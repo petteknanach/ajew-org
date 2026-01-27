@@ -1,0 +1,165 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Gallery" description="Photos and images from Na Nach Breslov">
+  <section class="page-header">
+    <h1>Gallery</h1>
+    <p>Images of Tzaddikim, holy places, and the Na Nach movement</p>
+  </section>
+
+  <section class="gallery-categories">
+    <div class="container">
+      <a href="/gallery/saba" class="gallery-card">
+        <div class="card-image saba-bg"></div>
+        <div class="card-content">
+          <h2>Saba Yisroel</h2>
+          <p>Photos of Rabbi Yisroel Ber Odesser, the receiver of the Petek</p>
+        </div>
+      </a>
+
+      <a href="/gallery/rabbainu" class="gallery-card">
+        <div class="card-image rabbainu-bg"></div>
+        <div class="card-content">
+          <h2>Rebbe Nachman</h2>
+          <p>Artistic depictions of Rabbainu</p>
+        </div>
+      </a>
+
+      <a href="/gallery/uman" class="gallery-card">
+        <div class="card-image uman-bg"></div>
+        <div class="card-content">
+          <h2>Uman</h2>
+          <p>The holy tziyun and Rosh Hashanah gatherings</p>
+        </div>
+      </a>
+
+      <a href="/gallery/hafatza" class="gallery-card">
+        <div class="card-image hafatza-bg"></div>
+        <div class="card-content">
+          <h2>Hafatza</h2>
+          <p>Spreading the light of Rebbe Nachman</p>
+        </div>
+      </a>
+
+      <a href="/gallery/holy-places" class="gallery-card">
+        <div class="card-image places-bg"></div>
+        <div class="card-content">
+          <h2>Holy Places</h2>
+          <p>Kevarim and sacred sites</p>
+        </div>
+      </a>
+
+      <a href="/gallery/events" class="gallery-card">
+        <div class="card-image events-bg"></div>
+        <div class="card-content">
+          <h2>Events</h2>
+          <p>Gatherings, celebrations, and simchas</p>
+        </div>
+      </a>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .page-header {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+    color: white;
+    padding: 4rem 2rem;
+    text-align: center;
+  }
+
+  .page-header h1 {
+    font-family: var(--font-hebrew);
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .page-header p {
+    opacity: 0.9;
+    font-size: 1.2rem;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .gallery-categories {
+    padding: 4rem 0;
+  }
+
+  .gallery-categories .container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+  }
+
+  .gallery-card {
+    display: block;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    text-decoration: none;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+
+  .gallery-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  }
+
+  .card-image {
+    height: 200px;
+    background-size: cover;
+    background-position: center;
+    background-color: var(--color-secondary);
+  }
+
+  .saba-bg {
+    background: linear-gradient(45deg, #2c5282, #1a365d);
+  }
+
+  .rabbainu-bg {
+    background: linear-gradient(45deg, #285e61, #234e52);
+  }
+
+  .uman-bg {
+    background: linear-gradient(45deg, #744210, #5d3a1a);
+  }
+
+  .hafatza-bg {
+    background: linear-gradient(45deg, #ed8936, #dd6b20);
+  }
+
+  .places-bg {
+    background: linear-gradient(45deg, #553c9a, #44337a);
+  }
+
+  .events-bg {
+    background: linear-gradient(45deg, #38a169, #276749);
+  }
+
+  .card-content {
+    padding: 1.5rem;
+  }
+
+  .card-content h2 {
+    color: var(--color-primary);
+    font-size: 1.4rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .card-content p {
+    color: #666;
+    font-size: 0.95rem;
+  }
+
+  @media (max-width: 768px) {
+    .gallery-categories .container {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

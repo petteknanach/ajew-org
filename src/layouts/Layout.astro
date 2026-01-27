@@ -1,0 +1,161 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = "Teachings of Rebbe Nachman of Breslov" } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title} | A Jew</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="nav-container">
+        <a href="/" class="logo">
+          <span class="logo-text">A Jew</span>
+        </a>
+        <div class="nav-links">
+          <a href="/">Home</a>
+          <a href="/teachings">Teachings</a>
+          <a href="/gallery">Gallery</a>
+          <a href="/about">About</a>
+        </div>
+      </div>
+    </nav>
+    
+    <main>
+      <slot />
+    </main>
+
+    <footer>
+      <div class="footer-container">
+        <p>נ נח נחמ נחמן מאומן</p>
+        <p>Na Nach Nachma Nachman Me'Uman</p>
+        <p class="copyright">© {new Date().getFullYear()} ajew.org</p>
+      </div>
+    </footer>
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    --color-primary: #1a365d;
+    --color-secondary: #2c5282;
+    --color-accent: #ed8936;
+    --color-bg: #fffdf7;
+    --color-text: #2d3748;
+    --font-hebrew: 'Frank Ruhl Libre', serif;
+    --font-body: 'Open Sans', sans-serif;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    font-family: var(--font-body);
+    background: var(--color-bg);
+    color: var(--color-text);
+    scroll-behavior: smooth;
+  }
+
+  body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  main {
+    flex: 1;
+  }
+
+  .navbar {
+    background: var(--color-primary);
+    padding: 1rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .logo {
+    text-decoration: none;
+  }
+
+  .logo-text {
+    font-family: var(--font-hebrew);
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: white;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+  }
+
+  .nav-links a {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover {
+    color: var(--color-accent);
+  }
+
+  footer {
+    background: var(--color-primary);
+    color: white;
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  footer p {
+    margin: 0.5rem 0;
+  }
+
+  footer p:first-child {
+    font-family: var(--font-hebrew);
+    font-size: 1.5rem;
+  }
+
+  .copyright {
+    opacity: 0.7;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    .nav-links {
+      gap: 1rem;
+      font-size: 0.9rem;
+    }
+  }
+</style>

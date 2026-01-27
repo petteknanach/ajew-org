@@ -1,0 +1,265 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Home" description="Teachings of Rebbe Nachman of Breslov - Torah, wisdom, and inspiration">
+  <section class="hero">
+    <div class="hero-content">
+      <h1 class="hero-title">
+        <span class="hebrew">רבי נחמן מברסלב</span>
+        <span class="english">Rebbe Nachman of Breslov</span>
+      </h1>
+      <p class="hero-subtitle">
+        "The whole world is a very narrow bridge, and the main thing is not to fear at all."
+      </p>
+      <div class="hero-buttons">
+        <a href="/teachings" class="btn btn-primary">Explore Teachings</a>
+        <a href="/gallery" class="btn btn-secondary">View Gallery</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="intro">
+    <div class="container">
+      <h2>Welcome</h2>
+      <p>
+        Rebbe Nachman of Breslov (1772-1810) was a great-grandson of the Baal Shem Tov, 
+        founder of Chassidus. His teachings continue to inspire and guide millions of 
+        people around the world in their service of Hashem.
+      </p>
+      <p>
+        This site is dedicated to spreading the light of Rebbe Nachman's teachings — 
+        his Torah, stories, and practical guidance for living a life of joy, faith, and connection.
+      </p>
+    </div>
+  </section>
+
+  <section class="featured">
+    <div class="container">
+      <h2>Featured Teachings</h2>
+      <div class="cards">
+        <div class="card">
+          <h3>Likutay Moharan</h3>
+          <p>The primary collection of Rebbe Nachman's Torah teachings, covering all aspects of spiritual life.</p>
+          <a href="/teachings/likutay-moharan" class="card-link">Learn More →</a>
+        </div>
+        <div class="card">
+          <h3>Stories</h3>
+          <p>The famous tales of Rebbe Nachman, profound stories containing deep mystical secrets.</p>
+          <a href="/teachings/stories" class="card-link">Learn More →</a>
+        </div>
+        <div class="card">
+          <h3>Advice (Likutay Eitzos)</h3>
+          <p>Practical guidance arranged by topic — from prayer to happiness to livelihood.</p>
+          <a href="/teachings/advice" class="card-link">Learn More →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="quote">
+    <div class="container">
+      <blockquote>
+        <p class="hebrew-quote">אם אתה מאמין שיכולין לקלקל, תאמין שיכולין לתקן</p>
+        <p class="english-quote">"If you believe you can damage, believe you can fix."</p>
+        <cite>— Rebbe Nachman of Breslov</cite>
+      </blockquote>
+    </div>
+  </section>
+
+  <section class="nanach">
+    <div class="container">
+      <h2>Na Nach Nachma Nachman Me'Uman</h2>
+      <p class="petek-text">
+        In 1922, Rabbi Yisroel Ber Odesser (Saba Yisroel) received a miraculous letter — 
+        the Petek — revealing the power of this song-name. Today, the Na Nach movement 
+        continues to spread joy and the teachings of Rebbe Nachman throughout the world.
+      </p>
+      <a href="/gallery/saba" class="btn btn-primary">Photos of Saba Yisroel</a>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .hero {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+    color: white;
+    padding: 6rem 2rem;
+    text-align: center;
+  }
+
+  .hero-content {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .hero-title {
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-title .hebrew {
+    display: block;
+    font-family: var(--font-hebrew);
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .hero-title .english {
+    display: block;
+    font-size: 2rem;
+    font-weight: 400;
+    opacity: 0.9;
+  }
+
+  .hero-subtitle {
+    font-size: 1.3rem;
+    font-style: italic;
+    opacity: 0.9;
+    margin-bottom: 2rem;
+  }
+
+  .hero-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 0.8rem 2rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+
+  .btn-primary {
+    background: var(--color-accent);
+    color: white;
+  }
+
+  .btn-secondary {
+    background: white;
+    color: var(--color-primary);
+  }
+
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  section {
+    padding: 4rem 0;
+  }
+
+  section h2 {
+    font-family: var(--font-hebrew);
+    font-size: 2rem;
+    color: var(--color-primary);
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  .intro p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+
+  .featured {
+    background: #f7f5f0;
+  }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  .card {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+
+  .card h3 {
+    color: var(--color-primary);
+    margin-bottom: 1rem;
+  }
+
+  .card p {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+
+  .card-link {
+    color: var(--color-accent);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .card-link:hover {
+    text-decoration: underline;
+  }
+
+  .quote {
+    background: var(--color-primary);
+    color: white;
+  }
+
+  blockquote {
+    text-align: center;
+  }
+
+  .hebrew-quote {
+    font-family: var(--font-hebrew);
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+  }
+
+  .english-quote {
+    font-size: 1.3rem;
+    font-style: italic;
+    opacity: 0.9;
+    margin-bottom: 1rem;
+  }
+
+  cite {
+    opacity: 0.8;
+  }
+
+  .nanach {
+    text-align: center;
+  }
+
+  .petek-text {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin-bottom: 2rem;
+  }
+
+  @media (max-width: 768px) {
+    .hero-title .hebrew {
+      font-size: 2rem;
+    }
+
+    .hero-title .english {
+      font-size: 1.3rem;
+    }
+
+    .hero-subtitle {
+      font-size: 1.1rem;
+    }
+  }
+</style>

@@ -1,0 +1,134 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="About" description="About ajew.org and the mission to spread Rebbe Nachman's teachings">
+  <section class="page-header">
+    <h1>About</h1>
+    <p>Our mission and vision</p>
+  </section>
+
+  <section class="about-content">
+    <div class="container">
+      <h2>Our Mission</h2>
+      <p>
+        ajew.org is dedicated to spreading the teachings of Rebbe Nachman of Breslov 
+        and making them accessible to everyone. Through authentic translations, 
+        beautiful imagery, and thoughtful presentation, we hope to bring the light 
+        of Breslov Chassidus to seekers everywhere.
+      </p>
+
+      <h2>Rebbe Nachman of Breslov</h2>
+      <p>
+        Rabbi Nachman of Breslov (1772-1810) was a great-grandson of Rabbi Yisroel 
+        Baal Shem Tov, the founder of the Chassidic movement. Despite living only 
+        38 years, Rebbe Nachman left behind a vast treasury of Torah teachings, 
+        stories, and guidance that continue to inspire millions.
+      </p>
+      <p>
+        His approach emphasizes joy, personal prayer (hisbodedus), faith, and the 
+        belief that no matter how far a person has fallen, they can always return 
+        to Hashem and find their unique path.
+      </p>
+
+      <h2>The Na Nach Movement</h2>
+      <p>
+        In 1922, Rabbi Yisroel Ber Odesser (known as Saba Yisroel, 1888-1994) 
+        discovered a miraculous letter — the Petek — in a book. This letter, 
+        signed with the mysterious phrase "Na Nach Nachma Nachman Me'Uman," 
+        became the foundation of the Na Nach movement.
+      </p>
+      <p>
+        Today, Na Nach Breslov is known for its joyful approach to spreading 
+        Rebbe Nachman's teachings through music, dancing, and outreach (hafatza) 
+        around the world.
+      </p>
+
+      <h2>Contact</h2>
+      <p>
+        Have questions or want to contribute? We'd love to hear from you.
+      </p>
+      <p>
+        <a href="mailto:info@ajew.org">info@ajew.org</a>
+      </p>
+
+      <div class="signature">
+        <p class="hebrew">נ נח נחמ נחמן מאומן</p>
+        <p>Na Nach Nachma Nachman Me'Uman</p>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .page-header {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+    color: white;
+    padding: 4rem 2rem;
+    text-align: center;
+  }
+
+  .page-header h1 {
+    font-family: var(--font-hebrew);
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .page-header p {
+    opacity: 0.9;
+    font-size: 1.2rem;
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .about-content {
+    padding: 4rem 0;
+  }
+
+  .about-content h2 {
+    font-family: var(--font-hebrew);
+    font-size: 1.6rem;
+    color: var(--color-primary);
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .about-content h2:first-child {
+    margin-top: 0;
+  }
+
+  .about-content p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #444;
+    margin-bottom: 1rem;
+  }
+
+  .about-content a {
+    color: var(--color-accent);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .about-content a:hover {
+    text-decoration: underline;
+  }
+
+  .signature {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid #ddd;
+    text-align: center;
+  }
+
+  .signature .hebrew {
+    font-family: var(--font-hebrew);
+    font-size: 2rem;
+    color: var(--color-primary);
+    margin-bottom: 0.5rem;
+  }
+</style>

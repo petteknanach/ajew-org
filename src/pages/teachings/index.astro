@@ -1,0 +1,184 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Teachings" description="Explore the teachings of Rebbe Nachman of Breslov">
+  <section class="page-header">
+    <h1>Teachings</h1>
+    <p>The wisdom of Rebbe Nachman for every aspect of life</p>
+  </section>
+
+  <section class="teachings-grid">
+    <div class="container">
+      <div class="teaching-card">
+        <h2>Likutay Moharan</h2>
+        <p>
+          The primary collection of Rebbe Nachman's Torah teachings. These profound 
+          lessons cover every aspect of serving Hashem, from prayer and faith to 
+          overcoming spiritual challenges.
+        </p>
+        <a href="/teachings/likutay-moharan" class="btn">Explore →</a>
+      </div>
+
+      <div class="teaching-card">
+        <h2>Likutay Halachos</h2>
+        <p>
+          Reb Noson's explanations of the Torah portions and Jewish law through the 
+          lens of Rebbe Nachman's teachings. A treasure of Chassidic wisdom.
+        </p>
+        <a href="/teachings/likutay-halachos" class="btn">Explore →</a>
+      </div>
+
+      <div class="teaching-card">
+        <h2>Stories of Rebbe Nachman</h2>
+        <p>
+          The famous tales told by Rebbe Nachman, filled with deep mystical secrets 
+          clothed in stories of kings, princesses, and journeys.
+        </p>
+        <a href="/teachings/stories" class="btn">Explore →</a>
+      </div>
+
+      <div class="teaching-card">
+        <h2>Likutay Eitzos (Advice)</h2>
+        <p>
+          Practical guidance from Rebbe Nachman's teachings, arranged alphabetically 
+          by topic. Whatever you're facing, there's wisdom here.
+        </p>
+        <a href="/teachings/advice" class="btn">Explore →</a>
+      </div>
+
+      <div class="teaching-card">
+        <h2>Sichos HaRan</h2>
+        <p>
+          Conversations and informal teachings of Rebbe Nachman recorded by his students. 
+          Personal guidance and practical wisdom.
+        </p>
+        <a href="/teachings/sichos" class="btn">Explore →</a>
+      </div>
+
+      <div class="teaching-card">
+        <h2>Tikkun HaKlali</h2>
+        <p>
+          The ten Psalms prescribed by Rebbe Nachman as a complete remedy (Tikkun) 
+          for spiritual healing and purification.
+        </p>
+        <a href="/teachings/tikkun-haklali" class="btn">Explore →</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="daily-teaching">
+    <div class="container">
+      <h2>Daily Inspiration</h2>
+      <blockquote>
+        <p class="hebrew">כל העולם כולו גשר צר מאד והעיקר לא לפחד כלל</p>
+        <p class="english">"The whole world is a very narrow bridge, and the main thing is not to fear at all."</p>
+        <cite>— Likutay Moharan II, 48</cite>
+      </blockquote>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .page-header {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+    color: white;
+    padding: 4rem 2rem;
+    text-align: center;
+  }
+
+  .page-header h1 {
+    font-family: var(--font-hebrew);
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .page-header p {
+    opacity: 0.9;
+    font-size: 1.2rem;
+  }
+
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .teachings-grid {
+    padding: 4rem 0;
+  }
+
+  .teachings-grid .container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+
+  .teaching-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border-left: 4px solid var(--color-accent);
+  }
+
+  .teaching-card h2 {
+    color: var(--color-primary);
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+  }
+
+  .teaching-card p {
+    color: #666;
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+  }
+
+  .btn {
+    display: inline-block;
+    color: var(--color-accent);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .btn:hover {
+    text-decoration: underline;
+  }
+
+  .daily-teaching {
+    background: #f7f5f0;
+    padding: 4rem 0;
+  }
+
+  .daily-teaching h2 {
+    text-align: center;
+    font-family: var(--font-hebrew);
+    font-size: 2rem;
+    color: var(--color-primary);
+    margin-bottom: 2rem;
+  }
+
+  blockquote {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .hebrew {
+    font-family: var(--font-hebrew);
+    font-size: 1.5rem;
+    color: var(--color-primary);
+    margin-bottom: 1rem;
+  }
+
+  .english {
+    font-size: 1.2rem;
+    font-style: italic;
+    color: #555;
+    margin-bottom: 1rem;
+  }
+
+  cite {
+    color: #888;
+  }
+</style>
