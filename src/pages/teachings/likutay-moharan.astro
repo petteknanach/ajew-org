@@ -1,0 +1,179 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+
+const likutayMoharan = [
+  { volume: "Volume I", torahs: 291, topics: "Torah lessons on prayer, faith, joy, and service of Hashem" },
+  { volume: "Volume II", torahs: 65, topics: "Later teachings including the famous 'Narrow Bridge' discourse" }
+];
+---
+
+<Layout title="Likutay Moharan" description="The complete teachings of Rebbe Nachman of Breslov">
+  <section class="page-header">
+    <h1>Likutay Moharan</h1>
+    <p>ליקוטי מוהרן</p>
+    <a href="/teachings" class="back-link">← Back to Teachings</a>
+  </section>
+
+  <section class="intro">
+    <div class="container">
+      <p class="description">
+        <strong>Likutay Moharan</strong> (Collected from Rabbi Nachman) is the primary collection 
+        of Rebbe Nachman's Torah teachings. These profound lessons cover every aspect of 
+        serving Hashem, from prayer and faith to joy, humility, and overcoming spiritual challenges.
+      </p>
+    </div>
+  </section>
+
+  <section class="volumes">
+    <div class="container">
+      <div class="volumes-grid">
+        <div class="volume-card">
+          <h2>Volume I</h2>
+          <p class="count">291 Torah Lessons</p>
+          <p class="topics">Topics include: Prayer, Faith, Joy, Humility, Repentance, Hitbodedut (self-seclusion), and daily service of Hashem</p>
+        </div>
+        <div class="volume-card">
+          <h2>Volume II</h2>
+          <p class="count">65 Torah Lessons</p>
+          <p class="topics">Includes the famous "Narrow Bridge" discourse (Torah 48), and teachings on joy, simchah, and the essence of Breslov teachings</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="famous-teachings">
+    <div class="container">
+      <h2>Famous Teachings</h2>
+      <div class="teachings-list">
+        <div class="teaching-item">
+          <h3>Torah 48 - The Narrow Bridge</h3>
+          <p class="hebrew">כל העולם כולו גשר צר מאד והעיקר לא לפחד כלל</p>
+          <p>"The whole world is a very narrow bridge, and the main thing is not to fear at all."</p>
+        </div>
+        <div class="teaching-item">
+          <h3>Torah 52 - Joy</h3>
+          <p class="hebrew">שמחה של מצוה</p>
+          <p>The essential role of joy in serving Hashem and overcoming sadness</p>
+        </div>
+        <div class="teaching-item">
+          <h3>Torah 3 - Hitbodedus</h3>
+          <p class="hebrew">התבודדות</p>
+          <p>The importance of personal prayer and conversation with God</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .page-header {
+    background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
+    color: white;
+    padding: 4rem 2rem;
+    text-align: center;
+  }
+
+  .page-header h1 {
+    font-family: var(--font-hebrew);
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-top: 1rem;
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border: 1px solid white;
+    border-radius: 4px;
+  }
+
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .intro {
+    padding: 4rem 0;
+    background: #f7f5f0;
+  }
+
+  .description {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #444;
+  }
+
+  .volumes {
+    padding: 4rem 0;
+  }
+
+  .volumes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+
+  .volume-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    border-left: 4px solid var(--color-accent);
+  }
+
+  .volume-card h2 {
+    color: var(--color-primary);
+    margin-bottom: 0.5rem;
+  }
+
+  .count {
+    font-weight: 600;
+    color: var(--color-accent);
+    margin-bottom: 1rem;
+  }
+
+  .topics {
+    color: #666;
+    font-size: 0.95rem;
+  }
+
+  .famous-teachings {
+    background: #edf2f7;
+    padding: 4rem 0;
+  }
+
+  .famous-teachings h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--color-primary);
+  }
+
+  .teachings-list {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .teaching-item {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+  }
+
+  .teaching-item h3 {
+    color: var(--color-primary);
+    margin-bottom: 0.5rem;
+  }
+
+  .teaching-item .hebrew {
+    font-family: var(--font-hebrew);
+    color: var(--color-accent);
+    margin-bottom: 0.5rem;
+  }
+
+  .teaching-item p:last-child {
+    color: #666;
+  }
+</style>

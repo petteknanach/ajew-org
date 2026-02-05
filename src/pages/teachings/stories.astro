@@ -1,0 +1,193 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+
+const stories = [
+  { title: "Tale 1", english: "The Lost Princess", hebrew: "הנסיכה האבודה", description: "A story of restoration and return" },
+  { title: "Tale 2", english: "The King and the Emperor", hebrew: "המלך והקיסר", description: "Of faith and leadership" },
+  { title: "Tale 3", english: "The One Who Could Not Walk", hebrew: "זה שלא יכול ללכת", description: "On overcoming obstacles" },
+  { title: "Tale 4", english: "The King Who Decreed Apostasy", hebrew: "המלך שגזר אפיקורסות", description: "Of坚持 faith under pressure" },
+  { title: "Tale 5", english: "The King's Son Who Was Made of Dirt", hebrew: "בן המלך שנעשה מעפר", description: "On humility and spiritual elevation" },
+  { title: "Tale 6", english: "The Humble King", hebrew: "המלך העניו", description: "Of true royalty" },
+  { title: "Tale 7", english: "The Fly and the Spider", hebrew: "הזבוב והעכביש", description: "A parable of small vs. great" },
+  { title: "Tale 8", english: "The Rabbi and His Only Son", hebrew: "הרב ובנו היחיד", description: "Of parental love and devotion" },
+  { title: "Tale 9", english: "The Clever Man and the Simple Man", hebrew: "החכם והפתי", description: "On wisdom and simplicity" },
+  { title: "Tale 10", english: "The Burgher and the Pauper", hebrew: "הבורגר והעני", description: "Of wealth and spirit" },
+  { title: "Tale 11", english: "The King's Son and the Maidservant's Son", hebrew: "בן המלך ובן השפחה", description: "Of identity and destiny" },
+  { title: "Tale 12", english: "The Seven Beggars", hebrew: "שבעה קבצנים", description: "The longest and most profound tale" },
+  { title: "Tale 13", english: "The Aleph-Beth Story", hebrew: "סיפור האלף-בית", description: "On letters and spiritual path" }
+];
+---
+
+<Layout title="Stories of Rebbe Nachman" description="The thirteen legendary tales of Rabbi Nachman of Breslov">
+  <section class="page-header">
+    <h1>Stories of Ancient Times</h1>
+    <p>סיפורי מעשיות</p>
+    <a href="/teachings" class="back-link">← Back to Teachings</a>
+  </section>
+
+  <section class="intro">
+    <div class="container">
+      <p class="description">
+        <strong>Sipurei Maasiyot</strong> (Stories of Ancient Times) are thirteen tales told by 
+        Rebbe Nachman of Breslov, filled with deep mystical secrets clothed in stories of kings, 
+        princesses, beggars, and journeys. Each story contains layers of meaning accessible to all.
+      </p>
+    </div>
+  </section>
+
+  <section class="stories">
+    <div class="container">
+      <div class="stories-grid">
+        {stories.map((story, index) => (
+          <a href={`/teachings/story/${index + 1}`} class="story-card">
+            <div class="story-number">{index + 1}</div>
+            <div class="story-info">
+              <h3>{story.title}</h3>
+              <p class="hebrew">{story.hebrew}</p>
+              <p class="english">{story.english}</p>
+              <p class="description">{story.description}</p>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="quote">
+    <div class="container">
+      <blockquote>
+        <p>"Rebbe Nachman's stories are like the Garden of Eden — everyone can find their portion."</p>
+        <cite>— Rabbi Natan</cite>
+      </blockquote>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .page-header {
+    background: linear-gradient(135deg, #553c9a 0%, #44337a 100%);
+    color: white;
+    padding: 4rem 2rem;
+    text-align: center;
+  }
+
+  .page-header h1 {
+    font-family: var(--font-hebrew);
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-top: 1rem;
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border: 1px solid white;
+    border-radius: 4px;
+  }
+
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .intro {
+    padding: 4rem 0;
+    background: #f7f5f0;
+  }
+
+  .description {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .stories {
+    padding: 4rem 0;
+  }
+
+  .stories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+  }
+
+  .story-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+
+  .story-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  }
+
+  .story-number {
+    width: 40px;
+    height: 40px;
+    background: var(--color-accent);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    flex-shrink: 0;
+  }
+
+  .story-info h3 {
+    color: var(--color-primary);
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .hebrew {
+    font-family: var(--font-hebrew);
+    color: #888;
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .english {
+    color: var(--color-accent);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+  }
+
+  .description {
+    color: #666;
+    font-size: 0.85rem;
+  }
+
+  .quote {
+    background: #edf2f7;
+    padding: 4rem 0;
+    text-align: center;
+  }
+
+  .quote blockquote {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .quote p {
+    font-size: 1.2rem;
+    font-style: italic;
+    margin-bottom: 1rem;
+  }
+
+  .quote cite {
+    color: #666;
+  }
+</style>

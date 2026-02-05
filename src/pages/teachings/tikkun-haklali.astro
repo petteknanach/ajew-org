@@ -1,0 +1,210 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+
+const psalms = [
+  { number: 16, name: "Mizmor L'Todah", english: "Psalm of Thanksgiving", description: "For gratitude and acknowledgment of goodness" },
+  { number: 32, name: "Ashrei", english: "Happy is the One", description: "For forgiveness of sins" },
+  { number: 41, name: "Ashrei L'roi", english: "Happy is the One Who Considers", description: "For healing from illness" },
+  { number: 42, name: "Lamenatzeiach", english: "To the Conductor", description: "For depression and sadness" },
+  { number: 59, name: "Lamenatzeiach Al Tushiyahu", english: "Do Not Keep Silent", description: "For protection from enemies" },
+  { number: 69, name: "Lamenatzeiach Al Shoshanim", english: "To the Conductor, About Lilies", description: "For salvation from distress" },
+  { number: 77, name: "Lamenatzeiach Al Yedutun", english: "To the Conductor, For Jeduthun", description: "For clarity and understanding" },
+  { number: 90, name: "Mizmor L'Moshe", english: "A Prayer of Moses", description: "For long life and repentance" },
+  { number: 91, name: "Lo Yisa", english: "He Shall Not Fear", description: "For protection and faith" },
+  { number: 104, name: "Baruch Shomeir", english: "Blessed is He Who Observes", description: "For blessing and prosperity" }
+];
+---
+
+<Layout title="Tikkun Haklali" description="The ten Psalms of Rebbe Nachman's complete remedy">
+  <section class="page-header">
+    <h1>Tikkun HaKlali</h1>
+    <p>תיקון הכללי</p>
+    <p class="subtitle">The Complete Remedy</p>
+    <a href="/teachings" class="back-link">← Back to Teachings</a>
+  </section>
+
+  <section class="intro">
+    <div class="container">
+      <div class="intro-content">
+        <p>
+          <strong>Tikkun HaKlali</strong> (The General/Universal Remedy) consists of ten Psalms 
+          prescribed by Rebbe Nachman of Breslov as a complete remedy for all spiritual and physical ailments.
+        </p>
+        <p>
+          Rebbe Nachman revealed this tikkun as a powerful tool for teshuva (repentance), healing, 
+          and drawing close to God. It is particularly effective for those who feel distant or broken.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="psalms">
+    <div class="container">
+      <h2>The Ten Psalms</h2>
+      <div class="psalms-grid">
+        {psalms.map((psalm, index) => (
+          <div class="psalm-card">
+            <div class="psalm-number">{psalm.number}</div>
+            <div class="psalm-info">
+              <h3>{psalm.name}</h3>
+              <p class="english">{psalm.english}</p>
+              <p class="description">{psalm.description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="instructions">
+    <div class="container">
+      <h2>How to Say the Tikkun</h2>
+      <div class="instructions-content">
+        <ol>
+          <li>Begin with the acknowledgment of sins and heartfelt repentance</li>
+          <li>Recite each of the ten Psalms slowly and contemplatively</li>
+          <li>Focus on the meaning of the words and their healing power</li>
+          <li>End with personal prayer and requests</li>
+          <li>Repeat regularly for maximum benefit</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .page-header {
+    background: linear-gradient(135deg, #2f855a 0%, #276749 100%);
+    color: white;
+    padding: 4rem 2rem;
+    text-align: center;
+  }
+
+  .page-header h1 {
+    font-family: var(--font-hebrew);
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .subtitle {
+    font-size: 1.2rem;
+    opacity: 0.9;
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-top: 1rem;
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border: 1px solid white;
+    border-radius: 4px;
+  }
+
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .intro {
+    padding: 4rem 0;
+    background: #f7f5f0;
+  }
+
+  .intro-content {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .intro-content p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin-bottom: 1rem;
+  }
+
+  .psalms {
+    padding: 4rem 0;
+  }
+
+  .psalms h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--color-primary);
+  }
+
+  .psalms-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+
+  .psalm-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+
+  .psalm-number {
+    width: 50px;
+    height: 50px;
+    background: var(--color-accent);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    font-weight: bold;
+    flex-shrink: 0;
+  }
+
+  .psalm-info h3 {
+    color: var(--color-primary);
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .english {
+    color: #888;
+    font-size: 0.85rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .description {
+    color: #666;
+    font-size: 0.9rem;
+  }
+
+  .instructions {
+    background: #edf2f7;
+    padding: 4rem 0;
+  }
+
+  .instructions h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--color-primary);
+  }
+
+  .instructions-content {
+    max-width: 600px;
+    margin: 0 auto;
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+  }
+
+  .instructions ol {
+    padding-left: 1.5rem;
+  }
+
+  .instructions li {
+    margin-bottom: 0.75rem;
+    line-height: 1.6;
+  }
+</style>
