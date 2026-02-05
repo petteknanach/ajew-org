@@ -1,24 +1,92 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import { getCollection } from 'astro:content';
 
 const images = await Astro.glob('../../assets/nanach/*.{jpg,jpeg,png,gif}');
 ---
 
-<Layout title="Na Nach Life" description="Na Nach Breslov movement photos">
+<Layout title="Na Nach Life Gallery" description="Photos of the Na Nach Breslov movement">
   <section class="page-header">
-    <h1>Na Nach Life</h1>
-    <p>The Na Nach Breslov movement in action</p>
+    <h1>✡ Na Nach Breslov Movement ✡</h1>
+    <p>Spreading the light of Rabbi Nachman throughout the world</p>
+    <p class="hebrew">נַ נַחְ נַחְמָ נַחְמָן מאוּמָן</p>
     <a href="/gallery" class="back-link">← Back to Gallery</a>
   </section>
 
-  <section class="gallery-grid">
+  <section class="intro">
     <div class="container">
-      {images.map((img, index) => (
-        <div class="gallery-item">
-          <img src={img.src} alt={`Na Nach photo ${index + 1}`} loading="lazy" />
+      <div class="info-box">
+        <h2>🌟 The Na Nach Movement</h2>
+        <p>
+          The Na Nach Breslov movement was inspired by Rabbi Yisroel Ber Odesser (Saba) 
+          who received the miraculous Petek in 1922. Today, Na Nach Breslover Chassidim 
+          spread joy and the teachings of Rebbe Nachman worldwide through songs, gatherings, 
+          and acts of kindness.
+        </p>
+        <p class="hebrew">
+          תנועת נ נח מברסלב התפתחה מהפטק שקיבל הסבא רבי ישראל בר אודסר בשנת תרפ"ב
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="gallery">
+    <div class="container">
+      <div class="gallery-grid">
+        {images.map((img, index) => {
+          const filename = img.src.toLowerCase();
+          let label = 'Na Nach';
+          if (filename.includes('simcha')) label = '🎵 Singing';
+          else if (filename.includes('yosef')) label = '👤 Yosef';
+          else if (filename.includes('yisroel') || filename.includes('dagan')) label = '🎤 Performing';
+          else if (filename.includes('snowman')) label = '⛄ Snowman';
+          else if (filename.includes('beanie') || filename.includes('hair')) label = '👒 Portraits';
+          else if (filename.includes('cave')) label = '🪨 Cave';
+          else if (filename.includes('driver') || filename.includes('car')) label = '🚗 Activities';
+          return (
+            <div class="gallery-item">
+              <img src={img.src} alt={`Na Nach ${index + 1}`} loading="lazy" />
+              <div class="overlay">
+                <span>{label}</span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <section class="friends-section">
+    <div class="container">
+      <h2>👥 Featured Friends</h2>
+      <div class="friends-grid">
+        <div class="friend-card">
+          <h3>🎤 Na Nach Simcha</h3>
+          <p>Known for joyful Na Nach songs and gatherings</p>
         </div>
-      ))}
+        <div class="friend-card">
+          <h3>🎵 Na Nach Yisroel Dagan</h3>
+          <p>Singer who popularized Na Nach music worldwide</p>
+        </div>
+        <div class="friend-card">
+          <h3>👤 Na Nach Yosef</h3>
+          <p>Spreading the Petek message</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="navigation">
+    <div class="container">
+      <div class="nav-buttons">
+        <a href="/gallery/uman" class="nav-btn prev">
+          <span class="arrow">←</span>
+          <span class="text">Tomb in Uman</span>
+        </a>
+        <a href="/teachings" class="nav-btn next">
+          <span class="text">Teachings</span>
+          <span class="arrow">→</span>
+        </a>
+      </div>
     </div>
   </section>
 </Layout>
@@ -27,7 +95,7 @@ const images = await Astro.glob('../../assets/nanach/*.{jpg,jpeg,png,gif}');
   .page-header {
     background: linear-gradient(135deg, #38a169 0%, #276749 100%);
     color: white;
-    padding: 4rem 2rem;
+    padding: 5rem 2rem;
     text-align: center;
   }
 
@@ -40,34 +108,71 @@ const images = await Astro.glob('../../assets/nanach/*.{jpg,jpeg,png,gif}');
   .page-header p {
     opacity: 0.9;
     font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .page-header .hebrew {
+    font-family: var(--font-hebrew);
+    font-size: 1.5rem;
+    margin-top: 1rem;
+    letter-spacing: 0.1em;
   }
 
   .back-link {
     display: inline-block;
-    margin-top: 1rem;
+    margin-top: 1.5rem;
     color: white;
     text-decoration: none;
-    padding: 0.5rem 1rem;
-    border: 1px solid white;
-    border-radius: 4px;
-    transition: background 0.3s;
-  }
-
-  .back-link:hover {
-    background: rgba(255,255,255,0.1);
+    padding: 0.75rem 1.5rem;
+    border: 2px solid white;
+    border-radius: 6px;
   }
 
   .container {
     max-width: 1400px;
     margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .intro {
+    background: #f7f5f0;
+    padding: 4rem 0;
+  }
+
+  .info-box {
+    max-width: 800px;
+    margin: 0 auto;
     padding: 2rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    text-align: center;
+  }
+
+  .info-box h2 {
+    font-family: var(--font-hebrew);
+    color: var(--color-primary);
+    margin-bottom: 1rem;
+  }
+
+  .info-box p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #555;
+    margin-bottom: 1rem;
+  }
+
+  .info-box .hebrew {
+    font-family: var(--font-hebrew);
+    font-size: 1.3rem;
+    color: #38a169;
+  }
+
+  .gallery {
+    padding: 4rem 0;
   }
 
   .gallery-grid {
-    padding: 2rem 0;
-  }
-
-  .gallery-grid .container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 1.5rem;
@@ -77,18 +182,110 @@ const images = await Astro.glob('../../assets/nanach/*.{jpg,jpeg,png,gif}');
     position: relative;
     aspect-ratio: 1;
     overflow: hidden;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   }
 
   .gallery-item img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.3s;
+    transition: transform 0.4s;
   }
 
   .gallery-item:hover img {
-    transform: scale(1.05);
+    transform: scale(1.08);
+  }
+
+  .gallery-item .overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.7));
+    padding: 2rem 1rem 1rem;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .gallery-item:hover .overlay {
+    opacity: 1;
+  }
+
+  .gallery-item .overlay span {
+    color: white;
+    font-size: 0.95rem;
+  }
+
+  .friends-section {
+    background: #f7f5f0;
+    padding: 4rem 0;
+  }
+
+  .friends-section h2 {
+    text-align: center;
+    color: var(--color-primary);
+    margin-bottom: 2rem;
+    font-family: var(--font-hebrew);
+  }
+
+  .friends-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .friend-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    text-align: center;
+  }
+
+  .friend-card h3 {
+    color: var(--color-primary);
+    margin-bottom: 0.5rem;
+  }
+
+  .friend-card p {
+    color: #666;
+    font-size: 0.95rem;
+  }
+
+  .navigation {
+    background: var(--color-primary);
+    padding: 3rem 0;
+  }
+
+  .nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: white;
+    text-decoration: none;
+    padding: 1rem 1.5rem;
+    background: rgba(255,255,255,0.1);
+    border-radius: 8px;
+  }
+
+  .nav-btn:hover {
+    background: rgba(255,255,255,0.2);
+  }
+
+  @media (max-width: 768px) {
+    .nav-buttons {
+      flex-direction: column;
+    }
+    
+    .gallery-grid {
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
   }
 </style>

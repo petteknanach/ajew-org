@@ -3,74 +3,114 @@ import Layout from '../../layouts/Layout.astro';
 
 const teachings = [
   {
-    title: "Likutay Moharan",
-    description: "The primary collection of Rebbe Nachman's Torah teachings - two volumes covering every aspect of serving Hashem",
-    url: "/teachings/likutay-moharan",
-    hebrew: "ליקוטי מוהרן",
-    icon: "📖"
+    category: "Core Teachings",
+    items: [
+      {
+        title: "Likutay Moharan",
+        description: "The complete collection of Rebbe Nachman's Torah teachings - 356 lessons covering all aspects of serving Hashem",
+        url: "/teachings/likutay-moharan",
+        hebrew: "ליקוטי מוהרן",
+        icon: "📖"
+      },
+      {
+        title: "Stories of Ancient Times",
+        description: "Thirteen profound stories filled with mystical secrets and life lessons",
+        url: "/teachings/stories",
+        hebrew: "סיפורי מעשיות",
+        icon: "📚"
+      },
+      {
+        title: "Tikkun Haklali",
+        description: "The Complete Remedy - ten Psalms for spiritual and physical healing",
+        url: "/teachings/tikkun-haklali",
+        hebrew: "תיקון הכללי",
+        icon: "🙏"
+      },
+      {
+        title: "The Life of Rabbi Nachman",
+        description: "Biography by Rabbi Natan including conversations and events from his holy life",
+        url: "/teachings/life-of-rabbi-nachman",
+        hebrew: "חיי מוהרן",
+        icon: "🕯️"
+      }
+    ]
   },
   {
-    title: "The Life of Our Leader Rabbi Nachman",
-    description: "The story of Rebbe Nachman's life by Rabbi Natan, including conversations and events from his holy days",
-    url: "/teachings/life-of-rabbi-nachman",
-    hebrew: "חיי מוהרן",
-    icon: "🕯️"
+    category: "Additional Writings",
+    items: [
+      {
+        title: "Sichos HaRan",
+        description: "Conversations and informal teachings recorded by his students",
+        url: "/teachings/sichos",
+        hebrew: "שיחות הר\"ן",
+        icon: "💬"
+      },
+      {
+        title: "Likutay Eitzos",
+        description: "Practical guidance arranged alphabetically by topic",
+        url: "/teachings/advice",
+        hebrew: "ליקוטי עצות",
+        icon: "💡"
+      },
+      {
+        title: "Shivchay Moharan",
+        description: "Testimonials and praises about Rebbe Nachman",
+        url: "/teachings/shivchay",
+        hebrew: "שיבחו מוהרן",
+        icon: "⭐"
+      },
+      {
+        title: "Sefer HaMidos",
+        description: "The book of character traits for self-improvement",
+        url: "/teachings/midos",
+        hebrew: "ספר המידות",
+        icon: "🌟"
+      }
+    ]
   },
   {
-    title: "Outpouring of the Soul",
-    description: "The Tikkun Haklali - ten Psalms prescribed by Rebbe Nachman as complete remedy for spiritual healing",
-    url: "/teachings/tikkun-haklali",
-    hebrew: "תיקון הכללי",
-    icon: "🙏"
+    category: "Resources",
+    items: [
+      {
+        title: "Na Nach Blogspot",
+        description: "Articles and teachings from naanaach.blogspot.com",
+        url: "/teachings/na-nach-blogspot",
+        hebrew: "נ נח נחמ נחמן",
+        icon: "🌐"
+      },
+      {
+        title: "External Links",
+        description: "Recommended Breslov resources and websites",
+        url: "#external",
+        hebrew: "קישורים חיצוניים",
+        icon: "🔗"
+      }
+    ]
+  }
+];
+
+const famousQuotes = [
+  {
+    quote: "כִּי בָּעוֹלָם הַזֶּה צָרִיךְ לַעֲבֹר עַל גֶּשֶׁר צַר מְאֹד",
+    translation: "In this world, a person must traverse a very narrow bridge",
+    source: "Likutay Moharan II, 48"
   },
   {
-    title: "Stories of Ancient Times",
-    description: "The thirteen legendary tales told by Rebbe Nachman, filled with deep mystical secrets clothed in stories",
-    url: "/teachings/stories",
-    hebrew: "סיפורי מעשיות",
-    icon: "📚"
+    quote: "אִם אַתָּה מַאֲמִין שֶׁאַתָּה יָכוֹל לְקַלְקֵל, תַּאֲמִין שֶׁאַתָּה יָכוֹל לְתַקֵן",
+    translation: "If you believe you can damage, believe you can fix",
+    source: "Likutay Moharan"
   },
   {
-    title: "Sichos HaRan",
-    description: "Conversations and informal teachings recorded by his students",
-    url: "/teachings/sichos",
-    hebrew: "שיחות הר\"ן",
-    icon: "💬"
-  },
-  {
-    title: "Likutay Eitzos (Advice)",
-    description: "Practical guidance arranged alphabetically by topic",
-    url: "/teachings/advice",
-    hebrew: "ליקוטי עצות",
-    icon: "💡"
-  },
-  {
-    title: "Shivchay Moharan",
-    description: "The praises of Rebbe Nachman - testimonials and accolades",
-    url: "/teachings/shivchay",
-    hebrew: "שיבחו מוהרן",
-    icon: "⭐"
-  },
-  {
-    title: "Sefer HaMidos",
-    description: "The book of character traits - working on oneself",
-    url: "/teachings/midos",
-    hebrew: "ספר המידות",
-    icon: "🌟"
-  },
-  {
-    title: "Na Nach Blogspot",
-    description: "Articles and teachings from naanaach.blogspot.com - Breslov insights, history, and inspiration",
-    url: "/teachings/na-nach-blogspot",
-    hebrew: "נ נח נחמ נחמן",
-    icon: "🌐"
+    quote: "אֵין שׁוּם דָּבָר שֶׁאֵין בּוֹ תִּקְוָה",
+    translation: "There is nothing without hope",
+    source: "Likutay Moharan"
   }
 ];
 ---
 
-<Layout title="Teachings of Breslov" description="The complete teachings of Rebbe Nachman of Breslov and the Breslov tradition">
+<Layout title="Teachings of Breslov" description="The complete teachings of Rebbe Nachman of Breslov - Torah, stories, and wisdom">
   <section class="page-header">
-    <h1>Teachings of Breslov</h1>
+    <h1>✡ Teachings of Breslov ✡</h1>
     <p>The eternal wisdom of Rabbi Nachman of Breslov and the Baal HaPetek</p>
     <p class="hebrew-banner">נַ נַחְ נַחְמָ נַחְמָן מאוּמָן</p>
   </section>
@@ -78,79 +118,68 @@ const teachings = [
   <section class="intro">
     <div class="container">
       <blockquote class="famous-quote">
-        <p class="hebrew">כִּי בָּעוֹלָם הַזֶּה צָרִיךְ לַעֲבֹר עַל גֶּשֶׁר צַר מְאֹד וְהָעִקָּר לְבַל לִפְחַד כְּלָל</p>
-        <p class="english">"In this world, a person must traverse a very narrow bridge — the main thing is not to fear at all."</p>
-        <cite>— Likutay Moharan II, 48</cite>
+        <p class="hebrew">{famousQuotes[0].quote}</p>
+        <p class="english">"{famousQuotes[0].translation}"</p>
+        <cite>— {famousQuotes[0].source}</cite>
       </blockquote>
     </div>
   </section>
 
-  <section class="teachings-grid">
+  {teachings.map((category) => (
+    <section class="teachings-category">
+      <div class="container">
+        <h2><span class="icon">{category.items[0].icon}</span> {category.category}</h2>
+        <div class="teachings-grid">
+          {category.items.map((teaching) => (
+            <a href={teaching.url} class="teaching-card">
+              <span class="card-icon">{teaching.icon}</span>
+              <h3>{teaching.title}</h3>
+              <p class="hebrew-title">{teaching.hebrew}</p>
+              <p class="description">{teaching.description}</p>
+              <span class="read-more">Learn More →</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  ))}
+
+  <section class="quotes-section">
     <div class="container">
-      {teachings.map((teaching) => (
-        <a href={teaching.url} class="teaching-card">
-          <span class="icon">{teaching.icon}</span>
-          <h2>{teaching.title}</h2>
-          <p class="hebrew-title">{teaching.hebrew}</p>
-          <p class="description">{teaching.description}</p>
-        </a>
-      ))}
+      <h2>💬 Famous Teachings</h2>
+      <div class="quotes-grid">
+        {famousQuotes.map((quote) => (
+          <blockquote class="quote-card">
+            <p class="hebrew">{quote.quote}</p>
+            <p class="english">"{quote.translation}"</p>
+            <cite>— {quote.source}</cite>
+          </blockquote>
+        ))}
+      </div>
     </div>
   </section>
 
-  <section class="quick-links">
+  <section class="quick-access">
     <div class="container">
-      <h2>Quick Access</h2>
-      <div class="links-grid">
+      <h2>⚡ Quick Access</h2>
+      <div class="quick-links">
         <a href="/teachings/tikkun-haklali" class="quick-link">
           <span>🙏</span>
           <span>Tikkun Haklali</span>
         </a>
-        <a href="/teachings/hisbodedus" class="quick-link">
-          <span>🤝</span>
-          <span>Hisbodedus Prayer</span>
+        <a href="/teachings/stories" class="quick-link">
+          <span>📚</span>
+          <span>Stories</span>
         </a>
-        <a href="/teachings/13-principles" class="quick-link">
-          <span>✡️</span>
-          <span>13 Principles</span>
+        <a href="/teachings/likutay-moharan" class="quick-link">
+          <span>📖</span>
+          <span>Likutay Moharan</span>
         </a>
-        <a href="/teachings/bris-milah" class="quick-link">
-          <span>🕎</span>
-          <span>Bris Milah</span>
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <section class="external-resources">
-    <div class="container">
-      <h2>📚 External Breslov Resources</h2>
-      <div class="resources-grid">
-        <a href="https://naanaach.blogspot.com" target="_blank" rel="noopener noreferrer" class="resource-card">
-          <span class="icon">🌐</span>
-          <h3>Naanaach Blogspot</h3>
-          <p>Na Nach Breslov teachings, insights, and articles (opens in new tab)</p>
-        </a>
-        <a href="https://breslov.org" target="_blank" rel="noopener noreferrer" class="resource-card">
-          <span class="icon">📖</span>
-          <h3>Breslov.org</h3>
-          <p>Central Breslov resources and teachings (opens in new tab)</p>
-        </a>
-        <a href="https://www.chabad.org/library/article_cdo/aid/3052/jewish/Rabbi-Nachman-of-Breslov.htm" target="_blank" rel="noopener noreferrer" class="resource-card">
-          <span class="icon">✡️</span>
-          <h3>Chabad.org</h3>
-          <p>Biography and teachings of Rabbi Nachman (opens in new tab)</p>
+        <a href="/teachings/na-nach-blogspot" class="quick-link">
+          <span>🌐</span>
+          <span>Na Nach Blog</span>
         </a>
       </div>
-    </div>
-  </section>
-
-  <section class="quote-section">
-    <div class="container">
-      <blockquote>
-        <p>"Even a simple word of Rabbi Nachman contains extremely deep intentions... great principles that encompass everything."</p>
-        <cite>— Rabbi Natan of Breslov</cite>
-      </blockquote>
     </div>
   </section>
 </Layout>
@@ -165,7 +194,7 @@ const teachings = [
 
   .page-header h1 {
     font-family: var(--font-hebrew);
-    font-size: 3rem;
+    font-size: 2.8rem;
     margin-bottom: 0.5rem;
   }
 
@@ -175,10 +204,10 @@ const teachings = [
   }
 
   .hebrew-banner {
-    margin-top: 1.5rem;
     font-family: var(--font-hebrew);
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     letter-spacing: 0.1em;
+    margin-top: 1.5rem;
   }
 
   .container {
@@ -196,6 +225,10 @@ const teachings = [
     text-align: center;
     max-width: 700px;
     margin: 0 auto;
+    padding: 2.5rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
   }
 
   .famous-quote .hebrew {
@@ -216,11 +249,27 @@ const teachings = [
     color: #888;
   }
 
-  .teachings-grid {
+  .teachings-category {
     padding: 4rem 0;
   }
 
-  .teachings-grid .container {
+  .teachings-category:nth-child(even) {
+    background: #fafafa;
+  }
+
+  .teachings-category h2 {
+    font-family: var(--font-hebrew);
+    font-size: 1.8rem;
+    color: var(--color-primary);
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .teachings-category h2 .icon {
+    margin-left: 0.5rem;
+  }
+
+  .teachings-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 1.5rem;
@@ -242,13 +291,13 @@ const teachings = [
     box-shadow: 0 8px 24px rgba(0,0,0,0.12);
   }
 
-  .teaching-card .icon {
-    font-size: 2.5rem;
+  .teaching-card .card-icon {
+    font-size: 2rem;
     display: block;
     margin-bottom: 1rem;
   }
 
-  .teaching-card h2 {
+  .teaching-card h3 {
     color: var(--color-primary);
     font-size: 1.3rem;
     margin-bottom: 0.5rem;
@@ -264,114 +313,92 @@ const teachings = [
     color: #666;
     font-size: 0.95rem;
     line-height: 1.6;
+    margin-bottom: 1rem;
   }
 
-  .quick-links {
+  .teaching-card .read-more {
+    color: var(--color-accent);
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .quotes-section {
     background: #edf2f7;
-    padding: 3rem 0;
+    padding: 4rem 0;
   }
 
-  .quick-links h2 {
+  .quotes-section h2 {
     text-align: center;
     color: var(--color-primary);
     margin-bottom: 2rem;
   }
 
-  .links-grid {
+  .quotes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .quote-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+
+  .quote-card .hebrew {
+    font-family: var(--font-hebrew);
+    font-size: 1.2rem;
+    color: var(--color-primary);
+    margin-bottom: 0.75rem;
+  }
+
+  .quote-card .english {
+    font-size: 0.95rem;
+    font-style: italic;
+    color: #666;
+    margin-bottom: 0.75rem;
+  }
+
+  .quote-card cite {
+    color: #888;
+    font-size: 0.85rem;
+  }
+
+  .quick-access {
+    background: var(--color-primary);
+    color: white;
+    padding: 4rem 0;
+  }
+
+  .quick-access h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .quick-links {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 1rem;
+    max-width: 900px;
+    margin: 0 auto;
   }
 
   .quick-link {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    background: white;
+    justify-content: center;
+    background: rgba(255,255,255,0.1);
     padding: 1rem 1.5rem;
     border-radius: 8px;
+    color: white;
     text-decoration: none;
-    color: var(--color-primary);
-    font-weight: 500;
     transition: background 0.3s;
   }
 
   .quick-link:hover {
-    background: var(--color-accent);
-    color: white;
-  }
-
-  .quote-section {
-    background: var(--color-primary);
-    color: white;
-    padding: 4rem 0;
-  }
-
-  .quote-section blockquote {
-    text-align: center;
-    max-width: 600px;
-    margin: 0 auto;
-  }
-
-  .quote-section p {
-    font-size: 1.2rem;
-    font-style: italic;
-    margin-bottom: 1rem;
-  }
-
-  .quote-section cite {
-    opacity: 0.8;
-  }
-
-  .external-resources {
-    background: #f7f5f0;
-    padding: 4rem 0;
-    border-top: 1px solid #e2e8f0;
-  }
-
-  .external-resources h2 {
-    text-align: center;
-    color: var(--color-primary);
-    margin-bottom: 2rem;
-  }
-
-  .resources-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.5rem;
-  }
-
-  .resource-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    background: white;
-    padding: 2rem;
-    border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-    text-decoration: none;
-    transition: transform 0.3s, box-shadow 0.3s;
-  }
-
-  .resource-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-  }
-
-  .resource-card .icon {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-  }
-
-  .resource-card h3 {
-    color: var(--color-primary);
-    margin-bottom: 0.5rem;
-  }
-
-  .resource-card p {
-    color: #666;
-    font-size: 0.9rem;
+    background: rgba(255,255,255,0.2);
   }
 
   @media (max-width: 768px) {
@@ -379,7 +406,7 @@ const teachings = [
       font-size: 2rem;
     }
     
-    .teachings-grid .container {
+    .teachings-grid {
       grid-template-columns: 1fr;
     }
   }

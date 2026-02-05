@@ -1,32 +1,75 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-
-const images = await Astro.glob('../../assets/events/*.{jpg,jpeg,png,gif}');
 ---
 
-<Layout title="Events" description="Photos from Na Nach events and gatherings">
+<Layout title="Events Gallery" description="Photos from Na Nach events and gatherings">
   <section class="page-header">
-    <h1>Events & Friends</h1>
-    <p>Gatherings, celebrations, and simchas</p>
+    <h1>✡ Events & Gatherings ✡</h1>
+    <p>Celebrations, simchas, and Na Nach events around the world</p>
     <a href="/gallery" class="back-link">← Back to Gallery</a>
   </section>
 
-  <section class="gallery-grid">
+  <section class="intro">
     <div class="container">
-      {images.map((img, index) => (
-        <div class="gallery-item">
-          <img src={img.src} alt={`Event photo ${index + 1}`} loading="lazy" />
-        </div>
-      ))}
+      <div class="info-box">
+        <h2>🎉 Events Coming Soon</h2>
+        <p>
+          We're currently organizing photos from Na Nach events, gatherings, and celebrations. 
+          Check back soon for photos from Rosh Hashanah in Uman, regional Na Nach gatherings, 
+          and simchas from around the world.
+        </p>
+        <p class="hebrew">
+          אירועים והתכנסויות נ נח מכל העולם
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="links-section">
+    <div class="container">
+      <h2>📷 Related Galleries</h2>
+      <div class="links-grid">
+        <a href="/gallery/saba" class="link-card">
+          <span class="icon">👤</span>
+          <span class="text">Saba Yisroel</span>
+        </a>
+        <a href="/gallery/rabbainu" class="link-card">
+          <span class="icon">✡️</span>
+          <span class="text">Rebbe Nachman</span>
+        </a>
+        <a href="/gallery/uman" class="link-card">
+          <span class="icon">🪦</span>
+          <span class="text">Tomb in Uman</span>
+        </a>
+        <a href="/gallery/nanach" class="link-card">
+          <span class="icon">🌟</span>
+          <span class="text">Na Nach Life</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="navigation">
+    <div class="container">
+      <div class="nav-buttons">
+        <a href="/gallery/nanach" class="nav-btn prev">
+          <span class="arrow">←</span>
+          <span class="text">Na Nach Life</span>
+        </a>
+        <a href="/teachings" class="nav-btn next">
+          <span class="text">Teachings</span>
+          <span class="arrow">→</span>
+        </a>
+      </div>
     </div>
   </section>
 </Layout>
 
 <style>
   .page-header {
-    background: linear-gradient(135deg, #38a169 0%, #276749 100%);
+    background: linear-gradient(135deg, #553c9a 0%, #44337a 100%);
     color: white;
-    padding: 4rem 2rem;
+    padding: 5rem 2rem;
     text-align: center;
   }
 
@@ -43,45 +86,126 @@ const images = await Astro.glob('../../assets/events/*.{jpg,jpeg,png,gif}');
 
   .back-link {
     display: inline-block;
-    margin-top: 1rem;
+    margin-top: 1.5rem;
     color: white;
     text-decoration: none;
-    padding: 0.5rem 1rem;
-    border: 1px solid white;
-    border-radius: 4px;
+    padding: 0.75rem 1.5rem;
+    border: 2px solid white;
+    border-radius: 6px;
   }
 
   .container {
-    max-width: 1400px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 0 2rem;
   }
 
-  .gallery-grid {
-    padding: 2rem 0;
+  .intro {
+    background: #f7f5f0;
+    padding: 4rem 0;
   }
 
-  .gallery-grid .container {
+  .info-box {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 3rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    text-align: center;
+  }
+
+  .info-box h2 {
+    font-family: var(--font-hebrew);
+    color: var(--color-primary);
+    margin-bottom: 1rem;
+  }
+
+  .info-box p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #555;
+    margin-bottom: 1rem;
+  }
+
+  .info-box .hebrew {
+    font-family: var(--font-hebrew);
+    font-size: 1.3rem;
+    color: #553c9a;
+  }
+
+  .links-section {
+    padding: 4rem 0;
+  }
+
+  .links-section h2 {
+    text-align: center;
+    color: var(--color-primary);
+    margin-bottom: 2rem;
+    font-family: var(--font-hebrew);
+  }
+
+  .links-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
   }
 
-  .gallery-item {
-    aspect-ratio: 1;
-    overflow: hidden;
+  .link-card {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.25rem;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    text-decoration: none;
+    color: var(--color-primary);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+
+  .link-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+  }
+
+  .link-card .icon {
+    font-size: 1.5rem;
+  }
+
+  .link-card .text {
+    font-weight: 500;
+  }
+
+  .navigation {
+    background: var(--color-primary);
+    padding: 3rem 0;
+  }
+
+  .nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: white;
+    text-decoration: none;
+    padding: 1rem 1.5rem;
+    background: rgba(255,255,255,0.1);
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   }
 
-  .gallery-item img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.3s;
+  .nav-btn:hover {
+    background: rgba(255,255,255,0.2);
   }
 
-  .gallery-item:hover img {
-    transform: scale(1.05);
+  @media (max-width: 768px) {
+    .nav-buttons {
+      flex-direction: column;
+    }
   }
 </style>

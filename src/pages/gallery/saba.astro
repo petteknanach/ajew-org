@@ -2,22 +2,110 @@
 import Layout from '../../layouts/Layout.astro';
 
 const images = await Astro.glob('../../assets/saba/*.{jpg,jpeg,png,gif}');
+
+// Organize images by category
+const categories = {
+  'portraits': {
+    name: 'Portraits',
+    hebrew: 'דיוקנאות',
+    icon: '📸',
+    images: []
+  },
+  'wheelchair': {
+    name: 'Wheelchair Era',
+    hebrew: 'תקופת הכיסא',
+    icon: '🦽',
+    images: []
+  },
+  'grave': {
+    name: 'Grave & Tomb',
+    hebrew: 'קבר וציון',
+    icon: '🪦',
+    images: []
+  },
+  'groups': {
+    name: 'Groups & Friends',
+    hebrew: 'קבוצות וחברים',
+    icon: '👥',
+    images: []
+  },
+  'special': {
+    name: 'Special Occasions',
+    hebrew: 'אירועים מיוחדים',
+    icon: '✨',
+    images: []
+  }
+};
+
+// Sort images into categories
+images.forEach(img => {
+  const filename = img.src.toLowerCase();
+  if (filename.includes('wheelchair') || filename.includes('wheel') || filename.includes('chair')) {
+    categories.wheelchair.images.push(img);
+  } else if (filename.includes('grave') || filename.includes('tomb') || filename.includes('grave')) {
+    categories.grave.images.push(img);
+  } else if (filename.includes('group') || filename.includes('friend') || filename.includes('friends')) {
+    categories.groups.images.push(img);
+  } else if (filename.includes('baby') || filename.includes('child') || filename.includes('young')) {
+    categories.special.images.push(img);
+  } else {
+    categories.portraits.images.push(img);
+  }
+});
 ---
 
-<Layout title="Saba Yisroel" description="Photos of Rabbi Yisroel Ber Odesser">
+<Layout title="Saba Yisroel Gallery" description="Photos of Rabbi Yisroel Ber Odesser - Saba">
   <section class="page-header">
-    <h1>Saba Yisroel</h1>
-    <p>Rabbi Yisroel Ber Odesser, receiver of the Holy Petek</p>
+    <h1>✡ Rabbi Yisroel Ber Odesser (Saba) ✡</h1>
+    <p>1904-1994 • Recipient of the Holy Petek</p>
+    <p class="hebrew">רבי ישראל בר אודסר ז"ל</p>
     <a href="/gallery" class="back-link">← Back to Gallery</a>
   </section>
 
-  <section class="gallery-grid">
+  <section class="intro">
     <div class="container">
-      {images.map((img, index) => (
-        <div class="gallery-item">
-          <img src={img.src} alt={`Saba photo ${index + 1}`} loading="lazy" />
+      <blockquote class="petek-quote">
+        <p class="hebrew">נַ נַחְ נַחְמָ נַחְמָן מאוּמָן</p>
+        <p class="english">"Na Nach Nachma Nachman Meuman"</p>
+        <cite>— From the Holy Petek (1922)</cite>
+      </blockquote>
+    </div>
+  </section>
+
+  <section class="gallery-sections">
+    {Object.entries(categories).map(([key, cat]) => (
+      cat.images.length > 0 && (
+        <div class="category-section">
+          <div class="container">
+            <h2><span class="icon">{cat.icon}</span> {cat.name} <span class="hebrew">({cat.hebrew})</span></h2>
+            <div class="gallery-grid">
+              {cat.images.map((img, index) => (
+                <div class="gallery-item" data-category={key}>
+                  <img src={img.src} alt={`${cat.name} ${index + 1}`} loading="lazy" />
+                  <div class="overlay">
+                    <span>{cat.name} #{index + 1}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-      ))}
+      )
+    ))}
+  </section>
+
+  <section class="navigation">
+    <div class="container">
+      <div class="nav-buttons">
+        <a href="/gallery/rabbainu" class="nav-btn prev">
+          <span class="arrow">←</span>
+          <span class="text">Rebbe Nachman</span>
+        </a>
+        <a href="/gallery/uman" class="nav-btn next">
+          <span class="text">Tomb in Uman</span>
+          <span class="arrow">→</span>
+        </a>
+      </div>
     </div>
   </section>
 </Layout>
@@ -26,7 +114,7 @@ const images = await Astro.glob('../../assets/saba/*.{jpg,jpeg,png,gif}');
   .page-header {
     background: linear-gradient(135deg, #2c5282 0%, #1a365d 100%);
     color: white;
-    padding: 4rem 2rem;
+    padding: 5rem 2rem;
     text-align: center;
   }
 
@@ -39,49 +127,182 @@ const images = await Astro.glob('../../assets/saba/*.{jpg,jpeg,png,gif}');
   .page-header p {
     opacity: 0.9;
     font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .page-header .hebrew {
+    font-family: var(--font-hebrew);
+    font-size: 1.5rem;
+    margin-top: 1rem;
   }
 
   .back-link {
     display: inline-block;
-    margin-top: 1rem;
+    margin-top: 1.5rem;
     color: white;
     text-decoration: none;
-    padding: 0.5rem 1rem;
-    border: 1px solid white;
-    border-radius: 4px;
+    padding: 0.75rem 1.5rem;
+    border: 2px solid white;
+    border-radius: 6px;
+    transition: background 0.3s;
+  }
+
+  .back-link:hover {
+    background: rgba(255,255,255,0.1);
   }
 
   .container {
     max-width: 1400px;
     margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .intro {
+    background: #f7f5f0;
+    padding: 4rem 0;
+  }
+
+  .petek-quote {
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto;
     padding: 2rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+
+  .petek-quote .hebrew {
+    font-family: var(--font-hebrew);
+    font-size: 2rem;
+    color: var(--color-primary);
+    margin-bottom: 1rem;
+    letter-spacing: 0.1em;
+  }
+
+  .petek-quote .english {
+    font-size: 1.2rem;
+    font-style: italic;
+    color: #666;
+    margin-bottom: 1rem;
+  }
+
+  .petek-quote cite {
+    color: #888;
+  }
+
+  .category-section {
+    padding: 4rem 0;
+    border-bottom: 1px solid #eee;
+  }
+
+  .category-section:nth-child(even) {
+    background: #fafafa;
+  }
+
+  .category-section h2 {
+    font-family: var(--font-hebrew);
+    font-size: 1.8rem;
+    color: var(--color-primary);
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .category-section h2 .icon {
+    margin-left: 0.5rem;
+  }
+
+  .category-section h2 .hebrew {
+    font-family: var(--font-hebrew);
+    font-size: 1.4rem;
+    color: #888;
+    font-weight: normal;
   }
 
   .gallery-grid {
-    padding: 2rem 0;
-  }
-
-  .gallery-grid .container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 1.5rem;
   }
 
   .gallery-item {
+    position: relative;
     aspect-ratio: 1;
     overflow: hidden;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    cursor: pointer;
   }
 
   .gallery-item img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.3s;
+    transition: transform 0.4s;
   }
 
   .gallery-item:hover img {
-    transform: scale(1.05);
+    transform: scale(1.08);
+  }
+
+  .gallery-item .overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.7));
+    padding: 2rem 1rem 1rem;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .gallery-item:hover .overlay {
+    opacity: 1;
+  }
+
+  .gallery-item .overlay span {
+    color: white;
+    font-size: 0.95rem;
+  }
+
+  .navigation {
+    background: var(--color-primary);
+    padding: 3rem 0;
+  }
+
+  .nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: white;
+    text-decoration: none;
+    padding: 1rem 1.5rem;
+    background: rgba(255,255,255,0.1);
+    border-radius: 8px;
+    transition: background 0.3s;
+  }
+
+  .nav-btn:hover {
+    background: rgba(255,255,255,0.2);
+  }
+
+  .nav-btn .arrow {
+    font-size: 1.3rem;
+  }
+
+  @media (max-width: 768px) {
+    .nav-buttons {
+      flex-direction: column;
+    }
+    
+    .gallery-grid {
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
   }
 </style>

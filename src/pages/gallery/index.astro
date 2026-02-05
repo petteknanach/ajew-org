@@ -2,74 +2,137 @@
 import Layout from '../../layouts/Layout.astro';
 ---
 
-<Layout title="Gallery" description="Photos and images from Na Nach Breslov">
+<Layout title="Gallery" description="Photo galleries of Na Nach Breslov - Rabbi Nachman, Saba, Uman, and the movement">
   <section class="page-header">
     <h1>✡ Gallery ✡</h1>
     <p>"Na Nach Nachma Nachman Meuman"</p>
+    <p class="hebrew-banner">נַ נַחְ נַחְמָ נַחְמָן מאוּמָן</p>
   </section>
 
-  <section class="gallery-categories">
+  <section class="intro">
     <div class="container">
-      <a href="/gallery/saba" class="gallery-card">
-        <div class="card-image saba-bg"></div>
+      <p class="intro-text">
+        Welcome to our comprehensive photo gallery featuring the holy tzaddikim, sacred places, 
+        and the vibrant Na Nach Breslov movement from around the world.
+      </p>
+    </div>
+  </section>
+
+  <section class="gallery-sections">
+    <div class="container">
+      
+      <!-- Saba -->
+      <a href="/gallery/saba" class="main-gallery-card saba">
+        <div class="card-bg saba-bg"></div>
         <div class="card-content">
-          <h2>✡ Saba Yisroel ✡</h2>
-          <p>Photos of Rabbi Yisroel Ber Odesser, the receiver of the Holy Petek (87 photos)</p>
+          <span class="card-icon">👤</span>
+          <h2>Rabbi Yisroel Ber Odesser (Saba)</h2>
+          <p class="hebrew">רבי ישראל בר אודסר ז"ל</p>
+          <p class="description">The recipient of the Holy Petek (1922) - 87 photos</p>
+          <span class="view-btn">View Gallery →</span>
         </div>
       </a>
 
-      <a href="/gallery/rabbainu" class="gallery-card">
-        <div class="card-image rabbainu-bg"></div>
+      <!-- Rebbe Nachman -->
+      <a href="/gallery/rabbainu" class="main-gallery-card rebbe">
+        <div class="card-bg rebbe-bg"></div>
         <div class="card-content">
-          <h2>✡ Rebbe Nachman ✡</h2>
-          <p>Artistic depictions of Rabbi Nachman of Breslov (15 photos)</p>
+          <span class="card-icon">✡️</span>
+          <h2>Rabbi Nachman of Breslov</h2>
+          <p class="hebrew">רבינו נחמן מברסלב</p>
+          <p class="description">1772-1810 - 15 photos</p>
+          <span class="view-btn">View Gallery →</span>
         </div>
       </a>
 
-      <a href="/gallery/uman" class="gallery-card">
-        <div class="card-image uman-bg"></div>
+      <!-- Tomb Uman -->
+      <a href="/gallery/uman" class="main-gallery-card uman">
+        <div class="card-bg uman-bg"></div>
         <div class="card-content">
-          <h2>✡ Tomb in Uman ✡</h2>
-          <p>The holy tziyun and Rosh Hashanah gatherings (25 photos)</p>
+          <span class="card-icon">🪦</span>
+          <h2>The Holy Tomb in Uman</h2>
+          <p class="hebrew">ציון רבינו נחמן באומן</p>
+          <p class="description">The sacred tzion and Rosh Hashanah gatherings - 25 photos</p>
+          <span class="view-btn">View Gallery →</span>
         </div>
       </a>
 
-      <a href="/gallery/nanach" class="gallery-card">
-        <div class="card-image nanach-bg"></div>
+      <!-- Na Nach Life -->
+      <a href="/gallery/nanach" class="main-gallery-card nanach">
+        <div class="card-bg nanach-bg"></div>
         <div class="card-content">
-          <h2>✡ Na Nach Life ✡</h2>
-          <p>The Na Nach Breslov movement in action (20 photos)</p>
+          <span class="card-icon">🌟</span>
+          <h2>Na Nach Breslov Movement</h2>
+          <p class="hebrew">תנועת נ נח מברסלב</p>
+          <p class="description">Spreading the light of Rebbe Nachman worldwide - 20 photos</p>
+          <span class="view-btn">View Gallery →</span>
         </div>
       </a>
 
-      <a href="/gallery/events" class="gallery-card">
-        <div class="card-image events-bg"></div>
+      <!-- Events -->
+      <a href="/gallery/events" class="main-gallery-card events">
+        <div class="card-bg events-bg"></div>
         <div class="card-content">
-          <h2>✡ Events & Friends ✡</h2>
-          <p>Gatherings, celebrations, and simchas (18 photos)</p>
+          <span class="card-icon">🎉</span>
+          <h2>Events & Gatherings</h2>
+          <p class="hebrew">אירועים והתכנסויות</p>
+          <p class="description">Celebrations, simchas, and Na Nach events from around the world</p>
+          <span class="view-btn">View Gallery →</span>
         </div>
       </a>
+
+    </div>
+  </section>
+
+  <section class="stats-section">
+    <div class="container">
+      <h2>📊 Gallery Statistics</h2>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="number">165+</span>
+          <span class="label">Total Photos</span>
+        </div>
+        <div class="stat-card">
+          <span class="number">5</span>
+          <span class="label">Galleries</span>
+        </div>
+        <div class="stat-card">
+          <span class="number">200+</span>
+          <span class="label">Years of History</span>
+        </div>
+        <div class="stat-card">
+          <span class="number">∞</span>
+          <span class="label">Blessings</span>
+        </div>
+      </div>
     </div>
   </section>
 </Layout>
 
 <style>
   .page-header {
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+    background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
     color: white;
-    padding: 4rem 2rem;
+    padding: 5rem 2rem;
     text-align: center;
   }
 
   .page-header h1 {
     font-family: var(--font-hebrew);
-    font-size: 2.5rem;
+    font-size: 3rem;
     margin-bottom: 0.5rem;
   }
 
   .page-header p {
     opacity: 0.9;
-    font-size: 1.2rem;
+    font-size: 1.3rem;
+  }
+
+  .hebrew-banner {
+    font-family: var(--font-hebrew);
+    font-size: 2rem;
+    letter-spacing: 0.15em;
+    margin-top: 1.5rem;
   }
 
   .container {
@@ -78,84 +141,176 @@ import Layout from '../../layouts/Layout.astro';
     padding: 0 2rem;
   }
 
-  .gallery-categories {
+  .intro {
+    background: #f7f5f0;
+    padding: 3rem 0;
+  }
+
+  .intro-text {
+    text-align: center;
+    font-size: 1.2rem;
+    line-height: 1.8;
+    color: #555;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .gallery-sections {
     padding: 4rem 0;
   }
 
-  .gallery-categories .container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  .gallery-sections .container {
+    display: flex;
+    flex-direction: column;
     gap: 2rem;
   }
 
-  .gallery-card {
+  .main-gallery-card {
     display: block;
-    background: white;
-    border-radius: 12px;
+    position: relative;
+    border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     text-decoration: none;
+    min-height: 250px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
     transition: transform 0.3s, box-shadow 0.3s;
   }
 
-  .gallery-card:hover {
+  .main-gallery-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.2);
   }
 
-  .card-image {
-    height: 200px;
+  .card-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     background-size: cover;
     background-position: center;
-    background-color: var(--color-secondary);
+    opacity: 0.85;
   }
 
-  .saba-bg {
-    background: linear-gradient(45deg, #2c5282, #1a365d);
+  .card-bg.saba-bg {
+    background: linear-gradient(135deg, rgba(44, 82, 130, 0.9), rgba(26, 54, 93, 0.95));
   }
 
-  .rabbainu-bg {
-    background: linear-gradient(45deg, #285e61, #234e52);
+  .card-bg.rebbe-bg {
+    background: linear-gradient(135deg, rgba(40, 94, 97, 0.9), rgba(35, 78, 82, 0.95));
   }
 
-  .uman-bg {
-    background: linear-gradient(45deg, #744210, #5d3a1a);
+  .card-bg.uman-bg {
+    background: linear-gradient(135deg, rgba(116, 66, 16, 0.9), rgba(93, 58, 26, 0.95));
   }
 
-  .hafatza-bg {
-    background: linear-gradient(45deg, #ed8936, #dd6b20);
+  .card-bg.nanach-bg {
+    background: linear-gradient(135deg, rgba(56, 161, 105, 0.9), rgba(39, 103, 73, 0.95));
   }
 
-  .nanach-bg {
-    background: linear-gradient(45deg, #38a169, #276749);
-  }
-
-  .places-bg {
-    background: linear-gradient(45deg, #553c9a, #44337a);
-  }
-
-  .events-bg {
-    background: linear-gradient(45deg, #38a169, #276749);
+  .card-bg.events-bg {
+    background: linear-gradient(135deg, rgba(85, 60, 154, 0.9), rgba(68, 51, 122, 0.95));
   }
 
   .card-content {
-    padding: 1.5rem;
+    position: relative;
+    z-index: 2;
+    padding: 2.5rem;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 250px;
+  }
+
+  .card-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
   }
 
   .card-content h2 {
-    color: var(--color-primary);
-    font-size: 1.4rem;
+    font-family: var(--font-hebrew);
+    font-size: 2rem;
     margin-bottom: 0.5rem;
   }
 
-  .card-content p {
+  .card-content .hebrew {
+    font-family: var(--font-hebrew);
+    font-size: 1.5rem;
+    opacity: 0.9;
+    margin-bottom: 1rem;
+  }
+
+  .card-content .description {
+    font-size: 1.1rem;
+    opacity: 0.95;
+    margin-bottom: 1rem;
+  }
+
+  .view-btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background: rgba(255,255,255,0.2);
+    border-radius: 6px;
+    font-weight: 500;
+    transition: background 0.3s;
+    width: fit-content;
+  }
+
+  .main-gallery-card:hover .view-btn {
+    background: rgba(255,255,255,0.3);
+  }
+
+  .stats-section {
+    background: #f7f5f0;
+    padding: 4rem 0;
+  }
+
+  .stats-section h2 {
+    text-align: center;
+    color: var(--color-primary);
+    margin-bottom: 2rem;
+    font-family: var(--font-hebrew);
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .stat-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+
+  .stat-card .number {
+    display: block;
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--color-primary);
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-card .label {
     color: #666;
-    font-size: 0.95rem;
+    font-size: 1rem;
   }
 
   @media (max-width: 768px) {
-    .gallery-categories .container {
-      grid-template-columns: 1fr;
+    .page-header h1 {
+      font-size: 2rem;
+    }
+    
+    .card-content h2 {
+      font-size: 1.5rem;
+    }
+    
+    .card-content .hebrew {
+      font-size: 1.2rem;
     }
   }
 </style>

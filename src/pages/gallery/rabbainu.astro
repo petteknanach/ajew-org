@@ -4,20 +4,51 @@ import Layout from '../../layouts/Layout.astro';
 const images = await Astro.glob('../../assets/rabbi-nachman/*.{jpg,jpeg,png,gif}');
 ---
 
-<Layout title="Rebbe Nachman" description="Images of Rabbi Nachman of Breslov">
+<Layout title="Rebbe Nachman Gallery" description="Images of Rabbi Nachman of Breslov">
   <section class="page-header">
-    <h1>Rebbe Nachman</h1>
-    <p>The holy lights of Rabbi Nachman of Breslov</p>
+    <h1>✡ Rabbi Nachman of Breslov ✡</h1>
+    <p>1772-1810 • Great-grandson of the Baal Shem Tov</p>
+    <p class="hebrew">רבינו נחמן מברסלב</p>
     <a href="/gallery" class="back-link">← Back to Gallery</a>
   </section>
 
-  <section class="gallery-grid">
+  <section class="intro">
     <div class="container">
-      {images.map((img, index) => (
-        <div class="gallery-item">
-          <img src={img.src} alt={`Rebbe Nachman photo ${index + 1}`} loading="lazy" />
-        </div>
-      ))}
+      <blockquote class="famous-quote">
+        <p class="hebrew">כִּי בָּעוֹלָם הַזֶּה צָרִיךְ לַעֲבֹר עַל גֶּשֶׁר צַר מְאֹד</p>
+        <p class="english">"In this world, a person must traverse a very narrow bridge — the main thing is not to fear at all."</p>
+        <cite>— Likutay Moharan II, 48</cite>
+      </blockquote>
+    </div>
+  </section>
+
+  <section class="gallery">
+    <div class="container">
+      <div class="gallery-grid">
+        {images.map((img, index) => (
+          <div class="gallery-item">
+            <img src={img.src} alt={`Rebbe Nachman ${index + 1}`} loading="lazy" />
+            <div class="overlay">
+              <span>#{index + 1}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="navigation">
+    <div class="container">
+      <div class="nav-buttons">
+        <a href="/gallery/saba" class="nav-btn prev">
+          <span class="arrow">←</span>
+          <span class="text">Saba Yisroel</span>
+        </a>
+        <a href="/gallery/uman" class="nav-btn next">
+          <span class="text">Tomb in Uman</span>
+          <span class="arrow">→</span>
+        </a>
+      </div>
     </div>
   </section>
 </Layout>
@@ -26,7 +57,7 @@ const images = await Astro.glob('../../assets/rabbi-nachman/*.{jpg,jpeg,png,gif}
   .page-header {
     background: linear-gradient(135deg, #285e61 0%, #234e52 100%);
     color: white;
-    padding: 4rem 2rem;
+    padding: 5rem 2rem;
     text-align: center;
   }
 
@@ -39,49 +70,146 @@ const images = await Astro.glob('../../assets/rabbi-nachman/*.{jpg,jpeg,png,gif}
   .page-header p {
     opacity: 0.9;
     font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .page-header .hebrew {
+    font-family: var(--font-hebrew);
+    font-size: 1.5rem;
+    margin-top: 1rem;
   }
 
   .back-link {
     display: inline-block;
-    margin-top: 1rem;
+    margin-top: 1.5rem;
     color: white;
     text-decoration: none;
-    padding: 0.5rem 1rem;
-    border: 1px solid white;
-    border-radius: 4px;
+    padding: 0.75rem 1.5rem;
+    border: 2px solid white;
+    border-radius: 6px;
   }
 
   .container {
     max-width: 1400px;
     margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .intro {
+    background: #f7f5f0;
+    padding: 4rem 0;
+  }
+
+  .famous-quote {
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto;
     padding: 2rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+
+  .famous-quote .hebrew {
+    font-family: var(--font-hebrew);
+    font-size: 1.8rem;
+    color: var(--color-primary);
+    margin-bottom: 1rem;
+  }
+
+  .famous-quote .english {
+    font-size: 1.2rem;
+    font-style: italic;
+    color: #666;
+    margin-bottom: 1rem;
+  }
+
+  .famous-quote cite {
+    color: #888;
+  }
+
+  .gallery {
+    padding: 4rem 0;
   }
 
   .gallery-grid {
-    padding: 2rem 0;
-  }
-
-  .gallery-grid .container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 1.5rem;
   }
 
   .gallery-item {
+    position: relative;
     aspect-ratio: 1;
     overflow: hidden;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   }
 
   .gallery-item img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.3s;
+    transition: transform 0.4s;
   }
 
   .gallery-item:hover img {
-    transform: scale(1.05);
+    transform: scale(1.08);
+  }
+
+  .gallery-item .overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.7));
+    padding: 2rem 1rem 1rem;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .gallery-item:hover .overlay {
+    opacity: 1;
+  }
+
+  .gallery-item .overlay span {
+    color: white;
+    font-size: 0.95rem;
+  }
+
+  .navigation {
+    background: var(--color-primary);
+    padding: 3rem 0;
+  }
+
+  .nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: white;
+    text-decoration: none;
+    padding: 1rem 1.5rem;
+    background: rgba(255,255,255,0.1);
+    border-radius: 8px;
+  }
+
+  .nav-btn:hover {
+    background: rgba(255,255,255,0.2);
+  }
+
+  @media (max-width: 768px) {
+    .nav-buttons {
+      flex-direction: column;
+    }
+    
+    .gallery-grid {
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
   }
 </style>
