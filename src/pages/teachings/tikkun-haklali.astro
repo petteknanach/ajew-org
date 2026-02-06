@@ -55,16 +55,77 @@ const pageDescription = "The Tikkun Haklali, the General Rectification, revealed
     margin-bottom: 1rem;
   }
 
-  .teaching-section {
-    padding: 3rem 0;
+  .psalm-index {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    margin-bottom: 2rem;
   }
 
-  .teaching-section h2 {
+  .psalm-index h2 {
     font-family: var(--font-hebrew);
     font-size: 1.5rem;
     color: var(--color-primary);
     margin-bottom: 1.5rem;
     text-align: center;
+  }
+
+  .psalm-index-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .psalm-index-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: #f7f5f0;
+    padding: 0.75rem;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .psalm-index-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    background: #edf2f7;
+  }
+
+  .psalm-index-link .num {
+    background: #744210;
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+  }
+
+  .psalm-index-link .info {
+    flex: 1;
+  }
+
+  .psalm-index-link .name {
+    color: var(--color-primary);
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: block;
+  }
+
+  .psalm-index-link .desc {
+    color: #888;
+    font-size: 0.7rem;
+  }
+
+  .teaching-section {
+    padding: 3rem 0;
   }
 
   .psalm {
@@ -73,6 +134,7 @@ const pageDescription = "The Tikkun Haklali, the General Rectification, revealed
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     margin-bottom: 2rem;
+    scroll-margin-top: 2rem;
   }
 
   .psalm-header {
@@ -182,6 +244,10 @@ const pageDescription = "The Tikkun Haklali, the General Rectification, revealed
       flex-direction: column;
       gap: 1rem;
     }
+    
+    .psalm-index-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
 </style>
 
@@ -204,6 +270,82 @@ const pageDescription = "The Tikkun Haklali, the General Rectification, revealed
       </p>
     </div>
     
+    <div class="psalm-index">
+      <h2>📿 Quick Index - Jump to Any Psalm</h2>
+      <div class="psalm-index-grid">
+        <a href="#psalm-16" class="psalm-index-link">
+          <span class="num">16</span>
+          <div class="info">
+            <span class="name">Mizmor LeDovid</span>
+            <span class="desc">Protection</span>
+          </div>
+        </a>
+        <a href="#psalm-32" class="psalm-index-link">
+          <span class="num">32</span>
+          <div class="info">
+            <span class="name">Ashrey</span>
+            <span class="desc">Forgiveness</span>
+          </div>
+        </a>
+        <a href="#psalm-41" class="psalm-index-link">
+          <span class="num">41</span>
+          <div class="info">
+            <span class="name">l'Manatzei'ach</span>
+            <span class="desc">Healing</span>
+          </div>
+        </a>
+        <a href="#psalm-42" class="psalm-index-link">
+          <span class="num">42</span>
+          <div class="info">
+            <span class="name">Shir</span>
+            <span class="desc">Yearning</span>
+          </div>
+        </a>
+        <a href="#psalm-59" class="psalm-index-link">
+          <span class="num">59</span>
+          <div class="info">
+            <span class="name">l'Manatzei'ach</span>
+            <span class="desc">Salvation</span>
+          </div>
+        </a>
+        <a href="#psalm-77" class="psalm-index-link">
+          <span class="num">77</span>
+          <div class="info">
+            <span class="name">Ne'ilah</span>
+            <span class="desc">Close to Hashem</span>
+          </div>
+        </a>
+        <a href="#psalm-90" class="psalm-index-link">
+          <span class="num">90</span>
+          <div class="info">
+            <span class="name">Tefilah</span>
+            <span class="desc">Long Life</span>
+          </div>
+        </a>
+        <a href="#psalm-105" class="psalm-index-link">
+          <span class="num">105</span>
+          <div class="info">
+            <span class="name">Hodu</span>
+            <span class="desc">Gratitude</span>
+          </div>
+        </a>
+        <a href="#psalm-137" class="psalm-index-link">
+          <span class="num">137</span>
+          <div class="info">
+            <span class="name">Mizmor</span>
+            <span class="desc">Zion</span>
+          </div>
+        </a>
+        <a href="#psalm-150" class="psalm-index-link">
+          <span class="num">150</span>
+          <div class="info">
+            <span class="name">Halleluyah</span>
+            <span class="desc">Praise</span>
+          </div>
+        </a>
+      </div>
+    </div>
+    
     <div class="info-box">
       <p><strong>Before reciting:</strong> It is propitious to give charity (or at least set aside), even one penny, for the merit of Rabbi Nachman, before reciting the Tikun.</p>
       <p><strong>Intention:</strong> Optimally one should have in mind, throughout the recital, that these melodies of Tehilim (Psalms) liberate the drops of seed which are under captivity of Lilith, with the Divine Kindness and Might invested in the Names.</p>
@@ -214,7 +356,7 @@ const pageDescription = "The Tikkun Haklali, the General Rectification, revealed
 <section class="teaching-section">
   <div class="container">
     
-    <div class="psalm">
+    <div id="psalm-16" class="psalm">
       <div class="psalm-header">
         <span class="psalm-number">16</span>
         <h3>Psalm 16 - Mizmor LeDovid</h3>
@@ -233,7 +375,7 @@ const pageDescription = "The Tikkun Haklali, the General Rectification, revealed
       </div>
     </div>
 
-    <div class="psalm">
+    <div id="psalm-32" class="psalm">
       <div class="psalm-header">
         <span class="psalm-number">32</span>
         <h3>Psalm 32 - Ashrey</h3>
@@ -243,7 +385,7 @@ const pageDescription = "The Tikkun Haklali, the General Rectification, revealed
       </div>
     </div>
 
-    <div class="psalm">
+    <div id="psalm-41" class="psalm">
       <div class="psalm-header">
         <span class="psalm-number">41</span>
         <h3>Psalm 41 - l'Manatzei'ach</h3>
@@ -253,7 +395,7 @@ const pageDescription = "The Tikkun Haklali, the General Rectification, revealed
       </div>
     </div>
 
-    <div class="psalm">
+    <div id="psalm-42" class="psalm">
       <div class="psalm-header">
         <span class="psalm-number">42</span>
         <h3>Psalm 42 - Shir</h3>
@@ -263,7 +405,7 @@ const pageDescription = "The Tikkun Haklali, the General Rectification, revealed
       </div>
     </div>
 
-    <div class="psalm">
+    <div id="psalm-59" class="psalm">
       <div class="psalm-header">
         <span class="psalm-number">59</span>
         <h3>Psalm 59 - l'Manatzei'ach</h3>
@@ -273,7 +415,7 @@ const pageDescription = "The Tikkun Haklali, the General Rectification, revealed
       </div>
     </div>
 
-    <div class="psalm">
+    <div id="psalm-77" class="psalm">
       <div class="psalm-header">
         <span class="psalm-number">77</span>
         <h3>Psalm 77 - Ne'ilah</h3>
@@ -283,7 +425,7 @@ const pageDescription = "The Tikkun Haklali, the General Rectification, revealed
       </div>
     </div>
 
-    <div class="psalm">
+    <div id="psalm-90" class="psalm">
       <div class="psalm-header">
         <span class="psalm-number">90</span>
         <h3>Psalm 90 - Tefilah</h3>
@@ -293,7 +435,7 @@ const pageDescription = "The Tikkun Haklali, the General Rectification, revealed
       </div>
     </div>
 
-    <div class="psalm">
+    <div id="psalm-105" class="psalm">
       <div class="psalm-header">
         <span class="psalm-number">105</span>
         <h3>Psalm 105 - Hodu</h3>
@@ -303,7 +445,7 @@ const pageDescription = "The Tikkun Haklali, the General Rectification, revealed
       </div>
     </div>
 
-    <div class="psalm">
+    <div id="psalm-137" class="psalm">
       <div class="psalm-header">
         <span class="psalm-number">137</span>
         <h3>Psalm 137 - Mizmor</h3>
@@ -313,7 +455,7 @@ const pageDescription = "The Tikkun Haklali, the General Rectification, revealed
       </div>
     </div>
 
-    <div class="psalm">
+    <div id="psalm-150" class="psalm">
       <div class="psalm-header">
         <span class="psalm-number">150</span>
         <h3>Psalm 150 - Halleluyah</h3>
