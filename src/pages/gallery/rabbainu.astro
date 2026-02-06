@@ -1,10 +1,23 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 
-const imageFiles = import.meta.glob('../../assets/rabbi-nachman/*.{jpg,jpeg,png,gif}', { query: '?url', import: 'default' });
-const images = Object.entries(imageFiles).map(([path, url]) => {
-  return { src: url, basename: path.split('/').pop() };
-});
+const images = [
+  'kikar rabbi nachman close.jpg',
+  'kikar rabbi nachman.jpg',
+  'letter from Rabbi Nachman of Umaan 2010-04-22 11.49.55.tiff',
+  'rabbainu portrait of head and clouds in background.jpg',
+  'rabbi-nachman-chair-hq.jpg',
+  'rabbi-nachman-chair.jpg',
+  'rabbi-nachman-chair-rebbe.jpg',
+  'rabbi-nachman-cropped.jpg',
+  'rabbi-nachman-cup-2.jpg',
+  'rabbi-nachman-cup-hq.jpg',
+  'rabbi-nachman-cup.jpg',
+  'rabbi-nachman-original.jpg',
+  'rabbi-nachman-portrait.jpg',
+  'rabbi-nachman-zebra-field.jpg',
+  'rabbi-nachman-zebra.jpg',
+];
 ---
 
 <Layout title="Rebbe Nachman Gallery" description="Images of Rabbi Nachman of Breslov">
@@ -18,8 +31,8 @@ const images = Object.entries(imageFiles).map(([path, url]) => {
   <section class="intro">
     <div class="container">
       <blockquote class="famous-quote">
-        <p class="hebrew">כִּי בָּעוֹלָם הַזֶּה צָרִיךְ לַעֲבֹר עַל גֶּשֶׁר צַר מְאֹד</p>
-        <p class="english">"In this world, a person must traverse a very narrow bridge — the main thing is not to fear at all."</p>
+        <p class="hebrew">כִּי בָּעוֹלָם הַזֶּה צָרִיךְ לַעֲבֹר עַל גֶּשֶׁר צַר מְאֹד וְהָעִקָּר לֹא לִפְחַד כְּלָל</p>
+        <p>"The whole world is a very narrow bridge, and the main thing is not to fear at all."</p>
         <cite>— Likutay Moharan II, 48</cite>
       </blockquote>
     </div>
@@ -30,7 +43,7 @@ const images = Object.entries(imageFiles).map(([path, url]) => {
       <div class="gallery-grid">
         {images.map((img, index) => (
           <div class="gallery-item">
-            <img src={img.src} alt={`Rebbe Nachman ${index + 1}`} loading="lazy" />
+            <img src={`/images/rabbi-nachman/${img}`} alt={`Rabbi Nachman ${index + 1}`} loading="lazy" />
             <div class="overlay">
               <span>#{index + 1}</span>
             </div>

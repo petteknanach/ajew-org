@@ -1,10 +1,33 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 
-const imageFiles = import.meta.glob('../../assets/tomb-uman/*.{jpg,jpeg,png,gif}', { query: '?url', import: 'default' });
-const images = Object.entries(imageFiles).map(([path, url]) => {
-  return { src: url, basename: path.split('/').pop() };
-});
+const images = [
+  'Old hut over Rabbainu\'s tzion.jpg',
+  'Rabbainus tomb white covering.jpg',
+  'rabbi-nachman-tomb-temple.jpg',
+  'Sabas tomb with his image on it and menora.jpg',
+  'sign directing to sabas grave.jpg',
+  'Tzion Rabbainu before house IMG-20180325-WA0004.jpg',
+  'uman-gates-tzion.jpg',
+  'uman-gateway-tzion.jpg',
+  'uman-high-shot-tzion.jpg',
+  'uman-old-house-tzion.jpg',
+  'uman-old-tzion.jpg',
+  'uman-on-tzion.jpg',
+  'uman-rocks.jpg',
+  'uman-shmuel-tubul.jpg',
+  'uman-tomb-above.jpg',
+  'uman-tomb-inside.jpg',
+  'uman-tzion-bima.jpg',
+  'uman-tzion-blue.jpg',
+  'uman-tzion-bottom-up.jpg',
+  'uman-tzion-fence.jpg',
+  'uman-tzion-houses.jpg',
+  'uman-tzion-inside.jpg',
+  'uman-tzion-shroud.jpg',
+  'uman-tzion-top.jpg',
+  'uman-wide-tzion.jpg',
+];
 ---
 
 <Layout title="Tomb of Rebbe Nachman in Uman" description="Photos of the holy tomb in Uman">
@@ -34,7 +57,7 @@ const images = Object.entries(imageFiles).map(([path, url]) => {
       <div class="gallery-grid">
         {images.map((img, index) => (
           <div class="gallery-item">
-            <img src={img.src} alt={`Uman ${index + 1}`} loading="lazy" />
+            <img src={`/images/tomb-uman/${img}`} alt={`Uman ${index + 1}`} loading="lazy" />
             <div class="overlay">
               <span>#{index + 1}</span>
             </div>
@@ -133,7 +156,7 @@ const images = Object.entries(imageFiles).map(([path, url]) => {
   .info-box .hebrew {
     font-family: var(--font-hebrew);
     font-size: 1.3rem;
-    color: #888;
+    color: #744210;
   }
 
   .gallery {

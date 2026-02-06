@@ -1,10 +1,118 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 
-const imageFiles = import.meta.glob('../../assets/nanach/*.{jpg,jpeg,png,gif}', { query: '?url', import: 'default' });
-const images = Object.entries(imageFiles).map(([path, url]) => {
-  return { src: url, basename: path.split('/').pop() };
-});
+// Get list of images from the public folder
+const images = [
+  'nanach-barzel-graffiti.jpg',
+  'nanach-blue-white-brick.jpg',
+  'nanach-bus-shelter.jpg',
+  'nanach-cam-0218.jpg',
+  'nanach-chaim-walden-head-fire-rabbainu.jpg',
+  'nanach-colorful-black.jpg',
+  'nanach-crowned.jpg',
+  'nanach-cube.jpg',
+  'nanach-electricity-box.jpg',
+  'nanach-eliyroel-gordetzky.jpg',
+  'nanach-explosion.jpg',
+  'nanach-flower-wall.jpg',
+  'nanach-friends-aron-heuberger-aron-shilo-beanies.jpg',
+  'nanach-gate-courtyard.jpg',
+  'nanach-gavriel-levi-uman-2.jpg',
+  'nanach-gavriel-levi-uman.jpg',
+  'nanach-graffiti-fence-black.jpg',
+  'nanach-graffiti-syria-four-kurds-below.jpg',
+  'nanach-graffiti-under-highway.jpg',
+  'nanach-graffiti-yellow-building-uman.jpg',
+  'nanach-graffiti.jpg',
+  'nanach-hair-beanie-portrait.jpg',
+  'nanach-holligram-face.jpg',
+  'nanach-house.jpg',
+  'nanach-india.jpg',
+  'nanach-israel-graffiti-uman.jpg',
+  'nanach-king-david-1.jpg',
+  'nanach-king-david-2.jpg',
+  'nanach-king-david-3.jpg',
+  'nanach-king-david-view-1.jpg',
+  'nanach-king-david-view-2.jpg',
+  'nanach-king-david-view-4.jpg',
+  'nanach-king-david-view-5.jpg',
+  'nanach-kotel.jpg',
+  'nanach-looking-at-graffiti.jpg',
+  'nanach-meir-weiner-driver.jpg',
+  'nanach-on-arizal-tomb.jpg',
+  'Nanach on the wall.jpg',
+  'Nanach on the wall thats what it is.jpg',
+  'nanach-pastel-graffiti.jpg',
+  'nanach-penciled.jpg',
+  'nanach-plaque-rabbainu.jpg',
+  'nanach-projected-kotel.jpg',
+  'nanach-red-brick-wall.jpg',
+  'nanach-red-stone.jpg',
+  'nanach-roof-graffiti.jpg',
+  'nanach-self-cave-portrait.jpg',
+  'nanach-simcha-healing.jpg',
+  'nanach-simcha-hochman-singing.jpg',
+  'nanach-simcha-singing.jpg',
+  'nanach-simcha-youcam.jpg',
+  'nanach-snowman-sitting.jpg',
+  'nanach-snowman-wearing-hat.jpg',
+  'nanach-spangled.jpg',
+  'nanach-spraypaint.jpg',
+  'nanach-stickerbomb-london.jpg',
+  'nanach-stomach-background.jpg',
+  'nanach-store-front.jpg',
+  'nanach-street-sign-redeption.jpg',
+  'nanach-swipe-graffiti.jpg',
+  'nanach-three-kids-saba-poster.jpg',
+  'nanach-tzinor-layla-thumbnail.jpg',
+  'nanach-tzion-king-david.jpg',
+  'nanach-tzvi-levin-guitar.jpg',
+  'nanach-uman-rosh-hashana.jpg',
+  'nanach-western-wall-1.jpg',
+  'nanach-western-wall-2.jpg',
+  'nanach-western-wall-3.jpg',
+  'nanach-western-wall-4.jpg',
+  'nanach-white-grey.jpg',
+  'nanach-yisroel-dagan-playing-saba.jpg',
+  'nanach-yosef-portrait.jpg',
+  'nanach-yosef-saban-striemel-sticker.jpg',
+  'rabbi-nachman-israel-graffiti.jpg',
+  'skateboard-kid-red-white.jpg',
+];
+
+// Organize images by category
+const categories = {
+  'graffiti': {
+    name: 'Graffiti',
+    hebrew: 'גרפיטי',
+    icon: '🎨',
+    images: images.filter(img => img.includes('graffiti') || img.includes('wall') || img.includes('brick') || img.includes('painting') || img.includes('spray'))
+  },
+  'locations': {
+    name: 'Sacred Locations',
+    hebrew: 'מקומות קדושים',
+    icon: '📍',
+    images: images.filter(img => img.includes('kotel') || img.includes('tzion') || img.includes('uman') || img.includes('israel'))
+  },
+  'events': {
+    name: 'Events & Singing',
+    hebrew: 'אירועים ושירה',
+    icon: '🎵',
+    images: images.filter(img => img.includes('simcha') || img.includes('singing') || img.includes('dagan') || img.includes('levi') || img.includes('hochman'))
+  },
+  'portraits': {
+    name: 'Portraits',
+    hebrew: 'דיוקנאות',
+    icon: '📸',
+    images: images.filter(img => img.includes('portrait') || img.includes('face') || img.includes('hair') || img.includes('beanie') || img.includes('yosef'))
+  },
+  'other': {
+    name: 'Na Nach Life',
+    hebrew: 'חיי נ נח',
+    icon: '🌟',
+    images: images.filter(img => !img.includes('graffiti') && !img.includes('wall') && !img.includes('brick') && !img.includes('painting') && !img.includes('spray') && !img.includes('kotel') && !img.includes('tzion') && !img.includes('uman') && !img.includes('israel') && !img.includes('simcha') && !img.includes('singing') && !img.includes('dagan') && !img.includes('levi') && !img.includes('hochman') && !img.includes('portrait') && !img.includes('face') && !img.includes('hair') && !img.includes('beanie') && !img.includes('yosef'))
+  }
+};
 ---
 
 <Layout title="Na Nach Life Gallery" description="Photos of the Na Nach Breslov movement">
@@ -34,47 +142,23 @@ const images = Object.entries(imageFiles).map(([path, url]) => {
 
   <section class="gallery">
     <div class="container">
-      <div class="gallery-grid">
-        {images.map((img, index) => {
-          const filename = img.basename.toLowerCase();
-          let label = 'Na Nach';
-          if (filename.includes('simcha')) label = '🎵 Singing';
-          else if (filename.includes('yosef')) label = '👤 Yosef';
-          else if (filename.includes('yisroel') || filename.includes('dagan')) label = '🎤 Performing';
-          else if (filename.includes('snowman')) label = '⛄ Snowman';
-          else if (filename.includes('beanie') || filename.includes('hair')) label = '👒 Portraits';
-          else if (filename.includes('cave')) label = '🪨 Cave';
-          else if (filename.includes('driver') || filename.includes('car')) label = '🚗 Activities';
-          return (
-            <div class="gallery-item">
-              <img src={img.src} alt={`Na Nach ${index + 1}`} loading="lazy" />
-              <div class="overlay">
-                <span>{label}</span>
-              </div>
+      {Object.entries(categories).map(([key, cat]) => (
+        cat.images.length > 0 && (
+          <div class="category-section">
+            <h2><span class="icon">{cat.icon}</span> {cat.name} <span class="hebrew">({cat.hebrew})</span></h2>
+            <div class="gallery-grid">
+              {cat.images.map((img, index) => (
+                <div class="gallery-item">
+                  <img src={`/images/nanach/${img}`} alt={`${cat.name} ${index + 1}`} loading="lazy" />
+                  <div class="overlay">
+                    <span>{cat.name} #{index + 1}</span>
+                  </div>
+                </div>
+              ))}
             </div>
-          );
-        })}
-      </div>
-    </div>
-  </section>
-
-  <section class="friends-section">
-    <div class="container">
-      <h2>👥 Featured Friends</h2>
-      <div class="friends-grid">
-        <div class="friend-card">
-          <h3>🎤 Na Nach Simcha</h3>
-          <p>Known for joyful Na Nach songs and gatherings</p>
-        </div>
-        <div class="friend-card">
-          <h3>🎵 Na Nach Yisroel Dagan</h3>
-          <p>Singer who popularized Na Nach music worldwide</p>
-        </div>
-        <div class="friend-card">
-          <h3>👤 Na Nach Yosef</h3>
-          <p>Spreading the Petek message</p>
-        </div>
-      </div>
+          </div>
+        )
+      ))}
     </div>
   </section>
 
@@ -171,8 +255,24 @@ const images = Object.entries(imageFiles).map(([path, url]) => {
     color: #38a169;
   }
 
-  .gallery {
+  .category-section {
     padding: 4rem 0;
+    border-bottom: 1px solid #eee;
+  }
+
+  .category-section h2 {
+    font-family: var(--font-hebrew);
+    font-size: 1.8rem;
+    color: var(--color-primary);
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .category-section h2 .hebrew {
+    font-family: var(--font-hebrew);
+    font-size: 1.4rem;
+    color: #888;
+    font-weight: normal;
   }
 
   .gallery-grid {
@@ -217,42 +317,6 @@ const images = Object.entries(imageFiles).map(([path, url]) => {
 
   .gallery-item .overlay span {
     color: white;
-    font-size: 0.95rem;
-  }
-
-  .friends-section {
-    background: #f7f5f0;
-    padding: 4rem 0;
-  }
-
-  .friends-section h2 {
-    text-align: center;
-    color: var(--color-primary);
-    margin-bottom: 2rem;
-    font-family: var(--font-hebrew);
-  }
-
-  .friends-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-  }
-
-  .friend-card {
-    background: white;
-    padding: 1.5rem;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    text-align: center;
-  }
-
-  .friend-card h3 {
-    color: var(--color-primary);
-    margin-bottom: 0.5rem;
-  }
-
-  .friend-card p {
-    color: #666;
     font-size: 0.95rem;
   }
 
