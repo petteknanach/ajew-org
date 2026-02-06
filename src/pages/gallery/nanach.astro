@@ -253,6 +253,21 @@ const categories = {
           תנועת נ נח מברסלב התפתחה מהפתק שקיבל הסבא רבי ישראל בר אודסר בשנת תרפ"ב
         </p>
       </div>
+      
+      <div class="quick-index">
+        <h3>📂 Quick Index</h3>
+        <div class="index-links">
+          {Object.entries(categories).map(([key, cat]) => (
+            cat.images.length > 0 && (
+              <a href={`#category-${key}`} class="index-link">
+                <span class="icon">{cat.icon}</span>
+                <span class="name">{cat.name}</span>
+                <span class="count">{cat.images.length}</span>
+              </a>
+            )
+          ))}
+        </div>
+      </div>
     </div>
   </section>
 
@@ -260,7 +275,7 @@ const categories = {
     <div class="container">
       {Object.entries(categories).map(([key, cat]) => (
         cat.images.length > 0 && (
-          <div class="category-section">
+          <div id={`category-${key}`} class="category-section">
             <h2><span class="icon">{cat.icon}</span> {cat.name} <span class="hebrew">({cat.hebrew})</span> <span class="count">({cat.images.length})</span></h2>
             <div class="gallery-grid">
               {cat.images.map((img, index) => (
@@ -370,6 +385,62 @@ const categories = {
     font-family: var(--font-hebrew);
     font-size: 1.3rem;
     color: #38a169;
+  }
+
+  .quick-index {
+    max-width: 800px;
+    margin: 2rem auto 0;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+
+  .quick-index h3 {
+    font-family: var(--font-hebrew);
+    color: var(--color-primary);
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+
+  .index-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+
+  .index-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: #f7f5f0;
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--color-primary);
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .index-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    background: #edf2f7;
+  }
+
+  .index-link .icon {
+    font-size: 1.1rem;
+  }
+
+  .index-link .count {
+    background: #38a169;
+    color: white;
+    padding: 0.2rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    margin-right: 0.25rem;
   }
 
   .category-section {
