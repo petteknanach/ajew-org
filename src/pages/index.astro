@@ -55,6 +55,12 @@ import Layout from '../layouts/Layout.astro';
           <span class="btn-text">Na Nach Music</span>
         </a>
       </div>
+      
+      <!-- The most important thing - Na Nach phrase -->
+      <div class="nanach-phrase">
+        <p class="nanach-phrase-hebrew">נ נח נחמ נחמן מאומן</p>
+        <p class="nanach-phrase-english">Na Nach Nachma Nachman MeUman</p>
+      </div>
     </div>
   </section>
 
@@ -268,6 +274,31 @@ import Layout from '../layouts/Layout.astro';
     background: rgba(139, 69, 19, 1);
   }
 
+  /* Na Nach phrase - most important */
+  .nanach-phrase {
+    margin-top: 2rem;
+    text-align: center;
+    padding: 1.5rem;
+    background: rgba(0,0,0,0.2);
+    border-radius: 8px;
+  }
+
+  .nanach-phrase-hebrew {
+    font-family: var(--font-hebrew);
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--color-accent);
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.15em;
+  }
+
+  .nanach-phrase-english {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: white;
+    letter-spacing: 0.1em;
+  }
+
   .container {
     max-width: 1000px;
     margin: 0 auto;
@@ -416,6 +447,19 @@ import Layout from '../layouts/Layout.astro';
     .btn-small {
       padding: 0.5rem 0.8rem;
       font-size: 0.85rem;
+    }
+
+    .nanach-phrase {
+      margin-top: 1.5rem;
+      padding: 1rem;
+    }
+
+    .nanach-phrase-hebrew {
+      font-size: 1.8rem;
+    }
+
+    .nanach-phrase-english {
+      font-size: 1rem;
     }
   }
 </style>
