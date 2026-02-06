@@ -8,6 +8,7 @@ import Layout from '../layouts/Layout.astro';
       <h1 class="hero-title">
         <span class="hebrew">רבי נחמן מברסלב</span>
         <span class="english">Rebbe Nachman of Breslov</span>
+        <span class="tagline">The Factory of Judaism</span>
       </h1>
       <p class="hero-subtitle">
         <span class="hebrew">"כִּי בָּעוֹלָם הַזֶּה צָרִיךְ לַעֲבֹר עַל גֶּשֶׁר צַר מְאֹד"</span>
@@ -110,6 +111,16 @@ import Layout from '../layouts/Layout.astro';
     font-size: 2rem;
     font-weight: 400;
     opacity: 0.9;
+  }
+
+  .hero-title .tagline {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--color-accent);
+    margin-top: 0.5rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
   }
 
   .hero-subtitle {
