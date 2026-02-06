@@ -24,7 +24,7 @@ const pageDescription = "Wondrous stories and parables of Rabbi Nachman of Bresl
   }
 
   .container {
-    max-width: 900px;
+    max-width: 1100px;
     margin: 0 auto;
     padding: 0 2rem;
   }
@@ -39,6 +39,7 @@ const pageDescription = "Wondrous stories and parables of Rabbi Nachman of Bresl
     padding: 2rem;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    text-align: center;
   }
 
   .intro-content p {
@@ -46,68 +47,150 @@ const pageDescription = "Wondrous stories and parables of Rabbi Nachman of Bresl
     line-height: 1.8;
     color: #555;
     margin-bottom: 1rem;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .quote-box {
     border-right: 4px solid var(--color-primary);
     padding: 1rem 1.5rem;
-    margin: 1.5rem 0;
+    margin: 1.5rem auto;
+    max-width: 600px;
     background: #f7f5f0;
   }
 
   .quote-box p {
     font-style: italic;
     margin-bottom: 0.5rem;
+    color: #553c9a;
+    font-size: 1.1rem;
   }
 
-  .quote-box p:last-child {
-    margin-bottom: 0;
-  }
-
-  .stories-section {
-    padding: 3rem 0;
-  }
-
-  .story-item {
-    background: white;
-    padding: 2rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    margin-bottom: 2rem;
-  }
-
-  .story-item h3 {
+  .section-title {
     font-family: var(--font-hebrew);
     color: var(--color-primary);
+    font-size: 1.8rem;
+    margin: 3rem 0 1.5rem;
+    text-align: center;
+  }
+
+  .index-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+
+  .story-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: transform 0.3s, box-shadow 0.3s;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    border-left: 4px solid transparent;
+  }
+
+  .story-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    border-left-color: #553c9a;
+  }
+
+  .story-card h3 {
+    font-family: var(--font-hebrew);
+    color: var(--color-primary);
+    font-size: 1.2rem;
     margin-bottom: 0.5rem;
-    font-size: 1.4rem;
   }
 
-  .story-item h4 {
+  .story-card .subtitle {
     color: #888;
-    font-size: 1rem;
-    margin-bottom: 1rem;
-    font-weight: normal;
+    font-size: 0.9rem;
+    margin-bottom: 0.75rem;
   }
 
-  .story-item p {
-    font-size: 1.05rem;
-    line-height: 1.8;
+  .story-card .summary {
+    font-size: 0.95rem;
+    line-height: 1.6;
     color: #555;
     margin-bottom: 1rem;
   }
 
-  .story-item p:last-child {
-    margin-bottom: 0;
+  .story-card .read-more {
+    color: #553c9a;
+    font-weight: 600;
+    font-size: 0.9rem;
   }
 
-  .na-nach-signature {
-    text-align: center;
-    font-family: var(--font-hebrew);
-    font-size: 1.5rem;
-    color: var(--color-primary);
+  .story-card .read-more::after {
+    content: " →";
+  }
+
+  .section-divider {
+    height: 2px;
+    background: linear-gradient(to right, transparent, #553c9a, transparent);
+    margin: 3rem 0;
+  }
+
+  .parables-section {
     margin: 2rem 0;
-    letter-spacing: 0.1em;
+  }
+
+  .parable-card {
+    background: white;
+    padding: 1.25rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    transition: transform 0.2s;
+  }
+
+  .parable-card:hover {
+    transform: translateX(4px);
+  }
+
+  .parable-number {
+    background: #553c9a;
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    flex-shrink: 0;
+  }
+
+  .parable-content h4 {
+    color: var(--color-primary);
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .parable-content p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #555;
+    margin-bottom: 0.5rem;
+  }
+
+  .parable-content a {
+    color: #553c9a;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+  }
+
+  .parable-content a:hover {
+    text-decoration: underline;
   }
 
   .navigation {
@@ -141,13 +224,17 @@ const pageDescription = "Wondrous stories and parables of Rabbi Nachman of Bresl
     .nav-buttons {
       flex-direction: column;
     }
+    
+    .index-grid {
+      grid-template-columns: 1fr;
+    }
   }
 </style>
 
 <section class="page-header">
   <h1>✡ Stories and Parables ✡</h1>
   <p class="hebrew-title">סיפורים ומשלים</p>
-  <p>Wondrous Stories and Teachings of Rabbi Nachman</p>
+  <p>Wondrous Stories and Teachings of Rabbi Nachman of Breslov</p>
 </section>
 
 <section class="intro">
@@ -159,6 +246,9 @@ const pageDescription = "Wondrous stories and parables of Rabbi Nachman of Bresl
       <p>
         He said: "Telling over stories is propitious to arouse people from their slumber" - contrary to the common belief that stories induce sleep.
       </p>
+      <div class="quote-box">
+        <p>"Look, and discern, and gaze, you who study this, how far these matters reach. Fortunate is one who attends and will attain to know and grasp a little of the secrets of these stories."</p>
+      </div>
     </div>
   </div>
 </section>
@@ -166,195 +256,186 @@ const pageDescription = "Wondrous stories and parables of Rabbi Nachman of Bresl
 <section class="stories-section">
   <div class="container">
     
-    <div class="story-item">
-      <h3>Tale 1 - The Lost Princess</h3>
-      <h4>Seeking What Was Lost</h4>
-      <p>
-        Once, there was a king who had six sons and one daughter. The daughter was very precious in his eyes. One time, while he was together with her, he became angry and blurted out, "May the Not Good One take you away." At night she disappeared. The Second to the King searched for her for many years through deserts and forests until he found her in a castle of "not good."
-      </p>
-      <p>
-        To rescue her, he had to remain in one place for a full year, longing to rescue her. Through tests of refraining from eating and sleep, he ultimately succeeded through his unwavering determination.
-      </p>
-      <p class="na-nach-signature">נַ נַחְ נַחְמָ נַחְמָן מאוּמָן</p>
+    <h2 class="section-title">📖 The Thirteen Tales of Ancient Times</h2>
+    
+    <div class="index-grid">
+      <a href="/teachings/stories/tale-1" class="story-card">
+        <h3>Tale 1 - The Lost Princess</h3>
+        <p class="subtitle">Seeking What Was Lost</p>
+        <p class="summary">
+          A king accidentally banishes his daughter to a place "not good." A brave searcher endures years of trials - fasting, sleeping for decades, seeking the golden mountain with a pearl castle - to rescue her.
+        </p>
+        <span class="read-more">Read Full Story</span>
+      </a>
+
+      <a href="/teachings/stories/tale-2" class="story-card">
+        <h3>Tale 2 - The King and the Emperor</h3>
+        <p class="subtitle">A Tale of Love and Separation</p>
+        <p class="summary">
+          An emperor and king promise to match their children. The prince and princess fall in love at school, are espoused with a ring, but through trials of pirates, storms, and mistaken identities, they are finally reunited.
+        </p>
+        <span class="read-more">Read Full Story</span>
+      </a>
+
+      <a href="/teachings/stories/tale-3" class="story-card">
+        <h3>Tale 3 - The One Who Could Not Walk</h3>
+        <p class="subtitle">Healing Through Strange Herbs</p>
+        <p class="summary">
+          A sage's son who cannot walk embarks on business, is robbed, eats grass, finds a magical diamond, and journeys to where day and night meet - hearing the sun and moon converse about salvation.
+        </p>
+        <span class="read-more">Read Full Story</span>
+      </a>
+
+      <a href="/teachings/stories/tale-4" class="story-card">
+        <h3>Tale 4 - The King Who Decreed Apostasy</h3>
+        <p class="subtitle">The Power of Tallis and Tefillin</p>
+        <p class="summary">
+          A king decrees conversion or exile. Through secret Jews, a wise minister, astrologers, and a mysterious effigy of seven metals, the story reveals how Jews dressed in tallis and tefillin can pass through fire.
+        </p>
+        <span class="read-more">Read Full Story</span>
+      </a>
+
+      <a href="/teachings/stories/tale-5" class="story-card">
+        <h3>Tale 5 - The King's Son Made of Precious Stones</h3>
+        <p class="subtitle">The Promise Fulfilled</p>
+        <p class="summary">
+          A childless king and queen receive a son made entirely of gemstones through a tzaddik's blessing. When the jealous princess casts a spell, he becomes leprous, but ultimately the prophecy is fulfilled.
+        </p>
+        <span class="read-more">Read Full Story</span>
+      </a>
+
+      <a href="/teachings/stories/tale-6" class="story-card">
+        <h3>Tale 6 - The Humble King</h3>
+        <p class="subtitle">A King Concealed in Humility</p>
+        <p class="summary">
+          A wise man searches for a king who signs himself as "mighty, truthful, and humble." Through understanding the country's jesting and false courts, he discovers a king so humble he hides behind a veil.
+        </p>
+        <span class="read-more">Read Full Story</span>
+      </a>
+
+      <a href="/teachings/stories/tale-7" class="story-card">
+        <h3>Tale 7 - The Fly and the Spider</h3>
+        <p class="subtitle">A King Seeks Understanding</p>
+        <p class="summary">
+          At a banquet, a king watches a spider and fly protected by a book's page. This leads him to understand that Jews protect the world, and he travels to find a sage who reveals the mysteries of providence.
+        </p>
+        <span class="read-more">Read Full Story</span>
+      </a>
+
+      <a href="/teachings/stories/tale-8" class="story-card">
+        <h3>Tale 8 - The Rabbi and His Only Son</h3>
+        <p class="subtitle">The Deception of the Evil Inclination</p>
+        <p class="summary">
+          A rabbi repeatedly prevents his son from visiting a tzaddik. After the son dies, he appears in dreams telling his father to go - revealing that the Satan first incited, then killed, then mocked the son.
+        </p>
+        <span class="read-more">Read Full Story</span>
+      </a>
+
+      <a href="/teachings/stories/tale-9" class="story-card">
+        <h3>Tale 9 - The Clever Man and the Simple Man</h3>
+        <p class="subtitle">Philosophy vs. Simplicity</p>
+        <p class="summary">
+          Two friends - one brilliant who masters many trades but remains afflicted, one simple who finds joy in everything despite poverty. The simple man rises to become governor through temimus (innocence).
+        </p>
+        <span class="read-more">Read Full Story</span>
+      </a>
+
+      <a href="/teachings/stories/tale-10" class="story-card">
+        <h3>Tale 10 - The Burgher and the Pauper</h3>
+        <p class="subtitle">Dreams of Exchange</p>
+        <p class="summary">
+          Wealthy burgher and poor neighbor each dream of the other's fortune. When the pauper's wife is abducted, the burgher rescues her at great risk, and their children eventually unite a pauper-turned-emperor with extraordinary beauty.
+        </p>
+        <span class="read-more">Read Full Story</span>
+      </a>
+
+      <a href="/teachings/stories/tale-11" class="story-card">
+        <h3>Tale 11 - The King's Son and the Maid's Son</h3>
+        <p class="subtitle">The Exchanged Children</p>
+        <p class="summary">
+          A midwife switches a king's infant with a servant's. The false prince becomes king and exiles the true heir. Through wilderness, strange men, and spiritual trials, the exiled prince seeks truth and redemption.
+        </p>
+        <span class="read-more">Read Full Story</span>
+      </a>
+
+      <a href="/teachings/stories/tale-12" class="story-card">
+        <h3>Tale 12 - The Prayer Leader</h3>
+        <p class="subtitle">A Country That Believed Only in Money</p>
+        <p class="summary">
+          A prayer leader draws people away from civilization to serve Hashem. In a land where wealth determines divinity, he reveals through a mystical Hand that shows all paths to heaven - but the people are too lost to understand.
+        </p>
+        <span class="read-more">Read Full Story</span>
+      </a>
+
+      <a href="/teachings/stories/tale-13" class="story-card">
+        <h3>Tale 13 - The Seven Beggars</h3>
+        <p class="subtitle">The Complete Remedy</p>
+        <p class="summary">
+          Each of seven beggars has a unique deficiency - one lacks eyes, another legs, etc. Together they represent the wholeness that comes from all parts of Israel uniting in prayer and faith.
+        </p>
+        <span class="read-more">Read Full Story</span>
+      </a>
     </div>
 
-    <div class="story-item">
-      <h3>Tale 2 - The King and the Emperor</h3>
-      <h4>A Tale of Love and Separation</h4>
-      <p>
-        An emperor and a king, both without children, made an agreement that if one had a son and the other a daughter, they would marry. Their children met while studying, fell in love, and were espoused. But through various trials and tribulations - including a lost ring, a storm at sea, a merchant's ship, pirates, and a mysterious doctor - they were ultimately reunited through the cleverness of the princess who disguised herself as a doctor.
-      </p>
-      <p class="na-nach-signature">נַ נַחְ נַחְמָ נַחְמָן מאוּמָן</p>
-    </div>
+    <div class="section-divider"></div>
 
-    <div class="story-item">
-      <h3>Tale 3 - The One Who Could Not Walk</h3>
-      <h4>Healing Through Strange Herbs</h4>
-      <p>
-        A sage instructed his children to water trees. His son could not walk but supported himself by hiring a carriage to do business. Robbers stole his money and horses, leaving him alone. He ate grass until he found a strange herb with a diamond beneath it - a diamond with magical properties that took him to where day and night meet, where he heard the sun and moon conversing about healing and salvation.
-      </p>
-      <p class="na-nach-signature">נַ נַחְ נַחְמָ נַחְמָן מאוּמָן</p>
-    </div>
+    <h2 class="section-title">✨ Additional Parables</h2>
 
-    <div class="story-item">
-      <h3>Tale 4 - The King Who Decreed Apostasy</h3>
-      <h4>The Power of Tallis and Tefillin</h4>
-      <p>
-        A king decreed apostasy: whoever wanted to remain had to convert or be expelled. Some abandoned all to remain faithful Jews. When the king died and his son became ruler, the Jewish minister who had secretly saved the king was permitted to wear tallis and tefillin publicly.
-      </p>
-      <p>
-        The new king conquered countries and built an effigy from seven metals that could give advice. But when he demoted the Jewish minister, the Jews were again forced underground. In the end, through a sage's warning about a path through fire that only Jews dressed in tallis and tefillin could traverse, the king and his descendants perished when they tried to pass through without Jews to protect them.
-      </p>
-      <div class="quote-box">
-        <p><em>"The bull and the ram laughed at him" - referring to the tefillin straps (bull) and tzitzis strings (lamb). The astrologers saw that through these, the king's line would be cut off, but they didn't understand their meaning.</em></p>
+    <div class="parables-section">
+      <div class="parable-card">
+        <div class="parable-number">1</div>
+        <div class="parable-content">
+          <h4>The Turkey Prince</h4>
+          <p>
+            A prince falls into psychosis that he is a turkey, sitting naked under the table. A sage joins him, gradually adding clothing back - "You think a turkey cannot wear this? It is possible!" until healing comes.
+          </p>
+          <a href="#">Read Full Parable →</a>
+        </div>
       </div>
-    </div>
 
-    <div class="story-item">
-      <h3>Tale 5 - The King's Son Made of Precious Stones</h3>
-      <h4>The Promise Fulfilled</h4>
-      <p>
-        A king without children prayed for offspring. A tzadik promised he would have a daughter, and later a son "made of precious stones." The princess, jealous of her brother, used sorcery to make him leprous. When the tzaddik revealed the sorcery had been thrown into water, the princess tried to retrieve it and drowned. The prince was healed, and his leprosy fell off revealing he was entirely made of gemstones as promised.
-      </p>
-      <p class="na-nach-signature">נַ נַחְ נַחְמָ נַחְמָן מאוּמָן</p>
-    </div>
-
-    <div class="story-item">
-      <h3>Tale 6 - The Humble King</h3>
-      <h4>A King Concealed in Humility</h4>
-      <p>
-        There was once a king who had a wise man. The king said to the wise man, "There is a king whose seal states that he is a great man of might, a man of truth, and a humble person - but I don't know this king. I want you to bring me his portrait."
-      </p>
-      <p>
-        The wise man traveled to that country and understood its essence through its jesting. He discovered the country was full of falsehood and deceit. When he finally came before the king and praised him, the king became so humble that he threw aside his veil to see the wise man - revealing his portrait.
-      </p>
-      <p>
-        This story teaches about "Zion" - the aspect of tziyuenim (markers) of all countries, where all signs gather. May it be rebuilt speedily in our days, amen.
-      </p>
-      <p class="na-nach-signature">נַ נַחְ נַחְמָ נַחְמָן מאוּמָן</p>
-    </div>
-
-    <div class="story-item">
-      <h3>Tale 7 - The Fly and the Spider</h3>
-      <h4>A King Seeks Understanding</h4>
-      <p>
-        A king who had conquered many wars watched a spider and fly at a banquet, where the page of a book lifted repeatedly to protect the fly from the spider. This led him to understand that Jews protect the world. He traveled to find a sage who could interpret his dream, and through sacred incense, he saw his soul's journey from heaven and understood the mysteries of providence.
-      </p>
-      <p class="na-nach-signature">נַ נַחְ נַחְמָ נַחְמָן מאוּמָן</p>
-    </div>
-
-    <div class="story-item">
-      <h3>Tale 8 - The Rabbi and His Only Son</h3>
-      <h4>The Deception of the Evil Inclination</h4>
-      <p>
-        A rabbi's only son felt lacking in his service to Hashem and wanted to visit a tzaddik. His father repeatedly prevented him. After the son died, he appeared in dreams telling his father to visit the tzaddik. On the way, the father met a "merchant" who was actually the Satan in disguise - who had first incited the son to seek the tzaddik, then prevented him, then killed him.
-      </p>
-      <div class="quote-box">
-        <p><em>The way of the evil inclination is to incite a person, and when the person follows him, Heaven forbid, he himself challenges the person afterwards and personally takes vengeance upon him for having followed him.</em></p>
+      <div class="parable-card">
+        <div class="parable-number">2</div>
+        <div class="parable-content">
+          <h4>The Treasure Under the Bridge</h4>
+          <p>
+            A man dreams of treasure under a bridge in Vienna, travels there, meets a soldier who dreamed of treasure under a bridge in his city. The treasure was always near him - but travel to the tzaddik reveals it.
+          </p>
+          <a href="#">Read Full Parable →</a>
+        </div>
       </div>
-    </div>
 
-    <div class="story-item">
-      <h3>Tale 9 - The Clever Man and the Simple Man</h3>
-      <h4>Philosophy vs. Simplicity</h4>
-      <p>
-        Two sons of homeowners - one clever, one simple - grew up together. The clever man traveled the world, learning many trades: goldwork, gem cutting, medicine. He became extremely wise but constantly afflicted, finding fault with everything.
-      </p>
-      <p>
-        The simple man learned shoemaking, married, and remained poor but constantly joyful. He tasted bread as if it were all foods, praised water as wine, and found happiness in everything despite having nothing.
-      </p>
-      <p>
-        When the king sent for them, the simple man became governor and minister through his simplicity and truth. The clever man remained afflicted. The story teaches that true success comes not through cleverness but through temimus - simplicity and joy.
-      </p>
-      <p class="na-nach-signature">נַ נַחְ נַחְמָ נַחְמָן מאוּמָן</p>
-    </div>
-
-    <div class="story-item">
-      <h3>Tale 10 - The Burgher and the Pauper</h3>
-      <h4>Dreams of Exchange</h4>
-      <p>
-        A wealthy burgher dreamed that all his possessions were carried to the pauper who lived below him. The pauper's wife dreamed the opposite. Meanwhile, the pauper's wife was taken by a general. The burgher rescued her at great personal risk, and she swore that all her future success would belong to him.
-      </p>
-      <p>
-        Their children - a son and an extraordinarily beautiful daughter - eventually brought the pauper to become emperor of the entire world. Through tests of loyalty, the burgher's son and the emperor's daughter were ultimately united, fulfilling the dreams of exchange through their marriage.
-      </p>
-      <p class="na-nach-signature">נַ נַחְ נַחְמָ נַחְמָן מאוּמָן</p>
-    </div>
-
-    <div class="story-item">
-      <h3>Tale 11 - The King's Son and the Maid's Son</h3>
-      <h4>The Exchanged Children</h4>
-      <p>
-        A midwife switched a king's infant with a bondmaid's infant. The false prince (the bondmaid's son) became king and drove away the true king's son. The exiled prince sank into despair and dissipation until a dream sent him to a fair where he became a herdsman.
-      </p>
-      <p>
-        In the wilderness, he met a mysterious man who told him to stop chasing his "sins" that had led him like animals. Through trials in the forest, he encountered beings beyond human understanding and learned that his suffering was a form of spiritual correction.
-      </p>
-      <p class="na-nach-signature">נַ נַחְ נַחְמָ נַחְמָן מאוּמָן</p>
-    </div>
-
-    <div class="story-item">
-      <h3>Tale 12 - The Prayer Leader</h3>
-      <h4>A Country That Believed Only in Money</h4>
-      <p>
-        There was a Prayer Leader who drew people away from civilization to serve Hashem with prayer and songs. A country existed where everything - status, honor, even divinity - was determined by wealth. When a warrior threatened them, they sought help from another "wealthy" country. The Prayer Leader tried to show them that money is meaningless, but they were too lost in their delusion.
-      </p>
-      <p>
-        Through a remarkable story of the king's Hand that depicted all worlds and paths to heaven, the Prayer Leader showed them they would all be destroyed. The story contains deep secrets of Torah and the paths between worlds.
-      </p>
-      <p class="na-nach-signature">נַ נַחְ נַחְמָ נַחְמָן מאוּמָן</p>
-    </div>
-
-    <div class="story-item">
-      <h3>The Turkey Prince</h3>
-      <p>
-        A prince fell into a psychosis that he was a turkey. He would sit naked under the table dragging crumbs. A sage undressed and sat with him, gradually adding clothing back - "You think a turkey cannot wear this? It is possible!" until he healed him completely.
-      </p>
-      <div class="quote-box">
-        <p><em>A person who desires to draw close to the service of Hashem is like a turkey dressed in materialism, and in this fashion it is possible, little by little, to draw himself close.</em></p>
+      <div class="parable-card">
+        <div class="parable-number">3</div>
+        <div class="parable-content">
+          <h4>The Flood</h4>
+          <p>
+            A king hunts in commoner's clothes. A flood comes, ministers flee, but a villager saves the king. The king says, "Since you saved me, you will bring me in your wagon and seat me on the royal throne."
+          </p>
+          <a href="#">Read Full Parable →</a>
+        </div>
       </div>
-    </div>
 
-    <div class="story-item">
-      <h3>The Treasure Under the Bridge</h3>
-      <p>
-        A man dreamt of treasure under a bridge in Vienna. He traveled there and met a soldier who dreamt of treasure under a bridge in the man's city. The man realized: the treasure was by him all along - but to know of it, he needed to travel to Vienna.
-      </p>
-      <div class="quote-box">
-        <p><em>"So it is in the matter of serving Hashem: the treasure is by each one by himself, but in order to know of the treasure it is incumbent to travel to the tzaddik."</em></p>
+      <div class="parable-card">
+        <div class="parable-number">4</div>
+        <div class="parable-content">
+          <h4>The Tainted Grain</h4>
+          <p>
+            A king sees all grain will make eaters crazy. His advisor suggests eating too and marking foreheads. This parable teaches strength when the whole world is caught in vanities.
+          </p>
+          <a href="#">Read Full Parable →</a>
+        </div>
       </div>
-      <p class="na-nach-signature">נַ נַחְ נַחְמָ נַחְמָן מאוּמָן</p>
-    </div>
 
-    <div class="story-item">
-      <h3>The Flood</h3>
-      <p>
-        A king went hunting dressed as a commoner. Heavy rain fell - a flood. All ministers scattered to save themselves, but a villager saved the king and gave him shelter. The king said, "Since you saved me, you will bring me in your wagon and seat me on the royal throne."
-      </p>
-      <div class="quote-box">
-        <p><em>"At the heels of the Messiah there will be a flood - they will shoot with heresy... Just the simple Jews who recite Psalms with simplicity... when the Messiah comes they will place the crown on his head."</em></p>
+      <div class="parable-card">
+        <div class="parable-number">5</div>
+        <div class="parable-content">
+          <h4>One Thing Brought the Success</h4>
+          <p>
+            Rabbi Nachman said, "With one thing I was successful, and through this I merited to what I merited." The holy soul of Rabbi Nachman did not taste from the Tree of Knowledge.
+          </p>
+          <a href="#">Read Full Parable →</a>
+        </div>
       </div>
-    </div>
-
-    <div class="story-item">
-      <h3>The Tainted Grain</h3>
-      <p>
-        A king saw that all grain that year would make whoever eats from it become crazy. His advisor suggested they eat too and mark their foreheads to know they were crazy.
-      </p>
-      <p>
-        This parable teaches that even if the whole world is caught in vanities, one must be strong to engage only in Torah and mitzvos, even if appearing crazy to others.
-      </p>
-    </div>
-
-    <div class="story-item">
-      <h3>One Thing Brought the Success</h3>
-      <div class="quote-box">
-        <p><em>"With one thing I was successful, and through this I merited to what I merited..."</em></p>
-      </div>
-      <p>
-        Rabbi Nachman said that Adam HaRishon, when he ate from the Tree of Knowledge, all the souls tasted, but Rabbi Nachman's holy soul merited that it did not taste from the Tree of Knowledge whatsoever.
-      </p>
-      <p class="na-nach-signature">נַ נַחְ נַחְמָ נַחְמָן מאוּמָן</p>
     </div>
 
   </div>
