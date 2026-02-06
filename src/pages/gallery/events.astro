@@ -1,51 +1,105 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+
+const images = [
+  'nanach-chaim-walden-head-fire-rabbainu.jpg',
+  'nanach-eliyahu-gordetzky.jpg',
+  'nanach-friends-aron-heuberger-aron-shilo-beanies.jpg',
+  'nanach-gavriel-levi-uman-2.jpg',
+  'nanach-gavriel-levi-uman.jpg',
+  'nanach-hair-beanie-portrait.jpg',
+  'nanach-meir-weiner-driver.jpg',
+  'nanach-self-cave-portrait.jpg',
+  'nanach-simcha-hochman-singing.jpg',
+  'nanach-simcha-singing.jpg',
+  'nanach-simcha-youcam.jpg',
+  'nanach-snowman-sitting.jpg',
+  'nanach-three-kids-saba-poster.jpg',
+  'nanach-tzinor-layla-thumbnail.jpg',
+  'nanach-tzvi-levin-guitar.jpg',
+  'nanach-yisroel-dagan-playing-saba.jpg',
+  'nanach-yosef-portrait.jpg',
+  'nanach-yosef-saban-striemel-sticker.jpg',
+];
+
+// Organize images by category
+const categories = {
+  'simcha': {
+    name: 'Simchas & Celebrations',
+    hebrew: 'שמחות',
+    icon: '🎉',
+    images: images.filter(img => img.includes('simcha') || img.includes('singing') || img.includes('hochman') || img.includes('dagan'))
+  },
+  'portraits': {
+    name: 'Portraits',
+    hebrew: 'דיוקנאות',
+    icon: '📸',
+    images: images.filter(img => img.includes('portrait') || img.includes('face') || img.includes('beanie') || img.includes('hair') || img.includes('yosef') || img.includes('self'))
+  },
+  'music': {
+    name: 'Music & Instruments',
+    hebrew: 'מוזיקה',
+    icon: '🎵',
+    images: images.filter(img => img.includes('guitar') || img.includes('levin') || img.includes('tzinor'))
+  },
+  'friends': {
+    name: 'Friends & Gathering',
+    hebrew: 'חברים',
+    icon: '👥',
+    images: images.filter(img => img.includes('friends') || img.includes('kids') || img.includes('gordetzky') || img.includes('weiner') || img.includes('gavriel'))
+  },
+  'other': {
+    name: 'Events Gallery',
+    hebrew: 'אירועים',
+    icon: '🎪',
+    images: images.filter(img => !img.includes('simcha') && !img.includes('singing') && !img.includes('hochman') && !img.includes('dagan') && !img.includes('portrait') && !img.includes('face') && !img.includes('beanie') && !img.includes('hair') && !img.includes('yosef') && !img.includes('self') && !img.includes('guitar') && !img.includes('levin') && !img.includes('tzinor') && !img.includes('friends') && !img.includes('kids') && !img.includes('gordetzky') && !img.includes('weiner') && !img.includes('gavriel'))
+  }
+};
 ---
 
-<Layout title="Events Gallery" description="Photos from Na Nach events and gatherings">
+<Layout title="Events Gallery" description="Photos from Na Nach events, simchas, and gatherings">
   <section class="page-header">
     <h1>✡ Events & Gatherings ✡</h1>
-    <p>Celebrations, simchas, and Na Nach events around the world</p>
+    <p>Simchas, celebrations, and Na Nach events around the world</p>
+    <p class="hebrew">אירועים ושמחות נ נח מכל העולם</p>
     <a href="/gallery" class="back-link">← Back to Gallery</a>
   </section>
 
   <section class="intro">
     <div class="container">
       <div class="info-box">
-        <h2>🎉 Events Coming Soon</h2>
+        <h2>🎉 Celebrating Together</h2>
         <p>
-          We're currently organizing photos from Na Nach events, gatherings, and celebrations. 
-          Check back soon for photos from Rosh Hashanah in Uman, regional Na Nach gatherings, 
-          and simchas from around the world.
+          Photos from Na Nach events, simchas, and gatherings from around the world. 
+          From singing gatherings to celebrations with friends, these moments capture 
+          the joy and unity of the Na Nach Breslov movement.
         </p>
         <p class="hebrew">
-          אירועים והתכנסויות נ נח מכל העולם
+          תמונות מאירועי נ נח, שמחות, והתכנסויות מכל העולם
         </p>
       </div>
     </div>
   </section>
 
-  <section class="links-section">
+  <section class="gallery">
     <div class="container">
-      <h2>📷 Related Galleries</h2>
-      <div class="links-grid">
-        <a href="/gallery/saba" class="link-card">
-          <span class="icon">👤</span>
-          <span class="text">Saba Yisroel</span>
-        </a>
-        <a href="/gallery/rabbainu" class="link-card">
-          <span class="icon">✡️</span>
-          <span class="text">Rebbe Nachman</span>
-        </a>
-        <a href="/gallery/uman" class="link-card">
-          <span class="icon">🪦</span>
-          <span class="text">Tomb in Uman</span>
-        </a>
-        <a href="/gallery/nanach" class="link-card">
-          <span class="icon">🌟</span>
-          <span class="text">Na Nach Life</span>
-        </a>
-      </div>
+      {Object.entries(categories).map(([key, cat]) => (
+        cat.images.length > 0 && (
+          <div class="category-section">
+            <h2><span class="icon">{cat.icon}</span> {cat.name} <span class="hebrew">({cat.hebrew})</span></h2>
+            <div class="gallery-grid">
+              {cat.images.map((img, index) => (
+                <div class="gallery-item">
+                  <img src={`/images/events/${img}`} alt={`${cat.name} ${index + 1}`} loading="lazy" />
+                  <div class="overlay">
+                    <span>{cat.name} #{index + 1}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )
+      ))}
     </div>
   </section>
 
@@ -82,6 +136,13 @@ import Layout from '../../layouts/Layout.astro';
   .page-header p {
     opacity: 0.9;
     font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .page-header .hebrew {
+    font-family: var(--font-hebrew);
+    font-size: 1.5rem;
+    margin-top: 1rem;
   }
 
   .back-link {
@@ -95,7 +156,7 @@ import Layout from '../../layouts/Layout.astro';
   }
 
   .container {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
     padding: 0 2rem;
   }
@@ -106,9 +167,9 @@ import Layout from '../../layouts/Layout.astro';
   }
 
   .info-box {
-    max-width: 700px;
+    max-width: 800px;
     margin: 0 auto;
-    padding: 3rem;
+    padding: 2rem;
     background: white;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
@@ -134,52 +195,79 @@ import Layout from '../../layouts/Layout.astro';
     color: #553c9a;
   }
 
-  .links-section {
+  .category-section {
     padding: 4rem 0;
+    border-bottom: 1px solid #eee;
   }
 
-  .links-section h2 {
-    text-align: center;
+  .category-section:last-child {
+    border-bottom: none;
+  }
+
+  .category-section h2 {
+    font-family: var(--font-hebrew);
+    font-size: 1.8rem;
     color: var(--color-primary);
     margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .category-section h2 .hebrew {
     font-family: var(--font-hebrew);
+    font-size: 1.4rem;
+    color: #888;
+    font-weight: normal;
   }
 
-  .links-grid {
+  .gallery-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
   }
 
-  .link-card {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 1.25rem;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    text-decoration: none;
-    color: var(--color-primary);
-    transition: transform 0.3s, box-shadow 0.3s;
+  .gallery-item {
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   }
 
-  .link-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+  .gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s;
   }
 
-  .link-card .icon {
-    font-size: 1.5rem;
+  .gallery-item:hover img {
+    transform: scale(1.08);
   }
 
-  .link-card .text {
-    font-weight: 500;
+  .gallery-item .overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.7));
+    padding: 2rem 1rem 1rem;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .gallery-item:hover .overlay {
+    opacity: 1;
+  }
+
+  .gallery-item .overlay span {
+    color: white;
+    font-size: 0.95rem;
   }
 
   .navigation {
     background: var(--color-primary);
     padding: 3rem 0;
+    margin-top: 2rem;
   }
 
   .nav-buttons {
@@ -206,6 +294,10 @@ import Layout from '../../layouts/Layout.astro';
   @media (max-width: 768px) {
     .nav-buttons {
       flex-direction: column;
+    }
+    
+    .gallery-grid {
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     }
   }
 </style>

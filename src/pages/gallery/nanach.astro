@@ -1,13 +1,12 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 
-// Get list of images from the public folder
 const images = [
+  // Graffiti images
   'nanach-barzel-graffiti.jpg',
   'nanach-blue-white-brick.jpg',
   'nanach-bus-shelter.jpg',
   'nanach-cam-0218.jpg',
-  'nanach-chaim-walden-head-fire-rabbainu.jpg',
   'nanach-colorful-black.jpg',
   'nanach-crowned.jpg',
   'nanach-cube.jpg',
@@ -83,39 +82,94 @@ const images = [
 // Organize images by category
 const categories = {
   'graffiti': {
-    name: 'Graffiti',
+    name: 'Graffiti & Street Art',
     hebrew: 'גרפיטי',
     icon: '🎨',
-    images: images.filter(img => img.includes('graffiti') || img.includes('wall') || img.includes('brick') || img.includes('painting') || img.includes('spray'))
+    images: images.filter(img => 
+      img.includes('graffiti') || 
+      img.includes('wall') || 
+      img.includes('brick') || 
+      img.includes('painting') || 
+      img.includes('spray') ||
+      img.includes('sticker')
+    )
   },
   'locations': {
     name: 'Sacred Locations',
     hebrew: 'מקומות קדושים',
     icon: '📍',
-    images: images.filter(img => img.includes('kotel') || img.includes('tzion') || img.includes('uman') || img.includes('israel'))
+    images: images.filter(img => 
+      img.includes('kotel') || 
+      img.includes('tzion') || 
+      img.includes('king-david') ||
+      img.includes('israel') ||
+      img.includes('arizal')
+    )
   },
   'events': {
     name: 'Events & Singing',
     hebrew: 'אירועים ושירה',
     icon: '🎵',
-    images: images.filter(img => img.includes('simcha') || img.includes('singing') || img.includes('dagan') || img.includes('levi') || img.includes('hochman'))
+    images: images.filter(img => 
+      img.includes('simcha') || 
+      img.includes('singing') || 
+      img.includes('dagan') || 
+      img.includes('levi') || 
+      img.includes('hochman') ||
+      img.includes('rosh-hashana')
+    )
   },
   'portraits': {
     name: 'Portraits',
     hebrew: 'דיוקנאות',
     icon: '📸',
-    images: images.filter(img => img.includes('portrait') || img.includes('face') || img.includes('hair') || img.includes('beanie') || img.includes('yosef'))
+    images: images.filter(img => 
+      img.includes('portrait') || 
+      img.includes('face') || 
+      img.includes('hair') || 
+      img.includes('beanie') || 
+      img.includes('yosef') ||
+      img.includes('holligram') ||
+      img.includes('crowned') ||
+      img.includes('spangled')
+    )
   },
-  'other': {
+  'life': {
     name: 'Na Nach Life',
     hebrew: 'חיי נ נח',
     icon: '🌟',
-    images: images.filter(img => !img.includes('graffiti') && !img.includes('wall') && !img.includes('brick') && !img.includes('painting') && !img.includes('spray') && !img.includes('kotel') && !img.includes('tzion') && !img.includes('uman') && !img.includes('israel') && !img.includes('simcha') && !img.includes('singing') && !img.includes('dagan') && !img.includes('levi') && !img.includes('hochman') && !img.includes('portrait') && !img.includes('face') && !img.includes('hair') && !img.includes('beanie') && !img.includes('yosef'))
+    images: images.filter(img => 
+      !img.includes('graffiti') && 
+      !img.includes('wall') && 
+      !img.includes('brick') && 
+      !img.includes('painting') && 
+      !img.includes('spray') &&
+      !img.includes('sticker') &&
+      !img.includes('kotel') && 
+      !img.includes('tzion') &&
+      !img.includes('king-david') &&
+      !img.includes('israel') &&
+      !img.includes('arizal') &&
+      !img.includes('simcha') && 
+      !img.includes('singing') && 
+      !img.includes('dagan') && 
+      !img.includes('levi') && 
+      !img.includes('hochman') &&
+      !img.includes('rosh-hashana') &&
+      !img.includes('portrait') && 
+      !img.includes('face') && 
+      !img.includes('hair') && 
+      !img.includes('beanie') && 
+      !img.includes('yosef') &&
+      !img.includes('holligram') &&
+      !img.includes('crowned') &&
+      !img.includes('spangled')
+    )
   }
 };
 ---
 
-<Layout title="Na Nach Life Gallery" description="Photos of the Na Nach Breslov movement">
+<Layout title="Na Nach Life Gallery" description="Photos of the Na Nach Breslov movement - graffiti, events, and daily life">
   <section class="page-header">
     <h1>✡ Na Nach Breslov Movement ✡</h1>
     <p>Spreading the light of Rabbi Nachman throughout the world</p>
@@ -145,7 +199,7 @@ const categories = {
       {Object.entries(categories).map(([key, cat]) => (
         cat.images.length > 0 && (
           <div class="category-section">
-            <h2><span class="icon">{cat.icon}</span> {cat.name} <span class="hebrew">({cat.hebrew})</span></h2>
+            <h2><span class="icon">{cat.icon}</span> {cat.name} <span class="hebrew">({cat.hebrew})</span> <span class="count">({cat.images.length})</span></h2>
             <div class="gallery-grid">
               {cat.images.map((img, index) => (
                 <div class="gallery-item">
@@ -169,8 +223,8 @@ const categories = {
           <span class="arrow">←</span>
           <span class="text">Tomb in Uman</span>
         </a>
-        <a href="/teachings" class="nav-btn next">
-          <span class="text">Teachings</span>
+        <a href="/gallery/events" class="nav-btn next">
+          <span class="text">Events Gallery</span>
           <span class="arrow">→</span>
         </a>
       </div>
@@ -260,6 +314,10 @@ const categories = {
     border-bottom: 1px solid #eee;
   }
 
+  .category-section:last-child {
+    border-bottom: none;
+  }
+
   .category-section h2 {
     font-family: var(--font-hebrew);
     font-size: 1.8rem;
@@ -272,6 +330,12 @@ const categories = {
     font-family: var(--font-hebrew);
     font-size: 1.4rem;
     color: #888;
+    font-weight: normal;
+  }
+
+  .category-section h2 .count {
+    font-size: 1rem;
+    color: #aaa;
     font-weight: normal;
   }
 

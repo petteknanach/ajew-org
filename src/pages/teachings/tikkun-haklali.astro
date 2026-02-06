@@ -1,82 +1,14 @@
 ---
-import Layout from '../../layouts/Layout.astro';
-
-const psalms = [
-  { number: 16, name: "Mizmor L'Todah", english: "Psalm of Thanksgiving", description: "For gratitude and acknowledgment of goodness" },
-  { number: 32, name: "Ashrei", english: "Happy is the One", description: "For forgiveness of sins" },
-  { number: 41, name: "Ashrei L'roi", english: "Happy is the One Who Considers", description: "For healing from illness" },
-  { number: 42, name: "Lamenatzeiach", english: "To the Conductor", description: "For depression and sadness" },
-  { number: 59, name: "Lamenatzeiach Al Tushiyahu", english: "Do Not Keep Silent", description: "For protection from enemies" },
-  { number: 69, name: "Lamenatzeiach Al Shoshanim", english: "To the Conductor, About Lilies", description: "For salvation from distress" },
-  { number: 77, name: "Lamenatzeiach Al Yedutun", english: "To the Conductor, For Jeduthun", description: "For clarity and understanding" },
-  { number: 90, name: "Mizmor L'Moshe", english: "A Prayer of Moses", description: "For long life and repentance" },
-  { number: 91, name: "Lo Yisa", english: "He Shall Not Fear", description: "For protection and faith" },
-  { number: 104, name: "Baruch Shomeir", english: "Blessed is He Who Observes", description: "For blessing and prosperity" }
-];
+layout: ../../layouts/Layout.astro
+title: Tikkun Haklali - The General Rectification
+description: The Tikkun Haklali, the General Rectification, revealed by Rabbi Nachman of Breslov - ten Psalms for salvation and healing
 ---
-
-<Layout title="Tikkun Haklali" description="The ten Psalms of Rebbe Nachman's complete remedy">
-  <section class="page-header">
-    <h1>Tikkun HaKlali</h1>
-    <p>תיקון הכללי</p>
-    <p class="subtitle">The Complete Remedy</p>
-    <a href="/teachings" class="back-link">← Back to Teachings</a>
-  </section>
-
-  <section class="intro">
-    <div class="container">
-      <div class="intro-content">
-        <p>
-          <strong>Tikkun HaKlali</strong> (The General/Universal Remedy) consists of ten Psalms 
-          prescribed by Rebbe Nachman of Breslov as a complete remedy for all spiritual and physical ailments.
-        </p>
-        <p>
-          Rebbe Nachman revealed this tikkun as a powerful tool for teshuva (repentance), healing, 
-          and drawing close to God. It is particularly effective for those who feel distant or broken.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <section class="psalms">
-    <div class="container">
-      <h2>The Ten Psalms</h2>
-      <div class="psalms-grid">
-        {psalms.map((psalm, index) => (
-          <div class="psalm-card">
-            <div class="psalm-number">{psalm.number}</div>
-            <div class="psalm-info">
-              <h3>{psalm.name}</h3>
-              <p class="english">{psalm.english}</p>
-              <p class="description">{psalm.description}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <section class="instructions">
-    <div class="container">
-      <h2>How to Say the Tikkun</h2>
-      <div class="instructions-content">
-        <ol>
-          <li>Begin with the acknowledgment of sins and heartfelt repentance</li>
-          <li>Recite each of the ten Psalms slowly and contemplatively</li>
-          <li>Focus on the meaning of the words and their healing power</li>
-          <li>End with personal prayer and requests</li>
-          <li>Repeat regularly for maximum benefit</li>
-        </ol>
-      </div>
-    </div>
-  </section>
-</Layout>
 
 <style>
   .page-header {
-    background: linear-gradient(135deg, #2f855a 0%, #276749 100%);
+    background: linear-gradient(135deg, #744210 0%, #5d3a1a 100%);
     color: white;
-    padding: 4rem 2rem;
+    padding: 5rem 2rem;
     text-align: center;
   }
 
@@ -86,125 +18,326 @@ const psalms = [
     margin-bottom: 0.5rem;
   }
 
-  .subtitle {
-    font-size: 1.2rem;
-    opacity: 0.9;
-  }
-
-  .back-link {
-    display: inline-block;
-    margin-top: 1rem;
-    color: white;
-    text-decoration: none;
-    padding: 0.5rem 1rem;
-    border: 1px solid white;
-    border-radius: 4px;
+  .hebrew-title {
+    font-family: var(--font-hebrew);
+    font-size: 1.8rem;
+    margin: 1rem 0;
   }
 
   .container {
-    max-width: 1000px;
+    max-width: 900px;
     margin: 0 auto;
     padding: 0 2rem;
   }
 
   .intro {
-    padding: 4rem 0;
     background: #f7f5f0;
+    padding: 4rem 0;
   }
 
   .intro-content {
-    max-width: 700px;
-    margin: 0 auto;
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    margin-bottom: 2rem;
+  }
+
+  .intro-content h2 {
+    font-family: var(--font-hebrew);
+    color: var(--color-primary);
+    margin-bottom: 1rem;
   }
 
   .intro-content p {
     font-size: 1.1rem;
     line-height: 1.8;
+    color: #555;
     margin-bottom: 1rem;
   }
 
-  .psalms {
-    padding: 4rem 0;
+  .teaching-section {
+    padding: 3rem 0;
   }
 
-  .psalms h2 {
+  .teaching-section h2 {
+    font-family: var(--font-hebrew);
+    font-size: 1.5rem;
+    color: var(--color-primary);
+    margin-bottom: 1.5rem;
     text-align: center;
+  }
+
+  .psalm {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     margin-bottom: 2rem;
+  }
+
+  .psalm-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+  }
+
+  .psalm-header h3 {
+    font-family: var(--font-hebrew);
+    font-size: 1.3rem;
     color: var(--color-primary);
   }
 
-  .psalms-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1rem;
-  }
-
-  .psalm-card {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    background: white;
-    padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  }
-
   .psalm-number {
+    background: var(--color-primary);
+    color: white;
     width: 50px;
     height: 50px;
-    background: var(--color-accent);
-    color: white;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.3rem;
     font-weight: bold;
-    flex-shrink: 0;
+    font-size: 1.2rem;
   }
 
-  .psalm-info h3 {
-    color: var(--color-primary);
+  .hebrew-text {
+    font-family: var(--font-hebrew);
+    font-size: 1.2rem;
+    line-height: 2;
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    background: #f7f5f0;
+    border-radius: 8px;
+    text-align: right;
+    direction: rtl;
+  }
+
+  .transliteration {
     font-size: 1rem;
-    margin-bottom: 0.25rem;
-  }
-
-  .english {
-    color: #888;
-    font-size: 0.85rem;
-    margin-bottom: 0.25rem;
-  }
-
-  .description {
+    line-height: 1.8;
     color: #666;
-    font-size: 0.9rem;
+    font-style: italic;
+    margin-bottom: 1rem;
   }
 
-  .instructions {
-    background: #edf2f7;
-    padding: 4rem 0;
+  .transliteration-word {
+    display: inline;
+    margin: 0 2px;
   }
 
-  .instructions h2 {
-    text-align: center;
-    margin-bottom: 2rem;
-    color: var(--color-primary);
+  .info-box {
+    background: #e8f4f8;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin: 2rem 0;
   }
 
-  .instructions-content {
-    max-width: 600px;
-    margin: 0 auto;
-    background: white;
-    padding: 2rem;
+  .info-box p {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #333;
+    margin-bottom: 0.5rem;
+  }
+
+  .info-box p:last-child {
+    margin-bottom: 0;
+  }
+
+  .navigation {
+    background: var(--color-primary);
+    padding: 3rem 0;
+    margin-top: 3rem;
+  }
+
+  .nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: white;
+    text-decoration: none;
+    padding: 1rem 1.5rem;
+    background: rgba(255,255,255,0.1);
     border-radius: 8px;
   }
 
-  .instructions ol {
-    padding-left: 1.5rem;
+  .nav-btn:hover {
+    background: rgba(255,255,255,0.2);
   }
 
-  .instructions li {
-    margin-bottom: 0.75rem;
-    line-height: 1.6;
+  @media (max-width: 768px) {
+    .nav-buttons {
+      flex-direction: column;
+    }
+    
+    .psalm-header {
+      flex-direction: column;
+      gap: 1rem;
+    }
   }
 </style>
+
+<section class="page-header">
+  <h1>✡ Tikkun Haklali ✡</h1>
+  <p class="hebrew-title">תיקון הכללי</p>
+  <p>The General Rectification</p>
+  <p class="hebrew">התיקון הכללי מרבינו נחמן מברסלב</p>
+</section>
+
+<section class="intro">
+  <div class="container">
+    <div class="intro-content">
+      <h2>🙏 What is Tikkun Haklali?</h2>
+      <p>
+        The Tikkun Haklali (General Rectification) was revealed by Rabbi Nachman of Breslov as a remedy for all spiritual and physical ailments. It consists of ten chapters from the Psalms, each representing one of the ten types of melodies which comprise the Psalms.
+      </p>
+      <p>
+        Rabbi Nachman revealed that saying these ten chapters of Psalms together serves as a Tikun Klali – a general rectification for all problems. Many Jews say these every day for salvation, healing, and protection.
+      </p>
+    </div>
+    
+    <div class="info-box">
+      <p><strong>Before reciting:</strong> It is propitious to give charity (or at least set aside), even one penny, for the merit of Rabbi Nachman, before reciting the Tikun.</p>
+      <p><strong>Intention:</strong> Optimally one should have in mind, throughout the recital, that these melodies of Tehilim (Psalms) liberate the drops of seed which are under captivity of Lilith, with the Divine Kindness and Might invested in the Names.</p>
+    </div>
+  </div>
+</section>
+
+<section class="teaching-section">
+  <div class="container">
+    
+    <div class="psalm">
+      <div class="psalm-header">
+        <span class="psalm-number">16</span>
+        <h3>Psalm 16 - Mizmor LeDovid</h3>
+      </div>
+      <div class="hebrew-text">
+        מִכְתָּם לְדָוִד שְׁמָרֵנִי אֵל כִּי חָסִיתִי בָּךְ
+      </div>
+      <div class="transliteration">
+        Michtam l'Dovid sh'morani El ki chasiti bach
+      </div>
+      <div class="transliteration">
+        אָמַרְתָּ לַאֲדֹנָי אֲדֹנָי אָתָּה טוּבָתִי בְּלָעָדֶיךָ
+      </div>
+      <div class="transliteration">
+        Amarta l'Adonai Adonai atah tuvti b'lo'adecha
+      </div>
+    </div>
+
+    <div class="psalm">
+      <div class="psalm-header">
+        <span class="psalm-number">32</span>
+        <h3>Psalm 32 - Ashrey</h3>
+      </div>
+      <div class="hebrew-text">
+        לְדָוִד מַשְׂכִּיל אַשְׁרֵי נְשׂוּי פֶּשַׁע כְּסוּי חֲטָאָה
+      </div>
+    </div>
+
+    <div class="psalm">
+      <div class="psalm-header">
+        <span class="psalm-number">41</span>
+        <h3>Psalm 41 - l'Manatzei'ach</h3>
+      </div>
+      <div class="hebrew-text">
+        אַשְׁרֵי מַשְׂכִּיל אֶל דָּל בְּיוֹם רָעָה יִמַּלְּטֵהוּ יְהוָה
+      </div>
+    </div>
+
+    <div class="psalm">
+      <div class="psalm-header">
+        <span class="psalm-number">42</span>
+        <h3>Psalm 42 - Shir</h3>
+      </div>
+      <div class="hebrew-text">
+        לְמַנַּצֵּחַ מַשְׂכִּיל לִבְנֵי קֹרַח
+      </div>
+    </div>
+
+    <div class="psalm">
+      <div class="psalm-header">
+        <span class="psalm-number">59</span>
+        <h3>Psalm 59 - l'Manatzei'ach</h3>
+      </div>
+      <div class="hebrew-text">
+        לַמְנַצֵּחַ עַל תַּשְׁחִית לְדָוִד מִכְתָּם בְּשָׁלַח שָׁאוּל וַיִּשְׁמְרוּ אֶת הַבַּיִת לַהֲמִיתוֹ
+      </div>
+    </div>
+
+    <div class="psalm">
+      <div class="psalm-header">
+        <span class="psalm-number">77</span>
+        <h3>Psalm 77 - Ne'ilah</h3>
+      </div>
+      <div class="hebrew-text">
+        לַמְנַצֵּחַ עַל יְדוּתוּן לְאָסָף מִזְמוֹר
+      </div>
+    </div>
+
+    <div class="psalm">
+      <div class="psalm-header">
+        <span class="psalm-number">90</span>
+        <h3>Psalm 90 - Tefilah</h3>
+      </div>
+      <div class="hebrew-text">
+        תְּפִלָּה לְמֹשֶׁה אִישׁ הָאֱלֹהִים אֲדֹנָי מָעוֹן אַתָּה הָיִיתָ לָנוּ בְּדֹר וָדֹר
+      </div>
+    </div>
+
+    <div class="psalm">
+      <div class="psalm-header">
+        <span class="psalm-number">105</span>
+        <h3>Psalm 105 - Hodu</h3>
+      </div>
+      <div class="hebrew-text">
+        הוֹדוּ לַיהוָה קִרְאוּ בִּשְׁמוֹ הוֹדִיעוּ בָעַמִּים עֲלִילוֹתָיו
+      </div>
+    </div>
+
+    <div class="psalm">
+      <div class="psalm-header">
+        <span class="psalm-number">137</span>
+        <h3>Psalm 137 - Mizmor</h3>
+      </div>
+      <div class="hebrew-text">
+        עַל נַהֲרוֹת בָּבֶל שָׁם יָשַׁבְנוּ גַּם בָּכִינוּ בְּזָכְרֵנוּ אֶת צִיּוֹן
+      </div>
+    </div>
+
+    <div class="psalm">
+      <div class="psalm-header">
+        <span class="psalm-number">150</span>
+        <h3>Psalm 150 - Halleluyah</h3>
+      </div>
+      <div class="hebrew-text">
+        הַלְלוּיָהּ הַלְלוּ אֵל בְּקָדְשׁוֹ הַלְלוּהוּ בִּרְקַע עֻזּוֹ
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="navigation">
+  <div class="container">
+    <div class="nav-buttons">
+      <a href="/teachings" class="nav-btn">
+        <span class="arrow">←</span>
+        <span class="text">All Teachings</span>
+      </a>
+      <a href="/teachings/likutay-moharan" class="nav-btn">
+        <span class="text">Likutay Moharan</span>
+        <span class="arrow">→</span>
+      </a>
+    </div>
+  </div>
+</section>
