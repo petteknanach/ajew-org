@@ -1,0 +1,319 @@
+---
+const pageTitle = "Simcha Nanach Books";
+const pageDescription = "Books published by Simcha Nanach - available on Amazon";
+---
+
+<style>
+  .page-header {
+    background: linear-gradient(135deg, #553c9a 0%, #6b46c1 100%);
+    color: white;
+    padding: 5rem 2rem;
+    text-align: center;
+  }
+
+  .page-header h1 {
+    font-family: var(--font-hebrew);
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .hebrew-title {
+    font-family: var(--font-hebrew);
+    font-size: 1.8rem;
+    margin: 1rem 0;
+  }
+
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .intro {
+    background: #f7f5f0;
+    padding: 4rem 0;
+  }
+
+  .intro-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    text-align: center;
+  }
+
+  .intro-content p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #555;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .books-section {
+    padding: 4rem 0;
+  }
+
+  .books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .book-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+
+  .book-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  }
+
+  .book-card h3 {
+    font-family: var(--font-hebrew);
+    color: var(--color-primary);
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+  }
+
+  .book-card .author {
+    font-size: 0.9rem;
+    color: #888;
+    margin-bottom: 1rem;
+  }
+
+  .book-card .description {
+    font-size: 0.95rem;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    flex: 1;
+  }
+
+  .book-card .price {
+    font-weight: bold;
+    color: var(--color-accent);
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+
+  .amazon-btn {
+    display: block;
+    text-align: center;
+    background: #ff9900;
+    color: #111;
+    text-decoration: none;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background 0.3s;
+  }
+
+  .amazon-btn:hover {
+    background: #e88b00;
+  }
+
+  .navigation {
+    background: var(--color-primary);
+    padding: 3rem 0;
+    margin-top: 3rem;
+  }
+
+  .nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: white;
+    text-decoration: none;
+    padding: 1rem 1.5rem;
+    background: rgba(255,255,255,0.1);
+    border-radius: 8px;
+  }
+
+  .nav-btn:hover {
+    background: rgba(255,255,255,0.2);
+  }
+
+  @media (max-width: 768px) {
+    .nav-buttons {
+      flex-direction: column;
+    }
+    
+    .books-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<section class="page-header">
+  <h1>Simcha Nanach Books</h1>
+  <p class="hebrew-title">ספרי סימחא ננח</p>
+  <p>Books published by Simcha Nanach</p>
+</section>
+
+<section class="intro">
+  <div class="container">
+    <div class="intro-content">
+      <p>
+        Simcha Nanach is a Breslov publisher dedicated to spreading the teachings of Rabbi Nachman of Breslov 
+        and Rabbi Yisroel Ber Odesser (Saba). Below are books available for purchase on Amazon.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="books-section">
+  <div class="container">
+    <div class="books-grid">
+      
+      <div class="book-card">
+        <h3>The Stories of Rabbi Nachman of Breslov and Saba Yisroel</h3>
+        <p class="author">by R. Nachman of Breslov, R. Yisroel Dov Odesser</p>
+        <p class="description">
+          A collection of stories combining the teachings of Rabbi Nachman with those of Saba Yisroel.
+        </p>
+        <p class="price">From $31.10</p>
+        <a href="https://www.amazon.com/Stories-Rabbi-Nachman-Breslov-Yisroel/dp/1533583617/" target="_blank" class="amazon-btn">
+          View on Amazon
+        </a>
+      </div>
+
+      <div class="book-card">
+        <h3>Pray With Your Limbs & Other Devotions of a Nanach</h3>
+        <p class="author">by Simcha Nanach</p>
+        <p class="description">
+          Inspirational devotions and prayers from the Na Nach Breslov tradition.
+        </p>
+        <p class="price">ILS 71.24</p>
+        <a href="https://www.amazon.com/Pray-Limbs-Other-Devotions-Nanach/dp/1537158090/" target="_blank" class="amazon-btn">
+          View on Amazon
+        </a>
+      </div>
+
+      <div class="book-card">
+        <h3>Rabbi Nachman of Breslov: Who He Was, and What He Said</h3>
+        <p class="author">by Rabbi Nachman of Breslov, Simcha Nanach</p>
+        <p class="description">
+          An introduction to the life and teachings of Rabbi Nachman of Breslov.
+        </p>
+        <p class="price">ILS 18.28</p>
+        <a href="https://www.amazon.com/Rabbi-Nachman-Breslov-What-Said/dp/1533528233/" target="_blank" class="amazon-btn">
+          View on Amazon
+        </a>
+      </div>
+
+      <div class="book-card">
+        <h3>Sefer HaMidot: The Book of Character</h3>
+        <p class="author">by Rabbi Nachman of Breslov</p>
+        <p class="description">
+          The classic work on character traits and self-improvement.
+        </p>
+        <p class="price">ILS 68.62 - ILS 106.39</p>
+        <a href="https://www.amazon.com/Sefer-HaMidot-Rabbi-Nachman-Breslov/dp/B0FVTWMTTB/" target="_blank" class="amazon-btn">
+          View on Amazon
+        </a>
+      </div>
+
+      <div class="book-card">
+        <h3>Hisbodidus: Alone Time</h3>
+        <p class="author">by Rabbi Nachman of Breslov, Rabbi Nussun of Breslov</p>
+        <p class="description">
+          Teachings on personal reflection and Hisbodidus (personal accounting).
+        </p>
+        <p class="price">ILS 34.28</p>
+        <a href="https://www.amazon.com/Hisbodidus-Alone-Time-Nachman-Breslov/dp/1670630862/" target="_blank" class="amazon-btn">
+          View on Amazon
+        </a>
+      </div>
+
+      <div class="book-card">
+        <h3>Legendary Tales Rabbi Nachman of Breslov</h3>
+        <p class="author">by Rabbi Nachman of Breslov, Rabbi Nusson of Breslov</p>
+        <p class="description">
+          The famous stories and parables of Rabbi Nachman.
+        </p>
+        <p class="price">ILS 40.55</p>
+        <a href="https://www.amazon.com/Legendary-Tales-Rabbi-Nachman-Breslov/dp/B09KWDZ379/" target="_blank" class="amazon-btn">
+          View on Amazon
+        </a>
+      </div>
+
+      <div class="book-card">
+        <h3>The Fires of Israel</h3>
+        <p class="author">by Rabbi Yisroel Dov Odesser, Simcha Nanach</p>
+        <p class="description">
+          Writings about the holy land of Israel.
+        </p>
+        <p class="price">ILS 39.02 - ILS 70.05</p>
+        <a href="https://www.amazon.com/Fires-Israel-Yisroel-Odesser-b-m/dp/1540621669/" target="_blank" class="amazon-btn">
+          View on Amazon
+        </a>
+      </div>
+
+      <div class="book-card">
+        <h3>The Praises of Rabbi Nachman</h3>
+        <p class="author">by Rabbi Nachman of Breslov, Rabbi Nussun of Breslov</p>
+        <p class="description">
+          Tehillah (praises) and hymns in honor of Rabbi Nachman.
+        </p>
+        <p class="price">ILS 84.21 - ILS 102.92</p>
+        <a href="https://www.amazon.com/Praises-Rabbi-Nachman-Breslov-b-m/dp/1717446671/" target="_blank" class="amazon-btn">
+          View on Amazon
+        </a>
+      </div>
+
+      <div class="book-card">
+        <h3>Likutay Na Nach - Enlightenment: MAyUMaN (Vol. 5)</h3>
+        <p class="author">by Simcha Nanach, Rabbi Nachman of Breslov</p>
+        <p class="description">
+          The Holy Petek and Prayers and Entries - Hebrew Edition.
+        </p>
+        <p class="price">ILS 374.58 - ILS 779.72</p>
+        <a href="https://www.amazon.com/Likutay-Na-Nach-Enlightenment-MAyUMaN/dp/B093CHKYDL/" target="_blank" class="amazon-btn">
+          View on Amazon
+        </a>
+      </div>
+
+      <div class="book-card">
+        <h3>Likutay Na Nach - Enlightenment: Nachman MayUman (Vol. 4)</h3>
+        <p class="author">by Simcha Nanach, Rabbi Nachman of Breslov</p>
+        <p class="description">
+          The Holy Petek and Prayers and Entries - Hebrew Edition.
+        </p>
+        <p class="price">Out of Print</p>
+        <a href="https://www.amazon.com/Likutay-Na-Nach-Enlightenment-Nachman/dp/B08MX7BPQ2/" target="_blank" class="amazon-btn">
+          View on Amazon
+        </a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="navigation">
+  <div class="container">
+    <div class="nav-buttons">
+      <a href="/teachings" class="nav-btn">
+        <span class="arrow">←</span>
+        <span class="text">All Teachings</span>
+      </a>
+      <a href="/gallery" class="nav-btn">
+        <span class="text">Photo Gallery</span>
+        <span class="arrow">→</span>
+      </a>
+    </div>
+  </div>
+</section>
