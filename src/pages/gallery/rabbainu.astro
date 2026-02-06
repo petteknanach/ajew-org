@@ -13,7 +13,7 @@ function formatFilename(filename) {
 const images = [
   'kikar rabbi nachman close.jpg',
   'kikar rabbi nachman.jpg',
-  'letter from Rabbi Nachman of Umaan 2010-04-22 11.49.55.tiff',
+  'letter from Rabbi Nachman of Umaan.jpg',
   'rabbainu portrait of head and clouds in background.jpg',
   'rabbi-nachman-chair-hq.jpg',
   'rabbi-nachman-chair.jpg',
@@ -251,4 +251,119 @@ const images = [
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     }
   }
+
+  /* Lightbox styles */
+  .lightbox {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    cursor: zoom-out;
+  }
+
+  .lightbox.active {
+    display: flex;
+  }
+
+  .lightbox img {
+    max-width: 90%;
+    max-height: 90vh;
+    object-fit: contain;
+    border-radius: 8px;
+    cursor: zoom-out;
+  }
+
+  .lightbox-close {
+    position: absolute;
+    top: 1.5rem;
+    right: 2rem;
+    color: white;
+    font-size: 2.5rem;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+  }
+
+  .lightbox-close:hover {
+    opacity: 1;
+  }
+
+  .lightbox-caption {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    font-size: 1rem;
+    text-align: center;
+    max-width: 80%;
+  }
 </style>
+
+<script>
+  // Lightbox functionality
+  function initLightbox() {
+    const items = document.querySelectorAll('.gallery-item');
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    const lightboxCaption = document.getElementById('lightbox-caption');
+    const closeBtn = document.getElementById('lightbox-close');
+
+    items.forEach(item => {
+      item.style.cursor = 'pointer';
+      item.addEventListener('click', () => {
+        const img = item.querySelector('img');
+        const caption = item.querySelector('.caption');
+        if (img && lightbox && lightboxImg && lightboxCaption) {
+          lightboxImg.src = img.src;
+          lightboxCaption.textContent = caption ? caption.textContent : '';
+          lightbox.classList.add('active');
+          document.body.style.overflow = 'hidden';
+        }
+      });
+    });
+
+    if (closeBtn) {
+      closeBtn.addEventListener('click', closeLightbox);
+    }
+
+    if (lightbox) {
+      lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox) {
+          closeLightbox();
+        }
+      });
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeLightbox();
+      }
+    });
+  }
+
+  function closeLightbox() {
+    const lightbox = document.getElementById('lightbox');
+    if (lightbox) {
+      lightbox.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  }
+
+  initLightbox();
+</script>
+
+<!-- Lightbox HTML -->
+<div id="lightbox" class="lightbox">
+  <span id="lightbox-close" class="lightbox-close">&times;</span>
+  <img id="lightbox-img" src="" alt="" />
+  <p id="lightbox-caption" class="lightbox-caption"></p>
+</div>
+</Layout>
