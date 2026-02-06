@@ -1,7 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import fs from 'node:fs';
-import path from 'node:path';
 
 const imageDir = './public/images/events/';
 
@@ -17,7 +16,7 @@ function getAllImages() {
   }
 }
 
-const images = getAllImages();
+const allImages = getAllImages();
 
 function formatFilename(filename) {
   let formatted = decodeURIComponent(filename);
@@ -29,43 +28,59 @@ function formatFilename(filename) {
 
 const categories = {
   'simcha': {
-    name: 'Simchas & Celebrations',
-    hebrew: 'שמחות',
-    icon: '🎉',
-    images: images.filter(img => img.includes('simcha') || img.includes('singing') || img.includes('hochman') || img.includes('dagan'))
+    name: 'Simchas & Singing',
+    hebrew: 'שמחות ושירה',
+    icon: '🎵',
+    images: allImages.filter(img =>
+      img.includes('simcha') || img.includes('singing') || img.includes('hochman') || img.includes('dagan')
+    )
   },
   'portraits': {
     name: 'Portraits',
     hebrew: 'דיוקנאות',
-    icon: '📸',
-    images: images.filter(img => img.includes('portrait') || img.includes('face') || img.includes('beanie') || img.includes('hair') || img.includes('yosef') || img.includes('self'))
+    icon: '😊',
+    images: allImages.filter(img =>
+      img.includes('portrait') || img.includes('face') || img.includes('self') ||
+      img.includes('hair') || img.includes('beanie') || img.includes('yosef') || img.includes('beard')
+    )
+  },
+  'friends': {
+    name: 'Friends & People',
+    hebrew: 'חברים',
+    icon: '👥',
+    images: allImages.filter(img =>
+      img.includes('friends') || img.includes('aron') || img.includes('heuberger') ||
+      img.includes('shilo') || img.includes('gavriel') || img.includes('levi') ||
+      img.includes('chaim') || img.includes('walden') || img.includes('meir') ||
+      img.includes('weiner') || img.includes('tzvi') || img.includes('levin')
+    )
   },
   'music': {
     name: 'Music & Instruments',
     hebrew: 'מוזיקה',
-    icon: '🎵',
-    images: images.filter(img => img.includes('guitar') || img.includes('levin') || img.includes('tzinor'))
-  },
-  'friends': {
-    name: 'Friends & Gathering',
-    hebrew: 'חברים',
-    icon: '👥',
-    images: images.filter(img => img.includes('friends') || img.includes('kids') || img.includes('gordetzky') || img.includes('weiner') || img.includes('gavriel'))
-  },
-  'other': {
-    name: 'Events Gallery',
-    hebrew: 'אירועים',
-    icon: '🎪',
-    images: images.filter(img => !img.includes('simcha') && !img.includes('singing') && !img.includes('hochman') && !img.includes('dagan') && !img.includes('portrait') && !img.includes('face') && !img.includes('beanie') && !img.includes('hair') && !img.includes('yosef') && !img.includes('self') && !img.includes('guitar') && !img.includes('levin') && !img.includes('tzinor') && !img.includes('friends') && !img.includes('kids') && !img.includes('gordetzky') && !img.includes('weiner') && !img.includes('gavriel'))
+    icon: '🎸',
+    images: allImages.filter(img =>
+      img.includes('guitar') || img.includes('tzinor')
+    )
   }
 };
+
+const categorizedImages = new Set([
+  ...categories.simcha.images,
+  ...categories.portraits.images,
+  ...categories.friends.images,
+  ...categories.music.images
+]);
+
+const otherImages = allImages.filter(img => !categorizedImages.has(img));
 ---
 
 <Layout title="Events Gallery" description="Photos from Na Nach events, simchas, and gatherings">
   <section class="page-header">
     <h1>✡ Events & Gatherings ✡</h1>
-    <p>Simchas, celebrations, and Na Nach events around the world</p>
-    <p class="hebrew">אירועים ושמחות נ נח מכל העולם</p>
+    <p>Simchas, celebrations, and Na Nach events</p>
+    <p class="hebrew">אירועים והתכנסויות</p>
+    <p class="stats">{allImages.length} photos</p>
     <a href="/gallery" class="back-link">← Back to Gallery</a>
   </section>
 
@@ -73,14 +88,30 @@ const categories = {
     <div class="container">
       <div class="info-box">
         <h2>🎉 Celebrating Together</h2>
-        <p>
-          Photos from Na Nach events, simchas, and gatherings from around the world. 
-          From singing gatherings to celebrations with friends, these moments capture 
-          the joy and unity of the Na Nach Breslov movement.
-        </p>
-        <p class="hebrew">
-          תמונות מאירועי נ נח, שמחות, והתכנסויות מכל העולם
-        </p>
+        <p>Photos from Na Nach events, simchas, and gatherings from around the world.</p>
+        <p class="hebrew">תמונות מאירועי נ נח, שמחות, והתכנסויות מכל העולם</p>
+      </div>
+      
+      <div class="quick-index">
+        <h3>📂 Quick Index</h3>
+        <div class="index-links">
+          {Object.entries(categories).map(([key, cat]) => (
+            cat.images.length > 0 && (
+              <a href={`#category-${key}`} class="index-link">
+                <span class="icon">{cat.icon}</span>
+                <span class="name">{cat.name}</span>
+                <span class="count">{cat.images.length}</span>
+              </a>
+            )
+          ))}
+          {otherImages.length > 0 && (
+            <a href="#category-other" class="index-link">
+              <span class="icon">📷</span>
+              <span class="name">Other</span>
+              <span class="count">{otherImages.length}</span>
+            </a>
+          )}
+        </div>
       </div>
     </div>
   </section>
@@ -89,15 +120,13 @@ const categories = {
     <div class="container">
       {Object.entries(categories).map(([key, cat]) => (
         cat.images.length > 0 && (
-          <div class="category-section">
+          <div id={`category-${key}`} class="category-section">
             <h2><span class="icon">{cat.icon}</span> {cat.name} <span class="hebrew">({cat.hebrew})</span></h2>
             <div class="gallery-grid">
               {cat.images.map((img, index) => (
                 <div class="gallery-item">
                   <img src={`/images/events/${img}`} alt={formatFilename(img)} loading="lazy" />
-                  <div class="overlay">
-                    <span>{cat.name} #{index + 1}</span>
-                  </div>
+                  <div class="overlay"><span>{cat.name} #{index + 1}</span></div>
                   <div class="caption">{formatFilename(img)}</div>
                 </div>
               ))}
@@ -105,6 +134,20 @@ const categories = {
           </div>
         )
       ))}
+      {otherImages.length > 0 && (
+        <div id="category-other" class="category-section">
+          <h2><span class="icon">📷</span> Other Photos <span class="hebrew">(תמונות אחרות)</span></h2>
+          <div class="gallery-grid">
+            {otherImages.map((img, index) => (
+              <div class="gallery-item">
+                <img src={`/images/events/${img}`} alt={formatFilename(img)} loading="lazy" />
+                <div class="overlay"><span>Other #{index + 1}</span></div>
+                <div class="caption">{formatFilename(img)}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   </section>
 
@@ -125,195 +168,45 @@ const categories = {
 </Layout>
 
 <style>
-  .page-header {
-    background: linear-gradient(135deg, #553c9a 0%, #44337a 100%);
-    color: white;
-    padding: 5rem 2rem;
-    text-align: center;
-  }
-
-  .page-header h1 {
-    font-family: var(--font-hebrew);
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .page-header p {
-    opacity: 0.9;
-    font-size: 1.2rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .page-header .hebrew {
-    font-family: var(--font-hebrew);
-    font-size: 1.5rem;
-    margin-top: 1rem;
-  }
-
-  .back-link {
-    display: inline-block;
-    margin-top: 1.5rem;
-    color: white;
-    text-decoration: none;
-    padding: 0.75rem 1.5rem;
-    border: 2px solid white;
-    border-radius: 6px;
-  }
-
-  .container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 2rem;
-  }
-
-  .intro {
-    background: #f7f5f0;
-    padding: 4rem 0;
-  }
-
-  .info-box {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 2rem;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    text-align: center;
-  }
-
-  .info-box h2 {
-    font-family: var(--font-hebrew);
-    color: var(--color-primary);
-    margin-bottom: 1rem;
-  }
-
-  .info-box p {
-    font-size: 1.1rem;
-    line-height: 1.8;
-    color: #555;
-    margin-bottom: 1rem;
-  }
-
-  .info-box .hebrew {
-    font-family: var(--font-hebrew);
-    font-size: 1.3rem;
-    color: #553c9a;
-  }
-
-  .category-section {
-    padding: 4rem 0;
-    border-bottom: 1px solid #eee;
-  }
-
-  .category-section:last-child {
-    border-bottom: none;
-  }
-
-  .category-section h2 {
-    font-family: var(--font-hebrew);
-    font-size: 1.8rem;
-    color: var(--color-primary);
-    margin-bottom: 2rem;
-    text-align: center;
-  }
-
-  .category-section h2 .hebrew {
-    font-family: var(--font-hebrew);
-    font-size: 1.4rem;
-    color: #888;
-    font-weight: normal;
-  }
-
-  .gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
-  }
-
-  .gallery-item {
-    position: relative;
-    overflow: visible;
-  }
-
-  .gallery-item img {
-    width: 100%;
-    aspect-ratio: 1;
-    object-fit: cover;
-    border-radius: 12px;
-    transition: transform 0.4s;
-    display: block;
-  }
-
-  .gallery-item:hover img {
-    transform: scale(1.08);
-  }
-
-  .gallery-item .overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: linear-gradient(transparent, rgba(0,0,0,0.7));
-    padding: 2rem 1rem 1rem;
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
-
-  .gallery-item:hover .overlay {
-    opacity: 1;
-  }
-
-  .gallery-item .overlay span {
-    color: white;
-    font-size: 0.95rem;
-  }
-
-  .gallery-item .caption {
-    padding: 0.75rem;
-    background: #f8f8f8;
-    font-size: 0.85rem;
-    color: #555;
-    text-align: center;
-    border-bottom-left-radius: 12px;
-    border-bottom-right-radius: 12px;
-    word-break: break-word;
-    line-height: 1.4;
-  }
-
-  .navigation {
-    background: var(--color-primary);
-    padding: 3rem 0;
-    margin-top: 2rem;
-  }
-
-  .nav-buttons {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-  }
-
-  .nav-btn {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    color: white;
-    text-decoration: none;
-    padding: 1rem 1.5rem;
-    background: rgba(255,255,255,0.1);
-    border-radius: 8px;
-  }
-
-  .nav-btn:hover {
-    background: rgba(255,255,255,0.2);
-  }
-
+  .page-header { background: linear-gradient(135deg, #553c9a 0%, #44337a 100%); color: white; padding: 5rem 2rem; text-align: center; }
+  .page-header h1 { font-family: var(--font-hebrew); font-size: 2.5rem; margin-bottom: 0.5rem; }
+  .page-header p { opacity: 0.9; font-size: 1.2rem; margin-bottom: 0.5rem; }
+  .page-header .hebrew { font-family: var(--font-hebrew); font-size: 1.5rem; margin-top: 1rem; letter-spacing: 0.1em; }
+  .page-header .stats { font-size: 1rem; opacity: 0.7; margin-top: 0.5rem; }
+  .back-link { display: inline-block; margin-top: 1.5rem; color: white; text-decoration: none; padding: 0.75rem 1.5rem; border: 2px solid white; border-radius: 6px; }
+  .container { max-width: 1400px; margin: 0 auto; padding: 0 2rem; }
+  .intro { background: #f7f5f0; padding: 4rem 0; }
+  .info-box { max-width: 800px; margin: 0 auto 2rem; padding: 2rem; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); text-align: center; }
+  .info-box h2 { font-family: var(--font-hebrew); color: #553c9a; margin-bottom: 1rem; }
+  .info-box p { font-size: 1.1rem; line-height: 1.8; color: #555; margin-bottom: 1rem; }
+  .info-box .hebrew { font-family: var(--font-hebrew); font-size: 1.3rem; color: #553c9a; }
+  .quick-index { max-width: 700px; margin: 0 auto; padding: 1.5rem; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+  .quick-index h3 { font-family: var(--font-hebrew); color: var(--color-primary); margin-bottom: 1rem; text-align: center; }
+  .index-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; }
+  .index-link { display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem; background: #f7f5f0; border-radius: 8px; text-decoration: none; color: var(--color-primary); font-weight: 600; font-size: 0.9rem; transition: transform 0.2s; }
+  .index-link:hover { transform: translateY(-2px); background: #edf2f7; }
+  .index-link .count { background: #553c9a; color: white; padding: 0.2rem 0.5rem; border-radius: 12px; font-size: 0.75rem; }
+  .gallery { padding: 4rem 0; }
+  .category-section { padding: 4rem 0; border-bottom: 1px solid #eee; scroll-margin-top: 2rem; }
+  .category-section:last-child { border-bottom: none; }
+  .category-section h2 { font-family: var(--font-hebrew); font-size: 1.8rem; color: var(--color-primary); margin-bottom: 2rem; text-align: center; }
+  .category-section h2 .hebrew { font-family: var(--font-hebrew); font-size: 1.4rem; color: #888; font-weight: normal; margin-right: 0.5rem; }
+  .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+  .gallery-item { position: relative; overflow: visible; }
+  .gallery-item img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 12px; transition: transform 0.4s; display: block; }
+  .gallery-item:hover img { transform: scale(1.08); }
+  .gallery-item .overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.7)); padding: 2rem 1rem 1rem; opacity: 0; transition: opacity 0.3s; }
+  .gallery-item:hover .overlay { opacity: 1; }
+  .gallery-item .overlay span { color: white; font-size: 0.95rem; }
+  .gallery-item .caption { padding: 0.75rem; background: #f8f8f8; font-size: 0.85rem; color: #555; text-align: center; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; word-break: break-word; line-height: 1.4; }
+  .navigation { background: #44337a; padding: 3rem 0; }
+  .nav-buttons { display: flex; justify-content: space-between; gap: 1rem; }
+  .nav-btn { display: flex; align-items: center; gap: 0.75rem; color: white; text-decoration: none; padding: 1rem 1.5rem; background: rgba(255,255,255,0.1); border-radius: 8px; }
+  .nav-btn:hover { background: rgba(255,255,255,0.2); }
   @media (max-width: 768px) {
-    .nav-buttons {
-      flex-direction: column;
-    }
-    
-    .gallery-grid {
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    }
+    .nav-buttons { flex-direction: column; }
+    .gallery-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+    .index-links { gap: 0.5rem; }
+    .index-link { padding: 0.5rem 0.75rem; font-size: 0.8rem; }
   }
 </style>

@@ -1,23 +1,20 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import fs from 'node:fs';
-import path from 'node:path';
 
-const imageDir = './public/images/uman/';
+const imageDir = './public/images/tomb-uman/';
 
 function getAllImages() {
   try {
     const files = fs.readdirSync(imageDir);
     return files.filter(file => 
       /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(file) &&
-      !file.startsWith('.')
-    ).sort();
-  } catch (e) {
-    return [];
-  }
+      !file.startsWith('.'))
+    .sort();
+  } catch (e) { return []; }
 }
 
-const images = getAllImages();
+const allImages = getAllImages();
 
 function formatFilename(filename) {
   let formatted = decodeURIComponent(filename);
@@ -26,231 +23,193 @@ function formatFilename(filename) {
   formatted = formatted.replace(/\b\w/g, l => l.toUpperCase());
   return formatted;
 }
+
+const tzion = allImages.filter(img => img.includes('tzion') || img.includes('Tzion'));
+const tomb = allImages.filter(img => img.includes('tomb') || img.includes('temple'));
+const davening = allImages.filter(img => img.includes('davening') || img.includes('kittels'));
+const masses = allImages.filter(img => 
+  img.includes('masses') || img.includes('people') || img.includes('crowd'));
+const buildings = allImages.filter(img =>
+  img.includes('gate') || img.includes('gateway') || img.includes('house') ||
+  img.includes('heichal') || img.includes('hut'));
+const views = allImages.filter(img =>
+  img.includes('high') || img.includes('wide') || img.includes('top') ||
+  img.includes('bottom') || img.includes('blue') || img.includes('rocks'));
+
+const categorized = new Set([...tzion, ...tomb, ...davening, ...masses, ...buildings, ...views]);
+const other = allImages.filter(img => !categorized.has(img));
 ---
 
-<Layout title="Tomb of Rebbe Nachman in Uman" description="Photos of the holy tomb in Uman">
+<Layout title="Tomb in Uman Gallery" description="Photos of the Holy Tomb of Rabbi Nachman in Uman">
   <section class="page-header">
-    <h1>✡ Tomb in Uman ✡</h1>
-    <p>The Holy Tzion of Rabbi Nachman of Breslov</p>
-    <p class="hebrew">ציון רבינו נחמן מברסלב באומן</p>
+    <h1>The Holy Tomb in Uman</h1>
+    <p>The Sacred Tzion of Rabbi Nachman of Breslov</p>
+    <p class="hebrew">ציון רבינו נחמן באומן</p>
+    <p class="stats">{allImages.length} photos</p>
     <a href="/gallery" class="back-link">← Back to Gallery</a>
   </section>
 
   <section class="intro">
     <div class="container">
       <div class="info-box">
-        <h2>🙏 Rosh Hashanah in Uman</h2>
-        <p>
-          Every year, tens of thousands of Jews from around the world gather at the 
-          holy tomb of Rabbi Nachman in Uman, Ukraine, to celebrate Rosh Hashanah. 
-          This tradition, which began in the early 1800s, continues to grow each year.
-        </p>
-        <p class="hebrew">כל שנה בראש השנה מתאספים אלפי יהודים בציון רבינו נחמן באומן</p>
+        <h2>Rosh Hashanah in Uman</h2>
+        <p>Every year, tens of thousands of Jews from around the world gather at the Holy Tomb of Rabbi Nachman in Uman for Rosh Hashanah.</p>
+        <p class="hebrew">אלפי יהודים מכל העולם מתאספים בציון הקדוש באומן לראש השנה</p>
+      </div>
+      <div class="quick-index">
+        <h3>Quick Index</h3>
+        <div class="index-links">
+          {tzion.length > 0 && <a href="#tzion" class="index-link"><span class="icon">🪦</span><span class="name">The Tzion</span><span class="count">{tzion.length}</span></a>}
+          {tomb.length > 0 && <a href="#tomb" class="index-link"><span class="icon">🏛️</span><span class="name">Tomb & Temple</span><span class="count">{tomb.length}</span></a>}
+          {davening.length > 0 && <a href="#davening" class="index-link"><span class="icon">🙏</span><span class="name">Davening</span><span class="count">{davening.length}</span></a>}
+          {masses.length > 0 && <a href="#masses" class="index-link"><span class="icon">👥</span><span class="name">Masses & Crowds</span><span class="count">{masses.length}</span></a>}
+          {buildings.length > 0 && <a href="#buildings" class="index-link"><span class="icon">🏛️</span><span class="name">Buildings & Gates</span><span class="count">{buildings.length}</span></a>}
+          {views.length > 0 && <a href="#views" class="index-link"><span class="icon">📸</span><span class="name">Views</span><span class="count">{views.length}</span></a>}
+          {other.length > 0 && <a href="#other" class="index-link"><span class="icon">📷</span><span class="name">Other</span><span class="count">{other.length}</span></a>}
+        </div>
       </div>
     </div>
   </section>
 
   <section class="gallery">
     <div class="container">
-      <div class="gallery-grid">
-        {images.map((img, index) => (
-          <div class="gallery-item">
-            <img src={`/images/tomb-uman/${img}`} alt={formatFilename(img)} loading="lazy" />
-            <div class="overlay">
-              <span>#{index + 1}</span>
-            </div>
-            <div class="caption">{formatFilename(img)}</div>
+      {tzion.length > 0 && (
+        <div id="tzion" class="category-section">
+          <h2><span class="icon">🪦</span> The Holy Tzion <span class="hebrew">(הציון הקדוש)</span></h2>
+          <div class="gallery-grid">
+            {tzion.map((img, i) => (
+              <div class="gallery-item">
+                <img src={`/images/tomb-uman/${img}`} alt={formatFilename(img)} loading="lazy" />
+                <div class="caption">{formatFilename(img)}</div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </div>
+      )}
+      {tomb.length > 0 && (
+        <div id="tomb" class="category-section">
+          <h2><span class="icon">🏛️</span> Tomb & Temple <span class="hebrew">(קבר והיכל)</span></h2>
+          <div class="gallery-grid">
+            {tomb.map((img, i) => (
+              <div class="gallery-item">
+                <img src={`/images/tomb-uman/${img}`} alt={formatFilename(img)} loading="lazy" />
+                <div class="caption">{formatFilename(img)}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      {davening.length > 0 && (
+        <div id="davening" class="category-section">
+          <h2><span class="icon">🙏</span> Davening & Prayers <span class="hebrew">(דאוונינג ותפילות)</span></h2>
+          <div class="gallery-grid">
+            {davening.map((img, i) => (
+              <div class="gallery-item">
+                <img src={`/images/tomb-uman/${img}`} alt={formatFilename(img)} loading="lazy" />
+                <div class="caption">{formatFilename(img)}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      {masses.length > 0 && (
+        <div id="masses" class="category-section">
+          <h2><span class="icon">👥</span> Masses & Crowds <span class="hebrew">(המונים וקהל)</span></h2>
+          <div class="gallery-grid">
+            {masses.map((img, i) => (
+              <div class="gallery-item">
+                <img src={`/images/tomb-uman/${img}`} alt={formatFilename(img)} loading="lazy" />
+                <div class="caption">{formatFilename(img)}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      {buildings.length > 0 && (
+        <div id="buildings" class="category-section">
+          <h2><span class="icon">🏛️</span> Buildings & Gates <span class="hebrew">(מבנים ושערים)</span></h2>
+          <div class="gallery-grid">
+            {buildings.map((img, i) => (
+              <div class="gallery-item">
+                <img src={`/images/tomb-uman/${img}`} alt={formatFilename(img)} loading="lazy" />
+                <div class="caption">{formatFilename(img)}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      {views.length > 0 && (
+        <div id="views" class="category-section">
+          <h2><span class="icon">📸</span> Views & Perspectives <span class="hebrew">(נופים ומבטים)</span></h2>
+          <div class="gallery-grid">
+            {views.map((img, i) => (
+              <div class="gallery-item">
+                <img src={`/images/tomb-uman/${img}`} alt={formatFilename(img)} loading="lazy" />
+                <div class="caption">{formatFilename(img)}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      {other.length > 0 && (
+        <div id="other" class="category-section">
+          <h2><span class="icon">📷</span> Other Photos <span class="hebrew">(תמונות אחרות)</span></h2>
+          <div class="gallery-grid">
+            {other.map((img, i) => (
+              <div class="gallery-item">
+                <img src={`/images/tomb-uman/${img}`} alt={formatFilename(img)} loading="lazy" />
+                <div class="caption">{formatFilename(img)}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   </section>
 
   <section class="navigation">
     <div class="container">
       <div class="nav-buttons">
-        <a href="/gallery/rabbainu" class="nav-btn prev">
-          <span class="arrow">←</span>
-          <span class="text">Rebbe Nachman</span>
-        </a>
-        <a href="/gallery/nanach" class="nav-btn next">
-          <span class="text">Na Nach Life</span>
-          <span class="arrow">→</span>
-        </a>
+        <a href="/gallery/rabbainu" class="nav-btn">← Rabbi Nachman</a>
+        <a href="/gallery/nanach" class="nav-btn">Na Nach Life →</a>
       </div>
     </div>
   </section>
 </Layout>
 
 <style>
-  .page-header {
-    background: linear-gradient(135deg, #744210 0%, #5d3a1a 100%);
-    color: white;
-    padding: 5rem 2rem;
-    text-align: center;
-  }
-
-  .page-header h1 {
-    font-family: var(--font-hebrew);
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .page-header p {
-    opacity: 0.9;
-    font-size: 1.2rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .page-header .hebrew {
-    font-family: var(--font-hebrew);
-    font-size: 1.5rem;
-    margin-top: 1rem;
-  }
-
-  .back-link {
-    display: inline-block;
-    margin-top: 1.5rem;
-    color: white;
-    text-decoration: none;
-    padding: 0.75rem 1.5rem;
-    border: 2px solid white;
-    border-radius: 6px;
-  }
-
-  .container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 2rem;
-  }
-
-  .intro {
-    background: #f7f5f0;
-    padding: 4rem 0;
-  }
-
-  .info-box {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 2rem;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    text-align: center;
-  }
-
-  .info-box h2 {
-    font-family: var(--font-hebrew);
-    color: var(--color-primary);
-    margin-bottom: 1rem;
-  }
-
-  .info-box p {
-    font-size: 1.1rem;
-    line-height: 1.8;
-    color: #555;
-    margin-bottom: 1rem;
-  }
-
-  .info-box .hebrew {
-    font-family: var(--font-hebrew);
-    font-size: 1.3rem;
-    color: #744210;
-  }
-
-  .gallery {
-    padding: 4rem 0;
-  }
-
-  .gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
-  }
-
-  .gallery-item {
-    position: relative;
-    overflow: visible;
-  }
-
-  .gallery-item img {
-    width: 100%;
-    aspect-ratio: 1;
-    object-fit: cover;
-    border-radius: 12px;
-    transition: transform 0.4s;
-    display: block;
-  }
-
-  .gallery-item:hover img {
-    transform: scale(1.08);
-  }
-
-  .gallery-item .overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: linear-gradient(transparent, rgba(0,0,0,0.7));
-    padding: 2rem 1rem 1rem;
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
-
-  .gallery-item:hover .overlay {
-    opacity: 1;
-  }
-
-  .gallery-item .overlay span {
-    color: white;
-    font-size: 0.95rem;
-  }
-
-  .gallery-item .caption {
-    padding: 0.75rem;
-    background: #f8f8f8;
-    font-size: 0.85rem;
-    color: #555;
-    text-align: center;
-    border-bottom-left-radius: 12px;
-    border-bottom-right-radius: 12px;
-    word-break: break-word;
-    line-height: 1.4;
-  }
-
-  .navigation {
-    background: var(--color-primary);
-    padding: 3rem 0;
-  }
-
-  .nav-buttons {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-  }
-
-  .nav-btn {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    color: white;
-    text-decoration: none;
-    padding: 1rem 1.5rem;
-    background: rgba(255,255,255,0.1);
-    border-radius: 8px;
-  }
-
-  .nav-btn:hover {
-    background: rgba(255,255,255,0.2);
-  }
-
+  .page-header { background: linear-gradient(135deg, #553c9a 0%, #44337a 100%); color: white; padding: 4rem 2rem; text-align: center; }
+  .page-header h1 { font-family: var(--font-hebrew); font-size: 2.5rem; margin-bottom: 0.5rem; }
+  .page-header p { opacity: 0.9; font-size: 1.2rem; }
+  .page-header .hebrew { font-family: var(--font-hebrew); font-size: 1.5rem; margin-top: 0.5rem; letter-spacing: 0.1em; }
+  .page-header .stats { font-size: 1rem; opacity: 0.7; margin-top: 0.5rem; }
+  .back-link { display: inline-block; margin-top: 1rem; color: white; text-decoration: none; padding: 0.5rem 1rem; border: 1px solid white; border-radius: 4px; }
+  .container { max-width: 1400px; margin: 0 auto; padding: 0 2rem; }
+  .intro { background: #f7f5f0; padding: 3rem 0; }
+  .info-box { max-width: 700px; margin: 0 auto 2rem; padding: 2rem; background: white; border-radius: 12px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+  .info-box h2 { font-family: var(--font-hebrew); color: #553c9a; margin-bottom: 1rem; }
+  .info-box p { font-size: 1.1rem; color: #555; margin-bottom: 1rem; }
+  .info-box .hebrew { font-family: var(--font-hebrew); font-size: 1.3rem; color: #553c9a; }
+  .quick-index { max-width: 800px; margin: 0 auto; padding: 1.5rem; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+  .quick-index h3 { text-align: center; margin-bottom: 1rem; color: var(--color-primary); }
+  .index-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; }
+  .index-link { display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem; background: #f7f5f0; border-radius: 8px; text-decoration: none; color: var(--color-primary); font-weight: 600; font-size: 0.9rem; }
+  .index-link:hover { background: #edf2f7; }
+  .index-link .count { background: #553c9a; color: white; padding: 0.2rem 0.5rem; border-radius: 12px; font-size: 0.75rem; }
+  .gallery { padding: 3rem 0; }
+  .category-section { padding: 3rem 0; border-bottom: 1px solid #eee; }
+  .category-section:last-child { border-bottom: none; }
+  .category-section h2 { font-family: var(--font-hebrew); font-size: 1.6rem; text-align: center; margin-bottom: 1.5rem; color: var(--color-primary); }
+  .category-section h2 .hebrew { font-family: var(--font-hebrew); font-size: 1.2rem; color: #888; margin-left: 0.5rem; }
+  .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem; }
+  .gallery-item { position: relative; }
+  .gallery-item img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; display: block; }
+  .gallery-item .caption { padding: 0.75rem; background: #f8f8f8; font-size: 0.85rem; color: #555; text-align: center; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; }
+  .navigation { background: #44337a; padding: 2rem 0; }
+  .nav-buttons { display: flex; justify-content: center; gap: 2rem; }
+  .nav-btn { color: white; text-decoration: none; padding: 0.75rem 1.5rem; background: rgba(255,255,255,0.1); border-radius: 8px; }
   @media (max-width: 768px) {
-    .nav-buttons {
-      flex-direction: column;
-    }
-    
-    .gallery-grid {
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    }
+    .nav-buttons { flex-direction: column; }
+    .gallery-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
   }
 </style>

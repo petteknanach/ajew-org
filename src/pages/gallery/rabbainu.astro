@@ -1,7 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import fs from 'node:fs';
-import path from 'node:path';
 
 const imageDir = './public/images/rabbi-nachman/';
 
@@ -9,358 +8,171 @@ function getAllImages() {
   try {
     const files = fs.readdirSync(imageDir);
     return files.filter(file => 
-      /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(file) &&
-      !file.startsWith('.')
-    ).sort();
-  } catch (e) {
-    return [];
-  }
+      /\.(jpg|jpeg|png|gif|webp|svg|tiff)$/i.test(file) &&
+      !file.startsWith('.'))
+    .sort();
+  } catch (e) { return []; }
 }
 
-const images = getAllImages();
+const allImages = getAllImages();
 
 function formatFilename(filename) {
   let formatted = decodeURIComponent(filename);
-  formatted = formatted.replace(/\.(jpg|jpeg|png|gif|webp|svg)$/i, '');
+  formatted = formatted.replace(/\.(jpg|jpeg|png|gif|webp|svg|tiff)$/i, '');
   formatted = formatted.replace(/[-_]/g, ' ');
   formatted = formatted.replace(/\b\w/g, l => l.toUpperCase());
   return formatted;
 }
+
+const portraits = allImages.filter(img => 
+  img.includes('portrait') || img.includes('face') || img.includes('close'));
+const chair = allImages.filter(img => img.includes('chair') || img.includes('kikar'));
+const kupah = allImages.filter(img => 
+  img.includes('kupah') || img.includes('crown') || img.includes('cup'));
+const tomb = allImages.filter(img => 
+  img.includes('tomb') || img.includes('tzion') || img.includes('zion'));
+const categorized = new Set([...portraits, ...chair, ...kupah, ...tomb]);
+const other = allImages.filter(img => !categorized.has(img));
 ---
 
-<Layout title="Rebbe Nachman Gallery" description="Images of Rabbi Nachman of Breslov">
+<Layout title="Rabbi Nachman Gallery" description="Photos of Rabbi Nachman of Breslov">
   <section class="page-header">
-    <h1>✡ Rabbi Nachman of Breslov ✡</h1>
-    <p>1772-1810 • Great-grandson of the Baal Shem Tov</p>
+    <h1>Rabbi Nachman of Breslov</h1>
     <p class="hebrew">רבינו נחמן מברסלב</p>
+    <p class="stats">{allImages.length} photos</p>
     <a href="/gallery" class="back-link">← Back to Gallery</a>
   </section>
 
   <section class="intro">
     <div class="container">
-      <blockquote class="famous-quote">
+      <div class="quote-box">
+        <p class="english">"The whole world is a very narrow bridge — and the main thing is not to fear at all."</p>
         <p class="hebrew">כִּי בָּעוֹלָם הַזֶּה צָרִיךְ לַעֲבֹר עַל גֶּשֶׁר צַר מְאֹד וְהָעִקָּר לֹא לִפְחַד כְּלָל</p>
-        <p>"In this world, a person must traverse a very narrow bridge — the main thing is not to fear at all."</p>
-        <cite>— Likutay Moharan II, 48</cite>
-      </blockquote>
+      </div>
+      <div class="quick-index">
+        <h3>Quick Index</h3>
+        <div class="index-links">
+          {portraits.length > 0 && <a href="#portraits" class="index-link"><span class="icon">📸</span><span class="name">Portraits</span><span class="count">{portraits.length}</span></a>}
+          {chair.length > 0 && <a href="#chair" class="index-link"><span class="icon">🪑</span><span class="name">The Chair</span><span class="count">{chair.length}</span></a>}
+          {kupah.length > 0 && <a href="#kupah" class="index-link"><span class="icon">👑</span><span class="name">The Crown</span><span class="count">{kupah.length}</span></a>}
+          {tomb.length > 0 && <a href="#tomb" class="index-link"><span class="icon">🪦</span><span class="name">Tomb & Tzion</span><span class="count">{tomb.length}</span></a>}
+          {other.length > 0 && <a href="#other" class="index-link"><span class="icon">📷</span><span class="name">Other</span><span class="count">{other.length}</span></a>}
+        </div>
+      </div>
     </div>
   </section>
 
   <section class="gallery">
     <div class="container">
-      <div class="gallery-grid">
-        {images.map((img, index) => (
-          <div class="gallery-item">
-            <img src={`/images/rabbi-nachman/${img}`} alt={formatFilename(img)} loading="lazy" />
-            <div class="overlay">
-              <span>#{index + 1}</span>
-            </div>
-            <div class="caption">{formatFilename(img)}</div>
+      {portraits.length > 0 && (
+        <div id="portraits" class="category-section">
+          <h2><span class="icon">📸</span> Portraits <span class="hebrew">(דיוקנות)</span></h2>
+          <div class="gallery-grid">
+            {portraits.map((img, i) => (
+              <div class="gallery-item">
+                <img src={`/images/rabbi-nachman/${img}`} alt={formatFilename(img)} loading="lazy" />
+                <div class="caption">{formatFilename(img)}</div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </div>
+      )}
+      {chair.length > 0 && (
+        <div id="chair" class="category-section">
+          <h2><span class="icon">🪑</span> The Chair <span class="hebrew">(הכיסא)</span></h2>
+          <div class="gallery-grid">
+            {chair.map((img, i) => (
+              <div class="gallery-item">
+                <img src={`/images/rabbi-nachman/${img}`} alt={formatFilename(img)} loading="lazy" />
+                <div class="caption">{formatFilename(img)}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      {kupah.length > 0 && (
+        <div id="kupah" class="category-section">
+          <h2><span class="icon">👑</span> The Crown <span class="hebrew">(הכתר)</span></h2>
+          <div class="gallery-grid">
+            {kupah.map((img, i) => (
+              <div class="gallery-item">
+                <img src={`/images/rabbi-nachman/${img}`} alt={formatFilename(img)} loading="lazy" />
+                <div class="caption">{formatFilename(img)}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      {tomb.length > 0 && (
+        <div id="tomb" class="category-section">
+          <h2><span class="icon">🪦</span> Tomb & Tzion <span class="hebrew">(קבר וציון)</span></h2>
+          <div class="gallery-grid">
+            {tomb.map((img, i) => (
+              <div class="gallery-item">
+                <img src={`/images/rabbi-nachman/${img}`} alt={formatFilename(img)} loading="lazy" />
+                <div class="caption">{formatFilename(img)}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      {other.length > 0 && (
+        <div id="other" class="category-section">
+          <h2><span class="icon">📷</span> Other Photos <span class="hebrew">(תמונות אחרות)</span></h2>
+          <div class="gallery-grid">
+            {other.map((img, i) => (
+              <div class="gallery-item">
+                <img src={`/images/rabbi-nachman/${img}`} alt={formatFilename(img)} loading="lazy" />
+                <div class="caption">{formatFilename(img)}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   </section>
 
   <section class="navigation">
     <div class="container">
       <div class="nav-buttons">
-        <a href="/gallery/saba" class="nav-btn prev">
-          <span class="arrow">←</span>
-          <span class="text">Saba Yisroel</span>
-        </a>
-        <a href="/gallery/uman" class="nav-btn next">
-          <span class="text">Tomb in Uman</span>
-          <span class="arrow">→</span>
-        </a>
+        <a href="/gallery/saba" class="nav-btn">← Saba</a>
+        <a href="/gallery/uman" class="nav-btn">Tomb in Uman →</a>
       </div>
     </div>
   </section>
 </Layout>
 
 <style>
-  .page-header {
-    background: linear-gradient(135deg, #285e61 0%, #234e52 100%);
-    color: white;
-    padding: 5rem 2rem;
-    text-align: center;
-  }
-
-  .page-header h1 {
-    font-family: var(--font-hebrew);
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .page-header p {
-    opacity: 0.9;
-    font-size: 1.2rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .page-header .hebrew {
-    font-family: var(--font-hebrew);
-    font-size: 1.5rem;
-    margin-top: 1rem;
-  }
-
-  .back-link {
-    display: inline-block;
-    margin-top: 1.5rem;
-    color: white;
-    text-decoration: none;
-    padding: 0.75rem 1.5rem;
-    border: 2px solid white;
-    border-radius: 6px;
-  }
-
-  .container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 2rem;
-  }
-
-  .intro {
-    background: #f7f5f0;
-    padding: 4rem 0;
-  }
-
-  .famous-quote {
-    text-align: center;
-    max-width: 700px;
-    margin: 0 auto;
-    padding: 2rem;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  }
-
-  .famous-quote .hebrew {
-    font-family: var(--font-hebrew);
-    font-size: 1.8rem;
-    color: var(--color-primary);
-    margin-bottom: 1rem;
-  }
-
-  .famous-quote .english {
-    font-size: 1.2rem;
-    font-style: italic;
-    color: #666;
-    margin-bottom: 1rem;
-  }
-
-  .famous-quote cite {
-    color: #888;
-  }
-
-  .gallery {
-    padding: 4rem 0;
-  }
-
-  .gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
-  }
-
-  .gallery-item {
-    position: relative;
-    overflow: visible;
-  }
-
-  .gallery-item img {
-    width: 100%;
-    aspect-ratio: 1;
-    object-fit: cover;
-    border-radius: 12px;
-    transition: transform 0.4s;
-    display: block;
-  }
-
-  .gallery-item:hover img {
-    transform: scale(1.08);
-  }
-
-  .gallery-item .overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: linear-gradient(transparent, rgba(0,0,0,0.7));
-    padding: 2rem 1rem 1rem;
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
-
-  .gallery-item:hover .overlay {
-    opacity: 1;
-  }
-
-  .gallery-item .overlay span {
-    color: white;
-    font-size: 0.95rem;
-  }
-
-  .gallery-item .caption {
-    padding: 0.75rem;
-    background: #f8f8f8;
-    font-size: 0.85rem;
-    color: #555;
-    text-align: center;
-    border-bottom-left-radius: 12px;
-    border-bottom-right-radius: 12px;
-    word-break: break-word;
-    line-height: 1.4;
-  }
-
-  .navigation {
-    background: var(--color-primary);
-    padding: 3rem 0;
-  }
-
-  .nav-buttons {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-  }
-
-  .nav-btn {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    color: white;
-    text-decoration: none;
-    padding: 1rem 1.5rem;
-    background: rgba(255,255,255,0.1);
-    border-radius: 8px;
-  }
-
-  .nav-btn:hover {
-    background: rgba(255,255,255,0.2);
-  }
-
+  .page-header { background: linear-gradient(135deg, #38a169 0%, #276749 100%); color: white; padding: 4rem 2rem; text-align: center; }
+  .page-header h1 { font-family: var(--font-hebrew); font-size: 2.5rem; margin-bottom: 0.5rem; }
+  .page-header .hebrew { font-family: var(--font-hebrew); font-size: 1.5rem; opacity: 0.9; }
+  .page-header .stats { font-size: 1rem; opacity: 0.7; margin-top: 0.5rem; }
+  .back-link { display: inline-block; margin-top: 1rem; color: white; text-decoration: none; padding: 0.5rem 1rem; border: 1px solid white; border-radius: 4px; }
+  .container { max-width: 1400px; margin: 0 auto; padding: 0 2rem; }
+  .intro { background: #f7f5f0; padding: 3rem 0; }
+  .quote-box { max-width: 700px; margin: 0 auto 2rem; padding: 2rem; background: white; border-radius: 12px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+  .quote-box .english { font-size: 1.3rem; font-style: italic; color: #555; margin-bottom: 1rem; }
+  .quote-box .hebrew { font-family: var(--font-hebrew); font-size: 1.4rem; color: #38a169; }
+  .quick-index { max-width: 700px; margin: 0 auto; padding: 1.5rem; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+  .quick-index h3 { font-family: var(--font-hebrew); text-align: center; margin-bottom: 1rem; color: var(--color-primary); }
+  .index-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; }
+  .index-link { display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem; background: #f7f5f0; border-radius: 8px; text-decoration: none; color: var(--color-primary); font-weight: 600; font-size: 0.9rem; }
+  .index-link .count { background: #38a169; color: white; padding: 0.2rem 0.5rem; border-radius: 12px; font-size: 0.75rem; }
+  .gallery { padding: 3rem 0; }
+  .category-section { padding: 3rem 0; border-bottom: 1px solid #eee; }
+  .category-section:last-child { border-bottom: none; }
+  .category-section h2 { font-family: var(--font-hebrew); font-size: 1.6rem; text-align: center; margin-bottom: 1.5rem; color: var(--color-primary); }
+  .category-section h2 .hebrew { font-family: var(--font-hebrew); font-size: 1.2rem; color: #888; margin-left: 0.5rem; }
+  .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem; }
+  .gallery-item { position: relative; }
+  .gallery-item img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; display: block; }
+  .gallery-item .caption { padding: 0.75rem; background: #f8f8f8; font-size: 0.85rem; color: #555; text-align: center; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; }
+  .navigation { background: #276749; padding: 2rem 0; }
+  .nav-buttons { display: flex; justify-content: center; gap: 2rem; }
+  .nav-btn { color: white; text-decoration: none; padding: 0.75rem 1.5rem; background: rgba(255,255,255,0.1); border-radius: 8px; }
   @media (max-width: 768px) {
-    .nav-buttons {
-      flex-direction: column;
-    }
-    
-    .gallery-grid {
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    }
-  }
-
-  /* Lightbox styles */
-  .lightbox {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.95);
-    z-index: 1000;
-    justify-content: center;
-    align-items: center;
-    padding: 2rem;
-    cursor: zoom-out;
-  }
-
-  .lightbox.active {
-    display: flex;
-  }
-
-  .lightbox img {
-    max-width: 90%;
-    max-height: 90vh;
-    object-fit: contain;
-    border-radius: 8px;
-    cursor: zoom-out;
-  }
-
-  .lightbox-close {
-    position: absolute;
-    top: 1.5rem;
-    right: 2rem;
-    color: white;
-    font-size: 2.5rem;
-    cursor: pointer;
-    opacity: 0.8;
-    transition: opacity 0.2s;
-  }
-
-  .lightbox-close:hover {
-    opacity: 1;
-  }
-
-  .lightbox-caption {
-    position: absolute;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%);
-    color: white;
-    font-size: 1rem;
-    text-align: center;
-    max-width: 80%;
+    .nav-buttons { flex-direction: column; }
+    .gallery-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+    .index-links { gap: 0.5rem; }
   }
 </style>
-
-<script>
-  // Lightbox functionality
-  function initLightbox() {
-    const items = document.querySelectorAll('.gallery-item');
-    const lightbox = document.getElementById('lightbox');
-    const lightboxImg = document.getElementById('lightbox-img');
-    const lightboxCaption = document.getElementById('lightbox-caption');
-    const closeBtn = document.getElementById('lightbox-close');
-
-    items.forEach(item => {
-      item.style.cursor = 'pointer';
-      item.addEventListener('click', () => {
-        const img = item.querySelector('img');
-        const caption = item.querySelector('.caption');
-        if (img && lightbox && lightboxImg && lightboxCaption) {
-          lightboxImg.src = img.src;
-          lightboxCaption.textContent = caption ? caption.textContent : '';
-          lightbox.classList.add('active');
-          document.body.style.overflow = 'hidden';
-        }
-      });
-    });
-
-    if (closeBtn) {
-      closeBtn.addEventListener('click', closeLightbox);
-    }
-
-    if (lightbox) {
-      lightbox.addEventListener('click', (e) => {
-        if (e.target === lightbox) {
-          closeLightbox();
-        }
-      });
-    }
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        closeLightbox();
-      }
-    });
-  }
-
-  function closeLightbox() {
-    const lightbox = document.getElementById('lightbox');
-    if (lightbox) {
-      lightbox.classList.remove('active');
-      document.body.style.overflow = '';
-    }
-  }
-
-  initLightbox();
-</script>
-
-<!-- Lightbox HTML -->
-<div id="lightbox" class="lightbox">
-  <span id="lightbox-close" class="lightbox-close">&times;</span>
-  <img id="lightbox-img" src="" alt="" />
-  <p id="lightbox-caption" class="lightbox-caption"></p>
-</div>
-</Layout>
