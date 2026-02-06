@@ -1,0 +1,229 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Sichos HaRan - Conversations of Rabbi Nachman" description="Informal conversations and teachings recorded by Rabbi Nachman's students">
+  <section class="page-header">
+    <h1>Sichos HaRan</h1>
+    <p>שיחות הר"ן</p>
+    <a href="/teachings" class="back-link">← Back to Teachings</a>
+  </section>
+
+  <section class="intro">
+    <div class="container">
+      <p class="description">
+        <strong>Sichos HaRan</strong> (Conversations of Rabbi Nachman) contains informal conversations 
+        and teachings that were recorded by Rebbe Nachman's students. Unlike the structured Torah 
+        lessons of Likutay Moharan, these conversations capture Rebbe Nachman's spontaneous wisdom, 
+        personal advice, and intimate teachings as he interacted with his followers on a daily basis.
+      </p>
+    </div>
+  </section>
+
+  <section class="topics">
+    <div class="container">
+      <h2>Topics Covered</h2>
+      <div class="topics-grid">
+        <div class="topic-card">
+          <h3>Prayer & Devotion</h3>
+          <p>Personal conversations about hitbodedut (self-seclusion) and heartfelt prayer</p>
+        </div>
+        <div class="topic-card">
+          <h3>Joy & Happiness</h3>
+          <p>The importance of joy in serving Hashem and overcoming sadness</p>
+        </div>
+        <div class="topic-card">
+          <h3>Faith & Trust</h3>
+          <p>Building unwavering faith in Hashem's providence</p>
+        </div>
+        <div class="topic-card">
+          <h3>Perseverance</h3>
+          <p>Never giving up, no matter how difficult the circumstances</p>
+        </div>
+        <div class="topic-card">
+          <h3>Hope & Redemption</h3>
+          <p>The power of hope and the promise of redemption</p>
+        </div>
+        <div class="topic-card">
+          <h3>Daily Life</h3>
+          <p>Practical guidance for navigating everyday challenges</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="famous-sayings">
+    <div class="container">
+      <h2>Famous Teachings from Sichos</h2>
+      <div class="sayings-list">
+        <div class="saying-item">
+          <p class="hebrew">כל העולם כולו גשר צר מאד והעיקר לא לפחד כלל</p>
+          <p>"The whole world is a very narrow bridge, and the main thing is not to fear at all."</p>
+        </div>
+        <div class="saying-item">
+          <p class="hebrew">אין שום דבר שאין בו תקווה</p>
+          <p>"There is nothing without hope."</p>
+        </div>
+        <div class="saying-item">
+          <p class="hebrew">אם אתה מאמין שאתה יכול לקלקל, תאמין שאתה יכול לתקן</p>
+          <p>"If you believe you can damage, believe you can fix."</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="navigation">
+    <div class="container">
+      <h2>More Teachings</h2>
+      <div class="nav-links">
+        <a href="/teachings/likutay-eitzos" class="nav-link">Likutay Eitzos →</a>
+        <a href="/teachings/shivchay-moharan" class="nav-link">Shivchay Moharan →</a>
+        <a href="/teachings/sefer-hamidos" class="nav-link">Sefer HaMidos →</a>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .page-header {
+    background: linear-gradient(135deg, #553c9a 0%, #6b46c1 100%);
+    color: white;
+    padding: 4rem 2rem;
+    text-align: center;
+  }
+
+  .page-header h1 {
+    font-family: var(--font-hebrew);
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-top: 1rem;
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border: 1px solid white;
+    border-radius: 4px;
+  }
+
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .intro {
+    padding: 4rem 0;
+    background: #f7f5f0;
+  }
+
+  .description {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #444;
+  }
+
+  .topics {
+    padding: 4rem 0;
+  }
+
+  .topics h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--color-primary);
+  }
+
+  .topics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .topic-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border-left: 4px solid #6b46c1;
+  }
+
+  .topic-card h3 {
+    color: #553c9a;
+    margin-bottom: 0.5rem;
+  }
+
+  .topic-card p {
+    color: #666;
+    font-size: 0.95rem;
+  }
+
+  .famous-sayings {
+    background: #faf5ff;
+    padding: 4rem 0;
+  }
+
+  .famous-sayings h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--color-primary);
+  }
+
+  .sayings-list {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .saying-item {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+
+  .saying-item .hebrew {
+    font-family: var(--font-hebrew);
+    color: #553c9a;
+    font-size: 1.3rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .saying-item p:last-child {
+    color: #666;
+    font-style: italic;
+  }
+
+  .navigation {
+    padding: 4rem 0;
+    background: #f7f5f0;
+  }
+
+  .navigation h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: var(--color-primary);
+  }
+
+  .nav-links {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .nav-link {
+    color: var(--color-accent);
+    text-decoration: none;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: transform 0.3s;
+  }
+
+  .nav-link:hover {
+    transform: translateY(-2px);
+  }
+</style>

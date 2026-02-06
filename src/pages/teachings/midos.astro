@@ -1,0 +1,266 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Sefer HaMidos - Book of Character Traits" description="The comprehensive work on character development and self-improvement based on Rebbe Nachman's teachings">
+  <section class="page-header">
+    <h1>Sefer HaMidos</h1>
+    <p>ספר המידות</p>
+    <a href="/teachings" class="back-link">← Back to Teachings</a>
+  </section>
+
+  <section class="intro">
+    <div class="container">
+      <p class="description">
+        <strong>Sefer HaMidos</strong> (The Book of Traits) is a comprehensive work that catalogs 
+        and examines various character traits—both positive and negative—based on Rebbe Nachman's 
+        teachings. This invaluable guide provides deep insights into human psychology and offers 
+        practical pathways for character improvement. It serves as an essential tool for anyone 
+        seeking to refine their personality and grow spiritually.
+      </p>
+    </div>
+  </section>
+
+  <section class="positive-midos">
+    <div class="container">
+      <h2>Positive Traits (מידות טובות)</h2>
+      <div class="midos-grid">
+        <div class="mido-card positive">
+          <h3>Faith (אמונה)</h3>
+          <p>Complete trust and belief in Hashem</p>
+        </div>
+        <div class="mido-card positive">
+          <h3>Humility (ענוה)</h3>
+          <p>Recognizing one's place before Hashem</p>
+        </div>
+        <div class="mido-card positive">
+          <h3>Joy (שמחה)</h3>
+          <p>Serving Hashem with happiness</p>
+        </div>
+        <div class="mido-card positive">
+          <h3>Hope (תקווה)</h3>
+          <p>Trusting in future redemption</p>
+        </div>
+        <div class="mido-card positive">
+          <h3>Love (אהבה)</h3>
+          <p>Love for Hashem and fellow Jews</p>
+        </div>
+        <div class="mido-card positive">
+          <h3>Fear of Heaven (יראת שמים)</h3>
+          <p>Revering and honoring Hashem</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="negative-midos">
+    <div class="container">
+      <h2>Traits to Overcome (מידות לתקן)</h2>
+      <div class="midos-grid">
+        <div class="mido-card negative">
+          <h3>Anger (כעס)</h3>
+          <p>Controlling and transforming explosive emotions</p>
+        </div>
+        <div class="mido-card negative">
+          <h3>Pride (גאוה)</h3>
+          <p>Overcoming haughtiness and self-exaltation</p>
+        </div>
+        <div class="mido-card negative">
+          <h3>Sadness (עצב)</h3>
+          <p>Lifting oneself from depression and despair</p>
+        </div>
+        <div class="mido-card negative">
+          <h3>Worry (דאגה)</h3>
+          <p>Releasing anxiety through trust in Hashem</p>
+        </div>
+        <div class="mido-card negative">
+          <h3>Laziness (עצלות)</h3>
+          <p>Finding motivation for spiritual growth</p>
+        </div>
+        <div class="mido-card negative">
+          <h3>Envy (קנאה)</h3>
+          <p>Transforming jealousy into contentment</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="quote">
+    <div class="container">
+      <blockquote>
+        <p class="hebrew">כל מידה ומידה יש לה תיקון</p>
+        <p>"Every trait has a rectification."</p>
+        <cite>— Sefer HaMidos</cite>
+      </blockquote>
+    </div>
+  </section>
+
+  <section class="navigation">
+    <div class="container">
+      <h2>More Teachings</h2>
+      <div class="nav-links">
+        <a href="/teachings/sichos" class="nav-link">← Sichos HaRan</a>
+        <a href="/teachings/likutay-eitzos" class="nav-link">Likutay Eitzos →</a>
+        <a href="/teachings/shivchay-moharan" class="nav-link">Shivchay Moharan →</a>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .page-header {
+    background: linear-gradient(135deg, #276749 0%, #48bb78 100%);
+    color: white;
+    padding: 4rem 2rem;
+    text-align: center;
+  }
+
+  .page-header h1 {
+    font-family: var(--font-hebrew);
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-top: 1rem;
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border: 1px solid white;
+    border-radius: 4px;
+  }
+
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .intro {
+    padding: 4rem 0;
+    background: #f0fff4;
+  }
+
+  .description {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #444;
+  }
+
+  .positive-midos {
+    padding: 4rem 0;
+  }
+
+  .positive-midos h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #276749;
+  }
+
+  .negative-midos {
+    padding: 4rem 0;
+    background: #f0fff4;
+  }
+
+  .negative-midos h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #276749;
+  }
+
+  .midos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .mido-card {
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+
+  .mido-card.positive {
+    background: white;
+    border-left: 4px solid #48bb78;
+  }
+
+  .mido-card.negative {
+    background: white;
+    border-left: 4px solid #e53e3e;
+  }
+
+  .mido-card h3 {
+    margin-bottom: 0.5rem;
+  }
+
+  .mido-card.positive h3 {
+    color: #276749;
+  }
+
+  .mido-card.negative h3 {
+    color: #c53030;
+  }
+
+  .mido-card p {
+    color: #666;
+    font-size: 0.95rem;
+  }
+
+  .quote {
+    background: #276749;
+    color: white;
+    padding: 4rem 0;
+    text-align: center;
+  }
+
+  .quote blockquote {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .quote .hebrew {
+    font-family: var(--font-hebrew);
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .quote p {
+    font-style: italic;
+    margin-bottom: 1rem;
+  }
+
+  .navigation {
+    padding: 4rem 0;
+    background: #f0fff4;
+  }
+
+  .navigation h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: var(--color-primary);
+  }
+
+  .nav-links {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .nav-link {
+    color: #276749;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: transform 0.3s;
+  }
+
+  .nav-link:hover {
+    transform: translateY(-2px);
+  }
+</style>

@@ -1,234 +1,186 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import { getImage } from 'astro:assets';
+import fs from 'node:fs';
+import path from 'node:path';
+
+const imageDir = './public/images/nanach/';
+
+// Get all images from the folder
+function getAllImages() {
+  try {
+    const files = fs.readdirSync(imageDir);
+    return files.filter(file => 
+      /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(file) &&
+      !file.startsWith('.')
+    ).sort();
+  } catch (e) {
+    return [];
+  }
+}
+
+const allImages = getAllImages();
 
 // Helper function to format filename for display
 function formatFilename(filename) {
   let formatted = decodeURIComponent(filename);
-  formatted = formatted.replace(/\.(jpg|jpeg|png|gif|webp)$/i, '');
+  formatted = formatted.replace(/\.(jpg|jpeg|png|gif|webp|svg)$/i, '');
   formatted = formatted.replace(/[-_]/g, ' ');
   formatted = formatted.replace(/\b\w/g, l => l.toUpperCase());
   return formatted;
 }
 
-const images = [
-  // Graffiti images
-  'nanach-barzel-graffiti.jpg',
-  'nanach-blue-white-brick.jpg',
-  'nanach-bus-shelter.jpg',
-  'nanach-cam-0218.jpg',
-  'nanach-colorful-black.jpg',
-  'nanach-crowned.jpg',
-  'nanach-cube.jpg',
-  'nanach-electricity-box.jpg',
-  'nanach-eliyroel-gordetzky.jpg',
-  'nanach-explosion.jpg',
-  'nanach-flower-wall.jpg',
-  'nanach-friends-aron-heuberger-aron-shilo-beanies.jpg',
-  'nanach-gate-courtyard.jpg',
-  'nanach-gavriel-levi-uman-2.jpg',
-  'nanach-gavriel-levi-uman.jpg',
-  'nanach-graffiti-fence-black.jpg',
-  'nanach-graffiti-syria-four-kurds-below.jpg',
-  'nanach-graffiti-under-highway.jpg',
-  'nanach-graffiti-yellow-building-uman.jpg',
-  'nanach-graffiti.jpg',
-  'nanach-hair-beanie-portrait.jpg',
-  'nanach-holligram-face.jpg',
-  'nanach-house.jpg',
-  'nanach-india.jpg',
-  'nanach-israel-graffiti-uman.jpg',
-  'nanach-king-david-1.jpg',
-  'nanach-king-david-2.jpg',
-  'nanach-king-david-3.jpg',
-  'nanach-king-david-view-1.jpg',
-  'nanach-king-david-view-2.jpg',
-  'nanach-king-david-view-4.jpg',
-  'nanach-king-david-view-5.jpg',
-  'nanach-kotel.jpg',
-  'nanach-looking-at-graffiti.jpg',
-  'nanach-meir-weiner-driver.jpg',
-  'nanach-on-arizal-tomb.jpg',
-  'Nanach on the wall.jpg',
-  'Nanach on the wall thats what it is.jpg',
-  'nanach-pastel-graffiti.jpg',
-  'nanach-penciled.jpg',
-  'nanach-plaque-rabbainu.jpg',
-  'nanach-projected-kotel.jpg',
-  'nanach-red-brick-wall.jpg',
-  'nanach-red-stone.jpg',
-  'nanach-roof-graffiti.jpg',
-  'nanach-self-cave-portrait.jpg',
-  'nanach-simcha-healing.jpg',
-  'nanach-simcha-hochman-singing.jpg',
-  'nanach-simcha-singing.jpg',
-  'nanach-simcha-youcam.jpg',
-  'nanach-snowman-sitting.jpg',
-  'nanach-snowman-wearing-hat.jpg',
-  'nanach-spangled.jpg',
-  'nanach-spraypaint.jpg',
-  'nanach-stickerbomb-london.jpg',
-  'nanach-stomach-background.jpg',
-  'nanach-store-front.jpg',
-  'nanach-street-sign-redeption.jpg',
-  'nanach-swipe-graffiti.jpg',
-  'nanach-three-kids-saba-poster.jpg',
-  'nanach-tzinor-layla-thumbnail.jpg',
-  'nanach-tzion-king-david.jpg',
-  'nanach-tzvi-levin-guitar.jpg',
-  'nanach-uman-rosh-hashana.jpg',
-  'nanach-western-wall-1.jpg',
-  'nanach-western-wall-2.jpg',
-  'nanach-western-wall-3.jpg',
-  'nanach-western-wall-4.jpg',
-  'nanach-white-grey.jpg',
-  'nanach-yisroel-dagan-playing-saba.jpg',
-  'nanach-yosef-portrait.jpg',
-  'nanach-yosef-saban-striemel-sticker.jpg',
-  'rabbi-nachman-israel-graffiti.jpg',
-  'skateboard-kid-red-white.jpg',
-  // New images from misc folder
-  'alarm clock with Nanach on the display.jpg',
-  'nanach-acronym-misirat-nefesh.jpg',
-  'Nanach beanie hanging in snow forest.jpg',
-  'nanach-nn-nike-english.jpg',
-  'nanach-nn-type-standard.jpg',
-  'nanach-nn-vertical-flipped.jpg',
-  'nanach-nn-vertical.jpg',
-  'nanach-sign-either-with-or.jpg',
-  'nanach-sign-green-neon.jpg',
-  'nanach-smiley-face.jpg',
-  'nanach-swipe-chabad.gif',
-  'nanach-transition-sign.jpg',
-  'nanach-transition-sign.png',
-  'u.jpg',
-  // Van pictures
-  'back of nanach van.jpg',
-  'back of red nanach van.jpg',
-  'blue nanach van ext window saba.jpg',
-  'Nanach Van Yellow Orange letters.jpg',
-  'sticker he got her out books van.jpg',
-  // Art
-  '1.jpg',
-  '2.jpg',
-  '3.jpg',
-  '4.jpg',
-  '5.jpg',
-  'saba earth (2).jpg',
-  'saba earth.jpg',
-  // Friends
-  'CAM_0193.JPG',
-  'CAM_0195.JPG',
-  'CAM_0196.JPG',
-  'CAM_0197.JPG',
-  'CAM_0198.JPG',
-  'CAM_0199.JPG',
-  'CAM_0200.JPG',
-  'CAM_0201.JPG',
-  'CAM_0202.JPG',
-  'CAM_0203.JPG',
-  'CAM_0204.JPG',
-  'CAM_0205.JPG',
-  'CAM_0206.JPG',
-  'CAM_0207.JPG',
-  'CAM_0208.JPG',
-  'CAM_0209.JPG',
-  'CAM_0210.JPG',
-  'CAM_0211.JPG',
-  'CAM_0212.JPG',
-  'CAM_0213.JPG',
-  'CAM_0219.JPG',
-  'CAM_0221.JPG',
-  'nanach-self-portrait-question.jpg',
-];
-
 // Organize images by category
 const categories = {
   'graffiti': {
     name: 'Graffiti & Street Art',
-    hebrew: 'גרפיטי',
+    hebrew: 'גרפיטי ואמנות רחוב',
     icon: '🎨',
-    images: images.filter(img => 
-      img.includes('graffiti') || 
-      img.includes('wall') || 
-      img.includes('brick') || 
-      img.includes('painting') || 
-      img.includes('spray') ||
-      img.includes('sticker')
+    images: allImages.filter(img => 
+      (img.includes('graffiti') || 
+       img.includes('spray') ||
+       img.includes('sticker') ||
+       img.includes('wall') && img.includes('nanach') ||
+       img.includes('brick') ||
+       img.includes('painting') ||
+       img.includes('paint')) &&
+      !img.includes('bais') &&
+      !img.includes('van') &&
+      !img.includes('heart')
+    )
+  },
+  'art': {
+    name: 'Art & Paintings',
+    hebrew: 'אמנות וציורים',
+    icon: '🖼️',
+    images: allImages.filter(img =>
+      !img.includes('graffiti') &&
+      !img.includes('spray') &&
+      !img.includes('sticker') &&
+      !img.includes('wall') &&
+      !img.includes('van') &&
+      !img.includes('heart') &&
+      !img.includes('portrait') &&
+      !img.includes('face') &&
+      !img.includes('friend') &&
+      !img.includes('simcha') &&
+      !img.includes('kotel') &&
+      !img.includes('tzion') &&
+      !img.includes('bais') &&
+      !img.includes('bridge') &&
+      !img.includes('logo') &&
+      !img.includes('sign') &&
+      !img.includes('smiley') &&
+      !img.includes('beanie') &&
+      !img.includes('vote') &&
+      !img.includes('election') &&
+      !img.includes('ballot') &&
+      !img.includes('transition')
+    )
+  },
+  'bais-rabbainu': {
+    name: 'Bais Rabbainu',
+    hebrew: 'בית רבינו',
+    icon: '🕍',
+    images: allImages.filter(img =>
+      img.includes('bais') || img.includes('synagogue')
     )
   },
   'locations': {
     name: 'Sacred Locations',
     hebrew: 'מקומות קדושים',
     icon: '📍',
-    images: images.filter(img => 
-      img.includes('kotel') || 
-      img.includes('tzion') || 
-      img.includes('king-david') ||
-      img.includes('israel') ||
-      img.includes('arizal')
+    images: allImages.filter(img =>
+      (img.includes('kotel') ||
+       img.includes('tzion') ||
+       img.includes('arizal') ||
+       img.includes('bridge') ||
+       img.includes('tomb')) &&
+      !img.includes('saba')
+    )
+  },
+  'vans': {
+    name: 'Na Nach Vans',
+    hebrew: 'ואנים נ נח',
+    icon: '🚐',
+    images: allImages.filter(img =>
+      img.includes('van') || img.includes('truck') || img.includes('trailer')
     )
   },
   'events': {
     name: 'Events & Singing',
     hebrew: 'אירועים ושירה',
     icon: '🎵',
-    images: images.filter(img => 
-      img.includes('simcha') || 
-      img.includes('singing') || 
-      img.includes('dagan') || 
-      img.includes('levi') || 
+    images: allImages.filter(img =>
+      img.includes('simcha') ||
+      img.includes('singing') ||
+      img.includes('dagan') ||
+      img.includes('levi') ||
       img.includes('hochman') ||
-      img.includes('rosh-hashana')
+      img.includes('rosh-hashana') ||
+      img.includes('rosh hashana')
     )
   },
-  'portraits': {
-    name: 'Portraits',
-    hebrew: 'דיוקנאות',
-    icon: '📸',
-    images: images.filter(img => 
-      img.includes('portrait') || 
-      img.includes('face') || 
-      img.includes('hair') || 
-      img.includes('beanie') || 
-      img.includes('yosef') ||
-      img.includes('holligram') ||
-      img.includes('crowned') ||
-      img.includes('spangled')
+  'friends': {
+    name: 'Friends & People',
+    hebrew: 'חברים ואנשים',
+    icon: '👥',
+    images: allImages.filter(img =>
+      (img.includes('portrait') ||
+       img.includes('face') ||
+       img.includes('friend') ||
+       img.includes('beanie') ||
+       img.includes('yosef') ||
+       img.includes('holligram') ||
+       img.includes('crowned') ||
+       img.includes('spangled') ||
+       img.includes('self') ||
+       img.includes('meir') ||
+       img.includes('weiner') ||
+       img.includes('gavriel') ||
+       img.includes('chaim') ||
+       img.includes('aron') ||
+       img.includes('gil') ||
+       img.includes('michol') ||
+       img.includes('bar-mitzva')) &&
+      !img.includes('van')
     )
   },
-  'life': {
-    name: 'Na Nach Life',
-    hebrew: 'חיי נ נח',
-    icon: '🌟',
-    images: images.filter(img => 
-      !img.includes('graffiti') && 
-      !img.includes('wall') && 
-      !img.includes('brick') && 
-      !img.includes('painting') && 
-      !img.includes('spray') &&
-      !img.includes('sticker') &&
-      !img.includes('kotel') && 
-      !img.includes('tzion') &&
-      !img.includes('king-david') &&
-      !img.includes('israel') &&
-      !img.includes('arizal') &&
-      !img.includes('simcha') && 
-      !img.includes('singing') && 
-      !img.includes('dagan') && 
-      !img.includes('levi') && 
-      !img.includes('hochman') &&
-      !img.includes('rosh-hashana') &&
-      !img.includes('portrait') && 
-      !img.includes('face') && 
-      !img.includes('hair') && 
-      !img.includes('beanie') && 
-      !img.includes('yosef') &&
-      !img.includes('holligram') &&
-      !img.includes('crowned') &&
-      !img.includes('spangled')
+  'signs': {
+    name: 'Signs & Symbols',
+    hebrew: 'שלטים וסמלים',
+    icon: '🪧',
+    images: allImages.filter(img =>
+      img.includes('sign') ||
+      img.includes('logo') ||
+      img.includes('smiley') ||
+      img.includes('transition') ||
+      img.includes('election') ||
+      img.includes('vote') ||
+      img.includes('ballot') ||
+      img.includes('neon')
+    )
+  },
+  'hearts': {
+    name: 'Hearts & Love',
+    hebrew: 'לבבות ואהבה',
+    icon: '❤️',
+    images: allImages.filter(img =>
+      img.includes('heart') || img.includes('love')
+    )
+  },
+  'saba': {
+    name: 'Saba & Petek',
+    hebrew: 'סבא ופתק',
+    icon: '✡️',
+    images: allImages.filter(img =>
+      img.includes('saba') || img.includes('petek')
     )
   }
 };
+
+// Count total categorized
+const categorizedCount = Object.values(categories).reduce((sum, cat) => sum + cat.images.length, 0);
 ---
 
 <Layout title="Na Nach Life Gallery" description="Photos of the Na Nach Breslov movement - graffiti, events, and daily life">
@@ -236,6 +188,7 @@ const categories = {
     <h1>✡ Na Nach Breslov Movement ✡</h1>
     <p>Spreading the light of Rabbi Nachman throughout the world</p>
     <p class="hebrew">נַ נַחְ נַחְמָ נַחְמָן מאוּמָן</p>
+    <p class="stats">{allImages.length} images</p>
     <a href="/gallery" class="back-link">← Back to Gallery</a>
   </section>
 
@@ -276,7 +229,7 @@ const categories = {
       {Object.entries(categories).map(([key, cat]) => (
         cat.images.length > 0 && (
           <div id={`category-${key}`} class="category-section">
-            <h2><span class="icon">{cat.icon}</span> {cat.name} <span class="hebrew">({cat.hebrew})</span> <span class="count">({cat.images.length})</span></h2>
+            <h2><span class="icon">{cat.icon}</span> {cat.name} <span class="hebrew">({cat.hebrew})</span></h2>
             <div class="gallery-grid">
               {cat.images.map((img, index) => (
                 <div class="gallery-item">
@@ -337,6 +290,12 @@ const categories = {
     letter-spacing: 0.1em;
   }
 
+  .page-header .stats {
+    font-size: 1rem;
+    opacity: 0.7;
+    margin-top: 0.5rem;
+  }
+
   .back-link {
     display: inline-block;
     margin-top: 1.5rem;
@@ -388,7 +347,7 @@ const categories = {
   }
 
   .quick-index {
-    max-width: 800px;
+    max-width: 900px;
     margin: 2rem auto 0;
     padding: 1.5rem;
     background: white;
@@ -446,6 +405,7 @@ const categories = {
   .category-section {
     padding: 4rem 0;
     border-bottom: 1px solid #eee;
+    scroll-margin-top: 2rem;
   }
 
   .category-section:last-child {
@@ -465,12 +425,7 @@ const categories = {
     font-size: 1.4rem;
     color: #888;
     font-weight: normal;
-  }
-
-  .category-section h2 .count {
-    font-size: 1rem;
-    color: #aaa;
-    font-weight: normal;
+    margin-right: 0.5rem;
   }
 
   .gallery-grid {
@@ -562,6 +517,15 @@ const categories = {
     
     .gallery-grid {
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+    
+    .index-links {
+      gap: 0.5rem;
+    }
+    
+    .index-link {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
     }
   }
 </style>

@@ -1,0 +1,244 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Likutay Eitzos - A Collection of Advice" description="Practical guidance arranged alphabetically by topic from Rebbe Nachman's teachings">
+  <section class="page-header">
+    <h1>Likutay Eitzos</h1>
+    <p>ליקוטי עצות</p>
+    <a href="/teachings" class="back-link">← Back to Teachings</a>
+  </section>
+
+  <section class="intro">
+    <div class="container">
+      <p class="description">
+        <strong>Likutay Eitzos</strong> (Collected Advice) is a compilation of practical guidance 
+        and counsel from Rebbe Nachman's teachings, arranged alphabetically by topic. This work 
+        serves as a practical handbook for daily life, addressing various challenges and situations 
+        that one may encounter on the spiritual path. Each entry provides concise wisdom for 
+        navigating life's difficulties.
+      </p>
+    </div>
+  </section>
+
+  <section class="topics">
+    <div class="container">
+      <h2>A–M Topics</h2>
+      <div class="topics-grid">
+        <div class="topic-card">
+          <h3>Adversity (צרות)</h3>
+          <p>How to face and overcome difficult times with faith and strength</p>
+        </div>
+        <div class="topic-card">
+          <h3>Anger (כעס)</h3>
+          <p>Controlling anger and transforming it into positive action</p>
+        </div>
+        <div class="topic-card">
+          <h3>Anxiety (דאגה)</h3>
+          <p>Overcoming worry and placing trust in Hashem</p>
+        </div>
+        <div class="topic-card">
+          <h3>Business (מסחר)</h3>
+          <p>Conducting business with integrity and trust in Divine providence</p>
+        </div>
+        <div class="topic-card">
+          <h3>Children (ילדים)</h3>
+          <p>Raising children with love and proper guidance</p>
+        </div>
+        <div class="topic-card">
+          <h3>Depression (עצב)</h3>
+          <p>Finding joy even in difficult circumstances</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="topics n-z">
+    <div class="container">
+      <h2>N–Z Topics</h2>
+      <div class="topics-grid">
+        <div class="topic-card">
+          <h3>Prayer (תפילה)</h3>
+          <p>The power of prayer and heartfelt connection with Hashem</p>
+        </div>
+        <div class="topic-card">
+          <h3>Pride (גאוה)</h3>
+          <p>Overcoming pride and cultivating humility</p>
+        </div>
+        <div class="topic-card">
+          <h3>Repentance (תשובה)</h3>
+          <p>The path to return and spiritual renewal</p>
+        </div>
+        <div class="topic-card">
+          <h3>Sadness (עצב)</h3>
+          <p>Transforming sadness into joy and growth</p>
+        </div>
+        <div class="topic-card">
+          <h3>Sin (חטא)</h3>
+          <p>Dealing with sin and the path to forgiveness</p>
+        </div>
+        <div class="topic-card">
+          <h3>Worry (דאגה)</h3>
+          <p>Releasing worry and embracing faith in Hashem</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="quote">
+    <div class="container">
+      <blockquote>
+        <p class="hebrew">צריך להתחזק באמונה תמיד, ולא ליפול בשום פעם</p>
+        <p>"One must always strengthen in faith, and never fall at any time."</p>
+        <cite>— Likutay Eitzos</cite>
+      </blockquote>
+    </div>
+  </section>
+
+  <section class="navigation">
+    <div class="container">
+      <h2>More Teachings</h2>
+      <div class="nav-links">
+        <a href="/teachings/sichos" class="nav-link">← Sichos HaRan</a>
+        <a href="/teachings/shivchay-moharan" class="nav-link">Shivchay Moharan →</a>
+        <a href="/teachings/sefer-hamidos" class="nav-link">Sefer HaMidos →</a>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .page-header {
+    background: linear-gradient(135deg, #2c7a7b 0%, #38b2ac 100%);
+    color: white;
+    padding: 4rem 2rem;
+    text-align: center;
+  }
+
+  .page-header h1 {
+    font-family: var(--font-hebrew);
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-top: 1rem;
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border: 1px solid white;
+    border-radius: 4px;
+  }
+
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .intro {
+    padding: 4rem 0;
+    background: #f7fafc;
+  }
+
+  .description {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #444;
+  }
+
+  .topics {
+    padding: 4rem 0;
+  }
+
+  .topics.n-z {
+    background: #f7fafc;
+  }
+
+  .topics h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--color-primary);
+  }
+
+  .topics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .topic-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border-left: 4px solid #38b2ac;
+  }
+
+  .topic-card h3 {
+    color: #2c7a7b;
+    margin-bottom: 0.5rem;
+  }
+
+  .topic-card p {
+    color: #666;
+    font-size: 0.95rem;
+  }
+
+  .quote {
+    background: #2c7a7b;
+    color: white;
+    padding: 4rem 0;
+    text-align: center;
+  }
+
+  .quote blockquote {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .quote .hebrew {
+    font-family: var(--font-hebrew);
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .quote p {
+    font-style: italic;
+    margin-bottom: 1rem;
+  }
+
+  .navigation {
+    padding: 4rem 0;
+    background: #f7fafc;
+  }
+
+  .navigation h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: var(--color-primary);
+  }
+
+  .nav-links {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .nav-link {
+    color: #2c7a7b;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: transform 0.3s;
+  }
+
+  .nav-link:hover {
+    transform: translateY(-2px);
+  }
+</style>
