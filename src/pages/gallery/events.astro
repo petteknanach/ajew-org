@@ -1,37 +1,32 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import fs from 'node:fs';
+import path from 'node:path';
 
-// Helper function to format filename for display
+const imageDir = './public/images/events/';
+
+function getAllImages() {
+  try {
+    const files = fs.readdirSync(imageDir);
+    return files.filter(file => 
+      /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(file) &&
+      !file.startsWith('.')
+    ).sort();
+  } catch (e) {
+    return [];
+  }
+}
+
+const images = getAllImages();
+
 function formatFilename(filename) {
   let formatted = decodeURIComponent(filename);
-  formatted = formatted.replace(/\.(jpg|jpeg|png|gif|webp)$/i, '');
+  formatted = formatted.replace(/\.(jpg|jpeg|png|gif|webp|svg)$/i, '');
   formatted = formatted.replace(/[-_]/g, ' ');
   formatted = formatted.replace(/\b\w/g, l => l.toUpperCase());
   return formatted;
 }
 
-const images = [
-  'nanach-chaim-walden-head-fire-rabbainu.jpg',
-  'nanach-eliyahu-gordetzky.jpg',
-  'nanach-friends-aron-heuberger-aron-shilo-beanies.jpg',
-  'nanach-gavriel-levi-uman-2.jpg',
-  'nanach-gavriel-levi-uman.jpg',
-  'nanach-hair-beanie-portrait.jpg',
-  'nanach-meir-weiner-driver.jpg',
-  'nanach-self-cave-portrait.jpg',
-  'nanach-simcha-hochman-singing.jpg',
-  'nanach-simcha-singing.jpg',
-  'nanach-simcha-youcam.jpg',
-  'nanach-snowman-sitting.jpg',
-  'nanach-three-kids-saba-poster.jpg',
-  'nanach-tzinor-layla-thumbnail.jpg',
-  'nanach-tzvi-levin-guitar.jpg',
-  'nanach-yisroel-dagan-playing-saba.jpg',
-  'nanach-yosef-portrait.jpg',
-  'nanach-yosef-saban-striemel-sticker.jpg',
-];
-
-// Organize images by category
 const categories = {
   'simcha': {
     name: 'Simchas & Celebrations',

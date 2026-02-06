@@ -1,34 +1,31 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import fs from 'node:fs';
+import path from 'node:path';
 
-// Helper function to format filename for display
+const imageDir = './public/images/rabbi-nachman/';
+
+function getAllImages() {
+  try {
+    const files = fs.readdirSync(imageDir);
+    return files.filter(file => 
+      /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(file) &&
+      !file.startsWith('.')
+    ).sort();
+  } catch (e) {
+    return [];
+  }
+}
+
+const images = getAllImages();
+
 function formatFilename(filename) {
   let formatted = decodeURIComponent(filename);
-  formatted = formatted.replace(/\.(jpg|jpeg|png|gif|webp|tiff)$/i, '');
+  formatted = formatted.replace(/\.(jpg|jpeg|png|gif|webp|svg)$/i, '');
   formatted = formatted.replace(/[-_]/g, ' ');
   formatted = formatted.replace(/\b\w/g, l => l.toUpperCase());
   return formatted;
 }
-
-const images = [
-  'kikar rabbi nachman close.jpg',
-  'kikar rabbi nachman.jpg',
-  'letter from Rabbi Nachman of Umaan.jpg',
-  'rabbainu portrait of head and clouds in background.jpg',
-  'rabbi-nachman-chair-hq.jpg',
-  'rabbi-nachman-chair.jpg',
-  'rabbi-nachman-chair-rebbe.jpg',
-  'rabbi-nachman-cropped.jpg',
-  'rabbi-nachman-cup-2.jpg',
-  'rabbi-nachman-cup-hq.jpg',
-  'rabbi-nachman-cup.jpg',
-  'rabbi-nachman-original.jpg',
-  'rabbi-nachman-portrait.jpg',
-  'rabbi-nachman-zebra-field.jpg',
-  'rabbi-nachman-zebra.jpg',
-  // New image
-  'rabbi-nachman-lineage-chart.jpg',
-];
 ---
 
 <Layout title="Rebbe Nachman Gallery" description="Images of Rabbi Nachman of Breslov">

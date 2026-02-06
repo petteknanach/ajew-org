@@ -1,51 +1,31 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import fs from 'node:fs';
+import path from 'node:path';
 
-// Helper function to format filename for display
+const imageDir = './public/images/uman/';
+
+function getAllImages() {
+  try {
+    const files = fs.readdirSync(imageDir);
+    return files.filter(file => 
+      /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(file) &&
+      !file.startsWith('.')
+    ).sort();
+  } catch (e) {
+    return [];
+  }
+}
+
+const images = getAllImages();
+
 function formatFilename(filename) {
   let formatted = decodeURIComponent(filename);
-  formatted = formatted.replace(/\.(jpg|jpeg|png|gif|webp)$/i, '');
+  formatted = formatted.replace(/\.(jpg|jpeg|png|gif|webp|svg)$/i, '');
   formatted = formatted.replace(/[-_]/g, ' ');
   formatted = formatted.replace(/\b\w/g, l => l.toUpperCase());
   return formatted;
 }
-
-const images = [
-  'Old hut over Rabbainu\'s tzion.jpg',
-  'Rabbainus tomb white covering.jpg',
-  'rabbi-nachman-tomb-temple.jpg',
-  'Tzion Rabbainu before house IMG-20180325-WA0004.jpg',
-  'uman-gates-tzion.jpg',
-  'uman-gateway-tzion.jpg',
-  'uman-high-shot-tzion.jpg',
-  'uman-old-house-tzion.jpg',
-  'uman-old-tzion.jpg',
-  'uman-on-tzion.jpg',
-  'uman-rocks.jpg',
-  'uman-shmuel-tubul.jpg',
-  'uman-tomb-above.jpg',
-  'uman-tomb-inside.jpg',
-  'uman-tzion-bima.jpg',
-  'uman-tzion-blue.jpg',
-  'uman-tzion-bottom-up.jpg',
-  'uman-tzion-fence.jpg',
-  'uman-tzion-houses.jpg',
-  'uman-tzion-inside.jpg',
-  'uman-tzion-shroud.jpg',
-  'uman-tzion-top.jpg',
-  'uman-wide-tzion.jpg',
-  // New images
-  'uman-chutzair.jpg',
-  'uman-davening-2.jpg',
-  'uman-davening.jpg',
-  'uman-heichal-window.jpg',
-  'uman-IMG-20110217.jpg',
-  'uman-kittels.jpg',
-  'uman-masses-front-tzion.jpg',
-  'uman-masses.jpg',
-  'uman-masses.png',
-  'uman-people-gates.jpg',
-];
 ---
 
 <Layout title="Tomb of Rebbe Nachman in Uman" description="Photos of the holy tomb in Uman">
