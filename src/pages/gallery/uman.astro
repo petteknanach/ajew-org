@@ -1,9 +1,9 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 
-const imageFiles = import.meta.glob('../../assets/tomb-uman/*.{jpg,jpeg,png,gif}');
-const images = Object.entries(imageFiles).map(([path, loader]) => {
-  return { src: path, basename: path.split('/').pop() };
+const imageFiles = import.meta.glob('../../assets/tomb-uman/*.{jpg,jpeg,png,gif}', { query: '?url', import: 'default' });
+const images = Object.entries(imageFiles).map(([path, url]) => {
+  return { src: url, basename: path.split('/').pop() };
 });
 ---
 

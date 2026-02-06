@@ -1,10 +1,101 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import { getImage } from 'astro:assets';
 
-const imageFiles = import.meta.glob('../../assets/saba/*.{jpg,jpeg,png,gif}');
-const images = Object.entries(imageFiles).map(([path, loader]) => {
-  return { src: path, basename: path.split('/').pop().toLowerCase() };
-});
+// Get list of images from the public folder
+const images = [
+  'Cartoon politician with hand up facing Saba.jpg',
+  'Likutay Tefilos makes tzadikim - Saba.jpg',
+  'Saba hands up - rabbainu rebbe and hasidim.jpg',
+  'Saba happy brings success.jpg',
+  'Saba hat up.jpg',
+  'Saba in black holding framed petek.jpg',
+  'Saba three with hands up to Uman Rosh Hashana and to Israel.jpg',
+  'Saba with a cigerette.jpg',
+  'Saba with his daughter bride.jpg',
+  'Saba.jpg',
+  'SabaExcersize.jpg',
+  'beach menora Saba imposed.jpg',
+  'dont forget me - Saba.jpg',
+  'if you believe you can break - gold with Saba hands up in background.jpg',
+  'petek saba water sky.jpg',
+  'saba keychain.jpg',
+  'saba mitzva gedola liyihot bisimcha.jpg',
+  'saba sitting hand up Na Nach ballot over head 200 px width.jpg',
+  'saba sitting hand up Na Nach ballot over head.jpg',
+  'saba superimposed on petek.jpg',
+  'saba-baala-bas.jpg',
+  'saba-bathrobe-chest.jpg',
+  'saba-bathrobe-gesture.jpg',
+  'saba-big-smile.jpg',
+  'saba-black-hat-distance.jpg',
+  'saba-black-hat-face.jpg',
+  'saba-blue-white-stripes.jpg',
+  'saba-blue-zebra-sitting.jpg',
+  'saba-cane-portrait.jpg',
+  'saba-face-closeup.jpg',
+  'saba-first-ride-uman-1.jpg',
+  'saba-first-ride-uman.jpg',
+  'saba-flannel-bag.jpg',
+  'saba-flannel-explanation.jpg',
+  'saba-fuzzy.jpg',
+  'saba-grey-sweater.jpg',
+  'saba-haha-original.jpg',
+  'saba-haha.jpg',
+  'saba-hands-cane.jpg',
+  'saba-hands-up.jpg',
+  'saba-hat-up.jpg',
+  'saba-herb-hand.jpg',
+  'saba-holding-petek.jpg',
+  'saba-jacket-pocket.jpg',
+  'saba-karlibach-guitar.jpg',
+  'saba-karlibach.jpg',
+  'saba-leviya.jpg',
+  'saba-light-blue-scarf.jpg',
+  'saba-looking-up.jpg',
+  'saba-lying-green-blanket.jpg',
+  'saba-passport.jpg',
+  'saba-petek-turning-cube.gif',
+  'saba-photo-9.jpg',
+  'saba-pillow.jpg',
+  'saba-sefer-bookshelf.jpg',
+  'saba-sitting-black.jpg',
+  'saba-sitting-framed-picture.jpg',
+  'saba-smile-grey-sweater.jpg',
+  'saba-sweater-exclamation.jpg',
+  'saba-three-years-old.jpg',
+  'saba-white-kippa-sheet.jpg',
+  'saba-white-staring.jpg',
+  'saba-white-watch.jpg',
+  'saba-wife-shabbat.jpg',
+  'saba-with-cane-risrpour.jpg',
+  'saba-zebra-tzion.jpg',
+  'sabas-ti-oodat-zihoot.jpg',
+  'sharon5%2520copy Saba hands up facing full.jpg',
+  // Wheelchair
+  'Saba in wheelchair with cane.jpg',
+  'saba-kotel-wheelchair-guitar.jpg',
+  'saba-wheelchair-cane.jpg',
+  'saba-wheelchair-checkered.jpg',
+  'saba-wheelchair-slumped.jpg',
+  'saba-wheelchair.jpg',
+  // Grave & Tomb
+  'saba-grave-2.jpg',
+  'saba-grave.jpg',
+  'saba-petek-grave.jpg',
+  'saba-tomb.jpg',
+  'sabas tomb.jpg',
+  // Groups
+  'Moshe Azizo group with Saba.jpg',
+  'Saba hands up - all friends.jpg',
+  'saba-hands-up-friends.jpg',
+  'saba-with-friends.jpg',
+  // Special
+  'saba-baby.jpg',
+  'saba-flannel-child.jpg',
+  'saba-young-streimel.jpg',
+  'saba-younger-no-hat.jpg',
+];
 
 // Organize images by category
 const categories = {
@@ -12,49 +103,33 @@ const categories = {
     name: 'Portraits',
     hebrew: 'דיוקנאות',
     icon: '📸',
-    images: []
+    images: images.filter(img => !img.includes('wheelchair') && !img.includes('wheel') && !img.includes('chair') && !img.includes('grave') && !img.includes('tomb') && !img.includes('group') && !img.includes('friend') && !img.includes('baby') && !img.includes('child') && !img.includes('young'))
   },
   'wheelchair': {
     name: 'Wheelchair Era',
     hebrew: 'תקופת הכיסא',
     icon: '🦽',
-    images: []
+    images: images.filter(img => img.includes('wheelchair') || img.includes('wheel') || img.includes('chair'))
   },
   'grave': {
     name: 'Grave & Tomb',
     hebrew: 'קבר וציון',
     icon: '🪦',
-    images: []
+    images: images.filter(img => img.includes('grave') || img.includes('tomb'))
   },
   'groups': {
     name: 'Groups & Friends',
     hebrew: 'קבוצות וחברים',
     icon: '👥',
-    images: []
+    images: images.filter(img => img.includes('group') || img.includes('friend'))
   },
   'special': {
     name: 'Special Occasions',
     hebrew: 'אירועים מיוחדים',
     icon: '✨',
-    images: []
+    images: images.filter(img => img.includes('baby') || img.includes('child') || img.includes('young'))
   }
 };
-
-// Sort images into categories
-images.forEach(img => {
-  const filename = img.basename.toLowerCase();
-  if (filename.includes('wheelchair') || filename.includes('wheel') || filename.includes('chair')) {
-    categories.wheelchair.images.push(img);
-  } else if (filename.includes('grave') || filename.includes('tomb') || filename.includes('grave')) {
-    categories.grave.images.push(img);
-  } else if (filename.includes('group') || filename.includes('friend') || filename.includes('friends')) {
-    categories.groups.images.push(img);
-  } else if (filename.includes('baby') || filename.includes('child') || filename.includes('young')) {
-    categories.special.images.push(img);
-  } else {
-    categories.portraits.images.push(img);
-  }
-});
 ---
 
 <Layout title="Saba Yisroel Gallery" description="Photos of Rabbi Yisroel Ber Odesser - Saba">
@@ -84,7 +159,7 @@ images.forEach(img => {
             <div class="gallery-grid">
               {cat.images.map((img, index) => (
                 <div class="gallery-item" data-category={key}>
-                  <img src={img.src} alt={`${cat.name} ${index + 1}`} loading="lazy" />
+                  <img src={`/images/saba/${img}`} alt={`${cat.name} ${index + 1}`} loading="lazy" />
                   <div class="overlay">
                     <span>{cat.name} #{index + 1}</span>
                   </div>
