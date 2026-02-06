@@ -18,9 +18,56 @@ import Layout from '../../layouts/Layout.astro';
     </div>
   </section>
 
+  <!-- Quick Category Index -->
+  <section class="quick-categories">
+    <div class="container">
+      <h2>📂 Browse by Category</h2>
+      <div class="category-buttons">
+        <!-- Saba Categories -->
+        <a href="/gallery/saba#handsup" class="cat-btn saba">🙌 Hands Up</a>
+        <a href="/gallery/saba#portraits" class="cat-btn saba">📸 Portraits</a>
+        <a href="/gallery/saba#withpetek" class="cat-btn saba">✡️ With Petek</a>
+        <a href="/gallery/saba#withfriends" class="cat-btn saba">👥 With Friends</a>
+        <a href="/gallery/saba#grave" class="cat-btn saba">🪦 Grave</a>
+        <!-- Rabbi Nachman Categories -->
+        <a href="/gallery/rabbainu#chair" class="cat-btn rebbe">🪑 The Chair</a>
+        <a href="/gallery/rabbainu#kupah" class="cat-btn rebbe">👑 The Crown</a>
+        <a href="/gallery/rabbainu#tomb" class="cat-btn rebbe">🪦 Tomb & Tzion</a>
+        <!-- Uman Categories -->
+        <a href="/gallery/uman#tzion" class="cat-btn uman">🪦 The Tzion</a>
+        <a href="/gallery/uman#davening" class="cat-btn uman">🙏 Davening</a>
+        <a href="/gallery/uman#masses" class="cat-btn uman">👥 Masses & Crowds</a>
+        <a href="/gallery/uman#buildings" class="cat-btn uman">🏛️ Buildings & Gates</a>
+        <!-- Na Nach Categories -->
+        <a href="/gallery/nanach#graffiti" class="cat-btn nanach">🎨 Graffiti & Art</a>
+        <a href="/gallery/nanach#vans" class="cat-btn nanach">🚐 Na Nach Vans</a>
+        <a href="/gallery/nanach#bais" class="cat-btn nanach">🕍 Bais Rabbainu</a>
+        <a href="/gallery/nanach#locations" class="cat-btn nanach">📍 Sacred Locations</a>
+        <a href="/gallery/nanach#portraits" class="cat-btn nanach">😊 Portraits</a>
+        <a href="/gallery/nanach#signs" class="cat-btn nanach">🪧 Signs & Banners</a>
+        <!-- Events Categories -->
+        <a href="/gallery/events#simcha" class="cat-btn events">🎵 Simchas & Singing</a>
+        <a href="/gallery/events#friends" class="cat-btn events">👥 Friends</a>
+      </div>
+    </div>
+  </section>
+
   <section class="gallery-sections">
     <div class="container">
       
+      <!-- Na Nach Life (largest gallery first) -->
+      <a href="/gallery/nanach" class="main-gallery-card nanach">
+        <div class="card-bg nanach-bg"></div>
+        <div class="card-content">
+          <span class="card-icon">🌟</span>
+          <h2>Na Nach Breslov Movement</h2>
+          <p class="hebrew">תנועת נ נח מברסלב</p>
+          <p class="description">Spreading the light of Rebbe Nachman worldwide - 485 photos in 12 categories</p>
+          <p class="categories">🎨 Graffiti 🚐 Vans 🕍 Bais 📍 Locations 😊 Portraits 👥 Friends 🪧 Signs 🖼️ Art 🌤️ Nature 🎉 Events 🏷️ Stickers 📚 Books</p>
+          <span class="view-btn">View Gallery →</span>
+        </div>
+      </a>
+
       <!-- Saba -->
       <a href="/gallery/saba" class="main-gallery-card saba">
         <div class="card-bg saba-bg"></div>
@@ -28,19 +75,8 @@ import Layout from '../../layouts/Layout.astro';
           <span class="card-icon">👤</span>
           <h2>Rabbi Yisroel Ber Odesser (Saba)</h2>
           <p class="hebrew">רבי ישראל בר אודסר ז"ל</p>
-          <p class="description">The recipient of the Holy Petek (1922) - 87 photos</p>
-          <span class="view-btn">View Gallery →</span>
-        </div>
-      </a>
-
-      <!-- Rebbe Nachman -->
-      <a href="/gallery/rabbainu" class="main-gallery-card rebbe">
-        <div class="card-bg rebbe-bg"></div>
-        <div class="card-content">
-          <span class="card-icon">✡️</span>
-          <h2>Rabbi Nachman of Breslov</h2>
-          <p class="hebrew">רבינו נחמן מברסלב</p>
-          <p class="description">1772-1810 - 15 photos</p>
+          <p class="description">The recipient of the Holy Petek (1922) - 90 photos in 10 categories</p>
+          <p class="categories">🙌 Hands Up ✡️ With Petek 🦽 Wheelchair 🪦 Grave 📸 Portraits 👥 Friends ✡️ With Rebbe 👔 Clothing 🎵 Music 🧱 Western Wall</p>
           <span class="view-btn">View Gallery →</span>
         </div>
       </a>
@@ -52,19 +88,21 @@ import Layout from '../../layouts/Layout.astro';
           <span class="card-icon">🪦</span>
           <h2>The Holy Tomb in Uman</h2>
           <p class="hebrew">ציון רבינו נחמן באומן</p>
-          <p class="description">The sacred tzion and Rosh Hashanah gatherings - 25 photos</p>
+          <p class="description">The sacred tzion and Rosh Hashanah gatherings - 34 photos in 6 categories</p>
+          <p class="categories">🪦 The Tzion 🏛️ Tomb 🙏 Davening 👥 Masses 🏛️ Buildings 📸 Views</p>
           <span class="view-btn">View Gallery →</span>
         </div>
       </a>
 
-      <!-- Na Nach Life -->
-      <a href="/gallery/nanach" class="main-gallery-card nanach">
-        <div class="card-bg nanach-bg"></div>
+      <!-- Rebbe Nachman -->
+      <a href="/gallery/rabbainu" class="main-gallery-card rebbe">
+        <div class="card-bg rebbe-bg"></div>
         <div class="card-content">
-          <span class="card-icon">🌟</span>
-          <h2>Na Nach Breslov Movement</h2>
-          <p class="hebrew">תנועת נ נח מברסלב</p>
-          <p class="description">Spreading the light of Rebbe Nachman worldwide - 75 photos including graffiti</p>
+          <span class="card-icon">✡️</span>
+          <h2>Rabbi Nachman of Breslov</h2>
+          <p class="hebrew">רבינו נחמן מברסלב</p>
+          <p class="description">1772-1810 - 17 photos in 4 categories</p>
+          <p class="categories">📸 Portraits 🪑 The Chair 👑 The Crown 🪦 Tomb & Tzion</p>
           <span class="view-btn">View Gallery →</span>
         </div>
       </a>
@@ -76,7 +114,8 @@ import Layout from '../../layouts/Layout.astro';
           <span class="card-icon">🎉</span>
           <h2>Events & Gatherings</h2>
           <p class="hebrew">אירועים והתכנסויות</p>
-          <p class="description">Celebrations, simchas, and Na Nach events from around the world - 18 photos</p>
+          <p class="description">Celebrations, simchas, and Na Nach events - 18 photos in 4 categories</p>
+          <p class="categories">🎵 Simchas 📸 Portraits 👥 Friends 🎸 Music</p>
           <span class="view-btn">View Gallery →</span>
         </div>
       </a>
@@ -89,16 +128,16 @@ import Layout from '../../layouts/Layout.astro';
       <h2>📊 Gallery Statistics</h2>
       <div class="stats-grid">
         <div class="stat-card">
-          <span class="number">220+</span>
+          <span class="number">644</span>
           <span class="label">Total Photos</span>
         </div>
         <div class="stat-card">
           <span class="number">5</span>
-          <span class="label">Galleries</span>
+          <span class="label">Main Galleries</span>
         </div>
         <div class="stat-card">
-          <span class="number">200+</span>
-          <span class="label">Years of History</span>
+          <span class="number">30+</span>
+          <span class="label">Categories</span>
         </div>
         <div class="stat-card">
           <span class="number">∞</span>
@@ -155,6 +194,74 @@ import Layout from '../../layouts/Layout.astro';
     margin: 0 auto;
   }
 
+  .quick-categories {
+    background: #fff;
+    padding: 3rem 0;
+    border-bottom: 1px solid #eee;
+  }
+
+  .quick-categories h2 {
+    text-align: center;
+    font-family: var(--font-hebrew);
+    color: var(--color-primary);
+    margin-bottom: 1.5rem;
+  }
+
+  .category-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .cat-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: transform 0.2s;
+  }
+
+  .cat-btn:hover {
+    transform: translateY(-2px);
+  }
+
+  .cat-btn.saba {
+    background: #e6f0ff;
+    color: #1a365d;
+    border: 1px solid #2c5282;
+  }
+
+  .cat-btn.rebbe {
+    background: #e6f5f0;
+    color: #276749;
+    border: 1px solid #38a169;
+  }
+
+  .cat-btn.uman {
+    background: #fff5e6;
+    color: #744210;
+    border: 1px solid #975a16;
+  }
+
+  .cat-btn.nanach {
+    background: #e6ffe6;
+    color: #276749;
+    border: 1px solid #38a169;
+  }
+
+  .cat-btn.events {
+    background: #f0e6ff;
+    color: #553c9a;
+    border: 1px solid #6b46c1;
+  }
+
   .gallery-sections {
     padding: 4rem 0;
   }
@@ -171,7 +278,7 @@ import Layout from '../../layouts/Layout.astro';
     border-radius: 16px;
     overflow: hidden;
     text-decoration: none;
-    min-height: 250px;
+    min-height: 200px;
     box-shadow: 0 8px 24px rgba(0,0,0,0.15);
     transition: transform 0.3s, box-shadow 0.3s;
   }
@@ -215,44 +322,52 @@ import Layout from '../../layouts/Layout.astro';
   .card-content {
     position: relative;
     z-index: 2;
-    padding: 2.5rem;
+    padding: 2rem;
     color: white;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    min-height: 250px;
+    min-height: 200px;
   }
 
   .card-icon {
-    font-size: 3rem;
-    margin-bottom: 1rem;
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
   }
 
   .card-content h2 {
     font-family: var(--font-hebrew);
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
+    font-size: 1.8rem;
+    margin-bottom: 0.25rem;
   }
 
   .card-content .hebrew {
     font-family: var(--font-hebrew);
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     opacity: 0.9;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
   }
 
   .card-content .description {
-    font-size: 1.1rem;
+    font-size: 1rem;
     opacity: 0.95;
+    margin-bottom: 0.75rem;
+  }
+
+  .card-content .categories {
+    font-size: 0.9rem;
+    opacity: 0.85;
     margin-bottom: 1rem;
+    line-height: 1.6;
   }
 
   .view-btn {
     display: inline-block;
-    padding: 0.75rem 1.5rem;
+    padding: 0.6rem 1.25rem;
     background: rgba(255,255,255,0.2);
     border-radius: 6px;
     font-weight: 500;
+    font-size: 0.9rem;
     transition: background 0.3s;
     width: fit-content;
   }
@@ -311,6 +426,19 @@ import Layout from '../../layouts/Layout.astro';
     
     .card-content .hebrew {
       font-size: 1.2rem;
+    }
+
+    .category-buttons {
+      gap: 0.5rem;
+    }
+
+    .cat-btn {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+    }
+    
+    .card-content .categories {
+      font-size: 0.8rem;
     }
   }
 </style>
