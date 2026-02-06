@@ -1,12 +1,9 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import { getImage } from 'astro:assets';
 import fs from 'node:fs';
-import path from 'node:path';
 
 const imageDir = './public/images/nanach/';
 
-// Get all images from the folder
 function getAllImages() {
   try {
     const files = fs.readdirSync(imageDir);
@@ -21,7 +18,6 @@ function getAllImages() {
 
 const allImages = getAllImages();
 
-// Helper function to format filename for display
 function formatFilename(filename) {
   let formatted = decodeURIComponent(filename);
   formatted = formatted.replace(/\.(jpg|jpeg|png|gif|webp|svg)$/i, '');
@@ -30,73 +26,18 @@ function formatFilename(filename) {
   return formatted;
 }
 
-// Organize images by category
 const categories = {
   'graffiti': {
     name: 'Graffiti & Street Art',
     hebrew: 'גרפיטי ואמנות רחוב',
     icon: '🎨',
     images: allImages.filter(img => 
-      (img.includes('graffiti') || 
-       img.includes('spray') ||
-       img.includes('sticker') ||
-       img.includes('wall') && img.includes('nanach') ||
-       img.includes('brick') ||
-       img.includes('painting') ||
-       img.includes('paint')) &&
-      !img.includes('bais') &&
-      !img.includes('van') &&
-      !img.includes('heart')
-    )
-  },
-  'art': {
-    name: 'Art & Paintings',
-    hebrew: 'אמנות וציורים',
-    icon: '🖼️',
-    images: allImages.filter(img =>
-      !img.includes('graffiti') &&
-      !img.includes('spray') &&
-      !img.includes('sticker') &&
-      !img.includes('wall') &&
-      !img.includes('van') &&
-      !img.includes('heart') &&
-      !img.includes('portrait') &&
-      !img.includes('face') &&
-      !img.includes('friend') &&
-      !img.includes('simcha') &&
-      !img.includes('kotel') &&
-      !img.includes('tzion') &&
-      !img.includes('bais') &&
-      !img.includes('bridge') &&
-      !img.includes('logo') &&
-      !img.includes('sign') &&
-      !img.includes('smiley') &&
-      !img.includes('beanie') &&
-      !img.includes('vote') &&
-      !img.includes('election') &&
-      !img.includes('ballot') &&
-      !img.includes('transition')
-    )
-  },
-  'bais-rabbainu': {
-    name: 'Bais Rabbainu',
-    hebrew: 'בית רבינו',
-    icon: '🕍',
-    images: allImages.filter(img =>
-      img.includes('bais') || img.includes('synagogue')
-    )
-  },
-  'locations': {
-    name: 'Sacred Locations',
-    hebrew: 'מקומות קדושים',
-    icon: '📍',
-    images: allImages.filter(img =>
-      (img.includes('kotel') ||
-       img.includes('tzion') ||
-       img.includes('arizal') ||
-       img.includes('bridge') ||
-       img.includes('tomb')) &&
-      !img.includes('saba')
+      (img.includes('graffiti') || img.includes('spray') || img.includes('stencil') ||
+       img.includes('stickerbomb') || img.includes('wall') && img.includes('nanach') ||
+       img.includes('brick') || img.includes('painting') || img.includes('paint') ||
+       img.includes('roof') && img.includes('nanach') || img.includes('fence') && img.includes('nanach') ||
+       img.includes('yellow building') || img.includes('syria')) &&
+      !img.includes('van') && !img.includes('bais-rabbainu')
     )
   },
   'vans': {
@@ -104,21 +45,43 @@ const categories = {
     hebrew: 'ואנים נ נח',
     icon: '🚐',
     images: allImages.filter(img =>
-      img.includes('van') || img.includes('truck') || img.includes('trailer')
+      img.includes('van') || img.includes('truck') || img.includes('trailer') ||
+      img.includes('vehicle') || img.includes('bus') || img.includes('soldiers') && img.includes('van')
     )
   },
-  'events': {
-    name: 'Events & Singing',
-    hebrew: 'אירועים ושירה',
-    icon: '🎵',
+  'bais-rabbainu': {
+    name: 'Bais Rabbainu',
+    hebrew: 'בית רבינו',
+    icon: '🕍',
     images: allImages.filter(img =>
-      img.includes('simcha') ||
-      img.includes('singing') ||
-      img.includes('dagan') ||
-      img.includes('levi') ||
-      img.includes('hochman') ||
-      img.includes('rosh-hashana') ||
-      img.includes('rosh hashana')
+      img.includes('bais-rabbainu') || img.includes('bais rabbainu') || 
+      img.includes('synagogue') || img.includes('courtyard') && img.includes('david')
+    )
+  },
+  'sacred-locations': {
+    name: 'Sacred Locations',
+    hebrew: 'מקומות קדושים',
+    icon: '📍',
+    images: allImages.filter(img =>
+      (img.includes('tzion') || img.includes('kotel') || img.includes('arizal') ||
+       img.includes('tomb') && (img.includes('uman') || img.includes('rabbainu')) ||
+       (img.includes('uman-') && !img.includes('van') && !img.includes('people') && 
+        !img.includes('masses') && !img.includes('stamp') && !img.includes('map')) ||
+       img.includes('western-wall'))
+    )
+  },
+  'portraits': {
+    name: 'Portraits & Faces',
+    hebrew: 'דיוקנאות ופנים',
+    icon: '😊',
+    images: allImages.filter(img =>
+      img.includes('portrait') || img.includes('face') || img.includes('face-profile') ||
+      img.includes('holligram') || img.includes('crowned') || img.includes('spangled') ||
+      img.includes('smiley') || img.includes('smiley-face') || img.includes('mask') ||
+      img.includes('beard') || img.includes('skull') || img.includes('head on fire') ||
+      img.includes('homeless') || img.includes('srulik') || img.includes('cartoon') ||
+      img.includes('doll') || img.includes('disney') || img.includes('cinema') ||
+      img.includes('coca cola') || img.includes('mcdonalds') || img.includes('ikea')
     )
   },
   'friends': {
@@ -126,64 +89,125 @@ const categories = {
     hebrew: 'חברים ואנשים',
     icon: '👥',
     images: allImages.filter(img =>
-      (img.includes('portrait') ||
-       img.includes('face') ||
-       img.includes('friend') ||
-       img.includes('beanie') ||
-       img.includes('yosef') ||
-       img.includes('holligram') ||
-       img.includes('crowned') ||
-       img.includes('spangled') ||
-       img.includes('self') ||
-       img.includes('meir') ||
-       img.includes('weiner') ||
-       img.includes('gavriel') ||
-       img.includes('chaim') ||
-       img.includes('aron') ||
-       img.includes('gil') ||
-       img.includes('michol') ||
-       img.includes('bar-mitzva')) &&
+      (img.includes('eliyahu') || img.includes('gordetzky') || 
+       (img.includes('gavriel') && img.includes('levi')) ||
+       (img.includes('chaim') && img.includes('walden')) ||
+       (img.includes('meir') && img.includes('weiner')) ||
+       (img.includes('michael') && img.includes('goodrich')) ||
+       (img.includes('aron') && (img.includes('heuberger') || img.includes('shilo'))) ||
+       (img.includes('gil') && img.includes('ronen')) || img.includes('ronain') ||
+       (img.includes('moshe') && img.includes('aziz')) ||
+       (img.includes('simcha') && !img.includes('youcam') && !img.includes('saba')) ||
+       (img.includes('dagan') && img.includes('playing')) ||
+       (img.includes('hochman') && img.includes('singing')) ||
+       img.includes('yosef') && !img.includes('saban') ||
+       (img.includes('yisroel') && img.includes('dagan')) ||
+       (img.includes('tzvi') && img.includes('levin')) ||
+       img.includes('bar-mitzva') || img.includes('saba-hands-up') ||
+       img.includes('friends') || img.includes('three kids') || img.includes('youth-center')) &&
       !img.includes('van')
     )
   },
-  'signs': {
-    name: 'Signs & Symbols',
-    hebrew: 'שלטים וסמלים',
+  'signs-banners': {
+    name: 'Signs & Banners',
+    hebrew: 'שלטים ובאנרים',
     icon: '🪧',
     images: allImages.filter(img =>
-      img.includes('sign') ||
-      img.includes('logo') ||
-      img.includes('smiley') ||
-      img.includes('transition') ||
-      img.includes('election') ||
-      img.includes('vote') ||
-      img.includes('ballot') ||
-      img.includes('neon')
+      img.includes('sign') || img.includes('banner') || img.includes('logo') ||
+      img.includes('billboard') || img.includes('transition') || img.includes('welcome') ||
+      img.includes('election') || img.includes('ballot') || img.includes('vote') ||
+      img.includes('license') || img.includes('NJ Nanach') ||
+      (img.includes('city') && img.includes('hall')) ||
+      img.includes('neon') || img.includes('plaque')
     )
   },
-  'hearts': {
-    name: 'Hearts & Love',
-    hebrew: 'לבבות ואהבה',
-    icon: '❤️',
+  'art-paintings': {
+    name: 'Art & Paintings',
+    hebrew: 'אמנות וציורים',
+    icon: '🖼️',
     images: allImages.filter(img =>
-      img.includes('heart') || img.includes('love')
+      (img.includes('painting') && !img.includes('wall') || img.includes('oil painting') ||
+       img.includes('famous oil') || img.includes('mosaic') || img.includes('color circle') ||
+       img.includes('colored squares') || img.includes('circle') && img.includes('tzion') ||
+       img.includes('rectangle') || img.includes('cube') || img.includes('pyramid') ||
+       img.includes('heart') && !img.includes('arrow') || img.includes('dots') ||
+       img.includes('squares') || img.includes('colors') || img.includes('spectrum') ||
+       img.includes('explosion') || img.includes('sunrise') || img.includes('sunset') ||
+       img.includes('wave') || img.includes('stream') || img.includes('lake') ||
+       img.includes('clouds') || img.includes('heavens') || img.includes('heaven') ||
+       img.includes('humanity') || img.includes('evolution') || img.includes('nation') ||
+       img.includes('liberty') && img.includes('crown') || img.includes('statue') && img.includes('liberty') ||
+       img.includes('india') || img.includes('dough') || img.includes('eggs') ||
+       img.includes('yellow egg') || img.includes('blue letter') || img.includes('white letter') ||
+       img.includes('vertical') || img.includes('on black') || img.includes('style') ||
+       img.includes('funky') || img.includes('dusk') || img.includes('scream') ||
+       img.includes('smile') && !img.includes('simcha') || img.includes('easy to say') ||
+       img.includes('how do you do') || img.includes('life you save') || img.includes('never forget') ||
+       img.includes('house') || img.includes('wood') || img.includes('box') ||
+       img.includes('plastered') || img.includes('absolut') || img.includes('alarm clock') ||
+       img.includes('bamba') || img.includes('apple') || img.includes('red sky') ||
+       img.includes('rain') || img.includes('rainbow') || img.includes('ladders') ||
+       img.includes('ladder') || img.includes('tower') || img.includes('type') ||
+       img.includes('net') || img.includes('king david')) &&
+      !img.includes('portrait') && !img.includes('face') && !img.includes('graffiti') &&
+      !img.includes('simcha') && !img.includes('youth') && !img.includes('mosque')
     )
   },
-  'saba': {
-    name: 'Saba & Petek',
-    hebrew: 'סבא ופתק',
-    icon: '✡️',
+  'nature': {
+    name: 'Nature & Sky',
+    hebrew: 'טבע ושמיים',
+    icon: '🌤️',
     images: allImages.filter(img =>
-      img.includes('saba') || img.includes('petek')
+      (img.includes('sky') || img.includes('cloud') || img.includes('sun') ||
+       img.includes('sunrise') || img.includes('sunset') || img.includes('eclipse') ||
+       img.includes('moon') || img.includes('star') || img.includes('wind') ||
+       img.includes('tree') || img.includes('forest') || img.includes('snow') ||
+       img.includes('snowman') || img.includes('river') || img.includes('sea') ||
+       img.includes('ocean') || img.includes('beach') || img.includes('boat') ||
+       img.includes('mountain') || img.includes('hill') || img.includes('earth') ||
+       img.includes('green') || img.includes('greenery') || img.includes('pale')) &&
+      !img.includes('portrait') && !img.includes('face') && !img.includes('art')
+    )
+  },
+  'events-simchas': {
+    name: 'Events & Simchas',
+    hebrew: 'אירועים ושמחות',
+    icon: '🎉',
+    images: allImages.filter(img =>
+      (img.includes('simcha') || img.includes('youth-center') || 
+       img.includes('dancing') || img.includes('dance') ||
+       img.includes('singing') && !img.includes('hochman') ||
+       img.includes('hafatza') || img.includes('bender') ||
+       img.includes('rosh-hashana') || img.includes('rosh hashana')) &&
+      !img.includes('van') && !img.includes('portrait')
+    )
+  },
+  'stickers-merch': {
+    name: 'Stickers & Merchandise',
+    hebrew: 'מדבקות וסחורה',
+    icon: '🏷️',
+    images: allImages.filter(img =>
+      (img.includes('sticker') && !img.includes('bomb') || img.includes('tshirt') ||
+       img.includes('t-shirt') || img.includes('shirt') || img.includes('beanie') ||
+       img.includes('hat') || img.includes('cap') || img.includes('pillow') ||
+       img.includes('wallet') || img.includes('holland') || img.includes('glove') ||
+       img.includes('disc') || img.includes('disk') || img.includes('album'))
+    )
+  },
+  'booksbreslov': {
+    name: 'Breslov Books & Likutay',
+    hebrew: 'ספרי ברסלב',
+    icon: '📚',
+    images: allImages.filter(img =>
+      img.includes('breslov-books') || img.includes('likutay') || img.includes('tikkun') ||
+      img.includes('haklali') || img.includes('sichos') && img.includes('saba') ||
+      img.includes('klaf') && img.includes('tzion')
     )
   }
 };
-
-// Count total categorized
-const categorizedCount = Object.values(categories).reduce((sum, cat) => sum + cat.images.length, 0);
 ---
 
-<Layout title="Na Nach Life Gallery" description="Photos of the Na Nach Breslov movement - graffiti, events, and daily life">
+<Layout title="Na Nach Life Gallery" description="Photos of the Na Nach Breslov movement">
   <section class="page-header">
     <h1>✡ Na Nach Breslov Movement ✡</h1>
     <p>Spreading the light of Rabbi Nachman throughout the world</p>
@@ -196,15 +220,8 @@ const categorizedCount = Object.values(categories).reduce((sum, cat) => sum + ca
     <div class="container">
       <div class="info-box">
         <h2>🌟 The Na Nach Movement</h2>
-        <p>
-          The Na Nach Breslov movement was inspired by Rabbi Yisroel Ber Odesser (Saba) 
-          who received the miraculous Petek in 1922. Today, Na Nach Breslover Chassidim 
-          spread joy and the teachings of Rebbe Nachman worldwide through songs, gatherings, 
-          and acts of kindness.
-        </p>
-        <p class="hebrew">
-          תנועת נ נח מברסלב התפתחה מהפתק שקיבל הסבא רבי ישראל בר אודסר בשנת תרפ"ב
-        </p>
+        <p>The Na Nach Breslov movement was inspired by Rabbi Yisroel Ber Odesser (Saba) who received the miraculous Petek in 1922.</p>
+        <p class="hebrew">תנועת נ נח מברסלב התפתחה מהפתק שקיבל הסבא רבי ישראל בר אודסר</p>
       </div>
       
       <div class="quick-index">
@@ -234,9 +251,7 @@ const categorizedCount = Object.values(categories).reduce((sum, cat) => sum + ca
               {cat.images.map((img, index) => (
                 <div class="gallery-item">
                   <img src={`/images/nanach/${img}`} alt={formatFilename(img)} loading="lazy" />
-                  <div class="overlay">
-                    <span>{cat.name} #{index + 1}</span>
-                  </div>
+                  <div class="overlay"><span>{cat.name} #{index + 1}</span></div>
                   <div class="caption">{formatFilename(img)}</div>
                 </div>
               ))}
@@ -251,12 +266,10 @@ const categorizedCount = Object.values(categories).reduce((sum, cat) => sum + ca
     <div class="container">
       <div class="nav-buttons">
         <a href="/gallery/uman" class="nav-btn prev">
-          <span class="arrow">←</span>
-          <span class="text">Tomb in Uman</span>
+          <span class="arrow">←</span><span class="text">Tomb in Uman</span>
         </a>
         <a href="/gallery/events" class="nav-btn next">
-          <span class="text">Events Gallery</span>
-          <span class="arrow">→</span>
+          <span class="text">Events Gallery</span><span class="arrow">→</span>
         </a>
       </div>
     </div>
@@ -264,268 +277,44 @@ const categorizedCount = Object.values(categories).reduce((sum, cat) => sum + ca
 </Layout>
 
 <style>
-  .page-header {
-    background: linear-gradient(135deg, #38a169 0%, #276749 100%);
-    color: white;
-    padding: 5rem 2rem;
-    text-align: center;
-  }
-
-  .page-header h1 {
-    font-family: var(--font-hebrew);
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .page-header p {
-    opacity: 0.9;
-    font-size: 1.2rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .page-header .hebrew {
-    font-family: var(--font-hebrew);
-    font-size: 1.5rem;
-    margin-top: 1rem;
-    letter-spacing: 0.1em;
-  }
-
-  .page-header .stats {
-    font-size: 1rem;
-    opacity: 0.7;
-    margin-top: 0.5rem;
-  }
-
-  .back-link {
-    display: inline-block;
-    margin-top: 1.5rem;
-    color: white;
-    text-decoration: none;
-    padding: 0.75rem 1.5rem;
-    border: 2px solid white;
-    border-radius: 6px;
-  }
-
-  .container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 2rem;
-  }
-
-  .intro {
-    background: #f7f5f0;
-    padding: 4rem 0;
-  }
-
-  .info-box {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 2rem;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    text-align: center;
-  }
-
-  .info-box h2 {
-    font-family: var(--font-hebrew);
-    color: var(--color-primary);
-    margin-bottom: 1rem;
-  }
-
-  .info-box p {
-    font-size: 1.1rem;
-    line-height: 1.8;
-    color: #555;
-    margin-bottom: 1rem;
-  }
-
-  .info-box .hebrew {
-    font-family: var(--font-hebrew);
-    font-size: 1.3rem;
-    color: #38a169;
-  }
-
-  .quick-index {
-    max-width: 900px;
-    margin: 2rem auto 0;
-    padding: 1.5rem;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  }
-
-  .quick-index h3 {
-    font-family: var(--font-hebrew);
-    color: var(--color-primary);
-    margin-bottom: 1rem;
-    text-align: center;
-  }
-
-  .index-links {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.75rem;
-  }
-
-  .index-link {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1rem;
-    background: #f7f5f0;
-    border-radius: 8px;
-    text-decoration: none;
-    color: var(--color-primary);
-    font-weight: 600;
-    font-size: 0.9rem;
-    transition: transform 0.2s, box-shadow 0.2s;
-  }
-
-  .index-link:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    background: #edf2f7;
-  }
-
-  .index-link .icon {
-    font-size: 1.1rem;
-  }
-
-  .index-link .count {
-    background: #38a169;
-    color: white;
-    padding: 0.2rem 0.5rem;
-    border-radius: 12px;
-    font-size: 0.75rem;
-    margin-right: 0.25rem;
-  }
-
-  .category-section {
-    padding: 4rem 0;
-    border-bottom: 1px solid #eee;
-    scroll-margin-top: 2rem;
-  }
-
-  .category-section:last-child {
-    border-bottom: none;
-  }
-
-  .category-section h2 {
-    font-family: var(--font-hebrew);
-    font-size: 1.8rem;
-    color: var(--color-primary);
-    margin-bottom: 2rem;
-    text-align: center;
-  }
-
-  .category-section h2 .hebrew {
-    font-family: var(--font-hebrew);
-    font-size: 1.4rem;
-    color: #888;
-    font-weight: normal;
-    margin-right: 0.5rem;
-  }
-
-  .gallery-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
-  }
-
-  .gallery-item {
-    position: relative;
-    overflow: visible;
-  }
-
-  .gallery-item img {
-    width: 100%;
-    aspect-ratio: 1;
-    object-fit: cover;
-    border-radius: 12px;
-    transition: transform 0.4s;
-    display: block;
-  }
-
-  .gallery-item:hover img {
-    transform: scale(1.08);
-  }
-
-  .gallery-item .overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: linear-gradient(transparent, rgba(0,0,0,0.7));
-    padding: 2rem 1rem 1rem;
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
-
-  .gallery-item:hover .overlay {
-    opacity: 1;
-  }
-
-  .gallery-item .overlay span {
-    color: white;
-    font-size: 0.95rem;
-  }
-
-  .gallery-item .caption {
-    padding: 0.75rem;
-    background: #f8f8f8;
-    font-size: 0.85rem;
-    color: #555;
-    text-align: center;
-    border-bottom-left-radius: 12px;
-    border-bottom-right-radius: 12px;
-    word-break: break-word;
-    line-height: 1.4;
-  }
-
-  .navigation {
-    background: var(--color-primary);
-    padding: 3rem 0;
-  }
-
-  .nav-buttons {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-  }
-
-  .nav-btn {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    color: white;
-    text-decoration: none;
-    padding: 1rem 1.5rem;
-    background: rgba(255,255,255,0.1);
-    border-radius: 8px;
-  }
-
-  .nav-btn:hover {
-    background: rgba(255,255,255,0.2);
-  }
-
+  .page-header { background: linear-gradient(135deg, #38a169 0%, #276749 100%); color: white; padding: 5rem 2rem; text-align: center; }
+  .page-header h1 { font-family: var(--font-hebrew); font-size: 2.5rem; margin-bottom: 0.5rem; }
+  .page-header p { opacity: 0.9; font-size: 1.2rem; margin-bottom: 0.5rem; }
+  .page-header .hebrew { font-family: var(--font-hebrew); font-size: 1.5rem; margin-top: 1rem; letter-spacing: 0.1em; }
+  .page-header .stats { font-size: 1rem; opacity: 0.7; margin-top: 0.5rem; }
+  .back-link { display: inline-block; margin-top: 1.5rem; color: white; text-decoration: none; padding: 0.75rem 1.5rem; border: 2px solid white; border-radius: 6px; }
+  .container { max-width: 1400px; margin: 0 auto; padding: 0 2rem; }
+  .intro { background: #f7f5f0; padding: 4rem 0; }
+  .info-box { max-width: 800px; margin: 0 auto; padding: 2rem; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); text-align: center; }
+  .info-box h2 { font-family: var(--font-hebrew); color: var(--color-primary); margin-bottom: 1rem; }
+  .info-box p { font-size: 1.1rem; line-height: 1.8; color: #555; margin-bottom: 1rem; }
+  .info-box .hebrew { font-family: var(--font-hebrew); font-size: 1.3rem; color: #38a169; }
+  .quick-index { max-width: 900px; margin: 2rem auto 0; padding: 1.5rem; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+  .quick-index h3 { font-family: var(--font-hebrew); color: var(--color-primary); margin-bottom: 1rem; text-align: center; }
+  .index-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; }
+  .index-link { display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem; background: #f7f5f0; border-radius: 8px; text-decoration: none; color: var(--color-primary); font-weight: 600; font-size: 0.9rem; transition: transform 0.2s; }
+  .index-link:hover { transform: translateY(-2px); background: #edf2f7; }
+  .index-link .count { background: #38a169; color: white; padding: 0.2rem 0.5rem; border-radius: 12px; font-size: 0.75rem; }
+  .category-section { padding: 4rem 0; border-bottom: 1px solid #eee; scroll-margin-top: 2rem; }
+  .category-section:last-child { border-bottom: none; }
+  .category-section h2 { font-family: var(--font-hebrew); font-size: 1.8rem; color: var(--color-primary); margin-bottom: 2rem; text-align: center; }
+  .category-section h2 .hebrew { font-family: var(--font-hebrew); font-size: 1.4rem; color: #888; font-weight: normal; margin-right: 0.5rem; }
+  .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+  .gallery-item { position: relative; overflow: visible; }
+  .gallery-item img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 12px; transition: transform 0.4s; display: block; }
+  .gallery-item:hover img { transform: scale(1.08); }
+  .gallery-item .overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.7)); padding: 2rem 1rem 1rem; opacity: 0; transition: opacity 0.3s; }
+  .gallery-item:hover .overlay { opacity: 1; }
+  .gallery-item .overlay span { color: white; font-size: 0.95rem; }
+  .gallery-item .caption { padding: 0.75rem; background: #f8f8f8; font-size: 0.85rem; color: #555; text-align: center; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; word-break: break-word; line-height: 1.4; }
+  .navigation { background: var(--color-primary); padding: 3rem 0; }
+  .nav-buttons { display: flex; justify-content: space-between; gap: 1rem; }
+  .nav-btn { display: flex; align-items: center; gap: 0.75rem; color: white; text-decoration: none; padding: 1rem 1.5rem; background: rgba(255,255,255,0.1); border-radius: 8px; }
+  .nav-btn:hover { background: rgba(255,255,255,0.2); }
   @media (max-width: 768px) {
-    .nav-buttons {
-      flex-direction: column;
-    }
-    
-    .gallery-grid {
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    }
-    
-    .index-links {
-      gap: 0.5rem;
-    }
-    
-    .index-link {
-      padding: 0.5rem 0.75rem;
-      font-size: 0.8rem;
-    }
+    .nav-buttons { flex-direction: column; }
+    .gallery-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+    .index-links { gap: 0.5rem; }
+    .index-link { padding: 0.5rem 0.75rem; font-size: 0.8rem; }
   }
 </style>
