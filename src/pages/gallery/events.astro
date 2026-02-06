@@ -1,6 +1,15 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 
+// Helper function to format filename for display
+function formatFilename(filename) {
+  let formatted = decodeURIComponent(filename);
+  formatted = formatted.replace(/\.(jpg|jpeg|png|gif|webp)$/i, '');
+  formatted = formatted.replace(/[-_]/g, ' ');
+  formatted = formatted.replace(/\b\w/g, l => l.toUpperCase());
+  return formatted;
+}
+
 const images = [
   'nanach-chaim-walden-head-fire-rabbainu.jpg',
   'nanach-eliyahu-gordetzky.jpg',
@@ -90,10 +99,11 @@ const categories = {
             <div class="gallery-grid">
               {cat.images.map((img, index) => (
                 <div class="gallery-item">
-                  <img src={`/images/events/${img}`} alt={`${cat.name} ${index + 1}`} loading="lazy" />
+                  <img src={`/images/events/${img}`} alt={formatFilename(img)} loading="lazy" />
                   <div class="overlay">
                     <span>{cat.name} #{index + 1}</span>
                   </div>
+                  <div class="caption">{formatFilename(img)}</div>
                 </div>
               ))}
             </div>
@@ -262,6 +272,18 @@ const categories = {
   .gallery-item .overlay span {
     color: white;
     font-size: 0.95rem;
+  }
+
+  .gallery-item .caption {
+    padding: 0.75rem;
+    background: #f8f8f8;
+    font-size: 0.85rem;
+    color: #555;
+    text-align: center;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+    word-break: break-word;
+    line-height: 1.4;
   }
 
   .navigation {

@@ -2,6 +2,18 @@
 import Layout from '../../layouts/Layout.astro';
 import { getImage } from 'astro:assets';
 
+// Helper function to format filename for display
+function formatFilename(filename) {
+  // Decode URL encoding and remove extension
+  let formatted = decodeURIComponent(filename);
+  formatted = formatted.replace(/\.(jpg|jpeg|png|gif|webp)$/i, '');
+  // Replace dashes and underscores with spaces
+  formatted = formatted.replace(/[-_]/g, ' ');
+  // Capitalize first letter of each word
+  formatted = formatted.replace(/\b\w/g, l => l.toUpperCase());
+  return formatted;
+}
+
 // Get list of images from the public folder
 const images = [
   'Cartoon politician with hand up facing Saba.jpg',
@@ -159,10 +171,11 @@ const categories = {
             <div class="gallery-grid">
               {cat.images.map((img, index) => (
                 <div class="gallery-item" data-category={key}>
-                  <img src={`/images/saba/${img}`} alt={`${cat.name} ${index + 1}`} loading="lazy" />
+                  <img src={`/images/saba/${img}`} alt={formatFilename(img)} loading="lazy" />
                   <div class="overlay">
                     <span>{cat.name} #{index + 1}</span>
                   </div>
+                  <div class="caption">{formatFilename(img)}</div>
                 </div>
               ))}
             </div>
@@ -341,6 +354,18 @@ const categories = {
   .gallery-item .overlay span {
     color: white;
     font-size: 0.95rem;
+  }
+
+  .gallery-item .caption {
+    padding: 0.75rem;
+    background: #f8f8f8;
+    font-size: 0.85rem;
+    color: #555;
+    text-align: center;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+    word-break: break-word;
+    line-height: 1.4;
   }
 
   .navigation {
