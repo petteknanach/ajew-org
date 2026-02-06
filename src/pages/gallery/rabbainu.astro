@@ -1,7 +1,10 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 
-const images = await Astro.glob('../../assets/rabbi-nachman/*.{jpg,jpeg,png,gif}');
+const imageFiles = import.meta.glob('../../assets/rabbi-nachman/*.{jpg,jpeg,png,gif}');
+const images = Object.entries(imageFiles).map(([path, loader]) => {
+  return { src: path, basename: path.split('/').pop() };
+});
 ---
 
 <Layout title="Rebbe Nachman Gallery" description="Images of Rabbi Nachman of Breslov">

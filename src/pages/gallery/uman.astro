@@ -1,7 +1,10 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 
-const images = await Astro.glob('../../assets/tomb-uman/*.{jpg,jpeg,png,gif}');
+const imageFiles = import.meta.glob('../../assets/tomb-uman/*.{jpg,jpeg,png,gif}');
+const images = Object.entries(imageFiles).map(([path, loader]) => {
+  return { src: path, basename: path.split('/').pop() };
+});
 ---
 
 <Layout title="Tomb of Rebbe Nachman in Uman" description="Photos of the holy tomb in Uman">

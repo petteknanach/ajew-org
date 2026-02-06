@@ -1,7 +1,10 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 
-const images = await Astro.glob('../../assets/nanach/*.{jpg,jpeg,png,gif}');
+const imageFiles = import.meta.glob('../../assets/nanach/*.{jpg,jpeg,png,gif}');
+const images = Object.entries(imageFiles).map(([path, loader]) => {
+  return { src: path, basename: path.split('/').pop() };
+});
 ---
 
 <Layout title="Na Nach Life Gallery" description="Photos of the Na Nach Breslov movement">
@@ -33,7 +36,7 @@ const images = await Astro.glob('../../assets/nanach/*.{jpg,jpeg,png,gif}');
     <div class="container">
       <div class="gallery-grid">
         {images.map((img, index) => {
-          const filename = img.src.toLowerCase();
+          const filename = img.basename.toLowerCase();
           let label = 'Na Nach';
           if (filename.includes('simcha')) label = '🎵 Singing';
           else if (filename.includes('yosef')) label = '👤 Yosef';
