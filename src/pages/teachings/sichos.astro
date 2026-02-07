@@ -1,54 +1,129 @@
 ---
-const pageTitle = "Sichos";
-const pageDescription = "Sichos - A Jew Na Nach Breslov Teaching";
+const pageTitle = "Sichos Haran";
+const pageDescription = "Sichos Haran - Wondrous Stories and Parables after the Storytelling";
 ---
 
 <style>
   .page-header {
     background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
     color: white;
-    padding: 3rem 2rem;
+    padding: 4rem 2rem;
     text-align: center;
   }
   .page-header h1 {
     font-family: var(--font-hebrew);
-    font-size: 2rem;
+    font-size: 2.5rem;
     margin-bottom: 0.5rem;
   }
-  .hebrew-title {
-    font-family: var(--font-hebrew);
-    font-size: 1.5rem;
+  .page-header .subtitle {
+    font-size: 1.1rem;
     opacity: 0.9;
   }
   .container { max-width: 800px; margin: 0 auto; padding: 0 2rem; }
-  .content { padding: 4rem 0; }
+  .navigation {
+    background: #f7f5f0;
+    padding: 1rem 0;
+  }
+  .nav-links {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+  }
+  .nav-link {
+    color: #1a365d;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  .nav-link:hover {
+    background: #1a365d;
+    color: white;
+  }
+  .content { padding: 3rem 0; }
   .content-text {
     background: white;
     padding: 3rem;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
   }
-  .content-text p {
+  .content-text :global(p) {
     font-size: 1.1rem;
-    line-height: 2;
+    line-height: 1.9;
     color: #333;
     margin-bottom: 1.5rem;
     text-align: justify;
   }
+  .story-title {
+    font-family: var(--font-hebrew);
+    font-size: 1.3rem;
+    color: #1a365d;
+    margin: 2rem 0 1rem;
+    font-weight: 600;
+  }
+  .footer-nav {
+    background: #1a365d;
+    padding: 2rem 0;
+  }
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: white;
+    text-decoration: none;
+    padding: 0.75rem 1.5rem;
+    background: rgba(255,255,255,0.1);
+    border-radius: 8px;
+  }
+  .back-link:hover {
+    background: rgba(255,255,255,0.2);
+  }
 </style>
 
 <section class="page-header">
-  <h1>Sichos</h1>
-  <p class="hebrew-title"></p>
+  <h1>📖 Sichos Haran</h1>
+  <p class="subtitle">Wondrous Stories and Parables</p>
 </section>
+
+<nav class="navigation">
+  <div class="container">
+    <div class="nav-links">
+      <a href="/teachings" class="nav-link">← All Teachings</a>
+    </div>
+  </div>
+</nav>
 
 <section class="content">
   <div class="container">
     <div class="content-text">
-
+<p><strong>Sichos Haran</strong> (שיחות הר"ן - Words of Rabbi Nachman after the Storytelling) contains wondrous stories and parables that Rabbi Nachman shared in conversations with his disciples, following the format of his more famous "Stories of Ancient Times."</p>
+<p>These sichos (conversations/stories) reveal Rabbi Nachman's unique ability to teach through parables and stories, each containing deep spiritual wisdom wrapped in accessible narratives. They cover topics of faith, trust in God, the path of the tzadik, and the journey of the soul.</p>
+<p class="story-title">Contents:</p>
+<p>1. Telltale Chandelier<br/>
+2. Great Are the Works<br/>
+3. The Pump<br/>
+4. Heated Flesh and Bones<br/>
+5. Tzaddik's Sadness<br/>
+6. Two Palaces<br/>
+7. Two Intellects<br/>
+8. Remedy for Pox<br/>
+9. Sarah Esther<br/>
+10. King's Hand</p>
+<p class="story-title">The Telltale Chandelier</p>
+<p>A tale. A man left his father and was in other countries for many years by other people. In time, he came to his father and boasted that he had learned there a great craft: how to make a chandelier...</p>
     </div>
   </div>
 </section>
+
+<nav class="footer-nav">
+  <div class="container">
+    <a href="/teachings" class="back-link">
+      <span>←</span>
+      <span>Back to Teachings</span>
+    </a>
+  </div>
+</nav>
 
 ---
 import Layout from '../../layouts/Layout.astro';
