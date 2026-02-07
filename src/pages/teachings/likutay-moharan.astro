@@ -1,734 +1,326 @@
 ---
 const pageTitle = "Likutay Moharan";
-const pageDescription = "The complete Torah teachings of Rebbe Nachman of Breslov - Volume 1 and Volume 2";
+const pageDescription = "Likutay Moharan - The Torah Teachings of Rabbi Nachman of Breslov";
 ---
 
 <style>
-  .page-header {#123;
+  .page-header {
     background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
     color: white;
     padding: 4rem 2rem;
     text-align: center;
-  }#125;
-
-  .page-header h1 {#123;
+  }
+  .page-header h1 {
     font-family: var(--font-hebrew);
     font-size: 2.5rem;
     margin-bottom: 0.5rem;
-  }#125;
-
-  .page-header .subtitle {#123;
+  }
+  .page-header .subtitle {
     font-size: 1.2rem;
     opacity: 0.9;
-  }#125;
-
-  .container {#123;
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 0 2rem;
-  }#125;
-
-  .intro {#123;
+  }
+  .container { max-width: 900px; margin: 0 auto; padding: 0 2rem; }
+  
+  .intro-section {
     background: #f7f5f0;
-    padding: 4rem 0;
-  }#125;
-
-  .intro-content {#123;
+    padding: 3rem 0;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .intro-text {
     background: white;
     padding: 2rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    text-align: center;
-    max-width: 700px;
-    margin: 0 auto;
-  }#125;
-
-  .intro-content p {#123;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .intro-text p {
     font-size: 1.1rem;
     line-height: 1.8;
-    color: #555;
-  }#125;
-
-  .content {#123;
-    padding: 4rem 0;
-  }#125;
-
-  .volume-section {#123;
-    margin-bottom: 4rem;
-  }#125;
-
-  .volume-header {#123;
-    background: var(--color-primary);
-    color: white;
-    padding: 1.5rem 2rem;
-    border-radius: 12px 12px 0 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 1rem;
-  }#125;
-
-  .volume-header h2 {#123;
+    color: #333;
+    margin-bottom: 1rem;
+  }
+  
+  .section-title {
     font-family: var(--font-hebrew);
-    font-size: 1.8rem;
-    margin: 0;
-  }#125;
-
-  .volume-header .count {#123;
-    font-size: 1rem;
-    opacity: 0.9;
-  }#125;
-
-  .volume-body {#123;
-    background: white;
-    border-radius: 0 0 12px 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    overflow: hidden;
-  }#125;
-
-  .section-header {#123;
-    background: #e8e4df;
-    padding: 1rem 1.5rem;
-    font-weight: 600;
-    color: var(--color-primary);
-    border-bottom: 1px solid #ddd;
-  }#125;
-
-  .torah-grid {#123;
+    font-size: 1.5rem;
+    color: #1a365d;
+    margin: 3rem 0 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e2e8f0;
+  }
+  
+  .torah-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 1px;
-    background: #eee;
-  }#125;
-
-  .torah-link {#123;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+    margin-bottom: 3rem;
+  }
+  
+  .torah-link {
     display: block;
-    padding: 0.75rem 1rem;
     background: white;
+    padding: 1.25rem 1.5rem;
+    border-radius: 8px;
     text-decoration: none;
-    color: var(--color-primary);
-    text-align: center;
-    font-weight: 500;
-    transition: background 0.2s;
-  }#125;
-
-  .torah-link:hover {#123;
-    background: #f0f4f8;
-  }#125;
-
-  .approbations {#123;
-    background: white;
-    padding: 2rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    margin-bottom: 3rem;
-  }#125;
-
-  .approbations h3 {#123;
-    font-family: var(--font-hebrew);
-    color: var(--color-primary);
-    margin-bottom: 1rem;
-  }#125;
-
-  .front-matter-section {#123;
-    background: white;
-    padding: 2rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    margin-bottom: 3rem;
-  }#125;
-
-  .front-matter-section h3 {#123;
-    font-family: var(--font-hebrew);
-    color: var(--color-primary);
-    margin-bottom: 1rem;
-  }#125;
-
-  .navigation {#123;
-    background: var(--color-primary);
-    padding: 3rem 0;
-    margin-top: 3rem;
-  }#125;
-
-  .nav-buttons {#123;
+    color: #333;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #e2e8f0;
+    transition: all 0.2s ease;
+  }
+  .torah-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-color: #1a365d;
+    color: #1a365d;
+  }
+  .torah-link .torah-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+  .torah-link .torah-desc {
+    font-size: 0.9rem;
+    color: #666;
+  }
+  
+  .navigation-links {
     display: flex;
     justify-content: center;
-    gap: 1rem;
-  }#125;
-
-  .nav-btn {#123;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: white;
-    text-decoration: none;
-    padding: 0.75rem 1.5rem;
-    background: rgba(255,255,255,0.1);
+    gap: 2rem;
+    padding: 2rem;
+    background: #f7f5f0;
     border-radius: 8px;
-  }#125;
-
-  .nav-btn:hover {#123;
-    background: rgba(255,255,255,0.2);
-  }#125;
-
-  @media (max-width: 768px) {#123;
-    .volume-header {#123;
-      flex-direction: column;
-      text-align: center;
-    }#125;
-
-    .torah-grid {#123;
-      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    }#125;
-  }#125;
+    margin-top: 2rem;
+  }
+  .nav-link {
+    color: #1a365d;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: background 0.2s;
+  }
+  .nav-link:hover {
+    background: #e2e8f0;
+  }
+  
+  @media (max-width: 768px) {
+    .torah-grid { grid-template-columns: 1fr; }
+    .navigation-links { flex-direction: column; text-align: center; }
+  }
 </style>
 
 <section class="page-header">
-  <h1>Likutay Moharan</h1>
-  <p class="subtitle">ליקוטי מוהרן | The Collected Teachings of Rabbi Nachman of Breslov</p>
+  <h1>📖 Likutay Moharan</h1>
+  <p class="subtitle">The Torah Teachings of Rabbi Nachman of Breslov</p>
 </section>
 
-<section class="intro">
+<nav class="navigation">
   <div class="container">
-    <div class="intro-content">
-      <p>
-        <strong>Likutay Moharan</strong> is the primary collection of Rebbe Nachman's Torah teachings, 
-        comprising 286 lessons in Volume 1 and 125 lessons in Volume 2. These profound discourses 
-        cover every aspect of serving Hashem — from prayer and faith to joy, humility, repentance, 
-        and the path of hitbodedut (personal prayer and self-seclusion).
-      </p>
+    <div class="navigation-links">
+      <a href="/teachings" class="nav-link">← Back to Teachings</a>
+      <a href="/teachings/likutay-moharan-intro" class="nav-link">Introduction</a>
+    </div>
+  </div>
+</nav>
+
+<section class="intro-section">
+  <div class="container">
+    <div class="intro-text">
+      <p><strong>Likutay Moharan</strong> (Collected Teachings of Rabbi Nachman) is the central work of Breslov Chassidus. 
+      These torahs were given by Rabbi Nachman throughout his life and contain deep insights into Torah, prayer, 
+      faith, joy, and the path to closeness with God.</p>
+      <p>The complete teachings are presented here with full text - no truncation, preserved exactly as written.</p>
     </div>
   </div>
 </section>
 
 <section class="content">
   <div class="container">
+    <h2 class="section-title">Volume 1 - Torah Teachings</h2>
     
-    <!-- Approbations -->
-    <div class="approbations">
-      <h3>Approbations (Haskamos)</h3>
-      <div class="torah-grid">
-        <a href="/teachings/likutay-moharan-approbation-chozeh-lublin" class="torah-link">Chozeh of Lublin</a>
-        <a href="/teachings/likutay-moharan-approbation-magid-kozhnitz" class="torah-link">Magid of Kozhnitz</a>
-        <a href="/teachings/likutay-moharan-approbation-avraham-chaim-zlotshev" class="torah-link">Rabbi Avraham Chaim of Zlotshev</a>
-        <a href="/teachings/likutay-moharan-approbation-meir-brod" class="torah-link">Rabbi Meir of Brod</a>
-        <a href="/teachings/likutay-moharan-approbation-efraim-zalman-margolis" class="torah-link">Rabbi Efraim Zalman Margolis</a>
-        <a href="/teachings/likutay-moharan-more-approbations" class="torah-link">More Approbations</a>
-      </div>
-    </div>
-
-    <!-- Volume 1 Front Matter -->
-    <div class="volume-section">
-      <div class="volume-header">
-        <h2>Volume I (Kama) - Front Matter</h2>
-        <span class="count">Prefaces, Poems, Introductions</span>
-      </div>
-      <div class="volume-body">
-        <div class="torah-grid">
-          <a href="/teachings/likutay-moharan-introduction" class="torah-link">Introduction</a>
-          <a href="/teachings/likutay-moharan-poem" class="torah-link">Rabbi Nachman's Poem</a>
-          <a href="/teachings/likutay-moharan-preface-greatness-rabbi-shimon" class="torah-link">Preface - Greatness of Rabbi Shimon</a>
-          <a href="/teachings/likutay-moharan-short-poetic-preface-1-15" class="torah-link">Short Poetic Preface (Torahs 1-15)</a>
-          <a href="/teachings/likutay-moharan-short-poetic-conclusion-1-15" class="torah-link">Short Poetic Conclusion (Torahs 1-15)</a>
-          <a href="/teachings/likutay-moharan-short-poetic-conclusion-16-18" class="torah-link">Short Poetic Conclusion (Torahs 16-18)</a>
-          <a href="/teachings/likutay-moharan-short-poetic-conclusion-suvay-divay-atuna" class="torah-link">Short Poetic Conclusion (Suvay Divay Atuna)</a>
-          <a href="/teachings/likutay-moharan-short-poetic-conclusion-32-end" class="torah-link">Short Poetic Conclusion (Torahs 32-End)</a>
-          <a href="/teachings/likutay-moharan-concluding-prayer" class="torah-link">Concluding Prayer</a>
-        </div>
-      </div>
-    </div>
-
-    <!-- Volume 1 -->
-    <div class="volume-section">
-      <div class="volume-header">
-        <h2>Volume I (Kama)</h2>
-        <span class="count">286 Torah Lessons</span>
-      </div>
-      <div class="volume-body">
-
-        <div class="section-header">Torahs 1-15: On Rabba bar bar Chana</div>
-        <div class="torah-grid">
-          <a href="#" class="torah-link">Torah 1</a>
-          <a href="#" class="torah-link">Torah 2</a>
-          <a href="#" class="torah-link">Torah 3</a>
-          <a href="#" class="torah-link">Torah 4</a>
-          <a href="#" class="torah-link">Torah 5</a>
-          <a href="#" class="torah-link">Torah 6</a>
-          <a href="#" class="torah-link">Torah 7</a>
-          <a href="#" class="torah-link">Torah 8</a>
-          <a href="#" class="torah-link">Torah 9</a>
-          <a href="#" class="torah-link">Torah 10</a>
-          <a href="#" class="torah-link">Torah 11</a>
-          <a href="#" class="torah-link">Torah 12</a>
-          <a href="#" class="torah-link">Torah 13</a>
-          <a href="#" class="torah-link">Torah 14</a>
-          <a href="#" class="torah-link">Torah 15</a>
-        </div>
-
-        <div class="section-header">Torahs 16-18: Mishtu-ai (Those Who Told Over)</div>
-        <div class="torah-grid">
-          <a href="#" class="torah-link">Torah 16</a>
-          <a href="#" class="torah-link">Torah 17</a>
-          <a href="#" class="torah-link">Torah 18</a>
-        </div>
-
-        <div class="section-header">Torahs 19-22: Safra DiTzneusa</div>
-        <div class="torah-grid">
-          <a href="#" class="torah-link">Torah 19</a>
-          <a href="#" class="torah-link">Torah 20</a>
-          <a href="#" class="torah-link">Torah 21</a>
-          <a href="#" class="torah-link">Torah 22</a>
-        </div>
-
-        <div class="section-header">Torahs 23-31: Suvay Divay Atuna</div>
-        <div class="torah-grid">
-          <a href="#" class="torah-link">Torah 23</a>
-          <a href="#" class="torah-link">Torah 24</a>
-          <a href="#" class="torah-link">Torah 25</a>
-          <a href="#" class="torah-link">Torah 26</a>
-          <a href="#" class="torah-link">Torah 27</a>
-          <a href="#" class="torah-link">Torah 28</a>
-          <a href="#" class="torah-link">Torah 29</a>
-          <a href="#" class="torah-link">Torah 30</a>
-          <a href="#" class="torah-link">Torah 31</a>
-        </div>
-
-        <div class="section-header">Torahs 32-286</div>
-        <div class="torah-grid">
-          <a href="#" class="torah-link">Torah 32</a>
-          <a href="#" class="torah-link">Torah 33</a>
-          <a href="#" class="torah-link">Torah 34</a>
-          <a href="#" class="torah-link">Torah 35</a>
-          <a href="#" class="torah-link">Torah 36</a>
-          <a href="#" class="torah-link">Torah 37</a>
-          <a href="#" class="torah-link">Torah 38</a>
-          <a href="#" class="torah-link">Torah 39</a>
-          <a href="#" class="torah-link">Torah 40</a>
-          <a href="#" class="torah-link">Torah 41</a>
-          <a href="#" class="torah-link">Torah 42</a>
-          <a href="#" class="torah-link">Torah 43</a>
-          <a href="#" class="torah-link">Torah 44</a>
-          <a href="#" class="torah-link">Torah 45</a>
-          <a href="#" class="torah-link">Torah 46</a>
-          <a href="#" class="torah-link">Torah 47</a>
-          <a href="/teachings/likutay-moharan-torah-48" class="torah-link">Torah 48</a>
-          <a href="#" class="torah-link">Torah 49</a>
-          <a href="#" class="torah-link">Torah 50</a>
-          <a href="#" class="torah-link">Torah 51</a>
-          <a href="#" class="torah-link">Torah 52</a>
-          <a href="#" class="torah-link">Torah 53</a>
-          <a href="#" class="torah-link">Torah 54</a>
-          <a href="#" class="torah-link">Torah 55</a>
-          <a href="#" class="torah-link">Torah 56</a>
-          <a href="#" class="torah-link">Torah 57</a>
-          <a href="#" class="torah-link">Torah 58</a>
-          <a href="#" class="torah-link">Torah 59</a>
-          <a href="#" class="torah-link">Torah 60</a>
-          <a href="#" class="torah-link">Torah 61</a>
-          <a href="#" class="torah-link">Torah 62</a>
-          <a href="#" class="torah-link">Torah 63</a>
-          <a href="#" class="torah-link">Torah 64</a>
-          <a href="#" class="torah-link">Torah 65</a>
-          <a href="#" class="torah-link">Torah 66</a>
-          <a href="#" class="torah-link">Torah 67</a>
-          <a href="#" class="torah-link">Torah 68</a>
-          <a href="#" class="torah-link">Torah 69</a>
-          <a href="#" class="torah-link">Torah 70</a>
-          <a href="#" class="torah-link">Torah 71</a>
-          <a href="#" class="torah-link">Torah 72</a>
-          <a href="#" class="torah-link">Torah 73</a>
-          <a href="#" class="torah-link">Torah 74</a>
-          <a href="#" class="torah-link">Torah 75</a>
-          <a href="#" class="torah-link">Torah 76</a>
-          <a href="#" class="torah-link">Torah 77</a>
-          <a href="#" class="torah-link">Torah 78</a>
-          <a href="#" class="torah-link">Torah 79</a>
-          <a href="#" class="torah-link">Torah 80</a>
-          <a href="#" class="torah-link">Torah 81</a>
-          <a href="#" class="torah-link">Torah 82</a>
-          <a href="#" class="torah-link">Torah 83</a>
-          <a href="#" class="torah-link">Torah 84</a>
-          <a href="#" class="torah-link">Torah 85</a>
-          <a href="#" class="torah-link">Torah 86</a>
-          <a href="#" class="torah-link">Torah 87</a>
-          <a href="#" class="torah-link">Torah 88</a>
-          <a href="#" class="torah-link">Torah 89</a>
-          <a href="#" class="torah-link">Torah 90</a>
-          <a href="#" class="torah-link">Torah 91</a>
-          <a href="#" class="torah-link">Torah 92</a>
-          <a href="#" class="torah-link">Torah 93</a>
-          <a href="#" class="torah-link">Torah 94</a>
-          <a href="#" class="torah-link">Torah 95</a>
-          <a href="#" class="torah-link">Torah 96</a>
-          <a href="#" class="torah-link">Torah 97</a>
-          <a href="#" class="torah-link">Torah 98</a>
-          <a href="#" class="torah-link">Torah 99</a>
-          <a href="#" class="torah-link">Torah 100</a>
-          <a href="#" class="torah-link">Torah 101</a>
-          <a href="#" class="torah-link">Torah 102</a>
-          <a href="#" class="torah-link">Torah 103</a>
-          <a href="#" class="torah-link">Torah 104</a>
-          <a href="#" class="torah-link">Torah 105</a>
-          <a href="#" class="torah-link">Torah 106</a>
-          <a href="#" class="torah-link">Torah 107</a>
-          <a href="#" class="torah-link">Torah 108</a>
-          <a href="#" class="torah-link">Torah 109</a>
-          <a href="#" class="torah-link">Torah 110</a>
-          <a href="#" class="torah-link">Torah 111</a>
-          <a href="#" class="torah-link">Torah 112</a>
-          <a href="#" class="torah-link">Torah 113</a>
-          <a href="#" class="torah-link">Torah 114</a>
-          <a href="#" class="torah-link">Torah 115</a>
-          <a href="#" class="torah-link">Torah 116</a>
-          <a href="#" class="torah-link">Torah 117</a>
-          <a href="#" class="torah-link">Torah 118</a>
-          <a href="#" class="torah-link">Torah 119</a>
-          <a href="#" class="torah-link">Torah 120</a>
-          <a href="#" class="torah-link">Torah 121</a>
-          <a href="#" class="torah-link">Torah 122</a>
-          <a href="#" class="torah-link">Torah 123</a>
-          <a href="#" class="torah-link">Torah 124</a>
-          <a href="#" class="torah-link">Torah 125</a>
-          <a href="#" class="torah-link">Torah 126</a>
-          <a href="#" class="torah-link">Torah 127</a>
-          <a href="#" class="torah-link">Torah 128</a>
-          <a href="#" class="torah-link">Torah 129</a>
-          <a href="#" class="torah-link">Torah 130</a>
-          <a href="#" class="torah-link">Torah 131</a>
-          <a href="#" class="torah-link">Torah 132</a>
-          <a href="#" class="torah-link">Torah 133</a>
-          <a href="#" class="torah-link">Torah 134</a>
-          <a href="#" class="torah-link">Torah 135</a>
-          <a href="#" class="torah-link">Torah 136</a>
-          <a href="#" class="torah-link">Torah 137</a>
-          <a href="#" class="torah-link">Torah 138</a>
-          <a href="#" class="torah-link">Torah 139</a>
-          <a href="#" class="torah-link">Torah 140</a>
-          <a href="#" class="torah-link">Torah 141</a>
-          <a href="#" class="torah-link">Torah 142</a>
-          <a href="#" class="torah-link">Torah 143</a>
-          <a href="#" class="torah-link">Torah 144</a>
-          <a href="#" class="torah-link">Torah 145</a>
-          <a href="#" class="torah-link">Torah 146</a>
-          <a href="#" class="torah-link">Torah 147</a>
-          <a href="#" class="torah-link">Torah 148</a>
-          <a href="#" class="torah-link">Torah 149</a>
-          <a href="#" class="torah-link">Torah 150</a>
-          <a href="#" class="torah-link">Torah 151</a>
-          <a href="#" class="torah-link">Torah 152</a>
-          <a href="#" class="torah-link">Torah 153</a>
-          <a href="#" class="torah-link">Torah 154</a>
-          <a href="#" class="torah-link">Torah 155</a>
-          <a href="#" class="torah-link">Torah 156</a>
-          <a href="#" class="torah-link">Torah 157</a>
-          <a href="#" class="torah-link">Torah 158</a>
-          <a href="#" class="torah-link">Torah 159</a>
-          <a href="#" class="torah-link">Torah 160</a>
-          <a href="#" class="torah-link">Torah 161</a>
-          <a href="#" class="torah-link">Torah 162</a>
-          <a href="#" class="torah-link">Torah 163</a>
-          <a href="#" class="torah-link">Torah 164</a>
-          <a href="#" class="torah-link">Torah 165</a>
-          <a href="#" class="torah-link">Torah 166</a>
-          <a href="#" class="torah-link">Torah 167</a>
-          <a href="#" class="torah-link">Torah 168</a>
-          <a href="#" class="torah-link">Torah 169</a>
-          <a href="#" class="torah-link">Torah 170</a>
-          <a href="#" class="torah-link">Torah 171</a>
-          <a href="#" class="torah-link">Torah 172</a>
-          <a href="#" class="torah-link">Torah 173</a>
-          <a href="#" class="torah-link">Torah 174</a>
-          <a href="#" class="torah-link">Torah 175</a>
-          <a href="#" class="torah-link">Torah 176</a>
-          <a href="#" class="torah-link">Torah 177</a>
-          <a href="#" class="torah-link">Torah 178</a>
-          <a href="#" class="torah-link">Torah 179</a>
-          <a href="#" class="torah-link">Torah 180</a>
-          <a href="#" class="torah-link">Torah 181</a>
-          <a href="#" class="torah-link">Torah 182</a>
-          <a href="#" class="torah-link">Torah 183</a>
-          <a href="#" class="torah-link">Torah 184</a>
-          <a href="#" class="torah-link">Torah 185</a>
-          <a href="#" class="torah-link">Torah 186</a>
-          <a href="#" class="torah-link">Torah 187</a>
-          <a href="#" class="torah-link">Torah 188</a>
-          <a href="#" class="torah-link">Torah 189</a>
-          <a href="#" class="torah-link">Torah 190</a>
-          <a href="#" class="torah-link">Torah 191</a>
-          <a href="#" class="torah-link">Torah 192</a>
-          <a href="#" class="torah-link">Torah 193</a>
-          <a href="#" class="torah-link">Torah 194</a>
-          <a href="#" class="torah-link">Torah 195</a>
-          <a href="#" class="torah-link">Torah 196</a>
-          <a href="#" class="torah-link">Torah 197</a>
-          <a href="#" class="torah-link">Torah 198</a>
-          <a href="#" class="torah-link">Torah 199</a>
-          <a href="#" class="torah-link">Torah 200</a>
-          <a href="#" class="torah-link">Torah 201</a>
-          <a href="#" class="torah-link">Torah 202</a>
-          <a href="#" class="torah-link">Torah 203</a>
-          <a href="#" class="torah-link">Torah 204</a>
-          <a href="#" class="torah-link">Torah 205</a>
-          <a href="#" class="torah-link">Torah 206</a>
-          <a href="#" class="torah-link">Torah 207</a>
-          <a href="#" class="torah-link">Torah 208</a>
-          <a href="#" class="torah-link">Torah 209</a>
-          <a href="#" class="torah-link">Torah 210</a>
-          <a href="#" class="torah-link">Torah 211</a>
-          <a href="#" class="torah-link">Torah 212</a>
-          <a href="#" class="torah-link">Torah 213</a>
-          <a href="#" class="torah-link">Torah 214</a>
-          <a href="#" class="torah-link">Torah 215</a>
-          <a href="#" class="torah-link">Torah 216</a>
-          <a href="#" class="torah-link">Torah 217</a>
-          <a href="#" class="torah-link">Torah 218</a>
-          <a href="#" class="torah-link">Torah 219</a>
-          <a href="#" class="torah-link">Torah 220</a>
-          <a href="#" class="torah-link">Torah 221</a>
-          <a href="#" class="torah-link">Torah 222</a>
-          <a href="#" class="torah-link">Torah 223</a>
-          <a href="#" class="torah-link">Torah 224</a>
-          <a href="#" class="torah-link">Torah 225</a>
-          <a href="#" class="torah-link">Torah 226</a>
-          <a href="#" class="torah-link">Torah 227</a>
-          <a href="#" class="torah-link">Torah 228</a>
-          <a href="#" class="torah-link">Torah 229</a>
-          <a href="#" class="torah-link">Torah 230</a>
-          <a href="#" class="torah-link">Torah 231</a>
-          <a href="#" class="torah-link">Torah 232</a>
-          <a href="#" class="torah-link">Torah 233</a>
-          <a href="#" class="torah-link">Torah 234</a>
-          <a href="#" class="torah-link">Torah 235</a>
-          <a href="#" class="torah-link">Torah 236</a>
-          <a href="#" class="torah-link">Torah 237</a>
-          <a href="#" class="torah-link">Torah 238</a>
-          <a href="#" class="torah-link">Torah 239</a>
-          <a href="#" class="torah-link">Torah 240</a>
-          <a href="#" class="torah-link">Torah 241</a>
-          <a href="#" class="torah-link">Torah 242</a>
-          <a href="#" class="torah-link">Torah 243</a>
-          <a href="#" class="torah-link">Torah 244</a>
-          <a href="#" class="torah-link">Torah 245</a>
-          <a href="#" class="torah-link">Torah 246</a>
-          <a href="#" class="torah-link">Torah 247</a>
-          <a href="#" class="torah-link">Torah 248</a>
-          <a href="#" class="torah-link">Torah 249</a>
-          <a href="#" class="torah-link">Torah 250</a>
-          <a href="#" class="torah-link">Torah 251</a>
-          <a href="#" class="torah-link">Torah 252</a>
-          <a href="#" class="torah-link">Torah 253</a>
-          <a href="#" class="torah-link">Torah 254</a>
-          <a href="#" class="torah-link">Torah 255</a>
-          <a href="#" class="torah-link">Torah 256</a>
-          <a href="#" class="torah-link">Torah 257</a>
-          <a href="#" class="torah-link">Torah 258</a>
-          <a href="#" class="torah-link">Torah 259</a>
-          <a href="#" class="torah-link">Torah 260</a>
-          <a href="#" class="torah-link">Torah 261</a>
-          <a href="#" class="torah-link">Torah 262</a>
-          <a href="#" class="torah-link">Torah 263</a>
-          <a href="#" class="torah-link">Torah 264</a>
-          <a href="#" class="torah-link">Torah 265</a>
-          <a href="#" class="torah-link">Torah 266</a>
-          <a href="#" class="torah-link">Torah 267</a>
-          <a href="#" class="torah-link">Torah 268</a>
-          <a href="#" class="torah-link">Torah 269</a>
-          <a href="#" class="torah-link">Torah 270</a>
-          <a href="#" class="torah-link">Torah 271</a>
-          <a href="#" class="torah-link">Torah 272</a>
-          <a href="#" class="torah-link">Torah 273</a>
-          <a href="#" class="torah-link">Torah 274</a>
-          <a href="#" class="torah-link">Torah 275</a>
-          <a href="#" class="torah-link">Torah 276</a>
-          <a href="#" class="torah-link">Torah 277</a>
-          <a href="#" class="torah-link">Torah 278</a>
-          <a href="#" class="torah-link">Torah 279</a>
-          <a href="#" class="torah-link">Torah 280</a>
-          <a href="#" class="torah-link">Torah 281</a>
-          <a href="#" class="torah-link">Torah 282</a>
-          <a href="#" class="torah-link">Torah 283</a>
-          <a href="#" class="torah-link">Torah 284</a>
-          <a href="#" class="torah-link">Torah 285</a>
-          <a href="#" class="torah-link">Torah 286</a>
-        </div>
-      </div>
-    </div>
-
-    <!-- Volume 2 -->
-    <div class="volume-section">
-      <div class="volume-header">
-        <h2>Volume II (Tinyana)</h2>
-        <span class="count">125 Torah Lessons</span>
-      </div>
-      <div class="volume-body">
-        <div class="section-header">Front Matter</div>
-        <div class="torah-grid">
-          <a href="/teachings/likutay-moharan-volume-2-introduction" class="torah-link">Introduction</a>
-          <a href="/teachings/likutay-moharan-omission-abraham" class="torah-link">Omission - Abraham Was One</a>
-        </div>
-
-        <div class="section-header">Torahs 1-125</div>
-        <div class="torah-grid">
-          <a href="/teachings/likutay-moharan-volume-2-torah-1" class="torah-link">Torah 1</a>
-          <a href="#" class="torah-link">Torah 2</a>
-          <a href="#" class="torah-link">Torah 3</a>
-          <a href="#" class="torah-link">Torah 4</a>
-          <a href="#" class="torah-link">Torah 5</a>
-          <a href="#" class="torah-link">Torah 6</a>
-          <a href="#" class="torah-link">Torah 7</a>
-          <a href="#" class="torah-link">Torah 8</a>
-          <a href="#" class="torah-link">Torah 9</a>
-          <a href="/teachings/likutay-moharan-volume-2-torah-10" class="torah-link">Torah 10</a>
-          <a href="#" class="torah-link">Torah 11</a>
-          <a href="/teachings/likutay-moharan-volume-2-torah-12" class="torah-link">Torah 12</a>
-          <a href="/teachings/likutay-moharan-volume-2-torah-13" class="torah-link">Torah 13</a>
-          <a href="#" class="torah-link">Torah 14</a>
-          <a href="/teachings/likutay-moharan-volume-2-torah-15" class="torah-link">Torah 15</a>
-          <a href="#" class="torah-link">Torah 16</a>
-          <a href="#" class="torah-link">Torah 17</a>
-          <a href="#" class="torah-link">Torah 18</a>
-          <a href="#" class="torah-link">Torah 19</a>
-          <a href="#" class="torah-link">Torah 20</a>
-          <a href="#" class="torah-link">Torah 21</a>
-          <a href="/teachings/likutay-moharan-volume-2-torah-22" class="torah-link">Torah 22</a>
-          <a href="/teachings/likutay-moharan-volume-2-torah-23" class="torah-link">Torah 23</a>
-          <a href="#" class="torah-link">Torah 24</a>
-          <a href="#" class="torah-link">Torah 25</a>
-          <a href="#" class="torah-link">Torah 26</a>
-          <a href="#" class="torah-link">Torah 27</a>
-          <a href="/teachings/likutay-moharan-volume-2-torah-28" class="torah-link">Torah 28</a>
-          <a href="/teachings/likutay-moharan-volume-2-torah-29" class="torah-link">Torah 29</a>
-          <a href="/teachings/likutay-moharan-volume-2-torah-30" class="torah-link">Torah 30</a>
-          <a href="#" class="torah-link">Torah 31</a>
-          <a href="/teachings/likutay-moharan-volume-2-torah-32" class="torah-link">Torah 32</a>
-          <a href="#" class="torah-link">Torah 33</a>
-          <a href="#" class="torah-link">Torah 34</a>
-          <a href="#" class="torah-link">Torah 35</a>
-          <a href="/teachings/likutay-moharan-volume-2-torah-36" class="torah-link">Torah 36</a>
-          <a href="#" class="torah-link">Torah 37</a>
-          <a href="/teachings/likutay-moharan-volume-2-torah-38" class="torah-link">Torah 38</a>
-          <a href="#" class="torah-link">Torah 39</a>
-          <a href="#" class="torah-link">Torah 40</a>
-          <a href="#" class="torah-link">Torah 41</a>
-          <a href="/teachings/likutay-moharan-volume-2-torah-42" class="torah-link">Torah 42</a>
-          <a href="/teachings/likutay-moharan-volume-2-torah-43" class="torah-link">Torah 43</a>
-          <a href="#" class="torah-link">Torah 44</a>
-          <a href="/teachings/likutay-moharan-volume-2-torah-45" class="torah-link">Torah 45</a>
-          <a href="#" class="torah-link">Torah 46</a>
-          <a href="/teachings/likutay-moharan-volume-2-torah-47" class="torah-link">Torah 47</a>
-          <a href="/teachings/likutay-moharan-torah-48" class="torah-link">Torah 48</a>
-          <a href="#" class="torah-link">Torah 49</a>
-          <a href="/teachings/likutay-moharan-volume-2-torah-50" class="torah-link">Torah 50</a>
-          <a href="/teachings/likutay-moharan-volume-2-torah-51" class="torah-link">Torah 51</a>
-          <a href="#" class="torah-link">Torah 52</a>
-          <a href="#" class="torah-link">Torah 53</a>
-          <a href="/teachings/likutay-moharan-volume-2-torah-54" class="torah-link">Torah 54</a>
-          <a href="/teachings/likutay-moharan-volume-2-torah-55" class="torah-link">Torah 55</a>
-          <a href="#" class="torah-link">Torah 56</a>
-          <a href="#" class="torah-link">Torah 57</a>
-          <a href="#" class="torah-link">Torah 58</a>
-          <a href="/teachings/likutay-moharan-volume-2-torah-59" class="torah-link">Torah 59</a>
-          <a href="#" class="torah-link">Torah 60</a>
-          <a href="#" class="torah-link">Torah 61</a>
-          <a href="/teachings/likutay-moharan-volume-2-torah-62" class="torah-link">Torah 62</a>
-          <a href="#" class="torah-link">Torah 63</a>
-          <a href="#" class="torah-link">Torah 64</a>
-          <a href="/teachings/likutay-moharan-volume-2-torah-65" class="torah-link">Torah 65</a>
-          <a href="/teachings/likutay-moharan-volume-2-torah-66" class="torah-link">Torah 66</a>
-          <a href="#" class="torah-link">Torah 67</a>
-          <a href="#" class="torah-link">Torah 68</a>
-          <a href="#" class="torah-link">Torah 69</a>
-          <a href="#" class="torah-link">Torah 70</a>
-          <a href="/teachings/likutay-moharan-volume-2-torah-71" class="torah-link">Torah 71</a>
-          <a href="#" class="torah-link">Torah 72</a>
-          <a href="/teachings/likutay-moharan-volume-2-torah-73" class="torah-link">Torah 73</a>
-          <a href="#" class="torah-link">Torah 74</a>
-          <a href="#" class="torah-link">Torah 75</a>
-          <a href="/teachings/likutay-moharan-volume-2-torah-76" class="torah-link">Torah 76</a>
-          <a href="/teachings/likutay-moharan-volume-2-torah-77" class="torah-link">Torah 77</a>
-          <a href="#" class="torah-link">Torah 78</a>
-          <a href="/teachings/likutay-moharan-volume-2-torah-79" class="torah-link">Torah 79</a>
-          <a href="#" class="torah-link">Torah 80</a>
-          <a href="/teachings/likutay-moharan-volume-2-torah-81" class="torah-link">Torah 81</a>
-          <a href="#" class="torah-link">Torah 82</a>
-          <a href="/teachings/likutay-moharan-volume-2-torah-83" class="torah-link">Torah 83</a>
-          <a href="#" class="torah-link">Torah 84</a>
-          <a href="/teachings/likutay-moharan-volume-2-torah-85" class="torah-link">Torah 85</a>
-          <a href="#" class="torah-link">Torah 86</a>
-          <a href="/teachings/likutay-moharan-volume-2-torah-87" class="torah-link">Torah 87</a>
-          <a href="#" class="torah-link">Torah 88</a>
-          <a href="#" class="torah-link">Torah 89</a>
-          <a href="/teachings/likutay-moharan-volume-2-torah-90" class="torah-link">Torah 90</a>
-          <a href="#" class="torah-link">Torah 91</a>
-          <a href="#" class="torah-link">Torah 92</a>
-          <a href="/teachings/likutay-moharan-volume-2-torah-93" class="torah-link">Torah 93</a>
-          <a href="#" class="torah-link">Torah 94</a>
-          <a href="/teachings/likutay-moharan-volume-2-torah-95" class="torah-link">Torah 95</a>
-          <a href="/teachings/likutay-moharan-volume-2-torah-96" class="torah-link">Torah 96</a>
-          <a href="/teachings/likutay-moharan-volume-2-torah-97" class="torah-link">Torah 97</a>
-          <a href="#" class="torah-link">Torah 98</a>
-          <a href="#" class="torah-link">Torah 99</a>
-          <a href="#" class="torah-link">Torah 100</a>
-          <a href="#" class="torah-link">Torah 101</a>
-          <a href="#" class="torah-link">Torah 102</a>
-          <a href="/teachings/likutay-moharan-volume-2-torah-103" class="torah-link">Torah 103</a>
-          <a href="#" class="torah-link">Torah 104</a>
-          <a href="#" class="torah-link">Torah 105</a>
-          <a href="#" class="torah-link">Torah 106</a>
-          <a href="#" class="torah-link">Torah 107</a>
-          <a href="#" class="torah-link">Torah 108</a>
-          <a href="#" class="torah-link">Torah 109</a>
-          <a href="#" class="torah-link">Torah 110</a>
-          <a href="#" class="torah-link">Torah 111</a>
-          <a href="#" class="torah-link">Torah 112</a>
-          <a href="#" class="torah-link">Torah 113</a>
-          <a href="#" class="torah-link">Torah 114</a>
-          <a href="#" class="torah-link">Torah 115</a>
-          <a href="/teachings/likutay-moharan-volume-2-torah-116" class="torah-link">Torah 116</a>
-          <a href="#" class="torah-link">Torah 117</a>
-          <a href="#" class="torah-link">Torah 118</a>
-          <a href="#" class="torah-link">Torah 119</a>
-          <a href="#" class="torah-link">Torah 120</a>
-          <a href="#" class="torah-link">Torah 121</a>
-          <a href="#" class="torah-link">Torah 122</a>
-          <a href="#" class="torah-link">Torah 123</a>
-          <a href="#" class="torah-link">Torah 124</a>
-          <a href="#" class="torah-link">Torah 125</a>
-        </div>
-      </div>
-    </div>
-
-    <!-- Handwritten Manuscripts -->
-    <div class="volume-section">
-      <div class="volume-header">
-        <h2>Handwritten Manuscripts</h2>
-        <span class="count">Additional Teachings</span>
-      </div>
-      <div class="volume-body">
-        <div class="section-header">Manuscripts</div>
-        <div class="torah-grid">
-          <a href="/teachings/likutay-moharan-manuscripts" class="torah-link">Introduction</a>
-          <a href="/teachings/likutay-moharan-manuscript-1" class="torah-link">Manuscript #1</a>
-          <a href="/teachings/likutay-moharan-manuscript-2" class="torah-link">Manuscript #2</a>
-          <a href="/teachings/likutay-moharan-manuscript-3" class="torah-link">Manuscript #3</a>
-          <a href="/teachings/likutay-moharan-manuscript-4" class="torah-link">Manuscript #4</a>
-          <a href="/teachings/likutay-moharan-manuscript-5" class="torah-link">Manuscript #5</a>
-          <a href="/teachings/likutay-moharan-manuscript-6" class="torah-link">Manuscript #6</a>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</section>
-
-<section class="navigation">
-  <div class="container">
-    <div class="nav-buttons">
-      <a href="/teachings" class="nav-btn">
-        <span class="arrow">←</span>
-        <span class="text">All Teachings</span>
+    <div class="torah-grid">
+      <a href="/teachings/likutay-moharan-volume-1-torah-1" class="torah-link">
+        <div class="torah-title">Torah 1</div>
+        <div class="torah-desc">Happy are those whose way is perfect</div>
+      </a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-2" class="torah-link">
+        <div class="torah-title">Torah 2</div>
+        <div class="torah-desc">Say to them, live!</div>
+      </a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-3" class="torah-link">
+        <div class="torah-title">Torah 3</div>
+        <div class="torah-desc">A treasury of wisdom</div>
+      </a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-4" class="torah-link">
+        <div class="torah-title">Torah 4</div>
+        <div class="torah-desc">Anokhi Hashem Elokeikha</div>
+      </a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-5" class="torah-link">
+        <div class="torah-title">Torah 5</div>
+        <div class="torah-desc">With trumpets and sound of shofar</div>
+      </a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-6" class="torah-link">
+        <div class="torah-title">Torah 6</div>
+        <div class="torah-desc">Call Joshua</div>
+      </a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-7" class="torah-link">
+        <div class="torah-title">Torah 7</div>
+        <div class="torah-desc">Looking at the face of the tzadikim</div>
+      </a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-8" class="torah-link">
+        <div class="torah-title">Torah 8</div>
+        <div class="torah-desc">The aspect of Rosh Hashanah</div>
+      </a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-9" class="torah-link">
+        <div class="torah-title">Torah 9</div>
+        <div class="torah-desc">Essential advice for every person</div>
+      </a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-10" class="torah-link">
+        <div class="torah-title">Torah 10</div>
+        <div class="torah-desc">These are the judgments</div>
+      </a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-11" class="torah-link">
+        <div class="torah-title">Torah 11</div>
+        <div class="torah-desc">I am Hashem He is My name</div>
+      </a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-12" class="torah-link">
+        <div class="torah-title">Torah 12</div>
+        <div class="torah-desc">Praise to David</div>
+      </a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-13" class="torah-link">
+        <div class="torah-title">Torah 13</div>
+        <div class="torah-desc">To draw complete supervision</div>
+      </a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-14" class="torah-link">
+        <div class="torah-title">Torah 14</div>
+        <div class="torah-desc">To draw peace in the world</div>
+      </a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-15" class="torah-link">
+        <div class="torah-title">Torah 15</div>
+        <div class="torah-desc">Who wants to taste the hidden</div>
+      </a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-16" class="torah-link">
+        <div class="torah-title">Torah 16</div>
+        <div class="torah-desc">The fish that took out its head</div>
+      </a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-17" class="torah-link">
+        <div class="torah-title">Torah 17</div>
+        <div class="torah-desc">They were emptying their hearts</div>
+      </a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-18" class="torah-link">
+        <div class="torah-title">Torah 18</div>
+        <div class="torah-desc">Kartalisa - Treasure Chest</div>
+      </a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-19" class="torah-link">
+        <div class="torah-title">Torah 19</div>
+        <div class="torah-desc">Prayer of Habakkuk</div>
+      </a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-20" class="torah-link">
+        <div class="torah-title">Torah 20</div>
+        <div class="torah-desc">The aspects of prayer</div>
+      </a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-21" class="torah-link">
+        <div class="torah-title">Torah 21</div>
+        <div class="torah-desc">The essence of emunah</div>
+      </a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-22" class="torah-link">
+        <div class="torah-title">Torah 22</div>
+        <div class="torah-desc">Chosam within a Chosam</div>
+      </a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-23" class="torah-link">
+        <div class="torah-title">Torah 23</div>
+        <div class="torah-desc">The way of Breslov</div>
+      </a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-24" class="torah-link">
+        <div class="torah-title">Torah 24</div>
+        <div class="torah-desc">The path of truth</div>
+      </a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-25" class="torah-link">
+        <div class="torah-title">Torah 25</div>
+        <div class="torah-desc">Hisbodidus - hitbodedut</div>
+      </a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-26" class="torah-link">
+        <div class="torah-title">Torah 26</div>
+        <div class="torah-desc">A powerful arousal</div>
+      </a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-27" class="torah-link">
+        <div class="torah-title">Torah 27</div>
+        <div class="torah-desc">The chick that died in its egg</div>
+      </a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-28" class="torah-link">
+        <div class="torah-title">Torah 28</div>
+        <div class="torah-desc">Build for us a house</div>
+      </a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-29" class="torah-link">
+        <div class="torah-title">Torah 29</div>
+        <div class="torah-desc">This man who goes to request</div>
+      </a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-30" class="torah-link">
+        <div class="torah-title">Torah 30</div>
+        <div class="torah-desc">Torah 30</div>
+      </a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-31" class="torah-link">
+        <div class="torah-title">Torah 31</div>
+        <div class="torah-desc">Torah 31</div>
+      </a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-32" class="torah-link">
+        <div class="torah-title">Torah 32</div>
+        <div class="torah-desc">My Lord, open my lips</div>
+      </a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-33" class="torah-link">
+        <div class="torah-title">Torah 33</div>
+        <div class="torah-desc">Who is the man who desires life</div>
+      </a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-34" class="torah-link">
+        <div class="torah-title">Torah 34</div>
+        <div class="torah-desc">You shall be to Me a Kingdom</div>
+      </a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-35" class="torah-link">
+        <div class="torah-title">Torah 35</div>
+        <div class="torah-desc">Happy are the people who know</div>
+      </a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-36" class="torah-link">
+        <div class="torah-title">Torah 36</div>
+        <div class="torah-desc">Torah 36</div>
+      </a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-37" class="torah-link">
+        <div class="torah-title">Torah 37</div>
+        <div class="torah-desc">Torah 37</div>
+      </a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-38" class="torah-link">
+        <div class="torah-title">Torah 38</div>
+        <div class="torah-desc">Torah 38</div>
+      </a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-39" class="torah-link">
+        <div class="torah-title">Torah 39</div>
+        <div class="torah-desc">Torah 39</div>
+      </a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-40" class="torah-link">
+        <div class="torah-title">Torah 40</div>
+        <div class="torah-desc">Torah 40</div>
+      </a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-41" class="torah-link">
+        <div class="torah-title">Torah 41</div>
+        <div class="torah-desc">Torah 41</div>
+      </a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-42" class="torah-link">
+        <div class="torah-title">Torah 42</div>
+        <div class="torah-desc">Torah 42</div>
+      </a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-43" class="torah-link">
+        <div class="torah-title">Torah 43</div>
+        <div class="torah-desc">Torah 43</div>
+      </a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-45" class="torah-link">
+        <div class="torah-title">Torah 45</div>
+        <div class="torah-desc">Torah 45</div>
       </a>
     </div>
+    
+    <div class="navigation-links">
+      <a href="/teachings" class="nav-link">← Back to Teachings</a>
+    </div>
   </div>
 </section>
+
+---
+import Layout from '../../layouts/Layout.astro';

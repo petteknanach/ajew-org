@@ -1,5 +1,5 @@
 ---
-const pageTitle = "Likutay Moharan Intro";
+const pageTitle = "Likutay Moharan - Introduction";
 const pageDescription = "Introduction to Likutay Moharan";
 ---
 
@@ -7,16 +7,44 @@ const pageDescription = "Introduction to Likutay Moharan";
   .page-header {
     background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
     color: white;
-    padding: 3rem 2rem;
+    padding: 4rem 2rem;
     text-align: center;
   }
   .page-header h1 {
     font-family: var(--font-hebrew);
-    font-size: 2rem;
+    font-size: 2.5rem;
     margin-bottom: 0.5rem;
   }
+  .page-header .subtitle {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    font-style: italic;
+  }
   .container { max-width: 800px; margin: 0 auto; padding: 0 2rem; }
-  .content { padding: 4rem 0; }
+  .navigation {
+    background: #f7f5f0;
+    padding: 1rem 0;
+  }
+  .nav-links {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .nav-link {
+    color: #1a365d;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.2s;
+  }
+  .nav-link:hover {
+    background: #1a365d;
+    color: white;
+  }
+  .content { padding: 3rem 0; }
   .content-text {
     background: white;
     padding: 3rem;
@@ -25,69 +53,72 @@ const pageDescription = "Introduction to Likutay Moharan";
   }
   .content-text :global(p) {
     font-size: 1.1rem;
-    line-height: 2;
+    line-height: 1.9;
     color: #333;
     margin-bottom: 1.5rem;
     text-align: justify;
   }
+  .footer-nav {
+    background: #1a365d;
+    padding: 2rem 0;
+  }
   .back-link {
-    display: inline-block;
-    margin-top: 2rem;
-    color: var(--color-primary);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: white;
     text-decoration: none;
+    padding: 0.75rem 1.5rem;
+    background: rgba(255,255,255,0.1);
+    border-radius: 8px;
+  }
+  .back-link:hover {
+    background: rgba(255,255,255,0.2);
+  }
+  @media (max-width: 768px) {
+    .nav-links { flex-direction: column; }
   }
 </style>
 
 <section class="page-header">
-  <h1>Likutay Moharan Intro</h1>
+  <h1>Introduction to Likutay Moharan</h1>
 </section>
 
 <nav class="navigation">
   <div class="container">
-    <a href="/teachings" class="back-link">← Back to Teachings</a>
+    <div class="nav-links">
+      <a href="/teachings" class="nav-link">← All Teachings</a>
+      <a href="/teachings/likutay-moharan" class="nav-link">← Likutay Moharan Index</a>
+    </div>
   </div>
 </nav>
 
 <section class="content">
   <div class="container">
     <div class="content-text">
-<p>The
-Book of</p>
-<p>The
-Life of Our Leader Rabbi Nachman</p>
-<p>Introduction</p>
-<p>"Who
-will relate the mighty actions of Hashem, make heard all His praise?"
-(Psalms 106). Who can tell over, who can fathom, all the great, and
-wondrous, and awesome things done by our master, our teacher, and our
-rabbi, light of lights, pure, pristine light, the cached, and hidden,
-and concealed light, with the collective entirety of the souls of
-Israel, upon whom (/which) are contingent all the worlds. And
-especially that which he accomplished and did with his men close to
-him who merited to revel in the holy shade of his shadow, and to hear
-from his mouth what they heard, matters which Atteek Yoamin
-(-Ancient of Days – a Supernal Divine Countenance – Daniel 7:9)
-concealed (Pesachim 119a). And particularly, that which he worked and
-did with my poor and destitute self, that he erected me from the dust
-and the dumps, and sat me down next to him, and with his mercy drew
-me even more, close to him, and placed his hand on me (-approbation,
-ordination) to receive and to write all his words of Torah, and his
-discourses, and his legendary tales. All and everything he merited me
-that it should be written by my hand, and he said explicitly (Chuchma
-and Beena article 21, and this is a seeming resolution to the query
-in Yisroel Saba chapter "Above Nature," that "a little" goes
-on Rabbi Nussun as well as Rabbi Naftoli) that there is no one that
-knows from him, except for I (-Rabbi Nussun), a little, and many
-additional such expressions.</p>
-<p>And
-in truth, my soul knows very well what is impossible to tell over
-whatsoever, and I already wrote a lot, and I told over orally to my
-friends and my students a very great deal, and thank G-d my words
-made an impact, with his great power, that the truth entered their
-hearts like burning fire, and they were aroused plen</parameter>
+<p><strong>Likutay Moharan</strong> (ליקוטי מוהר"ן - Collected Teachings of Rabbi Nachman) is the magnum opus of Breslov Chassidus, containing the Torah teachings given by Rabbi Nachman of Breslov (1772-1810) throughout his life.</p>
+
+<p>These teachings span a vast range of topics: faith, joy, prayer, repentance, Torah study, hitbodedut (seclusion with God), simcha (joy), and the path to true closeness with the Creator. Rabbi Nachman's unique approach combines deep Kabbalistic wisdom with practical advice for daily life.</p>
+
+<p>The Likutay Moharan is divided into two volumes:</p>
+
+<p><strong>Volume 1</strong> contains Torah teachings given from 1805 until Rabbi Nachman's passing in 1810. These torahs were written down by his close disciple, Rabbi Natan of Breslov, and include both public teachings and more esoteric insights.</p>
+
+<p><strong>Volume 2</strong> contains earlier teachings, including the famous Torah 48 "The Whole World is a Very Narrow Bridge," and many other profound discourses on faith, joy, and Moshiach.</p>
+
+<p>Each torah in this collection is presented with its complete text - no truncation, preserved exactly as translated from the original.</p>
     </div>
   </div>
 </section>
+
+<nav class="footer-nav">
+  <div class="container">
+    <a href="/teachings/likutay-moharan" class="back-link">
+      <span>←</span>
+      <span>Back to Likutay Moharan</span>
+    </a>
+  </div>
+</nav>
 
 ---
 import Layout from '../../layouts/Layout.astro';
