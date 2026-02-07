@@ -1,0 +1,207 @@
+---
+const pageTitle = "Subscribe - NNNNM Community";
+const pageDescription = "Join our Breslov learning community";
+---
+
+<style>
+  .page-header {
+    background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
+    color: white;
+    padding: 5rem 2rem;
+    text-align: center;
+  }
+  .page-header h1 { font-family: var(--font-hebrew); font-size: 2.5rem; margin-bottom: 0.5rem; }
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+  .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; padding: 4rem 0; }
+  .pricing-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2.5rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    text-align: center;
+    border: 2px solid transparent;
+    transition: all 0.3s;
+  }
+  .pricing-card:hover { transform: translateY(-4px); box-shadow: 0 8px 30px rgba(0,0,0,0.15); }
+  .pricing-card.featured { border-color: #744210; position: relative; }
+  .pricing-card.featured::before { content: 'Popular'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #744210; color: white; padding: 0.25rem 1rem; border-radius: 20px; font-size: 0.85rem; }
+  .tier-name { font-size: 1.5rem; font-weight: 700; color: #1a365d; margin-bottom: 0.5rem; }
+  .price { font-size: 3rem; font-weight: 800; color: #744210; }
+  .price span { font-size: 1rem; color: #666; font-weight: 400; }
+  .features { list-style: none; padding: 1.5rem 0; margin: 1.5rem 0; border-top: 1px solid #eee; text-align: right; }
+  .features li { padding: 0.5rem 0; color: #555; }
+  .features li::before { content: '✓'; color: #059669; margin-left: 0.5rem; font-weight: bold; }
+  .subscribe-btn {
+    width: 100%;
+    padding: 1rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .subscribe-btn.primary { background: linear-gradient(135deg, #744210 0%, #975a16 100%); color: white; }
+  .subscribe-btn.primary:hover { transform: scale(1.02); }
+  .subscribe-btn.secondary { background: #1a365d; color: white; }
+  .subscribe-btn.secondary:hover { background: #2c5282; }
+  .auth-section { background: #f7f5f0; padding: 4rem 0; margin-top: 3rem; }
+  .auth-box { max-width: 400px; margin: 0 auto; background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+  .form-group { margin-bottom: 1rem; }
+  .form-group label { display: block; margin-bottom: 0.5rem; color: #333; font-weight: 500; }
+  .form-group input { width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; }
+  .nav-links { display: flex; justify-content: center; gap: 1rem; margin-top: 2rem; }
+  .nav-link { color: white; text-decoration: none; padding: 0.5rem 1rem; background: rgba(255,255,255,0.2); border-radius: 8px; }
+  .nav-link:hover { background: rgba(255,255,255,0.3); }
+  .info-section { background: #fef3c7; padding: 4rem 0; margin-top: 3rem; }
+  .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; }
+  .info-card { background: white; padding: 1.5rem; border-radius: 12px; text-align: center; }
+  .info-card h3 { color: #744210; margin-bottom: 0.5rem; }
+</style>
+
+<section class="page-header">
+  <h1>🗝️ Join Our Community</h1>
+  <p>Access exclusive Breslov learning content and connect with fellow seekers</p>
+  <div class="nav-links">
+    <a href="/teachings" class="nav-link">📖 Browse Teachings</a>
+    <a href="/chat" class="nav-link">💬 Enter Chat</a>
+  </div>
+</section>
+
+<main class="container">
+  <section class="pricing-grid">
+    <!-- Free Tier -->
+    <div class="pricing-card">
+      <div class="tier-name">Free</div>
+      <div class="price">$0<span>/forever</span></div>
+      <ul class="features">
+        <li>Browse all teachings</li>
+        <li>Read stories & Torah</li>
+        <li>Search content</li>
+        <li>Basic access</li>
+      </ul>
+      <button class="subscribe-btn secondary" onclick="showAuth('free')">Sign Up Free</button>
+    </div>
+
+    <!-- Basic Tier -->
+    <div class="pricing-card featured">
+      <div class="tier-name">Basic</div>
+      <div class="price">$1<span>/month</span></div>
+      <ul class="features">
+        <li>Everything in Free</li>
+        <li>💬 Join chat rooms</li>
+        <li>💬 Comment on teachings</li>
+        <li>User profile</li>
+      </ul>
+      <button class="subscribe-btn primary" onclick="selectTier('basic')">Subscribe - $1/mo</button>
+    </div>
+
+    <!-- Premium Tier -->
+    <div class="pricing-card">
+      <div class="tier-name">Premium</div>
+      <div class="price">$5<span>/month</span></div>
+      <ul class="features">
+        <li>Everything in Basic</li>
+        <li>📩 Private messaging</li>
+        <li>🎯 Priority support</li>
+        <li>📅 Member events</li>
+      </ul>
+      <button class="subscribe-btn primary" onclick="selectTier('premium')">Subscribe - $5/mo</button>
+    </div>
+
+    <!-- Super Tier -->
+    <div class="pricing-card">
+      <div class="tier-name">Super</div>
+      <div class="price">$10<span>/month</span></div>
+      <ul class="features">
+        <li>Everything in Premium</li>
+        <li>🎵 Audio recordings</li>
+        <li>🎥 Live sessions</li>
+        <li>⭐ Special recognition</li>
+      </ul>
+      <button class="subscribe-btn primary" onclick="selectTier('super')">Subscribe - $10/mo</button>
+    </div>
+  </section>
+</section>
+
+<section class="auth-section">
+  <div class="container">
+    <h2 style="text-align: center; margin-bottom: 2rem;">Already a member? Sign In</h2>
+    <div class="auth-box">
+      <form id="authForm">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="email" placeholder="your@email.com" required>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="password" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="subscribe-btn primary">Sign In</button>
+      </form>
+      <p style="text-align: center; margin-top: 1rem; color: #666;">
+        <a href="#" onclick="showPasswordReset(); return false;">Forgot password?</a>
+      </p>
+      <p style="text-align: center; margin-top: 1.5rem; color: #888;">
+        Or continue with:
+      </p>
+      <button class="subscribe-btn secondary" style="margin-top: 0.5rem;" onclick="signInWithGoogle()">
+        🔵 Sign in with Google
+      </button>
+    </div>
+  </div>
+</section>
+
+<section class="info-section">
+  <div class="container">
+    <h2 style="text-align: center; margin-bottom: 2rem;">Why Subscribe?</h2>
+    <div class="info-grid">
+      <div class="info-card">
+        <h3>🕎 Learn Together</h3>
+        <p>Connect with fellow Breslov seekers and deepen your understanding of Rabbi Nachman's wisdom</p>
+      </div>
+      <div class="info-card">
+        <h3>💬 Real-time Chat</h3>
+        <p>Discuss teachings, ask questions, and share insights in real-time with the community</p>
+      </div>
+      <div class="info-card">
+        <h3>📿 Exclusive Content</h3>
+        <p>Access premium audio, live sessions, and special teachings not available publicly</p>
+      </div>
+      <div class="info-card">
+        <h3>🌟 Support the Mission</h3>
+        <p>Your subscription helps keep ajew.org running and spreading Rabbi Nachman's light</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+// Subscription system placeholder
+// In production, integrate with Stripe and Firebase
+
+function selectTier(tier) {
+  const prices = { basic: '$1', premium: '$5', super: '$10' };
+  alert(`Subscription system coming soon!\n\nSelected: ${tier.charAt(0).toUpperCase() + tier.slice(1)} - ${prices[tier]}/month\n\nPlease check back shortly.`);
+}
+
+function showAuth(tier) {
+  document.getElementById('authForm').scrollIntoView({ behavior: 'smooth' });
+}
+
+function signInWithGoogle() {
+  alert('Google Sign-In coming soon!\n\nPlease check back shortly.');
+}
+
+function showPasswordReset() {
+  alert('Password reset coming soon!\n\nContact support@ajew.org for assistance.');
+}
+
+document.getElementById('authForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  alert('Sign in coming soon!\n\nPlease check back shortly.');
+});
+</script>
+
+---
+import Layout from '../layouts/Layout.astro';

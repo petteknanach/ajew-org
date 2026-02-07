@@ -1,0 +1,231 @@
+---
+const pageTitle = "NNNNM Community Chat";
+const pageDescription = "Real-time chat for Breslov learning community";
+---
+
+<style>
+  .page-header {
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    color: white;
+    padding: 3rem 2rem;
+  }
+  .page-header h1 { font-family: var(--font-hebrew); font-size: 2rem; margin-bottom: 0.5rem; }
+  .container { max-width: 1400px; margin: 0 auto; padding: 0 1rem; }
+  .chat-layout { display: grid; grid-template-columns: 280px 1fr; gap: 1rem; height: calc(100vh - 200px); min-height: 500px; padding: 1rem 0; }
+  .sidebar { background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); overflow: hidden; }
+  .sidebar-header { background: #1a365d; color: white; padding: 1rem; font-weight: 600; }
+  .room-list { list-style: none; padding: 0; margin: 0; overflow-y: auto; max-height: calc(100% - 60px); }
+  .room-item { padding: 1rem; border-bottom: 1px solid #eee; cursor: pointer; transition: all 0.2s; }
+  .room-item:hover { background: #f7f5f0; }
+  .room-item.active { background: #fef3c7; border-right: 3px solid #744210; }
+  .room-name { font-weight: 600; color: #1a365d; display: flex; align-items: center; gap: 0.5rem; }
+  .room-desc { font-size: 0.85rem; color: #666; margin-top: 0.25rem; }
+  .room-count { font-size: 0.75rem; color: #888; float: right; }
+  .main-chat { background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); display: flex; flex-direction: column; overflow: hidden; }
+  .chat-header { background: #f7f5f0; padding: 1rem; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+  .chat-header h2 { margin: 0; color: #1a365d; font-size: 1.2rem; }
+  .chat-status { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: #059669; }
+  .chat-status::before { content: ''; width: 8px; height: 8px; background: #059669; border-radius: 50%; }
+  .messages { flex: 1; overflow-y: auto; padding: 1rem; background: #fafafa; }
+  .message { margin-bottom: 1rem; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .message-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem; }
+  .message-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #744210 0%, #975a16 100%); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.9rem; }
+  .message-author { font-weight: 600; color: #1a365d; }
+  .message-time { font-size: 0.75rem; color: #888; }
+  .message-content { background: white; padding: 0.75rem 1rem; border-radius: 12px; margin-right: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  .message.my-message .message-content { background: #fef3c7; margin-right: 0; margin-left: 2rem; }
+  .message-input { padding: 1rem; background: white; border-top: 1px solid #eee; display: flex; gap: 1rem; }
+  .message-input input { flex: 1; padding: 0.75rem 1rem; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; }
+  .message-input input:focus { outline: none; border-color: #744210; }
+  .send-btn { padding: 0.75rem 1.5rem; background: linear-gradient(135deg, #059669 0%, #10b981 100%); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .send-btn:hover { transform: scale(1.02); }
+  .sidebar-footer { padding: 1rem; border-top: 1px solid #eee; background: #f7f5f0; }
+  .user-info { display: flex; align-items: center; gap: 0.75rem; }
+  .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: #1a365d; color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; }
+  .user-name { font-weight: 600; color: #1a365d; }
+  .user-tier { font-size: 0.75rem; color: #744210; }
+  .welcome-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; padding: 2rem; }
+  .welcome-icon { font-size: 4rem; margin-bottom: 1rem; }
+  .welcome-title { font-size: 1.5rem; color: #1a365d; margin-bottom: 0.5rem; }
+  .welcome-text { color: #666; margin-bottom: 1.5rem; }
+  .subscribe-btn { padding: 0.75rem 1.5rem; background: linear-gradient(135deg, #744210 0%, #975a16 100%); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
+  .nav-links { display: flex; gap: 0.5rem; }
+  .nav-link { color: white; text-decoration: none; padding: 0.5rem 1rem; background: rgba(255,255,255,0.2); border-radius: 8px; font-size: 0.9rem; }
+  .nav-link:hover { background: rgba(255,255,255,0.3); }
+  @media (max-width: 768px) {
+    .chat-layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+  }
+</style>
+
+<section class="page-header">
+  <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
+    <div>
+      <h1>💬 NNNNM Community Chat</h1>
+      <p>Real-time discussion of Breslov teachings</p>
+    </div>
+    <div class="nav-links">
+      <a href="/subscribe" class="nav-link">Subscribe</a>
+      <a href="/teachings" class="nav-link">Teachings</a>
+    </div>
+  </div>
+</section>
+
+<main class="container">
+  <div class="chat-layout">
+    <!-- Sidebar - Rooms -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        💬 Chat Rooms
+      </div>
+      <ul class="room-list">
+        <li class="room-item active" onclick="selectRoom('general')">
+          <div class="room-name">🌐 General Discussion <span class="room-count">47</span></div>
+          <div class="room-desc">Chat about anything Breslov</div>
+        </li>
+        <li class="room-item" onclick="selectRoom('likutay')">
+          <div class="room-name">📖 Likutay Moharan <span class="room-count">23</span></div>
+          <div class="room-desc">Discuss Torah teachings</div>
+        </li>
+        <li class="room-item" onclick="selectRoom('stories')">
+          <div class="room-name">📚 Stories <span class="room-count">15</span></div>
+          <div class="room-desc">Sippurey Maasiyot discussions</div>
+        </li>
+        <li class="room-item" onclick="selectRoom('tikkun')">
+          <div class="room-name">🙏 Tikkun Haklali <span class="room-count">31</span></div>
+          <div class="room-desc">Prayers and remedies</div>
+        </li>
+        <li class="room-item" onclick="selectRoom(' Nachman')">
+          <div class="room-name">🕯️ Rabbi Nachman <span class="room-count">19</span></div>
+          <div class="room-desc">Life and teachings</div>
+        </li>
+        <li class="room-item" onclick="selectRoom('umman')">
+          <div class="room-name">🇮🇱 Uman <span class="room-count">28</span></div>
+          <div class="room-desc">Travel, Rosh Hashanah</div>
+        </li>
+      </ul>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar">G</div>
+          <div>
+            <div class="user-name">Guest</div>
+            <div class="user-tier">Sign in for full access</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Chat Area -->
+    <div class="main-chat">
+      <div class="chat-header">
+        <h2>🌐 General Discussion</h2>
+        <div class="chat-status">Live</div>
+      </div>
+      
+      <div class="messages" id="messages">
+        <div class="message">
+          <div class="message-header">
+            <div class="message-avatar">א</div>
+            <span class="message-author">Avraham</span>
+            <span class="message-time">Just now</span>
+          </div>
+          <div class="message-content">
+            Shalom everyone! Just finished reading Torah 48 - the hitbodedut section is so powerful. Anyone have insights to share?
+          </div>
+        </div>
+        <div class="message">
+          <div class="message-header">
+            <div class="message-avatar">ב</div>
+            <span class="message-author">Betzalel</span>
+            <span class="message-time">2 min ago</span>
+          </div>
+          <div class="message-content">
+            Yes! The part about "a person must traverse a very narrow bridge" - this is our daily avodah. Not to fear at all!
+          </div>
+        </div>
+        <div class="message">
+          <div class="message-header">
+            <div class="message-avatar">נ</div>
+            <span class="message-author">Na Nach Friend</span>
+            <span class="message-time">5 min ago</span>
+          </div>
+          <div class="message-content">
+            Na Nach Nachma Nachman MeUman! 🎵
+          </div>
+        </div>
+      </div>
+
+      <div class="message-input">
+        <input type="text" id="messageInput" placeholder="Type your message..." onkeypress="handleKeypress(event)">
+        <button class="send-btn" onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  let currentRoom = 'general';
+  const rooms = {
+    general: { name: '🌐 General Discussion', count: 47 },
+    likutay: { name: '📖 Likutay Moharan', count: 23 },
+    stories: { name: '📚 Stories', count: 15 },
+    tikkun: { name: '🙏 Tikkun Haklali', count: 31 },
+    ' Nachman': { name: '🕯️ Rabbi Nachman', count: 19 },
+    umman: { name: '🇮🇱 Uman', count: 28 }
+  };
+
+  function selectRoom(room) {
+    currentRoom = room;
+    document.querySelectorAll('.room-item').forEach(el => el.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+    document.querySelector('.chat-header h2').textContent = rooms[room].name;
+    document.querySelector('.chat-status').previousElementSibling.nextElementSibling.textContent = rooms[room].count + ' online';
+    
+    // Clear and add welcome message
+    const messages = document.getElementById('messages');
+    messages.innerHTML = `
+      <div class="message">
+        <div class="message-header">
+          <div class="message-avatar">🤖</div>
+          <span class="message-author">System</span>
+          <span class="message-time">Now</span>
+        </div>
+        <div class="message-content">
+          Welcome to #${rooms[room].name}! Subscribe to join the conversation.
+        </div>
+      </div>
+    `;
+  }
+
+  function sendMessage() {
+    const input = document.getElementById('messageInput');
+    const text = input.value.trim();
+    if (!text) return;
+
+    const messages = document.getElementById('messages');
+    const msg = document.createElement('div');
+    msg.className = 'message my-message';
+    msg.innerHTML = `
+      <div class="message-header">
+        <div class="message-avatar" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%);">י</div>
+        <span class="message-author">You</span>
+        <span class="message-time">Just now</span>
+      </div>
+      <div class="message-content">${text}</div>
+    `;
+    messages.appendChild(msg);
+    messages.scrollTop = messages.scrollHeight;
+    input.value = '';
+  }
+
+  function handleKeypress(event) {
+    if (event.key === 'Enter') sendMessage();
+  }
+
+  // Auto-scroll to bottom
+  document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
+</script>
+
+---
+import Layout from '../../layouts/Layout.astro';
