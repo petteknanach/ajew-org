@@ -1,263 +1,231 @@
 ---
-import Layout from '../../layouts/Layout.astro';
+const pageTitle = "Shivchay Haran";
+const pageDescription = "Shivchay Haran - The Praises of Rabbi Nachman";
 ---
-
-<Layout title="Shivchay Moharan - Praises of Rebbe Nachman" description="Testimonials and praises about Rebbe Nachman of Breslov from his students and followers">
-  <section class="page-header">
-    <h1>Shivchay Moharan</h1>
-    <p>שיבחו מוהרן</p>
-    <a href="/teachings" class="back-link">← Back to Teachings</a>
-  </section>
-
-  <section class="intro">
-    <div class="container">
-      <p class="description">
-        <strong>Shivchay Moharan</strong> (Praises of Our Teacher Rabbi Nachman) is a collection 
-        of testimonials, praises, and accounts from students and followers who witnessed 
-        Rebbe Nachman's greatness firsthand. This work contains stories of miraculous events, 
-        accounts of his extraordinary wisdom, and heartfelt expressions of gratitude for his 
-        guidance and influence on countless lives.
-      </p>
-    </div>
-  </section>
-
-  <section class="topics">
-    <div class="container">
-      <h2>Contents</h2>
-      <div class="topics-grid">
-        <div class="topic-card">
-          <h3>Testimonials from Students</h3>
-          <p>First-hand accounts from those who learned directly from Rebbe Nachman</p>
-        </div>
-        <div class="topic-card">
-          <h3>Miraculous Events</h3>
-          <p>Stories of supernatural occurrences and divine intervention</p>
-        </div>
-        <div class="topic-card">
-          <h3>Healing Accounts</h3>
-          <p>Testimonies of physical and spiritual healings</p>
-        </div>
-        <div class="topic-card">
-          <h3>Wisdom & Insight</h3>
-          <p>Examples of Rebbe Nachman's extraordinary wisdom and knowledge</p>
-        </div>
-        <div class="topic-card">
-          <h3>Love & Connection</h3>
-          <p>Stories of Rebbe Nachman's boundless love for his followers</p>
-        </div>
-        <div class="topic-card">
-          <h3>Final Days</h3>
-          <p>Accounts of Rebbe Nachman's last days and passing</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="quote">
-    <div class="container">
-      <blockquote>
-        <p class="hebrew">כי אין בעולם כמוהו צדיק גדול כמוהו</p>
-        <p>"For there is no tzadik in the world like him."</p>
-        <cite>— A student's testimony</cite>
-      </blockquote>
-    </div>
-  </section>
-
-  <section class="featured-praises">
-    <div class="container">
-      <h2>Featured Testimonials</h2>
-      <div class="praise-list">
-        <div class="praise-item">
-          <p class="hebrew">מעולם לא ראינו אדם כמוהו בחכמה ובקדושה</p>
-          <p>"We have never seen a person like him in wisdom and holiness."</p>
-        </div>
-        <div class="praise-item">
-          <p class="hebrew">הוא היה מלא רחמים וחסד לכל באי עולם</p>
-          <p>"He was full of mercy and kindness to all the world."</p>
-        </div>
-        <div class="praise-item">
-          <p class="hebrew">בכל דבריו היה מלא אמונה ובטחון בהשם</p>
-          <p>"In all his words he was filled with faith and trust in Hashem."</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="navigation">
-    <div class="container">
-      <h2>More Teachings</h2>
-      <div class="nav-links">
-        <a href="/teachings/sichos" class="nav-link">← Sichos HaRan</a>
-        <a href="/teachings/likutay-eitzos" class="nav-link">Likutay Eitzos →</a>
-        <a href="/teachings/sefer-hamidos" class="nav-link">Sefer HaMidos →</a>
-      </div>
-    </div>
-  </section>
-</Layout>
 
 <style>
   .page-header {
-    background: linear-gradient(135deg, #975a16 0%, #d69e2e 100%);
+    background: linear-gradient(135deg, #744210 0%, #975a16 100%);
     color: white;
     padding: 4rem 2rem;
     text-align: center;
   }
-
   .page-header h1 {
     font-family: var(--font-hebrew);
     font-size: 2.5rem;
     margin-bottom: 0.5rem;
   }
-
-  .back-link {
-    display: inline-block;
-    margin-top: 1rem;
-    color: white;
-    text-decoration: none;
-    padding: 0.5rem 1rem;
-    border: 1px solid white;
-    border-radius: 4px;
+  .page-header .subtitle {
+    font-size: 1.2rem;
+    opacity: 0.9;
   }
-
-  .container {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 0 2rem;
+  .container { max-width: 900px; margin: 0 auto; padding: 0 2rem; }
+  
+  .intro-section {
+    background: #fef3c7;
+    padding: 3rem 0;
+    border-bottom: 1px solid #fde68a;
   }
-
-  .intro {
-    padding: 4rem 0;
-    background: #fffaf0;
-  }
-
-  .description {
-    font-size: 1.1rem;
-    line-height: 1.8;
-    color: #444;
-  }
-
-  .topics {
-    padding: 4rem 0;
-  }
-
-  .topics h2 {
-    text-align: center;
-    margin-bottom: 2rem;
-    color: var(--color-primary);
-  }
-
-  .topics-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.5rem;
-  }
-
-  .topic-card {
+  .intro-text {
     background: white;
-    padding: 1.5rem;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    border-left: 4px solid #d69e2e;
-  }
-
-  .topic-card h3 {
-    color: #975a16;
-    margin-bottom: 0.5rem;
-  }
-
-  .topic-card p {
-    color: #666;
-    font-size: 0.95rem;
-  }
-
-  .quote {
-    background: #975a16;
-    color: white;
-    padding: 4rem 0;
-    text-align: center;
-  }
-
-  .quote blockquote {
-    max-width: 600px;
-    margin: 0 auto;
-  }
-
-  .quote .hebrew {
-    font-family: var(--font-hebrew);
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-  }
-
-  .quote p {
-    font-style: italic;
-    margin-bottom: 1rem;
-  }
-
-  .featured-praises {
-    padding: 4rem 0;
-    background: #fffaf0;
-  }
-
-  .featured-praises h2 {
-    text-align: center;
-    margin-bottom: 2rem;
-    color: var(--color-primary);
-  }
-
-  .praise-list {
-    display: grid;
-    gap: 1.5rem;
-  }
-
-  .praise-item {
-    background: white;
-    padding: 1.5rem;
-    border-radius: 10px;
+    padding: 2rem;
+    border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.06);
   }
-
-  .praise-item .hebrew {
+  .intro-text p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #333;
+    margin-bottom: 1rem;
+  }
+  
+  .section-title {
     font-family: var(--font-hebrew);
-    color: #975a16;
-    font-size: 1.3rem;
-    margin-bottom: 0.75rem;
+    font-size: 1.5rem;
+    color: #744210;
+    margin: 3rem 0 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #fde68a;
   }
-
-  .praise-item p:last-child {
+  
+  .chapter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+    margin-bottom: 3rem;
+  }
+  
+  .chapter-link {
+    display: block;
+    background: white;
+    padding: 1.25rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #333;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #e5e7eb;
+    transition: all 0.2s ease;
+  }
+  .chapter-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-color: #744210;
+    color: #744210;
+  }
+  .chapter-link .chapter-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+  .chapter-link .chapter-desc {
+    font-size: 0.9rem;
     color: #666;
-    font-style: italic;
   }
-
-  .navigation {
-    padding: 4rem 0;
-    background: #fffaf0;
-  }
-
-  .navigation h2 {
-    text-align: center;
-    margin-bottom: 1.5rem;
-    color: var(--color-primary);
-  }
-
-  .nav-links {
+  
+  .navigation-links {
     display: flex;
     justify-content: center;
     gap: 2rem;
-    flex-wrap: wrap;
+    padding: 2rem;
+    background: #fef3c7;
+    border-radius: 8px;
+    margin-top: 2rem;
   }
-
   .nav-link {
-    color: #975a16;
+    color: #744210;
     text-decoration: none;
-    font-weight: 600;
-    padding: 0.75rem 1.5rem;
-    background: white;
-    border-radius: 6px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    transition: transform 0.3s;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: background 0.2s;
   }
-
   .nav-link:hover {
-    transform: translateY(-2px);
+    background: #fde68a;
+  }
+  
+  @media (max-width: 768px) {
+    .chapter-grid { grid-template-columns: 1fr; }
+    .navigation-links { flex-direction: column; text-align: center; }
   }
 </style>
+
+<section class="page-header">
+  <h1>📖 Shivchay Haran</h1>
+  <p class="subtitle">The Praises of Rabbi Nachman</p>
+</section>
+
+<nav class="navigation">
+  <div class="container">
+    <div class="navigation-links">
+      <a href="/teachings" class="nav-link">← Back to Teachings</a>
+      <a href="/teachings/shivchay-intro" class="nav-link">Introduction</a>
+    </div>
+  </div>
+</nav>
+
+<section class="intro-section">
+  <div class="container">
+    <div class="intro-text">
+      <p><strong>Shivchay Haran</strong> (שבחי הר"ן - Praises of Rabbi Nachman) is the second part of the monumental work "The Life of Our Leader Rabbi Nachman." 
+      This sacred text contains testimonials, praises, and stories about Rabbi Nachman from his closest disciples and followers.</p>
+      <p>These heartfelt accounts reveal the extraordinary holiness, wisdom, and spiritual power of Rabbi Nachman, as witnessed by those who knew him intimately. 
+      The stories and recollections provide invaluable insight into his unique path of Breslov Chassidus.</p>
+    </div>
+  </div>
+</section>
+
+<section class="content">
+  <div class="container">
+    <h2 class="section-title">Part 1 - Chapters 1-27</h2>
+    
+    <div class="chapter-grid">
+      <a href="/teachings/shivchay-intro" class="chapter-link">
+        <div class="chapter-title">Introduction</div>
+        <div class="chapter-desc">Overview and background</div>
+      </a>
+      <a href="/teachings/shivchay-1-3" class="chapter-link">
+        <div class="chapter-title">Chapters 1-3</div>
+        <div class="chapter-desc">Early recollections</div>
+      </a>
+      <a href="/teachings/shivchay-4-7" class="chapter-link">
+        <div class="chapter-title">Chapters 4-7</div>
+        <div class="chapter-desc">Stories of holiness</div>
+      </a>
+      <a href="/teachings/shivchay-8-10" class="chapter-link">
+        <div class="chapter-title">Chapters 8-10</div>
+        <div class="chapter-desc">Wisdom and insights</div>
+      </a>
+      <a href="/teachings/shivchay-11-13" class="chapter-link">
+        <div class="chapter-title">Chapters 11-13</div>
+        <div class="chapter-desc">Testimonials</div>
+      </a>
+      <a href="/teachings/shivchay-14-16" class="chapter-link">
+        <div class="chapter-title">Chapters 14-16</div>
+        <div class="chapter-desc">Personal accounts</div>
+      </a>
+      <a href="/teachings/shivchay-17-19" class="chapter-link">
+        <div class="chapter-title">Chapters 17-19</div>
+        <div class="chapter-desc">Stories and recollections</div>
+      </a>
+      <a href="/teachings/shivchay-20-23" class="chapter-link">
+        <div class="chapter-title">Chapters 20-23</div>
+        <div class="chapter-desc">Further praises</div>
+      </a>
+      <a href="/teachings/shivchay-24-27" class="chapter-link">
+        <div class="chapter-title">Chapters 24-27</div>
+        <div class="chapter-desc">Final chapters of Part 1</div>
+      </a>
+    </div>
+    
+    <h2 class="section-title">Part 2 - Additional Chapters</h2>
+    
+    <div class="chapter-grid">
+      <a href="/teachings/shivchay-p2-1" class="chapter-link">
+        <div class="chapter-title">Part 2 - Chapter 1</div>
+        <div class="chapter-desc">Continued praises</div>
+      </a>
+      <a href="/teachings/shivchay-p2-2" class="chapter-link">
+        <div class="chapter-title">Part 2 - Chapter 2</div>
+        <div class="chapter-desc">More stories</div>
+      </a>
+      <a href="/teachings/shivchay-p2-3" class="chapter-link">
+        <div class="chapter-title">Part 2 - Chapter 3</div>
+        <div class="chapter-desc">Additional accounts</div>
+      </a>
+      <a href="/teachings/shivchay-p2-4" class="chapter-link">
+        <div class="chapter-title">Part 2 - Chapter 4</div>
+        <div class="chapter-desc">Further recollections</div>
+      </a>
+      <a href="/teachings/shivchay-p2-5" class="chapter-link">
+        <div class="chapter-title">Part 2 - Chapter 5</div>
+        <div class="chapter-desc">More praises</div>
+      </a>
+      <a href="/teachings/shivchay-p2-8" class="chapter-link">
+        <div class="chapter-title">Part 2 - Chapter 8</div>
+        <div class="chapter-desc">Additional chapters</div>
+      </a>
+      <a href="/teachings/shivchay-p2-9" class="chapter-link">
+        <div class="chapter-title">Part 2 - Chapter 9</div>
+        <div class="chapter-desc">Continued stories</div>
+      </a>
+      <a href="/teachings/shivchay-p2-10" class="chapter-link">
+        <div class="chapter-title">Part 2 - Chapter 10</div>
+        <div class="chapter-desc">Final chapters</div>
+      </a>
+      <a href="/teachings/shivchay-p2-his" class="chapter-link">
+        <div class="chapter-title">Part 2 - Hiskaddus</div>
+        <div class="chapter-desc">Holiness and elevation</div>
+      </a>
+      <a href="/teachings/shivchay-p2-his-7" class="chapter-link">
+        <div class="chapter-title">Part 2 - Hiskaddus 7</div>
+        <div class="chapter-desc">Additional hiskaddus</div>
+      </a>
+    </div>
+    
+    <div class="navigation-links">
+      <a href="/teachings" class="nav-link">← Back to Teachings</a>
+    </div>
+  </div>
+</section>
+
+---
+import Layout from '../../layouts/Layout.astro';
