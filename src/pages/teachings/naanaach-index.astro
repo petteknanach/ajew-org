@@ -1,0 +1,195 @@
+---
+const pageTitle = "Teachings Index";
+const pageDescription = "Complete index of all teachings imported from naanaach.blogspot.com";
+---
+
+<style>
+  .page-header {
+    background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
+    color: white;
+    padding: 3rem 2rem;
+    text-align: center;
+  }
+  .page-header h1 {
+    font-family: var(--font-hebrew);
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .container { max-width: 1000px; margin: 0 auto; padding: 0 2rem; }
+  .section { padding: 3rem 0; }
+  .section h2 {
+    font-family: var(--font-hebrew);
+    font-size: 1.8rem;
+    color: var(--color-primary);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 3px solid var(--color-accent);
+  }
+  .teachings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+  .teaching-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .teaching-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  }
+  .teaching-card h3 {
+    font-family: var(--font-hebrew);
+    font-size: 1.2rem;
+    color: var(--color-primary);
+    margin-bottom: 0.5rem;
+  }
+  .teaching-card .paragraphs {
+    font-size: 0.85rem;
+    color: #666;
+  }
+  .back-link {
+    display: inline-block;
+    margin: 2rem 0;
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .back-link:hover { text-decoration: underline; }
+  .stats {
+    background: #f7f5f0;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+  .stats strong { color: var(--color-primary); }
+</style>
+
+<section class="page-header">
+  <h1>📖 Teachings Index</h1>
+  <p>Content imported from naanaach.blogspot.com</p>
+</section>
+
+<nav class="navigation">
+  <div class="container">
+    <a href="/teachings" class="back-link">← Back to Teachings</a>
+  </div>
+</nav>
+
+<main class="container">
+  <div class="stats">
+    <strong>23 pages</strong> imported from naanaach.blogspot.com
+  </div>
+
+  <section class="section">
+    <h2>📖 Core Teachings</h2>
+    <div class="teachings-grid">
+      <a href="/teachings/life-of-rabbi-nachman" class="teaching-card">
+        <h3>The Life of Our Leader Rabbi Nachman</h3>
+        <p class="paragraphs">220 paragraphs</p>
+      </a>
+      <a href="/teachings/tikkun-haklali" class="teaching-card">
+        <h3>Tikkun Haklali</h3>
+        <p class="paragraphs">176 paragraphs</p>
+      </a>
+      <a href="/teachings/outpouring-of-soul" class="teaching-card">
+        <h3>Outpouring of the Soul</h3>
+        <p class="paragraphs">328 paragraphs</p>
+      </a>
+      <a href="/teachings/sichos-haran" class="teaching-card">
+        <h3>Sichos HaRan</h3>
+        <p class="paragraphs">6 paragraphs</p>
+      </a>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>📚 Stories of Ancient Times</h2>
+    <div class="teachings-grid">
+      <a href="/teachings/stories-1" class="teaching-card">
+        <h3>Tale 1 - The Lost Princess</h3>
+      </a>
+      <a href="/teachings/stories-2" class="teaching-card">
+        <h3>Tale 2 - The King and the Emperor</h3>
+      </a>
+      <a href="/teachings/stories-3" class="teaching-card">
+        <h3>Tale 3 - The One Who Could Not Walk</h3>
+      </a>
+      <a href="/teachings/stories-4" class="teaching-card">
+        <h3>Tale 4 - The King Who Decreed Apostasy</h3>
+      </a>
+      <a href="/teachings/stories-5" class="teaching-card">
+        <h3>Tale 5 - King's Son Made of Precious Stones</h3>
+      </a>
+      <a href="/teachings/stories-6" class="teaching-card">
+        <h3>Tale 6 - of a Humble King</h3>
+      </a>
+      <a href="/teachings/stories-7" class="teaching-card">
+        <h3>Tale 7 - of a Fly and Spider</h3>
+      </a>
+      <a href="/teachings/stories-8" class="teaching-card">
+        <h3>Tale 8 - of a Rabbi and His Only Son</h3>
+      </a>
+      <a href="/teachings/stories-9" class="teaching-card">
+        <h3>Tale 9 - of a Clever Man and Simple Man</h3>
+      </a>
+      <a href="/teachings/stories-10" class="teaching-card">
+        <h3>Tale 10 - of a Burgher and a Pauper</h3>
+      </a>
+      <a href="/teachings/stories-11" class="teaching-card">
+        <h3>Tale 11 - King's Son and Maid's Son</h3>
+      </a>
+      <a href="/teachings/stories-12" class="teaching-card">
+        <h3>Tale 12 - of a Prayer Leader</h3>
+      </a>
+      <a href="/teachings/stories-13" class="teaching-card">
+        <h3>Tale 13 - of the Seven Beggars</h3>
+      </a>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>📖 Additional Writings</h2>
+    <div class="teachings-grid">
+      <a href="/teachings/likutay-eitzos" class="teaching-card">
+        <h3>Likutay Eitzos</h3>
+        <p class="paragraphs">87 paragraphs</p>
+      </a>
+      <a href="/teachings/shivchay-moharan" class="teaching-card">
+        <h3>Shivchay Moharan</h3>
+        <p class="paragraphs">8 paragraphs</p>
+      </a>
+      <a href="/teachings/sefer-hamidos" class="teaching-card">
+        <h3>Sefer HaMidos</h3>
+        <p class="paragraphs">105 paragraphs</p>
+      </a>
+      <a href="/teachings/likutay-moharan-intro" class="teaching-card">
+        <h3>Likutay Moharan Introduction</h3>
+        <p class="paragraphs">17 paragraphs</p>
+      </a>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>🔗 Likutay Moharan Volumes</h2>
+    <div class="teachings-grid">
+      <a href="/teachings/likutay-moharan-vol1" class="teaching-card">
+        <h3>Likutay Moharan Volume 1</h3>
+        <p class="paragraphs">Label index page</p>
+      </a>
+      <a href="/teachings/likutay-moharan-vol2" class="teaching-card">
+        <h3>Likutay Moharan Volume 2</h3>
+        <p class="paragraphs">Label index page</p>
+      </a>
+    </div>
+  </section>
+</main>
+
+---
+import Layout from '../../layouts/Layout.astro';

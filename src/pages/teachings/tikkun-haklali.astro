@@ -1,677 +1,536 @@
 ---
-const pageTitle = "Tikkun Haklali - The General Rectification";
-const pageDescription = "The Tikkun Haklali, the General Rectification, revealed by Rabbi Nachman of Breslov - ten Psalms for salvation and healing";
+const pageTitle = "Tikkun Haklali";
+const pageDescription = "Tikkun Haklali";
 ---
 
 <style>
   .page-header {
-    background: linear-gradient(135deg, #744210 0%, #5d3a1a 100%);
+    background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
     color: white;
-    padding: 5rem 2rem;
+    padding: 3rem 2rem;
     text-align: center;
   }
-
   .page-header h1 {
     font-family: var(--font-hebrew);
-    font-size: 2.5rem;
+    font-size: 2rem;
     margin-bottom: 0.5rem;
   }
-
-  .hebrew-title {
-    font-family: var(--font-hebrew);
-    font-size: 1.8rem;
-    margin: 1rem 0;
-  }
-
-  .container {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 0 2rem;
-  }
-
-  .intro {
-    background: #f7f5f0;
-    padding: 4rem 0;
-  }
-
-  .intro-content {
+  .container { max-width: 800px; margin: 0 auto; padding: 0 2rem; }
+  .content { padding: 4rem 0; }
+  .content-text {
     background: white;
-    padding: 2rem;
+    padding: 3rem;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    margin-bottom: 2rem;
   }
-
-  .intro-content h2 {
-    font-family: var(--font-hebrew);
-    color: var(--color-primary);
-    margin-bottom: 1rem;
-  }
-
-  .intro-content p {
+  .content-text :global(p) {
     font-size: 1.1rem;
-    line-height: 1.8;
-    color: #555;
-    margin-bottom: 1rem;
-  }
-
-  .psalm-index {
-    background: white;
-    padding: 2rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    margin-bottom: 2rem;
-  }
-
-  .psalm-index h2 {
-    font-family: var(--font-hebrew);
-    font-size: 1.5rem;
-    color: var(--color-primary);
-    margin-bottom: 1.5rem;
-    text-align: center;
-  }
-
-  .psalm-index-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 0.75rem;
-  }
-
-  .psalm-index-link {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    background: #f7f5f0;
-    padding: 0.75rem;
-    border-radius: 8px;
-    text-decoration: none;
-    transition: transform 0.2s, box-shadow 0.2s;
-  }
-
-  .psalm-index-link:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    background: #edf2f7;
-  }
-
-  .psalm-index-link .num {
-    background: #744210;
-    color: white;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 0.9rem;
-    flex-shrink: 0;
-  }
-
-  .psalm-index-link .info {
-    flex: 1;
-  }
-
-  .psalm-index-link .name {
-    color: var(--color-primary);
-    font-size: 0.85rem;
-    font-weight: 600;
-    display: block;
-  }
-
-  .psalm-index-link .desc {
-    color: #888;
-    font-size: 0.7rem;
-  }
-
-  .teaching-section {
-    padding: 3rem 0;
-  }
-
-  .psalm {
-    background: white;
-    padding: 2rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    margin-bottom: 2rem;
-    scroll-margin-top: 2rem;
-  }
-
-  .psalm-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid #eee;
-  }
-
-  .psalm-header h3 {
-    font-family: var(--font-hebrew);
-    font-size: 1.3rem;
-    color: var(--color-primary);
-  }
-
-  .psalm-number {
-    background: var(--color-primary);
-    color: white;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 1.2rem;
-  }
-
-  .teaching-note {
-    background: #f0fff4;
-    padding: 1rem 1.5rem;
-    border-radius: 8px;
-    margin-top: 1.5rem;
-    border-right: 4px solid #48bb78;
-  }
-
-  .teaching-note p {
-    font-size: 0.95rem;
-    color: #276749;
-    margin-bottom: 0;
-    line-height: 1.6;
-  }
-
-  .teaching-note strong {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  .hebrew-text {
-    font-family: var(--font-hebrew);
-    font-size: 1.2rem;
     line-height: 2;
-    margin-bottom: 1.5rem;
-    padding: 1.5rem;
-    background: #f7f5f0;
-    border-radius: 8px;
-    text-align: right;
-    direction: rtl;
-  }
-
-  .transliteration {
-    font-size: 1rem;
-    line-height: 1.8;
-    color: #666;
-    font-style: italic;
-    margin-bottom: 1rem;
-  }
-
-  .transliteration-word {
-    display: inline;
-    margin: 0 2px;
-  }
-
-  .info-box {
-    background: #e8f4f8;
-    padding: 1.5rem;
-    border-radius: 8px;
-    margin: 2rem 0;
-  }
-
-  .info-box p {
-    font-size: 1rem;
-    line-height: 1.6;
     color: #333;
-    margin-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+    text-align: justify;
   }
-
-  .info-box p:last-child {
-    margin-bottom: 0;
-  }
-
-  .navigation {
-    background: var(--color-primary);
-    padding: 3rem 0;
-    margin-top: 3rem;
-  }
-
-  .nav-buttons {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-  }
-
-  .nav-btn {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    color: white;
+  .back-link {
+    display: inline-block;
+    margin-top: 2rem;
+    color: var(--color-primary);
     text-decoration: none;
-    padding: 1rem 1.5rem;
-    background: rgba(255,255,255,0.1);
-    border-radius: 8px;
-  }
-
-  .nav-btn:hover {
-    background: rgba(255,255,255,0.2);
-  }
-
-  @media (max-width: 768px) {
-    .nav-buttons {
-      flex-direction: column;
-    }
-    
-    .psalm-header {
-      flex-direction: column;
-      gap: 1rem;
-    }
-    
-    .psalm-index-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
   }
 </style>
 
 <section class="page-header">
-  <h1>✡ Tikkun Haklali ✡</h1>
-  <p class="hebrew-title">תיקון הכללי</p>
-  <p>The General Rectification</p>
-  <p class="hebrew">התיקון הכללי מרבינו נחמן מברסלב</p>
+  <h1>Tikkun Haklali</h1>
 </section>
 
-<section class="intro">
+<nav class="navigation">
   <div class="container">
-    <div class="intro-content">
-      <h2>🙏 What is Tikkun Haklali?</h2>
-      <p>
-        The Tikkun Haklali (General Rectification) was revealed by Rabbi Nachman of Breslov as a remedy for all spiritual and physical ailments. It consists of ten chapters from the Psalms, each representing one of the ten types of melodies which comprise the Psalms.
-      </p>
-      <p>
-        Rabbi Nachman revealed that saying these ten chapters of Psalms together serves as a Tikun Klali – a general rectification for all problems. Many Jews say these every day for salvation, healing, and protection.
-      </p>
-    </div>
-    
-    <div class="psalm-index">
-      <h2>📿 Quick Index - Jump to Any Psalm</h2>
-      <div class="psalm-index-grid">
-        <a href="#psalm-16" class="psalm-index-link">
-          <span class="num">16</span>
-          <div class="info">
-            <span class="name">Mizmor LeDovid</span>
-            <span class="desc">Protection</span>
-          </div>
-        </a>
-        <a href="#psalm-32" class="psalm-index-link">
-          <span class="num">32</span>
-          <div class="info">
-            <span class="name">Ashrey</span>
-            <span class="desc">Forgiveness</span>
-          </div>
-        </a>
-        <a href="#psalm-41" class="psalm-index-link">
-          <span class="num">41</span>
-          <div class="info">
-            <span class="name">l'Manatzei'ach</span>
-            <span class="desc">Healing</span>
-          </div>
-        </a>
-        <a href="#psalm-42" class="psalm-index-link">
-          <span class="num">42</span>
-          <div class="info">
-            <span class="name">Shir</span>
-            <span class="desc">Yearning</span>
-          </div>
-        </a>
-        <a href="#psalm-59" class="psalm-index-link">
-          <span class="num">59</span>
-          <div class="info">
-            <span class="name">l'Manatzei'ach</span>
-            <span class="desc">Salvation</span>
-          </div>
-        </a>
-        <a href="#psalm-77" class="psalm-index-link">
-          <span class="num">77</span>
-          <div class="info">
-            <span class="name">Ne'ilah</span>
-            <span class="desc">Close to Hashem</span>
-          </div>
-        </a>
-        <a href="#psalm-90" class="psalm-index-link">
-          <span class="num">90</span>
-          <div class="info">
-            <span class="name">Tefilah</span>
-            <span class="desc">Long Life</span>
-          </div>
-        </a>
-        <a href="#psalm-105" class="psalm-index-link">
-          <span class="num">105</span>
-          <div class="info">
-            <span class="name">Hodu</span>
-            <span class="desc">Gratitude</span>
-          </div>
-        </a>
-        <a href="#psalm-137" class="psalm-index-link">
-          <span class="num">137</span>
-          <div class="info">
-            <span class="name">Mizmor</span>
-            <span class="desc">Zion</span>
-          </div>
-        </a>
-        <a href="#psalm-150" class="psalm-index-link">
-          <span class="num">150</span>
-          <div class="info">
-            <span class="name">Halleluyah</span>
-            <span class="desc">Praise</span>
-          </div>
-        </a>
-      </div>
-    </div>
-    
-    <div class="info-box">
-      <p><strong>Before reciting:</strong> It is propitious to give charity (or at least set aside), even one penny, for the merit of Rabbi Nachman, before reciting the Tikun.</p>
-      <p><strong>Intention:</strong> Optimally one should have in mind, throughout the recital, that these melodies of Tehilim (Psalms) liberate the drops of seed which are under captivity of Lilith, with the Divine Kindness and Might invested in the Names.</p>
+    <a href="/teachings" class="back-link">← Back to Teachings</a>
+  </div>
+</nav>
+
+<section class="content">
+  <div class="container">
+    <div class="content-text">
+  <p>Teekoon
+Haklallee</p>
+  <p>transliteration</p>
+  <p>The
+Comprehensive (“General”) Rectification
+from Rabbi Nachman of Breslov</p>
+  <p>The
+Teekoon Haklallee
+is composed of ten chapters from the Psalms, each
+one representing one of the ten types of melodies which comprise the
+Psalms. Optimally
+one should have in mind, throughout the recital, that these melodies
+of Tehilim (-Praises of Psalms) liberate the drops of seed which are
+under captivity of Lilith (-depressing
+wailing, antithesis
+of Teheela of Psalms, under the numerical value of 485), with the
+Divine Kindness and Might invested in the Names, Ai”l Elohi”m,
+spelled out (=485:)
+אלף
+– למד,
+אלף
+– למד – הי – יוד – מם.
+The
+root of these melodies are inherent in the ten letters (1,2,3,4 =10)
+of the name of the tzaddik: Na NaCh NaChMa NaChMaN Me'Uman (=485 &
+6 inclusives) –
+נ
+נח נחמ נחמן מאומן.</p>
+  <p>Before
+reciting the Psalms
+there is a short assertion whereby one binds oneself to Rabbi Nachman
+for their recital, which
+can be said in the English presented here.</p>
+  <p>It
+is propitious to give charity (or at least set aside), even one
+penny, for the merit of Rabbi Nachman, before reciting the Tikun.</p>
+  <p>Transliterator's note: The method
+used here is not the sophisticated conventional way, rather it is
+extremely simple and straightforward. There are basically only three
+rules to keep in mind.</p>
+  <p>3
+rules to reading the phonetics:</p>
+  <p>2.
+ALL vowels are soft (like: bed, sit, luck. including eh, also at the
+end of the word) unless they are doubled, like ai, ay, ee, ey, oo,
+oa, ue, uy</p>
+  <p>2b.
+The soft a, is closer to the “a” in “was” and not like in the
+name “Al.”</p>
+  <p>Teekoon
+Haklalee</p>
+  <p>Comprehensive
+“General Rectification”</p>
+  <p>Hereby,
+I bind myself, in the recital of these ten chapters of Psalms to all
+the true tzaddikim of our generation, and to all the true tzaddikim
+who dwell in the earth, the holy ones whom are in the earth, and
+specifically to our holy master, the tzaddik foundation of the world,
+the gushing stream source of wisdom (Nachal
+Noavaya Mikor Chuchma: acronym Nachman), our Master Na Nach
+Nachmu Nachmun Me-Oomon may his merit protect us and all of Israel,
+amen.</p>
+  <p>16
+(Bracha)</p>
+  <p>1.
+Michtum liDuveed shumrainee Ail key chusseessee buch.</p>
+  <p>2.
+Umart lAdoanuy Adoanuy uttu toavussee bal ullechu.</p>
+  <p>3.
+Likidoashim ashehr bu-uretz haimu vi-adeeray kul cheftzee vum.</p>
+  <p>4.
+Yeerboo atzvoasum achair mu-huroo bal aseech neeskai'hem meedum ooval
+essu es shimoasum al sifusuy.</p>
+  <p>5.
+Adoanuy mi-nus chelkee vichoasee attu toameech goarulee.</p>
+  <p>6.
+Chavuleem nufiloo lee bani-eemeem af nachalus shufiru ulluy.</p>
+  <p>7.
+Avuraich es Adoanuy ashehr yi-utzunee af lailoas yisiroonee
+cheelyoasuy.</p>
+  <p>8.
+Sheeveesee Adoanuy linnegdee summeed key meemeenee bal emoat.</p>
+  <p>9.
+Luchain summach leebee va-yuggel kivoadee af bisuree yishkoan
+luvetach.</p>
+  <p>10.
+Key low sa-azoav nafshee lishoal low seetain chaseedichu leeroas
+shuchas.</p>
+  <p>11.
+Toadee-ainee oarach cha-yim soava simuchoas es punechu ni-eemoas
+beemeenichu netzach.</p>
+  <p>32
+ (Ashray)</p>
+  <p>1.
+LiDuveed maskeel ashray nissoy pesha kissoy chatu-uh.</p>
+  <p>2.
+Ashray udum low yachshoav Adoanuy low uvoan vi-ain biroochoa rimeeyu.</p>
+  <p>3.
+Key heche'rashtee buloo atzumuy bishaagussee kul ha-yoam.</p>
+  <p>4.
+Key yoamum vullayelu teechbad ullaye yudechu nehpach lishaddee
+bicharvoanay ka-yitz sellu.</p>
+  <p>5.
+Chattussee oadee-achu vaavoanee low cheesseessee umartee oadeh allay
+pishu-iy Ladoanuy vi-attu nussussu avoan chattussee sellu.</p>
+  <p>6.
+Al zoas yeespalail kul chusseed ailechu li-ais mitzoa rak lishaitef
+ma-yeem rabeem ailuv low yaggee-oo.</p>
+  <p>7.
+Attu saisehr lee meetzar teetzirainee runnay falait tisoavivainee
+sellu.</p>
+  <p>8.
+Askeelichu vi-ohrichu bidderrech zoo sailaich ee-atzu ullechu ainee.</p>
+  <p>9.
+Al tee-hi-yoo ki-soos ki-fe-red ain huvveen bimmesseg vu-ressen edyoa
+leevloam bal ki-roav ailechu.</p>
+  <p>10.
+Rabbeem machoaveem lurushu vi-haboatai-ach bAdoanuy chessed
+yisoavivvenoo.</p>
+  <p>11.
+Seemchoo vAdoanuy vi-geeloo tzaddeekeem vi-harneenoo kul yeeshray
+laiv.</p>
+  <p>41
+ (Maskeel)</p>
+  <p>1.
+Lamnatzai-ach mizmohr liDuvveed.</p>
+  <p>2.
+Ashray maskeel el dul bi-yoam ru-uh yimallitaihoo Adoanuy.</p>
+  <p>3.
+Adoanuy yeeshmiraihoo veeycha-yaihoo vi-ooshar bu-uretz vi-al
+teetinnaihoo binneffesh oyivvuv.</p>
+  <p>4.
+Adoanuy yeesuddennoo all eres divvuy kul meeshkuvvoa huffachtu
+vichulyoa.</p>
+  <p>5.
+Annee umartee Adoanuy chunnainee riffu-uh nafshee key chuttussee
+luch.</p>
+  <p>6.
+Oyivaye yoamiroo ra lee mussaye yumoos vi-uvad shimoa.</p>
+  <p>7.
+Vi-eem bu leeroas shuv yidabair leeboa yeekbutz uven low yaitzai
+lachootz yidabair.</p>
+  <p>8.
+Yachad ullaye yislachashoo kul soanuy ullaye yachshivoo ru-uh lee.</p>
+  <p>9.
+Divar bileeya-al yutzook boa va-ashehr shuchav low yoaseef lukoom.</p>
+  <p>10.
+Gam eesh shiloamee ashehr butachtee voa oachail lachmee heegdeel
+ullaye ukaiv.</p>
+  <p>11.
+Vi-attu Adoanuy chunainee va'hakeemainee vaashallimu luhem.</p>
+  <p>12.
+Bizoas yudattee key chuffatztu bee key low yuree-a oyivee ulluy.</p>
+  <p>13.
+Vaannee bisoomee tumachtu bee vatatzeevainee lifunechu li-oalum.</p>
+  <p>14.
+Burooch Adoanuy Eloahay Yisru-el maihu-oalum vi-ad hu-oalum umain
+vi-umain.</p>
+  <p>42
+ (Sheer)</p>
+  <p>1.
+Lamnatzai-ach maskeel leevnay Koarach.</p>
+  <p>2.
+Ki-a-yul taaroag al afeekay muyeem kain nafshee saaroag aillechu
+Eloaheem.</p>
+  <p>3.
+Tzumi-uh nafshee lAiloaheem li-Ail chuy mussay uvoa vi-airu-eh pinai
+Eloaheem.</p>
+  <p>4.
+Hu-yisu lee deemussee lechem yoamum vuluylu be-emohr aillaye kul
+ha-yoam a-yai Eloahechu.</p>
+  <p>5.
+Ailleh ezkirru vi-eshpichu ullaye nafshee key e-evohr basuch edadaim
+ad bais Eloaheem bikoal reenu visoadu humoan choagaig.</p>
+  <p>6.
+Ma teeshtoachachee nafshee va'tehemee ulluy hoacheelee lAiloaheem key
+oad oadennoo yishoo-oas punnuv.</p>
+  <p>7.
+Elloa'haye ullaye nafshee seeshtoachuch al kain ezkurchu mai-eretz
+yardain vichehrmoaneem mai'har meetzur.</p>
+  <p>8.
+Tihoam el tihoam koarai likoal tzeenoarechu kul meeshburechu
+vi'gallechu ullaye u'vuroo.</p>
+  <p>9.
+Yoamum yitzaveh Adoanuy chasdoa oovalaylu sheeroa eemee ti'feelu
+li-Ail chayuy.</p>
+  <p>10.
+Oamiru li-Ail, sa'lee lumu shichachtunee lumu koadair ailaich
+bilachatz oyaiv.</p>
+  <p>11.
+Biretzach bi-atzmoasaye chairifoonee tzoariruy bi-umrum aillaye kul
+ha-yoam a-yai Eloahechu.</p>
+  <p>12.
+Ma teeshtoachachee nafshee ooma te'hemee ulluy hoacheelee lailoaheem
+key oad oadenoo yishoo-oas punnaye vAiloahuy.</p>
+  <p>59
+ (Neetzoo-ach)</p>
+  <p>1.
+Lamnatzai-ach al tashchais liDuveed meechtum beeshloa-ach Shu-ool
+va-yeeshmiroo es haba-yees la'ha'meesoa.</p>
+  <p>2.
+Hatzeylainee mai-oyivaye Eloahuy meemeeskoamimaye ti'sagvainee.</p>
+  <p>3.
+Hatzeylainee meepoa-alay uven oomai-anshay dumeem hoasheyainee.</p>
+  <p>4.
+Key heenai urivoo linafshee yugooroo ullaye azeem low feeshee vilow
+chatusee Adoanuy.</p>
+  <p>5.
+Bilee uvoan yirootzoon vi-yeekoanunoo ooru leekrussee ooray.</p>
+  <p>6.
+Vi-attu Adoanuy Eloaheem Tzivu-oas Eloahay Yisru-ail hukeetzu
+leefkoad kul hagoyeem al tuchoan kul boagday uven sellu.</p>
+  <p>7.
+Yushoovoo lu-erev ye'hemoo cha'kullev veesoavivoo eer.</p>
+  <p>8.
+Heenay yabee-oon bifeehem charuvoas biseefsoasaihem key mee
+shoamai-a.</p>
+  <p>9.
+Vi-attu Adoanuy teeschak lumoa teelag lichul goyeem.</p>
+  <p>10.
+Oozoa ailechu eshmoaru key Eloaheem meesgabee.</p>
+  <p>11.
+Eloahay chasdee yikadimainee Eloaheem yarainee vishoariruy.</p>
+  <p>12.
+Al ta'hargaim pen yeeshkichoo amee haneyaimoa vichailichu
+vihoareedaimoa mugeenainoo Adoanuy.</p>
+  <p>13.
+Chatas peymoa divar sifusaymoa vi-yeeluchidoo veegoanum oomai-ullu
+oomeekachash yisapairoo.</p>
+  <p>14.
+Kalay vichaimu kalay vi-aynaimoa vi-yaidoo key Eloaheem moashail
+biyaakoav li-afsay hu-uretz sellu.</p>
+  <p>15.
+Vi-yushoovoo lu-erev yehemoo chakulev veysoavivoo eer.</p>
+  <p>16.
+Haimu yinee-oon le-echoal eem low yeesbi-oo va-yuleenoo.</p>
+  <p>17.
+Va'annee usheer oozechu va'aranain laboakehr chasdechu key hu-yeessu
+meesguv lee oomunoas bi-yoam tzar lee.</p>
+  <p>18.
+Oozee aillechu azamairu key Eloaheem meesgabee Eloahay chasdee.</p>
+  <p>77
+ (Neeggoon)</p>
+  <p>1.
+Lamnatzai-ach al yidoosoon li-ussuf meezmohr.</p>
+  <p>2.
+Koalee el Eloa'heem vi-etzuku koalee el Eloa'heem vi'haazeen ailluy.</p>
+  <p>3.
+Bi-yoam tzurusee Adoanuy durushtee yudee layelu neegiru vilow sufoog
+mai-anu heenuchaim nafshee.</p>
+  <p>4.
+Ezkiru Eloa'heem vi-ehemu-yu useechu vi'sees'ataif roochee sellu.</p>
+  <p>5.
+Uchaztu shimooroas ainuy neefamtee vilow adabair.</p>
+  <p>6.
+Cheeshavtee yumeem mee'kedem shinoas oalumeem.</p>
+  <p>7.
+Ezkiru nigeynusee baluylu eem livuvee useechu va-yichapais roochee.</p>
+  <p>8.
+Hali-oalumeem yeeznach Adoanuy viloa yoaseef leertzoas oad.</p>
+  <p>9.
+He-ufais lunetzach chasdoa gumar oamehr lidohr vudohr.</p>
+  <p>10.
+Hashuchach chanoas Ail eem kufatz bi-af rachamuv sellu.</p>
+  <p>11.
+Vu-oamar chaloasee hee shinoas yimeen elyoan.</p>
+  <p>12.
+Ezkohr ma-alilay Yu key ezkiru mee'kedem pee'lechu.</p>
+  <p>13.
+Vi'hu'geesee vichul pu-ulechu oovaaleeloasechu useechu.</p>
+  <p>14.
+Eloaheem ba'koadesh darkechu mee Ail gudoal kAiloaheem.</p>
+  <p>15.
+Attu hu-Ail oasay felle hoadaatu vu-ameem oozechu.</p>
+  <p>16.
+Gu-altu beezroa-a amechu binay yaakoav vi-yoasaif sellu.</p>
+  <p>17.
+Ru-oochu ma-yeem Eloaheem ru-oochu ma-yeem yucheeloo af yeergizoo
+sihoamoas.</p>
+  <p>18.
+Zohrmoo ma-yeem uvoas koal nussinoo shichukeem af chatzutzechu
+yees-haluchoo.</p>
+  <p>19.
+Koal ra-amchu bagalgal hai-eeroo virukeem taivail rugizu vateerash
+hu-uretz.</p>
+  <p>20.
+Ba-yum darkechu ooshveelichu bima-yeem rabeem vi-eekivoasechu low
+noadu-oo.</p>
+  <p>21.
+Nucheesu chatzoan amechu bi-yad Moashe Vi-aharoan.</p>
+  <p>90
+ (Tfeela)</p>
+  <p>1.
+Ti'feelu liMoashe eesh hu-Eloaheem, Adoanuy mu-oan attu hu-yeesu
+lunoo bidohr vudohr.</p>
+  <p>2.
+Bi'terem hureem yooludoo vatichoalail eretz visaivail oomai-oalum ad
+oalum attu ail.</p>
+  <p>3.
+Tushaiv enoash ad daku vatoamehr shoovoo vinay udum.</p>
+  <p>4.
+Key elef shuneem bi-ainechu ki-yoam esmoal key yaavor  vi-ashmooru
+valuylu.</p>
+  <p>5.
+Ziramtum shainu yee'hi-yoo baboakehr ke'chutzeer yachaloaf.</p>
+  <p>6.
+Baboakehr yutzeetz vichuluf lu-erev yimoalail vi-yuvaish.</p>
+  <p>7.
+Key chuleenoo vi-apechu oovachamusichu neevhulnoo.</p>
+  <p>8.
+Shattu avoanoasaynoo linegdechu aloomainoo leemi-ohr punechu.</p>
+  <p>9.
+Key chul yumaynoo punoo vi-evrusechu keeleynoo shunaynoo chimoa
+hegge.</p>
+  <p>10.
+Yimay shinoasaynoo vu-hem sheeveem shunu vi-eem beegvooroas
+shimoaneem shunu viruhbum umul vu-uven key guz cheesh vanu-oofu.</p>
+  <p>11.
+Mee yoadai-a oaz apechu oochyeerusichu evrusechu.</p>
+  <p>12.
+Leemnoas yumainoo kain hoada vinuvee livav chuchmu.</p>
+  <p>13.
+Shoovu Adoanuy ad mussuy viheenuchaim al avudechu.</p>
+  <p>14.
+Sabainoo vaboakehr chasdechu ooniraninu vineesmichu bichul yumainoo.</p>
+  <p>15.
+Samichainoo keemoas eeneesunoo shinoas ru-eenoo ru-uh.</p>
+  <p>16.
+Yairu-eh el avudechu fu-ulechu vahadurichu al binaihem.</p>
+  <p>17.
+Veehee noa-am Adoanuy Eloahainoo ulainoo oomaasay yudainoo koaninu
+ulainoo oomaasay yudaynoo koaninai-hoo.</p>
+  <p>105
+ (Hoadu-uh)</p>
+  <p>1.
+Hoadoo lAdoanuy keeroo veeshmoa hoadee-oo vu-ameem aleeloasuv.</p>
+  <p>2.
+Sheeroo low zamroo low seechoo bichul neefli-oasuv.</p>
+  <p>3.
+Hees-haliloo bishaim kudshoa yeesmach laiv mivakshay Adoanuy.</p>
+  <p>4.
+Deershoo Adoanuy vi-oozoa bakishoo funuv tumeed.</p>
+  <p>5.
+Zeechroo neefli-oasuv ashehr ussu moafsuv oomeeshpitay feev.</p>
+  <p>6.
+Zera Avruhum avdoa binay Yaakoav bicheeruv.</p>
+  <p>7.
+Hoo Adoanuy Eloahainoo bichul hu-uretz meeshputuv.</p>
+  <p>8.
+Zuchar li-oalum bireesoa duvur tzeevu li-elef dohr.</p>
+  <p>9.
+Ashehr kuras es Avruhum ooshvoo-usoa liYischuk.</p>
+  <p>10.
+Va-yameede'hu li'Yaakoav lichoak li'Yisru-ail birees oalum.</p>
+  <p>11.
+Laimohr lichu etain es eretz kinu-an chevel nachalaschem.</p>
+  <p>12.
+Beehi-yoasum misay meespur keemat vigureem bu.</p>
+  <p>13.
+Va-yees-halichoo meegoy el goy meemamluchu el am achair.</p>
+  <p>14.
+Low heenee-ach udum li-ushkum va-yoachach alaihem milucheem.</p>
+  <p>15.
+Al teegi-oo vee'misheechuy vi'leenivee-aye al turai-oo.</p>
+  <p>16.
+Va-yeekru ru-uv al hu-uretz kul matay lechem shuvur.</p>
+  <p>17.
+Shulach leefnai'hem eesh li-eved neemkar Yoasaif.</p>
+  <p>18.
+Eenoo vakevel ragloa barzel bu-uh nafshoa.</p>
+  <p>19.
+Ad ais boa divuroa eemras Adoanuy tzi'rufus-hoo.</p>
+  <p>20.
+Shulach melech va-yateerai'hoo moashail ameem va-yifatichaihoo.</p>
+  <p>21.
+Sumoa udoan livaisoa oomoashail bichul keenyunoa.</p>
+  <p>22.
+Lesohr suruv binafshoa oozkainuv yichakaim.</p>
+  <p>23.
+Va-yuvoa Yeesru-ail meetzru-yeem viYaakoav gur bi-eretz chum.</p>
+  <p>24.
+Va-yefehr es amoa mi-oad va-yaatzeemaihoo meetzuruv.</p>
+  <p>25.
+Hufach leebum leesnoa amoa liheesnakail baavuduv.</p>
+  <p>26.
+Shulach Moashe avdoa Aharoan ashehr buchar boa.</p>
+  <p>27.
+Sumoo vum deevray oasoasuv oomoafseem bi-eretz chum.</p>
+  <p>28.
+Shulach choashech va-yachsheech viloa muroo es divuroa.</p>
+  <p>29.
+Hufach es maimaihem lidum va-yumes es digusum.</p>
+  <p>30.
+Shuratz artzum tzifardi-eem bichadray malchai'hem.</p>
+  <p>31.
+Umar va-yuvoa uroav keeneem bichul givoolum.</p>
+  <p>32.
+Nussan geeshmaihem burud aish le-huvoas bi-artzum.</p>
+  <p>33.
+Va-yach gafnum oosainusum va-yishabair aitz givoolum.</p>
+  <p>34.
+Umar va-yuvoa arbeh vi-yelek vi-ain mispur.</p>
+  <p>35.
+Va-yoachal kul aisev bi-artzum va-yoachal piree admusum.</p>
+  <p>36.
+Va-yach kul bichohr bi-artzum raishees lichul oanum.</p>
+  <p>37.
+Va-yoatzee-aim bikesef vizu-huv, vi-ain beeshvutuv koashail.</p>
+  <p>38.
+Sumach meetzra-yeem bitzaisum, key nufal pachdum alai'hem.</p>
+  <p>39.
+Puras unun limusuch, vi-aish li-hu-eer luylu.</p>
+  <p>40.
+Shu-al va-yuvai siluv, vilechem shuma-yeem yasbee-aim.</p>
+  <p>41.
+Pusach tzoor va-yuzoovoo mu-yeem, hulichoo batzee-oas nuhur.</p>
+  <p>42.
+Key zuchar es divar kudshoa, es Avruhum avdoa.</p>
+  <p>43.
+Va-yoatzee amoa visusoan, bireenu es bicheeruv.</p>
+  <p>44.
+Va-yeetain lu-hem artzoas goy-eem, vaamal li-oomeem yeerushoo.</p>
+  <p>45.
+Baavoor yeeshmiroo chookuv visoaroasuv yeentzoaroo halliloo-Yu.</p>
+  <p>137
+ (Mizmor)</p>
+  <p>1.
+Al na'haroas buvel shum yushavnoo gam bucheenoo, bizuchrainoo es
+tzey-oan.</p>
+  <p>2.
+Al aruveem bisoachu, tuleenoo keenoaroasainoo.</p>
+  <p>3.
+Key shum shi-ailoonoo shoavainoo deevray sheer visoalulainoo seemchu,
+sheeroo lunoo meesheer Tzey-oan.</p>
+  <p>4.
+Aich nusheer es sheer Adoanuy, al admas naichur.</p>
+  <p>5.
+Eem eshkuchaich Yirooshulu-yeem teeshkach yimeenee.</p>
+  <p>6.
+Teedbak lishoanee licheekee eem low ezkiraichee eem low aaleh es
+Yirooshula-yeem, al roash seemchussee.</p>
+  <p>7.
+Zichohr Adoanuy leevnay edoam ais yoam Yirooshulu-yeem hu-oamreem
+uroo uroo, ad ha-yisoad bu.</p>
+  <p>8.
+Bas buvel hashidoodu ashray she-yishalem luch, es gimoolaich
+shegumalt lunoo.</p>
+  <p>9.
+Ashray she-yoachaiz vineepaitz es oalula-yeech el hasula.</p>
+  <p>150
+ (Haliloo-Ya)</p>
+  <p>1.
+Halliloo-Yu halliloo Ail bikudshoa, halliloohoo beerkey-a oozoa.</p>
+  <p>2.
+Halliloohoo veegvooroasuv, halliloohoo kiroav guedlow.</p>
+  <p>3.
+Halliloohoo bisaika shoafuhr, halliloohoo binaivel vicheenohr.</p>
+  <p>4.
+Halliloohoo bisoaf oomuchoal, halliloohoo bimeeneem vi-ooguv.</p>
+  <p>5.
+Halliloohoo vitzeeltzilay shuma, halliloohoo bitzeeltzilay siroo-uh.</p>
+  <p>6.
+Kohl hanishumu ti-halail Yuh, halliloo-Yuh.</p>
+  <p>The
+effectiveness of saying these 10 Psalms is to arouse the ten types of
+song which are included in the Song of the Future, the song that is
+single, double, triple, and quadruple, which unites with the name of
+G-d, and has now been revealed to be the holy name of the Rebbe, Head
+of the People of Israel: Na NaCh NaChMu NaChMuN Me’Uman. Therefore
+by pronouncing this name, and especially by singing it, as it is a
+wondrous song, one invokes colossal rectification for one’s soul
+and effects the faithful and supernatural renewal of the entire
+world! Many people have experienced awesome miracles, for example
+sick people without any cure, they received healing and full recovery
+by saying this holy awesome name!</p>
+  <p>Na
+Nach Nachma Nachman MeUman!</p>
     </div>
   </div>
 </section>
 
-<section class="teaching-section">
-  <div class="container">
-    
-    <div id="psalm-16" class="psalm">
-      <div class="psalm-header">
-        <span class="psalm-number">16</span>
-        <h3>Psalm 16 - Mizmor LeDovid</h3>
-      </div>
-      <div class="hebrew-text">
-        מִכְתָּם לְדָוִד שְׁמָרֵנִי אֵל כִּי חָסִיתִי בָּךְ
-        אָמַרְתָּ לַאֲדֹנָי אֲדֹנָי אָתָּה טוּבָתִי בְּלָעָדֶיךָ
-        לַקְּדוֹשִׁים אֲשֶׁר בָּאָרֶץ הֵמָּה וְאַדִּירֵי כָל חֶפְצִי בָּם
-        יִרְבּוּ עֲצָבֵיהֶם אַחֵר מָהָרוּ בָּל אָשִׁית נִסְכֵּיהֶם מִדָּם
-        וְלֹא אֶשָּׂא אֶת שְׁמוֹתָם עַל שְׂפָתָי
-        יְהוָה מְנָת חֶלְקִי וְכוֹסִי אַתָּה תּוֹמֵךְ גּוֹרָלִי
-        חֲבָלִים נָפְלוּ לִי בַּנְּעִמִים אַף נַחֲלָת שָׁעִיתִי עָלָי
-        אֲבָרֵךְ יְהוָה אֲשֶׁר יְעָצָנוּ אַף לֵילוֹת יִסְּרוּן כְּלָיוֹתָי
-        שִׁיתִי יְהוָה לְנֶגְדִּי תָּמִיד כִּי מִיָּמִינִי בַּל אֶמּוֹט
-        לָכֵן שָׂמַח לִבִּי וַיָּגֵל כְּבוֹדִי אַף בְּשָׂרִי יִשְׁכֹּן לָבֶטַח
-        כִּי לֹא תַעֲזֹב נַפְשִׁי לִשְׁאוֹל לֹא תִתֵּן חֲסִידְךָ לִרְאוֹת שָׁחַת
-        תּוֹדִיעֵנִי אֹרַח חַיִּים שְׂבַע שְׂמָחוֹת אֶת פָּנֶיךָ נְעִמוֹת בִּימִינְךָ נֵצַח
-      </div>
-      <div class="transliteration">
-        Michtam l'Dovid: Sh'morani El ki chasiti bach. Amarta l'Adonai Adonai atah tuvti b'lo'adecha. Lak'doshim asher ba'aretz hemah v'adiray chol cheftzam vam. Yirbu atz'bam achar maharu v'lo asit nisk'hem min dam. V'lo esa et shmotam al s'fatai. Adonai m'nat chelki v'chosi atah toim gorali. Chavalim naplu li ban'imim af nachalat sha'iti alai. Avarcha Adonai asher ya'atzani af laylot yisrun kol yotai. Shiti Adonai l'negdi tamid ki miyamini v'lo emot. Lachen samach libi vayagel k'vodi af bsari yishkon lavetach. Ki lo ta'azov naphshi l'She'ol lo titen chasidecha l'rosot shachat. Hodi'eini orach chayim s'va s'mochos et panecha n'imot biminecha netzach.
-      </div>
-      <div class="teaching-note">
-        <p><strong>Significance:</strong> This psalm speaks of trust in Hashem as our ultimate good. It emphasizes that the tzaddikim on earth are our true desire and that following them leads to happiness and security.</p>
-      </div>
-    </div>
-
-    <div id="psalm-32" class="psalm">
-      <div class="psalm-header">
-        <span class="psalm-number">32</span>
-        <h3>Psalm 32 - Ashrey</h3>
-      </div>
-      <div class="hebrew-text">
-        לְדָוִד מַשְׂכִּיל אַשְׁרֵי נְשׂוּי פֶּשַׁע כְּסוּי חֲטָאָה
-        אַשְׁרֵי אָדָם לֹא יַחְשֹׁב יְהוָה לוֹ עָוֹן וְאֵין בְּרוּחוֹ רְמִיָּה
-        כִּי הֶחֱלַיְתָ נְשָׁנָה רָחֲקָה מִמֶּנּוּ עֲווֹנֹתֶי
-        כִּי אֶמְרָתִי אוֹדֶה עָלַי עֲוֹנֹתַי לַיהוָה וְאַתָּה נָשָׂאתָ עֲוֹן פְּשָׁעָי
-        עַל זֶת יִתְפַּלֵּל כָּל חָסִיד אֵלֶיךָ לְעֵת מְצֹא רַק בְּשֶׁטֶף מַיִם רַבִּים אֵלֶיךָ לֹא יַגִּיעוּ
-        אַתָּה מָסֵךְ לִי צָרָה תְּשׁוּבֶתָה תְּחַבְּאֵנִי כַנְפֶיהָ
-        אוֹדֶה יְהוָה בְּכָל לֵב אֲסַפֵּר כָּל פֶּלֶאֶךָ
-        אָשִׂישָׂה וְאָעִיזָה בָּךְ אָשִׁירָה וַאֲזַמֶּרָה יְהוָה
-        יֹאמְרוּ יְרְאֵי יְהוָה כִּי לֹא חָסַךְ מֵהֶם
-        בָּרוּךְ יְהוָה אֲשֶׁר הִפְלִיא חַסְדּוֹ לִי
-      </div>
-      <div class="transliteration">
-        L'Dovid maskil: Ashrei n'suyei pesha k'sui chata'a. Ashrei adam lo yachshov Adonai lo avon v'ain b'rucho remiya. Ki hechalti n'shana rachka mimeni avonotai. Ki amarti odeh alai avonotai l'Adonai v'ata nasata avon p'shai. Al ze yitpalel kol chasid Elecha l'etz metzach rak b'shef mayim rabim Elecha lo yagiyu. Ata ma-seich li tzarah t'shuva techbe'eni k'nafeha. Odeh Adonai b'chol lev aspar kol palecha. Asisa v'aiza Bach asira v'azamera Adonai. Yomru y'rei Adonai ki lo chasach mehem. Baruch Adonai asher hiphlia chasdo li.
-      </div>
-      <div class="teaching-note">
-        <p><strong>Significance:</strong> The psalm of forgiveness. Rabbi Nachman taught that this psalm helps rectify sins and brings forgiveness when recited with proper intention.</p>
-      </div>
-    </div>
-
-    <div id="psalm-41" class="psalm">
-      <div class="psalm-header">
-        <span class="psalm-number">41</span>
-        <h3>Psalm 41 - l'Manatzei'ach</h3>
-      </div>
-      <div class="hebrew-text">
-        לַמְנַצֵּחַ לִבְנֵי קֹרַח מִזְמֹר
-        אַשְׁרֵי מַשְׂכִּיל אֶל דָּל בְּיוֹם רָעָה יִמַּלְּטֵהוּ יְהוָה
-        יְהוָה יִשְׁמְרֵהוּ וִיחַיֵּהוּ יְשֻׁעַתוֹ בָּאָרֶץ חַיִּים
-        יִתְּנֵהוּ לִפְנֵי מֶלֶךְ לְחָיִים בְּעַד חֲלָיִים יִפְגַּע בְּעַד טוֹב
-        אָמַרְתִּי יְהוָה חָנֵּנִי רָפָא נַפְשִׁי כִּי חָטָאתִי לָךְ
-        אוֹיְבַי יֹאמְרוּ רָע לִי מָתַי יָמוּת וְאָבַד שְׁמוֹ
-        וְאִם בָּא לִרְאוֹת דְּבַר שָׁקֶר יְדַבֵּר לִבּוֹ יִקְבָּץ עָוֹן לוֹ
-        יְקַבְּצוּ עָלָי יָחַד עָלַי יִשְׁטְנוּ לְשֶׁקֶר
-        יָשִׁימוּ עָלַי רָעָה יִתְּנוּ בִּי
-        גַּם אִישׁ שְׁלוֹמִי אֲשֶׁר בָּטַחְתִּי בּוֹ אוֹכֵל לַחֲמִי הִגְדִּיל עָלַי עָקֵב
-        וְאַתָּה יְהוָה חָנֵּנִי וַהֲקִימֵנִי וְאַשְׁלְמָה לָהֶם
-        בְּזֹאת יָדַעְתִּי כִּי חָפַצְתָּ בִּי כִּי לֹא יָרִיעַ אוֹיְבִי עָלָי
-        וַאֲנִי בְּתֻמִּי תְּמַכְתַּנִי וְתַעֲמִידֵנִי לְפָנֶיךָ לְעֹלָם
-        בָּרוּךְ יְהוָה אֱלֹהֵי יִשְׂרָאֵל מִן הָעוֹלָם וְעַד הָעוֹלָם אָמֵן וְאָמֵן
-      </div>
-      <div class="transliteration">
-        Lamanatzei'ach l'vnei Korach mizmor: Ashrei maskiyl el dal b'yom ra'ah yimlatzehu Adonai. Adonai yishm'rehu v'yichyehu y'shuato b'aretz chayim. Yitnahu l'fanai melech l'chayim b'ad chalayim yifga b'ad tov. Amarti Adonai chaneini refa naphshi ki chatati lach. Oiyvai yomru ra li masai yamus v'avad shmo. V'im ba liros dvar shaker y'daber libo yikbob avon lo. Y'kabtzu alai yachad alai yisht'nu l'sheker. Yasimu alai ra'ah yitnu bi. Gam ish sh'lomi asher vatachti bo ochel lachmi higidri alai akev. V'ata Adonai chaneini v'hakimeini v'ashalma lahem. B'zos yadati ki chafatzta bi ki lo yaria oiyvi alai. V'ani b'tumi timachtani v'ha'amideni l'fanaycha l'olam. Baruch Adonai Elohei Yisroel min ha'olam v'ad ha'olam amen v'amen.
-      </div>
-      <div class="teaching-note">
-        <p><strong>Significance:</strong> This psalm is for healing, both physical and spiritual. It teaches about caring for the less fortunate and finding mercy even in difficult times.</p>
-      </div>
-    </div>
-
-    <div id="psalm-42" class="psalm">
-      <div class="psalm-header">
-        <span class="psalm-number">42</span>
-        <h3>Psalm 42 - Shir</h3>
-      </div>
-      <div class="hebrew-text">
-        לַמְנַצֵּחַ מַשְׂכִּיל לִבְנֵי קֹרַח
-        כְּאַיָּל נִכְסָה לְמַעְיְנֵי מַיִם כֵּן נַפְשִׁי נִכְסָה לְךָ אֱלֹהִים
-        צָמְאָה נַפְשִׁי לְאֵל חַי לְמָתַי אָבוֹא וְאֵרָאֶה פְּנֵי אֱלֹהִים
-        הָיְתָה לִּי דִמְעָתִי לֶחֶם יוֹמָם וָלָיְלָה בְּאָמְרָם אֵלַי אַיֵּה אֱלֹהֶיךָ
-        אֵלֶּה אֶזְכֹּר וְאֶשְׁפֹּךְ עָלַי נַפְשִׁי כִּי אֶעֱבֹר בַּסָּךְ אֶדְרַ�ְ עִם הֲמוֹן רָגְלָי
-        בְּקוֹל רִנָּה וְתוֹדָה קוֹל מְשַׁלֵּחַ
-        לָמָּה קְדֹרַתְּ נַפְשִׁי וְתֶהֱמִי עָלָי
-        חוּלִי לִבִּי יִקַּר צוּר יִשְׁעִי
-        זַלְעָפֵי רוּחַ מַצִּילִים יְשַׁדְּלוּנִי
-        יוֹמָם יְצַוֶּה יְהוָה חַסְדּוֹ וּבַלַּיְלָה שִׁירֹה עִמִּי תְּפִלָּה לְאֵל חַיָּי
-        אֹמַר לְאֵל סַלְעִי לָמָּה שְׁכַחְתָּנִי לָמָּה קֹדֵר אֵלֵךְ בְּלַחַץ אוֹיֵב
-        בְּרֶצֶף עֲצָמַי חֵרֵף אוֹיְבִי בְּאָמְרָם אֵלַי כָּל הַיּוֹם אַיֵּה אֱלֹהֶיךָ
-        לָמָּה הֹוֶלְתְּ נַפְשִׁי הֲלֹא אֵל בְּקָרוֹב וְאֶעֱרָךְ לֹא אֶמּוֹט
-        בְּךָ רָחֲקוּ מַיִם נֶהְפָּכִים וְשִׁירֵי יָשָׁע יְשַׁדְּלוּנִי
-        יְצַוֶּה יְהוָה חַסְדּוֹ בַּיּוֹם הַזֶּה וּבְלֵילָה שִׁירֹה עִמִּי תְּפִלָּה לְאֵל חַיָּי
-      </div>
-      <div class="transliteration">
-        Lamanatzei'ach maskil l'vnei Korach: K'ayil nichsah l'ma'aynei mayim chen naphshi nichsah lach Elohim. Tz'm'ah naphshi l'El chai l'masai avo v'ereh pnei Elohim. Haytah li dim'ati lechem yomam v'layla b'om'rai elai ayeh Elohecha. Eleh ezkor v'shiphcha alai naphshi ki e'evor b'sach adrich im hamon raglai. B'kol rinah v'todah kol mashalach. Lamah k'dorath naphshi v'sehemi alai. Chuli libi yikar tzur yish'i. Zal'fei ruach matzilim yishdaluni. Yomam y'tzaveh Adonai chasdo uvalayla shiro imi t'fillah l'El chai. Omar l'El sal'i lamah shikachtani lamah koder alecha b'lachatz oyev. B'retzef atzmai cheref oyevai b'om'rai elai kol hayom aieh Elohecha. Lamah hovalth naphshi halo El b'karov v'e'archlo lo emut. Bach raqchu mayim neh'forshim v'shirei yasha yishdaluni. Y'tzaveh Adonai chasdo ba'yom hazeh uvlayla shiro imi t'fillah l'El chai.
-      </div>
-      <div class="teaching-note">
-        <p><strong>Significance:</strong> A psalm of yearning and longing for closeness to Hashem. It expresses the soul's deep desire to connect with the Divine.</p>
-      </div>
-    </div>
-
-    <div id="psalm-59" class="psalm">
-      <div class="psalm-header">
-        <span class="psalm-number">59</span>
-        <h3>Psalm 59 - l'Manatzei'ach</h3>
-      </div>
-      <div class="hebrew-text">
-        לַמְנַצֵּחַ עַל תַּשְׁחִית לְדָוִד מִכְתָּם בְּשָׁלַח שָׁאוּל וַיִּשְׁמְרוּ אֶת הַבַּיִת לַהֲמִיתוֹ
-        הַצִּילֵנִי מֵאוֹיְבַי אֱלֹהַי מִקָּמַי תְּשַׁגְּבֵנִי
-        תּוֹשִׁיעֵנִי מִפֹּעֲרֵי רָע וְאַנְשֵׁי דָּמִים תְּמַלֵּט
-        כִּי הִנֵּה אָֽנוּשׁוּ נַפְשִׁי וּבָֽטְחָה בִּי מָגֵן
-        אֱלֹהִים יְקַדְּמֵנִי בְּחַסְדּוֹ יָשֵׁב לִי עַל צוּר מָרוֹם
-        יְשַׁגֶּב לִי יִתֵּן בָּעַד רָעָה חָסִידְךָ יוֹשִׁיעֵנִי סֶלָה
-        אַל יִרְבּוּ עָרֵי גוֹיִם סְבִיבוֹתַי רְאוּ שִׂנְאַי
-        יְקַבְּצוּ עָלַי וְלֹא יֵדְעוּ בָּשְׁטָף מַיִם יְכַתְּרוּנִי
-        אַף אֵל לֹא יִקַּח בְּכָל גּוֹי אֱלֹהִים יָשִׁיב לִי
-        יוֹצִיאֵנִי מִצָּרָה אֶל אֲשֶׁר לֹא אֵדַע
-        צוּר לִבִּי וְחֶלְקִי אֱלֹהִים לְעוֹלָם
-        יִתֵּן לִבְנֵי אָדָם עֲוֹנָם וּבְעַד טוֹבָתוֹ יוֹשִׁיעֵנִי
-      </div>
-      <div class="transliteration">
-        Lamanatzei'ach al tashchit l'Dovid michtam b'shalach Sha'ul vayishm'ru et habayit l'hamito. Hatzileni me'oyevai Elohai mikamay tashg'veni. Toshi'eini mip'oray ra v'ansei damim t'malat. Ki hinenu anushu naphshi uvachah bi magen. Elohim y'kadmuni b'chaso yashav li al tzur marom. Yishgav li yiten ba'ad ra'ah chasid'cha yoshi'eni selah. Al yirbu arei goyim s'vivotai ru sin'ay. Y'kabtzu alai v'lo yad'u b'shataf mayim y'chaturuni. Af El lo yikach b'kol goi Elohim yashiv li. Yotzi'eni mi'tzarah el asher lo eda. Tzur libi v'chelki Elohim l'olam. Yiten l'vnei adam avonam uv'ad tuvato yoshi'eni.
-      </div>
-      <div class="teaching-note">
-        <p><strong>Significance:</strong> A psalm of salvation from enemies and dangers. It emphasizes trust in Hashem even when surrounded by those who seek to harm us.</p>
-      </div>
-    </div>
-
-    <div id="psalm-77" class="psalm">
-      <div class="psalm-header">
-        <span class="psalm-number">77</span>
-        <h3>Psalm 77 - Ne'ilah</h3>
-      </div>
-      <div class="hebrew-text">
-        לַמְנַצֵּחַ עַל יְדוּתוּן לְאָסָף מִזְמוֹר
-        בְּקוֹלִי אֶל יְהוָה אֶקְרָא בְּקוֹלִי אֶל יְהוָה וְיַאֲזִין אֵלָי
-        בְּיוֹם צָרָתִי אֲדֹנָי אֶדְרֹשׁ יָדְךָ עֲנֵנִי אֶל נִכְחֲךָ תָּשָׁא לִבִּי
-        כִּי תְמֻלָּא צָרוֹת נַפְשִׁי וּבִגְלָלֵךְ תְּחַיֵּה עֵינַי
-        אָנָּה אֱלֹהִים לֹא תָּבוּא בְּמַשָּׁא וְהָאֵל בִּדְרָכֶיךָ יִתְעַלֶּה
-        וְעַתָּה הֵסַרְתָּ יְמִינְךָ מִבֵּין יְרֵיבֶיךָ
-        אֱלֹהִים מִקֶּדֶם זֻלָתְךָ מִי כָמֹה נֹרָה
-        נוֹרָה מַעֲשֵׂי פֶּלֶא יָדְךָ בְּקִרְבֵּךָ
-        גָּאַלְתָּ בִּזְרוֹעֲךָ עַמֶּךָ בְּנֵי יַעֲקֹב וְיוֹסֵף סֶלָה
-        רָאוּךָ מַיִם אֱלֹהִים רָאוּךָ מַיִם יָחוּלוּ
-        יָחְלוּ שָׁמַיִם גַּם תִּתְּנוּ גֶּשֶׁם יָשִׁיעוּ עַמְּךָ
-      </div>
-      <div class="transliteration">
-        Lamanatzei'ach al y'dutun l'Asaf mizmor: B'koli el Adonai ekra b'koli el Adonai v'ya'azien elai. B'yom tzorasi Adonai edrosh yadecha anieni el nifnecha tasha libi. Ki t'mu'al tzarot naphshi uvil'gecha t'chayeh einai. Anah Elohim lo tavu v'hama'asha v'hEl b'drachecha yit'aleh. V'atah hesarta y'mincha mibeyn y'revecha. Elohim mikdem zutacha mi chamoh norah. Norah ma'asei fele yadecha b'kirbecha. G'alta b'zeroacha amecha b'nei Ya'akov v'Yosef selah. R'ucha yamim Elohim r'ucha yamim yachulu. Yachlu shamayim gam titnu geshem yashiu amecha.
-      </div>
-      <div class="teaching-note">
-        <p><strong>Significance:</strong> This is the "Ne'ilah" psalm, associated with the closing gates of prayer. It speaks of Hashem's wondrous deeds throughout history and His ability to save His people.</p>
-      </div>
-    </div>
-
-    <div id="psalm-90" class="psalm">
-      <div class="psalm-header">
-        <span class="psalm-number">90</span>
-        <h3>Psalm 90 - Tefilah</h3>
-      </div>
-      <div class="hebrew-text">
-        תְּפִלָּה לְמֹשֶׁה אִישׁ הָאֱלֹהִים אֲדֹנָי מָעוֹן אַתָּה הָיִיתָ לָנוּ בְּדֹר וָדֹר
-        בְּטֶרֶם הָרִים יָלָדוּ וְתָחוֹלֵל אֶרֶץ וְתֵבֵל וּמֵעוֹלָם עַד עוֹלָם אַתָּה אֵל
-        תָּשֵׁב אֱנוֹשׁ עַד דַּכָּא וְתֹאמַר שׁוּבוּ בְּנֵי אָדָם
-        כִּי אֶלֶף שָׁנִים בְּעֵינֶיךָ כְּיוֹם אֶתְמוּל כֵּן יַעֲבֹר
-        שָׁמֵרֶנָה כְּחֹלֵל עָלָיו יִמְשֹׁל בְּקִרְבּוֹ יִבָּלֶה
-        בַּבֹּקֶר יַעֲלֶה כְּחָצִיר יַעֲבֹר בַּבֹּקֶר יָצִיץ וְחָלָף
-        כִּי בָעַרְנוּ בְּאַפְּךָ וּבַחֲרוֹנְךָ נִבְהָלְנוּ
-        שַׂמְתָּ עֲוֹנֹתֵינוּ לְנֶגְדֶּךָ עֹלָמֵנוּ לִמְאוֹר פָּנֶיךָ
-        כִּי כָל יָמֵינוּ פָּנוּ בְּעֶבְרָתֶךָ כִּלִּינוּ כְּמוֹ נֹשֶׁךְ יָמֵינוּ
-        יְמֵי שָׁנוֹתֵינוּ בָּהֶם שִׁבְעִים שָׁנָה אִם בַּגְּבוּרֹת שְׁמוֹנִים שָׁנָה וְרָהְבָּם עָמָל וְאָוֶן
-        מִי יֵדַע עֹז אַפֶּךָ וּכְיִרְאָתְךָ עֶבְרָתֶךָ
-        לְמַעַן יֵדַע עַתָּה לַעֲשׂוֹת אֶת יָמֵינוּ וְנָבִיא לְבָבֵנוּ
-        שׁוּבָה יְהוָה עַד מָתָי וְהִנָּחֵם עַל עֲבָדֶיךָ
-        שָׂבְעֵנוּ בַּבֹּקֶר חַסְדֶּךָ וְנָרָנָה וְנִשְׂמְחָה בְּכָל יָמֵינוּ
-        יָשִׂישׂוּ כְּמוֹ עַל גְּבוּרֹתֶיךָ בְּצִלְּךָ יִשְׂמְחוּ כָּל הַיּוֹם
-        וְעַל גְּבוּרֹתֶיךָ יִתְעַלָּסוּן
-      </div>
-      <div class="transliteration">
-        T'fillah l'Moshe ish ha'Elohim: Adonai ma'on atah hayita lanu b'dor vador. Beterem harim yaldu vacholayl eretz v'tavel u'me'olam ad olam Atah El. Tashuv enosh ad dacho v'omar shuvu b'nei adam. Ki elef shanim b'einecha k'yom etmulo ken ya'avor. Shomreinha k'cholel alav yimshol b'kiro yivaleh. Baboker ya'aleh kachatzir ya'avor baboker yatzich vachalaf. Ki va'arnu b'apecha uvecharonecha nivhalnu. Samta avonoteinu l'negdcha olamenu l'ma'or panecha. Ki kol yamenu panu b'evrasecha kilinu k'mo noseach yameinu. Y'mei shenoteinu bahem shiv'im shanah im bigvuros sh'monim shanah v'rahvam amol va'oven. Mi yeda oz apecha v'k'yir'asecha evratecha. L'ma'an yeda'at la'asot et yameinu v'navi l'vaveinu. Shuvah Adonah ad mahi v'hinachem al avadecha. Sav'einu baboker chasdecha v'naranah v'nismach b'chol yamenu. Yasissu k'mo al gevurostecha b'tzelcha yismachu kol hayom. V'al gevurostecha yit'alason.
-      </div>
-      <div class="teaching-note">
-        <p><strong>Significance:</strong> Attributed to Moses, this is a prayer for long life and the fear of Heaven. It emphasizes the fleeting nature of human life and the importance of living righteously.</p>
-      </div>
-    </div>
-
-    <div id="psalm-105" class="psalm">
-      <div class="psalm-header">
-        <span class="psalm-number">105</span>
-        <h3>Psalm 105 - Hodu</h3>
-      </div>
-      <div class="hebrew-text">
-        הוֹדוּ לַיהוָה קִרְאוּ בִּשְׁמוֹ הוֹדִיעוּ בָעַמִּים עֲלִילוֹתָיו
-        שִׁירוּ לוֹ זַמְּרוּ לוֹ שִׁיחוּ בְּכָל פְּלָאָיו
-        הִתְהַלְלוּ בְּשֵׁם קָדְשׁוֹ יִשְׂמַח לֵב מְבַקְשֵׁי יְהוָה
-        דִּרְשׁוּ יְהוָה וְעֻזּוֹ בַּקְּשׁוּ פָנָיו תָּמִיד
-        זִכְרוּ נִפְלְאוֹתָיו אֲשֶׁר עָשָׂה מֹפְתָּיו וּמִשְׁפְּטֵי פִּיו
-        זֶרַע אָבְרָהָם עַבְדּוֹ בְּנֵי יַעֲקֹב בְּחִירָיו
-        הוּא יְהוָה אֱלֹהֵינוּ בְּכָל הָאָרֶץ מִשְׁפָּטָיו
-        זָכַר לְעוֹלָם בְּרִיתוֹ דָּבָר צִוָּה לְאֶלֶף דּוֹר
-        אֲשֶׁר כָּרַת אֶת אַבְרָהָם וּשְׁבוּעָתוֹ לְיִצְחָק
-        וַיַּעֲמִידֶהָ לְיַעֲקֹב לְחֹק לְיִשְׂרָאֵל בְּרִית עוֹלָם
-        לֵאמֹר לְךָ אֶתֵּן אֶרֶץ כְּנַעַן חֶבֶל נַחֲלַתְכֶם
-        בְּהִתְמַעְטְכֶם לְמַסְפָּר וְגָרִים בָּהּ
-        וַיִּתְהַלְכוּ מִגּוֹי אֶל גּוֹי מִמַּמְלָכָה אֶל עַם אַחֵר
-        לֹא הִנִּיחַ לְאָדָם לְעָשְׁקָם וַיּוֹכַח עֲלֵיהֶם מְלָכִים
-        אַל תִּגְּעוּ בִּמְשִׁיחָי וּבְנבִיאַי אַל תָּרֵעוּ
-        וַיִּקְרָא בָרָעָב בָּאָרֶץ בְּצֵלָא יִשְׁבֹּר מֹשֶׁה עַם הָאָרֶץ
-        שָׁלַח לִפְנֵיהֶם עַבְדּוֹ יוֹסֵף נִמְכַּר לָעֶבֶד
-        עִנּוּ בְּסִבְלוֹ עֵגֶל לִבּוֹתָם יָבִינוּ
-        בַּחֲלוֹם יְדַבֵּר עַד לֹא יָקוּם
-        וַיָּשֶׁב רוּחׁ אִישׁ וַיִּתְעַנֵּשׁ בְּדָבָר יְהוָה
-        יָשָׁלַח מֶלֶךְ וַיַּתִּירֵהוּ מוֹשֵׁל עַמִּים וַיְפַתְּחֵהוּ
-        יָשֵׂם אֲדוֹנָי לְבֵיתוֹ לְמֶמְשֶׁלֶת עַל כָּל אֲשֶׁר לָקַח
-        לְבַעֲבוּר יִשְׂרָאֵל עַבְדּוֹ לְזַכְּרִי בְּרִיתוֹ הַקְּדוֹשָׁה
-        לְהוֹדוֹת לִשִּׁמְךָ יְהוָה
-      </div>
-      <div class="transliteration">
-        Hodu l'Adonai kir'u v'sh'mo hodi'u va'amim alilotav. Shiru lo zamru lo siychu b'chol p'la'av. Hithhal'chu v'shem kodsho yismach lev m'vakshai Adonai. Dirshu Adonai v'uzo bak'shu panav tamid. Zachru nif'lotav asher asa mof'tav u'mishp'chav pisu. Zera Avraham avdov b'nei Ya'akov b'chirav. Hu Adonai Eloheinu b'chol ha'aretz mishpataiv. Zachar l'olam brisdo dvar tzivah l'elef dor. Asher karat et Avraham v'shvu'ato l'Yitzchak. Va'ya'amid'ha l'Ya'akov l'chok l'Yisra'el bris olam. Lemor lach eten eretz K'na'an chevel nachalat'chem. B'hitma't'chem l'mispar v'garim bah. Va'yis'halchu mi'goi el goi mi'mamlah el am acher. Lo hani'ach l'adam l'osh'gam va'yochach aleihem m'lachim. Al tigu b'mishichai u'v'navai al tari'u. Va'yikra v'rav'av b'aretz b'tzela yishbor Moshe am ha'aretz. Shalach lifneihem avdo Yosef nimkar la'eved. Inu b'siblo egel libotam yavinu. Bachalom y'daber ad lo yakum. Va'yashuv ruach ish va'yis'anesh b'dvar Adonai. Yashach melech va'yatirehu moshel amim va'yiftachem. Yasim Adonai l'vaito l'memshelet al kol asher lakach. L'vavur Yisra'el avdi l'zach'ri b'risdo ha'k'doshah. L'hodote l'shimcha Adonai.
-      </div>
-      <div class="teaching-note">
-        <p><strong>Significance:</strong> A psalm of gratitude that recounts the history of the Jewish people and Hashem's faithfulness to the patriarchs. It emphasizes gratitude and remembrance of Divine providence.</p>
-      </div>
-    </div>
-
-    <div id="psalm-137" class="psalm">
-      <div class="psalm-header">
-        <span class="psalm-number">137</span>
-        <h3>Psalm 137 - Mizmor</h3>
-      </div>
-      <div class="hebrew-text">
-        עַל נַהֲרוֹת בָּבֶל שָׁם יָשַׁבְנוּ גַּם בָּכִינוּ בְּזָכְרֵנוּ אֶת צִיּוֹן
-        עַל עֲרָבִים בְּתוֹכָהּ תָּלִינוּ כִּנֹּרוֹתֵינוּ
-        כִּי שָׁם שְׁאָלוּנוּ דּוֹבְרֵי שִׁיר וּמְשָׁרְתֵינוּ זִמְרָה שִׁיחוּ לָנוּ מִזְמוֹר
-        אֵיךְ נָשִׁיר אֶת שִׁיר יְהוָה עַל אַדְמַת נֵכָר
-        אִם אֶשְׁכָּחֵךְ יְרוּשָׁלַיִם תִּשְׁכַּח יְמִינִי
-        תִּדְבַּק לְחָלָי שְׁפָתִי אִם לֹא אֶזְכְּרָךְ אִם לֹא אַעֲלֶה אֶת יְרוּשָׁלַיִם עַל רֹאשׁ שִׂמְחָתִי
-        זְכֹר יְהוָה לֶאֱדוֹמִים בְּיוֹם יְרוּשָׁלַיִם הָאֹמְרִים עָרוּ עָרוּ עַד יְסוֹדֶהָ
-        בַּת בָּבֶל הַשְּׁדוּרָה אַשְׁרֵי שֶׁיְשַׁלֶּם לָךְ אֶת גְּמוּלֵךְ שֶׁגָּמַלְתְּ לָנוּ
-        אַשְׁרֵי שֶׁיֹּאחֵז וְנִפֵּץ אֶת עֹלָלַיִךְ אֶל הַסֶּלַע
-      </div>
-      <div class="transliteration">
-        Al naharot Bavel sham yashavnu gam vachinu b'zochrenu et Tziyon. Al aravim b'tochah talinu kinnoroteinu. Ki sham sha'alunu dovrei shir u'm'shartsenu zimrah siyachu lanu mizmor. Eich nashir et shir Adonai al adamat nechar. Im eshkachech Yerushalayim tishkach yeminai. Tidvak l'chalay s'fatai im lo echkarech im lo a'aleh et Yerushalayim al rosh s'michati. Zachor Adonai l'Edomim b'yom Yerushalayim ha'om'rim aru aru ad yesodah. Bat Bavel ha'shedurah ashrei yishalem lach et g'mulech she'gamalt lanu. Ashrei she'yochez v'nipetz et olaylayich el hasela.
-      </div>
-      <div class="teaching-note">
-        <p><strong>Significance:</strong> The psalm of Zion, expressing longing for Jerusalem and the Temple. It speaks of unwavering devotion to the holy city despite exile.</p>
-      </div>
-    </div>
-
-    <div id="psalm-150" class="psalm">
-      <div class="psalm-header">
-        <span class="psalm-number">150</span>
-        <h3>Psalm 150 - Halleluyah</h3>
-      </div>
-      <div class="hebrew-text">
-        הַלְלוּיָהּ הַלְלוּ אֵל בְּקָדְשׁוֹ הַלְלוּהוּ בִּרְקַע עֻזּוֹ
-        הַלְלוּהוּ בְּגְבוּרֹתָיו הַלְלוּהוּ כְּרֹב גֻּדְלָה
-        הַלְלוּהוּ בְּתֵקַע שׁוֹפָר הַלְלוּהוּ בְּנֵבֶל וְכִנּוֹר
-        הַלְלוּהוּ בְּתֹף וּמָחוֹל הַלְלוּהוּ בְּמִנִּים וְעוּגָב
-        הַלְלוּהוּ בְּצִלְצְלֵי שָׁמַע הַלְלוּהוּ בְּצִלְצְלֵי תְּרוּעָה
-        כָּל הַנְּשָׁמָה תְּהַלֵּל יָהּ הַלְלוּיָהּ
-      </div>
-      <div class="transliteration">
-        Halleluyah! Halelu El b'kodsho haleluhu b'rik'a uzzo. Haleluhu b'gevurotav haleluhu k'rov gudlo. Haleluhu b'tekoa shofar haleluhu b'nevel v'chinor. Haleluhu b'tof umachol haleluhu b'minim v'ugav. Haleluhu b'tziltz'lei shama haleluhu b'tziltz'lei t'ru'a. Kol han'shamah t'halel Yah. Halleluyah!
-      </div>
-      <div class="teaching-note">
-        <p><strong>Significance:</strong> The final psalm, a call to praise Hashem with every instrument and every soul. It represents the culmination of praise and joy in serving Hashem.</p>
-      </div>
-    </div>
-
-  </div>
-</section>
-
-<section class="navigation">
-  <div class="container">
-    <div class="nav-buttons">
-      <a href="/teachings" class="nav-btn">
-        <span class="arrow">←</span>
-        <span class="text">All Teachings</span>
-      </a>
-      <a href="/teachings/likutay-moharan" class="nav-btn">
-        <span class="text">Likutay Moharan</span>
-        <span class="arrow">→</span>
-      </a>
-    </div>
-  </div>
-</section>
+---
+import Layout from '../../layouts/Layout.astro';
