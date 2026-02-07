@@ -1,51 +1,197 @@
 ---
 const pageTitle = "Stories";
-const pageDescription = "Stories - A Jew Na Nach Breslov Teaching";
+const pageDescription = "Stories by Rabbi Nachman";
 ---
 
 <style>
   .page-header {
     background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
     color: white;
-    padding: 3rem 2rem;
+    padding: 4rem 2rem;
     text-align: center;
   }
   .page-header h1 {
     font-family: var(--font-hebrew);
-    font-size: 2rem;
+    font-size: 2.5rem;
     margin-bottom: 0.5rem;
   }
-  .hebrew-title {
-    font-family: var(--font-hebrew);
-    font-size: 1.5rem;
+  .page-header .subtitle {
+    font-size: 1.2rem;
     opacity: 0.9;
   }
-  .container { max-width: 800px; margin: 0 auto; padding: 0 2rem; }
-  .content { padding: 4rem 0; }
-  .content-text {
-    background: white;
-    padding: 3rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  .container { max-width: 900px; margin: 0 auto; padding: 0 2rem; }
+  
+  .intro-section {
+    background: #ebf8ff;
+    padding: 3rem 0;
+    border-bottom: 1px solid #bee3f8;
   }
-  .content-text p {
+  .intro-text {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .intro-text p {
     font-size: 1.1rem;
-    line-height: 2;
+    line-height: 1.8;
     color: #333;
-    margin-bottom: 1.5rem;
-    text-align: justify;
+    margin-bottom: 1rem;
+  }
+  
+  .section-title {
+    font-family: var(--font-hebrew);
+    font-size: 1.5rem;
+    color: #1a365d;
+    margin: 3rem 0 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #bee3f8;
+  }
+  
+  .story-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+    margin-bottom: 3rem;
+  }
+  
+  .story-link {
+    display: block;
+    background: white;
+    padding: 1.25rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #333;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #e2e8f0;
+    transition: all 0.2s ease;
+  }
+  .story-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-color: #2c5282;
+    color: #2c5282;
+  }
+  .story-link .story-num {
+    font-size: 0.8rem;
+    color: #718096;
+    margin-bottom: 0.25rem;
+  }
+  .story-link .story-title {
+    font-size: 1rem;
+    font-weight: 600;
+  }
+  
+  .navigation-links {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    padding: 2rem;
+    background: #ebf8ff;
+    border-radius: 8px;
+    margin-top: 2rem;
+  }
+  .nav-link {
+    color: #2c5282;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: background 0.2s;
+  }
+  .nav-link:hover {
+    background: #bee3f8;
+  }
+  
+  @media (max-width: 768px) {
+    .story-grid { grid-template-columns: 1fr; }
+    .navigation-links { flex-direction: column; text-align: center; }
   }
 </style>
 
 <section class="page-header">
-  <h1>Stories</h1>
-  <p class="hebrew-title"></p>
+  <h1>📖 Stories</h1>
+  <p class="subtitle">Tales of Rabbi Nachman</p>
+</section>
+
+<nav class="navigation">
+  <div class="container">
+    <div class="navigation-links">
+      <a href="/teachings" class="nav-link">← Back to Teachings</a>
+      <a href="/teachings/shivchay" class="nav-link">Shivchay Haran</a>
+    </div>
+  </div>
+</nav>
+
+<section class="intro-section">
+  <div class="container">
+    <div class="intro-text">
+      <p><strong>Stories</strong> (סיפורים) by Rabbi Nachman of Breslov are profound parables that contain deep spiritual wisdom and teachings about the soul's journey back to God.</p>
+      <p>These allegorical tales speak of kings, princesses, lost souls, and transformative journeys — each carrying layers of meaning for those seeking devekus (closeness to God) and repentance.</p>
+    </div>
+  </div>
 </section>
 
 <section class="content">
   <div class="container">
-    <div class="content-text">
-
+    <h2 class="section-title">The Thirteen Stories</h2>
+    
+    <div class="story-grid">
+      <a href="/teachings/stories-1" class="story-link">
+        <div class="story-num">Story 1</div>
+        <div class="story-title">A Lost Princess (The Loss of a King's Daughter)</div>
+      </a>
+      <a href="/teachings/stories-2" class="story-link">
+        <div class="story-num">Story 2</div>
+        <div class="story-title">The Clever Man and the Simple One</div>
+      </a>
+      <a href="/teachings/stories-3" class="story-link">
+        <div class="story-num">Story 3</div>
+        <div class="story-title">The Seven Beggars</div>
+      </a>
+      <a href="/teachings/stories-4" class="story-link">
+        <div class="story-num">Story 4</div>
+        <div class="story-title">The Heart of the World</div>
+      </a>
+      <a href="/teachings/stories-5" class="story-link">
+        <div class="story-num">Story 5</div>
+        <div class="story-title">The Dream of the Summer Palace</div>
+      </a>
+      <a href="/teachings/stories-6" class="story-link">
+        <div class="story-num">Story 6</div>
+        <div class="story-title">The King's Daughter Who Was Infiltrated</div>
+      </a>
+      <a href="/teachings/stories-7" class="story-link">
+        <div class="story-num">Story 7</div>
+        <div class="story-title">The Prince of the Sea</div>
+      </a>
+      <a href="/teachings/stories-8" class="story-link">
+        <div class="story-num">Story 8</div>
+        <div class="story-title">The Little Bird</div>
+      </a>
+      <a href="/teachings/stories-9" class="story-link">
+        <div class="story-num">Story 9</div>
+        <div class="story-title">The Mysterious Castle</div>
+      </a>
+      <a href="/teachings/stories-10" class="story-link">
+        <div class="story-num">Story 10</div>
+        <div class="story-title">The Two Kings</div>
+      </a>
+      <a href="/teachings/stories-11" class="story-link">
+        <div class="story-num">Story 11</div>
+        <div class="story-title">The Hidden Treasure</div>
+      </a>
+      <a href="/teachings/stories-12" class="story-link">
+        <div class="story-num">Story 12</div>
+        <div class="story-title">The Miraculous Journey</div>
+      </a>
+      <a href="/teachings/stories-13" class="story-link">
+        <div class="story-num">Story 13</div>
+        <div class="story-title">The Final Story</div>
+      </a>
+    </div>
+    
+    <div class="navigation-links">
+      <a href="/teachings" class="nav-link">← Back to Teachings</a>
     </div>
   </div>
 </section>
