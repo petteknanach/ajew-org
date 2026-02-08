@@ -86,14 +86,14 @@ const pageDescription = "Join our Breslov learning community";
     <!-- Basic Tier -->
     <div class="pricing-card featured">
       <div class="tier-name">Basic</div>
-      <div class="price">$1<span>/month</span></div>
+      <div class="price">$1<span>/year</span></div>
       <ul class="features">
         <li>Everything in Free</li>
         <li>💬 Join chat rooms</li>
         <li>💬 Comment on teachings</li>
         <li>User profile</li>
       </ul>
-      <button class="subscribe-btn primary" onclick="selectTier('basic')">Subscribe - $1/mo</button>
+      <button class="subscribe-btn primary" onclick="selectTier('basic')">Subscribe - $1/year</button>
     </div>
 
     <!-- Premium Tier -->
@@ -181,8 +181,8 @@ const pageDescription = "Join our Breslov learning community";
 // In production, integrate with Stripe and Firebase
 
 function selectTier(tier) {
-  const prices = { basic: '$1', premium: '$5', super: '$10' };
-  alert(`Subscription system coming soon!\n\nSelected: ${tier.charAt(0).toUpperCase() + tier.slice(1)} - ${prices[tier]}/month\n\nPlease check back shortly.`);
+  const prices = { basic: '$1/year', premium: '$5/month', super: '$10/month' };
+  alert(`Subscription system coming soon!\n\nSelected: ${tier.charAt(0).toUpperCase() + tier.slice(1)} - ${prices[tier]}\n\nPlease check back shortly.`);
 }
 
 function showAuth(tier) {
