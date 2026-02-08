@@ -41,13 +41,9 @@ import Layout from '../layouts/Layout.astro';
             <span class="btn-icon">📚</span>
             <span class="btn-text">Books</span>
           </a>
-          <a href="/subscribe" class="btn btn-small btn-subscribe">
-            <span class="btn-icon">💳</span>
-            <span class="btn-text">Subscribe</span>
-          </a>
-          <a href="/chat" class="btn btn-small btn-chat">
-            <span class="btn-icon">💬</span>
-            <span class="btn-text">Chat</span>
+          <a href="https://www.youtube.com/channel/UCYq6IzFfzJfQY8l9mOV5kgw" target="_blank" rel="noopener" class="btn btn-small btn-videos">
+            <span class="btn-icon">🎬</span>
+            <span class="btn-text">Videos</span>
           </a>
         </div>
       </nav>
@@ -64,6 +60,18 @@ import Layout from '../layouts/Layout.astro';
       <div class="nanach-phrase">
         <p class="nanach-phrase-hebrew">נ נח נחמ נחמן מאומן</p>
         <p class="nanach-phrase-english">Na Nach Nachma Nachman MeUman</p>
+      </div>
+
+      <!-- Subscribe & Chat section -->
+      <div class="member-section">
+        <a href="/subscribe" class="btn btn-subscribe">
+          <span class="btn-icon">💳</span>
+          <span class="btn-text">Subscribe for Access</span>
+        </a>
+        <a href="/chat" class="btn btn-chat">
+          <span class="btn-icon">💬</span>
+          <span class="btn-text">Member Chat</span>
+        </a>
       </div>
     </div>
   </section>
@@ -276,6 +284,13 @@ import Layout from '../layouts/Layout.astro';
 
   .btn-music:hover {
     background: rgba(139, 69, 19, 1);
+  }
+
+  .member-section {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
   }
 
   .btn-subscribe {
