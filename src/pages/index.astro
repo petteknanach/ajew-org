@@ -41,9 +41,13 @@ import Layout from '../layouts/Layout.astro';
             <span class="btn-icon">📚</span>
             <span class="btn-text">Books</span>
           </a>
-          <a href="https://www.youtube.com/channel/UCYq6IzFfzJfQY8l9mOV5kgw" target="_blank" rel="noopener" class="btn btn-small btn-videos">
-            <span class="btn-icon">🎬</span>
-            <span class="btn-text">Videos</span>
+          <a href="/subscribe" class="btn btn-small btn-subscribe">
+            <span class="btn-icon">💳</span>
+            <span class="btn-text">Subscribe</span>
+          </a>
+          <a href="/chat" class="btn btn-small btn-chat">
+            <span class="btn-icon">💬</span>
+            <span class="btn-text">Chat</span>
           </a>
         </div>
       </nav>
@@ -272,6 +276,28 @@ import Layout from '../layouts/Layout.astro';
 
   .btn-music:hover {
     background: rgba(139, 69, 19, 1);
+  }
+
+  .btn-subscribe {
+    background: #48bb78;
+    color: white;
+    border: 2px solid #48bb78;
+  }
+
+  .btn-subscribe:hover {
+    background: #38a169;
+    border-color: #38a169;
+  }
+
+  .btn-chat {
+    background: #805ad5;
+    color: white;
+    border: 2px solid #805ad5;
+  }
+
+  .btn-chat:hover {
+    background: #6b46c1;
+    border-color: #6b46c1;
   }
 
   /* Na Nach phrase - most important */
