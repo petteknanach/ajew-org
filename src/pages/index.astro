@@ -4,6 +4,14 @@ import Layout from '../layouts/Layout.astro';
 
 <Layout title="Home" description="Teachings of Rebbe Nachman of Breslov - Torah, wisdom, and inspiration">
   <section class="hero">
+    <!-- Corner buttons -->
+    <a href="/subscribe" class="corner-btn corner-btn-left">
+      <span>💳 Subscribe</span>
+    </a>
+    <a href="/chat" class="corner-btn corner-btn-right">
+      <span>💬 Chat</span>
+    </a>
+
     <div class="hero-content">
       <h1 class="hero-title">
         <span class="hebrew">רבי נחמן מברסלב</span>
@@ -60,18 +68,6 @@ import Layout from '../layouts/Layout.astro';
       <div class="nanach-phrase">
         <p class="nanach-phrase-hebrew">נ נח נחמ נחמן מאומן</p>
         <p class="nanach-phrase-english">Na Nach Nachma Nachman MeUman</p>
-      </div>
-
-      <!-- Subscribe & Chat section -->
-      <div class="member-section">
-        <a href="/subscribe" class="btn btn-subscribe">
-          <span class="btn-icon">💳</span>
-          <span class="btn-text">Subscribe for Access</span>
-        </a>
-        <a href="/chat" class="btn btn-chat">
-          <span class="btn-icon">💬</span>
-          <span class="btn-text">Member Chat</span>
-        </a>
       </div>
     </div>
   </section>
@@ -286,31 +282,39 @@ import Layout from '../layouts/Layout.astro';
     background: rgba(139, 69, 19, 1);
   }
 
-  .member-section {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    margin-top: 1.5rem;
+  /* Corner buttons */
+  .corner-btn {
+    position: absolute;
+    top: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+    z-index: 10;
   }
 
-  .btn-subscribe {
+  .corner-btn-left {
+    left: 1rem;
     background: #48bb78;
     color: white;
     border: 2px solid #48bb78;
   }
 
-  .btn-subscribe:hover {
+  .corner-btn-left:hover {
     background: #38a169;
     border-color: #38a169;
   }
 
-  .btn-chat {
+  .corner-btn-right {
+    right: 1rem;
     background: #805ad5;
     color: white;
     border: 2px solid #805ad5;
   }
 
-  .btn-chat:hover {
+  .corner-btn-right:hover {
     background: #6b46c1;
     border-color: #6b46c1;
   }
