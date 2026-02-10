@@ -31,7 +31,8 @@ const pageDescription = "Join our Breslov learning community";
   .features { list-style: none; padding: 1.5rem 0; margin: 1.5rem 0; border-top: 1px solid #eee; text-align: right; }
   .features li { padding: 0.5rem 0; color: #555; }
   .features li::before { content: '✓'; color: #059669; margin-left: 0.5rem; font-weight: bold; }
-  .subscribe-btn {
+  .stripe-btn {
+    display: inline-block;
     width: 100%;
     padding: 1rem;
     border: none;
@@ -40,17 +41,16 @@ const pageDescription = "Join our Breslov learning community";
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
+    text-decoration: none;
+    box-sizing: border-box;
   }
-  .subscribe-btn.primary { background: linear-gradient(135deg, #744210 0%, #975a16 100%); color: white; }
-  .subscribe-btn.primary:hover { transform: scale(1.02); }
-  .subscribe-btn.secondary { background: #1a365d; color: white; }
-  .subscribe-btn.secondary:hover { background: #2c5282; }
-  .subscribe-btn:disabled { opacity: 0.7; cursor: not-allowed; }
-  .auth-section { background: #f7f5f0; padding: 4rem 0; margin-top: 3rem; }
-  .auth-box { max-width: 400px; margin: 0 auto; background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-  .form-group { margin-bottom: 1rem; }
-  .form-group label { display: block; margin-bottom: 0.5rem; color: #333; font-weight: 500; }
-  .form-group input { width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; }
+  .stripe-btn.primary { background: linear-gradient(135deg, #744210 0%, #975a16 100%); color: white; }
+  .stripe-btn.primary:hover { transform: scale(1.02); box-shadow: 0 4px 12px rgba(116, 66, 16, 0.3); }
+  .stripe-btn.secondary { background: #1a365d; color: white; }
+  .stripe-btn.secondary:hover { background: #2c5282; }
+  .stripe-btn.donate { background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; }
+  .stripe-btn.donate:hover { transform: scale(1.02); box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3); }
+  .stripe-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
   .nav-links { display: flex; justify-content: center; gap: 1rem; margin-top: 2rem; }
   .nav-link { color: white; text-decoration: none; padding: 0.5rem 1rem; background: rgba(255,255,255,0.2); border-radius: 8px; }
   .nav-link:hover { background: rgba(255,255,255,0.3); }
@@ -58,12 +58,17 @@ const pageDescription = "Join our Breslov learning community";
   .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; }
   .info-card { background: white; padding: 1.5rem; border-radius: 12px; text-align: center; }
   .info-card h3 { color: #744210; margin-bottom: 0.5rem; }
-  .loading { display: inline-block; width: 20px; height: 20px; border: 2px solid #fff; border-radius: 50%; border-top-color: transparent; animation: spin 1s linear infinite; margin-right: 0.5rem; }
-  @keyframes spin { to { transform: rotate(360deg); } }
   .user-status { background: #dcfce7; color: #166534; padding: 1rem; border-radius: 8px; margin-bottom: 2rem; text-align: center; }
   .user-status.inactive { background: #fee2e2; color: #dc2626; }
   .success-banner { background: #dcfce7; color: #166534; padding: 1rem; border-radius: 8px; margin-bottom: 2rem; text-align: center; }
   .error-banner { background: #fee2e2; color: #dc2626; padding: 1rem; border-radius: 8px; margin-bottom: 2rem; text-align: center; }
+  .auth-section { background: #f7f5f0; padding: 4rem 0; margin-top: 3rem; }
+  .auth-box { max-width: 400px; margin: 0 auto; background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+  .form-group { margin-bottom: 1rem; }
+  .form-group label { display: block; margin-bottom: 0.5rem; color: #333; font-weight: 500; }
+  .form-group input { width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; }
+  .loading { display: inline-block; width: 20px; height: 20px; border: 2px solid #fff; border-radius: 50%; border-top-color: transparent; animation: spin 1s linear infinite; margin-right: 0.5rem; }
+  @keyframes spin { to { transform: rotate(360deg); } }
 </style>
 
 <section class="page-header">
@@ -78,11 +83,11 @@ const pageDescription = "Join our Breslov learning community";
 
 <main class="container">
   <div id="successBanner" class="success-banner" style="display: none;">
-    🎉 Payment successful! You now have access to all premium features.
+    🎉 Payment successful! Thank you for your support. Please sign in to access premium features.
   </div>
   
   <div id="errorBanner" class="error-banner" style="display: none;">
-    ❌ There was an issue with your payment. Please try again.
+    ❌ Payment was cancelled. No charges were made.
   </div>
 
   <div id="userStatus"></div>
@@ -98,7 +103,7 @@ const pageDescription = "Join our Breslov learning community";
         <li>Search content</li>
         <li>Basic access</li>
       </ul>
-      <button class="subscribe-btn secondary" onclick="location.href='/auth'">Sign Up Free</button>
+      <a href="/auth" class="stripe-btn secondary">Sign Up Free</a>
     </div>
 
     <!-- Basic Tier -->
@@ -111,9 +116,9 @@ const pageDescription = "Join our Breslov learning community";
         <li>💬 Comment on teachings</li>
         <li>User profile</li>
       </ul>
-      <button class="subscribe-btn primary" onclick="subscribe('basic')" id="basicBtn">
+      <a href="https://buy.stripe.com/00w5kD89Ld3Y9F1fsUfUQ03" class="stripe-btn primary" id="basicBtn" target="_blank" rel="noopener">
         Subscribe - $1/year
-      </button>
+      </a>
     </div>
 
     <!-- Premium Tier -->
@@ -126,9 +131,9 @@ const pageDescription = "Join our Breslov learning community";
         <li>🎯 Priority support</li>
         <li>📅 Member events</li>
       </ul>
-      <button class="subscribe-btn primary" onclick="subscribe('premium')" id="premiumBtn">
+      <a href="https://buy.stripe.com/3cI3cvey95Bw9F13KcfUQ01" class="stripe-btn primary" id="premiumBtn" target="_blank" rel="noopener">
         Subscribe - $5/mo
-      </button>
+      </a>
     </div>
 
     <!-- Super Tier -->
@@ -141,9 +146,9 @@ const pageDescription = "Join our Breslov learning community";
         <li>🎥 Live sessions</li>
         <li>⭐ Special recognition</li>
       </ul>
-      <button class="subscribe-btn primary" onclick="subscribe('super')" id="superBtn">
+      <a href="https://buy.stripe.com/3cI3cvey95Bw9F13KcfUQ00" class="stripe-btn primary" id="superBtn" target="_blank" rel="noopener">
         Subscribe - $10/mo
-      </button>
+      </a>
     </div>
   </section>
 
@@ -154,7 +159,9 @@ const pageDescription = "Join our Breslov learning community";
       Your donations help keep ajew.org running and spread Rabbi Nachman's light to Jews around the world.
       Every amount makes a difference!
     </p>
-    <button onclick="donateNow()" class="subscribe-btn primary" style="background: white; color: #059669; display: inline-block; border: none; padding: 1rem 3rem; cursor: pointer;">🙏 Donate Now</button>
+    <a href="https://buy.stripe.com/3cI3cvey95Bw9F13KcfUQ02" class="stripe-btn donate" style="display: inline-block; width: auto; padding: 1rem 3rem;" target="_blank" rel="noopener">
+      🙏 Donate - Choose Amount
+    </a>
   </section>
 </section>
 
@@ -218,8 +225,6 @@ const pageDescription = "Join our Breslov learning community";
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('success') === 'true') {
       document.getElementById('successBanner').style.display = 'block';
-      // Update user status
-      updateUserStatus();
     }
     if (urlParams.get('canceled') === 'true') {
       document.getElementById('errorBanner').style.display = 'block';
@@ -244,21 +249,12 @@ const pageDescription = "Join our Breslov learning community";
             <br><a href="/chat" style="color: #166534; font-weight: bold;">→ Go to Chat</a>
           </div>
         `;
-        // Disable subscribe buttons for paid tiers
         disableSubscribeButtons(subscription.tier);
-      } else if (currentUser.tier && currentUser.tier !== 'free') {
-        statusEl.innerHTML = `
-          <div class="user-status">
-            ✓ Welcome back, <strong>${currentUser.name}</strong>! You are on the <strong>${currentUser.tier}</strong> plan.
-            <br><a href="/chat" style="color: #166534; font-weight: bold;">→ Go to Chat</a>
-          </div>
-        `;
-        disableSubscribeButtons(currentUser.tier);
       } else {
         statusEl.innerHTML = `
           <div class="user-status inactive">
             👤 Signed in as <strong>${currentUser.name}</strong> (Free tier)
-            <br><a href="/auth" style="color: #dc2626;">→ Sign out</a>
+            <br>Subscribe above to access chat rooms!
           </div>
         `;
       }
@@ -271,100 +267,12 @@ const pageDescription = "Join our Breslov learning community";
     
     tiers.forEach((tier, index) => {
       const btn = document.getElementById(tier + 'Btn');
-      if (index <= tierIndex) {
-        btn.textContent = 'Current Plan';
-        btn.disabled = true;
+      if (index <= tierIndex && btn) {
+        btn.textContent = '✓ Current Plan';
         btn.style.opacity = '0.7';
+        btn.style.pointerEvents = 'none';
       }
     });
-  }
-
-  async function subscribe(tier) {
-    const userData = localStorage.getItem('ajew_current_user');
-    
-    if (!userData) {
-      // Not logged in, redirect to auth
-      alert('Please sign in or create an account first.');
-      window.location.href = '/auth?redirect=/subscribe';
-      return;
-    }
-
-    const user = JSON.parse(userData);
-    const btn = document.getElementById(tier + 'Btn');
-    const originalText = btn.textContent;
-    
-    btn.innerHTML = '<span class="loading"></span>Processing...';
-    btn.disabled = true;
-
-    try {
-      // For demo mode, simulate checkout
-      // In production, call the API endpoint
-      const response = await fetch('/api/create-checkout-session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: user.email,
-          tier: tier
-        })
-      });
-
-      const data = await response.json();
-
-      if (data.url) {
-        // Redirect to Stripe checkout
-        window.location.href = data.url;
-      } else {
-        // Demo mode - simulate successful subscription
-        simulateSubscription(tier, user);
-      }
-    } catch (error) {
-      console.error('Subscription error:', error);
-      // Demo mode fallback
-      simulateSubscription(tier, user);
-    }
-  }
-
-  function simulateSubscription(tier, user) {
-    // Calculate expiry
-    const expiryDate = new Date();
-    if (tier === 'basic') {
-      expiryDate.setFullYear(expiryDate.getFullYear() + 1);
-    } else {
-      expiryDate.setMonth(expiryDate.getMonth() + 1);
-    }
-
-    // Update user tier
-    user.tier = tier;
-    user.expiryDate = expiryDate.toISOString();
-    localStorage.setItem('ajew_current_user', JSON.stringify(user));
-
-    // Update memberships
-    const memberships = JSON.parse(localStorage.getItem('ajew_memberships') || '{}');
-    memberships[user.email] = {
-      email: user.email,
-      tier: tier,
-      subscriptionStatus: 'active',
-      expiryDate: expiryDate.toISOString(),
-      createdAt: new Date().toISOString()
-    };
-    localStorage.setItem('ajew_memberships', JSON.stringify(memberships));
-
-    // Update users
-    const users = JSON.parse(localStorage.getItem('ajew_users') || '{}');
-    if (users[user.email]) {
-      users[user.email].tier = tier;
-      users[user.email].membership = memberships[user.email];
-      localStorage.setItem('ajew_users', JSON.stringify(users));
-    }
-
-    alert(`🎉 Demo subscription activated!\n\nTier: ${tier.toUpperCase()}\nExpiry: ${expiryDate.toLocaleDateString()}\n\nIn production, you would be redirected to Stripe checkout.`);
-    
-    window.location.href = '/chat';
-  }
-
-  function donateNow() {
-    // Demo donation
-    alert('💖 Thank you for your interest in donating!\n\nIn production, this would open a Stripe payment link.');
   }
 </script>
 
