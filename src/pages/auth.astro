@@ -1,0 +1,309 @@
+---
+const pageTitle = "Sign In - NNNNM Community";
+const pageDescription = "Sign in to access the Breslov learning community chat and features";
+---
+
+<style>
+  .page-header {
+    background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
+    color: white;
+    padding: 4rem 2rem;
+    text-align: center;
+  }
+  .page-header h1 { font-family: var(--font-hebrew); font-size: 2rem; margin-bottom: 0.5rem; }
+  .container { max-width: 500px; margin: 0 auto; padding: 0 2rem; }
+  .auth-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2.5rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    margin-top: -3rem;
+  }
+  .auth-tabs { display: flex; margin-bottom: 2rem; border-bottom: 2px solid #eee; }
+  .auth-tab {
+    flex: 1;
+    padding: 1rem;
+    text-align: center;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    color: #666;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  .auth-tab.active {
+    color: #1a365d;
+    border-bottom-color: #744210;
+  }
+  .form-group { margin-bottom: 1.5rem; }
+  .form-group label { display: block; margin-bottom: 0.5rem; color: #333; font-weight: 500; }
+  .form-group input {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+  }
+  .form-group input:focus { outline: none; border-color: #744210; }
+  .submit-btn {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(135deg, #744210 0%, #975a16 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(116, 66, 16, 0.3); }
+  .submit-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+  .loading { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 1s linear infinite; margin-right: 0.5rem; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .error-message { background: #fee2e2; color: #dc2626; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; text-align: center; }
+  .success-message { background: #dcfce7; color: #166534; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; text-align: center; }
+  .benefits { margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #eee; }
+  .benefits h3 { color: #1a365d; font-size: 1.1rem; margin-bottom: 1rem; text-align: center; }
+  .benefits ul { list-style: none; padding: 0; }
+  .benefits li { padding: 0.5rem 0; color: #666; display: flex; align-items: center; gap: 0.5rem; }
+  .benefits li::before { content: '✓'; color: #059669; font-weight: bold; }
+  .nav-links { display: flex; justify-content: center; gap: 1rem; margin-top: 2rem; }
+  .nav-link { color: #1a365d; text-decoration: none; padding: 0.5rem 1rem; background: #f7f5f0; border-radius: 8px; }
+  .nav-link:hover { background: #1a365d; color: white; }
+  .user-status { background: #dcfce7; color: #166534; padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; text-align: center; }
+  .user-status h3 { margin-bottom: 0.5rem; }
+  .user-status .tier-badge { display: inline-block; background: #744210; color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.85rem; margin-top: 0.5rem; }
+  .hidden { display: none !important; }
+</style>
+
+<section class="page-header">
+  <h1>👤 Sign In</h1>
+  <p>Access the NNNNM Community</p>
+  <div class="nav-links">
+    <a href="/chat" class="nav-link">💬 Chat</a>
+    <a href="/subscribe" class="nav-link">💳 Subscribe</a>
+    <a href="/teachings" class="nav-link">📖 Teachings</a>
+  </div>
+</section>
+
+<main class="container">
+  <div class="auth-card">
+    <!-- Logged in view -->
+    <div id="loggedInView" class="hidden">
+      <div class="user-status">
+        <h3>✓ Welcome back!</h3>
+        <p>Signed in as <strong id="userEmail"></strong></p>
+        <p>Tier: <strong id="userTier"></strong></p>
+        <span class="tier-badge" id="tierBadge"></span>
+      </div>
+      <div class="nav-links" style="margin-top: 0;">
+        <a href="/chat" class="submit-btn" style="display: inline-block; text-decoration: none;">💬 Enter Chat</a>
+      </div>
+      <div style="text-align: center; margin-top: 1.5rem;">
+        <button onclick="signOut()" style="background: none; border: none; color: #dc2626; cursor: pointer; font-size: 0.95rem;">Sign out</button>
+      </div>
+    </div>
+
+    <!-- Auth form -->
+    <div id="authForm">
+      <div class="auth-tabs">
+        <div class="auth-tab active" onclick="switchTab('login')" id="loginTab">Sign In</div>
+        <div class="auth-tab" onclick="switchTab('register')" id="registerTab">Create Account</div>
+      </div>
+
+      <div id="loginForm">
+        <div id="loginError" class="error-message hidden"></div>
+        <form onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label for="loginEmail">Email</label>
+            <input type="email" id="loginEmail" required placeholder="your@email.com">
+          </div>
+          <div class="form-group">
+            <label for="loginPassword">Password</label>
+            <input type="password" id="loginPassword" placeholder="Enter password">
+          </div>
+          <button type="submit" class="submit-btn" id="loginBtn">Sign In</button>
+        </form>
+      </div>
+
+      <div id="registerForm" class="hidden">
+        <div id="registerError" class="error-message hidden"></div>
+        <div id="registerSuccess" class="success-message hidden"></div>
+        <form onsubmit="handleRegister(event)">
+          <div class="form-group">
+            <label for="registerName">Name</label>
+            <input type="text" id="registerName" required placeholder="Your name">
+          </div>
+          <div class="form-group">
+            <label for="registerEmail">Email</label>
+            <input type="email" id="registerEmail" required placeholder="your@email.com">
+          </div>
+          <div class="form-group">
+            <label for="registerPassword">Password</label>
+            <input type="password" id="registerPassword" required placeholder="Create password" minlength="6">
+          </div>
+          <button type="submit" class="submit-btn" id="registerBtn">Create Account</button>
+        </form>
+      </div>
+
+      <div class="benefits">
+        <h3>Member Benefits</h3>
+        <ul>
+          <li>Join community chat rooms</li>
+          <li>Comment on teachings</li>
+          <li>Access member-only content</li>
+          <li>Private messaging (Premium+)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  // Server subscriptions data
+  let serverSubscriptions = {};
+
+  // Load server subscriptions
+  async function loadServerSubscriptions() {
+    try {
+      const response = await fetch('/api/subscriptions');
+      if (response.ok) {
+        serverSubscriptions = await response.json();
+      }
+    } catch (e) {
+      console.log('Using localStorage only');
+    }
+  }
+
+  // Check if already logged in
+  function checkAuth() {
+    const userData = localStorage.getItem('ajew_current_user');
+    if (userData) {
+      const user = JSON.parse(userData);
+      document.getElementById('loggedInView').classList.remove('hidden');
+      document.getElementById('authForm').classList.add('hidden');
+      document.getElementById('userEmail').textContent = user.email || user.name;
+      document.getElementById('userTier').textContent = (user.tier || 'free').toUpperCase();
+      document.getElementById('tierBadge').textContent = (user.tier || 'free').toUpperCase() + ' MEMBER';
+    }
+  }
+
+  function switchTab(tab) {
+    document.getElementById('loginTab').classList.toggle('active', tab === 'login');
+    document.getElementById('registerTab').classList.toggle('active', tab === 'register');
+    document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login');
+    document.getElementById('registerForm').classList.toggle('hidden', tab !== 'register');
+    document.getElementById('loginError').classList.add('hidden');
+    document.getElementById('registerError').classList.add('hidden');
+    document.getElementById('registerSuccess').classList.add('hidden');
+  }
+
+  async function handleLogin(event) {
+    event.preventDefault();
+    const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+    const btn = document.getElementById('loginBtn');
+    btn.innerHTML = '<span class="loading"></span>Signing in...';
+    btn.disabled = true;
+
+    try {
+      // Check server subscriptions first
+      if (serverSubscriptions[email]) {
+        const sub = serverSubscriptions[email];
+        const user = {
+          email: email,
+          name: sub.name || email.split('@')[0],
+          tier: sub.tier,
+          expiryDate: sub.expiryDate
+        };
+        localStorage.setItem('ajew_current_user', JSON.stringify(user));
+        location.href = '/chat';
+        return;
+      }
+
+      // Fallback to localStorage
+      const users = JSON.parse(localStorage.getItem('ajew_users') || '{}');
+      const user = users[email];
+
+      if (user) {
+        localStorage.setItem('ajew_current_user', JSON.stringify(user));
+        location.href = '/chat';
+      } else {
+        // Auto-create account for demo
+        const newUser = {
+          email: email,
+          name: email.split('@')[0],
+          tier: 'free',
+          createdAt: new Date().toISOString()
+        };
+        users[email] = newUser;
+        localStorage.setItem('ajew_users', JSON.stringify(users));
+        localStorage.setItem('ajew_current_user', JSON.stringify(newUser));
+        location.href = '/subscribe';
+      }
+    } catch (error) {
+      document.getElementById('loginError').textContent = 'Login failed. Please try again.';
+      document.getElementById('loginError').classList.remove('hidden');
+      btn.innerHTML = 'Sign In';
+      btn.disabled = false;
+    }
+  }
+
+  async function handleRegister(event) {
+    event.preventDefault();
+    const name = document.getElementById('registerName').value.trim();
+    const email = document.getElementById('registerEmail').value.trim().toLowerCase();
+    const btn = document.getElementById('registerBtn');
+    btn.innerHTML = '<span class="loading"></span>Creating...';
+    btn.disabled = true;
+
+    try {
+      const users = JSON.parse(localStorage.getItem('ajew_users') || '{}');
+      
+      if (users[email]) {
+        document.getElementById('registerError').textContent = 'An account with this email already exists.';
+        document.getElementById('registerError').classList.remove('hidden');
+        btn.innerHTML = 'Create Account';
+        btn.disabled = false;
+        return;
+      }
+
+      const newUser = {
+        email: email,
+        name: name,
+        tier: 'free',
+        createdAt: new Date().toISOString()
+      };
+      users[email] = newUser;
+      localStorage.setItem('ajew_users', JSON.stringify(users));
+      localStorage.setItem('ajew_current_user', JSON.stringify(newUser));
+
+      document.getElementById('registerSuccess').textContent = '✓ Account created! Redirecting...';
+      document.getElementById('registerSuccess').classList.remove('hidden');
+      
+      setTimeout(() => {
+        location.href = '/subscribe';
+      }, 1500);
+    } catch (error) {
+      document.getElementById('registerError').textContent = 'Registration failed. Please try again.';
+      document.getElementById('registerError').classList.remove('hidden');
+      btn.innerHTML = 'Create Account';
+      btn.disabled = false;
+    }
+  }
+
+  function signOut() {
+    localStorage.removeItem('ajew_current_user');
+    location.reload();
+  }
+
+  // Initialize
+  document.addEventListener('DOMContentLoaded', async () => {
+    await loadServerSubscriptions();
+    checkAuth();
+  });
+</script>
+
+---
+import Layout from '../layouts/Layout.astro';
