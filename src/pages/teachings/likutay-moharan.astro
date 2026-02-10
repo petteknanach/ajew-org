@@ -1,413 +1,231 @@
 ---
 const pageTitle = "Likutay Moharan";
 const pageDescription = "Likutay Moharan - The Torah Teachings of Rabbi Nachman of Breslov";
+
+// Generate Torah links for Vol 1 (49-286)
+const vol1Links = [];
+for (let i = 49; i <= 286; i++) {
+  vol1Links.push({ num: i, url: `/teachings/likutay-moharan-vol1-torah${i}` });
+}
+
+// Generate Torah links for Vol 2 (3-125)
+const vol2Links = [];
+for (let i = 3; i <= 125; i++) {
+  vol2Links.push({ num: i, url: `/teachings/likutay-moharan-volume-2-torah-${i}` });
+}
 ---
 
 <style>
   .page-header {
-    background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
+    background: #1a365d;
     color: white;
-    padding: 4rem 2rem;
+    padding: 2rem;
     text-align: center;
   }
   .page-header h1 {
     font-family: var(--font-hebrew);
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
+    font-size: 1.8rem;
+    margin: 0;
   }
-  .page-header .subtitle {
-    font-size: 1.2rem;
-    opacity: 0.9;
-  }
-  .container { max-width: 900px; margin: 0 auto; padding: 0 2rem; }
-  
-  .intro-section {
-    background: #f7f5f0;
-    padding: 3rem 0;
-    border-bottom: 1px solid #e2e8f0;
-  }
-  .intro-text {
-    background: white;
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  }
-  .intro-text p {
-    font-size: 1.1rem;
-    line-height: 1.8;
-    color: #333;
+  .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+  .section { margin-bottom: 2.5rem; }
+  .section h2 {
+    font-family: var(--font-hebrew);
+    color: #1a365d;
+    font-size: 1.3rem;
+    border-bottom: 2px solid #ed8936;
+    padding-bottom: 0.5rem;
     margin-bottom: 1rem;
   }
-  
-  .section-title {
-    font-family: var(--font-hebrew);
-    font-size: 1.5rem;
-    color: #1a365d;
-    margin: 3rem 0 1.5rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 2px solid #e2e8f0;
-  }
-  
-  .torah-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1rem;
-    margin-bottom: 3rem;
-  }
-  
-  .torah-link {
-    display: block;
-    background: white;
-    padding: 1.25rem 1.5rem;
-    border-radius: 8px;
-    text-decoration: none;
-    color: #333;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    border: 1px solid #e2e8f0;
-    transition: all 0.2s ease;
-  }
-  .torah-link:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    border-color: #1a365d;
-    color: #1a365d;
-  }
-  .torah-link .torah-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin-bottom: 0.25rem;
-  }
-  .torah-link .torah-desc {
-    font-size: 0.9rem;
-    color: #666;
-  }
-  
-  .navigation-links {
+  .quick-nav {
     display: flex;
-    justify-content: center;
-    gap: 2rem;
-    padding: 2rem;
-    background: #f7f5f0;
-    border-radius: 8px;
-    margin-top: 2rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
   }
-  .nav-link {
+  .quick-nav a {
+    padding: 0.4rem 0.8rem;
+    background: #f7f5f0;
+    color: #1a365d;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 0.9rem;
+  }
+  .quick-nav a:hover {
+    background: #ed8936;
+    color: white;
+  }
+  .link-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 0.4rem;
+  }
+  .link-grid a, .link-grid span {
+    display: block;
+    padding: 0.4rem 0.6rem;
+    background: #f7f5f0;
+    color: #1a365d;
+    text-decoration: none;
+    border-radius: 4px;
+    text-align: center;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+  }
+  .link-grid a:hover {
+    background: #ed8936;
+    color: white;
+  }
+  .link-grid span {
+    background: #dbeafe;
+    font-weight: 600;
+  }
+  .nav-links {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #eee;
+  }
+  .nav-links a {
     color: #1a365d;
     text-decoration: none;
     padding: 0.5rem 1rem;
+    background: #f7f5f0;
     border-radius: 4px;
-    transition: background 0.2s;
   }
-  .nav-link:hover {
-    background: #e2e8f0;
+  .nav-links a:hover {
+    background: #1a365d;
+    color: white;
   }
-  
-  @media (max-width: 768px) {
-    .torah-grid { grid-template-columns: 1fr; }
-    .navigation-links { flex-direction: column; text-align: center; }
+  .missing {
+    background: #fee2e2 !important;
+    color: #991b1b;
   }
 </style>
 
 <section class="page-header">
   <h1>📖 Likutay Moharan</h1>
-  <p class="subtitle">The Torah Teachings of Rabbi Nachman of Breslov</p>
 </section>
 
-<nav class="navigation">
-  <div class="container">
-    <div class="navigation-links">
-      <a href="/teachings" class="nav-link">← Back to Teachings</a>
-      <a href="/teachings/likutay-moharan-intro" class="nav-link">Introduction</a>
-    </div>
+<main class="container">
+  <!-- Quick Navigation -->
+  <div class="quick-nav">
+    <a href="#front-matter">Front Matter</a>
+    <a href="#vol1-1-48">Vol 1: 1-48</a>
+    <a href="#vol1-49-150">Vol 1: 49-150</a>
+    <a href="#vol1-151-286">Vol 1: 151-286</a>
+    <a href="#vol2">Volume 2</a>
   </div>
-</nav>
 
-<section class="intro-section">
-  <div class="container">
-    <div class="intro-text">
-      <p><strong>Likutay Moharan</strong> (Collected Teachings of Rabbi Nachman) is the central work of Breslov Chassidus. 
-      These torahs were given by Rabbi Nachman throughout his life and contain deep insights into Torah, prayer, 
-      faith, joy, and the path to closeness with God.</p>
-      <p>The complete teachings are presented here with full text - no truncation, preserved exactly as written.</p>
+  <!-- Front Matter -->
+  <section class="section" id="front-matter">
+    <h2>Front Matter</h2>
+    <div class="link-grid">
+      <a href="/teachings/likutay-moharan-introduction">Introduction</a>
+      <a href="/teachings/likutay-moharan-poem">Poem</a>
+      <a href="/teachings/likutay-moharan-preface-greatness">Preface</a>
+      <a href="/teachings/likutay-moharan-short-poetic-preface-1-15">Poetic Preface</a>
+      <a href="/teachings/likutay-moharan-short-poetic-conclusion-1-15">Conclusion 1-15</a>
+      <a href="/teachings/likutay-moharan-short-poetic-conclusion-16-18">Conclusion 16-18</a>
+      <a href="/teachings/likutay-moharan-short-poetic-conclusion-suvay-divay">Suvay Divay</a>
+      <a href="/teachings/likutay-moharan-short-poetic-conclusion-32-end">Conclusion 32-End</a>
+      <a href="/teachings/likutay-moharan-approbation-chozeh-lublin">Approbations →</a>
     </div>
+  </section>
+
+  <!-- Volume 1: 1-48 -->
+  <section class="section" id="vol1-1-48">
+    <h2>Volume 1: Torahs 1-48</h2>
+    <div class="link-grid">
+      <a href="/teachings/likutay-moharan-vol1-torah1">1</a>
+      <a href="/teachings/likutay-moharan-vol1-torah2">2</a>
+      <a href="/teachings/likutay-moharan-vol1-torah3">3</a>
+      <a href="/teachings/likutay-moharan-vol1-torah4">4</a>
+      <a href="/teachings/likutay-moharan-vol1-torah5">5</a>
+      <a href="/teachings/likutay-moharan-vol1-torah6">6</a>
+      <a href="/teachings/likutay-moharan-vol1-torah7">7</a>
+      <a href="/teachings/likutay-moharan-vol1-torah8">8</a>
+      <a href="/teachings/likutay-moharan-vol1-torah9">9</a>
+      <a href="/teachings/likutay-moharan-vol1-torah10">10</a>
+      <a href="/teachings/likutay-moharan-vol1-torah11">11</a>
+      <a href="/teachings/likutay-moharan-vol1-torah12">12</a>
+      <a href="/teachings/likutay-moharan-vol1-torah13">13</a>
+      <a href="/teachings/likutay-moharan-vol1-torah14">14</a>
+      <a href="/teachings/likutay-moharan-vol1-torah15">15</a>
+      <a href="/teachings/likutay-moharan-vol1-torah16">16</a>
+      <a href="/teachings/likutay-moharan-vol1-torah17">17</a>
+      <a href="/teachings/likutay-moharan-vol1-torah18">18</a>
+      <a href="/teachings/likutay-moharan-vol1-torah19">19</a>
+      <a href="/teachings/likutay-moharan-vol1-torah20">20</a>
+      <a href="/teachings/likutay-moharan-vol1-torah21">21</a>
+      <a href="/teachings/likutay-moharan-vol1-torah22">22</a>
+      <a href="/teachings/likutay-moharan-vol1-torah23">23</a>
+      <a href="/teachings/likutay-moharan-vol1-torah24">24</a>
+      <a href="/teachings/likutay-moharan-vol1-torah25">25</a>
+      <a href="/teachings/likutay-moharan-vol1-torah26">26</a>
+      <a href="/teachings/likutay-moharan-vol1-torah27">27</a>
+      <a href="/teachings/likutay-moharan-vol1-torah28">28</a>
+      <a href="/teachings/likutay-moharan-vol1-torah29">29</a>
+      <a href="/teachings/likutay-moharan-vol1-torah30">30</a>
+      <a href="/teachings/likutay-moharan-vol1-torah31">31</a>
+      <a href="/teachings/likutay-moharan-vol1-torah32">32</a>
+      <a href="/teachings/likutay-moharan-vol1-torah33">33</a>
+      <a href="/teachings/likutay-moharan-vol1-torah34">34</a>
+      <a href="/teachings/likutay-moharan-vol1-torah35">35</a>
+      <a href="/teachings/likutay-moharan-vol1-torah36">36</a>
+      <a href="/teachings/likutay-moharan-vol1-torah37">37</a>
+      <a href="/teachings/likutay-moharan-vol1-torah38">38</a>
+      <a href="/teachings/likutay-moharan-vol1-torah39">39</a>
+      <a href="/teachings/likutay-moharan-vol1-torah40">40</a>
+      <a href="/teachings/likutay-moharan-vol1-torah41">41</a>
+      <a href="/teachings/likutay-moharan-vol1-torah42">42</a>
+      <a href="/teachings/likutay-moharan-vol1-torah43">43</a>
+      <a href="/teachings/likutay-moharan-vol1-torah44">44</a>
+      <a href="/teachings/likutay-moharan-vol1-torah45">45</a>
+      <a href="/teachings/likutay-moharan-vol1-torah46">46</a>
+      <a href="/teachings/likutay-moharan-vol1-torah47">47</a>
+      <a href="/teachings/likutay-moharan-vol1-torah48">48</a>
+    </div>
+  </section>
+
+  <!-- Volume 1: 49-150 -->
+  <section class="section" id="vol1-49-150">
+    <h2>Volume 1: Torahs 49-150</h2>
+    <div class="link-grid">
+      {vol1Links.filter(l => l.num >= 49 && l.num <= 150).map(link => (
+        <a href={link.url}>{link.num}</a>
+      ))}
+    </div>
+  </section>
+
+  <!-- Volume 1: 151-286 -->
+  <section class="section" id="vol1-151-286">
+    <h2>Volume 1: Torahs 151-286</h2>
+    <div class="link-grid">
+      {vol1Links.filter(l => l.num >= 151).map(link => (
+        <a href={link.url}>{link.num}</a>
+      ))}
+    </div>
+  </section>
+
+  <!-- Volume 2 -->
+  <section class="section" id="vol2">
+    <h2>Volume 2 - Torahs 1-125</h2>
+    <div class="link-grid">
+      <a href="/teachings/likutay-moharan-volume-2-intro">Intro</a>
+      <a href="/teachings/likutay-moharan-volume-2-torah-1">1</a>
+      <a href="/teachings/likutay-moharan-volume-2-torah-2">2</a>
+      {vol2Links.map(link => (
+        <a href={link.url}>{link.num}</a>
+      ))}
+    </div>
+  </section>
+
+  <div class="nav-links">
+    <a href="/teachings">← All Teachings</a>
   </div>
-</section>
-
-<section class="content">
-  <div class="container">
-    <h2 class="section-title">Volume 1 - Torah Teachings</h2>
-    
-    <div class="torah-grid">
-      <a href="/teachings/likutay-moharan-volume-1-torah-1" class="torah-link">
-        <div class="torah-title">Torah 1</div>
-        <div class="torah-desc">Happy are those whose way is perfect</div>
-      </a>
-      <a href="/teachings/likutay-moharan-volume-1-torah-2" class="torah-link">
-        <div class="torah-title">Torah 2</div>
-        <div class="torah-desc">Say to them, live!</div>
-      </a>
-      <a href="/teachings/likutay-moharan-volume-1-torah-3" class="torah-link">
-        <div class="torah-title">Torah 3</div>
-        <div class="torah-desc">A treasury of wisdom</div>
-      </a>
-      <a href="/teachings/likutay-moharan-volume-1-torah-4" class="torah-link">
-        <div class="torah-title">Torah 4</div>
-        <div class="torah-desc">Anokhi Hashem Elokeikha</div>
-      </a>
-      <a href="/teachings/likutay-moharan-volume-1-torah-5" class="torah-link">
-        <div class="torah-title">Torah 5</div>
-        <div class="torah-desc">With trumpets and sound of shofar</div>
-      </a>
-      <a href="/teachings/likutay-moharan-volume-1-torah-6" class="torah-link">
-        <div class="torah-title">Torah 6</div>
-        <div class="torah-desc">Call Joshua</div>
-      </a>
-      <a href="/teachings/likutay-moharan-volume-1-torah-7" class="torah-link">
-        <div class="torah-title">Torah 7</div>
-        <div class="torah-desc">Looking at the face of the tzadikim</div>
-      </a>
-      <a href="/teachings/likutay-moharan-volume-1-torah-8" class="torah-link">
-        <div class="torah-title">Torah 8</div>
-        <div class="torah-desc">The aspect of Rosh Hashanah</div>
-      </a>
-      <a href="/teachings/likutay-moharan-volume-1-torah-9" class="torah-link">
-        <div class="torah-title">Torah 9</div>
-        <div class="torah-desc">Essential advice for every person</div>
-      </a>
-      <a href="/teachings/likutay-moharan-volume-1-torah-10" class="torah-link">
-        <div class="torah-title">Torah 10</div>
-        <div class="torah-desc">These are the judgments</div>
-      </a>
-      <a href="/teachings/likutay-moharan-volume-1-torah-11" class="torah-link">
-        <div class="torah-title">Torah 11</div>
-        <div class="torah-desc">I am Hashem He is My name</div>
-      </a>
-      <a href="/teachings/likutay-moharan-volume-1-torah-12" class="torah-link">
-        <div class="torah-title">Torah 12</div>
-        <div class="torah-desc">Praise to David</div>
-      </a>
-      <a href="/teachings/likutay-moharan-volume-1-torah-13" class="torah-link">
-        <div class="torah-title">Torah 13</div>
-        <div class="torah-desc">To draw complete supervision</div>
-      </a>
-      <a href="/teachings/likutay-moharan-volume-1-torah-14" class="torah-link">
-        <div class="torah-title">Torah 14</div>
-        <div class="torah-desc">To draw peace in the world</div>
-      </a>
-      <a href="/teachings/likutay-moharan-volume-1-torah-15" class="torah-link">
-        <div class="torah-title">Torah 15</div>
-        <div class="torah-desc">Who wants to taste the hidden</div>
-      </a>
-      <a href="/teachings/likutay-moharan-volume-1-torah-16" class="torah-link">
-        <div class="torah-title">Torah 16</div>
-        <div class="torah-desc">The fish that took out its head</div>
-      </a>
-      <a href="/teachings/likutay-moharan-volume-1-torah-17" class="torah-link">
-        <div class="torah-title">Torah 17</div>
-        <div class="torah-desc">They were emptying their hearts</div>
-      </a>
-      <a href="/teachings/likutay-moharan-volume-1-torah-18" class="torah-link">
-        <div class="torah-title">Torah 18</div>
-        <div class="torah-desc">Kartalisa - Treasure Chest</div>
-      </a>
-      <a href="/teachings/likutay-moharan-volume-1-torah-19" class="torah-link">
-        <div class="torah-title">Torah 19</div>
-        <div class="torah-desc">Prayer of Habakkuk</div>
-      </a>
-      <a href="/teachings/likutay-moharan-volume-1-torah-20" class="torah-link">
-        <div class="torah-title">Torah 20</div>
-        <div class="torah-desc">The aspects of prayer</div>
-      </a>
-      <a href="/teachings/likutay-moharan-volume-1-torah-21" class="torah-link">
-        <div class="torah-title">Torah 21</div>
-        <div class="torah-desc">The essence of emunah</div>
-      </a>
-      <a href="/teachings/likutay-moharan-volume-1-torah-22" class="torah-link">
-        <div class="torah-title">Torah 22</div>
-        <div class="torah-desc">Chosam within a Chosam</div>
-      </a>
-      <a href="/teachings/likutay-moharan-volume-1-torah-23" class="torah-link">
-        <div class="torah-title">Torah 23</div>
-        <div class="torah-desc">The way of Breslov</div>
-      </a>
-      <a href="/teachings/likutay-moharan-volume-1-torah-24" class="torah-link">
-        <div class="torah-title">Torah 24</div>
-        <div class="torah-desc">The path of truth</div>
-      </a>
-      <a href="/teachings/likutay-moharan-volume-1-torah-25" class="torah-link">
-        <div class="torah-title">Torah 25</div>
-        <div class="torah-desc">Hisbodidus - hitbodedut</div>
-      </a>
-      <a href="/teachings/likutay-moharan-volume-1-torah-26" class="torah-link">
-        <div class="torah-title">Torah 26</div>
-        <div class="torah-desc">A powerful arousal</div>
-      </a>
-      <a href="/teachings/likutay-moharan-volume-1-torah-27" class="torah-link">
-        <div class="torah-title">Torah 27</div>
-        <div class="torah-desc">The chick that died in its egg</div>
-      </a>
-      <a href="/teachings/likutay-moharan-volume-1-torah-28" class="torah-link">
-        <div class="torah-title">Torah 28</div>
-        <div class="torah-desc">Build for us a house</div>
-      </a>
-      <a href="/teachings/likutay-moharan-volume-1-torah-29" class="torah-link">
-        <div class="torah-title">Torah 29</div>
-        <div class="torah-desc">This man who goes to request</div>
-      </a>
-      <a href="/teachings/likutay-moharan-volume-1-torah-30" class="torah-link">
-        <div class="torah-title">Torah 30</div>
-        <div class="torah-desc">Torah 30</div>
-      </a>
-      <a href="/teachings/likutay-moharan-volume-1-torah-31" class="torah-link">
-        <div class="torah-title">Torah 31</div>
-        <div class="torah-desc">Torah 31</div>
-      </a>
-      <a href="/teachings/likutay-moharan-volume-1-torah-32" class="torah-link">
-        <div class="torah-title">Torah 32</div>
-        <div class="torah-desc">My Lord, open my lips</div>
-      </a>
-      <a href="/teachings/likutay-moharan-volume-1-torah-33" class="torah-link">
-        <div class="torah-title">Torah 33</div>
-        <div class="torah-desc">Who is the man who desires life</div>
-      </a>
-      <a href="/teachings/likutay-moharan-volume-1-torah-34" class="torah-link">
-        <div class="torah-title">Torah 34</div>
-        <div class="torah-desc">You shall be to Me a Kingdom</div>
-      </a>
-      <a href="/teachings/likutay-moharan-volume-1-torah-35" class="torah-link">
-        <div class="torah-title">Torah 35</div>
-        <div class="torah-desc">Happy are the people who know</div>
-      </a>
-      <a href="/teachings/likutay-moharan-volume-1-torah-36" class="torah-link">
-        <div class="torah-title">Torah 36</div>
-        <div class="torah-desc">Torah 36</div>
-      </a>
-      <a href="/teachings/likutay-moharan-volume-1-torah-37" class="torah-link">
-        <div class="torah-title">Torah 37</div>
-        <div class="torah-desc">Torah 37</div>
-      </a>
-      <a href="/teachings/likutay-moharan-volume-1-torah-38" class="torah-link">
-        <div class="torah-title">Torah 38</div>
-        <div class="torah-desc">Torah 38</div>
-      </a>
-      <a href="/teachings/likutay-moharan-volume-1-torah-39" class="torah-link">
-        <div class="torah-title">Torah 39</div>
-        <div class="torah-desc">Torah 39</div>
-      </a>
-      <a href="/teachings/likutay-moharan-volume-1-torah-40" class="torah-link">
-        <div class="torah-title">Torah 40</div>
-        <div class="torah-desc">Torah 40</div>
-      </a>
-      <a href="/teachings/likutay-moharan-volume-1-torah-41" class="torah-link">
-        <div class="torah-title">Torah 41</div>
-        <div class="torah-desc">Torah 41</div>
-      </a>
-      <a href="/teachings/likutay-moharan-volume-1-torah-42" class="torah-link">
-        <div class="torah-title">Torah 42</div>
-        <div class="torah-desc">Torah 42</div>
-      </a>
-      <a href="/teachings/likutay-moharan-volume-1-torah-43" class="torah-link">
-        <div class="torah-title">Torah 43</div>
-        <div class="torah-desc">Torah 43</div>
-      </a>
-      <a href="/teachings/likutay-moharan-volume-1-torah-45" class="torah-link">
-        <div class="torah-title">Torah 45</div>
-        <div class="torah-desc">Torah 45</div>
-      </a>
-    </div>
-    
-    <h2 class="section-title">Preface & Introduction</h2>
-    <div class="torah-grid">
-      <a href="/teachings/likutay-moharan-introduction" class="torah-link" style="background: #fef3c7;">
-        <div class="torah-title">📖 Introduction</div>
-        <div class="torah-desc">Introduction to Likutay Moharan</div>
-      </a>
-      <a href="/teachings/likutay-moharan-poem" class="torah-link" style="background: #fef3c7;">
-        <div class="torah-title">📝 Rabbi Nachman's Poem</div>
-        <div class="torah-desc">Poem at beginning of Likutay Moharan</div>
-      </a>
-      <a href="/teachings/likutay-moharan-preface-greatness" class="torah-link" style="background: #fef3c7;">
-        <div class="torah-title">🙏 Preface - Greatness of Rabbi Shimon</div>
-        <div class="torah-desc">Preface on the greatness of Rabbi Shimon</div>
-      </a>
-    </div>
-
-    <h2 class="section-title">Approbations</h2>
-    <div class="torah-grid">
-      <a href="/teachings/likutay-moharan-approbation-chozeh-lublin" class="torah-link" style="background: #dbeafe;">
-        <div class="torah-title">✡ Chozeh of Lublin</div>
-        <div class="torah-desc">Approbation</div>
-      </a>
-      <a href="/teachings/likutay-moharan-approbation-magid-kozhnitz" class="torah-link" style="background: #dbeafe;">
-        <div class="torah-title">✡ Magid of Kozhnitz</div>
-        <div class="torah-desc">Approbation</div>
-      </a>
-      <a href="/teachings/likutay-moharan-approbation-avraham-chaim" class="torah-link" style="background: #dbeafe;">
-        <div class="torah-title">✡ Rabbi Avraham Chaim of Zlotshev</div>
-        <div class="torah-desc">Approbation</div>
-      </a>
-      <a href="/teachings/likutay-moharan-approbation-meir-brod" class="torah-link" style="background: #dbeafe;">
-        <div class="torah-title">✡ Rabbi Meir of Brod</div>
-        <div class="torah-desc">Approbation</div>
-      </a>
-      <a href="/teachings/likutay-moharan-approbation-efraim-margolis" class="torah-link" style="background: #dbeafe;">
-        <div class="torah-title">✡ Rabbi Efraim Zalman Margolis</div>
-        <div class="torah-desc">Approbation</div>
-      </a>
-      <a href="/teachings/likutay-moharan-approbations-more" class="torah-link" style="background: #dbeafe;">
-        <div class="torah-title">✡ More Approbations</div>
-        <div class="torah-desc">Additional approbations</div>
-      </a>
-    </div>
-
-    <h2 class="section-title">Poetic Prefaces & Conclusions</h2>
-    <div class="torah-grid">
-      <a href="/teachings/likutay-moharan-short-poetic-preface-1-15" class="torah-link" style="background: #dcfce7;">
-        <div class="torah-title">📜 Preface for Torahs 1-15</div>
-        <div class="torah-desc">Short poetic preface</div>
-      </a>
-      <a href="/teachings/likutay-moharan-short-poetic-conclusion-1-15" class="torah-link" style="background: #dcfce7;">
-        <div class="torah-title">📜 Conclusion to Torahs 1-15</div>
-        <div class="torah-desc">Short poetic conclusion</div>
-      </a>
-      <a href="/teachings/likutay-moharan-short-poetic-conclusion-16-18" class="torah-link" style="background: #dcfce7;">
-        <div class="torah-title">📜 Conclusion to Torahs 16-18</div>
-        <div class="torah-desc">Short poetic conclusion</div>
-      </a>
-      <a href="/teachings/likutay-moharan-short-poetic-conclusion-suvay-divay" class="torah-link" style="background: #dcfce7;">
-        <div class="torah-title">📜 Conclusion on Suvay Divay Atuna</div>
-        <div class="torah-desc">Short poetic conclusion</div>
-      </a>
-      <a href="/teachings/likutay-moharan-short-poetic-conclusion-32-end" class="torah-link" style="background: #dcfce7;">
-        <div class="torah-title">📜 Conclusion to Torahs 32-End</div>
-        <div class="torah-desc">Short poetic conclusion</div>
-      </a>
-    </div>
-
-    <h2 class="section-title" style="color: #744210;">Volume 2 - Torah Teachings (1-125)</h2>
-    <div class="torah-grid">
-      <a href="/teachings/likutay-moharan-volume-2-torah-1" class="torah-link" style="background: #fef3c7; border-color: #f59e0b;">
-        <div class="torah-title">Torah 2:1</div>
-        <div class="torah-desc">Blow the shofar on the new month</div>
-      </a>
-      <a href="/teachings/likutay-moharan-volume-2-torah-2" class="torah-link" style="background: #fef3c7; border-color: #f59e0b;">
-        <div class="torah-title">Torah 2:2</div>
-        <div class="torah-desc">A great and awesome thing</div>
-      </a>
-      <a href="/teachings/likutay-moharan-vol2-intro" class="torah-link" style="background: #dbeafe; border-color: #3b82f6;">
-        <div class="torah-title">📖 Volume 2 Introduction</div>
-        <div class="torah-desc">Introduction to Likutay Moharan Volume 2</div>
-      </a>
-    </div>
-    <p style="text-align: center; color: #666; margin-bottom: 2rem;">
-      <em>Volume 2 contains 125 additional torahs given by Rabbi Nachman. More coming soon.</em>
-    </p>
-
-    <div class="navigation-links">
-      <a href="/teachings" class="nav-link">← Back to Teachings</a>
-    </div>
-  </div>
-</section>
+</main>
 
 ---
 import Layout from '../../layouts/Layout.astro';
