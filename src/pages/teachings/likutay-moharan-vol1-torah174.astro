@@ -1,25 +1,33 @@
 ---
 const pageTitle = "Likutay Moharan Volume 1 - Torah 174";
-const pageDescription = "Likutay Moharan Volume 1 - Torah 174";
+const pageDescription = "NaNach: Likutay Moharan - Torah 174";
 ---
 
 <style>
   .page-header {
     background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
     color: white;
-    padding: 4rem 2rem;
+    padding: 3rem 2rem;
     text-align: center;
   }
-  .page-header h1 { font-family: var(--font-hebrew); font-size: 1.8rem; }
-  .container { max-width: 800px; margin: 0 auto; padding: 0 2rem; }
+  .page-header h1 {
+    font-family: var(--font-hebrew);
+    font-size: 1.8rem;
+  }
+  .container { max-width: 900px; margin: 0 auto; padding: 0 2rem; }
   .navigation { background: #f7f5f0; padding: 1rem 0; }
   .nav-links { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
   .nav-link { color: #1a365d; text-decoration: none; padding: 0.5rem 1rem; border-radius: 4px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
   .nav-link:hover { background: #1a365d; color: white; }
   .content { padding: 3rem 0; }
   .content-text { background: white; padding: 3rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-  .content-text :global(p) { font-size: 1.1rem; line-height: 1.9; color: #333; margin-bottom: 1.5rem; text-align: justify; }
-  .content-text :global(.hebrew) { font-family: var(--font-hebrew); direction: rtl; }
+  .content-text p { font-size: 1.05rem; line-height: 1.9; color: #333; margin-bottom: 1.2rem; text-align: justify; }
+  .content-text .key-term { color: #006600; font-weight: 600; }
+  .content-text .hebrew-text { color: #003087; font-family: var(--font-hebrew); direction: rtl; }
+  .content-text .note { color: #990099; font-style: italic; }
+  .content-text .citation { color: #555555; font-style: italic; }
+  .content-text .source { color: #800000; }
+  .content-text .body-text { color: #333; }
   .footer-nav { background: #1a365d; padding: 2rem 0; }
   .back-link { display: inline-flex; align-items: center; gap: 0.5rem; color: white; text-decoration: none; padding: 0.75rem 1.5rem; background: rgba(255,255,255,0.1); border-radius: 8px; }
   .back-link:hover { background: rgba(255,255,255,0.2); }
@@ -27,7 +35,6 @@ const pageDescription = "Likutay Moharan Volume 1 - Torah 174";
 
 <section class="page-header">
   <h1>Likutay Moharan Volume 1 - Torah 174</h1>
-  <span class="chapter-badge">Volume 1, Torah 174</span>
 </section>
 
 <nav class="navigation">
@@ -42,35 +49,7 @@ const pageDescription = "Likutay Moharan Volume 1 - Torah 174";
 <section class="content">
   <div class="container">
     <div class="content-text">
-<p>174.
-When judgments, God forbid, overpower a person.</p>
-<p>When
-the forces of judgment (dinim),
-God forbid, overpower a person, one should not mention the person’s
-name in prayer. This is in order not to give strength to the
-judgments.</p>
-<p>As stated in the Zohar
-(Noach 69a) and
-in Likutei
-Torah of the Ari on Bereishit:
-Noah was not given a name at birth, because the world was then under
-harsh judgments, and his father refrained from naming him. For
-through the naming, the person becomes identifiable, and the
-accusatory forces can target him.</p>
-<p>Similarly, when Moses
-prayed for Miriam, he did not mention her name explicitly but said
-simply: “O
-God, please heal her now” (Numbers
-12:13). Because judgments were overpowering her, he avoided stating
-her name explicitly.</p>
-<p>However, he did allude to her name
-wondrously. The phrase “נא
-רפא נא” (“please
-heal now”) has the numerical value (gematria) of Miriam
-Yocheved—the
-name of the ill and her mother, which are normally mentioned when
-praying for a sick person. Yet he refrained from doing so explicitly,
-for the reason stated above.</p>
+<p><b>174. When judgments, God forbid, overpower a person.</b></p><p><span class="body-text">When the forces of judgment (</span><span class="body-text"><i>dinim</i></span><span class="body-text">), God forbid, overpower a person, one should not mention the person’s name in prayer. This is in order not to give strength to the judgments.<br/><br/> As stated in the&nbsp;</span><b>Zohar (Noach 69a)</b><span class="body-text">&nbsp;and in&nbsp;</span>Likutei Torah of the Ari on Bereishit<span class="body-text">: Noah was not given a name at birth, because the world was then under harsh judgments, and his father refrained from naming him. For through the naming, the person becomes identifiable, and the accusatory forces can target him.<br/><br/> Similarly, when Moses prayed for Miriam, he did not mention her name explicitly but said simply:&nbsp;</span><b>“O God, please heal her now”</b><span class="body-text">&nbsp;(Numbers 12:13). Because judgments were overpowering her, he avoided stating her name explicitly.<br/><br/> However, he did allude to her name wondrously. The phrase&nbsp;</span><span class="source"><b>“</b></span><span lang="he-IL"><span class="source"><b>נא רפא נא”</b></span><span class="body-text">&nbsp;</span></span><span class="body-text">(“please heal now”) has the numerical value (gematria) of&nbsp;</span><span class="body-text"><b>Miriam Yocheved</b></span><span class="body-text">—the name of the ill and her mother, which are normally mentioned when praying for a sick person. Yet he refrained from doing so explicitly, for the reason stated above.</span></p><p><br/><br/></p> 
     </div>
   </div>
 </section>
@@ -81,7 +60,7 @@ for the reason stated above.</p>
       <a href="/teachings/likutay-moharan" class="back-link">← Back to Likutay Moharan</a>
     </div>
   </div>
-</nav>
+</section>
 
 ---
 import Layout from '../../layouts/Layout.astro';

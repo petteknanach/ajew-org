@@ -1,25 +1,33 @@
 ---
 const pageTitle = "Likutay Moharan Volume 1 - Torah 278";
-const pageDescription = "Likutay Moharan Volume 1 - Torah 278";
+const pageDescription = "NaNach: Likutay Moharan - Torah 278";
 ---
 
 <style>
   .page-header {
     background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
     color: white;
-    padding: 4rem 2rem;
+    padding: 3rem 2rem;
     text-align: center;
   }
-  .page-header h1 { font-family: var(--font-hebrew); font-size: 1.8rem; }
-  .container { max-width: 800px; margin: 0 auto; padding: 0 2rem; }
+  .page-header h1 {
+    font-family: var(--font-hebrew);
+    font-size: 1.8rem;
+  }
+  .container { max-width: 900px; margin: 0 auto; padding: 0 2rem; }
   .navigation { background: #f7f5f0; padding: 1rem 0; }
   .nav-links { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
   .nav-link { color: #1a365d; text-decoration: none; padding: 0.5rem 1rem; border-radius: 4px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
   .nav-link:hover { background: #1a365d; color: white; }
   .content { padding: 3rem 0; }
   .content-text { background: white; padding: 3rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-  .content-text :global(p) { font-size: 1.1rem; line-height: 1.9; color: #333; margin-bottom: 1.5rem; text-align: justify; }
-  .content-text :global(.hebrew) { font-family: var(--font-hebrew); direction: rtl; }
+  .content-text p { font-size: 1.05rem; line-height: 1.9; color: #333; margin-bottom: 1.2rem; text-align: justify; }
+  .content-text .key-term { color: #006600; font-weight: 600; }
+  .content-text .hebrew-text { color: #003087; font-family: var(--font-hebrew); direction: rtl; }
+  .content-text .note { color: #990099; font-style: italic; }
+  .content-text .citation { color: #555555; font-style: italic; }
+  .content-text .source { color: #800000; }
+  .content-text .body-text { color: #333; }
   .footer-nav { background: #1a365d; padding: 2rem 0; }
   .back-link { display: inline-flex; align-items: center; gap: 0.5rem; color: white; text-decoration: none; padding: 0.75rem 1.5rem; background: rgba(255,255,255,0.1); border-radius: 8px; }
   .back-link:hover { background: rgba(255,255,255,0.2); }
@@ -27,7 +35,6 @@ const pageDescription = "Likutay Moharan Volume 1 - Torah 278";
 
 <section class="page-header">
   <h1>Likutay Moharan Volume 1 - Torah 278</h1>
-  <span class="chapter-badge">Volume 1, Torah 278</span>
 </section>
 
 <nav class="navigation">
@@ -42,27 +49,7 @@ const pageDescription = "Likutay Moharan Volume 1 - Torah 278";
 <section class="content">
   <div class="container">
     <div class="content-text">
-<p>278
-– Know
-That Upon a Good Chalif</p>
-<p>Know
-that through a good chalif (the
-kosher slaughtering knife), one can behold all the vessels of the
-Beit HaMikdash— their forms, faces, and spiritual emanations. When
-Yitzchak told Esav, “Take
-now your vessels” (Genesis 27:3),
-he alluded to the vessels of the Sanctified House, visible through
-the chalif’s purity.</p>
-<p>This
-midrashic hint connects Yitzchak’s phrase “your vessels” to the
-Temple vessels: “and the vessels were brought to his god’s house”
-(Genesis parasha
-65). Thus “vessels” refers to the holy vessels of the Temple.</p>
-<p>Ultimately,
-the verse “In
-My jealousy, My jealousy” (Numbers 25:11)
-teaches that no tzadik should be jealous of another—only the Divine
-alone is truly jealous.</p>
+<p><span style="text-transform: uppercase"><span style="letter-spacing: 2.4pt"><b>278 –&nbsp;</b></span></span><span style="text-transform: uppercase"><span style="letter-spacing: 2.4pt"><i><b>Know That Upon a Good Chalif</b></i></span></span></p><p><span class="body-text">Know that through a good&nbsp;</span><span class="body-text"><i>chalif</i></span><span class="body-text">&nbsp;(the kosher slaughtering knife), one can behold all the vessels of the Beit HaMikdash— their forms, faces, and spiritual emanations. When Yitzchak told Esav,&nbsp;</span><b>“Take now your vessels”</b><span class="body-text">&nbsp;(</span><span class="body-text"><i>Genesis</i></span><span class="body-text">&nbsp;27:3), he alluded to the vessels of the Sanctified House, visible through the chalif’s purity.</span></p><p><span class="body-text">This midrashic hint connects Yitzchak’s phrase “your vessels” to the Temple vessels: “and the vessels were brought to his god’s house” (</span><span class="body-text"><i>Genesis</i></span><span class="body-text">&nbsp;parasha 65). Thus “vessels” refers to the holy vessels of the Temple.</span></p><p><span class="body-text">Ultimately, the verse&nbsp;</span><b>“In My jealousy, My jealousy”</b><span class="body-text">&nbsp;(</span><span class="body-text"><i>Numbers</i></span><span class="body-text">&nbsp;25:11) teaches that no tzadik should be jealous of another—only the Divine alone is truly jealous.</span></p><p><br/><br/></p> 
     </div>
   </div>
 </section>
@@ -73,7 +60,7 @@ alone is truly jealous.</p>
       <a href="/teachings/likutay-moharan" class="back-link">← Back to Likutay Moharan</a>
     </div>
   </div>
-</nav>
+</section>
 
 ---
 import Layout from '../../layouts/Layout.astro';

@@ -1,25 +1,33 @@
 ---
 const pageTitle = "Likutay Moharan Volume 1 - Torah 243";
-const pageDescription = "Likutay Moharan Volume 1 - Torah 243";
+const pageDescription = "NaNach: Likutay Moharan - Torah 243";
 ---
 
 <style>
   .page-header {
     background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
     color: white;
-    padding: 4rem 2rem;
+    padding: 3rem 2rem;
     text-align: center;
   }
-  .page-header h1 { font-family: var(--font-hebrew); font-size: 1.8rem; }
-  .container { max-width: 800px; margin: 0 auto; padding: 0 2rem; }
+  .page-header h1 {
+    font-family: var(--font-hebrew);
+    font-size: 1.8rem;
+  }
+  .container { max-width: 900px; margin: 0 auto; padding: 0 2rem; }
   .navigation { background: #f7f5f0; padding: 1rem 0; }
   .nav-links { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
   .nav-link { color: #1a365d; text-decoration: none; padding: 0.5rem 1rem; border-radius: 4px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
   .nav-link:hover { background: #1a365d; color: white; }
   .content { padding: 3rem 0; }
   .content-text { background: white; padding: 3rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-  .content-text :global(p) { font-size: 1.1rem; line-height: 1.9; color: #333; margin-bottom: 1.5rem; text-align: justify; }
-  .content-text :global(.hebrew) { font-family: var(--font-hebrew); direction: rtl; }
+  .content-text p { font-size: 1.05rem; line-height: 1.9; color: #333; margin-bottom: 1.2rem; text-align: justify; }
+  .content-text .key-term { color: #006600; font-weight: 600; }
+  .content-text .hebrew-text { color: #003087; font-family: var(--font-hebrew); direction: rtl; }
+  .content-text .note { color: #990099; font-style: italic; }
+  .content-text .citation { color: #555555; font-style: italic; }
+  .content-text .source { color: #800000; }
+  .content-text .body-text { color: #333; }
   .footer-nav { background: #1a365d; padding: 2rem 0; }
   .back-link { display: inline-flex; align-items: center; gap: 0.5rem; color: white; text-decoration: none; padding: 0.75rem 1.5rem; background: rgba(255,255,255,0.1); border-radius: 8px; }
   .back-link:hover { background: rgba(255,255,255,0.2); }
@@ -27,7 +35,6 @@ const pageDescription = "Likutay Moharan Volume 1 - Torah 243";
 
 <section class="page-header">
   <h1>Likutay Moharan Volume 1 - Torah 243</h1>
-  <span class="chapter-badge">Volume 1, Torah 243</span>
 </section>
 
 <nav class="navigation">
@@ -42,31 +49,7 @@ const pageDescription = "Likutay Moharan Volume 1 - Torah 243";
 <section class="content">
   <div class="container">
     <div class="content-text">
-<p>243
-- There is a tzadik very great, that the world cannot bear his
-holiness</p>
-<p>Know
-that there is a tzadik who
-is very great, such that the world cannot bear his holiness.
-Therefore he hides very much and they do not see any holiness or
-extra separation [outward
-signs of piety]
-from him. This is because of the greatness of his holiness very much.
-And this is the aspect of all the songs being holy and Song of Songs
-holy of holies [Yadayim chapter
-3 Mishnah
-classifying biblical books' sanctity].
-It is found that Song of Songs is holy very much more than all the
-books. And behold we found that Solomon the king, peace be upon him,
-composed three books: Proverbs, Ecclesiastes and Song of Songs. And
-in truth Proverbs and Ecclesiastes are all full of ethics and fear of
-heaven very much and we found in them words of holiness and purity
-many times. But in Song of Songs there are not found words of
-holiness and purity at all. Go out and see that in the entire book of
-Song of Songs there is not found there in all the book any words holy
-and pure. And this is because of the greatness of the essence of its
-holiness they do not see there any holiness [the
-highest holiness is concealed, appearing mundane].</p>
+<p><span style="text-transform: uppercase"><span style="letter-spacing: 2.4pt"><b>243 - There is a tzadik very great, that the world cannot bear his holiness</b></span></span></p><p><span class="body-text">Know that there is a&nbsp;</span><span class="body-text"><i>tzadik</i></span><span class="body-text">&nbsp;who is very great, such that the world cannot bear his holiness. Therefore he hides very much and they do not see any holiness or extra separation [</span>outward signs of piety<span class="body-text">] from him. This is because of the greatness of his holiness very much. And this is the aspect of all the songs being holy and Song of Songs holy of holies [</span><span class="body-text"><i>Yadayim</i></span><span class="body-text">&nbsp;chapter 3&nbsp;</span>Mishnah classifying biblical books' sanctity<span class="body-text">]. It is found that Song of Songs is holy very much more than all the books. And behold we found that Solomon the king, peace be upon him, composed three books: Proverbs, Ecclesiastes and Song of Songs. And in truth Proverbs and Ecclesiastes are all full of ethics and fear of heaven very much and we found in them words of holiness and purity many times. But in Song of Songs there are not found words of holiness and purity at all. Go out and see that in the entire book of Song of Songs there is not found there in all the book any words holy and pure. And this is because of the greatness of the essence of its holiness they do not see there any holiness [</span>the highest holiness is concealed, appearing mundane<span class="body-text">].</span></p><p><br/><br/></p> 
     </div>
   </div>
 </section>
@@ -77,7 +60,7 @@ highest holiness is concealed, appearing mundane].</p>
       <a href="/teachings/likutay-moharan" class="back-link">← Back to Likutay Moharan</a>
     </div>
   </div>
-</nav>
+</section>
 
 ---
 import Layout from '../../layouts/Layout.astro';

@@ -1,25 +1,33 @@
 ---
 const pageTitle = "Likutay Moharan Volume 1 - Torah 197";
-const pageDescription = "Likutay Moharan Volume 1 - Torah 197";
+const pageDescription = "NaNach: Likutay Moharan - Torah 197";
 ---
 
 <style>
   .page-header {
     background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
     color: white;
-    padding: 4rem 2rem;
+    padding: 3rem 2rem;
     text-align: center;
   }
-  .page-header h1 { font-family: var(--font-hebrew); font-size: 1.8rem; }
-  .container { max-width: 800px; margin: 0 auto; padding: 0 2rem; }
+  .page-header h1 {
+    font-family: var(--font-hebrew);
+    font-size: 1.8rem;
+  }
+  .container { max-width: 900px; margin: 0 auto; padding: 0 2rem; }
   .navigation { background: #f7f5f0; padding: 1rem 0; }
   .nav-links { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
   .nav-link { color: #1a365d; text-decoration: none; padding: 0.5rem 1rem; border-radius: 4px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
   .nav-link:hover { background: #1a365d; color: white; }
   .content { padding: 3rem 0; }
   .content-text { background: white; padding: 3rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-  .content-text :global(p) { font-size: 1.1rem; line-height: 1.9; color: #333; margin-bottom: 1.5rem; text-align: justify; }
-  .content-text :global(.hebrew) { font-family: var(--font-hebrew); direction: rtl; }
+  .content-text p { font-size: 1.05rem; line-height: 1.9; color: #333; margin-bottom: 1.2rem; text-align: justify; }
+  .content-text .key-term { color: #006600; font-weight: 600; }
+  .content-text .hebrew-text { color: #003087; font-family: var(--font-hebrew); direction: rtl; }
+  .content-text .note { color: #990099; font-style: italic; }
+  .content-text .citation { color: #555555; font-style: italic; }
+  .content-text .source { color: #800000; }
+  .content-text .body-text { color: #333; }
   .footer-nav { background: #1a365d; padding: 2rem 0; }
   .back-link { display: inline-flex; align-items: center; gap: 0.5rem; color: white; text-decoration: none; padding: 0.75rem 1.5rem; background: rgba(255,255,255,0.1); border-radius: 8px; }
   .back-link:hover { background: rgba(255,255,255,0.2); }
@@ -27,7 +35,6 @@ const pageDescription = "Likutay Moharan Volume 1 - Torah 197";
 
 <section class="page-header">
   <h1>Likutay Moharan Volume 1 - Torah 197</h1>
-  <span class="chapter-badge">Volume 1, Torah 197</span>
 </section>
 
 <nav class="navigation">
@@ -42,27 +49,7 @@ const pageDescription = "Likutay Moharan Volume 1 - Torah 197";
 <section class="content">
   <div class="container">
     <div class="content-text">
-<p>197
-- Evil Tongue of the World Harms and Damages the Humility</p>
-<p>Know
-that the world's evil tongue harms and damages humility – through
-such speech, it becomes impossible for tzadikim to
-be humble, as evil tongue damage separates humility from wisdom. This
-damages humility, making it impossible, and even if achieved, it
-lacks wisdom. It is known that humility without wisdom is worthless;
-it is not a virtue to display humility foolishly by bowing the head
-as if humble – that is invalid humility. True humility is
-accompanied by wisdom. Evil tongue creates separation between
-humility and wisdom, preventing true humility.</p>
-<p>This
-was Moses our master's virtue: the Torah praises his immense
-humility, unaffected even by evil tongue. As written (Numbers 12:1):
-"And
-they spoke etc. against Moses"
-– evil tongue existed, yet "and
-the man Moses was very humble"
-(Numbers 12:3), for his humility was at such a high level that evil
-tongue did not harm it.</p>
+<p><span style="text-transform: uppercase"><span style="letter-spacing: 2.4pt"><b>197 - Evil Tongue of the World Harms and Damages the Humility</b></span></span></p><p><span class="body-text">Know that the world's evil tongue harms and damages humility – through such speech, it becomes impossible for&nbsp;</span><span class="body-text"><i>tzadikim</i></span><span class="body-text">&nbsp;to be humble, as evil tongue damage separates humility from wisdom. This damages humility, making it impossible, and even if achieved, it lacks wisdom. It is known that humility without wisdom is worthless; it is not a virtue to display humility foolishly by bowing the head as if humble – that is invalid humility. True humility is accompanied by wisdom. Evil tongue creates separation between humility and wisdom, preventing true humility.</span></p><p><span class="body-text">This was Moses our master's virtue: the Torah praises his immense humility, unaffected even by evil tongue. As written (Numbers 12:1): &quot;</span><span class="body-text"><b>And they spoke etc. against Moses</b></span><span class="body-text">&quot; – evil tongue existed, yet &quot;</span><span class="body-text"><b>and the man Moses was very humble</b></span><span class="body-text">&quot; (Numbers 12:3), for his humility was at such a high level that evil tongue did not harm it.</span></p><p><br/><br/></p> 
     </div>
   </div>
 </section>
@@ -73,7 +60,7 @@ tongue did not harm it.</p>
       <a href="/teachings/likutay-moharan" class="back-link">← Back to Likutay Moharan</a>
     </div>
   </div>
-</nav>
+</section>
 
 ---
 import Layout from '../../layouts/Layout.astro';
