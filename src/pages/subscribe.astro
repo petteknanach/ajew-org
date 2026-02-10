@@ -45,6 +45,7 @@ const pageDescription = "Join our Breslov learning community";
   .subscribe-btn.primary:hover { transform: scale(1.02); }
   .subscribe-btn.secondary { background: #1a365d; color: white; }
   .subscribe-btn.secondary:hover { background: #2c5282; }
+  .subscribe-btn:disabled { opacity: 0.7; cursor: not-allowed; }
   .auth-section { background: #f7f5f0; padding: 4rem 0; margin-top: 3rem; }
   .auth-box { max-width: 400px; margin: 0 auto; background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
   .form-group { margin-bottom: 1rem; }
@@ -57,6 +58,12 @@ const pageDescription = "Join our Breslov learning community";
   .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; }
   .info-card { background: white; padding: 1.5rem; border-radius: 12px; text-align: center; }
   .info-card h3 { color: #744210; margin-bottom: 0.5rem; }
+  .loading { display: inline-block; width: 20px; height: 20px; border: 2px solid #fff; border-radius: 50%; border-top-color: transparent; animation: spin 1s linear infinite; margin-right: 0.5rem; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .user-status { background: #dcfce7; color: #166534; padding: 1rem; border-radius: 8px; margin-bottom: 2rem; text-align: center; }
+  .user-status.inactive { background: #fee2e2; color: #dc2626; }
+  .success-banner { background: #dcfce7; color: #166534; padding: 1rem; border-radius: 8px; margin-bottom: 2rem; text-align: center; }
+  .error-banner { background: #fee2e2; color: #dc2626; padding: 1rem; border-radius: 8px; margin-bottom: 2rem; text-align: center; }
 </style>
 
 <section class="page-header">
@@ -65,10 +72,21 @@ const pageDescription = "Join our Breslov learning community";
   <div class="nav-links">
     <a href="/teachings" class="nav-link">📖 Browse Teachings</a>
     <a href="/chat" class="nav-link">💬 Enter Chat</a>
+    <a href="/auth" class="nav-link">👤 My Account</a>
   </div>
 </section>
 
 <main class="container">
+  <div id="successBanner" class="success-banner" style="display: none;">
+    🎉 Payment successful! You now have access to all premium features.
+  </div>
+  
+  <div id="errorBanner" class="error-banner" style="display: none;">
+    ❌ There was an issue with your payment. Please try again.
+  </div>
+
+  <div id="userStatus"></div>
+
   <section class="pricing-grid">
     <!-- Free Tier -->
     <div class="pricing-card">
@@ -80,7 +98,7 @@ const pageDescription = "Join our Breslov learning community";
         <li>Search content</li>
         <li>Basic access</li>
       </ul>
-      <button class="subscribe-btn secondary" onclick="showAuth('free')">Sign Up Free</button>
+      <button class="subscribe-btn secondary" onclick="location.href='/auth'">Sign Up Free</button>
     </div>
 
     <!-- Basic Tier -->
@@ -93,7 +111,9 @@ const pageDescription = "Join our Breslov learning community";
         <li>💬 Comment on teachings</li>
         <li>User profile</li>
       </ul>
-      <button class="subscribe-btn primary" onclick="selectTier('basic')">Subscribe - $1/year</button>
+      <button class="subscribe-btn primary" onclick="subscribe('basic')" id="basicBtn">
+        Subscribe - $1/year
+      </button>
     </div>
 
     <!-- Premium Tier -->
@@ -106,7 +126,9 @@ const pageDescription = "Join our Breslov learning community";
         <li>🎯 Priority support</li>
         <li>📅 Member events</li>
       </ul>
-      <button class="subscribe-btn primary" onclick="selectTier('premium')">Subscribe - $5/mo</button>
+      <button class="subscribe-btn primary" onclick="subscribe('premium')" id="premiumBtn">
+        Subscribe - $5/mo
+      </button>
     </div>
 
     <!-- Super Tier -->
@@ -119,37 +141,21 @@ const pageDescription = "Join our Breslov learning community";
         <li>🎥 Live sessions</li>
         <li>⭐ Special recognition</li>
       </ul>
-      <button class="subscribe-btn primary" onclick="selectTier('super')">Subscribe - $10/mo</button>
-    </div>
-  </section>
-</section>
-
-<section class="auth-section">
-  <div class="container">
-    <h2 style="text-align: center; margin-bottom: 2rem;">Already a member? Sign In</h2>
-    <div class="auth-box">
-      <form id="authForm">
-        <div class="form-group">
-          <label>Email</label>
-          <input type="email" id="email" placeholder="your@email.com" required>
-        </div>
-        <div class="form-group">
-          <label>Password</label>
-          <input type="password" id="password" placeholder="••••••••" required>
-        </div>
-        <button type="submit" class="subscribe-btn primary">Sign In</button>
-      </form>
-      <p style="text-align: center; margin-top: 1rem; color: #666;">
-        <a href="#" onclick="showPasswordReset(); return false;">Forgot password?</a>
-      </p>
-      <p style="text-align: center; margin-top: 1.5rem; color: #888;">
-        Or continue with:
-      </p>
-      <button class="subscribe-btn secondary" style="margin-top: 0.5rem;" onclick="signInWithGoogle()">
-        🔵 Sign in with Google
+      <button class="subscribe-btn primary" onclick="subscribe('super')" id="superBtn">
+        Subscribe - $10/mo
       </button>
     </div>
-  </div>
+  </section>
+
+  <!-- Donations Section -->
+  <section style="background: linear-gradient(135deg, #059669 0%, #047857 100%); padding: 4rem 2rem; text-align: center; margin-top: 3rem; border-radius: 16px;">
+    <h2 style="color: white; font-size: 2rem; margin-bottom: 1rem;">💖 Support Our Mission</h2>
+    <p style="color: rgba(255,255,255,0.9); font-size: 1.2rem; max-width: 600px; margin: 0 auto 2rem;">
+      Your donations help keep ajew.org running and spread Rabbi Nachman's light to Jews around the world.
+      Every amount makes a difference!
+    </p>
+    <button onclick="donateNow()" class="subscribe-btn primary" style="background: white; color: #059669; display: inline-block; border: none; padding: 1rem 3rem; cursor: pointer;">🙏 Donate Now</button>
+  </section>
 </section>
 
 <section class="info-section">
@@ -177,30 +183,151 @@ const pageDescription = "Join our Breslov learning community";
 </section>
 
 <script>
-// Subscription system placeholder
-// In production, integrate with Stripe and Firebase
+  // Stripe configuration
+  const stripePublicKey = 'pk_test_YOUR_STRIPE_PUBLIC_KEY';
+  let currentUser = null;
 
-function selectTier(tier) {
-  const prices = { basic: '$1/year', premium: '$5/month', super: '$10/month' };
-  alert(`Subscription system coming soon!\n\nSelected: ${tier.charAt(0).toUpperCase() + tier.slice(1)} - ${prices[tier]}\n\nPlease check back shortly.`);
-}
+  // Check URL params for success/cancel
+  document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('success') === 'true') {
+      document.getElementById('successBanner').style.display = 'block';
+      // Update user status
+      updateUserStatus();
+    }
+    if (urlParams.get('canceled') === 'true') {
+      document.getElementById('errorBanner').style.display = 'block';
+    }
+    updateUserStatus();
+  });
 
-function showAuth(tier) {
-  document.getElementById('authForm').scrollIntoView({ behavior: 'smooth' });
-}
+  function updateUserStatus() {
+    const userData = localStorage.getItem('ajew_current_user');
+    if (userData) {
+      currentUser = JSON.parse(userData);
+      const statusEl = document.getElementById('userStatus');
+      
+      if (currentUser.tier && currentUser.tier !== 'free') {
+        statusEl.innerHTML = `
+          <div class="user-status">
+            ✓ Welcome back, <strong>${currentUser.name}</strong>! You are on the <strong>${currentUser.tier}</strong> plan.
+            <br><a href="/chat" style="color: #166534; font-weight: bold;">→ Go to Chat</a>
+          </div>
+        `;
+        // Disable subscribe buttons for paid tiers
+        disableSubscribeButtons(currentUser.tier);
+      } else {
+        statusEl.innerHTML = `
+          <div class="user-status inactive">
+            👤 Signed in as <strong>${currentUser.name}</strong> (Free tier)
+            <br><a href="/auth" style="color: #dc2626;">→ Sign out</a>
+          </div>
+        `;
+      }
+    }
+  }
 
-function signInWithGoogle() {
-  alert('Google Sign-In coming soon!\n\nPlease check back shortly.');
-}
+  function disableSubscribeButtons(currentTier) {
+    const tiers = ['basic', 'premium', 'super'];
+    const tierIndex = tiers.indexOf(currentTier);
+    
+    tiers.forEach((tier, index) => {
+      const btn = document.getElementById(tier + 'Btn');
+      if (index <= tierIndex) {
+        btn.textContent = 'Current Plan';
+        btn.disabled = true;
+        btn.style.opacity = '0.7';
+      }
+    });
+  }
 
-function showPasswordReset() {
-  alert('Password reset coming soon!\n\nContact support@ajew.org for assistance.');
-}
+  async function subscribe(tier) {
+    const userData = localStorage.getItem('ajew_current_user');
+    
+    if (!userData) {
+      // Not logged in, redirect to auth
+      alert('Please sign in or create an account first.');
+      window.location.href = '/auth?redirect=/subscribe';
+      return;
+    }
 
-document.getElementById('authForm').addEventListener('submit', function(e) {
-  e.preventDefault();
-  alert('Sign in coming soon!\n\nPlease check back shortly.');
-});
+    const user = JSON.parse(userData);
+    const btn = document.getElementById(tier + 'Btn');
+    const originalText = btn.textContent;
+    
+    btn.innerHTML = '<span class="loading"></span>Processing...';
+    btn.disabled = true;
+
+    try {
+      // For demo mode, simulate checkout
+      // In production, call the API endpoint
+      const response = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: user.email,
+          tier: tier
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.url) {
+        // Redirect to Stripe checkout
+        window.location.href = data.url;
+      } else {
+        // Demo mode - simulate successful subscription
+        simulateSubscription(tier, user);
+      }
+    } catch (error) {
+      console.error('Subscription error:', error);
+      // Demo mode fallback
+      simulateSubscription(tier, user);
+    }
+  }
+
+  function simulateSubscription(tier, user) {
+    // Calculate expiry
+    const expiryDate = new Date();
+    if (tier === 'basic') {
+      expiryDate.setFullYear(expiryDate.getFullYear() + 1);
+    } else {
+      expiryDate.setMonth(expiryDate.getMonth() + 1);
+    }
+
+    // Update user tier
+    user.tier = tier;
+    user.expiryDate = expiryDate.toISOString();
+    localStorage.setItem('ajew_current_user', JSON.stringify(user));
+
+    // Update memberships
+    const memberships = JSON.parse(localStorage.getItem('ajew_memberships') || '{}');
+    memberships[user.email] = {
+      email: user.email,
+      tier: tier,
+      subscriptionStatus: 'active',
+      expiryDate: expiryDate.toISOString(),
+      createdAt: new Date().toISOString()
+    };
+    localStorage.setItem('ajew_memberships', JSON.stringify(memberships));
+
+    // Update users
+    const users = JSON.parse(localStorage.getItem('ajew_users') || '{}');
+    if (users[user.email]) {
+      users[user.email].tier = tier;
+      users[user.email].membership = memberships[user.email];
+      localStorage.setItem('ajew_users', JSON.stringify(users));
+    }
+
+    alert(`🎉 Demo subscription activated!\n\nTier: ${tier.toUpperCase()}\nExpiry: ${expiryDate.toLocaleDateString()}\n\nIn production, you would be redirected to Stripe checkout.`);
+    
+    window.location.href = '/chat';
+  }
+
+  function donateNow() {
+    // Demo donation
+    alert('💖 Thank you for your interest in donating!\n\nIn production, this would open a Stripe payment link.');
+  }
 </script>
 
 ---
