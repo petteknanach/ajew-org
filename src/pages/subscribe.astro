@@ -186,9 +186,35 @@ const pageDescription = "Join our Breslov learning community";
   // Stripe configuration
   const stripePublicKey = 'pk_test_YOUR_STRIPE_PUBLIC_KEY';
   let currentUser = null;
+  
+  // Load subscriptions from JSON data (for admin-added users)
+  let serverSubscriptions = {};
+
+  // Fetch server subscriptions
+  async function loadServerSubscriptions() {
+    try {
+      const response = await fetch('/api/subscriptions');
+      if (response.ok) {
+        serverSubscriptions = await response.json();
+      }
+    } catch (e) {
+      console.log('Using localStorage only');
+    }
+  }
+
+  function getUserSubscription(email) {
+    // Check server subscriptions first
+    if (serverSubscriptions[email]) {
+      return serverSubscriptions[email];
+    }
+    // Fallback to localStorage
+    const memberships = JSON.parse(localStorage.getItem('ajew_memberships') || '{}');
+    return memberships[email];
+  }
 
   // Check URL params for success/cancel
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', async () => {
+    await loadServerSubscriptions();
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('success') === 'true') {
       document.getElementById('successBanner').style.display = 'block';
@@ -207,14 +233,26 @@ const pageDescription = "Join our Breslov learning community";
       currentUser = JSON.parse(userData);
       const statusEl = document.getElementById('userStatus');
       
-      if (currentUser.tier && currentUser.tier !== 'free') {
+      // Check server/local subscription
+      const subscription = getUserSubscription(currentUser.email);
+      
+      if (subscription && subscription.tier && subscription.tier !== 'free') {
+        statusEl.innerHTML = `
+          <div class="user-status">
+            ✓ Welcome back, <strong>${currentUser.name}</strong>! You are on the <strong>${subscription.tier}</strong> plan.
+            <br>Expiry: ${new Date(subscription.expiryDate).toLocaleDateString()}
+            <br><a href="/chat" style="color: #166534; font-weight: bold;">→ Go to Chat</a>
+          </div>
+        `;
+        // Disable subscribe buttons for paid tiers
+        disableSubscribeButtons(subscription.tier);
+      } else if (currentUser.tier && currentUser.tier !== 'free') {
         statusEl.innerHTML = `
           <div class="user-status">
             ✓ Welcome back, <strong>${currentUser.name}</strong>! You are on the <strong>${currentUser.tier}</strong> plan.
             <br><a href="/chat" style="color: #166534; font-weight: bold;">→ Go to Chat</a>
           </div>
         `;
-        // Disable subscribe buttons for paid tiers
         disableSubscribeButtons(currentUser.tier);
       } else {
         statusEl.innerHTML = `
