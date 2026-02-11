@@ -4,7 +4,7 @@ import { createClient } from '@supabase/supabase-js'
 const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '')
 
 const supabaseUrl = 'https://ekggvujbuusvgmrertgp.supabase.co'
-const supabaseServiceKey = 'PASTE_SERVICE_ROLE_KEY_HERE' // Replace
+const supabaseServiceKey = 'PASTE_SERVICE_ROLE_HERE' // Get from API page service_role
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey, {
   auth: {
@@ -20,7 +20,7 @@ export async function POST(request) {
   let event
 
   try {
-    event = stripe.webhooks.constructEvent(body, sig, 'PASTE_WEBHOOK_SECRET_HERE') // From Stripe dashboard
+    event = stripe.webhooks.constructEvent(body, sig, Deno.env.get('STRIPE_WEBHOOK_SECRET') || '') // From Stripe dashboard
   } catch (err) {
     return new Response(`Webhook signature verification failed.`, { status: 400 })
   }
