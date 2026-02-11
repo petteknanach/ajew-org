@@ -1,111 +1,35 @@
 ---
-import Layout from '../../layouts/Layout.astro';
+title: "Breslov Teachings"
 ---
 
-<Layout title="Teachings" description="Teachings of Rabbi Nachman of Breslov">
-  <section class="page-header">
-    <h1>✡ Teachings</h1>
-    <p>Na Nach Nachma Nachman MeUman</p>
-  </section>
+<section style="background: linear-gradient(135deg, #1a365d 0%, #2d4a8a 100%); color: white; padding: 4rem 2rem; text-align: center;">
+  <h1 style="font-size: 3rem; margin: 0; font-family: serif;">📖 Breslov Teachings</h1>
+  <p style="font-size: 1.3rem; opacity: 0.9;">Likutay Moharan, Stories, Advice & More</p>
+</section>
 
-  <main class="container">
-    <!-- Likutay Moharan -->
-    <section class="book-section">
-      <h2>Likutay Moharan</h2>
-      <ul class="simple-list">
-        <li><a href="/teachings/likutay-moharan">→ Full Index</a></li>
-      </ul>
-    </section>
-
-    <!-- Other Books -->
-    <section class="book-section">
-      <h2>Shivchay Huran</h2>
-      <ul class="simple-list">
-        <li><a href="/teachings/shivchay">→ Index</a></li>
-      </ul>
-    </section>
-
-    <section class="book-section">
-      <h2>Stories of Ancient Times</h2>
-      <ul class="simple-list">
-        <li><a href="/teachings/stories">→ Index</a></li>
-      </ul>
-    </section>
-
-    <section class="book-section">
-      <h2>Tikkun Haklali</h2>
-      <ul class="simple-list">
-        <li><a href="/teachings/tikkun-haklali">→ Index</a></li>
-      </ul>
-    </section>
-
-    <section class="book-section">
-      <h2>Additional Teachings</h2>
-      <ul class="simple-list">
-        <li><a href="/teachings/hisbodidus-intro">Hisbodidus</a></li>
-        <li><a href="/teachings/outpouring-soul">Outpouring of the Soul</a></li>
-        <li><a href="/teachings/sefer-hamidos">Sefer HaMidos</a></li>
-        <li><a href="/teachings/life-of-rabbi-nachman">Life of Rabbi Nachman</a></li>
-        <li><a href="/teachings/words-rabbi-nachman-1-3">Words of Rabbi Nachman</a></li>
-        <li><a href="/teachings/fires-of-israel-part-1">Fires of Israel</a></li>
-        <li><a href="/teachings/blossoms-of-spring">Blossoms of Spring</a></li>
-        <li><a href="/teachings/na-nach-blogspot">Na Nach Blog</a></li>
-      </ul>
-    </section>
-  </main>
-</Layout>
+<div style="max-width: 1200px; margin: 0 auto; padding: 2rem;">
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+    <a href="/teachings/likutay-moharan" style="text-decoration: none; color: inherit;">
+      <div style="border: 1px solid #eee; border-radius: 16px; padding: 2rem; text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,0.1); transition: transform 0.3s;">
+        <h2 style="color: #1a365d; font-size: 1.8rem;">📚 Likutay Moharan</h2>
+        <p>286 Torahs Vol 1 + 125 Vol 2</p>
+      </div>
+    </a>
+    <a href="/teachings/hh-main" style="text-decoration: none; color: inherit;">
+      <div style="border: 1px solid #eee; border-radius: 16px; padding: 2rem; text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,0.1); transition: transform 0.3s;">
+        <h2 style="color: #1a365d; font-size: 1.8rem;">🕊️ HH Teachings</h2>
+        <p>Na Nach wisdom</p>
+      </div>
+    </a>
+    <a href="/teachings/hisbodidus-intro" style="text-decoration: none; color: inherit;">
+      <div style="border: 1px solid #eee; border-radius: 16px; padding: 2rem; text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,0.1); transition: transform 0.3s;">
+        <h2 style="color: #1a365d; font-size: 1.8rem;">🗣️ Hitbodedut</h2>
+        <p>Personal prayer guide</p>
+      </div>
+    </a>
+  </div>
+</div>
 
 <style>
-  .page-header {
-    background: #1a365d;
-    color: white;
-    padding: 2rem;
-    text-align: center;
-  }
-  .page-header h1 {
-    font-family: var(--font-hebrew);
-    font-size: 2rem;
-    margin: 0;
-  }
-  .page-header p {
-    margin: 0.5rem 0 0;
-    opacity: 0.8;
-  }
-  .container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 2rem;
-  }
-  .book-section {
-    margin-bottom: 2rem;
-  }
-  .book-section h2 {
-    font-family: var(--font-hebrew);
-    color: #1a365d;
-    font-size: 1.3rem;
-    border-bottom: 2px solid #ed8936;
-    padding-bottom: 0.5rem;
-    margin-bottom: 1rem;
-  }
-  .simple-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 0.5rem;
-  }
-  .simple-list li a {
-    display: block;
-    padding: 0.5rem 1rem;
-    background: #f7f5f0;
-    color: #1a365d;
-    text-decoration: none;
-    border-radius: 4px;
-    transition: background 0.2s;
-  }
-  .simple-list li a:hover {
-    background: #ed8936;
-    color: white;
-  }
+  div:hover { transform: translateY(-4px); }
 </style>
