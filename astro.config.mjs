@@ -4,5 +4,10 @@ import { defineConfig } from 'astro/config';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://ajew.org',
-  output: 'static'
+  output: 'static',
+  vite: {
+    css: {
+      minify: false
+    }
+  }
 });
