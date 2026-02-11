@@ -1,20 +1,19 @@
-import fs from 'node:fs/promises';
-import path from 'node:path';
+import { createClient } from '@supabase/supabase-js'
 
-const dataFile = path.join(process.cwd(), 'src/data/subscriptions.json');
+const supabaseUrl = 'https://ekggvujbuusvgmrertgp.supabase.co'
+const supabaseKey = 'PASTE_ANON_KEY_HERE' // Replace with anon key
+
+const supabase = createClient(supabaseUrl, supabaseKey)
 
 export async function GET() {
-  try {
-    const data = await fs.readFile(dataFile, 'utf-8');
-    const subscriptions = JSON.parse(data).subscriptions;
-    return new Response(JSON.stringify(subscriptions), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' }
-    });
-  } catch (error) {
-    return new Response(JSON.stringify({}), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' }
-    });
-  }
+  const { data: subscriptions, error } = await supabase
+    .from('subscriptions')
+    .select('*')
+
+  if (error) console.error('Supabase error:', error)
+  
+  return new Response(JSON.stringify(subscriptions || []), {
+    status: 200,
+    headers: { 'Content-Type': 'application/json' }
+  })
 }
