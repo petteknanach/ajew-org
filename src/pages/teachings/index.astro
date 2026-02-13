@@ -1,116 +1,181 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 ---
-<Layout title="Teachings - Breslov Teachings">
 
-<section style="background: linear-gradient(135deg, #1a365d 0%, #2d4a8a 100%); color: white; padding: 4rem 2rem; text-align: center;">
-  <h1 style="font-size: 3rem; margin: 0; font-family: var(--font-hebrew);">📖 Breslov Teachings</h1>
-  <p style="font-size: 1.3rem; opacity: 0.9;">Complete teachings of Rabbi Nachman of Breslov</p>
-  <p style="font-size: 1rem; opacity: 0.8; margin-top: 0.5rem;">נ נח נחמ נחמן מאומן</p>
+<Layout title="All Teachings - Breslov Teachings">
+<section style="background: linear-gradient(135deg, #1a365d 0%, #2d4a8a 100%); color: white; padding: 3rem 2rem; text-align: center;">
+  <h1 style="font-size: 2.5rem; margin: 0; font-family: var(--font-hebrew);">📖 Complete Teachings Index</h1>
+  <p style="font-size: 1.2rem; opacity: 0.9; margin-top: 0.5rem;">All teachings of Rabbi Nachman of Breslov</p>
+  <p style="font-size: 1rem; opacity: 0.8;">נ נח נחמ נחמן מאומן</p>
 </section>
 
-<div style="max-width: 1200px; margin: 0 auto; padding: 2rem;">
+<div style="max-width: 1400px; margin: 0 auto; padding: 2rem;">
   
-  <!-- Main Collections -->
-  <h2 style="color: #1a365d; font-size: 1.8rem; margin-bottom: 1.5rem; border-bottom: 2px solid #ddd; padding-bottom: 0.5rem;">📚 Main Collections</h2>
-  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
-    <a href="/teachings/likutay-moharan" style="text-decoration: none; color: inherit;">
-      <div style="border: 2px solid #eee; border-radius: 16px; padding: 2rem; text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,0.1); transition: all 0.3s; background: linear-gradient(to bottom, #fff, #fafafa);">
-        <h3 style="color: #1a365d; font-size: 1.6rem; margin: 0 0 0.5rem 0;">📚 Likutay Moharan</h3>
-        <p style="color: #666; margin: 0;">286 Torahs Vol 1 + 125 Vol 2</p>
-        <p style="color: #999; font-size: 0.9rem; margin-top: 0.5rem;">The core teachings of Rabbi Nachman</p>
-      </div>
-    </a>
-    
-    <a href="/teachings/stories" style="text-decoration: none; color: inherit;">
-      <div style="border: 2px solid #eee; border-radius: 16px; padding: 2rem; text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,0.1); transition: all 0.3s; background: linear-gradient(to bottom, #fff, #fafafa);">
-        <h3 style="color: #1a365d; font-size: 1.6rem; margin: 0 0 0.5rem 0;">📖 Stories of Ancient Times</h3>
-        <p style="color: #666; margin: 0;">Tales 1-13</p>
-        <p style="color: #999; font-size: 0.9rem; margin-top: 0.5rem;">Sippurey Maasiyot - profound mystical stories</p>
-      </div>
-    </a>
-    
-    <a href="/teachings/hh-main" style="text-decoration: none; color: inherit;">
-      <div style="border: 2px solid #eee; border-radius: 16px; padding: 2rem; text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,0.1); transition: all 0.3s; background: linear-gradient(to bottom, #fff, #fafafa);">
-        <h3 style="color: #1a365d; font-size: 1.6rem; margin: 0 0 0.5rem 0;">🕊️ The Life of Our Leader</h3>
-        <p style="color: #666; margin: 0;">Rabbi Nachman of Breslov</p>
-        <p style="color: #999; font-size: 0.9rem; margin-top: 0.5rem;">HH - Na Nach Nachma Nachman MeUman</p>
-      </div>
-    </a>
+  <!-- MAIN COLLECTIONS -->
+  <h2 style="color: #1a365d; font-size: 1.6rem; margin: 2rem 0 1rem 0; border-bottom: 3px solid #1a365d; padding-bottom: 0.5rem;">📚 Main Collections</h2>
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+    <a href="/teachings/likutay-moharan" style="text-decoration: none;"><div style="border: 2px solid #1a365d; border-radius: 12px; padding: 1.5rem; background: linear-gradient(135deg, #1a365d 0%, #2d4a8a 100%); color: white; text-align: center;">
+      <h3 style="margin: 0; font-size: 1.4rem;">📚 Likutay Moharan</h3>
+      <p style="margin: 0.5rem 0 0; opacity: 0.9;">Volume 1 (286) + Volume 2 (125)</p>
+    </div></a>
+    <a href="/teachings/stories" style="text-decoration: none;"><div style="border: 2px solid #059669; border-radius: 12px; padding: 1.5rem; background: linear-gradient(135deg, #059669 0%, #10b981 100%); color: white; text-align: center;">
+      <h3 style="margin: 0; font-size: 1.4rem;">📖 Stories of Ancient Times</h3>
+      <p style="margin: 0.5rem 0 0; opacity: 0.9;">Sippurey Maasiyot - Tales 1-13</p>
+    </div></a>
+    <a href="/teachings/shivchay" style="text-decoration: none;"><div style="border: 2px solid #7c3aed; border-radius: 12px; padding: 1.5rem; background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%); color: white; text-align: center;">
+      <h3 style="margin: 0; font-size: 1.4rem;">✨ Shivchay Haran</h3>
+      <p style="margin: 0.5rem 0 0; opacity: 0.9;">Conversations with Rabbi Nachman</p>
+    </div></a>
+    <a href="/teachings/hh-main" style="text-decoration: none;"><div style="border: 2px solid #dc2626; border-radius: 12px; padding: 1.5rem; background: linear-gradient(135deg, #dc2626 0%, #f87171 100%); color: white; text-align: center;">
+      <h3 style="margin: 0; font-size: 1.4rem;">🕊️ The Life of Our Leader</h3>
+      <p style="margin: 0.5rem 0 0; opacity: 0.9;">Rabbi Nachman - HH</p>
+    </div></a>
   </div>
 
-  <!-- Additional Teachings -->
-  <h2 style="color: #1a365d; font-size: 1.8rem; margin-bottom: 1.5rem; border-bottom: 2px solid #ddd; padding-bottom: 0.5rem;">🌟 Additional Teachings</h2>
-  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 3rem;">
-    <a href="/teachings/tikkun-haklali" style="text-decoration: none; color: inherit;">
-      <div style="border: 1px solid #eee; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 16px rgba(0,0,0,0.08); transition: all 0.3s;">
-        <h3 style="color: #059669; font-size: 1.3rem; margin: 0 0 0.5rem 0;">🙏 Tikkun Haklali</h3>
-        <p style="color: #666; font-size: 0.9rem; margin: 0;">The General Tikkun - 10 Psalms</p>
-      </div>
-    </a>
-    
-    <a href="/teachings/outpouring-of-soul" style="text-decoration: none; color: inherit;">
-      <div style="border: 1px solid #eee; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 16px rgba(0,0,0,0.08); transition: all 0.3s;">
-        <h3 style="color: #059669; font-size: 1.3rem; margin: 0 0 0.5rem 0;">💫 Outpouring of the Soul</h3>
-        <p style="color: #666; font-size: 0.9rem; margin: 0;">Hitbodedut prayers & practices</p>
-      </div>
-    </a>
-    
-    <a href="/teachings/sefer-hamidos" style="text-decoration: none; color: inherit;">
-      <div style="border: 1px solid #eee; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 16px rgba(0,0,0,0.08); transition: all 0.3s;">
-        <h3 style="color: #059669; font-size: 1.3rem; margin: 0 0 0.5rem 0;">📜 Sefer HaMidos</h3>
-        <p style="color: #666; font-size: 0.9rem; margin: 0;">Book of Measurements</p>
-      </div>
-    </a>
-    
-    <a href="/teachings/sichos-haran" style="text-decoration: none; color: inherit;">
-      <div style="border: 1px solid #eee; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 16px rgba(0,0,0,0.08); transition: all 0.3s;">
-        <h3 style="color: #059669; font-size: 1.3rem; margin: 0 0 0.5rem 0;">🗣️ Sichos Haran</h3>
-        <p style="color: #666; font-size: 0.9rem; margin: 0;">Discourses of Rabbi Nachman</p>
-      </div>
-    </a>
-    
-    <a href="/teachings/shivchay-moharan" style="text-decoration: none; color: inherit;">
-      <div style="border: 1px solid #eee; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 16px rgba(0,0,0,0.08); transition: all 0.3s;">
-        <h3 style="color: #059669; font-size: 1.3rem; margin: 0 0 0.5rem 0;">✨ Shivchay Moharan</h3>
-        <p style="color: #666; font-size: 0.9rem; margin: 0;">Praise of the Holy Rabbi</p>
-      </div>
-    </a>
-    
-    <a href="/teachings/discourses-after" style="text-decoration: none; color: inherit;">
-      <div style="border: 1px solid #eee; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 16px rgba(0,0,0,0.08); transition: all 0.3s;">
-        <h3 style="color: #059669; font-size: 1.3rem; margin: 0 0 0.5rem 0;">💬 Discourses After</h3>
-        <p style="color: #666; font-size: 0.9rem; margin: 0;">Following the Stories</p>
-      </div>
-    </a>
+  <!-- CORE TEACHINGS -->
+  <h2 style="color: #1a365d; font-size: 1.6rem; margin: 2rem 0 1rem 0; border-bottom: 3px solid #1a365d; padding-bottom: 0.5rem;">🌟 Core Teachings</h2>
+  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 0.75rem; margin-bottom: 2rem;">
+    <a href="/teachings/tikkun-haklali" style="text-decoration: none;"><div style="border: 1px solid #ddd; border-radius: 8px; padding: 1rem; text-align: center; background: #fefce8; transition: all 0.2s;">
+      <span style="font-size: 1.5rem;">🙏</span>
+      <div style="color: #1a365d; font-weight: 600; font-size: 0.9rem; margin-top: 0.25rem;">Tikkun Haklali</div>
+      <div style="color: #666; font-size: 0.75rem;">10 Psalms</div>
+    </div></a>
+    <a href="/teachings/outpouring-of-soul" style="text-decoration: none;"><div style="border: 1px solid #ddd; border-radius: 8px; padding: 1rem; text-align: center; background: #fefce8; transition: all 0.2s;">
+      <span style="font-size: 1.5rem;">💫</span>
+      <div style="color: #1a365d; font-weight: 600; font-size: 0.9rem; margin-top: 0.25rem;">Outpouring of Soul</div>
+      <div style="color: #666; font-size: 0.75rem;">Hitbodedut</div>
+    </div></a>
+    <a href="/teachings/sefer-hamidos" style="text-decoration: none;"><div style="border: 1px solid #ddd; border-radius: 8px; padding: 1rem; text-align: center; background: #fefce8; transition: all 0.2s;">
+      <span style="font-size: 1.5rem;">📜</span>
+      <div style="color: #1a365d; font-weight: 600; font-size: 0.9rem; margin-top: 0.25rem;">Sefer HaMidos</div>
+      <div style="color: #666; font-size: 0.75rem;">Measurements</div>
+    </div></a>
+    <a href="/teachings/sichos-haran" style="text-decoration: none;"><div style="border: 1px solid #ddd; border-radius: 8px; padding: 1rem; text-align: center; background: #fefce8; transition: all 0.2s;">
+      <span style="font-size: 1.5rem;">🗣️</span>
+      <div style="color: #1a365d; font-weight: 600; font-size: 0.9rem; margin-top: 0.25rem;">Sichos Haran</div>
+      <div style="color: #666; font-size: 0.75rem;">Discourses</div>
+    </div></a>
+    <a href="/teachings/advice" style="text-decoration: none;"><div style="border: 1px solid #ddd; border-radius: 8px; padding: 1rem; text-align: center; background: #fefce8; transition: all 0.2s;">
+      <span style="font-size: 1.5rem;">💡</span>
+      <div style="color: #1a365d; font-weight: 600; font-size: 0.9rem; margin-top: 0.25rem;">Likutay Eitzos</div>
+      <div style="color: #666; font-size: 0.75rem;">Advice</div>
+    </div></a>
+    <a href="/teachings/discourses-after" style="text-decoration: none;"><div style="border: 1px solid #ddd; border-radius: 8px; padding: 1rem; text-align: center; background: #fefce8; transition: all 0.2s;">
+      <span style="font-size: 1.5rem;">💬</span>
+      <div style="color: #1a365d; font-weight: 600; font-size: 0.9rem; margin-top: 0.25rem;">Discourses After</div>
+      <div style="color: #666; font-size: 0.75rem;">Post-Stories</div>
+    </div></a>
   </div>
 
-  <!-- Hitbodedut Section -->
-  <h2 style="color: #1a365d; font-size: 1.8rem; margin-bottom: 1.5rem; border-bottom: 2px solid #ddd; padding-bottom: 0.5rem;">🗣️ Hitbodedut (Personal Prayer)</h2>
-  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 3rem;">
-    <a href="/teachings/hisbodidus-intro" style="text-decoration: none; color: inherit;">
-      <div style="border: 1px solid #ddd; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 16px rgba(0,0,0,0.08); transition: all 0.3s;">
-        <h3 style="color: #744210; font-size: 1.2rem; margin: 0 0 0.5rem 0;">🗣️ Introduction to Hitbodedut</h3>
-        <p style="color: #666; font-size: 0.85rem; margin: 0;">Guide to personal prayer</p>
-      </div>
-    </a>
-    <a href="/teachings/advice" style="text-decoration: none; color: inherit;">
-      <div style="border: 1px solid #ddd; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 16px rgba(0,0,0,0.08); transition: all 0.3s;">
-        <h3 style="color: #744210; font-size: 1.2rem; margin: 0 0 0.5rem 0;">💡 Likutay Eitzos</h3>
-        <p style="color: #666; font-size: 0.85rem; margin: 0;">Advice & counsel by topic</p>
-      </div>
-    </a>
+  <!-- HITBODEDUT -->
+  <h2 style="color: #744210; font-size: 1.6rem; margin: 2rem 0 1rem 0; border-bottom: 3px solid #744210; padding-bottom: 0.5rem;">🗣️ Hitbodedut (Personal Prayer)</h2>
+  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 0.75rem; margin-bottom: 2rem;">
+    <a href="/teachings/hisbodidus-intro" style="text-decoration: none;"><div style="border: 1px solid #ddd; border-radius: 8px; padding: 1rem; text-align: center; background: #fff7ed; transition: all 0.2s;">
+      <div style="color: #744210; font-weight: 600; font-size: 0.85rem;">Introduction</div>
+    </div></a>
+    <a href="/teachings/hisbodidus-power" style="text-decoration: none;"><div style="border: 1px solid #ddd; border-radius: 8px; padding: 1rem; text-align: center; background: #fff7ed; transition: all 0.2s;">
+      <div style="color: #744210; font-weight: 600; font-size: 0.85rem;">Power of Prayer</div>
+    </div></a>
+    <a href="/teachings/hisbodidus-vs-meditation" style="text-decoration: none;"><div style="border: 1px solid #ddd; border-radius: 8px; padding: 1rem; text-align: center; background: #fff7ed; transition: all 0.2s;">
+      <div style="color: #744210; font-weight: 600; font-size: 0.85rem;">vs Meditation</div>
+    </div></a>
+    <a href="/teachings/hisbodidus-likutay-aitzoas" style="text-decoration: none;"><div style="border: 1px solid #ddd; border-radius: 8px; padding: 1rem; text-align: center; background: #fff7ed; transition: all 0.2s;">
+      <div style="color: #744210; font-weight: 600; font-size: 0.85rem;">Likutay Aitzoas</div>
+    </div></a>
   </div>
 
-  <!-- Quote -->
-  <div style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 16px; padding: 2rem; text-align: center; margin-top: 2rem;">
+  <!-- STORIES - Individual Tales -->
+  <h2 style="color: #059669; font-size: 1.6rem; margin: 2rem 0 1rem 0; border-bottom: 3px solid #059669; padding-bottom: 0.5rem;">📖 Stories of Ancient Times (Sippurey Maasiyot)</h2>
+  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.5rem; margin-bottom: 2rem;">
+    <a href="/teachings/stories-1" style="text-decoration: none;"><div style="border: 1px solid #059669; border-radius: 6px; padding: 0.75rem; text-align: center; background: #ecfdf5; color: #065f46; font-weight: 500; font-size: 0.85rem;">Tale 1</div></a>
+    <a href="/teachings/stories-2" style="text-decoration: none;"><div style="border: 1px solid #059669; border-radius: 6px; padding: 0.75rem; text-align: center; background: #ecfdf5; color: #065f46; font-weight: 500; font-size: 0.85rem;">Tale 2</div></a>
+    <a href="/teachings/stories-3" style="text-decoration: none;"><div style="border: 1px solid #059669; border-radius: 6px; padding: 0.75rem; text-align: center; background: #ecfdf5; color: #065f46; font-weight: 500; font-size: 0.85rem;">Tale 3</div></a>
+    <a href="/teachings/stories-4" style="text-decoration: none;"><div style="border: 1px solid #059669; border-radius: 6px; padding: 0.75rem; text-align: center; background: #ecfdf5; color: #065f46; font-weight: 500; font-size: 0.85rem;">Tale 4</div></a>
+    <a href="/teachings/stories-5" style="text-decoration: none;"><div style="border: 1px solid #059669; border-radius: 6px; padding: 0.75rem; text-align: center; background: #ecfdf5; color: #065f46; font-weight: 500; font-size: 0.85rem;">Tale 5</div></a>
+    <a href="/teachings/stories-6" style="text-decoration: none;"><div style="border: 1px solid #059669; border-radius: 6px; padding: 0.75rem; text-align: center; background: #ecfdf5; color: #065f46; font-weight: 500; font-size: 0.85rem;">Tale 6</div></a>
+    <a href="/teachings/stories-7" style="text-decoration: none;"><div style="border: 1px solid #059669; border-radius: 6px; padding: 0.75rem; text-align: center; background: #ecfdf5; color: #065f46; font-weight: 500; font-size: 0.85rem;">Tale 7</div></a>
+    <a href="/teachings/stories-8" style="text-decoration: none;"><div style="border: 1px solid #059669; border-radius: 6px; padding: 0.75rem; text-align: center; background: #ecfdf5; color: #065f46; font-weight: 500; font-size: 0.85rem;">Tale 8</div></a>
+    <a href="/teachings/stories-9" style="text-decoration: none;"><div style="border: 1px solid #059669; border-radius: 6px; padding: 0.75rem; text-align: center; background: #ecfdf5; color: #065f46; font-weight: 500; font-size: 0.85rem;">Tale 9</div></a>
+    <a href="/teachings/stories-10" style="text-decoration: none;"><div style="border: 1px solid #059669; border-radius: 6px; padding: 0.75rem; text-align: center; background: #ecfdf5; color: #065f46; font-weight: 500; font-size: 0.85rem;">Tale 10</div></a>
+    <a href="/teachings/stories-11" style="text-decoration: none;"><div style="border: 1px solid #059669; border-radius: 6px; padding: 0.75rem; text-align: center; background: #ecfdf5; color: #065f46; font-weight: 500; font-size: 0.85rem;">Tale 11</div></a>
+    <a href="/teachings/stories-12" style="text-decoration: none;"><div style="border: 1px solid #059669; border-radius: 6px; padding: 0.75rem; text-align: center; background: #ecfdf5; color: #065f46; font-weight: 500; font-size: 0.85rem;">Tale 12</div></a>
+    <a href="/teachings/stories-13" style="text-decoration: none;"><div style="border: 1px solid #059669; border-radius: 6px; padding: 0.75rem; text-align: center; background: #ecfdf5; color: #065f46; font-weight: 500; font-size: 0.85rem;">Tale 13</div></a>
+  </div>
+
+  <!-- SHIVCHAY HARAN -->
+  <h2 style="color: #7c3aed; font-size: 1.6rem; margin: 2rem 0 1rem 0; border-bottom: 3px solid #7c3aed; padding-bottom: 0.5rem;">✨ Shivchay Haran (Conversations)</h2>
+  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.5rem; margin-bottom: 2rem;">
+    <a href="/teachings/shivchay-intro" style="text-decoration: none;"><div style="border: 1px solid #7c3aed; border-radius: 6px; padding: 0.75rem; text-align: center; background: #f5f3ff; color: #5b21b6; font-weight: 500; font-size: 0.8rem;">Intro</div></a>
+    <a href="/teachings/shivchay-1-3" style="text-decoration: none;"><div style="border: 1px solid #7c3aed; border-radius: 6px; padding: 0.75rem; text-align: center; background: #f5f3ff; color: #5b21b6; font-weight: 500; font-size: 0.8rem;">Ch1-3</div></a>
+    <a href="/teachings/shivchay-4-7" style="text-decoration: none;"><div style="border: 1px solid #7c3aed; border-radius: 6px; padding: 0.75rem; text-align: center; background: #f5f3ff; color: #5b21b6; font-weight: 500; font-size: 0.8rem;">Ch4-7</div></a>
+    <a href="/teachings/shivchay-8-10" style="text-decoration: none;"><div style="border: 1px solid #7c3aed; border-radius: 6px; padding: 0.75rem; text-align: center; background: #f5f3ff; color: #5b21b6; font-weight: 500; font-size: 0.8rem;">Ch8-10</div></a>
+    <a href="/teachings/shivchay-11-13" style="text-decoration: none;"><div style="border: 1px solid #7c3aed; border-radius: 6px; padding: 0.75rem; text-align: center; background: #f5f3ff; color: #5b21b6; font-weight: 500; font-size: 0.8rem;">Ch11-13</div></a>
+    <a href="/teachings/shivchay-14-16" style="text-decoration: none;"><div style="border: 1px solid #7c3aed; border-radius: 6px; padding: 0.75rem; text-align: center; background: #f5f3ff; color: #5b21b6; font-weight: 500; font-size: 0.8rem;">Ch14-16</div></a>
+    <a href="/teachings/shivchay-17-19" style="text-decoration: none;"><div style="border: 1px solid #7c3aed; border-radius: 6px; padding: 0.75rem; text-align: center; background: #f5f3ff; color: #5b21b6; font-weight: 500; font-size: 0.8rem;">Ch17-19</div></a>
+    <a href="/teachings/shivchay-20-23" style="text-decoration: none;"><div style="border: 1px solid #7c3aed; border-radius: 6px; padding: 0.75rem; text-align: center; background: #f5f3ff; color: #5b21b6; font-weight: 500; font-size: 0.8rem;">Ch20-23</div></a>
+    <a href="/teachings/shivchay-24-27" style="text-decoration: none;"><div style="border: 1px solid #7c3aed; border-radius: 6px; padding: 0.75rem; text-align: center; background: #f5f3ff; color: #5b21b6; font-weight: 500; font-size: 0.8rem;">Ch24-27</div></a>
+    <a href="/teachings/shivchay-huran-part-1" style="text-decoration: none;"><div style="border: 1px solid #dc2626; border-radius: 6px; padding: 0.75rem; text-align: center; background: #fef2f2; color: #dc2626; font-weight: 500; font-size: 0.8rem;">Huran Part 1</div></a>
+    <a href="/teachings/shivchay-huran-part-2" style="text-decoration: none;"><div style="border: 1px solid #dc2626; border-radius: 6px; padding: 0.75rem; text-align: center; background: #fef2f2; color: #dc2626; font-weight: 500; font-size: 0.8rem;">Huran Part 2</div></a>
+  </div>
+
+  <!-- ADDITIONAL WRITINGS -->
+  <h2 style="color: #1a365d; font-size: 1.6rem; margin: 2rem 0 1rem 0; border-bottom: 3px solid #1a365d; padding-bottom: 0.5rem;">📿 Additional Writings</h2>
+  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 0.75rem; margin-bottom: 2rem;">
+    <a href="/teachings/hh-intro" style="text-decoration: none;"><div style="border: 1px solid #ddd; border-radius: 8px; padding: 1rem; text-align: center; background: #f8fafc; transition: all 0.2s;">
+      <div style="color: #1a365d; font-weight: 600; font-size: 0.85rem;">HH Introduction</div>
+    </div></a>
+    <a href="/teachings/hh-title" style="text-decoration: none;"><div style="border: 1px solid #ddd; border-radius: 8px; padding: 1rem; text-align: center; background: #f8fafc; transition: all 0.2s;">
+      <div style="color: #1a365d; font-weight: 600; font-size: 0.85rem;">HH Title</div>
+    </div></a>
+    <a href="/teachings/blossoms-of-spring" style="text-decoration: none;"><div style="border: 1px solid #ddd; border-radius: 8px; padding: 1rem; text-align: center; background: #f8fafc; transition: all 0.2s;">
+      <div style="color: #1a365d; font-weight: 600; font-size: 0.85rem;">Blossoms of Spring</div>
+    </div></a>
+    <a href="/teachings/legendary-tales-foreword" style="text-decoration: none;"><div style="border: 1px solid #ddd; border-radius: 8px; padding: 1rem; text-align: center; background: #f8fafc; transition: all 0.2s;">
+      <div style="color: #1a365d; font-weight: 600; font-size: 0.85rem;">Legendary Tales Fwd</div>
+    </div></a>
+    <a href="/teachings/midos" style="text-decoration: none;"><div style="border: 1px solid #ddd; border-radius: 8px; padding: 1rem; text-align: center; background: #f8fafc; transition: all 0.2s;">
+      <div style="color: #1a365d; font-weight: 600; font-size: 0.85rem;">Midos</div>
+    </div></a>
+    <a href="/teachings/pray-with-limbs" style="text-decoration: none;"><div style="border: 1px solid #ddd; border-radius: 8px; padding: 1rem; text-align: center; background: #f8fafc; transition: all 0.2s;">
+      <div style="color: #1a365d; font-weight: 600; font-size: 0.85rem;">Pray with Limbs</div>
+    </div></a>
+    <a href="/teachings/prayer-eating" style="text-decoration: none;"><div style="border: 1px solid #ddd; border-radius: 8px; padding: 1rem; text-align: center; background: #f8fafc; transition: all 0.2s;">
+      <div style="color: #1a365d; font-weight: 600; font-size: 0.85rem;">Prayer & Eating</div>
+    </div></a>
+    <a href="/teachings/na-nach-blogspot" style="text-decoration: none;"><div style="border: 1px solid #ddd; border-radius: 8px; padding: 1rem; text-align: center; background: #f8fafc; transition: all 0.2s;">
+      <div style="color: #1a365d; font-weight: 600; font-size: 0.85rem;">Na Nach Blog</div>
+    </div></a>
+    <a href="/teachings/simcha-nanach-books" style="text-decoration: none;"><div style="border: 1px solid #ddd; border-radius: 8px; padding: 1rem; text-align: center; background: #f8fafc; transition: all 0.2s;">
+      <div style="color: #1a365d; font-weight: 600; font-size: 0.85rem;">Simcha Nanach Books</div>
+    </div></a>
+  </div>
+
+  <!-- PRAYERS -->
+  <h2 style="color: #0891b2; font-size: 1.6rem; margin: 2rem 0 1rem 0; border-bottom: 3px solid #0891b2; padding-bottom: 0.5rem;">🙏 Breslov Prayers</h2>
+  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 0.75rem; margin-bottom: 2rem;">
+    <a href="/teachings/prayers-before-prayers" style="text-decoration: none;"><div style="border: 1px solid #0891b2; border-radius: 8px; padding: 1rem; text-align: center; background: #ecfeff; transition: all 0.2s;">
+      <div style="color: #164e63; font-weight: 600; font-size: 0.85rem;">Before Prayers</div>
+    </div></a>
+    <a href="/teachings/prayer-purim" style="text-decoration: none;"><div style="border: 1px solid #0891b2; border-radius: 8px; padding: 1rem; text-align: center; background: #ecfeff; transition: all 0.2s;">
+      <div style="color: #164e63; font-weight: 600; font-size: 0.85rem;">Purim Prayer</div>
+    </div></a>
+    <a href="/teachings/pidyon-hanefesh" style="text-decoration: none;"><div style="border: 1px solid #0891b2; border-radius: 8px; padding: 1rem; text-align: center; background: #ecfeff; transition: all 0.2s;">
+      <div style="color: #164e63; font-weight: 600; font-size: 0.85rem;">Pidyon Hanefesh</div>
+    </div></a>
+    <a href="/teachings/revival-soul" style="text-decoration: none;"><div style="border: 1px solid #0891b2; border-radius: 8px; padding: 1rem; text-align: center; background: #ecfeff; transition: all 0.2s;">
+      <div style="color: #164e63; font-weight: 600; font-size: 0.85rem;">Revival of Soul</div>
+    </div></a>
+  </div>
+
+  <!-- QUOTE -->
+  <div style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 16px; padding: 2rem; text-align: center; margin-top: 3rem;">
     <p style="font-size: 1.4rem; color: #744210; font-style: italic; margin: 0;">
       "אם אתה מאמין שיכולין לקלקל, תאמין שיכולין לתקן"
     </p>
     <p style="color: #666; margin-top: 1rem;">
       "If you believe you can damage, believe you can fix."
     </p>
-    <p style="color: #999; font-size: 0.9rem; margin-top: 1rem;">
+    <p style="color: #999; font-size: 0.9rem; margin-top: 0.5rem;">
       — Rebbe Nachman of Breslov
     </p>
   </div>
@@ -119,9 +184,8 @@ import Layout from '../../layouts/Layout.astro';
 
 <style>
   a div:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(0,0,0,0.15) !important;
-    border-color: #1a365d !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
   }
 </style>
 </Layout>
