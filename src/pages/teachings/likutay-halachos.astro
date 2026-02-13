@@ -2,10 +2,10 @@
 import Layout from '../../layouts/Layout.astro';
 ---
 
-<Layout title="Likutay Halachos - Chanukah - Breslov Teachings">
+<Layout title="Likutay Halachos - Breslov Teachings">
 ---
-const pageTitle = "Likutay Halachos - Chanukah";
-const pageDescription = "Chanukah teachings from Likutay Halachos";
+const pageTitle = "Likutay Halachos";
+const pageDescription = "Halachic teachings of Rabbi Nachman of Breslov - Orach Chaim Volume 1";
 ---
 
 <style>
@@ -25,10 +25,11 @@ const pageDescription = "Chanukah teachings from Likutay Halachos";
     opacity: 0.9;
     font-style: italic;
   }
-  .container { max-width: 800px; margin: 0 auto; padding: 0 2rem; }
+  .container { max-width: 1000px; margin: 0 auto; padding: 0 2rem; }
   .navigation {
     background: #f7f5f0;
     padding: 1rem 0;
+    border-bottom: 1px solid #e2ddd5;
   }
   .nav-links {
     display: flex;
@@ -50,36 +51,69 @@ const pageDescription = "Chanukah teachings from Likutay Halachos";
     color: white;
   }
   .content { padding: 3rem 0; }
-  .content-text {
+  .intro-text {
     background: white;
-    padding: 3rem;
+    padding: 2rem;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    margin-bottom: 2rem;
   }
-  .content-text :global(p) {
+  .intro-text p {
     font-size: 1.1rem;
     line-height: 1.9;
     color: #333;
-    margin-bottom: 1.5rem;
     text-align: justify;
   }
-  .content-text :global(h2) {
-    color: #1a365d;
-    font-size: 1.5rem;
-    margin-top: 2rem;
-    margin-bottom: 1rem;
-    border-bottom: 2px solid #1a365d;
-    padding-bottom: 0.5rem;
+  .topics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
   }
-  .content-text :global(h3) {
-    color: #2c5282;
-    font-size: 1.2rem;
-    margin-top: 1.5rem;
-    margin-bottom: 0.75rem;
+  .topic-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    overflow: hidden;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: block;
+  }
+  .topic-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  }
+  .topic-card-header {
+    background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
+    color: white;
+    padding: 1.25rem;
+    font-family: var(--font-hebrew);
+    font-size: 1.1rem;
+  }
+  .topic-card-header.bais-haknnesses { background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%); }
+  .topic-card-header.bircas-hashachar { background: linear-gradient(135deg, #047857 0%, #059669 100%); }
+  .topic-card-header.birchos-hatorah { background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%); }
+  .topic-card-header.kedushah { background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%); }
+  .topic-card-header.krias-hatorah { background: linear-gradient(135deg, #b45309 0%, #d97706 100%); }
+  .topic-card-header.krias-shma { background: linear-gradient(135deg, #0891b2 0%, #06b6d4 100%); }
+  .topic-card-header.nefilas-apayim { background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%); }
+  .topic-card-header.nesias-kapayim { background: linear-gradient(135deg, #be185d 0%, #db2777 100%); }
+  .topic-card-header.tefillah { background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); }
+  .topic-card-header.tefillin { background: linear-gradient(135deg, #744210 0%, #92400e 100%); }
+  .topic-card-body {
+    padding: 1rem 1.25rem;
+    color: #555;
+    font-size: 0.9rem;
+  }
+  .topic-card-body .parts {
+    color: #1a365d;
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
   }
   .footer-nav {
     background: #1a365d;
     padding: 2rem 0;
+    margin-top: 3rem;
   }
   .back-link {
     display: inline-flex;
@@ -96,12 +130,13 @@ const pageDescription = "Chanukah teachings from Likutay Halachos";
   }
   @media (max-width: 768px) {
     .nav-links { flex-direction: column; }
+    .topics-grid { grid-template-columns: 1fr; }
   }
 </style>
 
 <section class="page-header">
-  <h1>Likutay Halachos - Chanukah</h1>
-  <p class="subtitle">ליקוטי הלכות - חנוכה</p>
+  <h1>Likutay Halachos</h1>
+  <p class="subtitle">ליקוטי הלכות</p>
 </section>
 
 <nav class="navigation">
@@ -115,46 +150,90 @@ const pageDescription = "Chanukah teachings from Likutay Halachos";
 
 <section class="content">
   <div class="container">
-    <div class="content-text">
+    <div class="intro-text">
+      <p><strong>Likutay Halachos</strong> (ליקוטי הלכות - Collected Halachic Teachings) is an important Breslov work presenting Rabbi Nachman's teachings on Jewish law and practice (Orach Chaim - the laws of daily prayer and mitzvos). Each halacha explores the deeper spiritual dimensions of the mitzvos.</p>
+    </div>
 
-<p><strong>Likutay Halachos</strong> (ליקוטי הלכות - Collected Halachic Teachings) is an important Breslov work that presents Rabbi Nachman's teachings on Jewish law and practice. This teaching focuses on the deeper spiritual dimensions of Chanukah.</p>
+    <div class="topics-grid">
+      <a href="/teachings/likutay-halachos-bais-haknnesses" class="topic-card">
+        <div class="topic-card-header bais-haknnesses">בית הכנסת</div>
+        <div class="topic-card-body">
+          <div>Synagogue</div>
+          <div class="parts">14 parts</div>
+        </div>
+      </a>
 
-<h2>The Matter of Chanukah</h2>
+      <a href="/teachings/likutay-halachos-bircas-hashachar" class="topic-card">
+        <div class="topic-card-header bircas-hashachar">ברכות השחר</div>
+        <div class="topic-card-body">
+          <div>Morning Blessings</div>
+          <div class="parts">11 parts</div>
+        </div>
+      </a>
 
-<p>Based on what our Rabbi Nachman wrote in the discourse beginning "Achawei Lan Mena D'la Shavya Lachabala" in Likutay Moharan, Torah Teaching 25:</p>
+      <a href="/teachings/likutay-halachos-birchos-hatorah" class="topic-card">
+        <div class="topic-card-header birchos-hatorah">ברכות התורה</div>
+        <div class="topic-card-body">
+          <div>Torah Blessings</div>
+          <div class="parts">1 part</div>
+        </div>
+      </a>
 
-<p>Every person must extract themselves from the realm of imagination, which is the force of animalistic desires, and ascend to the intellect, as explained there. Even after one initially breaks the power of imagination, when one continues to ascend from level to level, this power of imagination and all the confusions re-emerge, requiring one to subdue it again. This subjugation is achieved through the revelation of the greatness of the Creator, which is essentially through charity, as explained there.</p>
+      <a href="/teachings/likutay-halachos-kedushah" class="topic-card">
+        <div class="topic-card-header kedushah">קדושה</div>
+        <div class="topic-card-body">
+          <div>Kedushah</div>
+          <div class="parts">1 part</div>
+        </div>
+      </a>
 
-<p>And this is the intention of the prayer "Hoadoo" in the morning, between the first section of the prayer which is associated with the world of Asiya (action), and the succeeding section which corresponds to the higher world of Yitzeira (formation): "Give thanks to the Lord, call upon His name," which is to elevate from the level of action to formation. Therefore, we mention the greatness of the Creator to subdue these forces, as explained there.</p>
+      <a href="/teachings/likutay-halachos-krias-hatorah" class="topic-card">
+        <div class="topic-card-header krias-hatorah">קריאת התורה</div>
+        <div class="topic-card-body">
+          <div>Torah Reading</div>
+          <div class="parts">9 parts</div>
+        </div>
+      </a>
 
-<h2>Part A: The Aspect of Chanukah</h2>
+      <a href="/teachings/likutay-halachos-krias-shma" class="topic-card">
+        <div class="topic-card-header krias-shma">קריאת שמע</div>
+        <div class="topic-card-body">
+          <div>Shema</div>
+          <div class="parts">7 parts</div>
+        </div>
+      </a>
 
-<p>This is the aspect of Chanukah, which is the first illumination of the year (as mentioned in the books), symbolizing the beginning of a person's education in divine service. The term "Chanukah" (the root is chinuch) signifies that a person is being educated in the service of the Blessed God.</p>
+      <a href="/teachings/likutay-halachos-nefilas-apayim" class="topic-card">
+        <div class="topic-card-header nefilas-apayim">נפילת אפיים</div>
+        <div class="topic-card-body">
+          <div>Falling on Face</div>
+          <div class="parts">10 parts</div>
+        </div>
+      </a>
 
-<p>It's impossible to begin serving God without first waging war against the power of imagination as mentioned above. This is analogous to the war against idolaters before Chanukah, which was the wicked kingdom of idolaters who wanted to erase the Torah of God and make people transgress His laws. This is the aspect of the power of imagination, the animalistic force, which spreads over a person, trying to obstruct and divert him from the Torah of God, Heaven forbid, as written in Daniel 8, "And the he-goat became very great..." (in the apparition this animal represented Yuvun - Greece, and Chanuka is a celebration of defeating and surmounting them).</p>
+      <a href="/teachings/likutay-halachos-nesias-kapayim" class="topic-card">
+        <div class="topic-card-header nesias-kapayim">נשיאת כפיים</div>
+        <div class="topic-card-body">
+          <div>Lifting Hands (Priestly Blessing)</div>
+          <div class="parts">9 parts</div>
+        </div>
+      </a>
 
-<p>After overcoming this evil kingdom and breaking the power of imagination as mentioned, one begins to light the Chanukah lights, meaning one merits to ascend to the intellect, which is like the lit candle, as discussed in the discourse "Patah Rabbi Shimon" (Likutay Moharan, Torah Teaching 60). Each day one adds more, because one cannot remain on one level; rather, one must increase holiness in the soul daily, and the intellect must grow daily.</p>
+      <a href="/teachings/likutay-halachos-tefillah" class="topic-card">
+        <div class="topic-card-header tefillah">תפילה</div>
+        <div class="topic-card-body">
+          <div>Prayer</div>
+          <div class="parts">7 parts</div>
+        </div>
+      </a>
 
-<p>This is reflected in the practice of adding a candle each day, where the first candle remains lit throughout all days. When lighting on the second night, the two candles are for the first and second nights, and so forth. Hence, the first candle of the first night accompanies all the subsequent nights' candles, reflecting what our Rabbi wrote (in Likutay Moharan, Torah Teaching 62) that all beginnings are difficult because they involve moving from one opposite to another.</p>
-
-<p>However, once one begins to progress and sanctify more, all the work of the subsequent days gains strength from that initial beginning, similar to fasting, or the Tetragrammaton written "in reverse" (meaning there is a cycle of increment each time reverting to start from the beginning and then adding a letter, as in: a, ab, abc, abcd), where the first letter accompanies all others, like "Yud, Yud Kay, Yud," etc.</p>
-
-<p>This is the essence of Chanukah lights; we start with one candle and then add one more each day, showing that the first candle's light extends through all the days, because all days receive strength from the beginning of the educational process in divine service, the first ascent to intellect, which is the first candle of Chanukah. Each day as the intellect increases, all days receive strength from that beginning, as all beginnings are difficult, as mentioned above.</p>
-
-<p>And this is why we say Hallel during Chanukah, as an aspect of praising the Blessed God to reveal the greatness of the Creator, to subdue the power of imagination that re-emerges each time one tries to ascend from level to level, as mentioned above.</p>
-
-<h2>Part B: The Aspect of Charity</h2>
-
-<p>This is the aspect of charity, where we increase giving money during Chanukah to the poor, to break the power of imagination at every level through the revelation of different colors, which is the revelation of the Creator's greatness through charity, as mentioned above.</p>
-
-<p>This also relates to the games that even the ancient righteous practiced during Chanukah with permissible forms of play (but due to our many sins, today this often leads to transgression, as people engage in forbidden play), which is about lowering oneself to a state of smallness to then ascend to the next level, in the aspect of "descent for the sake of ascent," as mentioned.</p>
-
-<p>Because during Chanukah, we ascend from level to level, in the aspect of increasing day by day as mentioned above.</p>
-
-<p style="text-align: center; margin-top: 2rem; font-style: italic; color: #666;">
-נ נח נחמ נחמן מאומן
-</p>
-
+      <a href="/teachings/likutay-halachos-tefillin" class="topic-card">
+        <div class="topic-card-header tefillin">תפילין</div>
+        <div class="topic-card-body">
+          <div>Tefillin</div>
+          <div class="parts">4 parts</div>
+        </div>
+      </a>
     </div>
   </div>
 </section>
