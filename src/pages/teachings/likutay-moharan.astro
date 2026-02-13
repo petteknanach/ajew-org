@@ -24,12 +24,28 @@ vol1Sections.forEach((section, idx) => {
   vol1HTML += `</div></div>`;
 });
 
-// Generate Volume 2 links
+// Generate Volume 2 links - including external naanaach blog links
 let vol2HTML = '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); gap: 0.4rem;">';
 for (let i = 1; i <= 125; i++) {
   vol2HTML += `<a href="/teachings/likutay-moharan-volume-2-torah-${i}" style="display: block; padding: 0.5rem; text-align: center; background: #fefce8; border-radius: 6px; color: #744210; text-decoration: none; font-weight: 500; font-size: 0.85rem; transition: all 0.2s;">${i}</a>`;
 }
 vol2HTML += '</div>';
+
+// Naanaach Blog Volume 2 links (external)
+const vol2ExternalSections = [
+  { title: "Lkm 1-20", start: 1, end: 20 },
+  { title: "Lkm 21-40", start: 21, end: 40 },
+  { title: "Lkm 41-60", start: 41, end: 60 },
+  { title: "Lkm 61-80", start: 61, end: 80 },
+  { title: "Lkm 81-100", start: 81, end: 100 },
+  { title: "Lkm 101-125", start: 101, end: 125 }
+];
+
+let vol2ExternalHTML = '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.5rem; margin-top: 1rem;">';
+vol2ExternalSections.forEach((section) => {
+  vol2ExternalHTML += `<a href="https://naanaach.blogspot.com/search/label/Lkm%20${section.start}" target="_blank" style="display: block; padding: 0.6rem; text-align: center; background: #fef3c7; border: 2px solid #f59e0b; border-radius: 8px; color: #92400e; text-decoration: none; font-weight: 600; font-size: 0.85rem; transition: all 0.2s;">${section.title} →</a>`;
+});
+vol2ExternalHTML += '</div>';
 
 // Quick jump anchors
 const quickAnchors = [1, 15, 18, 22, 31, 50, 75, 100, 125, 150, 175, 200, 225, 250, 275, 286];
@@ -38,6 +54,7 @@ let quickJumpHTML = quickAnchors.map(n => `<a href="/teachings/likutay-moharan-v
 document.getElementById('vol1-sections').innerHTML = vol1HTML;
 document.getElementById('vol2-grid').innerHTML = vol2HTML;
 document.getElementById('quick-jump').innerHTML = quickJumpHTML;
+document.getElementById('vol2-external-grid').innerHTML = vol2ExternalHTML;
 </script>
 
 <section style="background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%); color: white; padding: 3rem 2rem; text-align: center;">
@@ -122,6 +139,17 @@ document.getElementById('quick-jump').innerHTML = quickJumpHTML;
           📗 Volume 2 - Likutay Moharan Tinyana <span style="font-size: 0.9rem; color: #666; font-weight: normal;">(125 Torahs)</span>
         </h2>
         <div id="vol2-grid"></div>
+        
+        <!-- External Naanaach Blog Links -->
+        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 2px dashed #f59e0b;">
+          <h3 style="color: #92400e; font-size: 1.1rem; margin: 0 0 0.75rem 0;">
+            🔗 External Links - Naanaach Blog Translations
+          </h3>
+          <p style="font-size: 0.9rem; color: #666; margin-bottom: 1rem;">
+            Additional translations from naanaach.blogspot.com - click to view
+          </p>
+          <div id="vol2-external-grid"></div>
+        </div>
       </div>
 
       <!-- Introduction -->
