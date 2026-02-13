@@ -45,7 +45,9 @@ title: "Likutay Moharan"
       <div style="background: #f7f5f0; border-radius: 12px; padding: 1rem; margin-top: 1rem;">
         <h4 style="margin: 0 0 0.5rem 0; color: #1a365d; font-size: 0.9rem;">Quick Jump</h4>
         <div style="display: flex; flex-wrap: wrap; gap: 0.25rem;">
-          ${[1,25,50,75,100,125,150,175,200,225,250,275,286].map(n => `<a href="#torah${n}" style="padding: 0.25rem 0.5rem; background: white; border-radius: 4px; font-size: 0.75rem; color: #666; text-decoration: none;">${n}</a>`).join('')}
+          {[1,25,50,75,100,125,150,175,200,225,250,275,286].map(n => (
+            <a href={`#torah${n}`} style="padding: 0.25rem 0.5rem; background: white; border-radius: 4px; font-size: 0.75rem; color: #666; text-decoration: none;">{n}</a>
+          ))}
         </div>
       </div>
     </aside>
@@ -58,12 +60,14 @@ title: "Likutay Moharan"
           Volume 1 <span style="font-size: 1rem; color: #666; font-weight: normal;">(286 Torahs)</span>
         </h2>
         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 0.5rem;">
-          ${Array.from({length: 286}, (_, i) => {
+          {Array.from({length: 286}, (_, i) => {
             const num = i + 1;
             const anchors = [1,25,50,75,100,125,150,175,200,225,250,275,286];
             const anchor = anchors.includes(num) ? ` id="torah${num}"` : '';
-            return `<a href="/teachings/likutay-moharan-volume-1-torah-${num}"${anchor} style="display: block; padding: 0.6rem; text-align: center; background: #f7f5f0; border-radius: 8px; color: #1a365d; text-decoration: none; font-weight: 500; transition: all 0.2s; font-size: 0.9rem;">${num}</a>`;
-          }).join('')}
+            return (
+              <a href={`/teachings/likutay-moharan-volume-1-torah-${num}`} {...{anchor}} style="display: block; padding: 0.6rem; text-align: center; background: #f7f5f0; border-radius: 8px; color: #1a365d; text-decoration: none; font-weight: 500; transition: all 0.2s; font-size: 0.9rem;">{num}</a>
+            );
+          })}
         </div>
       </div>
 
@@ -73,10 +77,12 @@ title: "Likutay Moharan"
           Volume 2 <span style="font-size: 1rem; color: #666; font-weight: normal;">(125 Torahs)</span>
         </h2>
         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 0.5rem;">
-          ${Array.from({length: 125}, (_, i) => {
+          {Array.from({length: 125}, (_, i) => {
             const num = i + 1;
-            return `<a href="/teachings/likutay-moharan-volume-2-torah-${num}" style="display: block; padding: 0.6rem; text-align: center; background: #fef3c7; border-radius: 8px; color: #744210; text-decoration: none; font-weight: 500; transition: all 0.2s; font-size: 0.9rem;">${num}</a>`;
-          }).join('')}
+            return (
+              <a href={`/teachings/likutay-moharan-volume-2-torah-${num}`} style="display: block; padding: 0.6rem; text-align: center; background: #fef3c7; border-radius: 8px; color: #744210; text-decoration: none; font-weight: 500; transition: all 0.2s; font-size: 0.9rem;">{num}</a>
+            );
+          })}
         </div>
       </div>
 
