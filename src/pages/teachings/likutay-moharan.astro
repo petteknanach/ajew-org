@@ -2,59 +2,120 @@
 title: "Likutay Moharan"
 ---
 
-<section style="background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%); color: white; padding: 4rem 2rem; text-align: center;">
+<section style="background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%); color: white; padding: 3rem 2rem; text-align: center;">
   <h1 style="font-family: var(--font-hebrew); font-size: 2.5rem; margin: 0;">📚 Likutay Moharan</h1>
   <p style="font-size: 1.2rem; opacity: 0.9; margin-top: 0.5rem;">ליקוטי מוהר"ן</p>
   <p style="font-size: 1rem; opacity: 0.8; margin-top: 1rem;">The primary collection of Rabbi Nachman's Torah teachings</p>
 </section>
 
-<div style="max-width: 1200px; margin: 0 auto; padding: 2rem;">
-  
-  <!-- Volume 1 -->
-  <div style="margin-bottom: 3rem;">
-    <h2 style="color: #1a365d; font-size: 1.8rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 3px solid #1a365d;">
-      Volume 1 <span style="font-size: 1rem; color: #666;">(286 Torahs)</span>
-    </h2>
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 0.5rem;">
-      ${Array.from({length: 286}, (_, i) => {
-        const num = i + 1;
-        return `<a href="/teachings/likutay-moharan-volume-1-torah-${num}" style="display: block; padding: 0.6rem; text-align: center; background: #f7f5f0; border-radius: 8px; color: #1a365d; text-decoration: none; font-weight: 500; transition: all 0.2s;">${num}</a>`;
-      }).join('')}
-    </div>
-  </div>
+<div style="max-width: 1400px; margin: 0 auto; padding: 2rem;">
+  <div style="display: grid; grid-template-columns: 280px 1fr; gap: 2rem;">
+    
+    <!-- Sidebar -->
+    <aside style="position: sticky; top: 2rem; height: fit-content;">
+      <div style="background: white; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.1); overflow: hidden;">
+        <div style="background: #1a365d; color: white; padding: 1rem; font-weight: 600;">
+          📖 Sections
+        </div>
+        <ul style="list-style: none; padding: 0; margin: 0;">
+          <li style="border-bottom: 1px solid #eee;">
+            <a href="#vol1" style="display: block; padding: 1rem; color: #1a365d; text-decoration: none; font-weight: 500;">
+              Volume 1 (286)
+            </a>
+          </li>
+          <li style="border-bottom: 1px solid #eee;">
+            <a href="#vol2" style="display: block; padding: 1rem; color: #744210; text-decoration: none; font-weight: 500;">
+              Volume 2 (125)
+            </a>
+          </li>
+          <li style="border-bottom: 1px solid #eee;">
+            <a href="#intro" style="display: block; padding: 1rem; color: #059669; text-decoration: none;">
+              Introduction
+            </a>
+          </li>
+          <li style="border-bottom: 1px solid #eee;">
+            <a href="#prefaces" style="display: block; padding: 1rem; color: #059669; text-decoration: none;">
+              Prefaces
+            </a>
+          </li>
+        </ul>
+      </div>
+      
+      <!-- Quick Jump -->
+      <div style="background: #f7f5f0; border-radius: 12px; padding: 1rem; margin-top: 1rem;">
+        <h4 style="margin: 0 0 0.5rem 0; color: #1a365d; font-size: 0.9rem;">Quick Jump</h4>
+        <div style="display: flex; flex-wrap: wrap; gap: 0.25rem;">
+          ${[1,25,50,75,100,125,150,175,200,225,250,275,286].map(n => `<a href="#torah${n}" style="padding: 0.25rem 0.5rem; background: white; border-radius: 4px; font-size: 0.75rem; color: #666; text-decoration: none;">${n}</a>`).join('')}
+        </div>
+      </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main>
+      <!-- Volume 1 -->
+      <div id="vol1" style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 4px 16px rgba(0,0,0,0.1); margin-bottom: 2rem;">
+        <h2 style="color: #1a365d; font-size: 1.8rem; margin: 0 0 1.5rem 0; padding-bottom: 0.5rem; border-bottom: 2px solid #1a365d;">
+          Volume 1 <span style="font-size: 1rem; color: #666; font-weight: normal;">(286 Torahs)</span>
+        </h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 0.5rem;">
+          ${Array.from({length: 286}, (_, i) => {
+            const num = i + 1;
+            const anchors = [1,25,50,75,100,125,150,175,200,225,250,275,286];
+            const anchor = anchors.includes(num) ? ` id="torah${num}"` : '';
+            return `<a href="/teachings/likutay-moharan-volume-1-torah-${num}"${anchor} style="display: block; padding: 0.6rem; text-align: center; background: #f7f5f0; border-radius: 8px; color: #1a365d; text-decoration: none; font-weight: 500; transition: all 0.2s; font-size: 0.9rem;">${num}</a>`;
+          }).join('')}
+        </div>
+      </div>
 
-  <!-- Volume 2 -->
-  <div style="margin-bottom: 3rem;">
-    <h2 style="color: #744210; font-size: 1.8rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 3px solid #744210;">
-      Volume 2 <span style="font-size: 1rem; color: #666;">(125 Torahs)</span>
-    </h2>
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 0.5rem;">
-      ${Array.from({length: 125}, (_, i) => {
-        const num = i + 1;
-        return `<a href="/teachings/likutay-moharan-volume-2-torah-${num}" style="display: block; padding: 0.6rem; text-align: center; background: #fef3c7; border-radius: 8px; color: #744210; text-decoration: none; font-weight: 500; transition: all 0.2s;">${num}</a>`;
-      }).join('')}
-    </div>
-  </div>
+      <!-- Volume 2 -->
+      <div id="vol2" style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 4px 16px rgba(0,0,0,0.1); margin-bottom: 2rem;">
+        <h2 style="color: #744210; font-size: 1.8rem; margin: 0 0 1.5rem 0; padding-bottom: 0.5rem; border-bottom: 2px solid #744210;">
+          Volume 2 <span style="font-size: 1rem; color: #666; font-weight: normal;">(125 Torahs)</span>
+        </h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 0.5rem;">
+          ${Array.from({length: 125}, (_, i) => {
+            const num = i + 1;
+            return `<a href="/teachings/likutay-moharan-volume-2-torah-${num}" style="display: block; padding: 0.6rem; text-align: center; background: #fef3c7; border-radius: 8px; color: #744210; text-decoration: none; font-weight: 500; transition: all 0.2s; font-size: 0.9rem;">${num}</a>`;
+          }).join('')}
+        </div>
+      </div>
 
-  <!-- Intro & Prefaces -->
-  <div>
-    <h2 style="color: #059669; font-size: 1.5rem; margin-bottom: 1rem;">📖 Introduction & Prefaces</h2>
-    <div style="display: flex; flex-wrap: wrap; gap: 1rem;">
-      <a href="/teachings/likutay-moharan-intro" style="padding: 1rem 1.5rem; background: #ecfdf5; color: #059669; border-radius: 8px; text-decoration: none;">Introduction</a>
-      <a href="/teachings/likutay-moharan-preface-greatness" style="padding: 1rem 1.5rem; background: #ecfdf5; color: #059669; border-radius: 8px; text-decoration: none;">Preface - Greatness of Torah</a>
-      <a href="/teachings/likutay-moharan-poem" style="padding: 1rem 1.5rem; background: #ecfdf5; color: #059669; border-radius: 8px; text-decoration: none;">Poem</a>
-      <a href="/teachings/likutay-moharan-short-poetic-preface-1-15" style="padding: 1rem 1.5rem; background: #ecfdf5; color: #059669; border-radius: 8px; text-decoration: none;">Short Poetic Preface 1-15</a>
-      <a href="/teachings/likutay-moharan-short-poetic-conclusion-1-15" style="padding: 1rem 1.5rem; background: #ecfdf5; color: #059669; border-radius: 8px; text-decoration: none;">Short Poetic Conclusion 1-15</a>
-      <a href="/teachings/likutay-moharan-short-poetic-conclusion-16-18" style="padding: 1rem 1.5rem; background: #ecfdf5; color: #059669; border-radius: 8px; text-decoration: none;">Short Poetic Conclusion 16-18</a>
-      <a href="/teachings/likutay-moharan-vol2-intro" style="padding: 1rem 1.5rem; background: #fef3c7; color: #744210; border-radius: 8px; text-decoration: none;">Volume 2 Introduction</a>
-    </div>
-  </div>
+      <!-- Introduction & Prefaces -->
+      <div id="intro" style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 4px 16px rgba(0,0,0,0.1); margin-bottom: 2rem;">
+        <h2 style="color: #059669; font-size: 1.5rem; margin: 0 0 1rem 0;">📖 Introduction</h2>
+        <div style="display: flex; flex-wrap: wrap; gap: 0.75rem;">
+          <a href="/teachings/likutay-moharan-intro" style="padding: 0.75rem 1.25rem; background: #ecfdf5; color: #059669; border-radius: 8px; text-decoration: none; font-weight: 500;">Introduction</a>
+        </div>
+      </div>
 
+      <div id="prefaces" style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 4px 16px rgba(0,0,0,0.1); margin-bottom: 2rem;">
+        <h2 style="color: #059669; font-size: 1.5rem; margin: 0 0 1rem 0;">📜 Prefaces & Supplements</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem;">
+          <a href="/teachings/likutay-moharan-preface-greatness" style="padding: 0.75rem 1rem; background: #ecfdf5; color: #059669; border-radius: 8px; text-decoration: none;">Preface - Greatness of Torah</a>
+          <a href="/teachings/likutay-moharan-poem" style="padding: 0.75rem 1rem; background: #ecfdf5; color: #059669; border-radius: 8px; text-decoration: none;">Poem</a>
+          <a href="/teachings/likutay-moharan-short-poetic-preface-1-15" style="padding: 0.75rem 1rem; background: #ecfdf5; color: #059669; border-radius: 8px; text-decoration: none;">Short Poetic Preface 1-15</a>
+          <a href="/teachings/likutay-moharan-short-poetic-conclusion-1-15" style="padding: 0.75rem 1rem; background: #ecfdf5; color: #059669; border-radius: 8px; text-decoration: none;">Short Poetic Conclusion 1-15</a>
+          <a href="/teachings/likutay-moharan-short-poetic-conclusion-16-18" style="padding: 0.75rem 1rem; background: #ecfdf5; color: #059669; border-radius: 8px; text-decoration: none;">Short Poetic Conclusion 16-18</a>
+          <a href="/teachings/likutay-moharan-vol2-intro" style="padding: 0.75rem 1rem; background: #fef3c7; color: #744210; border-radius: 8px; text-decoration: none;">Volume 2 Introduction</a>
+          <a href="/teachings/likutay-moharan-vol2-omission" style="padding: 0.75rem 1rem; background: #fef3c7; color: #744210; border-radius: 8px; text-decoration: none;">Volume 2 Omission</a>
+        </div>
+      </div>
+
+    </main>
+  </div>
 </div>
 
 <style>
   a:hover {
     transform: scale(1.05);
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+  @media (max-width: 900px) {
+    div[style*="grid-template-columns: 280px"] {
+      grid-template-columns: 1fr !important;
+    }
+    aside {
+      position: static !important;
+    }
   }
 </style>
