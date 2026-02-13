@@ -2,6 +2,27 @@
 title: "Likutay Moharan"
 ---
 
+<script>
+const vol1Quick = [1,25,50,75,100,125,150,175,200,225,250,275,286];
+const vol1Anchors = new Set(vol1Quick);
+const vol1Links = Array.from({length: 286}, (_, i) => {
+  const num = i + 1;
+  const anchor = vol1Anchors.has(num) ? ` id="torah${num}"` : '';
+  return `<a href="/teachings/likutay-moharan-volume-1-torah-${num}"${anchor} style="display: block; padding: 0.6rem; text-align: center; background: #f7f5f0; border-radius: 8px; color: #1a365d; text-decoration: none; font-weight: 500; transition: all 0.2s; font-size: 0.9rem;">${num}</a>`;
+}).join('');
+
+const vol2Links = Array.from({length: 125}, (_, i) => {
+  const num = i + 1;
+  return `<a href="/teachings/likutay-moharan-volume-2-torah-${num}" style="display: block; padding: 0.6rem; text-align: center; background: #fef3c7; border-radius: 8px; color: #744210; text-decoration: none; font-weight: 500; transition: all 0.2s; font-size: 0.9rem;">${num}</a>`;
+}).join('');
+
+const quickJump = vol1Quick.map(n => `<a href="#torah${n}" style="padding: 0.25rem 0.5rem; background: white; border-radius: 4px; font-size: 0.75rem; color: #666; text-decoration: none;">${n}</a>`).join('');
+
+document.getElementById('quick-jump').innerHTML = quickJump;
+document.getElementById('vol1-grid').innerHTML = vol1Links;
+document.getElementById('vol2-grid').innerHTML = vol2Links;
+</script>
+
 <section style="background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%); color: white; padding: 3rem 2rem; text-align: center;">
   <h1 style="font-family: var(--font-hebrew); font-size: 2.5rem; margin: 0;">📚 Likutay Moharan</h1>
   <p style="font-size: 1.2rem; opacity: 0.9; margin-top: 0.5rem;">ליקוטי מוהר"ן</p>
@@ -44,11 +65,7 @@ title: "Likutay Moharan"
       <!-- Quick Jump -->
       <div style="background: #f7f5f0; border-radius: 12px; padding: 1rem; margin-top: 1rem;">
         <h4 style="margin: 0 0 0.5rem 0; color: #1a365d; font-size: 0.9rem;">Quick Jump</h4>
-        <div style="display: flex; flex-wrap: wrap; gap: 0.25rem;">
-          {[1,25,50,75,100,125,150,175,200,225,250,275,286].map(n => (
-            <a href={`#torah${n}`} style="padding: 0.25rem 0.5rem; background: white; border-radius: 4px; font-size: 0.75rem; color: #666; text-decoration: none;">{n}</a>
-          ))}
-        </div>
+        <div id="quick-jump" style="display: flex; flex-wrap: wrap; gap: 0.25rem;"></div>
       </div>
     </aside>
     
@@ -59,16 +76,7 @@ title: "Likutay Moharan"
         <h2 style="color: #1a365d; font-size: 1.8rem; margin: 0 0 1.5rem 0; padding-bottom: 0.5rem; border-bottom: 2px solid #1a365d;">
           Volume 1 <span style="font-size: 1rem; color: #666; font-weight: normal;">(286 Torahs)</span>
         </h2>
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 0.5rem;">
-          {Array.from({length: 286}, (_, i) => {
-            const num = i + 1;
-            const anchors = [1,25,50,75,100,125,150,175,200,225,250,275,286];
-            const anchor = anchors.includes(num) ? ` id="torah${num}"` : '';
-            return (
-              <a href={`/teachings/likutay-moharan-volume-1-torah-${num}`} {...{anchor}} style="display: block; padding: 0.6rem; text-align: center; background: #f7f5f0; border-radius: 8px; color: #1a365d; text-decoration: none; font-weight: 500; transition: all 0.2s; font-size: 0.9rem;">{num}</a>
-            );
-          })}
-        </div>
+        <div id="vol1-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 0.5rem;"></div>
       </div>
 
       <!-- Volume 2 -->
@@ -76,14 +84,7 @@ title: "Likutay Moharan"
         <h2 style="color: #744210; font-size: 1.8rem; margin: 0 0 1.5rem 0; padding-bottom: 0.5rem; border-bottom: 2px solid #744210;">
           Volume 2 <span style="font-size: 1rem; color: #666; font-weight: normal;">(125 Torahs)</span>
         </h2>
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 0.5rem;">
-          {Array.from({length: 125}, (_, i) => {
-            const num = i + 1;
-            return (
-              <a href={`/teachings/likutay-moharan-volume-2-torah-${num}`} style="display: block; padding: 0.6rem; text-align: center; background: #fef3c7; border-radius: 8px; color: #744210; text-decoration: none; font-weight: 500; transition: all 0.2s; font-size: 0.9rem;">{num}</a>
-            );
-          })}
-        </div>
+        <div id="vol2-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 0.5rem;"></div>
       </div>
 
       <!-- Introduction & Prefaces -->
