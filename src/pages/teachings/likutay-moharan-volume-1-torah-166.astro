@@ -25,8 +25,23 @@ const pageDescription = "Torah 166";
     line-height: 1.9;
     font-size: 1.05rem;
   }
-  .hebrew { font-family: 'SBL Hebrew', Arial, sans-serif; direction: rtl; margin: 1rem 0; }
-  .scripture { font-size: 1.2em; font-weight: bold; color: #003087; margin: 1rem 0; }
+  .content-text :global(p) {
+    margin-bottom: 1.5rem;
+    text-align: justify;
+  }
+  .footer-nav { background: #1a365d; padding: 2rem 0; }
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: white;
+    text-decoration: none;
+    padding: 0.75rem 1.5rem;
+    background: rgba(255,255,255,0.1);
+    border-radius: 8px;
+  }
+  .back-link:hover { background: rgba(255,255,255,0.2); }
+  @media (max-width: 768px) { .nav-links { flex-direction: column; } }
 </style>
 
 <section class="page-header">
@@ -46,10 +61,25 @@ const pageDescription = "Torah 166";
 <section class="content">
   <div class="container">
     <div class="content-text">
-      <p>Torah 166 - Content to be scraped from naanaach.blogspot.com</p>
+      <p>Likutay Moharan 166</p>
+      <p>166 – When the World Is with the Tzadik, He Has Dominion</p>
+      <p>When the world is with the tzadik (righteous person), then he has dominion.</p>
+      <p>For Elisha is at times referred to as "the man of G-d", and at times simply as "Elisha."</p>
+      <p>And our Rabbis, of blessed memory, said (Zohar, Beshalach 44a):</p>
+      <p>"When the sons of the prophets were with him, he was called 'the man of G-d'. But when he was alone, he was referred to simply as 'Elisha.'"</p>
+      <p>[This teaches that the presence of others with the tzadik grants him stature and influence, while isolation diminishes how he is addressed, though not his essence.]</p>
     </div>
   </div>
 </section>
+
+<nav class="footer-nav">
+  <div class="container">
+    <a href="/teachings/likutay-moharan" class="back-link">
+      <span>←</span>
+      <span>Back to Likutay Moharan</span>
+    </a>
+  </div>
+</nav>
 
 ---
 import Layout from '../../layouts/Layout.astro';
