@@ -1,0 +1,502 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="ספרי ברסלב" description="All Breslov books in Hebrew">
+  <div class="books-page">
+    <header class="page-header">
+      <h1>ספרי ברסלב בלשון הקודש</h1>
+      <p class="subtitle">All Breslov Books in Hebrew</p>
+    </header>
+
+    <div class="search-section">
+      <div class="search-box">
+        <input 
+          type="text" 
+          id="bookSearch" 
+          placeholder="חפש ספר... Search for a book..."
+          dir="rtl"
+        />
+        <span class="search-icon">🔍</span>
+      </div>
+    </div>
+
+    <div class="categories-grid" id="categoriesGrid"></div>
+
+    <div class="search-results" id="searchResults" style="display: none;">
+      <h3>תוצאות חיפוש / Search Results</h3>
+      <ul class="results-list" id="resultsList"></ul>
+      <button class="back-btn" id="backToCategories">חזור לרשימה / Back to List</button>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  // Book data - loaded client-side from the folder structure
+  const booksData = [
+    {
+      name: "ספרי רבי נחמן",
+      originalName: "1_ספרי רבי נחמן",
+      books: [
+        { name: "01_ליקוטי מוהר''ן", filename: "01_ליקוטי מוהר''ן.txt" },
+        { name: "02_ ליקוטי מוהר''ן מנוקד", filename: "02_ ליקוטי מוהר''ן מנוקד.txt" },
+        { name: "02_קיצור ליקוטי מוהרן השלם", filename: "02_קיצור ליקוטי מוהרן השלם.txt" },
+        { name: "03_ספר המידות", filename: "03_ספר המידות.txt" },
+        { name: "04_ספורי מעשיות", filename: "04_ספורי מעשיות.txt" },
+        { name: "05_ספורי מעשיות מנוקד", filename: "05_ספורי מעשיות מנוקד.txt" },
+        { name: "06_שיחות הר''ן", filename: "06_שיחות הר''ן.txt" },
+        { name: "06א_שיחות הר''ן מנוקד", filename: "06א_שיחות הר''ן מנוקד.txt" },
+        { name: "07_חיי מוהר''ן", filename: "07_חיי מוהר''ן.txt" },
+        { name: "08_חיי מוהרן מנוקד", filename: "08_חיי מוהרן מנוקד.txt" },
+        { name: "09_שבחי הר''ן", filename: "09_שבחי הר''ן.txt" },
+        { name: "09א_שבחי הר''ן מנוקד", filename: "09א_שבחי הר''ן מנוקד.txt" }
+      ]
+    },
+    {
+      name: "ספרי רבי נתן",
+      originalName: "2_ספרי רבי נתן",
+      books: [
+        { name: "ליקוטי הלכות", filename: "ליקוטי הלכות.txt" },
+        { name: "שיחות הר''ן ליקוטי דפוס", filename: "שיחות הר''ן ליקוטי דפוס.txt" },
+        { name: "שיחות הר''ן ליקוטי ישן", filename: "שיחות הר''ן ליקוטי ישן.txt" },
+        { name: "שיחות הר''ן מכתב יד", filename: "שיחות הר''ן מכתב יד.txt" },
+        { name: "שבחי הר''ן", filename: "שבחי הר''ן.txt" },
+        { name: "חיי מוהר''ן", filename: "חיי מוהר''ן.txt" }
+      ]
+    },
+    {
+      name: "ספרי הרב מטשערין",
+      originalName: "3_ספרי הרב מטשערין",
+      books: [
+        { name: "דרשות מטשערין", filename: "דרשות מטשערין.txt" },
+        { name: "דרשות מטשערין ב", filename: "דרשות מטשערין ב.txt" },
+        { name: "מכתבים מטשערין", filename: "מכתבים מטשערין.txt" },
+        { name: "מכתבים מטשערין ב", filename: "מכתבים מטשערין ב.txt" },
+        { name: "שיחות מטשערין", filename: "שיחות מטשערין.txt" },
+        { name: "שיחות מטשערין ב", filename: "שיחות מטשערין ב.txt" }
+      ]
+    },
+    {
+      name: "ספרי רבי נתן בר יהודה",
+      originalName: "3_ספרי רבי נתן בר יהודה",
+      books: [
+        { name: "דרשות רבי נתן", filename: "דרשות רבי נתן.txt" },
+        { name: "שיחות רבי נתן", filename: "שיחות רבי נתן.txt" },
+        { name: "תולדות רבי נתן", filename: "תולדות רבי נתן.txt" }
+      ]
+    },
+    {
+      name: "ספרי רבי אלתר טפליקער",
+      originalName: "4_ספרי רבי אלתר טפליקער",
+      books: [
+        { name: "שיחות מהר''א טפליקער", filename: "שיחות מהר''א טפליקער.txt" },
+        { name: "תולדות מהר''א טפליקער", filename: "תולדות מהר''א טפליקער.txt" }
+      ]
+    },
+    {
+      name: "ספרי רבי אברהם בר' נחמן",
+      originalName: "5_ספרי רבי אברהם בר' נחמן",
+      books: [
+        { name: "שיחות הר''אבר''ן", filename: "שיחות הר''אבר''ן.txt" },
+        { name: "שיחות הר''אבר''ן ב", filename: "שיחות הר''אבר''ן ב.txt" },
+        { name: "תולדות הר''אבר''ן", filename: "תולדות הר''אבר''ן.txt" }
+      ]
+    },
+    {
+      name: "ספרי רבי שמשון בארסקי",
+      originalName: "6_ספרי רבי שמשון בארסקי",
+      books: [
+        { name: "שיחות רבי שמשון", filename: "שיחות רבי שמשון.txt" },
+        { name: "תולדות רבי שמשון", filename: "תולדות רבי שמשון.txt" }
+      ]
+    },
+    {
+      name: "ספרים של תלמידים ועוד",
+      originalName: "6_ספרים של תלמידים ועוד",
+      books: [
+        { name: "אגרות קודש ברסלב", filename: "אגרות קודש ברסלב.txt" },
+        { name: "דרשות אחרונות", filename: "דרשות אחרונות.txt" },
+        { name: "דרשות ליום ההילולא", filename: "דרשות ליום ההילולא.txt" },
+        { name: "הגדה של פסח", filename: "הגדה של פסח.txt" },
+        { name: "ילקוט ישראל", filename: "ילקוט ישראל.txt" },
+        { name: "ליקוטים מכתבים", filename: "ליקוטים מכתבים.txt" },
+        { name: "מאמרי מרא דאבוה", filename: "מאמרי מרא דאבוה.txt" },
+        { name: "מכתב לתלמידים", filename: "מכתב לתלמידים.txt" },
+        { name: "על ספר הזוהר", filename: "על ספר הזוהר.txt" },
+        { name: "פיואל הלולא", filename: "פיואל הלולא.txt" },
+        { name: "שיחות ליום טוב", filename: "שיחות ליום טוב.txt" },
+        { name: "תיקונים", filename: "תיקונים.txt" }
+      ]
+    },
+    {
+      name: "סיפורים",
+      originalName: "91_סיפורים",
+      books: [
+        { name: "סיפורי מעשיות עברית", filename: "סיפורי מעשיות עברית.txt" },
+        { name: "סיפורים נוספים", filename: "סיפורים נוספים.txt" }
+      ]
+    },
+    {
+      name: "ספרים מתורגמים",
+      originalName: "92_ספרים מתורגמים",
+      books: [
+        { name: "ליקוטי מוהר''ן אנגלית", filename: "ליקוטי מוהר''ן אנגלית.txt" }
+      ]
+    },
+    {
+      name: "ביבליוגרפית ברסלב",
+      originalName: "ביבליוגרפית ברסלב",
+      books: [
+        { name: "אוצר הספרים", filename: "אוצר הספרים.txt" },
+        { name: "ביבליוגרפיה ברסלב א", filename: "ביבליוגרפיה ברסלב א.txt" },
+        { name: "ביבליוגרפיה ברסלב ב", filename: "ביבליוגרפיה ברסלב ב.txt" },
+        { name: "ביבליוגרפיה ברסלב ג", filename: "ביבליוגרפיה ברסלב ג.txt" },
+        { name: "ביבליוגרפיה ברסלב ד", filename: "ביבליוגרפיה ברסלב ד.txt" },
+        { name: "ביבליוגרפיה ברסלב ה", filename: "ביבליוגרפיה ברסלב ה.txt" },
+        { name: "ביבליוגרפיה ברסלב ו", filename: "ביבליוגרפיה ברסלב ו.txt" },
+        { name: "ביבליוגרפיה ברסלב ז", filename: "ביבליוגרפיה ברסלב ז.txt" },
+        { name: "ספרי ברסלב מאז 2000", filename: "ספרי ברסלב מאז 2000.txt" }
+      ]
+    },
+    {
+      name: "לוי יצחק בנדר",
+      originalName: "לוי יצחק בנדר",
+      books: [
+        { name: "אוצר הדיבורים", filename: "אוצר הדיבורים.txt" },
+        { name: "דרשות לוי יצחק", filename: "דרשות לוי יצחק.txt" },
+        { name: "דרשות לוי יצחק ב", filename: "דרשות לוי יצחק ב.txt" },
+        { name: "דרשות לוי יצחק ג", filename: "דרשות לוי יצחק ג.txt" },
+        { name: "שיחות לוי יצחק", filename: "שיחות לוי יצחק.txt" },
+        { name: "שיחות לוי יצחק ב", filename: "שיחות לוי יצחק ב.txt" },
+        { name: "תולדות לוי יצחק", filename: "תולדות לוי יצחק.txt" }
+      ]
+    }
+  ];
+
+  // Flat list for search
+  const allBooks = booksData.flatMap(cat => 
+    cat.books.map(book => ({
+      ...book,
+      category: cat.name,
+      categoryKey: cat.originalName
+    }))
+  );
+
+  // Render categories
+  const categoriesGrid = document.getElementById('categoriesGrid');
+  
+  booksData.forEach((category, idx) => {
+    const card = document.createElement('div');
+    card.className = 'category-card';
+    card.style.setProperty('--delay', `${idx * 0.05}s`);
+    card.dataset.category = category.name;
+    
+    card.innerHTML = `
+      <div class="category-header">
+        <h2>${category.name}</h2>
+        <span class="book-count">${category.books.length} ספרים</span>
+      </div>
+      <ul class="book-list">
+        ${category.books.map((book, bookIdx) => `
+          <li class="book-item" style="--delay: ${bookIdx * 0.02}s">
+            <a href="/books/read?category=${encodeURIComponent(category.originalName)}&book=${encodeURIComponent(book.filename)}">
+              <span class="book-icon">📖</span>
+              <span class="book-name">${book.name}</span>
+            </a>
+          </li>
+        `).join('')}
+      </ul>
+    `;
+    
+    categoriesGrid.appendChild(card);
+  });
+
+  // Search functionality
+  const searchInput = document.getElementById('bookSearch');
+  const searchResults = document.getElementById('searchResults');
+  const resultsList = document.getElementById('resultsList');
+  const backBtn = document.getElementById('backToCategories');
+
+  searchInput.addEventListener('input', (e) => {
+    const query = e.target.value.trim().toLowerCase();
+    
+    if (query.length < 2) {
+      searchResults.style.display = 'none';
+      categoriesGrid.style.display = 'grid';
+      return;
+    }
+
+    const results = allBooks.filter(book => 
+      book.name.toLowerCase().includes(query) || 
+      book.category.toLowerCase().includes(query)
+    );
+
+    if (results.length === 0) {
+      resultsList.innerHTML = '<li class="no-results">לא נמצאו תוצאות / No results found</li>';
+    } else {
+      resultsList.innerHTML = results.map(book => `
+        <li>
+          <a href="/books/read?category=${encodeURIComponent(book.categoryKey)}&book=${encodeURIComponent(book.filename)}">
+            <span class="result-category">${book.category}</span>
+            <span class="result-name">${book.name}</span>
+          </a>
+        </li>
+      `).join('');
+    }
+
+    categoriesGrid.style.display = 'none';
+    searchResults.style.display = 'block';
+  });
+
+  backBtn.addEventListener('click', () => {
+    searchResults.style.display = 'none';
+    categoriesGrid.style.display = 'grid';
+    searchInput.value = '';
+  });
+</script>
+
+<style>
+  .books-page {
+    min-height: 100vh;
+    background: linear-gradient(180deg, #1a365d 0%, #2d4a6f 100%);
+    padding: 2rem;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .page-header h1 {
+    font-family: var(--font-hebrew);
+    font-size: 2.5rem;
+    color: white;
+    margin-bottom: 0.5rem;
+  }
+
+  .subtitle {
+    color: rgba(255,255,255,0.7);
+    font-size: 1.1rem;
+  }
+
+  .search-section {
+    max-width: 600px;
+    margin: 0 auto 2rem;
+  }
+
+  .search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .search-box input {
+    width: 100%;
+    padding: 1rem 1.5rem 1rem 3rem;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 50px;
+    background: white;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  }
+
+  .search-box input:focus {
+    outline: none;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 1.2rem;
+    font-size: 1.2rem;
+  }
+
+  .categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .category-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    animation: fadeInUp 0.5s ease forwards;
+    animation-delay: var(--delay);
+    opacity: 0;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .category-header {
+    background: linear-gradient(135deg, #1a365d, #2d4a6f);
+    color: white;
+    padding: 1.2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .category-header h2 {
+    font-family: var(--font-hebrew);
+    font-size: 1.3rem;
+    margin: 0;
+  }
+
+  .book-count {
+    font-size: 0.85rem;
+    background: rgba(255,255,255,0.2);
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+  }
+
+  .book-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .book-item {
+    border-bottom: 1px solid #eee;
+    animation: fadeIn 0.3s ease forwards;
+    animation-delay: var(--delay);
+    opacity: 0;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .book-item:last-child {
+    border-bottom: none;
+  }
+
+  .book-item a {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 1rem 1.2rem;
+    text-decoration: none;
+    color: #333;
+    transition: all 0.2s;
+  }
+
+  .book-item a:hover {
+    background: #f7f5f0;
+    color: #c53030;
+  }
+
+  .book-icon {
+    font-size: 1.2rem;
+  }
+
+  .book-name {
+    font-family: var(--font-hebrew);
+    font-size: 1rem;
+  }
+
+  /* Search Results */
+  .search-results {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .search-results h3 {
+    color: white;
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .results-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .results-list li {
+    border-bottom: 1px solid #eee;
+  }
+
+  .results-list li a {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem 1.5rem;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+
+  .results-list li a:hover {
+    background: #f7f5f0;
+  }
+
+  .result-category {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 0.3rem;
+  }
+
+  .result-name {
+    font-family: var(--font-hebrew);
+    font-size: 1.1rem;
+    color: #1a365d;
+  }
+
+  .no-results {
+    padding: 2rem;
+    text-align: center;
+    color: #666;
+  }
+
+  .back-btn {
+    display: block;
+    width: 100%;
+    max-width: 300px;
+    margin: 1.5rem auto 0;
+    padding: 1rem;
+    background: white;
+    color: #1a365d;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .back-btn:hover {
+    background: #f7f5f0;
+    transform: translateY(-2px);
+  }
+
+  @media (max-width: 768px) {
+    .books-page {
+      padding: 1rem;
+    }
+
+    .page-header h1 {
+      font-size: 1.8rem;
+    }
+
+    .categories-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
