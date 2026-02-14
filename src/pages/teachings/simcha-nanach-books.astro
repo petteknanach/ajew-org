@@ -4,63 +4,63 @@ const pageDescription = "Breslov books published by Simcha Nanach - available on
 ---
 
 <style>
-  .page-header {
+  .page-header &lbrace;
     background: linear-gradient(135deg, #553c9a 0%, #6b46c1 100%);
     color: white;
     padding: 5rem 2rem;
     text-align: center;
-  }
+  &rbrace;
 
-  .page-header h1 {
+  .page-header h1 &lbrace;
     font-family: var(--font-hebrew);
     font-size: 2.5rem;
     margin-bottom: 0.5rem;
-  }
+  &rbrace;
 
-  .hebrew-title {
+  .hebrew-title &lbrace;
     font-family: var(--font-hebrew);
     font-size: 1.8rem;
     margin: 1rem 0;
-  }
+  &rbrace;
 
-  .container {
+  .container &lbrace;
     max-width: 1000px;
     margin: 0 auto;
     padding: 0 2rem;
-  }
+  &rbrace;
 
-  .intro {
+  .intro &lbrace;
     background: #f7f5f0;
     padding: 4rem 0;
-  }
+  &rbrace;
 
-  .intro-content {
+  .intro-content &lbrace;
     background: white;
     padding: 2rem;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     text-align: center;
-  }
+  &rbrace;
 
-  .intro-content p {
+  .intro-content p &lbrace;
     font-size: 1.1rem;
     line-height: 1.8;
     color: #555;
     max-width: 700px;
     margin: 0 auto;
-  }
+  &rbrace;
 
-  .books-section {
+  .books-section &lbrace;
     padding: 4rem 0;
-  }
+  &rbrace;
 
-  .books-grid {
+  .books-grid &lbrace;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 1.5rem;
-  }
+  &rbrace;
 
-  .book-card {
+  .book-card &lbrace;
     background: white;
     padding: 1.5rem;
     border-radius: 12px;
@@ -68,43 +68,43 @@ const pageDescription = "Breslov books published by Simcha Nanach - available on
     display: flex;
     flex-direction: column;
     transition: transform 0.3s, box-shadow 0.3s;
-  }
+  &rbrace;
 
-  .book-card:hover {
+  .book-card:hover &lbrace;
     transform: translateY(-4px);
     box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-  }
+  &rbrace;
 
-  .book-card h3 {
+  .book-card h3 &lbrace;
     font-family: var(--font-hebrew);
     color: var(--color-primary);
     font-size: 1.1rem;
     margin-bottom: 0.5rem;
     line-height: 1.4;
-  }
+  &rbrace;
 
-  .book-card .author {
+  .book-card .author &lbrace;
     font-size: 0.9rem;
     color: #888;
     margin-bottom: 1rem;
-  }
+  &rbrace;
 
-  .book-card .description {
+  .book-card .description &lbrace;
     font-size: 0.95rem;
     color: #555;
     line-height: 1.6;
     margin-bottom: 1rem;
     flex: 1;
-  }
+  &rbrace;
 
-  .book-card .price {
+  .book-card .price &lbrace;
     font-weight: bold;
     color: var(--color-accent);
     font-size: 1.1rem;
     margin-bottom: 1rem;
-  }
+  &rbrace;
 
-  .amazon-btn {
+  .amazon-btn &lbrace;
     display: block;
     text-align: center;
     background: #ff9900;
@@ -114,25 +114,25 @@ const pageDescription = "Breslov books published by Simcha Nanach - available on
     border-radius: 8px;
     font-weight: 600;
     transition: background 0.3s;
-  }
+  &rbrace;
 
-  .amazon-btn:hover {
+  .amazon-btn:hover &lbrace;
     background: #e88b00;
-  }
+  &rbrace;
 
-  .navigation {
+  .navigation &lbrace;
     background: var(--color-primary);
     padding: 3rem 0;
     margin-top: 3rem;
-  }
+  &rbrace;
 
-  .nav-buttons {
+  .nav-buttons &lbrace;
     display: flex;
     justify-content: space-between;
     gap: 1rem;
-  }
+  &rbrace;
 
-  .nav-btn {
+  .nav-btn &lbrace;
     display: flex;
     align-items: center;
     gap: 0.75rem;
@@ -141,21 +141,21 @@ const pageDescription = "Breslov books published by Simcha Nanach - available on
     padding: 1rem 1.5rem;
     background: rgba(255,255,255,0.1);
     border-radius: 8px;
-  }
+  &rbrace;
 
-  .nav-btn:hover {
+  .nav-btn:hover &lbrace;
     background: rgba(255,255,255,0.2);
-  }
+  &rbrace;
 
-  @media (max-width: 768px) {
-    .nav-buttons {
+  @media (max-width: 768px) &lbrace;
+    .nav-buttons &lbrace;
       flex-direction: column;
-    }
+    &rbrace;
     
-    .books-grid {
+    .books-grid &lbrace;
       grid-template-columns: 1fr;
-    }
-  }
+    &rbrace;
+  &rbrace;
 </style>
 
 <section class="page-header">

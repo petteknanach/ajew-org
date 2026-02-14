@@ -4,58 +4,58 @@ const pageDescription = "Shivchay Haran - The Praises of Rabbi Nachman";
 ---
 
 <style>
-  .page-header {
+  .page-header &lbrace;
     background: linear-gradient(135deg, #744210 0%, #975a16 100%);
     color: white;
     padding: 4rem 2rem;
     text-align: center;
-  }
-  .page-header h1 {
+  &rbrace;
+  .page-header h1 &lbrace;
     font-family: var(--font-hebrew);
     font-size: 2.5rem;
     margin-bottom: 0.5rem;
-  }
-  .page-header .subtitle {
+  &rbrace;
+  .page-header .subtitle &lbrace;
     font-size: 1.2rem;
     opacity: 0.9;
-  }
-  .container { max-width: 1100px; margin: 0 auto; padding: 0 2rem; }
+  &rbrace;
+  .container &lbrace; max-width: 1100px; margin: 0 auto; padding: 0 2rem; &rbrace;
   
-  .intro-section {
+  .intro-section &lbrace;
     background: #fef3c7;
     padding: 3rem 0;
     border-bottom: 1px solid #fde68a;
-  }
-  .intro-text {
+  &rbrace;
+  .intro-text &lbrace;
     background: white;
     padding: 2rem;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  }
-  .intro-text p {
+  &rbrace;
+  .intro-text p &lbrace;
     font-size: 1.1rem;
     line-height: 1.8;
     color: #333;
     margin-bottom: 1rem;
-  }
+  &rbrace;
   
-  .section-title {
+  .section-title &lbrace;
     font-family: var(--font-hebrew);
     font-size: 1.5rem;
     color: #744210;
     margin: 3rem 0 1.5rem;
     padding-bottom: 0.5rem;
     border-bottom: 2px solid #fde68a;
-  }
+  &rbrace;
   
-  .chapter-grid {
+  .chapter-grid &lbrace;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 0.75rem;
     margin-bottom: 3rem;
-  }
+  &rbrace;
   
-  .chapter-link {
+  .chapter-link &lbrace;
     display: block;
     background: white;
     padding: 1rem 1.25rem;
@@ -65,35 +65,35 @@ const pageDescription = "Shivchay Haran - The Praises of Rabbi Nachman";
     box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     border: 1px solid #e5e7eb;
     transition: all 0.2s ease;
-  }
-  .chapter-link:hover {
+  &rbrace;
+  .chapter-link:hover &lbrace;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     border-color: #744210;
     color: #744210;
-  }
-  .chapter-link.missing {
+  &rbrace;
+  .chapter-link.missing &lbrace;
     background: #f3f4f6;
     color: #9ca3af;
     cursor: not-allowed;
-  }
-  .chapter-link.missing:hover {
+  &rbrace;
+  .chapter-link.missing:hover &lbrace;
     transform: none;
     box-shadow: none;
     border-color: #e5e7eb;
     color: #9ca3af;
-  }
-  .chapter-link .chapter-num {
+  &rbrace;
+  .chapter-link .chapter-num &lbrace;
     font-size: 0.8rem;
     color: #999;
     margin-bottom: 0.25rem;
-  }
-  .chapter-link .chapter-title {
+  &rbrace;
+  .chapter-link .chapter-title &lbrace;
     font-size: 0.95rem;
     font-weight: 600;
-  }
+  &rbrace;
   
-  .navigation-links {
+  .navigation-links &lbrace;
     display: flex;
     justify-content: center;
     gap: 2rem;
@@ -101,40 +101,40 @@ const pageDescription = "Shivchay Haran - The Praises of Rabbi Nachman";
     background: #fef3c7;
     border-radius: 8px;
     margin-top: 2rem;
-  }
-  .nav-link {
+  &rbrace;
+  .nav-link &lbrace;
     color: #744210;
     text-decoration: none;
     padding: 0.5rem 1rem;
     border-radius: 4px;
     transition: background 0.2s;
-  }
-  .nav-link:hover {
+  &rbrace;
+  .nav-link:hover &lbrace;
     background: #fde68a;
-  }
+  &rbrace;
   
-  .part-label {
+  .part-label &lbrace;
     font-family: var(--font-hebrew);
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 1px;
     color: #744210;
     margin-bottom: 1rem;
-  }
+  &rbrace;
   
-  .note {
+  .note &lbrace;
     background: #fef3c7;
     padding: 1rem;
     border-radius: 8px;
     font-size: 0.9rem;
     color: #92400e;
     margin-top: 2rem;
-  }
+  &rbrace;
   
-  @media (max-width: 768px) {
-    .chapter-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
-    .navigation-links { flex-direction: column; text-align: center; }
-  }
+  @media (max-width: 768px) &lbrace;
+    .chapter-grid &lbrace; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); &rbrace;
+    .navigation-links &lbrace; flex-direction: column; text-align: center; &rbrace;
+  &rbrace;
 </style>
 
 <section class="page-header">

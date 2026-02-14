@@ -1,28 +1,28 @@
----
+-
 import Layout from '../../layouts/Layout.astro';
 import fs from 'node:fs';
 
 const imageDir = './public/images/saba/';
 
-function getAllImages() {
-  try {
+function getAllImages() &lbrace;
+  try &lbrace;
     const files = fs.readdirSync(imageDir);
     return files.filter(file => 
       /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(file) &&
       !file.startsWith('.'))
     .sort();
-  } catch (e) { return []; }
-}
+  &rbrace; catch (e) &lbrace; return []; &rbrace;
+&rbrace;
 
 const allImages = getAllImages();
 
-function formatFilename(filename) {
+function formatFilename(filename) &lbrace;
   let formatted = decodeURIComponent(filename);
   formatted = formatted.replace(/\.(jpg|jpeg|png|gif|webp|svg)$/i, '');
   formatted = formatted.replace(/[-_]/g, ' ');
   formatted = formatted.replace(/\b\w/g, l => l.toUpperCase());
   return formatted;
-}
+&rbrace;
 
 const handsUp = allImages.filter(img => 
   img.includes('hands up') || img.includes('hands-up'));
@@ -57,14 +57,14 @@ const categorized = new Set([
   ...withFriends, ...withrebbe, ...clothing, ...music, ...kotel
 ]);
 const other = allImages.filter(img => !categorized.has(img));
----
+-
 
 <Layout title="Saba Gallery" description="Photos of Rabbi Yisroel Ber Odesser">
   <section class="page-header">
     <h1>Rabbi Yisroel Ber Odesser (Saba)</h1>
     <p>1904-1994 • Recipient of the Holy Petek</p>
     <p class="hebrew">רבי ישראל בר אודסר ז"ל</p>
-    <p class="stats">{allImages.length} photos</p>
+    <p class="stats">&lbrace;allImages.length&rbrace; photos</p>
     <a href="/gallery" class="back-link">← Back to Gallery</a>
   </section>
 
@@ -78,17 +78,17 @@ const other = allImages.filter(img => !categorized.has(img));
       <div class="quick-index">
         <h3>Quick Index</h3>
         <div class="index-links">
-          {handsUp.length > 0 && <a href="#handsup" class="index-link"><span class="icon">🙌</span><span class="name">Hands Up</span><span class="count">{handsUp.length}</span></a>}
-          {withPetek.length > 0 && <a href="#withpetek" class="index-link"><span class="icon">✡️</span><span class="name">With Petek</span><span class="count">{withPetek.length}</span></a>}
-          {wheelchair.length > 0 && <a href="#wheelchair" class="index-link"><span class="icon">🦽</span><span class="name">Wheelchair</span><span class="count">{wheelchair.length}</span></a>}
-          {grave.length > 0 && <a href="#grave" class="index-link"><span class="icon">🪦</span><span class="name">Grave</span><span class="count">{grave.length}</span></a>}
-          {portraits.length > 0 && <a href="#portraits" class="index-link"><span class="icon">📸</span><span class="name">Portraits</span><span class="count">{portraits.length}</span></a>}
-          {withFriends.length > 0 && <a href="#withfriends" class="index-link"><span class="icon">👥</span><span class="name">With Friends</span><span class="count">{withFriends.length}</span></a>}
-          {withrebbe.length > 0 && <a href="#withrebbe" class="index-link"><span class="icon">✡️</span><span class="name">With Rebbe</span><span class="count">{withrebbe.length}</span></a>}
-          {clothing.length > 0 && <a href="#clothing" class="index-link"><span class="icon">👔</span><span class="name">Clothing</span><span class="count">{clothing.length}</span></a>}
-          {music.length > 0 && <a href="#music" class="index-link"><span class="icon">🎵</span><span class="name">Music</span><span class="count">{music.length}</span></a>}
-          {kotel.length > 0 && <a href="#kotel" class="index-link"><span class="icon">🧱</span><span class="name">Western Wall</span><span class="count">{kotel.length}</span></a>}
-          {other.length > 0 && <a href="#other" class="index-link"><span class="icon">📷</span><span class="name">Other</span><span class="count">{other.length}</span></a>}
+          &lbrace;handsUp.length > 0 && <a href="#handsup" class="index-link"><span class="icon">🙌</span><span class="name">Hands Up</span><span class="count">&lbrace;handsUp.length&rbrace;</span></a>&rbrace;
+          &lbrace;withPetek.length > 0 && <a href="#withpetek" class="index-link"><span class="icon">✡️</span><span class="name">With Petek</span><span class="count">&lbrace;withPetek.length&rbrace;</span></a>&rbrace;
+          &lbrace;wheelchair.length > 0 && <a href="#wheelchair" class="index-link"><span class="icon">🦽</span><span class="name">Wheelchair</span><span class="count">&lbrace;wheelchair.length&rbrace;</span></a>&rbrace;
+          &lbrace;grave.length > 0 && <a href="#grave" class="index-link"><span class="icon">🪦</span><span class="name">Grave</span><span class="count">&lbrace;grave.length&rbrace;</span></a>&rbrace;
+          &lbrace;portraits.length > 0 && <a href="#portraits" class="index-link"><span class="icon">📸</span><span class="name">Portraits</span><span class="count">&lbrace;portraits.length&rbrace;</span></a>&rbrace;
+          &lbrace;withFriends.length > 0 && <a href="#withfriends" class="index-link"><span class="icon">👥</span><span class="name">With Friends</span><span class="count">&lbrace;withFriends.length&rbrace;</span></a>&rbrace;
+          &lbrace;withrebbe.length > 0 && <a href="#withrebbe" class="index-link"><span class="icon">✡️</span><span class="name">With Rebbe</span><span class="count">&lbrace;withrebbe.length&rbrace;</span></a>&rbrace;
+          &lbrace;clothing.length > 0 && <a href="#clothing" class="index-link"><span class="icon">👔</span><span class="name">Clothing</span><span class="count">&lbrace;clothing.length&rbrace;</span></a>&rbrace;
+          &lbrace;music.length > 0 && <a href="#music" class="index-link"><span class="icon">🎵</span><span class="name">Music</span><span class="count">&lbrace;music.length&rbrace;</span></a>&rbrace;
+          &lbrace;kotel.length > 0 && <a href="#kotel" class="index-link"><span class="icon">🧱</span><span class="name">Western Wall</span><span class="count">&lbrace;kotel.length&rbrace;</span></a>&rbrace;
+          &lbrace;other.length > 0 && <a href="#other" class="index-link"><span class="icon">📷</span><span class="name">Other</span><span class="count">&lbrace;other.length&rbrace;</span></a>&rbrace;
         </div>
       </div>
     </div>
@@ -96,149 +96,149 @@ const other = allImages.filter(img => !categorized.has(img));
 
   <section class="gallery">
     <div class="container">
-      {handsUp.length > 0 && (
+      &lbrace;handsUp.length > 0 && (
         <div id="handsup" class="category-section">
           <h2><span class="icon">🙌</span> Hands Up <span class="hebrew">(ידיים למעלה)</span></h2>
           <div class="gallery-grid">
-            {handsUp.map((img, i) => (
+            &lbrace;handsUp.map((img, i) => (
               <div class="gallery-item">
-                <img src={`/images/saba/${img}`} alt={formatFilename(img)} loading="lazy" />
-                <div class="caption">{formatFilename(img)}</div>
+                <img src=&lbrace;`/images/saba/$&lbrace;img&rbrace;`&rbrace; alt=&lbrace;formatFilename(img)&rbrace; loading="lazy" />
+                <div class="caption">&lbrace;formatFilename(img)&rbrace;</div>
               </div>
-            ))}
+            ))&rbrace;
           </div>
         </div>
-      )}
-      {withPetek.length > 0 && (
+      )&rbrace;
+      &lbrace;withPetek.length > 0 && (
         <div id="withpetek" class="category-section">
           <h2><span class="icon">✡️</span> With Petek <span class="hebrew">(עם הפתק)</span></h2>
           <div class="gallery-grid">
-            {withPetek.map((img, i) => (
+            &lbrace;withPetek.map((img, i) => (
               <div class="gallery-item">
-                <img src={`/images/saba/${img}`} alt={formatFilename(img)} loading="lazy" />
-                <div class="caption">{formatFilename(img)}</div>
+                <img src=&lbrace;`/images/saba/$&lbrace;img&rbrace;`&rbrace; alt=&lbrace;formatFilename(img)&rbrace; loading="lazy" />
+                <div class="caption">&lbrace;formatFilename(img)&rbrace;</div>
               </div>
-            ))}
+            ))&rbrace;
           </div>
         </div>
-      )}
-      {wheelchair.length > 0 && (
+      )&rbrace;
+      &lbrace;wheelchair.length > 0 && (
         <div id="wheelchair" class="category-section">
           <h2><span class="icon">🦽</span> Wheelchair <span class="hebrew">(כיסא גלגלים)</span></h2>
           <div class="gallery-grid">
-            {wheelchair.map((img, i) => (
+            &lbrace;wheelchair.map((img, i) => (
               <div class="gallery-item">
-                <img src={`/images/saba/${img}`} alt={formatFilename(img)} loading="lazy" />
-                <div class="caption">{formatFilename(img)}</div>
+                <img src=&lbrace;`/images/saba/$&lbrace;img&rbrace;`&rbrace; alt=&lbrace;formatFilename(img)&rbrace; loading="lazy" />
+                <div class="caption">&lbrace;formatFilename(img)&rbrace;</div>
               </div>
-            ))}
+            ))&rbrace;
           </div>
         </div>
-      )}
-      {grave.length > 0 && (
+      )&rbrace;
+      &lbrace;grave.length > 0 && (
         <div id="grave" class="category-section">
           <h2><span class="icon">🪦</span> Grave & Tomb <span class="hebrew">(קבר וציון)</span></h2>
           <div class="gallery-grid">
-            {grave.map((img, i) => (
+            &lbrace;grave.map((img, i) => (
               <div class="gallery-item">
-                <img src={`/images/saba/${img}`} alt={formatFilename(img)} loading="lazy" />
-                <div class="caption">{formatFilename(img)}</div>
+                <img src=&lbrace;`/images/saba/$&lbrace;img&rbrace;`&rbrace; alt=&lbrace;formatFilename(img)&rbrace; loading="lazy" />
+                <div class="caption">&lbrace;formatFilename(img)&rbrace;</div>
               </div>
-            ))}
+            ))&rbrace;
           </div>
         </div>
-      )}
-      {portraits.length > 0 && (
+      )&rbrace;
+      &lbrace;portraits.length > 0 && (
         <div id="portraits" class="category-section">
           <h2><span class="icon">📸</span> Portraits <span class="hebrew">(דיוקנות)</span></h2>
           <div class="gallery-grid">
-            {portraits.map((img, i) => (
+            &lbrace;portraits.map((img, i) => (
               <div class="gallery-item">
-                <img src={`/images/saba/${img}`} alt={formatFilename(img)} loading="lazy" />
-                <div class="caption">{formatFilename(img)}</div>
+                <img src=&lbrace;`/images/saba/$&lbrace;img&rbrace;`&rbrace; alt=&lbrace;formatFilename(img)&rbrace; loading="lazy" />
+                <div class="caption">&lbrace;formatFilename(img)&rbrace;</div>
               </div>
-            ))}
+            ))&rbrace;
           </div>
         </div>
-      )}
-      {withFriends.length > 0 && (
+      )&rbrace;
+      &lbrace;withFriends.length > 0 && (
         <div id="withfriends" class="category-section">
           <h2><span class="icon">👥</span> With Friends <span class="hebrew">(עם חברים)</span></h2>
           <div class="gallery-grid">
-            {withFriends.map((img, i) => (
+            &lbrace;withFriends.map((img, i) => (
               <div class="gallery-item">
-                <img src={`/images/saba/${img}`} alt={formatFilename(img)} loading="lazy" />
-                <div class="caption">{formatFilename(img)}</div>
+                <img src=&lbrace;`/images/saba/$&lbrace;img&rbrace;`&rbrace; alt=&lbrace;formatFilename(img)&rbrace; loading="lazy" />
+                <div class="caption">&lbrace;formatFilename(img)&rbrace;</div>
               </div>
-            ))}
+            ))&rbrace;
           </div>
         </div>
-      )}
-      {withrebbe.length > 0 && (
+      )&rbrace;
+      &lbrace;withrebbe.length > 0 && (
         <div id="withrebbe" class="category-section">
           <h2><span class="icon">✡️</span> With Rebbe Nachman <span class="hebrew">(עם רבינו)</span></h2>
           <div class="gallery-grid">
-            {withrebbe.map((img, i) => (
+            &lbrace;withrebbe.map((img, i) => (
               <div class="gallery-item">
-                <img src={`/images/saba/${img}`} alt={formatFilename(img)} loading="lazy" />
-                <div class="caption">{formatFilename(img)}</div>
+                <img src=&lbrace;`/images/saba/$&lbrace;img&rbrace;`&rbrace; alt=&lbrace;formatFilename(img)&rbrace; loading="lazy" />
+                <div class="caption">&lbrace;formatFilename(img)&rbrace;</div>
               </div>
-            ))}
+            ))&rbrace;
           </div>
         </div>
-      )}
-      {clothing.length > 0 && (
+      )&rbrace;
+      &lbrace;clothing.length > 0 && (
         <div id="clothing" class="category-section">
           <h2><span class="icon">👔</span> Clothing & Items <span class="hebrew">(ביגוד וחפצים)</span></h2>
           <div class="gallery-grid">
-            {clothing.map((img, i) => (
+            &lbrace;clothing.map((img, i) => (
               <div class="gallery-item">
-                <img src={`/images/saba/${img}`} alt={formatFilename(img)} loading="lazy" />
-                <div class="caption">{formatFilename(img)}</div>
+                <img src=&lbrace;`/images/saba/$&lbrace;img&rbrace;`&rbrace; alt=&lbrace;formatFilename(img)&rbrace; loading="lazy" />
+                <div class="caption">&lbrace;formatFilename(img)&rbrace;</div>
               </div>
-            ))}
+            ))&rbrace;
           </div>
         </div>
-      )}
-      {music.length > 0 && (
+      )&rbrace;
+      &lbrace;music.length > 0 && (
         <div id="music" class="category-section">
           <h2><span class="icon">🎵</span> Music & Instruments <span class="hebrew">(מוזיקה)</span></h2>
           <div class="gallery-grid">
-            {music.map((img, i) => (
+            &lbrace;music.map((img, i) => (
               <div class="gallery-item">
-                <img src={`/images/saba/${img}`} alt={formatFilename(img)} loading="lazy" />
-                <div class="caption">{formatFilename(img)}</div>
+                <img src=&lbrace;`/images/saba/$&lbrace;img&rbrace;`&rbrace; alt=&lbrace;formatFilename(img)&rbrace; loading="lazy" />
+                <div class="caption">&lbrace;formatFilename(img)&rbrace;</div>
               </div>
-            ))}
+            ))&rbrace;
           </div>
         </div>
-      )}
-      {kotel.length > 0 && (
+      )&rbrace;
+      &lbrace;kotel.length > 0 && (
         <div id="kotel" class="category-section">
           <h2><span class="icon">🧱</span> Western Wall <span class="hebrew">(כותל מערבי)</span></h2>
           <div class="gallery-grid">
-            {kotel.map((img, i) => (
+            &lbrace;kotel.map((img, i) => (
               <div class="gallery-item">
-                <img src={`/images/saba/${img}`} alt={formatFilename(img)} loading="lazy" />
-                <div class="caption">{formatFilename(img)}</div>
+                <img src=&lbrace;`/images/saba/$&lbrace;img&rbrace;`&rbrace; alt=&lbrace;formatFilename(img)&rbrace; loading="lazy" />
+                <div class="caption">&lbrace;formatFilename(img)&rbrace;</div>
               </div>
-            ))}
+            ))&rbrace;
           </div>
         </div>
-      )}
-      {other.length > 0 && (
+      )&rbrace;
+      &lbrace;other.length > 0 && (
         <div id="other" class="category-section">
           <h2><span class="icon">📷</span> Other Photos <span class="hebrew">(תמונות אחרות)</span></h2>
           <div class="gallery-grid">
-            {other.map((img, i) => (
+            &lbrace;other.map((img, i) => (
               <div class="gallery-item">
-                <img src={`/images/saba/${img}`} alt={formatFilename(img)} loading="lazy" />
-                <div class="caption">{formatFilename(img)}</div>
+                <img src=&lbrace;`/images/saba/$&lbrace;img&rbrace;`&rbrace; alt=&lbrace;formatFilename(img)&rbrace; loading="lazy" />
+                <div class="caption">&lbrace;formatFilename(img)&rbrace;</div>
               </div>
-            ))}
+            ))&rbrace;
           </div>
         </div>
-      )}
+      )&rbrace;
     </div>
   </section>
 
@@ -252,39 +252,39 @@ const other = allImages.filter(img => !categorized.has(img));
   </section>
 </Layout>
 
-<style>
-  .page-header { background: linear-gradient(135deg, #2c5282 0%, #1a365d 100%); color: white; padding: 4rem 2rem; text-align: center; }
-  .page-header h1 { font-family: var(--font-hebrew); font-size: 2.5rem; margin-bottom: 0.5rem; }
-  .page-header p { opacity: 0.9; font-size: 1.2rem; }
-  .page-header .hebrew { font-family: var(--font-hebrew); font-size: 1.5rem; margin-top: 0.5rem; letter-spacing: 0.1em; }
-  .page-header .stats { font-size: 1rem; opacity: 0.7; margin-top: 0.5rem; }
-  .back-link { display: inline-block; margin-top: 1rem; color: white; text-decoration: none; padding: 0.5rem 1rem; border: 1px solid white; border-radius: 4px; }
-  .container { max-width: 1400px; margin: 0 auto; padding: 0 2rem; }
-  .intro { background: #f7f5f0; padding: 3rem 0; }
-  .quote-box { max-width: 600px; margin: 0 auto 2rem; padding: 2rem; background: white; border-radius: 12px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-  .quote-box .hebrew { font-family: var(--font-hebrew); font-size: 2rem; color: var(--color-primary); margin-bottom: 0.5rem; }
-  .quote-box .english { font-size: 1.1rem; color: #555; margin-bottom: 0.5rem; }
-  .quote-box cite { color: #888; font-style: italic; }
-  .quick-index { max-width: 800px; margin: 0 auto; padding: 1.5rem; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-  .quick-index h3 { text-align: center; margin-bottom: 1rem; color: var(--color-primary); }
-  .index-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; }
-  .index-link { display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem; background: #f7f5f0; border-radius: 8px; text-decoration: none; color: var(--color-primary); font-weight: 600; font-size: 0.9rem; }
-  .index-link:hover { background: #edf2f7; }
-  .index-link .count { background: #2c5282; color: white; padding: 0.2rem 0.5rem; border-radius: 12px; font-size: 0.75rem; }
-  .gallery { padding: 3rem 0; }
-  .category-section { padding: 3rem 0; border-bottom: 1px solid #eee; }
-  .category-section:last-child { border-bottom: none; }
-  .category-section h2 { font-family: var(--font-hebrew); font-size: 1.6rem; text-align: center; margin-bottom: 1.5rem; color: var(--color-primary); }
-  .category-section h2 .hebrew { font-family: var(--font-hebrew); font-size: 1.2rem; color: #888; margin-left: 0.5rem; }
-  .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem; }
-  .gallery-item { position: relative; }
-  .gallery-item img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; display: block; }
-  .gallery-item .caption { padding: 0.75rem; background: #f8f8f8; font-size: 0.85rem; color: #555; text-align: center; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; }
-  .navigation { background: #1a365d; padding: 2rem 0; }
-  .nav-buttons { display: flex; justify-content: center; gap: 2rem; }
-  .nav-btn { color: white; text-decoration: none; padding: 0.75rem 1.5rem; background: rgba(255,255,255,0.1); border-radius: 8px; }
-  @media (max-width: 768px) {
-    .nav-buttons { flex-direction: column; }
-    .gallery-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
-  }
-</style>
+<
+  .page-header &lbrace; background: linear-gradient(135deg, #2c5282 0%, #1a365d 100%); color: white; padding: 4rem 2rem; text-align: center; &rbrace;
+  .page-header h1 &lbrace; font-family: var(--font-hebrew); font-size: 2.5rem; margin-bottom: 0.5rem; &rbrace;
+  .page-header p &lbrace; opacity: 0.9; font-size: 1.2rem; &rbrace;
+  .page-header .hebrew &lbrace; font-family: var(--font-hebrew); font-size: 1.5rem; margin-top: 0.5rem; letter-spacing: 0.1em; &rbrace;
+  .page-header .stats &lbrace; font-size: 1rem; opacity: 0.7; margin-top: 0.5rem; &rbrace;
+  .back-link &lbrace; display: inline-block; margin-top: 1rem; color: white; text-decoration: none; padding: 0.5rem 1rem; border: 1px solid white; border-radius: 4px; &rbrace;
+  .container &lbrace; max-width: 1400px; margin: 0 auto; padding: 0 2rem; &rbrace;
+  .intro &lbrace; background: #f7f5f0; padding: 3rem 0; &rbrace;
+  .quote-box &lbrace; max-width: 600px; margin: 0 auto 2rem; padding: 2rem; background: white; border-radius: 12px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.08); &rbrace;
+  .quote-box .hebrew &lbrace; font-family: var(--font-hebrew); font-size: 2rem; color: var(--color-primary); margin-bottom: 0.5rem; &rbrace;
+  .quote-box .english &lbrace; font-size: 1.1rem; color: #555; margin-bottom: 0.5rem; &rbrace;
+  .quote-box cite &lbrace; color: #888; font-style: italic; &rbrace;
+  .quick-index &lbrace; max-width: 800px; margin: 0 auto; padding: 1.5rem; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); &rbrace;
+  .quick-index h3 &lbrace; text-align: center; margin-bottom: 1rem; color: var(--color-primary); &rbrace;
+  .index-links &lbrace; display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; &rbrace;
+  .index-link &lbrace; display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem; background: #f7f5f0; border-radius: 8px; text-decoration: none; color: var(--color-primary); font-weight: 600; font-size: 0.9rem; &rbrace;
+  .index-link:hover &lbrace; background: #edf2f7; &rbrace;
+  .index-link .count &lbrace; background: #2c5282; color: white; padding: 0.2rem 0.5rem; border-radius: 12px; font-size: 0.75rem; &rbrace;
+  .gallery &lbrace; padding: 3rem 0; &rbrace;
+  .category-section &lbrace; padding: 3rem 0; border-bottom: 1px solid #eee; &rbrace;
+  .category-section:last-child &lbrace; border-bottom: none; &rbrace;
+  .category-section h2 &lbrace; font-family: var(--font-hebrew); font-size: 1.6rem; text-align: center; margin-bottom: 1.5rem; color: var(--color-primary); &rbrace;
+  .category-section h2 .hebrew &lbrace; font-family: var(--font-hebrew); font-size: 1.2rem; color: #888; margin-left: 0.5rem; &rbrace;
+  .gallery-grid &lbrace; display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem; &rbrace;
+  .gallery-item &lbrace; position: relative; &rbrace;
+  .gallery-item img &lbrace; width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; display: block; &rbrace;
+  .gallery-item .caption &lbrace; padding: 0.75rem; background: #f8f8f8; font-size: 0.85rem; color: #555; text-align: center; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; &rbrace;
+  .navigation &lbrace; background: #1a365d; padding: 2rem 0; &rbrace;
+  .nav-buttons &lbrace; display: flex; justify-content: center; gap: 2rem; &rbrace;
+  .nav-btn &lbrace; color: white; text-decoration: none; padding: 0.75rem 1.5rem; background: rgba(255,255,255,0.1); border-radius: 8px; &rbrace;
+  @media (max-width: 768px) &lbrace;
+    .nav-buttons &lbrace; flex-direction: column; &rbrace;
+    .gallery-grid &lbrace; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); &rbrace;
+  &rbrace;
+<

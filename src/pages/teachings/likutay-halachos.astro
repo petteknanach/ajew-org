@@ -9,35 +9,35 @@ const pageDescription = "Halachic teachings of Rabbi Nachman of Breslov - Orach 
 ---
 
 <style>
-  .page-header {
+  .page-header &lbrace;
     background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
     color: white;
     padding: 4rem 2rem;
     text-align: center;
-  }
-  .page-header h1 {
+  &rbrace;
+  .page-header h1 &lbrace;
     font-family: var(--font-hebrew);
     font-size: 2.5rem;
     margin-bottom: 0.5rem;
-  }
-  .page-header .subtitle {
+  &rbrace;
+  .page-header .subtitle &lbrace;
     font-size: 1.2rem;
     opacity: 0.9;
     font-style: italic;
-  }
-  .container { max-width: 1000px; margin: 0 auto; padding: 0 2rem; }
-  .navigation {
+  &rbrace;
+  .container &lbrace; max-width: 1000px; margin: 0 auto; padding: 0 2rem; &rbrace;
+  .navigation &lbrace;
     background: #f7f5f0;
     padding: 1rem 0;
     border-bottom: 1px solid #e2ddd5;
-  }
-  .nav-links {
+  &rbrace;
+  .nav-links &lbrace;
     display: flex;
     justify-content: center;
     gap: 1rem;
     flex-wrap: wrap;
-  }
-  .nav-link {
+  &rbrace;
+  .nav-link &lbrace;
     color: #1a365d;
     text-decoration: none;
     padding: 0.5rem 1rem;
@@ -45,31 +45,31 @@ const pageDescription = "Halachic teachings of Rabbi Nachman of Breslov - Orach 
     background: white;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     transition: all 0.2s;
-  }
-  .nav-link:hover {
+  &rbrace;
+  .nav-link:hover &lbrace;
     background: #1a365d;
     color: white;
-  }
-  .content { padding: 3rem 0; }
-  .intro-text {
+  &rbrace;
+  .content &lbrace; padding: 3rem 0; &rbrace;
+  .intro-text &lbrace;
     background: white;
     padding: 2rem;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     margin-bottom: 2rem;
-  }
-  .intro-text p {
+  &rbrace;
+  .intro-text p &lbrace;
     font-size: 1.1rem;
     line-height: 1.9;
     color: #333;
     text-align: justify;
-  }
-  .topics-grid {
+  &rbrace;
+  .topics-grid &lbrace;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 1rem;
-  }
-  .topic-card {
+  &rbrace;
+  .topic-card &lbrace;
     background: white;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
@@ -77,45 +77,45 @@ const pageDescription = "Halachic teachings of Rabbi Nachman of Breslov - Orach 
     transition: all 0.2s;
     text-decoration: none;
     display: block;
-  }
-  .topic-card:hover {
+  &rbrace;
+  .topic-card:hover &lbrace;
     transform: translateY(-4px);
     box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-  }
-  .topic-card-header {
+  &rbrace;
+  .topic-card-header &lbrace;
     background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
     color: white;
     padding: 1.25rem;
     font-family: var(--font-hebrew);
     font-size: 1.1rem;
-  }
-  .topic-card-header.bais-haknnesses { background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%); }
-  .topic-card-header.bircas-hashachar { background: linear-gradient(135deg, #047857 0%, #059669 100%); }
-  .topic-card-header.birchos-hatorah { background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%); }
-  .topic-card-header.kedushah { background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%); }
-  .topic-card-header.krias-hatorah { background: linear-gradient(135deg, #b45309 0%, #d97706 100%); }
-  .topic-card-header.krias-shma { background: linear-gradient(135deg, #0891b2 0%, #06b6d4 100%); }
-  .topic-card-header.nefilas-apayim { background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%); }
-  .topic-card-header.nesias-kapayim { background: linear-gradient(135deg, #be185d 0%, #db2777 100%); }
-  .topic-card-header.tefillah { background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); }
-  .topic-card-header.tefillin { background: linear-gradient(135deg, #744210 0%, #92400e 100%); }
-  .topic-card-body {
+  &rbrace;
+  .topic-card-header.bais-haknnesses &lbrace; background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%); &rbrace;
+  .topic-card-header.bircas-hashachar &lbrace; background: linear-gradient(135deg, #047857 0%, #059669 100%); &rbrace;
+  .topic-card-header.birchos-hatorah &lbrace; background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%); &rbrace;
+  .topic-card-header.kedushah &lbrace; background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%); &rbrace;
+  .topic-card-header.krias-hatorah &lbrace; background: linear-gradient(135deg, #b45309 0%, #d97706 100%); &rbrace;
+  .topic-card-header.krias-shma &lbrace; background: linear-gradient(135deg, #0891b2 0%, #06b6d4 100%); &rbrace;
+  .topic-card-header.nefilas-apayim &lbrace; background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%); &rbrace;
+  .topic-card-header.nesias-kapayim &lbrace; background: linear-gradient(135deg, #be185d 0%, #db2777 100%); &rbrace;
+  .topic-card-header.tefillah &lbrace; background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); &rbrace;
+  .topic-card-header.tefillin &lbrace; background: linear-gradient(135deg, #744210 0%, #92400e 100%); &rbrace;
+  .topic-card-body &lbrace;
     padding: 1rem 1.25rem;
     color: #555;
     font-size: 0.9rem;
-  }
-  .topic-card-body .parts {
+  &rbrace;
+  .topic-card-body .parts &lbrace;
     color: #1a365d;
     font-weight: 600;
     font-size: 0.85rem;
     margin-top: 0.5rem;
-  }
-  .footer-nav {
+  &rbrace;
+  .footer-nav &lbrace;
     background: #1a365d;
     padding: 2rem 0;
     margin-top: 3rem;
-  }
-  .back-link {
+  &rbrace;
+  .back-link &lbrace;
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
@@ -124,14 +124,14 @@ const pageDescription = "Halachic teachings of Rabbi Nachman of Breslov - Orach 
     padding: 0.75rem 1.5rem;
     background: rgba(255,255,255,0.1);
     border-radius: 8px;
-  }
-  .back-link:hover {
+  &rbrace;
+  .back-link:hover &lbrace;
     background: rgba(255,255,255,0.2);
-  }
-  @media (max-width: 768px) {
-    .nav-links { flex-direction: column; }
-    .topics-grid { grid-template-columns: 1fr; }
-  }
+  &rbrace;
+  @media (max-width: 768px) &lbrace;
+    .nav-links &lbrace; flex-direction: column; &rbrace;
+    .topics-grid &lbrace; grid-template-columns: 1fr; &rbrace;
+  &rbrace;
 </style>
 
 <section class="page-header">

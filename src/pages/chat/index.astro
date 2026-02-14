@@ -1,63 +1,63 @@
----
+-
 const pageTitle = "NNNNM Community Chat";
 const pageDescription = "Real-time chat for Breslov learning community";
----
+-
 
-<style>
-  .page-header {
+<
+  .page-header &lbrace;
     background: linear-gradient(135deg, #059669 0%, #10b981 100%);
     color: white;
     padding: 3rem 2rem;
-  }
-  .page-header h1 { font-family: var(--font-hebrew); font-size: 2rem; margin-bottom: 0.5rem; }
-  .container { max-width: 1400px; margin: 0 auto; padding: 0 1rem; }
-  .chat-layout { display: grid; grid-template-columns: 280px 1fr; gap: 1rem; height: calc(100vh - 200px); min-height: 500px; padding: 1rem 0; }
-  .sidebar { background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); overflow: hidden; }
-  .sidebar-header { background: #1a365d; color: white; padding: 1rem; font-weight: 600; }
-  .room-list { list-style: none; padding: 0; margin: 0; overflow-y: auto; max-height: calc(100% - 60px); }
-  .room-item { padding: 1rem; border-bottom: 1px solid #eee; cursor: pointer; transition: all 0.2s; }
-  .room-item:hover { background: #f7f5f0; }
-  .room-item.active { background: #fef3c7; border-right: 3px solid #744210; }
-  .room-name { font-weight: 600; color: #1a365d; display: flex; align-items: center; gap: 0.5rem; }
-  .room-desc { font-size: 0.85rem; color: #666; margin-top: 0.25rem; }
-  .room-count { font-size: 0.75rem; color: #888; float: right; }
-  .main-chat { background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); display: flex; flex-direction: column; overflow: hidden; }
-  .chat-header { background: #f7f5f0; padding: 1rem; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-  .chat-header h2 { margin: 0; color: #1a365d; font-size: 1.2rem; }
-  .chat-status { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: #059669; }
-  .chat-status::before { content: ''; width: 8px; height: 8px; background: #059669; border-radius: 50%; }
-  .messages { flex: 1; overflow-y: auto; padding: 1rem; background: #fafafa; }
-  .message { margin-bottom: 1rem; animation: fadeIn 0.3s ease; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-  .message-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem; }
-  .message-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #744210 0%, #975a16 100%); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.9rem; }
-  .message-author { font-weight: 600; color: #1a365d; }
-  .message-time { font-size: 0.75rem; color: #888; }
-  .message-content { background: white; padding: 0.75rem 1rem; border-radius: 12px; margin-right: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
-  .message.my-message .message-content { background: #fef3c7; margin-right: 0; margin-left: 2rem; }
-  .message-input { padding: 1rem; background: white; border-top: 1px solid #eee; display: flex; gap: 1rem; }
-  .message-input input { flex: 1; padding: 0.75rem 1rem; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; }
-  .message-input input:focus { outline: none; border-color: #744210; }
-  .send-btn { padding: 0.75rem 1.5rem; background: linear-gradient(135deg, #059669 0%, #10b981 100%); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-  .send-btn:hover { transform: scale(1.02); }
-  .sidebar-footer { padding: 1rem; border-top: 1px solid #eee; background: #f7f5f0; }
-  .user-info { display: flex; align-items: center; gap: 0.75rem; }
-  .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: #1a365d; color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; }
-  .user-name { font-weight: 600; color: #1a365d; }
-  .user-tier { font-size: 0.75rem; color: #744210; }
-  .welcome-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; padding: 2rem; }
-  .welcome-icon { font-size: 4rem; margin-bottom: 1rem; }
-  .welcome-title { font-size: 1.5rem; color: #1a365d; margin-bottom: 0.5rem; }
-  .welcome-text { color: #666; margin-bottom: 1.5rem; }
-  .subscribe-btn { padding: 0.75rem 1.5rem; background: linear-gradient(135deg, #744210 0%, #975a16 100%); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
-  .nav-links { display: flex; gap: 0.5rem; }
-  .nav-link { color: white; text-decoration: none; padding: 0.5rem 1rem; background: rgba(255,255,255,0.2); border-radius: 8px; font-size: 0.9rem; }
-  .nav-link:hover { background: rgba(255,255,255,0.3); }
-  @media (max-width: 768px) {
-    .chat-layout { grid-template-columns: 1fr; }
-    .sidebar { display: none; }
-  }
-</style>
+  &rbrace;
+  .page-header h1 &lbrace; font-family: var(--font-hebrew); font-size: 2rem; margin-bottom: 0.5rem; &rbrace;
+  .container &lbrace; max-width: 1400px; margin: 0 auto; padding: 0 1rem; &rbrace;
+  .chat-layout &lbrace; display: grid; grid-template-columns: 280px 1fr; gap: 1rem; height: calc(100vh - 200px); min-height: 500px; padding: 1rem 0; &rbrace;
+  .sidebar &lbrace; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); overflow: hidden; &rbrace;
+  .sidebar-header &lbrace; background: #1a365d; color: white; padding: 1rem; font-weight: 600; &rbrace;
+  .room-list &lbrace; list-style: none; padding: 0; margin: 0; overflow-y: auto; max-height: calc(100% - 60px); &rbrace;
+  .room-item &lbrace; padding: 1rem; border-bottom: 1px solid #eee; cursor: pointer; transition: all 0.2s; &rbrace;
+  .room-item:hover &lbrace; background: #f7f5f0; &rbrace;
+  .room-item.active &lbrace; background: #fef3c7; border-right: 3px solid #744210; &rbrace;
+  .room-name &lbrace; font-weight: 600; color: #1a365d; display: flex; align-items: center; gap: 0.5rem; &rbrace;
+  .room-desc &lbrace; font-size: 0.85rem; color: #666; margin-top: 0.25rem; &rbrace;
+  .room-count &lbrace; font-size: 0.75rem; color: #888; float: right; &rbrace;
+  .main-chat &lbrace; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); display: flex; flex-direction: column; overflow: hidden; &rbrace;
+  .chat-header &lbrace; background: #f7f5f0; padding: 1rem; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; &rbrace;
+  .chat-header h2 &lbrace; margin: 0; color: #1a365d; font-size: 1.2rem; &rbrace;
+  .chat-status &lbrace; display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: #059669; &rbrace;
+  .chat-status::before &lbrace; content: ''; width: 8px; height: 8px; background: #059669; border-radius: 50%; &rbrace;
+  .messages &lbrace; flex: 1; overflow-y: auto; padding: 1rem; background: #fafafa; &rbrace;
+  .message &lbrace; margin-bottom: 1rem; animation: fadeIn 0.3s ease; &rbrace;
+  @keyframes fadeIn &lbrace; from &lbrace; opacity: 0; transform: translateY(10px); &rbrace; to &lbrace; opacity: 1; transform: translateY(0); &rbrace; &rbrace;
+  .message-header &lbrace; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem; &rbrace;
+  .message-avatar &lbrace; width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #744210 0%, #975a16 100%); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.9rem; &rbrace;
+  .message-author &lbrace; font-weight: 600; color: #1a365d; &rbrace;
+  .message-time &lbrace; font-size: 0.75rem; color: #888; &rbrace;
+  .message-content &lbrace; background: white; padding: 0.75rem 1rem; border-radius: 12px; margin-right: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); &rbrace;
+  .message.my-message .message-content &lbrace; background: #fef3c7; margin-right: 0; margin-left: 2rem; &rbrace;
+  .message-input &lbrace; padding: 1rem; background: white; border-top: 1px solid #eee; display: flex; gap: 1rem; &rbrace;
+  .message-input input &lbrace; flex: 1; padding: 0.75rem 1rem; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; &rbrace;
+  .message-input input:focus &lbrace; outline: none; border-color: #744210; &rbrace;
+  .send-btn &lbrace; padding: 0.75rem 1.5rem; background: linear-gradient(135deg, #059669 0%, #10b981 100%); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; &rbrace;
+  .send-btn:hover &lbrace; transform: scale(1.02); &rbrace;
+  .sidebar-footer &lbrace; padding: 1rem; border-top: 1px solid #eee; background: #f7f5f0; &rbrace;
+  .user-info &lbrace; display: flex; align-items: center; gap: 0.75rem; &rbrace;
+  .user-avatar &lbrace; width: 40px; height: 40px; border-radius: 50%; background: #1a365d; color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; &rbrace;
+  .user-name &lbrace; font-weight: 600; color: #1a365d; &rbrace;
+  .user-tier &lbrace; font-size: 0.75rem; color: #744210; &rbrace;
+  .welcome-screen &lbrace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; padding: 2rem; &rbrace;
+  .welcome-icon &lbrace; font-size: 4rem; margin-bottom: 1rem; &rbrace;
+  .welcome-title &lbrace; font-size: 1.5rem; color: #1a365d; margin-bottom: 0.5rem; &rbrace;
+  .welcome-text &lbrace; color: #666; margin-bottom: 1.5rem; &rbrace;
+  .subscribe-btn &lbrace; padding: 0.75rem 1.5rem; background: linear-gradient(135deg, #744210 0%, #975a16 100%); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; &rbrace;
+  .nav-links &lbrace; display: flex; gap: 0.5rem; &rbrace;
+  .nav-link &lbrace; color: white; text-decoration: none; padding: 0.5rem 1rem; background: rgba(255,255,255,0.2); border-radius: 8px; font-size: 0.9rem; &rbrace;
+  .nav-link:hover &lbrace; background: rgba(255,255,255,0.3); &rbrace;
+  @media (max-width: 768px) &lbrace;
+    .chat-layout &lbrace; grid-template-columns: 1fr; &rbrace;
+    .sidebar &lbrace; display: none; &rbrace;
+  &rbrace;
+<
 
 <section class="page-header">
   <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
@@ -166,68 +166,68 @@ const pageDescription = "Real-time chat for Breslov learning community";
 
 <script>
   let currentUser = null;
-  let serverSubscriptions = {};
+  let serverSubscriptions = &lbrace;&rbrace;;
   let currentRoom = 'general';
-  const rooms = {
-    general: { name: '🌐 General Discussion', count: 47 },
-    likutay: { name: '📖 Likutay Moharan', count: 23 },
-    stories: { name: '📚 Stories', count: 15 },
-    tikkun: { name: '🙏 Tikkun Haklali', count: 31 },
-    ' Nachman': { name: '🕯️ Rabbi Nachman', count: 19 },
-    umman: { name: '🇮🇱 Uman', count: 28 }
-  };
+  const rooms = &lbrace;
+    general: &lbrace; name: '🌐 General Discussion', count: 47 &rbrace;,
+    likutay: &lbrace; name: '📖 Likutay Moharan', count: 23 &rbrace;,
+    stories: &lbrace; name: '📚 Stories', count: 15 &rbrace;,
+    tikkun: &lbrace; name: '🙏 Tikkun Haklali', count: 31 &rbrace;,
+    ' Nachman': &lbrace; name: '🕯️ Rabbi Nachman', count: 19 &rbrace;,
+    umman: &lbrace; name: '🇮🇱 Uman', count: 28 &rbrace;
+  &rbrace;;
 
   // Load server subscriptions
-  async function loadServerSubscriptions() {
-    try {
+  async function loadServerSubscriptions() &lbrace;
+    try &lbrace;
       const response = await fetch('/api/subscriptions');
-      if (response.ok) {
+      if (response.ok) &lbrace;
         serverSubscriptions = await response.json();
-      }
-    } catch (e) {
+      &rbrace;
+    &rbrace; catch (e) &lbrace;
       console.log('Using localStorage only');
-    }
-  }
+    &rbrace;
+  &rbrace;
 
   // Check if user can access chat
-  function canAccessChat() {
+  function canAccessChat() &lbrace;
     if (!currentUser) return false;
     const subscription = serverSubscriptions[currentUser.email];
     return subscription && ['basic', 'premium', 'super'].includes(subscription?.tier);
-  }
+  &rbrace;
 
   // Check if user is logged in
-  function checkAuth() {
+  function checkAuth() &lbrace;
     const userData = localStorage.getItem('ajew_current_user');
-    if (userData) {
+    if (userData) &lbrace;
       currentUser = JSON.parse(userData);
       return true;
-    }
+    &rbrace;
     return false;
-  }
+  &rbrace;
 
   // Initialize
-  document.addEventListener('DOMContentLoaded', async () => {
+  document.addEventListener('DOMContentLoaded', async () => &lbrace;
     await loadServerSubscriptions();
     
-    if (!checkAuth()) {
+    if (!checkAuth()) &lbrace;
       showLoginPrompt();
       return;
-    }
+    &rbrace;
 
-    if (!canAccessChat()) {
+    if (!canAccessChat()) &lbrace;
       showSubscribePrompt();
       return;
-    }
+    &rbrace;
 
     // Update user info in sidebar
     const subscription = serverSubscriptions[currentUser.email];
     document.getElementById('userName').textContent = currentUser.name;
     document.getElementById('userTier').textContent = (subscription?.tier || currentUser.tier || 'basic').toUpperCase();
     document.getElementById('userInitial').textContent = currentUser.name?.charAt(0).toUpperCase() || 'U';
-  });
+  &rbrace;);
 
-  function showLoginPrompt() {
+  function showLoginPrompt() &lbrace;
     document.querySelector('.chat-layout').innerHTML = `
       <div class="welcome-screen" style="grid-column: 1 / -1;">
         <div class="welcome-icon">🔐</div>
@@ -239,9 +239,9 @@ const pageDescription = "Real-time chat for Breslov learning community";
         </p>
       </div>
     `;
-  }
+  &rbrace;
 
-  function showSubscribePrompt() {
+  function showSubscribePrompt() &lbrace;
     document.querySelector('.chat-layout').innerHTML = `
       <div class="welcome-screen" style="grid-column: 1 / -1;">
         <div class="welcome-icon">💳</div>
@@ -253,9 +253,9 @@ const pageDescription = "Real-time chat for Breslov learning community";
         </p>
       </div>
     `;
-  }
+  &rbrace;
 
-  function selectRoom(room) {
+  function selectRoom(room) &lbrace;
     currentRoom = room;
     document.querySelectorAll('.room-item').forEach(el => el.classList.remove('active'));
     event.currentTarget.classList.add('active');
@@ -272,13 +272,13 @@ const pageDescription = "Real-time chat for Breslov learning community";
           <span class="message-time">Now</span>
         </div>
         <div class="message-content">
-          Welcome to #${rooms[room].name}! Subscribe to join the conversation.
+          Welcome to #$&lbrace;rooms[room].name&rbrace;! Subscribe to join the conversation.
         </div>
       </div>
     `;
-  }
+  &rbrace;
 
-  function sendMessage() {
+  function sendMessage() &lbrace;
     const input = document.getElementById('messageInput');
     const text = input.value.trim();
     if (!text) return;
@@ -292,20 +292,20 @@ const pageDescription = "Real-time chat for Breslov learning community";
         <span class="message-author">You</span>
         <span class="message-time">Just now</span>
       </div>
-      <div class="message-content">${text}</div>
+      <div class="message-content">$&lbrace;text&rbrace;</div>
     `;
     messages.appendChild(msg);
     messages.scrollTop = messages.scrollHeight;
     input.value = '';
-  }
+  &rbrace;
 
-  function handleKeypress(event) {
+  function handleKeypress(event) &lbrace;
     if (event.key === 'Enter') sendMessage();
-  }
+  &rbrace;
 
   // Auto-scroll to bottom
   document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
 </script>
 
----
+-
 import Layout from '../../layouts/Layout.astro';

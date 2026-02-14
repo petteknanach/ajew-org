@@ -4,16 +4,16 @@ const pageDescription = "Join our Breslov learning community";
 ---
 
 <style>
-  .page-header {
+  .page-header &lbrace;
     background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
     color: white;
     padding: 5rem 2rem;
     text-align: center;
-  }
-  .page-header h1 { font-family: var(--font-hebrew); font-size: 2.5rem; margin-bottom: 0.5rem; }
-  .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
-  .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; padding: 4rem 0; }
-  .pricing-card {
+  &rbrace;
+  .page-header h1 &lbrace; font-family: var(--font-hebrew); font-size: 2.5rem; margin-bottom: 0.5rem; &rbrace;
+  .container &lbrace; max-width: 1200px; margin: 0 auto; padding: 0 2rem; &rbrace;
+  .pricing-grid &lbrace; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; padding: 4rem 0; &rbrace;
+  .pricing-card &lbrace;
     background: white;
     border-radius: 16px;
     padding: 2.5rem;
@@ -21,17 +21,17 @@ const pageDescription = "Join our Breslov learning community";
     text-align: center;
     border: 2px solid transparent;
     transition: all 0.3s;
-  }
-  .pricing-card:hover { transform: translateY(-4px); box-shadow: 0 8px 30px rgba(0,0,0,0.15); }
-  .pricing-card.featured { border-color: #744210; position: relative; }
-  .pricing-card.featured::before { content: 'Popular'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #744210; color: white; padding: 0.25rem 1rem; border-radius: 20px; font-size: 0.85rem; }
-  .tier-name { font-size: 1.5rem; font-weight: 700; color: #1a365d; margin-bottom: 0.5rem; }
-  .price { font-size: 3rem; font-weight: 800; color: #744210; }
-  .price span { font-size: 1rem; color: #666; font-weight: 400; }
-  .features { list-style: none; padding: 1.5rem 0; margin: 1.5rem 0; border-top: 1px solid #eee; text-align: right; }
-  .features li { padding: 0.5rem 0; color: #555; }
-  .features li::before { content: '✓'; color: #059669; margin-left: 0.5rem; font-weight: bold; }
-  .stripe-btn {
+  &rbrace;
+  .pricing-card:hover &lbrace; transform: translateY(-4px); box-shadow: 0 8px 30px rgba(0,0,0,0.15); &rbrace;
+  .pricing-card.featured &lbrace; border-color: #744210; position: relative; &rbrace;
+  .pricing-card.featured::before &lbrace; content: 'Popular'; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #744210; color: white; padding: 0.25rem 1rem; border-radius: 20px; font-size: 0.85rem; &rbrace;
+  .tier-name &lbrace; font-size: 1.5rem; font-weight: 700; color: #1a365d; margin-bottom: 0.5rem; &rbrace;
+  .price &lbrace; font-size: 3rem; font-weight: 800; color: #744210; &rbrace;
+  .price span &lbrace; font-size: 1rem; color: #666; font-weight: 400; &rbrace;
+  .features &lbrace; list-style: none; padding: 1.5rem 0; margin: 1.5rem 0; border-top: 1px solid #eee; text-align: right; &rbrace;
+  .features li &lbrace; padding: 0.5rem 0; color: #555; &rbrace;
+  .features li::before &lbrace; content: '✓'; color: #059669; margin-left: 0.5rem; font-weight: bold; &rbrace;
+  .stripe-btn &lbrace;
     display: inline-block;
     width: 100%;
     padding: 1rem;
@@ -43,32 +43,32 @@ const pageDescription = "Join our Breslov learning community";
     transition: all 0.2s;
     text-decoration: none;
     box-sizing: border-box;
-  }
-  .stripe-btn.primary { background: linear-gradient(135deg, #744210 0%, #975a16 100%); color: white; }
-  .stripe-btn.primary:hover { transform: scale(1.02); box-shadow: 0 4px 12px rgba(116, 66, 16, 0.3); }
-  .stripe-btn.secondary { background: #1a365d; color: white; }
-  .stripe-btn.secondary:hover { background: #2c5282; }
-  .stripe-btn.donate { background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; }
-  .stripe-btn.donate:hover { transform: scale(1.02); box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3); }
-  .stripe-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
-  .nav-links { display: flex; justify-content: center; gap: 1rem; margin-top: 2rem; }
-  .nav-link { color: white; text-decoration: none; padding: 0.5rem 1rem; background: rgba(255,255,255,0.2); border-radius: 8px; }
-  .nav-link:hover { background: rgba(255,255,255,0.3); }
-  .info-section { background: #fef3c7; padding: 4rem 0; margin-top: 3rem; }
-  .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; }
-  .info-card { background: white; padding: 1.5rem; border-radius: 12px; text-align: center; }
-  .info-card h3 { color: #744210; margin-bottom: 0.5rem; }
-  .user-status { background: #dcfce7; color: #166534; padding: 1rem; border-radius: 8px; margin-bottom: 2rem; text-align: center; }
-  .user-status.inactive { background: #fee2e2; color: #dc2626; }
-  .success-banner { background: #dcfce7; color: #166534; padding: 1rem; border-radius: 8px; margin-bottom: 2rem; text-align: center; }
-  .error-banner { background: #fee2e2; color: #dc2626; padding: 1rem; border-radius: 8px; margin-bottom: 2rem; text-align: center; }
-  .auth-section { background: #f7f5f0; padding: 4rem 0; margin-top: 3rem; }
-  .auth-box { max-width: 400px; margin: 0 auto; background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-  .form-group { margin-bottom: 1rem; }
-  .form-group label { display: block; margin-bottom: 0.5rem; color: #333; font-weight: 500; }
-  .form-group input { width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; }
-  .loading { display: inline-block; width: 20px; height: 20px; border: 2px solid #fff; border-radius: 50%; border-top-color: transparent; animation: spin 1s linear infinite; margin-right: 0.5rem; }
-  @keyframes spin { to { transform: rotate(360deg); } }
+  &rbrace;
+  .stripe-btn.primary &lbrace; background: linear-gradient(135deg, #744210 0%, #975a16 100%); color: white; &rbrace;
+  .stripe-btn.primary:hover &lbrace; transform: scale(1.02); box-shadow: 0 4px 12px rgba(116, 66, 16, 0.3); &rbrace;
+  .stripe-btn.secondary &lbrace; background: #1a365d; color: white; &rbrace;
+  .stripe-btn.secondary:hover &lbrace; background: #2c5282; &rbrace;
+  .stripe-btn.donate &lbrace; background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; &rbrace;
+  .stripe-btn.donate:hover &lbrace; transform: scale(1.02); box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3); &rbrace;
+  .stripe-btn:disabled &lbrace; opacity: 0.7; cursor: not-allowed; transform: none; &rbrace;
+  .nav-links &lbrace; display: flex; justify-content: center; gap: 1rem; margin-top: 2rem; &rbrace;
+  .nav-link &lbrace; color: white; text-decoration: none; padding: 0.5rem 1rem; background: rgba(255,255,255,0.2); border-radius: 8px; &rbrace;
+  .nav-link:hover &lbrace; background: rgba(255,255,255,0.3); &rbrace;
+  .info-section &lbrace; background: #fef3c7; padding: 4rem 0; margin-top: 3rem; &rbrace;
+  .info-grid &lbrace; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; &rbrace;
+  .info-card &lbrace; background: white; padding: 1.5rem; border-radius: 12px; text-align: center; &rbrace;
+  .info-card h3 &lbrace; color: #744210; margin-bottom: 0.5rem; &rbrace;
+  .user-status &lbrace; background: #dcfce7; color: #166534; padding: 1rem; border-radius: 8px; margin-bottom: 2rem; text-align: center; &rbrace;
+  .user-status.inactive &lbrace; background: #fee2e2; color: #dc2626; &rbrace;
+  .success-banner &lbrace; background: #dcfce7; color: #166534; padding: 1rem; border-radius: 8px; margin-bottom: 2rem; text-align: center; &rbrace;
+  .error-banner &lbrace; background: #fee2e2; color: #dc2626; padding: 1rem; border-radius: 8px; margin-bottom: 2rem; text-align: center; &rbrace;
+  .auth-section &lbrace; background: #f7f5f0; padding: 4rem 0; margin-top: 3rem; &rbrace;
+  .auth-box &lbrace; max-width: 400px; margin: 0 auto; background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); &rbrace;
+  .form-group &lbrace; margin-bottom: 1rem; &rbrace;
+  .form-group label &lbrace; display: block; margin-bottom: 0.5rem; color: #333; font-weight: 500; &rbrace;
+  .form-group input &lbrace; width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; &rbrace;
+  .loading &lbrace; display: inline-block; width: 20px; height: 20px; border: 2px solid #fff; border-radius: 50%; border-top-color: transparent; animation: spin 1s linear infinite; margin-right: 0.5rem; &rbrace;
+  @keyframes spin &lbrace; to &lbrace; transform: rotate(360deg); &rbrace; &rbrace;
 </style>
 
 <section class="page-header">
@@ -195,85 +195,85 @@ const pageDescription = "Join our Breslov learning community";
   let currentUser = null;
   
   // Load subscriptions from JSON data (for admin-added users)
-  let serverSubscriptions = {};
+  let serverSubscriptions = &lbrace;&rbrace;;
 
   // Fetch server subscriptions
-  async function loadServerSubscriptions() {
-    try {
+  async function loadServerSubscriptions() &lbrace;
+    try &lbrace;
       const response = await fetch('/api/subscriptions');
-      if (response.ok) {
+      if (response.ok) &lbrace;
         serverSubscriptions = await response.json();
-      }
-    } catch (e) {
+      &rbrace;
+    &rbrace; catch (e) &lbrace;
       console.log('Using localStorage only');
-    }
-  }
+    &rbrace;
+  &rbrace;
 
-  function getUserSubscription(email) {
+  function getUserSubscription(email) &lbrace;
     // Check server subscriptions first
-    if (serverSubscriptions[email]) {
+    if (serverSubscriptions[email]) &lbrace;
       return serverSubscriptions[email];
-    }
+    &rbrace;
     // Fallback to localStorage
-    const memberships = JSON.parse(localStorage.getItem('ajew_memberships') || '{}');
+    const memberships = JSON.parse(localStorage.getItem('ajew_memberships') || '&lbrace;&rbrace;');
     return memberships[email];
-  }
+  &rbrace;
 
   // Check URL params for success/cancel
-  document.addEventListener('DOMContentLoaded', async () => {
+  document.addEventListener('DOMContentLoaded', async () => &lbrace;
     await loadServerSubscriptions();
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('success') === 'true') {
+    if (urlParams.get('success') === 'true') &lbrace;
       document.getElementById('successBanner').style.display = 'block';
-    }
-    if (urlParams.get('canceled') === 'true') {
+    &rbrace;
+    if (urlParams.get('canceled') === 'true') &lbrace;
       document.getElementById('errorBanner').style.display = 'block';
-    }
+    &rbrace;
     updateUserStatus();
-  });
+  &rbrace;);
 
-  function updateUserStatus() {
+  function updateUserStatus() &lbrace;
     const userData = localStorage.getItem('ajew_current_user');
-    if (userData) {
+    if (userData) &lbrace;
       currentUser = JSON.parse(userData);
       const statusEl = document.getElementById('userStatus');
       
       // Check server/local subscription
       const subscription = getUserSubscription(currentUser.email);
       
-      if (subscription && subscription.tier && subscription.tier !== 'free') {
+      if (subscription && subscription.tier && subscription.tier !== 'free') &lbrace;
         statusEl.innerHTML = `
           <div class="user-status">
-            ✓ Welcome back, <strong>${currentUser.name}</strong>! You are on the <strong>${subscription.tier}</strong> plan.
-            <br>Expiry: ${new Date(subscription.expiryDate).toLocaleDateString()}
+            ✓ Welcome back, <strong>$&lbrace;currentUser.name&rbrace;</strong>! You are on the <strong>$&lbrace;subscription.tier&rbrace;</strong> plan.
+            <br>Expiry: $&lbrace;new Date(subscription.expiryDate).toLocaleDateString()&rbrace;
             <br><a href="/chat" style="color: #166534; font-weight: bold;">→ Go to Chat</a>
           </div>
         `;
         disableSubscribeButtons(subscription.tier);
-      } else {
+      &rbrace; else &lbrace;
         statusEl.innerHTML = `
           <div class="user-status inactive">
-            👤 Signed in as <strong>${currentUser.name}</strong> (Free tier)
+            👤 Signed in as <strong>$&lbrace;currentUser.name&rbrace;</strong> (Free tier)
             <br>Subscribe above to access chat rooms!
           </div>
         `;
-      }
-    }
-  }
+      &rbrace;
+    &rbrace;
+  &rbrace;
 
-  function disableSubscribeButtons(currentTier) {
+  function disableSubscribeButtons(currentTier) &lbrace;
     const tiers = ['basic', 'premium', 'super'];
     const tierIndex = tiers.indexOf(currentTier);
     
-    tiers.forEach((tier, index) => {
+    tiers.forEach((tier, index) => &lbrace;
       const btn = document.getElementById(tier + 'Btn');
-      if (index <= tierIndex && btn) {
+      if (index <= tierIndex && btn) &lbrace;
         btn.textContent = '✓ Current Plan';
         btn.style.opacity = '0.7';
         btn.style.pointerEvents = 'none';
-      }
-    });
-  }
+      &rbrace;
+    &rbrace;);
+  &rbrace;
 </script>
 
 ---

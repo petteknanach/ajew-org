@@ -1,37 +1,37 @@
----
-interface Props {
+-
+interface Props &lbrace;
   teachingId: string;
   teachingTitle: string;
-}
-const { teachingId, teachingTitle } = Astro.props;
----
+&rbrace;
+const &lbrace; teachingId, teachingTitle &rbrace; = Astro.props;
+-
 
-<div class="comments-section" id="comments-{teachingId}">
-  <style>
-    .comments-section { background: #f7f5f0; padding: 2rem; border-radius: 12px; margin-top: 2rem; }
-    .comments-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-    .comments-header h3 { margin: 0; color: #1a365d; }
-    .comment-count { background: #1a365d; color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.85rem; }
-    .comment-form { margin-bottom: 1.5rem; }
-    .comment-form textarea { width: 100%; padding: 1rem; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; min-height: 100px; resize: vertical; }
-    .comment-form textarea:focus { outline: none; border-color: #744210; }
-    .comment-form button { margin-top: 0.5rem; padding: 0.75rem 1.5rem; background: linear-gradient(135deg, #744210 0%, #975a16 100%); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
-    .comment-list { max-height: 400px; overflow-y: auto; }
-    .comment-item { background: white; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; }
-    .comment-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
-    .comment-author { display: flex; align-items: center; gap: 0.5rem; }
-    .comment-avatar { width: 32px; height: 32px; border-radius: 50%; background: #1a365d; color: white; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 600; }
-    .comment-name { font-weight: 600; color: #1a365d; }
-    .comment-tier { font-size: 0.7rem; padding: 0.1rem 0.4rem; border-radius: 10px; margin-right: 0.5rem; }
-    .comment-tier.basic { background: #fef3c7; color: #92400e; }
-    .comment-tier.premium { background: #dbeafe; color: #1e40af; }
-    .comment-tier.super { background: #744210; color: white; }
-    .comment-time { font-size: 0.75rem; color: #888; }
-    .comment-text { color: #333; line-height: 1.6; }
-    .comment-teaching-ref { font-size: 0.8rem; color: #744210; margin-bottom: 0.5rem; font-style: italic; }
-    .login-prompt { text-align: center; padding: 2rem; background: white; border-radius: 8px; }
-    .login-prompt a { color: #744210; font-weight: 600; }
-  </style>
+<div class="comments-section" id="comments-&lbrace;teachingId&rbrace;">
+  <
+    .comments-section &lbrace; background: #f7f5f0; padding: 2rem; border-radius: 12px; margin-top: 2rem; &rbrace;
+    .comments-header &lbrace; display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; &rbrace;
+    .comments-header h3 &lbrace; margin: 0; color: #1a365d; &rbrace;
+    .comment-count &lbrace; background: #1a365d; color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.85rem; &rbrace;
+    .comment-form &lbrace; margin-bottom: 1.5rem; &rbrace;
+    .comment-form textarea &lbrace; width: 100%; padding: 1rem; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; min-height: 100px; resize: vertical; &rbrace;
+    .comment-form textarea:focus &lbrace; outline: none; border-color: #744210; &rbrace;
+    .comment-form button &lbrace; margin-top: 0.5rem; padding: 0.75rem 1.5rem; background: linear-gradient(135deg, #744210 0%, #975a16 100%); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; &rbrace;
+    .comment-list &lbrace; max-height: 400px; overflow-y: auto; &rbrace;
+    .comment-item &lbrace; background: white; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; &rbrace;
+    .comment-header &lbrace; display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; &rbrace;
+    .comment-author &lbrace; display: flex; align-items: center; gap: 0.5rem; &rbrace;
+    .comment-avatar &lbrace; width: 32px; height: 32px; border-radius: 50%; background: #1a365d; color: white; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 600; &rbrace;
+    .comment-name &lbrace; font-weight: 600; color: #1a365d; &rbrace;
+    .comment-tier &lbrace; font-size: 0.7rem; padding: 0.1rem 0.4rem; border-radius: 10px; margin-right: 0.5rem; &rbrace;
+    .comment-tier.basic &lbrace; background: #fef3c7; color: #92400e; &rbrace;
+    .comment-tier.premium &lbrace; background: #dbeafe; color: #1e40af; &rbrace;
+    .comment-tier.super &lbrace; background: #744210; color: white; &rbrace;
+    .comment-time &lbrace; font-size: 0.75rem; color: #888; &rbrace;
+    .comment-text &lbrace; color: #333; line-height: 1.6; &rbrace;
+    .comment-teaching-ref &lbrace; font-size: 0.8rem; color: #744210; margin-bottom: 0.5rem; font-style: italic; &rbrace;
+    .login-prompt &lbrace; text-align: center; padding: 2rem; background: white; border-radius: 8px; &rbrace;
+    .login-prompt a &lbrace; color: #744210; font-weight: 600; &rbrace;
+  <
 
   <div class="comments-header">
     <h3>💬 Comments</h3>
@@ -39,64 +39,64 @@ const { teachingId, teachingTitle } = Astro.props;
   </div>
 
   <div class="comment-form">
-    <textarea placeholder="Share your thoughts on this teaching..." id="comment-input-{teachingId}"></textarea>
-    <button onclick="submitComment('{teachingId}')">Post Comment</button>
+    <textarea placeholder="Share your thoughts on this teaching..." id="comment-input-&lbrace;teachingId&rbrace;"></textarea>
+    <button onclick="submitComment('&lbrace;teachingId&rbrace;')">Post Comment</button>
   </div>
 
-  <div class="comment-list" id="comment-list-{teachingId}">
+  <div class="comment-list" id="comment-list-&lbrace;teachingId&rbrace;">
     <div class="login-prompt">
       <p><a href="/subscribe">Subscribe</a> to join the conversation!</p>
     </div>
   </div>
 </div>
 
-<script define:vars={{ teachingId, teachingTitle }}>
+<script define:vars=&lbrace;&lbrace; teachingId, teachingTitle &rbrace;&rbrace;>
   let comments = [];
 
-  function submitComment(id) {
-    const input = document.getElementById(`comment-input-${id}`);
+  function submitComment(id) &lbrace;
+    const input = document.getElementById(`comment-input-$&lbrace;id&rbrace;`);
     const text = input.value.trim();
     if (!text) return alert('Please enter a comment');
     
     alert('Comment system coming soon!\n\nSign up to post comments.');
     input.value = '';
-  }
+  &rbrace;
 
-  function renderComments() {
-    const list = document.getElementById(`comment-list-${teachingId}`);
-    const count = document.querySelector(`#comments-${teachingId} .comment-count`);
+  function renderComments() &lbrace;
+    const list = document.getElementById(`comment-list-$&lbrace;teachingId&rbrace;`);
+    const count = document.querySelector(`#comments-$&lbrace;teachingId&rbrace; .comment-count`);
     
-    if (comments.length === 0) {
+    if (comments.length === 0) &lbrace;
       list.innerHTML = `
         <div class="login-prompt">
           <p>No comments yet. <a href="/subscribe">Subscribe</a> to be the first to comment!</p>
         </div>
       `;
-    } else {
+    &rbrace; else &lbrace;
       list.innerHTML = comments.map(c => `
         <div class="comment-item">
           <div class="comment-header">
             <div class="comment-author">
-              <div class="comment-avatar">${c.author[0]}</div>
-              <span class="comment-name">${c.author}</span>
-              ${c.tier !== 'free' ? `<span class="comment-tier ${c.tier}">${c.tier}</span>` : ''}
+              <div class="comment-avatar">$&lbrace;c.author[0]&rbrace;</div>
+              <span class="comment-name">$&lbrace;c.author&rbrace;</span>
+              $&lbrace;c.tier !== 'free' ? `<span class="comment-tier $&lbrace;c.tier&rbrace;">$&lbrace;c.tier&rbrace;</span>` : ''&rbrace;
             </div>
-            <span class="comment-time">${c.time}</span>
+            <span class="comment-time">$&lbrace;c.time&rbrace;</span>
           </div>
-          <div class="comment-teaching-ref">On: ${teachingTitle}</div>
-          <div class="comment-text">${c.text}</div>
+          <div class="comment-teaching-ref">On: $&lbrace;teachingTitle&rbrace;</div>
+          <div class="comment-text">$&lbrace;c.text&rbrace;</div>
         </div>
       `).join('');
-    }
+    &rbrace;
     
-    if (count) count.textContent = `${comments.length} comment${comments.length !== 1 ? 's' : ''}`;
-  }
+    if (count) count.textContent = `$&lbrace;comments.length&rbrace; comment$&lbrace;comments.length !== 1 ? 's' : ''&rbrace;`;
+  &rbrace;
 
   // Demo comments
   const demoComments = [
-    { author: 'Avraham', tier: 'basic', text: 'This Torah changed my life. The hitbodedut section is incredible.', time: '2 hours ago' },
-    { author: 'Sarah', tier: 'premium', text: 'Reading this before davening gives so much clarity.', time: '5 hours ago' },
-    { author: 'Moshe', tier: 'super', text: 'Na Nach! This connects beautifully with Likutay Moharan Torah 62.', time: '1 day ago' }
+    &lbrace; author: 'Avraham', tier: 'basic', text: 'This Torah changed my life. The hitbodedut section is incredible.', time: '2 hours ago' &rbrace;,
+    &lbrace; author: 'Sarah', tier: 'premium', text: 'Reading this before davening gives so much clarity.', time: '5 hours ago' &rbrace;,
+    &lbrace; author: 'Moshe', tier: 'super', text: 'Na Nach! This connects beautifully with Likutay Moharan Torah 62.', time: '1 day ago' &rbrace;
   ];
 
   // Uncomment below to enable demo comments

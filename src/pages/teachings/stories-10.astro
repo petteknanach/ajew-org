@@ -67,37 +67,37 @@ Next Tale</p>
 ---
 
 <style>
-  .page-header {
+  .page-header &lbrace;
     background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
     color: white;
     padding: 4rem 2rem;
     text-align: center;
-  }
-  .page-header h1 {
+  &rbrace;
+  .page-header h1 &lbrace;
     font-family: var(--font-hebrew);
     font-size: 1.8rem;
     margin-bottom: 0.5rem;
-  }
-  .story-badge {
+  &rbrace;
+  .story-badge &lbrace;
     display: inline-block;
     background: rgba(255,255,255,0.2);
     padding: 0.25rem 1rem;
     border-radius: 20px;
     font-size: 0.9rem;
     margin-top: 0.5rem;
-  }
-  .container { max-width: 800px; margin: 0 auto; padding: 0 2rem; }
-  .navigation {
+  &rbrace;
+  .container &lbrace; max-width: 800px; margin: 0 auto; padding: 0 2rem; &rbrace;
+  .navigation &lbrace;
     background: #ebf8ff;
     padding: 1rem 0;
-  }
-  .nav-links {
+  &rbrace;
+  .nav-links &lbrace;
     display: flex;
     justify-content: space-between;
     gap: 1rem;
     flex-wrap: wrap;
-  }
-  .nav-link {
+  &rbrace;
+  .nav-link &lbrace;
     color: #2c5282;
     text-decoration: none;
     padding: 0.5rem 1rem;
@@ -105,36 +105,36 @@ Next Tale</p>
     background: white;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     font-size: 0.9rem;
-  }
-  .nav-link:hover {
+  &rbrace;
+  .nav-link:hover &lbrace;
     background: #2c5282;
     color: white;
-  }
-  .content { padding: 3rem 0; }
-  .content-text {
+  &rbrace;
+  .content &lbrace; padding: 3rem 0; &rbrace;
+  .content-text &lbrace;
     background: white;
     padding: 3rem;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  }
-  .content-text :global(p) {
+  &rbrace;
+  .content-text :global(p) &lbrace;
     font-size: 1.1rem;
     line-height: 1.9;
     color: #333;
     margin-bottom: 1.5rem;
     text-align: justify;
-  }
-  .footer-nav {
+  &rbrace;
+  .footer-nav &lbrace;
     background: #2c5282;
     padding: 2rem 0;
-  }
-  .nav-row {
+  &rbrace;
+  .nav-row &lbrace;
     display: flex;
     justify-content: space-between;
     gap: 1rem;
     flex-wrap: wrap;
-  }
-  .back-link {
+  &rbrace;
+  .back-link &lbrace;
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
@@ -143,10 +143,10 @@ Next Tale</p>
     padding: 0.75rem 1.5rem;
     background: rgba(255,255,255,0.1);
     border-radius: 8px;
-  }
-  .back-link:hover {
+  &rbrace;
+  .back-link:hover &lbrace;
     background: rgba(255,255,255,0.2);
-  }
+  &rbrace;
 </style>
 
 <section class="page-header">
@@ -165,7 +165,7 @@ Next Tale</p>
 
 <section class="content">
   <div class="container">
-    <div class="content-text" set:html={contentHtml} />
+    <div class="content-text" set:html=&lbrace;contentHtml&rbrace; />
   </div>
 </section>
 

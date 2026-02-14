@@ -3,38 +3,38 @@ const pageTitle = "My Profile - NNNNM";
 ---
 
 <style>
-  .page-header {
+  .page-header &lbrace;
     background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
     color: white;
     padding: 4rem 2rem;
     text-align: center;
-  }
-  .container { max-width: 800px; margin: 0 auto; padding: 0 2rem; }
-  .profile-card { background: white; border-radius: 16px; padding: 2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.1); margin-top: -3rem; }
-  .profile-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 1px solid #eee; }
-  .avatar { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #744210 0%, #975a16 100%); color: white; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 700; }
-  .profile-info h2 { margin: 0 0 0.25rem 0; color: #1a365d; }
-  .tier-badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
-  .tier-badge.free { background: #e5e7eb; color: #666; }
-  .tier-badge.basic { background: #fef3c7; color: #92400e; }
-  .tier-badge.premium { background: #dbeafe; color: #1e40af; }
-  .tier-badge.super { background: linear-gradient(135deg, #744210 0%, #975a16 100%); color: white; }
-  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem; }
-  .stat { text-align: center; padding: 1rem; background: #f7f5f0; border-radius: 12px; }
-  .stat-num { font-size: 1.5rem; font-weight: 700; color: #1a365d; }
-  .stat-label { font-size: 0.85rem; color: #666; }
-  .section { margin-bottom: 2rem; }
-  .section h3 { color: #1a365d; margin-bottom: 1rem; }
-  .comment-item { padding: 1rem; background: #f7f5f0; border-radius: 8px; margin-bottom: 0.75rem; }
-  .comment-teaching { font-size: 0.85rem; color: #744210; margin-bottom: 0.5rem; }
-  .comment-text { color: #333; }
-  .comment-time { font-size: 0.75rem; color: #888; margin-top: 0.5rem; }
-  .settings-link { display: block; padding: 0.75rem 1rem; background: #f7f5f0; border-radius: 8px; margin-bottom: 0.5rem; color: #333; text-decoration: none; transition: all 0.2s; }
-  .settings-link:hover { background: #eee; }
-  .upgrade-box { background: linear-gradient(135deg, #744210 0%, #975a16 100%); color: white; padding: 1.5rem; border-radius: 12px; text-align: center; margin-top: 2rem; }
-  .upgrade-box h3 { margin: 0 0 0.5rem 0; }
-  .upgrade-box p { opacity: 0.9; margin-bottom: 1rem; }
-  .upgrade-btn { padding: 0.75rem 1.5rem; background: white; color: #744210; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
+  &rbrace;
+  .container &lbrace; max-width: 800px; margin: 0 auto; padding: 0 2rem; &rbrace;
+  .profile-card &lbrace; background: white; border-radius: 16px; padding: 2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.1); margin-top: -3rem; &rbrace;
+  .profile-header &lbrace; display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 1px solid #eee; &rbrace;
+  .avatar &lbrace; width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #744210 0%, #975a16 100%); color: white; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 700; &rbrace;
+  .profile-info h2 &lbrace; margin: 0 0 0.25rem 0; color: #1a365d; &rbrace;
+  .tier-badge &lbrace; display: inline-block; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; &rbrace;
+  .tier-badge.free &lbrace; background: #e5e7eb; color: #666; &rbrace;
+  .tier-badge.basic &lbrace; background: #fef3c7; color: #92400e; &rbrace;
+  .tier-badge.premium &lbrace; background: #dbeafe; color: #1e40af; &rbrace;
+  .tier-badge.super &lbrace; background: linear-gradient(135deg, #744210 0%, #975a16 100%); color: white; &rbrace;
+  .stats &lbrace; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem; &rbrace;
+  .stat &lbrace; text-align: center; padding: 1rem; background: #f7f5f0; border-radius: 12px; &rbrace;
+  .stat-num &lbrace; font-size: 1.5rem; font-weight: 700; color: #1a365d; &rbrace;
+  .stat-label &lbrace; font-size: 0.85rem; color: #666; &rbrace;
+  .section &lbrace; margin-bottom: 2rem; &rbrace;
+  .section h3 &lbrace; color: #1a365d; margin-bottom: 1rem; &rbrace;
+  .comment-item &lbrace; padding: 1rem; background: #f7f5f0; border-radius: 8px; margin-bottom: 0.75rem; &rbrace;
+  .comment-teaching &lbrace; font-size: 0.85rem; color: #744210; margin-bottom: 0.5rem; &rbrace;
+  .comment-text &lbrace; color: #333; &rbrace;
+  .comment-time &lbrace; font-size: 0.75rem; color: #888; margin-top: 0.5rem; &rbrace;
+  .settings-link &lbrace; display: block; padding: 0.75rem 1rem; background: #f7f5f0; border-radius: 8px; margin-bottom: 0.5rem; color: #333; text-decoration: none; transition: all 0.2s; &rbrace;
+  .settings-link:hover &lbrace; background: #eee; &rbrace;
+  .upgrade-box &lbrace; background: linear-gradient(135deg, #744210 0%, #975a16 100%); color: white; padding: 1.5rem; border-radius: 12px; text-align: center; margin-top: 2rem; &rbrace;
+  .upgrade-box h3 &lbrace; margin: 0 0 0.5rem 0; &rbrace;
+  .upgrade-box p &lbrace; opacity: 0.9; margin-bottom: 1rem; &rbrace;
+  .upgrade-btn &lbrace; padding: 0.75rem 1.5rem; background: white; color: #744210; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; &rbrace;
 </style>
 
 <section class="page-header">

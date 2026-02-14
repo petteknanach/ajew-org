@@ -1,33 +1,33 @@
----
+-
 import Layout from '../../layouts/Layout.astro';
 import fs from 'node:fs';
 
 const imageDir = './public/images/nanach/';
 
-function getAllImages() {
-  try {
+function getAllImages() &lbrace;
+  try &lbrace;
     const files = fs.readdirSync(imageDir);
     return files.filter(file => 
       /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(file) &&
       !file.startsWith('.')
     ).sort();
-  } catch (e) {
+  &rbrace; catch (e) &lbrace;
     return [];
-  }
-}
+  &rbrace;
+&rbrace;
 
 const allImages = getAllImages();
 
-function formatFilename(filename) {
+function formatFilename(filename) &lbrace;
   let formatted = decodeURIComponent(filename);
   formatted = formatted.replace(/\.(jpg|jpeg|png|gif|webp|svg)$/i, '');
   formatted = formatted.replace(/[-_]/g, ' ');
   formatted = formatted.replace(/\b\w/g, l => l.toUpperCase());
   return formatted;
-}
+&rbrace;
 
-const categories = {
-  'graffiti': {
+const categories = &lbrace;
+  'graffiti': &lbrace;
     name: 'Graffiti & Street Art',
     hebrew: 'גרפיטי ואמנות רחוב',
     icon: '🎨',
@@ -39,8 +39,8 @@ const categories = {
        img.includes('yellow building') || img.includes('syria')) &&
       !img.includes('van') && !img.includes('bais-rabbainu')
     )
-  },
-  'vans': {
+  &rbrace;,
+  'vans': &lbrace;
     name: 'Na Nach Vans',
     hebrew: 'ואנים נ נח',
     icon: '🚐',
@@ -48,8 +48,8 @@ const categories = {
       img.includes('van') || img.includes('truck') || img.includes('trailer') ||
       img.includes('vehicle') || img.includes('bus') || img.includes('soldiers') && img.includes('van')
     )
-  },
-  'bais-rabbainu': {
+  &rbrace;,
+  'bais-rabbainu': &lbrace;
     name: 'Bais Rabbainu',
     hebrew: 'בית רבינו',
     icon: '🕍',
@@ -57,8 +57,8 @@ const categories = {
       img.includes('bais-rabbainu') || img.includes('bais rabbainu') || 
       img.includes('synagogue') || img.includes('courtyard') && img.includes('david')
     )
-  },
-  'sacred-locations': {
+  &rbrace;,
+  'sacred-locations': &lbrace;
     name: 'Sacred Locations',
     hebrew: 'מקומות קדושים',
     icon: '📍',
@@ -69,8 +69,8 @@ const categories = {
         !img.includes('masses') && !img.includes('stamp') && !img.includes('map')) ||
        img.includes('western-wall'))
     )
-  },
-  'portraits': {
+  &rbrace;,
+  'portraits': &lbrace;
     name: 'Portraits & Faces',
     hebrew: 'דיוקנאות ופנים',
     icon: '😊',
@@ -83,8 +83,8 @@ const categories = {
       img.includes('doll') || img.includes('disney') || img.includes('cinema') ||
       img.includes('coca cola') || img.includes('mcdonalds') || img.includes('ikea')
     )
-  },
-  'friends': {
+  &rbrace;,
+  'friends': &lbrace;
     name: 'Friends & People',
     hebrew: 'חברים ואנשים',
     icon: '👥',
@@ -107,8 +107,8 @@ const categories = {
        img.includes('friends') || img.includes('three kids') || img.includes('youth-center')) &&
       !img.includes('van')
     )
-  },
-  'signs-banners': {
+  &rbrace;,
+  'signs-banners': &lbrace;
     name: 'Signs & Banners',
     hebrew: 'שלטים ובאנרים',
     icon: '🪧',
@@ -120,8 +120,8 @@ const categories = {
       (img.includes('city') && img.includes('hall')) ||
       img.includes('neon') || img.includes('plaque')
     )
-  },
-  'art-paintings': {
+  &rbrace;,
+  'art-paintings': &lbrace;
     name: 'Art & Paintings',
     hebrew: 'אמנות וציורים',
     icon: '🖼️',
@@ -152,8 +152,8 @@ const categories = {
       !img.includes('portrait') && !img.includes('face') && !img.includes('graffiti') &&
       !img.includes('simcha') && !img.includes('youth') && !img.includes('mosque')
     )
-  },
-  'nature': {
+  &rbrace;,
+  'nature': &lbrace;
     name: 'Nature & Sky',
     hebrew: 'טבע ושמיים',
     icon: '🌤️',
@@ -168,8 +168,8 @@ const categories = {
        img.includes('green') || img.includes('greenery') || img.includes('pale')) &&
       !img.includes('portrait') && !img.includes('face') && !img.includes('art')
     )
-  },
-  'events-simchas': {
+  &rbrace;,
+  'events-simchas': &lbrace;
     name: 'Events & Simchas',
     hebrew: 'אירועים ושמחות',
     icon: '🎉',
@@ -181,8 +181,8 @@ const categories = {
        img.includes('rosh-hashana') || img.includes('rosh hashana')) &&
       !img.includes('van') && !img.includes('portrait')
     )
-  },
-  'stickers-merch': {
+  &rbrace;,
+  'stickers-merch': &lbrace;
     name: 'Stickers & Merchandise',
     hebrew: 'מדבקות וסחורה',
     icon: '🏷️',
@@ -193,8 +193,8 @@ const categories = {
        img.includes('wallet') || img.includes('holland') || img.includes('glove') ||
        img.includes('disc') || img.includes('disk') || img.includes('album'))
     )
-  },
-  'booksbreslov': {
+  &rbrace;,
+  'booksbreslov': &lbrace;
     name: 'Breslov Books & Likutay',
     hebrew: 'ספרי ברסלב',
     icon: '📚',
@@ -203,16 +203,16 @@ const categories = {
       img.includes('haklali') || img.includes('sichos') && img.includes('saba') ||
       img.includes('klaf') && img.includes('tzion')
     )
-  }
-};
----
+  &rbrace;
+&rbrace;;
+-
 
 <Layout title="Na Nach Life Gallery" description="Photos of the Na Nach Breslov movement">
   <section class="page-header">
     <h1>✡ Na Nach Breslov Movement ✡</h1>
     <p>Spreading the light of Rabbi Nachman throughout the world</p>
     <p class="hebrew">נַ נַחְ נַחְמָ נַחְמָן מאוּמָן</p>
-    <p class="stats">{allImages.length} images</p>
+    <p class="stats">&lbrace;allImages.length&rbrace; images</p>
     <a href="/gallery" class="back-link">← Back to Gallery</a>
   </section>
 
@@ -227,15 +227,15 @@ const categories = {
       <div class="quick-index">
         <h3>📂 Quick Index</h3>
         <div class="index-links">
-          {Object.entries(categories).map(([key, cat]) => (
+          &lbrace;Object.entries(categories).map(([key, cat]) => (
             cat.images.length > 0 && (
-              <a href={`#category-${key}`} class="index-link">
-                <span class="icon">{cat.icon}</span>
-                <span class="name">{cat.name}</span>
-                <span class="count">{cat.images.length}</span>
+              <a href=&lbrace;`#category-$&lbrace;key&rbrace;`&rbrace; class="index-link">
+                <span class="icon">&lbrace;cat.icon&rbrace;</span>
+                <span class="name">&lbrace;cat.name&rbrace;</span>
+                <span class="count">&lbrace;cat.images.length&rbrace;</span>
               </a>
             )
-          ))}
+          ))&rbrace;
         </div>
       </div>
     </div>
@@ -243,22 +243,22 @@ const categories = {
 
   <section class="gallery">
     <div class="container">
-      {Object.entries(categories).map(([key, cat]) => (
+      &lbrace;Object.entries(categories).map(([key, cat]) => (
         cat.images.length > 0 && (
-          <div id={`category-${key}`} class="category-section">
-            <h2><span class="icon">{cat.icon}</span> {cat.name} <span class="hebrew">({cat.hebrew})</span></h2>
+          <div id=&lbrace;`category-$&lbrace;key&rbrace;`&rbrace; class="category-section">
+            <h2><span class="icon">&lbrace;cat.icon&rbrace;</span> &lbrace;cat.name&rbrace; <span class="hebrew">(&lbrace;cat.hebrew&rbrace;)</span></h2>
             <div class="gallery-grid">
-              {cat.images.map((img, index) => (
+              &lbrace;cat.images.map((img, index) => (
                 <div class="gallery-item">
-                  <img src={`/images/nanach/${img}`} alt={formatFilename(img)} loading="lazy" />
-                  <div class="overlay"><span>{cat.name} #{index + 1}</span></div>
-                  <div class="caption">{formatFilename(img)}</div>
+                  <img src=&lbrace;`/images/nanach/$&lbrace;img&rbrace;`&rbrace; alt=&lbrace;formatFilename(img)&rbrace; loading="lazy" />
+                  <div class="overlay"><span>&lbrace;cat.name&rbrace; #&lbrace;index + 1&rbrace;</span></div>
+                  <div class="caption">&lbrace;formatFilename(img)&rbrace;</div>
                 </div>
-              ))}
+              ))&rbrace;
             </div>
           </div>
         )
-      ))}
+      ))&rbrace;
     </div>
   </section>
 
@@ -276,45 +276,45 @@ const categories = {
   </section>
 </Layout>
 
-<style>
-  .page-header { background: linear-gradient(135deg, #38a169 0%, #276749 100%); color: white; padding: 5rem 2rem; text-align: center; }
-  .page-header h1 { font-family: var(--font-hebrew); font-size: 2.5rem; margin-bottom: 0.5rem; }
-  .page-header p { opacity: 0.9; font-size: 1.2rem; margin-bottom: 0.5rem; }
-  .page-header .hebrew { font-family: var(--font-hebrew); font-size: 1.5rem; margin-top: 1rem; letter-spacing: 0.1em; }
-  .page-header .stats { font-size: 1rem; opacity: 0.7; margin-top: 0.5rem; }
-  .back-link { display: inline-block; margin-top: 1.5rem; color: white; text-decoration: none; padding: 0.75rem 1.5rem; border: 2px solid white; border-radius: 6px; }
-  .container { max-width: 1400px; margin: 0 auto; padding: 0 2rem; }
-  .intro { background: #f7f5f0; padding: 4rem 0; }
-  .info-box { max-width: 800px; margin: 0 auto; padding: 2rem; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); text-align: center; }
-  .info-box h2 { font-family: var(--font-hebrew); color: var(--color-primary); margin-bottom: 1rem; }
-  .info-box p { font-size: 1.1rem; line-height: 1.8; color: #555; margin-bottom: 1rem; }
-  .info-box .hebrew { font-family: var(--font-hebrew); font-size: 1.3rem; color: #38a169; }
-  .quick-index { max-width: 900px; margin: 2rem auto 0; padding: 1.5rem; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-  .quick-index h3 { font-family: var(--font-hebrew); color: var(--color-primary); margin-bottom: 1rem; text-align: center; }
-  .index-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; }
-  .index-link { display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem; background: #f7f5f0; border-radius: 8px; text-decoration: none; color: var(--color-primary); font-weight: 600; font-size: 0.9rem; transition: transform 0.2s; }
-  .index-link:hover { transform: translateY(-2px); background: #edf2f7; }
-  .index-link .count { background: #38a169; color: white; padding: 0.2rem 0.5rem; border-radius: 12px; font-size: 0.75rem; }
-  .category-section { padding: 4rem 0; border-bottom: 1px solid #eee; scroll-margin-top: 2rem; }
-  .category-section:last-child { border-bottom: none; }
-  .category-section h2 { font-family: var(--font-hebrew); font-size: 1.8rem; color: var(--color-primary); margin-bottom: 2rem; text-align: center; }
-  .category-section h2 .hebrew { font-family: var(--font-hebrew); font-size: 1.4rem; color: #888; font-weight: normal; margin-right: 0.5rem; }
-  .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
-  .gallery-item { position: relative; overflow: visible; }
-  .gallery-item img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 12px; transition: transform 0.4s; display: block; }
-  .gallery-item:hover img { transform: scale(1.08); }
-  .gallery-item .overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.7)); padding: 2rem 1rem 1rem; opacity: 0; transition: opacity 0.3s; }
-  .gallery-item:hover .overlay { opacity: 1; }
-  .gallery-item .overlay span { color: white; font-size: 0.95rem; }
-  .gallery-item .caption { padding: 0.75rem; background: #f8f8f8; font-size: 0.85rem; color: #555; text-align: center; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; word-break: break-word; line-height: 1.4; }
-  .navigation { background: var(--color-primary); padding: 3rem 0; }
-  .nav-buttons { display: flex; justify-content: space-between; gap: 1rem; }
-  .nav-btn { display: flex; align-items: center; gap: 0.75rem; color: white; text-decoration: none; padding: 1rem 1.5rem; background: rgba(255,255,255,0.1); border-radius: 8px; }
-  .nav-btn:hover { background: rgba(255,255,255,0.2); }
-  @media (max-width: 768px) {
-    .nav-buttons { flex-direction: column; }
-    .gallery-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
-    .index-links { gap: 0.5rem; }
-    .index-link { padding: 0.5rem 0.75rem; font-size: 0.8rem; }
-  }
-</style>
+<
+  .page-header &lbrace; background: linear-gradient(135deg, #38a169 0%, #276749 100%); color: white; padding: 5rem 2rem; text-align: center; &rbrace;
+  .page-header h1 &lbrace; font-family: var(--font-hebrew); font-size: 2.5rem; margin-bottom: 0.5rem; &rbrace;
+  .page-header p &lbrace; opacity: 0.9; font-size: 1.2rem; margin-bottom: 0.5rem; &rbrace;
+  .page-header .hebrew &lbrace; font-family: var(--font-hebrew); font-size: 1.5rem; margin-top: 1rem; letter-spacing: 0.1em; &rbrace;
+  .page-header .stats &lbrace; font-size: 1rem; opacity: 0.7; margin-top: 0.5rem; &rbrace;
+  .back-link &lbrace; display: inline-block; margin-top: 1.5rem; color: white; text-decoration: none; padding: 0.75rem 1.5rem; border: 2px solid white; border-radius: 6px; &rbrace;
+  .container &lbrace; max-width: 1400px; margin: 0 auto; padding: 0 2rem; &rbrace;
+  .intro &lbrace; background: #f7f5f0; padding: 4rem 0; &rbrace;
+  .info-box &lbrace; max-width: 800px; margin: 0 auto; padding: 2rem; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); text-align: center; &rbrace;
+  .info-box h2 &lbrace; font-family: var(--font-hebrew); color: var(--color-primary); margin-bottom: 1rem; &rbrace;
+  .info-box p &lbrace; font-size: 1.1rem; line-height: 1.8; color: #555; margin-bottom: 1rem; &rbrace;
+  .info-box .hebrew &lbrace; font-family: var(--font-hebrew); font-size: 1.3rem; color: #38a169; &rbrace;
+  .quick-index &lbrace; max-width: 900px; margin: 2rem auto 0; padding: 1.5rem; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); &rbrace;
+  .quick-index h3 &lbrace; font-family: var(--font-hebrew); color: var(--color-primary); margin-bottom: 1rem; text-align: center; &rbrace;
+  .index-links &lbrace; display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; &rbrace;
+  .index-link &lbrace; display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem; background: #f7f5f0; border-radius: 8px; text-decoration: none; color: var(--color-primary); font-weight: 600; font-size: 0.9rem; transition: transform 0.2s; &rbrace;
+  .index-link:hover &lbrace; transform: translateY(-2px); background: #edf2f7; &rbrace;
+  .index-link .count &lbrace; background: #38a169; color: white; padding: 0.2rem 0.5rem; border-radius: 12px; font-size: 0.75rem; &rbrace;
+  .category-section &lbrace; padding: 4rem 0; border-bottom: 1px solid #eee; scroll-margin-top: 2rem; &rbrace;
+  .category-section:last-child &lbrace; border-bottom: none; &rbrace;
+  .category-section h2 &lbrace; font-family: var(--font-hebrew); font-size: 1.8rem; color: var(--color-primary); margin-bottom: 2rem; text-align: center; &rbrace;
+  .category-section h2 .hebrew &lbrace; font-family: var(--font-hebrew); font-size: 1.4rem; color: #888; font-weight: normal; margin-right: 0.5rem; &rbrace;
+  .gallery-grid &lbrace; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; &rbrace;
+  .gallery-item &lbrace; position: relative; overflow: visible; &rbrace;
+  .gallery-item img &lbrace; width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 12px; transition: transform 0.4s; display: block; &rbrace;
+  .gallery-item:hover img &lbrace; transform: scale(1.08); &rbrace;
+  .gallery-item .overlay &lbrace; position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.7)); padding: 2rem 1rem 1rem; opacity: 0; transition: opacity 0.3s; &rbrace;
+  .gallery-item:hover .overlay &lbrace; opacity: 1; &rbrace;
+  .gallery-item .overlay span &lbrace; color: white; font-size: 0.95rem; &rbrace;
+  .gallery-item .caption &lbrace; padding: 0.75rem; background: #f8f8f8; font-size: 0.85rem; color: #555; text-align: center; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; word-break: break-word; line-height: 1.4; &rbrace;
+  .navigation &lbrace; background: var(--color-primary); padding: 3rem 0; &rbrace;
+  .nav-buttons &lbrace; display: flex; justify-content: space-between; gap: 1rem; &rbrace;
+  .nav-btn &lbrace; display: flex; align-items: center; gap: 0.75rem; color: white; text-decoration: none; padding: 1rem 1.5rem; background: rgba(255,255,255,0.1); border-radius: 8px; &rbrace;
+  .nav-btn:hover &lbrace; background: rgba(255,255,255,0.2); &rbrace;
+  @media (max-width: 768px) &lbrace;
+    .nav-buttons &lbrace; flex-direction: column; &rbrace;
+    .gallery-grid &lbrace; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); &rbrace;
+    .index-links &lbrace; gap: 0.5rem; &rbrace;
+    .index-link &lbrace; padding: 0.5rem 0.75rem; font-size: 0.8rem; &rbrace;
+  &rbrace;
+<

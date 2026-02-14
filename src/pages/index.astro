@@ -142,7 +142,7 @@ import Layout from '../layouts/Layout.astro';
 </Layout>
 
 <style>
-  .hero {
+  .hero &lbrace;
     background: linear-gradient(135deg, rgba(26, 54, 93, 0.85) 0%, rgba(44, 82, 130, 0.85) 100%),
                 url('/images/tomb of rabbi nachman and building painting.avif') center/cover no-repeat;
     color: white;
@@ -152,32 +152,32 @@ import Layout from '../layouts/Layout.astro';
     display: flex;
     align-items: center;
     justify-content: center;
-  }
+  &rbrace;
 
-  .hero-content {
+  .hero-content &lbrace;
     max-width: 900px;
     margin: 0 auto;
-  }
+  &rbrace;
 
-  .hero-title {
+  .hero-title &lbrace;
     margin-bottom: 1rem;
-  }
+  &rbrace;
 
-  .hero-title .hebrew {
+  .hero-title .hebrew &lbrace;
     display: block;
     font-family: var(--font-hebrew);
     font-size: 3rem;
     margin-bottom: 0.5rem;
-  }
+  &rbrace;
 
-  .hero-title .english {
+  .hero-title .english &lbrace;
     display: block;
     font-size: 2rem;
     font-weight: 400;
     opacity: 0.9;
-  }
+  &rbrace;
 
-  .hero-title .tagline {
+  .hero-title .tagline &lbrace;
     display: block;
     font-size: 1.2rem;
     font-weight: 600;
@@ -185,39 +185,39 @@ import Layout from '../layouts/Layout.astro';
     margin-top: 0.5rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-  }
+  &rbrace;
 
-  .hero-subtitle {
+  .hero-subtitle &lbrace;
     font-size: 1.2rem;
     font-style: italic;
     opacity: 0.9;
     margin-bottom: 2.5rem;
-  }
+  &rbrace;
 
   /* Main Navigation */
-  .main-nav {
+  .main-nav &lbrace;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 1rem;
     margin-bottom: 1.5rem;
     flex-wrap: wrap;
-  }
+  &rbrace;
 
-  .nav-group {
+  .nav-group &lbrace;
     display: flex;
     gap: 0.75rem;
-  }
+  &rbrace;
 
-  .nav-group-left {
+  .nav-group-left &lbrace;
     margin-right: 0.5rem;
-  }
+  &rbrace;
 
-  .nav-group-right {
+  .nav-group-right &lbrace;
     margin-left: 0.5rem;
-  }
+  &rbrace;
 
-  .btn {
+  .btn &lbrace;
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
@@ -227,90 +227,90 @@ import Layout from '../layouts/Layout.astro';
     font-weight: 600;
     transition: all 0.2s;
     white-space: nowrap;
-  }
+  &rbrace;
 
-  .btn:hover {
+  .btn:hover &lbrace;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  }
+  &rbrace;
 
-  .btn-icon {
+  .btn-icon &lbrace;
     font-size: 1.1rem;
-  }
+  &rbrace;
 
   /* Center prominent button */
-  .btn-center {
+  .btn-center &lbrace;
     background: var(--color-accent);
     color: white;
     padding: 1.2rem 2.5rem;
     font-size: 1.4rem;
     border-radius: 8px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-  }
+  &rbrace;
 
-  .btn-center:hover {
+  .btn-center:hover &lbrace;
     transform: translateY(-3px);
     box-shadow: 0 6px 20px rgba(0,0,0,0.35);
-  }
+  &rbrace;
 
-  .btn-center .btn-icon {
+  .btn-center .btn-icon &lbrace;
     font-size: 1.5rem;
-  }
+  &rbrace;
 
-  .btn-center .btn-text {
+  .btn-center .btn-text &lbrace;
     font-size: 1.2rem;
-  }
+  &rbrace;
 
   /* Small side buttons */
-  .btn-small {
+  .btn-small &lbrace;
     background: rgba(255,255,255,0.15);
     color: white;
     border: 1px solid rgba(255,255,255,0.3);
     font-size: 0.95rem;
     padding: 0.5rem 1rem;
-  }
+  &rbrace;
 
-  .btn-small:hover {
+  .btn-small:hover &lbrace;
     background: rgba(255,255,255,0.25);
-  }
+  &rbrace;
 
   /* Music button */
-  .music-link {
+  .music-link &lbrace;
     margin-top: 0.5rem;
-  }
+  &rbrace;
 
-  .btn-music {
+  .btn-music &lbrace;
     background: rgba(139, 69, 19, 0.8);
     color: white;
     padding: 0.5rem 1rem;
     font-size: 0.9rem;
-  }
+  &rbrace;
 
-  .btn-music:hover {
+  .btn-music:hover &lbrace;
     background: rgba(139, 69, 19, 1);
-  }
+  &rbrace;
 
-  .hebrew-books-link {
+  .hebrew-books-link &lbrace;
     margin-top: 1rem;
-  }
+  &rbrace;
 
-  .btn-books-hebrew {
+  .btn-books-hebrew &lbrace;
     background: linear-gradient(135deg, #c53030, #9b2c2c);
     color: white;
     padding: 1rem 2rem;
     font-size: 1.2rem;
     border-radius: 8px;
     box-shadow: 0 4px 15px rgba(197, 48, 48, 0.4);
-  }
+  &rbrace;
 
-  .btn-books-hebrew:hover {
+  .btn-books-hebrew:hover &lbrace;
     background: linear-gradient(135deg, #9b2c2c, #c53030);
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(197, 48, 48, 0.5);
-  }
+  &rbrace;
 
   /* Corner buttons */
-  .corner-btn {
+  .corner-btn &lbrace;
     position: absolute;
     top: 1rem;
     padding: 0.5rem 1rem;
@@ -320,218 +320,218 @@ import Layout from '../layouts/Layout.astro';
     font-size: 0.9rem;
     transition: all 0.2s;
     z-index: 10;
-  }
+  &rbrace;
 
-  .corner-btn-left {
+  .corner-btn-left &lbrace;
     left: 1rem;
     background: #48bb78;
     color: white;
     border: 2px solid #48bb78;
-  }
+  &rbrace;
 
-  .corner-btn-left:hover {
+  .corner-btn-left:hover &lbrace;
     background: #38a169;
     border-color: #38a169;
-  }
+  &rbrace;
 
-  .corner-btn-right {
+  .corner-btn-right &lbrace;
     right: 1rem;
     background: #805ad5;
     color: white;
     border: 2px solid #805ad5;
-  }
+  &rbrace;
 
-  .corner-btn-right:hover {
+  .corner-btn-right:hover &lbrace;
     background: #6b46c1;
     border-color: #6b46c1;
-  }
+  &rbrace;
 
   /* Na Nach phrase - most important */
-  .nanach-phrase {
+  .nanach-phrase &lbrace;
     margin-top: 2rem;
     text-align: center;
     padding: 1.5rem;
     background: rgba(0,0,0,0.2);
     border-radius: 8px;
-  }
+  &rbrace;
 
-  .nanach-phrase-hebrew {
+  .nanach-phrase-hebrew &lbrace;
     font-family: var(--font-hebrew);
     font-size: 2.5rem;
     font-weight: bold;
     color: var(--color-accent);
     margin-bottom: 0.5rem;
     letter-spacing: 0.15em;
-  }
+  &rbrace;
 
-  .nanach-phrase-english {
+  .nanach-phrase-english &lbrace;
     font-size: 1.4rem;
     font-weight: 600;
     color: white;
     letter-spacing: 0.1em;
-  }
+  &rbrace;
 
-  .container {
+  .container &lbrace;
     max-width: 1000px;
     margin: 0 auto;
     padding: 0 2rem;
-  }
+  &rbrace;
 
-  section {
+  section &lbrace;
     padding: 4rem 0;
-  }
+  &rbrace;
 
-  section h2 {
+  section h2 &lbrace;
     font-family: var(--font-hebrew);
     font-size: 2rem;
     color: var(--color-primary);
     margin-bottom: 1.5rem;
     text-align: center;
-  }
+  &rbrace;
 
-  .intro p {
+  .intro p &lbrace;
     font-size: 1.1rem;
     line-height: 1.8;
     margin-bottom: 1rem;
     text-align: center;
-  }
+  &rbrace;
 
-  .featured {
+  .featured &lbrace;
     background: #f7f5f0;
-  }
+  &rbrace;
 
-  .cards {
+  .cards &lbrace;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 2rem;
     margin-top: 2rem;
-  }
+  &rbrace;
 
-  .card {
+  .card &lbrace;
     background: white;
     padding: 2rem;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  }
+  &rbrace;
 
-  .card h3 {
+  .card h3 &lbrace;
     color: var(--color-primary);
     margin-bottom: 1rem;
-  }
+  &rbrace;
 
-  .card p {
+  .card p &lbrace;
     color: #666;
     line-height: 1.6;
     margin-bottom: 1rem;
-  }
+  &rbrace;
 
-  .card-link {
+  .card-link &lbrace;
     color: var(--color-accent);
     text-decoration: none;
     font-weight: 600;
-  }
+  &rbrace;
 
-  .card-link:hover {
+  .card-link:hover &lbrace;
     text-decoration: underline;
-  }
+  &rbrace;
 
-  .quote {
+  .quote &lbrace;
     background: var(--color-primary);
     color: white;
-  }
+  &rbrace;
 
-  blockquote {
+  blockquote &lbrace;
     text-align: center;
-  }
+  &rbrace;
 
-  .hebrew-quote {
+  .hebrew-quote &lbrace;
     font-family: var(--font-hebrew);
     font-size: 1.8rem;
     margin-bottom: 1rem;
-  }
+  &rbrace;
 
-  .english-quote {
+  .english-quote &lbrace;
     font-size: 1.3rem;
     font-style: italic;
     opacity: 0.9;
     margin-bottom: 1rem;
-  }
+  &rbrace;
 
-  cite {
+  cite &lbrace;
     opacity: 0.8;
-  }
+  &rbrace;
 
-  .nanach {
+  .nanach &lbrace;
     text-align: center;
-  }
+  &rbrace;
 
-  .petek-text {
+  .petek-text &lbrace;
     font-size: 1.1rem;
     line-height: 1.8;
     margin-bottom: 2rem;
-  }
+  &rbrace;
 
-  .btn-primary {
+  .btn-primary &lbrace;
     background: var(--color-accent);
     color: white;
     padding: 0.8rem 2rem;
-  }
+  &rbrace;
 
-  @media (max-width: 768px) {
-    .hero {
+  @media (max-width: 768px) &lbrace;
+    .hero &lbrace;
       padding: 4rem 1.5rem;
       min-height: 60vh;
-    }
+    &rbrace;
     
-    .hero-title .hebrew {
+    .hero-title .hebrew &lbrace;
       font-size: 2rem;
-    }
+    &rbrace;
 
-    .hero-title .english {
+    .hero-title .english &lbrace;
       font-size: 1.3rem;
-    }
+    &rbrace;
 
-    .hero-subtitle {
+    .hero-subtitle &lbrace;
       font-size: 1.1rem;
-    }
+    &rbrace;
 
-    .main-nav {
+    .main-nav &lbrace;
       flex-direction: column;
       gap: 1rem;
-    }
+    &rbrace;
 
-    .nav-group {
+    .nav-group &lbrace;
       justify-content: center;
-    }
+    &rbrace;
 
     .nav-group-left,
-    .nav-group-right {
+    .nav-group-right &lbrace;
       margin: 0;
-    }
+    &rbrace;
 
-    .btn-center {
+    .btn-center &lbrace;
       padding: 1rem 2rem;
       font-size: 1.2rem;
       width: 100%;
       justify-content: center;
-    }
+    &rbrace;
 
-    .btn-small {
+    .btn-small &lbrace;
       padding: 0.5rem 0.8rem;
       font-size: 0.85rem;
-    }
+    &rbrace;
 
-    .nanach-phrase {
+    .nanach-phrase &lbrace;
       margin-top: 1.5rem;
       padding: 1rem;
-    }
+    &rbrace;
 
-    .nanach-phrase-hebrew {
+    .nanach-phrase-hebrew &lbrace;
       font-size: 1.8rem;
-    }
+    &rbrace;
 
-    .nanach-phrase-english {
+    .nanach-phrase-english &lbrace;
       font-size: 1rem;
-    }
-  }
+    &rbrace;
+  &rbrace;
 </style>
