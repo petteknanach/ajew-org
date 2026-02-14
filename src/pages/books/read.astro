@@ -1,16 +1,11 @@
 ---
-import Layout from '../../layouts/Layout.astro';
+import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="Read Translation" description="Read Likutay Moharan Translation">
+<Layout title="Read Book" description="Read Breslov book">
   <div class="reader-page">
     <header class="reader-header">
-      <nav class="reader-nav">
-        <a href="/" class="nav-btn">🏠 Home</a>
-        <a href="/teachings/likutay-moharan" class="nav-btn">📚 Index</a>
-        <a href="#" id="prevBtn" class="nav-btn">⬅️ Previous</a>
-        <a href="#" id="nextBtn" class="nav-btn">Next ➡️</a>
-      </nav>
+      <a href="/books" class="back-link">← חזור לרשימה / Back to List</a>
       <h1 id="bookTitle">Loading...</h1>
     </header>
 
@@ -20,8 +15,8 @@ import Layout from '../../layouts/Layout.astro';
     </div>
 
     <div class="error-message" id="error" style="display: none;">
-      <p>התרגום לא נמצא / Translation not found</p>
-      <a href="/teachings/likutay-moharan" class="btn">Go to Index</a>
+      <p>הספר לא נמצא / Book not found</p>
+      <a href="/books" class="btn">Go to Books List</a>
     </div>
 
     <div class="book-content" id="bookContent" dir="rtl" style="display: none;"></div>
@@ -30,57 +25,45 @@ import Layout from '../../layouts/Layout.astro';
 
 <script>
   const params = new URLSearchParams(window.location.search);
-  const volume = params.get('volume') || '1';
-  const torah = parseInt(params.get('torah')) || 1;
-  
+  const category = params.get('category');
+  const book = params.get('book');
+
   const loading = document.getElementById('loading');
   const error = document.getElementById('error');
   const bookContent = document.getElementById('bookContent');
   const bookTitle = document.getElementById('bookTitle');
-  const prevBtn = document.getElementById('prevBtn');
-  const nextBtn = document.getElementById('nextBtn');
 
-  // Set up navigation
-  const maxTorah = volume === '2' ? 125 : 286;
-  const currentTorah = torah;
-  
-  bookTitle.textContent = `ליקוטי מוהר"ן ${volume === '2' ? 'ט' : ''} - פרק ${torah}`;
-  
-  // Previous link
-  if (torah > 1) {
-    prevBtn.href = `/books/read?volume=${volume}&torah=${torah - 1}`;
+  if (!category || !book) {
+    loading.style.display = 'none';
+    error.style.display = 'block';
+    error.querySelector('p').textContent = 'לא נבחר ספר / No book selected';
   } else {
-    prevBtn.style.display = 'none';
-  }
-  
-  // Next link
-  if (torah < maxTorah) {
-    nextBtn.href = `/books/read?volume=${volume}&torah=${torah + 1}`;
-  } else {
-    nextBtn.style.display = 'none';
-  }
+    // Set title
+    bookTitle.textContent = decodeURIComponent(book).replace('.txt', '');
 
-  // Fetch the translation
-  const filePath = `/books/likutay-moharan/vol${volume}/torah${torah}.html`;
-  
-  fetch(filePath)
-    .then(response => {
-      if (!response.ok) throw new Error('Translation not found');
-      return response.text();
-    })
-    .then(content => {
-      loading.style.display = 'none';
-      bookContent.innerHTML = content;
-      bookContent.style.display = 'block';
-    })
-    .catch(err => {
-      loading.style.display = 'none';
-      error.style.display = 'block';
-      console.error(err);
-    });
+    // Fetch the book content
+    fetch(`/books/${encodeURIComponent(category)}/${encodeURIComponent(book)}`)
+      .then(response => {
+        if (!response.ok) throw new Error('Book not found');
+        return response.text();
+      })
+      .then(content => {
+        loading.style.display = 'none';
+        
+        // The content contains HTML - insert it directly
+        bookContent.innerHTML = content;
+        bookContent.style.display = 'block';
+      })
+      .catch(err => {
+        loading.style.display = 'none';
+        error.style.display = 'block';
+        console.error(err);
+      });
+  }
 </script>
 
 <style>
+  .reader-page {
     min-height: 100vh;
     background: #f7f5f0;
   }
@@ -88,38 +71,29 @@ import Layout from '../../layouts/Layout.astro';
   .reader-header {
     background: linear-gradient(135deg, #1a365d, #2d4a6f);
     color: white;
-    padding: 1rem 2rem;
+    padding: 1.5rem 2rem;
     position: sticky;
     top: 0;
     z-index: 100;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
   }
 
-  .reader-nav {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-    margin-bottom: 0.75rem;
-  }
-
-  .nav-btn {
-    color: rgba(255,255,255,0.9);
+  .back-link {
+    color: rgba(255,255,255,0.8);
     text-decoration: none;
-    font-size: 0.85rem;
-    padding: 0.4rem 0.75rem;
-    background: rgba(255,255,255,0.15);
-    border-radius: 4px;
-    transition: all 0.2s;
+    font-size: 0.95rem;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+    transition: color 0.2s;
   }
 
-  .nav-btn:hover {
-    background: rgba(255,255,255,0.25);
+  .back-link:hover {
     color: white;
   }
 
   .reader-header h1 {
     font-family: var(--font-hebrew);
-    font-size: 1.3rem;
+    font-size: 1.5rem;
     margin: 0;
   }
 
@@ -202,7 +176,6 @@ import Layout from '../../layouts/Layout.astro';
   .book-content :global(b), 
   .book-content :global(strong) {
     color: #1a365d;
-    font-weight: bold;
   }
 
   @media (min-width: 900px) {
@@ -235,4 +208,3 @@ import Layout from '../../layouts/Layout.astro';
     background: #a0aec0;
   }
 </style>
-

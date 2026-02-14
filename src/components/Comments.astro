@@ -1,13 +1,13 @@
--
+---
 interface Props {
   teachingId: string;
   teachingTitle: string;
 }
 const { teachingId, teachingTitle } = Astro.props;
--
+---
 
 <div class="comments-section" id="comments-{teachingId}">
-  <
+  <style>
     .comments-section { background: #f7f5f0; padding: 2rem; border-radius: 12px; margin-top: 2rem; }
     .comments-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
     .comments-header h3 { margin: 0; color: #1a365d; }
@@ -31,7 +31,7 @@ const { teachingId, teachingTitle } = Astro.props;
     .comment-teaching-ref { font-size: 0.8rem; color: #744210; margin-bottom: 0.5rem; font-style: italic; }
     .login-prompt { text-align: center; padding: 2rem; background: white; border-radius: 8px; }
     .login-prompt a { color: #744210; font-weight: 600; }
-  <
+  </style>
 
   <div class="comments-header">
     <h3>💬 Comments</h3>
