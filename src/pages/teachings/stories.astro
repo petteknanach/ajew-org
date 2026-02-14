@@ -4,58 +4,58 @@ const pageDescription = "Stories by Rabbi Nachman";
 ---
 
 <style>
-  .page-header &lbrace;
+  .page-header {
     background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
     color: white;
     padding: 4rem 2rem;
     text-align: center;
-  &rbrace;
-  .page-header h1 &lbrace;
+  }
+  .page-header h1 {
     font-family: var(--font-hebrew);
     font-size: 2.5rem;
     margin-bottom: 0.5rem;
-  &rbrace;
-  .page-header .subtitle &lbrace;
+  }
+  .page-header .subtitle {
     font-size: 1.2rem;
     opacity: 0.9;
-  &rbrace;
-  .container &lbrace; max-width: 900px; margin: 0 auto; padding: 0 2rem; &rbrace;
+  }
+  .container { max-width: 900px; margin: 0 auto; padding: 0 2rem; }
   
-  .intro-section &lbrace;
+  .intro-section {
     background: #ebf8ff;
     padding: 3rem 0;
     border-bottom: 1px solid #bee3f8;
-  &rbrace;
-  .intro-text &lbrace;
+  }
+  .intro-text {
     background: white;
     padding: 2rem;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  &rbrace;
-  .intro-text p &lbrace;
+  }
+  .intro-text p {
     font-size: 1.1rem;
     line-height: 1.8;
     color: #333;
     margin-bottom: 1rem;
-  &rbrace;
+  }
   
-  .section-title &lbrace;
+  .section-title {
     font-family: var(--font-hebrew);
     font-size: 1.5rem;
     color: #1a365d;
     margin: 3rem 0 1.5rem;
     padding-bottom: 0.5rem;
     border-bottom: 2px solid #bee3f8;
-  &rbrace;
+  }
   
-  .story-grid &lbrace;
+  .story-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 1rem;
     margin-bottom: 3rem;
-  &rbrace;
+  }
   
-  .story-link &lbrace;
+  .story-link {
     display: block;
     background: white;
     padding: 1.25rem 1.5rem;
@@ -65,24 +65,24 @@ const pageDescription = "Stories by Rabbi Nachman";
     box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     border: 1px solid #e2e8f0;
     transition: all 0.2s ease;
-  &rbrace;
-  .story-link:hover &lbrace;
+  }
+  .story-link:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     border-color: #2c5282;
     color: #2c5282;
-  &rbrace;
-  .story-link .story-num &lbrace;
+  }
+  .story-link .story-num {
     font-size: 0.8rem;
     color: #718096;
     margin-bottom: 0.25rem;
-  &rbrace;
-  .story-link .story-title &lbrace;
+  }
+  .story-link .story-title {
     font-size: 1rem;
     font-weight: 600;
-  &rbrace;
+  }
   
-  .navigation-links &lbrace;
+  .navigation-links {
     display: flex;
     justify-content: center;
     gap: 2rem;
@@ -90,22 +90,22 @@ const pageDescription = "Stories by Rabbi Nachman";
     background: #ebf8ff;
     border-radius: 8px;
     margin-top: 2rem;
-  &rbrace;
-  .nav-link &lbrace;
+  }
+  .nav-link {
     color: #2c5282;
     text-decoration: none;
     padding: 0.5rem 1rem;
     border-radius: 4px;
     transition: background 0.2s;
-  &rbrace;
-  .nav-link:hover &lbrace;
+  }
+  .nav-link:hover {
     background: #bee3f8;
-  &rbrace;
+  }
   
-  @media (max-width: 768px) &lbrace;
-    .story-grid &lbrace; grid-template-columns: 1fr; &rbrace;
-    .navigation-links &lbrace; flex-direction: column; text-align: center; &rbrace;
-  &rbrace;
+  @media (max-width: 768px) {
+    .story-grid { grid-template-columns: 1fr; }
+    .navigation-links { flex-direction: column; text-align: center; }
+  }
 </style>
 
 <section class="page-header">

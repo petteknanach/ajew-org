@@ -1,14 +1,14 @@
--
+---
 import astroLogo from '../assets/astro.svg';
 import background from '../assets/background.svg';
--
+---
 
 <div id="container">
-	<img id="background" src=&lbrace;background.src&rbrace; alt="" fetchpriority="high" />
+	<img id="background" src={background.src} alt="" fetchpriority="high" />
 	<main>
 		<section id="hero">
 			<a href="https://astro.build"
-				><img src=&lbrace;astroLogo.src&rbrace; width="115" height="48" alt="Astro Homepage" /></a
+				><img src={astroLogo.src} width="115" height="48" alt="Astro Homepage" /></a
 			>
 			<h1>
 				To get started, open the <code><pre>src/pages</pre></code> directory in your project.
@@ -42,7 +42,7 @@ import background from '../assets/background.svg';
 </div>
 
 <
-	#background &lbrace;
+	#background {
 		position: fixed;
 		top: 0;
 		left: 0;
@@ -50,70 +50,70 @@ import background from '../assets/background.svg';
 		height: 100%;
 		z-index: -1;
 		filter: blur(100px);
-	&rbrace;
+	}
 
-	#container &lbrace;
+	#container {
 		font-family: Inter, Roboto, 'Helvetica Neue', 'Arial Nova', 'Nimbus Sans', Arial, sans-serif;
 		height: 100%;
-	&rbrace;
+	}
 
-	main &lbrace;
+	main {
 		height: 100%;
 		display: flex;
 		justify-content: center;
-	&rbrace;
+	}
 
-	#hero &lbrace;
+	#hero {
 		display: flex;
 		align-items: start;
 		flex-direction: column;
 		justify-content: center;
 		padding: 16px;
-	&rbrace;
+	}
 
-	h1 &lbrace;
+	h1 {
 		font-size: 22px;
 		margin-top: 0.25em;
-	&rbrace;
+	}
 
-	#links &lbrace;
+	#links {
 		display: flex;
 		gap: 16px;
-	&rbrace;
+	}
 
-	#links a &lbrace;
+	#links a {
 		display: flex;
 		align-items: center;
 		padding: 10px 12px;
 		color: #111827;
 		text-decoration: none;
 		transition: color 0.2s;
-	&rbrace;
+	}
 
-	#links a:hover &lbrace;
+	#links a:hover {
 		color: rgb(78, 80, 86);
-	&rbrace;
+	}
 
-	#links a svg &lbrace;
+	#links a svg {
 		height: 1em;
 		margin-left: 8px;
-	&rbrace;
+	}
 
-	#links a.button &lbrace;
+	#links a.button {
 		color: white;
 		background: linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%);
 		box-shadow:
 			inset 0 0 0 1px rgba(255, 255, 255, 0.12),
 			inset 0 -2px 0 rgba(0, 0, 0, 0.24);
 		border-radius: 10px;
-	&rbrace;
+	}
 
-	#links a.button:hover &lbrace;
+	#links a.button:hover {
 		color: rgb(230, 230, 230);
 		box-shadow: none;
-	&rbrace;
+	}
 
-	pre &lbrace;
+	pre {
 		font-family:
 			ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono',
 			monospace;
@@ -123,24 +123,24 @@ import background from '../assets/background.svg';
 		-webkit-text-fill-color: transparent;
 		background-clip: text;
 		margin: 0;
-	&rbrace;
+	}
 
-	h2 &lbrace;
+	h2 {
 		margin: 0 0 1em;
 		font-weight: normal;
 		color: #111827;
 		font-size: 20px;
-	&rbrace;
+	}
 
-	p &lbrace;
+	p {
 		color: #4b5563;
 		font-size: 16px;
 		line-height: 24px;
 		letter-spacing: -0.006em;
 		margin: 0;
-	&rbrace;
+	}
 
-	code &lbrace;
+	code {
 		display: inline-block;
 		background:
 			linear-gradient(66.77deg, #f3cddd 0%, #f5cee7 100%) padding-box,
@@ -148,16 +148,16 @@ import background from '../assets/background.svg';
 		border-radius: 8px;
 		border: 1px solid transparent;
 		padding: 6px 8px;
-	&rbrace;
+	}
 
-	.box &lbrace;
+	.box {
 		padding: 16px;
 		background: rgba(255, 255, 255, 1);
 		border-radius: 16px;
 		border: 1px solid white;
-	&rbrace;
+	}
 
-	#news &lbrace;
+	#news {
 		position: absolute;
 		bottom: 16px;
 		right: 16px;
@@ -165,46 +165,46 @@ import background from '../assets/background.svg';
 		text-decoration: none;
 		transition: background 0.2s;
 		backdrop-filter: blur(50px);
-	&rbrace;
+	}
 
-	#news:hover &lbrace;
+	#news:hover {
 		background: rgba(255, 255, 255, 0.55);
-	&rbrace;
+	}
 
-	@media screen and (max-height: 368px) &lbrace;
-		#news &lbrace;
+	@media screen and (max-height: 368px) {
+		#news {
 			display: none;
-		&rbrace;
-	&rbrace;
+		}
+	}
 
-	@media screen and (max-width: 768px) &lbrace;
-		#container &lbrace;
+	@media screen and (max-width: 768px) {
+		#container {
 			display: flex;
 			flex-direction: column;
-		&rbrace;
+		}
 
-		#hero &lbrace;
+		#hero {
 			display: block;
 			padding-top: 10%;
-		&rbrace;
+		}
 
-		#links &lbrace;
+		#links {
 			flex-wrap: wrap;
-		&rbrace;
+		}
 
-		#links a.button &lbrace;
+		#links a.button {
 			padding: 14px 18px;
-		&rbrace;
+		}
 
-		#news &lbrace;
+		#news {
 			right: 16px;
 			left: 16px;
 			bottom: 2.5rem;
 			max-width: 100%;
-		&rbrace;
+		}
 
-		h1 &lbrace;
+		h1 {
 			line-height: 1.5;
-		&rbrace;
-	&rbrace;
+		}
+	}
 <

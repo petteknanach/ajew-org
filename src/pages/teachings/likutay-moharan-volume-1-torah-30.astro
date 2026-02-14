@@ -4,29 +4,29 @@ const pageDescription = "Torah 30";
 ---
 
 <style>
-  .page-header &lbrace;
+  .page-header {
     background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
     color: white;
     padding: 4rem 2rem;
     text-align: center;
-  &rbrace;
-  .page-header h1 &lbrace;
+  }
+  .page-header h1 {
     font-family: var(--font-hebrew);
     font-size: 2rem;
     margin-bottom: 0.5rem;
-  &rbrace;
-  .container &lbrace; max-width: 800px; margin: 0 auto; padding: 0 2rem; &rbrace;
-  .navigation &lbrace;
+  }
+  .container { max-width: 800px; margin: 0 auto; padding: 0 2rem; }
+  .navigation {
     background: #f7f5f0;
     padding: 1rem 0;
-  &rbrace;
-  .nav-links &lbrace;
+  }
+  .nav-links {
     display: flex;
     justify-content: space-between;
     gap: 1rem;
     flex-wrap: wrap;
-  &rbrace;
-  .nav-link &lbrace;
+  }
+  .nav-link {
     color: #1a365d;
     text-decoration: none;
     padding: 0.5rem 1rem;
@@ -34,30 +34,30 @@ const pageDescription = "Torah 30";
     background: white;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     transition: all 0.2s;
-  &rbrace;
-  .nav-link:hover &lbrace;
+  }
+  .nav-link:hover {
     background: #1a365d;
     color: white;
-  &rbrace;
-  .content &lbrace; padding: 3rem 0; &rbrace;
-  .content-text &lbrace;
+  }
+  .content { padding: 3rem 0; }
+  .content-text {
     background: white;
     padding: 3rem;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  &rbrace;
-  .content-text :global(p) &lbrace;
+  }
+  .content-text :global(p) {
     font-size: 1.1rem;
     line-height: 1.9;
     color: #333;
     margin-bottom: 1.5rem;
     text-align: justify;
-  &rbrace;
-  .footer-nav &lbrace;
+  }
+  .footer-nav {
     background: #1a365d;
     padding: 2rem 0;
-  &rbrace;
-  .back-link &lbrace;
+  }
+  .back-link {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
@@ -66,13 +66,13 @@ const pageDescription = "Torah 30";
     padding: 0.75rem 1.5rem;
     background: rgba(255,255,255,0.1);
     border-radius: 8px;
-  &rbrace;
-  .back-link:hover &lbrace;
+  }
+  .back-link:hover {
     background: rgba(255,255,255,0.2);
-  &rbrace;
-  @media (max-width: 768px) &lbrace;
-    .nav-links &lbrace; flex-direction: column; &rbrace;
-  &rbrace;
+  }
+  @media (max-width: 768px) {
+    .nav-links { flex-direction: column; }
+  }
 </style>
 
 <section class="page-header">

@@ -34,200 +34,200 @@ import Layout from '../layouts/Layout.astro';
 <script>
   // Book data - loaded client-side from the folder structure
   const booksData = [
-    &lbrace;
+    {
       name: "ספרי רבי נחמן",
       originalName: "1_ספרי רבי נחמן",
       books: [
-        &lbrace; name: "01_ליקוטי מוהר''ן", filename: "01_ליקוטי מוהר''ן.txt" &rbrace;,
-        &lbrace; name: "02_ ליקוטי מוהר''ן מנוקד", filename: "02_ ליקוטי מוהר''ן מנוקד.txt" &rbrace;,
-        &lbrace; name: "02_קיצור ליקוטי מוהרן השלם", filename: "02_קיצור ליקוטי מוהרן השלם.txt" &rbrace;,
-        &lbrace; name: "03_ספר המידות", filename: "03_ספר המידות.txt" &rbrace;,
-        &lbrace; name: "04_ספורי מעשיות", filename: "04_ספורי מעשיות.txt" &rbrace;,
-        &lbrace; name: "05_ספורי מעשיות מנוקד", filename: "05_ספורי מעשיות מנוקד.txt" &rbrace;,
-        &lbrace; name: "06_שיחות הר''ן", filename: "06_שיחות הר''ן.txt" &rbrace;,
-        &lbrace; name: "06א_שיחות הר''ן מנוקד", filename: "06א_שיחות הר''ן מנוקד.txt" &rbrace;,
-        &lbrace; name: "07_חיי מוהר''ן", filename: "07_חיי מוהר''ן.txt" &rbrace;,
-        &lbrace; name: "08_חיי מוהרן מנוקד", filename: "08_חיי מוהרן מנוקד.txt" &rbrace;,
-        &lbrace; name: "09_שבחי הר''ן", filename: "09_שבחי הר''ן.txt" &rbrace;,
-        &lbrace; name: "09א_שבחי הר''ן מנוקד", filename: "09א_שבחי הר''ן מנוקד.txt" &rbrace;
+        { name: "01_ליקוטי מוהר''ן", filename: "01_ליקוטי מוהר''ן.txt" },
+        { name: "02_ ליקוטי מוהר''ן מנוקד", filename: "02_ ליקוטי מוהר''ן מנוקד.txt" },
+        { name: "02_קיצור ליקוטי מוהרן השלם", filename: "02_קיצור ליקוטי מוהרן השלם.txt" },
+        { name: "03_ספר המידות", filename: "03_ספר המידות.txt" },
+        { name: "04_ספורי מעשיות", filename: "04_ספורי מעשיות.txt" },
+        { name: "05_ספורי מעשיות מנוקד", filename: "05_ספורי מעשיות מנוקד.txt" },
+        { name: "06_שיחות הר''ן", filename: "06_שיחות הר''ן.txt" },
+        { name: "06א_שיחות הר''ן מנוקד", filename: "06א_שיחות הר''ן מנוקד.txt" },
+        { name: "07_חיי מוהר''ן", filename: "07_חיי מוהר''ן.txt" },
+        { name: "08_חיי מוהרן מנוקד", filename: "08_חיי מוהרן מנוקד.txt" },
+        { name: "09_שבחי הר''ן", filename: "09_שבחי הר''ן.txt" },
+        { name: "09א_שבחי הר''ן מנוקד", filename: "09א_שבחי הר''ן מנוקד.txt" }
       ]
-    &rbrace;,
-    &lbrace;
+    },
+    {
       name: "ספרי רבי נתן",
       originalName: "2_ספרי רבי נתן",
       books: [
-        &lbrace; name: "ליקוטי הלכות", filename: "ליקוטי הלכות.txt" &rbrace;,
-        &lbrace; name: "שיחות הר''ן ליקוטי דפוס", filename: "שיחות הר''ן ליקוטי דפוס.txt" &rbrace;,
-        &lbrace; name: "שיחות הר''ן ליקוטי ישן", filename: "שיחות הר''ן ליקוטי ישן.txt" &rbrace;,
-        &lbrace; name: "שיחות הר''ן מכתב יד", filename: "שיחות הר''ן מכתב יד.txt" &rbrace;,
-        &lbrace; name: "שבחי הר''ן", filename: "שבחי הר''ן.txt" &rbrace;,
-        &lbrace; name: "חיי מוהר''ן", filename: "חיי מוהר''ן.txt" &rbrace;
+        { name: "ליקוטי הלכות", filename: "ליקוטי הלכות.txt" },
+        { name: "שיחות הר''ן ליקוטי דפוס", filename: "שיחות הר''ן ליקוטי דפוס.txt" },
+        { name: "שיחות הר''ן ליקוטי ישן", filename: "שיחות הר''ן ליקוטי ישן.txt" },
+        { name: "שיחות הר''ן מכתב יד", filename: "שיחות הר''ן מכתב יד.txt" },
+        { name: "שבחי הר''ן", filename: "שבחי הר''ן.txt" },
+        { name: "חיי מוהר''ן", filename: "חיי מוהר''ן.txt" }
       ]
-    &rbrace;,
-    &lbrace;
+    },
+    {
       name: "ספרי הרב מטשערין",
       originalName: "3_ספרי הרב מטשערין",
       books: [
-        &lbrace; name: "דרשות מטשערין", filename: "דרשות מטשערין.txt" &rbrace;,
-        &lbrace; name: "דרשות מטשערין ב", filename: "דרשות מטשערין ב.txt" &rbrace;,
-        &lbrace; name: "מכתבים מטשערין", filename: "מכתבים מטשערין.txt" &rbrace;,
-        &lbrace; name: "מכתבים מטשערין ב", filename: "מכתבים מטשערין ב.txt" &rbrace;,
-        &lbrace; name: "שיחות מטשערין", filename: "שיחות מטשערין.txt" &rbrace;,
-        &lbrace; name: "שיחות מטשערין ב", filename: "שיחות מטשערין ב.txt" &rbrace;
+        { name: "דרשות מטשערין", filename: "דרשות מטשערין.txt" },
+        { name: "דרשות מטשערין ב", filename: "דרשות מטשערין ב.txt" },
+        { name: "מכתבים מטשערין", filename: "מכתבים מטשערין.txt" },
+        { name: "מכתבים מטשערין ב", filename: "מכתבים מטשערין ב.txt" },
+        { name: "שיחות מטשערין", filename: "שיחות מטשערין.txt" },
+        { name: "שיחות מטשערין ב", filename: "שיחות מטשערין ב.txt" }
       ]
-    &rbrace;,
-    &lbrace;
+    },
+    {
       name: "ספרי רבי נתן בר יהודה",
       originalName: "3_ספרי רבי נתן בר יהודה",
       books: [
-        &lbrace; name: "דרשות רבי נתן", filename: "דרשות רבי נתן.txt" &rbrace;,
-        &lbrace; name: "שיחות רבי נתן", filename: "שיחות רבי נתן.txt" &rbrace;,
-        &lbrace; name: "תולדות רבי נתן", filename: "תולדות רבי נתן.txt" &rbrace;
+        { name: "דרשות רבי נתן", filename: "דרשות רבי נתן.txt" },
+        { name: "שיחות רבי נתן", filename: "שיחות רבי נתן.txt" },
+        { name: "תולדות רבי נתן", filename: "תולדות רבי נתן.txt" }
       ]
-    &rbrace;,
-    &lbrace;
+    },
+    {
       name: "ספרי רבי אלתר טפליקער",
       originalName: "4_ספרי רבי אלתר טפליקער",
       books: [
-        &lbrace; name: "שיחות מהר''א טפליקער", filename: "שיחות מהר''א טפליקער.txt" &rbrace;,
-        &lbrace; name: "תולדות מהר''א טפליקער", filename: "תולדות מהר''א טפליקער.txt" &rbrace;
+        { name: "שיחות מהר''א טפליקער", filename: "שיחות מהר''א טפליקער.txt" },
+        { name: "תולדות מהר''א טפליקער", filename: "תולדות מהר''א טפליקער.txt" }
       ]
-    &rbrace;,
-    &lbrace;
+    },
+    {
       name: "ספרי רבי אברהם בר' נחמן",
       originalName: "5_ספרי רבי אברהם בר' נחמן",
       books: [
-        &lbrace; name: "שיחות הר''אבר''ן", filename: "שיחות הר''אבר''ן.txt" &rbrace;,
-        &lbrace; name: "שיחות הר''אבר''ן ב", filename: "שיחות הר''אבר''ן ב.txt" &rbrace;,
-        &lbrace; name: "תולדות הר''אבר''ן", filename: "תולדות הר''אבר''ן.txt" &rbrace;
+        { name: "שיחות הר''אבר''ן", filename: "שיחות הר''אבר''ן.txt" },
+        { name: "שיחות הר''אבר''ן ב", filename: "שיחות הר''אבר''ן ב.txt" },
+        { name: "תולדות הר''אבר''ן", filename: "תולדות הר''אבר''ן.txt" }
       ]
-    &rbrace;,
-    &lbrace;
+    },
+    {
       name: "ספרי רבי שמשון בארסקי",
       originalName: "6_ספרי רבי שמשון בארסקי",
       books: [
-        &lbrace; name: "שיחות רבי שמשון", filename: "שיחות רבי שמשון.txt" &rbrace;,
-        &lbrace; name: "תולדות רבי שמשון", filename: "תולדות רבי שמשון.txt" &rbrace;
+        { name: "שיחות רבי שמשון", filename: "שיחות רבי שמשון.txt" },
+        { name: "תולדות רבי שמשון", filename: "תולדות רבי שמשון.txt" }
       ]
-    &rbrace;,
-    &lbrace;
+    },
+    {
       name: "ספרים של תלמידים ועוד",
       originalName: "6_ספרים של תלמידים ועוד",
       books: [
-        &lbrace; name: "אגרות קודש ברסלב", filename: "אגרות קודש ברסלב.txt" &rbrace;,
-        &lbrace; name: "דרשות אחרונות", filename: "דרשות אחרונות.txt" &rbrace;,
-        &lbrace; name: "דרשות ליום ההילולא", filename: "דרשות ליום ההילולא.txt" &rbrace;,
-        &lbrace; name: "הגדה של פסח", filename: "הגדה של פסח.txt" &rbrace;,
-        &lbrace; name: "ילקוט ישראל", filename: "ילקוט ישראל.txt" &rbrace;,
-        &lbrace; name: "ליקוטים מכתבים", filename: "ליקוטים מכתבים.txt" &rbrace;,
-        &lbrace; name: "מאמרי מרא דאבוה", filename: "מאמרי מרא דאבוה.txt" &rbrace;,
-        &lbrace; name: "מכתב לתלמידים", filename: "מכתב לתלמידים.txt" &rbrace;,
-        &lbrace; name: "על ספר הזוהר", filename: "על ספר הזוהר.txt" &rbrace;,
-        &lbrace; name: "פיואל הלולא", filename: "פיואל הלולא.txt" &rbrace;,
-        &lbrace; name: "שיחות ליום טוב", filename: "שיחות ליום טוב.txt" &rbrace;,
-        &lbrace; name: "תיקונים", filename: "תיקונים.txt" &rbrace;
+        { name: "אגרות קודש ברסלב", filename: "אגרות קודש ברסלב.txt" },
+        { name: "דרשות אחרונות", filename: "דרשות אחרונות.txt" },
+        { name: "דרשות ליום ההילולא", filename: "דרשות ליום ההילולא.txt" },
+        { name: "הגדה של פסח", filename: "הגדה של פסח.txt" },
+        { name: "ילקוט ישראל", filename: "ילקוט ישראל.txt" },
+        { name: "ליקוטים מכתבים", filename: "ליקוטים מכתבים.txt" },
+        { name: "מאמרי מרא דאבוה", filename: "מאמרי מרא דאבוה.txt" },
+        { name: "מכתב לתלמידים", filename: "מכתב לתלמידים.txt" },
+        { name: "על ספר הזוהר", filename: "על ספר הזוהר.txt" },
+        { name: "פיואל הלולא", filename: "פיואל הלולא.txt" },
+        { name: "שיחות ליום טוב", filename: "שיחות ליום טוב.txt" },
+        { name: "תיקונים", filename: "תיקונים.txt" }
       ]
-    &rbrace;,
-    &lbrace;
+    },
+    {
       name: "סיפורים",
       originalName: "91_סיפורים",
       books: [
-        &lbrace; name: "סיפורי מעשיות עברית", filename: "סיפורי מעשיות עברית.txt" &rbrace;,
-        &lbrace; name: "סיפורים נוספים", filename: "סיפורים נוספים.txt" &rbrace;
+        { name: "סיפורי מעשיות עברית", filename: "סיפורי מעשיות עברית.txt" },
+        { name: "סיפורים נוספים", filename: "סיפורים נוספים.txt" }
       ]
-    &rbrace;,
-    &lbrace;
+    },
+    {
       name: "ספרים מתורגמים",
       originalName: "92_ספרים מתורגמים",
       books: [
-        &lbrace; name: "ליקוטי מוהר''ן אנגלית", filename: "ליקוטי מוהר''ן אנגלית.txt" &rbrace;
+        { name: "ליקוטי מוהר''ן אנגלית", filename: "ליקוטי מוהר''ן אנגלית.txt" }
       ]
-    &rbrace;,
-    &lbrace;
+    },
+    {
       name: "ליקוטי מוהר''ן - עברית",
       originalName: "lm-hebrew",
       isHtml: true,
       htmlReader: "/books/read?volume=",
       books: [
-        &lbrace; name: "ליקוטי מוהר''ן חלק א (1-100)", volume: "1", range: "1-100" &rbrace;,
-        &lbrace; name: "ליקוטי מוהר''ן חלק א (101-200)", volume: "1", range: "101-200" &rbrace;,
-        &lbrace; name: "ליקוטי מוהר''ן חלק א (201-286)", volume: "1", range: "201-286" &rbrace;,
-        &lbrace; name: "ליקוטי מוהר''ן חלק ב (1-125)", volume: "2", range: "1-125" &rbrace;
+        { name: "ליקוטי מוהר''ן חלק א (1-100)", volume: "1", range: "1-100" },
+        { name: "ליקוטי מוהר''ן חלק א (101-200)", volume: "1", range: "101-200" },
+        { name: "ליקוטי מוהר''ן חלק א (201-286)", volume: "1", range: "201-286" },
+        { name: "ליקוטי מוהר''ן חלק ב (1-125)", volume: "2", range: "1-125" }
       ]
-    &rbrace;,
-    &lbrace;
+    },
+    {
       name: "ביבליוגרפית ברסלב",
       originalName: "ביבליוגרפית ברסלב",
       books: [
-        &lbrace; name: "אוצר הספרים", filename: "אוצר הספרים.txt" &rbrace;,
-        &lbrace; name: "ביבליוגרפיה ברסלב א", filename: "ביבליוגרפיה ברסלב א.txt" &rbrace;,
-        &lbrace; name: "ביבליוגרפיה ברסלב ב", filename: "ביבליוגרפיה ברסלב ב.txt" &rbrace;,
-        &lbrace; name: "ביבליוגרפיה ברסלב ג", filename: "ביבליוגרפיה ברסלב ג.txt" &rbrace;,
-        &lbrace; name: "ביבליוגרפיה ברסלב ד", filename: "ביבליוגרפיה ברסלב ד.txt" &rbrace;,
-        &lbrace; name: "ביבליוגרפיה ברסלב ה", filename: "ביבליוגרפיה ברסלב ה.txt" &rbrace;,
-        &lbrace; name: "ביבליוגרפיה ברסלב ו", filename: "ביבליוגרפיה ברסלב ו.txt" &rbrace;,
-        &lbrace; name: "ביבליוגרפיה ברסלב ז", filename: "ביבליוגרפיה ברסלב ז.txt" &rbrace;,
-        &lbrace; name: "ספרי ברסלב מאז 2000", filename: "ספרי ברסלב מאז 2000.txt" &rbrace;
+        { name: "אוצר הספרים", filename: "אוצר הספרים.txt" },
+        { name: "ביבליוגרפיה ברסלב א", filename: "ביבליוגרפיה ברסלב א.txt" },
+        { name: "ביבליוגרפיה ברסלב ב", filename: "ביבליוגרפיה ברסלב ב.txt" },
+        { name: "ביבליוגרפיה ברסלב ג", filename: "ביבליוגרפיה ברסלב ג.txt" },
+        { name: "ביבליוגרפיה ברסלב ד", filename: "ביבליוגרפיה ברסלב ד.txt" },
+        { name: "ביבליוגרפיה ברסלב ה", filename: "ביבליוגרפיה ברסלב ה.txt" },
+        { name: "ביבליוגרפיה ברסלב ו", filename: "ביבליוגרפיה ברסלב ו.txt" },
+        { name: "ביבליוגרפיה ברסלב ז", filename: "ביבליוגרפיה ברסלב ז.txt" },
+        { name: "ספרי ברסלב מאז 2000", filename: "ספרי ברסלב מאז 2000.txt" }
       ]
-    &rbrace;,
-    &lbrace;
+    },
+    {
       name: "לוי יצחק בנדר",
       originalName: "לוי יצחק בנדר",
       books: [
-        &lbrace; name: "אוצר הדיבורים", filename: "אוצר הדיבורים.txt" &rbrace;,
-        &lbrace; name: "דרשות לוי יצחק", filename: "דרשות לוי יצחק.txt" &rbrace;,
-        &lbrace; name: "דרשות לוי יצחק ב", filename: "דרשות לוי יצחק ב.txt" &rbrace;,
-        &lbrace; name: "דרשות לוי יצחק ג", filename: "דרשות לוי יצחק ג.txt" &rbrace;,
-        &lbrace; name: "שיחות לוי יצחק", filename: "שיחות לוי יצחק.txt" &rbrace;,
-        &lbrace; name: "שיחות לוי יצחק ב", filename: "שיחות לוי יצחק ב.txt" &rbrace;,
-        &lbrace; name: "תולדות לוי יצחק", filename: "תולדות לוי יצחק.txt" &rbrace;
+        { name: "אוצר הדיבורים", filename: "אוצר הדיבורים.txt" },
+        { name: "דרשות לוי יצחק", filename: "דרשות לוי יצחק.txt" },
+        { name: "דרשות לוי יצחק ב", filename: "דרשות לוי יצחק ב.txt" },
+        { name: "דרשות לוי יצחק ג", filename: "דרשות לוי יצחק ג.txt" },
+        { name: "שיחות לוי יצחק", filename: "שיחות לוי יצחק.txt" },
+        { name: "שיחות לוי יצחק ב", filename: "שיחות לוי יצחק ב.txt" },
+        { name: "תולדות לוי יצחק", filename: "תולדות לוי יצחק.txt" }
       ]
-    &rbrace;
+    }
   ];
 
   // Flat list for search
   const allBooks = booksData.flatMap(cat => 
-    cat.books.map(book => (&lbrace;
+    cat.books.map(book => ({
       ...book,
       category: cat.name,
       categoryKey: cat.originalName,
       isHtml: cat.isHtml || false,
       htmlReader: cat.htmlReader || ''
-    &rbrace;))
+    }))
   );
 
   // Render categories
   const categoriesGrid = document.getElementById('categoriesGrid');
   
-  booksData.forEach((category, idx) => &lbrace;
+  booksData.forEach((category, idx) => {
     const card = document.createElement('div');
     card.className = 'category-card';
-    card.style.setProperty('--delay', `$&lbrace;idx * 0.05&rbrace;s`);
+    card.style.setProperty('--delay', `${idx * 0.05}s`);
     card.dataset.category = category.name;
     
     card.innerHTML = `
       <div class="category-header">
-        <h2>$&lbrace;category.name&rbrace;</h2>
-        <span class="book-count">$&lbrace;category.books.length&rbrace; ספרים</span>
+        <h2>${category.name}</h2>
+        <span class="book-count">${category.books.length} ספרים</span>
       </div>
       <ul class="book-list">
-        $&lbrace;category.books.map((book, bookIdx) => &lbrace;
+        ${category.books.map((book, bookIdx) => {
           const link = category.isHtml 
-            ? `$&lbrace;category.htmlReader&rbrace;$&lbrace;book.volume&rbrace;&torah=1`
-            : `/books/read?category=$&lbrace;encodeURIComponent(category.originalName)&rbrace;&book=$&lbrace;encodeURIComponent(book.filename)&rbrace;`;
+            ? `${category.htmlReader}${book.volume}&torah=1`
+            : `/books/read?category=${encodeURIComponent(category.originalName)}&book=${encodeURIComponent(book.filename)}`;
           return `
-          <li class="book-item" style="--delay: $&lbrace;bookIdx * 0.02&rbrace;s">
-            <a href="$&lbrace;link&rbrace;">
-              <span class="book-icon">$&lbrace;category.isHtml ? '📚' : '📖'&rbrace;</span>
-              <span class="book-name">$&lbrace;book.name&rbrace;</span>
+          <li class="book-item" style="--delay: ${bookIdx * 0.02}s">
+            <a href="${link}">
+              <span class="book-icon">${category.isHtml ? '📚' : '📖'}</span>
+              <span class="book-name">${book.name}</span>
             </a>
           </li>
-        `&rbrace;).join('')&rbrace;
+        `}).join('')}
       </ul>
     `;
     
     categoriesGrid.appendChild(card);
-  &rbrace;);
+  });
 
   // Search functionality
   const searchInput = document.getElementById('bookSearch');
@@ -235,84 +235,84 @@ import Layout from '../layouts/Layout.astro';
   const resultsList = document.getElementById('resultsList');
   const backBtn = document.getElementById('backToCategories');
 
-  searchInput.addEventListener('input', (e) => &lbrace;
+  searchInput.addEventListener('input', (e) => {
     const query = e.target.value.trim().toLowerCase();
     
-    if (query.length < 2) &lbrace;
+    if (query.length < 2) {
       searchResults.style.display = 'none';
       categoriesGrid.style.display = 'grid';
       return;
-    &rbrace;
+    }
 
     const results = allBooks.filter(book => 
       book.name.toLowerCase().includes(query) || 
       book.category.toLowerCase().includes(query)
     );
 
-    if (results.length === 0) &lbrace;
+    if (results.length === 0) {
       resultsList.innerHTML = '<li class="no-results">לא נמצאו תוצאות / No results found</li>';
-    &rbrace; else &lbrace;
-      resultsList.innerHTML = results.map(book => &lbrace;
+    } else {
+      resultsList.innerHTML = results.map(book => {
         const link = book.isHtml 
-          ? `$&lbrace;book.htmlReader&rbrace;$&lbrace;book.volume&rbrace;&torah=1`
-          : `/books/read?category=$&lbrace;encodeURIComponent(book.categoryKey)&rbrace;&book=$&lbrace;encodeURIComponent(book.filename)&rbrace;`;
+          ? `${book.htmlReader}${book.volume}&torah=1`
+          : `/books/read?category=${encodeURIComponent(book.categoryKey)}&book=${encodeURIComponent(book.filename)}`;
         return `
         <li>
-          <a href="$&lbrace;link&rbrace;">
-            <span class="result-category">$&lbrace;book.category&rbrace;</span>
-            <span class="result-name">$&lbrace;book.name&rbrace;</span>
+          <a href="${link}">
+            <span class="result-category">${book.category}</span>
+            <span class="result-name">${book.name}</span>
           </a>
         </li>
-      `&rbrace;).join('');
-    &rbrace;
+      `}).join('');
+    }
 
     categoriesGrid.style.display = 'none';
     searchResults.style.display = 'block';
-  &rbrace;);
+  });
 
-  backBtn.addEventListener('click', () => &lbrace;
+  backBtn.addEventListener('click', () => {
     searchResults.style.display = 'none';
     categoriesGrid.style.display = 'grid';
     searchInput.value = '';
-  &rbrace;);
+  });
 </script>
 
 <style>
-  .books-page &lbrace;
+  .books-page {
     min-height: 100vh;
     background: linear-gradient(180deg, #1a365d 0%, #2d4a6f 100%);
     padding: 2rem;
-  &rbrace;
+  }
 
-  .page-header &lbrace;
+  .page-header {
     text-align: center;
     margin-bottom: 2rem;
-  &rbrace;
+  }
 
-  .page-header h1 &lbrace;
+  .page-header h1 {
     font-family: var(--font-hebrew);
     font-size: 2.5rem;
     color: white;
     margin-bottom: 0.5rem;
-  &rbrace;
+  }
 
-  .subtitle &lbrace;
+  .subtitle {
     color: rgba(255,255,255,0.7);
     font-size: 1.1rem;
-  &rbrace;
+  }
 
-  .search-section &lbrace;
+  .search-section {
     max-width: 600px;
     margin: 0 auto 2rem;
-  &rbrace;
+  }
 
-  .search-box &lbrace;
+  .search-box {
     position: relative;
     display: flex;
     align-items: center;
-  &rbrace;
+  }
 
-  .search-box input &lbrace;
+  .search-box input {
     width: 100%;
     padding: 1rem 1.5rem 1rem 3rem;
     font-size: 1.1rem;
@@ -320,28 +320,28 @@ import Layout from '../layouts/Layout.astro';
     border-radius: 50px;
     background: white;
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-  &rbrace;
+  }
 
-  .search-box input:focus &lbrace;
+  .search-box input:focus {
     outline: none;
     box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-  &rbrace;
+  }
 
-  .search-icon &lbrace;
+  .search-icon {
     position: absolute;
     left: 1.2rem;
     font-size: 1.2rem;
-  &rbrace;
+  }
 
-  .categories-grid &lbrace;
+  .categories-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 1.5rem;
     max-width: 1400px;
     margin: 0 auto;
-  &rbrace;
+  }
 
-  .category-card &lbrace;
+  .category-card {
     background: white;
     border-radius: 12px;
     overflow: hidden;
@@ -349,66 +349,66 @@ import Layout from '../layouts/Layout.astro';
     animation: fadeInUp 0.5s ease forwards;
     animation-delay: var(--delay);
     opacity: 0;
-  &rbrace;
+  }
 
-  @keyframes fadeInUp &lbrace;
-    from &lbrace;
+  @keyframes fadeInUp {
+    from {
       opacity: 0;
       transform: translateY(20px);
-    &rbrace;
-    to &lbrace;
+    }
+    to {
       opacity: 1;
       transform: translateY(0);
-    &rbrace;
-  &rbrace;
+    }
+  }
 
-  .category-header &lbrace;
+  .category-header {
     background: linear-gradient(135deg, #1a365d, #2d4a6f);
     color: white;
     padding: 1.2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-  &rbrace;
+  }
 
-  .category-header h2 &lbrace;
+  .category-header h2 {
     font-family: var(--font-hebrew);
     font-size: 1.3rem;
     margin: 0;
-  &rbrace;
+  }
 
-  .book-count &lbrace;
+  .book-count {
     font-size: 0.85rem;
     background: rgba(255,255,255,0.2);
     padding: 0.3rem 0.8rem;
     border-radius: 20px;
-  &rbrace;
+  }
 
-  .book-list &lbrace;
+  .book-list {
     list-style: none;
     padding: 0;
     margin: 0;
     max-height: 300px;
     overflow-y: auto;
-  &rbrace;
+  }
 
-  .book-item &lbrace;
+  .book-item {
     border-bottom: 1px solid #eee;
     animation: fadeIn 0.3s ease forwards;
     animation-delay: var(--delay);
     opacity: 0;
-  &rbrace;
+  }
 
-  @keyframes fadeIn &lbrace;
-    from &lbrace; opacity: 0; &rbrace;
-    to &lbrace; opacity: 1; &rbrace;
-  &rbrace;
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
 
-  .book-item:last-child &lbrace;
+  .book-item:last-child {
     border-bottom: none;
-  &rbrace;
+  }
 
-  .book-item a &lbrace;
+  .book-item a {
     display: flex;
     align-items: center;
     gap: 0.8rem;
@@ -416,78 +416,78 @@ import Layout from '../layouts/Layout.astro';
     text-decoration: none;
     color: #333;
     transition: all 0.2s;
-  &rbrace;
+  }
 
-  .book-item a:hover &lbrace;
+  .book-item a:hover {
     background: #f7f5f0;
     color: #c53030;
-  &rbrace;
+  }
 
-  .book-icon &lbrace;
+  .book-icon {
     font-size: 1.2rem;
-  &rbrace;
+  }
 
-  .book-name &lbrace;
+  .book-name {
     font-family: var(--font-hebrew);
     font-size: 1rem;
-  &rbrace;
+  }
 
   /* Search Results */
-  .search-results &lbrace;
+  .search-results {
     max-width: 800px;
     margin: 0 auto;
-  &rbrace;
+  }
 
-  .search-results h3 &lbrace;
+  .search-results h3 {
     color: white;
     text-align: center;
     margin-bottom: 1.5rem;
-  &rbrace;
+  }
 
-  .results-list &lbrace;
+  .results-list {
     list-style: none;
     padding: 0;
     margin: 0;
     background: white;
     border-radius: 12px;
     overflow: hidden;
-  &rbrace;
+  }
 
-  .results-list li &lbrace;
+  .results-list li {
     border-bottom: 1px solid #eee;
-  &rbrace;
+  }
 
-  .results-list li a &lbrace;
+  .results-list li a {
     display: flex;
     flex-direction: column;
     padding: 1rem 1.5rem;
     text-decoration: none;
     transition: background 0.2s;
-  &rbrace;
+  }
 
-  .results-list li a:hover &lbrace;
+  .results-list li a:hover {
     background: #f7f5f0;
-  &rbrace;
+  }
 
-  .result-category &lbrace;
+  .result-category {
     font-size: 0.85rem;
     color: #666;
     margin-bottom: 0.3rem;
-  &rbrace;
+  }
 
-  .result-name &lbrace;
+  .result-name {
     font-family: var(--font-hebrew);
     font-size: 1.1rem;
     color: #1a365d;
-  &rbrace;
+  }
 
-  .no-results &lbrace;
+  .no-results {
     padding: 2rem;
     text-align: center;
     color: #666;
-  &rbrace;
+  }
 
-  .back-btn &lbrace;
+  .back-btn {
     display: block;
     width: 100%;
     max-width: 300px;
@@ -501,24 +501,24 @@ import Layout from '../layouts/Layout.astro';
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
-  &rbrace;
+  }
 
-  .back-btn:hover &lbrace;
+  .back-btn:hover {
     background: #f7f5f0;
     transform: translateY(-2px);
-  &rbrace;
+  }
 
-  @media (max-width: 768px) &lbrace;
-    .books-page &lbrace;
+  @media (max-width: 768px) {
+    .books-page {
       padding: 1rem;
-    &rbrace;
+    }
 
-    .page-header h1 &lbrace;
+    .page-header h1 {
       font-size: 1.8rem;
-    &rbrace;
+    }
 
-    .categories-grid &lbrace;
+    .categories-grid {
       grid-template-columns: 1fr;
-    &rbrace;
-  &rbrace;
+    }
+  }
 </style>

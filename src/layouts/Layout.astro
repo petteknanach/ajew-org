@@ -1,15 +1,15 @@
 -
-interface Props &lbrace;
+interface Props {
   title: string;
   description?: string;
   image?: string;
-&rbrace;
+}
 
-const &lbrace; 
+const { 
   title, 
   description = "Rabbi Nachman's Factory of Judaism - Nanach. Explore Rabbi Nachman's wisdom and inspiration.",
   image = "/og-image.svg"
-&rbrace; = Astro.props;
+} = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const ogImage = new URL(image, Astro.site);
@@ -20,23 +20,23 @@ const ogImage = new URL(image, Astro.site);
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content=&lbrace;description&rbrace; />
-    <link rel="canonical" href=&lbrace;canonicalURL&rbrace; />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>&lbrace;title&rbrace; | A Jew</title>
+    <title>{title} | A Jew</title>
     
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content=&lbrace;canonicalURL&rbrace; />
-    <meta property="og:title" content=&lbrace;title&rbrace; />
-    <meta property="og:description" content=&lbrace;description&rbrace; />
-    <meta property="og:image" content=&lbrace;ogImage&rbrace; />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
     
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content=&lbrace;title&rbrace; />
-    <meta name="twitter:description" content=&lbrace;description&rbrace; />
-    <meta name="twitter:image" content=&lbrace;ogImage&rbrace; />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
     
     <!-- Preconnect for performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -44,24 +44,24 @@ const ogImage = new URL(image, Astro.site);
     <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     
     <!-- JSON-LD Structured Data -->
-    <script type="application/ld+json" set:html=&lbrace;JSON.stringify(&lbrace;
+    <script type="application/ld+json" set:html={JSON.stringify({
       "@context": "https://schema.org",
       "@type": "WebSite",
       "name": "A Jew - Na Nach Breslov",
       "url": "https://ajew.org",
       "description": "Teachings of Rebbe Nachman of Breslov and the Na Nach movement",
-      "potentialAction": &lbrace;
+      "potentialAction": {
         "@type": "SearchAction",
-        "target": "https://ajew.org/teachings?q=&lbrace;search_term_string&rbrace;",
+        "target": "https://ajew.org/teachings?q={search_term_string}",
         "query-input": "required name=search_term_string"
-      &rbrace;
-    &rbrace;)&rbrace; />
+      }
+    })} />
 
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-64VMMKHB30"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
-      function gtag()&lbrace;dataLayer.push(arguments);&rbrace;
+      function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', 'G-64VMMKHB30');
     </script>
@@ -91,14 +91,14 @@ const ogImage = new URL(image, Astro.site);
       <div class="footer-container">
         <p>נ נח נחמ נחמן מאומן</p>
         <p>Na Nach Nachma Nachman Me'Uman</p>
-        <p class="copyright">© &lbrace;new Date().getFullYear()&rbrace; ajew.org</p>
+        <p class="copyright">© {new Date().getFullYear()} ajew.org</p>
       </div>
     </footer>
   </body>
 </html>
 
 <style is:global>
-  :root &lbrace;
+  :root {
     --color-primary: #1a365d;
     --color-secondary: #2c5282;
     --color-accent: #ed8936;
@@ -106,105 +106,105 @@ const ogImage = new URL(image, Astro.site);
     --color-text: #2d3748;
     --font-hebrew: 'Frank Ruhl Libre', serif;
     --font-body: 'Open Sans', sans-serif;
-  &rbrace;
+  }
 
-  * &lbrace;
+  * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-  &rbrace;
+  }
 
-  html &lbrace;
+  html {
     font-family: var(--font-body);
     background: var(--color-bg);
     color: var(--color-text);
     scroll-behavior: smooth;
-  &rbrace;
+  }
 
-  body &lbrace;
+  body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-  &rbrace;
+  }
 
-  main &lbrace;
+  main {
     flex: 1;
-  &rbrace;
+  }
 
-  .navbar &lbrace;
+  .navbar {
     background: var(--color-primary);
     padding: 1rem 2rem;
     position: sticky;
     top: 0;
     z-index: 100;
-  &rbrace;
+  }
 
-  .nav-container &lbrace;
+  .nav-container {
     max-width: 1200px;
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
     align-items: center;
-  &rbrace;
+  }
 
-  .logo &lbrace;
+  .logo {
     text-decoration: none;
-  &rbrace;
+  }
 
-  .logo-text &lbrace;
+  .logo-text {
     font-family: var(--font-hebrew);
     font-size: 1.8rem;
     font-weight: 700;
     color: white;
-  &rbrace;
+  }
 
-  .nav-links &lbrace;
+  .nav-links {
     display: flex;
     gap: 2rem;
-  &rbrace;
+  }
 
-  .nav-links a &lbrace;
+  .nav-links a {
     color: white;
     text-decoration: none;
     font-weight: 600;
     transition: color 0.2s;
-  &rbrace;
+  }
 
-  .nav-links a:hover &lbrace;
+  .nav-links a:hover {
     color: var(--color-accent);
-  &rbrace;
+  }
 
-  footer &lbrace;
+  footer {
     background: var(--color-primary);
     color: white;
     padding: 2rem;
     text-align: center;
-  &rbrace;
+  }
 
-  .footer-container &lbrace;
+  .footer-container {
     max-width: 1200px;
     margin: 0 auto;
-  &rbrace;
+  }
 
-  footer p &lbrace;
+  footer p {
     margin: 0.5rem 0;
-  &rbrace;
+  }
 
-  footer p:first-child &lbrace;
+  footer p:first-child {
     font-family: var(--font-hebrew);
     font-size: 1.5rem;
-  &rbrace;
+  }
 
-  .copyright &lbrace;
+  .copyright {
     opacity: 0.7;
     font-size: 0.9rem;
     margin-top: 1rem;
-  &rbrace;
+  }
 
-  @media (max-width: 768px) &lbrace;
-    .nav-links &lbrace;
+  @media (max-width: 768px) {
+    .nav-links {
       gap: 1rem;
       font-size: 0.9rem;
-    &rbrace;
-  &rbrace;
+    }
+  }
 <

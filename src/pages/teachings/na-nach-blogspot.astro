@@ -2,50 +2,50 @@
 import Layout from '../../layouts/Layout.astro';
 
 const blogPosts = [
-  &lbrace;
+  {
     title: "Likutay Moharan - עמוד האמצעי",
     hebrew: "ליקוטי מוהרן - עמוד האמצעי לעלות מהיכל להיכל",
     date: "January 11, 2026",
     url: "https://naanaach.blogspot.com/2026/01/blog-post.html",
     label: "Likutay Moharan"
-  &rbrace;,
-  &lbrace;
+  },
+  {
     title: "The Berdichever's Falling",
     hebrew: "The Berdichever's falling",
     date: "January 5, 2026",
     url: "https://naanaach.blogspot.com/2026/01/the-berdichevers-falling.html",
     label: "Stories"
-  &rbrace;,
-  &lbrace;
+  },
+  {
     title: "Watching Animals Fight",
     hebrew: "ליקוטי מוהרן תורה רלג",
     date: "January 3, 2026",
     url: "https://naanaach.blogspot.com/2026/01/watching-animals-fight.html",
     label: "Likutay Moharan"
-  &rbrace;,
-  &lbrace;
+  },
+  {
     title: "How the Hatred of the Shpoler Zaide Started",
     hebrew: "איך התחיל השנאה של השפאלע זיידא והאסיפה לעשות חרם",
     date: "December 31, 2025",
     url: "https://naanaach.blogspot.com/2025/12/blog-post.html",
     label: "Chassidic History"
-  &rbrace;,
-  &lbrace;
+  },
+  {
     title: "Breslov - Best Life",
     hebrew: "Breslov - Best Life",
     date: "January 28, 2026",
     url: "https://naanaach.blogspot.com/2026/01/breslov-best-life.html",
     label: "Inspiration"
-  &rbrace;
+  }
 ];
 
 const categories = [
-  &lbrace; name: "Likutay Moharan", count: "ליקוטי מוהרן", icon: "📖" &rbrace;,
-  &lbrace; name: "Chassidic History", count: "חסידות", icon: "📜" &rbrace;,
-  &lbrace; name: "Stories", count: "סיפורים", icon: "📚" &rbrace;,
-  &lbrace; name: "Inspiration", count: "השראה", icon: "💫" &rbrace;,
-  &lbrace; name: "Tikunim", count: "תיקונים", icon: "🙏" &rbrace;,
-  &lbrace; name: "Articles", count: "מאמרים", icon: "✡️" &rbrace;
+  { name: "Likutay Moharan", count: "ליקוטי מוהרן", icon: "📖" },
+  { name: "Chassidic History", count: "חסידות", icon: "📜" },
+  { name: "Stories", count: "סיפורים", icon: "📚" },
+  { name: "Inspiration", count: "השראה", icon: "💫" },
+  { name: "Tikunim", count: "תיקונים", icon: "🙏" },
+  { name: "Articles", count: "מאמרים", icon: "✡️" }
 ];
 ---
 
@@ -62,13 +62,13 @@ const categories = [
   <section class="categories">
     <div class="container">
       <div class="categories-grid">
-        &lbrace;categories.map((cat) => (
-          <a href=&lbrace;`https://naanaach.blogspot.com/search/label/$&lbrace;cat.name.replace(/ /g, '%20')&rbrace;`&rbrace; target="_blank" rel="noopener noreferrer" class="category-card">
-            <span class="icon">&lbrace;cat.icon&rbrace;</span>
-            <h3>&lbrace;cat.name&rbrace;</h3>
-            <p class="hebrew">&lbrace;cat.count&rbrace;</p>
+        {categories.map((cat) => (
+          <a href={`https://naanaach.blogspot.com/search/label/${cat.name.replace(/ /g, '%20')}`} target="_blank" rel="noopener noreferrer" class="category-card">
+            <span class="icon">{cat.icon}</span>
+            <h3>{cat.name}</h3>
+            <p class="hebrew">{cat.count}</p>
           </a>
-        ))&rbrace;
+        ))}
       </div>
     </div>
   </section>
@@ -77,17 +77,17 @@ const categories = [
     <div class="container">
       <h2>📝 Latest Posts</h2>
       <div class="posts-grid">
-        &lbrace;blogPosts.map((post) => (
-          <a href=&lbrace;post.url&rbrace; target="_blank" rel="noopener noreferrer" class="post-card">
+        {blogPosts.map((post) => (
+          <a href={post.url} target="_blank" rel="noopener noreferrer" class="post-card">
             <div class="post-meta">
-              <span class="label">&lbrace;post.label&rbrace;</span>
-              <span class="date">&lbrace;post.date&rbrace;</span>
+              <span class="label">{post.label}</span>
+              <span class="date">{post.date}</span>
             </div>
-            <h3>&lbrace;post.title&rbrace;</h3>
-            <p class="hebrew">&lbrace;post.hebrew&rbrace;</p>
+            <h3>{post.title}</h3>
+            <p class="hebrew">{post.hebrew}</p>
             <span class="read-more">Read on BlogSpot →</span>
           </a>
-        ))&rbrace;
+        ))}
       </div>
     </div>
   </section>
@@ -104,32 +104,32 @@ const categories = [
 </Layout>
 
 <style>
-  .page-header &lbrace;
+  .page-header {
     background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
     color: white;
     padding: 5rem 2rem;
     text-align: center;
-  &rbrace;
+  }
 
-  .page-header h1 &lbrace;
+  .page-header h1 {
     font-family: var(--font-hebrew);
     font-size: 2.5rem;
     margin-bottom: 0.5rem;
-  &rbrace;
+  }
 
-  .page-header p &lbrace;
+  .page-header p {
     opacity: 0.9;
     font-size: 1.2rem;
-  &rbrace;
+  }
 
-  .hebrew-banner &lbrace;
+  .hebrew-banner {
     font-family: var(--font-hebrew);
     font-size: 1.5rem;
     letter-spacing: 0.1em;
     margin: 1.5rem 0;
-  &rbrace;
+  }
 
-  .visit-blog &lbrace;
+  .visit-blog {
     display: inline-block;
     margin-top: 1rem;
     padding: 0.75rem 1.5rem;
@@ -139,31 +139,31 @@ const categories = [
     border-radius: 6px;
     font-weight: 500;
     transition: background 0.3s;
-  &rbrace;
+  }
 
-  .visit-blog:hover &lbrace;
+  .visit-blog:hover {
     background: var(--color-accent);
     color: white;
-  &rbrace;
+  }
 
-  .container &lbrace;
+  .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 2rem;
-  &rbrace;
+  }
 
-  .categories &lbrace;
+  .categories {
     background: #f7f5f0;
     padding: 3rem 0;
-  &rbrace;
+  }
 
-  .categories-grid &lbrace;
+  .categories-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     gap: 1rem;
-  &rbrace;
+  }
 
-  .category-card &lbrace;
+  .category-card {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -174,47 +174,47 @@ const categories = [
     box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     text-decoration: none;
     transition: transform 0.3s, box-shadow 0.3s;
-  &rbrace;
+  }
 
-  .category-card:hover &lbrace;
+  .category-card:hover {
     transform: translateY(-3px);
     box-shadow: 0 6px 16px rgba(0,0,0,0.1);
-  &rbrace;
+  }
 
-  .category-card .icon &lbrace;
+  .category-card .icon {
     font-size: 2rem;
     margin-bottom: 0.5rem;
-  &rbrace;
+  }
 
-  .category-card h3 &lbrace;
+  .category-card h3 {
     color: var(--color-primary);
     font-size: 1rem;
     margin-bottom: 0.25rem;
-  &rbrace;
+  }
 
-  .category-card .hebrew &lbrace;
+  .category-card .hebrew {
     font-family: var(--font-hebrew);
     color: #888;
     font-size: 0.9rem;
-  &rbrace;
+  }
 
-  .latest-posts &lbrace;
+  .latest-posts {
     padding: 4rem 0;
-  &rbrace;
+  }
 
-  .latest-posts h2 &lbrace;
+  .latest-posts h2 {
     text-align: center;
     color: var(--color-primary);
     margin-bottom: 2rem;
-  &rbrace;
+  }
 
-  .posts-grid &lbrace;
+  .posts-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 1.5rem;
-  &rbrace;
+  }
 
-  .post-card &lbrace;
+  .post-card {
     display: block;
     background: white;
     padding: 1.5rem;
@@ -223,67 +223,67 @@ const categories = [
     text-decoration: none;
     transition: transform 0.3s, box-shadow 0.3s;
     border-left: 3px solid var(--color-accent);
-  &rbrace;
+  }
 
-  .post-card:hover &lbrace;
+  .post-card:hover {
     transform: translateY(-3px);
     box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-  &rbrace;
+  }
 
-  .post-meta &lbrace;
+  .post-meta {
     display: flex;
     justify-content: space-between;
     margin-bottom: 0.75rem;
     font-size: 0.85rem;
-  &rbrace;
+  }
 
-  .post-meta .label &lbrace;
+  .post-meta .label {
     background: var(--color-accent);
     color: white;
     padding: 0.2rem 0.6rem;
     border-radius: 4px;
-  &rbrace;
+  }
 
-  .post-meta .date &lbrace;
+  .post-meta .date {
     color: #888;
-  &rbrace;
+  }
 
-  .post-card h3 &lbrace;
+  .post-card h3 {
     color: var(--color-primary);
     font-size: 1.1rem;
     margin-bottom: 0.5rem;
-  &rbrace;
+  }
 
-  .post-card .hebrew &lbrace;
+  .post-card .hebrew {
     font-family: var(--font-hebrew);
     color: #666;
     margin-bottom: 1rem;
     font-size: 1rem;
-  &rbrace;
+  }
 
-  .read-more &lbrace;
+  .read-more {
     color: var(--color-accent);
     font-size: 0.9rem;
     font-weight: 500;
-  &rbrace;
+  }
 
-  .search-section &lbrace;
+  .search-section {
     background: #edf2f7;
     padding: 3rem 0;
     text-align: center;
-  &rbrace;
+  }
 
-  .search-section h2 &lbrace;
+  .search-section h2 {
     color: var(--color-primary);
     margin-bottom: 0.5rem;
-  &rbrace;
+  }
 
-  .search-section p &lbrace;
+  .search-section p {
     color: #666;
     margin-bottom: 1.5rem;
-  &rbrace;
+  }
 
-  .search-button &lbrace;
+  .search-button {
     display: inline-block;
     padding: 0.75rem 2rem;
     background: var(--color-primary);
@@ -292,15 +292,15 @@ const categories = [
     border-radius: 6px;
     font-weight: 500;
     transition: background 0.3s;
-  &rbrace;
+  }
 
-  .search-button:hover &lbrace;
+  .search-button:hover {
     background: var(--color-accent);
-  &rbrace;
+  }
 
-  @media (max-width: 768px) &lbrace;
-    .posts-grid &lbrace;
+  @media (max-width: 768px) {
+    .posts-grid {
       grid-template-columns: 1fr;
-    &rbrace;
-  &rbrace;
+    }
+  }
 </style>

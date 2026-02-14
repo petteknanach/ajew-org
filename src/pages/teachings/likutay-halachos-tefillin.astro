@@ -9,34 +9,34 @@ const pageDescription = "תפילין teachings from Likutay Halachos";
 ---
 
 <style>
-  .page-header &lbrace;
+  .page-header {
     background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
     color: white;
     padding: 4rem 2rem;
     text-align: center;
-  &rbrace;
-  .page-header h1 &lbrace;
+  }
+  .page-header h1 {
     font-family: var(--font-hebrew);
     font-size: 2.5rem;
     margin-bottom: 0.5rem;
-  &rbrace;
-  .page-header .subtitle &lbrace;
+  }
+  .page-header .subtitle {
     font-size: 1.2rem;
     opacity: 0.9;
     font-style: italic;
-  &rbrace;
-  .container &lbrace; max-width: 800px; margin: 0 auto; padding: 0 2rem; &rbrace;
-  .navigation &lbrace;
+  }
+  .container { max-width: 800px; margin: 0 auto; padding: 0 2rem; }
+  .navigation {
     background: #f7f5f0;
     padding: 1rem 0;
-  &rbrace;
-  .nav-links &lbrace;
+  }
+  .nav-links {
     display: flex;
     justify-content: center;
     gap: 1rem;
     flex-wrap: wrap;
-  &rbrace;
-  .nav-link &lbrace;
+  }
+  .nav-link {
     color: #1a365d;
     text-decoration: none;
     padding: 0.5rem 1rem;
@@ -44,66 +44,66 @@ const pageDescription = "תפילין teachings from Likutay Halachos";
     background: white;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     transition: all 0.2s;
-  &rbrace;
-  .nav-link:hover &lbrace;
+  }
+  .nav-link:hover {
     background: #1a365d;
     color: white;
-  &rbrace;
-  .content &lbrace; padding: 3rem 0; &rbrace;
-  .content-text &lbrace;
+  }
+  .content { padding: 3rem 0; }
+  .content-text {
     background: white;
     padding: 3rem;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  &rbrace;
-  .content-text :global(p) &lbrace;
+  }
+  .content-text :global(p) {
     font-size: 1.1rem;
     line-height: 1.9;
     color: #333;
     margin-bottom: 1.5rem;
     text-align: justify;
-  &rbrace;
-  .content-text :global(.key-term) &lbrace;
+  }
+  .content-text :global(.key-term) {
     color: #6b1d1d;
     font-weight: 600;
-  &rbrace;
-  .content-text :global(.bold-concept) &lbrace;
+  }
+  .content-text :global(.bold-concept) {
     font-weight: bold;
     color: #1a3c5e;
-  &rbrace;
-  .content-text :global(.transliteration) &lbrace;
+  }
+  .content-text :global(.transliteration) {
     font-style: italic;
     color: #555;
-  &rbrace;
-  .content-text :global(.source) &lbrace;
+  }
+  .content-text :global(.source) {
     font-size: 0.88em;
     color: #888;
-  &rbrace;
-  .content-text :global(.bracket-def) &lbrace;
+  }
+  .content-text :global(.bracket-def) {
     font-size: 0.92em;
     color: #666;
-  &rbrace;
-  .content-text :global(h2) &lbrace;
+  }
+  .content-text :global(h2) {
     color: #1a365d;
     font-size: 1.5rem;
     margin-top: 2rem;
     margin-bottom: 1rem;
     border-bottom: 2px solid #1a365d;
     padding-bottom: 0.5rem;
-  &rbrace;
-  .content-text :global(h3) &lbrace;
+  }
+  .content-text :global(h3) {
     color: #2c5282;
     font-size: 1.2rem;
     margin-top: 1.5rem;
     margin-bottom: 0.75rem;
     border-left: 3px solid #c8a96e;
     padding-left: 10px;
-  &rbrace;
-  .footer-nav &lbrace;
+  }
+  .footer-nav {
     background: #1a365d;
     padding: 2rem 0;
-  &rbrace;
-  .back-link &lbrace;
+  }
+  .back-link {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
@@ -112,13 +112,13 @@ const pageDescription = "תפילין teachings from Likutay Halachos";
     padding: 0.75rem 1.5rem;
     background: rgba(255,255,255,0.1);
     border-radius: 8px;
-  &rbrace;
-  .back-link:hover &lbrace;
+  }
+  .back-link:hover {
     background: rgba(255,255,255,0.2);
-  &rbrace;
-  @media (max-width: 768px) &lbrace;
-    .nav-links &lbrace; flex-direction: column; &rbrace;
-  &rbrace;
+  }
+  @media (max-width: 768px) {
+    .nav-links { flex-direction: column; }
+  }
 </style>
 
 <section class="page-header">

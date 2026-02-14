@@ -5,77 +5,77 @@ title: "Likutay Moharan"
 <script>
 // Generate Volume 1 links - exactly matching naanaach blog structure
 const vol1Sections = [
-  &lbrace; title: "Introduction", items: [
-    &lbrace; text: "Introduction", url: "/teachings/likutay-moharan-intro" &rbrace;,
-    &lbrace; text: "Rabbi Nachman's Poem", url: "/teachings/likutay-moharan-poem" &rbrace;,
-    &lbrace; text: "Preface - The Greatness of Rabbi Shimon", url: "/teachings/likutay-moharan-preface-greatness" &rbrace;
-  ]&rbrace;,
-  &lbrace; title: "Torahs 1-15 on Rabba bar bar Chana", items: [] &rbrace;,
-  &lbrace; title: "Torahs 16-18 of the Mishtu-ai - Those Who Told Over", items: [] &rbrace;,
-  &lbrace; title: "Torahs 19-22 on Safra DiTzneusa", items: [] &rbrace;,
-  &lbrace; title: "Torahs 23-31 on Suvay Divay Atuna - The Debate With the Elders of House of Atuna", items: [] &rbrace;,
-  &lbrace; title: "Torahs 32 to the End", items: [] &rbrace;
+  { title: "Introduction", items: [
+    { text: "Introduction", url: "/teachings/likutay-moharan-intro" },
+    { text: "Rabbi Nachman's Poem", url: "/teachings/likutay-moharan-poem" },
+    { text: "Preface - The Greatness of Rabbi Shimon", url: "/teachings/likutay-moharan-preface-greatness" }
+  ]},
+  { title: "Torahs 1-15 on Rabba bar bar Chana", items: [] },
+  { title: "Torahs 16-18 of the Mishtu-ai - Those Who Told Over", items: [] },
+  { title: "Torahs 19-22 on Safra DiTzneusa", items: [] },
+  { title: "Torahs 23-31 on Suvay Divay Atuna - The Debate With the Elders of House of Atuna", items: [] },
+  { title: "Torahs 32 to the End", items: [] }
 ];
 
 let vol1HTML = '';
 
-vol1Sections.forEach((section) => &lbrace;
+vol1Sections.forEach((section) => {
   vol1HTML += `<div style="margin-bottom: 1.5rem;">
-    <h3 style="color: #1a365d; font-size: 1.1rem; margin: 0 0 0.75rem 0; padding-bottom: 0.5rem; border-bottom: 1px solid #e2e8f0;">$&lbrace;section.title&rbrace;</h3>`;
+    <h3 style="color: #1a365d; font-size: 1.1rem; margin: 0 0 0.75rem 0; padding-bottom: 0.5rem; border-bottom: 1px solid #e2e8f0;">${section.title}</h3>`;
   
-  if (section.items && section.items.length > 0) &lbrace;
+  if (section.items && section.items.length > 0) {
     vol1HTML += `<div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.75rem;">`;
-    section.items.forEach(item => &lbrace;
-      vol1HTML += `<a href="$&lbrace;item.url&rbrace;" style="padding: 0.5rem 1rem; background: #ecfdf5; color: #059669; border-radius: 6px; text-decoration: none; font-size: 0.85rem;">$&lbrace;item.text&rbrace;</a>`;
-    &rbrace;);
+    section.items.forEach(item => {
+      vol1HTML += `<a href="${item.url}" style="padding: 0.5rem 1rem; background: #ecfdf5; color: #059669; border-radius: 6px; text-decoration: none; font-size: 0.85rem;">${item.text}</a>`;
+    });
     vol1HTML += `</div>`;
-  &rbrace;
+  }
   
   // Generate Torah links for this section
   let start = 1, end = 15;
-  if (section.title.includes("16-18")) &lbrace; start = 16; end = 18; &rbrace;
-  else if (section.title.includes("19-22")) &lbrace; start = 19; end = 22; &rbrace;
-  else if (section.title.includes("23-31")) &lbrace; start = 23; end = 31; &rbrace;
-  else if (section.title.includes("32")) &lbrace; start = 32; end = 286; &rbrace;
-  else if (section.title === "Introduction") &lbrace; start = 0; end = 0; &rbrace; // Skip numeric links
+  if (section.title.includes("16-18")) { start = 16; end = 18; }
+  else if (section.title.includes("19-22")) { start = 19; end = 22; }
+  else if (section.title.includes("23-31")) { start = 23; end = 31; }
+  else if (section.title.includes("32")) { start = 32; end = 286; }
+  else if (section.title === "Introduction") { start = 0; end = 0; } // Skip numeric links
   
-  if (start > 0) &lbrace;
+  if (start > 0) {
     vol1HTML += `<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); gap: 0.4rem;">`;
-    for (let i = start; i <= end; i++) &lbrace;
-      vol1HTML += `<a href="/teachings/likutay-moharan-volume-1-torah-$&lbrace;i&rbrace;" style="display: block; padding: 0.5rem; text-align: center; background: #f7fafc; border-radius: 6px; color: #1a365d; text-decoration: none; font-weight: 500; font-size: 0.85rem; transition: all 0.2s;">$&lbrace;i&rbrace;</a>`;
-    &rbrace;
+    for (let i = start; i <= end; i++) {
+      vol1HTML += `<a href="/teachings/likutay-moharan-volume-1-torah-${i}" style="display: block; padding: 0.5rem; text-align: center; background: #f7fafc; border-radius: 6px; color: #1a365d; text-decoration: none; font-weight: 500; font-size: 0.85rem; transition: all 0.2s;">${i}</a>`;
+    }
     vol1HTML += `</div>`;
-  &rbrace;
+  }
   
   vol1HTML += `</div>`;
-&rbrace;);
+});
 
 // Generate Volume 2 links - internal pages first
 let vol2InternalHTML = '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); gap: 0.4rem;">';
-for (let i = 1; i <= 125; i++) &lbrace;
-  vol2InternalHTML += `<a href="/teachings/likutay-moharan-volume-2-torah-$&lbrace;i&rbrace;" style="display: block; padding: 0.5rem; text-align: center; background: #fefce8; border-radius: 6px; color: #744210; text-decoration: none; font-weight: 500; font-size: 0.85rem; transition: all 0.2s;">$&lbrace;i&rbrace;</a>`;
-&rbrace;
+for (let i = 1; i <= 125; i++) {
+  vol2InternalHTML += `<a href="/teachings/likutay-moharan-volume-2-torah-${i}" style="display: block; padding: 0.5rem; text-align: center; background: #fefce8; border-radius: 6px; color: #744210; text-decoration: none; font-weight: 500; font-size: 0.85rem; transition: all 0.2s;">${i}</a>`;
+}
 vol2InternalHTML += '</div>';
 
 // Naanaach Blog Volume 2 external links (organized as on the blog)
 const vol2ExternalSections = [
-  &lbrace; title: "Lkm 1-20", label: 1 &rbrace;,
-  &lbrace; title: "Lkm 21-40", label: 21 &rbrace;,
-  &lbrace; title: "Lkm 41-60", label: 41 &rbrace;,
-  &lbrace; title: "Lkm 61-80", label: 61 &rbrace;,
-  &lbrace; title: "Lkm 81-100", label: 81 &rbrace;,
-  &lbrace; title: "Lkm 101-125", label: 101 &rbrace;
+  { title: "Lkm 1-20", label: 1 },
+  { title: "Lkm 21-40", label: 21 },
+  { title: "Lkm 41-60", label: 41 },
+  { title: "Lkm 61-80", label: 61 },
+  { title: "Lkm 81-100", label: 81 },
+  { title: "Lkm 101-125", label: 101 }
 ];
 
 let vol2ExternalHTML = '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.5rem; margin-top: 1rem;">';
-vol2ExternalSections.forEach((section) => &lbrace;
-  vol2ExternalHTML += `<a href="https://naanaach.blogspot.com/search/label/Lkm%20$&lbrace;section.label&rbrace;" target="_blank" style="display: block; padding: 0.6rem; text-align: center; background: #fef3c7; border: 2px solid #f59e0b; border-radius: 8px; color: #92400e; text-decoration: none; font-weight: 600; font-size: 0.85rem; transition: all 0.2s;">$&lbrace;section.title&rbrace; →</a>`;
-&rbrace;);
+vol2ExternalSections.forEach((section) => {
+  vol2ExternalHTML += `<a href="https://naanaach.blogspot.com/search/label/Lkm%20${section.label}" target="_blank" style="display: block; padding: 0.6rem; text-align: center; background: #fef3c7; border: 2px solid #f59e0b; border-radius: 8px; color: #92400e; text-decoration: none; font-weight: 600; font-size: 0.85rem; transition: all 0.2s;">${section.title} →</a>`;
+});
 vol2ExternalHTML += '</div>';
 
 // Quick jump anchors
 const quickAnchors = [1, 15, 18, 22, 31, 50, 75, 100, 125, 150, 175, 200, 225, 250, 275, 286];
-let quickJumpHTML = quickAnchors.map(n => `<a href="/teachings/likutay-moharan-volume-1-torah-$&lbrace;n&rbrace;" style="padding: 0.25rem 0.5rem; background: white; border-radius: 4px; font-size: 0.75rem; color: #666; text-decoration: none; border: 1px solid #e2e8f0;">$&lbrace;n&rbrace;</a>`).join('');
+let quickJumpHTML = quickAnchors.map(n => `<a href="/teachings/likutay-moharan-volume-1-torah-${n}" style="padding: 0.25rem 0.5rem; background: white; border-radius: 4px; font-size: 0.75rem; color: #666; text-decoration: none; border: 1px solid #e2e8f0;">${n}</a>`).join('');
 
 document.getElementById('vol1-sections').innerHTML = vol1HTML;
 document.getElementById('vol2-internal-grid').innerHTML = vol2InternalHTML;
@@ -184,11 +184,11 @@ document.getElementById('vol2-external-grid').innerHTML = vol2ExternalHTML;
 </div>
 
 <style>
-  a:hover &lbrace;
+  a:hover {
     transform: scale(1.05);
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  &rbrace;
-  section a:hover &lbrace;
+  }
+  section a:hover {
     transform: scale(1.05);
-  &rbrace;
+  }
 </style>

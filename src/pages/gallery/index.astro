@@ -1,6 +1,6 @@
--
+---
 import Layout from '../../layouts/Layout.astro';
--
+---
 
 <Layout title="Gallery" description="Photo galleries of Na Nach Breslov - Rabbi Nachman, Saba, Uman, and the movement">
   <section class="page-header">
@@ -149,74 +149,74 @@ import Layout from '../../layouts/Layout.astro';
 </Layout>
 
 <
-  .page-header &lbrace;
+  .page-header {
     background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
     color: white;
     padding: 5rem 2rem;
     text-align: center;
-  &rbrace;
+  }
 
-  .page-header h1 &lbrace;
+  .page-header h1 {
     font-family: var(--font-hebrew);
     font-size: 3rem;
     margin-bottom: 0.5rem;
-  &rbrace;
+  }
 
-  .page-header p &lbrace;
+  .page-header p {
     opacity: 0.9;
     font-size: 1.3rem;
-  &rbrace;
+  }
 
-  .hebrew-banner &lbrace;
+  .hebrew-banner {
     font-family: var(--font-hebrew);
     font-size: 2rem;
     letter-spacing: 0.15em;
     margin-top: 1.5rem;
-  &rbrace;
+  }
 
-  .container &lbrace;
+  .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 2rem;
-  &rbrace;
+  }
 
-  .intro &lbrace;
+  .intro {
     background: #f7f5f0;
     padding: 3rem 0;
-  &rbrace;
+  }
 
-  .intro-text &lbrace;
+  .intro-text {
     text-align: center;
     font-size: 1.2rem;
     line-height: 1.8;
     color: #555;
     max-width: 800px;
     margin: 0 auto;
-  &rbrace;
+  }
 
-  .quick-categories &lbrace;
+  .quick-categories {
     background: #fff;
     padding: 3rem 0;
     border-bottom: 1px solid #eee;
-  &rbrace;
+  }
 
-  .quick-categories h2 &lbrace;
+  .quick-categories h2 {
     text-align: center;
     font-family: var(--font-hebrew);
     color: var(--color-primary);
     margin-bottom: 1.5rem;
-  &rbrace;
+  }
 
-  .category-buttons &lbrace;
+  .category-buttons {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 0.75rem;
     max-width: 1000px;
     margin: 0 auto;
-  &rbrace;
+  }
 
-  .cat-btn &lbrace;
+  .cat-btn {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
@@ -226,53 +226,53 @@ import Layout from '../../layouts/Layout.astro';
     font-size: 0.9rem;
     font-weight: 500;
     transition: transform 0.2s;
-  &rbrace;
+  }
 
-  .cat-btn:hover &lbrace;
+  .cat-btn:hover {
     transform: translateY(-2px);
-  &rbrace;
+  }
 
-  .cat-btn.saba &lbrace;
+  .cat-btn.saba {
     background: #e6f0ff;
     color: #1a365d;
     border: 1px solid #2c5282;
-  &rbrace;
+  }
 
-  .cat-btn.rebbe &lbrace;
+  .cat-btn.rebbe {
     background: #e6f5f0;
     color: #276749;
     border: 1px solid #38a169;
-  &rbrace;
+  }
 
-  .cat-btn.uman &lbrace;
+  .cat-btn.uman {
     background: #fff5e6;
     color: #744210;
     border: 1px solid #975a16;
-  &rbrace;
+  }
 
-  .cat-btn.nanach &lbrace;
+  .cat-btn.nanach {
     background: #e6ffe6;
     color: #276749;
     border: 1px solid #38a169;
-  &rbrace;
+  }
 
-  .cat-btn.events &lbrace;
+  .cat-btn.events {
     background: #f0e6ff;
     color: #553c9a;
     border: 1px solid #6b46c1;
-  &rbrace;
+  }
 
-  .gallery-sections &lbrace;
+  .gallery-sections {
     padding: 4rem 0;
-  &rbrace;
+  }
 
-  .gallery-sections .container &lbrace;
+  .gallery-sections .container {
     display: flex;
     flex-direction: column;
     gap: 2rem;
-  &rbrace;
+  }
 
-  .main-gallery-card &lbrace;
+  .main-gallery-card {
     display: block;
     position: relative;
     border-radius: 16px;
@@ -281,14 +281,14 @@ import Layout from '../../layouts/Layout.astro';
     min-height: 200px;
     box-shadow: 0 8px 24px rgba(0,0,0,0.15);
     transition: transform 0.3s, box-shadow 0.3s;
-  &rbrace;
+  }
 
-  .main-gallery-card:hover &lbrace;
+  .main-gallery-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 12px 40px rgba(0,0,0,0.2);
-  &rbrace;
+  }
 
-  .card-bg &lbrace;
+  .card-bg {
     position: absolute;
     top: 0;
     left: 0;
@@ -297,29 +297,29 @@ import Layout from '../../layouts/Layout.astro';
     background-size: cover;
     background-position: center;
     opacity: 0.85;
-  &rbrace;
+  }
 
-  .card-bg.saba-bg &lbrace;
+  .card-bg.saba-bg {
     background: linear-gradient(135deg, rgba(44, 82, 130, 0.9), rgba(26, 54, 93, 0.95));
-  &rbrace;
+  }
 
-  .card-bg.rebbe-bg &lbrace;
+  .card-bg.rebbe-bg {
     background: linear-gradient(135deg, rgba(40, 94, 97, 0.9), rgba(35, 78, 82, 0.95));
-  &rbrace;
+  }
 
-  .card-bg.uman-bg &lbrace;
+  .card-bg.uman-bg {
     background: linear-gradient(135deg, rgba(116, 66, 16, 0.9), rgba(93, 58, 26, 0.95));
-  &rbrace;
+  }
 
-  .card-bg.nanach-bg &lbrace;
+  .card-bg.nanach-bg {
     background: linear-gradient(135deg, rgba(56, 161, 105, 0.9), rgba(39, 103, 73, 0.95));
-  &rbrace;
+  }
 
-  .card-bg.events-bg &lbrace;
+  .card-bg.events-bg {
     background: linear-gradient(135deg, rgba(85, 60, 154, 0.9), rgba(68, 51, 122, 0.95));
-  &rbrace;
+  }
 
-  .card-content &lbrace;
+  .card-content {
     position: relative;
     z-index: 2;
     padding: 2rem;
@@ -328,40 +328,40 @@ import Layout from '../../layouts/Layout.astro';
     flex-direction: column;
     justify-content: center;
     min-height: 200px;
-  &rbrace;
+  }
 
-  .card-icon &lbrace;
+  .card-icon {
     font-size: 2.5rem;
     margin-bottom: 0.75rem;
-  &rbrace;
+  }
 
-  .card-content h2 &lbrace;
+  .card-content h2 {
     font-family: var(--font-hebrew);
     font-size: 1.8rem;
     margin-bottom: 0.25rem;
-  &rbrace;
+  }
 
-  .card-content .hebrew &lbrace;
+  .card-content .hebrew {
     font-family: var(--font-hebrew);
     font-size: 1.3rem;
     opacity: 0.9;
     margin-bottom: 0.75rem;
-  &rbrace;
+  }
 
-  .card-content .description &lbrace;
+  .card-content .description {
     font-size: 1rem;
     opacity: 0.95;
     margin-bottom: 0.75rem;
-  &rbrace;
+  }
 
-  .card-content .categories &lbrace;
+  .card-content .categories {
     font-size: 0.9rem;
     opacity: 0.85;
     margin-bottom: 1rem;
     line-height: 1.6;
-  &rbrace;
+  }
 
-  .view-btn &lbrace;
+  .view-btn {
     display: inline-block;
     padding: 0.6rem 1.25rem;
     background: rgba(255,255,255,0.2);
@@ -370,75 +370,75 @@ import Layout from '../../layouts/Layout.astro';
     font-size: 0.9rem;
     transition: background 0.3s;
     width: fit-content;
-  &rbrace;
+  }
 
-  .main-gallery-card:hover .view-btn &lbrace;
+  .main-gallery-card:hover .view-btn {
     background: rgba(255,255,255,0.3);
-  &rbrace;
+  }
 
-  .stats-section &lbrace;
+  .stats-section {
     background: #f7f5f0;
     padding: 4rem 0;
-  &rbrace;
+  }
 
-  .stats-section h2 &lbrace;
+  .stats-section h2 {
     text-align: center;
     color: var(--color-primary);
     margin-bottom: 2rem;
     font-family: var(--font-hebrew);
-  &rbrace;
+  }
 
-  .stats-grid &lbrace;
+  .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 1.5rem;
-  &rbrace;
+  }
 
-  .stat-card &lbrace;
+  .stat-card {
     background: white;
     padding: 2rem;
     border-radius: 12px;
     text-align: center;
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  &rbrace;
+  }
 
-  .stat-card .number &lbrace;
+  .stat-card .number {
     display: block;
     font-size: 2.5rem;
     font-weight: bold;
     color: var(--color-primary);
     margin-bottom: 0.5rem;
-  &rbrace;
+  }
 
-  .stat-card .label &lbrace;
+  .stat-card .label {
     color: #666;
     font-size: 1rem;
-  &rbrace;
+  }
 
-  @media (max-width: 768px) &lbrace;
-    .page-header h1 &lbrace;
+  @media (max-width: 768px) {
+    .page-header h1 {
       font-size: 2rem;
-    &rbrace;
+    }
     
-    .card-content h2 &lbrace;
+    .card-content h2 {
       font-size: 1.5rem;
-    &rbrace;
+    }
     
-    .card-content .hebrew &lbrace;
+    .card-content .hebrew {
       font-size: 1.2rem;
-    &rbrace;
+    }
 
-    .category-buttons &lbrace;
+    .category-buttons {
       gap: 0.5rem;
-    &rbrace;
+    }
 
-    .cat-btn &lbrace;
+    .cat-btn {
       padding: 0.5rem 0.75rem;
       font-size: 0.8rem;
-    &rbrace;
+    }
     
-    .card-content .categories &lbrace;
+    .card-content .categories {
       font-size: 0.8rem;
-    &rbrace;
-  &rbrace;
+    }
+  }
 <

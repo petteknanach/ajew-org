@@ -1,6 +1,6 @@
--
+---
 import Layout from '../../layouts/Layout.astro';
--
+---
 
 <Layout title="Read Translation" description="Read Likutay Moharan Translation">
   <div class="reader-page">
@@ -44,49 +44,48 @@ import Layout from '../../layouts/Layout.astro';
   const maxTorah = volume === '2' ? 125 : 286;
   const currentTorah = torah;
   
-  bookTitle.textContent = `ליקוטי מוהר"ן $&lbrace;volume === '2' ? 'ט' : ''&rbrace; - פרק $&lbrace;torah&rbrace;`;
+  bookTitle.textContent = `ליקוטי מוהר"ן ${volume === '2' ? 'ט' : ''} - פרק ${torah}`;
   
   // Previous link
-  if (torah > 1) &lbrace;
-    prevBtn.href = `/books/read?volume=$&lbrace;volume&rbrace;&torah=$&lbrace;torah - 1&rbrace;`;
-  &rbrace; else &lbrace;
+  if (torah > 1) {
+    prevBtn.href = `/books/read?volume=${volume}&torah=${torah - 1}`;
+  } else {
     prevBtn.style.display = 'none';
-  &rbrace;
+  }
   
   // Next link
-  if (torah < maxTorah) &lbrace;
-    nextBtn.href = `/books/read?volume=$&lbrace;volume&rbrace;&torah=$&lbrace;torah + 1&rbrace;`;
-  &rbrace; else &lbrace;
+  if (torah < maxTorah) {
+    nextBtn.href = `/books/read?volume=${volume}&torah=${torah + 1}`;
+  } else {
     nextBtn.style.display = 'none';
-  &rbrace;
+  }
 
   // Fetch the translation
-  const filePath = `/books/likutay-moharan/vol$&lbrace;volume&rbrace;/torah$&lbrace;torah&rbrace;.html`;
+  const filePath = `/books/likutay-moharan/vol${volume}/torah${torah}.html`;
   
   fetch(filePath)
-    .then(response => &lbrace;
+    .then(response => {
       if (!response.ok) throw new Error('Translation not found');
       return response.text();
-    &rbrace;)
-    .then(content => &lbrace;
+    })
+    .then(content => {
       loading.style.display = 'none';
       bookContent.innerHTML = content;
       bookContent.style.display = 'block';
-    &rbrace;)
-    .catch(err => &lbrace;
+    })
+    .catch(err => {
       loading.style.display = 'none';
       error.style.display = 'block';
       console.error(err);
-    &rbrace;);
+    });
 </script>
 
-<
-  .reader-page &lbrace;
+<style>
     min-height: 100vh;
     background: #f7f5f0;
-  &rbrace;
+  }
 
-  .reader-header &lbrace;
+  .reader-header {
     background: linear-gradient(135deg, #1a365d, #2d4a6f);
     color: white;
     padding: 1rem 2rem;
@@ -94,16 +93,16 @@ import Layout from '../../layouts/Layout.astro';
     top: 0;
     z-index: 100;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  &rbrace;
+  }
 
-  .reader-nav &lbrace;
+  .reader-nav {
     display: flex;
     gap: 0.5rem;
     flex-wrap: wrap;
     margin-bottom: 0.75rem;
-  &rbrace;
+  }
 
-  .nav-btn &lbrace;
+  .nav-btn {
     color: rgba(255,255,255,0.9);
     text-decoration: none;
     font-size: 0.85rem;
@@ -111,25 +110,25 @@ import Layout from '../../layouts/Layout.astro';
     background: rgba(255,255,255,0.15);
     border-radius: 4px;
     transition: all 0.2s;
-  &rbrace;
+  }
 
-  .nav-btn:hover &lbrace;
+  .nav-btn:hover {
     background: rgba(255,255,255,0.25);
     color: white;
-  &rbrace;
+  }
 
-  .reader-header h1 &lbrace;
+  .reader-header h1 {
     font-family: var(--font-hebrew);
     font-size: 1.3rem;
     margin: 0;
-  &rbrace;
+  }
 
-  .loading &lbrace;
+  .loading {
     text-align: center;
     padding: 4rem 2rem;
-  &rbrace;
+  }
 
-  .spinner &lbrace;
+  .spinner {
     width: 40px;
     height: 40px;
     border: 4px solid #e2e8f0;
@@ -137,28 +136,28 @@ import Layout from '../../layouts/Layout.astro';
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin: 0 auto 1rem;
-  &rbrace;
+  }
 
-  @keyframes spin &lbrace;
-    to &lbrace; transform: rotate(360deg); &rbrace;
-  &rbrace;
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
 
-  .loading p &lbrace;
+  .loading p {
     color: #666;
-  &rbrace;
+  }
 
-  .error-message &lbrace;
+  .error-message {
     text-align: center;
     padding: 4rem 2rem;
-  &rbrace;
+  }
 
-  .error-message p &lbrace;
+  .error-message p {
     color: #c53030;
     font-size: 1.2rem;
     margin-bottom: 1.5rem;
-  &rbrace;
+  }
 
-  .btn &lbrace;
+  .btn {
     display: inline-block;
     padding: 0.8rem 2rem;
     background: #1a365d;
@@ -166,73 +165,74 @@ import Layout from '../../layouts/Layout.astro';
     text-decoration: none;
     border-radius: 8px;
     transition: background 0.2s;
-  &rbrace;
+  }
 
-  .btn:hover &lbrace;
+  .btn:hover {
     background: #2d4a6f;
-  &rbrace;
+  }
 
-  .book-content &lbrace;
+  .book-content {
     max-width: 900px;
     margin: 0 auto;
     padding: 2rem;
     font-family: var(--font-hebrew);
-  &rbrace;
+  }
 
-  .book-content :global(p) &lbrace;
+  .book-content :global(p) {
     font-size: 1.1rem;
     line-height: 1.8;
     margin: 0 0 1rem 0;
     text-align: justify;
     color: #2d3748;
-  &rbrace;
+  }
 
-  .book-content :global(br) &lbrace;
+  .book-content :global(br) {
     display: block;
     content: "";
     margin: 0.5rem 0;
-  &rbrace;
+  }
 
-  .book-content :global(div) &lbrace;
+  .book-content :global(div) {
     padding: 15px;
     margin: 30px;
     border: 2px solid #ccc;
     background-color: #fafafa;
-  &rbrace;
+  }
 
   .book-content :global(b), 
-  .book-content :global(strong) &lbrace;
+  .book-content :global(strong) {
     color: #1a365d;
     font-weight: bold;
-  &rbrace;
+  }
 
-  @media (min-width: 900px) &lbrace;
-    .book-content &lbrace;
+  @media (min-width: 900px) {
+    .book-content {
       column-count: 2;
       column-gap: 2rem;
-    &rbrace;
-  &rbrace;
+    }
+  }
 
-  @media (min-width: 1200px) &lbrace;
-    .book-content &lbrace;
+  @media (min-width: 1200px) {
+    .book-content {
       column-count: 3;
-    &rbrace;
-  &rbrace;
+    }
+  }
 
-  .book-content::-webkit-scrollbar &lbrace;
+  .book-content::-webkit-scrollbar {
     width: 8px;
-  &rbrace;
+  }
 
-  .book-content::-webkit-scrollbar-track &lbrace;
+  .book-content::-webkit-scrollbar-track {
     background: #e2e8f0;
-  &rbrace;
+  }
 
-  .book-content::-webkit-scrollbar-thumb &lbrace;
+  .book-content::-webkit-scrollbar-thumb {
     background: #cbd5e0;
     border-radius: 4px;
-  &rbrace;
+  }
 
-  .book-content::-webkit-scrollbar-thumb:hover &lbrace;
+  .book-content::-webkit-scrollbar-thumb:hover {
     background: #a0aec0;
-  &rbrace;
-<
+  }
+</style>
+
