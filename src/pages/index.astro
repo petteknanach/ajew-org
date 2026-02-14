@@ -63,6 +63,14 @@ import Layout from '../layouts/Layout.astro';
           <span class="btn-text">Na Nach Music</span>
         </a>
       </div>
+
+      <!-- Hebrew Books Button - Prominent -->
+      <div class="hebrew-books-link">
+        <a href="/books" class="btn btn-books-hebrew">
+          <span class="btn-icon">📚</span>
+          <span class="btn-text">כל ספרי ברסלב בלשון הקודש</span>
+        </a>
+      </div>
       
       <!-- The most important thing - Na Nach phrase -->
       <div class="nanach-phrase">
@@ -280,6 +288,25 @@ import Layout from '../layouts/Layout.astro';
 
   .btn-music:hover {
     background: rgba(139, 69, 19, 1);
+  }
+
+  .hebrew-books-link {
+    margin-top: 1rem;
+  }
+
+  .btn-books-hebrew {
+    background: linear-gradient(135deg, #c53030, #9b2c2c);
+    color: white;
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(197, 48, 48, 0.4);
+  }
+
+  .btn-books-hebrew:hover {
+    background: linear-gradient(135deg, #9b2c2c, #c53030);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(197, 48, 48, 0.5);
   }
 
   /* Corner buttons */
