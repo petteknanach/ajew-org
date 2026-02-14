@@ -144,6 +144,18 @@ import Layout from '../layouts/Layout.astro';
       ]
     },
     {
+      name: "ליקוטי מוהר''ן - עברית",
+      originalName: "lm-hebrew",
+      isHtml: true,
+      htmlReader: "/books/read?volume=",
+      books: [
+        { name: "ליקוטי מוהר''ן חלק א (1-100)", volume: "1", range: "1-100" },
+        { name: "ליקוטי מוהר''ן חלק א (101-200)", volume: "1", range: "101-200" },
+        { name: "ליקוטי מוהר''ן חלק א (201-286)", volume: "1", range: "201-286" },
+        { name: "ליקוטי מוהר''ן חלק ב (1-125)", volume: "2", range: "1-125" }
+      ]
+    },
+    {
       name: "ביבליוגרפית ברסלב",
       originalName: "ביבליוגרפית ברסלב",
       books: [
@@ -178,7 +190,9 @@ import Layout from '../layouts/Layout.astro';
     cat.books.map(book => ({
       ...book,
       category: cat.name,
-      categoryKey: cat.originalName
+      categoryKey: cat.originalName,
+      isHtml: cat.isHtml || false,
+      htmlReader: cat.htmlReader || ''
     }))
   );
 
@@ -197,14 +211,18 @@ import Layout from '../layouts/Layout.astro';
         <span class="book-count">${category.books.length} ספרים</span>
       </div>
       <ul class="book-list">
-        ${category.books.map((book, bookIdx) => `
+        ${category.books.map((book, bookIdx) => {
+          const link = category.isHtml 
+            ? `${category.htmlReader}${book.volume}&torah=1`
+            : `/books/read?category=${encodeURIComponent(category.originalName)}&book=${encodeURIComponent(book.filename)}`;
+          return `
           <li class="book-item" style="--delay: ${bookIdx * 0.02}s">
-            <a href="/books/read?category=${encodeURIComponent(category.originalName)}&book=${encodeURIComponent(book.filename)}">
-              <span class="book-icon">📖</span>
+            <a href="${link}">
+              <span class="book-icon">${category.isHtml ? '📚' : '📖'}</span>
               <span class="book-name">${book.name}</span>
             </a>
           </li>
-        `).join('')}
+        `}).join('')}
       </ul>
     `;
     
@@ -234,14 +252,18 @@ import Layout from '../layouts/Layout.astro';
     if (results.length === 0) {
       resultsList.innerHTML = '<li class="no-results">לא נמצאו תוצאות / No results found</li>';
     } else {
-      resultsList.innerHTML = results.map(book => `
+      resultsList.innerHTML = results.map(book => {
+        const link = book.isHtml 
+          ? `${book.htmlReader}${book.volume}&torah=1`
+          : `/books/read?category=${encodeURIComponent(book.categoryKey)}&book=${encodeURIComponent(book.filename)}`;
+        return `
         <li>
-          <a href="/books/read?category=${encodeURIComponent(book.categoryKey)}&book=${encodeURIComponent(book.filename)}">
+          <a href="${link}">
             <span class="result-category">${book.category}</span>
             <span class="result-name">${book.name}</span>
           </a>
         </li>
-      `).join('');
+      `}).join('');
     }
 
     categoriesGrid.style.display = 'none';
