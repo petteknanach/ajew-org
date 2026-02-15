@@ -41,22 +41,28 @@ import Layout from '../../layouts/Layout.astro';
     // Set title
     bookTitle.textContent = decodeURIComponent(book).replace('.txt', '');
 
-    // Fetch the book content
+    // Fetch the book content - try different encodings
     fetch(`/books/${encodeURIComponent(category)}/${encodeURIComponent(book)}`)
       .then(response => {
         if (!response.ok) throw new Error('Book not found');
-        return response.text();
+        return response.arrayBuffer();
       })
-      .then(content => {
+      .then(buffer => {
+        // Try UTF-8 first
+        let decoder = new TextDecoder('utf-8', { fatal: true });
+        try {
+          const content = decoder.decode(buffer);
+          bookContent.innerHTML = content;
+          loading.style.display = 'none';
+          bookContent.style.display = 'block';
+          return;
+        } catch {}
+        
+        // Try Windows-1255 (Hebrew)
+        decoder = new TextDecoder('windows-1255');
+        const content = decoder.decode(buffer);
+        bookContent.innerHTML = content;
         loading.style.display = 'none';
-        
-        // Decode HTML entities in the content
-        const textarea = document.createElement('textarea');
-        textarea.innerHTML = content;
-        const decodedContent = textarea.value;
-        
-        // The content contains HTML - insert it directly
-        bookContent.innerHTML = decodedContent;
         bookContent.style.display = 'block';
       })
       .catch(err => {
