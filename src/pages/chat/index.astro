@@ -65,6 +65,8 @@ import Layout from '../../layouts/Layout.astro';
     .message-input input:focus { outline: none; border-color: #744210; }
     .send-btn { padding: 0.75rem 1.5rem; background: linear-gradient(135deg, #059669 0%, #10b981 100%); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
     .send-btn:hover { transform: scale(1.02); }
+    .subscribe-notice { padding: 0.75rem 1rem; background: #fef3c7; border-top: 1px solid #fcd34d; text-align: center; color: #92400e; font-size: 0.85rem; }
+    .subscribe-notice a { color: #d97706; font-weight: bold; }
     .sidebar-footer { padding: 1rem; border-top: 1px solid #eee; background: #f7f5f0; }
     .user-info { display: flex; align-items: center; gap: 0.75rem; }
     .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: #1a365d; color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; }
@@ -81,6 +83,10 @@ import Layout from '../../layouts/Layout.astro';
     @media (max-width: 768px) {
       .chat-layout { grid-template-columns: 1fr; }
       .sidebar { display: none; }
+      .header-links { gap: 0.4rem; }
+      .header-link { padding: 0.4rem 0.6rem; font-size: 0.75rem; }
+      .header-link .icon { font-size: 0.9rem; }
+      .logo-btn { padding: 0.4rem 0.6rem !important; }
     }
   </style>
 
@@ -189,6 +195,9 @@ import Layout from '../../layouts/Layout.astro';
           <input type="text" id="messageInput" placeholder="Type your message..." onkeypress="handleKeypress(event)">
           <button class="send-btn" onclick="sendMessage()">Send</button>
         </div>
+        <div class="subscribe-notice">
+          💡 <a href="/subscribe">Subscribe</a> to send messages and participate in the community
+        </div>
       </div>
     </div>
   </main>
@@ -231,16 +240,21 @@ import Layout from '../../layouts/Layout.astro';
       const text = input.value.trim();
       if (!text) return;
 
+      // Show subscription prompt
       const messages = document.getElementById('messages');
       const msg = document.createElement('div');
-      msg.className = 'message my-message';
+      msg.className = 'message';
       msg.innerHTML = `
         <div class="message-header">
-          <div class="message-avatar" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%);">י</div>
-          <span class="message-author">You</span>
+          <div class="message-avatar" style="background: linear-gradient(135deg, #dc2626 0%, #f97316 100%);">🔒</div>
+          <span class="message-author">System</span>
           <span class="message-time">Just now</span>
         </div>
-        <div class="message-content">${text}</div>
+        <div class="message-content">
+          💳 To send messages and participate in chat, please <a href="/subscribe" style="color: #f97316; font-weight: bold;">subscribe here</a>. 
+          <br><br>
+          Already a subscriber? <a href="/login" style="color: #059669;">Sign in</a> with your email.
+        </div>
       `;
       messages.appendChild(msg);
       messages.scrollTop = messages.scrollHeight;
