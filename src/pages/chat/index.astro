@@ -1,17 +1,40 @@
 ---
 const pageTitle = "NNNNM Community Chat";
-const pageDescription = "Real-time chat for Breslov learning community";
+const pageDescription = "Real-time chat for Breslov learning community - connect with Na Nach followers worldwide. Discuss Rabbi Nachman's teachings, Likutay Moharan, stories, and Tikkun Haklali.";
 import Layout from '../../layouts/Layout.astro';
 ---
 
 <Layout title={pageTitle} description={pageDescription}>
+  <!-- Additional SEO for chat page -->
+  <meta name="keywords" content="Breslov chat, Na Nach community, Rabbi Nachman teachings, Likutay Moharan discussion, Tikkun Haklali, Breslov stories, Uman pilgrimage" />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="en_US" />
+  
+  <!-- JSON-LD for community -->
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "SocialMediaObservingActivity",
+    "name": "NNNNM Community Chat",
+    "description": "Real-time chat community for Breslov learners and Na Nach followers",
+    "url": "https://ajew.org/chat",
+    "potentialAction": {
+      "@type": "JoinAction",
+      "target": "https://ajew.org/subscribe"
+    }
+  })} />
   <style>
     .page-header {
       background: linear-gradient(135deg, #059669 0%, #10b981 100%);
       color: white;
-      padding: 3rem 2rem;
+      padding: 2rem;
     }
+    .page-header-content { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
     .page-header h1 { font-family: var(--font-hebrew); font-size: 2rem; margin-bottom: 0.5rem; }
+    .header-links { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+    .header-link { display: flex; align-items: center; gap: 0.5rem; color: white; text-decoration: none; padding: 0.6rem 1rem; background: rgba(255,255,255,0.2); border-radius: 8px; font-size: 0.9rem; transition: all 0.2s; }
+    .header-link:hover { background: rgba(255,255,255,0.3); transform: translateY(-2px); }
+    .header-link .icon { font-size: 1.2rem; }
+    .logo-btn { background: linear-gradient(135deg, #744210 0%, #975a16 100%) !important; }
     .container { max-width: 1400px; margin: 0 auto; padding: 0 1rem; }
     .chat-layout { display: grid; grid-template-columns: 280px 1fr; gap: 1rem; height: calc(100vh - 200px); min-height: 500px; padding: 1rem 0; }
     .sidebar { background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); overflow: hidden; }
@@ -62,14 +85,20 @@ import Layout from '../../layouts/Layout.astro';
   </style>
 
   <section class="page-header">
-    <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
+    <div class="page-header-content">
       <div>
         <h1>💬 NNNNM Community Chat</h1>
         <p>Real-time discussion of Breslov teachings</p>
       </div>
-      <div class="nav-links">
-        <a href="/subscribe" class="nav-link">Subscribe</a>
-        <a href="/teachings" class="nav-link">Teachings</a>
+      <div class="header-links">
+        <a href="https://nanach.tv" target="_blank" rel="noopener" class="header-link logo-btn">
+          <span class="icon">📺</span> nanach.tv
+        </a>
+        <a href="https://breslovbooks.com" target="_blank" rel="noopener" class="header-link">
+          <span class="icon">📚</span> breslovbooks
+        </a>
+        <a href="/subscribe" class="header-link">Subscribe</a>
+        <a href="/teachings" class="header-link">Teachings</a>
       </div>
     </div>
   </section>
