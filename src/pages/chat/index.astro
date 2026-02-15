@@ -98,7 +98,7 @@ import Layout from '../../layouts/Layout.astro';
     <div class="rooms-section" id="roomsSection">
       <div class="rooms-header">
         <h2>💬 Chat Rooms</h2>
-        <button class="new-room-btn" onclick="showCreateModal()">+ New Chat</button>
+        <button class="new-room-btn" onclick="alert('Create chat clicked!'); showCreateModal()">+ New Chat</button>
       </div>
       <div class="rooms-grid" id="roomsGrid">
         <div class="empty-state">Loading chats...</div>
@@ -287,6 +287,7 @@ import Layout from '../../layouts/Layout.astro';
     }
 
     function showCreateModal() {
+      alert('Opening modal');
       document.getElementById('modalOverlay').classList.add('show');
     }
 
