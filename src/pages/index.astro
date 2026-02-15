@@ -72,7 +72,7 @@ import Layout from '../layouts/Layout.astro';
           <span class="btn-icon">🎬</span>
           <span class="btn-text">Videos</span>
         </a>
-        <a href="/chat" class="btn btn-external">
+        <a href="/chat" class="btn btn-external btn-chat-ext">
           <span class="btn-icon">💬</span>
           <span class="btn-text">Chat</span>
         </a>
@@ -359,6 +359,15 @@ import Layout from '../layouts/Layout.astro';
 
   .btn-chat:hover {
     background: rgba(128, 90, 213, 0.5);
+  }
+  
+  .btn-chat-ext {
+    background: rgba(128, 90, 213, 0.4) !important;
+    border-color: rgba(128, 90, 213, 0.6) !important;
+  }
+  
+  .btn-chat-ext:hover {
+    background: rgba(128, 90, 213, 0.6) !important;
   }
   
   /* Amazon button */
