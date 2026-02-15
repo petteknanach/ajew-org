@@ -15,6 +15,10 @@ const teachingsCount = searchIndex?.teachings?.length || 0;
     </header>
 
     <div class="container">
+      <div class="search-note">
+        <strong>Note:</strong> This search only works with Hebrew words. For English search, use the tools below.
+      </div>
+      
       <div class="search-box">
         <input 
           type="text" 
@@ -265,6 +269,16 @@ const teachingsCount = searchIndex?.teachings?.length || 0;
   .container {
     max-width: 800px;
     margin: 0 auto;
+  }
+
+  .search-note {
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    color: #856404;
+    text-align: center;
   }
 
   .search-box {
