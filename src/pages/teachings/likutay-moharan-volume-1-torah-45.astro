@@ -10,80 +10,39 @@ const pageDescription = "Torah 45";
     padding: 4rem 2rem;
     text-align: center;
   }
-  .page-header h1 {
-    font-family: var(--font-hebrew);
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
-  }
+  .page-header h1 { font-family: var(--font-hebrew); font-size: 2rem; margin-bottom: 0.5rem; }
   .container { max-width: 800px; margin: 0 auto; padding: 0 2rem; }
-  .navigation {
-    background: #f7f5f0;
-    padding: 1rem 0;
-  }
-  .nav-links {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
-  .nav-link {
-    color: #1a365d;
-    text-decoration: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    background: white;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    transition: all 0.2s;
-  }
-  .nav-link:hover {
-    background: #1a365d;
-    color: white;
-  }
+  .navigation { background: #f7f5f0; padding: 1rem 0; }
+  .nav-links { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+  .nav-link { color: #1a365d; text-decoration: none; padding: 0.5rem 1rem; background: white; border-radius: 8px; }
+  .nav-link:hover { background: #1a365d; color: white; }
   .content { padding: 3rem 0; }
   .content-text {
     background: white;
     padding: 3rem;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  }
-  .content-text :global(p) {
-    font-size: 1.1rem;
     line-height: 1.9;
-    color: #333;
-    margin-bottom: 1.5rem;
-    text-align: justify;
+    font-size: 1.05rem;
   }
-  .footer-nav {
-    background: #1a365d;
-    padding: 2rem 0;
-  }
-  .back-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: white;
-    text-decoration: none;
-    padding: 0.75rem 1.5rem;
-    background: rgba(255,255,255,0.1);
-    border-radius: 8px;
-  }
-  .back-link:hover {
-    background: rgba(255,255,255,0.2);
-  }
-  @media (max-width: 768px) {
-    .nav-links { flex-direction: column; }
-  }
+  .content-text p { margin-bottom: 1.5rem; }
+  .content-text .scripture { color: #003087; font-weight: bold; }
+  .content-text .term { color: #006600; font-weight: bold; }
+  .content-text .header { color: #0066CC; font-weight: bold; }
+  .content-text .explanation { color: #555555; font-style: italic; }
+  .hebrew { font-family: 'SBL Hebrew', Arial, sans-serif; direction: rtl; margin: 1rem 0; }
 </style>
 
 <section class="page-header">
-  <h1>Likutay Moharan Volume 1 - Torah 45</h1>
+  <h1>Likutay Moharan Vol 1 - Torah 45</h1>
 </section>
 
 <nav class="navigation">
   <div class="container">
     <div class="nav-links">
+      <a href="/teachings/likutay-moharan-volume-1-torah-44" class="nav-link">← Prev</a>
       <a href="/teachings/likutay-moharan" class="nav-link">← Index</a>
-      <a href="/teachings/likutay-moharan-intro" class="nav-link">Intro</a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-46" class="nav-link">Next →</a>
     </div>
   </div>
 </nav>
@@ -91,105 +50,11 @@ const pageDescription = "Torah 45";
 <section class="content">
   <div class="container">
     <div class="content-text">
-      <p>Likutay Moharan Volume 1: Torah 45
-    
-        body &#123;
-            font-family: 'Georgia', serif;
-            background-color: #f5f6f5;
-            color: #333;
-            margin: 0;
-            padding: 20px;
-            line-height: 1.6;
-        &#125;
-        .container &#123;
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            text-align: justify;
-        &#125;
-        h1 &#123;
-            font-family: 'Cinzel', serif;
-            font-size: 36px;
-            color: #1e3a8a;
-            text-align: center;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        &#125;
-        p &#123;
-            font-size: 16px;
-            color: #333;
-            margin: 15px 0;
-        &#125;
-        .quote &#123;
-            font-style: italic;
-            color: #4b0082;
-            background-color: #e6e6fa;
-            padding: 15px;
-            border-left: 5px solid #1e3a8a;
-            margin: 10px 0;
-            border-radius: 5px;
-        &#125;
-        .verse &#123;
-            font-weight: bold;
-            color: #8b0000;
-            font-size: 18px;
-            text-align: center;
-            margin: 20px 0;
-        &#125;
-        .transliteration &#123;
-            font-style: italic;
-            color: #2f4f4f;
-        &#125;
-        .definition &#123;
-            color: #555;
-            font-size: 14px;
-        &#125;
-        .explanation &#123;
-            font-size: 14px;
-            color: #555;
-            background-color: #f0f0f0;
-            padding: 10px;
-            border-radius: 5px;
-            margin: 10px 0;
-        &#125;
-        .highlight &#123;
-            background-color: #fffacd;
-            padding: 2px 5px;
-            border-radius: 3px;
-        &#125;
-        .note &#123;
-            font-size: 14px;
-            color: #006400;
-            font-style: italic;
-            margin: 10px 0;
-        &#125;
-        hr &#123;
-            border: 1px solid #b8860b;
-            margin: 20px 0;
-        &#125;
-        @media (max-width: 600px) &#123;
-            .container &#123;
-                padding: 15px;
-            &#125;
-            h1 &#123;
-                font-size: 28px;
-            &#125;
-            p &#123;
-                font-size: 14px;
-            &#125;
-        &#125;
-    
-    </p>
-      <p>    
-        Likutay Moharan Volume 1: Torah 45
-        Clapping of Palms in Prayer
-        [In the language of our master, Rabbi Nachman of Breslov, of blessed memory]
-        
-        Behold, striking palm to palm at the time of prayer, this is the aspect of arousal of wings [spiritual faculties], from which speech [expression] comes. As it is written: “And the owner of wings shall tell the matter.” [Ecclesiastes 10:20] It is written: “And hands of a man from under their wings.” [Ezekiel 10:8] It turns out that through a person’s arousal in his hands [i.e., clapping them], the wings are aroused—that is, the wings of the lung [source of breath and speech], from which speech is formed. But still, they [wings/speech] need to prepare and rectify the mouth [organ of speech] to receive the speech within it. Through his striking palm to palm, through this the mouth is formed. For in each hand there are five fingers [digits]. The strikings [claps], which are the lights [spiritual illuminations]: right hand in left hand, that is, five times five, numerical equivalence of twenty-five. The strikings left hand in right hand, five times five, also numerical equivalence of twenty-five. Two times twenty-five, numerical equivalence of fifty. This is the aspect of “fifty times the Exodus from Egypt” mentioned in the Torah [linked to spiritual liberation]. For through the aspect of Jubilee [fifty-year cycle of freedom], they went out from the exile of Egypt [Zohar Shemos 46a]. The main aspect of the exile of Egypt was that speech was in exile [restricted expression]. Because of this, Moshe was “heavy of mouth” [speech impediment] [Exodus 4:10]. Through redemption [liberation], the aspect of the mouth was formed. It turns out that through the “fifty gates of Understanding” [Kabbalistic levels of wisdom], the mouth was formed. This is what is written: “Who placed a mouth in man?” [Exodus 4:11] “Who” [numerical value 50] precisely. It turns out that through striking palm to palm—five fingers of the right in the five of the left, and five of the left in the five of the right—the aspect of “Who” is formed, through which the mouth was formed, as it is written: “Who placed a mouth in man?” The mouth receives the speeches from the wings of the lung, as it is written: “And the owner of wings shall tell the matter.” Wings are aroused by the arousal of the hands of man, as it is written: “And hands of a man from under their wings.” All this we see empirically, that the hands are opposite the wings of the lung. Because of this, the halakhic decisors said: “If the wing broke close to the body, it is invalid” [Yoreh De’ah 53] [non-kosher, as the lung was certainly punctured].</p>
+      <p><strong>Likutay</strong><strong> </strong><strong>Moharan</strong><strong> </strong><strong>Volume</strong><strong> </strong><strong>1:</strong><strong> </strong><strong>Torah</strong><strong> </strong><strong>45</strong></p>
+      <p><strong>Clapping</strong><strong> </strong><strong>of</strong><strong> </strong><strong>Palms</strong><strong> </strong><strong>in</strong><strong> </strong><strong>Prayer</strong></p>
+      <p><em>[In</em><em> </em><em>the</em><em> </em><em>language</em><em> </em><em>of</em><em> </em><em>our</em><em> </em><em>master,</em><em> </em><em>Rabbi</em><em> </em><em>Nachman</em><em> </em><em>of</em><em> </em><em>Breslov,</em><em> </em><em>of</em><em> </em><em>blessed</em><em> </em><em>memory]</em></p>
+      <p><em>Behold,</em><em> </em><em>striking</em><em> </em><em>palm</em><em> </em><em>to</em><em> </em><em>palm</em><em> </em><em>at</em><em> </em><em>the</em><em> </em><em>time</em><em> </em><em>of</em><em> </em><em>prayer,</em><em> </em><em>this</em><em> </em><em>is</em><em> </em><em>the</em><em> </em><em>aspect</em><em> </em><em>of</em><em> </em><em>arousal</em><em> </em><em>of</em><em> </em><em>wings</em><em> </em><em>[spiritual</em><em> </em><em>faculties],</em><em> </em><em>from</em><em> </em><em>which</em><em> </em><em>speech</em><em> </em><em>[expression]</em><em> </em><em>comes.</em><em> </em><em>As</em><em> </em><em>it</em><em> </em><em>is</em><em> </em><em>written:</em><em> </em><strong><em>“And</em></strong><strong><em> </em></strong><strong><em>the</em></strong><strong><em> </em></strong><strong><em>owner</em></strong><strong><em> </em></strong><strong><em>of</em></strong><strong><em> </em></strong><strong><em>wings</em></strong><strong><em> </em></strong><strong><em>shall</em></strong><strong><em> </em></strong><strong><em>tell</em></strong><strong><em> </em></strong><strong><em>the</em></strong><strong><em> </em></strong><strong><em>matter.”</em></strong><em> </em><em>[Ecclesiastes</em><em> </em><em>10:20]</em><em> </em><em>It</em><em> </em><em>is</em><em> </em><em>written:</em><em> </em><strong><em>“And</em></strong><strong><em> </em></strong><strong><em>hands</em></strong><strong><em> </em></strong><strong><em>of</em></strong><strong><em> </em></strong><strong><em>a</em></strong><strong><em> </em></strong><strong><em>man</em></strong><strong><em> </em></strong><strong><em>from</em></strong><strong><em> </em></strong><strong><em>under</em></strong><strong><em> </em></strong><strong><em>their</em></strong><strong><em> </em></strong><strong><em>wings.”</em></strong><em> </em><em>[Ezekiel</em><em> </em><em>10:8]</em><em> </em><em>It</em><em> </em><em>turns</em><em> </em><em>out</em><em> </em><em>that</em><em> </em><em>through</em><em> </em><em>a</em><em> </em><em>person’s</em><em> </em><em>arousal</em><em> </em><em>in</em><em> </em><em>his</em><em> </em><em>hands</em><em> </em><em>[i.e.,</em><em> </em><em>clapping</em><em> </em><em>them],</em><em> </em><em>the</em><em> </em><em>wings</em><em> </em><em>are</em><em> </em><em>aroused—that</em><em> </em><em>is,</em><em> </em><em>the</em><em> </em><em>wings</em><em> </em><em>of</em><em> </em><em>the</em><em> </em><em>lung</em><em> </em><em>[source</em><em> </em><em>of</em><em> </em><em>breath</em><em> </em><em>and</em><em> </em><em>speech],</em><em> </em><em>from</em><em> </em><em>which</em><em> </em><em>speech</em><em> </em><em>is</em><em> </em><em>formed.</em><em> </em><em>But</em><em> </em><em>still,</em><em> </em><em>they</em><em> </em><em>[wings/speech]</em><em> </em><em>need</em><em> </em><em>to</em><em> </em><em>prepare</em><em> </em><em>and</em><em> </em><em>rectify</em><em> </em><em>the</em><em> </em><em>mouth</em><em> </em><em>[organ</em><em> </em><em>of</em><em> </em><em>speech]</em><em> </em><em>to</em><em> </em><em>receive</em><em> </em><em>the</em><em> </em><em>speech</em><em> </em><em>within</em><em> </em><em>it.</em><em> </em><em>Through</em><em> </em><em>his</em><em> </em><em>striking</em><em> </em><em>palm</em><em> </em><em>to</em><em> </em><em>palm,</em><em> </em><em>through</em><em> </em><em>this</em><em> </em><em>the</em><em> </em><em>mouth</em><em> </em><em>is</em><em> </em><em>formed.</em><em> </em><em>For</em><em> </em><em>in</em><em> </em><em>each</em><em> </em><em>hand</em><em> </em><em>there</em><em> </em><em>are</em><em> </em><em>five</em><em> </em><em>fingers</em><em> </em><em>[digits].</em><em> </em><em>The</em><em> </em><em>strikings</em><em> </em><em>[claps],</em><em> </em><em>which</em><em> </em><em>are</em><em> </em><em>the</em><em> </em><em>lights</em><em> </em><em>[spiritual</em><em> </em><em>illuminations]:</em><em> </em><em>right</em><em> </em><em>hand</em><em> </em><em>in</em><em> </em><em>left</em><em> </em><em>hand,</em><em> </em><em>that</em><em> </em><em>is,</em><em> </em><em>five</em><em> </em><em>times</em><em> </em><em>five,</em><em> </em><em>numerical</em><em> </em><em>equivalence</em><em> </em><em>of</em><em> </em><em>twenty-five.</em><em> </em><em>The</em><em> </em><em>strikings</em><em> </em><em>left</em><em> </em><em>hand</em><em> </em><em>in</em><em> </em><em>right</em><em> </em><em>hand,</em><em> </em><em>five</em><em> </em><em>times</em><em> </em><em>five,</em><em> </em><em>also</em><em> </em><em>numerical</em><em> </em><em>equivalence</em><em> </em><em>of</em><em> </em><em>twenty-five.</em><em> </em><em>Two</em><em> </em><em>times</em><em> </em><em>twenty-five,</em><em> </em><em>numerical</em><em> </em><em>equivalence</em><em> </em><em>of</em><em> </em><em>fifty.</em><em> </em><em>This</em><em> </em><em>is</em><em> </em><em>the</em><em> </em><em>aspect</em><em> </em><em>of</em><em> </em><em>“fifty</em><em> </em><em>times</em><em> </em><em>the</em><em> </em><em>Exodus</em><em> </em><em>from</em><em> </em><em>Egypt”</em><em> </em><em>mentioned</em><em> </em><em>in</em><em> </em><em>the</em><em> </em><em>Torah</em><em> </em><em>[linked</em><em> </em><em>to</em><em> </em><em>spiritual</em><em> </em><em>liberation].</em><em> </em><em>For</em><em> </em><em>through</em><em> </em><em>the</em><em> </em><em>aspect</em><em> </em><em>of</em><em> </em><em>Jubilee</em><em> </em><em>[fifty-year</em><em> </em><em>cycle</em><em> </em><em>of</em><em> </em><em>freedom],</em><em> </em><em>they</em><em> </em><em>went</em><em> </em><em>out</em><em> </em><em>from</em><em> </em><em>the</em><em> </em><em>exile</em><em> </em><em>of</em><em> </em><em>Egypt</em><em> </em><em>[Zohar</em><em> </em><em>Shemos</em><em> </em><em>46a].</em><em> </em><em>The</em><em> </em><em>main</em><em> </em><em>aspect</em><em> </em><em>of</em><em> </em><em>the</em><em> </em><em>exile</em><em> </em><em>of</em><em> </em><em>Egypt</em><em> </em><em>was</em><em> </em><em>that</em><em> </em><em>speech</em><em> </em><em>was</em><em> </em><em>in</em><em> </em><em>exile</em><em> </em><em>[restricted</em><em> </em><em>expression].</em><em> </em><em>Because</em><em> </em><em>of</em><em> </em><em>this,</em><em> </em><em>Moshe</em><em> </em><em>was</em><em> </em><em>“heavy</em><em> </em><em>of</em><em> </em><em>mouth”</em><em> </em><em>[speech</em><em> </em><em>impediment]</em><em> </em><em>[Exodus</em><em> </em><em>4:10].</em><em> </em><em>Through</em><em> </em><em>redemption</em><em> </em><em>[liberation],</em><em> </em><em>the</em><em> </em><em>aspect</em><em> </em><em>of</em><em> </em><em>the</em><em> </em><em>mouth</em><em> </em><em>was</em><em> </em><em>formed.</em><em> </em><em>It</em><em> </em><em>turns</em><em> </em><em>out</em><em> </em><em>that</em><em> </em><em>through</em><em> </em><em>the</em><em> </em><em>“fifty</em><em> </em><em>gates</em><em> </em><em>of</em><em> </em><em>Understanding”</em><em> </em><em>[Kabbalistic</em><em> </em><em>levels</em><em> </em><em>of</em><em> </em><em>wisdom],</em><em> </em><em>the</em><em> </em><em>mouth</em><em> </em><em>was</em><em> </em><em>formed.</em><em> </em><em>This</em><em> </em><em>is</em><em> </em><em>what</em><em> </em><em>is</em><em> </em><em>written:</em><em> </em><strong><em>“Who</em></strong><strong><em> </em></strong><strong><em>placed</em></strong><strong><em> </em></strong><strong><em>a</em></strong><strong><em> </em></strong><strong><em>mouth</em></strong><strong><em> </em></strong><strong><em>in</em></strong><strong><em> </em></strong><strong><em>man?”</em></strong><em> </em><em>[Exodus</em><em> </em><em>4:11]</em><em> </em><em>“Who”</em><em> </em><em>[numerical</em><em> </em><em>value</em><em> </em><em>50]</em><em> </em><em>precisely.</em><em> </em><em>It</em><em> </em><em>turns</em><em> </em><em>out</em><em> </em><em>that</em><em> </em><em>through</em><em> </em><em>striking</em><em> </em><em>palm</em><em> </em><em>to</em><em> </em><em>palm—five</em><em> </em><em>fingers</em><em> </em><em>of</em><em> </em><em>the</em><em> </em><em>right</em><em> </em><em>in</em><em> </em><em>the</em><em> </em><em>five</em><em> </em><em>of</em><em> </em><em>the</em><em> </em><em>left,</em><em> </em><em>and</em><em> </em><em>five</em><em> </em><em>of</em><em> </em><em>the</em><em> </em><em>left</em><em> </em><em>in</em><em> </em><em>the</em><em> </em><em>five</em><em> </em><em>of</em><em> </em><em>the</em><em> </em><em>right—the</em><em> </em><em>aspect</em><em> </em><em>of</em><em> </em><em>“Who”</em><em> </em><em>is</em><em> </em><em>formed,</em><em> </em><em>through</em><em> </em><em>which</em><em> </em><em>the</em><em> </em><em>mouth</em><em> </em><em>was</em><em> </em><em>formed,</em><em> </em><em>as</em><em> </em><em>it</em><em> </em><em>is</em><em> </em><em>written:</em><em> </em><strong><em>“Who</em></strong><strong><em> </em></strong><strong><em>placed</em></strong><strong><em> </em></strong><strong><em>a</em></strong><strong><em> </em></strong><strong><em>mouth</em></strong><strong><em> </em></strong><strong><em>in</em></strong><strong><em> </em></strong><strong><em>man?”</em></strong><em> </em><em>The</em><em> </em><em>mouth</em><em> </em><em>receives</em><em> </em><em>the</em><em> </em><em>speeches</em><em> </em><em>from</em><em> </em><em>the</em><em> </em><em>wings</em><em> </em><em>of</em><em> </em><em>the</em><em> </em><em>lung,</em><em> </em><em>as</em><em> </em><em>it</em><em> </em><em>is</em><em> </em><em>written:</em><em> </em><strong><em>“And</em></strong><strong><em> </em></strong><strong><em>the</em></strong><strong><em> </em></strong><strong><em>owner</em></strong><strong><em> </em></strong><strong><em>of</em></strong><strong><em> </em></strong><strong><em>wings</em></strong><strong><em> </em></strong><strong><em>shall</em></strong><strong><em> </em></strong><strong><em>tell</em></strong><strong><em> </em></strong><strong><em>the</em></strong><strong><em> </em></strong><strong><em>matter.”</em></strong><em> </em><em>Wings</em><em> </em><em>are</em><em> </em><em>aroused</em><em> </em><em>by</em><em> </em><em>the</em><em> </em><em>arousal</em><em> </em><em>of</em><em> </em><em>the</em><em> </em><em>hands</em><em> </em><em>of</em><em> </em><em>man,</em><em> </em><em>as</em><em> </em><em>it</em><em> </em><em>is</em><em> </em><em>written:</em><em> </em><strong><em>“And</em></strong><strong><em> </em></strong><strong><em>hands</em></strong><strong><em> </em></strong><strong><em>of</em></strong><strong><em> </em></strong><strong><em>a</em></strong><strong><em> </em></strong><strong><em>man</em></strong><strong><em> </em></strong><strong><em>from</em></strong><strong><em> </em></strong><strong><em>under</em></strong><strong><em> </em></strong><strong><em>their</em></strong><strong><em> </em></strong><strong><em>wings.”</em></strong><em> </em><em>All</em><em> </em><em>this</em><em> </em><em>we</em><em> </em><em>see</em><em> </em><em>empirically,</em><em> </em><em>that</em><em> </em><em>the</em><em> </em><em>hands</em><em> </em><em>are</em><em> </em><em>opposite</em><em> </em><em>the</em><em> </em><em>wings</em><em> </em><em>of</em><em> </em><em>the</em><em> </em><em>lung.</em><em> </em><em>Because</em><em> </em><em>of</em><em> </em><em>this,</em><em> </em><em>the</em><em> </em><em>halakhic</em><em> </em><em>decisors</em><em> </em><em>said:</em><em> </em><em>“If</em><em> </em><em>the</em><em> </em><em>wing</em><em> </em><em>broke</em><em> </em><em>close</em><em> </em><em>to</em><em> </em><em>the</em><em> </em><em>body,</em><em> </em><em>it</em><em> </em><em>is</em><em> </em><em>invalid”</em><em> </em><em>[</em><em>Yoreh</em><em> </em><em>De’ah</em><em> </em><em>53]</em><em> </em><em>[non-kosher,</em><em> </em><em>as</em><em> </em><em>the</em><em> </em><em>lung</em><em> </em><em>was</em><em> </em><em>certainly</em><em> </em><em>punctured].</em></p>
+
     </div>
   </div>
 </section>

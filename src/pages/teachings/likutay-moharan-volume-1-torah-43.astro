@@ -10,80 +10,39 @@ const pageDescription = "Torah 43";
     padding: 4rem 2rem;
     text-align: center;
   }
-  .page-header h1 {
-    font-family: var(--font-hebrew);
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
-  }
+  .page-header h1 { font-family: var(--font-hebrew); font-size: 2rem; margin-bottom: 0.5rem; }
   .container { max-width: 800px; margin: 0 auto; padding: 0 2rem; }
-  .navigation {
-    background: #f7f5f0;
-    padding: 1rem 0;
-  }
-  .nav-links {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
-  .nav-link {
-    color: #1a365d;
-    text-decoration: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    background: white;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    transition: all 0.2s;
-  }
-  .nav-link:hover {
-    background: #1a365d;
-    color: white;
-  }
+  .navigation { background: #f7f5f0; padding: 1rem 0; }
+  .nav-links { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+  .nav-link { color: #1a365d; text-decoration: none; padding: 0.5rem 1rem; background: white; border-radius: 8px; }
+  .nav-link:hover { background: #1a365d; color: white; }
   .content { padding: 3rem 0; }
   .content-text {
     background: white;
     padding: 3rem;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  }
-  .content-text :global(p) {
-    font-size: 1.1rem;
     line-height: 1.9;
-    color: #333;
-    margin-bottom: 1.5rem;
-    text-align: justify;
+    font-size: 1.05rem;
   }
-  .footer-nav {
-    background: #1a365d;
-    padding: 2rem 0;
-  }
-  .back-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: white;
-    text-decoration: none;
-    padding: 0.75rem 1.5rem;
-    background: rgba(255,255,255,0.1);
-    border-radius: 8px;
-  }
-  .back-link:hover {
-    background: rgba(255,255,255,0.2);
-  }
-  @media (max-width: 768px) {
-    .nav-links { flex-direction: column; }
-  }
+  .content-text p { margin-bottom: 1.5rem; }
+  .content-text .scripture { color: #003087; font-weight: bold; }
+  .content-text .term { color: #006600; font-weight: bold; }
+  .content-text .header { color: #0066CC; font-weight: bold; }
+  .content-text .explanation { color: #555555; font-style: italic; }
+  .hebrew { font-family: 'SBL Hebrew', Arial, sans-serif; direction: rtl; margin: 1rem 0; }
 </style>
 
 <section class="page-header">
-  <h1>Likutay Moharan Volume 1 - Torah 43</h1>
+  <h1>Likutay Moharan Vol 1 - Torah 43</h1>
 </section>
 
 <nav class="navigation">
   <div class="container">
     <div class="nav-links">
+      <a href="/teachings/likutay-moharan-volume-1-torah-42" class="nav-link">← Prev</a>
       <a href="/teachings/likutay-moharan" class="nav-link">← Index</a>
-      <a href="/teachings/likutay-moharan-intro" class="nav-link">Intro</a>
+      <a href="/teachings/likutay-moharan-volume-1-torah-44" class="nav-link">Next →</a>
     </div>
   </div>
 </nav>
@@ -91,113 +50,11 @@ const pageDescription = "Torah 43";
 <section class="content">
   <div class="container">
     <div class="content-text">
-      <p>Likutay Moharan Volume 1: Torah 43
-    
-        body &#123;
-            font-family: 'Georgia', serif;
-            background-color: #f5f6f5;
-            color: #333;
-            margin: 0;
-            padding: 20px;
-            line-height: 1.6;
-        &#125;
-        .container &#123;
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            text-align: justify;
-        &#125;
-        h1 &#123;
-            font-family: 'Cinzel', serif;
-            font-size: 28px;
-            color: #1e3a8a;
-            text-align: center;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        &#125;
-        p &#123;
-            font-size: 14px;
-            color: #333;
-            margin: 15px 0;
-        &#125;
-        .quote &#123;
-            font-style: italic;
-            color: #4b0082;
-            background-color: #e6e6fa;
-            padding: 15px;
-            border-left: 5px solid #1e3a8a;
-            margin: 10px 0;
-            border-radius: 5px;
-        &#125;
-        .verse &#123;
-            font-weight: bold;
-            color: #8b0000;
-            font-size: 16px;
-            text-align: center;
-            margin: 20px 0;
-        &#125;
-        .hebrew &#123;
-            font-family: 'SBL Hebrew', serif;
-            font-size: 16px;
-            color: #2f4f4f;
-            direction: rtl;
-            display: inline-block;
-            margin-left: 10px;
-        &#125;
-        .transliteration &#123;
-            font-style: italic;
-            color: #2f4f4f;
-        &#125;
-        .definition &#123;
-            color: #555;
-            font-size: 12px;
-        &#125;
-        .explanation &#123;
-            font-size: 12px;
-            color: #555;
-            background-color: #f0f0f0;
-            padding: 10px;
-            border-radius: 5px;
-            margin: 10px 0;
-        &#125;
-        .highlight &#123;
-            background-color: #fffacd;
-            padding: 2px 5px;
-            border-radius: 3px;
-        &#125;
-        .note &#123;
-            font-size: 12px;
-            color: #006400;
-            font-style: italic;
-            margin: 10px 0;
-        &#125;
-        hr &#123;
-            border: 1px solid #b8860b;
-            margin: 20px 0;
-        &#125;
-        @media (max-width: 600px) &#123;
-            .container &#123;
-                padding: 15px;
-            &#125;
-            h1 &#123;
-                font-size: 24px;
-            &#125;
-            p &#123;
-                font-size: 12px;
-            &#125;
-        &#125;
-    
-    </p>
-      <p>    
-        Likutay Moharan Volume 1: Torah 43
-        “The diburim (speeches [teachings]) of the wicked produce ni’uf (licentiousness [degenerate spiritual or physical connection]) in the hearer”
-        [In the language of our master, Rabbi Nachman of Breslov, of blessed memory]
-        
-        Know that the diburim (speeches) of the rosha (wicked person [evil individual]), who is a bar da’as (man of knowledge [intellectual acumen]), produce ni’uf (licentiousness) in the hearer. For zivugim (matings [spiritual or physical unions]) are drawn from da’as (knowledge [spiritual awareness]), as it is written: “And the man knew Chavah his wife” [Genesis 4:1]. And it is written: “Every woman who has known a man” [Numbers 31:17]. But there are two kinds of zivugim (matings): that is, zivug dikdushah (mating of holiness [connection to sanctity]), which is hiskashrus (attachment [connection]) to tzadikim, and to the Torah, and to Hashem, blessed be He—this is drawn from da’as dikdushah (knowledge of holiness). And zivugim (matings) of aveirah (transgression [sin]) are drawn from da’as diklipah (knowledge of the husk [evil force]). And dibbur (speech) is the hisgalus (revelation [expression]) of da’as (knowledge), for one does not know what is in the da’as (knowledge) except through dibbur (speech), as it is written: “And night to night yechaveh (declares) da’as (knowledge)” [Psalms 19:3] [root D-A]. Yechaveh (declares) is from the language of dibbur (speech), meaning that dibbur (speech) speaks what is in the da’as (knowledge). And when a rosha (wicked person) speaks and brings out from his mouth vanities, he produces avirim arsim (poisonous airs [corrupting influences]) of ni’uf (licentiousness). And the hearer, from him, inhales these diburim (speeches) and breathes these neshimos (breaths [spiritual influences]), inserting these avirim (airs) into his body. And therefore, by Bil’am, who is an aspect of da’as diklipah (knowledge of the husk), as our chachamim (sages), of blessed memory, expounded [Sifri, Parshas Vezos Haberochoh; Zohar Shemos 21b, Balak 193b] on the verse: “No one has arisen like Moshe” [Deuteronomy 34:10]: “In Yisrael no one has arisen, but among the nations has arisen.” And who was that? Bil’am [Vayikra Rabbah 9]. And therefore, when Moav took aitzah (counsel [advice]) from Midyan, they said to them: “His ko’ach (power [strength]) is only in the mouth” [referring to Moshe’s power, but also highlighting Bil’am’s similar power]. For the mouth is the hisgalus (revelation) of da’as (knowledge). Moav said: “Also we will come upon them with a man whose ko’ach (power) is in the mouth” [Rashi, Balak]. For he also possessed da’as diklipah (knowledge of the husk), as it is written: “This opposite this, G-d made” [Ecclesiastes 7:14] [implying a parallel between Moshe’s holiness and Bil’am’s negative power]. And it is written: “And knows the da’as (knowledge) of the Most High” [Numbers 24:16]. And our rabboseinu (rabbis), of blessed memory, expounded [Berachos 7a]: That he knew when the Holy One, blessed be He, is angry. For when da’as (knowledge) is not in yishuv (settlement [clarity]), then there is ka’as (anger [divine wrath]). As our rabboseinu (rabbis) said [Pesachim 66b]: “Anyone who is angry, his chochmah (wisdom [spiritual insight]) departs from him.” And therefore, when Moshe our master, peace be upon him, was angry at the officers of the army when they came from Midyan, the da’as (knowledge) departed from him. And Elazar needed to say the laws of immersion of vessels. And when the da’as (knowledge) is complete, then there is no ka’as (anger), as it is written: “They shall not hurt nor destroy in all My holy mountain, for the earth shall be full of de’ah (knowledge)” [Isaiah 11:9]. And Bil’am was looking into da’as diklipah (knowledge of the husk), which is the excesses of upper da’as (knowledge). And when it changes [i.e., when holiness is concealed], he knew that the Holy One, blessed be He, is in ka’as (anger). It emerges that Bil’am is da’as diklipah (knowledge of the husk), and through his diburim (speeches) he produced avirim arsim (poisonous airs) of ni’uf (licentiousness). This is why, when they came from the war of Midyan, it is written: “And Moshe was angry with the officers of the army, and he said, ‘Have you kept every female alive? hein heinah (behold, they were) through the d’var (word [speech]) of Bil’am’” [Numbers 31:14-16]—b’d’var dayka (through the word precisely) [i.e., through Bil’am’s corrupting speech]. And therefore, when they came from the wars of Midyan, it is written: “And the heads of the officers approached Moshe etc. and they said, ‘And we have brought near the offering of Hashem etc., to atone for our nafshos (souls [selves]) before Hashem’” [Numbers 31:48-50]. And our rabboseinu (rabbis), of blessed memory, expounded [Shabbas 64a]: “That thus they said, ‘Even though from the hands of aveirah (transgression) we came out, from the hands of hirhur (thought [evil influence]) we did not come out.’”</p>
+      <p><strong>Likutay</strong><strong> </strong><strong>Moharan</strong><strong> </strong><strong>Volume</strong><strong> </strong><strong>1:</strong><strong> </strong><strong>Torah</strong><strong> </strong><strong>43</strong></p>
+      <p><strong>“The</strong><strong> </strong><strong><em>diburim</em></strong><strong> </strong><strong>(speeches</strong><strong> </strong><strong>[teachings])</strong><strong> </strong><strong>of</strong><strong> </strong><strong>the</strong><strong> </strong><strong>wicked</strong><strong> </strong><strong>produce</strong><strong> </strong><strong><em>ni’uf</em></strong><strong> </strong><strong>(licentiousness</strong><strong> </strong><strong>[degenerate</strong><strong> </strong><strong>spiritual</strong><strong> </strong><strong>or</strong><strong> </strong><strong>physical</strong><strong> </strong><strong>connection])</strong><strong> </strong><strong>in</strong><strong> </strong><strong>the</strong><strong> </strong><strong>hearer”</strong></p>
+      <p><em>[In</em><em> </em><em>the</em><em> </em><em>language</em><em> </em><em>of</em><em> </em><em>our</em><em> </em><em>master,</em><em> </em><em>Rabbi</em><em> </em><em>Nachman</em><em> </em><em>of</em><em> </em><em>Breslov,</em><em> </em><em>of</em><em> </em><em>blessed</em><em> </em><em>memory]</em></p>
+      <p>Know that the <em>diburim</em> (speeches) of the <em>rosha</em> (wicked person [evil individual]), who is a <em>bar</em><em> </em><em>da’as</em> (man of knowledge [intellectual acumen]), produce <em>ni’uf</em> (licentiousness) in the hearer. For <em>zivugim</em> (matings [spiritual or physical unions]) are drawn from <em>da’as</em> (knowledge [spiritual awareness]), as it is written: <strong>“And</strong><strong> </strong><strong>the</strong><strong> </strong><strong>man</strong><strong> </strong><strong>knew</strong><strong> </strong><strong>Chavah</strong><strong> </strong><strong>his</strong><strong> </strong><strong>wife”</strong> [Genesis 4:1]. And it is written: <strong>“Every</strong><strong> </strong><strong>woman</strong><strong> </strong><strong>who</strong><strong> </strong><strong>has</strong><strong> </strong><strong>known</strong><strong> </strong><strong>a</strong><strong> </strong><strong>man”</strong> [Numbers 31:17]. But there are two kinds of <em>zivugim</em> (matings): that is, <em>zivug</em><em> </em><em>dikdushah</em> (mating of holiness [connection to sanctity]), which is <em>hiskashrus</em> (attachment [connection]) to tzadikim, and to the Torah, and to Hashem, blessed be He—this is drawn from <em>da’as</em><em> </em><em>dikdushah</em> (knowledge of holiness). And <em>zivugim</em> (matings) of <em>aveirah</em> (transgression [sin]) are drawn from <em>da’as</em><em> </em><em>diklipah</em> (knowledge of the husk [evil force]). And <em>dibbur</em> (speech) is the <em>hisgalus</em> (revelation [expression]) of <em>da’as</em> (knowledge), for one does not know what is in the <em>da’as</em> (knowledge) except through <em>dibbur</em> (speech), as it is written: <strong>“And</strong><strong> </strong><strong>night</strong><strong> </strong><strong>to</strong><strong> </strong><strong>night</strong><strong> </strong><strong><em>yechaveh</em></strong><strong> </strong><strong>(declares)</strong><strong> </strong><strong><em>da’as</em></strong><strong> </strong><strong>(knowledge)”</strong> [Psalms 19:3] [root <em>D-A</em>]. <em>Yechaveh</em> (declares) is from the language of <em>dibbur</em> (speech), meaning that <em>dibbur</em> (speech) speaks what is in the <em>da’as</em> (knowledge). And when a <em>rosha</em> (wicked person) speaks and brings out from his mouth vanities, he produces <em>avirim</em><em> </em><em>arsim</em> (poisonous airs [corrupting influences]) of <em>ni’uf</em> (licentiousness). And the hearer, from him, inhales these <em>diburim</em> (speeches) and breathes these <em>neshimos</em> (breaths [spiritual influences]), inserting these <em>avirim</em> (airs) into his body. And therefore, by Bil’am, who is an aspect of <em>da’as</em><em> </em><em>diklipah</em> (knowledge of the husk), as our <em>chachamim</em> (sages), of blessed memory, expounded [Sifri, Parshas Vezos Haberochoh; Zohar Shemos 21b, Balak 193b] on the verse: <strong>“No</strong><strong> </strong><strong>one</strong><strong> </strong><strong>has</strong><strong> </strong><strong>arisen</strong><strong> </strong><strong>like</strong><strong> </strong><strong>Moshe”</strong> [Deuteronomy 34:10]: “In Yisrael no one has arisen, but among the nations has arisen.” And who was that? Bil’am [Vayikra Rabbah 9]. And therefore, when Moav took <em>aitzah</em> (counsel [advice]) from Midyan, they said to them: “His <em>ko’ach</em> (power [strength]) is only in the mouth” [referring to Moshe’s power, but also highlighting Bil’am’s similar power]. For the mouth is the <em>hisgalus</em> (revelation) of <em>da’as</em> (knowledge). Moav said: “Also we will come upon them with a man whose <em>ko’ach</em> (power) is in the mouth” [Rashi, Balak]. For he also possessed <em>da’as</em><em> </em><em>diklipah</em> (knowledge of the husk), as it is written: <strong>“This</strong><strong> </strong><strong>opposite</strong><strong> </strong><strong>this,</strong><strong> </strong><strong>G-d</strong><strong> </strong><strong>made”</strong> [Ecclesiastes 7:14] [implying a parallel between Moshe’s holiness and Bil’am’s negative power]. And it is written: <strong>“And</strong><strong> </strong><strong>knows</strong><strong> </strong><strong>the</strong><strong> </strong><strong><em>da’as</em></strong><strong> </strong><strong>(knowledge)</strong><strong> </strong><strong>of</strong><strong> </strong><strong>the</strong><strong> </strong><strong>Most</strong><strong> </strong><strong>High</strong><strong>”</strong> [Numbers 24:16]. And our <em>rabboseinu</em> (rabbis), of blessed memory, expounded [Berachos 7a]: That he knew when the Holy One, blessed be He, is angry. For when <em>da’as</em> (knowledge) is not in <em>yishuv</em> (settlement [clarity]), then there is <em>ka’as</em> (anger [divine wrath]). As our <em>rabboseinu</em> (rabbis) said [Pesachim 66b]: “Anyone who is angry, his <em>chochmah</em> (wisdom [spiritual insight]) departs from him.” And therefore, when Moshe our master, peace be upon him, was angry at the officers of the army when they came from Midyan, the <em>da’as</em> (knowledge) departed from him. And Elazar needed to say the laws of immersion of vessels. And when the <em>da’as</em> (knowledge) is complete, then there is no <em>ka’as</em> (anger), as it is written: <strong>“They</strong><strong> </strong><strong>shall</strong><strong> </strong><strong>not</strong><strong> </strong><strong>hurt</strong><strong> </strong><strong>nor</strong><strong> </strong><strong>destroy</strong><strong> </strong><strong>in</strong><strong> </strong><strong>all</strong><strong> </strong><strong>My</strong><strong> </strong><strong>holy</strong><strong> </strong><strong>mountain,</strong><strong> </strong><strong>for</strong><strong> </strong><strong>the</strong><strong> </strong><strong>earth</strong><strong> </strong><strong>shall</strong><strong> </strong><strong>be</strong><strong> </strong><strong>full</strong><strong> </strong><strong>of</strong><strong> </strong><strong><em>de’ah</em></strong><strong> </strong><strong>(knowledge)”</strong> [Isaiah 11:9]. And Bil’am was looking into <em>da’as</em><em> </em><em>diklipah</em> (knowledge of the husk), which is the excesses of upper <em>da’as</em> (knowledge). And when it changes [i.e., when holiness is concealed], he knew that the Holy One, blessed be He, is in <em>ka’as</em> (anger). It emerges that Bil’am is <em>da’as</em><em> </em><em>diklipah</em> (knowledge of the husk), and through his <em>diburim</em> (speeches) he produced <em>avirim</em><em> </em><em>arsim</em> (poisonous airs) of <em>ni’uf</em> (licentiousness). This is why, when they came from the war of Midyan, it is written: <strong>“And</strong><strong> </strong><strong>Moshe</strong><strong> </strong><strong>was</strong><strong> </strong><strong>angry</strong><strong> </strong><strong>with</strong><strong> </strong><strong>the</strong><strong> </strong><strong>officers</strong><strong> </strong><strong>of</strong><strong> </strong><strong>the</strong><strong> </strong><strong>army,</strong><strong> </strong><strong>and</strong><strong> </strong><strong>he</strong><strong> </strong><strong>said,</strong><strong> </strong><strong>‘Have</strong><strong> </strong><strong>you</strong><strong> </strong><strong>kept</strong><strong> </strong><strong>every</strong><strong> </strong><strong>female</strong><strong> </strong><strong>alive?</strong><strong> </strong><strong><em>hein</em></strong><strong><em> </em></strong><strong><em>heinah</em></strong><strong> </strong><strong>(behold,</strong><strong> </strong><strong>they</strong><strong> </strong><strong>were)</strong><strong> </strong><strong>through</strong><strong> </strong><strong>the</strong><strong> </strong><strong><em>d’var</em></strong><strong> </strong><strong>(word</strong><strong> </strong><strong>[speech])</strong><strong> </strong><strong>of</strong><strong> </strong><strong>Bil’am</strong><strong>’”</strong> [Numbers 31:14-16]—<em>b’d’var</em><em> </em><em>dayka</em> (through the word precisely) [i.e., through Bil’am’s corrupting speech]. And therefore, when they came from the wars of Midyan, it is written: <strong>“And</strong><strong> </strong><strong>the</strong><strong> </strong><strong>heads</strong><strong> </strong><strong>of</strong><strong> </strong><strong>the</strong><strong> </strong><strong>officers</strong><strong> </strong><strong>approached</strong><strong> </strong><strong>Moshe</strong><strong> </strong><strong>etc.</strong><strong> </strong><strong>and</strong><strong> </strong><strong>they</strong><strong> </strong><strong>said,</strong><strong> </strong><strong>‘And</strong><strong> </strong><strong>we</strong><strong> </strong><strong>have</strong><strong> </strong><strong>brought</strong><strong> </strong><strong>near</strong><strong> </strong><strong>the</strong><strong> </strong><strong>offering</strong><strong> </strong><strong>of</strong><strong> </strong><strong>Hashem</strong><strong> </strong><strong>etc.,</strong><strong> </strong><strong>to</strong><strong> </strong><strong>atone</strong><strong> </strong><strong>for</strong><strong> </strong><strong>our</strong><strong> </strong><strong><em>nafshos</em></strong><strong> </strong><strong>(souls</strong><strong> </strong><strong>[selves])</strong><strong> </strong><strong>before</strong><strong> </strong><strong>Hashem’”</strong> [Numbers 31:48-50]. And our <em>rabboseinu</em> (rabbis), of blessed memory, expounded [Shabbas 64a]: “That thus they said, ‘Even though from the hands of <em>aveirah</em> (transgression) we came out, from the hands of <em>hirhur</em> (thought [evil influence]) we did not come out.’”</p>
+
     </div>
   </div>
 </section>
