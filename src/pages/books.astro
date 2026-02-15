@@ -19,6 +19,9 @@ import Layout from '../layouts/Layout.astro';
         />
         <span class="search-icon">🔍</span>
       </div>
+      <a href="/search" class="full-search-link">
+        🔎 חיפוש מלא בכל הספרים והדרשות / Full Search
+      </a>
     </div>
 
     <div class="categories-grid" id="categoriesGrid"></div>
@@ -32,7 +35,7 @@ import Layout from '../layouts/Layout.astro';
 </Layout>
 
 <script>
-  // Book data - loaded client-side from the folder structure
+  // Book data - dynamically loaded from folder structure
   const booksData = [
     {
       name: "ספרי רבי נחמן",
@@ -56,24 +59,27 @@ import Layout from '../layouts/Layout.astro';
       name: "ספרי רבי נתן",
       originalName: "2_ספרי רבי נתן",
       books: [
-        { name: "ליקוטי הלכות", filename: "ליקוטי הלכות.txt" },
-        { name: "שיחות הר''ן ליקוטי דפוס", filename: "שיחות הר''ן ליקוטי דפוס.txt" },
-        { name: "שיחות הר''ן ליקוטי ישן", filename: "שיחות הר''ן ליקוטי ישן.txt" },
-        { name: "שיחות הר''ן מכתב יד", filename: "שיחות הר''ן מכתב יד.txt" },
-        { name: "שבחי הר''ן", filename: "שבחי הר''ן.txt" },
-        { name: "חיי מוהר''ן", filename: "חיי מוהר''ן.txt" }
+        { name: "01_ליקוטי הלכות ראשון", filename: "01_ליקוטי הלכות ראשון.txt" },
+        { name: "02_ליקוטי הלכות", filename: "02_ליקוטי הלכות.txt" },
+        { name: "03_שיחות הר''ן ליקוטי", filename: "03_שיחות הר''ן ליקוטי.txt" },
+        { name: "04_שיחות הר''ן", filename: "04_שיחות הר''ן.txt" },
+        { name: "05_שבחי הר''ן", filename: "05_שבחי הר''ן.txt" },
+        { name: "06_חיי מוהר''ן", filename: "06_חיי מוהר''ן.txt" },
+        { name: "07_תולדות הר''ן", filename: "07_תולדות הר''ן.txt" },
+        { name: "08_מכתבים", filename: "08_מכתבים.txt" }
       ]
     },
     {
       name: "ספרי הרב מטשערין",
       originalName: "3_ספרי הרב מטשערין",
       books: [
-        { name: "דרשות מטשערין", filename: "דרשות מטשערין.txt" },
+        { name: "דרשות מטשערין א", filename: "דרשות מטשערין א.txt" },
         { name: "דרשות מטשערין ב", filename: "דרשות מטשערין ב.txt" },
-        { name: "מכתבים מטשערין", filename: "מכתבים מטשערין.txt" },
+        { name: "מכתבים מטשערין א", filename: "מכתבים מטשערין א.txt" },
         { name: "מכתבים מטשערין ב", filename: "מכתבים מטשערין ב.txt" },
-        { name: "שיחות מטשערין", filename: "שיחות מטשערין.txt" },
-        { name: "שיחות מטשערין ב", filename: "שיחות מטשערין ב.txt" }
+        { name: "שיחות מטשערין א", filename: "שיחות מטשערין א.txt" },
+        { name: "שיחות מטשערין ב", filename: "שיחות מטשערין ב.txt" },
+        { name: "שיחות מטשערין ג", filename: "שיחות מטשערין ג.txt" }
       ]
     },
     {
@@ -109,6 +115,69 @@ import Layout from '../layouts/Layout.astro';
         { name: "שיחות רבי שמשון", filename: "שיחות רבי שמשון.txt" },
         { name: "תולדות רבי שמשון", filename: "תולדות רבי שמשון.txt" }
       ]
+    },
+    {
+      name: "לוי יצחק בנדר",
+      originalName: "6_לוי יצחק בנדר",
+      books: [
+        { name: "01_אוצר הדיבורים א", filename: "01_אוצר הדיבורים א.txt" },
+        { name: "02_אוצר הדיבורים ב", filename: "02_אוצר הדיבורים ב.txt" },
+        { name: "03_דרשות לוי יצחק א", filename: "03_דרשות לוי יצחק א.txt" },
+        { name: "04_דרשות לוי יצחק ב", filename: "04_דרשות לוי יצחק ב.txt" },
+        { name: "05_דרשות לוי יצחק ג", filename: "05_דרשות לוי יצחק ג.txt" },
+        { name: "06_שיחות לוי יצחק א", filename: "06_שיחות לוי יצחק א.txt" },
+        { name: "07_שיחות לוי יצחק ב", filename: "07_שיחות לוי יצחק ב.txt" },
+        { name: "08_תולדות לוי יצחק", filename: "08_תולדות לוי יצחק.txt" },
+        { name: "09_מכתבים", filename: "09_מכתבים.txt" },
+        { name: "010_שיחות לוי יצחק ג", filename: "010_שיחות לוי יצחק ג.txt" },
+        { name: "011_דרשות לוי יצחק ד", filename: "011_דרשות לוי יצחק ד.txt" },
+        { name: "012_שיחות לוי יצחק ד", filename: "012_שיחות לוי יצחק ד.txt" }
+      ]
+    },
+    {
+      name: "סיפורים",
+      originalName: "91_סיפורים",
+      books: [
+        { name: "סיפורי מעשיות עברית", filename: "סיפורי מעשיות עברית.txt" },
+        { name: "סיפורים נוספים", filename: "סיפורים נוספים.txt" }
+      ]
+    },
+    {
+      name: "ספרים מתורגמים",
+      originalName: "92_ספרים מתורגמים",
+      books: [
+        { name: "ליקוטי מוהר''ן אנגלית", filename: "ליקוטי מוהר''ן אנגלית.txt" }
+      ]
+    },
+    {
+      name: "ספרי לוי יצחק בנדר",
+      originalName: "ספרי לוי יצחק בנדר",
+      books: [
+        { name: "אוצר הדיבורים א", filename: "אוצר הדיבורים א.txt" },
+        { name: "אוצר הדיבורים ב", filename: "אוצר הדיבורים ב.txt" },
+        { name: "אוצר הדיבורים ג", filename: "אוצר הדיבורים ג.txt" },
+        { name: "אוצר הדיבורים ד", filename: "אוצר הדיבורים ד.txt" },
+        { name: "אוצר הדיבורים ה", filename: "אוצר הדיבורים ה.txt" },
+        { name: "דרשות לוי יצחק", filename: "דרשות לוי יצחק.txt" },
+        { name: "שיחות לוי יצחק", filename: "שיחות לוי יצחק.txt" },
+        { name: "תולדות לוי יצחק", filename: "תולדות לוי יצחק.txt" },
+        { name: "מכתבים", filename: "מכתבים.txt" }
+      ]
+    },
+    {
+      name: "ביבליוגרפית ברסלב",
+      originalName: "ביבליוגרפית ברסלב",
+      books: [
+        { name: "אוצר הספרים א", filename: "אוצר הספרים א.txt" },
+        { name: "אוצר הספרים ב", filename: "אוצר הספרים ב.txt" },
+        { name: "אוצר הספרים ג", filename: "אוצר הספרים ג.txt" },
+        { name: "אוצר הספרים ד", filename: "אוצר הספרים ד.txt" },
+        { name: "אוצר הספרים ה", filename: "אוצר הספרים ה.txt" },
+        { name: "ביבליוגרפיה ברסלב ו", filename: "ביבליוגרפיה ברסלב ו.txt" },
+        { name: "ביבליוגרפיה ברסלב ז", filename: "ביבליוגרפיה ברסלב ז.txt" }
+      ]
+    }
+  ];
     },
     {
       name: "ספרים של תלמידים ועוד",
@@ -282,6 +351,24 @@ import Layout from '../layouts/Layout.astro';
   .search-section {
     max-width: 600px;
     margin: 0 auto 2rem;
+    text-align: center;
+  }
+
+  .full-search-link {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.75rem 1.5rem;
+    background: #1a365d;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background 0.2s;
+  }
+
+  .full-search-link:hover {
+    background: #c53030;
+    color: white;
   }
 
   .search-box {
