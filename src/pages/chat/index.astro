@@ -1,108 +1,73 @@
 ---
 const pageTitle = "NNNNM Community Chat";
-const pageDescription = "Real-time chat for Breslov learning community - connect with Na Nach followers worldwide. Discuss Rabbi Nachman's teachings, Likutay Moharan, stories, and Tikkun Haklali.";
+const pageDescription = "Real-time chat for Breslov learning community - connect with Na Nach followers worldwide.";
 import Layout from '../../layouts/Layout.astro';
 ---
 
 <Layout title={pageTitle} description={pageDescription}>
-  <!-- Additional SEO for chat page -->
-  <meta name="keywords" content="Breslov chat, Na Nach community, Rabbi Nachman teachings, Likutay Moharan discussion, Tikkun Haklali, Breslov stories, Uman pilgrimage" />
+  <meta name="keywords" content="Breslov chat, Na Nach community, Rabbi Nachman teachings" />
   <meta property="og:type" content="website" />
-  <meta property="og:locale" content="en_US" />
   
-  <!-- JSON-LD for community -->
-  <script type="application/ld+json" set:html={JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "SocialMediaObservingActivity",
-    "name": "NNNNM Community Chat",
-    "description": "Real-time chat community for Breslov learners and Na Nach followers",
-    "url": "https://ajew.org/chat",
-    "potentialAction": {
-      "@type": "JoinAction",
-      "target": "https://ajew.org/subscribe"
-    }
-  })} />
   <style>
     .page-header {
       background: linear-gradient(135deg, #059669 0%, #10b981 100%);
       color: white;
-      padding: 2rem;
+      padding: 1.5rem;
     }
     .page-header-content { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
-    .page-header h1 { font-family: var(--font-hebrew); font-size: 2rem; margin-bottom: 0.5rem; }
-    .header-links { display: flex; gap: 0.75rem; flex-wrap: wrap; }
-    .header-link { display: flex; align-items: center; gap: 0.5rem; color: white; text-decoration: none; padding: 0.6rem 1rem; background: rgba(255,255,255,0.2); border-radius: 8px; font-size: 0.9rem; transition: all 0.2s; }
-    .header-link:hover { background: rgba(255,255,255,0.3); transform: translateY(-2px); }
-    .header-link .icon { font-size: 1.2rem; }
+    .page-header h1 { font-family: var(--font-hebrew); font-size: 1.75rem; margin: 0; }
+    .header-links { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .header-link { display: flex; align-items: center; gap: 0.4rem; color: white; text-decoration: none; padding: 0.5rem 0.75rem; background: rgba(255,255,255,0.2); border-radius: 6px; font-size: 0.8rem; }
     .logo-btn { background: linear-gradient(135deg, #744210 0%, #975a16 100%) !important; }
     .container { max-width: 1400px; margin: 0 auto; padding: 0 1rem; }
-    .chat-layout { display: grid; grid-template-columns: 280px 1fr; gap: 1rem; height: calc(100vh - 200px); min-height: 500px; padding: 1rem 0; }
-    .sidebar { background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); overflow: hidden; }
-    .sidebar-header { background: #1a365d; color: white; padding: 1rem; font-weight: 600; }
-    .room-list { list-style: none; padding: 0; margin: 0; overflow-y: auto; max-height: calc(100% - 60px); }
-    .room-item { padding: 1rem; border-bottom: 1px solid #eee; cursor: pointer; transition: all 0.2s; }
+    .chat-layout { display: grid; grid-template-columns: 260px 1fr; gap: 1rem; height: calc(100vh - 180px); min-height: 450px; padding: 1rem 0; }
+    .sidebar { background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden; }
+    .sidebar-header { background: #1a365d; color: white; padding: 0.75rem 1rem; font-weight: 600; font-size: 0.9rem; }
+    .room-list { list-style: none; padding: 0; margin: 0; overflow-y: auto; max-height: calc(100% - 50px); }
+    .room-item { padding: 0.75rem 1rem; border-bottom: 1px solid #eee; cursor: pointer; transition: all 0.15s; }
     .room-item:hover { background: #f7f5f0; }
     .room-item.active { background: #fef3c7; border-right: 3px solid #744210; }
-    .room-name { font-weight: 600; color: #1a365d; display: flex; align-items: center; gap: 0.5rem; }
-    .room-desc { font-size: 0.85rem; color: #666; margin-top: 0.25rem; }
-    .room-count { font-size: 0.75rem; color: #888; float: right; }
-    .main-chat { background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); display: flex; flex-direction: column; overflow: hidden; }
-    .chat-header { background: #f7f5f0; padding: 1rem; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-    .chat-header h2 { margin: 0; color: #1a365d; font-size: 1.2rem; }
-    .chat-status { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: #059669; }
-    .chat-status::before { content: ''; width: 8px; height: 8px; background: #059669; border-radius: 50%; }
-    .messages { flex: 1; overflow-y: auto; padding: 1rem; background: #fafafa; }
-    .message { margin-bottom: 1rem; animation: fadeIn 0.3s ease; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    .message-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem; }
-    .message-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #744210 0%, #975a16 100%); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.9rem; }
-    .message-author { font-weight: 600; color: #1a365d; }
-    .message-time { font-size: 0.75rem; color: #888; }
-    .message-content { background: white; padding: 0.75rem 1rem; border-radius: 12px; margin-right: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
-    .message.my-message .message-content { background: #fef3c7; margin-right: 0; margin-left: 2rem; }
-    .message-input { padding: 1rem; background: white; border-top: 1px solid #eee; display: flex; gap: 1rem; }
-    .message-input input { flex: 1; padding: 0.75rem 1rem; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; }
+    .room-name { font-weight: 600; color: #1a365d; font-size: 0.9rem; display: flex; justify-content: space-between; }
+    .room-desc { font-size: 0.75rem; color: #666; margin-top: 0.2rem; }
+    .main-chat { background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; flex-direction: column; overflow: hidden; }
+    .chat-header { background: #f7f5f0; padding: 0.75rem 1rem; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+    .chat-header h2 { margin: 0; font-size: 1.1rem; color: #1a365d; }
+    .chat-status { font-size: 0.75rem; color: #059669; background: #d1fae5; padding: 0.25rem 0.5rem; border-radius: 4px; }
+    .messages { flex: 1; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; gap: 0.75rem; background: #f8fafc; }
+    .message { padding: 0.75rem; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .message.my-message { background: #d1fae5; margin-left: 2rem; }
+    .message-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; }
+    .message-avatar { width: 28px; height: 28px; border-radius: 50%; background: #1a365d; color: white; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600; }
+    .message-author { font-weight: 600; font-size: 0.85rem; color: #1a365d; }
+    .message-time { font-size: 0.7rem; color: #888; margin-left: auto; }
+    .message-content { font-size: 0.9rem; line-height: 1.5; color: #334155; }
+    .message-input-area { background: white; border-top: 1px solid #e2e8f0; padding: 1rem; }
+    .message-input { display: flex; gap: 0.5rem; }
+    .message-input input { flex: 1; padding: 0.6rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem; }
     .message-input input:focus { outline: none; border-color: #744210; }
-    .send-btn { padding: 0.75rem 1.5rem; background: linear-gradient(135deg, #059669 0%, #10b981 100%); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-    .send-btn:hover { transform: scale(1.02); }
-    .subscribe-notice { padding: 0.75rem 1rem; background: #fef3c7; border-top: 1px solid #fcd34d; text-align: center; color: #92400e; font-size: 0.85rem; }
-    .subscribe-notice a { color: #d97706; font-weight: bold; }
-    .sidebar-footer { padding: 1rem; border-top: 1px solid #eee; background: #f7f5f0; }
-    .user-info { display: flex; align-items: center; gap: 0.75rem; }
-    .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: #1a365d; color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; }
-    .user-name { font-weight: 600; color: #1a365d; }
-    .user-tier { font-size: 0.75rem; color: #744210; }
-    .welcome-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; padding: 2rem; }
-    .welcome-icon { font-size: 4rem; margin-bottom: 1rem; }
-    .welcome-title { font-size: 1.5rem; color: #1a365d; margin-bottom: 0.5rem; }
-    .welcome-text { color: #666; margin-bottom: 1.5rem; }
-    .subscribe-btn { padding: 0.75rem 1.5rem; background: linear-gradient(135deg, #744210 0%, #975a16 100%); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
-    .nav-links { display: flex; gap: 0.5rem; }
-    .nav-link { color: white; text-decoration: none; padding: 0.5rem 1rem; background: rgba(255,255,255,0.2); border-radius: 8px; font-size: 0.9rem; }
-    .nav-link:hover { background: rgba(255,255,255,0.3); }
+    .send-btn { padding: 0.6rem 1rem; background: #059669; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85rem; }
+    .send-btn:hover { background: #047857; }
+    .subscribe-prompt { text-align: center; padding: 1.5rem; background: #fef3c7; border-radius: 8px; margin: 1rem; }
+    .subscribe-prompt h3 { margin: 0 0 0.5rem; color: #92400e; }
+    .subscribe-prompt p { margin: 0 0 1rem; color: #78350f; font-size: 0.9rem; }
+    .subscribe-prompt a { display: inline-block; padding: 0.6rem 1.2rem; background: #f97316; color: white; text-decoration: none; border-radius: 6px; font-weight: 600; }
+    .login-btn { background: #059669 !important; margin-left: 0.5rem; }
+    .empty-state { text-align: center; padding: 2rem; color: #666; }
+    .system-message { background: #e0f2fe; border-left: 3px solid #0284c7; }
+    
     @media (max-width: 768px) {
       .chat-layout { grid-template-columns: 1fr; }
       .sidebar { display: none; }
-      .header-links { gap: 0.4rem; }
-      .header-link { padding: 0.4rem 0.6rem; font-size: 0.75rem; }
-      .header-link .icon { font-size: 0.9rem; }
-      .logo-btn { padding: 0.4rem 0.6rem !important; }
+      .header-links { gap: 0.3rem; }
+      .header-link { padding: 0.4rem 0.5rem; font-size: 0.7rem; }
     }
   </style>
 
   <section class="page-header">
     <div class="page-header-content">
-      <div>
-        <h1>💬 NNNNM Community Chat</h1>
-        <p>Real-time discussion of Breslov teachings</p>
-      </div>
+      <h1>💬 NNNNM Chat</h1>
       <div class="header-links">
-        <a href="https://nanach.tv" target="_blank" rel="noopener" class="header-link logo-btn">
-          <span class="icon">📺</span> nanach.tv
-        </a>
-        <a href="https://breslovbooks.com" target="_blank" rel="noopener" class="header-link">
-          <span class="icon">📚</span> breslovbooks
-        </a>
+        <a href="https://nanach.tv" target="_blank" class="header-link logo-btn">📺 nanach.tv</a>
         <a href="/subscribe" class="header-link">Subscribe</a>
         <a href="/teachings" class="header-link">Teachings</a>
       </div>
@@ -112,91 +77,50 @@ import Layout from '../../layouts/Layout.astro';
   <main class="container">
     <div class="chat-layout">
       <aside class="sidebar">
-        <div class="sidebar-header">
-          💬 Chat Rooms
-        </div>
+        <div class="sidebar-header">💬 Rooms</div>
         <ul class="room-list">
-          <li class="room-item active" onclick="selectRoom('general')">
-            <div class="room-name">🌐 General Discussion <span class="room-count">47</span></div>
-            <div class="room-desc">Chat about anything Breslov</div>
+          <li class="room-item active" data-room="general">
+            <div class="room-name">🌐 General <span class="room-count" id="count-general">-</span></div>
+            <div class="room-desc">Anything Breslov</div>
           </li>
-          <li class="room-item" onclick="selectRoom('likutay')">
-            <div class="room-name">📖 Likutay Moharan <span class="room-count">23</span></div>
-            <div class="room-desc">Discuss Torah teachings</div>
+          <li class="room-item" data-room="likutay">
+            <div class="room-name">📖 Likutay <span class="room-count" id="count-likutay">-</span></div>
+            <div class="room-desc">Torah teachings</div>
           </li>
-          <li class="room-item" onclick="selectRoom('stories')">
-            <div class="room-name">📚 Stories <span class="room-count">15</span></div>
-            <div class="room-desc">Sippurey Maasiyot discussions</div>
+          <li class="room-item" data-room="stories">
+            <div class="room-name">📚 Stories <span class="room-count" id="count-stories">-</span></div>
+            <div class="room-desc">Sippurey Maasiyot</div>
           </li>
-          <li class="room-item" onclick="selectRoom('tikkun')">
-            <div class="room-name">🙏 Tikkun Haklali <span class="room-count">31</span></div>
-            <div class="room-desc">Prayers and remedies</div>
+          <li class="room-item" data-room="tikkun">
+            <div class="room-name">🙏 Tikkun <span class="room-count" id="count-tikkun">-</span></div>
+            <div class="room-desc">Prayers & remedies</div>
           </li>
-          <li class="room-item" onclick="selectRoom('Nachman')">
-            <div class="room-name">🕯️ Rabbi Nachman <span class="room-count">19</span></div>
-            <div class="room-desc">Life and teachings</div>
+          <li class="room-item" data-room="Nachman">
+            <div class="room-name">🕯️ R. Nachman <span class="room-count" id="count-Nachman">-</span></div>
+            <div class="room-desc">Life & teachings</div>
           </li>
-          <li class="room-item" onclick="selectRoom('umman')">
-            <div class="room-name">🇮🇱 Uman <span class="room-count">28</span></div>
-            <div class="room-desc">Travel, Rosh Hashanah</div>
+          <li class="room-item" data-room="umman">
+            <div class="room-name">🇮🇱 Uman <span class="room-count" id="count-umman">-</span></div>
+            <div class="room-desc">Rosh Hashanah</div>
           </li>
         </ul>
-        <div class="sidebar-footer">
-          <div class="user-info">
-            <div class="user-avatar">G</div>
-            <div>
-              <div class="user-name">Guest</div>
-              <div class="user-tier">Sign in for full access</div>
-            </div>
-          </div>
-        </div>
       </aside>
 
       <div class="main-chat">
         <div class="chat-header">
-          <h2>🌐 General Discussion</h2>
-          <div class="chat-status">Live</div>
+          <h2 id="roomTitle">🌐 General Discussion</h2>
+          <span class="chat-status" id="onlineCount">Loading...</span>
         </div>
         
         <div class="messages" id="messages">
-          <div class="message">
-            <div class="message-header">
-              <div class="message-avatar">א</div>
-              <span class="message-author">Avraham</span>
-              <span class="message-time">Just now</span>
-            </div>
-            <div class="message-content">
-              Shalom everyone! Just finished reading Torah 48 - the hitbodedut section is so powerful. Anyone have insights to share?
-            </div>
-          </div>
-          <div class="message">
-            <div class="message-header">
-              <div class="message-avatar">ב</div>
-              <span class="message-author">Betzalel</span>
-              <span class="message-time">2 min ago</span>
-            </div>
-            <div class="message-content">
-              Yes! The part about "a person must traverse a very narrow bridge" - this is our daily avodah. Not to fear at all!
-            </div>
-          </div>
-          <div class="message">
-            <div class="message-header">
-              <div class="message-avatar">נ</div>
-              <span class="message-author">Na Nach Friend</span>
-              <span class="message-time">5 min ago</span>
-            </div>
-            <div class="message-content">
-              Na Nach Nachma Nachman MeUman! 🎵
-            </div>
-          </div>
+          <div class="empty-state">Loading messages...</div>
         </div>
 
-        <div class="message-input">
-          <input type="text" id="messageInput" placeholder="Type your message..." onkeypress="handleKeypress(event)">
-          <button class="send-btn" onclick="sendMessage()">Send</button>
-        </div>
-        <div class="subscribe-notice">
-          💡 <a href="/subscribe">Subscribe</a> to send messages and participate in the community
+        <div class="message-input-area">
+          <div class="message-input" id="inputArea">
+            <input type="text" id="messageInput" placeholder="Type your message..." maxlength="500">
+            <button class="send-btn" onclick="sendMessage()">Send</button>
+          </div>
         </div>
       </div>
     </div>
@@ -204,67 +128,153 @@ import Layout from '../../layouts/Layout.astro';
 
   <script>
     let currentRoom = 'general';
+    let currentUser = null;
+    let messagePolling = null;
+
     const rooms = {
-      general: { name: '🌐 General Discussion', count: 47 },
-      likutay: { name: '📖 Likutay Moharan', count: 23 },
-      stories: { name: '📚 Stories', count: 15 },
-      tikkun: { name: '🙏 Tikkun Haklali', count: 31 },
-      Nachman: { name: '🕯️ Rabbi Nachman', count: 19 },
-      umman: { name: '🇮🇱 Uman', count: 28 }
+      general: '🌐 General Discussion',
+      likutay: '📖 Likutay Moharan',
+      stories: '📚 Stories',
+      tikkun: '🙏 Tikkun Haklali',
+      Nachman: '🕯️ Rabbi Nachman',
+      umman: '🇮🇱 Uman'
     };
 
-    function selectRoom(room) {
-      currentRoom = room;
-      document.querySelectorAll('.room-item').forEach(el => el.classList.remove('active'));
-      event.currentTarget.classList.add('active');
-      document.querySelector('.chat-header h2').textContent = rooms[room].name;
-      document.querySelector('.chat-status').previousElementSibling.nextElementSibling.textContent = rooms[room].count + ' online';
-      
-      const messages = document.getElementById('messages');
-      messages.innerHTML = `
-        <div class="message">
-          <div class="message-header">
-            <div class="message-avatar">🤖</div>
-            <span class="message-author">System</span>
-            <span class="message-time">Now</span>
-          </div>
-          <div class="message-content">
-            Welcome to #${rooms[room].name}! Subscribe to join the conversation.
-          </div>
-        </div>
-      `;
+    // Check for logged in user
+    function checkUser() {
+      const saved = localStorage.getItem('nnnnm_user');
+      if (saved) {
+        try {
+          currentUser = JSON.parse(saved);
+        } catch(e) {}
+      }
+      return currentUser;
     }
 
-    function sendMessage() {
+    // Load messages for a room
+    async function loadMessages(room) {
+      try {
+        const res = await fetch(`/api/chat?room=${room}&limit=50`);
+        const data = await res.json();
+        
+        const messagesDiv = document.getElementById('messages');
+        
+        if (!data.messages || data.messages.length === 0) {
+          messagesDiv.innerHTML = '<div class="empty-state">No messages yet. Be the first to say Shalom!</div>';
+          return;
+        }
+        
+        // Show newest first
+        const msgs = data.messages.reverse();
+        
+        messagesDiv.innerHTML = msgs.map(msg => {
+          const time = new Date(msg.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+          const initial = msg.user_name ? msg.user_name.charAt(0).toUpperCase() : '?';
+          const isOwn = currentUser && msg.user_id === currentUser.id;
+          
+          return `
+            <div class="message ${isOwn ? 'my-message' : ''}">
+              <div class="message-header">
+                <div class="message-avatar">${initial}</div>
+                <span class="message-author">${msg.user_name || 'Guest'}</span>
+                <span class="message-time">${time}</span>
+              </div>
+              <div class="message-content">${escapeHtml(msg.message)}</div>
+            </div>
+          `;
+        }).join('');
+        
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        
+        // Update count
+        document.getElementById('onlineCount').textContent = `${msgs.length} messages`;
+        
+      } catch (e) {
+        console.error('Error loading messages:', e);
+      }
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Send a message
+    async function sendMessage() {
       const input = document.getElementById('messageInput');
       const text = input.value.trim();
       if (!text) return;
 
-      // Show subscription prompt
-      const messages = document.getElementById('messages');
-      const msg = document.createElement('div');
-      msg.className = 'message';
-      msg.innerHTML = `
-        <div class="message-header">
-          <div class="message-avatar" style="background: linear-gradient(135deg, #dc2626 0%, #f97316 100%);">🔒</div>
-          <span class="message-author">System</span>
-          <span class="message-time">Just now</span>
-        </div>
-        <div class="message-content">
-          💳 To send messages and participate in chat, please <a href="/subscribe" style="color: #f97316; font-weight: bold;">subscribe here</a>. 
-          <br><br>
-          Already a subscriber? <a href="/login" style="color: #059669;">Sign in</a> with your email.
+      // Check if user is logged in
+      if (!currentUser) {
+        // Show subscription prompt
+        showSubscribePrompt();
+        input.value = '';
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            room: currentRoom,
+            message: text,
+            user_id: currentUser.id,
+            user_name: currentUser.name || currentUser.email
+          })
+        });
+        
+        const data = await res.json();
+        
+        if (data.error) {
+          alert('Error: ' + data.error);
+          return;
+        }
+        
+        input.value = '';
+        loadMessages(currentRoom); // Reload messages
+        
+      } catch (e) {
+        console.error('Error sending message:', e);
+        alert('Failed to send message');
+      }
+    }
+
+    function showSubscribePrompt() {
+      const messagesDiv = document.getElementById('messages');
+      messagesDiv.innerHTML = `
+        <div class="subscribe-prompt">
+          <h3>🔒 Subscription Required</h3>
+          <p>To send messages and participate in chat, please subscribe or sign in.</p>
+          <a href="/subscribe">Subscribe Now</a>
+          <a href="/login" class="login-btn">Sign In</a>
         </div>
       `;
-      messages.appendChild(msg);
-      messages.scrollTop = messages.scrollHeight;
-      input.value = '';
     }
 
-    function handleKeypress(event) {
-      if (event.key === 'Enter') sendMessage();
-    }
+    // Room selection
+    document.querySelectorAll('.room-item').forEach(item => {
+      item.addEventListener('click', () => {
+        document.querySelectorAll('.room-item').forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+        currentRoom = item.dataset.room;
+        document.getElementById('roomTitle').textContent = rooms[currentRoom];
+        loadMessages(currentRoom);
+      });
+    });
 
-    document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
+    // Enter key to send
+    document.getElementById('messageInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') sendMessage();
+    });
+
+    // Initialize
+    checkUser();
+    loadMessages(currentRoom);
+    
+    // Poll for new messages every 10 seconds
+    messagePolling = setInterval(() => loadMessages(currentRoom), 10000);
   </script>
 </Layout>
