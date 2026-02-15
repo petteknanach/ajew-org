@@ -35,7 +35,7 @@ import Layout from '../layouts/Layout.astro';
 </Layout>
 
 <script>
-  // Book data - dynamically loaded from folder structure
+  // Book data - from MyBooks folder
   const booksData = [
     {
       name: "ספרי רבי נחמן",
@@ -59,9 +59,7 @@ import Layout from '../layouts/Layout.astro';
       name: "ספרי רבי נתן",
       originalName: "2_ספרי רבי נתן",
       books: [
-        { name: "01_ליקוטי הלכות ראשון", filename: "01_ליקוטי הלכות ראשון.txt" },
-        { name: "02_ליקוטי הלכות", filename: "02_ליקוטי הלכות.txt" },
-        { name: "03_שיחות הר''ן ליקוטי", filename: "03_שיחות הר''ן ליקוטי.txt" },
+        { name: "03_ליקוטי הלכות", filename: "03_ליקוטי הלכות.txt" },
         { name: "04_שיחות הר''ן", filename: "04_שיחות הר''ן.txt" },
         { name: "05_שבחי הר''ן", filename: "05_שבחי הר''ן.txt" },
         { name: "06_חיי מוהר''ן", filename: "06_חיי מוהר''ן.txt" },
@@ -78,17 +76,16 @@ import Layout from '../layouts/Layout.astro';
         { name: "מכתבים מטשערין א", filename: "מכתבים מטשערין א.txt" },
         { name: "מכתבים מטשערין ב", filename: "מכתבים מטשערין ב.txt" },
         { name: "שיחות מטשערין א", filename: "שיחות מטשערין א.txt" },
-        { name: "שיחות מטשערין ב", filename: "שיחות מטשערין ב.txt" },
-        { name: "שיחות מטשערין ג", filename: "שיחות מטשערין ג.txt" }
+        { name: "שיחות מטשערין ב", filename: "שיחות מטשערין ב.txt" }
       ]
     },
     {
       name: "ספרי רבי נתן בר יהודה",
       originalName: "3_ספרי רבי נתן בר יהודה",
       books: [
-        { name: "דרשות רבי נתן", filename: "דרשות רבי נתן.txt" },
-        { name: "שיחות רבי נתן", filename: "שיחות רבי נתן.txt" },
-        { name: "תולדות רבי נתן", filename: "תולדות רבי נתן.txt" }
+        { name: "01_דרשות רבי נתן", filename: "01_דרשות רבי נתן.txt" },
+        { name: "02_שיחות רבי נתן", filename: "02_שיחות רבי נתן.txt" },
+        { name: "03_תולדות רבי נתן", filename: "03_תולדות רבי נתן.txt" }
       ]
     },
     {
@@ -142,67 +139,6 @@ import Layout from '../layouts/Layout.astro';
         { name: "אוצר הספרים ה", filename: "אוצר הספרים ה.txt" },
         { name: "ביבליוגרפיה ברסלב ו", filename: "ביבליוגרפיה ברסלב ו.txt" },
         { name: "ביבליוגרפיה ברסלב ז", filename: "ביבליוגרפיה ברסלב ז.txt" }
-      ]
-    },
-    {
-      name: "ספרים של תלמידים ועוד",
-      originalName: "6_ספרים של תלמידים ועוד",
-      books: [
-        { name: "אגרות קודש ברסלב", filename: "אגרות קודש ברסלב.txt" },
-        { name: "דרשות אחרונות", filename: "דרשות אחרונות.txt" },
-        { name: "דרשות ליום ההילולא", filename: "דרשות ליום ההילולא.txt" },
-        { name: "הגדה של פסח", filename: "הגדה של פסח.txt" },
-        { name: "ילקוט ישראל", filename: "ילקוט ישראל.txt" },
-        { name: "ליקוטים מכתבים", filename: "ליקוטים מכתבים.txt" },
-        { name: "מאמרי מרא דאבוה", filename: "מאמרי מרא דאבוה.txt" },
-        { name: "מכתב לתלמידים", filename: "מכתב לתלמידים.txt" },
-        { name: "על ספר הזוהר", filename: "על ספר הזוהר.txt" },
-        { name: "פיואל הלולא", filename: "פיואל הלולא.txt" },
-        { name: "שיחות ליום טוב", filename: "שיחות ליום טוב.txt" },
-        { name: "תיקונים", filename: "תיקונים.txt" }
-      ]
-    },
-    {
-      name: "סיפורים",
-      originalName: "91_סיפורים",
-      books: [
-        { name: "סיפורי מעשיות עברית", filename: "סיפורי מעשיות עברית.txt" },
-        { name: "סיפורים נוספים", filename: "סיפורים נוספים.txt" }
-      ]
-    },
-    {
-      name: "ספרים מתורגמים",
-      originalName: "92_ספרים מתורגמים",
-      books: [
-        { name: "ליקוטי מוהר''ן אנגלית", filename: "ליקוטי מוהר''ן אנגלית.txt" }
-      ]
-    },
-    {
-      name: "ביבליוגרפית ברסלב",
-      originalName: "ביבליוגרפית ברסלב",
-      books: [
-        { name: "אוצר הספרים", filename: "אוצר הספרים.txt" },
-        { name: "ביבליוגרפיה ברסלב א", filename: "ביבליוגרפיה ברסלב א.txt" },
-        { name: "ביבליוגרפיה ברסלב ב", filename: "ביבליוגרפיה ברסלב ב.txt" },
-        { name: "ביבליוגרפיה ברסלב ג", filename: "ביבליוגרפיה ברסלב ג.txt" },
-        { name: "ביבליוגרפיה ברסלב ד", filename: "ביבליוגרפיה ברסלב ד.txt" },
-        { name: "ביבליוגרפיה ברסלב ה", filename: "ביבליוגרפיה ברסלב ה.txt" },
-        { name: "ביבליוגרפיה ברסלב ו", filename: "ביבליוגרפיה ברסלב ו.txt" },
-        { name: "ביבליוגרפיה ברסלב ז", filename: "ביבליוגרפיה ברסלב ז.txt" },
-        { name: "ספרי ברסלב מאז 2000", filename: "ספרי ברסלב מאז 2000.txt" }
-      ]
-    },
-    {
-      name: "לוי יצחק בנדר",
-      originalName: "לוי יצחק בנדר",
-      books: [
-        { name: "אוצר הדיבורים", filename: "אוצר הדיבורים.txt" },
-        { name: "דרשות לוי יצחק", filename: "דרשות לוי יצחק.txt" },
-        { name: "דרשות לוי יצחק ב", filename: "דרשות לוי יצחק ב.txt" },
-        { name: "דרשות לוי יצחק ג", filename: "דרשות לוי יצחק ג.txt" },
-        { name: "שיחות לוי יצחק", filename: "שיחות לוי יצחק.txt" },
-        { name: "שיחות לוי יצחק ב", filename: "שיחות לוי יצחק ב.txt" },
-        { name: "תולדות לוי יצחק", filename: "תולדות לוי יצחק.txt" }
       ]
     }
   ];
