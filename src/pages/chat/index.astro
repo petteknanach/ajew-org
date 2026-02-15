@@ -154,7 +154,7 @@ import Layout from '../../layouts/Layout.astro';
     // Load chat rooms
     async function loadRooms() {
       try {
-        const res = await fetch('/api/chat?rooms=1');
+        const res = await fetch('/api/chats');
         const data = await res.json();
         
         const grid = document.getElementById('roomsGrid');
