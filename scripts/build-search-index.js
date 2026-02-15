@@ -2,94 +2,54 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const BOOKS_DIR = path.join(__dirname, '../public/books');
-const OUTPUT_FILE = path.join(__dirname, '../src/data/search-index.json');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const baseDir = path.join(__dirname, '..');
 
-// Ensure output directory exists
-const outputDir = path.dirname(OUTPUT_FILE);
-if (!fs.existsSync(outputDir)) {
-  fs.mkdirSync(outputDir, { recursive: true });
-}
+const booksDir = path.join(baseDir, 'public/books');
+const outputPath = path.join(baseDir, 'public/data-search-index.json');
 
-function scanBooks(dir, category = '') {
-  const items = fs.readdirSync(dir, { withFileTypes: true });
-  const books = [];
+const books = [];
+
+function walkDir(dir, category = '') {
+  const items = fs.readdirSync(dir);
   
   for (const item of items) {
-    const fullPath = path.join(dir, item.name);
+    const fullPath = path.join(dir, item);
+    const stat = fs.statSync(fullPath);
     
-    if (item.isDirectory()) {
-      const subBooks = scanBooks(fullPath, item.name);
-      books.push(...subBooks);
-    } else if (item.name.endsWith('.txt')) {
+    if (stat.isDirectory()) {
+      walkDir(fullPath, item);
+    } else if (item.endsWith('.txt')) {
       try {
-        const content = fs.readFileSync(fullPath, 'utf8');
-        const relativePath = path.relative(path.join(__dirname, '../public'), fullPath);
+        // Read as UTF-8 (files already converted)
+        let content = fs.readFileSync(fullPath, 'utf8');
+        
+        // Strip the weird markup at start (CosmeticsType stuff)
+        content = content.replace(/^&[^&]*&/, '').replace(/^[^\u05D0-\u05EA]*([\u05D0-\u05EA])/, '$1');
+        
+        const relativePath = path.relative(baseDir + '/public', fullPath);
         
         books.push({
-          title: item.name.replace('.txt', ''),
-          category: category || 'Other',
+          title: item.replace('.txt', ''),
+          category: category || 'Unknown',
           path: '/' + relativePath.replace(/\\/g, '/'),
-          content: content.substring(0, 30000),
+          content: content.substring(0, 5000)
         });
-      } catch (e) {
-        console.error(`Error reading ${fullPath}:`, e.message);
+      } catch (err) {
+        console.error(`Error reading ${fullPath}:`, err.message);
       }
     }
   }
-  
-  return books;
 }
 
-function scanTeachings() {
-  const teachings = [];
-  const teachingsDir = path.join(__dirname, '../src/pages/teachings');
-  
-  if (!fs.existsSync(teachingsDir)) return teachings;
-  
-  const files = fs.readdirSync(teachingsDir).filter(f => f.endsWith('.astro'));
-  
-  for (const file of files) {
-    try {
-      const content = fs.readFileSync(path.join(teachingsDir, file), 'utf8');
-      const titleMatch = content.match(/<h1[^>]*>([^<]+)<\/h1>/);
-      const title = titleMatch ? titleMatch[1] : file.replace('.astro', '');
-      
-      const textContent = content
-        .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
-        .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
-        .replace(/<[^>]+>/g, ' ')
-        .replace(/&nbsp;/g, ' ')
-        .replace(/&[a-z]+;/gi, ' ')
-        .replace(/\s+/g, ' ')
-        .substring(0, 30000);
-      
-      teachings.push({
-        title: title,
-        category: 'Teachings',
-        path: '/teachings/' + file.replace('.astro', ''),
-        content: textContent
-      });
-    } catch (e) {
-      console.error(`Error reading ${file}:`, e.message);
-    }
-  }
-  
-  return teachings;
-}
-
-console.log('Building search index...');
-
-const books = scanBooks(BOOKS_DIR);
-const teachings = scanTeachings();
+console.log('Walking books directory...');
+walkDir(booksDir);
 
 const index = {
-  updated: new Date().toISOString(),
   books,
-  teachings
+  teachings: []
 };
 
-fs.writeFileSync(OUTPUT_FILE, JSON.stringify(index, null, 2));
-console.log(`Indexed ${books.length} books and ${teachings.length} teachings`);
-console.log(`Written to ${OUTPUT_FILE}`);
+fs.writeFileSync(outputPath, JSON.stringify(index, null, 2));
+console.log(`Created search index with ${books.length} books`);
