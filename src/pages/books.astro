@@ -309,6 +309,7 @@ import Layout from '../layouts/Layout.astro';
     position: absolute;
     left: 1.2rem;
     font-size: 1.2rem;
+    pointer-events: none;
   }
 
   .categories-grid {
@@ -321,10 +322,9 @@ import Layout from '../layouts/Layout.astro';
 
   .category-card {
     background: #ffffff;
-    border-radius: 12px;
+    border-radius: 16px;
     overflow: hidden;
     box-shadow: 0 6px 20px rgba(0,0,0,0.25);
-    border: 2px solid #e0e0e0;
   }
 
   @keyframes fadeInUp {
@@ -349,18 +349,18 @@ import Layout from '../layouts/Layout.astro';
 
   .category-header h2 {
     font-family: var(--font-hebrew);
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     margin: 0;
     color: #ffffff;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
-    font-weight: 800;
+    font-weight: 700;
   }
 
   .book-count {
-    font-size: 0.85rem;
-    background: rgba(255,255,255,0.2);
-    padding: 0.3rem 0.8rem;
-    border-radius: 20px;
+    font-size: 0.8rem;
+    background: rgba(255,255,255,0.25);
+    padding: 0.25rem 0.7rem;
+    border-radius: 15px;
+    color: #fff;
   }
 
   .book-list {
@@ -372,22 +372,7 @@ import Layout from '../layouts/Layout.astro';
   }
 
   .book-item {
-    border-bottom: 1px solid #cccccc;
-    animation: fadeIn 0.3s ease forwards;
-    animation-delay: var(--delay);
-    opacity: 0;
-    background: #ffffff;
-    margin-bottom: 2px;
-    padding: 5px 0;
-  }
-
-  .book-item:hover {
-    background: #f5f5f5;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    border-bottom: 1px solid #e5e5e5;
   }
 
   .book-item:last-child {
@@ -398,39 +383,26 @@ import Layout from '../layouts/Layout.astro';
     display: flex;
     align-items: center;
     gap: 0.8rem;
-    padding: 12px 15px;
+    padding: 0.85rem 1rem;
     text-decoration: none;
-    color: #000000 !important;
-    transition: all 0.2s;
-    font-size: 16px;
-  }
-
-  .book-item a:visited {
-    color: #000000 !important;
+    color: #1a1a1a;
+    transition: background 0.2s;
   }
 
   .book-item a:hover {
-    background: #e8e8e8;
-    color: #cc0000 !important;
-  }
-
-  .book-item a span {
-    color: #000000 !important;
+    background: #f0f4f8;
+    color: #c53030;
   }
 
   .book-icon {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
+    opacity: 0.7;
   }
 
   .book-name {
-    font-family: 'Tahoma', 'Arial', sans-serif;
-    font-size: 16px;
-    font-weight: bold;
-    color: #000000 !important;
-    display: block;
-    padding: 8px 10px;
-    line-height: 1.4;
-    background-color: #ffffff;
+    font-family: var(--font-hebrew);
+    font-size: 1rem;
+    color: inherit;
   }
 
   /* Search Results */
@@ -463,31 +435,30 @@ import Layout from '../layouts/Layout.astro';
     flex-direction: column;
     padding: 1rem 1.5rem;
     text-decoration: none;
+    color: #1a365d;
     transition: background 0.2s;
-    color: #1a365d !important;
   }
 
   .results-list li a:hover {
     background: #f7f5f0;
-    color: #c53030 !important;
+    color: #c53030;
   }
 
   .result-category {
-    font-size: 0.85rem;
-    color: #444 !important;
-    margin-bottom: 0.3rem;
+    font-size: 0.8rem;
+    color: #666;
+    margin-bottom: 0.25rem;
   }
 
   .result-name {
     font-family: var(--font-hebrew);
     font-size: 1.1rem;
-    color: #1a365d !important;
   }
 
   .no-results {
     padding: 2rem;
     text-align: center;
-    color: #666 !important;
+    color: #666;
   }
 
   .back-btn {
