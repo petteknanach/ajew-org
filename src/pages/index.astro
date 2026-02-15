@@ -82,17 +82,17 @@ import Layout from '../layouts/Layout.astro';
         </a>
       </div>
       
-      <!-- Third row: Breslov community links -->
+      <!-- Third row: Breslov community links - symmetrical -->
       <div class="community-links">
-        <a href="https://yesodyosef.com" target="_blank" rel="noopener" class="btn btn-community">
-          <span class="btn-icon">🤝</span>
-          <span class="btn-text">Yesod Yosef</span>
-          <span class="btn-subtitle">100% Charity to Poor Breslov Yidden</span>
-        </a>
         <a href="https://breslovmatch.com" target="_blank" rel="noopener" class="btn btn-community">
           <span class="btn-icon">💑</span>
           <span class="btn-text">Breslov Match</span>
           <span class="btn-subtitle">Free Breslov Dating</span>
+        </a>
+        <a href="https://yesodyosef.com" target="_blank" rel="noopener" class="btn btn-community btn-community-center">
+          <span class="btn-icon">🤝</span>
+          <span class="btn-text">Yesod Yosef</span>
+          <span class="btn-subtitle">100% Charity to Poor Breslov Yidden</span>
         </a>
         <a href="https://breslovbooks.com" target="_blank" rel="noopener" class="btn btn-community">
           <span class="btn-icon">📖</span>
@@ -274,22 +274,26 @@ import Layout from '../layouts/Layout.astro';
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 1rem;
+    gap: 0.5rem;
     margin-bottom: 1rem;
     flex-wrap: wrap;
   }
 
   .nav-group {
     display: flex;
-    gap: 0.5rem;
+    gap: 0.4rem;
   }
 
   .nav-group-left {
     justify-content: flex-end;
+    order: 1;
+    flex: 1;
   }
 
   .nav-group-right {
     justify-content: flex-start;
+    order: 3;
+    flex: 1;
   }
 
   .btn {
@@ -317,10 +321,12 @@ import Layout from '../layouts/Layout.astro';
   .btn-center {
     background: var(--color-accent);
     color: white;
-    padding: 1rem 2rem;
-    font-size: 1.3rem;
+    padding: 0.8rem 2rem;
+    font-size: 1.2rem;
     border-radius: 8px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    order: 2;
+    flex-shrink: 0;
   }
 
   .btn-center:hover {
@@ -329,7 +335,7 @@ import Layout from '../layouts/Layout.astro';
   }
 
   .btn-center .btn-icon {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
   }
 
   /* Small side buttons */
@@ -390,9 +396,17 @@ import Layout from '../layouts/Layout.astro';
     color: white;
     border: 1px solid rgba(72, 187, 120, 0.4);
     font-size: 0.8rem;
-    padding: 0.4rem 0.8rem;
+    padding: 0.5rem 1rem;
     flex-direction: column;
     gap: 0.2rem;
+    min-width: 160px;
+    text-align: center;
+  }
+
+  .btn-community-center {
+    min-width: 220px;
+    background: rgba(72, 187, 120, 0.3);
+    border-color: rgba(72, 187, 120, 0.5);
   }
 
   .btn-community:hover {
@@ -400,18 +414,18 @@ import Layout from '../layouts/Layout.astro';
   }
 
   .btn-community .btn-icon {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
   }
 
   .btn-community .btn-text {
     font-weight: 700;
+    font-size: 0.9rem;
   }
 
   .btn-community .btn-subtitle {
-    font-size: 0.65rem;
-    opacity: 0.8;
+    font-size: 0.7rem;
+    opacity: 0.85;
     font-weight: 400;
-    text-align: center;
   }
 
   /* Na Nach phrase - most important */
