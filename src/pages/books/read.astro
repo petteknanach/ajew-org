@@ -50,8 +50,13 @@ import Layout from '../../layouts/Layout.astro';
       .then(content => {
         loading.style.display = 'none';
         
+        // Decode HTML entities in the content
+        const textarea = document.createElement('textarea');
+        textarea.innerHTML = content;
+        const decodedContent = textarea.value;
+        
         // The content contains HTML - insert it directly
-        bookContent.innerHTML = content;
+        bookContent.innerHTML = decodedContent;
         bookContent.style.display = 'block';
       })
       .catch(err => {
