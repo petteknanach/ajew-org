@@ -323,10 +323,8 @@ import Layout from '../layouts/Layout.astro';
     background: white;
     border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    animation: fadeInUp 0.5s ease forwards;
-    animation-delay: var(--delay);
-    opacity: 0;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    border: 2px solid #e2e8f0;
   }
 
   @keyframes fadeInUp {
@@ -371,10 +369,15 @@ import Layout from '../layouts/Layout.astro';
   }
 
   .book-item {
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #e2e8f0;
     animation: fadeIn 0.3s ease forwards;
     animation-delay: var(--delay);
     opacity: 0;
+    background: #fafafa;
+  }
+
+  .book-item:hover {
+    background: #fff;
   }
 
   @keyframes fadeIn {
@@ -410,8 +413,10 @@ import Layout from '../layouts/Layout.astro';
   }
 
   .book-name {
-    font-family: var(--font-hebrew);
-    font-size: 1rem;
+    font-family: var(--font-hebrew), 'SBL Hebrew', 'Times New Roman', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1a365d;
   }
 
   /* Search Results */
