@@ -55,9 +55,9 @@ import Layout from '../layouts/Layout.astro';
             <span class="btn-icon">📚</span>
             <span class="btn-text">כל ספרי ברסלב</span>
           </a>
-          <a href="/chat" class="btn btn-small btn-chat">
-            <span class="btn-icon">💬</span>
-            <span class="btn-text">Chat</span>
+          <a href="https://www.amazon.com/shop/nanach" target="_blank" rel="noopener" class="btn btn-small btn-amazon">
+            <span class="btn-icon">🛒</span>
+            <span class="btn-text">Amazon</span>
           </a>
           <a href="/gematria" class="btn btn-small btn-gematria">
             <span class="btn-icon">🔢</span>
@@ -68,15 +68,15 @@ import Layout from '../layouts/Layout.astro';
       
       <!-- Second row: external links -->
       <div class="external-links">
-        <a href="https://www.amazon.com/shop/nanach" target="_blank" rel="noopener" class="btn btn-external">
-          <span class="btn-icon">🛒</span>
-          <span class="btn-text">Amazon</span>
-        </a>
         <a href="https://www.youtube.com/channel/UCYq6IzFfzJfQY8l9mOV5kgw" target="_blank" rel="noopener" class="btn btn-external">
           <span class="btn-icon">🎬</span>
           <span class="btn-text">Videos</span>
         </a>
-        <a href="https://www.youtube.com/channel/UCYq6IzFfzJfQY8l9mOV5kgw" target="_blank" rel="noopener" class="btn btn-external">
+        <a href="/chat" class="btn btn-external">
+          <span class="btn-icon">💬</span>
+          <span class="btn-text">Chat</span>
+        </a>
+        <a href="https://music.nanach.tv" target="_blank" rel="noopener" class="btn btn-external">
           <span class="btn-icon">🎵</span>
           <span class="btn-text">Music</span>
         </a>
@@ -359,6 +359,16 @@ import Layout from '../layouts/Layout.astro';
 
   .btn-chat:hover {
     background: rgba(128, 90, 213, 0.5);
+  }
+  
+  /* Amazon button */
+  .btn-amazon {
+    background: rgba(255, 153, 0, 0.3);
+    border-color: rgba(255, 153, 0, 0.5);
+  }
+  
+  .btn-amazon:hover {
+    background: rgba(255, 153, 0, 0.5);
   }
 
   /* External links row */
