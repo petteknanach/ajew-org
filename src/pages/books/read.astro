@@ -42,8 +42,8 @@ import Layout from '../../layouts/Layout.astro';
     // Set title
     bookTitle.textContent = decodeURIComponent(book).replace('.txt', '');
 
-    // Fetch the book content - use API for encoding conversion
-    fetch(`/api/read-book?category=${encodeURIComponent(category)}&book=${encodeURIComponent(book)}`)
+    // Fetch the book content - files are in /books/MyBooks/
+    fetch(`/books/MyBooks/${encodeURIComponent(category)}/${encodeURIComponent(book)}`)
       .then(response => {
         if (!response.ok) throw new Error('Book not found');
         return response.text();
