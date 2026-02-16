@@ -22,11 +22,14 @@ function walkDir(dir, category = '') {
       walkDir(fullPath, item);
     } else if (item.endsWith('.txt')) {
       try {
-        // Read as UTF-8 (files already converted)
+        // Read as UTF-8
         let content = fs.readFileSync(fullPath, 'utf8');
         
-        // Strip the weird markup at start (CosmeticsType stuff)
-        content = content.replace(/^&[^&]*&/, '').replace(/^[^\u05D0-\u05EA]*([\u05D0-\u05EA])/, '$1');
+        // Strip the weird markup at start: &HiddenFromIndex=0&LastLevelIndex=1&CosmeticsType=...
+        // This pattern starts with & and contains no Hebrew letters
+        content = content.replace(/^&HiddenFromIndex[^\n]*/, '');
+        // Also remove any leading whitespace after that
+        content = content.replace(/^[\s\n\r]+/, '');
         
         const relativePath = path.relative(baseDir + '/public', fullPath);
         
