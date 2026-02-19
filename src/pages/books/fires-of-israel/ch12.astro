@@ -1,0 +1,49 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+export const title = "R' Naftoli Cohen";
+export const bookTitle = "The Fires of Israel";
+---
+<Layout title="{title} - {bookTitle}" description="{title} from {bookTitle}">
+  <div class="book-page">
+    <header class="book-header">
+      <h1>{bookTitle}</h1>
+      <h2>Chapter 12: {title}</h2>
+    </header>
+    <nav class="chapter-nav">
+  <a href="/books/fires-of-israel/ch11" class="nav-btn prev">← Previous</a>
+  <a href="/books/fires-of-israel" class="nav-btn main">Main</a>
+  <a href="/books/fires-of-israel/ch13" class="nav-btn next">Next →</a>
+</nav>
+    <article class="chapter-content">
+      <h3 class="chapter-title">{title}</h3>
+      <p class="book-para">R' Naftoli Cohen o.b.m. And further, R' Naftoli (Cohen o.b.m. the father-in-law of R' Avrohom son of R' Nachman of Tulchin o.b.m. in his second marriage), I saw by him an amazing thing, he had a herring store, in the Old City on the Jewish Street. His wife would sit in the store, just once in a while when she needed to go out, she needed to shop, she had to go home to cook – so he would sit in the store. And he conducted himself like a “bal habayis” (homeowner – a regular person), he was so concealed, it was something else entirely, and in this way he was like a “bal habayis.” He would go – we had a shul (-synagogue), it was called The Aguna (-a woman who doesn't know the whereabouts of her husband, and is stuck alone) Shul, the shul of the aguna – there was an aguna, and this had been her house, or something like that. In any event, it was called The Aguna Shul. I prayed there, this was on Chevron Street, by the gates to the site of the Temple. Nu, R' Naftoli would sit by the shul, and from his place there were ascents and descents, to go up and down. And he was already an older Jew, he would go every – the whole week there wasn't a minyan (-quorum), just on Shabbos – he would come on Friday night to us in the shul. And she – the wife had a store, she certainly worked (Hebrew: she worked hard) – running to (/in) the store, running to (/in) the house to cook. In any event, she was tired. He used to – we make a dance every day after the prayers – after Maariv (-evening services), and on Shabbos, there is nothing to talk about, Shabbos! And he entered the dance and made a round and he left and went home, and I went after him. So he told me, “You shouldn't wonder why I go away, why I leave the dance, because she is tired, and she can fall asleep.” In any event, he goes because of “Shalom Ba-yis” (peace at home with the wife). Nu, and I went with him, and he spoke with me the whole way, and I had – by me this was a gift, because I thought he would tell me, “now go away from me, now I have to to do a mitzva, I have to come home, she still has to eat, she has to hear kiddush (-sanctifying Shabbos over a cup of wine), she shouldn't fall asleep!” No – he went with me and spoke. I went with him until his house, and by his house he somehow got such words, so he continued for a long time – he forgot that he had a house!…. And I had such pleasure from these words, I thought that I have already been saved – I will already not be able to come to taavos (bodily desires) - - such words! Nu, he stood with me – I don't remember for how long, an hour or more – he stood with me by his house, and he didn't go inside the house, and he stood with me and spoke! It was such words, which one does not always come by – not every day does a miracle happen – produce such words!… * This R' Naftoli was very smart, astute. However, his temimos (simple wholeheartedness) with his faith was an amazing novelty! There rested on his face a true chain (grace), such! He would go have hisbodidus – he didn't tell me, but I figured it out. Our men were concealed – (thoroughly) hidden. *</p>
+    </article>
+    <nav class="chapter-nav">
+  <a href="/books/fires-of-israel/ch11" class="nav-btn prev">← Previous</a>
+  <a href="/books/fires-of-israel" class="nav-btn main">Main</a>
+  <a href="/books/fires-of-israel/ch13" class="nav-btn next">Next →</a>
+</nav>
+    <footer class="book-footer">
+      <a href="/books/fires-of-israel" class="back-link">← Back to Table of Contents</a>
+    </footer>
+  </div>
+</Layout>
+<style>
+  .book-page { max-width: 800px; margin: 0 auto; padding: 2rem 1rem; }
+  .book-header { text-align: center; margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 2px solid #e2e8f0; }
+  .book-header h1 { font-size: 1.5rem; color: #1a365d; margin: 0 0 0.5rem; }
+  .book-header h2 { font-size: 1.25rem; color: #4a5568; margin: 0; font-weight: 500; }
+  .chapter-nav { display: flex; justify-content: center; gap: 1rem; margin: 1.5rem 0; flex-wrap: wrap; }
+  .nav-btn { display: inline-block; padding: 0.75rem 1.5rem; background: #1a365d; color: white; text-decoration: none; border-radius: 8px; font-weight: 500; transition: all 0.2s; }
+  .nav-btn:hover { background: #2d4a6f; transform: translateY(-2px); }
+  .nav-btn.disabled { background: #cbd5e0; cursor: not-allowed; }
+  .nav-btn.main { background: #059669; }
+  .nav-btn.main:hover { background: #047857; }
+  .chapter-content { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); line-height: 1.8; font-size: 1.1rem; }
+  .chapter-title { font-size: 1.5rem; color: #1a365d; margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 2px solid #e2e8f0; }
+  .book-para { margin-bottom: 1.25rem; text-align: justify; color: #2d3748; }
+  .book-footer { text-align: center; margin-top: 2rem; padding-top: 1.5rem; border-top: 2px solid #e2e8f0; }
+  .back-link { color: #1a365d; text-decoration: none; font-weight: 500; }
+  .back-link:hover { text-decoration: underline; }
+  @media (max-width: 640px) { .chapter-content { padding: 1.5rem; font-size: 1rem; } .chapter-nav { gap: 0.5rem; } .nav-btn { padding: 0.6rem 1rem; font-size: 0.9rem; } }
+</style>

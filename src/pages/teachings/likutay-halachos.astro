@@ -1,0 +1,306 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Likutay Halachos - Breslov Teachings" description="Likutay Halachos - Practical halachos (laws) from Rabbi Nachman's teachings on daily mitzvos and customs.">
+---
+const pageTitle = "Likutay Halachos";
+---
+
+<style>
+  .page-header {
+    background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
+    color: white;
+    padding: 4rem 2rem;
+    text-align: center;
+  }
+  .page-header h1 {
+    font-family: var(--font-hebrew);
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .page-header .subtitle {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    font-style: italic;
+  }
+  .container { max-width: 1000px; margin: 0 auto; padding: 0 2rem; }
+  .navigation {
+    background: #f7f5f0;
+    padding: 1rem 0;
+    border-bottom: 1px solid #e2ddd5;
+  }
+  .nav-links {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .nav-link {
+    color: #1a365d;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.2s;
+  }
+  .nav-link:hover, .nav-link.active {
+    background: #1a365d;
+    color: white;
+  }
+  .content { padding: 3rem 0; }
+  .intro-text {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    margin-bottom: 2rem;
+  }
+  .intro-text p {
+    font-size: 1.1rem;
+    line-height: 1.9;
+    color: #333;
+    text-align: justify;
+  }
+  .section-nav {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+  .section-btn {
+    padding: 0.75rem 1.5rem;
+    border: 2px solid #1a365d;
+    background: white;
+    color: #1a365d;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+  .section-btn:hover, .section-btn.active {
+    background: #1a365d;
+    color: white;
+  }
+  .topics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+  .topic-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    overflow: hidden;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: block;
+  }
+  .topic-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  }
+  .topic-card-header {
+    background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
+    color: white;
+    padding: 1.25rem;
+    font-family: var(--font-hebrew);
+    font-size: 1.1rem;
+  }
+  .topic-card-body {
+    padding: 1rem 1.25rem;
+    color: #555;
+    font-size: 0.9rem;
+  }
+  .topic-card-body .parts {
+    color: #1a365d;
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+  }
+  .footer-nav {
+    background: #1a365d;
+    padding: 2rem 0;
+    margin-top: 3rem;
+  }
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: white;
+    text-decoration: none;
+    padding: 0.75rem 1.5rem;
+    background: rgba(255,255,255,0.1);
+    border-radius: 8px;
+  }
+  .back-link:hover {
+    background: rgba(255,255,255,0.2);
+  }
+  .section-intro {
+    background: linear-gradient(135deg, #f7f5f0 0%, #e8e4db 100%);
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    border-right: 4px solid #1a365d;
+  }
+  .section-intro h2 {
+    margin: 0 0 0.5rem 0;
+    color: #1a365d;
+    font-size: 1.5rem;
+  }
+  .section-intro p {
+    margin: 0;
+    color: #555;
+  }
+  @media (max-width: 768px) {
+    .nav-links, .section-nav { flex-direction: column; }
+    .topics-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<section class="page-header">
+  <h1>Likutay Halachos</h1>
+  <p class="subtitle">ליקוטי הלכות</p>
+</section>
+
+<nav class="navigation">
+  <div class="container">
+    <div class="nav-links">
+      <a href="/teachings" class="nav-link">← All Teachings</a>
+      <a href="/teachings/likutay-moharan" class="nav-link">← Likutay Moharan</a>
+    </div>
+  </div>
+</nav>
+
+<section class="content">
+  <div class="container">
+    <div class="intro-text">
+      <p><strong>Likutay Halachos</strong> (ליקוטי הלכות - Collected Halachic Teachings) is an important Breslov work presenting Rabbi Nachman's teachings on Jewish law and practice. Each halacha explores the deeper spiritual dimensions of the mitzvos.</p>
+    </div>
+
+    <div class="section-nav">
+      <a href="#orach-chaim" class="section-btn active">Orach Chaim</a>
+      <a href="#yoreh-deah" class="section-btn">Yoreh De'ah</a>
+      <a href="#even-haezer" class="section-btn">Even HaEzer</a>
+      <a href="#choshen-mishpat" class="section-btn">Choshen Mishpat</a>
+    </div>
+
+    <div id="orach-chaim" class="section-intro">
+      <h2>Orach Chaim - Laws of Daily Life</h2>
+      <p>The laws of prayer, synagogue, morning blessings, Torah reading, Tefillin, and daily mitzvos.</p>
+    </div>
+
+    <div class="topics-grid">
+      <a href="/teachings/likutay-halachos-bais-haknnesses" class="topic-card">
+        <div class="topic-card-header">בית הכנסת</div>
+        <div class="topic-card-body">
+          <div>Synagogue</div>
+          <div class="parts">14 parts</div>
+        </div>
+      </a>
+
+      <a href="/teachings/likutay-halachos-bircas-hashachar" class="topic-card">
+        <div class="topic-card-header">ברכות השחר</div>
+        <div class="topic-card-body">
+          <div>Morning Blessings</div>
+          <div class="parts">11 parts</div>
+        </div>
+      </a>
+
+      <a href="/teachings/likutay-halachos-birchos-hatorah" class="topic-card">
+        <div class="topic-card-header">ברכות התורה</div>
+        <div class="topic-card-body">
+          <div>Torah Blessings</div>
+          <div class="parts">1 part</div>
+        </div>
+      </a>
+
+      <a href="/teachings/likutay-halachos-kedushah" class="topic-card">
+        <div class="topic-card-header">קדושה</div>
+        <div class="topic-card-body">
+          <div>Kedushah</div>
+          <div class="parts">1 part</div>
+        </div>
+      </a>
+
+      <a href="/teachings/likutay-halachos-krias-hatorah" class="topic-card">
+        <div class="topic-card-header">קריאת התורה</div>
+        <div class="topic-card-body">
+          <div>Torah Reading</div>
+          <div class="parts">9 parts</div>
+        </div>
+      </a>
+
+      <a href="/teachings/likutay-halachos-krias-shma" class="topic-card">
+        <div class="topic-card-header">קריאת שמע</div>
+        <div class="topic-card-body">
+          <div>Shema</div>
+          <div class="parts">7 parts</div>
+        </div>
+      </a>
+
+      <a href="/teachings/likutay-halachos-nefilas-apayim" class="topic-card">
+        <div class="topic-card-header">נפילת אפיים</div>
+        <div class="topic-card-body">
+          <div>Falling on Face</div>
+          <div class="parts">10 parts</div>
+        </div>
+      </a>
+
+      <a href="/teachings/likutay-halachos-nesias-kapayim" class="topic-card">
+        <div class="topic-card-header">נשיאת כפיים</div>
+        <div class="topic-card-body">
+          <div>Lifting Hands (Priestly Blessing)</div>
+          <div class="parts">9 parts</div>
+        </div>
+      </a>
+
+      <a href="/teachings/likutay-halachos-tefillah" class="topic-card">
+        <div class="topic-card-header">תפילה</div>
+        <div class="topic-card-body">
+          <div>Prayer</div>
+          <div class="parts">7 parts</div>
+        </div>
+      </a>
+
+      <a href="/teachings/likutay-halachos-tefillin" class="topic-card">
+        <div class="topic-card-header">תפילין</div>
+        <div class="topic-card-body">
+          <div>Tefillin</div>
+          <div class="parts">4 parts</div>
+        </div>
+      </a>
+    </div>
+
+    <div id="yoreh-deah" class="section-intro" style="margin-top: 3rem;">
+      <h2>Yoreh De'ah - Laws of Torah</h2>
+      <p>The laws of Torah study, blessings, and sacred texts.</p>
+    </div>
+    <p style="text-align: center; color: #777; padding: 2rem;">Content coming soon...</p>
+
+    <div id="even-haezer" class="section-intro" style="margin-top: 3rem;">
+      <h2>Even HaEzer - Laws of Marriage</h2>
+      <p>The laws of marriage, family, and relationships.</p>
+    </div>
+    <p style="text-align: center; color: #777; padding: 2rem;">Content coming soon...</p>
+
+    <div id="choshen-mishpat" class="section-intro" style="margin-top: 3rem;">
+      <h2>Choshen Mishpat - Laws of Damages</h2>
+      <p>The laws of business, finance, and civil matters.</p>
+    </div>
+    <p style="text-align: center; color: #777; padding: 2rem;">Content coming soon...</p>
+  </div>
+</section>
+
+<nav class="footer-nav">
+  <div class="container">
+    <a href="/teachings/likutay-moharan" class="back-link">
+      <span>←</span>
+      <span>Back to Likutay Moharan</span>
+    </a>
+  </div>
+</nav>
+</Layout>

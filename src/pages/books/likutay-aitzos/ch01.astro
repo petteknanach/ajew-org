@@ -1,0 +1,50 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+export const title = "Hisbodidus is a gateway to the Secrets of the Torah";
+export const bookTitle = "Likutay Aitzos";
+---
+<Layout title="{title} - {bookTitle}" description="{title} from {bookTitle} - Hisbodidus teachings from Rebbe Nachman">
+  <div class="book-page">
+    <header class="book-header">
+      <h1>{bookTitle}</h1>
+      <h2>Section 1: {title}</h2>
+    </header>
+    <nav class="chapter-nav">
+  <span class="nav-btn disabled">← Previous</span>
+  <a href="/books/likutay-aitzos" class="nav-btn main">Main</a>
+  <a href="/books/likutay-aitzos/ch02" class="nav-btn next">Next →</a>
+</nav>
+    <article class="chapter-content">
+      <h3 class="chapter-title">{title}</h3>
+      <p class="book-para">One who wants to taste a taste of the ohr haganuz [cached light], that is, the secrets of the Torah that will be revealed in the future, he should abound in hisbodidus between himself and his Creator, and judge and adjudicate himself all the time, regarding all his affairs and conduct, if this is proper and befitting for him to do, and to conduct like this against Hashem Yisburach, Who deals out to him goodness all the time and at every instance. And he should "manage his affairs [dispense his words]" judicially (Psalms 112:5)," and bring himself to account for everything. He himself should judge and adjudicate himself over all his affairs and deeds, and by this, he will remove from himself all fright, and he will be saved from the fallen fears, meaning that he'll not be afraid or frightened from any officer or lord, or dangerous beast, or bandits - nor from anything in the world, only from Hashem Yisburach alone he will fear and be frightened. And by this he will raise the fear to its root, which is da'as (realization of knowledge) - that he will merit complete da'as (realization of knowledge), that he will know from whom to fear, namely to fear the Glorious Name alone, [with a] fear of [His] loftiness ("yiras haroamimus"). And through this, he will merit an attainment [of perception] of the revealed Torah, and through this he will merit to true humility, and through this he will merit to prayer with meseeras nefesh (giving over of the soul, self-sacrifice) to abnegate all his physicality and ego at the time of prayer, and he will pray without any intention of self-benefit, and he will not think of himself as anything - just, he will annul all his physicality and his essence (/ego), as if he isn't in the world. And through this, he will come to the attainment [of perception] of the Hidden Torah, which is the ohr haganuz (cached light) which will be revealed in the future. And all this is attained through hisbodidus, as mentioned previously.</p><p class="source-ref">(Likutay Moharan, Torah 15:1-4; Outpouring of the Soul, article 52)</p>
+    </article>
+    <nav class="chapter-nav">
+  <span class="nav-btn disabled">← Previous</span>
+  <a href="/books/likutay-aitzos" class="nav-btn main">Main</a>
+  <a href="/books/likutay-aitzos/ch02" class="nav-btn next">Next →</a>
+</nav>
+    <footer class="book-footer">
+      <a href="/books/likutay-aitzos" class="back-link">← Back to Table of Contents</a>
+    </footer>
+  </div>
+</Layout>
+<style>
+  .book-page { max-width: 800px; margin: 0 auto; padding: 2rem 1rem; }
+  .book-header { text-align: center; margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 2px solid #e2e8f0; }
+  .book-header h1 { font-size: 1.5rem; color: #1a365d; margin: 0 0 0.5rem; }
+  .book-header h2 { font-size: 1.25rem; color: #4a5568; margin: 0; font-weight: 500; }
+  .chapter-nav { display: flex; justify-content: center; gap: 1rem; margin: 1.5rem 0; flex-wrap: wrap; }
+  .nav-btn { display: inline-block; padding: 0.75rem 1.5rem; background: #1a365d; color: white; text-decoration: none; border-radius: 8px; font-weight: 500; transition: all 0.2s; }
+  .nav-btn:hover { background: #2d4a6f; transform: translateY(-2px); }
+  .nav-btn.disabled { background: #cbd5e0; cursor: not-allowed; }
+  .nav-btn.main { background: #059669; }
+  .nav-btn.main:hover { background: #047857; }
+  .chapter-content { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); line-height: 1.8; font-size: 1.1rem; }
+  .chapter-title { font-size: 1.5rem; color: #1a365d; margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 2px solid #e2e8f0; }
+  .book-para { margin-bottom: 1.25rem; text-align: justify; color: #2d3748; }
+  .source-ref { font-style: italic; color: #718096; font-size: 0.9rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed #e2e8f0; }
+  .book-footer { text-align: center; margin-top: 2rem; padding-top: 1.5rem; border-top: 2px solid #e2e8f0; }
+  .back-link { color: #1a365d; text-decoration: none; font-weight: 500; }
+  .back-link:hover { text-decoration: underline; }
+  @media (max-width: 640px) { .chapter-content { padding: 1.5rem; font-size: 1rem; } .chapter-nav { gap: 0.5rem; } .nav-btn { padding: 0.6rem 1rem; font-size: 0.9rem; } }
+</style>

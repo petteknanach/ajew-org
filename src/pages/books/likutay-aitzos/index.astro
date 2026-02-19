@@ -1,0 +1,73 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+---
+<Layout title="Likutay Aitzos - Hisbodidus" description="Likutay Aitzos - A Collection of Remedies and Advice on Hisbodidus from Rebbe Nachman of Breslov">
+  <div class="book-page">
+    <header class="book-header">
+      <h1>Likutay Aitzos</h1>
+      <h2>Hisbodidus - Alone Time</h2>
+      <p class="subtitle">A Collection of Remedies and Advice from Rebbe Nachman of Breslov</p>
+    </header>
+
+    <div class="intro-section">
+      <p>Likutay Aitzos presents succinct summations of the teachings of Rabbi Nachman in such a way that they can be readily and practically implemented. Rabbi Nachman himself commissioned Rabbi Nussun to compose it.</p>
+      <p>Hisbodidus (pronounced: hisboadidoos) literally means to be alone, and it takes on the meaning and function of all things holy that are best, or can only be achieved, alone.</p>
+    </div>
+
+    <nav class="toc">
+      <h3>Table of Contents</h3>
+      <ol class="chapter-list">
+        <li><a href="/books/likutay-aitzos/ch01">Hisbodidus is a gateway to the Secrets of the Torah</a></li>
+        <li><a href="/books/likutay-aitzos/ch02">Personal words to G-d are Divinely inspired</a></li>
+        <li><a href="/books/likutay-aitzos/ch03">Yearning creates potential souls, verbalizing the yearning actualizes them</a></li>
+        <li><a href="/books/likutay-aitzos/ch04">Connect the heart to its point to save it from the shame of fallen desires</a></li>
+        <li><a href="/books/likutay-aitzos/ch05">Speaking to G-d will bring one to be embarrassed before Him with such holy connection that his face will shine</a></li>
+        <li><a href="/books/likutay-aitzos/ch06">Abnegation to be included in one's root</a></li>
+        <li><a href="/books/likutay-aitzos/ch07">At night, go alone to somewhere people never go, and completely nullify yourself to G-d</a></li>
+        <li><a href="/books/likutay-aitzos/ch08">Hisbodidus at night, crying to G-d and building ones good points from out of the bad, bring joy, and holds lust at bay</a></li>
+        <li><a href="/books/likutay-aitzos/ch09">Sighing – to regain one's standing</a></li>
+        <li><a href="/books/likutay-aitzos/ch10">G-d helps and provides words for one to prevail and be victorious despite all</a></li>
+        <li><a href="/books/likutay-aitzos/ch11">Candidly unburdening oneself to G-d evokes Divine consolation</a></li>
+        <li><a href="/books/likutay-aitzos/ch12">Do hisbodidus in the fields</a></li>
+        <li><a href="/books/likutay-aitzos/ch13">Highest virtue, Speak in your vernacular, and Set a designated hour daily</a></li>
+        <li><a href="/books/likutay-aitzos/ch14">Pray to attain what you learned</a></li>
+        <li><a href="/books/likutay-aitzos/ch15">Trying to cry is also a distraction</a></li>
+        <li><a href="/books/likutay-aitzos/ch16">Hisbodidus is the only way to succeed</a></li>
+        <li><a href="/books/likutay-aitzos/ch17">Find yourself in the Psalms and prayers</a></li>
+        <li><a href="/books/likutay-aitzos/ch18">Speak even without heart, always start new</a></li>
+        <li><a href="/books/likutay-aitzos/ch19">Speak to Hashem until your soul is about to depart</a></li>
+        <li><a href="/books/likutay-aitzos/ch20">Speak to Hashem like you speak to a friend</a></li>
+        <li><a href="/books/likutay-aitzos/ch21">Speak to G-d like an enamored toddler pesters his father</a></li>
+        <li><a href="/books/likutay-aitzos/ch22">Scream silently</a></li>
+        <li><a href="/books/likutay-aitzos/ch23">A Broken Heart Is Precious and Not Sadness</a></li>
+      </ol>
+    </nav>
+
+    <div class="book-nav">
+      <a href="/books" class="back-link">← Back to Books</a>
+      <a href="/books/likutay-aitzos/ch01" class="start-reading">Start Reading →</a>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .book-page { max-width: 900px; margin: 0 auto; padding: 2rem 1rem; }
+  .book-header { text-align: center; margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 3px double #e2e8f0; }
+  .book-header h1 { font-size: 2.5rem; color: #1a365d; margin: 0 0 0.5rem; font-family: 'Frank Ruhl Libre', serif; }
+  .book-header h2 { font-size: 1.5rem; color: #2c5282; margin: 0 0 1rem; font-weight: 500; }
+  .subtitle { color: #718096; font-style: italic; }
+  .intro-section { background: #f7fafc; padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; }
+  .intro-section p { margin-bottom: 1rem; line-height: 1.7; }
+  .toc { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 2rem; }
+  .toc h3 { color: #1a365d; margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 2px solid #e2e8f0; }
+  .chapter-list { padding-left: 0; list-style: none; counter-reset: item; }
+  .chapter-list li { counter-increment: item; margin-bottom: 0.75rem; padding-left: 2.5rem; position: relative; }
+  .chapter-list li::before { content: counter(item); position: absolute; left: 0; top: 0; width: 1.75rem; height: 1.75rem; background: #1a365d; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 600; }
+  .chapter-list a { color: #2d3748; text-decoration: none; display: block; padding: 0.5rem 0; transition: color 0.2s; }
+  .chapter-list a:hover { color: #1a365d; text-decoration: underline; }
+  .book-nav { display: flex; justify-content: space-between; gap: 1rem; }
+  .back-link, .start-reading { padding: 0.75rem 1.5rem; background: #1a365d; color: white; text-decoration: none; border-radius: 8px; font-weight: 500; transition: all 0.2s; }
+  .start-reading { background: #059669; }
+  .back-link:hover, .start-reading:hover { transform: translateY(-2px); opacity: 0.9; }
+  @media (max-width: 640px) { .book-header h1 { font-size: 1.8rem; } .chapter-list li { padding-left: 2rem; } .chapter-list li::before { width: 1.5rem; height: 1.5rem; font-size: 0.75rem; } }
+</style>

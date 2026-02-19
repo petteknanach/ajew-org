@@ -1,0 +1,71 @@
+---
+const pageTitle = "All Na Nach Blog Posts";
+const pageDescription = "Complete blog index";
+---
+
+<style>
+  .page-header {
+    background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
+    color: white;
+    padding: 4rem 2rem;
+    text-align: center;
+  }
+  .page-header h1 { font-family: var(--font-hebrew); font-size: 2rem; margin-bottom: 0.5rem; }
+  .container { max-width: 800px; margin: 0 auto; padding: 0 2rem; }
+  .navigation { background: #f7f5f0; padding: 1rem 0; }
+  .nav-links { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+  .nav-link { color: #1a365d; text-decoration: none; padding: 0.5rem 1rem; background: white; border-radius: 8px; }
+  .content { padding: 3rem 0; }
+  .content-text {
+    background: white;
+    padding: 3rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    line-height: 1.9;
+    font-size: 1.05rem;
+  }
+  .coming-soon {
+    background: #fef3c7;
+    padding: 2rem;
+    border-radius: 8px;
+    text-align: center;
+    margin: 2rem 0;
+  }
+  .source-link {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.75rem 1.5rem;
+    background: #1a365d;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+  }
+</style>
+
+<section class="page-header">
+  <h1>All Na Nach Blog Posts</h1>
+  <p>Complete blog index</p>
+</section>
+
+<nav class="navigation">
+  <div class="container">
+    <div class="nav-links">
+      <a href="/teachings" class="nav-link">← Teachings</a>
+    </div>
+  </div>
+</nav>
+
+<section class="content">
+  <div class="container">
+    <div class="content-text">
+      <div class="coming-soon">
+        <h3>📚 Coming Soon!</h3>
+        <p>This page is being prepared. Content will be added shortly.</p>
+        <a href="https://naanaach.blogspot.com/" class="source-link" target="_blank">View Source →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+---
+import Layout from '../../layouts/Layout.astro';

@@ -1,0 +1,52 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+export const title = "Letter 6";
+export const bookTitle = "Blossoms of the Spring";
+---
+<Layout title="{title} - {bookTitle}" description="Blossoms of the Spring - Letter 6 - The holy letters of Rabbi Yisroel Odesser">
+  <div class="book-page">
+    <header class="book-header">
+      <h1>{bookTitle}</h1>
+      <h2>Letter 6</h2>
+    </header>
+    <nav class="chapter-nav">
+  <a href="/books/blossoms-of-the-spring/letter05" class="nav-btn prev">← Previous</a>
+  <a href="/books/blossoms-of-the-spring" class="nav-btn main">Main</a>
+  <a href="/books/blossoms-of-the-spring/letter07" class="nav-btn next">Next →</a>
+</nav>
+    <article class="chapter-content letter-content">
+      <div class="letter-body">
+        <p class="letter-para">BH 27 Adar 718 (Wednesday 19 March, 1958) In honor of the delight of my eye and my heart Mr. Zalman Shazar, greetings ("abundant peace"). On the night of Purim I visited his house. And his refined sister received me with joy, and offered me Purim beverages, I drank a lichaim ("to life" -cheers), and I blessed him and his house from the depth of (my) heart. I was pained that I didn't encounter him. For I had bountiful urgent words. Just this was my consolation, that he will return home soon, and I will merit to get together with him with love and with joy… Hereby, I am sending him some excerpts from the matters that I am working on publishing organized nicely. With longing, and wishing well-being for him and all those associated with him. Yisroel Dov Odesser – By Zalman Odesser – Tiberius I merited to visit Mr. A. Steinman, I enjoyed very much seeing a man with a noble spirit. He received me with true joy and great friendliness. The same one as above. Here in the Hebrew book, there is a photocopy of a short thank you letter: BH 13 Nissan, the 3rd day of Chol Hamoed Pesach, 718 In honor of Mr. Z. Shazar, the good and the pleasant, abundant peace and salvation</p>
+<p class="letter-para">I express abundant thanks and blessings from the depth of my heart and soul, he is inscribed in my heart from afore, and I don't distract my consciousness of him. My eyes are constantly turned to Hashem (Psalms 25:15) in prayer and supplication for him. I request his pardon for the delay of my response, because it is just now that I received it. With wishes of well-being and feelings of respect and eternal love, and with the joy (?) of the holiday Yisroel Dov Odesser Please give over hearty wishes of well-being to his sister, the righteous, the wise, G-d fearing, with pure heart, and good intellect, she should live for length of days, pleasant, succulent, and fresh.</p>
+      </div>
+    </article>
+    <nav class="chapter-nav">
+  <a href="/books/blossoms-of-the-spring/letter05" class="nav-btn prev">← Previous</a>
+  <a href="/books/blossoms-of-the-spring" class="nav-btn main">Main</a>
+  <a href="/books/blossoms-of-the-spring/letter07" class="nav-btn next">Next →</a>
+</nav>
+    <footer class="book-footer">
+      <a href="/books/blossoms-of-the-spring" class="back-link">← Back to All Letters</a>
+    </footer>
+  </div>
+</Layout>
+<style>
+  .book-page { max-width: 800px; margin: 0 auto; padding: 2rem 1rem; }
+  .book-header { text-align: center; margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 2px solid #e2e8f0; }
+  .book-header h1 { font-size: 1.5rem; color: #1a365d; margin: 0 0 0.5rem; }
+  .book-header h2 { font-size: 1.25rem; color: #4a5568; margin: 0; font-weight: 500; }
+  .chapter-nav { display: flex; justify-content: center; gap: 1rem; margin: 1.5rem 0; flex-wrap: wrap; }
+  .nav-btn { display: inline-block; padding: 0.75rem 1.5rem; background: #1a365d; color: white; text-decoration: none; border-radius: 8px; font-weight: 500; transition: all 0.2s; }
+  .nav-btn:hover { background: #2d4a6f; transform: translateY(-2px); }
+  .nav-btn.disabled { background: #cbd5e0; cursor: not-allowed; }
+  .nav-btn.main { background: #059669; }
+  .nav-btn.main:hover { background: #047857; }
+  .chapter-content { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); line-height: 1.8; font-size: 1.1rem; }
+  .letter-content { background: linear-gradient(to bottom, #fffdf7, #fff9e6); }
+  .letter-para { margin-bottom: 1.25rem; text-align: justify; color: #2d3748; text-indent: 1.5rem; }
+  .letter-para:first-of-type { text-indent: 0; }
+  .book-footer { text-align: center; margin-top: 2rem; padding-top: 1.5rem; border-top: 2px solid #e2e8f0; }
+  .back-link { color: #1a365d; text-decoration: none; font-weight: 500; }
+  .back-link:hover { text-decoration: underline; }
+  @media (max-width: 640px) { .chapter-content { padding: 1.5rem; font-size: 1rem; } .letter-para { text-indent: 1rem; } }
+</style>

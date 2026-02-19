@@ -1,0 +1,306 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const blogPosts = [
+  {
+    title: "Likutay Moharan - עמוד האמצעי",
+    hebrew: "ליקוטי מוהרן - עמוד האמצעי לעלות מהיכל להיכל",
+    date: "January 11, 2026",
+    url: "https://naanaach.blogspot.com/2026/01/blog-post.html",
+    label: "Likutay Moharan"
+  },
+  {
+    title: "The Berdichever's Falling",
+    hebrew: "The Berdichever's falling",
+    date: "January 5, 2026",
+    url: "https://naanaach.blogspot.com/2026/01/the-berdichevers-falling.html",
+    label: "Stories"
+  },
+  {
+    title: "Watching Animals Fight",
+    hebrew: "ליקוטי מוהרן תורה רלג",
+    date: "January 3, 2026",
+    url: "https://naanaach.blogspot.com/2026/01/watching-animals-fight.html",
+    label: "Likutay Moharan"
+  },
+  {
+    title: "How the Hatred of the Shpoler Zaide Started",
+    hebrew: "איך התחיל השנאה של השפאלע זיידא והאסיפה לעשות חרם",
+    date: "December 31, 2025",
+    url: "https://naanaach.blogspot.com/2025/12/blog-post.html",
+    label: "Chassidic History"
+  },
+  {
+    title: "Breslov - Best Life",
+    hebrew: "Breslov - Best Life",
+    date: "January 28, 2026",
+    url: "https://naanaach.blogspot.com/2026/01/breslov-best-life.html",
+    label: "Inspiration"
+  }
+];
+
+const categories = [
+  { name: "Likutay Moharan", count: "ליקוטי מוהרן", icon: "📖" },
+  { name: "Chassidic History", count: "חסידות", icon: "📜" },
+  { name: "Stories", count: "סיפורים", icon: "📚" },
+  { name: "Inspiration", count: "השראה", icon: "💫" },
+  { name: "Tikunim", count: "תיקונים", icon: "🙏" },
+  { name: "Articles", count: "מאמרים", icon: "✡️" }
+];
+---
+
+<Layout title="Na Nach Blogspot" description="Teachings and articles from naanaach.blogspot.com">
+  <section class="page-header">
+    <h1>✡ Na Nach Teachings ✡</h1>
+    <p>From naanaach.blogspot.com</p>
+    <p class="hebrew-banner">נַ נַחְ נַחְמָ נַחְמָן מאוּמָן</p>
+    <a href="https://naanaach.blogspot.com" target="_blank" rel="noopener noreferrer" class="visit-blog">
+      Visit Original Blog →
+    </a>
+  </section>
+
+  <section class="categories">
+    <div class="container">
+      <div class="categories-grid">
+        {categories.map((cat) => (
+          <a href={`https://naanaach.blogspot.com/search/label/${cat.name.replace(/ /g, '%20')}`} target="_blank" rel="noopener noreferrer" class="category-card">
+            <span class="icon">{cat.icon}</span>
+            <h3>{cat.name}</h3>
+            <p class="hebrew">{cat.count}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="latest-posts">
+    <div class="container">
+      <h2>📝 Latest Posts</h2>
+      <div class="posts-grid">
+        {blogPosts.map((post) => (
+          <a href={post.url} target="_blank" rel="noopener noreferrer" class="post-card">
+            <div class="post-meta">
+              <span class="label">{post.label}</span>
+              <span class="date">{post.date}</span>
+            </div>
+            <h3>{post.title}</h3>
+            <p class="hebrew">{post.hebrew}</p>
+            <span class="read-more">Read on BlogSpot →</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="search-section">
+    <div class="container">
+      <h2>🔍 Search the Blog</h2>
+      <p>Find articles by topic or keyword on naanaach.blogspot.com</p>
+      <a href="https://naanaach.blogspot.com/search" target="_blank" rel="noopener noreferrer" class="search-button">
+        Open Blog Search →
+      </a>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .page-header {
+    background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
+    color: white;
+    padding: 5rem 2rem;
+    text-align: center;
+  }
+
+  .page-header h1 {
+    font-family: var(--font-hebrew);
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .page-header p {
+    opacity: 0.9;
+    font-size: 1.2rem;
+  }
+
+  .hebrew-banner {
+    font-family: var(--font-hebrew);
+    font-size: 1.5rem;
+    letter-spacing: 0.1em;
+    margin: 1.5rem 0;
+  }
+
+  .visit-blog {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.75rem 1.5rem;
+    background: white;
+    color: var(--color-primary);
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: background 0.3s;
+  }
+
+  .visit-blog:hover {
+    background: var(--color-accent);
+    color: white;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .categories {
+    background: #f7f5f0;
+    padding: 3rem 0;
+  }
+
+  .categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem;
+  }
+
+  .category-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    text-decoration: none;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+
+  .category-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+  }
+
+  .category-card .icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .category-card h3 {
+    color: var(--color-primary);
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .category-card .hebrew {
+    font-family: var(--font-hebrew);
+    color: #888;
+    font-size: 0.9rem;
+  }
+
+  .latest-posts {
+    padding: 4rem 0;
+  }
+
+  .latest-posts h2 {
+    text-align: center;
+    color: var(--color-primary);
+    margin-bottom: 2rem;
+  }
+
+  .posts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .post-card {
+    display: block;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    text-decoration: none;
+    transition: transform 0.3s, box-shadow 0.3s;
+    border-left: 3px solid var(--color-accent);
+  }
+
+  .post-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  }
+
+  .post-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  .post-meta .label {
+    background: var(--color-accent);
+    color: white;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+  }
+
+  .post-meta .date {
+    color: #888;
+  }
+
+  .post-card h3 {
+    color: var(--color-primary);
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .post-card .hebrew {
+    font-family: var(--font-hebrew);
+    color: #666;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+  }
+
+  .read-more {
+    color: var(--color-accent);
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  .search-section {
+    background: #edf2f7;
+    padding: 3rem 0;
+    text-align: center;
+  }
+
+  .search-section h2 {
+    color: var(--color-primary);
+    margin-bottom: 0.5rem;
+  }
+
+  .search-section p {
+    color: #666;
+    margin-bottom: 1.5rem;
+  }
+
+  .search-button {
+    display: inline-block;
+    padding: 0.75rem 2rem;
+    background: var(--color-primary);
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: background 0.3s;
+  }
+
+  .search-button:hover {
+    background: var(--color-accent);
+  }
+
+  @media (max-width: 768px) {
+    .posts-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

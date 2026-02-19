@@ -1,0 +1,569 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="ספרי ברסלב" description="All Breslov books in Hebrew">
+  <div class="books-page">
+    <header class="page-header">
+      <h1>ספרי ברסלב בלשון הקודש</h1>
+      <p class="subtitle">All Breslov Books in Hebrew</p>
+    </header>
+
+    <div class="search-section">
+      <div class="search-box">
+        <input 
+          type="text" 
+          id="bookSearch" 
+          placeholder="חפש ספר... Search for a book..."
+          dir="rtl"
+        />
+        <span class="search-icon">🔍</span>
+      </div>
+      <a href="/search" class="full-search-link">
+        🔎 חיפוש מלא בכל הספרים והדרשות / Full Search
+      </a>
+    </div>
+
+    <div class="categories-grid" id="categoriesGrid"></div>
+
+    <div class="search-results" id="searchResults" style="display: none;">
+      <h3>תוצאות חיפוש / Search Results</h3>
+      <ul class="results-list" id="resultsList"></ul>
+      <button class="back-btn" id="backToCategories">חזור לרשימה / Back to List</button>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  // Book data - EXACT paths from public/books (verified Feb 2026)
+  const booksData = [
+    {
+      name: "ספרי רבי נחמן",
+      originalName: "1_ספרי רבי נחמן",
+      books: [
+        { name: "ליקוטי מוהר''ן", filename: "01_ליקוטי מוהר''ן.txt" },
+        { name: "ליקוטי מוהר''ן מנוקד", filename: "02_ ליקוטי מוהר''ן מנוקד.txt" },
+        { name: "קיצור ליקוטי מוהרן השלם", filename: "02_קיצור ליקוטי מוהרן השלם.txt" },
+        { name: "ספר המידות", filename: "03_ספר המידות.txt" },
+        { name: "ספורי מעשיות", filename: "04_ספורי מעשיות.txt" },
+        { name: "ספורי מעשיות מנוקד", filename: "05_ספורי מעשיות מנוקד.txt" },
+        { name: "שיחות הר''ן", filename: "06_שיחות הר''ן.txt" },
+        { name: "שיחות הר''ן מנוקד", filename: "06א_שיחות הר''ן מנוקד.txt" },
+        { name: "חיי מוהר''ן", filename: "07_חיי מוהר''ן.txt" },
+        { name: "חיי מוהרן מנוקד", filename: "08_חיי מוהרן מנוקד.txt" },
+        { name: "שבחי הר''ן", filename: "09_שבחי הר''ן.txt" },
+        { name: "שבחי הר''ן מנוקד", filename: "09א_שבחי הר''ן מנוקד.txt" }
+      ]
+    },
+    {
+      name: "ספרי רבי נתן - ליקוטי הלכות (מנוקד)",
+      originalName: "2_ספרי רבי נתן",
+      books: [
+        { name: "ליקוטי הלכות - אורח חיים א", filename: "01_ליקוטי הלכות מנוקד/01_אורח חיים א.txt" },
+        { name: "ליקוטי הלכות - אורח חיים ב", filename: "01_ליקוטי הלכות מנוקד/02_אורח חיים ב.txt" },
+        { name: "ליקוטי הלכות - אורח חיים ג", filename: "01_ליקוטי הלכות מנוקד/03_אורח חיים ג.txt" },
+        { name: "ליקוטי הלכות - יורה דעה א", filename: "01_ליקוטי הלכות מנוקד/04_יורה דעה א.txt" },
+        { name: "ליקוטי הלכות - יורה דעה ב", filename: "01_ליקוטי הלכות מנוקד/05_יורה דעה ב.txt" },
+        { name: "ליקוטי הלכות - אבן העזר", filename: "01_ליקוטי הלכות מנוקד/06_אבן העזר.txt" },
+        { name: "ליקוטי הלכות - חושן משפט א", filename: "01_ליקוטי הלכות מנוקד/07_חושן משפט א.txt" },
+        { name: "ליקוטי הלכות - חושן משפט ב", filename: "01_ליקוטי הלכות מנוקד/08_חושן משפט ב.txt" }
+      ]
+    },
+    {
+      name: "ספרי רבי נתן - ליקוטי הלכות",
+      originalName: "2_ספרי רבי נתן",
+      books: [
+        { name: "ליקוטי הלכות - אורח חיים א", filename: "02_לקוטי הלכות/1_אורח חיים_א.txt" },
+        { name: "ליקוטי הלכות - אורח חיים ב", filename: "02_לקוטי הלכות/2_אורח חיים_ב.txt" },
+        { name: "ליקוטי הלכות - אורח חיים ג", filename: "02_לקוטי הלכות/3_אורח חיים_ג.txt" },
+        { name: "ליקוטי הלכות - יורה דעה א", filename: "02_לקוטי הלכות/4_יורה דעה_א.txt" },
+        { name: "ליקוטי הלכות - יורה דעה ב", filename: "02_לקוטי הלכות/5_יורה דעה_ב.txt" },
+        { name: "ליקוטי הלכות - אבן העזר", filename: "02_לקוטי הלכות/6_אבן_העזר.txt" },
+        { name: "ליקוטי הלכות - חושן משפט א", filename: "02_לקוטי הלכות/7_חושן משפט_א.txt" },
+        { name: "ליקוטי הלכות - חושן משפט ב", filename: "02_לקוטי הלכות/8_חושן משפט_ב.txt" },
+        { name: "ליקוטי תפילות", filename: "03_ליקוטי תפילות.txt" },
+        { name: "ליקוטי עצות", filename: "04_ליקוטי עצות.txt" },
+        { name: "ימי מוהרנ''ת", filename: "05_ימי מוהרנ''ת.txt" },
+        { name: "עלים לתרופה", filename: "06_עלים לתרופה.txt" },
+        { name: "שמות הצדיקים", filename: "07_שמות הצדיקים.txt" },
+        { name: "ימי התלאות", filename: "08_ימי התלאות.txt" }
+      ]
+    },
+    {
+      name: "ספרי הרב מטשערין",
+      originalName: "3_ספרי הרב מטשערין",
+      books: [
+        { name: "זמרת הארץ", filename: "זמרת הארץ.txt" },
+        { name: "יקרא דשבתא", filename: "יקרא דשבתא.txt" },
+        { name: "ירח האיתנים", filename: "ירח האיתנים.txt" },
+        { name: "נחת השולחן", filename: "נחת השולחן.txt" },
+        { name: "פרפראות לחכמה", filename: "פרפראות לחכמה.txt" },
+        { name: "רמזי המעשיות על ספורי מעשיות", filename: "רמזי המעשיות על ספורי מעשיות.txt" },
+        { name: "ליקוטי עצות מהדורא בתרא", filename: "אוצר היראה/ליקוטי עצות מהדורא בתרא.txt" }
+      ]
+    },
+    {
+      name: "ספרי רבי נתן בר יהודה",
+      originalName: "3_ספרי רבי נתן בר יהודה",
+      books: [
+        { name: "מכתבי ר' נתן ב''ר יהודה", filename: "01_מכתבי ר' נתן ב''ר יהודה.txt" },
+        { name: "קונטרס הצרופים", filename: "02_קונטרס הצרופים.txt" },
+        { name: "קונטרס הצירופים עם השלמות", filename: "03_קונטרס הצירופים עם השלמות.txt" }
+      ]
+    },
+    {
+      name: "ספרי רבי אלתר טפליקער",
+      originalName: "4_ספרי רבי אלתר טפליקער",
+      books: [
+        { name: "השתפכות הנפש", filename: "השתפכות הנפש.txt" },
+        { name: "משיבת נפש", filename: "משיבת נפש.txt" }
+      ]
+    },
+    {
+      name: "ספרי רבי אברהם בר' נחמן",
+      originalName: "5_ספרי רבי אברהם בר' נחמן",
+      books: [
+        { name: "ביאור הליקוטים", filename: "ביאור הליקוטים.txt" },
+        { name: "חכמה ותבונה", filename: "חכמה ותבונה.txt" },
+        { name: "כוכבי אור השלם", filename: "כוכבי אור השלם.txt" }
+      ]
+    },
+    {
+      name: "ספרי רבי שמשון בארסקי",
+      originalName: "6_ספרי רבי שמשון בארסקי",
+      books: [
+        { name: "גבורות שמשון", filename: "גבורות שמשון.txt" },
+        { name: "עצות המבוארות", filename: "עצות_המבוארות.txt" }
+      ]
+    },
+    {
+      name: "ספרי רבי ישראל דב אודסר",
+      originalName: "6_ספרים של תלמידים ועוד",
+      books: [
+        { name: "אבי הנחל חלק א", filename: "9_ספרי רבי ישראל דב אודסר/01_אבי הנחל חלק א.txt" },
+        { name: "אבי הנחל חלק ב", filename: "9_ספרי רבי ישראל דב אודסר/02_אבי הנחל חלק ב.txt" },
+        { name: "אישי ישראל עברית", filename: "9_ספרי רבי ישראל דב אודסר/03_אישי ישראל עברית.txt" },
+        { name: "אישי ישראל אידיש", filename: "9_ספרי רבי ישראל דב אודסר/04_אישי ישראל אידיש.txt" },
+        { name: "בירור השיר", filename: "9_ספרי רבי ישראל דב אודסר/בירור השיר.txt" },
+        { name: "ישראל סבא", filename: "9_ספרי רבי ישראל דב אודסר/ישראל סבא.txt" },
+        { name: "לראות באיבי הנחל", filename: "9_ספרי רבי ישראל דב אודסר/לראות באיבי הנחל.txt" },
+        { name: "מכתבי ידידות", filename: "9_ספרי רבי ישראל דב אודסר/מכתבי ידידות.txt" }
+      ]
+    },
+    {
+      name: "ספרי רבי שמואל הורוויץ",
+      originalName: "6_ספרים של תלמידים ועוד",
+      books: [
+        { name: "ימי שמואל א-ב", filename: "9_ספרי רבי שמואל הורוויץ/ימי שמואל א-ב.txt" },
+        { name: "מכתבי שמואל א", filename: "9_ספרי רבי שמואל הורוויץ/מכתבי שמואל א.txt" },
+        { name: "מכתבי שמואל ב", filename: "9_ספרי רבי שמואל הורוויץ/מכתבי שמואל ב.txt" },
+        { name: "קונטרס התקשרות לצדיק האמת", filename: "9_ספרי רבי שמואל הורוויץ/קונטרס התקשרות לצדיק האמת.txt" }
+      ]
+    },
+    {
+      name: "ספרי רבי יצחק ברייטער",
+      originalName: "6_ספרים של תלמידים ועוד",
+      books: [
+        { name: "שיר ידידות מר' יצחק ברייטער", filename: "91_ספרי ר' יצחק ברייטער/07_שיר ידידות מר' יצחק ברייטער.txt" },
+        { name: "סדר היום", filename: "91_ספרי ר' יצחק ברייטער/סדר היום.txt" }
+      ]
+    },
+    {
+      name: "סיפורים",
+      originalName: "91_סיפורים",
+      books: [
+        { name: "סיפורי ר' משה גלידמאן", filename: "סיפורי ר' משה גלידמאן.txt" },
+        { name: "סיפורים מר' שמואל הורוויץ", filename: "סיפורים מר' שמואל הורוויץ.txt" }
+      ]
+    },
+    {
+      name: "ספרים מתורגמים",
+      originalName: "92_ספרים מתורגמים",
+      books: [
+        { name: "סיפורי מעשיות באנגלית", filename: "סיפורי מעשיות באנגלית.txt" }
+      ]
+    },
+    {
+      name: "ביבליוגרפית ברסלב - רבי נחמן",
+      originalName: "ביבליוגרפית ברסלב",
+      books: [
+        { name: "ביבליוגרפית ספריו", filename: "ביבליוגרפית רבי נחמן/ביבליוגרפית ספריו.txt" },
+        { name: "פרקי חייו", filename: "ביבליוגרפית רבי נחמן/פרקי חייו.txt" }
+      ]
+    },
+    {
+      name: "ביבליוגרפית ברסלב - רבי נתן",
+      originalName: "ביבליוגרפית ברסלב",
+      books: [
+        { name: "באש ובמים", filename: "ביבליוגרפית רבי נתן/באש ובמים V.txt" },
+        { name: "ביבליוגרפית ספרי ר' נתן", filename: "ביבליוגרפית רבי נתן/ביבליוגרפית ספרי ר' נתן.txt" }
+      ]
+    },
+    {
+      name: "ביבליוגרפית ברסלב - שונות",
+      originalName: "ביבליוגרפית ברסלב",
+      books: [
+        { name: "ביבליוגרפית ספרי הרב", filename: "ביבליוגרפית ספרי הרב.txt" },
+        { name: "ביבליוגרפית ספרי ר' אברהם חזן", filename: "ביבליוגלפית ספרי ר' אברהם חזן.txt" },
+        { name: "ביבליוגרפית ספרי ר' אברהם סופר", filename: "ביבליוגרפית ספרי ר' אברהם סופר.txt" },
+        { name: "ביבליוגרפית ספרי ר' משה יהושע", filename: "ביבליוגרפית ספרי ר' משה יהושע.txt" },
+        { name: "ביבליוגרפית תלמידי מוהר''ן", filename: "ביבליוגרפית תלמידי מוהר''ן.txt" },
+        { name: "ביבליוגרפית תלמידי מוהרנ''ת", filename: "ביבליוגרפית תלמידי מוהרנ''ת.txt" },
+        { name: "ספר גידולי הנחל", filename: "ספר גידולי הנחל.txt" },
+        { name: "סיפור בנית הבית על ציון רבינו אחר המלחמה", filename: "סיפור בנית הבית על ציון רבינו אחר המלחמה.txt" },
+        { name: "סיפור מסירות נפש מספר אלפן חדת", filename: "סיפור מסירות נפש מספר אלפן חדת.txt" }
+      ]
+    }
+  ];
+
+  // Flat list for search
+  const allBooks = booksData.flatMap(cat => 
+    cat.books.map(book => ({
+      ...book,
+      category: cat.name,
+      categoryKey: cat.originalName
+    }))
+  );
+
+  // Render categories
+  const categoriesGrid = document.getElementById('categoriesGrid');
+  
+  booksData.forEach((category, idx) => {
+    const card = document.createElement('div');
+    card.className = 'category-card';
+    card.style.setProperty('--delay', `${idx * 0.05}s`);
+    card.dataset.category = category.name;
+    
+    card.innerHTML = `
+      <div class="category-header">
+        <h2>${category.name}</h2>
+        <span class="book-count">${category.books.length} ספרים</span>
+      </div>
+      <ul class="book-list">
+        ${category.books.map((book, bookIdx) => `
+          <li class="book-item" style="--delay: ${bookIdx * 0.02}s">
+            <a href="/books/read?category=${encodeURIComponent(category.originalName)}&book=${encodeURIComponent(book.filename)}">
+              <span class="book-icon">📖</span>
+              <span class="book-name">${book.name}</span>
+            </a>
+          </li>
+        `).join('')}
+      </ul>
+    `;
+    
+    categoriesGrid.appendChild(card);
+  });
+
+  // Search functionality
+  const searchInput = document.getElementById('bookSearch');
+  const searchResults = document.getElementById('searchResults');
+  const resultsList = document.getElementById('resultsList');
+  const backBtn = document.getElementById('backToCategories');
+
+  searchInput.addEventListener('input', (e) => {
+    const query = e.target.value.trim().toLowerCase();
+    
+    if (query.length < 2) {
+      searchResults.style.display = 'none';
+      categoriesGrid.style.display = 'grid';
+      return;
+    }
+
+    const results = allBooks.filter(book => 
+      book.name.toLowerCase().includes(query) || 
+      book.category.toLowerCase().includes(query)
+    );
+
+    if (results.length === 0) {
+      resultsList.innerHTML = '<li class="no-results">לא נמצאו תוצאות / No results found</li>';
+    } else {
+      resultsList.innerHTML = results.map(book => `
+        <li>
+          <a href="/books/read?category=${encodeURIComponent(book.categoryKey)}&book=${encodeURIComponent(book.filename)}">
+            <span class="result-category">${book.category}</span>
+            <span class="result-name">${book.name}</span>
+          </a>
+        </li>
+      `).join('');
+    }
+
+    categoriesGrid.style.display = 'none';
+    searchResults.style.display = 'block';
+  });
+
+  backBtn.addEventListener('click', () => {
+    searchResults.style.display = 'none';
+    categoriesGrid.style.display = 'grid';
+    searchInput.value = '';
+  });
+</script>
+
+<style>
+  .books-page {
+    min-height: 100vh;
+    background: #f0f0f0;
+    padding: 2rem;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .page-header h1 {
+    font-family: var(--font-hebrew);
+    font-size: 2.5rem;
+    color: #1a365d;
+    margin-bottom: 0.5rem;
+  }
+
+  .subtitle {
+    color: #555555;
+    font-size: 1.1rem;
+  }
+
+  .search-section {
+    max-width: 600px;
+    margin: 0 auto 2rem;
+    text-align: center;
+  }
+
+  .full-search-link {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.75rem 1.5rem;
+    background: #1a365d;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background 0.2s;
+  }
+
+  .full-search-link:hover {
+    background: #c53030;
+    color: white;
+  }
+
+  .search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .search-box input {
+    width: 100%;
+    padding: 1rem 1.5rem 1rem 3rem;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 50px;
+    background: white;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  }
+
+  .search-box input:focus {
+    outline: none;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 1.2rem;
+    font-size: 1.2rem;
+    pointer-events: none;
+  }
+
+  .categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    direction: rtl;
+  }
+
+  .category-card {
+    background: #ffffff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    border: 2px solid #cccccc;
+    direction: rtl;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .category-header {
+    background: linear-gradient(135deg, #4a5568, #718096);
+    color: #ffffff;
+    padding: 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .category-header h2 {
+    font-family: var(--font-hebrew), 'Frank Ruhl Libre', serif;
+    font-size: 1.3rem;
+    margin: 0;
+    color: #ffffff;
+    font-weight: 700;
+  }
+
+  .book-count {
+    font-size: 0.85rem;
+    background: rgba(255,255,255,0.3);
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    color: #fff;
+    font-weight: 500;
+  }
+
+  .book-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .book-item {
+    border-bottom: 1px solid #cccccc;
+    background: #ffffff;
+  }
+
+  .book-item:last-child {
+    border-bottom: none;
+  }
+
+  .book-item a {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 1rem 1.25rem;
+    text-decoration: none;
+    color: #000000;
+    background: #ffffff;
+    transition: background 0.15s;
+    font-weight: 600;
+  }
+
+  .book-item a:hover {
+    background: #f5f5f5;
+    color: #cc0000;
+  }
+
+  .book-icon {
+    font-size: 1.1rem;
+    opacity: 0.7;
+  }
+
+  .book-name {
+    font-family: var(--font-hebrew), 'Frank Ruhl Libre', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #000000;
+    line-height: 1.5;
+  }
+
+  /* Search Results */
+  .search-results {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .search-results h3 {
+    color: #1a365d;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+  }
+
+  .results-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .results-list li {
+    border-bottom: 1px solid #eee;
+  }
+
+  .results-list li a {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem 1.5rem;
+    text-decoration: none;
+    color: #1a365d;
+    transition: background 0.2s;
+  }
+
+  .results-list li a:hover {
+    background: #f7f5f0;
+    color: #c53030;
+  }
+
+  .result-category {
+    font-size: 0.8rem;
+    color: #666;
+    margin-bottom: 0.25rem;
+  }
+
+  .result-name {
+    font-family: var(--font-hebrew);
+    font-size: 1.1rem;
+  }
+
+  .no-results {
+    padding: 2rem;
+    text-align: center;
+    color: #666;
+  }
+
+  .back-btn {
+    display: block;
+    width: 100%;
+    max-width: 300px;
+    margin: 1.5rem auto 0;
+    padding: 1rem;
+    background: white;
+    color: #1a365d;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .back-btn:hover {
+    background: #f7f5f0;
+    transform: translateY(-2px);
+  }
+
+  @media (max-width: 768px) {
+    .books-page {
+      padding: 1rem;
+    }
+
+    .page-header h1 {
+      font-size: 1.8rem;
+    }
+
+    .categories-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

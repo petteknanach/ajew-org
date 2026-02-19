@@ -1,0 +1,194 @@
+---
+title: "Likutay Moharan"
+---
+
+<script>
+// Generate Volume 1 links - exactly matching naanaach blog structure
+const vol1Sections = [
+  { title: "Introduction", items: [
+    { text: "Introduction", url: "/teachings/likutay-moharan-intro" },
+    { text: "Rabbi Nachman's Poem", url: "/teachings/likutay-moharan-poem" },
+    { text: "Preface - The Greatness of Rabbi Shimon", url: "/teachings/likutay-moharan-preface-greatness" }
+  ]},
+  { title: "Torahs 1-15 on Rabba bar bar Chana", items: [] },
+  { title: "Torahs 16-18 of the Mishtu-ai - Those Who Told Over", items: [] },
+  { title: "Torahs 19-22 on Safra DiTzneusa", items: [] },
+  { title: "Torahs 23-31 on Suvay Divay Atuna - The Debate With the Elders of House of Atuna", items: [] },
+  { title: "Torahs 32 to the End", items: [] }
+];
+
+let vol1HTML = '';
+
+vol1Sections.forEach((section) => {
+  vol1HTML += `<div style="margin-bottom: 1.5rem;">
+    <h3 style="color: #1a365d; font-size: 1.1rem; margin: 0 0 0.75rem 0; padding-bottom: 0.5rem; border-bottom: 1px solid #e2e8f0;">${section.title}</h3>`;
+  
+  if (section.items && section.items.length > 0) {
+    vol1HTML += `<div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.75rem;">`;
+    section.items.forEach(item => {
+      vol1HTML += `<a href="${item.url}" style="padding: 0.5rem 1rem; background: #ecfdf5; color: #059669; border-radius: 6px; text-decoration: none; font-size: 0.85rem;">${item.text}</a>`;
+    });
+    vol1HTML += `</div>`;
+  }
+  
+  // Generate Torah links for this section
+  let start = 1, end = 15;
+  if (section.title.includes("16-18")) { start = 16; end = 18; }
+  else if (section.title.includes("19-22")) { start = 19; end = 22; }
+  else if (section.title.includes("23-31")) { start = 23; end = 31; }
+  else if (section.title.includes("32")) { start = 32; end = 286; }
+  else if (section.title === "Introduction") { start = 0; end = 0; } // Skip numeric links
+  
+  if (start > 0) {
+    vol1HTML += `<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); gap: 0.4rem;">`;
+    for (let i = start; i <= end; i++) {
+      vol1HTML += `<a href="/teachings/likutay-moharan-volume-1-torah-${i}" style="display: block; padding: 0.5rem; text-align: center; background: #f7fafc; border-radius: 6px; color: #1a365d; text-decoration: none; font-weight: 500; font-size: 0.85rem; transition: all 0.2s;">${i}</a>`;
+    }
+    vol1HTML += `</div>`;
+  }
+  
+  vol1HTML += `</div>`;
+});
+
+// Generate Volume 2 links - internal pages first
+let vol2InternalHTML = '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); gap: 0.4rem;">';
+for (let i = 1; i <= 125; i++) {
+  vol2InternalHTML += `<a href="/teachings/likutay-moharan-volume-2-torah-${i}" style="display: block; padding: 0.5rem; text-align: center; background: #fefce8; border-radius: 6px; color: #744210; text-decoration: none; font-weight: 500; font-size: 0.85rem; transition: all 0.2s;">${i}</a>`;
+}
+vol2InternalHTML += '</div>';
+
+// Naanaach Blog Volume 2 external links (organized as on the blog)
+const vol2ExternalSections = [
+  { title: "Lkm 1-20", label: 1 },
+  { title: "Lkm 21-40", label: 21 },
+  { title: "Lkm 41-60", label: 41 },
+  { title: "Lkm 61-80", label: 61 },
+  { title: "Lkm 81-100", label: 81 },
+  { title: "Lkm 101-125", label: 101 }
+];
+
+let vol2ExternalHTML = '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.5rem; margin-top: 1rem;">';
+vol2ExternalSections.forEach((section) => {
+  vol2ExternalHTML += `<a href="https://naanaach.blogspot.com/search/label/Lkm%20${section.label}" target="_blank" style="display: block; padding: 0.6rem; text-align: center; background: #fef3c7; border: 2px solid #f59e0b; border-radius: 8px; color: #92400e; text-decoration: none; font-weight: 600; font-size: 0.85rem; transition: all 0.2s;">${section.title} →</a>`;
+});
+vol2ExternalHTML += '</div>';
+
+// Quick jump anchors
+const quickAnchors = [1, 15, 18, 22, 31, 50, 75, 100, 125, 150, 175, 200, 225, 250, 275, 286];
+let quickJumpHTML = quickAnchors.map(n => `<a href="/teachings/likutay-moharan-volume-1-torah-${n}" style="padding: 0.25rem 0.5rem; background: white; border-radius: 4px; font-size: 0.75rem; color: #666; text-decoration: none; border: 1px solid #e2e8f0;">${n}</a>`).join('');
+
+document.getElementById('vol1-sections').innerHTML = vol1HTML;
+document.getElementById('vol2-internal-grid').innerHTML = vol2InternalHTML;
+document.getElementById('quick-jump').innerHTML = quickJumpHTML;
+document.getElementById('vol2-external-grid').innerHTML = vol2ExternalHTML;
+</script>
+
+<!-- Header Banner -->
+<section style="background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%); color: white; padding: 2rem; text-align: center;">
+  <p style="font-size: 0.9rem; letter-spacing: 0.3em; opacity: 0.8; margin: 0;">FREEDOM - LIBERTY - EMANCIPATION</p>
+  <h1 style="font-family: var(--font-hebrew); font-size: 2.5rem; margin: 0.5rem 0;">📚 Likutay Moharan</h1>
+  <p style="font-size: 1.2rem; opacity: 0.9; margin-top: 0.5rem;">ליקוטי מוהר"ן</p>
+  <p style="font-size: 1rem; opacity: 0.8; margin-top: 1rem;">The primary collection of Rabbi Nachman's Torah teachings</p>
+</section>
+
+<div style="max-width: 1200px; margin: 0 auto; padding: 2rem;">
+  
+  <!-- Main Content -->
+  <main>
+    
+    <!-- Intro Section -->
+    <div style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 16px rgba(0,0,0,0.1); margin-bottom: 1.5rem;">
+      <h2 style="color: #059669; font-size: 1.3rem; margin: 0 0 1rem 0; padding-bottom: 0.5rem; border-bottom: 2px solid #059669;">
+        📖 Introduction & Prefaces
+      </h2>
+      <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+        <a href="/teachings/likutay-moharan-intro" style="padding: 0.75rem 1.25rem; background: #ecfdf5; color: #065f46; border-radius: 8px; text-decoration: none; font-weight: 500;">Introduction</a>
+        <a href="/teachings/likutay-moharan-poem" style="padding: 0.75rem 1.25rem; background: #ecfdf5; color: #065f46; border-radius: 8px; text-decoration: none;">Rabbi Nachman's Poem</a>
+        <a href="/teachings/likutay-moharan-preface-greatness" style="padding: 0.75rem 1.25rem; background: #ecfdf5; color: #065f46; border-radius: 8px; text-decoration: none;">Preface - Greatness of Rabbi Shimon</a>
+      </div>
+    </div>
+
+    <!-- Approbations -->
+    <div style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 16px rgba(0,0,0,0.1); margin-bottom: 1.5rem;">
+      <h2 style="color: #059669; font-size: 1.3rem; margin: 0 0 1rem 0; padding-bottom: 0.5rem; border-bottom: 2px solid #059669;">
+        ✒️ Approbations
+      </h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 0.5rem;">
+        <a href="/teachings/likutay-moharan-approbation-chozeh-lublin" style="padding: 0.6rem 1rem; background: #ecfdf5; color: #065f46; border-radius: 6px; text-decoration: none; font-size: 0.85rem;">Chozeh of Lublin</a>
+        <a href="/teachings/likutay-moharan-approbation-magid-kozhnitz" style="padding: 0.6rem 1rem; background: #ecfdf5; color: #065f46; border-radius: 6px; text-decoration: none; font-size: 0.85rem;">Magid of Kozhnitz</a>
+        <a href="/teachings/likutay-moharan-approbation-avraham-chaim" style="padding: 0.6rem 1rem; background: #ecfdf5; color: #065f46; border-radius: 6px; text-decoration: none; font-size: 0.85rem;">Rabbi Avraham Chaim</a>
+        <a href="/teachings/likutay-moharan-approbation-meir-brod" style="padding: 0.6rem 1rem; background: #ecfdf5; color: #065f46; border-radius: 6px; text-decoration: none; font-size: 0.85rem;">Rabbi Meir of Brod</a>
+        <a href="/teachings/likutay-moharan-approbation-efraim-margolis" style="padding: 0.6rem 1rem; background: #ecfdf5; color: #065f46; border-radius: 6px; text-decoration: none; font-size: 0.85rem;">Rabbi Efraim Zalman</a>
+        <a href="/teachings/likutay-moharan-approbations-more" style="padding: 0.6rem 1rem; background: #ecfdf5; color: #065f46; border-radius: 6px; text-decoration: none; font-size: 0.85rem;">More Approbations</a>
+      </div>
+    </div>
+
+    <!-- Volume 1 -->
+    <div style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 16px rgba(0,0,0,0.1); margin-bottom: 1.5rem;">
+      <h2 style="color: #1a365d; font-size: 1.5rem; margin: 0 0 1rem 0; padding-bottom: 0.5rem; border-bottom: 3px solid #1a365d;">
+        📕 Likutay Moharan Kama - Volume 1 <span style="font-size: 0.9rem; color: #666; font-weight: normal;">(286 Torahs)</span>
+      </h2>
+      <div id="vol1-sections"></div>
+    </div>
+
+    <!-- Volume 2 -->
+    <div style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 16px rgba(0,0,0,0.1); margin-bottom: 1.5rem;">
+      <h2 style="color: #744210; font-size: 1.5rem; margin: 0 0 1rem 0; padding-bottom: 0.5rem; border-bottom: 3px solid #744210;">
+        📗 Likutay Moharan Tinyana - Volume 2 <span style="font-size: 0.9rem; color: #666; font-weight: normal;">(125 Torahs)</span>
+      </h2>
+      
+      <div id="vol2-internal-grid"></div>
+      
+      <!-- Volume 2 Supplements -->
+      <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e2e8f0;">
+        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+          <a href="/teachings/likutay-moharan-vol2-intro" style="padding: 0.6rem 1rem; background: #fefce8; color: #744210; border-radius: 6px; text-decoration: none; font-size: 0.85rem;">Volume 2 Introduction</a>
+          <a href="/teachings/likutay-moharan-vol2-omission" style="padding: 0.6rem 1rem; background: #fefce8; color: #744210; border-radius: 6px; text-decoration: none; font-size: 0.85rem;">Volume 2 Omission</a>
+        </div>
+      </div>
+        
+      <!-- External Naanaach Blog Links -->
+      <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px dashed #f59e0b;">
+        <h3 style="color: #92400e; font-size: 1.1rem; margin: 0 0 0.5rem 0;">
+          🔗 External Links - Naanaach Blog Translations
+        </h3>
+        <p style="font-size: 0.9rem; color: #666; margin-bottom: 1rem;">
+          Additional translations from naanaach.blogspot.com - click to view
+        </p>
+        <div id="vol2-external-grid"></div>
+      </div>
+    </div>
+
+    <!-- Manuscripts -->
+    <div style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 16px rgba(0,0,0,0.1); margin-bottom: 1.5rem;">
+      <h2 style="color: #7c3aed; font-size: 1.3rem; margin: 0 0 1rem 0; padding-bottom: 0.5rem; border-bottom: 2px solid #7c3aed;">
+        ✍️ Handwritten Manuscripts (Yad HaChazaka)
+      </h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.5rem;">
+        <a href="/teachings/likutay-moharan-volume-1-torah-1" style="padding: 0.6rem 1rem; background: #f5f3ff; color: #5b21b6; border-radius: 6px; text-decoration: none; font-size: 0.85rem;">Torah 1 (Manuscript)</a>
+        <a href="/teachings/likutay-moharan-volume-1-torah-2" style="padding: 0.6rem 1rem; background: #f5f3ff; color: #5b21b6; border-radius: 6px; text-decoration: none; font-size: 0.85rem;">Torah 2</a>
+      </div>
+    </div>
+
+    <!-- Quick Jump -->
+    <div style="background: white; border-radius: 12px; padding: 1rem; box-shadow: 0 4px 16px rgba(0,0,0,0.1); margin-bottom: 1.5rem;">
+      <div style="background: #1a365d; color: white; padding: 0.5rem 1rem; border-radius: 8px 8px 0 0; margin: -1rem -1rem 1rem -1rem;">
+        <span style="font-weight: 600; font-size: 0.9rem;">⚡ Quick Jump to Volume 1</span>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 0.25rem;">
+        <div id="quick-jump"></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<style>
+  a:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+  section a:hover {
+    transform: scale(1.05);
+  }
+</style>

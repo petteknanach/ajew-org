@@ -1,0 +1,140 @@
+---
+import Layout from '../../layouts/Layout.astro';
+const pageTitle = "לקוטי מוהרן א";
+const pageDescription = "ליקוטי מוהרן - חלק א' מתוך ויקיטקסט";
+const wikisourcePage = "לקוטי_מוהרן_א";
+
+// Fetch from Wikisource API
+let wikisourceHtml = "";
+let error = "";
+
+try {
+  const response = await fetch(`https://he.wikisource.org/w/api.php?action=parse&page=${wikisourcePage}&format=json&prop=text`);
+  const data = await response.json();
+  if (data.parse && data.parse.text && data.parse.text["*"]) {
+    // Clean up the HTML - remove some wiki styling
+    wikisourceHtml = data.parse.text["*"]
+      .replace(/<script[\s\S]*?<\/script>/gi, "")
+      .replace(/class="[^"]*"/g, "")
+      .replace(/style="[^"]*"/g, "")
+      .replace(/<table[^>]*>[\s\S]*?<\/table>/gi, "")
+      .replace(/<div class="mw-empty-elt">[\s\S]*?<\/div>/gi, "");
+  }
+} catch (e) {
+  error = e.message;
+}
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+  <meta name="keywords" content="לקוטי מוהרן, רבי נחמן מברסלב, חסידות" />
+  
+  <style>
+    .page-header {
+      background: linear-gradient(135deg, #744210 0%, #975a16 100%);
+      color: white;
+      padding: 1.5rem;
+    }
+    .page-header-content { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+    .page-header h1 { font-family: var(--font-hebrew); font-size: 1.8rem; margin: 0; }
+    
+    .toolbar {
+      display: flex;
+      gap: 0.5rem;
+      padding: 1rem;
+      background: #f7f5f0;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .toolbar-btn {
+      padding: 0.5rem 1rem;
+      background: white;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    .toolbar-btn:hover { background: #1a365d; color: white; }
+    .toolbar-btn.active { background: #059669; color: white; border-color: #059669; }
+    
+    .container { max-width: 900px; margin: 0 auto; padding: 1rem; }
+    
+    .book-content {
+      font-family: var(--font-hebrew);
+      font-size: 1.1rem;
+      line-height: 1.8;
+      direction: rtl;
+    }
+    .book-content h2 { 
+      color: #744210; 
+      border-bottom: 2px solid #744210;
+      padding-bottom: 0.5rem;
+      margin-top: 2rem;
+    }
+    .book-content p { margin-bottom: 1rem; }
+    
+    /* Nikud styles */
+    .nikud-hidden .niqqud { display: none; }
+    
+    .loading { text-align: center; padding: 3rem; color: #666; }
+    .error { text-align: center; padding: 3rem; color: #dc2626; }
+    
+    .source-link {
+      display: block;
+      text-align: center;
+      padding: 1rem;
+      color: #666;
+      font-size: 0.85rem;
+    }
+  </style>
+
+  <section class="page-header">
+    <div class="page-header-content">
+      <h1>📖 לקוטי מוהרן א</h1>
+      <a href="/books" style="color: white; text-decoration: underline;">← חזרה לספרים</a>
+    </div>
+  </section>
+
+  <div class="toolbar">
+    <button class="toolbar-btn" onclick="toggleNikud()" id="nikudBtn">🔤 הוסף ניקוד</button>
+    <button class="toolbar-btn" onclick="window.open('https://he.wikisource.org/wiki/לקוטי_מוהרן_א', '_blank')">📖 ויקיטקסט</button>
+  </div>
+
+  <main class="container">
+    {error && (
+      <div class="error">שגיאה בטעינה: {error}</div>
+    )}
+    
+    {!error && !wikisourceHtml && (
+      <div class="loading">טוען מויקיטקסט...</div>
+    )}
+    
+    {wikisourceHtml && (
+      <div class="book-content nikud-hidden" id="bookContent" set:html={wikisourceHtml}></div>
+    )}
+    
+    <a class="source-link" href="https://he.wikisource.org/wiki/לקוטי_מוהרן_א" target="_blank">
+      מקור: ויקיטקסט העברית
+    </a>
+  </main>
+
+  <script>
+    let nikudOn = false;
+    
+    function toggleNikud() {
+      const content = document.getElementById('bookContent');
+      const btn = document.getElementById('nikudBtn');
+      
+      nikudOn = !nikudOn;
+      
+      if (nikudOn) {
+        content.classList.remove('nikud-hidden');
+        btn.classList.add('active');
+        btn.textContent = '🔤 הסר ניקוד';
+      } else {
+        content.classList.add('nikud-hidden');
+        btn.classList.remove('active');
+        btn.textContent = '🔤 הוסף ניקוד';
+      }
+    }
+  </script>
+</Layout>

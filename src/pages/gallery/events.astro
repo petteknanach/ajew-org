@@ -1,0 +1,192 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import fs from 'node:fs';
+
+const imageDir = './public/images/events/';
+
+function getAllImages() {
+  try {
+    const files = fs.readdirSync(imageDir);
+    return files.filter(file => 
+      /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(file) &&
+      !file.startsWith('.'))
+    .sort();
+  } catch (e) { return []; }
+}
+
+const allImages = getAllImages();
+
+function formatFilename(filename) {
+  let formatted = decodeURIComponent(filename);
+  formatted = formatted.replace(/\.(jpg|jpeg|png|gif|webp|svg)$/i, '');
+  formatted = formatted.replace(/[-_]/g, ' ');
+  formatted = formatted.replace(/\b\w/g, l => l.toUpperCase());
+  return formatted;
+}
+
+const beanies = allImages.filter(img => img.includes('beanie') || img.includes('beanies'));
+const music = allImages.filter(img => 
+  img.includes('guitar') || img.includes('tzinor') || img.includes('singing') ||
+  img.includes('hochman') || img.includes('dagan') || img.includes('playing'));
+const friends = allImages.filter(img =>
+  img.includes('friends') || img.includes('aron') || img.includes('heuberger') ||
+  img.includes('shilo') || img.includes('gavriel') || img.includes('levi') ||
+  img.includes('chaim') || img.includes('walden') || img.includes('meir') ||
+  img.includes('weiner') || img.includes('tzvi') || img.includes('levin') ||
+  img.includes('simcha') || img.includes('kids') || img.includes('snowman') ||
+  img.includes('uman'));
+const portraits = allImages.filter(img =>
+  img.includes('portrait') || img.includes('face') || img.includes('self') ||
+  img.includes('hair') || img.includes('yosef') || img.includes('eliyahu') ||
+  img.includes('gordetzky'));
+
+const categorized = new Set([...beanies, ...music, ...friends, ...portraits]);
+const other = allImages.filter(img => !categorized.has(img));
+---
+
+<Layout title="Events Gallery" description="Photos from Na Nach events, simchas, and gatherings">
+  <section class="page-header">
+    <h1>✡ Events & Gatherings ✡</h1>
+    <p>Na Nach celebrations and gatherings</p>
+    <p class="hebrew">אירועים והתכנסויות</p>
+    <p class="stats">{allImages.length} photos</p>
+    <a href="/gallery" class="back-link">← Back to Gallery</a>
+  </section>
+
+  <section class="intro">
+    <div class="container">
+      <div class="info-box">
+        <h2>🎉 Celebrating Together</h2>
+        <p>Photos from Na Nach events, simchas, and gatherings from around the world.</p>
+        <p class="hebrew">תמונות מאירועי נ נח, שמחות, והתכנסויות מכל העולם</p>
+      </div>
+      
+      <div class="quick-index">
+        <h3>📂 Quick Index</h3>
+        <div class="index-links">
+          {friends.length > 0 && <a href="#friends" class="index-link"><span class="icon">👥</span><span class="name">Friends & People</span><span class="count">{friends.length}</span></a>}
+          {music.length > 0 && <a href="#music" class="index-link"><span class="icon">🎵</span><span class="name">Music & Singing</span><span class="count">{music.length}</span></a>}
+          {portraits.length > 0 && <a href="#portraits" class="index-link"><span class="icon">😊</span><span class="name">Portraits</span><span class="count">{portraits.length}</span></a>}
+          {beanies.length > 0 && <a href="#beanies" class="index-link"><span class="icon">🧢</span><span class="name">Na Nach Beanies</span><span class="count">{beanies.length}</span></a>}
+          {other.length > 0 && <a href="#other" class="index-link"><span class="icon">📷</span><span class="name">Other</span><span class="count">{other.length}</span></a>}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="gallery">
+    <div class="container">
+      {friends.length > 0 && (
+        <div id="friends" class="category-section">
+          <h2><span class="icon">👥</span> Friends & People <span class="hebrew">(חברים ואנשים)</span></h2>
+          <div class="gallery-grid">
+            {friends.map((img, i) => (
+              <div class="gallery-item">
+                <img src={`/images/events/${img}`} alt={formatFilename(img)} loading="lazy" />
+                <div class="caption">{formatFilename(img)}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      {music.length > 0 && (
+        <div id="music" class="category-section">
+          <h2><span class="icon">🎵</span> Music & Singing <span class="hebrew">(מוזיקה ושירה)</span></h2>
+          <div class="gallery-grid">
+            {music.map((img, i) => (
+              <div class="gallery-item">
+                <img src={`/images/events/${img}`} alt={formatFilename(img)} loading="lazy" />
+                <div class="caption">{formatFilename(img)}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      {portraits.length > 0 && (
+        <div id="portraits" class="category-section">
+          <h2><span class="icon">😊</span> Portraits <span class="hebrew">(דיוקנאות)</span></h2>
+          <div class="gallery-grid">
+            {portraits.map((img, i) => (
+              <div class="gallery-item">
+                <img src={`/images/events/${img}`} alt={formatFilename(img)} loading="lazy" />
+                <div class="caption">{formatFilename(img)}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      {beanies.length > 0 && (
+        <div id="beanies" class="category-section">
+          <h2><span class="icon">🧢</span> Na Nach Beanies <span class="hebrew">(סניקיות נ נח)</span></h2>
+          <div class="gallery-grid">
+            {beanies.map((img, i) => (
+              <div class="gallery-item">
+                <img src={`/images/events/${img}`} alt={formatFilename(img)} loading="lazy" />
+                <div class="caption">{formatFilename(img)}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      {other.length > 0 && (
+        <div id="other" class="category-section">
+          <h2><span class="icon">📷</span> Other Photos <span class="hebrew">(תמונות אחרות)</span></h2>
+          <div class="gallery-grid">
+            {other.map((img, i) => (
+              <div class="gallery-item">
+                <img src={`/images/events/${img}`} alt={formatFilename(img)} loading="lazy" />
+                <div class="caption">{formatFilename(img)}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <section class="navigation">
+    <div class="container">
+      <div class="nav-buttons">
+        <a href="/gallery/nanach" class="nav-btn">← Na Nach Life</a>
+        <a href="/teachings" class="nav-btn">Teachings →</a>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .page-header { background: linear-gradient(135deg, #553c9a 0%, #44337a 100%); color: white; padding: 4rem 2rem; text-align: center; }
+  .page-header h1 { font-family: var(--font-hebrew); font-size: 2.5rem; margin-bottom: 0.5rem; }
+  .page-header p { opacity: 0.9; font-size: 1.2rem; }
+  .page-header .hebrew { font-family: var(--font-hebrew); font-size: 1.5rem; margin-top: 0.5rem; letter-spacing: 0.1em; }
+  .page-header .stats { font-size: 1rem; opacity: 0.7; margin-top: 0.5rem; }
+  .back-link { display: inline-block; margin-top: 1rem; color: white; text-decoration: none; padding: 0.5rem 1rem; border: 1px solid white; border-radius: 4px; }
+  .container { max-width: 1400px; margin: 0 auto; padding: 0 2rem; }
+  .intro { background: #f7f5f0; padding: 3rem 0; }
+  .info-box { max-width: 700px; margin: 0 auto 2rem; padding: 2rem; background: white; border-radius: 12px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+  .info-box h2 { font-family: var(--font-hebrew); color: #553c9a; margin-bottom: 1rem; }
+  .info-box p { font-size: 1.1rem; color: #555; margin-bottom: 1rem; }
+  .info-box .hebrew { font-family: var(--font-hebrew); font-size: 1.3rem; color: #553c9a; }
+  .quick-index { max-width: 700px; margin: 0 auto; padding: 1.5rem; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+  .quick-index h3 { text-align: center; margin-bottom: 1rem; color: var(--color-primary); }
+  .index-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; }
+  .index-link { display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem; background: #f7f5f0; border-radius: 8px; text-decoration: none; color: var(--color-primary); font-weight: 600; font-size: 0.9rem; }
+  .index-link:hover { background: #edf2f7; }
+  .index-link .count { background: #553c9a; color: white; padding: 0.2rem 0.5rem; border-radius: 12px; font-size: 0.75rem; }
+  .gallery { padding: 3rem 0; }
+  .category-section { padding: 3rem 0; border-bottom: 1px solid #eee; }
+  .category-section:last-child { border-bottom: none; }
+  .category-section h2 { font-family: var(--font-hebrew); font-size: 1.6rem; text-align: center; margin-bottom: 1.5rem; color: var(--color-primary); }
+  .category-section h2 .hebrew { font-family: var(--font-hebrew); font-size: 1.2rem; color: #888; margin-left: 0.5rem; }
+  .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem; }
+  .gallery-item { position: relative; }
+  .gallery-item img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; display: block; }
+  .gallery-item .caption { padding: 0.75rem; background: #f8f8f8; font-size: 0.85rem; color: #555; text-align: center; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; }
+  .navigation { background: #44337a; padding: 2rem 0; }
+  .nav-buttons { display: flex; justify-content: center; gap: 2rem; }
+  .nav-btn { color: white; text-decoration: none; padding: 0.75rem 1.5rem; background: rgba(255,255,255,0.1); border-radius: 8px; }
+  @media (max-width: 768px) {
+    .nav-buttons { flex-direction: column; }
+    .gallery-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+  }
+</style>

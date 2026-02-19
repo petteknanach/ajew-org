@@ -1,0 +1,61 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+---
+<Layout title="Likutay Tefilos - Collection of Prayers" description="Likutay Tefilos - A Collection of Prayers on Hisbodidus from Rebbe Nachman of Breslov">
+  <div class="book-page">
+    <header class="book-header">
+      <h1>Likutay Tefilos</h1>
+      <h2>Collection of Prayers</h2>
+      <p class="subtitle">Prayers on Hisbodidus from Rebbe Nachman of Breslov</p>
+    </header>
+
+    <div class="intro-section">
+      <p>These prayers are taken from Likutay Tefilos (Collection of Prayers) authored by Rabbi Nussun based on the teachings of Likutay Moharan, composed at Rabbi Nachman's bidding.</p>
+      <p>Each prayer corresponds to the teachings in Likutay Aitzos and provides a way to internalize and actualize the holy advice in our daily service of Hashem.</p>
+    </div>
+
+    <nav class="toc">
+      <h3>Table of Contents</h3>
+      <ol class="chapter-list">
+        <li><a href="/books/likutay-tefilos/ch01">Prayer 21: Arouse the Hidden Holiness</a></li>
+        <li><a href="/books/likutay-tefilos/ch02">For SUCCOS</a></li>
+        <li><a href="/books/likutay-tefilos/ch03">Prayer 31: Bring Me Back In</a></li>
+        <li><a href="/books/likutay-tefilos/ch04">For Shabbos</a></li>
+        <li><a href="/books/likutay-tefilos/ch05">Prayer 34: Connect To The Three Central Points</a></li>
+        <li><a href="/books/likutay-tefilos/ch06">Prayer 38: Divaikus – Binding Bonding to Hashem</a></li>
+        <li><a href="/books/likutay-tefilos/ch07">For Shabbos</a></li>
+        <li><a href="/books/likutay-tefilos/ch08">Prayer 52: Complete Abnegation to the One G-d</a></li>
+        <li><a href="/books/likutay-tefilos/ch09">Prayer 147: Strong and Vast Supernal Roots</a></li>
+        <li><a href="/books/likutay-tefilos/ch10">Prayer 2:11: Prayer In The Field With The Vegetation</a></li>
+        <li><a href="/books/likutay-tefilos/ch11">Prayer 2:22: Hisbodidus The Highest Virtue</a></li>
+      </ol>
+    </nav>
+
+    <div class="book-nav">
+      <a href="/books" class="back-link">← Back to Books</a>
+      <a href="/books/likutay-tefilos/ch01" class="start-reading">Begin Praying →</a>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .book-page { max-width: 900px; margin: 0 auto; padding: 2rem 1rem; }
+  .book-header { text-align: center; margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 3px double #e2e8f0; }
+  .book-header h1 { font-size: 2.5rem; color: #1a365d; margin: 0 0 0.5rem; font-family: 'Frank Ruhl Libre', serif; }
+  .book-header h2 { font-size: 1.5rem; color: #2c5282; margin: 0 0 1rem; font-weight: 500; }
+  .subtitle { color: #718096; font-style: italic; }
+  .intro-section { background: linear-gradient(135deg, #f7fafc 0%, #fff9e6 100%); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; }
+  .intro-section p { margin-bottom: 1rem; line-height: 1.7; }
+  .toc { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 2rem; }
+  .toc h3 { color: #1a365d; margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 2px solid #e2e8f0; }
+  .chapter-list { padding-left: 0; list-style: none; counter-reset: item; }
+  .chapter-list li { counter-increment: item; margin-bottom: 0.75rem; padding-left: 2.5rem; position: relative; }
+  .chapter-list li::before { content: counter(item); position: absolute; left: 0; top: 0; width: 1.75rem; height: 1.75rem; background: #059669; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 600; }
+  .chapter-list a { color: #2d3748; text-decoration: none; display: block; padding: 0.5rem 0; transition: color 0.2s; }
+  .chapter-list a:hover { color: #059669; text-decoration: underline; }
+  .book-nav { display: flex; justify-content: space-between; gap: 1rem; }
+  .back-link, .start-reading { padding: 0.75rem 1.5rem; background: #1a365d; color: white; text-decoration: none; border-radius: 8px; font-weight: 500; transition: all 0.2s; }
+  .start-reading { background: #059669; }
+  .back-link:hover, .start-reading:hover { transform: translateY(-2px); opacity: 0.9; }
+  @media (max-width: 640px) { .book-header h1 { font-size: 1.8rem; } .chapter-list li { padding-left: 2rem; } .chapter-list li::before { width: 1.5rem; height: 1.5rem; font-size: 0.75rem; } }
+</style>

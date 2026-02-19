@@ -1,0 +1,91 @@
+---
+const pageTitle = "My Profile - NNNNM";
+---
+
+<style>
+  .page-header {
+    background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
+    color: white;
+    padding: 4rem 2rem;
+    text-align: center;
+  }
+  .container { max-width: 800px; margin: 0 auto; padding: 0 2rem; }
+  .profile-card { background: white; border-radius: 16px; padding: 2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.1); margin-top: -3rem; }
+  .profile-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 1px solid #eee; }
+  .avatar { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #744210 0%, #975a16 100%); color: white; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 700; }
+  .profile-info h2 { margin: 0 0 0.25rem 0; color: #1a365d; }
+  .tier-badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
+  .tier-badge.free { background: #e5e7eb; color: #666; }
+  .tier-badge.basic { background: #fef3c7; color: #92400e; }
+  .tier-badge.premium { background: #dbeafe; color: #1e40af; }
+  .tier-badge.super { background: linear-gradient(135deg, #744210 0%, #975a16 100%); color: white; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem; }
+  .stat { text-align: center; padding: 1rem; background: #f7f5f0; border-radius: 12px; }
+  .stat-num { font-size: 1.5rem; font-weight: 700; color: #1a365d; }
+  .stat-label { font-size: 0.85rem; color: #666; }
+  .section { margin-bottom: 2rem; }
+  .section h3 { color: #1a365d; margin-bottom: 1rem; }
+  .comment-item { padding: 1rem; background: #f7f5f0; border-radius: 8px; margin-bottom: 0.75rem; }
+  .comment-teaching { font-size: 0.85rem; color: #744210; margin-bottom: 0.5rem; }
+  .comment-text { color: #333; }
+  .comment-time { font-size: 0.75rem; color: #888; margin-top: 0.5rem; }
+  .settings-link { display: block; padding: 0.75rem 1rem; background: #f7f5f0; border-radius: 8px; margin-bottom: 0.5rem; color: #333; text-decoration: none; transition: all 0.2s; }
+  .settings-link:hover { background: #eee; }
+  .upgrade-box { background: linear-gradient(135deg, #744210 0%, #975a16 100%); color: white; padding: 1.5rem; border-radius: 12px; text-align: center; margin-top: 2rem; }
+  .upgrade-box h3 { margin: 0 0 0.5rem 0; }
+  .upgrade-box p { opacity: 0.9; margin-bottom: 1rem; }
+  .upgrade-btn { padding: 0.75rem 1.5rem; background: white; color: #744210; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
+</style>
+
+<section class="page-header">
+  <h1>👤 My Profile</h1>
+</section>
+
+<main class="container">
+  <div class="profile-card">
+    <div class="profile-header">
+      <div class="avatar">G</div>
+      <div class="profile-info">
+        <h2>Guest User</h2>
+        <span class="tier-badge free">Free Account</span>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-num">0</div>
+        <div class="stat-label">Comments</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">0</div>
+        <div class="stat-label">Chat Messages</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">0</div>
+        <div class="stat-label">Days Active</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>Recent Comments</h3>
+      <p style="color: #888; text-align: center; padding: 2rem;">Sign in to see your comments</p>
+    </div>
+
+    <div class="section">
+      <h3>Settings</h3>
+      <a href="#" class="settings-link">✏️ Edit Profile</a>
+      <a href="#" class="settings-link">🔔 Notification Settings</a>
+      <a href="#" class="settings-link">🔒 Privacy Settings</a>
+      <a href="#" class="settings-link">💳 Subscription Management</a>
+    </div>
+
+    <div class="upgrade-box">
+      <h3>Upgrade to Basic ($1/mo)</h3>
+      <p>Join the community chat and comment on teachings!</p>
+      <button class="upgrade-btn" onclick="location.href='/subscribe'">Upgrade Now</button>
+    </div>
+  </div>
+</main>
+
+---
+import Layout from '../layouts/Layout.astro';
