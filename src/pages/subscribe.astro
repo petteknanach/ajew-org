@@ -34,7 +34,7 @@ const pageDescription = "Join our Breslov learning community";
   .price span { font-size: 1rem; color: #666; font-weight: 400; }
   .features { list-style: none; padding: 1.5rem 0; margin: 1.5rem 0; border-top: 1px solid #eee; text-align: right; }
   .features li { padding: 0.5rem 0; color: #555; }
-  .features li::before { content: 'ג“'; color: #059669; margin-left: 0.5rem; font-weight: bold; }
+  .features li::before { content: '\\2713'; color: #059669; margin-left: 0.5rem; font-weight: bold; }
   .stripe-btn {
     display: inline-block;
     width: 100%;
@@ -76,22 +76,22 @@ const pageDescription = "Join our Breslov learning community";
 </style>
 
 <section class="page-header">
-  <h1>נ—ן¸ Join Our Community</h1>
+  <h1>Join Our Community</h1>
   <p>Access exclusive Breslov learning content and connect with fellow seekers</p>
   <div class="nav-links">
-    <a href="/teachings" class="nav-link">נ“– Browse Teachings</a>
-    <a href="/chat" class="nav-link">נ’¬ Enter Chat</a>
-    <a href="/auth" class="nav-link">נ‘₪ My Account</a>
+    <a href="/teachings" class="nav-link">Browse Teachings</a>
+    <a href="/chat" class="nav-link">Enter Chat</a>
+    <a href="/auth" class="nav-link">My Account</a>
   </div>
 </section>
 
 <main class="container">
   <div id="successBanner" class="success-banner" style="display: none;">
-    נ‰ Payment successful! Thank you for your support. Please sign in to access premium features.
+    Payment successful! Thank you for your support. Please sign in to access premium features.
   </div>
   
   <div id="errorBanner" class="error-banner" style="display: none;">
-    ג Payment was cancelled. No charges were made.
+    Payment was cancelled. No charges were made.
   </div>
 
   <div id="userStatus"></div>
@@ -116,8 +116,8 @@ const pageDescription = "Join our Breslov learning community";
       <div class="price">$1<span>/year</span></div>
       <ul class="features">
         <li>Everything in Free</li>
-        <li>נ’¬ Join chat rooms</li>
-        <li>נ’¬ Comment on teachings</li>
+        <li>Join chat rooms</li>
+        <li>Comment on teachings</li>
         <li>User profile</li>
       </ul>
       <a href="https://buy.stripe.com/00w5kD89Ld3Y9F1fsUfUQ03" class="stripe-btn primary" id="basicBtn" target="_blank" rel="noopener">
@@ -131,9 +131,9 @@ const pageDescription = "Join our Breslov learning community";
       <div class="price">$5<span>/month</span></div>
       <ul class="features">
         <li>Everything in Basic</li>
-        <li>נ“© Private messaging</li>
-        <li>נ¯ Priority support</li>
-        <li>נ“… Member events</li>
+        <li>Private messaging</li>
+        <li>Priority support</li>
+        <li>Member events</li>
       </ul>
       <a href="https://buy.stripe.com/3cI3cvey95Bw9F13KcfUQ01" class="stripe-btn primary" id="premiumBtn" target="_blank" rel="noopener">
         Subscribe - $5/mo
@@ -146,9 +146,9 @@ const pageDescription = "Join our Breslov learning community";
       <div class="price">$10<span>/month</span></div>
       <ul class="features">
         <li>Everything in Premium</li>
-        <li>נµ Audio recordings</li>
-        <li>נ¥ Live sessions</li>
-        <li>ג­ Special recognition</li>
+        <li>Audio recordings</li>
+        <li>Live sessions</li>
+        <li>Special recognition</li>
       </ul>
       <a href="https://buy.stripe.com/3cI3cvey95Bw9F13KcfUQ00" class="stripe-btn primary" id="superBtn" target="_blank" rel="noopener">
         Subscribe - $10/mo
@@ -158,13 +158,13 @@ const pageDescription = "Join our Breslov learning community";
 
   <!-- Donations Section -->
   <section style="background: linear-gradient(135deg, #059669 0%, #047857 100%); padding: 4rem 2rem; text-align: center; margin-top: 3rem; border-radius: 16px;">
-    <h2 style="color: white; font-size: 2rem; margin-bottom: 1rem;">נ’– Support Our Mission</h2>
+    <h2 style="color: white; font-size: 2rem; margin-bottom: 1rem;">Support Our Mission</h2>
     <p style="color: rgba(255,255,255,0.9); font-size: 1.2rem; max-width: 600px; margin: 0 auto 2rem;">
       Your donations help keep ajew.org running and spread Rabbi Nachman's light to Jews around the world.
       Every amount makes a difference!
     </p>
     <a href="https://buy.stripe.com/3cI3cvey95Bw9F13KcfUQ02" class="stripe-btn donate" style="display: inline-block; width: auto; padding: 1rem 3rem;" target="_blank" rel="noopener">
-      נ™ Donate - Choose Amount
+      Donate - Choose Amount
     </a>
   </section>
 </section>
@@ -174,19 +174,19 @@ const pageDescription = "Join our Breslov learning community";
     <h2 style="text-align: center; margin-bottom: 2rem;">Why Subscribe?</h2>
     <div class="info-grid">
       <div class="info-card">
-        <h3>נ• Learn Together</h3>
+        <h3>Learn Together</h3>
         <p>Connect with fellow Breslov seekers and deepen your understanding of Rabbi Nachman's wisdom</p>
       </div>
       <div class="info-card">
-        <h3>נ’¬ Real-time Chat</h3>
+        <h3>Real-time Chat</h3>
         <p>Discuss teachings, ask questions, and share insights in real-time with the community</p>
       </div>
       <div class="info-card">
-        <h3>נ“¿ Exclusive Content</h3>
+        <h3>Exclusive Content</h3>
         <p>Access premium audio, live sessions, and special teachings not available publicly</p>
       </div>
       <div class="info-card">
-        <h3>נ Support the Mission</h3>
+        <h3>Support the Mission</h3>
         <p>Your subscription helps keep ajew.org running and spreading Rabbi Nachman's light</p>
       </div>
     </div>
@@ -231,17 +231,17 @@ const pageDescription = "Join our Breslov learning community";
         const expiry = currentUser.expiryDate ? new Date(currentUser.expiryDate).toLocaleDateString() : 'N/A';
         statusEl.innerHTML = `
           <div class="user-status">
-            ג“ Welcome back, <strong>${currentUser.name || currentUser.email}</strong>!<br>
+            &#10003; Welcome back, <strong>${currentUser.name || currentUser.email}</strong>!<br>
             You are on the <strong>${tier.toUpperCase()}</strong> plan.<br>
             Expiry: ${expiry}
-            <br><a href="/chat" style="color: #166534; font-weight: bold;">ג†’ Go to Chat</a>
+            <br><a href="/chat" style="color: #166534; font-weight: bold;">&#8594; Go to Chat</a>
           </div>
         `;
         disableSubscribeButtons(tier);
       } else {
         statusEl.innerHTML = `
           <div class="user-status inactive">
-            נ‘₪ Signed in as <strong>${currentUser.name || currentUser.email}</strong> (Free tier)<br>
+            Signed in as <strong>${currentUser.name || currentUser.email}</strong> (Free tier)<br>
             Subscribe above to access chat rooms!
           </div>
         `;
@@ -256,7 +256,7 @@ const pageDescription = "Join our Breslov learning community";
     tiers.forEach((tier, index) => {
       const btn = document.getElementById(tier + 'Btn');
       if (btn && index <= tierIndex) {
-        btn.textContent = 'ג“ Current Plan';
+        btn.textContent = 'Current Plan';
         btn.style.opacity = '0.7';
         btn.style.pointerEvents = 'none';
       }
