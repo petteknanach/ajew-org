@@ -1,8 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = 'https://ekggvujbuusvgmrertgp.supabase.co';
-// Use service role key for admin operations
-const supabaseKey = process.env.SUPABASE_SERVICE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVrZ2d2dWpidXVzdmdtcmVydGdwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM5OTc5NTYsImV4cCI6MjA0OTU3Mzk1Nn0.N3k7nKJl7G1K8T5tMl9QwVZzVxG4j9XfJlD0Y1sKqJY';
+const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL || 'YOUR_SUPABASE_URL';
+const supabaseKey = import.meta.env.SUPABASE_SERVICE_ROLE_KEY || import.meta.env.PUBLIC_SUPABASE_ANON_KEY || 'YOUR_SUPABASE_KEY';
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
@@ -43,11 +42,7 @@ export async function POST({ request }) {
       .from('subscriptions')
       .insert({
         email: email.toLowerCase(),
-        username: username || name,
-        name: name,
-        tier: 'free',
-        status: 'active',
-        created_at: new Date().toISOString()
+        tier: 'free'
       })
       .select()
       .single();

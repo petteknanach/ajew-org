@@ -137,17 +137,21 @@ import Layout from '../../layouts/Layout.astro';
   </div>
 
   <script>
+    import { supabase } from '../../lib/supabaseClient';
     let currentRoom = null;
     let currentUser = null;
     let polling = null;
-    const SUPABASE_URL = 'https://ekggvujbuusvgmrertgp.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVrZ2d2dWpidXVzdmdtcmVydGdwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM5OTc5NTYsImV4cCI6MjA0OTU3Mzk1Nn0.N3k7nKJl7G1K8T5tMl9QwVZzVxG4j9XfJlD0Y1sKqJY';
 
     // Check user
-    function checkUser() {
-      const saved = localStorage.getItem('ajew_current_user');
-      if (saved) {
-        try { currentUser = JSON.parse(saved); } catch(e) {}
+    async function checkUser() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        currentUser = session.user;
+        // Also fetch subscription from DB so we know their tier locally
+        const { data: sub } = await supabase.from('subscriptions').select('tier').eq('email', currentUser.email).single();
+        if (sub) {
+          currentUser.tier = sub.tier;
+        }
       }
       return currentUser;
     }
@@ -244,14 +248,18 @@ import Layout from '../../layouts/Layout.astro';
       }
 
       try {
+        const { data: { session } } = await supabase.auth.getSession();
+        const token = session?.access_token || '';
+        
         const res = await fetch('/api/chat', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}` 
+          },
           body: JSON.stringify({
             room: currentRoom,
-            username: currentUser.username || currentUser.name,
-            message: text,
-            email: currentUser.email
+            message: text
           })
         });
         

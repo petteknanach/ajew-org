@@ -6,279 +6,214 @@ const pageDescription = "Sign in to access the Breslov learning community";
 ---
 
 <Layout title={pageTitle} description={pageDescription}>
+  <style>
+    .page-header {
+      background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
+      color: white;
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+    .page-header h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+    .container { max-width: 500px; margin: 0 auto; padding: 0 2rem; }
+    .auth-card {
+      background: white;
+      border-radius: 16px;
+      padding: 2.5rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      margin-top: -2rem;
+    }
+    .auth-tabs { display: flex; margin-bottom: 2rem; border-bottom: 2px solid #eee; }
+    .auth-tab {
+      flex: 1;
+      padding: 1rem;
+      text-align: center;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      color: #666;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .auth-tab.active {
+      color: #1a365d;
+      border-bottom-color: #744210;
+    }
+    .form-group { margin-bottom: 1.5rem; }
+    .form-group label { display: block; margin-bottom: 0.5rem; color: #333; font-weight: 500; }
+    .form-group input {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus { outline: none; border-color: #744210; }
+    .submit-btn {
+      width: 100%;
+      padding: 1rem;
+      background: linear-gradient(135deg, #744210 0%, #975a16 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(116, 66, 16, 0.3); }
+    .submit-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+    .hidden { display: none !important; }
+    .error-msg {
+      background: #fee2e2;
+      color: #dc2626;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+  </style>
 
-<style>
-  .page-header {
-    background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
-    color: white;
-    padding: 3rem 2rem;
-    text-align: center;
-  }
-  .page-header h1 { font-size: 2rem; margin-bottom: 0.5rem; }
-  .container { max-width: 500px; margin: 0 auto; padding: 0 2rem; }
-  .auth-card {
-    background: white;
-    border-radius: 16px;
-    padding: 2.5rem;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    margin-top: -2rem;
-  }
-  .auth-tabs { display: flex; margin-bottom: 2rem; border-bottom: 2px solid #eee; }
-  .auth-tab {
-    flex: 1;
-    padding: 1rem;
-    text-align: center;
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    margin-bottom: -2px;
-    color: #666;
-    font-weight: 600;
-    transition: all 0.2s;
-  }
-  .auth-tab.active {
-    color: #1a365d;
-    border-bottom-color: #744210;
-  }
-  .form-group { margin-bottom: 1.5rem; }
-  .form-group label { display: block; margin-bottom: 0.5rem; color: #333; font-weight: 500; }
-  .form-group input {
-    width: 100%;
-    padding: 0.85rem 1rem;
-    border: 2px solid #e2e8f0;
-    border-radius: 8px;
-    font-size: 1rem;
-    transition: border-color 0.2s;
-  }
-  .form-group input:focus { outline: none; border-color: #744210; }
-  .submit-btn {
-    width: 100%;
-    padding: 1rem;
-    background: linear-gradient(135deg, #744210 0%, #975a16 100%);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(116, 66, 16, 0.3); }
-  .submit-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
-  .hidden { display: none !important; }
-</style>
+  <section class="page-header">
+    <h1>Authentication</h1>
+    <p>Join the Community</p>
+  </section>
 
-<section class="page-header">
-  <h1>Sign In</h1>
-  <p>Access the Community</p>
-  <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 1rem;">
-    <a href="/chat" style="color: white; text-decoration: underline;">Chat</a>
-    <a href="/subscribe" style="color: white; text-decoration: underline;">Subscribe</a>
-  </div>
-</section>
-
-<main class="container">
-  <div class="auth-card">
-    <div id="loggedInView" class="hidden">
-      <div style="background: #dcfce7; color: #166534; padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; text-align: center;">
-        <h3 style="margin-bottom: 0.5rem;">Welcome back!</h3>
-        <p>Signed in as <strong id="userEmail"></strong></p>
-        <p>Tier: <strong id="userTier"></strong></p>
-        <span id="tierBadge" style="display: inline-block; background: #744210; color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.85rem;"></span>
-      </div>
-      <a href="/chat" class="submit-btn" style="display: inline-block; text-decoration: none; text-align: center;">Enter Chat</a>
-      <div style="text-align: center; margin-top: 1.5rem;">
-        <button onclick="signOut()" style="background: none; border: none; color: #dc2626; cursor: pointer;">Sign out</button>
-      </div>
-    </div>
-
-    <div id="authForm">
+  <main class="container">
+    <div class="auth-card">
       <div class="auth-tabs">
-        <div class="auth-tab active" onclick="switchTab('login')" id="loginTab">Sign In</div>
-        <div class="auth-tab" onclick="switchTab('register')" id="registerTab">Create Account</div>
+        <div class="auth-tab active" id="loginTab">Sign In</div>
+        <div class="auth-tab" id="registerTab">Create Account</div>
       </div>
 
-      <div id="loginForm">
-        <div id="loginError" class="error-message hidden" style="background: #fee2e2; color: #dc2626; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; text-align: center;"></div>
-        <form onsubmit="handleLogin(event)">
-          <div class="form-group">
-            <label for="loginEmail">Email</label>
-            <input type="email" id="loginEmail" required placeholder="naanaach@gmail.com">
-          </div>
-          <button type="submit" class="submit-btn" id="loginBtn">Sign In</button>
-        </form>
-      </div>
+      <!-- Login Form -->
+      <form id="loginForm">
+        <div id="loginError" class="error-msg hidden"></div>
+        <div class="form-group">
+          <label for="loginEmail">Email</label>
+          <input type="email" id="loginEmail" required>
+        </div>
+        <div class="form-group">
+          <label for="loginPassword">Password</label>
+          <input type="password" id="loginPassword" required>
+        </div>
+        <button type="submit" class="submit-btn" id="loginBtn">Sign In</button>
+      </form>
 
-      <div id="registerForm" class="hidden">
-        <div id="registerError" class="error-message hidden" style="background: #fee2e2; color: #dc2626; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; text-align: center;"></div>
-        <div id="registerSuccess" class="success-message hidden" style="background: #dcfce7; color: #166534; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; text-align: center;"></div>
-        <form onsubmit="handleRegister(event)">
-          <div class="form-group">
-            <label for="registerName">Display Name</label>
-            <input type="text" id="registerName" required placeholder="Choose a name for chat" minlength="2" maxlength="20">
-            <small style="color: #888; font-size: 0.8rem;">This is how you'll appear in chat</small>
-          </div>
-          <div class="form-group">
-            <label for="registerEmail">Email</label>
-            <input type="email" id="registerEmail" required placeholder="naanaach@gmail.com">
-          </div>
-          <button type="submit" class="submit-btn" id="registerBtn">Create Account</button>
-        </form>
-      </div>
+      <!-- Registration Form -->
+      <form id="registerForm" class="hidden">
+        <div id="registerError" class="error-msg hidden"></div>
+        <div class="form-group">
+          <label for="registerName">Display Name</label>
+          <input type="text" id="registerName" required minlength="2" maxlength="30">
+        </div>
+        <div class="form-group">
+          <label for="registerEmail">Email</label>
+          <input type="email" id="registerEmail" required>
+        </div>
+        <div class="form-group">
+          <label for="registerPassword">Password</label>
+          <input type="password" id="registerPassword" required minlength="6">
+        </div>
+        <button type="submit" class="submit-btn" id="registerBtn">Create Account</button>
+      </form>
 
-      <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #eee;">
-        <h3 style="color: #1a365d; font-size: 1.1rem; margin-bottom: 1rem; text-align: center;">Member Benefits</h3>
-        <ul style="list-style: none; padding: 0;">
-          <li style="padding: 0.5rem 0; color: #666;">Join community chat rooms</li>
-          <li style="padding: 0.5rem 0; color: #666;">Access all books and teachings</li>
-          <li style="padding: 0.5rem 0; color: #666;">Premium content access</li>
-        </ul>
-      </div>
     </div>
-  </div>
-</main>
+  </main>
 
-<script>
-  // Supabase config
-  const SUPABASE_URL = 'https://ekggvujbuusvgmrertgp.supabase.co';
-  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVrZ2d2dWpidXVzdmdtcmVydGdwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk5NDY4MjUsImV4cCI6MjA1NTUyMjgyNX0.E4D1Z2eMaUDS2ddwSvZr8Ot8P-yi6fKZe7Zkv2r68g';
+  <script>
+    import { supabase } from '../lib/supabaseClient';
 
-  async function checkSupabaseUser(email) {
-    if (!email) return null;
-    try {
-      const response = await fetch(`${SUPABASE_URL}/rest/v1/subscriptions?email=eq.${encodeURIComponent(email)}`, {
-        headers: {
-          'apikey': SUPABASE_ANON,
-          'Authorization': `Bearer ${SUPABASE_ANON}`
-        }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        if (data && data.length > 0) {
-          return data[0];
-        }
-      }
-    } catch (e) {
-      console.log('Server lookup failed');
-    }
-    return null;
-  }
-
-  function checkAuth() {
-    const userData = localStorage.getItem('ajew_current_user');
-    if (userData) {
-      const user = JSON.parse(userData);
-      document.getElementById('loggedInView').classList.remove('hidden');
-      document.getElementById('authForm').classList.add('hidden');
-      document.getElementById('userEmail').textContent = user.email || 'N/A';
-      document.getElementById('userTier').textContent = (user.tier || 'free').toUpperCase();
-      document.getElementById('tierBadge').textContent = (user.tier || 'free').toUpperCase() + ' MEMBER';
-    }
-  }
-
-  function switchTab(tab) {
-    document.getElementById('loginTab').classList.toggle('active', tab === 'login');
-    document.getElementById('registerTab').classList.toggle('active', tab === 'register');
-    document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login');
-    document.getElementById('registerForm').classList.toggle('hidden', tab !== 'register');
-    document.getElementById('loginError').classList.add('hidden');
-    document.getElementById('registerError').classList.add('hidden');
-  }
-
-  async function handleLogin(event) {
-    event.preventDefault();
-    const email = document.getElementById('loginEmail').value.trim().toLowerCase();
-    const btn = document.getElementById('loginBtn');
-    btn.textContent = 'Signing in...';
-    btn.disabled = true;
-
-    try {
-      // Check Supabase for naanaach@gmail.com
-      if (email === 'naanaach@gmail.com') {
-        const serverUser = await checkSupabaseUser(email);
-        if (serverUser) {
-          const user = {
-            email: email,
-            name: serverUser.name || 'Na Nach',
-            tier: serverUser.tier || 'super',
-            expiry: serverUser.expiry || '2030-12-31'
-          };
-          localStorage.setItem('ajew_current_user', JSON.stringify(user));
-          location.href = '/chat';
-          return;
-        }
-        // Auto-create super tier for naanaach
-        const newUser = {
-          email: email,
-          name: 'Na Nach',
-          tier: 'super',
-          expiry: '2030-12-31'
-        };
-        await fetch(`${SUPABASE_URL}/rest/v1/subscriptions`, {
-          method: 'POST',
-          headers: {
-            'apikey': SUPABASE_ANON,
-            'Authorization': `Bearer ${SUPABASE_ANON}`,
-            'Content-Type': 'application/json',
-            'Prefer': 'return=representation'
-          },
-          body: JSON.stringify(newUser)
-        });
-        localStorage.setItem('ajew_current_user', JSON.stringify(newUser));
-        location.href = '/chat';
-        return;
-      }
-
-      // Other emails - check localStorage
-      const users = JSON.parse(localStorage.getItem('ajew_users') || '{}');
-      if (users[email]) {
-        localStorage.setItem('ajew_current_user', JSON.stringify(users[email]));
-        location.href = '/chat';
+    const loginTab = document.getElementById('loginTab');
+    const registerTab = document.getElementById('registerTab');
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    
+    // Tab Switching
+    function switchTab(isLogin) {
+      if (isLogin) {
+        loginTab.classList.add('active');
+        registerTab.classList.remove('active');
+        loginForm.classList.remove('hidden');
+        registerForm.classList.add('hidden');
       } else {
-        // Auto-create free account
-        const newUser = { email: email, name: email.split('@')[0], tier: 'free' };
-        users[email] = newUser;
-        localStorage.setItem('ajew_users', JSON.stringify(users));
-        localStorage.setItem('ajew_current_user', JSON.stringify(newUser));
-        location.href = '/subscribe';
+        loginTab.classList.remove('active');
+        registerTab.classList.add('active');
+        loginForm.classList.add('hidden');
+        registerForm.classList.remove('hidden');
       }
-    } catch (error) {
-      document.getElementById('loginError').textContent = 'Login failed. Try again.';
-      document.getElementById('loginError').classList.remove('hidden');
-      btn.textContent = 'Sign In';
-      btn.disabled = false;
-    }
-  }
-
-  function handleRegister(event) {
-    event.preventDefault();
-    const name = document.getElementById('registerName').value.trim();
-    const email = document.getElementById('registerEmail').value.trim().toLowerCase();
-    const btn = document.getElementById('registerBtn');
-    btn.textContent = 'Creating...';
-    btn.disabled = true;
-
-    const users = JSON.parse(localStorage.getItem('ajew_users') || '{}');
-    if (users[email]) {
-      document.getElementById('registerError').textContent = 'Account already exists.';
-      document.getElementById('registerError').classList.remove('hidden');
-      btn.textContent = 'Create Account';
-      btn.disabled = false;
-      return;
     }
 
-    const newUser = { email: email, name: name, tier: 'free' };
-    users[email] = newUser;
-    localStorage.setItem('ajew_users', JSON.stringify(users));
-    localStorage.setItem('ajew_current_user', JSON.stringify(newUser));
-    location.href = '/chat';
-  }
+    loginTab.addEventListener('click', () => switchTab(true));
+    registerTab.addEventListener('click', () => switchTab(false));
 
-  function signOut() {
-    localStorage.removeItem('ajew_current_user');
-    location.reload();
-  }
+    // Handle Login
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      const errorDiv = document.getElementById('loginError');
+      const btn = document.getElementById('loginBtn');
 
-  document.addEventListener('DOMContentLoaded', checkAuth);
-</script>
+      errorDiv.classList.add('hidden');
+      btn.disabled = true;
+      btn.textContent = 'Signing in...';
 
+      try {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password
+        });
+
+        if (error) throw error;
+        
+        window.location.href = '/chat';
+      } catch (error) {
+        errorDiv.textContent = error.message;
+        errorDiv.classList.remove('hidden');
+        btn.disabled = false;
+        btn.textContent = 'Sign In';
+      }
+    });
+
+    // Handle Registration
+    registerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('registerEmail').value;
+      const password = document.getElementById('registerPassword').value;
+      const displayName = document.getElementById('registerName').value;
+      const errorDiv = document.getElementById('registerError');
+      const btn = document.getElementById('registerBtn');
+
+      errorDiv.classList.add('hidden');
+      btn.disabled = true;
+      btn.textContent = 'Creating...';
+
+      try {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              display_name: displayName,
+            }
+          }
+        });
+
+        if (error) throw error;
+
+        // If successful, prompt to check email or redirect to login
+        alert('Registration successful! You can now log in.');
+        switchTab(true);
+        registerForm.reset();
+
+      } catch (error) {
+        errorDiv.textContent = error.message;
+        errorDiv.classList.remove('hidden');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Create Account';
+      }
+    });
+  </script>
 </Layout>
