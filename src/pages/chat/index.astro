@@ -305,5 +305,11 @@ import Layout from '../../layouts/Layout.astro';
     // Init
     checkUser();
     loadRooms();
+
+    // Attach to window so onclick handlers work after Astro bundles the script
+    window.openRoom = openRoom;
+    window.sendMessage = sendMessage;
+    window.showRooms = showRooms;
+    window.hideModal = () => document.getElementById('modalOverlay').classList.remove('show');
   </script>
 </Layout>
