@@ -52,11 +52,7 @@ async function setupAccounts() {
     console.log(`Granting '${u.tier}' subscription to ${u.email}...`);
     const { error: subError } = await supabase.from('subscriptions').upsert({
       email: u.email,
-      username: u.name,
-      tier: u.tier,
-      status: 'active',
-      expiry: '2030-12-31',
-      updated_at: new Date().toISOString()
+      tier: u.tier
     }, { onConflict: 'email' });
 
     if (subError) {
