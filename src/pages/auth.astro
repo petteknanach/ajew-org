@@ -14,13 +14,12 @@ const pageDescription = "Sign in to access the Breslov learning community";
       text-align: center;
     }
     .page-header h1 { font-size: 2rem; margin-bottom: 0.5rem; }
-    .container { max-width: 500px; margin: 0 auto; padding: 0 2rem; }
+    .container { max-width: 500px; margin: 2rem auto; padding: 0 2rem; }
     .auth-card {
       background: white;
       border-radius: 16px;
       padding: 2.5rem;
       box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-      margin-top: -2rem;
     }
     .auth-tabs { display: flex; margin-bottom: 2rem; border-bottom: 2px solid #eee; }
     .auth-tab {
@@ -46,7 +45,6 @@ const pageDescription = "Sign in to access the Breslov learning community";
       border: 2px solid #e2e8f0;
       border-radius: 8px;
       font-size: 1rem;
-      transition: border-color 0.2s;
     }
     .form-group input:focus { outline: none; border-color: #744210; }
     .submit-btn {
@@ -59,14 +57,20 @@ const pageDescription = "Sign in to access the Breslov learning community";
       font-size: 1.1rem;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s;
     }
-    .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(116, 66, 16, 0.3); }
-    .submit-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+    .submit-btn:disabled { opacity: 0.7; cursor: not-allowed; }
     .hidden { display: none !important; }
     .error-msg {
       background: #fee2e2;
       color: #dc2626;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    .success-msg {
+      background: #d1fae5;
+      color: #059669;
       padding: 1rem;
       border-radius: 8px;
       margin-bottom: 1rem;
@@ -103,6 +107,7 @@ const pageDescription = "Sign in to access the Breslov learning community";
       <!-- Registration Form -->
       <form id="registerForm" class="hidden">
         <div id="registerError" class="error-msg hidden"></div>
+        <div id="registerSuccess" class="success-msg hidden">Account created! You can now sign in.</div>
         <div class="form-group">
           <label for="registerName">Display Name</label>
           <input type="text" id="registerName" required minlength="2" maxlength="30">
@@ -117,7 +122,6 @@ const pageDescription = "Sign in to access the Breslov learning community";
         </div>
         <button type="submit" class="submit-btn" id="registerBtn">Create Account</button>
       </form>
-
     </div>
   </main>
 
@@ -132,87 +136,92 @@ const pageDescription = "Sign in to access the Breslov learning community";
     // Tab Switching
     function switchTab(isLogin) {
       if (isLogin) {
-        loginTab.classList.add('active');
-        registerTab.classList.remove('active');
-        loginForm.classList.remove('hidden');
-        registerForm.classList.add('hidden');
+        loginTab?.classList.add('active');
+        registerTab?.classList.remove('active');
+        loginForm?.classList.remove('hidden');
+        registerForm?.classList.add('hidden');
       } else {
-        loginTab.classList.remove('active');
-        registerTab.classList.add('active');
-        loginForm.classList.add('hidden');
-        registerForm.classList.remove('hidden');
+        loginTab?.classList.remove('active');
+        registerTab?.classList.add('active');
+        loginForm?.classList.add('hidden');
+        registerForm?.classList.remove('hidden');
       }
     }
 
-    loginTab.addEventListener('click', () => switchTab(true));
-    registerTab.addEventListener('click', () => switchTab(false));
+    loginTab?.addEventListener('click', () => switchTab(true));
+    registerTab?.addEventListener('click', () => switchTab(false));
 
     // Handle Login
-    loginForm.addEventListener('submit', async (e) => {
+    loginForm?.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const email = document.getElementById('loginEmail').value;
-      const password = document.getElementById('loginPassword').value;
+      const email = (document.getElementById('loginEmail') as HTMLInputElement).value;
+      const password = (document.getElementById('loginPassword') as HTMLInputElement).value;
       const errorDiv = document.getElementById('loginError');
-      const btn = document.getElementById('loginBtn');
+      const btn = document.getElementById('loginBtn') as HTMLButtonElement;
 
-      errorDiv.classList.add('hidden');
-      btn.disabled = true;
-      btn.textContent = 'Signing in...';
+      if (errorDiv) errorDiv.classList.add('hidden');
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Signing in...';
+      }
 
       try {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password
-        });
-
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        
         window.location.href = '/chat';
-      } catch (error) {
-        errorDiv.textContent = error.message;
-        errorDiv.classList.remove('hidden');
-        btn.disabled = false;
-        btn.textContent = 'Sign In';
+      } catch (error: any) {
+        if (errorDiv) {
+          errorDiv.textContent = error.message;
+          errorDiv.classList.remove('hidden');
+        }
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = 'Sign In';
+        }
       }
     });
 
     // Handle Registration
-    registerForm.addEventListener('submit', async (e) => {
+    registerForm?.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const email = document.getElementById('registerEmail').value;
-      const password = document.getElementById('registerPassword').value;
-      const displayName = document.getElementById('registerName').value;
+      const email = (document.getElementById('registerEmail') as HTMLInputElement).value;
+      const password = (document.getElementById('registerPassword') as HTMLInputElement).value;
+      const displayName = (document.getElementById('registerName') as HTMLInputElement).value;
       const errorDiv = document.getElementById('registerError');
-      const btn = document.getElementById('registerBtn');
+      const successDiv = document.getElementById('registerSuccess');
+      const btn = document.getElementById('registerBtn') as HTMLButtonElement;
 
-      errorDiv.classList.add('hidden');
-      btn.disabled = true;
-      btn.textContent = 'Creating...';
+      if (errorDiv) errorDiv.classList.add('hidden');
+      if (successDiv) successDiv.classList.add('hidden');
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Creating...';
+      }
 
       try {
         const { error } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            data: {
-              display_name: displayName,
-            }
+            data: { display_name: displayName }
           }
         });
 
         if (error) throw error;
-
-        // If successful, prompt to check email or redirect to login
-        alert('Registration successful! You can now log in.');
-        switchTab(true);
-        registerForm.reset();
-
-      } catch (error) {
-        errorDiv.textContent = error.message;
-        errorDiv.classList.remove('hidden');
+        
+        if (successDiv) successDiv.classList.remove('hidden');
+        (registerForm as HTMLFormElement).reset();
+        setTimeout(() => switchTab(true), 2000);
+      } catch (error: any) {
+        if (errorDiv) {
+          errorDiv.textContent = error.message;
+          errorDiv.classList.remove('hidden');
+        }
       } finally {
-        btn.disabled = false;
-        btn.textContent = 'Create Account';
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = 'Create Account';
+        }
       }
     });
   </script>
