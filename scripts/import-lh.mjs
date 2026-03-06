@@ -13,26 +13,26 @@ if (!fs.existsSync(destDir)) {
 }
 
 const filesToProcess = [
-    '260 bircas_hashachar_1.html',
-    '270 bircas_hashachar_3a.html',
-    '280 bircas_hashachar_3b.html',
-    '290 bircas_hashachar_3c.html',
-    '400 bircas_hashachar_5a.html',
-    '410 bircas_hashachar_5b.html',
-    '420 bircas_hashachar_5c.html',
-    '430 bircas_hashachar_5d.html',
-    '440 bircas_hashachar_5e.html',
-    '450 bircas_hashachar_5f.html',
-    '460 bircas_hashachar_5g.html',
-    '470 bircas_hashachar_5h.html',
-    '480 bircas_hashachar_5i.html',
-    '490 bircas_hashachar_5j.html',
-    '500 bircas_hashachar_5k.html',
-    '510 birchos_hatorah_1_kaddish_1.html',
-    '520 krias_shma_1_2.html',
-    '530 krias_shma_3.html',
-    '540 krias_shma_4a.html',
-    '550 krias_shma_4b.html'
+    '560 krias_shma_5a.html',
+    '570 krias_shma_5b.html',
+    '580 krias_shma_5c.html',
+    '590 tefillah_1_3.html',
+    '600 tefillah_4a.html',
+    '610 tefillah_4b.html',
+    '620 tefillah_4c.html',
+    '630  tefillah_4d.html',
+    '640 tefillah_5_6 (1).html',
+    '650 nesias_kapayim_1.html',
+    '660 nesias_kapayim_2.html',
+    '670 nesias_kapayim_3.html',
+    '680 nesias_kapayim_4.html',
+    '690 nesias_kapayim_5a.html',
+    '700 nesias_kapayim_5b.html',
+    '710 nesias_kapayim_5c.html',
+    '720 nesias_kapayim_5d.html',
+    '730 nesias_kapayim_5e.html',
+    '740 nefilas_apayim_1.html',
+    '750 nefilas_apayim_4a.html'
 ];
 
 const sharedStyles = `
