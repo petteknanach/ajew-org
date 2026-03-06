@@ -4,7 +4,8 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.join(__dirname, '..');
-const sourceDir = 'C:\\Users\\Pettek\\Documents\\Translations\\Likutay Halachos\\Likutay Halachos - Orach Chaim - 1';
+const sourceDir = 'C:\\Users\\Pettek\\Documents\\Translations\\Likutay Halachos\\Likutay Halachos - Orach Chaim - 2';
+
 const destDir = path.join(rootDir, 'src', 'pages', 'teachings', 'likutay-halachos');
 
 // Ensure destination directory exists
@@ -13,18 +14,26 @@ if (!fs.existsSync(destDir)) {
 }
 
 const filesToProcess = [
-    '950 bais_haknnesses_3.html',
-    '955 bais_haknnesses_4.html',
-    '960 bais_haknnesses_5a.html',
-    '965 bais_haknnesses_5b.html',
-    '970 bais_haknnesses_5c.html',
-    '975 bais_haknnesses_5d.html',
-    '980 bais_haknnesses_5e.html',
-    '982 bais_haknnesses_5f.html',
-    '984 bais_haknnesses_6a.html',
-    '988 bais_haknnesses_6b.html',
-    '991 bais_haknnesses_6c.html',
-    '995 bais_haknnesses_6d.html'
+    '010 COMPLETE_Masa_Umasan_Halachos_1-2  have to fix masan in all the files.html',
+    '020 Likutay_Halachos_Masa_Umasan_3.html',
+    '030 Likutay_Halachos_Masa_Umasan_4_Part1.html',
+    '040 Likutay_Halachos_Masa_Umasan_4_Part2.html',
+    '045 Likutay_Halachos_Masa_Umasan_4_Part3 (1).html',
+    '050 Likutay_Halachos_Masa_Umasan_5 (1).html',
+    '055 Likutay_Halachos_Masa_Umasan_6 (1).html',
+    '060 Likutay_Halachos_Netilas_Yadayim_LSeudah_1 (1).html',
+    '065 Likutay_Halachos_Netilas_Yadayim_LSeudah_2.html',
+    '070 Likutay_Halachos_Netilas_Yadayim_LSeudah_3.html',
+    '075 Likutay_Halachos_Netilas_Yadayim_LSeudah_3_Part2.html',
+    '080 Likutay_Halachos_Netilas_Yadayim_LSeudah_4.html',
+    '085 Likutay_Halachos_Netilas_Yadayim_LSeudah_4_Part2.html',
+    '087  COMPLETE_Betzias_HaPas_Intro_9-10 - this is a repitition of the end of 085.html',
+    '090 Likutay_Halachos_Netilas_Yadayim_LSeudah_6 1-9.html',
+    '095 Likutay_Halachos netilas yadayim liseuda _Betzias_HaPas_Part1 10-21.html',
+    '100 Likutay_Halachos_Betzias_HaPas_Part2 22-31.html',
+    '110 Likutay_Halachos_Betzias_HaPas_Part3.html',
+    '115 Likutay_Halachos netlias yadayim liseuda _Betzias_HaPas_Part4 44-56.html',
+    '120 Likutay_Halachos netilas yadayim liseuda _Betzias_HaPas_Part5 57-68.html'
 ];
 
 const sharedStyles = `
