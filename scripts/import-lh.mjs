@@ -13,26 +13,18 @@ if (!fs.existsSync(destDir)) {
 }
 
 const filesToProcess = [
-    '760 nefilas_apayim_4b.html',
-    '770 nefilas_apayim_4c.html',
-    '780 nefilas_apayim_4d.html',
-    '790 nefilas_apayim_4e.html',
-    '800 nefilas_apayim_4f.html',
-    '810 nefilas_apayim_6a.html',
-    '820 nefilas_apayim_6b.html',
-    '830 nefilas_apayim_6c.html',
-    '840 kedushah_dsidra_1.html',
-    '850 krias_hatorah_1.html',
-    '860 krias_hatorah_3.html',
-    '870 krias_hatorah_4.html',
-    '880 krias_hatorah_6a.html',
-    '890 krias_hatorah_6b.html',
-    '900 krias_hatorah_6c.html',
-    '910 krias_hatorah_6d.html',
-    '920 krias_hatorah_6e.html',
-    '930 krias_hatorah_6f.html',
-    '940 bais_haknnesses_1.html',
-    '945 bais_haknnesses_2.html'
+    '950 bais_haknnesses_3.html',
+    '955 bais_haknnesses_4.html',
+    '960 bais_haknnesses_5a.html',
+    '965 bais_haknnesses_5b.html',
+    '970 bais_haknnesses_5c.html',
+    '975 bais_haknnesses_5d.html',
+    '980 bais_haknnesses_5e.html',
+    '982 bais_haknnesses_5f.html',
+    '984 bais_haknnesses_6a.html',
+    '988 bais_haknnesses_6b.html',
+    '991 bais_haknnesses_6c.html',
+    '995 bais_haknnesses_6d.html'
 ];
 
 const sharedStyles = `
