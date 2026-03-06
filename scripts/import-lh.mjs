@@ -13,26 +13,26 @@ if (!fs.existsSync(destDir)) {
 }
 
 const filesToProcess = [
-    '060 LH_OC1_NetilasYadayim1-2 (1) - this might include the two previous.html',
-    '070 nitteylas_yadayim_3.html',
-    '080 nitteylas_yadayim_4.html',
-    '090 tzitzis_1.html',
-    '100 tzitzis_2.html',
-    '110 tzitzis_3.html',
-    '120 tzitzis_4_5.html',
-    '130 tzitzis_7.html',
-    '140 tefillin_1_2_3.html',
-    '150 tefillin_4 - added diagram.html',
-    '160 tefillin_5a.html',
-    '170 tefillin_5b.html',
-    '180 tefillin_5c.html',
-    '190 tefillin_5d.html',
-    '200 tefillin_5e.html',
-    '210 tefillin_5f.html',
-    '220 tefillin_6a.html',
-    '230 tefillin_6b.html',
-    '240 tefillin_6c.html',
-    '250 tefillin_7.html'
+    '260 bircas_hashachar_1.html',
+    '270 bircas_hashachar_3a.html',
+    '280 bircas_hashachar_3b.html',
+    '290 bircas_hashachar_3c.html',
+    '400 bircas_hashachar_5a.html',
+    '410 bircas_hashachar_5b.html',
+    '420 bircas_hashachar_5c.html',
+    '430 bircas_hashachar_5d.html',
+    '440 bircas_hashachar_5e.html',
+    '450 bircas_hashachar_5f.html',
+    '460 bircas_hashachar_5g.html',
+    '470 bircas_hashachar_5h.html',
+    '480 bircas_hashachar_5i.html',
+    '490 bircas_hashachar_5j.html',
+    '500 bircas_hashachar_5k.html',
+    '510 birchos_hatorah_1_kaddish_1.html',
+    '520 krias_shma_1_2.html',
+    '530 krias_shma_3.html',
+    '540 krias_shma_4a.html',
+    '550 krias_shma_4b.html'
 ];
 
 const sharedStyles = `
