@@ -13,26 +13,26 @@ if (!fs.existsSync(destDir)) {
 }
 
 const filesToProcess = [
-    '560 krias_shma_5a.html',
-    '570 krias_shma_5b.html',
-    '580 krias_shma_5c.html',
-    '590 tefillah_1_3.html',
-    '600 tefillah_4a.html',
-    '610 tefillah_4b.html',
-    '620 tefillah_4c.html',
-    '630  tefillah_4d.html',
-    '640 tefillah_5_6 (1).html',
-    '650 nesias_kapayim_1.html',
-    '660 nesias_kapayim_2.html',
-    '670 nesias_kapayim_3.html',
-    '680 nesias_kapayim_4.html',
-    '690 nesias_kapayim_5a.html',
-    '700 nesias_kapayim_5b.html',
-    '710 nesias_kapayim_5c.html',
-    '720 nesias_kapayim_5d.html',
-    '730 nesias_kapayim_5e.html',
-    '740 nefilas_apayim_1.html',
-    '750 nefilas_apayim_4a.html'
+    '760 nefilas_apayim_4b.html',
+    '770 nefilas_apayim_4c.html',
+    '780 nefilas_apayim_4d.html',
+    '790 nefilas_apayim_4e.html',
+    '800 nefilas_apayim_4f.html',
+    '810 nefilas_apayim_6a.html',
+    '820 nefilas_apayim_6b.html',
+    '830 nefilas_apayim_6c.html',
+    '840 kedushah_dsidra_1.html',
+    '850 krias_hatorah_1.html',
+    '860 krias_hatorah_3.html',
+    '870 krias_hatorah_4.html',
+    '880 krias_hatorah_6a.html',
+    '890 krias_hatorah_6b.html',
+    '900 krias_hatorah_6c.html',
+    '910 krias_hatorah_6d.html',
+    '920 krias_hatorah_6e.html',
+    '930 krias_hatorah_6f.html',
+    '940 bais_haknnesses_1.html',
+    '945 bais_haknnesses_2.html'
 ];
 
 const sharedStyles = `
