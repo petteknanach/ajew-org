@@ -13,11 +13,26 @@ if (!fs.existsSync(destDir)) {
 }
 
 const filesToProcess = [
-    '010 LH_OC1_Complete_Hakdamah_Hashkamas1.html',
-    '020 LH_OC1_Hashkamas1_sections3-15.html',
-    '030 LH_OC1_Hashkamas2-3.html',
-    '040 LH_OC1_Hashkamas4.html',
-    '050 LH_OC1_Hashkamas5.html'
+    '060 LH_OC1_NetilasYadayim1-2 (1) - this might include the two previous.html',
+    '070 nitteylas_yadayim_3.html',
+    '080 nitteylas_yadayim_4.html',
+    '090 tzitzis_1.html',
+    '100 tzitzis_2.html',
+    '110 tzitzis_3.html',
+    '120 tzitzis_4_5.html',
+    '130 tzitzis_7.html',
+    '140 tefillin_1_2_3.html',
+    '150 tefillin_4 - added diagram.html',
+    '160 tefillin_5a.html',
+    '170 tefillin_5b.html',
+    '180 tefillin_5c.html',
+    '190 tefillin_5d.html',
+    '200 tefillin_5e.html',
+    '210 tefillin_5f.html',
+    '220 tefillin_6a.html',
+    '230 tefillin_6b.html',
+    '240 tefillin_6c.html',
+    '250 tefillin_7.html'
 ];
 
 const sharedStyles = `
