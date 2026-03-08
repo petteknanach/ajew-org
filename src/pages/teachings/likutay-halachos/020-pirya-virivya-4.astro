@@ -1,0 +1,179 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+const pageTitle = "Likutay Halachos - 020 Pirya Virivya 4";
+const pageDescription = "Breslov teachings from Likutay Halachos: 020 Pirya Virivya 4";
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+  <div class="page-banner">
+    <h1>Likutay Halachos</h1>
+    <p>020 Pirya Virivya 4</p>
+  </div>
+  
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap');
+  
+  .lh-container {
+    font-family: 'EB Garamond', 'Cormorant Garamond', Georgia, serif;
+    font-size: 18px; line-height: 1.85; color: #1a1a1a;
+    background-color: #faf8f4; text-align: justify;
+    max-width: 800px; margin: 0 auto; padding: 40px 20px 80px;
+  }
+  .lh-container .book-title { text-align: center; margin-bottom: 50px; padding-bottom: 30px; border-bottom: 2px solid #d4c9a8; }
+  .lh-container .book-title h1 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 2.2em; font-weight: 700; color: #3d3225; letter-spacing: 0.03em; margin-bottom: 4px; }
+  .lh-container .book-title .subtitle { font-size: 1.1em; color: #5a5040; font-style: italic; }
+  .lh-container .section-header { text-align: center; margin: 50px 0 30px; padding: 15px 0; border-top: 1px solid #d4c9a8; border-bottom: 1px solid #d4c9a8; }
+  .lh-container .section-header h2 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.65em; font-weight: 600; color: #3d3225; margin: 0; }
+  .lh-container .halacha-header { text-align: center; margin: 55px 0 20px; padding: 20px 0; border-top: 2px solid #8B7432; border-bottom: 2px solid #8B7432; }
+  .lh-container .halacha-header h2 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.65em; font-weight: 600; color: #3d3225; margin: 0; }
+  .lh-container .sa-excerpt { text-align: center; margin: 20px 0 35px; padding: 15px 25px; background: #f0ece3; border-left: 3px solid #8B7432; border-right: 3px solid #8B7432; font-size: 1.05em; font-style: italic; color: #3d3225; line-height: 1.9; }
+  .lh-container .ois { font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 700; font-size: 1.15em; color: #8B7432; margin-top: 35px; margin-bottom: 10px; display: block; }
+  .lh-container p { margin-bottom: 18px; text-indent: 1.5em; }
+  .lh-container p:first-of-type, .lh-container .ois + p, .lh-container .sa-excerpt + p, .lh-container .section-header + p, .lh-container .halacha-header + p { text-indent: 0; }
+  .lh-container .verse { font-style: italic; color: #3d3225; }
+  .lh-container .source { font-size: 0.88em; color: #5a5040; font-style: normal; }
+  .lh-container .heb { font-style: italic; }
+  .lh-container .bracket { color: #5a5040; font-size: 0.95em; }
+  .lh-container .insert { color: #5a5040; font-size: 0.93em; }
+  .lh-container .key { font-weight: 600; }
+  .lh-container .aramaic { font-style: italic; }
+  .lh-container .hagahah { font-variant: small-caps; font-weight: 600; color: #8B7432; }
+  .lh-container .closing { text-align: center; font-style: italic; margin: 25px 0; color: #3d3225; }
+  
+  .page-banner {
+    background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
+    color: white;
+    padding: 3rem 2rem;
+    text-align: center;
+    margin-bottom: 0;
+  }
+  .page-banner h1 {
+    font-family: var(--font-hebrew);
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    color: white;
+  }
+</style>
+
+  <div class="lh-container">
+    
+
+<div class="page-container">
+
+  <div class="lang-toggle">
+    <button class="active" onclick="setLang('en', this)">English</button>
+    <button onclick="setLang('he', this)">עברית</button>
+    <button onclick="setLang('both', this)">Both</button>
+  </div>
+
+  <div class="document">
+
+    <div class="book-title">Likutay Halachos — Even Hu'ezer</div>
+    <div class="section-title">Pirya viRivya &amp; Eishus — §4</div>
+
+    <!-- ═══════════════════════════════════════════════ -->
+    <!--  HALACHIC RULING (shown in both views)         -->
+    <!-- ═══════════════════════════════════════════════ -->
+
+    <div class="halachic-ruling">
+      <span class="hebrew">חַיָּב אָדָם לִשָּא אִשָּׁה כְּדֵי לִפְרוֹת וְלִרְבוֹת וְכוּ'</span>
+      A person is obligated to marry a woman in order to be fruitful and multiply, etc.
+    </div>
+    <div class="halachic-ruling">
+      <span class="hebrew">כָּל הַמִּשְׁפָּחוֹת בְּחֶזְקַת כְּשֵׁרוֹת וְכוּ'</span>
+      All families are presumed to be <em>kosher</em> [fit for marriage] — etc. — nevertheless, if you see two families
+      that are always quarreling with each other, or two individuals who are always quarreling with each other,
+      or you see a family that is perpetually contentious and argumentative, or you see a man who
+      multiplies disputes with everyone and is excessively brazen — one must be suspicious of them
+      and it is proper to distance oneself from them, for these are signs of disqualification, etc.
+      Similarly, one who possesses brazenness, cruelty, and hatred of people, etc. — one suspects
+      of him that he may perhaps be of Givonite origin.
+      <span class="source-attr"> — Thus far the wording of the <em>Shulchan Aruch</em>, Siman 2, Se'if 2.</span>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════ -->
+    <!--  ENGLISH BODY                                  -->
+    <!-- ═══════════════════════════════════════════════ -->
+    <div class="english-block">
+
+      <p>It emerges, then, that <b>the essential disqualification of a family is through the brazenness of the <em>sitra achara</em></b> [the Other Side]. For any family in which one sees <span class="hl-pink">excessive brazenness</span> and a disposition toward quarrel and strife — one must distance oneself from them so as not to marry among them. This is clarified through the Torah-teaching <em class="trans">"Chosom besoich Chosom"</em> [<em>Seal within Seal</em>] <span class="xref">(in §22)</span>. It is explained there that the essential <span class="hl-pink">distancing from holiness</span> comes about through the <em>azay fanim</em> [brazen-faced ones] of the generation, who exert themselves all the more to distance people from the <b>true <em>tzadikim</em></b> — who are the aspect of the <b>Seven Shepherds</b>, through whom flows the entire drawing-down of holy faith. Therefore, one can only draw close to holiness by means of <span class="hl-yellow"><em class="trans">azzus dikedushah</em> — the brazenness of holiness</span>. Every person must possess this holy brazenness in order to be able to stand against the evil brazenness of the <em>azay fanim</em>, who seize dominion for themselves — for <em>azzus malchusa bila taga</em> [brazenness is like royalty without a crown], etc. — see there.</p>
+
+      <p>And <em class="trans">azzus</em> [brazenness / bold strength] is of the aspect of <span class="hl-green"><em>voices / sounds</em> [<em class="trans">kolos</em>]</span> — the aspect of: <span class="verse-subtitle"><span class="hebrew-inline">הֵן יִתֵּן בְּקוֹלוֹ קוֹל עֹז</span><br>"Behold, He gives His voice — a voice of might" [<em>Tehillim</em> 68:34].</span> And to attain this holy brazenness, one must attain <b>joy</b>, which is achieved through the <span class="hl-blue">two crowns</span> — the aspects of <em class="trans">"Na'asseh viNishmah"</em> [<em>We will do and we will heed</em>] — which are the aspects of <em>Torah</em> and <em>Prayer</em>, <em>revealed</em> and <em>hidden</em>, etc.; the aspect of <em class="trans">Bereishis bara</em> [<em>In the beginning He created</em>] — <em>Father</em> and <em>Son</em>, etc. Every person must go from level to level, etc., until he is included within the initial point of Creation, etc., and thereafter when he is included in the <em>Ein Sof</em> [Infinite One], there the Torah is literally the Torah of Hashem, and Prayer is literally the Prayer of Hashem — see there.</p>
+
+      <p>And before ascending from level to level, a <span class="hl-yellow">descent must precede the ascent</span> — for the descent is the very purpose of the ascent, etc. — see there carefully.</p>
+
+      <p>For <b>the very purpose of Creation was for the sake of holy faith</b> — through which one knows of Him, may He be blessed, that for this reason everything was created, as is known. And this is the greatness of the obligation to marry a woman in order to be fruitful and multiply, for the sake of the world's sustenance — so that His faith and sovereignty be revealed through the <span class="hl-blue">multitude of human beings in every generation</span>, for they need to draw the holy faith from generation to generation, as it is written:</p>
+
+      <span class="verse-subtitle"><span class="hebrew-inline">וְעַד דֹּר וָדֹר אֱמוּנָתוֹ</span><br>"And to every generation, His faithfulness" [<em>Tehillim</em> 100:5].</span>
+      <span class="verse-subtitle"><span class="hebrew-inline">לְדֹר וָדֹר אֱמוּנָתֶךָ כּוֹנַנְתָּ אֶרֶץ וַתַּעֲמֹד</span><br>"To every generation Your faithfulness; You established the earth and it stands" [<em>Tehillim</em> 119:90].</span>
+
+      <p>The essential creation and sustaining of the world — that He established the earth and it stands — is for the sake of <em>"l'dor vador emunasecha"</em> — that they should draw faith from generation to generation. Therefore our Sages, of blessed memory, admonished to distance oneself greatly from the brazen-faced, so as not to marry among them as above — for the <em>azay fanim</em> distance from holy faith, as they are the chief obstructors from drawing close to the true <em>tzadikim</em>, through whom flows the essential drawing-down of holy faith. Therefore it is certainly forbidden to marry among them, for <b>the very purpose of marriage is to draw holy faith from generation to generation</b>, as above.</p>
+
+      <p>And therefore the <span class="hl-yellow">primary battle of a person is in the matter of this desire</span> — for there is the locus of <em class="trans">azzus dikedushah</em>, the aspect of <span class="hl-green"><em>"bo az, bo takpa"</em> — "in it is strength, in it is power"</span>, whose root flows from the <em>supernal holiness</em>, from the aspect of the two crowns mentioned above — <em>Na'asseh viNishmah</em>, Torah and Prayer, hidden and revealed, etc. — which are the aspect of <em>Bereishis bara</em>.</p>
+
+      <p>For the two crowns mentioned above are the aspects of the <span class="hl-blue">sun and the moon</span>, the aspects of <em>man</em> and <em>woman</em>, which are the aspects of <em>Torah</em> and <em>Prayer</em>, as is known — from which flows the holy brazenness, through which flows the essential drawing-down of holy faith, as above. But <em class="trans">"zo leumas zo asa ho'Elokim"</em> [<em>"this corresponding to that has G-d made"</em> — <em>Koheles</em> 7:14] — therefore there the brazenness of the <em>sitra achara</em> also principally takes hold. Hence it is a great battle.</p>
+
+      <p>And this is the aspect of <b><em class="trans">simchas choson vekalah</em></b> — <span class="hl-yellow">the joy of bride and groom</span> — which is a <em>mitzvah</em> to gladden them, as our Sages of blessed memory said. For through joy, one merits holy brazenness — the aspect of: <em>"ki chedvas Hashem hi mauzzechem"</em> — <span class="verse-subtitle"><span class="hebrew-inline">כִּי חֶדְוַת ה' הִיא מָעֻזְּכֶם</span><br>"For the joy of Hashem is your strength" [<em>Nechemyah</em> 8:10].</span> as is explained there.</p>
+
+      <p>And this is the aspect of what our Sages of blessed memory said: <em>"Any one who enjoys the feast of a bride and groom but does not gladden them has transgressed five voices [kolos]"</em>, etc. For <b>all the voices are the aspect of holy brazenness</b>, as above; and the essential <em>simchah</em> of the <em>choson</em> and <em>kalah</em> is for the sake of the holy voices — which are the aspect of <em class="trans">azzus dikedushah</em> — so that they merit to strengthen holy brazenness over the evil brazenness of the <em>sitra achara</em>, thereby meriting to draw down holy faith — which is the essential purpose of the <em>mitzvah</em> of marriage, as above.</p>
+
+      <p>And this is the aspect of the <span class="hl-blue">seven days of feasting</span> during which we gladden the bride and groom — the aspect of the <b>seven <em class="trans">brachos</em></b> [blessings] — in order to draw down through joy, which is the aspect of holy brazenness, the aspect of holy voices, the holiness of the <span class="hl-green">Seven Shepherds</span>, through whom flows the essential drawing-down of holy faith, as is explained there. Therefore there are seven days of feasting corresponding to the Seven Shepherds mentioned above.</p>
+
+      <p>And this is the aspect of the <b>seven <em class="trans">brachos</em></b> which are the aspect of holy voices — the aspect of holy brazenness — which are recited throughout all seven days of the feasting, in order to draw down the holiness of the Seven Shepherds through whom flows the essential drawing-down of holy faith as above. For <em>emunah</em> [faith] is the aspect of <em class="trans">brachos</em> [blessings], for it is the source of blessings, as it is written:</p>
+
+      <span class="verse-subtitle"><span class="hebrew-inline">אִישׁ אֱמוּנוֹת רַב בְּרָכוֹת</span><br>"A man of faith shall abound in blessings" [<em>Mishlei</em> 28:20], as is explained elsewhere.</span>
+
+    </div><!-- end english-block -->
+
+    <!-- ═══════════════════════════════════════════════ -->
+    <!--  HEBREW BLOCK                                  -->
+    <!-- ═══════════════════════════════════════════════ -->
+    <div class="hebrew-block" dir="rtl" style="line-height:2; font-size:1.05rem; text-align:right;">
+      <p>נִמְצָא, שֶׁעִקַּר פְּסוּל הַמִּשְׁפָּחָה הוּא עַל-יְדֵי עַזּוּת דְּסִטְרָא אָחֳרָא, שֶׁכָּל מִשְׁפָּחָה שֶׁרוֹאִין בָּהֶם שֶׁהֵם עַזֵּי פָּנִים בְּיוֹתֵר וּבַעֲלֵי רִיב וּמַצָּה, צְרִיכִין לְהִתְרַחֵק מֵהֶם שֶׁלֹּא לִשָּא מֵהֶם. וְזֶה מְבֹאָר עַל-פִּי הַתּוֹרָה "חוֹתָם בְּתוֹךְ חוֹתָם" (בְּסִימָן כב)...</p>
+      <p style="font-style:italic; color:#888; font-size:0.85rem; text-align:center;">[הטקסט המלא לעיל בלשון המחבר]</p>
+    </div>
+
+    <hr class="divider">
+
+    <!-- ═══════════════════════════════════════════════ -->
+    <!--  TRANSLATOR'S SUMMARY                          -->
+    <!-- ═══════════════════════════════════════════════ -->
+    <div class="summary-box">
+      <h3>Translator's Summary — Pirya viRivya &amp; Eishus §4</h3>
+
+      <p>This section opens from the halachic ruling (Shulchan Aruch, Even Hu'ezer 2:2) warning against marrying into families displaying chronic quarrelsomeness, brazenness, or cruelty. Reb Nosson explains the <em>spiritual mechanics</em> behind this ruling through the lens of Rebbe Nachman's Torah <em>"Chosom besoich Chosom"</em> (Likutay Moharan I, §22).</p>
+
+      <br>
+      <div class="flowchart">
+        <div class="flow-node highlight">Purpose of Marriage: To draw holy <em>Emunah</em> (Faith) from generation to generation</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-node">The enemy: <em>Azay Fanim</em> — the chronically brazen-faced, who repel people from the true <em>tzadik</em></div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-node">Antidote: <em>Azzus diKedushah</em> — holy boldness, which flows from <b>Joy</b></div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-node">Two Crowns: Torah &amp; Prayer (<em>Na'asseh viNishmah</em>) = Husband &amp; Wife = Sun &amp; Moon</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-node highlight">Wedding Joy (<em>Simchas Choson viKalah</em>) is a <em>mitzvah</em> precisely to generate this holy strength — 7 days / 7 blessings / 7 Shepherds</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-node">"A man of faith shall abound in blessings" — <em>Emunah</em> is the root of all blessing</div>
+      </div>
+
+      <br>
+      <p><strong style="color:#e8c84b;">Key concepts:</strong> <em>Azzus dikedushah</em> (holy boldness) • <em>Kolos</em> (voices/sounds as divine power) • Seven Shepherds as channel of faith • Joy as the engine of holiness • Marriage as a vehicle for transmitting G-d's presence across generations.</p>
+    </div>
+
+  </div><!-- end document -->
+</div><!-- end page-container -->
+
+<script>
+function setLang(lang, btn) {
+  document.querySelectorAll('.lang-toggle button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.body.classList.remove('show-hebrew', 'show-both');
+  if (lang === 'he') document.body.classList.add('show-hebrew');
+  if (lang === 'both') document.body.classList.add('show-both');
+}
+</script>
+
+  </div>
+</Layout>
