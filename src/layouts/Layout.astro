@@ -20,23 +20,67 @@ const ogImage = new URL(image, Astro.site);
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Language" content="en" />
     <meta name="description" content={description} />
+    <meta name="keywords" content="Rabbi Nachman, Breslov, Na Nach, Nanach, Judaism, Torah, Likutay Moharan, Likutay Halachos, Likutay Tefilos, Hisbodidus" />
+    <meta name="author" content="Pettek Nanach" />
+    <meta name="robots" content="index, follow" />
+    <meta name="googlebot" content="index, follow" />
     <link rel="canonical" href={canonicalURL} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title} | A Jew</title>
     
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:site_name" content="A Jew - Rabbi Nachman's Factory of Judaism" />
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={title} />
     
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:site" content="@ajeworg" />
+    
+    <!-- Additional Meta Tags -->
+    <meta name="theme-color" content="#4a90e2" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="format-detection" content="telephone=no" />
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "A Jew - Rabbi Nachman's Factory of Judaism",
+        "url": "https://ajew.org",
+        "description": "Explore the teachings of Rabbi Nachman of Breslov, Na Nach movement, Jewish wisdom, Torah insights, and spiritual guidance.",
+        "publisher": {
+          "@type": "Organization",
+          "name": "A Jew",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://ajew.org/logo.svg"
+          }
+        },
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://ajew.org/search?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      }
+    </script>
+    
+    <!-- Additional Structured Data -->
+    <link rel="alternate" type="application/json+oembed" href="/structured-data.json" title="Structured Data" />
     
     <!-- Preconnect for performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -311,3 +355,4 @@ const ogImage = new URL(image, Astro.site);
     }
   }
 </style>
+

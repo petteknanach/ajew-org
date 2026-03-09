@@ -7,7 +7,13 @@ const pageDescription = "Breslov prayers from Likutay Tefilos: Likutay Tefilos 2
 <Layout title={pageTitle} description={pageDescription}>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Cinzel:wght@400;600;700&family=Noto+Serif+Hebrew&display=swap');
-  .tefilos-container { --ink:#1c1c2e;--parchment:#f7f3ea;--parchment2:#eee8d5;--gold:#a07830;--gold-light:#c8a050;--sapphire:#1e3a5f;--sapphire2:#2e5580;--sapphire-pale:#dde8f5;--ruby:#7a1a2e;--border:#b89860;--muted:#5a5040;--verse-color:#1e3a5f;--source-color:#888070; font-family:'EB Garamond',Georgia,serif; font-size:18px;line-height:2;color:var(--ink); background:var(--parchment);padding-bottom:80px; }
+  
+  .tefilos-container {
+    --ink:#1c1c2e;--parchment:#f7f3ea;--parchment2:#eee8d5;--gold:#a07830;--gold-light:#c8a050;--sapphire:#1e3a5f;--sapphire2:#2e5580;--sapphire-pale:#dde8f5;--ruby:#7a1a2e;--border:#b89860;--muted:#5a5040;--verse-color:#1e3a5f;--source-color:#888070;
+    font-family:'EB Garamond',Georgia,serif;
+    font-size:18px;line-height:2;color:var(--ink);
+    background:var(--parchment);padding-bottom:80px;
+  }
   .tefilos-container #masthead{background:linear-gradient(160deg,#0d2240 0%,#1e3a5f 45%,#0d2240 100%);color:#e8dfc0;text-align:center;padding:48px 24px 36px;border-bottom:5px solid var(--gold);position:relative;overflow:hidden;}
   .tefilos-container #masthead::before{content:'';position:absolute;inset:0;background-image:repeating-linear-gradient(90deg,transparent,transparent 60px,rgba(255,255,255,.025) 60px,rgba(255,255,255,.025) 61px);pointer-events:none;}
   .tefilos-container .series-label{font-family:'Cinzel',serif;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--gold-light);margin-bottom:10px;}
@@ -36,7 +42,7 @@ const pageDescription = "Breslov prayers from Likutay Tefilos: Likutay Tefilos 2
   .tefilos-container footer{text-align:center;margin-top:60px;padding:24px;font-size:.85em;color:var(--muted);border-top:1px solid var(--border);font-family:'Cinzel',serif;letter-spacing:1px;}
   .tefilos-container .nanach-f{color:var(--gold);font-weight:700;font-size:1.05em;display:block;margin-top:8px;}
 </style>
-<script is:inline>function tog(id){var el=document.getElementById(id);if(el)el.classList.toggle('open');}</script>
+<script is:inline>function tog(id){var el=document.getElementById(id);if(el)el.classList.toggle("open");}</script>
   <div class="tefilos-container">
 
 <div id="masthead">
