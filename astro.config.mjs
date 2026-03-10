@@ -7,10 +7,7 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://ajew.org',
   output: 'static',
-  adapter: vercel({
-    // Static mode (now behaves like hybrid)
-    includeFiles: ['public/**/*'],
-  }),
+  adapter: vercel(),
 
   integrations: [sitemap({
     changefreq: 'weekly',
