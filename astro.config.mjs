@@ -6,9 +6,9 @@ import sitemap from '@astrojs/sitemap';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://ajew.org',
-  output: 'hybrid',
+  output: 'static',
   adapter: vercel({
-    // Hybrid mode: static by default, server when needed
+    // Static mode (now behaves like hybrid)
     includeFiles: ['public/**/*'],
   }),
 

@@ -7,16 +7,23 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "search": "node gen-search-index.js"
+    "search": "node gen-search-index.js",
+    "generate-index": "node enhanced-search-index-generator-simple.cjs",
+    "start-api": "node enhanced-search-api-simple.cjs",
+    "search-dev": "concurrently \"npm run generate-index\" \"npm run start-api\""
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.0",
-    "@astrojs/vercel": "^9.0.4",
+    "@astrojs/vercel": "^9.0.5",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.97.0",
     "astro": "^5.17.1",
+    "concurrently": "^9.2.1",
+    "cors": "^2.8.6",
     "dotenv": "^17.3.1",
+    "express": "^5.2.1",
     "lunr": "^2.3.9",
+    "lunr-languages": "^1.14.0",
     "stripe": "^20.3.1"
   }
 }
