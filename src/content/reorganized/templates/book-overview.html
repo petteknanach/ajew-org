@@ -1,0 +1,621 @@
+<!-- Book Overview Template -->
+<div class="book-overview">
+  <!-- Breadcrumb Navigation -->
+  {{> breadcrumb-navigation breadcrumbs=breadcrumbs}}
+  
+  <!-- Book Header -->
+  <div class="book-header">
+    <div class="book-cover">
+      {{#if coverImage}}
+      <img src="{{coverImage}}" alt="{{title}} Cover" class="cover-image">
+      {{else}}
+      <div class="cover-placeholder">
+        <span class="placeholder-icon">📖</span>
+        <span class="placeholder-text">{{title}}</span>
+      </div>
+      {{/if}}
+    </div>
+    
+    <div class="book-info">
+      <h1 class="book-title">{{title}}</h1>
+      {{#if hebrewTitle}}
+      <h2 class="book-hebrew-title">{{hebrewTitle}}</h2>
+      {{/if}}
+      
+      {{#if author}}
+      <div class="book-author">
+        <span class="author-label">Author:</span>
+        <span class="author-name">{{author}}</span>
+        {{#if hebrewAuthor}}
+        <span class="author-hebrew">({{hebrewAuthor}})</span>
+        {{/if}}
+      </div>
+      {{/if}}
+      
+      {{#if compiler}}
+      <div class="book-compiler">
+        <span class="compiler-label">Compiled by:</span>
+        <span class="compiler-name">{{compiler}}</span>
+      </div>
+      {{/if}}
+      
+      <div class="book-meta">
+        {{#if datePublished}}
+        <div class="meta-item">
+          <span class="meta-icon">📅</span>
+          <span class="meta-label">Published:</span>
+          <span class="meta-value">{{datePublished}}</span>
+        </div>
+        {{/if}}
+        
+        {{#if language}}
+        <div class="meta-item">
+          <span class="meta-icon">🌐</span>
+          <span class="meta-label">Language:</span>
+          <span class="meta-value">{{language}}</span>
+        </div>
+        {{/if}}
+        
+        {{#if category}}
+        <div class="meta-item">
+          <span class="meta-icon">📂</span>
+          <span class="meta-label">Category:</span>
+          <span class="meta-value">{{category}}</span>
+        </div>
+        {{/if}}
+      </div>
+      
+      <div class="book-actions">
+        <button class="action-btn btn-read" data-action="start-reading">
+          <span class="btn-icon">📖</span>
+          <span class="btn-text">Start Reading</span>
+        </button>
+        
+        <button class="action-btn btn-download" data-action="download">
+          <span class="btn-icon">⬇️</span>
+          <span class="btn-text">Download</span>
+        </button>
+        
+        <button class="action-btn btn-share" data-action="share">
+          <span class="btn-icon">🔗</span>
+          <span class="btn-text">Share</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Book Description -->
+  <div class="book-description-section">
+    <h3 class="section-title">About This Book</h3>
+    <div class="description-content">
+      {{description}}
+    </div>
+  </div>
+  
+  <!-- Key Themes -->
+  {{#if keyThemes}}
+  <div class="themes-section">
+    <h3 class="section-title">Key Themes</h3>
+    <div class="themes-grid">
+      {{#each keyThemes}}
+      <div class="theme-card">
+        <div class="theme-icon">{{@index}}</div>
+        <div class="theme-content">{{this}}</div>
+      </div>
+      {{/each}}
+    </div>
+  </div>
+  {{/if}}
+  
+  <!-- Book Structure -->
+  {{#if structure}}
+  <div class="structure-section">
+    <h3 class="section-title">Book Structure</h3>
+    <div class="structure-content">
+      {{#if structure.parts}}
+      <div class="parts-overview">
+        <h4>Parts</h4>
+        <div class="parts-list">
+          {{#each structure.parts}}
+          <div class="part-item">
+            <div class="part-header">
+              <span class="part-title">{{title}}</span>
+              <span class="part-stats">{{chapters}} chapters</span>
+            </div>
+            <div class="part-description">{{description}}</div>
+          </div>
+          {{/each}}
+        </div>
+      </div>
+      {{/if}}
+      
+      {{#if structure.totalChapters}}
+      <div class="stats-overview">
+        <h4>Statistics</h4>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-value">{{structure.totalChapters}}</div>
+            <div class="stat-label">Total Chapters</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">{{structure.totalPages}}</div>
+            <div class="stat-label">Total Pages</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">{{structure.completionRate}}%</div>
+            <div class="stat-label">Completion Rate</div>
+          </div>
+        </div>
+      </div>
+      {{/if}}
+    </div>
+  </div>
+  {{/if}}
+  
+  <!-- Chapter Listing -->
+  {{#if chapters}}
+  <div class="chapters-section">
+    <div class="section-header">
+      <h3 class="section-title">Chapters</h3>
+      <div class="section-actions">
+        <button class="action-btn btn-expand-all" data-action="expand-all">
+          <span class="btn-icon">📖</span>
+          <span class="btn-text">Expand All</span>
+        </button>
+        <button class="action-btn btn-collapse-all" data-action="collapse-all">
+          <span class="btn-icon">📕</span>
+          <span class="btn-text">Collapse All</span>
+        </button>
+      </div>
+    </div>
+    
+    <div class="chapters-list">
+      {{#each chapters}}
+      <div class="chapter-item" data-chapter="{{id}}">
+        <div class="chapter-header">
+          <div class="chapter-info">
+            <span class="chapter-number">{{number}}</span>
+            <div class="chapter-titles">
+              <span class="chapter-title">{{title}}</span>
+              {{#if hebrewTitle}}
+              <span class="chapter-hebrew-title">{{hebrewTitle}}</span>
+              {{/if}}
+            </div>
+          </div>
+          <div class="chapter-actions">
+            <button class="action-btn btn-read-chapter" data-action="read-chapter" data-chapter="{{id}}">
+              <span class="btn-icon">👁️</span>
+              <span class="btn-text">Read</span>
+            </button>
+            <button class="action-btn btn-expand" data-action="toggle-chapter">
+              <span class="btn-icon">▼</span>
+            </button>
+          </div>
+        </div>
+        
+        <div class="chapter-details" style="display: none;">
+          {{#if description}}
+          <div class="chapter-description">
+            <p>{{description}}</p>
+          </div>
+          {{/if}}
+          
+          {{#if themes}}
+          <div class="chapter-themes">
+            <strong>Themes:</strong>
+            {{#each themes}}
+            <span class="theme-tag">{{this}}</span>
+            {{/each}}
+          </div>
+          {{/if}}
+          
+          {{#if keyVerses}}
+          <div class="chapter-verses">
+            <strong>Key Verses:</strong>
+            {{#each keyVerses}}
+            <div class="verse-item">{{this}}</div>
+            {{/each}}
+          </div>
+          {{/if}}
+          
+          <div class="chapter-progress">
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: {{progress}}%"></div>
+            </div>
+            <span class="progress-text">{{progress}}% read</span>
+          </div>
+        </div>
+      </div>
+      {{/each}}
+    </div>
+  </div>
+  {{/if}}
+  
+  <!-- Navigation -->
+  {{> navigation-buttons navigation=navigation}}
+</div>
+
+<style>
+.book-overview {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Book Header */
+.book-header {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 3rem;
+  margin: 2rem 0 3rem;
+  align-items: start;
+}
+
+.book-cover {
+  position: sticky;
+  top: 2rem;
+}
+
+.cover-image {
+  width: 100%;
+  height: auto;
+  border-radius: 1rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.cover-placeholder {
+  width: 100%;
+  aspect-ratio: 2/3;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.placeholder-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.placeholder-text {
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+  padding: 0 1rem;
+}
+
+.book-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.book-title {
+  font-size: 3rem;
+  font-weight: 800;
+  color: #111827;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.book-hebrew-title {
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: #4b5563;
+  margin: 0;
+  font-family: 'Frank Ruhl Libre', 'David', 'Times New Roman', serif;
+  direction: rtl;
+  line-height: 1.3;
+}
+
+.book-author, .book-compiler {
+  font-size: 1.125rem;
+  color: #6b7280;
+}
+
+.author-label, .compiler-label {
+  font-weight: 600;
+  color: #374151;
+}
+
+.author-hebrew {
+  font-family: 'Frank Ruhl Libre', 'David', 'Times New Roman', serif;
+  direction: rtl;
+  margin-left: 0.5rem;
+}
+
+.book-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin: 1rem 0;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.meta-icon {
+  font-size: 1.25rem;
+}
+
+.meta-label {
+  font-weight: 600;
+  color: #374151;
+}
+
+.meta-value {
+  color: #6b7280;
+}
+
+.book-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-read {
+  background: #3b82f6;
+  color: white;
+}
+
+.btn-read:hover {
+  background: #2563eb;
+  transform: translateY(-2px);
+}
+
+.btn-download {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.btn-download:hover {
+  background: #e5e7eb;
+  transform: translateY(-2px);
+}
+
+.btn-share {
+  background: #10b981;
+  color: white;
+}
+
+.btn-share:hover {
+  background: #059669;
+  transform: translateY(-2px);
+}
+
+/* Sections */
+.section-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 3rem 0 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 3px solid #3b82f6;
+}
+
+.book-description-section {
+  margin: 2rem 0;
+}
+
+.description-content {
+  font-size: 1.125rem;
+  line-height: 1.7;
+  color: #4b5563;
+}
+
+/* Themes */
+.themes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.theme-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: #f8fafc;
+  border-radius: 0.75rem;
+  border-left: 4px solid #3b82f6;
+}
+
+.theme-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  background: #3b82f6;
+  color: white;
+  border-radius: 50%;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.theme-content {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #374151;
+}
+
+/* Structure */
+.structure-content {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 3rem;
+  margin: 1.5rem 0;
+}
+
+.parts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.part-item {
+  padding: 1.5rem;
+  background: #f8fafc;
+  border-radius: 0.75rem;
+  border: 1px solid #e5e7eb;
+}
+
+.part-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.part-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.part-stats {
+  font-size: 0.875rem;
+  color: #6b7280;
+  background: #e5e7eb;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+}
+
+.part-description {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: #4b5563;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.stat-card {
+  padding: 1.5rem;
+  background: #f8fafc;
+  border-radius: 0.75rem;
+  text-align: center;
+  border: 1px solid #e5e7eb;
+}
+
+.stat-value {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #3b82f6;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 0.5rem;
+}
+
+/* Chapters */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.section-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.chapters-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.chapter-item {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.chapter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.chapter-header:hover {
+  background: #f9fafb;
+}
+
+.chapter-info {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.chapter-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  background: #3b82f6;
+  color: white;
+  border-radius: 50%;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.chapter-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.chapter-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.chapter-hebrew-title {
+  font-size: 1rem;
+  color: #4b5563;
+  font-family: 'Frank Ruhl Libre', 'David', 'Times New Roman', serif;
+  direction: rtl;
+}
+
+.chapter-actions {
+  display: flex;
+  gap: 0.5rem

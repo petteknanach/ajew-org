@@ -1,62 +1,42 @@
 ---
 import Layout from '../layouts/Layout.astro';
 
-const searchIndex = await fetch('/data/search-index.json').then(r => r.json()).catch(() => null);
-const bookCount = searchIndex?.books?.length || 0;
-const teachingsCount = searchIndex?.teachings?.length || 0;
+// Meta refresh for redirection
 ---
 
 <Layout title="Search" description="Search all Breslov books and teachings">
-  <div class="search-page">
-    <header class="page-header">
-      <h1>חיפוש</h1>
-      <p class="subtitle">Search Books & Teachings</p>
-      <p class="stats">{bookCount} books • {teachingsCount} teachings indexed</p>
-    </header>
-
-    <div class="container">
-      <div class="search-box">
-        <input 
-          type="text" 
-          id="searchInput" 
-          placeholder="Search... חפש..."
-          dir="auto"
-          autocomplete="off"
-        />
-        <button id="searchBtn">🔍</button>
-      </div>
-
-      <div class="filters">
-        <label>
-          <input type="checkbox" id="searchBooks" checked />
-          Books (ספרים)
-        </label>
-        <label>
-          <input type="checkbox" id="searchTeachings" checked />
-          Teachings (דרשות)
-        </label>
-      </div>
-
-      <div id="results" class="results"></div>
-
-      <div class="external-tools">
-        <h2>Jewish Learning Tools</h2>
-        <div class="search-note">
-          <strong>Note:</strong> Torah Map Explorer works with Hebrew words only.
-        </div>
-        <div class="tool-frame">
-          <iframe 
-            src="https://daven613.github.io/mapjs/" 
-            width="100%" 
-            height="600" 
-            frameborder="0"
-            title="MapJS - Jewish Learning Map"
-          ></iframe>
-        </div>
-      </div>
-    </div>
+  <meta http-equiv="refresh" content="0;url=/search-enhanced" />
+  <div class="redirect-message">
+    <h1>Redirecting to Enhanced Search...</h1>
+    <p>If you are not redirected automatically, <a href="/search-enhanced">click here</a>.</p>
   </div>
+  
+  <script>
+    window.location.href = '/search-enhanced';
+  </script>
 </Layout>
+
+<style>
+  .redirect-message {
+    text-align: center;
+    padding: 4rem;
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .redirect-message h1 {
+    color: #1a365d;
+    margin-bottom: 1rem;
+  }
+  
+  .redirect-message a {
+    color: #c53030;
+    text-decoration: underline;
+  }
+</style>
 
 <script>
   let searchIndex = null;

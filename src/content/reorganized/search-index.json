@@ -1,0 +1,61 @@
+{
+  "searchIndex": {
+    "version": "1.0",
+    "lastUpdated": "2026-03-10",
+    "totalDocuments": 0,
+    "categories": ["rabbainu", "rabbi-nussun", "saba"],
+    "fields": ["title", "hebrewTitle", "author", "content", "themes", "keywords"],
+    "documents": []
+  },
+  "searchConfig": {
+    "fuzzyMatching": true,
+    "minQueryLength": 2,
+    "maxResults": 50,
+    "highlightFields": ["title", "content"],
+    "weights": {
+      "title": 10,
+      "hebrewTitle": 8,
+      "author": 5,
+      "themes": 3,
+      "keywords": 2,
+      "content": 1
+    }
+  },
+  "categories": {
+    "rabbainu": {
+      "name": "Rabbainu (Rabbi Nachman)",
+      "description": "Works by Rabbi Nachman of Breslov",
+      "books": ["likutay-moharan", "sippurei-maasiyos", "sefer-hamidos", "other-works"]
+    },
+    "rabbi-nussun": {
+      "name": "Rabbi Nussun (Rabbi Natan)",
+      "description": "Works by Rabbi Natan Sternhartz of Nemirov",
+      "books": ["likutay-halachos", "likutay-tefilos", "chayey-moharan", "other-transcriptions"]
+    },
+    "saba": {
+      "name": "Saba (Disciples)",
+      "description": "Works by disciples and later Breslov teachers",
+      "books": ["collected-teachings", "stories-and-anecdotes", "explanatory-works"]
+    }
+  },
+  "searchTemplates": {
+    "simple": {
+      "template": "search-simple.html",
+      "description": "Simple search interface with results list"
+    },
+    "advanced": {
+      "template": "search-advanced.html",
+      "description": "Advanced search with filters and facets"
+    },
+    "embedded": {
+      "template": "search-embedded.html",
+      "description": "Embedded search bar for headers"
+    }
+  },
+  "apiEndpoints": {
+    "search": "/api/search",
+    "suggest": "/api/suggest",
+    "autocomplete": "/api/autocomplete",
+    "indexStatus": "/api/index-status"
+  }
+}

@@ -17,8 +17,8 @@ function hebrewTokenizer(token) {
   return [withoutNikud.toLowerCase()];
 }
 
-// Register Hebrew tokenizer
-lunr.tokenizer.registerFunction(hebrewTokenizer, 'hebrewTokenizer');
+// Custom pipeline function for Hebrew
+lunr.Pipeline.registerFunction(hebrewTokenizer, 'hebrewTokenizer');
 
 // Get all book files
 const booksDir = path.join(rootDir, 'public', 'books');

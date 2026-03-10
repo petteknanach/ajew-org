@@ -1,0 +1,584 @@
+---
+interface Props {
+  compact?: boolean;
+  showFilters?: boolean;
+  autoFocus?: boolean;
+}
+
+const { compact = false, showFilters = true, autoFocus = true } = Astro.props;
+---
+
+<div class={`enhanced-search ${compact ? 'compact' : ''}`}>
+  <div class="search-container">
+    <form id="searchForm" class="search-form" @submit.prevent="handleSearch">
+      <div class="search-input-wrapper">
+        <input
+          type="text"
+          id="searchInput"
+          class="search-input"
+          placeholder="Search across all works... חפש בכל הספרים..."
+          dir="auto"
+          autocomplete="off"
+          :autofocus="autoFocus"
+          aria-label="Search"
+        />
+        <button type="submit" class="search-button" aria-label="Search">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </button>
+      </div>
+      
+      {showFilters && (
+        <div class="quick-filters">
+          <div class="filter-group">
+            <label class="filter-label">
+              <input type="checkbox" id="filterBooks" checked />
+              <span class="filter-text">Books (ספרים)</span>
+            </label>
+            <label class="filter-label">
+              <input type="checkbox" id="filterTeachings" checked />
+              <span class="filter-text">Teachings (דרשות)</span>
+            </label>
+          </div>
+          
+          <div class="search-tips">
+            <span class="tips-label">Search tips:</span>
+            <span class="tip">"exact phrase"</span>
+            <span class="tip">AND / OR / NOT</span>
+            <span class="tip">word* (wildcard)</span>
+            <span class="tip">word~2 (fuzzy)</span>
+          </div>
+        </div>
+      )}
+    </form>
+    
+    <div id="searchSuggestions" class="search-suggestions" style="display: none;"></div>
+  </div>
+  
+  {showFilters && (
+    <div class="advanced-filters" id="advancedFilters">
+      <div class="filters-header">
+        <h3>Advanced Filters</h3>
+        <button type="button" class="toggle-filters" id="toggleFilters">
+          Show Filters
+        </button>
+      </div>
+      
+      <div class="filters-content" id="filtersContent" style="display: none;">
+        <div class="filter-section">
+          <h4>Content Type</h4>
+          <div class="filter-options">
+            <label>
+              <input type="checkbox" name="type" value="book" checked />
+              <span>Books</span>
+            </label>
+            <label>
+              <input type="checkbox" name="type" value="teaching" checked />
+              <span>Teachings</span>
+            </label>
+            <label>
+              <input type="checkbox" name="type" value="story" />
+              <span>Stories</span>
+            </label>
+            <label>
+              <input type="checkbox" name="type" value="prayer" />
+              <span>Prayers</span>
+            </label>
+          </div>
+        </div>
+        
+        <div class="filter-section">
+          <h4>Category</h4>
+          <div class="filter-options" id="categoryFilters">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+        
+        <div class="filter-section">
+          <h4>Language</h4>
+          <div class="filter-options">
+            <label>
+              <input type="radio" name="language" value="" checked />
+              <span>All Languages</span>
+            </label>
+            <label>
+              <input type="radio" name="language" value="hebrew" />
+              <span>Hebrew Only</span>
+            </label>
+            <label>
+              <input type="radio" name="language" value="english" />
+              <span>English Only</span>
+            </label>
+          </div>
+        </div>
+        
+        <div class="filter-section">
+          <h4>Author</h4>
+          <select id="authorFilter" class="filter-select">
+            <option value="">All Authors</option>
+            <option value="Rabbi Nachman of Breslov">Rabbi Nachman of Breslov</option>
+            <option value="Rabbi Natan of Breslov">Rabbi Natan of Breslov</option>
+            <option value="Saba">Saba</option>
+          </select>
+        </div>
+        
+        <div class="filter-actions">
+          <button type="button" class="apply-filters" id="applyFilters">
+            Apply Filters
+          </button>
+          <button type="button" class="reset-filters" id="resetFilters">
+            Reset All
+          </button>
+        </div>
+      </div>
+    </div>
+  )}
+</div>
+
+<script>
+  // Search configuration
+  const SEARCH_CONFIG = {
+    apiUrl: 'http://localhost:3001/api/search',
+    suggestionsUrl: 'http://localhost:3001/api/search/suggest',
+    minCharsForSuggestions: 2,
+    debounceTime: 300,
+    maxSuggestions: 10
+  };
+
+  // State management
+  let searchState = {
+    query: '',
+    filters: {
+      type: ['book', 'teaching'],
+      category: [],
+      language: '',
+      author: ''
+    },
+    suggestions: [],
+    isLoading: false
+  };
+
+  // DOM elements
+  let searchInput, searchForm, suggestionsContainer;
+  let filtersContent, toggleFiltersBtn, applyFiltersBtn, resetFiltersBtn;
+
+  // Initialize
+  document.addEventListener('DOMContentLoaded', () => {
+    // Get DOM elements
+    searchInput = document.getElementById('searchInput');
+    searchForm = document.getElementById('searchForm');
+    suggestionsContainer = document.getElementById('searchSuggestions');
+    
+    if (document.getElementById('advancedFilters')) {
+      filtersContent = document.getElementById('filtersContent');
+      toggleFiltersBtn = document.getElementById('toggleFilters');
+      applyFiltersBtn = document.getElementById('applyFilters');
+      resetFiltersBtn = document.getElementById('resetFilters');
+    }
+
+    // Load categories
+    loadCategories();
+
+    // Event listeners
+    setupEventListeners();
+
+    // Check for URL parameters
+    checkUrlParameters();
+  });
+
+  // Load categories from API
+  async function loadCategories() {
+    try {
+      const response = await fetch('http://localhost:3001/api/search/health');
+      const data = await response.json();
+      
+      const categoryFilters = document.getElementById('categoryFilters');
+      if (categoryFilters && data.categories) {
+        const categories = Object.keys(data.categories).sort();
+        
+        categories.forEach(category => {
+          const label = document.createElement('label');
+          label.innerHTML = `
+            <input type="checkbox" name="category" value="${category}" />
+            <span>${category} (${data.categories[category]})</span>
+          `;
+          categoryFilters.appendChild(label);
+        });
+      }
+    } catch (error) {
+      console.error('Failed to load categories:', error);
+    }
+  }
+
+  // Setup event listeners
+  function setupEventListeners() {
+    // Search input events
+    let debounceTimer;
+    searchInput.addEventListener('input', (e) => {
+      searchState.query = e.target.value.trim();
+      
+      clearTimeout(debounceTimer);
+      
+      if (searchState.query.length >= SEARCH_CONFIG.minCharsForSuggestions) {
+        debounceTimer = setTimeout(() => {
+          fetchSuggestions(searchState.query);
+        }, SEARCH_CONFIG.debounceTime);
+      } else {
+        hideSuggestions();
+      }
+    });
+
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        navigateSuggestions(e.key);
+      } else if (e.key === 'Enter' && !suggestionsContainer.querySelector('.suggestion-item.highlighted')) {
+        performSearch();
+      } else if (e.key === 'Escape') {
+        hideSuggestions();
+      }
+    });
+
+    searchInput.addEventListener('focus', () => {
+      if (searchState.query.length >= SEARCH_CONFIG.minCharsForSuggestions) {
+        fetchSuggestions(searchState.query);
+      }
+    });
+
+    // Form submission
+    searchForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      performSearch();
+    });
+
+    // Click outside to hide suggestions
+    document.addEventListener('click', (e) => {
+      if (!searchForm.contains(e.target)) {
+        hideSuggestions();
+      }
+    });
+
+    // Advanced filters
+    if (toggleFiltersBtn) {
+      toggleFiltersBtn.addEventListener('click', toggleFilters);
+    }
+    
+    if (applyFiltersBtn) {
+      applyFiltersBtn.addEventListener('click', applyFilters);
+    }
+    
+    if (resetFiltersBtn) {
+      resetFiltersBtn.addEventListener('click', resetFilters);
+    }
+
+    // Quick filters
+    const quickFilters = ['filterBooks', 'filterTeachings'];
+    quickFilters.forEach(filterId => {
+      const filter = document.getElementById(filterId);
+      if (filter) {
+        filter.addEventListener('change', updateQuickFilters);
+      }
+    });
+  }
+
+  // Fetch search suggestions
+  async function fetchSuggestions(query) {
+    if (!query || query.length < SEARCH_CONFIG.minCharsForSuggestions) {
+      hideSuggestions();
+      return;
+    }
+
+    try {
+      const url = `${SEARCH_CONFIG.suggestionsUrl}?q=${encodeURIComponent(query)}&limit=${SEARCH_CONFIG.maxSuggestions}`;
+      const response = await fetch(url);
+      const suggestions = await response.json();
+      
+      searchState.suggestions = suggestions;
+      showSuggestions(suggestions);
+    } catch (error) {
+      console.error('Failed to fetch suggestions:', error);
+      hideSuggestions();
+    }
+  }
+
+  // Show suggestions
+  function showSuggestions(suggestions) {
+    if (!suggestions || suggestions.length === 0) {
+      hideSuggestions();
+      return;
+    }
+
+    suggestionsContainer.innerHTML = '';
+    
+    suggestions.forEach((suggestion, index) => {
+      const item = document.createElement('div');
+      item.className = 'suggestion-item';
+      item.textContent = suggestion;
+      item.dataset.index = index;
+      
+      item.addEventListener('click', () => {
+        searchInput.value = suggestion;
+        searchState.query = suggestion;
+        hideSuggestions();
+        performSearch();
+      });
+      
+      item.addEventListener('mouseenter', () => {
+        highlightSuggestion(index);
+      });
+      
+      suggestionsContainer.appendChild(item);
+    });
+
+    suggestionsContainer.style.display = 'block';
+  }
+
+  // Hide suggestions
+  function hideSuggestions() {
+    suggestionsContainer.style.display = 'none';
+    suggestionsContainer.innerHTML = '';
+  }
+
+  // Navigate suggestions with keyboard
+  function navigateSuggestions(key) {
+    const items = suggestionsContainer.querySelectorAll('.suggestion-item');
+    if (items.length === 0) return;
+
+    let currentIndex = -1;
+    items.forEach((item, index) => {
+      if (item.classList.contains('highlighted')) {
+        currentIndex = index;
+        item.classList.remove('highlighted');
+      }
+    });
+
+    if (key === 'ArrowDown') {
+      currentIndex = (currentIndex + 1) % items.length;
+    } else if (key === 'ArrowUp') {
+      currentIndex = currentIndex <= 0 ? items.length - 1 : currentIndex - 1;
+    }
+
+    if (currentIndex >= 0) {
+      items[currentIndex].classList.add('highlighted');
+      items[currentIndex].scrollIntoView({ block: 'nearest' });
+    }
+  }
+
+  // Highlight suggestion
+  function highlightSuggestion(index) {
+    const items = suggestionsContainer.querySelectorAll('.suggestion-item');
+    items.forEach(item => item.classList.remove('highlighted'));
+    
+    if (index >= 0 && index < items.length) {
+      items[index].classList.add('highlighted');
+    }
+  }
+
+  // Update quick filters
+  function updateQuickFilters() {
+    const types = [];
+    
+    if (document.getElementById('filterBooks')?.checked) {
+      types.push('book');
+    }
+    
+    if (document.getElementById('filterTeachings')?.checked) {
+      types.push('teaching');
+    }
+    
+    searchState.filters.type = types;
+  }
+
+  // Toggle advanced filters
+  function toggleFilters() {
+    const isVisible = filtersContent.style.display === 'block';
+    filtersContent.style.display = isVisible ? 'none' : 'block';
+    toggleFiltersBtn.textContent = isVisible ? 'Show Filters' : 'Hide Filters';
+  }
+
+  // Apply advanced filters
+  function applyFilters() {
+    // Get type filters
+    const typeCheckboxes = filtersContent.querySelectorAll('input[name="type"]:checked');
+    searchState.filters.type = Array.from(typeCheckboxes).map(cb => cb.value);
+    
+    // Get category filters
+    const categoryCheckboxes = filtersContent.querySelectorAll('input[name="category"]:checked');
+    searchState.filters.category = Array.from(categoryCheckboxes).map(cb => cb.value);
+    
+    // Get language filter
+    const languageRadio = filtersContent.querySelector('input[name="language"]:checked');
+    searchState.filters.language = languageRadio ? languageRadio.value : '';
+    
+    // Get author filter
+    const authorSelect = document.getElementById('authorFilter');
+    searchState.filters.author = authorSelect ? authorSelect.value : '';
+    
+    // Perform search with filters
+    if (searchState.query) {
+      performSearch();
+    }
+  }
+
+  // Reset all filters
+  function resetFilters() {
+    // Reset checkboxes
+    filtersContent.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+      cb.checked = cb.name === 'type' && (cb.value === 'book' || cb.value === 'teaching');
+    });
+    
+    // Reset radio buttons
+    filtersContent.querySelectorAll('input[type="radio"]').forEach(rb => {
+      rb.checked = rb.value === '';
+    });
+    
+    // Reset select
+    const authorSelect = document.getElementById('authorFilter');
+    if (authorSelect) {
+      authorSelect.value = '';
+    }
+    
+    // Reset quick filters
+    document.getElementById('filterBooks').checked = true;
+    document.getElementById('filterTeachings').checked = true;
+    
+    // Reset state
+    searchState.filters = {
+      type: ['book', 'teaching'],
+      category: [],
+      language: '',
+      author: ''
+    };
+    
+    // Perform search if there's a query
+    if (searchState.query) {
+      performSearch();
+    }
+  }
+
+  // Perform search
+  async function performSearch() {
+    const query = searchInput.value.trim();
+    if (!query) return;
+    
+    // Hide suggestions
+    hideSuggestions();
+    
+    // Update URL
+    updateUrl(query);
+    
+    // Dispatch search event
+    const searchEvent = new CustomEvent('enhanced-search', {
+      detail: {
+        query: query,
+        filters: searchState.filters,
+        timestamp: new Date().toISOString()
+      }
+    });
+    document.dispatchEvent(searchEvent);
+    
+    // Show loading state
+    searchState.isLoading = true;
+    searchInput.classList.add('loading');
+  }
+
+  // Update URL with search parameters
+  function updateUrl(query) {
+    const url = new URL(window.location);
+    url.searchParams.set('q', query);
+    
+    // Add filters to URL
+    Object.entries(searchState.filters).forEach(([key, value]) => {
+      if (Array.isArray(value) && value.length > 0) {
+        url.searchParams.set(key, value.join(','));
+      } else if (value) {
+        url.searchParams.set(key, value);
+      }
+    });
+    
+    window.history.replaceState({}, '', url);
+  }
+
+  // Check URL parameters on load
+  function checkUrlParameters() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const query = urlParams.get('q');
+    
+    if (query) {
+      searchInput.value = query;
+      searchState.query = query;
+      
+      // Parse filters from URL
+      const typeParam = urlParams.get('type');
+      if (typeParam) {
+        searchState.filters.type = typeParam.split(',');
+        
+        // Update checkboxes
+        document.getElementById('filterBooks').checked = searchState.filters.type.includes('book');
+        document.getElementById('filterTeachings').checked = searchState.filters.type.includes('teaching');
+      }
+      
+      // Trigger search
+      setTimeout(() => {
+        performSearch();
+      }, 100);
+    }
+  }
+
+  // Public API for external control
+  window.enhancedSearch = {
+    search: performSearch,
+    setQuery: (query) => {
+      searchInput.value = query;
+      searchState.query = query;
+    },
+    getState: () => ({ ...searchState }),
+    reset: resetFilters
+  };
+</script>
+
+<style>
+  .enhanced-search {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .enhanced-search.compact {
+    max-width: 500px;
+  }
+
+  .search-container {
+    position: relative;
+  }
+
+  .search-form {
+    width: 100%;
+  }
+
+  .search-input-wrapper {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .search-input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 50px;
+    transition: all 0.2s;
+    background: white;
+  }
+
+  .search-input:focus {
+    outline: none;
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+  }
+
+  .search-input.loading {
+    background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 2C6.47715 2 2 6.47715 2 12C2
