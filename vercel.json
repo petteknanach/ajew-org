@@ -5,19 +5,14 @@
   "installCommand": "npm install",
   "framework": "astro",
   "public": true,
-  "cleanUrls": true,
-  "trailingSlash": false,
-  "headers": [
+  "cleanUrls": false,
+  "trailingSlash": true,
+  "headers": [],
+  "rewrites": [
     {
       "source": "/teachings/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
-      ]
+      "destination": "/teachings/$1"
     }
   ],
-  "rewrites": [],
   "redirects": []
 }
