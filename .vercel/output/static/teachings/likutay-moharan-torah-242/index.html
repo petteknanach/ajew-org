@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 242</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 242</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה התחיל לומר על פסוק: &quot;ויהי מקץ&quot; וכו&#39;, אך לא סים לבאר זה הפסוק על פי ה
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+242 - THERE IS THE ASPECT OF ARICH ANPIN IN THE KLIPAH
+Know that there is the aspect of Arich Anpin (Long Face [a Kabbalistic term for a high divine countenance]) in the klipah (shell [forces of impurity or evil]). And one who encounters a woman from this aspect, it is hard for him to be saved from thoughts of licentiousness [immoral or forbidden desires]. And even if he closes his eyes, even so in every side that he turns she will present herself to him, because she is the aspect of Arich Anpin of the klipah, that they are long faces [extended and pervasive impure influences]. And therefore in every side that he turns she will present herself to him. And know that tzedakah [charity] is a great segula (propitious [remedy or virtue]) and helps very much to be saved from thoughts of licentiousness. But even so it is forbidden to rely on this and to be mixed with the women and to increase conversation with them, G-d forbid. Only that it does not harm him so much. And this is: “And let the poor be members of your household and do not increase conversation with the woman” [Avot chapter 1]. That is, even though you do tzedakah and the poor are members of your household, even so do not increase and so forth as above. But the prohibition is only not to increase, but what he is compelled does not harm him. And this is made through the tzedakah that it saves from thoughts of licentiousness that they are aspect of father of fathers of the impurity, aspects of dead [ultimate source of spiritual death and defilement]. And tzedakah saves from them in aspect of: “And tzedakah will save from death” [Proverbs 10:2]. The Name will save us.
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

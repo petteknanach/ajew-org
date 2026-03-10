@@ -1,0 +1,57 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 77</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 77</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה שבעל פה את הלמדן לילך ברשעתו? תשובה על זה: ויגד יעקב לרחל כי אחי אביה הוא וכי בן רבקה הוא - פרוש: בשעה שהגיד הצדיק ה
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+77
+And Hashem shall be King over all the earth
+And Hashem shall be King over all the earth [Zecharyah 14]
+[In the language of the companions] Behold, the general principle is that all our actions, whether tefillah [prayer] or limmud [study of Torah], are for the purpose of revealing His Malchus [Kingship], may He be blessed. For the hevel peh [vapor of the mouth, breath of speech] is the aspect of the letter Heh, and the kol [voice], through its extension, is the aspect of the letter Vav. When one studies or prays with d’chilu [fear] and r’chimu [love], the aspect of Yud-Heh is revealed [Tikkun 10]. When one studies halacha [Jewish law] in this manner, they create one olam [world]. When one completes an entire massechta [tractate of Talmud], it forms the Matronita [the Divine Feminine, an aspect of the Shechinah]. The halachos [laws] are the olamin [worlds] associated with it [Introduction to Tikkunei Zohar, 14]. For there is no king without a people. Thus, “And Hashem shall be King over all the earth” signifies that His Malchus is revealed. [It is evident to the discerning reader that much is lacking here, as the primary intent is missing from the text, and I have not merited to fully comprehend these words.]
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 236</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 236</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה לישראל - מפני שעזין הן&#39;, וכמו שאמרו (אבות פרק ה&#39;) &#39;הוי עז כנמר&#39;. ובשביל זה ה
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+236 - ONE WHO CONDUCTS RABBINIC LEADERSHIP WITH FITNESS AND INNOCENCE AS IS FITTING
+One who conducts rabbinic leadership with fitness [proper qualifications and integrity] and with innocence [purity of heart and actions] as is fitting, through this merits that he will ascend to greatness at the end of his days. And all that is considered greatness in that generation, he ascends to that greatness. For example, in this generation where the main greatness and honor is when they regard him as a famous tzadik [righteous one, a spiritual leader], then he merits that he will be accepted at the end of his days as a great famous one, even though in truth he is not so—only that he is a simple fit man [an upright and straightforward individual]. And they give him his reward before he departs from the world, and after that and so forth [implying continuation in the afterlife or further implications].
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 126</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 126</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה אצל בר דעת, כמו שכתוב (דניאל ב): &#39;קדשא בריך הוא יהב חכמתא לחכימין&#39;. אבל יש שני בחינות תורה: יש בחינת נגלה ובחינת נסתר; אבל לבחינת נסתר אינו זוכה אלא לעתיד לבוא, אבל בזה העולם זוכה לבחינת נסתר על ידי תפלה במסירת נפש, ולתפלה זוכה - על ידי
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+126 - That the Friends Praised Rabbi Shimon ben Yochai
+In the Zohar in several places that the friends praised Rabbi Shimon ben Yochai [see: Zohar references to his students expressing awe for his teachings] it is woe to the generation when the spring is removed [i.e., when the source of Torah is lost or concealed] and you will find (see part 1 83a 92a and part 2 23a 68a 86a 87a 89a Shemot 31a). "Shabbat and rested", since Shabbat woe the soul is lost (Beitzah 16a) [refers to the extra soul received on Shabbat, which departs at its conclusion] that is because of the greatness of the pleasure of the extra soul that comes on Shabbat therefore they begin immediately to long and to be pained on the loss of the soul on Motzaei Shabbat [the emotional pain of losing the Shabbat soul parallels their pain at losing Rabbi Shimon]. So the friends, because of the greatness of the pleasures and the amusements that they received from their rabbi Rabbi Shimon ben Yochai therefore immediately they began to long and it arose on their heart the pain of the removal that will be to them [i.e., just as Shabbat's departure brings longing, so too the thought of parting from their teacher] in every place that the friends praised Rabbi Shimon ben Yochai on that he revealed to them a wondrous secret you will find that after that he said to them more innovations of Torah [their praise opened further revelation; he continued teaching them after their expressions of awe].
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

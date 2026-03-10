@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 351</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 351</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה דעתיקא נותנין את המעות. כי אין צריך למעות, כי בעולם הבא לית אכילה ושתיה (ברכות י&quot;ז). וזה פרוש (תהלים סח): מלכי צבאות ידדון (עיין שבת פח:) הינו הצדיקים שהם מלאכיו גבורי כח שהם מדדין במרוצה ובמהירות כדי לרוץ ארח, וזה רקודין ונות בית תחלק שלל. וישראל הם מחלקים המעות, להורות שאין צריך למעות, ואין שם בבחינת עתיקא שמאל: בית תחלק שלל ראשי תבות שבת:<br>
+<br>
+ענין אחר להורות ותרנות גדול בזה שמחלקין מעות, להורות שהכלה היא בחינת ה&quot;א שמדל&quot;ת נעשית ה&quot;א. שעל ידי זה בא עשירות גדול, בבחינות: &#39;והריקותי לכם ברכה עד בלי די, עד שיבלו שפתותיכם&#39; וכו&#39; (שבת ל&quot;ב:). שמחלקין המעות, מורה שהגיעו לזאת הברכה, עד שהמעות אין חשוב אצלם. וזה פרוש: &quot;ועשירית האיפה&quot;. &#39;עשירית&#39;, שהוא בבחינת אי פה, הינו שבלו פיהם מלומר די, שיש להם כל כך עשירות, וזה מחמת שנעשה מרביעית ההין, מדל&quot;ת ה&quot;א כנ&quot;ל:<br>
+<br>
+(מסימן ל&quot;ב עד כאן, כל זה הוא לשון רבנו ז&quot;ל. לבד באיזהו מקומות שהוספתי שם קצת דברים, כפי מה ששמעתי והבנתי מפיו הקדוש או מפי כתבו כנרשם כל אחד במקומו):<br>
+<br>
+(עוד שמעתי דברים השיכים ל
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+Tinyana 65
+When one is zealous with the zeal of Hashem of Hosts, it is considered like charity.
+When one is zealous with the zeal of Hashem [Hashem – the Name, referring to G-d] of Hosts, it is considered like charity [tzedakah – righteous giving]. As the Tosafot wrote in the chapter of the partners on what our sages, of blessed memory, said (Bava Batra 10b): “Charity [tzedakah] exalts a nation,” these are Yisrael, “and kindness to the nations is a sin,” these are the idol-worshippers, that all the kindness they do, etc., and they brought a proof from Nevuzaradan, see there. And the Tosafot wrote there: And Nevuzaradan did then charity [tzedakah], that he was zealous for the Holy One, blessed be He.
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

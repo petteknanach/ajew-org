@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 330</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 330</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה שהם מגלים בני עמי הארץ, הם בחינת ניצוצות. ועולה להשכינה בבחינת מיין נוקבין, בבחינת: &#39;חזי במאי ברא קאתינא&#39;. ובשביל זה צריך לכבדם, כי על ידי הכבוד יתגלה ביותר ה
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+LIKUTAY MOHARAN II, TORAH 44: FAITH DEPENDS ON A PERSON’S MOUTH
+Emunah [faith] depends on the mouth of a person, in the aspect of: “I will make known Your emunah with my mouth” (Psalms 89:2). That is, through speaking emunah with the mouth, this is itself emunah, and also through this, one comes to emunah. And because of this, one must be very careful from words of kefirah [heresy] and epikorsus [heresy], even if one does not say them from one’s heart, that is, one himself believes and does not deny, heaven forbid, but only repeats words of epikorsus that he heard in the name of others who are epikorsim [heretics], and he mocks them. Even so, one must be very careful from this, for these words of kefirah harm emunah. Also, it is an absolute prohibition, for regarding Hashem, blessed be He, it is forbidden to say words of jest, even in a joking manner. And it is already explained in books and in our words in several places to greatly distance oneself from looking at all at the books of investigators, philosophy, and even from books of investigation written by great ones of our brethren, the Children of Israel, one must also greatly distance oneself from them, for they greatly harm emunah. For our emunah that we received from our holy ancestors is sufficient for us. And this is a great principle and foundation and essence in the service of Hashem, to be simple and upright, and so forth, to serve Him, blessed be He, in simplicity without any wisdoms and investigations at all, at all. Also, from wisdoms that are in the service of Hashem itself, one must greatly distance oneself, for all these wisdoms of the world that are for those entering and beginning a bit in the service of Hashem are not wisdoms at all, but only imaginations and foolishness and great confusions. And these wisdoms greatly cause a person to fall from the service of Hashem, that is, what one thinks and investigates and is overly meticulous about, whether one fulfills properly what one does. For a person of flesh and blood cannot possibly fulfill his obligation perfectly, and the Holy One, blessed be He, does not come with complaints, and so forth (Avodah Zarah 3), and the Torah was not given to ministering angels (Kiddushin 54). And regarding these overly meticulous and stringent ones, it is said about them: “And you shall live by them” (Leviticus 18:5), and not die by them (Yoma 85), for they have no vitality at all, and they are always in marah shechorah [melancholy] because it seems to them that they do not fulfill their obligation in the mitzvot [commandments] they perform, and they have no vitality from any mitzvah because of their meticulousness and their marah shechorah [and he himself does not impose any stringency at all]. And in truth, after all the wisdoms, even one who knows true wisdoms, after all the wisdoms, one must cast aside all the wisdoms and serve Hashem in complete simplicity without any wisdoms. And this is the greatest wisdom of all wisdoms, to not be wise at all. For in truth, there is no wise person in the world at all, and there is no wisdom and no understanding before Him, blessed be He (Proverbs 21:30; Sanhedrin 106; Zohar, Tetzaveh 281).
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

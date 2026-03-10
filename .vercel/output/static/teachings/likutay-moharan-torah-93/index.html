@@ -1,0 +1,65 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 93</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 93</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה שבעל פה, בחינת יין מלכות רב (אסתר א), ובחינת בינה לבא, שמחת הלב, &quot;ויין ישמח לבב&quot;, גם הוא בחינת יין. ומורק מהאי להאי - שימשיך קו ירק מהאי, בבחינת &quot;וירק את חניכיו&quot; כנ&quot;ל. וזה חבוק, שיקבל באהבה את הרדיפה וישמח ביסורין, על ידי זה השכינה, שהוא
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+93
+All who does business in faith
+[In the language of the friends]
+All who does business in emunah [faithfulness, integrity] fulfills the positive commandment of “Ve’ahavta” [“And you shall love (Hashem your God)”], which is the shoresh [root] of all positive commandments.
+As it is written in the Tikkunim (Tikkun 21): On the verse “And make for me delicacies as I love” (Genesis 27:4) — these are from the pikudin de'asei [positive commandments].
+And how does one fulfill the commandment of “Ve’ahavta”? For it is taught in the Gemara (Yoma 86a): on the verse “And you shall love” — that one should ensure that the Name of Heaven becomes beloved through him.
+How? A person who reads and studies, and serves Torah scholars, and conducts his affairs with gentleness toward others, and his business is with emunah — what do people say about him? “Happy is the one who taught him Torah”, etc.
+It is thereby found that the Name of Heaven becomes beloved through him. And he fulfills the commandment of “Ve’ahavta”, which is the root of all the mitzvot [see Mekhilta, Parashat Beshalach, on the verse: “and that which is upright in His eyes you shall do”, and also brought in Ramban there].
+Also, by means of business in emunah, he ascends to a level that is above time, as it is in the Gemara (Yoma 86a, conclusion): “And upon him the verse says: ‘Israel, in whom I will be glorified’” (Isaiah 49:3).
+And “Israel” ascended in thought — as the Sages taught (Bereishit Rabbah, Parasha 1): “Israel ‘rose up’ in thought”. And [to “rise up” in] thought means to transcend time itself.
+Likewise, by means of business with emunah, one is able to pray with pure intellect. For prayer, too, is something that is above time, as the Sages said (Berakhot 6b): “It is a matter that stands at the height of the world.”
+And also, due to the love that arises through this emunah, he comes to gadlut ha-mochin [expansion or greatness of the intellect], and becomes able to pray with sechel tzach [pure, clarified mind].
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

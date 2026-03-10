@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 89</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 89</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה שבעל פה, ידע שהוא לילה&#39;, וזה בר ליליתא, שעקר הלמדן מ
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+89
+You have made him a little less than Gd, and with glory and majesty You crown him
+[In the language of the friends]
+You have made him a little less than Gd, and with glory and majesty You crown him (Psalms 8).
+Behold, it is known that all that is lacking to a person, whether spiritually or physically, the lack is in the Shechinah, which is the aspect of Elokim.
+And this is: “You have made him a little less”—certainly from Elokim, that is, the lack certainly from Elokim, which is in the Shechinah.
+But when he knows this—that the lack is above and below— certainly he will have great pain and sadness, and he will not be able to serve the Blessed Name with joy.
+Therefore, he needs to answer himself: “What am I, and what is my life?”For the King Himself tells me His lack. 
+And is there greater glory than this? From this he comes to great joy, and his understanding is renewed; “And with glory and majesty You crown him,” that is, by means of the glory and majesty he has, because the King Himself tells him of the lack, You crown him with new understandings.
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

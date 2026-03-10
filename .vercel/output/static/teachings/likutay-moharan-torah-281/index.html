@@ -1,0 +1,58 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 281</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 281</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה בולטין. וכשנפשטין מהלבושים הגשמיים, הינו מלשונות העכו&quot;ם הינו ממדות רעות, הינו מימי רע, אזי מקבלין אלו אותיות ה
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+281 - EVEN A SIMPLE PERSON CAN SEE NEW AND WONDROUS THINGS
+Even a simple person—if he sets himself upon the book and looks at the letters of the Torah—can see new and wondrous things. That is, through gazing very intently at the letters of the Torah, the letters begin to shine and combine, in the aspect of “letters bulging and combining,” as our sages of blessed memory said (Yoma 73b).
+Then he will see wondrous combinations—new ones—and he can see in the book things that the author himself did not intend at all. And this is possible even for a simple person.
+For a great person can see this without effort, but even a completely simple person can attain and see new things as above—if he sets himself and gazes at the letters of the Torah.
+However, one should not set this as a test, for it may be that specifically then he will not see anything at all. Even so, it is possible to attain this—even for a simple person, as above.
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

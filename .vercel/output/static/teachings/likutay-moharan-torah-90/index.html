@@ -1,0 +1,58 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 90</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 90</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה שבעל פה. והוה רהט אקופא דשורא - זה צדיק הדור, שתלמיד חכם, שד יהודאין, רודף את הצדיק הדור שנמשל לחומה, כמאמר חכמינו, זכרונו לברכה (בבא בתרא ז:): &#39;תלמיד חכם אין צריך לנטירותא&#39;, עין שם. ורהט פרשא - פרש רבנו שמואל: &#39;לפי תמו&#39;. פרשא - זה התנא, שחדש זאת ה
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+90
+I will rejoice in Hashem; let sinners be consumed from the earth
+[In the language of the friends] 
+I will rejoice in Hashem; let sinners be consumed from the earth (Psalms 104). Behold, it is known that all the lacks that come to a person come due to the breaking, that sparks fell from all the worlds and were lacking from the Shechinah, as is known. 
+And the rectification is by means of his rejoicing in his Gd; then all the lacks from the breaking are completed, and all the sparks are raised.“I will rejoice in Hashem; let be completed all the sinners,” that is, the lacks,as it is written (1 Kings 1): “And I and my son Shlomo are sinners”—from the earth, that is, the upper earth aspect of the Shechinah.
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

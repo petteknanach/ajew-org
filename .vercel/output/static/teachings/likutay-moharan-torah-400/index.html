@@ -1,0 +1,60 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 400</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 400</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה וכן היה בכמה וכמה תורות שנתן להעתיקם כנ&quot;ל. והדברים עתיקים.<br>
+<br>
+שיך לאות א&#39; וב&#39; &#39;המבזה תלמיד חכם אין לו רפואה למכתו&#39; (שבת קי&quot;ט:), כי כל הרפואות הם הרכבות, דהינו שלוקחים סם פלוני ועשב פלוני במדה ובמשקל כך וכך, וכן עשב אחר שמשקלו כך וכך, וכן שוקלין מכמה מינים, וכל עשב ועשב יש לו כח אחר, ומערבין אלו המינים ביחד, ועושין מהם הרכבה. וזאת ההרכבה, יש לה כח לרפאות החולאת נמצא. שעקר כח הרפואה על ידי ההרכבה, שנעשה לה כח אחר חדש על ידי הכח שקבלה מכל אלו העשבים שנתערבו. ובזה הכח של ההרכבה דוקא, מרפאין החולאת. ועל כן צריך רופא ממחה, שיודע לעשות ההרכבה. אבל מי שאינו ממחה, אף אם יקח העשבים שיש להם כח לרפאות, עם כל זה לא יפעל כלל, כי אין יודע איך להרכיבם.<br>
+<br>
+כמו כן ה
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+Tinyana 114
+THE ESSENCE OF THE DEFECT OF THOUGHT, HEAVEN FORBID
+Once I spoke with him, of blessed memory, and I understood that he greatly desired to reveal to me something from the attainments he attained, as was his constant way. But it was difficult for him, and I walked with him together in silence, for he did not speak to me anything. But within this, these words came out from his holy mouth: Seh hat apanim az meh muz zich feun a hirhur zaiyer hitn [See, take care that one must greatly guard himself from a thought]. And I understood then from his holy language and from his holy movements when he spoke this, that then it was revealed to him in his awesome attainments the essence of the defect of thought, Heaven forbid, that it greatly, greatly damages, may the Merciful One save us. And it is impossible to depict this in writing.
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

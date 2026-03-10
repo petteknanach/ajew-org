@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 274</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 274</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה בולטין, אזי הוא יודע ה
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+274 - THERE ARE WICKED WHO LABOR AND TOIL ALL THEIR DAYS
+Know that there are wicked who labor and toil all their days to uproot themselves completely from Hashem, blessed be He, and from His Torah. Because the holy point of Israel's holiness that is still within them—even though they are complete wicked—confuses them and brings them thoughts of repentance and fear from the fear of the great judgment. And because of this, they have no pleasure from their transgressions and desires. Therefore, they desire and toil to reach complete denial in their knowledge, G-d forbid, in a way that they have no remaining side of doubt to incline toward the truth. But they need for this very, very great toil, many, many years, may the Merciful save us, may the Merciful deliver us. Because the Judaism within them does not let them be and confuses them always. And know that there are some of them who, when they reach and come to what they desired—that is, to complete denial, G-d forbid, without any doubt toward the truth—then immediately they die [from the world], and then they see the truth.
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

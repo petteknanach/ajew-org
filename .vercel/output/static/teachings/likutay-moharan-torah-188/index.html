@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 188</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 188</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה שסביבות המצוה, כגון &#39;וידבר&#39; כנ&quot;ל, שהם בחינת &#39;נשמע&#39; כנ&quot;ל, יהיה נעשה מהם בחינת &#39;נעשה&#39;. וזהו: עד עולם, שילך מדרגא לדרגא ומעולם לעולם, לעשות - לעשות דיקא, בחינת &#39;נעשה&#39;, את כל דברי ה
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+188 - ONE MUST TRAVEL TO THE TZADIK TO SEARCH FOR HIS LOSS
+Know that one must travel to the tzadik to search for one's loss, for before emerging into the world's air, a person is taught and shown all that he must accomplish, work toward, and attain in this world. Upon entering the world's air, it is immediately forgotten, as our Rabbis, of blessed memory, stated (Niddah 30b). Forgetting is an aspect of loss, as our Rabbis called the forgetter a "loser" (Avot 5:7: "quick to hear and quick to lose"). One must search for this loss, which resides with the tzadik. The tzadik searches for his own loss until finding it, then for others', eventually locating the losses of the entire world. Therefore, come to the wise one to seek and recognize your loss, and to retrieve it from him. However, the tzadik returns the loss only after examining if you are not a deceiver or liar, as written (Deuteronomy 22:2): "Until your brother seeks it, and you shall return it to him" – until you examine your brother to ensure he is not a deceiver (Bava Metzia 27b).
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

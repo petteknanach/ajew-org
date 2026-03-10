@@ -1,0 +1,59 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 284</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 284</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה מקבלין חיות ואור רב יותר ממה שקבלו מתחלה, כשהיו מלבשין בלשונות הגוים ובימי רע:<br>
+<br>
+ד וזה ידוע, שה
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+284 – HE REBUKED ONE WHO SAID TO HIM THAT HE HAS NO LEISURE TO LEARN
+I heard that he rebuked someone who said to him that he had no leisure for learning Torah because he was occupied with business dealings. He replied that even so, it is fitting for him to snatch some time every day to occupy himself with Torah study.
+He explained that this is exactly what our Rabbis of blessed memory said (Shabbat 31a): “Do you set fixed times for Torah?” The word “fixed” (קבע) is linguistically related to “robbery”—as it is written:“and robs the robbed soul their” (Proverbs 22:22).
+This means that the question asked is: Have you “robbed” time from your daily affairs—time you are busy with your business—to dedicate for Torah? One must snatch and rob time for Torah study even amidst the busyness and occupations of life.
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

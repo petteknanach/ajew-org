@@ -1,0 +1,69 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 148</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 148</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה אמר אל הכהנים סימן ב]<br>
+<br>
+<br>
+לשון רבנו, זכרונו לברכה<br>
+<br>
+פרקא תליתאה (דספרא דצניעותא)<br>
+<br>
+תשעה תקונין יקירין אתמסרא לדקנא - כל מה דאתטמר ולא אתגליא, עלאה ויקרא אשתכח, והוא גנזיא יקירא: נימין על נימין מקמי פתחי דאדנין עד רישא [דפמא]; מרישא האי לרישא אחרא; אשתכח מתחות תרין נקבין ארחא מליא דלא אתחזיא; עלעין אתחפין מהאי גיסא ומהאי גיסא, בהו אתחזין תפוחין סמקין כורדא; בחד חוטא תלין אכמין תקיפין עד חדווי; שפון סומקי כורדא אתפנון; זעירין נחתין בגרונא ומחפין קדלא; רברבין וזעירין נחתין בשקולא - באלין אשתכח גבר ותקיף:<br>
+<br>
+א<br>
+<br>
+ דע שיש נשמה בעולם, שעל ידה נתגלה באורי ופרושי התורה, והיא מסבלת ביסורין: &#39;פת במלח תאכל, ובמים במשורה תשתה, כי כך דרכה של תורה&#39; (אבות פרק ו). וכל מפרשי ה
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+LIKUTEY MOHARAN 148
+The Trait of Fear Itself is Fear of Hashem
+The trait of fear — in and of itself — is fear of Hashem, Blessed be He. And if that is so, then this fear itself must also possess fear. And that second-level fear is also fear of Hashem. And if that is so, then it too has fear — and so on, each level of fear is included within another, rising upward and upward endlessly.
+This is what our Rabbis of blessed memory said (Tanchuma, Devarim 1; Shir HaShirim Rabbah 1; Yerushalmi, Shabbat Chapter 1 — see Pnei Moshe): “What humility made a heel to frivolity, wisdom made a crown upon her head,” as it is written: “The heel of humility is the fear of Hashem” and “The beginning of wisdom is the fear of Hashem” (Proverbs 22:4, Psalms 111:10).
+It follows that the heel of humility is fear of God. And likewise, the beginning of wisdom is also fear. Therefore, there exists a level of fear above fear, for fear itself has another layer of fear, and this continues — upward, ever upward — to infinity, as described above.
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>
