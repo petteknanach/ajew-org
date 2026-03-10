@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 379</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 379</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה מכרזת וצועקת ומוכיחה תמיד, כמו שכתוב (משלי א): &quot;בראש המיות תקרא וכו&#39; עד מתי פתים תאהבו&quot; וכו&#39;. רק שאינו שומע קול הכרוז של התורה, מחמת ההסתרות הנ&quot;ל. ומאחר שנתגלו ונחזרו ההסתרות ונעשה מהם תורה, על ידי הדעת כנ&quot;ל, אזי תכף כשנעשה מהם תורה, ה
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+Tinyana 93
+REGARDING THE CONTROVERSY THAT THEY DISPUTED AGAINST HIM
+I heard in his name that he said regarding the controversy that they disputed against him, for our Sages, of blessed memory, said: "A vineyard of disgrace for people" [Berachos 6b]—these are matters that stand at the height of the world, and people belittle them. And what are they? Tefillah [prayer]. Therefore, because his entire occupation was tefillah, for regarding tefillah he spoke much with his people and greatly cautioned them to increase in tefillah and hisbodidus [secluded prayer] and conversation between himself and his Creator, as explained in his holy books. And more than this, he spoke with us extensively and strengthened us with boundless encouragement to increase in tefillah and hisbodidus. Therefore, people belittle him and disparage him and dispute against him, for his entire occupation is tefillah, which are matters that stand at the height of the world, and people belittle them.
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

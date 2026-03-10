@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 355</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 355</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה היא בחינת עץ החיים דמזון לכלא ביה (עיין זוהר בראשית כ&quot;ו.). הינו שיש לכל אחד די ספוקו ממנה, נמצא שהיא בחינת הסתפקות. וגם בלמוד ה
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+LIKUTAY MOHARAN, TORAH 69
+What is customary to give a blessing to the man who brings the beverage to the guests or at a wedding and the like [that is, when they carry wine or honey to guests or at a wedding, then they are accustomed to give from the beverage to the messenger who carries the beverage to make a blessing]. It is according to what is written in the Zohar (Pekudei, page 242a) that there are several things that are carried and carry. And it counts there several things that are carried, that is, that they carry them. And in truth these things carry, such as the chariot, which is carried and carries. And likewise the ark, which they would carry it "and it carried its carriers" [see 1 Samuel 6:7-12, and interpretations]. And this is the aspect of beracha [blessing] that they give as mentioned above. For beracha is the acronym: "כִּי רוּחַ חַיָּה בָּאוֹפַנִּים – For the spirit of the living creature was in the wheels" [Ezekiel 1:20], the aspect of carried and carrying. For the wheels carry the living creatures, and the living creatures carry them. For the spirit of the living creature is in the wheels. And so is the entire chariot, that the wheels carry the living creatures, and the living creatures the chariot. And in truth the chariot carries everything. Therefore, this one who carries the beverage, they give him a beracha, which is the aspect of: "ki ruach hachayah ba'ofanim – For the spirit of the living creature was in the wheels," the aspect of carrying and carried. For he carries the beverage, and now the beverage elevates him [or that pieces are made from this, for the beverage quenches and also warms a bit, and he did not explain this matter at all].
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

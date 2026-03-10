@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 340</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 340</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה הזאת. וכנרשם מן הצד בהג&quot;ה איך כל כונות תפלין כלולין שם, והדברים מובנים למשכילים ועדין צריכין באור רחב לבאר הדבר היטב, ואם יהיה אלקים עמדי, יתבאר הדבר במקום אחר בעזרת השם יתברך: ודע ששמעתי מפיו הקדוש, שחשב כמה וכמה תורות. ואמר: שכלם הם סוד כונות תפלין, דהינו התורה &quot;בחצצרות וקול שופר&quot;, ו&quot;אנכי ה&#39; אלקיך&quot;, ו&quot;קרא את יהושע&quot; וכו&#39;, והתורה &quot;מי האיש החפץ חיים&quot;, &quot;ואתם תהיו לי ממלכת כהנים&quot;, &quot;אשרי העם זרקא&quot;, וה
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+LIKUTAY MOHARAN II, TORAH 54: FREE CHOICE IS IN THE HAND OF A PERSON TO DO AS HE WISHES
+Bechirah [free choice] is in the hand of a person to do as he wishes. And even all things, everything is in the hand of the Israelite person to conduct everything as he wishes, as his bechirah. For in the hand of Israel, there is bechirah in their hand over every single thing in the world. For with others, there are things in which they are compelled, but with an Israelite person, every single thing that he does, such as to travel to some place and the like, has service in it, and therefore he has bechirah over everything.
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 360</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 360</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה נאמרה בשבת חנכה. ואחר שאמר ה
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+Likutay Moharan II Torah 74: After Purim, They Read the Parsha of Parah
+After Purim, they read the parsha of Parah [Red Heifer], which is a preparation for Pesach [Passover]. For they read the parsha of Parah so that they will be careful to purify themselves from the impurity of a dead body, so that they will be pure to perform the Pesach. Purim is named after the pur [lot] (Esther 9:26) (and see in the intentions of the Ari, of blessed memory, regarding the secret of “he cast a pur” and the secret of the Red Heifer). And afterward, the Parah is performed, for Purim is certainly a pathway and a way to Pesach. “His lips are roses, dripping with flowing myrrh” (Song of Songs 5:13). “His lips” is the aspect of Pesach, peh sach [the mouth speaks] (as brought). “Rose” [shoshanah] is Esther (as brought in the holy Zohar and the writings of the Ari, of blessed memory) [shoshanah in gematria equals Esther]. “Dripping with flowing myrrh” [mor over] is the aspect of Mordechai, mar dror [pure myrrh] (Chullin 139b), the language of freedom, the aspect of the freedom of Pesach. Therefore, the combination of Purim is hinted at in Pesach, in the verse: “Seven days you shall eat matzos, as I have commanded you, at the appointed time of the month of spring, for in it you went out from Mitzrayim, and they shall not appear before Me empty” (Exodus 23:15). “From Mitzrayim and they shall not appear before Me empty”—the initial letters are פּוּרִים [Purim]. For Purim is a way to Pesach, so that they will be able to be careful from chametz [leaven]. [And he stopped in the middle of the matter and did not reveal more.] For in the beginning, all beginnings were from Pesach, and therefore all the mitzvahs [commandments] are a remembrance of the exodus from Mitzrayim. [And he did not complete.]
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

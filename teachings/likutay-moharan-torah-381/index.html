@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 381</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 381</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה כנ&quot;ל, על ידי זה &quot;פיה פתחה&quot;. הינו בחינת אוריתא מכרזת קמיהו, שה
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+Tinyana 95
+REGARDING HISBODIDUS AND CONVERSATION BETWEEN HIMSELF AND HIS CREATOR
+Regarding hisbodidus [secluded prayer] and conversation between himself and his Creator, and the recitation of Psalms, supplications, and requests, it is very good when one merits to say them with a whole heart in truth until he merits to weep before Hashem [G-d], like a son weeping before his father. But he said: When a person says supplications and requests and thinks in his heart and expects that he will weep, this thought is not good, and it also confuses his mind. For because of this, he cannot say the requests with a whole heart in completeness. For during the recitation of supplications and requests, one must distance from himself all types of foreign thoughts in the world and only focus his mind on the words that he speaks before Hashem, as a man speaks to his friend. And then, naturally, with ease, his heart will be aroused until he comes to great weeping in truth. But when he thinks and expects to weep, then neither this nor that succeeds for him, for the recitation itself is confused by this, as above. For this thought and expectation to weep is also the aspect of a foreign thought that confuses the intention, so that he cannot hear well what he is saying because of this. For the essence is to speak the words in truth before Hashem without any other thoughts at all, as above. And if he merits true weeping, how good; and if not, not. And he should not confuse his recitation because of this, as above.
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

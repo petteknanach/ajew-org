@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 376</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 376</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה כנ&quot;ל. רק מחמת שלא היו יודעין שהשם יתברך נסתר שם, זה בעצמו הוא בחינת ההסתרות. ותכף, כשיודעין שהשם יתברך נסתר שם, על ידי זה בעצמו נתהפכה ההסתרה שבתוך ההסתרה, ונעשה ממנה דעת, והחזרה ה
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+Tinyana 90
+THE REASON FOR BREAKING A CLAY VESSEL AT THE TIME OF THE BETROTHAL
+The reason for breaking a clay vessel at the time of the betrothal is in two matters. For in truth, one must be very, very careful not to divorce his wife, for our Sages, of blessed memory, said: "Three do not see the face of Gehinnom [Hell], etc., and one who has a bad wife, what is the implication? To accept her with love" [Eruvin 41b]. And the commentators explained that this is why it did not say here the implication as above, for above it is stated there: "Three things remove a person from his mind and the mind of his Creator, what is the implication? To seek mercy." And here it did not say this implication, for with these three, one must accept with love specifically, because through them he does not see the face of Gehinnom. And this is the aspect of breaking a clay vessel at the time of the betrothal, for the gate of the potsherd was in Jerusalem [where they threw broken pottery, as Rashi explained there]. And this gate is opposite the entrance of Gehinnom, as it is written: "And you shall go out to the valley of the son of Hinnom, which is at the entrance of the gate of the potsherd" [Jeremiah 19:2]. And the valley of the son of Hinnom is the aspect of Gehinnom, as our Sages, of blessed memory, said: "There are two palm trees in the valley of the son of Hinnom, and smoke rises from between them, and this is the entrance of Gehinnom" [Sukkah 32b, Eruvin 19a]. And this is why they break a clay vessel at the time of the betrothal, for they allude to him with this two matters: That if she is a bad wife, be careful not to betray her, but accept her with love, for through this you do not see the face of Gehinnom, as above. And if she is a good wife, know and remember that there is Gehinnom, and do not be drawn after your desire, and sanctify yourself properly, for remember, you shall remember that there is Gehinnom. And all this they allude to him through breaking a clay vessel, which is the aspect of the gate of the potsherd, which is the aspect of the entrance of Gehinnom, as above. And therefore, through breaking a clay vessel, they allude to him the two matters mentioned above.
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

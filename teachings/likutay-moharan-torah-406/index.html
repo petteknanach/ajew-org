@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 406</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 406</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה כך, הם גורעים ממנה אות או תבה, ובמקום אחר מוסיפין, ובזה דורשין אותה, כפי מה שיודעין, כמו שנמסרה להם. ועל כן כשפוגם בכבוד תלמיד חכם, אין רפואה למכתו. כי עקר כח הרפואה שמקבלין מהתורה, אי אפשר לקבל כי אם על ידי חכמי הדור, כי להם נמסרה לדרש, והם יודעים להרכיב אותיות ה
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+Tinyana 120
+HE SHOULD NOT PRAY WITH INTENTIONS, ONLY INTEND THE MEANING OF THE WORDS LITERALLY
+One of our people told me that he was speaking with our master, of blessed memory, about the service of Hashem [G-d], as was his way. And our master, of blessed memory, understood that he was somewhat engaging in intending kavanos [kabbalistic meditative intentions] in his tefillah [prayer]. And our master, of blessed memory, was very particular with him and said to him that he should no longer engage in this and not pray with kavanos, but only intend the meaning of the words literally [pirush hamilos kipshuto]. [Even though this person studied the writings of the Ari, of blessed memory, by his command, nevertheless he did not want him to pray with kavanos at all.] And our master, of blessed memory, said to him that one who is not worthy of this, when he prays with kavanos, it is like sorcery. For in sorcery it is said: "You shall not learn to do" [Deuteronomy 18:9]. And our Sages, of blessed memory, expounded [Shabbos 75a, Rosh Hashanah 24b, Sanhedrin 68a]: "You shall not learn to do, but you may learn to understand and to teach." So it is with the matter of kavanos, to distinguish, that one should not learn them except to understand and to teach, but not to do with them, that is, to intend them in tefillah, for one who is not worthy of this. And he said that the essence of tefillah is attachment to Hashem. And it would be better to pray in the vernacular language that one speaks, for when one prays in the language that one speaks, then the heart is very close and attached to the words of tefillah, and one can attach himself more to Hashem. But the Men of the Great Assembly already established for us the order of tefillah [because not every person can arrange the order of tefillah for himself, as brought]. Therefore, we are obligated to pray in the holy language as they arranged for us. But the essence is only to intend the meaning of the words literally, for this is the essence of the tefillah that one prays before Hashem for every single matter. And through this, one draws close and attaches to Him, blessed be He. And behold, one who speaks in the holy language constantly, such as a Jerusalemite, does not need to think in his mind the meaning of the words, but only to incline his ear to what he says, and this is the essence of his intention in tefillah. And for true great tzadikim [righteous ones], for them, all the kavanos of the Ari, of blessed memory, etc., are the meaning of the words, for in their literal meaning of the words, all the kavanos are included.
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>
