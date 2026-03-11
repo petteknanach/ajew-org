@@ -1,55 +1,0 @@
-﻿<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>Likutay Moharan Torah 174</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
-        .english { margin-top: 20px; }
-        .language-toggle { margin-bottom: 20px; }
-        button { margin: 0 5px; padding: 5px 10px; }
-    </style>
-</head>
-<body>
-    <h1>Likutay Moharan Torah 174</h1>
-    
-    <div class="language-toggle">
-        <button onclick="showHebrew()">Hebrew</button>
-        <button onclick="showEnglish()">English</button>
-        <button onclick="showBoth()">Both</button>
-    </div>
-    
-    <div id="hebrew-content" class="hebrew" style="display: none;">
-    <h2>Hebrew Content</h2>
-    <div class="hebrew-text">
-תורה מההעלם למקיפים, ואחר כך יכנסו המקיפים של ה
-    </div>
-</div>
-    
-    <div id="english-content" class="english" style="display: none;">
-        <h2>English Translation</h2>
-        <div class="english-text">
-174. When judgments, God forbid, overpower a person.
-When the forces of judgment (dinim), God forbid, overpower a person, one should not mention the person’s name in prayer. This is in order not to give strength to the judgments.As stated in the Zohar (Noach 69a) and in Likutei Torah of the Ari on Bereishit: Noah was not given a name at birth, because the world was then under harsh judgments, and his father refrained from naming him. For through the naming, the person becomes identifiable, and the accusatory forces can target him.Similarly, when Moses prayed for Miriam, he did not mention her name explicitly but said simply: “O God, please heal her now” (Numbers 12:13). Because judgments were overpowering her, he avoided stating her name explicitly.However, he did allude to her name wondrously. The phrase “נא רפא נא” (“please heal now”) has the numerical value (gematria) of Miriam Yocheved—the name of the ill and her mother, which are normally mentioned when praying for a sick person. Yet he refrained from doing so explicitly, for the reason stated above.
-        </div>
-    </div>
-    
-    <script>
-        function showHebrew() {
-            document.getElementById('hebrew-content').style.display = 'block';
-            document.getElementById('english-content').style.display = 'none';
-        }
-        function showEnglish() {
-            document.getElementById('hebrew-content').style.display = 'none';
-            document.getElementById('english-content').style.display = 'block';
-        }
-        function showBoth() {
-            document.getElementById('hebrew-content').style.display = 'block';
-            document.getElementById('english-content').style.display = 'block';
-        }
-        
-        // Default to showing both
-        showBoth();
-    </script>
-</body>
-</html>
