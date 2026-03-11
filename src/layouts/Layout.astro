@@ -164,90 +164,97 @@ const ogImage = new URL(image, Astro.site);
     </script>
 
     <!-- Page Agent Integration -->
-    <script src="/page-agent.min.js" is:inline></script>
     <script>
-      // Initialize Page Agent
-      window.PageAgent.init({
-        // API configuration (to be filled with actual keys)
-        apiKey: null, // Set your DeepSeek API key here
-        model: 'deepseek-chat',
-        language: ['en', 'he'],
-        safeMode: true,
-        position: 'bottom-right',
-        theme: 'light',
-        autoShow: false, // Don't auto-show on load
-        debug: false,
-        
-        // Built-in tools
-        tools: ['help', 'search', 'navigate', 'summarize'],
-        
-        // Custom tools for ajew.org
-        customTools: {
-          'find-teachings': {
-            name: 'find-teachings',
-            description: 'Find teachings about a topic',
-            execute: (topic) => {
-              if (!topic) return 'Please specify a topic. Example: <code>find-teachings prayer</code>';
-              return `Searching for teachings about "${topic}"...<br>Demo: Would search ajew.org teachings database.`;
-            }
-          },
-          'navigate-to-book': {
-            name: 'navigate-to-book',
-            description: 'Navigate to a specific book/chapter',
-            execute: (book) => {
-              if (!book) return 'Please specify a book. Example: <code>navigate-to-book Likutay Moharan</code>';
+      // Load page-agent.min.js dynamically to avoid Astro/Vite build issues
+      (function() {
+        const script = document.createElement('script');
+        script.src = '/page-agent.min.js';
+        script.onload = function() {
+          // Initialize Page Agent after script loads
+          if (window.PageAgent) {
+            window.PageAgent.init({
+              // API configuration (to be filled with actual keys)
+              apiKey: null, // Set your DeepSeek API key here
+              model: 'deepseek-chat',
+              language: ['en', 'he'],
+              safeMode: true,
+              position: 'bottom-right',
+              theme: 'light',
+              autoShow: false, // Don't auto-show on load
+              debug: false,
               
-              const books = {
-                'likutay moharan': '/teachings/likutay-moharan',
-                'likutay halachos': '/teachings/likutay-halachos',
-                'likutay tefilos': '/teachings/likutay-tefilos',
-                'stories': '/teachings/stories',
-                'advice': '/teachings/advice'
-              };
+              // Built-in tools
+              tools: ['help', 'search', 'navigate', 'summarize'],
               
-              const path = books[book.toLowerCase()];
-              if (path) {
-                setTimeout(() => {
-                  window.location.href = path;
-                }, 500);
-                return `Navigating to ${book}...`;
+              // Custom tools for ajew.org
+              customTools: {
+                'find-teachings': {
+                  name: 'find-teachings',
+                  description: 'Find teachings about a topic',
+                  execute: (topic) => {
+                    if (!topic) return 'Please specify a topic. Example: <code>find-teachings prayer</code>';
+                    return `Searching for teachings about "${topic}"...<br>Demo: Would search ajew.org teachings database.`;
+                  }
+                },
+                'navigate-to-book': {
+                  name: 'navigate-to-book',
+                  description: 'Navigate to a specific book/chapter',
+                  execute: (book) => {
+                    if (!book) return 'Please specify a book. Example: <code>navigate-to-book Likutay Moharan</code>';
+                    
+                    const books = {
+                      'likutay moharan': '/teachings/likutay-moharan',
+                      'likutay halachos': '/teachings/likutay-halachos',
+                      'likutay tefilos': '/teachings/likutay-tefilos',
+                      'stories': '/teachings/stories',
+                      'advice': '/teachings/advice'
+                    };
+                    
+                    const path = books[book.toLowerCase()];
+                    if (path) {
+                      setTimeout(() => {
+                        window.location.href = path;
+                      }, 500);
+                      return `Navigating to ${book}...`;
+                    }
+                    
+                    return `Book not found: "${book}"<br>Available: ${Object.keys(books).join(', ')}`;
+                  }
+                },
+                'hebrew-search': {
+                  name: 'hebrew-search',
+                  description: 'חיפוש בעברית',
+                  execute: (query) => {
+                    if (!query) return 'נא להזין שאילתת חיפוש. דוגמה: <code>hebrew-search תפילה</code>';
+                    return `מחפש: "${query}"...<br>דמו: יחפש במאגר העברי של ajew.org.`;
+                  }
+                },
+                'summarize-teaching': {
+                  name: 'summarize-teaching',
+                  description: 'Summarize the current teaching',
+                  execute: () => {
+                    // Check if we're on a teachings page
+                    const isTeachingPage = window.location.pathname.includes('/teachings/');
+                    if (!isTeachingPage) {
+                      return 'This command works on teaching pages. Navigate to a teaching first.';
+                    }
+                    
+                    const title = document.title.replace(' | A Jew', '');
+                    const content = document.querySelector('main')?.textContent?.substring(0, 200) + '...';
+                    
+                    return `Teaching Summary:<br>
+                    <strong>Title:</strong> ${title}<br>
+                    <strong>Preview:</strong> ${content}<br>
+                    <br>Demo: Full Page Agent would analyze and summarize the entire teaching.`;
+                  }
+                }
               }
-              
-              return `Book not found: "${book}"<br>Available: ${Object.keys(books).join(', ')}`;
-            }
-          },
-          'hebrew-search': {
-            name: 'hebrew-search',
-            description: 'חיפוש בעברית',
-            execute: (query) => {
-              if (!query) return 'נא להזין שאילתת חיפוש. דוגמה: <code>hebrew-search תפילה</code>';
-              return `מחפש: "${query}"...<br>דמו: יחפש במאגר העברי של ajew.org.`;
-            }
-          },
-          'summarize-teaching': {
-            name: 'summarize-teaching',
-            description: 'Summarize the current teaching',
-            execute: () => {
-              // Check if we're on a teachings page
-              const isTeachingPage = window.location.pathname.includes('/teachings/');
-              if (!isTeachingPage) {
-                return 'This command works on teaching pages. Navigate to a teaching first.';
-              }
-              
-              const title = document.title.replace(' | A Jew', '');
-              const content = document.querySelector('main')?.textContent?.substring(0, 200) + '...';
-              
-              return `Teaching Summary:<br>
-              <strong>Title:</strong> ${title}<br>
-              <strong>Preview:</strong> ${content}<br>
-              <br>Demo: Full Page Agent would analyze and summarize the entire teaching.`;
-            }
+            });
+            console.log('Page Agent initialized on ajew.org');
           }
-        }
-      });
-      
-      // Log initialization
-      console.log('Page Agent initialized on ajew.org');
+        };
+        document.body.appendChild(script);
+      })();
     </script>
   </body>
 </html>
