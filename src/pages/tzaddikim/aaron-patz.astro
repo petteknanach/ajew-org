@@ -1,0 +1,570 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+// Profile data for Aaron Patz
+const tzaddik = {
+  name: "Aaron Patz (Aharon Patz)",
+  hebrew_name: "רבי אהרן פץ",
+  yahrzeit_hebrew: "כ״ז בַּאֲדָר",
+  yahrzeit_english: "27 Adar",
+  gregorian_date: "March 21, 2012 (ד' אדר ב' תשע\"ב)",
+  birth_year: "Approximately 1962",
+  passing_year: "2012",
+  age_at_passing: "Approximately 50",
+  location: "Beit Shemesh, Israel",
+  category: "Breslov Disciples - Modern Era",
+  era: "Contemporary (20th-21st Century)",
+  significance: "Prominent Breslov disciple, close friend and student of Saba (Rabbi Yisroel Dov Ber Odesser), known for extraordinary dedication to spreading Breslov teachings (hafatza)",
+  
+  // Biography sections
+  biography: [
+    {
+      title: "Meeting Saba in Ranana",
+      content: "Aaron Patz met Saba (Rabbi Yisroel Dov Ber Odesser) when Saba was in an old age home in Ranana. Saba had been waiting for him, recognizing him as 'a man of action.' This meeting was significant as Saba saw in Aaron Patz someone who would carry forward the mission of spreading Breslov teachings with mesiras nefesh (self-sacrifice)."
+    },
+    {
+      title: "The Meaning of 'Patz'",
+      content: "Saba explained that Aaron's surname 'Patz' is alluded to in the holy name on the Pettek (the note from Heaven) - PTzPTzYH. The name 'Patz' comes from the same Hebrew root as 'hafatza' (הפצה), meaning 'spreading' or 'dissemination.' True to his name, Aaron Patz became a 'fire of spreading' in distributing Breslov teachings."
+    },
+    {
+      title: "Dedication to Hafatza (Spreading)",
+      content: "Aaron Patz was known as a 'hero in spreading' - he distributed books, the holy note ('Na Nach Nachma Nachman Meuman'), and recordings of Saba's teachings. He participated in early mass trips to Uman (including the first mass flight in 1991) and recorded conversations about Saba's travels to America. His dedication to spreading Breslov teachings was extraordinary."
+    },
+    {
+      title: "Connection to Saba's Teachings",
+      content: "As a close student and friend of Saba, Aaron Patz was deeply involved in preserving and spreading Saba's teachings. He recorded video series that are available online, including stories about Saba, Breslov gatherings, and guidance such as 'not to write Na Nach on books to bring redemption to all of Israel.'"
+    }
+  ],
+  
+  // Passing and Legacy
+  passing: {
+    date: "March 21, 2012 (ד' אדר ב' תשע\"ב)",
+    circumstances: "He suddenly collapsed at Ben Gurion Airport on his way to Kiev (likely to Uman), the day before Rosh Hashanah, and passed away at the scene. He was buried in Beit Shemesh.",
+    significance: "His passing on the eve of Rosh Hashanah, while traveling to strengthen his connection to Rebbe Nachman, symbolizes his ultimate dedication to Breslov teachings."
+  },
+  
+  // Teaching connections
+  teachings: [
+    {
+      title: "The Pettek Connection",
+      content: "Saba revealed that Aaron's name 'Patz' is encoded in the holy name on the Pettek (PTzPTzYH), showing his destined role in spreading the message. This connection between his name and his mission demonstrates the divine providence in his life's work."
+    },
+    {
+      title: "Mesiras Nefesh for Hafatza",
+      content: "Aaron Patz exemplified self-sacrifice in spreading Breslov teachings. He traveled extensively, distributed materials widely, and dedicated his life to ensuring that Rebbe Nachman's teachings and Saba's message reached as many people as possible."
+    },
+    {
+      title: "Preserving Oral Tradition",
+      content: "Through his video recordings and conversations, Aaron Patz helped preserve important oral traditions about Saba's life, teachings, and travels. These recordings serve as valuable historical documents for the Breslov community."
+    }
+  ],
+  
+  // Legacy
+  legacy: [
+    "Remembered as 'a fire of spreading' in Breslov outreach",
+    "Instrumental in the widespread distribution of the holy note (Pettek)",
+    "Preserved valuable oral history through video recordings",
+    "Exemplified mesiras nefesh (self-sacrifice) for hafatza",
+    "His name eternally connected to the Pettek's divine message",
+    "Inspired others through his dedication and energy"
+  ],
+  
+  // Multimedia resources
+  resources: [
+    {
+      type: "Video Series",
+      title: "Old Film - Aaron Patz",
+      url: "https://www.youtube.com/playlist?list=PLOpOpa-8PwaaCa1V3SjngrnFJYo7RYh87",
+      description: "Video recordings of Aaron Patz sharing stories about Saba and Breslov teachings"
+    },
+    {
+      type: "Song",
+      title: "Mighty in Hafatza (גיבור בהפצה)",
+      url: "https://simchananach.bandcamp.com/track/mighty-in-hafatza",
+      description: "Song composed in memory of Aaron Patz"
+    },
+    {
+      type: "Article",
+      title: "News report about his passing",
+      url: "https://www.bhol.co.il/news/100861",
+      description: "Hebrew news article about Aaron Patz's passing"
+    }
+  ],
+  
+  // Related tzaddikim
+  related: [
+    {
+      name: "Saba (Rabbi Yisroel Dov Ber Odesser)",
+      path: "/tzaddikim/saba",
+      relationship: "Teacher and close friend"
+    },
+    {
+      name: "Rebbe Nachman of Breslov",
+      path: "/tzaddikim/rebbe-nachman",
+      relationship: "Source of the teachings he spread"
+    },
+    {
+      name: "Other Breslov spreaders",
+      path: "/tzaddikim/breslov-spreaders",
+      relationship: "Fellow activists in hafatza"
+    }
+  ]
+};
+---
+
+<Layout 
+  title={`Aaron Patz | Tzaddikim Profiles`}
+  description={`Learn about Aaron Patz (Aharon Patz), Breslov disciple with yahrzeit on 27 Adar. Close student of Saba, known for extraordinary dedication to spreading Breslov teachings (hafatza).`}
+>
+
+  <div class="tzaddik-profile">
+    <!-- Header with basic info -->
+    <div class="profile-header">
+      <div class="profile-info">
+        <h1 class="profile-name">{tzaddik.name}</h1>
+        <h2 class="profile-hebrew" dir="rtl">{tzaddik.hebrew_name}</h2>
+        
+        <div class="profile-meta">
+          <div class="meta-item">
+            <span class="meta-label">Yahrzeit:</span>
+            <span class="meta-value">{tzaddik.yahrzeit_hebrew} ({tzaddik.yahrzeit_english})</span>
+          </div>
+          
+          <div class="meta-item">
+            <span class="meta-label">Gregorian Date:</span>
+            <span class="meta-value">{tzaddik.gregorian_date}</span>
+          </div>
+          
+          <div class="meta-item">
+            <span class="meta-label">Location:</span>
+            <span class="meta-value">{tzaddik.location}</span>
+          </div>
+          
+          <div class="meta-item">
+            <span class="meta-label">Category:</span>
+            <span class="meta-value">{tzaddik.category}</span>
+          </div>
+          
+          <div class="meta-item">
+            <span class="meta-label">Age at Passing:</span>
+            <span class="meta-value">{tzaddik.age_at_passing}</span>
+          </div>
+        </div>
+        
+        <div class="profile-significance">
+          <h3>Significance</h3>
+          <p>{tzaddik.significance}</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Special Connection Box -->
+    <div class="special-connection">
+      <h3>🕯️ Special Connection to Saba</h3>
+      <p><strong>The Name "Patz":</strong> Saba revealed that Aaron's surname "Patz" is alluded to in the holy name on the Pettek - <strong>PTzPTzYH</strong>. The name comes from the same Hebrew root as "hafatza" (הפצה), meaning "spreading." True to his name, Aaron Patz became a dedicated spreader of Breslov teachings.</p>
+      <p><strong>Saba's Recognition:</strong> When they met in Ranana, Saba had been waiting for him, recognizing him as "a man of action" who would carry forward the mission with mesiras nefesh (self-sacrifice).</p>
+    </div>
+    
+    <!-- Biography Sections -->
+    <div class="profile-section">
+      <h2>Biography</h2>
+      {tzaddik.biography.map((section, index) => (
+        <div class="biography-section" key={index}>
+          <h3>{section.title}</h3>
+          <p>{section.content}</p>
+        </div>
+      ))}
+    </div>
+    
+    <!-- Passing Details -->
+    <div class="profile-section">
+      <h2>Passing</h2>
+      <div class="passing-details">
+        <p><strong>Date:</strong> {tzaddik.passing.date}</p>
+        <p><strong>Circumstances:</strong> {tzaddik.passing.circumstances}</p>
+        <p><strong>Significance:</strong> {tzaddik.passing.significance}</p>
+      </div>
+    </div>
+    
+    <!-- Teaching Connections -->
+    <div class="profile-section">
+      <h2>Teaching Connections</h2>
+      {tzaddik.teachings.map((teaching, index) => (
+        <div class="teaching-item" key={index}>
+          <h4>{teaching.title}</h4>
+          <p>{teaching.content}</p>
+        </div>
+      ))}
+    </div>
+    
+    <!-- Legacy -->
+    <div class="profile-section">
+      <h2>Legacy</h2>
+      <ul class="legacy-list">
+        {tzaddik.legacy.map((item, index) => (
+          <li key={index}>{item}</li>
+        ))}
+      </ul>
+    </div>
+    
+    <!-- Resources -->
+    <div class="profile-section">
+      <h2>Multimedia Resources</h2>
+      <div class="resources-grid">
+        {tzaddik.resources.map((resource, index) => (
+          <a href={resource.url} target="_blank" rel="noopener" class="resource-card" key={index}>
+            <div class="resource-type">{resource.type}</div>
+            <div class="resource-title">{resource.title}</div>
+            <div class="resource-description">{resource.description}</div>
+            <div class="resource-link">View Resource →</div>
+          </a>
+        ))}
+      </div>
+    </div>
+    
+    <!-- Related Tzaddikim -->
+    <div class="profile-section">
+      <h2>Related Tzaddikim</h2>
+      <div class="related-tzaddikim">
+        {tzaddik.related.map((related, index) => (
+          <a href={related.path} class="related-link" key={index}>
+            <span class="related-name">{related.name}</span>
+            <span class="related-relationship">{related.relationship}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+    
+    <!-- Navigation -->
+    <div class="profile-navigation">
+      <a href="/" class="nav-link">← Back to Home</a>
+      <a href="/tzaddikim" class="nav-link">View All Tzaddikim →</a>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .tzaddik-profile {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  
+  .profile-header {
+    margin-bottom: 2rem;
+  }
+  
+  .profile-name {
+    font-size: 2.5rem;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+  }
+  
+  .profile-hebrew {
+    font-family: var(--font-hebrew);
+    font-size: 2rem;
+    color: #4b5563;
+    margin-bottom: 1.5rem;
+  }
+  
+  .profile-meta {
+    background: #f9fafb;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid #3b82f6;
+  }
+  
+  .meta-item {
+    display: flex;
+    margin-bottom: 0.75rem;
+  }
+  
+  .meta-item:last-child {
+    margin-bottom: 0;
+  }
+  
+  .meta-label {
+    font-weight: 600;
+    color: #374151;
+    min-width: 140px;
+  }
+  
+  .meta-value {
+    color: #6b7280;
+  }
+  
+  .profile-significance {
+    background: #dbeafe;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #3b82f6;
+  }
+  
+  .profile-significance h3 {
+    color: #1e40af;
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+  }
+  
+  .profile-significance p {
+    color: #1e3a8a;
+    margin: 0;
+    line-height: 1.6;
+  }
+  
+  .special-connection {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    border: 2px solid #f59e0b;
+  }
+  
+  .special-connection h3 {
+    color: #92400e;
+    margin-top: 0;
+    margin-bottom: 1rem;
+  }
+  
+  .special-connection p {
+    color: #78350f;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+  
+  .special-connection p:last-child {
+    margin-bottom: 0;
+  }
+  
+  .profile-section {
+    margin-bottom: 3rem;
+  }
+  
+  .profile-section h2 {
+    color: #1f2937;
+    border-bottom: 2px solid #3b82f6;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .biography-section {
+    margin-bottom: 1.5rem;
+  }
+  
+  .biography-section h3 {
+    color: #374151;
+    margin-bottom: 0.5rem;
+  }
+  
+  .biography-section p {
+    color: #6b7280;
+    line-height: 1.8;
+    margin: 0;
+  }
+  
+  .passing-details {
+    background: #f8fafc;
+    padding: 1.5rem;
+    border-radius: 6px;
+    border-left: 3px solid #6b7280;
+  }
+  
+  .passing-details p {
+    margin-bottom: 0.75rem;
+    line-height: 1.6;
+  }
+  
+  .passing-details p:last-child {
+    margin-bottom: 0;
+  }
+  
+  .passing-details strong {
+    color: #374151;
+  }
+  
+  .teaching-item {
+    background: #f0f9ff;
+    padding: 1.25rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    border-left: 3px solid #0ea5e9;
+  }
+  
+  .teaching-item h4 {
+    color: #0369a1;
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+  }
+  
+  .teaching-item p {
+    color: #0c4a6e;
+    margin: 0;
+    line-height: 1.6;
+  }
+  
+  .legacy-list {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .legacy-list li {
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    background: #f0fdf4;
+    border-radius: 6px;
+    border-left: 3px solid #10b981;
+    color: #065f46;
+  }
+  
+  .resources-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+  }
+  
+  .resource-card {
+    display: block;
+    padding: 1.25rem;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  
+  .resource-card:hover {
+    background: #f9fafb;
+    border-color: #3b82f6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .resource-type {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+  
+  .resource-title {
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+  }
+  
+  .resource-description {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+  }
+  
+  .resource-link {
+    font-size: 0.875rem;
+    color: #3b82f6;
+    font-weight: 600;
+  }
+  
+  .related-tzaddikim {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+  
+  .related-link {
+    display: block;
+    padding: 1rem;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  
+  .related-link:hover {
+    background: #f9fafb;
+    border-color: #3b82f6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .related-name {
+    display: block;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 0.25rem;
+  }
+  
+  .related-relationship {
+    display: block;
+    font-size: 0.875rem;
+    color: #6b7280;
+  }
+  
+  .profile-navigation {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e5e7eb;
+  }
+  
+  .nav-link {
+    padding: 0.75rem 1.5rem;
+    background: #3b82f6;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  
+  .nav-link:hover {
+    background: #2563eb;
+    transform: translateY(-2px);
+  }
+  
+  @media (max-width: 768px) {
+    .tzaddik-profile {
+      padding: 1rem;
+    }
+    
+    .profile-name {
+      font-size: 2rem;
+    }
+    
+    .profile-hebrew {
+      font-size: 1.5rem;
+    }
+    
+    .meta-item {
+      flex-direction: column;
+    }
+    
+    .meta-label {
+      min-width: auto;
+      margin-bottom: 0.25rem;
+    }
+    
+    .resources-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .related-tzaddikim {
+      grid-template-columns: 1fr;
+    }
+    
+    .profile-navigation {
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .nav-link {
+      text-align: center;
+    }
+  }
+</style>
