@@ -1,0 +1,213 @@
+---
+// Compact Yahrzeit Display for Top Left Corner
+// Shows only today's yahrzeits in compact format
+// Click names to open profiles
+
+// Static data for today (26 Adar)
+const todayTzaddikim = [
+  {
+    name: "Obadiah the Prophet",
+    hebrew_name: "עובדיה הנביא",
+    yahrzeit_hebrew: "26 Adar",
+    profile_path: "/tzaddikim/obadiah"
+  },
+  {
+    name: "Rabbi Nussun son of Yehuda of Tiveria",
+    hebrew_name: "רבי נוסן בן יהודה מטבריה",
+    yahrzeit_hebrew: "26 Adar",
+    profile_path: "/tzaddikim/nussun-tiveria"
+  }
+];
+
+// Static data for tomorrow (27 Adar)
+const tomorrowTzaddikim = [
+  {
+    name: "Rabbi Moshe Cordovero (Ramak)",
+    hebrew_name: "רבי משה קורדובירו (רמ״ק)",
+    yahrzeit_hebrew: "27 Adar",
+    profile_path: "/tzaddikim/ramak"
+  },
+  {
+    name: "Aaron Patz",
+    hebrew_name: "אהרון פץ",
+    yahrzeit_hebrew: "27 Adar",
+    profile_path: "/tzaddikim/aaron-patz"
+  }
+];
+
+const hasToday = todayTzaddikim.length > 0;
+const hasTomorrow = tomorrowTzaddikim.length > 0;
+const showCompact = hasToday || hasTomorrow;
+
+// Hebrew date for display
+const todayHebrew = "כ״ו בַּאֲדָר";
+const tomorrowHebrew = "כ״ז בַּאֲדָר";
+---
+
+{showCompact && (
+  <div class="compact-yahrzeit">
+    <!-- Today's Yahrzeits -->
+    {hasToday && (
+      <div class="yahrzeit-section today-section">
+        <div class="section-header">
+          <span class="yahrzeit-icon">🕯️</span>
+          <h4 class="section-title">Today's Yahrzeit: {todayHebrew}</h4>
+        </div>
+        <div class="tzaddikim-list">
+          {todayTzaddikim.map(tzaddik => (
+            <a href={tzaddik.profile_path} class="tzaddik-link">
+              <span class="tzaddik-name">{tzaddik.name}</span>
+              {tzaddik.hebrew_name && (
+                <span class="tzaddik-hebrew" dir="rtl">{tzaddik.hebrew_name}</span>
+              )}
+            </a>
+          ))}
+        </div>
+      </div>
+    )}
+    
+    <!-- Tomorrow's Yahrzeits -->
+    {hasTomorrow && (
+      <div class="yahrzeit-section tomorrow-section">
+        <div class="section-header">
+          <span class="yahrzeit-icon">📅</span>
+          <h4 class="section-title">Tomorrow: {tomorrowHebrew}</h4>
+        </div>
+        <div class="tzaddikim-list">
+          {tomorrowTzaddikim.map(tzaddik => (
+            <a href={tzaddik.profile_path} class="tzaddik-link">
+              <span class="tzaddik-name">{tzaddik.name}</span>
+              {tzaddik.hebrew_name && (
+                <span class="tzaddik-hebrew" dir="rtl">{tzaddik.hebrew_name}</span>
+              )}
+            </a>
+          ))}
+        </div>
+      </div>
+    )}
+    
+    <!-- View All Link -->
+    <div class="view-all">
+      <a href="/yahrzeits" class="view-all-link">View all yahrzeits →</a>
+    </div>
+  </div>
+)}
+
+<style>
+  .compact-yahrzeit {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 8px;
+    padding: 0.75rem;
+    max-width: 280px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    z-index: 20;
+  }
+  
+  .yahrzeit-section {
+    margin-bottom: 0.75rem;
+  }
+  
+  .yahrzeit-section:last-child {
+    margin-bottom: 0;
+  }
+  
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.25rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+  
+  .yahrzeit-icon {
+    font-size: 1rem;
+  }
+  
+  .section-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #92400e;
+    margin: 0;
+  }
+  
+  .tzaddikim-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+  
+  .tzaddik-link {
+    display: flex;
+    flex-direction: column;
+    padding: 0.375rem 0.5rem;
+    background: #fff;
+    border-radius: 4px;
+    border-left: 2px solid #f59e0b;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  
+  .tzaddik-link:hover {
+    background: #fef3c7;
+    transform: translateX(2px);
+  }
+  
+  .tzaddik-name {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #1f2937;
+  }
+  
+  .tzaddik-hebrew {
+    font-size: 0.75rem;
+    color: #4b5563;
+    margin-top: 0.125rem;
+  }
+  
+  .view-all {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed #d1d5db;
+    text-align: center;
+  }
+  
+  .view-all-link {
+    font-size: 0.75rem;
+    color: #d97706;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  
+  .view-all-link:hover {
+    color: #92400e;
+    text-decoration: underline;
+  }
+  
+  /* Mobile responsiveness */
+  @media (max-width: 768px) {
+    .compact-yahrzeit {
+      top: 0.5rem;
+      left: 0.5rem;
+      right: 0.5rem;
+      max-width: none;
+      padding: 0.5rem;
+    }
+    
+    .section-title {
+      font-size: 0.8rem;
+    }
+    
+    .tzaddik-name {
+      font-size: 0.75rem;
+    }
+    
+    .tzaddik-hebrew {
+      font-size: 0.7rem;
+    }
+  }
+</style>

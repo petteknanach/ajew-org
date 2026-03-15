@@ -1,12 +1,15 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import YahrzeitBanner from '../components/YahrzeitBanner.astro';
+import CompactYahrzeit from '../components/CompactYahrzeit.astro';
 ---
 
 <Layout title="Home" description="Teachings of Rebbe Nachman of Breslov - Torah, wisdom, and inspiration">
   <section class="hero">
-    <!-- Top left: nanach.tv logo -->
-    <a href="https://nanach.tv" target="_blank" rel="noopener" class="corner-btn corner-btn-top-left">
+    <!-- Top left: Compact Yahrzeit Display -->
+    <CompactYahrzeit />
+    
+    <!-- Bottom left: nanach.tv logo (moved from top left) -->
+    <a href="https://nanach.tv" target="_blank" rel="noopener" class="corner-btn corner-btn-bottom-left">
       <span class="logo-text">nanach.tv</span>
     </a>
     
@@ -109,9 +112,6 @@ import YahrzeitBanner from '../components/YahrzeitBanner.astro';
       </div>
     </div>
   </section>
-
-  <!-- Yahrzeit Banner -->
-  <YahrzeitBanner />
 
   <section class="intro">
     <div class="container">
@@ -241,8 +241,8 @@ import YahrzeitBanner from '../components/YahrzeitBanner.astro';
     z-index: 10;
   }
 
-  .corner-btn-top-left {
-    top: 1rem;
+  .corner-btn-bottom-left {
+    bottom: 1rem;
     left: 1rem;
     background: linear-gradient(135deg, #c53030, #9b2c2c);
     color: white;
@@ -251,7 +251,7 @@ import YahrzeitBanner from '../components/YahrzeitBanner.astro';
     padding: 0.6rem 1.2rem;
   }
 
-  .corner-btn-top-left:hover {
+  .corner-btn-bottom-left:hover {
     background: linear-gradient(135deg, #9b2c2c, #c53030);
     transform: scale(1.05);
   }
@@ -657,16 +657,18 @@ import YahrzeitBanner from '../components/YahrzeitBanner.astro';
       font-size: 0.65rem !important;
     }
     
-    .corner-btn-top-left,
+    .corner-btn-bottom-left,
     .corner-btn-top-right {
-      top: 0.3rem;
+      top: auto;
     }
     
-    .corner-btn-top-left {
+    .corner-btn-bottom-left {
+      bottom: 0.3rem;
       left: 0.3rem;
     }
     
     .corner-btn-top-right {
+      top: 0.3rem;
       right: 0.3rem;
     }
   }
