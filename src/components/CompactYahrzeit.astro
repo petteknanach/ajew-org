@@ -80,8 +80,8 @@ const tomorrowHebrew = "כ״ז בַּאֲדָר";
       </div>
     )}
     
-    <!-- View All Link -->
-    <div class="view-all">
+    <!-- View All Link - Hidden on mobile -->
+    <div class="view-all desktop-only">
       <a href="/yahrzeits" class="view-all-link">View all yahrzeits →</a>
     </div>
   </div>
@@ -183,6 +183,11 @@ const tomorrowHebrew = "כ״ז בַּאֲדָר";
     text-decoration: underline;
   }
   
+  /* Hide desktop-only elements on mobile */
+  .desktop-only {
+    display: block;
+  }
+  
   /* Mobile responsiveness */
   @media (max-width: 768px) {
     .compact-yahrzeit {
@@ -203,6 +208,11 @@ const tomorrowHebrew = "כ״ז בַּאֲדָר";
     
     .tzaddik-hebrew {
       font-size: 0.7rem;
+    }
+    
+    /* Hide "View all yahrzeits" on mobile */
+    .desktop-only {
+      display: none;
     }
   }
 </style>
