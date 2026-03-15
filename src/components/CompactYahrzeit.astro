@@ -46,6 +46,28 @@ const upcomingDates = [
   }
 ];
 
+// Additional yahrzeits to add to database (not in next 7 days)
+const additionalYahrzeits = [
+  {
+    date_hebrew: "י״ג בְּחֶשְׁוָן",
+    date_english: "13 Cheshvan",
+    name: "Meir Yimeeney",
+    hebrew_name: "מאיר ימיני",
+    description: "Breslov Hasid, close to Saba Yisroel, big mayfitz (spreader), buried close to Saba",
+    profile_path: "/tzaddikim/meir-yimeeney",
+    type: "yahrzeit"
+  },
+  {
+    date_hebrew: "ט״ז בְּחֶשְׁוָן",
+    date_english: "16 Cheshvan",
+    name: "Shlomo Carlebach",
+    hebrew_name: "שלמה קרליבך",
+    description: "Renowned rabbi, composer, singer, spread Jewish music worldwide",
+    profile_path: "/tzaddikim/shlomo-carlebach",
+    type: "yahrzeit"
+  }
+];
+
 const hasToday = todayTzaddikim.length > 0;
 const hasTomorrow = tomorrowTzaddikim.length > 0;
 const hasUpcoming = upcomingDates.length > 0;
