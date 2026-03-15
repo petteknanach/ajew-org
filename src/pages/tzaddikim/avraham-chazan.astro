@@ -1,0 +1,513 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+// Profile data for Rabbi Avraham Chazan
+const tzaddik = {
+  name: "Rabbi Avraham Chazan",
+  hebrew_name: "רבי אברהם חזן",
+  yahrzeit_hebrew: "כ״ה בְּתַמּוּז",
+  yahrzeit_english: "25 Tamuz",
+  gregorian_date: "July 18, 1917",
+  birth_year: "1849",
+  passing_year: "1917",
+  age_at_passing: "68",
+  location: "Breslov, Ukraine → Jerusalem, Israel",
+  category: "Breslov Dynasty - Key Disciple",
+  era: "19th-20th Century",
+  significance: "Primary disciple of Rabbi Nachman of Tulchin and key figure in preserving and transmitting Breslov teachings to the next generation. Authored important Breslov works and helped establish Breslov in the Land of Israel.",
+  
+  // Biography sections
+  biography: [
+    {
+      title: "Early Life and Breslov Connection",
+      content: "Rabbi Avraham Chazan was born in 1849 in Breslov, Ukraine, into a family deeply connected to Breslov Chassidus. He became a close disciple of Rabbi Nachman of Tulchin (grandson of Reb Noson), who was the main Breslov leader of that generation. From a young age, he showed exceptional dedication to Breslov teachings and practices."
+    },
+    {
+      title: "Disciple of Rabbi Nachman of Tulchin",
+      content: "As the primary disciple of Rabbi Nachman of Tulchin, Rabbi Avraham Chazan absorbed the oral traditions and teachings that had been passed down from Rebbe Nachman through Reb Noson. He became a living repository of Breslov wisdom and was entrusted with preserving the authenticity of the teachings."
+    },
+    {
+      title: "Migration to the Land of Israel",
+      content: "In the late 19th century, Rabbi Avraham Chazan made aliyah (immigrated) to the Land of Israel, settling in Jerusalem. This was part of a larger movement of Breslover Chassidim establishing communities in the Holy Land. His move helped transplant Breslov teachings to Israel, where they would later flourish."
+    },
+    {
+      title: "Literary Contributions",
+      content: "Rabbi Avraham Chazan authored several important Breslov works, including 'Kochvey Or' (Stars of Light), a collection of Breslov teachings and stories. His writings helped preserve oral traditions and make Breslov teachings accessible to a wider audience. He also collected and edited the writings of earlier Breslov figures."
+    },
+    {
+      title: "Transmission to Next Generation",
+      content: "Rabbi Avraham Chazan played a crucial role in transmitting Breslov teachings to the next generation of leaders, including Rabbi Alter of Teplik and Rabbi Shmuel Horowitz. His dedication to preserving authentic Breslov tradition ensured the continuity of the movement through turbulent times."
+    }
+  ],
+  
+  // Major works
+  works: [
+    {
+      title: "Kochvey Or (Stars of Light)",
+      description: "Collection of Breslov teachings, stories, and insights compiled by Rabbi Avraham Chazan. Preserves oral traditions and makes Breslov wisdom accessible."
+    },
+    {
+      title: "Biur HaLikutim",
+      description: "Explanations and commentaries on Rebbe Nachman's teachings, helping students understand the depth of Likutey Moharan."
+    },
+    {
+      title: "Collected Letters and Teachings",
+      description: "Correspondence and teachings preserved by his disciples, providing guidance for Breslov practice and philosophy."
+    }
+  ],
+  
+  // Teaching connections
+  teachings: [
+    {
+      title: "Preserving Oral Tradition",
+      content: "Rabbi Avraham Chazan emphasized the importance of preserving the oral traditions passed down from Rebbe Nachman through Reb Noson. He served as a living link in the chain of transmission, ensuring authentic Breslov practice."
+    },
+    {
+      title: "Breslov in the Holy Land",
+      content: "By moving to Israel and establishing Breslov there, Rabbi Avraham Chazan helped fulfill Rebbe Nachman's connection to the Land of Israel. He demonstrated how Breslov teachings could flourish in the Holy Land."
+    },
+    {
+      title: "Authenticity in Transmission",
+      content: "Rabbi Avraham Chazan was meticulous about preserving the authentic form of Breslov teachings. He resisted changes and innovations, ensuring that later generations would receive the teachings as originally intended."
+    },
+    {
+      title: "Bridge Between Generations",
+      content: "Living through a period of transition, Rabbi Avraham Chazan served as a bridge between the older European Breslov community and the emerging Israeli Breslov community, ensuring continuity despite geographical displacement."
+    }
+  ],
+  
+  // Legacy
+  legacy: [
+    "Key figure in preserving Breslov teachings between generations",
+    "Helped establish Breslov communities in the Land of Israel",
+    "Authored important works preserving oral traditions",
+    "Primary disciple of Rabbi Nachman of Tulchin",
+    "Transmitted teachings to next generation of Breslov leaders",
+    "Maintained authenticity of Breslov practice during transition period",
+    "Served as living repository of Breslov wisdom and tradition"
+  ],
+  
+  // Related tzaddikim
+  related: [
+    {
+      name: "Reb Noson of Breslov",
+      path: "/tzaddikim/reb-noson",
+      relationship: "Teacher of his teacher (chain of transmission)"
+    },
+    {
+      name: "Rabbi Nachman of Tulchin",
+      path: "/tzaddikim/nachman-tulchin",
+      relationship: "His primary teacher"
+    },
+    {
+      name: "Rabbi Alter of Teplik",
+      path: "/tzaddikim/alter-teplik",
+      relationship: "Disciple he taught"
+    },
+    {
+      name: "Rabbi Shmuel Horowitz",
+      path: "/tzaddikim/shmuel-horowitz",
+      relationship: "Disciple he influenced"
+    }
+  ]
+};
+---
+
+<Layout 
+  title={`Rabbi Avraham Chazan | Tzaddikim Profiles`}
+  description={`Learn about Rabbi Avraham Chazan, key Breslov figure with yahrzeit on 25 Tamuz. Preserved Breslov teachings and helped establish Breslov in the Land of Israel.`}
+>
+
+  <div class="tzaddik-profile">
+    <!-- Header with basic info -->
+    <div class="profile-header">
+      <div class="profile-info">
+        <h1 class="profile-name">{tzaddik.name}</h1>
+        <h2 class="profile-hebrew" dir="rtl">{tzaddik.hebrew_name}</h2>
+        
+        <div class="profile-meta">
+          <div class="meta-item">
+            <span class="meta-label">Yahrzeit:</span>
+            <span class="meta-value">{tzaddik.yahrzeit_hebrew} ({tzaddik.yahrzeit_english})</span>
+          </div>
+          
+          <div class="meta-item">
+            <span class="meta-label">Gregorian Date:</span>
+            <span class="meta-value">{tzaddik.gregorian_date}</span>
+          </div>
+          
+          <div class="meta-item">
+            <span class="meta-label">Location:</span>
+            <span class="meta-value">{tzaddik.location}</span>
+          </div>
+          
+          <div class="meta-item">
+            <span class="meta-label">Category:</span>
+            <span class="meta-value">{tzaddik.category}</span>
+          </div>
+          
+          <div class="meta-item">
+            <span class="meta-label">Lifespan:</span>
+            <span class="meta-value">{tzaddik.birth_year} - {tzaddik.passing_year} (Age {tzaddik.age_at_passing})</span>
+          </div>
+        </div>
+        
+        <div class="profile-significance">
+          <h3>Significance</h3>
+          <p>{tzaddik.significance}</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Special Transmission Box -->
+    <div class="special-connection">
+      <h3>🕯️ Bridge Between Generations</h3>
+      <p><strong>Chain of Transmission:</strong> Rabbi Avraham Chazan served as a crucial link in the Breslov chain of transmission: Rebbe Nachman → Reb Noson → Rabbi Nachman of Tulchin → Rabbi Avraham Chazan → Next generation. His role ensured authentic teachings survived turbulent times.</p>
+      <p><strong>Preserver of Tradition:</strong> Living through the transition from European Breslov to Israeli Breslov, he meticulously preserved oral traditions and authentic practices, resisting changes that could dilute the original teachings.</p>
+    </div>
+    
+    <!-- Biography Sections -->
+    <div class="profile-section">
+      <h2>Biography</h2>
+      {tzaddik.biography.map((section, index) => (
+        <div class="biography-section" key={index}>
+          <h3>{section.title}</h3>
+          <p>{section.content}</p>
+        </div>
+      ))}
+    </div>
+    
+    <!-- Major Works -->
+    <div class="profile-section">
+      <h2>Major Works</h2>
+      <div class="works-grid">
+        {tzaddik.works.map((work, index) => (
+          <div class="work-card" key={index}>
+            <div class="work-title">{work.title}</div>
+            <div class="work-description">{work.description}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+    
+    <!-- Teaching Connections -->
+    <div class="profile-section">
+      <h2>Teaching Connections</h2>
+      {tzaddik.teachings.map((teaching, index) => (
+        <div class="teaching-item" key={index}>
+          <h4>{teaching.title}</h4>
+          <p>{teaching.content}</p>
+        </div>
+      ))}
+    </div>
+    
+    <!-- Legacy -->
+    <div class="profile-section">
+      <h2>Legacy</h2>
+      <ul class="legacy-list">
+        {tzaddik.legacy.map((item, index) => (
+          <li key={index}>{item}</li>
+        ))}
+      </ul>
+    </div>
+    
+    <!-- Related Tzaddikim -->
+    <div class="profile-section">
+      <h2>Related Tzaddikim</h2>
+      <div class="related-tzaddikim">
+        {tzaddik.related.map((related, index) => (
+          <a href={related.path} class="related-link" key={index}>
+            <span class="related-name">{related.name}</span>
+            <span class="related-relationship">{related.relationship}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+    
+    <!-- Navigation -->
+    <div class="profile-navigation">
+      <a href="/" class="nav-link">← Back to Home</a>
+      <a href="/tzaddikim" class="nav-link">View All Tzaddikim →</a>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .tzaddik-profile {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  
+  .profile-header {
+    margin-bottom: 2rem;
+  }
+  
+  .profile-name {
+    font-size: 2.5rem;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+  }
+  
+  .profile-hebrew {
+    font-family: var(--font-hebrew);
+    font-size: 2rem;
+    color: #4b5563;
+    margin-bottom: 1.5rem;
+  }
+  
+  .profile-meta {
+    background: #f9fafb;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid #0ea5e9;
+  }
+  
+  .meta-item {
+    display: flex;
+    margin-bottom: 0.75rem;
+  }
+  
+  .meta-item:last-child {
+    margin-bottom: 0;
+  }
+  
+  .meta-label {
+    font-weight: 600;
+    color: #374151;
+    min-width: 140px;
+  }
+  
+  .meta-value {
+    color: #6b7280;
+  }
+  
+  .profile-significance {
+    background: #e0f2fe;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #0ea5e9;
+  }
+  
+  .profile-significance h3 {
+    color: #0369a1;
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+  }
+  
+  .profile-significance p {
+    color: #0c4a6e;
+    margin: 0;
+    line-height: 1.6;
+  }
+  
+  .special-connection {
+    background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    border: 2px solid #0ea5e9;
+  }
+  
+  .special-connection h3 {
+    color: #0369a1;
+    margin-top: 0;
+    margin-bottom: 1rem;
+  }
+  
+  .special-connection p {
+    color: #0c4a6e;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+  
+  .special-connection p:last-child {
+    margin-bottom: 0;
+  }
+  
+  .profile-section {
+    margin-bottom: 3rem;
+  }
+  
+  .profile-section h2 {
+    color: #1f2937;
+    border-bottom: 2px solid #0ea5e9;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .biography-section {
+    margin-bottom: 1.5rem;
+  }
+  
+  .biography-section h3 {
+    color: #374151;
+    margin-bottom: 0.5rem;
+  }
+  
+  .biography-section p {
+    color: #6b7280;
+    line-height: 1.8;
+    margin: 0;
+  }
+  
+  .works-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+  
+  .work-card {
+    background: #f0f9ff;
+    padding: 1.25rem;
+    border-radius: 6px;
+    border-left: 3px solid #0ea5e9;
+  }
+  
+  .work-title {
+    font-weight: 600;
+    color: #0369a1;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+  }
+  
+  .work-description {
+    color: #0c4a6e;
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+  
+  .teaching-item {
+    background: #f0f9ff;
+    padding: 1.25rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    border-left: 3px solid #0ea5e9;
+  }
+  
+  .teaching-item h4 {
+    color: #0369a1;
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+  }
+  
+  .teaching-item p {
+    color: #0c4a6e;
+    margin: 0;
+    line-height: 1.6;
+  }
+  
+  .legacy-list {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .legacy-list li {
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    background: #f0f9ff;
+    border-radius: 6px;
+    border-left: 3px solid #0ea5e9;
+    color: #0c4a6e;
+  }
+  
+  .related-tzaddikim {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+  
+  .related-link {
+    display: block;
+    padding: 1rem;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  
+  .related-link:hover {
+    background: #f9fafb;
+    border-color: #0ea5e9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .related-name {
+    display: block;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 0.25rem;
+  }
+  
+  .related-relationship {
+    display: block;
+    font-size: 0.875rem;
+    color: #6b7280;
+  }
+  
+  .profile-navigation {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e5e7eb;
+  }
+  
+  .nav-link {
+    padding: 0.75rem 1.5rem;
+    background: #0ea5e9;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  
+  .nav-link:hover {
+    background: #0284c7;
+    transform: translateY(-2px);
+  }
+  
+  @media (max-width: 768px) {
+    .tzaddik-profile {
+      padding: 1rem;
+    }
+    
+    .profile-name {
+      font-size: 2rem;
+    }
+    
+    .profile-hebrew {
+      font-size: 1.5rem;
+    }
+    
+    .meta-item {
+      flex-direction: column;
+    }
+    
+    .meta-label {
+      min-width: auto;
+      margin-bottom: 0.25rem;
+    }
+    
+    .works-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .related-tzaddikim {
+      grid-template-columns: 1fr;
+    }
+    
+    .profile-navigation {
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .nav-link {
+      text-align: center;
+    }
+  }
+</style>

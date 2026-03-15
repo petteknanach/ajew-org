@@ -1,0 +1,497 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+// Profile data for Saba Yisroel Ber Odesser
+const tzaddik = {
+  name: "Saba Yisroel Ber Odesser",
+  hebrew_name: "סבא ישראל בער אודסר",
+  yahrzeit_hebrew: "כ״ה בְּתַמּוּז",
+  yahrzeit_english: "25 Tamuz",
+  gregorian_date: "October 3, 1994",
+  birth_year: "1888",
+  passing_year: "1994",
+  age_at_passing: "106",
+  location: "Tiberias, Israel",
+  category: "Breslov Dynasty - Pettek Receiver",
+  era: "20th Century",
+  significance: "Receiver of the Pettek (holy note from Heaven) containing the phrase 'Na Nach Nachma Nachman Meuman,' which sparked a revival of Breslov Chassidus in modern times. Known as 'Saba' (Grandfather) to his followers.",
+  
+  // Biography sections
+  biography: [
+    {
+      title: "Early Life and Breslov Connection",
+      content: "Saba Yisroel Ber Odesser was born in 1888 in Tiberias, Israel, to a Breslov family. From a young age, he was deeply connected to Breslov teachings. He studied in yeshiva and was known for his exceptional piety and dedication to Rebbe Nachman's teachings, particularly hitbodedut (personal prayer)."
+    },
+    {
+      title: "Receiving the Pettek (Holy Note)",
+      content: "In 1922, while immersed in prayer and fasting, Saba experienced a spiritual revelation. A note (Pettek) miraculously appeared before him containing the phrase 'Na Nach Nachma Nachman Meuman' and a personal message. This note, believed to be from Rebbe Nachman himself, became the center of his life's mission and sparked a Breslov revival."
+    },
+    {
+      title: "Mission to Spread the Pettek",
+      content: "Saba dedicated his life to spreading the message of the Pettek. He traveled, taught, and inspired countless people with the simple yet profound message: 'Na Nach Nachma Nachman Meuman' - a formula for spiritual connection and redemption. He emphasized that this phrase contains immense spiritual power and connection to Rebbe Nachman."
+    },
+    {
+      title: "Longevity and Spiritual Vigor",
+      content: "Saba lived to 106 years old, maintaining remarkable spiritual and physical vigor throughout his life. His longevity was seen as a blessing for his dedication to spreading Breslov teachings. Even in advanced age, he continued teaching, inspiring, and connecting people to Rebbe Nachman's teachings."
+    },
+    {
+      title: "Legacy and Impact",
+      content: "Saba's revelation of the Pettek sparked a major revival in Breslov Chassidus. The 'Na Nach' movement grew from his teachings, with followers worldwide embracing the Pettek's message. His simple, joyful approach to Breslov made the teachings accessible to a new generation."
+    }
+  ],
+  
+  // The Pettek details
+  pettek: {
+    phrase: "Na Nach Nachma Nachman Meuman",
+    hebrew: "נ נח נחמ נחמן מאומן",
+    meaning: "A mystical phrase received by Saba, believed to contain powerful spiritual energy and connection to Rebbe Nachman. The phrase is seen as a formula for spiritual elevation and redemption.",
+    significance: "The Pettek sparked a Breslov revival in the 20th century, creating the 'Na Nach' movement that emphasizes joy, simplicity, and direct connection to Rebbe Nachman through this sacred phrase."
+  },
+  
+  // Teaching connections
+  teachings: [
+    {
+      title: "The Power of Na Nach",
+      content: "Saba taught that the phrase 'Na Nach Nachma Nachman Meuman' contains immense spiritual power. Reciting, writing, or even seeing this phrase can bring spiritual elevation, protection, and connection to Rebbe Nachman."
+    },
+    {
+      title: "Joy and Simplicity",
+      content: "Saba emphasized a joyful, simple approach to Breslov. He taught that spiritual connection doesn't require complex philosophy but can be achieved through simple devotion, joy, and recitation of the holy phrase."
+    },
+    {
+      title: "Direct Connection to Rebbe Nachman",
+      content: "Through the Pettek, Saba taught that every Jew can have a direct, personal connection to Rebbe Nachman. The phrase serves as a spiritual 'wire' connecting the reciter to the Rebbe's teachings and blessings."
+    },
+    {
+      title: "Modern Breslov Revival",
+      content: "Saba's revelation came at a time when Breslov was relatively small. The Pettek sparked a major revival, attracting new followers and creating the vibrant 'Na Nach' movement that continues to grow today."
+    }
+  ],
+  
+  // Legacy
+  legacy: [
+    "Receiver of the Pettek (holy note from Heaven) containing 'Na Nach Nachma Nachman Meuman'",
+    "Sparkeda major Breslov revival in the 20th century",
+    "Founded the 'Na Nach' movement emphasizing joy and simplicity",
+    "Lived to 106 years old, maintaining spiritual vigor throughout",
+    "Made Breslov teachings accessible to a new generation",
+    "Emphasized direct personal connection to Rebbe Nachman through the holy phrase",
+    "Inspired countless followers with his joyful approach to spirituality"
+  ],
+  
+  // Related tzaddikim
+  related: [
+    {
+      name: "Rebbe Nachman of Breslov",
+      path: "/tzaddikim/rebbe-nachman",
+      relationship: "Source of the Pettek message"
+    },
+    {
+      name: "Aaron Patz",
+      path: "/tzaddikim/aaron-patz",
+      relationship: "Close disciple who helped spread the Pettek"
+    },
+    {
+      name: "Rabbi Moshe Feinstein",
+      path: "/tzaddikim/moshe-feinstein",
+      relationship: "Met Saba and gave approbation"
+    },
+    {
+      name: "Other Breslov spreaders",
+      path: "/tzaddikim/breslov-spreaders",
+      relationship: "Fellow activists in spreading Breslov teachings"
+    }
+  ]
+};
+---
+
+<Layout 
+  title={`Saba Yisroel Ber Odesser | Tzaddikim Profiles`}
+  description={`Learn about Saba Yisroel Ber Odesser, receiver of the Pettek (holy note) with yahrzeit on 25 Tamuz. Sparked Breslov revival with 'Na Nach Nachma Nachman Meuman.'`}
+>
+
+  <div class="tzaddik-profile">
+    <!-- Header with basic info -->
+    <div class="profile-header">
+      <div class="profile-info">
+        <h1 class="profile-name">{tzaddik.name}</h1>
+        <h2 class="profile-hebrew" dir="rtl">{tzaddik.hebrew_name}</h2>
+        
+        <div class="profile-meta">
+          <div class="meta-item">
+            <span class="meta-label">Yahrzeit:</span>
+            <span class="meta-value">{tzaddik.yahrzeit_hebrew} ({tzaddik.yahrzeit_english})</span>
+          </div>
+          
+          <div class="meta-item">
+            <span class="meta-label">Gregorian Date:</span>
+            <span class="meta-value">{tzaddik.gregorian_date}</span>
+          </div>
+          
+          <div class="meta-item">
+            <span class="meta-label">Location:</span>
+            <span class="meta-value">{tzaddik.location}</span>
+          </div>
+          
+          <div class="meta-item">
+            <span class="meta-label">Category:</span>
+            <span class="meta-value">{tzaddik.category}</span>
+          </div>
+          
+          <div class="meta-item">
+            <span class="meta-label">Lifespan:</span>
+            <span class="meta-value">{tzaddik.birth_year} - {tzaddik.passing_year} (Age {tzaddik.age_at_passing})</span>
+          </div>
+        </div>
+        
+        <div class="profile-significance">
+          <h3>Significance</h3>
+          <p>{tzaddik.significance}</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Pettek Special Box -->
+    <div class="pettek-box">
+      <h3>🕯️ The Pettek - Holy Note from Heaven</h3>
+      <div class="pettek-phrase-hebrew" dir="rtl">{tzaddik.pettek.hebrew}</div>
+      <div class="pettek-phrase-english">{tzaddik.pettek.phrase}</div>
+      <div class="pettek-meaning">
+        <p><strong>Meaning:</strong> {tzaddik.pettek.meaning}</p>
+        <p><strong>Significance:</strong> {tzaddik.pettek.significance}</p>
+      </div>
+    </div>
+    
+    <!-- Biography Sections -->
+    <div class="profile-section">
+      <h2>Biography</h2>
+      {tzaddik.biography.map((section, index) => (
+        <div class="biography-section" key={index}>
+          <h3>{section.title}</h3>
+          <p>{section.content}</p>
+        </div>
+      ))}
+    </div>
+    
+    <!-- Teaching Connections -->
+    <div class="profile-section">
+      <h2>Teaching Connections</h2>
+      {tzaddik.teachings.map((teaching, index) => (
+        <div class="teaching-item" key={index}>
+          <h4>{teaching.title}</h4>
+          <p>{teaching.content}</p>
+        </div>
+      ))}
+    </div>
+    
+    <!-- Legacy -->
+    <div class="profile-section">
+      <h2>Legacy</h2>
+      <ul class="legacy-list">
+        {tzaddik.legacy.map((item, index) => (
+          <li key={index}>{item}</li>
+        ))}
+      </ul>
+    </div>
+    
+    <!-- Related Tzaddikim -->
+    <div class="profile-section">
+      <h2>Related Tzaddikim</h2>
+      <div class="related-tzaddikim">
+        {tzaddik.related.map((related, index) => (
+          <a href={related.path} class="related-link" key={index}>
+            <span class="related-name">{related.name}</span>
+            <span class="related-relationship">{related.relationship}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+    
+    <!-- Navigation -->
+    <div class="profile-navigation">
+      <a href="/" class="nav-link">← Back to Home</a>
+      <a href="/tzaddikim" class="nav-link">View All Tzaddikim →</a>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .tzaddik-profile {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  
+  .profile-header {
+    margin-bottom: 2rem;
+  }
+  
+  .profile-name {
+    font-size: 2.5rem;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+  }
+  
+  .profile-hebrew {
+    font-family: var(--font-hebrew);
+    font-size: 2rem;
+    color: #4b5563;
+    margin-bottom: 1.5rem;
+  }
+  
+  .profile-meta {
+    background: #f9fafb;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid #f59e0b;
+  }
+  
+  .meta-item {
+    display: flex;
+    margin-bottom: 0.75rem;
+  }
+  
+  .meta-item:last-child {
+    margin-bottom: 0;
+  }
+  
+  .meta-label {
+    font-weight: 600;
+    color: #374151;
+    min-width: 140px;
+  }
+  
+  .meta-value {
+    color: #6b7280;
+  }
+  
+  .profile-significance {
+    background: #fef3c7;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #f59e0b;
+  }
+  
+  .profile-significance h3 {
+    color: #92400e;
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+  }
+  
+  .profile-significance p {
+    color: #78350f;
+    margin: 0;
+    line-height: 1.6;
+  }
+  
+  .pettek-box {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    padding: 2rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    border: 3px solid #f59e0b;
+    text-align: center;
+  }
+  
+  .pettek-box h3 {
+    color: #92400e;
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+  }
+  
+  .pettek-phrase-hebrew {
+    font-family: var(--font-hebrew);
+    font-size: 2.5rem;
+    color: #92400e;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+  }
+  
+  .pettek-phrase-english {
+    font-size: 1.5rem;
+    color: #78350f;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+  
+  .pettek-meaning p {
+    color: #78350f;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+    text-align: left;
+  }
+  
+  .pettek-meaning p:last-child {
+    margin-bottom: 0;
+  }
+  
+  .pettek-meaning strong {
+    color: #92400e;
+  }
+  
+  .profile-section {
+    margin-bottom: 3rem;
+  }
+  
+  .profile-section h2 {
+    color: #1f2937;
+    border-bottom: 2px solid #f59e0b;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .biography-section {
+    margin-bottom: 1.5rem;
+  }
+  
+  .biography-section h3 {
+    color: #374151;
+    margin-bottom: 0.5rem;
+  }
+  
+  .biography-section p {
+    color: #6b7280;
+    line-height: 1.8;
+    margin: 0;
+  }
+  
+  .teaching-item {
+    background: #fef3c7;
+    padding: 1.25rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    border-left: 3px solid #f59e0b;
+  }
+  
+  .teaching-item h4 {
+    color: #92400e;
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+  }
+  
+  .teaching-item p {
+    color: #78350f;
+    margin: 0;
+    line-height: 1.6;
+  }
+  
+  .legacy-list {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .legacy-list li {
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    background: #fef3c7;
+    border-radius: 6px;
+    border-left: 3px solid #f59e0b;
+    color: #78350f;
+  }
+  
+  .related-tzaddikim {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+  
+  .related-link {
+    display: block;
+    padding: 1rem;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  
+  .related-link:hover {
+    background: #f9fafb;
+    border-color: #f59e0b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .related-name {
+    display: block;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 0.25rem;
+  }
+  
+  .related-relationship {
+    display: block;
+    font-size: 0.875rem;
+    color: #6b7280;
+  }
+  
+  .profile-navigation {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e5e7eb;
+  }
+  
+  .nav-link {
+    padding: 0.75rem 1.5rem;
+    background: #f59e0b;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  
+  .nav-link:hover {
+    background: #d97706;
+    transform: translateY(-2px);
+  }
+  
+  @media (max-width: 768px) {
+    .tzaddik-profile {
+      padding: 1rem;
+    }
+    
+    .profile-name {
+      font-size: 2rem;
+    }
+    
+    .profile-hebrew {
+      font-size: 1.5rem;
+    }
+    
+    .pettek-phrase-hebrew {
+      font-size: 2rem;
+    }
+    
+    .pettek-phrase-english {
+      font-size: 1.25rem;
+    }
+    
+    .meta-item {
+      flex-direction: column;
+    }
+    
+    .meta-label {
+      min-width: auto;
+      margin-bottom: 0.25rem;
+    }
+    
+    .related-tzaddikim {
+      grid-template-columns: 1fr;
+    }
+    
+    .profile-navigation {
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .nav-link {
+      text-align: center;
+    }
+  }
+</style>
