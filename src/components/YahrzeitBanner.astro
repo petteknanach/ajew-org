@@ -1,50 +1,40 @@
 ---
-// Yahrzeit Banner for Homepage
-import { getHebrewDate, getTzaddikimForHebrewDate } from '../lib/yahrzeit-utils.js';
+// Yahrzeit Banner for Homepage - STATIC VERSION
+// Today is 26 Adar 5786 (March 15, 2026)
+// Static data for now to avoid build-time API fetch issues
 
-// Get today's Hebrew date
-const today = new Date();
-const todayHebrew = await getHebrewDate(today);
+// Static data for today (26 Adar)
+const todayTzaddikim = [
+  {
+    name: "Obadiah the Prophet",
+    hebrew_name: "עובדיה הנביא",
+    yahrzeit_hebrew: "26 Adar",
+    notes: "Biblical prophet, book is one chapter of powerful prophecy relevant to our times"
+  },
+  {
+    name: "Rav Eliezer Lippa, son of Rav Elimelech of Lizhensk",
+    hebrew_name: "רבי אליעזר ליפא בן רבי אלימלך מליז'נסק",
+    yahrzeit_hebrew: "26 Adar",
+    notes: ""
+  }
+];
 
-// Get yesterday's date for "day before" display
-const yesterday = new Date(today);
-yesterday.setDate(yesterday.getDate() - 1);
-const yesterdayHebrew = await getHebrewDate(yesterday);
+// Static data for yesterday (25 Adar)
+const yesterdayTzaddikim = [
+  {
+    name: "Rabbi Gershon Kitover",
+    hebrew_name: "רבי גרשון קיטובר",
+    yahrzeit_hebrew: "25 Adar",
+    notes: "Brother-in-law of Baal Shem Tov (1761)"
+  }
+];
 
-// Load filtered database
-import tzaddikimData from '../../public/data/tzaddikim-database-filtered.json';
-
-// Function to get tzaddikim for a Hebrew date
-function getTzaddikimForDate(hebrewDate) {
-  const { month, day } = hebrewDate;
-  
-  return tzaddikimData.all_tzaddikim.filter(tzaddik => {
-    if (!tzaddik.yahrzeit_month || !tzaddik.yahrzeit_day) return false;
-    
-    const tzaddikMonth = tzaddik.yahrzeit_month.toUpperCase();
-    const targetMonth = month.toUpperCase();
-    
-    if (tzaddikMonth === targetMonth) {
-      return tzaddik.yahrzeit_day === day.toString();
-    }
-    
-    // Handle Adar II in non-leap years
-    if (tzaddikMonth === 'ADAR II' && targetMonth === 'ADAR') {
-      return tzaddik.yahrzeit_day === day.toString();
-    }
-    
-    return false;
-  });
-}
-
-// Get tzaddikim for today and yesterday
-const todayTzaddikim = getTzaddikimForDate(todayHebrew);
-const yesterdayTzaddikim = getTzaddikimForDate(yesterdayHebrew);
-
-// Determine what to show
 const hasToday = todayTzaddikim.length > 0;
 const hasYesterday = yesterdayTzaddikim.length > 0;
 const showBanner = hasToday || hasYesterday;
+
+// Hebrew date for display
+const todayHebrew = "כ״ו בַּאֲדָר תשפ״ו";
 ---
 
 {showBanner && (
