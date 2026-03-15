@@ -1,9 +1,32 @@
 ---
 import Layout from '../../../../layouts/Layout.astro';
-import { getChapter } from '../data.js';
+import { getChapter, getVolumes, getVolumeChapters } from '../data.js';
+
+export async function getStaticPaths() {
+  const volumes = getVolumes();
+  const paths = [];
+  
+  for (const volume of volumes) {
+    const chapters = getVolumeChapters(volume.number);
+    for (const chapter of chapters) {
+      paths.push({
+        params: {
+          volume: volume.number.toString(),
+          chapter: chapter.number.toString()
+        },
+        props: {
+          chapterData: chapter,
+          volumeNumber: volume.number
+        }
+      });
+    }
+  }
+  
+  return paths;
+}
 
 const { volume, chapter } = Astro.params;
-const chapterData = getChapter(volume, chapter);
+const { chapterData, volumeNumber } = Astro.props;
 
 if (!chapterData) {
   return Astro.redirect(`/books/likutay-nanach/volume-${volume}`);
@@ -57,17 +80,7 @@ if (!chapterData) {
       <p>החיפוש כולל את כל התוכן של לקוטי ננח בכל הכרכים.</p>
     </div>
 
-    <div class="share-section">
-      <h4>שתף פרק זה:</h4>
-      <div class="share-buttons">
-        <button onclick="navigator.clipboard.writeText(window.location.href)" class="share-btn">
-          📋 העתק קישור
-        </button>
-        <a href={`https://wa.me/?text=לקוטי ננח כרך ${volume} פרק ${chapter} - ${window.location.href}`} target="_blank" class="share-btn">
-          📱 WhatsApp
-        </a>
-      </div>
-    </div>
+
   </div>
 
   <style>
@@ -284,14 +297,4 @@ if (!chapterData) {
     }
   </style>
 
-  <script>
-    // Add next chapter info if available
-    const currentChapter = parseInt('${chapter}');
-    const totalChapters = ${chapterData.totalChapters || 0};
-    
-    if (currentChapter < totalChapters) {
-      // Next chapter exists
-      document.querySelector('.chapter-nav .nav-btn.next').classList.remove('disabled');
-    }
-  </script>
 </Layout>

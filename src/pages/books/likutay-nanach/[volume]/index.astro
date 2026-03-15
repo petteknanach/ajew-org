@@ -1,9 +1,17 @@
 ---
 import Layout from '../../../../layouts/Layout.astro';
-import { getVolume, getVolumeChapters } from '../data.js';
+import { getVolume, getVolumeChapters, getVolumes } from '../data.js';
+
+export async function getStaticPaths() {
+  const volumes = getVolumes();
+  return volumes.map(volume => ({
+    params: { volume: volume.number.toString() },
+    props: { volumeData: volume }
+  }));
+}
 
 const { volume } = Astro.params;
-const volumeData = getVolume(volume);
+const { volumeData } = Astro.props;
 const chapters = getVolumeChapters(volume);
 
 if (!volumeData) {

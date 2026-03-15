@@ -12,10 +12,10 @@ const todayTzaddikim = [
     profile_path: "/tzaddikim/obadiah"
   },
   {
-    name: "Rabbi Nussun son of Yehuda of Tiveria",
-    hebrew_name: "רבי נוסן בן יהודה מטבריה",
+    name: "Rabbi Nosson (Nathan) son of Yehuda of Tiveria",
+    hebrew_name: "רבי נתן בן יהודה מטבריה",
     yahrzeit_hebrew: "26 Adar",
-    profile_path: "/tzaddikim/nussun-tiveria"
+    profile_path: "/tzaddikim/nosson-tiveria"
   }
 ];
 
@@ -292,9 +292,11 @@ const tomorrowHebrew = "כ״ז בַּאֲדָר";
     .compact-yahrzeit {
       top: 0.5rem;
       left: 0.5rem;
-      right: 0.5rem;
-      max-width: none;
+      /* Remove right: 0.5rem to prevent stretching across screen */
+      max-width: 280px; /* Increased from 240px for better mobile readability */
       padding: 0.5rem;
+      /* Ensure it doesn't cover other elements */
+      z-index: 15; /* Lower than buttons (typically z-index: 20+) */
     }
     
     .section-title {
@@ -312,6 +314,14 @@ const tomorrowHebrew = "כ״ז בַּאֲדָר";
     /* Hide "View all yahrzeits" on mobile */
     .desktop-only {
       display: none;
+    }
+    
+    /* For very small screens, reduce width further */
+    @media (max-width: 480px) {
+      .compact-yahrzeit {
+        max-width: 220px;
+        font-size: 0.85em;
+      }
     }
   }
 </style>
