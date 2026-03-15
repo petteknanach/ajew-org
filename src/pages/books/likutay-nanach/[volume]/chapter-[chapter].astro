@@ -1,0 +1,297 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import { getChapter } from '../data.js';
+
+const { volume, chapter } = Astro.params;
+const chapterData = getChapter(volume, chapter);
+
+if (!chapterData) {
+  return Astro.redirect(`/books/likutay-nanach/volume-${volume}`);
+}
+---
+
+<Layout title={`Likutay Nanach Volume ${volume} - Chapter ${chapter}`} description={`לקוטי ננח כרך ${volume} פרק ${chapter} - ${chapterData.title}`}>
+  <div class="chapter-page">
+    <header class="chapter-header">
+      <h1>לקוטי ננח</h1>
+      <h2>כרך {volume} - פרק {chapter}</h2>
+      <h3>{chapterData.title}</h3>
+      <div class="breadcrumb">
+        <a href="/books">ספרים</a> › 
+        <a href="/books/likutay-nanach">לקוטי ננח</a> › 
+        <a href={`/books/likutay-nanach/volume-${volume}`}>כרך {volume}</a> › 
+        <span>פרק {chapter}</span>
+      </div>
+    </header>
+
+    <div class="chapter-content" dir="rtl">
+      <pre>{chapterData.content}</pre>
+    </div>
+
+    <nav class="chapter-nav">
+      <div class="nav-buttons">
+        {parseInt(chapter) > 1 ? (
+          <a href={`/books/likutay-nanach/volume-${volume}/chapter-${parseInt(chapter) - 1}`} class="nav-btn prev">
+            ← הפרק הקודם
+          </a>
+        ) : (
+          <span class="nav-btn disabled">← הפרק הקודם</span>
+        )}
+        
+        <a href={`/books/likutay-nanach/volume-${volume}`} class="nav-btn toc">
+          📚 חזרה לתוכן העניינים
+        </a>
+        
+        {chapterData.nextChapter ? (
+          <a href={`/books/likutay-nanach/volume-${volume}/chapter-${parseInt(chapter) + 1}`} class="nav-btn next">
+            הפרק הבא →
+          </a>
+        ) : (
+          <span class="nav-btn disabled">הפרק הבא →</span>
+        )}
+      </div>
+    </nav>
+
+    <div class="search-note">
+      <p><strong>חיפוש:</strong> תוכן זה זמין לחיפוש דרך פונקציית החיפוש הראשית של האתר.</p>
+      <p>החיפוש כולל את כל התוכן של לקוטי ננח בכל הכרכים.</p>
+    </div>
+
+    <div class="share-section">
+      <h4>שתף פרק זה:</h4>
+      <div class="share-buttons">
+        <button onclick="navigator.clipboard.writeText(window.location.href)" class="share-btn">
+          📋 העתק קישור
+        </button>
+        <a href={`https://wa.me/?text=לקוטי ננח כרך ${volume} פרק ${chapter} - ${window.location.href}`} target="_blank" class="share-btn">
+          📱 WhatsApp
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .chapter-page {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .chapter-header {
+      text-align: center;
+      margin-bottom: 3rem;
+      border-bottom: 3px solid #4a90e2;
+      padding-bottom: 2rem;
+    }
+
+    .chapter-header h1 {
+      font-size: 2.5rem;
+      color: #2c3e50;
+      margin-bottom: 0.5rem;
+    }
+
+    .chapter-header h2 {
+      font-size: 2rem;
+      color: #34495e;
+      margin-bottom: 1rem;
+      font-family: 'David', 'Arial Hebrew', serif;
+    }
+
+    .chapter-header h3 {
+      font-size: 1.5rem;
+      color: #7f8c8d;
+      margin-bottom: 1.5rem;
+    }
+
+    .breadcrumb {
+      font-size: 0.9rem;
+      color: #95a5a6;
+      margin-top: 1rem;
+    }
+
+    .breadcrumb a {
+      color: #4a90e2;
+      text-decoration: none;
+    }
+
+    .breadcrumb a:hover {
+      text-decoration: underline;
+    }
+
+    .breadcrumb span {
+      color: #2c3e50;
+      font-weight: bold;
+    }
+
+    .chapter-content {
+      background: #f8f9fa;
+      padding: 2rem;
+      border-radius: 10px;
+      margin-bottom: 3rem;
+      border: 1px solid #e0e0e0;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      font-family: 'David', 'Arial Hebrew', serif;
+      text-align: right;
+    }
+
+    .chapter-content pre {
+      margin: 0;
+      font-family: inherit;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .chapter-nav {
+      margin-bottom: 3rem;
+    }
+
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .nav-btn {
+      display: inline-block;
+      padding: 1rem 1.5rem;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: all 0.3s;
+      text-align: center;
+      flex: 1;
+    }
+
+    .nav-btn.prev {
+      background: #3498db;
+      color: white;
+    }
+
+    .nav-btn.prev:hover {
+      background: #2980b9;
+    }
+
+    .nav-btn.toc {
+      background: #2c3e50;
+      color: white;
+    }
+
+    .nav-btn.toc:hover {
+      background: #34495e;
+    }
+
+    .nav-btn.next {
+      background: #27ae60;
+      color: white;
+    }
+
+    .nav-btn.next:hover {
+      background: #219653;
+    }
+
+    .nav-btn.disabled {
+      background: #bdc3c7;
+      color: #7f8c8d;
+      cursor: not-allowed;
+    }
+
+    .search-note {
+      background: #e8f4fc;
+      padding: 1.5rem;
+      border-radius: 10px;
+      border-left: 5px solid #3498db;
+      margin-bottom: 2rem;
+    }
+
+    .search-note p {
+      margin: 0 0 0.5rem 0;
+      color: #2c3e50;
+    }
+
+    .search-note p:last-child {
+      margin-bottom: 0;
+    }
+
+    .share-section {
+      background: #f8f9fa;
+      padding: 1.5rem;
+      border-radius: 10px;
+      border: 1px solid #e0e0e0;
+    }
+
+    .share-section h4 {
+      color: #2c3e50;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .share-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    .share-btn {
+      background: #4a90e2;
+      color: white;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      text-decoration: none;
+      display: inline-block;
+      transition: background 0.3s;
+    }
+
+    .share-btn:hover {
+      background: #357ae8;
+    }
+
+    @media (max-width: 768px) {
+      .chapter-page {
+        padding: 1rem;
+      }
+
+      .chapter-header h1 {
+        font-size: 2rem;
+      }
+
+      .chapter-header h2 {
+        font-size: 1.5rem;
+      }
+
+      .nav-buttons {
+        flex-direction: column;
+      }
+
+      .nav-btn {
+        width: 100%;
+      }
+
+      .share-buttons {
+        flex-direction: column;
+      }
+
+      .share-btn {
+        width: 100%;
+        text-align: center;
+      }
+    }
+  </style>
+
+  <script>
+    // Add next chapter info if available
+    const currentChapter = parseInt('${chapter}');
+    const totalChapters = ${chapterData.totalChapters || 0};
+    
+    if (currentChapter < totalChapters) {
+      // Next chapter exists
+      document.querySelector('.chapter-nav .nav-btn.next').classList.remove('disabled');
+    }
+  </script>
+</Layout>
