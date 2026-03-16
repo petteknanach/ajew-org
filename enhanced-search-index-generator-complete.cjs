@@ -32,6 +32,59 @@ const CONFIG = {
   snippetLength: 200
 };
 
+// Book mapping for advanced search
+// Maps AdvancedSearchOptions book IDs to actual book data patterns
+const BOOK_MAPPING = {
+  // Likutay Nanach volumes - map to actual Likutey Moharan
+  'likutay-nanach-1': { 
+    searchableBookId: 'likutay-moharan',
+    category: 'Rabbainu', 
+    subcategory: 'Likutey Moharan Part 1' 
+  },
+  'likutay-nanach-2': { 
+    searchableBookId: 'likutay-moharan',
+    category: 'Rabbainu', 
+    subcategory: 'Likutey Moharan Part 2' 
+  },
+  'likutay-nanach-3': { 
+    searchableBookId: 'likutay-moharan',
+    category: 'Rabbainu', 
+    subcategory: 'Likutey Moharan Part 1' // Fallback
+  },
+  'likutay-nanach-4': { 
+    searchableBookId: 'likutay-moharan',
+    category: 'Rabbainu', 
+    subcategory: 'Likutey Moharan Part 2' // Fallback
+  },
+  'likutay-nanach-5': { 
+    searchableBookId: 'likutay-moharan',
+    category: 'Rabbainu', 
+    subcategory: 'Likutey Moharan Part 1' // Fallback
+  },
+  
+  // Other Breslov collections - map to actual categories
+  'likutay-aitzos': { 
+    searchableBookId: 'sefer-hamidos',
+    category: 'Books', 
+    subcategory: '1_ספרי רבי נחמן' // Likutey Aitzos is in ספרי רבי נחמן
+  },
+  'likutay-tefilos': { 
+    searchableBookId: 'likutay-moharan', // Likutey Tefilos is part of Likutey Moharan
+    category: 'Rabbainu', 
+    subcategory: 'Likutey Moharan Part 1' 
+  },
+  'blossoms-of-the-spring': { 
+    searchableBookId: '92_ספרים-מתורגמים', // Translated books
+    category: 'Books', 
+    subcategory: '92_ספרים מתורגמים' 
+  },
+  'fires-of-israel': { 
+    searchableBookId: '92_ספרים-מתורגמים', // Translated books
+    category: 'Books', 
+    subcategory: '92_ספרים מתורגמים' 
+  }
+};
+
 // Ensure output directory exists
 if (!fs.existsSync(CONFIG.outputDir)) {
   fs.mkdirSync(CONFIG.outputDir, { recursive: true });
@@ -77,11 +130,12 @@ function loadHebrewTorahs() {
       content: content,
       normalizedContent: content,
       path: `/teachings/torah-${torahNum}`,
-      tags: ['torah', 'teachings'],
+      tags: ['torah', 'teachings', 'likutay-moharan'],
       wordCount: content.split(/\s+/).length,
       charCount: content.length,
       timestamp: new Date().toISOString(),
       bookId: 'likutay-moharan',
+      searchableBookId: 'likutay-moharan',
       chapter: parseInt(torahNum),
       section: 1
     };
@@ -138,25 +192,52 @@ function loadBooks() {
       const totalChars = content.length;
       const language = hebrewChars > totalChars * 0.3 ? 'hebrew' : 'english';
       
+      // Map category to bookId for advanced search
+      let bookId = categoryDir.toLowerCase().replace(/\s+/g, '-');
+      let mappedCategory = 'Books';
+      let mappedSubcategory = categoryDir;
+      
+      // Try to find matching book in mapping
+      for (const [mappedId, mapping] of Object.entries(BOOK_MAPPING)) {
+        if (categoryDir.toLowerCase().includes(mapping.subcategory.toLowerCase().replace(/\s+/g, '-'))) {
+          bookId = mappedId;
+          mappedCategory = mapping.category;
+          mappedSubcategory = mapping.subcategory;
+          break;
+        }
+      }
+      
+      // Also check for volume numbers in Likutay Nanach
+      if (categoryDir.toLowerCase().includes('likutay') && categoryDir.toLowerCase().includes('nanach')) {
+        const volumeMatch = fileName.match(/volume[\s\-]*(\d+)/i) || textFile.match(/\b(\d+)\b/);
+        if (volumeMatch) {
+          const volumeNum = volumeMatch[1];
+          bookId = `likutay-nanach-${volumeNum}`;
+          mappedCategory = 'Likutay Nanach';
+          mappedSubcategory = `Volume ${volumeNum}`;
+        }
+      }
+      
       const document = {
         id: `book_${categoryDir}_${fileName}`,
         type: 'book',
         title: bookName,
         englishTitle: bookName,
         author: 'Various Breslov Authors',
-        category: 'Books',
-        subcategory: categoryDir,
+        category: mappedCategory,
+        subcategory: mappedSubcategory,
         language: language,
         content: content,
         normalizedContent: content,
         path: `/books/read?category=${encodeURIComponent(categoryDir)}&book=${encodeURIComponent(textFile)}`,
-        tags: ['book', categoryDir.toLowerCase()],
+        tags: ['book', categoryDir.toLowerCase(), bookId],
         wordCount: content.split(/\s+/).length,
         charCount: content.length,
         timestamp: new Date().toISOString(),
-        bookId: categoryDir,
+        bookId: bookId,
         chapter: 1,
-        section: 1
+        section: 1,
+        searchableBookId: bookId // For advanced search filtering
       };
       
       documents.push(document);
@@ -173,6 +254,90 @@ function loadBooks() {
   return documents;
 }
 
+
+
+// Load mobile API content
+function loadMobileApiContent() {
+  console.log('Loading mobile API content...');
+  
+  const mobileApiDir = path.join(__dirname, 'public', 'api-mobile');
+  const documents = [];
+  
+  // Load Likutay Moharan
+  const lmPart1Dir = path.join(mobileApiDir, 'likutay-moharan', 'part-1');
+  const lmPart2Dir = path.join(mobileApiDir, 'likutay-moharan', 'part-2');
+  
+  // Load Sefer Hamidos
+  const shDir = path.join(mobileApiDir, 'sefer-hamidos');
+  
+  // Load Stories
+  const storiesDir = path.join(mobileApiDir, 'stories');
+  
+  // Function to load chapters from a directory
+  function loadChaptersFromDir(dirPath, bookId, bookTitle, type = 'torah') {
+    if (!fs.existsSync(dirPath)) {
+      console.log(`Warning: Directory not found: ${dirPath}`);
+      return [];
+    }
+    
+    const files = fs.readdirSync(dirPath)
+      .filter(f => f.endsWith('.json') && !f.includes('index') && !f.includes('torah-'))
+      .sort((a, b) => {
+        const numA = parseInt(a.match(/\d+/)?.[0] || 0);
+        const numB = parseInt(b.match(/\d+/)?.[0] || 0);
+        return numA - numB;
+      });
+    
+    const chapters = [];
+    
+    for (const file of files) {
+      const filePath = path.join(dirPath, file);
+      const chapterData = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+      
+      // Create search document from chapter data
+      const document = {
+        id: `mobile-${bookId}-${chapterData.n}`,
+        type: 'mobile-api',
+        title: chapterData.t,
+        englishTitle: chapterData.t,
+        author: 'Rabbi Nachman of Breslov',
+        category: 'Rabbainu',
+        subcategory: bookTitle,
+        language: 'hebrew',
+        content: chapterData.s?.map(s => s.sum).join(' ') || chapterData.t,
+        normalizedContent: chapterData.ht + ' ' + (chapterData.s?.map(s => s.sum).join(' ') || ''),
+        path: `/api-mobile/${bookId}/${file}`,
+        tags: chapterData.th || [],
+        keywords: chapterData.kw || [],
+        wordCount: (chapterData.s?.map(s => s.sum).join(' ') || '').split(/\s+/).length,
+        charCount: (chapterData.s?.map(s => s.sum).join(' ') || '').length,
+        timestamp: chapterData.lu || new Date().toISOString(),
+        bookId: bookId,
+        chapter: chapterData.n,
+        section: 1,
+        searchableBookId: bookId,
+        source: 'mobile-api'
+      };
+      
+      chapters.push(document);
+    }
+    
+    console.log(`  Loaded ${chapters.length} chapters from ${bookId}`);
+    return chapters;
+  }
+  
+  // Load all books
+  const lmPart1Chapters = loadChaptersFromDir(lmPart1Dir, 'likutay-moharan', 'Likutey Moharan Part 1');
+  const lmPart2Chapters = loadChaptersFromDir(lmPart2Dir, 'likutay-moharan', 'Likutey Moharan Part 2');
+  const shChapters = loadChaptersFromDir(shDir, 'sefer-hamidos', 'Sefer Hamidos');
+  const storiesChapters = loadChaptersFromDir(storiesDir, 'stories', 'Stories of Rabbi Nachman');
+  
+  // Combine all chapters
+  const allChapters = [...lmPart1Chapters, ...lmPart2Chapters, ...shChapters, ...storiesChapters];
+  
+  console.log(`Total mobile API chapters loaded: ${allChapters.length}`);
+  return allChapters;
+}
 // Build search index
 function buildSearchIndex(documents) {
   console.log('Building search index...');
@@ -189,6 +354,7 @@ function buildSearchIndex(documents) {
     this.field('author', { boost: 5 });
     this.field('category', { boost: 3 });
     this.field('tags', { boost: 2 });
+    this.field('searchableBookId', { boost: 1 });
     
     // Add documents
     documents.forEach(doc => {
@@ -264,13 +430,17 @@ async function main() {
   
   try {
     // Load all documents
-    const torahDocs = loadHebrewTorahs();
-    const bookDocs = loadBooks();
-    const allDocuments = [...torahDocs, ...bookDocs];
+  const hebrewTorahs = loadHebrewTorahs();
+  const books = loadBooks();
+  const mobileApiContent = loadMobileApiContent();
+  
+  // Combine all documents
+  const allDocuments = [...hebrewTorahs, ...books, ...mobileApiContent];
     
     console.log(`\nTotal documents to index: ${allDocuments.length}`);
-    console.log(`- Torah teachings: ${torahDocs.length}`);
-    console.log(`- Books: ${bookDocs.length}`);
+    console.log(`- Torah teachings: ${hebrewTorahs.length}`);
+    console.log(`- Books: ${books.length}`);
+    console.log(`- Mobile API chapters: ${mobileApiContent.length}`);
     
     if (allDocuments.length === 0) {
       console.error('Error: No documents found to index!');

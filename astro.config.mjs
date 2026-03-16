@@ -30,8 +30,21 @@ export default defineConfig({
     })
   ],
   vite: {
+    build: {
+      cssMinify: 'esbuild', // Use esbuild for CSS minification
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            // Split vendor code into separate chunks
+            vendor: ['lunr', 'lunr-languages'],
+            // You can add more chunks here for code splitting
+          }
+        }
+      }
+    },
     css: {
-      minify: false
+      // Enable CSS minification with esbuild
+      minify: 'esbuild'
     }
   }
 });

@@ -1,0 +1,71 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SimpleSearch from '../components/SimpleSearch.astro';
+---
+
+<Layout 
+  title="Simple Search | ajew.org" 
+  description="Simple, working search across Breslov books with book selection checklists"
+>
+  <div class="simple-search-page">
+    <SimpleSearch />
+    
+    <div class="page-info">
+      <h3>About This Search</h3>
+      <p>This is a <strong>simple, working search</strong> that lets you:</p>
+      <ul>
+        <li>✅ <strong>Select specific books</strong> to search (checkboxes)</li>
+        <li>✅ <strong>Fast, client-side search</strong> (no server calls)</li>
+        <li>✅ <strong>Exact match</strong> and <strong>case-sensitive</strong> options</li>
+        <li>✅ <strong>Clean, readable results</strong> with highlighting</li>
+      </ul>
+      
+      <p><strong>Coming soon:</strong> Full-text search across all Breslov books with advanced Torat Emet-style options.</p>
+      
+      <div class="note">
+        <p>📝 <strong>Note:</strong> The enhanced search system is being rebuilt. This simple search provides basic functionality while we fix the advanced system.</p>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .simple-search-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+  
+  .page-info {
+    margin-top: 3rem;
+    padding: 1.5rem;
+    background: #f0f9ff;
+    border-radius: 12px;
+    border-left: 4px solid #3b82f6;
+  }
+  
+  .page-info h3 {
+    margin-top: 0;
+    color: #1e40af;
+  }
+  
+  .page-info ul {
+    padding-left: 1.5rem;
+  }
+  
+  .page-info li {
+    margin-bottom: 0.5rem;
+  }
+  
+  .note {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: #fef3c7;
+    border-radius: 8px;
+    border-left: 4px solid #f59e0b;
+  }
+  
+  .note p {
+    margin: 0;
+  }
+</style>

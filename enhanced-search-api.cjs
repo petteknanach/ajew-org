@@ -201,18 +201,19 @@ function parseAdvancedQuery(query) {
 }
 
 // Generate cache key
-function generateCacheKey(query, filters, page, pageSize) {
+function generateCacheKey(query, filters, advancedOptions, page, pageSize) {
   return JSON.stringify({
     query: query.toLowerCase().trim(),
     filters: Object.keys(filters).sort().map(k => `${k}:${filters[k]}`).join('|'),
+    advancedOptions: Object.keys(advancedOptions).sort().map(k => `${k}:${advancedOptions[k]}`).join('|'),
     page,
     pageSize
   });
 }
 
 // Perform search with advanced features
-function performSearch(query, filters = {}, page = 1, pageSize = CONFIG.defaultPageSize) {
-  const cacheKey = CONFIG.enableCache ? generateCacheKey(query, filters, page, pageSize) : null;
+function performSearch(query, filters = {}, advancedOptions = {}, page = 1, pageSize = CONFIG.defaultPageSize) {
+  const cacheKey = CONFIG.enableCache ? generateCacheKey(query, filters, advancedOptions, page, pageSize) : null;
   
   // Check cache
   if (CONFIG.enableCache && cacheKey && searchCache.has(cacheKey)) {
@@ -238,14 +239,52 @@ function performSearch(query, filters = {}, page = 1, pageSize = CONFIG.defaultP
     const parsedQuery = parseAdvancedQuery(query);
     
     let searchResults = [];
+    let lunrQuery = query;
     
-    if (parsedQuery.isAdvanced) {
-      // For advanced queries, use Lunr's built-in search
-      searchResults = searchIndex.search(query);
-    } else {
-      // For simple queries, use enhanced search
-      searchResults = searchIndex.search(query + '~2'); // Add fuzzy search by default
+    // Apply search type from advanced options
+    if (advancedOptions && advancedOptions.searchType) {
+      switch (advancedOptions.searchType) {
+        case 'exact':
+          // For exact phrase, wrap in quotes if not already
+          if (!query.includes('"')) {
+            lunrQuery = `"${query}"`;
+          }
+          break;
+        case 'startsWith':
+          // For starts with, add wildcard at the end
+          lunrQuery = `${query}*`;
+          break;
+        case 'endsWith':
+          // For ends with, add wildcard at the beginning
+          lunrQuery = `*${query}`;
+          break;
+        case 'boolean':
+          // Boolean search - keep as is, Lunr supports AND/OR/NOT
+          break;
+        case 'contains':
+        default:
+          // Default contains search with fuzzy matching
+          if (!parsedQuery.isAdvanced) {
+            lunrQuery = query + '~2'; // Add fuzzy search by default
+          }
+          break;
+      }
+    } else if (!parsedQuery.isAdvanced) {
+      // Default fuzzy search for simple queries
+      lunrQuery = query + '~2';
     }
+    
+    // Handle proximity search
+    if (advancedOptions && advancedOptions.proximity && advancedOptions.proximity > 0) {
+      // For proximity search, we need to modify the query
+      // This is a simplified implementation - Lunr doesn't have built-in proximity
+      // We'll use a workaround by searching for terms and filtering by position
+      // For now, we'll just use the regular search
+      console.log(`Proximity search requested: ${advancedOptions.proximity} words`);
+    }
+    
+    // Perform search with modified query
+    searchResults = searchIndex.search(lunrQuery);
     
     // Apply filters
     const filteredResults = searchResults.filter(result => {
@@ -289,6 +328,50 @@ function performSearch(query, filters = {}, page = 1, pageSize = CONFIG.defaultP
         return false;
       }
       
+      // Apply advanced options filters
+      if (advancedOptions) {
+        // Filter by selected books
+        if (advancedOptions.books && advancedOptions.books.length > 0) {
+          // Map AdvancedSearchOptions book IDs to actual searchableBookId values
+          const bookMapping = {
+            // Likutay Nanach volumes -> likutay-moharan
+            'likutay-nanach-1': 'likutay-moharan',
+            'likutay-nanach-2': 'likutay-moharan',
+            'likutay-nanach-3': 'likutay-moharan',
+            'likutay-nanach-4': 'likutay-moharan',
+            'likutay-nanach-5': 'likutay-moharan',
+            // Other collections
+            'likutay-aitzos': 'sefer-hamidos',
+            'likutay-tefilos': 'likutay-moharan',
+            'blossoms-of-the-spring': '92_ספרים-מתורגמים',
+            'fires-of-israel': '92_ספרים-מתורגמים'
+          };
+          
+          // Check if any of the selected books match this document
+          let hasMatchingBook = false;
+          for (const selectedBook of advancedOptions.books) {
+            const mappedBook = bookMapping[selectedBook] || selectedBook;
+            if (doc.searchableBookId === mappedBook) {
+              hasMatchingBook = true;
+              break;
+            }
+          }
+          
+          if (!hasMatchingBook) {
+            return false;
+          }
+        }
+        
+        // Filter by minimum words (simplified - check if query has enough words)
+        if (advancedOptions.minWords && advancedOptions.minWords > 1) {
+          const queryWords = query.trim().split(/\s+/).length;
+          if (queryWords < advancedOptions.minWords) {
+            // This is more of a query validation than document filtering
+            // We'll handle this in the query parsing
+          }
+        }
+      }
+      
       return true;
     });
     
@@ -323,6 +406,7 @@ function performSearch(query, filters = {}, page = 1, pageSize = CONFIG.defaultP
     
     const response = {
       query: query,
+      lunrQuery: lunrQuery, // The actual query sent to Lunr
       parsedQuery: parsedQuery,
       results: formattedResults,
       total: filteredResults.length,
@@ -330,6 +414,7 @@ function performSearch(query, filters = {}, page = 1, pageSize = CONFIG.defaultP
       pageSize: pageSize,
       totalPages: Math.ceil(filteredResults.length / pageSize),
       filters: filters,
+      advancedOptions: advancedOptions,
       timestamp: new Date().toISOString()
     };
     
@@ -447,7 +532,8 @@ app.get('/api/search/health', (req, res) => {
 
 // Search endpoint
 app.get('/api/search', (req, res) => {
-  const { q, type, category, subcategory, language, author, tags, bookId, page, pageSize } = req.query;
+  const { q, type, category, subcategory, language, author, tags, bookId, page, pageSize, 
+          books, searchType, missingLetters, minWords, proximity } = req.query;
   
   if (!q) {
     return res.status(400).json({ error: 'Query parameter "q" is required' });
@@ -462,10 +548,17 @@ app.get('/api/search', (req, res) => {
   if (tags) filters.tags = Array.isArray(tags) ? tags : [tags];
   if (bookId) filters.bookId = bookId;
   
+  const advancedOptions = {};
+  if (books) advancedOptions.books = Array.isArray(books) ? books : books.split(',');
+  if (searchType) advancedOptions.searchType = searchType;
+  if (missingLetters === 'true') advancedOptions.missingLetters = true;
+  if (minWords) advancedOptions.minWords = parseInt(minWords);
+  if (proximity) advancedOptions.proximity = parseInt(proximity);
+  
   const pageNum = parseInt(page) || 1;
   const pageSizeNum = parseInt(pageSize) || CONFIG.defaultPageSize;
   
-  const results = performSearch(q, filters, pageNum, pageSizeNum);
+  const results = performSearch(q, filters, advancedOptions, pageNum, pageSizeNum);
   
   // Track search
   trackSearch(q, filters, results.total);
@@ -573,4 +666,8 @@ function startServer() {
   });
   
   // Periodic analytics save
-  setInterval(saveAnalytics, 5 *
+  setInterval(saveAnalytics, 5 * 60 * 1000); // Save every 5 minutes
+}
+
+// Start server
+startServer();

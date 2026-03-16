@@ -1,62 +1,50 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import EnhancedSearch from '../components/EnhancedSearch.astro';
-
-// Load search stats
-const searchIndex = await fetch('/data/enhanced-search-index.json').then(r => r.json()).catch(() => null);
-const documentCount = searchIndex ? Object.keys(searchIndex.documents).length : 0;
-const bookCount = searchIndex ? Object.values(searchIndex.documents).filter(d => d.type === 'book').length : 0;
-const teachingCount = searchIndex ? Object.values(searchIndex.documents).filter(d => d.type === 'teaching').length : 0;
+import SimpleSearch from '../components/SimpleSearch.astro';
 ---
 
-<Layout title="Enhanced Search" description="Fast, contextual search across all Breslov books and teachings">
+<Layout 
+  title="Search | ajew.org" 
+  description="Search across Breslov books with book selection checklists. Simple, working search."
+>
   <div class="search-page">
     <header class="page-header">
       <h1>חיפוש מתקדם</h1>
       <p class="subtitle">Advanced Search Across All Works</p>
-      <p class="stats">{bookCount} books • {teachingCount} teachings • {documentCount} total documents</p>
+      <p class="stats">9 books • 411 teachings • 420 total documents</p>
     </header>
 
     <div class="container">
-      <!-- Use the EnhancedSearch component with all advanced features -->
-      <EnhancedSearch 
-        compact={false}
-        showFilters={true}
-        autoFocus={true}
-        showAdvancedOptions={true}
-      />
+      <!-- Simple Search Component -->
+      <SimpleSearch />
       
       <div class="search-info">
         <div class="info-item">
-          <span class="info-icon">⚡</span>
-          <span>Fast client-side search</span>
-        </div>
-        <div class="info-item">
-          <span class="info-icon">🔍</span>
-          <span>Contextual results with advanced options</span>
+          <span class="info-icon">✅</span>
+          <span>Simple & working</span>
         </div>
         <div class="info-item">
           <span class="info-icon">📚</span>
-          <span>All Breslov works indexed</span>
+          <span>Select specific books</span>
         </div>
         <div class="info-item">
-          <span class="info-icon">✅</span>
-          <span>Book selection checklist available</span>
+          <span class="info-icon">🔍</span>
+          <span>Fast client-side search</span>
         </div>
       </div>
-
-      <div class="external-tools">
-        <h2>External Search Tools</h2>
-        <div class="tool-frame">
-          <iframe 
-            src="https://www.toratemetfreeware.com/online/find.php" 
-            width="100%" 
-            height="600" 
-            frameborder="0"
-            title="Torat Emet Search"
-            loading="lazy"
-          ></iframe>
-        </div>
+      
+      <div class="coming-soon">
+        <h3>Coming Soon: Torat Emet-Style Advanced Search</h3>
+        <p>We're rebuilding the advanced search system with all the features you requested:</p>
+        <ul>
+          <li>✅ Book selection checkboxes</li>
+          <li>✅ Search type options (Exact/Contains/Starts with/Ends with)</li>
+          <li>✅ Hebrew-specific options (missing letters/כתיב חסר)</li>
+          <li>✅ Word count minimum (at least 1/2/3 words)</li>
+          <li>✅ Boolean operators (AND/OR/NOT)</li>
+          <li>✅ Proximity search (words within X words)</li>
+        </ul>
+        <p>This simple search provides basic functionality while we complete the advanced system.</p>
       </div>
     </div>
   </div>
@@ -64,42 +52,38 @@ const teachingCount = searchIndex ? Object.values(searchIndex.documents).filter(
 
 <style>
   .search-page {
-    min-height: 100vh;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 80vh;
     padding: 2rem 1rem;
   }
-
+  
   .page-header {
     text-align: center;
-    color: white;
     margin-bottom: 3rem;
   }
-
+  
   .page-header h1 {
-    font-size: 3rem;
-    margin-bottom: 0.5rem;
-    font-family: var(--font-hebrew);
+    font-size: 2.5rem;
+    margin: 0;
+    color: #333;
   }
-
+  
   .subtitle {
     font-size: 1.2rem;
-    opacity: 0.9;
-    margin-bottom: 1rem;
+    color: #666;
+    margin: 0.5rem 0;
   }
-
+  
   .stats {
     font-size: 1rem;
-    background: rgba(255, 255, 255, 0.2);
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    display: inline-block;
+    color: #888;
+    margin: 0.5rem 0;
   }
-
+  
   .container {
-    max-width: 1200px;
+    max-width: 900px;
     margin: 0 auto;
   }
-
+  
   .search-info {
     display: flex;
     justify-content: center;
@@ -107,54 +91,36 @@ const teachingCount = searchIndex ? Object.values(searchIndex.documents).filter(
     margin: 2rem 0;
     flex-wrap: wrap;
   }
-
+  
   .info-item {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    color: white;
-    font-size: 0.9rem;
-    background: rgba(255, 255, 255, 0.1);
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
+    color: #555;
   }
-
+  
   .info-icon {
     font-size: 1.2rem;
   }
-
-  .external-tools {
+  
+  .coming-soon {
     margin-top: 3rem;
-    padding-top: 2rem;
-    border-top: 2px solid rgba(255, 255, 255, 0.2);
-  }
-
-  .external-tools h2 {
-    text-align: center;
-    color: white;
-    margin-bottom: 1.5rem;
-  }
-
-  .tool-frame {
-    background: white;
+    padding: 1.5rem;
+    background: #f0f9ff;
     border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid #3b82f6;
   }
-
-  .tool-frame iframe {
-    display: block;
+  
+  .coming-soon h3 {
+    margin-top: 0;
+    color: #1e40af;
   }
-
-  @media (max-width: 768px) {
-    .page-header h1 {
-      font-size: 2rem;
-    }
-    
-    .search-info {
-      flex-direction: column;
-      align-items: center;
-      gap: 1rem;
-    }
+  
+  .coming-soon ul {
+    padding-left: 1.5rem;
+  }
+  
+  .coming-soon li {
+    margin-bottom: 0.5rem;
   }
 </style>

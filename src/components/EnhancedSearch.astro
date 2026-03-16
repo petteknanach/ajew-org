@@ -1,11 +1,14 @@
 ---
+import AdvancedSearchOptions from './AdvancedSearchOptions.astro';
+
 interface Props {
   compact?: boolean;
   showFilters?: boolean;
   autoFocus?: boolean;
+  showAdvancedOptions?: boolean;
 }
 
-const { compact = false, showFilters = true, autoFocus = true } = Astro.props;
+const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptions = true } = Astro.props;
 ---
 
 <div class={`enhanced-search ${compact ? 'compact' : ''}`}>
@@ -54,8 +57,11 @@ const { compact = false, showFilters = true, autoFocus = true } = Astro.props;
       )}
     </form>
     
-    <div id="searchSuggestions" class="search-suggestions" style="display: none;"></div>
+    <div id="searchSuggestions" class="search-suggestions" class="hidden"></div>
   </div>
+  
+  <!-- Advanced Search Options -->
+  {showAdvancedOptions && <AdvancedSearchOptions /> }
   
   {showFilters && (
     <div class="advanced-filters" id="advancedFilters">
@@ -66,7 +72,7 @@ const { compact = false, showFilters = true, autoFocus = true } = Astro.props;
         </button>
       </div>
       
-      <div class="filters-content" id="filtersContent" style="display: none;">
+      <div class="filters-content" id="filtersContent" class="hidden">
         <div class="filter-section">
           <h4>Content Type</h4>
           <div class="filter-options">
@@ -155,6 +161,13 @@ const { compact = false, showFilters = true, autoFocus = true } = Astro.props;
       category: [],
       language: '',
       author: ''
+    },
+    advancedOptions: {
+      books: ['likutay-nanach-1', 'likutay-nanach-2', 'likutay-nanach-3', 'likutay-nanach-4', 'likutay-nanach-5', 'likutay-aitzos', 'likutay-tefilos', 'blossoms-of-the-spring', 'fires-of-israel'],
+      searchType: 'contains',
+      missingLetters: false,
+      minWords: 2,
+      proximity: 0
     },
     suggestions: [],
     isLoading: false
@@ -257,6 +270,17 @@ const { compact = false, showFilters = true, autoFocus = true } = Astro.props;
     document.addEventListener('click', (e) => {
       if (!searchForm.contains(e.target)) {
         hideSuggestions();
+      }
+    });
+
+    // Listen for advanced search options
+    document.addEventListener('advanced-search-options', (e) => {
+      const options = e.detail;
+      searchState.advancedOptions = options;
+      
+      // If there's a current query, re-run search with new options
+      if (searchState.query) {
+        performSearch();
       }
     });
 
@@ -469,11 +493,12 @@ const { compact = false, showFilters = true, autoFocus = true } = Astro.props;
     // Update URL
     updateUrl(query);
     
-    // Dispatch search event
+    // Dispatch search event with advanced options
     const searchEvent = new CustomEvent('enhanced-search', {
       detail: {
         query: query,
         filters: searchState.filters,
+        advancedOptions: searchState.advancedOptions,
         timestamp: new Date().toISOString()
       }
     });
@@ -498,6 +523,26 @@ const { compact = false, showFilters = true, autoFocus = true } = Astro.props;
       }
     });
     
+    // Add advanced options to URL
+    if (searchState.advancedOptions) {
+      const adv = searchState.advancedOptions;
+      if (adv.books && adv.books.length > 0) {
+        url.searchParams.set('books', adv.books.join(','));
+      }
+      if (adv.searchType && adv.searchType !== 'contains') {
+        url.searchParams.set('searchType', adv.searchType);
+      }
+      if (adv.missingLetters) {
+        url.searchParams.set('missingLetters', 'true');
+      }
+      if (adv.minWords && adv.minWords !== 2) {
+        url.searchParams.set('minWords', adv.minWords.toString());
+      }
+      if (adv.proximity && adv.proximity > 0) {
+        url.searchParams.set('proximity', adv.proximity.toString());
+      }
+    }
+    
     window.history.replaceState({}, '', url);
   }
 
@@ -518,6 +563,32 @@ const { compact = false, showFilters = true, autoFocus = true } = Astro.props;
         // Update checkboxes
         document.getElementById('filterBooks').checked = searchState.filters.type.includes('book');
         document.getElementById('filterTeachings').checked = searchState.filters.type.includes('teaching');
+      }
+      
+      // Parse advanced options from URL
+      const booksParam = urlParams.get('books');
+      if (booksParam) {
+        searchState.advancedOptions.books = booksParam.split(',');
+      }
+      
+      const searchTypeParam = urlParams.get('searchType');
+      if (searchTypeParam) {
+        searchState.advancedOptions.searchType = searchTypeParam;
+      }
+      
+      const missingLettersParam = urlParams.get('missingLetters');
+      if (missingLettersParam === 'true') {
+        searchState.advancedOptions.missingLetters = true;
+      }
+      
+      const minWordsParam = urlParams.get('minWords');
+      if (minWordsParam) {
+        searchState.advancedOptions.minWords = parseInt(minWordsParam);
+      }
+      
+      const proximityParam = urlParams.get('proximity');
+      if (proximityParam) {
+        searchState.advancedOptions.proximity = parseInt(proximityParam);
       }
       
       // Trigger search
