@@ -18,7 +18,7 @@ require('lunr-languages/lunr.he')(lunr);
 // Configuration
 const CONFIG = {
   // Input directories
-  hebrewTorahsDir: path.join(__dirname, '..', 'hebrew_torahs_simple'),
+  hebrewTorahsDir: path.join(__dirname, 'hebrew_torahs_simple'),
   booksDir: path.join(__dirname, 'public', 'books', 'MyBooks'),
   
   // Output files
