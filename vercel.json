@@ -1,18 +1,11 @@
 {
-  "buildCommand": "npm run build",
+  "buildCommand": "npm ci && npm run build",
   "outputDirectory": "dist",
-  "devCommand": "npm run dev",
-  "installCommand": "npm install",
   "framework": "astro",
-  "public": true,
-  "cleanUrls": false,
-  "trailingSlash": true,
-  "headers": [],
-  "rewrites": [
-    {
-      "source": "/teachings/(.*)",
-      "destination": "/teachings/$1"
-    }
-  ],
-  "redirects": []
+  "installCommand": "npm ci",
+  "devCommand": "npm run dev",
+  "regions": ["fra1"],
+  "env": {
+    "NODE_VERSION": "18"
+  }
 }
