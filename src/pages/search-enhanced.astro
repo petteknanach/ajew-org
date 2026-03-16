@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 
 // Load search stats
-const searchIndex = await fetch('/data/optimized-search-index.json').then(r => r.json()).catch(() => null);
+const searchIndex = await fetch('/data/enhanced-search-index.json').then(r => r.json()).catch(() => null);
 const documentCount = searchIndex ? Object.keys(searchIndex.documents).length : 0;
 const bookCount = searchIndex ? Object.values(searchIndex.documents).filter(d => d.type === 'book').length : 0;
 const teachingCount = searchIndex ? Object.values(searchIndex.documents).filter(d => d.type === 'teaching').length : 0;
@@ -71,7 +71,7 @@ const teachingCount = searchIndex ? Object.values(searchIndex.documents).filter(
       </div>
 
       <div class="results-container">
-        <div id="loading" class="loading" style="display: none;">
+        <div id="loading" class="loading" class="hidden">
           <div class="spinner"></div>
           <p>Loading search index...</p>
         </div>
@@ -92,7 +92,7 @@ const teachingCount = searchIndex ? Object.values(searchIndex.documents).filter(
           </div>
         </div>
 
-        <div id="noResults" class="no-results" style="display: none;">
+        <div id="noResults" class="no-results" class="hidden">
           <h3>No results found</h3>
           <p>Try different keywords or check your spelling.</p>
         </div>
