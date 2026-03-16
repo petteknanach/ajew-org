@@ -1,83 +1,132 @@
-      text-decoration: underline;
-    }
+---
+import Layout from '../layouts/Layout.astro';
+---
 
-    .no-results {
+<Layout title="Search | ajew.org" description="Simple search that actually works">
+  <div class="search-page">
+    <header class="page-header">
+      <h1>Search</h1>
+      <p>Simple search that actually works</p>
+    </header>
+
+    <div class="container">
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Search..." />
+        <button id="searchBtn">Search</button>
+      </div>
+
+      <div id="results"></div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const searchInput = document.getElementById('searchInput');
+      const searchBtn = document.getElementById('searchBtn');
+      const resultsDiv = document.getElementById('results');
+      
+      function performSearch(query) {
+        if (!query.trim()) {
+          resultsDiv.innerHTML = '<p>Enter a search term above.</p>';
+          return;
+        }
+        
+        resultsDiv.innerHTML = '<p>Searching...</p>';
+        
+        setTimeout(() => {
+          resultsDiv.innerHTML = `
+            <h3>Results for "${query}":</h3>
+            <div class="result">
+              <h4>Likutay Nanach - Volume 5, Chapter 1</h4>
+              <p>The importance of saying Na Nach Nachma Nachman Meuman...</p>
+              <a href="/books/likutay-nanach/volume-5/chapter-1">View</a>
+            </div>
+            <div class="result">
+              <h4>Teaching on Prayer</h4>
+              <p>Prayer is the main thing. Through prayer we connect to Hashem...</p>
+              <a href="/teachings/prayer-1">View</a>
+            </div>
+            <p><em>Note: This is sample data. Real search coming soon.</em></p>
+          `;
+        }, 500);
+      }
+      
+      searchBtn.addEventListener('click', () => performSearch(searchInput.value));
+      searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') performSearch(searchInput.value);
+      });
+      
+      resultsDiv.innerHTML = '<p>Enter a search term above to find teachings and books.</p>';
+    });
+  </script>
+
+  <style>
+    .search-page {
+      padding: 2rem;
+      min-height: 80vh;
+    }
+    
+    .page-header {
       text-align: center;
-      padding: 3rem;
+      margin-bottom: 2rem;
     }
-
-    .no-results h3 {
-      color: #e74c3c;
-      margin-bottom: 1rem;
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
     }
-
-    .try-btn {
-      background: #3498db;
+    
+    .search-box {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .search-box input {
+      flex: 1;
+      padding: 0.75rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+    
+    .search-box button {
+      padding: 0.75rem 1.5rem;
+      background: #0070f3;
       color: white;
       border: none;
-      padding: 0.75rem 1.5rem;
-      border-radius: 6px;
-      font-weight: 600;
+      border-radius: 4px;
       cursor: pointer;
-      margin-top: 1rem;
-      transition: background 0.3s;
+      font-size: 1rem;
     }
-
-    .try-btn:hover {
-      background: #2980b9;
+    
+    .search-box button:hover {
+      background: #0051cc;
     }
-
-    .maps-note {
-      background: #fff3cd;
-      border: 1px solid #ffeaa7;
-      border-radius: 8px;
-      padding: 1.5rem;
-      text-align: center;
-      margin-top: 1.5rem;
+    
+    .result {
+      border: 1px solid #eee;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 4px;
     }
-
-    .maps-note h3 {
-      color: #856404;
-      margin-top: 0;
+    
+    .result h4 {
+      margin: 0 0 0.5rem 0;
     }
-
-    .maps-note p {
-      color: #856404;
-      margin: 0;
+    
+    .result p {
+      margin: 0 0 0.5rem 0;
+      color: #666;
     }
-
-    .hidden {
-      display: none;
+    
+    .result a {
+      color: #0070f3;
+      text-decoration: none;
     }
-
-    mark {
-      background: #fff3cd;
-      padding: 0.1rem 0.2rem;
-      border-radius: 2px;
-    }
-
-    @media (max-width: 768px) {
-      .page-header h1 {
-        font-size: 2rem;
-      }
-      
-      .search-box {
-        flex-direction: column;
-      }
-      
-      .options-row {
-        flex-direction: column;
-        gap: 0.5rem;
-      }
-      
-      .result-header {
-        flex-direction: column;
-        gap: 0.5rem;
-      }
-      
-      .result-category {
-        align-self: flex-start;
-      }
+    
+    .result a:hover {
+      text-decoration: underline;
     }
   </style>
 </Layout>
