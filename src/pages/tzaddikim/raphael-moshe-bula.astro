@@ -1,6 +1,5 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import TzaddikProfile from '../../components/TzaddikProfile.astro';
 
 const tzaddikData = {
   name: "Rabbi Raphael Moshe Bula",
@@ -91,10 +90,157 @@ const tzaddikData = {
   title={`${tzaddikData.name} | Tzaddik Profile`}
   description={`Learn about ${tzaddikData.name} (${tzaddikData.hebrew_name}), author of Get Mekushar, Sephardic sage and Rishon LeZion in 18th century Jerusalem. Yahrzeit: ${tzaddikData.yahrzeit_hebrew} (${tzaddikData.yahrzeit_english}).`}
 >
-  <TzaddikProfile {tzaddikData} />
+  <div class="tzaddik-profile">
+    <div class="profile-header">
+      <h1>{tzaddikData.name}</h1>
+      <h2 class="hebrew-name">{tzaddikData.hebrew_name}</h2>
+      <p class="title">{tzaddikData.title}</p>
+      
+      <div class="yahrzeit-info">
+        <div class="yahrzeit-badge">
+          <span class="yahrzeit-label">Yahrzeit:</span>
+          <span class="yahrzeit-hebrew">{tzaddikData.yahrzeit_hebrew}</span>
+          <span class="yahrzeit-english">({tzaddikData.yahrzeit_english})</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="profile-content">
+      <div class="biography" set:html={tzaddikData.biography} />
+      
+      {tzaddikData.works && tzaddikData.works.length > 0 && (
+        <div class="works-section">
+          <h3>Major Works</h3>
+          <ul class="works-list">
+            {tzaddikData.works.map(work => (
+              <li>
+                <strong>{work.title}</strong>
+                {work.description && <span> – {work.description}</span>}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      
+      {tzaddikData.legacy && (
+        <div class="legacy-section">
+          <h3>Legacy & Impact</h3>
+          <div set:html={tzaddikData.legacy} />
+        </div>
+      )}
+      
+      {tzaddikData.sources && tzaddikData.sources.length > 0 && (
+        <div class="sources-section">
+          <h3>Sources & References</h3>
+          <ul class="sources-list">
+            {tzaddikData.sources.map(source => (
+              <li>{source}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  </div>
 </Layout>
 
 <style>
+  /* Tzaddik profile styles */
+  .tzaddik-profile {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+  
+  .profile-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 2rem;
+  }
+  
+  .profile-header h1 {
+    color: #1a365d;
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .hebrew-name {
+    color: #4a5568;
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    font-weight: normal;
+  }
+  
+  .title {
+    color: #718096;
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .yahrzeit-info {
+    display: inline-block;
+    background: #f7fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1.5rem;
+  }
+  
+  .yahrzeit-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .yahrzeit-label {
+    font-weight: bold;
+    color: #4a5568;
+  }
+  
+  .yahrzeit-hebrew {
+    color: #2d3748;
+    font-size: 1.1rem;
+  }
+  
+  .yahrzeit-english {
+    color: #718096;
+  }
+  
+  .profile-content {
+    line-height: 1.7;
+  }
+  
+  .profile-content h3 {
+    color: #2d3748;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 0.5rem;
+  }
+  
+  .works-list, .sources-list {
+    list-style: none;
+    padding-left: 0;
+  }
+  
+  .works-list li, .sources-list li {
+    margin-bottom: 0.75rem;
+    padding-left: 1.5rem;
+    position: relative;
+  }
+  
+  .works-list li:before {
+    content: "📚";
+    position: absolute;
+    left: 0;
+  }
+  
+  .sources-list li:before {
+    content: "📖";
+    position: absolute;
+    left: 0;
+  }
+  
   /* Additional styling specific to Sephardic sages */
   .sephardic-highlight {
     border-left: 4px solid #8B4513;
