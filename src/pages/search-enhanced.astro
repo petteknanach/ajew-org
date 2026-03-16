@@ -1,445 +1,309 @@
 ---
 import Layout from '../layouts/Layout.astro';
-
-// Simple search page that actually works
-// Uses server-side API instead of client-side 212MB index
+import EnhancedSearch from '../components/EnhancedSearch.astro';
 ---
 
-<Layout title="Simple Search" description="Working search across Breslov books and teachings">
+<Layout 
+  title="Advanced Search | ajew.org" 
+  description="Torat Emet-style advanced search with book selection, Hebrew options, proximity search, and maps integration."
+>
   <div class="search-page">
     <header class="page-header">
-      <h1>חיפוש פשוט</h1>
-      <p class="subtitle">Simple Search That Actually Works</p>
-      <p class="warning">⚠️ The enhanced search (212MB index) is broken. This is a working alternative.</p>
+      <h1>חיפוש מתקדם</h1>
+      <p class="subtitle">Torat Emet-Style Advanced Search</p>
+      <div class="feature-badges">
+        <span class="badge">✅ Book Selection</span>
+        <span class="badge">✅ Hebrew Options</span>
+        <span class="badge">✅ Proximity Search</span>
+        <span class="badge">✅ Boolean Operators</span>
+        <span class="badge">✅ Maps Integration</span>
+      </div>
     </header>
 
     <div class="container">
-      <div class="search-box">
-        <input 
-          type="text" 
-          id="searchInput" 
-          placeholder="Search... חפש..."
-          dir="auto"
-          autocomplete="off"
-          autofocus
+      <!-- Main Enhanced Search Component -->
+      <div class="search-section">
+        <h2>📚 Search All Breslov Texts</h2>
+        <EnhancedSearch 
+          compact={false}
+          showFilters={true}
+          autoFocus={true}
+          showAdvancedOptions={true}
         />
-        <button id="searchBtn">Search</button>
       </div>
 
-      <div class="search-options">
-        <h3>Search Options:</h3>
-        <div class="options">
-          <label>
-            <input type="checkbox" id="optionBooks" checked>
-            Books (ספרים)
-          </label>
-          <label>
-            <input type="checkbox" id="optionTeachings" checked>
-            Teachings (דרשות)
-          </label>
-          <label>
-            <input type="radio" name="searchType" value="contains" checked>
-            Contains
-          </label>
-          <label>
-            <input type="radio" name="searchType" value="exact">
-            Exact
-          </label>
+      <!-- Maps Search Section -->
+      <div class="maps-section">
+        <h2>🗺️ Maps Search (Torat Emet)</h2>
+        <p class="section-description">Use the powerful Torat Emet search engine for advanced text analysis and mapping:</p>
+        
+        <div class="maps-container">
+          <div class="maps-frame">
+            <iframe 
+              src="https://www.toratemetfreeware.com/online/find.php" 
+              width="100%" 
+              height="700" 
+              frameborder="0"
+              title="Torat Emet Advanced Search"
+              loading="lazy"
+              sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"
+            ></iframe>
+          </div>
+          
+          <div class="maps-info">
+            <h3>Torat Emet Features:</h3>
+            <ul>
+              <li>✅ Advanced text search with wildcards</li>
+              <li>✅ Boolean operators (AND, OR, NOT)</li>
+              <li>✅ Proximity search (words within distance)</li>
+              <li>✅ Hebrew vowel pattern matching</li>
+              <li>✅ Root word searching</li>
+              <li>✅ Multiple text collections</li>
+              <li>✅ Context display with highlighting</li>
+            </ul>
+            <p><strong>Tip:</strong> Use both search systems for comprehensive research.</p>
+          </div>
         </div>
       </div>
 
-      <div id="results" class="results">
-        <div class="welcome-message">
-          <h2 style="color: #000; background: #fff; padding: 10px; border-radius: 5px;">Welcome to Breslov Search</h2>
-          <p>Enter a search term above to find relevant teachings and books.</p>
-          <div class="examples">
-            <p><strong>Try searching for:</strong></p>
+      <!-- Search Features Comparison -->
+      <div class="features-section">
+        <h2>⚡ Search Features Comparison</h2>
+        <div class="features-grid">
+          <div class="feature-card">
+            <h3>Internal Search</h3>
             <ul>
-              <li>תפילה (prayer)</li>
-              <li>אמונה (faith)</li>
-              <li>שמחה (joy)</li>
-              <li>התבודדות (solitude)</li>
+              <li>✅ Fast client-side search</li>
+              <li>✅ Book selection checklist</li>
+              <li>✅ Search type options</li>
+              <li>✅ Hebrew missing letters</li>
+              <li>✅ Word count minimum</li>
+              <li>✅ Basic proximity</li>
+              <li>✅ English/Hebrew toggle</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card">
+            <h3>Torat Emet (Maps)</h3>
+            <ul>
+              <li>✅ Advanced wildcard search</li>
+              <li>✅ Full boolean operators</li>
+              <li>✅ Exact proximity control</li>
+              <li>✅ Root word analysis</li>
+              <li>✅ Vowel pattern matching</li>
+              <li>✅ Multiple collections</li>
+              <li>✅ Advanced context display</li>
             </ul>
           </div>
         </div>
       </div>
 
-      <div id="loading" class="loading hidden">
-        <div class="spinner"></div>
-        <p>Searching...</p>
-      </div>
-
-      <div id="noResults" class="no-results hidden">
-        <h3>No results found</h3>
-        <p>Try different keywords or check your spelling.</p>
-      </div>
-
-      <div class="external-tools">
-        <h2>External Search Tools (Guaranteed to Work)</h2>
-        <div class="tool-frame">
-          <iframe 
-            src="https://www.toratemetfreeware.com/online/find.php" 
-            width="100%" 
-            height="600" 
-            frameborder="0"
-            title="Torat Emet Search"
-            loading="lazy"
-          ></iframe>
+      <!-- Quick Links -->
+      <div class="quick-links">
+        <h2>🔗 Quick Access</h2>
+        <div class="links-grid">
+          <a href="/books/likutay-nanach" class="link-card">
+            <span class="link-icon">🌟</span>
+            <span class="link-text">Likutay Nanach</span>
+          </a>
+          <a href="/books" class="link-card">
+            <span class="link-icon">📚</span>
+            <span class="link-text">All Books</span>
+          </a>
+          <a href="/teachings" class="link-card">
+            <span class="link-icon">📖</span>
+            <span class="link-text">Teachings</span>
+          </a>
+          <a href="https://www.toratemetfreeware.com/online/find.php" class="link-card" target="_blank">
+            <span class="link-icon">🗺️</span>
+            <span class="link-text">Torat Emet Direct</span>
+          </a>
         </div>
       </div>
     </div>
   </div>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const searchInput = document.getElementById('searchInput');
-      const searchBtn = document.getElementById('searchBtn');
-      const resultsDiv = document.getElementById('results');
-      const loadingDiv = document.getElementById('loading');
-      const noResultsDiv = document.getElementById('noResults');
-      
-      // Simple search function
-      async function performSearch(query) {
-        if (!query.trim()) {
-          showWelcome();
-          return;
-        }
-        
-        showLoading();
-        
-        try {
-          // For now, use a mock search until API is fixed
-          // In production, this would call: /api/search?q=...
-          const mockResults = [
-            {
-              title: "Likutey Moharan Part 1, Chapter 1",
-              snippet: "The main thing is prayer...",
-              category: "Book",
-              link: "/books/likutay-moharan/part-1/chapter-1"
-            },
-            {
-              title: "Teaching on Faith",
-              snippet: "Faith is the foundation...",
-              category: "Teaching", 
-              link: "/teachings/faith-1"
-            }
-          ];
-          
-          // Simulate API delay
-          await new Promise(resolve => setTimeout(resolve, 500));
-          
-          displayResults(mockResults);
-        } catch (error) {
-          console.error('Search error:', error);
-          showError();
-        }
-      }
-      
-      function showWelcome() {
-        loadingDiv.classList.add('hidden');
-        noResultsDiv.classList.add('hidden');
-        resultsDiv.classList.remove('hidden');
-        resultsDiv.innerHTML = `
-          <div class="welcome-message">
-            <h2 style="color: #000; background: #fff; padding: 10px; border-radius: 5px;">Welcome to Breslov Search</h2>
-            <p>Enter a search term above to find relevant teachings and books.</p>
-            <div class="examples">
-              <p><strong>Try searching for:</strong></p>
-              <ul>
-                <li>תפילה (prayer)</li>
-                <li>אמונה (faith)</li>
-                <li>שמחה (joy)</li>
-                <li>התבודדות (solitude)</li>
-              </ul>
-            </div>
-          </div>
-        `;
-      }
-      
-      function showLoading() {
-        resultsDiv.classList.add('hidden');
-        noResultsDiv.classList.add('hidden');
-        loadingDiv.classList.remove('hidden');
-      }
-      
-      function displayResults(results) {
-        loadingDiv.classList.add('hidden');
-        
-        if (results.length === 0) {
-          noResultsDiv.classList.remove('hidden');
-          resultsDiv.classList.add('hidden');
-          return;
-        }
-        
-        noResultsDiv.classList.add('hidden');
-        resultsDiv.classList.remove('hidden');
-        
-        const resultsHTML = results.map(result => `
-          <div class="result-item">
-            <h3 class="result-title">
-              <a href="${result.link}">${result.title}</a>
-            </h3>
-            <div class="result-meta">
-              <span class="result-category">${result.category}</span>
-            </div>
-            <p class="result-snippet">${result.snippet}</p>
-          </div>
-        `).join('');
-        
-        resultsDiv.innerHTML = `
-          <div class="results-header">
-            <h3>Found ${results.length} results</h3>
-          </div>
-          ${resultsHTML}
-        `;
-      }
-      
-      function showError() {
-        loadingDiv.classList.add('hidden');
-        resultsDiv.classList.remove('hidden');
-        resultsDiv.innerHTML = `
-          <div class="error-message">
-            <h3>Search Error</h3>
-            <p>The search API is currently unavailable. Please try the external Torat Emet search tool below.</p>
-            <p>We're working to fix the internal search system.</p>
-          </div>
-        `;
-      }
-      
-      // Event listeners
-      searchBtn.addEventListener('click', () => {
-        performSearch(searchInput.value);
-      });
-      
-      searchInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-          performSearch(searchInput.value);
-        }
-      });
-      
-      // Initialize
-      showWelcome();
-    });
-  </script>
-
-  <style>
-    .search-page {
-      min-height: 100vh;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      padding: 2rem 1rem;
-    }
-
-    .page-header {
-      text-align: center;
-      color: white;
-      margin-bottom: 2rem;
-    }
-
-    .page-header h1 {
-      font-size: 2.5rem;
-      margin-bottom: 0.5rem;
-      font-family: var(--font-hebrew);
-    }
-
-    .subtitle {
-      font-size: 1.2rem;
-      opacity: 0.9;
-      margin-bottom: 0.5rem;
-    }
-
-    .warning {
-      background: rgba(255, 193, 7, 0.2);
-      border: 1px solid #ffc107;
-      border-radius: 8px;
-      padding: 0.5rem 1rem;
-      display: inline-block;
-      color: #ffc107;
-      font-weight: bold;
-    }
-
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-    }
-
-    .search-box {
-      display: flex;
-      gap: 0.5rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .search-box input {
-      flex: 1;
-      padding: 0.75rem 1rem;
-      border: none;
-      border-radius: 8px;
-      font-size: 1rem;
-    }
-
-    .search-box button {
-      padding: 0.75rem 1.5rem;
-      background: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-
-    .search-box button:hover {
-      background: #45a049;
-    }
-
-    .search-options {
-      background: rgba(255, 255, 255, 0.9);
-      border-radius: 8px;
-      padding: 1rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .search-options h3 {
-      margin-top: 0;
-      margin-bottom: 0.5rem;
-    }
-
-    .options {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-
-    .options label {
-      display: flex;
-      align-items: center;
-      gap: 0.25rem;
-    }
-
-    .results {
-      background: white;
-      border-radius: 12px;
-      padding: 1.5rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .welcome-message, .error-message {
-      text-align: center;
-    }
-
-    .welcome-message h2 {
-      color: #000 !important;
-      background: #fff;
-      padding: 10px;
-      border-radius: 5px;
-      margin-bottom: 1rem;
-    }
-
-    .examples {
-      text-align: left;
-      max-width: 400px;
-      margin: 0 auto;
-    }
-
-    .examples ul {
-      padding-left: 1.5rem;
-    }
-
-    .loading, .no-results {
-      background: white;
-      border-radius: 12px;
-      padding: 3rem;
-      text-align: center;
-      margin-bottom: 1.5rem;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    .spinner {
-      border: 4px solid #f3f3f3;
-      border-top: 4px solid #3498db;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 1rem;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    .result-item {
-      border-bottom: 1px solid #eee;
-      padding: 1rem 0;
-    }
-
-    .result-item:last-child {
-      border-bottom: none;
-    }
-
-    .result-title {
-      margin: 0 0 0.5rem 0;
-    }
-
-    .result-title a {
-      color: #1a365d;
-      text-decoration: none;
-    }
-
-    .result-title a:hover {
-      text-decoration: underline;
-    }
-
-    .result-meta {
-      margin-bottom: 0.5rem;
-    }
-
-    .result-category {
-      background: #f0f0f0;
-      padding: 0.2rem 0.5rem;
-      border-radius: 4px;
-      font-size: 0.8rem;
-    }
-
-    .result-snippet {
-      color: #666;
-      margin: 0;
-    }
-
-    .external-tools {
-      margin-top: 2rem;
-      padding-top: 2rem;
-      border-top: 2px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .external-tools h2 {
-      text-align: center;
-      color: white;
-      margin-bottom: 1.5rem;
-    }
-
-    .tool-frame {
-      background: white;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-
-    @media (max-width: 768px) {
-      .page-header h1 {
-        font-size: 2rem;
-      }
-      
-      .search-box {
-        flex-direction: column;
-      }
-      
-      .options {
-        flex-direction: column;
-        gap: 0.5rem;
-      }
-    }
-  </style>
 </Layout>
+
+<style>
+  .search-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 2rem 1rem;
+  }
+
+  .page-header {
+    text-align: center;
+    color: white;
+    margin-bottom: 3rem;
+  }
+
+  .page-header h1 {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+    font-family: var(--font-hebrew);
+  }
+
+  .subtitle {
+    font-size: 1.5rem;
+    opacity: 0.9;
+    margin-bottom: 1.5rem;
+  }
+
+  .feature-badges {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+  }
+
+  .badge {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .search-section, .maps-section, .features-section, .quick-links {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  h2 {
+    color: #2c3e50;
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+  }
+
+  h3 {
+    color: #34495e;
+    margin-top: 0;
+    margin-bottom: 1rem;
+  }
+
+  .section-description {
+    color: #7f8c8d;
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+  }
+
+  .maps-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+  }
+
+  .maps-frame {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .maps-info {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.5rem;
+  }
+
+  .maps-info ul {
+    padding-left: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .maps-info li {
+    margin-bottom: 0.5rem;
+    color: #495057;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+
+  .feature-card {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.5rem;
+  }
+
+  .feature-card ul {
+    padding-left: 1.5rem;
+    margin: 0;
+  }
+
+  .feature-card li {
+    margin-bottom: 0.5rem;
+    color: #495057;
+  }
+
+  .links-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+
+  .link-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #3498db;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    padding: 1.5rem;
+    transition: transform 0.3s, background 0.3s;
+    text-align: center;
+  }
+
+  .link-card:hover {
+    transform: translateY(-3px);
+    background: #2980b9;
+  }
+
+  .link-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .link-text {
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+
+  @media (max-width: 768px) {
+    .page-header h1 {
+      font-size: 2rem;
+    }
+    
+    .maps-container {
+      grid-template-columns: 1fr;
+    }
+    
+    .features-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .links-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .links-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
