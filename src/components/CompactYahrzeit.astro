@@ -3,30 +3,19 @@
 // Shows only today's yahrzeits in compact format
 // Click names to open profiles
 
-// Static data for today (26 Adar)
+// Static data for today (27 Adar - March 16, 2026)
 const todayTzaddikim = [
-  {
-    name: "Obadiah the Prophet",
-    hebrew_name: "עובדיה הנביא",
-    yahrzeit_hebrew: "26 Adar",
-    profile_path: "/tzaddikim/obadiah"
-  },
-  {
-    name: "Rabbi Nosson (Nathan) son of Yehuda of Tiveria",
-    hebrew_name: "רבי נתן בן יהודה מטבריה",
-    yahrzeit_hebrew: "26 Adar",
-    profile_path: "/tzaddikim/nosson-tiveria"
-  }
-];
-
-// Static data for tomorrow (27 Adar)
-const tomorrowTzaddikim = [
   {
     name: "Aaron Patz",
     hebrew_name: "רבי אהרן פץ",
     yahrzeit_hebrew: "27 Adar",
     profile_path: "/tzaddikim/aaron-patz"
   }
+];
+
+// Static data for tomorrow (28 Adar - March 17, 2026)
+const tomorrowTzaddikim = [
+  // No known yahrzeits for 28 Adar
 ];
 
 // Upcoming important dates (next 7 days)
@@ -74,8 +63,8 @@ const hasUpcoming = upcomingDates.length > 0;
 const showCompact = hasToday || hasTomorrow || hasUpcoming;
 
 // Hebrew date for display
-const todayHebrew = "כ״ו בַּאֲדָר";
-const tomorrowHebrew = "כ״ז בַּאֲדָר";
+const todayHebrew = "כ״ז בַּאֲדָר";
+const tomorrowHebrew = "כ״ח בַּאֲדָר";
 ---
 
 {showCompact && (
