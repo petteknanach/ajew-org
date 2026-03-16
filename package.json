@@ -7,11 +7,13 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "prebuild": "node scripts/generate-search-index.js",
+    "build": "npm run prebuild && astro build",
     "preview": "astro preview",
     "astro": "astro",
     "search": "node gen-search-index.js",
     "generate-index": "node enhanced-search-index-generator-simple.cjs",
+    "generate-index-complete": "node enhanced-search-index-generator-complete.cjs",
     "start-api": "node enhanced-search-api-simple.cjs",
     "search-dev": "concurrently \"npm run generate-index\" \"npm run start-api\""
   },
