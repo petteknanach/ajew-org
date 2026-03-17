@@ -256,6 +256,124 @@ function loadBooks() {
 
 
 
+// Load Likutay Nanach content
+function loadLikutayNanach() {
+  console.log('Loading Likutay Nanach...');
+  
+  const nanachDir = path.join(__dirname, 'public', 'books', 'likutay-nanach');
+  
+  if (!fs.existsSync(nanachDir)) {
+    console.log(`Warning: Likutay Nanach directory not found: ${nanachDir}`);
+    return [];
+  }
+  
+  const documents = [];
+  
+  // Check for volume directories (volume-3, volume-4, etc.)
+  const volumeDirs = fs.readdirSync(nanachDir, { withFileTypes: true })
+    .filter(dirent => dirent.isDirectory() && dirent.name.startsWith('volume-'))
+    .map(dirent => dirent.name);
+  
+  console.log(`Found ${volumeDirs.length} Likutay Nanach volumes`);
+  
+  for (const volumeDir of volumeDirs) {
+    const volumePath = path.join(nanachDir, volumeDir);
+    const volumeNum = volumeDir.replace('volume-', '');
+    
+    // Load metadata.json for chapters
+    const metadataPath = path.join(volumePath, 'metadata.json');
+    
+    if (fs.existsSync(metadataPath)) {
+      try {
+        const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
+        const chapters = metadata.chapters || [];
+        
+        for (let i = 0; i < chapters.length; i++) {
+          const chapter = chapters[i];
+          const content = chapter.content || '';
+          
+          if (!content.trim()) continue;
+          
+          const document = {
+            id: `likutay-nanach-${volumeNum}-${i + 1}`,
+            type: 'book',
+            title: chapter.title || `כרך ${volumeNum} פרק ${i + 1}`,
+            englishTitle: `Likutay Nanach Volume ${volumeNum} Chapter ${i + 1}`,
+            author: 'Breslov Chassidim',
+            category: 'Likutay Nanach',
+            subcategory: `Volume ${volumeNum}`,
+            language: 'hebrew',
+            content: content,
+            normalizedContent: content,
+            path: `/books/likutay-nanach/volume-${volumeNum}/chapter-${i + 1}`,
+            tags: ['likutay-nanach', 'nanach', 'breslov', `volume-${volumeNum}`],
+            wordCount: content.split(/\s+/).length,
+            charCount: content.length,
+            timestamp: new Date().toISOString(),
+            bookId: `likutay-nanach-${volumeNum}`,
+            searchableBookId: `likutay-nanach-${volumeNum}`,
+            chapter: i + 1,
+            section: 1
+          };
+          
+          documents.push(document);
+        }
+        
+        console.log(`  Loaded ${chapters.length} chapters from ${volumeDir}`);
+      } catch (err) {
+        console.log(`  Error loading ${metadataPath}: ${err.message}`);
+      }
+    }
+  }
+  
+  // Also check for raw text files as fallback
+  const rawFiles = fs.readdirSync(nanachDir)
+    .filter(f => f.endsWith('-raw.txt'));
+  
+  for (const rawFile of rawFiles) {
+    const volumeMatch = rawFile.match(/volume-(\w+)-raw\.txt/);
+    if (!volumeMatch) continue;
+    
+    const volumeNum = volumeMatch[1];
+    // Skip if we already loaded from metadata
+    const existingDocs = documents.filter(d => d.bookId === `likutay-nanach-${volumeNum}`);
+    if (existingDocs.length > 0) continue;
+    
+    const filePath = path.join(nanachDir, rawFile);
+    const content = fs.readFileSync(filePath, 'utf8');
+    
+    if (!content.trim()) continue;
+    
+    const document = {
+      id: `likutay-nanach-${volumeNum}-raw`,
+      type: 'book',
+      title: `לקוטי ננח כרך ${volumeNum}`,
+      englishTitle: `Likutay Nanach Volume ${volumeNum}`,
+      author: 'Breslov Chassidim',
+      category: 'Likutay Nanach',
+      subcategory: `Volume ${volumeNum}`,
+      language: 'hebrew',
+      content: content,
+      normalizedContent: content,
+      path: `/books/likutay-nanach/volume-${volumeNum}`,
+      tags: ['likutay-nanach', 'nanach', 'breslov', `volume-${volumeNum}`],
+      wordCount: content.split(/\s+/).length,
+      charCount: content.length,
+      timestamp: new Date().toISOString(),
+      bookId: `likutay-nanach-${volumeNum}`,
+      searchableBookId: `likutay-nanach-${volumeNum}`,
+      chapter: 1,
+      section: 1
+    };
+    
+    documents.push(document);
+    console.log(`  Loaded raw text from ${rawFile}`);
+  }
+  
+  console.log(`Total Likutay Nanach documents: ${documents.length}`);
+  return documents;
+}
+
 // Load mobile API content
 function loadMobileApiContent() {
   console.log('Loading mobile API content...');
@@ -432,14 +550,16 @@ async function main() {
     // Load all documents
   const hebrewTorahs = loadHebrewTorahs();
   const books = loadBooks();
+  const likutayNanach = loadLikutayNanach();
   const mobileApiContent = loadMobileApiContent();
   
   // Combine all documents
-  const allDocuments = [...hebrewTorahs, ...books, ...mobileApiContent];
+  const allDocuments = [...hebrewTorahs, ...books, ...likutayNanach, ...mobileApiContent];
     
     console.log(`\nTotal documents to index: ${allDocuments.length}`);
     console.log(`- Torah teachings: ${hebrewTorahs.length}`);
     console.log(`- Books: ${books.length}`);
+    console.log(`- Likutay Nanach: ${likutayNanach.length}`);
     console.log(`- Mobile API chapters: ${mobileApiContent.length}`);
     
     if (allDocuments.length === 0) {
