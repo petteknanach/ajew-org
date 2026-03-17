@@ -85,11 +85,48 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         </div>
       </div>
 
-      <!-- Maps Search Note -->
-      <div class="maps-note">
-        <h3>🗺️ Maps Search (Coming Soon)</h3>
-        <p>The special maps search feature will be restored shortly. We're working on bringing back this unique search tool.</p>
-        <p><em>Note: This is different from Torat Emet search.</em></p>
+      <!-- Maps Search - Torah Map Explorer -->
+      <div class="maps-section">
+        <h2>🗺️ מפות תורה - Torah Map Explorer</h2>
+        <div class="maps-notice">
+          <p><strong>⚠️ חשוב / Important:</strong> כלי חיפוש זה עובד רק עם טקסט בעברית! / This search tool only works with Hebrew text!</p>
+          <p class="maps-subnotice">Search for topics in Likutay Halachos and discover hidden connections between Torah concepts.</p>
+        </div>
+        
+        <div class="maps-container">
+          <div class="maps-frame">
+            <iframe 
+              src="https://daven613.github.io/maps" 
+              width="100%" 
+              height="600" 
+              frameborder="0"
+              title="Torah Map Explorer - Discover connections between Torah concepts"
+              loading="lazy"
+              sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"
+              class="maps-iframe"
+            ></iframe>
+          </div>
+          
+          <div class="maps-info">
+            <h3>Torah Map Explorer Features:</h3>
+            <ul>
+              <li>✅ Discover hidden connections between Torah concepts</li>
+              <li>✅ Search for topics in Likutay Halachos</li>
+              <li>✅ Trace paths between related ideas</li>
+              <li>✅ Visualize how concepts interrelate</li>
+              <li>✅ Explore Torah sources graphically</li>
+              <li>✅ Hebrew-only interface</li>
+            </ul>
+            <p><strong>How to use:</strong></p>
+            <ol>
+              <li>Enter Hebrew search terms in the left sidebar</li>
+              <li>Click on concepts to explore connections</li>
+              <li>Use the graph visualization to see relationships</li>
+              <li>Follow paths between related ideas</li>
+            </ol>
+            <p><em>This is a specialized tool for exploring conceptual connections in Torah texts.</em></p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -567,7 +604,193 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
       background: #2980b9;
     }
 
-    .maps-note {
+    .maps-section {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .maps-section h2 {
+      color: #2c3e50;
+      margin-bottom: 1rem;
+      font-size: 1.8rem;
+    }
+
+    .maps-notice {
       background: #fff3cd;
-      border: 1px solid #ffeaa7;
-      border-radius: 8
+      border: 2px solid #ffc107;
+      border-radius: 8px;
+      padding: 1rem 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .maps-notice p {
+      margin: 0.5rem 0;
+      color: #856404;
+    }
+
+    .maps-notice strong {
+      color: #664d03;
+    }
+
+    .maps-subnotice {
+      font-style: italic;
+      color: #666;
+      margin-top: 0.5rem !important;
+    }
+
+    .maps-container {
+      margin-top: 1.5rem;
+    }
+
+    .maps-frame {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #f8f9fa;
+    }
+
+    .maps-iframe {
+      display: block;
+      width: 100%;
+      border: none;
+    }
+
+    .maps-info {
+      margin-top: 1.5rem;
+      padding: 1.5rem;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+
+    .maps-info h3 {
+      color: #2c3e50;
+      margin-bottom: 1rem;
+    }
+
+    .maps-info ul {
+      margin: 1rem 0;
+      padding-left: 1.5rem;
+    }
+
+    .maps-info li {
+      margin: 0.5rem 0;
+      color: #555;
+    }
+
+    .maps-info ol {
+      margin: 1rem 0;
+      padding-left: 1.5rem;
+    }
+
+    .maps-info ol li {
+      margin: 0.5rem 0;
+      color: #555;
+    }
+
+    .maps-info p {
+      color: #666;
+      margin: 1rem 0;
+    }
+
+    .maps-info em {
+      color: #888;
+      font-size: 0.9rem;
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+      .page-header h1 {
+        font-size: 2rem;
+      }
+
+      .subtitle {
+        font-size: 1.1rem;
+      }
+
+      .search-section, .results-section, .maps-section {
+        padding: 1.5rem 1rem;
+      }
+
+      .maps-section h2 {
+        font-size: 1.4rem;
+      }
+
+      .maps-notice {
+        padding: 0.75rem 1rem;
+      }
+
+      .maps-notice p {
+        font-size: 0.9rem;
+      }
+
+      .maps-frame {
+        border-radius: 6px;
+      }
+
+      .maps-iframe {
+        height: 500px !important;
+      }
+
+      .maps-info {
+        padding: 1rem;
+      }
+
+      .maps-info h3 {
+        font-size: 1.1rem;
+      }
+
+      .maps-info ul, .maps-info ol {
+        padding-left: 1.2rem;
+      }
+
+      .maps-info li {
+        font-size: 0.9rem;
+      }
+
+      .feature-badges {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .badge {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.8rem;
+      }
+
+      .features-list {
+        grid-template-columns: 1fr;
+      }
+
+      .results-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+      }
+
+      .results-actions {
+        width: 100%;
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .maps-iframe {
+        height: 450px !important;
+      }
+
+      .maps-section {
+        padding: 1rem 0.75rem;
+      }
+
+      .maps-notice {
+        padding: 0.6rem 0.8rem;
+      }
+
+      .maps-notice strong {
+        font-size: 0.95rem;
+      }
+    }
+  </style>
+</Layout>
