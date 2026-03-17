@@ -201,8 +201,8 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
       const tryAgain = document.getElementById('tryAgain');
       const exportResults = document.getElementById('exportResults');
       
-      // Demo search function
-      function performDemoSearch(query) {
+      // Perform search function
+      function performSearch(query, filters = {}, advanced = {}) {
         if (!query.trim()) {
           showWelcome();
           return;
@@ -210,22 +210,27 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         
         showLoading();
         
-        setTimeout(() => {
-          loading.classList.add('hidden');
-          
-          // Filter sample results
-          const filteredResults = sampleResults.filter(result => 
-            result.title.toLowerCase().includes(query.toLowerCase()) ||
-            result.snippet.toLowerCase().includes(query.toLowerCase()) ||
-            result.subcategory.toLowerCase().includes(query.toLowerCase())
-          );
-          
-          if (filteredResults.length > 0) {
-            displayResults(filteredResults, query);
-          } else {
+        const url = new URL('/api/search', window.location.origin);
+        url.searchParams.set('q', query);
+        if (advanced.searchType) url.searchParams.set('searchType', advanced.searchType);
+        if (advanced.proximity) url.searchParams.set('proximity', advanced.proximity);
+        if (advanced.books && advanced.books.length > 0) url.searchParams.set('books', advanced.books.join(','));
+        
+        fetch(url)
+          .then(res => res.json())
+          .then(filteredResults => {
+            loading.classList.add('hidden');
+            if (filteredResults.length > 0) {
+              displayResults(filteredResults, query);
+            } else {
+              showNoResults(query);
+            }
+          })
+          .catch(err => {
+            console.error(err);
+            loading.classList.add('hidden');
             showNoResults(query);
-          }
-        }, 1000);
+          });
       }
       
       function displayResults(results, query) {
@@ -296,10 +301,10 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         alert('Export feature will be implemented with real search data.');
       });
       
-      // Demo: Simulate a search after 3 seconds
-      setTimeout(() => {
-        performDemoSearch('prayer');
-      }, 3000);
+      // Listen for actual searches
+      document.addEventListener('enhanced-search', (e) => {
+        performSearch(e.detail.query, e.detail.filters, e.detail.advancedOptions);
+      });
       
       // Initialize
       showWelcome();
@@ -310,13 +315,13 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
     .search-page {
       min-height: 100vh;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      padding: 2rem 1rem;
+      padding: 1rem;
     }
 
     .page-header {
       text-align: center;
       color: white;
-      margin-bottom: 3rem;
+      margin-bottom: 1rem;
     }
 
     .page-header h1 {
@@ -356,8 +361,8 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
     .search-section {
       background: rgba(255, 255, 255, 0.95);
       border-radius: 12px;
-      padding: 2rem;
-      margin-bottom: 2rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     }
 

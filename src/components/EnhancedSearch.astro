@@ -146,8 +146,8 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
 <script>
   // Search configuration
   const SEARCH_CONFIG = {
-    apiUrl: 'http://localhost:3001/api/search',
-    suggestionsUrl: 'http://localhost:3001/api/search/suggest',
+    apiUrl: '/api/search',
+    suggestionsUrl: '/api/search', // just use the same endpoint for now
     minCharsForSuggestions: 2,
     debounceTime: 300,
     maxSuggestions: 10
@@ -163,7 +163,7 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
       author: ''
     },
     advancedOptions: {
-      books: ['likutay-nanach-1', 'likutay-nanach-2', 'likutay-nanach-3', 'likutay-nanach-4', 'likutay-nanach-5', 'likutay-aitzos', 'likutay-tefilos', 'blossoms-of-the-spring', 'fires-of-israel'],
+      books: ['likutay-moharan', 'sefer-hamidos', 'stories', 'likutay-halachos', 'likutay-tefilos', 'likutay-aitzos', 'likutay-nanach-1', 'likutay-nanach-2', 'likutay-nanach-3', 'likutay-nanach-4', 'likutay-nanach-5', 'blossoms-of-the-spring', 'fires-of-israel'],
       searchType: 'contains',
       missingLetters: false,
       minWords: 2,
@@ -204,7 +204,7 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
   // Load categories from API
   async function loadCategories() {
     try {
-      const response = await fetch('http://localhost:3001/api/search/health');
+      const response = await fetch('/api/search?q=healthcheck');
       const data = await response.json();
       
       const categoryFilters = document.getElementById('categoryFilters');
