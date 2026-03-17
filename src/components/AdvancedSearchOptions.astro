@@ -1,63 +1,188 @@
 ---
-// Advanced Search Options Component
-// Torat Emet-style search options to enhance existing search
+// Advanced Search Options Component - Redesigned
+// Bilingual book selection with accordion categories
 ---
 
 <div class="advanced-search-options">
   <div class="options-header">
-    <h4 class="options-title">Advanced Search Options</h4>
+    <h4 class="options-title">⚙️ אפשרויות חיפוש מתקדמות / Advanced Search Options</h4>
     <button type="button" class="options-toggle" id="toggleAdvancedOptions">
-      <span class="toggle-icon">⚙️</span>
-      <span class="toggle-text">Show Options</span>
+      <span class="toggle-text">הצג אפשרויות / Show Options</span>
+      <span class="toggle-icon">▼</span>
     </button>
   </div>
   
-  <div class="options-content" id="advancedOptionsContent" class="hidden">
+  <div class="options-content" id="advancedOptionsContent" style="display: none;">
     
     <!-- Book Selection -->
     <div class="option-group">
-      <div class="options-header-row" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.75rem;">
-        <h5 class="option-group-title" style="margin:0;">📚 Select Books to Search:</h5>
-        <div class="quick-buttons" style="margin:0;">
-          <button type="button" class="quick-btn" id="selectAllBooks">Select All</button>
-          <button type="button" class="quick-btn" id="deselectAllBooks">Deselect All</button>
+      <div class="options-header-row">
+        <h5 class="option-group-title">📚 בחר ספרים / Select Books:</h5>
+        <div class="quick-buttons">
+          <button type="button" class="quick-btn select-all" id="selectAllBooks">בחר הכל / All</button>
+          <button type="button" class="quick-btn deselect-all" id="deselectAllBooks">בטל הכל / None</button>
         </div>
       </div>
-      <div class="book-checkboxes-container" id="bookSelection" style="max-height: 300px; overflow-y: auto; padding: 0.5rem; border: 1px solid #e5e7eb; border-radius: 6px;">
-        <details class="book-category-details" open style="margin-bottom: 1rem;">
-          <summary style="cursor:pointer; font-weight:bold; color:#4b5563; margin-bottom:0.5rem;">Likutay Moharan & Main Books</summary>
-          <div class="book-category" style="margin-left:1.5rem;">
-            <label class="book-checkbox"><input type="checkbox" name="book" value="likutay-moharan" checked> <span>Likutay Moharan (ליקוטי מוהר''ן)</span></label>
-            <label class="book-checkbox"><input type="checkbox" name="book" value="sefer-hamidos" checked> <span>Sefer Hamidos (ספר המידות)</span></label>
-            <label class="book-checkbox"><input type="checkbox" name="book" value="stories" checked> <span>Sipurei Ma'asiyot (סיפורי מעשיות)</span></label>
+      <div class="book-checkboxes-container" id="bookSelection">
+        
+        <!-- Likutay Moharan -->
+        <details class="book-category-details" open>
+          <summary class="category-summary">
+            <span class="category-icon">📖</span>
+            <span class="category-label">ליקוטי מוהרן — Likutay Moharan</span>
+            <span class="category-count">(431)</span>
+          </summary>
+          <div class="book-category">
+            <label class="book-checkbox">
+              <input type="checkbox" name="book" value="likutay-moharan" checked>
+              <span class="book-name">ליקוטי מוהרן / Likutay Moharan</span>
+              <span class="book-count">431</span>
+            </label>
           </div>
         </details>
         
-        <details class="book-category-details" open style="margin-bottom: 1rem;">
-          <summary style="cursor:pointer; font-weight:bold; color:#4b5563; margin-bottom:0.5rem;">Likutay Halachos & Rabbi Natan</summary>
-          <div class="book-category" style="margin-left:1.5rem;">
-            <label class="book-checkbox"><input type="checkbox" name="book" value="likutay-halachos" checked> <span>Likutay Halachos (ליקוטי הלכות)</span></label>
-            <label class="book-checkbox"><input type="checkbox" name="book" value="likutay-tefilos" checked> <span>Likutay Tefilos (ליקוטי תפילות)</span></label>
-            <label class="book-checkbox"><input type="checkbox" name="book" value="likutay-aitzos" checked> <span>Likutay Aitzos (ליקוטי עצות)</span></label>
+        <!-- Sefarim of Rabbainu -->
+        <details class="book-category-details" open>
+          <summary class="category-summary">
+            <span class="category-icon">📜</span>
+            <span class="category-label">ספרי רבי נחמן — Books of Rabbainu</span>
+          </summary>
+          <div class="book-category">
+            <label class="book-checkbox">
+              <input type="checkbox" name="book" value="sefer-hamidos" checked>
+              <span class="book-name">ספר המידות / Sefer Hamidos</span>
+              <span class="book-count">10</span>
+            </label>
+            <label class="book-checkbox">
+              <input type="checkbox" name="book" value="stories" checked>
+              <span class="book-name">סיפורי מעשיות / Sipurei Ma'asiyos</span>
+              <span class="book-count">5</span>
+            </label>
+          </div>
+        </details>
+
+        <!-- Likutay Nanach -->
+        <details class="book-category-details" open>
+          <summary class="category-summary">
+            <span class="category-icon">📗</span>
+            <span class="category-label">ליקוטי נ נח — Likutay Nanach</span>
+          </summary>
+          <div class="book-category">
+            <label class="book-checkbox">
+              <input type="checkbox" name="book" value="likutay-nanach-3" checked>
+              <span class="book-name">ליקוטי נ נח כרך ג / Likutay Nanach Vol. 3</span>
+              <span class="book-count">18</span>
+            </label>
+            <label class="book-checkbox">
+              <input type="checkbox" name="book" value="likutay-nanach-4" checked>
+              <span class="book-name">ליקוטי נ נח כרך ד / Likutay Nanach Vol. 4</span>
+              <span class="book-count">40</span>
+            </label>
+            <label class="book-checkbox">
+              <input type="checkbox" name="book" value="likutay-nanach-5" checked>
+              <span class="book-name">ליקוטי נ נח כרך ה / Likutay Nanach Vol. 5</span>
+              <span class="book-count">8</span>
+            </label>
+            <label class="book-checkbox">
+              <input type="checkbox" name="book" value="likutay-nanach-unknown" checked>
+              <span class="book-name">ליקוטי נ נח - אחר / Likutay Nanach - Other</span>
+              <span class="book-count">11</span>
+            </label>
+          </div>
+        </details>
+
+        <!-- Sifrei Rabbainu / Rabbi Nachman's Books -->
+        <details class="book-category-details">
+          <summary class="category-summary">
+            <span class="category-icon">📕</span>
+            <span class="category-label">ספרי רבי נחמן מברסלב — Rabbi Nachman's Books</span>
+          </summary>
+          <div class="book-category">
+            <label class="book-checkbox">
+              <input type="checkbox" name="book" value="1_ספרי-רבי-נחמן" checked>
+              <span class="book-name">ספרי רבי נחמן / Books of Rabbainu</span>
+              <span class="book-count">12</span>
+            </label>
           </div>
         </details>
         
-        <details class="book-category-details" style="margin-bottom: 1rem;">
-          <summary style="cursor:pointer; font-weight:bold; color:#4b5563; margin-bottom:0.5rem;">Nanach Collections</summary>
-          <div class="book-category" style="margin-left:1.5rem;">
-            <label class="book-checkbox"><input type="checkbox" name="book" value="likutay-nanach-1" checked> <span>Volume 1</span></label>
-            <label class="book-checkbox"><input type="checkbox" name="book" value="likutay-nanach-2" checked> <span>Volume 2</span></label>
-            <label class="book-checkbox"><input type="checkbox" name="book" value="likutay-nanach-3" checked> <span>Volume 3</span></label>
-            <label class="book-checkbox"><input type="checkbox" name="book" value="likutay-nanach-4" checked> <span>Volume 4</span></label>
-            <label class="book-checkbox"><input type="checkbox" name="book" value="likutay-nanach-5" checked> <span>Volume 5</span></label>
+        <!-- Sifrei Rabbi Natan -->
+        <details class="book-category-details">
+          <summary class="category-summary">
+            <span class="category-icon">📘</span>
+            <span class="category-label">ספרי רבי נתן — Rabbi Natan's Books</span>
+          </summary>
+          <div class="book-category">
+            <label class="book-checkbox">
+              <input type="checkbox" name="book" value="2_ספרי-רבי-נתן" checked>
+              <span class="book-name">ספרי רבי נתן / Sifrei R' Natan</span>
+              <span class="book-count">6</span>
+            </label>
+            <label class="book-checkbox">
+              <input type="checkbox" name="book" value="3_ספרי-רבי-נתן-בר-יהודה" checked>
+              <span class="book-name">ספרי רבי נתן בר יהודה / R' Natan bar Yehuda</span>
+              <span class="book-count">3</span>
+            </label>
           </div>
         </details>
         
-        <details class="book-category-details" style="margin-bottom: 1rem;">
-          <summary style="cursor:pointer; font-weight:bold; color:#4b5563; margin-bottom:0.5rem;">Other Breslov Collections</summary>
-          <div class="book-category" style="margin-left:1.5rem;">
-            <label class="book-checkbox"><input type="checkbox" name="book" value="blossoms-of-the-spring" checked> <span>Blossoms of the Spring</span></label>
-            <label class="book-checkbox"><input type="checkbox" name="book" value="fires-of-israel" checked> <span>Fires of Israel</span></label>
+        <!-- Other Breslov Authors -->
+        <details class="book-category-details">
+          <summary class="category-summary">
+            <span class="category-icon">📙</span>
+            <span class="category-label">ספרים אחרים — Other Breslov Books</span>
+          </summary>
+          <div class="book-category">
+            <label class="book-checkbox">
+              <input type="checkbox" name="book" value="3_ספרי-הרב-מטשערין" checked>
+              <span class="book-name">ספרי הרב מטשערין / R' Nachman of Tcherin</span>
+              <span class="book-count">6</span>
+            </label>
+            <label class="book-checkbox">
+              <input type="checkbox" name="book" value="4_ספרי-רבי-אלתר-טפליקער" checked>
+              <span class="book-name">ספרי רבי אלתר טפליקער / R' Alter Tepliker</span>
+              <span class="book-count">2</span>
+            </label>
+            <label class="book-checkbox">
+              <input type="checkbox" name="book" value="5_ספרי-רבי-אברהם-בר-נחמן" checked>
+              <span class="book-name">ספרי רבי אברהם בר נחמן / R' Avraham ben R' Nachman</span>
+              <span class="book-count">3</span>
+            </label>
+            <label class="book-checkbox">
+              <input type="checkbox" name="book" value="6_ספרי-רבי-שמשון-בארסקי" checked>
+              <span class="book-name">ספרי רבי שמשון בארסקי / R' Shimshon Barsky</span>
+              <span class="book-count">2</span>
+            </label>
+            <label class="book-checkbox">
+              <input type="checkbox" name="book" value="6_ספרים-של-תלמידים-ועוד" checked>
+              <span class="book-name">ספרים של תלמידים ועוד / Other Talmidim</span>
+              <span class="book-count">12</span>
+            </label>
+          </div>
+        </details>
+
+        <!-- Bibliography & Misc -->
+        <details class="book-category-details">
+          <summary class="category-summary">
+            <span class="category-icon">📚</span>
+            <span class="category-label">ביבליוגרפית ועוד — Bibliography & Misc</span>
+          </summary>
+          <div class="book-category">
+            <label class="book-checkbox">
+              <input type="checkbox" name="book" value="ביבליוגרפית-ברסלב" checked>
+              <span class="book-name">ביבליוגרפית ברסלב / Breslov Bibliography</span>
+              <span class="book-count">9</span>
+            </label>
+            <label class="book-checkbox">
+              <input type="checkbox" name="book" value="91_סיפורים" checked>
+              <span class="book-name">סיפורים / Stories</span>
+              <span class="book-count">2</span>
+            </label>
+            <label class="book-checkbox">
+              <input type="checkbox" name="book" value="92_ספרים-מתורגמים" checked>
+              <span class="book-name">ספרים מתורגמים / Translated Books</span>
+              <span class="book-count">1</span>
+            </label>
           </div>
         </details>
       </div>
@@ -65,103 +190,74 @@
     
     <!-- Search Type -->
     <div class="option-group">
-      <h5 class="option-group-title">🔍 Search Type:</h5>
+      <h5 class="option-group-title">🔍 סוג חיפוש / Search Type:</h5>
       <div class="search-type-options">
         <label class="search-type-option">
           <input type="radio" name="searchType" value="contains" checked>
-          <span>Contains (default)</span>
-          <span class="option-description">Finds text anywhere in document</span>
+          <div>
+            <span class="type-label">מכיל / Contains</span>
+            <span class="option-description">Finds text anywhere in document</span>
+          </div>
         </label>
         
         <label class="search-type-option">
           <input type="radio" name="searchType" value="exact">
-          <span>Exact phrase</span>
-          <span class="option-description">Words in exact order</span>
-        </label>
-        
-        <label class="search-type-option">
-          <input type="radio" name="searchType" value="startsWith">
-          <span>Starts with</span>
-          <span class="option-description">Text begins with search term</span>
-        </label>
-        
-        <label class="search-type-option">
-          <input type="radio" name="searchType" value="endsWith">
-          <span>Ends with</span>
-          <span class="option-description">Text ends with search term</span>
+          <div>
+            <span class="type-label">מדויק / Exact phrase</span>
+            <span class="option-description">Words in exact order</span>
+          </div>
         </label>
         
         <label class="search-type-option">
           <input type="radio" name="searchType" value="boolean">
-          <span>Boolean search</span>
-          <span class="option-description">Use AND, OR, NOT operators</span>
+          <div>
+            <span class="type-label">בוליאני / Boolean</span>
+            <span class="option-description">Use AND, OR, NOT operators</span>
+          </div>
+        </label>
+        
+        <label class="search-type-option">
+          <input type="radio" name="searchType" value="startsWith">
+          <div>
+            <span class="type-label">מתחיל ב / Starts with</span>
+            <span class="option-description">Text begins with search term</span>
+          </div>
+        </label>
+        
+        <label class="search-type-option">
+          <input type="radio" name="searchType" value="endsWith">
+          <div>
+            <span class="type-label">מסתיים ב / Ends with</span>
+            <span class="option-description">Text ends with search term</span>
+          </div>
         </label>
       </div>
     </div>
     
-    <!-- Hebrew-Specific Options -->
+    <!-- Proximity Search -->
     <div class="option-group">
-      <h5 class="option-group-title">📜 Hebrew Text Options:</h5>
-      <div class="hebrew-options">
-        <label class="hebrew-option">
-          <input type="checkbox" name="missingLetters" id="missingLettersOption">
-          <span>Include missing letters (כתיב חסר)</span>
-          <span class="option-description">Search matches words with missing vowels/letters</span>
-        </label>
-        
-        <div class="word-count-option">
-          <label for="minWords">Minimum words match:</label>
-          <select name="minWords" id="minWords">
-            <option value="1">At least 1 word</option>
-            <option value="2" selected>At least 2 words</option>
-            <option value="3">At least 3 words</option>
-            <option value="all">All words must match</option>
-          </select>
-        </div>
-        
-        <div class="proximity-option">
-          <label for="proximity">Proximity search:</label>
-          <select name="proximity" id="proximity">
-            <option value="0">No proximity limit</option>
-            <option value="5">Within 5 words</option>
-            <option value="10">Within 10 words</option>
-            <option value="20">Within 20 words</option>
-            <option value="50">Within 50 words</option>
-          </select>
-          <span class="option-description">Search terms must be within X words of each other</span>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Search Examples -->
-    <div class="option-group">
-      <h5 class="option-group-title">💡 Search Examples:</h5>
-      <div class="search-examples">
-        <div class="example">
-          <strong>Exact phrase:</strong> <code>"תפילה נפלאה"</code>
-        </div>
-        <div class="example">
-          <strong>Boolean:</strong> <code>תפילה AND שמחה</code> or <code>תפילה OR בקשה</code>
-        </div>
-        <div class="example">
-          <strong>Wildcard:</strong> <code>שמח*</code> (finds שמחה, שמחת, etc.)
-        </div>
-        <div class="example">
-          <strong>Proximity:</strong> <code>תפילה NEAR/5 שמחה</code>
-        </div>
+      <h5 class="option-group-title">📏 חיפוש קרבה / Proximity Search:</h5>
+      <div class="proximity-options">
+        <label for="proximity" class="proximity-label">Maximum words between search terms:</label>
+        <select name="proximity" id="proximity" class="proximity-select">
+          <option value="0">ללא הגבלה / No limit</option>
+          <option value="1">1 word apart</option>
+          <option value="2">2 words apart</option>
+          <option value="3">3 words apart</option>
+          <option value="5">5 words apart</option>
+          <option value="10">10 words apart</option>
+        </select>
+        <span class="option-description">For multi-word searches: words must be this close to each other</span>
       </div>
     </div>
     
     <!-- Action Buttons -->
     <div class="option-actions">
       <button type="button" class="action-btn apply-btn" id="applyAdvancedOptions">
-        Apply Options
+        החל אפשרויות / Apply Options
       </button>
       <button type="button" class="action-btn reset-btn" id="resetAdvancedOptions">
-        Reset to Defaults
-      </button>
-      <button type="button" class="action-btn close-btn" id="closeAdvancedOptions">
-        Close Options
+        אפס / Reset
       </button>
     </div>
   </div>
@@ -170,9 +266,9 @@
 <style>
   .advanced-search-options {
     background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    margin: 1rem 0;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    margin: 0.75rem 0;
     overflow: hidden;
   }
   
@@ -180,175 +276,267 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem;
-    background: #f9fafb;
-    border-bottom: 1px solid #e5e7eb;
+    padding: 0.75rem 1rem;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
   }
   
   .options-title {
     margin: 0;
-    font-size: 1.1rem;
+    font-size: 0.95rem;
     color: #374151;
   }
   
   .options-toggle {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    background: #8b5cf6;
+    gap: 0.4rem;
+    padding: 0.4rem 0.8rem;
+    background: #6366f1;
     color: white;
     border: none;
     border-radius: 6px;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     font-weight: 500;
     cursor: pointer;
+    transition: background 0.2s;
   }
   
   .options-toggle:hover {
-    background: #7c3aed;
+    background: #4f46e5;
+  }
+  
+  .toggle-icon {
+    transition: transform 0.3s;
+    font-size: 0.7rem;
+  }
+  
+  .toggle-icon.rotated {
+    transform: rotate(180deg);
   }
   
   .options-content {
-    padding: 1.5rem;
+    padding: 1rem;
   }
   
   .option-group {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #f0f0f0;
   }
   
-  .option-group-title {
-    margin: 0 0 0.75rem 0;
-    font-size: 1rem;
-    color: #4b5563;
+  .option-group:last-of-type {
+    border-bottom: none;
+    margin-bottom: 0.75rem;
+  }
+  
+  .options-header-row {
     display: flex;
+    justify-content: space-between;
     align-items: center;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
     gap: 0.5rem;
   }
   
-  .book-category {
-    margin-bottom: 1rem;
+  .option-group-title {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #4b5563;
   }
   
-  .book-category h6 {
-    margin: 0 0 0.5rem 0;
+  .quick-buttons {
+    display: flex;
+    gap: 0.4rem;
+  }
+  
+  .quick-btn {
+    padding: 0.3rem 0.65rem;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: white;
+    color: #374151;
+  }
+  
+  .quick-btn.select-all {
+    background: #ecfdf5;
+    border-color: #6ee7b7;
+    color: #065f46;
+  }
+  
+  .quick-btn.deselect-all {
+    background: #fef2f2;
+    border-color: #fca5a5;
+    color: #991b1b;
+  }
+  
+  .quick-btn:hover {
+    filter: brightness(0.95);
+  }
+  
+  .book-checkboxes-container {
+    max-height: 350px;
+    overflow-y: auto;
+    padding: 0.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    background: #fafafa;
+  }
+  
+  .book-category-details {
+    margin-bottom: 0.5rem;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #f0f0f0;
+    overflow: hidden;
+  }
+  
+  .category-summary {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #374151;
+    background: #f9fafb;
+    user-select: none;
+    transition: background 0.15s;
+  }
+  
+  .category-summary:hover {
+    background: #f3f4f6;
+  }
+  
+  .category-icon {
     font-size: 0.9rem;
-    color: #6b7280;
+  }
+  
+  .category-count {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    font-weight: 400;
+  }
+  
+  .book-category {
+    padding: 0.25rem 0.5rem 0.5rem 2rem;
   }
   
   .book-checkbox {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    margin: 0.25rem 0;
-    padding: 0.25rem;
+    padding: 0.3rem 0.5rem;
     cursor: pointer;
+    border-radius: 4px;
+    font-size: 0.82rem;
+    transition: background 0.15s;
   }
   
   .book-checkbox:hover {
     background: #f3f4f6;
-    border-radius: 4px;
   }
   
-  .quick-buttons {
-    display: flex;
-    gap: 0.5rem;
-    margin-top: 1rem;
+  .book-checkbox input[type="checkbox"] {
+    flex-shrink: 0;
   }
   
-  .quick-btn {
-    padding: 0.375rem 0.75rem;
+  .book-name {
+    flex: 1;
+    color: #374151;
+  }
+  
+  .book-count {
+    font-size: 0.7rem;
+    color: #9ca3af;
     background: #f3f4f6;
-    border: 1px solid #e5e7eb;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    cursor: pointer;
-  }
-  
-  .quick-btn:hover {
-    background: #e5e7eb;
+    padding: 0.1rem 0.4rem;
+    border-radius: 10px;
   }
   
   .search-type-options {
-    display: grid;
-    gap: 0.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
   }
   
   .search-type-option {
     display: flex;
-    align-items: flex-start;
-    gap: 0.5rem;
-    padding: 0.5rem;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.75rem;
     cursor: pointer;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    transition: all 0.15s;
+    background: white;
+    font-size: 0.82rem;
+  }
+  
+  .search-type-option:has(input:checked) {
+    background: #eef2ff;
+    border-color: #818cf8;
   }
   
   .search-type-option:hover {
-    background: #f3f4f6;
-    border-radius: 4px;
+    border-color: #c7d2fe;
+  }
+  
+  .search-type-option input[type="radio"] {
+    flex-shrink: 0;
+  }
+  
+  .type-label {
+    font-weight: 600;
+    color: #374151;
   }
   
   .option-description {
     display: block;
-    font-size: 0.8rem;
-    color: #6b7280;
-    margin-top: 0.125rem;
+    font-size: 0.72rem;
+    color: #9ca3af;
+    margin-top: 0.1rem;
   }
   
-  .hebrew-options {
-    display: grid;
-    gap: 1rem;
-  }
-  
-  .hebrew-option {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.5rem;
-    cursor: pointer;
-  }
-  
-  .word-count-option,
-  .proximity-option {
+  .proximity-options {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.4rem;
   }
   
-  .word-count-option select,
-  .proximity-option select {
-    padding: 0.375rem;
+  .proximity-label {
+    font-size: 0.85rem;
+    color: #4b5563;
+  }
+  
+  .proximity-select {
+    padding: 0.4rem 0.6rem;
     border: 1px solid #d1d5db;
-    border-radius: 4px;
-    max-width: 200px;
-  }
-  
-  .search-examples {
-    display: grid;
-    gap: 0.5rem;
-    font-size: 0.9rem;
-  }
-  
-  .example code {
-    background: #f3f4f6;
-    padding: 0.125rem 0.375rem;
-    border-radius: 3px;
-    font-family: monospace;
-    color: #374151;
+    border-radius: 6px;
+    max-width: 250px;
+    font-size: 0.85rem;
+    background: white;
   }
   
   .option-actions {
     display: flex;
-    gap: 0.75rem;
-    margin-top: 1.5rem;
-    padding-top: 1.5rem;
+    gap: 0.6rem;
+    padding-top: 0.75rem;
     border-top: 1px solid #e5e7eb;
   }
   
   .action-btn {
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 1.2rem;
     border: none;
     border-radius: 6px;
-    font-weight: 500;
+    font-weight: 600;
+    font-size: 0.85rem;
     cursor: pointer;
+    transition: all 0.2s;
   }
   
   .apply-btn {
@@ -369,18 +557,43 @@
     background: #e5e7eb;
   }
   
-  .close-btn {
-    background: #ef4444;
-    color: white;
-  }
-  
-  .close-btn:hover {
-    background: #dc2626;
+  /* Mobile */
+  @media (max-width: 640px) {
+    .options-header {
+      flex-direction: column;
+      gap: 0.5rem;
+      align-items: flex-start;
+    }
+    
+    .options-title {
+      font-size: 0.85rem;
+    }
+    
+    .options-header-row {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    
+    .search-type-options {
+      flex-direction: column;
+    }
+    
+    .search-type-option {
+      width: 100%;
+    }
+    
+    .option-actions {
+      flex-direction: column;
+    }
+    
+    .action-btn {
+      width: 100%;
+      text-align: center;
+    }
   }
 </style>
 
 <script>
-  // Toggle advanced options visibility
   document.addEventListener('DOMContentLoaded', function() {
     const toggleBtn = document.getElementById('toggleAdvancedOptions');
     const optionsContent = document.getElementById('advancedOptionsContent');
@@ -391,94 +604,59 @@
     
     toggleBtn.addEventListener('click', function() {
       isOpen = !isOpen;
-      
-      if (isOpen) {
-        optionsContent.style.display = 'block';
-        toggleText.textContent = 'Hide Options';
-        toggleIcon.textContent = '⚙️';
-      } else {
-        optionsContent.style.display = 'none';
-        toggleText.textContent = 'Show Options';
-        toggleIcon.textContent = '⚙️';
-      }
+      optionsContent.style.display = isOpen ? 'block' : 'none';
+      toggleText.textContent = isOpen ? 'הסתר אפשרויות / Hide Options' : 'הצג אפשרויות / Show Options';
+      toggleIcon.classList.toggle('rotated', isOpen);
     });
     
-    // Book selection quick buttons
+    // Select All / Deselect All
     document.getElementById('selectAllBooks').addEventListener('click', function() {
-      document.querySelectorAll('input[name="book"]').forEach(cb => {
-        cb.checked = true;
-      });
+      document.querySelectorAll('input[name="book"]').forEach(cb => cb.checked = true);
     });
     
     document.getElementById('deselectAllBooks').addEventListener('click', function() {
-      document.querySelectorAll('input[name="book"]').forEach(cb => {
-        cb.checked = false;
-      });
+      document.querySelectorAll('input[name="book"]').forEach(cb => cb.checked = false);
     });
 
-      // Apply advanced options
+    // Apply options
     document.getElementById('applyAdvancedOptions').addEventListener('click', function() {
       const options = getAdvancedOptions();
+      document.dispatchEvent(new CustomEvent('advanced-search-options', { detail: options }));
       
-      // Dispatch event with options
-      const event = new CustomEvent('advanced-search-options', {
-        detail: options
-      });
-      document.dispatchEvent(event);
-      
-      alert('Advanced options applied! Your next search will use these settings.');
+      // Visual feedback
+      const btn = this;
+      const orig = btn.textContent;
+      btn.textContent = '✓ הוחל / Applied!';
+      btn.style.background = '#059669';
+      setTimeout(() => { btn.textContent = orig; btn.style.background = ''; }, 1500);
     });
     
     // Reset options
     document.getElementById('resetAdvancedOptions').addEventListener('click', function() {
       resetAdvancedOptions();
-      alert('Options reset to defaults.');
+      const btn = this;
+      const orig = btn.textContent;
+      btn.textContent = '✓ אופס / Reset!';
+      setTimeout(() => { btn.textContent = orig; }, 1000);
     });
     
-    // Close options
-    document.getElementById('closeAdvancedOptions').addEventListener('click', function() {
-      optionsContent.style.display = 'none';
-      toggleText.textContent = 'Show Options';
-      toggleIcon.textContent = '⚙️';
-      isOpen = false;
-    });
-    
-    // Get current advanced options
     function getAdvancedOptions() {
       const selectedBooks = Array.from(document.querySelectorAll('input[name="book"]:checked'))
         .map(cb => cb.value);
       
-      const searchType = document.querySelector('input[name="searchType"]:checked').value;
-      const missingLetters = document.getElementById('missingLettersOption').checked;
-      const minWords = parseInt(document.getElementById('minWords').value);
+      const searchType = document.querySelector('input[name="searchType"]:checked')?.value || 'contains';
       const proximity = parseInt(document.getElementById('proximity').value);
       
-      return {
-        books: selectedBooks,
-        searchType: searchType,
-        missingLetters: missingLetters,
-        minWords: minWords,
-        proximity: proximity
-      };
+      return { books: selectedBooks, searchType, proximity };
     }
     
-    // Reset advanced options to defaults
     function resetAdvancedOptions() {
-      // Reset book checkboxes (select all by default)
-      document.querySelectorAll('input[name="book"]').forEach(cb => {
-        cb.checked = true;
-      });
-      
-      // Reset search type to "contains"
+      document.querySelectorAll('input[name="book"]').forEach(cb => cb.checked = true);
       document.querySelector('input[name="searchType"][value="contains"]').checked = true;
-      
-      // Reset Hebrew options
-      document.getElementById('missingLettersOption').checked = false;
-      document.getElementById('minWords').value = '2';
       document.getElementById('proximity').value = '0';
     }
     
-    // Initialize with defaults
+    // Initialize
     resetAdvancedOptions();
   });
 </script>

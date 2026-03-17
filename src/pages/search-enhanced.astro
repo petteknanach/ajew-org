@@ -1,31 +1,20 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import EnhancedSearch from '../components/EnhancedSearch.astro';
-
-// Advanced search page with all features restored
-// Uses the EnhancedSearch component with all advanced options
 ---
 
 <Layout 
-  title="Advanced Search | ajew.org" 
-  description="Torat Emet-style advanced search with book selection, Hebrew options, proximity search, and boolean operators"
+  title="חיפוש מתקדם | Advanced Search | ajew.org" 
+  description="Advanced search across Breslov Torah texts with book selection, proximity search, and more"
 >
   <div class="search-page">
     <header class="page-header">
       <h1>חיפוש מתקדם</h1>
-      <p class="subtitle">Advanced Search with All Features Restored</p>
-      <div class="feature-badges">
-        <span class="badge">✅ Book Selection</span>
-        <span class="badge">✅ Hebrew Options</span>
-        <span class="badge">✅ Proximity Search</span>
-        <span class="badge">✅ Boolean Operators</span>
-        <span class="badge">✅ Wildcard Search</span>
-        <span class="badge">✅ Fuzzy Search</span>
-      </div>
+      <p class="subtitle">Advanced Search Across All Works</p>
     </header>
 
     <div class="container">
-      <!-- Main Enhanced Search Component -->
+      <!-- Search Section -->
       <div class="search-section">
         <EnhancedSearch 
           compact={false}
@@ -35,64 +24,42 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         />
       </div>
 
-      <!-- Search Results Area -->
-      <div class="results-section">
+      <!-- Results Section - RIGHT BELOW SEARCH -->
+      <div class="results-section" id="resultsSection">
         <div id="welcomeMessage" class="welcome-message">
-          <h2>Welcome to Advanced Search</h2>
-          <p>Use the search box above with all advanced features:</p>
-          <div class="features-list">
-            <div class="feature">
-              <h3>📚 Book Selection</h3>
-              <p>Choose which books to search in using the checklist</p>
-            </div>
-            <div class="feature">
-              <h3>🔍 Search Types</h3>
-              <p>Exact match, contains, starts with, ends with, boolean</p>
-            </div>
-            <div class="feature">
-              <h3>📏 Proximity Search</h3>
-              <p>Find words within X words of each other</p>
-            </div>
-            <div class="feature">
-              <h3>✡️ Hebrew Options</h3>
-              <p>Handle missing letters (כתיב חסר) and English/Hebrew toggle</p>
-            </div>
-          </div>
+          <div class="welcome-icon">📖</div>
+          <p class="welcome-text">התחילו לחיפוש למעלה / Start searching above</p>
+          <p class="welcome-hint">בחרו ספרים והגדרות מתקדמות / Select books and advanced options</p>
         </div>
 
         <div id="loading" class="loading hidden">
           <div class="spinner"></div>
-          <p>Searching with advanced filters...</p>
+          <p>מחפש... Searching...</p>
         </div>
 
         <div id="resultsContainer" class="results-container hidden">
           <div class="results-header">
-            <h3 id="resultsCount">0 results found</h3>
+            <h3 id="resultsCount"></h3>
             <div class="results-actions">
-              <button id="clearResults" class="action-btn">Clear</button>
-              <button id="exportResults" class="action-btn">Export</button>
+              <button id="clearResults" class="action-btn clear-btn">✕ Clear</button>
             </div>
           </div>
-          <div id="resultsList" class="results-list">
-            <!-- Results will appear here -->
-          </div>
+          <div id="resultsList" class="results-list"></div>
         </div>
 
         <div id="noResults" class="no-results hidden">
-          <h3>No results found</h3>
-          <p>Try adjusting your search terms or filters.</p>
-          <button id="tryAgain" class="try-btn">Try Different Search</button>
+          <div class="no-results-icon">🔍</div>
+          <h3>לא נמצאו תוצאות / No results found</h3>
+          <p id="noResultsMessage"></p>
         </div>
       </div>
 
-      <!-- Maps Search - Torah Map Explorer -->
+      <!-- Torah Map Explorer -->
       <div class="maps-section">
         <h2>🗺️ מפות תורה - Torah Map Explorer</h2>
         <div class="maps-notice">
-          <p><strong>⚠️ חשוב / Important:</strong> כלי חיפוש זה עובד רק עם טקסט בעברית! / This search tool only works with Hebrew text!</p>
-          <p class="maps-subnotice">Search for topics in Likutay Halachos and discover hidden connections between Torah concepts.</p>
+          <p><strong>⚠️ חשוב:</strong> כלי זה עובד רק עם טקסט בעברית! / This tool only works with Hebrew text!</p>
         </div>
-        
         <div class="maps-container">
           <div class="maps-frame">
             <iframe 
@@ -100,31 +67,11 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
               width="100%" 
               height="600" 
               frameborder="0"
-              title="Torah Map Explorer - Discover connections between Torah concepts"
+              title="Torah Map Explorer"
               loading="lazy"
               sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"
               class="maps-iframe"
             ></iframe>
-          </div>
-          
-          <div class="maps-info">
-            <h3>Torah Map Explorer Features:</h3>
-            <ul>
-              <li>✅ Discover hidden connections between Torah concepts</li>
-              <li>✅ Search for topics in Likutay Halachos</li>
-              <li>✅ Trace paths between related ideas</li>
-              <li>✅ Visualize how concepts interrelate</li>
-              <li>✅ Explore Torah sources graphically</li>
-              <li>✅ Hebrew-only interface</li>
-            </ul>
-            <p><strong>How to use:</strong></p>
-            <ol>
-              <li>Enter Hebrew search terms in the left sidebar</li>
-              <li>Click on concepts to explore connections</li>
-              <li>Use the graph visualization to see relationships</li>
-              <li>Follow paths between related ideas</li>
-            </ol>
-            <p><em>This is a specialized tool for exploring conceptual connections in Torah texts.</em></p>
           </div>
         </div>
       </div>
@@ -133,189 +80,148 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Initialize advanced search
-      console.log('Advanced search page loaded');
-      
-      // Sample data for demonstration
-      const sampleResults = [
-        {
-          id: 1,
-          title: "Likutay Nanach - Volume 5, Chapter 1",
-          snippet: "The importance of saying Na Nach Nachma Nachman Meuman every day...",
-          category: "Book",
-          subcategory: "Likutay Nanach",
-          link: "/books/likutay-nanach/volume-5/chapter-1",
-          wordCount: 245,
-          relevance: 95
-        },
-        {
-          id: 2,
-          title: "Teaching on Prayer and Faith",
-          snippet: "Prayer is the main thing. Through prayer we connect to Hashem with complete faith...",
-          category: "Teaching",
-          subcategory: "Faith",
-          link: "/teachings/prayer-faith",
-          wordCount: 187,
-          relevance: 88
-        },
-        {
-          id: 3,
-          title: "Likutey Moharan - Part 1, Torah 1",
-          snippet: "The main thing is prayer. A person must pray with great intensity and devotion...",
-          category: "Book",
-          subcategory: "Likutey Moharan",
-          link: "/books/likutay-moharan/part-1/torah-1",
-          wordCount: 312,
-          relevance: 82
-        },
-        {
-          id: 4,
-          title: "On Joy and Simcha",
-          snippet: "True joy comes from faith. When we believe in Hashem, we can be happy always...",
-          category: "Teaching",
-          subcategory: "Joy",
-          link: "/teachings/joy-simcha",
-          wordCount: 156,
-          relevance: 75
-        },
-        {
-          id: 5,
-          title: "Sefer Hamidos - Faith Chapter",
-          snippet: "Faith: Believe in Hashem with complete faith. Faith is the foundation of everything...",
-          category: "Book",
-          subcategory: "Sefer Hamidos",
-          link: "/books/sefer-hamidos/faith",
-          wordCount: 89,
-          relevance: 70
-        }
-      ];
-      
-      // Elements
       const welcomeMessage = document.getElementById('welcomeMessage');
       const loading = document.getElementById('loading');
       const resultsContainer = document.getElementById('resultsContainer');
       const resultsList = document.getElementById('resultsList');
       const resultsCount = document.getElementById('resultsCount');
       const noResults = document.getElementById('noResults');
+      const noResultsMessage = document.getElementById('noResultsMessage');
       const clearResults = document.getElementById('clearResults');
-      const tryAgain = document.getElementById('tryAgain');
-      const exportResults = document.getElementById('exportResults');
-      
-      // Perform search function
-      function performSearch(query, filters = {}, advanced = {}) {
-        if (!query.trim()) {
+      const resultsSection = document.getElementById('resultsSection');
+
+      // Listen for search events
+      document.addEventListener('enhanced-search', (e: any) => {
+        performSearch(e.detail.query, e.detail.filters, e.detail.advancedOptions);
+      });
+
+      function performSearch(query: string, filters: any = {}, advanced: any = {}) {
+        if (!query?.trim()) {
           showWelcome();
           return;
         }
-        
+
         showLoading();
-        
+
         const url = new URL('/api/search', window.location.origin);
         url.searchParams.set('q', query);
         if (advanced.searchType) url.searchParams.set('searchType', advanced.searchType);
-        if (advanced.proximity) url.searchParams.set('proximity', advanced.proximity);
-        if (advanced.books && advanced.books.length > 0) url.searchParams.set('books', advanced.books.join(','));
-        
-        fetch(url)
+        if (advanced.proximity > 0) url.searchParams.set('proximity', String(advanced.proximity));
+        if (advanced.books?.length > 0) url.searchParams.set('books', advanced.books.join(','));
+
+        fetch(url.toString())
           .then(res => res.json())
-          .then(filteredResults => {
+          .then((data: any[]) => {
             loading.classList.add('hidden');
-            if (filteredResults.length > 0) {
-              displayResults(filteredResults, query);
+            if (data?.error) {
+              showNoResults(query, 'Error: ' + data.error);
+              return;
+            }
+            if (data && data.length > 0) {
+              displayResults(data, query);
             } else {
               showNoResults(query);
             }
           })
           .catch(err => {
-            console.error(err);
+            console.error('Search error:', err);
             loading.classList.add('hidden');
-            showNoResults(query);
+            showNoResults(query, 'Search failed. Please try again.');
           });
       }
-      
-      function displayResults(results, query) {
-        resultsCount.textContent = `${results.length} advanced results for "${query}"`;
+
+      function displayResults(results: any[], query: string) {
+        resultsCount.textContent = `${results.length} תוצאות ל "${query}" / results for "${query}"`;
         
-        const resultsHTML = results.map(result => `
-          <div class="result-item">
-            <div class="result-header">
-              <h4 class="result-title">
-                <a href="${result.link}" class="result-link">${result.title}</a>
-              </h4>
-              <div class="result-tags">
-                <span class="result-category ${result.category.toLowerCase()}">${result.category}</span>
-                <span class="result-subcategory">${result.subcategory}</span>
-                <span class="result-stats">${result.wordCount} words • ${result.relevance}% match</span>
+        const html = results.map(result => {
+          const snippet = highlightQuery(result.snippet || '', query);
+          const categoryClass = (result.category || '').toLowerCase();
+          const link = result.link || '#';
+          const title = result.title || 'Unknown';
+          const subcategory = result.subcategory || '';
+          const wordCount = result.wordCount || 0;
+          const relevance = result.relevance || 0;
+          
+          return `
+            <div class="result-item">
+              <div class="result-top">
+                <h4 class="result-title">
+                  <a href="${link}">${title}</a>
+                </h4>
+                <div class="result-tags">
+                  ${subcategory ? `<span class="result-subcategory">${subcategory}</span>` : ''}
+                  ${wordCount ? `<span class="result-stat">${wordCount} words</span>` : ''}
+                  ${relevance ? `<span class="result-relevance">${relevance}%</span>` : ''}
+                </div>
+              </div>
+              <p class="result-snippet">${snippet}</p>
+              <div class="result-footer">
+                <a href="${link}" class="view-link">קרא טקסט מלא / Read Full →</a>
               </div>
             </div>
-            <p class="result-snippet">${highlightQuery(result.snippet, query)}</p>
-            <div class="result-footer">
-              <a href="${result.link}" class="view-link">Read Full Text →</a>
-              <button class="save-btn" data-id="${result.id}">Save</button>
-            </div>
-          </div>
-        `).join('');
-        
-        resultsList.innerHTML = resultsHTML;
+          `;
+        }).join('');
+
+        resultsList.innerHTML = html;
         resultsContainer.classList.remove('hidden');
-        
-        // Scroll to results
-        resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        noResults.classList.add('hidden');
+        welcomeMessage.classList.add('hidden');
+
+        // Scroll to results smoothly
+        resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
-      
-      function highlightQuery(text, query) {
-        if (!query) return text;
-        const regex = new RegExp(`(${query})`, 'gi');
-        return text.replace(regex, '<mark>$1</mark>');
+
+      function highlightQuery(text: string, query: string): string {
+        if (!query || !text) return text || '';
+        const words = query.split(/\s+/).filter(w => !['and', 'or', 'not'].includes(w.toLowerCase()));
+        let result = text;
+        words.forEach(word => {
+          const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          const regex = new RegExp(`(${escaped})`, 'gi');
+          result = result.replace(regex, '<mark>$1</mark>');
+        });
+        return result;
       }
-      
+
       function showLoading() {
         welcomeMessage.classList.add('hidden');
         loading.classList.remove('hidden');
         resultsContainer.classList.add('hidden');
         noResults.classList.add('hidden');
+        // Scroll to results section
+        resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
-      
-      function showNoResults(query) {
-        noResults.querySelector('p').textContent = `No results found for "${query}" with current filters.`;
+
+      function showNoResults(query: string, msg?: string) {
+        noResultsMessage.textContent = msg || `No results for "${query}". Try different terms or fewer filters.`;
         noResults.classList.remove('hidden');
+        resultsContainer.classList.add('hidden');
+        welcomeMessage.classList.add('hidden');
+        resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
-      
+
       function showWelcome() {
         welcomeMessage.classList.remove('hidden');
         loading.classList.add('hidden');
         resultsContainer.classList.add('hidden');
         noResults.classList.add('hidden');
       }
-      
-      function clearSearch() {
+
+      clearResults.addEventListener('click', () => {
         showWelcome();
-      }
-      
-      // Event listeners
-      clearResults.addEventListener('click', clearSearch);
-      tryAgain.addEventListener('click', () => {
-        showWelcome();
+        (document.getElementById('searchInput') as HTMLInputElement).value = '';
+        const url = new URL(window.location.href);
+        url.searchParams.delete('q');
+        window.history.replaceState({}, '', url);
       });
-      exportResults.addEventListener('click', () => {
-        alert('Export feature will be implemented with real search data.');
-      });
-      
-      // Listen for actual searches
-      document.addEventListener('enhanced-search', (e) => {
-        performSearch(e.detail.query, e.detail.filters, e.detail.advancedOptions);
-      });
-      
-      // Initialize
-      showWelcome();
     });
   </script>
 
   <style>
     .search-page {
       min-height: 100vh;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      padding: 1rem;
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #a855f7 100%);
+      padding: 1rem 1rem 2rem;
     }
 
     .page-header {
@@ -325,132 +231,111 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
     }
 
     .page-header h1 {
-      font-size: 3rem;
-      margin-bottom: 0.5rem;
-      font-family: var(--font-hebrew);
+      font-size: 2.2rem;
+      margin-bottom: 0.3rem;
+      font-family: var(--font-hebrew, serif);
+      font-weight: 700;
     }
 
     .subtitle {
-      font-size: 1.5rem;
-      opacity: 0.9;
-      margin-bottom: 1.5rem;
-    }
-
-    .feature-badges {
-      display: flex;
-      justify-content: center;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-      margin-top: 1rem;
-    }
-
-    .badge {
-      background: rgba(255, 255, 255, 0.2);
-      color: white;
-      padding: 0.5rem 1rem;
-      border-radius: 20px;
-      font-size: 0.9rem;
-      font-weight: 600;
+      font-size: 1rem;
+      opacity: 0.85;
+      margin: 0;
     }
 
     .container {
-      max-width: 1200px;
+      max-width: 1000px;
       margin: 0 auto;
     }
 
     .search-section {
-      background: rgba(255, 255, 255, 0.95);
+      background: rgba(255, 255, 255, 0.97);
       border-radius: 12px;
       padding: 1rem;
-      margin-bottom: 1rem;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      margin-bottom: 0.75rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
     }
 
+    /* Results Section - Prominent */
     .results-section {
-      background: rgba(255, 255, 255, 0.95);
+      background: rgba(255, 255, 255, 0.97);
       border-radius: 12px;
-      padding: 2rem;
-      margin-bottom: 2rem;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      min-height: 100px;
     }
 
     .welcome-message {
       text-align: center;
-      padding: 2rem;
+      padding: 1.5rem 1rem;
+      color: #6b7280;
     }
 
-    .welcome-message h2 {
-      color: #2c3e50;
-      margin-bottom: 2rem;
+    .welcome-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
     }
 
-    .features-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1.5rem;
-      margin-top: 2rem;
+    .welcome-text {
+      font-size: 1rem;
+      color: #4b5563;
+      margin: 0 0 0.25rem 0;
+      font-weight: 500;
     }
 
-    .feature {
-      background: #f8f9fa;
-      border-radius: 8px;
-      padding: 1.5rem;
-      text-align: center;
-    }
-
-    .feature h3 {
-      color: #2c3e50;
-      margin: 0 0 0.5rem 0;
-      font-size: 1.1rem;
-    }
-
-    .feature p {
-      color: #7f8c8d;
+    .welcome-hint {
+      font-size: 0.85rem;
+      color: #9ca3af;
       margin: 0;
-      font-size: 0.9rem;
     }
 
     .loading {
       text-align: center;
-      padding: 3rem;
+      padding: 2rem;
+      color: #6b7280;
     }
 
     .spinner {
-      border: 4px solid #f3f3f3;
-      border-top: 4px solid #3498db;
+      border: 3px solid #f3f4f6;
+      border-top: 3px solid #6366f1;
       border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 1rem;
+      width: 36px;
+      height: 36px;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 0.75rem;
     }
 
     @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .hidden {
+      display: none !important;
     }
 
     .results-container {
-      animation: fadeIn 0.5s;
+      animation: fadeIn 0.3s ease-out;
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .results-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 2rem;
-      padding-bottom: 1rem;
-      border-bottom: 2px solid #f0f0f0;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid #e5e7eb;
     }
 
     .results-header h3 {
       margin: 0;
-      color: #2c3e50;
+      color: #1f2937;
+      font-size: 1rem;
     }
 
     .results-actions {
@@ -459,108 +344,121 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
     }
 
     .action-btn {
-      background: #3498db;
-      color: white;
-      border: none;
-      padding: 0.5rem 1rem;
+      background: #f3f4f6;
+      color: #4b5563;
+      border: 1px solid #e5e7eb;
+      padding: 0.4rem 0.8rem;
       border-radius: 6px;
       cursor: pointer;
-      font-weight: 600;
-      transition: background 0.3s;
+      font-size: 0.8rem;
+      font-weight: 500;
+      transition: all 0.15s;
     }
 
     .action-btn:hover {
-      background: #2980b9;
+      background: #e5e7eb;
+    }
+
+    .clear-btn {
+      background: #fef2f2;
+      border-color: #fecaca;
+      color: #b91c1c;
+    }
+
+    .clear-btn:hover {
+      background: #fee2e2;
     }
 
     .results-list {
       display: flex;
       flex-direction: column;
-      gap: 1.5rem;
+      gap: 0.75rem;
     }
 
     .result-item {
-      border: 1px solid #e0e0e0;
+      border: 1px solid #e5e7eb;
       border-radius: 8px;
-      padding: 1.5rem;
+      padding: 1rem 1.25rem;
       background: white;
-      transition: box-shadow 0.3s;
+      transition: box-shadow 0.2s, border-color 0.2s;
     }
 
     .result-item:hover {
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      border-color: #c7d2fe;
     }
 
-    .result-header {
-      margin-bottom: 1rem;
+    .result-top {
+      margin-bottom: 0.5rem;
     }
 
     .result-title {
-      margin: 0 0 0.5rem 0;
+      margin: 0 0 0.35rem 0;
+      font-size: 1rem;
     }
 
-    .result-link {
-      color: #3498db;
+    .result-title a {
+      color: #4f46e5;
       text-decoration: none;
-      font-size: 1.2rem;
       font-weight: 600;
     }
 
-    .result-link:hover {
+    .result-title a:hover {
       text-decoration: underline;
     }
 
     .result-tags {
       display: flex;
-      gap: 0.5rem;
+      gap: 0.4rem;
       flex-wrap: wrap;
     }
 
-    .result-category, .result-subcategory, .result-stats {
-      padding: 0.25rem 0.5rem;
+    .result-subcategory, .result-stat, .result-relevance {
+      padding: 0.15rem 0.45rem;
       border-radius: 4px;
-      font-size: 0.8rem;
-      font-weight: 600;
-    }
-
-    .result-category.book {
-      background: #e8f4fc;
-      color: #2980b9;
-    }
-
-    .result-category.teaching {
-      background: #f0f8e8;
-      color: #27ae60;
+      font-size: 0.7rem;
+      font-weight: 500;
     }
 
     .result-subcategory {
-      background: #f0f0f0;
-      color: #666;
+      background: #eef2ff;
+      color: #4f46e5;
     }
 
-    .result-stats {
-      background: #fff3cd;
-      color: #856404;
+    .result-stat {
+      background: #f3f4f6;
+      color: #6b7280;
+    }
+
+    .result-relevance {
+      background: #ecfdf5;
+      color: #059669;
     }
 
     .result-snippet {
-      color: #666;
-      line-height: 1.6;
-      margin: 1rem 0;
+      color: #4b5563;
+      line-height: 1.55;
+      margin: 0.5rem 0;
+      font-size: 0.9rem;
+    }
+
+    .result-snippet mark {
+      background: #fef08a;
+      padding: 0.05rem 0.2rem;
+      border-radius: 2px;
+      color: inherit;
     }
 
     .result-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 1rem;
-      padding-top: 1rem;
-      border-top: 1px solid #f0f0f0;
+      margin-top: 0.5rem;
+      padding-top: 0.5rem;
+      border-top: 1px solid #f3f4f6;
     }
 
     .view-link {
-      color: #3498db;
+      color: #6366f1;
       text-decoration: none;
+      font-size: 0.82rem;
       font-weight: 600;
     }
 
@@ -568,92 +466,64 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
       text-decoration: underline;
     }
 
-    .save-btn {
-      background: #2ecc71;
-      color: white;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: background 0.3s;
-    }
-
-    .save-btn:hover {
-      background: #27ae60;
-    }
-
     .no-results {
       text-align: center;
-      padding: 3rem;
+      padding: 2rem;
+    }
+
+    .no-results-icon {
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
     }
 
     .no-results h3 {
-      color: #e74c3c;
-      margin-bottom: 1rem;
+      color: #4b5563;
+      margin: 0 0 0.5rem 0;
+      font-size: 1.1rem;
     }
 
-    .try-btn {
-      background: #3498db;
-      color: white;
-      border: none;
-      padding: 0.75rem 1.5rem;
-      border-radius: 6px;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 1rem;
-      transition: background 0.3s;
+    .no-results p {
+      color: #9ca3af;
+      margin: 0;
+      font-size: 0.9rem;
     }
 
-    .try-btn:hover {
-      background: #2980b9;
-    }
-
+    /* Maps Section */
     .maps-section {
-      background: rgba(255, 255, 255, 0.95);
+      background: rgba(255, 255, 255, 0.97);
       border-radius: 12px;
-      padding: 2rem;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      padding: 1.5rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
     }
 
     .maps-section h2 {
-      color: #2c3e50;
-      margin-bottom: 1rem;
-      font-size: 1.8rem;
+      color: #1f2937;
+      margin: 0 0 0.75rem 0;
+      font-size: 1.3rem;
     }
 
     .maps-notice {
-      background: #fff3cd;
-      border: 2px solid #ffc107;
-      border-radius: 8px;
-      padding: 1rem 1.5rem;
-      margin-bottom: 1.5rem;
+      background: #fffbeb;
+      border: 1px solid #fcd34d;
+      border-radius: 6px;
+      padding: 0.6rem 1rem;
+      margin-bottom: 1rem;
     }
 
     .maps-notice p {
-      margin: 0.5rem 0;
-      color: #856404;
+      margin: 0.25rem 0;
+      color: #92400e;
+      font-size: 0.9rem;
     }
 
     .maps-notice strong {
-      color: #664d03;
-    }
-
-    .maps-subnotice {
-      font-style: italic;
-      color: #666;
-      margin-top: 0.5rem !important;
-    }
-
-    .maps-container {
-      margin-top: 1.5rem;
+      color: #78350f;
     }
 
     .maps-frame {
-      border: 1px solid #ddd;
+      border: 1px solid #e5e7eb;
       border-radius: 8px;
       overflow: hidden;
-      background: #f8f9fa;
     }
 
     .maps-iframe {
@@ -662,139 +532,54 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
       border: none;
     }
 
-    .maps-info {
-      margin-top: 1.5rem;
-      padding: 1.5rem;
-      background: #f8f9fa;
-      border-radius: 8px;
-    }
-
-    .maps-info h3 {
-      color: #2c3e50;
-      margin-bottom: 1rem;
-    }
-
-    .maps-info ul {
-      margin: 1rem 0;
-      padding-left: 1.5rem;
-    }
-
-    .maps-info li {
-      margin: 0.5rem 0;
-      color: #555;
-    }
-
-    .maps-info ol {
-      margin: 1rem 0;
-      padding-left: 1.5rem;
-    }
-
-    .maps-info ol li {
-      margin: 0.5rem 0;
-      color: #555;
-    }
-
-    .maps-info p {
-      color: #666;
-      margin: 1rem 0;
-    }
-
-    .maps-info em {
-      color: #888;
-      font-size: 0.9rem;
-    }
-
-    /* Mobile Responsiveness */
+    /* Mobile */
     @media (max-width: 768px) {
+      .search-page {
+        padding: 0.75rem;
+      }
+
       .page-header h1 {
-        font-size: 2rem;
+        font-size: 1.8rem;
       }
 
       .subtitle {
-        font-size: 1.1rem;
+        font-size: 0.9rem;
       }
 
       .search-section, .results-section, .maps-section {
-        padding: 1.5rem 1rem;
-      }
-
-      .maps-section h2 {
-        font-size: 1.4rem;
-      }
-
-      .maps-notice {
-        padding: 0.75rem 1rem;
-      }
-
-      .maps-notice p {
-        font-size: 0.9rem;
-      }
-
-      .maps-frame {
-        border-radius: 6px;
-      }
-
-      .maps-iframe {
-        height: 500px !important;
-      }
-
-      .maps-info {
         padding: 1rem;
-      }
-
-      .maps-info h3 {
-        font-size: 1.1rem;
-      }
-
-      .maps-info ul, .maps-info ol {
-        padding-left: 1.2rem;
-      }
-
-      .maps-info li {
-        font-size: 0.9rem;
-      }
-
-      .feature-badges {
-        flex-direction: column;
-        align-items: center;
-      }
-
-      .badge {
-        font-size: 0.8rem;
-        padding: 0.4rem 0.8rem;
-      }
-
-      .features-list {
-        grid-template-columns: 1fr;
       }
 
       .results-header {
         flex-direction: column;
-        gap: 1rem;
+        gap: 0.5rem;
         align-items: flex-start;
       }
 
-      .results-actions {
-        width: 100%;
-        justify-content: flex-start;
+      .result-item {
+        padding: 0.75rem;
+      }
+
+      .result-title {
+        font-size: 0.95rem;
+      }
+
+      .maps-iframe {
+        height: 450px;
       }
     }
 
     @media (max-width: 480px) {
+      .page-header h1 {
+        font-size: 1.5rem;
+      }
+
       .maps-iframe {
-        height: 450px !important;
+        height: 400px;
       }
 
-      .maps-section {
-        padding: 1rem 0.75rem;
-      }
-
-      .maps-notice {
-        padding: 0.6rem 0.8rem;
-      }
-
-      .maps-notice strong {
-        font-size: 0.95rem;
+      .result-tags {
+        flex-wrap: wrap;
       }
     }
   </style>
