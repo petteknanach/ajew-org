@@ -1,168 +1,244 @@
 ---
 // Compact Yahrzeit Display for Top Left Corner
-// Shows only today's yahrzeits in compact format
-// Click names to open profiles
-
-// Static data for today (27 Adar - March 16, 2026)
-const todayTzaddikim = [
-  {
-    name: "Aaron Patz",
-    hebrew_name: "רבי אהרן פץ",
-    yahrzeit_hebrew: "27 Adar",
-    profile_path: "/tzaddikim/aaron-patz"
-  },
-  {
-    name: "Rabbi Raphael Moshe Bula",
-    hebrew_name: "רבי רפאל משה בולא",
-    yahrzeit_hebrew: "27 Adar",
-    profile_path: "/tzaddikim/raphael-moshe-bula",
-    description: "Author of 'Get Mekushar', Sephardic sage from Salonika, served as Rishon LeZion in Jerusalem"
-  }
-];
-
-// Static data for tomorrow (28 Adar - March 17, 2026)
-const tomorrowTzaddikim = [
-  // No known yahrzeits for 28 Adar
-];
-
-// Upcoming important dates (next 7 days)
-const upcomingDates = [
-  {
-    date_hebrew: "א׳ בְּנִיסָן",
-    date_english: "1 Nissan",
-    events: [
-      {
-        name: "Birth of Rabbainu - Rebbe Nachman of Breslov",
-        hebrew_name: "הולדת רבינו - רבי נחמן מברסלב",
-        description: "Na NaCh NaChMa NaChMaN MAyUMaN!",
-        profile_path: "/tzaddikim/rebbe-nachman",
-        type: "birth" // 'birth' instead of 'yahrzeit'
-      }
-    ]
-  }
-];
-
-// Additional yahrzeits to add to database (not in next 7 days)
-const additionalYahrzeits = [
-  {
-    date_hebrew: "י״ג בְּחֶשְׁוָן",
-    date_english: "13 Cheshvan",
-    name: "Meir Yimeeney",
-    hebrew_name: "מאיר ימיני",
-    description: "Breslov Hasid, close to Saba Yisroel, big mayfitz (spreader), buried close to Saba",
-    profile_path: "/tzaddikim/meir-yimeeney",
-    type: "yahrzeit"
-  },
-  {
-    date_hebrew: "ט״ז בְּחֶשְׁוָן",
-    date_english: "16 Cheshvan",
-    name: "Shlomo Carlebach",
-    hebrew_name: "שלמה קרליבך",
-    description: "Renowned rabbi, composer, singer, spread Jewish music worldwide",
-    profile_path: "/tzaddikim/shlomo-carlebach",
-    type: "yahrzeit"
-  },
-  {
-    date_hebrew: "כ״ז בַּאֲדָר",
-    date_english: "27 Adar",
-    name: "Rabbi Raphael Moshe Bula",
-    hebrew_name: "רבי רפאל משה בולא",
-    description: "Author of 'Get Mekushar', Sephardic sage, Rishon LeZion in Jerusalem",
-    profile_path: "/tzaddikim/raphael-moshe-bula",
-    type: "yahrzeit"
-  }
-];
-
-const hasToday = todayTzaddikim.length > 0;
-const hasTomorrow = tomorrowTzaddikim.length > 0;
-const hasUpcoming = upcomingDates.length > 0;
-const showCompact = hasToday || hasTomorrow || hasUpcoming;
-
-// Hebrew date for display
-const todayHebrew = "כ״ז בַּאֲדָר";
-const tomorrowHebrew = "כ״ח בַּאֲדָר";
+// Dynamically shows today's and tomorrow's yahrzeits based on Hebrew date
+// Only appears when there are actual yahrzeits to display
 ---
 
-{showCompact && (
-  <div class="compact-yahrzeit" id="compactYahrzeit">
-    <!-- Toggle button for mobile - shows icon when collapsed -->
-    <button class="toggle-btn mobile-only" onclick="toggleYahrzeit()" aria-label="Toggle yahrzeit box">
-      <span class="collapsed-icon">🕯️</span>
-      <span class="expanded-icon">×</span>
-    </button>
-    
-    <!-- Today's Yahrzeits -->
-    {hasToday && (
-      <div class="yahrzeit-section today-section">
-        <div class="section-header">
-          <span class="yahrzeit-icon">🕯️</span>
-          <h4 class="section-title">Today's Yahrzeit: {todayHebrew}</h4>
-        </div>
-        <div class="tzaddikim-list">
-          {todayTzaddikim.map(tzaddik => (
-            <a href={tzaddik.profile_path} class="tzaddik-link">
-              <span class="tzaddik-name">{tzaddik.name}</span>
-              {tzaddik.hebrew_name && (
-                <span class="tzaddik-hebrew" dir="rtl">{tzaddik.hebrew_name}</span>
-              )}
-            </a>
-          ))}
-        </div>
-      </div>
-    )}
-    
-    <!-- Tomorrow's Yahrzeits -->
-    {hasTomorrow && (
-      <div class="yahrzeit-section tomorrow-section">
-        <div class="section-header">
-          <span class="yahrzeit-icon">📅</span>
-          <h4 class="section-title">Tomorrow: {tomorrowHebrew}</h4>
-        </div>
-        <div class="tzaddikim-list">
-          {tomorrowTzaddikim.map(tzaddik => (
-            <a href={tzaddik.profile_path} class="tzaddik-link">
-              <span class="tzaddik-name">{tzaddik.name}</span>
-              {tzaddik.hebrew_name && (
-                <span class="tzaddik-hebrew" dir="rtl">{tzaddik.hebrew_name}</span>
-              )}
-            </a>
-          ))}
-        </div>
-      </div>
-    )}
-    
-    <!-- Upcoming Important Dates -->
-    {hasUpcoming && upcomingDates.map(upcoming => (
-      <div class="yahrzeit-section upcoming-section">
-        <div class="section-header">
-          <span class="yahrzeit-icon">⭐</span>
-          <h4 class="section-title">Upcoming: {upcoming.date_hebrew}</h4>
-        </div>
-        <div class="tzaddikim-list">
-          {upcoming.events.map(event => (
-            <a href={event.profile_path} class="tzaddik-link upcoming-event">
-              <span class="tzaddik-name">{event.name}</span>
-              {event.hebrew_name && (
-                <span class="tzaddik-hebrew" dir="rtl">{event.hebrew_name}</span>
-              )}
-              {event.description && (
-                <span class="event-description">{event.description}</span>
-              )}
-              {event.type === 'birth' && (
-                <span class="event-type birth-badge">Birth</span>
-              )}
-            </a>
-          ))}
-        </div>
-      </div>
-    ))}
-    
-    <!-- View All Link - Hidden on mobile -->
-    <div class="view-all desktop-only">
-      <a href="/yahrzeits" class="view-all-link">View all yahrzeits →</a>
-    </div>
+<div class="compact-yahrzeit" id="compactYahrzeit" style="display: none;">
+  <!-- Toggle button for mobile - shows icon when collapsed -->
+  <button class="toggle-btn mobile-only" onclick="toggleYahrzeit()" aria-label="Toggle yahrzeit box">
+    <span class="collapsed-icon">🕯️</span>
+    <span class="expanded-icon">×</span>
+  </button>
+  
+  <!-- Loading state -->
+  <div id="yahrzeitLoading" class="yahrzeit-loading">
+    <span class="loading-icon">🕯️</span>
   </div>
-)}
+  
+  <!-- Today's Yahrzeits -->
+  <div id="todaySection" class="yahrzeit-section today-section" style="display: none;">
+    <div class="section-header">
+      <span class="yahrzeit-icon">🕯️</span>
+      <h4 class="section-title">Today: <span id="todayHebrew"></span></h4>
+    </div>
+    <div id="todayList" class="tzaddikim-list"></div>
+  </div>
+  
+  <!-- Tomorrow's Yahrzeits -->
+  <div id="tomorrowSection" class="yahrzeit-section tomorrow-section" style="display: none;">
+    <div class="section-header">
+      <span class="yahrzeit-icon">📅</span>
+      <h4 class="section-title">Tomorrow: <span id="tomorrowHebrew"></span></h4>
+    </div>
+    <div id="tomorrowList" class="tzaddikim-list"></div>
+  </div>
+  
+  <!-- Upcoming Important Dates -->
+  <div id="upcomingSection" class="yahrzeit-section upcoming-section" style="display: none;">
+    <div class="section-header">
+      <span class="yahrzeit-icon">⭐</span>
+      <h4 class="section-title">Upcoming: <span id="upcomingLabel"></span></h4>
+    </div>
+    <div id="upcomingList" class="tzaddikim-list"></div>
+  </div>
+</div>
+
+<script>
+  // Hebrew month names mapping
+  const hebrewMonths = {
+    1: 'Nisan', 2: 'Iyyar', 3: 'Sivan', 4: 'Tamuz', 
+    5: 'Av', 6: 'Elul', 7: 'Tishrei', 8: 'Cheshvan',
+    9: 'Kislev', 10: 'Tevet', 11: 'Shevat', 12: 'Adar',
+    13: 'Adar II'
+  };
+
+  // Important dates to always show (upcoming)
+  const importantDates = [
+    { month: 'Nisan', day: 1, type: 'birth', name: 'Birth of Rabbainu', hebrew_name: 'הולדת רבינו', description: 'Na NaCh NaChMa NaChMaN MAyUMaN!', profile_path: '/tzaddikim/rebbe-nachman' }
+  ];
+
+  let tzaddikimDatabase = [];
+
+  // Fetch Hebrew date from Hebcal API
+  async function getHebrewDate(date = new Date()) {
+    const dateStr = date.toISOString().split('T')[0];
+    const response = await fetch(`https://www.hebcal.com/converter?cfg=json&date=${dateStr}&g2h=1`);
+    const data = await response.json();
+    return {
+      hebrew: data.hebrew,
+      month: data.hm,
+      day: data.hd,
+      year: data.hy,
+      monthIndex: data.monthIndex
+    };
+  }
+
+  // Load tzaddikim database
+  async function loadDatabase() {
+    try {
+      const response = await fetch('/data/tzaddikim-database-filtered.json');
+      const data = await response.json();
+      tzaddikimDatabase = data.all_tzaddikim || [];
+    } catch (e) {
+      console.error('Failed to load tzaddikim database:', e);
+    }
+  }
+
+  // Find yahrzeits for a specific Hebrew date
+  function findYahrzeits(month, day) {
+    return tzaddikimDatabase.filter(tz => {
+      const tzMonth = tz.yahrzeit_month;
+      const tzDay = parseInt(tz.yahrzeit_day);
+      return tzMonth === month && tzDay === day;
+    });
+  }
+
+  // Find important dates for a specific Hebrew date
+  function findImportantDates(month, day) {
+    return importantDates.filter(d => d.month === month && d.day === day);
+  }
+
+  // Check if an important date is coming up within 7 days
+  function findUpcomingImportantDates(todayMonth, todayDay, todayMonthIndex) {
+    const upcoming = [];
+    for (const date of importantDates) {
+      // Simple calculation - check if within next 7 days in same month
+      // This is simplified; a full implementation would handle month boundaries
+      if (date.month === todayMonth && date.day > todayDay && date.day <= todayDay + 7) {
+        upcoming.push({
+          ...date,
+          daysUntil: date.day - todayDay,
+          dateLabel: `${date.day} ${date.month}`
+        });
+      }
+    }
+    return upcoming;
+  }
+
+  // Render a tzaddik link
+  function renderTzaddikLink(tzaddik, isImportant = false) {
+    const div = document.createElement('a');
+    div.href = tzaddik.profile_path || '#';
+    div.className = `tzaddik-link${isImportant ? ' upcoming-event' : ''}`;
+    
+    let html = `<span class="tzaddik-name">${tzaddik.name}</span>`;
+    if (tzaddik.hebrew_name) {
+      html += `<span class="tzaddik-hebrew" dir="rtl">${tzaddik.hebrew_name}</span>`;
+    }
+    if (tzaddik.description) {
+      html += `<span class="event-description">${tzaddik.description}</span>`;
+    }
+    if (tzaddik.type === 'birth') {
+      html += `<span class="event-type birth-badge">Birth</span>`;
+    }
+    
+    div.innerHTML = html;
+    return div;
+  }
+
+  // Main initialization
+  async function initYahrzeit() {
+    try {
+      await loadDatabase();
+      
+      const today = new Date();
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      
+      const todayHeb = await getHebrewDate(today);
+      const tomorrowHeb = await getHebrewDate(tomorrow);
+      
+      // Find yahrzeits for today and tomorrow
+      const todayYahrzeits = findYahrzeits(todayHeb.month, todayHeb.day);
+      const tomorrowYahrzeits = findYahrzeits(tomorrowHeb.month, tomorrowHeb.day);
+      const todayImportant = findImportantDates(todayHeb.month, todayHeb.day);
+      const tomorrowImportant = findImportantDates(tomorrowHeb.month, tomorrowHeb.day);
+      const upcomingImportant = findUpcomingImportantDates(todayHeb.month, todayHeb.day, todayHeb.monthIndex);
+      
+      // Determine what to show
+      const hasToday = todayYahrzeits.length > 0 || todayImportant.length > 0;
+      const hasTomorrow = tomorrowYahrzeits.length > 0 || tomorrowImportant.length > 0;
+      const hasUpcoming = upcomingImportant.length > 0;
+      
+      // Hide loading
+      document.getElementById('yahrzeitLoading').style.display = 'none';
+      
+      // If nothing to show, hide the box entirely
+      if (!hasToday && !hasTomorrow && !hasUpcoming) {
+        document.getElementById('compactYahrzeit').style.display = 'none';
+        return;
+      }
+      
+      // Show the box
+      document.getElementById('compactYahrzeit').style.display = 'block';
+      
+      // Populate today's section
+      if (hasToday) {
+        document.getElementById('todayHebrew').textContent = todayHeb.hebrew;
+        const todayList = document.getElementById('todayList');
+        todayList.innerHTML = '';
+        
+        for (const tz of todayYahrzeits) {
+          todayList.appendChild(renderTzaddikLink(tz));
+        }
+        for (const evt of todayImportant) {
+          todayList.appendChild(renderTzaddikLink(evt, true));
+        }
+        
+        document.getElementById('todaySection').style.display = 'block';
+      }
+      
+      // Populate tomorrow's section
+      if (hasTomorrow) {
+        document.getElementById('tomorrowHebrew').textContent = tomorrowHeb.hebrew;
+        const tomorrowList = document.getElementById('tomorrowList');
+        tomorrowList.innerHTML = '';
+        
+        for (const tz of tomorrowYahrzeits) {
+          tomorrowList.appendChild(renderTzaddikLink(tz));
+        }
+        for (const evt of tomorrowImportant) {
+          tomorrowList.appendChild(renderTzaddikLink(evt, true));
+        }
+        
+        document.getElementById('tomorrowSection').style.display = 'block';
+      }
+      
+      // Populate upcoming section
+      if (hasUpcoming) {
+        const first = upcomingImportant[0];
+        document.getElementById('upcomingLabel').textContent = first.dateLabel;
+        const upcomingList = document.getElementById('upcomingList');
+        upcomingList.innerHTML = '';
+        
+        for (const evt of upcomingImportant) {
+          upcomingList.appendChild(renderTzaddikLink(evt, true));
+        }
+        
+        document.getElementById('upcomingSection').style.display = 'block';
+      }
+      
+    } catch (e) {
+      console.error('Yahrzeit initialization error:', e);
+      // Hide on error to avoid showing stale data
+      document.getElementById('compactYahrzeit').style.display = 'none';
+    }
+  }
+
+  // Mobile toggle
+  function toggleYahrzeit() {
+    const box = document.getElementById('compactYahrzeit');
+    box.classList.toggle('collapsed');
+  }
+
+  // Initialize on load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initYahrzeit);
+  } else {
+    initYahrzeit();
+  }
+</script>
 
 <style>
   .compact-yahrzeit {
@@ -177,6 +253,20 @@ const tomorrowHebrew = "כ״ח בַּאֲדָר";
     border: 1px solid rgba(245, 158, 11, 0.3);
     z-index: 20;
     font-size: 0.9em;
+  }
+  
+  .yahrzeit-loading {
+    text-align: center;
+    padding: 0.5rem;
+  }
+  
+  .loading-icon {
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+  
+  @keyframes pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
   }
   
   .yahrzeit-section {
@@ -241,7 +331,6 @@ const tomorrowHebrew = "כ״ח בַּאֲדָר";
     margin-top: 0.125rem;
   }
   
-  /* Upcoming events styling */
   .upcoming-event {
     border-left-color: #10b981;
   }
@@ -274,207 +363,62 @@ const tomorrowHebrew = "כ״ח בַּאֲדָר";
     align-self: flex-start;
   }
   
-  .view-all {
-    margin-top: 0.375rem;
-    padding-top: 0.375rem;
-    border-top: 1px dashed #d1d5db;
-    text-align: center;
+  .toggle-btn {
+    display: none;
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
   }
   
-  .view-all-link {
-    font-size: 0.7rem;
-    color: #d97706;
-    text-decoration: none;
-    font-weight: 500;
-  }
-  
-  .view-all-link:hover {
-    color: #92400e;
-    text-decoration: underline;
-  }
-  
-  /* Hide desktop-only elements on mobile */
-  .desktop-only {
-    display: block;
-  }
-  
-  /* Show mobile-only elements */
   .mobile-only {
     display: none;
   }
   
-  /* Close button styling */
-  .close-btn {
-    position: absolute;
-    top: 0.125rem;
-    right: 0.125rem;
-    background: none;
-    border: none;
-    font-size: 1.2rem;
-    color: #999;
-    cursor: pointer;
-    width: 1.5rem;
-    height: 1.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    padding: 0;
-    line-height: 1;
-  }
-  
-  .close-btn:hover {
-    background: #f0f0f0;
-    color: #666;
-  }
-  
-  /* Mobile responsiveness - FIXED: Box was covering quarter of screen */
   @media (max-width: 768px) {
     .compact-yahrzeit {
-      position: fixed;
-      top: 0.5rem;
-      left: 0.5rem;
-      max-width: 50px; /* Start as small button */
-      max-height: 50px;
-      padding: 0;
-      z-index: 15;
-      font-size: 0.8em;
-      overflow: hidden;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
-      transition: all 0.3s ease;
-      cursor: pointer;
-      background: rgba(255, 255, 255, 0.9);
-      border-radius: 25px;
-    }
-    
-    /* Expanded state */
-    .compact-yahrzeit.expanded {
-      max-width: calc(100vw - 1rem);
-      max-height: 40vh;
-      width: auto;
-      height: auto;
-      padding: 0.5rem;
-      border-radius: 8px;
-      right: 0.5rem;
-      overflow-y: auto;
-    }
-    
-    .section-header {
-      gap: 0.25rem;
-      margin-bottom: 0.25rem;
-      padding-bottom: 0.125rem;
-    }
-    
-    .section-title {
-      font-size: 0.75rem;
-      line-height: 1.2;
-    }
-    
-    .tzaddikim-list {
-      gap: 0.125rem;
-    }
-    
-    .tzaddik-link {
-      padding: 0.125rem 0.25rem;
-    }
-    
-    .tzaddik-name {
-      font-size: 0.7rem;
-      line-height: 1.2;
-    }
-    
-    .tzaddik-hebrew {
-      font-size: 0.65rem;
-      line-height: 1.2;
-    }
-    
-    .event-description {
-      font-size: 0.6rem;
-      line-height: 1.2;
-    }
-    
-    /* Hide "View all yahrzeits" on mobile */
-    .desktop-only {
-      display: none;
-    }
-    
-    /* Show toggle button on mobile */
-    .mobile-only {
-      display: block;
-    }
-    
-    /* Hide content when collapsed */
-    .compact-yahrzeit:not(.expanded) > *:not(.toggle-btn) {
-      display: none;
-    }
-    
-    /* Show only candle icon when collapsed */
-    .compact-yahrzeit:not(.expanded) .collapsed-icon {
-      display: block;
-      font-size: 1.5rem;
+      max-width: 60px;
+      max-height: 60px;
       padding: 0.75rem;
-      text-align: center;
+      overflow: hidden;
+      transition: all 0.3s ease;
     }
     
-    .compact-yahrzeit:not(.expanded) .expanded-icon {
+    .compact-yahrzeit:not(.collapsed) {
+      max-width: 220px;
+      max-height: 500px;
+    }
+    
+    .compact-yahrzeit.collapsed .yahrzeit-section,
+    .compact-yahrzeit.collapsed .view-all {
+      display: none !important;
+    }
+    
+    .toggle-btn {
+      display: flex;
+    }
+    
+    .collapsed .collapsed-icon {
+      display: inline;
+    }
+    
+    .collapsed .expanded-icon {
       display: none;
     }
     
-    /* Show only X when expanded */
-    .compact-yahrzeit.expanded .collapsed-icon {
+    .compact-yahrzeit:not(.collapsed) .collapsed-icon {
       display: none;
     }
     
-    .compact-yahrzeit.expanded .expanded-icon {
-      display: block;
+    .compact-yahrzeit:not(.collapsed) .expanded-icon {
+      display: inline;
     }
     
-    /* For very small screens, make it even more compact */
-    @media (max-width: 480px) {
-      .compact-yahrzeit {
-        top: 0.25rem;
-        left: 0.25rem;
-        right: 0.25rem;
-        max-width: calc(100vw - 0.5rem);
-        padding: 0.375rem;
-        font-size: 0.75em;
-        max-height: 35vh;
-      }
-      
-      .section-title {
-        font-size: 0.7rem;
-      }
-      
-      .tzaddik-name {
-        font-size: 0.65rem;
-      }
-      
-      .tzaddik-hebrew {
-        font-size: 0.6rem;
-      }
+    .mobile-only {
+      display: flex;
     }
-    
-    /* Extra small screens (like iPhone SE) */
-    @media (max-width: 375px) {
-      .compact-yahrzeit {
-        max-height: 30vh;
-        font-size: 0.7em;
-      }
-      
-      /* Option to collapse to just icon on very small screens */
-      .compact-mode .section-title {
-        display: none;
-      }
-      
-      .compact-mode .tzaddik-hebrew {
-        display: none;
-      }
-    }
-  }
-  
-  /* Toggle function */
-  function toggleYahrzeit() {
-    const box = document.getElementById('compactYahrzeit');
-    box.classList.toggle('expanded');
   }
 </style>
