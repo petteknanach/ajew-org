@@ -1,0 +1,267 @@
+/**
+ * Generate Astro reader routes for ALL books in the catalog.
+ * Reads catalog.json and creates [part]/[torah].astro for each book.
+ * Also scans actual output directories to get correct max counts.
+ */
+const fs = require('fs');
+const path = require('path');
+
+const ROOT = path.resolve(__dirname, '..');
+const READER_BASE = path.join(ROOT, 'public/reader');
+const PAGES_BASE = path.join(ROOT, 'src/pages/reader');
+
+const catalog = JSON.parse(fs.readFileSync(path.join(READER_BASE, 'catalog.json'), 'utf8'));
+
+// Skip books that already have manually created routes
+const skipBooks = ['likutay-moharan', 'sefer-hamidos'];
+
+function getFilePrefix(bookDir, partDir) {
+  // Detect the file prefix from actual files in the directory
+  const files = fs.readdirSync(partDir).filter(f => f.endsWith('.json') && f !== 'index.json');
+  if (files.length === 0) return 'section';
+  const first = files[0];
+  return first.replace(/-\d+\.json$/, '');
+}
+
+function generateRoute(book, filePattern, partsConfig) {
+  const partsCode = partsConfig.map(p =>
+    `  for (let torah = 1; torah <= ${p.max}; torah++) {\n    paths.push({ params: { part: '${p.num}', torah: String(torah) } });\n  }`
+  ).join('\n');
+
+  return `---
+import Layout from '../../../../layouts/Layout.astro';
+import '../../../../styles/reader.css';
+import fs from 'node:fs';
+import path from 'node:path';
+
+export function getStaticPaths() {
+  const paths = [];
+${partsCode}
+  return paths;
+}
+
+const { part, torah } = Astro.params;
+const partNum = parseInt(part);
+const torahNum = parseInt(torah);
+
+let torahData = null;
+let error = null;
+
+try {
+  const filePath = path.join(process.cwd(), \`public/reader/${book.id}/${filePattern}\`);
+  const raw = fs.readFileSync(filePath, 'utf8');
+  torahData = JSON.parse(raw);
+} catch (e) {
+  error = \`Section \${torahNum} not found\`;
+}
+
+if (!torahData && !error) error = 'Content not available';
+
+const bookName = '${book.title.replace(/'/g, "\\'")}';
+const bookHebrew = '${book.hebrewTitle.replace(/'/g, "\\'")}';
+
+const pageTitle = torahData
+  ? \`\${torahData.hebrewTitle || torahData.title} - ${book.title.replace(/'/g, "\\'")}\`
+  : 'Not Found';
+const pageDesc = torahData
+  ? \`Read \${torahData.title} from ${book.title.replace(/'/g, "\\'")} by ${(book.author || '').replace(/'/g, "\\'")}\`
+  : '';
+
+const structuredData = torahData ? JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": \`\${torahData.title} - ${book.title.replace(/'/g, "\\'")}\`,
+  "alternativeHeadline": torahData.hebrewTitle || '',
+  "author": { "@type": "Person", "name": "${(book.author || '').replace(/'/g, "\\'")}" },
+  "publisher": { "@type": "Organization", "name": "ajew.org" },
+  "inLanguage": ["he", "en"],
+  "isPartOf": { "@type": "Book", "name": "${book.title.replace(/'/g, "\\'")}" },
+  "url": \`https://ajew.org/reader/${book.id}/\${partNum}/\${torahNum}\`
+}) : '';
+---
+
+<Layout title={pageTitle} description={pageDesc}>
+  {torahData && structuredData && (
+    <script type="application/ld+json" set:html={structuredData} slot="head" />
+  )}
+  {error ? (
+    <div style="text-align: center; padding: 80px 20px;">
+      <h1>{error}</h1>
+      <p><a href="/reader">Back to Reader</a></p>
+    </div>
+  ) : (
+    <div
+      class="reader-container"
+      data-torah-id={torahData.id}
+      data-torah-title={\`\${torahData.title} - ${book.title.replace(/'/g, "\\'")}\`}
+    >
+      <div class="reader-progress"></div>
+
+      <div class="reader-breadcrumb">
+        <a href="/reader">Reader</a>
+        <span>&rsaquo;</span>
+        <a href="/reader">{bookName}</a>
+        <span>&rsaquo;</span>
+        {torahData.hebrewTitle || torahData.title}
+      </div>
+
+      <div class="reader-toolbar">
+        <div class="reader-toolbar-group">
+          <button class="reader-btn" data-mode="hebrew">Hebrew</button>
+          <button class="reader-btn" data-mode="english">English</button>
+          <button class="reader-btn" data-mode="both">Both</button>
+        </div>
+        <div class="reader-toolbar-group">
+          <button class="reader-btn" id="btn-nikud">Nikud</button>
+        </div>
+        <div class="reader-toolbar-group">
+          <span style="font-size:0.7em; font-family: 'Open Sans', sans-serif; color: var(--reader-text-secondary);">A</span>
+          <input type="range" id="font-size-slider" class="font-size-slider" min="12" max="32" value="18" />
+          <span style="font-size:0.9em; font-family: 'Open Sans', sans-serif; color: var(--reader-text-secondary);">A</span>
+        </div>
+        <div class="reader-toolbar-group">
+          <button class="reader-btn reader-btn-icon" data-theme-btn="day">Day</button>
+          <button class="reader-btn reader-btn-icon" data-theme-btn="sepia">Sepia</button>
+          <button class="reader-btn reader-btn-icon" data-theme-btn="night">Night</button>
+        </div>
+        <div class="reader-toolbar-group">
+          <button class="reader-btn reader-btn-icon" id="btn-search">Search</button>
+          <button class="reader-btn reader-btn-icon" id="btn-bookmark">Bookmark</button>
+          <button class="reader-btn reader-btn-icon" id="btn-notes">Notes</button>
+          <button class="reader-btn reader-btn-icon" id="btn-fullscreen">Fullscreen</button>
+        </div>
+      </div>
+
+      <div class="reader-search-bar">
+        <input type="text" placeholder="Search in this section..." dir="auto" />
+        <span class="search-info"></span>
+        <button class="reader-btn search-close">Close</button>
+      </div>
+
+      <button class="reader-toc-toggle" title="Table of Contents">&#9776;</button>
+      <div class="reader-toc">
+        <button class="reader-toc-close">&times;</button>
+        <h3>Sections</h3>
+        <ul class="reader-toc-list">
+          {torahData.segments.map((seg, i) => (
+            <li><a href={\`#seg-\${seg.index}\`} data-index={String(seg.index)}>{seg.index}</a></li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="reader-header">
+        {torahData.hebrewTitle && <div class="hebrew-title">{torahData.hebrewTitle}</div>}
+        <h1>{torahData.title}</h1>
+        <p style="color: var(--reader-text-secondary); font-size: 0.9em; font-family: 'Open Sans', sans-serif;">
+          {bookHebrew} - {bookName}
+        </p>
+      </div>
+
+      <div class="reader-nav">
+        {torahData.navigation.prevUrl ? (
+          <a href={torahData.navigation.prevUrl} data-dir="prev">&larr; Previous</a>
+        ) : <span class="disabled">&larr; Previous</span>}
+        <a href="/reader">All Books</a>
+        {torahData.navigation.nextUrl ? (
+          <a href={torahData.navigation.nextUrl} data-dir="next">Next &rarr;</a>
+        ) : <span class="disabled">Next &rarr;</span>}
+      </div>
+
+      <div class="reader-content mode-hebrew">
+        {torahData.segments.map((seg) => (
+          <div class="reader-segment-pair" id={\`seg-\${seg.index}\`}>
+            <div class="reader-segment segment-he" data-index={String(seg.index)}>
+              <span class="segment-number">{seg.index}</span>
+              <p data-nikud={seg.he}>{seg.he}</p>
+            </div>
+            <div class={\`reader-segment segment-en \${!seg.en ? 'empty-translation' : ''}\`} data-index={String(seg.index)}>
+              <span class="segment-number">{seg.index}</span>
+              <p>{seg.en || 'Translation not yet available'}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div class="reader-nav">
+        {torahData.navigation.prevUrl ? (
+          <a href={torahData.navigation.prevUrl} data-dir="prev">&larr; Previous</a>
+        ) : <span class="disabled">&larr; Previous</span>}
+        <a href="/reader">All Books</a>
+        {torahData.navigation.nextUrl ? (
+          <a href={torahData.navigation.nextUrl} data-dir="next">Next &rarr;</a>
+        ) : <span class="disabled">Next &rarr;</span>}
+      </div>
+
+      <div class="reader-shortcuts-overlay">
+        <div class="reader-shortcuts-panel">
+          <h2>Keyboard Shortcuts</h2>
+          <div class="shortcut-row"><span>Hebrew mode</span><span class="shortcut-key">H</span></div>
+          <div class="shortcut-row"><span>English mode</span><span class="shortcut-key">E</span></div>
+          <div class="shortcut-row"><span>Both columns</span><span class="shortcut-key">B</span></div>
+          <div class="shortcut-row"><span>Toggle nikud</span><span class="shortcut-key">N</span></div>
+          <div class="shortcut-row"><span>Fullscreen</span><span class="shortcut-key">F</span></div>
+          <div class="shortcut-row"><span>Search in text</span><span class="shortcut-key">Ctrl+F</span></div>
+          <div class="shortcut-row"><span>Save bookmark</span><span class="shortcut-key">S</span></div>
+          <div class="shortcut-row"><span>Previous/Next</span><span class="shortcut-key">&larr; &rarr;</span></div>
+          <div class="shortcut-row"><span>Show shortcuts</span><span class="shortcut-key">?</span></div>
+          <br />
+          <button class="reader-btn" onclick="this.closest('.reader-shortcuts-overlay').classList.remove('open')">Close</button>
+        </div>
+      </div>
+
+      <script src="/reader-script.js" is:inline></script>
+      <script src="/reader-notes.js" is:inline></script>
+    </div>
+  )}
+</Layout>
+`;
+}
+
+let routeCount = 0;
+
+for (const book of catalog.books) {
+  if (skipBooks.includes(book.id)) continue;
+  if (book.parts.every(p => p.totalTorahs === 0)) continue;
+
+  // Determine file pattern and parts config
+  const bookDir = path.join(READER_BASE, book.id);
+  if (!fs.existsSync(bookDir)) continue;
+
+  const partsConfig = [];
+  let filePattern = '';
+
+  for (const part of book.parts) {
+    let partDir;
+    if (book.parts.length === 1 && !fs.existsSync(path.join(bookDir, 'part-1'))) {
+      partDir = bookDir;
+    } else {
+      partDir = path.join(bookDir, `part-${part.part}`);
+    }
+
+    if (!fs.existsSync(partDir)) continue;
+
+    const prefix = getFilePrefix(book.id, partDir);
+    const max = part.totalTorahs + 5; // padding for safety
+    partsConfig.push({ num: part.part, max });
+
+    if (!filePattern) {
+      if (book.parts.length === 1 && !fs.existsSync(path.join(bookDir, 'part-1'))) {
+        filePattern = `${prefix}-\${torahNum}.json`;
+      } else {
+        filePattern = `part-\${partNum}/${prefix}-\${torahNum}.json`;
+      }
+    }
+  }
+
+  if (partsConfig.length === 0 || !filePattern) continue;
+
+  const routeDir = path.join(PAGES_BASE, book.id, '[part]');
+  fs.mkdirSync(routeDir, { recursive: true });
+
+  const content = generateRoute(book, filePattern, partsConfig);
+  fs.writeFileSync(path.join(routeDir, '[torah].astro'), content, 'utf8');
+  routeCount++;
+}
+
+console.log(`Generated ${routeCount} reader routes`);
+console.log('Skipped:', skipBooks.join(', '), '(have manual routes)');

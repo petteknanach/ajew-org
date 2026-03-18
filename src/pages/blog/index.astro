@@ -1,0 +1,162 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Blog - Na Nach Nachma Nachman MeUman" description="Blog posts from ajew.org - thoughts, teachings, and inspiration from the world of Breslov.">
+<div class="blog-page">
+  <header class="blog-header">
+    <h1>ajew.org Blog</h1>
+    <p class="subtitle">Thoughts, teachings & inspiration</p>
+    <p class="nanach">Na Nach Nachma Nachman MeUman</p>
+  </header>
+
+  <div class="blog-content">
+    <div id="posts-container">
+      <div class="loading">Loading posts...</div>
+    </div>
+    <div id="no-posts" style="display:none;" class="no-posts">
+      <p>No blog posts yet. Check back soon!</p>
+      <p class="hebrew">נ נח נחמ נחמן מאומן</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { createClient } from '@supabase/supabase-js';
+
+  const supabase = createClient(
+    'https://ekggvujbuusvgmrertgp.supabase.co',
+    'sb_publishable_q6XD_TD8KOQuphI30Gmi5Q_3PBAXQHo'
+  );
+
+  async function loadPosts() {
+    const container = document.getElementById('posts-container');
+    const noPosts = document.getElementById('no-posts');
+
+    try {
+      const { data: posts, error } = await supabase
+        .from('blog_posts')
+        .select('id, title, slug, excerpt, author, created_at')
+        .eq('published', true)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      if (!posts || posts.length === 0) {
+        container.style.display = 'none';
+        noPosts.style.display = 'block';
+        return;
+      }
+
+      container.innerHTML = posts.map(post => {
+        const date = new Date(post.created_at).toLocaleDateString('en-US', {
+          year: 'numeric', month: 'long', day: 'numeric'
+        });
+        return `
+          <article class="post-card">
+            <a href="/blog/${post.slug}">
+              <h2>${post.title}</h2>
+              ${post.excerpt ? `<p class="excerpt">${post.excerpt}</p>` : ''}
+              <div class="post-meta">
+                <span class="author">${post.author || 'Pettek Nanach'}</span>
+                <span class="date">${date}</span>
+              </div>
+            </a>
+          </article>
+        `;
+      }).join('');
+    } catch (e) {
+      container.innerHTML = '<div class="no-posts"><p>Blog coming soon!</p><p class="hebrew">נ נח נחמ נחמן מאומן</p></div>';
+    }
+  }
+
+  loadPosts();
+</script>
+
+<style>
+  .blog-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+    font-family: 'Open Sans', sans-serif;
+  }
+
+  .blog-header {
+    text-align: center;
+    padding: 48px 20px 32px;
+    border-bottom: 3px solid #1a365d;
+    margin-bottom: 40px;
+  }
+  .blog-header h1 {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 2.4em;
+    color: #1a365d;
+    margin: 0 0 8px;
+  }
+  .blog-header .subtitle {
+    color: #666;
+    font-size: 1.1em;
+    margin: 0 0 8px;
+  }
+  .blog-header .nanach {
+    color: #c4a265;
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 0.95em;
+    margin: 0;
+  }
+
+  .post-card {
+    margin-bottom: 24px;
+    border: 1px solid #e0d6c2;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.2s;
+  }
+  .post-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    border-color: #c4a265;
+  }
+  .post-card a {
+    display: block;
+    padding: 24px;
+    text-decoration: none;
+    color: inherit;
+  }
+  .post-card h2 {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 1.4em;
+    color: #1a365d;
+    margin: 0 0 8px;
+  }
+  .post-card .excerpt {
+    color: #555;
+    font-size: 0.95em;
+    margin: 0 0 12px;
+    line-height: 1.6;
+  }
+  .post-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85em;
+    color: #999;
+  }
+
+  .loading {
+    text-align: center;
+    padding: 40px;
+    color: #999;
+  }
+  .no-posts {
+    text-align: center;
+    padding: 60px 20px;
+    color: #666;
+  }
+  .no-posts .hebrew {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 1.3em;
+    color: #c4a265;
+    margin-top: 16px;
+  }
+</style>
+</Layout>

@@ -78,35 +78,63 @@ function main() {
     console.log(`  Part ${partNum}: ${catalog.torahs.length} torahs indexed`);
   }
 
-  // Index Sefer Hamidos
-  const shDir = path.join(READER_BASE, 'sefer-hamidos');
-  const shIndexPath = path.join(shDir, 'index.json');
-  if (fs.existsSync(shIndexPath)) {
-    const shCatalog = JSON.parse(fs.readFileSync(shIndexPath, 'utf8'));
-    for (const entry of shCatalog.torahs) {
-      const topicPath = path.join(shDir, `topic-${entry.number}.json`);
-      if (!fs.existsSync(topicPath)) continue;
-      const topic = JSON.parse(fs.readFileSync(topicPath, 'utf8'));
-      const fullText = topic.segments.map(s => s.he || '').filter(t => t.length > 0).join('\n\n');
-      const searchableHebrew = stripNikud(fullText);
-      documents.push({
-        id: topic.id,
-        part: 0,
-        torah: topic.torah,
-        displayNumber: topic.displayNumber || topic.torah,
-        title: topic.title,
-        hebrewTitle: topic.hebrewTitle || '',
-        themes: topic.themes || [],
-        url: `/reader/sefer-hamidos/1/${topic.torah}`,
-        wordCount: searchableHebrew.split(/\s+/).length,
-        content: searchableHebrew,
-        preview: fullText.substring(0, 200).replace(/\n/g, ' '),
-        hasEnglish: false,
-        englishContent: '',
-        bookName: 'Sefer Hamidos'
-      });
+  // Index ALL other books dynamically from catalog.json
+  const catalogPath = path.join(READER_BASE, 'catalog.json');
+  if (fs.existsSync(catalogPath)) {
+    const catalog = JSON.parse(fs.readFileSync(catalogPath, 'utf8'));
+    for (const book of catalog.books) {
+      if (book.id === 'likutay-moharan') continue; // already indexed above
+      const bookDir = path.join(READER_BASE, book.id);
+      if (!fs.existsSync(bookDir)) continue;
+
+      let bookCount = 0;
+      for (const part of book.parts) {
+        // Find the index.json for this part
+        let indexPath;
+        if (book.parts.length === 1) {
+          indexPath = path.join(bookDir, 'index.json');
+          if (!fs.existsSync(indexPath)) indexPath = path.join(bookDir, `part-${part.part}`, 'index.json');
+        } else {
+          indexPath = path.join(bookDir, `part-${part.part}`, 'index.json');
+        }
+        if (!fs.existsSync(indexPath)) continue;
+
+        const partCatalog = JSON.parse(fs.readFileSync(indexPath, 'utf8'));
+        const partDir = path.dirname(indexPath);
+
+        for (const entry of partCatalog.torahs) {
+          // Find the actual JSON file for this entry
+          const jsonFiles = fs.readdirSync(partDir).filter(f => f.endsWith(`-${entry.number}.json`) && f !== 'index.json');
+          if (jsonFiles.length === 0) continue;
+
+          const filePath = path.join(partDir, jsonFiles[0]);
+          if (!fs.existsSync(filePath)) continue;
+
+          const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+          const fullText = data.segments.map(s => s.he || '').filter(t => t.length > 0).join('\n\n');
+          const searchableHebrew = stripNikud(fullText);
+
+          documents.push({
+            id: data.id,
+            part: part.part,
+            torah: data.torah,
+            displayNumber: data.displayNumber || data.torah,
+            title: data.title,
+            hebrewTitle: data.hebrewTitle || '',
+            themes: data.themes || [],
+            url: entry.url || `/reader/${book.id}/${part.part}/${data.torah}`,
+            wordCount: searchableHebrew.split(/\s+/).length,
+            content: searchableHebrew,
+            preview: fullText.substring(0, 200).replace(/\n/g, ' '),
+            hasEnglish: false,
+            englishContent: '',
+            bookName: book.title
+          });
+          bookCount++;
+        }
+      }
+      if (bookCount > 0) console.log(`  ${book.title}: ${bookCount} items indexed`);
     }
-    console.log(`  Sefer Hamidos: ${shCatalog.torahs.length} topics indexed`);
   }
 
   // Also index other content from the old search index if available

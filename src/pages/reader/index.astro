@@ -1,28 +1,51 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 
-// Load both catalogs
+// Load master catalog and all book indexes
 import fs from 'node:fs';
 import path from 'node:path';
 
-let catalog1 = null;
-let catalog2 = null;
-let catalogSH = null;
-try {
-  const f1 = path.join(process.cwd(), 'public/reader/likutay-moharan/part-1/index.json');
-  catalog1 = JSON.parse(fs.readFileSync(f1, 'utf8'));
-} catch (e) { /* */ }
-try {
-  const f2 = path.join(process.cwd(), 'public/reader/likutay-moharan/part-2/index.json');
-  catalog2 = JSON.parse(fs.readFileSync(f2, 'utf8'));
-} catch (e) { /* */ }
-try {
-  const fSH = path.join(process.cwd(), 'public/reader/sefer-hamidos/index.json');
-  catalogSH = JSON.parse(fs.readFileSync(fSH, 'utf8'));
-} catch (e) { /* */ }
+function loadJSON(filePath) {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(process.cwd(), filePath), 'utf8'));
+  } catch (e) { return null; }
+}
+
+const masterCatalog = loadJSON('public/reader/catalog.json') || { books: [] };
+
+// Load index for each book's parts
+function loadBookIndexes(book) {
+  const indexes = [];
+  for (const part of book.parts) {
+    const idx = loadJSON(part.indexUrl.replace(/^\//, 'public/'));
+    if (idx) indexes.push({ ...part, index: idx });
+  }
+  return indexes;
+}
+
+// Group books by category
+const categories = [
+  { title: 'Rabbi Nachman of Breslov / רבי נחמן מברסלב', ids: ['likutay-moharan', 'kitzur-likutay-moharan', 'sefer-hamidos', 'sipurey-maasiyos', 'sipurey-maasiyos-english'] },
+  { title: 'Rabbi Nosson of Breslov / רבי נתן מברסלב', ids: ['likutay-halachos', 'likutay-tefilos', 'likutay-eitzos', 'sichos-haran', 'shivchay-haran', 'chayey-moharan', 'alim-litrufa', 'yemei-moharnat', 'shemos-hatzadikim', 'yemei-hatlaos'] },
+  { title: 'Rabbi Alter of Teplik / רבי אלתר טפליקער', ids: ['hashtatfchus-hanefesh', 'meshivas-nefesh'] },
+  { title: 'Rabbi Nachman of Tcheryn / הרב מטשערין', ids: ['parparos-lechochma', 'rimzei-hamaasiyos', 'zimras-haaretz', 'yikra-dshabbata', 'yereach-haeitanim', 'nachas-hashulchan', 'likutay-eitzos-basra'] },
+  { title: "Rabbi Avraham bar Nachman / רבי אברהם בר' נחמן", ids: ['biur-halikutim', 'chochma-utvuna', 'kokhvei-or'] },
+  { title: 'Levi Yitzchak Bender / לוי יצחק בנדר', ids: ['siach-sarfei-kodesh'] },
+];
+
+// Collect remaining books not in categories
+const categorizedIds = categories.flatMap(c => c.ids);
+const miscBooks = masterCatalog.books.filter(b => !categorizedIds.includes(b.id) && b.parts.some(p => p.totalTorahs > 0));
+if (miscBooks.length > 0) {
+  categories.push({ title: 'Students & Other Works / תלמידים ועוד', ids: miscBooks.map(b => b.id) });
+}
+
+// Pre-load LM catalogs specifically (for backward compatibility with detailed listing)
+const catalog1 = loadJSON('public/reader/likutay-moharan/part-1/index.json');
+const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
 ---
 
-<Layout title="Likutay Moharan - Torah Reader" description="Read Likutay Moharan online - all 411 Torahs of Rabbi Nachman of Breslov in Hebrew. Part 1 (286 Torahs) and Part 2 Tinyana (125 Torahs).">
+<Layout title="Breslov Library - ajew.org Reader" description="Read the holy books of Breslov online - Likutay Moharan, Sipurey Maasiyos, Sichos HaRan, Shivchay HaRan, Chayey Moharan, Likutay Halachos, Sefer Hamidos and more. Over 1500 texts in Hebrew.">
   <style>
     .lm-index {
       max-width: 800px;
@@ -148,31 +171,18 @@ try {
       column-span: all;
     }
 
-    /* Coming soon */
-    .coming-soon-section {
-      margin-top: 40px;
+    /* Category sections */
+    .category-section {
+      margin-top: 48px;
       padding-top: 24px;
-      border-top: 2px solid #e0d6c2;
+      border-top: 3px solid #1a365d;
     }
-    .coming-soon-section h2 {
+    .category-title {
       font-family: 'Frank Ruhl Libre', serif;
-      font-size: 1.2em;
-      color: #888;
-      margin: 0 0 16px;
-    }
-    .coming-soon-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 12px;
-    }
-    .coming-soon-item {
-      text-align: center;
-      padding: 20px;
-      color: #999;
-      font-style: italic;
-      border: 1px dashed #ddd;
-      border-radius: 8px;
-      font-size: 0.9em;
+      font-size: 1.5em;
+      color: #1a365d;
+      margin: 0 0 24px;
+      font-weight: 700;
     }
 
     @media (max-width: 768px) {
@@ -240,37 +250,44 @@ try {
       )}
     </div>
 
-    <!-- Sefer Hamidos -->
-    <div class="volume-section">
-      <h2 class="volume-title">Sefer Hamidos (The Book of Traits)</h2>
-      <div class="volume-hebrew">&#1505;&#1508;&#1512; &#1492;&#1502;&#1497;&#1491;&#1493;&#1514;</div>
-      {catalogSH && <p class="volume-count">{catalogSH.totalTorahs} Topics (A-Z by Hebrew)</p>}
-      {catalogSH ? (
-        <ul class="torah-list">
-          {catalogSH.torahs.map(t => (
-            <li>
-              <a href={t.url}>
-                <span class="torah-num">{t.hebrewTitle || t.title}</span>
-              </a>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>Loading...</p>
-      )}
-    </div>
-
-    <!-- Coming Soon -->
-    <div class="coming-soon-section">
-      <h2>More Books Coming Soon</h2>
-      <div class="coming-soon-grid">
-        <div class="coming-soon-item">Likutay Halachos</div>
-        <div class="coming-soon-item">Likutay Tefilos</div>
-        <div class="coming-soon-item">Sipurey Maasiyos</div>
-        <div class="coming-soon-item">Sichos HaRan</div>
-        <div class="coming-soon-item">Shivchay HaRan</div>
-        <div class="coming-soon-item">Sichos HaRan</div>
-      </div>
-    </div>
+    <!-- All Other Books by Category -->
+    {categories.map(cat => {
+      const catBooks = cat.ids.map(id => masterCatalog.books.find(b => b.id === id)).filter(Boolean).filter(b => b.parts.some(p => p.totalTorahs > 0));
+      if (catBooks.length === 0 || cat.ids.includes('likutay-moharan')) return null;
+      return (
+        <div class="category-section">
+          <h2 class="category-title">{cat.title}</h2>
+          {catBooks.map(book => {
+            const indexes = loadBookIndexes(book);
+            const totalPages = book.parts.reduce((s, p) => s + p.totalTorahs, 0);
+            return (
+              <div class="volume-section" style="margin-bottom: 30px;">
+                <h3 class="volume-title" style="font-size: 1.2em;">{book.title}</h3>
+                <div class="volume-hebrew">{book.hebrewTitle}</div>
+                <p class="volume-count">{totalPages} sections{book.parts.length > 1 ? ` (${book.parts.length} parts)` : ''}</p>
+                {indexes.map(partData => (
+                  <div style={book.parts.length > 1 ? "margin-bottom: 12px;" : ""}>
+                    {book.parts.length > 1 && (
+                      <h4 style="font-size: 0.9em; color: #6b5a42; margin: 8px 0 4px; font-style: italic;">
+                        {partData.hebrewTitle || partData.title} ({partData.totalTorahs})
+                      </h4>
+                    )}
+                    <ul class="torah-list">
+                      {partData.index.torahs.map(t => (
+                        <li>
+                          <a href={t.url}>
+                            <span class="torah-num">{t.hebrewTitle || t.title || `[${t.number}]`}</span>
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            );
+          })}
+        </div>
+      );
+    })}
   </div>
 </Layout>

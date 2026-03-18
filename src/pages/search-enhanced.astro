@@ -107,6 +107,7 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         url.searchParams.set('q', query);
         if (advanced.searchType) url.searchParams.set('searchType', advanced.searchType);
         if (advanced.proximity > 0) url.searchParams.set('proximity', String(advanced.proximity));
+        if (advanced.acronymOrder) url.searchParams.set('acronymOrder', advanced.acronymOrder);
         if (advanced.books?.length > 0) url.searchParams.set('books', advanced.books.join(','));
 
         fetch(url.toString())

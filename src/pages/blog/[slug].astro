@@ -1,0 +1,187 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Blog Post - ajew.org" description="A blog post from ajew.org">
+<div class="post-page">
+  <div id="post-content">
+    <div class="loading">Loading...</div>
+  </div>
+  <div id="post-error" style="display:none;" class="error">
+    <h1>Post not found</h1>
+    <p><a href="/blog">Back to Blog</a></p>
+  </div>
+</div>
+
+<script>
+  import { createClient } from '@supabase/supabase-js';
+
+  const supabase = createClient(
+    'https://ekggvujbuusvgmrertgp.supabase.co',
+    'sb_publishable_q6XD_TD8KOQuphI30Gmi5Q_3PBAXQHo'
+  );
+
+  async function loadPost() {
+    const slug = window.location.pathname.replace('/blog/', '').replace(/\/$/, '');
+    const container = document.getElementById('post-content');
+    const errorEl = document.getElementById('post-error');
+
+    try {
+      const { data: post, error } = await supabase
+        .from('blog_posts')
+        .select('*')
+        .eq('slug', slug)
+        .eq('published', true)
+        .single();
+
+      if (error || !post) {
+        container.style.display = 'none';
+        errorEl.style.display = 'block';
+        return;
+      }
+
+      const date = new Date(post.created_at).toLocaleDateString('en-US', {
+        year: 'numeric', month: 'long', day: 'numeric'
+      });
+
+      // Update page title
+      document.title = `${post.title} | A Jew`;
+
+      // Simple markdown-like rendering: convert newlines to paragraphs
+      const contentHtml = post.content
+        .split(/\n\n+/)
+        .map(p => p.trim())
+        .filter(p => p)
+        .map(p => {
+          if (p.startsWith('# ')) return `<h2>${p.substring(2)}</h2>`;
+          if (p.startsWith('## ')) return `<h3>${p.substring(3)}</h3>`;
+          if (p.startsWith('### ')) return `<h4>${p.substring(4)}</h4>`;
+          if (p.startsWith('> ')) return `<blockquote>${p.substring(2)}</blockquote>`;
+          // Convert **bold** and *italic*
+          let html = p
+            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.+?)\*/g, '<em>$1</em>')
+            .replace(/\n/g, '<br/>');
+          return `<p>${html}</p>`;
+        })
+        .join('\n');
+
+      container.innerHTML = `
+        <nav class="breadcrumb">
+          <a href="/blog">Blog</a>
+          <span>&rsaquo;</span>
+          <span>${post.title}</span>
+        </nav>
+        <article>
+          <header class="post-header">
+            <h1>${post.title}</h1>
+            <div class="post-meta">
+              <span class="author">${post.author || 'Pettek Nanach'}</span>
+              <span class="date">${date}</span>
+            </div>
+          </header>
+          <div class="post-body">
+            ${contentHtml}
+          </div>
+          <footer class="post-footer">
+            <p class="nanach">נ נח נחמ נחמן מאומן</p>
+            <a href="/blog">&larr; Back to Blog</a>
+          </footer>
+        </article>
+      `;
+    } catch (e) {
+      container.style.display = 'none';
+      errorEl.style.display = 'block';
+    }
+  }
+
+  loadPost();
+</script>
+
+<style>
+  .post-page {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+    font-family: 'Open Sans', sans-serif;
+  }
+
+  .breadcrumb {
+    padding: 20px 0;
+    font-size: 0.9em;
+    color: #999;
+  }
+  .breadcrumb a { color: #1a365d; text-decoration: none; }
+  .breadcrumb a:hover { text-decoration: underline; }
+  .breadcrumb span { margin: 0 8px; }
+
+  .post-header {
+    margin-bottom: 32px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #e0d6c2;
+  }
+  .post-header h1 {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 2em;
+    color: #1a365d;
+    margin: 0 0 12px;
+    line-height: 1.3;
+  }
+  .post-meta {
+    display: flex;
+    gap: 16px;
+    font-size: 0.9em;
+    color: #999;
+  }
+
+  .post-body {
+    line-height: 1.8;
+    color: #333;
+    font-size: 1.05em;
+  }
+  .post-body p { margin: 0 0 16px; }
+  .post-body h2 {
+    font-family: 'Frank Ruhl Libre', serif;
+    color: #1a365d;
+    margin: 32px 0 12px;
+    font-size: 1.4em;
+  }
+  .post-body h3 {
+    color: #1a365d;
+    margin: 24px 0 8px;
+    font-size: 1.2em;
+  }
+  .post-body blockquote {
+    border-left: 4px solid #c4a265;
+    margin: 16px 0;
+    padding: 12px 20px;
+    background: #faf8f4;
+    color: #555;
+    font-style: italic;
+  }
+  .post-body strong { color: #1a365d; }
+
+  .post-footer {
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 2px solid #e0d6c2;
+    text-align: center;
+  }
+  .post-footer .nanach {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 1.3em;
+    color: #c4a265;
+    margin: 0 0 16px;
+  }
+  .post-footer a {
+    color: #1a365d;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .loading { text-align: center; padding: 60px; color: #999; }
+  .error { text-align: center; padding: 60px; }
+  .error h1 { color: #1a365d; }
+  .error a { color: #1a365d; }
+</style>
+</Layout>

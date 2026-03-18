@@ -52,6 +52,11 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
             <button type="button" class="mode-btn" data-mode="startsWith" title="Words starting with...">Starts With</button>
             <button type="button" class="mode-btn" data-mode="endsWith" title="Words ending with...">Ends With</button>
           </div>
+          <div class="mode-group acronym-order-group" id="acronymOrderGroup" style="display:none;">
+            <span class="mode-label">Order:</span>
+            <button type="button" class="order-btn active" data-order="consecutive" title="Letters must match consecutive words in order">Specific Order</button>
+            <button type="button" class="order-btn" data-order="any" title="Letters can appear in any order across the text">Any Order</button>
+          </div>
         </div>
       )}
     </form>
@@ -69,7 +74,8 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
     advancedOptions: {
       books: [],
       searchType: 'google',
-      proximity: 5
+      proximity: 5,
+      acronymOrder: 'consecutive'
     },
     isLoading: false
   };
@@ -113,11 +119,27 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
     });
 
     // Mode buttons
+    const orderGroup = document.getElementById('acronymOrderGroup');
     document.querySelectorAll('.mode-btn[data-mode]').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.mode-btn[data-mode]').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        searchState.advancedOptions.searchType = (btn as HTMLElement).dataset.mode || 'google';
+        const mode = (btn as HTMLElement).dataset.mode || 'google';
+        searchState.advancedOptions.searchType = mode;
+        // Show order toggle for acronym/endletters modes
+        if (orderGroup) {
+          orderGroup.style.display = (mode === 'acronym' || mode === 'endletters') ? 'flex' : 'none';
+        }
+        if (searchState.query) performSearch();
+      });
+    });
+
+    // Order toggle buttons (for acronym/endletters)
+    document.querySelectorAll('.order-btn[data-order]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.order-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        searchState.advancedOptions.acronymOrder = (btn as HTMLElement).dataset.order || 'consecutive';
         if (searchState.query) performSearch();
       });
     });
@@ -294,6 +316,32 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
     background: #6366f1;
     color: white;
     border-color: #6366f1;
+  }
+
+  .order-btn {
+    background: #fef3c7;
+    border: 1px solid #d97706;
+    color: #92400e;
+    padding: 4px 10px;
+    border-radius: 14px;
+    font-size: 0.72rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .order-btn:hover { background: #fde68a; }
+  .order-btn.active {
+    background: #d97706;
+    color: white;
+    border-color: #d97706;
+  }
+
+  .acronym-order-group {
+    align-items: center;
+    border-top: 1px solid #e5e7eb;
+    padding-top: 6px;
+    margin-top: 4px;
   }
 
   @media (max-width: 640px) {

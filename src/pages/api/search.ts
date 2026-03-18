@@ -212,29 +212,48 @@ function searchBoolean(content: string, queryStr: string) {
 
 /**
  * Acronym search (ראשי תיבות)
- * Given letters like "אבג", find consecutive words in the text
- * whose FIRST letters are א, ב, ג in order.
+ * Given letters like "אבג", find words in the text whose FIRST letters match.
+ * order='consecutive': letters must match consecutive words in order (original behavior)
+ * order='any': all letters must appear as first letters of words, in any position
  */
-function searchAcronym(content: string, letters: string) {
-  // Split content into words
+function searchAcronym(content: string, letters: string, order: string = 'consecutive') {
   const words = content.split(/\s+/).filter(w => w.length > 0);
   const targetLetters = [...letters];
   const len = targetLetters.length;
 
   if (len === 0 || words.length < len) return { match: false, index: -1, score: 0 };
 
-  // Slide through words looking for consecutive first-letter match
+  if (order === 'any') {
+    // Any order: all target letters must appear as first letters of words somewhere in text
+    const firstLetters = words.map(w => w[0]);
+    const remaining = [...targetLetters];
+    const matchedPositions: number[] = [];
+
+    for (let i = 0; i < firstLetters.length && remaining.length > 0; i++) {
+      const idx = remaining.indexOf(firstLetters[i]);
+      if (idx !== -1) {
+        remaining.splice(idx, 1);
+        matchedPositions.push(i);
+      }
+    }
+
+    if (remaining.length === 0) {
+      const firstMatch = matchedPositions[0];
+      const matchedWords = matchedPositions.map(p => words[p]).join(' ... ');
+      let charIdx = 0;
+      for (let i = 0; i < firstMatch; i++) charIdx = content.indexOf(words[i], charIdx) + words[i].length;
+      return { match: true, index: Math.max(0, charIdx), score: 85, matchedWords };
+    }
+    return { match: false, index: -1, score: 0 };
+  }
+
+  // Consecutive order (original behavior)
   for (let i = 0; i <= words.length - len; i++) {
     let found = true;
     for (let j = 0; j < len; j++) {
-      const firstChar = words[i + j][0];
-      if (firstChar !== targetLetters[j]) {
-        found = false;
-        break;
-      }
+      if (words[i + j][0] !== targetLetters[j]) { found = false; break; }
     }
     if (found) {
-      // Find the character index in the original content
       const matchedPhrase = words.slice(i, i + len).join(' ');
       const idx = content.indexOf(matchedPhrase);
       return { match: true, index: idx >= 0 ? idx : 0, score: 95, matchedWords: matchedPhrase };
@@ -243,44 +262,57 @@ function searchAcronym(content: string, letters: string) {
   return { match: false, index: -1, score: 0 };
 }
 
+// Final-form Hebrew letter normalization (shared by end-letters search)
+const finalToRegular: Record<string, string> = {
+  '\u05DA': '\u05DB', '\u05DD': '\u05DE', '\u05DF': '\u05E0',
+  '\u05E3': '\u05E4', '\u05E5': '\u05E6',
+};
+function normalizeHebChar(ch: string): string {
+  return finalToRegular[ch] || ch;
+}
+
 /**
  * End-letters search (סופי תיבות)
- * Given letters like "אבג", find consecutive words in the text
- * whose LAST letters are א, ב, ג in order.
+ * Given letters like "אבג", find words whose LAST letters match.
+ * order='consecutive': letters must match consecutive words in order
+ * order='any': all letters must appear as last letters of words, in any position
  */
-function searchEndLetters(content: string, letters: string) {
+function searchEndLetters(content: string, letters: string, order: string = 'consecutive') {
   const words = content.split(/\s+/).filter(w => w.length > 0);
   const targetLetters = [...letters];
   const len = targetLetters.length;
 
   if (len === 0 || words.length < len) return { match: false, index: -1, score: 0 };
 
-  // Handle final-form Hebrew letters: map final to regular for comparison
-  const finalToRegular: Record<string, string> = {
-    '\u05DA': '\u05DB', // ך -> כ
-    '\u05DD': '\u05DE', // ם -> מ
-    '\u05DF': '\u05E0', // ן -> נ
-    '\u05E3': '\u05E4', // ף -> פ
-    '\u05E5': '\u05E6', // ץ -> צ
-  };
-  const regularToFinal: Record<string, string> = {};
-  for (const [f, r] of Object.entries(finalToRegular)) regularToFinal[r] = f;
+  if (order === 'any') {
+    const lastLetters = words.map(w => normalizeHebChar(w[w.length - 1]));
+    const remaining = targetLetters.map(l => normalizeHebChar(l));
+    const matchedPositions: number[] = [];
 
-  function normalizeChar(ch: string): string {
-    return finalToRegular[ch] || ch;
+    for (let i = 0; i < lastLetters.length && remaining.length > 0; i++) {
+      const idx = remaining.indexOf(lastLetters[i]);
+      if (idx !== -1) {
+        remaining.splice(idx, 1);
+        matchedPositions.push(i);
+      }
+    }
+
+    if (remaining.length === 0) {
+      const firstMatch = matchedPositions[0];
+      const matchedWords = matchedPositions.map(p => words[p]).join(' ... ');
+      let charIdx = 0;
+      for (let i = 0; i < firstMatch; i++) charIdx = content.indexOf(words[i], charIdx) + words[i].length;
+      return { match: true, index: Math.max(0, charIdx), score: 85, matchedWords };
+    }
+    return { match: false, index: -1, score: 0 };
   }
 
+  // Consecutive order (original behavior)
   for (let i = 0; i <= words.length - len; i++) {
     let found = true;
     for (let j = 0; j < len; j++) {
-      const word = words[i + j];
-      const lastChar = word[word.length - 1];
-      const target = targetLetters[j];
-      // Compare with final-form normalization
-      if (normalizeChar(lastChar) !== normalizeChar(target)) {
-        found = false;
-        break;
-      }
+      const lastChar = words[i + j][words[i + j].length - 1];
+      if (normalizeHebChar(lastChar) !== normalizeHebChar(targetLetters[j])) { found = false; break; }
     }
     if (found) {
       const matchedPhrase = words.slice(i, i + len).join(' ');
@@ -314,6 +346,7 @@ export async function GET({ request }: { request: Request }) {
     const searchType = url.searchParams.get('searchType') || 'google';
     const proximityStr = url.searchParams.get('proximity') || '0';
     const proximity = parseInt(proximityStr, 10);
+    const acronymOrder = url.searchParams.get('acronymOrder') || 'consecutive';
     const booksParam = url.searchParams.get('books');
     const books = booksParam ? booksParam.split(',').filter(Boolean) : [];
     const page = parseInt(url.searchParams.get('page') || '1', 10);
@@ -387,13 +420,13 @@ export async function GET({ request }: { request: Request }) {
           break;
         }
         case 'acronym': {
-          const r = searchAcronym(content, normalizedQuery.replace(/\s/g, ''));
+          const r = searchAcronym(content, normalizedQuery.replace(/\s/g, ''), acronymOrder);
           matched = r.match; matchIndex = r.index; score = r.score;
           if (r.match) extraInfo = `Found: ${(r as any).matchedWords || ''}`;
           break;
         }
         case 'endletters': {
-          const r = searchEndLetters(content, normalizedQuery.replace(/\s/g, ''));
+          const r = searchEndLetters(content, normalizedQuery.replace(/\s/g, ''), acronymOrder);
           matched = r.match; matchIndex = r.index; score = r.score;
           if (r.match) extraInfo = `Found: ${(r as any).matchedWords || ''}`;
           break;
