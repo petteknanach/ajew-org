@@ -1,0 +1,417 @@
+---
+import Layout from '../layouts/Layout.astro';
+import fs from 'node:fs';
+import path from 'node:path';
+
+let citationsData = null;
+try {
+  const filePath = path.join(process.cwd(), 'public/data/citations-index.json');
+  citationsData = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+} catch (e) { /* */ }
+
+const stats = citationsData?.stats || { totalCitations: 0, totalTorahsWithCitations: 0, byType: {}, topBooks: [] };
+const torahs = citationsData?.torahs || {};
+const reverseIndex = citationsData?.reverseIndex || {};
+
+// Prepare sorted torah list
+const torahList = Object.entries(torahs)
+  .sort(([, a], [, b]) => (b as any).totalCitations - (a as any).totalCitations);
+
+// Prepare source list sorted by citation count
+const sourceList = Object.entries(reverseIndex)
+  .sort(([, a], [, b]) => (b as any[]).length - (a as any[]).length);
+---
+
+<Layout title="Torah Connections Map - Likutay Moharan Sources" description="Interactive citation map showing which Tanach, Talmud, and Zohar sources are referenced in each Torah of Likutay Moharan. 4,132 citations across 343 Torahs.">
+<div class="connections-page">
+  <header class="page-header">
+    <div class="header-hebrew">מפת הקשרים</div>
+    <h1>Torah Connections Map</h1>
+    <p class="subtitle">Every source cited in Likutay Moharan</p>
+    <div class="stats-row">
+      <div class="stat-box">
+        <span class="stat-num">{stats.totalCitations.toLocaleString()}</span>
+        <span class="stat-label">Citations</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-num">{stats.totalTorahsWithCitations}</span>
+        <span class="stat-label">Torahs</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-num">{stats.byType?.tanach || 0}</span>
+        <span class="stat-label">Tanach</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-num">{stats.byType?.talmud || 0}</span>
+        <span class="stat-label">Talmud</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-num">{(stats.byType?.zohar || 0) + (stats.byType?.midrash || 0)}</span>
+        <span class="stat-label">Zohar/Midrash</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Tab Navigation -->
+  <div class="tab-bar">
+    <button class="tab active" data-tab="sources">By Source</button>
+    <button class="tab" data-tab="torahs">By Torah</button>
+    <button class="tab" data-tab="top">Top Cited</button>
+  </div>
+
+  <!-- By Source Tab -->
+  <div class="tab-content active" id="tab-sources">
+    <div class="search-filter">
+      <input type="text" id="source-search" placeholder="Filter sources..." dir="auto" />
+    </div>
+    <div class="source-grid" id="source-list">
+      {sourceList.map(([book, torahsList]) => (
+        <div class="source-card" data-book={book}>
+          <div class="source-header">
+            <h3>{book}</h3>
+            <span class="source-count">{(torahsList as any[]).length} torahs</span>
+          </div>
+          <ul class="source-torahs">
+            {(torahsList as any[]).slice(0, 8).map(t => (
+              <li><a href={t.url}>Torah {t.torahNum} (Part {t.part})</a></li>
+            ))}
+            {(torahsList as any[]).length > 8 && (
+              <li class="more">+{(torahsList as any[]).length - 8} more</li>
+            )}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <!-- By Torah Tab -->
+  <div class="tab-content" id="tab-torahs">
+    <div class="search-filter">
+      <input type="text" id="torah-search" placeholder="Search torah number..." />
+    </div>
+    <div class="torah-grid" id="torah-list">
+      {torahList.map(([id, data]) => {
+        const d = data as any;
+        return (
+          <div class="torah-card" data-num={String(d.torahNum)}>
+            <div class="torah-card-header">
+              <a href={d.url}>
+                <span class="torah-num">Torah {d.torahNum}</span>
+                <span class="torah-part">Part {d.part}</span>
+              </a>
+              <span class="citation-count">{d.totalCitations} sources</span>
+            </div>
+            <div class="citation-tags">
+              {d.citedBooks.map((book: string) => {
+                const type = d.citations.find((c: any) => c.bookEn === book)?.type || 'other';
+                return <span class={`tag tag-${type}`}>{book}</span>;
+              })}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </div>
+
+  <!-- Top Cited Tab -->
+  <div class="tab-content" id="tab-top">
+    <h2>Most Cited Sources in Likutay Moharan</h2>
+    <div class="top-list">
+      {stats.topBooks.map((b: any, i: number) => (
+        <div class="top-item">
+          <span class="top-rank">#{i + 1}</span>
+          <span class="top-name">{b.book}</span>
+          <div class="top-bar-container">
+            <div class="top-bar" style={`width: ${Math.round((b.count / stats.topBooks[0].count) * 100)}%`}></div>
+          </div>
+          <span class="top-count">{b.count}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  // Tab switching
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('tab-' + tab.dataset.tab)?.classList.add('active');
+    });
+  });
+
+  // Source filter
+  const sourceSearch = document.getElementById('source-search');
+  if (sourceSearch) {
+    sourceSearch.addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase();
+      document.querySelectorAll('.source-card').forEach(card => {
+        const book = card.dataset.book?.toLowerCase() || '';
+        card.style.display = book.includes(q) ? '' : 'none';
+      });
+    });
+  }
+
+  // Torah filter
+  const torahSearch = document.getElementById('torah-search');
+  if (torahSearch) {
+    torahSearch.addEventListener('input', (e) => {
+      const q = e.target.value.trim();
+      document.querySelectorAll('.torah-card').forEach(card => {
+        const num = card.dataset.num || '';
+        card.style.display = !q || num.includes(q) ? '' : 'none';
+      });
+    });
+  }
+</script>
+
+<style>
+  .connections-page {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+    font-family: 'Open Sans', sans-serif;
+  }
+
+  .page-header {
+    text-align: center;
+    padding: 48px 20px 32px;
+  }
+  .header-hebrew {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 2.6em;
+    color: #1a365d;
+    direction: rtl;
+    margin: 0 0 4px;
+    font-weight: 700;
+  }
+  .page-header h1 {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 1.8em;
+    color: #1a365d;
+    margin: 0 0 8px;
+  }
+  .page-header .subtitle {
+    color: #666;
+    margin: 0 0 24px;
+  }
+
+  .stats-row {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .stat-box {
+    background: #1a365d;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 12px;
+    text-align: center;
+    min-width: 80px;
+  }
+  .stat-num {
+    display: block;
+    font-size: 1.4em;
+    font-weight: 700;
+    color: #e8d5a3;
+  }
+  .stat-label {
+    font-size: 0.75em;
+    opacity: 0.8;
+  }
+
+  /* Tabs */
+  .tab-bar {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 32px 0 24px;
+    border-bottom: 2px solid #e0d6c2;
+    padding-bottom: 0;
+  }
+  .tab {
+    padding: 10px 24px;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: #666;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 1em;
+    margin-bottom: -2px;
+    transition: all 0.2s;
+  }
+  .tab:hover { color: #1a365d; }
+  .tab.active {
+    color: #1a365d;
+    border-bottom-color: #1a365d;
+  }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* Search filter */
+  .search-filter {
+    margin-bottom: 20px;
+  }
+  .search-filter input {
+    width: 100%;
+    padding: 10px 16px;
+    border: 2px solid #e0d6c2;
+    border-radius: 8px;
+    font-size: 1em;
+    box-sizing: border-box;
+  }
+  .search-filter input:focus {
+    outline: none;
+    border-color: #1a365d;
+  }
+
+  /* Source cards */
+  .source-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  .source-card {
+    border: 1px solid #e0d6c2;
+    border-radius: 12px;
+    padding: 16px;
+    background: #faf8f4;
+  }
+  .source-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .source-header h3 {
+    font-family: 'Frank Ruhl Libre', serif;
+    color: #1a365d;
+    margin: 0;
+    font-size: 1.1em;
+  }
+  .source-count {
+    font-size: 0.8em;
+    color: #999;
+    background: #e0d6c2;
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+  .source-torahs {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .source-torahs li {
+    padding: 3px 0;
+    font-size: 0.85em;
+  }
+  .source-torahs a {
+    color: #1a365d;
+    text-decoration: none;
+  }
+  .source-torahs a:hover { text-decoration: underline; }
+  .source-torahs .more {
+    color: #999;
+    font-style: italic;
+  }
+
+  /* Torah cards */
+  .torah-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .torah-card {
+    border: 1px solid #e0d6c2;
+    border-radius: 8px;
+    padding: 12px 16px;
+    background: white;
+  }
+  .torah-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .torah-card-header a {
+    text-decoration: none;
+    color: #1a365d;
+    font-weight: 700;
+  }
+  .torah-card-header a:hover { text-decoration: underline; }
+  .torah-num { font-size: 1em; }
+  .torah-part { font-size: 0.8em; color: #999; margin-left: 6px; }
+  .citation-count { font-size: 0.8em; color: #999; }
+
+  .citation-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .tag {
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.7em;
+    font-weight: 600;
+  }
+  .tag-tanach { background: #dbeafe; color: #1e40af; }
+  .tag-talmud { background: #fef3c7; color: #92400e; }
+  .tag-zohar { background: #ede9fe; color: #6b21a8; }
+  .tag-midrash { background: #d1fae5; color: #065f46; }
+  .tag-halacha { background: #fee2e2; color: #991b1b; }
+
+  /* Top cited chart */
+  .top-list { margin-top: 16px; }
+  .top-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0ebe0;
+  }
+  .top-rank {
+    font-weight: 700;
+    color: #c4a265;
+    min-width: 30px;
+  }
+  .top-name {
+    min-width: 120px;
+    font-weight: 600;
+    color: #1a365d;
+    font-size: 0.95em;
+  }
+  .top-bar-container {
+    flex: 1;
+    height: 20px;
+    background: #f0ebe0;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .top-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #1a365d, #2d4a8a);
+    border-radius: 10px;
+    transition: width 0.5s;
+  }
+  .top-count {
+    min-width: 40px;
+    text-align: right;
+    font-weight: 700;
+    color: #1a365d;
+    font-size: 0.9em;
+  }
+
+  @media (max-width: 768px) {
+    .source-grid { grid-template-columns: 1fr; }
+    .stats-row { gap: 8px; }
+    .stat-box { padding: 8px 12px; min-width: 60px; }
+    .stat-num { font-size: 1.1em; }
+    .top-name { min-width: 80px; font-size: 0.85em; }
+  }
+</style>
+</Layout>
