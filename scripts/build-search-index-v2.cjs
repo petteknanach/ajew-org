@@ -23,6 +23,17 @@ function main() {
 
   const documents = [];
 
+  // Load citations index if available
+  let citationsIndex = {};
+  const citationsPath = path.join(ROOT, 'public/data/citations-index.json');
+  if (fs.existsSync(citationsPath)) {
+    try {
+      const cData = JSON.parse(fs.readFileSync(citationsPath, 'utf8'));
+      citationsIndex = cData.torahs || {};
+      console.log(`  Loaded citations for ${Object.keys(citationsIndex).length} torahs`);
+    } catch (e) { /* skip */ }
+  }
+
   // Process Part 1 and Part 2
   for (const partNum of [1, 2]) {
     const partDir = path.join(READER_DIR, `part-${partNum}`);
@@ -56,6 +67,18 @@ function main() {
       // Create searchable content (nikud-stripped for Hebrew matching)
       const searchableHebrew = stripNikud(fullText);
 
+      // Append citation data as searchable text
+      const citationData = citationsIndex[torah.id];
+      let citationText = '';
+      let citedBooks = [];
+      if (citationData) {
+        citedBooks = citationData.citedBooks || [];
+        // Add both Hebrew and English source names to searchable content
+        citationText = citationData.citations.map(c =>
+          `${c.ref} ${c.bookEn} ${c.bookHeb}`
+        ).join(' ');
+      }
+
       documents.push({
         id: torah.id,
         part: partNum,
@@ -64,10 +87,11 @@ function main() {
         title: torah.title,
         hebrewTitle: torah.hebrewTitle || '',
         themes: torah.themes || [],
+        citedBooks,
         url: `/reader/likutay-moharan/${partNum}/${torah.torah}`,
         wordCount: searchableHebrew.split(/\s+/).length,
-        // Store the actual searchable content
-        content: searchableHebrew,
+        // Store the actual searchable content + citation references
+        content: searchableHebrew + (citationText ? '\n' + citationText : ''),
         // Store first 200 chars as preview (with nikud for display)
         preview: fullText.substring(0, 200).replace(/\n/g, ' '),
         hasEnglish: englishText.length > 0,
