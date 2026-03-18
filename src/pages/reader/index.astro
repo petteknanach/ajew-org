@@ -1,6 +1,5 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import '../../styles/reader.css';
 
 // Load both catalogs
 import fs from 'node:fs';
@@ -18,224 +17,234 @@ try {
 } catch (e) { /* */ }
 ---
 
-<Layout title="Reader - Torah Library" description="Read the teachings of Rabbi Nachman of Breslov with bilingual support, nikud toggle, and reading tools.">
+<Layout title="Likutay Moharan - Torah Reader" description="Read Likutay Moharan online - all 411 Torahs of Rabbi Nachman of Breslov in Hebrew. Part 1 (286 Torahs) and Part 2 Tinyana (125 Torahs).">
   <style>
-    .reader-index {
-      max-width: 960px;
+    .lm-index {
+      max-width: 800px;
       margin: 0 auto;
       padding: 40px 24px 80px;
       font-family: 'Open Sans', sans-serif;
+      color: #222;
     }
-    .reader-index-header {
+
+    /* Header */
+    .lm-header {
       text-align: center;
-      margin-bottom: 48px;
+      margin-bottom: 40px;
+      padding-bottom: 24px;
+      border-bottom: 3px solid #1a365d;
     }
-    .reader-index-header h1 {
+    .lm-header .hebrew-title {
       font-family: 'Frank Ruhl Libre', serif;
-      font-size: 2.2em;
+      font-size: 2.8em;
+      color: #1a365d;
+      direction: rtl;
+      margin: 0 0 4px;
+      font-weight: 700;
+    }
+    .lm-header h1 {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 1.8em;
       color: #1a365d;
       margin: 0 0 8px;
     }
-    .reader-index-header .hebrew-main-title {
-      font-family: 'Frank Ruhl Libre', serif;
-      font-size: 2.6em;
-      color: #1a365d;
-      direction: rtl;
-      margin: 0 0 16px;
-    }
-    .reader-index-header p {
+    .lm-header .subtitle {
       color: #666;
-      font-size: 1em;
-      max-width: 600px;
-      margin: 0 auto;
-      line-height: 1.6;
+      font-size: 0.95em;
+      margin: 0;
     }
-    .reader-features {
-      display: flex;
-      gap: 16px;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-top: 20px;
-    }
-    .reader-feature {
-      background: #f0ebe0;
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 0.8em;
-      color: #555;
-    }
-    .book-section {
-      margin-bottom: 48px;
-    }
-    .book-section h2 {
-      font-family: 'Frank Ruhl Libre', serif;
-      font-size: 1.5em;
-      color: #1a365d;
-      border-bottom: 2px solid #e0d6c2;
-      padding-bottom: 8px;
-      margin: 0 0 24px;
-    }
-    .book-section .section-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-    .book-section .section-meta span {
+    .lm-header .author {
       color: #888;
       font-size: 0.85em;
+      margin: 8px 0 0;
+      font-style: italic;
     }
-    .torah-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 12px;
+    .lm-features {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 16px;
     }
-    .torah-card {
-      display: block;
-      padding: 16px 20px;
-      border: 1px solid #e0d6c2;
-      border-radius: 8px;
-      text-decoration: none;
-      color: inherit;
-      transition: all 0.15s;
-      background: #fffdf7;
-    }
-    .torah-card:hover {
-      border-color: #1a365d;
-      box-shadow: 0 2px 8px rgba(26, 54, 93, 0.1);
-      transform: translateY(-1px);
-    }
-    .torah-card .torah-number {
+    .lm-features span {
+      background: #f0ebe0;
+      padding: 4px 12px;
+      border-radius: 14px;
       font-size: 0.75em;
+      color: #555;
+    }
+
+    /* Volume sections */
+    .volume-section {
+      margin-bottom: 40px;
+    }
+    .volume-title {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 1.4em;
+      color: #1a365d;
+      margin: 0 0 4px;
+      font-weight: 700;
+    }
+    .volume-hebrew {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 1.3em;
+      color: #333;
+      direction: rtl;
+      margin: 0 0 8px;
+    }
+    .volume-count {
       color: #888;
+      font-size: 0.85em;
+      margin: 0 0 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #e0d6c2;
+    }
+
+    /* Torah links - clean simple list */
+    .torah-list {
+      columns: 3;
+      column-gap: 24px;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .torah-list li {
+      break-inside: avoid;
       margin-bottom: 4px;
     }
-    .torah-card .torah-title {
-      font-family: 'Frank Ruhl Libre', serif;
-      font-size: 1.05em;
-      font-weight: 600;
+    .torah-list a {
+      display: inline-block;
       color: #1a365d;
-      margin-bottom: 2px;
+      text-decoration: none;
+      font-size: 0.92em;
+      padding: 3px 6px;
+      border-radius: 3px;
+      transition: background 0.12s;
     }
-    .torah-card .torah-hebrew-title {
-      font-family: 'Frank Ruhl Libre', serif;
-      font-size: 1.1em;
-      direction: rtl;
-      color: #333;
-      margin-bottom: 8px;
+    .torah-list a:hover {
+      background: #e8e2d6;
+      text-decoration: underline;
     }
-    .torah-card .torah-meta {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
+    .torah-list .torah-num {
+      font-weight: 600;
+      min-width: 2.5em;
+      display: inline-block;
     }
-    .torah-card .torah-meta span {
-      font-size: 0.7em;
-      color: #888;
-      background: #f0ebe0;
-      padding: 2px 8px;
-      border-radius: 10px;
-    }
-    .coming-soon {
-      text-align: center;
-      padding: 40px;
-      color: #888;
+
+    /* Section dividers within a volume */
+    .section-divider {
+      margin: 16px 0;
+      padding: 8px 12px;
+      background: #f8f5ef;
+      border-left: 3px solid #c4a265;
+      font-size: 0.85em;
+      color: #6b5a42;
       font-style: italic;
-      border: 1px dashed #e0d6c2;
-      border-radius: 8px;
+      column-span: all;
     }
+
+    /* Coming soon */
+    .coming-soon-section {
+      margin-top: 40px;
+      padding-top: 24px;
+      border-top: 2px solid #e0d6c2;
+    }
+    .coming-soon-section h2 {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 1.2em;
+      color: #888;
+      margin: 0 0 16px;
+    }
+    .coming-soon-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    .coming-soon-item {
+      text-align: center;
+      padding: 20px;
+      color: #999;
+      font-style: italic;
+      border: 1px dashed #ddd;
+      border-radius: 8px;
+      font-size: 0.9em;
+    }
+
     @media (max-width: 768px) {
-      .reader-index-header h1 { font-size: 1.6em; }
-      .reader-index-header .hebrew-main-title { font-size: 2em; }
-      .torah-grid { grid-template-columns: 1fr; }
+      .torah-list { columns: 2; }
+      .lm-header .hebrew-title { font-size: 2.2em; }
+      .lm-header h1 { font-size: 1.4em; }
+    }
+    @media (max-width: 480px) {
+      .torah-list { columns: 1; }
     }
   </style>
 
-  <div class="reader-index">
-    <div class="reader-index-header">
-      <div class="hebrew-main-title">&#1511;&#1512;&#1497;&#1488;&#1492;</div>
-      <h1>Torah Reader</h1>
-      <p>
-        Read the holy teachings of Rabbi Nachman of Breslov in a beautiful,
-        feature-rich reading environment. Toggle between Hebrew and English,
-        adjust fonts, bookmark your place, and more.
-      </p>
-      <div class="reader-features">
-        <span class="reader-feature">Hebrew / English / Both</span>
-        <span class="reader-feature">Nikud Toggle</span>
-        <span class="reader-feature">Day / Sepia / Night Modes</span>
-        <span class="reader-feature">Bookmarks</span>
-        <span class="reader-feature">In-text Search</span>
-        <span class="reader-feature">Keyboard Shortcuts</span>
-        <span class="reader-feature">Fullscreen</span>
+  <div class="lm-index">
+    <div class="lm-header">
+      <div class="hebrew-title">&#1500;&#1497;&#1511;&#1493;&#1496;&#1497; &#1502;&#1493;&#1492;&#1512;"&#1503;</div>
+      <h1>Likutay Moharan</h1>
+      <p class="subtitle">The collected teachings of Rabbainu Na Nach Nachma Nachman MeUman</p>
+      <p class="author">Compiled by Rabbi Noson of Breslov</p>
+      <div class="lm-features">
+        <span>Hebrew / English / Both</span>
+        <span>Day / Sepia / Night</span>
+        <span>Bookmarks</span>
+        <span>Search</span>
+        <span>Fullscreen</span>
       </div>
     </div>
 
-    <!-- Likutay Moharan Part 1 -->
-    <div class="book-section">
-      <h2>&#1500;&#1497;&#1511;&#1493;&#1496;&#1497; &#1502;&#1493;&#1492;&#1512;"&#1503; &#1495;&#1500;&#1511; &#1488; - Likutay Moharan Part 1</h2>
+    <!-- Volume 1 (Kama) -->
+    <div class="volume-section">
+      <h2 class="volume-title">Volume 1 (Kama)</h2>
+      <div class="volume-hebrew">&#1502;&#1492;&#1491;&#1493;&#1512;&#1488; &#1511;&#1502;&#1488;</div>
+      {catalog1 && <p class="volume-count">{catalog1.totalTorahs} Torahs</p>}
       {catalog1 ? (
-        <>
-          <div class="section-meta">
-            <span>{catalog1.totalTorahs} Torahs</span>
-            <span>Rabbi Nachman of Breslov</span>
-          </div>
-          <div class="torah-grid">
-            {catalog1.torahs.map(t => (
-              <a class="torah-card" href={t.url}>
-                <div class="torah-number">Torah {t.displayNumber || t.number}</div>
-                <div class="torah-title">{t.title}</div>
-                {t.hebrewTitle && <div class="torah-hebrew-title">{t.hebrewTitle}</div>}
-                <div class="torah-meta">
-                  <span>{t.paragraphs} paragraphs</span>
-                  {t.themes && t.themes.slice(0, 3).map(theme => (
-                    <span>{theme}</span>
-                  ))}
-                </div>
+        <ul class="torah-list">
+          {catalog1.torahs.map(t => (
+            <li>
+              <a href={t.url}>
+                <span class="torah-num">[Torah {t.displayNumber || t.number}]</span>
               </a>
-            ))}
-          </div>
-        </>
+            </li>
+          ))}
+        </ul>
       ) : (
-        <div class="coming-soon">Content loading...</div>
+        <p>Loading...</p>
       )}
     </div>
 
-    <!-- Likutay Moharan Part 2 (Tinyana) -->
-    <div class="book-section">
-      <h2>&#1500;&#1497;&#1511;&#1493;&#1496;&#1497; &#1502;&#1493;&#1492;&#1512;"&#1503; &#1495;&#1500;&#1511; &#1489; - Likutay Moharan Part 2 (Tinyana)</h2>
+    <!-- Volume 2 (Tinyana) -->
+    <div class="volume-section">
+      <h2 class="volume-title">Volume 2 (Tinyana)</h2>
+      <div class="volume-hebrew">&#1502;&#1492;&#1491;&#1493;&#1512;&#1488; &#1489;&#1514;&#1512;&#1488; (&#1514;&#1504;&#1497;&#1504;&#1488;)</div>
+      {catalog2 && <p class="volume-count">{catalog2.totalTorahs} Torahs</p>}
       {catalog2 ? (
-        <>
-          <div class="section-meta">
-            <span>{catalog2.totalTorahs} Torahs</span>
-            <span>Rabbi Nachman of Breslov</span>
-          </div>
-          <div class="torah-grid">
-            {catalog2.torahs.map(t => (
-              <a class="torah-card" href={t.url}>
-                <div class="torah-number">Torah {t.displayNumber || t.number}</div>
-                <div class="torah-title">{t.title}</div>
-                {t.hebrewTitle && <div class="torah-hebrew-title">{t.hebrewTitle}</div>}
-                <div class="torah-meta">
-                  <span>{t.paragraphs} paragraphs</span>
-                </div>
+        <ul class="torah-list">
+          {catalog2.torahs.map(t => (
+            <li>
+              <a href={t.url}>
+                <span class="torah-num">[Torah {t.displayNumber || t.number}]</span>
               </a>
-            ))}
-          </div>
-        </>
+            </li>
+          ))}
+        </ul>
       ) : (
-        <div class="coming-soon">Content loading...</div>
+        <p>Loading...</p>
       )}
     </div>
 
-    <!-- Future Books -->
-    <div class="book-section">
-      <h2>Coming Soon</h2>
-      <div class="torah-grid">
-        <div class="coming-soon">Likutay Halachos</div>
-        <div class="coming-soon">Likutay Tefilos</div>
-        <div class="coming-soon">Sipurey Maasiyos</div>
-        <div class="coming-soon">Sefer Hamidos</div>
+    <!-- Coming Soon -->
+    <div class="coming-soon-section">
+      <h2>More Books Coming Soon</h2>
+      <div class="coming-soon-grid">
+        <div class="coming-soon-item">Likutay Halachos</div>
+        <div class="coming-soon-item">Likutay Tefilos</div>
+        <div class="coming-soon-item">Sipurey Maasiyos</div>
+        <div class="coming-soon-item">Sefer Hamidos</div>
+        <div class="coming-soon-item">Shivchay HaRan</div>
+        <div class="coming-soon-item">Sichos HaRan</div>
       </div>
     </div>
   </div>
