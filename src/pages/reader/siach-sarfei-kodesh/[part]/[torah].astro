@@ -159,7 +159,7 @@ const structuredData = torahData ? JSON.stringify({
           <div class="reader-segment-pair" id={`seg-${seg.index}`}>
             <div class="reader-segment segment-he" data-index={String(seg.index)}>
               <span class="segment-number">{seg.index}</span>
-              <p data-nikud={seg.he}>{seg.he}</p>
+              <p data-nikud={seg.he_nikud || seg.he}>{seg.he}</p>
             </div>
             <div class={`reader-segment segment-en ${!seg.en ? 'empty-translation' : ''}`} data-index={String(seg.index)}>
               <span class="segment-number">{seg.index}</span>

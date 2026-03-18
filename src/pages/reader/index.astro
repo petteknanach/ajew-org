@@ -128,35 +128,37 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
       border-bottom: 1px solid #e0d6c2;
     }
 
-    /* Torah links - clean simple list */
+    /* Torah links - compact grid */
     .torah-list {
-      columns: 3;
-      column-gap: 24px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
       list-style: none;
       padding: 0;
       margin: 0;
     }
-    .torah-list li {
-      break-inside: avoid;
-      margin-bottom: 4px;
-    }
     .torah-list a {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       color: #1a365d;
       text-decoration: none;
-      font-size: 0.92em;
-      padding: 3px 6px;
-      border-radius: 3px;
-      transition: background 0.12s;
+      font-size: 0.85em;
+      padding: 4px 8px;
+      border-radius: 4px;
+      background: #f8f5ef;
+      border: 1px solid #e8e2d6;
+      min-width: 32px;
+      text-align: center;
+      transition: all 0.12s;
     }
     .torah-list a:hover {
-      background: #e8e2d6;
-      text-decoration: underline;
+      background: #1a365d;
+      color: #e8d5a3;
+      border-color: #1a365d;
     }
     .torah-list .torah-num {
       font-weight: 600;
-      min-width: 2.5em;
-      display: inline-block;
     }
 
     /* Section dividers within a volume */
@@ -186,12 +188,8 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
     }
 
     @media (max-width: 768px) {
-      .torah-list { columns: 2; }
       .lm-header .hebrew-title { font-size: 2.2em; }
       .lm-header h1 { font-size: 1.4em; }
-    }
-    @media (max-width: 480px) {
-      .torah-list { columns: 1; }
     }
   </style>
 
@@ -211,16 +209,23 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
     </div>
 
     <!-- Volume 1 (Kama) -->
-    <div class="volume-section">
+    <div class="volume-section" id="likutay-moharan">
       <h2 class="volume-title">Volume 1 (Kama)</h2>
       <div class="volume-hebrew">&#1502;&#1492;&#1491;&#1493;&#1512;&#1488; &#1511;&#1502;&#1488;</div>
       {catalog1 && <p class="volume-count">{catalog1.totalTorahs} Torahs</p>}
+      <div style="margin-bottom: 12px;">
+        <ul class="torah-list">
+          <li><a href="/reader/likutay-moharan/1/haskamos" style="background: #e8d5a3; font-size: 0.8em;">הסכמות</a></li>
+          <li><a href="/reader/likutay-moharan/1/intro" style="background: #e8d5a3; font-size: 0.8em;">שיר נעים</a></li>
+          <li><a href="/reader/likutay-moharan/1/intro-shimon" style="background: #e8d5a3; font-size: 0.8em;">ר׳ שמעון</a></li>
+        </ul>
+      </div>
       {catalog1 ? (
         <ul class="torah-list">
-          {catalog1.torahs.map(t => (
+          {catalog1.torahs.filter(t => typeof t.number === 'number').map(t => (
             <li>
               <a href={t.url}>
-                <span class="torah-num">[Torah {t.displayNumber || t.number}]</span>
+                <span class="torah-num">{t.displayNumber || t.number}</span>
               </a>
             </li>
           ))}
@@ -240,7 +245,7 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
           {catalog2.torahs.map(t => (
             <li>
               <a href={t.url}>
-                <span class="torah-num">[Torah {t.displayNumber || t.number}]</span>
+                <span class="torah-num">{t.displayNumber || t.number}</span>
               </a>
             </li>
           ))}
@@ -261,7 +266,7 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
             const indexes = loadBookIndexes(book);
             const totalPages = book.parts.reduce((s, p) => s + p.totalTorahs, 0);
             return (
-              <div class="volume-section" style="margin-bottom: 30px;">
+              <div class="volume-section" id={book.id} style="margin-bottom: 30px;">
                 <h3 class="volume-title" style="font-size: 1.2em;">{book.title}</h3>
                 <div class="volume-hebrew">{book.hebrewTitle}</div>
                 <p class="volume-count">{totalPages} sections{book.parts.length > 1 ? ` (${book.parts.length} parts)` : ''}</p>

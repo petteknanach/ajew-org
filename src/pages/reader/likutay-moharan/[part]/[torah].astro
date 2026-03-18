@@ -7,12 +7,16 @@ import path from 'node:path';
 export function getStaticPaths() {
   // Generate paths for all torahs in both parts
   const paths = [];
-  // Part 1: 285 torahs
-  for (let torah = 1; torah <= 285; torah++) {
+  // Part 1 intro pages
+  paths.push({ params: { part: '1', torah: 'haskamos' } });
+  paths.push({ params: { part: '1', torah: 'intro' } });
+  paths.push({ params: { part: '1', torah: 'intro-shimon' } });
+  // Part 1: 286 torahs (1-286, all present including 272)
+  for (let torah = 1; torah <= 286; torah++) {
     paths.push({ params: { part: '1', torah: String(torah) } });
   }
-  // Part 2 (Tinyana): 123 torahs
-  for (let torah = 1; torah <= 123; torah++) {
+  // Part 2 (Tinyana): 125 torahs (1-125, all present including 51)
+  for (let torah = 1; torah <= 125; torah++) {
     paths.push({ params: { part: '2', torah: String(torah) } });
   }
   return paths;
@@ -21,17 +25,19 @@ export function getStaticPaths() {
 const { part, torah } = Astro.params;
 const partNum = parseInt(part);
 const torahNum = parseInt(torah);
+const isIntroPage = isNaN(torahNum);
 
 // Load the torah data
 let torahData = null;
 let error = null;
 
 try {
-  const filePath = path.join(process.cwd(), `public/reader/likutay-moharan/part-${partNum}/torah-${torahNum}.json`);
+  const fileName = isIntroPage ? `${torah}.json` : `torah-${torahNum}.json`;
+  const filePath = path.join(process.cwd(), `public/reader/likutay-moharan/part-${partNum}/${fileName}`);
   const raw = fs.readFileSync(filePath, 'utf8');
   torahData = JSON.parse(raw);
 } catch (e) {
-  error = `Torah ${torahNum} not found`;
+  error = `Torah ${torah} not found`;
 }
 
 if (!torahData && !error) {
@@ -190,7 +196,7 @@ const pageDesc = torahData
           <div class="reader-segment-pair" id={`seg-${seg.index}`}>
             <div class="reader-segment segment-he" data-index={String(seg.index)}>
               <span class="segment-number">{seg.index}</span>
-              <p data-nikud={seg.he}>{seg.he}</p>
+              <p data-nikud={seg.he_nikud || seg.he}>{seg.he}</p>
             </div>
             <div class={`reader-segment segment-en ${!seg.en ? 'empty-translation' : ''}`} data-index={String(seg.index)}>
               <span class="segment-number">{seg.index}</span>

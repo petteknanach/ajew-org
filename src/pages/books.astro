@@ -57,7 +57,7 @@ const totalPages = masterCatalog.books.reduce((sum, b) => sum + b.parts.reduce((
         <div class="cat-grid">
           {catBooks.map(book => {
             const total = book.parts.reduce((s, p) => s + p.totalTorahs, 0);
-            const firstPartUrl = book.parts[0] ? `/reader/${book.id}/1/1` : '/reader';
+            const firstPartUrl = book.parts[0] ? `/reader#${book.id}` : '/reader';
             return (
               <a href={firstPartUrl} class="book-card">
                 <div class="book-title">{book.hebrewTitle}</div>

@@ -10,7 +10,7 @@
   const PREFS_KEY = 'ajew-reader-prefs';
   let state = {
     mode: 'hebrew',       // 'hebrew' | 'english' | 'both'
-    nikud: true,          // Show nikud (vowel marks)
+    nikud: false,         // Show nikud (vowel marks) - off by default
     fontSize: 18,
     fontFamily: "'Frank Ruhl Libre', serif",
     theme: 'day',         // 'day' | 'sepia' | 'night'
@@ -369,7 +369,18 @@
     });
 
     const nikudBtn = document.getElementById('btn-nikud');
-    if (nikudBtn) nikudBtn.addEventListener('click', () => setState('nikud', !state.nikud));
+    if (nikudBtn) {
+      // Check if data-nikud actually contains nikud marks (vowels in Unicode range)
+      const firstNikud = document.querySelector('.segment-he [data-nikud]');
+      const nikudText = firstNikud ? firstNikud.getAttribute('data-nikud') : '';
+      const hasRealNikud = /[\u05B0-\u05BD\u05BF-\u05C7]/.test(nikudText);
+      if (hasRealNikud) {
+        nikudBtn.addEventListener('click', () => setState('nikud', !state.nikud));
+      } else {
+        nikudBtn.style.opacity = '0.3';
+        nikudBtn.title = 'Nikud not available for this text';
+      }
+    }
 
     const fsBtn = document.getElementById('btn-fullscreen');
     if (fsBtn) fsBtn.addEventListener('click', toggleFullscreen);
