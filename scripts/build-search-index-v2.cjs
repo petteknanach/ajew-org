@@ -1,0 +1,135 @@
+/**
+ * Build a lightweight search index from the reader JSON files.
+ * Instead of the 249MB monster, this creates a ~5MB optimized index
+ * with nikud-stripped content for fast Hebrew searching.
+ *
+ * Output: public/data/search-index-v2.json
+ */
+
+const fs = require('fs');
+const path = require('path');
+
+const ROOT = path.resolve(__dirname, '..');
+const READER_DIR = path.join(ROOT, 'public/reader/likutay-moharan');
+const OUTPUT = path.join(ROOT, 'public/data/search-index-v2.json');
+
+function stripNikud(text) {
+  return text.replace(/[\u0591-\u05BD\u05BF-\u05C7]/g, '');
+}
+
+function main() {
+  console.log('Building search index v2...\n');
+
+  const documents = [];
+
+  // Process Part 1 and Part 2
+  for (const partNum of [1, 2]) {
+    const partDir = path.join(READER_DIR, `part-${partNum}`);
+    const indexPath = path.join(partDir, 'index.json');
+
+    if (!fs.existsSync(indexPath)) {
+      console.log(`  Skipping part ${partNum} - no index.json`);
+      continue;
+    }
+
+    const catalog = JSON.parse(fs.readFileSync(indexPath, 'utf8'));
+
+    for (const entry of catalog.torahs) {
+      const torahPath = path.join(partDir, `torah-${entry.number}.json`);
+      if (!fs.existsSync(torahPath)) continue;
+
+      const torah = JSON.parse(fs.readFileSync(torahPath, 'utf8'));
+
+      // Combine all paragraph text into one searchable string
+      const fullText = torah.segments
+        .map(s => s.he || '')
+        .filter(t => t.length > 0)
+        .join('\n\n');
+
+      // Also get English text if available
+      const englishText = torah.segments
+        .map(s => s.en || '')
+        .filter(t => t.length > 0)
+        .join('\n\n');
+
+      // Create searchable content (nikud-stripped for Hebrew matching)
+      const searchableHebrew = stripNikud(fullText);
+
+      documents.push({
+        id: torah.id,
+        part: partNum,
+        torah: torah.torah,
+        displayNumber: torah.displayNumber || torah.torah,
+        title: torah.title,
+        hebrewTitle: torah.hebrewTitle || '',
+        themes: torah.themes || [],
+        url: `/reader/likutay-moharan/${partNum}/${torah.torah}`,
+        wordCount: searchableHebrew.split(/\s+/).length,
+        // Store the actual searchable content
+        content: searchableHebrew,
+        // Store first 200 chars as preview (with nikud for display)
+        preview: fullText.substring(0, 200).replace(/\n/g, ' '),
+        hasEnglish: englishText.length > 0,
+        englishContent: englishText ? englishText.substring(0, 500) : ''
+      });
+    }
+
+    console.log(`  Part ${partNum}: ${catalog.torahs.length} torahs indexed`);
+  }
+
+  // Also index other content from the old search index if available
+  const oldIndexPath = path.join(ROOT, 'public/data/search-metadata.json');
+  if (fs.existsSync(oldIndexPath)) {
+    try {
+      const oldMeta = JSON.parse(fs.readFileSync(oldIndexPath, 'utf8'));
+      // Add any non-LM documents from old metadata
+      if (oldMeta.documents) {
+        let extraCount = 0;
+        for (const doc of Object.values(oldMeta.documents)) {
+          const d = doc;
+          // Skip if already in our index (LM torahs)
+          if (d.id && d.id.startsWith('torah_')) continue;
+          if (d.id && d.id.startsWith('lm-')) continue;
+
+          documents.push({
+            id: d.id || `extra-${extraCount}`,
+            part: 0,
+            torah: 0,
+            displayNumber: 0,
+            title: d.title || d.englishTitle || 'Unknown',
+            hebrewTitle: '',
+            themes: [],
+            url: d.path || '#',
+            wordCount: d.wordCount || 0,
+            content: stripNikud(d.content || '').substring(0, 2000), // Limit content size
+            preview: (d.content || '').substring(0, 200),
+            hasEnglish: false,
+            englishContent: ''
+          });
+          extraCount++;
+        }
+        if (extraCount > 0) {
+          console.log(`  Extra documents from old index: ${extraCount}`);
+        }
+      }
+    } catch (e) {
+      console.log('  Could not load old metadata (OK)');
+    }
+  }
+
+  // Build the output
+  const index = {
+    version: 2,
+    generated: new Date().toISOString(),
+    totalDocuments: documents.length,
+    documents
+  };
+
+  fs.writeFileSync(OUTPUT, JSON.stringify(index), 'utf8');
+
+  const sizeMB = (fs.statSync(OUTPUT).size / 1024 / 1024).toFixed(1);
+  console.log(`\nDone! ${documents.length} documents indexed`);
+  console.log(`Output: ${OUTPUT} (${sizeMB} MB)`);
+}
+
+main();
