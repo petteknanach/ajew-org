@@ -34,11 +34,23 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
       </div>
       
       {showFilters && (
-        <div class="quick-filters">
-          <div class="search-tips">
-            <span class="tip"><code>"..."</code> exact</span>
-            <span class="tip"><code>AND / OR</code></span>
-            <span class="tip"><code>word*</code> wildcard</span>
+        <div class="search-mode-bar">
+          <div class="mode-group">
+            <span class="mode-label">Mode:</span>
+            <button type="button" class="mode-btn active" data-mode="google" title="Smart search - finds any/all words, ranked by relevance">Google</button>
+            <button type="button" class="mode-btn" data-mode="exact" title="Exact phrase match">Exact</button>
+            <button type="button" class="mode-btn" data-mode="all" title="ALL words must appear">All Words</button>
+            <button type="button" class="mode-btn" data-mode="any" title="ANY of the words can appear">Any Word</button>
+          </div>
+          <div class="mode-group">
+            <button type="button" class="mode-btn" data-mode="proximity" title="Words within N words of each other">Proximity</button>
+            <button type="button" class="mode-btn" data-mode="boolean" title="AND / OR / NOT operators">Boolean</button>
+            <button type="button" class="mode-btn" data-mode="acronym" title="ראשי תיבות - First letters of consecutive words">Acronym</button>
+            <button type="button" class="mode-btn" data-mode="endletters" title="סופי תיבות - Last letters of consecutive words">End Letters</button>
+          </div>
+          <div class="mode-group">
+            <button type="button" class="mode-btn" data-mode="startsWith" title="Words starting with...">Starts With</button>
+            <button type="button" class="mode-btn" data-mode="endsWith" title="Words ending with...">Ends With</button>
           </div>
         </div>
       )}
@@ -56,8 +68,8 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
     filters: { type: [], category: [], language: '', author: '' },
     advancedOptions: {
       books: [],
-      searchType: 'contains',
-      proximity: 0
+      searchType: 'google',
+      proximity: 5
     },
     isLoading: false
   };
@@ -100,6 +112,16 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
       if (searchState.query) performSearch();
     });
 
+    // Mode buttons
+    document.querySelectorAll('.mode-btn[data-mode]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.mode-btn[data-mode]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        searchState.advancedOptions.searchType = (btn as HTMLElement).dataset.mode || 'google';
+        if (searchState.query) performSearch();
+      });
+    });
+
     // Check URL parameters on load
     checkUrlParameters();
   });
@@ -124,7 +146,7 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
   function updateUrl(query: string) {
     const url = new URL(window.location.href);
     url.searchParams.set('q', query);
-    if (searchState.advancedOptions.searchType !== 'contains') {
+    if (searchState.advancedOptions.searchType !== 'google') {
       url.searchParams.set('searchType', searchState.advancedOptions.searchType);
     } else {
       url.searchParams.delete('searchType');
@@ -227,33 +249,51 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
     transform: scale(1.02);
   }
 
-  .quick-filters {
+  .search-mode-bar {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 0.5rem;
-    gap: 0.75rem;
-  }
-
-  .search-tips {
-    display: flex;
-    gap: 0.5rem;
     flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
     justify-content: center;
+    align-items: center;
   }
 
-  .tip {
+  .mode-group {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .mode-label {
     font-size: 0.72rem;
-    color: #9ca3af;
-    background: #f9fafb;
-    padding: 0.2rem 0.5rem;
-    border-radius: 4px;
+    color: #888;
+    margin-right: 2px;
+    font-weight: 600;
   }
 
-  .tip code {
-    font-family: monospace;
-    color: #6b7280;
-    font-size: 0.7rem;
+  .mode-btn {
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    color: #4b5563;
+    padding: 4px 10px;
+    border-radius: 14px;
+    font-size: 0.72rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .mode-btn:hover {
+    background: #e5e7eb;
+    border-color: #9ca3af;
+  }
+
+  .mode-btn.active {
+    background: #6366f1;
+    color: white;
+    border-color: #6366f1;
   }
 
   @media (max-width: 640px) {
