@@ -7,6 +7,7 @@ import path from 'node:path';
 
 let catalog1 = null;
 let catalog2 = null;
+let catalogSH = null;
 try {
   const f1 = path.join(process.cwd(), 'public/reader/likutay-moharan/part-1/index.json');
   catalog1 = JSON.parse(fs.readFileSync(f1, 'utf8'));
@@ -14,6 +15,10 @@ try {
 try {
   const f2 = path.join(process.cwd(), 'public/reader/likutay-moharan/part-2/index.json');
   catalog2 = JSON.parse(fs.readFileSync(f2, 'utf8'));
+} catch (e) { /* */ }
+try {
+  const fSH = path.join(process.cwd(), 'public/reader/sefer-hamidos/index.json');
+  catalogSH = JSON.parse(fs.readFileSync(fSH, 'utf8'));
 } catch (e) { /* */ }
 ---
 
@@ -235,6 +240,26 @@ try {
       )}
     </div>
 
+    <!-- Sefer Hamidos -->
+    <div class="volume-section">
+      <h2 class="volume-title">Sefer Hamidos (The Book of Traits)</h2>
+      <div class="volume-hebrew">&#1505;&#1508;&#1512; &#1492;&#1502;&#1497;&#1491;&#1493;&#1514;</div>
+      {catalogSH && <p class="volume-count">{catalogSH.totalTorahs} Topics (A-Z by Hebrew)</p>}
+      {catalogSH ? (
+        <ul class="torah-list">
+          {catalogSH.torahs.map(t => (
+            <li>
+              <a href={t.url}>
+                <span class="torah-num">{t.hebrewTitle || t.title}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>Loading...</p>
+      )}
+    </div>
+
     <!-- Coming Soon -->
     <div class="coming-soon-section">
       <h2>More Books Coming Soon</h2>
@@ -242,7 +267,7 @@ try {
         <div class="coming-soon-item">Likutay Halachos</div>
         <div class="coming-soon-item">Likutay Tefilos</div>
         <div class="coming-soon-item">Sipurey Maasiyos</div>
-        <div class="coming-soon-item">Sefer Hamidos</div>
+        <div class="coming-soon-item">Sichos HaRan</div>
         <div class="coming-soon-item">Shivchay HaRan</div>
         <div class="coming-soon-item">Sichos HaRan</div>
       </div>

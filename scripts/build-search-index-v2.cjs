@@ -10,7 +10,8 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..');
-const READER_DIR = path.join(ROOT, 'public/reader/likutay-moharan');
+const READER_BASE = path.join(ROOT, 'public/reader');
+const READER_DIR = path.join(READER_BASE, 'likutay-moharan');
 const OUTPUT = path.join(ROOT, 'public/data/search-index-v2.json');
 
 function stripNikud(text) {
@@ -75,6 +76,37 @@ function main() {
     }
 
     console.log(`  Part ${partNum}: ${catalog.torahs.length} torahs indexed`);
+  }
+
+  // Index Sefer Hamidos
+  const shDir = path.join(READER_BASE, 'sefer-hamidos');
+  const shIndexPath = path.join(shDir, 'index.json');
+  if (fs.existsSync(shIndexPath)) {
+    const shCatalog = JSON.parse(fs.readFileSync(shIndexPath, 'utf8'));
+    for (const entry of shCatalog.torahs) {
+      const topicPath = path.join(shDir, `topic-${entry.number}.json`);
+      if (!fs.existsSync(topicPath)) continue;
+      const topic = JSON.parse(fs.readFileSync(topicPath, 'utf8'));
+      const fullText = topic.segments.map(s => s.he || '').filter(t => t.length > 0).join('\n\n');
+      const searchableHebrew = stripNikud(fullText);
+      documents.push({
+        id: topic.id,
+        part: 0,
+        torah: topic.torah,
+        displayNumber: topic.displayNumber || topic.torah,
+        title: topic.title,
+        hebrewTitle: topic.hebrewTitle || '',
+        themes: topic.themes || [],
+        url: `/reader/sefer-hamidos/1/${topic.torah}`,
+        wordCount: searchableHebrew.split(/\s+/).length,
+        content: searchableHebrew,
+        preview: fullText.substring(0, 200).replace(/\n/g, ' '),
+        hasEnglish: false,
+        englishContent: '',
+        bookName: 'Sefer Hamidos'
+      });
+    }
+    console.log(`  Sefer Hamidos: ${shCatalog.torahs.length} topics indexed`);
   }
 
   // Also index other content from the old search index if available
