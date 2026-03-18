@@ -1,0 +1,160 @@
+---
+import Layout from '../layouts/Layout.astro';
+import fs from 'node:fs';
+import path from 'node:path';
+
+const catalog = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'public/library-catalog.json'), 'utf8'));
+
+// Group by file type
+const pdfs = catalog.filter(f => f.ext === 'PDF');
+const docs = catalog.filter(f => f.ext === 'DOC' || f.ext === 'DOCX');
+const totalSizeMB = catalog.reduce((s, f) => s + f.sizeMB, 0);
+---
+
+<Layout title="ספריית ברסלב - Breslov PDF Library | ajew.org" description="Download Breslov holy books - PDFs and documents of Likutay Moharan, Likutay Tefilos, Sipurey Maasiyos, and more.">
+<div class="library-page">
+  <header class="page-header">
+    <h1>ספריית ברסלב</h1>
+    <p class="subtitle">Breslov PDF & Document Library</p>
+    <div class="stats">
+      <span>{catalog.length} ספרים</span>
+      <span class="divider">|</span>
+      <span>{totalSizeMB.toFixed(0)} MB</span>
+      <span class="divider">|</span>
+      <span>{pdfs.length} PDF, {docs.length} DOC</span>
+    </div>
+  </header>
+
+  <div class="file-grid">
+    {catalog.map(file => (
+      <a href={file.url} class="file-card" target="_blank" rel="noopener">
+        <div class="file-icon">{file.ext === 'PDF' ? '📄' : '📝'}</div>
+        <div class="file-info">
+          <div class="file-name">{file.name.replace(/\.(pdf|doc|docx)$/i, '')}</div>
+          <div class="file-meta">
+            <span class="file-type">{file.ext}</span>
+            <span class="file-size">{file.sizeMB} MB</span>
+          </div>
+        </div>
+      </a>
+    ))}
+  </div>
+
+  <div class="back-link">
+    <a href="/books">חזור לספריה המלאה / Back to Full Library</a>
+  </div>
+</div>
+
+<style>
+  .library-page {
+    min-height: 100vh;
+    background: #f8f5ef;
+    padding: 0 24px 80px;
+    direction: rtl;
+  }
+  .page-header {
+    text-align: center;
+    padding: 48px 20px 32px;
+    margin-bottom: 32px;
+  }
+  .page-header h1 {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 2.4em;
+    color: #1a365d;
+    margin: 0 0 8px;
+    font-weight: 700;
+  }
+  .subtitle {
+    color: #666;
+    font-size: 1.1em;
+    margin: 0 0 16px;
+    font-family: 'Open Sans', sans-serif;
+    direction: ltr;
+  }
+  .stats {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 1.1em;
+    color: #c4a265;
+    font-weight: 700;
+  }
+  .divider { color: #ddd; }
+
+  .file-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+  }
+
+  .file-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: white;
+    border: 1px solid #e0d6c2;
+    border-radius: 10px;
+    padding: 14px 16px;
+    text-decoration: none;
+    transition: all 0.2s;
+    color: inherit;
+  }
+  .file-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    border-color: #c4a265;
+  }
+  .file-icon {
+    font-size: 1.8em;
+    flex-shrink: 0;
+  }
+  .file-info {
+    overflow: hidden;
+  }
+  .file-name {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 1em;
+    color: #1a365d;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .file-meta {
+    display: flex;
+    gap: 8px;
+    margin-top: 4px;
+    font-size: 0.75em;
+    color: #999;
+    direction: ltr;
+  }
+  .file-type {
+    background: #f0ebe0;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+    color: #6b5a42;
+  }
+
+  .back-link {
+    text-align: center;
+    margin-top: 48px;
+  }
+  .back-link a {
+    font-family: 'Frank Ruhl Libre', serif;
+    color: #1a365d;
+    font-size: 1.1em;
+    text-decoration: none;
+    border-bottom: 2px solid #c4a265;
+    padding-bottom: 4px;
+  }
+
+  @media (max-width: 768px) {
+    .page-header h1 { font-size: 1.8em; }
+    .file-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</Layout>
