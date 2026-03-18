@@ -38,6 +38,26 @@ if (!torahData && !error) {
   error = 'Content not available';
 }
 
+// SEO structured data
+const structuredData = torahData ? JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": `${torahData.title} - Likutay Moharan ${partNum}:${torahData.displayNumber || torahNum}`,
+  "alternativeHeadline": torahData.hebrewTitle || '',
+  "author": { "@type": "Person", "name": "Rabbi Nachman of Breslov" },
+  "publisher": { "@type": "Organization", "name": "ajew.org" },
+  "inLanguage": ["he", "en"],
+  "genre": "Religious text",
+  "isPartOf": {
+    "@type": "Book",
+    "name": "Likutay Moharan",
+    "author": { "@type": "Person", "name": "Rabbi Nachman of Breslov" }
+  },
+  "keywords": torahData.themes?.join(', ') || 'Torah, Breslov, Rabbi Nachman',
+  "url": `https://ajew.org/reader/likutay-moharan/${partNum}/${torahNum}`,
+  "mainEntityOfPage": `https://ajew.org/reader/likutay-moharan/${partNum}/${torahNum}`
+}) : '';
+
 const pageTitle = torahData
   ? `${torahData.hebrewTitle || torahData.title} - Likutay Moharan`
   : 'Torah Not Found';
@@ -47,6 +67,9 @@ const pageDesc = torahData
 ---
 
 <Layout title={pageTitle} description={pageDesc}>
+  {torahData && structuredData && (
+    <script type="application/ld+json" set:html={structuredData} slot="head" />
+  )}
   {error ? (
     <div style="text-align: center; padding: 80px 20px;">
       <h1>{error}</h1>
