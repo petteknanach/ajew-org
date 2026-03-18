@@ -1,0 +1,431 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Quick Reference - Tanach & Talmud" description="Instantly look up any verse from Tanach or passage from Talmud. Perfect companion for studying Likutay Moharan.">
+  <style>
+    .ref-page {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+      font-family: 'Open Sans', sans-serif;
+    }
+    .ref-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .ref-header h1 {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 2em;
+      color: #1a365d;
+      margin: 0 0 4px;
+    }
+    .ref-header .hebrew-title {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 1.8em;
+      color: #1a365d;
+      direction: rtl;
+      margin: 0 0 12px;
+    }
+    .ref-header p {
+      color: #666;
+      font-size: 0.95em;
+      line-height: 1.6;
+    }
+
+    /* Search box */
+    .ref-search {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .ref-input {
+      flex: 1;
+      padding: 12px 16px;
+      font-size: 1.1em;
+      border: 2px solid #d1d5db;
+      border-radius: 8px;
+      font-family: 'Frank Ruhl Libre', serif;
+      direction: auto;
+    }
+    .ref-input:focus {
+      outline: none;
+      border-color: #1a365d;
+      box-shadow: 0 0 0 3px rgba(26, 54, 93, 0.1);
+    }
+    .ref-btn {
+      padding: 12px 24px;
+      background: #1a365d;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1em;
+      cursor: pointer;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .ref-btn:hover { background: #2a5a9e; }
+
+    /* Quick access buttons */
+    .quick-refs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 24px;
+    }
+    .quick-ref-btn {
+      background: #f0ebe0;
+      border: 1px solid #e0d6c2;
+      color: #555;
+      padding: 4px 12px;
+      border-radius: 14px;
+      font-size: 0.8em;
+      cursor: pointer;
+      font-family: 'Frank Ruhl Libre', serif;
+      transition: all 0.15s;
+    }
+    .quick-ref-btn:hover {
+      background: #e5ddd0;
+      border-color: #1a365d;
+      color: #1a365d;
+    }
+
+    /* Result display */
+    .ref-result {
+      display: none;
+      border: 1px solid #e0d6c2;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .ref-result.visible { display: block; }
+    .ref-result-header {
+      background: #f8f5ef;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #e0d6c2;
+    }
+    .ref-result-title {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 1.1em;
+      font-weight: 700;
+      color: #1a365d;
+    }
+    .ref-result-title-he {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 1.2em;
+      direction: rtl;
+      color: #333;
+    }
+    .ref-result-link {
+      font-size: 0.75em;
+      color: #888;
+      text-decoration: none;
+    }
+    .ref-result-link:hover { text-decoration: underline; }
+    .ref-result-body {
+      padding: 20px;
+    }
+    .ref-text-he {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 1.3em;
+      line-height: 2;
+      direction: rtl;
+      text-align: right;
+      color: #1a1a1a;
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #f0ebe0;
+    }
+    .ref-text-en {
+      font-size: 1em;
+      line-height: 1.7;
+      color: #444;
+      font-style: italic;
+    }
+    .ref-nav {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 20px;
+      background: #f8f5ef;
+      border-top: 1px solid #e0d6c2;
+    }
+    .ref-nav button {
+      background: transparent;
+      border: 1px solid #d1d5db;
+      padding: 4px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.85em;
+      color: #1a365d;
+    }
+    .ref-nav button:hover { background: #e5ddd0; }
+    .ref-nav button:disabled { opacity: 0.3; cursor: default; }
+
+    /* Loading / Error */
+    .ref-loading {
+      display: none;
+      text-align: center;
+      padding: 24px;
+      color: #888;
+    }
+    .ref-loading.visible { display: block; }
+    .ref-error {
+      display: none;
+      text-align: center;
+      padding: 24px;
+      color: #b91c1c;
+      background: #fef2f2;
+      border-radius: 8px;
+      margin-bottom: 16px;
+    }
+    .ref-error.visible { display: block; }
+
+    /* History */
+    .ref-history {
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid #e0d6c2;
+    }
+    .ref-history h3 {
+      font-size: 0.9em;
+      color: #888;
+      margin: 0 0 12px;
+    }
+    .history-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .history-item {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 0.8em;
+      cursor: pointer;
+      color: #4b5563;
+      transition: all 0.15s;
+    }
+    .history-item:hover {
+      background: #e5e7eb;
+      color: #1a365d;
+    }
+
+    /* Examples section */
+    .examples {
+      margin-top: 24px;
+      background: #f8f5ef;
+      border-radius: 8px;
+      padding: 16px 20px;
+    }
+    .examples h3 {
+      font-size: 0.9em;
+      color: #666;
+      margin: 0 0 8px;
+    }
+    .examples-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px 24px;
+      font-size: 0.85em;
+      color: #555;
+    }
+    .example-item {
+      cursor: pointer;
+      padding: 2px 0;
+    }
+    .example-item:hover { color: #1a365d; text-decoration: underline; }
+    .example-item code {
+      background: #e5ddd0;
+      padding: 1px 4px;
+      border-radius: 2px;
+      font-size: 0.9em;
+    }
+
+    @media (max-width: 768px) {
+      .ref-header h1 { font-size: 1.5em; }
+      .ref-header .hebrew-title { font-size: 1.4em; }
+      .ref-text-he { font-size: 1.1em; }
+      .examples-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+
+  <div class="ref-page">
+    <div class="ref-header">
+      <div class="hebrew-title">&#1502;&#1512;&#1488;&#1492; &#1502;&#1511;&#1493;&#1502;&#1493;&#1514;</div>
+      <h1>Quick Reference</h1>
+      <p>Instantly look up any verse from Tanach or passage from Talmud.<br>
+      Type in Hebrew or English - perfect companion for studying Likutay Moharan.</p>
+    </div>
+
+    <!-- Search -->
+    <div class="ref-search">
+      <input type="text" class="ref-input" id="refInput"
+        placeholder="&#1514;&#1492;&#1500;&#1497;&#1501; &#1511;&#1497;&#1496; / Psalms 119:1 / Berakhot 5a"
+        dir="auto" autocomplete="off" />
+      <button class="ref-btn" id="refSearchBtn">Look Up</button>
+    </div>
+
+    <!-- Quick access -->
+    <div class="quick-refs">
+      <button class="quick-ref-btn" data-ref="Genesis.1.1">&#1489;&#1512;&#1488;&#1513;&#1497;&#1514; &#1488;:&#1488;</button>
+      <button class="quick-ref-btn" data-ref="Psalms.119.1">&#1514;&#1492;&#1500;&#1497;&#1501; &#1511;&#1497;&#1496;:&#1488;</button>
+      <button class="quick-ref-btn" data-ref="Proverbs.3.6">&#1502;&#1513;&#1500;&#1497; &#1490;:&#1493;</button>
+      <button class="quick-ref-btn" data-ref="Isaiah.11.9">&#1497;&#1513;&#1506;&#1497;&#1492;&#1493; &#1497;&#1488;:&#1496;</button>
+      <button class="quick-ref-btn" data-ref="Ecclesiastes.7.12">&#1511;&#1492;&#1500;&#1514; &#1494;:&#1497;&#1489;</button>
+      <button class="quick-ref-btn" data-ref="Berakhot.5a">&#1489;&#1512;&#1499;&#1493;&#1514; &#1492;.</button>
+      <button class="quick-ref-btn" data-ref="Shabbat.31a">&#1513;&#1489;&#1514; &#1500;&#1488;.</button>
+      <button class="quick-ref-btn" data-ref="Sotah.3a">&#1505;&#1493;&#1496;&#1492; &#1490;.</button>
+    </div>
+
+    <!-- Loading -->
+    <div class="ref-loading" id="refLoading">Loading...</div>
+
+    <!-- Error -->
+    <div class="ref-error" id="refError"></div>
+
+    <!-- Result -->
+    <div class="ref-result" id="refResult">
+      <div class="ref-result-header">
+        <div>
+          <div class="ref-result-title" id="resultTitle"></div>
+          <div class="ref-result-title-he" id="resultTitleHe"></div>
+        </div>
+        <a class="ref-result-link" id="resultLink" href="#" target="_blank">View on Sefaria &rarr;</a>
+      </div>
+      <div class="ref-result-body">
+        <div class="ref-text-he" id="resultHe"></div>
+        <div class="ref-text-en" id="resultEn"></div>
+      </div>
+      <div class="ref-nav">
+        <button id="prevBtn" disabled>&larr; Previous</button>
+        <button id="nextBtn" disabled>Next &rarr;</button>
+      </div>
+    </div>
+
+    <!-- History -->
+    <div class="ref-history" id="refHistory" style="display:none;">
+      <h3>Recent Lookups</h3>
+      <div class="history-list" id="historyList"></div>
+    </div>
+
+    <!-- Examples -->
+    <div class="examples">
+      <h3>Examples - try these:</h3>
+      <div class="examples-grid">
+        <div class="example-item" data-ref="&#1514;&#1492;&#1500;&#1497;&#1501; &#1511;&#1497;&#1496;">&#1514;&#1492;&#1500;&#1497;&#1501; &#1511;&#1497;&#1496; (Psalms 119)</div>
+        <div class="example-item" data-ref="Genesis.1.1">Genesis 1:1</div>
+        <div class="example-item" data-ref="&#1489;&#1512;&#1488;&#1513;&#1497;&#1514; &#1499;&#1492;">&#1489;&#1512;&#1488;&#1513;&#1497;&#1514; &#1499;&#1492; (Genesis 25)</div>
+        <div class="example-item" data-ref="Berakhot.5a">Berakhot 5a</div>
+        <div class="example-item" data-ref="&#1497;&#1513;&#1506;&#1497;&#1492;&#1493; &#1502;&#1495;">&#1497;&#1513;&#1506;&#1497;&#1492;&#1493; &#1502;&#1495; (Isaiah 48)</div>
+        <div class="example-item" data-ref="Bava Batra.73a">Bava Batra 73a</div>
+        <div class="example-item" data-ref="&#1511;&#1492;&#1500;&#1514; &#1494;">&#1511;&#1492;&#1500;&#1514; &#1494; (Ecclesiastes 7)</div>
+        <div class="example-item" data-ref="Sanhedrin.24a">Sanhedrin 24a</div>
+      </div>
+    </div>
+  </div>
+
+  <script is:inline>
+    const HISTORY_KEY = 'ajew-ref-history';
+
+    const refInput = document.getElementById('refInput');
+    const refSearchBtn = document.getElementById('refSearchBtn');
+    const refLoading = document.getElementById('refLoading');
+    const refError = document.getElementById('refError');
+    const refResult = document.getElementById('refResult');
+    const resultTitle = document.getElementById('resultTitle');
+    const resultTitleHe = document.getElementById('resultTitleHe');
+    const resultHe = document.getElementById('resultHe');
+    const resultEn = document.getElementById('resultEn');
+    const resultLink = document.getElementById('resultLink');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    let currentData = null;
+
+    function lookupRef(ref) {
+      if (!ref || !ref.trim()) return;
+
+      refInput.value = ref;
+      refLoading.classList.add('visible');
+      refError.classList.remove('visible');
+      refResult.classList.remove('visible');
+
+      fetch('/api/verse-lookup?ref=' + encodeURIComponent(ref))
+        .then(r => r.json())
+        .then(data => {
+          refLoading.classList.remove('visible');
+          if (data.error) {
+            refError.textContent = data.error + (data.suggestion ? '\n' + data.suggestion : '');
+            refError.classList.add('visible');
+            return;
+          }
+          currentData = data;
+          displayResult(data);
+          addToHistory(ref);
+        })
+        .catch(err => {
+          refLoading.classList.remove('visible');
+          refError.textContent = 'Lookup failed: ' + err.message;
+          refError.classList.add('visible');
+        });
+    }
+
+    function displayResult(data) {
+      resultTitle.textContent = data.ref || '';
+      resultTitleHe.textContent = data.heRef || '';
+      resultHe.innerHTML = data.he || '';
+      resultEn.innerHTML = data.en || 'Translation not available';
+      resultLink.href = data.sefariaUrl || '#';
+      prevBtn.disabled = !data.prev;
+      nextBtn.disabled = !data.next;
+      prevBtn.dataset.ref = data.prev || '';
+      nextBtn.dataset.ref = data.next || '';
+      refResult.classList.add('visible');
+      refResult.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // Event listeners
+    refSearchBtn.addEventListener('click', () => lookupRef(refInput.value));
+    refInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); lookupRef(refInput.value); }
+    });
+
+    prevBtn.addEventListener('click', () => { if (prevBtn.dataset.ref) lookupRef(prevBtn.dataset.ref); });
+    nextBtn.addEventListener('click', () => { if (nextBtn.dataset.ref) lookupRef(nextBtn.dataset.ref); });
+
+    // Quick ref buttons
+    document.querySelectorAll('[data-ref]').forEach(btn => {
+      btn.addEventListener('click', () => lookupRef(btn.dataset.ref));
+    });
+
+    // History
+    function addToHistory(ref) {
+      let history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+      history = history.filter(h => h !== ref);
+      history.unshift(ref);
+      history = history.slice(0, 20);
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+      renderHistory();
+    }
+
+    function renderHistory() {
+      const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+      const container = document.getElementById('refHistory');
+      const list = document.getElementById('historyList');
+      if (history.length === 0) { container.style.display = 'none'; return; }
+      container.style.display = 'block';
+      list.innerHTML = history.map(ref =>
+        '<span class="history-item" data-ref="' + ref.replace(/"/g, '&quot;') + '">' + ref + '</span>'
+      ).join('');
+      list.querySelectorAll('.history-item').forEach(item => {
+        item.addEventListener('click', () => lookupRef(item.dataset.ref));
+      });
+    }
+
+    renderHistory();
+  </script>
+</Layout>
