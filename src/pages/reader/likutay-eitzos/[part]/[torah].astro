@@ -29,25 +29,25 @@ try {
 
 if (!torahData && !error) error = 'Content not available';
 
-const bookName = 'Likutay Eitzos';
+const bookName = 'Likutay Aitzos';
 const bookHebrew = 'ליקוטי עצות';
 
 const pageTitle = torahData
-  ? `${torahData.hebrewTitle || torahData.title} - Likutay Eitzos`
+  ? `${torahData.hebrewTitle || torahData.title} - Likutay Aitzos`
   : 'Not Found';
 const pageDesc = torahData
-  ? `Read ${torahData.title} from Likutay Eitzos by Rabbi Nosson of Breslov`
+  ? `Read ${torahData.title} from Likutay Aitzos by Rabbi Nosson of Breslov`
   : '';
 
 const structuredData = torahData ? JSON.stringify({
   "@context": "https://schema.org",
   "@type": "Article",
-  "headline": `${torahData.title} - Likutay Eitzos`,
+  "headline": `${torahData.title} - Likutay Aitzos`,
   "alternativeHeadline": torahData.hebrewTitle || '',
   "author": { "@type": "Person", "name": "Rabbi Nosson of Breslov" },
   "publisher": { "@type": "Organization", "name": "ajew.org" },
   "inLanguage": ["he", "en"],
-  "isPartOf": { "@type": "Book", "name": "Likutay Eitzos" },
+  "isPartOf": { "@type": "Book", "name": "Likutay Aitzos" },
   "url": `https://ajew.org/reader/likutay-eitzos/${partNum}/${torahNum}`
 }) : '';
 ---
@@ -65,7 +65,7 @@ const structuredData = torahData ? JSON.stringify({
     <div
       class="reader-container"
       data-torah-id={torahData.id}
-      data-torah-title={`${torahData.title} - Likutay Eitzos`}
+      data-torah-title={`${torahData.title} - Likutay Aitzos`}
     >
       <div class="reader-progress"></div>
 
