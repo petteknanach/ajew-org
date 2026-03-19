@@ -258,6 +258,73 @@ const ogImage = new URL(image, Astro.site);
           }
         };
         document.body.appendChild(script);
+
+        // Voice input via Web Speech API
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+          const micBtn = document.createElement('button');
+          micBtn.id = 'voice-input-btn';
+          micBtn.innerHTML = '🎤';
+          micBtn.title = 'Speak to ask a question';
+          micBtn.style.cssText = 'position:fixed;bottom:80px;right:20px;width:48px;height:48px;border-radius:50%;border:2px solid #1a365d;background:white;font-size:1.4em;cursor:pointer;z-index:9999;box-shadow:0 2px 8px rgba(0,0,0,0.15);transition:all 0.2s;';
+          document.body.appendChild(micBtn);
+
+          let listening = false;
+          const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+          const recognition = new SpeechRecognition();
+          recognition.continuous = false;
+          recognition.interimResults = false;
+          recognition.lang = 'en-US'; // Default to English, switch based on content
+
+          recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            // Find the Page Agent input and fill it
+            const agentInput = document.querySelector('.page-agent-input input, .page-agent-input textarea, [data-page-agent-input]');
+            if (agentInput) {
+              agentInput.value = transcript;
+              agentInput.dispatchEvent(new Event('input', { bubbles: true }));
+              // Try to submit
+              const form = agentInput.closest('form');
+              if (form) form.dispatchEvent(new Event('submit', { bubbles: true }));
+              else {
+                const enterEvent = new KeyboardEvent('keydown', { key: 'Enter', code: 'Enter', keyCode: 13, bubbles: true });
+                agentInput.dispatchEvent(enterEvent);
+              }
+            } else {
+              // If no agent input found, show transcript as alert
+              alert('You said: ' + transcript);
+            }
+            micBtn.innerHTML = '🎤';
+            micBtn.style.background = 'white';
+            listening = false;
+          };
+
+          recognition.onerror = () => {
+            micBtn.innerHTML = '🎤';
+            micBtn.style.background = 'white';
+            listening = false;
+          };
+
+          recognition.onend = () => {
+            micBtn.innerHTML = '🎤';
+            micBtn.style.background = 'white';
+            listening = false;
+          };
+
+          micBtn.addEventListener('click', () => {
+            if (listening) {
+              recognition.stop();
+              listening = false;
+            } else {
+              // Detect if page has Hebrew content
+              const hasHebrew = document.body.innerText.match(/[\u0590-\u05FF]/);
+              recognition.lang = hasHebrew ? 'he-IL' : 'en-US';
+              recognition.start();
+              micBtn.innerHTML = '🔴';
+              micBtn.style.background = '#ffe0e0';
+              listening = true;
+            }
+          });
+        }
       })();
     </script>
   </body>

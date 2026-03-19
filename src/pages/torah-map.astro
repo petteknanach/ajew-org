@@ -431,10 +431,53 @@ import Layout from '../layouts/Layout.astro';
   .rc-weight { font-size: 0.7em; color: #999; margin-right: 4px; }
 
   @media (max-width: 768px) {
-    .header-hebrew { font-size: 2em; }
-    .ch-hebrew { font-size: 2.2em; }
-    .center-bubble { min-width: 100px; min-height: 100px; padding: 16px 24px; }
+    .map-page { padding: 20px 12px 60px; }
+    .header-hebrew { font-size: 1.8em; }
+    .map-header h1 { font-size: 1.3em; }
+    .ch-hebrew { font-size: 2em; }
+    .ch-english { font-size: 1.1em; }
+    .center-bubble { min-width: 90px; min-height: 90px; padding: 14px 20px; }
+    .center-he { font-size: 1.4em; }
     .teachings-grid { grid-template-columns: 1fr; }
+
+    .concept-chip {
+      padding: 6px 10px;
+      min-width: 60px;
+      font-size: 0.85em;
+    }
+
+    .chip-en { font-size: 0.6em; }
+    .chip-count { font-size: 0.5em; }
+
+    .flow-chip {
+      padding: 5px 10px;
+      font-size: 0.8em;
+    }
+
+    .flow-row {
+      gap: 6px;
+    }
+
+    .cat-chips {
+      gap: 4px;
+    }
+
+    .teaching-card {
+      padding: 10px;
+    }
+
+    .related-chip {
+      padding: 5px 10px;
+      font-size: 0.8em;
+    }
+  }
+
+  @media (max-width: 400px) {
+    .concept-chip {
+      padding: 4px 8px;
+      min-width: 50px;
+    }
+    .chip-he { font-size: 0.9em; }
   }
 </style>
 </Layout>
