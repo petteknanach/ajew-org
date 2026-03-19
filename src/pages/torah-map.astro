@@ -1,0 +1,440 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Torah Map - Pathways Through the Teachings" description="Explore how spiritual concepts flow through Rabbi Nachman's teachings. See where each idea leads and what leads to it.">
+<div class="map-page">
+  <header class="map-header">
+    <div class="header-hebrew">מפת התורה</div>
+    <h1>Torah Map</h1>
+    <p class="subtitle">See how concepts flow through the holy teachings - what leads where</p>
+  </header>
+
+  <div id="loading" class="loading">Loading concept graph...</div>
+
+  <div id="mapContent" style="display:none;">
+    <!-- Concept Cloud -->
+    <section class="concept-cloud" id="conceptCloud"></section>
+
+    <!-- Selected Concept View -->
+    <section class="concept-view" id="conceptView" style="display:none;">
+      <div class="concept-header" id="conceptHeader"></div>
+
+      <!-- Flow Diagram -->
+      <div class="flow-section">
+        <h3 class="flow-title">What Leads Here / מה מוביל לכאן</h3>
+        <div class="flow-row" id="leadsHere"></div>
+      </div>
+
+      <div class="selected-concept-center" id="centerConcept"></div>
+
+      <div class="flow-section">
+        <h3 class="flow-title">Where This Leads / לאן זה מוביל</h3>
+        <div class="flow-row" id="leadsTo"></div>
+      </div>
+
+      <!-- Related Teachings -->
+      <div class="teachings-section">
+        <h3>Key Teachings / תורות מרכזיות</h3>
+        <div class="teachings-grid" id="teachingsList"></div>
+      </div>
+
+      <!-- Co-occurring concepts -->
+      <div class="related-section">
+        <h3>Often Found Together / נמצאים יחד</h3>
+        <div class="related-chips" id="relatedConcepts"></div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script is:inline>
+  let graphData = null;
+
+  async function loadGraph() {
+    try {
+      const res = await fetch('/data/concept-graph.json');
+      graphData = await res.json();
+      renderCloud();
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('mapContent').style.display = 'block';
+    } catch (e) {
+      document.getElementById('loading').textContent = 'Error loading concept graph';
+    }
+  }
+
+  function renderCloud() {
+    const cloud = document.getElementById('conceptCloud');
+    const maxOcc = graphData.nodes[0]?.occurrences || 1;
+
+    // Group by category
+    const cats = { core: 'Core / יסודות', middos: 'Character / מדות', process: 'Process / תהליכים',
+      torah: 'Torah / תורה', life: 'Life / חיים', nanach: 'Na Nach', place: 'Places', time: 'Times' };
+
+    const grouped = {};
+    for (const node of graphData.nodes) {
+      if (!grouped[node.cat]) grouped[node.cat] = [];
+      grouped[node.cat].push(node);
+    }
+
+    let html = '';
+    for (const [cat, label] of Object.entries(cats)) {
+      const nodes = grouped[cat];
+      if (!nodes || nodes.length === 0) continue;
+
+      html += `<div class="cat-group"><h4 class="cat-label">${label}</h4><div class="cat-chips">`;
+      for (const node of nodes) {
+        const size = 0.7 + (node.occurrences / maxOcc) * 1.0;
+        const opacity = 0.5 + (node.docs / graphData.meta.totalDocuments) * 2;
+        html += `<button class="concept-chip" onclick="selectConcept('${node.id}')"
+          style="font-size:${size}em; opacity:${Math.min(1, opacity)};"
+          title="${node.en}: ${node.occurrences} occurrences in ${node.docs} texts">
+          <span class="chip-he">${node.id}</span>
+          <span class="chip-en">${node.en}</span>
+          <span class="chip-count">${node.docs}</span>
+        </button>`;
+      }
+      html += '</div></div>';
+    }
+
+    cloud.innerHTML = html;
+  }
+
+  function selectConcept(conceptId) {
+    const node = graphData.nodes.find(n => n.id === conceptId);
+    if (!node) return;
+
+    // Header
+    document.getElementById('conceptHeader').innerHTML = `
+      <div class="ch-hebrew">${node.id}</div>
+      <div class="ch-english">${node.en}</div>
+      <div class="ch-stats">${node.occurrences.toLocaleString()} occurrences across ${node.docs.toLocaleString()} teachings</div>
+    `;
+
+    // Flow: What leads here (concepts that flow INTO this one)
+    const leadsHere = graphData.flowEdges
+      .filter(e => e.to === conceptId)
+      .sort((a, b) => b.netFlow - a.netFlow)
+      .slice(0, 8);
+
+    const leadsHereEl = document.getElementById('leadsHere');
+    leadsHereEl.innerHTML = leadsHere.map(e => {
+      const srcNode = graphData.nodes.find(n => n.id === e.from);
+      if (!srcNode) return '';
+      return `<button class="flow-chip flow-incoming" onclick="selectConcept('${e.from}')">
+        <span class="flow-he">${e.from}</span>
+        <span class="flow-en">${srcNode.en}</span>
+        <span class="flow-arrow">→</span>
+      </button>`;
+    }).join('');
+
+    // Center concept
+    document.getElementById('centerConcept').innerHTML = `
+      <div class="center-bubble">
+        <div class="center-he">${node.id}</div>
+        <div class="center-en">${node.en}</div>
+      </div>
+    `;
+
+    // Flow: Where this leads (concepts that flow FROM this one)
+    const leadsTo = graphData.flowEdges
+      .filter(e => e.from === conceptId)
+      .sort((a, b) => b.netFlow - a.netFlow)
+      .slice(0, 8);
+
+    const leadsToEl = document.getElementById('leadsTo');
+    leadsToEl.innerHTML = leadsTo.map(e => {
+      const tgtNode = graphData.nodes.find(n => n.id === e.to);
+      if (!tgtNode) return '';
+      return `<button class="flow-chip flow-outgoing" onclick="selectConcept('${e.to}')">
+        <span class="flow-arrow">→</span>
+        <span class="flow-he">${e.to}</span>
+        <span class="flow-en">${tgtNode.en}</span>
+      </button>`;
+    }).join('');
+
+    // Teachings
+    const teachings = graphData.teachings[conceptId] || [];
+    const teachingsEl = document.getElementById('teachingsList');
+    teachingsEl.innerHTML = teachings.map(t => `
+      <a class="teaching-card" href="${t.url}">
+        <div class="tc-book">${t.book} / ${t.bookEn}</div>
+        <div class="tc-title">${t.title}</div>
+        <div class="tc-snippet" dir="rtl">${t.snippet}</div>
+        <div class="tc-meta">${t.count} mentions${t.hasEnglish ? ' · English available' : ''}</div>
+      </a>
+    `).join('');
+
+    // Co-occurring concepts
+    const coRelated = graphData.coEdges
+      .filter(e => e.source === conceptId || e.target === conceptId)
+      .sort((a, b) => b.weight - a.weight)
+      .slice(0, 12)
+      .map(e => {
+        const other = e.source === conceptId ? e.target : e.source;
+        const otherNode = graphData.nodes.find(n => n.id === other);
+        return otherNode ? { ...otherNode, weight: e.weight } : null;
+      })
+      .filter(Boolean);
+
+    const relatedEl = document.getElementById('relatedConcepts');
+    relatedEl.innerHTML = coRelated.map(r => `
+      <button class="related-chip" onclick="selectConcept('${r.id}')">
+        ${r.id} (${r.en}) <span class="rc-weight">${r.weight}</span>
+      </button>
+    `).join('');
+
+    // Show the view
+    document.getElementById('conceptView').style.display = 'block';
+    document.getElementById('conceptView').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  loadGraph();
+</script>
+
+<style>
+  .map-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+    font-family: 'Open Sans', sans-serif;
+  }
+
+  .map-header {
+    text-align: center;
+    margin-bottom: 32px;
+    padding-bottom: 20px;
+    border-bottom: 3px solid #1a365d;
+  }
+
+  .header-hebrew {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 2.4em;
+    color: #1a365d;
+    direction: rtl;
+  }
+
+  .map-header h1 {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 1.6em;
+    color: #1a365d;
+    margin: 4px 0;
+  }
+
+  .subtitle { color: #666; font-size: 0.95em; }
+
+  .loading { text-align: center; padding: 60px; color: #888; font-size: 1.1em; }
+
+  /* Concept Cloud */
+  .concept-cloud { margin-bottom: 40px; }
+
+  .cat-group { margin-bottom: 20px; }
+
+  .cat-label {
+    font-size: 0.85em;
+    color: #92400e;
+    font-weight: 600;
+    margin: 0 0 8px;
+    padding-left: 4px;
+    border-left: 3px solid #f59e0b;
+  }
+
+  .cat-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .concept-chip {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid #e0d6c2;
+    background: #faf7f0;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    min-width: 70px;
+  }
+
+  .concept-chip:hover {
+    background: #1a365d;
+    color: #e8d5a3;
+    border-color: #1a365d;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(26, 54, 93, 0.3);
+  }
+
+  .concept-chip:hover .chip-en, .concept-chip:hover .chip-count { color: #c4a265; }
+
+  .chip-he {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-weight: 600;
+    direction: rtl;
+  }
+
+  .chip-en { font-size: 0.65em; color: #666; margin-top: 2px; }
+  .chip-count { font-size: 0.55em; color: #999; margin-top: 1px; }
+
+  /* Concept View */
+  .concept-view {
+    border-top: 3px solid #1a365d;
+    padding-top: 32px;
+  }
+
+  .concept-header { text-align: center; margin-bottom: 32px; }
+
+  .ch-hebrew {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 2.8em;
+    color: #1a365d;
+    direction: rtl;
+  }
+
+  .ch-english { font-size: 1.4em; color: #4a5568; margin: 4px 0; }
+  .ch-stats { font-size: 0.85em; color: #888; }
+
+  /* Flow Diagram */
+  .flow-section { margin-bottom: 16px; }
+
+  .flow-title {
+    font-size: 0.9em;
+    color: #92400e;
+    margin: 0 0 8px;
+    text-align: center;
+  }
+
+  .flow-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .flow-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.85em;
+    transition: all 0.2s;
+  }
+
+  .flow-incoming {
+    background: #e8f5e9;
+    color: #2e7d32;
+  }
+
+  .flow-incoming:hover { background: #2e7d32; color: white; }
+
+  .flow-outgoing {
+    background: #e3f2fd;
+    color: #1565c0;
+  }
+
+  .flow-outgoing:hover { background: #1565c0; color: white; }
+
+  .flow-he { font-family: 'Frank Ruhl Libre', serif; font-weight: 600; direction: rtl; }
+  .flow-en { font-size: 0.8em; opacity: 0.8; }
+  .flow-arrow { font-size: 1.2em; opacity: 0.5; }
+
+  .selected-concept-center {
+    text-align: center;
+    margin: 20px 0;
+  }
+
+  .center-bubble {
+    display: inline-block;
+    padding: 20px 40px;
+    background: linear-gradient(135deg, #1a365d, #2d3748);
+    color: white;
+    border-radius: 50%;
+    min-width: 120px;
+    min-height: 120px;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 24px rgba(26, 54, 93, 0.4);
+  }
+
+  .center-he {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 1.8em;
+    direction: rtl;
+  }
+
+  .center-en { font-size: 0.85em; opacity: 0.8; margin-top: 4px; }
+
+  /* Teachings */
+  .teachings-section, .related-section {
+    margin-top: 32px;
+    padding-top: 20px;
+    border-top: 1px solid #e0d6c2;
+  }
+
+  .teachings-section h3, .related-section h3 {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 1.1em;
+    color: #1a365d;
+    margin: 0 0 16px;
+  }
+
+  .teachings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+  }
+
+  .teaching-card {
+    padding: 12px;
+    border: 1px solid #e0d6c2;
+    border-radius: 8px;
+    background: white;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s;
+    border-left: 3px solid #c4a265;
+  }
+
+  .teaching-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+  }
+
+  .tc-book { font-size: 0.7em; color: #888; }
+  .tc-title { font-family: 'Frank Ruhl Libre', serif; font-size: 1em; color: #1a365d; margin: 4px 0; direction: rtl; }
+  .tc-snippet { font-size: 0.75em; color: #555; line-height: 1.4; max-height: 3em; overflow: hidden; }
+  .tc-meta { font-size: 0.65em; color: #999; margin-top: 6px; }
+
+  /* Related Chips */
+  .related-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  .related-chip {
+    padding: 6px 12px;
+    border-radius: 16px;
+    border: 1px solid #e0d6c2;
+    background: #faf7f0;
+    cursor: pointer;
+    font-size: 0.85em;
+    font-family: 'Frank Ruhl Libre', serif;
+    transition: all 0.2s;
+    direction: rtl;
+  }
+
+  .related-chip:hover { background: #1a365d; color: white; border-color: #1a365d; }
+  .rc-weight { font-size: 0.7em; color: #999; margin-right: 4px; }
+
+  @media (max-width: 768px) {
+    .header-hebrew { font-size: 2em; }
+    .ch-hebrew { font-size: 2.2em; }
+    .center-bubble { min-width: 100px; min-height: 100px; padding: 16px 24px; }
+    .teachings-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</Layout>
