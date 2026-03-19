@@ -150,6 +150,91 @@ function normalizeRef(input: string): string {
   return ref;
 }
 
+// Sefaria name -> local slug mapping for Tanach
+const SEFARIA_TO_LOCAL: Record<string, string> = {
+  'Genesis': 'genesis', 'Exodus': 'exodus', 'Leviticus': 'leviticus',
+  'Numbers': 'numbers', 'Deuteronomy': 'deuteronomy',
+  'Joshua': 'joshua', 'Judges': 'judges',
+  'I Samuel': 'i-samuel', 'II Samuel': 'ii-samuel',
+  'I Kings': 'i-kings', 'II Kings': 'ii-kings',
+  'Isaiah': 'isaiah', 'Jeremiah': 'jeremiah', 'Ezekiel': 'ezekiel',
+  'Hosea': 'hosea', 'Joel': 'joel', 'Amos': 'amos', 'Obadiah': 'obadiah',
+  'Jonah': 'jonah', 'Micah': 'micah', 'Nahum': 'nahum',
+  'Habakkuk': 'habakkuk', 'Zephaniah': 'zephaniah',
+  'Haggai': 'haggai', 'Zechariah': 'zechariah', 'Malachi': 'malachi',
+  'Psalms': 'psalms', 'Proverbs': 'proverbs', 'Job': 'job',
+  'Song of Songs': 'song-of-songs', 'Ruth': 'ruth',
+  'Lamentations': 'lamentations', 'Ecclesiastes': 'ecclesiastes',
+  'Esther': 'esther', 'Daniel': 'daniel', 'Ezra': 'ezra',
+  'Nehemiah': 'nehemiah', 'I Chronicles': 'i-chronicles', 'II Chronicles': 'ii-chronicles',
+};
+
+// Hebrew name -> local slug for direct Hebrew lookup
+const HEBREW_TO_LOCAL: Record<string, string> = {};
+for (const [heb, eng] of Object.entries(HEBREW_TO_SEFARIA)) {
+  const slug = SEFARIA_TO_LOCAL[eng];
+  if (slug) HEBREW_TO_LOCAL[heb] = slug;
+}
+
+import fs from 'node:fs';
+import path from 'node:path';
+
+function tryLocalLookup(sefariaRef: string): any | null {
+  // Parse ref like "Genesis.1.1" or "Psalms.119"
+  const parts = sefariaRef.split('.');
+  if (parts.length < 2) return null;
+
+  const bookName = parts[0];
+  const chapter = parseInt(parts[1]);
+  const verse = parts.length >= 3 ? parseInt(parts[2]) : null;
+
+  if (!chapter || isNaN(chapter)) return null;
+
+  const slug = SEFARIA_TO_LOCAL[bookName];
+  if (!slug) return null;
+
+  // Try to read local file
+  const filePath = path.join(process.cwd(), 'public', 'texts', 'tanach', slug, `${chapter}.json`);
+  if (!fs.existsSync(filePath)) return null;
+
+  try {
+    const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+
+    let heText: string;
+    let heRef: string;
+
+    if (verse && !isNaN(verse)) {
+      // Specific verse
+      const v = data.verses.find((v: any) => v.num === verse);
+      if (!v) return null;
+      heText = v.he;
+      heRef = `${data.bookHe} ${chapter}:${verse}`;
+    } else {
+      // Whole chapter
+      heText = data.verses.map((v: any) => `(${v.num}) ${v.he}`).join(' ');
+      heRef = `${data.bookHe} ${chapter}`;
+    }
+
+    const nextChapter = chapter + 1;
+    const prevChapter = chapter > 1 ? chapter - 1 : null;
+
+    return {
+      ref: verse ? `${bookName}.${chapter}.${verse}` : `${bookName}.${chapter}`,
+      heRef,
+      book: bookName,
+      he: heText,
+      en: '', // No English in local files
+      categories: ['Tanakh'],
+      next: `${bookName}.${nextChapter}`,
+      prev: prevChapter ? `${bookName}.${prevChapter}` : null,
+      sefariaUrl: `https://www.sefaria.org/${bookName}.${chapter}${verse ? '.' + verse : ''}`,
+      source: 'local'
+    };
+  } catch (e) {
+    return null;
+  }
+}
+
 export async function GET({ request }: { request: Request }) {
   try {
     const url = new URL(request.url);
@@ -162,7 +247,18 @@ export async function GET({ request }: { request: Request }) {
 
     const sefariaRef = normalizeRef(rawRef);
 
-    // Fetch from Sefaria API
+    // Try local lookup first (Tanach only)
+    const localResult = tryLocalLookup(sefariaRef);
+    if (localResult) {
+      return new Response(JSON.stringify(localResult), {
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'public, max-age=86400'
+        }
+      });
+    }
+
+    // Fallback to Sefaria API for Talmud, Midrash, etc.
     const sefariaUrl = `https://www.sefaria.org/api/texts/${encodeURIComponent(sefariaRef)}?context=0&pad=0`;
     const res = await fetch(sefariaUrl, {
       headers: { 'Accept': 'application/json' }
@@ -177,7 +273,6 @@ export async function GET({ request }: { request: Request }) {
 
     const data = await res.json();
 
-    // Extract the key fields
     const result = {
       ref: data.ref || sefariaRef,
       heRef: data.heRef || '',
@@ -187,13 +282,14 @@ export async function GET({ request }: { request: Request }) {
       categories: data.categories || [],
       next: data.next || null,
       prev: data.prev || null,
-      sefariaUrl: `https://www.sefaria.org/${encodeURIComponent(data.ref || sefariaRef)}`
+      sefariaUrl: `https://www.sefaria.org/${encodeURIComponent(data.ref || sefariaRef)}`,
+      source: 'sefaria'
     };
 
     return new Response(JSON.stringify(result), {
       headers: {
         'Content-Type': 'application/json',
-        'Cache-Control': 'public, max-age=86400' // Cache for 24h
+        'Cache-Control': 'public, max-age=86400'
       }
     });
   } catch (err: any) {
