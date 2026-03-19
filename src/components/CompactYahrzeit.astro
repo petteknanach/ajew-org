@@ -4,7 +4,7 @@
 // Only appears when there are actual yahrzeits to display
 ---
 
-<div class="compact-yahrzeit" id="compactYahrzeit" style="display: none;">
+<div class="compact-yahrzeit collapsed" id="compactYahrzeit" style="display: none;">
   <!-- Toggle button for mobile - shows icon when collapsed -->
   <button class="toggle-btn mobile-only" onclick="toggleYahrzeit()" aria-label="Toggle yahrzeit box">
     <span class="collapsed-icon">🕯️</span>
@@ -45,17 +45,25 @@
 </div>
 
 <script>
-  // Hebrew month names mapping
+  // Hebrew month names mapping (matching Hebcal API output)
   const hebrewMonths = {
-    1: 'Nisan', 2: 'Iyyar', 3: 'Sivan', 4: 'Tamuz', 
+    1: 'Nisan', 2: 'Iyyar', 3: 'Sivan', 4: 'Tamuz',
     5: 'Av', 6: 'Elul', 7: 'Tishrei', 8: 'Cheshvan',
-    9: 'Kislev', 10: 'Tevet', 11: 'Shevat', 12: 'Adar',
+    9: 'Kislev', 10: 'Tevet', 11: "Sh'vat", 12: 'Adar',
     13: 'Adar II'
   };
 
   // Important dates to always show (upcoming)
   const importantDates = [
-    { month: 'Nisan', day: 1, type: 'birth', name: 'Birth of Rabbainu', hebrew_name: 'הולדת רבינו', description: 'Na NaCh NaChMa NaChMaN MAyUMaN!', profile_path: '/tzaddikim/rebbe-nachman' }
+    { month: 'Nisan', day: 1, type: 'birth', name: 'Birth of Rabbainu Na Nach Nachma Nachman', hebrew_name: 'הולדת רבינו נ נח נחמ נחמן', description: 'Rosh Chodesh Nisan' },
+    { month: 'Nisan', day: 15, type: 'special', name: 'Pesach', hebrew_name: 'פסח', description: 'First night of Passover' },
+    { month: 'Iyyar', day: 18, type: 'special', name: 'Lag BaOmer', hebrew_name: 'ל"ג בעומר', description: 'Hilula of Rabbi Shimon bar Yochai' },
+    { month: 'Sivan', day: 6, type: 'special', name: 'Shavuos', hebrew_name: 'שבועות', description: 'Giving of the Torah' },
+    { month: 'Tishrei', day: 1, type: 'special', name: 'Rosh Hashana', hebrew_name: 'ראש השנה', description: 'Be with Rabbainu in Uman!' },
+    { month: 'Tishrei', day: 10, type: 'special', name: 'Yom Kippur', hebrew_name: 'יום כיפור', description: 'Day of Atonement' },
+    { month: 'Tishrei', day: 15, type: 'special', name: 'Sukkos', hebrew_name: 'סוכות', description: 'Festival of Tabernacles' },
+    { month: 'Kislev', day: 25, type: 'special', name: 'Chanukah', hebrew_name: 'חנוכה', description: 'Festival of Lights' },
+    { month: 'Adar', day: 14, type: 'special', name: 'Purim', hebrew_name: 'פורים', description: 'Na Nach Nachma Nachman!' },
   ];
 
   let tzaddikimDatabase = [];
@@ -99,27 +107,48 @@
     return importantDates.filter(d => d.month === month && d.day === day);
   }
 
-  // Check if an important date is coming up within 7 days
-  function findUpcomingImportantDates(todayMonth, todayDay, todayMonthIndex) {
+  // Month order for calculating upcoming dates across month boundaries
+  const monthOrder = ['Nisan', 'Iyyar', 'Sivan', 'Tamuz', 'Av', 'Elul',
+    'Tishrei', 'Cheshvan', 'Kislev', 'Tevet', "Sh'vat", 'Adar', 'Adar II'];
+  const daysInMonth = { 'Nisan': 30, 'Iyyar': 29, 'Sivan': 30, 'Tamuz': 29,
+    'Av': 30, 'Elul': 29, 'Tishrei': 30, 'Cheshvan': 29, 'Kislev': 30,
+    'Tevet': 29, "Sh'vat": 30, 'Adar': 29, 'Adar II': 29 };
+
+  // Check if an important date is coming up within 7 days (handles cross-month)
+  function findUpcomingImportantDates(todayMonth, todayDay) {
     const upcoming = [];
+    const todayMonthIdx = monthOrder.indexOf(todayMonth);
+    if (todayMonthIdx < 0) return upcoming;
+
     for (const date of importantDates) {
-      // Simple calculation - check if within next 7 days in same month
-      // This is simplified; a full implementation would handle month boundaries
-      if (date.month === todayMonth && date.day > todayDay && date.day <= todayDay + 7) {
+      const dateMonthIdx = monthOrder.indexOf(date.month);
+      if (dateMonthIdx < 0) continue;
+
+      let daysUntil;
+      if (date.month === todayMonth) {
+        daysUntil = date.day - todayDay;
+      } else if (dateMonthIdx === todayMonthIdx + 1 || (todayMonthIdx === monthOrder.length - 1 && dateMonthIdx === 0)) {
+        // Next month
+        const daysLeftThisMonth = (daysInMonth[todayMonth] || 30) - todayDay;
+        daysUntil = daysLeftThisMonth + date.day;
+      } else {
+        continue; // Too far away
+      }
+
+      if (daysUntil > 0 && daysUntil <= 7) {
         upcoming.push({
           ...date,
-          daysUntil: date.day - todayDay,
-          dateLabel: `${date.day} ${date.month}`
+          daysUntil,
+          dateLabel: `${date.day} ${date.month} (in ${daysUntil} days)`
         });
       }
     }
-    return upcoming;
+    return upcoming.sort((a, b) => a.daysUntil - b.daysUntil);
   }
 
-  // Render a tzaddik link
+  // Render a tzaddik entry
   function renderTzaddikLink(tzaddik, isImportant = false) {
-    const div = document.createElement('a');
-    div.href = tzaddik.profile_path || '#';
+    const div = document.createElement('div');
     div.className = `tzaddik-link${isImportant ? ' upcoming-event' : ''}`;
     
     let html = `<span class="tzaddik-name">${tzaddik.name}</span>`;
@@ -130,7 +159,9 @@
       html += `<span class="event-description">${tzaddik.description}</span>`;
     }
     if (tzaddik.type === 'birth') {
-      html += `<span class="event-type birth-badge">Birth</span>`;
+      html += `<span class="event-type birth-badge">Birthday</span>`;
+    } else if (tzaddik.type === 'special') {
+      html += `<span class="event-type special-badge">Holiday</span>`;
     }
     
     div.innerHTML = html;
@@ -154,7 +185,7 @@
       const tomorrowYahrzeits = findYahrzeits(tomorrowHeb.month, tomorrowHeb.day);
       const todayImportant = findImportantDates(todayHeb.month, todayHeb.day);
       const tomorrowImportant = findImportantDates(tomorrowHeb.month, tomorrowHeb.day);
-      const upcomingImportant = findUpcomingImportantDates(todayHeb.month, todayHeb.day, todayHeb.monthIndex);
+      const upcomingImportant = findUpcomingImportantDates(todayHeb.month, todayHeb.day);
       
       // Determine what to show
       const hasToday = todayYahrzeits.length > 0 || todayImportant.length > 0;
@@ -170,8 +201,12 @@
         return;
       }
       
-      // Show the box
-      document.getElementById('compactYahrzeit').style.display = 'block';
+      // Show the box (remove collapsed for desktop, mobile stays collapsed until tapped)
+      const box = document.getElementById('compactYahrzeit');
+      box.style.display = 'block';
+      if (window.innerWidth > 768) {
+        box.classList.remove('collapsed');
+      }
       
       // Populate today's section
       if (hasToday) {
@@ -253,6 +288,23 @@
     border: 1px solid rgba(245, 158, 11, 0.3);
     z-index: 20;
     font-size: 0.9em;
+  }
+
+  /* On small mobile, shrink and move to bottom-left to avoid covering title */
+  @media (max-width: 480px) {
+    .compact-yahrzeit {
+      top: auto;
+      bottom: 0.5rem;
+      left: 0.5rem;
+    }
+
+    .compact-yahrzeit.collapsed {
+      max-width: 44px;
+      max-height: 44px;
+      padding: 0.5rem;
+      border-radius: 50%;
+      opacity: 0.8;
+    }
   }
   
   .yahrzeit-loading {
@@ -362,6 +414,15 @@
     display: inline-block;
     align-self: flex-start;
   }
+
+  .special-badge {
+    color: #7c3aed;
+    background: #f5f3ff;
+    padding: 0.125rem 0.375rem;
+    border-radius: 3px;
+    display: inline-block;
+    align-self: flex-start;
+  }
   
   .toggle-btn {
     display: none;
@@ -380,20 +441,24 @@
   
   @media (max-width: 768px) {
     .compact-yahrzeit {
+      transition: all 0.3s ease;
+      overflow: hidden;
+    }
+
+    .compact-yahrzeit.collapsed {
       max-width: 60px;
       max-height: 60px;
       padding: 0.75rem;
-      overflow: hidden;
-      transition: all 0.3s ease;
     }
-    
+
     .compact-yahrzeit:not(.collapsed) {
       max-width: 220px;
       max-height: 500px;
     }
-    
+
     .compact-yahrzeit.collapsed .yahrzeit-section,
-    .compact-yahrzeit.collapsed .view-all {
+    .compact-yahrzeit.collapsed .view-all,
+    .compact-yahrzeit.collapsed .yahrzeit-loading {
       display: none !important;
     }
     

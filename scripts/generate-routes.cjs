@@ -202,6 +202,15 @@ const structuredData = torahData ? JSON.stringify({
 
 const books = [
   {
+    slug: 'ebay-hanachal',
+    bookName: 'Ebay HaNachal - Blossoms of the Stream',
+    bookHebrew: 'אבי הנחל',
+    itemName: 'Letter',
+    author: 'Rabbi Yisroel Dov Odesser (Saba)',
+    filePattern: 'part-${partNum}/letter-${torahNum}.json',
+    parts: [{ num: 1, max: 130 }, { num: 2, max: 150 }]
+  },
+  {
     slug: 'sichos-haran',
     bookName: 'Sichos HaRan',
     bookHebrew: 'שיחות הר"ן',
