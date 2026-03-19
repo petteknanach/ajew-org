@@ -17,7 +17,7 @@ const TANACH_BOOKS = [
   // Torah
   { folder: '001_TORA/01_BERESHIT', file: 'a01_Genesis.txt', slug: 'genesis', he: 'בראשית' },
   { folder: '001_TORA/02_SHEMOT', file: 'a02_Exodus.txt', slug: 'exodus', he: 'שמות' },
-  { folder: '001_TORA/03_VAYIKRA', file: 'a03_Leviticus.txt', slug: 'leviticus', he: 'ויקרא' },
+  { folder: '001_TORA/03_VAIKRA', file: 'a03_Leviticus.txt', slug: 'leviticus', he: 'ויקרא' },
   { folder: '001_TORA/04_BAMIDBAR', file: 'a04_Numbers.txt', slug: 'numbers', he: 'במדבר' },
   { folder: '001_TORA/05_DEVARIM', file: 'a05_Deuteronomy.txt', slug: 'deuteronomy', he: 'דברים' },
   // Nevi'im (in subfolders)
@@ -37,11 +37,11 @@ const TANACH_BOOKS = [
   { folder: '002_NAVI/19_YONA', file: 'a19_Jonah.txt', slug: 'jonah', he: 'יונה' },
   { folder: '002_NAVI/20_MICHA', file: 'a20_Micah.txt', slug: 'micah', he: 'מיכה' },
   { folder: '002_NAVI/21_NAHUM', file: 'a21_Nahum.txt', slug: 'nahum', he: 'נחום' },
-  { folder: '002_NAVI/22_HABAKUK', file: 'a22_Habakkuk.txt', slug: 'habakkuk', he: 'חבקוק' },
-  { folder: '002_NAVI/23_TSEFANYA', file: 'a23_Zephaniah.txt', slug: 'zephaniah', he: 'צפניה' },
-  { folder: '002_NAVI/24_HAGAI', file: 'a24_Haggai.txt', slug: 'haggai', he: 'חגי' },
-  { folder: '002_NAVI/25_ZEHARYA', file: 'a25_Zechariah.txt', slug: 'zechariah', he: 'זכריה' },
-  { folder: '002_NAVI/26_MALAHI', file: 'a26_Malachi.txt', slug: 'malachi', he: 'מלאכי' },
+  { folder: '002_NAVI/22_HAVAKUK', file: 'a22_Habakkuk.txt', slug: 'habakkuk', he: 'חבקוק' },
+  { folder: '002_NAVI/23_ZFANYA', file: 'a23_Zephaniah.txt', slug: 'zephaniah', he: 'צפניה' },
+  { folder: '002_NAVI/24_HAGAY', file: 'a24_Haggai.txt', slug: 'haggai', he: 'חגי' },
+  { folder: '002_NAVI/25_ZECHARYA', file: 'a25_Zechariah.txt', slug: 'zechariah', he: 'זכריה' },
+  { folder: '002_NAVI/26_MALACHI', file: 'a26_Malachi.txt', slug: 'malachi', he: 'מלאכי' },
   // Ketuvim (in subfolders)
   { folder: '003_KTUVIM/27_TEHILIM', file: 'a27_Psalms.txt', slug: 'psalms', he: 'תהלים' },
   { folder: '003_KTUVIM/28_MISHLEI', file: 'a28_Proverbs.txt', slug: 'proverbs', he: 'משלי' },
@@ -53,9 +53,9 @@ const TANACH_BOOKS = [
   { folder: '003_KTUVIM/34_ESTER', file: 'a34_Esther.txt', slug: 'esther', he: 'אסתר' },
   { folder: '003_KTUVIM/35_DANIEL', file: 'a35_Daniel.txt', slug: 'daniel', he: 'דניאל' },
   { folder: '003_KTUVIM/36_EZRA', file: 'a36_Ezra.txt', slug: 'ezra', he: 'עזרא' },
-  { folder: '003_KTUVIM/37_NEHEMYA', file: 'a37_Nehemiah.txt', slug: 'nehemiah', he: 'נחמיה' },
-  { folder: '003_KTUVIM/38_DIVREI_HAYAMIM_A', file: 'a38_Chronicles_1.txt', slug: 'i-chronicles', he: 'דברי הימים א' },
-  { folder: '003_KTUVIM/39_DIVREI_HAYAMIM_B', file: 'a39_Chronicles_2.txt', slug: 'ii-chronicles', he: 'דברי הימים ב' },
+  { folder: '003_KTUVIM/37_NECHEMYA', file: 'a37_Nehemiah.txt', slug: 'nehemiah', he: 'נחמיה' },
+  { folder: '003_KTUVIM/38_DIVRE_A', file: 'a38_Chronicles_1.txt', slug: 'i-chronicles', he: 'דברי הימים א' },
+  { folder: '003_KTUVIM/39_DIVRE_B', file: 'a39_Chronicles_2.txt', slug: 'ii-chronicles', he: 'דברי הימים ב' },
 ];
 
 function readCP1255(filePath) {
