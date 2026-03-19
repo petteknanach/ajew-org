@@ -6,7 +6,7 @@ import path from 'node:path';
 
 export function getStaticPaths() {
   const paths = [];
-  for (let torah = 1; torah <= 314; torah++) {
+  for (let torah = 1; torah <= 320; torah++) {
     paths.push({ params: { part: '1', torah: String(torah) } });
   }
   return paths;
@@ -24,17 +24,18 @@ try {
   const raw = fs.readFileSync(filePath, 'utf8');
   torahData = JSON.parse(raw);
 } catch (e) {
-  error = `Section ${torahNum} not found`;
+  error = `Sicha ${torahNum} not found`;
 }
 
 if (!torahData && !error) error = 'Content not available';
 
 const bookName = 'Sichos HaRan';
 const bookHebrew = 'שיחות הר"ן';
+const itemName = 'Sicha';
 
 const pageTitle = torahData
   ? `${torahData.hebrewTitle || torahData.title} - Sichos HaRan`
-  : 'Not Found';
+  : 'Sicha Not Found';
 const pageDesc = torahData
   ? `Read ${torahData.title} from Sichos HaRan by Rabbi Nachman of Breslov`
   : '';
@@ -72,7 +73,7 @@ const structuredData = torahData ? JSON.stringify({
       <div class="reader-breadcrumb">
         <a href="/reader">Reader</a>
         <span>&rsaquo;</span>
-        <a href="/reader">{bookName}</a>
+        <a href="/reader">Sichos HaRan</a>
         <span>&rsaquo;</span>
         {torahData.hebrewTitle || torahData.title}
       </div>
@@ -97,15 +98,15 @@ const structuredData = torahData ? JSON.stringify({
           <button class="reader-btn reader-btn-icon" data-theme-btn="night">Night</button>
         </div>
         <div class="reader-toolbar-group">
+          <button class="reader-btn reader-btn-icon" id="btn-listen" onclick="toggleSpeaking()">Listen</button>
           <button class="reader-btn reader-btn-icon" id="btn-search">Search</button>
           <button class="reader-btn reader-btn-icon" id="btn-bookmark">Bookmark</button>
-          <button class="reader-btn reader-btn-icon" id="btn-notes">Notes</button>
           <button class="reader-btn reader-btn-icon" id="btn-fullscreen">Fullscreen</button>
         </div>
       </div>
 
       <div class="reader-search-bar">
-        <input type="text" placeholder="Search in this section..." dir="auto" />
+        <input type="text" placeholder={"Search in this sicha..."} dir="auto" />
         <span class="search-info"></span>
         <button class="reader-btn search-close">Close</button>
       </div>
@@ -125,7 +126,7 @@ const structuredData = torahData ? JSON.stringify({
         {torahData.hebrewTitle && <div class="hebrew-title">{torahData.hebrewTitle}</div>}
         <h1>{torahData.title}</h1>
         <p style="color: var(--reader-text-secondary); font-size: 0.9em; font-family: 'Open Sans', sans-serif;">
-          {bookHebrew} - {bookName}
+          שיחות הר"ן - Sichos HaRan
         </p>
       </div>
 
@@ -144,7 +145,7 @@ const structuredData = torahData ? JSON.stringify({
           <div class="reader-segment-pair" id={`seg-${seg.index}`}>
             <div class="reader-segment segment-he" data-index={String(seg.index)}>
               <span class="segment-number">{seg.index}</span>
-              <p data-nikud={seg.he_nikud || seg.he}>{seg.he}</p>
+              <p data-nikud={seg.he}>{seg.he}</p>
             </div>
             <div class={`reader-segment segment-en ${!seg.en ? 'empty-translation' : ''}`} data-index={String(seg.index)}>
               <span class="segment-number">{seg.index}</span>
@@ -182,7 +183,6 @@ const structuredData = torahData ? JSON.stringify({
       </div>
 
       <script src="/reader-script.js" is:inline></script>
-      <script src="/reader-notes.js" is:inline></script>
     </div>
   )}
 </Layout>

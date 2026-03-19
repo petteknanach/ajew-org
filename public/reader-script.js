@@ -433,6 +433,109 @@
     }
   }
 
+  // --- Text-to-Speech ---
+  let ttsState = { speaking: false, paused: false, currentSeg: 0 };
+
+  function getTextSegments() {
+    const mode = state.mode;
+    const segments = [];
+    document.querySelectorAll('.reader-segment-pair').forEach(pair => {
+      const he = pair.querySelector('.segment-he p')?.textContent?.trim();
+      const en = pair.querySelector('.segment-en p')?.textContent?.trim();
+      if (mode === 'english' && en && en !== 'Translation not yet available') {
+        segments.push({ text: en, lang: 'en-US' });
+      } else if (mode === 'both') {
+        if (he) segments.push({ text: he, lang: 'he-IL' });
+        if (en && en !== 'Translation not yet available') segments.push({ text: en, lang: 'en-US' });
+      } else {
+        if (he) segments.push({ text: he, lang: 'he-IL' });
+      }
+    });
+    return segments;
+  }
+
+  function highlightSegment(index) {
+    document.querySelectorAll('.reader-segment-pair').forEach((pair, i) => {
+      pair.classList.toggle('tts-active', i === index);
+    });
+  }
+
+  function speakSegments(startFrom) {
+    const segments = getTextSegments();
+    if (startFrom >= segments.length) {
+      stopSpeaking();
+      return;
+    }
+
+    ttsState.currentSeg = startFrom;
+    const seg = segments[startFrom];
+
+    // Highlight the current segment pair
+    const pairIndex = Math.floor(startFrom / (state.mode === 'both' ? 2 : 1));
+    highlightSegment(pairIndex);
+
+    // Scroll into view
+    const pairs = document.querySelectorAll('.reader-segment-pair');
+    if (pairs[pairIndex]) {
+      pairs[pairIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    const utterance = new SpeechSynthesisUtterance(seg.text);
+    utterance.lang = seg.lang;
+    utterance.rate = seg.lang === 'he-IL' ? 0.85 : 0.9;
+
+    utterance.onend = () => {
+      if (ttsState.speaking && !ttsState.paused) {
+        speakSegments(startFrom + 1);
+      }
+    };
+
+    utterance.onerror = () => {
+      if (ttsState.speaking) speakSegments(startFrom + 1);
+    };
+
+    speechSynthesis.speak(utterance);
+  }
+
+  function toggleSpeaking() {
+    const btn = document.getElementById('btn-listen');
+    if (!btn) return;
+
+    if (ttsState.speaking && !ttsState.paused) {
+      // Pause
+      speechSynthesis.pause();
+      ttsState.paused = true;
+      btn.textContent = 'Resume';
+      btn.classList.add('active');
+    } else if (ttsState.paused) {
+      // Resume
+      speechSynthesis.resume();
+      ttsState.paused = false;
+      btn.textContent = 'Pause';
+      btn.classList.add('active');
+    } else {
+      // Start
+      ttsState.speaking = true;
+      ttsState.paused = false;
+      btn.textContent = 'Pause';
+      btn.classList.add('active');
+      speakSegments(0);
+    }
+  }
+
+  function stopSpeaking() {
+    speechSynthesis.cancel();
+    ttsState.speaking = false;
+    ttsState.paused = false;
+    ttsState.currentSeg = 0;
+    highlightSegment(-1);
+    const btn = document.getElementById('btn-listen');
+    if (btn) {
+      btn.textContent = 'Listen';
+      btn.classList.remove('active');
+    }
+  }
+
   // Run on DOM ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);

@@ -9,25 +9,25 @@ export function getStaticPaths() {
   for (let torah = 1; torah <= 60; torah++) {
     paths.push({ params: { part: '1', torah: String(torah) } });
   }
-  for (let torah = 1; torah <= 53; torah++) {
+  for (let torah = 1; torah <= 55; torah++) {
     paths.push({ params: { part: '2', torah: String(torah) } });
   }
   for (let torah = 1; torah <= 85; torah++) {
     paths.push({ params: { part: '3', torah: String(torah) } });
   }
-  for (let torah = 1; torah <= 107; torah++) {
+  for (let torah = 1; torah <= 110; torah++) {
     paths.push({ params: { part: '4', torah: String(torah) } });
   }
-  for (let torah = 1; torah <= 111; torah++) {
+  for (let torah = 1; torah <= 115; torah++) {
     paths.push({ params: { part: '5', torah: String(torah) } });
   }
-  for (let torah = 1; torah <= 34; torah++) {
+  for (let torah = 1; torah <= 35; torah++) {
     paths.push({ params: { part: '6', torah: String(torah) } });
   }
-  for (let torah = 1; torah <= 96; torah++) {
+  for (let torah = 1; torah <= 95; torah++) {
     paths.push({ params: { part: '7', torah: String(torah) } });
   }
-  for (let torah = 1; torah <= 87; torah++) {
+  for (let torah = 1; torah <= 90; torah++) {
     paths.push({ params: { part: '8', torah: String(torah) } });
   }
   return paths;
@@ -45,17 +45,18 @@ try {
   const raw = fs.readFileSync(filePath, 'utf8');
   torahData = JSON.parse(raw);
 } catch (e) {
-  error = `Section ${torahNum} not found`;
+  error = `Halacha ${torahNum} not found`;
 }
 
 if (!torahData && !error) error = 'Content not available';
 
 const bookName = 'Likutay Halachos';
 const bookHebrew = 'ליקוטי הלכות';
+const itemName = 'Halacha';
 
 const pageTitle = torahData
   ? `${torahData.hebrewTitle || torahData.title} - Likutay Halachos`
-  : 'Not Found';
+  : 'Halacha Not Found';
 const pageDesc = torahData
   ? `Read ${torahData.title} from Likutay Halachos by Rabbi Nosson of Breslov`
   : '';
@@ -93,7 +94,7 @@ const structuredData = torahData ? JSON.stringify({
       <div class="reader-breadcrumb">
         <a href="/reader">Reader</a>
         <span>&rsaquo;</span>
-        <a href="/reader">{bookName}</a>
+        <a href="/reader">Likutay Halachos</a>
         <span>&rsaquo;</span>
         {torahData.hebrewTitle || torahData.title}
       </div>
@@ -118,15 +119,15 @@ const structuredData = torahData ? JSON.stringify({
           <button class="reader-btn reader-btn-icon" data-theme-btn="night">Night</button>
         </div>
         <div class="reader-toolbar-group">
+          <button class="reader-btn reader-btn-icon" id="btn-listen" onclick="toggleSpeaking()">Listen</button>
           <button class="reader-btn reader-btn-icon" id="btn-search">Search</button>
           <button class="reader-btn reader-btn-icon" id="btn-bookmark">Bookmark</button>
-          <button class="reader-btn reader-btn-icon" id="btn-notes">Notes</button>
           <button class="reader-btn reader-btn-icon" id="btn-fullscreen">Fullscreen</button>
         </div>
       </div>
 
       <div class="reader-search-bar">
-        <input type="text" placeholder="Search in this section..." dir="auto" />
+        <input type="text" placeholder={"Search in this halacha..."} dir="auto" />
         <span class="search-info"></span>
         <button class="reader-btn search-close">Close</button>
       </div>
@@ -146,7 +147,7 @@ const structuredData = torahData ? JSON.stringify({
         {torahData.hebrewTitle && <div class="hebrew-title">{torahData.hebrewTitle}</div>}
         <h1>{torahData.title}</h1>
         <p style="color: var(--reader-text-secondary); font-size: 0.9em; font-family: 'Open Sans', sans-serif;">
-          {bookHebrew} - {bookName}
+          ליקוטי הלכות - Likutay Halachos
         </p>
       </div>
 
@@ -165,7 +166,7 @@ const structuredData = torahData ? JSON.stringify({
           <div class="reader-segment-pair" id={`seg-${seg.index}`}>
             <div class="reader-segment segment-he" data-index={String(seg.index)}>
               <span class="segment-number">{seg.index}</span>
-              <p data-nikud={seg.he_nikud || seg.he}>{seg.he}</p>
+              <p data-nikud={seg.he}>{seg.he}</p>
             </div>
             <div class={`reader-segment segment-en ${!seg.en ? 'empty-translation' : ''}`} data-index={String(seg.index)}>
               <span class="segment-number">{seg.index}</span>
@@ -203,7 +204,6 @@ const structuredData = torahData ? JSON.stringify({
       </div>
 
       <script src="/reader-script.js" is:inline></script>
-      <script src="/reader-notes.js" is:inline></script>
     </div>
   )}
 </Layout>

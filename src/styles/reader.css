@@ -883,3 +883,22 @@
   color: var(--reader-accent, #c4a265);
   font-weight: 700;
 }
+
+/* --- Text-to-Speech Highlight --- */
+.reader-segment-pair.tts-active {
+  background: rgba(196, 162, 101, 0.15);
+  border-radius: 8px;
+  outline: 2px solid rgba(196, 162, 101, 0.4);
+  outline-offset: 2px;
+  transition: background 0.3s, outline 0.3s;
+}
+
+[data-theme="night"] .reader-segment-pair.tts-active {
+  background: rgba(196, 162, 101, 0.1);
+  outline-color: rgba(196, 162, 101, 0.3);
+}
+
+#btn-listen.active {
+  background: var(--reader-accent, #c4a265);
+  color: white;
+}
