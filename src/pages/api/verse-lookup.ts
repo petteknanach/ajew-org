@@ -179,54 +179,92 @@ for (const [heb, eng] of Object.entries(HEBREW_TO_SEFARIA)) {
 import fs from 'node:fs';
 import path from 'node:path';
 
+// Talmud tractate slug mapping
+const TALMUD_TO_LOCAL: Record<string, string> = {
+  'Berakhot': 'berakhot', 'Shabbat': 'shabbat', 'Eruvin': 'eruvin',
+  'Pesachim': 'pesachim', 'Rosh Hashanah': 'rosh-hashanah', 'Yoma': 'yoma',
+  'Sukkah': 'sukkah', 'Beitzah': 'beitzah', 'Taanit': 'taanit',
+  'Megillah': 'megillah', 'Moed Katan': 'moed-katan', 'Chagigah': 'chagigah',
+  'Yevamot': 'yevamot', 'Ketubot': 'ketubot', 'Nedarim': 'nedarim',
+  'Nazir': 'nazir', 'Sotah': 'sotah', 'Gittin': 'gittin', 'Kiddushin': 'kiddushin',
+  'Bava Kamma': 'bava-kamma', 'Bava Metzia': 'bava-metzia', 'Bava Batra': 'bava-batra',
+  'Sanhedrin': 'sanhedrin', 'Makkot': 'makkot', 'Shevuot': 'shevuot',
+  'Avodah Zarah': 'avodah-zarah', 'Horayot': 'horayot',
+  'Zevachim': 'zevachim', 'Menachot': 'menachot', 'Chullin': 'chullin',
+  'Bekhorot': 'bekhorot', 'Arakhin': 'arakhin', 'Temurah': 'temurah',
+  'Keritot': 'keritot', 'Meilah': 'meilah', 'Niddah': 'niddah', 'Tamid': 'tamid',
+};
+
 function tryLocalLookup(sefariaRef: string): any | null {
-  // Parse ref like "Genesis.1.1" or "Psalms.119"
   const parts = sefariaRef.split('.');
   if (parts.length < 2) return null;
 
   const bookName = parts[0];
+
+  // Try Talmud first (e.g., "Berakhot.5a")
+  const talmudSlug = TALMUD_TO_LOCAL[bookName];
+  if (talmudSlug) {
+    const daf = parts[1].toLowerCase(); // e.g., "5a"
+    const filePath = path.join(process.cwd(), 'public', 'texts', 'bavli', talmudSlug, `${daf}.json`);
+    if (!fs.existsSync(filePath)) return null;
+
+    try {
+      const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+      const dafNum = parseInt(daf);
+      const amud = daf.endsWith('a') ? 'a' : 'b';
+      const nextDaf = amud === 'a' ? `${dafNum}b` : `${dafNum + 1}a`;
+      const prevDaf = amud === 'b' ? `${dafNum}a` : (dafNum > 2 ? `${dafNum - 1}b` : null);
+
+      return {
+        ref: `${bookName}.${daf}`,
+        heRef: `${data.tractateHe} דף ${daf}`,
+        book: bookName,
+        he: data.he,
+        en: '',
+        categories: ['Talmud'],
+        next: nextDaf ? `${bookName}.${nextDaf}` : null,
+        prev: prevDaf ? `${bookName}.${prevDaf}` : null,
+        sefariaUrl: `https://www.sefaria.org/${bookName}.${daf}`,
+        source: 'local'
+      };
+    } catch (e) { return null; }
+  }
+
+  // Try Tanach (e.g., "Genesis.1.1")
   const chapter = parseInt(parts[1]);
   const verse = parts.length >= 3 ? parseInt(parts[2]) : null;
-
   if (!chapter || isNaN(chapter)) return null;
 
   const slug = SEFARIA_TO_LOCAL[bookName];
   if (!slug) return null;
 
-  // Try to read local file
   const filePath = path.join(process.cwd(), 'public', 'texts', 'tanach', slug, `${chapter}.json`);
   if (!fs.existsSync(filePath)) return null;
 
   try {
     const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-
     let heText: string;
     let heRef: string;
 
     if (verse && !isNaN(verse)) {
-      // Specific verse
       const v = data.verses.find((v: any) => v.num === verse);
       if (!v) return null;
       heText = v.he;
       heRef = `${data.bookHe} ${chapter}:${verse}`;
     } else {
-      // Whole chapter
       heText = data.verses.map((v: any) => `(${v.num}) ${v.he}`).join(' ');
       heRef = `${data.bookHe} ${chapter}`;
     }
-
-    const nextChapter = chapter + 1;
-    const prevChapter = chapter > 1 ? chapter - 1 : null;
 
     return {
       ref: verse ? `${bookName}.${chapter}.${verse}` : `${bookName}.${chapter}`,
       heRef,
       book: bookName,
       he: heText,
-      en: '', // No English in local files
+      en: '',
       categories: ['Tanakh'],
-      next: `${bookName}.${nextChapter}`,
-      prev: prevChapter ? `${bookName}.${prevChapter}` : null,
+      next: `${bookName}.${chapter + 1}`,
+      prev: chapter > 1 ? `${bookName}.${chapter - 1}` : null,
       sefariaUrl: `https://www.sefaria.org/${bookName}.${chapter}${verse ? '.' + verse : ''}`,
       source: 'local'
     };
