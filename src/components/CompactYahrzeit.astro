@@ -101,25 +101,49 @@
     }
   }
 
+  // Normalize Hebrew month names (Hebcal API vs database inconsistencies)
+  function normalizeMonth(m) {
+    if (!m) return '';
+    const lower = m.toLowerCase().trim();
+    const map = {
+      'nisan': 'Nisan', 'nissan': 'Nisan',
+      'iyyar': 'Iyyar', 'iyar': 'Iyyar', 'iyaar': 'Iyyar',
+      'sivan': 'Sivan', 'sivvan': 'Sivan',
+      'tamuz': 'Tamuz', 'tammuz': 'Tamuz',
+      'av': 'Av', 'ab': 'Av',
+      'elul': 'Elul',
+      'tishrei': 'Tishrei', 'tishri': 'Tishrei',
+      'cheshvan': 'Cheshvan', 'marcheshvan': 'Cheshvan', 'heshvan': 'Cheshvan',
+      'kislev': 'Kislev',
+      'tevet': 'Tevet', 'teves': 'Tevet', 'teveis': 'Tevet',
+      "sh'vat": "Sh'vat", 'shvat': "Sh'vat", 'shevat': "Sh'vat", 'shват': "Sh'vat",
+      'adar': 'Adar', 'adar i': 'Adar',
+      'adar ii': 'Adar II', 'adar 2': 'Adar II', 'adar bet': 'Adar II'
+    };
+    return map[lower] || m;
+  }
+
   // Find yahrzeits for a specific Hebrew date
   // In a leap year: "Adar" entries show in both Adar I and Adar II (covers both halachic opinions)
   // "Adar II" entries show only in Adar II
   function findYahrzeits(month, day) {
+    const normMonth = normalizeMonth(month);
     return tzaddikimDatabase.filter(tz => {
-      const tzMonth = tz.yahrzeit_month;
+      const tzMonth = normalizeMonth(tz.yahrzeit_month);
       const tzDay = parseInt(tz.yahrzeit_day);
       if (tzDay !== day) return false;
-      // Exact match
-      if (tzMonth === month) return true;
+      // Exact match (after normalization)
+      if (tzMonth === normMonth) return true;
       // In Adar II: also show "Adar" entries (covers the opinion that yahrzeits are in Adar II)
-      if (month === 'Adar II' && tzMonth === 'Adar') return true;
+      if (normMonth === 'Adar II' && tzMonth === 'Adar') return true;
       return false;
     });
   }
 
   // Find important dates for a specific Hebrew date
   function findImportantDates(month, day) {
-    return importantDates.filter(d => d.month === month && d.day === day);
+    const normMonth = normalizeMonth(month);
+    return importantDates.filter(d => normalizeMonth(d.month) === normMonth && d.day === day);
   }
 
   // Month order for calculating upcoming dates across month boundaries
@@ -132,19 +156,21 @@
   // Check if an important date is coming up within 7 days (handles cross-month)
   function findUpcomingImportantDates(todayMonth, todayDay) {
     const upcoming = [];
-    const todayMonthIdx = monthOrder.indexOf(todayMonth);
+    const normToday = normalizeMonth(todayMonth);
+    const todayMonthIdx = monthOrder.indexOf(normToday);
     if (todayMonthIdx < 0) return upcoming;
 
     for (const date of importantDates) {
-      const dateMonthIdx = monthOrder.indexOf(date.month);
+      const normDateMonth = normalizeMonth(date.month);
+      const dateMonthIdx = monthOrder.indexOf(normDateMonth);
       if (dateMonthIdx < 0) continue;
 
       let daysUntil;
-      if (date.month === todayMonth) {
+      if (normDateMonth === normToday) {
         daysUntil = date.day - todayDay;
       } else if (dateMonthIdx === todayMonthIdx + 1 || (todayMonthIdx === monthOrder.length - 1 && dateMonthIdx === 0)) {
         // Next month
-        const daysLeftThisMonth = (daysInMonth[todayMonth] || 30) - todayDay;
+        const daysLeftThisMonth = (daysInMonth[normToday] || 30) - todayDay;
         daysUntil = daysLeftThisMonth + date.day;
       } else {
         continue; // Too far away
