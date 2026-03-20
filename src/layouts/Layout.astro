@@ -3,16 +3,19 @@ interface Props {
   title: string;
   description?: string;
   image?: string;
+  noindex?: boolean;
 }
 
-const { 
-  title, 
+const {
+  title,
   description = "Rabbi Nachman's Factory of Judaism - Nanach. Explore Rabbi Nachman's wisdom and inspiration.",
-  image = "/og-image.svg"
+  image = "/og-image.svg",
+  noindex = false
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const ogImage = new URL(image, Astro.site);
+const isHebrew = Astro.url.pathname.includes('/reader/') || title.match(/[\u0590-\u05FF]/);
 ---
 
 <!doctype html>
@@ -22,10 +25,10 @@ const ogImage = new URL(image, Astro.site);
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="Content-Language" content="en" />
     <meta name="description" content={description} />
-    <meta name="keywords" content="Rabbi Nachman, Breslov, Na Nach, Nanach, Judaism, Torah, Likutay Moharan, Likutay Halachos, Likutay Tefilos, Hisbodidus" />
+    <meta name="keywords" content="Rabbi Nachman, Breslov, Na Nach, Nanach, Judaism, Torah, Likutay Moharan, Likutay Halachos, Likutay Tefilos, Hisbodidus, Zohar, Talmud, Mishna, Rambam, Tanach, Jewish texts, Hebrew books online, Torah study" />
     <meta name="author" content="Pettek Nanach" />
-    <meta name="robots" content="index, follow" />
-    <meta name="googlebot" content="index, follow" />
+    <meta name="robots" content={noindex ? "noindex, nofollow" : "index, follow"} />
+    <meta name="googlebot" content={noindex ? "noindex, nofollow" : "index, follow"} />
     <link rel="canonical" href={canonicalURL} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="32x32" />
@@ -64,7 +67,7 @@ const ogImage = new URL(image, Astro.site);
         "@type": "WebSite",
         "name": "A Jew - Rabbi Nachman's Factory of Judaism",
         "url": "https://ajew.org",
-        "description": "Explore the teachings of Rabbi Nachman of Breslov, Na Nach movement, Jewish wisdom, Torah insights, and spiritual guidance.",
+        "description": "The largest online Breslov Torah library. Read Likutay Moharan, Zohar, Talmud, Mishna, Rambam, Tanach and 220+ sacred Jewish texts in Hebrew with English translations.",
         "publisher": {
           "@type": "Organization",
           "name": "A Jew",
@@ -81,26 +84,25 @@ const ogImage = new URL(image, Astro.site);
       }
     </script>
     
-    <!-- Additional Structured Data -->
-    <link rel="alternate" type="application/json+oembed" href="/structured-data.json" title="Structured Data" />
+    <!-- Language alternates -->
+    <link rel="alternate" hreflang="en" href={canonicalURL} />
+    <link rel="alternate" hreflang="he" href={canonicalURL} />
+    <link rel="alternate" hreflang="x-default" href={canonicalURL} />
     
     <!-- Preconnect for performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     
-    <!-- JSON-LD Structured Data -->
+    <!-- Organization Schema -->
     <script type="application/ld+json" set:html={JSON.stringify({
       "@context": "https://schema.org",
-      "@type": "WebSite",
+      "@type": "Organization",
       "name": "A Jew - Na Nach Breslov",
       "url": "https://ajew.org",
-      "description": "Teachings of Rebbe Nachman of Breslov and the Na Nach movement",
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": "https://ajew.org/teachings?q={search_term_string}",
-        "query-input": "required name=search_term_string"
-      }
+      "logo": "https://ajew.org/logo.svg",
+      "description": "The largest online library of Breslov Torah texts with Tanach, Talmud, Mishna, Rambam, Zohar, and more.",
+      "sameAs": []
     })} />
 
     <!-- Google tag (gtag.js) -->

@@ -18,6 +18,7 @@ export default defineConfig({
         defaultLocale: 'en',
         locales: {
           en: 'en-US',
+          he: 'he-IL',
         },
       },
       filter: (page) => {
