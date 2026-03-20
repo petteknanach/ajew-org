@@ -1,22 +1,23 @@
-# SEO-Optimized Robots.txt for ajew.org
+# Robots.txt for ajew.org
 User-agent: *
 Allow: /
 Disallow: /admin/
 Disallow: /private/
 Disallow: /tmp/
 Disallow: /cgi-bin/
-Disallow: /*?*
-Disallow: /*&*
-Allow: /*?page=
-Allow: /*?sort=
-
-# Crawl delay for aggressive bots
-Crawl-delay: 2
+Allow: /search?q=
 
 # Sitemaps
-Sitemap: https://ajew.org/sitemap.xml
+Sitemap: https://ajew.org/sitemap-index.xml
 
-# Special bots
+# Social media bots
+User-agent: FacebookBot
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+# AI crawlers
 User-agent: GPTBot
 Disallow: /
 
@@ -25,12 +26,6 @@ Disallow: /
 
 User-agent: Google-Extended
 Disallow: /
-
-User-agent: FacebookBot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
 
 # Host
 Host: https://ajew.org
