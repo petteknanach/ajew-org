@@ -60,7 +60,22 @@ const catalog1 = loadJSON('public/reader/likutay-moharan/part-1/index.json');
 const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
 ---
 
-<Layout title="Jewish Torah Library - 226 Books Online" description="Read 226+ sacred Jewish texts free online: Likutay Moharan, Zohar HaKadosh, Talmud Bavli, Mishna, Rambam Mishneh Torah, full Tanach, Breslov classics and more. 25,000+ pages in Hebrew with English translations.">
+<Layout title="Jewish Torah Library - 226 Books Online | ajew.org" description="Read 226+ sacred Jewish texts free online: Likutay Moharan, Zohar HaKadosh, Talmud Bavli, Mishna, Rambam Mishneh Torah, full Tanach, Breslov classics and more. 25,000+ pages in Hebrew with English translations.">
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Jewish Torah Library - 226+ Sacred Texts Online",
+    "description": "The largest free online Breslov Torah library. Read Likutay Moharan, Zohar, Talmud Bavli, Mishna, Rambam, Tanach and more in Hebrew with English translations.",
+    "url": "https://ajew.org/reader",
+    "isPartOf": { "@type": "WebSite", "name": "ajew.org", "url": "https://ajew.org" },
+    "about": [
+      { "@type": "Thing", "name": "Torah study" },
+      { "@type": "Thing", "name": "Breslov Hasidism" },
+      { "@type": "Thing", "name": "Jewish texts" }
+    ],
+    "numberOfItems": masterCatalog.books.length,
+    "publisher": { "@type": "Organization", "name": "ajew.org", "url": "https://ajew.org" }
+  })} slot="head" />
   <style>
     .lm-index {
       max-width: 800px;
@@ -210,16 +225,16 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
 
   <div class="lm-index">
     <div class="lm-header">
-      <div class="hebrew-title">&#1500;&#1497;&#1511;&#1493;&#1496;&#1497; &#1502;&#1493;&#1492;&#1512;"&#1503;</div>
-      <h1>Likutay Moharan</h1>
-      <p class="subtitle">The collected teachings of Rabbainu Na Nach Nachma Nachman MeUman</p>
-      <p class="author">Compiled by Rabbi Noson of Breslov</p>
+      <div class="hebrew-title">ספריית התורה</div>
+      <h1>Jewish Torah Library</h1>
+      <p class="subtitle">226+ sacred texts online free — Breslov, Tanach, Talmud, Mishna, Rambam, Zohar & more</p>
+      <p class="author">Na Nach Nachma Nachman MeUman</p>
       <div class="lm-features">
         <span>Hebrew / English / Both</span>
-        <span>Day / Sepia / Night</span>
-        <span>Bookmarks</span>
-        <span>Search</span>
-        <span>Fullscreen</span>
+        <span>Day / Sepia / Night themes</span>
+        <span>Bookmarks & Search</span>
+        <span>25,000+ pages</span>
+        <span>Fullscreen reading</span>
       </div>
     </div>
 
