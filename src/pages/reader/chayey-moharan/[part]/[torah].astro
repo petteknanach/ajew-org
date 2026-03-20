@@ -9,22 +9,25 @@ export function getStaticPaths() {
   for (let torah = 1; torah <= 15; torah++) {
     paths.push({ params: { part: '1', torah: String(torah) } });
   }
+  paths.push({ params: { part: '1', torah: 'maftechos' } });
   return paths;
 }
 
 const { part, torah } = Astro.params;
 const partNum = parseInt(part);
 const torahNum = parseInt(torah);
+const isSpecial = isNaN(torahNum);
 
 let torahData = null;
 let error = null;
 
 try {
-  const filePath = path.join(process.cwd(), `public/reader/chayey-moharan/chapter-${torahNum}.json`);
+  const fileName = isSpecial ? `${torah}.json` : `chapter-${torahNum}.json`;
+  const filePath = path.join(process.cwd(), `public/reader/chayey-moharan/${fileName}`);
   const raw = fs.readFileSync(filePath, 'utf8');
   torahData = JSON.parse(raw);
 } catch (e) {
-  error = `Chapter ${torahNum} not found`;
+  error = `${isSpecial ? torah : 'Chapter ' + torahNum} not found`;
 }
 
 if (!torahData && !error) error = 'Content not available';
