@@ -126,27 +126,33 @@ function main() {
         const partCatalog = JSON.parse(fs.readFileSync(indexPath, 'utf8'));
         const partDir = path.dirname(indexPath);
 
-        for (const entry of partCatalog.torahs) {
-          // Find the actual JSON file for this entry
-          const jsonFiles = fs.readdirSync(partDir).filter(f => f.endsWith(`-${entry.number}.json`) && f !== 'index.json');
-          if (jsonFiles.length === 0) continue;
-
-          const filePath = path.join(partDir, jsonFiles[0]);
+        // Support both old format (torahs) and new format (items)
+        const entries = partCatalog.torahs || partCatalog.items || [];
+        for (const entry of entries) {
+          const num = entry.number || entry.torah;
+          // Find the actual JSON file for this entry - try multiple patterns
+          let filePath = path.join(partDir, `torah-${num}.json`);
+          if (!fs.existsSync(filePath)) {
+            const jsonFiles = fs.readdirSync(partDir).filter(f => f.endsWith(`-${num}.json`) && f !== 'index.json');
+            if (jsonFiles.length === 0) continue;
+            filePath = path.join(partDir, jsonFiles[0]);
+          }
           if (!fs.existsSync(filePath)) continue;
 
           const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
           const fullText = data.segments.map(s => s.he || '').filter(t => t.length > 0).join('\n\n');
           const searchableHebrew = stripNikud(fullText);
+          const torahNum = data.torah || data.displayNumber || num;
 
           documents.push({
             id: data.id,
             part: part.part,
-            torah: data.torah,
-            displayNumber: data.displayNumber || data.torah,
+            torah: torahNum,
+            displayNumber: data.displayNumber || torahNum,
             title: data.title,
             hebrewTitle: data.hebrewTitle || '',
             themes: data.themes || [],
-            url: entry.url || `/reader/${book.id}/${part.part}/${data.torah}`,
+            url: entry.url || `/reader/${book.id}/${part.part}/${torahNum}`,
             wordCount: searchableHebrew.split(/\s+/).length,
             content: searchableHebrew,
             preview: fullText.substring(0, 200).replace(/\n/g, ' '),
