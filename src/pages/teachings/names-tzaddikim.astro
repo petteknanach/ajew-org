@@ -12,25 +12,6 @@ try {
 
 const monthOrder = ['Tishrei','Cheshvan','Kislev','Tevet','Sh\'vat','Adar','Adar II','Nisan','Iyyar','Sivan','Tamuz','Av','Elul'];
 
-// Group by month
-const byMonth = {};
-for (const tz of allTzaddikim) {
-  const m = tz.yahrzeit_month || 'Unknown';
-  if (!byMonth[m]) byMonth[m] = [];
-  byMonth[m].push(tz);
-}
-
-// Sort each month by day
-for (const m of Object.keys(byMonth)) {
-  byMonth[m].sort((a, b) => parseInt(a.yahrzeit_day) - parseInt(b.yahrzeit_day));
-}
-
-const orderedMonths = monthOrder.filter(m => byMonth[m]?.length > 0);
-// Add any months not in order
-for (const m of Object.keys(byMonth)) {
-  if (!orderedMonths.includes(m)) orderedMonths.push(m);
-}
-
 const hebrewMonths = {
   'Tishrei': 'תשרי', 'Cheshvan': 'חשון', 'Kislev': 'כסלו', 'Tevet': 'טבת',
   "Sh'vat": 'שבט', 'Adar': 'אדר', 'Adar II': 'אדר ב', 'Nisan': 'ניסן',
@@ -38,105 +19,248 @@ const hebrewMonths = {
 };
 
 const catColors = {
-  'biblical': '#276749',
-  'talmudic': '#744210',
-  'breslov': '#1a365d',
-  'chassidic': '#553c9a',
-  'rishonim': '#9b2c2c',
-  'lithuanian': '#2c5282',
-  'chabad': '#4a5568',
-  'sephardic': '#b7791f',
-  'other': '#718096'
+  'biblical': '#276749', 'talmudic': '#744210', 'breslov': '#1a365d',
+  'chassidic': '#553c9a', 'rishonim': '#9b2c2c', 'lithuanian': '#2c5282',
+  'chabad': '#4a5568', 'sephardic': '#b7791f', 'other': '#718096'
 };
 ---
 
-<Layout title="Yahrzeit List - All Tzaddikim" description="Complete list of tzaddikim yahrzeits by Hebrew month. Review and approve entries for the yahrzeit box.">
+<Layout title="Yahrzeit List - Review & Approve" description="Review and approve tzaddikim entries for the yahrzeit box.">
   <style>
-    .tz-page { max-width: 900px; margin: 0 auto; padding: 24px 16px 80px; font-family: 'Open Sans', sans-serif; }
-    .tz-header { text-align: center; margin-bottom: 32px; padding-bottom: 20px; border-bottom: 3px solid #1a365d; }
-    .tz-header h1 { font-family: 'Frank Ruhl Libre', serif; font-size: 2em; color: #1a365d; margin: 0 0 8px; }
+    .tz-page { max-width: 1000px; margin: 0 auto; padding: 24px 16px 80px; font-family: 'Open Sans', sans-serif; }
+    .tz-header { text-align: center; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 3px solid #1a365d; }
+    .tz-header h1 { font-family: 'Frank Ruhl Libre', serif; font-size: 1.8em; color: #1a365d; margin: 0 0 8px; }
     .tz-header .subtitle { color: #666; font-size: 0.9em; }
     .tz-stats { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }
     .tz-stats span { background: #f0ebe0; padding: 4px 12px; border-radius: 14px; font-size: 0.75em; color: #555; }
 
-    .month-nav { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-bottom: 24px; position: sticky; top: 0; background: #fffdf7; padding: 12px 0; z-index: 10; border-bottom: 1px solid #e0d6c2; }
-    .month-nav a { padding: 4px 10px; border-radius: 6px; background: #f0ebe0; color: #1a365d; text-decoration: none; font-size: 0.8em; font-weight: 600; }
-    .month-nav a:hover { background: #1a365d; color: white; }
+    .toolbar { position: sticky; top: 0; background: #fffdf7; padding: 10px 0; z-index: 10; border-bottom: 1px solid #e0d6c2; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center; }
+    .toolbar button { padding: 6px 14px; border-radius: 6px; border: 1px solid #ccc; cursor: pointer; font-size: 0.8em; font-weight: 600; }
+    .toolbar .btn-delete { background: #e53e3e; color: white; border-color: #c53030; }
+    .toolbar .btn-delete:hover { background: #c53030; }
+    .toolbar .btn-export { background: #2b6cb0; color: white; border-color: #2c5282; }
+    .toolbar .btn-export:hover { background: #2c5282; }
+    .toolbar .btn-undo { background: #d69e2e; color: white; border-color: #b7791f; }
+    .toolbar .btn-filter { background: #f0ebe0; color: #1a365d; }
+    .toolbar .btn-filter.active { background: #1a365d; color: white; }
+    .toolbar .count { font-size: 0.8em; color: #555; padding: 0 8px; }
+    .month-links { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; padding: 6px 0; }
+    .month-links a { padding: 3px 8px; border-radius: 5px; background: #f0ebe0; color: #1a365d; text-decoration: none; font-size: 0.75em; font-weight: 600; }
+    .month-links a:hover { background: #1a365d; color: white; }
 
-    .month-section { margin-bottom: 32px; }
-    .month-header { font-family: 'Frank Ruhl Libre', serif; font-size: 1.4em; color: #1a365d; margin: 0 0 4px; padding-top: 16px; }
-    .month-hebrew { font-family: 'Frank Ruhl Libre', serif; font-size: 1.1em; color: #555; direction: rtl; margin: 0 0 4px; }
-    .month-count { font-size: 0.8em; color: #888; margin: 0 0 12px; padding-bottom: 8px; border-bottom: 1px solid #e0d6c2; }
+    .month-section { margin-bottom: 28px; }
+    .month-header { font-family: 'Frank Ruhl Libre', serif; font-size: 1.3em; color: #1a365d; margin: 0 0 2px; padding-top: 12px; }
+    .month-hebrew { font-family: 'Frank Ruhl Libre', serif; font-size: 1em; color: #555; direction: rtl; margin: 0 0 2px; }
+    .month-count { font-size: 0.75em; color: #888; margin: 0 0 8px; padding-bottom: 6px; border-bottom: 1px solid #e0d6c2; }
 
-    .tz-table { width: 100%; border-collapse: collapse; font-size: 0.85em; }
-    .tz-table th { text-align: left; padding: 6px 8px; background: #f0ebe0; color: #1a365d; font-weight: 600; border-bottom: 2px solid #c4a265; }
-    .tz-table td { padding: 6px 8px; border-bottom: 1px solid #e8e2d6; vertical-align: top; }
+    .tz-table { width: 100%; border-collapse: collapse; font-size: 0.82em; }
+    .tz-table th { text-align: left; padding: 5px 6px; background: #f0ebe0; color: #1a365d; font-weight: 600; border-bottom: 2px solid #c4a265; }
+    .tz-table td { padding: 5px 6px; border-bottom: 1px solid #e8e2d6; vertical-align: top; }
     .tz-table tr:hover { background: #faf7f0; }
-    .tz-day { font-weight: 700; color: #1a365d; min-width: 30px; }
+    .tz-table tr.marked-delete { background: #fed7d7; opacity: 0.6; text-decoration: line-through; }
+    .tz-table tr.marked-delete:hover { opacity: 0.8; }
+    .tz-day { font-weight: 700; color: #1a365d; min-width: 26px; }
     .tz-name { color: #2d3748; }
     .tz-heb { font-family: 'Frank Ruhl Libre', serif; direction: rtl; color: #333; }
     .tz-year { color: #4a5568; font-size: 0.85em; white-space: nowrap; }
-    .tz-notes { color: #718096; font-size: 0.9em; }
-    .tz-cat { display: inline-block; padding: 1px 6px; border-radius: 4px; font-size: 0.75em; color: white; }
-    .tz-source { font-size: 0.75em; color: #a0aec0; }
+    .tz-notes { color: #718096; font-size: 0.88em; max-width: 200px; }
+    .tz-cat { display: inline-block; padding: 1px 5px; border-radius: 4px; font-size: 0.72em; color: white; }
+    .tz-cb { width: 16px; height: 16px; cursor: pointer; }
 
-    @media (max-width: 600px) {
-      .tz-table { font-size: 0.78em; }
+    .hidden { display: none !important; }
+    .instructions { background: #ebf8ff; border: 1px solid #bee3f8; border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; font-size: 0.85em; color: #2c5282; }
+    .instructions b { color: #1a365d; }
+
+    @media (max-width: 700px) {
+      .tz-table { font-size: 0.75em; }
       .tz-table th:nth-child(5), .tz-table td:nth-child(5) { display: none; }
-      .tz-table th:nth-child(6), .tz-table td:nth-child(6) { display: none; }
+      .tz-table th:nth-child(7), .tz-table td:nth-child(7) { display: none; }
     }
   </style>
 
   <div class="tz-page">
     <div class="tz-header">
-      <h1>Yahrzeit List - All Tzaddikim</h1>
-      <p class="subtitle">Complete database for review - {allTzaddikim.length} entries</p>
-      <div class="tz-stats">
-        <span>biblical: {allTzaddikim.filter(t => t.category === 'biblical').length}</span>
-        <span>talmudic: {allTzaddikim.filter(t => t.category === 'talmudic').length}</span>
-        <span>breslov: {allTzaddikim.filter(t => t.category === 'breslov').length}</span>
-        <span>chassidic: {allTzaddikim.filter(t => t.category === 'chassidic').length}</span>
-        <span>lithuanian: {allTzaddikim.filter(t => t.category === 'lithuanian').length}</span>
-        <span>other: {allTzaddikim.filter(t => !['biblical','talmudic','breslov','chassidic','lithuanian'].includes(t.category)).length}</span>
-      </div>
+      <h1>Yahrzeit List - Review & Approve</h1>
+      <p class="subtitle">Check boxes to mark entries for removal, then click "Delete Selected"</p>
+      <div class="tz-stats" id="stats"></div>
     </div>
 
-    <nav class="month-nav">
-      {orderedMonths.map(m => (
-        <a href={`#${m.replace(/'/g, '')}`}>{m}</a>
-      ))}
-    </nav>
+    <div class="instructions">
+      <b>How to use:</b> Check the box next to any name you want to remove. They'll turn red. Click <b>"Delete Selected"</b> to remove them.
+      Use <b>"Undo All"</b> to restore everything. Click <b>"Export Approved"</b> when done to save the final list.
+      Filter by category using the buttons. Your selections are saved automatically.
+    </div>
 
-    {orderedMonths.map(m => (
-      <div class="month-section" id={m.replace(/'/g, '')}>
-        <h2 class="month-header">{m}</h2>
-        <div class="month-hebrew">{hebrewMonths[m] || m}</div>
-        <p class="month-count">{byMonth[m].length} entries</p>
-        <table class="tz-table">
-          <thead>
-            <tr>
+    <div class="toolbar">
+      <button class="btn-delete" onclick="deleteSelected()">Delete Selected (<span id="sel-count">0</span>)</button>
+      <button class="btn-undo" onclick="undoAll()">Undo All</button>
+      <button class="btn-export" onclick="exportApproved()">Export Approved</button>
+      <span class="count">Showing: <span id="showing-count">0</span> / <span id="total-count">0</span></span>
+      <div style="width:100%"></div>
+      <button class="btn-filter active" data-cat="all" onclick="filterCat('all')">All</button>
+      <button class="btn-filter" data-cat="biblical" onclick="filterCat('biblical')">Biblical</button>
+      <button class="btn-filter" data-cat="talmudic" onclick="filterCat('talmudic')">Talmudic</button>
+      <button class="btn-filter" data-cat="breslov" onclick="filterCat('breslov')">Breslov</button>
+      <button class="btn-filter" data-cat="chassidic" onclick="filterCat('chassidic')">Chassidic</button>
+      <button class="btn-filter" data-cat="other" onclick="filterCat('other')">Other</button>
+    </div>
+
+    <div class="month-links" id="month-links"></div>
+
+    <div id="content"></div>
+  </div>
+
+  <script is:inline define:vars={{ allTzaddikim, monthOrder, hebrewMonths, catColors }}>
+    // State
+    let deletedNames = JSON.parse(localStorage.getItem('tz-deleted') || '[]');
+    let currentFilter = 'all';
+
+    function getKey(tz) {
+      return tz.name + '|' + (tz.yahrzeit_month || '') + '|' + (tz.yahrzeit_day || '');
+    }
+
+    function isDeleted(tz) {
+      return deletedNames.includes(getKey(tz));
+    }
+
+    function saveState() {
+      localStorage.setItem('tz-deleted', JSON.stringify(deletedNames));
+    }
+
+    // Group by month
+    function groupByMonth(list) {
+      const byMonth = {};
+      for (const tz of list) {
+        const m = tz.yahrzeit_month || 'Unknown';
+        if (!byMonth[m]) byMonth[m] = [];
+        byMonth[m].push(tz);
+      }
+      for (const m of Object.keys(byMonth)) {
+        byMonth[m].sort((a, b) => parseInt(a.yahrzeit_day) - parseInt(b.yahrzeit_day));
+      }
+      return byMonth;
+    }
+
+    function render() {
+      const filtered = currentFilter === 'all'
+        ? allTzaddikim
+        : allTzaddikim.filter(t => t.category === currentFilter ||
+            (currentFilter === 'other' && !['biblical','talmudic','breslov','chassidic'].includes(t.category)));
+
+      const byMonth = groupByMonth(filtered);
+      const orderedM = monthOrder.filter(m => byMonth[m]?.length > 0);
+      for (const m of Object.keys(byMonth)) {
+        if (!orderedM.includes(m)) orderedM.push(m);
+      }
+
+      // Month links
+      document.getElementById('month-links').innerHTML = orderedM.map(m =>
+        `<a href="#${m.replace(/'/g, '')}">${m}</a>`
+      ).join('');
+
+      // Stats
+      const active = allTzaddikim.filter(t => !isDeleted(t));
+      document.getElementById('stats').innerHTML = `
+        <span>Total: ${active.length} approved</span>
+        <span style="background:#fed7d7;color:#c53030">${deletedNames.length} marked for deletion</span>
+      `;
+      document.getElementById('total-count').textContent = allTzaddikim.length;
+      document.getElementById('showing-count').textContent = filtered.filter(t => !isDeleted(t)).length;
+
+      // Content
+      let html = '';
+      for (const m of orderedM) {
+        const entries = byMonth[m];
+        const activeCount = entries.filter(t => !isDeleted(t)).length;
+        html += `<div class="month-section" id="${m.replace(/'/g, '')}">
+          <h2 class="month-header">${m}</h2>
+          <div class="month-hebrew">${hebrewMonths[m] || m}</div>
+          <p class="month-count">${activeCount} active / ${entries.length} total</p>
+          <table class="tz-table">
+            <thead><tr>
+              <th style="width:30px"></th>
               <th>Day</th>
               <th>Name</th>
               <th>Hebrew</th>
               <th>Year</th>
               <th>Notes</th>
               <th>Category</th>
-            </tr>
-          </thead>
-          <tbody>
-            {byMonth[m].map(tz => (
-              <tr>
-                <td class="tz-day">{tz.yahrzeit_day}</td>
-                <td class="tz-name">{tz.name}</td>
-                <td class="tz-heb">{tz.hebrew_name && /[\u0590-\u05FF]/.test(tz.hebrew_name) ? tz.hebrew_name : ''}</td>
-                <td class="tz-year">{tz.year_passed || ''}</td>
-                <td class="tz-notes">{tz.notes || ''}</td>
-                <td><span class="tz-cat" style={`background:${catColors[tz.category] || '#718096'}`}>{tz.category}</span></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    ))}
-  </div>
+            </tr></thead>
+            <tbody>`;
+
+        for (const tz of entries) {
+          const key = getKey(tz);
+          const del = isDeleted(tz);
+          const hebName = tz.hebrew_name && /[\u0590-\u05FF]/.test(tz.hebrew_name) ? tz.hebrew_name : '';
+          const catColor = catColors[tz.category] || '#718096';
+          html += `<tr class="${del ? 'marked-delete' : ''}" data-key="${key.replace(/"/g, '&quot;')}">
+            <td><input type="checkbox" class="tz-cb" ${del ? 'checked' : ''} onchange="toggleDelete(this, '${key.replace(/'/g, "\\'")}')"></td>
+            <td class="tz-day">${tz.yahrzeit_day || ''}</td>
+            <td class="tz-name">${tz.name}</td>
+            <td class="tz-heb">${hebName}</td>
+            <td class="tz-year">${tz.year_passed || ''}</td>
+            <td class="tz-notes">${tz.notes || ''}</td>
+            <td><span class="tz-cat" style="background:${catColor}">${tz.category || ''}</span></td>
+          </tr>`;
+        }
+        html += '</tbody></table></div>';
+      }
+      document.getElementById('content').innerHTML = html;
+      updateSelCount();
+    }
+
+    function toggleDelete(cb, key) {
+      if (cb.checked) {
+        if (!deletedNames.includes(key)) deletedNames.push(key);
+        cb.closest('tr').classList.add('marked-delete');
+      } else {
+        deletedNames = deletedNames.filter(k => k !== key);
+        cb.closest('tr').classList.remove('marked-delete');
+      }
+      saveState();
+      updateSelCount();
+    }
+
+    function updateSelCount() {
+      const checked = document.querySelectorAll('.tz-cb:checked').length;
+      document.getElementById('sel-count').textContent = deletedNames.length;
+      const active = allTzaddikim.filter(t => !isDeleted(t));
+      document.getElementById('stats').querySelector('span').textContent = `Total: ${active.length} approved`;
+      document.getElementById('stats').querySelectorAll('span')[1].textContent = `${deletedNames.length} marked for deletion`;
+    }
+
+    function deleteSelected() {
+      // Already marked - just re-render to update counts
+      render();
+      alert(`${deletedNames.length} entries marked for deletion. Click "Export Approved" when you're done reviewing to save the final list.`);
+    }
+
+    function undoAll() {
+      if (!confirm('Restore all deleted entries?')) return;
+      deletedNames = [];
+      saveState();
+      render();
+    }
+
+    function filterCat(cat) {
+      currentFilter = cat;
+      document.querySelectorAll('.btn-filter').forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
+      render();
+    }
+
+    function exportApproved() {
+      const approved = allTzaddikim.filter(t => !isDeleted(t));
+      const blob = new Blob([JSON.stringify({ all_tzaddikim: approved }, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'tzaddikim-approved.json';
+      a.click();
+      URL.revokeObjectURL(url);
+      alert(`Exported ${approved.length} approved entries. Send this file back to update the site.`);
+    }
+
+    // Initial render
+    render();
+  </script>
 </Layout>
