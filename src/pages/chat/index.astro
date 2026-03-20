@@ -76,6 +76,16 @@ import Layout from '../../layouts/Layout.astro';
     .subscribe-prompt a { display: inline-block; padding: 0.6rem 1.2rem; background: #f97316; color: white; text-decoration: none; border-radius: 6px; font-weight: 600; }
     
     .empty-state { text-align: center; padding: 2rem; color: #666; }
+
+    /* Shared note messages - special styling */
+    .message.shared-note { background: #f0fdf4; border-left: 3px solid #059669; }
+    .message.shared-note.my-message { background: #d1fae5; border-left: 3px solid #047857; }
+    .shared-note-header { font-size: 0.8rem; color: #059669; font-weight: 600; margin-bottom: 4px; }
+    .shared-note-hebrew { font-family: 'Frank Ruhl Libre', serif; color: #1a365d; font-size: 0.95rem; direction: rtl; padding: 4px 8px; background: rgba(26,54,93,0.05); border-radius: 4px; margin: 4px 0; }
+    .shared-note-text { font-style: italic; color: #333; }
+    .shared-note-link { font-size: 0.8rem; margin-top: 4px; }
+    .shared-note-link a { color: #059669; text-decoration: none; font-weight: 600; }
+    .shared-note-link a:hover { text-decoration: underline; }
     
     @media (max-width: 768px) {
       .page-header-content { flex-direction: column; gap: 0.5rem; }
@@ -189,9 +199,10 @@ import Layout from '../../layouts/Layout.astro';
     // Load rooms from server
     async function loadRooms() {
       const rooms = [
-        { slug: 'general', title: 'General Chat', description: 'Discuss Breslov teachings' },
-        { slug: 'hitbodedut', title: 'Hitbodedut Corner', description: 'Personal prayer discussions' },
-        { slug: 'stories', title: 'Stories of the Rebbe', description: 'Discuss Sippurey Maasiyot' }
+        { slug: 'shared-notes', title: '📝 Shared Notes', description: 'Notes shared from the reader - discuss insights on the holy texts', icon: '📝' },
+        { slug: 'general', title: '💬 General Chat', description: 'Discuss Breslov teachings' },
+        { slug: 'hitbodedut', title: '🙏 Hitbodedut Corner', description: 'Personal prayer discussions' },
+        { slug: 'stories', title: '📖 Stories of the Rebbe', description: 'Discuss Sippurey Maasiyot' }
       ];
       
       const grid = document.getElementById('roomsGrid');
@@ -240,7 +251,36 @@ import Layout from '../../layouts/Layout.astro';
           const time = new Date(msg.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
           const initial = msg.username ? msg.username.charAt(0).toUpperCase() : '?';
           const isOwn = currentUser && msg.email === currentUser.email;
-          
+          const isSharedNote = msg.message && msg.message.startsWith('[📝 NOTE]');
+
+          if (isSharedNote) {
+            // Parse shared note format
+            const lines = msg.message.split('\n');
+            const headerLine = lines[0] || '';  // [📝 NOTE] Book - Segment N
+            const hebrewLine = lines[1] || '';  // 📖 Hebrew snippet
+            const noteLine = lines[2] || '';    // ✏️ Note text
+            const linkLine = lines[3] || '';    // 🔗 URL
+
+            const noteTitle = headerLine.replace('[📝 NOTE] ', '');
+            const hebrewText = hebrewLine.replace('📖 ', '');
+            const noteText = noteLine.replace('✏️ ', '');
+            const linkUrl = linkLine.replace('🔗 ', '');
+
+            return `
+              <div class="message shared-note ${isOwn ? 'my-message' : ''}">
+                <div class="message-header">
+                  <div class="message-avatar" style="background:#059669;">${initial}</div>
+                  <span class="message-author">${escapeHtml(msg.username || 'Guest')}</span>
+                  <span class="message-time">${time}</span>
+                </div>
+                <div class="shared-note-header">📝 ${escapeHtml(noteTitle)}</div>
+                ${hebrewText ? `<div class="shared-note-hebrew">${escapeHtml(hebrewText)}</div>` : ''}
+                <div class="shared-note-text">"${escapeHtml(noteText)}"</div>
+                ${linkUrl ? `<div class="shared-note-link"><a href="${escapeHtml(linkUrl)}" target="_blank">📖 Read in context →</a></div>` : ''}
+              </div>
+            `;
+          }
+
           return `
             <div class="message ${isOwn ? 'my-message' : ''}">
               <div class="message-header">
@@ -335,6 +375,28 @@ import Layout from '../../layouts/Layout.astro';
     // Init
     checkUser();
     loadRooms();
+
+    // Auto-open room and pre-fill message if URL has params (from shared notes)
+    const urlParams = new URLSearchParams(window.location.search);
+    const autoRoom = urlParams.get('room');
+    const autoMsg = urlParams.get('msg');
+    if (autoRoom) {
+      // Find the room title
+      const roomTitles = { 'shared-notes': '📝 Shared Notes', 'general': '💬 General Chat', 'hitbodedut': '🙏 Hitbodedut Corner', 'stories': '📖 Stories of the Rebbe' };
+      const roomTitle = roomTitles[autoRoom] || autoRoom;
+      setTimeout(() => {
+        openRoom(autoRoom, roomTitle);
+        if (autoMsg) {
+          const input = document.getElementById('messageInput');
+          if (input) {
+            input.value = decodeURIComponent(autoMsg);
+            input.focus();
+          }
+        }
+      }, 500);
+      // Clean URL
+      window.history.replaceState({}, '', '/chat');
+    }
 
     // Attach to window so onclick handlers work after Astro bundles the script
     window.openRoom = openRoom;

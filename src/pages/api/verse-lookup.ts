@@ -181,8 +181,9 @@ import path from 'node:path';
 
 // Talmud tractate slug mapping
 const TALMUD_TO_LOCAL: Record<string, string> = {
-  'Berakhot': 'berakhot', 'Shabbat': 'shabbat', 'Eruvin': 'eruvin',
-  'Pesachim': 'pesachim', 'Rosh Hashanah': 'rosh-hashanah', 'Yoma': 'yoma',
+  'Berakhot': 'brachot', 'Shabbat': 'shabbat', 'Eruvin': 'eruvin',
+  'Pesachim': 'pesachim', 'Shekalim': 'shekalim',
+  'Rosh Hashanah': 'rosh-hashana', 'Yoma': 'yoma',
   'Sukkah': 'sukkah', 'Beitzah': 'beitzah', 'Taanit': 'taanit',
   'Megillah': 'megillah', 'Moed Katan': 'moed-katan', 'Chagigah': 'chagigah',
   'Yevamot': 'yevamot', 'Ketubot': 'ketubot', 'Nedarim': 'nedarim',
@@ -191,7 +192,7 @@ const TALMUD_TO_LOCAL: Record<string, string> = {
   'Sanhedrin': 'sanhedrin', 'Makkot': 'makkot', 'Shevuot': 'shevuot',
   'Avodah Zarah': 'avodah-zarah', 'Horayot': 'horayot',
   'Zevachim': 'zevachim', 'Menachot': 'menachot', 'Chullin': 'chullin',
-  'Bekhorot': 'bekhorot', 'Arakhin': 'arakhin', 'Temurah': 'temurah',
+  'Bekhorot': 'bechorot', 'Arakhin': 'arachin', 'Temurah': 'temurah',
   'Keritot': 'keritot', 'Meilah': 'meilah', 'Niddah': 'niddah', 'Tamid': 'tamid',
 };
 
@@ -217,9 +218,9 @@ function tryLocalLookup(sefariaRef: string): any | null {
 
       return {
         ref: `${bookName}.${daf}`,
-        heRef: `${data.tractateHe} דף ${daf}`,
+        heRef: `${data.tractate} דף ${data.daf} ${data.amudHe}`,
         book: bookName,
-        he: data.he,
+        he: data.text || data.he || '',
         en: '',
         categories: ['Talmud'],
         next: nextDaf ? `${bookName}.${nextDaf}` : null,
