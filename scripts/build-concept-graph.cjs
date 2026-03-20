@@ -311,7 +311,7 @@ function main() {
     },
     nodes,
     coEdges: coEdges.slice(0, 500), // Top 500 co-occurrences
-    flowEdges: flowEdges.slice(0, 300), // Top 300 flows
+    flowEdges: flowEdges.slice(0, 800), // Top 800 flows for richer pathways
     teachings: conceptTeachings,
   };
 
