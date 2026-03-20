@@ -93,7 +93,7 @@
   // Load tzaddikim database
   async function loadDatabase() {
     try {
-      const response = await fetch('/data/tzaddikim-database-filtered.json');
+      const response = await fetch('/data/tzaddikim-database-complete.json');
       const data = await response.json();
       tzaddikimDatabase = data.all_tzaddikim || [];
     } catch (e) {
