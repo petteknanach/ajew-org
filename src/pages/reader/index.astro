@@ -279,7 +279,7 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
                       </h4>
                     )}
                     <ul class="torah-list">
-                      {partData.index.torahs.map(t => (
+                      {(partData.index.torahs || partData.index.items || []).map(t => (
                         <li>
                           <a href={t.url}>
                             <span class="torah-num">{t.hebrewTitle || t.title || `[${t.number}]`}</span>
