@@ -37,7 +37,10 @@ const pageTitle = torahData
   ? `${torahData.hebrewTitle || torahData.title} - Shivchay HaRan`
   : 'Section Not Found';
 const pageDesc = torahData
-  ? `Read ${torahData.title} from Shivchay HaRan by Rabbi Nosson of Breslov`
+  ? (() => {
+    const snippet = (torahData.segments?.find(s => s.en)?.en || '').replace(/<[^>]+>/g, '').slice(0, 120);
+    return `Read ${torahData.title} from Shivchay HaRan online free. ${snippet ? snippet + '...' : 'Hebrew text with English translation on ajew.org.'}`;
+  })()
   : '';
 
 const structuredData = torahData ? JSON.stringify({

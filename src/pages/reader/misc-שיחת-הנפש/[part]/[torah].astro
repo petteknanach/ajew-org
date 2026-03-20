@@ -36,7 +36,10 @@ const pageTitle = torahData
   ? `${torahData.hebrewTitle || torahData.title} - שיחת הנפש`
   : 'Not Found';
 const pageDesc = torahData
-  ? `Read ${torahData.title} from שיחת הנפש by Breslov Students`
+  ? (() => {
+    const snippet = (torahData.segments?.find(s => s.en)?.en || '').replace(/<[^>]+>/g, '').slice(0, 120);
+    return `Read ${torahData.title} from שיחת הנפש online free. ${snippet ? snippet + '...' : 'Hebrew text with English translation on ajew.org.'}`;
+  })()
   : '';
 
 const structuredData = torahData ? JSON.stringify({

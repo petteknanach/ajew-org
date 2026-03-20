@@ -36,7 +36,10 @@ const pageTitle = torahData
   ? `${torahData.hebrewTitle || torahData.title} - Rambam`
   : 'Chapter Not Found';
 const pageDesc = torahData
-  ? `Read ${torahData.title} from Rambam's Mishneh Torah`
+  ? (() => {
+    const snippet = (torahData.segments?.find(s => s.en)?.en || '').replace(/<[^>]+>/g, '').slice(0, 120);
+    return `Read ${torahData.title} from Mishneh Torah - Sefer HaMada (Knowledge) online free. ${snippet ? snippet + '...' : 'Hebrew text with English translation on ajew.org.'}`;
+  })()
   : '';
 
 const structuredData = torahData ? JSON.stringify({

@@ -36,7 +36,10 @@ const pageTitle = torahData
   ? `${torahData.hebrewTitle || torahData.title} - Mishna`
   : 'Mishna Not Found';
 const pageDesc = torahData
-  ? `Read ${torahData.title} from Mishna Eduyot`
+  ? (() => {
+    const snippet = (torahData.segments?.find(s => s.en)?.en || '').replace(/<[^>]+>/g, '').slice(0, 120);
+    return `Read ${torahData.title} from Mishna - Eduyot online free. ${snippet ? snippet + '...' : 'Hebrew text with English translation on ajew.org.'}`;
+  })()
   : '';
 
 const structuredData = torahData ? JSON.stringify({
