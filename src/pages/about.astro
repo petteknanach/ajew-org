@@ -1,120 +1,496 @@
 ---
 import Layout from '../layouts/Layout.astro';
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "AboutPage",
+  "name": "About ajew.org - The Largest Online Breslov Torah Library",
+  "url": "https://ajew.org/about",
+  "description": "ajew.org is the largest free online Breslov Torah library with 226+ books, 25,000+ pages of sacred Jewish texts in Hebrew and English. Read Likutay Moharan, Likutay Halachos, Tanach, Talmud, Mishna, Rambam, Zohar, and more.",
+  "mainEntity": {
+    "@type": "WebSite",
+    "name": "ajew.org",
+    "url": "https://ajew.org"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "A Jew - Na Nach Breslov",
+    "url": "https://ajew.org"
+  }
+};
 ---
 
-<Layout title="About" description="About ajew.org and the mission to spread Rebbe Nachman's teachings">
-  <section class="page-header">
-    <h1>About</h1>
-    <p>Our mission and vision</p>
+<Layout
+  title="About - The Largest Online Breslov Torah Library"
+  description="ajew.org offers 226+ books and 25,000+ pages of Breslov and classic Jewish texts free online. Bilingual Hebrew/English reader, 10 search modes, gematria tools, and more."
+>
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-inner">
+      <p class="hero-hebrew">נ נח נחמ נחמן מאומן</p>
+      <h1>About ajew.org</h1>
+      <p class="hero-subtitle">The largest free online Breslov Torah library</p>
+      <p class="hero-stats">226+ books &middot; 25,000+ pages &middot; Hebrew &amp; English</p>
+    </div>
   </section>
 
-  <section class="about-content">
+  <!-- What is ajew.org -->
+  <section class="content-section">
     <div class="container">
-      <h2>Our Mission</h2>
+      <h2>What is ajew.org?</h2>
       <p>
-        ajew.org is dedicated to spreading the teachings of Rebbe Nachman of Breslov 
-        and making them accessible to everyone. Through authentic translations, 
-        beautiful imagery, and thoughtful presentation, we hope to bring the light 
-        of Breslov Chassidus to seekers everywhere.
+        ajew.org is a free, open Torah library dedicated to making the teachings of
+        Rebbe Nachman of Breslov and the classic texts of Judaism accessible to
+        everyone. The site hosts over <strong>226 books</strong> totaling more than
+        <strong>25,000 pages</strong> of sacred text, all readable online in a
+        beautiful bilingual reader.
+      </p>
+      <p>
+        Whether you are a long-time student of Breslov Chassidus or discovering
+        these teachings for the first time, ajew.org gives you instant access to
+        the full breadth of the tradition -- from Likutay Moharan and Likutay
+        Halachos to Tanach, Talmud, Mishna, Rambam, and Zohar -- without cost
+        and without barriers.
       </p>
 
+      <div class="cta-row">
+        <a href="/reader" class="cta-btn">Browse the Library</a>
+        <a href="/search-enhanced" class="cta-btn cta-btn-outline">Search Texts</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- The Reader -->
+  <section class="content-section alt">
+    <div class="container">
+      <h2>The Reader</h2>
+      <p>
+        Every text on ajew.org is presented in a purpose-built reader designed
+        for deep Torah study:
+      </p>
+      <ul class="feature-list">
+        <li><strong>Bilingual display</strong> -- switch between Hebrew only, English only, or both side by side</li>
+        <li><strong>Themes</strong> -- Day, Sepia, and Night modes for comfortable reading at any hour</li>
+        <li><strong>Adjustable font size</strong> -- a slider lets you find the perfect size</li>
+        <li><strong>Bookmarks</strong> -- save your place and return later</li>
+        <li><strong>In-text search</strong> -- find any word or phrase inside the current text</li>
+        <li><strong>Table of contents</strong> -- sidebar navigation for quick jumping</li>
+        <li><strong>Nikud (vowels)</strong> -- toggle Hebrew vowel points on enriched texts</li>
+        <li><strong>Fullscreen &amp; keyboard shortcuts</strong> -- distraction-free study</li>
+        <li><strong>Progress bar</strong> -- see how far you have read</li>
+      </ul>
+      <div class="cta-row">
+        <a href="/reader" class="cta-btn">Open the Reader</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- What's Available -->
+  <section class="content-section">
+    <div class="container">
+      <h2>What's in the Library</h2>
+
+      <div class="category-grid">
+        <div class="category-card">
+          <h3>Rebbe Nachman</h3>
+          <p>
+            Likutay Moharan (411 torahs, 100% English), Kitzur Likutay Moharan,
+            Sefer HaMidos, Sipurey Maasiyos -- the complete primary works.
+          </p>
+        </div>
+
+        <div class="category-card">
+          <h3>Rabbi Nosson</h3>
+          <p>
+            Likutay Halachos (8 volumes, 95% English), Likutay Tefilos,
+            Likutay Eitzos, Sichos HaRan, Shivchay HaRan, Chayey Moharan,
+            Alim LiTrufa, Yemei Moharnat, and more.
+          </p>
+        </div>
+
+        <div class="category-card">
+          <h3>Breslov Masters</h3>
+          <p>
+            R' Alter Tepliker, R' Avraham b'R' Nachman, the Tcheriner Rov,
+            R' Shimshon Barsky, Levi Yitzchak Bender (Siach Sarfei Kodesh,
+            6 volumes) and other students and disciples.
+          </p>
+        </div>
+
+        <div class="category-card">
+          <h3>Tanach</h3>
+          <p>
+            All 39 books of the Hebrew Bible -- Torah, Nevi'im, and Ketuvim --
+            929 chapters with full nikud.
+          </p>
+        </div>
+
+        <div class="category-card">
+          <h3>Talmud Bavli</h3>
+          <p>
+            39 tractates covering over 5,400 dapim (folio pages) of the
+            Babylonian Talmud.
+          </p>
+        </div>
+
+        <div class="category-card">
+          <h3>Mishna</h3>
+          <p>
+            57 tractates with nearly 3,850 mishnayot across all six orders.
+          </p>
+        </div>
+
+        <div class="category-card">
+          <h3>Rambam</h3>
+          <p>
+            Mishneh Torah -- all 14 books, over 1,000 chapters and 15,000
+            halachot of Maimonides' monumental code.
+          </p>
+        </div>
+
+        <div class="category-card">
+          <h3>Zohar HaKadosh</h3>
+          <p>
+            8 volumes including Hakdama, the five Chumash volumes, Tikunei
+            Zohar, and Zohar Chadash -- 1,930 pages.
+          </p>
+        </div>
+
+        <div class="category-card">
+          <h3>Musar &amp; Halacha</h3>
+          <p>
+            Shmirat HaLashon, Nefesh HaChaim, Eved Hashem, and other
+            works of ethical and legal guidance.
+          </p>
+        </div>
+      </div>
+
+      <div class="cta-row">
+        <a href="/reader" class="cta-btn">Explore All 226+ Books</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Search -->
+  <section class="content-section alt">
+    <div class="container">
+      <h2>Powerful Search</h2>
+      <p>
+        ajew.org indexes over <strong>22,000 documents</strong> across every
+        book in the library. The search engine supports <strong>10 distinct
+        modes</strong> so you can find exactly what you need:
+      </p>
+      <ul class="feature-list two-col">
+        <li>Full-text search (Hebrew &amp; English)</li>
+        <li>Exact phrase matching</li>
+        <li>Gematria search (numerical value)</li>
+        <li>Acronym search (Roshei Teivos)</li>
+        <li>End-letters search (Sofei Teivos)</li>
+        <li>Specific-order and any-order modes</li>
+        <li>Wildcard / partial-word matching</li>
+        <li>Proximity search</li>
+        <li>Book-filtered search</li>
+        <li>Cross-reference lookup</li>
+      </ul>
+      <div class="cta-row">
+        <a href="/search-enhanced" class="cta-btn">Try the Search</a>
+        <a href="/gematria" class="cta-btn cta-btn-outline">Gematria Calculator</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- More Tools -->
+  <section class="content-section">
+    <div class="container">
+      <h2>More Tools</h2>
+      <div class="tools-grid">
+        <a href="/reference" class="tool-card">
+          <h3>Reference Lookup</h3>
+          <p>Look up Tanach and Talmud passages by book, chapter, and verse.</p>
+        </a>
+        <a href="/connections" class="tool-card">
+          <h3>Torah Connections Map</h3>
+          <p>Explore how concepts connect across Rebbe Nachman's teachings.</p>
+        </a>
+        <a href="/gematria" class="tool-card">
+          <h3>Gematria Calculator</h3>
+          <p>Calculate the numerical value of Hebrew words and find matches.</p>
+        </a>
+        <a href="/reader" class="tool-card">
+          <h3>Full Library</h3>
+          <p>Browse every book organized by author and category.</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Rebbe Nachman & Na Nach -->
+  <section class="content-section alt">
+    <div class="container">
       <h2>Rebbe Nachman of Breslov</h2>
       <p>
-        Rabbi Nachman of Breslov (1772-1810) was a great-grandson of Rabbi Yisroel 
-        Baal Shem Tov, the founder of the Chassidic movement. Despite living only 
-        38 years, Rebbe Nachman left behind a vast treasury of Torah teachings, 
-        stories, and guidance that continue to inspire millions.
-      </p>
-      <p>
-        His approach emphasizes joy, personal prayer (hisbodedus), faith, and the 
-        belief that no matter how far a person has fallen, they can always return 
-        to Hashem and find their unique path.
+        Rabbi Nachman of Breslov (1772-1810), great-grandson of the Baal Shem
+        Tov, left behind a vast treasury of Torah teachings, stories, prayers,
+        and guidance that continue to illuminate the path for seekers
+        everywhere. His approach centers on joy, personal prayer
+        (hisbodedus), deep faith, and the unwavering belief that every person
+        can draw close to Hashem no matter their situation.
       </p>
 
-      <h2>The Na Nach Movement</h2>
+      <h2>Na Nach Nachma Nachman Me'Uman</h2>
       <p>
-        In 1922, Rabbi Yisroel Ber Odesser (known as Saba Yisroel, 1888-1994) 
-        discovered a miraculous letter — the Petek — in a book. This letter, 
-        signed with the mysterious phrase "Na Nach Nachma Nachman Me'Uman," 
-        became the foundation of the Na Nach movement.
+        In 1922, Rabbi Yisroel Ber Odesser (the Saba, 1888-1994) discovered a
+        miraculous letter -- the Petek -- bearing the phrase
+        <strong>Na Nach Nachma Nachman Me'Uman</strong>. This revelation
+        became the heart of the Na Nach movement, which spreads Rebbe
+        Nachman's light through music, dancing, and joyful outreach (hafatza)
+        around the world. ajew.org carries this spirit forward by making the
+        teachings freely available to all.
       </p>
-      <p>
-        Today, Na Nach Breslov is known for its joyful approach to spreading 
-        Rebbe Nachman's teachings through music, dancing, and outreach (hafatza) 
-        around the world.
-      </p>
+    </div>
+  </section>
 
-      <h2>Contact Site Manager / יצירת קשר</h2>
+  <!-- Contact -->
+  <section class="content-section">
+    <div class="container contact-section">
+      <h2>Contact / <span class="hebrew-inline">יצירת קשר</span></h2>
       <p>
-        Have questions or want to contribute? We'd love to hear from you.
+        Questions, corrections, or contributions are always welcome.
       </p>
       <p>
-        <a href="mailto:naanaach@gmail.com">naanaach@gmail.com</a>
+        <a href="mailto:naanaach@gmail.com" class="email-link">naanaach@gmail.com</a>
       </p>
 
       <div class="signature">
-        <p class="hebrew">נ נח נחמ נחמן מאומן</p>
-        <p>Na Nach Nachma Nachman Me'Uman</p>
+        <p class="sig-hebrew">נ נח נחמ נחמן מאומן</p>
+        <p class="sig-english">Na Nach Nachma Nachman Me'Uman</p>
       </div>
     </div>
   </section>
 </Layout>
 
 <style>
-  .page-header {
+  /* Hero */
+  .hero {
     background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
     color: white;
-    padding: 4rem 2rem;
     text-align: center;
+    padding: 5rem 2rem 4rem;
   }
 
-  .page-header h1 {
+  .hero-inner {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .hero-hebrew {
     font-family: var(--font-hebrew);
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
+    font-size: 2.2rem;
+    opacity: 0.85;
+    margin-bottom: 1rem;
+    letter-spacing: 0.15em;
   }
 
-  .page-header p {
-    opacity: 0.9;
-    font-size: 1.2rem;
+  .hero h1 {
+    font-family: var(--font-hebrew);
+    font-size: 2.8rem;
+    margin-bottom: 0.6rem;
+    font-weight: 700;
+  }
+
+  .hero-subtitle {
+    font-size: 1.3rem;
+    opacity: 0.92;
+    margin-bottom: 0.4rem;
+  }
+
+  .hero-stats {
+    font-size: 1.05rem;
+    opacity: 0.78;
+  }
+
+  /* Shared section styles */
+  .content-section {
+    padding: 4rem 2rem;
+  }
+
+  .content-section.alt {
+    background: #f7f5ef;
   }
 
   .container {
-    max-width: 800px;
+    max-width: 900px;
     margin: 0 auto;
-    padding: 0 2rem;
   }
 
-  .about-content {
-    padding: 4rem 0;
-  }
-
-  .about-content h2 {
+  .content-section h2 {
     font-family: var(--font-hebrew);
-    font-size: 1.6rem;
+    font-size: 1.75rem;
     color: var(--color-primary);
-    margin-top: 2.5rem;
     margin-bottom: 1rem;
-  }
-
-  .about-content h2:first-child {
     margin-top: 0;
   }
 
-  .about-content p {
+  .content-section h2 + h2 {
+    margin-top: 2.5rem;
+  }
+
+  .content-section p {
     font-size: 1.1rem;
-    line-height: 1.8;
+    line-height: 1.85;
     color: #444;
     margin-bottom: 1rem;
   }
 
-  .about-content a {
-    color: var(--color-accent);
-    text-decoration: none;
-    font-weight: 600;
+  /* Feature lists */
+  .feature-list {
+    list-style: none;
+    padding: 0;
+    margin: 1.2rem 0 1.8rem;
   }
 
-  .about-content a:hover {
+  .feature-list li {
+    position: relative;
+    padding-left: 1.6rem;
+    margin-bottom: 0.65rem;
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: #444;
+  }
+
+  .feature-list li::before {
+    content: "\2713";
+    position: absolute;
+    left: 0;
+    color: var(--color-accent);
+    font-weight: 700;
+  }
+
+  .feature-list.two-col {
+    columns: 2;
+    column-gap: 2rem;
+  }
+
+  /* CTA buttons */
+  .cta-row {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.8rem;
+    flex-wrap: wrap;
+  }
+
+  .cta-btn {
+    display: inline-block;
+    padding: 0.75rem 1.8rem;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.15s;
+    background: var(--color-primary);
+    color: white !important;
+  }
+
+  .cta-btn:hover {
+    background: var(--color-secondary);
+    transform: translateY(-1px);
+    color: white !important;
+  }
+
+  .cta-btn-outline {
+    background: transparent;
+    color: var(--color-primary) !important;
+    border: 2px solid var(--color-primary);
+  }
+
+  .cta-btn-outline:hover {
+    background: var(--color-primary);
+    color: white !important;
+  }
+
+  /* Category grid */
+  .category-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.2rem;
+    margin: 1.5rem 0;
+  }
+
+  .category-card {
+    background: white;
+    border: 1px solid #e2ddd3;
+    border-radius: 8px;
+    padding: 1.3rem;
+  }
+
+  .category-card h3 {
+    font-family: var(--font-hebrew);
+    font-size: 1.15rem;
+    color: var(--color-primary);
+    margin-bottom: 0.5rem;
+  }
+
+  .category-card p {
+    font-size: 0.95rem !important;
+    line-height: 1.6 !important;
+    margin-bottom: 0 !important;
+  }
+
+  /* Tools grid */
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.2rem;
+    margin-top: 1.2rem;
+  }
+
+  .tool-card {
+    display: block;
+    background: white;
+    border: 1px solid #e2ddd3;
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-decoration: none;
+    transition: box-shadow 0.2s, transform 0.15s;
+  }
+
+  .tool-card:hover {
+    box-shadow: 0 4px 16px rgba(26, 54, 93, 0.12);
+    transform: translateY(-2px);
+  }
+
+  .tool-card h3 {
+    font-family: var(--font-hebrew);
+    font-size: 1.15rem;
+    color: var(--color-primary);
+    margin-bottom: 0.4rem;
+  }
+
+  .tool-card p {
+    font-size: 0.95rem !important;
+    color: #555 !important;
+    margin-bottom: 0 !important;
+  }
+
+  /* Contact / Signature */
+  .contact-section {
+    text-align: center;
+  }
+
+  .hebrew-inline {
+    font-family: var(--font-hebrew);
+  }
+
+  .email-link {
+    color: var(--color-accent);
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 1.15rem;
+  }
+
+  .email-link:hover {
     text-decoration: underline;
   }
 
@@ -122,13 +498,75 @@ import Layout from '../layouts/Layout.astro';
     margin-top: 3rem;
     padding-top: 2rem;
     border-top: 1px solid #ddd;
-    text-align: center;
   }
 
-  .signature .hebrew {
+  .sig-hebrew {
     font-family: var(--font-hebrew);
-    font-size: 2rem;
+    font-size: 2.2rem;
     color: var(--color-primary);
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.3rem !important;
+    letter-spacing: 0.1em;
+  }
+
+  .sig-english {
+    font-size: 1rem !important;
+    opacity: 0.7;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .hero {
+      padding: 3.5rem 1.5rem 3rem;
+    }
+
+    .hero h1 {
+      font-size: 2rem;
+    }
+
+    .hero-hebrew {
+      font-size: 1.7rem;
+    }
+
+    .content-section {
+      padding: 3rem 1.2rem;
+    }
+
+    .category-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .tools-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .feature-list.two-col {
+      columns: 1;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .hero h1 {
+      font-size: 1.6rem;
+    }
+
+    .hero-hebrew {
+      font-size: 1.4rem;
+    }
+
+    .hero-subtitle {
+      font-size: 1.05rem;
+    }
+
+    .category-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .cta-row {
+      flex-direction: column;
+    }
+
+    .cta-btn {
+      text-align: center;
+    }
   }
 </style>

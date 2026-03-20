@@ -1,0 +1,763 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="My Notes" description="View and manage all your personal notes from the A Jew reader.">
+  <div class="notes-page">
+    <header class="notes-header">
+      <h1>My Notes</h1>
+      <p class="subtitle">Your personal annotations from the reader</p>
+    </header>
+
+    <div id="notes-app">
+      <!-- Summary bar -->
+      <div class="summary-bar" id="summary-bar" style="display:none;">
+        <div class="summary-stat">
+          <span class="stat-number" id="total-notes">0</span>
+          <span class="stat-label">Total Notes</span>
+        </div>
+        <div class="summary-stat">
+          <span class="stat-number" id="total-books">0</span>
+          <span class="stat-label">Books</span>
+        </div>
+        <div class="summary-stat">
+          <span class="stat-number" id="latest-date">-</span>
+          <span class="stat-label">Latest Note</span>
+        </div>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="notes-toolbar" id="notes-toolbar" style="display:none;">
+        <div class="toolbar-left">
+          <div class="search-box">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="text" id="search-input" placeholder="Search notes..." />
+          </div>
+        </div>
+        <div class="toolbar-right">
+          <select id="sort-select">
+            <option value="date-desc">Newest first</option>
+            <option value="date-asc">Oldest first</option>
+            <option value="book">By book</option>
+          </select>
+          <button class="btn btn-outline" id="export-btn" title="Export all notes as text file">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export
+          </button>
+        </div>
+      </div>
+
+      <!-- Empty state -->
+      <div class="empty-state" id="empty-state">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#cbd5e0" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        <h2>No notes yet</h2>
+        <p>Open any text in the <a href="/reader">reader</a> and click on a segment to add a note.</p>
+      </div>
+
+      <!-- Notes list -->
+      <div id="notes-list"></div>
+    </div>
+  </div>
+
+  <!-- Delete confirmation modal -->
+  <div class="modal-overlay" id="delete-modal" style="display:none;">
+    <div class="modal-box">
+      <h3>Delete note?</h3>
+      <p id="delete-modal-text">This cannot be undone.</p>
+      <div class="modal-actions">
+        <button class="btn btn-outline" id="delete-cancel">Cancel</button>
+        <button class="btn btn-danger" id="delete-confirm">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <script is:inline>
+  (function() {
+    'use strict';
+
+    const NOTES_PREFIX = 'ajew-notes-';
+    const NOTE_COLORS = {
+      yellow: '#f6e05e',
+      green:  '#48bb78',
+      blue:   '#4299e1',
+      pink:   '#ed64a6'
+    };
+
+    let catalog = null;
+    let allNotes = [];
+    let pendingDelete = null;
+
+    // ── Load catalog for friendly names ──────────────────────
+    async function loadCatalog() {
+      try {
+        const res = await fetch('/reader/catalog.json');
+        if (res.ok) catalog = await res.json();
+      } catch(e) {
+        console.warn('Could not load catalog:', e);
+      }
+    }
+
+    function getBookTitle(path) {
+      // path like /reader/likutay-moharan/part-1/5
+      const parts = path.replace(/^\/reader\//, '').split('/');
+      const bookSlug = parts[0];
+
+      if (catalog && catalog.books) {
+        const book = catalog.books.find(b => b.id === bookSlug);
+        if (book) return book.title;
+      }
+
+      // Fallback: humanize slug
+      return bookSlug
+        .split('-')
+        .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(' ');
+    }
+
+    function getPageLabel(path) {
+      const parts = path.replace(/^\/reader\//, '').split('/');
+      // e.g. ["likutay-moharan", "part-1", "5"]
+      const pieces = [];
+      for (let i = 1; i < parts.length; i++) {
+        const p = parts[i];
+        if (p.startsWith('part-')) {
+          pieces.push('Part ' + p.replace('part-', ''));
+        } else {
+          pieces.push('#' + p);
+        }
+      }
+      return pieces.join(', ') || '';
+    }
+
+    function formatDate(ts) {
+      if (!ts) return '';
+      const d = new Date(ts);
+      if (isNaN(d.getTime())) return '';
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    function formatDateShort(ts) {
+      if (!ts) return '-';
+      const d = new Date(ts);
+      if (isNaN(d.getTime())) return '-';
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+
+    // ── Gather all notes from localStorage ───────────────────
+    function gatherNotes() {
+      const notes = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (!key.startsWith(NOTES_PREFIX)) continue;
+
+        const path = key.slice(NOTES_PREFIX.length);
+        let data;
+        try {
+          data = JSON.parse(localStorage.getItem(key));
+        } catch(e) { continue; }
+
+        if (!data || typeof data !== 'object') continue;
+
+        for (const [segIdx, note] of Object.entries(data)) {
+          if (!note || !note.text) continue;
+          notes.push({
+            storageKey: key,
+            path: path,
+            segmentIndex: segIdx,
+            text: note.text,
+            color: note.color || 'yellow',
+            created: note.created,
+            updated: note.updated,
+            bookSlug: path.replace(/^\/reader\//, '').split('/')[0],
+          });
+        }
+      }
+      return notes;
+    }
+
+    // ── Render ────────────────────────────────────────────────
+    function render(notes) {
+      const listEl = document.getElementById('notes-list');
+      const emptyEl = document.getElementById('empty-state');
+      const summaryEl = document.getElementById('summary-bar');
+      const toolbarEl = document.getElementById('notes-toolbar');
+
+      if (!notes.length) {
+        emptyEl.style.display = '';
+        summaryEl.style.display = 'none';
+        toolbarEl.style.display = 'none';
+        listEl.innerHTML = '';
+        return;
+      }
+
+      emptyEl.style.display = 'none';
+      summaryEl.style.display = '';
+      toolbarEl.style.display = '';
+
+      // Summary
+      const books = new Set(notes.map(n => n.bookSlug));
+      document.getElementById('total-notes').textContent = notes.length;
+      document.getElementById('total-books').textContent = books.size;
+      const latestTs = Math.max(...notes.map(n => {
+        const t = n.updated || n.created;
+        return t ? new Date(t).getTime() : 0;
+      }));
+      document.getElementById('latest-date').textContent =
+        latestTs > 0 ? formatDateShort(latestTs) : '-';
+
+      // Sort
+      const sortVal = document.getElementById('sort-select').value;
+      const sorted = [...notes];
+      if (sortVal === 'date-desc') {
+        sorted.sort((a, b) => {
+          const ta = new Date(b.updated || b.created || 0).getTime();
+          const tb = new Date(a.updated || a.created || 0).getTime();
+          return ta - tb;
+        });
+      } else if (sortVal === 'date-asc') {
+        sorted.sort((a, b) => {
+          const ta = new Date(a.updated || a.created || 0).getTime();
+          const tb = new Date(b.updated || b.created || 0).getTime();
+          return ta - tb;
+        });
+      } else {
+        sorted.sort((a, b) => {
+          const cmp = a.bookSlug.localeCompare(b.bookSlug);
+          if (cmp !== 0) return cmp;
+          return (parseInt(a.segmentIndex) || 0) - (parseInt(b.segmentIndex) || 0);
+        });
+      }
+
+      // Group by book
+      const groups = new Map();
+      for (const n of sorted) {
+        const key = n.bookSlug;
+        if (!groups.has(key)) groups.set(key, []);
+        groups.get(key).push(n);
+      }
+
+      let html = '';
+      for (const [bookSlug, bookNotes] of groups) {
+        const title = getBookTitle('/' + 'reader/' + bookSlug);
+        html += '<div class="book-group">';
+        html += '<div class="book-group-header">';
+        html += '<h2>' + escapeHtml(title) + '</h2>';
+        html += '<span class="book-count">' + bookNotes.length + ' note' + (bookNotes.length !== 1 ? 's' : '') + '</span>';
+        html += '</div>';
+
+        for (const n of bookNotes) {
+          const pageLabel = getPageLabel(n.path);
+          const colorHex = NOTE_COLORS[n.color] || NOTE_COLORS.yellow;
+          const dateStr = formatDate(n.updated || n.created);
+          const readerUrl = n.path;
+
+          html += '<div class="note-card" data-key="' + escapeAttr(n.storageKey) + '" data-seg="' + escapeAttr(n.segmentIndex) + '">';
+          html += '<div class="note-top">';
+          html += '<span class="color-dot" style="background:' + colorHex + ';" title="' + escapeAttr(n.color) + '"></span>';
+          html += '<a class="note-location" href="' + escapeAttr(readerUrl) + '">' + escapeHtml(pageLabel || n.path) + ' &middot; Segment ' + escapeHtml(n.segmentIndex) + '</a>';
+          html += '<span class="note-date">' + escapeHtml(dateStr) + '</span>';
+          html += '<button class="delete-note-btn" title="Delete this note" data-key="' + escapeAttr(n.storageKey) + '" data-seg="' + escapeAttr(n.segmentIndex) + '">&times;</button>';
+          html += '</div>';
+          html += '<div class="note-text">' + escapeHtml(n.text) + '</div>';
+          html += '</div>';
+        }
+
+        html += '</div>';
+      }
+
+      listEl.innerHTML = html;
+
+      // Attach delete handlers
+      listEl.querySelectorAll('.delete-note-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          pendingDelete = {
+            key: this.dataset.key,
+            seg: this.dataset.seg
+          };
+          document.getElementById('delete-modal').style.display = '';
+        });
+      });
+    }
+
+    function escapeHtml(s) {
+      const div = document.createElement('div');
+      div.textContent = s;
+      return div.innerHTML;
+    }
+
+    function escapeAttr(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    // ── Filter ───────────────────────────────────────────────
+    function getFilteredNotes() {
+      const q = (document.getElementById('search-input').value || '').toLowerCase().trim();
+      if (!q) return allNotes;
+      return allNotes.filter(n =>
+        n.text.toLowerCase().includes(q) ||
+        getBookTitle('/reader/' + n.bookSlug).toLowerCase().includes(q) ||
+        n.path.toLowerCase().includes(q)
+      );
+    }
+
+    // ── Export ────────────────────────────────────────────────
+    function exportNotes() {
+      const notes = getFilteredNotes();
+      if (!notes.length) return;
+
+      let text = 'My Notes from ajew.org\n';
+      text += 'Exported: ' + new Date().toLocaleString() + '\n';
+      text += '='.repeat(50) + '\n\n';
+
+      const groups = new Map();
+      for (const n of notes) {
+        const title = getBookTitle('/reader/' + n.bookSlug);
+        if (!groups.has(title)) groups.set(title, []);
+        groups.get(title).push(n);
+      }
+
+      for (const [title, bookNotes] of groups) {
+        text += title + '\n';
+        text += '-'.repeat(title.length) + '\n';
+        for (const n of bookNotes) {
+          const pageLabel = getPageLabel(n.path);
+          const dateStr = formatDate(n.updated || n.created);
+          text += '\n  [' + (pageLabel || n.path) + ', Segment ' + n.segmentIndex + ']';
+          if (dateStr) text += '  (' + dateStr + ')';
+          text += '\n  ' + n.text + '\n';
+        }
+        text += '\n';
+      }
+
+      const blob = new Blob([text], { type: 'text/plain' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'ajew-notes-' + new Date().toISOString().slice(0,10) + '.txt';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    // ── Delete ───────────────────────────────────────────────
+    function deleteNote(key, seg) {
+      try {
+        const data = JSON.parse(localStorage.getItem(key));
+        if (data && data[seg]) {
+          delete data[seg];
+          if (Object.keys(data).length === 0) {
+            localStorage.removeItem(key);
+          } else {
+            localStorage.setItem(key, JSON.stringify(data));
+          }
+        }
+      } catch(e) {
+        console.error('Error deleting note:', e);
+      }
+      allNotes = gatherNotes();
+      render(getFilteredNotes());
+    }
+
+    // ── Init ─────────────────────────────────────────────────
+    async function init() {
+      await loadCatalog();
+      allNotes = gatherNotes();
+      render(getFilteredNotes());
+
+      document.getElementById('search-input').addEventListener('input', function() {
+        render(getFilteredNotes());
+      });
+
+      document.getElementById('sort-select').addEventListener('change', function() {
+        render(getFilteredNotes());
+      });
+
+      document.getElementById('export-btn').addEventListener('click', exportNotes);
+
+      document.getElementById('delete-cancel').addEventListener('click', function() {
+        pendingDelete = null;
+        document.getElementById('delete-modal').style.display = 'none';
+      });
+
+      document.getElementById('delete-confirm').addEventListener('click', function() {
+        if (pendingDelete) {
+          deleteNote(pendingDelete.key, pendingDelete.seg);
+          pendingDelete = null;
+        }
+        document.getElementById('delete-modal').style.display = 'none';
+      });
+
+      // Close modal on overlay click
+      document.getElementById('delete-modal').addEventListener('click', function(e) {
+        if (e.target === this) {
+          pendingDelete = null;
+          this.style.display = 'none';
+        }
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  })();
+  </script>
+</Layout>
+
+<style>
+  .notes-page {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  .notes-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .notes-header h1 {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 2.4rem;
+    color: #1a365d;
+    margin-bottom: 0.3rem;
+  }
+
+  .subtitle {
+    color: #718096;
+    font-size: 1.05rem;
+  }
+
+  /* ── Summary bar ─────────────────────────────────────────── */
+  .summary-bar {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    background: #f0ebe0;
+    border-radius: 12px;
+    padding: 1.2rem 2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .summary-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.15rem;
+  }
+
+  .stat-number {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #1a365d;
+  }
+
+  .stat-label {
+    font-size: 0.8rem;
+    color: #718096;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  /* ── Toolbar ─────────────────────────────────────────────── */
+  .notes-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .toolbar-left {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .toolbar-right {
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+  }
+
+  .search-box {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border: 1.5px solid #cbd5e0;
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+    gap: 0.5rem;
+    transition: border-color 0.2s;
+  }
+
+  .search-box:focus-within {
+    border-color: #1a365d;
+  }
+
+  .search-box svg {
+    color: #a0aec0;
+    flex-shrink: 0;
+  }
+
+  .search-box input {
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 0.95rem;
+    width: 100%;
+    color: #2d3748;
+  }
+
+  .search-box input::placeholder {
+    color: #a0aec0;
+  }
+
+  select {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 0.85rem;
+    padding: 0.5rem 0.7rem;
+    border: 1.5px solid #cbd5e0;
+    border-radius: 8px;
+    background: #fff;
+    color: #2d3748;
+    cursor: pointer;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.5rem 0.9rem;
+    border-radius: 8px;
+    border: 1.5px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn-outline {
+    background: #fff;
+    color: #1a365d;
+    border-color: #cbd5e0;
+  }
+
+  .btn-outline:hover {
+    border-color: #1a365d;
+    background: #f7fafc;
+  }
+
+  .btn-danger {
+    background: #e53e3e;
+    color: #fff;
+    border-color: #e53e3e;
+  }
+
+  .btn-danger:hover {
+    background: #c53030;
+  }
+
+  /* ── Empty state ─────────────────────────────────────────── */
+  .empty-state {
+    text-align: center;
+    padding: 4rem 1rem;
+    color: #a0aec0;
+  }
+
+  .empty-state h2 {
+    font-family: 'Frank Ruhl Libre', serif;
+    color: #718096;
+    margin: 1rem 0 0.5rem;
+    font-size: 1.5rem;
+  }
+
+  .empty-state p {
+    font-size: 1rem;
+    color: #718096;
+  }
+
+  .empty-state a {
+    color: #1a365d;
+    font-weight: 600;
+    text-decoration: underline;
+  }
+
+  /* ── Book group ──────────────────────────────────────────── */
+  .book-group {
+    margin-bottom: 2rem;
+  }
+
+  .book-group-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: 2px solid #f0ebe0;
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .book-group-header h2 {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 1.3rem;
+    color: #1a365d;
+  }
+
+  .book-count {
+    font-size: 0.82rem;
+    color: #a0aec0;
+    font-weight: 600;
+  }
+
+  /* ── Note card ───────────────────────────────────────────── */
+  .note-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 0.9rem 1rem;
+    margin-bottom: 0.6rem;
+    transition: box-shadow 0.15s;
+  }
+
+  .note-card:hover {
+    box-shadow: 0 2px 8px rgba(26,54,93,0.08);
+  }
+
+  .note-top {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.45rem;
+    flex-wrap: wrap;
+  }
+
+  .color-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .note-location {
+    font-size: 0.82rem;
+    color: #1a365d;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .note-location:hover {
+    text-decoration: underline;
+    color: #c53030;
+  }
+
+  .note-date {
+    font-size: 0.78rem;
+    color: #a0aec0;
+    margin-left: auto;
+  }
+
+  .delete-note-btn {
+    background: none;
+    border: none;
+    color: #cbd5e0;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0 0.3rem;
+    line-height: 1;
+    transition: color 0.15s;
+  }
+
+  .delete-note-btn:hover {
+    color: #e53e3e;
+  }
+
+  .note-text {
+    font-size: 0.95rem;
+    color: #4a5568;
+    line-height: 1.55;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  /* ── Delete modal ────────────────────────────────────────── */
+  .modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.35);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-box {
+    background: #fff;
+    border-radius: 14px;
+    padding: 1.8rem 2rem;
+    max-width: 380px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.18);
+  }
+
+  .modal-box h3 {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 1.25rem;
+    color: #1a365d;
+    margin-bottom: 0.5rem;
+  }
+
+  .modal-box p {
+    font-size: 0.92rem;
+    color: #718096;
+    margin-bottom: 1.3rem;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 0.7rem;
+    justify-content: center;
+  }
+
+  /* ── Responsive ──────────────────────────────────────────── */
+  @media (max-width: 600px) {
+    .notes-page {
+      padding: 1.2rem 1rem 3rem;
+    }
+
+    .notes-header h1 {
+      font-size: 1.8rem;
+    }
+
+    .summary-bar {
+      padding: 1rem 1rem;
+      gap: 1rem;
+    }
+
+    .stat-number {
+      font-size: 1.3rem;
+    }
+
+    .notes-toolbar {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .toolbar-right {
+      justify-content: flex-end;
+    }
+
+    .note-top {
+      gap: 0.35rem;
+    }
+
+    .note-date {
+      margin-left: 0;
+      width: 100%;
+      order: 5;
+    }
+  }
+</style>

@@ -57,6 +57,17 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
             <button type="button" class="order-btn active" data-order="consecutive" title="Letters must match consecutive words in order">Specific Order</button>
             <button type="button" class="order-btn" data-order="any" title="Letters can appear in any order across the text">Any Order</button>
           </div>
+          <div class="mode-group min-words-group" id="minWordsGroup">
+            <span class="mode-label">Min match:</span>
+            <select id="minWordsSelect" class="min-words-select" title="Minimum number of words that must match">
+              <option value="0">Any 1+</option>
+              <option value="2">At least 2</option>
+              <option value="3">At least 3</option>
+              <option value="4">At least 4</option>
+              <option value="5">At least 5</option>
+            </select>
+            <span class="mode-label" id="minWordsHint">of <span id="totalWordsCount">0</span> words</span>
+          </div>
         </div>
       )}
     </form>
@@ -75,7 +86,8 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
       books: [],
       searchType: 'google',
       proximity: 5,
-      acronymOrder: 'consecutive'
+      acronymOrder: 'consecutive',
+      minWords: 0
     },
     isLoading: false
   };
@@ -120,6 +132,10 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
 
     // Mode buttons
     const orderGroup = document.getElementById('acronymOrderGroup');
+    const minWordsGroup = document.getElementById('minWordsGroup');
+    const minWordsSelect = document.getElementById('minWordsSelect') as HTMLSelectElement;
+    const totalWordsCount = document.getElementById('totalWordsCount');
+
     document.querySelectorAll('.mode-btn[data-mode]').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.mode-btn[data-mode]').forEach(b => b.classList.remove('active'));
@@ -130,9 +146,36 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
         if (orderGroup) {
           orderGroup.style.display = (mode === 'acronym' || mode === 'endletters') ? 'flex' : 'none';
         }
+        // Show minWords for google/any modes
+        if (minWordsGroup) {
+          minWordsGroup.style.display = (mode === 'google' || mode === 'any') ? 'flex' : 'none';
+        }
         if (searchState.query) performSearch();
       });
     });
+
+    // Min words select
+    if (minWordsSelect) {
+      minWordsSelect.addEventListener('change', () => {
+        searchState.advancedOptions.minWords = parseInt(minWordsSelect.value, 10);
+        if (searchState.query) performSearch();
+      });
+    }
+
+    // Update word count hint when search input changes
+    if (searchInput) {
+      searchInput.addEventListener('input', () => {
+        const words = searchInput.value.trim().split(/\s+/).filter((w: string) => w.length > 0);
+        if (totalWordsCount) totalWordsCount.textContent = String(words.length);
+        // Update select options to not exceed word count
+        if (minWordsSelect) {
+          for (const opt of minWordsSelect.options) {
+            const val = parseInt(opt.value, 10);
+            opt.disabled = val > words.length && val > 0;
+          }
+        }
+      });
+    }
 
     // Order toggle buttons (for acronym/endletters)
     document.querySelectorAll('.order-btn[data-order]').forEach(btn => {
@@ -342,6 +385,29 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
     border-top: 1px solid #e5e7eb;
     padding-top: 6px;
     margin-top: 4px;
+  }
+
+  .min-words-group {
+    align-items: center;
+    border-top: 1px solid #e5e7eb;
+    padding-top: 6px;
+    margin-top: 4px;
+  }
+
+  .min-words-select {
+    padding: 3px 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    background: white;
+    color: #4b5563;
+    cursor: pointer;
+    font-weight: 500;
+  }
+
+  .min-words-select:focus {
+    outline: none;
+    border-color: #6366f1;
   }
 
   @media (max-width: 640px) {

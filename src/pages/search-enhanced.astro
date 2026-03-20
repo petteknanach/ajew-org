@@ -108,6 +108,7 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         if (advanced.searchType) url.searchParams.set('searchType', advanced.searchType);
         if (advanced.proximity > 0) url.searchParams.set('proximity', String(advanced.proximity));
         if (advanced.acronymOrder) url.searchParams.set('acronymOrder', advanced.acronymOrder);
+        if (advanced.minWords > 0) url.searchParams.set('minWords', String(advanced.minWords));
         if (advanced.books?.length > 0) url.searchParams.set('books', advanced.books.join(','));
 
         fetch(url.toString())
@@ -146,7 +147,8 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
           const subcategory = result.subcategory || '';
           const wordCount = result.wordCount || 0;
           const relevance = result.relevance || 0;
-          
+          const extraInfo = result.extraInfo || '';
+
           return `
             <div class="result-item">
               <div class="result-top">
@@ -154,6 +156,7 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
                   <a href="${link}">${title}</a>
                 </h4>
                 <div class="result-tags">
+                  ${extraInfo ? `<span class="result-match-info">${extraInfo}</span>` : ''}
                   ${subcategory ? `<span class="result-subcategory">${subcategory}</span>` : ''}
                   ${wordCount ? `<span class="result-stat">${wordCount} words</span>` : ''}
                   ${relevance ? `<span class="result-relevance">${relevance}%</span>` : ''}
@@ -418,11 +421,16 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
       flex-wrap: wrap;
     }
 
-    .result-subcategory, .result-stat, .result-relevance {
+    .result-subcategory, .result-stat, .result-relevance, .result-match-info {
       padding: 0.15rem 0.45rem;
       border-radius: 4px;
       font-size: 0.7rem;
       font-weight: 500;
+    }
+
+    .result-match-info {
+      background: #fef3c7;
+      color: #92400e;
     }
 
     .result-subcategory {
