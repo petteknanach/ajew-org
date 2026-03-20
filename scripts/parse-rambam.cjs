@@ -259,7 +259,7 @@ try {
 
 if (!torahData && !error) error = 'Content not available';
 
-const bookName = 'Rambam - ${book.en}';
+const bookName = "Rambam - ${book.en}";
 const bookHebrew = 'רמב\\"ם - ${book.he}';
 
 const pageTitle = torahData
