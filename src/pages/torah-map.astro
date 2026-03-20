@@ -117,19 +117,41 @@ import Layout from '../layouts/Layout.astro';
     flowLookup = {};
     reverseLookup = {};
     coLookup = {};
-    for (const e of graphData.flowEdges) {
-      if (!flowLookup[e.from]) flowLookup[e.from] = [];
-      flowLookup[e.from].push({ to: e.to, netFlow: e.netFlow });
-      if (!reverseLookup[e.to]) reverseLookup[e.to] = [];
-      reverseLookup[e.to].push({ from: e.from, netFlow: e.netFlow });
+
+    // Support both old format (flowEdges/coEdges) and new format (concepts with connections)
+    if (graphData.flowEdges) {
+      // Old format
+      for (const e of graphData.flowEdges) {
+        if (!flowLookup[e.from]) flowLookup[e.from] = [];
+        flowLookup[e.from].push({ to: e.to, netFlow: e.netFlow });
+        if (!reverseLookup[e.to]) reverseLookup[e.to] = [];
+        reverseLookup[e.to].push({ from: e.from, netFlow: e.netFlow });
+      }
+      for (const e of graphData.coEdges) {
+        if (!coLookup[e.source]) coLookup[e.source] = [];
+        coLookup[e.source].push({ to: e.target, weight: e.weight });
+        if (!coLookup[e.target]) coLookup[e.target] = [];
+        coLookup[e.target].push({ to: e.source, weight: e.weight });
+      }
+    } else if (graphData.concepts) {
+      // New format: concepts array with embedded connections
+      // Convert to nodes array for compatibility
+      graphData.nodes = graphData.concepts.sort((a, b) => b.count - a.count);
+      // Build co-occurrence lookup from connections and treat as flow edges too
+      for (const concept of graphData.concepts) {
+        if (!concept.connections) continue;
+        coLookup[concept.id] = [];
+        flowLookup[concept.id] = [];
+        for (const conn of concept.connections) {
+          coLookup[concept.id].push({ to: conn.to, weight: conn.weight });
+          flowLookup[concept.id].push({ to: conn.to, netFlow: conn.weight });
+          // Build reverse lookup
+          if (!reverseLookup[conn.to]) reverseLookup[conn.to] = [];
+          reverseLookup[conn.to].push({ from: concept.id, netFlow: conn.weight });
+        }
+      }
     }
-    // Build co-occurrence lookup (bidirectional)
-    for (const e of graphData.coEdges) {
-      if (!coLookup[e.source]) coLookup[e.source] = [];
-      coLookup[e.source].push({ to: e.target, weight: e.weight });
-      if (!coLookup[e.target]) coLookup[e.target] = [];
-      coLookup[e.target].push({ to: e.source, weight: e.weight });
-    }
+
     // Sort by strength
     for (const k in flowLookup) flowLookup[k].sort((a, b) => b.netFlow - a.netFlow);
     for (const k in reverseLookup) reverseLookup[k].sort((a, b) => b.netFlow - a.netFlow);
@@ -699,7 +721,7 @@ import Layout from '../layouts/Layout.astro';
 
   function renderCloud() {
     const cloud = document.getElementById('conceptCloud');
-    const maxOcc = graphData.nodes[0]?.occurrences || 1;
+    const maxOcc = graphData.nodes[0]?.count || 1;
 
     const cats = { core: 'Core / יסודות', middos: 'Character / מדות', process: 'Process / תהליכים',
       torah: 'Torah / תורה', life: 'Life / חיים', nanach: 'Na Nach', place: 'Places', time: 'Times' };
@@ -717,14 +739,15 @@ import Layout from '../layouts/Layout.astro';
 
       html += `<div class="cat-group"><h4 class="cat-label">${label}</h4><div class="cat-chips">`;
       for (const node of nodes) {
-        const size = 0.7 + (node.occurrences / maxOcc) * 1.0;
-        const opacity = 0.5 + (node.docs / graphData.meta.totalDocuments) * 2;
+        const size = 0.7 + (node.count / maxOcc) * 1.0;
+        const totalDocs = graphData.meta?.totalDocuments || graphData.totalDocuments || 22044;
+        const opacity = 0.5 + (node.count / totalDocs) * 2;
         html += `<button class="concept-chip" onclick="startPathway('${node.id}');selectConcept('${node.id}')"
           style="font-size:${size}em; opacity:${Math.min(1, opacity)};"
-          title="${node.en}: ${node.occurrences} occurrences in ${node.docs} texts">
+          title="${node.en}: ${node.count} occurrences in ${node.count} texts">
           <span class="chip-he">${node.id}</span>
           <span class="chip-en">${node.en}</span>
-          <span class="chip-count">${node.docs}</span>
+          <span class="chip-count">${node.count}</span>
         </button>`;
       }
       html += '</div></div>';
@@ -742,7 +765,7 @@ import Layout from '../layouts/Layout.astro';
       <button class="back-to-cloud" onclick="document.getElementById('conceptView').style.display='none';document.getElementById('conceptCloud').scrollIntoView({behavior:'smooth'});">&larr; Back to all concepts</button>
       <div class="ch-hebrew">${node.id}</div>
       <div class="ch-english">${node.en}</div>
-      <div class="ch-stats">${node.occurrences.toLocaleString()} occurrences across ${node.docs.toLocaleString()} teachings</div>
+      <div class="ch-stats">${node.count.toLocaleString()} texts contain this concept</div>
       <button class="start-path-btn" onclick="startPathway('${node.id}')">Start pathway from here</button>
     `;
 

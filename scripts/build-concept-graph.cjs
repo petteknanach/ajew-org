@@ -1,336 +1,214 @@
 /**
- * Build a concept graph from all Breslov teachings.
+ * Build a concept co-occurrence graph from the search index.
  *
- * This extracts key concepts from every torah/section and builds:
- * 1. A vocabulary of frequently-used spiritual concepts
- * 2. Co-occurrence data (which concepts appear together)
- * 3. Sequential/progression data (which concepts appear BEFORE and AFTER each other within a torah)
- * 4. A directed graph showing concept pathways
+ * Reads public/data/search-index-v2.json, finds ~50 key Breslov/Torah concepts
+ * in each document, builds a co-occurrence matrix, and outputs
+ * public/data/concept-graph.json with concept nodes and weighted edges.
  *
- * Output: public/data/concept-graph.json
+ * Output format:
+ * {
+ *   "concepts": [{ id, he, en, count, connections: [{ to, weight }] }],
+ *   "generated": "ISO timestamp",
+ *   "totalDocuments": N,
+ *   "totalConcepts": N
+ * }
  */
 
 const fs = require('fs');
 const path = require('path');
 
-const READER_BASE = path.join(__dirname, '../public/reader');
-const OUTPUT = path.join(__dirname, '../public/data/concept-graph.json');
+const ROOT = path.resolve(__dirname, '..');
+const INDEX_PATH = path.join(ROOT, 'public/data/search-index-v2.json');
+const OUTPUT_PATH = path.join(ROOT, 'public/data/concept-graph.json');
 
-// ── Key spiritual concepts in Rabbi Nachman's teachings ──
-// Hebrew keyword → English translation + category
-const CONCEPT_VOCAB = {
-  // Core spiritual concepts
-  'אמונה': { en: 'Faith', cat: 'core' },
-  'תפלה': { en: 'Prayer', cat: 'core' },
-  'תשובה': { en: 'Repentance', cat: 'core' },
-  'שמחה': { en: 'Joy', cat: 'core' },
-  'התבודדות': { en: 'Hisbodidus', cat: 'core' },
-  'צדיק': { en: 'Tzaddik', cat: 'core' },
-  'תורה': { en: 'Torah', cat: 'core' },
-  'אמת': { en: 'Truth', cat: 'core' },
-  'חסד': { en: 'Kindness', cat: 'core' },
-  'דעת': { en: 'Knowledge/Awareness', cat: 'core' },
-  'רצון': { en: 'Will/Desire', cat: 'core' },
-  'ביטול': { en: 'Nullification', cat: 'core' },
-
-  // Middos / Character traits
-  'ענוה': { en: 'Humility', cat: 'middos' },
-  'גאוה': { en: 'Pride', cat: 'middos' },
-  'כעס': { en: 'Anger', cat: 'middos' },
-  'סבלנות': { en: 'Patience', cat: 'middos' },
-  'יראה': { en: 'Fear of God', cat: 'middos' },
-  'אהבה': { en: 'Love', cat: 'middos' },
-  'קדושה': { en: 'Holiness', cat: 'middos' },
-  'טהרה': { en: 'Purity', cat: 'middos' },
-  'חכמה': { en: 'Wisdom', cat: 'middos' },
-  'בינה': { en: 'Understanding', cat: 'middos' },
-  'עצבות': { en: 'Sadness', cat: 'middos' },
-  'תאוה': { en: 'Desire/Lust', cat: 'middos' },
-  'קנאה': { en: 'Jealousy', cat: 'middos' },
-  'שלום': { en: 'Peace', cat: 'middos' },
-  'חן': { en: 'Grace/Favor', cat: 'middos' },
-  'בטחון': { en: 'Trust', cat: 'middos' },
-  'זכרון': { en: 'Memory', cat: 'middos' },
-
-  // Spiritual processes
-  'תיקון': { en: 'Rectification', cat: 'process' },
-  'בריאה': { en: 'Creation', cat: 'process' },
-  'גאולה': { en: 'Redemption', cat: 'process' },
-  'משיח': { en: 'Messiah', cat: 'process' },
-  'נשמה': { en: 'Soul', cat: 'process' },
-  'ניצוצות': { en: 'Sparks', cat: 'process' },
-  'עליה': { en: 'Ascent', cat: 'process' },
-  'ירידה': { en: 'Descent', cat: 'process' },
-  'דבקות': { en: 'Attachment to God', cat: 'process' },
-  'התקרבות': { en: 'Drawing Close', cat: 'process' },
-  'התחזקות': { en: 'Strengthening', cat: 'process' },
-
-  // Torah concepts
-  'שבת': { en: 'Shabbos', cat: 'torah' },
-  'ברית': { en: 'Covenant', cat: 'torah' },
-  'צדקה': { en: 'Charity', cat: 'torah' },
-  'מצוה': { en: 'Mitzvah', cat: 'torah' },
-  'לימוד': { en: 'Study', cat: 'torah' },
-  'הלכה': { en: 'Halacha', cat: 'torah' },
-  'תהלים': { en: 'Psalms', cat: 'torah' },
-  'כשרות': { en: 'Kashrus', cat: 'torah' },
-
-  // Places/times
-  'ארץ ישראל': { en: 'Land of Israel', cat: 'place' },
-  'ראש השנה': { en: 'Rosh Hashana', cat: 'time' },
-  'פסח': { en: 'Pesach', cat: 'time' },
-
-  // Na Nach specific
-  'פתק': { en: 'The Petek', cat: 'nanach' },
-  'נ נח נחמ נחמן': { en: 'Na Nach Nachma Nachman', cat: 'nanach' },
-  'אומן': { en: 'Uman', cat: 'nanach' },
-
-  // Key relationships
-  'פרנסה': { en: 'Livelihood', cat: 'life' },
-  'שידוך': { en: 'Marriage Match', cat: 'life' },
-  'רפואה': { en: 'Healing', cat: 'life' },
-  'בנים': { en: 'Children', cat: 'life' },
-  'חלומות': { en: 'Dreams', cat: 'life' },
-  'מחלוקת': { en: 'Controversy', cat: 'life' },
-  'שקר': { en: 'Falsehood', cat: 'life' },
-  'דיבור': { en: 'Speech', cat: 'core' },
-  'שתיקה': { en: 'Silence', cat: 'core' },
-  'ניגון': { en: 'Melody', cat: 'core' },
-  'ריקוד': { en: 'Dance', cat: 'core' },
-};
-
+// Strip nikud from text for matching
 function stripNikud(text) {
-  return text.replace(/[\u0591-\u05C7]/g, '');
+  return text.replace(/[\u0591-\u05BD\u05BF-\u05C7]/g, '');
 }
 
+// ~50 important Breslov/Torah concepts
+// Each: [id, hebrew (no nikud), english label]
+const CONCEPTS = [
+  // Core Breslov
+  ['teshuva', 'תשובה', 'Repentance'],
+  ['simcha', 'שמחה', 'Joy'],
+  ['emuna', 'אמונה', 'Faith'],
+  ['tefilla', 'תפילה', 'Prayer'],
+  ['tzaddik', 'צדיק', 'Tzaddik'],
+  ['hitbodedut', 'התבודדות', 'Meditation'],
+  ['pshitus', 'פשיטות', 'Simplicity'],
+  ['emet', 'אמת', 'Truth'],
+  ['anava', 'ענוה', 'Humility'],
+  ['azut_dkedusha', 'עזות דקדושה', 'Holy Boldness'],
+  ['nekudot_tovot', 'נקודות טובות', 'Good Points'],
+  ['tikun_habrit', 'תיקון הברית', 'Covenant Repair'],
+  ['ratzon', 'רצון', 'Will / Desire'],
+  ['bitachon', 'בטחון', 'Trust in God'],
+  ['dvekut', 'דבקות', 'Clinging to God'],
+  ['hispaalut', 'התפעלות', 'Enthusiasm'],
+  ['dibbur', 'דיבור', 'Speech'],
+
+  // Sefirot / Consciousness
+  ['daat', 'דעת', 'Knowledge'],
+  ['chochma', 'חכמה', 'Wisdom'],
+  ['bina', 'בינה', 'Understanding'],
+  ['mochin', 'מוחין', 'Consciousness'],
+  ['chesed', 'חסד', 'Kindness'],
+  ['din', 'דין', 'Judgment'],
+  ['rachamim', 'רחמים', 'Mercy'],
+  ['malchut', 'מלכות', 'Kingship'],
+  ['tiferet', 'תפארת', 'Beauty / Harmony'],
+
+  // Torah / Mitzvot
+  ['torah', 'תורה', 'Torah'],
+  ['shabbat', 'שבת', 'Shabbat'],
+  ['rosh_hashana', 'ראש השנה', 'Rosh Hashana'],
+  ['eretz_yisrael', 'ארץ ישראל', 'Land of Israel'],
+  ['tzedaka', 'צדקה', 'Charity'],
+  ['brit_mila', 'ברית מילה', 'Circumcision'],
+  ['tefillin', 'תפילין', 'Tefillin'],
+  ['mikva', 'מקוה', 'Mikva'],
+  ['mitzva', 'מצוה', 'Mitzvah'],
+  ['tehillim', 'תהלים', 'Psalms'],
+
+  // Middot / Character
+  ['shalom', 'שלום', 'Peace'],
+  ['kavod', 'כבוד', 'Honor'],
+  ['mamon', 'ממון', 'Money'],
+  ['machloket', 'מחלוקת', 'Controversy'],
+  ['gaava', 'גאוה', 'Pride'],
+  ['taava', 'תאוה', 'Desire / Lust'],
+  ['yiush', 'יאוש', 'Despair'],
+  ['ahava', 'אהבה', 'Love'],
+  ['yira', 'יראה', 'Fear of God'],
+
+  // Redemption / Spiritual
+  ['geula', 'גאולה', 'Redemption'],
+  ['mashiach', 'משיח', 'Mashiach'],
+  ['neshama', 'נשמה', 'Soul'],
+  ['olam_haba', 'עולם הבא', 'World to Come'],
+  ['yetzer_hara', 'יצר הרע', 'Evil Inclination'],
+  ['kedusha', 'קדושה', 'Holiness'],
+  ['niggun', 'ניגון', 'Melody / Song'],
+  ['tikun', 'תיקון', 'Rectification'],
+  ['tzimtzum', 'צמצום', 'Contraction'],
+];
+
 function main() {
-  console.log('Building concept graph from all teachings...\n');
+  console.log('Building concept co-occurrence graph from search index...\n');
 
-  // Load all documents
-  const catalog = JSON.parse(fs.readFileSync(path.join(READER_BASE, 'catalog.json'), 'utf8'));
-  const documents = [];
+  // Load search index
+  if (!fs.existsSync(INDEX_PATH)) {
+    console.error('Search index not found at:', INDEX_PATH);
+    process.exit(1);
+  }
 
-  for (const book of catalog.books) {
-    for (const part of book.parts) {
-      const partDir = part.indexUrl.replace(/\/index\.json$/, '').replace(/^\/reader\//, '');
-      const fullDir = path.join(READER_BASE, partDir);
-      if (!fs.existsSync(fullDir)) continue;
+  console.log('Loading search index...');
+  const raw = fs.readFileSync(INDEX_PATH, 'utf8');
+  const index = JSON.parse(raw);
+  const docs = index.documents;
+  console.log(`  Loaded ${docs.length} documents\n`);
 
-      const files = fs.readdirSync(fullDir).filter(f => f.endsWith('.json') && f !== 'index.json');
-      for (const file of files) {
-        try {
-          const data = JSON.parse(fs.readFileSync(path.join(fullDir, file), 'utf8'));
-          const fullText = stripNikud(data.segments.map(s => s.he).join(' '));
-          documents.push({
-            id: data.id,
-            book: book.id,
-            bookTitle: book.title,
-            bookHebrew: book.hebrewTitle,
-            part: data.part,
-            num: data.torah || data.displayNumber,
-            title: data.hebrewTitle,
-            url: data.navigation?.nextUrl ? data.navigation.nextUrl.replace(/\/\d+$/, '/' + (data.torah || data.displayNumber)) : `/reader/${book.id}/${data.part}/${data.torah || data.displayNumber}`,
-            text: fullText,
-            segments: data.segments.map(s => stripNikud(s.he)),
-            hasEnglish: data.hasEnglish
-          });
-        } catch (e) { /* skip bad files */ }
+  // Strip nikud from concept terms (in case any snuck in)
+  const concepts = CONCEPTS.map(([id, he, en]) => ({
+    id,
+    he: stripNikud(he),
+    en,
+    count: 0
+  }));
+
+  const n = concepts.length;
+
+  // Phase 1: For each document, find which concepts appear
+  console.log('Scanning documents for concept occurrences...');
+  const docConcepts = new Array(docs.length); // doc index -> array of concept indices
+
+  for (let di = 0; di < docs.length; di++) {
+    const content = docs[di].content || '';
+    const found = [];
+    for (let ci = 0; ci < n; ci++) {
+      if (content.includes(concepts[ci].he)) {
+        found.push(ci);
+        concepts[ci].count++;
+      }
+    }
+    docConcepts[di] = found;
+  }
+
+  // Report concept counts
+  console.log('\nConcept occurrence counts (docs containing concept):');
+  const sorted = [...concepts].sort((a, b) => b.count - a.count);
+  for (const c of sorted) {
+    console.log(`  ${c.he} (${c.en}): ${c.count} docs`);
+  }
+
+  // Phase 2: Build co-occurrence matrix
+  console.log('\nBuilding co-occurrence matrix...');
+  const cooccur = new Int32Array(n * n);
+
+  for (let di = 0; di < docs.length; di++) {
+    const found = docConcepts[di];
+    for (let i = 0; i < found.length; i++) {
+      for (let j = i + 1; j < found.length; j++) {
+        const a = found[i];
+        const b = found[j];
+        cooccur[a * n + b]++;
+        cooccur[b * n + a]++;
       }
     }
   }
 
-  console.log(`Loaded ${documents.length} documents\n`);
+  // Phase 3: For each concept, find top 8 co-occurring concepts
+  console.log('Finding top connections per concept...');
+  const MAX_CONNECTIONS = 8;
 
-  // ── Step 1: Count concept occurrences per document ──
-  const conceptDocs = {}; // concept -> [{ docIdx, count, positions }]
-  const docConcepts = {}; // docIdx -> [{ concept, count, firstPos }]
-  const conceptKeys = Object.keys(CONCEPT_VOCAB);
+  const result = {
+    concepts: [],
+    generated: new Date().toISOString(),
+    totalDocuments: docs.length,
+    totalConcepts: n
+  };
 
-  for (let d = 0; d < documents.length; d++) {
-    const doc = documents[d];
-    const text = doc.text;
-    docConcepts[d] = [];
-
-    for (const concept of conceptKeys) {
-      // Count occurrences and find position (as fraction of text length)
-      let count = 0;
-      let firstPos = -1;
-      let searchFrom = 0;
-      while (true) {
-        const idx = text.indexOf(concept, searchFrom);
-        if (idx === -1) break;
-        count++;
-        if (firstPos === -1) firstPos = idx / text.length; // Normalized position 0-1
-        searchFrom = idx + concept.length;
-      }
-
-      if (count > 0) {
-        if (!conceptDocs[concept]) conceptDocs[concept] = [];
-        conceptDocs[concept].push({ docIdx: d, count, firstPos });
-        docConcepts[d].push({ concept, count, firstPos });
+  for (let ci = 0; ci < n; ci++) {
+    const c = concepts[ci];
+    // Gather all co-occurrence weights for this concept
+    const pairs = [];
+    for (let oi = 0; oi < n; oi++) {
+      if (oi === ci) continue;
+      const w = cooccur[ci * n + oi];
+      if (w > 0) {
+        pairs.push({ to: concepts[oi].id, weight: w });
       }
     }
+    // Sort by weight descending, take top N
+    pairs.sort((a, b) => b.weight - a.weight);
+    const connections = pairs.slice(0, MAX_CONNECTIONS);
 
-    // Sort by position in text (for progression analysis)
-    docConcepts[d].sort((a, b) => a.firstPos - b.firstPos);
-  }
-
-  // ── Step 2: Build co-occurrence matrix ──
-  // How often do two concepts appear in the same document?
-  const cooccurrence = {}; // "conceptA|conceptB" -> count
-
-  for (const d in docConcepts) {
-    const concepts = docConcepts[d].map(c => c.concept);
-    for (let i = 0; i < concepts.length; i++) {
-      for (let j = i + 1; j < concepts.length; j++) {
-        const key = [concepts[i], concepts[j]].sort().join('|');
-        cooccurrence[key] = (cooccurrence[key] || 0) + 1;
-      }
-    }
-  }
-
-  // ── Step 3: Build progression/flow data ──
-  // When concept A appears BEFORE concept B in a torah, it suggests A leads to B
-  const flow = {}; // "from|to" -> count (directed)
-
-  for (const d in docConcepts) {
-    const concepts = docConcepts[d];
-    if (concepts.length < 2) continue;
-
-    // For each pair where A appears before B
-    for (let i = 0; i < concepts.length; i++) {
-      for (let j = i + 1; j < concepts.length; j++) {
-        // Only count if positions are meaningfully different (not in same sentence)
-        if (concepts[j].firstPos - concepts[i].firstPos > 0.05) {
-          const key = `${concepts[i].concept}|${concepts[j].concept}`;
-          flow[key] = (flow[key] || 0) + 1;
-        }
-      }
-    }
-  }
-
-  // ── Step 4: Build the output graph ──
-
-  // Concept nodes
-  const nodes = [];
-  for (const [concept, info] of Object.entries(CONCEPT_VOCAB)) {
-    const docs = conceptDocs[concept] || [];
-    if (docs.length === 0) continue;
-
-    const totalOccurrences = docs.reduce((s, d) => s + d.count, 0);
-
-    // Find top books this concept appears in
-    const bookCounts = {};
-    for (const d of docs) {
-      const bookId = documents[d.docIdx].book;
-      bookCounts[bookId] = (bookCounts[bookId] || 0) + d.count;
-    }
-    const topBooks = Object.entries(bookCounts)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 5)
-      .map(([id, count]) => ({ id, count }));
-
-    nodes.push({
-      id: concept,
-      en: info.en,
-      cat: info.cat,
-      docs: docs.length,
-      occurrences: totalOccurrences,
-      topBooks,
+    result.concepts.push({
+      id: c.id,
+      he: c.he,
+      en: c.en,
+      count: c.count,
+      connections
     });
   }
 
-  nodes.sort((a, b) => b.occurrences - a.occurrences);
+  // Sort concepts by count descending in output
+  result.concepts.sort((a, b) => b.count - a.count);
 
-  // Edges (co-occurrence)
-  const coEdges = Object.entries(cooccurrence)
-    .filter(([, count]) => count >= 5) // Minimum 5 co-occurrences
-    .map(([key, count]) => {
-      const [a, b] = key.split('|');
-      return { source: a, target: b, weight: count, type: 'cooccurrence' };
-    })
-    .sort((a, b) => b.weight - a.weight);
+  // Save
+  fs.mkdirSync(path.dirname(OUTPUT_PATH), { recursive: true });
+  fs.writeFileSync(OUTPUT_PATH, JSON.stringify(result, null, 2), 'utf8');
 
-  // Flow edges (directed progression)
-  const flowEdges = Object.entries(flow)
-    .filter(([, count]) => count >= 3) // Minimum 3 progressions
-    .map(([key, count]) => {
-      const [from, to] = key.split('|');
-      // Check if reverse flow is also significant
-      const reverseKey = `${to}|${from}`;
-      const reverseCount = flow[reverseKey] || 0;
-      // Net direction: if A->B is much stronger than B->A, it's a strong flow
-      const netFlow = count - reverseCount;
-      return { from, to, count, reverseCount, netFlow, type: 'flow' };
-    })
-    .filter(e => e.netFlow > 0) // Only keep net positive flows
-    .sort((a, b) => b.netFlow - a.netFlow);
-
-  // Sample teachings for each concept (top 5 most relevant)
-  const conceptTeachings = {};
-  for (const concept of conceptKeys) {
-    const docs = conceptDocs[concept] || [];
-    if (docs.length === 0) continue;
-
-    const top = docs
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 8)
-      .map(d => {
-        const doc = documents[d.docIdx];
-        // Get a snippet around the first occurrence
-        const text = doc.text;
-        const idx = text.indexOf(concept);
-        const start = Math.max(0, idx - 60);
-        const end = Math.min(text.length, idx + concept.length + 60);
-        const snippet = text.substring(start, end).trim();
-
-        return {
-          id: doc.id,
-          book: doc.bookHebrew,
-          bookEn: doc.bookTitle,
-          title: doc.title,
-          num: doc.num,
-          url: doc.url,
-          count: d.count,
-          snippet,
-          hasEnglish: doc.hasEnglish
-        };
-      });
-
-    conceptTeachings[concept] = top;
+  const sizeMB = (fs.statSync(OUTPUT_PATH).size / 1024 / 1024).toFixed(2);
+  console.log(`\n=== Done! ===`);
+  console.log(`Concept graph saved to: ${OUTPUT_PATH}`);
+  console.log(`  ${result.concepts.length} concepts, ${sizeMB} MB`);
+  console.log(`\nTop 10 most frequent concepts:`);
+  for (const c of result.concepts.slice(0, 10)) {
+    const topConn = c.connections.slice(0, 3).map(x => `${x.to}(${x.weight})`).join(', ');
+    console.log(`  ${c.he} (${c.en}): ${c.count} docs - top connections: ${topConn}`);
   }
-
-  // ── Write output ──
-  const graph = {
-    meta: {
-      totalDocuments: documents.length,
-      totalConcepts: nodes.length,
-      totalCoEdges: coEdges.length,
-      totalFlowEdges: flowEdges.length,
-      generated: new Date().toISOString(),
-    },
-    nodes,
-    coEdges: coEdges.slice(0, 500), // Top 500 co-occurrences
-    flowEdges: flowEdges.slice(0, 800), // Top 800 flows for richer pathways
-    teachings: conceptTeachings,
-  };
-
-  fs.writeFileSync(OUTPUT, JSON.stringify(graph, null, 2), 'utf8');
-  const sizeMB = (fs.statSync(OUTPUT).size / 1024 / 1024).toFixed(1);
-
-  console.log('=== Concept Graph Built ===');
-  console.log(`Concepts: ${nodes.length}`);
-  console.log(`Co-occurrence edges: ${coEdges.length}`);
-  console.log(`Flow edges: ${flowEdges.length}`);
-  console.log(`Output: ${OUTPUT} (${sizeMB} MB)`);
-  console.log('\nTop 15 concepts by occurrence:');
-  nodes.slice(0, 15).forEach(n => console.log(`  ${n.id} (${n.en}): ${n.occurrences} in ${n.docs} docs`));
-  console.log('\nTop 10 concept flows (A leads to B):');
-  flowEdges.slice(0, 10).forEach(e => {
-    const fromEn = CONCEPT_VOCAB[e.from]?.en || e.from;
-    const toEn = CONCEPT_VOCAB[e.to]?.en || e.to;
-    console.log(`  ${e.from} (${fromEn}) → ${e.to} (${toEn}): ${e.netFlow} net flow`);
-  });
 }
 
 main();
