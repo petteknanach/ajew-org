@@ -140,20 +140,21 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         resultsCount.textContent = `${count} תוצאות ל "${query}" / results for "${query}"`;
 
         const html = results.map(result => {
-          const snippet = highlightQuery(result.snippet || '', query);
-          const categoryClass = (result.category || '').toLowerCase();
+          const extraInfo = result.extraInfo || '';
+          const snippet = highlightQuery(result.snippet || '', query, extraInfo);
           const link = result.link || '#';
-          const title = result.title || 'Unknown';
+          const rawTitle = result.title || 'Unknown';
+          const title = highlightQuery(rawTitle, query);
+          const hebrewTitle = result.hebrewTitle ? highlightQuery(result.hebrewTitle, query) : '';
           const subcategory = result.subcategory || '';
           const wordCount = result.wordCount || 0;
           const relevance = result.relevance || 0;
-          const extraInfo = result.extraInfo || '';
 
           return `
             <div class="result-item">
               <div class="result-top">
                 <h4 class="result-title">
-                  <a href="${link}">${title}</a>
+                  <a href="${link}">${title}${hebrewTitle ? ` <span class="result-he-title">${hebrewTitle}</span>` : ''}</a>
                 </h4>
                 <div class="result-tags">
                   ${extraInfo ? `<span class="result-match-info">${extraInfo}</span>` : ''}
@@ -179,15 +180,53 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
 
-      function highlightQuery(text: string, query: string): string {
+      // Nikud (vowel marks) regex - these appear in Hebrew text but not in search queries
+      const NIKUD_RANGE = '[\u0591-\u05BD\u05BF-\u05C7]';
+
+      function highlightQuery(text: string, query: string, extraInfo?: string): string {
         if (!query || !text) return text || '';
-        const words = query.split(/\s+/).filter(w => !['and', 'or', 'not'].includes(w.toLowerCase()));
+
         let result = text;
-        words.forEach(word => {
+
+        // For acronym/endletters: highlight the matched words from extraInfo
+        if (extraInfo && extraInfo.startsWith('Found:')) {
+          const matchedWords = extraInfo.replace('Found:', '').trim();
+          if (matchedWords) {
+            // Highlight each matched word (may contain nikud in text)
+            const mWords = matchedWords.split(/\s*\.\.\.\s*|\s+/).filter(Boolean);
+            for (const mw of mWords) {
+              const escaped = mw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+              // Insert optional nikud between each character for Hebrew matching
+              const nikudAware = [...escaped].join(NIKUD_RANGE + '*');
+              try {
+                const regex = new RegExp(`(${nikudAware})`, 'g');
+                result = result.replace(regex, '<mark>$1</mark>');
+              } catch(e) { /* skip bad regex */ }
+            }
+            return result;
+          }
+        }
+
+        // Standard word highlighting - nikud-aware
+        const words = query.split(/\s+/).filter(w =>
+          w.length > 0 && !['and', 'or', 'not'].includes(w.toLowerCase())
+        );
+
+        for (const word of words) {
           const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-          const regex = new RegExp(`(${escaped})`, 'gi');
-          result = result.replace(regex, '<mark>$1</mark>');
-        });
+          // Insert optional nikud marks between each Hebrew character
+          // This lets "תשובה" match "תְּשׁוּבָה" in the text
+          const chars = [...escaped];
+          const nikudAware = chars.join(NIKUD_RANGE + '*');
+          try {
+            const regex = new RegExp(`(${nikudAware})`, 'gi');
+            result = result.replace(regex, '<mark>$1</mark>');
+          } catch(e) {
+            // Fallback: plain match without nikud awareness
+            const simpleRegex = new RegExp(`(${escaped})`, 'gi');
+            result = result.replace(simpleRegex, '<mark>$1</mark>');
+          }
+        }
         return result;
       }
 
@@ -455,11 +494,21 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
       font-size: 0.9rem;
     }
 
-    .result-snippet mark {
+    .result-snippet mark, .result-title mark {
       background: #fef08a;
       padding: 0.05rem 0.2rem;
       border-radius: 2px;
       color: inherit;
+      font-weight: 700;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+    }
+
+    .result-he-title {
+      font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif);
+      font-size: 0.9em;
+      color: #6b7280;
+      direction: rtl;
+      unicode-bidi: isolate;
     }
 
     .result-footer {
