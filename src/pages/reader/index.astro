@@ -32,6 +32,10 @@ const categories = [
   { title: "Rabbi Avraham bar Nachman / רבי אברהם בר' נחמן", ids: ['biur-halikutim', 'chochma-utvuna', 'kokhvei-or'] },
   { title: 'Siach Sarfei Kodesh / שיח שרפי קודש', ids: ['siach-sarfei-kodesh'] },
   { title: 'Rabbi Yisroel Dov Odesser (Saba) / רבי ישראל דב אודסר (הסבא)', ids: ['ebay-hanachal'] },
+  { title: 'Torah / תורה', ids: ['tanach-bereishit', 'tanach-shemos', 'tanach-vayikra', 'tanach-bamidbar', 'tanach-devarim'] },
+  { title: "Nevi'im / נביאים", ids: ['tanach-yehoshua', 'tanach-shoftim', 'tanach-shmuel-a', 'tanach-shmuel-b', 'tanach-melachim-a', 'tanach-melachim-b', 'tanach-yeshayahu', 'tanach-yirmiyahu', 'tanach-yechezkel', 'tanach-hoshea', 'tanach-yoel', 'tanach-amos', 'tanach-ovadya', 'tanach-yonah', 'tanach-michah', 'tanach-nachum', 'tanach-havakkuk', 'tanach-tzefanya', 'tanach-chaggai', 'tanach-zecharya', 'tanach-malachi'] },
+  { title: 'Ketuvim / כתובים', ids: ['tanach-tehillim', 'tanach-mishlei', 'tanach-iyov', 'tanach-shir-hashirim', 'tanach-rus', 'tanach-eicha', 'tanach-koheles', 'tanach-esther', 'tanach-daniel', 'tanach-ezra', 'tanach-nechemia', 'tanach-divrei-hayamim-a', 'tanach-divrei-hayamim-b'] },
+  { title: 'Talmud Bavli / תלמוד בבלי', ids: ['talmud-bavli-brachot', 'talmud-bavli-shabbat', 'talmud-bavli-eruvin', 'talmud-bavli-psachim', 'talmud-bavli-shkalim', 'talmud-bavli-rosh-hashana', 'talmud-bavli-yoma', 'talmud-bavli-sukkah', 'talmud-bavli-beitza', 'talmud-bavli-taanit', 'talmud-bavli-megillah', 'talmud-bavli-moed-katan', 'talmud-bavli-chagigah', 'talmud-bavli-yevamot', 'talmud-bavli-ketubot', 'talmud-bavli-nedarim', 'talmud-bavli-nazir', 'talmud-bavli-sotah', 'talmud-bavli-gittin', 'talmud-bavli-kiddushin', 'talmud-bavli-bava-kamma', 'talmud-bavli-bava-metzia', 'talmud-bavli-bava-batra', 'talmud-bavli-sanhedrin', 'talmud-bavli-makkot', 'talmud-bavli-shevuot', 'talmud-bavli-avodah-zarah', 'talmud-bavli-horayot', 'talmud-bavli-eduyot', 'talmud-bavli-zevachim', 'talmud-bavli-menachot', 'talmud-bavli-chulin', 'talmud-bavli-bechorot', 'talmud-bavli-arachin', 'talmud-bavli-temurah', 'talmud-bavli-keritot', 'talmud-bavli-meilah', 'talmud-bavli-tamid', 'talmud-bavli-niddah'] },
 ];
 
 // Collect remaining books not in categories
@@ -281,7 +285,7 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
                     <ul class="torah-list">
                       {(partData.index.torahs || partData.index.items || []).map(t => (
                         <li>
-                          <a href={t.url}>
+                          <a href={t.url || `/reader/${book.id}/${partData.part}/${t.number}`}>
                             <span class="torah-num">{t.hebrewTitle || t.title || `[${t.number}]`}</span>
                           </a>
                         </li>
