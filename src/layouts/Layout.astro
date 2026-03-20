@@ -78,7 +78,7 @@ const isHebrew = Astro.url.pathname.includes('/reader/') || title.match(/[\u0590
         },
         "potentialAction": {
           "@type": "SearchAction",
-          "target": "https://ajew.org/search?q={search_term_string}",
+          "target": "https://ajew.org/search-enhanced?q={search_term_string}",
           "query-input": "required name=search_term_string"
         }
       }
@@ -339,7 +339,7 @@ const isHebrew = Astro.url.pathname.includes('/reader/') || title.match(/[\u0590
             if (searchQuery) {
               overlay.innerHTML = 'Searching: <strong>' + searchQuery + '</strong>';
               setTimeout(() => {
-                window.location.href = '/search?q=' + encodeURIComponent(searchQuery.trim());
+                window.location.href = '/search-enhanced?q=' + encodeURIComponent(searchQuery.trim());
               }, 800);
               setTimeout(() => { overlay.style.display = 'none'; }, 3000);
               return;
@@ -363,7 +363,7 @@ const isHebrew = Astro.url.pathname.includes('/reader/') || title.match(/[\u0590
             // Default: treat as search
             overlay.innerHTML = 'Searching: <strong>' + transcript + '</strong>';
             setTimeout(() => {
-              window.location.href = '/search?q=' + encodeURIComponent(transcript.trim());
+              window.location.href = '/search-enhanced?q=' + encodeURIComponent(transcript.trim());
             }, 1000);
             setTimeout(() => { overlay.style.display = 'none'; }, 3000);
           }
