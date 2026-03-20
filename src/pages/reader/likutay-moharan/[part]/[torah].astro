@@ -63,6 +63,15 @@ const structuredData = torahData ? JSON.stringify({
   "url": `https://ajew.org/reader/likutay-moharan/${partNum}/${torahNum}`,
   "mainEntityOfPage": `https://ajew.org/reader/likutay-moharan/${partNum}/${torahNum}`
 }) : '';
+const breadcrumbData = torahData ? JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Library", "item": "https://ajew.org/reader" },
+    { "@type": "ListItem", "position": 2, "name": "Likutay Moharan", "item": `https://ajew.org/reader#likutay-moharan` },
+    { "@type": "ListItem", "position": 3, "name": torahData.hebrewTitle || torahData.title }
+  ]
+}) : '';
 
 const pageTitle = torahData
   ? `${torahData.hebrewTitle || torahData.title} - Likutay Moharan`
@@ -75,6 +84,9 @@ const pageDesc = torahData
 <Layout title={pageTitle} description={pageDesc}>
   {torahData && structuredData && (
     <script type="application/ld+json" set:html={structuredData} slot="head" />
+  )}
+  {torahData && breadcrumbData && (
+    <script type="application/ld+json" set:html={breadcrumbData} slot="head" />
   )}
   {error ? (
     <div style="text-align: center; padding: 80px 20px;">

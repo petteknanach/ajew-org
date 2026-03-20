@@ -50,11 +50,23 @@ const structuredData = torahData ? JSON.stringify({
   "isPartOf": { "@type": "Book", "name": "Mishna - Nedarim" },
   "url": `https://ajew.org/reader/mishna-nedarim/${partNum}/${torahNum}`
 }) : '';
+const breadcrumbData = torahData ? JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Library", "item": "https://ajew.org/reader" },
+    { "@type": "ListItem", "position": 2, "name": "Mishna - Nedarim", "item": `https://ajew.org/reader#mishna-nedarim` },
+    { "@type": "ListItem", "position": 3, "name": torahData.hebrewTitle || torahData.title }
+  ]
+}) : '';
 ---
 
 <Layout title={pageTitle} description={pageDesc}>
   {torahData && structuredData && (
     <script type="application/ld+json" set:html={structuredData} slot="head" />
+  )}
+  {torahData && breadcrumbData && (
+    <script type="application/ld+json" set:html={breadcrumbData} slot="head" />
   )}
   {error ? (
     <div style="text-align: center; padding: 80px 20px;">
