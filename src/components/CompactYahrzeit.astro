@@ -102,11 +102,18 @@
   }
 
   // Find yahrzeits for a specific Hebrew date
+  // In a leap year: "Adar" entries show in both Adar I and Adar II (covers both halachic opinions)
+  // "Adar II" entries show only in Adar II
   function findYahrzeits(month, day) {
     return tzaddikimDatabase.filter(tz => {
       const tzMonth = tz.yahrzeit_month;
       const tzDay = parseInt(tz.yahrzeit_day);
-      return tzMonth === month && tzDay === day;
+      if (tzDay !== day) return false;
+      // Exact match
+      if (tzMonth === month) return true;
+      // In Adar II: also show "Adar" entries (covers the opinion that yahrzeits are in Adar II)
+      if (month === 'Adar II' && tzMonth === 'Adar') return true;
+      return false;
     });
   }
 
