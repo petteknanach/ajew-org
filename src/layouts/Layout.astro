@@ -259,71 +259,203 @@ const ogImage = new URL(image, Astro.site);
         };
         document.body.appendChild(script);
 
-        // Voice input via Web Speech API
+        // Voice input via Web Speech API - with auto-submit and command recognition
         if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
           const micBtn = document.createElement('button');
           micBtn.id = 'voice-input-btn';
           micBtn.innerHTML = '🎤';
-          micBtn.title = 'Speak to ask a question';
+          micBtn.title = 'Speak to navigate or search';
           micBtn.style.cssText = 'position:fixed;bottom:80px;right:20px;width:48px;height:48px;border-radius:50%;border:2px solid #1a365d;background:white;font-size:1.4em;cursor:pointer;z-index:9999;box-shadow:0 2px 8px rgba(0,0,0,0.15);transition:all 0.2s;';
           document.body.appendChild(micBtn);
+
+          // Transcript overlay
+          const overlay = document.createElement('div');
+          overlay.id = 'voice-overlay';
+          overlay.style.cssText = 'display:none;position:fixed;bottom:140px;right:20px;max-width:320px;background:#1a365d;color:white;padding:12px 16px;border-radius:12px;font-size:0.9em;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,0.3);font-family:sans-serif;line-height:1.4;';
+          document.body.appendChild(overlay);
 
           let listening = false;
           const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
           const recognition = new SpeechRecognition();
           recognition.continuous = false;
-          recognition.interimResults = false;
-          recognition.lang = 'en-US'; // Default to English, switch based on content
+          recognition.interimResults = true;
+          recognition.maxAlternatives = 3;
 
-          recognition.onresult = (event) => {
-            const transcript = event.results[0][0].transcript;
-            // Find the Page Agent input and fill it
+          // Navigation commands - maps spoken words to URLs
+          const navRoutes = {
+            'likutay moharan': '/reader',
+            'ליקוטי מוהרן': '/reader',
+            'likutay halachos': '/reader',
+            'ליקוטי הלכות': '/reader',
+            'likutay tefilos': '/reader',
+            'ליקוטי תפילות': '/reader',
+            'stories': '/reader',
+            'סיפורי מעשיות': '/reader',
+            'reader': '/reader',
+            'library': '/reader',
+            'ספריה': '/reader',
+            'home': '/',
+            'בית': '/',
+            'search': '/search',
+            'חיפוש': '/search',
+            'reference': '/reference',
+            'torah map': '/torah-map',
+            'connections': '/torah-map',
+            'pdf': '/pdf-library',
+            'books': '/books',
+            'ספרים': '/books',
+            'videos': '/videos',
+          };
+
+          function handleVoiceCommand(transcript) {
+            const lower = transcript.toLowerCase().trim();
+            overlay.textContent = '"' + transcript + '"';
+            overlay.style.display = 'block';
+
+            // Check navigation commands
+            for (const [phrase, url] of Object.entries(navRoutes)) {
+              if (lower.includes(phrase.toLowerCase())) {
+                overlay.innerHTML = 'Navigating: <strong>' + phrase + '</strong>';
+                setTimeout(() => { window.location.href = url; }, 800);
+                setTimeout(() => { overlay.style.display = 'none'; }, 3000);
+                return;
+              }
+            }
+
+            // Check if it's a search query (prefixed with "search for" / "find" / "חפש")
+            let searchQuery = null;
+            if (lower.startsWith('search for ')) searchQuery = transcript.substring(11);
+            else if (lower.startsWith('search ')) searchQuery = transcript.substring(7);
+            else if (lower.startsWith('find ')) searchQuery = transcript.substring(5);
+            else if (lower.startsWith('look for ')) searchQuery = transcript.substring(9);
+            else if (lower.startsWith('חפש ')) searchQuery = transcript.substring(4);
+            else if (lower.startsWith('תחפש ')) searchQuery = transcript.substring(5);
+            else if (lower.startsWith('show me ')) searchQuery = transcript.substring(8);
+            else if (lower.startsWith('תראה לי ')) searchQuery = transcript.substring(9);
+            else if (lower.startsWith('תרשום לי ')) searchQuery = transcript.substring(10);
+
+            if (searchQuery) {
+              overlay.innerHTML = 'Searching: <strong>' + searchQuery + '</strong>';
+              setTimeout(() => {
+                window.location.href = '/search?q=' + encodeURIComponent(searchQuery.trim());
+              }, 800);
+              setTimeout(() => { overlay.style.display = 'none'; }, 3000);
+              return;
+            }
+
+            // Try page agent input
             const agentInput = document.querySelector('.page-agent-input input, .page-agent-input textarea, [data-page-agent-input]');
             if (agentInput) {
               agentInput.value = transcript;
               agentInput.dispatchEvent(new Event('input', { bubbles: true }));
-              // Try to submit
               const form = agentInput.closest('form');
-              if (form) form.dispatchEvent(new Event('submit', { bubbles: true }));
-              else {
-                const enterEvent = new KeyboardEvent('keydown', { key: 'Enter', code: 'Enter', keyCode: 13, bubbles: true });
-                agentInput.dispatchEvent(enterEvent);
+              if (form) {
+                form.requestSubmit ? form.requestSubmit() : form.dispatchEvent(new Event('submit', { bubbles: true }));
+              } else {
+                agentInput.dispatchEvent(new KeyboardEvent('keypress', { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, bubbles: true }));
               }
-            } else {
-              // If no agent input found, show transcript as alert
-              alert('You said: ' + transcript);
+              setTimeout(() => { overlay.style.display = 'none'; }, 3000);
+              return;
             }
-            micBtn.innerHTML = '🎤';
-            micBtn.style.background = 'white';
-            listening = false;
+
+            // Default: treat as search
+            overlay.innerHTML = 'Searching: <strong>' + transcript + '</strong>';
+            setTimeout(() => {
+              window.location.href = '/search?q=' + encodeURIComponent(transcript.trim());
+            }, 1000);
+            setTimeout(() => { overlay.style.display = 'none'; }, 3000);
+          }
+
+          recognition.onresult = (event) => {
+            let interim = '';
+            let final = '';
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+              const t = event.results[i][0].transcript;
+              if (event.results[i].isFinal) {
+                final += t;
+              } else {
+                interim += t;
+              }
+            }
+
+            if (interim) {
+              overlay.textContent = interim + '...';
+              overlay.style.display = 'block';
+            }
+
+            if (final) {
+              handleVoiceCommand(final);
+              micBtn.innerHTML = '🎤';
+              micBtn.style.background = 'white';
+              micBtn.style.borderColor = '#1a365d';
+              listening = false;
+            }
           };
 
-          recognition.onerror = () => {
+          recognition.onerror = (e) => {
+            if (e.error === 'no-speech') {
+              overlay.textContent = 'No speech detected. Try again.';
+              overlay.style.display = 'block';
+            } else if (e.error !== 'aborted') {
+              overlay.textContent = 'Error: ' + e.error;
+              overlay.style.display = 'block';
+            }
+            setTimeout(() => { overlay.style.display = 'none'; }, 2500);
             micBtn.innerHTML = '🎤';
             micBtn.style.background = 'white';
+            micBtn.style.borderColor = '#1a365d';
             listening = false;
           };
 
           recognition.onend = () => {
             micBtn.innerHTML = '🎤';
             micBtn.style.background = 'white';
+            micBtn.style.borderColor = '#1a365d';
             listening = false;
           };
 
-          micBtn.addEventListener('click', () => {
+          // Track language preference
+          let voiceLang = 'en-US';
+
+          micBtn.addEventListener('click', (e) => {
+            e.preventDefault();
             if (listening) {
               recognition.stop();
               listening = false;
-            } else {
-              // Detect if page has Hebrew content
-              const hasHebrew = document.body.innerText.match(/[\u0590-\u05FF]/);
-              recognition.lang = hasHebrew ? 'he-IL' : 'en-US';
+              overlay.style.display = 'none';
+              return;
+            }
+
+            // Detect page language from content
+            const bodyText = document.body.innerText.substring(0, 2000);
+            const hebrewChars = (bodyText.match(/[\u0590-\u05FF]/g) || []).length;
+            const latinChars = (bodyText.match(/[a-zA-Z]/g) || []).length;
+            voiceLang = hebrewChars > latinChars ? 'he-IL' : 'en-US';
+            recognition.lang = voiceLang;
+
+            try {
               recognition.start();
               micBtn.innerHTML = '🔴';
               micBtn.style.background = '#ffe0e0';
+              micBtn.style.borderColor = '#c53030';
               listening = true;
+              overlay.textContent = voiceLang === 'he-IL' ? 'מקשיב...' : 'Listening...';
+              overlay.style.display = 'block';
+            } catch (err) {
+              console.error('Speech recognition error:', err);
             }
           });
+
+          // Long-press to force English
+          let pressTimer;
+          micBtn.addEventListener('mousedown', () => {
+            pressTimer = setTimeout(() => {
+              recognition.lang = 'en-US';
+              overlay.textContent = 'Listening (English)...';
+            }, 600);
+          });
+          micBtn.addEventListener('mouseup', () => clearTimeout(pressTimer));
+          micBtn.addEventListener('mouseleave', () => clearTimeout(pressTimer));
         }
       })();
     </script>
