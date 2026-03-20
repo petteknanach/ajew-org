@@ -362,6 +362,7 @@
     setupCopyAttribution();
     setupKeyboard();
     setupScrollSpy();
+    setupNotes();
 
     // Bind toolbar buttons
     document.querySelectorAll('[data-mode]').forEach(btn => {
@@ -431,6 +432,199 @@
         if (e.target === shortcutsOverlay) closeShortcuts();
       });
     }
+  }
+
+  // --- Notes / Annotations ---
+  const NOTES_KEY = 'ajew-reader-notes';
+
+  function loadNotes() {
+    try {
+      return JSON.parse(localStorage.getItem(NOTES_KEY) || '{}');
+    } catch (e) { return {}; }
+  }
+
+  function saveNotes(notes) {
+    try {
+      localStorage.setItem(NOTES_KEY, JSON.stringify(notes));
+    } catch (e) { /* ignore */ }
+  }
+
+  function getTorahId() {
+    return document.querySelector('.reader-container')?.dataset.torahId || '';
+  }
+
+  function getNoteKey(segIndex) {
+    return getTorahId() + ':' + segIndex;
+  }
+
+  function setupNotes() {
+    const torahId = getTorahId();
+    if (!torahId) return;
+
+    const notes = loadNotes();
+    const pairs = document.querySelectorAll('.reader-segment-pair');
+
+    pairs.forEach(pair => {
+      const segId = pair.id; // e.g. "seg-5"
+      const segIndex = segId.replace('seg-', '');
+      const noteKey = getNoteKey(segIndex);
+
+      // Add note indicator button
+      const indicator = document.createElement('button');
+      indicator.className = 'note-indicator ' + (notes[noteKey] ? 'has-note' : 'empty');
+      indicator.textContent = notes[noteKey] ? '\u270E' : '+';
+      indicator.title = notes[noteKey] ? 'Edit note' : 'Add note';
+      indicator.addEventListener('click', () => toggleNoteEditor(pair, segIndex));
+      pair.appendChild(indicator);
+
+      // Add note editor (hidden by default)
+      const editor = document.createElement('div');
+      editor.className = 'note-editor';
+      editor.dataset.segIndex = segIndex;
+      editor.innerHTML = `
+        <textarea placeholder="Write your note here..." dir="auto">${notes[noteKey] || ''}</textarea>
+        <div class="note-editor-actions">
+          <button class="delete-note" style="${notes[noteKey] ? '' : 'display:none'}">Delete</button>
+          <button class="cancel-note">Cancel</button>
+          <button class="save-note">Save</button>
+        </div>
+      `;
+      pair.appendChild(editor);
+
+      // Save button
+      editor.querySelector('.save-note').addEventListener('click', () => {
+        const text = editor.querySelector('textarea').value.trim();
+        const allNotes = loadNotes();
+        if (text) {
+          allNotes[noteKey] = text;
+          indicator.className = 'note-indicator has-note';
+          indicator.textContent = '\u270E';
+          indicator.title = 'Edit note';
+          editor.querySelector('.delete-note').style.display = '';
+        } else {
+          delete allNotes[noteKey];
+          indicator.className = 'note-indicator empty';
+          indicator.textContent = '+';
+          indicator.title = 'Add note';
+        }
+        saveNotes(allNotes);
+        editor.classList.remove('open');
+      });
+
+      // Delete button
+      editor.querySelector('.delete-note').addEventListener('click', () => {
+        const allNotes = loadNotes();
+        delete allNotes[noteKey];
+        saveNotes(allNotes);
+        editor.querySelector('textarea').value = '';
+        editor.querySelector('.delete-note').style.display = 'none';
+        indicator.className = 'note-indicator empty';
+        indicator.textContent = '+';
+        indicator.title = 'Add note';
+        editor.classList.remove('open');
+      });
+
+      // Cancel button
+      editor.querySelector('.cancel-note').addEventListener('click', () => {
+        editor.querySelector('textarea').value = notes[noteKey] || loadNotes()[noteKey] || '';
+        editor.classList.remove('open');
+      });
+    });
+
+    // Add Notes button to toolbar
+    const toolbarGroups = document.querySelectorAll('.reader-toolbar-group');
+    const lastGroup = toolbarGroups[toolbarGroups.length - 1];
+    if (lastGroup) {
+      const notesBtn = document.createElement('button');
+      notesBtn.className = 'reader-btn reader-btn-icon';
+      notesBtn.id = 'btn-notes';
+      notesBtn.textContent = 'Notes';
+      notesBtn.addEventListener('click', toggleNotesPanel);
+      lastGroup.insertBefore(notesBtn, lastGroup.querySelector('#btn-fullscreen'));
+    }
+
+    // Create notes panel
+    const panel = document.createElement('div');
+    panel.className = 'notes-panel';
+    panel.id = 'notes-panel';
+    panel.innerHTML = `
+      <div class="notes-panel-header">
+        <h3>My Notes</h3>
+        <button class="notes-panel-close">&times;</button>
+      </div>
+      <div class="notes-panel-content"></div>
+    `;
+    document.body.appendChild(panel);
+    panel.querySelector('.notes-panel-close').addEventListener('click', toggleNotesPanel);
+  }
+
+  function toggleNoteEditor(pair, segIndex) {
+    const editor = pair.querySelector('.note-editor');
+    if (!editor) return;
+
+    // Close any other open editors
+    document.querySelectorAll('.note-editor.open').forEach(e => {
+      if (e !== editor) e.classList.remove('open');
+    });
+
+    editor.classList.toggle('open');
+    if (editor.classList.contains('open')) {
+      const textarea = editor.querySelector('textarea');
+      textarea.focus();
+    }
+  }
+
+  function toggleNotesPanel() {
+    const panel = document.getElementById('notes-panel');
+    if (!panel) return;
+    panel.classList.toggle('open');
+
+    if (panel.classList.contains('open')) {
+      renderNotesPanel();
+    }
+  }
+
+  function renderNotesPanel() {
+    const panel = document.getElementById('notes-panel');
+    if (!panel) return;
+    const content = panel.querySelector('.notes-panel-content');
+    const torahId = getTorahId();
+    const notes = loadNotes();
+
+    // Get notes for current page
+    const pageNotes = Object.entries(notes)
+      .filter(([key]) => key.startsWith(torahId + ':'))
+      .sort(([a], [b]) => {
+        const numA = parseInt(a.split(':')[1]);
+        const numB = parseInt(b.split(':')[1]);
+        return numA - numB;
+      });
+
+    if (pageNotes.length === 0) {
+      content.innerHTML = '<div class="notes-panel-empty">No notes yet.<br>Click the + icon next to any verse to add a note.</div>';
+      return;
+    }
+
+    content.innerHTML = pageNotes.map(([key, text]) => {
+      const segIndex = key.split(':')[1];
+      return `<div class="notes-panel-item" data-seg="${segIndex}">
+        <div class="note-seg-ref">Segment ${segIndex}</div>
+        <div class="note-text">${text.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
+      </div>`;
+    }).join('');
+
+    // Click to scroll to segment
+    content.querySelectorAll('.notes-panel-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const seg = document.getElementById('seg-' + item.dataset.seg);
+        if (seg) {
+          seg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          seg.style.outline = '2px solid var(--reader-accent)';
+          setTimeout(() => seg.style.outline = '', 2000);
+        }
+        panel.classList.remove('open');
+      });
+    });
   }
 
   // --- Text-to-Speech ---
