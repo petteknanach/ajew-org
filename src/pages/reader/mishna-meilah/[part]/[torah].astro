@@ -1,0 +1,171 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import '../../../../styles/reader.css';
+import fs from 'node:fs';
+import path from 'node:path';
+
+export function getStaticPaths() {
+  const paths = [];
+  for (let torah = 1; torah <= 38; torah++) {
+    paths.push({ params: { part: '1', torah: String(torah) } });
+  }
+  return paths;
+}
+
+const { part, torah } = Astro.params;
+const partNum = parseInt(part);
+const torahNum = parseInt(torah);
+
+let torahData = null;
+let error = null;
+
+try {
+  const filePath = path.join(process.cwd(), `public/reader/mishna-meilah/part-${partNum}/torah-${torahNum}.json`);
+  const raw = fs.readFileSync(filePath, 'utf8');
+  torahData = JSON.parse(raw);
+} catch (e) {
+  error = `Mishna ${torahNum} not found`;
+}
+
+if (!torahData && !error) error = 'Content not available';
+
+const bookName = 'Mishna - Meilah';
+const bookHebrew = 'משנה - מעילה';
+
+const pageTitle = torahData
+  ? `${torahData.hebrewTitle || torahData.title} - Mishna`
+  : 'Mishna Not Found';
+const pageDesc = torahData
+  ? `Read ${torahData.title} from Mishna Meilah`
+  : '';
+
+const structuredData = torahData ? JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": `${torahData.title} - Mishna`,
+  "alternativeHeadline": torahData.hebrewTitle || '',
+  "author": { "@type": "Organization", "name": "Mishna" },
+  "publisher": { "@type": "Organization", "name": "ajew.org" },
+  "inLanguage": ["he"],
+  "isPartOf": { "@type": "Book", "name": "Mishna - Meilah" },
+  "url": `https://ajew.org/reader/mishna-meilah/${partNum}/${torahNum}`
+}) : '';
+---
+
+<Layout title={pageTitle} description={pageDesc}>
+  {torahData && structuredData && (
+    <script type="application/ld+json" set:html={structuredData} slot="head" />
+  )}
+  {error ? (
+    <div style="text-align: center; padding: 80px 20px;">
+      <h1>{error}</h1>
+      <p><a href="/reader">Back to Reader</a></p>
+    </div>
+  ) : (
+    <div
+      class="reader-container"
+      data-torah-id={torahData.id}
+      data-torah-title={`${torahData.title} - Mishna`}
+    >
+      <div class="reader-progress"></div>
+
+      <div class="reader-breadcrumb">
+        <a href="/reader">Reader</a>
+        <span>&rsaquo;</span>
+        <a href="/reader">Meilah</a>
+        <span>&rsaquo;</span>
+        {torahData.hebrewTitle || torahData.title}
+      </div>
+
+      <div class="reader-toolbar">
+        <div class="reader-toolbar-group">
+          <button class="reader-btn" data-mode="hebrew">Hebrew</button>
+          <button class="reader-btn" data-mode="english">English</button>
+          <button class="reader-btn" data-mode="both">Both</button>
+        </div>
+        <div class="reader-toolbar-group">
+          <button class="reader-btn" id="btn-nikud">Nikud</button>
+        </div>
+        <div class="reader-toolbar-group">
+          <span style="font-size:0.7em; font-family: 'Open Sans', sans-serif; color: var(--reader-text-secondary);">A</span>
+          <input type="range" id="font-size-slider" class="font-size-slider" min="12" max="32" value="18" />
+          <span style="font-size:0.9em; font-family: 'Open Sans', sans-serif; color: var(--reader-text-secondary);">A</span>
+        </div>
+        <div class="reader-toolbar-group">
+          <button class="reader-btn reader-btn-icon" data-theme-btn="day">Day</button>
+          <button class="reader-btn reader-btn-icon" data-theme-btn="sepia">Sepia</button>
+          <button class="reader-btn reader-btn-icon" data-theme-btn="night">Night</button>
+        </div>
+        <div class="reader-toolbar-group">
+          <button class="reader-btn reader-btn-icon" id="btn-listen" onclick="toggleSpeaking()">Listen</button>
+          <button class="reader-btn reader-btn-icon" id="btn-search">Search</button>
+          <button class="reader-btn reader-btn-icon" id="btn-bookmark">Bookmark</button>
+          <button class="reader-btn reader-btn-icon" id="btn-fullscreen">Fullscreen</button>
+        </div>
+      </div>
+
+      <div class="reader-search-bar">
+        <input type="text" placeholder="Search in this mishna..." dir="auto" />
+        <span class="search-info"></span>
+        <button class="reader-btn search-close">Close</button>
+      </div>
+
+      <button class="reader-toc-toggle" title="Table of Contents">&#9776;</button>
+      <div class="reader-toc">
+        <button class="reader-toc-close">&times;</button>
+        <h3>Sections</h3>
+        <ul class="reader-toc-list">
+          {torahData.segments.map((seg, i) => (
+            <li><a href={`#seg-${seg.index}`} data-index={String(seg.index)}>{seg.index}</a></li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="reader-header">
+        {torahData.perek && <div style="color: var(--reader-text-secondary); font-size: 0.85em; margin-bottom: 4px;">{torahData.perek}</div>}
+        {torahData.hebrewTitle && <div class="hebrew-title">{torahData.hebrewTitle}</div>}
+        <h1>{torahData.title}</h1>
+        <p style="color: var(--reader-text-secondary); font-size: 0.9em; font-family: 'Open Sans', sans-serif;">
+          משנה - מעילה / Mishna - Meilah
+        </p>
+      </div>
+
+      <div class="reader-nav">
+        {torahData.navigation.prevUrl ? (
+          <a href={torahData.navigation.prevUrl} data-dir="prev">&larr; Previous</a>
+        ) : <span class="disabled">&larr; Previous</span>}
+        <a href="/reader">All Books</a>
+        {torahData.navigation.nextUrl ? (
+          <a href={torahData.navigation.nextUrl} data-dir="next">Next &rarr;</a>
+        ) : <span class="disabled">Next &rarr;</span>}
+      </div>
+
+      <div class="reader-content mode-hebrew">
+        {torahData.segments.map((seg) => (
+          <div class="reader-segment-pair" id={`seg-${seg.index}`}>
+            <div class="reader-segment segment-he" data-index={String(seg.index)}>
+              <span class="segment-number">{seg.index}</span>
+              <p data-nikud={seg.he}>{seg.he}</p>
+            </div>
+            <div class={`reader-segment segment-en ${!seg.en ? 'empty-translation' : ''}`} data-index={String(seg.index)}>
+              <span class="segment-number">{seg.index}</span>
+              <p>{seg.en || 'Translation not yet available'}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div class="reader-nav">
+        {torahData.navigation.prevUrl ? (
+          <a href={torahData.navigation.prevUrl} data-dir="prev">&larr; Previous</a>
+        ) : <span class="disabled">&larr; Previous</span>}
+        <a href="/reader">All Books</a>
+        {torahData.navigation.nextUrl ? (
+          <a href={torahData.navigation.nextUrl} data-dir="next">Next &rarr;</a>
+        ) : <span class="disabled">Next &rarr;</span>}
+      </div>
+
+      <script src="/reader-script.js" is:inline></script>
+    </div>
+  )}
+</Layout>
