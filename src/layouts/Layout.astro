@@ -118,7 +118,8 @@ const isHebrew = Astro.url.pathname.includes('/reader/') || title.match(/[\u0590
     </script>
   </head>
   <body>
-    <nav class="navbar">
+    <a href="#main-content" class="skip-link">Skip to content</a>
+    <nav class="navbar" role="navigation" aria-label="Main navigation">
       <div class="nav-container">
         <a href="/" class="logo">
           <span class="logo-text">A Jew</span>
@@ -146,14 +147,14 @@ const isHebrew = Astro.url.pathname.includes('/reader/') || title.match(/[\u0590
       </div>
     </nav>
     
-    <main>
+    <main id="main-content">
       <slot />
     </main>
 
     <!-- Back to top button -->
     <button class="back-to-top" id="backToTop" aria-label="Back to top" title="Back to top">↑</button>
 
-    <footer>
+    <footer role="contentinfo">
       <div class="footer-container">
         <div class="footer-links">
           <a href="/reader">Library</a>
@@ -688,6 +689,23 @@ const isHebrew = Astro.url.pathname.includes('/reader/') || title.match(/[\u0590
   }
 
   /* Back to top button */
+  /* Skip link - accessibility */
+  .skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: var(--color-primary);
+    color: white;
+    padding: 8px 16px;
+    z-index: 1000;
+    font-size: 0.9em;
+    text-decoration: none;
+    transition: top 0.2s;
+  }
+  .skip-link:focus {
+    top: 0;
+  }
+
   .back-to-top {
     position: fixed;
     bottom: 24px;
