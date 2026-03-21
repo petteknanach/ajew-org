@@ -225,6 +225,7 @@ function tryLocalLookup(sefariaRef: string): any | null {
         categories: ['Talmud'],
         next: nextDaf ? `${bookName}.${nextDaf}` : null,
         prev: prevDaf ? `${bookName}.${prevDaf}` : null,
+        localUrl: `/reader/talmud-bavli/${talmudSlug}/${daf}`,
         sefariaUrl: `https://www.sefaria.org/${bookName}.${daf}`,
         source: 'local'
       };
@@ -266,6 +267,7 @@ function tryLocalLookup(sefariaRef: string): any | null {
       categories: ['Tanakh'],
       next: `${bookName}.${chapter + 1}`,
       prev: chapter > 1 ? `${bookName}.${chapter - 1}` : null,
+      localUrl: `/reader/tanach/${slug}/${chapter}`,
       sefariaUrl: `https://www.sefaria.org/${bookName}.${chapter}${verse ? '.' + verse : ''}`,
       source: 'local'
     };

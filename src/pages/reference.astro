@@ -125,6 +125,11 @@ import Layout from '../layouts/Layout.astro';
       text-decoration: none;
     }
     .ref-result-link:hover { text-decoration: underline; }
+    .ref-local-link {
+      color: #1a365d;
+      font-weight: 600;
+      margin-right: 12px;
+    }
     .ref-result-body {
       padding: 20px;
     }
@@ -294,6 +299,7 @@ import Layout from '../layouts/Layout.astro';
           <div class="ref-result-title" id="resultTitle"></div>
           <div class="ref-result-title-he" id="resultTitleHe"></div>
         </div>
+        <a class="ref-result-link ref-local-link" id="resultLocalLink" href="#" style="display:none;">📖 Read in Library &rarr;</a>
         <a class="ref-result-link" id="resultLink" href="#" target="_blank">View on Sefaria &rarr;</a>
       </div>
       <div class="ref-result-body">
@@ -341,6 +347,7 @@ import Layout from '../layouts/Layout.astro';
     const resultHe = document.getElementById('resultHe');
     const resultEn = document.getElementById('resultEn');
     const resultLink = document.getElementById('resultLink');
+    const resultLocalLink = document.getElementById('resultLocalLink');
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
 
@@ -380,6 +387,12 @@ import Layout from '../layouts/Layout.astro';
       resultHe.innerHTML = data.he || '';
       resultEn.innerHTML = data.en || 'Translation not available';
       resultLink.href = data.sefariaUrl || '#';
+      if (data.localUrl) {
+        resultLocalLink.href = data.localUrl;
+        resultLocalLink.style.display = 'inline-block';
+      } else {
+        resultLocalLink.style.display = 'none';
+      }
       prevBtn.disabled = !data.prev;
       nextBtn.disabled = !data.next;
       prevBtn.dataset.ref = data.prev || '';
