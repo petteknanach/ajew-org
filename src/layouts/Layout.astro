@@ -149,12 +149,23 @@ const isHebrew = Astro.url.pathname.includes('/reader/') || title.match(/[\u0590
       <slot />
     </main>
 
+    <!-- Back to top button -->
+    <button class="back-to-top" id="backToTop" aria-label="Back to top" title="Back to top">↑</button>
+
     <footer>
       <div class="footer-container">
-        <p>&#1504; &#1504;&#1495; &#1504;&#1495;&#1502; &#1504;&#1495;&#1502;&#1503; &#1502;&#1488;&#1493;&#1502;&#1503;</p>
-          <p>Na Nach Nachma Nachman Me'Uman</p>
+        <div class="footer-links">
+          <a href="/reader">Library</a>
+          <a href="/search-enhanced">Search</a>
+          <a href="/reference">Reference</a>
+          <a href="/tzaddikim">Tzaddikim</a>
+          <a href="/about">About</a>
+          <a href="/contact">Contact</a>
+        </div>
+        <p class="footer-nanach">&#1504; &#1504;&#1495; &#1504;&#1495;&#1502; &#1504;&#1495;&#1502;&#1503; &#1502;&#1488;&#1493;&#1502;&#1503;</p>
+        <p>Na Nach Nachma Nachman Me'Uman</p>
         <div class="footer-contact">
-          <p>Contact Site Manager / &#1497;&#1510;&#1497;&#1512;&#1514; &#1511;&#1513;&#1512;: <a href="mailto:naanaach@gmail.com">naanaach@gmail.com</a></p>
+          <p>Contact: <a href="mailto:naanaach@gmail.com">naanaach@gmail.com</a></p>
         </div>
         <p class="copyright">&copy; {new Date().getFullYear()} ajew.org</p>
       </div>
@@ -163,11 +174,33 @@ const isHebrew = Astro.url.pathname.includes('/reader/') || title.match(/[\u0590
     <script>
       const menuToggle = document.querySelector('.mobile-menu-toggle');
       const navLinks = document.querySelector('.nav-links');
-      
+
       if (menuToggle && navLinks) {
         menuToggle.addEventListener('click', () => {
           menuToggle.classList.toggle('active');
           navLinks.classList.toggle('active');
+        });
+      }
+
+      // Highlight active nav link
+      const currentPath = window.location.pathname;
+      document.querySelectorAll('.nav-links a').forEach(link => {
+        const href = link.getAttribute('href');
+        if (href === '/') {
+          if (currentPath === '/') link.classList.add('active');
+        } else if (currentPath.startsWith(href)) {
+          link.classList.add('active');
+        }
+      });
+
+      // Back to top button
+      const backToTop = document.getElementById('backToTop');
+      if (backToTop) {
+        window.addEventListener('scroll', () => {
+          backToTop.classList.toggle('visible', window.scrollY > 400);
+        }, { passive: true });
+        backToTop.addEventListener('click', () => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         });
       }
     </script>
@@ -558,6 +591,11 @@ const isHebrew = Astro.url.pathname.includes('/reader/') || title.match(/[\u0590
   .nav-links a:hover {
     color: var(--color-accent);
   }
+  .nav-links a.active {
+    color: var(--color-accent);
+    border-bottom: 2px solid var(--color-accent);
+    padding-bottom: 2px;
+  }
 
   /* Mobile Menu Toggle */
   .mobile-menu-toggle {
@@ -598,7 +636,22 @@ const isHebrew = Astro.url.pathname.includes('/reader/') || title.match(/[\u0590
     margin: 0.5rem 0;
   }
 
-  footer p:first-child {
+  .footer-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .footer-links a {
+    color: rgba(255,255,255,0.8);
+    text-decoration: none;
+    font-size: 0.9em;
+  }
+  .footer-links a:hover {
+    color: var(--color-accent);
+  }
+  .footer-nanach {
     font-family: var(--font-hebrew);
     font-size: 1.5rem;
   }
@@ -622,6 +675,34 @@ const isHebrew = Astro.url.pathname.includes('/reader/') || title.match(/[\u0590
 
   .footer-contact a:hover {
     text-decoration: underline;
+  }
+
+  /* Back to top button */
+  .back-to-top {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 44px;
+    height: 44px;
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 1.4em;
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s, transform 0.3s;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  .back-to-top.visible {
+    opacity: 0.8;
+    pointer-events: auto;
+  }
+  .back-to-top:hover {
+    opacity: 1;
+    transform: scale(1.1);
   }
 
   @media (max-width: 1024px) {
