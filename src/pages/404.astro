@@ -1,0 +1,111 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Page Not Found" noindex={true}>
+  <section class="not-found">
+    <div class="container">
+      <div class="content">
+        <h1 class="code">404</h1>
+        <h2 class="message">Page Not Found</h2>
+        <p class="hebrew">הדף לא נמצא</p>
+        <p class="quote">"The whole world is a very narrow bridge — the main thing is not to fear at all."</p>
+        <p class="quote-hebrew">כל העולם כולו גשר צר מאוד והעיקר לא לפחד כלל</p>
+        <p class="attribution">— Rebbe Nachman of Breslov</p>
+
+        <div class="actions">
+          <a href="/" class="btn btn-primary">🏠 Home</a>
+          <a href="/reader" class="btn btn-secondary">📖 Library</a>
+          <a href="/search-enhanced" class="btn btn-secondary">🔍 Search</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .not-found {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 24px;
+    font-family: 'Open Sans', sans-serif;
+  }
+  .container {
+    max-width: 600px;
+  }
+  .code {
+    font-size: 6em;
+    font-weight: 700;
+    color: #1a365d;
+    margin: 0;
+    line-height: 1;
+    opacity: 0.3;
+  }
+  .message {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 2em;
+    color: #1a365d;
+    margin: 0 0 8px;
+  }
+  .hebrew {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 1.6em;
+    color: #1a365d;
+    direction: rtl;
+    margin: 0 0 24px;
+  }
+  .quote {
+    font-style: italic;
+    color: #555;
+    font-size: 1.05em;
+    margin: 0 0 8px;
+    line-height: 1.6;
+  }
+  .quote-hebrew {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 1.2em;
+    color: #444;
+    direction: rtl;
+    margin: 0 0 4px;
+  }
+  .attribution {
+    color: #888;
+    font-size: 0.85em;
+    margin: 0 0 32px;
+  }
+  .actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95em;
+    transition: all 0.2s;
+  }
+  .btn-primary {
+    background: #1a365d;
+    color: white;
+  }
+  .btn-primary:hover {
+    background: #2a5a9e;
+  }
+  .btn-secondary {
+    background: #f0ebe0;
+    color: #1a365d;
+    border: 1px solid #e0d6c2;
+  }
+  .btn-secondary:hover {
+    background: #e8dfd0;
+  }
+</style>
