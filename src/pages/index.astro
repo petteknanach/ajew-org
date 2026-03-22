@@ -154,6 +154,37 @@ import CompactYahrzeit from '../components/CompactYahrzeit.astro';
     </div>
   </section>
 
+  <!-- Daily Quote -->
+  <section class="daily-quote" id="dailyQuote">
+    <div class="container">
+      <div class="quote-card" id="quoteCard"></div>
+    </div>
+  </section>
+  <script is:inline>
+  (function() {
+    const quotes = [
+      { he: 'כל העולם כולו גשר צר מאוד, והעיקר לא לפחד כלל', en: 'The whole world is a very narrow bridge, and the main thing is not to fear at all', src: 'LM II:48' },
+      { he: 'אם אתה מאמין שיכולין לקלקל, תאמין שיכולין לתקן', en: 'If you believe you can damage, believe you can fix', src: 'LM II:112' },
+      { he: 'מצוה גדולה להיות בשמחה תמיד', en: 'It is a great mitzvah to always be happy', src: 'LM II:24' },
+      { he: 'אין שום יאוש בעולם כלל', en: 'There is no despair in the world at all', src: 'LM II:78' },
+      { he: 'התבודדות הוא מעלה עליונה ויתירה על הכל', en: 'Hitbodedut is the highest virtue of all', src: 'LM II:25' },
+      { he: 'עיקר החיות מהשמחה', en: 'The essence of life is from joy', src: 'LM II:24' },
+      { he: 'כשאדם יודע שכל הקורותיו הם לטובתו, זאת הבחינה מעין עולם הבא', en: 'When a person knows all that happens is for his good, this is like the World to Come', src: 'LM I:4' },
+      { he: 'תפילה בלא כוונה כגוף בלא נשמה', en: 'Prayer without intent is like a body without a soul', src: 'LM I:2' },
+      { he: 'שכל אחד ואחד מישראל יש לו חלק בתורה', en: 'Every single Jew has a portion in Torah', src: 'LM I:22' },
+      { he: 'העולם ברובו שוטים', en: 'Most of the world is foolish', src: 'Sichos HaRan' },
+      { he: 'צריך לחפש ולבקש למצוא בעצמו איזה מעט טוב', en: 'One must search to find in oneself some small good', src: 'LM I:282' },
+      { he: 'נ נח נחמ נחמן מאומן', en: 'Na Nach Nachma Nachman MeUman', src: 'The Petek' },
+    ];
+    const day = Math.floor(Date.now() / 86400000) % quotes.length;
+    const q = quotes[day];
+    const card = document.getElementById('quoteCard');
+    if (card) {
+      card.innerHTML = '<div class="quote-he">' + q.he + '</div><div class="quote-en">"' + q.en + '"</div><div class="quote-src">— ' + q.src + '</div>';
+    }
+  })();
+  </script>
+
   <section class="featured">
     <div class="container">
       <h2>Online Torah Library — 213 Books</h2>
@@ -585,6 +616,37 @@ import CompactYahrzeit from '../components/CompactYahrzeit.astro';
     line-height: 1.8;
     margin-bottom: 1rem;
     text-align: center;
+  }
+
+  /* Daily Quote */
+  .daily-quote {
+    padding: 2rem 1rem;
+    background: #f8f5ef;
+  }
+  .quote-card {
+    max-width: 700px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 1.5rem;
+  }
+  .quote-he {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 1.6rem;
+    color: #1a365d;
+    direction: rtl;
+    line-height: 1.8;
+    margin-bottom: 0.75rem;
+  }
+  .quote-en {
+    font-style: italic;
+    color: #555;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    margin-bottom: 0.5rem;
+  }
+  .quote-src {
+    color: #888;
+    font-size: 0.85rem;
   }
 
   .featured {
