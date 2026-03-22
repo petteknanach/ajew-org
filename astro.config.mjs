@@ -22,10 +22,30 @@ export default defineConfig({
         },
       },
       filter: (page) => {
-        // Exclude admin and private pages
-        return !page.includes('/admin/') && 
+        // Exclude admin, private, and utility pages
+        return !page.includes('/admin/') &&
                !page.includes('/private/') &&
-               !page.includes('/tmp/');
+               !page.includes('/tmp/') &&
+               !page.includes('/my-stats') &&
+               !page.includes('/my-notes') &&
+               !page.includes('/profile') &&
+               !page.includes('/login');
+      },
+      serialize: (item) => {
+        // Boost priority for key pages
+        const highPriority = ['/', '/reader', '/search-enhanced', '/about', '/topics', '/ask', '/parsha', '/torah-map'];
+        const medPriority = ['/reference', '/gematria', '/tzaddikim', '/gallery', '/videos', '/donate'];
+        if (highPriority.some(p => item.url === p || item.url === p + '/')) {
+          return { ...item, priority: 1.0, changefreq: 'daily' };
+        }
+        if (medPriority.some(p => item.url === p || item.url === p + '/')) {
+          return { ...item, priority: 0.8 };
+        }
+        // Reader pages get higher priority
+        if (item.url.includes('/reader/')) {
+          return { ...item, priority: 0.6 };
+        }
+        return item;
       },
       entryLimit: 50000,
     })
