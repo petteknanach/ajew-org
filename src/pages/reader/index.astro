@@ -282,6 +282,18 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
       transform: scale(1.05);
     }
 
+    /* Reading Streak */
+    .streak-badge {
+      margin: 8px 0;
+      padding: 6px 16px;
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: white;
+      border-radius: 20px;
+      font-size: 0.85em;
+      font-weight: 600;
+      display: inline-block;
+    }
+
     /* Library Filter */
     .library-search {
       margin-top: 12px;
@@ -357,6 +369,7 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
         <span>30,000+ pages</span>
         <span>Fullscreen reading</span>
       </div>
+      <div id="streakBadge" class="streak-badge" style="display:none;"></div>
       <button class="random-torah-btn" id="randomTorahBtn" onclick="goToRandomTorah()">Open Random Torah</button>
       <div class="library-search">
         <input type="text" id="libraryFilter" placeholder="Filter books... / סנן ספרים..." dir="auto" autocomplete="off" />
@@ -480,6 +493,21 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
       const num = Math.floor(Math.random() * book.max) + 1;
       window.location.href = book.base + num;
     }
+    </script>
+
+    <script is:inline>
+    // Show reading streak
+    (function() {
+      try {
+        const data = JSON.parse(localStorage.getItem('ajew-reading-streak') || '{}');
+        if (!data.streak || data.streak < 1) return;
+        const badge = document.getElementById('streakBadge');
+        if (!badge) return;
+        const flame = data.streak >= 7 ? '🔥' : data.streak >= 3 ? '✨' : '📖';
+        badge.textContent = flame + ' ' + data.streak + ' day streak' + (data.totalDays > data.streak ? ' · ' + data.totalDays + ' total days' : '');
+        badge.style.display = 'inline-block';
+      } catch(e) {}
+    })();
     </script>
 
     <!-- Volume 1 (Kama) -->

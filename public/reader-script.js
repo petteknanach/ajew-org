@@ -412,6 +412,28 @@
     }, { passive: true });
   }
 
+  // --- Reading Streak ---
+  function updateStreak() {
+    const STREAK_KEY = 'ajew-reading-streak';
+    try {
+      const data = JSON.parse(localStorage.getItem(STREAK_KEY) || '{}');
+      const today = new Date().toDateString();
+      const yesterday = new Date(Date.now() - 86400000).toDateString();
+
+      if (data.lastDate === today) return; // Already counted today
+
+      if (data.lastDate === yesterday) {
+        data.streak = (data.streak || 0) + 1;
+      } else if (data.lastDate !== today) {
+        data.streak = 1; // Reset streak
+      }
+      data.lastDate = today;
+      data.totalDays = (data.totalDays || 0) + 1;
+      data.longestStreak = Math.max(data.longestStreak || 0, data.streak);
+      localStorage.setItem(STREAK_KEY, JSON.stringify(data));
+    } catch(e) {}
+  }
+
   // --- Reading History ---
   function saveToHistory() {
     const HISTORY_KEY = 'ajew-reading-history';
@@ -455,6 +477,7 @@
     setupScrollSpy();
     setupNotes();
     saveToHistory();
+    updateStreak();
     restoreScrollPosition();
     saveScrollPosition();
     addReadingTime();
