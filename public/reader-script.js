@@ -308,6 +308,30 @@
         case 'p':
           window.print();
           break;
+        case 'j':
+        case 'ArrowDown': {
+          if (e.key === 'ArrowDown' && (e.ctrlKey || e.metaKey)) break; // Don't hijack ctrl+down
+          const segs = document.querySelectorAll('.reader-segment-pair');
+          const current = Array.from(segs).findIndex(s => {
+            const rect = s.getBoundingClientRect();
+            return rect.top >= 0 && rect.top < window.innerHeight / 2;
+          });
+          const next = current >= 0 && current < segs.length - 1 ? segs[current + 1] : segs[0];
+          if (next) next.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          break;
+        }
+        case 'k':
+        case 'ArrowUp': {
+          if (e.key === 'ArrowUp' && (e.ctrlKey || e.metaKey)) break;
+          const segsUp = document.querySelectorAll('.reader-segment-pair');
+          const curUp = Array.from(segsUp).findIndex(s => {
+            const rect = s.getBoundingClientRect();
+            return rect.top >= 0 && rect.top < window.innerHeight / 2;
+          });
+          const prev = curUp > 0 ? segsUp[curUp - 1] : segsUp[segsUp.length - 1];
+          if (prev) prev.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          break;
+        }
         case 'Escape':
           if (ttsState.speaking) stopSpeaking();
           if (state.searchOpen) toggleSearch();
