@@ -235,69 +235,77 @@
       
       // Hide loading
       document.getElementById('yahrzeitLoading').style.display = 'none';
-      
+
       // If nothing to show, hide the box entirely
       if (!hasToday && !hasTomorrow && !hasUpcoming) {
         document.getElementById('compactYahrzeit').style.display = 'none';
         return;
       }
-      
+
       // Show the box (remove collapsed for desktop, mobile stays collapsed until tapped)
       const box = document.getElementById('compactYahrzeit');
       box.style.display = 'block';
       if (window.innerWidth > 768) {
         box.classList.remove('collapsed');
       }
-      
-      // Populate today's section
+
+      // Populate today's section - ONLY if there are names for today
       if (hasToday) {
         document.getElementById('todayHebrew').textContent = todayHeb.hebrew;
         const todayList = document.getElementById('todayList');
         todayList.innerHTML = '';
-        
+
         for (const tz of todayYahrzeits) {
           todayList.appendChild(renderTzaddikLink(tz));
         }
         for (const evt of todayImportant) {
           todayList.appendChild(renderTzaddikLink(evt, true));
         }
-        
+
         document.getElementById('todaySection').style.display = 'block';
+      } else {
+        // No names today - hide today section completely
+        document.getElementById('todaySection').style.display = 'none';
       }
-      
-      // Populate tomorrow's section
+
+      // Populate tomorrow's section - ONLY if there are names for tomorrow
       if (hasTomorrow) {
         document.getElementById('tomorrowHebrew').textContent = tomorrowHeb.hebrew;
         const tomorrowList = document.getElementById('tomorrowList');
         tomorrowList.innerHTML = '';
-        
+
         for (const tz of tomorrowYahrzeits) {
           tomorrowList.appendChild(renderTzaddikLink(tz));
         }
         for (const evt of tomorrowImportant) {
           tomorrowList.appendChild(renderTzaddikLink(evt, true));
         }
-        
+
         document.getElementById('tomorrowSection').style.display = 'block';
+      } else {
+        // No names tomorrow - hide tomorrow section completely
+        document.getElementById('tomorrowSection').style.display = 'none';
       }
-      
+
       // Populate upcoming section
       if (hasUpcoming) {
         const first = upcomingImportant[0];
         document.getElementById('upcomingLabel').textContent = first.dateLabel;
         const upcomingList = document.getElementById('upcomingList');
         upcomingList.innerHTML = '';
-        
+
         for (const evt of upcomingImportant) {
           upcomingList.appendChild(renderTzaddikLink(evt, true));
         }
-        
+
         document.getElementById('upcomingSection').style.display = 'block';
+      } else {
+        document.getElementById('upcomingSection').style.display = 'none';
       }
       
     } catch (e) {
       console.error('Yahrzeit initialization error:', e);
-      // Hide on error to avoid showing stale data
+      // Hide on error - don't show empty box
       document.getElementById('compactYahrzeit').style.display = 'none';
     }
   }
