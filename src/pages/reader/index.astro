@@ -401,6 +401,30 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
     })();
     </script>
 
+    <!-- Bookmarks -->
+    <div id="bookmarksSection" class="recently-read" style="display:none;">
+      <h2 class="volume-title">Bookmarks</h2>
+      <div id="bookmarksList" class="recent-list"></div>
+    </div>
+
+    <script is:inline>
+    (function() {
+      try {
+        const prefs = JSON.parse(localStorage.getItem('ajew-reader-prefs') || '{}');
+        const bookmarks = prefs.bookmarks || {};
+        const entries = Object.entries(bookmarks).filter(([k, v]) => v.url && v.title);
+        if (entries.length === 0) return;
+        entries.sort((a, b) => (b[1].timestamp || 0) - (a[1].timestamp || 0));
+        const container = document.getElementById('bookmarksSection');
+        const list = document.getElementById('bookmarksList');
+        container.style.display = 'block';
+        list.innerHTML = entries.slice(0, 10).map(([id, bm]) => {
+          return '<a href="' + bm.url + '" class="recent-item"><span class="recent-title">' + bm.title + '</span><span class="recent-ago">bookmarked</span></a>';
+        }).join('');
+      } catch(e) {}
+    })();
+    </script>
+
     <!-- Recently Read -->
     <div id="recentlyRead" class="recently-read" style="display:none;">
       <h2 class="volume-title">Recently Read</h2>

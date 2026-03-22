@@ -206,7 +206,9 @@
 
     state.bookmarks[torahId] = {
       scrollY: window.scrollY,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      url: window.location.pathname,
+      title: document.title.replace(' | A Jew', '')
     };
     savePrefs();
 
