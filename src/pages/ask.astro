@@ -105,7 +105,8 @@ import Layout from '../layouts/Layout.astro';
       const list = document.getElementById('resultsList');
 
       if (data.results && data.results.length > 0) {
-        title.textContent = 'Found ' + data.total + ' relevant teachings:';
+        const searchedFor = searchTerms !== question ? ' (searching: ' + searchTerms + ')' : '';
+        title.textContent = 'Found ' + data.total + ' relevant teachings' + searchedFor + ':';
         list.innerHTML = data.results.map(r => {
           const snippet = (r.snippet || '').substring(0, 200);
           return '<a href="' + (r.link || '#') + '" class="result-card">' +
