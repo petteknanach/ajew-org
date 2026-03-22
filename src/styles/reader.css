@@ -573,7 +573,15 @@
     border-right: none;
   }
   .reader-toolbar {
-    justify-content: center;
+    justify-content: flex-start;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .reader-toolbar::-webkit-scrollbar { display: none; }
+  /* Hide less essential buttons on very small screens */
+  #btn-print, #btn-share, #btn-notes {
+    display: none;
   }
 }
 
