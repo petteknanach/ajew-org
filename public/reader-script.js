@@ -1366,10 +1366,103 @@
       });
   }
 
+  // --- Cross-Reference Links ---
+  // Scan English text for references to other books and make them clickable
+  function addCrossReferenceLinks() {
+    const segments = document.querySelectorAll('.segment-en p');
+    if (!segments.length) return;
+
+    // Hebrew number conversion
+    const hebrewNums = {'א':1,'ב':2,'ג':3,'ד':4,'ה':5,'ו':6,'ז':7,'ח':8,'ט':9,'י':10,
+      'יא':11,'יב':12,'יג':13,'יד':14,'טו':15,'טז':16,'יז':17,'יח':18,'יט':19,'כ':20,
+      'כא':21,'כב':22,'כג':23,'כד':24,'כה':25,'כו':26,'כז':27,'כח':28,'כט':29,'ל':30,
+      'לא':31,'לב':32,'לג':33,'לד':34,'לה':35,'לו':36,'לז':37,'לח':38,'לט':39,'מ':40,
+      'מא':41,'מב':42,'מג':43,'מד':44,'מה':45,'מו':46,'מז':47,'מח':48,'מט':49,'נ':50,
+      'נא':51,'נב':52,'נג':53,'נד':54,'נה':55,'נו':56,'נז':57,'נח':58,'נט':59,'ס':60,
+      'סא':61,'סב':62,'סג':63,'סד':64,'סה':65,'סו':66,'סז':67,'סח':68,'סט':69,'ע':70,
+      'עא':71,'עב':72,'עג':73,'עד':74,'עה':75,'עו':76,'עז':77,'עח':78,'עט':79,'פ':80,
+      'צ':90,'ק':100,'ר':200,'ש':300,'ת':400};
+
+    function parseHebrewNum(s) {
+      if (!s) return 0;
+      s = s.replace(/['"״׳]/g, '').trim();
+      if (hebrewNums[s]) return hebrewNums[s];
+      // Try compound: קמ"א = 100+40+1 = 141
+      let total = 0;
+      for (const [k, v] of Object.entries(hebrewNums).sort((a, b) => b[1] - a[1])) {
+        while (s.startsWith(k)) { total += v; s = s.substring(k.length); }
+      }
+      return total || parseInt(s) || 0;
+    }
+
+    // Patterns to match (English text)
+    const patterns = [
+      // "Likutay Moharan 22" or "Likutey Moharan, Torah 22" or "LM I:22"
+      { regex: /Likut[ae]y?\s*Moharan\s*(?:Part\s*(?:One|Two|1|2|I|II)\s*[,:]\s*)?(?:Torah\s*)?(\d+)/gi,
+        link: (m) => `/reader/likutay-moharan/1/${m[1]}` },
+      // "Likutay Moharan II, 5" or "Tinyana 5"
+      { regex: /(?:Likut[ae]y?\s*Moharan\s*(?:Part\s*)?(?:Two|2|II)\s*[,:]\s*(?:Torah\s*)?|Tinyana\s+)(\d+)/gi,
+        link: (m) => `/reader/likutay-moharan/2/${m[1]}` },
+      // "Sichos HaRan 44" or "Sicha 44"
+      { regex: /(?:Sichos?\s*(?:Ha)?Ran|Sicha)\s*[#]?\s*(\d+)/gi,
+        link: (m) => `/reader/sichos-haran/sicha-${m[1]}` },
+      // "Sefer HaMidos" or "Book of Traits"
+      { regex: /Sefer\s*Ha\s*Mid[do]s/gi,
+        link: () => `/reader/sefer-hamidos/topic-1` },
+      // "Meshivas Nefesh, Section 5"
+      { regex: /Meshivas?\s*Nefesh\s*[,]?\s*(?:Section\s*)?(\d+)/gi,
+        link: (m) => `/reader/meshivas-nefesh/section-${m[1]}` },
+    ];
+
+    // Also scan Hebrew text for references
+    const hePatterns = [
+      // ליקוטי מוהר"ן סי' כ"ב or תורה כב
+      { regex: /לקוטי\s*מוהר[""״]ן\s*(?:סי[מ׳']\s*)?([א-ת][א-ת"'״׳]*)/g,
+        link: (m) => { const n = parseHebrewNum(m[1]); return n ? `/reader/likutay-moharan/1/${n}` : null; } },
+      // ליקוטי מוהר"ן תנינא סי' ה
+      { regex: /לקוטי\s*מוהר[""״]ן\s*תנינא\s*(?:סי[מ׳']\s*)?([א-ת][א-ת"'״׳]*)/g,
+        link: (m) => { const n = parseHebrewNum(m[1]); return n ? `/reader/likutay-moharan/2/${n}` : null; } },
+    ];
+
+    segments.forEach(p => {
+      let html = p.innerHTML;
+      let changed = false;
+
+      for (const pat of patterns) {
+        html = html.replace(pat.regex, (match, ...groups) => {
+          const url = pat.link([match, ...groups]);
+          if (!url) return match;
+          changed = true;
+          return `<a href="${url}" style="color:#1a365d;text-decoration:underline dotted;cursor:pointer;" title="Open in reader">${match}</a>`;
+        });
+      }
+
+      if (changed) p.innerHTML = html;
+    });
+
+    // Hebrew segments
+    document.querySelectorAll('.segment-he p').forEach(p => {
+      let html = p.innerHTML;
+      let changed = false;
+
+      for (const pat of hePatterns) {
+        html = html.replace(pat.regex, (match, ...groups) => {
+          const url = pat.link([match, ...groups]);
+          if (!url) return match;
+          changed = true;
+          return `<a href="${url}" style="color:#1a365d;text-decoration:underline dotted;cursor:pointer;" title="פתח בקורא">${match}</a>`;
+        });
+      }
+
+      if (changed) p.innerHTML = html;
+    });
+  }
+
   // Run on DOM ready
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener('DOMContentLoaded', () => { init(); setTimeout(addCrossReferenceLinks, 500); });
   } else {
     init();
+    setTimeout(addCrossReferenceLinks, 500);
   }
 })();
