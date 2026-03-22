@@ -31,6 +31,35 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
           </svg>
         </button>
+        <button type="button" class="heb-kb-toggle" id="hebKbToggle" title="Hebrew keyboard">א</button>
+      </div>
+
+      <!-- Hebrew Keyboard -->
+      <div class="heb-keyboard" id="hebKeyboard" style="display:none;">
+        <div class="heb-kb-row">
+          <button class="heb-key" data-char="ק">ק</button><button class="heb-key" data-char="ר">ר</button>
+          <button class="heb-key" data-char="א">א</button><button class="heb-key" data-char="ט">ט</button>
+          <button class="heb-key" data-char="ו">ו</button><button class="heb-key" data-char="ן">ן</button>
+          <button class="heb-key" data-char="ם">ם</button><button class="heb-key" data-char="פ">פ</button>
+        </div>
+        <div class="heb-kb-row">
+          <button class="heb-key" data-char="ש">ש</button><button class="heb-key" data-char="ד">ד</button>
+          <button class="heb-key" data-char="ג">ג</button><button class="heb-key" data-char="כ">כ</button>
+          <button class="heb-key" data-char="ע">ע</button><button class="heb-key" data-char="י">י</button>
+          <button class="heb-key" data-char="ח">ח</button><button class="heb-key" data-char="ל">ל</button>
+          <button class="heb-key" data-char="ך">ך</button><button class="heb-key" data-char="ף">ף</button>
+        </div>
+        <div class="heb-kb-row">
+          <button class="heb-key" data-char="ז">ז</button><button class="heb-key" data-char="ס">ס</button>
+          <button class="heb-key" data-char="ב">ב</button><button class="heb-key" data-char="ה">ה</button>
+          <button class="heb-key" data-char="נ">נ</button><button class="heb-key" data-char="מ">מ</button>
+          <button class="heb-key" data-char="צ">צ</button><button class="heb-key" data-char="ת">ת</button>
+          <button class="heb-key" data-char="ץ">ץ</button>
+        </div>
+        <div class="heb-kb-row">
+          <button class="heb-key heb-space" data-char=" ">Space</button>
+          <button class="heb-key heb-del" id="hebDel">⌫</button>
+        </div>
       </div>
 
       <!-- Popular Searches -->
@@ -163,6 +192,31 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
         performSearch();
       }
     });
+
+    // Hebrew keyboard toggle
+    const hebKbToggle = document.getElementById('hebKbToggle');
+    const hebKeyboard = document.getElementById('hebKeyboard');
+    if (hebKbToggle && hebKeyboard) {
+      hebKbToggle.addEventListener('click', () => {
+        hebKeyboard.style.display = hebKeyboard.style.display === 'none' ? 'block' : 'none';
+        hebKbToggle.classList.toggle('active');
+      });
+      hebKeyboard.querySelectorAll('.heb-key[data-char]').forEach(key => {
+        key.addEventListener('click', () => {
+          if (!searchInput) return;
+          searchInput.value += (key as HTMLElement).dataset.char;
+          searchInput.focus();
+        });
+      });
+      const hebDel = document.getElementById('hebDel');
+      if (hebDel) {
+        hebDel.addEventListener('click', () => {
+          if (!searchInput) return;
+          searchInput.value = searchInput.value.slice(0, -1);
+          searchInput.focus();
+        });
+      }
+    }
 
     // Popular search tags
     document.querySelectorAll('.pop-tag').forEach(tag => {
@@ -340,6 +394,44 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
     align-items: center;
     margin: 8px 0;
   }
+  /* Hebrew keyboard toggle */
+  .heb-kb-toggle {
+    padding: 0.85rem 1rem;
+    background: #f0ebe0;
+    border: 2px solid #d1d5db;
+    border-radius: 50px;
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 1.1em;
+    font-weight: 700;
+    cursor: pointer;
+    color: #1a365d;
+  }
+  .heb-kb-toggle.active { background: #1a365d; color: white; border-color: #1a365d; }
+  .heb-keyboard {
+    background: #f8f5ef;
+    border: 1px solid #e0d6c2;
+    border-radius: 12px;
+    padding: 8px;
+    margin-bottom: 8px;
+    direction: rtl;
+  }
+  .heb-kb-row { display: flex; justify-content: center; gap: 4px; margin-bottom: 4px; }
+  .heb-key {
+    min-width: 32px;
+    height: 36px;
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 1.1em;
+    cursor: pointer;
+    color: #1a365d;
+  }
+  .heb-key:hover { background: #e0d6c2; }
+  .heb-key:active { background: #1a365d; color: white; }
+  .heb-space { min-width: 120px; font-size: 0.8em; }
+  .heb-del { font-size: 0.9em; min-width: 48px; }
+
   .pop-label { color: #888; font-size: 0.8em; }
   .pop-tag {
     background: #f0ebe0;
