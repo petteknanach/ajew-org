@@ -83,11 +83,36 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
             </select>
             <span class="mode-label" id="minWordsHint">of <span id="totalWordsCount">0</span> words</span>
           </div>
+          <!-- Book filter -->
+          <div class="mode-group book-filter-group">
+            <span class="mode-label">Book:</span>
+            <select id="bookFilter" class="min-words-select" title="Filter results by book">
+              <option value="">All Books</option>
+              <optgroup label="R' Nachman">
+                <option value="likutay-moharan">Likutay Moharan</option>
+                <option value="sefer-hamidos">Sefer HaMidos</option>
+                <option value="sipurey-maasiyos">Sipurey Maasiyos</option>
+              </optgroup>
+              <optgroup label="R' Nosson">
+                <option value="likutay-halachos">Likutay Halachos</option>
+                <option value="likutay-tefilos">Likutay Tefilos</option>
+                <option value="sichos-haran">Sichos HaRan</option>
+                <option value="shivchay-haran">Shivchay HaRan</option>
+                <option value="likutay-eitzos">Likutay Eitzos</option>
+              </optgroup>
+              <optgroup label="Other Breslov">
+                <option value="kitzur-likutay-moharan">Kitzur LM</option>
+                <option value="hashtatfchus-hanefesh">Hashtatfchus</option>
+                <option value="meshivas-nefesh">Meshivas Nefesh</option>
+                <option value="parparos-lechochma">Parparos</option>
+              </optgroup>
+            </select>
+          </div>
         </div>
       )}
     </form>
   </div>
-  
+
   <!-- Advanced Search Options -->
   {showAdvancedOptions && <AdvancedSearchOptions />}
 </div>
@@ -188,6 +213,15 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
     if (minWordsSelect) {
       minWordsSelect.addEventListener('change', () => {
         searchState.advancedOptions.minWords = parseInt(minWordsSelect.value, 10);
+        if (searchState.query) performSearch();
+      });
+    }
+
+    // Book filter
+    const bookFilter = document.getElementById('bookFilter') as HTMLSelectElement;
+    if (bookFilter) {
+      bookFilter.addEventListener('change', () => {
+        searchState.advancedOptions.books = bookFilter.value ? [bookFilter.value] : [];
         if (searchState.query) performSearch();
       });
     }
