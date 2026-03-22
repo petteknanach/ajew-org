@@ -532,52 +532,55 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
     })();
     </script>
 
-    <!-- Volume 1 (Kama) -->
-    <div class="volume-section" id="likutay-moharan">
-      <h2 class="volume-title">Volume 1 (Kama)</h2>
-      <div class="volume-hebrew">&#1502;&#1492;&#1491;&#1493;&#1512;&#1488; &#1511;&#1502;&#1488;</div>
-      {catalog1 && <p class="volume-count">{catalog1.totalTorahs} Torahs</p>}
-      <div style="margin-bottom: 12px;">
-        <ul class="torah-list">
-          <li><a href="/reader/likutay-moharan/1/haskamos" style="background: #e8d5a3; font-size: 0.8em;">הסכמות</a></li>
-          <li><a href="/reader/likutay-moharan/1/intro" style="background: #e8d5a3; font-size: 0.8em;">שיר נעים</a></li>
-          <li><a href="/reader/likutay-moharan/1/intro-shimon" style="background: #e8d5a3; font-size: 0.8em;">ר׳ שמעון</a></li>
-        </ul>
-      </div>
-      {catalog1 ? (
-        <ul class="torah-list">
-          {catalog1.torahs.filter(t => typeof t.number === 'number').map(t => (
-            <li>
-              <a href={t.url}>
-                <span class="torah-num">{t.displayNumber || t.number}</span>
-              </a>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>Loading...</p>
-      )}
-    </div>
+    <!-- All Books by Category -->
 
-    <!-- Volume 2 (Tinyana) -->
-    <div class="volume-section">
-      <h2 class="volume-title">Volume 2 (Tinyana)</h2>
-      <div class="volume-hebrew">&#1502;&#1492;&#1491;&#1493;&#1512;&#1488; &#1489;&#1514;&#1512;&#1488; (&#1514;&#1504;&#1497;&#1504;&#1488;)</div>
-      {catalog2 && <p class="volume-count">{catalog2.totalTorahs} Torahs</p>}
-      {catalog2 ? (
-        <ul class="torah-list">
-          {catalog2.torahs.map(t => (
-            <li>
-              <a href={t.url}>
-                <span class="torah-num">{t.displayNumber || t.number}</span>
-              </a>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>Loading...</p>
-      )}
-    </div>
+    <!-- Likutay Moharan - in its own collapsible section -->
+    <details class="category-section" id="likutay-moharan">
+      <summary class="category-title">Likutay Moharan / ליקוטי מוהר"ן <span class="cat-count">({(catalog1?.totalTorahs || 0) + (catalog2?.totalTorahs || 0)} torahs)</span></summary>
+
+      <div class="volume-section" style="margin-bottom: 20px;">
+        <h3 class="volume-title" style="font-size: 1.2em;">Volume 1 (Kama) — מהדורא קמא</h3>
+        {catalog1 && <p class="volume-count">{catalog1.totalTorahs} Torahs</p>}
+        <div style="margin-bottom: 8px;">
+          <ul class="torah-list">
+            <li><a href="/reader/likutay-moharan/1/haskamos" style="background: #e8d5a3; font-size: 0.8em;">הסכמות</a></li>
+            <li><a href="/reader/likutay-moharan/1/intro" style="background: #e8d5a3; font-size: 0.8em;">שיר נעים</a></li>
+            <li><a href="/reader/likutay-moharan/1/intro-shimon" style="background: #e8d5a3; font-size: 0.8em;">ר׳ שמעון</a></li>
+          </ul>
+        </div>
+        {catalog1 ? (
+          <ul class="torah-list">
+            {catalog1.torahs.filter(t => typeof t.number === 'number').map(t => (
+              <li>
+                <a href={t.url}>
+                  <span class="torah-num">{t.displayNumber || t.number}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>Loading...</p>
+        )}
+      </div>
+
+      <div class="volume-section">
+        <h3 class="volume-title" style="font-size: 1.2em;">Volume 2 (Tinyana) — מהדורא בתרא (תנינא)</h3>
+        {catalog2 && <p class="volume-count">{catalog2.totalTorahs} Torahs</p>}
+        {catalog2 ? (
+          <ul class="torah-list">
+            {catalog2.torahs.map(t => (
+              <li>
+                <a href={t.url}>
+                  <span class="torah-num">{t.displayNumber || t.number}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>Loading...</p>
+        )}
+      </div>
+    </details>
 
     <!-- All Other Books by Category -->
     {categories.map(cat => {
