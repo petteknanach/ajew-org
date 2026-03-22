@@ -387,6 +387,31 @@
     segments.forEach(seg => observer.observe(seg));
   }
 
+  // --- Auto-advance prompt at end of page ---
+  function setupAutoAdvance() {
+    const nextLink = document.querySelector('.reader-nav a[data-dir="next"]:not(.disabled)');
+    if (!nextLink) return;
+
+    let shown = false;
+    const banner = document.createElement('div');
+    banner.className = 'auto-advance-banner';
+    banner.innerHTML = `<span>Finished? </span><a href="${nextLink.href}" class="advance-link">Continue to next →</a>`;
+    banner.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:var(--reader-accent,#c4a265);color:white;text-align:center;padding:12px;font-weight:600;transform:translateY(100%);transition:transform 0.3s;z-index:50;font-size:0.95em;';
+    banner.querySelector('.advance-link').style.cssText = 'color:white;text-decoration:underline;margin-left:8px;';
+    document.body.appendChild(banner);
+
+    window.addEventListener('scroll', () => {
+      const scrolledToBottom = (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 200);
+      if (scrolledToBottom && !shown) {
+        banner.style.transform = 'translateY(0)';
+        shown = true;
+      } else if (!scrolledToBottom && shown) {
+        banner.style.transform = 'translateY(100%)';
+        shown = false;
+      }
+    }, { passive: true });
+  }
+
   // --- Reading Time Estimate ---
   function addReadingTime() {
     const header = document.querySelector('.reader-header');
@@ -505,7 +530,20 @@
     restoreScrollPosition();
     saveScrollPosition();
     addReadingTime();
+    setupAutoAdvance();
     setupRelatedTeachings();
+
+    // Add "Report Typo" link at bottom
+    const lastNav = document.querySelectorAll('.reader-nav');
+    const bottomNav = lastNav[lastNav.length - 1];
+    if (bottomNav) {
+      const reportLink = document.createElement('div');
+      reportLink.style.cssText = 'text-align:center;margin-top:8px;';
+      const pageTitle = document.title.replace(' | A Jew', '');
+      const mailto = 'mailto:naanaach@gmail.com?subject=Typo Report: ' + encodeURIComponent(pageTitle) + '&body=' + encodeURIComponent('Page: ' + window.location.href + '\n\nDescription of issue:\n');
+      reportLink.innerHTML = '<a href="' + mailto + '" style="color:var(--reader-text-secondary,#888);font-size:0.8em;text-decoration:none;">Found a typo? Report it →</a>';
+      bottomNav.parentNode.insertBefore(reportLink, bottomNav.nextSibling);
+    }
     setupSelectionPopup();
     setupSegmentHighlight();
     setupCopyButtons();
