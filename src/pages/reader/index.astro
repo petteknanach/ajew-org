@@ -238,6 +238,24 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
     }
     .recent-ago { color: #888; font-size: 0.75em; }
 
+    /* Random Torah Button */
+    .random-torah-btn {
+      margin-top: 16px;
+      padding: 10px 24px;
+      background: #1a365d;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .random-torah-btn:hover {
+      background: #2a5a9e;
+      transform: scale(1.05);
+    }
+
     .category-section {
       margin-top: 48px;
       padding-top: 24px;
@@ -270,6 +288,7 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
         <span>25,000+ pages</span>
         <span>Fullscreen reading</span>
       </div>
+      <button class="random-torah-btn" id="randomTorahBtn" onclick="goToRandomTorah()">Open Random Torah</button>
     </div>
 
     <!-- Recently Read -->
@@ -303,6 +322,29 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
         return days + 'd ago';
       }
     })();
+    </script>
+
+    <script is:inline>
+    function goToRandomTorah() {
+      const books = [
+        { base: '/reader/likutay-moharan/part-1/', max: 285 },
+        { base: '/reader/likutay-moharan/part-2/', max: 123 },
+        { base: '/reader/sefer-hamidos/topic-', max: 108, suffix: '' },
+        { base: '/reader/sichos-haran/sicha-', max: 309, suffix: '' },
+        { base: '/reader/shivchay-haran/section-', max: 63, suffix: '' },
+        { base: '/reader/likutay-halachos/part-1/halacha-', max: 55, suffix: '' },
+        { base: '/reader/likutay-halachos/part-2/halacha-', max: 48, suffix: '' },
+        { base: '/reader/likutay-halachos/part-3/halacha-', max: 80, suffix: '' },
+        { base: '/reader/kitzur-likutay-moharan/part-1/', max: 289 },
+        { base: '/reader/likutay-tefilos/part-2/torah-', max: 151, suffix: '' },
+        { base: '/reader/likutay-eitzos/topic-', max: 65, suffix: '' },
+        { base: '/reader/hashtatfchus-hanefesh/part-1/torah-', max: 130, suffix: '' },
+        { base: '/reader/meshivas-nefesh/part-1/torah-', max: 183, suffix: '' },
+      ];
+      const book = books[Math.floor(Math.random() * books.length)];
+      const num = Math.floor(Math.random() * book.max) + 1;
+      window.location.href = book.base + num;
+    }
     </script>
 
     <!-- Volume 1 (Kama) -->
