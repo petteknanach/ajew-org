@@ -441,6 +441,7 @@
     restoreScrollPosition();
     saveScrollPosition();
     addReadingTime();
+    setupRelatedTeachings();
 
     // Scroll to segment from URL hash (e.g. #seg-5)
     if (window.location.hash) {
@@ -846,6 +847,50 @@
       btn.textContent = 'Listen';
       btn.classList.remove('active');
     }
+  }
+
+  // --- Related Teachings ---
+  function setupRelatedTeachings() {
+    const container = document.querySelector('.reader-container');
+    if (!container) return;
+    const nav = document.querySelectorAll('.reader-nav');
+    const lastNav = nav[nav.length - 1];
+    if (!lastNav) return;
+
+    // Get all Hebrew text to find concepts
+    const heTexts = Array.from(document.querySelectorAll('.segment-he p'))
+      .map(p => p.textContent || '').join(' ');
+    const stripped = heTexts.replace(/[\u0591-\u05BD\u05BF-\u05C7]/g, '');
+
+    // Key concepts to detect
+    const concepts = [
+      { he: 'תשובה', en: 'Repentance' }, { he: 'שמחה', en: 'Joy' },
+      { he: 'אמונה', en: 'Faith' }, { he: 'תפילה', en: 'Prayer' },
+      { he: 'צדיק', en: 'Righteous One' }, { he: 'התבודדות', en: 'Meditation' },
+      { he: 'תיקון', en: 'Repair' }, { he: 'נשמה', en: 'Soul' },
+      { he: 'גאולה', en: 'Redemption' }, { he: 'צדקה', en: 'Charity' },
+      { he: 'ענווה', en: 'Humility' }, { he: 'דביקות', en: 'Attachment' },
+    ];
+
+    const found = concepts.filter(c => stripped.includes(c.he));
+    if (found.length === 0) return;
+
+    // Show concept tags
+    const section = document.createElement('div');
+    section.className = 'related-teachings';
+    section.innerHTML = `
+      <h3 style="font-size:0.95em;color:var(--reader-text-secondary,#666);margin:16px 0 8px;">
+        Concepts in this teaching:
+      </h3>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;">
+        ${found.map(c => `<a href="/search-enhanced?q=${encodeURIComponent(c.he)}"
+          style="padding:3px 10px;background:var(--reader-surface,#f0ebe0);border-radius:12px;
+          color:var(--reader-text,#1a365d);text-decoration:none;font-size:0.85em;
+          font-family:'Frank Ruhl Libre',serif;border:1px solid var(--reader-border,#e0d6c2);"
+          title="Search for ${c.en}">${c.he} (${c.en})</a>`).join('')}
+      </div>
+    `;
+    lastNav.parentNode.insertBefore(section, lastNav);
   }
 
   // --- Share ---
