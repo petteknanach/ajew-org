@@ -299,8 +299,7 @@ import Layout from '../layouts/Layout.astro';
           <div class="ref-result-title" id="resultTitle"></div>
           <div class="ref-result-title-he" id="resultTitleHe"></div>
         </div>
-        <a class="ref-result-link ref-local-link" id="resultLocalLink" href="#" style="display:none;">📖 Read in Library &rarr;</a>
-        <a class="ref-result-link" id="resultLink" href="#" target="_blank">View on Sefaria &rarr;</a>
+        <a class="ref-result-link ref-local-link" id="resultLocalLink" href="#">Open in Reader &rarr;</a>
       </div>
       <div class="ref-result-body">
         <div class="ref-text-he" id="resultHe"></div>
@@ -346,7 +345,7 @@ import Layout from '../layouts/Layout.astro';
     const resultTitleHe = document.getElementById('resultTitleHe');
     const resultHe = document.getElementById('resultHe');
     const resultEn = document.getElementById('resultEn');
-    const resultLink = document.getElementById('resultLink');
+    // resultLink removed - no longer using Sefaria
     const resultLocalLink = document.getElementById('resultLocalLink');
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
@@ -386,7 +385,6 @@ import Layout from '../layouts/Layout.astro';
       resultTitleHe.textContent = data.heRef || '';
       resultHe.innerHTML = data.he || '';
       resultEn.innerHTML = data.en || 'Translation not available';
-      resultLink.href = data.sefariaUrl || '#';
       if (data.localUrl) {
         resultLocalLink.href = data.localUrl;
         resultLocalLink.style.display = 'inline-block';

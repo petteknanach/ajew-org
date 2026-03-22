@@ -1,8 +1,8 @@
 export const prerender = false;
 
 /**
- * Verse Lookup API - Quick reference for Tanach, Talmud, and other sources
- * Proxies requests to the Sefaria API for instant verse/passage lookup.
+ * Verse Lookup API - Quick reference for Tanach and Talmud Bavli
+ * All data served from local texts - no external API dependencies.
  *
  * Usage: /api/verse-lookup?ref=Genesis.1.1
  *        /api/verse-lookup?ref=Psalms.119.1
@@ -10,97 +10,46 @@ export const prerender = false;
  *        /api/verse-lookup?ref=תהלים+קיט+א
  */
 
-// Common Hebrew book name mappings to Sefaria refs
-const HEBREW_TO_SEFARIA: Record<string, string> = {
+import fs from 'node:fs';
+import path from 'node:path';
+
+// Hebrew book name -> English canonical name
+const HEBREW_TO_ENGLISH: Record<string, string> = {
   // Torah
-  'בראשית': 'Genesis',
-  'שמות': 'Exodus',
-  'ויקרא': 'Leviticus',
-  'במדבר': 'Numbers',
-  'דברים': 'Deuteronomy',
+  'בראשית': 'Genesis', 'שמות': 'Exodus', 'ויקרא': 'Leviticus',
+  'במדבר': 'Numbers', 'דברים': 'Deuteronomy',
   // Nevi'im
-  'יהושע': 'Joshua',
-  'שופטים': 'Judges',
-  'שמואל': 'I Samuel',
-  'שמואל א': 'I Samuel',
-  'שמואל ב': 'II Samuel',
-  'מלכים': 'I Kings',
-  'מלכים א': 'I Kings',
-  'מלכים ב': 'II Kings',
-  'ישעיהו': 'Isaiah',
-  'ישעיה': 'Isaiah',
-  'ירמיהו': 'Jeremiah',
-  'ירמיה': 'Jeremiah',
+  'יהושע': 'Joshua', 'שופטים': 'Judges',
+  'שמואל': 'I Samuel', 'שמואל א': 'I Samuel', 'שמואל ב': 'II Samuel',
+  'מלכים': 'I Kings', 'מלכים א': 'I Kings', 'מלכים ב': 'II Kings',
+  'ישעיהו': 'Isaiah', 'ישעיה': 'Isaiah',
+  'ירמיהו': 'Jeremiah', 'ירמיה': 'Jeremiah',
   'יחזקאל': 'Ezekiel',
-  'הושע': 'Hosea',
-  'יואל': 'Joel',
-  'עמוס': 'Amos',
-  'עובדיה': 'Obadiah',
-  'יונה': 'Jonah',
-  'מיכה': 'Micah',
-  'נחום': 'Nahum',
-  'חבקוק': 'Habakkuk',
-  'צפניה': 'Zephaniah',
-  'חגי': 'Haggai',
-  'זכריה': 'Zechariah',
-  'מלאכי': 'Malachi',
+  'הושע': 'Hosea', 'יואל': 'Joel', 'עמוס': 'Amos', 'עובדיה': 'Obadiah',
+  'יונה': 'Jonah', 'מיכה': 'Micah', 'נחום': 'Nahum', 'חבקוק': 'Habakkuk',
+  'צפניה': 'Zephaniah', 'חגי': 'Haggai', 'זכריה': 'Zechariah', 'מלאכי': 'Malachi',
   // Ketuvim
-  'תהלים': 'Psalms',
-  'תהילים': 'Psalms',
-  'משלי': 'Proverbs',
-  'איוב': 'Job',
-  'שיר השירים': 'Song of Songs',
-  'רות': 'Ruth',
-  'איכה': 'Lamentations',
-  'קהלת': 'Ecclesiastes',
-  'אסתר': 'Esther',
-  'דניאל': 'Daniel',
-  'עזרא': 'Ezra',
-  'נחמיה': 'Nehemiah',
-  'דברי הימים': 'I Chronicles',
-  'דברי הימים א': 'I Chronicles',
-  'דברי הימים ב': 'II Chronicles',
-  // Talmud Bavli (common tractates)
-  'ברכות': 'Berakhot',
-  'שבת': 'Shabbat',
-  'ערובין': 'Eruvin',
-  'עירובין': 'Eruvin',
-  'פסחים': 'Pesachim',
-  'ביצה': 'Beitzah',
-  'ראש השנה': 'Rosh Hashanah',
-  'תענית': 'Taanit',
-  'מגילה': 'Megillah',
-  'סוכה': 'Sukkah',
-  'חגיגה': 'Chagigah',
-  'יבמות': 'Yevamot',
-  'כתובות': 'Ketubot',
-  'נדרים': 'Nedarim',
-  'נזיר': 'Nazir',
-  'סוטה': 'Sotah',
-  'גיטין': 'Gittin',
-  'קידושין': 'Kiddushin',
-  'בבא קמא': 'Bava Kamma',
-  'בבא מציעא': 'Bava Metzia',
-  'בבא בתרא': 'Bava Batra',
-  'סנהדרין': 'Sanhedrin',
-  'מכות': 'Makkot',
-  'שבועות': 'Shevuot',
-  'עבודה זרה': 'Avodah Zarah',
-  'הוריות': 'Horayot',
-  'זבחים': 'Zevachim',
-  'מנחות': 'Menachot',
-  'חולין': 'Chullin',
-  'בכורות': 'Bekhorot',
-  'ערכין': 'Arakhin',
-  'נדה': 'Niddah',
-  // Midrash
-  'בראשית רבה': 'Bereishit Rabbah',
-  'ויקרא רבה': 'Vayikra Rabbah',
-  // Zohar
-  'זהר': 'Zohar',
+  'תהלים': 'Psalms', 'תהילים': 'Psalms', 'משלי': 'Proverbs', 'איוב': 'Job',
+  'שיר השירים': 'Song of Songs', 'רות': 'Ruth', 'איכה': 'Lamentations',
+  'קהלת': 'Ecclesiastes', 'אסתר': 'Esther', 'דניאל': 'Daniel',
+  'עזרא': 'Ezra', 'נחמיה': 'Nehemiah',
+  'דברי הימים': 'I Chronicles', 'דברי הימים א': 'I Chronicles', 'דברי הימים ב': 'II Chronicles',
+  // Talmud Bavli
+  'ברכות': 'Berakhot', 'שבת': 'Shabbat', 'ערובין': 'Eruvin', 'עירובין': 'Eruvin',
+  'פסחים': 'Pesachim', 'ביצה': 'Beitzah', 'ראש השנה': 'Rosh Hashanah',
+  'תענית': 'Taanit', 'מגילה': 'Megillah', 'סוכה': 'Sukkah', 'חגיגה': 'Chagigah',
+  'יומא': 'Yoma', 'שקלים': 'Shekalim', 'מועד קטן': 'Moed Katan',
+  'יבמות': 'Yevamot', 'כתובות': 'Ketubot', 'נדרים': 'Nedarim',
+  'נזיר': 'Nazir', 'סוטה': 'Sotah', 'גיטין': 'Gittin', 'קידושין': 'Kiddushin',
+  'בבא קמא': 'Bava Kamma', 'בבא מציעא': 'Bava Metzia', 'בבא בתרא': 'Bava Batra',
+  'סנהדרין': 'Sanhedrin', 'מכות': 'Makkot', 'שבועות': 'Shevuot',
+  'עבודה זרה': 'Avodah Zarah', 'הוריות': 'Horayot',
+  'זבחים': 'Zevachim', 'מנחות': 'Menachot', 'חולין': 'Chullin',
+  'בכורות': 'Bekhorot', 'ערכין': 'Arakhin', 'נדה': 'Niddah',
+  'תמיד': 'Tamid', 'תמורה': 'Temurah', 'כריתות': 'Keritot', 'מעילה': 'Meilah',
 };
 
-// Hebrew number parsing for chapter/verse
+// Hebrew number parsing
 const HEB_NUMS: Record<string, number> = {
   'א': 1, 'ב': 2, 'ג': 3, 'ד': 4, 'ה': 5, 'ו': 6, 'ז': 7, 'ח': 8, 'ט': 9,
   'י': 10, 'כ': 20, 'ל': 30, 'מ': 40, 'נ': 50, 'ס': 60, 'ע': 70, 'פ': 80, 'צ': 90,
@@ -124,11 +73,11 @@ function parseHebrewNum(str: string): number | null {
 function normalizeRef(input: string): string {
   let ref = input.trim();
 
-  // Try to match Hebrew book name
-  for (const [heb, eng] of Object.entries(HEBREW_TO_SEFARIA)) {
+  // Try to match Hebrew book name (longest match first)
+  const sortedEntries = Object.entries(HEBREW_TO_ENGLISH).sort((a, b) => b[0].length - a[0].length);
+  for (const [heb, eng] of sortedEntries) {
     if (ref.startsWith(heb)) {
       const rest = ref.substring(heb.length).trim();
-      // Parse remaining as chapter:verse (could be Hebrew letters or numbers)
       const parts = rest.split(/[\s,:.\-]+/).filter(Boolean);
 
       if (parts.length === 0) {
@@ -144,14 +93,12 @@ function normalizeRef(input: string): string {
     }
   }
 
-  // Handle Talmud page references like "5a", "32b"
   ref = ref.replace(/\s+/g, '.');
-
   return ref;
 }
 
-// Sefaria name -> local slug mapping for Tanach
-const SEFARIA_TO_LOCAL: Record<string, string> = {
+// English name -> local texts slug (for public/texts/tanach/)
+const TANACH_TEXT_SLUG: Record<string, string> = {
   'Genesis': 'genesis', 'Exodus': 'exodus', 'Leviticus': 'leviticus',
   'Numbers': 'numbers', 'Deuteronomy': 'deuteronomy',
   'Joshua': 'joshua', 'Judges': 'judges',
@@ -169,18 +116,28 @@ const SEFARIA_TO_LOCAL: Record<string, string> = {
   'Nehemiah': 'nehemiah', 'I Chronicles': 'i-chronicles', 'II Chronicles': 'ii-chronicles',
 };
 
-// Hebrew name -> local slug for direct Hebrew lookup
-const HEBREW_TO_LOCAL: Record<string, string> = {};
-for (const [heb, eng] of Object.entries(HEBREW_TO_SEFARIA)) {
-  const slug = SEFARIA_TO_LOCAL[eng];
-  if (slug) HEBREW_TO_LOCAL[heb] = slug;
-}
+// English name -> reader route slug (for /reader/tanach-{slug}/part-1/{ch})
+const TANACH_READER_SLUG: Record<string, string> = {
+  'Genesis': 'bereishit', 'Exodus': 'shemos', 'Leviticus': 'vayikra',
+  'Numbers': 'bamidbar', 'Deuteronomy': 'devarim',
+  'Joshua': 'yehoshua', 'Judges': 'shoftim',
+  'I Samuel': 'shmuel-a', 'II Samuel': 'shmuel-b',
+  'I Kings': 'melachim-a', 'II Kings': 'melachim-b',
+  'Isaiah': 'yeshayahu', 'Jeremiah': 'yirmiyahu', 'Ezekiel': 'yechezkel',
+  'Hosea': 'hoshea', 'Joel': 'yoel', 'Amos': 'amos', 'Obadiah': 'ovadya',
+  'Jonah': 'yonah', 'Micah': 'michah', 'Nahum': 'nachum',
+  'Habakkuk': 'havakkuk', 'Zephaniah': 'tzefanya',
+  'Haggai': 'chaggai', 'Zechariah': 'zecharya', 'Malachi': 'malachi',
+  'Psalms': 'tehillim', 'Proverbs': 'mishlei', 'Job': 'iyov',
+  'Song of Songs': 'shir-hashirim', 'Ruth': 'rus',
+  'Lamentations': 'eicha', 'Ecclesiastes': 'koheles',
+  'Esther': 'esther', 'Daniel': 'daniel', 'Ezra': 'ezra',
+  'Nehemiah': 'nechemia',
+  'I Chronicles': 'divrei-hayamim-a', 'II Chronicles': 'divrei-hayamim-b',
+};
 
-import fs from 'node:fs';
-import path from 'node:path';
-
-// Talmud tractate slug mapping
-const TALMUD_TO_LOCAL: Record<string, string> = {
+// Talmud tractate -> text file slug (public/texts/bavli/{slug}/)
+const TALMUD_TEXT_SLUG: Record<string, string> = {
   'Berakhot': 'brachot', 'Shabbat': 'shabbat', 'Eruvin': 'eruvin',
   'Pesachim': 'pesachim', 'Shekalim': 'shekalim',
   'Rosh Hashanah': 'rosh-hashana', 'Yoma': 'yoma',
@@ -196,17 +153,34 @@ const TALMUD_TO_LOCAL: Record<string, string> = {
   'Keritot': 'keritot', 'Meilah': 'meilah', 'Niddah': 'niddah', 'Tamid': 'tamid',
 };
 
-function tryLocalLookup(sefariaRef: string): any | null {
-  const parts = sefariaRef.split('.');
+// Talmud tractate -> reader route slug (src/pages/reader/talmud-bavli-{slug}/)
+const TALMUD_READER_SLUG: Record<string, string> = {
+  'Berakhot': 'brachot', 'Shabbat': 'shabbat', 'Eruvin': 'eruvin',
+  'Pesachim': 'psachim', 'Shekalim': 'shkalim',
+  'Rosh Hashanah': 'rosh-hashana', 'Yoma': 'yoma',
+  'Sukkah': 'sukkah', 'Beitzah': 'beitza', 'Taanit': 'taanit',
+  'Megillah': 'megillah', 'Moed Katan': 'moed-katan', 'Chagigah': 'chagigah',
+  'Yevamot': 'yevamot', 'Ketubot': 'ketubot', 'Nedarim': 'nedarim',
+  'Nazir': 'nazir', 'Sotah': 'sotah', 'Gittin': 'gittin', 'Kiddushin': 'kiddushin',
+  'Bava Kamma': 'bava-kamma', 'Bava Metzia': 'bava-metzia', 'Bava Batra': 'bava-batra',
+  'Sanhedrin': 'sanhedrin', 'Makkot': 'makkot', 'Shevuot': 'shevuot',
+  'Avodah Zarah': 'avodah-zarah', 'Horayot': 'horayot',
+  'Zevachim': 'zevachim', 'Menachot': 'menachot', 'Chullin': 'chulin',
+  'Bekhorot': 'bechorot', 'Arakhin': 'arachin', 'Temurah': 'temurah',
+  'Keritot': 'keritot', 'Meilah': 'meilah', 'Niddah': 'niddah', 'Tamid': 'tamid',
+};
+
+function tryLocalLookup(ref: string): any | null {
+  const parts = ref.split('.');
   if (parts.length < 2) return null;
 
   const bookName = parts[0];
 
   // Try Talmud first (e.g., "Berakhot.5a")
-  const talmudSlug = TALMUD_TO_LOCAL[bookName];
-  if (talmudSlug) {
-    const daf = parts[1].toLowerCase(); // e.g., "5a"
-    const filePath = path.join(process.cwd(), 'public', 'texts', 'bavli', talmudSlug, `${daf}.json`);
+  const talmudTextSlug = TALMUD_TEXT_SLUG[bookName];
+  if (talmudTextSlug) {
+    const daf = parts[1].toLowerCase();
+    const filePath = path.join(process.cwd(), 'public', 'texts', 'bavli', talmudTextSlug, `${daf}.json`);
     if (!fs.existsSync(filePath)) return null;
 
     try {
@@ -215,6 +189,7 @@ function tryLocalLookup(sefariaRef: string): any | null {
       const amud = daf.endsWith('a') ? 'a' : 'b';
       const nextDaf = amud === 'a' ? `${dafNum}b` : `${dafNum + 1}a`;
       const prevDaf = amud === 'b' ? `${dafNum}a` : (dafNum > 2 ? `${dafNum - 1}b` : null);
+      const readerSlug = TALMUD_READER_SLUG[bookName] || talmudTextSlug;
 
       return {
         ref: `${bookName}.${daf}`,
@@ -225,8 +200,7 @@ function tryLocalLookup(sefariaRef: string): any | null {
         categories: ['Talmud'],
         next: nextDaf ? `${bookName}.${nextDaf}` : null,
         prev: prevDaf ? `${bookName}.${prevDaf}` : null,
-        localUrl: `/reader/talmud-bavli/${talmudSlug}/${daf}`,
-        sefariaUrl: `https://www.sefaria.org/${bookName}.${daf}`,
+        localUrl: `/reader/talmud-bavli-${readerSlug}/1/${daf}`,
         source: 'local'
       };
     } catch (e) { return null; }
@@ -237,10 +211,11 @@ function tryLocalLookup(sefariaRef: string): any | null {
   const verse = parts.length >= 3 ? parseInt(parts[2]) : null;
   if (!chapter || isNaN(chapter)) return null;
 
-  const slug = SEFARIA_TO_LOCAL[bookName];
-  if (!slug) return null;
+  const textSlug = TANACH_TEXT_SLUG[bookName];
+  const readerSlug = TANACH_READER_SLUG[bookName];
+  if (!textSlug) return null;
 
-  const filePath = path.join(process.cwd(), 'public', 'texts', 'tanach', slug, `${chapter}.json`);
+  const filePath = path.join(process.cwd(), 'public', 'texts', 'tanach', textSlug, `${chapter}.json`);
   if (!fs.existsSync(filePath)) return null;
 
   try {
@@ -267,8 +242,7 @@ function tryLocalLookup(sefariaRef: string): any | null {
       categories: ['Tanakh'],
       next: `${bookName}.${chapter + 1}`,
       prev: chapter > 1 ? `${bookName}.${chapter - 1}` : null,
-      localUrl: `/reader/tanach/${slug}/${chapter}`,
-      sefariaUrl: `https://www.sefaria.org/${bookName}.${chapter}${verse ? '.' + verse : ''}`,
+      localUrl: readerSlug ? `/reader/tanach-${readerSlug}/part-1/${chapter}` : null,
       source: 'local'
     };
   } catch (e) {
@@ -286,10 +260,9 @@ export async function GET({ request }: { request: Request }) {
         { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
 
-    const sefariaRef = normalizeRef(rawRef);
+    const normalizedRef = normalizeRef(rawRef);
 
-    // Try local lookup first (Tanach only)
-    const localResult = tryLocalLookup(sefariaRef);
+    const localResult = tryLocalLookup(normalizedRef);
     if (localResult) {
       return new Response(JSON.stringify(localResult), {
         headers: {
@@ -299,40 +272,13 @@ export async function GET({ request }: { request: Request }) {
       });
     }
 
-    // Fallback to Sefaria API for Talmud, Midrash, etc.
-    const sefariaUrl = `https://www.sefaria.org/api/texts/${encodeURIComponent(sefariaRef)}?context=0&pad=0`;
-    const res = await fetch(sefariaUrl, {
-      headers: { 'Accept': 'application/json' }
-    });
+    // No external fallback - return helpful error
+    return new Response(JSON.stringify({
+      error: `Could not find "${rawRef}" in our library`,
+      tried: normalizedRef,
+      suggestion: 'Try: בראשית א א, Genesis 1:1, תהלים קיט, Psalms 119, ברכות ה, Berakhot 5a'
+    }), { status: 404, headers: { 'Content-Type': 'application/json' } });
 
-    if (!res.ok) {
-      return new Response(JSON.stringify({
-        error: `Could not find "${rawRef}" (tried: ${sefariaRef})`,
-        suggestion: 'Try formats like: Genesis.1.1, תהלים קיט, Berakhot.5a'
-      }), { status: 404, headers: { 'Content-Type': 'application/json' } });
-    }
-
-    const data = await res.json();
-
-    const result = {
-      ref: data.ref || sefariaRef,
-      heRef: data.heRef || '',
-      book: data.book || '',
-      he: Array.isArray(data.he) ? data.he.join(' ') : (data.he || ''),
-      en: Array.isArray(data.text) ? data.text.join(' ') : (data.text || ''),
-      categories: data.categories || [],
-      next: data.next || null,
-      prev: data.prev || null,
-      sefariaUrl: `https://www.sefaria.org/${encodeURIComponent(data.ref || sefariaRef)}`,
-      source: 'sefaria'
-    };
-
-    return new Response(JSON.stringify(result), {
-      headers: {
-        'Content-Type': 'application/json',
-        'Cache-Control': 'public, max-age=86400'
-      }
-    });
   } catch (err: any) {
     return new Response(JSON.stringify({ error: err.message }),
       { status: 500, headers: { 'Content-Type': 'application/json' } });
