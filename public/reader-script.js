@@ -442,6 +442,7 @@
     saveScrollPosition();
     addReadingTime();
     setupRelatedTeachings();
+    setupSelectionPopup();
 
     // Scroll to segment from URL hash (e.g. #seg-5)
     if (window.location.hash) {
@@ -891,6 +892,66 @@
       </div>
     `;
     lastNav.parentNode.insertBefore(section, lastNav);
+  }
+
+  // --- Text Selection Popup ---
+  function setupSelectionPopup() {
+    const container = document.querySelector('.reader-container');
+    if (!container) return;
+
+    // Create popup
+    const popup = document.createElement('div');
+    popup.className = 'selection-popup';
+    popup.style.cssText = 'display:none;position:absolute;z-index:100;background:var(--reader-bg,#fffdf7);border:1px solid #d1c8b0;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15);padding:4px;';
+    popup.innerHTML = `
+      <button class="sel-btn" data-action="copy" title="Copy">Copy</button>
+      <button class="sel-btn" data-action="share" title="Share">Share</button>
+    `;
+    document.body.appendChild(popup);
+
+    // Style buttons
+    popup.querySelectorAll('.sel-btn').forEach(btn => {
+      btn.style.cssText = 'background:none;border:none;padding:6px 12px;cursor:pointer;font-size:0.85em;color:var(--reader-text,#333);border-radius:4px;';
+      btn.addEventListener('mouseenter', () => btn.style.background = 'var(--reader-surface,#f0ebe0)');
+      btn.addEventListener('mouseleave', () => btn.style.background = 'none');
+    });
+
+    document.addEventListener('mouseup', (e) => {
+      setTimeout(() => {
+        const sel = window.getSelection();
+        if (!sel || sel.isCollapsed || !container.contains(sel.anchorNode)) {
+          popup.style.display = 'none';
+          return;
+        }
+        const range = sel.getRangeAt(0);
+        const rect = range.getBoundingClientRect();
+        popup.style.display = 'flex';
+        popup.style.top = (rect.top + window.scrollY - 40) + 'px';
+        popup.style.left = (rect.left + rect.width / 2 - 60) + 'px';
+      }, 10);
+    });
+
+    popup.querySelector('[data-action="copy"]').addEventListener('click', () => {
+      const text = window.getSelection().toString();
+      navigator.clipboard.writeText(text).catch(() => {});
+      popup.style.display = 'none';
+    });
+
+    popup.querySelector('[data-action="share"]').addEventListener('click', () => {
+      const text = window.getSelection().toString();
+      const title = document.title.replace(' | A Jew', '');
+      if (navigator.share) {
+        navigator.share({ title, text, url: window.location.href }).catch(() => {});
+      } else {
+        const full = text + '\n\n— ' + title + '\n' + window.location.href;
+        navigator.clipboard.writeText(full).catch(() => {});
+      }
+      popup.style.display = 'none';
+    });
+
+    document.addEventListener('mousedown', (e) => {
+      if (!popup.contains(e.target)) popup.style.display = 'none';
+    });
   }
 
   // --- Share ---
