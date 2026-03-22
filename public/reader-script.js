@@ -361,6 +361,55 @@
     segments.forEach(seg => observer.observe(seg));
   }
 
+  // --- Reading Time Estimate ---
+  function addReadingTime() {
+    const header = document.querySelector('.reader-header');
+    if (!header) return;
+    const segments = document.querySelectorAll('.reader-segment-pair');
+    const totalChars = Array.from(segments).reduce((sum, seg) => {
+      const he = seg.querySelector('.segment-he p')?.textContent?.length || 0;
+      const en = seg.querySelector('.segment-en p')?.textContent?.length || 0;
+      return sum + he + en;
+    }, 0);
+    // Hebrew: ~150 words/min, ~5 chars/word = ~750 chars/min
+    // English: ~200 words/min, ~5 chars/word = ~1000 chars/min
+    // Estimate average
+    const minutes = Math.max(1, Math.round(totalChars / 850));
+    const badge = document.createElement('div');
+    badge.className = 'reading-time-badge';
+    badge.textContent = minutes + ' min read · ' + segments.length + ' segments';
+    badge.style.cssText = 'font-size:0.8em;color:var(--reader-text-secondary,#888);margin-top:8px;';
+    header.appendChild(badge);
+  }
+
+  // --- Scroll Position Memory ---
+  function restoreScrollPosition() {
+    const key = 'ajew-scroll-' + window.location.pathname;
+    try {
+      const saved = sessionStorage.getItem(key);
+      if (saved && !window.location.hash) {
+        const pos = parseInt(saved);
+        if (pos > 100) {
+          setTimeout(() => window.scrollTo(0, pos), 100);
+        }
+      }
+    } catch(e) {}
+  }
+
+  function saveScrollPosition() {
+    const key = 'ajew-scroll-' + window.location.pathname;
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          try { sessionStorage.setItem(key, String(window.scrollY)); } catch(e) {}
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+  }
+
   // --- Reading History ---
   function saveToHistory() {
     const HISTORY_KEY = 'ajew-reading-history';
@@ -389,6 +438,9 @@
     setupScrollSpy();
     setupNotes();
     saveToHistory();
+    restoreScrollPosition();
+    saveScrollPosition();
+    addReadingTime();
 
     // Scroll to segment from URL hash (e.g. #seg-5)
     if (window.location.hash) {
