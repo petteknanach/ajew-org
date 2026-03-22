@@ -508,6 +508,7 @@
     setupRelatedTeachings();
     setupSelectionPopup();
     setupSegmentHighlight();
+    setupCopyButtons();
 
     // Scroll to segment from URL hash (e.g. #seg-5)
     if (window.location.hash) {
@@ -957,6 +958,29 @@
       </div>
     `;
     lastNav.parentNode.insertBefore(section, lastNav);
+  }
+
+  // --- Copy Segment Button ---
+  function setupCopyButtons() {
+    document.querySelectorAll('.reader-segment-pair').forEach(pair => {
+      const btn = document.createElement('button');
+      btn.className = 'seg-copy-btn';
+      btn.textContent = 'Copy';
+      btn.title = 'Copy this segment';
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const he = pair.querySelector('.segment-he p')?.textContent?.trim() || '';
+        const en = pair.querySelector('.segment-en p')?.textContent?.trim() || '';
+        let text = he;
+        if (en && en !== 'Translation not yet available') text += '\n\n' + en;
+        text += '\n\n— ' + document.title.replace(' | A Jew', '') + ' (ajew.org)';
+        navigator.clipboard.writeText(text).then(() => {
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
+        }).catch(() => {});
+      });
+      pair.appendChild(btn);
+    });
   }
 
   // --- Double-click to Highlight Segment ---

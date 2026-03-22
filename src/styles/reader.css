@@ -1005,6 +1005,26 @@
   border-color: #333;
 }
 
+/* === Copy Segment Button === */
+.seg-copy-btn {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  background: var(--reader-surface, #f0ebe0);
+  border: 1px solid var(--reader-border, #d1c8b0);
+  border-radius: 4px;
+  font-size: 0.7em;
+  padding: 2px 8px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s;
+  color: var(--reader-text-secondary, #666);
+  z-index: 5;
+}
+.reader-segment-pair:hover .seg-copy-btn { opacity: 0.7; }
+.seg-copy-btn:hover { opacity: 1 !important; background: var(--reader-accent, #c4a265); color: white; border-color: var(--reader-accent, #c4a265); }
+@media print { .seg-copy-btn { display: none !important; } }
+
 /* === User Highlights (double-click) === */
 .reader-segment-pair.user-highlighted {
   background: rgba(237, 198, 80, 0.12);
