@@ -1,8 +1,10 @@
 ---
+import Layout from '../../layouts/Layout.astro';
 const pageTitle = "Teachings Index";
 const pageDescription = "Complete index of all teachings imported from naanaach.blogspot.com";
 ---
 
+<Layout title={pageTitle} description={pageDescription}>
 <style>
   .page-header {
     background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
@@ -178,6 +180,4 @@ const pageDescription = "Complete index of all teachings imported from naanaach.
     </div>
   </section>
 </main>
-
----
-import Layout from '../../layouts/Layout.astro';
+</Layout>

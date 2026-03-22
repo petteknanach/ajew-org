@@ -1,8 +1,10 @@
 ---
+import Layout from '../../layouts/Layout.astro';
 const pageTitle = "Rabbi Nachman's Poem";
 const pageDescription = "Rabbi Nachman's Poem from Likutay Moharan";
 ---
 
+<Layout title={pageTitle} description={pageDescription}>
 <style>
   .page-header {
     background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
@@ -47,6 +49,4 @@ const pageDescription = "Rabbi Nachman's Poem from Likutay Moharan";
     </div>
   </div>
 </section>
-
----
-import Layout from '../../layouts/Layout.astro';
+</Layout>

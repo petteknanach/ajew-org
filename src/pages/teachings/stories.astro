@@ -1,8 +1,10 @@
 ---
+import Layout from '../../layouts/Layout.astro';
 const pageTitle = "Stories";
 const pageDescription = "Stories by Rabbi Nachman";
 ---
 
+<Layout title={pageTitle} description={pageDescription}>
 <style>
   .page-header {
     background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
@@ -195,6 +197,4 @@ const pageDescription = "Stories by Rabbi Nachman";
     </div>
   </div>
 </section>
-
----
-import Layout from '../../layouts/Layout.astro';
+</Layout>

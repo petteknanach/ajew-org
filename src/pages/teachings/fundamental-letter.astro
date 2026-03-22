@@ -1,8 +1,10 @@
 ---
+import Layout from '../../layouts/Layout.astro';
 const pageTitle = "Fundamental Letter of Rabbi Shimon Barski";
 const pageDescription = "Fundamental teachings";
 ---
 
+<Layout title={pageTitle} description={pageDescription}>
 <style>
   .page-header {
     background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
@@ -67,6 +69,4 @@ const pageDescription = "Fundamental teachings";
     </div>
   </div>
 </section>
-
----
-import Layout from '../../layouts/Layout.astro';
+</Layout>

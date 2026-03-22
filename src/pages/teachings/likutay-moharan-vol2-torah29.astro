@@ -1,8 +1,10 @@
 ---
+import Layout from '../../layouts/Layout.astro';
 const pageTitle = "Likutay Moharan Volume 2 - Torah 29";
 const pageDescription = "Likutay Moharan - Volume 2 - Torah-teaching 29";
 ---
 
+<Layout title={pageTitle} description={pageDescription}>
 <style>
 .page-header { background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%); color: white; padding: 3rem 2rem; text-align: center; }
 .page-header h1 { font-family: var(--font-hebrew); font-size: 1.8rem; margin: 0; }
@@ -38,6 +40,4 @@ const pageDescription = "Likutay Moharan - Volume 2 - Torah-teaching 29";
     <p>When a question arises in a person's house due to a mixture of issur [forbidden] with heter [permitted], and there is not enough heter to nullify the issur, this shows him that he has damaged some yichud [unification] above...</p>
   </div>
 </section>
-
----
-import Layout from '../../layouts/Layout.astro';
+</Layout>

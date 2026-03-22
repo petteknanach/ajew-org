@@ -1,4 +1,5 @@
 ---
+import Layout from '../../layouts/Layout.astro';
 const pageTitle = "Story 10: The Two Kings";
 const pageDescription = "The Two Kings";
 const contentHtml = `
@@ -66,6 +67,7 @@ Next Tale</p>
 `;
 ---
 
+<Layout title={pageTitle} description={pageDescription}>
 <style>
   .page-header {
     background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
@@ -179,6 +181,4 @@ Next Tale</p>
     </div>
   </div>
 </section>
-
----
-import Layout from '../../layouts/Layout.astro';
+</Layout>

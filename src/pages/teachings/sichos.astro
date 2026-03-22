@@ -1,8 +1,10 @@
 ---
+import Layout from '../../layouts/Layout.astro';
 const pageTitle = "Sichos Haran";
 const pageDescription = "Sichos Haran - Wondrous Stories and Parables after the Storytelling";
 ---
 
+<Layout title={pageTitle} description={pageDescription}>
 <style>
   .page-header {
     background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
@@ -124,6 +126,4 @@ const pageDescription = "Sichos Haran - Wondrous Stories and Parables after the 
     </a>
   </div>
 </nav>
-
----
-import Layout from '../../layouts/Layout.astro';
+</Layout>

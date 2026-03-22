@@ -1,8 +1,10 @@
 ---
+import Layout from '../../layouts/Layout.astro';
 const pageTitle = "Likutay Moharan Volume 2 - Torah 1";
 const pageDescription = "NaNach: Likutay Moharan Volume 2 - Torah-teaching 1: Happy are those whose way is perfect, who walk in the Torah of Hashem. Know that through the Torah, all prayers and all requests that we seek and pray for are accepted, and the grace and importance of Israel are elevated and exalted before all who are needed.";
 ---
 
+<Layout title={pageTitle} description={pageDescription}>
 <style>
 .page-header { background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%); color: white; padding: 3rem 2rem; text-align: center; }
 .page-header h1 { font-family: var(--font-hebrew); font-size: 1.8rem; margin: 0; }
@@ -85,6 +87,4 @@ const pageDescription = "NaNach: Likutay Moharan Volume 2 - Torah-teaching 1: Ha
     
   </div>
 </section>
-
----
-import Layout from '../../layouts/Layout.astro';
+</Layout>

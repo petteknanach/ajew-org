@@ -1,4 +1,5 @@
 ---
+import Layout from '../../layouts/Layout.astro';
 const pageTitle = "Story 13: The Final Story";
 const pageDescription = "The Final Story";
 const contentHtml = `
@@ -142,6 +143,7 @@ Na Nach Nachma Nachman MeUman</p>
 `;
 ---
 
+<Layout title={pageTitle} description={pageDescription}>
 <style>
   .page-header {
     background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
@@ -255,6 +257,4 @@ Na Nach Nachma Nachman MeUman</p>
     </div>
   </div>
 </section>
-
----
-import Layout from '../../layouts/Layout.astro';
+</Layout>

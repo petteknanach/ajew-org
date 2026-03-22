@@ -1,8 +1,10 @@
 ---
+import Layout from '../../layouts/Layout.astro';
 const pageTitle = "Likutay Moharan Volume 2 - Torah 2";
 const pageDescription = "NaNach: Likutay Moharan Volume 2 - Torah-teaching 2: Say to the Kohanim - And Hashem said to Moshe: Speak to the priests, the sons of Aharon, and say to them: None shall defile himself for a dead person among his people.";
 ---
 
+<Layout title={pageTitle} description={pageDescription}>
 <style>
 .page-header { background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%); color: white; padding: 3rem 2rem; text-align: center; }
 .page-header h1 { font-family: var(--font-hebrew); font-size: 1.8rem; margin: 0; }
@@ -55,6 +57,4 @@ const pageDescription = "NaNach: Likutay Moharan Volume 2 - Torah-teaching 2: Sa
 
   </div>
 </section>
-
----
-import Layout from '../../layouts/Layout.astro';
+</Layout>
