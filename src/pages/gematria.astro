@@ -66,6 +66,12 @@ import Layout from '../layouts/Layout.astro';
           <p class="note">Sofiot (final letters) have the same value as their regular counterparts.</p>
         </div>
 
+        <!-- Matching words with same gematria -->
+        <div class="matches-section" id="matchesSection" style="display:none;">
+          <h3>Words with the Same Value</h3>
+          <div class="matches-grid" id="matchesGrid"></div>
+        </div>
+
         <div class="common-words">
           <h3>Common Words</h3>
           <div class="words-grid">
@@ -112,6 +118,7 @@ import Layout from '../layouts/Layout.astro';
   function updateDisplay(text: string) {
     const total = calculateGematria(text);
     if (totalValue) totalValue.textContent = total.toString();
+    showMatches(total);
 
     if (lettersGrid) {
       lettersGrid.innerHTML = '';
@@ -140,6 +147,54 @@ import Layout from '../layouts/Layout.astro';
     hebrewInput.value = '';
     updateDisplay('');
   });
+
+  // Known Hebrew words database for matching
+  const KNOWN_WORDS: Array<{he: string, en: string, val: number}> = [
+    {he:'אחד', en:'One', val:13}, {he:'אהבה', en:'Love', val:13},
+    {he:'אמת', en:'Truth', val:441}, {he:'תורה', en:'Torah', val:611},
+    {he:'שלום', en:'Peace', val:376}, {he:'ישראל', en:'Israel', val:541},
+    {he:'משיח', en:'Messiah', val:358}, {he:'נחש', en:'Snake', val:358},
+    {he:'שמחה', en:'Joy', val:353}, {he:'נשמה', en:'Soul', val:395},
+    {he:'תפילה', en:'Prayer', val:515}, {he:'צדיק', en:'Righteous', val:204},
+    {he:'חיים', en:'Life', val:68}, {he:'חכמה', en:'Wisdom', val:73},
+    {he:'בינה', en:'Understanding', val:67}, {he:'דעת', en:'Knowledge', val:474},
+    {he:'כתר', en:'Crown', val:620}, {he:'מלכות', en:'Kingship', val:496},
+    {he:'תשובה', en:'Repentance', val:713}, {he:'אמונה', en:'Faith', val:102},
+    {he:'בטחון', en:'Trust', val:75}, {he:'גאולה', en:'Redemption', val:45},
+    {he:'קדושה', en:'Holiness', val:415}, {he:'ענווה', en:'Humility', val:131},
+    {he:'רחמים', en:'Mercy', val:298}, {he:'דין', en:'Judgment', val:64},
+    {he:'חסד', en:'Kindness', val:72}, {he:'גבורה', en:'Strength', val:216},
+    {he:'תפארת', en:'Beauty', val:1081}, {he:'נצח', en:'Eternity', val:148},
+    {he:'הוד', en:'Splendor', val:15}, {he:'יסוד', en:'Foundation', val:80},
+    {he:'שכינה', en:'Divine Presence', val:385}, {he:'אור', en:'Light', val:207},
+    {he:'חושך', en:'Darkness', val:334}, {he:'רפואה', en:'Healing', val:292},
+    {he:'פרנסה', en:'Livelihood', val:395}, {he:'ברכה', en:'Blessing', val:227},
+    {he:'נחמן', en:'Nachman', val:148}, {he:'ברסלב', en:'Breslov', val:294},
+    {he:'אדם', en:'Man', val:45}, {he:'חוה', en:'Eve', val:19},
+    {he:'שרה', en:'Sarah', val:505}, {he:'רבקה', en:'Rebecca', val:307},
+    {he:'רחל', en:'Rachel', val:238}, {he:'לאה', en:'Leah', val:36},
+    {he:'משה', en:'Moses', val:345}, {he:'אהרן', en:'Aaron', val:256},
+    {he:'דוד', en:'David', val:14}, {he:'שלמה', en:'Solomon', val:375},
+    {he:'אליהו', en:'Elijah', val:52}, {he:'ירושלים', en:'Jerusalem', val:596},
+    {he:'ציון', en:'Zion', val:156}, {he:'שבת', en:'Shabbat', val:702},
+    {he:'תיקון', en:'Repair', val:566}, {he:'עולם', en:'World', val:146},
+    {he:'נתן', en:'Natan', val:500}, {he:'צדקה', en:'Charity', val:199},
+    {he:'התבודדות', en:'Seclusion', val:837}, {he:'סבא', en:'Saba', val:63},
+  ];
+
+  function showMatches(value: number) {
+    const section = document.getElementById('matchesSection');
+    const grid = document.getElementById('matchesGrid');
+    if (!section || !grid || value <= 0) { if (section) section.style.display = 'none'; return; }
+
+    const matches = KNOWN_WORDS.filter(w => w.val === value);
+    if (matches.length === 0) { section.style.display = 'none'; return; }
+
+    section.style.display = 'block';
+    grid.innerHTML = matches.map(m =>
+      `<span class="match-item"><span class="match-he">${m.he}</span> <span class="match-en">${m.en}</span></span>`
+    ).join('');
+  }
 
   document.querySelectorAll('.word-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -261,6 +316,25 @@ import Layout from '../layouts/Layout.astro';
     font-weight: bold;
     font-family: var(--font-hebrew);
   }
+
+  /* Matches section */
+  .matches-section {
+    background: rgba(237, 137, 54, 0.15);
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(237, 137, 54, 0.3);
+  }
+  .matches-section h3 { color: #ed8936; margin: 0 0 0.75rem; font-size: 1em; }
+  .matches-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+  .match-item {
+    background: rgba(255,255,255,0.15);
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 0.9em;
+  }
+  .match-he { font-family: 'Frank Ruhl Libre', serif; color: white; font-weight: 600; }
+  .match-en { color: rgba(255,255,255,0.7); font-size: 0.85em; }
 
   .letters-breakdown h3, .info-section h3, .common-words h3 {
     color: #1a365d;
