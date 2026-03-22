@@ -884,21 +884,18 @@ import Layout from '../layouts/Layout.astro';
       </a>
     `).join('');
 
-    // Co-occurring concepts
-    const coRelated = graphData.coEdges
-      .filter(e => e.source === conceptId || e.target === conceptId)
-      .sort((a, b) => b.weight - a.weight)
+    // Co-occurring concepts - use coLookup built from either format
+    const coRelated = (coLookup[conceptId] || [])
       .slice(0, 12)
       .map(e => {
-        const other = e.source === conceptId ? e.target : e.source;
-        const otherNode = graphData.nodes.find(n => n.id === other);
+        const otherNode = graphData.nodes.find(n => n.id === e.to);
         return otherNode ? { ...otherNode, weight: e.weight } : null;
       })
       .filter(Boolean);
 
     document.getElementById('relatedConcepts').innerHTML = coRelated.map(r => `
       <button class="related-chip" onclick="selectConcept('${r.id}')">
-        ${r.id} (${r.en}) <span class="rc-weight">${r.weight}</span>
+        ${r.he || r.id} (${r.en}) <span class="rc-weight">${r.weight}</span>
       </button>
     `).join('');
 
