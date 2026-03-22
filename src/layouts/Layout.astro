@@ -195,6 +195,15 @@ const isHebrew = Astro.url.pathname.includes('/reader/') || title.match(/[\u0590
         }
       });
 
+      // Global keyboard shortcuts
+      document.addEventListener('keydown', (e) => {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) return;
+        if (e.key === '/' && !e.ctrlKey && !e.metaKey) {
+          e.preventDefault();
+          window.location.href = '/search-enhanced';
+        }
+      });
+
       // Back to top button
       const backToTop = document.getElementById('backToTop');
       if (backToTop) {
