@@ -32,7 +32,22 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
           </svg>
         </button>
       </div>
-      
+
+      <!-- Popular Searches -->
+      <div class="popular-searches" id="popularSearches">
+        <span class="pop-label">Try:</span>
+        <button type="button" class="pop-tag" data-q="תשובה">תשובה</button>
+        <button type="button" class="pop-tag" data-q="שמחה">שמחה</button>
+        <button type="button" class="pop-tag" data-q="התבודדות">התבודדות</button>
+        <button type="button" class="pop-tag" data-q="אמונה">אמונה</button>
+        <button type="button" class="pop-tag" data-q="תפילה">תפילה</button>
+        <button type="button" class="pop-tag" data-q="צדיק">צדיק</button>
+        <button type="button" class="pop-tag" data-q="תיקון">תיקון</button>
+        <button type="button" class="pop-tag" data-q="prayer">prayer</button>
+        <button type="button" class="pop-tag" data-q="joy">joy</button>
+        <button type="button" class="pop-tag" data-q="faith">faith</button>
+      </div>
+
       {showFilters && (
         <div class="search-mode-bar">
           <div class="mode-group">
@@ -122,6 +137,21 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
         e.preventDefault();
         performSearch();
       }
+    });
+
+    // Popular search tags
+    document.querySelectorAll('.pop-tag').forEach(tag => {
+      tag.addEventListener('click', () => {
+        searchInput.value = tag.dataset.q || '';
+        performSearch();
+        const popSection = document.getElementById('popularSearches');
+        if (popSection) popSection.style.display = 'none';
+      });
+    });
+    // Hide popular searches when user types
+    searchInput.addEventListener('input', () => {
+      const popSection = document.getElementById('popularSearches');
+      if (popSection) popSection.style.display = searchInput.value ? 'none' : 'flex';
     });
 
     // Listen for advanced search options
@@ -268,6 +298,27 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
   .search-form {
     width: 100%;
   }
+
+  .popular-searches {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    margin: 8px 0;
+  }
+  .pop-label { color: #888; font-size: 0.8em; }
+  .pop-tag {
+    background: #f0ebe0;
+    border: 1px solid #e0d6c2;
+    color: #1a365d;
+    padding: 3px 10px;
+    border-radius: 14px;
+    font-size: 0.8em;
+    cursor: pointer;
+    font-family: 'Frank Ruhl Libre', serif;
+    transition: all 0.2s;
+  }
+  .pop-tag:hover { background: #e0d6c2; }
 
   .search-input-wrapper {
     display: flex;
