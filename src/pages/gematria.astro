@@ -66,6 +66,16 @@ import Layout from '../layouts/Layout.astro';
           <p class="note">Sofiot (final letters) have the same value as their regular counterparts.</p>
         </div>
 
+        <!-- Alternative methods -->
+        <div class="alt-methods" id="altMethods" style="display:none;">
+          <h3>Alternative Methods</h3>
+          <div class="alt-grid">
+            <div class="alt-item"><span class="alt-label">Mispar Katan (Small)</span><span class="alt-value" id="misparKatan">0</span></div>
+            <div class="alt-item"><span class="alt-label">Atbash</span><span class="alt-value" id="atbashValue">0</span></div>
+            <div class="alt-item"><span class="alt-label">Mispar Gadol (Final)</span><span class="alt-value" id="misparGadol">0</span></div>
+          </div>
+        </div>
+
         <!-- Matching words with same gematria -->
         <div class="matches-section" id="matchesSection" style="display:none;">
           <h3>Words with the Same Value</h3>
@@ -115,10 +125,59 @@ import Layout from '../layouts/Layout.astro';
     return total;
   }
 
+  // Atbash: replace each letter with its mirror (א↔ת, ב↔ש, ג↔ר, etc.)
+  const ALEFBET = 'אבגדהוזחטיכלמנסעפצקרשת';
+  const atbashMap: Record<string, string> = {};
+  for (let i = 0; i < ALEFBET.length; i++) {
+    atbashMap[ALEFBET[i]] = ALEFBET[ALEFBET.length - 1 - i];
+  }
+  // Map sofit to regular for atbash
+  const sofitToRegular: Record<string, string> = {'ך':'כ','ם':'מ','ן':'נ','ף':'פ','ץ':'צ'};
+
+  function atbashGematria(text: string): number {
+    let total = 0;
+    for (const char of text) {
+      let c = sofitToRegular[char] || char;
+      const mirrored = atbashMap[c];
+      if (mirrored && gematriaMap[mirrored]) total += gematriaMap[mirrored];
+    }
+    return total;
+  }
+
+  // Mispar Katan: reduce each letter value to single digit (e.g. כ=20→2, ק=100→1)
+  function misparKatan(text: string): number {
+    let total = 0;
+    for (const char of text) {
+      let val = gematriaMap[char] || 0;
+      while (val >= 10) { val = String(val).split('').reduce((s,d) => s + parseInt(d), 0); }
+      total += val;
+    }
+    return total;
+  }
+
+  // Mispar Gadol: final letters get higher values (ך=500, ם=600, ן=700, ף=800, ץ=900)
+  const gadolMap: Record<string, number> = {...gematriaMap, 'ך':500, 'ם':600, 'ן':700, 'ף':800, 'ץ':900};
+  function misparGadol(text: string): number {
+    let total = 0;
+    for (const char of text) { total += gadolMap[char] || 0; }
+    return total;
+  }
+
+  function updateAltMethods(text: string) {
+    const section = document.getElementById('altMethods');
+    if (!section) return;
+    if (!text || calculateGematria(text) === 0) { section.style.display = 'none'; return; }
+    section.style.display = 'block';
+    document.getElementById('misparKatan')!.textContent = String(misparKatan(text));
+    document.getElementById('atbashValue')!.textContent = String(atbashGematria(text));
+    document.getElementById('misparGadol')!.textContent = String(misparGadol(text));
+  }
+
   function updateDisplay(text: string) {
     const total = calculateGematria(text);
     if (totalValue) totalValue.textContent = total.toString();
     showMatches(total);
+    updateAltMethods(text);
 
     if (lettersGrid) {
       lettersGrid.innerHTML = '';
@@ -316,6 +375,19 @@ import Layout from '../layouts/Layout.astro';
     font-weight: bold;
     font-family: var(--font-hebrew);
   }
+
+  /* Alternative methods */
+  .alt-methods {
+    background: rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .alt-methods h3 { color: rgba(255,255,255,0.7); margin: 0 0 0.75rem; font-size: 0.9em; }
+  .alt-grid { display: flex; gap: 16px; flex-wrap: wrap; }
+  .alt-item { display: flex; flex-direction: column; align-items: center; flex: 1; min-width: 100px; }
+  .alt-label { font-size: 0.75em; color: rgba(255,255,255,0.5); margin-bottom: 4px; }
+  .alt-value { font-size: 1.4em; font-weight: 700; color: white; }
 
   /* Matches section */
   .matches-section {
