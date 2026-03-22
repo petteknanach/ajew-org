@@ -596,10 +596,35 @@
     const searchClose = document.querySelector('.reader-search-bar .search-close');
     if (searchClose) searchClose.addEventListener('click', toggleSearch);
 
-    // Font size slider
+    // Font size slider + presets
     const slider = document.getElementById('font-size-slider');
     if (slider) {
       slider.addEventListener('input', () => setState('fontSize', parseInt(slider.value)));
+      // Add preset buttons next to slider
+      const group = slider.closest('.reader-toolbar-group');
+      if (group) {
+        const presets = [
+          { label: 'S', size: 14, title: 'Small' },
+          { label: 'M', size: 18, title: 'Medium' },
+          { label: 'L', size: 24, title: 'Large' },
+        ];
+        const presetWrap = document.createElement('span');
+        presetWrap.className = 'font-presets';
+        presetWrap.style.cssText = 'display:inline-flex;gap:2px;margin-left:4px;';
+        presets.forEach(p => {
+          const btn = document.createElement('button');
+          btn.className = 'reader-btn reader-btn-icon font-preset-btn';
+          btn.textContent = p.label;
+          btn.title = p.title + ' font';
+          btn.style.cssText = 'padding:2px 6px;font-size:0.65em;min-width:auto;';
+          btn.addEventListener('click', () => {
+            setState('fontSize', p.size);
+            slider.value = String(p.size);
+          });
+          presetWrap.appendChild(btn);
+        });
+        group.appendChild(presetWrap);
+      }
     }
 
     // Theme buttons
