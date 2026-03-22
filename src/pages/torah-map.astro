@@ -97,10 +97,18 @@ import Layout from '../layouts/Layout.astro';
   let coLookup = {};    // concept -> [{to, weight}] from co-occurrence
   let currentPathway = []; // Array of concept IDs
 
+  let progressionData = null;
+
   async function loadGraph() {
     try {
-      const res = await fetch('/data/concept-graph.json');
+      const [res, progRes] = await Promise.all([
+        fetch('/data/concept-graph.json'),
+        fetch('/data/concept-progression.json').catch(() => null)
+      ]);
       graphData = await res.json();
+      if (progRes && progRes.ok) {
+        progressionData = await progRes.json();
+      }
       buildLookups();
       document.getElementById('loading').style.display = 'none';
       document.getElementById('mapContent').style.display = 'block';
@@ -149,6 +157,16 @@ import Layout from '../layouts/Layout.astro';
           if (!reverseLookup[conn.to]) reverseLookup[conn.to] = [];
           reverseLookup[conn.to].push({ from: concept.id, netFlow: conn.weight });
         }
+      }
+    }
+
+    // If we have directed progression data, use it for flow/reverse lookups
+    if (progressionData && progressionData.concepts) {
+      flowLookup = {};
+      reverseLookup = {};
+      for (const c of progressionData.concepts) {
+        flowLookup[c.id] = (c.leadsTo || []).map(e => ({ to: e.to, netFlow: e.weight }));
+        reverseLookup[c.id] = (c.comesFrom || []).map(e => ({ from: e.from, netFlow: e.weight }));
       }
     }
 
@@ -688,16 +706,35 @@ import Layout from '../layouts/Layout.astro';
 
   function renderTopPathways() {
     const grid = document.getElementById('pathwaysGrid');
-    const topPaths = findTopGlobalPathways(12);
+
+    // Use progression pathways if available, otherwise computed ones
+    let topPaths;
+    if (progressionData && progressionData.pathways && progressionData.pathways.length > 0) {
+      topPaths = progressionData.pathways.slice(0, 12).map(p => ({
+        path: p.path,
+        score: p.strength * (p.path.length - 1)
+      }));
+    } else {
+      topPaths = findTopGlobalPathways(12);
+    }
+
+    // Get concept lookup from progression or graph data
+    const conceptLookup = {};
+    if (progressionData && progressionData.concepts) {
+      progressionData.concepts.forEach(c => { conceptLookup[c.id] = c; });
+    }
+    if (graphData.nodes) {
+      graphData.nodes.forEach(n => { if (!conceptLookup[n.id]) conceptLookup[n.id] = n; });
+    }
 
     grid.innerHTML = topPaths.map((p, idx) => {
       const nodes = p.path.map(id => {
-        const node = graphData.nodes.find(n => n.id === id);
-        return node ? { id, en: node.en } : { id, en: '' };
+        const c = conceptLookup[id];
+        return c ? { id, he: c.he || id, en: c.en || '' } : { id, he: id, en: '' };
       });
 
       const chainHtml = nodes.map((n, i) => {
-        let html = `<span class="tp-concept" onclick="startPathway('${n.id}');selectConcept('${n.id}')">${n.id}</span>`;
+        let html = `<span class="tp-concept" onclick="startPathway('${n.id}');selectConcept('${n.id}')">${n.he}</span>`;
         if (i < nodes.length - 1) html += '<span class="tp-arrow">→</span>';
         return html;
       }).join('');
@@ -708,7 +745,7 @@ import Layout from '../layouts/Layout.astro';
       return `<div class="pathway-card" onclick="loadPathway(${JSON.stringify(p.path)})">
         <div class="pc-chain" dir="rtl">${chainHtml}</div>
         <div class="pc-english">${enChain}</div>
-        <div class="pc-meta">${p.path.length} steps &middot; avg flow: ${avgFlow}</div>
+        <div class="pc-meta">${p.path.length} steps &middot; strength: ${avgFlow}</div>
       </div>`;
     }).join('');
   }
