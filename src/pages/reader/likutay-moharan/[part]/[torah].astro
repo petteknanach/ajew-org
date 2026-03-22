@@ -15,9 +15,16 @@ export function getStaticPaths() {
   for (let torah = 1; torah <= 286; torah++) {
     paths.push({ params: { part: '1', torah: String(torah) } });
   }
+  // Part 2 intro pages
+  paths.push({ params: { part: '2', torah: 'intro' } });
+  paths.push({ params: { part: '2', torah: 'omission' } });
   // Part 2 (Tinyana): 125 torahs (1-125, all present including 51)
   for (let torah = 1; torah <= 125; torah++) {
     paths.push({ params: { part: '2', torah: String(torah) } });
+  }
+  // Part 2 manuscripts (Ksav Yad)
+  for (let i = 1; i <= 6; i++) {
+    paths.push({ params: { part: '2', torah: `manuscript-${i}` } });
   }
   return paths;
 }

@@ -1,0 +1,243 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import '../../../../styles/reader.css';
+import fs from 'node:fs';
+import path from 'node:path';
+
+export function getStaticPaths() {
+  const paths = [];
+  // Part 1: Bereishis (12 parshas)
+  for (let torah = 1; torah <= 12; torah++) {
+    paths.push({ params: { part: '1', torah: String(torah) } });
+  }
+  // Part 2: Shemos (11 parshas)
+  for (let torah = 1; torah <= 11; torah++) {
+    paths.push({ params: { part: '2', torah: String(torah) } });
+  }
+  // Part 3: Vayikra (10 parshas)
+  for (let torah = 1; torah <= 10; torah++) {
+    paths.push({ params: { part: '3', torah: String(torah) } });
+  }
+  // Part 4: Bamidbar (10 parshas)
+  for (let torah = 1; torah <= 10; torah++) {
+    paths.push({ params: { part: '4', torah: String(torah) } });
+  }
+  // Part 5: Devarim (9 parshas)
+  for (let torah = 1; torah <= 9; torah++) {
+    paths.push({ params: { part: '5', torah: String(torah) } });
+  }
+  // Part 6: Holidays (4)
+  for (let torah = 1; torah <= 4; torah++) {
+    paths.push({ params: { part: '6', torah: String(torah) } });
+  }
+  return paths;
+}
+
+const { part, torah } = Astro.params;
+const partNum = parseInt(part);
+const torahNum = parseInt(torah);
+
+let torahData = null;
+let error = null;
+
+try {
+  const filePath = path.join(process.cwd(), `public/reader/chumash-lh/part-${partNum}/torah-${torahNum}.json`);
+  const raw = fs.readFileSync(filePath, 'utf8');
+  torahData = JSON.parse(raw);
+} catch (e) {
+  error = `Parsha ${torahNum} not found`;
+}
+
+if (!torahData && !error) error = 'Content not available';
+
+const PART_NAMES: Record<number, {en: string, he: string}> = {
+  1: { en: 'Bereishis', he: 'בראשית' },
+  2: { en: 'Shemos', he: 'שמות' },
+  3: { en: 'Vayikra', he: 'ויקרא' },
+  4: { en: 'Bamidbar', he: 'במדבר' },
+  5: { en: 'Devarim', he: 'דברים' },
+  6: { en: 'Holidays', he: 'חגים' },
+};
+
+const partName = PART_NAMES[partNum] || { en: `Part ${partNum}`, he: '' };
+const bookName = 'Chumash with Likutey Halachos';
+const bookHebrew = 'חומש עם ליקוטי הלכות';
+
+const pageTitle = torahData
+  ? `${torahData.hebrewTitle || torahData.title} - ${bookName}`
+  : 'Parsha Not Found';
+const pageDesc = torahData
+  ? `Read ${torahData.title} - Likutey Halachos commentary on the weekly parsha`
+  : '';
+
+const structuredData = torahData ? JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": `${torahData.title} - ${bookName}`,
+  "alternativeHeadline": torahData.hebrewTitle || '',
+  "author": { "@type": "Person", "name": "Rabbi Nosson of Breslov" },
+  "publisher": { "@type": "Organization", "name": "ajew.org" },
+  "inLanguage": ["he", "en"],
+  "isPartOf": { "@type": "Book", "name": bookName },
+  "url": `https://ajew.org/reader/chumash-lh/${partNum}/${torahNum}`
+}) : '';
+---
+
+<Layout title={pageTitle} description={pageDesc}>
+  {torahData && structuredData && (
+    <script type="application/ld+json" set:html={structuredData} slot="head" />
+  )}
+  {error ? (
+    <div style="text-align: center; padding: 80px 20px;">
+      <h1>{error}</h1>
+      <p><a href="/reader">Back to Reader</a></p>
+    </div>
+  ) : (
+    <div
+      class="reader-container"
+      data-torah-id={torahData.id}
+      data-torah-title={`${torahData.title} - ${bookName}`}
+    >
+      <div class="reader-progress"></div>
+
+      <div class="reader-breadcrumb">
+        <a href="/reader">Reader</a>
+        <span>&rsaquo;</span>
+        <a href="/reader">{bookHebrew}</a>
+        <span>&rsaquo;</span>
+        <a href="/reader">{partName.he}</a>
+        <span>&rsaquo;</span>
+        {torahData.hebrewTitle || torahData.title}
+      </div>
+
+      <div class="reader-toolbar">
+        <div class="reader-toolbar-group">
+          <button class="reader-btn" data-mode="hebrew">Hebrew</button>
+          <button class="reader-btn" data-mode="english">English</button>
+          <button class="reader-btn" data-mode="both">Both</button>
+        </div>
+        <div class="reader-toolbar-group">
+          <button class="reader-btn" id="btn-nikud">Nikud</button>
+        </div>
+        <div class="reader-toolbar-group">
+          <span style="font-size:0.7em; font-family: 'Open Sans', sans-serif; color: var(--reader-text-secondary);">A</span>
+          <input type="range" id="font-size-slider" class="font-size-slider" min="12" max="32" value="18" />
+          <span style="font-size:0.9em; font-family: 'Open Sans', sans-serif; color: var(--reader-text-secondary);">A</span>
+        </div>
+        <div class="reader-toolbar-group">
+          <button class="reader-btn reader-btn-icon" data-theme-btn="day">Day</button>
+          <button class="reader-btn reader-btn-icon" data-theme-btn="sepia">Sepia</button>
+          <button class="reader-btn reader-btn-icon" data-theme-btn="night">Night</button>
+        </div>
+        <div class="reader-toolbar-group">
+          <button class="reader-btn reader-btn-icon" id="btn-listen" onclick="toggleSpeaking()">Listen</button>
+          <button class="reader-btn reader-btn-icon" id="btn-search">Search</button>
+          <button class="reader-btn reader-btn-icon" id="btn-bookmark">Bookmark</button>
+          <button class="reader-btn reader-btn-icon" id="btn-fullscreen">Fullscreen</button>
+        </div>
+      </div>
+
+      <div class="reader-search-bar">
+        <input type="text" placeholder="Search in this parsha..." dir="auto" />
+        <span class="search-info"></span>
+        <button class="reader-btn search-close">Close</button>
+      </div>
+
+      <button class="reader-toc-toggle" title="Table of Contents">&#9776;</button>
+      <div class="reader-toc">
+        <button class="reader-toc-close">&times;</button>
+        <h3>Verse Sections</h3>
+        <ul class="reader-toc-list">
+          {torahData.simanim && torahData.simanim.length > 0 ? (
+            torahData.simanim.map((sim: any) => (
+              <li><a href={`#seg-${sim.segmentStart}`} data-index={String(sim.segmentStart)}>{sim.hebrewTitle}</a></li>
+            ))
+          ) : (
+            torahData.segments.map((seg: any) => (
+              <li><a href={`#seg-${seg.index}`} data-index={String(seg.index)}>{seg.index}</a></li>
+            ))
+          )}
+        </ul>
+      </div>
+
+      <div class="reader-header">
+        {torahData.hebrewTitle && <div class="hebrew-title">{torahData.hebrewTitle}</div>}
+        <h1>{torahData.title}</h1>
+        <p style="color: var(--reader-text-secondary); font-size: 0.9em; font-family: 'Open Sans', sans-serif;">
+          {bookHebrew} — {partName.he} / {partName.en}
+        </p>
+        {torahData.pdfSource && (
+          <p style="margin-top: 0.5em;">
+            <a href={torahData.pdfSource} target="_blank" style="color: var(--reader-link); font-family: 'Open Sans', sans-serif; font-size: 0.85em;">
+              View Original PDF
+            </a>
+            {' | '}
+            <a href={`/parsha/${torahData.title.split(' - ')[0].toLowerCase().replace(/[^a-z]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')}`} style="color: var(--reader-link); font-family: 'Open Sans', sans-serif; font-size: 0.85em;">
+              Parsha Page
+            </a>
+          </p>
+        )}
+      </div>
+
+      <div class="reader-nav">
+        {torahData.navigation.prevUrl ? (
+          <a href={torahData.navigation.prevUrl} data-dir="prev">&larr; Previous</a>
+        ) : <span class="disabled">&larr; Previous</span>}
+        <a href="/reader">All Books</a>
+        {torahData.navigation.nextUrl ? (
+          <a href={torahData.navigation.nextUrl} data-dir="next">Next &rarr;</a>
+        ) : <span class="disabled">Next &rarr;</span>}
+      </div>
+
+      <div class="reader-content mode-hebrew">
+        {torahData.segments.map((seg: any) => (
+          <div class="reader-segment-pair" id={`seg-${seg.index}`}>
+            {seg.verse && (
+              <div class="reader-verse-header" style="text-align: center; padding: 1em 0 0.5em; font-family: 'Open Sans', sans-serif; color: var(--reader-text-secondary); font-size: 0.85em; border-top: 1px solid var(--reader-border);">
+                <strong dir="rtl">{seg.verse}</strong>
+                {seg.verseText && <span dir="rtl" style="margin-right: 0.5em;">{seg.verseText}</span>}
+              </div>
+            )}
+            <div class="reader-segment segment-he" data-index={String(seg.index)}>
+              <span class="segment-number">{seg.index}</span>
+              <p data-nikud={seg.he}>{seg.he}</p>
+            </div>
+            <div class={`reader-segment segment-en ${!seg.en ? 'empty-translation' : ''}`} data-index={String(seg.index)}>
+              <span class="segment-number">{seg.index}</span>
+              <p>{seg.en || 'Translation not yet available'}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div class="reader-nav">
+        {torahData.navigation.prevUrl ? (
+          <a href={torahData.navigation.prevUrl} data-dir="prev">&larr; Previous</a>
+        ) : <span class="disabled">&larr; Previous</span>}
+        <a href="/reader">All Books</a>
+        {torahData.navigation.nextUrl ? (
+          <a href={torahData.navigation.nextUrl} data-dir="next">Next &rarr;</a>
+        ) : <span class="disabled">Next &rarr;</span>}
+      </div>
+
+      <div class="reader-shortcuts-overlay">
+        <div class="reader-shortcuts-panel">
+          <h2>Keyboard Shortcuts</h2>
+          <div class="shortcut-row"><span>Hebrew mode</span><span class="shortcut-key">H</span></div>
+          <div class="shortcut-row"><span>English mode</span><span class="shortcut-key">E</span></div>
+          <div class="shortcut-row"><span>Both columns</span><span class="shortcut-key">B</span></div>
+          <div class="shortcut-row"><span>Toggle nikud</span><span class="shortcut-key">N</span></div>
+          <div class="shortcut-row"><span>Fullscreen</span><span class="shortcut-key">F</span></div>
+          <div class="shortcut-row"><span>Search in text</span><span class="shortcut-key">Ctrl+F</span></div>
+          <div class="shortcut-row"><span>Save bookmark</span><span class="shortcut-key">S</span></div>
+          <div class="shortcut-row"><span>Previous/Next</span><span class="shortcut-key">&larr; &rarr;</span></div>
+          <div class="shortcut-row"><span>Show shortcuts</span><span class="shortcut-key">?</span></div>
+          <br />
+          <button class="reader-btn" onclick="this.closest('.reader-shortcuts-overlay').classList.remove('open')">Close</button>
+        </div>
+      </div>
+
+      <script src="/reader-script.js" is:inline></script>
+    </div>
+  )}
+</Layout>

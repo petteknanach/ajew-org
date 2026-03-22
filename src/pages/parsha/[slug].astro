@@ -1,0 +1,576 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import fs from 'node:fs';
+import path from 'node:path';
+
+export function getStaticPaths() {
+  const dataPath = path.join(process.cwd(), 'public', 'data', 'parsha-connections.json');
+  let parshaData = { parshas: {} };
+  try {
+    parshaData = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+  } catch (e) {
+    console.warn('parsha-connections.json not found');
+    return [];
+  }
+
+  const slugs = Object.keys(parshaData.parshas);
+  return slugs.map(slug => ({ params: { slug } }));
+}
+
+const { slug } = Astro.params;
+
+const dataPath = path.join(process.cwd(), 'public', 'data', 'parsha-connections.json');
+const parshaData = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+const parsha = parshaData.parshas[slug];
+
+if (!parsha) {
+  return Astro.redirect('/parsha');
+}
+
+// Slug -> PDF path mapping (Chumash with Likutay Halachos)
+const PARSHA_PDF: Record<string, string> = {
+  'bereishit': 'בראשית/בראשית.pdf', 'noach': 'בראשית/נח.pdf',
+  'lech-lecha': 'בראשית/לךלך.pdf', 'vayeira': 'בראשית/וירא.pdf',
+  'chayei-sarah': 'בראשית/חיי שרה.pdf', 'toldot': 'בראשית/תולדות.pdf',
+  'vayeitzei': 'בראשית/ויצא.pdf', 'vayishlach': 'בראשית/וישלח.pdf',
+  'vayeishev': 'בראשית/וישב.pdf', 'mikeitz': 'בראשית/מקץ.pdf',
+  'vayigash': 'בראשית/ויגש.pdf', 'vayechi': 'בראשית/ויחי.pdf',
+  'shemot': 'שמות/שמות.pdf', 'vaeira': 'שמות/וארא.pdf',
+  'bo': 'שמות/בא.pdf', 'beshalach': 'שמות/בשלח.pdf',
+  'yitro': 'שמות/יתרו.pdf', 'mishpatim': 'שמות/משפטים.pdf',
+  'terumah': 'שמות/תרומה.pdf', 'tetzaveh': 'שמות/תצוה.pdf',
+  'ki-tisa': 'שמות/כי תשא.pdf', 'vayakhel': 'שמות/ויקהל.pdf',
+  'pekudei': 'שמות/פקודי.pdf',
+  'vayikra': 'ויקרא/ויקרא.pdf', 'tzav': 'ויקרא/צו.pdf',
+  'shemini': 'ויקרא/שמיני.pdf', 'tazria': 'ויקרא/תזריע.pdf',
+  'metzora': 'ויקרא/מצורע.pdf', 'acharei-mot': 'ויקרא/אחרי.pdf',
+  'kedoshim': 'ויקרא/קדושים.pdf', 'emor': 'ויקרא/אמור.pdf',
+  'behar': 'ויקרא/בהר.pdf', 'bechukotai': 'ויקרא/בחוקותי.pdf',
+  'bamidbar': 'במדבר/במדבר.pdf', 'naso': 'במדבר/נשא.pdf',
+  'behaalotcha': 'במדבר/בהעלותך.pdf', 'shelach': 'במדבר/שלח לך.pdf',
+  'korach': 'במדבר/קרח.pdf', 'chukat': 'במדבר/חוקת.pdf',
+  'balak': 'במדבר/בלק.pdf', 'pinchas': 'במדבר/פינחס.pdf',
+  'matot': 'במדבר/מטות.pdf', 'masei': 'במדבר/מטות מסעי.pdf',
+  'devarim': 'דברים/דברים.pdf', 'vaetchanan': 'דברים/ואתחנן.pdf',
+  'eikev': 'דברים/עקב.pdf', 'reeh': 'דברים/ראה.pdf',
+  'shoftim': 'דברים/שופטים.pdf', 'ki-teitzei': 'דברים/כי תצא.pdf',
+  'ki-tavo': 'דברים/כי תבוא.pdf',
+  'nitzavim': 'דברים/נצבים-וילך.pdf', 'vayeilech': 'דברים/נצבים-וילך.pdf',
+  'haazinu': 'דברים/האזינו.pdf',
+};
+const pdfRaw = PARSHA_PDF[slug] || '';
+const pdfPath = pdfRaw ? `/pdfs/parsha/${pdfRaw.split('/').map(p => encodeURIComponent(p)).join('/')}` : null;
+// Check if PDF file actually exists
+const hasPdf = pdfPath && fs.existsSync(path.join(process.cwd(), 'public', 'pdfs', 'parsha', pdfRaw));
+
+// Get prev/next parshas
+const allSlugs = Object.keys(parshaData.parshas);
+const currentIdx = allSlugs.indexOf(slug);
+const prevSlug = currentIdx > 0 ? allSlugs[currentIdx - 1] : null;
+const nextSlug = currentIdx < allSlugs.length - 1 ? allSlugs[currentIdx + 1] : null;
+const prevParsha = prevSlug ? parshaData.parshas[prevSlug] : null;
+const nextParsha = nextSlug ? parshaData.parshas[nextSlug] : null;
+
+// Group connections by author then book
+const authorGroups = {};
+const zoharSummary = {}; // bookId -> { count, firstUrl, bookTitle, bookHebrewTitle }
+
+for (const conn of parsha.connections) {
+  const isZohar = conn.bookId.startsWith('zohar-');
+
+  if (isZohar) {
+    if (!zoharSummary[conn.bookId]) {
+      zoharSummary[conn.bookId] = {
+        count: 0,
+        firstUrl: conn.url,
+        bookTitle: conn.bookTitle,
+        bookHebrewTitle: conn.bookHebrewTitle,
+        author: conn.author || 'Zohar HaKadosh',
+      };
+    }
+    zoharSummary[conn.bookId].count++;
+    continue;
+  }
+
+  const author = conn.author || 'Other';
+  if (!authorGroups[author]) authorGroups[author] = {};
+  if (!authorGroups[author][conn.bookId]) {
+    authorGroups[author][conn.bookId] = {
+      bookTitle: conn.bookTitle,
+      bookHebrewTitle: conn.bookHebrewTitle,
+      items: [],
+    };
+  }
+  authorGroups[author][conn.bookId].items.push(conn);
+}
+
+// Author display order
+const AUTHOR_ORDER = {
+  'Rabbi Nachman of Breslov': 1,
+  'Rabbi Nosson of Breslov': 2,
+  'Rabbi Nachman of Tcheryn': 3,
+  'Rabbi Avraham bar Nachman': 4,
+  'Rabbi Alter of Teplik': 5,
+  'Levi Yitzchak Bender': 6,
+  'Rabbi Shimshon Barsky': 7,
+  'Rabbi Nosson bar Yehuda': 8,
+  'Rabbi Yisroel Dov Odesser (Saba)': 9,
+  'Breslov Students': 10,
+  'Various': 11,
+};
+
+const AUTHOR_HE = {
+  'Rabbi Nachman of Breslov': 'רבי נחמן מברסלב',
+  'Rabbi Nosson of Breslov': 'רבי נתן מברסלב',
+  'Rabbi Nachman of Tcheryn': 'הרב מטשערין',
+  'Rabbi Avraham bar Nachman': 'רבי אברהם בר נחמן',
+  'Rabbi Alter of Teplik': 'רבי אלתר טפליקער',
+  'Levi Yitzchak Bender': 'לוי יצחק בנדר',
+  'Rabbi Shimshon Barsky': 'רבי שמשון בארסקי',
+  'Rabbi Nosson bar Yehuda': 'רבי נתן בר יהודה',
+  'Rabbi Yisroel Dov Odesser (Saba)': 'רבי ישראל דב אודסר',
+  'Breslov Students': 'תלמידי ברסלב',
+  'Various': 'שונים',
+};
+
+const sortedAuthors = Object.keys(authorGroups).sort(
+  (a, b) => (AUTHOR_ORDER[a] || 99) - (AUTHOR_ORDER[b] || 99)
+);
+
+// Count non-zohar connections
+const nonZoharCount = parsha.connections.filter(c => !c.bookId.startsWith('zohar-')).length;
+const zoharCount = parsha.connections.filter(c => c.bookId.startsWith('zohar-')).length;
+const hasZohar = Object.keys(zoharSummary).length > 0;
+
+// Tanach reader link
+const tanachBook = parsha.book ? 'tanach-' + parsha.book : '';
+const firstCh = parsha.ch?.[0] || 1;
+const readLink = tanachBook ? `/reader/${tanachBook}/part-1/${firstCh}` : '#';
+
+// Chumash LH reader links (slug -> part/torah)
+const CHUMASH_LH_READER: Record<string, string> = {
+  'bereishit': '1/1', 'noach': '1/2', 'lech-lecha': '1/3', 'vayeira': '1/4',
+  'chayei-sarah': '1/5', 'toldot': '1/6', 'vayeitzei': '1/7', 'vayishlach': '1/8',
+  'vayeishev': '1/9', 'mikeitz': '1/10', 'vayigash': '1/11', 'vayechi': '1/12',
+  'shemot': '2/1', 'vaeira': '2/2', 'bo': '2/3', 'beshalach': '2/4',
+  'yitro': '2/5', 'mishpatim': '2/6', 'terumah': '2/7', 'tetzaveh': '2/8',
+  'ki-tisa': '2/9', 'vayakhel': '2/10', 'pekudei': '2/11',
+  'vayikra': '3/1', 'tzav': '3/2', 'shemini': '3/3', 'tazria': '3/4',
+  'metzora': '3/5', 'acharei-mot': '3/6', 'kedoshim': '3/7', 'emor': '3/8',
+  'behar': '3/9', 'bechukotai': '3/10',
+  'bamidbar': '4/1', 'naso': '4/2', 'behaalotcha': '4/3', 'shelach': '4/4',
+  'korach': '4/5', 'chukat': '4/6', 'balak': '4/7', 'pinchas': '4/8',
+  'matot': '4/9', 'masei': '4/10',
+  'devarim': '5/1', 'vaetchanan': '5/2', 'eikev': '5/3', 'reeh': '5/4',
+  'shoftim': '5/5', 'ki-teitzei': '5/6', 'ki-tavo': '5/7',
+  'nitzavim': '5/8', 'vayeilech': '5/8', 'haazinu': '5/9',
+};
+const chumashLhReaderUrl = CHUMASH_LH_READER[slug] ? `/reader/chumash-lh/${CHUMASH_LH_READER[slug]}` : null;
+
+// Chumash names
+const CHUMASH_NAMES = {
+  'bereishit': 'Beraishis',
+  'shemos': 'Shemos',
+  'vayikra': 'Vayikra',
+  'bamidbar': 'Bamidbar',
+  'devarim': 'Devarim',
+};
+---
+
+<Layout title={`Parashat ${parsha.en} - Breslov Teachings`} description={`${parsha.totalConnections} Breslov teachings connected to Parashat ${parsha.en} (${parsha.he}). ${parsha.ref}.`}>
+  <section class="parsha-detail">
+    <div class="container">
+      <!-- Breadcrumb -->
+      <nav class="breadcrumb">
+        <a href="/parsha">All Parshas</a>
+        <span>/</span>
+        <span>{CHUMASH_NAMES[parsha.chumash]}</span>
+        <span>/</span>
+        <span>{parsha.en}</span>
+      </nav>
+
+      <!-- Header card -->
+      <div class="parsha-hero">
+        <div class="hero-name">
+          <span class="hero-he">{parsha.he}</span>
+          <span class="hero-en">Parashat {parsha.en}</span>
+        </div>
+        <div class="hero-ref">{parsha.ref}</div>
+        <div class="hero-stats">{parsha.totalConnections} Breslov teachings found</div>
+        <div class="hero-actions">
+          <a href={readLink} class="hero-btn">Read the Parsha</a>
+          <a href={`/search-enhanced?q=${encodeURIComponent(parsha.he)}`} class="hero-btn hero-btn-alt">Search Teachings</a>
+        </div>
+      </div>
+
+      <!-- Chumash with Likutay Halachos PDF -->
+      {hasPdf && (
+        <div class="pdf-section">
+          <h2>חומש עם ליקוטי הלכות</h2>
+          <p class="pdf-subtitle">Chumash with Likutay Halachos - curated selections for this parsha</p>
+          <div class="pdf-embed">
+            <iframe src={pdfPath} title={`Likutay Halachos on Parashat ${parsha.en}`}></iframe>
+          </div>
+          <div class="pdf-actions">
+            {chumashLhReaderUrl && <a href={chumashLhReaderUrl} class="pdf-download" style="background: var(--accent, #2563eb); color: white;">Read as Text in Reader</a>}
+            <a href={pdfPath} class="pdf-download" download>Download PDF</a>
+          </div>
+        </div>
+      )}
+
+      <!-- More Teachings from Text Search -->
+      <div class="teachings-section">
+        <h2>{hasPdf ? 'More Breslov Teachings Mentioning This Parsha' : `Breslov Teachings on Parashat ${parsha.en}`}</h2>
+
+        {sortedAuthors.map(author => {
+          const books = authorGroups[author];
+          const totalItems = Object.values(books).reduce((s, b) => s + b.items.length, 0);
+          return (
+            <details class="author-group" open>
+              <summary class="author-header">
+                <span class="author-he">{AUTHOR_HE[author] || author}</span>
+                <span class="author-en">{author}</span>
+                <span class="author-count">{totalItems}</span>
+              </summary>
+              <div class="author-books">
+                {Object.entries(books).map(([bookId, bookData]) => (
+                  <div class="book-group">
+                    <div class="book-title">
+                      <span class="book-he">{bookData.bookHebrewTitle}</span>
+                      <span class="book-en">{bookData.bookTitle}</span>
+                      <span class="book-count">{bookData.items.length}</span>
+                    </div>
+                    <div class="teaching-list">
+                      {bookData.items.map(item => (
+                        <a href={item.url} class="teaching-item">
+                          <div class="teaching-title">{item.title}</div>
+                          {item.snippet && <div class="teaching-snippet" dir="rtl">{item.snippet}</div>}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </details>
+          );
+        })}
+
+        {/* Zohar summary section */}
+        {hasZohar && (
+          <details class="author-group" open>
+            <summary class="author-header">
+              <span class="author-he">זוהר הקדוש</span>
+              <span class="author-en">Zohar HaKadosh</span>
+              <span class="author-count">{zoharCount}</span>
+            </summary>
+            <div class="author-books">
+              {Object.entries(zoharSummary).map(([bookId, zData]) => (
+                <div class="book-group">
+                  <a href={zData.firstUrl} class="zohar-summary">
+                    <span class="book-he">{zData.bookHebrewTitle}</span>
+                    <span class="book-en">{zData.bookTitle}</span>
+                    <span class="zohar-pages">{zData.count} pages on this parsha</span>
+                  </a>
+                </div>
+              ))}
+            </div>
+          </details>
+        )}
+
+        {parsha.totalConnections === 0 && (
+          <div class="no-results">
+            <p>No direct parsha references found yet. Try searching for themes from this parsha:</p>
+            <a href={`/search-enhanced?q=${encodeURIComponent(parsha.he)}`} class="search-link">Search "{parsha.he}"</a>
+          </div>
+        )}
+      </div>
+
+      <!-- Prev/Next navigation -->
+      <div class="parsha-nav">
+        {prevSlug ? (
+          <a href={`/parsha/${prevSlug}`} class="nav-link nav-prev">
+            <span class="nav-arrow">&larr;</span>
+            <span class="nav-he">{prevParsha.he}</span>
+            <span class="nav-en">{prevParsha.en}</span>
+          </a>
+        ) : <div></div>}
+        {nextSlug ? (
+          <a href={`/parsha/${nextSlug}`} class="nav-link nav-next">
+            <span class="nav-he">{nextParsha.he}</span>
+            <span class="nav-en">{nextParsha.en}</span>
+            <span class="nav-arrow">&rarr;</span>
+          </a>
+        ) : <div></div>}
+      </div>
+    </div>
+  </section>
+
+  <style>
+    /* PDF section */
+    .pdf-section {
+      margin-bottom: 32px;
+      border: 1px solid #e0d6c2;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #f8f5ef;
+    }
+    .pdf-section h2 {
+      font-family: 'Frank Ruhl Libre', serif;
+      color: #1a365d;
+      font-size: 1.3em;
+      margin: 0;
+      padding: 18px 20px 4px;
+      direction: rtl;
+      text-align: center;
+    }
+    .pdf-subtitle {
+      color: #888;
+      font-size: 0.85em;
+      margin: 0 0 12px;
+      text-align: center;
+      padding: 0 20px;
+    }
+    .pdf-embed {
+      background: white;
+      margin: 0 12px;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .pdf-embed iframe {
+      width: 100%;
+      height: 80vh;
+      min-height: 500px;
+      border: none;
+    }
+    .pdf-download {
+      display: block;
+      text-align: center;
+      padding: 12px;
+      color: #1a365d;
+      text-decoration: none;
+      font-size: 0.85em;
+      font-weight: 600;
+    }
+    .pdf-download:hover { text-decoration: underline; }
+
+    .parsha-detail {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 24px 24px 80px;
+      font-family: 'Open Sans', sans-serif;
+    }
+
+    /* Breadcrumb */
+    .breadcrumb {
+      display: flex;
+      gap: 8px;
+      font-size: 0.85em;
+      color: #888;
+      margin-bottom: 20px;
+    }
+    .breadcrumb a { color: #1a365d; text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    /* Hero card */
+    .parsha-hero {
+      background: linear-gradient(135deg, #1a365d, #2c5282);
+      color: white;
+      padding: 32px;
+      border-radius: 16px;
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .hero-he {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 3em;
+      display: block;
+      margin-bottom: 4px;
+    }
+    .hero-en { font-size: 1.2em; display: block; opacity: 0.9; margin-bottom: 8px; }
+    .hero-ref { font-size: 0.9em; opacity: 0.7; }
+    .hero-stats { font-size: 0.85em; opacity: 0.7; margin-top: 4px; margin-bottom: 16px; }
+    .hero-actions { display: flex; gap: 12px; justify-content: center; }
+    .hero-btn {
+      padding: 10px 24px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 600;
+      background: white;
+      color: #1a365d;
+    }
+    .hero-btn-alt { background: rgba(255,255,255,0.15); color: white; }
+
+    /* Teachings section */
+    .teachings-section { margin-bottom: 40px; }
+    .teachings-section h2 {
+      font-family: 'Frank Ruhl Libre', serif;
+      color: #1a365d;
+      font-size: 1.3em;
+      margin: 0 0 20px;
+    }
+
+    /* Author groups */
+    .author-group {
+      margin-bottom: 16px;
+      border: 1px solid #e0d6c2;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .author-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 18px;
+      background: #f8f5ef;
+      cursor: pointer;
+      list-style: none;
+    }
+    .author-header::-webkit-details-marker { display: none; }
+    .author-header::before {
+      content: '\25B6';
+      font-size: 0.6em;
+      color: #999;
+      transition: transform 0.2s;
+    }
+    details[open] > .author-header::before { transform: rotate(90deg); }
+    .author-he {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 1.15em;
+      color: #1a365d;
+      font-weight: 700;
+      direction: rtl;
+    }
+    .author-en { color: #666; font-size: 0.85em; flex: 1; }
+    .author-count {
+      background: #1a365d;
+      color: white;
+      padding: 2px 10px;
+      border-radius: 10px;
+      font-size: 0.75em;
+      font-weight: 700;
+    }
+
+    .author-books { padding: 8px 18px 14px; }
+
+    /* Book groups */
+    .book-group { margin-bottom: 12px; }
+    .book-group:last-child { margin-bottom: 0; }
+    .book-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid #e8e0d0;
+    }
+    .book-he {
+      font-family: 'Frank Ruhl Libre', serif;
+      color: #2c5282;
+      font-weight: 600;
+      direction: rtl;
+    }
+    .book-en { color: #888; font-size: 0.8em; flex: 1; }
+    .book-count {
+      color: #999;
+      font-size: 0.75em;
+      background: #f0ebe0;
+      padding: 1px 8px;
+      border-radius: 8px;
+    }
+
+    /* Teaching items */
+    .teaching-list { display: flex; flex-direction: column; gap: 4px; }
+    .teaching-item {
+      display: block;
+      padding: 8px 12px;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: background 0.1s;
+    }
+    .teaching-item:hover { background: #f8f5ef; }
+    .teaching-title {
+      font-family: 'Frank Ruhl Libre', serif;
+      color: #1a365d;
+      font-size: 0.95em;
+      direction: rtl;
+      text-align: right;
+    }
+    .teaching-snippet {
+      color: #888;
+      font-size: 0.8em;
+      margin-top: 3px;
+      line-height: 1.5;
+      max-height: 2.4em;
+      overflow: hidden;
+      font-family: 'Frank Ruhl Libre', serif;
+    }
+
+    /* Zohar summary */
+    .zohar-summary {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: background 0.1s;
+    }
+    .zohar-summary:hover { background: #f8f5ef; }
+    .zohar-pages {
+      color: #999;
+      font-size: 0.8em;
+      margin-left: auto;
+    }
+
+    /* No results */
+    .no-results { text-align: center; padding: 32px; color: #888; }
+    .search-link {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 8px 20px;
+      background: #1a365d;
+      color: white;
+      border-radius: 8px;
+      text-decoration: none;
+    }
+
+    /* Prev/Next nav */
+    .parsha-nav {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding-top: 20px;
+      border-top: 1px solid #e0d6c2;
+    }
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-radius: 10px;
+      text-decoration: none;
+      background: #f8f5ef;
+      border: 1px solid #e0d6c2;
+      transition: all 0.15s;
+    }
+    .nav-link:hover {
+      background: #f0ebe0;
+      border-color: #1a365d;
+    }
+    .nav-arrow { color: #1a365d; font-size: 1.2em; }
+    .nav-he {
+      font-family: 'Frank Ruhl Libre', serif;
+      color: #1a365d;
+      font-weight: 600;
+      direction: rtl;
+    }
+    .nav-en { color: #888; font-size: 0.8em; }
+
+    @media (max-width: 600px) {
+      .hero-he { font-size: 2.2em; }
+      .hero-actions { flex-direction: column; }
+      .parsha-nav { flex-direction: column; }
+      .author-header { flex-wrap: wrap; }
+    }
+  </style>
+</Layout>

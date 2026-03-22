@@ -338,7 +338,7 @@ import Layout from '../layouts/Layout.astro';
 
       html += `<button class="pathway-node ${i === currentPathway.length - 1 ? 'pathway-node-active' : ''}"
         onclick="selectConcept('${cid}')">
-        <span class="pn-he">${node.id}</span>
+        <span class="pn-he">${node.he || node.id}</span>
         <span class="pn-en">${node.en}</span>
       </button>`;
     }
@@ -372,7 +372,7 @@ import Layout from '../layouts/Layout.astro';
         const barClass = e.type === 'co' ? 'no-bar no-bar-co' : e.type === 'reverse' ? 'no-bar no-bar-reverse' : 'no-bar';
         return `<button class="next-option" onclick="extendPathway('${e.to}')">
           <div class="no-info">
-            <span class="no-he">${e.to}</span>
+            <span class="no-he">${node.he || e.to}</span>
             <span class="no-en">${node.en}${typeLabel}</span>
           </div>
           <div class="no-bar-bg"><div class="${barClass}" style="width:${barWidth}%"></div></div>
@@ -413,7 +413,7 @@ import Layout from '../layouts/Layout.astro';
 
     // Build graph nodes - top 30 concepts
     const topNodes = graphData.nodes.slice(0, 30);
-    const maxDocs = topNodes[0]?.docs || 1;
+    const maxDocs = topNodes[0]?.count || 1;
 
     // Position using concentric circles by importance
     graphNodes = topNodes.map((n, i) => {
@@ -423,12 +423,13 @@ import Layout from '../layouts/Layout.astro';
       else if (i < 15) { ring = 0.38; angleOffset = (i - 5) * (Math.PI * 2 / 10) + 0.3; }
       else { ring = 0.55; angleOffset = (i - 15) * (Math.PI * 2 / 15) + 0.15; }
 
-      const r = 14 + (n.docs / maxDocs) * 22;
+      const r = 14 + (n.count / maxDocs) * 22;
       return {
         id: n.id,
+        he: n.he || n.id,
         en: n.en,
         cat: n.cat,
-        docs: n.docs,
+        count: n.count,
         x: canvasW / 2 + Math.cos(angleOffset) * (canvasW * ring),
         y: canvasH / 2 + Math.sin(angleOffset) * (canvasH * ring),
         r,
@@ -436,12 +437,18 @@ import Layout from '../layouts/Layout.astro';
       };
     });
 
-    // Build edges - top flow edges between visible nodes
+    // Build edges from lookups (works with both old and new data formats)
     const nodeIds = new Set(graphNodes.map(n => n.id));
-    graphEdges = graphData.flowEdges
-      .filter(e => nodeIds.has(e.from) && nodeIds.has(e.to))
-      .slice(0, 80)
-      .map(e => ({ from: e.from, to: e.to, strength: e.netFlow }));
+    graphEdges = [];
+    for (const fromId of nodeIds) {
+      for (const e of (flowLookup[fromId] || [])) {
+        if (nodeIds.has(e.to)) {
+          graphEdges.push({ from: fromId, to: e.to, strength: e.netFlow });
+        }
+      }
+    }
+    graphEdges.sort((a, b) => b.strength - a.strength);
+    graphEdges = graphEdges.slice(0, 80);
 
     // Force-directed simulation
     for (let iter = 0; iter < 150; iter++) {
@@ -672,7 +679,7 @@ import Layout from '../layouts/Layout.astro';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillStyle = dimmed ? '#999' : 'white';
-      ctx.fillText(node.id, node.x, node.y - 1);
+      ctx.fillText(node.he, node.x, node.y - 1);
 
       // English label below for larger nodes
       if (node.r > 22 || isHovered) {
@@ -697,10 +704,10 @@ import Layout from '../layouts/Layout.astro';
       ctx.font = "bold 11px 'Open Sans', sans-serif";
       ctx.fillStyle = '#e8d5a3';
       ctx.textAlign = 'center';
-      ctx.fillText(`${n.en} - ${n.id}`, tipX + tipW / 2, tipY + 14);
+      ctx.fillText(`${n.en} — ${n.he}`, tipX + tipW / 2, tipY + 14);
       ctx.font = "10px 'Open Sans', sans-serif";
       ctx.fillStyle = 'rgba(255,255,255,0.7)';
-      ctx.fillText(`${n.docs} teachings`, tipX + tipW / 2, tipY + 27);
+      ctx.fillText(`${n.count} teachings`, tipX + tipW / 2, tipY + 27);
     }
   }
 
@@ -781,8 +788,8 @@ import Layout from '../layouts/Layout.astro';
         const opacity = 0.5 + (node.count / totalDocs) * 2;
         html += `<button class="concept-chip" onclick="startPathway('${node.id}');selectConcept('${node.id}')"
           style="font-size:${size}em; opacity:${Math.min(1, opacity)};"
-          title="${node.en}: ${node.count} occurrences in ${node.count} texts">
-          <span class="chip-he">${node.id}</span>
+          title="${node.en}: found in ${node.count} texts">
+          <span class="chip-he">${node.he || node.id}</span>
           <span class="chip-en">${node.en}</span>
           <span class="chip-count">${node.count}</span>
         </button>`;
@@ -797,26 +804,26 @@ import Layout from '../layouts/Layout.astro';
     const node = graphData.nodes.find(n => n.id === conceptId);
     if (!node) return;
 
+    // Helper to get Hebrew name for concept ID
+    const getHe = (id) => { const n = graphData.nodes.find(x => x.id === id); return n?.he || id; };
+
     // Header
     document.getElementById('conceptHeader').innerHTML = `
       <button class="back-to-cloud" onclick="document.getElementById('conceptView').style.display='none';document.getElementById('conceptCloud').scrollIntoView({behavior:'smooth'});">&larr; Back to all concepts</button>
-      <div class="ch-hebrew">${node.id}</div>
+      <div class="ch-hebrew">${node.he || node.id}</div>
       <div class="ch-english">${node.en}</div>
       <div class="ch-stats">${node.count.toLocaleString()} texts contain this concept</div>
       <button class="start-path-btn" onclick="startPathway('${node.id}')">Start pathway from here</button>
     `;
 
-    // Flow: What leads here
-    const leadsHere = graphData.flowEdges
-      .filter(e => e.to === conceptId)
-      .sort((a, b) => b.netFlow - a.netFlow)
-      .slice(0, 8);
+    // Flow: What leads here (from reverse lookup)
+    const leadsHere = (reverseLookup[conceptId] || []).slice(0, 8);
 
     document.getElementById('leadsHere').innerHTML = leadsHere.map(e => {
       const srcNode = graphData.nodes.find(n => n.id === e.from);
       if (!srcNode) return '';
       return `<button class="flow-chip flow-incoming" onclick="selectConcept('${e.from}')">
-        <span class="flow-he">${e.from}</span>
+        <span class="flow-he">${srcNode.he || e.from}</span>
         <span class="flow-en">${srcNode.en}</span>
         <span class="flow-strength">${e.netFlow}</span>
       </button>`;
@@ -825,22 +832,19 @@ import Layout from '../layouts/Layout.astro';
     // Center
     document.getElementById('centerConcept').innerHTML = `
       <div class="center-bubble">
-        <div class="center-he">${node.id}</div>
+        <div class="center-he">${node.he || node.id}</div>
         <div class="center-en">${node.en}</div>
       </div>
     `;
 
-    // Flow: Where this leads
-    const leadsTo = graphData.flowEdges
-      .filter(e => e.from === conceptId)
-      .sort((a, b) => b.netFlow - a.netFlow)
-      .slice(0, 8);
+    // Flow: Where this leads (from flow lookup)
+    const leadsTo = (flowLookup[conceptId] || []).slice(0, 8);
 
     document.getElementById('leadsTo').innerHTML = leadsTo.map(e => {
       const tgtNode = graphData.nodes.find(n => n.id === e.to);
       if (!tgtNode) return '';
       return `<button class="flow-chip flow-outgoing" onclick="selectConcept('${e.to}')">
-        <span class="flow-he">${e.to}</span>
+        <span class="flow-he">${tgtNode.he || e.to}</span>
         <span class="flow-en">${tgtNode.en}</span>
         <span class="flow-strength">${e.netFlow}</span>
       </button>`;
@@ -851,19 +855,16 @@ import Layout from '../layouts/Layout.astro';
     const pathwaysEl = document.getElementById('conceptPathways');
     if (pathways.length > 0) {
       pathwaysEl.innerHTML = `
-        <h3>Pathways from ${node.en} / מסלולים מ${node.id}</h3>
+        <h3>Pathways from ${node.en} / מסלולים מ${node.he || node.id}</h3>
         <div class="mini-pathways">
           ${pathways.map(p => {
-            const chainNodes = p.path.map(id => {
-              const n = graphData.nodes.find(x => x.id === id);
-              return n ? n.id : id;
-            });
+            const chainHe = p.path.map(id => getHe(id));
             const enChain = p.path.map(id => {
               const n = graphData.nodes.find(x => x.id === id);
               return n ? n.en : id;
             }).join(' → ');
             return `<button class="mini-path" onclick="loadPathway(${JSON.stringify(p.path)})">
-              <div class="mp-chain" dir="rtl">${chainNodes.join(' → ')}</div>
+              <div class="mp-chain" dir="rtl">${chainHe.join(' ← ')}</div>
               <div class="mp-en">${enChain}</div>
             </button>`;
           }).join('')}
