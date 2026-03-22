@@ -389,6 +389,18 @@
     setupScrollSpy();
     setupNotes();
     saveToHistory();
+
+    // Scroll to segment from URL hash (e.g. #seg-5)
+    if (window.location.hash) {
+      const target = document.getElementById(window.location.hash.substring(1));
+      if (target) {
+        setTimeout(() => {
+          target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          target.style.outline = '2px solid var(--reader-accent)';
+          setTimeout(() => target.style.outline = '', 3000);
+        }, 300);
+      }
+    }
     setupSourceRefs();
 
     // Bind toolbar buttons
