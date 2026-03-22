@@ -29,6 +29,14 @@ import CompactYahrzeit from '../components/CompactYahrzeit.astro';
         <span class="english">"In this world, a person must traverse a very narrow bridge — the main thing is not to fear at all."</span>
       </p>
       
+      <!-- Quick search on hero -->
+      <div class="hero-search">
+        <form action="/search-enhanced" method="get" class="hero-search-form">
+          <input type="text" name="q" placeholder="Search 30,000+ pages... / חפש..." dir="auto" autocomplete="off" />
+          <button type="submit">Search</button>
+        </form>
+      </div>
+
       <!-- Main navigation - symmetrical with Teachings in center -->
       <nav class="main-nav">
         <!-- Left side -->
@@ -651,6 +659,37 @@ import CompactYahrzeit from '../components/CompactYahrzeit.astro';
     margin-bottom: 1rem;
     text-align: center;
   }
+
+  /* Hero Search */
+  .hero-search {
+    max-width: 500px;
+    margin: 0 auto 1.5rem;
+  }
+  .hero-search-form {
+    display: flex;
+    gap: 0;
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+  .hero-search-form input {
+    flex: 1;
+    padding: 12px 20px;
+    border: none;
+    font-size: 1em;
+    font-family: 'Frank Ruhl Libre', serif;
+    outline: none;
+  }
+  .hero-search-form button {
+    padding: 12px 20px;
+    background: #ed8936;
+    color: white;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.95em;
+  }
+  .hero-search-form button:hover { background: #dd7726; }
 
   /* Daily Quote */
   .daily-quote {
