@@ -303,6 +303,9 @@
         case 'l':
           toggleSpeaking();
           break;
+        case 'p':
+          window.print();
+          break;
         case 'Escape':
           if (ttsState.speaking) stopSpeaking();
           if (state.searchOpen) toggleSearch();
@@ -439,6 +442,14 @@
       shareBtn.title = 'Share this page';
       shareBtn.addEventListener('click', shareCurrentPage);
       lastToolGroup.insertBefore(shareBtn, lastToolGroup.querySelector('#btn-fullscreen'));
+
+      const printBtn = document.createElement('button');
+      printBtn.className = 'reader-btn reader-btn-icon';
+      printBtn.id = 'btn-print';
+      printBtn.textContent = 'Print';
+      printBtn.title = 'Print this page (P)';
+      printBtn.addEventListener('click', () => window.print());
+      lastToolGroup.insertBefore(printBtn, lastToolGroup.querySelector('#btn-fullscreen'));
     }
 
     const searchInput = document.querySelector('.reader-search-bar input');

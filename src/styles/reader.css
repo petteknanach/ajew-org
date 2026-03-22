@@ -587,16 +587,35 @@
   .reader-nav,
   .reader-shortcuts-overlay,
   .navbar,
-  footer {
+  footer,
+  .back-to-top,
+  .note-indicator,
+  .note-editor,
+  .source-ref-popup,
+  #voice-input-btn {
     display: none !important;
   }
   .reader-container {
-    background: white;
-    color: black;
+    background: white !important;
+    color: black !important;
+    max-width: 100% !important;
+    padding: 0 !important;
   }
   .reader-segment:hover {
     background: transparent;
   }
+  .reader-header {
+    border-bottom: 2px solid #333;
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+  }
+  .reader-header h1 { font-size: 1.4em; color: black; }
+  .segment-he { font-size: 14pt; line-height: 1.8; }
+  .segment-en { font-size: 11pt; line-height: 1.6; color: #333; }
+  .reader-segment-pair { page-break-inside: avoid; }
+  .source-ref-link { color: inherit; border-bottom: none; }
+  a { color: black; text-decoration: none; }
+  @page { margin: 2cm; }
 }
 
 /* ═══════════════════════════════════════════════ */
