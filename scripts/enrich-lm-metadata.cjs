@@ -159,14 +159,56 @@ function cleanTitle(title) {
  */
 function detectThemes(segments) {
   const fullText = segments.map(s => s.he || '').join(' ');
+  const textLen = fullText.length;
+  // For short texts, lower threshold to 1; for long texts keep at 2
+  const minCount = textLen < 500 ? 1 : 2;
   const found = [];
 
   for (const [theme, keywords] of Object.entries(THEMES)) {
     for (const kw of keywords) {
       if (fullText.includes(kw)) {
-        // Count occurrences
         const count = (fullText.match(new RegExp(kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')) || []).length;
-        if (count >= 2) { // At least 2 mentions
+        if (count >= minCount) {
+          found.push({ theme, count });
+          break;
+        }
+      }
+    }
+  }
+
+  // Also check English text for themes if Hebrew didn't yield enough
+  if (found.length < 2) {
+    const fullEn = segments.map(s => s.en || '').join(' ').toLowerCase();
+    const EN_THEMES = {
+      'Torah': ['torah', 'learning', 'study'],
+      'Prayer': ['prayer', 'praying', 'tefilah'],
+      'Faith': ['faith', 'emunah', 'believe'],
+      'Truth': ['truth', 'emet'],
+      'Joy': ['joy', 'happiness', 'simcha', 'rejoice'],
+      'Repentance': ['repentance', 'teshuvah', 'return'],
+      'Tzaddik': ['tzaddik', 'righteous'],
+      'Charity': ['charity', 'tzedakah'],
+      'Peace': ['peace', 'shalom'],
+      'Knowledge': ['knowledge', 'da\'at', 'mind', 'intellect'],
+      'Holiness': ['holiness', 'kedushah', 'holy'],
+      'Judgment': ['judgment', 'din', 'justice'],
+      'Kindness': ['kindness', 'chesed', 'mercy'],
+      'Honor': ['honor', 'kavod', 'glory'],
+      'Humility': ['humility', 'humble', 'anava'],
+      'Speech': ['speech', 'words', 'speaking'],
+      'Hitbodedut': ['hitbodedut', 'meditation', 'seclusion'],
+      'Mashiach': ['mashiach', 'messiah', 'redemption'],
+      'Eretz Yisrael': ['eretz yisrael', 'land of israel'],
+      'Fear of God': ['fear of god', 'awe', 'yirah'],
+      'Healing': ['healing', 'cure', 'medicine'],
+      'Controversy': ['controversy', 'dispute', 'machloket'],
+      'Suffering': ['suffering', 'pain', 'affliction'],
+    };
+    for (const [theme, keywords] of Object.entries(EN_THEMES)) {
+      if (found.some(f => f.theme === theme)) continue;
+      for (const kw of keywords) {
+        const count = (fullEn.match(new RegExp(kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi')) || []).length;
+        if (count >= 2) {
           found.push({ theme, count });
           break;
         }
@@ -194,8 +236,13 @@ async function main() {
       const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
       const torahNum = data.torah || parseInt(file.match(/\d+/)?.[0]);
 
-      // Skip if already has rich metadata
-      if (data.title !== `Torah ${torahNum}` && data.hebrewTitle && data.themes?.length > 0) {
+      // Check what's missing
+      const hasTitle = data.title && data.title !== `Torah ${torahNum}`;
+      const hasHeTitle = !!data.hebrewTitle;
+      const hasThemes = data.themes?.length > 0;
+
+      // Skip only if everything is already filled
+      if (hasTitle && hasHeTitle && hasThemes) {
         skipped++;
         continue;
       }
@@ -233,8 +280,10 @@ async function main() {
         changed = true;
       }
       if (!data.themes || data.themes.length === 0) {
-        data.themes = themes;
-        changed = true;
+        if (themes.length > 0) {
+          data.themes = themes;
+          changed = true;
+        }
       }
 
       if (changed) {
