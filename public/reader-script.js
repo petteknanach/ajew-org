@@ -424,8 +424,21 @@
 
     const listenBtn = document.getElementById('btn-listen');
     if (listenBtn) {
-      listenBtn.removeAttribute('onclick'); // Remove inline handler
+      listenBtn.removeAttribute('onclick');
       listenBtn.addEventListener('click', toggleSpeaking);
+    }
+
+    // Share button - add to toolbar if not present
+    const toolbarGroups = document.querySelectorAll('.reader-toolbar-group');
+    const lastToolGroup = toolbarGroups[toolbarGroups.length - 1];
+    if (lastToolGroup && !document.getElementById('btn-share')) {
+      const shareBtn = document.createElement('button');
+      shareBtn.className = 'reader-btn reader-btn-icon';
+      shareBtn.id = 'btn-share';
+      shareBtn.textContent = 'Share';
+      shareBtn.title = 'Share this page';
+      shareBtn.addEventListener('click', shareCurrentPage);
+      lastToolGroup.insertBefore(shareBtn, lastToolGroup.querySelector('#btn-fullscreen'));
     }
 
     const searchInput = document.querySelector('.reader-search-bar input');
@@ -757,6 +770,37 @@
     if (btn) {
       btn.textContent = 'Listen';
       btn.classList.remove('active');
+    }
+  }
+
+  // --- Share ---
+  function shareCurrentPage() {
+    const title = document.title.replace(' | A Jew', '');
+    const url = window.location.href;
+
+    if (navigator.share) {
+      navigator.share({ title, url }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(url).then(() => {
+        const btn = document.getElementById('btn-share');
+        if (btn) {
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = 'Share'; }, 2000);
+        }
+      }).catch(() => {
+        // Fallback
+        const input = document.createElement('input');
+        input.value = url;
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand('copy');
+        document.body.removeChild(input);
+        const btn = document.getElementById('btn-share');
+        if (btn) {
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = 'Share'; }, 2000);
+        }
+      });
     }
   }
 
