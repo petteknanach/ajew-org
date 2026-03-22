@@ -419,13 +419,28 @@
       const entry = {
         url: window.location.pathname,
         title: document.title.replace(' | A Jew', ''),
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        progress: 0
       };
       // Remove duplicate
       const filtered = history.filter(h => h.url !== entry.url);
       filtered.unshift(entry);
       localStorage.setItem(HISTORY_KEY, JSON.stringify(filtered.slice(0, MAX_HISTORY)));
     } catch (e) { /* ignore */ }
+
+    // Update progress on scroll
+    window.addEventListener('scroll', () => {
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? Math.round((window.scrollY / docHeight) * 100) : 100;
+      try {
+        const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+        const idx = history.findIndex(h => h.url === window.location.pathname);
+        if (idx !== -1 && progress > (history[idx].progress || 0)) {
+          history[idx].progress = progress;
+          localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+        }
+      } catch(e) {}
+    }, { passive: true });
   }
 
   // --- Initialize ---

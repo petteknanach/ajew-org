@@ -371,7 +371,8 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
         container.style.display = 'block';
         list.innerHTML = history.slice(0, 8).map(h => {
           const ago = getTimeAgo(h.timestamp);
-          return '<a href="' + h.url + '" class="recent-item"><span class="recent-title">' + h.title + '</span><span class="recent-ago">' + ago + '</span></a>';
+          const pct = h.progress ? ' · ' + h.progress + '%' : '';
+          return '<a href="' + h.url + '" class="recent-item"><span class="recent-title">' + h.title + '</span><span class="recent-ago">' + ago + pct + '</span></a>';
         }).join('');
       } catch(e) {}
 
