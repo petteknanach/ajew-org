@@ -283,17 +283,37 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
     }
 
     .category-section {
-      margin-top: 48px;
-      padding-top: 24px;
-      border-top: 3px solid #1a365d;
+      margin-top: 24px;
+      border: 1px solid #e0d6c2;
+      border-radius: 12px;
+      overflow: hidden;
     }
     .category-title {
       font-family: 'Frank Ruhl Libre', serif;
-      font-size: 1.5em;
+      font-size: 1.3em;
       color: #1a365d;
-      margin: 0 0 24px;
+      margin: 0;
+      padding: 16px 20px;
       font-weight: 700;
+      cursor: pointer;
+      background: #f8f5ef;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
+    .category-title::-webkit-details-marker { display: none; }
+    .category-title::after {
+      content: '▸';
+      font-size: 0.8em;
+      color: #888;
+      transition: transform 0.2s;
+    }
+    details[open] > .category-title::after { transform: rotate(90deg); }
+    .category-title:hover { background: #f0ebe0; }
+    .cat-count { font-size: 0.65em; color: #888; font-weight: 400; }
+    details[open] > .category-title { border-bottom: 1px solid #e0d6c2; }
+    .category-section .volume-section { padding: 0 20px; }
 
     @media (max-width: 768px) {
       .lm-header .hebrew-title { font-size: 2.2em; }
@@ -463,9 +483,10 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
     {categories.map(cat => {
       const catBooks = cat.ids.map(id => masterCatalog.books.find(b => b.id === id)).filter(Boolean).filter(b => b.parts.some(p => p.totalTorahs > 0));
       if (catBooks.length === 0 || cat.ids.includes('likutay-moharan')) return null;
+      const totalCatPages = catBooks.reduce((s, b) => s + b.parts.reduce((s2, p) => s2 + p.totalTorahs, 0), 0);
       return (
-        <div class="category-section">
-          <h2 class="category-title">{cat.title}</h2>
+        <details class="category-section">
+          <summary class="category-title">{cat.title} <span class="cat-count">({catBooks.length} books, {totalCatPages} pages)</span></summary>
           {catBooks.map(book => {
             const indexes = loadBookIndexes(book);
             const totalPages = book.parts.reduce((s, p) => s + p.totalTorahs, 0);
@@ -495,7 +516,7 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
               </div>
             );
           })}
-        </div>
+        </details>
       );
     })}
   </div>
