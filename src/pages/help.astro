@@ -1,0 +1,104 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Help - How to Use ajew.org" description="Guide to using ajew.org - the reader, search, Torah Map, gematria, and all features.">
+  <section class="help-page">
+    <div class="container">
+      <h1>Help</h1>
+      <p class="subtitle">How to use ajew.org</p>
+
+      <div class="help-sections">
+        <details class="help-section" open>
+          <summary>📖 The Reader</summary>
+          <div class="help-content">
+            <p>The reader is where you read all 213 books. Features:</p>
+            <ul>
+              <li><strong>H / E / B</strong> — Switch between Hebrew, English, or Both</li>
+              <li><strong>N</strong> — Toggle nikud (vowel marks)</li>
+              <li><strong>L</strong> — Listen (text-to-speech), with ½×/1×/1.5× speed</li>
+              <li><strong>S</strong> — Save bookmark at current position</li>
+              <li><strong>G</strong> — Toggle favorite ★</li>
+              <li><strong>J/K or ↑/↓</strong> — Navigate between segments</li>
+              <li><strong>←/→</strong> — Previous/Next page</li>
+              <li><strong>F</strong> — Fullscreen mode</li>
+              <li><strong>P</strong> — Print the current page</li>
+              <li><strong>T</strong> — Table of contents</li>
+              <li><strong>Ctrl+F</strong> — Search within the text</li>
+              <li><strong>+/-</strong> — Increase/decrease font size</li>
+              <li><strong>?</strong> — Show all keyboard shortcuts</li>
+              <li><strong>Double-click</strong> a segment to highlight it</li>
+              <li><strong>Click</strong> a source reference (in parentheses) to see the verse</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="help-section">
+          <summary>🔍 Search</summary>
+          <div class="help-content">
+            <p>10 search modes across 22,000+ documents:</p>
+            <ul>
+              <li><strong>Google</strong> — Smart search, ranked by relevance</li>
+              <li><strong>Exact</strong> — Find exact phrase</li>
+              <li><strong>All Words</strong> — All words must appear</li>
+              <li><strong>Any Word</strong> — Any word can match</li>
+              <li><strong>Proximity</strong> — Words within N words of each other</li>
+              <li><strong>Boolean</strong> — AND / OR / NOT operators</li>
+              <li><strong>Acronym</strong> — Find by first letters (ראשי תיבות)</li>
+              <li><strong>End Letters</strong> — Find by last letters (סופי תיבות)</li>
+              <li><strong>Starts/Ends With</strong> — Word prefix/suffix search</li>
+            </ul>
+            <p>Press <strong>/</strong> from any page to jump to search.</p>
+            <p>Use the Hebrew keyboard button <strong>א</strong> if you don't have Hebrew input.</p>
+          </div>
+        </details>
+
+        <details class="help-section">
+          <summary>🗺️ Torah Map</summary>
+          <div class="help-content">
+            <p>Explore how spiritual concepts connect across the teachings. Click any concept to see what leads to it and where it leads. Build multi-step pathways through the ideas.</p>
+          </div>
+        </details>
+
+        <details class="help-section">
+          <summary>🔢 Gematria</summary>
+          <div class="help-content">
+            <p>Calculate gematria values with 4 methods: Standard, Mispar Katan, Atbash, and Mispar Gadol. Shows matching words with the same value.</p>
+          </div>
+        </details>
+
+        <details class="help-section">
+          <summary>🌙 Dark Mode & Text Size</summary>
+          <div class="help-content">
+            <p>Use the 🌙 button in the navbar to toggle dark mode. Use A-/A+ to adjust text size. Both settings persist.</p>
+          </div>
+        </details>
+
+        <details class="help-section">
+          <summary>📱 Mobile & Offline</summary>
+          <div class="help-content">
+            <p>ajew.org works on all devices. Add to Home Screen on mobile for an app-like experience. Pages you've visited are cached for offline reading.</p>
+          </div>
+        </details>
+      </div>
+
+      <div class="contact-help">
+        <p>Need more help? <a href="mailto:naanaach@gmail.com">Contact us</a></p>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .help-page { max-width: 700px; margin: 0 auto; padding: 40px 24px 80px; font-family: 'Open Sans', sans-serif; }
+  h1 { font-family: 'Frank Ruhl Libre', serif; color: #1a365d; font-size: 2em; margin: 0 0 4px; }
+  .subtitle { color: #666; margin: 0 0 32px; }
+  .help-section { margin-bottom: 8px; border: 1px solid #e0d6c2; border-radius: 10px; overflow: hidden; }
+  .help-section summary { padding: 14px 18px; cursor: pointer; background: #f8f5ef; font-weight: 600; color: #1a365d; font-size: 1.05em; }
+  .help-section summary:hover { background: #f0ebe0; }
+  .help-content { padding: 16px 18px; line-height: 1.7; }
+  .help-content ul { padding-left: 20px; }
+  .help-content li { margin-bottom: 4px; }
+  .contact-help { text-align: center; margin-top: 32px; }
+  .contact-help a { color: #1a365d; font-weight: 600; }
+</style>
