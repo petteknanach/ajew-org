@@ -561,6 +561,29 @@
     if (listenBtn) {
       listenBtn.removeAttribute('onclick');
       listenBtn.addEventListener('click', toggleSpeaking);
+
+      // TTS speed control
+      const speedWrap = document.createElement('span');
+      speedWrap.className = 'tts-speed-ctrl';
+      speedWrap.style.cssText = 'display:inline-flex;gap:1px;margin-left:2px;';
+      const speeds = [{label:'½×', val:'0.6'}, {label:'1×', val:'1'}, {label:'1.5×', val:'1.5'}];
+      const currentSpeed = localStorage.getItem('ajew-tts-speed') || '1';
+      speeds.forEach(s => {
+        const btn = document.createElement('button');
+        btn.className = 'reader-btn reader-btn-icon' + (s.val === currentSpeed ? ' active' : '');
+        btn.textContent = s.label;
+        btn.title = 'TTS speed ' + s.label;
+        btn.style.cssText = 'padding:2px 5px;font-size:0.6em;min-width:auto;';
+        btn.addEventListener('click', () => {
+          localStorage.setItem('ajew-tts-speed', s.val);
+          speedWrap.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          // Restart if currently speaking
+          if (ttsState.speaking) { stopSpeaking(); toggleSpeaking(); }
+        });
+        speedWrap.appendChild(btn);
+      });
+      listenBtn.parentNode.insertBefore(speedWrap, listenBtn.nextSibling);
     }
 
     // Share button - add to toolbar if not present
@@ -887,7 +910,8 @@
 
     const utterance = new SpeechSynthesisUtterance(seg.text);
     utterance.lang = seg.lang;
-    utterance.rate = seg.lang === 'he-IL' ? 0.85 : 0.9;
+    const speedPref = parseFloat(localStorage.getItem('ajew-tts-speed') || '1');
+    utterance.rate = (seg.lang === 'he-IL' ? 0.85 : 0.9) * speedPref;
 
     utterance.onend = () => {
       if (ttsState.speaking && !ttsState.paused) {
