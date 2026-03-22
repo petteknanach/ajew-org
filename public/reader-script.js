@@ -507,6 +507,7 @@
     addReadingTime();
     setupRelatedTeachings();
     setupSelectionPopup();
+    setupSegmentHighlight();
 
     // Scroll to segment from URL hash (e.g. #seg-5)
     if (window.location.hash) {
@@ -956,6 +957,43 @@
       </div>
     `;
     lastNav.parentNode.insertBefore(section, lastNav);
+  }
+
+  // --- Double-click to Highlight Segment ---
+  function setupSegmentHighlight() {
+    const container = document.querySelector('.reader-container');
+    if (!container) return;
+    const HIGHLIGHTS_KEY = 'ajew-highlights-' + (container.dataset.torahId || window.location.pathname);
+
+    // Load saved highlights
+    let highlights = new Set();
+    try {
+      const saved = JSON.parse(localStorage.getItem(HIGHLIGHTS_KEY) || '[]');
+      highlights = new Set(saved);
+      // Apply saved highlights
+      highlights.forEach(id => {
+        const seg = document.getElementById(id);
+        if (seg) seg.classList.add('user-highlighted');
+      });
+    } catch(e) {}
+
+    container.addEventListener('dblclick', (e) => {
+      const seg = e.target.closest('.reader-segment-pair');
+      if (!seg || !seg.id) return;
+      // Don't highlight if user is selecting text
+      const sel = window.getSelection();
+      if (sel && sel.toString().length > 0) return;
+
+      seg.classList.toggle('user-highlighted');
+      if (seg.classList.contains('user-highlighted')) {
+        highlights.add(seg.id);
+      } else {
+        highlights.delete(seg.id);
+      }
+      try {
+        localStorage.setItem(HIGHLIGHTS_KEY, JSON.stringify([...highlights]));
+      } catch(e) {}
+    });
   }
 
   // --- Text Selection Popup ---
