@@ -102,6 +102,7 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         }
 
         showLoading();
+        saveSearchHistory(query);
 
         const url = new URL('/api/search', window.location.origin);
         url.searchParams.set('q', query);
@@ -290,6 +291,46 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         loading.classList.add('hidden');
         resultsContainer.classList.add('hidden');
         noResults.classList.add('hidden');
+        renderSearchHistory();
+      }
+
+      // Search history
+      function saveSearchHistory(query: string) {
+        const KEY = 'ajew-search-history';
+        try {
+          let history: string[] = JSON.parse(localStorage.getItem(KEY) || '[]');
+          history = history.filter(h => h !== query);
+          history.unshift(query);
+          localStorage.setItem(KEY, JSON.stringify(history.slice(0, 20)));
+        } catch(e) {}
+      }
+
+      function renderSearchHistory() {
+        const KEY = 'ajew-search-history';
+        let container = document.getElementById('searchHistoryBox');
+        if (!container) {
+          container = document.createElement('div');
+          container.id = 'searchHistoryBox';
+          container.className = 'search-history-box';
+          welcomeMessage.appendChild(container);
+        }
+        try {
+          const history: string[] = JSON.parse(localStorage.getItem(KEY) || '[]');
+          if (history.length === 0) { container.style.display = 'none'; return; }
+          container.style.display = 'block';
+          container.innerHTML = '<h4>Recent Searches</h4><div class="sh-tags">' +
+            history.slice(0, 10).map(h =>
+              '<button class="sh-tag" data-q="' + h.replace(/"/g, '&quot;') + '">' + h + '</button>'
+            ).join('') +
+            '</div>';
+          container.querySelectorAll('.sh-tag').forEach((btn: any) => {
+            btn.addEventListener('click', () => {
+              const input = document.getElementById('searchInput') as HTMLInputElement;
+              input.value = btn.dataset.q;
+              performSearch(btn.dataset.q, {}, searchState?.advancedOptions || {});
+            });
+          });
+        } catch(e) {}
       }
 
       clearResults.addEventListener('click', () => {
@@ -299,6 +340,9 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         url.searchParams.delete('q');
         window.history.replaceState({}, '', url);
       });
+
+      // Render history on load
+      renderSearchHistory();
     });
   </script>
 
@@ -554,6 +598,17 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
       padding-top: 0.5rem;
       border-top: 1px solid #f3f4f6;
     }
+
+    /* Search history */
+    .search-history-box { margin-top: 20px; text-align: center; }
+    .search-history-box h4 { color: #888; font-size: 0.85em; margin: 0 0 8px; font-weight: 400; }
+    .sh-tags { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+    .sh-tag {
+      background: #f0ebe0; border: 1px solid #e0d6c2; color: #1a365d;
+      padding: 4px 12px; border-radius: 16px; font-size: 0.85em;
+      cursor: pointer; font-family: 'Frank Ruhl Libre', serif;
+    }
+    .sh-tag:hover { background: #e0d6c2; }
 
     .load-more-btn {
       display: block;
