@@ -238,6 +238,32 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
     }
     .recent-ago { color: #888; font-size: 0.75em; }
 
+    /* Daily Learning */
+    .daily-learning {
+      margin-bottom: 24px;
+      padding: 16px 20px;
+      background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
+      border-radius: 12px;
+      color: white;
+    }
+    .daily-learning .volume-title { color: white; border: none; margin-bottom: 12px; }
+    .daily-cards { display: flex; gap: 10px; flex-wrap: wrap; }
+    .daily-card {
+      flex: 1;
+      min-width: 140px;
+      padding: 12px 16px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 8px;
+      text-decoration: none;
+      color: white;
+      transition: background 0.2s;
+    }
+    .daily-card:hover { background: rgba(255,255,255,0.25); }
+    .daily-label { display: block; font-weight: 600; font-size: 0.9em; }
+    .daily-num { display: block; font-size: 0.8em; opacity: 0.8; margin-top: 2px; }
+    .daily-random { background: rgba(237,137,54,0.3); }
+    .daily-random:hover { background: rgba(237,137,54,0.5); }
+
     /* Random Torah Button */
     .random-torah-btn {
       margin-top: 16px;
@@ -290,6 +316,44 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
       </div>
       <button class="random-torah-btn" id="randomTorahBtn" onclick="goToRandomTorah()">Open Random Torah</button>
     </div>
+
+    <!-- Daily Learning -->
+    <div class="daily-learning" id="dailyLearning">
+      <h2 class="volume-title">Today's Learning</h2>
+      <div class="daily-cards" id="dailyCards"></div>
+    </div>
+
+    <script is:inline>
+    (function() {
+      const today = new Date();
+      const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 86400000);
+
+      // Daily LM: cycle through 408 torahs (285 part1 + 123 part2)
+      const lmDay = (dayOfYear % 408) + 1;
+      let lmPart, lmTorah;
+      if (lmDay <= 285) { lmPart = 1; lmTorah = lmDay; }
+      else { lmPart = 2; lmTorah = lmDay - 285; }
+
+      // Daily Tehillim: cycle through 150 chapters
+      const tehillimDay = (dayOfYear % 150) + 1;
+
+      const cards = document.getElementById('dailyCards');
+      cards.innerHTML = `
+        <a href="/reader/likutay-moharan/part-${lmPart}/${lmTorah}" class="daily-card">
+          <span class="daily-label">Likutay Moharan</span>
+          <span class="daily-num">Part ${lmPart}, Torah ${lmTorah}</span>
+        </a>
+        <a href="/reader/tanach-tehillim/part-1/${tehillimDay}" class="daily-card">
+          <span class="daily-label">Tehillim</span>
+          <span class="daily-num">Chapter ${tehillimDay}</span>
+        </a>
+        <a href="#" onclick="goToRandomTorah();return false;" class="daily-card daily-random">
+          <span class="daily-label">Random Torah</span>
+          <span class="daily-num">Discover something new</span>
+        </a>
+      `;
+    })();
+    </script>
 
     <!-- Recently Read -->
     <div id="recentlyRead" class="recently-read" style="display:none;">
