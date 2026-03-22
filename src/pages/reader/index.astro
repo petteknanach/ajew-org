@@ -282,6 +282,29 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
       transform: scale(1.05);
     }
 
+    /* Library Filter */
+    .library-search {
+      margin-top: 12px;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .library-search input {
+      width: 100%;
+      padding: 10px 16px;
+      font-size: 0.95em;
+      border: 2px solid #d1d5db;
+      border-radius: 24px;
+      font-family: 'Frank Ruhl Libre', serif;
+      direction: auto;
+      background: white;
+    }
+    .library-search input:focus {
+      outline: none;
+      border-color: #1a365d;
+      box-shadow: 0 0 0 3px rgba(26, 54, 93, 0.1);
+    }
+
     .category-section {
       margin-top: 24px;
       border: 1px solid #e0d6c2;
@@ -335,6 +358,9 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
         <span>Fullscreen reading</span>
       </div>
       <button class="random-torah-btn" id="randomTorahBtn" onclick="goToRandomTorah()">Open Random Torah</button>
+      <div class="library-search">
+        <input type="text" id="libraryFilter" placeholder="Filter books... / סנן ספרים..." dir="auto" autocomplete="off" />
+      </div>
     </div>
 
     <!-- Daily Learning -->
@@ -520,4 +546,49 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
       );
     })}
   </div>
+
+  <script is:inline>
+  // Library filter - search/filter books by name
+  document.addEventListener('DOMContentLoaded', () => {
+    const input = document.getElementById('libraryFilter');
+    if (!input) return;
+
+    input.addEventListener('input', () => {
+      const q = input.value.toLowerCase().trim();
+      if (!q) {
+        // Show all
+        document.querySelectorAll('.category-section, .volume-section, #likutay-moharan').forEach(el => {
+          el.style.display = '';
+        });
+        return;
+      }
+
+      // Filter volume sections (individual books)
+      document.querySelectorAll('.volume-section').forEach(section => {
+        const title = (section.querySelector('.volume-title')?.textContent || '').toLowerCase();
+        const hebrew = (section.querySelector('.volume-hebrew')?.textContent || '').toLowerCase();
+        const match = title.includes(q) || hebrew.includes(q);
+        section.style.display = match ? '' : 'none';
+      });
+
+      // Show/hide categories based on whether they have visible books
+      document.querySelectorAll('.category-section').forEach(cat => {
+        const visibleBooks = cat.querySelectorAll('.volume-section:not([style*="display: none"])');
+        if (visibleBooks.length > 0) {
+          cat.style.display = '';
+          cat.open = true; // Expand matching categories
+        } else {
+          cat.style.display = 'none';
+        }
+      });
+
+      // Also check LM section
+      const lmSection = document.getElementById('likutay-moharan');
+      if (lmSection) {
+        const lmMatch = 'likutay moharan'.includes(q) || 'ליקוטי מוהר'.includes(q) || 'lm'.includes(q);
+        lmSection.style.display = lmMatch ? '' : 'none';
+      }
+    });
+  });
+  </script>
 </Layout>
