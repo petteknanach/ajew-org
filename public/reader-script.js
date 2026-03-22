@@ -367,6 +367,7 @@
     setupKeyboard();
     setupScrollSpy();
     setupNotes();
+    setupSourceRefs();
 
     // Bind toolbar buttons
     document.querySelectorAll('[data-mode]').forEach(btn => {
@@ -738,6 +739,125 @@
       btn.textContent = 'Listen';
       btn.classList.remove('active');
     }
+  }
+
+  // --- Source Reference Popups ---
+  // Detect Hebrew source citations in parentheses and make them clickable
+  const SOURCE_PATTERNS = [
+    // Tanach books
+    { re: /בראשית/g, book: 'Genesis' },
+    { re: /שמות/g, book: 'Exodus' },
+    { re: /ויקרא/g, book: 'Leviticus' },
+    { re: /במדבר/g, book: 'Numbers' },
+    { re: /דברים/g, book: 'Deuteronomy' },
+    { re: /תהלים|תהילים/g, book: 'Psalms' },
+    { re: /משלי/g, book: 'Proverbs' },
+    { re: /ישעיהו|ישעיה/g, book: 'Isaiah' },
+    { re: /ירמיהו|ירמיה/g, book: 'Jeremiah' },
+    { re: /יחזקאל/g, book: 'Ezekiel' },
+    { re: /איוב/g, book: 'Job' },
+    { re: /שיר השירים/g, book: 'Song of Songs' },
+    { re: /קהלת/g, book: 'Ecclesiastes' },
+    { re: /דניאל/g, book: 'Daniel' },
+    { re: /שופטים/g, book: 'Judges' },
+    { re: /שמואל/g, book: 'I Samuel' },
+    { re: /מלכים/g, book: 'I Kings' },
+    { re: /יהושע/g, book: 'Joshua' },
+    { re: /רות/g, book: 'Ruth' },
+    { re: /איכה/g, book: 'Lamentations' },
+    { re: /אסתר/g, book: 'Esther' },
+    // Talmud
+    { re: /ברכות/g, book: 'Berakhot' },
+    { re: /שבת/g, book: 'Shabbat' },
+    { re: /סנהדרין/g, book: 'Sanhedrin' },
+    { re: /בבא בתרא/g, book: 'Bava Batra' },
+    { re: /בבא קמא/g, book: 'Bava Kamma' },
+    { re: /בבא מציעא/g, book: 'Bava Metzia' },
+  ];
+
+  function setupSourceRefs() {
+    // Create popup element
+    const popup = document.createElement('div');
+    popup.id = 'source-popup';
+    popup.className = 'source-ref-popup';
+    popup.innerHTML = '<div class="source-popup-header"><span class="source-popup-title"></span><button class="source-popup-close">&times;</button></div><div class="source-popup-body"></div><a class="source-popup-link" href="#">Read full chapter &rarr;</a>';
+    popup.style.display = 'none';
+    document.body.appendChild(popup);
+
+    popup.querySelector('.source-popup-close').addEventListener('click', () => {
+      popup.style.display = 'none';
+    });
+    document.addEventListener('click', (e) => {
+      if (!popup.contains(e.target) && !e.target.classList.contains('source-ref-link')) {
+        popup.style.display = 'none';
+      }
+    });
+
+    // Find all parenthesized references in Hebrew text
+    document.querySelectorAll('.segment-he p').forEach(p => {
+      const html = p.innerHTML;
+      // Match references in parentheses: (תהלים קי"ט) or (בראשית כ"ה, י')
+      const refRegex = /\(([^)]*?(?:בראשית|שמות|ויקרא|במדבר|דברים|תהלים|תהילים|משלי|ישעיהו|ישעיה|ירמיהו|ירמיה|יחזקאל|איוב|שיר השירים|קהלת|דניאל|שופטים|שמואל|מלכים|יהושע|רות|איכה|אסתר|ברכות|שבת|סנהדרין|בבא בתרא|בבא קמא|בבא מציעא)[^)]*?)\)/g;
+
+      const newHtml = html.replace(refRegex, (match, inner) => {
+        return `(<span class="source-ref-link" data-ref="${inner}">${inner}</span>)`;
+      });
+
+      if (newHtml !== html) {
+        p.innerHTML = newHtml;
+      }
+    });
+
+    // Handle clicks on source refs
+    document.addEventListener('click', (e) => {
+      const link = e.target.closest('.source-ref-link');
+      if (!link) return;
+
+      const ref = link.dataset.ref;
+      showSourcePopup(ref, link, popup);
+    });
+  }
+
+  function showSourcePopup(heRef, anchor, popup) {
+    const title = popup.querySelector('.source-popup-title');
+    const body = popup.querySelector('.source-popup-body');
+    const linkEl = popup.querySelector('.source-popup-link');
+
+    title.textContent = heRef;
+    body.innerHTML = '<span style="color:#888;">Loading...</span>';
+    linkEl.style.display = 'none';
+
+    // Position popup near the clicked reference
+    const rect = anchor.getBoundingClientRect();
+    popup.style.display = 'block';
+    popup.style.top = (rect.bottom + window.scrollY + 8) + 'px';
+    popup.style.left = Math.max(16, Math.min(rect.left, window.innerWidth - 340)) + 'px';
+
+    // Fetch the verse from our API
+    fetch('/api/verse-lookup?ref=' + encodeURIComponent(heRef))
+      .then(r => r.json())
+      .then(data => {
+        if (data.error) {
+          body.innerHTML = '<span style="color:#888;">' + heRef + '</span>';
+          return;
+        }
+        let html = '';
+        if (data.heRef) html += '<div style="font-family:\'Frank Ruhl Libre\',serif;direction:rtl;font-size:1.1em;line-height:1.8;margin-bottom:8px;">' + data.he + '</div>';
+        if (data.en) html += '<div style="font-size:0.9em;color:#555;line-height:1.6;">' + data.en + '</div>';
+        body.innerHTML = html || heRef;
+
+        if (data.localUrl) {
+          linkEl.href = data.localUrl;
+          linkEl.style.display = 'block';
+        } else if (data.sefariaUrl) {
+          linkEl.href = data.sefariaUrl;
+          linkEl.target = '_blank';
+          linkEl.style.display = 'block';
+        }
+      })
+      .catch(() => {
+        body.innerHTML = '<span style="color:#888;">' + heRef + '</span>';
+      });
   }
 
   // Run on DOM ready

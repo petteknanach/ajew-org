@@ -903,6 +903,81 @@
   color: white;
 }
 
+/* === Source Reference Popups === */
+.source-ref-link {
+  color: var(--reader-accent, #c4a265);
+  cursor: pointer;
+  border-bottom: 1px dotted var(--reader-accent, #c4a265);
+  transition: color 0.2s;
+}
+.source-ref-link:hover {
+  color: #8b6914;
+}
+
+.source-ref-popup {
+  position: absolute;
+  z-index: 200;
+  background: var(--reader-bg, #fffdf7);
+  border: 1px solid #d1c8b0;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  max-width: 380px;
+  min-width: 260px;
+  font-family: 'Open Sans', sans-serif;
+}
+.source-popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  border-bottom: 1px solid #e8dfd0;
+  font-family: 'Frank Ruhl Libre', serif;
+  font-weight: 700;
+  color: var(--reader-text, #1a1a1a);
+  direction: rtl;
+}
+.source-popup-close {
+  background: none;
+  border: none;
+  font-size: 1.3em;
+  cursor: pointer;
+  color: #888;
+  padding: 0 4px;
+}
+.source-popup-body {
+  padding: 12px 14px;
+  max-height: 250px;
+  overflow-y: auto;
+  line-height: 1.7;
+}
+.source-popup-link {
+  display: block;
+  padding: 8px 14px;
+  border-top: 1px solid #e8dfd0;
+  text-align: center;
+  color: var(--reader-accent, #c4a265);
+  text-decoration: none;
+  font-size: 0.85em;
+  font-weight: 600;
+}
+.source-popup-link:hover {
+  background: rgba(196, 162, 101, 0.08);
+}
+
+[data-theme="night"] .source-ref-popup {
+  background: #1a1a2e;
+  border-color: #333;
+}
+[data-theme="night"] .source-popup-header {
+  border-color: #333;
+}
+[data-theme="night"] .source-popup-body {
+  color: #ddd;
+}
+[data-theme="night"] .source-popup-link {
+  border-color: #333;
+}
+
 /* === Notes / Annotations === */
 .reader-segment-pair {
   position: relative;
