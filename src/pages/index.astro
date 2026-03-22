@@ -200,9 +200,23 @@ import CompactYahrzeit from '../components/CompactYahrzeit.astro';
     const q = quotes[day];
     const card = document.getElementById('quoteCard');
     if (card) {
-      card.innerHTML = '<div class="quote-he">' + q.he + '</div><div class="quote-en">"' + q.en + '"</div><div class="quote-src">— ' + q.src + '</div>';
+      card.innerHTML = '<div class="quote-he">' + q.he + '</div><div class="quote-en">"' + q.en + '"</div><div class="quote-src">— ' + q.src + '</div><button class="quote-share" onclick="shareQuote()">Share</button>';
+      window._currentQuote = q;
     }
   })();
+  function shareQuote() {
+    var q = window._currentQuote;
+    if (!q) return;
+    var text = q.he + '\n\n"' + q.en + '"\n\n— ' + q.src + '\najew.org';
+    if (navigator.share) {
+      navigator.share({title: 'Daily Torah Quote', text: text}).catch(function(){});
+    } else {
+      navigator.clipboard.writeText(text).then(function() {
+        var btn = document.querySelector('.quote-share');
+        if (btn) { btn.textContent = 'Copied!'; setTimeout(function() { btn.textContent = 'Share'; }, 2000); }
+      }).catch(function(){});
+    }
+  }
   </script>
 
   <section class="featured">
@@ -667,7 +681,19 @@ import CompactYahrzeit from '../components/CompactYahrzeit.astro';
   .quote-src {
     color: #888;
     font-size: 0.85rem;
+    margin-bottom: 8px;
   }
+  .quote-share {
+    background: #1a365d;
+    color: white;
+    border: none;
+    padding: 6px 16px;
+    border-radius: 16px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .quote-share:hover { background: #2a5a9e; }
 
   .featured {
     background: #f7f5f0;
