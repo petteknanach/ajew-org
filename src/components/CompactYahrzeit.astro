@@ -211,15 +211,23 @@
 
   // Main initialization
   async function initYahrzeit() {
+    // Set a timeout - if API calls take too long, hide the box
+    const timeout = setTimeout(() => {
+      const box = document.getElementById('compactYahrzeit');
+      if (box) box.style.display = 'none';
+    }, 8000);
+
     try {
       await loadDatabase();
-      
+
       const today = new Date();
       const tomorrow = new Date(today);
       tomorrow.setDate(tomorrow.getDate() + 1);
-      
+
       const todayHeb = await getHebrewDate(today);
       const tomorrowHeb = await getHebrewDate(tomorrow);
+
+      clearTimeout(timeout);
       
       // Find yahrzeits for today and tomorrow
       const todayYahrzeits = findYahrzeits(todayHeb.month, todayHeb.day);
@@ -329,12 +337,12 @@
     position: absolute;
     top: 1rem;
     left: 1rem;
-    background: rgba(255, 255, 255, 0.95);
+    background: #fff;
     border-radius: 8px;
     padding: 0.5rem;
     max-width: 240px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(245, 158, 11, 0.3);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+    border: 2px solid #f59e0b;
     z-index: 20;
     font-size: 0.9em;
   }
@@ -421,14 +429,14 @@
   }
   
   .tzaddik-name {
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: #1f2937;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #111;
   }
-  
+
   .tzaddik-hebrew {
-    font-size: 0.7rem;
-    color: #4b5563;
+    font-size: 0.75rem;
+    color: #333;
     margin-top: 0.125rem;
   }
   
