@@ -358,6 +358,24 @@
     segments.forEach(seg => observer.observe(seg));
   }
 
+  // --- Reading History ---
+  function saveToHistory() {
+    const HISTORY_KEY = 'ajew-reading-history';
+    const MAX_HISTORY = 30;
+    try {
+      const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+      const entry = {
+        url: window.location.pathname,
+        title: document.title.replace(' | A Jew', ''),
+        timestamp: Date.now()
+      };
+      // Remove duplicate
+      const filtered = history.filter(h => h.url !== entry.url);
+      filtered.unshift(entry);
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(filtered.slice(0, MAX_HISTORY)));
+    } catch (e) { /* ignore */ }
+  }
+
   // --- Initialize ---
   function init() {
     loadPrefs();
@@ -367,6 +385,7 @@
     setupKeyboard();
     setupScrollSpy();
     setupNotes();
+    saveToHistory();
     setupSourceRefs();
 
     // Bind toolbar buttons

@@ -204,6 +204,40 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
     }
 
     /* Category sections */
+    /* Recently Read */
+    .recently-read {
+      margin-bottom: 32px;
+      padding: 16px 20px;
+      background: #f0ebe0;
+      border-radius: 12px;
+    }
+    .recent-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .recent-item {
+      display: flex;
+      flex-direction: column;
+      padding: 8px 14px;
+      background: white;
+      border-radius: 8px;
+      text-decoration: none;
+      border: 1px solid #e0d6c2;
+      transition: border-color 0.2s;
+      max-width: 220px;
+    }
+    .recent-item:hover { border-color: #1a365d; }
+    .recent-title {
+      color: #1a365d;
+      font-weight: 600;
+      font-size: 0.85em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .recent-ago { color: #888; font-size: 0.75em; }
+
     .category-section {
       margin-top: 48px;
       padding-top: 24px;
@@ -237,6 +271,39 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
         <span>Fullscreen reading</span>
       </div>
     </div>
+
+    <!-- Recently Read -->
+    <div id="recentlyRead" class="recently-read" style="display:none;">
+      <h2 class="volume-title">Recently Read</h2>
+      <div id="recentList" class="recent-list"></div>
+    </div>
+
+    <script is:inline>
+    (function() {
+      try {
+        const history = JSON.parse(localStorage.getItem('ajew-reading-history') || '[]');
+        if (history.length === 0) return;
+        const container = document.getElementById('recentlyRead');
+        const list = document.getElementById('recentList');
+        container.style.display = 'block';
+        list.innerHTML = history.slice(0, 8).map(h => {
+          const ago = getTimeAgo(h.timestamp);
+          return '<a href="' + h.url + '" class="recent-item"><span class="recent-title">' + h.title + '</span><span class="recent-ago">' + ago + '</span></a>';
+        }).join('');
+      } catch(e) {}
+
+      function getTimeAgo(ts) {
+        const diff = Date.now() - ts;
+        const mins = Math.floor(diff / 60000);
+        if (mins < 1) return 'just now';
+        if (mins < 60) return mins + 'm ago';
+        const hours = Math.floor(mins / 60);
+        if (hours < 24) return hours + 'h ago';
+        const days = Math.floor(hours / 24);
+        return days + 'd ago';
+      }
+    })();
+    </script>
 
     <!-- Volume 1 (Kama) -->
     <div class="volume-section" id="likutay-moharan">
