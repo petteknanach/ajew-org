@@ -1,0 +1,207 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Weekly Parsha - Torah Portion" description="This week's Torah portion with connections to Breslov teachings. Read the parsha and discover what Rebbe Nachman says about it.">
+  <section class="parsha-page">
+    <div class="container">
+      <div class="page-header">
+        <h1 class="hebrew-title">פרשת השבוע</h1>
+        <h1>Weekly Torah Portion</h1>
+        <p class="subtitle">Connect this week's parsha to Breslov teachings</p>
+      </div>
+
+      <div id="parshaLoading" class="loading">Loading this week's parsha...</div>
+      <div id="parshaContent" style="display:none;">
+        <div class="parsha-card">
+          <div class="parsha-name">
+            <span class="parsha-he" id="parshaHe"></span>
+            <span class="parsha-en" id="parshaEn"></span>
+          </div>
+          <div class="parsha-details">
+            <span id="parshaRef"></span>
+            <span id="parshaDate"></span>
+          </div>
+        </div>
+
+        <div class="parsha-actions">
+          <a id="parshaReadLink" href="#" class="action-btn">Read the Parsha</a>
+          <a id="parshaSearchLink" href="#" class="action-btn action-btn-alt">Find in Breslov Teachings</a>
+        </div>
+
+        <div class="connections-section">
+          <h2>Breslov Connections</h2>
+          <p class="connections-desc">Search for this week's parsha themes in Rebbe Nachman's teachings:</p>
+          <div class="connections-grid" id="connectionsGrid"></div>
+        </div>
+      </div>
+
+      <div id="parshaError" style="display:none;" class="error-msg">
+        Could not load parsha information. <a href="javascript:loadParsha()">Try again</a>
+      </div>
+    </div>
+  </section>
+
+  <script is:inline>
+  // Parsha list with Hebrew names and Torah references
+  const PARSHIOT = {
+    'Bereishit': { he: 'בראשית', ref: 'Genesis 1:1-6:8', book: 'bereishit', ch: [1,2,3,4,5,6] },
+    'Noach': { he: 'נח', ref: 'Genesis 6:9-11:32', book: 'bereishit', ch: [6,7,8,9,10,11] },
+    'Lech-Lecha': { he: 'לך לך', ref: 'Genesis 12:1-17:27', book: 'bereishit', ch: [12,13,14,15,16,17] },
+    'Vayeira': { he: 'וירא', ref: 'Genesis 18:1-22:24', book: 'bereishit', ch: [18,19,20,21,22] },
+    'Chayei Sarah': { he: 'חיי שרה', ref: 'Genesis 23:1-25:18', book: 'bereishit', ch: [23,24,25] },
+    'Toldot': { he: 'תולדות', ref: 'Genesis 25:19-28:9', book: 'bereishit', ch: [25,26,27,28] },
+    'Vayeitzei': { he: 'ויצא', ref: 'Genesis 28:10-32:3', book: 'bereishit', ch: [28,29,30,31,32] },
+    'Vayishlach': { he: 'וישלח', ref: 'Genesis 32:4-36:43', book: 'bereishit', ch: [32,33,34,35,36] },
+    'Vayeishev': { he: 'וישב', ref: 'Genesis 37:1-40:23', book: 'bereishit', ch: [37,38,39,40] },
+    'Mikeitz': { he: 'מקץ', ref: 'Genesis 41:1-44:17', book: 'bereishit', ch: [41,42,43,44] },
+    'Vayigash': { he: 'ויגש', ref: 'Genesis 44:18-47:27', book: 'bereishit', ch: [44,45,46,47] },
+    'Vayechi': { he: 'ויחי', ref: 'Genesis 47:28-50:26', book: 'bereishit', ch: [47,48,49,50] },
+    'Shemot': { he: 'שמות', ref: 'Exodus 1:1-6:1', book: 'shemos', ch: [1,2,3,4,5,6] },
+    'Vaeira': { he: 'וארא', ref: 'Exodus 6:2-9:35', book: 'shemos', ch: [6,7,8,9] },
+    'Bo': { he: 'בא', ref: 'Exodus 10:1-13:16', book: 'shemos', ch: [10,11,12,13] },
+    'Beshalach': { he: 'בשלח', ref: 'Exodus 13:17-17:16', book: 'shemos', ch: [13,14,15,16,17] },
+    'Yitro': { he: 'יתרו', ref: 'Exodus 18:1-20:23', book: 'shemos', ch: [18,19,20] },
+    'Mishpatim': { he: 'משפטים', ref: 'Exodus 21:1-24:18', book: 'shemos', ch: [21,22,23,24] },
+    'Terumah': { he: 'תרומה', ref: 'Exodus 25:1-27:19', book: 'shemos', ch: [25,26,27] },
+    'Tetzaveh': { he: 'תצוה', ref: 'Exodus 27:20-30:10', book: 'shemos', ch: [27,28,29,30] },
+    'Ki Tisa': { he: 'כי תשא', ref: 'Exodus 30:11-34:35', book: 'shemos', ch: [30,31,32,33,34] },
+    'Vayakhel': { he: 'ויקהל', ref: 'Exodus 35:1-38:20', book: 'shemos', ch: [35,36,37,38] },
+    'Pekudei': { he: 'פקודי', ref: 'Exodus 38:21-40:38', book: 'shemos', ch: [38,39,40] },
+    'Vayikra': { he: 'ויקרא', ref: 'Leviticus 1:1-5:26', book: 'vayikra', ch: [1,2,3,4,5] },
+    'Tzav': { he: 'צו', ref: 'Leviticus 6:1-8:36', book: 'vayikra', ch: [6,7,8] },
+    'Shemini': { he: 'שמיני', ref: 'Leviticus 9:1-11:47', book: 'vayikra', ch: [9,10,11] },
+    'Tazria': { he: 'תזריע', ref: 'Leviticus 12:1-13:59', book: 'vayikra', ch: [12,13] },
+    'Metzora': { he: 'מצורע', ref: 'Leviticus 14:1-15:33', book: 'vayikra', ch: [14,15] },
+  ];
+
+  async function loadParsha() {
+    const loading = document.getElementById('parshaLoading');
+    const content = document.getElementById('parshaContent');
+    const error = document.getElementById('parshaError');
+
+    loading.style.display = 'block';
+    content.style.display = 'none';
+    error.style.display = 'none';
+
+    try {
+      // Get this week's parsha from Hebcal
+      const today = new Date();
+      const dateStr = today.toISOString().split('T')[0];
+      const res = await fetch(`https://www.hebcal.com/shabbat?cfg=json&geo=none&M=on&date=${dateStr}`);
+      const data = await res.json();
+
+      const parshaItem = data.items?.find(i => i.category === 'parashat');
+      if (!parshaItem) throw new Error('No parsha found');
+
+      const parshaName = parshaItem.title.replace('Parashat ', '');
+      const parshaData = PARSHIOT[parshaName] || PARSHIOT[parshaName.split('-')[0]];
+
+      document.getElementById('parshaHe').textContent = parshaData?.he || parshaName;
+      document.getElementById('parshaEn').textContent = 'Parashat ' + parshaName;
+      document.getElementById('parshaRef').textContent = parshaData?.ref || '';
+      document.getElementById('parshaDate').textContent = parshaItem.date || '';
+
+      // Set links
+      const tanachBook = parshaData?.book ? 'tanach-' + parshaData.book : '';
+      const firstCh = parshaData?.ch?.[0] || 1;
+      if (tanachBook) {
+        document.getElementById('parshaReadLink').href = '/reader/' + tanachBook + '/part-1/' + firstCh;
+      }
+      document.getElementById('parshaSearchLink').href = '/search-enhanced?q=' + encodeURIComponent(parshaData?.he || parshaName);
+
+      // Build connection suggestions
+      const grid = document.getElementById('connectionsGrid');
+      const searchTerms = [parshaData?.he || parshaName];
+      if (parshaData?.ch) {
+        // Add key themes for this parsha
+        const themes = {
+          'בראשית': ['בריאה', 'אדם', 'חטא'],
+          'נח': ['מבול', 'תיבה', 'קשת'],
+          'לך לך': ['אברהם', 'ארץ ישראל', 'ברית'],
+          'וירא': ['הכנסת אורחים', 'עקידה', 'צדיק'],
+          'שמות': ['גלות', 'גאולה', 'משה'],
+          'בשלח': ['ים סוף', 'אמונה', 'שירה'],
+          'יתרו': ['תורה', 'עשרת הדברות', 'סיני'],
+        };
+        const extra = themes[parshaData.he] || [];
+        searchTerms.push(...extra);
+      }
+
+      grid.innerHTML = searchTerms.map(term =>
+        `<a href="/search-enhanced?q=${encodeURIComponent(term)}" class="connection-chip">${term}</a>`
+      ).join('');
+
+      loading.style.display = 'none';
+      content.style.display = 'block';
+    } catch (e) {
+      loading.style.display = 'none';
+      error.style.display = 'block';
+    }
+  }
+
+  loadParsha();
+  </script>
+</Layout>
+
+<style>
+  .parsha-page {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+    font-family: 'Open Sans', sans-serif;
+  }
+  .page-header { text-align: center; margin-bottom: 32px; }
+  .hebrew-title { font-family: 'Frank Ruhl Libre', serif; font-size: 2.5em; color: #1a365d; direction: rtl; margin: 0; }
+  h1 { font-family: 'Frank Ruhl Libre', serif; color: #1a365d; font-size: 1.5em; margin: 0 0 8px; }
+  .subtitle { color: #666; }
+
+  .loading, .error-msg { text-align: center; padding: 40px; color: #888; }
+  .error-msg a { color: #1a365d; }
+
+  .parsha-card {
+    background: linear-gradient(135deg, #1a365d, #2c5282);
+    color: white;
+    padding: 24px;
+    border-radius: 16px;
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  .parsha-he { font-family: 'Frank Ruhl Libre', serif; font-size: 2.5em; display: block; margin-bottom: 4px; }
+  .parsha-en { font-size: 1.2em; display: block; opacity: 0.9; }
+  .parsha-details { margin-top: 12px; font-size: 0.9em; opacity: 0.7; display: flex; justify-content: center; gap: 16px; }
+
+  .parsha-actions { display: flex; gap: 12px; margin-bottom: 32px; }
+  .action-btn {
+    flex: 1;
+    padding: 12px;
+    text-align: center;
+    background: #1a365d;
+    color: white;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .action-btn-alt { background: #f0ebe0; color: #1a365d; border: 1px solid #e0d6c2; }
+
+  .connections-section h2 { font-family: 'Frank Ruhl Libre', serif; color: #1a365d; font-size: 1.2em; margin: 0 0 8px; }
+  .connections-desc { color: #666; font-size: 0.9em; margin: 0 0 16px; }
+  .connections-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+  .connection-chip {
+    padding: 6px 16px;
+    background: #f8f5ef;
+    border: 1px solid #e0d6c2;
+    border-radius: 20px;
+    color: #1a365d;
+    text-decoration: none;
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 0.95em;
+    font-weight: 600;
+  }
+  .connection-chip:hover { background: #f0ebe0; border-color: #1a365d; }
+
+  @media (max-width: 600px) {
+    .parsha-actions { flex-direction: column; }
+    .parsha-he { font-size: 2em; }
+  }
+</style>
