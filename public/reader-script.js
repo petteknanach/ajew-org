@@ -300,7 +300,11 @@
         case '-':
           setState('fontSize', Math.max(state.fontSize - 2, 12));
           break;
+        case 'l':
+          toggleSpeaking();
+          break;
         case 'Escape':
+          if (ttsState.speaking) stopSpeaking();
           if (state.searchOpen) toggleSearch();
           if (state.tocOpen) toggleToc();
           if (state.fullscreen) toggleFullscreen();
@@ -397,6 +401,12 @@
 
     const searchBtn = document.getElementById('btn-search');
     if (searchBtn) searchBtn.addEventListener('click', toggleSearch);
+
+    const listenBtn = document.getElementById('btn-listen');
+    if (listenBtn) {
+      listenBtn.removeAttribute('onclick'); // Remove inline handler
+      listenBtn.addEventListener('click', toggleSpeaking);
+    }
 
     const searchInput = document.querySelector('.reader-search-bar input');
     if (searchInput) {
