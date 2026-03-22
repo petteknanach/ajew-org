@@ -116,6 +116,15 @@ const isHebrew = Astro.url.pathname.includes('/reader/') || title.match(/[\u0590
       gtag('js', new Date());
       gtag('config', 'G-64VMMKHB30');
     </script>
+    <!-- Prevent dark mode flash -->
+    <script is:inline>
+      if (localStorage.getItem('ajew-dark-mode') === 'true') {
+        document.documentElement.classList.add('dark-mode-preload');
+      }
+    </script>
+    <style>
+      html.dark-mode-preload { background: #1a1a2e; }
+    </style>
   </head>
   <body>
     <a href="#main-content" class="skip-link">Skip to content</a>
@@ -124,6 +133,7 @@ const isHebrew = Astro.url.pathname.includes('/reader/') || title.match(/[\u0590
         <a href="/" class="logo">
           <span class="logo-text">A Jew</span>
         </a>
+        <button class="dark-mode-toggle" id="darkModeToggle" aria-label="Toggle dark mode" title="Toggle dark mode">🌙</button>
         <button class="mobile-menu-toggle" aria-label="Toggle Menu">
           <span></span>
           <span></span>
@@ -195,6 +205,22 @@ const isHebrew = Astro.url.pathname.includes('/reader/') || title.match(/[\u0590
           link.classList.add('active');
         }
       });
+
+      // Dark mode toggle
+      const darkToggle = document.getElementById('darkModeToggle');
+      const isDark = localStorage.getItem('ajew-dark-mode') === 'true';
+      if (isDark) {
+        document.body.classList.add('dark-mode');
+        if (darkToggle) darkToggle.textContent = '☀️';
+      }
+      if (darkToggle) {
+        darkToggle.addEventListener('click', () => {
+          document.body.classList.toggle('dark-mode');
+          const nowDark = document.body.classList.contains('dark-mode');
+          localStorage.setItem('ajew-dark-mode', String(nowDark));
+          darkToggle.textContent = nowDark ? '☀️' : '🌙';
+        });
+      }
 
       // Global keyboard shortcuts
       document.addEventListener('keydown', (e) => {
@@ -549,6 +575,38 @@ const isHebrew = Astro.url.pathname.includes('/reader/') || title.match(/[\u0590
   a {
     color: #1a365d;
   }
+
+  /* Dark mode toggle button */
+  .dark-mode-toggle {
+    background: none;
+    border: none;
+    font-size: 1.2em;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: background 0.2s;
+  }
+  .dark-mode-toggle:hover { background: rgba(255,255,255,0.15); }
+
+  /* Dark mode styles */
+  body.dark-mode {
+    --color-bg: #1a1a2e;
+    --color-text: #e0e0e0;
+    --color-primary: #0f0f23;
+    background: #1a1a2e;
+    color: #e0e0e0;
+  }
+  body.dark-mode .navbar { background: #0f0f23; }
+  body.dark-mode footer { background: #0f0f23; }
+  body.dark-mode a { color: #7db0ed; }
+  body.dark-mode h1, body.dark-mode h2, body.dark-mode h3 { color: #c8d6e5; }
+  body.dark-mode .hero { background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 100%); }
+  body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
+    background: #2a2a4e;
+    color: #e0e0e0;
+    border-color: #444;
+  }
+  body.dark-mode .back-to-top { background: #333; }
 
   a:visited {
     color: #1a365d;
