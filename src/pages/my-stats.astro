@@ -1,0 +1,176 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="My Reading Stats" description="Your personal reading statistics on ajew.org" noindex={true}>
+  <section class="stats-page">
+    <div class="container">
+      <h1>My Reading Stats</h1>
+      <p class="subtitle">Your personal learning journey</p>
+
+      <div class="stats-grid" id="statsGrid">
+        <div class="stat-card">
+          <div class="stat-value" id="statStreak">0</div>
+          <div class="stat-label">Day Streak</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="statLongest">0</div>
+          <div class="stat-label">Longest Streak</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="statTotal">0</div>
+          <div class="stat-label">Total Days</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="statPages">0</div>
+          <div class="stat-label">Pages Read</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="statBookmarks">0</div>
+          <div class="stat-label">Bookmarks</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="statNotes">0</div>
+          <div class="stat-label">Notes</div>
+        </div>
+      </div>
+
+      <div class="history-section" id="historySection">
+        <h2>Reading History</h2>
+        <div id="historyList" class="history-list"></div>
+      </div>
+
+      <div class="actions">
+        <a href="/reader" class="btn-primary">Continue Reading</a>
+        <a href="/my-notes" class="btn-secondary">View Notes</a>
+      </div>
+    </div>
+  </section>
+
+  <script is:inline>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Streak data
+    try {
+      const streak = JSON.parse(localStorage.getItem('ajew-reading-streak') || '{}');
+      document.getElementById('statStreak').textContent = streak.streak || 0;
+      document.getElementById('statLongest').textContent = streak.longestStreak || 0;
+      document.getElementById('statTotal').textContent = streak.totalDays || 0;
+    } catch(e) {}
+
+    // Reading history
+    try {
+      const history = JSON.parse(localStorage.getItem('ajew-reading-history') || '[]');
+      document.getElementById('statPages').textContent = history.length;
+
+      const list = document.getElementById('historyList');
+      if (history.length > 0) {
+        list.innerHTML = history.map(h => {
+          const date = new Date(h.timestamp);
+          const dateStr = date.toLocaleDateString();
+          const pct = h.progress ? h.progress + '%' : '';
+          return '<div class="history-item"><a href="' + h.url + '">' + h.title + '</a><span class="history-meta">' + dateStr + (pct ? ' · ' + pct : '') + '</span></div>';
+        }).join('');
+      } else {
+        list.innerHTML = '<p style="color:#888;text-align:center;">No reading history yet. Start reading!</p>';
+      }
+    } catch(e) {}
+
+    // Bookmarks
+    try {
+      const prefs = JSON.parse(localStorage.getItem('ajew-reader-prefs') || '{}');
+      const bookmarks = Object.keys(prefs.bookmarks || {}).length;
+      document.getElementById('statBookmarks').textContent = bookmarks;
+    } catch(e) {}
+
+    // Notes count
+    try {
+      let noteCount = 0;
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('ajew-notes-')) {
+          const notes = JSON.parse(localStorage.getItem(key) || '{}');
+          noteCount += Object.keys(notes).length;
+        }
+      }
+      document.getElementById('statNotes').textContent = noteCount;
+    } catch(e) {}
+  });
+  </script>
+</Layout>
+
+<style>
+  .stats-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+    font-family: 'Open Sans', sans-serif;
+  }
+  h1 {
+    font-family: 'Frank Ruhl Libre', serif;
+    color: #1a365d;
+    font-size: 2em;
+    margin: 0 0 4px;
+  }
+  .subtitle { color: #666; margin: 0 0 32px; }
+  h2 { font-family: 'Frank Ruhl Libre', serif; color: #1a365d; font-size: 1.3em; margin: 32px 0 16px; }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .stat-card {
+    background: #f8f5ef;
+    border: 1px solid #e0d6c2;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+  }
+  .stat-value {
+    font-size: 2.2em;
+    font-weight: 700;
+    color: #1a365d;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .stat-label { color: #666; font-size: 0.85em; }
+
+  .history-list { display: flex; flex-direction: column; gap: 8px; }
+  .history-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    background: #f8f5ef;
+    border-radius: 8px;
+    border: 1px solid #e0d6c2;
+  }
+  .history-item a { color: #1a365d; text-decoration: none; font-weight: 600; font-size: 0.9em; }
+  .history-item a:hover { text-decoration: underline; }
+  .history-meta { color: #888; font-size: 0.8em; white-space: nowrap; }
+
+  .actions { display: flex; gap: 12px; margin-top: 32px; justify-content: center; }
+  .btn-primary {
+    padding: 10px 24px;
+    background: #1a365d;
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .btn-secondary {
+    padding: 10px 24px;
+    background: #f0ebe0;
+    color: #1a365d;
+    border: 1px solid #e0d6c2;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  @media (max-width: 600px) {
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .history-item { flex-direction: column; align-items: flex-start; gap: 4px; }
+  }
+</style>
