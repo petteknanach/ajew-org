@@ -308,6 +308,11 @@
         case 'p':
           window.print();
           break;
+        case 'g': {
+          const favBtn = document.getElementById('btn-fav');
+          if (favBtn) favBtn.click();
+          break;
+        }
         case 'j':
         case 'ArrowDown': {
           if (e.key === 'ArrowDown' && (e.ctrlKey || e.metaKey)) break; // Don't hijack ctrl+down
