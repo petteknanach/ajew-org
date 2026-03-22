@@ -35,6 +35,25 @@ import Layout from '../layouts/Layout.astro';
         </div>
       </div>
 
+      <!-- Daily Goal -->
+      <div class="goal-section">
+        <h2>Daily Goal</h2>
+        <div class="goal-setting">
+          <label>Pages per day: </label>
+          <select id="goalSelect">
+            <option value="1">1 page</option>
+            <option value="3">3 pages</option>
+            <option value="5" selected>5 pages</option>
+            <option value="10">10 pages</option>
+            <option value="20">20 pages</option>
+          </select>
+        </div>
+        <div class="goal-progress">
+          <div class="goal-bar"><div class="goal-fill" id="goalFill"></div></div>
+          <span class="goal-text" id="goalText">0 / 5 today</span>
+        </div>
+      </div>
+
       <div class="history-section" id="historySection">
         <h2>Reading History</h2>
         <div id="historyList" class="history-list"></div>
@@ -81,6 +100,28 @@ import Layout from '../layouts/Layout.astro';
       const bookmarks = Object.keys(prefs.bookmarks || {}).length;
       document.getElementById('statBookmarks').textContent = bookmarks;
     } catch(e) {}
+
+    // Daily goal
+    const goalSelect = document.getElementById('goalSelect') as HTMLSelectElement;
+    const savedGoal = localStorage.getItem('ajew-daily-goal') || '5';
+    if (goalSelect) goalSelect.value = savedGoal;
+    goalSelect?.addEventListener('change', () => {
+      localStorage.setItem('ajew-daily-goal', goalSelect.value);
+      updateGoalProgress();
+    });
+
+    function updateGoalProgress() {
+      const goal = parseInt(localStorage.getItem('ajew-daily-goal') || '5');
+      const history = JSON.parse(localStorage.getItem('ajew-reading-history') || '[]');
+      const today = new Date().toDateString();
+      const todayPages = history.filter((h: any) => new Date(h.timestamp).toDateString() === today).length;
+      const pct = Math.min(100, (todayPages / goal) * 100);
+      const fill = document.getElementById('goalFill');
+      const text = document.getElementById('goalText');
+      if (fill) fill.style.width = pct + '%';
+      if (text) text.textContent = todayPages + ' / ' + goal + ' today' + (pct >= 100 ? ' ✓' : '');
+    }
+    updateGoalProgress();
 
     // Notes count
     try {
@@ -135,6 +176,40 @@ import Layout from '../layouts/Layout.astro';
     margin-bottom: 4px;
   }
   .stat-label { color: #666; font-size: 0.85em; }
+
+  /* Daily Goal */
+  .goal-section {
+    background: linear-gradient(135deg, #1a365d, #2c5282);
+    border-radius: 16px;
+    padding: 20px 24px;
+    color: white;
+    margin-bottom: 24px;
+  }
+  .goal-section h2 { color: white; margin: 0 0 12px; font-size: 1.1em; }
+  .goal-setting { margin-bottom: 12px; font-size: 0.9em; }
+  .goal-setting select {
+    background: rgba(255,255,255,0.2);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.3);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.95em;
+  }
+  .goal-bar {
+    height: 8px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 6px;
+  }
+  .goal-fill {
+    height: 100%;
+    background: #ed8936;
+    border-radius: 4px;
+    transition: width 0.5s;
+    width: 0;
+  }
+  .goal-text { font-size: 0.85em; opacity: 0.8; }
 
   .history-list { display: flex; flex-direction: column; gap: 8px; }
   .history-item {
