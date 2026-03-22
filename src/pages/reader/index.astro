@@ -587,8 +587,10 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
 
     <!-- All Other Books by Category -->
     {categories.map(cat => {
-      const catBooks = cat.ids.map(id => masterCatalog.books.find(b => b.id === id)).filter(Boolean).filter(b => b.parts.some(p => p.totalTorahs > 0));
-      if (catBooks.length === 0 || cat.ids.includes('likutay-moharan')) return null;
+      const catBooks = cat.ids
+        .filter(id => id !== 'likutay-moharan') // LM has its own section above
+        .map(id => masterCatalog.books.find(b => b.id === id)).filter(Boolean).filter(b => b.parts.some(p => p.totalTorahs > 0));
+      if (catBooks.length === 0) return null;
       const totalCatPages = catBooks.reduce((s, b) => s + b.parts.reduce((s2, p) => s2 + p.totalTorahs, 0), 0);
       return (
         <details class="category-section">
