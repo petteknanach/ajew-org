@@ -172,6 +172,44 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         }).join('');
 
         resultsList.innerHTML = html;
+
+        // Add "Load More" if there are more results
+        if (count > results.length) {
+          const loadMore = document.createElement('button');
+          loadMore.className = 'load-more-btn';
+          loadMore.textContent = `Load more (showing ${results.length} of ${count})`;
+          loadMore.addEventListener('click', () => {
+            const currentPage = Math.floor(results.length / 50) + 1;
+            const advanced = searchState?.advancedOptions || {};
+            const url = new URL('/api/search', window.location.origin);
+            url.searchParams.set('q', query);
+            url.searchParams.set('page', String(currentPage + 1));
+            if (advanced.searchType) url.searchParams.set('searchType', advanced.searchType);
+            if (advanced.books?.length > 0) url.searchParams.set('books', advanced.books.join(','));
+            loadMore.textContent = 'Loading...';
+            fetch(url.toString())
+              .then(r => r.json())
+              .then(data => {
+                if (data.results?.length > 0) {
+                  const moreHtml = data.results.map((r: any) => {
+                    const s = highlightQuery(r.snippet || '', query, r.extraInfo || '');
+                    const t = highlightQuery(r.title || '', query);
+                    const ht = r.hebrewTitle ? highlightQuery(r.hebrewTitle, query) : '';
+                    return '<div class="result-item"><div class="result-top"><h4 class="result-title"><a href="' + (r.link||'#') + '">' + t + (ht ? ' <span class="result-he-title">'+ht+'</span>' : '') + '</a></h4></div><p class="result-snippet">' + s + '</p><div class="result-footer"><a href="' + (r.link||'#') + '" class="view-link">Read Full →</a></div></div>';
+                  }).join('');
+                  loadMore.insertAdjacentHTML('beforebegin', moreHtml);
+                  const totalShown = resultsList.querySelectorAll('.result-item').length;
+                  if (totalShown >= count) loadMore.remove();
+                  else loadMore.textContent = `Load more (showing ${totalShown} of ${count})`;
+                } else {
+                  loadMore.remove();
+                }
+              })
+              .catch(() => { loadMore.textContent = 'Failed to load. Try again.'; });
+          });
+          resultsList.appendChild(loadMore);
+        }
+
         resultsContainer.classList.remove('hidden');
         noResults.classList.add('hidden');
         welcomeMessage.classList.add('hidden');
@@ -516,6 +554,22 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
       padding-top: 0.5rem;
       border-top: 1px solid #f3f4f6;
     }
+
+    .load-more-btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      margin-top: 16px;
+      background: #f0ebe0;
+      border: 1px solid #e0d6c2;
+      border-radius: 8px;
+      color: #1a365d;
+      font-weight: 600;
+      font-size: 0.9em;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .load-more-btn:hover { background: #e0d6c2; }
 
     .view-link {
       color: #6366f1;
