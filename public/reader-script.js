@@ -547,6 +547,7 @@
     setupSelectionPopup();
     setupSegmentHighlight();
     setupCopyButtons();
+    setupFavorites();
 
     // Scroll to segment from URL hash (e.g. #seg-5)
     if (window.location.hash) {
@@ -1045,6 +1046,49 @@
       </div>
     `;
     lastNav.parentNode.insertBefore(section, lastNav);
+  }
+
+  // --- Favorites ---
+  function setupFavorites() {
+    const FAV_KEY = 'ajew-favorites';
+    const container = document.querySelector('.reader-container');
+    if (!container) return;
+    const url = window.location.pathname;
+    const title = document.title.replace(' | A Jew', '');
+
+    // Load favorites
+    let favorites = [];
+    try { favorites = JSON.parse(localStorage.getItem(FAV_KEY) || '[]'); } catch(e) {}
+    const isFav = favorites.some(f => f.url === url);
+
+    // Add favorite button to toolbar
+    const toolbarGroups = document.querySelectorAll('.reader-toolbar-group');
+    const lastGroup = toolbarGroups[toolbarGroups.length - 1];
+    if (!lastGroup) return;
+
+    const favBtn = document.createElement('button');
+    favBtn.className = 'reader-btn reader-btn-icon' + (isFav ? ' active' : '');
+    favBtn.id = 'btn-fav';
+    favBtn.textContent = isFav ? '★' : '☆';
+    favBtn.title = isFav ? 'Remove from favorites' : 'Add to favorites';
+    favBtn.addEventListener('click', () => {
+      let favs = [];
+      try { favs = JSON.parse(localStorage.getItem(FAV_KEY) || '[]'); } catch(e) {}
+      const idx = favs.findIndex(f => f.url === url);
+      if (idx !== -1) {
+        favs.splice(idx, 1);
+        favBtn.textContent = '☆';
+        favBtn.classList.remove('active');
+        favBtn.title = 'Add to favorites';
+      } else {
+        favs.unshift({ url, title, timestamp: Date.now() });
+        favBtn.textContent = '★';
+        favBtn.classList.add('active');
+        favBtn.title = 'Remove from favorites';
+      }
+      try { localStorage.setItem(FAV_KEY, JSON.stringify(favs.slice(0, 50))); } catch(e) {}
+    });
+    lastGroup.insertBefore(favBtn, lastGroup.querySelector('#btn-fullscreen'));
   }
 
   // --- Copy Segment Button ---

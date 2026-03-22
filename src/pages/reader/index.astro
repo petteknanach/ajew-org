@@ -414,6 +414,27 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
     })();
     </script>
 
+    <!-- Favorites -->
+    <div id="favoritesSection" class="recently-read" style="display:none;">
+      <h2 class="volume-title">★ Favorites</h2>
+      <div id="favoritesList" class="recent-list"></div>
+    </div>
+
+    <script is:inline>
+    (function() {
+      try {
+        const favs = JSON.parse(localStorage.getItem('ajew-favorites') || '[]');
+        if (favs.length === 0) return;
+        const container = document.getElementById('favoritesSection');
+        const list = document.getElementById('favoritesList');
+        container.style.display = 'block';
+        list.innerHTML = favs.slice(0, 12).map(f =>
+          '<a href="' + f.url + '" class="recent-item"><span class="recent-title">' + f.title + '</span><span class="recent-ago">★</span></a>'
+        ).join('');
+      } catch(e) {}
+    })();
+    </script>
+
     <!-- Bookmarks -->
     <div id="bookmarksSection" class="recently-read" style="display:none;">
       <h2 class="volume-title">Bookmarks</h2>
