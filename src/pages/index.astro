@@ -113,6 +113,32 @@ import CompactYahrzeit from '../components/CompactYahrzeit.astro';
     </div>
   </section>
 
+  <!-- Continue Reading -->
+  <div id="continueReading" class="continue-reading" style="display:none;">
+    <div class="container">
+      <a id="continueLink" href="#" class="continue-card">
+        <span class="continue-label">Continue Reading</span>
+        <span id="continueTitle" class="continue-title"></span>
+        <span id="continueProgress" class="continue-progress"></span>
+      </a>
+    </div>
+  </div>
+  <script is:inline>
+  (function() {
+    try {
+      const history = JSON.parse(localStorage.getItem('ajew-reading-history') || '[]');
+      if (history.length === 0) return;
+      const last = history[0];
+      if (!last.url || !last.url.startsWith('/reader/')) return;
+      document.getElementById('continueReading').style.display = 'block';
+      document.getElementById('continueLink').href = last.url;
+      document.getElementById('continueTitle').textContent = last.title;
+      const pct = last.progress ? last.progress + '% read' : '';
+      document.getElementById('continueProgress').textContent = pct;
+    } catch(e) {}
+  })();
+  </script>
+
   <section class="intro">
     <div class="container">
       <h2>Welcome</h2>
@@ -507,6 +533,51 @@ import CompactYahrzeit from '../components/CompactYahrzeit.astro';
     color: var(--color-primary);
     margin-bottom: 1.5rem;
     text-align: center;
+  }
+
+  /* Continue Reading */
+  .continue-reading {
+    padding: 12px 0;
+    background: #eef2f7;
+  }
+  .continue-reading .container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+  .continue-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    background: white;
+    border-radius: 10px;
+    text-decoration: none;
+    border: 1px solid #d1d5db;
+    transition: border-color 0.2s;
+  }
+  .continue-card:hover { border-color: #1a365d; }
+  .continue-label {
+    font-size: 0.75em;
+    color: #888;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+  .continue-title {
+    color: #1a365d;
+    font-weight: 600;
+    font-size: 0.9em;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .continue-progress {
+    color: #888;
+    font-size: 0.75em;
+    white-space: nowrap;
   }
 
   .intro p {
