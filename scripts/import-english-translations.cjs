@@ -546,10 +546,203 @@ function importOtzarHayirah() {
 }
 
 // ============================================================
+// 7. KITZUR LIKUTAY MOHARAN
+// ============================================================
+
+function importKitzurLM() {
+  console.log('\n=== Importing Kitzur Likutay Moharan ===');
+  const klmDir = path.join(SRC_DIR, 'Kitzure lkm');
+  const htmlFiles = fs.readdirSync(klmDir).filter(f => f.endsWith('.html')).sort();
+  console.log(`  Found ${htmlFiles.length} HTML files`);
+
+  const allTorahs = {};
+
+  for (const file of htmlFiles) {
+    const html = readHtmlFile(path.join(klmDir, file));
+    const isPart2 = file.includes('part_two') || file.includes('tinyana');
+
+    // Split by torah headings
+    const parts = html.split(/<div[^>]*class="torah-heading"[^>]*>/i);
+    parts.shift();
+
+    for (const part of parts) {
+      // Extract torah number from heading
+      const numMatch = part.match(/Torah\s+(\d+)|Toirah\s+(\d+)|torah-label[^>]*>.*?(\d+)/i);
+      let torahNum = null;
+      if (numMatch) torahNum = parseInt(numMatch[1] || numMatch[2] || numMatch[3]);
+
+      // Also try: <span class="torah-label">TOIRAH 2</span>
+      if (!torahNum) {
+        const labelMatch = part.match(/TOIRAH\s+(\d+)/i);
+        if (labelMatch) torahNum = parseInt(labelMatch[1]);
+      }
+
+      if (!torahNum) continue;
+
+      // Extract teaching items
+      const teachings = [];
+      const itemMatches = part.match(/<div[^>]*class="teaching-item"[^>]*>[\s\S]*?<\/div>\s*<\/div>/gi) ||
+                          part.match(/<li[^>]*class="teaching-item"[^>]*>[\s\S]*?<\/li>/gi) || [];
+
+      for (const item of itemMatches) {
+        const text = stripHtml(item).replace(/^\d+\.\s*/, '').trim();
+        if (text.length > 10) teachings.push(text);
+      }
+
+      // If no teaching-items found, extract paragraphs after the heading
+      if (teachings.length === 0) {
+        const afterHeading = part.replace(/^[\s\S]*?<\/div>/i, ''); // skip heading div
+        const paras = afterHeading.match(/<p[^>]*>[\s\S]*?<\/p>/gi) || [];
+        for (const p of paras) {
+          const text = stripHtml(p).trim();
+          if (text.length > 10) teachings.push(text);
+        }
+      }
+
+      if (teachings.length > 0) {
+        const key = `${isPart2 ? 2 : 1}-${torahNum}`;
+        allTorahs[key] = teachings.join('\n\n');
+      }
+    }
+  }
+
+  console.log(`  Parsed ${Object.keys(allTorahs).length} torahs`);
+
+  let updated = 0;
+  for (const [key, text] of Object.entries(allTorahs)) {
+    const [partNum, torahNum] = key.split('-').map(Number);
+    const jsonPath = path.join(READER_DIR, 'kitzur-likutay-moharan', `part-${partNum}`, `torah-${torahNum}.json`);
+
+    if (fs.existsSync(jsonPath)) {
+      const data = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+      if (data.segments.length > 0) {
+        const paras = text.split('\n\n').filter(p => p.trim().length > 10);
+        const segsCount = data.segments.length;
+
+        if (paras.length <= segsCount) {
+          for (let i = 0; i < paras.length; i++) {
+            data.segments[i].en = paras[i];
+          }
+        } else {
+          const ratio = paras.length / segsCount;
+          for (let i = 0; i < segsCount; i++) {
+            const start = Math.floor(i * ratio);
+            const end = Math.floor((i + 1) * ratio);
+            data.segments[i].en = paras.slice(start, end).join('\n\n');
+          }
+        }
+
+        data.hasEnglish = true;
+        if (!DRY_RUN) fs.writeFileSync(jsonPath, JSON.stringify(data, null, 2));
+        updated++;
+      }
+    }
+  }
+
+  console.log(`  Updated: ${updated} torahs`);
+  return updated;
+}
+
+// ============================================================
+// 8. SICHOS HARAN
+// ============================================================
+
+function importSichosHaran() {
+  console.log('\n=== Importing Sichos HaRan ===');
+  const mammoth = require('mammoth');
+  const sichosDir = path.join(SRC_DIR, 'Sichos Haran');
+  const docxFiles = fs.readdirSync(sichosDir).filter(f => f.endsWith('.docx')).sort();
+  console.log(`  Found ${docxFiles.length} DOCX files`);
+
+  // We need async for mammoth, so return a promise
+  return (async () => {
+    const allSichos = {};
+
+    for (const file of docxFiles) {
+      const result = await mammoth.extractRawText({path: path.join(sichosDir, file)});
+      const text = result.value;
+
+      // Split by numbered sichos: "1. Title" or just "1."
+      const lines = text.split('\n');
+      let currentNum = null;
+      let currentText = [];
+
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed) continue;
+
+        // Check if this line starts a new sicha: number followed by period or dot
+        const numMatch = trimmed.match(/^(\d+)\.\s+(.*)/);
+        if (numMatch) {
+          // Save previous sicha
+          if (currentNum !== null && currentText.length > 0) {
+            allSichos[currentNum] = currentText.join('\n\n');
+          }
+          currentNum = parseInt(numMatch[1]);
+          const title = numMatch[2].trim();
+          currentText = title.length > 5 ? [title] : [];
+        } else if (currentNum !== null) {
+          if (trimmed.length > 5 &&
+              !trimmed.match(/^sichos haran$/i) &&
+              !trimmed.match(/^the words of/i) &&
+              !trimmed.match(/^na nach/i) &&
+              !trimmed.match(/^articles \d/i) &&
+              !trimmed.match(/^translator.*note/i) &&
+              !trimmed.match(/^שיחות/)) {
+            currentText.push(trimmed);
+          }
+        }
+      }
+      // Save last sicha
+      if (currentNum !== null && currentText.length > 0) {
+        allSichos[currentNum] = currentText.join('\n\n');
+      }
+    }
+
+    console.log(`  Parsed ${Object.keys(allSichos).length} sichos`);
+
+    let updated = 0;
+    const readerDir = path.join(READER_DIR, 'sichos-haran');
+
+    for (const [num, text] of Object.entries(allSichos)) {
+      const jsonPath = path.join(readerDir, `sicha-${num}.json`);
+
+      if (fs.existsSync(jsonPath)) {
+        const data = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+        if (data.segments.length > 0) {
+          const paras = text.split('\n\n').filter(p => p.trim().length > 10);
+          const segsCount = data.segments.length;
+
+          if (paras.length <= segsCount) {
+            for (let i = 0; i < paras.length; i++) {
+              data.segments[i].en = paras[i];
+            }
+          } else {
+            const ratio = paras.length / segsCount;
+            for (let i = 0; i < segsCount; i++) {
+              const start = Math.floor(i * ratio);
+              const end = Math.floor((i + 1) * ratio);
+              data.segments[i].en = paras.slice(start, end).join('\n\n');
+            }
+          }
+
+          data.hasEnglish = true;
+          if (!DRY_RUN) fs.writeFileSync(jsonPath, JSON.stringify(data, null, 2));
+          updated++;
+        }
+      }
+    }
+
+    console.log(`  Updated: ${updated} sichos`);
+    return updated;
+  })();
+}
+
+// ============================================================
 // MAIN
 // ============================================================
 
-function main() {
+async function main() {
   console.log('=== English Translation Import ===');
   if (DRY_RUN) console.log('*** DRY RUN ***\n');
 
@@ -559,6 +752,8 @@ function main() {
     ebay: importEbayHanachal,
     tefilos: importLikutayTefilos,
     otzar: importOtzarHayirah,
+    kitzur: importKitzurLM,
+    sichos: importSichosHaran,
   };
 
   let total = 0;
@@ -566,14 +761,14 @@ function main() {
   if (targetBook) {
     const key = Object.keys(books).find(k => k.includes(targetBook.toLowerCase()));
     if (key) {
-      total = books[key]();
+      total = await books[key]();
     } else {
       console.log(`Book not found: ${targetBook}`);
       console.log('Available:', Object.keys(books).join(', '));
     }
   } else {
     for (const [name, fn] of Object.entries(books)) {
-      total += fn();
+      total += await fn();
     }
   }
 
