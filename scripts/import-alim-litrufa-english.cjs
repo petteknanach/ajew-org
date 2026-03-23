@@ -252,7 +252,7 @@ function main() {
     if (enCount === segCount) {
       // Perfect 1:1 match
       for (let i = 0; i < segCount; i++) {
-        if (!segments[i].en || segments[i].en.trim() === '') {
+        if (true) {
           segments[i].en = englishParas[i];
           segmentsUpdated++;
         }
@@ -262,7 +262,7 @@ function main() {
       // Assign first (segCount-1) English to first (segCount-1) segments
       // Combine remaining English into last segment
       for (let i = 0; i < segCount - 1; i++) {
-        if (!segments[i].en || segments[i].en.trim() === '') {
+        if (true) {
           segments[i].en = englishParas[i];
           segmentsUpdated++;
         }
@@ -276,7 +276,7 @@ function main() {
     } else {
       // Fewer English than Hebrew - assign what we have
       for (let i = 0; i < enCount; i++) {
-        if (!segments[i].en || segments[i].en.trim() === '') {
+        if (true) {
           segments[i].en = englishParas[i];
           segmentsUpdated++;
         }
