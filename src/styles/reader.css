@@ -941,6 +941,44 @@
   color: #8b6914;
 }
 
+/* === Cross-Reference Links === */
+a.cross-ref {
+  color: var(--reader-accent, #1a365d);
+  text-decoration: none;
+  border-bottom: 1px dotted var(--reader-accent-light, #2a5a9e);
+  transition: color 0.2s, border-color 0.2s;
+  cursor: pointer;
+}
+a.cross-ref:hover {
+  color: var(--reader-accent-light, #2a5a9e);
+  border-bottom-style: solid;
+}
+/* Night theme override */
+[data-theme="night"] a.cross-ref {
+  color: #7fb3e0;
+  border-bottom-color: #5a8ab5;
+}
+[data-theme="night"] a.cross-ref:hover {
+  color: #a0ccf0;
+  border-bottom-color: #7fb3e0;
+}
+/* Sepia theme override */
+[data-theme="sepia"] a.cross-ref {
+  color: #5a3e1b;
+  border-bottom-color: #8b6914;
+}
+[data-theme="sepia"] a.cross-ref:hover {
+  color: #8b6914;
+}
+/* Print: hide link styling */
+@media print {
+  a.cross-ref {
+    color: inherit;
+    border-bottom: none;
+    text-decoration: none;
+  }
+}
+
 .source-ref-popup {
   position: absolute;
   z-index: 200;

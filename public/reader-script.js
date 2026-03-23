@@ -1367,94 +1367,313 @@
   }
 
   // --- Cross-Reference Links ---
-  // Scan English text for references to other books and make them clickable
-  function addCrossReferenceLinks() {
-    const segments = document.querySelectorAll('.segment-en p');
-    if (!segments.length) return;
+  // Scan English and Hebrew text for references to other books and make them clickable
 
-    // Hebrew number conversion
-    const hebrewNums = {'א':1,'ב':2,'ג':3,'ד':4,'ה':5,'ו':6,'ז':7,'ח':8,'ט':9,'י':10,
-      'יא':11,'יב':12,'יג':13,'יד':14,'טו':15,'טז':16,'יז':17,'יח':18,'יט':19,'כ':20,
-      'כא':21,'כב':22,'כג':23,'כד':24,'כה':25,'כו':26,'כז':27,'כח':28,'כט':29,'ל':30,
-      'לא':31,'לב':32,'לג':33,'לד':34,'לה':35,'לו':36,'לז':37,'לח':38,'לט':39,'מ':40,
-      'מא':41,'מב':42,'מג':43,'מד':44,'מה':45,'מו':46,'מז':47,'מח':48,'מט':49,'נ':50,
-      'נא':51,'נב':52,'נג':53,'נד':54,'נה':55,'נו':56,'נז':57,'נח':58,'נט':59,'ס':60,
-      'סא':61,'סב':62,'סג':63,'סד':64,'סה':65,'סו':66,'סז':67,'סח':68,'סט':69,'ע':70,
-      'עא':71,'עב':72,'עג':73,'עד':74,'עה':75,'עו':76,'עז':77,'עח':78,'עט':79,'פ':80,
-      'צ':90,'ק':100,'ר':200,'ש':300,'ת':400};
+  // Hebrew number conversion (shared between English and Hebrew patterns)
+  const _hebrewNums = {'א':1,'ב':2,'ג':3,'ד':4,'ה':5,'ו':6,'ז':7,'ח':8,'ט':9,'י':10,
+    'יא':11,'יב':12,'יג':13,'יד':14,'טו':15,'טז':16,'יז':17,'יח':18,'יט':19,'כ':20,
+    'כא':21,'כב':22,'כג':23,'כד':24,'כה':25,'כו':26,'כז':27,'כח':28,'כט':29,'ל':30,
+    'לא':31,'לב':32,'לג':33,'לד':34,'לה':35,'לו':36,'לז':37,'לח':38,'לט':39,'מ':40,
+    'מא':41,'מב':42,'מג':43,'מד':44,'מה':45,'מו':46,'מז':47,'מח':48,'מט':49,'נ':50,
+    'נא':51,'נב':52,'נג':53,'נד':54,'נה':55,'נו':56,'נז':57,'נח':58,'נט':59,'ס':60,
+    'סא':61,'סב':62,'סג':63,'סד':64,'סה':65,'סו':66,'סז':67,'סח':68,'סט':69,'ע':70,
+    'עא':71,'עב':72,'עג':73,'עד':74,'עה':75,'עו':76,'עז':77,'עח':78,'עט':79,'פ':80,
+    'פא':81,'פב':82,'פג':83,'פד':84,'פה':85,'פו':86,'פז':87,'פח':88,'פט':89,'צ':90,
+    'צא':91,'צב':92,'צג':93,'צד':94,'צה':95,'צו':96,'צז':97,'צח':98,'צט':99,
+    'ק':100,'קא':101,'קב':102,'קג':103,'קד':104,'קה':105,'קו':106,'קז':107,'קח':108,'קט':109,
+    'קי':110,'קיא':111,'קיב':112,'קיג':113,'קיד':114,'קטו':115,'קטז':116,'קיז':117,'קיח':118,'קיט':119,
+    'קכ':120,'קל':130,'קמ':140,'קנ':150,'ר':200,'רא':201,'רב':202,'רג':203,'רד':204,'רה':205,
+    'רו':206,'רז':207,'רח':208,'רט':209,'רי':210,'רכ':220,'רל':230,'רמ':240,'רנ':250,
+    'רס':260,'רע':270,'רפ':280,'רצ':290,'ש':300,'ת':400};
 
-    function parseHebrewNum(s) {
-      if (!s) return 0;
-      s = s.replace(/['"״׳]/g, '').trim();
-      if (hebrewNums[s]) return hebrewNums[s];
-      // Try compound: קמ"א = 100+40+1 = 141
-      let total = 0;
-      for (const [k, v] of Object.entries(hebrewNums).sort((a, b) => b[1] - a[1])) {
-        while (s.startsWith(k)) { total += v; s = s.substring(k.length); }
-      }
-      return total || parseInt(s) || 0;
+  function _parseHebrewNum(s) {
+    if (!s) return 0;
+    s = s.replace(/['"״׳"]/g, '').trim();
+    if (_hebrewNums[s]) return _hebrewNums[s];
+    // Try compound: decompose letter by letter from highest to lowest
+    let total = 0;
+    let remaining = s;
+    // Sort keys by value descending, longest key first for same value
+    const sorted = Object.entries(_hebrewNums).sort((a, b) => b[1] - a[1] || b[0].length - a[0].length);
+    for (const [k, v] of sorted) {
+      while (remaining.startsWith(k)) { total += v; remaining = remaining.substring(k.length); }
+    }
+    return total || parseInt(s) || 0;
+  }
+
+  // Determine LM part from torah number
+  function _lmUrl(num) {
+    num = parseInt(num);
+    if (!num || num < 1) return null;
+    if (num <= 286) return '/reader/likutay-moharan/part-1/torah-' + num;
+    return '/reader/likutay-moharan/part-2/torah-' + num;
+  }
+
+  // Linkify English text references
+  function linkifyEnglish(html) {
+    // Guard: skip if already contains cross-ref links
+    if (html.indexOf('cross-ref') !== -1) return html;
+
+    var changed = false;
+    var LINK_CLS = 'cross-ref';
+
+    function makeLink(url, text, title) {
+      changed = true;
+      return '<a href="' + url + '" class="' + LINK_CLS + '" target="_blank" title="' + (title || 'Open in reader') + '">' + text + '</a>';
     }
 
-    // Patterns to match (English text)
-    const patterns = [
-      // "Likutay Moharan 22" or "Likutey Moharan, Torah 22" or "LM I:22"
-      { regex: /Likut[ae]y?\s*Moharan\s*(?:Part\s*(?:One|Two|1|2|I|II)\s*[,:]\s*)?(?:Torah\s*)?(\d+)/gi,
-        link: (m) => `/reader/likutay-moharan/1/${m[1]}` },
-      // "Likutay Moharan II, 5" or "Tinyana 5"
-      { regex: /(?:Likut[ae]y?\s*Moharan\s*(?:Part\s*)?(?:Two|2|II)\s*[,:]\s*(?:Torah\s*)?|Tinyana\s+)(\d+)/gi,
-        link: (m) => `/reader/likutay-moharan/2/${m[1]}` },
-      // "Sichos HaRan 44" or "Sicha 44"
-      { regex: /(?:Sichos?\s*(?:Ha)?Ran|Sicha)\s*[#]?\s*(\d+)/gi,
-        link: (m) => `/reader/sichos-haran/sicha-${m[1]}` },
-      // "Sefer HaMidos" or "Book of Traits"
-      { regex: /Sefer\s*Ha\s*Mid[do]s/gi,
-        link: () => `/reader/sefer-hamidos/topic-1` },
-      // "Meshivas Nefesh, Section 5"
-      { regex: /Meshivas?\s*Nefesh\s*[,]?\s*(?:Section\s*)?(\d+)/gi,
-        link: (m) => `/reader/meshivas-nefesh/section-${m[1]}` },
-    ];
+    // ORDER MATTERS: more specific patterns must come before general ones
 
-    // Also scan Hebrew text for references
-    const hePatterns = [
-      // ליקוטי מוהר"ן סי' כ"ב or תורה כב
-      { regex: /לקוטי\s*מוהר[""״]ן\s*(?:סי[מ׳']\s*)?([א-ת][א-ת"'״׳]*)/g,
-        link: (m) => { const n = parseHebrewNum(m[1]); return n ? `/reader/likutay-moharan/1/${n}` : null; } },
-      // ליקוטי מוהר"ן תנינא סי' ה
-      { regex: /לקוטי\s*מוהר[""״]ן\s*תנינא\s*(?:סי[מ׳']\s*)?([א-ת][א-ת"'״׳]*)/g,
-        link: (m) => { const n = parseHebrewNum(m[1]); return n ? `/reader/likutay-moharan/2/${n}` : null; } },
-    ];
-
-    segments.forEach(p => {
-      let html = p.innerHTML;
-      let changed = false;
-
-      for (const pat of patterns) {
-        html = html.replace(pat.regex, (match, ...groups) => {
-          const url = pat.link([match, ...groups]);
-          if (!url) return match;
-          changed = true;
-          return `<a href="${url}" style="color:#1a365d;text-decoration:underline dotted;cursor:pointer;" title="Open in reader">${match}</a>`;
-        });
-      }
-
-      if (changed) p.innerHTML = html;
+    // --- LM Part 2 (must come before general LM) ---
+    // "Likutay Moharan II, 5" / "LM II:5" / "LM II, 5" / "Likutey Moharan Part Two, 5" / "Tinyana 5"
+    html = html.replace(/(?:Likut[ae]y?\s*Moharan\s*(?:Part\s*)?(?:Two|2|II)\s*[,:;]\s*(?:Torah\s*)?|LM\s*(?:Part\s*)?II\s*[,:;]\s*|Tinyana\s+(?:Torah\s*)?)(\d+)/gi, function(match, num) {
+      var n = parseInt(num);
+      if (!n || n < 1) return match;
+      return makeLink('/reader/likutay-moharan/part-2/torah-' + n, match);
     });
 
-    // Hebrew segments
-    document.querySelectorAll('.segment-he p').forEach(p => {
-      let html = p.innerHTML;
-      let changed = false;
+    // --- LM Part 1 explicit ---
+    // "LM I:5" / "LM I, 5" / "Likutay Moharan Part One, 5"
+    html = html.replace(/(?:LM\s*(?:Part\s*)?I\s*[,:;]\s*|Likut[ae]y?\s*Moharan\s*(?:Part\s*)?(?:One|1|I)\s*[,:;]\s*)(?:Torah\s*)?(\d+)/gi, function(match, num) {
+      var n = parseInt(num);
+      if (!n || n < 1) return match;
+      return makeLink('/reader/likutay-moharan/part-1/torah-' + n, match);
+    });
 
-      for (const pat of hePatterns) {
-        html = html.replace(pat.regex, (match, ...groups) => {
-          const url = pat.link([match, ...groups]);
-          if (!url) return match;
-          changed = true;
-          return `<a href="${url}" style="color:#1a365d;text-decoration:underline dotted;cursor:pointer;" title="פתח בקורא">${match}</a>`;
-        });
+    // --- General LM references ---
+    // "Likutay Moharan 22" / "Likutey Moharan, Torah 22" / "LM 22"
+    html = html.replace(/(?:Likut[ae]y?\s*Moharan\s*[,:;]?\s*(?:Torah\s*)?|LM\s+)(\d+)(?!\s*[,:;]\s*\d)/gi, function(match, num) {
+      // Skip if already linked
+      if (match.indexOf('cross-ref') !== -1) return match;
+      var url = _lmUrl(num);
+      if (!url) return match;
+      return makeLink(url, match);
+    });
+
+    // --- "Torah 5" / "Lesson 5" (contextual - default to LM) ---
+    // Only match when preceded by certain contexts or standalone
+    html = html.replace(/\b(?:Torah|Lesson)\s+(\d+)\b/gi, function(match, num) {
+      if (match.indexOf('cross-ref') !== -1) return match;
+      var url = _lmUrl(num);
+      if (!url) return match;
+      return makeLink(url, match, 'Likutay Moharan ' + num);
+    });
+
+    // --- "Siman 5" (default to LM) ---
+    html = html.replace(/\bSiman\s+(\d+)\b/gi, function(match, num) {
+      var url = _lmUrl(num);
+      if (!url) return match;
+      return makeLink(url, match, 'Likutay Moharan ' + num);
+    });
+
+    // --- Kitzur Likutay Moharan ---
+    // "Kitzur 5" / "Kitzur LM 5" / "Kitzur Likutay Moharan 5"
+    html = html.replace(/\bKitzur\s*(?:Likut[ae]y?\s*Moharan\s*|LM\s*)?(\d+)/gi, function(match, num) {
+      var n = parseInt(num);
+      if (!n || n < 1) return match;
+      return makeLink('/reader/kitzur-likutay-moharan/part-1/torah-' + n, match);
+    });
+
+    // --- Likutay Tefilos ---
+    // "Prayer 5" / "Tefila 5" / "Likutay Tefilos 5" / "Likutey Tefilot 5"
+    html = html.replace(/\b(?:Likut[ae]y?\s*Tefil[lo][st]\s*|Prayer\s+|Tefil[la]h?\s+)(\d+)/gi, function(match, num) {
+      var n = parseInt(num);
+      if (!n || n < 1) return match;
+      return makeLink('/reader/likutay-tefilos/part-1/prayer-' + n, match);
+    });
+
+    // --- Tehillim / Psalms ---
+    // "Tehillim 23" / "Psalm 23" / "Psalms 23"
+    html = html.replace(/\b(?:Tehill?im|Psalms?)\s+(\d+)/gi, function(match, num) {
+      var n = parseInt(num);
+      if (!n || n < 1 || n > 150) return match;
+      return makeLink('/reader/tanach-tehillim/part-1/torah-' + n, match);
+    });
+
+    // --- Sichos HaRan ---
+    // "Sichos HaRan 44" / "Sicha 44" / "Sichot HaRan 44"
+    html = html.replace(/\b(?:Sichos?\s*(?:Ha)?Ran|Sich[oa]h?)\s*[#]?\s*(\d+)/gi, function(match, num) {
+      var n = parseInt(num);
+      if (!n || n < 1) return match;
+      return makeLink('/reader/sichos-haran/sicha-' + n, match);
+    });
+
+    // --- Sefer HaMidos ---
+    // "Sefer HaMidos" / "Sefer HaMiddos" / "Book of Traits"
+    html = html.replace(/\bSefer\s*Ha\s*Mi?d[do]s\b/gi, function(match) {
+      return makeLink('/reader/sefer-hamidos/topic-1', match);
+    });
+
+    // --- Meshivas Nefesh ---
+    // "Meshivas Nefesh 5" / "Meshivat Nefesh, Section 5" / "Restore the Soul 5"
+    html = html.replace(/\b(?:Meshivas?\s*Nefesh|Restore\s*the\s*Soul)\s*[,:;]?\s*(?:Section\s*)?(\d+)/gi, function(match, num) {
+      var n = parseInt(num);
+      if (!n || n < 1) return match;
+      return makeLink('/reader/meshivas-nefesh/section-' + n, match);
+    });
+
+    // --- Hashtatfchus HaNefesh / Outpouring of the Soul ---
+    html = html.replace(/\b(?:Hashtatf?chus\s*(?:Ha)?Nefesh|Outpouring\s*(?:of\s*(?:the\s*)?)?Soul)\s*[,:;]?\s*(?:Section\s*)?(\d+)/gi, function(match, num) {
+      var n = parseInt(num);
+      if (!n || n < 1) return match;
+      return makeLink('/reader/hashtatfchus-hanefesh/section-' + n, match);
+    });
+
+    // --- Sipurey Maasiyos / Stories ---
+    // "Sipurey Maasiyos, Story 5" / "Rabbi Nachman's Stories 5"
+    html = html.replace(/\b(?:Sipure[iy]\s*Ma?asiy?os|Rabbi\s*Nachman'?s?\s*Stories?)\s*[,:;]?\s*(?:Story\s*)?(\d+)/gi, function(match, num) {
+      var n = parseInt(num);
+      if (!n || n < 1) return match;
+      return makeLink('/reader/sipurey-maasiyos/story-' + n, match);
+    });
+
+    // --- Likutay Eitzos ---
+    // "Likutay Eitzos" / "Likutey Etzot"
+    html = html.replace(/\bLikut[ae]y?\s*(?:Eitz[oa][st]|Etz[oa]t)\s*[,:;]?\s*(?:Topic\s*)?(\d+)/gi, function(match, num) {
+      var n = parseInt(num);
+      if (!n || n < 1) return match;
+      return makeLink('/reader/likutay-eitzos/topic-' + n, match);
+    });
+
+    // --- Shivchay HaRan ---
+    html = html.replace(/\bShivch[ae]y?\s*(?:Ha)?Ran\s*[,:;]?\s*(?:Section\s*)?(\d+)/gi, function(match, num) {
+      var n = parseInt(num);
+      if (!n || n < 1) return match;
+      return makeLink('/reader/shivchay-haran/section-' + n, match);
+    });
+
+    // --- Chayey Moharan ---
+    html = html.replace(/\bCha[iy]e[iy]\s*Moharan\s*[,:;]?\s*(?:Section\s*)?(\d+)/gi, function(match, num) {
+      var n = parseInt(num);
+      if (!n || n < 1) return match;
+      return makeLink('/reader/chayey-moharan/section-' + n, match);
+    });
+
+    // --- Likutay Halachos (general reference, no specific halacha number easy to link) ---
+    // "Likutay Halachos" without a specific number - link to index
+    html = html.replace(/\bLikut[ae]y?\s*Hal[ao]ch[oa]s?\b(?!\s*\d)/gi, function(match) {
+      if (match.indexOf('cross-ref') !== -1) return match;
+      return makeLink('/reader/likutay-halachos/part-1/halacha-1', match, 'Likutay Halachos');
+    });
+
+    return changed ? html : null;
+  }
+
+  // Linkify Hebrew text references
+  function linkifyHebrew(html) {
+    if (html.indexOf('cross-ref') !== -1) return html;
+
+    var changed = false;
+    var LINK_CLS = 'cross-ref';
+
+    function makeLink(url, text, title) {
+      changed = true;
+      return '<a href="' + url + '" class="' + LINK_CLS + '" target="_blank" title="' + (title || 'Open in reader') + '">' + text + '</a>';
+    }
+
+    // --- ליקוטי מוהר"ן תנינא (Part 2 - must come before Part 1) ---
+    html = html.replace(/לי?קוטי\s*מוהר[""״]?ן\s*תנינא\s*(?:סי(?:מן|[׳'])?\s*)?([א-ת][א-ת""״׳']*)/g, function(match, numStr) {
+      var n = _parseHebrewNum(numStr);
+      if (!n || n < 1) return match;
+      return makeLink('/reader/likutay-moharan/part-2/torah-' + n, match, 'LM II:' + n);
+    });
+
+    // --- ליקוטי מוהר"ן (Part 1) ---
+    html = html.replace(/לי?קוטי\s*מוהר[""״]?ן\s*(?:סי(?:מן|[׳'])?\s*)?([א-ת][א-ת""״׳']*)/g, function(match, numStr) {
+      var n = _parseHebrewNum(numStr);
+      if (!n || n < 1) return match;
+      var url = _lmUrl(n);
+      if (!url) return match;
+      return makeLink(url, match, 'LM ' + n);
+    });
+
+    // --- סימן with a number (default to LM in context) ---
+    html = html.replace(/סימן\s+([א-ת][א-ת""״׳']*)/g, function(match, numStr) {
+      if (match.indexOf('cross-ref') !== -1) return match;
+      var n = _parseHebrewNum(numStr);
+      if (!n || n < 1) return match;
+      var url = _lmUrl(n);
+      if (!url) return match;
+      return makeLink(url, match, 'LM ' + n);
+    });
+
+    // --- תהלים / תהילים ---
+    html = html.replace(/תהי?לים\s+(?:פרק\s+)?([א-ת][א-ת""״׳']*)/g, function(match, numStr) {
+      var n = _parseHebrewNum(numStr);
+      if (!n || n < 1 || n > 150) return match;
+      return makeLink('/reader/tanach-tehillim/part-1/torah-' + n, match, 'Tehillim ' + n);
+    });
+
+    // --- ליקוטי תפילות ---
+    html = html.replace(/לי?קוטי\s*תפי?לות\s*(?:תפילה\s*)?([א-ת][א-ת""״׳']*)/g, function(match, numStr) {
+      var n = _parseHebrewNum(numStr);
+      if (!n || n < 1) return match;
+      return makeLink('/reader/likutay-tefilos/part-1/prayer-' + n, match, 'Prayer ' + n);
+    });
+
+    // --- שיחות הר"ן ---
+    html = html.replace(/שיחות\s*הר[""״]?ן\s*(?:סי(?:מן|[׳'])?\s*)?([א-ת][א-ת""״׳']*)/g, function(match, numStr) {
+      var n = _parseHebrewNum(numStr);
+      if (!n || n < 1) return match;
+      return makeLink('/reader/sichos-haran/sicha-' + n, match, 'Sichos HaRan ' + n);
+    });
+
+    // --- קיצור ליקוטי מוהר"ן ---
+    html = html.replace(/קי?צור\s*(?:לי?קוטי\s*)?מוהר[""״]?ן?\s*(?:סי(?:מן|[׳'])?\s*)?([א-ת][א-ת""״׳']*)/g, function(match, numStr) {
+      var n = _parseHebrewNum(numStr);
+      if (!n || n < 1) return match;
+      return makeLink('/reader/kitzur-likutay-moharan/part-1/torah-' + n, match, 'Kitzur LM ' + n);
+    });
+
+    // --- ספר המידות ---
+    html = html.replace(/ספר\s*המי?דות/g, function(match) {
+      return makeLink('/reader/sefer-hamidos/topic-1', match, 'Sefer HaMidos');
+    });
+
+    // --- השתפכות הנפש ---
+    html = html.replace(/השתפכות\s*הנפש\s*(?:סי(?:מן|[׳'])?\s*)?([א-ת][א-ת""״׳']*)/g, function(match, numStr) {
+      var n = _parseHebrewNum(numStr);
+      if (!n || n < 1) return match;
+      return makeLink('/reader/hashtatfchus-hanefesh/section-' + n, match);
+    });
+
+    // --- משיבת נפש ---
+    html = html.replace(/משיבת?\s*נפש\s*(?:סי(?:מן|[׳'])?\s*)?([א-ת][א-ת""״׳']*)/g, function(match, numStr) {
+      var n = _parseHebrewNum(numStr);
+      if (!n || n < 1) return match;
+      return makeLink('/reader/meshivas-nefesh/section-' + n, match);
+    });
+
+    // --- סיפורי מעשיות ---
+    html = html.replace(/סיפורי\s*מעשי?ות\s*(?:מעשה\s*)?([א-ת][א-ת""״׳']*)/g, function(match, numStr) {
+      var n = _parseHebrewNum(numStr);
+      if (!n || n < 1) return match;
+      return makeLink('/reader/sipurey-maasiyos/story-' + n, match);
+    });
+
+    return changed ? html : null;
+  }
+
+  function addCrossReferenceLinks() {
+    // Process English segments
+    document.querySelectorAll('.segment-en p').forEach(function(p) {
+      // Skip if already processed
+      if (p.dataset.xrefDone) return;
+      var result = linkifyEnglish(p.innerHTML);
+      if (result) {
+        p.innerHTML = result;
+        p.dataset.xrefDone = '1';
       }
+    });
 
-      if (changed) p.innerHTML = html;
+    // Process Hebrew segments
+    document.querySelectorAll('.segment-he p').forEach(function(p) {
+      if (p.dataset.xrefDone) return;
+      var result = linkifyHebrew(p.innerHTML);
+      if (result) {
+        p.innerHTML = result;
+        p.dataset.xrefDone = '1';
+      }
     });
   }
 
