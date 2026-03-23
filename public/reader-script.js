@@ -1677,11 +1677,157 @@
     });
   }
 
+  // --- Add to My Sefer ---
+  function setupMySefer() {
+    var SEFER_KEY = 'mySefer';
+    var container = document.querySelector('.reader-container');
+    if (!container) return;
+
+    var torahId = container.dataset.torahId || '';
+    var torahTitle = container.dataset.torahTitle || document.title.replace(' | A Jew', '');
+    var url = window.location.pathname;
+
+    function loadSefer() {
+      try {
+        var raw = localStorage.getItem(SEFER_KEY);
+        if (raw) return JSON.parse(raw);
+      } catch (e) {}
+      return { name: '', passages: [], createdAt: Date.now(), updatedAt: Date.now() };
+    }
+
+    function saveSefer(sefer) {
+      sefer.updatedAt = Date.now();
+      try { localStorage.setItem(SEFER_KEY, JSON.stringify(sefer)); } catch(e) {}
+    }
+
+    function showToast(msg, duration) {
+      var existing = document.getElementById('sefer-toast');
+      if (existing) existing.remove();
+      var toast = document.createElement('div');
+      toast.id = 'sefer-toast';
+      toast.textContent = msg;
+      toast.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1a365d;color:white;padding:10px 20px;border-radius:8px;font-size:0.95em;z-index:10000;box-shadow:0 4px 12px rgba(0,0,0,0.25);font-family:"Open Sans",sans-serif;transition:opacity 0.3s;';
+      document.body.appendChild(toast);
+      setTimeout(function() {
+        toast.style.opacity = '0';
+        setTimeout(function() { toast.remove(); }, 300);
+      }, duration || 2000);
+    }
+
+    function getSegmentData(segPair) {
+      var hePara = segPair.querySelector('.segment-he p');
+      var enPara = segPair.querySelector('.segment-en p');
+      var nikudAttr = hePara ? hePara.getAttribute('data-nikud') : '';
+      var he = hePara ? hePara.textContent.trim() : '';
+      var en = enPara ? enPara.textContent.trim() : '';
+      if (en === 'Translation not yet available') en = '';
+      var idx = segPair.id ? segPair.id.replace('seg-', '') : '';
+      return { he: he, en: en, he_nikud: nikudAttr || he, segmentIndex: idx };
+    }
+
+    function addPassageToSefer(data) {
+      var sefer = loadSefer();
+      // Check if already added (by URL + segment)
+      var key = url + '#' + (data.segmentIndex || 'all');
+      var exists = sefer.passages.some(function(p) { return p._key === key; });
+      if (exists) {
+        showToast('Already in your Sefer');
+        return false;
+      }
+
+      // Determine Hebrew reference from breadcrumb or title
+      var breadcrumb = container.querySelector('.reader-breadcrumb');
+      var refEn = torahTitle;
+      var refHe = '';
+      var heTitle = container.querySelector('.hebrew-title');
+      if (heTitle) refHe = heTitle.textContent.trim();
+      if (data.segmentIndex && data.segmentIndex !== 'all') {
+        refEn += ', Paragraph ' + data.segmentIndex;
+        if (refHe) refHe += ' \u05D0\u05D5\u05EA ' + data.segmentIndex;
+      }
+
+      sefer.passages.push({
+        _key: key,
+        ref: refEn,
+        refHe: refHe,
+        book: torahId,
+        he: data.he,
+        en: data.en,
+        he_nikud: data.he_nikud || data.he,
+        segmentIndex: data.segmentIndex || '',
+        readerUrl: data.segmentIndex ? url + '#seg-' + data.segmentIndex : url,
+        addedAt: Date.now(),
+        note: '',
+        tag: ''
+      });
+      saveSefer(sefer);
+      return true;
+    }
+
+    // Add toolbar button
+    var toolbarGroups = document.querySelectorAll('.reader-toolbar-group');
+    var lastGroup = toolbarGroups[toolbarGroups.length - 1];
+    if (!lastGroup) return;
+
+    var seferBtn = document.createElement('button');
+    seferBtn.className = 'reader-btn reader-btn-icon';
+    seferBtn.id = 'btn-add-sefer';
+    seferBtn.textContent = 'My Sefer';
+    seferBtn.title = 'Add this teaching to your personal Sefer';
+    seferBtn.addEventListener('click', function() {
+      // Collect all segments as one passage (the entire teaching)
+      var segments = container.querySelectorAll('.reader-segment-pair');
+      var allHe = [];
+      var allEn = [];
+      var allNikud = [];
+      segments.forEach(function(seg) {
+        var d = getSegmentData(seg);
+        if (d.he) allHe.push(d.he);
+        if (d.en) allEn.push(d.en);
+        if (d.he_nikud) allNikud.push(d.he_nikud);
+      });
+
+      var added = addPassageToSefer({
+        he: allHe.join('\n'),
+        en: allEn.join('\n'),
+        he_nikud: allNikud.join('\n'),
+        segmentIndex: 'all'
+      });
+      if (added) {
+        showToast('Added to your Sefer!');
+        seferBtn.textContent = 'Added!';
+        setTimeout(function() { seferBtn.textContent = 'My Sefer'; }, 2000);
+      }
+    });
+    lastGroup.insertBefore(seferBtn, lastGroup.querySelector('#btn-fullscreen'));
+
+    // Add per-segment "Add to Sefer" buttons via the copy button area
+    container.querySelectorAll('.reader-segment-pair').forEach(function(pair) {
+      var addBtn = document.createElement('button');
+      addBtn.className = 'seg-copy-btn seg-add-sefer-btn';
+      addBtn.textContent = '+Sefer';
+      addBtn.title = 'Add this paragraph to your Sefer';
+      addBtn.style.cssText = 'margin-left:4px;';
+      addBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var d = getSegmentData(pair);
+        var added = addPassageToSefer(d);
+        if (added) {
+          showToast('Paragraph added to your Sefer!');
+          addBtn.textContent = 'Added!';
+          setTimeout(function() { addBtn.textContent = '+Sefer'; }, 1500);
+        }
+      });
+      pair.appendChild(addBtn);
+    });
+  }
+
   // Run on DOM ready
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => { init(); setTimeout(addCrossReferenceLinks, 500); });
+    document.addEventListener('DOMContentLoaded', () => { init(); setupMySefer(); setTimeout(addCrossReferenceLinks, 500); });
   } else {
     init();
+    setupMySefer();
     setTimeout(addCrossReferenceLinks, 500);
   }
 })();
