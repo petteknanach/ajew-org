@@ -20,7 +20,7 @@ const path = require('path');
 const READER_DIR = path.join(__dirname, '..', 'public', 'reader');
 const API_URL = 'https://nakdan-u1-0.loadbalancer.dicta.org.il/api';
 const CHUNK_SIZE = 3500; // chars per API request (safe under 5000 limit)
-const DELAY_MS = 500;    // delay between API calls to be respectful
+const DELAY_MS = 1500;   // delay between API calls (increased to avoid 503 rate limiting)
 
 const args = process.argv.slice(2);
 const DRY_RUN = args.includes('--dry-run');
@@ -194,8 +194,8 @@ async function processBook(bookInfo) {
         if (errors <= 3) {
           console.error(`  Error on ${file} seg ${seg.index}: ${err.message}`);
         }
-        // Wait longer on error (might be rate limited)
-        await new Promise(r => setTimeout(r, 3000));
+        // Wait longer on error (rate limited)
+        await new Promise(r => setTimeout(r, 10000));
       }
     }
 
