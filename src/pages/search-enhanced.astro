@@ -167,6 +167,7 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
               <p class="result-snippet">${snippet}</p>
               <div class="result-footer">
                 <a href="${link}" class="view-link">קרא טקסט מלא / Read Full →</a>
+                <button class="share-btn" onclick="shareResult('${link}', '${rawTitle.replace(/'/g, "\\'")}')">📤 Share</button>
               </div>
             </div>
           `;
@@ -284,6 +285,18 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         resultsContainer.classList.add('hidden');
         welcomeMessage.classList.add('hidden');
         resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      function shareResult(link: string, title: string) {
+        const fullUrl = window.location.origin + link;
+        if (navigator.share) {
+          navigator.share({ title: title + ' — ajew.org', url: fullUrl }).catch(() => {});
+        } else {
+          navigator.clipboard.writeText(fullUrl).then(() => {
+            const btn = event?.target as HTMLElement;
+            if (btn) { const orig = btn.textContent; btn.textContent = '✓ Copied!'; setTimeout(() => btn.textContent = orig, 2000); }
+          });
+        }
       }
 
       function showWelcome() {
@@ -636,6 +649,24 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
     .view-link:hover {
       text-decoration: underline;
     }
+
+    .result-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .share-btn {
+      background: none;
+      border: 1px solid #d0c8b0;
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      color: #666;
+      transition: all 0.2s;
+    }
+    .share-btn:hover { background: #f5f0e8; color: #1a365d; border-color: #1a365d; }
 
     .no-results {
       text-align: center;
