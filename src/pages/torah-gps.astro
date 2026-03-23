@@ -1,0 +1,756 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Torah GPS - Spiritual Navigation" description="Find the right Torah teachings for what you're going through. Search by topic across 226+ sacred Jewish texts. A spiritual GPS for life's challenges.">
+<div class="gps-page">
+  <header class="gps-header">
+    <div class="header-hebrew">תורה GPS</div>
+    <h1>Torah GPS</h1>
+    <p class="subtitle">Find the teachings you need for what you're going through</p>
+    <p class="nanach">Na Nach Nachma Nachman MeUman</p>
+  </header>
+
+  <!-- Search Input -->
+  <section class="gps-search">
+    <div class="search-box">
+      <input
+        type="text"
+        id="gpsInput"
+        placeholder="What are you going through? (e.g., anxiety, money problems, anger...)"
+        dir="auto"
+        autocomplete="off"
+        aria-label="Describe what you are going through"
+      />
+      <button id="gpsSearchBtn" aria-label="Search">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+    </div>
+  </section>
+
+  <!-- Quick Topic Buttons -->
+  <section class="gps-topics" id="topicButtons">
+    <h2 class="section-label">Quick Topics / נושאים</h2>
+    <div class="topic-grid" id="topicGrid">
+      <!-- Filled by JS -->
+    </div>
+  </section>
+
+  <!-- Loading -->
+  <div id="gpsLoading" class="gps-loading" style="display:none;">
+    <div class="loading-spinner"></div>
+    <p>Searching the teachings...</p>
+  </div>
+
+  <!-- Results -->
+  <section class="gps-results" id="gpsResults" style="display:none;">
+    <div class="results-header">
+      <h2 id="resultsTitle"></h2>
+      <p id="resultsCount" class="results-count"></p>
+      <button id="clearResults" class="clear-btn">Clear</button>
+    </div>
+    <div class="results-grid" id="resultsGrid">
+      <!-- Filled by JS -->
+    </div>
+  </section>
+
+  <!-- Empty State -->
+  <div id="emptyState" class="empty-state" style="display:none;">
+    <p>No matching teachings found. Try a different topic or browse the quick topics above.</p>
+  </div>
+
+  <!-- Info Footer -->
+  <section class="gps-info">
+    <p>Searching across <strong>226+ books</strong> of Torah, Breslov, Talmud, Mishna, Zohar, and more.</p>
+    <p class="info-small">Results are based on English translations available in the library. <a href="/reader">Browse the full library</a></p>
+  </section>
+</div>
+
+<style>
+  /* ─── Page Layout ─── */
+  .gps-page {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 1rem;
+    min-height: 80vh;
+  }
+
+  /* ─── Header ─── */
+  .gps-header {
+    text-align: center;
+    padding: 2rem 1rem 1rem;
+  }
+  .gps-header .header-hebrew {
+    font-family: 'Frank Ruhl Libre', 'David', serif;
+    font-size: 2.4rem;
+    color: #1a365d;
+    margin-bottom: 0.2rem;
+    direction: rtl;
+  }
+  .gps-header h1 {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 2rem;
+    color: #1a365d;
+    margin: 0;
+  }
+  .gps-header .subtitle {
+    color: #5a6a7a;
+    font-size: 1.1rem;
+    margin: 0.5rem 0 0.3rem;
+  }
+  .gps-header .nanach {
+    font-family: 'Frank Ruhl Libre', serif;
+    color: #b8860b;
+    font-size: 0.95rem;
+    margin: 0;
+  }
+
+  /* ─── Search Box ─── */
+  .gps-search {
+    max-width: 640px;
+    margin: 1.5rem auto;
+  }
+  .search-box {
+    display: flex;
+    border: 2px solid #1a365d;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 2px 12px rgba(26, 54, 93, 0.12);
+    transition: box-shadow 0.2s;
+  }
+  .search-box:focus-within {
+    box-shadow: 0 4px 20px rgba(26, 54, 93, 0.2);
+    border-color: #2b6cb0;
+  }
+  .search-box input {
+    flex: 1;
+    padding: 0.9rem 1.2rem;
+    border: none;
+    font-size: 1.05rem;
+    font-family: 'Open Sans', sans-serif;
+    outline: none;
+    background: transparent;
+  }
+  .search-box input::placeholder {
+    color: #9aa;
+  }
+  .search-box button {
+    background: #1a365d;
+    color: white;
+    border: none;
+    padding: 0 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: background 0.2s;
+  }
+  .search-box button:hover {
+    background: #2b6cb0;
+  }
+
+  /* ─── Topic Buttons ─── */
+  .gps-topics {
+    margin: 1.5rem 0;
+  }
+  .section-label {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 1.1rem;
+    color: #1a365d;
+    text-align: center;
+    margin-bottom: 0.8rem;
+  }
+  .topic-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+  }
+  .topic-btn {
+    padding: 0.45rem 0.9rem;
+    border: 1.5px solid #d4a574;
+    border-radius: 20px;
+    background: #fdf8f0;
+    color: #5a4030;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .topic-btn:hover {
+    background: #d4a574;
+    color: #fff;
+    border-color: #d4a574;
+  }
+  .topic-btn.active {
+    background: #1a365d;
+    color: white;
+    border-color: #1a365d;
+  }
+  .topic-btn .he {
+    font-family: 'Frank Ruhl Libre', 'David', serif;
+    font-size: 0.85rem;
+    margin-left: 0.3rem;
+    opacity: 0.8;
+  }
+
+  /* ─── Loading ─── */
+  .gps-loading {
+    text-align: center;
+    padding: 2rem;
+    color: #5a6a7a;
+  }
+  .loading-spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid #e2e8f0;
+    border-top-color: #1a365d;
+    border-radius: 50%;
+    margin: 0 auto 0.8rem;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ─── Results ─── */
+  .gps-results {
+    margin: 1.5rem 0;
+  }
+  .results-header {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+  .results-header h2 {
+    font-family: 'Frank Ruhl Libre', serif;
+    color: #1a365d;
+    font-size: 1.3rem;
+    margin: 0;
+    flex: 1;
+  }
+  .results-count {
+    color: #7a8a9a;
+    font-size: 0.9rem;
+    margin: 0;
+  }
+  .clear-btn {
+    padding: 0.3rem 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: #f8f8f8;
+    color: #666;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+  }
+  .clear-btn:hover {
+    background: #eee;
+    border-color: #aaa;
+  }
+  .results-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  /* ─── Result Card ─── */
+  .result-card {
+    border: 1px solid #e2ddd5;
+    border-radius: 10px;
+    padding: 1rem 1.2rem;
+    background: #fefcf9;
+    transition: box-shadow 0.2s, border-color 0.2s;
+  }
+  .result-card:hover {
+    box-shadow: 0 2px 12px rgba(26, 54, 93, 0.1);
+    border-color: #d4a574;
+  }
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.5rem;
+    gap: 0.5rem;
+  }
+  .card-book {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-weight: 700;
+    color: #1a365d;
+    font-size: 0.95rem;
+  }
+  .card-ref {
+    font-size: 0.8rem;
+    color: #8a7a6a;
+    white-space: nowrap;
+  }
+  .card-he {
+    font-family: 'Frank Ruhl Libre', 'David', serif;
+    direction: rtl;
+    text-align: right;
+    color: #3a3a3a;
+    font-size: 1rem;
+    line-height: 1.7;
+    margin-bottom: 0.5rem;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid #f0ece5;
+  }
+  .card-en {
+    color: #4a4a4a;
+    font-size: 0.92rem;
+    line-height: 1.6;
+    margin-bottom: 0.6rem;
+  }
+  .card-link {
+    display: inline-block;
+    color: #2b6cb0;
+    font-size: 0.88rem;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s;
+  }
+  .card-link:hover {
+    color: #1a365d;
+    text-decoration: underline;
+  }
+
+  /* ─── Empty State ─── */
+  .empty-state {
+    text-align: center;
+    padding: 2rem;
+    color: #7a8a9a;
+    font-size: 1rem;
+  }
+
+  /* ─── Info Footer ─── */
+  .gps-info {
+    text-align: center;
+    padding: 2rem 1rem;
+    margin-top: 2rem;
+    border-top: 1px solid #e8e4dd;
+    color: #6a7a8a;
+    font-size: 0.95rem;
+  }
+  .gps-info strong {
+    color: #1a365d;
+  }
+  .gps-info .info-small {
+    font-size: 0.82rem;
+    margin-top: 0.3rem;
+  }
+  .gps-info a {
+    color: #2b6cb0;
+  }
+
+  /* ─── Dark Mode ─── */
+  :global(body.dark-mode) .gps-page {
+    color: #e0e0e0;
+  }
+  :global(body.dark-mode) .gps-header .header-hebrew,
+  :global(body.dark-mode) .gps-header h1 {
+    color: #90b8f0;
+  }
+  :global(body.dark-mode) .gps-header .subtitle {
+    color: #aab;
+  }
+  :global(body.dark-mode) .search-box {
+    background: #2a2a3e;
+    border-color: #4a5a7a;
+  }
+  :global(body.dark-mode) .search-box:focus-within {
+    border-color: #6a8ac0;
+  }
+  :global(body.dark-mode) .search-box input {
+    color: #e0e0e0;
+  }
+  :global(body.dark-mode) .search-box input::placeholder {
+    color: #6a7a8a;
+  }
+  :global(body.dark-mode) .topic-btn {
+    background: #2a2a3e;
+    border-color: #5a4a3a;
+    color: #d4a574;
+  }
+  :global(body.dark-mode) .topic-btn:hover {
+    background: #5a4a3a;
+    color: #fff;
+  }
+  :global(body.dark-mode) .topic-btn.active {
+    background: #3a5a8a;
+    border-color: #3a5a8a;
+    color: #fff;
+  }
+  :global(body.dark-mode) .result-card {
+    background: #1e1e2e;
+    border-color: #3a3a4e;
+  }
+  :global(body.dark-mode) .result-card:hover {
+    border-color: #6a5a4a;
+  }
+  :global(body.dark-mode) .card-book {
+    color: #90b8f0;
+  }
+  :global(body.dark-mode) .card-he {
+    color: #d0d0d0;
+    border-bottom-color: #3a3a4e;
+  }
+  :global(body.dark-mode) .card-en {
+    color: #b8b8c8;
+  }
+  :global(body.dark-mode) .card-link {
+    color: #6aafe0;
+  }
+  :global(body.dark-mode) .section-label,
+  :global(body.dark-mode) .results-header h2 {
+    color: #90b8f0;
+  }
+  :global(body.dark-mode) .gps-info {
+    border-top-color: #3a3a4e;
+    color: #8a8a9a;
+  }
+  :global(body.dark-mode) .gps-info strong {
+    color: #90b8f0;
+  }
+
+  /* ─── Mobile ─── */
+  @media (max-width: 640px) {
+    .gps-header .header-hebrew { font-size: 1.8rem; }
+    .gps-header h1 { font-size: 1.5rem; }
+    .gps-header .subtitle { font-size: 0.95rem; }
+    .search-box input { font-size: 0.95rem; padding: 0.75rem 1rem; }
+    .topic-btn { font-size: 0.82rem; padding: 0.4rem 0.7rem; }
+    .result-card { padding: 0.8rem 1rem; }
+    .card-he { font-size: 0.95rem; }
+    .card-en { font-size: 0.88rem; }
+    .results-header { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+
+<script is:inline>
+(function() {
+  let gpsData = null;
+  let currentTopic = null;
+
+  const input = document.getElementById('gpsInput');
+  const searchBtn = document.getElementById('gpsSearchBtn');
+  const topicGrid = document.getElementById('topicGrid');
+  const loading = document.getElementById('gpsLoading');
+  const resultsSection = document.getElementById('gpsResults');
+  const resultsTitle = document.getElementById('resultsTitle');
+  const resultsCount = document.getElementById('resultsCount');
+  const resultsGrid = document.getElementById('resultsGrid');
+  const clearBtn = document.getElementById('clearResults');
+  const emptyState = document.getElementById('emptyState');
+
+  // Topic synonyms for fuzzy matching from user input
+  const SYNONYMS = {
+    'joy': ['joy', 'happy', 'happiness', 'simcha', 'cheerful', 'glad', 'uplifted', 'celebration'],
+    'sadness': ['sad', 'sadness', 'depression', 'depressed', 'down', 'low', 'melancholy', 'hopeless', 'despair', 'blue', 'unhappy', 'miserable'],
+    'prayer': ['prayer', 'pray', 'praying', 'daven', 'davening', 'tefillah', 'hisbodedus', 'hitbodedut', 'talk to god', 'meditation'],
+    'faith': ['faith', 'emunah', 'emuna', 'trust', 'belief', 'believe', 'bitachon', 'trust in god', 'believing'],
+    'teshuvah': ['teshuvah', 'teshuva', 'repent', 'repentance', 'return', 'sin', 'sins', 'forgiveness', 'atonement', 'regret'],
+    'livelihood': ['money', 'livelihood', 'parnasa', 'parnassah', 'income', 'wealth', 'financial', 'bills', 'poor', 'poverty', 'job', 'career', 'business', 'work', 'earning', 'sustenance', 'broke'],
+    'anger': ['anger', 'angry', 'mad', 'rage', 'temper', 'furious', 'irritated', 'frustrated', 'annoyed'],
+    'marriage': ['marriage', 'married', 'wife', 'husband', 'spouse', 'relationship', 'dating', 'shidduch', 'shalom bayit', 'partner', 'love', 'divorce', 'family'],
+    'fear': ['fear', 'afraid', 'anxiety', 'anxious', 'worry', 'worried', 'panic', 'scared', 'nervous', 'stress', 'stressed', 'phobia', 'overwhelmed'],
+    'healing': ['healing', 'health', 'sick', 'sickness', 'illness', 'disease', 'pain', 'doctor', 'cure', 'recovery', 'hospital', 'medical', 'suffering'],
+    'obstacles': ['obstacle', 'obstacles', 'challenge', 'test', 'trial', 'difficulty', 'hard', 'struggle', 'struggling', 'stuck', 'blocked', 'adversity', 'setback'],
+    'torah_study': ['torah', 'study', 'learning', 'learn', 'wisdom', 'knowledge', 'understand', 'teaching'],
+    'tzaddik': ['tzaddik', 'tzadik', 'righteous', 'rebbe', 'rabbi', 'holy man', 'leader', 'master'],
+    'shabbat': ['shabbat', 'shabbos', 'sabbath', 'holiday', 'yom tov', 'rosh hashana', 'yom kippur', 'sukkot', 'pesach', 'purim'],
+    'humility': ['humility', 'humble', 'ego', 'pride', 'arrogance', 'modest', 'modesty'],
+    'gratitude': ['gratitude', 'grateful', 'thankful', 'thanks', 'appreciate', 'appreciation', 'blessing'],
+    'peace': ['peace', 'shalom', 'harmony', 'conflict', 'argument', 'quarrel', 'fighting', 'strife', 'dispute', 'machloket'],
+    'truth': ['truth', 'honest', 'honesty', 'integrity', 'lies', 'lying', 'deception', 'sincere'],
+    'courage': ['courage', 'brave', 'strength', 'strong', 'determined', 'persist', 'never give up', 'persevere', 'endure', 'willpower'],
+    'holiness': ['holiness', 'holy', 'sacred', 'pure', 'purity', 'kedusha', 'spiritual', 'impurity'],
+    'speech': ['speech', 'words', 'tongue', 'gossip', 'lashon hara', 'slander', 'talking', 'silence', 'guard your mouth'],
+    'desire': ['desire', 'temptation', 'lust', 'craving', 'urge', 'addiction', 'yetzer hara', 'evil inclination', 'self-control'],
+    'charity': ['charity', 'tzedakah', 'giving', 'generous', 'donate', 'tithe', 'maaser', 'chesed', 'kindness', 'helping'],
+    'meditation': ['meditation', 'meditate', 'mindfulness', 'contemplation', 'hisbodedus', 'hitbodedut', 'seclude', 'seclusion', 'nature', 'field'],
+    'music': ['music', 'song', 'singing', 'melody', 'niggun', 'dance', 'dancing', 'instruments'],
+    'water': ['mikvah', 'mikveh', 'water', 'immersion', 'purification', 'bath'],
+    'suffering': ['suffering', 'pain', 'anguish', 'agony', 'hardship', 'affliction', 'torment', 'yisurim', 'why do bad things happen'],
+    'death': ['death', 'dying', 'mourning', 'grief', 'loss', 'bereaved', 'funeral', 'afterlife', 'world to come'],
+    'children': ['children', 'kids', 'child', 'parenting', 'raising', 'education', 'son', 'daughter', 'baby', 'chinuch', 'teenage'],
+    'sleep': ['sleep', 'insomnia', 'dream', 'dreams', 'night', 'rest', 'tired', 'exhausted', 'nightmares'],
+    'eating': ['eating', 'food', 'diet', 'fasting', 'kosher', 'appetite', 'overeating', 'meal', 'hunger'],
+    'forgiveness': ['forgiveness', 'forgive', 'forgiving', 'mercy', 'compassion', 'pardon', 'letting go', 'grudge', 'resentment'],
+    'eretz_yisrael': ['israel', 'eretz yisrael', 'holy land', 'jerusalem', 'aliyah', 'zion', 'temple'],
+    'loneliness': ['lonely', 'loneliness', 'alone', 'isolated', 'friendless', 'abandoned', 'disconnected', 'no friends'],
+    'pride': ['pride', 'ego', 'arrogance', 'arrogant', 'haughty', 'conceited', 'vain', 'boasting', 'showing off'],
+    'redemption': ['redemption', 'mashiach', 'moshiach', 'messiah', 'geulah', 'salvation', 'exile', 'freedom'],
+    'nature': ['nature', 'creation', 'trees', 'garden', 'outdoors', 'animals', 'stars', 'sky', 'beauty'],
+    'judgment': ['judgment', 'justice', 'strict', 'decree', 'harsh', 'punishment', 'court', 'din'],
+    'simplicity': ['simple', 'simplicity', 'sincere', 'sincerity', 'wholehearted', 'naive', 'innocent', 'unpretentious'],
+    'confession': ['confession', 'confess', 'viduy', 'admit', 'acknowledge'],
+    'jealousy': ['jealous', 'jealousy', 'envy', 'envious', 'comparing', 'competition', 'resentment', 'grudge'],
+    'patience': ['patience', 'patient', 'waiting', 'impatient', 'endurance', 'tolerance', 'slow'],
+    'kindness': ['kindness', 'kind', 'chesed', 'compassion', 'caring', 'gentle', 'goodness', 'benevolent', 'empathy'],
+    'beginning': ['beginning', 'start', 'starting', 'new', 'fresh start', 'restart', 'first step', 'motivated', 'inspiration', 'getting started'],
+    'mind': ['thoughts', 'thinking', 'mind', 'mental', 'confusion', 'confused', 'clarity', 'focus', 'concentration', 'overthinking', 'intrusive thoughts', 'racing thoughts'],
+    'world_to_come': ['world to come', 'afterlife', 'heaven', 'eternal', 'olam haba', 'paradise', 'reward', 'punishment'],
+    'community': ['community', 'friends', 'friendship', 'together', 'unity', 'connection', 'fellowship', 'belonging', 'companionship'],
+    'character': ['character', 'traits', 'middot', 'personality', 'habits', 'self-improvement', 'growth', 'virtue', 'behavior', 'mussar'],
+    'doubt': ['doubt', 'doubts', 'confused', 'questioning', 'uncertain', 'skeptical', 'lost', 'heresy', 'questioning faith'],
+    'gratitude_to_god': ['closeness to god', 'close to god', 'connection to god', 'spiritual', 'dvekut', 'cleaving', 'divine', 'presence of god', 'feeling god', 'relationship with god'],
+    'travel': ['travel', 'uman', 'pilgrimage', 'journey', 'visiting tzaddik', 'rosh hashana uman']
+  };
+
+  // ─── Load Data ───
+  async function loadData() {
+    try {
+      const resp = await fetch('/torah-gps-index.json');
+      if (!resp.ok) throw new Error('Index not found');
+      gpsData = await resp.json();
+      renderTopicButtons();
+    } catch (e) {
+      console.error('Failed to load Torah GPS index:', e);
+      topicGrid.innerHTML = '<p style="color:#c00;text-align:center;">Index not yet built. Run: <code>node scripts/build-torah-gps-index.cjs</code></p>';
+    }
+  }
+
+  // ─── Render Topic Buttons ───
+  function renderTopicButtons() {
+    if (!gpsData || !gpsData.topicMeta) return;
+    // Sort by result count descending, then filter to those with results
+    const sorted = [...gpsData.topicMeta]
+      .filter(t => t.resultCount > 0)
+      .sort((a, b) => b.resultCount - a.resultCount);
+
+    topicGrid.innerHTML = sorted.map(t =>
+      `<button class="topic-btn" data-topic="${t.id}" title="${t.resultCount} teachings found">
+        ${t.label} <span class="he">${t.hebrewLabel}</span>
+      </button>`
+    ).join('');
+
+    // Add click handlers
+    topicGrid.querySelectorAll('.topic-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const topicId = btn.dataset.topic;
+        selectTopic(topicId);
+      });
+    });
+  }
+
+  // ─── Select Topic ───
+  function selectTopic(topicId) {
+    if (!gpsData) return;
+    currentTopic = topicId;
+
+    // Update button states
+    topicGrid.querySelectorAll('.topic-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.topic === topicId);
+    });
+
+    // Update input to show the topic name
+    const meta = gpsData.topicMeta.find(t => t.id === topicId);
+    if (meta) {
+      input.value = meta.label;
+    }
+
+    showResults(topicId);
+  }
+
+  // ─── Show Results ───
+  function showResults(topicId) {
+    const results = gpsData.topics[topicId];
+    const meta = gpsData.topicMeta.find(t => t.id === topicId);
+    if (!results || !results.length) {
+      resultsSection.style.display = 'none';
+      emptyState.style.display = 'block';
+      return;
+    }
+
+    emptyState.style.display = 'none';
+    resultsSection.style.display = 'block';
+    resultsTitle.textContent = `${meta ? meta.label : topicId} ${meta ? '/ ' + meta.hebrewLabel : ''}`;
+    resultsCount.textContent = `${results.length} teaching${results.length !== 1 ? 's' : ''} found`;
+
+    resultsGrid.innerHTML = results.map((r, i) => {
+      const ref = buildRef(r);
+      return `<article class="result-card" style="animation: fadeIn 0.3s ease ${i * 0.05}s both;">
+        <div class="card-header">
+          <span class="card-book">${escHtml(r.bookTitle)}</span>
+          <span class="card-ref">${escHtml(ref)}</span>
+        </div>
+        ${r.he ? `<div class="card-he">${escHtml(r.he)}</div>` : ''}
+        <div class="card-en">${escHtml(r.en)}</div>
+        <a class="card-link" href="${escHtml(r.url)}">Read More &rarr;</a>
+      </article>`;
+    }).join('');
+
+    // Scroll to results
+    resultsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function buildRef(r) {
+    const parts = [];
+    if (r.part) parts.push(`Part ${r.part}`);
+    if (r.torah) parts.push(`#${r.torah}`);
+    if (r.segment) parts.push(`Seg. ${r.segment}`);
+    return parts.join(', ');
+  }
+
+  function escHtml(str) {
+    if (!str) return '';
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  // ─── Search / Fuzzy Match ───
+  function searchTopics(query) {
+    if (!gpsData) return;
+    const q = query.toLowerCase().trim();
+    if (!q) {
+      clearAllResults();
+      return;
+    }
+
+    // Score each topic against the query
+    const scores = [];
+    for (const [topicId, synonyms] of Object.entries(SYNONYMS)) {
+      let score = 0;
+      for (const syn of synonyms) {
+        if (q === syn) { score += 10; continue; }
+        if (q.includes(syn)) { score += 5; continue; }
+        if (syn.includes(q)) { score += 3; continue; }
+        // Partial match (first 3+ chars)
+        if (q.length >= 3 && syn.startsWith(q)) { score += 4; continue; }
+        if (syn.length >= 3 && q.startsWith(syn)) { score += 2; continue; }
+      }
+      if (score > 0) {
+        scores.push({ topicId, score });
+      }
+    }
+
+    // Also check topic labels and Hebrew labels directly
+    if (gpsData.topicMeta) {
+      for (const meta of gpsData.topicMeta) {
+        if (meta.label.toLowerCase().includes(q) || q.includes(meta.label.toLowerCase())) {
+          const existing = scores.find(s => s.topicId === meta.id);
+          if (existing) existing.score += 8;
+          else scores.push({ topicId: meta.id, score: 8 });
+        }
+      }
+    }
+
+    if (scores.length === 0) {
+      resultsSection.style.display = 'none';
+      emptyState.style.display = 'block';
+      return;
+    }
+
+    // Pick the best matching topic
+    scores.sort((a, b) => b.score - a.score);
+    const bestTopic = scores[0].topicId;
+
+    // If we have multiple good matches close in score, combine results
+    if (scores.length > 1 && scores[1].score >= scores[0].score * 0.6) {
+      showCombinedResults(q, scores.slice(0, 3));
+    } else {
+      selectTopic(bestTopic);
+    }
+  }
+
+  function showCombinedResults(query, topScores) {
+    // Combine results from multiple matching topics
+    let combined = [];
+    const seenUrls = new Set();
+
+    for (const { topicId } of topScores) {
+      const results = gpsData.topics[topicId] || [];
+      for (const r of results) {
+        const key = r.url + '#' + r.segment;
+        if (!seenUrls.has(key)) {
+          seenUrls.add(key);
+          combined.push(r);
+        }
+      }
+    }
+
+    // Limit to 20 results
+    combined = combined.slice(0, 20);
+
+    if (!combined.length) {
+      resultsSection.style.display = 'none';
+      emptyState.style.display = 'block';
+      return;
+    }
+
+    // Update UI
+    topicGrid.querySelectorAll('.topic-btn').forEach(btn => {
+      btn.classList.toggle('active', topScores.some(s => s.topicId === btn.dataset.topic));
+    });
+
+    emptyState.style.display = 'none';
+    resultsSection.style.display = 'block';
+    resultsTitle.textContent = `Results for "${query}"`;
+    resultsCount.textContent = `${combined.length} teaching${combined.length !== 1 ? 's' : ''} found`;
+
+    resultsGrid.innerHTML = combined.map((r, i) => {
+      const ref = buildRef(r);
+      return `<article class="result-card" style="animation: fadeIn 0.3s ease ${i * 0.05}s both;">
+        <div class="card-header">
+          <span class="card-book">${escHtml(r.bookTitle)}</span>
+          <span class="card-ref">${escHtml(ref)}</span>
+        </div>
+        ${r.he ? `<div class="card-he">${escHtml(r.he)}</div>` : ''}
+        <div class="card-en">${escHtml(r.en)}</div>
+        <a class="card-link" href="${escHtml(r.url)}">Read More &rarr;</a>
+      </article>`;
+    }).join('');
+
+    resultsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function clearAllResults() {
+    currentTopic = null;
+    resultsSection.style.display = 'none';
+    emptyState.style.display = 'none';
+    topicGrid.querySelectorAll('.topic-btn').forEach(btn => btn.classList.remove('active'));
+    input.value = '';
+  }
+
+  // ─── Event Handlers ───
+  searchBtn.addEventListener('click', () => searchTopics(input.value));
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      searchTopics(input.value);
+    }
+  });
+  clearBtn.addEventListener('click', clearAllResults);
+
+  // Debounced live search
+  let debounceTimer;
+  input.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      if (input.value.trim().length >= 3) {
+        searchTopics(input.value);
+      }
+    }, 400);
+  });
+
+  // ─── Fade In Animation ───
+  const style = document.createElement('style');
+  style.textContent = `@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }`;
+  document.head.appendChild(style);
+
+  // ─── URL Parameters ───
+  const urlParams = new URLSearchParams(window.location.search);
+  const topicParam = urlParams.get('topic');
+  const queryParam = urlParams.get('q');
+
+  loadData().then(() => {
+    if (topicParam && gpsData && gpsData.topics[topicParam]) {
+      selectTopic(topicParam);
+    } else if (queryParam) {
+      input.value = queryParam;
+      searchTopics(queryParam);
+    }
+  });
+})();
+</script>
+</Layout>
