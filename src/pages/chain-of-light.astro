@@ -1,0 +1,800 @@
+---
+import Layout from '../layouts/Layout.astro';
+import fs from 'node:fs';
+import path from 'node:path';
+
+function loadJSON(filePath) {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(process.cwd(), filePath), 'utf8'));
+  } catch (e) { return null; }
+}
+
+const chainData = loadJSON('public/chain-of-light.json') || { lmMetadata: { 'part-1': {}, 'part-2': {} }, connections: { 'part-1': {}, 'part-2': {} } };
+const lmMeta = chainData.lmMetadata || { 'part-1': {}, 'part-2': {} };
+const connections = chainData.connections || { 'part-1': {}, 'part-2': {} };
+
+// Compute stats
+let totalTorahsWithConnections = 0;
+let totalConnections = 0;
+let maxConnections = 0;
+let maxConnectionsTorah = '';
+
+for (const partKey of ['part-1', 'part-2']) {
+  for (const [torahNum, data] of Object.entries(connections[partKey] || {})) {
+    if (data.connections && data.connections.length > 0) {
+      totalTorahsWithConnections++;
+      totalConnections += data.connections.length;
+      if (data.connections.length > maxConnections) {
+        maxConnections = data.connections.length;
+        const meta = lmMeta[partKey]?.[torahNum];
+        maxConnectionsTorah = meta ? `${meta.hebrewTitle} (${partKey === 'part-1' ? 'Part 1' : 'Part 2'}, Torah ${torahNum})` : `Torah ${torahNum}`;
+      }
+    }
+  }
+}
+
+// Prepare torah lists with connection counts for quick browse
+const part1Torahs = [];
+const part1Index = loadJSON('public/reader/likutay-moharan/part-1/index.json');
+if (part1Index && part1Index.torahs) {
+  for (const t of part1Index.torahs) {
+    const conns = connections['part-1']?.[t.number]?.connections || [];
+    part1Torahs.push({ number: t.number, title: t.hebrewTitle || t.title, connectionCount: conns.length });
+  }
+}
+
+const part2Torahs = [];
+const part2Index = loadJSON('public/reader/likutay-moharan/part-2/index.json');
+if (part2Index && part2Index.torahs) {
+  for (const t of part2Index.torahs) {
+    const conns = connections['part-2']?.[t.number]?.connections || [];
+    part2Torahs.push({ number: t.number, title: t.hebrewTitle || t.title, connectionCount: conns.length });
+  }
+}
+---
+
+<Layout title="Chain of Light - שרשרת האור" description="Trace any Likutay Moharan teaching through all the Breslov sefarim. See how each torah flows into Likutay Halachos, Kitzur, Tefilos, Parparos LeChochma, Biur HaLikutim and more.">
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "Chain of Light - שרשרת האור",
+    "description": "Trace any Likutay Moharan teaching through all the Breslov sefarim.",
+    "url": "https://ajew.org/chain-of-light",
+    "isPartOf": { "@type": "WebSite", "name": "ajew.org", "url": "https://ajew.org" }
+  })} slot="head" />
+
+  <style>
+    .col-page {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+      font-family: 'Open Sans', sans-serif;
+      color: #222;
+    }
+
+    /* Header */
+    .col-header {
+      text-align: center;
+      margin-bottom: 36px;
+      padding-bottom: 24px;
+      border-bottom: 3px solid #1a365d;
+    }
+    .col-header .hebrew-title {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 2.8em;
+      color: #1a365d;
+      direction: rtl;
+      margin: 0 0 4px;
+      font-weight: 700;
+    }
+    .col-header h1 {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 1.8em;
+      color: #1a365d;
+      margin: 0 0 8px;
+    }
+    .col-header .subtitle {
+      color: #666;
+      font-size: 0.95em;
+      margin: 0;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Stats bar */
+    .col-stats {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 20px 0 32px;
+    }
+    .col-stat {
+      background: #f8f5ef;
+      border: 1px solid #e8e2d6;
+      border-radius: 12px;
+      padding: 12px 20px;
+      text-align: center;
+      min-width: 120px;
+    }
+    .col-stat-num {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 1.8em;
+      color: #1a365d;
+      font-weight: 700;
+      line-height: 1;
+    }
+    .col-stat-label {
+      font-size: 0.78em;
+      color: #888;
+      margin-top: 4px;
+    }
+
+    /* Selector */
+    .col-selector {
+      background: #f8f5ef;
+      border: 1px solid #e8e2d6;
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 28px;
+    }
+    .col-selector-title {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 1.2em;
+      color: #1a365d;
+      margin: 0 0 12px;
+      font-weight: 700;
+    }
+    .col-selector-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .col-selector select, .col-selector input {
+      font-family: 'Open Sans', sans-serif;
+      font-size: 0.95em;
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background: white;
+      color: #222;
+    }
+    .col-selector select {
+      min-width: 140px;
+    }
+    .col-selector input[type="number"] {
+      width: 100px;
+    }
+    .col-selector .col-go-btn {
+      background: #1a365d;
+      color: #e8d5a3;
+      border: none;
+      padding: 8px 24px;
+      border-radius: 8px;
+      font-size: 0.95em;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+    .col-selector .col-go-btn:hover {
+      background: #2a4a7d;
+    }
+
+    /* Quick browse */
+    .col-browse {
+      margin-bottom: 32px;
+    }
+    .col-browse-title {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 1.15em;
+      color: #1a365d;
+      margin: 0 0 6px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .col-browse-title .toggle-arrow {
+      transition: transform 0.2s;
+      font-size: 0.8em;
+    }
+    .col-browse-title.open .toggle-arrow {
+      transform: rotate(90deg);
+    }
+    .col-browse-grid {
+      display: none;
+      flex-wrap: wrap;
+      gap: 4px;
+      list-style: none;
+      padding: 8px 0 0;
+      margin: 0;
+    }
+    .col-browse-grid.visible {
+      display: flex;
+    }
+    .col-browse-grid a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #1a365d;
+      text-decoration: none;
+      font-size: 0.82em;
+      padding: 4px 8px;
+      border-radius: 4px;
+      background: #f8f5ef;
+      border: 1px solid #e8e2d6;
+      min-width: 32px;
+      text-align: center;
+      transition: all 0.12s;
+      position: relative;
+    }
+    .col-browse-grid a:hover {
+      background: #1a365d;
+      color: #e8d5a3;
+      border-color: #1a365d;
+    }
+    .col-browse-grid a.has-connections {
+      background: #eef2f7;
+      border-color: #1a365d;
+      font-weight: 600;
+    }
+    .col-browse-grid a.many-connections {
+      background: #1a365d;
+      color: #e8d5a3;
+      font-weight: 700;
+    }
+    .col-browse-grid a .conn-dot {
+      position: absolute;
+      top: -3px;
+      right: -3px;
+      background: #c53030;
+      color: white;
+      border-radius: 50%;
+      width: 14px;
+      height: 14px;
+      font-size: 0.6em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+
+    /* Part divider in quick browse */
+    .col-part-label {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 1em;
+      color: #555;
+      margin: 16px 0 4px;
+      font-weight: 600;
+      direction: rtl;
+    }
+
+    /* Chain display area */
+    .col-chain-area {
+      display: none;
+    }
+    .col-chain-area.visible {
+      display: block;
+    }
+
+    /* Source card */
+    .col-source {
+      background: linear-gradient(135deg, #1a365d 0%, #2a4a7d 100%);
+      border-radius: 14px;
+      padding: 24px;
+      color: white;
+      margin-bottom: 16px;
+    }
+    .col-source-label {
+      font-size: 0.75em;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #e8d5a3;
+      margin: 0 0 8px;
+      font-weight: 600;
+    }
+    .col-source-title {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 1.6em;
+      margin: 0 0 6px;
+      direction: rtl;
+    }
+    .col-source-english {
+      font-size: 0.95em;
+      opacity: 0.9;
+      margin: 0 0 8px;
+    }
+    .col-source-verse {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 1.05em;
+      direction: rtl;
+      background: rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin: 12px 0 0;
+      border-right: 3px solid #e8d5a3;
+    }
+    .col-source-verse-ref {
+      font-family: 'Open Sans', sans-serif;
+      font-size: 0.75em;
+      color: #e8d5a3;
+      margin-top: 4px;
+      direction: ltr;
+      display: block;
+    }
+    .col-source-themes {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+    .col-source-themes span {
+      background: rgba(255,255,255,0.15);
+      padding: 3px 10px;
+      border-radius: 10px;
+      font-size: 0.72em;
+      color: #e8d5a3;
+    }
+    .col-source-link {
+      display: inline-block;
+      margin-top: 14px;
+      color: #e8d5a3;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9em;
+      border: 1px solid rgba(232,213,163,0.4);
+      padding: 6px 16px;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+    .col-source-link:hover {
+      background: rgba(232,213,163,0.15);
+    }
+
+    /* Connection count badge */
+    .col-count-badge {
+      text-align: center;
+      padding: 10px;
+      font-size: 0.9em;
+      color: #666;
+      margin-bottom: 8px;
+    }
+    .col-count-badge strong {
+      color: #1a365d;
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 1.3em;
+    }
+
+    /* Chain timeline */
+    .col-chain {
+      position: relative;
+      padding-left: 40px;
+    }
+    .col-chain::before {
+      content: '';
+      position: absolute;
+      left: 15px;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: linear-gradient(to bottom, #1a365d, #e8d5a3, #c53030);
+      border-radius: 2px;
+    }
+
+    /* Chain category section */
+    .col-chain-category {
+      margin-bottom: 24px;
+    }
+    .col-chain-cat-title {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 1.1em;
+      color: #1a365d;
+      margin: 0 0 10px;
+      font-weight: 700;
+      position: relative;
+    }
+    .col-chain-cat-title::before {
+      content: '';
+      position: absolute;
+      left: -33px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      background: #1a365d;
+      border: 3px solid white;
+      box-shadow: 0 0 0 2px #1a365d;
+    }
+    .col-chain-cat-icon {
+      margin-right: 6px;
+    }
+
+    /* Connection card */
+    .col-conn-card {
+      background: white;
+      border: 1px solid #e8e2d6;
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 10px;
+      position: relative;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .col-conn-card:hover {
+      border-color: #1a365d;
+      box-shadow: 0 2px 12px rgba(26,54,93,0.1);
+    }
+    .col-conn-card::before {
+      content: '';
+      position: absolute;
+      left: -28px;
+      top: 20px;
+      width: 20px;
+      height: 2px;
+      background: #d1ccc0;
+    }
+    .col-conn-book {
+      font-size: 0.78em;
+      color: #888;
+      margin: 0 0 4px;
+    }
+    .col-conn-book-he {
+      font-family: 'Frank Ruhl Libre', serif;
+      color: #1a365d;
+      font-weight: 600;
+      font-size: 1.1em;
+    }
+    .col-conn-title {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 0.95em;
+      color: #333;
+      margin: 0 0 6px;
+      direction: rtl;
+    }
+    .col-conn-snippet {
+      font-size: 0.83em;
+      color: #555;
+      line-height: 1.6;
+      direction: rtl;
+      font-family: 'Frank Ruhl Libre', serif;
+      max-height: 4.8em;
+      overflow: hidden;
+      margin: 0 0 10px;
+    }
+    .col-conn-type {
+      display: inline-block;
+      font-size: 0.7em;
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-right: 6px;
+    }
+    .col-conn-type.expansion { background: #e6f3e6; color: #276227; }
+    .col-conn-type.summary { background: #e8eef6; color: #1a365d; }
+    .col-conn-type.prayer { background: #f5e6f5; color: #6b246b; }
+    .col-conn-type.commentary { background: #f5f0e0; color: #7a6520; }
+    .col-conn-type.advice { background: #e0f0f5; color: #1a5d5d; }
+    .col-conn-type.related { background: #f0e8e8; color: #5d1a1a; }
+    .col-conn-link {
+      display: inline-block;
+      color: #1a365d;
+      text-decoration: none;
+      font-size: 0.85em;
+      font-weight: 600;
+      transition: color 0.2s;
+    }
+    .col-conn-link:hover {
+      color: #2a4a7d;
+      text-decoration: underline;
+    }
+
+    /* No connections */
+    .col-no-connections {
+      text-align: center;
+      padding: 40px 20px;
+      color: #888;
+      font-style: italic;
+    }
+
+    /* Dark mode support */
+    :global(html.dark-mode) .col-page { color: #e0e0e0; }
+    :global(html.dark-mode) .col-header { border-bottom-color: #4a7ab5; }
+    :global(html.dark-mode) .col-header .hebrew-title,
+    :global(html.dark-mode) .col-header h1 { color: #8ab4f8; }
+    :global(html.dark-mode) .col-header .subtitle { color: #aaa; }
+    :global(html.dark-mode) .col-stat { background: #2a2a3e; border-color: #3a3a5e; }
+    :global(html.dark-mode) .col-stat-num { color: #8ab4f8; }
+    :global(html.dark-mode) .col-stat-label { color: #aaa; }
+    :global(html.dark-mode) .col-selector { background: #2a2a3e; border-color: #3a3a5e; }
+    :global(html.dark-mode) .col-selector-title { color: #8ab4f8; }
+    :global(html.dark-mode) .col-selector select,
+    :global(html.dark-mode) .col-selector input { background: #1a1a2e; color: #e0e0e0; border-color: #3a3a5e; }
+    :global(html.dark-mode) .col-browse-grid a { background: #2a2a3e; border-color: #3a3a5e; color: #8ab4f8; }
+    :global(html.dark-mode) .col-browse-grid a:hover { background: #3a4a6d; }
+    :global(html.dark-mode) .col-browse-grid a.has-connections { background: #2a3a5e; border-color: #4a7ab5; }
+    :global(html.dark-mode) .col-browse-grid a.many-connections { background: #4a7ab5; color: #fff; }
+    :global(html.dark-mode) .col-conn-card { background: #2a2a3e; border-color: #3a3a5e; }
+    :global(html.dark-mode) .col-conn-card:hover { border-color: #4a7ab5; box-shadow: 0 2px 12px rgba(74,122,181,0.2); }
+    :global(html.dark-mode) .col-conn-book-he { color: #8ab4f8; }
+    :global(html.dark-mode) .col-conn-snippet { color: #bbb; }
+    :global(html.dark-mode) .col-conn-link { color: #8ab4f8; }
+    :global(html.dark-mode) .col-chain-cat-title { color: #8ab4f8; }
+    :global(html.dark-mode) .col-chain-cat-title::before { background: #4a7ab5; box-shadow: 0 0 0 2px #4a7ab5; }
+    :global(html.dark-mode) .col-chain::before { background: linear-gradient(to bottom, #4a7ab5, #e8d5a3, #c53030); }
+    :global(html.dark-mode) .col-part-label { color: #aaa; }
+    :global(html.dark-mode) .col-count-badge { color: #aaa; }
+    :global(html.dark-mode) .col-count-badge strong { color: #8ab4f8; }
+
+    /* Mobile */
+    @media (max-width: 640px) {
+      .col-page { padding: 20px 16px 60px; }
+      .col-header .hebrew-title { font-size: 2em; }
+      .col-header h1 { font-size: 1.3em; }
+      .col-stats { gap: 8px; }
+      .col-stat { padding: 8px 14px; min-width: 90px; }
+      .col-stat-num { font-size: 1.4em; }
+      .col-chain { padding-left: 30px; }
+      .col-chain::before { left: 10px; }
+      .col-chain-cat-title::before { left: -27px; }
+      .col-conn-card::before { left: -22px; width: 14px; }
+      .col-source-title { font-size: 1.3em; }
+      .col-selector-row { flex-direction: column; align-items: stretch; }
+      .col-selector select, .col-selector input[type="number"] { width: 100%; }
+    }
+  </style>
+
+  <div class="col-page">
+    <!-- Header -->
+    <header class="col-header">
+      <div class="hebrew-title">שרשרת האור</div>
+      <h1>Chain of Light</h1>
+      <p class="subtitle">
+        Trace any Likutay Moharan teaching through all the Breslov sefarim &mdash;
+        from source to expansion, summary, prayer, and commentary.
+      </p>
+    </header>
+
+    <!-- Stats -->
+    <div class="col-stats">
+      <div class="col-stat">
+        <div class="col-stat-num">{totalTorahsWithConnections}</div>
+        <div class="col-stat-label">Torahs Connected</div>
+      </div>
+      <div class="col-stat">
+        <div class="col-stat-num">{totalConnections.toLocaleString()}</div>
+        <div class="col-stat-label">Total Connections</div>
+      </div>
+      <div class="col-stat">
+        <div class="col-stat-num">{maxConnections}</div>
+        <div class="col-stat-label">Most Connections</div>
+      </div>
+    </div>
+
+    <!-- Selector -->
+    <div class="col-selector">
+      <div class="col-selector-title">Select a Torah</div>
+      <div class="col-selector-row">
+        <select id="colPartSelect">
+          <option value="1">Part 1 / חלק א</option>
+          <option value="2">Part 2 / תנינא</option>
+        </select>
+        <input type="number" id="colTorahInput" min="1" max="286" value="1" placeholder="Torah #" />
+        <button class="col-go-btn" id="colGoBtn">Show Chain</button>
+      </div>
+    </div>
+
+    <!-- Quick Browse -->
+    <div class="col-browse">
+      <div class="col-browse-title" id="colBrowseToggle1">
+        <span class="toggle-arrow">&#9654;</span> Part 1 / חלק א ({part1Torahs.length} Torahs)
+      </div>
+      <div class="col-browse-grid" id="colGrid1">
+        {part1Torahs.map(t => {
+          const cls = t.connectionCount >= 5 ? 'many-connections' : t.connectionCount > 0 ? 'has-connections' : '';
+          return (
+            <a href="#" class={cls} data-part="1" data-torah={t.number} title={`Torah ${t.number}: ${t.title} (${t.connectionCount} connections)`}>
+              <span class="torah-num">{t.number}</span>
+              {t.connectionCount > 0 && <span class="conn-dot">{t.connectionCount > 9 ? '9+' : t.connectionCount}</span>}
+            </a>
+          );
+        })}
+      </div>
+
+      <div class="col-part-label">חלק ב - תנינא</div>
+      <div class="col-browse-title" id="colBrowseToggle2">
+        <span class="toggle-arrow">&#9654;</span> Part 2 / תנינא ({part2Torahs.length} Torahs)
+      </div>
+      <div class="col-browse-grid" id="colGrid2">
+        {part2Torahs.map(t => {
+          const cls = t.connectionCount >= 5 ? 'many-connections' : t.connectionCount > 0 ? 'has-connections' : '';
+          return (
+            <a href="#" class={cls} data-part="2" data-torah={t.number} title={`Torah ${t.number}: ${t.title} (${t.connectionCount} connections)`}>
+              <span class="torah-num">{t.number}</span>
+              {t.connectionCount > 0 && <span class="conn-dot">{t.connectionCount > 9 ? '9+' : t.connectionCount}</span>}
+            </a>
+          );
+        })}
+      </div>
+    </div>
+
+    <!-- Chain Display Area -->
+    <div class="col-chain-area" id="colChainArea">
+      <div id="colSourceCard"></div>
+      <div class="col-count-badge" id="colCountBadge"></div>
+      <div class="col-chain" id="colChain"></div>
+      <div class="col-no-connections" id="colNoConns" style="display:none;">
+        No connections found for this torah yet. More connections are discovered as more texts are analyzed.
+      </div>
+    </div>
+  </div>
+
+  <!-- Inline data for client-side rendering -->
+  <script is:inline define:vars={{ lmMeta: JSON.stringify(lmMeta), connections: JSON.stringify(connections) }}>
+    const chainLmMeta = JSON.parse(lmMeta);
+    const chainConnections = JSON.parse(connections);
+
+    // Category ordering and labels
+    const categoryOrder = [
+      { type: 'expansion', icon: '\uD83D\uDCD6', label: 'Expanded in Likutay Halachos', labelHe: '\u05D4\u05E8\u05D7\u05D1\u05D4 \u05D1\u05DC\u05D9\u05E7\u05D5\u05D8\u05D9 \u05D4\u05DC\u05DB\u05D5\u05EA' },
+      { type: 'summary', icon: '\uD83D\uDCDD', label: 'Summarized in Kitzur LM', labelHe: '\u05E7\u05D9\u05E6\u05D5\u05E8' },
+      { type: 'prayer', icon: '\uD83D\uDE4F', label: 'Turned into Prayer', labelHe: '\u05EA\u05E4\u05D9\u05DC\u05D4' },
+      { type: 'commentary', icon: '\uD83D\uDCA1', label: 'Commentary & Explanation', labelHe: '\u05E4\u05D9\u05E8\u05D5\u05E9 \u05D5\u05D1\u05D9\u05D0\u05D5\u05E8' },
+      { type: 'advice', icon: '\u2728', label: 'Practical Advice', labelHe: '\u05E2\u05E6\u05D5\u05EA' },
+      { type: 'related', icon: '\uD83D\uDD17', label: 'Related Teachings', labelHe: '\u05E7\u05E9\u05E8\u05D9\u05DD' },
+    ];
+
+    function showChain(part, torah) {
+      const partKey = 'part-' + part;
+      const meta = chainLmMeta[partKey]?.[torah];
+      const data = chainConnections[partKey]?.[torah];
+      const conns = data?.connections || [];
+
+      // Show the chain area
+      document.getElementById('colChainArea').classList.add('visible');
+
+      // Render source card
+      const srcCard = document.getElementById('colSourceCard');
+      let srcHtml = '<div class="col-source">';
+      srcHtml += '<div class="col-source-label">\u05DE\u05E7\u05D5\u05E8 \u2014 Source</div>';
+      if (meta) {
+        srcHtml += '<div class="col-source-title">\u05DC\u05D9\u05E7\u05D5\u05D8\u05D9 \u05DE\u05D5\u05D4\u05E8"\u05DF ' + (part === 2 ? '\u05EA\u05E0\u05D9\u05E0\u05D0 ' : '') + '\u05EA\u05D5\u05E8\u05D4 ' + torah + ' \u2014 ' + (meta.hebrewTitle || '') + '</div>';
+        if (meta.title) srcHtml += '<div class="col-source-english">' + meta.title + '</div>';
+        if (meta.keyVerse) {
+          srcHtml += '<div class="col-source-verse">' + meta.keyVerse;
+          if (meta.keyVerseRef) srcHtml += '<span class="col-source-verse-ref">' + meta.keyVerseRef + '</span>';
+          srcHtml += '</div>';
+        }
+        if (meta.themes && meta.themes.length > 0) {
+          srcHtml += '<div class="col-source-themes">';
+          meta.themes.forEach(function(t) { srcHtml += '<span>' + t + '</span>'; });
+          srcHtml += '</div>';
+        }
+        srcHtml += '<a class="col-source-link" href="' + meta.url + '">Read in Reader \u2192</a>';
+      } else {
+        srcHtml += '<div class="col-source-title">\u05DC\u05D9\u05E7\u05D5\u05D8\u05D9 \u05DE\u05D5\u05D4\u05E8"\u05DF ' + (part === 2 ? '\u05EA\u05E0\u05D9\u05E0\u05D0 ' : '') + '\u05EA\u05D5\u05E8\u05D4 ' + torah + '</div>';
+        srcHtml += '<a class="col-source-link" href="/reader/likutay-moharan/' + part + '/' + torah + '">Read in Reader \u2192</a>';
+      }
+      srcHtml += '</div>';
+      srcCard.innerHTML = srcHtml;
+
+      // Count badge
+      const badge = document.getElementById('colCountBadge');
+      if (conns.length > 0) {
+        const bookSet = new Set(conns.map(function(c) { return c.book; }));
+        badge.innerHTML = 'This teaching appears in <strong>' + conns.length + '</strong> ' + (conns.length === 1 ? 'place' : 'places') + ' across <strong>' + bookSet.size + '</strong> ' + (bookSet.size === 1 ? 'book' : 'books');
+        badge.style.display = '';
+      } else {
+        badge.style.display = 'none';
+      }
+
+      // Chain
+      const chainEl = document.getElementById('colChain');
+      const noConns = document.getElementById('colNoConns');
+
+      if (conns.length === 0) {
+        chainEl.innerHTML = '';
+        noConns.style.display = '';
+        return;
+      }
+      noConns.style.display = 'none';
+
+      // Group by type
+      const grouped = {};
+      conns.forEach(function(c) {
+        if (!grouped[c.type]) grouped[c.type] = [];
+        grouped[c.type].push(c);
+      });
+
+      let chainHtml = '';
+      categoryOrder.forEach(function(cat) {
+        const items = grouped[cat.type];
+        if (!items || items.length === 0) return;
+
+        chainHtml += '<div class="col-chain-category">';
+        chainHtml += '<div class="col-chain-cat-title"><span class="col-chain-cat-icon">' + cat.icon + '</span> ' + cat.label + ' <span style="font-size:0.75em;color:#888;">(' + items.length + ')</span></div>';
+
+        items.forEach(function(conn) {
+          chainHtml += '<div class="col-conn-card">';
+          chainHtml += '<div class="col-conn-book"><span class="col-conn-book-he">' + (conn.bookHebrew || '') + '</span> \u2014 ' + (conn.bookTitle || '') + '</div>';
+          if (conn.title) chainHtml += '<div class="col-conn-title">' + conn.title + '</div>';
+          chainHtml += '<span class="col-conn-type ' + conn.type + '">' + (conn.typeHebrew || conn.typeLabel || conn.type) + '</span> ';
+          if (conn.snippet) chainHtml += '<div class="col-conn-snippet">' + conn.snippet + '</div>';
+          chainHtml += '<a class="col-conn-link" href="' + conn.url + '">Read \u2192</a>';
+          chainHtml += '</div>';
+        });
+
+        chainHtml += '</div>';
+      });
+
+      chainEl.innerHTML = chainHtml;
+
+      // Scroll to chain area
+      document.getElementById('colChainArea').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      // Update URL
+      history.replaceState(null, '', '/chain-of-light?part=' + part + '&torah=' + torah);
+    }
+
+    // Event handlers
+    document.getElementById('colGoBtn').addEventListener('click', function() {
+      var part = parseInt(document.getElementById('colPartSelect').value);
+      var torah = parseInt(document.getElementById('colTorahInput').value);
+      if (torah >= 1) showChain(part, torah);
+    });
+
+    document.getElementById('colTorahInput').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        var part = parseInt(document.getElementById('colPartSelect').value);
+        var torah = parseInt(document.getElementById('colTorahInput').value);
+        if (torah >= 1) showChain(part, torah);
+      }
+    });
+
+    // Update max when part changes
+    document.getElementById('colPartSelect').addEventListener('change', function() {
+      var part = parseInt(this.value);
+      document.getElementById('colTorahInput').max = part === 1 ? 286 : 125;
+    });
+
+    // Quick browse toggle
+    function setupToggle(toggleId, gridId) {
+      document.getElementById(toggleId).addEventListener('click', function() {
+        var grid = document.getElementById(gridId);
+        grid.classList.toggle('visible');
+        this.classList.toggle('open');
+      });
+    }
+    setupToggle('colBrowseToggle1', 'colGrid1');
+    setupToggle('colBrowseToggle2', 'colGrid2');
+
+    // Quick browse clicks
+    document.querySelectorAll('.col-browse-grid a').forEach(function(a) {
+      a.addEventListener('click', function(e) {
+        e.preventDefault();
+        var part = parseInt(this.dataset.part);
+        var torah = parseInt(this.dataset.torah);
+        document.getElementById('colPartSelect').value = part;
+        document.getElementById('colTorahInput').value = torah;
+        showChain(part, torah);
+      });
+    });
+
+    // Check URL params on load
+    (function() {
+      var params = new URLSearchParams(window.location.search);
+      var part = parseInt(params.get('part')) || 0;
+      var torah = parseInt(params.get('torah')) || 0;
+      if (part >= 1 && torah >= 1) {
+        document.getElementById('colPartSelect').value = part;
+        document.getElementById('colTorahInput').value = torah;
+        showChain(part, torah);
+      } else {
+        // Auto-open part 1 browse by default
+        document.getElementById('colGrid1').classList.add('visible');
+        document.getElementById('colBrowseToggle1').classList.add('open');
+      }
+    })();
+  </script>
+</Layout>
