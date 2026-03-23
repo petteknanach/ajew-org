@@ -1,0 +1,557 @@
+---
+import Layout from '../layouts/Layout.astro';
+import healingData from '../../public/healing-words.json';
+---
+
+<Layout title="Healing Words - \u05D3\u05D1\u05E8\u05D9 \u05DE\u05E8\u05E4\u05D0" description="Curated journeys through Rabbi Nachman's teachings. Guided paths of joy, faith, prayer, healing and strength for the soul.">
+  <div class="hw-page">
+    <!-- Hero -->
+    <header class="hw-hero">
+      <h1 class="hw-title-he">\u05D3\u05D1\u05E8\u05D9 \u05DE\u05E8\u05E4\u05D0</h1>
+      <h2 class="hw-title-en">Healing Words</h2>
+      <p class="hw-subtitle">Curated journeys through the teachings of Rabbi Nachman and his students.<br>Each path is a carefully ordered sequence of teachings, building on each other, ending with a suggested prayer.</p>
+    </header>
+
+    <!-- Journey Cards Grid -->
+    <section class="hw-grid" id="journeyGrid">
+      {healingData.journeys.map((journey: any) => (
+        <button class="hw-card" data-journey={journey.id} type="button" aria-expanded="false">
+          <span class="hw-card-icon">{journey.icon}</span>
+          <h3 class="hw-card-title-he">{journey.hebrewTitle}</h3>
+          <h4 class="hw-card-title-en">{journey.title}</h4>
+          <p class="hw-card-desc">{journey.description}</p>
+          <span class="hw-card-steps">{journey.steps.length} teachings</span>
+          <div class="hw-card-progress" data-journey-progress={journey.id}>
+            <div class="hw-card-progress-bar"></div>
+          </div>
+        </button>
+      ))}
+    </section>
+
+    <!-- Journey Detail View (hidden by default) -->
+    <section class="hw-journey-detail" id="journeyDetail" hidden>
+      <button class="hw-back-btn" id="backToGrid" type="button">&larr; Back to all journeys</button>
+      <div class="hw-journey-header" id="journeyHeader"></div>
+      <div class="hw-journey-progress-bar" id="journeyProgressOuter">
+        <div class="hw-journey-progress-fill" id="journeyProgressFill"></div>
+        <span class="hw-journey-progress-text" id="journeyProgressText"></span>
+      </div>
+      <ol class="hw-steps-list" id="stepsList"></ol>
+    </section>
+  </div>
+
+  <!-- Data injected for client-side JS -->
+  <script is:inline define:vars={{ journeysJSON: JSON.stringify(healingData.journeys) }}>
+    const journeys = JSON.parse(journeysJSON);
+
+    // --- Progress storage ---
+    function getProgress() {
+      try {
+        return JSON.parse(localStorage.getItem('hw-progress') || '{}');
+      } catch { return {}; }
+    }
+    function setProgress(data) {
+      localStorage.setItem('hw-progress', JSON.stringify(data));
+    }
+    function isStepDone(journeyId, stepIdx) {
+      const p = getProgress();
+      return !!(p[journeyId] && p[journeyId][stepIdx]);
+    }
+    function toggleStep(journeyId, stepIdx) {
+      const p = getProgress();
+      if (!p[journeyId]) p[journeyId] = {};
+      p[journeyId][stepIdx] = !p[journeyId][stepIdx];
+      setProgress(p);
+    }
+    function journeyCompletion(journeyId, totalSteps) {
+      const p = getProgress();
+      if (!p[journeyId]) return 0;
+      let done = 0;
+      for (let i = 0; i < totalSteps; i++) {
+        if (p[journeyId][i]) done++;
+      }
+      return done / totalSteps;
+    }
+
+    // --- Card progress bars ---
+    function updateCardProgress() {
+      journeys.forEach(j => {
+        const el = document.querySelector('[data-journey-progress="' + j.id + '"]');
+        if (!el) return;
+        const pct = journeyCompletion(j.id, j.steps.length) * 100;
+        const bar = el.querySelector('.hw-card-progress-bar');
+        if (bar) bar.style.width = pct + '%';
+      });
+    }
+    updateCardProgress();
+
+    // --- Grid <-> Detail navigation ---
+    const grid = document.getElementById('journeyGrid');
+    const detail = document.getElementById('journeyDetail');
+    const backBtn = document.getElementById('backToGrid');
+
+    function showGrid() {
+      detail.hidden = true;
+      grid.hidden = false;
+      updateCardProgress();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      history.replaceState(null, '', '/healing-words');
+    }
+    function showJourney(journeyId) {
+      const journey = journeys.find(j => j.id === journeyId);
+      if (!journey) return;
+
+      grid.hidden = true;
+      detail.hidden = false;
+
+      // Header
+      const header = document.getElementById('journeyHeader');
+      header.innerHTML = '<span class="hw-detail-icon">' + journey.icon + '</span>'
+        + '<h2 class="hw-detail-title-he">' + journey.hebrewTitle + '</h2>'
+        + '<h3 class="hw-detail-title-en">' + journey.title + '</h3>'
+        + '<p class="hw-detail-desc">' + journey.description + '</p>';
+
+      // Steps
+      const list = document.getElementById('stepsList');
+      list.innerHTML = '';
+      journey.steps.forEach((step, idx) => {
+        const done = isStepDone(journey.id, idx);
+        const li = document.createElement('li');
+        li.className = 'hw-step' + (done ? ' hw-step--done' : '');
+        li.innerHTML =
+          '<div class="hw-step-header">'
+          + '<button class="hw-step-check" data-j="' + journey.id + '" data-s="' + idx + '" type="button" aria-label="' + (done ? 'Mark incomplete' : 'Mark complete') + '">'
+          + (done ? '\u2705' : '\u2b1c') + '</button>'
+          + '<div class="hw-step-num">' + (idx + 1) + '</div>'
+          + '<div class="hw-step-info">'
+          + '<h4 class="hw-step-title">' + step.title + '</h4>'
+          + '<p class="hw-step-desc">' + step.description + '</p>'
+          + '</div>'
+          + '</div>'
+          + '<div class="hw-step-snippet">'
+          + '<div class="hw-snippet-he" dir="rtl">' + step.snippet_he + '</div>'
+          + '<div class="hw-snippet-en">' + step.snippet_en + '</div>'
+          + '</div>'
+          + '<a class="hw-step-link" href="' + step.reader_url + '" target="_blank">Read Full Teaching \u2192</a>';
+        list.appendChild(li);
+      });
+
+      updateJourneyProgress(journey);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      history.replaceState(null, '', '/healing-words#' + journeyId);
+    }
+
+    function updateJourneyProgress(journey) {
+      const pct = journeyCompletion(journey.id, journey.steps.length) * 100;
+      const done = Math.round(pct / 100 * journey.steps.length);
+      document.getElementById('journeyProgressFill').style.width = pct + '%';
+      document.getElementById('journeyProgressText').textContent = done + ' / ' + journey.steps.length + ' completed (' + Math.round(pct) + '%)';
+    }
+
+    // --- Event Listeners ---
+    document.querySelectorAll('.hw-card').forEach(card => {
+      card.addEventListener('click', () => {
+        showJourney(card.dataset.journey);
+      });
+    });
+    backBtn.addEventListener('click', showGrid);
+
+    document.getElementById('stepsList').addEventListener('click', (e) => {
+      const btn = e.target.closest('.hw-step-check');
+      if (!btn) return;
+      const jId = btn.dataset.j;
+      const sIdx = parseInt(btn.dataset.s);
+      toggleStep(jId, sIdx);
+      const done = isStepDone(jId, sIdx);
+      btn.textContent = done ? '\u2705' : '\u2b1c';
+      btn.setAttribute('aria-label', done ? 'Mark incomplete' : 'Mark complete');
+      btn.closest('.hw-step').classList.toggle('hw-step--done', done);
+      const journey = journeys.find(j => j.id === jId);
+      if (journey) updateJourneyProgress(journey);
+    });
+
+    // Handle hash on load
+    if (window.location.hash) {
+      const id = window.location.hash.slice(1);
+      if (journeys.find(j => j.id === id)) {
+        showJourney(id);
+      }
+    }
+
+    // Handle browser back
+    window.addEventListener('popstate', () => {
+      if (window.location.hash) {
+        const id = window.location.hash.slice(1);
+        if (journeys.find(j => j.id === id)) {
+          showJourney(id);
+          return;
+        }
+      }
+      showGrid();
+    });
+  </script>
+
+  <style>
+    /* ============ Healing Words Page ============ */
+    .hw-page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 4rem;
+    }
+
+    /* Hero */
+    .hw-hero {
+      text-align: center;
+      padding: 2.5rem 1rem 2rem;
+    }
+    .hw-title-he {
+      font-family: 'Frank Ruhl Libre', 'David', serif;
+      font-size: 3rem;
+      font-weight: 700;
+      color: #5b3a1a;
+      margin: 0 0 0.25rem;
+      direction: rtl;
+    }
+    .hw-title-en {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 1.6rem;
+      font-weight: 400;
+      color: #7a5c3a;
+      margin: 0 0 1rem;
+    }
+    .hw-subtitle {
+      font-size: 1.05rem;
+      color: #6b5a48;
+      max-width: 650px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* Card Grid */
+    .hw-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    .hw-card {
+      background: linear-gradient(145deg, #fdf8f0 0%, #f9f0e3 100%);
+      border: 1px solid #e8d5bd;
+      border-radius: 16px;
+      padding: 1.75rem 1.5rem 1.25rem;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: inherit;
+      font-size: inherit;
+      color: inherit;
+      box-shadow: 0 2px 12px rgba(139, 109, 72, 0.08);
+      position: relative;
+      overflow: hidden;
+    }
+    .hw-card:hover, .hw-card:focus-visible {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 30px rgba(139, 109, 72, 0.15);
+      border-color: #c9a87c;
+    }
+    .hw-card:focus-visible {
+      outline: 3px solid #c9a87c;
+      outline-offset: 2px;
+    }
+    .hw-card-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+    .hw-card-title-he {
+      font-family: 'Frank Ruhl Libre', 'David', serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #5b3a1a;
+      margin: 0 0 0.15rem;
+      direction: rtl;
+    }
+    .hw-card-title-en {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 1rem;
+      font-weight: 400;
+      color: #8b6d48;
+      margin: 0 0 0.75rem;
+    }
+    .hw-card-desc {
+      font-size: 0.9rem;
+      color: #6b5a48;
+      line-height: 1.55;
+      flex-grow: 1;
+      text-align: left;
+    }
+    .hw-card-steps {
+      font-size: 0.8rem;
+      color: #9c8569;
+      margin-top: 0.75rem;
+      display: inline-block;
+      background: rgba(201, 168, 124, 0.15);
+      padding: 0.2rem 0.7rem;
+      border-radius: 99px;
+    }
+    .hw-card-progress {
+      width: 100%;
+      height: 4px;
+      background: rgba(201, 168, 124, 0.2);
+      border-radius: 2px;
+      margin-top: 0.75rem;
+      overflow: hidden;
+    }
+    .hw-card-progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #c9a87c, #8b6d48);
+      border-radius: 2px;
+      width: 0%;
+      transition: width 0.4s ease;
+    }
+
+    /* Journey Detail */
+    .hw-journey-detail {
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .hw-back-btn {
+      background: none;
+      border: 1px solid #c9a87c;
+      color: #8b6d48;
+      padding: 0.5rem 1.25rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-family: inherit;
+      transition: all 0.2s;
+      margin-bottom: 1.5rem;
+    }
+    .hw-back-btn:hover {
+      background: #fdf8f0;
+      color: #5b3a1a;
+    }
+    .hw-journey-header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    .hw-detail-icon {
+      font-size: 3rem;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+    .hw-detail-title-he {
+      font-family: 'Frank Ruhl Libre', 'David', serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #5b3a1a;
+      margin: 0 0 0.15rem;
+      direction: rtl;
+    }
+    .hw-detail-title-en {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 1.3rem;
+      font-weight: 400;
+      color: #8b6d48;
+      margin: 0 0 0.75rem;
+    }
+    .hw-detail-desc {
+      font-size: 1rem;
+      color: #6b5a48;
+      max-width: 650px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* Progress bar */
+    .hw-journey-progress-bar {
+      width: 100%;
+      height: 12px;
+      background: rgba(201, 168, 124, 0.15);
+      border-radius: 6px;
+      margin: 0 0 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hw-journey-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #c9a87c, #6b8f4a);
+      border-radius: 6px;
+      width: 0%;
+      transition: width 0.5s ease;
+    }
+    .hw-journey-progress-text {
+      position: absolute;
+      right: 0;
+      top: -1.5rem;
+      font-size: 0.85rem;
+      color: #8b6d48;
+    }
+
+    /* Steps */
+    .hw-steps-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+    .hw-step {
+      background: linear-gradient(145deg, #fdf8f0 0%, #f9f0e3 100%);
+      border: 1px solid #e8d5bd;
+      border-radius: 14px;
+      padding: 1.5rem;
+      transition: all 0.25s ease;
+    }
+    .hw-step--done {
+      background: linear-gradient(145deg, #f0f7e9 0%, #e8f0dd 100%);
+      border-color: #c4d9b0;
+    }
+    .hw-step-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .hw-step-check {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.4rem;
+      line-height: 1;
+      padding: 0;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+    .hw-step-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #c9a87c, #8b6d48);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .hw-step--done .hw-step-num {
+      background: linear-gradient(135deg, #8bb86a, #6b8f4a);
+    }
+    .hw-step-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .hw-step-title {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #5b3a1a;
+      margin: 0 0 0.3rem;
+    }
+    .hw-step-desc {
+      font-size: 0.9rem;
+      color: #6b5a48;
+      line-height: 1.5;
+      margin: 0;
+    }
+    .hw-step-snippet {
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 0.75rem;
+      border-left: 3px solid #c9a87c;
+    }
+    .hw-snippet-he {
+      font-family: 'Frank Ruhl Libre', 'David', serif;
+      font-size: 1.1rem;
+      color: #3d2a10;
+      line-height: 1.8;
+      margin-bottom: 0.6rem;
+    }
+    .hw-snippet-en {
+      font-size: 0.95rem;
+      color: #5b4a34;
+      line-height: 1.6;
+      font-style: italic;
+    }
+    .hw-step-link {
+      display: inline-block;
+      color: #8b6d48;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      padding: 0.4rem 0;
+      border-bottom: 1px dashed #c9a87c;
+      transition: all 0.2s;
+    }
+    .hw-step-link:hover {
+      color: #5b3a1a;
+      border-bottom-color: #5b3a1a;
+    }
+
+    /* Dark mode */
+    :global(body.dark-mode) .hw-hero { }
+    :global(body.dark-mode) .hw-title-he,
+    :global(body.dark-mode) .hw-detail-title-he { color: #e8d5bd; }
+    :global(body.dark-mode) .hw-title-en,
+    :global(body.dark-mode) .hw-detail-title-en,
+    :global(body.dark-mode) .hw-card-title-en { color: #c9a87c; }
+    :global(body.dark-mode) .hw-subtitle,
+    :global(body.dark-mode) .hw-card-desc,
+    :global(body.dark-mode) .hw-step-desc,
+    :global(body.dark-mode) .hw-detail-desc { color: #b8a890; }
+    :global(body.dark-mode) .hw-card {
+      background: linear-gradient(145deg, #2a2240 0%, #1e1a30 100%);
+      border-color: #3d3560;
+    }
+    :global(body.dark-mode) .hw-card:hover {
+      border-color: #c9a87c;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    }
+    :global(body.dark-mode) .hw-card-title-he,
+    :global(body.dark-mode) .hw-step-title { color: #e8d5bd; }
+    :global(body.dark-mode) .hw-card-steps { background: rgba(201, 168, 124, 0.1); color: #c9a87c; }
+    :global(body.dark-mode) .hw-card-progress { background: rgba(201, 168, 124, 0.1); }
+    :global(body.dark-mode) .hw-step {
+      background: linear-gradient(145deg, #2a2240 0%, #1e1a30 100%);
+      border-color: #3d3560;
+    }
+    :global(body.dark-mode) .hw-step--done {
+      background: linear-gradient(145deg, #1e2a1e 0%, #1a251a 100%);
+      border-color: #3d5030;
+    }
+    :global(body.dark-mode) .hw-step-snippet {
+      background: rgba(0, 0, 0, 0.2);
+      border-left-color: #8b6d48;
+    }
+    :global(body.dark-mode) .hw-snippet-he { color: #e8d5bd; }
+    :global(body.dark-mode) .hw-snippet-en { color: #b8a890; }
+    :global(body.dark-mode) .hw-step-link { color: #c9a87c; border-bottom-color: #8b6d48; }
+    :global(body.dark-mode) .hw-step-link:hover { color: #e8d5bd; }
+    :global(body.dark-mode) .hw-back-btn { color: #c9a87c; border-color: #5b3a1a; }
+    :global(body.dark-mode) .hw-back-btn:hover { background: #2a2240; color: #e8d5bd; }
+    :global(body.dark-mode) .hw-journey-progress-bar { background: rgba(201, 168, 124, 0.1); }
+    :global(body.dark-mode) .hw-journey-progress-text { color: #c9a87c; }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .hw-title-he { font-size: 2.2rem; }
+      .hw-title-en { font-size: 1.2rem; }
+      .hw-grid { grid-template-columns: 1fr; gap: 1rem; }
+      .hw-card { padding: 1.25rem 1rem; }
+      .hw-step { padding: 1rem; }
+      .hw-step-header { flex-wrap: wrap; }
+      .hw-detail-title-he { font-size: 1.8rem; }
+      .hw-snippet-he { font-size: 1rem; }
+    }
+  </style>
+</Layout>
