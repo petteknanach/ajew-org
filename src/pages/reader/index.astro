@@ -400,11 +400,21 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
       // Daily Tehillim: cycle through 150 chapters
       const tehillimDay = (dayOfYear % 150) + 1;
 
+      // Daily Likutay Tefilos: cycle through 211 prayers (152 part1 + 59 part2)
+      const ltDay = (dayOfYear % 211) + 1;
+      let ltPart, ltPrayer;
+      if (ltDay <= 152) { ltPart = 1; ltPrayer = ltDay; }
+      else { ltPart = 2; ltPrayer = ltDay - 152; }
+
       const cards = document.getElementById('dailyCards');
       cards.innerHTML = `
         <a href="/reader/likutay-moharan/part-${lmPart}/${lmTorah}" class="daily-card">
           <span class="daily-label">Likutay Moharan</span>
           <span class="daily-num">Part ${lmPart}, Torah ${lmTorah}</span>
+        </a>
+        <a href="/reader/likutay-tefilos/part-${ltPart}/prayer-${ltPrayer}" class="daily-card">
+          <span class="daily-label">Likutay Tefilos</span>
+          <span class="daily-num">Part ${ltPart}, Prayer ${ltPrayer}</span>
         </a>
         <a href="/reader/tanach-tehillim/part-1/${tehillimDay}" class="daily-card">
           <span class="daily-label">Tehillim</span>
@@ -571,6 +581,8 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
         {catalog2 && <p class="volume-count">{catalog2.totalTorahs} Torahs</p>}
         {catalog2 ? (
           <ul class="torah-list">
+            <li><a href="/reader/likutay-moharan/2/intro" style="background: #e8d5a3; font-size: 0.8em;">הקדמה</a></li>
+            <li><a href="/reader/likutay-moharan/2/omission" style="background: #e8d5a3; font-size: 0.8em;">השמטה — אחד היה אברהם</a></li>
             {catalog2.torahs.map(t => (
               <li>
                 <a href={t.url}>
