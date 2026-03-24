@@ -105,7 +105,7 @@ const BOOK_DEFS = [
     parts: [
       { part: 1, dir: 'sefer-hamidos', prefix: 'topic-' },
     ],
-    urlTemplate: (part, num) => `/reader/sefer-hamidos/topic-${num}`,
+    urlTemplate: (part, num) => `/reader/sefer-hamidos/1/${num}`,
     sectionLabel: 'Topic',
   },
   {
@@ -115,7 +115,7 @@ const BOOK_DEFS = [
     parts: [
       { part: 1, dir: 'sipurey-maasiyos', prefix: 'story-' },
     ],
-    urlTemplate: (part, num) => `/reader/sipurey-maasiyos/story-${num}`,
+    urlTemplate: (part, num) => `/reader/sipurey-maasiyos/1/${num}`,
     sectionLabel: 'Story',
   },
   {
@@ -125,7 +125,7 @@ const BOOK_DEFS = [
     parts: [
       { part: 1, dir: 'sichos-haran', prefix: 'sicha-' },
     ],
-    urlTemplate: (part, num) => `/reader/sichos-haran/sicha-${num}`,
+    urlTemplate: (part, num) => `/reader/sichos-haran/1/${num}`,
     sectionLabel: 'Sicha',
   },
   {
@@ -135,7 +135,7 @@ const BOOK_DEFS = [
     parts: [
       { part: 1, dir: 'shivchay-haran', prefix: 'section-' },
     ],
-    urlTemplate: (part, num) => `/reader/shivchay-haran/section-${num}`,
+    urlTemplate: (part, num) => `/reader/shivchay-haran/1/${num}`,
     sectionLabel: 'Section',
   },
   {
@@ -145,7 +145,7 @@ const BOOK_DEFS = [
     parts: [
       { part: 1, dir: 'chayey-moharan', prefix: 'chapter-' },
     ],
-    urlTemplate: (part, num) => `/reader/chayey-moharan/chapter-${num}`,
+    urlTemplate: (part, num) => `/reader/chayey-moharan/1/${num}`,
     sectionLabel: 'Chapter',
   },
   {
@@ -155,7 +155,7 @@ const BOOK_DEFS = [
     parts: [
       { part: 1, dir: 'likutay-eitzos', prefix: 'topic-' },
     ],
-    urlTemplate: (part, num) => `/reader/likutay-eitzos/topic-${num}`,
+    urlTemplate: (part, num) => `/reader/likutay-eitzos/1/${num}`,
     sectionLabel: 'Topic',
   },
   {
@@ -165,7 +165,7 @@ const BOOK_DEFS = [
     parts: [
       { part: 1, dir: 'hashtatfchus-hanefesh', prefix: 'section-' },
     ],
-    urlTemplate: (part, num) => `/reader/hashtatfchus-hanefesh/section-${num}`,
+    urlTemplate: (part, num) => `/reader/hashtatfchus-hanefesh/1/${num}`,
     sectionLabel: 'Section',
   },
   {
@@ -175,7 +175,7 @@ const BOOK_DEFS = [
     parts: [
       { part: 1, dir: 'meshivas-nefesh', prefix: 'section-' },
     ],
-    urlTemplate: (part, num) => `/reader/meshivas-nefesh/section-${num}`,
+    urlTemplate: (part, num) => `/reader/meshivas-nefesh/1/${num}`,
     sectionLabel: 'Section',
   },
   {
@@ -196,7 +196,7 @@ const BOOK_DEFS = [
     parts: [
       { part: 1, dir: 'shemos-hatzadikim', prefix: 'section-' },
     ],
-    urlTemplate: (part, num) => `/reader/shemos-hatzadikim/section-${num}`,
+    urlTemplate: (part, num) => `/reader/shemos-hatzadikim/1/${num}`,
     sectionLabel: 'Section',
   },
   {
