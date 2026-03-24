@@ -6,14 +6,13 @@ import path from 'node:path';
 
 export function getStaticPaths() {
   const paths = [];
-  for (let torah = 1; torah <= 6; torah++) {
+  // Part 1: Chelek Rishon (prayers 0-151, prayer 0 = hakdama)
+  for (let torah = 0; torah <= 151; torah++) {
     paths.push({ params: { part: '1', torah: String(torah) } });
   }
-  for (let torah = 1; torah <= 156; torah++) {
+  // Part 2: Chelek Sheni (prayers 1-59)
+  for (let torah = 1; torah <= 59; torah++) {
     paths.push({ params: { part: '2', torah: String(torah) } });
-  }
-  for (let torah = 1; torah <= 64; torah++) {
-    paths.push({ params: { part: '3', torah: String(torah) } });
   }
   return paths;
 }
