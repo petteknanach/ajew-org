@@ -787,6 +787,38 @@ import Layout from '../layouts/Layout.astro';
       });
     }
 
+    // === LT Calendar Override ===
+    let ltCalendarMap = null;
+    let ltUndatedIndex = 0; // tracks which undated prayer we're on
+
+    function getLtPrayerForDay(day) {
+      if (!ltCalendarMap) return null;
+      const md = dayOfYearToMonthDay(day);
+      // Check if there's a dated prayer for this Hebrew date
+      const monthMap = ltCalendarMap.dateMap[md.month];
+      if (monthMap && monthMap[md.day]) {
+        const prayers = monthMap[md.day];
+        return prayers.map(p => ({
+          part: p.part,
+          num: p.num,
+          url: '/reader/likutay-tefilos/' + p.part + '/' + p.num,
+          label: 'Prayer ' + p.num
+        }));
+      }
+      // No dated prayer for today — use next undated prayer in sequence
+      if (ltCalendarMap.undated && ltCalendarMap.undated.length > 0) {
+        const idx = day % ltCalendarMap.undated.length;
+        const p = ltCalendarMap.undated[idx];
+        return [{
+          part: p.part,
+          num: p.num,
+          url: '/reader/likutay-tefilos/' + p.part + '/' + p.num,
+          label: 'Prayer ' + p.num
+        }];
+      }
+      return null;
+    }
+
     // === Init ===
 
     async function init() {
@@ -794,13 +826,30 @@ import Layout from '../layouts/Layout.astro';
       renderAll(); // initial render with loading state
 
       try {
-        const resp = await fetch('/chok-breslov.json');
-        if (!resp.ok) throw new Error('Could not load schedule');
-        chokData = await resp.json();
+        const [chokResp, ltResp] = await Promise.all([
+          fetch('/chok-breslov.json'),
+          fetch('/lt-calendar-map.json')
+        ]);
+        if (!chokResp.ok) throw new Error('Could not load schedule');
+        chokData = await chokResp.json();
+        if (ltResp.ok) ltCalendarMap = await ltResp.json();
       } catch(e) {
         document.getElementById('portionsGrid').innerHTML =
           '<p class="loading-msg">Could not load daily study schedule. Please run: <code>node scripts/build-chok-breslov.cjs</code></p>';
         return;
+      }
+
+      // Override LT portions with calendar-based assignments
+      if (chokData && ltCalendarMap) {
+        const ltBook = chokData.books.find(b => b.id === 'likutay-tefilos');
+        if (ltBook) {
+          for (let day = 1; day <= 354; day++) {
+            const ltPrayers = getLtPrayerForDay(day);
+            if (ltPrayers && ltBook.portions[day - 1]) {
+              ltBook.portions[day - 1].sections = ltPrayers;
+            }
+          }
+        }
       }
 
       renderAll();
