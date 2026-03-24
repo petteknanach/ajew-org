@@ -42,7 +42,14 @@ for (const [slug, data] of Object.entries(parshas)) {
 const totalConnections = Object.values(parshas).reduce((s, p) => s + (p.totalConnections || 0), 0);
 ---
 
-<Layout title="Breslov Teachings on the Parsha" description={`Discover Breslov teachings connected to each weekly Torah portion. ${totalConnections} connections across all 54 parshas.`}>
+<Layout title="Weekly Parsha with Likutey Halachos Commentary" description={`Discover Breslov teachings connected to each weekly Torah portion. ${totalConnections} connections across all 54 parshas from Likutey Halachos and more.`} breadcrumbs={[{name: "Home", url: "https://ajew.org"}, {name: "Parsha", url: "https://ajew.org/parsha"}]} jsonLd={{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Weekly Parsha with Breslov Teachings",
+  "description": `Breslov teachings connected to each weekly Torah portion. ${totalConnections} connections across all 54 parshas.`,
+  "url": "https://ajew.org/parsha",
+  "isPartOf": { "@type": "WebSite", "name": "A Jew", "url": "https://ajew.org" }
+}}>
   <section class="parsha-page">
     <div class="container">
       <div class="page-header">

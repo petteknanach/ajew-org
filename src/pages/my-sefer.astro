@@ -2,7 +2,14 @@
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="Build Your Sefer - My Personal Torah Anthology" description="Collect your favorite teachings from across the entire Jewish Torah library into a personal holy book. Bookmark passages, add notes, arrange in custom order, and export as PDF.">
+<Layout title="Build Your Sefer - Create a Personal Torah Anthology" description="Collect your favorite teachings from 226+ sacred Jewish texts into a personal holy book. Bookmark passages, add notes, arrange in custom order, and export as PDF." breadcrumbs={[{name: "Home", url: "https://ajew.org"}, {name: "My Sefer", url: "https://ajew.org/my-sefer"}]} jsonLd={{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Build Your Sefer - Personal Torah Anthology",
+  "description": "Collect your favorite teachings into a personal holy book.",
+  "url": "https://ajew.org/my-sefer",
+  "isPartOf": { "@type": "WebSite", "name": "A Jew", "url": "https://ajew.org" }
+}}>
   <div class="sefer-page">
     <!-- Header -->
     <div class="sefer-header">

@@ -4,17 +4,24 @@ Allow: /
 Disallow: /admin/
 Disallow: /private/
 Disallow: /tmp/
+Disallow: /my-stats
+Disallow: /my-notes
+Disallow: /profile
+Disallow: /login
+Disallow: /api/
 Disallow: /cgi-bin/
-Allow: /search?q=
 
 # Sitemaps
 Sitemap: https://ajew.org/sitemap-index.xml
 
-# Social media bots
+# Social media bots - allow for link previews
 User-agent: FacebookBot
 Allow: /
 
 User-agent: Twitterbot
+Allow: /
+
+User-agent: LinkedInBot
 Allow: /
 
 # AI crawlers
@@ -25,6 +32,12 @@ User-agent: ChatGPT-User
 Disallow: /
 
 User-agent: Google-Extended
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: anthropic-ai
 Disallow: /
 
 # Host

@@ -2,7 +2,14 @@
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="Torah GPS - Spiritual Navigation" description="Find the right Torah teachings for what you're going through. Search by topic across 226+ sacred Jewish texts. A spiritual GPS for life's challenges.">
+<Layout title="Torah GPS - Find Teachings for What You're Going Through" description="Spiritual navigation through 226+ sacred Jewish texts. Find Torah teachings for anxiety, faith, prayer, relationships, money, anger, and more. Rabbi Nachman of Breslov." breadcrumbs={[{name: "Home", url: "https://ajew.org"}, {name: "Torah GPS", url: "https://ajew.org/torah-gps"}]} jsonLd={{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Torah GPS - Spiritual Navigation",
+  "description": "Find the right Torah teachings for what you're going through. Search by topic across 226+ sacred Jewish texts.",
+  "url": "https://ajew.org/torah-gps",
+  "isPartOf": { "@type": "WebSite", "name": "A Jew", "url": "https://ajew.org" }
+}}>
 <div class="gps-page">
   <header class="gps-header">
     <div class="header-hebrew">תורה GPS</div>

@@ -2,7 +2,14 @@
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="Torah Lens / עדשת התורה" description="Understand current events through the lens of Breslov Torah teachings. Based on Amos 3:7 — Hashem does nothing without revealing His counsel to His servants the prophets.">
+<Layout title="Torah Lens - Current Events Through Torah Perspective" description="Understand current events through the lens of Breslov Torah teachings. See today's headlines through the wisdom of Rabbi Nachman and the Torah. Based on Amos 3:7." breadcrumbs={[{name: "Home", url: "https://ajew.org"}, {name: "Torah Lens", url: "https://ajew.org/torah-lens"}]} jsonLd={{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Torah Lens - Current Events Through Torah",
+  "description": "Understand current events through the lens of Breslov Torah teachings.",
+  "url": "https://ajew.org/torah-lens",
+  "isPartOf": { "@type": "WebSite", "name": "A Jew", "url": "https://ajew.org" }
+}}>
 <div class="lens-page">
   <header class="lens-header">
     <div class="header-ornament">&#x2721;</div>

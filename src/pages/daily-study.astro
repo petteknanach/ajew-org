@@ -2,7 +2,14 @@
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="Chok Breslov - Daily Torah Study" description="Complete the entire Breslov library in one year with daily Torah study portions. Likutay Moharan, Likutay Halachos, Sichos HaRan, and more.">
+<Layout title="Chok Breslov - Daily Torah Study Schedule" description="Complete the entire Breslov library in one year with daily Torah study portions. Likutay Moharan, Likutay Halachos, Sichos HaRan, Likutay Tefilos, and more. Track your progress day by day." breadcrumbs={[{name: "Home", url: "https://ajew.org"}, {name: "Daily Study", url: "https://ajew.org/daily-study"}]} jsonLd={{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Chok Breslov - Daily Torah Study",
+  "description": "Complete the entire Breslov library in one year with daily Torah study portions.",
+  "url": "https://ajew.org/daily-study",
+  "isPartOf": { "@type": "WebSite", "name": "A Jew", "url": "https://ajew.org" }
+}}>
   <div class="chok-container" id="chokApp">
     <!-- Header -->
     <header class="chok-header">

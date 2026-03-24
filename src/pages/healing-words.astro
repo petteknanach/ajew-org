@@ -3,7 +3,14 @@ import Layout from '../layouts/Layout.astro';
 import healingData from '../../public/healing-words.json';
 ---
 
-<Layout title="Healing Words - \u05D3\u05D1\u05E8\u05D9 \u05DE\u05E8\u05E4\u05D0" description="Curated journeys through Rabbi Nachman's teachings. Guided paths of joy, faith, prayer, healing and strength for the soul.">
+<Layout title="Healing Words - Curated Spiritual Journeys from Rabbi Nachman" description="Guided journeys through the teachings of Rabbi Nachman and his students. Curated paths for joy, faith, prayer, healing, strength, and hope. Each journey builds step by step." breadcrumbs={[{name: "Home", url: "https://ajew.org"}, {name: "Healing Words", url: "https://ajew.org/healing-words"}]} jsonLd={{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Healing Words - Curated Spiritual Journeys",
+  "description": "Curated journeys through Rabbi Nachman's teachings for joy, faith, prayer, healing and strength.",
+  "url": "https://ajew.org/healing-words",
+  "isPartOf": { "@type": "WebSite", "name": "A Jew", "url": "https://ajew.org" }
+}}>
   <div class="hw-page">
     <!-- Hero -->
     <header class="hw-hero">
