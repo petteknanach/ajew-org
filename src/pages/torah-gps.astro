@@ -314,6 +314,35 @@ import Layout from '../layouts/Layout.astro';
     color: #1a365d;
     text-decoration: underline;
   }
+  .card-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .card-share-btn {
+    background: none;
+    border: 1px solid #e2ddd5;
+    border-radius: 6px;
+    padding: 4px 10px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #8a7a6a;
+    transition: all 0.2s;
+    line-height: 1;
+  }
+  .card-share-btn:hover {
+    background: #f0ebe0;
+    border-color: #d4a574;
+    color: #5a4030;
+  }
+  :global(body.dark-mode) .card-share-btn {
+    border-color: #3a3a4e;
+    color: #8a8a9a;
+  }
+  :global(body.dark-mode) .card-share-btn:hover {
+    background: #3a3a4e;
+    color: #e0e0e0;
+  }
   .results-share-bar { text-align: center; margin-bottom: 16px; }
   .share-results-btn {
     padding: 8px 20px; background: #1a365d; color: white; border: none;
@@ -595,12 +624,28 @@ import Layout from '../layouts/Layout.astro';
         </div>
         ${r.he ? `<div class="card-he">${escHtml(r.he)}</div>` : ''}
         <div class="card-en">${escHtml(r.en)}</div>
-        <a class="card-link" href="${escHtml(r.url)}">Read More &rarr;</a>
+        <div class="card-actions">
+          <a class="card-link" href="${escHtml(r.url)}">Read More &rarr;</a>
+          <button class="card-share-btn" onclick="shareGpsCard('${escHtml(r.bookTitle)}', '${escHtml(r.url)}')" title="Share this teaching" aria-label="Share this teaching">&#x1F517;</button>
+        </div>
       </article>`;
     }).join('');
 
     // Scroll to results
     resultsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function shareGpsCard(bookTitle, readerUrl) {
+    const url = window.location.origin + readerUrl;
+    const text = bookTitle + ' — from Torah GPS on ajew.org';
+    if (navigator.share) {
+      navigator.share({ title: bookTitle, text: text, url: url }).catch(function(){});
+    } else {
+      navigator.clipboard.writeText(url).then(function() {
+        var btn = event.target.closest('.card-share-btn');
+        if (btn) { btn.textContent = '\u2713'; setTimeout(function() { btn.innerHTML = '\u{1F517}'; }, 2000); }
+      }).catch(function() { prompt('Copy this link:', url); });
+    }
   }
 
   function shareGpsResults(topicId, topicLabel) {
@@ -728,7 +773,10 @@ import Layout from '../layouts/Layout.astro';
         </div>
         ${r.he ? `<div class="card-he">${escHtml(r.he)}</div>` : ''}
         <div class="card-en">${escHtml(r.en)}</div>
-        <a class="card-link" href="${escHtml(r.url)}">Read More &rarr;</a>
+        <div class="card-actions">
+          <a class="card-link" href="${escHtml(r.url)}">Read More &rarr;</a>
+          <button class="card-share-btn" onclick="shareGpsCard('${escHtml(r.bookTitle)}', '${escHtml(r.url)}')" title="Share this teaching" aria-label="Share this teaching">&#x1F517;</button>
+        </div>
       </article>`;
     }).join('');
 

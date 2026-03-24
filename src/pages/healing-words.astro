@@ -109,7 +109,8 @@ import healingData from '../../public/healing-words.json';
       header.innerHTML = '<span class="hw-detail-icon">' + journey.icon + '</span>'
         + '<h2 class="hw-detail-title-he">' + journey.hebrewTitle + '</h2>'
         + '<h3 class="hw-detail-title-en">' + journey.title + '</h3>'
-        + '<p class="hw-detail-desc">' + journey.description + '</p>';
+        + '<p class="hw-detail-desc">' + journey.description + '</p>'
+        + '<button class="hw-share-btn" onclick="shareJourney(\'' + journey.id + '\', \'' + journey.title.replace(/'/g, "\\'") + '\')" title="Share this journey">\u{1F517} Share Journey</button>';
 
       // Steps
       const list = document.getElementById('stepsList');
@@ -177,6 +178,20 @@ import healingData from '../../public/healing-words.json';
         showJourney(id);
       }
     }
+
+    // Share journey
+    window.shareJourney = function(journeyId, journeyTitle) {
+      const url = window.location.origin + '/healing-words#' + journeyId;
+      const text = 'Healing Words: ' + journeyTitle + ' — A curated journey through Rabbi Nachman\'s teachings';
+      if (navigator.share) {
+        navigator.share({ title: 'Healing Words — ' + journeyTitle, text: text, url: url }).catch(function(){});
+      } else {
+        navigator.clipboard.writeText(url).then(function() {
+          var btn = document.querySelector('.hw-share-btn');
+          if (btn) { var orig = btn.innerHTML; btn.textContent = '\u2713 Link Copied!'; setTimeout(function() { btn.innerHTML = orig; }, 2000); }
+        }).catch(function() { prompt('Copy this link:', url); });
+      }
+    };
 
     // Handle browser back
     window.addEventListener('popstate', () => {
@@ -497,6 +512,23 @@ import healingData from '../../public/healing-words.json';
       color: #5b3a1a;
       border-bottom-color: #5b3a1a;
     }
+    .hw-share-btn {
+      display: inline-block;
+      margin-top: 0.75rem;
+      padding: 0.4rem 1rem;
+      background: none;
+      border: 1px solid #c9a87c;
+      border-radius: 8px;
+      color: #8b6d48;
+      font-size: 0.9rem;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .hw-share-btn:hover {
+      background: #fdf8f0;
+      color: #5b3a1a;
+    }
 
     /* Dark mode */
     :global(body.dark-mode) .hw-hero { }
@@ -539,6 +571,8 @@ import healingData from '../../public/healing-words.json';
     :global(body.dark-mode) .hw-step-link:hover { color: #e8d5bd; }
     :global(body.dark-mode) .hw-back-btn { color: #c9a87c; border-color: #5b3a1a; }
     :global(body.dark-mode) .hw-back-btn:hover { background: #2a2240; color: #e8d5bd; }
+    :global(body.dark-mode) .hw-share-btn { color: #c9a87c; border-color: #5b3a1a; }
+    :global(body.dark-mode) .hw-share-btn:hover { background: #2a2240; color: #e8d5bd; }
     :global(body.dark-mode) .hw-journey-progress-bar { background: rgba(201, 168, 124, 0.1); }
     :global(body.dark-mode) .hw-journey-progress-text { color: #c9a87c; }
 

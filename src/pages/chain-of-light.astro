@@ -490,6 +490,25 @@ if (part2Index && part2Index.torahs) {
       text-decoration: underline;
     }
 
+    /* Share button */
+    .col-share-btn {
+      background: none;
+      border: 1px solid #1a365d;
+      color: #1a365d;
+      padding: 6px 18px;
+      border-radius: 8px;
+      font-size: 0.9em;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+    .col-share-btn:hover {
+      background: #1a365d;
+      color: #e8d5a3;
+    }
+    :global(html.dark-mode) .col-share-btn { color: #8ab4f8; border-color: #4a7ab5; }
+    :global(html.dark-mode) .col-share-btn:hover { background: #4a7ab5; color: white; }
+
     /* No connections */
     .col-no-connections {
       text-align: center;
@@ -735,6 +754,32 @@ if (part2Index && part2Index.torahs) {
 
       // Update URL
       history.replaceState(null, '', '/chain-of-light?part=' + part + '&torah=' + torah);
+
+      // Add share button after source card
+      var shareBar = document.getElementById('colShareBar');
+      if (!shareBar) {
+        shareBar = document.createElement('div');
+        shareBar.id = 'colShareBar';
+        shareBar.style.cssText = 'text-align:center;margin:12px 0;';
+        document.getElementById('colSourceCard').after(shareBar);
+      }
+      shareBar.innerHTML = '<button class="col-share-btn" onclick="shareChain(' + part + ',' + torah + ')">\u{1F517} Share This Chain</button>';
+    }
+
+    window.shareChain = function(part, torah) {
+      var url = window.location.origin + '/chain-of-light?part=' + part + '&torah=' + torah;
+      var partLabel = part === 2 ? 'Tinyana' : 'Kama';
+      var meta = chainLmMeta['part-' + part] && chainLmMeta['part-' + part][torah];
+      var title = meta ? meta.title || ('Torah ' + torah) : ('Torah ' + torah);
+      var text = 'Chain of Light: Likutay Moharan ' + partLabel + ' Torah ' + torah + ' — ' + title;
+      if (navigator.share) {
+        navigator.share({ title: 'Chain of Light \u2014 Torah ' + torah, text: text, url: url }).catch(function(){});
+      } else {
+        navigator.clipboard.writeText(url).then(function() {
+          var btn = document.querySelector('.col-share-btn');
+          if (btn) { btn.textContent = '\u2713 Link Copied!'; setTimeout(function() { btn.innerHTML = '\u{1F517} Share This Chain'; }, 2000); }
+        }).catch(function() { prompt('Copy this link:', url); });
+      }
     }
 
     // Event handlers
