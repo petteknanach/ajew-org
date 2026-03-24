@@ -67,7 +67,7 @@ const BOOK_DEFS = [
       { part: 1, dir: 'likutay-moharan/part-1', prefix: 'torah-' },
       { part: 2, dir: 'likutay-moharan/part-2', prefix: 'torah-' },
     ],
-    urlTemplate: (part, num) => `/reader/likutay-moharan/part-${part}/torah-${num}`,
+    urlTemplate: (part, num) => `/reader/likutay-moharan/${part}/${num}`,
     sectionLabel: 'Torah',
   },
   {
@@ -84,7 +84,7 @@ const BOOK_DEFS = [
       { part: 7, dir: 'likutay-halachos/part-7', prefix: 'halacha-' },
       { part: 8, dir: 'likutay-halachos/part-8', prefix: 'halacha-' },
     ],
-    urlTemplate: (part, num) => `/reader/likutay-halachos/part-${part}/halacha-${num}`,
+    urlTemplate: (part, num) => `/reader/likutay-halachos/${part}/${num}`,
     sectionLabel: 'Halacha',
   },
   {
@@ -95,7 +95,7 @@ const BOOK_DEFS = [
       { part: 1, dir: 'kitzur-likutay-moharan/part-1', prefix: 'torah-' },
       { part: 2, dir: 'kitzur-likutay-moharan/part-2', prefix: 'torah-' },
     ],
-    urlTemplate: (part, num) => `/reader/kitzur-likutay-moharan/part-${part}/torah-${num}`,
+    urlTemplate: (part, num) => `/reader/kitzur-likutay-moharan/${part}/${num}`,
     sectionLabel: 'Torah',
   },
   {
@@ -186,7 +186,7 @@ const BOOK_DEFS = [
       { part: 1, dir: 'likutay-tefilos/part-1', prefix: 'prayer-' },
       { part: 2, dir: 'likutay-tefilos/part-2', prefix: 'prayer-' },
     ],
-    urlTemplate: (part, num) => `/reader/likutay-tefilos/part-${part}/prayer-${num}`,
+    urlTemplate: (part, num) => `/reader/likutay-tefilos/${part}/${num}`,
     sectionLabel: 'Prayer',
   },
   {
@@ -207,7 +207,7 @@ const BOOK_DEFS = [
       { part: 1, dir: 'ebay-hanachal/part-1', prefix: 'letter-' },
       { part: 2, dir: 'ebay-hanachal/part-2', prefix: 'letter-' },
     ],
-    urlTemplate: (part, num) => `/reader/ebay-hanachal/part-${part}/letter-${num}`,
+    urlTemplate: (part, num) => `/reader/ebay-hanachal/${part}/${num}`,
     sectionLabel: 'Letter',
   },
 ];
@@ -225,7 +225,7 @@ const BONUS_BOOK = {
     { part: 5, dir: 'alim-litrufa/part-5', prefix: 'letter-' },
     { part: 6, dir: 'alim-litrufa/part-6', prefix: 'letter-' },
   ],
-  urlTemplate: (part, num) => `/reader/alim-litrufa/part-${part}/letter-${num}`,
+  urlTemplate: (part, num) => `/reader/alim-litrufa/${part}/${num}`,
   sectionLabel: 'Letter',
 };
 
