@@ -261,6 +261,7 @@ import Layout from '../layouts/Layout.astro';
             heSection.style.display = heSection.style.display === 'none' ? 'block' : 'none';
             this.textContent = heSection.style.display === 'none' ? 'Show Hebrew Analysis' : 'Hide Hebrew Analysis';
           ">Show Hebrew Analysis</button>
+          <button class="share-btn" onclick="shareLensResult('${evt.id}', '${evt.label}')">&#x1F4E4; Share</button>
           <button class="back-btn" onclick="
             document.getElementById('lensResults').style.display = 'none';
             document.getElementById('quickPickSection').style.display = '';
@@ -273,6 +274,31 @@ import Layout from '../layouts/Layout.astro';
 
     container.innerHTML = html;
   }
+
+  function shareLensResult(eventId, eventLabel) {
+    const url = window.location.origin + '/torah-lens?event=' + encodeURIComponent(eventId);
+    const text = 'Torah Lens: ' + eventLabel + ' — Understanding events through Torah teachings';
+    if (navigator.share) {
+      navigator.share({ title: 'Torah Lens — ' + eventLabel, text: text, url: url }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(url).then(() => {
+        const btn = document.querySelector('.share-btn');
+        if (btn) { btn.textContent = '✓ Link Copied!'; setTimeout(() => { btn.innerHTML = '&#x1F4E4; Share'; }, 2000); }
+      }).catch(() => {
+        prompt('Copy this link:', url);
+      });
+    }
+  }
+
+  // Handle ?event= URL parameter
+  (function() {
+    const params = new URLSearchParams(window.location.search);
+    const eventParam = params.get('event');
+    if (eventParam && window.lensData) {
+      const evt = window.lensData.events.find(e => e.id === eventParam);
+      if (evt) { setTimeout(() => showResults(evt), 500); }
+    }
+  })();
 
   function doSearch() {
     const input = document.getElementById('lensInput');
@@ -788,6 +814,16 @@ import Layout from '../layouts/Layout.astro';
   .back-btn:hover {
     border-color: #c9a84c;
     color: #c9a84c;
+  }
+
+  .share-btn {
+    background: #c9a84c;
+    border: none;
+    color: #1a1a2e;
+    font-weight: 600;
+  }
+  .share-btn:hover {
+    background: #ddbf5e;
   }
 
   .no-match {
