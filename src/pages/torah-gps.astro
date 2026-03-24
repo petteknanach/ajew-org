@@ -321,6 +321,12 @@ import Layout from '../layouts/Layout.astro';
     transition: all 0.2s;
   }
   .share-results-btn:hover { background: #2a5a9e; transform: scale(1.02); }
+  .discuss-results-btn {
+    padding: 8px 20px; background: #059669; color: white; border: none;
+    border-radius: 8px; font-size: 0.95em; cursor: pointer; font-family: inherit;
+    text-decoration: none; display: inline-block; transition: all 0.2s;
+  }
+  .discuss-results-btn:hover { background: #047857; transform: scale(1.02); }
 
   /* ─── Empty State ─── */
   .empty-state {
@@ -577,7 +583,8 @@ import Layout from '../layouts/Layout.astro';
 
     resultsGrid.innerHTML = `
       <div class="results-share-bar">
-        <button class="share-results-btn" onclick="shareGpsResults('${escHtml(topicId)}', '${escHtml(meta ? meta.label : topicId)}')">📤 Share These Results</button>
+        <button class="share-results-btn" onclick="shareGpsResults('${escHtml(topicId)}', '${escHtml(meta ? meta.label : topicId)}')">📤 Share</button>
+        <a class="discuss-results-btn" href="/chat?topic=${encodeURIComponent('Torah GPS: ' + (meta ? meta.label : topicId))}" target="_blank">💬 Discuss in Chat</a>
       </div>
     ` + results.map((r, i) => {
       const ref = buildRef(r);
