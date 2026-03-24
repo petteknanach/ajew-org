@@ -78,8 +78,44 @@ import CompactYahrzeit from '../components/CompactYahrzeit.astro';
         </div>
       </nav>
       
-      <!-- Second row: site tools -->
+      <!-- NEW FEATURES ROW - prominent -->
+      <div class="feature-links">
+        <a href="/daily-study" class="btn btn-feature">
+          <span class="btn-icon">📅</span>
+          <span class="btn-text">Daily Study</span>
+          <span class="btn-subtitle">Chok Breslov</span>
+        </a>
+        <a href="/torah-gps" class="btn btn-feature">
+          <span class="btn-icon">🧭</span>
+          <span class="btn-text">Torah GPS</span>
+          <span class="btn-subtitle">Personal Help</span>
+        </a>
+        <a href="/torah-lens" class="btn btn-feature">
+          <span class="btn-icon">🔭</span>
+          <span class="btn-text">Torah Lens</span>
+          <span class="btn-subtitle">News</span>
+        </a>
+        <a href="/healing-words" class="btn btn-feature">
+          <span class="btn-icon">🩺</span>
+          <span class="btn-text">Healing Words</span>
+          <span class="btn-subtitle">Journeys</span>
+        </a>
+      </div>
+
+      <!-- Second row: more tools -->
       <div class="external-links">
+        <a href="/chain-of-light" class="btn btn-external">
+          <span class="btn-icon">🔗</span>
+          <span class="btn-text">Chain of Light</span>
+        </a>
+        <a href="/my-sefer" class="btn btn-external">
+          <span class="btn-icon">📖</span>
+          <span class="btn-text">My Sefer</span>
+        </a>
+        <a href="/parsha" class="btn btn-external">
+          <span class="btn-icon">📜</span>
+          <span class="btn-text">Parsha</span>
+        </a>
         <a href="/ask" class="btn btn-external">
           <span class="btn-icon">❓</span>
           <span class="btn-text">Ask</span>
@@ -88,21 +124,9 @@ import CompactYahrzeit from '../components/CompactYahrzeit.astro';
           <span class="btn-icon">📋</span>
           <span class="btn-text">Topics</span>
         </a>
-        <a href="/learning-plan" class="btn btn-external btn-chat-ext">
-          <span class="btn-icon">📅</span>
-          <span class="btn-text">Learning Plan</span>
-        </a>
-        <a href="/parsha" class="btn btn-external">
-          <span class="btn-icon">📜</span>
-          <span class="btn-text">Parsha</span>
-        </a>
-        <a href="/torah-gps" class="btn btn-external">
-          <span class="btn-icon">🧭</span>
-          <span class="btn-text">Torah GPS</span>
-        </a>
       </div>
 
-      <!-- Third row: external links -->
+      <!-- Third row: media & community -->
       <div class="external-links">
         <a href="/videos" class="btn btn-external">
           <span class="btn-icon">🎬</span>
@@ -117,23 +141,17 @@ import CompactYahrzeit from '../components/CompactYahrzeit.astro';
           <span class="btn-text">Music</span>
         </a>
       </div>
-      
-      <!-- Third row: Breslov community links - symmetrical -->
-      <div class="community-links">
-        <a href="https://breslovmatch.com" target="_blank" rel="noopener" class="btn btn-community">
-          <span class="btn-icon">💑</span>
-          <span class="btn-text">Breslov Match</span>
-          <span class="btn-subtitle">Free Breslov Dating</span>
+
+      <!-- Community links - compact -->
+      <div class="community-links community-compact">
+        <a href="https://breslovmatch.com" target="_blank" rel="noopener" class="btn btn-community-sm">
+          <span>💑 Breslov Match</span>
         </a>
-        <a href="https://yesodyosef.com" target="_blank" rel="noopener" class="btn btn-community btn-community-center">
-          <span class="btn-icon">🤝</span>
-          <span class="btn-text">Yesod Yosef</span>
-          <span class="btn-subtitle">100% Charity to Poor Breslov Yidden</span>
+        <a href="https://yesodyosef.com" target="_blank" rel="noopener" class="btn btn-community-sm">
+          <span>🤝 Yesod Yosef</span>
         </a>
-        <a href="https://breslovbooks.com" target="_blank" rel="noopener" class="btn btn-community">
-          <span class="btn-icon">📖</span>
-          <span class="btn-text">Breslov Books</span>
-          <span class="btn-subtitle">Books at Cost</span>
+        <a href="https://breslovbooks.com" target="_blank" rel="noopener" class="btn btn-community-sm">
+          <span>📖 Breslov Books</span>
         </a>
       </div>
       
@@ -525,12 +543,71 @@ import CompactYahrzeit from '../components/CompactYahrzeit.astro';
   }
 
   /* Community links row */
+  /* Feature links - prominent new features */
+  .feature-links {
+    display: flex;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-feature {
+    background: rgba(201, 168, 76, 0.25);
+    color: white;
+    border: 2px solid rgba(201, 168, 76, 0.5);
+    font-size: 0.85rem;
+    padding: 0.6rem 1rem;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 130px;
+    text-align: center;
+    border-radius: 10px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.2s;
+  }
+
+  .btn-feature:hover {
+    background: rgba(201, 168, 76, 0.4);
+    border-color: rgba(201, 168, 76, 0.7);
+    transform: translateY(-2px);
+  }
+
+  .btn-feature .btn-icon { font-size: 1.4rem; }
+  .btn-feature .btn-text { font-weight: 700; font-size: 0.95rem; }
+  .btn-feature .btn-subtitle { font-size: 0.65rem; opacity: 0.8; font-weight: 400; }
+
+  /* Community links - compact */
   .community-links {
     display: flex;
     justify-content: center;
     gap: 0.75rem;
     margin-bottom: 1.5rem;
     flex-wrap: wrap;
+  }
+
+  .community-compact {
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .btn-community-sm {
+    background: rgba(72, 187, 120, 0.15);
+    color: rgba(255,255,255,0.8);
+    border: 1px solid rgba(72, 187, 120, 0.3);
+    font-size: 0.7rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: 6px;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.2s;
+  }
+
+  .btn-community-sm:hover {
+    background: rgba(72, 187, 120, 0.3);
+    color: white;
   }
 
   .btn-community {
