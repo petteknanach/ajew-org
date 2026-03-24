@@ -155,7 +155,7 @@ function processKitzur(result) {
         typeLabel: 'Summary',
         typeHebrew: 'קיצור',
         snippet: getSnippet(data.segments),
-        url: `/reader/kitzur-likutay-moharan/${partNum}/${torahNum}`
+        url: `/reader/kitzur-likutay-moharan/part-${partNum}/torah-${torahNum}`
       });
       count++;
     }
@@ -203,7 +203,7 @@ function processTefilos(result) {
         typeLabel: 'Prayer',
         typeHebrew: 'תפילה',
         snippet: getSnippet(data.segments),
-        url: `/reader/likutay-tefilos/${tefilosPart}/${prayerNum}`
+        url: `/reader/likutay-tefilos/part-${tefilosPart}/prayer-${prayerNum}`
       });
       count++;
     }
@@ -272,7 +272,7 @@ function processParparos(result) {
       typeLabel: 'Commentary',
       typeHebrew: 'פירוש',
       snippet: getSnippet(data.segments),
-      url: `/reader/parparos-lechochma/1/${data.torah || data.displayNumber}`
+      url: `/reader/parparos-lechochma/part-1/torah-${data.torah || data.displayNumber}`
     });
     count++;
   }
@@ -334,7 +334,7 @@ function processBiur(result) {
       typeLabel: 'Commentary',
       typeHebrew: 'ביאור',
       snippet: getSnippet(data.segments),
-      url: `/reader/biur-halikutim/1/${data.torah || data.displayNumber}`
+      url: `/reader/biur-halikutim/part-1/torah-${data.torah || data.displayNumber}`
     });
     count++;
   }
@@ -442,7 +442,7 @@ function processLikutayHalachos(result) {
           typeHebrew: 'הרחבה',
           title: data.title || data.hebrewTitle || '',
           snippet: getSnippet(data.segments),
-          url: `/reader/likutay-halachos/${partNum}/${data.torah || data.displayNumber}`
+          url: `/reader/likutay-halachos/part-${partNum}/halacha-${data.torah || data.displayNumber}`
         });
         count++;
       }
@@ -488,7 +488,7 @@ function processSichos(result) {
         typeLabel: 'Related Teaching',
         typeHebrew: 'שיחה',
         snippet: getSnippet(data.segments),
-        url: `/reader/sichos-haran/1/${data.torah || data.displayNumber}`
+        url: `/reader/sichos-haran/sicha-${data.torah || data.displayNumber}`
       });
       count++;
     }
@@ -551,7 +551,7 @@ function processOtherBooks(result) {
             typeLabel: bookInfo.typeLabel,
             typeHebrew: bookInfo.typeHebrew,
             snippet: getSnippet(data.segments),
-            url: `/reader/${bookInfo.id}/${partNum}/${data.torah || data.displayNumber}`
+            url: `/reader/${bookInfo.id}/part-${partNum}/section-${data.torah || data.displayNumber}`
           });
           count++;
         }
@@ -648,7 +648,7 @@ function loadLMMetadata() {
         keyVerseRef: data.keyVerseRef || '',
         themes: data.themes || [],
         snippet: getSnippet(data.segments, 150),
-        url: `/reader/likutay-moharan/${partNum}/${torahNum}`
+        url: `/reader/likutay-moharan/part-${partNum}/torah-${torahNum}`
       };
     }
   }
