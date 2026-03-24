@@ -183,7 +183,7 @@ const BOOK_DEFS = [
     title: 'Likutay Tefilos',
     hebrewTitle: 'ליקוטי תפילות',
     parts: [
-      { part: 1, dir: 'likutay-tefilos/part-1', prefix: 'prayer-' },
+      { part: 1, dir: 'likutay-tefilos/part-1', prefix: 'prayer-', startAt: 1 },
       { part: 2, dir: 'likutay-tefilos/part-2', prefix: 'prayer-' },
     ],
     urlTemplate: (part, num) => `/reader/likutay-tefilos/${part}/${num}`,
@@ -251,8 +251,11 @@ function getAllSections(bookDef) {
   const sections = [];
   for (const partDef of bookDef.parts) {
     const nums = countSections(partDef.dir, partDef.prefix);
+    const startAt = partDef.startAt || 0;
     for (const num of nums) {
-      sections.push({ part: partDef.part, num });
+      if (num >= startAt) {
+        sections.push({ part: partDef.part, num });
+      }
     }
   }
   return sections;
