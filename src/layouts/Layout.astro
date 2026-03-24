@@ -188,24 +188,24 @@ const siteName = "A Jew - Breslov Torah Library";
         </button>
         <div class="nav-links">
           <a href="/">Home</a>
-          <a href="/reader">Library</a>
-          <a href="/daily-study">Daily Study</a>
-          <a href="/ask">Ask</a>
-          <a href="/search-enhanced">Search</a>
-          <a href="/reference">Reference</a>
-          <a href="/topics">Topics</a>
-          <a href="/healing-words">Healing Words</a>
-          <a href="/parsha">Parsha</a>
-          <a href="/torah-gps">Torah GPS</a>
-          <a href="/torah-lens">Torah Lens</a>
-          <a href="/chain-of-light">Chain of Light</a>
-          <a href="/chat">Chat</a>
-          <a href="/gematria">Gematria</a>
+          <a href="/reader"><span>Library</span><span class="nav-he">ספרייה</span></a>
+          <a href="/daily-study"><span>Daily Study</span><span class="nav-he">לימוד יומי</span></a>
+          <a href="/ask"><span>Ask</span><span class="nav-he">שאל</span></a>
+          <a href="/search-enhanced"><span>Search</span><span class="nav-he">חיפוש</span></a>
+          <a href="/reference"><span>Reference</span><span class="nav-he">מקורות</span></a>
+          <a href="/topics"><span>Topics</span><span class="nav-he">נושאים</span></a>
+          <a href="/healing-words"><span>Healing Words</span><span class="nav-he">דברי מרפא</span></a>
+          <a href="/parsha"><span>Parsha</span><span class="nav-he">פרשה</span></a>
+          <a href="/torah-gps"><span>Torah GPS</span><span class="nav-he">תורה GPS</span></a>
+          <a href="/torah-lens"><span>Torah Lens</span><span class="nav-he">עדשת תורה</span></a>
+          <a href="/chain-of-light"><span>Chain of Light</span><span class="nav-he">שרשרת האור</span></a>
+          <a href="/chat"><span>Chat</span><span class="nav-he">צ'אט</span></a>
+          <a href="/gematria"><span>Gematria</span><span class="nav-he">גימטריה</span></a>
           <a href="/gallery">Gallery</a>
-          <a href="/my-sefer">My Sefer</a>
-          <a href="/my-notes">My Notes</a>
+          <a href="/my-sefer"><span>My Sefer</span><span class="nav-he">הספר שלי</span></a>
+          <a href="/my-notes"><span>My Notes</span><span class="nav-he">הערות שלי</span></a>
           <a href="/my-stats">My Stats</a>
-          <a href="/donate">Donate</a>
+          <a href="/donate"><span>Donate</span><span class="nav-he">תרומה</span></a>
           <a href="/subscribe">Subscribe</a>
           <a href="/about">About</a>
         </div>
@@ -751,6 +751,10 @@ const siteName = "A Jew - Breslov Torah Library";
     text-decoration: none;
     font-weight: 600;
     transition: color 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1.2;
   }
 
   .nav-links a:hover {
@@ -760,6 +764,14 @@ const siteName = "A Jew - Breslov Torah Library";
     color: var(--color-accent);
     border-bottom: 2px solid var(--color-accent);
     padding-bottom: 2px;
+  }
+
+  .nav-he {
+    font-family: var(--font-hebrew);
+    font-size: 0.65em;
+    opacity: 0.7;
+    font-weight: 400;
+    direction: rtl;
   }
 
   /* Mobile Menu Toggle */
