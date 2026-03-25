@@ -584,10 +584,10 @@ function build() {
     const torahMatch = torahFile.match(/(?:torah|chapter|daf|tractate|perek|book|siman|letter|section|halacha|tefila|sicha|story|mishna|volume)-?(\d+)/i);
     const torahNum = torahMatch ? parseInt(torahMatch[1]) : null;
 
-    // Build reader URL
+    // Build reader URL - routes use /reader/book/partNum/torahNum (plain numbers)
     let readerUrl = `/reader/${bookId}`;
-    if (partNum) readerUrl += `/part-${partNum}`;
-    readerUrl += `/${torahFile}`;
+    if (partNum) readerUrl += `/${partNum}`;
+    readerUrl += `/${torahNum || torahFile.replace(/\.[^.]+$/, '')}`;
 
     const bookInfo = getBookDisplayName(bookId, catalog);
 
