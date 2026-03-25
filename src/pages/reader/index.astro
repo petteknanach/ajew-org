@@ -25,8 +25,8 @@ function loadBookIndexes(book) {
 
 // Group books by category
 const categories = [
-  { title: 'Rabbi Nachman of Breslov / רבי נחמן מברסלב', ids: ['likutay-moharan', 'kitzur-likutay-moharan', 'sefer-hamidos', 'sipurey-maasiyos', 'sipurey-maasiyos-english'] },
-  { title: 'Rabbi Nosson of Breslov / רבי נתן מברסלב', ids: ['likutay-halachos', 'likutay-tefilos', 'likutay-eitzos', 'otzar-hayirah', 'sichos-haran', 'shivchay-haran', 'chayey-moharan', 'alim-litrufa', 'yemei-moharnat', 'shemos-hatzadikim', 'yemei-hatlaos'] },
+  { title: 'Rabbi Nachman of Breslov / רבי נחמן מברסלב', ids: ['likutay-moharan', 'kitzur-likutay-moharan', 'sefer-hamidos', 'sipurey-maasiyos', 'sipurey-maasiyos-english', 'sichos-haran', 'shivchay-haran', 'chayey-moharan'] },
+  { title: 'Rabbi Nosson of Breslov / רבי נתן מברסלב', ids: ['likutay-halachos', 'likutay-tefilos', 'likutay-eitzos', 'otzar-hayirah', 'alim-litrufa', 'yemei-moharnat', 'shemos-hatzadikim', 'yemei-hatlaos'] },
   { title: 'Chumash with Likutey Halachos / חומש עם ליקוטי הלכות', ids: ['chumash-lh'] },
   { title: 'Rabbi Alter of Teplik / רבי אלתר טפליקער', ids: ['hashtatfchus-hanefesh', 'meshivas-nefesh'] },
   { title: 'Rabbi Nachman of Tcheryn / הרב מטשערין', ids: ['parparos-lechochma', 'rimzei-hamaasiyos', 'zimras-haaretz', 'yikra-dshabbata', 'yereach-haeitanim', 'nachas-hashulchan', 'likutay-eitzos-basra'] },
@@ -136,6 +136,24 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
     /* Volume sections */
     .volume-section {
       margin-bottom: 40px;
+    }
+    .book-dropdown {
+      margin-bottom: 12px;
+    }
+    .book-dropdown summary {
+      list-style: none;
+      padding: 8px 0;
+    }
+    .book-dropdown summary::-webkit-details-marker { display: none; }
+    .book-dropdown summary::before {
+      content: '▶ ';
+      font-size: 0.7em;
+      margin-right: 4px;
+      transition: transform 0.2s;
+      display: inline-block;
+    }
+    .book-dropdown[open] summary::before {
+      content: '▼ ';
     }
     .volume-title {
       font-family: 'Frank Ruhl Libre', serif;
@@ -650,27 +668,56 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
             const totalPages = book.parts.reduce((s, p) => s + p.totalTorahs, 0);
             return (
               <div class="volume-section" id={book.id} style="margin-bottom: 30px;">
-                <h3 class="volume-title" style="font-size: 1.2em;">{book.title}</h3>
-                <div class="volume-hebrew">{book.hebrewTitle}</div>
-                <p class="volume-count">{totalPages} sections{book.parts.length > 1 ? ` (${book.parts.length} parts)` : ''}</p>
-                {indexes.map(partData => (
-                  <div style={book.parts.length > 1 ? "margin-bottom: 12px;" : ""}>
-                    {book.parts.length > 1 && (
-                      <h4 style="font-size: 0.9em; color: #6b5a42; margin: 8px 0 4px; font-style: italic;">
-                        {partData.hebrewTitle || partData.title} ({partData.totalTorahs})
-                      </h4>
-                    )}
-                    <ul class="torah-list">
-                      {(partData.index.torahs || partData.index.items || []).map(t => (
-                        <li>
-                          <a href={t.url || `/reader/${book.id}/${partData.part}/${t.number}`}>
-                            <span class="torah-num">{t.hebrewTitle || t.title || `[${t.number}]`}</span>
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
+                {totalPages > 40 ? (
+                  <details class="book-dropdown">
+                    <summary class="volume-title" style="font-size: 1.2em; cursor: pointer;">
+                      {book.title} <span class="volume-hebrew" style="display: inline; margin-left: 8px;">{book.hebrewTitle}</span>
+                      <span class="volume-count" style="display: inline; margin-left: 8px; font-size: 0.8em;">({totalPages})</span>
+                    </summary>
+                    {indexes.map(partData => (
+                      <div style={book.parts.length > 1 ? "margin-bottom: 12px;" : ""}>
+                        {book.parts.length > 1 && (
+                          <h4 style="font-size: 0.9em; color: #6b5a42; margin: 8px 0 4px; font-style: italic;">
+                            {partData.hebrewTitle || partData.title} ({partData.totalTorahs})
+                          </h4>
+                        )}
+                        <ul class="torah-list">
+                          {(partData.index.torahs || partData.index.items || []).map(t => (
+                            <li>
+                              <a href={t.url || `/reader/${book.id}/${partData.part}/${t.number}`}>
+                                <span class="torah-num">{t.hebrewTitle || t.title || `[${t.number}]`}</span>
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </details>
+                ) : (
+                  <Fragment>
+                    <h3 class="volume-title" style="font-size: 1.2em;">{book.title}</h3>
+                    <div class="volume-hebrew">{book.hebrewTitle}</div>
+                    <p class="volume-count">{totalPages} sections{book.parts.length > 1 ? ` (${book.parts.length} parts)` : ''}</p>
+                    {indexes.map(partData => (
+                      <div style={book.parts.length > 1 ? "margin-bottom: 12px;" : ""}>
+                        {book.parts.length > 1 && (
+                          <h4 style="font-size: 0.9em; color: #6b5a42; margin: 8px 0 4px; font-style: italic;">
+                            {partData.hebrewTitle || partData.title} ({partData.totalTorahs})
+                          </h4>
+                        )}
+                        <ul class="torah-list">
+                          {(partData.index.torahs || partData.index.items || []).map(t => (
+                            <li>
+                              <a href={t.url || `/reader/${book.id}/${partData.part}/${t.number}`}>
+                                <span class="torah-num">{t.hebrewTitle || t.title || `[${t.number}]`}</span>
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </Fragment>
+                )}
               </div>
             );
           })}
