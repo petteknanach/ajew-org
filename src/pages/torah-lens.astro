@@ -205,7 +205,7 @@ import Layout from '../layouts/Layout.astro';
     return bestMatch;
   }
 
-  function showResults(evt) {
+  function showResults(evt, headlineText) {
     const container = document.getElementById('lensResults');
     container.style.display = 'block';
     document.getElementById('quickPickSection').style.display = 'none';
@@ -214,6 +214,9 @@ import Layout from '../layouts/Layout.astro';
     setTimeout(() => {
       container.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 100);
+
+    // Get the user's search query or headline
+    const query = headlineText || document.getElementById('lensInput').value || '';
 
     // Build result HTML
     let html = `
@@ -225,6 +228,8 @@ import Layout from '../layouts/Layout.astro';
             <h3 class="result-title-he" dir="rtl">${evt.labelHe}</h3>
           </div>
         </div>
+
+        ${query ? `<div class="result-query"><strong>Regarding:</strong> ${query}</div>` : ''}
 
         <div class="result-analysis">
           <p>${evt.analysis}</p>
@@ -342,7 +347,7 @@ import Layout from '../layouts/Layout.astro';
       loading.style.display = 'none';
 
       if (match) {
-        showResults(match);
+        showResults(match, query);
       } else {
         // Show no match message
         const container = document.getElementById('lensResults');
@@ -411,12 +416,12 @@ import Layout from '../layouts/Layout.astro';
           '</div>';
 
         card.addEventListener('click', function() {
-          // Find matching event in lensData and trigger showResults
+          // Find matching event in lensData and trigger showResults with headline text
           if (lensData) {
             var evt = lensData.eventTypes.find(function(e) { return e.id === h.eventType; });
             if (evt) {
-              document.getElementById('lensInput').value = evt.label;
-              showResults(evt);
+              document.getElementById('lensInput').value = h.title;
+              showResults(evt, h.title);
             }
           }
         });
@@ -703,6 +708,22 @@ import Layout from '../layouts/Layout.astro';
     font-weight: 400;
     margin: 0.25rem 0 0;
     font-family: 'Frank Ruhl Libre', serif;
+  }
+
+  .result-query {
+    background: #2a2a4e;
+    border: 1px solid #c9a84c;
+    border-radius: 8px;
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 1.5rem;
+    color: #f0e6d3;
+    font-size: 1.05rem;
+    font-family: 'Open Sans', sans-serif;
+  }
+
+  .result-query strong {
+    color: #c9a84c;
+    margin-right: 0.5rem;
   }
 
   .result-analysis {
