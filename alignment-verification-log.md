@@ -90,13 +90,29 @@ The fix requires:
 
 ---
 
-## Other Books Status
-- [ ] Likutay Halachos — 1,111 crammed segments (WORST)
-- [ ] Chumash LH — 645 crammed
-- [ ] Likutay Moharan Part 2 — included in LM above
-- [ ] Ebay HaNachal — 130 crammed
-- [ ] Alim LiTrufa — 104 crammed
-- [ ] Kitzur LM — 102 crammed
-- [ ] Yemay Moharnat — 97 crammed
-- [ ] Sichos HaRan — 87 crammed
-- [ ] All others — see full audit above
+## Other Books — Full Audit (2026-03-26)
+
+### ✅ PERFECT
+- **Meshivas Nefesh**: 183/183 (100%) — no issues at all
+
+### 🟡 MOSTLY GOOD (70%+)
+- **Sefer HaMidos**: 91/108 (84%) — 17 minor
+- **Sichos HaRan**: 244/310 (79%) — 45 minor, 21 bad
+- **Kitzur LM**: 288/385 (75%) — 81 minor, 16 bad
+- **Yemay Moharnat**: 217/303 (72%) — 68 minor, 18 bad
+
+### 🔴 NEEDS WORK (50-69%)
+- **Hashtatfchus HaNefesh**: 90/130 (69%)
+- **Shivchay HaRan**: 44/64 (69%)
+- **Yemay HaTlaos**: 18/36 (50%)
+
+### 🔴 BAD (<50%)
+- **Likutay Eitzos**: 28/65 (43%)
+- **Likutay Eitzos Basra**: 15/46 (33%)
+- **Ebay HaNachal**: 59/265 (22%)
+- **Likutay Tefilos**: 43/211 (20%)
+- **Rimzei HaMaasiyos**: 2/13 (15%)
+- **Chayey Moharan**: 2/14 (14%)
+- **Likutay Halachos**: 23/600 (4%) — SKIP: user providing corrected files
+- **Sipurey Maasiyos**: 0/17 (0%)
+- **Yereach HaEitanim**: 0/24 (0%)
