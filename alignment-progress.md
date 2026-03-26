@@ -41,7 +41,10 @@ Must verify each fix by reading both languages.
 - Likutay Tefilos: 56 crammed
 - Sipurey Maasiyos: 50 crammed (partially fixed)
 
-## Completed
+## Verified (content-read, both languages)
+- [x] LM Part 1, Torah 1: 8 segs — segs 0-2 ✅ perfect, segs 3-4 🟡 slight offset, segs 5-7 ✅ — MOSTLY GOOD
+
+## Completed (structural fixes)
 - [x] LM ois-anchor fix: 30 torahs fixed using ois markers (committed)
 - [x] Sipurey Maasiyos: 13 stories redistributed 1:1
 
