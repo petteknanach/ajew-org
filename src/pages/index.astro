@@ -78,6 +78,30 @@ import CompactYahrzeit from '../components/CompactYahrzeit.astro';
         </div>
       </nav>
       
+      <!-- Seasonal: Pesach Button (shows Nisan season ~2 weeks before through end of Pesach) -->
+      <div id="pesachBanner" class="pesach-banner" style="display: none;">
+        <a href="/pesach" class="btn btn-pesach">
+          <span class="btn-icon">🫓</span>
+          <span class="btn-text">Pesach Teachings</span>
+          <span class="btn-subtitle-pesach" dir="rtl">חג הפסח</span>
+        </a>
+      </div>
+      <script is:inline>
+      (function() {
+        // Show Pesach button from ~2 weeks before Pesach through end of Pesach
+        // Using approximate Gregorian dates for 2026 Pesach: April 1-9, show from March 18
+        // For robustness, show from March 15 through April 15 of any year
+        var now = new Date();
+        var m = now.getMonth(); // 0-indexed
+        var d = now.getDate();
+        // Show in late March (m=2, d>=15) through mid-April (m=3, d<=15)
+        if ((m === 2 && d >= 15) || (m === 3 && d <= 15)) {
+          var banner = document.getElementById('pesachBanner');
+          if (banner) banner.style.display = 'flex';
+        }
+      })();
+      </script>
+
       <!-- NEW FEATURES ROW - prominent -->
       <div class="feature-links">
         <a href="/daily-study" class="btn btn-feature">
@@ -561,6 +585,51 @@ import CompactYahrzeit from '../components/CompactYahrzeit.astro';
     font-size: 0.65rem;
     opacity: 0.8;
     font-weight: 400;
+  }
+
+  /* Pesach seasonal banner */
+  .pesach-banner {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+  }
+
+  .btn-pesach {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.7rem 2rem;
+    background: linear-gradient(135deg, #d97706 0%, #f59e0b 50%, #fbbf24 100%);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 15px rgba(217, 119, 6, 0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+    transition: all 0.3s ease;
+    animation: pesachGlow 2s ease-in-out infinite alternate;
+  }
+
+  .btn-pesach:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 6px 25px rgba(217, 119, 6, 0.5), inset 0 1px 0 rgba(255,255,255,0.3);
+  }
+
+  .btn-pesach .btn-icon {
+    font-size: 1.4rem;
+  }
+
+  .btn-subtitle-pesach {
+    font-family: var(--font-hebrew);
+    font-size: 0.8rem;
+    opacity: 0.9;
+    font-weight: 600;
+  }
+
+  @keyframes pesachGlow {
+    0% { box-shadow: 0 4px 15px rgba(217, 119, 6, 0.4), inset 0 1px 0 rgba(255,255,255,0.2); }
+    100% { box-shadow: 0 4px 20px rgba(245, 158, 11, 0.6), inset 0 1px 0 rgba(255,255,255,0.3); }
   }
 
   /* Community links row */

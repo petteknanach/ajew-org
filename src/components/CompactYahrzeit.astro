@@ -1,7 +1,6 @@
 ---
 // Compact Yahrzeit Display for Top Left Corner
-// Dynamically shows today's and tomorrow's yahrzeits based on Hebrew date
-// Only appears when there are actual yahrzeits to display
+// Always visible — shows today/tomorrow yahrzeits, or the next upcoming significant date
 ---
 
 <div class="compact-yahrzeit collapsed" id="compactYahrzeit" style="display: none;">
@@ -10,12 +9,12 @@
     <span class="collapsed-icon">🕯️</span>
     <span class="expanded-icon">×</span>
   </button>
-  
-  <!-- Loading state - hidden by default, only show box when data loaded -->
-  <div id="yahrzeitLoading" class="yahrzeit-loading" style="display: none;">
+
+  <!-- Loading state -->
+  <div id="yahrzeitLoading" class="yahrzeit-loading">
     <span class="loading-icon">🕯️</span>
   </div>
-  
+
   <!-- Today's Yahrzeits -->
   <div id="todaySection" class="yahrzeit-section today-section" style="display: none;">
     <div class="section-header">
@@ -24,7 +23,7 @@
     </div>
     <div id="todayList" class="tzaddikim-list"></div>
   </div>
-  
+
   <!-- Tomorrow's Yahrzeits -->
   <div id="tomorrowSection" class="yahrzeit-section tomorrow-section" style="display: none;">
     <div class="section-header">
@@ -33,12 +32,12 @@
     </div>
     <div id="tomorrowList" class="tzaddikim-list"></div>
   </div>
-  
-  <!-- Upcoming Important Dates -->
+
+  <!-- Upcoming Important Dates (always shows when no today/tomorrow) -->
   <div id="upcomingSection" class="yahrzeit-section upcoming-section" style="display: none;">
     <div class="section-header">
       <span class="yahrzeit-icon">⭐</span>
-      <h4 class="section-title">Upcoming: <span id="upcomingLabel"></span></h4>
+      <h4 class="section-title">Coming Up: <span id="upcomingLabel"></span></h4>
     </div>
     <div id="upcomingList" class="tzaddikim-list"></div>
   </div>
@@ -53,25 +52,39 @@
     13: 'Adar II'
   };
 
-  // Important dates to always show (upcoming)
+  // Important dates — holidays AND major yahrzeits
   const importantDates = [
-    { month: 'Nisan', day: 1, type: 'birth', name: 'Birth of Rabbainu Na Nach Nachma Nachman', hebrew_name: 'הולדת רבינו נ נח נחמ נחמן', description: 'Rosh Chodesh Nisan' },
-    { month: 'Nisan', day: 15, type: 'special', name: 'Pesach', hebrew_name: 'פסח', description: 'First night of Passover' },
-    { month: 'Iyyar', day: 18, type: 'special', name: 'Lag BaOmer', hebrew_name: 'ל"ג בעומר', description: 'Hilula of Rabbi Shimon bar Yochai' },
-    { month: 'Sivan', day: 6, type: 'special', name: 'Shavuos', hebrew_name: 'שבועות', description: 'Giving of the Torah' },
-    { month: 'Tishrei', day: 1, type: 'special', name: 'Rosh Hashana', hebrew_name: 'ראש השנה', description: 'Be with Rabbainu in Uman!' },
-    { month: 'Tishrei', day: 10, type: 'special', name: 'Yom Kippur', hebrew_name: 'יום כיפור', description: 'Day of Atonement' },
-    { month: 'Tishrei', day: 15, type: 'special', name: 'Sukkos', hebrew_name: 'סוכות', description: 'Festival of Tabernacles' },
-    { month: 'Kislev', day: 25, type: 'special', name: 'Chanukah', hebrew_name: 'חנוכה', description: 'Festival of Lights' },
-    { month: 'Adar', day: 14, type: 'special', name: 'Purim', hebrew_name: 'פורים', description: 'Na Nach Nachma Nachman!' },
-    // Purim Katan of Tiberias - 5 days commemorating the miracle of R' Chaim Abulafia (~1743)
-    { month: 'Kislev', day: 4, type: 'special', name: 'Purim Tiberias', hebrew_name: 'פורים טבריה', description: "Miracle of Tiberias - R' Chaim Abulafia" },
-    { month: 'Sivan', day: 13, type: 'special', name: 'Purim Tiberias', hebrew_name: 'פורים טבריה', description: "Miracle of Tiberias - R' Chaim Abulafia" },
-    { month: 'Tamuz', day: 14, type: 'special', name: 'Purim Tiberias', hebrew_name: 'פורים טבריה', description: "Miracle of Tiberias - R' Chaim Abulafia" },
-    { month: 'Tamuz', day: 15, type: 'special', name: 'Purim Tiberias', hebrew_name: 'פורים טבריה', description: "Miracle of Tiberias - R' Chaim Abulafia" },
-    { month: 'Elul', day: 7, type: 'special', name: 'Purim Tiberias', hebrew_name: 'פורים טבריה', description: "Miracle of Tiberias - R' Chaim Abulafia" },
+    // === HOLIDAYS ===
+    { month: 'Nisan', day: 1, type: 'birth', name: 'Birth of Rabbainu Na Nach Nachma Nachman', hebrew_name: 'הולדת רבינו נ נח נחמ נחמן', description: 'Rosh Chodesh Nisan', priority: 2 },
+    { month: 'Nisan', day: 15, type: 'special', name: 'Pesach', hebrew_name: 'פסח', description: 'First night of Passover', priority: 1 },
+    { month: 'Iyyar', day: 18, type: 'special', name: 'Lag BaOmer', hebrew_name: 'ל"ג בעומר', description: 'Hilula of Rabbi Shimon bar Yochai', priority: 1 },
+    { month: 'Sivan', day: 6, type: 'special', name: 'Shavuos', hebrew_name: 'שבועות', description: 'Giving of the Torah', priority: 1 },
+    { month: 'Tishrei', day: 1, type: 'special', name: 'Rosh Hashana', hebrew_name: 'ראש השנה', description: 'Be with Rabbainu in Uman!', priority: 1 },
+    { month: 'Tishrei', day: 10, type: 'special', name: 'Yom Kippur', hebrew_name: 'יום כיפור', description: 'Day of Atonement', priority: 1 },
+    { month: 'Tishrei', day: 15, type: 'special', name: 'Sukkos', hebrew_name: 'סוכות', description: 'Festival of Tabernacles', priority: 1 },
+    { month: 'Kislev', day: 25, type: 'special', name: 'Chanukah', hebrew_name: 'חנוכה', description: 'Festival of Lights', priority: 1 },
+    { month: 'Adar', day: 14, type: 'special', name: 'Purim', hebrew_name: 'פורים', description: 'Na Nach Nachma Nachman!', priority: 1 },
+    { month: "Sh'vat", day: 15, type: 'special', name: 'Tu B\'Shvat', hebrew_name: 'ט"ו בשבט', description: 'New Year of the Trees', priority: 2 },
+
+    // === MAJOR YAHRZEITS ===
+    { month: 'Tishrei', day: 18, type: 'yahrzeit', name: "R' Nachman of Breslov", hebrew_name: 'רבי נחמן מברסלב', description: 'Yahrzeit of Rabbeinu (1810)', priority: 1 },
+    { month: 'Tevet', day: 10, type: 'yahrzeit', name: "R' Nosson of Breslov", hebrew_name: 'רבי נתן מברסלב', description: 'Yahrzeit (1844)', priority: 1 },
+    { month: 'Cheshvan', day: 17, type: 'yahrzeit', name: 'Saba Yisroel (R\' Odesser)', hebrew_name: 'סבא ישראל אודסר', description: 'Yahrzeit (1994)', priority: 1 },
+    { month: 'Sivan', day: 6, type: 'yahrzeit', name: 'Baal Shem Tov', hebrew_name: 'הבעל שם טוב', description: 'Yahrzeit (1760)', priority: 1 },
+    { month: 'Tishrei', day: 4, type: 'yahrzeit', name: 'R\' Nachman of Horodenka', hebrew_name: 'רבי נחמן מהורודנקא', description: 'Great-grandfather of Rabbeinu', priority: 3 },
+    { month: 'Iyyar', day: 2, type: 'yahrzeit', name: "R' Shimon bar Yochai", hebrew_name: 'רבי שמעון בר יוחאי', description: 'Author of the Holy Zohar', priority: 2 },
+    { month: 'Tamuz', day: 2, type: 'yahrzeit', name: "R' Nachman of Tulchin", hebrew_name: 'רבי נחמן מטולטשין', description: "R' Nosson's primary student", priority: 3 },
+    { month: 'Av', day: 5, type: 'yahrzeit', name: 'Arizal (R\' Yitzchak Luria)', hebrew_name: 'האריז"ל', description: 'Master of Kabbalah (1572)', priority: 2 },
+    { month: 'Elul', day: 18, type: 'birth', name: 'Birthday of the Baal Shem Tov', hebrew_name: 'הולדת הבעל שם טוב', description: 'Born 1698', priority: 2 },
+
+    // === PURIM TIBERIAS ===
+    { month: 'Kislev', day: 4, type: 'special', name: 'Purim Tiberias', hebrew_name: 'פורים טבריה', description: "Miracle of Tiberias - R' Chaim Abulafia", priority: 4 },
+    { month: 'Sivan', day: 13, type: 'special', name: 'Purim Tiberias', hebrew_name: 'פורים טבריה', description: "Miracle of Tiberias - R' Chaim Abulafia", priority: 4 },
+    { month: 'Tamuz', day: 14, type: 'special', name: 'Purim Tiberias', hebrew_name: 'פורים טבריה', description: "Miracle of Tiberias - R' Chaim Abulafia", priority: 4 },
+    { month: 'Tamuz', day: 15, type: 'special', name: 'Purim Tiberias', hebrew_name: 'פורים טבריה', description: "Miracle of Tiberias - R' Chaim Abulafia", priority: 4 },
+    { month: 'Elul', day: 7, type: 'special', name: 'Purim Tiberias', hebrew_name: 'פורים טבריה', description: "Miracle of Tiberias - R' Chaim Abulafia", priority: 4 },
     // 23 Sivan - Second Letters of Mordechai and Esther (Esther 8:9)
-    { month: 'Sivan', day: 23, type: 'special', name: 'Second Letters of Mordechai & Esther', hebrew_name: 'כתב השנית - מרדכי ואסתר', description: 'Jews permitted to defend themselves (Esther 8:9)' },
+    { month: 'Sivan', day: 23, type: 'special', name: 'Second Letters of Mordechai & Esther', hebrew_name: 'כתב השנית - מרדכי ואסתר', description: 'Jews permitted to defend themselves (Esther 8:9)', priority: 3 },
   ];
 
   let tzaddikimDatabase = [];
@@ -153,34 +166,75 @@
     'Av': 30, 'Elul': 29, 'Tishrei': 30, 'Cheshvan': 29, 'Kislev': 30,
     'Tevet': 29, "Sh'vat": 30, 'Adar': 29, 'Adar II': 29 };
 
-  // Check if an important date is coming up within 7 days (handles cross-month)
-  function findUpcomingImportantDates(todayMonth, todayDay) {
-    const upcoming = [];
-    const normToday = normalizeMonth(todayMonth);
-    const todayMonthIdx = monthOrder.indexOf(normToday);
-    if (todayMonthIdx < 0) return upcoming;
+  // Calculate days between two Hebrew dates (approximate, using month order)
+  function calcDaysUntil(fromMonth, fromDay, toMonth, toDay) {
+    const normFrom = normalizeMonth(fromMonth);
+    const normTo = normalizeMonth(toMonth);
+    const fromIdx = monthOrder.indexOf(normFrom);
+    const toIdx = monthOrder.indexOf(normTo);
+    if (fromIdx < 0 || toIdx < 0) return 999;
+
+    let days = 0;
+    if (fromIdx === toIdx) {
+      // Same month
+      days = toDay - fromDay;
+      if (days <= 0) {
+        // Wrap around full year
+        days = (daysInMonth[normFrom] || 30) - fromDay;
+        for (let i = 1; i < monthOrder.length; i++) {
+          const mIdx = (fromIdx + i) % monthOrder.length;
+          if (mIdx === toIdx) {
+            days += toDay;
+            break;
+          }
+          days += daysInMonth[monthOrder[mIdx]] || 30;
+        }
+      }
+    } else {
+      // Different months - count forward
+      days = (daysInMonth[normFrom] || 30) - fromDay;
+      let curIdx = (fromIdx + 1) % monthOrder.length;
+      while (curIdx !== toIdx) {
+        days += daysInMonth[monthOrder[curIdx]] || 30;
+        curIdx = (curIdx + 1) % monthOrder.length;
+      }
+      days += toDay;
+    }
+    return days;
+  }
+
+  // Find the NEXT upcoming important date (searches entire year, returns closest)
+  // maxDays parameter: if > 0, also returns dates within that window (for "within 7 days" display)
+  function findNextImportantDate(todayMonth, todayDay) {
+    let closest = null;
+    let closestDays = 999;
 
     for (const date of importantDates) {
-      const normDateMonth = normalizeMonth(date.month);
-      const dateMonthIdx = monthOrder.indexOf(normDateMonth);
-      if (dateMonthIdx < 0) continue;
-
-      let daysUntil;
-      if (normDateMonth === normToday) {
-        daysUntil = date.day - todayDay;
-      } else if (dateMonthIdx === todayMonthIdx + 1 || (todayMonthIdx === monthOrder.length - 1 && dateMonthIdx === 0)) {
-        // Next month
-        const daysLeftThisMonth = (daysInMonth[normToday] || 30) - todayDay;
-        daysUntil = daysLeftThisMonth + date.day;
-      } else {
-        continue; // Too far away
+      const days = calcDaysUntil(todayMonth, todayDay, date.month, date.day);
+      if (days > 0 && days < closestDays) {
+        // Prefer higher-priority dates if within same week, otherwise just closest
+        closestDays = days;
+        closest = { ...date, daysUntil: days };
+      } else if (days > 0 && days === closestDays && closest) {
+        // Same day - prefer lower priority number (= more important)
+        if ((date.priority || 5) < (closest.priority || 5)) {
+          closest = { ...date, daysUntil: days };
+        }
       }
+    }
+    return closest;
+  }
 
-      if (daysUntil > 0 && daysUntil <= 7) {
+  // Find all important dates within N days (for the "upcoming within 7 days" section)
+  function findUpcomingImportantDates(todayMonth, todayDay, maxDays = 7) {
+    const upcoming = [];
+    for (const date of importantDates) {
+      const days = calcDaysUntil(todayMonth, todayDay, date.month, date.day);
+      if (days > 0 && days <= maxDays) {
         upcoming.push({
           ...date,
-          daysUntil,
-          dateLabel: `${date.day} ${date.month} (in ${daysUntil} days)`
+          daysUntil: days,
+          dateLabel: `${date.day} ${date.month} (in ${days} day${days === 1 ? '' : 's'})`
         });
       }
     }
@@ -191,7 +245,7 @@
   function renderTzaddikLink(tzaddik, isImportant = false) {
     const div = document.createElement('div');
     div.className = `tzaddik-link${isImportant ? ' upcoming-event' : ''}`;
-    
+
     let html = `<span class="tzaddik-name">${tzaddik.name}</span>`;
     if (tzaddik.hebrew_name) {
       html += `<span class="tzaddik-hebrew" dir="rtl">${tzaddik.hebrew_name}</span>`;
@@ -199,22 +253,38 @@
     if (tzaddik.description) {
       html += `<span class="event-description">${tzaddik.description}</span>`;
     }
+    if (tzaddik.daysUntil && tzaddik.daysUntil > 1) {
+      html += `<span class="countdown-badge">in ${tzaddik.daysUntil} days</span>`;
+    } else if (tzaddik.daysUntil === 1) {
+      html += `<span class="countdown-badge">tomorrow</span>`;
+    }
     if (tzaddik.type === 'birth') {
       html += `<span class="event-type birth-badge">Birthday</span>`;
     } else if (tzaddik.type === 'special') {
       html += `<span class="event-type special-badge">Holiday</span>`;
+    } else if (tzaddik.type === 'yahrzeit') {
+      html += `<span class="event-type yahrzeit-badge">Yahrzeit</span>`;
     }
-    
+
     div.innerHTML = html;
     return div;
   }
 
   // Main initialization
   async function initYahrzeit() {
-    // Set a timeout - if API calls take too long, hide the box
+    const box = document.getElementById('compactYahrzeit');
+
+    // Set a timeout - if API calls take too long, show fallback
     const timeout = setTimeout(() => {
-      const box = document.getElementById('compactYahrzeit');
-      if (box) box.style.display = 'none';
+      document.getElementById('yahrzeitLoading').style.display = 'none';
+      // Still show the box with a static message
+      const upSection = document.getElementById('upcomingSection');
+      document.getElementById('upcomingLabel').textContent = '';
+      const upList = document.getElementById('upcomingList');
+      upList.innerHTML = '<div class="tzaddik-link upcoming-event"><span class="tzaddik-name">Loading...</span></div>';
+      upSection.style.display = 'block';
+      box.style.display = 'block';
+      if (window.innerWidth > 768) box.classList.remove('collapsed');
     }, 8000);
 
     try {
@@ -228,36 +298,29 @@
       const tomorrowHeb = await getHebrewDate(tomorrow);
 
       clearTimeout(timeout);
-      
+
       // Find yahrzeits for today and tomorrow
       const todayYahrzeits = findYahrzeits(todayHeb.month, todayHeb.day);
       const tomorrowYahrzeits = findYahrzeits(tomorrowHeb.month, tomorrowHeb.day);
       const todayImportant = findImportantDates(todayHeb.month, todayHeb.day);
       const tomorrowImportant = findImportantDates(tomorrowHeb.month, tomorrowHeb.day);
-      const upcomingImportant = findUpcomingImportantDates(todayHeb.month, todayHeb.day);
-      
+      const upcomingWithin7 = findUpcomingImportantDates(todayHeb.month, todayHeb.day, 7);
+
       // Determine what to show
       const hasToday = todayYahrzeits.length > 0 || todayImportant.length > 0;
       const hasTomorrow = tomorrowYahrzeits.length > 0 || tomorrowImportant.length > 0;
-      const hasUpcoming = upcomingImportant.length > 0;
-      
+      const hasUpcoming7 = upcomingWithin7.length > 0;
+
       // Hide loading
       document.getElementById('yahrzeitLoading').style.display = 'none';
 
-      // If nothing to show, hide the box entirely
-      if (!hasToday && !hasTomorrow && !hasUpcoming) {
-        document.getElementById('compactYahrzeit').style.display = 'none';
-        return;
-      }
-
-      // Show the box (remove collapsed for desktop, mobile stays collapsed until tapped)
-      const box = document.getElementById('compactYahrzeit');
+      // ALWAYS show the box
       box.style.display = 'block';
       if (window.innerWidth > 768) {
         box.classList.remove('collapsed');
       }
 
-      // Populate today's section - ONLY if there are names for today
+      // Populate today's section
       if (hasToday) {
         document.getElementById('todayHebrew').textContent = todayHeb.hebrew;
         const todayList = document.getElementById('todayList');
@@ -272,11 +335,10 @@
 
         document.getElementById('todaySection').style.display = 'block';
       } else {
-        // No names today - hide today section completely
         document.getElementById('todaySection').style.display = 'none';
       }
 
-      // Populate tomorrow's section - ONLY if there are names for tomorrow
+      // Populate tomorrow's section
       if (hasTomorrow) {
         document.getElementById('tomorrowHebrew').textContent = tomorrowHeb.hebrew;
         const tomorrowList = document.getElementById('tomorrowList');
@@ -291,30 +353,57 @@
 
         document.getElementById('tomorrowSection').style.display = 'block';
       } else {
-        // No names tomorrow - hide tomorrow section completely
         document.getElementById('tomorrowSection').style.display = 'none';
       }
 
-      // Populate upcoming section
-      if (hasUpcoming) {
-        const first = upcomingImportant[0];
+      // Upcoming section: show within-7-days events, OR the single next big date
+      if (hasUpcoming7) {
+        const first = upcomingWithin7[0];
         document.getElementById('upcomingLabel').textContent = first.dateLabel;
         const upcomingList = document.getElementById('upcomingList');
         upcomingList.innerHTML = '';
 
-        for (const evt of upcomingImportant) {
+        for (const evt of upcomingWithin7) {
           upcomingList.appendChild(renderTzaddikLink(evt, true));
         }
-
         document.getElementById('upcomingSection').style.display = 'block';
+      } else if (!hasToday && !hasTomorrow) {
+        // Nothing today/tomorrow/within 7 days — find the NEXT big date anywhere in the year
+        const next = findNextImportantDate(todayHeb.month, todayHeb.day);
+        if (next) {
+          document.getElementById('upcomingLabel').textContent = '';
+          const upcomingList = document.getElementById('upcomingList');
+          upcomingList.innerHTML = '';
+
+          const div = document.createElement('div');
+          div.className = 'tzaddik-link upcoming-event next-big-date';
+          let html = `<span class="tzaddik-name">${next.name}</span>`;
+          if (next.hebrew_name) {
+            html += `<span class="tzaddik-hebrew" dir="rtl">${next.hebrew_name}</span>`;
+          }
+          if (next.description) {
+            html += `<span class="event-description">${next.description}</span>`;
+          }
+          html += `<span class="countdown-badge">${next.day} ${next.month} — in ${next.daysUntil} days</span>`;
+          div.innerHTML = html;
+          upcomingList.appendChild(div);
+
+          document.getElementById('upcomingSection').style.display = 'block';
+        }
       } else {
         document.getElementById('upcomingSection').style.display = 'none';
       }
-      
+
     } catch (e) {
       console.error('Yahrzeit initialization error:', e);
-      // Hide on error - don't show empty box
-      document.getElementById('compactYahrzeit').style.display = 'none';
+      // On error, still show box with a simple message
+      document.getElementById('yahrzeitLoading').style.display = 'none';
+      box.style.display = 'block';
+      if (window.innerWidth > 768) box.classList.remove('collapsed');
+      const upSection = document.getElementById('upcomingSection');
+      const upList = document.getElementById('upcomingList');
+      upList.innerHTML = '<div class="tzaddik-link upcoming-event"><span class="event-description">Check back soon</span></div>';
+      upSection.style.display = 'block';
     }
   }
 
@@ -363,29 +452,29 @@
       opacity: 0.8;
     }
   }
-  
+
   .yahrzeit-loading {
     text-align: center;
     padding: 0.5rem;
   }
-  
+
   .loading-icon {
     animation: pulse 1.5s ease-in-out infinite;
   }
-  
+
   @keyframes pulse {
     0%, 100% { opacity: 0.5; }
     50% { opacity: 1; }
   }
-  
+
   .yahrzeit-section {
     margin-bottom: 0.5rem;
   }
-  
+
   .yahrzeit-section:last-child {
     margin-bottom: 0;
   }
-  
+
   .section-header {
     display: flex;
     align-items: center;
@@ -394,24 +483,24 @@
     padding-bottom: 0.125rem;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   }
-  
+
   .yahrzeit-icon {
     font-size: 0.875rem;
   }
-  
+
   .section-title {
     font-size: 0.8rem;
     font-weight: 600;
     color: #92400e;
     margin: 0;
   }
-  
+
   .tzaddikim-list {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
   }
-  
+
   .tzaddik-link {
     display: flex;
     flex-direction: column;
@@ -422,12 +511,12 @@
     text-decoration: none;
     transition: all 0.2s;
   }
-  
+
   .tzaddik-link:hover {
     background: #fef3c7;
     transform: translateX(2px);
   }
-  
+
   .tzaddik-name {
     font-size: 0.8rem;
     font-weight: 600;
@@ -439,22 +528,43 @@
     color: #333;
     margin-top: 0.125rem;
   }
-  
+
   .upcoming-event {
     border-left-color: #10b981;
   }
-  
+
   .upcoming-event:hover {
     background: #f0fdf4;
   }
-  
+
+  .next-big-date {
+    border-left-color: #6366f1;
+    background: #f5f3ff;
+  }
+
+  .next-big-date:hover {
+    background: #ede9fe;
+  }
+
   .event-description {
     font-size: 0.65rem;
     color: #059669;
     font-style: italic;
     margin-top: 0.125rem;
   }
-  
+
+  .countdown-badge {
+    font-size: 0.6rem;
+    font-weight: 600;
+    color: #6366f1;
+    background: #eef2ff;
+    padding: 0.125rem 0.375rem;
+    border-radius: 3px;
+    display: inline-block;
+    align-self: flex-start;
+    margin-top: 0.125rem;
+  }
+
   .event-type {
     font-size: 0.6rem;
     font-weight: 600;
@@ -462,7 +572,7 @@
     letter-spacing: 0.05em;
     margin-top: 0.125rem;
   }
-  
+
   .birth-badge {
     color: #10b981;
     background: #f0fdf4;
@@ -480,7 +590,16 @@
     display: inline-block;
     align-self: flex-start;
   }
-  
+
+  .yahrzeit-badge {
+    color: #92400e;
+    background: #fffbeb;
+    padding: 0.125rem 0.375rem;
+    border-radius: 3px;
+    display: inline-block;
+    align-self: flex-start;
+  }
+
   .toggle-btn {
     display: none;
     position: absolute;
@@ -491,11 +610,11 @@
     cursor: pointer;
     font-size: 1.2rem;
   }
-  
+
   .mobile-only {
     display: none;
   }
-  
+
   @media (max-width: 768px) {
     .compact-yahrzeit {
       transition: all 0.3s ease;
@@ -518,27 +637,27 @@
     .compact-yahrzeit.collapsed .yahrzeit-loading {
       display: none !important;
     }
-    
+
     .toggle-btn {
       display: flex;
     }
-    
+
     .collapsed .collapsed-icon {
       display: inline;
     }
-    
+
     .collapsed .expanded-icon {
       display: none;
     }
-    
+
     .compact-yahrzeit:not(.collapsed) .collapsed-icon {
       display: none;
     }
-    
+
     .compact-yahrzeit:not(.collapsed) .expanded-icon {
       display: inline;
     }
-    
+
     .mobile-only {
       display: flex;
     }
