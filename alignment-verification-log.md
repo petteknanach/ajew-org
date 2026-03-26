@@ -49,9 +49,29 @@
 - **12 torahs MINOR** (1-2 off): 2, 3, 5, 9, 11, 12, 20, 21, 23, 24, 26, 29
 - **9 torahs BAD** (3+ off): 4, 6, 7, 8, 10, 13, 14, 15, 17
 
+### Part 1, Torahs 31-286:
+- **230 GOOD** ✅
+- **21 MINOR** 🟡: 42, 55, 57, 58, 62, 63, 78, 85, 95, 106, 107, 108, 111, 126, 137, 143, 157, 234, 269, 282, 286
+- **5 BAD** 🔴: 33, 35, 60, 61, 212
+
+### Part 2, Torahs 1-125:
+- **117 GOOD** ✅
+- **7 MINOR** 🟡: 8, 60, 67, 78, 79, 91, 92
+- **1 BAD** 🔴: Torah 4 (26 segs, 3 crammed, 4 empty)
+
+### FULL LM TOTALS:
+- **356 GOOD (84%)** — no alignment issues
+- **40 MINOR (9%)** — 1-2 segments slightly off
+- **15 BAD (4%)** — 3+ segments need redistribution
+- BAD torahs: Part 1: 4, 6, 7, 8, 10, 13, 14, 15, 17, 33, 35, 60, 61, 212. Part 2: 4.
+- NOTE: Most BAD torahs are in 1-17 range — user providing new translations for 11-17
+
 ### Still need to verify:
-- [ ] Part 1, Torah 31-286
-- [ ] Part 2, Torah 1-125
+- [ ] Likutay Halachos (all 8 parts — 1,111 crammed, WORST book)
+- [ ] Kitzur LM
+- [ ] Sichos HaRan
+- [ ] Ebay HaNachal
+- [ ] Likutay Tefilos
 - [ ] All other books
 
 ---
