@@ -1822,12 +1822,323 @@
     });
   }
 
+  // --- Commentary Panel for Likutay Moharan ---
+  // Shows related commentaries: Parparos, Biur, Kitzur, Chochma UTvuna, LH, Tefilos
+  var commentaryState = { open: false, loaded: {}, activeTab: null, chainData: null };
+
+  function isLmPage() {
+    var p = window.location.pathname;
+    return /^\/reader\/likutay-moharan\/\d+\/\d+/.test(p);
+  }
+
+  function getLmParts() {
+    var m = window.location.pathname.match(/^\/reader\/likutay-moharan\/(\d+)\/(\d+)/);
+    if (!m) return null;
+    return { part: parseInt(m[1]), torah: parseInt(m[2]) };
+  }
+
+  function getCommentarySources(part, torah) {
+    var sources = [];
+
+    // Kitzur LM (same numbering as LM)
+    sources.push({
+      id: 'kitzur',
+      label: 'Kitzur',
+      labelHe: 'קיצור ליקו"מ',
+      url: '/reader/kitzur-likutay-moharan/part-' + part + '/torah-' + torah + '.json',
+      readerUrl: '/reader/kitzur-likutay-moharan/' + part + '/' + torah,
+      type: 'summary'
+    });
+
+    // Parparos LeChochma (section = torah, Part 1 only, sections 1-135)
+    if (part === 1 && torah <= 135) {
+      sources.push({
+        id: 'parparos',
+        label: 'Parparos',
+        labelHe: 'פרפראות לחכמה',
+        url: '/reader/parparos-lechochma/section-' + torah + '.json',
+        readerUrl: '/reader/parparos-lechochma/1/' + torah,
+        type: 'commentary'
+      });
+    }
+
+    // Biur HaLikutim (section = torah, Part 1 only, sections 1-77)
+    if (part === 1 && torah <= 77) {
+      sources.push({
+        id: 'biur',
+        label: 'Biur',
+        labelHe: 'ביאור הליקוטים',
+        url: '/reader/biur-halikutim/section-' + torah + '.json',
+        readerUrl: '/reader/biur-halikutim/1/' + torah,
+        type: 'explanation'
+      });
+    }
+
+    // Chochma UTvuna (section = torah, Part 1 only, sections 1-25)
+    if (part === 1 && torah <= 25) {
+      sources.push({
+        id: 'chochma',
+        label: 'Chochma',
+        labelHe: 'חכמה ותבונה',
+        url: '/reader/chochma-utvuna/section-' + torah + '.json',
+        readerUrl: '/reader/chochma-utvuna/1/' + torah,
+        type: 'explanation'
+      });
+    }
+
+    return sources;
+  }
+
+  function setupCommentaryPanel() {
+    if (!isLmPage()) return;
+    var lm = getLmParts();
+    if (!lm) return;
+
+    // Add Commentary button to toolbar
+    var toolbarGroups = document.querySelectorAll('.reader-toolbar-group');
+    var lastGroup = toolbarGroups[toolbarGroups.length - 1];
+    if (!lastGroup) return;
+
+    var commentaryBtn = document.createElement('button');
+    commentaryBtn.className = 'reader-btn reader-btn-icon';
+    commentaryBtn.id = 'btn-commentary';
+    commentaryBtn.textContent = 'Commentary';
+    commentaryBtn.title = 'Show related commentaries';
+    commentaryBtn.addEventListener('click', toggleCommentaryPanel);
+    lastGroup.insertBefore(commentaryBtn, lastGroup.querySelector('#btn-fullscreen'));
+
+    // Create the commentary panel
+    var panel = document.createElement('div');
+    panel.className = 'commentary-panel';
+    panel.id = 'commentary-panel';
+
+    var sources = getCommentarySources(lm.part, lm.torah);
+
+    panel.innerHTML =
+      '<div class="commentary-header">' +
+        '<h3>Commentary</h3>' +
+        '<button class="commentary-close">&times;</button>' +
+      '</div>' +
+      '<div class="commentary-tabs" id="commentary-tabs"></div>' +
+      '<div class="commentary-body" id="commentary-body">' +
+        '<div class="commentary-placeholder">Select a commentary above to view</div>' +
+      '</div>';
+
+    document.body.appendChild(panel);
+
+    panel.querySelector('.commentary-close').addEventListener('click', toggleCommentaryPanel);
+
+    // Build tabs from available sources + chain-of-light data
+    buildCommentaryTabs(lm.part, lm.torah, sources);
+  }
+
+  function buildCommentaryTabs(part, torah, sources) {
+    var tabsEl = document.getElementById('commentary-tabs');
+    if (!tabsEl) return;
+
+    // First add the static sources (try fetching headers to see if they exist)
+    var pendingSources = sources.slice();
+    var validSources = [];
+    var checked = 0;
+
+    function addTab(source) {
+      var tab = document.createElement('button');
+      tab.className = 'commentary-tab';
+      tab.dataset.sourceId = source.id;
+      tab.innerHTML = '<span class="tab-he">' + source.labelHe + '</span><span class="tab-en">' + source.label + '</span>';
+      tab.title = source.label;
+      tab.addEventListener('click', function() {
+        loadCommentary(source);
+        document.querySelectorAll('.commentary-tab').forEach(function(t) { t.classList.remove('active'); });
+        tab.classList.add('active');
+      });
+      tabsEl.appendChild(tab);
+    }
+
+    // Check each source exists by attempting fetch (HEAD or small fetch)
+    pendingSources.forEach(function(source) {
+      fetch(source.url, { method: 'GET' })
+        .then(function(r) {
+          if (r.ok) {
+            return r.json().then(function(data) {
+              // Cache the data
+              commentaryState.loaded[source.id] = data;
+              // Check if it has actual content (segments with text)
+              if (data && data.segments && data.segments.length > 0) {
+                validSources.push(source);
+              }
+              checked++;
+              if (checked === pendingSources.length) finalize();
+            });
+          } else {
+            checked++;
+            if (checked === pendingSources.length) finalize();
+          }
+        })
+        .catch(function() {
+          checked++;
+          if (checked === pendingSources.length) finalize();
+        });
+    });
+
+    // Also load chain-of-light for LH and Tefilos connections
+    fetch('/chain-of-light.json')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        commentaryState.chainData = data;
+        var partKey = 'part-' + part;
+        var torahKey = String(torah);
+        if (data.connections && data.connections[partKey] && data.connections[partKey][torahKey]) {
+          var conns = data.connections[partKey][torahKey].connections || [];
+          // Group LH connections
+          var lhConns = conns.filter(function(c) { return c.book === 'likutay-halachos'; });
+          var ltConns = conns.filter(function(c) { return c.book === 'likutay-tefilos'; });
+
+          if (lhConns.length > 0) {
+            validSources.push({
+              id: 'lh-chain',
+              label: 'Lik. Halachos',
+              labelHe: 'ליקוטי הלכות',
+              type: 'chain',
+              connections: lhConns
+            });
+          }
+          if (ltConns.length > 0) {
+            validSources.push({
+              id: 'lt-chain',
+              label: 'Lik. Tefilos',
+              labelHe: 'ליקוטי תפילות',
+              type: 'chain',
+              connections: ltConns
+            });
+          }
+        }
+      })
+      .catch(function() {})
+      .finally(function() {
+        // Re-check finalization - chain data loaded
+        if (checked === pendingSources.length) finalize();
+      });
+
+    function finalize() {
+      // Sort: kitzur, parparos, biur, chochma, lh, lt
+      var order = ['kitzur', 'parparos', 'biur', 'chochma', 'lh-chain', 'lt-chain'];
+      validSources.sort(function(a, b) {
+        return order.indexOf(a.id) - order.indexOf(b.id);
+      });
+      tabsEl.innerHTML = '';
+      if (validSources.length === 0) {
+        tabsEl.innerHTML = '<div style="padding:8px;color:var(--reader-text-secondary);font-size:0.85em;">No commentaries available for this torah</div>';
+        // Hide the button or dim it
+        var btn = document.getElementById('btn-commentary');
+        if (btn) {
+          btn.style.opacity = '0.4';
+          btn.title = 'No commentaries available for this torah';
+        }
+        return;
+      }
+      validSources.forEach(addTab);
+
+      // Auto-open first tab
+      var firstTab = tabsEl.querySelector('.commentary-tab');
+      if (firstTab) firstTab.click();
+    }
+  }
+
+  function loadCommentary(source) {
+    var body = document.getElementById('commentary-body');
+    if (!body) return;
+
+    commentaryState.activeTab = source.id;
+
+    // Chain-of-light connections (LH, Tefilos)
+    if (source.type === 'chain') {
+      var html = '<div class="commentary-connections">';
+      source.connections.forEach(function(conn) {
+        html += '<a href="' + conn.url + '" class="commentary-connection-item" target="_blank">' +
+          '<div class="conn-book">' + (conn.bookHebrew || conn.bookTitle) + '</div>' +
+          '<div class="conn-snippet">' + (conn.snippet || '').substring(0, 120) + (conn.snippet && conn.snippet.length > 120 ? '...' : '') + '</div>' +
+          '<div class="conn-type">' + (conn.typeHebrew || conn.typeLabel || '') + '</div>' +
+        '</a>';
+      });
+      html += '</div>';
+      body.innerHTML = html;
+      return;
+    }
+
+    // Cached JSON data
+    if (commentaryState.loaded[source.id]) {
+      renderCommentaryContent(body, commentaryState.loaded[source.id], source);
+      return;
+    }
+
+    body.innerHTML = '<div class="commentary-loading">Loading...</div>';
+
+    fetch(source.url)
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        commentaryState.loaded[source.id] = data;
+        if (commentaryState.activeTab === source.id) {
+          renderCommentaryContent(body, data, source);
+        }
+      })
+      .catch(function() {
+        if (commentaryState.activeTab === source.id) {
+          body.innerHTML = '<div class="commentary-placeholder">Failed to load commentary</div>';
+        }
+      });
+  }
+
+  function renderCommentaryContent(body, data, source) {
+    if (!data || !data.segments || data.segments.length === 0) {
+      body.innerHTML = '<div class="commentary-placeholder">No content available</div>';
+      return;
+    }
+
+    var html = '<div class="commentary-content">';
+
+    // Header with link to full page
+    if (source.readerUrl) {
+      html += '<a href="' + source.readerUrl + '" class="commentary-full-link" target="_blank">' +
+        'Open full text in reader &rarr;</a>';
+    }
+
+    // Show segments (Hebrew only for commentary, compact)
+    data.segments.forEach(function(seg, i) {
+      if (!seg.he && !seg.en) return;
+      var heText = seg.he_nikud || seg.he || '';
+      var enText = seg.en || '';
+      html += '<div class="commentary-segment" data-index="' + seg.index + '">';
+      if (heText) {
+        html += '<p class="commentary-he" dir="rtl">' + heText + '</p>';
+      }
+      if (enText && enText !== 'Translation not yet available') {
+        html += '<p class="commentary-en">' + enText + '</p>';
+      }
+      html += '</div>';
+    });
+
+    html += '</div>';
+    body.innerHTML = html;
+  }
+
+  function toggleCommentaryPanel() {
+    commentaryState.open = !commentaryState.open;
+    var panel = document.getElementById('commentary-panel');
+    if (panel) {
+      panel.classList.toggle('open', commentaryState.open);
+    }
+    var btn = document.getElementById('btn-commentary');
+    if (btn) btn.classList.toggle('active', commentaryState.open);
+  }
+
   // Run on DOM ready
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => { init(); setupMySefer(); setTimeout(addCrossReferenceLinks, 500); });
+    document.addEventListener('DOMContentLoaded', () => { init(); setupMySefer(); setupCommentaryPanel(); setTimeout(addCrossReferenceLinks, 500); });
   } else {
     init();
     setupMySefer();
+    setupCommentaryPanel();
     setTimeout(addCrossReferenceLinks, 500);
   }
 })();
