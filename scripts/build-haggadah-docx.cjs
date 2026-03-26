@@ -239,8 +239,41 @@ children.push(centeredPar('ajew.org', { size: 24, spacingAfter: 100, spacingBefo
 children.push(pageBreak());
 
 // ============================================================
-// 2. INTRODUCTION — Torah Novelties on Pesach
+// 2. INTRODUCTION — 8 Nissan + Torah Novelties on Pesach
 // ============================================================
+
+children.push(sectionHeading('הקדמה', true));
+children.push(sectionHeading('Introduction'));
+
+// --- 8 Nissan Opening ---
+children.push(hePar(
+  'ח׳ ניסן תשפ"ו — היום, ביום שהנשיא גמליאל בן פדהצור מקריב את קרבנו, באנו לסדר הגדה של פסח אמיתית של ברסלב.',
+  { size: 26, bold: true, spacingAfter: 200 }
+));
+children.push(enPar(
+  'The 8th of Nissan 5786 — Today, on the day when the Nassi Gamliel ben Pedahtzur brings his offering, we have come to arrange a true Breslov Haggadah shel Pesach.',
+  { size: 24, bold: true, spacingAfter: 200 }
+));
+children.push(enPar(
+  'And we note the auspicious timing: The Nassi of this day carries within his very name the secret of the Haggadah and of Mitzrayim:',
+  { size: 22, spacingAfter: 200 }
+));
+children.push(gematriaLine('פדהצור = 380 = מצרים = ש"פ (ר"ת הגדה של פסח)', 'Pedahtzur = 380 = Mitzrayim = Shin-Peh (initials of Haggadah Shel Pesach)'));
+children.push(gematriaLine('פדה-צור — הצור פדה', '"The Rock redeemed" — HaShem redeems from Mitzrayim'));
+children.push(gematriaLine('מנשה = אותיות משה + נ׳ (שער הנ׳ של בינה)', 'Menashe = letters of Moshe + Nun (the 50th gate of Binah)'));
+children.push(gematriaLine('ר"ת גמליאל בן פדהצור = גב"פ = בגפו', 'Initials of Gamliel Ben Pedahtzur = Begafo — "alone he comes, alone he goes free"'));
+children.push(gematriaLine('גמליאל — בחי׳ המלאך גומיאל (שרשי השמות) = מים = 90', 'Gamliel — aspect of angel Gumiel (Shoreshei HaShemos) = Mayim/Water = 90'));
+children.push(gematriaLine('גם עלה = נחמן = פסח = 148 (בראשית מו:ד)', 'Gam Aloh = Nachman = Pesach = 148 — "I will also bring you UP" (Bereishis 46:4)'));
+children.push(enPar(
+  'And in Gemara Brachos: one who sees a gamal (camel) in a dream — death was decreed from Heaven and he was saved. R\' Chama bar Chanina says the source is: "And I will go down with you to Mitzrayim and I will also bring you UP (gam aloh)" — the rising up from Mitzrayim IS Nachman, IS Pesach, IS 148!',
+  { size: 22, spacingAfter: 200 }
+));
+children.push(enPar(
+  'And Moshe = 345 = HaMitzri — he is called "Ish Mitzri" (Shemos 2:19). He carried Mitzrayim within him to rectify it from inside. And from Sefer Bris Menucha: Paschar (פסכ"ר), one of the 7 Ro\'ei Pnei HaMelech, = 380 = Mitzrayim — appointed over harsh judgment from all the serafim. And in Shoreshei HaShemos of the Ramaz: Pasbar (פסב"ר), with the interchange of Kaf and Beis.',
+  { size: 22, spacingAfter: 300 }
+));
+
+children.push(pageBreak());
 
 children.push(sectionHeading('חידושי תורה על פסח', true));
 children.push(sectionHeading('Torah Novelties on Pesach'));
@@ -356,25 +389,40 @@ children.push(gematriaLine(
   'Gam Aloh = Nachman = Pesach = 148!'
 ));
 
-// --- Matza Shmura (SSK 2:38) ---
+// --- Teachings from Kuntres HaHosafos L'Chayey Moharan ---
 children.push(pageBreak());
-children.push(subHeading('מצה שמורה — שיח שרפי קודש ב:לח', true));
-children.push(subHeading('Matza Shmura — Siach Sarfei Kodesh 2:38'));
+children.push(subHeading('קונטרס ההוספות לספר חיי מוהר"ן', true));
+children.push(subHeading('Kuntres HaHosafos — Additions to Chayey Moharan'));
 
+// לב — Litvaks have strong hearts
+children.push(hePar(
+  'לב — רבינו ז"ל אמר שהוא אוהב שענינו יבא על לבות של ליטאים ("ליטוואקיס") כי יש להם לב חזק והם עקשנים גדולים וזה מעלה גדולה בעבודת השם ("זיין זאך זאל איבער גיין אוף ליטוושי הערצער").',
+  { size: 24, spacingAfter: 150 }
+));
 children.push(enPar(
-  'Rabbeinu touched the non-shmura matza, then touched his body (the area of bris mila), then touched the matza again and said: "Matza + Shmiras HaBris = THIS is Matza Shmura!" Rabbeinu would only eat matza shmura.',
+  '32 — Rabbeinu said that he loves when his matters come upon the hearts of Lithuanians ("Litvaks"), for they have strong hearts and they are greatly stubborn — and this is a great virtue in the service of Hashem.',
   { size: 22, spacingAfter: 300 }
 ));
 
-// Full Hebrew text from SSK 2:38
-if (ssk38 && ssk38.segments && ssk38.segments.length > 0) {
-  for (const seg of ssk38.segments) {
-    const heText = seg.he_nikud || seg.he;
-    if (heText && heText.trim().length > 3) {
-      children.push(hePar(heText, { size: 24, spacingAfter: 200 }));
-    }
-  }
-}
+// לג — Shmira in the pants / no extra stringencies
+children.push(hePar(
+  'לג — פעם אחד הי\' איזה שאלה אצל רבינו ז"ל בפסח שנפל חתיכת מצה לתוך התבשיל לענין שאין אוכלים (גבראקט) המצה לתוך המים (שרויה) ולא החמיר כל כך. אמר לענין מצה שמורה העיקר שמירה במכנסיים ("שמירה אין דיא הוזין") היינו העיקר הוא תיקון הברית בזה צריכין להחמיר מאד אבל בשאר דברים לא צריכים חומרות יתירות רק אם ע"פ ש"ע כשר לא צריכים להחמיר הרבה מאד וכמו שאומרים אנ"ש שהראשי תיבות ו\'ח\'י\' בהם הוא ו\'לא ח\'ומרות י\'תירות.',
+  { size: 24, spacingAfter: 150 }
+));
+children.push(enPar(
+  '33 — Once there was a question before Rabbeinu on Pesach about a piece of matza that fell into a cooked dish, regarding the matter of not eating matza soaked in water (gebrochts/shruyah), and he did not rule stringently. He said regarding matza shmura: "The main guarding is in the pants!" ("Shmira in di hozin") — meaning the main thing is the rectification of the bris (covenant), in this one must be very strict. But in other matters one does not need extra stringencies — if according to the Shulchan Aruch it is kosher, one does not need to be overly strict. As our people say: the acronym of V\'CH\'Y (and he lived) is V\'lo CH\'umros Y\'eseiros — "and no extra stringencies!"',
+  { size: 22, spacingAfter: 300 }
+));
+
+// לד — Taking matza = taking HKB'H
+children.push(hePar(
+  'לד — פעם אחת היו מנחות אצל רבנו ז"ל שתי מצות: אחת של שמורה ואחת בלתי, והשמורה היתה יותר קרובה לרבנו ז"ל. והניח רבנו ז"ל השמורה ולקח הבלתי, ואמר: כאשר לוקחים מצה ביד, לוקחים את קדשא בריך הוא בעצמו ביד ("אז מען נעמט א מצה אין דער האנט, נעמט מען קודשא בריך הוא אין דער האנט"), כי המצות הן באחדות עם השם יתברך, כמובא בלקוטי מוהר"ן סימן ה\'.',
+  { size: 24, spacingAfter: 150 }
+));
+children.push(enPar(
+  '34 — Once there were placed before Rabbeinu two matzos: one shmura and one not shmura, and the shmura was closer to Rabbeinu. And Rabbeinu LEFT the shmura and TOOK the non-shmura, and said: "When one takes a matza in the hand, one takes the Holy One Blessed Be He Himself in the hand!" ("Az men nemt a matza in der hant, nemt men Kudsha Brich Hu in der hant") — for the matzos are in unity with Hashem Yisbarach, as brought in Likutay Moharan, Torah 5.',
+  { size: 22, spacingAfter: 300 }
+));
 
 children.push(pageBreak());
 
@@ -441,6 +489,55 @@ for (let i = 0; i < haggadahSections.length; i++) {
     if (!cleanHe || cleanHe.length < 3) continue;
 
     children.push(hePar(cleanHe, { size: 24, spacingAfter: 120 }));
+  }
+
+  // === SPECIAL: After Maror section (i=7), add the Bitter Herbs parable ===
+  if (i === 7) {
+    children.push(pageBreak());
+    children.push(subHeading('מעשה ממרור — כוכבי אור', true));
+    children.push(subHeading('The Parable of the Bitter Herbs — Kokhvei Or'));
+
+    // Rashi + Litvaks connection
+    children.push(enPar(
+      'Rashi (Pesachim 39a, d"h Chasa) says that Chasa (lettuce/חסה) — the maror — is called in Old French "Lituga" (ליטוג"א). And Rabbeinu said (Kuntres HaHosafos 32) that he loves when his teachings reach Litvak hearts, for they have strong hearts and great stubbornness — a great virtue in avodas Hashem! The very maror of the seder hints at this.',
+      { size: 22, bold: true, spacingAfter: 200 }
+    ));
+
+    // Hebrew parable from Kokhvei Or
+    children.push(hePar(
+      'מַעֲשֶׂה מִמָּרוֹר שֶׁסִּפֵּר רַבֵּנוּ זַ"ל. שֶׁפַּעַם אַחַת הָלְכוּ יְהוּדִי וְגֶרְמָנִי יַחַד נְדוֹד, וְלִמֵּד הַיְּהוּדִי אֶת הַגֶּרְמָנִי שֶׁיַּעֲשֶׂה אֶת עַצְמוֹ כְּמוֹ יְהוּדִי (כֵּיוָן שֶׁהַלָּשׁוֹן הוּא אֶחָד), וְהַיְּהוּדִים רַחֲמָנִים וִירַחֲמוּ עָלָיו. וְכֵיוָן שֶׁבָּא סָמוּךְ לְפֶסַח לִמְּדוֹ אֵיךְ שֶׁיִּתְנַהֵג בְּכָל הַסֵּדֶר, שֶׁעוֹשִׂין קִדּוּשׁ, וְרוֹחֲצִים יָדַיִם, רַק שָׁכַח לֹאמַר לוֹ שֶׁאוֹכְלִים מָרוֹר.',
+      { size: 24, spacingAfter: 100 }
+    ));
+    children.push(hePar(
+      'וְכֵיוָן שֶׁבָּא לְהַסֵּדֶר רָעֵב מִכָּל הַיּוֹם, וּמְצַפֶּה שֶׁיֹּאכַל הַדְּבָרִים טוֹבִים שֶׁאָמַר לוֹ הַיְּהוּדִי, אֲבָל נוֹתְנִים לוֹ חֲתִיכַת כַּרְפַּס בְּמֵי מֶלַח, וּשְׁאָר הַדְּבָרִים הַנּוֹהֲגִים בַּסֵּדֶר, וְאוֹמְרִים הַהַגָּדָה. וּכְבָר הוּא בְּעֵינַיִם צוֹפִיּוֹת לְהָאֲכִילָה, וְהוּא שָׂמֵחַ כְּבָר שֶׁאוֹכְלִים כְּבָר הַמַּצָּה. פִּתְאֹם נוֹתְנִים לוֹ מָרוֹר, וְנַעֲשָׂה לוֹ מַר בְּפִיו, וְהוּא חָשַׁב שֶׁזֶּהוּ הַסְּעֻדָּה שֶׁרַק זֶה יֹאכְלוּ. בָּרַח תֵּכֶף בִּמְרִירוּת וּרְעָבוֹן.',
+      { size: 24, spacingAfter: 100 }
+    ));
+    children.push(hePar(
+      'וְאַחַר־כָּךְ בָּא הַיְּהוּדִי בְּפָנִים שְׂמֵחוֹת, שָׂבֵעַ מֵאֲכִילָה וּשְׁתִיָּה, וּשְׁאָלוֹ אֵיךְ הָיָה לְךָ הַסֵּדֶר. אָמַר לוֹ הוֹי גֶּרְמָנִי שׁוֹטֶה, אִם הָיִיתָ מְחַכֶּה עוֹד מְעַט, הָיִיתָ אוֹכֵל כָּל טוּב כָּמוֹנִי.',
+      { size: 24, spacingAfter: 100 }
+    ));
+    children.push(hePar(
+      'כֵּן הוּא בְּעִנְיַן רַבֵּנוּ וַעֲבוֹדַת ה\', שֶׁאַחַר כָּל הַיְגִיעוֹת וְהַטְּרָחוֹת, נוֹתְנִים מְעַט מָרוֹר מְרִירוּת, כִּי זִכּוּךְ הַגּוּף בָּא בִּמְרִירוּת, אֲבָל הָאִישׁ חוֹשֵׁב שֶׁתָּמִיד יִהְיֶה רַק הַמְּרִירוּת. אֲבָל כֵּיוָן שֶׁמְּחַכֶּה מְעַט וְסוֹבֵל זֶה הַמְּרִירוּת מְעַט מִזִּכּוּךְ הַגּוּף, אָז מַרְגִּישׁ אַחַר־כָּךְ כָּל מִינֵי חִיּוּת וְתַעֲנוּג.',
+      { size: 24, spacingAfter: 200 }
+    ));
+
+    // English translation
+    children.push(enPar(
+      'A story of bitter herbs that Rabbeinu told: Once a Jew and a German went wandering together. The Jew taught the German to pretend to be a Jew (since the language is the same), and the Jews are compassionate and will have mercy on him. When Pesach approached, the Jew taught him how to conduct himself at the seder — kiddush, washing hands — but forgot to tell him about the eating of maror.',
+      { size: 22, spacingAfter: 100 }
+    ));
+    children.push(enPar(
+      'When the German came to the seder, famished from the whole day, they gave him a piece of karpas in salt water and recited the Haggadah. He was already looking expectantly for the eating. He was happy when they ate the matzah. Suddenly they gave him maror — and his mouth became pungent! He thought THIS is the feast, this alone is what they eat. He immediately fled in bitterness and hunger. "Cursed Jews! After the whole ceremony, THIS is what they give to eat!"',
+      { size: 22, spacingAfter: 100 }
+    ));
+    children.push(enPar(
+      'Afterwards the Jew came with joyous countenance, satiated from eating and drinking, and asked him, "How was the seder for you?" He answered angrily. The Jew said to him: "Hoy, German fool! If you would have waited a bit more, you would have eaten sumptuously like me!"',
+      { size: 22, bold: true, spacingAfter: 100 }
+    ));
+    children.push(enPar(
+      'The same is true in the service of Hashem: after all the exertion and toil, a bit of maror — bitterness — is given, because the purification of the body comes with bitterness. But the person thinks it will always be just the bitterness, and flees. However, when he waits a bit and endures this small bitterness, then he feels afterwards all types of vitality and delight.',
+      { size: 22, spacingAfter: 300 }
+    ));
   }
 
   // Note if Nirtzah was truncated
@@ -733,7 +830,7 @@ const doc = new Document({
 // WRITE FILE
 // ============================================================
 
-const outPath = 'C:/Users/Pettek/Downloads/Haggadah-Shel-Pesach-NaNach.docx';
+const outPath = 'C:/Users/Pettek/Downloads/Haggadah-Shel-Pesach-NaNach-v2.docx';
 
 Packer.toBuffer(doc).then(buffer => {
   fs.writeFileSync(outPath, buffer);
@@ -744,3 +841,4 @@ Packer.toBuffer(doc).then(buffer => {
   console.error('Error generating DOCX:', err);
   process.exit(1);
 });
+// This will be patched properly - just a marker
