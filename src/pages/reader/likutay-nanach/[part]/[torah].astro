@@ -1,0 +1,82 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import '../../../../styles/reader.css';
+import fs from 'node:fs';
+import path from 'node:path';
+
+export function getStaticPaths() {
+  const paths = [];
+  for (let torah = 1; torah <= 24; torah++) {
+    paths.push({ params: { part: "1", torah: String(torah) } });
+  }
+  for (let torah = 1; torah <= 11; torah++) {
+    paths.push({ params: { part: "2", torah: String(torah) } });
+  }
+  for (let torah = 1; torah <= 18; torah++) {
+    paths.push({ params: { part: "3", torah: String(torah) } });
+  }
+  for (let torah = 1; torah <= 40; torah++) {
+    paths.push({ params: { part: "4", torah: String(torah) } });
+  }
+  for (let torah = 1; torah <= 8; torah++) {
+    paths.push({ params: { part: "5", torah: String(torah) } });
+  }
+  return paths;
+}
+
+const { part, torah } = Astro.params;
+const torahNum = parseInt(torah);
+
+let torahData = null;
+let error = null;
+
+try {
+  const filePath = path.join(process.cwd(), `public/reader/likutay-nanach/volume-${part}/chapter-${torahNum}.json`);
+  const raw = fs.readFileSync(filePath, 'utf8');
+  torahData = JSON.parse(raw);
+} catch (e) {
+  error = `Chapter ${torahNum} not found`;
+}
+
+if (!torahData && !error) error = 'Content not available';
+
+const volumeNames: Record<string, string> = {
+  '1': '\u05E0 - Na - Al HaTorah',
+  '2': '\u05E0\u05D7 - NaCh - Neviim uKetuvim',
+  '3': '\u05E0\u05D7\u05DE - NaChMa - Torah Shebal Peh',
+  '4': '\u05E0\u05D7\u05DE\u05DF - NaChMaN',
+  '5': '\u05DE\u05D0\u05D5\u05DE\u05DF - MayUman',
+};
+const volName = volumeNames[part] || 'Volume ' + part;
+
+const pageTitle = torahData
+  ? `${torahData.title} - ${volName} - Likutay Nanach`
+  : 'Chapter Not Found';
+---
+<Layout title={pageTitle}>
+  <main id="reader-container" data-book="likutay-nanach" data-part={part} data-torah={torah}>
+    {error ? (
+      <div class="error-message">
+        <h2>{error}</h2>
+        <p><a href="/reader">&larr; Back to Library</a></p>
+      </div>
+    ) : (
+      <div id="reader-content">
+        <div class="reader-header">
+          <div class="book-title">{'\u05DC\u05D9\u05E7\u05D5\u05D8\u05D9 \u05E0 \u05E0\u05D7 \u05E0\u05D7\u05DE \u05E0\u05D7\u05DE\u05DF'}</div>
+          <div class="torah-title">{volName}</div>
+          <div class="torah-number">{torahData.title}</div>
+        </div>
+        <div id="segments-container">
+          {torahData.segments.map(seg => (
+            <div class="segment" data-index={seg.index}>
+              {(seg.he_nikud || seg.he) && <div class="he" dir="rtl">{seg.he_nikud || seg.he}</div>}
+              {seg.en && <div class="en">{seg.en}</div>}
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+  </main>
+  <script is:inline src="/reader-script.js"></script>
+</Layout>
