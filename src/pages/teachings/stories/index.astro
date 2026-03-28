@@ -1,0 +1,55 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+---
+
+<Layout title="Stories of Rabbi Nachman" description="The 13 mystical stories told by Rabbi Nachman of Breslov - Sipurey Maasiyos">
+  <div class="stories-page">
+    <header class="page-header">
+      <h1>סיפורי מעשיות</h1>
+      <h2>Stories of Rabbi Nachman</h2>
+      <p>The 13 mystical stories of ancient times</p>
+    </header>
+
+    <div class="container">
+      <div class="stories-grid">
+        <a href="/teachings/stories/tale-1" class="story-card">
+          <span class="story-num">1</span>
+          <h3>The Lost Princess</h3>
+          <p>מעשה מאבידת בת מלך</p>
+        </a>
+        <a href="/teachings/stories/tale-2" class="story-card">
+          <span class="story-num">2</span>
+          <h3>The Emperor and the King</h3>
+          <p>מעשה מקיסר ומלך</p>
+        </a>
+        <a href="/reader/sipurey-maasiyos" class="story-card reader-link">
+          <span class="story-num">📖</span>
+          <h3>All 13 Stories in the Reader</h3>
+          <p>כל 13 הסיפורים בקורא הספרים</p>
+        </a>
+      </div>
+
+      <div class="more-info">
+        <p>More individual story pages are being added. In the meantime, read all 13 stories in our <a href="/reader/sipurey-maasiyos">library reader</a>.</p>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .stories-page { min-height: 100vh; background: linear-gradient(135deg, #1a1a2e, #16213e); color: #eee; padding: 2rem 1rem; }
+  .page-header { text-align: center; margin-bottom: 2rem; }
+  .page-header h1 { font-size: 2.5rem; color: #c9a227; font-family: 'Frank Ruhl Libre', serif; margin: 0; }
+  .page-header h2 { color: #e8d174; font-size: 1.3rem; margin: 0.3rem 0; }
+  .page-header p { color: #999; }
+  .container { max-width: 800px; margin: 0 auto; }
+  .stories-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+  .story-card { background: rgba(255,255,255,0.05); border: 1px solid #333; border-radius: 12px; padding: 1.5rem; text-decoration: none; color: #eee; transition: all 0.2s; display: block; }
+  .story-card:hover { border-color: #c9a227; transform: translateY(-3px); background: rgba(201,162,39,0.1); }
+  .story-num { font-size: 2rem; display: block; margin-bottom: 0.5rem; color: #c9a227; }
+  .story-card h3 { margin: 0 0 0.3rem; color: #fff; font-size: 1.1rem; }
+  .story-card p { margin: 0; color: #999; font-family: 'Frank Ruhl Libre', serif; font-size: 1rem; direction: rtl; }
+  .reader-link { border-color: #c9a227; border-style: dashed; }
+  .more-info { text-align: center; color: #888; }
+  .more-info a { color: #c9a227; }
+</style>

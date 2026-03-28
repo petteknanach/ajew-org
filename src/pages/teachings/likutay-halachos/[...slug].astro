@@ -1,0 +1,178 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import fs from 'node:fs';
+import path from 'node:path';
+
+export function getStaticPaths() {
+  // Read the LH index page to extract all link slugs
+  const indexPath = path.resolve('src/pages/teachings/likutay-halachos.astro');
+  let paths: { params: { slug: string } }[] = [];
+
+  try {
+    const indexContent = fs.readFileSync(indexPath, 'utf-8');
+    const regex = /href="\/teachings\/likutay-halachos\/([^"]+)"/g;
+    let match;
+    const seen = new Set<string>();
+    while ((match = regex.exec(indexContent)) !== null) {
+      const slug = match[1];
+      if (!seen.has(slug)) {
+        seen.add(slug);
+        paths.push({ params: { slug } });
+      }
+    }
+  } catch (e) {
+    // Fallback: generate a generic catch-all
+  }
+
+  // Also add a fallback index
+  if (paths.length === 0) {
+    paths.push({ params: { slug: 'index' } });
+  }
+
+  return paths;
+}
+
+const { slug } = Astro.params;
+const parts = (slug || '').split('/');
+const volume = parts[0] || '';
+const topic = parts[1] || '';
+
+// Clean up topic name for display
+const displayTopic = topic
+  .replace(/-/g, ' ')
+  .replace(/\b\w/g, c => c.toUpperCase())
+  .replace(/(\d+)([a-z])$/i, '$1 ($2)');
+
+const displayVolume = volume
+  .replace(/-/g, ' ')
+  .replace(/\b\w/g, c => c.toUpperCase());
+
+// Map volume slugs to reader part numbers
+const volumeToReaderPart: Record<string, string> = {
+  'orach-chaim-1': '1',
+  'orach-chaim-2': '2',
+  'orach-chaim-3': '3',
+  'yoreh-daya-1': '4',
+  'yoreh-daya-2': '4',
+  'evven-hu-ezehr': '5',
+  'choshen-mishpat-1': '5',
+  'choshen-mishpat-2': '5',
+};
+
+const readerPart = volumeToReaderPart[volume] || '1';
+---
+
+<Layout title={`Likutay Halachos - ${displayTopic}`} description={`Likutay Halachos - ${displayVolume} - ${displayTopic}`}>
+  <div class="lh-redirect-page">
+    <header class="page-header">
+      <h1>ליקוטי הלכות</h1>
+      <h2>Likutay Halachos</h2>
+    </header>
+
+    <div class="container">
+      <div class="content-card">
+        <h2>{displayTopic}</h2>
+        <p class="volume-label">{displayVolume}</p>
+
+        <div class="options">
+          <p>This teaching is available in our library:</p>
+          <div class="button-group">
+            <a href={`/reader/likutay-halachos/part-${readerPart}/halacha-1`} class="btn primary">
+              📖 Open in Reader — {displayVolume}
+            </a>
+            <a href="/teachings/likutay-halachos" class="btn secondary">
+              📚 Browse All Likutay Halachos
+            </a>
+            <a href="/search-enhanced" class="btn secondary">
+              🔍 Search for this topic
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .lh-redirect-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    color: #eee;
+  }
+  .page-header {
+    text-align: center;
+    padding: 3rem 1rem 1.5rem;
+  }
+  .page-header h1 {
+    font-size: 2.5rem;
+    color: #c9a227;
+    font-family: 'Frank Ruhl Libre', serif;
+    margin: 0;
+  }
+  .page-header h2 {
+    font-size: 1.3rem;
+    color: #e8d174;
+    margin: 0.3rem 0;
+  }
+  .container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+  .content-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(201,162,39,0.3);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+  }
+  .content-card h2 {
+    color: #fff;
+    font-size: 1.5rem;
+    margin: 0 0 0.5rem;
+  }
+  .volume-label {
+    color: #c9a227;
+    font-size: 1rem;
+    margin-bottom: 2rem;
+  }
+  .options p {
+    color: #999;
+    margin-bottom: 1rem;
+  }
+  .button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    align-items: center;
+  }
+  .btn {
+    display: inline-block;
+    padding: 0.8rem 1.5rem;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+  }
+  .btn.primary {
+    background: #c9a227;
+    color: #111;
+  }
+  .btn.primary:hover {
+    background: #e8d174;
+    transform: translateY(-2px);
+  }
+  .btn.secondary {
+    background: rgba(255,255,255,0.1);
+    color: #eee;
+    border: 1px solid #444;
+  }
+  .btn.secondary:hover {
+    background: rgba(255,255,255,0.15);
+    transform: translateY(-2px);
+  }
+</style>
