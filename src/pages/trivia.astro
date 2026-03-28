@@ -69,11 +69,13 @@ import Layout from '../layouts/Layout.astro';
         </div>
 
         <div class="play-mode-select">
-          <button id="playForFun" class="play-btn fun-btn">
-            <span>🎮</span> Play for Fun
+          <button id="playForFun" class="play-btn fun-btn start-btn">
+            <span class="start-icon">🎮</span>
+            <span class="start-text">START — Play for Fun</span>
           </button>
-          <button id="playCompetitive" class="play-btn compete-btn">
-            <span>🏆</span> Play to Compete
+          <button id="playCompetitive" class="play-btn compete-btn start-btn">
+            <span class="start-icon">🏆</span>
+            <span class="start-text">START — Play to Compete</span>
             <small>Register to appear on the leaderboard</small>
           </button>
         </div>
@@ -277,10 +279,10 @@ import Layout from '../layouts/Layout.astro';
         { q: "What is the gematria of נחמן (Nachman)?", a: ["148","200","210","180"], correct: 0, cat: "Gematria", source: "Nun(50)+Ches(8)+Mem(40)+Nun(50)=148", topics: ["gematria","nanach"], qHe: "מה הגימטריה של נחמן?", aHe: ["148","200","210","180"] },
         { q: "What is the gematria of נ נח נחמ נחמן?", a: ["354 = שמחה (Simcha)","200","613","420"], correct: 0, cat: "Gematria", source: "50+58+98+148=354=שמחה", topics: ["gematria","nanach"], qHe: "מה הגימטריה של נ נח נחמ נחמן?", aHe: ["354 = שמחה","200","613","420"] },
         { q: "Who is 'Saba' in Na Nach tradition?", a: ["Rabbi Yisroel Ber Odesser","Rabbi Nachman","Reb Noson","The Baal Shem Tov"], correct: 0, cat: "Na Nach", source: "Saba Yisroel (1888-1994)", topics: ["nanach"], qHe: "מי הוא 'סבא' במסורת הננח?", aHe: ["רבי ישראל בר אודסר","רבי נחמן בעצמו","רבי נתן","הבעל שם טוב"] },
-        { q: "Na Nach Nachma Nachman represents what type of song?", a: ["Single, double, triple, quadruple — shir chadash","A children's song","A Shabbos song","A wedding song"], correct: 0, cat: "Na Nach", source: "Tikkuney Zohar — the new song of redemption", topics: ["nanach","lm"], qHe: "נ נח נחמ נחמן מייצג איזה סוג שיר?", aHe: ["פשוט, כפול, משולש, מרובע — שיר חדש","שיר ילדים","שיר שבת","שיר חתונה"] },
+        { q: "What is the gematria of נ נח (Na Nach)?", a: ["108","148","58","98"], correct: 0, cat: "Gematria", source: "Nun(50) + Nun(50)+Ches(8) = 108", topics: ["gematria","nanach"], qHe: "מה הגימטריה של נ נח?", aHe: ["108","148","58","98"] },
         { q: "How old was Saba Yisroel when he passed away?", a: ["106","95","88","120"], correct: 0, cat: "Na Nach", source: "Born 1888, passed away 1994", topics: ["nanach"], qHe: "בן כמה היה סבא ישראל כשנפטר?", aHe: ["106","95","88","120"] },
         { q: "What is the gematria of פתק (Petek)?", a: ["580","385","500","420"], correct: 0, cat: "Gematria", source: "Pei(80)+Tav(400)+Kuf(100)=580", topics: ["gematria","nanach"], qHe: "מה הגימטריה של פתק?", aHe: ["580","385","500","420"] },
-        { q: "What Torah in LM discusses the 'Song of the Future'?", a: ["Torah 64 (Part I)","Torah 1","Torah 282","Torah 48 (Part II)"], correct: 0, cat: "Likutay Moharan", source: "LM I:64 — shir pashut, kaful, meshulash, meruba", topics: ["lm","nanach"], qHe: "איזו תורה בליקוטי מוהר״ן דנה ב'שיר העתיד'?", aHe: ["תורה ס״ד (חלק א)","תורה א","תורה רפ״ב","תורה מ״ח (חלק ב)"] },
+        { q: "What type of song does Na Nach Nachma Nachman represent according to Tikkuney Zohar?", a: ["Single, double, triple, quadruple — the song of Mashiach","A lullaby for the soul","A wedding song","A song of mourning turned to joy"], correct: 0, cat: "Na Nach", source: "Tikkuney Zohar — shir pashut, kaful, meshulash, meruba = the new song of redemption", topics: ["nanach","lm"], qHe: "איזה סוג שיר מייצג נ נח נחמ נחמן לפי תיקוני הזוהר?", aHe: ["פשוט, כפול, משולש, מרובע — שיר של משיח","שיר ערש לנשמה","שיר חתונה","שיר של אבל שהפך לשמחה"] },
         { q: "What is 'Ebay HaNachal'?", a: ["Saba's letters to President Shazar","A river near Uman","A niggun","A commentary on Tehillim"], correct: 0, cat: "Na Nach", source: "Blossoms of the Brook (Song of Songs 6:11)", topics: ["nanach"], qHe: "מהו 'אבי הנחל'?", aHe: ["אוסף מכתבי סבא לנשיא שזר","נהר ליד אומן","ניגון ברסלבי","פירוש על תהילים"] },
         { q: "What president of Israel was close to Saba?", a: ["Zalman Shazar","Chaim Weizmann","Ben-Zvi","Shimon Peres"], correct: 0, cat: "Na Nach", source: "Saba's letters form the book Ebay HaNachal", topics: ["nanach"], qHe: "איזה נשיא ישראל היה קרוב לסבא?", aHe: ["זלמן שזר","חיים ויצמן","יצחק בן-צבי","שמעון פרס"] },
         { q: "In Chayay Moharan, what did Rabbi Nachman say about Uman's martyrs?", a: ["He can fix their souls — that's why he chose to be buried there","He didn't know about them","He wanted to avoid them","Only scholars are buried there"], correct: 0, cat: "Chayay Moharan", source: "The holy martyrs of the 1768 Haidamak massacre", topics: ["chm","life"], qHe: "בחיי מוהר״ן, מה אמר רבי נחמן על קדושי אומן?", aHe: ["הוא יכול לתקן את נשמותיהם — לכן בחר להיקבר שם","הוא לא ידע עליהם","הוא רצה להימנע מהם","רק תלמידי חכמים קבורים שם"] },
@@ -887,10 +889,22 @@ import Layout from '../layouts/Layout.astro';
     .play-btn small { font-size: 0.7rem; color: #999; margin-top: 0.2rem; }
     .play-btn:hover { transform: translateY(-2px); }
 
+    .start-btn {
+      padding: 1.2rem 2.5rem;
+      font-size: 1.4rem;
+      font-weight: 700;
+      border-width: 3px;
+      border-radius: 16px;
+      min-width: 300px;
+      animation: pulse 2s infinite;
+    }
+    .start-icon { font-size: 2rem; display: block; margin-bottom: 0.3rem; }
+    .start-text { font-size: 1.3rem; }
+
     .fun-btn { border-color: #4a9eff; }
-    .fun-btn:hover { background: #1a2a4e; box-shadow: 0 0 15px rgba(74,158,255,0.3); }
+    .fun-btn:hover { background: #1a2a4e; box-shadow: 0 0 20px rgba(74,158,255,0.4); }
     .compete-btn { border-color: #c9a227; }
-    .compete-btn:hover { background: #2a2a1e; box-shadow: 0 0 15px rgba(201,162,39,0.3); }
+    .compete-btn:hover { background: #2a2a1e; box-shadow: 0 0 20px rgba(201,162,39,0.4); }
 
     /* ==================== LEADERBOARD ==================== */
     .leaderboard-preview { margin-top: 2rem; }
@@ -1013,22 +1027,29 @@ import Layout from '../layouts/Layout.astro';
     }
     .streak-bar.on-fire #streakText { animation: fireGlow 1s infinite; font-size: 1.1rem; }
 
-    .question-area { margin: 1rem 0; }
+    .question-area {
+      margin: 1rem 0;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(201,162,39,0.2);
+      border-radius: 16px;
+      padding: 1.5rem;
+    }
     .question-category {
       text-align: center;
       color: #c9a227;
       font-size: 0.85rem;
       text-transform: uppercase;
       letter-spacing: 2px;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.8rem;
     }
     .question-text {
       text-align: center;
-      font-size: 1.3rem;
+      font-size: 1.5rem;
       color: #fff;
-      margin-bottom: 1.5rem;
-      line-height: 1.5;
+      margin-bottom: 1.8rem;
+      line-height: 1.6;
       min-height: 3rem;
+      font-weight: 500;
     }
 
     .answers-grid {
@@ -1038,16 +1059,17 @@ import Layout from '../layouts/Layout.astro';
     }
 
     .answer-btn {
-      padding: 1rem;
+      padding: 1.1rem 1.2rem;
       border: 2px solid #444;
-      border-radius: 10px;
+      border-radius: 12px;
       background: #1a1a2e;
       color: #eee;
-      font-size: 0.95rem;
+      font-size: 1.05rem;
       cursor: pointer;
       transition: all 0.2s ease;
       text-align: center;
-      line-height: 1.3;
+      line-height: 1.4;
+      font-weight: 500;
     }
     .answer-btn:hover:not(:disabled) { border-color: #4a9eff; background: #1a2a4e; transform: scale(1.02); }
     .answer-btn:disabled { cursor: default; }
@@ -1130,9 +1152,14 @@ import Layout from '../layouts/Layout.astro';
       .answers-grid { grid-template-columns: 1fr; }
       .results-stats { grid-template-columns: repeat(2, 1fr); }
       .level-cards { grid-template-columns: repeat(2, 1fr); }
-      .question-text { font-size: 1.1rem; }
+      .question-text { font-size: 1.2rem; }
+      .question-area { padding: 1rem; }
       .play-mode-select { flex-direction: column; align-items: center; }
-      .play-btn { width: 100%; max-width: 300px; }
+      .play-btn { width: 100%; max-width: 350px; }
+      .start-btn { min-width: unset; width: 100%; }
+      .start-icon { font-size: 1.5rem; }
+      .start-text { font-size: 1.1rem; }
+      .answer-btn { padding: 0.9rem 1rem; font-size: 1rem; }
     }
   </style>
 </Layout>
