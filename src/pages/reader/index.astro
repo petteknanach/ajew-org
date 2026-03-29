@@ -465,11 +465,11 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
 
       const cards = document.getElementById('dailyCards');
       cards.innerHTML = `
-        <a href="/reader/likutay-moharan/part-${lmPart}/${lmTorah}" class="daily-card">
+        <a href="/reader/likutay-moharan/${lmPart}/${lmTorah}" class="daily-card">
           <span class="daily-label">Likutay Moharan</span>
           <span class="daily-num">Part ${lmPart}, Torah ${lmTorah}</span>
         </a>
-        <a href="/reader/likutay-tefilos/part-${ltPart}/prayer-${ltPrayer}" class="daily-card">
+        <a href="/reader/likutay-tefilos/${ltPart}/${ltPrayer}" class="daily-card">
           <span class="daily-label">Likutay Tefilos</span>
           <span class="daily-num">Part ${ltPart}, Prayer ${ltPrayer}</span>
         </a>
@@ -567,19 +567,19 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
     <script is:inline>
     function goToRandomTorah() {
       const books = [
-        { base: '/reader/likutay-moharan/part-1/', max: 285 },
-        { base: '/reader/likutay-moharan/part-2/', max: 123 },
-        { base: '/reader/sefer-hamidos/topic-', max: 108, suffix: '' },
-        { base: '/reader/sichos-haran/sicha-', max: 309, suffix: '' },
-        { base: '/reader/shivchay-haran/section-', max: 63, suffix: '' },
-        { base: '/reader/likutay-halachos/part-1/halacha-', max: 55, suffix: '' },
-        { base: '/reader/likutay-halachos/part-2/halacha-', max: 48, suffix: '' },
-        { base: '/reader/likutay-halachos/part-3/halacha-', max: 80, suffix: '' },
-        { base: '/reader/kitzur-likutay-moharan/part-1/', max: 289 },
-        { base: '/reader/likutay-tefilos/part-1/prayer-', max: 152, suffix: '' },
-        { base: '/reader/likutay-eitzos/topic-', max: 65, suffix: '' },
-        { base: '/reader/hashtatfchus-hanefesh/part-1/torah-', max: 130, suffix: '' },
-        { base: '/reader/meshivas-nefesh/part-1/torah-', max: 183, suffix: '' },
+        { base: '/reader/likutay-moharan/1/', max: 286 },
+        { base: '/reader/likutay-moharan/2/', max: 125 },
+        { base: '/reader/sefer-hamidos/1/', max: 108 },
+        { base: '/reader/sichos-haran/1/', max: 320 },
+        { base: '/reader/shivchay-haran/1/', max: 70 },
+        { base: '/reader/likutay-halachos/1/', max: 60 },
+        { base: '/reader/likutay-halachos/2/', max: 55 },
+        { base: '/reader/likutay-halachos/3/', max: 85 },
+        { base: '/reader/kitzur-likutay-moharan/1/', max: 294 },
+        { base: '/reader/likutay-tefilos/1/', max: 151 },
+        { base: '/reader/likutay-eitzos/1/', max: 70 },
+        { base: '/reader/hashtatfchus-hanefesh/1/', max: 135 },
+        { base: '/reader/meshivas-nefesh/1/', max: 188 },
       ];
       const book = books[Math.floor(Math.random() * books.length)];
       const num = Math.floor(Math.random() * book.max) + 1;
