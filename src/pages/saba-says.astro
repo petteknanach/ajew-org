@@ -1,0 +1,729 @@
+---
+import Layout from '../layouts/Layout.astro';
+import fs from 'node:fs';
+
+const manifest = JSON.parse(fs.readFileSync('public/audio/saba-says/manifest.json', 'utf-8'));
+const totalClips = manifest.length;
+const totalDuration = manifest.reduce((sum: number, c: any) => sum + c.duration, 0);
+const totalMinutes = Math.round(totalDuration / 60);
+---
+
+<Layout
+  title="Saba Says — קולו של סבא"
+  description="112 holy audio moments from the voice of Saba Yisroel (Rabbi Yisroel Ber Odesser). Listen to the actual voice of the Saba speaking words of Torah, joy, and Na Nach."
+>
+  <div class="saba-page">
+    <!-- Hero -->
+    <section class="saba-hero">
+      <div class="saba-hero-inner">
+        <h1 class="saba-title">
+          <span class="title-he">קולו של סבא</span>
+          <span class="title-en">Saba Says</span>
+        </h1>
+        <p class="saba-subtitle">112 holy moments from the voice of Saba Yisroel</p>
+        <p class="saba-meta">{totalClips} clips &middot; {totalMinutes} minutes of sacred audio</p>
+      </div>
+    </section>
+
+    <!-- Daily Saba Quote -->
+    <section class="daily-saba">
+      <div class="container">
+        <div class="daily-card" id="dailyCard">
+          <div class="daily-label">Daily Saba Quote</div>
+          <div class="daily-label-he">קול יומי של סבא</div>
+          <div class="daily-text" id="dailyText" dir="rtl"></div>
+          <div class="daily-controls">
+            <button class="daily-play-btn" id="dailyPlayBtn" aria-label="Play daily clip">
+              <svg class="play-icon" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+            </button>
+            <span class="daily-duration" id="dailyDuration"></span>
+          </div>
+          <audio id="dailyAudio" preload="none"></audio>
+        </div>
+      </div>
+    </section>
+
+    <!-- Controls -->
+    <section class="saba-controls">
+      <div class="container">
+        <div class="controls-bar">
+          <div class="search-wrap">
+            <input
+              type="text"
+              id="searchInput"
+              placeholder="חפש... / Search..."
+              dir="auto"
+              autocomplete="off"
+            />
+            <span class="search-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </span>
+          </div>
+          <button class="shuffle-btn" id="shuffleBtn" aria-label="Shuffle clips">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+            <span>Shuffle</span>
+          </button>
+          <span class="clip-count" id="clipCount">{totalClips} clips</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cards Grid -->
+    <section class="saba-grid-section">
+      <div class="container">
+        <div class="saba-grid" id="sabaGrid">
+          {manifest.map((clip: any) => (
+            <div class="saba-card" data-id={clip.id} data-text={clip.text} data-file={clip.file} data-duration={clip.duration}>
+              <div class="card-text" dir="rtl">{clip.text}</div>
+              <div class="card-bottom">
+                <button class="card-play-btn" aria-label={`Play clip ${clip.id}`}>
+                  <svg class="play-icon" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+                </button>
+                <span class="card-duration">{clip.duration < 60 ? `${clip.duration}s` : `${Math.floor(clip.duration / 60)}:${String(Math.round(clip.duration % 60)).padStart(2, '0')}`}</span>
+                <button class="card-share-btn" aria-label={`Share clip ${clip.id}`}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                </button>
+              </div>
+              <div class="card-progress">
+                <div class="card-progress-bar"></div>
+              </div>
+              <audio preload="none"></audio>
+            </div>
+          ))}
+        </div>
+        <div class="no-results" id="noResults" style="display:none;">
+          <p>No clips found for your search.</p>
+          <p dir="rtl">לא נמצאו קליפים</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script is:inline>
+  (function() {
+    const manifest = JSON.parse(document.getElementById('sabaGrid').dataset.manifest || '[]') || [];
+    let currentAudio = null;
+    let currentCard = null;
+    let animFrame = null;
+
+    // Daily quote - deterministic by day
+    const dayIndex = Math.floor(Date.now() / 86400000) % 112;
+    const allCards = document.querySelectorAll('.saba-card');
+    const dailyClip = allCards[dayIndex];
+    if (dailyClip) {
+      document.getElementById('dailyText').textContent = dailyClip.dataset.text;
+      document.getElementById('dailyDuration').textContent = formatDuration(parseFloat(dailyClip.dataset.duration));
+      const dailyAudio = document.getElementById('dailyAudio');
+      dailyAudio.src = '/audio/saba-says/' + dailyClip.dataset.file;
+
+      document.getElementById('dailyPlayBtn').addEventListener('click', function() {
+        togglePlay(dailyAudio, this, null);
+      });
+    }
+
+    // Card play buttons
+    allCards.forEach(function(card) {
+      var playBtn = card.querySelector('.card-play-btn');
+      var audio = card.querySelector('audio');
+      audio.src = '/audio/saba-says/' + card.dataset.file;
+
+      playBtn.addEventListener('click', function() {
+        togglePlay(audio, playBtn, card);
+      });
+
+      // Share
+      card.querySelector('.card-share-btn').addEventListener('click', function() {
+        var text = card.dataset.text;
+        var shareData = {
+          title: 'Saba Says',
+          text: text + '\n\nListen at ajew.org/saba-says',
+          url: 'https://ajew.org/saba-says'
+        };
+        if (navigator.share) {
+          navigator.share(shareData).catch(function(){});
+        } else {
+          navigator.clipboard.writeText(text + '\n\najew.org/saba-says').then(function() {
+            var btn = card.querySelector('.card-share-btn');
+            btn.classList.add('copied');
+            setTimeout(function() { btn.classList.remove('copied'); }, 1500);
+          }).catch(function(){});
+        }
+      });
+
+      // Progress tracking
+      audio.addEventListener('timeupdate', function() {
+        if (audio.duration) {
+          var pct = (audio.currentTime / audio.duration) * 100;
+          card.querySelector('.card-progress-bar').style.width = pct + '%';
+        }
+      });
+
+      audio.addEventListener('ended', function() {
+        resetPlayBtn(playBtn);
+        card.classList.remove('playing');
+        card.querySelector('.card-progress-bar').style.width = '0%';
+        currentAudio = null;
+        currentCard = null;
+      });
+    });
+
+    function togglePlay(audio, btn, card) {
+      // Stop any currently playing
+      if (currentAudio && currentAudio !== audio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+        if (currentCard) {
+          currentCard.classList.remove('playing');
+          currentCard.querySelector('.card-progress-bar').style.width = '0%';
+        }
+        // Reset all play buttons
+        document.querySelectorAll('.card-play-btn, #dailyPlayBtn').forEach(function(b) {
+          resetPlayBtn(b);
+        });
+      }
+
+      if (audio.paused) {
+        audio.play().catch(function(){});
+        setToPause(btn);
+        if (card) card.classList.add('playing');
+        currentAudio = audio;
+        currentCard = card;
+      } else {
+        audio.pause();
+        resetPlayBtn(btn);
+        if (card) card.classList.remove('playing');
+        currentAudio = null;
+        currentCard = null;
+      }
+    }
+
+    function resetPlayBtn(btn) {
+      btn.innerHTML = '<svg class="play-icon" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>';
+      btn.classList.remove('is-playing');
+    }
+
+    function setToPause(btn) {
+      btn.innerHTML = '<svg class="pause-icon" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
+      btn.classList.add('is-playing');
+    }
+
+    function formatDuration(s) {
+      if (s < 60) return s + 's';
+      return Math.floor(s / 60) + ':' + String(Math.round(s % 60)).padStart(2, '0');
+    }
+
+    // Search
+    var searchInput = document.getElementById('searchInput');
+    searchInput.addEventListener('input', function() {
+      var q = this.value.trim().toLowerCase();
+      var visible = 0;
+      allCards.forEach(function(card) {
+        var text = card.dataset.text.toLowerCase();
+        if (!q || text.includes(q)) {
+          card.style.display = '';
+          visible++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+      document.getElementById('clipCount').textContent = visible + ' clips';
+      document.getElementById('noResults').style.display = visible === 0 ? '' : 'none';
+    });
+
+    // Shuffle
+    document.getElementById('shuffleBtn').addEventListener('click', function() {
+      var grid = document.getElementById('sabaGrid');
+      var cards = Array.from(grid.children);
+      // Fisher-Yates
+      for (var i = cards.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        grid.appendChild(cards[j]);
+        cards.splice(j, 1);
+        if (j < i) i--; // Adjust since we modified the array
+      }
+      // Simpler approach:
+      var cards2 = Array.from(grid.querySelectorAll('.saba-card'));
+      for (var i = cards2.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        grid.appendChild(cards2[j]);
+      }
+      this.classList.add('shuffled');
+      setTimeout(function() { document.getElementById('shuffleBtn').classList.remove('shuffled'); }, 600);
+    });
+  })();
+  </script>
+</Layout>
+
+<style>
+  /* ===== Page Theme: Dark Warm ===== */
+  .saba-page {
+    --saba-bg: #0f1729;
+    --saba-card-bg: #1a2540;
+    --saba-card-hover: #22305a;
+    --saba-gold: #d4a843;
+    --saba-gold-light: #f0d078;
+    --saba-parchment: #f5e6c8;
+    --saba-text: #e8dcc8;
+    --saba-text-dim: #9aa3b8;
+    --saba-accent: #4a7dbd;
+    --saba-glow: rgba(212, 168, 67, 0.15);
+    background: var(--saba-bg);
+    min-height: 100vh;
+    color: var(--saba-text);
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  /* ===== Hero ===== */
+  .saba-hero {
+    background: linear-gradient(180deg, #0a1020 0%, #0f1729 100%);
+    text-align: center;
+    padding: 3rem 1.5rem 2rem;
+    border-bottom: 1px solid rgba(212, 168, 67, 0.15);
+  }
+
+  .saba-title {
+    margin: 0 0 0.75rem;
+  }
+
+  .title-he {
+    display: block;
+    font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif);
+    font-size: 3rem;
+    color: var(--saba-gold);
+    letter-spacing: 0.05em;
+    text-shadow: 0 0 30px rgba(212, 168, 67, 0.3);
+  }
+
+  .title-en {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 300;
+    color: var(--saba-parchment);
+    opacity: 0.85;
+    margin-top: 0.25rem;
+  }
+
+  .saba-subtitle {
+    font-size: 1.1rem;
+    color: var(--saba-text-dim);
+    margin: 0 0 0.5rem;
+    font-style: italic;
+  }
+
+  .saba-meta {
+    font-size: 0.85rem;
+    color: var(--saba-text-dim);
+    opacity: 0.7;
+    margin: 0;
+  }
+
+  /* ===== Daily Card ===== */
+  .daily-saba {
+    padding: 2rem 0;
+  }
+
+  .daily-card {
+    background: linear-gradient(135deg, #1e2d50 0%, #162040 100%);
+    border: 1px solid var(--saba-gold);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+    position: relative;
+    box-shadow: 0 0 40px rgba(212, 168, 67, 0.1), inset 0 0 30px rgba(212, 168, 67, 0.03);
+  }
+
+  .daily-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--saba-gold);
+    margin-bottom: 0.15rem;
+  }
+
+  .daily-label-he {
+    font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif);
+    font-size: 0.9rem;
+    color: var(--saba-gold-light);
+    opacity: 0.7;
+    margin-bottom: 1rem;
+  }
+
+  .daily-text {
+    font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif);
+    font-size: 1.8rem;
+    line-height: 1.6;
+    color: var(--saba-parchment);
+    margin-bottom: 1.25rem;
+    min-height: 2em;
+  }
+
+  .daily-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .daily-play-btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 2px solid var(--saba-gold);
+    background: rgba(212, 168, 67, 0.1);
+    color: var(--saba-gold);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s ease;
+  }
+
+  .daily-play-btn:hover {
+    background: rgba(212, 168, 67, 0.25);
+    transform: scale(1.08);
+    box-shadow: 0 0 20px rgba(212, 168, 67, 0.3);
+  }
+
+  .daily-play-btn svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .daily-duration {
+    font-size: 0.85rem;
+    color: var(--saba-text-dim);
+  }
+
+  /* ===== Controls Bar ===== */
+  .saba-controls {
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--saba-bg);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .controls-bar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .search-wrap {
+    flex: 1;
+    min-width: 200px;
+    position: relative;
+  }
+
+  .search-wrap input {
+    width: 100%;
+    padding: 0.7rem 1rem 0.7rem 2.5rem;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: var(--saba-card-bg);
+    color: var(--saba-text);
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .search-wrap input:focus {
+    border-color: var(--saba-gold);
+  }
+
+  .search-wrap input::placeholder {
+    color: var(--saba-text-dim);
+    opacity: 0.6;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--saba-text-dim);
+    pointer-events: none;
+  }
+
+  .search-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .shuffle-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: var(--saba-card-bg);
+    color: var(--saba-text);
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+  }
+
+  .shuffle-btn:hover {
+    border-color: var(--saba-gold);
+    color: var(--saba-gold);
+  }
+
+  .shuffle-btn.shuffled {
+    animation: shake 0.4s ease;
+  }
+
+  .shuffle-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: rotate(0); }
+    25% { transform: rotate(-8deg); }
+    75% { transform: rotate(8deg); }
+  }
+
+  .clip-count {
+    font-size: 0.85rem;
+    color: var(--saba-text-dim);
+    white-space: nowrap;
+  }
+
+  /* ===== Cards Grid ===== */
+  .saba-grid-section {
+    padding: 1.5rem 0 3rem;
+  }
+
+  .saba-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+
+  .saba-card {
+    background: var(--saba-card-bg);
+    border-radius: 12px;
+    padding: 1.25rem;
+    border: 1px solid rgba(255,255,255,0.06);
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .saba-card:hover {
+    background: var(--saba-card-hover);
+    border-color: rgba(212, 168, 67, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  }
+
+  .saba-card.playing {
+    border-color: var(--saba-gold);
+    box-shadow: 0 0 20px rgba(212, 168, 67, 0.15);
+  }
+
+  .card-text {
+    font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif);
+    font-size: 1.35rem;
+    line-height: 1.7;
+    color: var(--saba-parchment);
+    text-align: center;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 3rem;
+    padding: 0.5rem 0;
+  }
+
+  .card-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .card-play-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 1.5px solid var(--saba-gold);
+    background: rgba(212, 168, 67, 0.08);
+    color: var(--saba-gold);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .card-play-btn:hover {
+    background: rgba(212, 168, 67, 0.2);
+    transform: scale(1.1);
+  }
+
+  .card-play-btn.is-playing {
+    background: var(--saba-gold);
+    color: var(--saba-bg);
+  }
+
+  .card-play-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .card-duration {
+    font-size: 0.8rem;
+    color: var(--saba-text-dim);
+    min-width: 2.5rem;
+    text-align: center;
+  }
+
+  .card-share-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: var(--saba-text-dim);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .card-share-btn:hover {
+    color: var(--saba-gold);
+    background: rgba(212, 168, 67, 0.1);
+  }
+
+  .card-share-btn.copied {
+    color: #4ade80;
+  }
+
+  .card-share-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* Progress bar */
+  .card-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: rgba(255,255,255,0.05);
+  }
+
+  .card-progress-bar {
+    height: 100%;
+    background: var(--saba-gold);
+    width: 0%;
+    transition: width 0.3s linear;
+    border-radius: 0 3px 3px 0;
+  }
+
+  /* No results */
+  .no-results {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--saba-text-dim);
+    font-size: 1.1rem;
+  }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 768px) {
+    .saba-hero {
+      padding: 2rem 1rem 1.5rem;
+    }
+
+    .title-he {
+      font-size: 2.2rem;
+    }
+
+    .title-en {
+      font-size: 1.2rem;
+    }
+
+    .daily-text {
+      font-size: 1.4rem;
+    }
+
+    .daily-card {
+      padding: 1.5rem 1rem;
+    }
+
+    .saba-grid {
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+    }
+
+    .card-text {
+      font-size: 1.2rem;
+    }
+
+    .controls-bar {
+      gap: 0.5rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .title-he {
+      font-size: 1.8rem;
+    }
+
+    .saba-subtitle {
+      font-size: 0.95rem;
+    }
+
+    .daily-text {
+      font-size: 1.25rem;
+    }
+
+    .saba-grid {
+      gap: 0.5rem;
+    }
+
+    .saba-card {
+      padding: 1rem;
+    }
+  }
+
+  /* ===== Animations ===== */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .saba-card {
+    animation: fadeInUp 0.4s ease both;
+  }
+
+  .saba-card:nth-child(n+5) {
+    animation-delay: 0.05s;
+  }
+
+  .saba-card:nth-child(n+9) {
+    animation-delay: 0.1s;
+  }
+
+  .saba-card:nth-child(n+13) {
+    animation-delay: 0.15s;
+  }
+</style>
