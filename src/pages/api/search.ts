@@ -374,7 +374,9 @@ export async function GET({ request }: { request: Request }) {
         if (!partMatch && bookId && !books.includes(bookId)) continue;
       }
 
-      const content = (doc.content || '').toLowerCase();
+      const hebrewContent = (doc.content || '').toLowerCase();
+      const englishContent = (doc.englishContent || '').toLowerCase();
+      const content = hebrewContent + (englishContent ? '\n' + englishContent : '');
       if (!content) continue;
 
       let matched = false;
