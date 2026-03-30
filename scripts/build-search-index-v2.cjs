@@ -95,7 +95,7 @@ function main() {
         // Store first 200 chars as preview (with nikud for display)
         preview: fullText.substring(0, 200).replace(/\n/g, ' '),
         hasEnglish: englishText.length > 0,
-        englishContent: englishText ? englishText.substring(0, 500) : ''
+        englishContent: englishText ? englishText.substring(0, 1000) : ''
       });
     }
 
@@ -141,6 +141,7 @@ function main() {
 
           const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
           const fullText = data.segments.map(s => s.he || '').filter(t => t.length > 0).join('\n\n');
+          const englishText = data.segments.map(s => s.en || '').filter(t => t.length > 0).join('\n\n');
           const searchableHebrew = stripNikud(fullText);
           const torahNum = data.torah || data.displayNumber || num;
 
@@ -156,8 +157,8 @@ function main() {
             wordCount: searchableHebrew.split(/\s+/).length,
             content: searchableHebrew,
             preview: fullText.substring(0, 200).replace(/\n/g, ' '),
-            hasEnglish: false,
-            englishContent: '',
+            hasEnglish: englishText.length > 0,
+            englishContent: englishText ? englishText.substring(0, 1000) : '',
             bookName: book.title
           });
           bookCount++;
