@@ -15,13 +15,13 @@ import Layout from '../layouts/Layout.astro';
           </button>
         </div>
         <h1>🔥 <span data-en="Torah Trivia" data-he="טריוויה תורנית">Torah Trivia</span> 🔥</h1>
-        <p class="subtitle" data-en="טריוויה תורנית" data-he="Torah Trivia">טריוויה תורנית</p>
+        <p class="subtitle" data-en="Test your knowledge of Breslov teachings" data-he="בחנו את הידע שלכם בתורות ברסלב">Test your knowledge of Breslov teachings</p>
         <p class="tagline" data-en="How well do you know Rebbe Nachman and his teachings?" data-he="כמה אתה מכיר את רבי נחמן ותורותיו?">How well do you know Rebbe Nachman and his teachings?</p>
       </header>
 
       <div class="menu-container">
         <div class="level-select">
-          <h2>Choose Your Level</h2>
+          <h2 data-en="Choose Your Level" data-he="בחר את הרמה שלך">Choose Your Level</h2>
           <div class="level-cards">
             <button class="level-card" data-level="1">
               <span class="level-icon">🌱</span>
@@ -51,7 +51,7 @@ import Layout from '../layouts/Layout.astro';
         </div>
 
         <div class="topic-select">
-          <h2>Choose Topics</h2>
+          <h2 data-en="Choose Topics" data-he="בחר נושאים">Choose Topics</h2>
           <div class="topic-chips">
             <button class="topic-chip active" data-topic="all">🔥 Everything</button>
             <button class="topic-chip" data-topic="life">📜 Life of Rabbeinu</button>
@@ -120,7 +120,7 @@ import Layout from '../layouts/Layout.astro';
     <div id="gameScreen" class="screen hidden">
       <div class="game-hud">
         <div class="hud-item">
-          <span class="hud-label">Score</span>
+          <span class="hud-label" data-en="Score" data-he="ניקוד">Score</span>
           <span class="hud-value" id="scoreDisplay">0</span>
         </div>
         <div class="hud-item timer-hud">
@@ -133,7 +133,7 @@ import Layout from '../layouts/Layout.astro';
           </div>
         </div>
         <div class="hud-item">
-          <span class="hud-label">Question</span>
+          <span class="hud-label" data-en="Question" data-he="שאלה">Question</span>
           <span class="hud-value"><span id="questionNum">1</span>/<span id="totalQuestions">10</span></span>
         </div>
       </div>
@@ -161,7 +161,7 @@ import Layout from '../layouts/Layout.astro';
         <div class="results-header">
           <h1 id="resultsTitle">Great Job!</h1>
           <div class="final-score-display">
-            <span class="final-score-label">Final Score</span>
+            <span class="final-score-label" data-en="Final Score" data-he="ניקוד סופי">Final Score</span>
             <span class="final-score-value" id="finalScore">0</span>
           </div>
         </div>
@@ -169,32 +169,32 @@ import Layout from '../layouts/Layout.astro';
         <div class="results-stats">
           <div class="stat-card">
             <span class="stat-value" id="correctCount">0</span>
-            <span class="stat-label">Correct</span>
+            <span class="stat-label" data-en="Correct" data-he="נכון">Correct</span>
           </div>
           <div class="stat-card">
             <span class="stat-value" id="wrongCount">0</span>
-            <span class="stat-label">Wrong</span>
+            <span class="stat-label" data-en="Wrong" data-he="שגוי">Wrong</span>
           </div>
           <div class="stat-card">
             <span class="stat-value" id="bestStreak">0</span>
-            <span class="stat-label">Best Streak</span>
+            <span class="stat-label" data-en="Best Streak" data-he="רצף הכי טוב">Best Streak</span>
           </div>
           <div class="stat-card">
             <span class="stat-value" id="avgTime">0s</span>
-            <span class="stat-label">Avg. Time</span>
+            <span class="stat-label" data-en="Avg. Time" data-he="זמן ממוצע">Avg. Time</span>
           </div>
         </div>
 
         <div class="results-rank" id="resultsRank"></div>
 
         <div class="results-actions">
-          <button id="playAgain" class="play-btn fun-btn">Play Again 🔄</button>
-          <button id="backToMenu" class="play-btn">Back to Menu</button>
-          <button id="shareScore" class="play-btn compete-btn">Share Score 📤</button>
+          <button id="playAgain" class="play-btn fun-btn" data-en="Play Again 🔄" data-he="🔄 שחק שוב">Play Again 🔄</button>
+          <button id="backToMenu" class="play-btn" data-en="Back to Menu" data-he="חזרה לתפריט">Back to Menu</button>
+          <button id="shareScore" class="play-btn compete-btn" data-en="Share Score 📤" data-he="📤 שתף ניקוד">Share Score 📤</button>
         </div>
 
         <div class="results-review" id="resultsReview">
-          <h3>Review Your Answers</h3>
+          <h3 data-en="Review Your Answers" data-he="סקירת התשובות שלך">Review Your Answers</h3>
           <div id="reviewList"></div>
         </div>
       </div>
@@ -252,7 +252,7 @@ import Layout from '../layouts/Layout.astro';
         { q: "What happened on 17 Tammuz to Saba Yisroel?", a: ["He found the Petek","He was born","He arrived in Israel","He met Reb Noson's grandson"], correct: 0, cat: "Na Nach", source: "Found the Petek in a copy of Likutay Tefilos", topics: ["nanach"], qHe: "מה קרה לסבא ישראל בי״ז בתמוז?", aHe: ["מצא את הפתק","נולד","הגיע לארץ ישראל","פגש את נכדו של רבי נתן"] },
       ],
       3: [
-        { q: "In LM I:282 (Azamra), what verse is the basis?", a: ["'I will sing to my G-d with what I have left' (Tehillim 146:2)","'Shema Yisrael'","'In the beginning'","'Hashem is my shepherd'"], correct: 0, cat: "Likutay Moharan", source: "Azamra l'Elokai b'odi — finding nekudos tovos", topics: ["lm"], qHe: "בליקוטי מוהר״ן א:רפ״ב (אזמרה), על איזה פסוק מבוססת התורה?", aHe: ["\'אזמרה לאלוקי בעודי\' (תהילים קמ״ו:ב)","'שמע ישראל'", "'בראשית'", "'ה' רועי'"] },
+        { q: "In LM I:282 (Azamra), what verse is the basis?", a: ["'I will sing to my G-d with what I have left' (Tehillim 146:2)","'Shema Yisrael'","'In the beginning'","'Hashem is my shepherd'"], correct: 0, cat: "Likutay Moharan", source: "Azamra l'Elokai b'odi — finding nekudos tovos", topics: ["lm"], qHe: "בליקוטי מוהר״ן א:רפ״ב (אזמרה), על איזה פסוק מבוססת התורה?", aHe: ["'אזמרה לאלוקי בעודי' (תהילים קמ״ו:ב)","'שמע ישראל'","'בראשית'","'ה׳ רועי'"] },
         { q: "What concept does LM I:64 teach?", a: ["Clapping in prayer sweetens harsh judgments","Clapping is forbidden","Hands = 10 sefiros only","Clapping is only for Shabbos"], correct: 0, cat: "Likutay Moharan", source: "LM I:64 — the mystical power of clapping", topics: ["lm"], qHe: "מה מלמדת תורה ס״ד בליקוטי מוהר״ן?", aHe: ["מחיאת כפיים בתפילה ממתיקה דינים","מחיאת כפיים אסורה בתפילה","ידיים מייצגות י' ספירות בלבד","מחיאת כפיים רק לשבת"] },
         { q: "What is the root of all sin according to Rabbi Nachman?", a: ["Lack of da'as (holy awareness)","Anger","Laziness","Bad friends"], correct: 0, cat: "Likutay Moharan", source: "LM I:21 — da'as connects everything", topics: ["lm"], qHe: "מהו שורש כל החטאים לפי רבי נחמן?", aHe: ["חוסר דעת (מודעות קדושה)","כעס","עצלות","חברים רעים"] },
         { q: "In Sichos HaRan #2, what does Rabbi Nachman warn about?", a: ["Philosophical speculation that damages faith","Sleeping too much","Talking during prayer","Ignoring halacha"], correct: 0, cat: "Sichos HaRan", source: "Sichos HaRan 2 — the danger of chochmos (philosophies)", topics: ["sichos"], qHe: "בשיחות הר״ן ב', על מה מזהיר רבי נחמן?", aHe: ["חקירות פילוסופיות שפוגעות באמונה","שינה מרובה","דיבור בתפילה","התעלמות מהלכה"] },
@@ -478,6 +478,11 @@ import Layout from '../layouts/Layout.astro';
       const qText = isHe && q.qHe ? q.qHe : q.q;
       const aTexts = isHe && q.aHe ? q.aHe : q.a;
 
+      // Update language-dependent labels
+      document.querySelectorAll('[data-en][data-he]').forEach(el => {
+        el.textContent = el.getAttribute('data-' + lang);
+      });
+
       $('#questionNum').textContent = state.currentQ + 1;
       $('#questionCategory').textContent = q.cat;
       $('#questionText').textContent = qText;
@@ -495,11 +500,19 @@ import Layout from '../layouts/Layout.astro';
 
       const grid = $('#answersGrid');
       grid.innerHTML = '';
+      const labels = isHe ? ['א','ב','ג','ד'] : ['A','B','C','D'];
       shuffled.forEach((origIdx, btnIdx) => {
         const btn = document.createElement('button');
         btn.className = 'answer-btn';
         if (isHe) btn.style.direction = 'rtl';
-        btn.textContent = aTexts[origIdx];
+        const label = document.createElement('span');
+        label.className = 'answer-label';
+        label.textContent = labels[btnIdx];
+        const text = document.createElement('span');
+        text.className = 'answer-text';
+        text.textContent = aTexts[origIdx];
+        btn.appendChild(label);
+        btn.appendChild(text);
         btn.dataset.idx = btnIdx;
         btn.dataset.correct = btnIdx === correctIdx ? 'true' : 'false';
         btn.addEventListener('click', () => handleAnswer(btn, btnIdx === correctIdx, q));
@@ -618,6 +631,10 @@ import Layout from '../layouts/Layout.astro';
     function endGame() {
       clearInterval(state.timer);
       showScreen(resultsScreen);
+      // Update language-dependent elements on results screen
+      document.querySelectorAll('[data-en][data-he]').forEach(el => {
+        el.textContent = el.getAttribute('data-' + lang);
+      });
 
       const pct = state.correct / QUESTIONS_PER_GAME;
       let title;
@@ -1037,11 +1054,17 @@ import Layout from '../layouts/Layout.astro';
     .question-category {
       text-align: center;
       color: #c9a227;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       text-transform: uppercase;
       letter-spacing: 2px;
       margin-bottom: 0.8rem;
+      display: inline-block;
+      padding: 0.25rem 0.8rem;
+      border: 1px solid rgba(201,162,39,0.3);
+      border-radius: 20px;
+      background: rgba(201,162,39,0.08);
     }
+    .question-area { position: relative; text-align: center; }
     .question-text {
       text-align: center;
       font-size: 1.5rem;
@@ -1049,7 +1072,8 @@ import Layout from '../layouts/Layout.astro';
       margin-bottom: 1.8rem;
       line-height: 1.6;
       min-height: 3rem;
-      font-weight: 500;
+      font-weight: 600;
+      padding: 0.5rem 0;
     }
 
     .answers-grid {
@@ -1067,14 +1091,35 @@ import Layout from '../layouts/Layout.astro';
       font-size: 1.05rem;
       cursor: pointer;
       transition: all 0.2s ease;
-      text-align: center;
+      text-align: left;
       line-height: 1.4;
       font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
     }
+    [dir="rtl"] .answer-btn { text-align: right; }
+    .answer-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      background: rgba(201,162,39,0.15);
+      color: #c9a227;
+      font-weight: 700;
+      font-size: 0.95rem;
+      flex-shrink: 0;
+    }
+    .answer-text { flex: 1; }
     .answer-btn:hover:not(:disabled) { border-color: #4a9eff; background: #1a2a4e; transform: scale(1.02); }
+    .answer-btn:hover:not(:disabled) .answer-label { background: rgba(74,158,255,0.2); color: #4a9eff; }
     .answer-btn:disabled { cursor: default; }
     .answer-btn.correct { border-color: #4caf50; background: rgba(76,175,80,0.2); color: #4caf50; animation: pulse 0.3s; }
+    .answer-btn.correct .answer-label { background: rgba(76,175,80,0.3); color: #4caf50; }
     .answer-btn.wrong { border-color: #f44336; background: rgba(244,67,54,0.2); color: #f44336; animation: shake 0.3s; }
+    .answer-btn.wrong .answer-label { background: rgba(244,67,54,0.3); color: #f44336; }
 
     .question-feedback {
       text-align: center;
@@ -1160,6 +1205,7 @@ import Layout from '../layouts/Layout.astro';
       .start-icon { font-size: 1.5rem; }
       .start-text { font-size: 1.1rem; }
       .answer-btn { padding: 0.9rem 1rem; font-size: 1rem; }
+      .answer-label { min-width: 1.6rem; height: 1.6rem; font-size: 0.85rem; }
     }
   </style>
 </Layout>
