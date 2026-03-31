@@ -106,6 +106,24 @@ const totalMinutes = Math.round(totalDuration / 60);
     let currentCard = null;
     let animFrame = null;
 
+    // Supabase play analytics — keeps the database active + gives us play counts
+    const SUPABASE_URL = 'https://ekggvujbuusvgmrertgp.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_q6XD_TD8KOQuphI30Gmi5Q_3PBAXQHo';
+    function logPlay(clipId, clipText) {
+      try {
+        fetch(SUPABASE_URL + '/rest/v1/saba_plays', {
+          method: 'POST',
+          headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': 'Bearer ' + SUPABASE_KEY,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=minimal'
+          },
+          body: JSON.stringify({ clip_id: clipId, clip_text: clipText, played_at: new Date().toISOString() })
+        }).catch(function(){});
+      } catch(e) {}
+    }
+
     // Daily quote - deterministic by day
     const dayIndex = Math.floor(Date.now() / 86400000) % 112;
     const allCards = document.querySelectorAll('.saba-card');
@@ -118,6 +136,7 @@ const totalMinutes = Math.round(totalDuration / 60);
 
       document.getElementById('dailyPlayBtn').addEventListener('click', function() {
         togglePlay(dailyAudio, this, null);
+        if (dailyAudio.paused === false) logPlay('daily-' + dayIndex, dailyClip.dataset.text);
       });
     }
 
@@ -129,6 +148,7 @@ const totalMinutes = Math.round(totalDuration / 60);
 
       playBtn.addEventListener('click', function() {
         togglePlay(audio, playBtn, card);
+        if (audio.paused === false) logPlay(card.dataset.id, card.dataset.text);
       });
 
       // Share
