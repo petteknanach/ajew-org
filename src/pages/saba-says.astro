@@ -83,6 +83,9 @@ const totalMinutes = Math.round(totalDuration / 60);
                 <button class="card-share-btn" aria-label={`Share clip ${clip.id}`}>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
                 </button>
+                <a class="card-dl-btn" href={`/audio/saba-says/${clip.file}`} download={`saba-says-${clip.text}.mp3`} aria-label={`Download clip ${clip.id}`}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                </a>
               </div>
               <div class="card-progress">
                 <div class="card-progress-bar"></div>
@@ -637,6 +640,27 @@ const totalMinutes = Math.round(totalDuration / 60);
   }
 
   .card-share-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .card-dl-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--saba-text-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+  .card-dl-btn:hover {
+    color: var(--saba-gold);
+    background: rgba(212, 168, 67, 0.1);
+  }
+  .card-dl-btn svg {
     width: 16px;
     height: 16px;
   }
