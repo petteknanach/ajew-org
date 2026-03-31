@@ -11,9 +11,11 @@ import Layout from '../../layouts/Layout.astro';
       <p class="nanach">נ נח נחמ נחמן מאומן</p>
       <form id="login-form">
         <input type="email" id="email" placeholder="Email" required />
-        <input type="password" id="password" placeholder="Password" required />
+        <input type="password" id="password" placeholder="Password (optional — leave blank for magic link)" />
         <button type="submit">Sign In</button>
+        <button type="button" id="magic-link-btn" style="margin-top:8px;background:#6b5ce7;color:#fff;border:none;padding:10px 20px;border-radius:6px;cursor:pointer;width:100%;">Send Magic Link (no password needed)</button>
         <p id="login-error" class="error-msg" style="display:none;"></p>
+        <p id="login-success" class="success-msg" style="display:none;color:#2d8a4e;margin-top:8px;"></p>
       </form>
     </div>
   </div>
@@ -108,13 +110,31 @@ Use blank lines between paragraphs.
     }
   }
 
-  // Login
+  // Login with password
   loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     loginError.style.display = 'none';
+    document.getElementById('login-success').style.display = 'none';
 
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
+
+    if (!password) {
+      // No password — use magic link instead
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: { emailRedirectTo: window.location.origin + '/blog/admin' }
+      });
+      if (error) {
+        loginError.textContent = error.message;
+        loginError.style.display = 'block';
+      } else {
+        const successMsg = document.getElementById('login-success');
+        successMsg.textContent = 'Magic link sent! Check your email and click the link.';
+        successMsg.style.display = 'block';
+      }
+      return;
+    }
 
     const { error } = await supabase.auth.signInWithPassword({ email, password });
 
@@ -123,6 +143,31 @@ Use blank lines between paragraphs.
       loginError.style.display = 'block';
     } else {
       showDashboard();
+    }
+  });
+
+  // Magic link button
+  document.getElementById('magic-link-btn').addEventListener('click', async () => {
+    const email = document.getElementById('email').value;
+    if (!email) {
+      loginError.textContent = 'Please enter your email first';
+      loginError.style.display = 'block';
+      return;
+    }
+    loginError.style.display = 'none';
+
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: window.location.origin + '/blog/admin' }
+    });
+
+    if (error) {
+      loginError.textContent = error.message;
+      loginError.style.display = 'block';
+    } else {
+      const successMsg = document.getElementById('login-success');
+      successMsg.textContent = 'Magic link sent to ' + email + '! Check your email and click the link to sign in.';
+      successMsg.style.display = 'block';
     }
   });
 
