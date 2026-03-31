@@ -146,11 +146,19 @@ Use blank lines between paragraphs.
     }
   });
 
+  // Allowed admin emails
+  const ADMIN_EMAILS = ['naanaach@gmail.com', 'petteknanach@gmail.com'];
+
   // Magic link button
   document.getElementById('magic-link-btn').addEventListener('click', async () => {
     const email = document.getElementById('email').value;
     if (!email) {
       loginError.textContent = 'Please enter your email first';
+      loginError.style.display = 'block';
+      return;
+    }
+    if (!ADMIN_EMAILS.includes(email.toLowerCase())) {
+      loginError.textContent = 'This email is not authorized for blog admin.';
       loginError.style.display = 'block';
       return;
     }
