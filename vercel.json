@@ -6,6 +6,11 @@
     { "source": "/connections", "destination": "/torah-map", "permanent": true },
     { "source": "/search", "destination": "/search-enhanced", "permanent": true }
   ],
+  "rewrites": [
+    { "source": "/reader/likutay-halachos/:part/torah-:n.json", "destination": "/reader/likutay-halachos/:part/halacha-:n.json" },
+    { "source": "/reader/likutay-tefilos/:part/torah-:n.json", "destination": "/reader/likutay-tefilos/:part/prayer-:n.json" },
+    { "source": "/reader/siach-sarfei-kodesh/:part/torah-:n.json", "destination": "/reader/siach-sarfei-kodesh/:part/section-:n.json" }
+  ],
   "headers": [
     {
       "source": "/reader/(.*).json",
