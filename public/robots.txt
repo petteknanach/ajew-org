@@ -11,8 +11,14 @@ Disallow: /login
 Disallow: /api/
 Disallow: /cgi-bin/
 
+# Block JSON data files from crawling (saves crawl budget)
+# These are data files fetched by the reader app, not pages
+Disallow: /reader/*.json
+Disallow: /search-index/
+Disallow: /data/*.json
+
 # Sitemaps
-Sitemap: https://ajew.org/sitemap-index.xml
+Sitemap: https://ajew.org/sitemap.xml
 
 # Social media bots - allow for link previews
 User-agent: FacebookBot
