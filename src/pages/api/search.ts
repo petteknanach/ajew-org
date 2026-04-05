@@ -365,13 +365,11 @@ export async function GET({ request }: { request: Request }) {
     const results: any[] = [];
 
     for (const doc of documents) {
-      // Book filter
+      // Book filter — match by URL prefix (e.g. /reader/likutay-halachos/...)
       if (books.length > 0) {
-        const bookId = (doc as any).bookId || '';
-        const partMatch = books.some(b =>
-          b === bookId || b === `part-${doc.part}` || b === 'likutay-moharan'
-        );
-        if (!partMatch && bookId && !books.includes(bookId)) continue;
+        const urlParts = (doc.url || '').split('/');
+        const bookId = urlParts.length >= 3 ? urlParts[2] : '';
+        if (!bookId || !books.includes(bookId)) continue;
       }
 
       const hebrewContent = (doc.content || '').toLowerCase();
