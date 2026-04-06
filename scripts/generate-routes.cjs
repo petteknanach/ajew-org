@@ -41,6 +41,20 @@ try {
 
 if (!torahData && !error) error = 'Content not available';
 
+// Add navigation and segment indexes if missing
+if (torahData) {
+  if (!torahData.navigation) {
+    torahData.navigation = {
+      prevUrl: torahNum > 1 ? \`/reader/${config.slug}/\${partNum}/\${torahNum - 1}\` : null,
+      nextUrl: \`/reader/${config.slug}/\${partNum}/\${torahNum + 1}\`,
+    };
+  }
+  // Add segment indexes if missing
+  torahData.segments.forEach((seg, i) => {
+    if (!seg.index) seg.index = i + 1;
+  });
+}
+
 const bookName = '${config.bookName}';
 const bookHebrew = '${config.bookHebrew}';
 const itemName = '${config.itemName}';

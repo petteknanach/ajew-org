@@ -29,6 +29,20 @@ try {
 
 if (!torahData && !error) error = 'Content not available';
 
+// Add navigation and segment indexes if missing
+if (torahData) {
+  if (!torahData.navigation) {
+    torahData.navigation = {
+      prevUrl: torahNum > 1 ? `/reader/fires-of-israel/${partNum}/${torahNum - 1}` : null,
+      nextUrl: `/reader/fires-of-israel/${partNum}/${torahNum + 1}`,
+    };
+  }
+  // Add segment indexes if missing
+  torahData.segments.forEach((seg, i) => {
+    if (!seg.index) seg.index = i + 1;
+  });
+}
+
 const bookName = 'Fires of Israel';
 const bookHebrew = 'אשי ישראל';
 const itemName = 'Section';

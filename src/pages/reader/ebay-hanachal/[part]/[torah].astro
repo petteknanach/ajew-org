@@ -32,6 +32,20 @@ try {
 
 if (!torahData && !error) error = 'Content not available';
 
+// Add navigation and segment indexes if missing
+if (torahData) {
+  if (!torahData.navigation) {
+    torahData.navigation = {
+      prevUrl: torahNum > 1 ? `/reader/ebay-hanachal/${partNum}/${torahNum - 1}` : null,
+      nextUrl: `/reader/ebay-hanachal/${partNum}/${torahNum + 1}`,
+    };
+  }
+  // Add segment indexes if missing
+  torahData.segments.forEach((seg, i) => {
+    if (!seg.index) seg.index = i + 1;
+  });
+}
+
 const bookName = 'Ebay HaNachal - Blossoms of the Stream';
 const bookHebrew = 'אבי הנחל';
 const itemName = 'Letter';
@@ -40,10 +54,7 @@ const pageTitle = torahData
   ? `${torahData.hebrewTitle || torahData.title} - Ebay HaNachal - Blossoms of the Stream`
   : 'Letter Not Found';
 const pageDesc = torahData
-  ? (() => {
-    const snippet = (torahData.segments?.find(s => s.en)?.en || '').replace(/<[^>]+>/g, '').slice(0, 120);
-    return `Read ${torahData.title} from Ebay HaNachal - Blossoms of the Stream online free. ${snippet ? snippet + '...' : 'Hebrew text with English translation on ajew.org.'}`;
-  })()
+  ? `Read ${torahData.title} from Ebay HaNachal - Blossoms of the Stream by Rabbi Yisroel Dov Odesser (Saba)`
   : '';
 
 const structuredData = torahData ? JSON.stringify({
@@ -57,23 +68,11 @@ const structuredData = torahData ? JSON.stringify({
   "isPartOf": { "@type": "Book", "name": "Ebay HaNachal - Blossoms of the Stream" },
   "url": `https://ajew.org/reader/ebay-hanachal/${partNum}/${torahNum}`
 }) : '';
-const breadcrumbData = torahData ? JSON.stringify({
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    { "@type": "ListItem", "position": 1, "name": "Library", "item": "https://ajew.org/reader" },
-    { "@type": "ListItem", "position": 2, "name": "Ebay HaNachal - Blossoms of the Stream", "item": `https://ajew.org/reader#ebay-hanachal` },
-    { "@type": "ListItem", "position": 3, "name": torahData.hebrewTitle || torahData.title }
-  ]
-}) : '';
 ---
 
 <Layout title={pageTitle} description={pageDesc}>
   {torahData && structuredData && (
     <script type="application/ld+json" set:html={structuredData} slot="head" />
-  )}
-  {torahData && breadcrumbData && (
-    <script type="application/ld+json" set:html={breadcrumbData} slot="head" />
   )}
   {error ? (
     <div style="text-align: center; padding: 80px 20px;">
@@ -116,7 +115,7 @@ const breadcrumbData = torahData ? JSON.stringify({
           <button class="reader-btn reader-btn-icon" data-theme-btn="night">Night</button>
         </div>
         <div class="reader-toolbar-group">
-          <button class="reader-btn reader-btn-icon" id="btn-listen">Listen</button>
+          <button class="reader-btn reader-btn-icon" id="btn-listen" onclick="toggleSpeaking()">Listen</button>
           <button class="reader-btn reader-btn-icon" id="btn-search">Search</button>
           <button class="reader-btn reader-btn-icon" id="btn-bookmark">Bookmark</button>
           <button class="reader-btn reader-btn-icon" id="btn-fullscreen">Fullscreen</button>
@@ -193,11 +192,6 @@ const breadcrumbData = torahData ? JSON.stringify({
           <div class="shortcut-row"><span>Fullscreen</span><span class="shortcut-key">F</span></div>
           <div class="shortcut-row"><span>Search in text</span><span class="shortcut-key">Ctrl+F</span></div>
           <div class="shortcut-row"><span>Save bookmark</span><span class="shortcut-key">S</span></div>
-          <div class="shortcut-row"><span>Listen / Pause</span><span class="shortcut-key">L</span></div>
-          <div class="shortcut-row"><span>Print</span><span class="shortcut-key">P</span></div>
-          <div class="shortcut-row"><span>Next segment</span><span class="shortcut-key">J / ↓</span></div>
-          <div class="shortcut-row"><span>Prev segment</span><span class="shortcut-key">K / ↑</span></div>
-          <div class="shortcut-row"><span>Toggle favorite</span><span class="shortcut-key">G</span></div>
           <div class="shortcut-row"><span>Previous/Next</span><span class="shortcut-key">&larr; &rarr;</span></div>
           <div class="shortcut-row"><span>Show shortcuts</span><span class="shortcut-key">?</span></div>
           <br />
