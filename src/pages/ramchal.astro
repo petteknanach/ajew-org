@@ -1,0 +1,153 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const ramchalBooks = [
+  { id: 'ramchal-mesillas-yesharim', title: 'Mesillas Yesharim', heTitle: 'מסילת ישרים', desc: 'The Path of the Just — the foundational work of mussar' },
+  { id: 'ramchal-derech-hashem', title: 'Derech Hashem', heTitle: 'דרך ה\'', desc: 'The Way of God — systematic theology and hashkafa' },
+  { id: 'ramchal-daas-tevunos', title: 'Daas Tevunos', heTitle: 'דעת תבונות', desc: 'The Knowing Heart — understanding Divine providence' },
+  { id: 'ramchal-klach-pitchei-chochma', title: "Klach Pitchei Chochma", heTitle: 'קל"ח פתחי חכמה', desc: '138 Openings of Wisdom — Kabbalistic foundations' },
+  { id: 'ramchal-adir-bamuroam', title: 'Adir BaMurom', heTitle: 'אדיר במרום', desc: 'Mighty on High — deep Kabbalistic commentary on the Zohar and Idra Rabba' },
+  { id: 'ramchal-derech-etz-chaim', title: 'Derech Etz Chaim', heTitle: 'דרך עץ חיים', desc: 'The Way of the Tree of Life' },
+  { id: 'ramchal-maamar-haikkarim', title: "Ma'amar HaIkkarim", heTitle: 'מאמר העיקרים', desc: 'Essay on the Fundamentals' },
+  { id: 'ramchal-asara-perakim', title: 'Asara Perakim', heTitle: 'עשרה פרקים', desc: 'Ten Chapters' },
+];
+---
+
+<Layout title="The Ramchal Library — ajew.org" description="Complete works of Rabbi Moshe Chaim Luzzatto (Ramchal) in English translation. Mesillas Yesharim, Derech Hashem, Daas Tevunos, Klach Pitchei Chochma, Adir BaMurom, and more.">
+  <main class="ramchal-page">
+    <div class="hero">
+      <h1 class="hero-title">הרמח"ל</h1>
+      <h2 class="hero-subtitle">The Ramchal Library</h2>
+      <p class="hero-desc">Rabbi Moshe Chaim Luzzatto (1707–1746)</p>
+      <p class="hero-quote">"The foundation of piety and the root of perfect service is for a person to clarify and verify what his obligation is in this world."<br><em>— Mesillas Yesharim, Chapter 1</em></p>
+    </div>
+
+    <div class="books-grid">
+      {ramchalBooks.map(book => (
+        <a href={`/reader/${book.id}/1/1`} class="book-card">
+          <div class="book-hebrew">{book.heTitle}</div>
+          <div class="book-title">{book.title}</div>
+          <div class="book-desc">{book.desc}</div>
+        </a>
+      ))}
+    </div>
+
+    <div class="about-section">
+      <h3>About the Ramchal</h3>
+      <p>Rabbi Moshe Chaim Luzzatto, known as the Ramchal, was one of the most influential Jewish thinkers of the past 500 years. Born in Padua, Italy, he authored works spanning mussar (ethics), Kabbalah, logic, and poetry. His <em>Mesillas Yesharim</em> is studied in virtually every yeshiva in the world.</p>
+      <p>The Gaon of Vilna said that if the Ramchal were alive in his generation, he would walk on foot to learn from him. Rabbi Nachman of Breslov held the Ramchal's writings in the highest regard.</p>
+      <p>All texts on this page are presented in English translation for accessibility.</p>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .ramchal-page {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 20px 60px;
+  }
+
+  .hero {
+    text-align: center;
+    padding: 50px 20px 40px;
+    background: linear-gradient(135deg, #1a2e5a 0%, #2d4a8a 100%);
+    color: white;
+    border-radius: 12px;
+    margin-bottom: 40px;
+  }
+
+  .hero-title {
+    font-size: 3em;
+    color: #f5e9c8;
+    margin-bottom: 5px;
+    font-family: 'Times New Roman', serif;
+  }
+
+  .hero-subtitle {
+    font-size: 1.5em;
+    color: #d4a843;
+    font-weight: normal;
+    margin-bottom: 10px;
+  }
+
+  .hero-desc {
+    color: #c8bfa0;
+    font-size: 1.1em;
+    margin-bottom: 20px;
+  }
+
+  .hero-quote {
+    font-style: italic;
+    color: #e8dfc0;
+    font-size: 0.95em;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  .books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+  }
+
+  .book-card {
+    display: block;
+    padding: 24px;
+    border: 2px solid #d4a843;
+    border-radius: 10px;
+    text-decoration: none;
+    color: #1a1a1a;
+    background: #faf7f0;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .book-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  }
+
+  .book-hebrew {
+    font-size: 1.8em;
+    color: #8B0000;
+    text-align: center;
+    margin-bottom: 8px;
+    font-family: 'Times New Roman', serif;
+    direction: rtl;
+  }
+
+  .book-title {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #1a2e5a;
+    text-align: center;
+    margin-bottom: 8px;
+  }
+
+  .book-desc {
+    font-size: 0.9em;
+    color: #555;
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  .about-section {
+    background: #f5f0e6;
+    padding: 30px;
+    border-radius: 10px;
+    border-left: 4px solid #d4a843;
+  }
+
+  .about-section h3 {
+    color: #1a2e5a;
+    margin-bottom: 15px;
+  }
+
+  .about-section p {
+    line-height: 1.8;
+    margin-bottom: 12px;
+    color: #333;
+  }
+</style>
