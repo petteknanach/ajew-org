@@ -310,6 +310,15 @@ const books = [
     filePattern: 'section-${torahNum}.json',
     parts: [{ num: 1, max: 5 }]
   },
+  {
+    slug: 'sichos-chayay-saba',
+    bookName: 'Sichos Metoch Chayay HaSaba',
+    bookHebrew: 'שיחות מתוך חיי הסבא',
+    itemName: 'Section',
+    author: 'Saba Yisroel (Rabbi Yisroel Dov Odesser)',
+    filePattern: 'section-${torahNum}.json',
+    parts: [{ num: 1, max: 20 }]
+  },
 ];
 
 for (const book of books) {
