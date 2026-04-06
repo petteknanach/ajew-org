@@ -2,14 +2,14 @@
 import Layout from '../layouts/Layout.astro';
 
 const ramchalBooks = [
-  { id: 'ramchal-mesillas-yesharim', title: 'Mesillas Yesharim', heTitle: 'מסילת ישרים', desc: 'The Path of the Just — the foundational work of mussar' },
-  { id: 'ramchal-derech-hashem', title: 'Derech Hashem', heTitle: 'דרך ה\'', desc: 'The Way of God — systematic theology and hashkafa' },
-  { id: 'ramchal-daas-tevunos', title: 'Daas Tevunos', heTitle: 'דעת תבונות', desc: 'The Knowing Heart — understanding Divine providence' },
-  { id: 'ramchal-klach-pitchei-chochma', title: "Klach Pitchei Chochma", heTitle: 'קל"ח פתחי חכמה', desc: '138 Openings of Wisdom — Kabbalistic foundations' },
-  { id: 'ramchal-adir-bamuroam', title: 'Adir BaMurom', heTitle: 'אדיר במרום', desc: 'Mighty on High — deep Kabbalistic commentary on the Zohar and Idra Rabba' },
-  { id: 'ramchal-derech-etz-chaim', title: 'Derech Etz Chaim', heTitle: 'דרך עץ חיים', desc: 'The Way of the Tree of Life' },
-  { id: 'ramchal-maamar-haikkarim', title: "Ma'amar HaIkkarim", heTitle: 'מאמר העיקרים', desc: 'Essay on the Fundamentals' },
-  { id: 'ramchal-asara-perakim', title: 'Asara Perakim', heTitle: 'עשרה פרקים', desc: 'Ten Chapters' },
+  { id: 'ramchal-mesillas-yesharim', title: 'Mesillas Yesharim', heTitle: 'מסילת ישרים', desc: 'The Path of the Just — the foundational work of mussar', sections: 27, sectionLabel: 'chapters', hasHebrew: true },
+  { id: 'ramchal-derech-hashem', title: 'Derech Hashem', heTitle: 'דרך ה\'', desc: 'The Way of God — systematic theology and hashkafa', sections: 28, sectionLabel: 'chapters', hasHebrew: true },
+  { id: 'ramchal-daas-tevunos', title: 'Daas Tevunos', heTitle: 'דעת תבונות', desc: 'The Knowing Heart — understanding Divine providence', sections: 195, sectionLabel: 'sections', hasHebrew: true },
+  { id: 'ramchal-klach-pitchei-chochma', title: "Klach Pitchei Chochma", heTitle: 'קל"ח פתחי חכמה', desc: '138 Openings of Wisdom — Kabbalistic foundations', sections: 138, sectionLabel: 'openings', hasHebrew: true },
+  { id: 'ramchal-adir-bamuroam', title: 'Adir BaMurom', heTitle: 'אדיר במרום', desc: 'Mighty on High — deep Kabbalistic commentary on the Zohar and Idra Rabba', sections: 22, sectionLabel: 'chapters', hasHebrew: false },
+  { id: 'ramchal-derech-etz-chaim', title: 'Derech Etz Chaim', heTitle: 'דרך עץ חיים', desc: 'The Way of the Tree of Life — introduction to Pitchei Chochma', sections: 1, sectionLabel: 'chapter', hasHebrew: true },
+  { id: 'ramchal-maamar-haikkarim', title: "Ma'amar HaIkkarim", heTitle: 'מאמר העיקרים', desc: 'Essay on the Fundamentals — core principles of faith', sections: 10, sectionLabel: 'chapters', hasHebrew: true },
+  { id: 'ramchal-asara-perakim', title: 'Asara Perakim', heTitle: 'עשרה פרקים', desc: 'Ten Chapters — concise overview of Kabbalistic concepts', sections: 10, sectionLabel: 'chapters', hasHebrew: true },
 ];
 ---
 
@@ -28,6 +28,14 @@ const ramchalBooks = [
           <div class="book-hebrew">{book.heTitle}</div>
           <div class="book-title">{book.title}</div>
           <div class="book-desc">{book.desc}</div>
+          <div class="book-meta">
+            <span class="book-sections">{book.sections} {book.sectionLabel}</span>
+            {book.hasHebrew ? (
+              <span class="book-lang lang-both">Hebrew + English</span>
+            ) : (
+              <span class="book-lang lang-en">English only</span>
+            )}
+          </div>
         </a>
       ))}
     </div>
@@ -36,7 +44,7 @@ const ramchalBooks = [
       <h3>About the Ramchal</h3>
       <p>Rabbi Moshe Chaim Luzzatto, known as the Ramchal, was one of the most influential Jewish thinkers of the past 500 years. Born in Padua, Italy, he authored works spanning mussar (ethics), Kabbalah, logic, and poetry. His <em>Mesillas Yesharim</em> is studied in virtually every yeshiva in the world.</p>
       <p>The Gaon of Vilna said that if the Ramchal were alive in his generation, he would walk on foot to learn from him. Rabbi Nachman of Breslov held the Ramchal's writings in the highest regard.</p>
-      <p>All texts on this page are presented in English translation for accessibility.</p>
+      <p>All texts are presented with Hebrew and English side-by-side where available. Use the Hebrew/English/Both toggle in the reader to switch display modes.</p>
     </div>
   </main>
 </Layout>
@@ -149,5 +157,34 @@ const ramchalBooks = [
     line-height: 1.8;
     margin-bottom: 12px;
     color: #333;
+  }
+
+  .book-meta {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 12px;
+    font-size: 0.8em;
+  }
+
+  .book-sections {
+    color: #1a2e5a;
+    font-weight: 600;
+  }
+
+  .book-lang {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.85em;
+  }
+
+  .lang-both {
+    background: #e8f5e9;
+    color: #2e7d32;
+  }
+
+  .lang-en {
+    background: #fff3e0;
+    color: #e65100;
   }
 </style>

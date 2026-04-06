@@ -6,7 +6,7 @@ import path from 'node:path';
 
 export function getStaticPaths() {
   const paths = [];
-  for (let torah = 1; torah <= 82; torah++) {
+  for (let torah = 1; torah <= 22; torah++) {
     paths.push({ params: { part: '1', torah: String(torah) } });
   }
   return paths;
@@ -20,7 +20,7 @@ let torahData = null;
 let error = null;
 
 try {
-  const filePath = path.join(process.cwd(), `public/reader/biur-halikutim/section-${torahNum}.json`);
+  const filePath = path.join(process.cwd(), `public/reader/ramchal-adir-bamuroam/section-${torahNum}.json`);
   const raw = fs.readFileSync(filePath, 'utf8');
   torahData = JSON.parse(raw);
 } catch (e) {
@@ -29,36 +29,36 @@ try {
 
 if (!torahData && !error) error = 'Content not available';
 
-const bookName = 'Biur HaLikutim';
-const bookHebrew = 'ביאור הליקוטים';
+const bookName = 'Adir BaMurom';
+const bookHebrew = 'אדיר במרום';
 
 const pageTitle = torahData
-  ? `${torahData.hebrewTitle || torahData.title} - Biur HaLikutim`
+  ? `${torahData.hebrewTitle || torahData.title} - Adir BaMurom`
   : 'Not Found';
 const pageDesc = torahData
   ? (() => {
     const snippet = (torahData.segments?.find(s => s.en)?.en || '').replace(/<[^>]+>/g, '').slice(0, 120);
-    return `Read ${torahData.title} from Biur HaLikutim online free. ${snippet ? snippet + '...' : 'Hebrew text with English translation on ajew.org.'}`;
+    return `Read ${torahData.title} from Adir BaMurom by the Ramchal online free. ${snippet ? snippet + '...' : 'Hebrew text with English translation on ajew.org.'}`;
   })()
   : '';
 
 const structuredData = torahData ? JSON.stringify({
   "@context": "https://schema.org",
   "@type": "Article",
-  "headline": `${torahData.title} - Biur HaLikutim`,
+  "headline": `${torahData.title} - Adir BaMurom`,
   "alternativeHeadline": torahData.hebrewTitle || '',
-  "author": { "@type": "Person", "name": "Rabbi Avraham bar Nachman" },
+  "author": { "@type": "Person", "name": "Ramchal (Rabbi Moshe Chaim Luzzatto)" },
   "publisher": { "@type": "Organization", "name": "ajew.org" },
   "inLanguage": ["he", "en"],
-  "isPartOf": { "@type": "Book", "name": "Biur HaLikutim" },
-  "url": `https://ajew.org/reader/biur-halikutim/${partNum}/${torahNum}`
+  "isPartOf": { "@type": "Book", "name": "Adir BaMurom" },
+  "url": `https://ajew.org/reader/ramchal-adir-bamuroam/${partNum}/${torahNum}`
 }) : '';
 const breadcrumbData = torahData ? JSON.stringify({
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   "itemListElement": [
     { "@type": "ListItem", "position": 1, "name": "Library", "item": "https://ajew.org/reader" },
-    { "@type": "ListItem", "position": 2, "name": "Biur HaLikutim", "item": `https://ajew.org/reader#biur-halikutim` },
+    { "@type": "ListItem", "position": 2, "name": "Adir BaMurom", "item": `https://ajew.org/reader#ramchal-adir-bamuroam` },
     { "@type": "ListItem", "position": 3, "name": torahData.hebrewTitle || torahData.title }
   ]
 }) : '';
@@ -79,15 +79,15 @@ const breadcrumbData = torahData ? JSON.stringify({
   ) : (
     <div
       class="reader-container"
-      data-torah-id={torahData.id}
-      data-torah-title={`${torahData.title} - Biur HaLikutim`}
+      data-torah-id={torahData.bookId + '-' + torahData.torah}
+      data-torah-title={`${torahData.title} - Adir BaMurom`}
     >
       <div class="reader-progress"></div>
 
       <div class="reader-breadcrumb">
         <a href="/reader">Reader</a>
         <span>&rsaquo;</span>
-        <a href="/reader">{bookName}</a>
+        <a href="/ramchal">{bookName}</a>
         <span>&rsaquo;</span>
         {torahData.hebrewTitle || torahData.title}
       </div>
@@ -97,9 +97,6 @@ const breadcrumbData = torahData ? JSON.stringify({
           <button class="reader-btn" data-mode="hebrew">Hebrew</button>
           <button class="reader-btn" data-mode="english">English</button>
           <button class="reader-btn" data-mode="both">Both</button>
-        </div>
-        <div class="reader-toolbar-group">
-          <button class="reader-btn" id="btn-nikud">Nikud</button>
         </div>
         <div class="reader-toolbar-group">
           <span style="font-size:0.7em; font-family: 'Open Sans', sans-serif; color: var(--reader-text-secondary);">A</span>
@@ -132,7 +129,7 @@ const breadcrumbData = torahData ? JSON.stringify({
         <h3>Sections</h3>
         <ul class="reader-toc-list">
           {torahData.segments.map((seg, i) => (
-            <li><a href={`#seg-${seg.index}`} data-index={String(seg.index)}>{seg.index}</a></li>
+            <li><a href={`#seg-${i + 1}`} data-index={String(i + 1)}>{i + 1}</a></li>
           ))}
         </ul>
       </div>
@@ -146,24 +143,24 @@ const breadcrumbData = torahData ? JSON.stringify({
       </div>
 
       <div class="reader-nav">
-        {torahData.navigation.prevUrl ? (
-          <a href={torahData.navigation.prevUrl} data-dir="prev">&larr; Previous</a>
+        {torahNum > 1 ? (
+          <a href={`/reader/ramchal-adir-bamuroam/1/${torahNum - 1}`} data-dir="prev">&larr; Previous</a>
         ) : <span class="disabled">&larr; Previous</span>}
-        <a href="/reader">All Books</a>
-        {torahData.navigation.nextUrl ? (
-          <a href={torahData.navigation.nextUrl} data-dir="next">Next &rarr;</a>
+        <a href="/ramchal">Ramchal Library</a>
+        {torahNum < 22 ? (
+          <a href={`/reader/ramchal-adir-bamuroam/1/${torahNum + 1}`} data-dir="next">Next &rarr;</a>
         ) : <span class="disabled">Next &rarr;</span>}
       </div>
 
-      <div class="reader-content mode-hebrew">
-        {torahData.segments.map((seg) => (
-          <div class="reader-segment-pair" id={`seg-${seg.index}`}>
-            <div class="reader-segment segment-he" data-index={String(seg.index)}>
-              <span class="segment-number">{seg.index}</span>
-              <p data-nikud={seg.he_nikud || seg.he}>{seg.he}</p>
+      <div class="reader-content mode-english">
+        {torahData.segments.map((seg, i) => (
+          <div class="reader-segment-pair" id={`seg-${i + 1}`}>
+            <div class="reader-segment segment-he" data-index={String(i + 1)}>
+              <span class="segment-number">{i + 1}</span>
+              <p>{seg.he || '\u00A0'}</p>
             </div>
-            <div class={`reader-segment segment-en ${!seg.en ? 'empty-translation' : ''}`} data-index={String(seg.index)}>
-              <span class="segment-number">{seg.index}</span>
+            <div class={`reader-segment segment-en ${!seg.en ? 'empty-translation' : ''}`} data-index={String(i + 1)}>
+              <span class="segment-number">{i + 1}</span>
               <p>{seg.en || 'Translation not yet available'}</p>
             </div>
           </div>
@@ -171,12 +168,12 @@ const breadcrumbData = torahData ? JSON.stringify({
       </div>
 
       <div class="reader-nav">
-        {torahData.navigation.prevUrl ? (
-          <a href={torahData.navigation.prevUrl} data-dir="prev">&larr; Previous</a>
+        {torahNum > 1 ? (
+          <a href={`/reader/ramchal-adir-bamuroam/1/${torahNum - 1}`} data-dir="prev">&larr; Previous</a>
         ) : <span class="disabled">&larr; Previous</span>}
-        <a href="/reader">All Books</a>
-        {torahData.navigation.nextUrl ? (
-          <a href={torahData.navigation.nextUrl} data-dir="next">Next &rarr;</a>
+        <a href="/ramchal">Ramchal Library</a>
+        {torahNum < 22 ? (
+          <a href={`/reader/ramchal-adir-bamuroam/1/${torahNum + 1}`} data-dir="next">Next &rarr;</a>
         ) : <span class="disabled">Next &rarr;</span>}
       </div>
 
@@ -186,7 +183,6 @@ const breadcrumbData = torahData ? JSON.stringify({
           <div class="shortcut-row"><span>Hebrew mode</span><span class="shortcut-key">H</span></div>
           <div class="shortcut-row"><span>English mode</span><span class="shortcut-key">E</span></div>
           <div class="shortcut-row"><span>Both columns</span><span class="shortcut-key">B</span></div>
-          <div class="shortcut-row"><span>Toggle nikud</span><span class="shortcut-key">N</span></div>
           <div class="shortcut-row"><span>Fullscreen</span><span class="shortcut-key">F</span></div>
           <div class="shortcut-row"><span>Search in text</span><span class="shortcut-key">Ctrl+F</span></div>
           <div class="shortcut-row"><span>Save bookmark</span><span class="shortcut-key">S</span></div>
