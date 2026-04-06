@@ -250,7 +250,52 @@ const books = [
       { num: 4, max: 110 }, { num: 5, max: 115 }, { num: 6, max: 35 },
       { num: 7, max: 95 }, { num: 8, max: 90 }
     ]
-  }
+  },
+  {
+    slug: 'azamra',
+    bookName: 'Azamra / Rabbi Nachman: Who He Was',
+    bookHebrew: 'אזמרה',
+    itemName: 'Section',
+    author: 'English Compilation',
+    filePattern: 'section-${torahNum}.json',
+    parts: [{ num: 1, max: 35 }]
+  },
+  {
+    slug: 'fires-of-israel',
+    bookName: 'Fires of Israel',
+    bookHebrew: 'אשי ישראל',
+    itemName: 'Section',
+    author: 'English Compilation',
+    filePattern: 'section-${torahNum}.json',
+    parts: [{ num: 1, max: 65 }]
+  },
+  {
+    slug: 'hisbodidus-alone-time',
+    bookName: 'Hisbodidus - Alone Time',
+    bookHebrew: 'התבודדות',
+    itemName: 'Section',
+    author: 'English Compilation',
+    filePattern: 'section-${torahNum}.json',
+    parts: [{ num: 1, max: 50 }]
+  },
+  {
+    slug: 'seven-pillars',
+    bookName: 'The Seven Pillars',
+    bookHebrew: 'שבעה עמודי האמונה',
+    itemName: 'Section',
+    author: 'Reb Yitzchok Breiter',
+    filePattern: 'section-${torahNum}.json',
+    parts: [{ num: 1, max: 5 }]
+  },
+  {
+    slug: 'praises-of-rabbi-nachman',
+    bookName: 'The Praises of Rabbi Nachman',
+    bookHebrew: 'שבחי הר"ן',
+    itemName: 'Section',
+    author: 'English Translation',
+    filePattern: 'section-${torahNum}.json',
+    parts: [{ num: 1, max: 5 }]
+  },
 ];
 
 for (const book of books) {
