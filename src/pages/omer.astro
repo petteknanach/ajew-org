@@ -25,9 +25,38 @@ const pesachSecondNight = new Date(2026, 3, 2); // April 2, 2026
 const today = new Date();
 const diffMs = today.getTime() - pesachSecondNight.getTime();
 const todayOmer = Math.floor(diffMs / (1000 * 60 * 60 * 24)) + 1;
+
+const pageTitle = "Sfiras HaOmer - Counting the Omer";
+const pageDescription = "Count the 49 days of Sfiras HaOmer from Pesach to Shavuos. Interactive Omer counter with the seven sefiros (Chesed, Gevurah, Tiferes, Netzach, Hod, Yesod, Malchus) and Breslov teachings for spiritual refinement.";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Sfiras HaOmer - Counting the Omer",
+  "description": pageDescription,
+  "url": "https://ajew.org/omer",
+  "inLanguage": ["en", "he"],
+  "about": {
+    "@type": "Event",
+    "name": "Sfiras HaOmer",
+    "alternateName": "ספירת העומר",
+    "description": "The 49-day period between Pesach and Shavuos during which Jews count each day as a spiritual preparation for receiving the Torah.",
+    "duration": "P49D"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "A Jew",
+    "url": "https://ajew.org"
+  }
+};
+
+const breadcrumbs = [
+  { name: "Home", url: "https://ajew.org/" },
+  { name: "Sfiras HaOmer", url: "https://ajew.org/omer" }
+];
 ---
 
-<Layout title="Sfiras HaOmer - Counting the Omer | AJEW.org" description="Count the 49 days from Pesach to Shavuos with Breslov teachings for each day">
+<Layout title={pageTitle} description={pageDescription} jsonLd={jsonLd} breadcrumbs={breadcrumbs}>
   <div class="omer-page">
     <header class="omer-header">
       <h1>🌾 ספירת העומר</h1>
@@ -80,6 +109,34 @@ const todayOmer = Math.floor(diffMs / (1000 * 60 * 60 * 24)) + 1;
     </div>
   </div>
 </Layout>
+
+<script is:inline>
+// Client-side Omer count update (overrides build-time static value)
+(function() {
+  var pesachSecondNight = new Date(2026, 3, 2); // April 2, 2026
+  var now = new Date();
+  var diffMs = now.getTime() - pesachSecondNight.getTime();
+  var todayOmer = Math.floor(diffMs / (1000 * 60 * 60 * 24)) + 1;
+
+  if (todayOmer >= 1 && todayOmer <= 49) {
+    // Update the day number display
+    var numEl = document.querySelector('.today-number');
+    if (numEl) numEl.textContent = todayOmer;
+
+    // Show the count banner
+    var countEl = document.querySelector('.today-count');
+    if (countEl) countEl.style.display = 'inline-flex';
+
+    // Highlight today's day in the grid and mark counted days
+    document.querySelectorAll('.omer-day').forEach(function(el) {
+      var dayNum = parseInt(el.querySelector('.day-number').textContent);
+      el.classList.remove('today', 'counted');
+      if (dayNum === todayOmer) el.classList.add('today');
+      else if (dayNum < todayOmer) el.classList.add('counted');
+    });
+  }
+})();
+</script>
 
 <style>
   .omer-page {
