@@ -11,9 +11,56 @@ const ramchalBooks = [
   { id: 'ramchal-maamar-haikkarim', title: "Ma'amar HaIkkarim", heTitle: 'מאמר העיקרים', desc: 'Essay on the Fundamentals — core principles of faith', sections: 10, sectionLabel: 'chapters', hasHebrew: true },
   { id: 'ramchal-asara-perakim', title: 'Asara Perakim', heTitle: 'עשרה פרקים', desc: 'Ten Chapters — concise overview of Kabbalistic concepts', sections: 10, sectionLabel: 'chapters', hasHebrew: true },
 ];
+
+const pageTitle = "Ramchal - Rabbi Moshe Chaim Luzzatto | Mesillas Yesharim, Derech Hashem, Adir BaMurom";
+const pageDescription = "Complete works of Rabbi Moshe Chaim Luzzatto (Ramchal) — Kabbalistic texts including Mesillas Yesharim, Derech Hashem, Adir BaMurom, Klach Pitchei Chochma, Daas Tevunos, and Ruzin Gineezin. Bilingual Hebrew-English. Free online at AJEW.org.";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "The Ramchal Library",
+  "description": pageDescription,
+  "url": "https://ajew.org/ramchal",
+  "inLanguage": ["en", "he"],
+  "about": {
+    "@type": "Person",
+    "name": "Rabbi Moshe Chaim Luzzatto",
+    "alternateName": ["Ramchal", "רמח\"ל"],
+    "birthDate": "1707",
+    "deathDate": "1746",
+    "birthPlace": "Padua, Italy",
+    "description": "Rabbi Moshe Chaim Luzzatto (1707-1746), known as the Ramchal, was one of the most influential Jewish thinkers and Kabbalists. Author of Mesillas Yesharim, Derech Hashem, and numerous Kabbalistic works."
+  },
+  "hasPart": ramchalBooks.map(book => ({
+    "@type": "Book",
+    "name": book.title,
+    "alternateName": book.heTitle,
+    "author": { "@type": "Person", "name": "Rabbi Moshe Chaim Luzzatto" },
+    "inLanguage": book.hasHebrew ? ["he", "en"] : ["en"],
+    "url": `https://ajew.org/reader/${book.id}/1/1`,
+    "description": book.desc,
+    "numberOfPages": book.sections
+  })),
+  "publisher": {
+    "@type": "Organization",
+    "name": "A Jew",
+    "url": "https://ajew.org"
+  }
+};
+
+const breadcrumbs = [
+  { name: "Home", url: "https://ajew.org/" },
+  { name: "Library", url: "https://ajew.org/reader" },
+  { name: "Ramchal Library", url: "https://ajew.org/ramchal" }
+];
 ---
 
-<Layout title="The Ramchal Library — ajew.org" description="Complete works of Rabbi Moshe Chaim Luzzatto (Ramchal) in English translation. Mesillas Yesharim, Derech Hashem, Daas Tevunos, Klach Pitchei Chochma, Adir BaMurom, and more.">
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  jsonLd={jsonLd}
+  breadcrumbs={breadcrumbs}
+>
   <main class="ramchal-page">
     <div class="hero">
       <h1 class="hero-title">הרמח"ל</h1>

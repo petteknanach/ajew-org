@@ -39,35 +39,42 @@ const pageDesc = torahData
   })()
   : '';
 
-const structuredData = torahData ? JSON.stringify({
+const jsonLd = torahData ? {
   "@context": "https://schema.org",
-  "@type": "Article",
-  "headline": `${torahData.title}`,
-  "alternativeHeadline": torahData.hebrewTitle || '',
-  "author": { "@type": "Person", "name": "Ramchal (Rabbi Moshe Chaim Luzzatto)" },
-  "publisher": { "@type": "Organization", "name": "ajew.org" },
+  "@type": "Chapter",
+  "name": torahData.title,
+  "alternateName": torahData.hebrewTitle || undefined,
+  "author": {
+    "@type": "Person",
+    "name": "Rabbi Moshe Chaim Luzzatto",
+    "alternateName": ["Ramchal", "רמח\"ל"],
+    "birthDate": "1707",
+    "deathDate": "1746"
+  },
+  "publisher": { "@type": "Organization", "name": "A Jew", "url": "https://ajew.org" },
   "inLanguage": ["he", "en"],
-  "isPartOf": { "@type": "Book", "name": "Derech Hashem" },
-  "url": `https://ajew.org/reader/ramchal-derech-hashem/${partNum}/${torahNum}`
-}) : '';
-const breadcrumbData = torahData ? JSON.stringify({
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    { "@type": "ListItem", "position": 1, "name": "Library", "item": "https://ajew.org/reader" },
-    { "@type": "ListItem", "position": 2, "name": "Derech Hashem", "item": `https://ajew.org/reader#ramchal-derech-hashem` },
-    { "@type": "ListItem", "position": 3, "name": torahData.hebrewTitle || torahData.title }
-  ]
-}) : '';
+  "isPartOf": {
+    "@type": "Book",
+    "name": "Derech Hashem",
+    "alternateName": "דרך ה'",
+    "author": { "@type": "Person", "name": "Rabbi Moshe Chaim Luzzatto" },
+    "genre": ["Jewish theology", "Hashkafa"],
+    "inLanguage": ["he", "en"]
+  },
+  "url": `https://ajew.org/reader/ramchal-derech-hashem/${partNum}/${torahNum}`,
+  "position": torahNum
+} : null;
+
+const breadcrumbs = torahData ? [
+  { name: "Home", url: "https://ajew.org/" },
+  { name: "Library", url: "https://ajew.org/reader" },
+  { name: "Ramchal", url: "https://ajew.org/ramchal" },
+  { name: "Derech Hashem", url: "https://ajew.org/reader/ramchal-derech-hashem/1/1" },
+  { name: torahData.hebrewTitle || torahData.title, url: `https://ajew.org/reader/ramchal-derech-hashem/${partNum}/${torahNum}` }
+] : [];
 ---
 
-<Layout title={pageTitle} description={pageDesc}>
-  {torahData && structuredData && (
-    <script type="application/ld+json" set:html={structuredData} slot="head" />
-  )}
-  {torahData && breadcrumbData && (
-    <script type="application/ld+json" set:html={breadcrumbData} slot="head" />
-  )}
+<Layout title={pageTitle} description={pageDesc} jsonLd={jsonLd} breadcrumbs={breadcrumbs}>
   {error ? (
     <div style="text-align: center; padding: 80px 20px;">
       <h1>{error}</h1>
