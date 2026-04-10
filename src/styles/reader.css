@@ -318,6 +318,38 @@
   font-size: 0.85em;
 }
 
+/* --- Supplementary/note segments (English-only editorial content) --- */
+.reader-segment-pair.segment-note .segment-en p {
+  font-style: italic;
+  color: var(--reader-text-secondary, #555);
+  border-left: 3px solid var(--reader-accent, #b8860b);
+  padding-left: 1em;
+  margin-left: 0.5em;
+  font-size: 0.92em;
+}
+.reader-segment-pair.segment-intro .segment-en p {
+  font-style: italic;
+  color: var(--reader-text-secondary, #555);
+  background: rgba(184, 134, 11, 0.05);
+  padding: 0.8em 1em;
+  border-radius: 4px;
+  font-size: 0.92em;
+}
+.reader-segment-pair.segment-summary .segment-en p {
+  font-style: italic;
+  color: var(--reader-text-secondary, #555);
+  border-top: 1px solid var(--reader-border, #ddd);
+  padding-top: 0.8em;
+  margin-top: 0.5em;
+  font-size: 0.9em;
+}
+/* Hide note/intro/summary segments in Hebrew-only mode */
+.reader-content.mode-hebrew .segment-note,
+.reader-content.mode-hebrew .segment-intro,
+.reader-content.mode-hebrew .segment-summary {
+  display: none;
+}
+
 /* --- Hebrew-only mode --- */
 .reader-content.mode-hebrew .segment-en {
   display: none;

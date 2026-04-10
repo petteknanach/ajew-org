@@ -78,25 +78,25 @@ import CompactYahrzeit from '../components/CompactYahrzeit.astro';
         </div>
       </nav>
       
-      <!-- Seasonal: Pesach Button (shows Nisan season ~2 weeks before through end of Pesach) -->
-      <div id="pesachBanner" class="pesach-banner" style="display: none;">
-        <a href="/pesach" class="btn btn-pesach">
-          <span class="btn-icon">🫓</span>
-          <span class="btn-text">Pesach Teachings</span>
-          <span class="btn-subtitle-pesach" dir="rtl">חג הפסח</span>
+      <!-- Seasonal: Sfiras HaOmer (Pesach through Shavuos) -->
+      <div id="omerBanner" class="omer-banner" style="display: none;">
+        <a href="/omer" class="btn btn-omer">
+          <span class="btn-icon">🌾</span>
+          <span class="btn-text">Sfiras HaOmer</span>
+          <span class="btn-subtitle-omer" dir="rtl">ספירת העומר</span>
         </a>
       </div>
       <script is:inline>
       (function() {
-        // Show Pesach button from ~2 weeks before Pesach through end of Pesach
-        // Using approximate Gregorian dates for 2026 Pesach: April 1-9, show from March 18
-        // For robustness, show from March 15 through April 15 of any year
+        // Show Omer counter from day after Pesach through Shavuos
+        // 2026: April 2 (2nd night Pesach) through May 21 (Shavuos)
+        // General: mid-April through late May
         var now = new Date();
         var m = now.getMonth(); // 0-indexed
         var d = now.getDate();
-        // Show in late March (m=2, d>=15) through mid-April (m=3, d<=15)
-        if ((m === 2 && d >= 15) || (m === 3 && d <= 15)) {
-          var banner = document.getElementById('pesachBanner');
+        // Show from April 2 (m=3, d>=2) through May 22 (m=4, d<=22)
+        if ((m === 3 && d >= 2) || (m === 4 && d <= 22)) {
+          var banner = document.getElementById('omerBanner');
           if (banner) banner.style.display = 'flex';
         }
       })();
@@ -133,6 +133,11 @@ import CompactYahrzeit from '../components/CompactYahrzeit.astro';
 
       <!-- Second row: more tools -->
       <div class="external-links">
+        <a href="/ramchal" class="btn btn-external">
+          <span class="btn-icon">✡️</span>
+          <span class="btn-text">Ramchal</span>
+          <span class="btn-he" dir="rtl">רמח"ל</span>
+        </a>
         <a href="/chain-of-light" class="btn btn-external">
           <span class="btn-icon">🔗</span>
           <span class="btn-text">Chain of Light</span>
@@ -598,48 +603,48 @@ import CompactYahrzeit from '../components/CompactYahrzeit.astro';
   }
 
   /* Pesach seasonal banner */
-  .pesach-banner {
+  .omer-banner {
     display: flex;
     justify-content: center;
     margin-bottom: 1rem;
   }
 
-  .btn-pesach {
+  .btn-omer {
     display: inline-flex;
     align-items: center;
     gap: 0.6rem;
     padding: 0.7rem 2rem;
-    background: linear-gradient(135deg, #d97706 0%, #f59e0b 50%, #fbbf24 100%);
+    background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 50%, #c4b5fd 100%);
     color: white;
     border: 2px solid rgba(255, 255, 255, 0.4);
     border-radius: 12px;
     text-decoration: none;
     font-weight: 700;
     font-size: 1.1rem;
-    box-shadow: 0 4px 15px rgba(217, 119, 6, 0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+    box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4), inset 0 1px 0 rgba(255,255,255,0.2);
     transition: all 0.3s ease;
-    animation: pesachGlow 2s ease-in-out infinite alternate;
+    animation: omerGlow 2s ease-in-out infinite alternate;
   }
 
-  .btn-pesach:hover {
+  .btn-omer:hover {
     transform: translateY(-3px) scale(1.03);
-    box-shadow: 0 6px 25px rgba(217, 119, 6, 0.5), inset 0 1px 0 rgba(255,255,255,0.3);
+    box-shadow: 0 6px 25px rgba(124, 58, 237, 0.5), inset 0 1px 0 rgba(255,255,255,0.3);
   }
 
-  .btn-pesach .btn-icon {
+  .btn-omer .btn-icon {
     font-size: 1.4rem;
   }
 
-  .btn-subtitle-pesach {
+  .btn-subtitle-omer {
     font-family: var(--font-hebrew);
     font-size: 0.8rem;
     opacity: 0.9;
     font-weight: 600;
   }
 
-  @keyframes pesachGlow {
-    0% { box-shadow: 0 4px 15px rgba(217, 119, 6, 0.4), inset 0 1px 0 rgba(255,255,255,0.2); }
-    100% { box-shadow: 0 4px 20px rgba(245, 158, 11, 0.6), inset 0 1px 0 rgba(255,255,255,0.3); }
+  @keyframes omerGlow {
+    0% { box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4), inset 0 1px 0 rgba(255,255,255,0.2); }
+    100% { box-shadow: 0 4px 20px rgba(167, 139, 250, 0.6), inset 0 1px 0 rgba(255,255,255,0.3); }
   }
 
   /* Community links row */
