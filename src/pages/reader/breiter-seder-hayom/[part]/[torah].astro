@@ -20,7 +20,7 @@ let torahData = null;
 let error = null;
 
 try {
-  const filePath = path.join(process.cwd(), `public/reader/breiter-seder-hayom/part-${partNum}/torah-${torahNum}.json`);
+  const filePath = path.join(process.cwd(), `public/reader/breiter-seder-hayom/chapter-${torahNum}.json`);
   const raw = fs.readFileSync(filePath, 'utf8');
   torahData = JSON.parse(raw);
 } catch (e) {
@@ -30,12 +30,12 @@ try {
 if (!torahData && !error) error = 'Content not available';
 
 const pageTitle = torahData
-  ? `${torahData.hebrewTitle || torahData.title} - Anava (Humility)`
+  ? `${torahData.hebrewTitle || torahData.title} - Seder HaYom - R' Yitzchak Breiter`
   : 'Section Not Found';
 const pageDesc = torahData
   ? (() => {
     const snippet = (torahData.segments?.find(s => s.en)?.en || '').replace(/<[^>]+>/g, '').slice(0, 120);
-    return `Read ${torahData.title} from Anava (Humility) online free. ${snippet ? snippet + '...' : 'Hebrew text with English translation on ajew.org.'}`;
+    return `Read ${torahData.title} from Seder HaYom - R' Yitzchak Breiter online free. ${snippet ? snippet + '...' : 'Hebrew text with English translation on ajew.org.'}`;
   })()
   : '';
 
@@ -44,10 +44,10 @@ const structuredData = torahData ? JSON.stringify({
   "@type": "Article",
   "headline": `${torahData.title}`,
   "alternativeHeadline": torahData.hebrewTitle || '',
-  "author": { "@type": "Person", "name": "Anava (Humility)" },
+  "author": { "@type": "Person", "name": "Seder HaYom - R' Yitzchak Breiter" },
   "publisher": { "@type": "Organization", "name": "ajew.org" },
   "inLanguage": ["he"],
-  "isPartOf": { "@type": "Book", "name": "Anava (Humility)" },
+  "isPartOf": { "@type": "Book", "name": "Seder HaYom - R' Yitzchak Breiter" },
   "url": `https://ajew.org/reader/breiter-seder-hayom/${partNum}/${torahNum}`
 }) : '';
 const breadcrumbData = torahData ? JSON.stringify({
@@ -55,7 +55,7 @@ const breadcrumbData = torahData ? JSON.stringify({
   "@type": "BreadcrumbList",
   "itemListElement": [
     { "@type": "ListItem", "position": 1, "name": "Library", "item": "https://ajew.org/reader" },
-    { "@type": "ListItem", "position": 2, "name": "Anava (Humility)", "item": `https://ajew.org/reader#breiter-seder-hayom` },
+    { "@type": "ListItem", "position": 2, "name": "Seder HaYom - R' Yitzchak Breiter", "item": `https://ajew.org/reader#breiter-seder-hayom` },
     { "@type": "ListItem", "position": 3, "name": torahData.hebrewTitle || torahData.title }
   ]
 }) : '';
@@ -84,7 +84,7 @@ const breadcrumbData = torahData ? JSON.stringify({
       <div class="reader-breadcrumb">
         <a href="/reader">Reader</a>
         <span>&rsaquo;</span>
-        <a href="/reader">Anava (Humility)</a>
+        <a href="/reader">Seder HaYom - R' Yitzchak Breiter</a>
         <span>&rsaquo;</span>
         {torahData.hebrewTitle || torahData.title}
       </div>
@@ -138,7 +138,7 @@ const breadcrumbData = torahData ? JSON.stringify({
         {torahData.hebrewTitle && <div class="hebrew-title">{torahData.hebrewTitle}</div>}
         <h1>{torahData.title}</h1>
         <p style="color: var(--reader-text-secondary); font-size: 0.9em; font-family: 'Open Sans', sans-serif;">
-          ענווה / Anava (Humility)
+          ענווה / Seder HaYom - R' Yitzchak Breiter
         </p>
       </div>
 
