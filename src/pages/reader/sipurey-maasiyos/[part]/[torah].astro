@@ -92,6 +92,78 @@ const breadcrumbData = torahData ? JSON.stringify({
         {torahData.hebrewTitle || torahData.title}
       </div>
 
+      <!-- Kol HaTzadik Audio Player -->
+      <div class="kol-hatzadik-player" id="kol-hatzadik-player" style="display:none;">
+        <div style="background: var(--reader-bg-secondary, #f8f5f0); border: 1px solid var(--reader-border, #ddd); border-radius: 8px; padding: 12px 16px; margin: 0 auto 12px auto; max-width: 700px;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+            <span style="font-size: 1.2em;">&#x1F3A7;</span>
+            <strong style="font-family: 'Open Sans', sans-serif; font-size: 0.95em; color: var(--reader-text, #333);">Listen to Kol HaTzadik Reading</strong>
+          </div>
+          <audio id="kol-hatzadik-audio" controls preload="none" style="width: 100%; border-radius: 4px;">
+            Your browser does not support audio playback.
+          </audio>
+          <div id="kol-hatzadik-note" style="font-size: 0.8em; color: var(--reader-text-secondary, #888); margin-top: 4px; font-family: 'Open Sans', sans-serif;"></div>
+        </div>
+      </div>
+      <script is:inline>
+      (function() {
+        var R2_BASE = 'https://pub-81b61511a43c43218e37bc24c20a7a22.r2.dev/kol-hatzadik/';
+
+        // Sipurey Maasiyos: 15 files, 14 stories
+        // Most stories get 1 file, longer stories get multiple
+        // [fileNumber, startTorah, endTorah]
+        var SIPUREY_MAP = [
+          [1, 1, 1],
+          [2, 2, 2],
+          [3, 3, 3],
+          [4, 4, 4],
+          [5, 5, 5],
+          [6, 6, 6],
+          [7, 7, 7],
+          [8, 8, 8],
+          [9, 9, 9],
+          [10, 10, 10],
+          [11, 11, 11],
+          [12, 12, 12],
+          [13, 13, 13],
+          [14, 14, 14],
+          [15, 14, 14]
+        ];
+
+        var pathParts = window.location.pathname.split('/');
+        var partIdx = pathParts.indexOf('sipurey-maasiyos');
+        if (partIdx === -1) return;
+        var torahSlug = pathParts[partIdx + 2];
+        var torahNum = parseInt(torahSlug);
+        if (isNaN(torahNum)) return;
+
+        // Simple mapping: story 1-14 get file 01-14, file 15 is also for story 14 (continuation)
+        var fileNum = null;
+        if (torahNum >= 1 && torahNum <= 13) {
+          fileNum = torahNum;
+        } else if (torahNum === 14) {
+          fileNum = 14; // files 14 and 15 both cover story 14
+        }
+        if (fileNum === null) return;
+
+        var fileStr = String(fileNum);
+        while (fileStr.length < 2) fileStr = '0' + fileStr;
+        var fileName = 'kol-hatzadik-sipuray-maaseyos-' + fileStr + '.mp3';
+        var audioUrl = R2_BASE + fileName;
+
+        var player = document.getElementById('kol-hatzadik-player');
+        var audio = document.getElementById('kol-hatzadik-audio');
+        var note = document.getElementById('kol-hatzadik-note');
+
+        audio.src = audioUrl;
+        player.style.display = 'block';
+
+        if (torahNum === 14) {
+          note.textContent = 'This story has 2 audio parts (files 14 & 15)';
+        }
+      })();
+      </script>
+
       <div class="reader-toolbar">
         <div class="reader-toolbar-group">
           <button class="reader-btn" data-mode="hebrew">Hebrew</button>

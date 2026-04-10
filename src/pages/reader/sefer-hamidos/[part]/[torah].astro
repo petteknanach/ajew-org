@@ -89,6 +89,80 @@ const breadcrumbData = torahData ? JSON.stringify({
         {torahData.hebrewTitle || torahData.title}
       </div>
 
+      <!-- Kol HaTzadik Audio Player -->
+      <div class="kol-hatzadik-player" id="kol-hatzadik-player" style="display:none;">
+        <div style="background: var(--reader-bg-secondary, #f8f5f0); border: 1px solid var(--reader-border, #ddd); border-radius: 8px; padding: 12px 16px; margin: 0 auto 12px auto; max-width: 700px;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+            <span style="font-size: 1.2em;">&#x1F3A7;</span>
+            <strong style="font-family: 'Open Sans', sans-serif; font-size: 0.95em; color: var(--reader-text, #333);">Listen to Kol HaTzadik Reading</strong>
+          </div>
+          <audio id="kol-hatzadik-audio" controls preload="none" style="width: 100%; border-radius: 4px;">
+            Your browser does not support audio playback.
+          </audio>
+          <div id="kol-hatzadik-note" style="font-size: 0.8em; color: var(--reader-text-secondary, #888); margin-top: 4px; font-family: 'Open Sans', sans-serif;"></div>
+        </div>
+      </div>
+      <script is:inline>
+      (function() {
+        var R2_BASE = 'https://pub-81b61511a43c43218e37bc24c20a7a22.r2.dev/kol-hatzadik/';
+
+        // Sefer HaMidos: 13 files, 108 topics
+        // [fileNumber, startTorah, endTorah]
+        var HAMIDOS_MAP = [
+          [1, 1, 9],
+          [2, 10, 17],
+          [3, 18, 25],
+          [4, 26, 34],
+          [5, 35, 42],
+          [6, 43, 50],
+          [7, 51, 58],
+          [8, 59, 67],
+          [9, 68, 75],
+          [10, 76, 83],
+          [11, 84, 92],
+          [12, 93, 100],
+          [13, 101, 108]
+        ];
+
+        var pathParts = window.location.pathname.split('/');
+        var partIdx = pathParts.indexOf('sefer-hamidos');
+        if (partIdx === -1) return;
+        var torahSlug = pathParts[partIdx + 2];
+        var torahNum = parseInt(torahSlug);
+        if (isNaN(torahNum)) return;
+
+        var fileNum = null;
+        var coversMultiple = false;
+        for (var i = 0; i < HAMIDOS_MAP.length; i++) {
+          if (torahNum >= HAMIDOS_MAP[i][1] && torahNum <= HAMIDOS_MAP[i][2]) {
+            fileNum = HAMIDOS_MAP[i][0];
+            coversMultiple = (HAMIDOS_MAP[i][2] - HAMIDOS_MAP[i][1]) > 0;
+            break;
+          }
+        }
+        if (fileNum === null) return;
+
+        var fileStr = String(fileNum);
+        while (fileStr.length < 2) fileStr = '0' + fileStr;
+        var fileName = 'kol-hatzadik-sefer-hamidos-' + fileStr + '.mp3';
+        var audioUrl = R2_BASE + fileName;
+
+        var player = document.getElementById('kol-hatzadik-player');
+        var audio = document.getElementById('kol-hatzadik-audio');
+        var note = document.getElementById('kol-hatzadik-note');
+
+        audio.src = audioUrl;
+        player.style.display = 'block';
+
+        if (coversMultiple) {
+          var start = HAMIDOS_MAP.filter(function(m) { return m[0] === fileNum; })[0];
+          if (start) {
+            note.textContent = 'This recording covers Topics ' + start[1] + '\u2013' + start[2];
+          }
+        }
+      })();
+      </script>
+
       <div class="reader-toolbar">
         <div class="reader-toolbar-group">
           <button class="reader-btn" data-mode="hebrew">Hebrew</button>
