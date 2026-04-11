@@ -12,6 +12,9 @@ export function getStaticPaths() {
   for (let torah = 1; torah <= 150; torah++) {
     paths.push({ params: { part: '2', torah: String(torah) } });
   }
+  for (let torah = 1; torah <= 460; torah++) {
+    paths.push({ params: { part: '3', torah: String(torah) } });
+  }
   return paths;
 }
 
