@@ -190,7 +190,8 @@ const structuredData = torahData ? JSON.stringify({
       </div>
 
       <div class="reader-content mode-hebrew">
-        {torahData.segments.map((seg: any) => (
+        <div class="reader-content-original">
+{torahData.segments.map((seg: any) => (
           <div class="reader-segment-pair" id={`seg-${seg.index}`}>
             {seg.verse && (
               <div class="reader-verse-header" style="text-align: center; padding: 1em 0 0.5em; font-family: 'Open Sans', sans-serif; color: var(--reader-text-secondary); font-size: 0.85em; border-top: 1px solid var(--reader-border);">
@@ -208,6 +209,23 @@ const structuredData = torahData ? JSON.stringify({
             </div>
           </div>
         ))}
+        </div>
+        {torahData.aligned_segments && (
+          <div class="reader-content-aligned" style="display:none;">
+            {torahData.aligned_segments.map((seg) => (
+              <div class={`reader-segment-pair ${seg.type === 'note' ? 'segment-note' : ''}`} id={`aligned-${seg.index}`}>
+                <div class="reader-segment segment-he" data-index={String(seg.index)}>
+                  <span class="segment-number">{seg.index}</span>
+                  <p>{seg.he || '\u00A0'}</p>
+                </div>
+                <div class={`reader-segment segment-en ${!seg.en ? 'empty-translation' : ''}`} data-index={String(seg.index)}>
+                  <span class="segment-number">{seg.index}</span>
+                  <p>{seg.en || '\u00A0'}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div class="reader-nav">
