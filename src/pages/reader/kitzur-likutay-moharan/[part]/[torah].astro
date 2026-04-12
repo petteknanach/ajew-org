@@ -159,7 +159,6 @@ const breadcrumbData = torahData ? JSON.stringify({
       </div>
 
       <div class="reader-content mode-hebrew">
-        <div class="reader-content-original">
         {torahData.segments.map((seg) => (
           <div class="reader-segment-pair" id={`seg-${seg.index}`}>
             <div class="reader-segment segment-he" data-index={String(seg.index)}>
@@ -169,26 +168,7 @@ const breadcrumbData = torahData ? JSON.stringify({
             <div class={`reader-segment segment-en ${!seg.en ? 'empty-translation' : ''}`} data-index={String(seg.index)}>
               <span class="segment-number">{seg.index}</span>
               <p>{seg.en || 'Translation not yet available'}</p>
-        
-        </div>
-        {torahData.aligned_segments && (
-          <div class="reader-content-aligned" style="display:none;">
-            {torahData.aligned_segments.map((seg) => (
-              <div class={`reader-segment-pair ${seg.type === 'note' ? 'segment-note' : ''}`} id={`aligned-${seg.index}`}>
-                <div class="reader-segment segment-he" data-index={String(seg.index)}>
-                  <span class="segment-number">{seg.index}</span>
-                  <p>{seg.he || ' '}</p>
-                </div>
-                <div class={`reader-segment segment-en ${!seg.en ? 'empty-translation' : ''}`} data-index={String(seg.index)}>
-                  <span class="segment-number">{seg.index}</span>
-                  <p>{seg.en || ' '}</p>
-                </div>
-              </div>
-            ))}
-            <div id="aligned-segments-data"></div>
-          </div>
-        )}
-          </div>
+            </div>
           </div>
         ))}
       </div>
