@@ -217,6 +217,12 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
     .torah-list .torah-num {
       font-weight: 600;
     }
+    .torah-list .torah-he {
+      font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif);
+      font-weight: 400;
+      font-size: 0.9em;
+      color: #666;
+    }
 
     /* Section dividers within a volume */
     .section-divider {
@@ -698,7 +704,7 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
                           {(partData.index.torahs || partData.index.items || []).map(t => (
                             <li>
                               <a href={t.url || `/reader/${book.id}/${partData.part}/${t.number}`}>
-                                <span class="torah-num">{t.title || t.hebrewTitle || `[${t.number}]`}</span>
+                                <span class="torah-num">{t.title || `[${t.number}]`}{t.hebrewTitle ? <span class="torah-he" dir="rtl"> — {t.hebrewTitle}</span> : ''}</span>
                               </a>
                             </li>
                           ))}
@@ -722,7 +728,7 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
                           {(partData.index.torahs || partData.index.items || []).map(t => (
                             <li>
                               <a href={t.url || `/reader/${book.id}/${partData.part}/${t.number}`}>
-                                <span class="torah-num">{t.title || t.hebrewTitle || `[${t.number}]`}</span>
+                                <span class="torah-num">{t.title || `[${t.number}]`}{t.hebrewTitle ? <span class="torah-he" dir="rtl"> — {t.hebrewTitle}</span> : ''}</span>
                               </a>
                             </li>
                           ))}
