@@ -727,13 +727,17 @@ function processLetterV2(letterNum) {
   return true;
 }
 
-// Main
-console.log('Building aligned segments for Ebay HaNachal Part 1, Letters 1-30...\n');
+// Main - process range from command line args, default 1-121
+const args = process.argv.slice(2);
+const startLetter = args[0] ? parseInt(args[0], 10) : 1;
+const endLetter = args[1] ? parseInt(args[1], 10) : 121;
+
+console.log(`Building aligned segments for Ebay HaNachal Part 1, Letters ${startLetter}-${endLetter}...\n`);
 
 let processed = 0;
 let skipped = 0;
 
-for (let i = 1; i <= 30; i++) {
+for (let i = startLetter; i <= endLetter; i++) {
   try {
     const result = processLetterV2(i);
     if (result) processed++;
