@@ -86,9 +86,13 @@
   // --- Font Controls ---
   var FONT_OPTIONS = {
     'frank': { label: 'Frank Ruhl', family: "'Frank Ruhl Libre', serif" },
+    'taamey': { label: 'Taamey Frank', family: "'Taamey Frank CLM', serif" },
+    'keter': { label: 'Keter YG', family: "'Keter YG', serif" },
     'david': { label: 'David Libre', family: "'David Libre', serif" },
     'noto': { label: 'Noto Serif', family: "'Noto Serif Hebrew', serif" },
     'suez': { label: 'Suez One', family: "'Suez One', serif" },
+    'drugulin': { label: 'Drugulin', family: "'Drugulin CLM', serif" },
+    'stam': { label: 'Shlomo Stam', family: "'Shlomo Stam', serif" },
     'heebo': { label: 'Heebo', family: "'Heebo', sans-serif" },
     'assistant': { label: 'Assistant', family: "'Assistant', sans-serif" },
     'rubik': { label: 'Rubik', family: "'Rubik', sans-serif" },
