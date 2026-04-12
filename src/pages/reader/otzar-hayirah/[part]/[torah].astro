@@ -20,7 +20,7 @@ let torahData = null;
 let error = null;
 
 try {
-  const filePath = path.join(process.cwd(), `public/reader/otzar-hayirah/torah-${torahNum}.json`);
+  const filePath = path.join(process.cwd(), `public/reader/otzar-hayirah/part-${partNum}/torah-${torahNum}.json`);
   const raw = fs.readFileSync(filePath, 'utf8');
   torahData = JSON.parse(raw);
 } catch (e) {
