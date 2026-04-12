@@ -12,7 +12,7 @@
     mode: 'hebrew',       // 'hebrew' | 'english' | 'both'
     nikud: false,         // Show nikud (vowel marks) - off by default
     fontSize: 18,
-    fontFamily: "'Frank Ruhl Libre', serif",
+    fontFamily: "frank",
     theme: 'day',         // 'day' | 'sepia' | 'night'
     fullscreen: false,
     tocOpen: false,
@@ -84,6 +84,23 @@
   }
 
   // --- Font Controls ---
+  var FONT_OPTIONS = {
+    'frank': { label: 'Frank Ruhl', family: "'Frank Ruhl Libre', serif" },
+    'heebo': { label: 'Heebo', family: "'Heebo', sans-serif" },
+    'assistant': { label: 'Assistant', family: "'Assistant', sans-serif" },
+    'rubik': { label: 'Rubik', family: "'Rubik', sans-serif" },
+  };
+
+  function applyFontFamily() {
+    var container = document.querySelector('.reader-container');
+    if (!container) return;
+    var opt = FONT_OPTIONS[state.fontFamily] || FONT_OPTIONS['frank'];
+    container.style.setProperty('--reader-font-family', opt.family);
+    // Update selector if exists
+    var sel = document.getElementById('font-family-select');
+    if (sel) sel.value = state.fontFamily;
+  }
+
   function applyFontSize() {
     const container = document.querySelector('.reader-container');
     if (container) {
@@ -387,6 +404,7 @@
     applyMode();
     applyNikud();
     applyFontSize();
+    applyFontFamily();
     applyTheme();
   }
 
@@ -711,6 +729,25 @@
         group.appendChild(presetWrap);
       }
     }
+
+    // Font family selector - inject dynamically
+    var fontGroup = slider ? slider.closest('.reader-toolbar-group') : null;
+    if (fontGroup) {
+      var fontSelect = document.createElement('select');
+      fontSelect.id = 'font-family-select';
+      fontSelect.style.cssText = 'font-size:0.75em; padding:2px 4px; border-radius:4px; border:1px solid var(--reader-border,#ccc); background:var(--reader-bg,#fff); color:var(--reader-text,#333); cursor:pointer; margin-left:8px;';
+      fontSelect.title = 'Hebrew Font / גופן עברי';
+      Object.keys(FONT_OPTIONS).forEach(function(key) {
+        var opt = document.createElement('option');
+        opt.value = key;
+        opt.textContent = FONT_OPTIONS[key].label;
+        fontSelect.appendChild(opt);
+      });
+      fontSelect.value = state.fontFamily || 'frank';
+      fontSelect.addEventListener('change', function() { setState('fontFamily', fontSelect.value); });
+      fontGroup.appendChild(fontSelect);
+    }
+    applyFontFamily();
 
     // Theme buttons
     document.querySelectorAll('[data-theme-btn]').forEach(btn => {
