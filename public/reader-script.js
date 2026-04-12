@@ -59,6 +59,24 @@
     content.classList.remove('mode-hebrew', 'mode-english', 'mode-both');
     content.classList.add('mode-' + state.mode);
 
+    // Three-view system: swap content for "both" mode if aligned_segments available
+    var alignedEl = document.getElementById('aligned-segments-data');
+    var originalContent = document.querySelector('.reader-content-original');
+    var alignedContent = document.querySelector('.reader-content-aligned');
+
+    if (alignedEl && alignedContent) {
+      if (state.mode === 'both') {
+        // Show aligned version, hide original
+        if (originalContent) originalContent.style.display = 'none';
+        alignedContent.style.display = 'block';
+        content.classList.add('mode-both');
+      } else {
+        // Show original, hide aligned
+        if (originalContent) originalContent.style.display = 'block';
+        alignedContent.style.display = 'none';
+      }
+    }
+
     // Update buttons
     document.querySelectorAll('[data-mode]').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.mode === state.mode);
