@@ -18,7 +18,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const BASE_DIR = path.join(__dirname, '..', 'public', 'reader', 'ebay-hanachal', 'part-1');
+const partNum = process.argv[4] || '1';
+const BASE_DIR = path.join(__dirname, '..', 'public', 'reader', 'ebay-hanachal', `part-${partNum}`);
 
 /**
  * Split English text into paragraphs and separate out source references
