@@ -731,7 +731,7 @@
     }
 
     // Font family selector - inject dynamically
-    var fontGroup = slider ? slider.closest('.reader-toolbar-group') : null;
+    var fontGroup = slider ? slider.closest('.reader-toolbar-group') : document.querySelector('.reader-toolbar-group');
     if (fontGroup) {
       var fontSelect = document.createElement('select');
       fontSelect.id = 'font-family-select';

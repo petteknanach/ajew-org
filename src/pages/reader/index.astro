@@ -691,14 +691,14 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
                       <div style={book.parts.length > 1 ? "margin-bottom: 12px;" : ""}>
                         {book.parts.length > 1 && (
                           <h4 style="font-size: 0.9em; color: #6b5a42; margin: 8px 0 4px; font-style: italic;">
-                            {partData.hebrewTitle || partData.title} ({partData.totalTorahs})
+                            {partData.title || partData.hebrewTitle} ({partData.totalTorahs})
                           </h4>
                         )}
                         <ul class="torah-list">
                           {(partData.index.torahs || partData.index.items || []).map(t => (
                             <li>
                               <a href={t.url || `/reader/${book.id}/${partData.part}/${t.number}`}>
-                                <span class="torah-num">{t.hebrewTitle || t.title || `[${t.number}]`}</span>
+                                <span class="torah-num">{t.title || t.hebrewTitle || `[${t.number}]`}</span>
                               </a>
                             </li>
                           ))}
@@ -715,14 +715,14 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
                       <div style={book.parts.length > 1 ? "margin-bottom: 12px;" : ""}>
                         {book.parts.length > 1 && (
                           <h4 style="font-size: 0.9em; color: #6b5a42; margin: 8px 0 4px; font-style: italic;">
-                            {partData.hebrewTitle || partData.title} ({partData.totalTorahs})
+                            {partData.title || partData.hebrewTitle} ({partData.totalTorahs})
                           </h4>
                         )}
                         <ul class="torah-list">
                           {(partData.index.torahs || partData.index.items || []).map(t => (
                             <li>
                               <a href={t.url || `/reader/${book.id}/${partData.part}/${t.number}`}>
-                                <span class="torah-num">{t.hebrewTitle || t.title || `[${t.number}]`}</span>
+                                <span class="torah-num">{t.title || t.hebrewTitle || `[${t.number}]`}</span>
                               </a>
                             </li>
                           ))}
