@@ -6,7 +6,7 @@ import path from 'node:path';
 
 export function getStaticPaths() {
   const paths = [];
-  for (let torah = 1; torah <= 36; torah++) {
+  for (let torah = 1; torah <= 115; torah++) {
     paths.push({ params: { part: '1', torah: String(torah) } });
   }
   return paths;
