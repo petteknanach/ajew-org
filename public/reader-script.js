@@ -2194,13 +2194,142 @@
     if (btn) btn.classList.toggle('active', commentaryState.open);
   }
 
+  // --- Kol HaTzadik Audio Player ---
+  var KHT_AUDIO_MAP = {
+    'likutay-moharan':       { ia: 'kol-hatzadik-likutay-moharan-1', parts: { 1: 'kol-hatzadik-likutay-moharan-1', 2: 'kol-hatzadik-likutay-moharan-2' } },
+    'kitzur-likutay-moharan': { ia: 'kol-hatzadik-kitzur-likutay-moharan' },
+    'sichos-haran':          { ia: 'kol-hatzadik-sichos-haran' },
+    'sefer-hamidos':         { ia: 'kol-hatzadik-sefer-hamidos' },
+    'sipurey-maasiyos':      { ia: 'kol-hatzadik-sipuray-maaseyos' },
+    'shivchay-haran':        { ia: 'kol-hatzadik-shivchay-haran' },
+    'chayey-moharan':        { ia: 'kol-hatzadik-chayay-moharan' },
+    'likutay-tefilos':       { ia: 'kol-hatzadik-likutay-tefilos' },
+    'alim-litrufa':          { ia: 'kol-hatzadik-ulim-litrufa' },
+    'meshivas-nefesh':       { ia: 'kol-hatzadik-meshivas-nefesh' },
+    'hashtatfchus-hanefesh': { ia: 'kol-hatzadik-hishtafchus-hanefesh' },
+    'kokhvei-or':            { ia: 'kol-hatzadik-koachvay-or' },
+    'likutay-halachos':      { ia: 'kol-hatzadik-likutay-halachos' },
+    'likutay-eitzos':        { ia: 'kol-hatzadik-melody-likutay-aitzos' },
+    'yemei-moharnat':        { ia: 'kol-hatzadik-yimay-moharnat' },
+    'yemei-hatlaos':         { ia: 'kol-hatzadik-yimay-hatlaos' },
+    'shemos-hatzadikim':     { ia: 'kol-hatzadik-shaimos-hatzadikim' },
+  };
+
+  function setupAudioPlayer() {
+    var container = document.querySelector('.reader-container');
+    if (!container) return;
+
+    // Extract book ID from URL: /reader/BOOK-ID/part/torah
+    var pathParts = window.location.pathname.replace(/^\/reader\//, '').split('/');
+    var bookId = pathParts[0];
+    var partNum = parseInt(pathParts[1]) || 1;
+    var torahNum = parseInt(pathParts[2]) || 1;
+
+    var audioConfig = KHT_AUDIO_MAP[bookId];
+    if (!audioConfig) return; // No audio for this book
+
+    // Determine the IA item ID
+    var iaItem = audioConfig.ia;
+    if (audioConfig.parts && audioConfig.parts[partNum]) {
+      iaItem = audioConfig.parts[partNum];
+    }
+
+    // Track filename: track-NNNN.mp3
+    var trackNum = String(torahNum).padStart(4, '0');
+    var audioUrl = 'https://archive.org/download/' + iaItem + '/track-' + trackNum + '.mp3';
+
+    // Create player bar
+    var playerBar = document.createElement('div');
+    playerBar.className = 'kht-audio-player';
+    playerBar.innerHTML =
+      '<div class="kht-player-inner">' +
+        '<button class="kht-play-btn" title="Play Kol HaTzadik">&#9654;</button>' +
+        '<div class="kht-info">' +
+          '<span class="kht-label">&#127911; Kol HaTzadik</span>' +
+          '<span class="kht-time">0:00 / 0:00</span>' +
+        '</div>' +
+        '<input type="range" class="kht-progress" min="0" max="100" value="0" />' +
+        '<button class="kht-speed-btn" title="Playback speed">1x</button>' +
+      '</div>';
+
+    // Insert after the toolbar
+    var toolbar = document.querySelector('.reader-toolbar');
+    if (toolbar) {
+      toolbar.parentNode.insertBefore(playerBar, toolbar.nextSibling);
+    } else {
+      container.insertBefore(playerBar, container.firstChild);
+    }
+
+    // Audio element
+    var audio = new Audio();
+    audio.preload = 'metadata';
+    audio.src = audioUrl;
+
+    var playBtn = playerBar.querySelector('.kht-play-btn');
+    var progress = playerBar.querySelector('.kht-progress');
+    var timeDisplay = playerBar.querySelector('.kht-time');
+    var speedBtn = playerBar.querySelector('.kht-speed-btn');
+    var speeds = [1, 1.25, 1.5, 0.75];
+    var speedIdx = 0;
+
+    function formatTime(s) {
+      if (isNaN(s)) return '0:00';
+      var m = Math.floor(s / 60);
+      var sec = Math.floor(s % 60);
+      return m + ':' + (sec < 10 ? '0' : '') + sec;
+    }
+
+    // Check if audio exists (404 = no recording for this page)
+    audio.addEventListener('error', function() {
+      playerBar.style.display = 'none';
+    });
+
+    audio.addEventListener('loadedmetadata', function() {
+      progress.max = Math.floor(audio.duration);
+      timeDisplay.textContent = '0:00 / ' + formatTime(audio.duration);
+    });
+
+    audio.addEventListener('timeupdate', function() {
+      progress.value = Math.floor(audio.currentTime);
+      timeDisplay.textContent = formatTime(audio.currentTime) + ' / ' + formatTime(audio.duration);
+    });
+
+    audio.addEventListener('ended', function() {
+      playBtn.textContent = '\u25B6';
+      playBtn.classList.remove('playing');
+    });
+
+    playBtn.addEventListener('click', function() {
+      if (audio.paused) {
+        audio.play();
+        playBtn.textContent = '\u275A\u275A';
+        playBtn.classList.add('playing');
+      } else {
+        audio.pause();
+        playBtn.textContent = '\u25B6';
+        playBtn.classList.remove('playing');
+      }
+    });
+
+    progress.addEventListener('input', function() {
+      audio.currentTime = progress.value;
+    });
+
+    speedBtn.addEventListener('click', function() {
+      speedIdx = (speedIdx + 1) % speeds.length;
+      audio.playbackRate = speeds[speedIdx];
+      speedBtn.textContent = speeds[speedIdx] + 'x';
+    });
+  }
+
   // Run on DOM ready
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => { init(); setupMySefer(); setupCommentaryPanel(); setTimeout(addCrossReferenceLinks, 500); });
+    document.addEventListener('DOMContentLoaded', () => { init(); setupMySefer(); setupCommentaryPanel(); setupAudioPlayer(); setTimeout(addCrossReferenceLinks, 500); });
   } else {
     init();
     setupMySefer();
     setupCommentaryPanel();
+    setupAudioPlayer();
     setTimeout(addCrossReferenceLinks, 500);
   }
 })();
