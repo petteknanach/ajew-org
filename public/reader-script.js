@@ -1286,33 +1286,56 @@
 
   // --- Share ---
   function shareCurrentPage() {
-    const title = document.title.replace(' | A Jew', '');
-    const url = window.location.href;
+    var title = document.title.replace(' | A Jew', '');
+    var url = window.location.href;
+    var text = title + ' - ' + url;
 
-    if (navigator.share) {
-      navigator.share({ title, url }).catch(() => {});
-    } else {
-      navigator.clipboard.writeText(url).then(() => {
-        const btn = document.getElementById('btn-share');
-        if (btn) {
-          btn.textContent = 'Copied!';
-          setTimeout(() => { btn.textContent = 'Share'; }, 2000);
-        }
-      }).catch(() => {
-        // Fallback
-        const input = document.createElement('input');
-        input.value = url;
-        document.body.appendChild(input);
-        input.select();
-        document.execCommand('copy');
-        document.body.removeChild(input);
-        const btn = document.getElementById('btn-share');
-        if (btn) {
-          btn.textContent = 'Copied!';
-          setTimeout(() => { btn.textContent = 'Share'; }, 2000);
-        }
+    // Check if share dropdown already exists
+    var existing = document.querySelector('.share-dropdown');
+    if (existing) { existing.remove(); return; }
+
+    var dropdown = document.createElement('div');
+    dropdown.className = 'share-dropdown';
+    dropdown.innerHTML =
+      '<a href="https://wa.me/?text=' + encodeURIComponent(text + '\n\nNa Nach Nachma Nachman Meuman') + '" target="_blank" rel="noopener" class="share-option share-whatsapp">WhatsApp</a>' +
+      '<a href="https://t.me/share/url?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent(title) + '" target="_blank" rel="noopener" class="share-option share-telegram">Telegram</a>' +
+      '<a href="https://twitter.com/intent/tweet?text=' + encodeURIComponent(title) + '&url=' + encodeURIComponent(url) + '" target="_blank" rel="noopener" class="share-option share-twitter">X / Twitter</a>' +
+      '<a href="https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url) + '" target="_blank" rel="noopener" class="share-option share-facebook">Facebook</a>' +
+      '<button class="share-option share-copy">Copy Link</button>' +
+      (navigator.share ? '<button class="share-option share-native">More...</button>' : '');
+
+    var btn = document.getElementById('btn-share');
+    if (btn) {
+      btn.parentNode.style.position = 'relative';
+      btn.parentNode.appendChild(dropdown);
+    }
+
+    // Copy link
+    dropdown.querySelector('.share-copy').addEventListener('click', function() {
+      navigator.clipboard.writeText(url).then(function() {
+        dropdown.querySelector('.share-copy').textContent = 'Copied!';
+        setTimeout(function() { dropdown.remove(); }, 1500);
+      });
+    });
+
+    // Native share
+    var nativeBtn = dropdown.querySelector('.share-native');
+    if (nativeBtn) {
+      nativeBtn.addEventListener('click', function() {
+        navigator.share({ title: title, url: url }).catch(function() {});
+        dropdown.remove();
       });
     }
+
+    // Close on click outside
+    setTimeout(function() {
+      document.addEventListener('click', function closeShare(e) {
+        if (!dropdown.contains(e.target) && e.target !== btn) {
+          dropdown.remove();
+          document.removeEventListener('click', closeShare);
+        }
+      });
+    }, 100);
   }
 
   // --- Source Reference Popups ---
@@ -2328,14 +2351,44 @@
     });
   }
 
+  // --- Segment Permalink Buttons ---
+  function setupSegmentLinks() {
+    document.querySelectorAll('.reader-segment-pair[id]').forEach(function(pair) {
+      var btn = document.createElement('button');
+      btn.className = 'seg-link-btn';
+      btn.textContent = '\u{1F517}';
+      btn.title = 'Copy link to this section';
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var url = window.location.origin + window.location.pathname + '#' + pair.id;
+        navigator.clipboard.writeText(url).then(function() {
+          btn.textContent = '\u2713';
+          btn.classList.add('copied');
+          setTimeout(function() { btn.textContent = '\u{1F517}'; btn.classList.remove('copied'); }, 2000);
+        });
+      });
+      pair.appendChild(btn);
+    });
+    // Scroll to fragment on load
+    if (window.location.hash) {
+      var target = document.querySelector(window.location.hash);
+      if (target) {
+        setTimeout(function() { target.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 300);
+        target.style.outline = '2px solid #ffd54f';
+        setTimeout(function() { target.style.outline = ''; }, 3000);
+      }
+    }
+  }
+
   // Run on DOM ready
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => { init(); setupMySefer(); setupCommentaryPanel(); setupAudioPlayer(); setTimeout(addCrossReferenceLinks, 500); });
+    document.addEventListener('DOMContentLoaded', () => { init(); setupMySefer(); setupCommentaryPanel(); setupAudioPlayer(); setupSegmentLinks(); setTimeout(addCrossReferenceLinks, 500); });
   } else {
     init();
     setupMySefer();
     setupCommentaryPanel();
     setupAudioPlayer();
+    setupSegmentLinks();
     setTimeout(addCrossReferenceLinks, 500);
   }
 })();

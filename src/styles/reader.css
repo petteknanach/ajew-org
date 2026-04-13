@@ -1683,3 +1683,111 @@ a.cross-ref:hover {
     flex-basis: 100%;
   }
 }
+
+/* --- Segment Link Button (copy permalink on hover) --- */
+.reader-segment-pair {
+  position: relative;
+}
+.reader-segment-pair .seg-link-btn {
+  display: none;
+  position: absolute;
+  left: -28px;
+  top: 4px;
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  border: 1px solid #d0d0d0;
+  background: #fff;
+  color: #888;
+  font-size: 12px;
+  cursor: pointer;
+  line-height: 20px;
+  text-align: center;
+  z-index: 5;
+}
+.reader-segment-pair:hover .seg-link-btn {
+  display: block;
+}
+.seg-link-btn:hover {
+  background: #1a365d;
+  color: #fff;
+  border-color: #1a365d;
+}
+.seg-link-btn.copied {
+  background: #059669;
+  color: #fff;
+  border-color: #059669;
+}
+
+@media (max-width: 600px) {
+  .reader-segment-pair .seg-link-btn { display: none !important; }
+}
+
+/* --- Share Dropdown --- */
+.share-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: #fff;
+  border: 1px solid #d0d0d0;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  z-index: 1000;
+  min-width: 180px;
+  overflow: hidden;
+  animation: shareSlide 0.15s ease-out;
+}
+
+@keyframes shareSlide {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.share-option {
+  display: block;
+  width: 100%;
+  padding: 10px 16px;
+  text-align: left;
+  text-decoration: none;
+  color: #333;
+  font-size: 14px;
+  font-family: 'Open Sans', sans-serif;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.share-option:hover {
+  background: #f0f0f0;
+}
+
+.share-whatsapp:hover { background: #dcf8c6; color: #128c7e; }
+.share-telegram:hover { background: #e3f2fd; color: #0088cc; }
+.share-twitter:hover { background: #e8f5fd; color: #1da1f2; }
+.share-facebook:hover { background: #e8f0fe; color: #1877f2; }
+.share-copy:hover { background: #f5f0e0; color: #744210; }
+.share-native:hover { background: #f0ebe0; }
+
+.share-option + .share-option {
+  border-top: 1px solid #eee;
+}
+
+/* Dark mode share */
+[data-theme="night"] .share-dropdown,
+.reader-container[data-theme="night"] .share-dropdown {
+  background: #1e1e2e;
+  border-color: #3a3a5e;
+}
+[data-theme="night"] .share-option,
+.reader-container[data-theme="night"] .share-option {
+  color: #d0d0e0;
+}
+[data-theme="night"] .share-option:hover,
+.reader-container[data-theme="night"] .share-option:hover {
+  background: #2a2a3e;
+}
+[data-theme="night"] .share-option + .share-option,
+.reader-container[data-theme="night"] .share-option + .share-option {
+  border-top-color: #3a3a5e;
+}
