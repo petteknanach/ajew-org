@@ -1953,52 +1953,98 @@
     return { part: parseInt(m[1]), torah: parseInt(m[2]) };
   }
 
-  function getCommentarySources(part, torah) {
+  // Get the current book/part/torah from URL
+  function getReaderContext() {
+    var path = window.location.pathname.replace(/^\/reader\//, '').replace(/\/$/, '');
+    var parts = path.split('/');
+    if (parts.length < 3) return null;
+    return { bookId: parts[0], part: parseInt(parts[1]) || 1, torah: parseInt(parts[2]) || 1 };
+  }
+
+  function getCommentarySources(bookId, part, torah) {
     var sources = [];
 
-    // Kitzur LM (same numbering as LM)
-    sources.push({
-      id: 'kitzur',
-      label: 'Kitzur',
-      labelHe: 'קיצור ליקו"מ',
-      url: '/reader/kitzur-likutay-moharan/part-' + part + '/torah-' + torah + '.json',
-      readerUrl: '/reader/kitzur-likutay-moharan/' + part + '/' + torah,
-      type: 'summary'
-    });
-
-    // Parparos LeChochma (section = torah, Part 1 only, sections 1-135)
-    if (part === 1 && torah <= 135) {
+    if (bookId === 'likutay-moharan') {
+      // Kitzur LM (same numbering as LM)
       sources.push({
-        id: 'parparos',
-        label: 'Parparos',
-        labelHe: 'פרפראות לחכמה',
-        url: '/reader/parparos-lechochma/section-' + torah + '.json',
-        readerUrl: '/reader/parparos-lechochma/1/' + torah,
+        id: 'kitzur',
+        label: 'Kitzur',
+        labelHe: 'קיצור ליקו"מ',
+        url: '/reader/kitzur-likutay-moharan/part-' + part + '/torah-' + torah + '.json',
+        readerUrl: '/reader/kitzur-likutay-moharan/' + part + '/' + torah,
+        type: 'summary'
+      });
+
+      // Parparos LeChochma (section = torah, Part 1 only, sections 1-135)
+      if (part === 1 && torah <= 135) {
+        sources.push({
+          id: 'parparos',
+          label: 'Parparos',
+          labelHe: 'פרפראות לחכמה',
+          url: '/reader/parparos-lechochma/section-' + torah + '.json',
+          readerUrl: '/reader/parparos-lechochma/1/' + torah,
+          type: 'commentary'
+        });
+      }
+
+      // Biur HaLikutim (section = torah, Part 1 only, sections 1-77)
+      if (part === 1 && torah <= 77) {
+        sources.push({
+          id: 'biur',
+          label: 'Biur',
+          labelHe: 'ביאור הליקוטים',
+          url: '/reader/biur-halikutim/section-' + torah + '.json',
+          readerUrl: '/reader/biur-halikutim/1/' + torah,
+          type: 'explanation'
+        });
+      }
+
+      // Chochma UTvuna (section = torah, Part 1 only, sections 1-25)
+      if (part === 1 && torah <= 25) {
+        sources.push({
+          id: 'chochma',
+          label: 'Chochma',
+          labelHe: 'חכמה ותבונה',
+          url: '/reader/chochma-utvuna/section-' + torah + '.json',
+          readerUrl: '/reader/chochma-utvuna/1/' + torah,
+          type: 'explanation'
+        });
+      }
+    }
+
+    // Sipurey Maasiyos gets Rimzei HaMaasiyos
+    if (bookId === 'sipurey-maasiyos' && torah <= 13) {
+      sources.push({
+        id: 'rimzei',
+        label: 'Rimzei',
+        labelHe: 'רמזי המעשיות',
+        url: '/reader/rimzei-hamaasiyos/story-' + torah + '.json',
+        readerUrl: '/reader/rimzei-hamaasiyos/1/' + torah,
         type: 'commentary'
       });
     }
 
-    // Biur HaLikutim (section = torah, Part 1 only, sections 1-77)
-    if (part === 1 && torah <= 77) {
+    // Kitzur LM gets the full LM it summarizes
+    if (bookId === 'kitzur-likutay-moharan') {
       sources.push({
-        id: 'biur',
-        label: 'Biur',
-        labelHe: 'ביאור הליקוטים',
-        url: '/reader/biur-halikutim/section-' + torah + '.json',
-        readerUrl: '/reader/biur-halikutim/1/' + torah,
-        type: 'explanation'
+        id: 'lm-full',
+        label: 'Full LM',
+        labelHe: 'ליקו"מ המלא',
+        url: '/reader/likutay-moharan/part-' + part + '/torah-' + torah + '.json',
+        readerUrl: '/reader/likutay-moharan/' + part + '/' + torah,
+        type: 'source'
       });
     }
 
-    // Chochma UTvuna (section = torah, Part 1 only, sections 1-25)
-    if (part === 1 && torah <= 25) {
+    // Likutay Eitzos gets the full LM source for each eitza
+    if (bookId === 'likutay-eitzos') {
       sources.push({
-        id: 'chochma',
-        label: 'Chochma',
-        labelHe: 'חכמה ותבונה',
-        url: '/reader/chochma-utvuna/section-' + torah + '.json',
-        readerUrl: '/reader/chochma-utvuna/1/' + torah,
-        type: 'explanation'
+        id: 'lm-source',
+        label: 'Full LM',
+        labelHe: 'ליקו"מ המלא',
+        url: '/reader/likutay-moharan/part-1/torah-' + torah + '.json',
+        readerUrl: '/reader/likutay-moharan/1/' + torah,
+        type: 'source'
       });
     }
 
@@ -2006,9 +2052,25 @@
   }
 
   function setupCommentaryPanel() {
-    if (!isLmPage()) return;
-    var lm = getLmParts();
-    if (!lm) return;
+    var ctx = getReaderContext();
+    var sources = [];
+    var partNum, torahNum;
+
+    // LM pages use the existing isLmPage logic
+    if (isLmPage()) {
+      var lm = getLmParts();
+      if (!lm) return;
+      partNum = lm.part;
+      torahNum = lm.torah;
+      sources = getCommentarySources('likutay-moharan', partNum, torahNum);
+    } else if (ctx) {
+      // All other books
+      partNum = ctx.part;
+      torahNum = ctx.torah;
+      sources = getCommentarySources(ctx.bookId, partNum, torahNum);
+    }
+
+    if (sources.length === 0) return;
 
     // Add Commentary button to toolbar
     var toolbarGroups = document.querySelectorAll('.reader-toolbar-group');
@@ -2028,8 +2090,6 @@
     panel.className = 'commentary-panel';
     panel.id = 'commentary-panel';
 
-    var sources = getCommentarySources(lm.part, lm.torah);
-
     panel.innerHTML =
       '<div class="commentary-header">' +
         '<h3>Commentary</h3>' +
@@ -2045,7 +2105,7 @@
     panel.querySelector('.commentary-close').addEventListener('click', toggleCommentaryPanel);
 
     // Build tabs from available sources + chain-of-light data
-    buildCommentaryTabs(lm.part, lm.torah, sources);
+    buildCommentaryTabs(partNum, torahNum, sources);
   }
 
   function buildCommentaryTabs(part, torah, sources) {

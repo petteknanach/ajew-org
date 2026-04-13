@@ -24,6 +24,11 @@ import Layout from '../layouts/Layout.astro';
   .help-emergency h3 { color: #e65100; margin: 0 0 8px; }
   .help-emergency p { color: #555; font-size: 0.9em; margin: 4px 0; }
   .begin-card { text-align: center; border-left-color: #ffd54f; background: #faf6ee; }
+  .quick-actions { background: #fff3e0; border: 2px solid #ff9800; border-radius: 12px; padding: 20px 24px; margin-bottom: 16px; }
+  .quick-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(255,152,0,0.15); font-size: 0.95em; color: #333; }
+  .quick-item:last-child { border-bottom: none; }
+  .quick-icon { font-size: 1.3em; flex-shrink: 0; width: 28px; text-align: center; }
+  .quick-item a { color: #c62828; text-decoration: underline; }
 </style>
 
 <div class="help-page">
@@ -39,15 +44,47 @@ import Layout from '../layouts/Layout.astro';
 
   <h2 class="section-title">In the Heat of the Moment</h2>
 
+  <div class="quick-actions">
+    <h3 style="color: #c62828; margin: 0 0 12px; font-size: 1.1em;">Quick Actions &mdash; Do This Right Now:</h3>
+    <div class="quick-item" lang="he" dir="rtl">
+      <span class="quick-icon">&#x1F4B0;</span>
+      <span><strong>תן צדקה</strong> &mdash; Give charity immediately, even a small coin</span>
+    </div>
+    <div class="quick-item" lang="he" dir="rtl">
+      <span class="quick-icon">&#x1F56F;</span>
+      <span><strong>הדלק נר</strong> &mdash; Light a candle, preferably olive oil</span>
+    </div>
+    <div class="quick-item" lang="he" dir="rtl">
+      <span class="quick-icon">&#x1F4A7;</span>
+      <span><strong>טבול במקוה</strong> &mdash; Go to the mikveh</span>
+    </div>
+    <div class="quick-item">
+      <span class="quick-icon">&#x1F4D6;</span>
+      <span><strong>Say Tikkun HaKlali</strong> &mdash; <a href="/tikkun-klali" style="color: #c62828;">the 10 Psalms</a></span>
+    </div>
+    <div class="quick-item">
+      <span class="quick-icon">&#x1F3C3;</span>
+      <span><strong>Change your location</strong> &mdash; Go outside, walk, move physically</span>
+    </div>
+    <div class="quick-item">
+      <span class="quick-icon">&#x1F64F;</span>
+      <span><strong>Cry out to Hashem</strong> &mdash; Even one word: "Hashem, help me!"</span>
+    </div>
+    <div class="quick-item" lang="he" dir="rtl">
+      <span class="quick-icon">&#x2728;</span>
+      <span><strong>נ נח נחמ נחמן מאומן</strong> &mdash; Say it, sing it, scream it</span>
+    </div>
+  </div>
+
   <a href="/reader/likutay-nanach/5/2" class="help-card emergency-card">
     <h3>Likutay Nanach &mdash; Vol. 5, בעידנא דריתחא</h3>
     <div class="card-he" lang="he" dir="rtl">ליקוטי נ נח - בעידנא דריתחא</div>
-    <p>For someone in the heat of temptation right now. Words to hold onto when the struggle is fiercest.</p>
+    <p>Full teachings for someone in the heat of temptation. The sources and explanations behind the quick actions above.</p>
   </a>
 
   <a href="/reader/likutay-nanach/5/3" class="help-card emergency-card">
     <h3>Likutay Nanach &mdash; Vol. 5, More on Temptation</h3>
-    <p>Continuation of the teachings for overcoming desire in the moment.</p>
+    <p>Continuation &mdash; deeper teachings for overcoming desire.</p>
   </a>
 
   <a href="/reader/likutay-moharan/1/36" class="help-card">
