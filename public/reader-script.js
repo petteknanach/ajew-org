@@ -2465,15 +2465,48 @@
     }
   }
 
+  // --- Font Notification (show once) ---
+  function showFontNotification() {
+    var NOTIF_KEY = 'ajew-font-notif-shown';
+    if (localStorage.getItem(NOTIF_KEY)) return;
+    // Only show after 3rd visit
+    var visits = parseInt(localStorage.getItem('ajew-reader-visits') || '0') + 1;
+    localStorage.setItem('ajew-reader-visits', String(visits));
+    if (visits < 3) return;
+
+    var notif = document.createElement('div');
+    notif.className = 'font-notification';
+    notif.innerHTML =
+      '<strong>Did you know?</strong> You can choose from 11 different Hebrew fonts ' +
+      'for reading. Look for the font selector in the toolbar above. ' +
+      'Try <em>Taamey Frank</em> for a classic feel or <em>Keter YG</em> for elegance.' +
+      '<button class="dismiss-notif">Got it</button>';
+    document.body.appendChild(notif);
+
+    notif.querySelector('.dismiss-notif').addEventListener('click', function() {
+      notif.remove();
+      localStorage.setItem(NOTIF_KEY, '1');
+    });
+
+    // Auto-dismiss after 15 seconds
+    setTimeout(function() {
+      if (notif.parentNode) {
+        notif.remove();
+        localStorage.setItem(NOTIF_KEY, '1');
+      }
+    }, 15000);
+  }
+
   // Run on DOM ready
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => { init(); setupMySefer(); setupCommentaryPanel(); setupAudioPlayer(); setupSegmentLinks(); setTimeout(addCrossReferenceLinks, 500); });
+    document.addEventListener('DOMContentLoaded', () => { init(); setupMySefer(); setupCommentaryPanel(); setupAudioPlayer(); setupSegmentLinks(); showFontNotification(); setTimeout(addCrossReferenceLinks, 500); });
   } else {
     init();
     setupMySefer();
     setupCommentaryPanel();
     setupAudioPlayer();
     setupSegmentLinks();
+    showFontNotification();
     setTimeout(addCrossReferenceLinks, 500);
   }
 })();

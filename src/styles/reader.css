@@ -323,6 +323,58 @@
   text-align: justify;
 }
 
+/* English segments use EB Garamond for elegance */
+.segment-en p {
+  font-family: 'EB Garamond', 'Georgia', serif;
+  letter-spacing: 0.01em;
+}
+
+/* Decorative divider between book header and content */
+.reader-header::after {
+  content: '\2766  \2766  \2766';
+  display: block;
+  text-align: center;
+  color: var(--reader-text-secondary, #999);
+  font-size: 0.9em;
+  margin-top: 16px;
+  letter-spacing: 12px;
+  opacity: 0.5;
+}
+
+/* Font notification tooltip */
+.font-notification {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  background: var(--reader-bg, #fffdf7);
+  border: 1px solid var(--reader-border, #d1c8b0);
+  border-radius: 10px;
+  padding: 12px 16px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  z-index: 200;
+  max-width: 260px;
+  font-size: 0.82em;
+  font-family: 'Open Sans', sans-serif;
+  color: var(--reader-text, #333);
+  animation: fontNotifSlide 0.3s ease-out;
+}
+.font-notification strong { color: var(--reader-accent, #1a365d); }
+.font-notification .dismiss-notif {
+  display: block;
+  margin-top: 8px;
+  color: var(--reader-text-secondary);
+  cursor: pointer;
+  font-size: 0.9em;
+  text-align: right;
+  border: none;
+  background: none;
+  text-decoration: underline;
+}
+@keyframes fontNotifSlide {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 /* --- Side-by-side segment pairing --- */
 .reader-segment-pair {
   display: contents;
