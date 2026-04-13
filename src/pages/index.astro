@@ -75,6 +75,10 @@ import CompactYahrzeit from '../components/CompactYahrzeit.astro';
             <span class="btn-icon">🔢</span>
             <span class="btn-text" lang="he" dir="rtl">גימטריה</span>
           </a>
+          <a href="/start" class="btn btn-small btn-start" style="background: #059669; color: white; border-color: #059669;">
+            <span class="btn-icon">🌱</span>
+            <span class="btn-text">New Here?</span>
+          </a>
           <a href="/help-me" class="btn btn-small btn-help" style="background: #c62828; color: white; border-color: #c62828;">
             <span class="btn-icon">🆘</span>
             <span class="btn-text">Help</span>
@@ -92,14 +96,26 @@ import CompactYahrzeit from '../components/CompactYahrzeit.astro';
       </div>
       <script is:inline>
       (function() {
-        // Show Omer counter from day after Pesach through Shavuos
-        // 2026: April 2 (2nd night Pesach) through May 21 (Shavuos)
-        // General: mid-April through late May
+        // Dynamic Omer calculation using Gauss's Pesach algorithm
+        // Pesach falls on 15 Nisan; Omer starts 16 Nisan through 6 Sivan (50 days)
         var now = new Date();
-        var m = now.getMonth(); // 0-indexed
-        var d = now.getDate();
-        // Show from April 2 (m=3, d>=2) through May 22 (m=4, d<=22)
-        if ((m === 3 && d >= 2) || (m === 4 && d <= 22)) {
+        var year = now.getFullYear();
+
+        // Gauss's algorithm for Pesach date (approximate, works for most years)
+        var a = (12 * year + 17) % 19;
+        var b = year % 4;
+        var m = 32.044093161144 + 1.5542417966212 * a + b / 4.0 - 0.0031777940220923 * year;
+        var c = Math.floor((m + 3 * (year + 5) / 4.0 + 8.5) % 7);
+        var pesachDay = Math.floor(m);
+        // April adjustment
+        var pesachMonth = 2; // March (0-indexed)
+        if (pesachDay > 31) { pesachDay -= 31; pesachMonth = 3; } // April
+
+        var pesachDate = new Date(year, pesachMonth, pesachDay);
+        var omerStart = new Date(pesachDate.getTime() + 86400000); // day after Pesach
+        var shavuosEnd = new Date(pesachDate.getTime() + 51 * 86400000); // 50 days later + 1
+
+        if (now >= omerStart && now <= shavuosEnd) {
           var banner = document.getElementById('omerBanner');
           if (banner) banner.style.display = 'flex';
         }
