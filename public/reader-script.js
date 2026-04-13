@@ -1236,6 +1236,7 @@
     popup.innerHTML = `
       <button class="sel-btn" data-action="copy" title="Copy">Copy</button>
       <button class="sel-btn" data-action="share" title="Share">Share</button>
+      <button class="sel-btn" data-action="mysefer" title="Add to My Sefer">+ My Sefer</button>
     `;
     document.body.appendChild(popup);
 
@@ -1276,6 +1277,30 @@
         const full = text + '\n\n— ' + title + '\n' + window.location.href;
         navigator.clipboard.writeText(full).catch(() => {});
       }
+      popup.style.display = 'none';
+    });
+
+    // Add to My Sefer
+    popup.querySelector('[data-action="mysefer"]').addEventListener('click', () => {
+      const text = window.getSelection().toString();
+      const title = document.title.replace(' | A Jew', '');
+      const source = title + ' (' + window.location.pathname.split('/').pop() + ')';
+      // Save to My Sefer localStorage
+      try {
+        const SEFER_KEY = 'ajew-my-sefer';
+        const saved = JSON.parse(localStorage.getItem(SEFER_KEY) || '{"sections":[]}');
+        saved.sections.push({
+          id: 'sel-' + Date.now(),
+          title: source,
+          content: text,
+          source: window.location.href,
+          addedAt: new Date().toISOString()
+        });
+        localStorage.setItem(SEFER_KEY, JSON.stringify(saved));
+        const btn = popup.querySelector('[data-action="mysefer"]');
+        btn.textContent = 'Added!';
+        setTimeout(() => { btn.textContent = '+ My Sefer'; }, 2000);
+      } catch(e) {}
       popup.style.display = 'none';
     });
 
