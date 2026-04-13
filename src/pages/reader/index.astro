@@ -12,6 +12,7 @@ function loadJSON(filePath) {
 }
 
 const masterCatalog = loadJSON('public/reader/catalog.json') || { books: [] };
+const bookDescriptions = loadJSON('src/data/book-descriptions.json') || {};
 
 // Load index for each book's parts
 function loadBookIndexes(book) {
@@ -423,6 +424,18 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
     :global(body.dark-mode) .library-search input { background: #2a2a3e; border-color: #3a3a5e; color: #e0e0e0; }
     :global(body.dark-mode) .library-search input:focus { border-color: #4a7ab5; box-shadow: 0 0 0 3px rgba(74, 122, 181, 0.15); }
 
+    .book-desc { color: #666; font-size: 0.82em; margin: 2px 0 8px; line-height: 1.5; max-width: 600px; font-style: italic; }
+    :global(body.dark-mode) .book-desc { color: #999; }
+    .compact-mode .book-desc { display: none; }
+    .compact-mode .volume-count { display: none; }
+    .compact-mode .volume-section { margin-bottom: 8px !important; }
+    .view-toggle { display: flex; gap: 6px; justify-content: center; margin-top: 10px; }
+    .view-toggle button { padding: 6px 16px; border: 1px solid #d1d5db; border-radius: 16px; background: white; color: #555; font-size: 0.82em; cursor: pointer; font-family: 'Open Sans', sans-serif; transition: all 0.15s; }
+    .view-toggle button:hover { border-color: #1a365d; color: #1a365d; }
+    .view-toggle button.active { background: #1a365d; color: white; border-color: #1a365d; }
+    :global(body.dark-mode) .view-toggle button { background: #2a2a3e; border-color: #3a3a5e; color: #aaa; }
+    :global(body.dark-mode) .view-toggle button.active { background: #4a7ab5; border-color: #4a7ab5; color: white; }
+
     @media (max-width: 768px) {
       .lm-header .hebrew-title { font-size: 2.2em; }
       .lm-header h1 { font-size: 1.4em; }
@@ -431,7 +444,7 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
 
   <div class="lm-index">
     <div class="lm-header">
-      <div class="hebrew-title">ספריית התורה</div>
+      <div class="hebrew-title" lang="he" dir="rtl">ספריית התורה</div>
       <h1>Jewish Torah Library</h1>
       <p class="subtitle">213 sacred texts online free — Breslov, Tanach, Talmud, Mishna, Rambam, Zohar & more</p>
       <p class="author">Na Nach Nachma Nachman MeUman</p>
@@ -446,6 +459,11 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
       <button class="random-torah-btn" id="randomTorahBtn" onclick="goToRandomTorah()">Open Random Torah</button>
       <div class="library-search">
         <input type="text" id="libraryFilter" placeholder="Filter books... / סנן ספרים..." dir="auto" autocomplete="off" />
+      </div>
+      <div class="view-toggle">
+        <button id="viewFull" class="active" onclick="setView('full')">Full View</button>
+        <button id="viewCompact" onclick="setView('compact')">Quick Access</button>
+        <button id="expandAll" onclick="expandAllCategories()">Show Everything</button>
       </div>
     </div>
 
@@ -690,9 +708,10 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
                 {totalPages > 40 ? (
                   <details class="book-dropdown">
                     <summary class="volume-title" style="font-size: 1.2em; cursor: pointer;">
-                      {book.title} <span class="volume-hebrew" style="display: inline; margin-left: 8px;">{book.hebrewTitle}</span>
+                      {book.title} <span class="volume-hebrew" lang="he" dir="rtl" style="display: inline; margin-left: 8px;">{book.hebrewTitle}</span>
                       <span class="volume-count" style="display: inline; margin-left: 8px; font-size: 0.8em;">({totalPages})</span>
                     </summary>
+                    {bookDescriptions[book.id] && <p class="book-desc">{bookDescriptions[book.id]}</p>}
                     {indexes.map(partData => (
                       <div style={book.parts.length > 1 ? "margin-bottom: 12px;" : ""}>
                         {book.parts.length > 1 && (
@@ -704,7 +723,7 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
                           {(partData.index.torahs || partData.index.items || []).map(t => (
                             <li>
                               <a href={t.url || `/reader/${book.id}/${partData.part}/${t.number}`}>
-                                <span class="torah-num">{t.title || `[${t.number}]`}{t.hebrewTitle ? <span class="torah-he" dir="rtl"> — {t.hebrewTitle}</span> : ''}</span>
+                                <span class="torah-num">{t.title || `[${t.number}]`}{t.hebrewTitle ? <span class="torah-he" lang="he" dir="rtl"> — {t.hebrewTitle}</span> : ''}</span>
                               </a>
                             </li>
                           ))}
@@ -715,8 +734,9 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
                 ) : (
                   <Fragment>
                     <h3 class="volume-title" style="font-size: 1.2em;">{book.title}</h3>
-                    <div class="volume-hebrew">{book.hebrewTitle}</div>
+                    <div class="volume-hebrew" lang="he" dir="rtl">{book.hebrewTitle}</div>
                     <p class="volume-count">{totalPages} sections{book.parts.length > 1 ? ` (${book.parts.length} parts)` : ''}</p>
+                    {bookDescriptions[book.id] && <p class="book-desc">{bookDescriptions[book.id]}</p>}
                     {indexes.map(partData => (
                       <div style={book.parts.length > 1 ? "margin-bottom: 12px;" : ""}>
                         {book.parts.length > 1 && (
@@ -728,7 +748,7 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
                           {(partData.index.torahs || partData.index.items || []).map(t => (
                             <li>
                               <a href={t.url || `/reader/${book.id}/${partData.part}/${t.number}`}>
-                                <span class="torah-num">{t.title || `[${t.number}]`}{t.hebrewTitle ? <span class="torah-he" dir="rtl"> — {t.hebrewTitle}</span> : ''}</span>
+                                <span class="torah-num">{t.title || `[${t.number}]`}{t.hebrewTitle ? <span class="torah-he" lang="he" dir="rtl"> — {t.hebrewTitle}</span> : ''}</span>
                               </a>
                             </li>
                           ))}
@@ -787,6 +807,31 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
         lmSection.style.display = lmMatch ? '' : 'none';
       }
     });
+
+    // Restore view preference
+    const savedView = localStorage.getItem('ajew-library-view');
+    if (savedView === 'compact') setView('compact');
   });
+
+  function setView(mode) {
+    const container = document.querySelector('.lm-index');
+    const fullBtn = document.getElementById('viewFull');
+    const compactBtn = document.getElementById('viewCompact');
+    if (mode === 'compact') {
+      container.classList.add('compact-mode');
+      fullBtn.classList.remove('active');
+      compactBtn.classList.add('active');
+    } else {
+      container.classList.remove('compact-mode');
+      fullBtn.classList.add('active');
+      compactBtn.classList.remove('active');
+    }
+    localStorage.setItem('ajew-library-view', mode);
+  }
+
+  function expandAllCategories() {
+    document.querySelectorAll('.category-section').forEach(cat => { cat.open = true; });
+    document.querySelectorAll('.book-dropdown').forEach(book => { book.open = true; });
+  }
   </script>
 </Layout>

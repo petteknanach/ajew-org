@@ -346,7 +346,7 @@ const pageDesc = torahData
       <!-- Header -->
       <div class="reader-header">
         {torahData.hebrewTitle && (
-          <div class="hebrew-title">{torahData.hebrewTitle}</div>
+          <div class="hebrew-title" lang="he" dir="rtl">{torahData.hebrewTitle}</div>
         )}
         <h1>{torahData.title}</h1>
         {torahData.keyVerse && (
@@ -384,7 +384,7 @@ const pageDesc = torahData
         <div class="reader-content-original">
 {torahData.segments.map((seg) => (
           <div class="reader-segment-pair" id={`seg-${seg.index}`}>
-            <div class="reader-segment segment-he" data-index={String(seg.index)}>
+            <div class="reader-segment segment-he" lang="he" dir="rtl" data-index={String(seg.index)}>
               <span class="segment-number">{seg.index}</span>
               <p data-nikud={seg.he_nikud || seg.he}>{seg.he}</p>
             </div>
@@ -399,7 +399,7 @@ const pageDesc = torahData
           <div class="reader-content-aligned" style="display:none;">
             {torahData.aligned_segments.map((seg) => (
               <div class={`reader-segment-pair ${seg.type === 'note' ? 'segment-note' : ''}`} id={`aligned-${seg.index}`}>
-                <div class="reader-segment segment-he" data-index={String(seg.index)}>
+                <div class="reader-segment segment-he" lang="he" dir="rtl" data-index={String(seg.index)}>
                   <span class="segment-number">{seg.index}</span>
                   <p>{seg.he || '\u00A0'}</p>
                 </div>

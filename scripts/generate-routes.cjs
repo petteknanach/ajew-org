@@ -149,7 +149,7 @@ const structuredData = torahData ? JSON.stringify({
       </div>
 
       <div class="reader-header">
-        {torahData.hebrewTitle && <div class="hebrew-title">{torahData.hebrewTitle}</div>}
+        {torahData.hebrewTitle && <div class="hebrew-title" lang="he" dir="rtl">{torahData.hebrewTitle}</div>}
         <h1>{torahData.title}</h1>
         <p style="color: var(--reader-text-secondary); font-size: 0.9em; font-family: 'Open Sans', sans-serif;">
           ${config.bookHebrew} - ${config.bookName}
@@ -169,7 +169,7 @@ const structuredData = torahData ? JSON.stringify({
       <div class="reader-content mode-hebrew">
         {torahData.segments.map((seg) => (
           <div class="reader-segment-pair" id={\`seg-\${seg.index}\`}>
-            <div class="reader-segment segment-he" data-index={String(seg.index)}>
+            <div class="reader-segment segment-he" lang="he" dir="rtl" data-index={String(seg.index)}>
               <span class="segment-number">{seg.index}</span>
               <p data-nikud={seg.he}>{seg.he}</p>
             </div>

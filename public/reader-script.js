@@ -6,6 +6,12 @@
 (function() {
   'use strict';
 
+  // --- Accessibility: ensure Hebrew elements have lang attribute ---
+  document.querySelectorAll('.segment-he:not([lang]), .hebrew-title:not([lang])').forEach(function(el) {
+    el.setAttribute('lang', 'he');
+    if (!el.getAttribute('dir')) el.setAttribute('dir', 'rtl');
+  });
+
   // --- State ---
   const PREFS_KEY = 'ajew-reader-prefs';
   let state = {
