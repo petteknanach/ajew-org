@@ -679,7 +679,11 @@
     font-size: 0.85em;
   }
   .reader-segment .segment-number {
-    display: none;
+    position: static;
+    display: inline;
+    font-size: 0.7em;
+    opacity: 0.5;
+    margin-left: 4px;
   }
   .reader-content {
     padding: 0 12px 40px;
@@ -1722,6 +1726,18 @@ a.cross-ref:hover {
 .kht-speed-btn:hover {
   background: rgba(255,255,255,0.2);
   color: #fff;
+}
+
+/* Mobile: stack Both mode columns vertically */
+@media (max-width: 768px) {
+  .reader-content.mode-both .reader-segment-pair {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+  .reader-content.mode-both .reader-segment-pair .segment-he {
+    border-bottom: 1px solid var(--reader-border, #e0d6c2);
+    padding-bottom: 12px;
+  }
 }
 
 @media (max-width: 600px) {
