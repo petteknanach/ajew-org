@@ -10,6 +10,12 @@ import Layout from '../../layouts/Layout.astro';
     <p class="nanach">Na Nach Nachma Nachman MeUman</p>
   </header>
 
+  <div class="archive-banner">
+    <a href="/blog/archive">
+      <strong>Na Nach Blog Archive</strong> -- Browse 1,700+ preserved posts from nanach.net (na-nach.blogspot.com)
+    </a>
+  </div>
+
   <div class="blog-content">
     <div id="posts-container">
       <div class="loading">Loading posts...</div>
@@ -103,6 +109,24 @@ import Layout from '../../layouts/Layout.astro';
     font-family: 'Frank Ruhl Libre', serif;
     font-size: 0.95em;
     margin: 0;
+  }
+
+  .archive-banner {
+    background: #faf8f4;
+    border: 1px solid #e0d6c2;
+    border-left: 4px solid #c4a265;
+    border-radius: 8px;
+    padding: 14px 20px;
+    margin-bottom: 32px;
+    text-align: center;
+  }
+  .archive-banner a {
+    color: #1a365d;
+    text-decoration: none;
+    font-size: 0.95em;
+  }
+  .archive-banner a:hover {
+    text-decoration: underline;
   }
 
   .post-card {
