@@ -256,17 +256,54 @@ import CompactYahrzeit from '../components/CompactYahrzeit.astro';
   })();
   </script>
 
+  <!-- New Here? Welcome Section -->
+  <section class="welcome-newcomer" id="newHere">
+    <div class="container">
+      <h2 class="welcome-heading">Welcome to A Jew</h2>
+      <p class="welcome-description">
+        A free library of sacred Jewish texts in Hebrew and English — featuring the teachings
+        of Rebbe Nachman of Breslov (1772-1810), Na Nach classics, and over 200 books
+        including Talmud, Zohar, Tanach, and Rambam. No account needed. Just read.
+      </p>
+      <div class="start-here-box">
+        <h3 class="start-here-title">New here? Begin with one of these:</h3>
+        <div class="start-cards">
+          <a href="/reader/likutay-moharan/part-1/torah-1" class="start-card">
+            <span class="start-card-label">The First Teaching</span>
+            <span class="start-card-name">Likutay Moharan, Torah 1</span>
+            <span class="start-card-desc">The foundation of Rebbe Nachman's wisdom. A beautiful place to begin.</span>
+          </a>
+          <a href="/reader/sipurey-maasiyos" class="start-card">
+            <span class="start-card-label">Stories</span>
+            <span class="start-card-name">Sipurey Maasiyos</span>
+            <span class="start-card-desc">Rebbe Nachman's 13 mystical tales. Engaging, deep, and accessible to all.</span>
+          </a>
+          <a href="/help-me" class="start-card start-card-help">
+            <span class="start-card-label">Going Through Something?</span>
+            <span class="start-card-name">Help Me</span>
+            <span class="start-card-desc">Find Torah guidance for whatever you are facing right now.</span>
+          </a>
+          <a href="/reader" class="start-card start-card-library">
+            <span class="start-card-label">Explore Everything</span>
+            <span class="start-card-name">The Full Library</span>
+            <span class="start-card-desc">Over 200 sacred texts -- Talmud, Zohar, Tanach, Rambam, and more. All free.</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="intro">
     <div class="container">
-      <h2>Welcome</h2>
+      <h2>About Rebbe Nachman</h2>
       <p>
-        Rebbe Nachman of Breslov (1772-1810) was a great-grandson of the Baal Shem Tov, 
-        founder of Chassidus. His teachings continue to inspire and guide millions of 
+        Rebbe Nachman of Breslov was a great-grandson of the Baal Shem Tov,
+        founder of Chassidus. His teachings continue to inspire and guide millions of
         people around the world in their service of Hashem.
       </p>
       <p>
-        This site is dedicated to spreading the light of Rebbe Nachman's teachings — 
-        his Torah, stories, and practical guidance for living a life of joy, faith, and connection.
+        This site is dedicated to spreading the light of his Torah, stories, and
+        practical guidance for living a life of joy, faith, and connection to the Creator.
       </p>
     </div>
   </section>
@@ -1111,7 +1148,148 @@ import CompactYahrzeit from '../components/CompactYahrzeit.astro';
       top: 0.3rem;
       right: 0.3rem;
     }
-    
+
+    .start-cards {
+      flex-direction: column;
+    }
+
+    .start-card {
+      min-width: unset;
+    }
+
+    .welcome-heading {
+      font-size: 1.6rem !important;
+    }
   }
-  
+
+  /* Welcome / New Here Section */
+  .welcome-newcomer {
+    padding: 3rem 0 2rem;
+    background: linear-gradient(180deg, #eef2f7 0%, #f8f5ef 100%);
+  }
+
+  .welcome-heading {
+    font-family: var(--font-hebrew);
+    font-size: 2rem;
+    color: var(--color-primary);
+    margin-bottom: 0.75rem;
+    text-align: center;
+  }
+
+  .welcome-description {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    text-align: center;
+    color: #444;
+    max-width: 700px;
+    margin: 0 auto 2rem;
+  }
+
+  .start-here-box {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .start-here-title {
+    text-align: center;
+    font-size: 1.15rem;
+    color: var(--color-primary);
+    margin-bottom: 1.25rem;
+    font-weight: 600;
+  }
+
+  .start-cards {
+    display: flex;
+    gap: 1.25rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
+
+  .start-card {
+    display: flex;
+    flex-direction: column;
+    background: white;
+    border: 2px solid #d1d5db;
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    text-decoration: none;
+    min-width: 220px;
+    flex: 1;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  }
+
+  .start-card:hover {
+    border-color: var(--color-accent);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    transform: translateY(-2px);
+  }
+
+  .start-card-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #888;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+  }
+
+  .start-card-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-bottom: 0.4rem;
+  }
+
+  .start-card-desc {
+    font-size: 0.9rem;
+    color: #666;
+    line-height: 1.5;
+  }
+
+  .start-card-help {
+    border-color: #c62828;
+    background: #fef2f2;
+  }
+
+  .start-card-help:hover {
+    border-color: #c62828;
+    box-shadow: 0 4px 16px rgba(198,40,40,0.15);
+  }
+
+  .start-card-help .start-card-name {
+    color: #c62828;
+  }
+
+  .start-card-library {
+    border-color: #1565c0;
+    background: #f0f7ff;
+  }
+
+  .start-card-library:hover {
+    border-color: #1565c0;
+    box-shadow: 0 4px 16px rgba(21,101,192,0.15);
+  }
+
+  .start-card-library .start-card-name {
+    color: #1565c0;
+  }
+
+  .start-or {
+    text-align: center;
+    font-size: 0.95rem;
+    color: #666;
+  }
+
+  .start-or a {
+    color: var(--color-accent);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .start-or a:hover {
+    text-decoration: underline;
+  }
+
 </style>

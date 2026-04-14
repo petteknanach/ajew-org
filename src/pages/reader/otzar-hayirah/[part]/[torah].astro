@@ -6,8 +6,21 @@ import path from 'node:path';
 
 export function getStaticPaths() {
   const paths = [];
+  // Part 1: Volume 1 (א–ד) - up to 115 torahs
   for (let torah = 1; torah <= 115; torah++) {
     paths.push({ params: { part: '1', torah: String(torah) } });
+  }
+  // Part 2: Volume 2 (ה–ל) - 16 torahs
+  for (let torah = 1; torah <= 16; torah++) {
+    paths.push({ params: { part: '2', torah: String(torah) } });
+  }
+  // Part 3: Volume 3 (מ) - 17 torahs
+  for (let torah = 1; torah <= 17; torah++) {
+    paths.push({ params: { part: '3', torah: String(torah) } });
+  }
+  // Part 4: Volume 4 (נ–ת) - 25 torahs
+  for (let torah = 1; torah <= 25; torah++) {
+    paths.push({ params: { part: '4', torah: String(torah) } });
   }
   return paths;
 }

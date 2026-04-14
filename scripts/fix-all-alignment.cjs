@@ -1,202 +1,147 @@
+/**
+ * Fix aligned_segments for ALL books in the reader
+ *
+ * Handles:
+ * 1. Books with no aligned_segments at all (221 files)
+ * 2. Books with English segments missing Hebrew pairing (103 files)
+ * 3. Rebuilds aligned_segments from segments data
+ *
+ * Usage:
+ *   node scripts/fix-all-alignment.cjs
+ *   node scripts/fix-all-alignment.cjs --dry-run
+ */
+
 const fs = require('fs');
 const path = require('path');
 
-const READER = path.resolve(__dirname, '..', 'public', 'reader');
-const stripNikud = s => (s || '').replace(/[\u0591-\u05C7]/g, '');
+const READER_DIR = path.resolve(__dirname, '..', 'public', 'reader');
+const DRY_RUN = process.argv.includes('--dry-run');
 
-// Hebrew letter to number mapping for ois markers
-const heLetterVal = {'א':1,'ב':2,'ג':3,'ד':4,'ה':5,'ו':6,'ז':7,'ח':8,'ט':9,'י':10,'יא':11,'יב':12,'יג':13,'יד':14,'טו':15,'טז':16,'יז':17,'יח':18,'יט':19,'כ':20};
+/**
+ * Build aligned_segments from segments array.
+ * Each segment becomes one aligned entry with he + en paired.
+ */
+function buildAlignedSegments(segments) {
+  const aligned = [];
+  let idx = 1;
 
-function findHebrewOisMarkers(segments) {
-  // Find segments that start with an ois marker like "א ", "ב ", "(א)", etc.
-  const markers = [];
-  for (let i = 0; i < segments.length; i++) {
-    const he = stripNikud(segments[i].he || '').trim();
-    // Match patterns: "א כש...", "(א) ...", "אות א ...", standalone Hebrew letter at start
-    const m = he.match(/^([א-ת]{1,2})\s/) || he.match(/^\(([א-ת]{1,2})\)/) || he.match(/^אות\s+([א-ת]{1,2})/);
-    if (m) {
-      const letter = m[1];
-      if (heLetterVal[letter]) {
-        markers.push({ segIdx: i, ois: heLetterVal[letter], letter });
-      }
-    }
+  for (const seg of segments) {
+    const he = seg.he || '';
+    const en = seg.en || '';
+    const heNikud = seg.he_nikud || '';
+
+    if (!he && !en) continue;
+
+    const entry = { index: idx++, he, en };
+    if (heNikud) entry.he_nikud = heNikud;
+    aligned.push(entry);
   }
-  return markers;
+
+  return aligned;
 }
 
-function findEnglishSectionMarkers(text) {
-  // Find section numbers in English: "1. ", "2. ", "[1]", "Section 1", etc.
-  const markers = [];
-  const regex = /(?:^|\n)\s*(\d{1,2})\.\s/gm;
-  let match;
-  while ((match = regex.exec(text)) !== null) {
-    const num = parseInt(match[1]);
-    if (num >= 1 && num <= 50) {
-      markers.push({ pos: match.index, num });
-    }
-  }
-  return markers;
+/**
+ * Check if a file needs fixing
+ */
+function needsFix(data) {
+  if (!data.segments || data.segments.length === 0) return false;
+
+  const hasEn = data.segments.some(s => s.en && s.en.length > 0);
+  if (!hasEn) return false;
+
+  const hasHe = data.segments.some(s => s.he && s.he.length > 0);
+  // English-only content (no Hebrew at all) - aligned_segments with en-only is correct
+  if (!hasHe) return false;
+
+  // Has both Hebrew and English - check alignment
+  // No aligned_segments
+  if (!data.aligned_segments || data.aligned_segments.length === 0) return true;
+
+  // Check if en-only entries in aligned_segments match en-only entries in source segments
+  // If they do, alignment is correct (the source just has English-only content)
+  const enOnlyInSource = data.segments.filter(
+    s => s.en && s.en.length > 0 && (!s.he || s.he.length === 0)
+  ).length;
+  const enOnlyInAligned = data.aligned_segments.filter(
+    s => s.en && s.en.length > 0 && (!s.he || s.he.length === 0)
+  ).length;
+
+  // If aligned has MORE en-only than source, alignment is broken
+  // If they match, it's just reflecting the source data correctly
+  return enOnlyInAligned > enOnlyInSource;
 }
 
-function fixFile(filePath) {
-  const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-  if (!data.segments || data.segments.length < 2) return 0;
+function main() {
+  console.log('=== Fix All Book Alignment ===');
+  if (DRY_RUN) console.log('*** DRY RUN ***\n');
 
-  // Check if file has both Hebrew and English
-  const hasHe = data.segments.some(s => s.he && s.he.length > 10);
-  const hasEn = data.segments.some(s => s.en && s.en.length > 10);
-  if (!hasHe || !hasEn) return 0;
+  const bookDirs = fs.readdirSync(READER_DIR, { withFileTypes: true })
+    .filter(d => d.isDirectory())
+    .map(d => d.name);
 
-  // Check if there's a cramming problem
-  let cramming = 0;
-  for (const seg of data.segments) {
-    const heLen = (seg.he || '').length;
-    const enLen = (seg.en || '').length;
-    if (enLen > heLen * 4 && enLen > 500) cramming++;
-  }
-  if (cramming === 0) return 0; // No problem, skip
+  let totalFiles = 0;
+  let fixedFiles = 0;
+  let skippedFiles = 0;
+  const fixedBooks = new Map();
 
-  // Collect all English into one string
-  const allEn = data.segments.map(s => s.en || '').join('\n\n');
-  if (allEn.trim().length < 50) return 0;
+  for (const bookDir of bookDirs) {
+    const bookPath = path.join(READER_DIR, bookDir);
 
-  // Find Hebrew ois markers
-  const heMarkers = findHebrewOisMarkers(data.segments);
-
-  // Find English section markers
-  const enMarkers = findEnglishSectionMarkers(allEn);
-
-  // If we have matching markers, use them as anchors
-  if (heMarkers.length >= 2 && enMarkers.length >= 2) {
-    // Build mapping: ois number -> English text section
-    const enSections = {};
-    for (let i = 0; i < enMarkers.length; i++) {
-      const startPos = enMarkers[i].pos;
-      const endPos = i < enMarkers.length - 1 ? enMarkers[i + 1].pos : allEn.length;
-      enSections[enMarkers[i].num] = allEn.substring(startPos, endPos).trim();
+    // Handle nested part dirs (e.g., likutay-moharan/part-1/)
+    const subDirs = [bookPath];
+    const partDirs = fs.readdirSync(bookPath, { withFileTypes: true })
+      .filter(d => d.isDirectory() && d.name.startsWith('part-'));
+    for (const pd of partDirs) {
+      subDirs.push(path.join(bookPath, pd.name));
     }
 
-    // Text before first English marker = intro
-    const introEn = allEn.substring(0, enMarkers[0].pos).trim();
+    for (const dir of subDirs) {
+      const jsonFiles = fs.readdirSync(dir)
+        .filter(f => f.endsWith('.json') && f !== 'index.json');
 
-    // Clear all English
-    for (const seg of data.segments) seg.en = '';
+      for (const jsonFile of jsonFiles) {
+        totalFiles++;
+        const filePath = path.join(dir, jsonFile);
 
-    // Assign intro to segments before first ois marker
-    if (introEn.length > 10 && heMarkers[0].segIdx > 0) {
-      const introSegs = data.segments.slice(0, heMarkers[0].segIdx);
-      const totalIntroHe = introSegs.reduce((sum, s) => sum + (s.he || '').length, 0);
-      const introSentences = introEn.split(/(?<=\.)\s+/).filter(s => s.length > 5);
-      let sentIdx = 0;
-      for (let i = 0; i < introSegs.length; i++) {
-        const proportion = (introSegs[i].he || '').length / (totalIntroHe || 1);
-        const numSentences = Math.max(1, Math.round(proportion * introSentences.length));
-        data.segments[i].en = introSentences.slice(sentIdx, sentIdx + numSentences).join(' ');
-        sentIdx += numSentences;
-      }
-    }
+        try {
+          const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
 
-    // For each ois section, assign English to the Hebrew segment range
-    for (let mi = 0; mi < heMarkers.length; mi++) {
-      const oisNum = heMarkers[mi].ois;
-      const startSeg = heMarkers[mi].segIdx;
-      const endSeg = mi < heMarkers.length - 1 ? heMarkers[mi + 1].segIdx : data.segments.length;
+          if (!needsFix(data)) {
+            skippedFiles++;
+            continue;
+          }
 
-      const enText = enSections[oisNum] || '';
-      if (!enText) continue;
+          const newAligned = buildAlignedSegments(data.segments);
+          data.aligned_segments = newAligned;
 
-      const segRange = data.segments.slice(startSeg, endSeg);
-      const totalHe = segRange.reduce((sum, s) => sum + (s.he || '').length, 0);
+          if (!DRY_RUN) {
+            fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
+          }
 
-      if (segRange.length === 1) {
-        data.segments[startSeg].en = enText;
-      } else {
-        // Distribute English sentences proportionally across segments in this ois section
-        const sentences = enText.split(/(?<=\.)\s+/).filter(s => s.length > 5);
-        let sentIdx = 0;
-        for (let i = startSeg; i < endSeg; i++) {
-          const proportion = (data.segments[i].he || '').length / (totalHe || 1);
-          const numSentences = Math.max(1, Math.round(proportion * sentences.length));
-          data.segments[i].en = sentences.slice(sentIdx, sentIdx + numSentences).join(' ');
-          sentIdx += numSentences;
-        }
-        // Assign remaining to last segment
-        if (sentIdx < sentences.length) {
-          data.segments[endSeg - 1].en += ' ' + sentences.slice(sentIdx).join(' ');
+          fixedFiles++;
+          const bookKey = dir === bookPath ? bookDir : bookDir + '/' + path.basename(dir);
+          if (!fixedBooks.has(bookKey)) fixedBooks.set(bookKey, 0);
+          fixedBooks.set(bookKey, fixedBooks.get(bookKey) + 1);
+
+        } catch (e) {
+          console.error(`  ERROR: ${bookDir}/${jsonFile}: ${e.message}`);
         }
       }
     }
-
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-    return 1; // Fixed with ois anchors
   }
 
-  // FALLBACK: No ois markers — distribute proportionally by Hebrew length
-  const sentences = allEn.split(/(?<=\.)\s+/).filter(s => s.length > 5);
-  if (sentences.length < 2) return 0;
+  console.log('\n=== SUMMARY ===');
+  console.log(`Total files scanned: ${totalFiles}`);
+  console.log(`Files fixed: ${fixedFiles}`);
+  console.log(`Files skipped (OK or no English): ${skippedFiles}`);
+  console.log(`Books affected: ${fixedBooks.size}`);
 
-  const totalHe = data.segments.reduce((sum, s) => sum + (s.he || '').length, 0);
-  if (totalHe === 0) return 0;
-
-  // Clear all English
-  for (const seg of data.segments) seg.en = '';
-
-  let sentIdx = 0;
-  for (let i = 0; i < data.segments.length; i++) {
-    const heLen = (data.segments[i].he || '').length;
-    if (heLen < 5) continue;
-    const proportion = heLen / totalHe;
-    const numSentences = Math.max(1, Math.round(proportion * sentences.length));
-    data.segments[i].en = sentences.slice(sentIdx, sentIdx + numSentences).join(' ');
-    sentIdx += numSentences;
-  }
-  // Remaining sentences to last segment with Hebrew
-  if (sentIdx < sentences.length) {
-    for (let i = data.segments.length - 1; i >= 0; i--) {
-      if ((data.segments[i].he || '').length > 5) {
-        data.segments[i].en += ' ' + sentences.slice(sentIdx).join(' ');
-        break;
-      }
+  if (fixedBooks.size > 0) {
+    console.log('\nFixed books:');
+    for (const [book, count] of [...fixedBooks.entries()].sort()) {
+      console.log(`  ${book}: ${count} files`);
     }
-  }
-
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-  return 2; // Fixed with proportional fallback
-}
-
-// Process all books
-const books = fs.readdirSync(READER).filter(f => {
-  const fp = path.join(READER, f);
-  return fs.statSync(fp).isDirectory() && !f.startsWith('.');
-});
-
-let totalOis = 0, totalProp = 0, totalSkipped = 0;
-const bookStats = {};
-
-for (const book of books) {
-  const bookDir = path.join(READER, book);
-  const parts = fs.readdirSync(bookDir).filter(f => f.startsWith('part-') && fs.statSync(path.join(bookDir, f)).isDirectory());
-  const dirs = parts.length > 0 ? parts.map(p => path.join(bookDir, p)) : [bookDir];
-
-  let bookOis = 0, bookProp = 0, bookSkip = 0;
-
-  for (const dir of dirs) {
-    const files = fs.readdirSync(dir).filter(f => f.endsWith('.json') && !f.includes('index'));
-    for (const f of files) {
-      const result = fixFile(path.join(dir, f));
-      if (result === 1) { bookOis++; totalOis++; }
-      else if (result === 2) { bookProp++; totalProp++; }
-      else { bookSkip++; totalSkipped++; }
-    }
-  }
-
-  if (bookOis > 0 || bookProp > 0) {
-    bookStats[book] = { ois: bookOis, prop: bookProp, skip: bookSkip };
-    console.log(`${book}: ${bookOis} ois-fixed, ${bookProp} prop-fixed, ${bookSkip} skipped`);
   }
 }
 
-console.log(`\n=== TOTAL ===`);
-console.log(`Ois-anchored: ${totalOis}`);
-console.log(`Proportional: ${totalProp}`);
-console.log(`Skipped (no issue): ${totalSkipped}`);
+main();
