@@ -1728,15 +1728,21 @@ a.cross-ref:hover {
   color: #fff;
 }
 
-/* Mobile: stack Both mode columns vertically */
-@media (max-width: 768px) {
+/* Mobile & Tablet: stack Both mode columns vertically */
+@media (max-width: 1024px) {
   .reader-content.mode-both .reader-segment-pair {
-    grid-template-columns: 1fr !important;
+    display: flex !important;
+    flex-direction: column !important;
+    grid-template-columns: unset !important;
     gap: 8px !important;
   }
   .reader-content.mode-both .reader-segment-pair .segment-he {
     border-bottom: 1px solid var(--reader-border, #e0d6c2);
     padding-bottom: 12px;
+    width: 100% !important;
+  }
+  .reader-content.mode-both .reader-segment-pair .segment-en {
+    width: 100% !important;
   }
 }
 
