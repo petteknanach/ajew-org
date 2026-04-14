@@ -1,0 +1,93 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Subscription Activated | A Jew" description="Welcome to the NNNNM community">
+  <style>
+    .success-page { max-width: 600px; margin: 4rem auto; padding: 2rem; text-align: center; }
+    .success-icon { font-size: 4rem; margin-bottom: 1rem; }
+    .success-title { font-family: var(--font-hebrew); font-size: 2rem; color: #059669; margin-bottom: 1rem; }
+    .success-message { font-size: 1.1rem; color: #333; line-height: 1.6; margin-bottom: 2rem; }
+    .status { padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-weight: 600; }
+    .status-loading { background: #fef3c7; color: #92400e; }
+    .status-success { background: #d1fae5; color: #065f46; }
+    .status-error { background: #fee2e2; color: #991b1b; }
+    .chat-link { display: inline-block; padding: 0.8rem 2rem; background: #059669; color: white; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 1.1rem; }
+    .chat-link:hover { background: #047857; }
+    .login-prompt { margin-top: 1.5rem; }
+    .login-link { color: #744210; font-weight: 600; }
+  </style>
+
+  <div class="success-page">
+    <div class="success-icon">&#10003;</div>
+    <h1 class="success-title">Thank You!</h1>
+    <p class="success-message">Your payment has been received. Activating your subscription...</p>
+    <div class="status status-loading" id="status">Activating your subscription...</div>
+    <div id="chatLinkArea" style="display:none;">
+      <a href="/chat" class="chat-link">Enter the Chat</a>
+    </div>
+    <div class="login-prompt" id="loginPrompt" style="display:none;">
+      <p>Please <a href="/auth" class="login-link">log in</a> first, then come back to this page to activate your subscription.</p>
+    </div>
+  </div>
+
+  <script>
+    import { supabase } from '../../lib/supabaseClient';
+
+    async function activateSubscription() {
+      const statusDiv = document.getElementById('status');
+      const chatArea = document.getElementById('chatLinkArea');
+      const loginPrompt = document.getElementById('loginPrompt');
+
+      // Check if user is logged in
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (!session) {
+        statusDiv.textContent = 'Please log in to activate your subscription.';
+        statusDiv.className = 'status status-error';
+        loginPrompt.style.display = 'block';
+        return;
+      }
+
+      const email = session.user.email.toLowerCase();
+      const username = session.user.user_metadata?.display_name || email.split('@')[0];
+
+      // Check if already has subscription
+      const { data: existing } = await supabase
+        .from('subscriptions')
+        .select('tier')
+        .eq('email', email)
+        .single();
+
+      if (existing && existing.tier !== 'free') {
+        statusDiv.textContent = 'Your subscription is already active! Tier: ' + existing.tier;
+        statusDiv.className = 'status status-success';
+        chatArea.style.display = 'block';
+        return;
+      }
+
+      // Create/update subscription
+      const expiry = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString();
+      const { error } = await supabase
+        .from('subscriptions')
+        .upsert({
+          email,
+          tier: 'basic',
+          expiry,
+          username,
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'email' });
+
+      if (error) {
+        statusDiv.textContent = 'Error activating: ' + error.message + '. Please contact naanaach@gmail.com';
+        statusDiv.className = 'status status-error';
+      } else {
+        statusDiv.textContent = 'Subscription activated! Welcome to the community.';
+        statusDiv.className = 'status status-success';
+        chatArea.style.display = 'block';
+      }
+    }
+
+    activateSubscription();
+  </script>
+</Layout>
