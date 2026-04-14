@@ -310,12 +310,7 @@ import Layout from '../../layouts/Layout.astro';
         return;
       }
 
-      // Check subscription tier
-      const tier = currentUser.tier || 'free';
-      if (tier === 'free') {
-        showSubscribePrompt();
-        return;
-      }
+      // Allow any logged-in user to chat (subscription check relaxed for now)
 
       try {
         const { data: { session } } = await supabase.auth.getSession();

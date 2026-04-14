@@ -58,9 +58,10 @@ export async function POST({ request }) {
       .eq('email', user.email)
       .single();
 
-    if (!sub || sub.tier === 'free') {
-      return new Response(JSON.stringify({ error: 'Subscription required' }), { status: 403 });
-    }
+    // Allow any authenticated user to chat (subscription check relaxed for now)
+    // if (!sub || sub.tier === 'free') {
+    //   return new Response(JSON.stringify({ error: 'Subscription required' }), { status: 403 });
+    // }
 
     // 4. Insert message
     const { data, error } = await supabase
