@@ -51,16 +51,20 @@ export async function POST({ request }) {
       return new Response(JSON.stringify({ error: 'Missing required fields' }), { status: 400 });
     }
 
-    // 3. Check Subscription Tier
+    // 3. Check Subscription Tier (case-insensitive email lookup)
+    const userEmail = (user.email || '').toLowerCase();
     const { data: sub } = await supabase
       .from('subscriptions')
       .select('tier')
-      .eq('email', user.email)
+      .eq('email', userEmail)
       .single();
 
     if (!sub || sub.tier === 'free') {
       return new Response(JSON.stringify({ error: 'Subscription required' }), { status: 403 });
     }
+
+    // 3b. Store email lowercased for consistency
+    const storedEmail = userEmail;
 
     // 4. Insert message
     const { data, error } = await supabase
@@ -69,7 +73,7 @@ export async function POST({ request }) {
         room,
         username: user.user_metadata?.display_name || 'User',
         message: message.slice(0, 500),
-        email: user.email
+        email: storedEmail
       })
       .select()
       .single();

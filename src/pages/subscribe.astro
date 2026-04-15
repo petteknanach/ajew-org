@@ -121,40 +121,11 @@ const pageDescription = "Join our Breslov learning community";
         <li>Comment on teachings</li>
         <li>User profile</li>
       </ul>
-      <a href="https://buy.stripe.com/00w5kD89Ld3Y9F1fsUfUQ03" class="stripe-btn primary" id="basicBtn" target="_blank" rel="noopener">
+      <a href="https://buy.stripe.com/00w5kD89Ld3Y9F1fsUfUQ03" class="stripe-btn primary" id="basicBtn" rel="noopener">
         Subscribe - $1/year
       </a>
     </div>
 
-    <!-- Premium Tier -->
-    <div class="pricing-card">
-      <div class="tier-name">Premium</div>
-      <div class="price">$5<span>/month</span></div>
-      <ul class="features">
-        <li>Everything in Basic</li>
-        <li>Private messaging</li>
-        <li>Priority support</li>
-        <li>Member events</li>
-      </ul>
-      <a href="https://buy.stripe.com/3cI3cvey95Bw9F13KcfUQ01" class="stripe-btn primary" id="premiumBtn" target="_blank" rel="noopener">
-        Subscribe - $5/mo
-      </a>
-    </div>
-
-    <!-- Super Tier -->
-    <div class="pricing-card">
-      <div class="tier-name">Super</div>
-      <div class="price">$10<span>/month</span></div>
-      <ul class="features">
-        <li>Everything in Premium</li>
-        <li>Audio recordings</li>
-        <li>Live sessions</li>
-        <li>Special recognition</li>
-      </ul>
-      <a href="https://buy.stripe.com/3cI3cvey95Bw9F13KcfUQ00" class="stripe-btn primary" id="superBtn" target="_blank" rel="noopener">
-        Subscribe - $10/mo
-      </a>
-    </div>
   </section>
 
   <!-- Activation Notice -->
@@ -174,7 +145,7 @@ const pageDescription = "Join our Breslov learning community";
       Your donations help keep ajew.org running and spread Rabbi Nachman's light to Jews around the world.
       Every amount makes a difference!
     </p>
-    <a href="https://buy.stripe.com/3cI3cvey95Bw9F13KcfUQ02" class="stripe-btn donate" style="display: inline-block; width: auto; padding: 1rem 3rem;" target="_blank" rel="noopener">
+    <a href="https://buy.stripe.com/3cI3cvey95Bw9F13KcfUQ02" class="stripe-btn donate" style="display: inline-block; width: auto; padding: 1rem 3rem;" rel="noopener">
       Donate - Choose Amount
     </a>
   </section>
@@ -205,58 +176,65 @@ const pageDescription = "Join our Breslov learning community";
 </section>
 
 <script>
-  // Simple membership storage
-  // For a production site, you'd use Supabase or similar backend
-  
-  const ADMIN_EMAIL = 'naanaach@gmail.com';
-  let currentUser = null;
-  
-  // Check URL params for success/cancel from Stripe
-  document.addEventListener('DOMContentLoaded', () => {
+  import { supabase } from '../lib/supabaseClient';
+
+  // Check URL params for Stripe redirect + query live subscription from DB
+  document.addEventListener('DOMContentLoaded', async () => {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('success') === 'true') {
-      document.getElementById('successBanner').style.display = 'block';
-      // Auto-upgrade user to basic tier
-      const userData = localStorage.getItem('ajew_current_user');
-      if (userData) {
-        currentUser = JSON.parse(userData);
-        currentUser.tier = 'basic';
-        currentUser.expiryDate = new Date(Date.now() + 365*24*60*60*1000).toISOString();
-        localStorage.setItem('ajew_current_user', JSON.stringify(currentUser));
-      }
+      // Stripe returned here instead of /subscribe/success — redirect for full activation flow
+      window.location.href = '/subscribe/success';
+      return;
     }
     if (urlParams.get('canceled') === 'true') {
       document.getElementById('errorBanner').style.display = 'block';
     }
-    updateUserStatus();
+    await updateUserStatus();
   });
 
-  function updateUserStatus() {
-    const userData = localStorage.getItem('ajew_current_user');
-    if (userData) {
-      currentUser = JSON.parse(userData);
-      const statusEl = document.getElementById('userStatus');
-      const tier = currentUser.tier || 'free';
-      
-      if (tier !== 'free') {
-        const expiry = currentUser.expiryDate ? new Date(currentUser.expiryDate).toLocaleDateString() : 'N/A';
-        statusEl.innerHTML = `
-          <div class="user-status">
-            &#10003; Welcome back, <strong>${currentUser.name || currentUser.email}</strong>!<br>
-            You are on the <strong>${tier.toUpperCase()}</strong> plan.<br>
-            Expiry: ${expiry}
-            <br><a href="/chat" style="color: #166534; font-weight: bold;">&#8594; Go to Chat</a>
-          </div>
-        `;
-        disableSubscribeButtons(tier);
-      } else {
-        statusEl.innerHTML = `
-          <div class="user-status inactive">
-            Signed in as <strong>${currentUser.name || currentUser.email}</strong> (Free tier)<br>
-            Subscribe above to access chat rooms!
-          </div>
-        `;
+  async function updateUserStatus() {
+    const { data: { session } } = await supabase.auth.getSession();
+    const statusEl = document.getElementById('userStatus');
+    if (!session) {
+      statusEl.innerHTML = `
+        <div class="user-status inactive">
+          Not signed in. <a href="/auth" style="color:#dc2626;font-weight:bold;">Sign in or create an account</a> before subscribing so your payment can be linked to your profile.
+        </div>
+      `;
+      return;
+    }
+
+    const email = session.user.email.toLowerCase();
+    const name = session.user.user_metadata?.display_name || email;
+
+    let tier = 'free';
+    let expiry = null;
+    try {
+      const res = await fetch('/api/subscriptions?email=' + encodeURIComponent(email));
+      const data = await res.json();
+      if (data && data.subscribed) {
+        tier = data.tier || 'free';
+        expiry = data.expiry;
       }
+    } catch (e) { /* ignore */ }
+
+    if (tier !== 'free') {
+      const expDate = expiry ? new Date(expiry).toLocaleDateString() : 'N/A';
+      statusEl.innerHTML = `
+        <div class="user-status">
+          &#10003; Welcome back, <strong>${name}</strong>!<br>
+          You are on the <strong>${tier.toUpperCase()}</strong> plan. Expiry: ${expDate}
+          <br><a href="/chat" style="color: #166534; font-weight: bold;">&#8594; Go to Chat</a>
+        </div>
+      `;
+      disableSubscribeButtons(tier);
+    } else {
+      statusEl.innerHTML = `
+        <div class="user-status inactive">
+          Signed in as <strong>${name}</strong> (Free tier)<br>
+          Subscribe below to access chat rooms. Use the same email at Stripe checkout.
+        </div>
+      `;
     }
   }
 

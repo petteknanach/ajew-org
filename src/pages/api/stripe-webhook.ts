@@ -54,20 +54,27 @@ export async function POST({ request }) {
           break;
         }
 
-        // Determine tier based on price
+        // Determine tier based on amount paid (line_items isn't on session by default)
+        // $1 = basic/year, $5 = premium/month, $10 = super/month
         let tier = 'basic';
-        let expiry = null;
-        
-        const priceId = session.price_id;
-        if (priceId === 'price_premium_id') {
-          tier = 'premium';
-          expiry = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(); // 30 days
-        } else if (priceId === 'price_super_id') {
+        let expiry: string | null = null;
+
+        const amountTotal = session.amount_total || 0; // in cents
+        if (amountTotal >= 1000) {
           tier = 'super';
           expiry = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+        } else if (amountTotal >= 500) {
+          tier = 'premium';
+          expiry = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
         } else {
-          // Default to basic - 1 year
+          tier = 'basic';
           expiry = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString();
+        }
+
+        // One-time donations (mode=payment with donation link) shouldn't change tier
+        if (session.mode === 'payment' && amountTotal < 100) {
+          console.log(`Donation received from ${customerEmail}, no tier change`);
+          break;
         }
 
         // Extract username from metadata or default
