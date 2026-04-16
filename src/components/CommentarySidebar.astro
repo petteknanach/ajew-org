@@ -138,7 +138,8 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
           kind: 'running',
           book: entry.running_commentary.book,
           slug: entry.running_commentary.slug,
-          status: entry.running_commentary.status || 'pending'
+          status: entry.running_commentary.status || 'pending',
+          url: entry.running_commentary.url || null
         });
       }
       var seen = {};
@@ -211,14 +212,14 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
           .replace(/'/g, '&#39;');
       }
 
-      function renderRunning(def) {
+      function renderRunningPlaceholder() {
         body.innerHTML = '';
         var wrap = document.createElement('div');
         wrap.className = 'commentary-sidebar-placeholder';
         var h = document.createElement('h3');
         h.textContent = 'Ne\u2019imos Netzach';
         var p = document.createElement('p');
-        p.textContent = 'A running bilingual commentary on Likutey Moharan. Text extraction is in progress \u2014 this tab will populate automatically once the source is ready.';
+        p.textContent = 'A running Hebrew commentary on Likutey Moharan. Text extraction is in progress \u2014 this tab will populate automatically once the source is ready.';
         var small = document.createElement('p');
         small.className = 'commentary-sidebar-placeholder-note';
         small.textContent = 'Coming soon.';
@@ -226,6 +227,88 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
         wrap.appendChild(p);
         wrap.appendChild(small);
         body.appendChild(wrap);
+      }
+
+      function renderRunningData(def, data) {
+        body.innerHTML = '';
+        var head = document.createElement('div');
+        head.className = 'commentary-sidebar-section-head';
+        var title = document.createElement('h3');
+        title.lang = 'he';
+        title.dir = 'rtl';
+        title.textContent = (data && data.hebrewTitle) || 'נעימות נצח';
+        var sub = document.createElement('div');
+        sub.className = 'commentary-sidebar-section-sub';
+        sub.textContent = 'Ne\u2019imos Netzach \u00B7 Running Commentary';
+        head.appendChild(title);
+        head.appendChild(sub);
+        body.appendChild(head);
+
+        var segs = Array.isArray(data && data.segments) ? data.segments : [];
+        if (segs.length === 0) {
+          var empty = document.createElement('p');
+          empty.className = 'commentary-sidebar-empty';
+          empty.textContent = 'No segments available.';
+          body.appendChild(empty);
+          return;
+        }
+
+        var list = document.createElement('div');
+        list.className = 'commentary-sidebar-segments';
+        segs.forEach(function (seg) {
+          var pair = document.createElement('div');
+          pair.className = 'commentary-sidebar-segment';
+          var idxSpan = document.createElement('span');
+          idxSpan.className = 'commentary-sidebar-seg-num';
+          idxSpan.textContent = String(seg.index || '');
+          pair.appendChild(idxSpan);
+
+          var heText = seg.he_nikud || seg.he || '';
+          if (heText) {
+            // Split paragraph breaks into distinct <p> elements for readability.
+            var paragraphs = String(heText).split(/\n{2,}/);
+            paragraphs.forEach(function (para) {
+              var trimmed = para.replace(/\s+$/g, '').replace(/^\s+/g, '');
+              if (!trimmed) return;
+              var pHe = document.createElement('p');
+              pHe.className = 'commentary-sidebar-he';
+              pHe.lang = 'he';
+              pHe.dir = 'rtl';
+              pHe.textContent = trimmed;
+              pair.appendChild(pHe);
+            });
+          } else {
+            var pEmpty = document.createElement('p');
+            pEmpty.className = 'commentary-sidebar-he empty';
+            pEmpty.lang = 'he';
+            pEmpty.dir = 'rtl';
+            pEmpty.textContent = '—';
+            pair.appendChild(pEmpty);
+          }
+          list.appendChild(pair);
+        });
+        body.appendChild(list);
+      }
+
+      function renderRunning(def) {
+        if (def.status !== 'available' || !def.url) {
+          renderRunningPlaceholder();
+          return;
+        }
+        if (cache[def.url]) {
+          renderRunningData(def, cache[def.url]);
+          return;
+        }
+        renderLoading();
+        fetch(def.url, { credentials: 'same-origin' }).then(function (r) {
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          return r.json();
+        }).then(function (json) {
+          cache[def.url] = json;
+          renderRunningData(def, json);
+        }).catch(function (err) {
+          renderError('Could not load running commentary: ' + (err && err.message ? err.message : 'unknown error'));
+        });
       }
 
       function renderRelated(def, data) {
@@ -369,9 +452,17 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
         }
       }
       if (!initialTab) {
-        // Prefer first related (non-pending running)
+        // Prefer running commentary if available, else first related, else first tab.
         for (var k = 0; k < tabDefs.length; k++) {
-          if (tabDefs[k].kind === 'related') { initialTab = tabDefs[k].id; break; }
+          if (tabDefs[k].kind === 'running' && tabDefs[k].status === 'available' && tabDefs[k].url) {
+            initialTab = tabDefs[k].id;
+            break;
+          }
+        }
+      }
+      if (!initialTab) {
+        for (var k2 = 0; k2 < tabDefs.length; k2++) {
+          if (tabDefs[k2].kind === 'related') { initialTab = tabDefs[k2].id; break; }
         }
       }
       if (!initialTab && tabDefs.length) initialTab = tabDefs[0].id;
