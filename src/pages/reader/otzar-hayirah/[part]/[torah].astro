@@ -62,8 +62,8 @@ const structuredData = torahData ? JSON.stringify({
   "alternativeHeadline": torahData.hebrewTitle || '',
   "author": { "@type": "Person", "name": "Rabbi Nosson of Breslov" },
   "publisher": { "@type": "Organization", "name": "ajew.org" },
-  "inLanguage": ["he", "en"],
-  "isPartOf": { "@type": "Book", "name": "Otzar HaYirah" },
+  "inLanguage": "he",
+  "isPartOf": { "@type": "Book", "name": "Otzar HaYirah", "inLanguage": "he" },
   "url": `https://ajew.org/reader/otzar-hayirah/${partNum}/${torahNum}`
 }) : '';
 const breadcrumbData = torahData ? JSON.stringify({
@@ -77,7 +77,7 @@ const breadcrumbData = torahData ? JSON.stringify({
 }) : '';
 ---
 
-<Layout title={pageTitle} description={pageDesc}>
+<Layout title={pageTitle} description={pageDesc} lang="he" hreflangs={['he']}>
   {torahData && structuredData && (
     <script type="application/ld+json" set:html={structuredData} slot="head" />
   )}

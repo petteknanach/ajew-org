@@ -29,13 +29,20 @@ try {
 
 if (!torahData && !error) error = 'Content not available';
 
+const bookName = 'Otzros Ramchal';
+const bookHebrew = 'אוצרות רמח"ל';
+const bookUrl = 'https://ajew.org/reader/ramchal-otzros-ramchal/1/1';
+
 const pageTitle = torahData
-  ? `${torahData.hebrewTitle || torahData.title} - Otzros Ramchal`
+  ? `${torahData.title} — ${torahData.hebrewTitle || bookHebrew} | Ramchal`
   : 'Section Not Found';
 const pageDesc = torahData
   ? (() => {
-    const snippet = (torahData.segments?.find(s => s.en)?.en || '').replace(/<[^>]+>/g, '').slice(0, 120);
-    return `Read ${torahData.title} from Otzros Ramchal online free. ${snippet ? snippet + "..." : "Hebrew text with English translation on ajew.org."}`;
+    const isFirst = torahNum === 1;
+    if (isFirst) {
+      return `Otzros Ramchal (אוצרות רמח"ל) — Rabbi Moshe Chaim Luzzatto's Kabbalistic commentaries on Tanach, Drushim and Iggros. Bilingual Hebrew-English, free on AJEW.org.`;
+    }
+    return `${torahData.title} from Otzros Ramchal (אוצרות רמח"ל) — Ramchal's Kabbalistic commentaries on Tanach, Drushim & Iggros. Bilingual Hebrew-English on AJEW.org.`;
   })()
   : '';
 
@@ -55,11 +62,19 @@ const jsonLd = torahData ? {
   "inLanguage": ["he", "en"],
   "isPartOf": {
     "@type": "Book",
-    "name": "Otzros Ramchal",
-    "alternateName": "אוצרות רמח\"ל",
-    "author": { "@type": "Person", "name": "Rabbi Moshe Chaim Luzzatto" },
-    "genre": ["Kabbalah", "Jewish mysticism", "Tanach commentary"],
-    "inLanguage": ["he", "en"]
+    "name": bookName,
+    "alternateName": bookHebrew,
+    "author": {
+      "@type": "Person",
+      "name": "Rabbi Moshe Chaim Luzzatto",
+      "alternateName": ["Ramchal", "רמח\"ל"]
+    },
+    "genre": ["Kabbalah", "Jewish mysticism", "Tanach commentary", "Drushim", "Iggros"],
+    "inLanguage": ["he", "en"],
+    "url": bookUrl,
+    "image": "https://ajew.org/og-image.png",
+    "numberOfPages": 9,
+    "bookFormat": "https://schema.org/EBook"
   },
   "url": `https://ajew.org/reader/ramchal-otzros-ramchal/${partNum}/${torahNum}`,
   "position": torahNum
@@ -74,7 +89,7 @@ const breadcrumbs = torahData ? [
 ] : [];
 ---
 
-<Layout title={pageTitle} description={pageDesc} jsonLd={jsonLd} breadcrumbs={breadcrumbs}>
+<Layout title={pageTitle} description={pageDesc} jsonLd={jsonLd} breadcrumbs={breadcrumbs} type="book" hreflangs={['en', 'he']}>
   {error ? (
     <div style="text-align: center; padding: 80px 20px;">
       <h1>{error}</h1>

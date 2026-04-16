@@ -29,13 +29,20 @@ try {
 
 if (!torahData && !error) error = 'Content not available';
 
+const bookName = 'Shaaray Ramchal';
+const bookHebrew = 'שערי רמח"ל';
+const bookUrl = 'https://ajew.org/reader/ramchal-shaaray-ramchal/1/1';
+
 const pageTitle = torahData
-  ? `${torahData.hebrewTitle || torahData.title} - Shaaray Ramchal`
+  ? `${torahData.title} — ${torahData.hebrewTitle || bookHebrew} | Ramchal`
   : 'Section Not Found';
 const pageDesc = torahData
   ? (() => {
-    const snippet = (torahData.segments?.find(s => s.en)?.en || '').replace(/<[^>]+>/g, '').slice(0, 120);
-    return `Read ${torahData.title} from Shaaray Ramchal online free. ${snippet ? snippet + "..." : "Hebrew text with English translation on ajew.org."}`;
+    const isFirst = torahNum === 1;
+    if (isFirst) {
+      return `Shaaray Ramchal (שערי רמח"ל) — the Gates of Ramchal: Mavo, Maamar HaVikuach, Pischay Chochmah, Klalei Chochmas HaEmes, Igros, Binyan Olam. Bilingual HE-EN on AJEW.org.`;
+    }
+    return `${torahData.title} from Shaaray Ramchal (שערי רמח"ל) — Ramchal's Kabbalistic & philosophical gateway works. Bilingual Hebrew-English on AJEW.org.`;
   })()
   : '';
 
@@ -55,11 +62,19 @@ const jsonLd = torahData ? {
   "inLanguage": ["he", "en"],
   "isPartOf": {
     "@type": "Book",
-    "name": "Shaaray Ramchal",
-    "alternateName": "שערי רמח\"ל",
-    "author": { "@type": "Person", "name": "Rabbi Moshe Chaim Luzzatto" },
+    "name": bookName,
+    "alternateName": bookHebrew,
+    "author": {
+      "@type": "Person",
+      "name": "Rabbi Moshe Chaim Luzzatto",
+      "alternateName": ["Ramchal", "רמח\"ל"]
+    },
     "genre": ["Kabbalah", "Jewish mysticism", "Jewish philosophy"],
-    "inLanguage": ["he", "en"]
+    "inLanguage": ["he", "en"],
+    "url": bookUrl,
+    "image": "https://ajew.org/og-image.png",
+    "numberOfPages": 6,
+    "bookFormat": "https://schema.org/EBook"
   },
   "url": `https://ajew.org/reader/ramchal-shaaray-ramchal/${partNum}/${torahNum}`,
   "position": torahNum
@@ -74,7 +89,7 @@ const breadcrumbs = torahData ? [
 ] : [];
 ---
 
-<Layout title={pageTitle} description={pageDesc} jsonLd={jsonLd} breadcrumbs={breadcrumbs}>
+<Layout title={pageTitle} description={pageDesc} jsonLd={jsonLd} breadcrumbs={breadcrumbs} type="book" hreflangs={['en', 'he']}>
   {error ? (
     <div style="text-align: center; padding: 80px 20px;">
       <h1>{error}</h1>

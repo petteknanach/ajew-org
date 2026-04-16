@@ -7,6 +7,9 @@ interface Props {
   type?: string;
   jsonLd?: object;
   breadcrumbs?: Array<{name: string; url: string}>;
+  lang?: 'en' | 'he';
+  dir?: 'ltr' | 'rtl';
+  hreflangs?: Array<'en' | 'he'>;
 }
 
 const {
@@ -17,7 +20,14 @@ const {
   type = "website",
   jsonLd,
   breadcrumbs,
+  lang = 'en',
+  dir = lang === 'he' ? 'rtl' : 'ltr',
+  hreflangs,
 } = Astro.props;
+
+// Determine which hreflang alternates to emit. If hreflangs is explicitly passed, use it.
+// Otherwise, default to both en+he (bilingual) for back-compat with existing behavior.
+const effectiveHreflangs: Array<'en' | 'he'> = hreflangs && hreflangs.length > 0 ? hreflangs : ['en', 'he'];
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const ogImage = new URL(image, Astro.site);
@@ -25,11 +35,11 @@ const siteName = "A Jew - Breslov Torah Library";
 ---
 
 <!doctype html>
-<html lang="en" dir="ltr">
+<html lang={lang} dir={dir}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="Content-Language" content="en" />
+    <meta http-equiv="Content-Language" content={lang} />
     <meta name="description" content={description} />
     <meta name="keywords" content="Rabbi Nachman, Breslov, Na Nach, Nanach, Judaism, Torah, Likutay Moharan, Likutay Halachos, Likutay Tefilos, Hisbodidus, Zohar, Talmud, Mishna, Rambam, Tanach, Jewish texts, Hebrew books online, Torah study, Ramchal, Rabbi Moshe Chaim Luzzatto, Mesillas Yesharim, Derech Hashem, Kabbalah, Jewish mysticism" />
     <meta name="author" content="Pettek Nanach" />
@@ -45,8 +55,8 @@ const siteName = "A Jew - Breslov Torah Library";
 
     <!-- Open Graph -->
     <meta property="og:type" content={type} />
-    <meta property="og:locale" content="en_US" />
-    <meta property="og:locale:alternate" content="he_IL" />
+    <meta property="og:locale" content={lang === 'he' ? 'he_IL' : 'en_US'} />
+    {effectiveHreflangs.length > 1 && <meta property="og:locale:alternate" content={lang === 'he' ? 'en_US' : 'he_IL'} />}
     <meta property="og:site_name" content={siteName} />
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:title" content={`${title} | A Jew`} />
@@ -101,8 +111,8 @@ const siteName = "A Jew - Breslov Torah Library";
     </script>
     
     <!-- Language alternates -->
-    <link rel="alternate" hreflang="en" href={canonicalURL} />
-    <link rel="alternate" hreflang="he" href={canonicalURL} />
+    {effectiveHreflangs.includes('en') && <link rel="alternate" hreflang="en" href={canonicalURL} />}
+    {effectiveHreflangs.includes('he') && <link rel="alternate" hreflang="he" href={canonicalURL} />}
     <link rel="alternate" hreflang="x-default" href={canonicalURL} />
     
     <!-- Preconnect & DNS prefetch for performance -->

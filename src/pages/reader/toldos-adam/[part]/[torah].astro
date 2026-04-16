@@ -61,7 +61,7 @@ const breadcrumbData = torahData ? JSON.stringify({
 }) : '';
 ---
 
-<Layout title={pageTitle} description={pageDesc}>
+<Layout title={pageTitle} description={pageDesc} lang="he" hreflangs={['he']}>
   {torahData && structuredData && (
     <script type="application/ld+json" set:html={structuredData} slot="head" />
   )}

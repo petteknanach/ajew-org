@@ -77,13 +77,13 @@ const structuredData = torahData ? JSON.stringify({
   "alternativeHeadline": torahData.hebrewTitle || '',
   "author": { "@type": "Person", "name": "Rabbi Nosson of Breslov" },
   "publisher": { "@type": "Organization", "name": "ajew.org" },
-  "inLanguage": ["he", "en"],
+  "inLanguage": "he",
   "isPartOf": { "@type": "Book", "name": bookName },
   "url": `https://ajew.org/reader/chumash-lh/${partNum}/${torahNum}`
 }) : '';
 ---
 
-<Layout title={pageTitle} description={pageDesc}>
+<Layout title={pageTitle} description={pageDesc} lang="he" hreflangs={['he']}>
   {torahData && structuredData && (
     <script type="application/ld+json" set:html={structuredData} slot="head" />
   )}

@@ -4,13 +4,19 @@ import '../../../../styles/reader.css';
 import fs from 'node:fs';
 import path from 'node:path';
 
+// Total sections: Intro + 70 tikunim + closing = 72 per public/.../part-1/index.json
+// Must be inlined — getStaticPaths runs in isolation and cannot access module-scope vars.
+
 export function getStaticPaths() {
   const paths = [];
-  for (let torah = 1; torah <= 7; torah++) {
+  const TOTAL_SECTIONS = 72;
+  for (let torah = 1; torah <= TOTAL_SECTIONS; torah++) {
     paths.push({ params: { part: '1', torah: String(torah) } });
   }
   return paths;
 }
+
+const TOTAL_SECTIONS = 72;
 
 const { part, torah } = Astro.params;
 const partNum = parseInt(part);
@@ -20,7 +26,7 @@ let torahData = null;
 let error = null;
 
 try {
-  const filePath = path.join(process.cwd(), `public/reader/ramchal-ruzin-gineezin/section-${torahNum}.json`);
+  const filePath = path.join(process.cwd(), `public/reader/ramchal-tikunim-chadashim/part-${partNum}/torah-${torahNum}.json`);
   const raw = fs.readFileSync(filePath, 'utf8');
   torahData = JSON.parse(raw);
 } catch (e) {
@@ -29,20 +35,23 @@ try {
 
 if (!torahData && !error) error = 'Content not available';
 
-const bookName = 'Ruzin Gineezin';
-const bookHebrew = 'רוזין גנוזין';
-const bookUrl = 'https://ajew.org/reader/ramchal-ruzin-gineezin/1/1';
+const bookName = 'Tikunim Chadashim';
+const bookHebrew = 'תיקונים חדשים';
+const bookUrl = 'https://ajew.org/reader/ramchal-tikunim-chadashim/1/1';
+
+const prevUrl = torahNum > 1 ? `/reader/ramchal-tikunim-chadashim/1/${torahNum - 1}` : null;
+const nextUrl = torahNum < TOTAL_SECTIONS ? `/reader/ramchal-tikunim-chadashim/1/${torahNum + 1}` : null;
 
 const pageTitle = torahData
   ? `${torahData.title} — ${torahData.hebrewTitle || bookHebrew} | Ramchal`
-  : 'Not Found';
+  : 'Section Not Found';
 const pageDesc = torahData
   ? (() => {
     const isFirst = torahNum === 1;
     if (isFirst) {
-      return `Ruzin Gineezin (רוזין גנוזין) — Rabbi Moshe Chaim Luzzatto's Hidden Treasures, a Kabbalistic work on Zohar secrets. Bilingual Hebrew-English, free on AJEW.org.`;
+      return `Tikunim Chadashim (תיקונים חדשים) — Ramchal's Kabbalistic continuation of the Tikunei Zohar, 70 new tikunim by Rabbi Moshe Chaim Luzzatto. Bilingual Hebrew-English on AJEW.org.`;
     }
-    return `${torahData.title} from Ruzin Gineezin (רוזין גנוזין) by Ramchal — Hidden Treasures of Kabbalah & Zohar secrets. Bilingual Hebrew-English on AJEW.org.`;
+    return `${torahData.title} from Tikunim Chadashim (תיקונים חדשים) by Ramchal — continuation of the Tikunei Zohar. Bilingual Hebrew-English, free on AJEW.org.`;
   })()
   : '';
 
@@ -69,14 +78,14 @@ const jsonLd = torahData ? {
       "name": "Rabbi Moshe Chaim Luzzatto",
       "alternateName": ["Ramchal", "רמח\"ל"]
     },
-    "genre": ["Kabbalah", "Jewish mysticism", "Zohar"],
+    "genre": ["Kabbalah", "Jewish mysticism", "Zohar", "Tikunei Zohar"],
     "inLanguage": ["he", "en"],
     "url": bookUrl,
     "image": "https://ajew.org/og-image.png",
-    "numberOfPages": 5,
+    "numberOfPages": 70,
     "bookFormat": "https://schema.org/EBook"
   },
-  "url": `https://ajew.org/reader/ramchal-ruzin-gineezin/1/${torahNum}`,
+  "url": `https://ajew.org/reader/ramchal-tikunim-chadashim/${partNum}/${torahNum}`,
   "position": torahNum
 } : null;
 
@@ -84,8 +93,8 @@ const breadcrumbs = torahData ? [
   { name: "Home", url: "https://ajew.org/" },
   { name: "Library", url: "https://ajew.org/reader" },
   { name: "Ramchal", url: "https://ajew.org/ramchal" },
-  { name: "Ruzin Gineezin", url: "https://ajew.org/reader/ramchal-ruzin-gineezin/1/1" },
-  { name: torahData.hebrewTitle || torahData.title, url: `https://ajew.org/reader/ramchal-ruzin-gineezin/1/${torahNum}` }
+  { name: bookName, url: bookUrl },
+  { name: torahData.hebrewTitle || torahData.title, url: `https://ajew.org/reader/ramchal-tikunim-chadashim/${partNum}/${torahNum}` }
 ] : [];
 ---
 
@@ -98,15 +107,17 @@ const breadcrumbs = torahData ? [
   ) : (
     <div
       class="reader-container"
-      data-torah-id={torahData.bookId + '-' + torahData.torah}
-      data-torah-title={`${torahData.title} - Ruzin Gineezin`}
+      data-torah-id={torahData.id}
+      data-torah-title={`${torahData.title}`}
     >
       <div class="reader-progress"></div>
 
       <div class="reader-breadcrumb">
         <a href="/reader">Reader</a>
         <span>&rsaquo;</span>
-        <a href="/ramchal">{bookName}</a>
+        <a href="/ramchal">Ramchal</a>
+        <span>&rsaquo;</span>
+        <a href="/reader/ramchal-tikunim-chadashim/1/1">Tikunim Chadashim</a>
         <span>&rsaquo;</span>
         {torahData.hebrewTitle || torahData.title}
       </div>
@@ -131,7 +142,6 @@ const breadcrumbs = torahData ? [
           <button class="reader-btn reader-btn-icon" id="btn-listen">Listen</button>
           <button class="reader-btn reader-btn-icon" id="btn-search">Search</button>
           <button class="reader-btn reader-btn-icon" id="btn-bookmark">Bookmark</button>
-          <button class="reader-btn reader-btn-icon" id="btn-notes">Notes</button>
           <button class="reader-btn reader-btn-icon" id="btn-fullscreen">Fullscreen</button>
         </div>
       </div>
@@ -147,8 +157,8 @@ const breadcrumbs = torahData ? [
         <button class="reader-toc-close">&times;</button>
         <h3>Sections</h3>
         <ul class="reader-toc-list">
-          {torahData.segments.map((seg, i) => (
-            <li><a href={`#seg-${i + 1}`} data-index={String(i + 1)}>{i + 1}</a></li>
+          {torahData.segments.map((seg) => (
+            <li><a href={`#seg-${seg.index}`} data-index={String(seg.index)}>{seg.index}</a></li>
           ))}
         </ul>
       </div>
@@ -157,68 +167,46 @@ const breadcrumbs = torahData ? [
         {torahData.hebrewTitle && <div class="hebrew-title">{torahData.hebrewTitle}</div>}
         <h1>{torahData.title}</h1>
         <p style="color: var(--reader-text-secondary); font-size: 0.9em; font-family: 'Open Sans', sans-serif;">
-          {bookHebrew} - {bookName}
+          תיקונים חדשים / Tikunim Chadashim
         </p>
       </div>
 
       <div class="reader-nav">
-        {torahNum > 1 ? (
-          <a href={`/reader/ramchal-ruzin-gineezin/1/${torahNum - 1}`} data-dir="prev">&larr; Previous</a>
+        {prevUrl ? (
+          <a href={prevUrl} data-dir="prev">&larr; Previous</a>
         ) : <span class="disabled">&larr; Previous</span>}
-        <a href="/ramchal">Ramchal Library</a>
-        {torahNum < 7 ? (
-          <a href={`/reader/ramchal-ruzin-gineezin/1/${torahNum + 1}`} data-dir="next">Next &rarr;</a>
+        <a href="/ramchal">All Ramchal</a>
+        {nextUrl ? (
+          <a href={nextUrl} data-dir="next">Next &rarr;</a>
         ) : <span class="disabled">Next &rarr;</span>}
       </div>
 
-      <div class="reader-content mode-english">
-        {torahData.segments.map((seg, i) => (
-          <div class="reader-segment-pair" id={`seg-${i + 1}`}>
-            <div class="reader-segment segment-he" data-index={String(i + 1)}>
-              <span class="segment-number">{i + 1}</span>
-              <p>{seg.he || '\u00A0'}</p>
+      <div class="reader-content mode-both">
+        {torahData.segments.map((seg) => (
+          <div class="reader-segment-pair" id={`seg-${seg.index}`}>
+            <div class="reader-segment segment-he" data-index={String(seg.index)}>
+              <span class="segment-number">{seg.index}</span>
+              <p>{seg.he}</p>
             </div>
-            <div class={`reader-segment segment-en ${!seg.en ? 'empty-translation' : ''}`} data-index={String(i + 1)}>
-              <span class="segment-number">{i + 1}</span>
-              <p>{seg.en || 'Translation not yet available'}</p>
+            <div class={`reader-segment segment-en ${!seg.en ? "empty-translation" : ""}`} data-index={String(seg.index)}>
+              <span class="segment-number">{seg.index}</span>
+              <p>{seg.en || "Translation not yet available"}</p>
             </div>
           </div>
         ))}
       </div>
 
       <div class="reader-nav">
-        {torahNum > 1 ? (
-          <a href={`/reader/ramchal-ruzin-gineezin/1/${torahNum - 1}`} data-dir="prev">&larr; Previous</a>
+        {prevUrl ? (
+          <a href={prevUrl} data-dir="prev">&larr; Previous</a>
         ) : <span class="disabled">&larr; Previous</span>}
-        <a href="/ramchal">Ramchal Library</a>
-        {torahNum < 7 ? (
-          <a href={`/reader/ramchal-ruzin-gineezin/1/${torahNum + 1}`} data-dir="next">Next &rarr;</a>
+        <a href="/ramchal">All Ramchal</a>
+        {nextUrl ? (
+          <a href={nextUrl} data-dir="next">Next &rarr;</a>
         ) : <span class="disabled">Next &rarr;</span>}
       </div>
 
-      <div class="reader-shortcuts-overlay">
-        <div class="reader-shortcuts-panel">
-          <h2>Keyboard Shortcuts</h2>
-          <div class="shortcut-row"><span>Hebrew mode</span><span class="shortcut-key">H</span></div>
-          <div class="shortcut-row"><span>English mode</span><span class="shortcut-key">E</span></div>
-          <div class="shortcut-row"><span>Both columns</span><span class="shortcut-key">B</span></div>
-          <div class="shortcut-row"><span>Fullscreen</span><span class="shortcut-key">F</span></div>
-          <div class="shortcut-row"><span>Search in text</span><span class="shortcut-key">Ctrl+F</span></div>
-          <div class="shortcut-row"><span>Save bookmark</span><span class="shortcut-key">S</span></div>
-          <div class="shortcut-row"><span>Listen / Pause</span><span class="shortcut-key">L</span></div>
-          <div class="shortcut-row"><span>Print</span><span class="shortcut-key">P</span></div>
-          <div class="shortcut-row"><span>Next segment</span><span class="shortcut-key">J / ↓</span></div>
-          <div class="shortcut-row"><span>Prev segment</span><span class="shortcut-key">K / ↑</span></div>
-          <div class="shortcut-row"><span>Toggle favorite</span><span class="shortcut-key">G</span></div>
-          <div class="shortcut-row"><span>Previous/Next</span><span class="shortcut-key">&larr; &rarr;</span></div>
-          <div class="shortcut-row"><span>Show shortcuts</span><span class="shortcut-key">?</span></div>
-          <br />
-          <button class="reader-btn" onclick="this.closest('.reader-shortcuts-overlay').classList.remove('open')">Close</button>
-        </div>
-      </div>
-
       <script src="/reader-script.js?v=3" is:inline></script>
-      <script src="/reader-notes.js" is:inline></script>
     </div>
   )}
 </Layout>

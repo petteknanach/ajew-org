@@ -29,16 +29,26 @@ try {
 
 if (!torahData && !error) error = 'Content not available';
 
+const bookName = 'Yichud HaYeeruh';
+const bookHebrew = 'יחוד היראה';
+const bookUrl = 'https://ajew.org/reader/ramchal-yichud-hayeeruh/1/1';
+
+// Title: bilingual, under ~60 chars. "AJEW.org" is appended by Layout (" | A Jew")
 const pageTitle = torahData
-  ? `${torahData.hebrewTitle || torahData.title} - Yichud HaYeeruh`
+  ? `${torahData.title} — ${torahData.hebrewTitle || bookHebrew} | Ramchal`
   : 'Section Not Found';
+// Description: 140-160 char target, includes EN+HE titles, author, keywords
 const pageDesc = torahData
   ? (() => {
-    const snippet = (torahData.segments?.find(s => s.en)?.en || '').replace(/<[^>]+>/g, '').slice(0, 120);
-    return `Read ${torahData.title} from Yichud HaYeeruh online free. ${snippet ? snippet + "..." : "Hebrew text with English translation on ajew.org."}`;
+    const isFirst = torahNum === 1;
+    if (isFirst) {
+      return `Yichud HaYeeruh (יחוד היראה) by Ramchal — Rabbi Moshe Chaim Luzzatto's Kabbalistic treatise on Yiras Haromimus (awe of God). Bilingual Hebrew-English, free on AJEW.org.`;
+    }
+    return `${torahData.title} from Yichud HaYeeruh (יחוד היראה) by Ramchal — a Kabbalistic treatise on Yiras Haromimus. Bilingual Hebrew-English edition, free on AJEW.org.`;
   })()
   : '';
 
+// Book-level schema (isPartOf) and Chapter-level schema combined
 const jsonLd = torahData ? {
   "@context": "https://schema.org",
   "@type": "Chapter",
@@ -55,11 +65,19 @@ const jsonLd = torahData ? {
   "inLanguage": ["he", "en"],
   "isPartOf": {
     "@type": "Book",
-    "name": "Yichud HaYeeruh",
-    "alternateName": "יחוד היראה",
-    "author": { "@type": "Person", "name": "Rabbi Moshe Chaim Luzzatto" },
+    "name": bookName,
+    "alternateName": bookHebrew,
+    "author": {
+      "@type": "Person",
+      "name": "Rabbi Moshe Chaim Luzzatto",
+      "alternateName": ["Ramchal", "רמח\"ל"]
+    },
     "genre": ["Kabbalah", "Jewish mysticism", "Yiras Haromimus"],
-    "inLanguage": ["he", "en"]
+    "inLanguage": ["he", "en"],
+    "url": bookUrl,
+    "image": "https://ajew.org/og-image.png",
+    "numberOfPages": 5,
+    "bookFormat": "https://schema.org/EBook"
   },
   "url": `https://ajew.org/reader/ramchal-yichud-hayeeruh/${partNum}/${torahNum}`,
   "position": torahNum
@@ -74,7 +92,7 @@ const breadcrumbs = torahData ? [
 ] : [];
 ---
 
-<Layout title={pageTitle} description={pageDesc} jsonLd={jsonLd} breadcrumbs={breadcrumbs}>
+<Layout title={pageTitle} description={pageDesc} jsonLd={jsonLd} breadcrumbs={breadcrumbs} type="book" hreflangs={['en', 'he']}>
   {error ? (
     <div style="text-align: center; padding: 80px 20px;">
       <h1>{error}</h1>

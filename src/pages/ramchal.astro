@@ -6,7 +6,8 @@ const ramchalBooks = [
   { id: 'ramchal-derech-hashem', title: 'Derech Hashem', heTitle: 'דרך ה\'', desc: 'The Way of God — systematic theology and hashkafa', sections: 28, sectionLabel: 'chapters', hasHebrew: true },
   { id: 'ramchal-daas-tevunos', title: 'Daas Tevunos', heTitle: 'דעת תבונות', desc: 'The Knowing Heart — understanding Divine providence', sections: 195, sectionLabel: 'sections', hasHebrew: true },
   { id: 'ramchal-klach-pitchei-chochma', title: "Klach Pitchei Chochma", heTitle: 'קל"ח פתחי חכמה', desc: '138 Openings of Wisdom — Kabbalistic foundations', sections: 138, sectionLabel: 'openings', hasHebrew: true },
-  { id: 'ramchal-adir-bamuroam', title: 'Adir BaMurom', heTitle: 'אדיר במרום', desc: 'Commentary on the Idra Rabba of the Zohar', sections: 21, hasHebrew: true },
+  { id: 'ramchal-adir-bamuroam', title: 'Adir BaMurom', heTitle: 'אדיר במרום', desc: 'Commentary on the Idra Rabba of the Zohar', sections: 21, sectionLabel: 'sections', hasHebrew: true },
+  { id: 'ramchal-ruzin-gineezin', title: 'Ruzin Gineezin', heTitle: 'רוזין גנוזין', desc: 'Hidden Treasures — Ramchal\'s Kabbalistic work on Zohar secrets', sections: 5, sectionLabel: 'sections', hasHebrew: true },
   { id: 'ramchal-derech-etz-chaim', title: 'Derech Etz Chaim', heTitle: 'דרך עץ חיים', desc: 'The Way of the Tree of Life — introduction to Pitchei Chochma', sections: 1, sectionLabel: 'chapter', hasHebrew: true },
   { id: 'ramchal-maamar-haikkarim', title: "Ma'amar HaIkkarim", heTitle: 'מאמר העיקרים', desc: 'Essay on the Fundamentals — core principles of faith', sections: 10, sectionLabel: 'chapters', hasHebrew: true },
   { id: 'ramchal-asara-perakim', title: 'Asara Perakim', heTitle: 'עשרה פרקים', desc: 'Ten Chapters — concise overview of Kabbalistic concepts', sections: 10, sectionLabel: 'chapters', hasHebrew: true },
@@ -16,8 +17,8 @@ const ramchalBooks = [
   { id: 'ramchal-shaaray-ramchal', title: 'Shaaray Ramchal', heTitle: 'שערי רמח"ל', desc: 'Gates of Ramchal — Mavo · Maamar HaVikuach · Pischay Chochmah · Klalei Chochmas HaEmes · Igros · Binyan Olam + Sod Hashem', sections: 6, sectionLabel: 'volumes', hasHebrew: true, hasEnglish: true },
 ];
 
-const pageTitle = "Ramchal - Rabbi Moshe Chaim Luzzatto | Mesillas Yesharim, Derech Hashem, Adir BaMurom";
-const pageDescription = "Complete works of Rabbi Moshe Chaim Luzzatto (Ramchal) — Kabbalistic texts including Mesillas Yesharim, Derech Hashem, Adir BaMurom, Klach Pitchei Chochma, Daas Tevunos, and Ruzin Gineezin. Bilingual Hebrew-English. Free online at AJEW.org.";
+const pageTitle = "Ramchal — Rabbi Moshe Chaim Luzzatto | Complete Kabbalistic Works";
+const pageDescription = "Complete works of Rabbi Moshe Chaim Luzzatto (Ramchal): Mesillas Yesharim, Derech Hashem, Klach Pitchei Chochma, Daas Tevunos, Adir BaMurom, Ruzin Gineezin, Tikunim Chadashim, Yichud HaYeeruh, Otzros Ramchal, Shaaray Ramchal. Bilingual Hebrew-English. Free on AJEW.org.";
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -39,11 +40,17 @@ const jsonLd = {
     "@type": "Book",
     "name": book.title,
     "alternateName": book.heTitle,
-    "author": { "@type": "Person", "name": "Rabbi Moshe Chaim Luzzatto" },
+    "author": {
+      "@type": "Person",
+      "name": "Rabbi Moshe Chaim Luzzatto",
+      "alternateName": ["Ramchal", "רמח\"ל"]
+    },
     "inLanguage": book.hasHebrew ? ["he", "en"] : ["en"],
     "url": `https://ajew.org/reader/${book.id}/1/1`,
     "description": book.desc,
-    "numberOfPages": book.sections
+    "numberOfPages": book.sections,
+    "genre": "Kabbalah",
+    "bookFormat": "https://schema.org/EBook"
   })),
   "publisher": {
     "@type": "Organization",
@@ -95,6 +102,7 @@ const breadcrumbs = [
       <h3>About the Ramchal</h3>
       <p>Rabbi Moshe Chaim Luzzatto, known as the Ramchal, was one of the most influential Jewish thinkers of the past 500 years. Born in Padua, Italy, he authored works spanning mussar (ethics), Kabbalah, logic, and poetry. His <em>Mesillas Yesharim</em> is studied in virtually every yeshiva in the world.</p>
       <p>The Gaon of Vilna said that if the Ramchal were alive in his generation, he would walk on foot to learn from him. Rabbi Nachman of Breslov held the Ramchal's writings in the highest regard.</p>
+      <p>This library also presents Ramchal's deepest Kabbalistic works — <a href="/reader/ramchal-tikunim-chadashim/1/1"><em>Tikunim Chadashim</em></a> (his continuation of the Tikunei Zohar), <a href="/reader/ramchal-yichud-hayeeruh/1/1"><em>Yichud HaYeeruh</em></a> (on Yiras Haromimus), <a href="/reader/ramchal-otzros-ramchal/1/1"><em>Otzros Ramchal</em></a> (commentaries on Tanach, Drushim, and Iggros), and <a href="/reader/ramchal-shaaray-ramchal/1/1"><em>Shaaray Ramchal</em></a> (the Gates of Ramchal) — alongside classics like <a href="/reader/ramchal-adir-bamuroam/1/1"><em>Adir BaMurom</em></a> and <a href="/reader/ramchal-ruzin-gineezin/1/1"><em>Ruzin Gineezin</em></a>.</p>
       <p>All texts are presented with Hebrew and English side-by-side where available. Use the Hebrew/English/Both toggle in the reader to switch display modes.</p>
     </div>
   </main>

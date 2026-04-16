@@ -64,8 +64,8 @@ const structuredData = torahData ? JSON.stringify({
   "alternativeHeadline": torahData.hebrewTitle || '',
   "author": { "@type": "Person", "name": "Levi Yitzchak Bender" },
   "publisher": { "@type": "Organization", "name": "ajew.org" },
-  "inLanguage": ["he", "en"],
-  "isPartOf": { "@type": "Book", "name": "Siach Sarfei Kodesh" },
+  "inLanguage": "he",
+  "isPartOf": { "@type": "Book", "name": "Siach Sarfei Kodesh", "inLanguage": "he" },
   "url": `https://ajew.org/reader/siach-sarfei-kodesh/${partNum}/${torahNum}`
 }) : '';
 const breadcrumbData = torahData ? JSON.stringify({
@@ -79,7 +79,7 @@ const breadcrumbData = torahData ? JSON.stringify({
 }) : '';
 ---
 
-<Layout title={pageTitle} description={pageDesc}>
+<Layout title={pageTitle} description={pageDesc} lang="he" hreflangs={['he']}>
   {torahData && structuredData && (
     <script type="application/ld+json" set:html={structuredData} slot="head" />
   )}
