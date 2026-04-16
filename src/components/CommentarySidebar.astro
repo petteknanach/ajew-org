@@ -79,6 +79,19 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
     <span class="commentary-sidebar-toggle-text">Commentary</span>
   </button>
 
+  {/* Right-edge handle — always visible when sidebar is closed, impossible to miss */}
+  <button
+    type="button"
+    class="commentary-sidebar-handle"
+    id="commentary-sidebar-handle"
+    aria-controls="commentary-sidebar"
+    aria-label="Open commentary sidebar"
+    title="Open commentary sidebar"
+  >
+    <span class="commentary-sidebar-handle-text">COMMENTARY</span>
+    <span class="commentary-sidebar-handle-arrow" aria-hidden="true">&#9664;</span>
+  </button>
+
   <script type="application/json" id="commentary-sidebar-data" set:html={entryJson}></script>
 
   <script is:inline>
@@ -104,14 +117,30 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
       var mql = window.matchMedia('(max-width: 900px)');
 
       // Read the main reader's language mode: 'hebrew' | 'english' | 'both'
+      // Priority:
+      //   1. DOM: active mode button in the reader header (most reliable — reflects current UI state)
+      //   2. localStorage ajew-reader-prefs.mode
+      //   3. Default: 'hebrew' (matches reader.js default so first-visit matches what user sees)
       function getReaderMode() {
+        // 1. DOM — reader uses data-mode="hebrew|english|both" on active mode button
+        try {
+          var activeBtn = document.querySelector('.reader-mode-btn.active, [data-mode].active, button[data-mode][aria-pressed="true"]');
+          if (activeBtn) {
+            var m = activeBtn.getAttribute('data-mode');
+            if (m === 'hebrew' || m === 'english' || m === 'both') return m;
+          }
+        } catch(_e) {}
+        // 2. localStorage
         try {
           var raw = localStorage.getItem(READER_PREFS_KEY);
-          if (!raw) return 'both';
-          var p = JSON.parse(raw);
-          var m = p && p.mode;
-          return (m === 'hebrew' || m === 'english' || m === 'both') ? m : 'both';
-        } catch (_e) { return 'both'; }
+          if (raw) {
+            var p = JSON.parse(raw);
+            var m2 = p && p.mode;
+            if (m2 === 'hebrew' || m2 === 'english' || m2 === 'both') return m2;
+          }
+        } catch (_e) {}
+        // 3. Default matches reader.js state.mode = 'hebrew'
+        return 'hebrew';
       }
 
       // Re-render current tab when the reader's language mode changes.
@@ -295,12 +324,20 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
         body.appendChild(head);
 
         // Determine available layers — use definition from registry or fall back to detecting from data
-        var layers = (def && def.layers) || ['beginner','intermediate','scholarly'];
+        var allLayers = (def && def.layers) || ['beginner','intermediate','scholarly'];
 
-        // Layer selection priority:
-        //   1. User's explicit layer preference (saved via click)
-        //   2. If no saved preference: auto-match to reader language mode
-        //      hebrew → scholarly, english → beginner, both → intermediate
+        // Language-mode scopes the VISIBLE layers:
+        //   hebrew → only [scholarly]  (Hebrew-native)
+        //   english → only [beginner]  (English-native)
+        //   both → all three layers
+        function layersForMode(m) {
+          if (m === 'hebrew')  return allLayers.filter(function(l){ return l === 'scholarly'; });
+          if (m === 'english') return allLayers.filter(function(l){ return l === 'beginner'; });
+          return allLayers.slice();
+        }
+        var layers = layersForMode(getReaderMode());
+        if (layers.length === 0) layers = allLayers.slice(); // fallback
+
         function defaultLayerForMode(m) {
           if (m === 'hebrew') return 'scholarly';
           if (m === 'english') return 'beginner';
@@ -313,11 +350,13 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
           : defaultLayerForMode(getReaderMode());
         if (layers.indexOf(current) === -1) current = layers[0];
 
-        // Layer sub-tabs
+        // Layer sub-tabs — only show visible layers for this language mode
         var layerBar = document.createElement('div');
         layerBar.className = 'commentary-sidebar-layers';
         layerBar.setAttribute('role','tablist');
         layerBar.setAttribute('aria-label','Commentary depth');
+        // Hide the row entirely if only one layer is shown (Hebrew or English mode)
+        if (layers.length <= 1) layerBar.style.display = 'none';
         layers.forEach(function (layer) {
           var btn = document.createElement('button');
           btn.type = 'button';
@@ -335,14 +374,11 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
           btn.addEventListener('click', function () {
             current = layer;
             setPreferredLayer(layer);
-            // Mark as explicit user choice — overrides language-mode default for this session
             try { localStorage.setItem('commentary-sidebar-layer-explicit', layer); } catch(_e) {}
-            // Update active state
             Array.prototype.forEach.call(layerBar.children, function (b) {
               b.classList.toggle('active', b.getAttribute('data-layer') === layer);
               b.setAttribute('aria-selected', b.getAttribute('data-layer') === layer ? 'true' : 'false');
             });
-            // Re-render the segments for the newly-selected layer
             renderLayerSegments();
           });
           layerBar.appendChild(btn);
@@ -613,6 +649,11 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
       });
       closeBtn.addEventListener('click', function () { setOpen(false); });
 
+      var handleBtn = document.getElementById('commentary-sidebar-handle');
+      if (handleBtn) {
+        handleBtn.addEventListener('click', function () { setOpen(true); });
+      }
+
       document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && sidebar.classList.contains('is-open') && isMobile()) {
           setOpen(false);
@@ -709,6 +750,57 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
 
     body.has-commentary-sidebar-open .commentary-sidebar-toggle {
       display: none;
+    }
+
+    /* Right-edge vertical handle — always visible when sidebar is closed */
+    .commentary-sidebar-handle {
+      position: fixed;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 1099;
+      background: var(--reader-accent, #1a365d);
+      color: #fff;
+      border: none;
+      border-radius: 8px 0 0 8px;
+      padding: 14px 8px 14px 12px;
+      cursor: pointer;
+      box-shadow: -3px 0 10px rgba(0, 0, 0, 0.18);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 0.75em;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      writing-mode: vertical-rl;
+      transform-origin: center;
+      transition: background 0.15s, padding-right 0.15s;
+    }
+    .commentary-sidebar-handle-text {
+      transform: rotate(180deg);
+    }
+    .commentary-sidebar-handle-arrow {
+      font-size: 1.2em;
+      writing-mode: horizontal-tb;
+      transform: rotate(180deg);
+    }
+    .commentary-sidebar-handle:hover {
+      background: var(--reader-accent-light, #2a5a9e);
+      padding-right: 12px;
+    }
+    .commentary-sidebar-handle:focus-visible {
+      outline: 3px solid #f4d978;
+      outline-offset: 2px;
+    }
+    body.has-commentary-sidebar-open .commentary-sidebar-handle {
+      display: none;
+    }
+    @media (max-width: 900px) {
+      .commentary-sidebar-handle {
+        display: none; /* mobile uses the FAB */
+      }
     }
 
     /* Sidebar panel — desktop default: fixed right */
