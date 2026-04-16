@@ -14,7 +14,7 @@
  *   - Tabs per source; body fetches section JSON on demand.
  *   - Accessibility: aria-expanded on toggle, role="complementary" on panel, aria-modal on mobile drawer.
  *
- * Running commentary (Ne'imos Netzach) text extraction is pending; the tab renders a placeholder.
+ * Running commentary (Pettek Nanach) — original three-layer commentary (Beginner/Intermediate/Scholarly).
  */
 
 export interface Props {
@@ -134,12 +134,14 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
       if (entry.running_commentary) {
         tabDefs.push({
           id: 'running',
-          label: 'Running Commentary',
+          label: entry.running_commentary.label || 'Running Commentary',
           kind: 'running',
           book: entry.running_commentary.book,
           slug: entry.running_commentary.slug,
           status: entry.running_commentary.status || 'pending',
-          url: entry.running_commentary.url || null
+          url: entry.running_commentary.url || null,
+          layers: entry.running_commentary.layers || null,
+          author: entry.running_commentary.author || null
         });
       }
       var seen = {};
@@ -212,87 +214,159 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
           .replace(/'/g, '&#39;');
       }
 
-      function renderRunningPlaceholder() {
+      // Preferred layer persists across pages
+      function getPreferredLayer() {
+        try {
+          return localStorage.getItem('commentary-sidebar-layer') || 'beginner';
+        } catch (e) { return 'beginner'; }
+      }
+      function setPreferredLayer(layer) {
+        try { localStorage.setItem('commentary-sidebar-layer', layer); } catch (e) {}
+      }
+
+      function renderRunningPlaceholder(def) {
         body.innerHTML = '';
         var wrap = document.createElement('div');
         wrap.className = 'commentary-sidebar-placeholder';
         var h = document.createElement('h3');
-        h.textContent = 'Ne\u2019imos Netzach';
+        h.textContent = (def && def.label) || 'Pettek Nanach Commentary';
         var p = document.createElement('p');
-        p.textContent = 'A running Hebrew commentary on Likutey Moharan. Text extraction is in progress \u2014 this tab will populate automatically once the source is ready.';
+        p.textContent = 'An original three-layer running commentary on Likutey Moharan \u2014 Beginner / Intermediate / Scholarly \u2014 by Pettek Nanach. Published freely on AJEW.org.';
         var small = document.createElement('p');
         small.className = 'commentary-sidebar-placeholder-note';
-        small.textContent = 'Coming soon.';
+        small.textContent = 'Coming soon for this Torah.';
         wrap.appendChild(h);
         wrap.appendChild(p);
         wrap.appendChild(small);
         body.appendChild(wrap);
       }
 
+      var LAYER_LABELS = {
+        beginner:     { en: 'Beginner',     icon: '\uD83C\uDF31' },
+        intermediate: { en: 'Intermediate', icon: '\uD83C\uDF3F' },
+        scholarly:    { en: 'Scholarly',    icon: '\uD83C\uDF33' }
+      };
+
       function renderRunningData(def, data) {
         body.innerHTML = '';
         var head = document.createElement('div');
         head.className = 'commentary-sidebar-section-head';
         var title = document.createElement('h3');
-        title.lang = 'he';
-        title.dir = 'rtl';
-        title.textContent = (data && data.hebrewTitle) || 'נעימות נצח';
+        title.textContent = (data && data.title) || (def && def.label) || 'Pettek Nanach Commentary';
         var sub = document.createElement('div');
         sub.className = 'commentary-sidebar-section-sub';
-        sub.textContent = 'Ne\u2019imos Netzach \u00B7 Running Commentary';
+        sub.textContent = (data && data.author) || 'Pettek Nanach';
         head.appendChild(title);
         head.appendChild(sub);
         body.appendChild(head);
 
-        var segs = Array.isArray(data && data.segments) ? data.segments : [];
-        if (segs.length === 0) {
-          var empty = document.createElement('p');
-          empty.className = 'commentary-sidebar-empty';
-          empty.textContent = 'No segments available.';
-          body.appendChild(empty);
-          return;
-        }
+        // Determine available layers — use definition from registry or fall back to detecting from data
+        var layers = (def && def.layers) || ['beginner','intermediate','scholarly'];
+        var current = getPreferredLayer();
+        if (layers.indexOf(current) === -1) current = layers[0];
 
-        var list = document.createElement('div');
-        list.className = 'commentary-sidebar-segments';
-        segs.forEach(function (seg) {
-          var pair = document.createElement('div');
-          pair.className = 'commentary-sidebar-segment';
-          var idxSpan = document.createElement('span');
-          idxSpan.className = 'commentary-sidebar-seg-num';
-          idxSpan.textContent = String(seg.index || '');
-          pair.appendChild(idxSpan);
-
-          var heText = seg.he_nikud || seg.he || '';
-          if (heText) {
-            // Split paragraph breaks into distinct <p> elements for readability.
-            var paragraphs = String(heText).split(/\n{2,}/);
-            paragraphs.forEach(function (para) {
-              var trimmed = para.replace(/\s+$/g, '').replace(/^\s+/g, '');
-              if (!trimmed) return;
-              var pHe = document.createElement('p');
-              pHe.className = 'commentary-sidebar-he';
-              pHe.lang = 'he';
-              pHe.dir = 'rtl';
-              pHe.textContent = trimmed;
-              pair.appendChild(pHe);
-            });
+        // Layer sub-tabs
+        var layerBar = document.createElement('div');
+        layerBar.className = 'commentary-sidebar-layers';
+        layerBar.setAttribute('role','tablist');
+        layerBar.setAttribute('aria-label','Commentary depth');
+        layers.forEach(function (layer) {
+          var btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'commentary-sidebar-layer-btn';
+          btn.setAttribute('role','tab');
+          var meta = LAYER_LABELS[layer] || { en: layer, icon: '' };
+          btn.textContent = meta.icon + ' ' + meta.en;
+          btn.setAttribute('data-layer', layer);
+          if (layer === current) {
+            btn.classList.add('active');
+            btn.setAttribute('aria-selected','true');
           } else {
-            var pEmpty = document.createElement('p');
-            pEmpty.className = 'commentary-sidebar-he empty';
-            pEmpty.lang = 'he';
-            pEmpty.dir = 'rtl';
-            pEmpty.textContent = '—';
-            pair.appendChild(pEmpty);
+            btn.setAttribute('aria-selected','false');
           }
-          list.appendChild(pair);
+          btn.addEventListener('click', function () {
+            current = layer;
+            setPreferredLayer(layer);
+            // Update active state
+            Array.prototype.forEach.call(layerBar.children, function (b) {
+              b.classList.toggle('active', b.getAttribute('data-layer') === layer);
+              b.setAttribute('aria-selected', b.getAttribute('data-layer') === layer ? 'true' : 'false');
+            });
+            // Re-render the segments for the newly-selected layer
+            renderLayerSegments();
+          });
+          layerBar.appendChild(btn);
         });
-        body.appendChild(list);
+        body.appendChild(layerBar);
+
+        var segsWrap = document.createElement('div');
+        segsWrap.className = 'commentary-sidebar-segments';
+        body.appendChild(segsWrap);
+
+        function renderLayerSegments() {
+          segsWrap.innerHTML = '';
+          var segs = Array.isArray(data && data.segments) ? data.segments : [];
+          if (segs.length === 0) {
+            var empty = document.createElement('p');
+            empty.className = 'commentary-sidebar-empty';
+            empty.textContent = 'No segments available.';
+            segsWrap.appendChild(empty);
+            return;
+          }
+          segs.forEach(function (seg) {
+            var pair = document.createElement('div');
+            pair.className = 'commentary-sidebar-segment';
+            var idxSpan = document.createElement('span');
+            idxSpan.className = 'commentary-sidebar-seg-num';
+            idxSpan.textContent = String(seg.index || '');
+            pair.appendChild(idxSpan);
+
+            // Support both new 3-layer format and legacy single-field format
+            var layer = seg.layers && seg.layers[current] ? seg.layers[current] : null;
+            var heText = layer ? (layer.he_nikud || layer.he || '') : (seg.he_nikud || seg.he || '');
+            var enText = layer ? (layer.en || '') : (seg.en || '');
+
+            // English first (for beginner/intermediate which are EN-primary), then Hebrew
+            if (enText) {
+              var paragraphsEn = String(enText).split(/\n{2,}/);
+              paragraphsEn.forEach(function (para) {
+                var trimmed = para.replace(/\s+$/g, '').replace(/^\s+/g, '');
+                if (!trimmed) return;
+                var pEn = document.createElement('p');
+                pEn.className = 'commentary-sidebar-en';
+                pEn.lang = 'en';
+                pEn.textContent = trimmed;
+                pair.appendChild(pEn);
+              });
+            }
+            if (heText) {
+              var paragraphs = String(heText).split(/\n{2,}/);
+              paragraphs.forEach(function (para) {
+                var trimmed = para.replace(/\s+$/g, '').replace(/^\s+/g, '');
+                if (!trimmed) return;
+                var pHe = document.createElement('p');
+                pHe.className = 'commentary-sidebar-he';
+                pHe.lang = 'he';
+                pHe.dir = 'rtl';
+                pHe.textContent = trimmed;
+                pair.appendChild(pHe);
+              });
+            }
+            if (!enText && !heText) {
+              var pEmpty = document.createElement('p');
+              pEmpty.className = 'commentary-sidebar-empty-layer';
+              pEmpty.textContent = '— This layer is empty for this segment —';
+              pair.appendChild(pEmpty);
+            }
+            segsWrap.appendChild(pair);
+          });
+        }
+        renderLayerSegments();
       }
 
       function renderRunning(def) {
         if (def.status !== 'available' || !def.url) {
-          renderRunningPlaceholder();
+          renderRunningPlaceholder(def);
           return;
         }
         if (cache[def.url]) {
@@ -600,6 +674,56 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
     .commentary-sidebar-tab:focus-visible {
       outline: 2px solid var(--reader-accent-light, #2a5a9e);
       outline-offset: 2px;
+    }
+
+    .commentary-sidebar-layers {
+      display: flex;
+      gap: 6px;
+      margin: 12px 0 18px;
+      padding: 4px;
+      background: var(--reader-control-bg, #f5ebd8);
+      border-radius: 999px;
+      justify-content: stretch;
+    }
+    .commentary-sidebar-layer-btn {
+      flex: 1 1 33%;
+      padding: 7px 10px;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 0.85em;
+      background: transparent;
+      color: var(--reader-text-secondary, #666);
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .commentary-sidebar-layer-btn:hover {
+      background: var(--reader-control-hover, #eaddc0);
+      color: var(--reader-text, #1a1a1a);
+    }
+    .commentary-sidebar-layer-btn.active {
+      background: var(--reader-accent, #1a365d);
+      color: #fff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .commentary-sidebar-layer-btn:focus-visible {
+      outline: 2px solid var(--reader-accent-light, #2a5a9e);
+      outline-offset: 2px;
+    }
+    .commentary-sidebar-en {
+      font-family: 'Crimson Pro', 'Georgia', serif;
+      font-size: 1.02em;
+      line-height: 1.65;
+      margin: 0 0 0.8em 0;
+      color: var(--reader-text, #1a1a1a);
+    }
+    .commentary-sidebar-empty-layer {
+      font-style: italic;
+      color: var(--reader-text-tertiary, #999);
+      font-size: 0.88em;
+      text-align: center;
+      padding: 12px;
     }
 
     .commentary-sidebar-body {
