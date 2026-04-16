@@ -6,7 +6,7 @@ import path from 'node:path';
 
 export function getStaticPaths() {
   const paths = [];
-  for (let torah = 1; torah <= 13; torah++) {
+  for (let torah = 1; torah <= 16; torah++) {
     paths.push({ params: { part: '1', torah: String(torah) } });
   }
   return paths;
@@ -32,7 +32,7 @@ if (!torahData && !error) error = 'Content not available';
 const bookName = 'Ginzay Ramchal';
 const bookHebrew = 'גנזי רמח"ל';
 const bookUrl = 'https://ajew.org/reader/ramchal-ginzay-ramchal/1/1';
-const totalSections = 13;
+const totalSections = 16;
 
 const pageTitle = torahData
   ? `${torahData.title} — ${torahData.hebrewTitle || bookHebrew} | Ramchal`
