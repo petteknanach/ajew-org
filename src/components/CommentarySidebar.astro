@@ -114,23 +114,22 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
         } catch (_e) { return 'both'; }
       }
 
-      // Re-render current tab when the reader's language mode changes
+      // Re-render current tab when the reader's language mode changes.
+      // Also clear the "explicit layer" preference so the sidebar's default layer
+      // follows the new reader language (hebrew→scholarly, english→beginner, both→intermediate).
+      function onReaderModeChanged() {
+        try { localStorage.removeItem('commentary-sidebar-layer-explicit'); } catch(_e) {}
+        var activeTabEl = document.querySelector('.commentary-sidebar-tab.is-active');
+        if (activeTabEl) activateTab(activeTabEl.getAttribute('data-tab-id'));
+      }
       window.addEventListener('storage', function(ev) {
-        if (ev && ev.key === READER_PREFS_KEY) {
-          var activeTabEl = document.querySelector('.commentary-sidebar-tab.is-active');
-          if (activeTabEl) activateTab(activeTabEl.getAttribute('data-tab-id'));
-        }
+        if (ev && ev.key === READER_PREFS_KEY) onReaderModeChanged();
       });
-      // Also listen for same-tab reader-mode changes (no storage event fires on the same tab).
-      // The reader fires its own prefs save via setState -> savePrefs. We add a lightweight poll.
+      // Same-tab polling — storage event doesn't fire in the same document.
       var lastMode = getReaderMode();
       setInterval(function() {
         var m = getReaderMode();
-        if (m !== lastMode) {
-          lastMode = m;
-          var activeTabEl = document.querySelector('.commentary-sidebar-tab.is-active');
-          if (activeTabEl) activateTab(activeTabEl.getAttribute('data-tab-id'));
-        }
+        if (m !== lastMode) { lastMode = m; onReaderModeChanged(); }
       }, 800);
 
       function isMobile() { return mql.matches; }
@@ -297,7 +296,21 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
 
         // Determine available layers — use definition from registry or fall back to detecting from data
         var layers = (def && def.layers) || ['beginner','intermediate','scholarly'];
-        var current = getPreferredLayer();
+
+        // Layer selection priority:
+        //   1. User's explicit layer preference (saved via click)
+        //   2. If no saved preference: auto-match to reader language mode
+        //      hebrew → scholarly, english → beginner, both → intermediate
+        function defaultLayerForMode(m) {
+          if (m === 'hebrew') return 'scholarly';
+          if (m === 'english') return 'beginner';
+          return 'intermediate';
+        }
+        var savedLayer = null;
+        try { savedLayer = localStorage.getItem('commentary-sidebar-layer-explicit'); } catch(_e) {}
+        var current = savedLayer && layers.indexOf(savedLayer) !== -1
+          ? savedLayer
+          : defaultLayerForMode(getReaderMode());
         if (layers.indexOf(current) === -1) current = layers[0];
 
         // Layer sub-tabs
@@ -322,6 +335,8 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
           btn.addEventListener('click', function () {
             current = layer;
             setPreferredLayer(layer);
+            // Mark as explicit user choice — overrides language-mode default for this session
+            try { localStorage.setItem('commentary-sidebar-layer-explicit', layer); } catch(_e) {}
             // Update active state
             Array.prototype.forEach.call(layerBar.children, function (b) {
               b.classList.toggle('active', b.getAttribute('data-layer') === layer);
@@ -655,34 +670,42 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
   </script>
 
   <style>
-    /* Toggle button (Floating Action Button on mobile, pill on desktop) */
+    /* Toggle button — prominent FAB, bottom-right, animated pulse when closed */
     .commentary-sidebar-toggle {
       position: fixed;
-      right: 16px;
-      bottom: 16px;
+      right: 20px;
+      bottom: 20px;
       z-index: 1100;
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      padding: 10px 16px;
-      border: 1px solid var(--reader-border, #e0d6c2);
+      gap: 10px;
+      padding: 14px 22px;
+      border: 2px solid #fff;
       background: var(--reader-accent, #1a365d);
       color: #fff;
       border-radius: 999px;
       font-family: 'Open Sans', sans-serif;
-      font-size: 0.9em;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+      font-size: 1em;
+      font-weight: 600;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.28), 0 0 0 0 rgba(26, 54, 93, 0.5);
       cursor: pointer;
-      transition: background 0.15s ease, transform 0.15s ease;
+      transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.3s ease;
+      animation: commentary-toggle-pulse 2.4s ease-in-out 1s 3;
+    }
+    @keyframes commentary-toggle-pulse {
+      0%, 100% { box-shadow: 0 6px 20px rgba(0, 0, 0, 0.28), 0 0 0 0 rgba(26, 54, 93, 0.5); }
+      50%      { box-shadow: 0 6px 20px rgba(0, 0, 0, 0.28), 0 0 0 14px rgba(26, 54, 93, 0); }
     }
     .commentary-sidebar-toggle:hover {
       background: var(--reader-accent-light, #2a5a9e);
+      transform: translateY(-2px);
     }
     .commentary-sidebar-toggle:focus-visible {
-      outline: 2px solid var(--reader-accent-light, #2a5a9e);
-      outline-offset: 2px;
+      outline: 3px solid #f4d978;
+      outline-offset: 3px;
     }
-    .commentary-sidebar-toggle-icon { font-size: 1.15em; line-height: 1; }
+    .commentary-sidebar-toggle-icon { font-size: 1.25em; line-height: 1; }
+    .commentary-sidebar-toggle-text { letter-spacing: 0.02em; }
 
     body.has-commentary-sidebar-open .commentary-sidebar-toggle {
       display: none;
