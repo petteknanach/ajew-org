@@ -29,6 +29,16 @@ try {
 
 if (!torahData && !error) error = 'Content not available';
 
+// Defensive defaults for JSONs that may lack navigation or segments
+if (torahData) {
+  if (!torahData.navigation) {
+    torahData.navigation = { prev: null, next: null, prevUrl: null, nextUrl: null };
+  }
+  if (!Array.isArray(torahData.segments)) {
+    torahData.segments = [];
+  }
+}
+
 const bookName = 'Otzros Ramchal';
 const bookHebrew = 'אוצרות רמח"ל';
 const bookUrl = 'https://ajew.org/reader/ramchal-otzros-ramchal/1/1';
