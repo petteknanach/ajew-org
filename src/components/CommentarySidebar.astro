@@ -1,0 +1,648 @@
+---
+/**
+ * CommentarySidebar.astro
+ *
+ * Sefaria-style commentary sidebar for Likutey Moharan reader pages.
+ * Props:
+ *   - part: LM part number (1 or 2)
+ *   - torah: LM torah number
+ *   - entry: commentaries registry entry for this torah (may be null if none)
+ *
+ * Behaviour:
+ *   - Desktop: fixed right-side panel (~40% width), user-toggleable, state persists in localStorage.
+ *   - Mobile (<=900px): collapsible drawer with bottom-right FAB toggle.
+ *   - Tabs per source; body fetches section JSON on demand.
+ *   - Accessibility: aria-expanded on toggle, role="complementary" on panel, aria-modal on mobile drawer.
+ *
+ * Running commentary (Ne'imos Netzach) text extraction is pending; the tab renders a placeholder.
+ */
+
+export interface Props {
+  part: number;
+  torah: number;
+  entry: any | null;
+}
+
+const { part, torah, entry } = Astro.props as Props;
+const hasAny = !!(entry && (entry.related_commentaries?.length || entry.running_commentary));
+const entryJson = hasAny ? JSON.stringify(entry) : 'null';
+---
+
+{hasAny && (
+  <div
+    class="commentary-sidebar"
+    id="commentary-sidebar"
+    role="complementary"
+    aria-label={`Commentaries on Likutey Moharan ${part}:${torah}`}
+    data-part={String(part)}
+    data-torah={String(torah)}
+  >
+    <div class="commentary-sidebar-header">
+      <h2 class="commentary-sidebar-title">
+        Commentaries on Torah {torah}
+      </h2>
+      <button
+        type="button"
+        class="commentary-sidebar-close"
+        id="commentary-sidebar-close"
+        aria-label="Close commentary sidebar"
+      >&times;</button>
+    </div>
+
+    <div
+      class="commentary-sidebar-tabs"
+      role="tablist"
+      aria-label="Commentary sources"
+      id="commentary-sidebar-tabs"
+    ></div>
+
+    <div
+      class="commentary-sidebar-body"
+      id="commentary-sidebar-body"
+      tabindex="0"
+    >
+      <div class="commentary-sidebar-loading" aria-live="polite">
+        Loading commentary&hellip;
+      </div>
+    </div>
+  </div>
+
+  <button
+    type="button"
+    class="commentary-sidebar-toggle"
+    id="commentary-sidebar-toggle"
+    aria-controls="commentary-sidebar"
+    aria-expanded="false"
+    title="Open commentary sidebar"
+  >
+    <span class="commentary-sidebar-toggle-icon" aria-hidden="true">&#9776;</span>
+    <span class="commentary-sidebar-toggle-text">Commentary</span>
+  </button>
+
+  <script type="application/json" id="commentary-sidebar-data" set:html={entryJson}></script>
+
+  <script is:inline>
+    (function () {
+      var dataEl = document.getElementById('commentary-sidebar-data');
+      if (!dataEl) return;
+
+      var entry;
+      try { entry = JSON.parse(dataEl.textContent || 'null'); } catch (_e) { entry = null; }
+      if (!entry) return;
+
+      var sidebar = document.getElementById('commentary-sidebar');
+      var toggle = document.getElementById('commentary-sidebar-toggle');
+      var closeBtn = document.getElementById('commentary-sidebar-close');
+      var tabs = document.getElementById('commentary-sidebar-tabs');
+      var body = document.getElementById('commentary-sidebar-body');
+      if (!sidebar || !toggle || !tabs || !body || !closeBtn) return;
+
+      var STORAGE_KEY = 'commentarySidebarOpen';
+      var ACTIVE_TAB_KEY = 'commentarySidebarActiveTab';
+      var cache = {}; // url -> fetched JSON
+      var mql = window.matchMedia('(max-width: 900px)');
+
+      function isMobile() { return mql.matches; }
+
+      function setOpen(open, persist) {
+        sidebar.classList.toggle('is-open', open);
+        document.body.classList.toggle('has-commentary-sidebar-open', open);
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        if (isMobile()) {
+          sidebar.setAttribute('aria-modal', open ? 'true' : 'false');
+          sidebar.setAttribute('role', open ? 'dialog' : 'complementary');
+        } else {
+          sidebar.removeAttribute('aria-modal');
+          sidebar.setAttribute('role', 'complementary');
+        }
+        if (persist !== false) {
+          try { localStorage.setItem(STORAGE_KEY, open ? '1' : '0'); } catch (_e) {}
+        }
+      }
+
+      function getStoredOpen() {
+        try {
+          var v = localStorage.getItem(STORAGE_KEY);
+          // Default: open on desktop, closed on mobile
+          if (v === null) return !isMobile();
+          return v === '1';
+        } catch (_e) { return !isMobile(); }
+      }
+
+      // --- Build tab list ---
+      var tabDefs = [];
+      if (entry.running_commentary) {
+        tabDefs.push({
+          id: 'running',
+          label: 'Running Commentary',
+          kind: 'running',
+          book: entry.running_commentary.book,
+          slug: entry.running_commentary.slug,
+          status: entry.running_commentary.status || 'pending'
+        });
+      }
+      var seen = {};
+      (entry.related_commentaries || []).forEach(function (c, idx) {
+        var id = 'c-' + idx + '-' + (c.book || 'x');
+        tabDefs.push({
+          id: id,
+          label: c.label + (c.sectionTitle ? ' \u2014 ' + c.sectionTitle : ''),
+          shortLabel: c.label,
+          kind: 'related',
+          book: c.book,
+          section: c.section,
+          sectionNumber: c.sectionNumber,
+          url: c.url,
+          sectionTitle: c.sectionTitle || ''
+        });
+      });
+
+      if (tabDefs.length === 0) return;
+
+      // Collapse duplicate short labels (e.g. multiple Biur HaLikutim sections on same torah)
+      var shortCounts = {};
+      tabDefs.forEach(function (t) {
+        if (t.kind !== 'related') return;
+        shortCounts[t.shortLabel] = (shortCounts[t.shortLabel] || 0) + 1;
+      });
+      var shortIdx = {};
+      tabDefs.forEach(function (t) {
+        if (t.kind !== 'related') { t.displayLabel = t.label; return; }
+        if (shortCounts[t.shortLabel] > 1) {
+          shortIdx[t.shortLabel] = (shortIdx[t.shortLabel] || 0) + 1;
+          t.displayLabel = t.shortLabel + ' (' + shortIdx[t.shortLabel] + ')';
+        } else {
+          t.displayLabel = t.shortLabel;
+        }
+      });
+
+      tabDefs.forEach(function (t) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'commentary-sidebar-tab';
+        btn.setAttribute('role', 'tab');
+        btn.setAttribute('aria-selected', 'false');
+        btn.setAttribute('data-tab-id', t.id);
+        btn.title = t.label;
+        btn.textContent = t.displayLabel;
+        btn.addEventListener('click', function () { activateTab(t.id); });
+        tabs.appendChild(btn);
+      });
+
+      function renderLoading() {
+        body.innerHTML = '<div class="commentary-sidebar-loading" aria-live="polite">Loading commentary\u2026</div>';
+      }
+
+      function renderError(message) {
+        var div = document.createElement('div');
+        div.className = 'commentary-sidebar-error';
+        div.setAttribute('role', 'alert');
+        div.textContent = message;
+        body.innerHTML = '';
+        body.appendChild(div);
+      }
+
+      function escapeHtml(str) {
+        return String(str == null ? '' : str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/\"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function renderRunning(def) {
+        body.innerHTML = '';
+        var wrap = document.createElement('div');
+        wrap.className = 'commentary-sidebar-placeholder';
+        var h = document.createElement('h3');
+        h.textContent = 'Ne\u2019imos Netzach';
+        var p = document.createElement('p');
+        p.textContent = 'A running bilingual commentary on Likutey Moharan. Text extraction is in progress \u2014 this tab will populate automatically once the source is ready.';
+        var small = document.createElement('p');
+        small.className = 'commentary-sidebar-placeholder-note';
+        small.textContent = 'Coming soon.';
+        wrap.appendChild(h);
+        wrap.appendChild(p);
+        wrap.appendChild(small);
+        body.appendChild(wrap);
+      }
+
+      function renderRelated(def, data) {
+        body.innerHTML = '';
+        var head = document.createElement('div');
+        head.className = 'commentary-sidebar-section-head';
+        var title = document.createElement('h3');
+        title.lang = 'he';
+        title.dir = 'rtl';
+        title.textContent = def.sectionTitle || data.hebrewTitle || def.displayLabel;
+        var sub = document.createElement('div');
+        sub.className = 'commentary-sidebar-section-sub';
+        sub.textContent = def.shortLabel + (def.sectionNumber ? ' \u00B7 \u00A7' + def.sectionNumber : '');
+        var link = document.createElement('a');
+        link.className = 'commentary-sidebar-open-full';
+        link.href = def.url;
+        link.textContent = 'Open full section \u2197';
+        link.setAttribute('rel', 'noopener');
+        head.appendChild(title);
+        head.appendChild(sub);
+        head.appendChild(link);
+        body.appendChild(head);
+
+        var segs = Array.isArray(data && data.segments) ? data.segments : [];
+        if (segs.length === 0) {
+          var empty = document.createElement('p');
+          empty.className = 'commentary-sidebar-empty';
+          empty.textContent = 'No segments available.';
+          body.appendChild(empty);
+          return;
+        }
+        var list = document.createElement('div');
+        list.className = 'commentary-sidebar-segments';
+        segs.forEach(function (seg) {
+          var pair = document.createElement('div');
+          pair.className = 'commentary-sidebar-segment';
+          var idxSpan = document.createElement('span');
+          idxSpan.className = 'commentary-sidebar-seg-num';
+          idxSpan.textContent = String(seg.index || '');
+          pair.appendChild(idxSpan);
+
+          if (seg.he) {
+            var pHe = document.createElement('p');
+            pHe.className = 'commentary-sidebar-he';
+            pHe.lang = 'he';
+            pHe.dir = 'rtl';
+            pHe.textContent = seg.he;
+            pair.appendChild(pHe);
+          }
+          if (seg.en) {
+            var pEn = document.createElement('p');
+            pEn.className = 'commentary-sidebar-en';
+            pEn.textContent = seg.en;
+            pair.appendChild(pEn);
+          } else if (!seg.he) {
+            var pEmpty = document.createElement('p');
+            pEmpty.className = 'commentary-sidebar-en empty';
+            pEmpty.textContent = 'Translation not yet available.';
+            pair.appendChild(pEmpty);
+          }
+          list.appendChild(pair);
+        });
+        body.appendChild(list);
+      }
+
+      function fetchSection(def) {
+        if (!def.book || !def.section) {
+          return Promise.reject(new Error('Missing commentary source info.'));
+        }
+        var url = '/reader/' + def.book + '/' + def.section + '.json';
+        if (cache[url]) return Promise.resolve(cache[url]);
+        return fetch(url, { credentials: 'same-origin' }).then(function (r) {
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          return r.json();
+        }).then(function (json) {
+          cache[url] = json;
+          return json;
+        });
+      }
+
+      function activateTab(tabId) {
+        var def = null;
+        for (var i = 0; i < tabDefs.length; i++) {
+          if (tabDefs[i].id === tabId) { def = tabDefs[i]; break; }
+        }
+        if (!def) return;
+
+        Array.prototype.forEach.call(
+          tabs.querySelectorAll('.commentary-sidebar-tab'),
+          function (btn) {
+            var sel = btn.getAttribute('data-tab-id') === tabId;
+            btn.setAttribute('aria-selected', sel ? 'true' : 'false');
+            btn.classList.toggle('is-active', sel);
+          }
+        );
+
+        try { localStorage.setItem(ACTIVE_TAB_KEY, tabId); } catch (_e) {}
+
+        if (def.kind === 'running') {
+          renderRunning(def);
+          return;
+        }
+        renderLoading();
+        fetchSection(def).then(function (json) {
+          renderRelated(def, json);
+        }).catch(function (err) {
+          renderError('Could not load commentary: ' + (err && err.message ? err.message : 'unknown error'));
+        });
+      }
+
+      // --- Event wiring ---
+      toggle.addEventListener('click', function () {
+        setOpen(!sidebar.classList.contains('is-open'));
+      });
+      closeBtn.addEventListener('click', function () { setOpen(false); });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && sidebar.classList.contains('is-open') && isMobile()) {
+          setOpen(false);
+          toggle.focus();
+        }
+      });
+
+      // Update role when breakpoint changes
+      function handleMql() {
+        if (sidebar.classList.contains('is-open')) setOpen(true, false);
+      }
+      if (mql.addEventListener) mql.addEventListener('change', handleMql);
+      else if (mql.addListener) mql.addListener(handleMql);
+
+      // Restore state
+      var startOpen = getStoredOpen();
+      setOpen(startOpen, false);
+
+      var storedTab = null;
+      try { storedTab = localStorage.getItem(ACTIVE_TAB_KEY); } catch (_e) {}
+      var initialTab = null;
+      if (storedTab) {
+        for (var j = 0; j < tabDefs.length; j++) {
+          if (tabDefs[j].id === storedTab) { initialTab = storedTab; break; }
+        }
+      }
+      if (!initialTab) {
+        // Prefer first related (non-pending running)
+        for (var k = 0; k < tabDefs.length; k++) {
+          if (tabDefs[k].kind === 'related') { initialTab = tabDefs[k].id; break; }
+        }
+      }
+      if (!initialTab && tabDefs.length) initialTab = tabDefs[0].id;
+      if (initialTab) activateTab(initialTab);
+    })();
+  </script>
+
+  <style>
+    /* Toggle button (Floating Action Button on mobile, pill on desktop) */
+    .commentary-sidebar-toggle {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      z-index: 1100;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border: 1px solid var(--reader-border, #e0d6c2);
+      background: var(--reader-accent, #1a365d);
+      color: #fff;
+      border-radius: 999px;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 0.9em;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+      cursor: pointer;
+      transition: background 0.15s ease, transform 0.15s ease;
+    }
+    .commentary-sidebar-toggle:hover {
+      background: var(--reader-accent-light, #2a5a9e);
+    }
+    .commentary-sidebar-toggle:focus-visible {
+      outline: 2px solid var(--reader-accent-light, #2a5a9e);
+      outline-offset: 2px;
+    }
+    .commentary-sidebar-toggle-icon { font-size: 1.15em; line-height: 1; }
+
+    body.has-commentary-sidebar-open .commentary-sidebar-toggle {
+      display: none;
+    }
+
+    /* Sidebar panel — desktop default: fixed right */
+    .commentary-sidebar {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 40%;
+      min-width: 340px;
+      max-width: 560px;
+      height: 100vh;
+      background: var(--reader-sidebar-bg, #f8f5ef);
+      color: var(--reader-text, #1a1a1a);
+      border-left: 1px solid var(--reader-border, #e0d6c2);
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.22s ease;
+      z-index: 1000;
+      box-shadow: -4px 0 16px rgba(0, 0, 0, 0.08);
+    }
+    .commentary-sidebar.is-open {
+      transform: translateX(0);
+    }
+
+    /* Shift main reader content when sidebar is open on desktop */
+    @media (min-width: 901px) {
+      body.has-commentary-sidebar-open .reader-container {
+        max-width: calc(100% - 40%);
+        margin-right: 40%;
+        transition: margin-right 0.22s ease, max-width 0.22s ease;
+      }
+    }
+
+    .commentary-sidebar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--reader-border, #e0d6c2);
+      background: var(--reader-control-bg, #f0ebe0);
+    }
+    .commentary-sidebar-title {
+      margin: 0;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 1em;
+      font-weight: 600;
+      color: var(--reader-text, #1a1a1a);
+    }
+    .commentary-sidebar-close {
+      background: transparent;
+      border: none;
+      font-size: 1.8em;
+      line-height: 1;
+      color: var(--reader-text-secondary, #555);
+      cursor: pointer;
+      padding: 0 6px;
+    }
+    .commentary-sidebar-close:hover { color: var(--reader-text, #1a1a1a); }
+    .commentary-sidebar-close:focus-visible {
+      outline: 2px solid var(--reader-accent-light, #2a5a9e);
+      outline-offset: 2px;
+    }
+
+    .commentary-sidebar-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--reader-border, #e0d6c2);
+      background: var(--reader-bg, #fffdf7);
+    }
+    .commentary-sidebar-tab {
+      padding: 6px 10px;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 0.82em;
+      background: transparent;
+      color: var(--reader-text-secondary, #555);
+      border: 1px solid var(--reader-border, #e0d6c2);
+      border-radius: 6px;
+      cursor: pointer;
+      white-space: nowrap;
+      max-width: 220px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .commentary-sidebar-tab:hover {
+      background: var(--reader-control-hover, #e5ddd0);
+      color: var(--reader-text, #1a1a1a);
+    }
+    .commentary-sidebar-tab.is-active {
+      background: var(--reader-accent, #1a365d);
+      color: #fff;
+      border-color: var(--reader-accent, #1a365d);
+    }
+    .commentary-sidebar-tab:focus-visible {
+      outline: 2px solid var(--reader-accent-light, #2a5a9e);
+      outline-offset: 2px;
+    }
+
+    .commentary-sidebar-body {
+      flex: 1 1 auto;
+      overflow-y: auto;
+      padding: 16px 18px 48px;
+      font-family: var(--reader-font-family, 'Frank Ruhl Libre', serif);
+      font-size: 0.95em;
+      line-height: 1.75;
+    }
+    .commentary-sidebar-body:focus {
+      outline: none;
+    }
+
+    .commentary-sidebar-section-head {
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px dashed var(--reader-border, #e0d6c2);
+    }
+    .commentary-sidebar-section-head h3 {
+      margin: 0 0 4px 0;
+      font-size: 1.2em;
+      color: var(--reader-accent, #1a365d);
+    }
+    .commentary-sidebar-section-sub {
+      font-family: 'Open Sans', sans-serif;
+      font-size: 0.8em;
+      color: var(--reader-text-secondary, #555);
+    }
+    .commentary-sidebar-open-full {
+      display: inline-block;
+      margin-top: 6px;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 0.8em;
+      color: var(--reader-accent, #1a365d);
+      text-decoration: none;
+      border-bottom: 1px solid currentColor;
+    }
+    .commentary-sidebar-open-full:hover {
+      color: var(--reader-accent-light, #2a5a9e);
+    }
+
+    .commentary-sidebar-segments {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .commentary-sidebar-segment {
+      position: relative;
+      padding: 10px 0 10px 34px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    }
+    .commentary-sidebar-segment:last-child { border-bottom: none; }
+    .commentary-sidebar-seg-num {
+      position: absolute;
+      left: 0;
+      top: 12px;
+      width: 26px;
+      text-align: center;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 0.7em;
+      color: var(--reader-text-secondary, #555);
+      background: var(--reader-control-bg, #f0ebe0);
+      border: 1px solid var(--reader-border, #e0d6c2);
+      border-radius: 4px;
+      padding: 2px 0;
+    }
+    .commentary-sidebar-he {
+      margin: 0 0 6px 0;
+      line-height: 1.95;
+    }
+    .commentary-sidebar-en {
+      margin: 0;
+      color: var(--reader-text, #1a1a1a);
+      font-size: 0.92em;
+    }
+    .commentary-sidebar-en.empty {
+      color: var(--reader-text-secondary, #555);
+      font-style: italic;
+    }
+
+    .commentary-sidebar-loading,
+    .commentary-sidebar-empty,
+    .commentary-sidebar-error {
+      font-family: 'Open Sans', sans-serif;
+      font-size: 0.9em;
+      color: var(--reader-text-secondary, #555);
+      padding: 16px 0;
+    }
+    .commentary-sidebar-error {
+      color: #b23;
+    }
+
+    .commentary-sidebar-placeholder {
+      text-align: center;
+      padding: 40px 16px;
+    }
+    .commentary-sidebar-placeholder h3 {
+      margin: 0 0 8px 0;
+      color: var(--reader-accent, #1a365d);
+    }
+    .commentary-sidebar-placeholder p {
+      margin: 0 0 8px 0;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 0.95em;
+      color: var(--reader-text-secondary, #555);
+    }
+    .commentary-sidebar-placeholder-note {
+      font-style: italic;
+      opacity: 0.8;
+    }
+
+    /* Mobile: drawer from the right, covers most of the screen, has backdrop */
+    @media (max-width: 900px) {
+      .commentary-sidebar {
+        width: 92%;
+        min-width: 0;
+        max-width: none;
+        box-shadow: -6px 0 28px rgba(0, 0, 0, 0.35);
+      }
+      .commentary-sidebar.is-open::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        left: auto;
+        right: 92%;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.45);
+        z-index: -1;
+      }
+      body.has-commentary-sidebar-open {
+        overflow: hidden;
+      }
+    }
+  </style>
+)}

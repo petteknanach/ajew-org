@@ -1,6 +1,8 @@
 ---
 import Layout from '../../../../layouts/Layout.astro';
+import CommentarySidebar from '../../../../components/CommentarySidebar.astro';
 import '../../../../styles/reader.css';
+import commentaryRegistry from '../../../../data/lm-commentaries.json';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -98,6 +100,17 @@ const breadcrumbData = torahData ? JSON.stringify({
     { "@type": "ListItem", "position": 3, "name": torahData.hebrewTitle || torahData.title }
   ]
 }) : '';
+
+// Look up commentary registry entry for this torah (only for numeric torahs)
+let commentaryEntry: any = null;
+if (!isIntroPage && !isNaN(partNum) && !isNaN(torahNum)) {
+  const partKey = String(partNum);
+  const torahKey = String(torahNum);
+  const registry: any = commentaryRegistry as any;
+  if (registry && registry[partKey] && registry[partKey][torahKey]) {
+    commentaryEntry = registry[partKey][torahKey];
+  }
+}
 
 const pageTitle = torahData
   ? `${torahData.hebrewTitle || torahData.title} - Likutay Moharan`
@@ -479,5 +492,8 @@ const pageDesc = torahData
       <script src="/reader-script.js?v=3" is:inline></script>
       <script src="/reader-notes.js" is:inline></script>
     </div>
+  )}
+  {torahData && commentaryEntry && (
+    <CommentarySidebar part={partNum} torah={torahNum} entry={commentaryEntry} />
   )}
 </Layout>
