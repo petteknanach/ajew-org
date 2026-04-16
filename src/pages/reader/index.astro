@@ -72,12 +72,13 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
 // LM Volume 1 section groupings (per naanaach.blogspot.com)
 // Each Torah number falls into exactly one section — used to render section
 // headers above the first Torah of each group.
+// prefaceSlug points to the short poetic preface JSON for that section.
 const lmVol1Sections = [
-  { start: 1,  end: 15,  english: 'Rabba bar bar Chana',                   hebrew: 'רבה בר בר חנה' },
-  { start: 16, end: 18,  english: 'The Mishtu-ai (Those Who Told Over)',   hebrew: 'משתעי' },
-  { start: 19, end: 22,  english: 'Safra DiTzniusa (Book of Concealment)', hebrew: 'ספרא דצניעותא' },
-  { start: 23, end: 31,  english: 'Suvay Divay Atuna (Elders of Athens)',  hebrew: 'סבי דבי אתונא' },
-  { start: 32, end: 286, english: 'Main Teachings',                        hebrew: 'התורות הנותרות' },
+  { start: 1,  end: 15,  english: 'Rabba bar bar Chana',                   hebrew: 'רבה בר בר חנה',    prefaceSlug: 'preface-section-1' },
+  { start: 16, end: 18,  english: 'The Mishtu-ai (Those Who Told Over)',   hebrew: 'משתעי',           prefaceSlug: 'preface-section-2' },
+  { start: 19, end: 22,  english: 'Safra DiTzniusa (Book of Concealment)', hebrew: 'ספרא דצניעותא',   prefaceSlug: 'preface-section-3' },
+  { start: 23, end: 31,  english: 'Suvay Divay Atuna (Elders of Athens)',  hebrew: 'סבי דבי אתונא',   prefaceSlug: 'preface-section-4' },
+  { start: 32, end: 286, english: 'Main Teachings',                        hebrew: 'התורות הנותרות', prefaceSlug: 'preface-section-5' },
 ];
 
 // Build section groups for Vol 1 once, up front (so the JSX below has no
@@ -753,6 +754,9 @@ const lmVol1Groups = (() => {
             <li><a href="/reader/likutay-moharan/1/haskamos" class="lm-gold-box"><span class="lm-gold-en">Approbations</span><span class="lm-gold-he" lang="he" dir="rtl">הסכמות</span></a></li>
             <li><a href="/reader/likutay-moharan/1/intro" class="lm-gold-box"><span class="lm-gold-en">Rabbi Nachman's Poem</span><span class="lm-gold-he" lang="he" dir="rtl">שיר נעים</span></a></li>
             <li><a href="/reader/likutay-moharan/1/intro-shimon" class="lm-gold-box"><span class="lm-gold-en">Greatness of R' Shimon</span><span class="lm-gold-he" lang="he" dir="rtl">ר׳ שמעון</span></a></li>
+            <li><a href="/reader/likutay-moharan/1/hakdama" class="lm-gold-box"><span class="lm-gold-en">Hakdama (Hebrew)</span><span class="lm-gold-he" lang="he" dir="rtl">הקדמה</span></a></li>
+            <li><a href="/reader/likutay-moharan/1/intro-lm" class="lm-gold-box"><span class="lm-gold-en">Introduction to Likutay Moharan</span><span class="lm-gold-he" lang="he" dir="rtl">מבוא לליקוטי מוהר״ן</span></a></li>
+            <li><a href="/reader/likutay-moharan/1/intro-manuscripts" class="lm-gold-box"><span class="lm-gold-en">Intro to Manuscripts</span><span class="lm-gold-he" lang="he" dir="rtl">מבוא לכתבי היד</span></a></li>
           </ul>
         </div>
         {catalog1 ? (
@@ -764,6 +768,16 @@ const lmVol1Groups = (() => {
                   <span class="lm-section-he" lang="he" dir="rtl">{g.hebrew}</span>
                   <span class="lm-section-range">({g.rangeLabel})</span>
                 </h4>
+                {g.prefaceSlug && (
+                  <ul class="torah-list" style="margin-bottom: 8px;">
+                    <li>
+                      <a href={`/reader/likutay-moharan/1/${g.prefaceSlug}`} class="lm-gold-box">
+                        <span class="lm-gold-en">📖 Preface</span>
+                        <span class="lm-gold-he" lang="he" dir="rtl">פתיחה</span>
+                      </a>
+                    </li>
+                  </ul>
+                )}
                 <ul class="torah-list">
                   {g.sectionTorahs.map((t) => (
                     <li>
@@ -788,7 +802,7 @@ const lmVol1Groups = (() => {
           <Fragment>
             <div style="margin-bottom: 8px;">
               <ul class="torah-list">
-                <li><a href="/reader/likutay-moharan/2/intro" class="lm-gold-box"><span class="lm-gold-en">Introduction</span><span class="lm-gold-he" lang="he" dir="rtl">הקדמה</span></a></li>
+                <li><a href="/reader/likutay-moharan/2/intro-volume-2" class="lm-gold-box"><span class="lm-gold-en">Introduction</span><span class="lm-gold-he" lang="he" dir="rtl">הקדמה</span></a></li>
                 <li><a href="/reader/likutay-moharan/2/omission" class="lm-gold-box"><span class="lm-gold-en">Omission — There Was One Abraham</span><span class="lm-gold-he" lang="he" dir="rtl">השמטה — אחד היה אברהם</span></a></li>
               </ul>
             </div>

@@ -11,6 +11,14 @@ export function getStaticPaths() {
   paths.push({ params: { part: '1', torah: 'haskamos' } });
   paths.push({ params: { part: '1', torah: 'intro' } });
   paths.push({ params: { part: '1', torah: 'intro-shimon' } });
+  // Part 1 new intro pages (hakdama, intro-lm, intro-manuscripts)
+  paths.push({ params: { part: '1', torah: 'hakdama' } });
+  paths.push({ params: { part: '1', torah: 'intro-lm' } });
+  paths.push({ params: { part: '1', torah: 'intro-manuscripts' } });
+  // Part 1 preface sections (one per LM Vol 1 section group)
+  for (let i = 1; i <= 5; i++) {
+    paths.push({ params: { part: '1', torah: `preface-section-${i}` } });
+  }
   // Part 1: 286 torahs (1-286, all present including 272)
   for (let torah = 1; torah <= 286; torah++) {
     paths.push({ params: { part: '1', torah: String(torah) } });
@@ -18,6 +26,7 @@ export function getStaticPaths() {
   // Part 2 intro pages
   paths.push({ params: { part: '2', torah: 'intro' } });
   paths.push({ params: { part: '2', torah: 'omission' } });
+  paths.push({ params: { part: '2', torah: 'intro-volume-2' } });
   // Part 2 (Tinyana): 125 torahs (1-125, all present including 51)
   for (let torah = 1; torah <= 125; torah++) {
     paths.push({ params: { part: '2', torah: String(torah) } });
@@ -49,6 +58,16 @@ try {
 
 if (!torahData && !error) {
   error = 'Content not available';
+}
+
+// Defensive defaults for intro/preface JSONs that may lack these fields
+if (torahData) {
+  if (!torahData.navigation) {
+    torahData.navigation = { prev: null, next: null, prevUrl: null, nextUrl: null };
+  }
+  if (!Array.isArray(torahData.segments)) {
+    torahData.segments = [];
+  }
 }
 
 // SEO structured data
