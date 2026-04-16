@@ -325,22 +325,28 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
         // Determine available layers — use definition from registry or fall back to detecting from data
         var allLayers = (def && def.layers) || ['beginner','intermediate','scholarly'];
 
-        // Language-mode scopes the VISIBLE layers:
-        //   hebrew → only [scholarly]  (Hebrew-native)
-        //   english → only [beginner]  (English-native)
-        //   both → all three layers
+        // Language-content matrix for this book's layers:
+        //   beginner     → English only
+        //   intermediate → bilingual (HE + EN)
+        //   scholarly    → Hebrew only
+        // A layer is shown if it has CONTENT in the current language mode.
+        //   hebrew mode  → [intermediate, scholarly]  (both have Hebrew)
+        //   english mode → [beginner, intermediate]   (both have English)
+        //   both mode    → all three
         function layersForMode(m) {
-          if (m === 'hebrew')  return allLayers.filter(function(l){ return l === 'scholarly'; });
-          if (m === 'english') return allLayers.filter(function(l){ return l === 'beginner'; });
+          if (m === 'hebrew')  return allLayers.filter(function(l){ return l === 'intermediate' || l === 'scholarly'; });
+          if (m === 'english') return allLayers.filter(function(l){ return l === 'beginner' || l === 'intermediate'; });
           return allLayers.slice();
         }
         var layers = layersForMode(getReaderMode());
-        if (layers.length === 0) layers = allLayers.slice(); // fallback
+        if (layers.length === 0) layers = allLayers.slice(); // safety
 
+        // Default layer per mode — prefer the "middle" (Intermediate) which adapts
+        // to the user's language, since Intermediate is bilingual and accessible.
         function defaultLayerForMode(m) {
-          if (m === 'hebrew') return 'scholarly';
-          if (m === 'english') return 'beginner';
-          return 'intermediate';
+          if (m === 'hebrew')  return 'intermediate'; // Hebrew reader gets bilingual's Hebrew side
+          if (m === 'english') return 'intermediate'; // English reader gets bilingual's English side
+          return 'intermediate'; // Both — middle depth by default
         }
         var savedLayer = null;
         try { savedLayer = localStorage.getItem('commentary-sidebar-layer-explicit'); } catch(_e) {}
