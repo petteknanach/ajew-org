@@ -68,6 +68,32 @@ if (miscBooks.length > 0) {
 // Pre-load LM catalogs specifically (for backward compatibility with detailed listing)
 const catalog1 = loadJSON('public/reader/likutay-moharan/part-1/index.json');
 const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
+
+// LM Volume 1 section groupings (per naanaach.blogspot.com)
+// Each Torah number falls into exactly one section — used to render section
+// headers above the first Torah of each group.
+const lmVol1Sections = [
+  { start: 1,  end: 15,  english: 'Rabba bar bar Chana',                   hebrew: 'רבה בר בר חנה' },
+  { start: 16, end: 18,  english: 'The Mishtu-ai (Those Who Told Over)',   hebrew: 'משתעי' },
+  { start: 19, end: 22,  english: 'Safra DiTzniusa (Book of Concealment)', hebrew: 'ספרא דצניעותא' },
+  { start: 23, end: 31,  english: 'Suvay Divay Atuna (Elders of Athens)',  hebrew: 'סבי דבי אתונא' },
+  { start: 32, end: 286, english: 'Main Teachings',                        hebrew: 'התורות הנותרות' },
+];
+
+// Build section groups for Vol 1 once, up front (so the JSX below has no
+// logic inside .map() — Astro's compiler prefers simple expressions in JSX).
+const lmVol1Groups = (() => {
+  if (!catalog1 || !Array.isArray(catalog1.torahs)) return [];
+  return lmVol1Sections.map((section) => {
+    const sectionTorahs = catalog1.torahs.filter(
+      (t) => typeof t.number === 'number' && t.number >= section.start && t.number <= section.end
+    );
+    const rangeLabel = section.end !== section.start
+      ? `Torahs ${section.start}–${section.end}`
+      : `Torah ${section.start}`;
+    return { ...section, sectionTorahs, rangeLabel };
+  }).filter((g) => g.sectionTorahs.length > 0);
+})();
 ---
 
 <Layout title="Jewish Torah Library - 226+ Books in Hebrew & English" description="Read 226+ sacred Jewish texts free online. Likutay Moharan, Likutay Halachos, Zohar, Talmud Bavli, Mishna, Rambam, full Tanach, and 47 Breslov classics. 25,000+ pages in Hebrew with English translations." breadcrumbs={[{name: "Home", url: "https://ajew.org"}, {name: "Library", url: "https://ajew.org/reader"}]}>
@@ -236,6 +262,81 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
       font-style: italic;
       column-span: all;
     }
+
+    /* LM gold boxes — bilingual (English + Hebrew) intro links */
+    .torah-list a.lm-gold-box {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #e8d5a3;
+      font-size: 0.8em;
+      padding: 6px 12px;
+      min-width: auto;
+      line-height: 1.2;
+    }
+    .torah-list a.lm-gold-box:hover {
+      background: #c4a265;
+      color: #1a365d;
+      border-color: #c4a265;
+    }
+    .lm-gold-en {
+      font-weight: 600;
+      font-size: 0.95em;
+      color: #1a365d;
+    }
+    .lm-gold-he {
+      font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif);
+      font-size: 0.9em;
+      color: #6b5a42;
+      margin-top: 2px;
+    }
+    .torah-list a.lm-gold-box:hover .lm-gold-en,
+    .torah-list a.lm-gold-box:hover .lm-gold-he {
+      color: #1a365d;
+    }
+
+    /* LM Volume 1 section groupings */
+    .lm-section-group { margin-bottom: 14px; }
+    .lm-section-header {
+      margin: 14px 0 6px;
+      padding: 6px 10px;
+      background: #faf6ee;
+      border-left: 4px solid #c4a265;
+      border-radius: 3px;
+      font-size: 0.95em;
+      font-weight: 600;
+      color: #6b5a42;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 10px;
+    }
+    .lm-section-en { color: #1a365d; }
+    .lm-section-he {
+      font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif);
+      font-weight: 500;
+      color: #6b5a42;
+    }
+    .lm-section-range {
+      font-size: 0.8em;
+      font-weight: 400;
+      color: #888;
+      font-style: italic;
+    }
+    :global(body.dark-mode) .lm-section-header {
+      background: #2a2a3e;
+      border-left-color: #8ab4f8;
+      color: #c9c9d3;
+    }
+    :global(body.dark-mode) .lm-section-en { color: #8ab4f8; }
+    :global(body.dark-mode) .lm-section-he { color: #c9c9d3; }
+    :global(body.dark-mode) .torah-list a.lm-gold-box {
+      background: #4a3d2a;
+      border-color: #5a4d3a;
+    }
+    :global(body.dark-mode) .lm-gold-en { color: #e8d5a3; }
+    :global(body.dark-mode) .lm-gold-he { color: #c9b88a; }
 
     /* Category sections */
     /* Recently Read */
@@ -649,21 +750,32 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
         {catalog1 && <p class="volume-count">{catalog1.totalTorahs} Torahs</p>}
         <div style="margin-bottom: 8px;">
           <ul class="torah-list">
-            <li><a href="/reader/likutay-moharan/1/haskamos" style="background: #e8d5a3; font-size: 0.8em;">הסכמות</a></li>
-            <li><a href="/reader/likutay-moharan/1/intro" style="background: #e8d5a3; font-size: 0.8em;">שיר נעים</a></li>
-            <li><a href="/reader/likutay-moharan/1/intro-shimon" style="background: #e8d5a3; font-size: 0.8em;">ר׳ שמעון</a></li>
+            <li><a href="/reader/likutay-moharan/1/haskamos" class="lm-gold-box"><span class="lm-gold-en">Approbations</span><span class="lm-gold-he" lang="he" dir="rtl">הסכמות</span></a></li>
+            <li><a href="/reader/likutay-moharan/1/intro" class="lm-gold-box"><span class="lm-gold-en">Rabbi Nachman's Poem</span><span class="lm-gold-he" lang="he" dir="rtl">שיר נעים</span></a></li>
+            <li><a href="/reader/likutay-moharan/1/intro-shimon" class="lm-gold-box"><span class="lm-gold-en">Greatness of R' Shimon</span><span class="lm-gold-he" lang="he" dir="rtl">ר׳ שמעון</span></a></li>
           </ul>
         </div>
         {catalog1 ? (
-          <ul class="torah-list">
-            {catalog1.torahs.filter(t => typeof t.number === 'number').map(t => (
-              <li>
-                <a href={t.url}>
-                  <span class="torah-num">{t.displayNumber || t.number}</span>
-                </a>
-              </li>
+          <div>
+            {lmVol1Groups.map((g) => (
+              <div class="lm-section-group">
+                <h4 class="lm-section-header">
+                  <span class="lm-section-en">{g.english}</span>
+                  <span class="lm-section-he" lang="he" dir="rtl">{g.hebrew}</span>
+                  <span class="lm-section-range">({g.rangeLabel})</span>
+                </h4>
+                <ul class="torah-list">
+                  {g.sectionTorahs.map((t) => (
+                    <li>
+                      <a href={t.url}>
+                        <span class="torah-num">{t.displayNumber || t.number}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             ))}
-          </ul>
+          </div>
         ) : (
           <p>Loading...</p>
         )}
@@ -673,17 +785,23 @@ const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
         <h3 class="volume-title" style="font-size: 1.2em;">Volume 2 (Tinyana) — מהדורא בתרא (תנינא)</h3>
         {catalog2 && <p class="volume-count">{catalog2.totalTorahs} Torahs</p>}
         {catalog2 ? (
-          <ul class="torah-list">
-            <li><a href="/reader/likutay-moharan/2/intro" style="background: #e8d5a3; font-size: 0.8em;">הקדמה</a></li>
-            <li><a href="/reader/likutay-moharan/2/omission" style="background: #e8d5a3; font-size: 0.8em;">השמטה — אחד היה אברהם</a></li>
-            {catalog2.torahs.map(t => (
-              <li>
-                <a href={t.url}>
-                  <span class="torah-num">{t.displayNumber || t.number}</span>
-                </a>
-              </li>
-            ))}
-          </ul>
+          <Fragment>
+            <div style="margin-bottom: 8px;">
+              <ul class="torah-list">
+                <li><a href="/reader/likutay-moharan/2/intro" class="lm-gold-box"><span class="lm-gold-en">Introduction</span><span class="lm-gold-he" lang="he" dir="rtl">הקדמה</span></a></li>
+                <li><a href="/reader/likutay-moharan/2/omission" class="lm-gold-box"><span class="lm-gold-en">Omission — There Was One Abraham</span><span class="lm-gold-he" lang="he" dir="rtl">השמטה — אחד היה אברהם</span></a></li>
+              </ul>
+            </div>
+            <ul class="torah-list">
+              {catalog2.torahs.map(t => (
+                <li>
+                  <a href={t.url}>
+                    <span class="torah-num">{t.displayNumber || t.number}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </Fragment>
         ) : (
           <p>Loading...</p>
         )}
