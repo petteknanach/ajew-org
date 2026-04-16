@@ -99,8 +99,39 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
 
       var STORAGE_KEY = 'commentarySidebarOpen';
       var ACTIVE_TAB_KEY = 'commentarySidebarActiveTab';
+      var READER_PREFS_KEY = 'ajew-reader-prefs';
       var cache = {}; // url -> fetched JSON
       var mql = window.matchMedia('(max-width: 900px)');
+
+      // Read the main reader's language mode: 'hebrew' | 'english' | 'both'
+      function getReaderMode() {
+        try {
+          var raw = localStorage.getItem(READER_PREFS_KEY);
+          if (!raw) return 'both';
+          var p = JSON.parse(raw);
+          var m = p && p.mode;
+          return (m === 'hebrew' || m === 'english' || m === 'both') ? m : 'both';
+        } catch (_e) { return 'both'; }
+      }
+
+      // Re-render current tab when the reader's language mode changes
+      window.addEventListener('storage', function(ev) {
+        if (ev && ev.key === READER_PREFS_KEY) {
+          var activeTabEl = document.querySelector('.commentary-sidebar-tab.is-active');
+          if (activeTabEl) activateTab(activeTabEl.getAttribute('data-tab-id'));
+        }
+      });
+      // Also listen for same-tab reader-mode changes (no storage event fires on the same tab).
+      // The reader fires its own prefs save via setState -> savePrefs. We add a lightweight poll.
+      var lastMode = getReaderMode();
+      setInterval(function() {
+        var m = getReaderMode();
+        if (m !== lastMode) {
+          lastMode = m;
+          var activeTabEl = document.querySelector('.commentary-sidebar-tab.is-active');
+          if (activeTabEl) activateTab(activeTabEl.getAttribute('data-tab-id'));
+        }
+      }, 800);
 
       function isMobile() { return mql.matches; }
 
@@ -132,9 +163,13 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
       // --- Build tab list ---
       var tabDefs = [];
       if (entry.running_commentary) {
+        var rcLabel = entry.running_commentary.label || 'Running Commentary';
+        var rcIsAvailable = (entry.running_commentary.status === 'available') && entry.running_commentary.url;
+        // Make it obvious this is the site's own commentary, not an old source text.
+        var displayLabel = rcIsAvailable ? ('\u2728 ' + rcLabel) : rcLabel;
         tabDefs.push({
           id: 'running',
-          label: entry.running_commentary.label || 'Running Commentary',
+          label: displayLabel,
           kind: 'running',
           book: entry.running_commentary.book,
           slug: entry.running_commentary.slug,
@@ -326,8 +361,13 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
             var heText = layer ? (layer.he_nikud || layer.he || '') : (seg.he_nikud || seg.he || '');
             var enText = layer ? (layer.en || '') : (seg.en || '');
 
+            // Respect the main reader's language mode
+            var mode = getReaderMode();
+            var showHe = (mode !== 'english');
+            var showEn = (mode !== 'hebrew');
+
             // English first (for beginner/intermediate which are EN-primary), then Hebrew
-            if (enText) {
+            if (enText && showEn) {
               var paragraphsEn = String(enText).split(/\n{2,}/);
               paragraphsEn.forEach(function (para) {
                 var trimmed = para.replace(/\s+$/g, '').replace(/^\s+/g, '');
@@ -339,7 +379,7 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
                 pair.appendChild(pEn);
               });
             }
-            if (heText) {
+            if (heText && showHe) {
               var paragraphs = String(heText).split(/\n{2,}/);
               paragraphs.forEach(function (para) {
                 var trimmed = para.replace(/\s+$/g, '').replace(/^\s+/g, '');
@@ -352,11 +392,40 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
                 pair.appendChild(pHe);
               });
             }
-            if (!enText && !heText) {
-              var pEmpty = document.createElement('p');
-              pEmpty.className = 'commentary-sidebar-empty-layer';
-              pEmpty.textContent = '— This layer is empty for this segment —';
-              pair.appendChild(pEmpty);
+            // If the current layer has no content in the user's chosen language mode,
+            // fall back gracefully: show the other language with a small hint.
+            var nothingShown = (pair.children.length === 1); // only the idxSpan
+            if (nothingShown) {
+              if (heText && !showHe && enText) {
+                // Mode is hebrew but layer has no Hebrew — fall back to English
+                var pE2 = document.createElement('p');
+                pE2.className = 'commentary-sidebar-en';
+                pE2.lang = 'en';
+                pE2.textContent = enText;
+                pair.appendChild(pE2);
+              } else if (enText && !showEn && heText) {
+                var pH2 = document.createElement('p');
+                pH2.className = 'commentary-sidebar-he';
+                pH2.lang = 'he';
+                pH2.dir = 'rtl';
+                pH2.textContent = heText;
+                pair.appendChild(pH2);
+              } else if (heText && !showHe && !enText) {
+                var pEmpty1 = document.createElement('p');
+                pEmpty1.className = 'commentary-sidebar-empty-layer';
+                pEmpty1.textContent = '— This layer is Hebrew-only. Switch reader to Hebrew or Both to view. —';
+                pair.appendChild(pEmpty1);
+              } else if (enText && !showEn && !heText) {
+                var pEmpty2 = document.createElement('p');
+                pEmpty2.className = 'commentary-sidebar-empty-layer';
+                pEmpty2.textContent = '— This layer is English-only. Switch reader to English or Both to view. —';
+                pair.appendChild(pEmpty2);
+              } else if (!enText && !heText) {
+                var pEmpty3 = document.createElement('p');
+                pEmpty3.className = 'commentary-sidebar-empty-layer';
+                pEmpty3.textContent = '— This layer is empty for this segment —';
+                pair.appendChild(pEmpty3);
+              }
             }
             segsWrap.appendChild(pair);
           });
@@ -416,6 +485,9 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
         }
         var list = document.createElement('div');
         list.className = 'commentary-sidebar-segments';
+        var relMode = getReaderMode();
+        var relShowHe = (relMode !== 'english');
+        var relShowEn = (relMode !== 'hebrew');
         segs.forEach(function (seg) {
           var pair = document.createElement('div');
           pair.className = 'commentary-sidebar-segment';
@@ -424,7 +496,7 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
           idxSpan.textContent = String(seg.index || '');
           pair.appendChild(idxSpan);
 
-          if (seg.he) {
+          if (seg.he && relShowHe) {
             var pHe = document.createElement('p');
             pHe.className = 'commentary-sidebar-he';
             pHe.lang = 'he';
@@ -432,16 +504,43 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
             pHe.textContent = seg.he;
             pair.appendChild(pHe);
           }
-          if (seg.en) {
+          if (seg.en && relShowEn) {
             var pEn = document.createElement('p');
             pEn.className = 'commentary-sidebar-en';
             pEn.textContent = seg.en;
             pair.appendChild(pEn);
-          } else if (!seg.he) {
-            var pEmpty = document.createElement('p');
-            pEmpty.className = 'commentary-sidebar-en empty';
-            pEmpty.textContent = 'Translation not yet available.';
-            pair.appendChild(pEmpty);
+          }
+          // Fallbacks when the user's language mode hides everything
+          var nothingShownRel = (pair.children.length === 1);
+          if (nothingShownRel) {
+            if (seg.he && !relShowHe && seg.en) {
+              var pE2r = document.createElement('p');
+              pE2r.className = 'commentary-sidebar-en';
+              pE2r.textContent = seg.en;
+              pair.appendChild(pE2r);
+            } else if (seg.en && !relShowEn && seg.he) {
+              var pH2r = document.createElement('p');
+              pH2r.className = 'commentary-sidebar-he';
+              pH2r.lang = 'he';
+              pH2r.dir = 'rtl';
+              pH2r.textContent = seg.he;
+              pair.appendChild(pH2r);
+            } else if (!seg.he && !seg.en) {
+              var pEmpty = document.createElement('p');
+              pEmpty.className = 'commentary-sidebar-en empty';
+              pEmpty.textContent = 'Translation not yet available.';
+              pair.appendChild(pEmpty);
+            } else if (seg.he && !relShowHe && !seg.en) {
+              var pEmptyH = document.createElement('p');
+              pEmptyH.className = 'commentary-sidebar-empty-layer';
+              pEmptyH.textContent = '— Hebrew-only source. Switch reader to Hebrew or Both to view. —';
+              pair.appendChild(pEmptyH);
+            } else if (seg.en && !relShowEn && !seg.he) {
+              var pEmptyE = document.createElement('p');
+              pEmptyE.className = 'commentary-sidebar-empty-layer';
+              pEmptyE.textContent = '— English-only source. Switch reader to English or Both to view. —';
+              pair.appendChild(pEmptyE);
+            }
           }
           list.appendChild(pair);
         });
@@ -519,19 +618,30 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
 
       var storedTab = null;
       try { storedTab = localStorage.getItem(ACTIVE_TAB_KEY); } catch (_e) {}
-      var initialTab = null;
-      if (storedTab) {
-        for (var j = 0; j < tabDefs.length; j++) {
-          if (tabDefs[j].id === storedTab) { initialTab = storedTab; break; }
+
+      // Detect when an available running commentary exists — always prefer it
+      var hasAvailableRunning = false;
+      for (var rc = 0; rc < tabDefs.length; rc++) {
+        if (tabDefs[rc].kind === 'running' && tabDefs[rc].status === 'available' && tabDefs[rc].url) {
+          hasAvailableRunning = true;
+          break;
         }
       }
-      if (!initialTab) {
-        // Prefer running commentary if available, else first related, else first tab.
+
+      var initialTab = null;
+      // If we have an available running commentary, default to it regardless of storedTab.
+      if (hasAvailableRunning) {
         for (var k = 0; k < tabDefs.length; k++) {
           if (tabDefs[k].kind === 'running' && tabDefs[k].status === 'available' && tabDefs[k].url) {
             initialTab = tabDefs[k].id;
             break;
           }
+        }
+      }
+      // Otherwise, honor a valid stored preference
+      if (!initialTab && storedTab) {
+        for (var j = 0; j < tabDefs.length; j++) {
+          if (tabDefs[j].id === storedTab) { initialTab = storedTab; break; }
         }
       }
       if (!initialTab) {
