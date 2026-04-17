@@ -1,5 +1,6 @@
 ---
 import Layout from '../../../../layouts/Layout.astro';
+import Comments from '../../../../components/Comments.astro';
 import '../../../../styles/reader.css';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -152,6 +153,10 @@ const pageDesc = torahData
       </div>
     </div>
   )}
+
+      {torahData && (
+        <Comments teachingId={`saba-tape-transcripts-${partNum}-${torahNum}`} teachingTitle={`saba-tape-transcripts ${partNum}:${torahNum}${torahData?.title ? ' — ' + torahData.title : ''}`} />
+      )}
 </Layout>
 
 <script is:inline src="/reader-script.js?v=3"></script>

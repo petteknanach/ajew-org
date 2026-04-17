@@ -1,6 +1,7 @@
 ---
 import Layout from '../../../../layouts/Layout.astro';
 import CommentarySidebar from '../../../../components/CommentarySidebar.astro';
+import Comments from '../../../../components/Comments.astro';
 import '../../../../styles/reader.css';
 import commentaryRegistry from '../../../../data/lm-commentaries.json';
 import fs from 'node:fs';
@@ -491,6 +492,13 @@ const pageDesc = torahData
       <!-- Reader Script -->
       <script src="/reader-script.js?v=3" is:inline></script>
       <script src="/reader-notes.js" is:inline></script>
+
+      {!isIntroPage && (
+        <Comments
+          teachingId={`lm-${partNum}-${torahNum}`}
+          teachingTitle={`Likutey Moharan ${partNum}:${torahData.displayNumber || torahNum} — ${torahData.title || ''}`}
+        />
+      )}
     </div>
   )}
   {torahData && commentaryEntry && (

@@ -1,5 +1,6 @@
 ---
 import Layout from '../../../../layouts/Layout.astro';
+import Comments from '../../../../components/Comments.astro';
 import '../../../../styles/reader.css';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -180,6 +181,10 @@ const breadcrumbs = torahData ? [
           <a href={torahData.navigation.nextUrl} data-dir="next">Next &rarr;</a>
         ) : <span class="disabled">Next &rarr;</span>}
       </div>
+      {torahData && (
+        <Comments teachingId={`ramchal-maamar-haikkarim-${partNum}-${torahNum}`} teachingTitle={`ramchal-maamar-haikkarim ${partNum}:${torahNum}${torahData?.title ? ' — ' + torahData.title : ''}`} />
+      )}
+
 
       <script src="/reader-script.js?v=3" is:inline></script>
     </div>

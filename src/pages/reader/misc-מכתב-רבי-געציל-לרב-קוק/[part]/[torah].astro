@@ -1,5 +1,6 @@
 ---
 import Layout from '../../../../layouts/Layout.astro';
+import Comments from '../../../../components/Comments.astro';
 import '../../../../styles/reader.css';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -219,6 +220,10 @@ const breadcrumbData = torahData ? JSON.stringify({
           <button class="reader-btn" onclick="this.closest('.reader-shortcuts-overlay').classList.remove('open')">Close</button>
         </div>
       </div>
+      {torahData && (
+        <Comments teachingId={`misc-מכתב-רבי-געציל-לרב-קוק-${partNum}-${torahNum}`} teachingTitle={`misc-מכתב-רבי-געציל-לרב-קוק ${partNum}:${torahNum}${torahData?.title ? ' — ' + torahData.title : ''}`} />
+      )}
+
 
       <script src="/reader-script.js?v=3" is:inline></script>
       <script src="/reader-notes.js" is:inline></script>

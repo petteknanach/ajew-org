@@ -1,5 +1,6 @@
 ---
 import Layout from '../../../../layouts/Layout.astro';
+import Comments from '../../../../components/Comments.astro';
 import '../../../../styles/reader.css';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -79,4 +80,8 @@ const pageTitle = torahData
     )}
   </main>
   <script is:inline src="/reader-script.js?v=3"></script>
+
+      {torahData && (
+        <Comments teachingId={`likutay-nanach-${partNum}-${torahNum}`} teachingTitle={`likutay-nanach ${partNum}:${torahNum}${torahData?.title ? ' — ' + torahData.title : ''}`} />
+      )}
 </Layout>
