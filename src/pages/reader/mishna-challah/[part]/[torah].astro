@@ -181,7 +181,7 @@ const breadcrumbData = torahData ? JSON.stringify({
         ) : <span class="disabled">Next &rarr;</span>}
       </div>
       {torahData && (
-        <Comments teachingId={`mishna-challah-${partNum}-${torahNum}`} teachingTitle={`mishna-challah ${partNum}:${torahNum}${torahData?.title ? ' — ' + torahData.title : ''}`} />
+        <Comments teachingId={`mishna-challah-${part}-${torah}`} teachingTitle={`mishna-challah ${part}:${torah}${torahData?.title ? ' — ' + torahData.title : ''}`} />
       )}
 
 

@@ -82,6 +82,6 @@ const pageTitle = torahData
   <script is:inline src="/reader-script.js?v=3"></script>
 
       {torahData && (
-        <Comments teachingId={`likutay-nanach-${partNum}-${torahNum}`} teachingTitle={`likutay-nanach ${partNum}:${torahNum}${torahData?.title ? ' — ' + torahData.title : ''}`} />
+        <Comments teachingId={`likutay-nanach-${part}-${torah}`} teachingTitle={`likutay-nanach ${part}:${torah}${torahData?.title ? ' — ' + torahData.title : ''}`} />
       )}
 </Layout>
