@@ -1,6 +1,9 @@
 {
   "framework": "astro",
   "regions": ["fra1"],
+  "rewrites": [
+    { "source": "/API/stripe-webhook", "destination": "/api/stripe-webhook" }
+  ],
   "redirects": [
     { "source": "/teachings", "destination": "/reader", "permanent": true },
     { "source": "/connections", "destination": "/torah-map", "permanent": true },
