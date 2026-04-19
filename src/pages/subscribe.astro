@@ -232,10 +232,27 @@ const pageDescription = "Join our Breslov learning community";
       statusEl.innerHTML = `
         <div class="user-status inactive">
           Signed in as <strong>${name}</strong> (Free tier)<br>
-          Subscribe below to access chat rooms. Use the same email at Stripe checkout.
+          Subscribe below — your email will be pre-filled in the checkout form.
         </div>
       `;
+      // Pre-fill the Stripe checkout with the user's auth email so the
+      // webhook stores the subscription under the correct account.
+      prefillStripeLinks(session, email);
     }
+  }
+
+  async function prefillStripeLinks(session, email) {
+    try {
+      const token = session.access_token;
+      const res = await fetch('/api/create-checkout', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const { url } = await res.json();
+      if (url) {
+        const basicBtn = document.getElementById('basicBtn');
+        if (basicBtn) basicBtn.href = url;
+      }
+    } catch (e) { /* leave original link intact */ }
   }
 
   function disableSubscribeButtons(currentTier) {

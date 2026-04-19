@@ -46,9 +46,11 @@ export async function POST({ request }) {
       case 'checkout.session.completed': {
         const session = event.data.object;
         
-        // Get customer email
-        const customerEmail = session.customer_details?.email || session.customer_email;
-        
+        // Prefer auth_email from metadata (set when user checks out while logged in)
+        // so the subscription is stored under the same email as their login session.
+        const billingEmail = session.customer_details?.email || session.customer_email;
+        const customerEmail = session.metadata?.auth_email || billingEmail;
+
         if (!customerEmail) {
           console.log('No email in session:', session.id);
           break;

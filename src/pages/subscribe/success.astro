@@ -79,6 +79,21 @@ import Layout from '../../layouts/Layout.astro';
       return error;
     }
 
+    // If Stripe returned a session_id in the URL, ask the server to reconcile
+    // the billing email with the auth email (fixes the mismatch case).
+    async function reconcileBySessionId(authEmail, sessionId) {
+      try {
+        const res = await fetch('/api/reconcile-subscription', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sessionId, authEmail })
+        });
+        return res.ok;
+      } catch (e) {
+        return false;
+      }
+    }
+
     async function run() {
       const { data: { session } } = await supabase.auth.getSession();
 
@@ -93,8 +108,9 @@ import Layout from '../../layouts/Layout.astro';
 
       const email = session.user.email.toLowerCase();
       const username = session.user.user_metadata?.display_name || email.split('@')[0];
+      const sessionId = new URLSearchParams(window.location.search).get('session_id');
 
-      // 1) Fast path: webhook already activated
+      // 1) Fast path: webhook already activated under auth email
       setStatus('status-loading', 'Verifying payment with Stripe...');
       let sub = await checkSubscription(email);
       if (sub) {
@@ -106,8 +122,8 @@ import Layout from '../../layouts/Layout.astro';
         return;
       }
 
-      // 2) Poll briefly (webhook may take a moment)
-      setStatus('status-loading', 'Waiting for payment confirmation (this takes up to 15 seconds)...');
+      // 2) Poll briefly (webhook may still be in-flight)
+      setStatus('status-loading', 'Waiting for payment confirmation (up to 15 seconds)...');
       sub = await pollForActivation(email);
       if (sub) {
         setStatus('status-success', `Your ${sub.tier.toUpperCase()} subscription is active!`);
@@ -118,8 +134,25 @@ import Layout from '../../layouts/Layout.astro';
         return;
       }
 
-      // 3) Fallback: offer manual activation (basic tier) for paid users whose
-      //    webhook didn't fire (e.g., payment from a different email than their account).
+      // 3) Email mismatch reconciliation: if Stripe gave us a session_id, ask the
+      //    server to look up the billing email and copy the subscription to auth email.
+      if (sessionId) {
+        setStatus('status-loading', 'Linking your payment to your account...');
+        const reconciled = await reconcileBySessionId(email, sessionId);
+        if (reconciled) {
+          sub = await checkSubscription(email);
+          if (sub) {
+            setStatus('status-success', `Your ${sub.tier.toUpperCase()} subscription is active!`);
+            renderActions(`
+              <a href="/chat" class="chat-link">Enter the Chat</a>
+              <a href="/profile" class="secondary-link">My Profile</a>
+            `);
+            return;
+          }
+        }
+      }
+
+      // 4) Final fallback: manual activation button
       setStatus('status-info', "We couldn't automatically match your payment. If you completed payment, click below to activate manually.");
       renderActions(`
         <button id="manualBtn" class="chat-link" style="border:none;cursor:pointer;">I paid — activate my account</button>
