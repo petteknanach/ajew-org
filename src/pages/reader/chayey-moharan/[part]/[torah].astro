@@ -7,8 +7,14 @@ import path from 'node:path';
 
 export function getStaticPaths() {
   const paths = [];
-  for (let torah = 1; torah <= 15; torah++) {
+  for (let torah = 1; torah <= 12; torah++) {
     paths.push({ params: { part: '1', torah: String(torah) } });
+  }
+  for (const slug of ['intro', 'maftechos', 'hashmata-162', 'hashmatos-toc', 'part-3', 'part-4']) {
+    paths.push({ params: { part: '1', torah: slug } });
+  }
+  for (const slug of ['part-5', 'part-6']) {
+    paths.push({ params: { part: '2', torah: slug } });
   }
   return paths;
 }
@@ -16,27 +22,32 @@ export function getStaticPaths() {
 const { part, torah } = Astro.params;
 const partNum = parseInt(part);
 const torahNum = parseInt(torah);
+const isNumeric = !isNaN(torahNum) && String(torahNum) === torah;
+const fileName = isNumeric ? `chapter-${torahNum}.json` : `${torah}.json`;
 
 let torahData = null;
 let error = null;
 
 try {
-  const filePath = path.join(process.cwd(), `public/reader/chayey-moharan/chapter-${torahNum}.json`);
+  const filePath = path.join(process.cwd(), `public/reader/chayey-moharan/${fileName}`);
   const raw = fs.readFileSync(filePath, 'utf8');
   torahData = JSON.parse(raw);
 } catch (e) {
-  error = `Chapter ${torahNum} not found`;
+  error = `Content not found`;
 }
 
 if (!torahData && !error) error = 'Content not available';
 
 // Add navigation and segment indexes if missing
 if (torahData) {
-  if (!torahData.navigation) {
+  if (!torahData.navigation && isNumeric) {
     torahData.navigation = {
       prevUrl: torahNum > 1 ? `/reader/chayey-moharan/${partNum}/${torahNum - 1}` : null,
-      nextUrl: `/reader/chayey-moharan/${partNum}/${torahNum + 1}`,
+      nextUrl: torahNum < 12 ? `/reader/chayey-moharan/${partNum}/${torahNum + 1}` : null,
     };
+  }
+  if (!torahData.navigation) {
+    torahData.navigation = { prevUrl: null, nextUrl: null };
   }
   // Add segment indexes if missing
   torahData.segments.forEach((seg, i) => {
