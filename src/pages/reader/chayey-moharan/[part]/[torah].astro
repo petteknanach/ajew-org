@@ -49,6 +49,8 @@ if (torahData) {
   if (!torahData.navigation) {
     torahData.navigation = { prevUrl: null, nextUrl: null };
   }
+  // Guard: some special files (locked hashmatos) have no segments
+  if (!torahData.segments) torahData.segments = [];
   // Add segment indexes if missing
   torahData.segments.forEach((seg, i) => {
     if (!seg.index) seg.index = i + 1;
@@ -165,6 +167,16 @@ const structuredData = torahData ? JSON.stringify({
           <a href={torahData.navigation.nextUrl} data-dir="next">Next &rarr;</a>
         ) : <span class="disabled">Next &rarr;</span>}
       </div>
+
+      {torahData.siman && (
+        <div class="reader-segment-pair" style="padding: 2rem; text-align: center;">
+          <div style="font-size: 1.1em; color: var(--reader-text-secondary); margin-bottom: 1rem;" dir="rtl">
+            {torahData.label || `סימן ${torahData.siman}`}
+          </div>
+          <div style="font-size: 0.95em; margin-bottom: 1rem;">{torahData.note}</div>
+          {torahData.hashmata_en && <div style="font-style: italic; color: var(--reader-text-secondary);">{torahData.hashmata_en}</div>}
+        </div>
+      )}
 
       <div class="reader-content mode-hebrew">
         <div class="reader-content-original">
