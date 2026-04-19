@@ -188,7 +188,7 @@ import Layout from '../../layouts/Layout.astro';
         // --- END NEW ---
 
         // Also fetch subscription from DB so we know their tier locally
-        const { data: sub } = await supabase.from('subscriptions').select('tier').eq('email', currentUser.email).single();
+        const { data: sub } = await supabase.from('subscriptions').select('tier').eq('email', (currentUser.email || '').toLowerCase()).single();
         if (sub) {
           currentUser.tier = sub.tier;
         }
