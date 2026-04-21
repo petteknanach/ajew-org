@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>דברי מרפא — Healing Words</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="../_astro/styles.css">
+  <style>
+    body{font-family:system-ui,sans-serif;margin:0;padding:2rem;color:#111}
+    #journey{display:none;margin-top:1rem;padding:1rem;border:1px solid #ddd;border-radius:8px}
+    .curated{margin-top:1rem}
+    .curated h3{margin:.5rem 0 .2rem}
+    .curated p{margin:.2rem 0;color:#555}
+    .loading{color:#888}
+  </style>
+</head>
+<body>
+  <header><h1><a href="/" style="color:inherit">אישי</a></h1></header>
+  <main>
+    <h1>דברי מרפא — Healing Words</h1>
+    <p>Curated journeys through the teachings of Rabbi Nachman and his students, organized by theme to guide and uplift the soul.</p>
+    <button id="loadBtn" onclick="loadJourneys()">Load Journeys</button>
+    <div id="journey" class="loading">Loading…</div>
+    <div id="curated" class="curated"></div>
+  </main>
+  <script>
+    let data = null;
+    async function loadJourneys() {
+      const el = document.getElementById('journey');
+      if (data) { render(data); return; }
+      try {
+        const r = await fetch('../healing-words.json');
+        data = await r.json();
+        render(data);
+      } catch (e) {
+        el.textContent = 'Failed to load healing-words.json';
+        console.error(e);
+      }
+    }
+    function render(json) {
+      const el = document.getElementById('journey');
+      el.className = '';
+      el.innerHTML = '';
+      if (!json.journeys || !json.journeys.length) {
+        el.innerHTML = '<p>No journeys found in JSON.</p>';
+        return;
+      }
+      json.journeys.forEach((j, i) => {
+        const div = document.createElement('div');
+        div.innerHTML = '<h3>' + (j.title || ('Journey ' + (i + 1))) + '</h3>';
+        if (j.description) { const p = document.createElement('p'); p.textContent = j.description; div.appendChild(p); }
+        if (j.url) { const a = document.createElement('a'); a.href = j.url; a.textContent = 'Open'; div.appendChild(a); }
+        el.appendChild(div);
+      });
+    }
+  </script>
+</body>
+</html>
