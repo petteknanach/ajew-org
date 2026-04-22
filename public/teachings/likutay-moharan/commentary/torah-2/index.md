@@ -1,3 +1,7 @@
+# Commentary Index
+
+This item commentary is sourced from Rimzay Maaseyos and Likutay Nanach Volume 4.
+
 # Commentary for Likutay Moharan — Torah 2
 
 > Source: /teachings/likutay-moharan/torah-2/
