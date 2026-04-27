@@ -145,7 +145,7 @@ const hasZohar = Object.keys(zoharSummary).length > 0;
 // Tanach reader link
 const tanachBook = parsha.book ? 'tanach-' + parsha.book : '';
 const firstCh = parsha.ch?.[0] || 1;
-const readLink = tanachBook ? `/reader/${tanachBook}/part-1/${firstCh}` : '#';
+const readLink = tanachBook ? `/reader/${tanachBook}/1/${firstCh}` : '#';
 
 // Chumash LH reader links (slug -> part/torah)
 const CHUMASH_LH_READER: Record<string, string> = {
