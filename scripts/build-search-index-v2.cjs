@@ -116,8 +116,18 @@ function main() {
         // Find the index.json for this part
         let indexPath;
         if (book.parts.length === 1) {
-          indexPath = path.join(bookDir, 'index.json');
-          if (!fs.existsSync(indexPath)) indexPath = path.join(bookDir, `part-${part.part}`, 'index.json');
+          // Try part-1/index.json first for single-part books
+          indexPath = path.join(bookDir, `part-${part.part}`, 'index.json');
+          if (!fs.existsSync(indexPath)) {
+            indexPath = path.join(bookDir, 'index.json');
+            // If root index has nested parts, follow the indexPath field
+            if (fs.existsSync(indexPath)) {
+              const checkRoot = JSON.parse(fs.readFileSync(indexPath, 'utf8'));
+              if (!checkRoot.torahs && !checkRoot.items && checkRoot.parts && checkRoot.parts[0] && checkRoot.parts[0].indexPath) {
+                indexPath = path.join(bookDir, checkRoot.parts[0].indexPath);
+              }
+            }
+          }
         } else {
           indexPath = path.join(bookDir, `part-${part.part}`, 'index.json');
         }

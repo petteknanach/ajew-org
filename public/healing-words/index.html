@@ -7,14 +7,18 @@
   <meta name="description" content="Curated journeys through the teachings of Rabbi Nachman and his students, organized by theme to guide and uplift the soul." />
   <meta property="og:title" content="דברי מרפא — Healing Words" />
   <meta property="og:url" content="https://petteknanach.github.io/ajew-org/healing-words/" />
+  <meta property="og:image" content="/images/social.png" />
   <link rel="stylesheet" href="../_astro/styles.css">
   <style>
     body{font-family:system-ui,sans-serif;margin:0;padding:2rem;color:#111}
-    #journey{margin-top:1rem;padding:1rem;border:1px solid #ddd;border-radius:8px}
+    #journey{margin-top:1rem;padding:1rem;border:1px solid #ddd;border-radius:8px;display:none}
+    #journey.show{display:block}
     .curated{margin-top:1rem}
     .curated h3{margin:.5rem 0 .2rem}
     .curated p{margin:.2rem 0;color:#555}
     .loading{color:#888}
+    .scroll-anchor{display:block;height:80px;visibility:hidden;pointer-events:none}
+    button{font-size:1rem;padding:.5rem 1rem;border-radius:4px;border:1px solid #999;background:#fafafa;cursor:pointer}
   </style>
 </head>
 <body>
@@ -25,27 +29,50 @@
     <button id="loadBtn" onclick="loadJourneys()">Load Journeys</button>
     <div id="journey"></div>
     <div id="curated" class="curated"></div>
+    <div class="scroll-anchor" aria-hidden="true"></div>
   </main>
   <script>
     let data = null;
-    async function loadJourneys() {
-      const out = document.getElementById('journey');
-      if (!data) { out.innerHTML = '<p class="loading">Loading…</p>'; }
-      if (data) { render(data); out.scrollIntoView({behavior:'smooth',block:'start'}); return; }
-      try {
-        const r = await fetch('../healing-words.json');
-        data = await r.json();
-        render(data);
-        out.scrollIntoView({behavior:'smooth',block:'start'});
-      } catch (e) {
-        out.innerHTML = '<p>Failed to load healing-words.json</p>';
-        console.error(e);
-      }
+    const journeyEl = document.getElementById('journey');
+    const loadBtn = document.getElementById('loadBtn');
+    const anchor = document.querySelector('.scroll-anchor');
+
+    function scrollToResults() {
+      if (anchor) anchor.scrollIntoView({behavior:'smooth',block:'start'});
+      else journeyEl.scrollIntoView({behavior:'smooth',block:'start'});
     }
+
+    async function loadJourneys() {
+      loadBtn.disabled = true;
+      loadBtn.textContent = 'Loading…';
+      if (!data) {
+        try {
+          const r = await fetch('../healing-words.json');
+          if (!r.ok) throw new Error('Network response was not ok');
+          data = await r.json();
+        } catch (e) {
+          console.error(e);
+          journeyEl.innerHTML = '<p>Failed to load healing-words.json</p>';
+          journeyEl.className = 'show';
+          loadBtn.disabled = false;
+          loadBtn.textContent = 'Load Journeys';
+          return;
+        }
+      }
+      render(data);
+      loadBtn.disabled = false;
+      loadBtn.textContent = 'Load Journeys';
+      scrollToResults();
+    }
+
     function render(json) {
-      const el = document.getElementById('journey');
+      const el = journeyEl;
       el.innerHTML = '';
-      if (!json.journeys || !json.journeys.length) { el.innerHTML = '<p>No journeys found in JSON.</p>'; return; }
+      if (!json.journeys || !json.journeys.length) {
+        el.innerHTML = '<p>No journeys found in JSON.</p>';
+        el.className = 'show';
+        return;
+      }
       json.journeys.forEach((j, i) => {
         const div = document.createElement('div');
         div.innerHTML = '<h3>' + (j.title || ('Journey ' + (i + 1))) + '</h3>';
@@ -53,6 +80,7 @@
         if (j.url) { const a = document.createElement('a'); a.href = j.url; a.textContent = 'Open'; div.appendChild(a); }
         el.appendChild(div);
       });
+      el.className = 'show';
     }
   </script>
 </body>
