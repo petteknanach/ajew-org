@@ -130,6 +130,9 @@ function main() {
           }
         } else {
           indexPath = path.join(bookDir, `part-${part.part}`, 'index.json');
+          if (!fs.existsSync(indexPath)) {
+            indexPath = path.join(bookDir, `volume-${part.part}`, 'index.json');
+          }
         }
         if (!fs.existsSync(indexPath)) continue;
 
