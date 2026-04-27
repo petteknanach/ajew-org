@@ -51,6 +51,7 @@ const siteName = "A Jew - Breslov Torah Library";
     <link rel="apple-touch-icon" href="/favicon.svg" />
     <link rel="manifest" href="/manifest.json" />
     <link rel="alternate" type="application/rss+xml" title="A Jew RSS Feed" href="/rss.xml" />
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap-index.xml" />
     <title>{title} | A Jew</title>
 
     <!-- Open Graph -->
@@ -115,6 +116,13 @@ const siteName = "A Jew - Breslov Torah Library";
     {effectiveHreflangs.includes('he') && <link rel="alternate" hreflang="he" href={canonicalURL} />}
     <link rel="alternate" hreflang="x-default" href={canonicalURL} />
     
+    <!-- Google Scholar / Academic indexing -->
+    <meta name="citation_title" content={title} />
+    <meta name="citation_author" content="Rabbi Nachman of Breslov" />
+    <meta name="citation_publication_date" content="2026" />
+    <meta name="citation_language" content={lang === 'he' ? 'he' : 'en'} />
+    <meta name="citation_online_date" content="2026" />
+    
     <!-- Preconnect & DNS prefetch for performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -138,7 +146,11 @@ const siteName = "A Jew - Breslov Torah Library";
         "email": "naanaach@gmail.com",
         "contactType": "customer support"
       },
-      "sameAs": []
+      "sameAs": [
+        "https://www.youtube.com/channel/UCYq6IzFfzJfQY8l9mOV5kgw",
+        "https://x.com/ajeworg",
+        "https://malevegadish.com"
+      ]
     })} />
 
     {/* Breadcrumbs Schema */}

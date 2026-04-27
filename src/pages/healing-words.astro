@@ -19,6 +19,17 @@ import healingData from '../../public/healing-words.json';
       <p class="hw-subtitle">Curated journeys through the teachings of Rabbi Nachman and his students.<br>Each path is a carefully ordered sequence of teachings, building on each other, ending with a suggested prayer.<br><span style="font-family: var(--font-hebrew); font-size: 0.85em; opacity: 0.8;" dir="rtl">מסעות מודרכים דרך תורות רבי נחמן ותלמידיו</span></p>
     </header>
 
+    <!-- Journey Detail View (hidden by default, positioned above grid) -->
+    <section class="hw-journey-detail" id="journeyDetail" hidden>
+      <button class="hw-back-btn" id="backToGrid" type="button">&larr; Back to all journeys</button>
+      <div class="hw-journey-header" id="journeyHeader"></div>
+      <div class="hw-journey-progress-bar" id="journeyProgressOuter">
+        <div class="hw-journey-progress-fill" id="journeyProgressFill"></div>
+        <span class="hw-journey-progress-text" id="journeyProgressText"></span>
+      </div>
+      <ol class="hw-steps-list" id="stepsList"></ol>
+    </section>
+
     <!-- Journey Cards Grid -->
     <section class="hw-grid" id="journeyGrid">
       {healingData.journeys.map((journey: any) => (
@@ -35,16 +46,6 @@ import healingData from '../../public/healing-words.json';
       ))}
     </section>
 
-    <!-- Journey Detail View (hidden by default) -->
-    <section class="hw-journey-detail" id="journeyDetail" hidden>
-      <button class="hw-back-btn" id="backToGrid" type="button">&larr; Back to all journeys</button>
-      <div class="hw-journey-header" id="journeyHeader"></div>
-      <div class="hw-journey-progress-bar" id="journeyProgressOuter">
-        <div class="hw-journey-progress-fill" id="journeyProgressFill"></div>
-        <span class="hw-journey-progress-text" id="journeyProgressText"></span>
-      </div>
-      <ol class="hw-steps-list" id="stepsList"></ol>
-    </section>
   </div>
 
   <!-- Data injected for client-side JS -->

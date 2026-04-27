@@ -15,14 +15,14 @@ import CompactYahrzeit from '../components/CompactYahrzeit.astro';
     
     <!-- Top right buttons -->
     <a href="/subscribe" class="corner-btn corner-btn-top-right">
-      <span>💳 Subscribe</span>
+      <span>💛 Subscribe</span>
     </a>
 
     <div class="hero-content">
       <h1 class="hero-title">
         <span class="hebrew" lang="he" dir="rtl">רבי נחמן מברסלב</span>
         <span class="english">Rebbe Nachman of Breslov</span>
-        <span class="tagline">The Factory of Judaism</span>
+        <span class="tagline">The Breslov Torah Treasury — Free & Open to All</span>
       </h1>
       <p class="hero-subtitle">
         <span class="hebrew" lang="he" dir="rtl">"כִּי בָּעוֹלָם הַזֶּה צָרִיךְ לַעֲבֹר עַל גֶּשֶׁר צַר מְאֹד"</span>
@@ -37,7 +37,21 @@ import CompactYahrzeit from '../components/CompactYahrzeit.astro';
         </form>
       </div>
 
-      <!-- Main navigation - symmetrical with Teachings in center -->
+      <!-- Topic navigation pills -->
+      <div class="topic-nav">
+        <a href="/topics?q=emunah" class="topic-pill">Emunah</a>
+        <a href="/topics?q=tefillah" class="topic-pill">Tefillah</a>
+        <a href="/topics?q=teshuvah" class="topic-pill">Teshuvah</a>
+        <a href="/topics?q=simcha" class="topic-pill">Simcha</a>
+        <a href="/topics?q=shalom" class="topic-pill">Shalom</a>
+        <a href="/topics?q=parnassah" class="topic-pill">Parnassah</a>
+        <a href="/healing-words" class="topic-pill">Healing</a>
+        <a href="/topics?q=bris" class="topic-pill">Shmiras HaBris</a>
+        <a href="/topics?q=hisbodedus" class="topic-pill">Hisbodedus</a>
+        <a href="/topics" class="topic-pill">All Topics →</a>
+      </div>
+
+      <!-- Main navigation - symmetrical -->
       <nav class="main-nav">
         <!-- Left side -->
         <div class="nav-group nav-group-left">
@@ -413,7 +427,41 @@ import CompactYahrzeit from '../components/CompactYahrzeit.astro';
       <a href="/gallery/saba" class="btn btn-primary">Photos of Saba Yisroel</a>
     </div>
   </section>
+
+  <!-- Spread the Word - Social Sharing -->
+  <section class="spread-the-word">
+    <div class="container">
+      <h2>Spread the Light</h2>
+      <p class="spread-desc">
+        The Breslov Torah Treasury is free for everyone. Help others discover these teachings.
+      </p>
+      <div class="spread-buttons">
+        <a href="https://twitter.com/intent/tweet?text=Free%20Breslov%20Torah%20library%20%E2%80%94%20226%2B%20books%2C%2025%2C000%2B%20pages%20in%20Hebrew%20%26%20English.%20Likutay%20Moharan%2C%20Zohar%2C%20Talmud%2C%20Tanach.%20All%20free.&url=https%3A%2F%2Fajew.org&hashtags=Torah,Breslov,NaNach" target="_blank" rel="noopener" class="btn btn-share btn-share-x">
+          Share on X
+        </a>
+        <button class="btn btn-share btn-share-copy" onclick="copySiteLink()">
+          Copy Link
+        </button>
+        <a href="/rss.xml" class="btn btn-share btn-share-rss">
+          RSS Feed
+        </a>
+      </div>
+      <p class="spread-sites">
+        Help ajew.org grow — link to us from your site, shul newsletter, or WhatsApp group.<br>
+        Every backlink helps more people find these teachings.
+      </p>
+    </div>
+  </section>
 </Layout>
+
+<script is:inline>
+function copySiteLink() {
+  navigator.clipboard.writeText('https://ajew.org — Free Breslov Torah Library').then(function() {
+    var btn = document.querySelector('.btn-share-copy');
+    if (btn) { btn.textContent = 'Copied!'; setTimeout(function() { btn.textContent = 'Copy Link'; }, 2000); }
+  }).catch(function(){});
+}
+</script>
 
 <style>
   .hero {
@@ -905,34 +953,62 @@ import CompactYahrzeit from '../components/CompactYahrzeit.astro';
 
   /* Hero Search */
   .hero-search {
-    max-width: 500px;
-    margin: 0 auto 1.5rem;
+    max-width: 640px;
+    margin: 0 auto 1.2rem;
   }
   .hero-search-form {
     display: flex;
     gap: 0;
-    border-radius: 28px;
+    border-radius: 32px;
     overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+    border: 2px solid #ed8936;
   }
   .hero-search-form input {
     flex: 1;
-    padding: 12px 20px;
+    padding: 15px 24px;
     border: none;
-    font-size: 1em;
+    font-size: 1.1em;
     font-family: 'Frank Ruhl Libre', serif;
     outline: none;
+    background: #fff;
   }
   .hero-search-form button {
-    padding: 12px 20px;
+    padding: 15px 32px;
     background: #ed8936;
     color: white;
     border: none;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
-    font-size: 0.95em;
+    font-size: 1.05em;
+    white-space: nowrap;
   }
   .hero-search-form button:hover { background: #dd7726; }
+
+  /* Topic Navigation */
+  .topic-nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    max-width: 640px;
+    margin: 0 auto 1.5rem;
+  }
+  .topic-pill {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+    text-decoration: none;
+    font-size: 0.9em;
+    font-family: 'Frank Ruhl Libre', serif;
+    transition: background 0.2s;
+    backdrop-filter: blur(4px);
+  }
+  .topic-pill:hover {
+    background: rgba(255,255,255,0.3);
+  }
 
   /* Daily Quote */
   .daily-quote {
@@ -1290,6 +1366,58 @@ import CompactYahrzeit from '../components/CompactYahrzeit.astro';
 
   .start-or a:hover {
     text-decoration: underline;
+  }
+
+  /* Spread the Word */
+  .spread-the-word {
+    background: linear-gradient(135deg, #1a365d, #2c5282);
+    color: white;
+    padding: 3rem 1rem;
+    text-align: center;
+  }
+  .spread-the-word h2 {
+    color: var(--color-accent);
+    font-size: 1.8rem;
+    margin-bottom: 0.75rem;
+  }
+  .spread-desc {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    max-width: 500px;
+    margin: 0 auto 1.5rem;
+  }
+  .spread-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
+  .btn-share {
+    padding: 0.7rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    border: 2px solid rgba(255,255,255,0.3);
+    color: white;
+    background: rgba(255,255,255,0.1);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+  .btn-share:hover {
+    background: rgba(255,255,255,0.2);
+    transform: translateY(-2px);
+  }
+  .btn-share-x { background: rgba(0,0,0,0.3); }
+  .btn-share-rss { background: rgba(255, 153, 0, 0.3); }
+  .spread-sites {
+    font-size: 0.85rem;
+    opacity: 0.7;
+    max-width: 480px;
+    margin: 0 auto;
+    line-height: 1.6;
   }
 
 </style>
