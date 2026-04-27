@@ -146,7 +146,7 @@ function main() {
           const torahNum = data.torah || data.displayNumber || num;
 
           documents.push({
-            id: data.id,
+            id: data.id || `${book.id}-${part.part}-${torahNum}`,
             part: part.part,
             torah: torahNum,
             displayNumber: data.displayNumber || torahNum,
