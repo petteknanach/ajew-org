@@ -1,0 +1,380 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Speak & Earn XP - Voice Transcription" description="Record yourself speaking Hebrew, reading Breslov texts aloud, or journaling hisbodedus. Earn XP points for every minute spoken.">
+  <section class="speak-page">
+    <div class="container">
+      <h1>Speak & Earn XP</h1>
+      <p class="subtitle">Record Hebrew speech — read texts aloud, dictate hisbodedus, or take voice notes. Earn XP.</p>
+
+      <!-- XP Bar -->
+      <div class="xp-bar-section">
+        <div class="xp-stats">
+          <span class="xp-label">Your XP</span>
+          <span class="xp-value" id="xpTotal">0</span>
+          <span class="xp-streak" id="xpStreak"></span>
+        </div>
+        <div class="xp-level-bar">
+          <div class="xp-fill" id="xpFill"></div>
+          <span class="xp-level" id="xpLevel">Level 1</span>
+        </div>
+      </div>
+
+      <!-- Mode Selection -->
+      <div class="mode-selector">
+        <button class="mode-btn active" data-mode="free_speech">Free Speech</button>
+        <button class="mode-btn" data-mode="guided">Guided Reading</button>
+        <button class="mode-btn" data-mode="notes">Voice Notes</button>
+      </div>
+
+      <!-- Guided mode: reference text selector -->
+      <div class="guided-section" id="guidedSection" style="display:none;">
+        <label>Select text to read:</label>
+        <select id="referenceSelect">
+          <option value="">Choose a text...</option>
+          <option value="likutay-moharan-1-1">Likutay Moharan I:1</option>
+          <option value="tikun-haklali-16">Tikun HaKlali - Psalm 16</option>
+          <option value="tikun-haklali-32">Tikun HaKlali - Psalm 32</option>
+          <option value="sichos-haran-1">Sichos HaRan §1</option>
+        </select>
+        <div class="reference-preview" id="referencePreview"></div>
+      </div>
+
+      <!-- Recorder -->
+      <div class="recorder-section">
+        <button class="record-btn" id="recordBtn">
+          <span class="record-icon">🎤</span>
+          <span class="record-text">Tap to Record</span>
+        </button>
+        <div class="recording-status" id="recordingStatus" style="display:none;">
+          <span class="recording-dot"></span>
+          <span class="recording-timer" id="recordingTimer">00:00</span>
+        </div>
+        <p class="record-hint">Speak clearly in Hebrew. Tap again to stop.</p>
+      </div>
+
+      <!-- Results -->
+      <div class="results-section" id="resultsSection" style="display:none;">
+        <h3>Transcription</h3>
+        <div class="transcription-box" id="transcriptionBox" dir="rtl"></div>
+        <div class="result-stats" id="resultStats"></div>
+        <div class="xp-earned" id="xpEarned"></div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="activity-section" id="activitySection">
+        <h3>Recent Sessions</h3>
+        <div class="activity-list" id="activityList">
+          <p class="no-activity">No sessions yet. Start speaking!</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script is:inline>
+    // XP System
+    const XP_KEY = 'ajew-speak-xp';
+    const ACTIVITY_KEY = 'ajew-speak-activity';
+    
+    function getXP() {
+      try { return JSON.parse(localStorage.getItem(XP_KEY) || '{"total":0,"streak":0,"lastDate":"","level":1}'); }
+      catch { return {total:0,streak:0,lastDate:"",level:1}; }
+    }
+    function saveXP(data: any) { localStorage.setItem(XP_KEY, JSON.stringify(data)); }
+    function getActivity() {
+      try { return JSON.parse(localStorage.getItem(ACTIVITY_KEY) || '[]'); }
+      catch { return []; }
+    }
+    function saveActivity(data: any) { localStorage.setItem(ACTIVITY_KEY, JSON.stringify(data)); }
+
+    function updateXPDisplay() {
+      const xp = getXP();
+      const el = document.getElementById('xpTotal');
+      if (el) el.textContent = String(xp.total);
+      
+      const level = Math.floor(xp.total / 100) + 1;
+      const levelEl = document.getElementById('xpLevel');
+      if (levelEl) levelEl.textContent = 'Level ' + level;
+      
+      const fillEl = document.getElementById('xpFill');
+      if (fillEl) {
+        const pct = ((xp.total % 100) / 100) * 100;
+        fillEl.style.width = pct + '%';
+      }
+
+      const streakEl = document.getElementById('xpStreak');
+      if (streakEl && xp.streak > 1) {
+        streakEl.textContent = '🔥 ' + xp.streak + ' day streak';
+      }
+    }
+
+    function renderActivity() {
+      const activity = getActivity();
+      const list = document.getElementById('activityList');
+      if (!list) return;
+      
+      if (activity.length === 0) {
+        list.innerHTML = '<p class="no-activity">No sessions yet. Start speaking!</p>';
+        return;
+      }
+
+      list.innerHTML = activity.slice(0, 10).map((a: any) => `
+        <div class="activity-item">
+          <span class="activity-date">${new Date(a.date).toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'})}</span>
+          <span class="activity-mode">${a.mode === 'free_speech' ? '🗣 Free Speech' : a.mode === 'guided' ? '📖 Guided' : '📝 Notes'}</span>
+          <span class="activity-words">${a.words} words</span>
+          <span class="activity-xp">+${a.xp} XP</span>
+        </div>
+      `).join('');
+    }
+
+    // Recording
+    let mediaRecorder: MediaRecorder | null = null;
+    let audioChunks: Blob[] = [];
+    let recordingStart = 0;
+    let timerInterval: number | null = null;
+    let currentMode = 'free_speech';
+
+    async function startRecording() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm;codecs=opus' });
+        audioChunks = [];
+        
+        mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) audioChunks.push(e.data); };
+        mediaRecorder.onstop = () => handleRecordingStop();
+        
+        mediaRecorder.start();
+        recordingStart = Date.now();
+        
+        // Update UI
+        const btn = document.getElementById('recordBtn');
+        if (btn) {
+          btn.classList.add('recording');
+          btn.querySelector('.record-text')!.textContent = 'Recording... Tap to Stop';
+          btn.querySelector('.record-icon')!.textContent = '⏹';
+        }
+        
+        document.getElementById('recordingStatus')!.style.display = 'flex';
+        document.getElementById('resultsSection')!.style.display = 'none';
+        
+        // Timer
+        timerInterval = window.setInterval(() => {
+          const elapsed = Math.floor((Date.now() - recordingStart) / 1000);
+          const mins = Math.floor(elapsed / 60).toString().padStart(2, '0');
+          const secs = (elapsed % 60).toString().padStart(2, '0');
+          document.getElementById('recordingTimer')!.textContent = mins + ':' + secs;
+        }, 1000);
+      } catch (e) {
+        alert('Microphone access denied. Please allow microphone access in your browser settings.');
+      }
+    }
+
+    function stopRecording() {
+      if (mediaRecorder && mediaRecorder.state === 'recording') {
+        mediaRecorder.stop();
+        mediaRecorder.stream.getTracks().forEach(t => t.stop());
+      }
+      
+      const btn = document.getElementById('recordBtn');
+      if (btn) {
+        btn.classList.remove('recording');
+        btn.querySelector('.record-text')!.textContent = 'Transcribing...';
+        btn.querySelector('.record-icon')!.textContent = '⏳';
+        btn.setAttribute('disabled', 'true');
+      }
+      
+      document.getElementById('recordingStatus')!.style.display = 'none';
+      if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+    }
+
+    async function handleRecordingStop() {
+      const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+      
+      const formData = new FormData();
+      formData.append('audio', audioBlob, 'recording.webm');
+      formData.append('mode', currentMode);
+      
+      if (currentMode === 'guided') {
+        const refText = document.getElementById('referencePreview')?.textContent || '';
+        formData.append('reference_text', refText);
+      }
+
+      try {
+        const res = await fetch('/api/transcribe', { method: 'POST', body: formData });
+        const data = await res.json();
+
+        if (data.error) {
+          document.getElementById('transcriptionBox')!.textContent = 'Error: ' + data.error;
+          document.getElementById('resultsSection')!.style.display = 'block';
+          resetRecordButton();
+          return;
+        }
+
+        // Show results
+        document.getElementById('transcriptionBox')!.textContent = data.transcribed_text || '(no speech detected)';
+        document.getElementById('resultsSection')!.style.display = 'block';
+
+        // Stats
+        let statsHtml = data.words_spoken + ' words • ' + data.duration_seconds + 's';
+        if (data.accuracy_pct > 0) {
+          statsHtml += ' • ' + data.accuracy_pct + '% accuracy';
+        }
+        document.getElementById('resultStats')!.innerHTML = statsHtml;
+
+        // XP
+        let xpHtml = '<strong>+' + data.xp_earned + ' XP</strong>';
+        if (data.bonus === 'high_accuracy') xpHtml += ' 🎯 High Accuracy Bonus!';
+        if (data.bonus === 'perfect') xpHtml += ' 🌟 Perfect Score!';
+        document.getElementById('xpEarned')!.innerHTML = xpHtml;
+
+        // Update XP
+        const xp = getXP();
+        xp.total += data.xp_earned;
+        const today = new Date().toISOString().split('T')[0];
+        if (xp.lastDate === today) {
+          // Already recorded today
+        } else if (xp.lastDate) {
+          const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+          xp.streak = (xp.lastDate === yesterday) ? xp.streak + 1 : 1;
+        } else {
+          xp.streak = 1;
+        }
+        xp.lastDate = today;
+        saveXP(xp);
+        updateXPDisplay();
+
+        // Save activity
+        const activity = getActivity();
+        activity.unshift({
+          date: new Date().toISOString(),
+          mode: currentMode,
+          words: data.words_spoken,
+          xp: data.xp_earned,
+          text: (data.transcribed_text || '').substring(0, 100),
+        });
+        saveActivity(activity.slice(0, 50));
+        renderActivity();
+
+      } catch (e) {
+        document.getElementById('transcriptionBox')!.textContent = 'Network error. Please try again.';
+        document.getElementById('resultsSection')!.style.display = 'block';
+      }
+
+      resetRecordButton();
+    }
+
+    function resetRecordButton() {
+      const btn = document.getElementById('recordBtn');
+      if (btn) {
+        btn.removeAttribute('disabled');
+        btn.querySelector('.record-text')!.textContent = 'Tap to Record';
+        btn.querySelector('.record-icon')!.textContent = '🎤';
+      }
+    }
+
+    // Init
+    document.addEventListener('DOMContentLoaded', () => {
+      updateXPDisplay();
+      renderActivity();
+
+      document.getElementById('recordBtn')!.addEventListener('click', () => {
+        if (mediaRecorder && mediaRecorder.state === 'recording') {
+          stopRecording();
+        } else {
+          startRecording();
+        }
+      });
+
+      // Mode switching
+      document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentMode = btn.getAttribute('data-mode') || 'free_speech';
+          document.getElementById('guidedSection')!.style.display = currentMode === 'guided' ? 'block' : 'none';
+        });
+      });
+
+      // Reference text selector
+      document.getElementById('referenceSelect')!.addEventListener('change', async (e) => {
+        const val = (e.target as HTMLSelectElement).value;
+        if (!val) { document.getElementById('referencePreview')!.textContent = ''; return; }
+        // Load reference text (simple client-side fetch from public data)
+        document.getElementById('referencePreview')!.textContent = 'Loading...';
+        try {
+          const [book, part, torah] = val.split('-');
+          const res = await fetch(`/reader/${book}/${part}/${torah}`);
+          const html = await res.text();
+          // Simple extraction — get first few lines of Hebrew
+          const div = document.createElement('div');
+          div.innerHTML = html;
+          const hebrew = div.querySelector('.segment-he p')?.textContent || 'Text not available';
+          document.getElementById('referencePreview')!.textContent = hebrew.substring(0, 500);
+        } catch {
+          document.getElementById('referencePreview')!.textContent = 'Could not load text';
+        }
+      });
+    });
+  </script>
+
+  <style>
+    .speak-page { max-width: 700px; margin: 0 auto; padding: 30px 20px 80px; font-family: 'Open Sans', sans-serif; }
+    .speak-page h1 { font-family: 'Frank Ruhl Libre', serif; color: #1a365d; text-align: center; font-size: 2em; margin-bottom: 4px; }
+    .subtitle { text-align: center; color: #666; margin-bottom: 24px; }
+
+    /* XP Bar */
+    .xp-bar-section { background: linear-gradient(135deg, #1a365d, #2c5282); border-radius: 16px; padding: 20px 24px; color: white; margin-bottom: 24px; }
+    .xp-stats { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+    .xp-label { font-size: 0.8em; opacity: 0.7; text-transform: uppercase; letter-spacing: 1px; }
+    .xp-value { font-size: 2em; font-weight: 700; font-family: 'Frank Ruhl Libre', serif; }
+    .xp-streak { font-size: 0.9em; opacity: 0.8; margin-left: auto; }
+    .xp-level-bar { height: 8px; background: rgba(255,255,255,0.2); border-radius: 4px; position: relative; }
+    .xp-fill { height: 100%; background: #d69e2e; border-radius: 4px; transition: width 0.5s ease; width: 0%; }
+    .xp-level { position: absolute; right: 0; top: -20px; font-size: 0.7em; opacity: 0.7; }
+
+    /* Mode Selector */
+    .mode-selector { display: flex; gap: 8px; margin-bottom: 20px; }
+    .mode-btn { flex: 1; padding: 10px; border: 2px solid #e0d6c2; border-radius: 10px; background: #f8f5ef; cursor: pointer; font-family: inherit; font-size: 0.9em; font-weight: 600; color: #666; transition: all 0.15s; }
+    .mode-btn.active { border-color: #1a365d; background: #1a365d; color: white; }
+
+    /* Guided */
+    .guided-section { margin-bottom: 20px; }
+    .guided-section label { display: block; font-weight: 600; color: #1a365d; margin-bottom: 8px; }
+    .guided-section select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit; font-size: 0.9em; }
+    .reference-preview { margin-top: 12px; padding: 16px; background: #f8f5ef; border-radius: 10px; border: 1px solid #e0d6c2; font-family: 'Frank Ruhl Libre', serif; font-size: 1.1em; direction: rtl; text-align: right; line-height: 1.8; min-height: 60px; max-height: 200px; overflow-y: auto; color: #333; }
+
+    /* Recorder */
+    .recorder-section { text-align: center; margin-bottom: 24px; }
+    .record-btn { width: 120px; height: 120px; border-radius: 50%; border: 4px solid #c53030; background: white; cursor: pointer; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s; }
+    .record-btn:hover { transform: scale(1.05); }
+    .record-btn.recording { border-color: #c53030; background: #c53030; color: white; animation: pulse 1.5s infinite; }
+    .record-btn[disabled] { opacity: 0.6; cursor: not-allowed; }
+    .record-icon { font-size: 2em; }
+    .record-text { font-size: 0.8em; font-weight: 600; }
+    .recording-status { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 12px; }
+    .recording-dot { width: 10px; height: 10px; border-radius: 50%; background: #c53030; animation: blink 1s infinite; }
+    .recording-timer { font-size: 1.2em; font-weight: 600; color: #c53030; font-family: monospace; }
+    .record-hint { color: #999; font-size: 0.85em; margin-top: 8px; }
+    @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(197,48,48,0.4); } 50% { box-shadow: 0 0 0 16px rgba(197,48,48,0); } }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    /* Results */
+    .results-section { background: #f8f5ef; border-radius: 14px; padding: 20px; border: 1px solid #e0d6c2; margin-bottom: 24px; }
+    .results-section h3 { color: #1a365d; margin: 0 0 12px; font-family: 'Frank Ruhl Libre', serif; }
+    .transcription-box { background: white; padding: 16px; border-radius: 10px; font-family: 'Frank Ruhl Libre', serif; font-size: 1.15em; line-height: 1.8; min-height: 60px; color: #333; }
+    .result-stats { margin-top: 10px; font-size: 0.85em; color: #888; }
+    .xp-earned { margin-top: 12px; padding: 10px 16px; background: #fffbeb; border: 1px solid #d69e2e; border-radius: 10px; color: #1a365d; font-size: 1.1em; text-align: center; }
+
+    /* Activity */
+    .activity-section h3 { color: #1a365d; font-family: 'Frank Ruhl Libre', serif; }
+    .activity-list { display: flex; flex-direction: column; gap: 6px; }
+    .activity-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: #f8f5ef; border-radius: 10px; font-size: 0.85em; }
+    .activity-date { color: #666; min-width: 90px; }
+    .activity-mode { color: #1a365d; flex: 1; }
+    .activity-words { color: #888; }
+    .activity-xp { color: #d69e2e; font-weight: 700; }
+    .no-activity { color: #999; text-align: center; padding: 20px; }
+  </style>
+</Layout>
