@@ -175,7 +175,6 @@ const CHUMASH_NAMES = {
   'bamidbar': 'Bamidbar',
   'devarim': 'Devarim',
 };
----
 
 const structuredData = JSON.stringify({
   "@context": "https://schema.org",
@@ -208,6 +207,7 @@ const breadcrumbData = JSON.stringify({
   ]
 });
 ---
+
 <Layout title={`Parashat ${parsha.en} - Breslov Teachings`} description={`${parsha.totalConnections} Breslov teachings connected to Parashat ${parsha.en} (${parsha.he}). ${parsha.ref}.`}>
   <script type="application/ld+json" set:html={structuredData} slot="head" />
   <script type="application/ld+json" set:html={breadcrumbData} slot="head" />
