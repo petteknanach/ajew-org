@@ -7,8 +7,11 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 
 const supabaseUrl = process.env.SUPABASE_URL || 'https://ekggvujbuusvgmrertgp.supabase.co';
 const supabaseKey = process.env.SUPABASE_SERVICE_KEY;
+if (!supabaseKey) {
+  console.error('❌ SUPABASE_SERVICE_KEY not set — webhook cannot write to DB');
+}
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+const supabase = createClient(supabaseUrl, supabaseKey || '');
 
 export const prerender = false;
 
