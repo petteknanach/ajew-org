@@ -188,10 +188,12 @@ import Layout from '../../layouts/Layout.astro';
         // --- END NEW ---
 
         // Also fetch subscription from DB so we know their tier locally
-        const { data: sub } = await supabase.from('subscriptions').select('tier').eq('email', (currentUser.email || '').toLowerCase()).single();
-        if (sub) {
-          currentUser.tier = sub.tier;
-        }
+        try {
+          const { data: sub } = await supabase.from('subscriptions').select('tier').ilike('email', (currentUser.email || '').toLowerCase()).limit(1);
+          if (sub && sub.length > 0) {
+            currentUser.tier = sub[0].tier;
+          }
+        } catch(e) { /* silently ignore — server validates on send */ }
       }
       return currentUser;
     }
