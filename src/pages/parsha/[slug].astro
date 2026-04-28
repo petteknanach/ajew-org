@@ -177,7 +177,40 @@ const CHUMASH_NAMES = {
 };
 ---
 
+const structuredData = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": `Parashat ${parsha.en} (${parsha.he}) - Breslov Teachings`,
+  "alternativeHeadline": parsha.he,
+  "description": `${parsha.totalConnections} Breslov Torah teachings on Parashat ${parsha.en}. ${parsha.ref}. Insights from Likutay Moharan, Likutay Halachos, Likutay Tefilos, and more.`,
+  "author": { "@type": "Organization", "name": "ajew.org - Breslov Torah Library" },
+  "publisher": { "@type": "Organization", "name": "ajew.org", "url": "https://ajew.org" },
+  "inLanguage": ["he", "en"],
+  "genre": "Torah commentary",
+  "isPartOf": {
+    "@type": "Book",
+    "name": `Torah - ${CHUMASH_NAMES[parsha.chumash] || parsha.chumash}`,
+    "author": { "@type": "Organization", "name": "Breslov Tradition" }
+  },
+  "keywords": `parsha, ${parsha.en}, ${parsha.he}, ${CHUMASH_NAMES[parsha.chumash] || ''}, Torah, Breslov, Rabbi Nachman, ${parsha.chumash || ''}`,
+  "url": `https://ajew.org/parsha/${slug}`,
+  "datePublished": "2024-01-01",
+  "wordCount": parsha.totalConnections * 50
+});
+
+const breadcrumbData = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Parsha", "item": "https://ajew.org/parsha" },
+    { "@type": "ListItem", "position": 2, "name": CHUMASH_NAMES[parsha.chumash] || parsha.chumash, "item": `https://ajew.org/parsha` },
+    { "@type": "ListItem", "position": 3, "name": `${parsha.he} - ${parsha.en}` }
+  ]
+});
+---
 <Layout title={`Parashat ${parsha.en} - Breslov Teachings`} description={`${parsha.totalConnections} Breslov teachings connected to Parashat ${parsha.en} (${parsha.he}). ${parsha.ref}.`}>
+  <script type="application/ld+json" set:html={structuredData} slot="head" />
+  <script type="application/ld+json" set:html={breadcrumbData} slot="head" />
   <section class="parsha-detail">
     <div class="container">
       <!-- Breadcrumb -->

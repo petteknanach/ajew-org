@@ -10,7 +10,7 @@ export const prerender = false;
  */
 export async function POST({ request }: { request: Request }) {
   const provider = import.meta.env.WHISPER_PROVIDER || 'groq';
-  const apiKey = import.meta.env.WHISPER_API_KEY;
+  const apiKey = import.meta.env.WHISPER_API_KEY || import.meta.env.GROQ_API_KEY;
 
   if (!apiKey) {
     return new Response(JSON.stringify({ 
