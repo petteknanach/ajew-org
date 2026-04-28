@@ -85,16 +85,12 @@ export async function POST({ request }) {
         // Extract username from metadata or default
         const username = session.metadata?.username || customerEmail.split('@')[0];
 
-        // Upsert subscription in Supabase
+        // Upsert subscription in Supabase (only columns that exist in the table)
         const { error } = await supabase
           .from('subscriptions')
           .upsert({
             email: customerEmail.toLowerCase(),
             tier,
-            expiry,
-            username,
-            stripe_customer_id: session.customer,
-            stripe_subscription_id: session.subscription,
             updated_at: new Date().toISOString()
           }, { onConflict: 'email' });
 
