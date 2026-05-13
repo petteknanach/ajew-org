@@ -180,17 +180,28 @@ const siteName = "A Jew - Breslov Torah Library";
       gtag('js', new Date());
       gtag('config', 'G-64VMMKHB30');
     </script>
-    <!-- Prevent dark mode flash + restore text size -->
+    <!-- Prevent dark mode flash + restore theme + text size -->
     <script is:inline>
-      if (localStorage.getItem('ajew-dark-mode') === 'true') {
-        document.documentElement.classList.add('dark-mode-preload');
-      }
-      var siteTextSize = localStorage.getItem('ajew-text-size');
-      if (siteTextSize) document.documentElement.style.fontSize = siteTextSize + 'px';
+      (function() {
+        var theme = localStorage.getItem('ajew-theme') || 'day';
+        var textSize = localStorage.getItem('ajew-text-size');
+        if (textSize) document.documentElement.style.fontSize = textSize + 'px';
+        if (theme === 'night') {
+          document.documentElement.setAttribute('data-theme', 'night');
+          document.body && document.body.classList.add('dark-mode');
+        } else if (theme === 'sepia') {
+          document.documentElement.setAttribute('data-theme', 'sepia');
+        }
+        if (theme === 'night' && document.documentElement.style) {
+          var s = document.createElement('style');
+          s.textContent = 'html { background: #1a1a2e; }';
+          document.head.appendChild(s);
+        }
+      })();
     </script>
-    <style>
-      html.dark-mode-preload { background: #1a1a2e; }
-    </style>
+
+    <!-- Phase 1 Design System CSS (global base styles) -->
+    <link rel="stylesheet" href="/src/styles/design-system.css" />
   </head>
   <body>
     <a href="#main-content" class="skip-link">Skip to content</a>

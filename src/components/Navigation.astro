@@ -1,0 +1,837 @@
+---
+/**
+ * Navigation Shell — ajew.org Phase 1
+ * Desktop: left sidebar (260px) + top bar
+ * Mobile: bottom tab bar (64px) + compact top header
+ * Floating Hitbodedut FAB on all views
+ * Theme toggle: day / sepia / night
+ */
+
+interface Props {
+  currentPath?: string;
+}
+
+const { currentPath = Astro.url.pathname } = Astro.props;
+
+const navItems = [
+  { label: 'Reader', labelHe: 'קורא', icon: '📖', href: '/reader', key: 'reader' },
+  { label: 'Search', labelHe: 'חיפוש', icon: '🔍', href: '/search-enhanced', key: 'search' },
+  { label: 'Daily Study', labelHe: 'לימוד יומי', icon: '📅', href: '/daily-study', key: 'daily' },
+  { label: 'My Flame', labelHe: 'הלהבה שלי', icon: '🔥', href: '/my-flame', key: 'flame' },
+  { label: 'Torah GPS', labelHe: 'תורה GPS', icon: '🧭', href: '/torah-gps', key: 'gps' },
+  { label: 'Topics', labelHe: 'נושאים', icon: '☰', href: '/topics', key: 'topics' },
+  { label: 'Help Me', labelHe: 'עזרו לי', icon: '💬', href: '/help-me', key: 'help' },
+  { label: 'Ask', labelHe: 'שאל', icon: '🆘', href: '/ask', key: 'ask' },
+];
+
+function isActive(path: string) {
+  return currentPath === path || currentPath.startsWith(path + '/');
+}
+---
+
+<!-- ═══════════════════════════════════════
+     DESKTOP SIDEBAR
+     Visible on screens ≥1024px
+     ═══════════════════════════════════════ -->
+<aside class="desktop-sidebar" role="navigation" aria-label="Main navigation">
+  <!-- Logo -->
+  <a href="/" class="sidebar-logo">
+    <span class="logo-emoji">✡️</span>
+    <div class="logo-text">
+      <span class="logo-name">ajew.org</span>
+      <span class="logo-tagline">Breslov Digital Sanctuary</span>
+    </div>
+  </a>
+
+  <nav class="sidebar-nav">
+    <ul>
+      {navItems.map(item => (
+        <li>
+          <a
+            href={item.href}
+            class:list={['sidebar-link', { active: isActive(item.href) }]}
+            aria-current={isActive(item.href) ? 'page' : undefined}
+          >
+            <span class="sidebar-link-icon">{item.icon}</span>
+            <span class="sidebar-link-label">{item.label}</span>
+            <span class="sidebar-link-he">{item.labelHe}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+
+  <!-- Sidebar footer: theme toggle + Na Nach -->
+  <div class="sidebar-footer">
+    <button
+      id="theme-toggle-sidebar"
+      class="theme-toggle"
+      type="button"
+      aria-label="Toggle theme"
+      title="Toggle light/dark/sephia theme"
+    >
+      <span class="theme-icon-light">☀️</span>
+      <span class="theme-icon-dark">🌙</span>
+    </button>
+    <div class="sidebar-nanach">נ נח נחמ נחמן מאומן</div>
+  </div>
+</aside>
+
+<!-- ═══════════════════════════════════════
+     MOBILE HEADER
+     Visible on screens <1024px
+     ═══════════════════════════════════════ -->
+<header class="mobile-header" role="banner">
+  <a href="/" class="mobile-logo">
+    <span class="logo-emoji">✡️</span>
+    <span class="logo-name">ajew</span>
+  </a>
+  <div class="mobile-header-actions">
+    <a href="/search-enhanced" class="mobile-search-btn" aria-label="Search">🔍</a>
+    <button
+      id="theme-toggle-mobile"
+      class="theme-toggle theme-toggle-mobile"
+      type="button"
+      aria-label="Toggle theme"
+    >
+      <span>☀️</span>
+    </button>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════
+     MOBILE BOTTOM TAB BAR
+     Visible on screens <1024px
+     ═══════════════════════════════════════ -->
+<nav class="mobile-tabbar" role="navigation" aria-label="Mobile navigation">
+  <!-- Primary tabs (4): fit in tab bar -->
+  <a href="/reader" class:list={['mobile-tab', { active: isActive('/reader') }]} aria-label="Reader">
+    <span class="mobile-tab-icon">📖</span>
+    <span class="mobile-tab-label">Read</span>
+  </a>
+  <a href="/search-enhanced" class:list={['mobile-tab', { active: isActive('/search-enhanced') }]} aria-label="Search">
+    <span class="mobile-tab-icon">🔍</span>
+    <span class="mobile-tab-label">Search</span>
+  </a>
+  <a href="/my-flame" class:list={['mobile-tab', { active: isActive('/my-flame') }]} aria-label="My Flame">
+    <span class="mobile-tab-icon">🔥</span>
+    <span class="mobile-tab-label">Flame</span>
+  </a>
+  <!-- "More" tab opens bottom sheet with remaining items -->
+  <button class="mobile-tab mobile-tab-more" type="button" id="mobile-more-btn" aria-label="More options">
+    <span class="mobile-tab-icon">☰</span>
+    <span class="mobile-tab-label">More</span>
+  </button>
+</nav>
+
+<!-- Mobile "More" bottom sheet (hidden by default) -->
+<div class="mobile-more-sheet" id="mobile-more-sheet" inert>
+  <div class="more-sheet-backdrop" id="more-sheet-backdrop"></div>
+  <div class="more-sheet-content">
+    <div class="more-sheet-header">
+      <h3>More</h3>
+      <button class="more-sheet-close" id="more-sheet-close" aria-label="Close">✕</button>
+    </div>
+    <ul class="more-sheet-list">
+      {navItems.slice(4).map(item => (
+        <li>
+          <a href={item.href} class="more-sheet-link">
+            <span class="more-sheet-icon">{item.icon}</span>
+            <span class="more-sheet-label">{item.label}</span>
+            <span class="more-sheet-he">{item.labelHe}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+    <div class="more-sheet-footer">
+      <div class="more-sheet-nanach">נ נח נחמ נחמן מאומן</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     HITBODEDUT FAB (Floating Action Button)
+     ═══════════════════════════════════════ -->
+<a href="/help-me" class="hitbodedut-fab" aria-label="Hitbodedut - Quick Prayer" title="Hitbodedut — Speak your heart to Hashem">
+  🙏
+</a>
+
+<!-- ═══════════════════════════════════════
+     WRAPPER for main content area
+     On desktop, this sits beside the sidebar
+     On mobile, fills the viewport
+     ═══════════════════════════════════════ -->
+<div class="content-wrapper">
+  <slot />
+</div>
+
+<style>
+  /* ============================================
+     DESKTOP SIDEBAR
+     ============================================ */
+  .desktop-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: var(--ds-sidebar-width, 260px);
+    height: 100vh;
+    background: var(--ds-surface, #f8f5ef);
+    border-right: 1px solid var(--ds-border, #e0d6c2);
+    display: flex;
+    flex-direction: column;
+    z-index: 50;
+    transition: background 250ms ease, border-color 250ms ease;
+  }
+
+  [data-theme="night"] .desktop-sidebar,
+  body.dark-mode .desktop-sidebar {
+    background: #22223a;
+    border-color: #3a3a5c;
+  }
+
+  [data-theme="sepia"] .desktop-sidebar {
+    background: #ede4cc;
+    border-color: #d4c5a9;
+  }
+
+  /* Logo */
+  .sidebar-logo {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3, 0.75rem);
+    padding: var(--ds-space-6, 1.5rem) var(--ds-space-5, 1.25rem);
+    text-decoration: none;
+    color: var(--ds-navy-700, #1a365d);
+    border-bottom: 1px solid var(--ds-border, #e0d6c2);
+  }
+
+  [data-theme="night"] .sidebar-logo,
+  body.dark-mode .sidebar-logo {
+    color: #8ab4f8;
+    border-color: #3a3a5c;
+  }
+
+  .logo-emoji {
+    font-size: 1.5rem;
+  }
+
+  .logo-text {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .logo-name {
+    font-size: var(--ds-text-xl, 1.25rem);
+    font-weight: 700;
+    font-family: var(--ds-font-heading, Georgia, serif);
+    letter-spacing: -0.02em;
+  }
+
+  .logo-tagline {
+    font-size: var(--ds-text-xs, 0.75rem);
+    color: var(--ds-text-muted, #888);
+    margin-top: 2px;
+  }
+
+  [data-theme="night"] .logo-tagline,
+  body.dark-mode .logo-tagline {
+    color: #66667a;
+  }
+
+  /* Nav links */
+  .sidebar-nav {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--ds-space-4, 1rem) 0;
+  }
+
+  .sidebar-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3, 0.75rem);
+    padding: var(--ds-space-3, 0.75rem) var(--ds-space-5, 1.25rem);
+    text-decoration: none;
+    color: var(--ds-text-primary, #1a1a1a);
+    font-size: var(--ds-text-sm, 0.875rem);
+    font-weight: 500;
+    transition: background-color 150ms ease, color 150ms ease;
+    border-left: 3px solid transparent;
+  }
+
+  .sidebar-link:hover {
+    background: var(--ds-surface-raised, #f5f0e6);
+    color: var(--ds-navy-700, #1a365d);
+  }
+
+  .sidebar-link.active {
+    background: var(--ds-navy-100, #e0eef7);
+    color: var(--ds-navy-700, #1a365d);
+    border-left-color: var(--ds-navy-700, #1a365d);
+    font-weight: 600;
+  }
+
+  [data-theme="night"] .sidebar-link.active,
+  body.dark-mode .sidebar-link.active {
+    background: #2a4a6e;
+    color: #8ab4f8;
+    border-left-color: #8ab4f8;
+  }
+
+  [data-theme="night"] .sidebar-link:hover,
+  body.dark-mode .sidebar-link:hover {
+    background: #2c2c4a;
+    color: #d0d0e0;
+  }
+
+  .sidebar-link-icon {
+    font-size: 1.1rem;
+    width: 1.4rem;
+    text-align: center;
+  }
+
+  .sidebar-link-he {
+    font-family: var(--ds-font-hebrew, 'Frank Ruhl Libre', serif);
+    font-size: var(--ds-hebrew-text-sm, 0.9375rem);
+    color: var(--ds-text-muted, #888);
+    margin-left: auto;
+    direction: rtl;
+  }
+
+  [data-theme="night"] .sidebar-link-he,
+  body.dark-mode .sidebar-link-he {
+    color: #66667a;
+  }
+
+  /* Sidebar footer */
+  .sidebar-footer {
+    padding: var(--ds-space-4, 1rem) var(--ds-space-5, 1.25rem);
+    border-top: 1px solid var(--ds-border, #e0d6c2);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ds-space-3, 0.75rem);
+    align-items: center;
+  }
+
+  [data-theme="night"] .sidebar-footer,
+  body.dark-mode .sidebar-footer {
+    border-color: #3a3a5c;
+  }
+
+  .sidebar-nanach {
+    font-family: var(--ds-font-hebrew, 'Frank Ruhl Libre', serif);
+    font-size: var(--ds-text-sm, 0.875rem);
+    color: var(--ds-gold-500, #d4a017);
+    text-align: center;
+    direction: rtl;
+  }
+
+  [data-theme="night"] .sidebar-nanach,
+  body.dark-mode .sidebar-nanach {
+    color: #e8b830;
+  }
+
+  /* ============================================
+     THEME TOGGLE
+     ============================================ */
+  .theme-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ds-space-2, 0.5rem);
+    padding: var(--ds-space-2, 0.5rem) var(--ds-space-4, 1rem);
+    background: var(--ds-surface-raised, #f5f0e6);
+    border: 1px solid var(--ds-border, #e0d6c2);
+    border-radius: var(--ds-radius-pill, 9999px);
+    cursor: pointer;
+    font-size: var(--ds-text-sm, 0.875rem);
+    color: var(--ds-text-primary, #1a1a1a);
+    transition: background-color 150ms ease, border-color 150ms ease;
+  }
+
+  .theme-toggle:hover {
+    background: var(--ds-border, #e0d6c2);
+  }
+
+  .theme-icon-dark,
+  .theme-icon-light {
+    font-size: 1rem;
+  }
+
+  [data-theme="night"] .theme-toggle,
+  body.dark-mode .theme-toggle {
+    background: #2c2c4a;
+    border-color: #3a3a5c;
+    color: #d0d0e0;
+  }
+
+  [data-theme="night"] .theme-icon-dark { opacity: 1; }
+  [data-theme="night"] .theme-icon-light { opacity: 0.4; }
+
+  /* ============================================
+     MOBILE HEADER
+     ============================================ */
+  .mobile-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 56px;
+    background: var(--ds-white, #fefdfb);
+    border-bottom: 1px solid var(--ds-border, #e0d6c2);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--ds-space-4, 1rem);
+    z-index: 50;
+  }
+
+  [data-theme="night"] .mobile-header,
+  body.dark-mode .mobile-header {
+    background: #1a1a2e;
+    border-color: #3a3a5c;
+  }
+
+  .mobile-logo {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-2, 0.5rem);
+    text-decoration: none;
+    color: var(--ds-navy-700, #1a365d);
+  }
+
+  [data-theme="night"] .mobile-logo,
+  body.dark-mode .mobile-logo {
+    color: #8ab4f8;
+  }
+
+  .mobile-logo .logo-name {
+    font-weight: 700;
+    font-size: var(--ds-text-lg, 1.125rem);
+    font-family: var(--ds-font-heading, Georgia, serif);
+  }
+
+  .mobile-header-actions {
+    display: flex;
+    gap: var(--ds-space-3, 0.75rem);
+    align-items: center;
+  }
+
+  .mobile-search-btn {
+    font-size: 1.2rem;
+    text-decoration: none;
+  }
+
+  .theme-toggle-mobile {
+    padding: var(--ds-space-1, 0.25rem) var(--ds-space-3, 0.75rem);
+    font-size: var(--ds-text-sm, 0.875rem);
+  }
+
+  .theme-toggle-mobile .theme-icon-dark {
+    display: none;
+  }
+
+  [data-theme="night"] .theme-toggle-mobile .theme-icon-dark {
+    display: inline;
+  }
+
+  [data-theme="night"] .theme-toggle-mobile .theme-icon-light {
+    display: none;
+  }
+
+  /* ============================================
+     MOBILE BOTTOM TAB BAR
+     ============================================ */
+  .mobile-tabbar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--ds-mobile-tab-height, 64px);
+    background: var(--ds-white, #fefdfb);
+    border-top: 1px solid var(--ds-border, #e0d6c2);
+    display: flex;
+    justify-content: space-around;
+    align-items: stretch;
+    z-index: 50;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  [data-theme="night"] .mobile-tabbar,
+  body.dark-mode .mobile-tabbar {
+    background: #1a1a2e;
+    border-color: #3a3a5c;
+  }
+
+  .mobile-tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    text-decoration: none;
+    color: var(--ds-text-muted, #888);
+    font-size: 0.65rem;
+    font-weight: 500;
+    transition: color 150ms ease, background-color 150ms ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mobile-tab.active {
+    color: var(--ds-navy-700, #1a365d);
+    font-weight: 600;
+  }
+
+  [data-theme="night"] .mobile-tab.active,
+  body.dark-mode .mobile-tab.active {
+    color: #8ab4f8;
+  }
+
+  .mobile-tab-icon {
+    font-size: 1.3rem;
+    line-height: 1;
+  }
+
+  .mobile-tab-label {
+    line-height: 1;
+  }
+
+  .mobile-tab-more {
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  /* ============================================
+     MOBILE "MORE" BOTTOM SHEET
+     ============================================ */
+  .mobile-more-sheet {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+  }
+
+  .mobile-more-sheet.open {
+    display: flex;
+  }
+
+  .more-sheet-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    animation: fadeIn 200ms ease;
+  }
+
+  .more-sheet-content {
+    position: relative;
+    background: var(--ds-white, #fefdfb);
+    border-radius: var(--ds-radius-lg, 16px) var(--ds-radius-lg, 16px) 0 0;
+    padding: var(--ds-space-6, 1.5rem) var(--ds-space-5, 1.25rem) calc(var(--ds-space-6, 1.5rem) + env(safe-area-inset-bottom));
+    max-height: 70vh;
+    width: 100%;
+    max-width: 480px;
+    animation: slideUp 300ms var(--ds-ease-out, cubic-bezier(0.2, 0.0, 0.0, 1.0));
+    overflow-y: auto;
+  }
+
+  [data-theme="night"] .more-sheet-content,
+  body.dark-mode .more-sheet-content {
+    background: #22223a;
+  }
+
+  .more-sheet-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: var(--ds-space-4, 1rem);
+    border-bottom: 1px solid var(--ds-border, #e0d6c2);
+    margin-bottom: var(--ds-space-4, 1rem);
+  }
+
+  .more-sheet-header h3 {
+    margin: 0;
+    font-size: var(--ds-text-xl, 1.25rem);
+    color: var(--ds-navy-700, #1a365d);
+  }
+
+  .more-sheet-close {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    color: var(--ds-text-muted, #888);
+    cursor: pointer;
+    padding: var(--ds-space-2, 0.5rem);
+  }
+
+  .more-sheet-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .more-sheet-link {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-3, 0.75rem);
+    padding: var(--ds-space-4, 1rem) var(--ds-space-3, 0.75rem);
+    text-decoration: none;
+    color: var(--ds-text-primary, #1a1a1a);
+    font-size: var(--ds-text-base, 1rem);
+    border-radius: var(--ds-radius-sm, 6px);
+    transition: background-color 150ms ease;
+  }
+
+  .more-sheet-link:hover {
+    background: var(--ds-surface-raised, #f5f0e6);
+  }
+
+  .more-sheet-icon {
+    font-size: 1.2rem;
+  }
+
+  .more-sheet-he {
+    font-family: var(--ds-font-hebrew, 'Frank Ruhl Libre', serif);
+    font-size: var(--ds-hebrew-text-sm, 0.9375rem);
+    color: var(--ds-text-muted, #888);
+    margin-left: auto;
+    direction: rtl;
+  }
+
+  .more-sheet-footer {
+    padding-top: var(--ds-space-4, 1rem);
+    margin-top: var(--ds-space-4, 1rem);
+    border-top: 1px solid var(--ds-border, #e0d6c2);
+    text-align: center;
+  }
+
+  .more-sheet-nanach {
+    font-family: var(--ds-font-hebrew, 'Frank Ruhl Libre', serif);
+    font-size: var(--ds-text-sm, 0.875rem);
+    color: var(--ds-gold-500, #d4a017);
+    direction: rtl;
+  }
+
+  /* ============================================
+     HITBODEDUT FAB
+     ============================================ */
+  .hitbodedut-fab {
+    position: fixed;
+    bottom: calc(var(--ds-mobile-tab-height, 64px) + var(--ds-space-4, 1rem));
+    right: var(--ds-space-5, 1.25rem);
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--ds-gold-500, #d4a017);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    text-decoration: none;
+    box-shadow: var(--ds-shadow-md, 0 2px 4px rgba(0,0,0,0.04), 0 3px 8px rgba(0,0,0,0.08));
+    z-index: 45;
+    transition: transform 200ms var(--ds-ease-out), box-shadow 200ms var(--ds-ease-out), background-color 200ms ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .hitbodedut-fab:hover {
+    transform: scale(1.08);
+    box-shadow: var(--ds-shadow-lg, 0 4px 12px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.1));
+    background: var(--ds-gold-400, #e8b830);
+  }
+
+  .hitbodedut-fab:active {
+    transform: scale(0.96);
+  }
+
+  [data-theme="night"] .hitbodedut-fab {
+    background: #e8b830;
+  }
+
+  /* Desktop: FAB adjusts for sidebar */
+  @media (min-width: 1024px) {
+    .hitbodedut-fab {
+      right: calc(280px + var(--ds-space-5, 1.25rem));
+      bottom: var(--ds-space-6, 1.5rem);
+    }
+  }
+
+  /* ============================================
+     CONTENT WRAPPER
+     Desktop: sits beside sidebar
+     Mobile: full viewport with header + tabbar offset
+     ============================================ */
+  .content-wrapper {
+    min-height: 100vh;
+    background: var(--ds-white, #fefdfb);
+  }
+
+  @media (min-width: 1024px) {
+    .content-wrapper {
+      margin-left: var(--ds-sidebar-width, 260px);
+    }
+
+    /* Hide mobile elements on desktop */
+    .mobile-header,
+    .mobile-tabbar,
+    .mobile-more-sheet {
+      display: none !important;
+    }
+  }
+
+  @media (max-width: 1023px) {
+    .content-wrapper {
+      padding-top: 56px; /* Mobile header height */
+      padding-bottom: calc(var(--ds-mobile-tab-height, 64px) + env(safe-area-inset-bottom));
+    }
+
+    /* Hide desktop elements on mobile */
+    .desktop-sidebar {
+      display: none !important;
+    }
+  }
+
+  /* ============================================
+     ANIMATIONS
+     ============================================ */
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  /* ============================================
+     SCROLLBAR STYLING (subtle)
+     ============================================ */
+  .sidebar-nav::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .sidebar-nav::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .sidebar-nav::-webkit-scrollbar-thumb {
+    background: var(--ds-border, #e0d6c2);
+    border-radius: 2px;
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes slideUp {
+      from { transform: translateY(0); }
+      to { transform: translateY(0); }
+    }
+    .more-sheet-content {
+      animation: none;
+    }
+    .more-sheet-backdrop {
+      animation: none;
+    }
+  }
+</style>
+
+<!-- ═══════════════════════════════════════
+     CLIENT-SIDE INTERACTIVITY
+     Theme toggle + More sheet behavior
+     ═══════════════════════════════════════ -->
+<script is:inline>
+(function() {
+  'use strict';
+
+  // Theme cycling: day → sepia → night → day
+  const THEMES = ['day', 'sepia', 'night'];
+  const THEME_ICONS = ['☀️', '🌅', '🌙'];
+
+  function getCurrentTheme() {
+    return localStorage.getItem('ajew-theme') || 'day';
+  }
+
+  function cycleTheme() {
+    const current = getCurrentTheme();
+    const idx = THEMES.indexOf(current);
+    const next = THEMES[(idx + 1) % THEMES.length];
+    setTheme(next);
+  }
+
+  function setTheme(theme) {
+    localStorage.setItem('ajew-theme', theme);
+    var container = document.querySelector('.reader-container') || document.documentElement;
+    container.removeAttribute('data-theme');
+    if (theme !== 'day') {
+      container.setAttribute('data-theme', theme);
+    }
+    document.body.classList.toggle('dark-mode', theme === 'night');
+
+    // Update all theme toggles
+    document.querySelectorAll('.theme-toggle').forEach(function(btn) {
+      var iconEl = btn.querySelector('span');
+      if (iconEl) {
+        var tIdx = THEMES.indexOf(theme) % 3;
+        iconEl.textContent = THEME_ICONS[tIdx];
+      }
+    });
+  }
+
+  // Bind toggles
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest('.theme-toggle');
+    if (btn) {
+      e.preventDefault();
+      cycleTheme();
+      return;
+    }
+  });
+
+  // Initialize theme on load
+  setTheme(getCurrentTheme());
+
+  // More sheet toggle
+  var moreBtn = document.getElementById('mobile-more-btn');
+  var moreSheet = document.getElementById('mobile-more-sheet');
+  var moreClose = document.getElementById('more-sheet-close');
+  var moreBackdrop = document.getElementById('more-sheet-backdrop');
+
+  function openMoreSheet() {
+    if (moreSheet) {
+      moreSheet.classList.add('open');
+      moreSheet.removeAttribute('inert');
+    }
+  }
+
+  function closeMoreSheet() {
+    if (moreSheet) {
+      moreSheet.classList.remove('open');
+      moreSheet.setAttribute('inert', '');
+    }
+  }
+
+  if (moreBtn) moreBtn.addEventListener('click', openMoreSheet);
+  if (moreClose) moreClose.addEventListener('click', closeMoreSheet);
+  if (moreBackdrop) moreBackdrop.addEventListener('click', closeMoreSheet);
+
+  // Close on Escape
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && moreSheet && moreSheet.classList.contains('open')) {
+      closeMoreSheet();
+    }
+  });
+})();
+</script>
