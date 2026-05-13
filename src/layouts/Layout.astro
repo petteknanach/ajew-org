@@ -12,6 +12,8 @@ interface Props {
   hreflangs?: Array<'en' | 'he'>;
 }
 
+import Navigation from '../components/Navigation.astro';
+
 const {
   title,
   description = "The largest online Breslov Torah library. 226+ sacred Jewish texts — Likutay Moharan, Zohar, Talmud, Mishna, Rambam, Tanach — in Hebrew with English translations. Free.",
@@ -204,8 +206,11 @@ const siteName = "A Jew - Breslov Torah Library";
     <link rel="stylesheet" href="/src/styles/design-system.css" />
   </head>
   <body>
-    <a href="#main-content" class="skip-link">Skip to content</a>
-    <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <!-- Phase 1: Navigation Shell -->
+    <Navigation currentPath={Astro.url.pathname} />
+
+    <!-- Legacy navbar → replaced by Navigation component, hidden in CSS -->
+    <div class="legacy-nav-hidden" style="display:none;">
       <div class="nav-container">
         <a href="/" class="logo">
           <span class="logo-text">A Jew</span>
@@ -249,8 +254,8 @@ const siteName = "A Jew - Breslov Torah Library";
           <a href="https://github.com/petteknanach/ajew-ananach/releases" target="_blank" rel="noopener" style="color: #c8a050; font-weight: 600;">📱 Install Android App</a>
         </div>
       </div>
-    </nav>
-    
+    </div>
+
     <main id="main-content">
       <slot />
     </main>
