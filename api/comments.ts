@@ -1,8 +1,8 @@
 
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env?.PUBLIC_SUPABASE_URL || 'https://ekggvujbuusvgmrertgp.supabase.co';
-const supabaseKey = import.meta.env?.PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_q6XD_TD8KOQuphI30Gmi5Q_3PBAXQHo';
+const supabaseUrl = process.env.PUBLIC_SUPABASE_URL || 'https://ekggvujbuusvgmrertgp.supabase.co';
+const supabaseKey = process.env.PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_q6XD_TD8KOQuphI30Gmi5Q_3PBAXQHo';
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
@@ -15,7 +15,17 @@ function roomForTeaching(teachingId: string): string {
 }
 
 export default async function handler(req: any, res: any) {
-  const request = req;
+  const url = new URL((req.url || ''), `https://${(req.headers || {}).host || 'ajew.org'}`);
+  const request = { url: url.toString() };
+  const searchParams = url.searchParams;
+  // Parse body for POST requests
+  let parsedBody: any = {};
+  if (req.method === 'POST') {
+    try {
+      const bodyStr = req.body ? JSON.stringify(req.body) : '';
+      parsedBody = bodyStr ? JSON.parse(bodyStr) : {};
+    } catch(e) { parsedBody = {}; }
+  }
   const url = new URL(request.url);
   const teachingId = url.searchParams.get('teaching');
   if (!teachingId) {
@@ -55,7 +65,7 @@ export async function POST({ request }) {
       return new Response(JSON.stringify({ error: 'Invalid Token' }), { status: 401 });
     }
 
-    const body = await request.json();
+    const body = parsedBody;
     const { teachingId, teachingTitle, message, shareToChat } = body;
     if (!teachingId || !message) {
       return new Response(JSON.stringify({ error: 'Missing fields' }), { status: 400 });

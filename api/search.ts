@@ -340,7 +340,17 @@ function searchEndsWith(content: string, query: string) {
 // --- Main Handler ---
 
 export default async function handler(req: any, res: any) {
-  const request = req;
+  const url = new URL((req.url || ''), `https://${(req.headers || {}).host || 'ajew.org'}`);
+  const request = { url: url.toString() };
+  const searchParams = url.searchParams;
+  // Parse body for POST requests
+  let parsedBody: any = {};
+  if (req.method === 'POST') {
+    try {
+      const bodyStr = req.body ? JSON.stringify(req.body) : '';
+      parsedBody = bodyStr ? JSON.parse(bodyStr) : {};
+    } catch(e) { parsedBody = {}; }
+  }
   try {
     const url = new URL(request.url);
     const query = url.searchParams.get('q') || '';

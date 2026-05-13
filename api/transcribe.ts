@@ -9,8 +9,8 @@
  * Also: "openai", "replicate"
  */
 export async function POST({ request }: APIContext) {
-  const provider = import.meta.env.WHISPER_PROVIDER || 'groq';
-  const apiKey = import.meta.env.WHISPER_API_KEY || import.meta.env.GROQ_API_KEY;
+  const provider = process.env.WHISPER_PROVIDER || 'groq';
+  const apiKey = process.env.WHISPER_API_KEY || process.env.GROQ_API_KEY;
 
   if (!apiKey) {
     return new Response(JSON.stringify({ 

@@ -1,8 +1,8 @@
 
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env?.PUBLIC_SUPABASE_URL || 'https://ekggvujbuusvgmrertgp.supabase.co';
-const supabaseKey = import.meta.env?.SUPABASE_SERVICE_ROLE_KEY || import.meta.env?.PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_q6XD_TD8KOQuphI30Gmi5Q_3PBAXQHo';
+const supabaseUrl = process.env.PUBLIC_SUPABASE_URL || 'https://ekggvujbuusvgmrertgp.supabase.co';
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_q6XD_TD8KOQuphI30Gmi5Q_3PBAXQHo';
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
@@ -10,7 +10,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 // Admin endpoint to add subscription
 export async function POST({ request }) {
   try {
-    const body = await request.json();
+    const body = parsedBody;
     const { email, name, tier, password } = body;
 
     // Simple admin password check

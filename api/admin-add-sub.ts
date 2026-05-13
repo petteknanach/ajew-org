@@ -1,8 +1,8 @@
 
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env?.SUPABASE_URL || 'https://ekggvujbuusvgmrertgp.supabase.co';
-const supabaseKey = import.meta.env?.SUPABASE_SERVICE_KEY;
+const supabaseUrl = process.env.SUPABASE_URL || 'https://ekggvujbuusvgmrertgp.supabase.co';
+const supabaseKey = process.env.SUPABASE_SERVICE_KEY;
 
 
 // Admin-only: Add subscription manually (uses service key)
