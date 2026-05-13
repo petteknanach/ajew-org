@@ -1,5 +1,7 @@
 {
-  "regions": ["fra1"],
+  "regions": [
+    "fra1"
+  ],
   "buildCommand": "NODE_OPTIONS=--max-old-space-size=12288 astro build",
   "rewrites": [
     {
@@ -134,5 +136,10 @@
       ]
     }
   ],
-  "framework": "astro"
+  "outputDirectory": "dist/client",
+  "build": {
+    "env": {
+      "NODE_OPTIONS": "--max-old-space-size=8192"
+    }
+  }
 }
