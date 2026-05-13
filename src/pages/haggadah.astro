@@ -1,0 +1,940 @@
+---
+import Layout from '../layouts/Layout.astro';
+import fs from 'node:fs';
+import path from 'node:path';
+
+// Load haggadah data
+const readerDir = path.join(process.cwd(), 'public', 'reader', 'haggadah-shel-pesach');
+let indexData = null;
+let sections = [];
+let chumashLH = null;
+
+try {
+  const indexPath = path.join(readerDir, 'index.json');
+  if (fs.existsSync(indexPath)) {
+    indexData = JSON.parse(fs.readFileSync(indexPath, 'utf8'));
+
+    // Load each section
+    for (let i = 1; i <= (indexData.totalSections || 14); i++) {
+      const sectionPath = path.join(readerDir, 'part-1', `section-${i}.json`);
+      if (fs.existsSync(sectionPath)) {
+        sections.push(JSON.parse(fs.readFileSync(sectionPath, 'utf8')));
+      }
+    }
+
+    // Load Chumash LH
+    const lhPath = path.join(readerDir, 'part-1', 'chumash-lh-pesach.json');
+    if (fs.existsSync(lhPath)) {
+      chumashLH = JSON.parse(fs.readFileSync(lhPath, 'utf8'));
+    }
+  }
+} catch(e) {
+  console.error('Error loading haggadah data:', e.message);
+}
+
+const sederSteps = [
+  { id: 'kadesh', he: 'קַדֵּשׁ', en: 'Kadesh', num: 1 },
+  { id: 'urchatz', he: 'וּרְחַץ', en: 'Urchatz', num: 2 },
+  { id: 'karpas', he: 'כַּרְפַּס', en: 'Karpas', num: 3 },
+  { id: 'yachatz', he: 'יַחַץ', en: 'Yachatz', num: 4 },
+  { id: 'maggid', he: 'מַגִּיד', en: 'Maggid', num: 5 },
+  { id: 'rachtzah', he: 'רָחְצָה', en: 'Rachtzah', num: 6 },
+  { id: 'motzi-matzah', he: 'מוֹצִיא מַצָּה', en: 'Motzi Matzah', num: 7 },
+  { id: 'maror', he: 'מָרוֹר', en: 'Maror', num: 8 },
+  { id: 'korech', he: 'כּוֹרֵךְ', en: 'Korech', num: 9 },
+  { id: 'shulchan-orech', he: 'שֻׁלְחָן עוֹרֵךְ', en: 'Shulchan Orech', num: 10 },
+  { id: 'tzafun', he: 'צָפוּן', en: 'Tzafun', num: 11 },
+  { id: 'barech', he: 'בָּרֵךְ', en: 'Barech', num: 12 },
+  { id: 'hallel', he: 'הַלֵּל', en: 'Hallel', num: 13 },
+  { id: 'nirtzah', he: 'נִרְצָה', en: 'Nirtzah', num: 14 },
+];
+---
+
+<Layout
+  title="Haggadah shel Pesach - Na Nach Breslov Haggadah"
+  description="The Pesach Haggadah with Breslov commentary from Or Zoreach by R' Alter Tepliker. Complete seder text in Hebrew with nikud, plus insights from Likutay Halachos."
+  jsonLd={{
+    "@context": "https://schema.org",
+    "@type": "Book",
+    "name": "Haggadah shel Pesach - Na Nach",
+    "alternateName": "הגדה של פסח — נ נח",
+    "author": [
+      { "@type": "Person", "name": "Traditional" },
+      { "@type": "Person", "name": "R' Alter of Teplik" }
+    ],
+    "inLanguage": "he",
+    "genre": "Religious text",
+    "publisher": { "@type": "Organization", "name": "ajew.org" }
+  }}
+>
+  <div class="haggadah-page">
+    <!-- Hero -->
+    <header class="haggadah-hero">
+      <div class="hero-ornament left"></div>
+      <div class="hero-ornament right"></div>
+      <div class="hero-content">
+        <div class="seder-plate-icon" aria-hidden="true">
+          <span class="plate-emoji">🍷</span>
+        </div>
+        <h1 class="haggadah-title-he" dir="rtl">הגדה של פסח</h1>
+        <h2 class="haggadah-title-sub" dir="rtl">עם פירוש אור זורח</h2>
+        <p class="haggadah-author" dir="rtl">לרבי אלתר טעפליקער זצ"ל — תלמיד רבי נתן</p>
+        <div class="nanach-badge">Na Nach Nachma Nachman Me'Uman</div>
+        <p class="haggadah-subtitle">The Pesach Seder with Breslov Commentary</p>
+        <div class="hero-actions">
+          <button class="btn-print" onclick="window.print()" title="Print for Seder night">
+            Print Haggadah
+          </button>
+          <button class="btn-share" onclick="shareHaggadah()" title="Share with friends">
+            Share
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div class="haggadah-layout">
+      <!-- Sidebar: Seder Steps Navigation -->
+      <aside class="seder-sidebar" id="sederSidebar">
+        <div class="sidebar-header" dir="rtl">
+          <h3>סדר ההגדה</h3>
+        </div>
+        <nav class="seder-nav" aria-label="Seder steps navigation">
+          <ol class="seder-steps">
+            {sederSteps.map((step) => (
+              <li>
+                <a href={`#section-${step.id}`} class="seder-step-link" data-section={step.id}>
+                  <span class="step-he" dir="rtl">{step.he}</span>
+                  <span class="step-en">{step.en}</span>
+                </a>
+              </li>
+            ))}
+          </ol>
+          {chumashLH && (
+            <div class="sidebar-extra">
+              <a href="#chumash-lh" class="seder-step-link extra-link">
+                <span class="step-he" dir="rtl">חומש ל"ה — פסח</span>
+                <span class="step-en">Chumash LH</span>
+              </a>
+            </div>
+          )}
+          <div class="sidebar-extra">
+            <a href="#more-sources" class="seder-step-link extra-link">
+              <span class="step-he" dir="rtl">עוד מעיינות</span>
+              <span class="step-en">More Sources</span>
+            </a>
+          </div>
+        </nav>
+        <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
+          <span></span>
+        </button>
+      </aside>
+
+      <!-- Main Content -->
+      <div class="haggadah-content">
+        {sections.length === 0 && (
+          <div class="no-data-message">
+            <p>Haggadah data not yet generated.</p>
+            <p>Run: <code>node scripts/build-haggadah.cjs</code></p>
+          </div>
+        )}
+
+        {sections.map((section, idx) => (
+          <section class="seder-section" id={`section-${section.sectionId}`} data-section={section.sectionId}>
+            <!-- Section Header -->
+            <div class="section-header">
+              <div class="section-number">{idx + 1}</div>
+              <div class="section-titles">
+                <h2 class="section-title-he" dir="rtl">{section.hebrewTitle}</h2>
+                <h3 class="section-title-en">{section.title}</h3>
+                <p class="section-desc">{section.description}</p>
+              </div>
+            </div>
+
+            <!-- Haggadah Text -->
+            <div class="haggadah-text" dir="rtl">
+              {section.segments && section.segments.map((seg) => (
+                <p class="haggadah-paragraph" data-index={seg.index}>
+                  {seg.he}
+                </p>
+              ))}
+            </div>
+
+            <!-- Commentaries (expandable) -->
+            <div class="commentaries">
+              {section.commentary_or_zoreach && section.commentary_or_zoreach.length > 0 && (
+                <details class="commentary-block or-zoreach">
+                  <summary class="commentary-header" dir="rtl">
+                    <span class="commentary-icon">&#9733;</span>
+                    <span class="commentary-title">אור זורח — ר' אלתר טעפליקער</span>
+                    <span class="commentary-count">({section.commentary_or_zoreach.length})</span>
+                  </summary>
+                  <div class="commentary-content" dir="rtl">
+                    {section.commentary_or_zoreach.map((para) => (
+                      <p class="commentary-paragraph">{para.he}</p>
+                    ))}
+                  </div>
+                </details>
+              )}
+
+              {section.relatedSources && section.relatedSources.length > 0 && (
+                <details class="commentary-block related-sources">
+                  <summary class="commentary-header">
+                    <span class="commentary-icon">&#128279;</span>
+                    <span class="commentary-title" dir="rtl">עוד מעיינות — More Sources</span>
+                  </summary>
+                  <div class="commentary-content">
+                    <ul class="related-links">
+                      {section.relatedSources.map((src) => (
+                        <li>
+                          <a href={`/reader/${src.book}/part-${src.part}/torah-${src.torah}`} class="related-link">
+                            {src.title}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </details>
+              )}
+            </div>
+
+            {idx < sections.length - 1 && <hr class="section-divider" />}
+          </section>
+        ))}
+
+        <!-- Chumash LH Section -->
+        {chumashLH && (
+          <section class="seder-section chumash-lh-section" id="chumash-lh">
+            <div class="section-header">
+              <div class="section-number lh-number">&#128214;</div>
+              <div class="section-titles">
+                <h2 class="section-title-he" dir="rtl">{chumashLH.hebrewTitle}</h2>
+                <h3 class="section-title-en">{chumashLH.title}</h3>
+              </div>
+            </div>
+            <div class="haggadah-text" dir="rtl">
+              {chumashLH.segments && chumashLH.segments.map((seg) => (
+                <p class="haggadah-paragraph lh-paragraph" data-index={seg.index}>
+                  {seg.he}
+                </p>
+              ))}
+            </div>
+          </section>
+        )}
+
+        <!-- More Sources Section -->
+        <section class="seder-section more-sources-section" id="more-sources">
+          <div class="section-header">
+            <div class="section-number sources-number">&#127793;</div>
+            <div class="section-titles">
+              <h2 class="section-title-he" dir="rtl">עוד מעיינות ברסלביים על פסח</h2>
+              <h3 class="section-title-en">More Breslov Sources on Pesach</h3>
+            </div>
+          </div>
+          <div class="sources-grid">
+            <a href="/reader/otzar-hayirah/part-1/torah-22" class="source-card">
+              <span class="source-title" dir="rtl">אוצר היראה — פסח</span>
+              <span class="source-desc">OHY on Pesach, Sefira & Shavuos</span>
+            </a>
+            <a href="/reader/otzar-hayirah/part-1/torah-23" class="source-card">
+              <span class="source-title" dir="rtl">אוצר היראה — פסח (המשך)</span>
+              <span class="source-desc">OHY Pesach Continued</span>
+            </a>
+            <a href="/reader/otzar-hayirah/part-1/torah-24" class="source-card">
+              <span class="source-title" dir="rtl">אוצר היראה — פסח ג'</span>
+              <span class="source-desc">OHY Pesach III</span>
+            </a>
+            <a href="/reader/otzar-hayirah/part-1/torah-25" class="source-card">
+              <span class="source-title" dir="rtl">אוצר היראה — פסח (סיום)</span>
+              <span class="source-desc">OHY Pesach Completion</span>
+            </a>
+            <a href="/reader/likutay-moharan/part-1/torah-21" class="source-card">
+              <span class="source-title" dir="rtl">ליקוטי מוהר"ן א:כא</span>
+              <span class="source-desc">Torah and Redemption</span>
+            </a>
+            <a href="/reader/likutay-moharan/part-2/torah-4" class="source-card">
+              <span class="source-title" dir="rtl">ליקוטי מוהר"ן ב:ד — תקעו</span>
+              <span class="source-desc">The Narrow Bridge</span>
+            </a>
+            <a href="/reader/likutay-tefilos/part-1/torah-1" class="source-card">
+              <span class="source-title" dir="rtl">ליקוטי תפילות א</span>
+              <span class="source-desc">Prayers for Redemption</span>
+            </a>
+            <a href="/reader/meshivas-nefesh/part-1/torah-1" class="source-card">
+              <span class="source-title" dir="rtl">משיבת נפש</span>
+              <span class="source-desc">Restoring the Soul - Never Give Up</span>
+            </a>
+            <a href="/pesach" class="source-card pesach-link">
+              <span class="source-title">Pesach Topics Page</span>
+              <span class="source-desc">All Pesach teachings organized by topic</span>
+            </a>
+          </div>
+        </section>
+
+        <!-- Footer -->
+        <div class="haggadah-footer" dir="rtl">
+          <p class="footer-blessing">לְשָׁנָה הַבָּאָה בִּירוּשָׁלָיִם הַבְּנוּיָה!</p>
+          <p class="footer-nanach">נ נח נחמ נחמן מאומן</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  /* ============================================================
+     HAGGADAH PAGE STYLES
+     Warm gold/burgundy theme, festive Pesach feel
+     ============================================================ */
+
+  :root {
+    --haggadah-gold: #c5963a;
+    --haggadah-gold-light: #f0d48a;
+    --haggadah-burgundy: #6b1d2a;
+    --haggadah-cream: #fdf6e3;
+    --haggadah-brown: #4a2c0a;
+    --haggadah-border: #d4a855;
+    --haggadah-bg: #fefaf2;
+    --haggadah-text: #2c1810;
+    --haggadah-accent: #8b2240;
+    --font-hebrew: 'Frank Ruhl Libre', 'David Libre', 'Noto Serif Hebrew', serif;
+  }
+
+  /* Dark mode overrides */
+  :global(body.dark-mode) {
+    --haggadah-gold: #d4a855;
+    --haggadah-gold-light: #6b5520;
+    --haggadah-burgundy: #c44d6c;
+    --haggadah-cream: #1a1520;
+    --haggadah-brown: #e0c89a;
+    --haggadah-border: #7a5c2a;
+    --haggadah-bg: #15121a;
+    --haggadah-text: #e8dcc8;
+    --haggadah-accent: #d47090;
+  }
+
+  .haggadah-page {
+    min-height: 100vh;
+    background: var(--haggadah-bg);
+    color: var(--haggadah-text);
+  }
+
+  /* ---- HERO ---- */
+  .haggadah-hero {
+    position: relative;
+    background: linear-gradient(135deg, var(--haggadah-burgundy) 0%, #3d0a15 50%, var(--haggadah-burgundy) 100%);
+    color: var(--haggadah-cream);
+    text-align: center;
+    padding: 3rem 1.5rem 2.5rem;
+    overflow: hidden;
+  }
+
+  .hero-ornament {
+    position: absolute;
+    top: 0;
+    width: 120px;
+    height: 100%;
+    opacity: 0.1;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 20px,
+      var(--haggadah-gold) 20px,
+      var(--haggadah-gold) 22px
+    );
+  }
+  .hero-ornament.left { left: 0; }
+  .hero-ornament.right { right: 0; }
+
+  .seder-plate-icon {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .haggadah-title-he {
+    font-family: var(--font-hebrew);
+    font-size: clamp(2.2rem, 6vw, 3.5rem);
+    font-weight: 700;
+    color: var(--haggadah-gold-light);
+    margin: 0;
+    line-height: 1.3;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  }
+
+  .haggadah-title-sub {
+    font-family: var(--font-hebrew);
+    font-size: clamp(1.1rem, 3vw, 1.6rem);
+    font-weight: 400;
+    color: var(--haggadah-gold);
+    margin: 0.3rem 0 0.2rem;
+  }
+
+  .haggadah-author {
+    font-family: var(--font-hebrew);
+    font-size: 0.95rem;
+    color: rgba(240,212,138,0.7);
+    margin: 0 0 0.8rem;
+  }
+
+  .nanach-badge {
+    display: inline-block;
+    background: var(--haggadah-gold);
+    color: var(--haggadah-burgundy);
+    padding: 0.25rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.5rem;
+  }
+
+  .haggadah-subtitle {
+    font-size: 1rem;
+    opacity: 0.85;
+    margin: 0.5rem 0 1rem;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-print, .btn-share {
+    padding: 0.5rem 1.2rem;
+    border: 2px solid var(--haggadah-gold);
+    background: transparent;
+    color: var(--haggadah-gold-light);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  .btn-print:hover, .btn-share:hover {
+    background: var(--haggadah-gold);
+    color: var(--haggadah-burgundy);
+  }
+
+  /* ---- LAYOUT ---- */
+  .haggadah-layout {
+    display: flex;
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  /* ---- SIDEBAR ---- */
+  .seder-sidebar {
+    position: sticky;
+    top: 60px;
+    width: 220px;
+    min-width: 220px;
+    height: calc(100vh - 60px);
+    overflow-y: auto;
+    background: var(--haggadah-cream);
+    border-right: 2px solid var(--haggadah-border);
+    padding: 1rem 0;
+    z-index: 10;
+  }
+
+  .sidebar-header {
+    padding: 0 1rem 0.75rem;
+    border-bottom: 1px solid var(--haggadah-border);
+    margin-bottom: 0.5rem;
+  }
+  .sidebar-header h3 {
+    font-family: var(--font-hebrew);
+    font-size: 1.1rem;
+    color: var(--haggadah-burgundy);
+    margin: 0;
+  }
+
+  .seder-steps {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    counter-reset: seder;
+  }
+
+  .seder-step-link {
+    display: flex;
+    flex-direction: column;
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    color: var(--haggadah-text);
+    border-left: 3px solid transparent;
+    transition: all 0.2s;
+    counter-increment: seder;
+  }
+  .seder-step-link::before {
+    content: counter(seder) ".";
+    font-size: 0.75rem;
+    color: var(--haggadah-gold);
+    font-weight: 700;
+  }
+  .seder-step-link:hover {
+    background: rgba(197,150,58,0.1);
+    border-left-color: var(--haggadah-gold);
+  }
+  .seder-step-link.active {
+    background: rgba(197,150,58,0.15);
+    border-left-color: var(--haggadah-burgundy);
+  }
+
+  .step-he {
+    font-family: var(--font-hebrew);
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--haggadah-burgundy);
+  }
+  .step-en {
+    font-size: 0.78rem;
+    opacity: 0.7;
+  }
+
+  .sidebar-extra {
+    border-top: 1px solid var(--haggadah-border);
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+  }
+  .extra-link::before { content: none !important; }
+
+  .sidebar-toggle {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: -32px;
+    width: 32px;
+    height: 32px;
+    background: var(--haggadah-cream);
+    border: 2px solid var(--haggadah-border);
+    border-left: none;
+    border-radius: 0 6px 6px 0;
+    cursor: pointer;
+    z-index: 11;
+  }
+  .sidebar-toggle span {
+    display: block;
+    width: 16px;
+    height: 2px;
+    background: var(--haggadah-burgundy);
+    margin: 3px auto;
+    transition: 0.2s;
+  }
+
+  /* ---- MAIN CONTENT ---- */
+  .haggadah-content {
+    flex: 1;
+    padding: 2rem 2rem 3rem;
+    max-width: 800px;
+  }
+
+  .no-data-message {
+    text-align: center;
+    padding: 3rem;
+    color: #888;
+  }
+  .no-data-message code {
+    display: inline-block;
+    background: #f0e6d0;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+  }
+
+  /* ---- SECTION ---- */
+  .seder-section {
+    scroll-margin-top: 80px;
+    margin-bottom: 2rem;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--haggadah-border);
+  }
+
+  .section-number {
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    background: linear-gradient(135deg, var(--haggadah-burgundy), var(--haggadah-accent));
+    color: var(--haggadah-gold-light);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+  .lh-number, .sources-number {
+    background: linear-gradient(135deg, var(--haggadah-gold), #8b6914);
+    color: #fff;
+    font-size: 1.3rem;
+  }
+
+  .section-title-he {
+    font-family: var(--font-hebrew);
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    font-weight: 700;
+    color: var(--haggadah-burgundy);
+    margin: 0;
+    line-height: 1.3;
+  }
+  .section-title-en {
+    font-size: 1rem;
+    color: var(--haggadah-gold);
+    margin: 0.1rem 0 0;
+    font-weight: 600;
+  }
+  .section-desc {
+    font-size: 0.85rem;
+    color: #888;
+    margin: 0.2rem 0 0;
+    font-style: italic;
+  }
+
+  /* ---- HAGGADAH TEXT ---- */
+  .haggadah-text {
+    font-family: var(--font-hebrew);
+    font-size: 1.25rem;
+    line-height: 2;
+    color: var(--haggadah-text);
+    background: var(--haggadah-cream);
+    padding: 1.5rem 2rem;
+    border-radius: 8px;
+    border: 1px solid var(--haggadah-border);
+    margin-bottom: 1rem;
+  }
+
+  .haggadah-paragraph {
+    margin: 0 0 1rem;
+    text-align: justify;
+  }
+  .haggadah-paragraph:last-child { margin-bottom: 0; }
+
+  .lh-paragraph {
+    font-size: 1.1rem;
+    line-height: 1.9;
+  }
+
+  /* ---- COMMENTARIES ---- */
+  .commentaries {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .commentary-block {
+    border: 1px solid var(--haggadah-border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: rgba(253,246,227,0.5);
+  }
+
+  :global(body.dark-mode) .commentary-block {
+    background: rgba(30,25,35,0.5);
+  }
+
+  .commentary-header {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-hebrew);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--haggadah-burgundy);
+    background: rgba(197,150,58,0.08);
+    transition: background 0.2s;
+    list-style: none;
+  }
+  .commentary-header::-webkit-details-marker { display: none; }
+  .commentary-header::after {
+    content: '\25BC';
+    margin-right: auto;
+    font-size: 0.7rem;
+    transition: transform 0.2s;
+    opacity: 0.5;
+  }
+  details[open] > .commentary-header::after {
+    transform: rotate(180deg);
+  }
+  .commentary-header:hover {
+    background: rgba(197,150,58,0.15);
+  }
+
+  .commentary-icon {
+    font-size: 1.1rem;
+  }
+  .commentary-count {
+    font-size: 0.8rem;
+    opacity: 0.6;
+    font-weight: 400;
+  }
+
+  .commentary-content {
+    padding: 1rem 1.5rem;
+    font-family: var(--font-hebrew);
+    font-size: 1.05rem;
+    line-height: 1.85;
+    color: var(--haggadah-text);
+  }
+
+  .commentary-paragraph {
+    margin: 0 0 0.8rem;
+    text-align: justify;
+  }
+
+  .related-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .related-link {
+    display: block;
+    padding: 0.4rem 0.6rem;
+    color: var(--haggadah-burgundy);
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    transition: background 0.2s;
+  }
+  .related-link:hover {
+    background: rgba(197,150,58,0.1);
+    text-decoration: underline;
+  }
+
+  /* ---- SECTION DIVIDER ---- */
+  .section-divider {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--haggadah-gold), transparent);
+    margin: 2rem 0;
+  }
+
+  /* ---- SOURCES GRID ---- */
+  .sources-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+
+  .source-card {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    background: var(--haggadah-cream);
+    border: 1px solid var(--haggadah-border);
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--haggadah-text);
+    transition: all 0.2s;
+  }
+  .source-card:hover {
+    border-color: var(--haggadah-burgundy);
+    box-shadow: 0 2px 8px rgba(107,29,42,0.15);
+    transform: translateY(-2px);
+  }
+  .source-title {
+    font-family: var(--font-hebrew);
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--haggadah-burgundy);
+  }
+  .source-desc {
+    font-size: 0.8rem;
+    color: #888;
+    margin-top: 0.3rem;
+  }
+
+  .pesach-link {
+    background: linear-gradient(135deg, rgba(197,150,58,0.1), rgba(107,29,42,0.05));
+    border-color: var(--haggadah-gold);
+  }
+
+  /* ---- FOOTER ---- */
+  .haggadah-footer {
+    text-align: center;
+    padding: 3rem 1rem;
+    border-top: 2px solid var(--haggadah-border);
+    margin-top: 2rem;
+  }
+  .footer-blessing {
+    font-family: var(--font-hebrew);
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--haggadah-burgundy);
+    margin: 0 0 0.5rem;
+  }
+  .footer-nanach {
+    font-family: var(--font-hebrew);
+    font-size: 1.3rem;
+    color: var(--haggadah-gold);
+    margin: 0;
+  }
+
+  /* ---- MOBILE RESPONSIVE ---- */
+  @media (max-width: 768px) {
+    .seder-sidebar {
+      position: fixed;
+      left: -240px;
+      top: 56px;
+      height: calc(100vh - 56px);
+      width: 240px;
+      min-width: 240px;
+      transition: left 0.3s ease;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.15);
+      z-index: 100;
+    }
+    .seder-sidebar.open { left: 0; }
+
+    .sidebar-toggle {
+      display: block;
+    }
+
+    .haggadah-content {
+      padding: 1.5rem 1rem 2rem;
+    }
+
+    .haggadah-text {
+      padding: 1rem 1.2rem;
+      font-size: 1.15rem;
+    }
+
+    .commentary-content {
+      padding: 0.75rem 1rem;
+    }
+
+    .sources-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .section-header {
+      gap: 0.75rem;
+    }
+    .section-number {
+      width: 36px;
+      height: 36px;
+      font-size: 0.95rem;
+    }
+  }
+
+  /* ---- PRINT STYLES ---- */
+  @media print {
+    .haggadah-hero { padding: 1rem; }
+    .hero-actions, .sidebar-toggle, .seder-sidebar,
+    .btn-print, .btn-share, .nanach-badge,
+    .source-card, .sources-grid, .more-sources-section,
+    :global(.navbar), :global(footer), :global(.back-to-top) {
+      display: none !important;
+    }
+
+    .haggadah-layout { display: block; }
+    .haggadah-content {
+      max-width: 100%;
+      padding: 0;
+    }
+
+    .haggadah-text {
+      border: none;
+      padding: 0;
+      background: none;
+    }
+
+    .seder-section {
+      page-break-inside: avoid;
+      page-break-before: auto;
+    }
+
+    .commentary-block {
+      border: 1px solid #ccc;
+    }
+
+    details[open] { display: block; }
+    details:not([open]) > .commentary-content { display: block !important; }
+
+    .section-divider {
+      border-top: 1px solid #ccc;
+      background: none;
+    }
+
+    .haggadah-footer {
+      border-top: 1px solid #ccc;
+    }
+  }
+</style>
+
+<script is:inline>
+  // ---- Sidebar toggle (mobile) ----
+  document.addEventListener('DOMContentLoaded', () => {
+    const sidebar = document.getElementById('sederSidebar');
+    const toggle = document.getElementById('sidebarToggle');
+
+    if (toggle && sidebar) {
+      toggle.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+      });
+
+      // Close sidebar when clicking a link (mobile)
+      sidebar.querySelectorAll('.seder-step-link').forEach(link => {
+        link.addEventListener('click', () => {
+          if (window.innerWidth <= 768) {
+            sidebar.classList.remove('open');
+          }
+        });
+      });
+    }
+
+    // ---- Scroll spy for active section ----
+    const sectionEls = document.querySelectorAll('.seder-section');
+    const navLinks = document.querySelectorAll('.seder-step-link[data-section]');
+
+    if (sectionEls.length > 0 && navLinks.length > 0) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const sectionId = entry.target.dataset.section;
+            navLinks.forEach(link => {
+              link.classList.toggle('active', link.dataset.section === sectionId);
+            });
+          }
+        });
+      }, {
+        rootMargin: '-20% 0px -70% 0px',
+        threshold: 0
+      });
+
+      sectionEls.forEach(el => observer.observe(el));
+    }
+  });
+
+  // ---- Share ----
+  function shareHaggadah() {
+    const url = window.location.href;
+    const title = 'Haggadah shel Pesach - Na Nach Breslov';
+    const text = 'The Pesach Haggadah with Breslov commentary from Or Zoreach. Read online free at ajew.org';
+
+    if (navigator.share) {
+      navigator.share({ title, text, url }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(url).then(() => {
+        const btn = document.querySelector('.btn-share');
+        if (btn) {
+          const orig = btn.textContent;
+          btn.textContent = 'Link Copied!';
+          setTimeout(() => btn.textContent = orig, 2000);
+        }
+      });
+    }
+  }
+</script>

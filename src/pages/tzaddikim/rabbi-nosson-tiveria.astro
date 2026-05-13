@@ -1,0 +1,405 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+// Profile data for Rabbi Nussun of Tiveria
+const tzaddik = {
+  name: "Rabbi Nosson (Nathan) son of Yehuda of Tiveria",
+  hebrew_name: "רבי נתן בן יהודה מטבריה",
+  yahrzeit_hebrew: "כ״ו בַּאֲדָר",
+  yahrzeit_english: "26 Adar",
+  birth_year: "Unknown",
+  passing_year: "Unknown",
+  location: "Tiveria (Tiberias), Israel",
+  category: "Breslov Disciples",
+  era: "18th-19th Century",
+  significance: "Early Breslov disciple in the Holy Land, part of Breslov community in Tiveria",
+  
+  // Image information
+  image_path: "/images/tzaddikim/rabbi-nussun-tiveria.jpg",
+  image_alt: "Rabbi Nussun son of Yehuda of Tiveria - Breslov disciple",
+  
+  // Biography sections
+  biography: [
+    {
+      title: "Early Life and Background",
+      content: "Rabbi Nussun (also spelled Nosson) was the son of Rabbi Yehuda and lived in Tiveria (Tiberias), one of Judaism's Four Holy Cities. He was part of the early Breslov community that established itself in the Holy Land, continuing the teachings of Rebbe Nachman of Breslov in Israel."
+    },
+    {
+      title: "Connection to Breslov",
+      content: "As a disciple in the Breslov tradition, Rabbi Nussun was part of the chain of transmission that brought Rebbe Nachman's teachings to the Land of Israel. Tiveria, with its rich Jewish history and spiritual significance, became an important center for Breslov Chassidim seeking to live and learn in the Holy Land."
+    },
+    {
+      title: "Historical Context",
+      content: "During the 18th-19th centuries, Tiveria was experiencing a revival as Jews returned to the Holy Land. The city, known for its hot springs and burial sites of many Talmudic sages, attracted pious Jews including Breslov Chassidim who sought to connect with the spiritual energy of the land while practicing the teachings of Rebbe Nachman."
+    },
+    {
+      title: "Spiritual Significance",
+      content: "Rabbi Nussun represents the spread of Breslov teachings beyond Ukraine to the Holy Land. His presence in Tiveria symbolizes the connection between the physical land of Israel and the spiritual teachings of Breslov, demonstrating how Rebbe Nachman's wisdom took root in Jewish holy sites."
+    }
+  ],
+  
+  // Teaching connections
+  teachings: [
+    {
+      title: "Connection to Rebbe Nachman",
+      content: "As a Breslov disciple, Rabbi Nussun would have been familiar with Rebbe Nachman's core teachings including Hitbodedut (personal prayer), Simcha (joy), and Hisbodedus (secluded meditation)."
+    },
+    {
+      title: "Tiveria's Spiritual Significance",
+      content: "Tiveria is mentioned in Talmudic literature as a place of healing and spiritual elevation. The Breslov community there would have emphasized the importance of being in the Holy Land for spiritual growth."
+    }
+  ],
+  
+  // Legacy
+  legacy: [
+    "Represents early Breslov presence in the Holy Land",
+    "Part of the chain transmitting Rebbe Nachman's teachings to Israel",
+    "Demonstrates the geographic spread of Breslov Chassidus",
+    "Connects Breslov teachings with Jewish holy sites"
+  ],
+  
+  // Related tzaddikim
+  related: [
+    {
+      name: "Rebbe Nachman of Breslov",
+      path: "/tzaddikim/rebbe-nachman",
+      relationship: "Teacher and inspiration"
+    },
+    {
+      name: "Reb Noson of Breslov",
+      path: "/tzaddikim/reb-noson",
+      relationship: "Primary disciple who recorded teachings"
+    },
+    {
+      name: "Other Tiveria Breslov figures",
+      path: "/tzaddikim/tiveria",
+      relationship: "Community contemporaries"
+    }
+  ]
+};
+---
+
+<Layout 
+  title={`Rabbi Nosson of Tiveria | Tzaddikim Profiles`}
+  description={`Learn about Rabbi Nosson (Nathan) son of Yehuda of Tiveria, Breslov disciple with yahrzeit on 26 Adar. Early Breslov presence in the Holy Land.`}
+>
+  <script type="application/ld+json" set:html={} />
+
+  <div class="tzaddik-profile">
+    <!-- Header with image and basic info -->
+    <div class="profile-header">
+      <div class="profile-image-container">
+        <img 
+          src={tzaddik.image_path} 
+          alt={tzaddik.image_alt}
+          class="profile-image"
+          loading="lazy"
+        />
+        <div class="image-caption">Rabbi Nosson of Tiveria</div>
+      </div>
+      
+      <div class="profile-info">
+        <h1 class="profile-name">{tzaddik.name}</h1>
+        <h2 class="profile-hebrew" dir="rtl">{tzaddik.hebrew_name}</h2>
+        
+        <div class="profile-meta">
+          <div class="meta-item">
+            <span class="meta-label">Yahrzeit:</span>
+            <span class="meta-value">{tzaddik.yahrzeit_hebrew} ({tzaddik.yahrzeit_english})</span>
+          </div>
+          
+          <div class="meta-item">
+            <span class="meta-label">Location:</span>
+            <span class="meta-value">{tzaddik.location}</span>
+          </div>
+          
+          <div class="meta-item">
+            <span class="meta-label">Category:</span>
+            <span class="meta-value">{tzaddik.category}</span>
+          </div>
+          
+          <div class="meta-item">
+            <span class="meta-label">Historical Era:</span>
+            <span class="meta-value">{tzaddik.era}</span>
+          </div>
+        </div>
+        
+        <div class="profile-significance">
+          <h3>Significance</h3>
+          <p>{tzaddik.significance}</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Biography Sections -->
+    <div class="profile-section">
+      <h2>Biography</h2>
+      {tzaddik.biography.map((section, index) => (
+        <div class="biography-section" key={index}>
+          <h3>{section.title}</h3>
+          <p>{section.content}</p>
+        </div>
+      ))}
+    </div>
+    
+    <!-- Teaching Connections -->
+    <div class="profile-section">
+      <h2>Teaching Connections</h2>
+      {tzaddik.teachings.map((teaching, index) => (
+        <div class="teaching-item" key={index}>
+          <h4>{teaching.title}</h4>
+          <p>{teaching.content}</p>
+        </div>
+      ))}
+    </div>
+    
+    <!-- Legacy -->
+    <div class="profile-section">
+      <h2>Legacy</h2>
+      <ul class="legacy-list">
+        {tzaddik.legacy.map((item, index) => (
+          <li key={index}>{item}</li>
+        ))}
+      </ul>
+    </div>
+    
+    <!-- Related Tzaddikim -->
+    <div class="profile-section">
+      <h2>Related Tzaddikim</h2>
+      <div class="related-tzaddikim">
+        {tzaddik.related.map((related, index) => (
+          <a href={related.path} class="related-link" key={index}>
+            <span class="related-name">{related.name}</span>
+            <span class="related-relationship">{related.relationship}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+    
+    <!-- Navigation -->
+    <div class="profile-navigation">
+      <a href="/" class="nav-link">← Back to Home</a>
+      <a href="/tzaddikim" class="nav-link">View All Tzaddikim →</a>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .tzaddik-profile {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  
+  .profile-header {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 2rem;
+    margin-bottom: 3rem;
+    align-items: start;
+  }
+  
+  @media (max-width: 768px) {
+    .profile-header {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  .profile-image-container {
+    position: relative;
+  }
+  
+  .profile-image {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border: 2px solid #f59e0b;
+  }
+  
+  .image-caption {
+    text-align: center;
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin-top: 0.5rem;
+    font-style: italic;
+  }
+  
+  .profile-name {
+    font-size: 2.5rem;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+  }
+  
+  .profile-hebrew {
+    font-family: var(--font-hebrew);
+    font-size: 2rem;
+    color: #4b5563;
+    margin-bottom: 1.5rem;
+  }
+  
+  .profile-meta {
+    background: #f9fafb;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid #f59e0b;
+  }
+  
+  .meta-item {
+    display: flex;
+    margin-bottom: 0.75rem;
+  }
+  
+  .meta-item:last-child {
+    margin-bottom: 0;
+  }
+  
+  .meta-label {
+    font-weight: 600;
+    color: #374151;
+    min-width: 120px;
+  }
+  
+  .meta-value {
+    color: #6b7280;
+  }
+  
+  .profile-significance {
+    background: #fef3c7;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #f59e0b;
+  }
+  
+  .profile-significance h3 {
+    color: #92400e;
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+  }
+  
+  .profile-significance p {
+    color: #78350f;
+    margin: 0;
+    line-height: 1.6;
+  }
+  
+  .profile-section {
+    margin-bottom: 3rem;
+  }
+  
+  .profile-section h2 {
+    color: #1f2937;
+    border-bottom: 2px solid #f59e0b;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .biography-section {
+    margin-bottom: 1.5rem;
+  }
+  
+  .biography-section h3 {
+    color: #374151;
+    margin-bottom: 0.5rem;
+  }
+  
+  .biography-section p {
+    color: #6b7280;
+    line-height: 1.8;
+    margin: 0;
+  }
+  
+  .teaching-item {
+    background: #f8fafc;
+    padding: 1.25rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    border-left: 3px solid #3b82f6;
+  }
+  
+  .teaching-item h4 {
+    color: #1e40af;
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+  }
+  
+  .teaching-item p {
+    color: #4b5563;
+    margin: 0;
+    line-height: 1.6;
+  }
+  
+  .legacy-list {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .legacy-list li {
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    background: #f0fdf4;
+    border-radius: 6px;
+    border-left: 3px solid #10b981;
+    color: #065f46;
+  }
+  
+  .related-tzaddikim {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+  
+  .related-link {
+    display: block;
+    padding: 1rem;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  
+  .related-link:hover {
+    background: #f9fafb;
+    border-color: #f59e0b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .related-name {
+    display: block;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 0.25rem;
+  }
+  
+  .related-relationship {
+    display: block;
+    font-size: 0.875rem;
+    color: #6b7280;
+  }
+  
+  .profile-navigation {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e5e7eb;
+  }
+  
+  .nav-link {
+    padding: 0.75rem 1.5rem;
+    background: #f59e0b;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  
+  .nav-link:hover {
+    background: #d97706;
+    transform: translateY(-2px);
+  }
+</style>

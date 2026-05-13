@@ -1,0 +1,781 @@
+---
+import Layout from '../layouts/Layout.astro';
+import EnhancedSearch from '../components/EnhancedSearch.astro';
+---
+
+<Layout
+  title="Search 25,000+ Pages of Torah - Advanced Search"
+  description="Search across 226+ sacred Jewish texts with 10 search modes. Hebrew, English, acronym, gematria, proximity search and more. Likutay Moharan, Zohar, Talmud, Tanach."
+  breadcrumbs={[{name: "Home", url: "https://ajew.org"}, {name: "Search", url: "https://ajew.org/search-enhanced"}]}
+>
+  <div class="search-page">
+    <header class="page-header">
+      <h1><span lang="he">חיפוש מתקדם</span> <span class="sr-only">-</span> Advanced Search Across All Works</h1>
+    </header>
+
+    <div class="container">
+      <!-- Search Section -->
+      <div class="search-section">
+        <EnhancedSearch 
+          compact={false}
+          showFilters={true}
+          autoFocus={true}
+          showAdvancedOptions={true}
+        />
+      </div>
+
+      <!-- Results Section - RIGHT BELOW SEARCH -->
+      <div class="results-section" id="resultsSection">
+        <div id="welcomeMessage" class="welcome-message">
+          <div class="welcome-icon">📖</div>
+          <p class="welcome-text">התחילו לחיפוש למעלה / Start searching above</p>
+          <p class="welcome-hint">בחרו ספרים והגדרות מתקדמות / Select books and advanced options</p>
+        </div>
+
+        <div id="loading" class="loading hidden">
+          <div class="spinner"></div>
+          <p>מחפש... Searching...</p>
+        </div>
+
+        <div id="resultsContainer" class="results-container hidden">
+          <div class="results-header">
+            <h3 id="resultsCount"></h3>
+            <div class="results-actions">
+              <button id="clearResults" class="action-btn clear-btn">✕ Clear</button>
+            </div>
+          </div>
+          <div id="resultsList" class="results-list"></div>
+        </div>
+
+        <div id="noResults" class="no-results hidden">
+          <div class="no-results-icon">🔍</div>
+          <h3>לא נמצאו תוצאות / No results found</h3>
+          <p id="noResultsMessage"></p>
+        </div>
+      </div>
+
+      <!-- Explore More -->
+      <div class="maps-section">
+        <h2>🔍 חיפוש מתקדם — Advanced Search</h2>
+        <div class="maps-notice">
+          <p><strong>חפשו ב-22,000+ עמודים בעברית ואנגלית</strong> / Search 22,000+ pages in Hebrew and English</p>
+          <p style="margin-top:0.5em;opacity:0.8;">10 search modes: Google-style, exact phrase, boolean, proximity, acronym (ראשי תיבות), end-letters (סופי תיבות), and more</p>
+        </div>
+        <div style="display:flex;gap:1em;flex-wrap:wrap;margin-top:1em;">
+          <a href="/chain-of-light" style="padding:0.8em 1.5em;background:var(--accent-color,#d4a574);color:#fff;border-radius:8px;text-decoration:none;font-weight:bold;">🔗 Chain of Light — Torah Connections Map</a>
+          <a href="/topics" style="padding:0.8em 1.5em;background:var(--accent-color,#d4a574);color:#fff;border-radius:8px;text-decoration:none;font-weight:bold;">📚 Torah GPS — 51 Spiritual Topics</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const welcomeMessage = document.getElementById('welcomeMessage');
+      const loading = document.getElementById('loading');
+      const resultsContainer = document.getElementById('resultsContainer');
+      const resultsList = document.getElementById('resultsList');
+      const resultsCount = document.getElementById('resultsCount');
+      const noResults = document.getElementById('noResults');
+      const noResultsMessage = document.getElementById('noResultsMessage');
+      const clearResults = document.getElementById('clearResults');
+      const resultsSection = document.getElementById('resultsSection');
+
+      // Listen for search events
+      document.addEventListener('enhanced-search', (e: any) => {
+        performSearch(e.detail.query, e.detail.filters, e.detail.advancedOptions);
+      });
+
+      function performSearch(query: string, filters: any = {}, advanced: any = {}) {
+        if (!query?.trim()) {
+          showWelcome();
+          return;
+        }
+
+        showLoading();
+        saveSearchHistory(query);
+
+        const url = new URL('/api/search', window.location.origin);
+        url.searchParams.set('q', query);
+        if (advanced.searchType) url.searchParams.set('searchType', advanced.searchType);
+        if (advanced.proximity > 0) url.searchParams.set('proximity', String(advanced.proximity));
+        if (advanced.acronymOrder) url.searchParams.set('acronymOrder', advanced.acronymOrder);
+        if (advanced.minWords > 0) url.searchParams.set('minWords', String(advanced.minWords));
+        if (advanced.books?.length > 0) url.searchParams.set('books', advanced.books.join(','));
+
+        fetch(url.toString())
+          .then(res => res.json())
+          .then((data: any) => {
+            loading.classList.add('hidden');
+            if (data?.error) {
+              showNoResults(query, 'Error: ' + data.error);
+              return;
+            }
+            // Support both old format (flat array) and new format ({ results, total })
+            const results = Array.isArray(data) ? data : (data.results || []);
+            const total = Array.isArray(data) ? results.length : (data.total || results.length);
+            if (results.length > 0) {
+              displayResults(results, query, total);
+            } else {
+              showNoResults(query);
+            }
+          })
+          .catch(err => {
+            console.error('Search error:', err);
+            loading.classList.add('hidden');
+            showNoResults(query, 'Search failed. Please try again.');
+          });
+      }
+
+      function displayResults(results: any[], query: string, total?: number) {
+        const count = total || results.length;
+        resultsCount.textContent = `${count} תוצאות ל "${query}" / results for "${query}"`;
+
+        const html = results.map(result => {
+          const extraInfo = result.extraInfo || '';
+          const snippet = highlightQuery(result.snippet || '', query, extraInfo);
+          const link = result.link || '#';
+          const linkWithQuery = link + (link.includes('?') ? '&' : '?') + 'q=' + encodeURIComponent(query);
+          const rawTitle = result.title || 'Unknown';
+          const title = highlightQuery(rawTitle, query);
+          const hebrewTitle = result.hebrewTitle ? highlightQuery(result.hebrewTitle, query) : '';
+          const subcategory = result.subcategory || '';
+          const wordCount = result.wordCount || 0;
+          const relevance = result.relevance || 0;
+
+          return `
+            <div class="result-item">
+              <div class="result-top">
+                <h4 class="result-title">
+                  <a href="${linkWithQuery}">${title}${hebrewTitle ? ` <span class="result-he-title">${hebrewTitle}</span>` : ''}</a>
+                </h4>
+                <div class="result-tags">
+                  ${extraInfo ? `<span class="result-match-info">${extraInfo}</span>` : ''}
+                  ${subcategory ? `<span class="result-subcategory">${subcategory}</span>` : ''}
+                  ${wordCount ? `<span class="result-stat">${wordCount} words</span>` : ''}
+                  ${relevance ? `<span class="result-relevance">${relevance}%</span>` : ''}
+                </div>
+              </div>
+              <p class="result-snippet">${snippet}</p>
+              <div class="result-footer">
+                <a href="${linkWithQuery}" class="view-link">קרא טקסט מלא / Read Full →</a>
+                <button class="share-btn" onclick="shareResult('${linkWithQuery.replace(/'/g, "\\'")}', '${rawTitle.replace(/'/g, "\\'")}')">📤 Share</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        resultsList.innerHTML = html;
+
+        // Add "Load More" if there are more results
+        if (count > results.length) {
+          const loadMore = document.createElement('button');
+          loadMore.className = 'load-more-btn';
+          loadMore.textContent = `Load more (showing ${results.length} of ${count})`;
+          loadMore.addEventListener('click', () => {
+            const currentPage = Math.floor(results.length / 50) + 1;
+            const advanced = searchState?.advancedOptions || {};
+            const url = new URL('/api/search', window.location.origin);
+            url.searchParams.set('q', query);
+            url.searchParams.set('page', String(currentPage + 1));
+            if (advanced.searchType) url.searchParams.set('searchType', advanced.searchType);
+            if (advanced.books?.length > 0) url.searchParams.set('books', advanced.books.join(','));
+            loadMore.textContent = 'Loading...';
+            fetch(url.toString())
+              .then(r => r.json())
+              .then(data => {
+                if (data.results?.length > 0) {
+                  const moreHtml = data.results.map((r: any) => {
+                    const s = highlightQuery(r.snippet || '', query, r.extraInfo || '');
+                    const t = highlightQuery(r.title || '', query);
+                    const ht = r.hebrewTitle ? highlightQuery(r.hebrewTitle, query) : '';
+                    const linkWithQ = (r.link||'#') + ((r.link||'').includes('?') ? '&' : '?') + 'q=' + encodeURIComponent(query);
+                    return '<div class="result-item"><div class="result-top"><h4 class="result-title"><a href="' + linkWithQ + '">' + t + (ht ? ' <span class="result-he-title">'+ht+'</span>' : '') + '</a></h4></div><p class="result-snippet">' + s + '</p><div class="result-footer"><a href="' + linkWithQ + '" class="view-link">Read Full →</a></div></div>';
+                  }).join('');
+                  loadMore.insertAdjacentHTML('beforebegin', moreHtml);
+                  const totalShown = resultsList.querySelectorAll('.result-item').length;
+                  if (totalShown >= count) loadMore.remove();
+                  else loadMore.textContent = `Load more (showing ${totalShown} of ${count})`;
+                } else {
+                  loadMore.remove();
+                }
+              })
+              .catch(() => { loadMore.textContent = 'Failed to load. Try again.'; });
+          });
+          resultsList.appendChild(loadMore);
+        }
+
+        resultsContainer.classList.remove('hidden');
+        noResults.classList.add('hidden');
+        welcomeMessage.classList.add('hidden');
+
+        // Scroll to results smoothly
+        resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      // Nikud (vowel marks) regex - these appear in Hebrew text but not in search queries
+      const NIKUD_RANGE = '[\u0591-\u05BD\u05BF-\u05C7]';
+
+      function highlightQuery(text: string, query: string, extraInfo?: string): string {
+        if (!query || !text) return text || '';
+
+        let result = text;
+
+        // For acronym/endletters: highlight the matched words from extraInfo
+        if (extraInfo && extraInfo.startsWith('Found:')) {
+          const matchedWords = extraInfo.replace('Found:', '').trim();
+          if (matchedWords) {
+            // Highlight each matched word (may contain nikud in text)
+            const mWords = matchedWords.split(/\s*\.\.\.\s*|\s+/).filter(Boolean);
+            for (const mw of mWords) {
+              const escaped = mw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+              // Insert optional nikud between each character for Hebrew matching
+              const nikudAware = [...escaped].join(NIKUD_RANGE + '*');
+              try {
+                const regex = new RegExp(`(${nikudAware})`, 'g');
+                result = result.replace(regex, '<mark>$1</mark>');
+              } catch(e) { /* skip bad regex */ }
+            }
+            return result;
+          }
+        }
+
+        // Standard word highlighting - nikud-aware
+        const words = query.split(/\s+/).filter(w =>
+          w.length > 0 && !['and', 'or', 'not'].includes(w.toLowerCase())
+        );
+
+        for (const word of words) {
+          const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          // Insert optional nikud marks between each Hebrew character
+          // This lets "תשובה" match "תְּשׁוּבָה" in the text
+          const chars = [...escaped];
+          const nikudAware = chars.join(NIKUD_RANGE + '*');
+          try {
+            const regex = new RegExp(`(${nikudAware})`, 'gi');
+            result = result.replace(regex, '<mark>$1</mark>');
+          } catch(e) {
+            // Fallback: plain match without nikud awareness
+            const simpleRegex = new RegExp(`(${escaped})`, 'gi');
+            result = result.replace(simpleRegex, '<mark>$1</mark>');
+          }
+        }
+        return result;
+      }
+
+      function showLoading() {
+        welcomeMessage.classList.add('hidden');
+        loading.classList.remove('hidden');
+        resultsContainer.classList.add('hidden');
+        noResults.classList.add('hidden');
+        // Scroll to results section
+        resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      function showNoResults(query: string, msg?: string) {
+        noResultsMessage.textContent = msg || `No results for "${query}". Try different terms or fewer filters.`;
+        noResults.classList.remove('hidden');
+        resultsContainer.classList.add('hidden');
+        welcomeMessage.classList.add('hidden');
+        resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      function shareResult(link: string, title: string) {
+        const fullUrl = window.location.origin + link;
+        if (navigator.share) {
+          navigator.share({ title: title + ' — ajew.org', url: fullUrl }).catch(() => {});
+        } else {
+          navigator.clipboard.writeText(fullUrl).then(() => {
+            const btn = event?.target as HTMLElement;
+            if (btn) { const orig = btn.textContent; btn.textContent = '✓ Copied!'; setTimeout(() => btn.textContent = orig, 2000); }
+          });
+        }
+      }
+
+      function showWelcome() {
+        welcomeMessage.classList.remove('hidden');
+        loading.classList.add('hidden');
+        resultsContainer.classList.add('hidden');
+        noResults.classList.add('hidden');
+        renderSearchHistory();
+      }
+
+      // Search history
+      function saveSearchHistory(query: string) {
+        const KEY = 'ajew-search-history';
+        try {
+          let history: string[] = JSON.parse(localStorage.getItem(KEY) || '[]');
+          history = history.filter(h => h !== query);
+          history.unshift(query);
+          localStorage.setItem(KEY, JSON.stringify(history.slice(0, 20)));
+        } catch(e) {}
+      }
+
+      function renderSearchHistory() {
+        const KEY = 'ajew-search-history';
+        let container = document.getElementById('searchHistoryBox');
+        if (!container) {
+          container = document.createElement('div');
+          container.id = 'searchHistoryBox';
+          container.className = 'search-history-box';
+          welcomeMessage.appendChild(container);
+        }
+        try {
+          const history: string[] = JSON.parse(localStorage.getItem(KEY) || '[]');
+          if (history.length === 0) { container.style.display = 'none'; return; }
+          container.style.display = 'block';
+          container.innerHTML = '<h4>Recent Searches</h4><div class="sh-tags">' +
+            history.slice(0, 10).map(h =>
+              '<button class="sh-tag" data-q="' + h.replace(/"/g, '&quot;') + '">' + h + '</button>'
+            ).join('') +
+            '</div>';
+          container.querySelectorAll('.sh-tag').forEach((btn: any) => {
+            btn.addEventListener('click', () => {
+              const input = document.getElementById('searchInput') as HTMLInputElement;
+              input.value = btn.dataset.q;
+              performSearch(btn.dataset.q, {}, searchState?.advancedOptions || {});
+            });
+          });
+        } catch(e) {}
+      }
+
+      clearResults.addEventListener('click', () => {
+        showWelcome();
+        (document.getElementById('searchInput') as HTMLInputElement).value = '';
+        const url = new URL(window.location.href);
+        url.searchParams.delete('q');
+        window.history.replaceState({}, '', url);
+      });
+
+      // Render history on load
+      renderSearchHistory();
+    });
+  </script>
+
+  <style>
+    .search-page {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #a855f7 100%);
+      padding: 1rem 1rem 2rem;
+    }
+
+    .page-header {
+      text-align: center;
+      color: white;
+      margin-bottom: 1rem;
+    }
+
+    .page-header h1 {
+      font-size: 2.2rem;
+      margin-bottom: 0.3rem;
+      font-family: var(--font-hebrew, serif);
+      font-weight: 700;
+    }
+
+    .subtitle {
+      font-size: 1rem;
+      opacity: 0.85;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .search-section {
+      background: rgba(255, 255, 255, 0.97);
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Results Section - Prominent */
+    .results-section {
+      background: rgba(255, 255, 255, 0.97);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      min-height: 100px;
+    }
+
+    .welcome-message {
+      text-align: center;
+      padding: 1.5rem 1rem;
+      color: #6b7280;
+    }
+
+    .welcome-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .welcome-text {
+      font-size: 1rem;
+      color: #4b5563;
+      margin: 0 0 0.25rem 0;
+      font-weight: 500;
+    }
+
+    .welcome-hint {
+      font-size: 0.85rem;
+      color: #9ca3af;
+      margin: 0;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 2rem;
+      color: #6b7280;
+    }
+
+    .spinner {
+      border: 3px solid #f3f4f6;
+      border-top: 3px solid #6366f1;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 0.75rem;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .results-container {
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    .results-header h3 {
+      margin: 0;
+      color: #1f2937;
+      font-size: 1rem;
+    }
+
+    .results-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .action-btn {
+      background: #f3f4f6;
+      color: #4b5563;
+      border: 1px solid #e5e7eb;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+
+    .action-btn:hover {
+      background: #e5e7eb;
+    }
+
+    .clear-btn {
+      background: #fef2f2;
+      border-color: #fecaca;
+      color: #b91c1c;
+    }
+
+    .clear-btn:hover {
+      background: #fee2e2;
+    }
+
+    .results-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .result-item {
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      background: white;
+      transition: box-shadow 0.2s, border-color 0.2s;
+    }
+
+    .result-item:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      border-color: #c7d2fe;
+    }
+
+    .result-top {
+      margin-bottom: 0.5rem;
+    }
+
+    .result-title {
+      margin: 0 0 0.35rem 0;
+      font-size: 1rem;
+    }
+
+    .result-title a {
+      color: #4f46e5;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .result-title a:hover {
+      text-decoration: underline;
+    }
+
+    .result-tags {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+
+    .result-subcategory, .result-stat, .result-relevance, .result-match-info {
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 500;
+    }
+
+    .result-match-info {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .result-subcategory {
+      background: #eef2ff;
+      color: #4f46e5;
+    }
+
+    .result-stat {
+      background: #f3f4f6;
+      color: #6b7280;
+    }
+
+    .result-relevance {
+      background: #ecfdf5;
+      color: #059669;
+    }
+
+    .result-snippet {
+      color: #4b5563;
+      line-height: 1.55;
+      margin: 0.5rem 0;
+      font-size: 0.9rem;
+    }
+
+    .result-snippet mark, .result-title mark {
+      background: #fef08a;
+      padding: 0.05rem 0.2rem;
+      border-radius: 2px;
+      color: inherit;
+      font-weight: 700;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+    }
+
+    .result-he-title {
+      font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif);
+      font-size: 0.9em;
+      color: #6b7280;
+      direction: rtl;
+      unicode-bidi: isolate;
+    }
+
+    .result-footer {
+      margin-top: 0.5rem;
+      padding-top: 0.5rem;
+      border-top: 1px solid #f3f4f6;
+    }
+
+    /* Search history */
+    .search-history-box { margin-top: 20px; text-align: center; }
+    .search-history-box h4 { color: #888; font-size: 0.85em; margin: 0 0 8px; font-weight: 400; }
+    .sh-tags { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+    .sh-tag {
+      background: #f0ebe0; border: 1px solid #e0d6c2; color: #1a365d;
+      padding: 4px 12px; border-radius: 16px; font-size: 0.85em;
+      cursor: pointer; font-family: 'Frank Ruhl Libre', serif;
+    }
+    .sh-tag:hover { background: #e0d6c2; }
+
+    .load-more-btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      margin-top: 16px;
+      background: #f0ebe0;
+      border: 1px solid #e0d6c2;
+      border-radius: 8px;
+      color: #1a365d;
+      font-weight: 600;
+      font-size: 0.9em;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .load-more-btn:hover { background: #e0d6c2; }
+
+    .view-link {
+      color: #6366f1;
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    .view-link:hover {
+      text-decoration: underline;
+    }
+
+    .result-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .share-btn {
+      background: none;
+      border: 1px solid #d0c8b0;
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      color: #666;
+      transition: all 0.2s;
+    }
+    .share-btn:hover { background: #f5f0e8; color: #1a365d; border-color: #1a365d; }
+
+    .no-results {
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .no-results-icon {
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .no-results h3 {
+      color: #4b5563;
+      margin: 0 0 0.5rem 0;
+      font-size: 1.1rem;
+    }
+
+    .no-results p {
+      color: #9ca3af;
+      margin: 0;
+      font-size: 0.9rem;
+    }
+
+    /* Maps Section */
+    .maps-section {
+      background: rgba(255, 255, 255, 0.97);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .maps-section h2 {
+      color: #1f2937;
+      margin: 0 0 0.75rem 0;
+      font-size: 1.3rem;
+    }
+
+    .maps-notice {
+      background: #fffbeb;
+      border: 1px solid #fcd34d;
+      border-radius: 6px;
+      padding: 0.6rem 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .maps-notice p {
+      margin: 0.25rem 0;
+      color: #92400e;
+      font-size: 0.9rem;
+    }
+
+    .maps-notice strong {
+      color: #78350f;
+    }
+
+    .maps-frame {
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .maps-iframe {
+      display: block;
+      width: 100%;
+      border: none;
+    }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+      .search-page {
+        padding: 0.75rem;
+      }
+
+      .page-header h1 {
+        font-size: 1.8rem;
+      }
+
+      .subtitle {
+        font-size: 0.9rem;
+      }
+
+      .search-section, .results-section, .maps-section {
+        padding: 1rem;
+      }
+
+      .results-header {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: flex-start;
+      }
+
+      .result-item {
+        padding: 0.75rem;
+      }
+
+      .result-title {
+        font-size: 0.95rem;
+      }
+
+      .maps-iframe {
+        height: 450px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .page-header h1 {
+        font-size: 1.5rem;
+      }
+
+      .maps-iframe {
+        height: 400px;
+      }
+
+      .result-tags {
+        flex-wrap: wrap;
+      }
+    }
+  </style>
+</Layout>

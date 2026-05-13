@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 372</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 372</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה קורא את החיות לתוך הימים והמדות כנ&quot;ל. ועל כן צריך לעסק ב
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+Tinyana 86
+BECAUSE THE WORLD IS OF LITTLE FAITH
+Know that because the world is of little emunah [faith], therefore they need fasting, that is, difficult services. For certainly it is known that it is possible to serve Hashem [G-d] in every matter, for the Holy One, blessed be He, does not come with complaints against His creations [Avodah Zarah 3a]. But the reason they sometimes need difficult services is in the aspect of what our Sages, of blessed memory, said: "At a time of persecution, even for the strap of a sandal, one should be killed rather than transgress" [Sanhedrin 74b]. Thus, even though in truth it is not appropriate to be killed for this, because it is a time of persecution and they prevail and specifically wish to make him transgress the religion and bring him to heresies, Heaven forbid, therefore he is compelled to give his life even for a small matter. And idol worship and heresies are in the aspect of: "Indeed, there is no spirit in them" [Psalms 135:17], for they have no spirit at all. And those of little emunah are in the aspect of "mikotzer ruach" [shortness of spirit], which is like an intermediate state, that is, they do not have complete emunah, which is the aspect of one who lengthens his spirit, as brought elsewhere [Likutay Moharan I:155]. And even so, they are not complete heretics who have no spirit at all; rather, they are like an intermediate state, and their spirit is short, the aspect of "mikotzer ruach." And this is: "From shortness of spirit and from difficult service" [Exodus 6:9]—because they are in the aspect of "mikotzer ruach," because they are of little emunah, as above, therefore they need difficult services and fasts, as above. Just as at a time of persecution, which is a complete corruption of emunah, they need to give their lives entirely even for a small matter, so too when there is smallness and a defect in emunah, they need to perform difficult services, as above. And there are several aspects in those of little emunah, for even tzadikim [righteous ones] are sometimes of little emunah, as our Sages, of blessed memory, expounded on the verse: "For who has despised the day of small things" [Zechariah 4:10]—who caused the tzadikim [to stumble, etc.] [Sotah 48b].
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

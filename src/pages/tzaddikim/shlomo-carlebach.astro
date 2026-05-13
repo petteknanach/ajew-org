@@ -1,0 +1,522 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+// Profile data for Shlomo Carlebach
+const tzaddik = {
+  name: "Shlomo Carlebach (Reb Shlomo)",
+  hebrew_name: "שלמה קרליבך",
+  yahrzeit_hebrew: "ט״ז בְּחֶשְׁוָן",
+  yahrzeit_english: "16 Cheshvan",
+  gregorian_date: "October 20, 1994",
+  birth_year: "1925",
+  passing_year: "1994",
+  age_at_passing: "69",
+  location: "Berlin → New York → Worldwide",
+  category: "Jewish Music & Outreach - Modern Era",
+  era: "20th Century",
+  significance: "Renowned rabbi, composer, and singer known as 'The Singing Rabbi' or 'Reb Shlomo.' Revolutionized Jewish music, composed thousands of songs, and spread Jewish spirituality worldwide through music, stories, and personal connection. Though not Breslov, his music and outreach inspired countless Jews.",
+  
+  // Biography sections
+  biography: [
+    {
+      title: "Early Life and Musical Roots",
+      content: "Shlomo Carlebach was born in Berlin in 1925 to a distinguished rabbinic family. His father was Rabbi Dr. Naftali Carlebach, and the family escaped Nazi Germany in 1939, settling in New York. From a young age, Shlomo showed musical talent and deep spiritual sensitivity. He studied in yeshivas including Lakewood and became a disciple of Rabbi Aharon Kotler."
+    },
+    {
+      title: "Musical Revolution",
+      content: "In the 1950s and 1960s, Carlebach began composing and performing Jewish music that broke from traditional forms. His melodies blended Chassidic niggunim (tunes) with folk, rock, and blues influences. Songs like 'Am Yisrael Chai,' 'L'cha Dodi,' and 'Od Yishama' became anthems of Jewish revival. He composed over 5,000 songs in his lifetime."
+    },
+    {
+      title: "Outreach and Connection",
+      content: "Carlebach traveled worldwide, performing in concerts, synagogues, campuses, and festivals. His unique approach combined music, storytelling, and personal connection. He reached Jews of all backgrounds - religious and secular, young and old - making Jewish spirituality accessible and joyful. His 'Carlebach minyanim' (prayer gatherings) featured his melodies and created communities."
+    },
+    {
+      title: "The House of Love and Prayer",
+      content: "In 1967 in San Francisco, Carlebach co-founded the 'House of Love and Prayer,' a spiritual community that attracted young Jews during the counterculture movement. It became a model for Jewish outreach, combining traditional Judaism with contemporary spirituality and music."
+    },
+    {
+      title: "Legacy and Impact",
+      content: "Carlebach passed away in 1994 from a heart attack. His legacy includes not only his music but also his approach to Jewish outreach. He showed that joy, music, and personal connection could bring Jews closer to their heritage. Today, his melodies are sung worldwide in synagogues, schools, and Jewish gatherings."
+    }
+  ],
+  
+  // Musical legacy
+  musical_legacy: [
+    {
+      title: "Signature Songs",
+      examples: "Am Yisrael Chai, L'cha Dodi, Od Yishama, Esa Einai, Borchi Nafshi, Pitchu Li, Moshiach"
+    },
+    {
+      title: "Musical Style",
+      description: "Blended Chassidic melodies with folk, rock, blues, and gospel influences. Created accessible, emotional music that resonated across Jewish denominations."
+    },
+    {
+      title: "Live Performances",
+      description: "Known for energetic, soulful concerts where he connected personally with audiences. His 'Carlebach minyan' style of prayer became a movement."
+    }
+  ],
+  
+  // Teaching connections
+  teachings: [
+    {
+      title: "Music as Spiritual Gateway",
+      content: "Carlebach believed music could open hearts to Jewish spirituality when words alone couldn't. His melodies served as 'gateways' for people to connect with prayer, Torah, and Jewish community."
+    },
+    {
+      title: "Joy in Judaism",
+      content: "He emphasized simcha (joy) as essential to Jewish life. His music and personality radiated joy, showing that Judaism isn't just about obligation but about celebration and connection."
+    },
+    {
+      title: "Personal Connection Over Doctrine",
+      content: "Carlebach focused on connecting with individuals personally rather than teaching doctrine. He believed that loving people where they were could bring them closer to Judaism."
+    },
+    {
+      title: "Inclusive Outreach",
+      content: "He reached across Jewish denominations and backgrounds, showing that Jewish unity could be achieved through shared music and spirituality rather than theological agreement."
+    }
+  ],
+  
+  // Legacy
+  legacy: [
+    "Composed over 5,000 Jewish songs that are sung worldwide",
+    "Revolutionized Jewish music with contemporary influences",
+    "Pioneered new forms of Jewish outreach and community building",
+    "Founded the House of Love and Prayer in San Francisco",
+    "Inspired countless Jews to connect with their heritage",
+    "Created the 'Carlebach minyan' style of prayer",
+    "Showed that joy and music are powerful tools for Jewish continuity",
+    "Bridged gaps between different Jewish communities through shared music"
+  ],
+  
+  // Related figures
+  related: [
+    {
+      name: "Rebbe Nachman of Breslov",
+      path: "/tzaddikim/rebbe-nachman",
+      relationship: "Shared emphasis on joy and music in spirituality"
+    },
+    {
+      name: "Other Jewish musicians",
+      path: "/tzaddikim/jewish-musicians",
+      relationship: "Fellow composers and performers"
+    },
+    {
+      name: "Modern Jewish outreach figures",
+      path: "/tzaddikim/jewish-outreach",
+      relationship: "Fellow activists in connecting Jews to heritage"
+    }
+  ]
+};
+---
+
+<Layout 
+  title={`Shlomo Carlebach | Tzaddikim Profiles`}
+  description={`Learn about Shlomo Carlebach (Reb Shlomo), renowned Jewish composer and singer with yahrzeit on 16 Cheshvan. Revolutionized Jewish music and spread Jewish spirituality worldwide.`}
+>
+  <script type="application/ld+json" set:html={} />
+
+  <div class="tzaddik-profile">
+    <!-- Header with basic info -->
+    <div class="profile-header">
+      <div class="profile-info">
+        <h1 class="profile-name">{tzaddik.name}</h1>
+        <h2 class="profile-hebrew" dir="rtl">{tzaddik.hebrew_name}</h2>
+        
+        <div class="profile-meta">
+          <div class="meta-item">
+            <span class="meta-label">Yahrzeit:</span>
+            <span class="meta-value">{tzaddik.yahrzeit_hebrew} ({tzaddik.yahrzeit_english})</span>
+          </div>
+          
+          <div class="meta-item">
+            <span class="meta-label">Gregorian Date:</span>
+            <span class="meta-value">{tzaddik.gregorian_date}</span>
+          </div>
+          
+          <div class="meta-item">
+            <span class="meta-label">Location:</span>
+            <span class="meta-value">{tzaddik.location}</span>
+          </div>
+          
+          <div class="meta-item">
+            <span class="meta-label">Category:</span>
+            <span class="meta-value">{tzaddik.category}</span>
+          </div>
+          
+          <div class="meta-item">
+            <span class="meta-label">Lifespan:</span>
+            <span class="meta-value">{tzaddik.birth_year} - {tzaddik.passing_year} (Age {tzaddik.age_at_passing})</span>
+          </div>
+        </div>
+        
+        <div class="profile-significance">
+          <h3>Significance</h3>
+          <p>{tzaddik.significance}</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Musical Legacy Box -->
+    <div class="special-connection">
+      <h3>🎵 The Singing Rabbi - Musical Legacy</h3>
+      <p><strong>Over 5,000 Songs:</strong> Carlebach composed thousands of Jewish songs that revolutionized Jewish music. His melodies blend Chassidic traditions with contemporary influences, creating accessible, emotional music that resonates across Jewish denominations.</p>
+      <p><strong>Worldwide Impact:</strong> From the House of Love and Prayer in San Francisco to concerts worldwide, Carlebach used music to connect Jews to their heritage. His songs like 'Am Yisrael Chai' and 'L'cha Dodi' became anthems of Jewish revival.</p>
+    </div>
+    
+    <!-- Biography Sections -->
+    <div class="profile-section">
+      <h2>Biography</h2>
+      {tzaddik.biography.map((section, index) => (
+        <div class="biography-section" key={index}>
+          <h3>{section.title}</h3>
+          <p>{section.content}</p>
+        </div>
+      ))}
+    </div>
+    
+    <!-- Musical Legacy -->
+    <div class="profile-section">
+      <h2>Musical Legacy</h2>
+      <div class="musical-grid">
+        {tzaddik.musical_legacy.map((item, index) => (
+          <div class="musical-card" key={index}>
+            <div class="musical-title">{item.title}</div>
+            {item.examples && (
+              <div class="musical-examples">{item.examples}</div>
+            )}
+            {item.description && (
+              <div class="musical-description">{item.description}</div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+    
+    <!-- Teaching Connections -->
+    <div class="profile-section">
+      <h2>Teaching Connections</h2>
+      {tzaddik.teachings.map((teaching, index) => (
+        <div class="teaching-item" key={index}>
+          <h4>{teaching.title}</h4>
+          <p>{teaching.content}</p>
+        </div>
+      ))}
+    </div>
+    
+    <!-- Legacy -->
+    <div class="profile-section">
+      <h2>Legacy</h2>
+      <ul class="legacy-list">
+        {tzaddik.legacy.map((item, index) => (
+          <li key={index}>{item}</li>
+        ))}
+      </ul>
+    </div>
+    
+    <!-- Related Figures -->
+    <div class="profile-section">
+      <h2>Related Figures</h2>
+      <div class="related-tzaddikim">
+        {tzaddik.related.map((related, index) => (
+          <a href={related.path} class="related-link" key={index}>
+            <span class="related-name">{related.name}</span>
+            <span class="related-relationship">{related.relationship}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+    
+    <!-- Navigation -->
+    <div class="profile-navigation">
+      <a href="/" class="nav-link">← Back to Home</a>
+      <a href="/tzaddikim" class="nav-link">View All Tzaddikim →</a>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .tzaddik-profile {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  
+  .profile-header {
+    margin-bottom: 2rem;
+  }
+  
+  .profile-name {
+    font-size: 2.5rem;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+  }
+  
+  .profile-hebrew {
+    font-family: var(--font-hebrew);
+    font-size: 2rem;
+    color: #4b5563;
+    margin-bottom: 1.5rem;
+  }
+  
+  .profile-meta {
+    background: #f9fafb;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid #ec4899;
+  }
+  
+  .meta-item {
+    display: flex;
+    margin-bottom: 0.75rem;
+  }
+  
+  .meta-item:last-child {
+    margin-bottom: 0;
+  }
+  
+  .meta-label {
+    font-weight: 600;
+    color: #374151;
+    min-width: 140px;
+  }
+  
+  .meta-value {
+    color: #6b7280;
+  }
+  
+  .profile-significance {
+    background: #fce7f3;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #ec4899;
+  }
+  
+  .profile-significance h3 {
+    color: #9d174d;
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+  }
+  
+  .profile-significance p {
+    color: #be185d;
+    margin: 0;
+    line-height: 1.6;
+  }
+  
+  .special-connection {
+    background: linear-gradient(135deg, #fce7f3, #fbcfe8);
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    border: 2px solid #ec4899;
+  }
+  
+  .special-connection h3 {
+    color: #9d174d;
+    margin-top: 0;
+    margin-bottom: 1rem;
+  }
+  
+  .special-connection p {
+    color: #be185d;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+  
+  .special-connection p:last-child {
+    margin-bottom: 0;
+  }
+  
+  .profile-section {
+    margin-bottom: 3rem;
+  }
+  
+  .profile-section h2 {
+    color: #1f2937;
+    border-bottom: 2px solid #ec4899;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .biography-section {
+    margin-bottom: 1.5rem;
+  }
+  
+  .biography-section h3 {
+    color: #374151;
+    margin-bottom: 0.5rem;
+  }
+  
+  .biography-section p {
+    color: #6b7280;
+    line-height: 1.8;
+    margin: 0;
+  }
+  
+  .musical-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+  
+  .musical-card {
+    background: #fdf2f8;
+    padding: 1.25rem;
+    border-radius: 6px;
+    border-left: 3px solid #ec4899;
+  }
+  
+  .musical-title {
+    font-weight: 600;
+    color: #9d174d;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+  }
+  
+  .musical-examples {
+    color: #be185d;
+    font-size: 0.875rem;
+    font-style: italic;
+    margin-bottom: 0.5rem;
+  }
+  
+  .musical-description {
+    color: #9d174d;
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+  
+  .teaching-item {
+    background: #fdf2f8;
+    padding: 1.25rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    border-left: 3px solid #ec4899;
+  }
+  
+  .teaching-item h4 {
+    color: #9d174d;
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+  }
+  
+  .teaching-item p {
+    color: #be185d;
+    margin: 0;
+    line-height: 1.6;
+  }
+  
+  .legacy-list {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .legacy-list li {
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    background: #fdf2f8;
+    border-radius: 6px;
+    border-left: 3px solid #ec4899;
+    color: #9d174d;
+  }
+  
+  .related-tzaddikim {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+  
+  .related-link {
+    display: block;
+    padding: 1rem;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  
+  .related-link:hover {
+    background: #f9fafb;
+    border-color: #ec4899;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .related-name {
+    display: block;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 0.25rem;
+  }
+  
+  .related-relationship {
+    display: block;
+    font-size: 0.875rem;
+    color: #6b7280;
+  }
+  
+  .profile-navigation {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e5e7eb;
+  }
+  
+  .nav-link {
+    padding: 0.75rem 1.5rem;
+    background: #ec4899;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  
+  .nav-link:hover {
+    background: #db2777;
+    transform: translateY(-2px);
+  }
+  
+  @media (max-width: 768px) {
+    .tzaddik-profile {
+      padding: 1rem;
+    }
+    
+    .profile-name {
+      font-size: 2rem;
+    }
+    
+    .profile-hebrew {
+      font-size: 1.5rem;
+    }
+    
+    .meta-item {
+      flex-direction: column;
+    }
+    
+    .meta-label {
+      min-width: auto;
+      margin-bottom: 0.25rem;
+    }
+    
+    .musical-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .related-tzaddikim {
+      grid-template-columns: 1fr;
+    }
+    
+    .profile-navigation {
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .nav-link {
+      text-align: center;
+    }
+  }
+</style>

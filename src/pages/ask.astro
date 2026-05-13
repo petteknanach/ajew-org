@@ -1,0 +1,218 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Ask - Find Answers in the Teachings" description="Ask any question about life, faith, prayer, or Torah and discover what Rebbe Nachman's teachings say about it.">
+  <section class="ask-page">
+    <div class="container">
+      <div class="page-header">
+        <h1 class="hebrew-title">שאל</h1>
+        <h1>Ask the Teachings</h1>
+        <p class="subtitle">Type your question and discover what the holy books say</p>
+      </div>
+
+      <div class="ask-form">
+        <input type="text" id="askInput" placeholder="How do I find joy? / איך למצוא שמחה?" dir="auto" autocomplete="off" />
+        <button id="askBtn" onclick="askQuestion()">Ask</button>
+      </div>
+
+      <div class="suggestions">
+        <span class="sug-label">Try asking:</span>
+        <button class="sug-btn" data-q="How do I overcome sadness?">How to overcome sadness?</button>
+        <button class="sug-btn" data-q="What is hitbodedut?">What is hitbodedut?</button>
+        <button class="sug-btn" data-q="איך להתחזק באמונה">How to strengthen faith?</button>
+        <button class="sug-btn" data-q="Why is joy so important?">Why is joy important?</button>
+        <button class="sug-btn" data-q="How to do teshuva?">How to do teshuva?</button>
+        <button class="sug-btn" data-q="What does the tzaddik do?">What does the tzaddik do?</button>
+      </div>
+
+      <div id="askResults" class="results" style="display:none;">
+        <h2 id="resultsTitle"></h2>
+        <div id="resultsList"></div>
+      </div>
+
+      <div id="askLoading" class="loading" style="display:none;">Searching the teachings...</div>
+    </div>
+  </section>
+
+  <script is:inline>
+  // Map common English questions to Hebrew search terms
+  const QUESTION_MAP = [
+    { patterns: ['joy', 'happy', 'happiness', 'sad', 'sadness', 'depression', 'depressed'], terms: ['שמחה', 'עצבות'] },
+    { patterns: ['faith', 'believe', 'belief', 'emuna', 'doubt'], terms: ['אמונה'] },
+    { patterns: ['pray', 'prayer', 'daven', 'tefila', 'tefillah'], terms: ['תפילה'] },
+    { patterns: ['hitbodedut', 'meditation', 'seclude', 'seclusion', 'alone'], terms: ['התבודדות'] },
+    { patterns: ['teshuva', 'repent', 'repentance', 'return'], terms: ['תשובה'] },
+    { patterns: ['tzaddik', 'righteous', 'rebbe', 'leader'], terms: ['צדיק'] },
+    { patterns: ['heal', 'healing', 'sick', 'illness', 'health'], terms: ['רפואה'] },
+    { patterns: ['money', 'livelihood', 'parnasa', 'income', 'work', 'job'], terms: ['פרנסה'] },
+    { patterns: ['peace', 'shalom', 'argue', 'conflict', 'anger'], terms: ['שלום'] },
+    { patterns: ['humble', 'humility', 'pride', 'arrogant', 'ego'], terms: ['ענווה', 'גאווה'] },
+    { patterns: ['torah', 'study', 'learn', 'wisdom'], terms: ['תורה', 'חכמה'] },
+    { patterns: ['love', 'ahava', 'compassion'], terms: ['אהבה'] },
+    { patterns: ['fear', 'awe', 'yirah', 'afraid', 'anxiety', 'worry'], terms: ['יראה', 'בטחון'] },
+    { patterns: ['soul', 'neshama', 'spiritual'], terms: ['נשמה'] },
+    { patterns: ['charity', 'tzedaka', 'give', 'donate'], terms: ['צדקה'] },
+    { patterns: ['mashiach', 'messiah', 'redemption', 'geula'], terms: ['משיח', 'גאולה'] },
+    { patterns: ['shabbat', 'sabbath', 'shabbos'], terms: ['שבת'] },
+    { patterns: ['children', 'child', 'kids', 'education', 'chinuch'], terms: ['בנים', 'חינוך'] },
+    { patterns: ['marriage', 'spouse', 'wife', 'husband', 'shalom bayit'], terms: ['שלום בית', 'זיווג'] },
+    { patterns: ['song', 'music', 'niggun', 'sing'], terms: ['שירה', 'ניגון'] },
+  ];
+
+  function extractSearchTerms(question) {
+    const lower = question.toLowerCase();
+    const terms = new Set();
+
+    // Check if already Hebrew
+    if (/[\u0590-\u05FF]/.test(question)) {
+      return question; // Pass Hebrew directly as search
+    }
+
+    // Match English patterns to Hebrew terms
+    for (const mapping of QUESTION_MAP) {
+      for (const pattern of mapping.patterns) {
+        if (lower.includes(pattern)) {
+          mapping.terms.forEach(t => terms.add(t));
+        }
+      }
+    }
+
+    if (terms.size > 0) return [...terms].join(' ');
+    // Fallback: use original question for search
+    return question;
+  }
+
+  async function askQuestion() {
+    const input = document.getElementById('askInput');
+    const question = input.value.trim();
+    if (!question) return;
+
+    const loading = document.getElementById('askLoading');
+    const results = document.getElementById('askResults');
+    loading.style.display = 'block';
+    results.style.display = 'none';
+
+    const searchTerms = extractSearchTerms(question);
+    const url = '/api/search?q=' + encodeURIComponent(searchTerms) + '&searchType=google&pageSize=10';
+
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+      loading.style.display = 'none';
+
+      const title = document.getElementById('resultsTitle');
+      const list = document.getElementById('resultsList');
+
+      if (data.results && data.results.length > 0) {
+        const searchedFor = searchTerms !== question ? ' (searching: ' + searchTerms + ')' : '';
+        title.textContent = 'Found ' + data.total + ' relevant teachings' + searchedFor + ':';
+        list.innerHTML = data.results.map(r => {
+          const snippet = (r.snippet || '').substring(0, 200);
+          return '<a href="' + (r.link || '#') + '" class="result-card">' +
+            '<div class="result-title">' + (r.hebrewTitle || r.title || '') + '</div>' +
+            '<div class="result-snippet" dir="rtl">' + snippet + '</div>' +
+            '<div class="result-book">' + (r.subcategory || '') + '</div>' +
+            '</a>';
+        }).join('');
+        results.style.display = 'block';
+      } else {
+        title.textContent = 'No results found. Try different words.';
+        list.innerHTML = '<p><a href="/search-enhanced?q=' + encodeURIComponent(question) + '">Try advanced search →</a></p>';
+        results.style.display = 'block';
+      }
+    } catch (e) {
+      loading.style.display = 'none';
+      results.style.display = 'block';
+      document.getElementById('resultsTitle').textContent = 'Search failed. Please try again.';
+    }
+  }
+
+  // Enter key
+  document.getElementById('askInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') askQuestion();
+  });
+
+  // Suggestion buttons
+  document.querySelectorAll('.sug-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.getElementById('askInput').value = btn.dataset.q;
+      askQuestion();
+    });
+  });
+  </script>
+</Layout>
+
+<style>
+  .ask-page {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+    font-family: 'Open Sans', sans-serif;
+  }
+  .page-header { text-align: center; margin-bottom: 32px; }
+  .hebrew-title { font-family: 'Frank Ruhl Libre', serif; font-size: 3em; color: #1a365d; direction: rtl; margin: 0; }
+  h1 { font-family: 'Frank Ruhl Libre', serif; color: #1a365d; font-size: 1.5em; margin: 0 0 8px; }
+  .subtitle { color: #666; }
+
+  .ask-form {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .ask-form input {
+    flex: 1;
+    padding: 14px 20px;
+    font-size: 1.1em;
+    border: 2px solid #d1d5db;
+    border-radius: 12px;
+    font-family: 'Frank Ruhl Libre', serif;
+  }
+  .ask-form input:focus { outline: none; border-color: #1a365d; box-shadow: 0 0 0 3px rgba(26,54,93,0.1); }
+  .ask-form button {
+    padding: 14px 28px;
+    background: #1a365d;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .ask-form button:hover { background: #2a5a9e; }
+
+  .suggestions { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 24px; }
+  .sug-label { color: #888; font-size: 0.8em; }
+  .sug-btn {
+    background: #f0ebe0;
+    border: 1px solid #e0d6c2;
+    color: #1a365d;
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 0.8em;
+    cursor: pointer;
+  }
+  .sug-btn:hover { background: #e0d6c2; }
+
+  .loading { text-align: center; padding: 40px; color: #888; }
+  h2 { font-size: 1em; color: #666; margin: 0 0 16px; }
+
+  .result-card {
+    display: block;
+    padding: 14px 16px;
+    background: #f8f5ef;
+    border: 1px solid #e0d6c2;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    text-decoration: none;
+    transition: border-color 0.2s;
+  }
+  .result-card:hover { border-color: #1a365d; }
+  .result-title { font-family: 'Frank Ruhl Libre', serif; color: #1a365d; font-weight: 700; font-size: 1.05em; direction: rtl; }
+  .result-snippet { color: #555; font-size: 0.9em; line-height: 1.6; margin: 6px 0; }
+  .result-book { color: #888; font-size: 0.8em; }
+
+  @media (max-width: 600px) {
+    .ask-form { flex-direction: column; }
+  }
+</style>

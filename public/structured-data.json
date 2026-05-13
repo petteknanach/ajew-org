@@ -1,0 +1,105 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://ajew.org/#website",
+      "url": "https://ajew.org",
+      "name": "A Jew - Rabbi Nachman's Factory of Judaism",
+      "description": "Explore the teachings of Rabbi Nachman of Breslov, Na Nach movement, Jewish wisdom, Torah insights, and spiritual guidance.",
+      "publisher": {
+        "@id": "https://ajew.org/#organization"
+      },
+      "inLanguage": "en-US",
+      "potentialAction": [
+        {
+          "@type": "SearchAction",
+          "target": "https://ajew.org/search?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      ]
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://ajew.org/#organization",
+      "name": "A Jew",
+      "url": "https://ajew.org",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://ajew.org/logo.svg",
+        "width": 512,
+        "height": 512,
+        "caption": "A Jew Logo"
+      },
+      "sameAs": [
+        "https://twitter.com/ajeworg"
+      ],
+      "description": "A platform dedicated to sharing the teachings of Rabbi Nachman of Breslov and the Na Nach movement."
+    },
+    {
+      "@type": "CollectionPage",
+      "@id": "https://ajew.org/books/#webpage",
+      "url": "https://ajew.org/books",
+      "name": "Jewish Books & Teachings",
+      "description": "Collection of Jewish books, teachings, and spiritual writings from Rabbi Nachman of Breslov and the Na Nach movement.",
+      "isPartOf": {
+        "@id": "https://ajew.org/#website"
+      },
+      "inLanguage": "en-US",
+      "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "item": {
+              "@id": "https://ajew.org",
+              "name": "Home"
+            }
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "item": {
+              "@id": "https://ajew.org/books",
+              "name": "Books"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "@type": "Book",
+      "@id": "https://ajew.org/books/blossoms-of-the-spring/#book",
+      "url": "https://ajew.org/books/blossoms-of-the-spring",
+      "name": "Blossoms of the Spring",
+      "alternateName": "Kokhavey Or",
+      "description": "A collection of letters and teachings from Rabbi Nachman of Breslov, offering spiritual guidance and wisdom.",
+      "author": {
+        "@type": "Person",
+        "name": "Rabbi Nachman of Breslov"
+      },
+      "publisher": {
+        "@id": "https://ajew.org/#organization"
+      },
+      "datePublished": "2024",
+      "bookFormat": "https://schema.org/EBook",
+      "inLanguage": "en-US",
+      "isbn": "",
+      "numberOfPages": 282,
+      "genre": ["Religion", "Judaism", "Spirituality"],
+      "keywords": ["Rabbi Nachman", "Breslov", "Jewish", "Torah", "Spirituality", "Na Nach"]
+    },
+    {
+      "@type": "AboutPage",
+      "@id": "https://ajew.org/about/#webpage",
+      "url": "https://ajew.org/about",
+      "name": "About A Jew",
+      "description": "Learn about the mission and purpose of A Jew - Rabbi Nachman's Factory of Judaism.",
+      "isPartOf": {
+        "@id": "https://ajew.org/#website"
+      },
+      "inLanguage": "en-US"
+    }
+  ]
+}

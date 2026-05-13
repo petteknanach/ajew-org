@@ -1,0 +1,57 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 278</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 278</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה הוא בהעלם ובאתכסיא יותר. ומי שמפשיט את האותיות ה
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+278 – KNOW THAT UPON A GOOD CHALIF
+Know that through a good chalif (the kosher slaughtering knife), one can behold all the vessels of the Beit HaMikdash— their forms, faces, and spiritual emanations. When Yitzchak told Esav, “Take now your vessels” (Genesis 27:3), he alluded to the vessels of the Sanctified House, visible through the chalif’s purity.
+This midrashic hint connects Yitzchak’s phrase “your vessels” to the Temple vessels: “and the vessels were brought to his god’s house” (Genesis parasha 65). Thus “vessels” refers to the holy vessels of the Temple.
+Ultimately, the verse “In My jealousy, My jealousy” (Numbers 25:11) teaches that no tzadik should be jealous of another—only the Divine alone is truly jealous.
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

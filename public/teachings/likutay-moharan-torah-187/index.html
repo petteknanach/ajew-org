@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 187</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 187</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה הזאת - שילך מדרגא לדרגא, שיבוא לעולם שיהיה מה&#39;נשמע&#39; &#39;נעשה&#39;. וזה: לעשות את כל דברי התורה; דברי התורה - הם דבורי ה
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+187 - AND TO YOU HASHEM IS THE KINDNESS FOR YOU PAY A MAN ACCORDING TO HIS DEED
+"And to You Hashem is the kindness, for You pay a man according to his deed" (Psalms 62:13) – this is a great kindness from Hashem blessed be He, paying measure for measure, enabling one to examine deeds, recognize sins, and return in repentance.
+The primary application of measure-for-measure payment occurs in the Land of Israel, as written (Job 20:27): "The heavens reveal his iniquity, and the earth rises up against him." "Earth" signifies the Land of Israel, where iniquity is revealed through precise payment. Thus (Numbers 13:32): "A land that eats its inhabitants" – initials Atta Teshalem Leish Kemaasehu (-You pay a man according to his deed). Therefore, dwellers in the Land of Israel endure many sufferings, as payment is hastened there.
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

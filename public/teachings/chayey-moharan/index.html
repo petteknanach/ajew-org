@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chayey Moharan - The Life of Rabbi Nachman</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 1000px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #2c5282; text-align: center; }
+        .subtitle { color: #666; text-align: center; font-size: 1.2em; margin-bottom: 30px; }
+        .hebrew-title { font-family: 'David', 'Times New Roman', serif; font-size: 1.8em; direction: rtl; text-align: center; margin: 20px 0; color: #1a365d; }
+        .description { line-height: 1.6; font-size: 1.1em; color: #333; margin-bottom: 40px; text-align: justify; }
+        .articles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 30px; }
+        .article-card { background: #f8f9fa; padding: 20px; border-radius: 8px; border-left: 4px solid #4299e1; text-decoration: none; color: #333; transition: all 0.3s; }
+        .article-card:hover { background: #e3f2fd; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .article-number { font-weight: bold; color: #2c5282; font-size: 1.2em; }
+        .article-title { margin-top: 5px; font-size: 0.9em; color: #666; }
+        .nav { margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; }
+        .nav a { color: #4299e1; text-decoration: none; margin-right: 15px; }
+        .nav a:hover { text-decoration: underline; }
+        .footer { margin-top: 40px; color: #888; font-size: 0.9em; text-align: center; }
+        .language-toggle { text-align: center; margin: 20px 0; }
+        .language-toggle button { background: #4299e1; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin: 0 5px; }
+        .language-toggle button:hover { background: #3182ce; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Chayey Moharan</h1>
+        <div class="hebrew-title">חיי מוהר"ן - חיי רבי נחמן</div>
+        <div class="subtitle">The Life of Our Leader Rabbi Nachman</div>
+        
+        <div class="description">
+            <p>This is the bilingual edition of "Chayey Moharan" (The Life of Rabbi Nachman), the biography of Rabbi Nachman of Breslov written by his disciple Rabbi Nathan of Breslov. The work contains stories, conversations, and events from Rabbi Nachman's life, providing deep insights into his teachings and personality.</p>
+            <p>The text is presented in both Hebrew and English side by side for comparative study. Each article corresponds to a numbered section in the original work.</p>
+        </div>
+        
+        <div class="language-toggle">
+            <button onclick="showAll()">All Articles</button>
+            <button onclick="showHebrew()">Hebrew Only</button>
+            <button onclick="showEnglish()">English Only</button>
+        </div>
+        
+        <div class="articles-grid" id="articles-grid">
+            <!-- Articles will be populated by JavaScript -->
+        </div>
+        
+        <div class="nav">
+            <a href="/teachings">← Back to Teachings</a>
+            <a href="/">Home</a>
+        </div>
+        
+        <div class="footer">
+            <p>© 2026 Ajew.org - Breslov Teachings</p>
+            <p>Hebrew source: Chayey Moharan Volumes 1 & 2 | English translation: The Life of Our Leader Rabbi Nachman</p>
+        </div>
+    </div>
+
+    <script>
+        // Sample articles data - in a real implementation, this would come from a database or API
+        const articles = [
+            { number: 1, hebrewTitle: "הקדמה", englishTitle: "Introduction" },
+            { number: 2, hebrewTitle: "ילדותו", englishTitle: "His Childhood" },
+            { number: 3, hebrewTitle: "נישואיו", englishTitle: "His Marriage" },
+            { number: 4, hebrewTitle: "לימוד התורה", englishTitle: "Torah Study" },
+            { number: 5, hebrewTitle: "תפילה והתבודדות", englishTitle: "Prayer and Seclusion" },
+            { number: 6, hebrewTitle: "נסיעה לארץ ישראל", englishTitle: "Journey to the Land of Israel" },
+            { number: 7, hebrewTitle: "חזרה מארץ ישראל", englishTitle: "Return from Israel" },
+            { number: 8, hebrewTitle: "ליקוטי מוהר\"ן", englishTitle: "Likutey Moharan" },
+            { number: 9, hebrewTitle: "סיפורי מעשיות", englishTitle: "Tales" },
+            { number: 10, hebrewTitle: "תיקון הכללי", englishTitle: "The General Remedy" },
+            { number: 11, hebrewTitle: "התבודדות", englishTitle: "Hisbodidus" },
+            { number: 12, hebrewTitle: "שמחה", englishTitle: "Joy" },
+            { number: 13, hebrewTitle: "אמונה", englishTitle: "Faith" },
+            { number: 14, hebrewTitle: "תפילה", englishTitle: "Prayer" },
+            { number: 15, hebrewTitle: "צדקה", englishTitle: "Charity" },
+            { number: 16, hebrewTitle: "רפואה", englishTitle: "Healing" },
+            { number: 17, hebrewTitle: "הסתלקותו", englishTitle: "His Passing" },
+            { number: 18, hebrewTitle: "ציונו הקדוש", englishTitle: "His Holy Grave" }
+        ];
+
+        function renderArticles(filter = 'all') {
+            const grid = document.getElementById('articles-grid');
+            grid.innerHTML = '';
+            
+            articles.forEach(article => {
+                const card = document.createElement('a');
+                card.href = `article-${article.number}.html`;
+                card.className = 'article-card';
+                
+                let content = '';
+                if (filter === 'all' || filter === 'english') {
+                    content += `<div class="article-number">Article ${article.number}</div>`;
+                    content += `<div class="article-title">${article.englishTitle}</div>`;
+                }
+                if (filter === 'all' || filter === 'hebrew') {
+                    content += `<div class="article-title" style="direction: rtl; text-align: right; font-family: 'David', 'Times New Roman', serif; margin-top: 10px;">${article.hebrewTitle}</div>`;
+                }
+                
+                card.innerHTML = content;
+                grid.appendChild(card);
+            });
+        }
+
+        function showAll() { renderArticles('all'); }
+        function showHebrew() { renderArticles('hebrew'); }
+        function showEnglish() { renderArticles('english'); }
+
+        // Initial render
+        renderArticles('all');
+    </script>
+</body>
+</html>

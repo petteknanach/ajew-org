@@ -1,0 +1,417 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+// Meta refresh for redirection
+---
+
+<Layout title="Search" description="Search all Breslov books and teachings">
+  <meta http-equiv="refresh" content="0;url=/search-enhanced" />
+  <div class="redirect-message">
+    <h1>Redirecting to Enhanced Search...</h1>
+    <p>If you are not redirected automatically, <a href="/search-enhanced">click here</a>.</p>
+  </div>
+  
+  <script>
+    window.location.href = '/search-enhanced';
+  </script>
+</Layout>
+
+<style>
+  .redirect-message {
+    text-align: center;
+    padding: 4rem;
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .redirect-message h1 {
+    color: #1a365d;
+    margin-bottom: 1rem;
+  }
+  
+  .redirect-message a {
+    color: #c53030;
+    text-decoration: underline;
+  }
+</style>
+
+<script>
+  let searchIndex = null;
+
+  // Load search index
+  async function loadIndex() {
+    try {
+      const response = await fetch('/data/search-index.json');
+      searchIndex = await response.json();
+    } catch (e) {
+      console.error('Failed to load search index:', e);
+    }
+  }
+
+  // Simple Hebrew-aware search
+  function normalizeHebrew(text) {
+    // Remove nikud
+    return text
+      .replace(/[\u0591-\u05BD\u05BF-\u05C7]/g, '')
+      .toLowerCase();
+  }
+
+  function search(query, options = {}) {
+    if (!query || !searchIndex) return [];
+    
+    const normalizedQuery = normalizeHebrew(query);
+    const results = [];
+    
+    const searchBooks = options.searchBooks !== false;
+    const searchTeachings = options.searchTeachings !== false;
+    
+    if (searchBooks && searchIndex.books) {
+      for (const book of searchIndex.books) {
+        const titleMatch = normalizeHebrew(book.title).includes(normalizedQuery);
+        const contentMatch = book.content && normalizeHebrew(book.content).includes(normalizedQuery);
+        
+        if (titleMatch || contentMatch) {
+          let snippet = '';
+          if (contentMatch && !titleMatch) {
+            // Find snippet around match
+            const normContent = normalizeHebrew(book.content);
+            const idx = normContent.indexOf(normalizedQuery);
+            if (idx !== -1) {
+              const start = Math.max(0, idx - 50);
+              const end = Math.min(book.content.length, idx + normalizedQuery.length + 100);
+              snippet = (start > 0 ? '...' : '') + 
+                book.content.substring(start, end).replace(/\n/g, ' ') + 
+                (end < book.content.length ? '...' : '');
+            }
+          }
+          
+          results.push({
+            type: 'book',
+            title: book.title,
+            category: book.category,
+            path: book.path,
+            snippet
+          });
+        }
+      }
+    }
+    
+    if (searchTeachings && searchIndex.teachings) {
+      for (const teaching of searchIndex.teachings) {
+        const titleMatch = normalizeHebrew(teaching.title).includes(normalizedQuery);
+        const contentMatch = teaching.content && normalizeHebrew(teaching.content).includes(normalizedQuery);
+        
+        if (titleMatch || contentMatch) {
+          let snippet = '';
+          if (contentMatch && !titleMatch) {
+            const normContent = normalizeHebrew(teaching.content);
+            const idx = normContent.indexOf(normalizedQuery);
+            if (idx !== -1) {
+              const start = Math.max(0, idx - 50);
+              const end = Math.min(teaching.content.length, idx + normalizedQuery.length + 100);
+              snippet = (start > 0 ? '...' : '') + 
+                teaching.content.substring(start, end).replace(/\n/g, ' ').replace(/<[^>]+>/g, '') + 
+                (end < teaching.content.length ? '...' : '');
+            }
+          }
+          
+          results.push({
+            type: 'teaching',
+            title: teaching.title,
+            category: 'Teachings',
+            path: teaching.path,
+            snippet
+          });
+        }
+      }
+    }
+    
+    return results.slice(0, 50); // Limit results
+  }
+
+  function displayResults(results, query) {
+    const resultsDiv = document.getElementById('results');
+    
+    if (!results.length) {
+      resultsDiv.innerHTML = '<p class="no-results">No results found</p>';
+      return;
+    }
+    
+    let html = `<p class="results-count">${results.length} results for "${query}"</p>`;
+    
+    // Group by type
+    const books = results.filter(r => r.type === 'book');
+    const teachings = results.filter(r => r.type === 'teaching');
+    
+    if (books.length) {
+      html += '<h3>Books (ספרים)</h3>';
+      html += '<ul class="results-list">';
+      for (const result of books) {
+        html += `
+          <li>
+            <a href="${result.path}">
+              <span class="result-title">${result.title}</span>
+              <span class="result-category">${result.category}</span>
+              ${result.snippet ? `<span class="result-snippet">${result.snippet}</span>` : ''}
+            </a>
+          </li>
+        `;
+      }
+      html += '</ul>';
+    }
+    
+    if (teachings.length) {
+      html += '<h3>Teachings (דרשות)</h3>';
+      html += '<ul class="results-list">';
+      for (const result of teachings) {
+        html += `
+          <li>
+            <a href="${result.path}">
+              <span class="result-title">${result.title}</span>
+              ${result.snippet ? `<span class="result-snippet">${result.snippet}</span>` : ''}
+            </a>
+          </li>
+        `;
+      }
+      html += '</ul>';
+    }
+    
+    resultsDiv.innerHTML = html;
+  }
+
+  // Initialize
+  loadIndex();
+  
+  const searchInput = document.getElementById('searchInput');
+  const searchBtn = document.getElementById('searchBtn');
+  const searchBooks = document.getElementById('searchBooks');
+  const searchTeachings = document.getElementById('searchTeachings');
+  
+  function doSearch() {
+    const query = searchInput.value.trim();
+    if (!query) return;
+    
+    const results = search(query, {
+      searchBooks: searchBooks.checked,
+      searchTeachings: searchTeachings.checked
+    });
+    
+    displayResults(results, query);
+  }
+  
+  searchBtn?.addEventListener('click', doSearch);
+  searchInput?.addEventListener('keyup', (e) => {
+    if (e.key === 'Enter') doSearch();
+    else if (searchInput.value.length >= 2) {
+      // Live search on 2+ chars
+      doSearch();
+    }
+  });
+  
+  searchBooks?.addEventListener('change', doSearch);
+  searchTeachings?.addEventListener('change', doSearch);
+</script>
+
+<style>
+  .search-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1a365d 0%, #2d4a6f 100%);
+    padding: 2rem;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .page-header h1 {
+    font-family: var(--font-hebrew);
+    font-size: 3rem;
+    color: white;
+    margin-bottom: 0.5rem;
+  }
+
+  .subtitle {
+    color: rgba(255,255,255,0.7);
+    font-size: 1.2rem;
+  }
+
+  .stats {
+    color: rgba(255,255,255,0.5);
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .search-note {
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    color: #856404;
+    text-align: center;
+  }
+
+  .search-box {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .search-box input {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 50px;
+    background: white;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  }
+
+  .search-box input:focus {
+    outline: none;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+
+  .search-box button {
+    padding: 1rem 1.5rem;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 50px;
+    background: #c53030;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .search-box button:hover {
+    background: #9b2c2c;
+  }
+
+  .filters {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    justify-content: center;
+  }
+
+  .filters label {
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+  }
+
+  .filters input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+  }
+
+  .results {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  }
+
+  .results-count {
+    color: #666;
+    margin-bottom: 1rem;
+  }
+
+  .results h3 {
+    color: #1a365d;
+    margin: 1.5rem 0 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e2e8f0;
+  }
+
+  .results h3:first-child {
+    margin-top: 0;
+  }
+
+  .results-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .results-list li {
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .results-list li:last-child {
+    border-bottom: none;
+  }
+
+  .results-list a {
+    display: block;
+    padding: 1rem;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+
+  .results-list a:hover {
+    background: #f7fafc;
+  }
+
+  .result-title {
+    display: block;
+    font-family: var(--font-hebrew);
+    font-size: 1.1rem;
+    color: #1a365d;
+    margin-bottom: 0.3rem;
+  }
+
+  .result-category {
+    display: block;
+    font-size: 0.8rem;
+    color: #666;
+    margin-bottom: 0.3rem;
+  }
+
+  .result-snippet {
+    display: block;
+    font-size: 0.9rem;
+    color: #444;
+    line-height: 1.5;
+  }
+
+  .no-results {
+    text-align: center;
+    color: #666;
+    padding: 2rem;
+  }
+
+  .external-tools {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 2px solid #eee;
+  }
+
+  .external-tools h2 {
+    text-align: center;
+    color: #1a365d;
+    margin-bottom: 1.5rem;
+  }
+
+  .tool-frame {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+
+  .tool-frame iframe {
+    display: block;
+  }
+</style>

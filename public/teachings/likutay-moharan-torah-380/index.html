@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 380</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 380</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה בעצמה מוכיחה אותם &quot;עד מתי פתים&quot; וכו&#39; כנ&quot;ל: וזה שכתוב (שם ל&quot;א): &quot;פיה פתחה בחכמה&quot;, שעל ידי החכמה ודעת הנ&quot;ל שעל ידי זה מגלין ההסתרות, ועושין מהם
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+Tinyana 94
+REGARDING THE NEED TO TRAVEL TO TZADIKIM ON ROSH HASHANAH
+I heard from his holy mouth that he had written a Torah teaching regarding Rosh Hashanah, that one must travel to tzadikim [righteous ones] on Rosh Hashanah. And it was explained there regarding the three heads that gather on Rosh Hashanah when one merits then to be with the tzadik. For the tzadik is the aspect of a head, for he is the head of the Children of Israel. And Rosh Hashanah is also the aspect of a head, for it is the head of the year. And each one comes with his mind and knowledge to the tzadik and connects his knowledge and mind in his head, which is also the aspect of a head, to the tzadik who is the head of the Children of Israel [Exodus 30:12]. On Rosh Hashanah, it turns out that three heads gather together. And he had a complete Torah teaching on this, and I did not merit to receive it.
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

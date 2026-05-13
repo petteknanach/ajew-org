@@ -1,0 +1,138 @@
+{
+  "regions": ["fra1"],
+  "buildCommand": "NODE_OPTIONS=--max-old-space-size=6144 astro build",
+  "rewrites": [
+    {
+      "source": "/sitemap.xml",
+      "destination": "/sitemap-0.xml"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/teachings",
+      "destination": "/reader",
+      "permanent": true
+    },
+    {
+      "source": "/connections",
+      "destination": "/mapjs",
+      "permanent": true
+    },
+    {
+      "source": "/torah-map",
+      "destination": "/mapjs",
+      "permanent": true
+    },
+    {
+      "source": "/search",
+      "destination": "/search-enhanced",
+      "permanent": true
+    },
+    {
+      "source": "/lm18",
+      "destination": "/reader/likutay-moharan/part-1/18",
+      "permanent": true
+    },
+    {
+      "source": "/lm19",
+      "destination": "/reader/likutay-moharan/part-1/19",
+      "permanent": true
+    },
+    {
+      "source": "/lm63",
+      "destination": "/reader/likutay-moharan/part-1/63",
+      "permanent": true
+    },
+    {
+      "source": "/lm77",
+      "destination": "/reader/likutay-moharan/part-1/77",
+      "permanent": true
+    },
+    {
+      "source": "/lm99",
+      "destination": "/reader/likutay-moharan/part-1/99",
+      "permanent": true
+    },
+    {
+      "source": "/lm100",
+      "destination": "/reader/likutay-moharan/part-1/100",
+      "permanent": true
+    },
+    {
+      "source": "/lm103",
+      "destination": "/reader/likutay-moharan/part-1/103",
+      "permanent": true
+    },
+    {
+      "source": "/lm108",
+      "destination": "/reader/likutay-moharan/part-1/108",
+      "permanent": true
+    }
+  ],
+  "headers": [
+    {
+      "source": "/reader/(.*).json",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, s-maxage=604800, stale-while-revalidate=86400"
+        }
+      ]
+    },
+    {
+      "source": "/data/(.*).json",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600, s-maxage=86400, stale-while-revalidate=3600"
+        }
+      ]
+    },
+    {
+      "source": "/images/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=2592000, s-maxage=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/fonts/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/(.*).css",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=2592000, s-maxage=31536000, stale-while-revalidate=86400"
+        }
+      ]
+    },
+    {
+      "source": "/(.*).js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=2592000, s-maxage=31536000, stale-while-revalidate=86400"
+        }
+      ]
+    },
+    {
+      "source": "/search-index/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600, s-maxage=86400, stale-while-revalidate=3600"
+        }
+      ]
+    }
+  ],
+  "framework": "astro"
+}

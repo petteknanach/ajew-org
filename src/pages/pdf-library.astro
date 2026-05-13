@@ -1,0 +1,193 @@
+---
+import Layout from '../layouts/Layout.astro';
+import fs from 'node:fs';
+import path from 'node:path';
+
+let catalog = null;
+try {
+  const raw = fs.readFileSync(path.join(process.cwd(), 'public/data/pdf-catalog.json'), 'utf8');
+  catalog = JSON.parse(raw);
+} catch (e) {}
+
+// Only show PDFs that should be kept (action = keep or compress)
+const displayEntries = catalog
+  ? catalog.entries
+      .filter(e => e.type === 'pdf' && (e.action === 'keep' || e.action === 'compress'))
+      .sort((a, b) => a.name.localeCompare(b.name, 'he'))
+  : [];
+
+// Group by category
+const byCategory = {};
+for (const e of displayEntries) {
+  if (!byCategory[e.category]) byCategory[e.category] = [];
+  byCategory[e.category].push(e);
+}
+
+const categoryNames = {
+  'likutay-moharan': { he: 'ליקוטי מוהר"ן', en: 'Likutay Moharan' },
+  'kitzur-lm': { he: 'קיצור ליקוטי מוהר"ן', en: 'Kitzur Likutay Moharan' },
+  'sipurey-maasiyos': { he: 'סיפורי מעשיות', en: 'Sipurey Maasiyos' },
+  'sefer-hamidos': { he: 'ספר המידות', en: 'Sefer HaMidos' },
+  'likutay-halachos': { he: 'ליקוטי הלכות', en: 'Likutay Halachos' },
+  'likutay-tefilos': { he: 'ליקוטי תפילות', en: 'Likutay Tefilos' },
+  'likutay-eitzos': { he: 'ליקוטי עצות', en: 'Likutay Eitzos' },
+  'sichos-haran': { he: 'שיחות הר"ן', en: 'Sichos HaRan' },
+  'shivchay-haran': { he: 'שבחי הר"ן', en: 'Shivchay HaRan' },
+  'chayey-moharan': { he: 'חיי מוהר"ן', en: 'Chayey Moharan' },
+  'alim-litrufa': { he: 'עלים לתרופה', en: 'Alim LiTrufa' },
+  'yemei-moharnat': { he: 'ימי מוהרנ"ת', en: 'Yemei Moharnat' },
+  'yemei-hatlaos': { he: 'ימי התלאות', en: 'Yemei HaTlaos' },
+  'ebay-hanachal': { he: 'אבי הנחל', en: 'Ebay HaNachal' },
+  'hashtatfchus': { he: 'השתפכות הנפש / משיבת נפש', en: 'Hashtatfchus / Meshivas Nefesh' },
+  'parparos': { he: 'פרפראות לחכמה', en: 'Parparos LeChochma' },
+  'kokhvei-or': { he: 'כוכבי אור', en: 'Kokhvei Or' },
+  'tikun': { he: 'תיקון הכללי', en: 'Tikun HaKlali' },
+  'kinas-hashem': { he: 'קנאת ה\' צבאות', en: 'Kinas Hashem Tzvakos' },
+  'zimras-haaretz': { he: 'זמרת הארץ', en: 'Zimras HaAretz' },
+  'nachas-hashulchan': { he: 'נחת השולחן', en: 'Nachas HaShulchan' },
+  'otzar-hayirah': { he: 'אוצר היראה', en: 'Otzar HaYirah' },
+  'karduner': { he: 'ר\' ישראל קרדונר', en: 'R\' Yisroel Karduner' },
+  'anshein': { he: 'ר\' שמואל מאיר אנשין', en: 'R\' Shmuel Meir Anshein' },
+  'ginzei-abba': { he: 'גנזי אבא', en: 'Ginzei Abba' },
+  'petek': { he: 'הפתק', en: 'The Petek' },
+  'siddur': { he: 'סידור / תפילות', en: 'Siddur / Prayers' },
+  'yemei-shmuel': { he: 'ימי שמואל', en: 'Yemei Shmuel' },
+  'uncategorized': { he: 'ספרים נוספים', en: 'Additional Books' },
+};
+
+// Order categories
+const catOrder = [
+  'likutay-moharan', 'kitzur-lm', 'sipurey-maasiyos', 'sefer-hamidos',
+  'likutay-halachos', 'likutay-tefilos', 'likutay-eitzos', 'sichos-haran',
+  'shivchay-haran', 'chayey-moharan', 'alim-litrufa', 'yemei-moharnat', 'yemei-hatlaos',
+  'ebay-hanachal', 'hashtatfchus', 'parparos', 'kokhvei-or', 'zimras-haaretz', 'nachas-hashulchan',
+  'otzar-hayirah', 'tikun', 'kinas-hashem', 'karduner', 'anshein', 'ginzei-abba',
+  'petek', 'siddur', 'yemei-shmuel', 'uncategorized'
+];
+
+const orderedCategories = catOrder
+  .filter(cat => byCategory[cat]?.length > 0)
+  .map(cat => ({ id: cat, ...categoryNames[cat], books: byCategory[cat] }));
+
+// Add any categories not in catOrder
+for (const cat of Object.keys(byCategory)) {
+  if (!catOrder.includes(cat) && byCategory[cat].length > 0) {
+    orderedCategories.push({
+      id: cat,
+      he: cat,
+      en: cat,
+      books: byCategory[cat]
+    });
+  }
+}
+---
+
+<Layout title="Breslov PDF Library - Original Printings" description="Browse and download original printings of Breslov holy books - Likutay Moharan, Sipurey Maasiyos, Likutay Halachos, and more. Scanned PDFs of first editions.">
+  <style>
+    .pdf-page {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+      font-family: 'Open Sans', sans-serif;
+    }
+    .pdf-header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding-bottom: 24px;
+      border-bottom: 3px solid #1a365d;
+    }
+    .pdf-header .hebrew-title {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 2.4em;
+      color: #1a365d;
+      direction: rtl;
+      font-weight: 700;
+    }
+    .pdf-header h1 { font-family: 'Frank Ruhl Libre', serif; font-size: 1.6em; color: #1a365d; margin: 4px 0 8px; }
+    .pdf-header .subtitle { color: #666; font-size: 0.9em; }
+    .pdf-stats { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }
+    .pdf-stats span { background: #f0ebe0; padding: 4px 12px; border-radius: 14px; font-size: 0.75em; color: #555; }
+
+    .cat-section { margin-bottom: 32px; }
+    .cat-header {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 1.2em;
+      color: #1a365d;
+      margin: 0 0 4px;
+      font-weight: 700;
+    }
+    .cat-hebrew {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 1.1em;
+      color: #333;
+      direction: rtl;
+      margin: 0 0 8px;
+    }
+    .cat-count { font-size: 0.8em; color: #888; margin: 0 0 12px; padding-bottom: 8px; border-bottom: 1px solid #e0d6c2; }
+
+    .book-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+    .book-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      border-radius: 6px;
+      background: #faf7f0;
+      border: 1px solid #e8e2d6;
+      transition: all 0.15s;
+    }
+    .book-item:hover { background: #f0ebe0; border-color: #c4a265; }
+    .book-name {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 0.9em;
+      color: #1a365d;
+      direction: rtl;
+      flex: 1;
+    }
+    .book-size { font-size: 0.7em; color: #888; margin-left: 12px; white-space: nowrap; }
+    .book-note { font-size: 0.65em; color: #92400e; margin-left: 8px; background: #fef3c7; padding: 2px 6px; border-radius: 4px; }
+
+    .coming-soon { text-align: center; color: #888; font-style: italic; padding: 20px; font-size: 0.9em; }
+
+    @media (max-width: 768px) {
+      .pdf-header .hebrew-title { font-size: 1.8em; }
+      .pdf-header h1 { font-size: 1.3em; }
+      .book-item { padding: 6px 10px; }
+    }
+  </style>
+
+  <div class="pdf-page">
+    <div class="pdf-header">
+      <div class="hebrew-title">ספריית ברסלב</div>
+      <h1>Breslov PDF Library</h1>
+      <p class="subtitle">Original printings and rare editions - scanned PDFs of holy Breslov books</p>
+      <div class="pdf-stats">
+        <span>{displayEntries.length} books</span>
+        <span>First editions & rare prints</span>
+        <span>Hebrew scans</span>
+      </div>
+    </div>
+
+    <p class="coming-soon">
+      Downloads coming soon. For now, browse the catalog below.
+      <br />Na Nach Nachma Nachman MeUman
+    </p>
+
+    {orderedCategories.map(cat => (
+      <div class="cat-section">
+        <h2 class="cat-header">{cat.en}</h2>
+        <div class="cat-hebrew">{cat.he}</div>
+        <p class="cat-count">{cat.books.length} {cat.books.length === 1 ? 'book' : 'books'}</p>
+        <ul class="book-list">
+          {cat.books.map(book => (
+            <li class="book-item">
+              <span class="book-name">{book.name.replace('.pdf', '')}</span>
+              <span class="book-size">{book.sizeHuman}</span>
+              {book.action === 'compress' && <span class="book-note">Large scan</span>}
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))}
+  </div>
+</Layout>

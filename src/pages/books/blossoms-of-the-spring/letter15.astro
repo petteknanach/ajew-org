@@ -1,0 +1,52 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+export const title = "Letter 15";
+export const bookTitle = "Blossoms of the Spring";
+---
+<Layout title="{title} - {bookTitle}" description="Blossoms of the Spring - Letter 15 - The holy letters of Rabbi Yisroel Odesser">
+  <div class="book-page">
+    <header class="book-header">
+      <h1>{bookTitle}</h1>
+      <h2>Letter 15</h2>
+    </header>
+    <nav class="chapter-nav">
+  <a href="/books/blossoms-of-the-spring/letter14" class="nav-btn prev">← Previous</a>
+  <a href="/books/blossoms-of-the-spring" class="nav-btn main">Main</a>
+  <a href="/books/blossoms-of-the-spring/letter16" class="nav-btn next">Next →</a>
+</nav>
+    <article class="chapter-content letter-content">
+      <div class="letter-body">
+        <p class="letter-para">B.H. 24 Elul 718 (Tuesday, 9 September, 1958) In honor of the very honorable madam S. Kahanuh Shalom, and life, and everything good.</p>
+<p class="letter-para">From the depth of my heart I am extending wishes of Shalom to my beloved Mr. Z. Shazar the pleasant. Thousands of thanks and proclamations of commendation on his good work. May his reward be full from Hashem that he be inscribed and sealed in the books of the true tzadikim for good life, long life, and Shalom, and all true good. My eyes look expectantly to see him very soon with joyous heart, with vitality, and Shalom, wishes of wellbeing to his honorable family and to all those affiliated with him. Yisroel Dov Odesser – 28 Ben Atar St. – Tel-Aviv</p>
+      </div>
+    </article>
+    <nav class="chapter-nav">
+  <a href="/books/blossoms-of-the-spring/letter14" class="nav-btn prev">← Previous</a>
+  <a href="/books/blossoms-of-the-spring" class="nav-btn main">Main</a>
+  <a href="/books/blossoms-of-the-spring/letter16" class="nav-btn next">Next →</a>
+</nav>
+    <footer class="book-footer">
+      <a href="/books/blossoms-of-the-spring" class="back-link">← Back to All Letters</a>
+    </footer>
+  </div>
+</Layout>
+<style>
+  .book-page { max-width: 800px; margin: 0 auto; padding: 2rem 1rem; }
+  .book-header { text-align: center; margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 2px solid #e2e8f0; }
+  .book-header h1 { font-size: 1.5rem; color: #1a365d; margin: 0 0 0.5rem; }
+  .book-header h2 { font-size: 1.25rem; color: #4a5568; margin: 0; font-weight: 500; }
+  .chapter-nav { display: flex; justify-content: center; gap: 1rem; margin: 1.5rem 0; flex-wrap: wrap; }
+  .nav-btn { display: inline-block; padding: 0.75rem 1.5rem; background: #1a365d; color: white; text-decoration: none; border-radius: 8px; font-weight: 500; transition: all 0.2s; }
+  .nav-btn:hover { background: #2d4a6f; transform: translateY(-2px); }
+  .nav-btn.disabled { background: #cbd5e0; cursor: not-allowed; }
+  .nav-btn.main { background: #059669; }
+  .nav-btn.main:hover { background: #047857; }
+  .chapter-content { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); line-height: 1.8; font-size: 1.1rem; }
+  .letter-content { background: linear-gradient(to bottom, #fffdf7, #fff9e6); }
+  .letter-para { margin-bottom: 1.25rem; text-align: justify; color: #2d3748; text-indent: 1.5rem; }
+  .letter-para:first-of-type { text-indent: 0; }
+  .book-footer { text-align: center; margin-top: 2rem; padding-top: 1.5rem; border-top: 2px solid #e2e8f0; }
+  .back-link { color: #1a365d; text-decoration: none; font-weight: 500; }
+  .back-link:hover { text-decoration: underline; }
+  @media (max-width: 640px) { .chapter-content { padding: 1.5rem; font-size: 1rem; } .letter-para { text-indent: 1rem; } }
+</style>

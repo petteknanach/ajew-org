@@ -1,0 +1,488 @@
+<!-- Category Listing Template -->
+<div class="category-listing">
+  <div class="category-header">
+    <h1 class="category-title">{{category.title}}</h1>
+    {{#if category.hebrewTitle}}
+    <h2 class="category-hebrew-title">{{category.hebrewTitle}}</h2>
+    {{/if}}
+    {{#if category.description}}
+    <p class="category-description">{{category.description}}</p>
+    {{/if}}
+  </div>
+
+  <div class="books-grid">
+    {{#each books}}
+    <div class="book-card" data-category="{{../category.id}}" data-book="{{id}}">
+      <div class="book-card-inner">
+        <div class="book-header">
+          <h3 class="book-title">{{title}}</h3>
+          {{#if hebrewTitle}}
+          <h4 class="book-hebrew-title">{{hebrewTitle}}</h4>
+          {{/if}}
+          {{#if author}}
+          <div class="book-author">By {{author}}</div>
+          {{/if}}
+        </div>
+        
+        {{#if description}}
+        <div class="book-description">
+          <p>{{description}}</p>
+        </div>
+        {{/if}}
+        
+        <div class="book-stats">
+          {{#if stats.chapters}}
+          <span class="stat-item">
+            <span class="stat-icon">📚</span>
+            <span class="stat-value">{{stats.chapters}}</span>
+            <span class="stat-label">Chapters</span>
+          </span>
+          {{/if}}
+          
+          {{#if stats.pages}}
+          <span class="stat-item">
+            <span class="stat-icon">📄</span>
+            <span class="stat-value">{{stats.pages}}</span>
+            <span class="stat-label">Pages</span>
+          </span>
+          {{/if}}
+          
+          {{#if stats.completed}}
+          <span class="stat-item">
+            <span class="stat-icon">{{#if stats.completed}}✅{{else}}⏳{{/if}}</span>
+            <span class="stat-label">{{#if stats.completed}}Complete{{else}}In Progress{{/if}}</span>
+          </span>
+          {{/if}}
+        </div>
+        
+        <div class="book-actions">
+          <a href="{{url}}" class="btn btn-primary">
+            <span class="btn-icon">📖</span>
+            <span class="btn-text">Read Book</span>
+          </a>
+          
+          {{#if hasExtras}}
+          <a href="{{extrasUrl}}" class="btn btn-secondary">
+            <span class="btn-icon">📎</span>
+            <span class="btn-text">Extras</span>
+          </a>
+          {{/if}}
+        </div>
+        
+        {{#if tags}}
+        <div class="book-tags">
+          {{#each tags}}
+          <span class="tag">{{this}}</span>
+          {{/each}}
+        </div>
+        {{/if}}
+      </div>
+    </div>
+    {{/each}}
+  </div>
+</div>
+
+<style>
+.category-listing {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.category-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  padding: 0 1rem;
+}
+
+.category-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #111827;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.2;
+}
+
+.category-hebrew-title {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #4b5563;
+  margin: 0 0 1.5rem 0;
+  font-family: 'Frank Ruhl Libre', 'David', 'Times New Roman', serif;
+  direction: rtl;
+}
+
+.category-description {
+  font-size: 1.125rem;
+  line-height: 1.7;
+  color: #6b7280;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.books-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 2rem;
+  padding: 1rem;
+}
+
+.book-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 1rem;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.book-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  border-color: #3b82f6;
+}
+
+.book-card-inner {
+  padding: 1.5rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.book-header {
+  margin-bottom: 1rem;
+}
+
+.book-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 0.25rem 0;
+  line-height: 1.3;
+}
+
+.book-hebrew-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #4b5563;
+  margin: 0 0 0.5rem 0;
+  font-family: 'Frank Ruhl Libre', 'David', 'Times New Roman', serif;
+  direction: rtl;
+  line-height: 1.4;
+}
+
+.book-author {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-style: italic;
+}
+
+.book-description {
+  flex: 1;
+  margin-bottom: 1.5rem;
+}
+
+.book-description p {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: #4b5563;
+  margin: 0;
+}
+
+.book-stats {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 0.75rem 0;
+  border-top: 1px solid #f3f4f6;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.stat-icon {
+  font-size: 1.25rem;
+}
+
+.stat-value {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.book-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+  flex: 1;
+}
+
+.btn-primary {
+  background: #3b82f6;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.btn-secondary:hover {
+  background: #e5e7eb;
+  transform: translateY(-1px);
+}
+
+.btn-icon {
+  font-size: 1rem;
+}
+
+.book-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tag {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: #f3f4f6;
+  color: #4b5563;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .category-title {
+    color: #f9fafb;
+  }
+  
+  .category-hebrew-title {
+    color: #d1d5db;
+  }
+  
+  .category-description {
+    color: #9ca3af;
+  }
+  
+  .book-card {
+    background: #1f2937;
+    border-color: #374151;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  }
+  
+  .book-card:hover {
+    border-color: #60a5fa;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+  }
+  
+  .book-title {
+    color: #f9fafb;
+  }
+  
+  .book-hebrew-title {
+    color: #d1d5db;
+  }
+  
+  .book-author {
+    color: #9ca3af;
+  }
+  
+  .book-description p {
+    color: #d1d5db;
+  }
+  
+  .book-stats {
+    border-color: #374151;
+  }
+  
+  .stat-value {
+    color: #f9fafb;
+  }
+  
+  .stat-label {
+    color: #9ca3af;
+  }
+  
+  .btn-secondary {
+    background: #374151;
+    color: #d1d5db;
+  }
+  
+  .btn-secondary:hover {
+    background: #4b5563;
+  }
+  
+  .tag {
+    background: #374151;
+    color: #d1d5db;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .category-title {
+    font-size: 2rem;
+  }
+  
+  .category-hebrew-title {
+    font-size: 1.5rem;
+  }
+  
+  .books-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 0;
+  }
+  
+  .book-actions {
+    flex-direction: column;
+  }
+}
+
+/* Animation for card entrance */
+@keyframes cardEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.book-card {
+  animation: cardEntrance 0.6s ease-out;
+  animation-fill-mode: both;
+}
+
+.book-card:nth-child(1) { animation-delay: 0.1s; }
+.book-card:nth-child(2) { animation-delay: 0.2s; }
+.book-card:nth-child(3) { animation-delay: 0.3s; }
+.book-card:nth-child(4) { animation-delay: 0.4s; }
+.book-card:nth-child(5) { animation-delay: 0.5s; }
+.book-card:nth-child(6) { animation-delay: 0.6s; }
+.book-card:nth-child(7) { animation-delay: 0.7s; }
+.book-card:nth-child(8) { animation-delay: 0.8s; }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const bookCards = document.querySelectorAll('.book-card');
+  
+  // Add click handlers for entire card (excluding buttons)
+  bookCards.forEach(card => {
+    card.addEventListener('click', function(e) {
+      // Don't trigger if click was on a button or link
+      if (e.target.closest('a') || e.target.closest('button')) {
+        return;
+      }
+      
+      const bookLink = this.querySelector('.btn-primary');
+      if (bookLink) {
+        e.preventDefault();
+        bookLink.click();
+      }
+    });
+    
+    // Add keyboard navigation
+    card.setAttribute('tabindex', '0');
+    card.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        const bookLink = this.querySelector('.btn-primary');
+        if (bookLink) {
+          bookLink.click();
+        }
+      }
+    });
+  });
+  
+  // Filter functionality (if implemented)
+  const filterButtons = document.querySelectorAll('[data-filter]');
+  if (filterButtons.length > 0) {
+    filterButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const filterValue = this.getAttribute('data-filter');
+        
+        // Update active state
+        filterButtons.forEach(btn => btn.classList.remove('active'));
+        this.classList.add('active');
+        
+        // Filter cards
+        bookCards.forEach(card => {
+          if (filterValue === 'all') {
+            card.style.display = 'block';
+          } else {
+            const cardCategory = card.getAttribute('data-category');
+            const cardBook = card.getAttribute('data-book');
+            
+            if (filterValue === cardCategory || filterValue === cardBook) {
+              card.style.display = 'block';
+            } else {
+              card.style.display = 'none';
+            }
+          }
+        });
+      });
+    });
+  }
+  
+  // Search functionality (if implemented)
+  const searchInput = document.querySelector('[data-search]');
+  if (searchInput) {
+    searchInput.addEventListener('input', function() {
+      const searchTerm = this.value.toLowerCase();
+      
+      bookCards.forEach(card => {
+        const title = card.querySelector('.book-title').textContent.toLowerCase();
+        const hebrewTitle = card.querySelector('.book-hebrew-title')?.textContent.toLowerCase() || '';
+        const description = card.querySelector('.book-description p').textContent.toLowerCase();
+        const author = card.querySelector('.book-author')?.textContent.toLowerCase() || '';
+        
+        const matches = title.includes(searchTerm) || 
+                       hebrewTitle.includes(searchTerm) || 
+                       description.includes(searchTerm) || 
+                       author.includes(searchTerm);
+        
+        card.style.display = matches ? 'block' : 'none';
+      });
+    });
+  }
+});
+</script>

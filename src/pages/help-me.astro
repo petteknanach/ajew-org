@@ -1,0 +1,168 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Spiritual First Aid - Find Comfort in Torah" description="Struggling? Torah teachings for hope, comfort, and strength. Breslov wisdom for difficult times.">
+<style>
+  .help-page { max-width: 700px; margin: 0 auto; padding: 40px 24px 80px; font-family: 'Open Sans', sans-serif; }
+  .help-header { text-align: center; padding: 30px 20px; background: linear-gradient(135deg, #1a237e 0%, #283593 100%); border-radius: 16px; margin-bottom: 30px; }
+  .help-header h1 { color: #ffd54f; font-family: 'Frank Ruhl Libre', serif; font-size: 2em; margin: 0 0 8px; }
+  .help-header p { color: rgba(255,255,255,0.8); font-size: 1em; margin: 0; }
+  .help-quote { text-align: center; padding: 24px; background: #faf6ee; border: 1px solid #e0d6c2; border-radius: 12px; margin-bottom: 24px; }
+  .help-quote .he { font-family: 'Frank Ruhl Libre', serif; font-size: 1.4em; color: #1a365d; direction: rtl; line-height: 1.8; margin-bottom: 8px; }
+  .help-quote .en { color: #555; font-size: 0.95em; font-style: italic; }
+  .help-card { display: block; padding: 20px 24px; background: #fff; border: 1px solid #e0d6c2; border-radius: 12px; margin-bottom: 12px; text-decoration: none; transition: all 0.2s; border-left: 4px solid #1a237e; }
+  .help-card:hover { border-left-color: #ffd54f; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transform: translateX(4px); }
+  .help-card h3 { color: #1a365d; margin: 0 0 4px; font-size: 1.1em; }
+  .help-card .card-he { font-family: 'Frank Ruhl Libre', serif; color: #333; direction: rtl; font-size: 1em; margin-bottom: 4px; }
+  .help-card p { color: #666; font-size: 0.85em; margin: 0; }
+  .section-title { font-family: 'Frank Ruhl Libre', serif; color: #1a365d; font-size: 1.3em; border-bottom: 2px solid #e0d6c2; padding-bottom: 8px; margin-top: 30px; margin-bottom: 16px; }
+  .emergency-card { border-left-color: #c62828; }
+  .emergency-card:hover { border-left-color: #ff5722; }
+  .emergency-card h3 { color: #c62828; }
+  .help-emergency { text-align: center; padding: 20px; background: #fff3e0; border: 2px solid #ff9800; border-radius: 12px; margin-top: 30px; }
+  .help-emergency h3 { color: #e65100; margin: 0 0 8px; }
+  .help-emergency p { color: #555; font-size: 0.9em; margin: 4px 0; }
+  .begin-card { text-align: center; border-left-color: #ffd54f; background: #faf6ee; }
+  .quick-actions { background: #fff3e0; border: 2px solid #ff9800; border-radius: 12px; padding: 20px 24px; margin-bottom: 16px; }
+  .quick-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(255,152,0,0.15); font-size: 0.95em; color: #333; }
+  .quick-item:last-child { border-bottom: none; }
+  .quick-icon { font-size: 1.3em; flex-shrink: 0; width: 28px; text-align: center; }
+  .quick-item a { color: #c62828; text-decoration: underline; }
+</style>
+
+<div class="help-page">
+  <div class="help-header">
+    <h1>Spiritual First Aid</h1>
+    <p>You are never too far. There is always hope.</p>
+  </div>
+
+  <div class="help-quote">
+    <div class="he" lang="he" dir="rtl">אִם אַתָּה מַאֲמִין שֶׁיְּכוֹלִין לְקַלְקֵל, תַּאֲמִין שֶׁיְּכוֹלִין לְתַקֵּן</div>
+    <div class="en">"If you believe you can damage, believe you can fix." &mdash; Rebbe Nachman</div>
+  </div>
+
+  <h2 class="section-title">In the Heat of the Moment</h2>
+
+  <div class="quick-actions">
+    <h3 style="color: #c62828; margin: 0 0 12px; font-size: 1.1em;">Quick Actions &mdash; Do This Right Now:</h3>
+    <div class="quick-item" lang="he" dir="rtl">
+      <span class="quick-icon">&#x1F4B0;</span>
+      <span><strong>תן צדקה</strong> &mdash; Give charity immediately, even a small coin</span>
+    </div>
+    <div class="quick-item" lang="he" dir="rtl">
+      <span class="quick-icon">&#x1F56F;</span>
+      <span><strong>הדלק נר</strong> &mdash; Light a candle, preferably olive oil</span>
+    </div>
+    <div class="quick-item" lang="he" dir="rtl">
+      <span class="quick-icon">&#x1F4A7;</span>
+      <span><strong>טבול במקוה</strong> &mdash; Go to the mikveh</span>
+    </div>
+    <div class="quick-item">
+      <span class="quick-icon">&#x1F4D6;</span>
+      <span><strong>Say Tikkun HaKlali</strong> &mdash; <a href="/tikkun-klali" style="color: #c62828;">the 10 Psalms</a></span>
+    </div>
+    <div class="quick-item">
+      <span class="quick-icon">&#x1F3C3;</span>
+      <span><strong>Change your location</strong> &mdash; Go outside, walk, move physically</span>
+    </div>
+    <div class="quick-item">
+      <span class="quick-icon">&#x1F64F;</span>
+      <span><strong>Cry out to Hashem</strong> &mdash; Even one word: "Hashem, help me!"</span>
+    </div>
+    <div class="quick-item" lang="he" dir="rtl">
+      <span class="quick-icon">&#x2728;</span>
+      <span><strong>נ נח נחמ נחמן מאומן</strong> &mdash; Say it, sing it, scream it</span>
+    </div>
+  </div>
+
+  <a href="/reader/likutay-nanach/5/2" class="help-card emergency-card">
+    <h3>Likutay Nanach &mdash; Vol. 5, בעידנא דריתחא</h3>
+    <div class="card-he" lang="he" dir="rtl">ליקוטי נ נח - בעידנא דריתחא</div>
+    <p>Full teachings for someone in the heat of temptation. The sources and explanations behind the quick actions above.</p>
+  </a>
+
+  <a href="/reader/likutay-nanach/5/3" class="help-card emergency-card">
+    <h3>Likutay Nanach &mdash; Vol. 5, More on Temptation</h3>
+    <p>Continuation &mdash; deeper teachings for overcoming desire.</p>
+  </a>
+
+  <a href="/reader/likutay-moharan/1/36" class="help-card">
+    <h3>Likutay Moharan Torah 36</h3>
+    <div class="card-he" lang="he" dir="rtl">ליקוטי מוהר"ן תורה לו</div>
+    <p>The keys to overcoming desire through clinging to holiness.</p>
+  </a>
+
+  <h2 class="section-title">Feeling Down or Hopeless</h2>
+
+  <a href="/reader/meshivas-nefesh/1/1" class="help-card">
+    <h3>Meshivas Nefesh &mdash; Revival of the Soul</h3>
+    <div class="card-he" lang="he" dir="rtl">משיבת נפש</div>
+    <p>No one is ever lost. Powerful encouragement &mdash; a lifeline of hope from R' Alter of Teplik.</p>
+  </a>
+
+  <a href="/healing-words" class="help-card">
+    <h3>Healing Words &mdash; Guided Journeys</h3>
+    <p>12 curated spiritual paths through Breslov teachings for specific struggles.</p>
+  </a>
+
+  <a href="/reader/hashtatfchus-hanefesh/1/1" class="help-card">
+    <h3>Hashtatfchus HaNefesh &mdash; Outpouring of the Soul</h3>
+    <div class="card-he" lang="he" dir="rtl">השתפכות הנפש</div>
+    <p>Guide to personal prayer (hisbodedus) &mdash; pour out your heart to Hashem in your own words.</p>
+  </a>
+
+  <a href="/reader/azamra/1/1" class="help-card">
+    <h3>Azamra &mdash; Live Up the Good Points</h3>
+    <div class="card-he" lang="he" dir="rtl">אזמרה</div>
+    <p>Always find the good in yourself, even in the darkest moments.</p>
+  </a>
+
+  <a href="/reader/sefer-hamidos/1/1" class="help-card">
+    <h3>Sefer HaMidos &mdash; The Book of Character</h3>
+    <div class="card-he" lang="he" dir="rtl">ספר המידות</div>
+    <p>Practical advice on every character trait. Find your topic and discover the path forward.</p>
+  </a>
+
+  <h2 class="section-title">Need Daily Structure</h2>
+
+  <a href="/daily-study" class="help-card">
+    <h3>Chok Breslov &mdash; Daily Study Program</h3>
+    <p>14 books divided into daily portions. Start today, build a streak, transform your life one page at a time.</p>
+  </a>
+
+  <a href="/tikkun-klali" class="help-card">
+    <h3>Tikkun HaKlali &mdash; The Complete Remedy</h3>
+    <div class="card-he" lang="he" dir="rtl">תיקון הכללי</div>
+    <p>The 10 Psalms prescribed by Rebbe Nachman as the universal remedy.</p>
+  </a>
+
+  <a href="/torah-gps" class="help-card">
+    <h3>Torah GPS &mdash; Find Your Topic</h3>
+    <p>Search across all 226 books by spiritual topic &mdash; find exactly the teaching you need.</p>
+  </a>
+
+  <h2 class="section-title">Just Begin</h2>
+
+  <div class="help-quote">
+    <div class="he" lang="he" dir="rtl">הָעִקָּר הוּא הָאֱמוּנָה</div>
+    <div class="en">"The main thing is faith." &mdash; Rebbe Nachman</div>
+    <div style="margin-top: 12px; color: #666; font-size: 0.9em;">
+      Pick up any holy book and begin. Pray to Hashem to help you understand and fulfill what you learn. That is all you need to do.
+    </div>
+  </div>
+
+  <a href="/reader" class="help-card begin-card">
+    <h3 style="font-size: 1.2em;">Enter the Library &rarr;</h3>
+    <p>226+ sacred books waiting for you. Just open one and begin.</p>
+  </a>
+
+  <div class="help-emergency">
+    <h3>In Immediate Danger?</h3>
+    <p>If you or someone you know is in immediate danger, please reach out:</p>
+    <p><strong>Crisis Text Line:</strong> Text HOME to 741741</p>
+    <p><strong>Suicide & Crisis Lifeline:</strong> 988</p>
+    <p><strong>Israel:</strong> ERAN - 1201</p>
+  </div>
+</div>
+</Layout>

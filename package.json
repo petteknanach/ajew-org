@@ -1,0 +1,43 @@
+{
+  "name": "ajew.org",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": "22.x"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "node scripts/create-app-aliases.cjs && node scripts/build-parsha-connections.cjs && node scripts/build-search-index-v2.cjs && astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "search": "node gen-search-index.js",
+    "generate-index": "node enhanced-search-index-generator-simple.cjs",
+    "generate-index-complete": "node enhanced-search-index-generator-complete.cjs",
+    "start-api": "node enhanced-search-api-simple.cjs",
+    "search-dev": "concurrently \"npm run generate-index\" \"npm run start-api\"",
+    "import-ramchal": "node scripts/import-ramchal.mjs"
+  },
+  "dependencies": {
+    "@astrojs/rss": "^4.0.18",
+    "@astrojs/sitemap": "^3.7.2",
+    "@astrojs/vercel": "9.0.5",
+    "@supabase/ssr": "^0.8.0",
+    "@supabase/supabase-js": "^2.97.0",
+    "adm-zip": "^0.5.16",
+    "astro": "^5.17.1",
+    "cheerio": "^1.2.0",
+    "concurrently": "^9.2.1",
+    "cors": "^2.8.6",
+    "docx": "^9.6.1",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "iconv-lite": "^0.7.2",
+    "lunr": "^2.3.9",
+    "lunr-languages": "^1.14.0",
+    "mammoth": "^1.12.0",
+    "pdf-parse": "^2.4.5",
+    "stream-chain": "^3.4.1",
+    "stream-json": "^1.9.1",
+    "stripe": "^20.3.1"
+  }
+}

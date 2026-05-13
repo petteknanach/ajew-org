@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 410</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 410</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה כך לפי דעתו, ונדמה לו שהם עושים, חס ושלום, כנגד התורה, הוא צריך להאמין שבודאי הם עושים נכונה על פי התורה, כי ה
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+Tinyana 124
+SOMETIMES A THOUGHT OF REPENTANCE REACHES A PERSON
+I heard in his name that he said: Sometimes a thought of teshuva [repentance] and yearning for Hashem [G-d] reaches a person in some place, that he must specifically in that place strengthen himself in this thought of teshuva and yearning. For example, to speak there some words of supplications and requests or words of yearning with the mouth and heart according to the matter. And he should not wait and not move from his place, even though that place is not prepared for this, such as not a fixed place for Torah and tefillah [prayer], but in the course of his going and the like. For if he moves from his place, it may be that it will cease. And so, from him, of blessed memory, himself, we saw this matter several times, that sometimes he remained standing in the middle of the house and spoke with us and revealed to us wondrous Torah and very pleasant conversation and revealed wondrous ways for the service of Hashem and great arousal, etc. And he did not want to move from his place until he finished what he wanted. And so it was several times.
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

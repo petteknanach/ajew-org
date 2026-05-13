@@ -1,0 +1,57 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 267</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 267</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה על כל זה. אך בעוונותינו הרבים בא השמש בצהרים ולא זכינו לשמע כי אם מה שנדפס תהלה לאל חי:<br>
+<br>
+הפעם נודה את ה&#39; בגילה ברנה, אשר זכינו לסים סבי דבי אתונא, דברים הסתומים וחתומים באלף עזקאין אין חכמה ואין תבונה, וגם אם יאמר החכם לדעת לא יוכל למצא נלעג לשון אין בינה, נתיב לא ידעו עיט ולא שזפתו עינא, מה אדבר והוא אמר ועשה אזנים ל
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+267 - SHAVUOT IS A REMEDY FOR THE LUNGS
+Shavuot is a remedy for the lungs, because the five lobes of the lungs correspond to the five books of the Torah [Tikkunim 25, Kabbalistic text linking physical and spiritual], and on Shavuot, when we receive the Torah, we can receive renewed life [vitality or spiritual infusion].
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

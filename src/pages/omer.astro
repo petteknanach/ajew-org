@@ -1,0 +1,252 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+// Sfiras HaOmer - 49 days from Pesach to Shavuos
+// Each day is a combination of two sefiros
+const sefiros = ['Chesed', 'Gevurah', 'Tiferes', 'Netzach', 'Hod', 'Yesod', 'Malchus'];
+const sefirosHe = ['חֶסֶד', 'גְּבוּרָה', 'תִּפְאֶרֶת', 'נֶצַח', 'הוֹד', 'יְסוֹד', 'מַלְכוּת'];
+
+const weeks = sefiros.map((outer, wi) => ({
+  name: outer,
+  heName: sefirosHe[wi],
+  week: wi + 1,
+  days: sefiros.map((inner, di) => ({
+    day: wi * 7 + di + 1,
+    inner,
+    innerHe: sefirosHe[di],
+    outer,
+    outerHe: sefirosHe[wi],
+  }))
+}));
+
+// Calculate today's omer count
+// 2026 Pesach: April 1 evening = 1st night of Pesach, April 2 evening = 1st night of Omer
+const pesachSecondNight = new Date(2026, 3, 2); // April 2, 2026
+const today = new Date();
+const diffMs = today.getTime() - pesachSecondNight.getTime();
+const todayOmer = Math.floor(diffMs / (1000 * 60 * 60 * 24)) + 1;
+
+const pageTitle = "Sfiras HaOmer - Counting the Omer";
+const pageDescription = "Count the 49 days of Sfiras HaOmer from Pesach to Shavuos. Interactive Omer counter with the seven sefiros (Chesed, Gevurah, Tiferes, Netzach, Hod, Yesod, Malchus) and Breslov teachings for spiritual refinement.";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Sfiras HaOmer - Counting the Omer",
+  "description": pageDescription,
+  "url": "https://ajew.org/omer",
+  "inLanguage": ["en", "he"],
+  "about": {
+    "@type": "Event",
+    "name": "Sfiras HaOmer",
+    "alternateName": "ספירת העומר",
+    "description": "The 49-day period between Pesach and Shavuos during which Jews count each day as a spiritual preparation for receiving the Torah.",
+    "duration": "P49D"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "A Jew",
+    "url": "https://ajew.org"
+  }
+};
+
+const breadcrumbs = [
+  { name: "Home", url: "https://ajew.org/" },
+  { name: "Sfiras HaOmer", url: "https://ajew.org/omer" }
+];
+---
+
+<Layout title={pageTitle} description={pageDescription} jsonLd={jsonLd} breadcrumbs={breadcrumbs}>
+  <div class="omer-page">
+    <header class="omer-header">
+      <h1>🌾 ספירת העומר</h1>
+      <h2>Sfiras HaOmer</h2>
+      <p class="omer-subtitle">49 Days from Pesach to Shavuos — Refining the Soul</p>
+      {todayOmer >= 1 && todayOmer <= 49 && (
+        <div class="today-count">
+          <span class="today-label">Tonight is Day</span>
+          <span class="today-number">{todayOmer}</span>
+          <span class="today-sefira">
+            {weeks[Math.floor((todayOmer - 1) / 7)].days[(todayOmer - 1) % 7].innerHe} שב{weeks[Math.floor((todayOmer - 1) / 7)].days[(todayOmer - 1) % 7].outerHe}
+          </span>
+        </div>
+      )}
+    </header>
+
+    <div class="omer-intro">
+      <p>Rabbi Nachman teaches that the 49 days of the Omer are a time of spiritual refinement, corresponding to the 49 gates of holiness. Each day we work on a different combination of the seven divine attributes (sefiros), purifying ourselves in preparation for receiving the Torah on Shavuos.</p>
+    </div>
+
+    <div class="omer-grid">
+      {weeks.map(week => (
+        <div class="omer-week">
+          <h3 class="week-title">
+            <span class="week-name">Week {week.week}: {week.name}</span>
+            <span class="week-he">{week.heName}</span>
+          </h3>
+          <div class="week-days">
+            {week.days.map(day => (
+              <div class={`omer-day ${day.day === todayOmer ? 'today' : ''} ${day.day < todayOmer ? 'counted' : ''}`}>
+                <span class="day-number">{day.day}</span>
+                <span class="day-sefira">{day.inner}</span>
+                <span class="day-combo">of {day.outer}</span>
+                <span class="day-he">{day.innerHe} שב{day.outerHe}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div class="omer-teachings">
+      <h3>Breslov Teachings on the Omer</h3>
+      <ul>
+        <li><a href="/reader/otzar-hayirah/1/22">Otzar HaYirah — Pesach, Sefira & Shavuos</a></li>
+        <li><a href="/reader/likutay-moharan/1/49">LM I:49 — The 49 Gates</a></li>
+        <li><a href="/reader/sichos-haran/1/57">Sichos HaRan 57 — Each day is a new beginning</a></li>
+        <li><a href="/reader/likutay-eitzos/1/1">Likutay Eitzos — Advice for spiritual growth</a></li>
+      </ul>
+    </div>
+  </div>
+</Layout>
+
+<script is:inline>
+// Client-side Omer count update (overrides build-time static value)
+(function() {
+  var pesachSecondNight = new Date(2026, 3, 2); // April 2, 2026
+  var now = new Date();
+  var diffMs = now.getTime() - pesachSecondNight.getTime();
+  var todayOmer = Math.floor(diffMs / (1000 * 60 * 60 * 24)) + 1;
+
+  if (todayOmer >= 1 && todayOmer <= 49) {
+    // Update the day number display
+    var numEl = document.querySelector('.today-number');
+    if (numEl) numEl.textContent = todayOmer;
+
+    // Show the count banner
+    var countEl = document.querySelector('.today-count');
+    if (countEl) countEl.style.display = 'inline-flex';
+
+    // Highlight today's day in the grid and mark counted days
+    document.querySelectorAll('.omer-day').forEach(function(el) {
+      var dayNum = parseInt(el.querySelector('.day-number').textContent);
+      el.classList.remove('today', 'counted');
+      if (dayNum === todayOmer) el.classList.add('today');
+      else if (dayNum < todayOmer) el.classList.add('counted');
+    });
+  }
+})();
+</script>
+
+<style>
+  .omer-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+  }
+  .omer-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  .omer-header h1 {
+    font-size: 2.2rem;
+    color: #7c3aed;
+    margin-bottom: 0.2rem;
+  }
+  .omer-header h2 {
+    font-size: 1.4rem;
+    color: #6b7280;
+    font-weight: 400;
+    margin-bottom: 0.5rem;
+  }
+  .omer-subtitle {
+    color: #9ca3af;
+    font-style: italic;
+  }
+  .today-count {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    background: linear-gradient(135deg, #7c3aed, #a78bfa);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    margin-top: 1rem;
+    box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+  }
+  .today-label { font-size: 0.85rem; opacity: 0.9; }
+  .today-number { font-size: 2.5rem; font-weight: 800; line-height: 1.1; }
+  .today-sefira { font-family: 'Frank Ruhl Libre', serif; font-size: 1.1rem; direction: rtl; }
+
+  .omer-intro {
+    background: #faf5ff;
+    border-left: 4px solid #7c3aed;
+    padding: 1rem 1.5rem;
+    border-radius: 4px;
+    margin-bottom: 2rem;
+    color: #4b5563;
+    line-height: 1.7;
+  }
+
+  .omer-grid { display: flex; flex-direction: column; gap: 1.5rem; }
+  .week-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: 2px solid #e5e7eb;
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.8rem;
+  }
+  .week-name { font-size: 1.1rem; color: #7c3aed; }
+  .week-he { font-family: 'Frank Ruhl Libre', serif; color: #9ca3af; direction: rtl; }
+
+  .week-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.5rem;
+  }
+  .omer-day {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.6rem 0.3rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+  }
+  .omer-day.counted {
+    background: #f3e8ff;
+    border-color: #c4b5fd;
+  }
+  .omer-day.today {
+    background: linear-gradient(135deg, #7c3aed, #a78bfa);
+    color: white;
+    border-color: #7c3aed;
+    box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
+    transform: scale(1.05);
+  }
+  .day-number { font-weight: 700; font-size: 1.1rem; }
+  .day-sefira { font-size: 0.7rem; }
+  .day-combo { font-size: 0.6rem; color: #9ca3af; }
+  .omer-day.today .day-combo { color: rgba(255,255,255,0.8); }
+  .day-he { font-family: 'Frank Ruhl Libre', serif; font-size: 0.65rem; direction: rtl; margin-top: 0.2rem; }
+
+  .omer-teachings {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: #faf5ff;
+    border-radius: 8px;
+  }
+  .omer-teachings h3 { color: #7c3aed; margin-bottom: 0.8rem; }
+  .omer-teachings ul { list-style: none; padding: 0; }
+  .omer-teachings li { margin-bottom: 0.5rem; }
+  .omer-teachings a { color: #6d28d9; text-decoration: none; }
+  .omer-teachings a:hover { text-decoration: underline; }
+
+  @media (max-width: 600px) {
+    .week-days { grid-template-columns: repeat(4, 1fr); }
+    .day-combo { display: none; }
+  }
+</style>

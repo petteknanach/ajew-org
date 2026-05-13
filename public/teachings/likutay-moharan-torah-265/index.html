@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 265</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 265</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה אית לן בירא הנ&quot;ל: גברא דאוזיף, וריחיא דתבירא, לא זכינו לשמע עליהם תורה. אבל מכלל דבריו שמעתי, שרצונו לגלות תורות על כל המאמרים הנאמרים שם. וגם גלה דעתו, שרצונו היה לגלות
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+265 - REASON FOR BREAKING VESSEL CLAY AT TIME OF CONNECTION THE MATCH
+Reason for breaking vessel clay [earthenware] at time of connection the match [engagement] because [all] these souls of the match they above one (see Zohar Lech Lecha 85b and in Dtz"ach and in Zohar Tazria 43a [Kabbalistic sources on soul mates]). But below the connection and the unification of them is in concealment because they do not know from unification of them until the match. And then is revealed the connection of them that was until now in concealment. But this the revelation of the connection that is revealed at time of the conditions [engagement terms] is in aspect of "And the living creatures ran and returned" [Ezekiel 1:14]. Because at time of the match is revealed the connection and immediately is concealed because after that they separate and distance because still she forbidden to him until the chuppah [wedding canopy]. It is found that at time of the match is revealed light of the unity of them that was until now in concealment and immediately is concealed as above in aspect of and the living creatures ran and returned as above. Therefore break vessel clay at time of connection the match because written (there) "And the living creatures ran and returned as appearance of the lightning" interpretation as light that comes out from the potteries that is the spark that comes out at hour that break vessel clay that it only for according to hour [momentary]. And therefore at time of connection the match that then light of the unity of them is revealed in aspect of ran and returned as above therefore break vessel clay this hints on secret and the living creatures ran and returned as appearance of the lightning as above [and see more reason on this above in Torah 60 and in Likutei Tinyana at its end].
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

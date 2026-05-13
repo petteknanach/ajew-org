@@ -1,0 +1,145 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Videos - Na Nach Breslov" description="Watch Na Nach Breslov videos, shiurim, and music on Rumble and YouTube.">
+<div class="videos-page">
+  <header class="page-header">
+    <div class="header-hebrew">וידאו</div>
+    <h1>Videos</h1>
+    <p class="subtitle">Na Nach Breslov shiurim, music, and more</p>
+  </header>
+
+  <section class="video-section">
+    <h2>Rumble Channel</h2>
+    <p class="section-desc">Na Nach Breslov videos on Rumble</p>
+    <div class="video-embed">
+      <iframe loading="lazy"
+        src="https://rumble.com/c/c-1073404?e9s=src_v1_cmd"
+        width="100%"
+        height="600"
+        frameborder="0"
+        allowfullscreen
+        loading="lazy"
+      ></iframe>
+    </div>
+    <a href="https://rumble.com/c/c-1073404" target="_blank" rel="noopener" class="channel-link">
+      View full channel on Rumble →
+    </a>
+  </section>
+
+  <section class="video-section">
+    <h2>YouTube Channel</h2>
+    <p class="section-desc">More Na Nach videos on YouTube</p>
+    <div class="video-embed">
+      <iframe loading="lazy"
+        src="https://www.youtube.com/embed?listType=user_uploads&list=UCYq6IzFfzJfQY8l9mOV5kgw"
+        width="100%"
+        height="400"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen
+        loading="lazy"
+      ></iframe>
+    </div>
+    <a href="https://www.youtube.com/channel/UCYq6IzFfzJfQY8l9mOV5kgw" target="_blank" rel="noopener" class="channel-link">
+      View full channel on YouTube →
+    </a>
+  </section>
+
+  <section class="video-section">
+    <h2>nanach.tv</h2>
+    <p class="section-desc">Live Na Nach streaming and archives</p>
+    <a href="https://nanach.tv" target="_blank" rel="noopener" class="channel-link large">
+      Visit nanach.tv →
+    </a>
+  </section>
+</div>
+
+<style>
+  .videos-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 20px 80px;
+    font-family: 'Open Sans', sans-serif;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 3px solid #1a365d;
+  }
+
+  .header-hebrew {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 2.4em;
+    color: #1a365d;
+    direction: rtl;
+  }
+
+  .page-header h1 {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 1.6em;
+    color: #1a365d;
+    margin: 4px 0;
+  }
+
+  .subtitle { color: #666; font-size: 0.95em; }
+
+  .video-section {
+    margin-bottom: 48px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid #e0d6c2;
+  }
+
+  .video-section:last-child { border-bottom: none; }
+
+  .video-section h2 {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 1.4em;
+    color: #1a365d;
+    margin: 0 0 8px;
+  }
+
+  .section-desc { color: #666; font-size: 0.9em; margin: 0 0 16px; }
+
+  .video-embed {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    margin-bottom: 12px;
+  }
+
+  .video-embed iframe {
+    display: block;
+    min-height: 300px;
+  }
+
+  .channel-link {
+    display: inline-block;
+    color: #1a365d;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 8px 16px;
+    border: 1px solid #1a365d;
+    border-radius: 6px;
+    transition: all 0.2s;
+    margin-top: 8px;
+  }
+
+  .channel-link:hover {
+    background: #1a365d;
+    color: white;
+  }
+
+  .channel-link.large {
+    font-size: 1.2em;
+    padding: 12px 24px;
+  }
+
+  @media (max-width: 768px) {
+    .video-embed iframe { min-height: 200px; height: 300px !important; }
+  }
+</style>
+</Layout>

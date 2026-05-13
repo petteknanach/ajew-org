@@ -1,0 +1,91 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="My Profile" description="View your profile, comments, and settings on ajew.org" noindex={true}>
+  <section class="page-header">
+    <h1>My Profile</h1>
+  </section>
+
+  <div class="container">
+    <div class="profile-card">
+      <div class="profile-header">
+        <div class="avatar">G</div>
+        <div class="profile-info">
+          <h2>Guest User</h2>
+          <span class="tier-badge free">Free Account</span>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-num">0</div>
+          <div class="stat-label">Comments</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">0</div>
+          <div class="stat-label">Chat Messages</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">0</div>
+          <div class="stat-label">Days Active</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>Recent Comments</h3>
+        <p class="placeholder">Sign in to see your comments</p>
+      </div>
+
+      <div class="section">
+        <h3>Settings</h3>
+        <a href="#" class="settings-link">Edit Profile</a>
+        <a href="#" class="settings-link">Notification Settings</a>
+        <a href="#" class="settings-link">Privacy Settings</a>
+        <a href="/subscribe" class="settings-link">Subscription Management</a>
+      </div>
+
+      <div class="upgrade-box">
+        <h3>Upgrade to Basic ($1/mo)</h3>
+        <p>Join the community chat and comment on teachings!</p>
+        <a href="/subscribe" class="upgrade-btn">Upgrade Now</a>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .page-header {
+    background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
+    color: white;
+    padding: 3rem 2rem;
+    text-align: center;
+  }
+  .page-header h1 { font-family: 'Frank Ruhl Libre', serif; font-size: 2rem; margin: 0; }
+  .container { max-width: 800px; margin: 0 auto; padding: 0 2rem; }
+  .profile-card { background: white; border-radius: 16px; padding: 2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin: -2rem auto 3rem; }
+  .profile-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 1px solid #eee; }
+  .avatar { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #1a365d, #2c5282); color: white; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 700; }
+  .profile-info h2 { margin: 0 0 0.25rem; color: #1a365d; }
+  .tier-badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
+  .tier-badge.free { background: #e5e7eb; color: #666; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem; }
+  .stat { text-align: center; padding: 1rem; background: #f8f5ef; border-radius: 12px; }
+  .stat-num { font-size: 1.5rem; font-weight: 700; color: #1a365d; }
+  .stat-label { font-size: 0.85rem; color: #666; }
+  .section { margin-bottom: 2rem; }
+  .section h3 { color: #1a365d; margin: 0 0 1rem; }
+  .placeholder { color: #888; text-align: center; padding: 2rem; }
+  .settings-link { display: block; padding: 0.75rem 1rem; background: #f8f5ef; border-radius: 8px; margin-bottom: 0.5rem; color: #333; text-decoration: none; transition: background 0.2s; }
+  .settings-link:hover { background: #f0ebe0; }
+  .upgrade-box { background: linear-gradient(135deg, #1a365d, #2c5282); color: white; padding: 1.5rem; border-radius: 12px; text-align: center; }
+  .upgrade-box h3 { margin: 0 0 0.5rem; }
+  .upgrade-box p { opacity: 0.9; margin: 0 0 1rem; }
+  .upgrade-btn { display: inline-block; padding: 0.75rem 1.5rem; background: white; color: #1a365d; border: none; border-radius: 8px; font-weight: 600; text-decoration: none; }
+  .upgrade-btn:hover { background: #f0ebe0; }
+
+  @media (max-width: 600px) {
+    .profile-header { flex-direction: column; text-align: center; }
+    .stats { grid-template-columns: 1fr; }
+  }
+</style>

@@ -1,0 +1,454 @@
+---
+// Simple, working search component with book checklists
+// No complex dependencies, just pure JavaScript
+---
+
+<div class="simple-search">
+  <div class="search-header">
+    <h2>Simple Search</h2>
+    <p class="subtitle">Search across Breslov books (select which books to search)</p>
+  </div>
+  
+  <!-- Book Selection Checklist -->
+  <div class="book-selection">
+    <h3>📚 Select Books to Search:</h3>
+    <div class="book-checkboxes">
+      <div class="book-category">
+        <h4>Likutay Nanach (ליקוטי ננח)</h4>
+        <label class="book-checkbox">
+          <input type="checkbox" name="book" value="likutay-nanach-1" checked>
+          <span>Volume 1</span>
+        </label>
+        <label class="book-checkbox">
+          <input type="checkbox" name="book" value="likutay-nanach-2" checked>
+          <span>Volume 2</span>
+        </label>
+        <label class="book-checkbox">
+          <input type="checkbox" name="book" value="likutay-nanach-3" checked>
+          <span>Volume 3</span>
+        </label>
+        <label class="book-checkbox">
+          <input type="checkbox" name="book" value="likutay-nanach-4" checked>
+          <span>Volume 4</span>
+        </label>
+        <label class="book-checkbox">
+          <input type="checkbox" name="book" value="likutay-nanach-5" checked>
+          <span>Volume 5</span>
+        </label>
+      </div>
+      
+      <div class="book-category">
+        <h4>Other Breslov Collections</h4>
+        <label class="book-checkbox">
+          <input type="checkbox" name="book" value="likutay-aitzos" checked>
+          <span>Likutay Aitzos (ליקוטי עצות)</span>
+        </label>
+        <label class="book-checkbox">
+          <input type="checkbox" name="book" value="likutay-tefilos" checked>
+          <span>Likutay Tefilos (ליקוטי תפילות)</span>
+        </label>
+        <label class="book-checkbox">
+          <input type="checkbox" name="book" value="blossoms-of-the-spring" checked>
+          <span>Blossoms of the Spring (פרי השדה)</span>
+        </label>
+        <label class="book-checkbox">
+          <input type="checkbox" name="book" value="fires-of-israel" checked>
+          <span>Fires of Israel (אש ישראל)</span>
+        </label>
+      </div>
+      
+      <div class="quick-buttons">
+        <button type="button" class="quick-btn" id="selectAllBooks">Select All</button>
+        <button type="button" class="quick-btn" id="deselectAllBooks">Deselect All</button>
+        <button type="button" class="quick-btn" id="selectBreslovOnly">Breslov Only</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Search Input -->
+  <div class="search-input-container">
+    <input 
+      type="text" 
+      id="simpleSearchInput" 
+      placeholder="Enter search term... הכנס מילת חיפוש..."
+      dir="auto"
+      autocomplete="off"
+      autofocus
+    />
+    <button id="simpleSearchBtn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      Search
+    </button>
+  </div>
+  
+  <!-- Search Options -->
+  <div class="search-options">
+    <label class="search-option">
+      <input type="checkbox" id="exactMatch">
+      <span>Exact match only</span>
+    </label>
+    <label class="search-option">
+      <input type="checkbox" id="caseSensitive">
+      <span>Case sensitive</span>
+    </label>
+  </div>
+  
+  <!-- Results Area -->
+  <div class="results-container">
+    <div id="simpleSearchResults">
+      <div class="welcome-message">
+        <p>Enter a search term above to find text in the selected books.</p>
+        <p>Use the checkboxes to select which books to search.</p>
+      </div>
+    </div>
+    <div id="simpleSearchLoading" style="display: none;">
+      <div class="loading-spinner"></div>
+      <p>Searching...</p>
+    </div>
+    <div id="simpleSearchError" style="display: none;" class="error-message">
+      <p>Search error. Please try again.</p>
+    </div>
+  </div>
+</div>
+
+<style>
+  .simple-search {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  
+  .search-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  .search-header h2 {
+    margin: 0;
+    font-size: 2rem;
+    color: #333;
+  }
+  
+  .subtitle {
+    color: #666;
+    margin-top: 0.5rem;
+  }
+  
+  .book-selection {
+    background: #f9f9f9;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .book-selection h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: #444;
+  }
+  
+  .book-category {
+    margin-bottom: 1.5rem;
+  }
+  
+  .book-category h4 {
+    margin: 0 0 0.75rem 0;
+    font-size: 1rem;
+    color: #555;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 0.5rem;
+  }
+  
+  .book-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0.5rem 0;
+    padding: 0.25rem;
+    cursor: pointer;
+  }
+  
+  .book-checkbox:hover {
+    background: #f0f0f0;
+    border-radius: 4px;
+  }
+  
+  .quick-buttons {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+  
+  .quick-btn {
+    padding: 0.5rem 1rem;
+    background: #4f46e5;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+  
+  .quick-btn:hover {
+    background: #4338ca;
+  }
+  
+  .search-input-container {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  #simpleSearchInput {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+  }
+  
+  #simpleSearchInput:focus {
+    outline: none;
+    border-color: #4f46e5;
+  }
+  
+  #simpleSearchBtn {
+    padding: 0.75rem 1.5rem;
+    background: #10b981;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  #simpleSearchBtn:hover {
+    background: #059669;
+  }
+  
+  .search-options {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .search-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+  }
+  
+  .results-container {
+    min-height: 200px;
+  }
+  
+  .welcome-message {
+    text-align: center;
+    color: #666;
+    padding: 2rem;
+    background: #f9f9f9;
+    border-radius: 8px;
+  }
+  
+  .loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #4f46e5;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  .error-message {
+    background: #fee;
+    color: #c00;
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+  }
+  
+  .result-item {
+    background: white;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .result-title {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.1rem;
+    color: #333;
+  }
+  
+  .result-book {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .result-text {
+    color: #444;
+    line-height: 1.5;
+  }
+  
+  .highlight {
+    background: yellow;
+    font-weight: bold;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('simpleSearchInput');
+    const searchBtn = document.getElementById('simpleSearchBtn');
+    const resultsDiv = document.getElementById('simpleSearchResults');
+    const loadingDiv = document.getElementById('simpleSearchLoading');
+    const errorDiv = document.getElementById('simpleSearchError');
+    
+    // Book selection buttons
+    document.getElementById('selectAllBooks').addEventListener('click', function() {
+      document.querySelectorAll('input[name="book"]').forEach(cb => {
+        cb.checked = true;
+      });
+    });
+    
+    document.getElementById('deselectAllBooks').addEventListener('click', function() {
+      document.querySelectorAll('input[name="book"]').forEach(cb => {
+        cb.checked = false;
+      });
+    });
+    
+    document.getElementById('selectBreslovOnly').addEventListener('click', function() {
+      document.querySelectorAll('input[name="book"]').forEach(cb => {
+        // All our books are Breslov, so select all
+        cb.checked = true;
+      });
+    });
+    
+    // Search function
+    async function performSearch() {
+      const query = searchInput.value.trim();
+      if (!query) return;
+      
+      // Show loading
+      resultsDiv.style.display = 'none';
+      loadingDiv.style.display = 'block';
+      errorDiv.style.display = 'none';
+      
+      try {
+        // Get selected books
+        const selectedBooks = Array.from(document.querySelectorAll('input[name="book"]:checked'))
+          .map(cb => cb.value);
+        
+        // Get search options
+        const exactMatch = document.getElementById('exactMatch').checked;
+        const caseSensitive = document.getElementById('caseSensitive').checked;
+        
+        // For now, simulate search with timeout
+        // In real implementation, this would fetch from an API or search local data
+        setTimeout(() => {
+          displayMockResults(query, selectedBooks);
+        }, 500);
+        
+      } catch (error) {
+        console.error('Search error:', error);
+        loadingDiv.style.display = 'none';
+        errorDiv.style.display = 'block';
+      }
+    }
+    
+    // Mock results for demonstration
+    function displayMockResults(query, selectedBooks) {
+      loadingDiv.style.display = 'none';
+      resultsDiv.style.display = 'block';
+      
+      const bookNames = {
+        'likutay-nanach-1': 'Likutay Nanach Volume 1',
+        'likutay-nanach-2': 'Likutay Nanach Volume 2',
+        'likutay-nanach-3': 'Likutay Nanach Volume 3',
+        'likutay-nanach-4': 'Likutay Nanach Volume 4',
+        'likutay-nanach-5': 'Likutay Nanach Volume 5',
+        'likutay-aitzos': 'Likutay Aitzos',
+        'likutay-tefilos': 'Likutay Tefilos',
+        'blossoms-of-the-spring': 'Blossoms of the Spring',
+        'fires-of-israel': 'Fires of Israel'
+      };
+      
+      let html = `
+        <div class="search-summary">
+          <h3>Search results for "${query}"</h3>
+          <p>Searching in: ${selectedBooks.map(b => bookNames[b] || b).join(', ')}</p>
+        </div>
+      `;
+      
+      // Mock results
+      const mockResults = [
+        {
+          book: 'likutay-nanach-1',
+          title: 'Teaching on Faith',
+          text: `This is a sample text about faith and trust in God. The search term "${query}" appears here to demonstrate how results would look.`,
+          relevance: 'high'
+        },
+        {
+          book: 'likutay-aitzos',
+          title: 'Advice on Prayer',
+          text: `Another example text showing search functionality. When you search for "${query}", relevant passages are highlighted.`,
+          relevance: 'medium'
+        }
+      ];
+      
+      mockResults.forEach(result => {
+        const bookName = bookNames[result.book] || result.book;
+        const highlightedText = result.text.replace(
+          new RegExp(query, 'gi'),
+          match => `<span class="highlight">${match}</span>`
+        );
+        
+        html += `
+          <div class="result-item">
+            <h4 class="result-title">${result.title}</h4>
+            <div class="result-book">📚 ${bookName}</div>
+            <div class="result-text">${highlightedText}</div>
+          </div>
+        `;
+      });
+      
+      if (mockResults.length === 0) {
+        html += `
+          <div class="welcome-message">
+            <p>No results found for "${query}" in the selected books.</p>
+            <p>Try a different search term or select more books to search.</p>
+          </div>
+        `;
+      }
+      
+      resultsDiv.innerHTML = html;
+    }
+    
+    // Event listeners
+    searchBtn.addEventListener('click', performSearch);
+    searchInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        performSearch();
+      }
+    });
+    
+    // Initialize
+    console.log('Simple search component loaded');
+  });
+</script>

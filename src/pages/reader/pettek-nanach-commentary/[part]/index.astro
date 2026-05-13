@@ -1,0 +1,54 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import fs from 'node:fs';
+import path from 'node:path';
+
+export function getStaticPaths() {
+  return [
+    { params: { part: '1' } },
+    { params: { part: '2' } },
+  ];
+}
+
+const { part } = Astro.params;
+const partNum = parseInt(part);
+
+let indexData = null;
+try {
+  const idxPath = path.join(process.cwd(), 'public/reader/pettek-nanach-commentary/index.json');
+  indexData = JSON.parse(fs.readFileSync(idxPath, 'utf8'));
+} catch (e) {}
+
+const partTitle = partNum === 1 ? 'Part 1 (Torahs 1-286)' : 'Part 2 (Tinyana 1-59)';
+const partHebrew = partNum === 1 ? 'חלק א (תורות א-רפו)' : 'חלק ב (תנינא א-נט)';
+
+// Filter torahs by part number
+const filteredTorahs = indexData?.torahs?.filter(t => {
+  return t.part === partNum;
+}) || [];
+---
+
+<Layout title={`Petek Nanach Commentary — ${partTitle}`}>
+  <div style="max-width: 900px; margin: 0 auto; padding: 40px 20px;">
+    <div style="text-align: center; margin-bottom: 40px;">
+      <h1 style="font-family: 'Cinzel', serif; font-size: 2em; color: #1e3a5f;">Petek Nanach Commentary</h1>
+      <p style="font-family: 'Noto Serif Hebrew', serif; font-size: 1.2em; color: #6b5a42; direction: rtl;">פירוש פתק נ נח</p>
+      <p style="color: #888; margin-top: 8px;">{partTitle} — {partHebrew}</p>
+    </div>
+
+    <div style="text-align: center; margin-bottom: 32px;">
+      <a href="/reader/pettek-nanach-commentary/1" style="display: inline-block; padding: 10px 24px; margin: 4px; border-radius: 6px; text-decoration: none; font-weight: 600; background: #1e3a5f; color: #fff;">Part 1: Torahs 1-286</a>
+      <a href="/reader/pettek-nanach-commentary/2" style="display: inline-block; padding: 10px 24px; margin: 4px; border-radius: 6px; text-decoration: none; font-weight: 600; background: #f0ebe0; color: #1e3a5f;">Part 2: Tinyana 1-59</a>
+    </div>
+
+    {filteredTorahs.length > 0 && (
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px;">
+        {filteredTorahs.map(t => (
+          <a href={`/reader/pettek-nanach-commentary/${partNum}/${t.number}`} style="display: block; padding: 10px 14px; background: #f8f5f0; border-radius: 6px; text-decoration: none; border-right: 3px solid #a07830;">
+            <span style="color: #1e3a5f; font-weight: 600; font-size: 0.9em;">{t.hebrewTitle || t.title}</span>
+          </a>
+        ))}
+      </div>
+    )}
+  </div>
+</Layout>

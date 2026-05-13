@@ -1,0 +1,80 @@
+---
+interface Props {
+  compact?: boolean;
+  placeholder?: string;
+}
+
+const { compact = false, placeholder = "Search teachings..." } = Astro.props;
+---
+
+<div class={`search-form ${compact ? 'compact' : ''}`}>
+  <form action="/search-enhanced" method="get" class="search-form-inner">
+    <input 
+      type="text" 
+      name="q" 
+      placeholder={placeholder}
+      aria-label="Search"
+      class="search-input"
+    />
+    <button type="submit" class="search-button" aria-label="Search">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+    </button>
+  </form>
+</div>
+
+<style>
+  .search-form {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  
+  .search-form.compact {
+    max-width: 300px;
+  }
+  
+  .search-form-inner {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .search-input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 50px;
+    transition: all 0.2s;
+  }
+  
+  .search-input:focus {
+    outline: none;
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+  }
+  
+  .search-button {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 50px;
+    background: #4a90e2;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .search-button:hover {
+    background: #357abd;
+    transform: scale(1.05);
+  }
+  
+  .search-button:active {
+    transform: scale(0.95);
+  }
+</style>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Test</title>
+    <script src="https://unpkg.com/lunr@2.3.9/lunr.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .search-box {
+            margin: 20px 0;
+            display: flex;
+            gap: 10px;
+        }
+        input {
+            flex: 1;
+            padding: 10px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .results {
+            margin-top: 20px;
+        }
+        .result {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        .result-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .result-meta {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Search Test</h1>
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Search...">
+        <button id="searchBtn">Search</button>
+    </div>
+    <div id="loading" class="loading">Loading search index...</div>
+    <div id="results" class="results"></div>
+
+    <script>
+        let lunrIndex = null;
+        let documentStore = null;
+
+        async function initSearch() {
+            try {
+                // Load the optimized search index
+                const response = await fetch('/data/optimized-search-index.json');
+                const searchData = await response.json();
+                
+                // Initialize Lunr index
+                lunrIndex = lunr.Index.load(searchData.lunrIndex);
+                documentStore = searchData.documents;
+                
+                document.getElementById('loading').style.display = 'none';
+                console.log('Search initialized with', Object.keys(documentStore).length, 'documents');
+                
+                // Test search
+                performSearch('תפילה');
+            } catch (error) {
+                console.error('Failed to initialize search:', error);
+                document.getElementById('loading').innerHTML = 'Error loading search index';
+            }
+        }
+
+        function performSearch(query) {
+            if (!lunrIndex || !documentStore || !query.trim()) {
+                document.getElementById('results').innerHTML = '<p>Enter a search term</p>';
+                return;
+            }
+            
+            try {
+                const searchResults = lunrIndex.search(query);
+                displayResults(searchResults, query);
+            } catch (error) {
+                console.error('Search error:', error);
+                document.getElementById('results').innerHTML = '<p>Search error</p>';
+            }
+        }
+
+        function displayResults(results, query) {
+            const resultsDiv = document.getElementById('results');
+            
+            if (results.length === 0) {
+                resultsDiv.innerHTML = `<p>No results found for "${query}"</p>`;
+                return;
+            }
+            
+            let html = `<h3>Results for "${query}" (${results.length} found)</h3>`;
+            
+            results.slice(0, 10).forEach(result => {
+                const doc = documentStore[result.ref];
+                if (!doc) return;
+                
+                html += `
+                    <div class="result">
+                        <div class="result-title">${doc.title}</div>
+                        <div class="result-meta">
+                            ${doc.type} • ${doc.category}
+                            ${doc.subcategory ? ` • ${doc.subcategory}` : ''}
+                        </div>
+                        <div><a href="${doc.path}" target="_blank">View →</a></div>
+                    </div>
+                `;
+            });
+            
+            if (results.length > 10) {
+                html += `<p>... and ${results.length - 10} more results</p>`;
+            }
+            
+            resultsDiv.innerHTML = html;
+        }
+
+        // Initialize search
+        initSearch();
+
+        // Event listeners
+        document.getElementById('searchBtn').addEventListener('click', () => {
+            const query = document.getElementById('searchInput').value.trim();
+            if (query) performSearch(query);
+        });
+
+        document.getElementById('searchInput').addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') {
+                const query = document.getElementById('searchInput').value.trim();
+                if (query) performSearch(query);
+            }
+        });
+    </script>
+</body>
+</html>

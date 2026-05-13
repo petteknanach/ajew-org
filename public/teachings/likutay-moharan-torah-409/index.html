@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 409</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 409</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה כנ&quot;ל, על ידי זה מקבלין כח כל ההרכבות של כל העשבים, שמקבלים כח מהתורה: על כן העקר שיהיה לו אמונת חכמים, ולהזהר בכבודם, לירא מהם מאד. ואף אם נראה לו מהם דבר שאינו מפרש בה
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+Tinyana 123
+MIKVA DOES NOT HARM AT ALL
+He said: A mikvah [ritual bath] does not harm at all. And the doctor who tells him that a mikveh harms is not a doctor at all. On the contrary, immersion in a mikva is very good for the health of the body, for there are many small pores in a person’s body, which are the pores of sweat, through which sweat comes out from a person. And they need to be opened, for if the sweat pores are blocked, one can become weak and fall into weakness, Heaven forbid. And through immersion in water, the sweat pores are opened, and this is very good for the health of the body. Only that the water should not be too cold, for then the water hardens the aforementioned pores. But when the water is not too cold, then immersion in it is very good. Also, it has already been explained that the services and ascetic practices, which are called hariwani [hardships], do not harm at all. And one whom the service and ascetic practices harm, this is only because of haughtiness.
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

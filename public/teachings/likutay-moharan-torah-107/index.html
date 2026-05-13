@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 107</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 107</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה ב&#39;בראשית&#39; (תקוני זהר דף יח:): תמן ראשי, תמן בת. ראשי - &quot;אלה ראשי בית אבתם&quot; (שמות ו), שהאבות הם תלת גונין דעינא; תמן בת - דא בת עין. נמצא, כשחכם מביא
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+Torah 107
+"Happy is he who considers the poor..."
+"Happy is he who considers the poor; on the day of evil, Hashem will deliver him" (Psalms 41:2) Explanation (according to the language of the companions): There is no poverty except poverty of the mind (Nedarim 41a). And for this, one requires great mercy, for there is no greater mercy than this — both in general and in particular: • In general, it refers to a person who has no understanding in the service of the Creator. He needs someone who possesses intellect to instruct him and help him comprehend. • In particular, it refers to the person himself, for there are times when even he experiences a lack of intellect. This is called small-mindedness (katnut ha-mochin), and he must strengthen himself to arrive at a state of expanded consciousness (gadlut ha-mochin). When he does reach greatness of the mind, then all judgments are sweetened, and he draws upon himself kindness and mercy. This is in accordance with the statement of our sages, of blessed memory (Berakhot 33a): "Great is knowledge, for it was given between two Divine Names", as it is written: "For the Lord is a God of knowledge, Hashem" (1 Samuel 2:3). Explanation: When one arrives at greatness of the mind, then mercy and kindness are awakened upon him from the two Divine Names: • "God" (El) — this corresponds to kindness, as in: "The kindness of God is all day long" (Psalms 52:3), • "Hashem" (Y-H-V-H) — this corresponds to mercy, as in: "Great is Your mercy, Hashem" (Psalms 119:156). Thus, this is the explanation of the verse: "Happy is he who considers the poor" — meaning, when he is in a state of mental constriction, and he directs himself toward expansion of the mind, then: "On the day of evil, Hashem will deliver him" — for all judgments are sweetened. And if one is unable by himself to reach expanded consciousness, then a remedy for this is: That he helps others attain understanding — and through this, he too will be awakened.
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

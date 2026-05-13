@@ -1,0 +1,51 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+export const title = "Yearning creates potential souls, verbalizing the yearning actualizes them";
+export const bookTitle = "Likutay Aitzos";
+---
+<Layout title="{title} - {bookTitle}" description="{title} from {bookTitle} - Hisbodidus teachings from Rebbe Nachman">
+  <div class="book-page">
+    <header class="book-header">
+      <h1>{bookTitle}</h1>
+      <h2>Section 3: {title}</h2>
+    </header>
+    <nav class="chapter-nav">
+  <a href="/books/likutay-aitzos/ch02" class="nav-btn prev">← Previous</a>
+  <a href="/books/likutay-aitzos" class="nav-btn main">Main</a>
+  <a href="/books/likutay-aitzos/ch04" class="nav-btn next">Next →</a>
+</nav>
+    <article class="chapter-content">
+      <h3 class="chapter-title">{title}</h3>
+      <p class="book-para">Through the conversation that one converses and speaks between himself and his Maker, and he verbalizes his yearnings and good desires, that which he yearns, and quests, and longs to get out of his baseness and merit to the true good, and he prays and pleads before Hashem Yisburach for this, through this he produces the good souls from their state of potentiality (bikoaach) to actuality (bifoaal). For through the longing alone, potential souls are made [because the yearning is the soul, in the aspect of (Psalms 84:3), “my soul yearns and pines (-even to the extent of expiration),” (added from Outpouring of the Soul)] and through the speaking mentioned above, they are completed and produced from potential (bikoach) to actuality (bifoal) [in the aspect of (Genesis 2:7), “and the man became a living soul,” and the Targum (aramaic translation of Unkellus) is, “a speaking spirit,” and as it is written (Song of Songs 5:6), “my soul departed with his speaking.” (added from Outpouring of the Soul)]. And through this one merits to effectuate his request, and he merits to configure the letters of the Torah for the good, and sustain and give to everything, and to draw goodness and blessing in all the worlds [and good implementations are carried out in the world (added from Outpouring of the Soul)], and many souls are aroused to repentance through this speech, that one speaks between himself and his Maker. For this matter of yearning and good desires, and to fully verbalize them, is extremely precious, and everyone needs to accustom himself to engage in this plentifully every day, and through this it is possible to return the whole world to the better.</p>
+<p class="book-para">Na Nach Nachma Nachman MayUman</p><p class="source-ref">(Likutay Moharan 31, Outpouring of the Soul 56 – at much greater length)</p>
+    </article>
+    <nav class="chapter-nav">
+  <a href="/books/likutay-aitzos/ch02" class="nav-btn prev">← Previous</a>
+  <a href="/books/likutay-aitzos" class="nav-btn main">Main</a>
+  <a href="/books/likutay-aitzos/ch04" class="nav-btn next">Next →</a>
+</nav>
+    <footer class="book-footer">
+      <a href="/books/likutay-aitzos" class="back-link">← Back to Table of Contents</a>
+    </footer>
+  </div>
+</Layout>
+<style>
+  .book-page { max-width: 800px; margin: 0 auto; padding: 2rem 1rem; }
+  .book-header { text-align: center; margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 2px solid #e2e8f0; }
+  .book-header h1 { font-size: 1.5rem; color: #1a365d; margin: 0 0 0.5rem; }
+  .book-header h2 { font-size: 1.25rem; color: #4a5568; margin: 0; font-weight: 500; }
+  .chapter-nav { display: flex; justify-content: center; gap: 1rem; margin: 1.5rem 0; flex-wrap: wrap; }
+  .nav-btn { display: inline-block; padding: 0.75rem 1.5rem; background: #1a365d; color: white; text-decoration: none; border-radius: 8px; font-weight: 500; transition: all 0.2s; }
+  .nav-btn:hover { background: #2d4a6f; transform: translateY(-2px); }
+  .nav-btn.disabled { background: #cbd5e0; cursor: not-allowed; }
+  .nav-btn.main { background: #059669; }
+  .nav-btn.main:hover { background: #047857; }
+  .chapter-content { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); line-height: 1.8; font-size: 1.1rem; }
+  .chapter-title { font-size: 1.5rem; color: #1a365d; margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 2px solid #e2e8f0; }
+  .book-para { margin-bottom: 1.25rem; text-align: justify; color: #2d3748; }
+  .source-ref { font-style: italic; color: #718096; font-size: 0.9rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed #e2e8f0; }
+  .book-footer { text-align: center; margin-top: 2rem; padding-top: 1.5rem; border-top: 2px solid #e2e8f0; }
+  .back-link { color: #1a365d; text-decoration: none; font-weight: 500; }
+  .back-link:hover { text-decoration: underline; }
+  @media (max-width: 640px) { .chapter-content { padding: 1.5rem; font-size: 1rem; } .chapter-nav { gap: 0.5rem; } .nav-btn { padding: 0.6rem 1rem; font-size: 0.9rem; } }
+</style>

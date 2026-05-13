@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 304</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 304</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה היה הממשלה ביד השם יתברך, ואחר מתן
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+18 - GREAT DANGER TO BE FAMOUS AND TO LEAD THE WORLD
+Great danger to be famous and to lead the world not only when one is wholly unworthy and wears a tallit not his own. Only even servants of Hashem in truth great of the generation have on them dangers terrible in leading the world. For man simple far very that will transgress murder even if not man worthy for not has desire to this and even when comes G-d forbid to desire such Heaven save us not comes to his hand, and has many preventions to this. And even if transgresses not transgress only to times distant and close that not transgress only one time all his days. But in leading the world and in innovations of Torah that innovates can to transgress literally theft and adultery and murder in every time, in every moment [in the spiritual sense, e.g., misguiding others, corrupting teachings] Heaven save us (see Zohar Chadash Hakdama s.v. 71a).
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

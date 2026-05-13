@@ -1,0 +1,530 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Gematria Calculator" description="Calculate Hebrew gematria values">
+  <div class="gematria-page">
+    <header class="page-header">
+      <h1>גימטריה</h1>
+      <p class="subtitle">Gematria Calculator</p>
+    </header>
+
+    <div class="container">
+      <div class="calculator-section">
+        <div class="input-section">
+          <label for="hebrewInput">Enter Hebrew Text:</label>
+          <div class="input-wrapper">
+            <input 
+              type="text" 
+              id="hebrewInput" 
+              placeholder="הכנס טקסט עברי..."
+              dir="rtl"
+            />
+            <button id="clearBtn" class="clear-btn">✕</button>
+          </div>
+        </div>
+
+        <div class="result-section">
+          <div class="total-gematria">
+            <span class="label">Total:</span>
+            <span class="value" id="totalValue">0</span>
+          </div>
+        </div>
+
+        <div class="letters-breakdown" id="lettersBreakdown">
+          <h3>Letter Breakdown</h3>
+          <div class="letters-grid" id="lettersGrid"></div>
+        </div>
+
+        <div class="info-section">
+          <h3>How Gematria Works</h3>
+          <p>Each Hebrew letter has a numerical value:</p>
+          <div class="alef-bet-table">
+            <div class="letter-row"><span class="letter">א</span><span class="value">1</span></div>
+            <div class="letter-row"><span class="letter">ב</span><span class="value">2</span></div>
+            <div class="letter-row"><span class="letter">ג</span><span class="value">3</span></div>
+            <div class="letter-row"><span class="letter">ד</span><span class="value">4</span></div>
+            <div class="letter-row"><span class="letter">ה</span><span class="value">5</span></div>
+            <div class="letter-row"><span class="letter">ו</span><span class="value">6</span></div>
+            <div class="letter-row"><span class="letter">ז</span><span class="value">7</span></div>
+            <div class="letter-row"><span class="letter">ח</span><span class="value">8</span></div>
+            <div class="letter-row"><span class="letter">ט</span><span class="value">9</span></div>
+            <div class="letter-row"><span class="letter">י</span><span class="value">10</span></div>
+            <div class="letter-row"><span class="letter">כ</span><span class="value">20</span></div>
+            <div class="letter-row"><span class="letter">ל</span><span class="value">30</span></div>
+            <div class="letter-row"><span class="letter">מ</span><span class="value">40</span></div>
+            <div class="letter-row"><span class="letter">נ</span><span class="value">50</span></div>
+            <div class="letter-row"><span class="letter">ס</span><span class="value">60</span></div>
+            <div class="letter-row"><span class="letter">ע</span><span class="value">70</span></div>
+            <div class="letter-row"><span class="letter">פ</span><span class="value">80</span></div>
+            <div class="letter-row"><span class="letter">צ</span><span class="value">90</span></div>
+            <div class="letter-row"><span class="letter">ק</span><span class="value">100</span></div>
+            <div class="letter-row"><span class="letter">ר</span><span class="value">200</span></div>
+            <div class="letter-row"><span class="letter">ש</span><span class="value">300</span></div>
+            <div class="letter-row"><span class="letter">ת</span><span class="value">400</span></div>
+          </div>
+          <p class="note">Sofiot (final letters) have the same value as their regular counterparts.</p>
+        </div>
+
+        <!-- Alternative methods -->
+        <div class="alt-methods" id="altMethods" style="display:none;">
+          <h3>Alternative Methods</h3>
+          <div class="alt-grid">
+            <div class="alt-item"><span class="alt-label">Mispar Katan (Small)</span><span class="alt-value" id="misparKatan">0</span></div>
+            <div class="alt-item"><span class="alt-label">Atbash</span><span class="alt-value" id="atbashValue">0</span></div>
+            <div class="alt-item"><span class="alt-label">Mispar Gadol (Final)</span><span class="alt-value" id="misparGadol">0</span></div>
+          </div>
+        </div>
+
+        <!-- Matching words with same gematria -->
+        <div class="matches-section" id="matchesSection" style="display:none;">
+          <h3>Words with the Same Value</h3>
+          <div class="matches-grid" id="matchesGrid"></div>
+        </div>
+
+        <div class="common-words">
+          <h3>Common Words</h3>
+          <div class="words-grid">
+            <button class="word-btn" data-word="אמת">אמת (Truth) = 441</button>
+            <button class="word-btn" data-word="אהבה">אהבה (Love) = 13</button>
+            <button class="word-btn" data-word="שלום">שלום (Peace) = 376</button>
+            <button class="word-btn" data-word="תורה">תורה (Torah) = 611</button>
+            <button class="word-btn" data-word="ישראל">ישראל (Israel) = 541</button>
+            <button class="word-btn" data-word="משיח">משיח (Messiah) = 358</button>
+            <button class="word-btn" data-word="נחמן">נחמן (Nachman) = 148</button>
+            <button class="word-btn" data-word="ברסלב">ברסלב (Breslov) = 232</button>
+            <button class="word-btn" data-word="נ נ נ נ מ מ נ מ ע מ א נ">נ נ נ נ מ מ נ מ ע מ א נ = 331</button>
+            <button class="word-btn" data-word="נתן">נתן (Natan) = 500</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  const gematriaMap: Record<string, number> = {
+    'א': 1, 'ב': 2, 'ג': 3, 'ד': 4, 'ה': 5, 'ו': 6, 'ז': 7, 'ח': 8, 'ט': 9, 'י': 10,
+    'כ': 20, 'ל': 30, 'מ': 40, 'נ': 50, 'ס': 60, 'ע': 70, 'פ': 80, 'צ': 90,
+    'ק': 100, 'ר': 200, 'ש': 300, 'ת': 400,
+    'ך': 20, 'ם': 40, 'ן': 50, 'ף': 80, 'ץ': 90
+  };
+
+  const hebrewInput = document.getElementById('hebrewInput') as HTMLInputElement;
+  const totalValue = document.getElementById('totalValue');
+  const lettersGrid = document.getElementById('lettersGrid');
+  const clearBtn = document.getElementById('clearBtn');
+
+  function calculateGematria(text: string): number {
+    let total = 0;
+    for (const char of text) {
+      if (gematriaMap[char]) {
+        total += gematriaMap[char];
+      }
+    }
+    return total;
+  }
+
+  // Atbash: replace each letter with its mirror (א↔ת, ב↔ש, ג↔ר, etc.)
+  const ALEFBET = 'אבגדהוזחטיכלמנסעפצקרשת';
+  const atbashMap: Record<string, string> = {};
+  for (let i = 0; i < ALEFBET.length; i++) {
+    atbashMap[ALEFBET[i]] = ALEFBET[ALEFBET.length - 1 - i];
+  }
+  // Map sofit to regular for atbash
+  const sofitToRegular: Record<string, string> = {'ך':'כ','ם':'מ','ן':'נ','ף':'פ','ץ':'צ'};
+
+  function atbashGematria(text: string): number {
+    let total = 0;
+    for (const char of text) {
+      let c = sofitToRegular[char] || char;
+      const mirrored = atbashMap[c];
+      if (mirrored && gematriaMap[mirrored]) total += gematriaMap[mirrored];
+    }
+    return total;
+  }
+
+  // Mispar Katan: reduce each letter value to single digit (e.g. כ=20→2, ק=100→1)
+  function misparKatan(text: string): number {
+    let total = 0;
+    for (const char of text) {
+      let val = gematriaMap[char] || 0;
+      while (val >= 10) { val = String(val).split('').reduce((s,d) => s + parseInt(d), 0); }
+      total += val;
+    }
+    return total;
+  }
+
+  // Mispar Gadol: final letters get higher values (ך=500, ם=600, ן=700, ף=800, ץ=900)
+  const gadolMap: Record<string, number> = {...gematriaMap, 'ך':500, 'ם':600, 'ן':700, 'ף':800, 'ץ':900};
+  function misparGadol(text: string): number {
+    let total = 0;
+    for (const char of text) { total += gadolMap[char] || 0; }
+    return total;
+  }
+
+  function updateAltMethods(text: string) {
+    const section = document.getElementById('altMethods');
+    if (!section) return;
+    if (!text || calculateGematria(text) === 0) { section.style.display = 'none'; return; }
+    section.style.display = 'block';
+    document.getElementById('misparKatan')!.textContent = String(misparKatan(text));
+    document.getElementById('atbashValue')!.textContent = String(atbashGematria(text));
+    document.getElementById('misparGadol')!.textContent = String(misparGadol(text));
+  }
+
+  function updateDisplay(text: string) {
+    const total = calculateGematria(text);
+    if (totalValue) totalValue.textContent = total.toString();
+    showMatches(total);
+    updateAltMethods(text);
+
+    if (lettersGrid) {
+      lettersGrid.innerHTML = '';
+      let runningTotal = 0;
+      for (const char of text) {
+        if (gematriaMap[char]) {
+          runningTotal += gematriaMap[char];
+          const letterDiv = document.createElement('div');
+          letterDiv.className = 'letter-item';
+          letterDiv.innerHTML = `
+            <span class="letter-char">${char}</span>
+            <span class="letter-value">= ${gematriaMap[char]}</span>
+            <span class="letter-running">(${runningTotal})</span>
+          `;
+          lettersGrid.appendChild(letterDiv);
+        }
+      }
+    }
+  }
+
+  hebrewInput?.addEventListener('input', (e) => {
+    updateDisplay((e.target as HTMLInputElement).value);
+  });
+
+  clearBtn?.addEventListener('click', () => {
+    hebrewInput.value = '';
+    updateDisplay('');
+  });
+
+  // Known Hebrew words database for matching
+  const KNOWN_WORDS: Array<{he: string, en: string, val: number}> = [
+    {he:'אחד', en:'One', val:13}, {he:'אהבה', en:'Love', val:13},
+    {he:'אמת', en:'Truth', val:441}, {he:'תורה', en:'Torah', val:611},
+    {he:'שלום', en:'Peace', val:376}, {he:'ישראל', en:'Israel', val:541},
+    {he:'משיח', en:'Messiah', val:358}, {he:'נחש', en:'Snake', val:358},
+    {he:'שמחה', en:'Joy', val:353}, {he:'נשמה', en:'Soul', val:395},
+    {he:'תפילה', en:'Prayer', val:515}, {he:'צדיק', en:'Righteous', val:204},
+    {he:'חיים', en:'Life', val:68}, {he:'חכמה', en:'Wisdom', val:73},
+    {he:'בינה', en:'Understanding', val:67}, {he:'דעת', en:'Knowledge', val:474},
+    {he:'כתר', en:'Crown', val:620}, {he:'מלכות', en:'Kingship', val:496},
+    {he:'תשובה', en:'Repentance', val:713}, {he:'אמונה', en:'Faith', val:102},
+    {he:'בטחון', en:'Trust', val:75}, {he:'גאולה', en:'Redemption', val:45},
+    {he:'קדושה', en:'Holiness', val:415}, {he:'ענווה', en:'Humility', val:131},
+    {he:'רחמים', en:'Mercy', val:298}, {he:'דין', en:'Judgment', val:64},
+    {he:'חסד', en:'Kindness', val:72}, {he:'גבורה', en:'Strength', val:216},
+    {he:'תפארת', en:'Beauty', val:1081}, {he:'נצח', en:'Eternity', val:148},
+    {he:'הוד', en:'Splendor', val:15}, {he:'יסוד', en:'Foundation', val:80},
+    {he:'שכינה', en:'Divine Presence', val:385}, {he:'אור', en:'Light', val:207},
+    {he:'חושך', en:'Darkness', val:334}, {he:'רפואה', en:'Healing', val:292},
+    {he:'פרנסה', en:'Livelihood', val:395}, {he:'ברכה', en:'Blessing', val:227},
+    {he:'נחמן', en:'Nachman', val:148}, {he:'ברסלב', en:'Breslov', val:294},
+    {he:'אדם', en:'Man', val:45}, {he:'חוה', en:'Eve', val:19},
+    {he:'שרה', en:'Sarah', val:505}, {he:'רבקה', en:'Rebecca', val:307},
+    {he:'רחל', en:'Rachel', val:238}, {he:'לאה', en:'Leah', val:36},
+    {he:'משה', en:'Moses', val:345}, {he:'אהרן', en:'Aaron', val:256},
+    {he:'דוד', en:'David', val:14}, {he:'שלמה', en:'Solomon', val:375},
+    {he:'אליהו', en:'Elijah', val:52}, {he:'ירושלים', en:'Jerusalem', val:596},
+    {he:'ציון', en:'Zion', val:156}, {he:'שבת', en:'Shabbat', val:702},
+    {he:'תיקון', en:'Repair', val:566}, {he:'עולם', en:'World', val:146},
+    {he:'נתן', en:'Natan', val:500}, {he:'צדקה', en:'Charity', val:199},
+    {he:'התבודדות', en:'Seclusion', val:837}, {he:'סבא', en:'Saba', val:63},
+  ];
+
+  function showMatches(value: number) {
+    const section = document.getElementById('matchesSection');
+    const grid = document.getElementById('matchesGrid');
+    if (!section || !grid || value <= 0) { if (section) section.style.display = 'none'; return; }
+
+    const matches = KNOWN_WORDS.filter(w => w.val === value);
+    if (matches.length === 0) { section.style.display = 'none'; return; }
+
+    section.style.display = 'block';
+    grid.innerHTML = matches.map(m =>
+      `<span class="match-item"><span class="match-he">${m.he}</span> <span class="match-en">${m.en}</span></span>`
+    ).join('');
+  }
+
+  document.querySelectorAll('.word-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const word = (btn as HTMLButtonElement).dataset.word;
+      if (word && hebrewInput) {
+        hebrewInput.value = word;
+        updateDisplay(word);
+      }
+    });
+  });
+</script>
+
+<style>
+  .gematria-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1a365d 0%, #2d4a6f 100%);
+    padding: 2rem;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .page-header h1 {
+    font-family: var(--font-hebrew);
+    font-size: 3rem;
+    color: white;
+    margin-bottom: 0.5rem;
+  }
+
+  .subtitle {
+    color: rgba(255,255,255,0.7);
+    font-size: 1.2rem;
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .calculator-section {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+  }
+
+  .input-section {
+    margin-bottom: 2rem;
+  }
+
+  .input-section label {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1a365d;
+    margin-bottom: 0.5rem;
+  }
+
+  .input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .input-wrapper input {
+    width: 100%;
+    padding: 1rem 2.5rem 1rem 1rem;
+    font-size: 2rem;
+    font-family: var(--font-hebrew);
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    text-align: right;
+    direction: rtl;
+  }
+
+  .input-wrapper input:focus {
+    outline: none;
+    border-color: #1a365d;
+  }
+
+  .clear-btn {
+    position: absolute;
+    left: 1rem;
+    background: #e2e8f0;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1rem;
+    color: #666;
+    transition: all 0.2s;
+  }
+
+  .clear-btn:hover {
+    background: #c53030;
+    color: white;
+  }
+
+  .result-section {
+    text-align: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, #1a365d, #2d4a6f);
+    border-radius: 12px;
+    margin-bottom: 2rem;
+  }
+
+  .total-gematria .label {
+    color: rgba(255,255,255,0.7);
+    font-size: 1.5rem;
+    margin-right: 1rem;
+  }
+
+  .total-gematria .value {
+    color: white;
+    font-size: 4rem;
+    font-weight: bold;
+    font-family: var(--font-hebrew);
+  }
+
+  /* Alternative methods */
+  .alt-methods {
+    background: rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .alt-methods h3 { color: rgba(255,255,255,0.7); margin: 0 0 0.75rem; font-size: 0.9em; }
+  .alt-grid { display: flex; gap: 16px; flex-wrap: wrap; }
+  .alt-item { display: flex; flex-direction: column; align-items: center; flex: 1; min-width: 100px; }
+  .alt-label { font-size: 0.75em; color: rgba(255,255,255,0.5); margin-bottom: 4px; }
+  .alt-value { font-size: 1.4em; font-weight: 700; color: white; }
+
+  /* Matches section */
+  .matches-section {
+    background: rgba(237, 137, 54, 0.15);
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(237, 137, 54, 0.3);
+  }
+  .matches-section h3 { color: #ed8936; margin: 0 0 0.75rem; font-size: 1em; }
+  .matches-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+  .match-item {
+    background: rgba(255,255,255,0.15);
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 0.9em;
+  }
+  .match-he { font-family: 'Frank Ruhl Libre', serif; color: white; font-weight: 600; }
+  .match-en { color: rgba(255,255,255,0.7); font-size: 0.85em; }
+
+  .letters-breakdown h3, .info-section h3, .common-words h3 {
+    color: #1a365d;
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+  }
+
+  .letters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .letter-item {
+    background: #f7fafc;
+    padding: 0.5rem;
+    border-radius: 8px;
+    text-align: center;
+    font-family: var(--font-hebrew);
+  }
+
+  .letter-char {
+    display: block;
+    font-size: 1.5rem;
+    color: #1a365d;
+  }
+
+  .letter-value {
+    display: block;
+    font-size: 0.9rem;
+    color: #c53030;
+  }
+
+  .letter-running {
+    display: block;
+    font-size: 0.75rem;
+    color: #666;
+  }
+
+  .info-section {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: #f7fafc;
+    border-radius: 12px;
+  }
+
+  .info-section p {
+    color: #4a5568;
+    margin-bottom: 1rem;
+  }
+
+  .alef-bet-table {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    gap: 0.5rem;
+  }
+
+  .letter-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.3rem 0.5rem;
+    background: white;
+    border-radius: 4px;
+    font-size: 0.9rem;
+  }
+
+  .letter-row .letter {
+    font-family: var(--font-hebrew);
+    color: #1a365d;
+  }
+
+  .letter-row .value {
+    color: #c53030;
+    font-weight: 600;
+  }
+
+  .note {
+    font-size: 0.85rem;
+    color: #666;
+    font-style: italic;
+    margin-top: 0.5rem;
+  }
+
+  .words-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .word-btn {
+    padding: 0.75rem 1rem;
+    background: white;
+    border: 2px solid #1a365d;
+    border-radius: 8px;
+    font-family: var(--font-hebrew);
+    font-size: 1rem;
+    color: #1a365d;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .word-btn:hover {
+    background: #1a365d;
+    color: white;
+  }
+
+  @media (max-width: 600px) {
+    .page-header h1 {
+      font-size: 2rem;
+    }
+
+    .input-wrapper input {
+      font-size: 1.5rem;
+    }
+
+    .total-gematria .value {
+      font-size: 3rem;
+    }
+  }
+</style>

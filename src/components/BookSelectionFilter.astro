@@ -1,0 +1,218 @@
+---
+// Book Selection Filter — generates individual book checkboxes from search index
+// Groups books by author/category with per-category select/deselect
+
+import fs from 'fs';
+import path from 'path';
+
+// Load search index to get actual book IDs and counts
+const indexPath = path.join(process.cwd(), 'public/data/search-index-v2.json');
+let bookCounts: Record<string, number> = {};
+
+try {
+  const indexData = JSON.parse(fs.readFileSync(indexPath, 'utf-8'));
+  const docs = indexData.documents || [];
+  for (const doc of docs) {
+    const url = doc.url || '';
+    const parts = url.split('/');
+    if (parts.length >= 3 && parts[1] === 'reader') {
+      const bookId = parts[2];
+      bookCounts[bookId] = (bookCounts[bookId] || 0) + 1;
+    }
+  }
+} catch (e) {
+  // Fallback if index not available at build time
+}
+
+// Hebrew names for books
+const hebrewNames: Record<string, string> = {
+  'likutay-moharan': 'ליקוטי מוהר"ן',
+  'kitzur-likutay-moharan': 'קיצור ליקוטי מוהר"ן',
+  'sefer-hamidos': 'ספר המידות',
+  'sipurey-maasiyos': 'סיפורי מעשיות',
+  'likutay-halachos': 'ליקוטי הלכות',
+  'likutay-tefilos': 'ליקוטי תפילות',
+  'likutay-eitzos': 'ליקוטי עצות',
+  'likutay-eitzos-basra': 'ליקוטי עצות מהד"ב',
+  'sichos-haran': 'שיחות הר"ן',
+  'shivchay-haran': 'שבחי הר"ן',
+  'chayey-moharan': 'חיי מוהר"ן',
+  'alim-litrufa': 'עלים לתרופה',
+  'yemei-moharnat': 'ימי מוהרנ"ת',
+  'ebay-hanachal': 'אבי הנחל',
+  'shemos-hatzadikim': 'שמות הצדיקים',
+  'yemei-hatlaos': 'ימי התלאות',
+  'parparos-lechochma': 'פרפראות לחוכמה',
+  'rimzei-hamaasiyos': 'רמזי המעשיות',
+  'zimras-haaretz': 'זמרת הארץ',
+  'yikra-dshabbata': 'יקרא דשבתא',
+  'yereach-haeitanim': 'ירח האיתנים',
+  'nachas-hashulchan': 'נחת השולחן',
+  'hashtatfchus-hanefesh': 'השתפכות הנפש',
+  'meshivas-nefesh': 'משיבת נפש',
+  'biur-halikutim': 'ביאור הליקוטים',
+  'chochma-utvuna': 'חכמה ותבונה',
+  'kokhvei-or': 'כוכבי אור',
+  'siach-sarfei-kodesh': 'שיח שרפי קודש',
+  'otzar-hayirah': 'אוצר היראה',
+  'yisroel-saba': 'ישראל סבא',
+  'chumash-lh': 'חומש ליקוטי הלכות',
+  'toldos-adam': 'תולדות אדם',
+  'kuntrass-hiskashrus': 'קונטרס התקשרות',
+
+};
+
+// Define categories with their books
+interface BookEntry {
+  id: string;
+  name: string;
+  count: number;
+}
+
+interface Category {
+  icon: string;
+  label: string;
+  books: BookEntry[];
+}
+
+const categories: Category[] = [
+  {
+    icon: '📖', label: 'ספרי רבי נחמן — Rebbe Nachman',
+    books: ['likutay-moharan', 'kitzur-likutay-moharan', 'sefer-hamidos', 'sipurey-maasiyos']
+      .filter(id => bookCounts[id])
+      .map(id => ({ id, name: hebrewNames[id] || id, count: bookCounts[id] || 0 }))
+  },
+  {
+    icon: '📘', label: 'ספרי רבי נתן — Rabbi Nosson',
+    books: ['likutay-halachos', 'likutay-tefilos', 'likutay-eitzos', 'likutay-eitzos-basra', 'sichos-haran', 'shivchay-haran', 'chayey-moharan', 'alim-litrufa', 'yemei-moharnat', 'ebay-hanachal', 'shemos-hatzadikim', 'yemei-hatlaos']
+      .filter(id => bookCounts[id])
+      .map(id => ({ id, name: hebrewNames[id] || id, count: bookCounts[id] || 0 }))
+  },
+  {
+    icon: '📗', label: 'ספרי הרב מטשערין — Tcheryn',
+    books: ['parparos-lechochma', 'rimzei-hamaasiyos', 'zimras-haaretz', 'yikra-dshabbata', 'yereach-haeitanim', 'nachas-hashulchan']
+      .filter(id => bookCounts[id])
+      .map(id => ({ id, name: hebrewNames[id] || id, count: bookCounts[id] || 0 }))
+  },
+  {
+    icon: '📙', label: "ספרי רבי אלתר טפליקער — R' Alter Tepliker",
+    books: ['hashtatfchus-hanefesh', 'meshivas-nefesh']
+      .filter(id => bookCounts[id])
+      .map(id => ({ id, name: hebrewNames[id] || id, count: bookCounts[id] || 0 }))
+  },
+  {
+    icon: '📕', label: "ספרי רבי אברהם — R' Avraham",
+    books: ['biur-halikutim', 'chochma-utvuna', 'kokhvei-or']
+      .filter(id => bookCounts[id])
+      .map(id => ({ id, name: hebrewNames[id] || id, count: bookCounts[id] || 0 }))
+  },
+  {
+    icon: '🔥', label: 'שיח שרפי קודש — Siach Sarfei Kodesh',
+    books: ['siach-sarfei-kodesh']
+      .filter(id => bookCounts[id])
+      .map(id => ({ id, name: hebrewNames[id] || id, count: bookCounts[id] || 0 }))
+  },
+];
+
+// Dynamic categories from remaining books
+const breslovIds = new Set(categories.flatMap(c => c.books.map(b => b.id)));
+
+const tanachBooks = Object.entries(bookCounts)
+  .filter(([id]) => id.startsWith('tanach-'))
+  .sort((a, b) => b[1] - a[1])
+  .map(([id, count]) => ({ id, name: hebrewNames[id] || id.replace('tanach-', '').replace(/-/g, ' '), count }));
+
+const talmudBooks = Object.entries(bookCounts)
+  .filter(([id]) => id.startsWith('talmud-bavli-'))
+  .sort((a, b) => b[1] - a[1])
+  .map(([id, count]) => ({ id, name: id.replace('talmud-bavli-', '').replace(/-/g, ' '), count }));
+
+const mishnaBooks = Object.entries(bookCounts)
+  .filter(([id]) => id.startsWith('mishna-'))
+  .sort((a, b) => b[1] - a[1])
+  .map(([id, count]) => ({ id, name: id.replace('mishna-', '').replace(/-/g, ' '), count }));
+
+const rambamBooks = Object.entries(bookCounts)
+  .filter(([id]) => id.startsWith('rambam-'))
+  .sort((a, b) => b[1] - a[1])
+  .map(([id, count]) => ({ id, name: id.replace('rambam-', '').replace(/-/g, ' '), count }));
+
+const zoharBooks = Object.entries(bookCounts)
+  .filter(([id]) => id.startsWith('zohar-'))
+  .sort((a, b) => b[1] - a[1])
+  .map(([id, count]) => ({ id, name: hebrewNames[id] || id.replace('zohar-', '').replace(/-/g, ' '), count }));
+
+const allKnownIds = new Set([
+  ...breslovIds,
+  ...tanachBooks.map(b => b.id),
+  ...talmudBooks.map(b => b.id),
+  ...mishnaBooks.map(b => b.id),
+  ...rambamBooks.map(b => b.id),
+  ...zoharBooks.map(b => b.id),
+]);
+
+const otherBooks = Object.entries(bookCounts)
+  .filter(([id]) => !allKnownIds.has(id))
+  .sort((a, b) => b[1] - a[1])
+  .map(([id, count]) => ({ id, name: hebrewNames[id] || id, count }));
+
+if (tanachBooks.length) categories.push({ icon: '📜', label: 'תנ"ך — Tanach', books: tanachBooks });
+if (talmudBooks.length) categories.push({ icon: '📚', label: 'תלמוד בבלי — Talmud Bavli', books: talmudBooks });
+if (mishnaBooks.length) categories.push({ icon: '📖', label: 'משנה — Mishna', books: mishnaBooks });
+if (rambamBooks.length) categories.push({ icon: '⚖️', label: 'רמב"ם — Rambam', books: rambamBooks });
+if (zoharBooks.length) categories.push({ icon: '✨', label: 'זוהר הקדוש — Zohar', books: zoharBooks });
+if (otherBooks.length) categories.push({ icon: '📚', label: 'אחרים — Other', books: otherBooks });
+---
+
+<div class="option-group">
+  <div class="options-header-row">
+    <h5 class="option-group-title">📚 בחר ספרים / Select Books:</h5>
+    <div class="quick-buttons">
+      <button type="button" class="quick-btn select-all" id="selectAllBooks">בחר הכל / All</button>
+      <button type="button" class="quick-btn deselect-all" id="deselectAllBooks">בטל הכל / None</button>
+    </div>
+  </div>
+  <div class="book-checkboxes-container" id="bookSelection">
+    {categories.map((cat, catIdx) => (
+      <details class="book-category-details" open={catIdx < 6}>
+        <summary class="category-summary">
+          <span class="category-icon">{cat.icon}</span>
+          <span class="category-label">{cat.label}</span>
+          <span class="category-count">({cat.books.reduce((s, b) => s + b.count, 0)})</span>
+          <button type="button" class="cat-toggle-btn" data-category={`cat-${catIdx}`} onclick={`
+            const details = this.closest('details');
+            const boxes = details.querySelectorAll('input[type=checkbox]');
+            const allChecked = Array.from(boxes).every(b => b.checked);
+            boxes.forEach(b => b.checked = !allChecked);
+            this.textContent = allChecked ? '✓ All' : '✗ None';
+          `}>✓ All</button>
+        </summary>
+        <div class="book-category">
+          {cat.books.map(book => (
+            <label class="book-checkbox">
+              <input type="checkbox" name="book" value={book.id} checked />
+              <span class="book-name">{book.name}</span>
+              <span class="book-count">{book.count}</span>
+            </label>
+          ))}
+        </div>
+      </details>
+    ))}
+  </div>
+</div>
+
+<style>
+  .cat-toggle-btn {
+    float: left;
+    font-size: 0.7em;
+    padding: 2px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: #f5f5f5;
+    cursor: pointer;
+    margin-right: 8px;
+  }
+  .cat-toggle-btn:hover {
+    background: #e0e0e0;
+  }
+</style>

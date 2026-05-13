@@ -1,0 +1,254 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Books" description="Browse all Breslov books available on ajew.org">
+  <div class="books-page">
+    <header class="page-header">
+      <h1>📚 Breslov Books</h1>
+      <p class="subtitle">Complete collection of Breslov texts available for reading and search</p>
+    </header>
+
+    <div class="container">
+      <div class="books-grid">
+        <!-- Likutay Nanach -->
+        <div class="book-card featured">
+          <div class="book-icon">🌟</div>
+          <h2 class="book-title">Likutay Nanach</h2>
+          <h3 class="book-hebrew">לקוטי ננח</h3>
+          <p class="book-description">אוסף תורות, שיחות והנהגות מגדולי חסידי ברסלב סביב עניין ה"ננח" - נא נח נחמ נחמן מאומן.</p>
+          <div class="book-stats">
+            <span>📖 5+ volumes</span>
+            <span>📄 39+ chapters</span>
+          </div>
+          <a href="/reader/likutay-nanach/volume-1/chapter-1" class="book-button">Open Likutay Nanach →</a>
+        </div>
+
+        <!-- Likutey Moharan -->
+        <div class="book-card">
+          <div class="book-icon">📘</div>
+          <h2 class="book-title">Likutey Moharan</h2>
+          <h3 class="book-hebrew">לקוטי מוהר"ן</h3>
+          <p class="book-description">The primary work of Rabbi Nachman, containing his core teachings.</p>
+          <div class="book-stats">
+            <span>📖 2 parts</span>
+            <span>📄 282 chapters</span>
+          </div>
+          <a href="/reader/likutay-moharan/part-1/1" class="book-button">Open Likutey Moharan →</a>
+        </div>
+
+        <!-- Sefer Hamidos -->
+        <div class="book-card">
+          <div class="book-icon">📗</div>
+          <h2 class="book-title">Sefer Hamidos</h2>
+          <h3 class="book-hebrew">ספר המידות</h3>
+          <p class="book-description">A book of character traits and ethical teachings arranged alphabetically.</p>
+          <div class="book-stats">
+            <span>📖 1 volume</span>
+            <span>📄 413 traits</span>
+          </div>
+          <a href="/reader/sefer-hamidos/topic-1" class="book-button">Open Sefer Hamidos →</a>
+        </div>
+
+        <!-- Stories of Rabbi Nachman -->
+        <div class="book-card">
+          <div class="book-icon">📖</div>
+          <h2 class="book-title">Stories of Rabbi Nachman</h2>
+          <h3 class="book-hebrew">סיפורי מעשיות</h3>
+          <p class="book-description">The thirteen mystical stories told by Rabbi Nachman of Breslov.</p>
+          <div class="book-stats">
+            <span>📖 1 volume</span>
+            <span>📄 13 stories</span>
+          </div>
+          <a href="/teachings/stories" class="book-button">Open Stories →</a>
+        </div>
+
+        <!-- Other Works -->
+        <div class="book-card">
+          <div class="book-icon">📚</div>
+          <h2 class="book-title">Other Breslov Works</h2>
+          <h3 class="book-hebrew">ספרים נוספים</h3>
+          <p class="book-description">Additional Breslov texts including Likutey Halachos, Likutey Tefilos, and more.</p>
+          <div class="book-stats">
+            <span>📖 Multiple works</span>
+            <span>📄 Various chapters</span>
+          </div>
+          <a href="/teachings" class="book-button">Browse All Works →</a>
+        </div>
+
+        <!-- Search All Books -->
+        <div class="book-card search-card">
+          <div class="book-icon">🔍</div>
+          <h2 class="book-title">Search All Books</h2>
+          <h3 class="book-hebrew">חפש בכל הספרים</h3>
+          <p class="book-description">Search across all Breslov texts with advanced options and book selection.</p>
+          <div class="book-stats">
+            <span>⚡ Fast search</span>
+            <span>✅ Book filters</span>
+          </div>
+          <a href="/search-enhanced" class="book-button primary">Open Search →</a>
+        </div>
+      </div>
+
+      <div class="search-note">
+        <h3>📖 All Books Are Searchable</h3>
+        <p>Every book and teaching on this site is included in the search index. Use the <a href="/search-enhanced">advanced search</a> to find specific passages across all works.</p>
+        <p><strong>Tip:</strong> You can select which books to search using the checklist in the advanced search options.</p>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .books-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    padding: 2rem 1rem;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .page-header h1 {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+    color: #2c3e50;
+  }
+
+  .subtitle {
+    font-size: 1.2rem;
+    color: #7f8c8d;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .book-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .book-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+  }
+
+  .book-card.featured {
+    border: 2px solid #f39c12;
+    background: linear-gradient(135deg, #fff9e6 0%, #fff 100%);
+  }
+
+  .book-card.search-card {
+    border: 2px solid #3498db;
+    background: linear-gradient(135deg, #e8f4fc 0%, #fff 100%);
+  }
+
+  .book-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .book-title {
+    font-size: 1.5rem;
+    margin: 0 0 0.5rem 0;
+    color: #2c3e50;
+  }
+
+  .book-hebrew {
+    font-size: 1.2rem;
+    margin: 0 0 1rem 0;
+    color: #34495e;
+    font-family: var(--font-hebrew);
+    direction: rtl;
+  }
+
+  .book-description {
+    flex: 1;
+    color: #7f8c8d;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+  }
+
+  .book-stats {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    color: #95a5a6;
+    font-size: 0.9rem;
+  }
+
+  .book-button {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background: #3498db;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    text-align: center;
+    font-weight: 600;
+    transition: background 0.3s;
+  }
+
+  .book-button:hover {
+    background: #2980b9;
+  }
+
+  .book-button.primary {
+    background: #2ecc71;
+  }
+
+  .book-button.primary:hover {
+    background: #27ae60;
+  }
+
+  .search-note {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+
+  .search-note h3 {
+    margin-top: 0;
+    color: #2c3e50;
+  }
+
+  .search-note a {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .search-note a:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 768px) {
+    .page-header h1 {
+      font-size: 2rem;
+    }
+    
+    .books-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

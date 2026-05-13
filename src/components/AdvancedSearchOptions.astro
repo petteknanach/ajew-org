@@ -1,0 +1,492 @@
+---
+// Advanced Search Options Component - Redesigned
+// Individual book selection with per-category toggle
+import BookSelectionFilter from './BookSelectionFilter.astro';
+---
+
+<div class="advanced-search-options">
+  <div class="options-header">
+    <h4 class="options-title">⚙️ אפשרויות חיפוש מתקדמות / Advanced Search Options</h4>
+    <button type="button" class="options-toggle" id="toggleAdvancedOptions">
+      <span class="toggle-text">הצג אפשרויות / Show Options</span>
+      <span class="toggle-icon">▼</span>
+    </button>
+  </div>
+  
+  <div class="options-content" id="advancedOptionsContent" style="display: none;">
+    
+    <!-- Book Selection — Individual books with per-category toggle -->
+    <BookSelectionFilter />
+    
+    <!-- Search Type -->
+    <div class="option-group">
+      <h5 class="option-group-title">🔍 סוג חיפוש / Search Type:</h5>
+      <div class="search-type-options">
+        <label class="search-type-option">
+          <input type="radio" name="searchType" value="contains" checked>
+          <div>
+            <span class="type-label">מכיל / Contains</span>
+            <span class="option-description">Finds text anywhere in document</span>
+          </div>
+        </label>
+        
+        <label class="search-type-option">
+          <input type="radio" name="searchType" value="exact">
+          <div>
+            <span class="type-label">מדויק / Exact phrase</span>
+            <span class="option-description">Words in exact order</span>
+          </div>
+        </label>
+        
+        <label class="search-type-option">
+          <input type="radio" name="searchType" value="boolean">
+          <div>
+            <span class="type-label">בוליאני / Boolean</span>
+            <span class="option-description">Use AND, OR, NOT operators</span>
+          </div>
+        </label>
+        
+        <label class="search-type-option">
+          <input type="radio" name="searchType" value="startsWith">
+          <div>
+            <span class="type-label">מתחיל ב / Starts with</span>
+            <span class="option-description">Text begins with search term</span>
+          </div>
+        </label>
+        
+        <label class="search-type-option">
+          <input type="radio" name="searchType" value="endsWith">
+          <div>
+            <span class="type-label">מסתיים ב / Ends with</span>
+            <span class="option-description">Text ends with search term</span>
+          </div>
+        </label>
+      </div>
+    </div>
+    
+    <!-- Proximity Search -->
+    <div class="option-group">
+      <h5 class="option-group-title">📏 חיפוש קרבה / Proximity Search:</h5>
+      <div class="proximity-options">
+        <label for="proximity" class="proximity-label">Maximum words between search terms:</label>
+        <select name="proximity" id="proximity" class="proximity-select">
+          <option value="0">ללא הגבלה / No limit</option>
+          <option value="1">1 word apart</option>
+          <option value="2">2 words apart</option>
+          <option value="3">3 words apart</option>
+          <option value="5">5 words apart</option>
+          <option value="10">10 words apart</option>
+        </select>
+        <span class="option-description">For multi-word searches: words must be this close to each other</span>
+      </div>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="option-actions">
+      <button type="button" class="action-btn apply-btn" id="applyAdvancedOptions">
+        החל אפשרויות / Apply Options
+      </button>
+      <button type="button" class="action-btn reset-btn" id="resetAdvancedOptions">
+        אפס / Reset
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .advanced-search-options {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    margin: 0.75rem 0;
+    overflow: hidden;
+  }
+  
+  .options-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+  }
+  
+  .options-title {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #374151;
+  }
+  
+  .options-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.8rem;
+    background: #6366f1;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  
+  .options-toggle:hover {
+    background: #4f46e5;
+  }
+  
+  .toggle-icon {
+    transition: transform 0.3s;
+    font-size: 0.7rem;
+  }
+  
+  .toggle-icon.rotated {
+    transform: rotate(180deg);
+  }
+  
+  .options-content {
+    padding: 1rem;
+  }
+  
+  .option-group {
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  
+  .option-group:last-of-type {
+    border-bottom: none;
+    margin-bottom: 0.75rem;
+  }
+  
+  .options-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .option-group-title {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #4b5563;
+  }
+  
+  .quick-buttons {
+    display: flex;
+    gap: 0.4rem;
+  }
+  
+  .quick-btn {
+    padding: 0.3rem 0.65rem;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: white;
+    color: #374151;
+  }
+  
+  .quick-btn.select-all {
+    background: #ecfdf5;
+    border-color: #6ee7b7;
+    color: #065f46;
+  }
+  
+  .quick-btn.deselect-all {
+    background: #fef2f2;
+    border-color: #fca5a5;
+    color: #991b1b;
+  }
+  
+  .quick-btn:hover {
+    filter: brightness(0.95);
+  }
+  
+  .book-checkboxes-container {
+    max-height: 350px;
+    overflow-y: auto;
+    padding: 0.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    background: #fafafa;
+  }
+  
+  .book-category-details {
+    margin-bottom: 0.5rem;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #f0f0f0;
+    overflow: hidden;
+  }
+  
+  .category-summary {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #374151;
+    background: #f9fafb;
+    user-select: none;
+    transition: background 0.15s;
+  }
+  
+  .category-summary:hover {
+    background: #f3f4f6;
+  }
+  
+  .category-icon {
+    font-size: 0.9rem;
+  }
+  
+  .category-count {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    font-weight: 400;
+  }
+  
+  .book-category {
+    padding: 0.25rem 0.5rem 0.5rem 2rem;
+  }
+  
+  .book-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.3rem 0.5rem;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 0.82rem;
+    transition: background 0.15s;
+  }
+  
+  .book-checkbox:hover {
+    background: #f3f4f6;
+  }
+  
+  .book-checkbox input[type="checkbox"] {
+    flex-shrink: 0;
+  }
+  
+  .book-name {
+    flex: 1;
+    color: #374151;
+  }
+  
+  .book-count {
+    font-size: 0.7rem;
+    color: #9ca3af;
+    background: #f3f4f6;
+    padding: 0.1rem 0.4rem;
+    border-radius: 10px;
+  }
+  
+  .search-type-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  
+  .search-type-option {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.75rem;
+    cursor: pointer;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    transition: all 0.15s;
+    background: white;
+    font-size: 0.82rem;
+  }
+  
+  .search-type-option:has(input:checked) {
+    background: #eef2ff;
+    border-color: #818cf8;
+  }
+  
+  .search-type-option:hover {
+    border-color: #c7d2fe;
+  }
+  
+  .search-type-option input[type="radio"] {
+    flex-shrink: 0;
+  }
+  
+  .type-label {
+    font-weight: 600;
+    color: #374151;
+  }
+  
+  .option-description {
+    display: block;
+    font-size: 0.72rem;
+    color: #9ca3af;
+    margin-top: 0.1rem;
+  }
+  
+  .proximity-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  
+  .proximity-label {
+    font-size: 0.85rem;
+    color: #4b5563;
+  }
+  
+  .proximity-select {
+    padding: 0.4rem 0.6rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    max-width: 250px;
+    font-size: 0.85rem;
+    background: white;
+  }
+  
+  .option-actions {
+    display: flex;
+    gap: 0.6rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #e5e7eb;
+  }
+  
+  .action-btn {
+    padding: 0.5rem 1.2rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .apply-btn {
+    background: #10b981;
+    color: white;
+  }
+  
+  .apply-btn:hover {
+    background: #059669;
+  }
+  
+  .reset-btn {
+    background: #f3f4f6;
+    color: #374151;
+  }
+  
+  .reset-btn:hover {
+    background: #e5e7eb;
+  }
+  
+  /* Mobile */
+  @media (max-width: 640px) {
+    .options-header {
+      flex-direction: column;
+      gap: 0.5rem;
+      align-items: flex-start;
+    }
+    
+    .options-title {
+      font-size: 0.85rem;
+    }
+    
+    .options-header-row {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    
+    .search-type-options {
+      flex-direction: column;
+    }
+    
+    .search-type-option {
+      width: 100%;
+    }
+    
+    .option-actions {
+      flex-direction: column;
+    }
+    
+    .action-btn {
+      width: 100%;
+      text-align: center;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const toggleBtn = document.getElementById('toggleAdvancedOptions');
+    const optionsContent = document.getElementById('advancedOptionsContent');
+    const toggleText = toggleBtn.querySelector('.toggle-text');
+    const toggleIcon = toggleBtn.querySelector('.toggle-icon');
+    
+    let isOpen = false;
+    
+    toggleBtn.addEventListener('click', function() {
+      isOpen = !isOpen;
+      optionsContent.style.display = isOpen ? 'block' : 'none';
+      toggleText.textContent = isOpen ? 'הסתר אפשרויות / Hide Options' : 'הצג אפשרויות / Show Options';
+      toggleIcon.classList.toggle('rotated', isOpen);
+    });
+    
+    // Select All / Deselect All
+    document.getElementById('selectAllBooks').addEventListener('click', function() {
+      document.querySelectorAll('input[name="book"]').forEach(cb => cb.checked = true);
+    });
+    
+    document.getElementById('deselectAllBooks').addEventListener('click', function() {
+      document.querySelectorAll('input[name="book"]').forEach(cb => cb.checked = false);
+    });
+
+    // Apply options
+    document.getElementById('applyAdvancedOptions').addEventListener('click', function() {
+      const options = getAdvancedOptions();
+      document.dispatchEvent(new CustomEvent('advanced-search-options', { detail: options }));
+      
+      // Visual feedback
+      const btn = this;
+      const orig = btn.textContent;
+      btn.textContent = '✓ הוחל / Applied!';
+      btn.style.background = '#059669';
+      setTimeout(() => { btn.textContent = orig; btn.style.background = ''; }, 1500);
+    });
+    
+    // Reset options
+    document.getElementById('resetAdvancedOptions').addEventListener('click', function() {
+      resetAdvancedOptions();
+      const btn = this;
+      const orig = btn.textContent;
+      btn.textContent = '✓ אופס / Reset!';
+      setTimeout(() => { btn.textContent = orig; }, 1000);
+    });
+    
+    function getAdvancedOptions() {
+      const selectedBooks = Array.from(document.querySelectorAll('input[name="book"]:checked'))
+        .map(cb => cb.value);
+      
+      const searchType = document.querySelector('input[name="searchType"]:checked')?.value || 'contains';
+      const proximity = parseInt(document.getElementById('proximity').value);
+      
+      return { books: selectedBooks, searchType, proximity };
+    }
+    
+    function resetAdvancedOptions() {
+      document.querySelectorAll('input[name="book"]').forEach(cb => cb.checked = true);
+      document.querySelector('input[name="searchType"][value="contains"]').checked = true;
+      document.getElementById('proximity').value = '0';
+    }
+    
+    // Initialize
+    resetAdvancedOptions();
+  });
+</script>

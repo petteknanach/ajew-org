@@ -1,0 +1,258 @@
+<!-- Navigation Buttons Template -->
+<div class="navigation-buttons">
+  <div class="nav-container">
+    {{#if previous}}
+    <a href="{{previous.url}}" class="nav-button prev-button">
+      <span class="nav-arrow">←</span>
+      <div class="nav-content">
+        <span class="nav-label">Previous</span>
+        <span class="nav-title">{{previous.title}}</span>
+        {{#if previous.hebrewTitle}}
+        <span class="nav-hebrew">{{previous.hebrewTitle}}</span>
+        {{/if}}
+      </div>
+    </a>
+    {{else}}
+    <div class="nav-button prev-button disabled">
+      <span class="nav-arrow">←</span>
+      <div class="nav-content">
+        <span class="nav-label">Previous</span>
+        <span class="nav-title">Beginning</span>
+      </div>
+    </div>
+    {{/if}}
+
+    <div class="nav-center">
+      <a href="{{up.url}}" class="up-button">
+        <span class="up-arrow">↑</span>
+        <span class="up-label">{{up.label}}</span>
+      </a>
+    </div>
+
+    {{#if next}}
+    <a href="{{next.url}}" class="nav-button next-button">
+      <div class="nav-content">
+        <span class="nav-label">Next</span>
+        <span class="nav-title">{{next.title}}</span>
+        {{#if next.hebrewTitle}}
+        <span class="nav-hebrew">{{next.hebrewTitle}}</span>
+        {{/if}}
+      </div>
+      <span class="nav-arrow">→</span>
+    </a>
+    {{else}}
+    <div class="nav-button next-button disabled">
+      <div class="nav-content">
+        <span class="nav-label">Next</span>
+        <span class="nav-title">End</span>
+      </div>
+      <span class="nav-arrow">→</span>
+    </div>
+    {{/if}}
+  </div>
+</div>
+
+<style>
+.navigation-buttons {
+  margin: 2rem 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.nav-button {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.75rem;
+  text-decoration: none;
+  color: #374151;
+  background: white;
+  transition: all 0.2s ease;
+  min-height: 80px;
+}
+
+.nav-button:hover:not(.disabled) {
+  border-color: #3b82f6;
+  background: #f8fafc;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.nav-button.prev-button {
+  text-align: left;
+}
+
+.nav-button.next-button {
+  text-align: right;
+  flex-direction: row-reverse;
+}
+
+.nav-button.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #f9fafb;
+}
+
+.nav-arrow {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #6b7280;
+  margin: 0 1rem;
+}
+
+.nav-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.nav-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6b7280;
+}
+
+.nav-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.3;
+}
+
+.nav-hebrew {
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: #4b5563;
+  font-family: 'Frank Ruhl Libre', 'David', 'Times New Roman', serif;
+  direction: rtl;
+}
+
+.nav-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.up-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.75rem;
+  text-decoration: none;
+  color: #374151;
+  background: white;
+  transition: all 0.2s ease;
+}
+
+.up-button:hover {
+  border-color: #10b981;
+  background: #f0fdf4;
+}
+
+.up-arrow {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #6b7280;
+  margin-bottom: 0.25rem;
+}
+
+.up-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+@media (max-width: 768px) {
+  .nav-container {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .nav-button, .up-button {
+    width: 100%;
+    min-height: 70px;
+  }
+  
+  .nav-center {
+    order: -1;
+    width: 100%;
+  }
+  
+  .up-button {
+    flex-direction: row;
+    gap: 0.5rem;
+    justify-content: center;
+  }
+  
+  .up-arrow {
+    margin-bottom: 0;
+    margin-right: 0.5rem;
+  }
+}
+</style>
+
+<script>
+// Add click handlers for navigation
+document.addEventListener('DOMContentLoaded', function() {
+  const navButtons = document.querySelectorAll('.nav-button:not(.disabled)');
+  
+  navButtons.forEach(button => {
+    button.addEventListener('click', function(e) {
+      if (!this.href) return;
+      
+      // Add loading state
+      this.style.opacity = '0.7';
+      this.style.pointerEvents = 'none';
+      
+      const originalHTML = this.innerHTML;
+      this.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: center; width: 100%;">
+          <div style="width: 20px; height: 20px; border: 2px solid #f3f3f3; border-top: 2px solid #3b82f6; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+        </div>
+      `;
+      
+      // Add spinner animation
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `;
+      document.head.appendChild(style);
+    });
+  });
+  
+  // Keyboard navigation
+  document.addEventListener('keydown', function(e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    
+    const prevButton = document.querySelector('.nav-button.prev-button:not(.disabled)');
+    const nextButton = document.querySelector('.nav-button.next-button:not(.disabled)');
+    
+    if (e.key === 'ArrowLeft' && prevButton) {
+      prevButton.click();
+    } else if (e.key === 'ArrowRight' && nextButton) {
+      nextButton.click();
+    } else if (e.key === 'ArrowUp') {
+      const upButton = document.querySelector('.up-button');
+      if (upButton) upButton.click();
+    }
+  });
+});
+</script>

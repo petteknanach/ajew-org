@@ -1,0 +1,238 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import { getVolume, getVolumeChapters, getVolumes } from '../data.js';
+
+export async function getStaticPaths() {
+  const volumes = getVolumes();
+  return volumes.map(volume => ({
+    params: { volume: volume.number.toString() },
+    props: { volumeData: volume }
+  }));
+}
+
+const { volume } = Astro.params;
+const { volumeData } = Astro.props;
+const chapters = getVolumeChapters(volume);
+
+if (!volumeData) {
+  return Astro.redirect('/books/likutay-nanach');
+}
+---
+
+<Layout title={`Likutay Nanach Volume ${volume}`} description={`לקוטי ננח כרך ${volume} - ${chapters.length} פרקים`}>
+  <div class="volume-page">
+    <header class="volume-header">
+      <h1>לקוטי ננח</h1>
+      <h2>כרך {volume}</h2>
+      <p class="subtitle">{chapters.length} פרקים</p>
+      <a href="/books/likutay-nanach" class="back-link">← חזרה לכל הכרכים</a>
+    </header>
+
+    <div class="volume-info">
+      <div class="info-card">
+        <h3>מידע על הכרך</h3>
+        <ul>
+          <li><strong>מספר פרקים:</strong> {chapters.length}</li>
+          <li><strong>גודל טקסט:</strong> {Math.round(volumeData.size / 1024)}KB</li>
+          <li><strong>זמין לחיפוש:</strong> כן</li>
+        </ul>
+      </div>
+    </div>
+
+    <nav class="chapters-nav">
+      <h3>תוכן העניינים</h3>
+      <div class="chapters-grid">
+        {chapters.map(chapter => (
+          <a href={`/books/likutay-nanach/volume-${volume}/chapter-${chapter.number}`} class="chapter-card">
+            <div class="chapter-number">פרק {chapter.number}</div>
+            <div class="chapter-title">{chapter.title}</div>
+            <div class="chapter-preview">
+              {chapter.content.substring(0, 150)}...
+            </div>
+          </a>
+        ))}
+      </div>
+    </nav>
+
+    <div class="search-note">
+      <p><strong>חיפוש:</strong> ניתן לחפש בתוכן זה דרך פונקציית החיפוש הראשית של האתר.</p>
+      <p>התוכן כולו מתווסף לאינדקס החיפוש של האתר.</p>
+    </div>
+  </div>
+
+  <style>
+    .volume-page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .volume-header {
+      text-align: center;
+      margin-bottom: 3rem;
+      border-bottom: 3px solid #4a90e2;
+      padding-bottom: 2rem;
+    }
+
+    .volume-header h1 {
+      font-size: 2.5rem;
+      color: #2c3e50;
+      margin-bottom: 0.5rem;
+    }
+
+    .volume-header h2 {
+      font-size: 2rem;
+      color: #34495e;
+      margin-bottom: 1rem;
+      font-family: 'David', 'Arial Hebrew', serif;
+    }
+
+    .subtitle {
+      font-size: 1.2rem;
+      color: #7f8c8d;
+      margin-bottom: 1.5rem;
+    }
+
+    .back-link {
+      display: inline-block;
+      color: #4a90e2;
+      text-decoration: none;
+      font-weight: bold;
+      padding: 0.5rem 1rem;
+      border: 2px solid #4a90e2;
+      border-radius: 5px;
+      transition: all 0.3s;
+    }
+
+    .back-link:hover {
+      background: #4a90e2;
+      color: white;
+    }
+
+    .volume-info {
+      margin-bottom: 3rem;
+    }
+
+    .info-card {
+      background: #f8f9fa;
+      padding: 1.5rem;
+      border-radius: 10px;
+      border-right: 5px solid #4a90e2;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    .info-card h3 {
+      color: #2c3e50;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .info-card ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .info-card li {
+      margin-bottom: 0.5rem;
+      padding: 0.5rem;
+      background: white;
+      border-radius: 5px;
+    }
+
+    .chapters-nav {
+      margin-bottom: 3rem;
+    }
+
+    .chapters-nav h3 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 2rem;
+      font-size: 1.8rem;
+    }
+
+    .chapters-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .chapter-card {
+      background: white;
+      border-radius: 10px;
+      padding: 1.5rem;
+      text-decoration: none;
+      color: inherit;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      border: 2px solid #e0e0e0;
+      transition: all 0.3s;
+      display: block;
+    }
+
+    .chapter-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+      border-color: #4a90e2;
+    }
+
+    .chapter-number {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #4a90e2;
+      margin-bottom: 0.5rem;
+    }
+
+    .chapter-title {
+      font-size: 1.1rem;
+      color: #2c3e50;
+      margin-bottom: 1rem;
+      font-weight: bold;
+    }
+
+    .chapter-preview {
+      font-size: 0.9rem;
+      color: #7f8c8d;
+      line-height: 1.6;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+    }
+
+    .search-note {
+      background: #e8f4fc;
+      padding: 1.5rem;
+      border-radius: 10px;
+      border-left: 5px solid #3498db;
+      margin-top: 2rem;
+    }
+
+    .search-note p {
+      margin: 0 0 0.5rem 0;
+      color: #2c3e50;
+    }
+
+    .search-note p:last-child {
+      margin-bottom: 0;
+    }
+
+    @media (max-width: 768px) {
+      .volume-page {
+        padding: 1rem;
+      }
+
+      .volume-header h1 {
+        font-size: 2rem;
+      }
+
+      .volume-header h2 {
+        font-size: 1.5rem;
+      }
+
+      .chapters-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</Layout>

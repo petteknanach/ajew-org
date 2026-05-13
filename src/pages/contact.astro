@@ -1,0 +1,154 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Contact" description="Contact the site manager of ajew.org">
+  <section class="page-header">
+    <h1>Contact</h1>
+    <p>Get in touch with us</p>
+  </section>
+
+  <section class="contact-content">
+    <div class="container">
+      <div class="contact-card">
+        <h2>Contact Site Manager / יצירת קשר</h2>
+        <p>
+          Have questions, suggestions, or want to contribute to ajew.org? 
+          We'd love to hear from you.
+        </p>
+        <p class="hebrew">
+          יש לכם שאלות, הצעות או רוצים לתרום לאתר ajew.org? 
+          נשמח לשמוע מכם.
+        </p>
+        <div class="email-section">
+          <p class="email-label">Email / אימייל:</p>
+          <a href="mailto:naanaach@gmail.com" class="email-link">naanaach@gmail.com</a>
+        </div>
+      </div>
+
+      <div class="signature">
+        <p class="hebrew">נ נח נחמ נחמן מאומן</p>
+        <p>Na Nach Nachma Nachman Me'Uman</p>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .page-header {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+    color: white;
+    padding: 4rem 2rem;
+    text-align: center;
+  }
+
+  .page-header h1 {
+    font-family: var(--font-hebrew);
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .page-header p {
+    opacity: 0.9;
+    font-size: 1.2rem;
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .contact-content {
+    padding: 4rem 0;
+  }
+
+  .contact-card {
+    background: white;
+    border-radius: 8px;
+    padding: 2.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-top: 4px solid var(--color-accent);
+  }
+
+  .contact-card h2 {
+    font-family: var(--font-hebrew);
+    font-size: 1.8rem;
+    color: var(--color-primary);
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  .contact-card p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #444;
+    margin-bottom: 1rem;
+  }
+
+  .contact-card p.hebrew {
+    font-family: var(--font-hebrew);
+    font-size: 1.2rem;
+    direction: rtl;
+    text-align: right;
+    color: #555;
+  }
+
+  .email-section {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: var(--color-bg);
+    border-radius: 6px;
+    text-align: center;
+  }
+
+  .email-label {
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+  }
+
+  .email-link {
+    display: inline-block;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border: 2px solid var(--color-accent);
+    border-radius: 4px;
+    transition: all 0.2s ease;
+  }
+
+  .email-link:hover {
+    background: var(--color-accent);
+    color: white;
+  }
+
+  .signature {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    text-align: center;
+  }
+
+  .signature .hebrew {
+    font-family: var(--font-hebrew);
+    font-size: 2rem;
+    color: var(--color-primary);
+    margin-bottom: 0.5rem;
+  }
+
+  @media (max-width: 600px) {
+    .contact-card {
+      padding: 1.5rem;
+    }
+
+    .contact-card h2 {
+      font-size: 1.4rem;
+    }
+
+    .email-link {
+      font-size: 1.1rem;
+    }
+  }
+</style>

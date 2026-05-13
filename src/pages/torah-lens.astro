@@ -1,0 +1,1246 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Torah Lens - Current Events Through Torah Perspective" description="Understand current events through the lens of Breslov Torah teachings. See today's headlines through the wisdom of Rabbi Nachman and the Torah. Based on Amos 3:7." breadcrumbs={[{name: "Home", url: "https://ajew.org"}, {name: "Torah Lens", url: "https://ajew.org/torah-lens"}]} jsonLd={{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Torah Lens - Current Events Through Torah",
+  "description": "Understand current events through the lens of Breslov Torah teachings.",
+  "url": "https://ajew.org/torah-lens",
+  "isPartOf": { "@type": "WebSite", "name": "A Jew", "url": "https://ajew.org" }
+}}>
+<div class="lens-page">
+  <header class="lens-header">
+    <div class="header-ornament">&#x2721;</div>
+    <div class="header-hebrew">עדשת התורה</div>
+    <h1>Torah Lens</h1>
+    <blockquote class="header-verse" dir="rtl">
+      <p class="verse-he">כִּי לֹא יַעֲשֶׂה אֲדֹנָי ה' דָּבָר כִּי אִם גָּלָה סוֹדוֹ אֶל עֲבָדָיו הַנְּבִיאִים</p>
+      <p class="verse-en">"For the Lord God does nothing without revealing His counsel to His servants the prophets."</p>
+      <cite>Amos 3:7</cite>
+    </blockquote>
+    <blockquote class="header-verse secondary" dir="rtl">
+      <p class="verse-he">אָמַרְתִּי אַךְ תִּירְאִי אוֹתִי תִּקְחִי מוּסָר</p>
+      <p class="verse-en">"I said: Surely you will fear Me, you will accept correction."</p>
+      <cite>Tzefania 3:7</cite>
+    </blockquote>
+  </header>
+
+  <!-- Headlines Section -->
+  <section class="lens-headlines" id="headlinesSection" style="display:none;">
+    <h2 class="headlines-title">Today's Headlines Through Torah / כותרות היום דרך התורה</h2>
+    <div class="headlines-grid" id="headlinesGrid">
+      <!-- Filled by JS -->
+    </div>
+  </section>
+
+  <!-- Headlines Loading -->
+  <div class="headlines-loading" id="headlinesLoading">
+    <div class="headlines-loading-dots">
+      <span></span><span></span><span></span>
+    </div>
+    <p>Loading current headlines...</p>
+  </div>
+
+  <!-- Divider before search -->
+  <div class="section-divider" id="searchDivider" style="display:none;">
+    <span>Or Search Any Event</span>
+  </div>
+
+  <!-- Main Input -->
+  <section class="lens-input-section">
+    <div class="input-container">
+      <label for="lensInput" class="input-label">What happened in the world? / ?מה קרה בעולם</label>
+      <div class="input-wrapper">
+        <input
+          type="text"
+          id="lensInput"
+          placeholder="What happened? / ?מה קרה (e.g., earthquake, market crash, peace deal...)"
+          dir="auto"
+          autocomplete="off"
+          aria-label="Describe what happened in the world"
+        />
+        <button id="lensSearchBtn" aria-label="Find Torah perspective">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quick Pick Buttons -->
+  <section class="lens-quickpick" id="quickPickSection">
+    <h2 class="section-label">Quick Topics / נושאים</h2>
+    <div class="quickpick-grid" id="quickPickGrid">
+      <!-- Filled by JS -->
+    </div>
+  </section>
+
+  <!-- Loading -->
+  <div id="lensLoading" class="lens-loading" style="display:none;">
+    <div class="loading-spinner"></div>
+    <p>Searching Torah sources...</p>
+  </div>
+
+  <!-- Results -->
+  <section id="lensResults" class="lens-results" style="display:none;">
+    <!-- Filled by JS -->
+  </section>
+
+  <!-- Footer Note -->
+  <footer class="lens-footer">
+    <div class="footer-ornament">&#x2721;</div>
+    <p class="footer-obligation">
+      The Torah obligates us to understand the messages Hashem sends through events in the world.
+      As the prophet says: <em>"If a shofar is blown in a city, will the people not tremble?"</em> (Amos 3:6).
+      R' Nachman of Breslov taught us to pay attention to the hints Hashem speaks to us daily through all that occurs.
+    </p>
+    <p class="footer-disclaimer">
+      This is not prophecy — it is Torah-based reflection for spiritual growth.
+      The sources presented are starting points for deeper study and personal prayer (hisbodedus).
+    </p>
+  </footer>
+</div>
+
+<script is:inline>
+(function() {
+  let lensData = null;
+  const STORAGE_KEY = 'torah-lens-last';
+
+  // Load the index
+  async function loadIndex() {
+    try {
+      const resp = await fetch('/torah-lens-index.json');
+      if (!resp.ok) throw new Error('Index not found');
+      lensData = await resp.json();
+      renderQuickPicks();
+    } catch (e) {
+      console.error('Failed to load Torah Lens index:', e);
+      document.getElementById('quickPickGrid').innerHTML =
+        '<p style="color:#b91c1c;text-align:center;grid-column:1/-1;">Index not yet built. Run: <code>node scripts/build-torah-lens-index.cjs</code></p>';
+    }
+  }
+
+  function renderQuickPicks() {
+    if (!lensData) return;
+    const grid = document.getElementById('quickPickGrid');
+    grid.innerHTML = '';
+    for (const evt of lensData.eventTypes) {
+      const btn = document.createElement('button');
+      btn.className = 'quickpick-btn';
+      btn.setAttribute('data-event-id', evt.id);
+      btn.innerHTML = `<span class="qp-icon">${evt.icon}</span><span class="qp-label">${evt.label.split(' / ')[0]}</span>`;
+      btn.addEventListener('click', () => {
+        showResults(evt);
+        document.getElementById('lensInput').value = evt.label;
+      });
+      grid.appendChild(btn);
+    }
+  }
+
+  function matchEvent(query) {
+    if (!lensData) return null;
+    const q = query.toLowerCase().trim();
+    if (!q) return null;
+
+    let bestMatch = null;
+    let bestScore = 0;
+
+    for (const evt of lensData.eventTypes) {
+      let score = 0;
+
+      // Check keywords
+      for (const kw of evt.keywords) {
+        if (q.includes(kw.toLowerCase())) {
+          score += 10;
+          // Exact match bonus
+          if (q === kw.toLowerCase()) score += 5;
+        }
+        // Partial match
+        if (kw.toLowerCase().includes(q) || q.includes(kw.toLowerCase().substring(0, 4))) {
+          score += 3;
+        }
+      }
+
+      // Check Hebrew keywords
+      for (const kw of (evt.keywordsHe || [])) {
+        if (q.includes(kw)) score += 10;
+      }
+
+      // Check label
+      if (q.includes(evt.label.split(' / ')[0].toLowerCase())) score += 15;
+      if (evt.label.toLowerCase().includes(q)) score += 12;
+
+      // Check event id
+      if (q.includes(evt.id.replace(/-/g, ' '))) score += 8;
+
+      if (score > bestScore) {
+        bestScore = score;
+        bestMatch = evt;
+      }
+    }
+
+    // Fallback: try substring matching on all keywords
+    if (!bestMatch || bestScore < 3) {
+      for (const evt of lensData.eventTypes) {
+        for (const kw of evt.keywords) {
+          const kwWords = kw.toLowerCase().split(' ');
+          const qWords = q.split(' ');
+          for (const qw of qWords) {
+            if (qw.length > 3) {
+              for (const kww of kwWords) {
+                if (kww.startsWith(qw) || qw.startsWith(kww)) {
+                  if (!bestMatch || bestScore < 2) {
+                    bestMatch = evt;
+                    bestScore = 2;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    return bestMatch;
+  }
+
+  function showResults(evt, headlineText) {
+    const container = document.getElementById('lensResults');
+    container.style.display = 'block';
+    document.getElementById('quickPickSection').style.display = 'none';
+
+    // Scroll to results
+    setTimeout(() => {
+      container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+
+    // Get the user's search query or headline
+    const query = headlineText || document.getElementById('lensInput').value || '';
+
+    // Build result HTML
+    let html = `
+      <div class="result-card">
+        <div class="result-header">
+          <span class="result-icon">${evt.icon}</span>
+          <div>
+            <h2 class="result-title">${evt.label}</h2>
+            <h3 class="result-title-he" dir="rtl">${evt.labelHe}</h3>
+          </div>
+        </div>
+
+        ${query ? `<div class="result-query"><strong>Regarding:</strong> ${query}</div>` : ''}
+
+        <div class="result-analysis">
+          <p>${evt.analysis}</p>
+        </div>
+
+        <div class="result-section">
+          <h3 class="section-heading">Primary Breslov Sources</h3>
+          <div class="source-list">
+    `;
+
+    for (const src of evt.breslovSources) {
+      const linkAttr = src.verified !== false ? `href="${src.url}"` : `href="${src.url}"`;
+      html += `
+        <div class="source-card breslov-source">
+          <div class="source-icon-wrap">&#x1F4D6;</div>
+          <div class="source-content">
+            <a ${linkAttr} class="source-title">${src.title}</a>
+            <span class="source-title-he" dir="rtl">${src.titleHe}</span>
+            <p class="source-desc">${src.desc}</p>
+            ${src.snippet ? `<div class="source-snippet" style="display:none;"><p>${src.snippet}</p></div>` : ''}
+            <div class="source-actions">
+              <a ${linkAttr} class="read-link">Read &#x2192;</a>
+              ${src.snippet ? '<button class="expand-btn" onclick="this.closest(\'.source-card\').querySelector(\'.source-snippet\').style.display=this.closest(\'.source-card\').querySelector(\'.source-snippet\').style.display===\'none\'?\'block\':\'none\';this.textContent=this.textContent.includes(\'Show\')?\'Hide excerpt\':\'Show excerpt\'">Show excerpt</button>' : ''}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    html += `
+          </div>
+        </div>
+
+        <div class="result-section traditional">
+          <h3 class="section-heading">Supporting Traditional Sources</h3>
+          <div class="source-list">
+    `;
+
+    for (const src of evt.traditionalSources) {
+      html += `
+        <div class="source-card traditional-source">
+          <div class="source-icon-wrap">&#x1F4DC;</div>
+          <div class="source-content">
+            <span class="source-title">${src.source}</span>
+            <p class="source-desc">${src.desc}</p>
+          </div>
+        </div>
+      `;
+    }
+
+    html += `
+          </div>
+        </div>
+
+        <div class="result-analysis-he" dir="rtl" style="display:none;">
+          <p>${evt.analysisHe}</p>
+        </div>
+
+        <div class="result-actions">
+          <button class="toggle-hebrew-btn" onclick="
+            const heSection = this.closest('.result-card').querySelector('.result-analysis-he');
+            heSection.style.display = heSection.style.display === 'none' ? 'block' : 'none';
+            this.textContent = heSection.style.display === 'none' ? 'Show Hebrew Analysis' : 'Hide Hebrew Analysis';
+          ">Show Hebrew Analysis</button>
+          <button class="share-btn" onclick="shareLensResult('${evt.id}', '${evt.label}')">&#x1F4E4; Share</button>
+          <a class="discuss-btn" href="/chat?topic=${encodeURIComponent('Torah Lens: ' + evt.label + ' — ' + evt.analysis.substring(0, 100))}" target="_blank">&#x1F4AC; Discuss in Chat</a>
+          <button class="back-btn" onclick="
+            document.getElementById('lensResults').style.display = 'none';
+            document.getElementById('quickPickSection').style.display = '';
+            document.getElementById('lensInput').value = '';
+            document.getElementById('lensInput').focus();
+          ">&#x2190; Back to Topics</button>
+        </div>
+      </div>
+    `;
+
+    container.innerHTML = html;
+  }
+
+  function shareLensResult(eventId, eventLabel) {
+    const url = window.location.origin + '/torah-lens?event=' + encodeURIComponent(eventId);
+    const text = 'Torah Lens: ' + eventLabel + ' — Understanding events through Torah teachings';
+    if (navigator.share) {
+      navigator.share({ title: 'Torah Lens — ' + eventLabel, text: text, url: url }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(url).then(() => {
+        const btn = document.querySelector('.share-btn');
+        if (btn) { btn.textContent = '✓ Link Copied!'; setTimeout(() => { btn.innerHTML = '&#x1F4E4; Share'; }, 2000); }
+      }).catch(() => {
+        prompt('Copy this link:', url);
+      });
+    }
+  }
+
+  // Handle ?event= URL parameter
+  (function() {
+    const params = new URLSearchParams(window.location.search);
+    const eventParam = params.get('event');
+    if (eventParam && window.lensData) {
+      const evt = window.lensData.events.find(e => e.id === eventParam);
+      if (evt) { setTimeout(() => showResults(evt), 500); }
+    }
+  })();
+
+  function doSearch() {
+    const input = document.getElementById('lensInput');
+    const query = input.value.trim();
+    if (!query) return;
+
+    const loading = document.getElementById('lensLoading');
+    loading.style.display = 'flex';
+
+    setTimeout(() => {
+      const match = matchEvent(query);
+      loading.style.display = 'none';
+
+      if (match) {
+        showResults(match, query);
+      } else {
+        // Show no match message
+        const container = document.getElementById('lensResults');
+        container.style.display = 'block';
+        document.getElementById('quickPickSection').style.display = 'none';
+        container.innerHTML = `
+          <div class="no-match">
+            <p>No specific Torah perspective found for "<strong>${query}</strong>".</p>
+            <p>Try one of the quick topics below, or describe the event differently.</p>
+            <button class="back-btn" onclick="
+              document.getElementById('lensResults').style.display = 'none';
+              document.getElementById('quickPickSection').style.display = '';
+              document.getElementById('lensInput').value = '';
+              document.getElementById('lensInput').focus();
+            ">&#x2190; Back to Topics</button>
+          </div>
+        `;
+      }
+    }, 300);
+  }
+
+  // Event listeners
+  document.getElementById('lensSearchBtn').addEventListener('click', doSearch);
+  document.getElementById('lensInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') doSearch();
+  });
+
+  // Load headlines from news API
+  async function loadHeadlines() {
+    const section = document.getElementById('headlinesSection');
+    const loading = document.getElementById('headlinesLoading');
+    const divider = document.getElementById('searchDivider');
+    const grid = document.getElementById('headlinesGrid');
+
+    try {
+      const resp = await fetch('/api/torah-lens-news');
+      if (!resp.ok) throw new Error('API error');
+      const data = await resp.json();
+
+      loading.style.display = 'none';
+
+      if (!data.headlines || data.headlines.length === 0) {
+        // No headlines — just hide the section quietly
+        return;
+      }
+
+      // Render headline cards
+      grid.innerHTML = '';
+      for (const h of data.headlines) {
+        const card = document.createElement('button');
+        card.className = 'headline-card';
+        card.setAttribute('data-event-type', h.eventType);
+
+        // Truncate long titles
+        const displayTitle = h.title.length > 90 ? h.title.substring(0, 87) + '...' : h.title;
+
+        card.innerHTML =
+          '<div class="hl-top">' +
+            '<span class="hl-icon">' + h.eventIcon + '</span>' +
+            '<span class="hl-badge">' + h.eventLabel + '</span>' +
+          '</div>' +
+          '<p class="hl-title">' + displayTitle + '</p>' +
+          '<div class="hl-meta">' +
+            '<span class="hl-source">' + h.source + '</span>' +
+            (h.date ? '<span class="hl-date">' + h.date + '</span>' : '') +
+          '</div>';
+
+        card.addEventListener('click', function() {
+          // Find matching event in lensData and trigger showResults with headline text
+          if (lensData) {
+            var evt = lensData.eventTypes.find(function(e) { return e.id === h.eventType; });
+            if (evt) {
+              document.getElementById('lensInput').value = h.title;
+              showResults(evt, h.title);
+            }
+          }
+        });
+
+        grid.appendChild(card);
+      }
+
+      section.style.display = '';
+      divider.style.display = '';
+
+    } catch (e) {
+      // Graceful fallback — just hide everything
+      loading.style.display = 'none';
+    }
+  }
+
+  // Load data
+  loadIndex();
+  loadHeadlines();
+})();
+</script>
+
+<style>
+  .lens-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 1rem 3rem;
+    font-family: 'Frank Ruhl Libre', serif;
+  }
+
+  /* Header */
+  .lens-header {
+    text-align: center;
+    padding: 3rem 1rem 2rem;
+    background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+    color: #f0e6d3;
+    margin: 0 -1rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    border-bottom: 3px solid #c9a84c;
+  }
+
+  .header-ornament {
+    font-size: 2rem;
+    color: #c9a84c;
+    margin-bottom: 0.5rem;
+  }
+
+  .header-hebrew {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #c9a84c;
+    direction: rtl;
+    margin-bottom: 0.25rem;
+    font-family: 'Frank Ruhl Libre', serif;
+  }
+
+  .lens-header h1 {
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: #e0d5c1;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    font-family: 'Open Sans', sans-serif;
+  }
+
+  .header-verse {
+    border: none;
+    margin: 0 auto 1rem;
+    padding: 0;
+    max-width: 600px;
+  }
+
+  .header-verse.secondary {
+    margin-bottom: 0;
+    opacity: 0.8;
+  }
+
+  .verse-he {
+    font-size: 1.2rem;
+    line-height: 1.8;
+    color: #f0e6d3;
+    font-family: 'Frank Ruhl Libre', serif;
+  }
+
+  .verse-en {
+    font-size: 0.95rem;
+    color: #c9a84c;
+    font-style: italic;
+    direction: ltr;
+    margin-top: 0.25rem;
+    font-family: 'Open Sans', sans-serif;
+  }
+
+  .header-verse cite {
+    font-size: 0.85rem;
+    color: #8a7a5a;
+    font-style: normal;
+    display: block;
+    margin-top: 0.25rem;
+    direction: ltr;
+    font-family: 'Open Sans', sans-serif;
+  }
+
+  /* Input Section */
+  .lens-input-section {
+    background: #1a1a2e;
+    margin: 0 -1rem;
+    padding: 2rem;
+    border-bottom: 1px solid #2a2a4e;
+  }
+
+  .input-label {
+    display: block;
+    text-align: center;
+    font-size: 1.15rem;
+    color: #c9a84c;
+    margin-bottom: 1rem;
+    font-family: 'Frank Ruhl Libre', serif;
+  }
+
+  .input-container {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .input-wrapper {
+    display: flex;
+    background: #2a2a4e;
+    border: 2px solid #3a3a5e;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .input-wrapper:focus-within {
+    border-color: #c9a84c;
+  }
+
+  .input-wrapper input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 1rem 1.25rem;
+    font-size: 1.05rem;
+    color: #f0e6d3;
+    font-family: 'Open Sans', sans-serif;
+    outline: none;
+  }
+
+  .input-wrapper input::placeholder {
+    color: #6a6a8a;
+  }
+
+  .input-wrapper button {
+    background: #c9a84c;
+    border: none;
+    padding: 0 1.25rem;
+    cursor: pointer;
+    color: #1a1a2e;
+    transition: background 0.2s;
+  }
+
+  .input-wrapper button:hover {
+    background: #d4b85c;
+  }
+
+  /* Quick Pick Section */
+  .lens-quickpick {
+    background: #1a1a2e;
+    margin: 0 -1rem;
+    padding: 1.5rem 2rem 2rem;
+  }
+
+  .section-label {
+    text-align: center;
+    font-size: 1rem;
+    color: #8a7a5a;
+    margin-bottom: 1.25rem;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    font-family: 'Open Sans', sans-serif;
+  }
+
+  .quickpick-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.75rem;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .quickpick-btn {
+    background: #2a2a4e;
+    border: 1px solid #3a3a5e;
+    border-radius: 10px;
+    padding: 0.75rem 0.5rem;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    transition: all 0.2s;
+    color: #d0c8b8;
+  }
+
+  .quickpick-btn:hover {
+    background: #3a3a5e;
+    border-color: #c9a84c;
+    transform: translateY(-2px);
+  }
+
+  .qp-icon {
+    font-size: 1.6rem;
+  }
+
+  .qp-label {
+    font-size: 0.8rem;
+    text-align: center;
+    line-height: 1.3;
+    font-family: 'Open Sans', sans-serif;
+  }
+
+  /* Loading */
+  .lens-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 3rem;
+    color: #c9a84c;
+    font-family: 'Open Sans', sans-serif;
+  }
+
+  .loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #3a3a5e;
+    border-top-color: #c9a84c;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Results */
+  .lens-results {
+    background: #1a1a2e;
+    margin: 0 -1rem;
+    padding: 2rem;
+  }
+
+  .result-card {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .result-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #c9a84c;
+  }
+
+  .result-icon {
+    font-size: 3rem;
+  }
+
+  .result-title {
+    font-size: 1.5rem;
+    color: #f0e6d3;
+    margin: 0;
+    font-family: 'Frank Ruhl Libre', serif;
+  }
+
+  .result-title-he {
+    font-size: 1.2rem;
+    color: #c9a84c;
+    font-weight: 400;
+    margin: 0.25rem 0 0;
+    font-family: 'Frank Ruhl Libre', serif;
+  }
+
+  .result-query {
+    background: #2a2a4e;
+    border: 1px solid #c9a84c;
+    border-radius: 8px;
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 1.5rem;
+    color: #f0e6d3;
+    font-size: 1.05rem;
+    font-family: 'Open Sans', sans-serif;
+  }
+
+  .result-query strong {
+    color: #c9a84c;
+    margin-right: 0.5rem;
+  }
+
+  .result-analysis {
+    background: #222244;
+    border-left: 4px solid #c9a84c;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 2rem;
+    border-radius: 0 8px 8px 0;
+  }
+
+  .result-analysis p {
+    color: #e0d5c1;
+    font-size: 1.05rem;
+    line-height: 1.8;
+    font-family: 'Frank Ruhl Libre', serif;
+  }
+
+  .result-analysis-he {
+    background: #222244;
+    border-right: 4px solid #c9a84c;
+    border-left: none;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 2rem;
+    border-radius: 8px 0 0 8px;
+  }
+
+  .result-analysis-he p {
+    color: #e0d5c1;
+    font-size: 1.15rem;
+    line-height: 2;
+    font-family: 'Frank Ruhl Libre', serif;
+  }
+
+  .section-heading {
+    font-size: 1.1rem;
+    color: #c9a84c;
+    margin-bottom: 1rem;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 600;
+  }
+
+  .result-section {
+    margin-bottom: 2rem;
+  }
+
+  .result-section.traditional {
+    border-top: 1px solid #3a3a5e;
+    padding-top: 1.5rem;
+  }
+
+  .source-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .source-card {
+    display: flex;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: #2a2a4e;
+    border-radius: 8px;
+    border: 1px solid #3a3a5e;
+    transition: border-color 0.2s;
+  }
+
+  .source-card:hover {
+    border-color: #c9a84c;
+  }
+
+  .source-icon-wrap {
+    font-size: 1.4rem;
+    flex-shrink: 0;
+    padding-top: 0.1rem;
+  }
+
+  .source-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .source-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #c9a84c;
+    text-decoration: none;
+    font-family: 'Open Sans', sans-serif;
+  }
+
+  a.source-title:hover {
+    text-decoration: underline;
+    color: #d4b85c;
+  }
+
+  .source-title-he {
+    display: block;
+    font-size: 0.9rem;
+    color: #d0c8b8;
+    margin-top: 0.15rem;
+    font-family: 'Frank Ruhl Libre', serif;
+  }
+
+  .source-desc {
+    font-size: 0.9rem;
+    color: #e8e0d0;
+    margin: 0.4rem 0 0;
+    line-height: 1.5;
+    font-family: 'Open Sans', sans-serif;
+  }
+
+  .source-snippet {
+    margin-top: 0.75rem;
+    padding: 0.75rem;
+    background: #1a1a2e;
+    border-radius: 6px;
+    border: 1px solid #3a3a5e;
+  }
+
+  .source-snippet p {
+    font-size: 0.88rem;
+    color: #d0c8b8;
+    line-height: 1.7;
+    font-family: 'Frank Ruhl Libre', serif;
+  }
+
+  .source-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+    align-items: center;
+  }
+
+  .read-link {
+    font-size: 0.85rem;
+    color: #c9a84c;
+    text-decoration: none;
+    font-weight: 600;
+    font-family: 'Open Sans', sans-serif;
+  }
+
+  .read-link:hover {
+    color: #d4b85c;
+    text-decoration: underline;
+  }
+
+  .expand-btn {
+    font-size: 0.8rem;
+    color: #8a8aaa;
+    background: none;
+    border: 1px solid #3a3a5e;
+    border-radius: 4px;
+    padding: 0.2rem 0.5rem;
+    cursor: pointer;
+    font-family: 'Open Sans', sans-serif;
+  }
+
+  .expand-btn:hover {
+    border-color: #c9a84c;
+    color: #c9a84c;
+  }
+
+  .traditional-source .source-title {
+    color: #d4b870;
+    cursor: default;
+  }
+
+  .result-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #3a3a5e;
+    flex-wrap: wrap;
+  }
+
+  .toggle-hebrew-btn,
+  .back-btn {
+    padding: 0.6rem 1.25rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-family: 'Open Sans', sans-serif;
+    transition: all 0.2s;
+  }
+
+  .toggle-hebrew-btn {
+    background: #2a2a4e;
+    border: 1px solid #c9a84c;
+    color: #c9a84c;
+  }
+
+  .toggle-hebrew-btn:hover {
+    background: #3a3a5e;
+  }
+
+  .back-btn {
+    background: transparent;
+    border: 1px solid #5a5a7e;
+    color: #8a8aaa;
+  }
+
+  .back-btn:hover {
+    border-color: #c9a84c;
+    color: #c9a84c;
+  }
+
+  .share-btn {
+    background: #c9a84c;
+    border: none;
+    color: #1a1a2e;
+    font-weight: 600;
+  }
+  .share-btn:hover {
+    background: #ddbf5e;
+  }
+  .discuss-btn {
+    background: #059669;
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9em;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .discuss-btn:hover {
+    background: #047857;
+  }
+
+  .no-match {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #b0a89a;
+    font-family: 'Open Sans', sans-serif;
+  }
+
+  .no-match p {
+    margin: 0.5rem 0;
+  }
+
+  .no-match .back-btn {
+    margin-top: 1.5rem;
+  }
+
+  /* Headlines Section */
+  .lens-headlines {
+    background: #1a1a2e;
+    margin: 0 -1rem;
+    padding: 1.5rem 2rem 1rem;
+  }
+
+  .headlines-title {
+    text-align: center;
+    font-size: 1rem;
+    color: #8a7a5a;
+    margin-bottom: 1.25rem;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    font-family: 'Open Sans', sans-serif;
+  }
+
+  .headlines-title::before,
+  .headlines-title::after {
+    content: '\2014\2014';
+    margin: 0 0.5em;
+    color: #3a3a5e;
+  }
+
+  .headlines-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.75rem;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .headline-card {
+    background: #222244;
+    border: 1px solid #3a3a5e;
+    border-radius: 10px;
+    padding: 0.85rem;
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    transition: all 0.2s;
+    color: #d0c8b8;
+    font-family: 'Open Sans', sans-serif;
+    width: 100%;
+  }
+
+  .headline-card:hover {
+    border-color: #c9a84c;
+    background: #2a2a50;
+    transform: translateY(-2px);
+  }
+
+  .hl-top {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .hl-icon {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  .hl-badge {
+    font-size: 0.68rem;
+    background: #3a3a5e;
+    color: #c9a84c;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    white-space: nowrap;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  .hl-title {
+    font-size: 0.82rem;
+    color: #e0d5c1;
+    line-height: 1.45;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .hl-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.68rem;
+    color: #6a6a8a;
+    margin-top: auto;
+  }
+
+  .hl-source {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .hl-date {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* Headlines Loading */
+  .headlines-loading {
+    background: #1a1a2e;
+    margin: 0 -1rem;
+    padding: 1.5rem 2rem;
+    text-align: center;
+    color: #6a6a8a;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 0.85rem;
+  }
+
+  .headlines-loading p {
+    margin: 0.5rem 0 0;
+  }
+
+  .headlines-loading-dots {
+    display: flex;
+    justify-content: center;
+    gap: 0.3rem;
+  }
+
+  .headlines-loading-dots span {
+    width: 6px;
+    height: 6px;
+    background: #5a5a7e;
+    border-radius: 50%;
+    animation: hlDot 1.2s ease-in-out infinite;
+  }
+
+  .headlines-loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .headlines-loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes hlDot {
+    0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+    40% { opacity: 1; transform: scale(1.2); }
+  }
+
+  /* Section Divider */
+  .section-divider {
+    background: #1a1a2e;
+    margin: 0 -1rem;
+    padding: 0.75rem 2rem;
+    text-align: center;
+    font-size: 0.85rem;
+    color: #6a6a8a;
+    font-family: 'Open Sans', sans-serif;
+    letter-spacing: 0.05em;
+  }
+
+  .section-divider span::before,
+  .section-divider span::after {
+    content: '\2014\2014';
+    margin: 0 0.5em;
+    color: #3a3a5e;
+  }
+
+  /* Footer */
+  .lens-footer {
+    background: #1a1a2e;
+    margin: 0 -1rem;
+    padding: 2rem 2rem 2.5rem;
+    text-align: center;
+    border-top: 1px solid #3a3a5e;
+  }
+
+  .footer-ornament {
+    font-size: 1.5rem;
+    color: #5a5a7e;
+    margin-bottom: 1rem;
+  }
+
+  .footer-obligation {
+    font-size: 0.95rem;
+    color: #b0a89a;
+    line-height: 1.7;
+    max-width: 600px;
+    margin: 0 auto 1rem;
+    font-family: 'Frank Ruhl Libre', serif;
+  }
+
+  .footer-disclaimer {
+    font-size: 0.82rem;
+    color: #6a6a8a;
+    max-width: 500px;
+    margin: 0 auto;
+    line-height: 1.5;
+    font-family: 'Open Sans', sans-serif;
+    font-style: italic;
+  }
+
+  /* Dark mode compatibility (page is already dark by default) */
+  body:not(.dark-mode) .lens-page {
+    /* Light mode overrides — keep dark aesthetic for this page */
+  }
+
+  /* Mobile */
+  @media (max-width: 640px) {
+    .header-hebrew {
+      font-size: 2rem;
+    }
+
+    .lens-header h1 {
+      font-size: 1.2rem;
+    }
+
+    .verse-he {
+      font-size: 1.05rem;
+    }
+
+    .quickpick-grid {
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 0.5rem;
+    }
+
+    .quickpick-btn {
+      padding: 0.6rem 0.3rem;
+    }
+
+    .qp-icon {
+      font-size: 1.3rem;
+    }
+
+    .qp-label {
+      font-size: 0.72rem;
+    }
+
+    .result-header {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .result-analysis {
+      padding: 1rem;
+    }
+
+    .source-card {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .result-actions {
+      flex-direction: column;
+    }
+
+    .toggle-hebrew-btn,
+    .back-btn {
+      width: 100%;
+      text-align: center;
+    }
+
+    .lens-input-section,
+    .lens-quickpick,
+    .lens-results,
+    .lens-footer,
+    .lens-headlines,
+    .headlines-loading,
+    .section-divider {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+
+    .headlines-grid {
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+    }
+  }
+</style>
+</Layout>

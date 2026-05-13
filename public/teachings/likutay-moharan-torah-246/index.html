@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 246</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 246</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה יבקשו מפיהו&quot;, אזי אותיות ה
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+246 - SOMETIMES THE PERSON NEEDS TO HAVE GREATNESS FOR HIMSELF
+Sometimes the person needs to have greatness [elevated status or self-importance] for himself, as it is written: "And his heart was exalted in the ways of Hashem" [2 Chronicles 17:6]. And it helps like a fast, because when he needs to come to an attainment [spiritual insight or level] and to ascend to some level, then he needs to forget his wisdom that was before. [Bava Metzia 85a]: "Rabbi Zeira fasted in order to forget the Talmud of Babylonia", because he was needing to come to a greater attainment that is the Torah of the land of Israel. And the greatness helps like the fast as above, because through the greatness he also forgets his wisdom, as our rabbis, of blessed memory, said: [Pesachim 66b] "All who is haughty, his wisdom departs from him". But one needs for this extra wisdom [additional insight or skill], because certainly greatness is a great prohibition very much [severe transgression of arrogance]. And if he is haughty in truth, certainly his wisdom will depart from him completely, and he will not come to attainment and he will become actually a fool. But one needs for this extra artistry [skillful conduct or balance], how to conduct himself in this, that he will have greatness only in order to forget his wisdom that was before, that he needs to forget as above. And even so he will be humble in truth.
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

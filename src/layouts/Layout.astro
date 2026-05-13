@@ -1,0 +1,974 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+  noindex?: boolean;
+  type?: string;
+  jsonLd?: object;
+  breadcrumbs?: Array<{name: string; url: string}>;
+  lang?: 'en' | 'he';
+  dir?: 'ltr' | 'rtl';
+  hreflangs?: Array<'en' | 'he'>;
+}
+
+const {
+  title,
+  description = "The largest online Breslov Torah library. 226+ sacred Jewish texts — Likutay Moharan, Zohar, Talmud, Mishna, Rambam, Tanach — in Hebrew with English translations. Free.",
+  image = "/og-image.png",
+  noindex = false,
+  type = "website",
+  jsonLd,
+  breadcrumbs,
+  lang = 'en',
+  dir = lang === 'he' ? 'rtl' : 'ltr',
+  hreflangs,
+} = Astro.props;
+
+// Determine which hreflang alternates to emit. If hreflangs is explicitly passed, use it.
+// Otherwise, default to both en+he (bilingual) for back-compat with existing behavior.
+const effectiveHreflangs: Array<'en' | 'he'> = hreflangs && hreflangs.length > 0 ? hreflangs : ['en', 'he'];
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL(image, Astro.site);
+const siteName = "A Jew - Breslov Torah Library";
+---
+
+<!doctype html>
+<html lang={lang} dir={dir}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Language" content={lang} />
+    <meta name="description" content={description} />
+    <meta name="keywords" content="Rabbi Nachman, Breslov, Na Nach, Nanach, Judaism, Torah, Likutay Moharan, Likutay Halachos, Likutay Tefilos, Hisbodidus, Zohar, Talmud, Mishna, Rambam, Tanach, Jewish texts, Hebrew books online, Torah study, Ramchal, Rabbi Moshe Chaim Luzzatto, Mesillas Yesharim, Derech Hashem, Kabbalah, Jewish mysticism" />
+    <meta name="author" content="Pettek Nanach" />
+    <meta name="robots" content={noindex ? "noindex, nofollow" : "index, follow"} />
+    <meta name="googlebot" content={noindex ? "noindex, nofollow" : "index, follow"} />
+    <link rel="canonical" href={canonicalURL} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="alternate" type="application/rss+xml" title="A Jew RSS Feed" href="/rss.xml" />
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap-index.xml" />
+    <title>{title} | A Jew</title>
+
+    <!-- Open Graph -->
+    <meta property="og:type" content={type} />
+    <meta property="og:locale" content={lang === 'he' ? 'he_IL' : 'en_US'} />
+    {effectiveHreflangs.length > 1 && <meta property="og:locale:alternate" content={lang === 'he' ? 'en_US' : 'he_IL'} />}
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={`${title} | A Jew`} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={title} />
+    <meta property="og:image:type" content="image/png" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={`${title} | A Jew`} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:site" content="@ajeworg" />
+    
+    <!-- Additional Meta Tags -->
+    <meta name="theme-color" content="#4a90e2" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="format-detection" content="telephone=no" />
+    
+    <!-- Structured Data: WebSite + SearchAction -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "A Jew - Breslov Torah Library",
+        "alternateName": "ajew.org",
+        "url": "https://ajew.org",
+        "description": "The largest online Breslov Torah library with 226+ sacred Jewish texts and 25,000+ pages. Read Likutay Moharan, Zohar, Talmud, Mishna, Rambam, Tanach in Hebrew with English translations.",
+        "inLanguage": ["en", "he"],
+        "publisher": {
+          "@type": "Organization",
+          "name": "A Jew",
+          "url": "https://ajew.org",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://ajew.org/og-image.png"
+          }
+        },
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://ajew.org/search-enhanced?q={search_term_string}"
+          },
+          "query-input": "required name=search_term_string"
+        }
+      }
+    </script>
+    
+    <!-- Language alternates -->
+    {effectiveHreflangs.includes('en') && <link rel="alternate" hreflang="en" href={canonicalURL} />}
+    {effectiveHreflangs.includes('he') && <link rel="alternate" hreflang="he" href={canonicalURL} />}
+    <link rel="alternate" hreflang="x-default" href={canonicalURL} />
+    
+    <!-- Google Scholar / Academic indexing -->
+    <meta name="citation_title" content={title} />
+    <meta name="citation_author" content="Rabbi Nachman of Breslov" />
+    <meta name="citation_publication_date" content="2026" />
+    <meta name="citation_language" content={lang === 'he' ? 'he' : 'en'} />
+    <meta name="citation_online_date" content="2026" />
+    
+    <!-- Preconnect & DNS prefetch for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+    <link rel="dns-prefetch" href="https://ekggvujbuusvgmrertgp.supabase.co" />
+    <!-- Preload critical font CSS, then apply -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&family=Heebo:wght@300;400;700&family=Assistant:wght@400;600&family=Rubik:wght@400;500&family=David+Libre:wght@400;700&family=Noto+Serif+Hebrew:wght@400;700&family=Suez+One&family=Open+Sans:wght@400;600&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" />
+    <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&family=Heebo:wght@300;400;700&family=Assistant:wght@400;600&family=Rubik:wght@400;500&family=David+Libre:wght@400;700&family=Noto+Serif+Hebrew:wght@400;700&family=Suez+One&family=Open+Sans:wght@400;600&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700&family=Heebo:wght@300;400;700&family=Assistant:wght@400;600&family=Rubik:wght@400;500&family=David+Libre:wght@400;700&family=Noto+Serif+Hebrew:wght@400;700&family=Suez+One&family=Open+Sans:wght@400;600&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" /></noscript>
+    
+    <!-- Organization Schema -->
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "A Jew",
+      "url": "https://ajew.org",
+      "logo": "https://ajew.org/og-image.png",
+      "description": "The largest online Breslov Torah library with 226+ sacred Jewish texts, 25,000+ pages in Hebrew with English translations.",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "naanaach@gmail.com",
+        "contactType": "customer support"
+      },
+      "sameAs": [
+        "https://www.youtube.com/channel/UCYq6IzFfzJfQY8l9mOV5kgw",
+        "https://x.com/ajeworg",
+        "https://malevegadish.com"
+      ]
+    })} />
+
+    {/* Breadcrumbs Schema */}
+    {breadcrumbs && breadcrumbs.length > 0 && (
+      <script type="application/ld+json" set:html={JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": breadcrumbs.map((crumb, i) => ({
+          "@type": "ListItem",
+          "position": i + 1,
+          "name": crumb.name,
+          "item": crumb.url
+        }))
+      })} />
+    )}
+
+    {/* Page-specific JSON-LD */}
+    {jsonLd && (
+      <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    )}
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-64VMMKHB30"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-64VMMKHB30');
+    </script>
+    <!-- Prevent dark mode flash + restore text size -->
+    <script is:inline>
+      if (localStorage.getItem('ajew-dark-mode') === 'true') {
+        document.documentElement.classList.add('dark-mode-preload');
+      }
+      var siteTextSize = localStorage.getItem('ajew-text-size');
+      if (siteTextSize) document.documentElement.style.fontSize = siteTextSize + 'px';
+    </script>
+    <style>
+      html.dark-mode-preload { background: #1a1a2e; }
+    </style>
+  </head>
+  <body>
+    <a href="#main-content" class="skip-link">Skip to content</a>
+    <nav class="navbar" role="navigation" aria-label="Main navigation">
+      <div class="nav-container">
+        <a href="/" class="logo">
+          <span class="logo-text">A Jew</span>
+        </a>
+        <span class="nav-controls">
+          <button class="text-size-btn" id="textSmaller" aria-label="Decrease text size" title="Smaller text">A-</button>
+          <button class="text-size-btn" id="textLarger" aria-label="Increase text size" title="Larger text">A+</button>
+          <button class="dark-mode-toggle" id="darkModeToggle" aria-label="Toggle dark mode" title="Toggle dark mode">🌙</button>
+        </span>
+        <button class="mobile-menu-toggle" aria-label="Toggle Menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+        <div class="nav-links">
+          <a href="/">Home</a>
+          <a href="/reader"><span>Library</span><span class="nav-he">ספרייה</span></a>
+          <a href="/daily-study"><span>Daily Study</span><span class="nav-he">לימוד יומי</span></a>
+          <a href="/ask"><span>Ask</span><span class="nav-he">שאל</span></a>
+          <a href="/search-enhanced"><span>Search</span><span class="nav-he">חיפוש</span></a>
+          <a href="/reference"><span>Reference</span><span class="nav-he">מקורות</span></a>
+          <a href="/topics"><span>Topics</span><span class="nav-he">נושאים</span></a>
+          <a href="/healing-words"><span>Healing Words</span><span class="nav-he">דברי מרפא</span></a>
+          <a href="/parsha"><span>Parsha</span><span class="nav-he">פרשה</span></a>
+          <a href="/torah-gps"><span>Torah GPS</span><span class="nav-he">תורה GPS</span></a>
+          <a href="/mapjs"><span>Torah Map</span><span class="nav-he">מפת תורה</span></a>
+          <a href="/torah-lens"><span>Torah Lens</span><span class="nav-he">עדשת תורה</span></a>
+          <a href="/chain-of-light"><span>Chain of Light</span><span class="nav-he">שרשרת האור</span></a>
+          <a href="/chat"><span>Chat</span><span class="nav-he">צ'אט</span></a>
+          <a href="/blog"><span>Blog</span><span class="nav-he">בלוג</span></a>
+          <a href="/gematria"><span>Gematria</span><span class="nav-he">גימטריה</span></a>
+          <a href="/trivia"><span>Torah Trivia</span><span class="nav-he">טריוויה תורנית</span></a>
+          <a href="/gallery">Gallery</a>
+          <a href="/saba-says"><span>Saba Says</span><span class="nav-he">קולו של סבא</span></a>
+          <a href="/my-sefer"><span>My Sefer</span><span class="nav-he">הספר שלי</span></a>
+          <a href="/my-notes"><span>My Notes</span><span class="nav-he">הערות שלי</span></a>
+          <a href="/my-stats">My Stats</a>
+          <a href="/donate"><span>Donate</span><span class="nav-he">תרומה</span></a>
+          <a href="/subscribe">Subscribe</a>
+          <a href="/about">About</a>
+          <a href="https://github.com/petteknanach/ajew-ananach/releases" target="_blank" rel="noopener" style="color: #c8a050; font-weight: 600;">📱 Install Android App</a>
+        </div>
+      </div>
+    </nav>
+    
+    <main id="main-content">
+      <slot />
+    </main>
+
+    <!-- Back to top button -->
+    <button class="back-to-top" id="backToTop" aria-label="Back to top" title="Back to top">↑</button>
+
+    <!-- Reader audio player (self-initializes only on /reader/<bookId>/... pages when a mapping exists) -->
+    <script src="/audio-player.js" defer></script>
+
+    <footer role="contentinfo">
+      <div class="footer-container">
+        <div class="footer-links">
+          <a href="/reader">Library</a>
+          <a href="/daily-study">Daily Study</a>
+          <a href="/search-enhanced">Search</a>
+          <a href="/reference">Reference</a>
+          <a href="/topics">Topics</a>
+          <a href="/parsha">Parsha</a>
+          <a href="/mapjs">Torah Map</a>
+          <a href="/tzaddikim">Tzaddikim</a>
+          <a href="/about">About</a>
+          <a href="/help">Help</a>
+          <a href="/whats-new">What's New</a>
+          <a href="/contact">Contact</a>
+          <a href="/rss.xml" title="RSS Feed" aria-label="RSS Feed">RSS</a>
+        </div>
+        <p class="footer-nanach">&#1504; &#1504;&#1495; &#1504;&#1495;&#1502; &#1504;&#1495;&#1502;&#1503; &#1502;&#1488;&#1493;&#1502;&#1503;</p>
+        <p>Na Nach Nachma Nachman Me'Uman</p>
+        <div class="footer-contact">
+          <p>Contact: <a href="mailto:naanaach@gmail.com">naanaach@gmail.com</a></p>
+        </div>
+        <p class="copyright">&copy; {new Date().getFullYear()} ajew.org</p>
+      </div>
+    </footer>
+
+    <script>
+      const menuToggle = document.querySelector('.mobile-menu-toggle');
+      const navLinks = document.querySelector('.nav-links');
+
+      if (menuToggle && navLinks) {
+        menuToggle.addEventListener('click', () => {
+          menuToggle.classList.toggle('active');
+          navLinks.classList.toggle('active');
+        });
+      }
+
+      // Highlight active nav link
+      const currentPath = window.location.pathname;
+      document.querySelectorAll('.nav-links a').forEach(link => {
+        const href = link.getAttribute('href');
+        if (href === '/') {
+          if (currentPath === '/') link.classList.add('active');
+        } else if (currentPath.startsWith(href)) {
+          link.classList.add('active');
+        }
+      });
+
+      // Text size controls
+      const textSmaller = document.getElementById('textSmaller');
+      const textLarger = document.getElementById('textLarger');
+      function setTextSize(delta) {
+        const current = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+        const newSize = Math.max(12, Math.min(24, current + delta));
+        document.documentElement.style.fontSize = newSize + 'px';
+        localStorage.setItem('ajew-text-size', String(newSize));
+      }
+      if (textSmaller) textSmaller.addEventListener('click', () => setTextSize(-2));
+      if (textLarger) textLarger.addEventListener('click', () => setTextSize(2));
+
+      // Dark mode toggle
+      const darkToggle = document.getElementById('darkModeToggle');
+      const isDark = localStorage.getItem('ajew-dark-mode') === 'true';
+      if (isDark) {
+        document.body.classList.add('dark-mode');
+        if (darkToggle) darkToggle.textContent = '☀️';
+      }
+      if (darkToggle) {
+        darkToggle.addEventListener('click', () => {
+          document.body.classList.toggle('dark-mode');
+          const nowDark = document.body.classList.contains('dark-mode');
+          localStorage.setItem('ajew-dark-mode', String(nowDark));
+          darkToggle.textContent = nowDark ? '☀️' : '🌙';
+        });
+      }
+
+      // Global keyboard shortcuts
+      document.addEventListener('keydown', (e) => {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) return;
+        if (e.key === '/' && !e.ctrlKey && !e.metaKey) {
+          e.preventDefault();
+          window.location.href = '/search-enhanced';
+        }
+      });
+
+      // Back to top button
+      const backToTop = document.getElementById('backToTop');
+      if (backToTop) {
+        window.addEventListener('scroll', () => {
+          backToTop.classList.toggle('visible', window.scrollY > 400);
+        }, { passive: true });
+        backToTop.addEventListener('click', () => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      }
+    </script>
+
+    <!-- Page Agent Integration -->
+    <script>
+      // Load page-agent.min.js dynamically to avoid Astro/Vite build issues
+      (function() {
+        const script = document.createElement('script');
+        script.src = '/page-agent.min.js';
+        script.onload = function() {
+          // Initialize Page Agent after script loads
+          if (window.PageAgent) {
+            window.PageAgent.init({
+              // API configuration (to be filled with actual keys)
+              apiKey: null, // Set your DeepSeek API key here
+              model: 'deepseek-chat',
+              language: ['en', 'he'],
+              safeMode: true,
+              position: 'bottom-right',
+              theme: 'light',
+              autoShow: false, // Don't auto-show on load
+              debug: false,
+              
+              // Built-in tools
+              tools: ['help', 'search', 'navigate', 'summarize'],
+              
+              // Custom tools for ajew.org
+              customTools: {
+                'find-teachings': {
+                  name: 'find-teachings',
+                  description: 'Find teachings about a topic',
+                  execute: (topic) => {
+                    if (!topic) return 'Please specify a topic. Example: <code>find-teachings prayer</code>';
+                    return `Searching for teachings about "${topic}"...<br>Demo: Would search ajew.org teachings database.`;
+                  }
+                },
+                'navigate-to-book': {
+                  name: 'navigate-to-book',
+                  description: 'Navigate to a specific book/chapter',
+                  execute: (book) => {
+                    if (!book) return 'Please specify a book. Example: <code>navigate-to-book Likutay Moharan</code>';
+                    
+                    const books = {
+                      'likutay moharan': '/teachings/likutay-moharan',
+                      'likutay halachos': '/teachings/likutay-halachos',
+                      'likutay tefilos': '/teachings/likutay-tefilos',
+                      'stories': '/teachings/stories',
+                      'advice': '/teachings/advice'
+                    };
+                    
+                    const path = books[book.toLowerCase()];
+                    if (path) {
+                      setTimeout(() => {
+                        window.location.href = path;
+                      }, 500);
+                      return `Navigating to ${book}...`;
+                    }
+                    
+                    return `Book not found: "${book}"<br>Available: ${Object.keys(books).join(', ')}`;
+                  }
+                },
+                'hebrew-search': {
+                  name: 'hebrew-search',
+                  description: 'חיפוש בעברית',
+                  execute: (query) => {
+                    if (!query) return 'נא להזין שאילתת חיפוש. דוגמה: <code>hebrew-search תפילה</code>';
+                    return `מחפש: "${query}"...<br>דמו: יחפש במאגר העברי של ajew.org.`;
+                  }
+                },
+                'summarize-teaching': {
+                  name: 'summarize-teaching',
+                  description: 'Summarize the current teaching',
+                  execute: () => {
+                    // Check if we're on a teachings page
+                    const isTeachingPage = window.location.pathname.includes('/teachings/');
+                    if (!isTeachingPage) {
+                      return 'This command works on teaching pages. Navigate to a teaching first.';
+                    }
+                    
+                    const title = document.title.replace(' | A Jew', '');
+                    const content = document.querySelector('main')?.textContent?.substring(0, 200) + '...';
+                    
+                    return `Teaching Summary:<br>
+                    <strong>Title:</strong> ${title}<br>
+                    <strong>Preview:</strong> ${content}<br>
+                    <br>Demo: Full Page Agent would analyze and summarize the entire teaching.`;
+                  }
+                }
+              }
+            });
+            console.log('Page Agent initialized on ajew.org');
+          }
+        };
+        document.body.appendChild(script);
+
+        // Voice input via Web Speech API - with auto-submit and command recognition
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+          const micBtn = document.createElement('button');
+          micBtn.id = 'voice-input-btn';
+          micBtn.innerHTML = '🎤';
+          micBtn.title = 'Speak to navigate or search';
+          micBtn.style.cssText = 'position:fixed;bottom:80px;right:20px;width:48px;height:48px;border-radius:50%;border:2px solid #1a365d;background:white;font-size:1.4em;cursor:pointer;z-index:9999;box-shadow:0 2px 8px rgba(0,0,0,0.15);transition:all 0.2s;';
+          document.body.appendChild(micBtn);
+
+          // Transcript overlay
+          const overlay = document.createElement('div');
+          overlay.id = 'voice-overlay';
+          overlay.style.cssText = 'display:none;position:fixed;bottom:140px;right:20px;max-width:320px;background:#1a365d;color:white;padding:12px 16px;border-radius:12px;font-size:0.9em;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,0.3);font-family:sans-serif;line-height:1.4;';
+          document.body.appendChild(overlay);
+
+          let listening = false;
+          const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+          const recognition = new SpeechRecognition();
+          recognition.continuous = false;
+          recognition.interimResults = true;
+          recognition.maxAlternatives = 3;
+
+          // Navigation commands - maps spoken words to URLs
+          const navRoutes = {
+            'likutay moharan': '/reader',
+            'ליקוטי מוהרן': '/reader',
+            'likutay halachos': '/reader',
+            'ליקוטי הלכות': '/reader',
+            'likutay tefilos': '/reader',
+            'ליקוטי תפילות': '/reader',
+            'stories': '/reader',
+            'סיפורי מעשיות': '/reader',
+            'reader': '/reader',
+            'library': '/reader',
+            'ספריה': '/reader',
+            'home': '/',
+            'בית': '/',
+            'search': '/search',
+            'חיפוש': '/search',
+            'reference': '/reference',
+            'torah map': '/mapjs',
+            'connections': '/mapjs',
+            'pdf': '/pdf-library',
+            'books': '/books',
+            'ספרים': '/books',
+            'videos': '/videos',
+          };
+
+          function handleVoiceCommand(transcript) {
+            const lower = transcript.toLowerCase().trim();
+            overlay.textContent = '"' + transcript + '"';
+            overlay.style.display = 'block';
+
+            // Check navigation commands
+            for (const [phrase, url] of Object.entries(navRoutes)) {
+              if (lower.includes(phrase.toLowerCase())) {
+                overlay.innerHTML = 'Navigating: <strong>' + phrase + '</strong>';
+                setTimeout(() => { window.location.href = url; }, 800);
+                setTimeout(() => { overlay.style.display = 'none'; }, 3000);
+                return;
+              }
+            }
+
+            // Check if it's a search query (prefixed with "search for" / "find" / "חפש")
+            let searchQuery = null;
+            if (lower.startsWith('search for ')) searchQuery = transcript.substring(11);
+            else if (lower.startsWith('search ')) searchQuery = transcript.substring(7);
+            else if (lower.startsWith('find ')) searchQuery = transcript.substring(5);
+            else if (lower.startsWith('look for ')) searchQuery = transcript.substring(9);
+            else if (lower.startsWith('חפש ')) searchQuery = transcript.substring(4);
+            else if (lower.startsWith('תחפש ')) searchQuery = transcript.substring(5);
+            else if (lower.startsWith('show me ')) searchQuery = transcript.substring(8);
+            else if (lower.startsWith('תראה לי ')) searchQuery = transcript.substring(9);
+            else if (lower.startsWith('תרשום לי ')) searchQuery = transcript.substring(10);
+
+            if (searchQuery) {
+              overlay.innerHTML = 'Searching: <strong>' + searchQuery + '</strong>';
+              setTimeout(() => {
+                window.location.href = '/search-enhanced?q=' + encodeURIComponent(searchQuery.trim());
+              }, 800);
+              setTimeout(() => { overlay.style.display = 'none'; }, 3000);
+              return;
+            }
+
+            // Try page agent input
+            const agentInput = document.querySelector('.page-agent-input input, .page-agent-input textarea, [data-page-agent-input]');
+            if (agentInput) {
+              agentInput.value = transcript;
+              agentInput.dispatchEvent(new Event('input', { bubbles: true }));
+              const form = agentInput.closest('form');
+              if (form) {
+                form.requestSubmit ? form.requestSubmit() : form.dispatchEvent(new Event('submit', { bubbles: true }));
+              } else {
+                agentInput.dispatchEvent(new KeyboardEvent('keypress', { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, bubbles: true }));
+              }
+              setTimeout(() => { overlay.style.display = 'none'; }, 3000);
+              return;
+            }
+
+            // Default: treat as search
+            overlay.innerHTML = 'Searching: <strong>' + transcript + '</strong>';
+            setTimeout(() => {
+              window.location.href = '/search-enhanced?q=' + encodeURIComponent(transcript.trim());
+            }, 1000);
+            setTimeout(() => { overlay.style.display = 'none'; }, 3000);
+          }
+
+          recognition.onresult = (event) => {
+            let interim = '';
+            let final = '';
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+              const t = event.results[i][0].transcript;
+              if (event.results[i].isFinal) {
+                final += t;
+              } else {
+                interim += t;
+              }
+            }
+
+            if (interim) {
+              overlay.textContent = interim + '...';
+              overlay.style.display = 'block';
+            }
+
+            if (final) {
+              handleVoiceCommand(final);
+              micBtn.innerHTML = '🎤';
+              micBtn.style.background = 'white';
+              micBtn.style.borderColor = '#1a365d';
+              listening = false;
+            }
+          };
+
+          recognition.onerror = (e) => {
+            if (e.error === 'no-speech') {
+              overlay.textContent = 'No speech detected. Try again.';
+              overlay.style.display = 'block';
+            } else if (e.error !== 'aborted') {
+              overlay.textContent = 'Error: ' + e.error;
+              overlay.style.display = 'block';
+            }
+            setTimeout(() => { overlay.style.display = 'none'; }, 2500);
+            micBtn.innerHTML = '🎤';
+            micBtn.style.background = 'white';
+            micBtn.style.borderColor = '#1a365d';
+            listening = false;
+          };
+
+          recognition.onend = () => {
+            micBtn.innerHTML = '🎤';
+            micBtn.style.background = 'white';
+            micBtn.style.borderColor = '#1a365d';
+            listening = false;
+          };
+
+          // Track language preference
+          let voiceLang = 'en-US';
+
+          micBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (listening) {
+              recognition.stop();
+              listening = false;
+              overlay.style.display = 'none';
+              return;
+            }
+
+            // Detect page language from content
+            const bodyText = document.body.innerText.substring(0, 2000);
+            const hebrewChars = (bodyText.match(/[\u0590-\u05FF]/g) || []).length;
+            const latinChars = (bodyText.match(/[a-zA-Z]/g) || []).length;
+            voiceLang = hebrewChars > latinChars ? 'he-IL' : 'en-US';
+            recognition.lang = voiceLang;
+
+            try {
+              recognition.start();
+              micBtn.innerHTML = '🔴';
+              micBtn.style.background = '#ffe0e0';
+              micBtn.style.borderColor = '#c53030';
+              listening = true;
+              overlay.textContent = voiceLang === 'he-IL' ? 'מקשיב...' : 'Listening...';
+              overlay.style.display = 'block';
+            } catch (err) {
+              console.error('Speech recognition error:', err);
+            }
+          });
+
+          // Long-press to force English
+          let pressTimer;
+          micBtn.addEventListener('mousedown', () => {
+            pressTimer = setTimeout(() => {
+              recognition.lang = 'en-US';
+              overlay.textContent = 'Listening (English)...';
+            }, 600);
+          });
+          micBtn.addEventListener('mouseup', () => clearTimeout(pressTimer));
+          micBtn.addEventListener('mouseleave', () => clearTimeout(pressTimer));
+        }
+      })();
+    </script>
+
+    <!-- Service Worker registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(() => {});
+        });
+      }
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    --color-primary: #1a365d;
+    --color-secondary: #2c5282;
+    --color-accent: #ed8936;
+    --color-bg: #fffdf7;
+    --color-text: #2d3748;
+    --font-hebrew: 'Frank Ruhl Libre', serif;
+    --font-body: 'Open Sans', sans-serif;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    font-family: var(--font-body);
+    background: var(--color-bg);
+    color: var(--color-text);
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+  }
+
+  a {
+    color: #1a365d;
+  }
+
+  /* Nav controls */
+  .nav-controls { display: flex; align-items: center; gap: 2px; }
+  .text-size-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 0.8em;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 4px;
+    opacity: 0.7;
+  }
+  .text-size-btn:hover { opacity: 1; background: rgba(255,255,255,0.15); }
+
+  /* Dark mode toggle button */
+  .dark-mode-toggle {
+    background: none;
+    border: none;
+    font-size: 1.2em;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: background 0.2s;
+  }
+  .dark-mode-toggle:hover { background: rgba(255,255,255,0.15); }
+
+  /* Dark mode styles */
+  body.dark-mode {
+    --color-bg: #1a1a2e;
+    --color-text: #e0e0e0;
+    --color-primary: #0f0f23;
+    background: #1a1a2e;
+    color: #e0e0e0;
+  }
+  body.dark-mode .navbar { background: #0f0f23; }
+  body.dark-mode footer { background: #0f0f23; }
+  body.dark-mode a { color: #7db0ed; }
+  body.dark-mode h1, body.dark-mode h2, body.dark-mode h3 { color: #c8d6e5; }
+  body.dark-mode .hero { background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 100%); }
+  body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
+    background: #2a2a4e;
+    color: #e0e0e0;
+    border-color: #444;
+  }
+  body.dark-mode .back-to-top { background: #333; }
+
+  a:visited {
+    color: #1a365d;
+  }
+
+  a:hover {
+    color: #c53030;
+  }
+
+  body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+  }
+
+  main {
+    flex: 1;
+    width: 100%;
+  }
+
+  .navbar {
+    background: var(--color-primary);
+    padding: 1rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .logo {
+    text-decoration: none;
+  }
+
+  .logo-text {
+    font-family: var(--font-hebrew);
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: white;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 0.8rem 1.2rem;
+    flex-wrap: wrap;
+    max-width: calc(100% - 200px);
+    justify-content: center;
+  }
+
+  .nav-links a {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1.2;
+  }
+
+  .nav-links a:hover {
+    color: var(--color-accent);
+  }
+  .nav-links a.active {
+    color: var(--color-accent);
+    border-bottom: 2px solid var(--color-accent);
+    padding-bottom: 2px;
+  }
+
+  .nav-he {
+    font-family: var(--font-hebrew);
+    font-size: 0.65em;
+    opacity: 0.7;
+    font-weight: 400;
+    direction: rtl;
+  }
+
+  /* Mobile Menu Toggle */
+  .mobile-menu-toggle {
+    display: none;
+    flex-direction: column;
+    gap: 6px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+  }
+
+  .mobile-menu-toggle span {
+    display: block;
+    width: 25px;
+    height: 3px;
+    background-color: white;
+    transition: all 0.3s ease;
+  }
+
+  .mobile-menu-toggle.active span:nth-child(1) { transform: translateY(9px) rotate(45deg); }
+  .mobile-menu-toggle.active span:nth-child(2) { opacity: 0; }
+  .mobile-menu-toggle.active span:nth-child(3) { transform: translateY(-9px) rotate(-45deg); }
+
+  footer {
+    background: var(--color-primary);
+    color: white;
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  footer p {
+    margin: 0.5rem 0;
+  }
+
+  .footer-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .footer-links a {
+    color: rgba(255,255,255,0.8);
+    text-decoration: none;
+    font-size: 0.9em;
+  }
+  .footer-links a:hover {
+    color: var(--color-accent);
+  }
+  .footer-nanach {
+    font-family: var(--font-hebrew);
+    font-size: 1.5rem;
+  }
+
+  .copyright {
+    opacity: 0.7;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+  }
+
+  .footer-contact {
+    margin: 1rem 0;
+    padding: 0.5rem 0;
+  }
+
+  .footer-contact a {
+    color: var(--color-accent);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .footer-contact a:hover {
+    text-decoration: underline;
+  }
+
+  /* Back to top button */
+  /* Skip link - accessibility */
+  .skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: var(--color-primary);
+    color: white;
+    padding: 8px 16px;
+    z-index: 10000;
+    font-size: 14px;
+    text-decoration: none;
+    transition: top 0.2s;
+  }
+  .skip-link:focus {
+    top: 0;
+  }
+
+  .back-to-top {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 44px;
+    height: 44px;
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 1.4em;
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s, transform 0.3s;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  .back-to-top.visible {
+    opacity: 0.8;
+    pointer-events: auto;
+  }
+  .back-to-top:hover {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+
+  @media (max-width: 1024px) {
+    .mobile-menu-toggle {
+      display: flex;
+    }
+    .nav-links {
+      display: none;
+      flex-direction: column;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--color-primary);
+      padding: 1rem 2rem;
+      gap: 1rem;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .nav-links.active {
+      display: flex;
+    }
+
+    .mobile-menu-toggle {
+      display: flex;
+    }
+
+    .navbar {
+      padding: 1rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .logo-text {
+      font-size: 1.4rem;
+    }
+  }
+</style>
+

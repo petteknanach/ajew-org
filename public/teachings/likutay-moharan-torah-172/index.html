@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 172</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 172</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה לתוך ה
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+172. All the deficiencies a person has—whether in children, livelihood, or health—come from the person himself.
+For the light of God continuously flows upon him; however, through his evil deeds, a person creates a shadow over himself, which blocks the light of God from reaching him. According to one’s deeds, so is the shadow formed, and so is the lack that results from it.A shadow is created by something physical standing against something spiritual (which is more subtle)—just like a physical tree or stone blocks the light of the sun or moon and casts a shadow. Similarly, a solar or lunar eclipse occurs through the shadow of the earth. Even the sun, in comparison to what is above it, is physical and casts a shadow.Thus, according to a person’s physicality and his deeds, he creates for himself a shadow that blocks the light and flow of the Blessed One. But if a person nullifies himself and is not at all connected to this world, he creates no shadow and receives the light of God. And the essential light of God is honor (כבוד), for everything the Holy One, blessed be He, created was only for His honor, as it is written: “For My honor I created it” (Isaiah 43:7).That is: if He “fills all the earth,” and the person is not of this world, he receives the light of God, which is honor. This is the meaning of: “The wise shall inherit honor” (Proverbs 3:35), for “Wisdom is found from nothing” (Job 28:12). Therefore, the wise—who are “nothing”—inherit honor, because they create no shadow to interrupt, for they possess no materiality at all.When the Blessed Holy One shows a laughing face, there is life and good in the world. The opposite is also true, God forbid. Likewise, when the tzadik shows a laughing face, it is good; the opposite, too, is the opposite. This is the meaning of: “See, I have set before you today life and good, and death...” (Deuteronomy 30:15)—that is, before your faces.
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

@@ -1,0 +1,395 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import CommentarySidebar from '../../../../components/CommentarySidebar.astro';
+import Comments from '../../../../components/Comments.astro';
+import '../../../../styles/reader.css';
+import commentaryRegistry from '../../../../data/lm-commentaries.json';
+import fs from 'node:fs';
+import path from 'node:path';
+
+export function getStaticPaths() {
+  // Generate paths for all torahs in both parts
+  const paths = [];
+  // Part 1 intro pages
+  paths.push({ params: { part: '1', torah: 'haskamos' } });
+  paths.push({ params: { part: '1', torah: 'intro' } });
+  paths.push({ params: { part: '1', torah: 'intro-shimon' } });
+  // Part 1 new intro pages (hakdama, intro-lm, intro-manuscripts)
+  paths.push({ params: { part: '1', torah: 'hakdama' } });
+  paths.push({ params: { part: '1', torah: 'intro-lm' } });
+  paths.push({ params: { part: '1', torah: 'intro-manuscripts' } });
+  // Part 1 preface sections (one per LM Vol 1 section group)
+  for (let i = 1; i <= 297; i++) {
+    paths.push({ params: { part: '1', torah: `preface-section-${i}` } });
+  }
+  // Part 1: 286 torahs (1-286, all present including 272)
+  for (let torah = 1; torah <= 297; torah++) {
+    paths.push({ params: { part: '1', torah: String(torah) } });
+  }
+  // Part 2 intro pages
+  paths.push({ params: { part: '2', torah: 'intro' } });
+  paths.push({ params: { part: '2', torah: 'omission' } });
+  paths.push({ params: { part: '2', torah: 'intro-volume-2' } });
+  // Part 2 (Tinyana): 125 torahs (1-125, all present including 51)
+  for (let torah = 1; torah <= 297; torah++) {
+    paths.push({ params: { part: '2', torah: String(torah) } });
+  }
+  // Part 2 manuscripts (Ksav Yad)
+  for (let i = 1; i <= 297; i++) {
+    paths.push({ params: { part: '2', torah: `manuscript-${i}` } });
+  }
+  return paths;
+}
+
+const { part, torah } = Astro.params;
+const partNum = parseInt(part);
+const torahNum = parseInt(torah);
+const isIntroPage = isNaN(torahNum);
+
+// Load the torah data
+let torahData = null;
+let error = null;
+
+try {
+  const fileName = isIntroPage ? `${torah}.json` : `torah-${torahNum}.json`;
+  const filePath = path.join(process.cwd(), `public/reader/likutay-moharan/part-${partNum}/${fileName}`);
+  const raw = fs.readFileSync(filePath, 'utf8');
+  torahData = JSON.parse(raw);
+} catch (e) {
+  error = `Torah ${torah} not found`;
+}
+
+if (!torahData && !error) {
+  error = 'Content not available';
+}
+
+// Defensive defaults for intro/preface JSONs that may lack these fields
+if (torahData) {
+  if (!torahData.navigation) {
+    torahData.navigation = { prev: null, next: null, prevUrl: null, nextUrl: null };
+  }
+  if (!Array.isArray(torahData.segments)) {
+    torahData.segments = [];
+  }
+}
+
+// SEO structured data
+const structuredData = torahData ? JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": `${torahData.title} - Likutay Moharan ${partNum}:${torahData.displayNumber || torahNum}`,
+  "alternativeHeadline": torahData.hebrewTitle || '',
+  "author": { "@type": "Person", "name": "Rabbi Nachman of Breslov" },
+  "publisher": { "@type": "Organization", "name": "ajew.org" },
+  "inLanguage": ["he", "en"],
+  "genre": "Religious text",
+  "isPartOf": {
+    "@type": "Book",
+    "name": "Likutay Moharan",
+    "author": { "@type": "Person", "name": "Rabbi Nachman of Breslov" }
+  },
+  "keywords": torahData.themes?.join(', ') || 'Torah, Breslov, Rabbi Nachman',
+  "url": `https://ajew.org/reader/likutay-moharan/${partNum}/${torahNum}`,
+  "mainEntityOfPage": `https://ajew.org/reader/likutay-moharan/${partNum}/${torahNum}`
+}) : '';
+const breadcrumbData = torahData ? JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Library", "item": "https://ajew.org/reader" },
+    { "@type": "ListItem", "position": 2, "name": "Likutay Moharan", "item": `https://ajew.org/reader#likutay-moharan` },
+    { "@type": "ListItem", "position": 3, "name": torahData.hebrewTitle || torahData.title }
+  ]
+}) : '';
+
+// Look up commentary registry entry for this torah (only for numeric torahs)
+let commentaryEntry: any = null;
+if (!isIntroPage && !isNaN(partNum) && !isNaN(torahNum)) {
+  const partKey = String(partNum);
+  const torahKey = String(torahNum);
+  const registry: any = commentaryRegistry as any;
+  if (registry && registry[partKey] && registry[partKey][torahKey]) {
+    commentaryEntry = registry[partKey][torahKey];
+  }
+}
+
+const pageTitle = torahData
+  ? `${torahData.hebrewTitle || torahData.title} - Likutay Moharan`
+  : 'Torah Not Found';
+const pageDesc = torahData
+  ? (() => {
+    const snippet = (torahData.segments?.find(s => s.en)?.en || '').replace(/<[^>]+>/g, '').slice(0, 120);
+    return `Read ${torahData.title} from Likutay Moharan online free. ${snippet ? snippet + '...' : 'Hebrew text with English translation on ajew.org.'}`;
+  })()
+  : '';
+---
+
+<Layout title={pageTitle} description={pageDesc}>
+  {torahData && structuredData && (
+    <script type="application/ld+json" set:html={structuredData} slot="head" />
+  )}
+  {torahData && breadcrumbData && (
+    <script type="application/ld+json" set:html={breadcrumbData} slot="head" />
+  )}
+  {error ? (
+    <div style="text-align: center; padding: 80px 20px;">
+      <h1>{error}</h1>
+      <p><a href="/reader">Back to Reader</a></p>
+    </div>
+  ) : (
+    <div
+      class="reader-container"
+      data-torah-id={torahData.id}
+      data-torah-title={`${torahData.title} - Likutay Moharan ${partNum}:${torahNum}`}
+    >
+      <!-- Progress Bar -->
+      <div class="reader-progress"></div>
+
+      <!-- Breadcrumb -->
+      <div class="reader-breadcrumb">
+        <a href="/reader">Reader</a>
+        <span>&rsaquo;</span>
+        <a href="/reader">Likutay Moharan</a>
+        <span>&rsaquo;</span>
+        <a href="/reader">Part {partNum}</a>
+        <span>&rsaquo;</span>
+        Torah {torahNum}
+      </div>
+
+      
+
+      <!-- Toolbar -->
+
+      
+
+<!-- Unified Audio Player -->
+<div id="audio-controls" style="margin:0 auto 12px auto; max-width:700px; font-family:'Open Sans',sans-serif;">
+  <div style="display:flex; gap:0; border-radius:8px; overflow:hidden; border:1px solid var(--reader-border,#ddd);">
+    <button id="audio-btn-he" onclick="toggleAudio('he')" 
+      style="flex:1; padding:8px 12px; border:none; cursor:pointer; font-size:0.85em; font-weight:600;
+      background:var(--reader-bg-secondary,#f8f5f0); color:var(--reader-text,#333);">
+      🎧 Hebrew
+    </button>
+    <button id="audio-btn-en" onclick="toggleAudio('en')" 
+      style="flex:1; padding:8px 12px; border:none; cursor:pointer; font-size:0.85em; font-weight:600;
+      background:var(--reader-bg-secondary,#f8f5f0); color:var(--reader-text,#333); border-left:1px solid var(--reader-border,#ddd);">
+      🔊 English
+    </button>
+  </div>
+  
+  <!-- Hidden data element for book/part/torah -->
+  <div id="en-tts-player" data-book="likutay-moharan" data-part={partNum} data-torah={torahNum} style="display:none;"></div>
+  
+  <div id="audio-panel-he" style="display:none; background:var(--reader-bg-secondary,#f8f5f0); 
+    border:1px solid var(--reader-border,#ddd); border-top:none; border-radius:0 0 8px 8px; padding:12px 16px;">
+    <audio id="kol-hatzadik-audio" controls preload="none" style="width:100%; border-radius:4px;"></audio>
+    <div id="kol-hatzadik-note" style="font-size:0.8em; color:var(--reader-text-secondary,#888); margin-top:4px;"></div>
+  </div>
+  
+  <div id="audio-panel-en" style="display:none; background:#1a3a1a; 
+    border:1px solid #2d5a2d; border-top:none; border-radius:0 0 8px 8px; padding:12px 16px;">
+    <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+      <span style="font-size:1em;">🔊</span>
+      <strong style="color:#7fff7f; font-size:0.85em;">English Audio</strong>
+      <div style="margin-left:auto; display:flex; gap:4px;">
+        <button id="en-btn-ryan" onclick="enSetVoice('ryan')" 
+          style="background:#7fff7f20; border:2px solid #7fff7f; color:#fff; border-radius:4px; 
+          padding:2px 8px; cursor:pointer; font-size:0.8em;">🇬🇧</button>
+        <button id="en-btn-guy" onclick="enSetVoice('guy')" 
+          style="background:#7fff7f10; border:1px solid #7fff7f40; color:#fff; border-radius:4px; 
+          padding:2px 8px; cursor:pointer; font-size:0.8em;">🇺🇸</button>
+        <button id="en-btn-connor" onclick="enSetVoice('connor')" 
+          style="background:#7fff7f10; border:1px solid #7fff7f40; color:#fff; border-radius:4px; 
+          padding:2px 8px; cursor:pointer; font-size:0.8em;">🇮🇪</button>
+      </div>
+    </div>
+    <button id="en-btn-play" onclick="enTogglePlay()" 
+      style="background:#2d8a2d; color:#fff; border:none; border-radius:4px; padding:6px 16px; 
+      cursor:pointer; font-size:0.9em; font-weight:bold; width:100%;">▶ Play English</button>
+    <div id="en-progress" style="margin-top:4px; height:3px; background:#2d5a2d; border-radius:2px; 
+      overflow:hidden; display:none;">
+      <div id="en-progress-bar" style="height:100%; width:0%; background:#7fff7f;"></div>
+    </div>
+  </div>
+</div>
+<script src="/unified-audio.js" defer></script>
+
+      <div class="reader-toolbar">
+        <div class="reader-toolbar-group">
+          <button class="reader-btn" data-mode="hebrew">Hebrew</button>
+        </div>
+        <div class="reader-toolbar-group">
+          <button class="reader-btn" id="btn-nikud">Nikud</button>
+        </div>
+        <div class="reader-toolbar-group">
+          <span style="font-size:0.7em; font-family: 'Open Sans', sans-serif; color: var(--reader-text-secondary);">A</span>
+          <input type="range" id="font-size-slider" class="font-size-slider" min="12" max="32" value="18" />
+          <span style="font-size:0.9em; font-family: 'Open Sans', sans-serif; color: var(--reader-text-secondary);">A</span>
+        </div>
+        <div class="reader-toolbar-group">
+          <button class="reader-btn reader-btn-icon" data-theme-btn="day" title="Day mode">Day</button>
+          <button class="reader-btn reader-btn-icon" data-theme-btn="sepia" title="Sepia mode">Sepia</button>
+          <button class="reader-btn reader-btn-icon" data-theme-btn="night" title="Night mode">Night</button>
+        </div>
+        <div class="reader-toolbar-group">
+          <button class="reader-btn reader-btn-icon" id="btn-listen">Listen</button>
+          <button class="reader-btn reader-btn-icon" id="btn-search" title="Search (Ctrl+F)">Search</button>
+          <button class="reader-btn reader-btn-icon" id="btn-bookmark" title="Bookmark (S)">Bookmark</button>
+          <button class="reader-btn reader-btn-icon" id="btn-notes">Notes</button>
+          <button class="reader-btn reader-btn-icon" id="btn-fullscreen" title="Fullscreen (F)">Fullscreen</button>
+        </div>
+      </div>
+
+      <!-- In-text Search Bar -->
+      <div class="reader-search-bar">
+        <input type="text" placeholder="Search in this teaching..." dir="auto" />
+        <span class="search-info"></span>
+        <button class="reader-btn search-close">Close</button>
+      </div>
+
+      <!-- TOC Toggle Button -->
+      <button class="reader-toc-toggle" title="Table of Contents (T)">&#9776;</button>
+
+      <!-- Floating TOC Sidebar -->
+      <div class="reader-toc">
+        <button class="reader-toc-close">&times;</button>
+        <h3>Paragraphs</h3>
+        <ul class="reader-toc-list">
+          {torahData.segments.map((seg, i) => (
+            <li>
+              <a href={`#seg-${seg.index}`} data-index={String(seg.index)}>
+                Paragraph {seg.index}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Header -->
+      <div class="reader-header">
+        {torahData.hebrewTitle && (
+          <div class="hebrew-title" lang="he" dir="rtl">{torahData.hebrewTitle}</div>
+        )}
+        <h1>{torahData.title}</h1>
+        {torahData.keyVerse && (
+          <div class="key-verse">{torahData.keyVerse}</div>
+        )}
+        {torahData.keyVerseTranslation && (
+          <div class="key-verse-translation">{torahData.keyVerseTranslation}</div>
+        )}
+        {torahData.themes && torahData.themes.length > 0 && (
+          <div class="themes">
+            {torahData.themes.map(theme => (
+              <span class="theme-tag">{theme}</span>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <!-- Top Navigation -->
+      <div class="reader-nav">
+        {torahData.navigation.prevUrl ? (
+          <a href={torahData.navigation.prevUrl} data-dir="prev">&larr; Previous</a>
+        ) : (
+          <span class="disabled">&larr; Previous</span>
+        )}
+        <a href="/reader#likutay-moharan">Book Index</a>
+        <a href="/reader">All Books</a>
+        {torahData.navigation.nextUrl ? (
+          <a href={torahData.navigation.nextUrl} data-dir="next">Next &rarr;</a>
+        ) : (
+          <span class="disabled">Next &rarr;</span>
+        )}
+      </div>
+
+      <!-- Content -->
+      <div class="reader-content mode-hebrew">
+        <div class="reader-content-original">
+{torahData.segments.map((seg) => (
+          <div class="reader-segment-pair" id={`seg-${seg.index}`}>
+            <div class="reader-segment segment-he" lang="he" dir="rtl" data-index={String(seg.index)}>
+              <span class="segment-number">{seg.index}</span>
+              <p data-nikud={seg.he_nikud || seg.he}>{seg.he}</p>
+            </div>
+            <div class={`reader-segment segment-en ${!seg.en ? 'empty-translation' : ''}`} data-index={String(seg.index)}>
+              <span class="segment-number">{seg.index}</span>
+              <p>{seg.en || 'Translation not yet available'}</p>
+            </div>
+          </div>
+        ))}
+        </div>
+        {torahData.aligned_segments && (
+          <div class="reader-content-aligned" style="display:none;">
+            {torahData.aligned_segments.map((seg) => (
+              <div class={`reader-segment-pair ${seg.type === 'note' ? 'segment-note' : ''}`} id={`aligned-${seg.index}`}>
+                <div class="reader-segment segment-he" lang="he" dir="rtl" data-index={String(seg.index)}>
+                  <span class="segment-number">{seg.index}</span>
+                  <p>{seg.he || '\u00A0'}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <!-- Bottom Navigation -->
+      <div class="reader-nav">
+        {torahData.navigation.prevUrl ? (
+          <a href={torahData.navigation.prevUrl} data-dir="prev">&larr; Previous</a>
+        ) : (
+          <span class="disabled">&larr; Previous</span>
+        )}
+        <a href="/reader#likutay-moharan">Book Index</a>
+        <a href="/reader">All Books</a>
+        {torahData.navigation.nextUrl ? (
+          <a href={torahData.navigation.nextUrl} data-dir="next">Next &rarr;</a>
+        ) : (
+          <span class="disabled">Next &rarr;</span>
+        )}
+      </div>
+
+      <!-- Keyboard Shortcuts Overlay -->
+      <div class="reader-shortcuts-overlay">
+        <div class="reader-shortcuts-panel">
+          <h2>Keyboard Shortcuts</h2>
+          <div class="shortcut-row"><span>Hebrew mode</span><span class="shortcut-key">H</span></div>
+          <div class="shortcut-row"><span>English mode</span><span class="shortcut-key">E</span></div>
+          <div class="shortcut-row"><span>Both columns</span><span class="shortcut-key">B</span></div>
+          <div class="shortcut-row"><span>Toggle nikud</span><span class="shortcut-key">N</span></div>
+          <div class="shortcut-row"><span>Fullscreen</span><span class="shortcut-key">F</span></div>
+          <div class="shortcut-row"><span>Table of contents</span><span class="shortcut-key">T</span></div>
+          <div class="shortcut-row"><span>Search in text</span><span class="shortcut-key">Ctrl+F</span></div>
+          <div class="shortcut-row"><span>Save bookmark</span><span class="shortcut-key">S</span></div>
+          <div class="shortcut-row"><span>Listen / Pause</span><span class="shortcut-key">L</span></div>
+          <div class="shortcut-row"><span>Print</span><span class="shortcut-key">P</span></div>
+          <div class="shortcut-row"><span>Next segment</span><span class="shortcut-key">J / ↓</span></div>
+          <div class="shortcut-row"><span>Prev segment</span><span class="shortcut-key">K / ↑</span></div>
+          <div class="shortcut-row"><span>Toggle favorite</span><span class="shortcut-key">G</span></div>
+          <div class="shortcut-row"><span>Increase font</span><span class="shortcut-key">+</span></div>
+          <div class="shortcut-row"><span>Decrease font</span><span class="shortcut-key">-</span></div>
+          <div class="shortcut-row"><span>Previous torah</span><span class="shortcut-key">&larr;</span></div>
+          <div class="shortcut-row"><span>Next torah</span><span class="shortcut-key">&rarr;</span></div>
+          <div class="shortcut-row"><span>Show shortcuts</span><span class="shortcut-key">?</span></div>
+          <div class="shortcut-row"><span>Close / Exit</span><span class="shortcut-key">Esc</span></div>
+          <br />
+          <button class="reader-btn" onclick="this.closest('.reader-shortcuts-overlay').classList.remove('open')">Close</button>
+        </div>
+      </div>
+
+      <!-- Reader Script -->
+      <script src="/reader-script.js?v=4" defer></script>
+      <script src="/tts-fix.js" defer></script>
+      <script src="/reader-notes.js" is:inline></script>
+
+      {!isIntroPage && (
+        <Comments
+          teachingId={`lm-${partNum}-${torahNum}`}
+          teachingTitle={`Likutey Moharan ${partNum}:${torahData.displayNumber || torahNum} — ${torahData.title || ''}`}
+        />
+      )}
+    </div>
+  )}
+  {torahData && commentaryEntry && (
+    <CommentarySidebar part={partNum} torah={torahNum} entry={commentaryEntry} />
+  )}
+</Layout>

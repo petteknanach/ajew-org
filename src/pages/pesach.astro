@@ -1,0 +1,559 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+// Curated Pesach teachings organized by topic
+const pesachTopics = [
+  {
+    id: 'freedom',
+    icon: '🔓',
+    hebrewTitle: 'חירות וגאולה',
+    title: 'Freedom & Redemption',
+    description: 'The deep spiritual meaning of leaving Mitzrayim — breaking free from inner bondage.',
+    teachings: [
+      { book: 'otzar-hayirah', part: 1, torah: 22, title: 'Pesach, Sefira & Shavuos', snippet: 'On the night of Pesach the light of Ein Sof shines with a great light, and through this the Redemption was...' },
+      { book: 'otzar-hayirah', part: 1, torah: 25, title: 'Pesach — Completion', snippet: 'After the first day of Pesach, one must draw close to Hashem gradually and in measure...' },
+      { book: 'likutay-moharan', part: 1, torah: 21, title: 'LM I:21', snippet: 'The essential redemption depends on Torah learning, for Torah is the root of all deliverances.' },
+      { book: 'likutay-moharan', part: 2, torah: 4, title: 'LM II:4 - Tiku', snippet: 'Know that a person must cross a very narrow bridge — the main thing is not to fear at all.' },
+      { book: 'meshivas-nefesh', part: 1, torah: 1, title: 'Meshivas Nefesh', snippet: 'Hashem always helps — there is always hope, always a path back. Never give up!' },
+    ]
+  },
+  {
+    id: 'chametz-matzah',
+    icon: '🫓',
+    hebrewTitle: 'חמץ ומצה',
+    title: 'Chametz & Matzah',
+    description: 'The spiritual war between arrogance (chametz) and humility (matzah) — the secret of Pesach.',
+    teachings: [
+      { book: 'likutay-moharan', part: 1, torah: 1, title: 'LM I:1', snippet: 'Through humility one merits prayer, and through prayer one merits to know the greatness of the Creator.' },
+      { book: 'likutay-moharan', part: 1, torah: 10, title: 'LM I:10', snippet: 'Chametz is the aspect of the evil inclination, puffing up with arrogance. Matzah is humility.' },
+      { book: 'sefer-hamidos', part: 1, torah: 4, title: 'Sefer Hamidos — Humility', snippet: 'Through humility one comes to joy, and through joy one comes to all good things.' },
+      { book: 'likutay-eitzos', part: 1, torah: 1, title: 'Likutay Eitzos', snippet: 'The foundation of all holiness is to break the desire and arrogance within.' },
+      { book: 'hashtatfchus-hanefesh', part: 1, torah: 1, title: 'Outpouring of the Soul', snippet: 'Pour out your heart like water before Hashem — this is the matzah, the bread of humility.' },
+    ]
+  },
+  {
+    id: 'seder',
+    icon: '🍷',
+    hebrewTitle: 'ליל הסדר',
+    title: 'The Seder Night',
+    description: 'Insights on the Haggadah, the four cups, the four sons, and the wonders of the Seder night.',
+    teachings: [
+      { book: 'otzar-hayirah', part: 1, torah: 22, title: 'OHY — The Questions of Pesach Night', snippet: 'The question must be in the manner of wisdom — the wise son accepts all Torah but asks what it alludes to.' },
+      { book: 'otzar-hayirah', part: 1, torah: 23, title: 'OHY — Sefira Journey', snippet: 'Pesach is called Pesach from peh sach — the mouth speaks — for then the essential repair is to merit speech.' },
+      { book: 'likutay-moharan', part: 1, torah: 30, title: 'LM I:30 — Four Cups', snippet: 'The four cups correspond to the four languages of redemption and the four worlds of holiness.' },
+      { book: 'sichos-haran', part: 1, torah: 1, title: "Sichos HaRan", snippet: "Rabbeinu spoke extensively about the holiness of the Seder night and the power of simple faith." },
+      { book: 'likutay-halachos', part: 1, torah: 1, title: 'Likutay Halachos', snippet: "R' Nosson reveals the deep connections between the halachos of Pesach and the inner life of the soul." },
+    ]
+  },
+  {
+    id: 'tefilos',
+    icon: '🤲',
+    hebrewTitle: 'תפילות לפסח',
+    title: 'Pesach Prayers',
+    description: 'Heartfelt prayers for the Pesach period — for freedom, for faith, for drawing close to Hashem.',
+    teachings: [
+      { book: 'likutay-tefilos', part: 1, torah: 1, title: 'Likutay Tefilos 1', snippet: 'Master of the Universe! Help me to truly leave all my inner Mitzrayim...' },
+      { book: 'likutay-tefilos', part: 1, torah: 4, title: 'Likutay Tefilos 4', snippet: 'Grant me the merit to eat the holy matzah with great holiness and purity...' },
+      { book: 'likutay-tefilos', part: 1, torah: 10, title: 'Likutay Tefilos 10', snippet: 'Help me merit true humility, the aspect of matzah, bread of the poor...' },
+      { book: 'likutay-tefilos', part: 1, torah: 21, title: 'Likutay Tefilos 21', snippet: 'Have mercy on us and redeem us with a complete redemption speedily...' },
+      { book: 'likutay-tefilos', part: 2, torah: 1, title: 'Likutay Tefilos II:1', snippet: 'Master of the Universe! You performed wonders for our forefathers in Mitzrayim...' },
+    ]
+  },
+  {
+    id: 'omer',
+    icon: '🌾',
+    hebrewTitle: 'ספירת העומר',
+    title: 'Counting the Omer',
+    description: 'The 49-day journey from Pesach to Shavuos — refining character traits day by day.',
+    teachings: [
+      { book: 'otzar-hayirah', part: 1, torah: 23, title: 'OHY — Sefira', snippet: 'During the Sefira we work to repair through silence — hearing disgrace and remaining silent — the essential teshuva.' },
+      { book: 'otzar-hayirah', part: 1, torah: 24, title: 'OHY — Barley Omer', snippet: 'The barley omer is the totality of all contractions — one works to repair during all the Sefira days.' },
+      { book: 'likutay-moharan', part: 1, torah: 6, title: 'LM I:6', snippet: 'One must judge oneself every day — this is the aspect of counting, being a mara d\'chushbena.' },
+      { book: 'sichos-haran', part: 1, torah: 26, title: 'Sichos HaRan', snippet: 'Every single day is a new world. Yesterday is gone — today make a fresh start.' },
+      { book: 'likutay-eitzos', part: 1, torah: 8, title: 'Likutay Eitzos — Teshuva', snippet: 'The essence of teshuva is to cry out to Hashem from the depths of the heart.' },
+    ]
+  },
+  {
+    id: 'chumash-lh',
+    icon: '📜',
+    hebrewTitle: 'חומש ליקוטי הלכות',
+    title: 'Chumash LH on the Exodus',
+    description: "R' Nosson's teachings on the parshiyos of Shemos — the deeper meaning behind the Exodus narrative.",
+    teachings: [
+      { book: 'chumash-lh', part: 'shemos', torah: 1, title: 'Chumash LH — Shemos', snippet: "R' Nosson on Parshas Shemos — the secret of exile and the beginning of redemption." },
+      { book: 'chumash-lh', part: 'vaera', torah: 1, title: 'Chumash LH — Va\'eira', snippet: "The ten plagues correspond to the ten types of song — destruction of evil reveals the song of holiness." },
+      { book: 'chumash-lh', part: 'bo', torah: 1, title: 'Chumash LH — Bo', snippet: "Come to Pharaoh — enter the very heart of the darkness to find the hidden light." },
+      { book: 'chumash-lh', part: 'beshalach', torah: 1, title: 'Chumash LH — Beshalach', snippet: "The splitting of the sea — when all barriers fall and a new path opens in impossible places." },
+      { book: 'chumash-lh', part: 'yisro', torah: 1, title: 'Chumash LH — Yisro', snippet: "Receiving the Torah — the culmination of the Exodus, the purpose of all freedom." },
+    ]
+  }
+];
+---
+
+<Layout title="Pesach - Breslov Teachings for Passover" description="Pesach through the eyes of Rabbi Nachman of Breslov and his students. Teachings on freedom, redemption, chametz & matzah, the Seder, prayers, and the Omer. Hebrew with English translation.">
+  <div class="pesach-page">
+    <!-- Festive Hero -->
+    <header class="pesach-hero">
+      <div class="hero-bg-pattern"></div>
+      <div class="hero-content">
+        <div class="matzah-ornament top-left"></div>
+        <div class="matzah-ornament top-right"></div>
+        <h1 class="pesach-title-he" dir="rtl">חג הפסח</h1>
+        <h2 class="pesach-title-en">Pesach</h2>
+        <p class="pesach-subtitle">Through the Eyes of Rabbeinu</p>
+        <p class="pesach-subtitle-he" dir="rtl">פסח דרך עיני רבינו נ נח נחמ נחמן מאומן</p>
+        <div class="pesach-verse" dir="rtl">
+          <span class="verse-he">בְּכָל דּוֹר וָדוֹר חַיָּב אָדָם לִרְאוֹת אֶת עַצְמוֹ כְּאִלּוּ הוּא יָצָא מִמִּצְרַיִם</span>
+        </div>
+        <p class="pesach-verse-en">In every generation, a person must see himself as if he personally left Mitzrayim</p>
+      </div>
+    </header>
+
+    <!-- Introduction -->
+    <section class="pesach-intro">
+      <div class="container">
+        <p class="intro-text">
+          Pesach is not just a historical event — it is a living reality. Every year, the same lights of freedom that shone in Mitzrayim shine again.
+          Rebbe Nachman and his students teach us how to access these lights: through humility (matzah), through speech (peh sach — the mouth speaks),
+          through crying out to Hashem, and through simple faith that redemption is always possible.
+        </p>
+        <p class="intro-text" dir="rtl" style="font-family: var(--font-hebrew); font-size: 1.1rem;">
+          פסח הוא לא רק זכר ליציאת מצרים — הוא מציאות חיה. כל שנה, אותם אורות של חירות שהאירו במצרים חוזרים ומאירים.
+        </p>
+        <div style="text-align:center; margin-top:1rem;">
+          <a href="/haggadah" style="display:inline-block; padding:0.7rem 2rem; background:linear-gradient(135deg,#6b1d2a,#8b2240); color:#f0d48a; border-radius:8px; text-decoration:none; font-weight:700; font-size:1.1rem; box-shadow:0 2px 8px rgba(107,29,42,0.3); transition:transform 0.2s;">
+            <span dir="rtl" style="font-family:var(--font-hebrew);">הגדה של פסח — נ נח</span>
+            <br><span style="font-size:0.85rem; opacity:0.9;">Breslov Haggadah with Or Zoreach Commentary</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Topic Cards Grid -->
+    <section class="pesach-topics">
+      <div class="container">
+        <h2 class="topics-title">Explore Pesach Teachings</h2>
+        <div class="topics-grid">
+          {pesachTopics.map((topic) => (
+            <div class="topic-card" id={`topic-${topic.id}`}>
+              <div class="topic-header">
+                <span class="topic-icon">{topic.icon}</span>
+                <div class="topic-titles">
+                  <h3 class="topic-title-he" dir="rtl">{topic.hebrewTitle}</h3>
+                  <h4 class="topic-title-en">{topic.title}</h4>
+                </div>
+              </div>
+              <p class="topic-desc">{topic.description}</p>
+              <ul class="topic-teachings">
+                {topic.teachings.map((teaching) => (
+                  <li class="teaching-item">
+                    <a href={`/reader/${teaching.book}/${teaching.part ? 'part-' + teaching.part : ''}/${teaching.torah ? 'torah-' + teaching.torah : ''}`} class="teaching-link">
+                      <span class="teaching-title">{teaching.title}</span>
+                      <span class="teaching-snippet">{teaching.snippet}</span>
+                      <span class="teaching-read">Read in Reader</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+              <div class="topic-actions">
+                <button class="btn-add-sefer" data-topic={topic.id} onclick={`addTopicToSefer('${topic.id}')`}>
+                  Add to My Sefer
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Special Message -->
+    <section class="pesach-message">
+      <div class="container">
+        <div class="message-card">
+          <p class="message-he" dir="rtl">נ נח נחמ נחמן מאומן</p>
+          <p class="message-en">Na Nach Nachma Nachman MeUman</p>
+          <p class="message-blessing">Chag Kasher v'Sameach! May we all merit true freedom this Pesach!</p>
+          <p class="message-blessing-he" dir="rtl">חג כשר ושמח! שנזכה כולנו לחירות אמיתית בפסח הזה!</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Share buttons -->
+    <section class="pesach-share">
+      <div class="container" style="text-align: center;">
+        <button class="share-btn" onclick="sharePesach()">Share This Page</button>
+      </div>
+    </section>
+  </div>
+
+  <script is:inline>
+    function addTopicToSefer(topicId) {
+      // Open My Sefer page with topic context
+      window.location.href = '/my-sefer?from=pesach&topic=' + topicId;
+    }
+
+    function sharePesach() {
+      const text = 'Pesach Through the Eyes of Rabbeinu - Breslov teachings on freedom, redemption, and the Seder night.\n\nhttps://ajew.org/pesach\n\nNa Nach Nachma Nachman MeUman!';
+      if (navigator.share) {
+        navigator.share({ title: 'Pesach - Breslov Teachings', text: text, url: 'https://ajew.org/pesach' }).catch(() => {});
+      } else {
+        navigator.clipboard.writeText(text).then(() => {
+          const btn = document.querySelector('.share-btn');
+          if (btn) { btn.textContent = 'Link Copied!'; setTimeout(() => { btn.textContent = 'Share This Page'; }, 2000); }
+        }).catch(() => {});
+      }
+    }
+  </script>
+</Layout>
+
+<style>
+  /* === PESACH PAGE STYLES === */
+  .pesach-page {
+    min-height: 100vh;
+    background: #fffdf5;
+  }
+
+  /* Hero */
+  .pesach-hero {
+    position: relative;
+    background: linear-gradient(135deg, #92400e 0%, #b45309 30%, #d97706 60%, #f59e0b 100%);
+    color: white;
+    padding: 4rem 2rem 3rem;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .hero-bg-pattern {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(255,255,255,0.08) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(255,255,255,0.06) 0%, transparent 50%),
+      repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.02) 40px, rgba(255,255,255,0.02) 80px);
+    pointer-events: none;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .matzah-ornament {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 3px dashed rgba(255,255,255,0.3);
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  }
+  .matzah-ornament.top-left { top: -10px; left: -20px; }
+  .matzah-ornament.top-right { top: -10px; right: -20px; }
+
+  .pesach-title-he {
+    font-family: var(--font-hebrew);
+    font-size: 4rem;
+    font-weight: 800;
+    margin-bottom: 0.25rem;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    letter-spacing: 0.05em;
+  }
+
+  .pesach-title-en {
+    font-size: 2rem;
+    font-weight: 300;
+    margin-bottom: 0.5rem;
+    opacity: 0.95;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .pesach-subtitle {
+    font-size: 1.3rem;
+    font-style: italic;
+    opacity: 0.9;
+    margin-bottom: 0.25rem;
+  }
+
+  .pesach-subtitle-he {
+    font-family: var(--font-hebrew);
+    font-size: 1rem;
+    opacity: 0.8;
+    margin-bottom: 1.5rem;
+  }
+
+  .pesach-verse {
+    background: rgba(0,0,0,0.15);
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+  }
+
+  .verse-he {
+    font-family: var(--font-hebrew);
+    font-size: 1.2rem;
+    line-height: 1.6;
+  }
+
+  .pesach-verse-en {
+    font-size: 0.9rem;
+    font-style: italic;
+    opacity: 0.85;
+    margin-top: 0.5rem;
+  }
+
+  /* Introduction */
+  .pesach-intro {
+    padding: 2.5rem 0;
+    background: #fffdf5;
+  }
+
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  .intro-text {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: #44403c;
+    text-align: center;
+    max-width: 750px;
+    margin: 0 auto 1rem;
+  }
+
+  /* Topics Grid */
+  .pesach-topics {
+    padding: 2rem 0 3rem;
+    background: linear-gradient(180deg, #fffdf5 0%, #fef3c7 100%);
+  }
+
+  .topics-title {
+    font-family: var(--font-hebrew);
+    font-size: 1.8rem;
+    color: #92400e;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .topics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+  }
+
+  /* Topic Card */
+  .topic-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 12px rgba(146, 64, 14, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    transition: all 0.3s ease;
+  }
+
+  .topic-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(146, 64, 14, 0.15);
+    border-color: rgba(245, 158, 11, 0.4);
+  }
+
+  .topic-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .topic-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+  }
+
+  .topic-titles {
+    flex: 1;
+  }
+
+  .topic-title-he {
+    font-family: var(--font-hebrew);
+    font-size: 1.3rem;
+    color: #92400e;
+    margin: 0;
+    font-weight: 700;
+  }
+
+  .topic-title-en {
+    font-size: 1rem;
+    color: #b45309;
+    margin: 0;
+    font-weight: 600;
+  }
+
+  .topic-desc {
+    font-size: 0.9rem;
+    color: #57534e;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+
+  /* Teachings list */
+  .topic-teachings {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .teaching-item {
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .teaching-link {
+    display: flex;
+    flex-direction: column;
+    padding: 0.6rem 0.75rem;
+    background: #fffbeb;
+    border-left: 3px solid #f59e0b;
+    text-decoration: none;
+    transition: all 0.2s;
+    gap: 0.2rem;
+  }
+
+  .teaching-link:hover {
+    background: #fef3c7;
+    border-left-color: #d97706;
+    transform: translateX(3px);
+  }
+
+  .teaching-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #92400e;
+  }
+
+  .teaching-snippet {
+    font-size: 0.78rem;
+    color: #78716c;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .teaching-read {
+    font-size: 0.72rem;
+    color: #d97706;
+    font-weight: 600;
+    margin-top: 0.15rem;
+  }
+
+  .teaching-read::after {
+    content: ' \2192';
+  }
+
+  /* Actions */
+  .topic-actions {
+    text-align: center;
+  }
+
+  .btn-add-sefer {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    border: none;
+    padding: 0.5rem 1.25rem;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-add-sefer:hover {
+    background: linear-gradient(135deg, #d97706, #b45309);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(217, 119, 6, 0.3);
+  }
+
+  /* Special Message */
+  .pesach-message {
+    padding: 2rem 0;
+    background: #fffdf5;
+  }
+
+  .message-card {
+    text-align: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.05));
+    border-radius: 12px;
+    border: 2px solid rgba(245, 158, 11, 0.3);
+  }
+
+  .message-he {
+    font-family: var(--font-hebrew);
+    font-size: 2rem;
+    color: #d97706;
+    font-weight: 800;
+    margin-bottom: 0.25rem;
+    letter-spacing: 0.1em;
+  }
+
+  .message-en {
+    font-size: 1.1rem;
+    color: #92400e;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    letter-spacing: 0.08em;
+  }
+
+  .message-blessing {
+    font-size: 1rem;
+    color: #57534e;
+    margin-bottom: 0.25rem;
+  }
+
+  .message-blessing-he {
+    font-family: var(--font-hebrew);
+    font-size: 1rem;
+    color: #78716c;
+  }
+
+  /* Share */
+  .pesach-share {
+    padding: 1rem 0 3rem;
+    background: #fffdf5;
+  }
+
+  .share-btn {
+    background: #92400e;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.5rem;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .share-btn:hover {
+    background: #78350f;
+    transform: translateY(-1px);
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .pesach-title-he { font-size: 2.8rem; }
+    .pesach-title-en { font-size: 1.5rem; }
+    .pesach-subtitle { font-size: 1rem; }
+    .verse-he { font-size: 1rem; }
+    .topics-grid { grid-template-columns: 1fr; }
+    .pesach-hero { padding: 2.5rem 1rem 2rem; }
+  }
+</style>

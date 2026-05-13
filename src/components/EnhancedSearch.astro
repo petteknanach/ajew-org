@@ -1,0 +1,600 @@
+---
+import AdvancedSearchOptions from './AdvancedSearchOptions.astro';
+
+interface Props {
+  compact?: boolean;
+  showFilters?: boolean;
+  autoFocus?: boolean;
+  showAdvancedOptions?: boolean;
+}
+
+const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptions = true } = Astro.props;
+---
+
+<div class={`enhanced-search ${compact ? 'compact' : ''}`}>
+  <div class="search-container">
+    <form id="searchForm" class="search-form">
+      <div class="search-input-wrapper">
+        <input
+          type="text"
+          id="searchInput"
+          class="search-input"
+          placeholder="חפש בכל הספרים... Search across all works..."
+          dir="auto"
+          autocomplete="off"
+          autofocus={autoFocus}
+          aria-label="Search"
+        />
+        <button type="submit" class="search-button" aria-label="Search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </button>
+        <button type="button" class="heb-kb-toggle" id="hebKbToggle" title="Hebrew keyboard">א</button>
+      </div>
+
+      <!-- Hebrew Keyboard -->
+      <div class="heb-keyboard" id="hebKeyboard" style="display:none;">
+        <div class="heb-kb-row">
+          <button class="heb-key" data-char="ק">ק</button><button class="heb-key" data-char="ר">ר</button>
+          <button class="heb-key" data-char="א">א</button><button class="heb-key" data-char="ט">ט</button>
+          <button class="heb-key" data-char="ו">ו</button><button class="heb-key" data-char="ן">ן</button>
+          <button class="heb-key" data-char="ם">ם</button><button class="heb-key" data-char="פ">פ</button>
+        </div>
+        <div class="heb-kb-row">
+          <button class="heb-key" data-char="ש">ש</button><button class="heb-key" data-char="ד">ד</button>
+          <button class="heb-key" data-char="ג">ג</button><button class="heb-key" data-char="כ">כ</button>
+          <button class="heb-key" data-char="ע">ע</button><button class="heb-key" data-char="י">י</button>
+          <button class="heb-key" data-char="ח">ח</button><button class="heb-key" data-char="ל">ל</button>
+          <button class="heb-key" data-char="ך">ך</button><button class="heb-key" data-char="ף">ף</button>
+        </div>
+        <div class="heb-kb-row">
+          <button class="heb-key" data-char="ז">ז</button><button class="heb-key" data-char="ס">ס</button>
+          <button class="heb-key" data-char="ב">ב</button><button class="heb-key" data-char="ה">ה</button>
+          <button class="heb-key" data-char="נ">נ</button><button class="heb-key" data-char="מ">מ</button>
+          <button class="heb-key" data-char="צ">צ</button><button class="heb-key" data-char="ת">ת</button>
+          <button class="heb-key" data-char="ץ">ץ</button>
+        </div>
+        <div class="heb-kb-row">
+          <button class="heb-key heb-space" data-char=" ">Space</button>
+          <button class="heb-key heb-del" id="hebDel">⌫</button>
+        </div>
+      </div>
+
+      <!-- Popular Searches -->
+      <div class="popular-searches" id="popularSearches">
+        <span class="pop-label">Try:</span>
+        <button type="button" class="pop-tag" data-q="תשובה">תשובה</button>
+        <button type="button" class="pop-tag" data-q="שמחה">שמחה</button>
+        <button type="button" class="pop-tag" data-q="התבודדות">התבודדות</button>
+        <button type="button" class="pop-tag" data-q="אמונה">אמונה</button>
+        <button type="button" class="pop-tag" data-q="תפילה">תפילה</button>
+        <button type="button" class="pop-tag" data-q="צדיק">צדיק</button>
+        <button type="button" class="pop-tag" data-q="תיקון">תיקון</button>
+        <button type="button" class="pop-tag" data-q="prayer">prayer</button>
+        <button type="button" class="pop-tag" data-q="joy">joy</button>
+        <button type="button" class="pop-tag" data-q="faith">faith</button>
+      </div>
+
+      {showFilters && (
+        <div class="search-mode-bar">
+          <div class="mode-group">
+            <span class="mode-label">Mode:</span>
+            <button type="button" class="mode-btn active" data-mode="google" title="Smart search - finds any/all words, ranked by relevance">Google</button>
+            <button type="button" class="mode-btn" data-mode="exact" title="Exact phrase match">Exact</button>
+            <button type="button" class="mode-btn" data-mode="all" title="ALL words must appear">All Words</button>
+            <button type="button" class="mode-btn" data-mode="any" title="ANY of the words can appear">Any Word</button>
+          </div>
+          <div class="mode-group">
+            <button type="button" class="mode-btn" data-mode="proximity" title="Words within N words of each other">Proximity</button>
+            <button type="button" class="mode-btn" data-mode="boolean" title="AND / OR / NOT operators">Boolean</button>
+            <button type="button" class="mode-btn" data-mode="acronym" title="ראשי תיבות - First letters of consecutive words">Acronym</button>
+            <button type="button" class="mode-btn" data-mode="endletters" title="סופי תיבות - Last letters of consecutive words">End Letters</button>
+          </div>
+          <div class="mode-group">
+            <button type="button" class="mode-btn" data-mode="startsWith" title="Words starting with...">Starts With</button>
+            <button type="button" class="mode-btn" data-mode="endsWith" title="Words ending with...">Ends With</button>
+          </div>
+          <div class="mode-group acronym-order-group" id="acronymOrderGroup" style="display:none;">
+            <span class="mode-label">Order:</span>
+            <button type="button" class="order-btn active" data-order="consecutive" title="Letters must match consecutive words in order">Specific Order</button>
+            <button type="button" class="order-btn" data-order="any" title="Letters can appear in any order across the text">Any Order</button>
+          </div>
+          <div class="mode-group min-words-group" id="minWordsGroup">
+            <span class="mode-label">Min match:</span>
+            <select id="minWordsSelect" class="min-words-select" title="Minimum number of words that must match">
+              <option value="0">Any 1+</option>
+              <option value="2">At least 2</option>
+              <option value="3">At least 3</option>
+              <option value="4">At least 4</option>
+              <option value="5">At least 5</option>
+            </select>
+            <span class="mode-label" id="minWordsHint">of <span id="totalWordsCount">0</span> words</span>
+          </div>
+          <!-- Book filter -->
+          <div class="mode-group book-filter-group">
+            <span class="mode-label">Book:</span>
+            <select id="bookFilter" class="min-words-select" title="Filter results by book">
+              <option value="">All Books</option>
+              <optgroup label="R' Nachman">
+                <option value="likutay-moharan">Likutay Moharan</option>
+                <option value="sefer-hamidos">Sefer HaMidos</option>
+                <option value="sipurey-maasiyos">Sipurey Maasiyos</option>
+              </optgroup>
+              <optgroup label="R' Nosson">
+                <option value="likutay-halachos">Likutay Halachos</option>
+                <option value="likutay-tefilos">Likutay Tefilos</option>
+                <option value="sichos-haran">Sichos HaRan</option>
+                <option value="shivchay-haran">Shivchay HaRan</option>
+                <option value="likutay-eitzos">Likutay Eitzos</option>
+              </optgroup>
+              <optgroup label="Other Breslov">
+                <option value="kitzur-likutay-moharan">Kitzur LM</option>
+                <option value="hashtatfchus-hanefesh">Hashtatfchus</option>
+                <option value="meshivas-nefesh">Meshivas Nefesh</option>
+                <option value="parparos-lechochma">Parparos</option>
+              </optgroup>
+            </select>
+          </div>
+        </div>
+      )}
+    </form>
+  </div>
+
+  <!-- Advanced Search Options -->
+  {showAdvancedOptions && <AdvancedSearchOptions />}
+</div>
+
+<script>
+  // Search state
+  const searchState = {
+    query: '',
+    filters: { type: [], category: [], language: '', author: '' },
+    advancedOptions: {
+      books: [],
+      searchType: 'google',
+      proximity: 5,
+      acronymOrder: 'consecutive',
+      minWords: 0
+    },
+    isLoading: false
+  };
+
+  const allBookValues = [
+    'likutay-moharan', 'sefer-hamidos', 'stories',
+    'likutay-nanach-3', 'likutay-nanach-4', 'likutay-nanach-5', 'likutay-nanach-unknown',
+    '1_ספרי-רבי-נחמן', '2_ספרי-רבי-נתן', '3_ספרי-רבי-נתן-בר-יהודה',
+    '3_ספרי-הרב-מטשערין', '4_ספרי-רבי-אלתר-טפליקער', '5_ספרי-רבי-אברהם-בר-נחמן',
+    '6_ספרי-רבי-שמשון-בארסקי', '6_ספרים-של-תלמידים-ועוד',
+    'ביבליוגרפית-ברסלב', '91_סיפורים', '92_ספרים-מתורגמים'
+  ];
+
+  searchState.advancedOptions.books = [...allBookValues];
+
+  let searchInput: HTMLInputElement;
+  let searchForm: HTMLFormElement;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    searchInput = document.getElementById('searchInput') as HTMLInputElement;
+    searchForm = document.getElementById('searchForm') as HTMLFormElement;
+
+    // Form submission
+    searchForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      performSearch();
+    });
+
+    // Enter key
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        performSearch();
+      }
+    });
+
+    // Hebrew keyboard toggle
+    const hebKbToggle = document.getElementById('hebKbToggle');
+    const hebKeyboard = document.getElementById('hebKeyboard');
+    if (hebKbToggle && hebKeyboard) {
+      hebKbToggle.addEventListener('click', () => {
+        hebKeyboard.style.display = hebKeyboard.style.display === 'none' ? 'block' : 'none';
+        hebKbToggle.classList.toggle('active');
+      });
+      hebKeyboard.querySelectorAll('.heb-key[data-char]').forEach(key => {
+        key.addEventListener('click', () => {
+          if (!searchInput) return;
+          searchInput.value += (key as HTMLElement).dataset.char;
+          searchInput.focus();
+        });
+      });
+      const hebDel = document.getElementById('hebDel');
+      if (hebDel) {
+        hebDel.addEventListener('click', () => {
+          if (!searchInput) return;
+          searchInput.value = searchInput.value.slice(0, -1);
+          searchInput.focus();
+        });
+      }
+    }
+
+    // Popular search tags
+    document.querySelectorAll('.pop-tag').forEach(tag => {
+      tag.addEventListener('click', () => {
+        searchInput.value = tag.dataset.q || '';
+        performSearch();
+        const popSection = document.getElementById('popularSearches');
+        if (popSection) popSection.style.display = 'none';
+      });
+    });
+    // Hide popular searches when user types
+    searchInput.addEventListener('input', () => {
+      const popSection = document.getElementById('popularSearches');
+      if (popSection) popSection.style.display = searchInput.value ? 'none' : 'flex';
+    });
+
+    // Listen for advanced search options
+    document.addEventListener('advanced-search-options', (e: any) => {
+      searchState.advancedOptions = { ...searchState.advancedOptions, ...e.detail };
+      if (searchState.query) performSearch();
+    });
+
+    // Mode buttons
+    const orderGroup = document.getElementById('acronymOrderGroup');
+    const minWordsGroup = document.getElementById('minWordsGroup');
+    const minWordsSelect = document.getElementById('minWordsSelect') as HTMLSelectElement;
+    const totalWordsCount = document.getElementById('totalWordsCount');
+
+    document.querySelectorAll('.mode-btn[data-mode]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.mode-btn[data-mode]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const mode = (btn as HTMLElement).dataset.mode || 'google';
+        searchState.advancedOptions.searchType = mode;
+        // Show order toggle for acronym/endletters modes
+        if (orderGroup) {
+          orderGroup.style.display = (mode === 'acronym' || mode === 'endletters') ? 'flex' : 'none';
+        }
+        // Show minWords for google/any modes
+        if (minWordsGroup) {
+          minWordsGroup.style.display = (mode === 'google' || mode === 'any') ? 'flex' : 'none';
+        }
+        if (searchState.query) performSearch();
+      });
+    });
+
+    // Min words select
+    if (minWordsSelect) {
+      minWordsSelect.addEventListener('change', () => {
+        searchState.advancedOptions.minWords = parseInt(minWordsSelect.value, 10);
+        if (searchState.query) performSearch();
+      });
+    }
+
+    // Book filter
+    const bookFilter = document.getElementById('bookFilter') as HTMLSelectElement;
+    if (bookFilter) {
+      bookFilter.addEventListener('change', () => {
+        searchState.advancedOptions.books = bookFilter.value ? [bookFilter.value] : [];
+        if (searchState.query) performSearch();
+      });
+    }
+
+    // Update word count hint when search input changes
+    if (searchInput) {
+      searchInput.addEventListener('input', () => {
+        const words = searchInput.value.trim().split(/\s+/).filter((w: string) => w.length > 0);
+        if (totalWordsCount) totalWordsCount.textContent = String(words.length);
+        // Update select options to not exceed word count
+        if (minWordsSelect) {
+          for (const opt of minWordsSelect.options) {
+            const val = parseInt(opt.value, 10);
+            opt.disabled = val > words.length && val > 0;
+          }
+        }
+      });
+    }
+
+    // Order toggle buttons (for acronym/endletters)
+    document.querySelectorAll('.order-btn[data-order]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.order-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        searchState.advancedOptions.acronymOrder = (btn as HTMLElement).dataset.order || 'consecutive';
+        if (searchState.query) performSearch();
+      });
+    });
+
+    // Check URL parameters on load
+    checkUrlParameters();
+  });
+
+  function performSearch() {
+    const query = searchInput.value.trim();
+    if (!query) return;
+    
+    searchState.query = query;
+    updateUrl(query);
+    
+    // Dispatch search event
+    document.dispatchEvent(new CustomEvent('enhanced-search', {
+      detail: {
+        query: query,
+        filters: searchState.filters,
+        advancedOptions: searchState.advancedOptions
+      }
+    }));
+  }
+
+  function updateUrl(query: string) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('q', query);
+    if (searchState.advancedOptions.searchType !== 'google') {
+      url.searchParams.set('searchType', searchState.advancedOptions.searchType);
+    } else {
+      url.searchParams.delete('searchType');
+    }
+    if (searchState.advancedOptions.proximity > 0) {
+      url.searchParams.set('proximity', String(searchState.advancedOptions.proximity));
+    } else {
+      url.searchParams.delete('proximity');
+    }
+    window.history.replaceState({}, '', url);
+  }
+
+  function checkUrlParameters() {
+    const params = new URLSearchParams(window.location.search);
+    const query = params.get('q');
+    if (query) {
+      searchInput.value = query;
+      searchState.query = query;
+      
+      const searchType = params.get('searchType');
+      if (searchType) searchState.advancedOptions.searchType = searchType;
+      
+      const proximity = params.get('proximity');
+      if (proximity) searchState.advancedOptions.proximity = parseInt(proximity);
+      
+      setTimeout(() => performSearch(), 200);
+    }
+  }
+
+  // Public API
+  (window as any).enhancedSearch = {
+    search: performSearch,
+    setQuery: (q: string) => { searchInput.value = q; searchState.query = q; },
+    getState: () => ({ ...searchState }),
+    reset: () => { searchInput.value = ''; searchState.query = ''; }
+  };
+</script>
+
+<style>
+  .enhanced-search {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .enhanced-search.compact {
+    max-width: 500px;
+  }
+
+  .search-container {
+    position: relative;
+  }
+
+  .search-form {
+    width: 100%;
+  }
+
+  .popular-searches {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    margin: 8px 0;
+  }
+  /* Hebrew keyboard toggle */
+  .heb-kb-toggle {
+    padding: 0.85rem 1rem;
+    background: #f0ebe0;
+    border: 2px solid #d1d5db;
+    border-radius: 50px;
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 1.1em;
+    font-weight: 700;
+    cursor: pointer;
+    color: #1a365d;
+  }
+  .heb-kb-toggle.active { background: #1a365d; color: white; border-color: #1a365d; }
+  .heb-keyboard {
+    background: #f8f5ef;
+    border: 1px solid #e0d6c2;
+    border-radius: 12px;
+    padding: 8px;
+    margin-bottom: 8px;
+    direction: rtl;
+  }
+  .heb-kb-row { display: flex; justify-content: center; gap: 4px; margin-bottom: 4px; }
+  .heb-key {
+    min-width: 32px;
+    height: 36px;
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 1.1em;
+    cursor: pointer;
+    color: #1a365d;
+  }
+  .heb-key:hover { background: #e0d6c2; }
+  .heb-key:active { background: #1a365d; color: white; }
+  .heb-space { min-width: 120px; font-size: 0.8em; }
+  .heb-del { font-size: 0.9em; min-width: 48px; }
+
+  .pop-label { color: #888; font-size: 0.8em; }
+  .pop-tag {
+    background: #f0ebe0;
+    border: 1px solid #e0d6c2;
+    color: #1a365d;
+    padding: 3px 10px;
+    border-radius: 14px;
+    font-size: 0.8em;
+    cursor: pointer;
+    font-family: 'Frank Ruhl Libre', serif;
+    transition: all 0.2s;
+  }
+  .pop-tag:hover { background: #e0d6c2; }
+
+  .search-input-wrapper {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .search-input {
+    flex: 1;
+    padding: 0.85rem 1.2rem;
+    font-size: 1.05rem;
+    border: 2px solid #d1d5db;
+    border-radius: 50px;
+    transition: all 0.2s;
+    background: white;
+    direction: ltr;
+  }
+
+  .search-input:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+  }
+
+  .search-input::placeholder {
+    color: #9ca3af;
+  }
+
+  .search-button {
+    padding: 0.85rem 1.2rem;
+    background: #6366f1;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .search-button:hover {
+    background: #4f46e5;
+    transform: scale(1.02);
+  }
+
+  .search-mode-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .mode-group {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .mode-label {
+    font-size: 0.72rem;
+    color: #888;
+    margin-right: 2px;
+    font-weight: 600;
+  }
+
+  .mode-btn {
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    color: #4b5563;
+    padding: 4px 10px;
+    border-radius: 14px;
+    font-size: 0.72rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .mode-btn:hover {
+    background: #e5e7eb;
+    border-color: #9ca3af;
+  }
+
+  .mode-btn.active {
+    background: #6366f1;
+    color: white;
+    border-color: #6366f1;
+  }
+
+  .order-btn {
+    background: #fef3c7;
+    border: 1px solid #d97706;
+    color: #92400e;
+    padding: 4px 10px;
+    border-radius: 14px;
+    font-size: 0.72rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .order-btn:hover { background: #fde68a; }
+  .order-btn.active {
+    background: #d97706;
+    color: white;
+    border-color: #d97706;
+  }
+
+  .acronym-order-group {
+    align-items: center;
+    border-top: 1px solid #e5e7eb;
+    padding-top: 6px;
+    margin-top: 4px;
+  }
+
+  .min-words-group {
+    align-items: center;
+    border-top: 1px solid #e5e7eb;
+    padding-top: 6px;
+    margin-top: 4px;
+  }
+
+  .min-words-select {
+    padding: 3px 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    background: white;
+    color: #4b5563;
+    cursor: pointer;
+    font-weight: 500;
+  }
+
+  .min-words-select:focus {
+    outline: none;
+    border-color: #6366f1;
+  }
+
+  @media (max-width: 640px) {
+    .search-input {
+      font-size: 0.95rem;
+      padding: 0.75rem 1rem;
+    }
+
+    .search-button {
+      padding: 0.75rem 1rem;
+    }
+  }
+</style>

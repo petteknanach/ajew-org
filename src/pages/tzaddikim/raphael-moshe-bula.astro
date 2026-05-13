@@ -1,0 +1,262 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const tzaddikData = {
+  name: "Rabbi Raphael Moshe Bula",
+  hebrew_name: "רבי רפאל משה בולא",
+  title: "Author of 'Get Mekushar', Sephardic Sage, Rishon LeZion",
+  yahrzeit_hebrew: "כ״ז בַּאֲדָר",
+  yahrzeit_english: "27 Adar",
+  
+  // Biography sections
+  biography: `
+    <p><strong>Rabbi Raphael Moshe Bula</strong> was a prominent Sephardic sage and halakhic authority in the 18th century, best known as the author of the seminal work <em>Get Mekushar</em> on the laws of divorce documents.</p>
+    
+    <h3>Early Life & Background</h3>
+    <p>Born in <strong>Salonika (Thessaloniki)</strong> to a distinguished Sephardic Jewish family, Rabbi Bula received a comprehensive Torah education in the vibrant Jewish community of the Ottoman Empire. Salonika was then a major center of Sephardic learning and commerce.</p>
+    
+    <h3>Rabbinic Career in Italy</h3>
+    <p>He served as a rabbi in <strong>Ancona, Italy</strong>, where he gained recognition for his scholarship and leadership. His time in Italy exposed him to both Sephardic and Ashkenazic traditions, enriching his halakhic perspective.</p>
+    
+    <h3>Aliyah to Jerusalem & Leadership</h3>
+    <p>Rabbi Bula made <em>aliyah</em> to the Holy Land and settled in Jerusalem. His scholarship and stature led to his appointment as <strong>Rishon LeZion</strong> (Sephardic Chief Rabbi of Jerusalem), a position he held for a brief period in the mid-18th century.</p>
+    
+    <h3>Historical Context</h3>
+    <p>He was part of the generation of Sephardic sages who helped rebuild Jerusalem's Jewish community after centuries of decline. His leadership came during a period of gradual renewal of Jewish life in the Holy Land.</p>
+  `,
+  
+  // Major works
+  major_works: [
+    {
+      title: "Get Mekushar (גט מקושר)",
+      description: "Comprehensive halakhic work on the laws of divorce documents (gittin), particularly focusing on the intricate requirements for a 'tied get' (get mekushar). This work established his reputation as a leading authority in family law."
+    },
+    {
+      title: "Chayei Olam (חיי עולם)",
+      description: "Collection of sermons and homilies (derashot) on Torah portions and Jewish holidays, reflecting his depth in aggadah and ethical teachings alongside his halakhic expertise."
+    },
+    {
+      title: "Zechut Moshe (זכות משה)",
+      description: "Additional halakhic writings and responsa that further demonstrate his comprehensive Torah scholarship across all areas of Jewish law."
+    }
+  ],
+  
+  // Legacy and significance
+  legacy: `
+    <h3>Halakhic Legacy</h3>
+    <p>Rabbi Bula's <em>Get Mekushar</em> remains an important source for the complex laws of Jewish divorce documents. His careful analysis of the Talmudic and medieval sources, combined with practical guidance, made his work essential for rabbinical courts dealing with gittin.</p>
+    
+    <h3>Sephardic Leadership</h3>
+    <p>As Rishon LeZion, he represented the continuity of Sephardic scholarship in Jerusalem. His brief tenure contributed to the strengthening of Jerusalem's rabbinical institutions during a challenging period.</p>
+    
+    <h3>Bridge Between Communities</h3>
+    <p>Having served communities in both the Ottoman Empire (Salonika) and Italy (Ancona), and then in Jerusalem, Rabbi Bula embodied the interconnectedness of the Sephardic diaspora and the centrality of the Land of Israel in Jewish life.</p>
+  `,
+  
+  // Teaching connections (to Breslov/Nanach where applicable)
+  teaching_connections: `
+    <div class="connection-note">
+      <h4>📜 Connection to General Torah Scholarship:</h4>
+      <p>While not directly connected to Breslov, Rabbi Bula represents the rich tradition of Sephardic halakhic scholarship that forms an essential part of the broader Torah world. His meticulous attention to the details of <em>halakha</em>, particularly in the sensitive area of divorce law, exemplifies the seriousness with which Torah scholars approach their sacred responsibility.</p>
+      
+      <p>His life journey—from Salonika to Italy to Jerusalem—mirrors the historical movements of Sephardic Jewry and their enduring connection to Eretz Yisrael, a theme that resonates with the Breslov emphasis on the Land of Israel's spiritual significance.</p>
+    </div>
+  `,
+  
+  // Category and tags
+  category: "sephardic-sages",
+  tags: ["sephardic", "halakha", "rishon-lezion", "jerusalem", "get-mekushar", "18th-century"],
+  
+  // Historical period
+  period: "18th Century",
+  timeline_position: "Sephardic Sages of Jerusalem",
+  
+  // Related tzaddikim (for linking)
+  related_tzaddikim: [
+    { name: "Other Sephardic Sages of Jerusalem", link: "/tzaddikim#sephardic" },
+    { name: "Halakhic Authorities", link: "/tzaddikim#halakha" }
+  ],
+  
+  // Color scheme for profile
+  color_scheme: {
+    primary: "#8B4513", // Sephardic brown/earth tone
+    secondary: "#D2691E",
+    accent: "#CD853F"
+  }
+};
+---
+
+<Layout 
+  title={`${tzaddikData.name} | Tzaddik Profile`}
+  description={`Learn about ${tzaddikData.name} (${tzaddikData.hebrew_name}), author of Get Mekushar, Sephardic sage and Rishon LeZion in 18th century Jerusalem. Yahrzeit: ${tzaddikData.yahrzeit_hebrew} (${tzaddikData.yahrzeit_english}).`}
+>
+  <script type="application/ld+json" set:html={} />
+  <div class="tzaddik-profile">
+    <div class="profile-header">
+      <h1>{tzaddikData.name}</h1>
+      <h2 class="hebrew-name">{tzaddikData.hebrew_name}</h2>
+      <p class="title">{tzaddikData.title}</p>
+      
+      <div class="yahrzeit-info">
+        <div class="yahrzeit-badge">
+          <span class="yahrzeit-label">Yahrzeit:</span>
+          <span class="yahrzeit-hebrew">{tzaddikData.yahrzeit_hebrew}</span>
+          <span class="yahrzeit-english">({tzaddikData.yahrzeit_english})</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="profile-content">
+      <div class="biography" set:html={tzaddikData.biography} />
+      
+      {tzaddikData.works && tzaddikData.works.length > 0 && (
+        <div class="works-section">
+          <h3>Major Works</h3>
+          <ul class="works-list">
+            {tzaddikData.works.map(work => (
+              <li>
+                <strong>{work.title}</strong>
+                {work.description && <span> – {work.description}</span>}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      
+      {tzaddikData.legacy && (
+        <div class="legacy-section">
+          <h3>Legacy & Impact</h3>
+          <div set:html={tzaddikData.legacy} />
+        </div>
+      )}
+      
+      {tzaddikData.sources && tzaddikData.sources.length > 0 && (
+        <div class="sources-section">
+          <h3>Sources & References</h3>
+          <ul class="sources-list">
+            {tzaddikData.sources.map(source => (
+              <li>{source}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  </div>
+</Layout>
+
+<style>
+  /* Tzaddik profile styles */
+  .tzaddik-profile {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+  
+  .profile-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 2rem;
+  }
+  
+  .profile-header h1 {
+    color: #1a365d;
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .hebrew-name {
+    color: #4a5568;
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    font-weight: normal;
+  }
+  
+  .title {
+    color: #718096;
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .yahrzeit-info {
+    display: inline-block;
+    background: #f7fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1.5rem;
+  }
+  
+  .yahrzeit-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .yahrzeit-label {
+    font-weight: bold;
+    color: #4a5568;
+  }
+  
+  .yahrzeit-hebrew {
+    color: #2d3748;
+    font-size: 1.1rem;
+  }
+  
+  .yahrzeit-english {
+    color: #718096;
+  }
+  
+  .profile-content {
+    line-height: 1.7;
+  }
+  
+  .profile-content h3 {
+    color: #2d3748;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 0.5rem;
+  }
+  
+  .works-list, .sources-list {
+    list-style: none;
+    padding-left: 0;
+  }
+  
+  .works-list li, .sources-list li {
+    margin-bottom: 0.75rem;
+    padding-left: 1.5rem;
+    position: relative;
+  }
+  
+  .works-list li:before {
+    content: "📚";
+    position: absolute;
+    left: 0;
+  }
+  
+  .sources-list li:before {
+    content: "📖";
+    position: absolute;
+    left: 0;
+  }
+  
+  /* Additional styling specific to Sephardic sages */
+  .sephardic-highlight {
+    border-left: 4px solid #8B4513;
+    padding-left: 1rem;
+    margin: 1.5rem 0;
+    background: linear-gradient(to right, rgba(139, 69, 19, 0.05), transparent);
+  }
+  
+  .halakha-badge {
+    display: inline-block;
+    background: #8B4513;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+    margin: 0.25rem;
+  }
+</style>

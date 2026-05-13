@@ -1,0 +1,145 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import fs from 'node:fs';
+import path from 'node:path';
+
+// Load special prayers data
+let specialData = null;
+let tocData = null;
+try {
+  const specialPath = path.join(process.cwd(), 'public/reader/likutay-tefilos/special-prayers.json');
+  const tocPath = path.join(process.cwd(), 'public/reader/likutay-tefilos/toc-topics.json');
+  specialData = JSON.parse(fs.readFileSync(specialPath, 'utf8'));
+  tocData = JSON.parse(fs.readFileSync(tocPath, 'utf8'));
+} catch (e) {
+  console.error('Error loading special prayers data:', e);
+}
+
+// Build prayer-to-topics map for the special page
+const prayerTopics: Record<number, { part: number; topics: string[] }> = {};
+if (tocData) {
+  for (const topic of tocData.topics) {
+    for (const p of topic.part1_prayers) {
+      if (!prayerTopics[p]) prayerTopics[p] = { part: 1, topics: [] };
+      prayerTopics[p].topics.push(topic.topic);
+    }
+    for (const p of topic.part2_prayers) {
+      if (!prayerTopics[p]) prayerTopics[p] = { part: 2, topics: [] };
+      if (!prayerTopics[p].topics.includes(topic.topic)) {
+        prayerTopics[p].topics.push(topic.topic);
+      }
+    }
+  }
+}
+
+// Categorize topics for display
+const categories = [
+  { name: 'Livelihood & Business', hebrew: 'פרנסה ומסחר', keywords: ['מָמוֹן', 'פַרְנָסָה', 'מַשָּׂא־וּמַתָּן', 'מַשָּׂא וּמַתָּן'] },
+  { name: 'Health & Healing', hebrew: 'בריאות ורפואה', keywords: ['רְפוּאָה', 'חוֹלֶה', 'חֳלִי', 'מַחֲלָה'] },
+  { name: 'Children & Family', hebrew: 'בנים ומשפחה', keywords: ['בָּנִים', 'בָּנוֹת', 'זֶרַע', 'יְרוּשָּׁה'] },
+  { name: 'Faith & Trust', hebrew: 'אמונה וביטחון', keywords: ['אֱמוּנָה', 'בִּטְחוֹן', 'יִרְאָה', 'תְּשׁוּבָה'] },
+  { name: 'Exile & Redemption', hebrew: 'גלות וגאולה', keywords: ['גָּלוּת', 'גְאֻלָּה', 'יְרוּשָׁלַיִם', 'בֵּית הַמִּקְדָּשׁ', 'אֶרֶץ־יִשְׂרָאֵל'] },
+  { name: 'Torah & Prayer', hebrew: 'תורה ותפילה', keywords: ['תּוֹרָה', 'תְּפִלָה', 'לִמּוּד', 'תַּלְמוּד'] },
+  { name: 'Love & Kindness', hebrew: 'אהבה וחסד', keywords: ['אַהֲבָה', 'חֶסֶד', 'רַחֲמִים'] },
+  { name: 'Protection & Salvation', hebrew: 'הגנה וישועה', keywords: ['יְשׁוּעָה', 'הַצָּלָה', 'גְזֵרוֹת', 'גְזַלָה', 'כַּעַס'] },
+  { name: 'Humility & Character', hebrew: 'ענוות ומידות', keywords: ['עֲנָוָה', 'גַאֲוָה', 'מוּסָר', 'יִשּׁוּב הַדַּעַת'] },
+  { name: 'The Righteous', hebrew: 'צדיקים', keywords: ['צַדִּיק', 'צְדָקָה', 'הִסְתַּלְקוּת'] },
+];
+
+// Match topics to categories
+const categorizedTopics: Record<string, typeof tocData.topics> = {};
+for (const cat of categories) {
+  categorizedTopics[cat.name] = [];
+  for (const topic of (specialData?.topics || [])) {
+    for (const kw of cat.keywords) {
+      if (topic.topic.includes(kw)) {
+        categorizedTopics[cat.name].push(topic);
+        break;
+      }
+    }
+  }
+}
+// Add uncategorized
+const categorizedNames = new Set(categories.flatMap(c => categorizedTopics[c.name].map(t => t.topic)));
+categorizedTopics['Other Needs'] = (specialData?.topics || []).filter(t => !categorizedNames.has(t.topic));
+---
+
+<Layout title="Special Prayers for All Needs & Occasions — Likutay Tefilos" description="Find the right prayer for every situation. Browse Likutay Tefilos by topic: livelihood, health, children, faith, trust, exile, redemption, Torah, prayer, and more.">
+  <div style="max-width: 900px; margin: 0 auto; padding: 40px 20px;">
+    <!-- Header -->
+    <div style="text-align: center; margin-bottom: 40px;">
+      <p style="font-family: 'Cinzel', serif; font-size: 0.75em; letter-spacing: 3px; color: #a07830; text-transform: uppercase; margin-bottom: 8px;">Likutay Tefilos</p>
+      <h1 style="font-family: 'Cinzel', serif; font-size: 2em; color: #1e3a5f; margin-bottom: 8px;">Special Prayers for Every Need</h1>
+      <p style="font-family: 'Noto Serif Hebrew', serif; font-size: 1.2em; color: #6b5a42; direction: rtl; margin-bottom: 12px;">תפילות מיוחדות לכל צורך ומקרה</p>
+      <p style="color: #6b5a42; font-size: 0.95em; max-width: 600px; margin: 0 auto;">Prayers curated by Rabbi Nosson of Breslov, based on the teachings of Rabbi Nachman. Find the right prayer for your situation below, organized by topic.</p>
+    </div>
+
+    <!-- Topic Categories -->
+    {categories.map(cat => {
+      const topics = categorizedTopics[cat.name] || [];
+      if (topics.length === 0) return null;
+      return (
+        <div style="margin-bottom: 32px; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
+          <div style="background: linear-gradient(135deg, #1e3a5f 0%, #2e5580 100%); padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <h2 style="color: #f5ead0; font-family: 'Cinzel', serif; font-size: 1.1em; margin: 0;">{cat.name}</h2>
+              <span style="color: #c8bfa0; font-family: 'Noto Serif Hebrew', serif; font-size: 0.9em; direction: rtl;">{cat.hebrew}</span>
+            </div>
+            <span style="color: #c8bfa0; font-size: 0.8em;">{topics.length} topics</span>
+          </div>
+          <div style="padding: 16px 20px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px;">
+              {topics.map(topic => {
+                const allPrayers = [...topic.part1_prayers, ...topic.part2_prayers];
+                const firstPrayer = allPrayers[0];
+                const part = topic.part1_prayers.length > 0 ? 1 : 2;
+                const prayerNum = firstPrayer || (part === 1 ? topic.part1_prayers[0] : topic.part2_prayers[0]);
+                return (
+                  <a href={`/reader/likutay-tefilos/${part}/${prayerNum}`} style="display: block; padding: 12px 16px; background: #f8f5f0; border-radius: 6px; text-decoration: none; border-right: 3px solid #a07830; transition: background 0.15s;">
+                    <div style="font-weight: 600; color: #1e3a5f; font-size: 0.95em; direction: rtl; text-align: right;">{topic.topic}</div>
+                    {topic.english && <div style="color: #5a7a9a; font-size: 0.85em; direction: ltr; text-align: left;">{topic.english}</div>}
+                    <div style="color: #888; font-size: 0.75em; margin-top: 4px;">
+                      {allPrayers.length} prayer{allPrayers.length !== 1 ? 's' : ''} — 
+                      ח"א: {topic.part1_prayers.length > 0 ? topic.part1_prayers.slice(0, 5).join(', ') + (topic.part1_prayers.length > 5 ? '...' : '') : '—'}
+                      {topic.part2_prayers.length > 0 && <> | ח"ב: {topic.part2_prayers.slice(0, 5).join(', ') + (topic.part2_prayers.length > 5 ? '...' : '')}</>}
+                    </div>
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      );
+    })}
+
+    <!-- Uncategorized -->
+    {(categorizedTopics['Other Needs'] || []).length > 0 && (
+      <div style="margin-bottom: 32px; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
+        <div style="background: #f0ebe0; padding: 16px 20px;">
+          <h2 style="color: #6b5a42; font-family: 'Cinzel', serif; font-size: 1.1em; margin: 0;">Other Topics</h2>
+        </div>
+        <div style="padding: 16px 20px;">
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px;">
+            {categorizedTopics['Other Needs'].map(topic => {
+              const allPrayers = [...topic.part1_prayers, ...topic.part2_prayers];
+              const part = topic.part1_prayers.length > 0 ? 1 : 2;
+              const prayerNum = allPrayers[0];
+              return (
+                <a href={`/reader/likutay-tefilos/${part}/${prayerNum}`} style="display: block; padding: 12px 16px; background: #f8f5f0; border-radius: 6px; text-decoration: none; border-right: 3px solid #a07830;">
+                  <div style="font-weight: 600; color: #1e3a5f; font-size: 0.95em; direction: rtl; text-align: right;">{topic.topic}</div>
+                  {topic.english && <div style="color: #5a7a9a; font-size: 0.85em; direction: ltr; text-align: left;">{topic.english}</div>}
+                  <div style="color: #888; font-size: 0.75em; margin-top: 4px;">{allPrayers.length} prayer{allPrayers.length !== 1 ? 's' : ''}</div>
+                </a>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    )}
+
+    <!-- Back link -->
+    <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd;">
+      <a href="/reader/likutay-tefilos/1/1" style="color: #1e3a5f; text-decoration: none; font-weight: 600;">← Read Likutay Tefilos from the beginning</a>
+    </div>
+  </div>
+</Layout>

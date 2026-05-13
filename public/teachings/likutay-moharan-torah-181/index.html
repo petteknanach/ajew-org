@@ -1,0 +1,57 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 181</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 181</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה לקים המצוה, יש עוד לזה דברים בתורה, כגון &quot;וידבר ה&#39; אל משה&quot;, ושאר דבורי ה
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+181 - WHEN PEOPLE BIND IN A BOND AGAINST ONE MAN
+When individuals form a bond against one person – even if he is more prominent than they are – they can nevertheless cause his downfall. This happens because their individual portions of honor aggregate, nullifying his own portion and leading to his fall at their hands. This is akin to (Job 29:8): "The youths saw me and hid," where lesser status is nullified before greater. Their combined portions of honor, when gathered and bound, surpass his solitary portion – unless the disputed individual is of such elevated stature that his portion of honor exceeds their collective total. In that case, they are nullified before him, as in "saw me" etc. (as mentioned above). If he is not that great, they can cause his fall through the bond, even if each is inferior to him – provided they are not wicked, for a bond of the wicked does not count, as our Rabbis, of blessed memory, stated (Sanhedrin 26a). The wicked have no portion in honor, but if not wicked and possessing vitality from the soul, they have a portion in honor, enabling them to fell the one they dispute through the bond (as above).
+Jacob prayed that Korach's dispute would not harm Moses our master, peace be upon him, saying (Genesis 49:6): "In their assembly let my honor not be united" – meaning, prevent the unification and binding of their portions of honor (each had one, as they were "called to the assembly, men of renown" – esteemed individuals). Without such unification, Moses could certainly stand against them and cause their fall. He said "my honor" because Jacob embodies honor, akin to the soul (Genesis 46:26): "All the souls that came to Jacob's house".
+When someone is felled, the primary fall is into the desire for licentiousness – may Hashem protect us. All that is spoken against the true tzadik and his followers yields immense good, both material and spiritual, as in the Midrash (Tanchuma, Parashat Nitzavim) on the verse: "You are standing" – adjacent to the curses section to indicate that the curses themselves are what uphold you (i.e., apparent negatives ultimately provide stability).
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

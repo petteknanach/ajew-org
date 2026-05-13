@@ -1,0 +1,421 @@
+---
+const pageTitle = "NNNNM Community Chat";
+const pageDescription = "Real-time chat for Breslov learning community";
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+  <meta name="keywords" content="Breslov chat, Na Nach community" />
+  <meta property="og:type" content="website" />
+  
+  <style>
+    .page-header {
+      background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+      color: white;
+      padding: 1.5rem;
+    }
+    .page-header-content { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+    .page-header h1 { font-family: var(--font-hebrew); font-size: 1.5rem; margin: 0; }
+    .header-links { display: flex; gap: 0.5rem; }
+    .header-link { color: white; text-decoration: none; padding: 0.4rem 0.75rem; background: rgba(255,255,255,0.2); border-radius: 6px; font-size: 0.8rem; }
+    .logo-btn { background: linear-gradient(135deg, #744210 0%, #975a16 100%) !important; }
+    
+    .container { max-width: 1200px; margin: 0 auto; padding: 1rem; }
+    
+    /* Chat Rooms List */
+    .rooms-section { margin-bottom: 1.5rem; }
+    .rooms-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+    .rooms-header h2 { margin: 0; color: #1a365d; font-size: 1.25rem; }
+    .new-room-btn { background: #059669; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.9rem; }
+    .new-room-btn:hover { background: #047857; }
+    
+    .rooms-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+    .room-card { background: white; border-radius: 12px; padding: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); cursor: pointer; transition: all 0.2s; border: 2px solid transparent; }
+    .room-card:hover { border-color: #059669; transform: translateY(-2px); }
+    .room-card.active { border-color: #744210; background: #fef3c7; }
+    .room-card-title { font-weight: 700; color: #1a365d; font-size: 1.1rem; margin-bottom: 0.25rem; }
+    .room-card-desc { font-size: 0.85rem; color: #666; }
+    .room-card-meta { font-size: 0.75rem; color: #888; margin-top: 0.5rem; }
+    
+    /* Create Room Modal */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; }
+    .modal-overlay.show { display: flex; }
+    .modal { background: white; border-radius: 12px; padding: 1.5rem; max-width: 400px; width: 90%; }
+    .modal h3 { margin: 0 0 1rem; color: #1a365d; }
+    .modal input, .modal textarea { width: 100%; padding: 0.6rem; border: 1px solid #cbd5e1; border-radius: 6px; margin-bottom: 0.75rem; font-size: 0.9rem; }
+    .modal textarea { resize: vertical; min-height: 80px; }
+    .modal-buttons { display: flex; gap: 0.5rem; justify-content: flex-end; }
+    .modal-btn { padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 600; border: none; }
+    .modal-btn-cancel { background: #e2e8f0; color: #475569; }
+    .modal-btn-submit { background: #059669; color: white; }
+    
+    /* Active Chat */
+    .chat-section { display: none; background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden; }
+    .chat-section.active { display: block; }
+    .chat-header { background: #f7f5f0; padding: 1rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; }
+    .chat-header h2 { margin: 0; color: #1a365d; }
+    .back-btn { background: none; border: none; color: #744210; cursor: pointer; font-size: 0.9rem; padding: 0.5rem; }
+    
+    .messages { height: 400px; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; gap: 0.75rem; background: #f8fafc; }
+    .message { padding: 0.75rem; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .message.my-message { background: #d1fae5; margin-left: 2rem; }
+    .message-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; }
+    .message-avatar { width: 28px; height: 28px; border-radius: 50%; background: #1a365d; color: white; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600; }
+    .message-author { font-weight: 600; font-size: 0.85rem; color: #1a365d; }
+    .message-time { font-size: 0.7rem; color: #888; margin-left: auto; }
+    .message-content { font-size: 0.9rem; line-height: 1.5; }
+    
+    .message-input-area { background: white; border-top: 1px solid #e2e8f0; padding: 1rem; }
+    .message-input { display: flex; gap: 0.5rem; }
+    .message-input input { flex: 1; padding: 0.6rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 6px; }
+    .message-input input:focus { outline: none; border-color: #744210; }
+    .send-btn { padding: 0.6rem 1rem; background: #059669; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
+    
+    .subscribe-prompt { text-align: center; padding: 2rem; background: #fef3c7; }
+    .subscribe-prompt h3 { margin: 0 0 0.5rem; color: #92400e; }
+    .subscribe-prompt a { display: inline-block; padding: 0.6rem 1.2rem; background: #f97316; color: white; text-decoration: none; border-radius: 6px; font-weight: 600; }
+    
+    .empty-state { text-align: center; padding: 2rem; color: #666; }
+
+    /* Shared note messages - special styling */
+    .message.shared-note { background: #f0fdf4; border-left: 3px solid #059669; }
+    .message.shared-note.my-message { background: #d1fae5; border-left: 3px solid #047857; }
+    .shared-note-header { font-size: 0.8rem; color: #059669; font-weight: 600; margin-bottom: 4px; }
+    .shared-note-hebrew { font-family: 'Frank Ruhl Libre', serif; color: #1a365d; font-size: 0.95rem; direction: rtl; padding: 4px 8px; background: rgba(26,54,93,0.05); border-radius: 4px; margin: 4px 0; }
+    .shared-note-text { font-style: italic; color: #333; }
+    .shared-note-link { font-size: 0.8rem; margin-top: 4px; }
+    .shared-note-link a { color: #059669; text-decoration: none; font-weight: 600; }
+    .shared-note-link a:hover { text-decoration: underline; }
+    
+    @media (max-width: 768px) {
+      .page-header-content { flex-direction: column; gap: 0.5rem; }
+      .rooms-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+
+  <section class="page-header">
+    <div class="page-header-content">
+      <h1>💬 NNNNM Chat</h1>
+      <div class="header-links">
+        <a href="/auth" class="header-link logo-btn">🔐 Login</a>
+        <a href="/subscribe" class="header-link">Subscribe</a>
+      </div>
+    </div>
+  </section>
+
+  <main class="container">
+    <!-- Welcome Section (hidden by default) -->
+    <div id="welcomeSection" style="display: none; background: #e0f2fe; padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid #bae6fd;">
+      <h2 style="margin: 0 0 0.5rem; color: #0369a1;" id="welcomeTitle">Welcome!</h2>
+      <p style="margin: 0; color: #0c4a6e; font-size: 1.05rem;">We're glad you're here. Choose an existing chat room below to join the discussion, or you can start a new topic.</p>
+    </div>
+
+    <!-- Chat Rooms List -->
+    <div class="rooms-section" id="roomsSection">
+      <div class="rooms-header">
+        <h2>💬 Chat Rooms</h2>
+        <button id="createRoomBtn" class="new-room-btn" onclick="showModal()" class="hidden">+ New Chat</button>
+      </div>
+      <div class="rooms-grid" id="roomsGrid">
+        <div class="empty-state">Loading chats...</div>
+      </div>
+    </div>
+
+    <!-- Active Chat -->
+    <div class="chat-section" id="chatSection">
+      <div class="chat-header">
+        <button class="back-btn" onclick="showRooms()">← Back to Chats</button>
+        <h2 id="chatTitle">Chat</h2>
+        <span></span>
+      </div>
+      <div class="messages" id="messages">
+        <div class="empty-state">Loading messages...</div>
+      </div>
+      <div class="message-input-area">
+        <div class="message-input">
+          <input type="text" id="messageInput" placeholder="Type your message..." maxlength="500">
+          <button class="send-btn" onclick="sendMessage()">Send</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Create Room Modal -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <h3>Create New Chat</h3>
+      <input type="text" id="newRoomTitle" placeholder="Chat title (e.g., Likutay Discussion)">
+      <textarea id="newRoomDesc" placeholder="Description (optional)"></textarea>
+      <div class="modal-buttons">
+        <button class="modal-btn modal-btn-cancel" onclick="hideModal()">Cancel</button>
+        <button class="modal-btn modal-btn-submit" onclick="createRoom()">Create</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    import { supabase } from '../../lib/supabaseClient';
+    let currentRoom = null;
+    let currentUser = null;
+    let polling = null;
+
+    // Check user
+    async function checkUser() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        currentUser = session.user;
+        
+        // --- NEW: Update UI for logged-in user ---
+        const headerLinks = document.querySelector('.header-links');
+        if (headerLinks) {
+            headerLinks.innerHTML = `
+                <a href="/profile" class="header-link">Profile</a>
+                <button onclick="logout()" class="header-link logo-btn" style="border:none; cursor:pointer;">Logout</button>
+            `;
+        }
+        
+        const welcomeSection = document.getElementById('welcomeSection');
+        if (welcomeSection) {
+            const displayName = currentUser.user_metadata?.display_name || currentUser.email?.split('@')[0] || 'Friend';
+            document.getElementById('welcomeTitle').textContent = 'Welcome back, ' + displayName + '!';
+            welcomeSection.style.display = 'block';
+        }
+
+        const createRoomBtn = document.getElementById('createRoomBtn');
+        if (createRoomBtn) {
+            createRoomBtn.style.display = 'block';
+        }
+        // --- END NEW ---
+
+        // Also fetch subscription from DB so we know their tier locally
+        try {
+          const { data: sub } = await supabase.from('subscriptions').select('tier').ilike('email', (currentUser.email || '').toLowerCase()).limit(1);
+          if (sub && sub.length > 0) {
+            currentUser.tier = sub[0].tier;
+          }
+        } catch(e) { /* silently ignore — server validates on send */ }
+      }
+      return currentUser;
+    }
+
+    // Load rooms from server
+    async function loadRooms() {
+      const rooms = [
+        { slug: 'shared-notes', title: '📝 Shared Notes', description: 'Notes shared from the reader - discuss insights on the holy texts', icon: '📝' },
+        { slug: 'general', title: '💬 General Chat', description: 'Discuss Breslov teachings' },
+        { slug: 'hitbodedut', title: '🙏 Hitbodedut Corner', description: 'Personal prayer discussions' },
+        { slug: 'stories', title: '📖 Stories of the Rebbe', description: 'Discuss Sippurey Maasiyot' }
+      ];
+      
+      const grid = document.getElementById('roomsGrid');
+      grid.innerHTML = rooms.map(room => `
+        <div class="room-card" onclick="openRoom('${room.slug}', '${escapeHtml(room.title)}')">
+          <div class="room-card-title">${escapeHtml(room.title)}</div>
+          <div class="room-card-desc">${escapeHtml(room.description || 'No description')}</div>
+        </div>
+      `).join('');
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    async function openRoom(slug, title) {
+      currentRoom = slug;
+      document.getElementById('chatTitle').textContent = title;
+      document.getElementById('roomsSection').style.display = 'none';
+      document.getElementById('chatSection').classList.add('active');
+      
+      // Load messages from API
+      await loadMessages(slug);
+      
+      // Simple polling
+      if (polling) clearInterval(polling);
+      polling = setInterval(() => loadMessages(slug), 3000);
+    }
+
+    async function loadMessages(roomSlug) {
+      const messagesDiv = document.getElementById('messages');
+      
+      try {
+        const res = await fetch(`/api/chat?room=${roomSlug}`);
+        const messages = await res.json();
+        
+        if (!messages || messages.length === 0) {
+          messagesDiv.innerHTML = '<div class="empty-state">No messages yet. Be the first!</div>';
+          return;
+        }
+        
+        messagesDiv.innerHTML = messages.reverse().map(msg => {
+          const time = new Date(msg.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+          const initial = msg.username ? msg.username.charAt(0).toUpperCase() : '?';
+          const isOwn = currentUser && msg.email === currentUser.email;
+          const isSharedNote = msg.message && msg.message.startsWith('[📝 NOTE]');
+
+          if (isSharedNote) {
+            // Parse shared note format
+            const lines = msg.message.split('\n');
+            const headerLine = lines[0] || '';  // [📝 NOTE] Book - Segment N
+            const hebrewLine = lines[1] || '';  // 📖 Hebrew snippet
+            const noteLine = lines[2] || '';    // ✏️ Note text
+            const linkLine = lines[3] || '';    // 🔗 URL
+
+            const noteTitle = headerLine.replace('[📝 NOTE] ', '');
+            const hebrewText = hebrewLine.replace('📖 ', '');
+            const noteText = noteLine.replace('✏️ ', '');
+            const linkUrl = linkLine.replace('🔗 ', '');
+
+            return `
+              <div class="message shared-note ${isOwn ? 'my-message' : ''}">
+                <div class="message-header">
+                  <div class="message-avatar" style="background:#059669;">${initial}</div>
+                  <span class="message-author">${escapeHtml(msg.username || 'Guest')}</span>
+                  <span class="message-time">${time}</span>
+                </div>
+                <div class="shared-note-header">📝 ${escapeHtml(noteTitle)}</div>
+                ${hebrewText ? `<div class="shared-note-hebrew">${escapeHtml(hebrewText)}</div>` : ''}
+                <div class="shared-note-text">"${escapeHtml(noteText)}"</div>
+                ${linkUrl ? `<div class="shared-note-link"><a href="${escapeHtml(linkUrl)}" target="_blank">📖 Read in context →</a></div>` : ''}
+              </div>
+            `;
+          }
+
+          return `
+            <div class="message ${isOwn ? 'my-message' : ''}">
+              <div class="message-header">
+                <div class="message-avatar">${initial}</div>
+                <span class="message-author">${escapeHtml(msg.username || 'Guest')}</span>
+                <span class="message-time">${time}</span>
+              </div>
+              <div class="message-content">${escapeHtml(msg.message)}</div>
+            </div>
+          `;
+        }).join('');
+        
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+      } catch (e) {
+        console.error('Load messages error:', e);
+        messagesDiv.innerHTML = '<div class="empty-state">Unable to load messages. Try again later.</div>';
+      }
+    }
+
+    async function sendMessage() {
+      const input = document.getElementById('messageInput');
+      const text = input.value.trim();
+      if (!text || !currentRoom) return;
+
+      if (!currentUser) {
+        showSubscribePrompt();
+        return;
+      }
+
+      // Check subscription tier
+      const tier = currentUser.tier || 'free';
+      if (tier === 'free') {
+        showSubscribePrompt();
+        return;
+      }
+
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        const token = session?.access_token || '';
+        
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}` 
+          },
+          body: JSON.stringify({
+            room: currentRoom,
+            message: text
+          })
+        });
+        
+        if (!res.ok) {
+          const err = await res.json();
+          if (err.error === 'Subscription required') {
+            showSubscribePrompt();
+            return;
+          }
+          throw new Error(err.error);
+        }
+        
+        input.value = '';
+        await loadMessages(currentRoom);
+      } catch (e) {
+        alert('Failed to send: ' + e.message);
+      }
+    }
+
+    function showSubscribePrompt() {
+      document.getElementById('messages').innerHTML = `
+        <div class="subscribe-prompt">
+          <h3>🔒 Subscription Required</h3>
+          <p>To send messages, please subscribe for $1/year.</p>
+          <a href="/subscribe">Subscribe Now</a>
+        </div>
+      `;
+    }
+
+    function showRooms() {
+      currentRoom = null;
+      if (polling) clearInterval(polling);
+      document.getElementById('roomsSection').style.display = 'block';
+      document.getElementById('chatSection').classList.remove('active');
+      loadRooms();
+    }
+
+    // Enter key handlers
+    document.getElementById('messageInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') sendMessage();
+    });
+
+    // Init
+    checkUser();
+    loadRooms();
+
+    // Auto-open room and pre-fill message if URL has params (from shared notes)
+    const urlParams = new URLSearchParams(window.location.search);
+    const autoRoom = urlParams.get('room');
+    const autoMsg = urlParams.get('msg');
+    if (autoRoom) {
+      // Find the room title
+      const roomTitles = { 'shared-notes': '📝 Shared Notes', 'general': '💬 General Chat', 'hitbodedut': '🙏 Hitbodedut Corner', 'stories': '📖 Stories of the Rebbe' };
+      const roomTitle = roomTitles[autoRoom] || autoRoom;
+      setTimeout(() => {
+        openRoom(autoRoom, roomTitle);
+        if (autoMsg) {
+          const input = document.getElementById('messageInput');
+          if (input) {
+            input.value = decodeURIComponent(autoMsg);
+            input.focus();
+          }
+        }
+      }, 500);
+      // Clean URL
+      window.history.replaceState({}, '', '/chat');
+    }
+
+    // Attach to window so onclick handlers work after Astro bundles the script
+    window.openRoom = openRoom;
+    window.sendMessage = sendMessage;
+    window.showRooms = showRooms;
+    window.hideModal = () => document.getElementById('modalOverlay').classList.remove('show');
+    window.showModal = () => document.getElementById('modalOverlay').classList.add('show');
+    window.logout = async () => {
+      await supabase.auth.signOut();
+      window.location.reload();
+    };
+    window.createRoom = () => {
+      const title = document.getElementById('newRoomTitle').value.trim();
+      if (!title) return alert('Chat title is required');
+      const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      hideModal();
+      openRoom(slug, title);
+    };
+  </script>
+</Layout>

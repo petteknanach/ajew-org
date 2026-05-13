@@ -1,0 +1,49 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+export const title = "It Is A Great Mitzva To Be Happy Always";
+export const bookTitle = "The Fires of Israel";
+---
+<Layout title="{title} - {bookTitle}" description="{title} from {bookTitle}">
+  <div class="book-page">
+    <header class="book-header">
+      <h1>{bookTitle}</h1>
+      <h2>Chapter 4: {title}</h2>
+    </header>
+    <nav class="chapter-nav">
+  <a href="/books/fires-of-israel/ch03" class="nav-btn prev">← Previous</a>
+  <a href="/books/fires-of-israel" class="nav-btn main">Main</a>
+  <a href="/books/fires-of-israel/ch05" class="nav-btn next">Next →</a>
+</nav>
+    <article class="chapter-content">
+      <h3 class="chapter-title">{title}</h3>
+      <p class="book-para">It Is A Great Mitzva To Be Joyous Always The holy Rebbe does not let us be sad. “Sadness and laziness” these are two extreme destroyers (*See Likutay Moharan, Torah 189, condensed in Likutay Aitzos, entry of Joy, article 23 which call them the main bite of the snake) - - and nebach (pitifully) we fall into sadness – and into lethargy… and therefore we don't have vitality in our Judaism the way it should be. Furthermore, the holy Rebbe warned us; not only – not to have sadness and laziness, but – to be happy! Just like in the Legendary Tales (*Story #13 – The Seven Beggars, at the beginning) it is written – that the king told him (-his son); “In the stars I see that in the future you will descend from the monarchy, you should see to it that you should not have any sadness – just be joyous!” First of all – no sadness – this [for sure not], So what then? On the contrary – even more so – he should be happy! Nu, the holy Rebbe says – just to be always happy (* Likutay Moharan, vol. 2, Torah 24). Nu, if so it is a mitzva! The holy Rebbe speaks so much about joy, and Rabbi Nussun in Likutay Halachos, and Likutay Aitzos (-remedies, directives), what the Rebbe says in The Words of Rabbi Nachman – in the Words of Rabbi Nachman there are such words about joy, that it appears that it is already impossible - - how is it possible to part from this?! Nu, and the becheera (free choice) is so great, and we don't know - - the holy Rebbe brought this down as a way! *</p>
+    </article>
+    <nav class="chapter-nav">
+  <a href="/books/fires-of-israel/ch03" class="nav-btn prev">← Previous</a>
+  <a href="/books/fires-of-israel" class="nav-btn main">Main</a>
+  <a href="/books/fires-of-israel/ch05" class="nav-btn next">Next →</a>
+</nav>
+    <footer class="book-footer">
+      <a href="/books/fires-of-israel" class="back-link">← Back to Table of Contents</a>
+    </footer>
+  </div>
+</Layout>
+<style>
+  .book-page { max-width: 800px; margin: 0 auto; padding: 2rem 1rem; }
+  .book-header { text-align: center; margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 2px solid #e2e8f0; }
+  .book-header h1 { font-size: 1.5rem; color: #1a365d; margin: 0 0 0.5rem; }
+  .book-header h2 { font-size: 1.25rem; color: #4a5568; margin: 0; font-weight: 500; }
+  .chapter-nav { display: flex; justify-content: center; gap: 1rem; margin: 1.5rem 0; flex-wrap: wrap; }
+  .nav-btn { display: inline-block; padding: 0.75rem 1.5rem; background: #1a365d; color: white; text-decoration: none; border-radius: 8px; font-weight: 500; transition: all 0.2s; }
+  .nav-btn:hover { background: #2d4a6f; transform: translateY(-2px); }
+  .nav-btn.disabled { background: #cbd5e0; cursor: not-allowed; }
+  .nav-btn.main { background: #059669; }
+  .nav-btn.main:hover { background: #047857; }
+  .chapter-content { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); line-height: 1.8; font-size: 1.1rem; }
+  .chapter-title { font-size: 1.5rem; color: #1a365d; margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 2px solid #e2e8f0; }
+  .book-para { margin-bottom: 1.25rem; text-align: justify; color: #2d3748; }
+  .book-footer { text-align: center; margin-top: 2rem; padding-top: 1.5rem; border-top: 2px solid #e2e8f0; }
+  .back-link { color: #1a365d; text-decoration: none; font-weight: 500; }
+  .back-link:hover { text-decoration: underline; }
+  @media (max-width: 640px) { .chapter-content { padding: 1.5rem; font-size: 1rem; } .chapter-nav { gap: 0.5rem; } .nav-btn { padding: 0.6rem 1rem; font-size: 0.9rem; } }
+</style>

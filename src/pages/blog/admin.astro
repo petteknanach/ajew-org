@@ -1,0 +1,597 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Blog Admin - ajew.org" description="Admin panel for managing blog posts">
+<div class="admin-page">
+  <!-- Login Screen -->
+  <div id="login-screen" class="login-screen">
+    <div class="login-box">
+      <h1>Blog Admin</h1>
+      <p class="nanach">נ נח נחמ נחמן מאומן</p>
+      <form id="login-form">
+        <input type="email" id="email" placeholder="Email" required />
+        <input type="password" id="password" placeholder="Password (optional — leave blank for magic link)" />
+        <button type="submit">Sign In</button>
+        <button type="button" id="magic-link-btn" style="margin-top:8px;background:#6b5ce7;color:#fff;border:none;padding:10px 20px;border-radius:6px;cursor:pointer;width:100%;">Send Magic Link (no password needed)</button>
+        <p id="login-error" class="error-msg" style="display:none;"></p>
+        <p id="login-success" class="success-msg" style="display:none;color:#2d8a4e;margin-top:8px;"></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Admin Dashboard -->
+  <div id="admin-dashboard" style="display:none;">
+    <header class="admin-header">
+      <h1>Blog Admin</h1>
+      <div class="admin-actions">
+        <button id="new-post-btn" class="btn-primary">New Post</button>
+        <button id="logout-btn" class="btn-secondary">Logout</button>
+      </div>
+    </header>
+
+    <!-- Posts List -->
+    <div id="posts-list-view">
+      <h2>All Posts</h2>
+      <div id="admin-posts-list">
+        <p class="loading">Loading posts...</p>
+      </div>
+    </div>
+
+    <!-- Post Editor -->
+    <div id="editor-view" style="display:none;">
+      <div class="editor-header">
+        <button id="back-to-list" class="btn-back">&larr; Back to Posts</button>
+        <div class="editor-actions">
+          <button id="save-draft-btn" class="btn-secondary">Save Draft</button>
+          <button id="publish-btn" class="btn-primary">Publish</button>
+          <button id="delete-btn" class="btn-danger" style="display:none;">Delete</button>
+        </div>
+      </div>
+      <input type="hidden" id="post-id" />
+      <div class="editor-fields">
+        <input type="text" id="post-title" placeholder="Post title..." class="field-title" />
+        <input type="text" id="post-slug" placeholder="url-slug (auto-generated)" class="field-slug" />
+        <input type="text" id="post-excerpt" placeholder="Short excerpt / summary (optional)" class="field-excerpt" />
+        <textarea id="post-content" placeholder="Write your post here...
+
+Use blank lines between paragraphs.
+# Heading
+## Sub-heading
+> Quote
+**bold** and *italic*" class="field-content"></textarea>
+      </div>
+      <p id="editor-status" class="status-msg"></p>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { createClient } from '@supabase/supabase-js';
+
+  const supabase = createClient(
+    'https://ekggvujbuusvgmrertgp.supabase.co',
+    'sb_publishable_q6XD_TD8KOQuphI30Gmi5Q_3PBAXQHo'
+  );
+
+  // Elements
+  const loginScreen = document.getElementById('login-screen');
+  const dashboard = document.getElementById('admin-dashboard');
+  const loginForm = document.getElementById('login-form');
+  const loginError = document.getElementById('login-error');
+  const postsListView = document.getElementById('posts-list-view');
+  const editorView = document.getElementById('editor-view');
+  const adminPostsList = document.getElementById('admin-posts-list');
+  const postTitle = document.getElementById('post-title');
+  const postSlug = document.getElementById('post-slug');
+  const postExcerpt = document.getElementById('post-excerpt');
+  const postContent = document.getElementById('post-content');
+  const postId = document.getElementById('post-id');
+  const editorStatus = document.getElementById('editor-status');
+  const deleteBtn = document.getElementById('delete-btn');
+
+  // Auto-generate slug from title
+  postTitle.addEventListener('input', () => {
+    if (!postId.value) { // Only auto-generate for new posts
+      postSlug.value = postTitle.value
+        .toLowerCase()
+        .replace(/[^\w\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .trim();
+    }
+  });
+
+  // Check existing session
+  async function checkSession() {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      showDashboard();
+    }
+  }
+
+  // Login with password
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    loginError.style.display = 'none';
+    document.getElementById('login-success').style.display = 'none';
+
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    if (!password) {
+      // No password — use magic link instead
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: { emailRedirectTo: window.location.origin + '/blog/admin' }
+      });
+      if (error) {
+        loginError.textContent = error.message;
+        loginError.style.display = 'block';
+      } else {
+        const successMsg = document.getElementById('login-success');
+        successMsg.textContent = 'Magic link sent! Check your email and click the link.';
+        successMsg.style.display = 'block';
+      }
+      return;
+    }
+
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+    if (error) {
+      loginError.textContent = error.message;
+      loginError.style.display = 'block';
+    } else {
+      showDashboard();
+    }
+  });
+
+  // Allowed admin emails
+  const ADMIN_EMAILS = ['naanaach@gmail.com', 'petteknanach@gmail.com'];
+
+  // Magic link button
+  document.getElementById('magic-link-btn').addEventListener('click', async () => {
+    const email = document.getElementById('email').value;
+    if (!email) {
+      loginError.textContent = 'Please enter your email first';
+      loginError.style.display = 'block';
+      return;
+    }
+    if (!ADMIN_EMAILS.includes(email.toLowerCase())) {
+      loginError.textContent = 'This email is not authorized for blog admin.';
+      loginError.style.display = 'block';
+      return;
+    }
+    loginError.style.display = 'none';
+
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: window.location.origin + '/blog/admin' }
+    });
+
+    if (error) {
+      loginError.textContent = error.message;
+      loginError.style.display = 'block';
+    } else {
+      const successMsg = document.getElementById('login-success');
+      successMsg.textContent = 'Magic link sent to ' + email + '! Check your email and click the link to sign in.';
+      successMsg.style.display = 'block';
+    }
+  });
+
+  // Logout
+  document.getElementById('logout-btn').addEventListener('click', async () => {
+    await supabase.auth.signOut();
+    loginScreen.style.display = 'flex';
+    dashboard.style.display = 'none';
+  });
+
+  function showDashboard() {
+    loginScreen.style.display = 'none';
+    dashboard.style.display = 'block';
+    loadAdminPosts();
+  }
+
+  // Load all posts (published and drafts)
+  async function loadAdminPosts() {
+    const { data: posts, error } = await supabase
+      .from('blog_posts')
+      .select('id, title, slug, published, created_at, updated_at')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      adminPostsList.innerHTML = `<p class="error-msg">Error loading posts: ${error.message}</p>`;
+      return;
+    }
+
+    if (!posts || posts.length === 0) {
+      adminPostsList.innerHTML = '<p class="empty-msg">No posts yet. Click "New Post" to get started!</p>';
+      return;
+    }
+
+    adminPostsList.innerHTML = posts.map(post => {
+      const date = new Date(post.created_at).toLocaleDateString('en-US', {
+        month: 'short', day: 'numeric', year: 'numeric'
+      });
+      const status = post.published
+        ? '<span class="badge published">Published</span>'
+        : '<span class="badge draft">Draft</span>';
+      return `
+        <div class="admin-post-row" data-id="${post.id}">
+          <div class="post-info">
+            <strong>${post.title}</strong>
+            <span class="post-date">${date}</span>
+          </div>
+          ${status}
+          <button class="btn-edit" onclick="editPost('${post.id}')">Edit</button>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // New Post
+  document.getElementById('new-post-btn').addEventListener('click', () => {
+    postId.value = '';
+    postTitle.value = '';
+    postSlug.value = '';
+    postExcerpt.value = '';
+    postContent.value = '';
+    deleteBtn.style.display = 'none';
+    editorStatus.textContent = '';
+    postsListView.style.display = 'none';
+    editorView.style.display = 'block';
+  });
+
+  // Edit existing post
+  window.editPost = async function(id) {
+    const { data: post, error } = await supabase
+      .from('blog_posts')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (error || !post) {
+      alert('Could not load post');
+      return;
+    }
+
+    postId.value = post.id;
+    postTitle.value = post.title;
+    postSlug.value = post.slug;
+    postExcerpt.value = post.excerpt || '';
+    postContent.value = post.content;
+    deleteBtn.style.display = 'inline-block';
+    editorStatus.textContent = '';
+    postsListView.style.display = 'none';
+    editorView.style.display = 'block';
+  };
+
+  // Back to list
+  document.getElementById('back-to-list').addEventListener('click', () => {
+    editorView.style.display = 'none';
+    postsListView.style.display = 'block';
+    loadAdminPosts();
+  });
+
+  // Save (draft or publish)
+  async function savePost(published) {
+    const title = postTitle.value.trim();
+    const slug = postSlug.value.trim();
+    const content = postContent.value.trim();
+    const excerpt = postExcerpt.value.trim();
+
+    if (!title || !content) {
+      editorStatus.textContent = 'Title and content are required';
+      editorStatus.className = 'status-msg error';
+      return;
+    }
+
+    if (!slug) {
+      editorStatus.textContent = 'Slug is required';
+      editorStatus.className = 'status-msg error';
+      return;
+    }
+
+    const postData = { title, slug, content, excerpt, published };
+
+    let result;
+    if (postId.value) {
+      // Update existing
+      result = await supabase
+        .from('blog_posts')
+        .update(postData)
+        .eq('id', postId.value)
+        .select()
+        .single();
+    } else {
+      // Insert new
+      result = await supabase
+        .from('blog_posts')
+        .insert(postData)
+        .select()
+        .single();
+    }
+
+    if (result.error) {
+      editorStatus.textContent = 'Error: ' + result.error.message;
+      editorStatus.className = 'status-msg error';
+    } else {
+      postId.value = result.data.id;
+      deleteBtn.style.display = 'inline-block';
+      editorStatus.textContent = published ? 'Published!' : 'Draft saved!';
+      editorStatus.className = 'status-msg success';
+    }
+  }
+
+  document.getElementById('save-draft-btn').addEventListener('click', () => savePost(false));
+  document.getElementById('publish-btn').addEventListener('click', () => savePost(true));
+
+  // Delete
+  deleteBtn.addEventListener('click', async () => {
+    if (!confirm('Are you sure you want to delete this post?')) return;
+
+    const { error } = await supabase
+      .from('blog_posts')
+      .delete()
+      .eq('id', postId.value);
+
+    if (error) {
+      editorStatus.textContent = 'Error deleting: ' + error.message;
+      editorStatus.className = 'status-msg error';
+    } else {
+      editorView.style.display = 'none';
+      postsListView.style.display = 'block';
+      loadAdminPosts();
+    }
+  });
+
+  // Init
+  checkSession();
+</script>
+
+<style>
+  .admin-page {
+    min-height: 100vh;
+    font-family: 'Open Sans', sans-serif;
+  }
+
+  /* Login */
+  .login-screen {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh;
+    padding: 20px;
+  }
+  .login-box {
+    background: white;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+  }
+  .login-box h1 {
+    font-family: 'Frank Ruhl Libre', serif;
+    color: #1a365d;
+    margin: 0 0 8px;
+    font-size: 2em;
+  }
+  .login-box .nanach {
+    font-family: 'Frank Ruhl Libre', serif;
+    color: #c4a265;
+    margin: 0 0 24px;
+  }
+  .login-box input {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    margin-bottom: 12px;
+    border: 2px solid #e0d6c2;
+    border-radius: 8px;
+    font-size: 1em;
+    box-sizing: border-box;
+  }
+  .login-box input:focus {
+    outline: none;
+    border-color: #1a365d;
+  }
+  .login-box button {
+    width: 100%;
+    padding: 14px;
+    background: #1a365d;
+    color: #e8d5a3;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .login-box button:hover { background: #0f2440; }
+
+  .error-msg {
+    color: #dc2626;
+    font-size: 0.9em;
+    margin-top: 12px;
+  }
+
+  /* Dashboard */
+  .admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 3px solid #1a365d;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .admin-header h1 {
+    font-family: 'Frank Ruhl Libre', serif;
+    color: #1a365d;
+    margin: 0;
+    font-size: 1.6em;
+  }
+  .admin-actions { display: flex; gap: 8px; }
+
+  #posts-list-view, #editor-view {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px;
+  }
+  #posts-list-view h2 {
+    color: #1a365d;
+    margin: 0 0 16px;
+    font-size: 1.2em;
+  }
+
+  .admin-post-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border: 1px solid #e0d6c2;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    background: white;
+  }
+  .admin-post-row .post-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .admin-post-row .post-info strong { color: #1a365d; }
+  .admin-post-row .post-date { font-size: 0.8em; color: #999; }
+
+  .badge {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.75em;
+    font-weight: 600;
+  }
+  .badge.published { background: #ecfdf5; color: #059669; }
+  .badge.draft { background: #fef3c7; color: #d97706; }
+
+  .btn-primary {
+    padding: 8px 20px;
+    background: #1a365d;
+    color: #e8d5a3;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background 0.2s;
+  }
+  .btn-primary:hover { background: #0f2440; }
+  .btn-secondary {
+    padding: 8px 20px;
+    background: white;
+    color: #1a365d;
+    border: 2px solid #1a365d;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: all 0.2s;
+  }
+  .btn-secondary:hover { background: #f0ebe0; }
+  .btn-danger {
+    padding: 8px 20px;
+    background: #dc2626;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.9em;
+  }
+  .btn-danger:hover { background: #b91c1c; }
+  .btn-edit {
+    padding: 6px 14px;
+    background: #f0ebe0;
+    color: #1a365d;
+    border: 1px solid #e0d6c2;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85em;
+  }
+  .btn-edit:hover { background: #e0d6c2; }
+  .btn-back {
+    padding: 8px 16px;
+    background: none;
+    border: none;
+    color: #1a365d;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.95em;
+  }
+  .btn-back:hover { text-decoration: underline; }
+
+  /* Editor */
+  .editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .editor-actions { display: flex; gap: 8px; }
+
+  .editor-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .field-title {
+    padding: 14px 16px;
+    border: 2px solid #e0d6c2;
+    border-radius: 8px;
+    font-size: 1.4em;
+    font-family: 'Frank Ruhl Libre', serif;
+    color: #1a365d;
+    font-weight: 700;
+  }
+  .field-slug, .field-excerpt {
+    padding: 10px 16px;
+    border: 2px solid #e0d6c2;
+    border-radius: 8px;
+    font-size: 0.95em;
+    color: #555;
+  }
+  .field-content {
+    padding: 16px;
+    border: 2px solid #e0d6c2;
+    border-radius: 8px;
+    font-size: 1.05em;
+    line-height: 1.7;
+    min-height: 400px;
+    resize: vertical;
+    font-family: 'Open Sans', sans-serif;
+  }
+  .field-title:focus, .field-slug:focus, .field-excerpt:focus, .field-content:focus {
+    outline: none;
+    border-color: #1a365d;
+  }
+
+  .status-msg {
+    font-size: 0.9em;
+    margin-top: 12px;
+    font-weight: 600;
+  }
+  .status-msg.success { color: #059669; }
+  .status-msg.error { color: #dc2626; }
+
+  .empty-msg { color: #999; text-align: center; padding: 40px; }
+  .loading { color: #999; text-align: center; padding: 40px; }
+
+  @media (max-width: 768px) {
+    .admin-header { flex-direction: column; gap: 12px; text-align: center; }
+    .editor-header { flex-direction: column; }
+  }
+</style>
+</Layout>

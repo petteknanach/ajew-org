@@ -1,0 +1,547 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Na Nach Blog Archive - Preserved Posts from nanach.net" description="Archive of 1,700+ blog posts from na-nach.blogspot.com (nanach.net), preserved for the Breslov community. Teachings, stories, and inspiration from Na Nach Nachma Nachman MeUman.">
+<div class="archive-page">
+  <header class="archive-header">
+    <h1>Na Nach Blog Archive</h1>
+    <p class="subtitle">Preserved posts from nanach.net</p>
+    <p class="nanach">Na Nach Nachma Nachman MeUman</p>
+  </header>
+
+  <div class="archive-notice">
+    <p>
+      These posts are archived from <strong>na-nach.blogspot.com</strong> (also known as <strong>nanach.net</strong>),
+      which has been taken offline. This archive preserves the blog's content for the Na Nach community.
+      The original blog was authored by NaaNaach and contained teachings, stories, news, and inspiration
+      related to Rabbi Nachman of Breslov and the Na Nach movement, spanning from 2008 to 2018.
+    </p>
+  </div>
+
+  <div class="controls">
+    <div class="search-box">
+      <input type="text" id="search-input" placeholder="Search posts by title or content..." autocomplete="off" />
+      <span class="search-icon">&#128269;</span>
+    </div>
+    <div class="filter-row">
+      <div class="year-filter">
+        <label for="year-select">Year:</label>
+        <select id="year-select">
+          <option value="all">All Years</option>
+        </select>
+      </div>
+      <div class="sort-control">
+        <label for="sort-select">Sort:</label>
+        <select id="sort-select">
+          <option value="newest">Newest First</option>
+          <option value="oldest">Oldest First</option>
+        </select>
+      </div>
+      <div class="results-count" id="results-count"></div>
+    </div>
+  </div>
+
+  <div id="posts-container">
+    <div class="loading">Loading archive...</div>
+  </div>
+
+  <div id="pagination" class="pagination" style="display:none;">
+    <button id="prev-btn" class="page-btn" disabled>Previous</button>
+    <span id="page-info" class="page-info"></span>
+    <button id="next-btn" class="page-btn">Next</button>
+  </div>
+
+  <div class="archive-footer">
+    <a href="/blog">&larr; Back to Blog</a>
+  </div>
+</div>
+
+<script>
+  const POSTS_PER_PAGE = 20;
+  let allPosts = [];
+  let filteredPosts = [];
+  let currentPage = 1;
+  let searchTimeout = null;
+
+  async function init() {
+    try {
+      const res = await fetch('/data/nanach-blog-posts.json');
+      const data = await res.json();
+      allPosts = data.posts;
+      populateYearFilter();
+      applyFilters();
+    } catch (e) {
+      document.getElementById('posts-container').innerHTML =
+        '<div class="error-msg">Failed to load archive. Please try again later.</div>';
+    }
+  }
+
+  function populateYearFilter() {
+    const years = new Set();
+    allPosts.forEach(p => {
+      const year = p.date ? p.date.substring(0, 4) : null;
+      if (year && /^\d{4}$/.test(year)) years.add(year);
+    });
+    const sorted = Array.from(years).sort((a, b) => b.localeCompare(a));
+    const select = document.getElementById('year-select');
+    sorted.forEach(y => {
+      const opt = document.createElement('option');
+      opt.value = y;
+      opt.textContent = y;
+      select.appendChild(opt);
+    });
+  }
+
+  function applyFilters() {
+    const query = document.getElementById('search-input').value.trim().toLowerCase();
+    const year = document.getElementById('year-select').value;
+    const sort = document.getElementById('sort-select').value;
+
+    filteredPosts = allPosts.filter(p => {
+      if (year !== 'all' && (!p.date || !p.date.startsWith(year))) return false;
+      if (query) {
+        const inTitle = p.title.toLowerCase().includes(query);
+        const inBody = p.body.toLowerCase().includes(query);
+        if (!inTitle && !inBody) return false;
+      }
+      return true;
+    });
+
+    if (sort === 'oldest') {
+      filteredPosts.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+    } else {
+      filteredPosts.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+    }
+
+    currentPage = 1;
+    renderPage();
+  }
+
+  function renderPage() {
+    const container = document.getElementById('posts-container');
+    const pagination = document.getElementById('pagination');
+    const countEl = document.getElementById('results-count');
+    const totalPages = Math.max(1, Math.ceil(filteredPosts.length / POSTS_PER_PAGE));
+
+    countEl.textContent = filteredPosts.length + ' post' + (filteredPosts.length !== 1 ? 's' : '') + ' found';
+
+    if (filteredPosts.length === 0) {
+      container.innerHTML = '<div class="no-results">No posts match your search.</div>';
+      pagination.style.display = 'none';
+      return;
+    }
+
+    const start = (currentPage - 1) * POSTS_PER_PAGE;
+    const end = Math.min(start + POSTS_PER_PAGE, filteredPosts.length);
+    const pagePosts = filteredPosts.slice(start, end);
+
+    const query = document.getElementById('search-input').value.trim().toLowerCase();
+
+    container.innerHTML = pagePosts.map(post => {
+      const dateStr = formatDate(post.date);
+      let excerpt = post.body.substring(0, 300);
+      if (post.body.length > 300) excerpt += '...';
+      // Escape HTML
+      excerpt = escapeHtml(excerpt);
+
+      return `
+        <article class="post-card" data-slug="${post.slug}">
+          <div class="post-card-inner">
+            <h2 class="post-title">${escapeHtml(post.title)}</h2>
+            <p class="post-excerpt">${excerpt}</p>
+            <div class="post-meta">
+              <span class="date">${dateStr}</span>
+              ${post.url ? `<a href="${post.url}" target="_blank" rel="noopener noreferrer" class="original-link">Original post</a>` : ''}
+            </div>
+          </div>
+        </article>
+      `;
+    }).join('');
+
+    // Add click handlers to expand posts
+    container.querySelectorAll('.post-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        if (e.target.tagName === 'A') return;
+        const slug = card.dataset.slug;
+        const post = filteredPosts.find(p => p.slug === slug);
+        if (post) showPost(post);
+      });
+    });
+
+    // Pagination
+    if (totalPages > 1) {
+      pagination.style.display = 'flex';
+      document.getElementById('page-info').textContent = `Page ${currentPage} of ${totalPages}`;
+      document.getElementById('prev-btn').disabled = currentPage <= 1;
+      document.getElementById('next-btn').disabled = currentPage >= totalPages;
+    } else {
+      pagination.style.display = 'none';
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function showPost(post) {
+    const container = document.getElementById('posts-container');
+    const dateStr = formatDate(post.date);
+    const bodyHtml = post.body
+      .split(/\n\n+/)
+      .map(p => p.trim())
+      .filter(p => p)
+      .map(p => `<p>${escapeHtml(p).replace(/\n/g, '<br/>')}</p>`)
+      .join('\n');
+
+    container.innerHTML = `
+      <div class="post-detail">
+        <button class="back-to-list" id="back-to-list">&larr; Back to list</button>
+        <article>
+          <header class="detail-header">
+            <h1>${escapeHtml(post.title)}</h1>
+            <div class="post-meta">
+              <span class="date">${dateStr}</span>
+              ${post.url ? `<a href="${post.url}" target="_blank" rel="noopener noreferrer" class="original-link">View on Wayback Machine</a>` : ''}
+            </div>
+          </header>
+          <div class="detail-body">
+            ${bodyHtml}
+          </div>
+          <footer class="detail-footer">
+            <p class="nanach-footer">Na Nach Nachma Nachman MeUman</p>
+          </footer>
+        </article>
+      </div>
+    `;
+
+    document.getElementById('back-to-list').addEventListener('click', () => {
+      renderPage();
+    });
+
+    document.getElementById('pagination').style.display = 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function formatDate(dateStr) {
+    if (!dateStr) return '';
+    try {
+      const d = new Date(dateStr + 'T00:00:00');
+      if (isNaN(d.getTime())) return dateStr;
+      return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    } catch {
+      return dateStr;
+    }
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  // Event listeners
+  document.getElementById('search-input').addEventListener('input', () => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(applyFilters, 300);
+  });
+  document.getElementById('year-select').addEventListener('change', applyFilters);
+  document.getElementById('sort-select').addEventListener('change', applyFilters);
+  document.getElementById('prev-btn').addEventListener('click', () => {
+    if (currentPage > 1) { currentPage--; renderPage(); }
+  });
+  document.getElementById('next-btn').addEventListener('click', () => {
+    const totalPages = Math.ceil(filteredPosts.length / POSTS_PER_PAGE);
+    if (currentPage < totalPages) { currentPage++; renderPage(); }
+  });
+
+  init();
+</script>
+
+<style>
+  .archive-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+    font-family: 'Open Sans', sans-serif;
+  }
+
+  .archive-header {
+    text-align: center;
+    padding: 48px 20px 32px;
+    border-bottom: 3px solid #1a365d;
+    margin-bottom: 24px;
+  }
+  .archive-header h1 {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 2.4em;
+    color: #1a365d;
+    margin: 0 0 8px;
+  }
+  .archive-header .subtitle {
+    color: #666;
+    font-size: 1.1em;
+    margin: 0 0 8px;
+  }
+  .archive-header .nanach {
+    color: #c4a265;
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 0.95em;
+    margin: 0;
+  }
+
+  .archive-notice {
+    background: #faf8f4;
+    border: 1px solid #e0d6c2;
+    border-left: 4px solid #c4a265;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    font-size: 0.92em;
+    line-height: 1.6;
+    color: #555;
+  }
+  .archive-notice strong {
+    color: #1a365d;
+  }
+
+  .controls {
+    margin-bottom: 24px;
+  }
+
+  .search-box {
+    position: relative;
+    margin-bottom: 12px;
+  }
+  .search-box input {
+    width: 100%;
+    padding: 12px 16px 12px 40px;
+    border: 2px solid #e0d6c2;
+    border-radius: 8px;
+    font-size: 1em;
+    font-family: 'Open Sans', sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+  }
+  .search-box input:focus {
+    border-color: #c4a265;
+  }
+  .search-box .search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.1em;
+    color: #999;
+    pointer-events: none;
+  }
+
+  .filter-row {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .year-filter,
+  .sort-control {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .filter-row label {
+    font-size: 0.9em;
+    color: #666;
+    white-space: nowrap;
+  }
+  .filter-row select {
+    padding: 6px 10px;
+    border: 1px solid #e0d6c2;
+    border-radius: 6px;
+    font-size: 0.9em;
+    font-family: 'Open Sans', sans-serif;
+    background: #fff;
+    outline: none;
+    cursor: pointer;
+  }
+  .filter-row select:focus {
+    border-color: #c4a265;
+  }
+  .results-count {
+    margin-left: auto;
+    font-size: 0.85em;
+    color: #999;
+  }
+
+  .post-card {
+    margin-bottom: 16px;
+    border: 1px solid #e0d6c2;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  .post-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    border-color: #c4a265;
+  }
+  .post-card-inner {
+    padding: 20px 24px;
+  }
+  .post-title {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 1.25em;
+    color: #1a365d;
+    margin: 0 0 8px;
+    line-height: 1.3;
+  }
+  .post-excerpt {
+    color: #555;
+    font-size: 0.9em;
+    margin: 0 0 12px;
+    line-height: 1.6;
+    word-break: break-word;
+  }
+  .post-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85em;
+    color: #999;
+  }
+  .original-link {
+    color: #1a365d;
+    text-decoration: none;
+    font-size: 0.85em;
+  }
+  .original-link:hover {
+    text-decoration: underline;
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin-top: 32px;
+    padding: 20px 0;
+  }
+  .page-btn {
+    padding: 8px 20px;
+    border: 2px solid #1a365d;
+    border-radius: 8px;
+    background: #fff;
+    color: #1a365d;
+    font-size: 0.9em;
+    font-family: 'Open Sans', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .page-btn:hover:not(:disabled) {
+    background: #1a365d;
+    color: #fff;
+  }
+  .page-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .page-info {
+    font-size: 0.9em;
+    color: #666;
+  }
+
+  /* Post detail view */
+  .post-detail {
+    padding-top: 8px;
+  }
+  .back-to-list {
+    display: inline-block;
+    margin-bottom: 20px;
+    padding: 8px 16px;
+    border: 1px solid #e0d6c2;
+    border-radius: 6px;
+    background: #faf8f4;
+    color: #1a365d;
+    font-size: 0.9em;
+    font-family: 'Open Sans', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .back-to-list:hover {
+    background: #1a365d;
+    color: #fff;
+    border-color: #1a365d;
+  }
+  .detail-header {
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #e0d6c2;
+  }
+  .detail-header h1 {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 1.8em;
+    color: #1a365d;
+    margin: 0 0 12px;
+    line-height: 1.3;
+  }
+  .detail-body {
+    line-height: 1.8;
+    color: #333;
+    font-size: 1.02em;
+    word-break: break-word;
+  }
+  .detail-body p {
+    margin: 0 0 16px;
+  }
+  .detail-footer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 2px solid #e0d6c2;
+    text-align: center;
+  }
+  .nanach-footer {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 1.2em;
+    color: #c4a265;
+  }
+
+  .loading {
+    text-align: center;
+    padding: 40px;
+    color: #999;
+  }
+  .no-results {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+    font-size: 1em;
+  }
+  .error-msg {
+    text-align: center;
+    padding: 40px;
+    color: #c44;
+  }
+
+  .archive-footer {
+    margin-top: 40px;
+    text-align: center;
+  }
+  .archive-footer a {
+    color: #1a365d;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95em;
+  }
+  .archive-footer a:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 600px) {
+    .archive-header h1 { font-size: 1.8em; }
+    .filter-row { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .results-count { margin-left: 0; }
+    .post-card-inner { padding: 16px; }
+    .post-title { font-size: 1.1em; }
+    .detail-header h1 { font-size: 1.4em; }
+  }
+</style>
+</Layout>

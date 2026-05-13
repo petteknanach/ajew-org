@@ -1,0 +1,33 @@
+{
+  "api": {
+    "name": "Ajew Ananach Mobile API",
+    "version": "1.0.0",
+    "description": "Mobile-optimized API for Breslov Torah content",
+    "lastUpdated": "2026-03-12",
+    "endpoints": {
+      "books": "/api/books",
+      "book": "/api/books/{bookId}",
+      "part": "/api/books/{bookId}/parts/{partId}",
+      "torah": "/api/books/{bookId}/parts/{partId}/torahs/{torahId}",
+      "search": "/api/search",
+      "batch": "/api/batch"
+    }
+  },
+  "optimizations": {
+    "compression": true,
+    "minified": true,
+    "batchedRequests": true,
+    "caching": {
+      "static": 86400,
+      "dynamic": 3600
+    }
+  },
+  "content": {
+    "books": ["likutay-moharan"],
+    "totalTorahs": 10,
+    "totalParts": 1,
+    "formats": ["json", "min.json"],
+    "coverage": "Likutay Moharan Part 1, Torahs 1-10",
+    "lastContentUpdate": "2026-03-12"
+  }
+}

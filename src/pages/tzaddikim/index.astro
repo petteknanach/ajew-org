@@ -1,0 +1,195 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import fs from 'node:fs';
+
+const dbPath = './public/data/tzaddikim-database-complete.json';
+let tzaddikim = [];
+try {
+  const data = JSON.parse(fs.readFileSync(dbPath, 'utf8'));
+  tzaddikim = data.all_tzaddikim || [];
+} catch (e) {}
+
+// Group by category
+const groups = {};
+tzaddikim.forEach(t => {
+  const cat = t.category || 'other';
+  if (!groups[cat]) groups[cat] = [];
+  groups[cat].push(t);
+});
+
+// Profile pages we have
+const profiles = [
+  { slug: 'rebbe-nachman', name: 'Rebbe Nachman of Breslov', hebrew: 'רבי נחמן מברסלב' },
+  { slug: 'reb-noson', name: 'Reb Noson of Breslov', hebrew: 'רבי נתן מברסלב' },
+  { slug: 'saba', name: 'Saba Yisroel (Rabbi Odesser)', hebrew: 'הסבא ישראל' },
+  { slug: 'avraham-chazan', name: "Rabbi Avraham b'Rabbi Nachman", hebrew: "רבי אברהם בר' נחמן" },
+  { slug: 'rabbi-nosson-tiveria', name: 'Rabbi Nosson of Tiveria', hebrew: 'רבי נתן מטבריה' },
+  { slug: 'aaron-patz', name: 'Rabbi Aharon Patz', hebrew: 'רבי אהרן פאטץ' },
+  { slug: 'meir-yimeeney', name: 'Rabbi Meir Yimeeney', hebrew: 'רבי מאיר ימיני' },
+  { slug: 'shlomo-carlebach', name: 'Rabbi Shlomo Carlebach', hebrew: 'רבי שלמה קרליבך' },
+];
+
+const categoryLabels = {
+  breslov: { en: 'Breslov', he: 'ברסלב', icon: '🌟' },
+  biblical: { en: 'Biblical', he: 'תנ"ך', icon: '📜' },
+  talmudic: { en: 'Talmudic', he: 'תלמוד', icon: '📖' },
+  rishonim: { en: 'Rishonim', he: 'ראשונים', icon: '🏛️' },
+  acharonim: { en: 'Acharonim', he: 'אחרונים', icon: '📚' },
+  chassidic: { en: 'Chassidic', he: 'חסידי', icon: '✡️' },
+  lithuanian: { en: 'Lithuanian', he: 'ליטאי', icon: '🎓' },
+  sephardic: { en: 'Sephardic', he: 'ספרדי', icon: '🌍' },
+  chabad: { en: 'Chabad', he: 'חב"ד', icon: '🕎' },
+  other: { en: 'Other', he: 'אחר', icon: '📋' },
+};
+
+const categoryOrder = ['breslov', 'biblical', 'talmudic', 'rishonim', 'acharonim', 'chassidic', 'sephardic', 'lithuanian', 'chabad', 'other'];
+---
+
+<Layout title="Tzaddikim - Holy Sages of Israel" description="Profiles and yahrzeit dates of holy sages from the Torah, Talmud, Rishonim, and Breslov tradition.">
+  <section class="tz-page">
+    <div class="container">
+      <h1>Tzaddikim <span class="hebrew">צדיקים</span></h1>
+      <p class="subtitle">Holy sages of Israel across the generations</p>
+
+      <div class="profiles-section">
+        <h2>🌟 Breslov Profiles</h2>
+        <div class="profile-grid">
+          {profiles.map(p => (
+            <a href={`/tzaddikim/${p.slug}`} class="profile-card">
+              <span class="profile-name">{p.name}</span>
+              <span class="profile-hebrew">{p.hebrew}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <div class="stats-bar">
+        <span>🕯️ {tzaddikim.length} tzaddikim in the yahrzeit database</span>
+        <a href="/teachings/names-tzaddikim" class="manage-link">Manage List →</a>
+      </div>
+
+      <div class="categories-grid">
+        {categoryOrder.filter(cat => groups[cat] && groups[cat].length > 0).map(cat => {
+          const label = categoryLabels[cat] || categoryLabels.other;
+          const entries = groups[cat].sort((a, b) => a.name.localeCompare(b.name));
+          return (
+            <details class="category-section">
+              <summary>
+                <span class="cat-icon">{label.icon}</span>
+                <span class="cat-name">{label.en}</span>
+                <span class="cat-hebrew">{label.he}</span>
+                <span class="cat-count">({entries.length})</span>
+              </summary>
+              <ul class="tz-list">
+                {entries.map(t => (
+                  <li>
+                    <span class="tz-name">{t.name}</span>
+                    {t.hebrew_name && <span class="tz-hebrew">{t.hebrew_name}</span>}
+                    {t.yahrzeit_hebrew && <span class="tz-date">🕯️ {t.yahrzeit_hebrew}</span>}
+                  </li>
+                ))}
+              </ul>
+            </details>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .tz-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+    font-family: 'Open Sans', sans-serif;
+  }
+  h1 {
+    font-family: 'Frank Ruhl Libre', serif;
+    color: #1a365d;
+    font-size: 2.2em;
+    margin: 0 0 4px;
+  }
+  .hebrew { font-size: 0.9em; }
+  .subtitle { color: #666; margin: 0 0 32px; }
+
+  .profiles-section { margin-bottom: 32px; }
+  .profiles-section h2 { font-size: 1.3em; color: #1a365d; margin: 0 0 16px; }
+  .profile-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+  }
+  .profile-card {
+    display: flex;
+    flex-direction: column;
+    padding: 12px 16px;
+    background: #f8f5ef;
+    border: 1px solid #e0d6c2;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .profile-card:hover { background: #f0ebe0; border-color: #1a365d; }
+  .profile-name { color: #1a365d; font-weight: 600; font-size: 0.95em; }
+  .profile-hebrew { color: #555; font-family: 'Frank Ruhl Libre', serif; direction: rtl; font-size: 0.9em; }
+
+  .stats-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: #eef2f7;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    font-size: 0.9em;
+  }
+  .manage-link { color: #1a365d; font-weight: 600; text-decoration: none; }
+  .manage-link:hover { text-decoration: underline; }
+
+  .category-section {
+    margin-bottom: 8px;
+    border: 1px solid #e0d6c2;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .category-section summary {
+    padding: 12px 16px;
+    cursor: pointer;
+    background: #f8f5ef;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+  }
+  .category-section summary:hover { background: #f0ebe0; }
+  .cat-icon { font-size: 1.2em; }
+  .cat-name { color: #1a365d; }
+  .cat-hebrew { color: #555; font-family: 'Frank Ruhl Libre', serif; }
+  .cat-count { color: #888; font-weight: 400; font-size: 0.85em; }
+
+  .tz-list {
+    list-style: none;
+    padding: 8px 16px;
+    margin: 0;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+  .tz-list li {
+    padding: 6px 0;
+    border-bottom: 1px solid #f0ebe0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: baseline;
+  }
+  .tz-list li:last-child { border-bottom: none; }
+  .tz-name { color: #333; font-size: 0.9em; }
+  .tz-hebrew { color: #666; font-family: 'Frank Ruhl Libre', serif; direction: rtl; font-size: 0.85em; }
+  .tz-date { color: #888; font-size: 0.8em; margin-left: auto; }
+
+  @media (max-width: 600px) {
+    .profile-grid { grid-template-columns: 1fr; }
+    .stats-bar { flex-direction: column; gap: 8px; text-align: center; }
+  }
+</style>

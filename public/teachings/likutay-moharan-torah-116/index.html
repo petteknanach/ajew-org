@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 116</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 116</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה הם ששים רבוא אותיות, כנגד ששים רבוא נשמות, ויש לכל הנשמות שרש למעלה במחשבה דקדשא בריך הוא, כי &#39;ישראל עלו במחשבה תחלה&#39; (בראשית רבה א). ועל ידי זווג הנשמות נבראים נשמות גרים (עיין זוהר שלח דקס&quot;ח ע&quot;א), וכשנתעוררים הנשמות על ידי אותיות ה
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+116 – One Who Gives Charity Is Saved from Transgression
+One who gives charity (tzedakah) is saved from transgression. For anyone who has mercy upon other beings, Heaven has mercy upon him (Shabbat 151b). And anyone who lacks understanding— it is forbidden to have mercy upon him (Berakhot 33a). Therefore, once Heaven has mercy on him, it necessarily follows that they grant him understanding (da'at). And through this he is saved from coming to transgression, for no person commits a transgression unless a spirit of folly enters him (Sotah 3a). But when he possesses understanding, he is protected from sin.
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

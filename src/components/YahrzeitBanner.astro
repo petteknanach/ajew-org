@@ -1,0 +1,235 @@
+---
+// Yahrzeit Banner for Homepage - STATIC VERSION
+// Today is 26 Adar 5786 (March 15, 2026)
+// Static data for now to avoid build-time API fetch issues
+
+// Static data for today (26 Adar)
+const todayTzaddikim = [
+  {
+    name: "Obadiah the Prophet",
+    hebrew_name: "עובדיה הנביא",
+    yahrzeit_hebrew: "26 Adar",
+    notes: "Biblical prophet, book is one chapter of powerful prophecy relevant to our times"
+  }
+];
+
+// Static data for yesterday (25 Adar)
+const yesterdayTzaddikim = [
+  {
+    name: "Rabbi Gershon Kitover",
+    hebrew_name: "רבי גרשון קיטובר",
+    yahrzeit_hebrew: "25 Adar",
+    notes: "Brother-in-law of Baal Shem Tov (1761)"
+  }
+];
+
+const hasToday = todayTzaddikim.length > 0;
+const hasYesterday = yesterdayTzaddikim.length > 0;
+const showBanner = hasToday || hasYesterday;
+
+// Hebrew date for display
+const todayHebrew = "כ״ו בַּאֲדָר תשפ״ו";
+---
+
+{showBanner && (
+  <div class="yahrzeit-banner">
+    <div class="banner-content">
+      <div class="banner-header">
+        <span class="banner-icon">🕯️</span>
+        <h3 class="banner-title">Today's Yahrzeits</h3>
+        <span class="hebrew-date">{todayHebrew.hebrew}</span>
+      </div>
+      
+      {hasToday ? (
+        <div class="tzaddikim-list">
+          {todayTzaddikim.slice(0, 3).map(tzaddik => (
+            <div class="tzaddik-item">
+              <span class="tzaddik-name">{tzaddik.name}</span>
+              {tzaddik.hebrew_name && (
+                <span class="tzaddik-hebrew" dir="rtl">{tzaddik.hebrew_name}</span>
+              )}
+              {tzaddik.year_passed && (
+                <span class="tzaddik-year">({tzaddik.year_passed})</span>
+              )}
+            </div>
+          ))}
+          {todayTzaddikim.length > 3 && (
+            <div class="tzaddik-more">
+              +{todayTzaddikim.length - 3} more
+            </div>
+          )}
+        </div>
+      ) : (
+        <div class="no-yahrzeits">
+          <p>No yahrzeits recorded for today.</p>
+        </div>
+      )}
+      
+      {hasYesterday && (
+        <div class="yesterday-section">
+          <div class="yesterday-header">
+            <span class="yesterday-icon">📅</span>
+            <h4>Yesterday's Yahrzeit</h4>
+          </div>
+          <div class="tzaddikim-list">
+            {yesterdayTzaddikim.slice(0, 2).map(tzaddik => (
+              <div class="tzaddik-item yesterday-item">
+                <span class="tzaddik-name">{tzaddik.name}</span>
+                {tzaddik.hebrew_name && (
+                  <span class="tzaddik-hebrew" dir="rtl">{tzaddik.hebrew_name}</span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      
+      <div class="banner-footer">
+        <a href="/tzaddikim" class="view-all-link">
+          View all yahrzeits →
+        </a>
+      </div>
+    </div>
+  </div>
+)}
+
+<style>
+  .yahrzeit-banner {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border: 2px solid #f59e0b;
+    border-radius: 12px;
+    margin: 1.5rem auto;
+    max-width: 800px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+  
+  .banner-content {
+    padding: 1.25rem;
+  }
+  
+  .banner-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(245, 158, 11, 0.3);
+    padding-bottom: 0.75rem;
+  }
+  
+  .banner-icon {
+    font-size: 1.5rem;
+  }
+  
+  .banner-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #92400e;
+    margin: 0;
+  }
+  
+  .hebrew-date {
+    margin-left: auto;
+    font-size: 0.875rem;
+    color: #78350f;
+    font-weight: 500;
+    background: rgba(255, 255, 255, 0.7);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+  }
+  
+  .tzaddikim-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .tzaddik-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    background: white;
+    border-radius: 6px;
+    border-left: 3px solid #f59e0b;
+  }
+  
+  .tzaddik-name {
+    font-weight: 500;
+    color: #1f2937;
+  }
+  
+  .tzaddik-hebrew {
+    font-size: 0.875rem;
+    color: #4b5563;
+  }
+  
+  .tzaddik-year {
+    margin-left: auto;
+    font-size: 0.75rem;
+    color: #6b7280;
+    background: #f3f4f6;
+    padding: 0.125rem 0.375rem;
+    border-radius: 4px;
+  }
+  
+  .tzaddik-more {
+    text-align: center;
+    font-size: 0.875rem;
+    color: #6b7280;
+    padding: 0.5rem;
+  }
+  
+  .no-yahrzeits {
+    text-align: center;
+    padding: 1rem;
+    color: #6b7280;
+    font-style: italic;
+  }
+  
+  .yesterday-section {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px dashed #d1d5db;
+  }
+  
+  .yesterday-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .yesterday-icon {
+    font-size: 1rem;
+  }
+  
+  .yesterday-header h4 {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #6b7280;
+    margin: 0;
+  }
+  
+  .yesterday-item {
+    border-left-color: #9ca3af;
+    opacity: 0.8;
+  }
+  
+  .banner-footer {
+    margin-top: 1rem;
+    text-align: center;
+  }
+  
+  .view-all-link {
+    display: inline-block;
+    font-size: 0.875rem;
+    color: #d97706;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  
+  .view-all-link:hover {
+    color: #92400e;
+    text-decoration: underline;
+  }
+</style>

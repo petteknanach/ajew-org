@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 405</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 405</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה ודורשין אותה ממקום למקום בשלש עשרה מדות. והם גורעין ומוסיפין ודורשין (בבא בתרא קי&quot;א:), ואף שכתוב בה
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+Tinyana 119
+REGARDING THE SUFFERINGS OF THIS WORLD
+He spoke with us several times regarding the sufferings of this world, that all people of the world, all of them, are full of sufferings. There is not even one who has this world. And even the great wealthy and even the princes, they have no this world at all, for all their days are anger and pains, and all of them are full of troubles and worries and sadness and grief and sighing constantly. And each one has unique sufferings. And there is not even one among all the magnates and princes who has everything in order according to his desire constantly. And all of them, as one, are full of sufferings and worries constantly. And this is clear and known to anyone who is slightly familiar with them and their ways. And we spoke of this several times, and we saw with our eyes all this. And even one who seems to have this world in completeness and has all pleasures, wealth and assets and honor and great fortune and great palaces and wondrous vessels and jewelry and royal segulos [propitious treasures], etc., if they look at him well, he too is full of anger and many pains constantly in many types of ways and matters, as is visible to the senses. And there is no need to explain this to one who has a mind in his head and looks at them somewhat in truth. And as King Solomon, peace be upon him, said: "Also all his days are anger and pains" [Ecclesiastes 2:23], etc. And it is written: "Man is born to toil, short of days and full of agitation" [Job 14:1]. And this includes all people in the world, from small to great, for all of them are born to toil and are full of agitation and sufferings. And there is no counsel or strategy to escape from this toil and grief except to flee to Hashem [G-d] and to engage in Torah. [Beraishis Rabbah, parasha 13:6]: "Man is born to toil"—fortunate is he whose toil is in Torah. That is, since every person is born to toil and it is impossible to escape from this in any way, even if he has all the pleasures of the world, certainly he will have toil and sufferings and many worries. Therefore, the wise man, his eyes are in his head, that he transforms the toil into the toil of Torah, for which he was born to toil in Torah. And then, fortunate is he, for he is saved from the toil of this world and merits the life of the World to Come. Our master, of blessed memory, responded and said: Behold, all say that there is this world and the World to Come. And behold, the World to Come, we believe that there is a World to Come. Perhaps there is also this world in some world, for here it seems that it is Gehinnom [Hell], for all are full of great sufferings constantly. And he said that no this world is found at all.
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

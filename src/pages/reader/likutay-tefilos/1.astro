@@ -1,0 +1,99 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import fs from 'node:fs';
+import path from 'node:path';
+
+const part = '1';
+const partNum = 1;
+
+// Load index data
+let indexData = null;
+try {
+  const idxPath = path.join(process.cwd(), `public/reader/likutay-tefilos/part-${partNum}/index.json`);
+  indexData = JSON.parse(fs.readFileSync(idxPath, 'utf8'));
+} catch (e) {
+  console.error('Error loading index:', e);
+}
+
+const partTitle = partNum === 1 ? 'Chelek Rishon (Part 1)' : 'Chelek Sheni (Part 2)';
+const partHebrew = partNum === 1 ? 'חלק ראשון' : 'חלק שני';
+const totalPrayers = indexData?.torahs?.length || 0;
+
+// Load TOC topics for this part
+let tocTopics = [];
+try {
+  const tocPath = path.join(process.cwd(), 'public/reader/likutay-tefilos/toc-topics.json');
+  const tocData = JSON.parse(fs.readFileSync(tocPath, 'utf8'));
+  tocTopics = tocData.topics.filter(t => 
+    (partNum === 1 && t.part1_prayers.length > 0) || 
+    (partNum === 2 && t.part2_prayers.length > 0)
+  );
+} catch (e) {}
+---
+
+<Layout title={`Likutay Tefilos — ${partTitle} Index`} description={`Complete index of Likutay Tefilos ${partTitle}. ${totalPrayers} prayers with Hebrew text and English translation.`}>
+  <div style="max-width: 900px; margin: 0 auto; padding: 40px 20px;">
+    <!-- Header -->
+    <div style="text-align: center; margin-bottom: 40px;">
+      <p style="font-family: 'Cinzel', serif; font-size: 0.75em; letter-spacing: 3px; color: #a07830; text-transform: uppercase; margin-bottom: 8px;">Likutay Tefilos</p>
+      <h1 style="font-family: 'Cinzel', serif; font-size: 2em; color: #1e3a5f; margin-bottom: 8px;">{partTitle}</h1>
+      <p style="font-family: 'Noto Serif Hebrew', serif; font-size: 1.2em; color: #6b5a42; direction: rtl;">{partHebrew}</p>
+      <p style="color: #888; font-size: 0.9em; margin-top: 8px;">{totalPrayers} prayers</p>
+    </div>
+
+    <!-- Special Prayers Button -->
+    <div style="margin-bottom: 32px; padding: 16px 20px; background: linear-gradient(135deg, #1e3a5f 0%, #2e5580 100%); border-radius: 8px; text-align: center;">
+      <a href="/reader/likutay-tefilos/special" style="color: #c8bfa0; text-decoration: none; font-family: 'Cinzel', serif; font-size: 1em; letter-spacing: 1px;">
+        ✨ Special Prayers for Every Need & Occasion — Browse by Topic →
+      </a>
+    </div>
+
+    <!-- Prayer List -->
+    {indexData && (
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px;">
+        {indexData.torahs.map(t => (
+          <a href={`/reader/likutay-tefilos/${partNum}/${t.number}`} style="display: block; padding: 10px 14px; background: #f8f5f0; border-radius: 6px; text-decoration: none; border-right: 3px solid #a07830;">
+            <span style="color: #1e3a5f; font-weight: 600; font-size: 0.9em;">
+              {t.hebrewTitle || t.title || `Prayer ${t.number}`}
+            </span>
+            {t.hebrewTitle && t.title && t.title !== t.hebrewTitle && (
+              <span style="color: #888; font-size: 0.75em; display: block;">{t.title}</span>
+            )}
+          </a>
+        ))}
+      </div>
+    )}
+
+    <!-- Topic Index -->
+    {tocTopics.length > 0 && (
+      <div style="margin-top: 48px;">
+        <h2 style="font-family: 'Cinzel', serif; font-size: 1.3em; color: #1e3a5f; border-bottom: 2px solid #a07830; padding-bottom: 8px; margin-bottom: 20px;">
+          Browse by Topic
+        </h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px;">
+          {tocTopics.map(topic => {
+            const prayers = partNum === 1 ? topic.part1_prayers : topic.part2_prayers;
+            if (prayers.length === 0) return null;
+            const firstPrayer = prayers[0];
+            return (
+              <a href={`/reader/likutay-tefilos/${partNum}/${firstPrayer}`} style="display: block; padding: 10px 14px; background: #f0ebe0; border-radius: 6px; text-decoration: none;">
+                <span style="color: #1e3a5f; font-weight: 600; font-size: 0.9em; direction: rtl; display: block; text-align: right;">{topic.topic}</span>
+                <span style="color: #888; font-size: 0.75em;">Prayers: {prayers.slice(0, 8).join(', ')}{prayers.length > 8 ? '...' : ''}</span>
+              </a>
+            );
+          })}
+        </div>
+      </div>
+    )}
+
+    <!-- Navigation -->
+    <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; display: flex; justify-content: space-between;">
+      <a href="/reader" style="color: #1e3a5f; text-decoration: none; font-weight: 600;">← All Books</a>
+      {partNum === 1 ? (
+        <a href="/reader/likutay-tefilos/2" style="color: #1e3a5f; text-decoration: none; font-weight: 600;">Part 2 →</a>
+      ) : (
+        <a href="/reader/likutay-tefilos/1" style="color: #1e3a5f; text-decoration: none; font-weight: 600;">← Part 1</a>
+      )}
+    </div>
+  </div>
+</Layout>

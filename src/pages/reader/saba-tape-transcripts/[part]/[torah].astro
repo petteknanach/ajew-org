@@ -1,0 +1,288 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import Comments from '../../../../components/Comments.astro';
+import '../../../../styles/reader.css';
+import fs from 'node:fs';
+import path from 'node:path';
+
+export function getStaticPaths() {
+  const paths = [];
+  for (let torah = 1; torah <= 28; torah++) {
+    paths.push({ params: { part: '1', torah: String(torah) } });
+  }
+  return paths;
+}
+
+const { part, torah } = Astro.params;
+const partNum = parseInt(part);
+const torahNum = parseInt(torah);
+const bookSlug = 'saba-tape-transcripts';
+const bookName = 'Saba Tape Transcripts';
+
+let torahData = null;
+let indexData = null;
+let error = null;
+
+try {
+  const readerDir = path.join(process.cwd(), `public/reader/${bookSlug}`);
+  indexData = JSON.parse(fs.readFileSync(path.join(readerDir, 'index.json'), 'utf8'));
+  const filePath = path.join(readerDir, `chapter-${torahNum}.json`);
+  const raw = fs.readFileSync(filePath, 'utf8');
+  torahData = JSON.parse(raw);
+} catch (e) {
+  error = `Tape ${torahNum} not found`;
+}
+
+if (!torahData && !error) error = 'Content not available';
+
+const totalSections = indexData?.torahs?.length || 28;
+
+// R2 audio base URL
+const R2_BASE = 'https://pub-81b61511a43c43218e37bc24c20a7a22.r2.dev/saba-recordings';
+
+const pageTitle = torahData
+  ? `${torahData.title} - ${bookName} | AJEW.org`
+  : 'Tape Not Found';
+const pageDesc = torahData
+  ? `Listen to and read the transcript of ${torahData.title} from Saba Yisroel (Rabbi Yisroel Dov Odesser). English transcript with original audio recording.`
+  : '';
+---
+
+<Layout title={pageTitle} description={pageDesc}>
+  {error ? (
+    <div style="text-align: center; padding: 80px 20px;">
+      <h1>{error}</h1>
+      <p><a href={`/reader/saba-tape-transcripts/${partNum}`}>Book Index</a>
+        <a href="/reader">Back to Reader</a></p>
+    </div>
+  ) : (
+    <div class="reader-container" data-book={bookSlug}>
+      <div class="reader-header">
+        <a href="/reader" class="reader-back">&larr; Library</a>
+        <span>&rsaquo;</span>
+        <span>{bookName}</span>
+        <span>&rsaquo;</span>
+        {torahData.title}
+      </div>
+
+
+
+<!-- Unified Audio Player -->
+<div id="audio-controls" style="margin:0 auto 12px auto; max-width:700px; font-family:'Open Sans',sans-serif;">
+  <div style="display:flex; gap:0; border-radius:8px; overflow:hidden; border:1px solid var(--reader-border,#ddd);">
+    <button id="audio-btn-he" onclick="toggleAudio('he')" 
+      style="flex:1; padding:8px 12px; border:none; cursor:pointer; font-size:0.85em; font-weight:600;
+      background:var(--reader-bg-secondary,#f8f5f0); color:var(--reader-text,#333);">
+      🎧 Hebrew
+    </button>
+    <button id="audio-btn-en" onclick="toggleAudio('en')" 
+      style="flex:1; padding:8px 12px; border:none; cursor:pointer; font-size:0.85em; font-weight:600;
+      background:var(--reader-bg-secondary,#f8f5f0); color:var(--reader-text,#333); border-left:1px solid var(--reader-border,#ddd);">
+      🔊 English
+    </button>
+  </div>
+  
+  <!-- Hidden data element for book/part/torah -->
+  <div id="en-tts-player" data-book="saba-tape-transcripts" data-part={partNum} data-torah={torahNum} style="display:none;"></div>
+  
+  <div id="audio-panel-he" style="display:none; background:var(--reader-bg-secondary,#f8f5f0); 
+    border:1px solid var(--reader-border,#ddd); border-top:none; border-radius:0 0 8px 8px; padding:12px 16px;">
+    <audio id="kol-hatzadik-audio" controls preload="none" style="width:100%; border-radius:4px;"></audio>
+    <div id="kol-hatzadik-note" style="font-size:0.8em; color:var(--reader-text-secondary,#888); margin-top:4px;"></div>
+  </div>
+  
+  <div id="audio-panel-en" style="display:none; background:#1a3a1a; 
+    border:1px solid #2d5a2d; border-top:none; border-radius:0 0 8px 8px; padding:12px 16px;">
+    <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+      <span style="font-size:1em;">🔊</span>
+      <strong style="color:#7fff7f; font-size:0.85em;">English Audio</strong>
+      <div style="margin-left:auto; display:flex; gap:4px;">
+        <button id="en-btn-ryan" onclick="enSetVoice('ryan')" 
+          style="background:#7fff7f20; border:2px solid #7fff7f; color:#fff; border-radius:4px; 
+          padding:2px 8px; cursor:pointer; font-size:0.8em;">🇬🇧</button>
+        <button id="en-btn-guy" onclick="enSetVoice('guy')" 
+          style="background:#7fff7f10; border:1px solid #7fff7f40; color:#fff; border-radius:4px; 
+          padding:2px 8px; cursor:pointer; font-size:0.8em;">🇺🇸</button>
+        <button id="en-btn-connor" onclick="enSetVoice('connor')" 
+          style="background:#7fff7f10; border:1px solid #7fff7f40; color:#fff; border-radius:4px; 
+          padding:2px 8px; cursor:pointer; font-size:0.8em;">🇮🇪</button>
+      </div>
+    </div>
+    <button id="en-btn-play" onclick="enTogglePlay()" 
+      style="background:#2d8a2d; color:#fff; border:none; border-radius:4px; padding:6px 16px; 
+      cursor:pointer; font-size:0.9em; font-weight:bold; width:100%;">▶ Play English</button>
+    <div id="en-progress" style="margin-top:4px; height:3px; background:#2d5a2d; border-radius:2px; 
+      overflow:hidden; display:none;">
+      <div id="en-progress-bar" style="height:100%; width:0%; background:#7fff7f;"></div>
+    </div>
+  </div>
+</div>
+<script src="/unified-audio.js" defer></script>
+
+      <div class="reader-toolbar">
+        <div class="reader-toolbar-group">
+          <button class="reader-btn" data-mode="hebrew">Hebrew</button>
+          <button class="reader-btn" data-mode="english">English</button>
+          <button class="reader-btn" data-mode="both">Both</button>
+        </div>
+        <div class="reader-toolbar-group">
+          <span style="font-size:0.7em; color: var(--reader-text-secondary);">A</span>
+          <input type="range" id="font-size-slider" class="font-size-slider" min="12" max="32" value="18" />
+          <span style="font-size:0.9em; color: var(--reader-text-secondary);">A</span>
+        </div>
+        <div class="reader-toolbar-group">
+          <button class="reader-btn reader-btn-icon" data-theme-btn="day">Day</button>
+          <button class="reader-btn reader-btn-icon" data-theme-btn="sepia">Sepia</button>
+          <button class="reader-btn reader-btn-icon" data-theme-btn="night">Night</button>
+        </div>
+        <div class="reader-toolbar-group">
+          <button class="reader-btn reader-btn-icon" id="btn-search">Search</button>
+          <button class="reader-btn reader-btn-icon" id="btn-bookmark">Bookmark</button>
+          <button class="reader-btn reader-btn-icon" id="btn-fullscreen">Fullscreen</button>
+        </div>
+      </div>
+
+      <!-- Audio Player -->
+      <div class="saba-audio-player">
+        <div class="audio-header">
+          <span class="audio-icon">🎙️</span>
+          <span class="audio-title">Listen to Saba — Original Recording</span>
+        </div>
+        <audio id="saba-audio" controls preload="none" class="audio-element">
+          <source src="" type="audio/mpeg" />
+          Your browser does not support audio playback.
+        </audio>
+        <p class="audio-note">Recordings of Saba Yisroel (Rabbi Yisroel Dov Odesser) z"l</p>
+      </div>
+
+      <div class="reader-nav">
+        {torahNum > 1 ? (
+          <a href={`/reader/${bookSlug}/1/${torahNum - 1}`} data-dir="prev">&larr; Previous</a>
+        ) : <span class="disabled">&larr; Previous</span>}
+        <a href="/reader">Library</a>
+        {torahNum < totalSections ? (
+          <a href={`/reader/${bookSlug}/1/${torahNum + 1}`} data-dir="next">Next &rarr;</a>
+        ) : <span class="disabled">Next &rarr;</span>}
+      </div>
+
+      <div class="reader-content mode-english">
+        <div class="reader-content-original">
+        {torahData.segments.map((seg, i) => (
+          <div class="reader-segment-pair" id={`seg-${i + 1}`}>
+            <div class="reader-segment segment-he" data-index={String(i + 1)}>
+              <span class="segment-number">{i + 1}</span>
+              <p>{seg.he || '\u00A0'}</p>
+            </div>
+            <div class={`reader-segment segment-en ${!seg.en ? 'empty-translation' : ''}`} data-index={String(i + 1)}>
+              <span class="segment-number">{i + 1}</span>
+              <p>{seg.en || 'Translation not yet available'}</p>
+            </div>
+          </div>
+        ))}
+        </div>
+        {torahData.aligned_segments && (
+          <div class="reader-content-aligned" style="display:none;">
+            {torahData.aligned_segments.map((seg) => (
+              <div class={`reader-segment-pair ${seg.type === 'note' ? 'segment-note' : ''}`} id={`aligned-${seg.index}`}>
+                <div class="reader-segment segment-he" data-index={String(seg.index)}>
+                  <span class="segment-number">{seg.index}</span>
+                  <p>{seg.he || '\u00A0'}</p>
+                </div>
+                <div class={`reader-segment segment-en ${!seg.en ? 'empty-translation' : ''}`} data-index={String(seg.index)}>
+                  <span class="segment-number">{seg.index}</span>
+                  <p>{seg.en || '\u00A0'}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div class="reader-nav">
+        {torahNum > 1 ? (
+          <a href={`/reader/${bookSlug}/1/${torahNum - 1}`} data-dir="prev">&larr; Previous</a>
+        ) : <span class="disabled">&larr; Previous</span>}
+        <a href="/reader">Library</a>
+        {torahNum < totalSections ? (
+          <a href={`/reader/${bookSlug}/1/${torahNum + 1}`} data-dir="next">Next &rarr;</a>
+        ) : <span class="disabled">Next &rarr;</span>}
+      </div>
+    </div>
+  )}
+
+      {torahData && (
+        <Comments teachingId={`saba-tape-transcripts-${part}-${torah}`} teachingTitle={`saba-tape-transcripts ${part}:${torah}${torahData?.title ? ' — ' + torahData.title : ''}`} />
+      )}
+</Layout>
+
+<script defer src="/reader-script.js?v=4"></script>
+
+<script is:inline>
+// Map tape transcript chapters to R2 recording files
+// Tape transcripts are from a different set than the numbered sichot
+// For now, provide the full collection as a playlist
+(function() {
+  var audioEl = document.getElementById('saba-audio');
+  if (!audioEl) return;
+
+  var R2 = 'https://pub-81b61511a43c43218e37bc24c20a7a22.r2.dev/saba-recordings';
+
+  // Map tape numbers to recording files
+  // The tapes (1G-16G) correspond to different recordings than the numbered sichot
+  // For now, assign recordings sequentially - users can browse
+  var tapeNum = parseInt(window.location.pathname.split('/').pop()) || 1;
+
+  // Use the recording that corresponds to this tape number
+  var filename = 'saba-recording-00misc-' + tapeNum + '.mp3';
+  var source = audioEl.querySelector('source');
+  if (source) {
+    source.src = R2 + '/' + filename;
+    audioEl.load();
+  }
+})();
+</script>
+
+<style>
+  .saba-audio-player {
+    max-width: 700px;
+    margin: 1rem auto;
+    padding: 1rem 1.5rem;
+    background: linear-gradient(135deg, #fef9ef 0%, #fdf5e6 100%);
+    border: 1px solid #e8d5b0;
+    border-radius: 12px;
+    text-align: center;
+  }
+  .audio-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 0.8rem;
+  }
+  .audio-icon { font-size: 1.4rem; }
+  .audio-title {
+    font-weight: 600;
+    color: #5a3e1b;
+    font-size: 1rem;
+  }
+  .audio-element {
+    width: 100%;
+    max-width: 500px;
+    margin: 0.5rem auto;
+    display: block;
+  }
+  .audio-note {
+    font-size: 0.8rem;
+    color: #8a7050;
+    font-style: italic;
+    margin-top: 0.5rem;
+  }
+
+  /* Dark mode */
+  [data-theme="night"] .saba-audio-player {
+    background: linear-gradient(135deg, #1a1510 0%, #2a2015 100%);
+    border-color: #4a3a25;
+  }
+  [data-theme="night"] .audio-title { color: #d4b896; }
+  [data-theme="night"] .audio-note { color: #8a7050; }
+</style>

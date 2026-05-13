@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 270</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 270</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה מדברת מאהבה ויראה ושאר המדות. ובה ברא הקדוש ברוך הוא עלמין, כמו שכתוב (משלי ח&#39;): &quot;ואהיה אצלו אמון&quot;. אל תקרי אמון אלא אמן (בראשית רבה פרשה א&#39; זהר שמיני ל&quot;ה:). ואותיות ה
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+270 - JUST AS THERE IS AROUSAL FROM ONE PERSON TO HIS FELLOW
+Just as there is arousal from one person to his fellow—for example, when they see that one says requests and prayers for forgiveness with arousal in a broken heart, then his fellow is also aroused from him, because he is aroused from his fellow and begins to look at himself and is also aroused, and begins also to say requests with arousal of the heart—so too, within the person himself there is arousal from him and within him, that he is aroused from his own words. That is, he says requests and supplications with arousal and cries "woe to me," and cries "woe to me," and within that he is aroused from this and begins to look at himself: "Where am I, and who is crying so? Is it not woe to me, to me actually?" And he begins a second time to cry "woe to me, to me precisely." And even though at the beginning it seems to him as if he is also saying in truth as is proper, with all this, afterward they see the difference between before and after, and understand [demonstrating self-arousal through personal prayer leading to deeper introspection].
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

@@ -1,0 +1,250 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const ramchalBooks = [
+  { id: 'ramchal-mesillas-yesharim', title: 'Mesillas Yesharim', heTitle: 'מסילת ישרים', desc: 'The Path of the Just — the foundational work of mussar', sections: 27, sectionLabel: 'chapters', hasHebrew: true },
+  { id: 'ramchal-derech-hashem', title: 'Derech Hashem', heTitle: 'דרך ה\'', desc: 'The Way of God — systematic theology and hashkafa', sections: 28, sectionLabel: 'chapters', hasHebrew: true },
+  { id: 'ramchal-daas-tevunos', title: 'Daas Tevunos', heTitle: 'דעת תבונות', desc: 'The Knowing Heart — understanding Divine providence', sections: 195, sectionLabel: 'sections', hasHebrew: true },
+  { id: 'ramchal-klach-pitchei-chochma', title: "Klach Pitchei Chochma", heTitle: 'קל"ח פתחי חכמה', desc: '138 Openings of Wisdom — Kabbalistic foundations', sections: 138, sectionLabel: 'openings', hasHebrew: true },
+  { id: 'ramchal-adir-bamuroam', title: 'Adir BaMurom', heTitle: 'אדיר במרום', desc: 'Commentary on the Idra Rabba of the Zohar', sections: 21, sectionLabel: 'sections', hasHebrew: true },
+  { id: 'ramchal-ruzin-gineezin', title: 'Ruzin Gineezin', heTitle: 'רוזין גנוזין', desc: 'Hidden Treasures — Ramchal\'s Kabbalistic work on Zohar secrets', sections: 5, sectionLabel: 'sections', hasHebrew: true },
+  { id: 'ramchal-derech-etz-chaim', title: 'Derech Etz Chaim', heTitle: 'דרך עץ חיים', desc: 'The Way of the Tree of Life — introduction to Pitchei Chochma', sections: 1, sectionLabel: 'chapter', hasHebrew: true },
+  { id: 'ramchal-maamar-haikkarim', title: "Ma'amar HaIkkarim", heTitle: 'מאמר העיקרים', desc: 'Essay on the Fundamentals — core principles of faith', sections: 10, sectionLabel: 'chapters', hasHebrew: true },
+  { id: 'ramchal-asara-perakim', title: 'Asara Perakim', heTitle: 'עשרה פרקים', desc: 'Ten Chapters — concise overview of Kabbalistic concepts', sections: 10, sectionLabel: 'chapters', hasHebrew: true },
+  { id: 'ramchal-tikunim-chadashim', title: 'Tikunim Chadashim', heTitle: 'תיקונים חדשים', desc: 'New Tikunim — Ramchal\'s Kabbalistic continuation of the Tikunei Zohar', sections: 70, sectionLabel: 'tikunim', hasHebrew: true },
+  { id: 'ramchal-yichud-hayeeruh', title: 'Yichud HaYeeruh', heTitle: 'יחוד היראה', desc: 'The Unification of Awe — a Kabbalistic treatise on Yiras Haromimus', sections: 5, sectionLabel: 'sections', hasHebrew: true },
+  { id: 'ramchal-otzros-ramchal', title: 'Otzros Ramchal', heTitle: 'אוצרות רמח"ל', desc: 'Treasures of Ramchal — commentaries on all of Tanach + Drushim + Iggros', sections: 9, sectionLabel: 'sections', hasHebrew: true, hasEnglish: true },
+  { id: 'ramchal-shaaray-ramchal', title: 'Shaaray Ramchal', heTitle: 'שערי רמח"ל', desc: 'Gates of Ramchal — Mavo · Maamar HaVikuach · Pischay Chochmah · Klalei Chochmas HaEmes · Igros · Binyan Olam + Sod Hashem', sections: 6, sectionLabel: 'volumes', hasHebrew: true, hasEnglish: true },
+  { id: 'ramchal-ginzay-ramchal', title: 'Ginzay Ramchal', heTitle: 'גנזי רמח"ל', desc: 'Treasuries of Ramchal — 11 hidden compositions: Daas Tevunos II · Kinas Hashem Tzvaos · Mishkney Elyon · Kovetz Ma\'amarim (Arimis Yadai · Ra\'usin · Sod ha-Merkavah · Zohar Mishpatim) · Vayhi Miketz · Biurim on Otzros Chaim · Asarah Oros · Penos HaMerkavah', sections: 16, sectionLabel: 'sections', hasHebrew: true, hasEnglish: true },
+];
+
+const pageTitle = "Ramchal — Rabbi Moshe Chaim Luzzatto | Complete Kabbalistic Works";
+const pageDescription = "Complete works of Rabbi Moshe Chaim Luzzatto (Ramchal): Mesillas Yesharim, Derech Hashem, Klach Pitchei Chochma, Daas Tevunos, Adir BaMurom, Ruzin Gineezin, Tikunim Chadashim, Yichud HaYeeruh, Otzros Ramchal, Shaaray Ramchal. Bilingual Hebrew-English. Free on AJEW.org.";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "The Ramchal Library",
+  "description": pageDescription,
+  "url": "https://ajew.org/ramchal",
+  "inLanguage": ["en", "he"],
+  "about": {
+    "@type": "Person",
+    "name": "Rabbi Moshe Chaim Luzzatto",
+    "alternateName": ["Ramchal", "רמח\"ל"],
+    "birthDate": "1707",
+    "deathDate": "1746",
+    "birthPlace": "Padua, Italy",
+    "description": "Rabbi Moshe Chaim Luzzatto (1707-1746), known as the Ramchal, was one of the most influential Jewish thinkers and Kabbalists. Author of Mesillas Yesharim, Derech Hashem, and numerous Kabbalistic works."
+  },
+  "hasPart": ramchalBooks.map(book => ({
+    "@type": "Book",
+    "name": book.title,
+    "alternateName": book.heTitle,
+    "author": {
+      "@type": "Person",
+      "name": "Rabbi Moshe Chaim Luzzatto",
+      "alternateName": ["Ramchal", "רמח\"ל"]
+    },
+    "inLanguage": book.hasHebrew ? ["he", "en"] : ["en"],
+    "url": `https://ajew.org/reader/${book.id}/1/1`,
+    "description": book.desc,
+    "numberOfPages": book.sections,
+    "genre": "Kabbalah",
+    "bookFormat": "https://schema.org/EBook"
+  })),
+  "publisher": {
+    "@type": "Organization",
+    "name": "A Jew",
+    "url": "https://ajew.org"
+  }
+};
+
+const breadcrumbs = [
+  { name: "Home", url: "https://ajew.org/" },
+  { name: "Library", url: "https://ajew.org/reader" },
+  { name: "Ramchal Library", url: "https://ajew.org/ramchal" }
+];
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  jsonLd={jsonLd}
+  breadcrumbs={breadcrumbs}
+>
+  <main class="ramchal-page">
+    <div class="hero">
+      <h1 class="hero-title">הרמח"ל</h1>
+      <h2 class="hero-subtitle">The Ramchal Library</h2>
+      <p class="hero-desc">Rabbi Moshe Chaim Luzzatto (1707–1746)</p>
+      <p class="hero-quote">"The foundation of piety and the root of perfect service is for a person to clarify and verify what his obligation is in this world."<br><em>— Mesillas Yesharim, Chapter 1</em></p>
+    </div>
+
+    <div class="books-grid">
+      {ramchalBooks.map(book => (
+        <a href={`/reader/${book.id}/1/1`} class="book-card">
+          <div class="book-hebrew">{book.heTitle}</div>
+          <div class="book-title">{book.title}</div>
+          <div class="book-desc">{book.desc}</div>
+          <div class="book-meta">
+            <span class="book-sections">{book.sections} {book.sectionLabel}</span>
+            {book.hasHebrew ? (
+              <span class="book-lang lang-both">Hebrew + English</span>
+            ) : (
+              <span class="book-lang lang-en">English only</span>
+            )}
+          </div>
+        </a>
+      ))}
+    </div>
+
+    <div class="about-section">
+      <h3>About the Ramchal</h3>
+      <p>Rabbi Moshe Chaim Luzzatto, known as the Ramchal, was one of the most influential Jewish thinkers of the past 500 years. Born in Padua, Italy, he authored works spanning mussar (ethics), Kabbalah, logic, and poetry. His <em>Mesillas Yesharim</em> is studied in virtually every yeshiva in the world.</p>
+      <p>The Gaon of Vilna said that if the Ramchal were alive in his generation, he would walk on foot to learn from him. Rabbi Nachman of Breslov held the Ramchal's writings in the highest regard.</p>
+      <p>This library also presents Ramchal's deepest Kabbalistic works — <a href="/reader/ramchal-tikunim-chadashim/1/1"><em>Tikunim Chadashim</em></a> (his continuation of the Tikunei Zohar), <a href="/reader/ramchal-yichud-hayeeruh/1/1"><em>Yichud HaYeeruh</em></a> (on Yiras Haromimus), <a href="/reader/ramchal-otzros-ramchal/1/1"><em>Otzros Ramchal</em></a> (commentaries on Tanach, Drushim, and Iggros), and <a href="/reader/ramchal-shaaray-ramchal/1/1"><em>Shaaray Ramchal</em></a> (the Gates of Ramchal) — alongside classics like <a href="/reader/ramchal-adir-bamuroam/1/1"><em>Adir BaMurom</em></a> and <a href="/reader/ramchal-ruzin-gineezin/1/1"><em>Ruzin Gineezin</em></a>.</p>
+      <p>All texts are presented with Hebrew and English side-by-side where available. Use the Hebrew/English/Both toggle in the reader to switch display modes.</p>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .ramchal-page {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 20px 60px;
+  }
+
+  .hero {
+    text-align: center;
+    padding: 50px 20px 40px;
+    background: linear-gradient(135deg, #1a2e5a 0%, #2d4a8a 100%);
+    color: white;
+    border-radius: 12px;
+    margin-bottom: 40px;
+  }
+
+  .hero-title {
+    font-size: 3em;
+    color: #f5e9c8;
+    margin-bottom: 5px;
+    font-family: 'Times New Roman', serif;
+  }
+
+  .hero-subtitle {
+    font-size: 1.5em;
+    color: #d4a843;
+    font-weight: normal;
+    margin-bottom: 10px;
+  }
+
+  .hero-desc {
+    color: #c8bfa0;
+    font-size: 1.1em;
+    margin-bottom: 20px;
+  }
+
+  .hero-quote {
+    font-style: italic;
+    color: #e8dfc0;
+    font-size: 0.95em;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  .books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+  }
+
+  .book-card {
+    display: block;
+    padding: 24px;
+    border: 2px solid #d4a843;
+    border-radius: 10px;
+    text-decoration: none;
+    color: #1a1a1a;
+    background: #faf7f0;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .book-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  }
+
+  .book-hebrew {
+    font-size: 1.8em;
+    color: #8B0000;
+    text-align: center;
+    margin-bottom: 8px;
+    font-family: 'Times New Roman', serif;
+    direction: rtl;
+  }
+
+  .book-title {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #1a2e5a;
+    text-align: center;
+    margin-bottom: 8px;
+  }
+
+  .book-desc {
+    font-size: 0.9em;
+    color: #555;
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  .about-section {
+    background: #f5f0e6;
+    padding: 30px;
+    border-radius: 10px;
+    border-left: 4px solid #d4a843;
+  }
+
+  .about-section h3 {
+    color: #1a2e5a;
+    margin-bottom: 15px;
+  }
+
+  .about-section p {
+    line-height: 1.8;
+    margin-bottom: 12px;
+    color: #333;
+  }
+
+  .book-meta {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 12px;
+    font-size: 0.8em;
+  }
+
+  .book-sections {
+    color: #1a2e5a;
+    font-weight: 600;
+  }
+
+  .book-lang {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.85em;
+  }
+
+  .lang-both {
+    background: #e8f5e9;
+    color: #2e7d32;
+  }
+
+  .lang-en {
+    background: #fff3e0;
+    color: #e65100;
+  }
+</style>

@@ -1,0 +1,219 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import Comments from '../../../../components/Comments.astro';
+import '../../../../styles/reader.css';
+import fs from 'node:fs';
+import path from 'node:path';
+
+// Total sections: Intro + 70 tikunim + closing = 72 per public/.../part-1/index.json
+// Must be inlined — getStaticPaths runs in isolation and cannot access module-scope vars.
+
+export function getStaticPaths() {
+  const paths = [];
+  const TOTAL_SECTIONS = 72;
+  for (let torah = 1; torah <= TOTAL_SECTIONS; torah++) {
+    paths.push({ params: { part: '1', torah: String(torah) } });
+  }
+  return paths;
+}
+
+const TOTAL_SECTIONS = 72;
+
+const { part, torah } = Astro.params;
+const partNum = parseInt(part);
+const torahNum = parseInt(torah);
+
+let torahData = null;
+let error = null;
+
+try {
+  const filePath = path.join(process.cwd(), `public/reader/ramchal-tikunim-chadashim/part-${partNum}/torah-${torahNum}.json`);
+  const raw = fs.readFileSync(filePath, 'utf8');
+  torahData = JSON.parse(raw);
+} catch (e) {
+  error = `Section ${torahNum} not found`;
+}
+
+if (!torahData && !error) error = 'Content not available';
+
+const bookName = 'Tikunim Chadashim';
+const bookHebrew = 'תיקונים חדשים';
+const bookUrl = 'https://ajew.org/reader/ramchal-tikunim-chadashim/1/1';
+
+const prevUrl = torahNum > 1 ? `/reader/ramchal-tikunim-chadashim/1/${torahNum - 1}` : null;
+const nextUrl = torahNum < TOTAL_SECTIONS ? `/reader/ramchal-tikunim-chadashim/1/${torahNum + 1}` : null;
+
+const pageTitle = torahData
+  ? `${torahData.title} — ${torahData.hebrewTitle || bookHebrew} | Ramchal`
+  : 'Section Not Found';
+const pageDesc = torahData
+  ? (() => {
+    const isFirst = torahNum === 1;
+    if (isFirst) {
+      return `Tikunim Chadashim (תיקונים חדשים) — Ramchal's Kabbalistic continuation of the Tikunei Zohar, 70 new tikunim by Rabbi Moshe Chaim Luzzatto. Bilingual Hebrew-English on AJEW.org.`;
+    }
+    return `${torahData.title} from Tikunim Chadashim (תיקונים חדשים) by Ramchal — continuation of the Tikunei Zohar. Bilingual Hebrew-English, free on AJEW.org.`;
+  })()
+  : '';
+
+const jsonLd = torahData ? {
+  "@context": "https://schema.org",
+  "@type": "Chapter",
+  "name": torahData.title,
+  "alternateName": torahData.hebrewTitle || undefined,
+  "author": {
+    "@type": "Person",
+    "name": "Rabbi Moshe Chaim Luzzatto",
+    "alternateName": ["Ramchal", "רמח\"ל"],
+    "birthDate": "1707",
+    "deathDate": "1746"
+  },
+  "publisher": { "@type": "Organization", "name": "A Jew", "url": "https://ajew.org" },
+  "inLanguage": ["he", "en"],
+  "isPartOf": {
+    "@type": "Book",
+    "name": bookName,
+    "alternateName": bookHebrew,
+    "author": {
+      "@type": "Person",
+      "name": "Rabbi Moshe Chaim Luzzatto",
+      "alternateName": ["Ramchal", "רמח\"ל"]
+    },
+    "genre": ["Kabbalah", "Jewish mysticism", "Zohar", "Tikunei Zohar"],
+    "inLanguage": ["he", "en"],
+    "url": bookUrl,
+    "image": "https://ajew.org/og-image.png",
+    "numberOfPages": 70,
+    "bookFormat": "https://schema.org/EBook"
+  },
+  "url": `https://ajew.org/reader/ramchal-tikunim-chadashim/${partNum}/${torahNum}`,
+  "position": torahNum
+} : null;
+
+const breadcrumbs = torahData ? [
+  { name: "Home", url: "https://ajew.org/" },
+  { name: "Library", url: "https://ajew.org/reader" },
+  { name: "Ramchal", url: "https://ajew.org/ramchal" },
+  { name: bookName, url: bookUrl },
+  { name: torahData.hebrewTitle || torahData.title, url: `https://ajew.org/reader/ramchal-tikunim-chadashim/${partNum}/${torahNum}` }
+] : [];
+---
+
+<Layout title={pageTitle} description={pageDesc} jsonLd={jsonLd} breadcrumbs={breadcrumbs} type="book" hreflangs={['en', 'he']}>
+  {error ? (
+    <div style="text-align: center; padding: 80px 20px;">
+      <h1>{error}</h1>
+      <p><a href={`/reader/ramchal-tikunim-chadashim/${partNum}`}>Book Index</a>
+        <a href="/reader">Back to Reader</a></p>
+    </div>
+  ) : (
+    <div
+      class="reader-container"
+      data-torah-id={torahData.id}
+      data-torah-title={`${torahData.title}`}
+    >
+      <div class="reader-progress"></div>
+
+      <div class="reader-breadcrumb">
+        <a href="/reader">Reader</a>
+        <span>&rsaquo;</span>
+        <a href="/ramchal">Ramchal</a>
+        <span>&rsaquo;</span>
+        <a href="/reader/ramchal-tikunim-chadashim/1/1">Tikunim Chadashim</a>
+        <span>&rsaquo;</span>
+        {torahData.hebrewTitle || torahData.title}
+      </div>
+
+      <div class="reader-toolbar">
+        <div class="reader-toolbar-group">
+          <button class="reader-btn" data-mode="hebrew">Hebrew</button>
+          <button class="reader-btn" data-mode="english">English</button>
+          <button class="reader-btn" data-mode="both">Both</button>
+        </div>
+        <div class="reader-toolbar-group">
+          <span style="font-size:0.7em; font-family: 'Open Sans', sans-serif; color: var(--reader-text-secondary);">A</span>
+          <input type="range" id="font-size-slider" class="font-size-slider" min="12" max="32" value="18" />
+          <span style="font-size:0.9em; font-family: 'Open Sans', sans-serif; color: var(--reader-text-secondary);">A</span>
+        </div>
+        <div class="reader-toolbar-group">
+          <button class="reader-btn reader-btn-icon" data-theme-btn="day">Day</button>
+          <button class="reader-btn reader-btn-icon" data-theme-btn="sepia">Sepia</button>
+          <button class="reader-btn reader-btn-icon" data-theme-btn="night">Night</button>
+        </div>
+        <div class="reader-toolbar-group">
+          <button class="reader-btn reader-btn-icon" id="btn-listen">Listen</button>
+          <button class="reader-btn reader-btn-icon" id="btn-search">Search</button>
+          <button class="reader-btn reader-btn-icon" id="btn-bookmark">Bookmark</button>
+          <button class="reader-btn reader-btn-icon" id="btn-fullscreen">Fullscreen</button>
+        </div>
+      </div>
+
+      <div class="reader-search-bar">
+        <input type="text" placeholder="Search in this section..." dir="auto" />
+        <span class="search-info"></span>
+        <button class="reader-btn search-close">Close</button>
+      </div>
+
+      <button class="reader-toc-toggle" title="Table of Contents">&#9776;</button>
+      <div class="reader-toc">
+        <button class="reader-toc-close">&times;</button>
+        <h3>Sections</h3>
+        <ul class="reader-toc-list">
+          {torahData.segments.map((seg) => (
+            <li><a href={`#seg-${seg.index}`} data-index={String(seg.index)}>{seg.index}</a></li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="reader-header">
+        {torahData.hebrewTitle && <div class="hebrew-title">{torahData.hebrewTitle}</div>}
+        <h1>{torahData.title}</h1>
+        <p style="color: var(--reader-text-secondary); font-size: 0.9em; font-family: 'Open Sans', sans-serif;">
+          תיקונים חדשים / Tikunim Chadashim
+        </p>
+      </div>
+
+      <div class="reader-nav">
+        {prevUrl ? (
+          <a href={prevUrl} data-dir="prev">&larr; Previous</a>
+        ) : <span class="disabled">&larr; Previous</span>}
+        <a href="/ramchal">All Ramchal</a>
+        {nextUrl ? (
+          <a href={nextUrl} data-dir="next">Next &rarr;</a>
+        ) : <span class="disabled">Next &rarr;</span>}
+      </div>
+
+      <div class="reader-content mode-both">
+        {torahData.segments.map((seg) => (
+          <div class="reader-segment-pair" id={`seg-${seg.index}`}>
+            <div class="reader-segment segment-he" data-index={String(seg.index)}>
+              <span class="segment-number">{seg.index}</span>
+              <p>{seg.he}</p>
+            </div>
+            <div class={`reader-segment segment-en ${!seg.en ? "empty-translation" : ""}`} data-index={String(seg.index)}>
+              <span class="segment-number">{seg.index}</span>
+              <p>{seg.en || "Translation not yet available"}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div class="reader-nav">
+        {prevUrl ? (
+          <a href={prevUrl} data-dir="prev">&larr; Previous</a>
+        ) : <span class="disabled">&larr; Previous</span>}
+        <a href="/ramchal">All Ramchal</a>
+        {nextUrl ? (
+          <a href={nextUrl} data-dir="next">Next &rarr;</a>
+        ) : <span class="disabled">Next &rarr;</span>}
+      </div>
+      {torahData && (
+        <Comments teachingId={`ramchal-tikunim-chadashim-${part}-${torah}`} teachingTitle={`ramchal-tikunim-chadashim ${part}:${torah}${torahData?.title ? ' — ' + torahData.title : ''}`} />
+      )}
+
+
+      <script src="/reader-script.js?v=4" defer></script>
+      <script src="/tts-fix.js" defer></script>
+    </div>
+  )}
+</Layout>

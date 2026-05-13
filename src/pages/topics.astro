@@ -1,0 +1,113 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const topics = [
+  { id: 'teshuva', he: 'תשובה', en: 'Repentance', desc: 'Returning to Hashem, rectifying mistakes, spiritual growth', icon: '🔄' },
+  { id: 'simcha', he: 'שמחה', en: 'Joy', desc: 'The mitzvah of joy, overcoming sadness, finding happiness', icon: '😊' },
+  { id: 'emuna', he: 'אמונה', en: 'Faith', desc: 'Belief in Hashem, trust, strengthening faith', icon: '🕊️' },
+  { id: 'tefila', he: 'תפילה', en: 'Prayer', desc: 'Personal prayer, hitbodedut, connecting to Hashem', icon: '🙏' },
+  { id: 'tzaddik', he: 'צדיק', en: 'The Tzaddik', desc: 'The righteous leader, connecting to the true tzaddik', icon: '⭐' },
+  { id: 'hitbodedut', he: 'התבודדות', en: 'Meditation', desc: 'Personal prayer in seclusion, talking to Hashem', icon: '🌿' },
+  { id: 'tikkun', he: 'תיקון', en: 'Spiritual Repair', desc: 'Rectifying the soul, fixing past mistakes', icon: '🔧' },
+  { id: 'torah', he: 'תורה', en: 'Torah Study', desc: 'Learning Torah, understanding the teachings', icon: '📖' },
+  { id: 'kedusha', he: 'קדושה', en: 'Holiness', desc: 'Sanctifying daily life, purity of thought', icon: '✨' },
+  { id: 'ahava', he: 'אהבה', en: 'Love', desc: 'Love of Hashem, love of fellow Jews', icon: '❤️' },
+  { id: 'anava', he: 'ענווה', en: 'Humility', desc: 'Overcoming pride, true humility', icon: '🌱' },
+  { id: 'bitachon', he: 'בטחון', en: 'Trust', desc: 'Trusting in Hashem, letting go of worry', icon: '🛡️' },
+  { id: 'geula', he: 'גאולה', en: 'Redemption', desc: 'The final redemption, Mashiach, hope', icon: '🌅' },
+  { id: 'neshama', he: 'נשמה', en: 'The Soul', desc: 'Understanding the soul, spiritual awareness', icon: '💫' },
+  { id: 'shalom', he: 'שלום', en: 'Peace', desc: 'Inner peace, peace between people, shalom bayit', icon: '☮️' },
+  { id: 'tzedaka', he: 'צדקה', en: 'Charity', desc: 'Giving charity, generosity, supporting others', icon: '🤲' },
+  { id: 'parnasa', he: 'פרנסה', en: 'Livelihood', desc: 'Earning a living, trusting Hashem for sustenance', icon: '💰' },
+  { id: 'refua', he: 'רפואה', en: 'Healing', desc: 'Physical and spiritual healing', icon: '💚' },
+  { id: 'devekut', he: 'דביקות', en: 'Attachment to God', desc: 'Clinging to Hashem, spiritual closeness', icon: '🔗' },
+  { id: 'mashiach', he: 'משיח', en: 'Messiah', desc: 'The coming of Mashiach, preparing for redemption', icon: '👑' },
+];
+---
+
+<Layout title="Topics - Browse by Subject" description="Explore Breslov teachings by topic: joy, faith, prayer, repentance, the tzaddik, meditation, and more. Find what speaks to your soul.">
+  <section class="topics-page">
+    <div class="container">
+      <div class="page-header">
+        <h1 class="hebrew-title">נושאים</h1>
+        <h1>Browse by Topic</h1>
+        <p class="subtitle">Explore the teachings through the lens of spiritual concepts</p>
+      </div>
+
+      <div class="topics-grid">
+        {topics.map(topic => (
+          <a href={`/search-enhanced?q=${encodeURIComponent(topic.he)}`} class="topic-card">
+            <span class="topic-icon">{topic.icon}</span>
+            <div class="topic-text">
+              <span class="topic-he">{topic.he}</span>
+              <span class="topic-en">{topic.en}</span>
+              <span class="topic-desc">{topic.desc}</span>
+            </div>
+          </a>
+        ))}
+      </div>
+
+      <div class="explore-more">
+        <h2>Explore More</h2>
+        <div class="explore-links">
+          <a href="/torah-map">Torah Map — See how concepts connect</a>
+          <a href="/search-enhanced">Advanced Search — 10 search modes</a>
+          <a href="/reader">Full Library — 213 books, 30,000+ pages</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .topics-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+    font-family: 'Open Sans', sans-serif;
+  }
+  .page-header { text-align: center; margin-bottom: 40px; }
+  .hebrew-title {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 2.5em;
+    color: #1a365d;
+    direction: rtl;
+    margin: 0;
+  }
+  h1 { font-family: 'Frank Ruhl Libre', serif; color: #1a365d; font-size: 1.8em; margin: 0 0 8px; }
+  .subtitle { color: #666; font-size: 1.05em; }
+
+  .topics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 16px;
+  }
+  .topic-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px;
+    background: #f8f5ef;
+    border: 1px solid #e0d6c2;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .topic-card:hover { border-color: #1a365d; background: #f0ebe0; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+  .topic-icon { font-size: 1.8em; flex-shrink: 0; margin-top: 2px; }
+  .topic-text { display: flex; flex-direction: column; }
+  .topic-he { font-family: 'Frank Ruhl Libre', serif; font-size: 1.3em; color: #1a365d; font-weight: 700; direction: rtl; }
+  .topic-en { color: #1a365d; font-weight: 600; font-size: 0.95em; }
+  .topic-desc { color: #666; font-size: 0.8em; line-height: 1.4; margin-top: 4px; }
+
+  .explore-more { margin-top: 48px; text-align: center; }
+  .explore-more h2 { font-family: 'Frank Ruhl Libre', serif; color: #1a365d; }
+  .explore-links { display: flex; flex-direction: column; gap: 8px; align-items: center; }
+  .explore-links a { color: #1a365d; text-decoration: none; font-weight: 600; }
+  .explore-links a:hover { text-decoration: underline; }
+
+  @media (max-width: 600px) {
+    .topics-grid { grid-template-columns: 1fr; }
+    .hebrew-title { font-size: 2em; }
+  }
+</style>

@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 92</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 92</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה הקדושה של התנא יכול הלמדן להכשל. ותרץ על זה: זמנא חדא הוי מסרגין לה תרתי חיותא - כי לפעמים התנא נופל לאיזה שגיאה דקה מן הדקה, כדי שעל ידי זה ימשיך לעולם תרתי חיותא; כי יש שני מיני חיות: חיות רוחני - ארך ימים בימינה, וחיות גשמי - &quot;בשמאלה עשר וכבוד&quot;; והתנא מחמת דבקותו העצומה בחיות הרוחני, אינו מתיר את עצמו, חס ושלום, מכל וכל מחיות הרוחני, ומחמת שהוא נפל לבחינת הלמוד [שלא לשמה] בשביל חיות גשמי. קימין אתרי גשרי דדונג, ושור מהאי להאי - כמו אדם שעומד על גשר של שעוה ואינו יכול לעמד - קופץ על גשר השני; ומחמת שגם השני של שעוה, קופץ על הראשונה, קופץ מהאי להאי. כן התנא - עקר למודו תמיד לשמה, ומחמת שצריך להמשיך חיות גשמי לעולם, מפילין אותו ללמוד שלא לשמה, אזי נוטלין ממנו למוד בחינת לשמה, ושוור מלשמה לשלא לשמה; ומחמת קדשתו ופרישותו, שוור וקופץ משלא לשמה ללשמה, כי זאת הבחינה אצלו כמו גשר של דונג, שאין יכולים לעמד עליו. שוור לתוך לשמה, ומלשמה - מחמת הכרח לטובת העולם - שוור מהגשר הזאת, שהוא אצלו עכשו כמו גשר של דונג, ושוור מזה לזה ומזה לזה, ועל ידי זה יש בתורתו בחינת &quot;ופשעים יכשלו בם&quot;. התקון לכל הנ&quot;ל. ונקיט תרי כסא דחמרא בידה - כי יש שני בחינת יין, בחינת
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+92
+By means of what a person wanders in his house
+[In the language of the friends]
+By means of what a person wanders within his house, he can revive the dead, as it is written about Elisha when he revived the son of the Shunamite woman. It is written of him (2 Kings 4): “And he walked here and there”.
+And it is brought in the Tikkunim (Tikkun 13, page 27b): If not for the wings of the lung that blow upon the heart, the heart would burn the entire body.
+The lung and the heart correspond to the aspects of Yaakov and Yosef, as it is written (Micah 7): “Give truth to Yaakov” (Peticha d’Eicha Rabbati, sign 2), and as it is written (Malachi 2): “Torah of truth”.
+The Torah consists of five books, corresponding to the five wings of the lung (Tikkun 25). Yosef corresponds to the aspect of the heart, for Yosef is called Tzofnat Paneach (at the end of Parashat Vayechi), and it is written (Psalms 119): “In my heart I have hidden”, etc.
+When the fire that is in the heart burns, it would consume the entire body. By means of the five wings of the lung moving and wandering, blowing upon the heart, they calm the warmth within the heart.
+As it is taught (Bereishit Rabbah, Vayeshev, Parsha 84): “Yaakov sought,” that is the lung wishing to dwell in tranquility, but the anger of Yosef — the warmth within the heart — jumped upon him.
+It is found that by means of what a person — which is the aspect of Torah, as it is written (Numbers 19): “This is the Torah of the person” — wandering even within his house, he can calm the fire, which is the aspect of judgments, and he can revive the dead so that they live.
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

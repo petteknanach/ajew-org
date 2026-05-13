@@ -1,0 +1,131 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="What's New" description="Recent updates and new features on ajew.org - the largest online Breslov Torah library.">
+  <section class="updates-page">
+    <div class="container">
+      <h1>What's New</h1>
+      <p class="subtitle">Recent updates to ajew.org</p>
+
+      <div class="update-list">
+        <div class="update-card">
+          <div class="update-date">March 2026</div>
+          <h2>Massive Library Expansion</h2>
+          <ul>
+            <li>213 books now online with 30,000+ pages</li>
+            <li>Full Tanach (39 books, 929 chapters) with nikud</li>
+            <li>Talmud Bavli (39 tractates, 5,400 dapim)</li>
+            <li>Mishna (57 tractates, 3,847 mishnayot)</li>
+            <li>Rambam Mishneh Torah (14 books, 15,017 halachot)</li>
+            <li>Zohar HaKadosh (8 volumes, 1,930 pages)</li>
+            <li>Musar & Halacha texts (8 books)</li>
+            <li>Siach Sarfei Kodesh (6 volumes, 3,427 pages)</li>
+          </ul>
+        </div>
+
+        <div class="update-card">
+          <div class="update-date">March 2026</div>
+          <h2>English Translations</h2>
+          <ul>
+            <li>Likutay Moharan: 100% complete (411/411 torahs)</li>
+            <li>Likutay Halachos: 95% (567/600)</li>
+            <li>Sefer HaMidos: 98%</li>
+            <li>Sipurey Maasiyos: 96%</li>
+            <li>Shivchay HaRan: 98%</li>
+            <li>Hashtatfchus HaNefesh: 79%</li>
+          </ul>
+        </div>
+
+        <div class="update-card">
+          <div class="update-date">March 2026</div>
+          <h2>Reader Features</h2>
+          <ul>
+            <li>Listen (text-to-speech) with L keyboard shortcut</li>
+            <li>Clickable source references with verse popup</li>
+            <li>Share & Print buttons</li>
+            <li>Reading history with progress tracking</li>
+            <li>Daily learning (LM + Tehillim cycle)</li>
+            <li>Random Torah button</li>
+            <li>Concept tags on each teaching</li>
+            <li>Scroll position memory</li>
+            <li>Text selection copy/share popup</li>
+            <li>Offline support (Service Worker)</li>
+          </ul>
+        </div>
+
+        <div class="update-card">
+          <div class="update-date">March 2026</div>
+          <h2>Search & Tools</h2>
+          <ul>
+            <li>10 search modes: Google, Exact, All/Any word, Proximity, Boolean, Acronym, End-letters, Starts/Ends with</li>
+            <li>Min match (e.g. at least 3 of 5 words)</li>
+            <li>Nikud-aware highlighting</li>
+            <li>Torah Map with concept progression pathways</li>
+            <li>Gematria calculator</li>
+            <li>Quick verse reference lookup (Tanach + Talmud)</li>
+            <li>Yahrzeit notifications</li>
+          </ul>
+        </div>
+
+        <div class="update-card">
+          <div class="update-date">March 2026</div>
+          <h2>Performance & UX</h2>
+          <ul>
+            <li>58MB image optimization (gallery)</li>
+            <li>Caching headers for faster repeat visits</li>
+            <li>PWA support (Add to Home Screen)</li>
+            <li>404 page, skip-to-content, ARIA roles</li>
+            <li>Active nav indicator, back-to-top button</li>
+            <li>Press / to search from any page</li>
+            <li>Collapsible library categories</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .updates-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+    font-family: 'Open Sans', sans-serif;
+  }
+  h1 {
+    font-family: 'Frank Ruhl Libre', serif;
+    color: #1a365d;
+    font-size: 2em;
+    margin: 0 0 4px;
+  }
+  .subtitle { color: #666; margin: 0 0 32px; }
+  .update-list { display: flex; flex-direction: column; gap: 20px; }
+  .update-card {
+    background: #f8f5ef;
+    border: 1px solid #e0d6c2;
+    border-radius: 12px;
+    padding: 20px 24px;
+  }
+  .update-date {
+    font-size: 0.8em;
+    color: #888;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+  .update-card h2 {
+    font-family: 'Frank Ruhl Libre', serif;
+    color: #1a365d;
+    font-size: 1.2em;
+    margin: 0 0 12px;
+  }
+  .update-card ul {
+    margin: 0;
+    padding: 0 0 0 20px;
+    line-height: 1.8;
+    color: #444;
+    font-size: 0.95em;
+  }
+</style>

@@ -1,0 +1,251 @@
+---
+import Layout from '../../layouts/Layout.astro';
+const pageTitle = "Shivchay Haran";
+const pageDescription = "Shivchay Haran - The Praises of Rabbi Nachman";
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+<style>
+  .page-header {
+    background: linear-gradient(135deg, #744210 0%, #975a16 100%);
+    color: white;
+    padding: 4rem 2rem;
+    text-align: center;
+  }
+  .page-header h1 {
+    font-family: var(--font-hebrew);
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .page-header .subtitle {
+    font-size: 1.2rem;
+    opacity: 0.9;
+  }
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 2rem; }
+  
+  .intro-section {
+    background: #fef3c7;
+    padding: 3rem 0;
+    border-bottom: 1px solid #fde68a;
+  }
+  .intro-text {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .intro-text p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #333;
+    margin-bottom: 1rem;
+  }
+  
+  .section-title {
+    font-family: var(--font-hebrew);
+    font-size: 1.5rem;
+    color: #744210;
+    margin: 3rem 0 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #fde68a;
+  }
+  
+  .chapter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 3rem;
+  }
+  
+  .chapter-link {
+    display: block;
+    background: white;
+    padding: 1rem 1.25rem;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #333;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #e5e7eb;
+    transition: all 0.2s ease;
+  }
+  .chapter-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-color: #744210;
+    color: #744210;
+  }
+  .chapter-link.missing {
+    background: #f3f4f6;
+    color: #9ca3af;
+    cursor: not-allowed;
+  }
+  .chapter-link.missing:hover {
+    transform: none;
+    box-shadow: none;
+    border-color: #e5e7eb;
+    color: #9ca3af;
+  }
+  .chapter-link .chapter-num {
+    font-size: 0.8rem;
+    color: #999;
+    margin-bottom: 0.25rem;
+  }
+  .chapter-link .chapter-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+  
+  .navigation-links {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    padding: 2rem;
+    background: #fef3c7;
+    border-radius: 8px;
+    margin-top: 2rem;
+  }
+  .nav-link {
+    color: #744210;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: background 0.2s;
+  }
+  .nav-link:hover {
+    background: #fde68a;
+  }
+  
+  .part-label {
+    font-family: var(--font-hebrew);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #744210;
+    margin-bottom: 1rem;
+  }
+  
+  .note {
+    background: #fef3c7;
+    padding: 1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: #92400e;
+    margin-top: 2rem;
+  }
+  
+  @media (max-width: 768px) {
+    .chapter-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+    .navigation-links { flex-direction: column; text-align: center; }
+  }
+</style>
+
+<section class="page-header">
+  <h1>📖 Shivchay Haran</h1>
+  <p class="subtitle">The Praises of Rabbi Nachman</p>
+</section>
+
+<nav class="navigation">
+  <div class="container">
+    <div class="navigation-links">
+      <a href="/teachings" class="nav-link">← Back to Teachings</a>
+      <a href="/teachings/shivchay-intro" class="nav-link">Introduction</a>
+    </div>
+  </div>
+</nav>
+
+<section class="intro-section">
+  <div class="container">
+    <div class="intro-text">
+      <p><strong>Shivchay Haran</strong> (שבחי הר"ן - Praises of Rabbi Nachman) is the second part of the monumental work "The Life of Our Leader Rabbi Nachman." 
+      This sacred text contains testimonials, praises, and stories about Rabbi Nachman from his closest disciples and followers.</p>
+      <p>These heartfelt accounts reveal the extraordinary holiness, wisdom, and spiritual power of Rabbi Nachman, as witnessed by those who knew him intimately.</p>
+    </div>
+  </div>
+</section>
+
+<section class="content">
+  <div class="container">
+    <div class="part-label">Part One</div>
+    <h2 class="section-title">Chapters 1-27</h2>
+    
+    <div class="chapter-grid">
+      <a href="/teachings/shivchay-p1-ch1" class="chapter-link"><div class="chapter-num">Chapter 1</div><div class="chapter-title">Childhood abstinence</div></a>
+      <a href="/teachings/shivchay-p1-ch2" class="chapter-link"><div class="chapter-num">Chapter 2</div><div class="chapter-title">Setting YHVH before him</div></a>
+      <a href="/teachings/shivchay-p1-ch3" class="chapter-link"><div class="chapter-num">Chapter 3</div><div class="chapter-title">Bar Mitzvah and devotion</div></a>
+      <a href="/teachings/shivchay-p1-ch4" class="chapter-link"><div class="chapter-num">Chapter 4</div><div class="chapter-title">Early stories</div></a>
+      <a href="/teachings/shivchay-p1-ch5" class="chapter-link"><div class="chapter-num">Chapter 5</div><div class="chapter-title">Further recollections</div></a>
+      <a href="/teachings/shivchay-p1-ch6" class="chapter-link"><div class="chapter-num">Chapter 6</div><div class="chapter-title">More stories</div></a>
+      <a href="/teachings/shivchay-p1-ch7" class="chapter-link"><div class="chapter-num">Chapter 7</div><div class="chapter-title">Continuing accounts</div></a>
+      <a href="/teachings/shivchay-p1-ch8" class="chapter-link"><div class="chapter-num">Chapter 8</div><div class="chapter-title">Wisdom and insights</div></a>
+      <a href="/teachings/shivchay-p1-ch9" class="chapter-link"><div class="chapter-num">Chapter 9</div><div class="chapter-title">Further wisdom</div></a>
+      <a href="/teachings/shivchay-p1-ch10" class="chapter-link"><div class="chapter-num">Chapter 10</div><div class="chapter-title">Stories and teachings</div></a>
+      <a href="/teachings/shivchay-p1-ch11" class="chapter-link"><div class="chapter-num">Chapter 11</div><div class="chapter-title">Testimonials</div></a>
+      <a href="/teachings/shivchay-p1-ch12" class="chapter-link"><div class="chapter-num">Chapter 12</div><div class="chapter-title">More testimonials</div></a>
+      <a href="/teachings/shivchay-p1-ch13" class="chapter-link"><div class="chapter-num">Chapter 13</div><div class="chapter-title">Further accounts</div></a>
+      <a href="/teachings/shivchay-p1-ch14" class="chapter-link"><div class="chapter-num">Chapter 14</div><div class="chapter-title">Personal accounts</div></a>
+      <a href="/teachings/shivchay-p1-ch15" class="chapter-link"><div class="chapter-num">Chapter 15</div><div class="chapter-title">More personal stories</div></a>
+      <a href="/teachings/shivchay-p1-ch16" class="chapter-link"><div class="chapter-num">Chapter 16</div><div class="chapter-title">Further recollections</div></a>
+      <a href="/teachings/shivchay-p1-ch17" class="chapter-link"><div class="chapter-num">Chapter 17</div><div class="chapter-title">Stories and recollections</div></a>
+      <a href="/teachings/shivchay-p1-ch18" class="chapter-link"><div class="chapter-num">Chapter 18</div><div class="chapter-title">More stories</div></a>
+      <a href="/teachings/shivchay-p1-ch19" class="chapter-link"><div class="chapter-num">Chapter 19</div><div class="chapter-title">Further praises</div></a>
+      <a href="/teachings/shivchay-p1-ch20" class="chapter-link"><div class="chapter-num">Chapter 20</div><div class="chapter-title">Additional accounts</div></a>
+      <a href="/teachings/shivchay-p1-ch21" class="chapter-link"><div class="chapter-num">Chapter 21</div><div class="chapter-title">More praises</div></a>
+      <a href="/teachings/shivchay-p1-ch22" class="chapter-link"><div class="chapter-num">Chapter 22</div><div class="chapter-title">Further stories</div></a>
+      <a href="/teachings/shivchay-p1-ch23" class="chapter-link"><div class="chapter-num">Chapter 23</div><div class="chapter-title">More recollections</div></a>
+      <a href="/teachings/shivchay-p1-ch24" class="chapter-link"><div class="chapter-num">Chapter 24</div><div class="chapter-title">Final accounts Part 1</div></a>
+      <a href="/teachings/shivchay-p1-ch25" class="chapter-link"><div class="chapter-num">Chapter 25</div><div class="chapter-title">Continuing stories</div></a>
+      <a href="/teachings/shivchay-p1-ch26" class="chapter-link"><div class="chapter-num">Chapter 26</div><div class="chapter-title">Further praises</div></a>
+      <a href="/teachings/shivchay-p1-ch27" class="chapter-link"><div class="chapter-num">Chapter 27</div><div class="chapter-title">Final chapter of Part 1</div></a>
+    </div>
+    
+    <div class="part-label">Part Two</div>
+    <h2 class="section-title">The Voyage to the Land of Israel</h2>
+    
+    <div class="chapter-grid">
+      <a href="/teachings/shivchay-p2-ch1" class="chapter-link"><div class="chapter-num">Chapter 1</div><div class="chapter-title">Voyage begins</div></a>
+      <a href="/teachings/shivchay-p2-ch2" class="chapter-link"><div class="chapter-num">Chapter 2</div><div class="chapter-title">Journey preparation</div></a>
+      <a href="/teachings/shivchay-p2-ch3" class="chapter-link"><div class="chapter-num">Chapter 3</div><div class="chapter-title">Departure</div></a>
+      <a href="/teachings/shivchay-p2-ch4" class="chapter-link"><div class="chapter-num">Chapter 4</div><div class="chapter-title">Travel to Kaminitz</div></a>
+      <a href="/teachings/shivchay-p2-ch5" class="chapter-link"><div class="chapter-num">Chapter 5</div><div class="chapter-title">Passover departure</div></a>
+      <a href="/teachings/shivchay-p2-ch6" class="chapter-link"><div class="chapter-num">Chapter 6</div><div class="chapter-title">Journey by sea</div></a>
+      <a href="/teachings/shivchay-p2-ch7" class="chapter-link"><div class="chapter-num">Chapter 7</div><div class="chapter-title">Storm and danger</div></a>
+      <a href="/teachings/shivchay-p2-ch8" class="chapter-link"><div class="chapter-num">Chapter 8</div><div class="chapter-title">Wars and storms</div></a>
+      <a href="/teachings/shivchay-p2-ch9" class="chapter-link"><div class="chapter-num">Chapter 9</div><div class="chapter-title">More dangers</div></a>
+      <a href="/teachings/shivchay-p2-ch10" class="chapter-link"><div class="chapter-num">Chapter 10</div><div class="chapter-title">Istanbul encounters</div></a>
+      <a href="/teachings/shivchay-p2-ch11" class="chapter-link"><div class="chapter-num">Chapter 11</div><div class="chapter-title">Further journey</div></a>
+      <a href="/teachings/shivchay-p2-ch12" class="chapter-link"><div class="chapter-num">Chapter 12</div><div class="chapter-title">Continued travels</div></a>
+      <a href="/teachings/shivchay-p2-ch13" class="chapter-link"><div class="chapter-num">Chapter 13</div><div class="chapter-title">More storms</div></a>
+      <a href="/teachings/shivchay-p2-ch14" class="chapter-link"><div class="chapter-num">Chapter 14</div><div class="chapter-title">Danger at sea</div></a>
+      <a href="/teachings/shivchay-p2-ch15" class="chapter-link"><div class="chapter-num">Chapter 15</div><div class="chapter-title">Arrival near Holy Land</div></a>
+      <a href="/teachings/shivchay-p2-ch16" class="chapter-link"><div class="chapter-num">Chapter 16</div><div class="chapter-title">Further progress</div></a>
+      <a href="/teachings/shivchay-p2-ch17" class="chapter-link"><div class="chapter-num">Chapter 17</div><div class="chapter-title">Tiberias and Safed</div></a>
+      <a href="/teachings/shivchay-p2-ch18" class="chapter-link"><div class="chapter-num">Chapter 18</div><div class="chapter-title">Holy Land journey</div></a>
+      <a href="/teachings/shivchay-p2-ch19" class="chapter-link"><div class="chapter-num">Chapter 19</div><div class="chapter-title">Final journey</div></a>
+      <a href="/teachings/shivchay-p2-ch20" class="chapter-link"><div class="chapter-num">Chapter 20</div><div class="chapter-title">Escape from Akko</div></a>
+      <a href="/teachings/shivchay-p2-ch21" class="chapter-link"><div class="chapter-num">Chapter 21</div><div class="chapter-title">Brand vach soldiers</div></a>
+      <a href="/teachings/shivchay-p2-ch22" class="chapter-link"><div class="chapter-num">Chapter 22</div><div class="chapter-title">Dangers of return</div></a>
+      <a href="/teachings/shivchay-p2-ch23" class="chapter-link"><div class="chapter-num">Chapter 23</div><div class="chapter-title">More dangers</div></a>
+      <a href="/teachings/shivchay-p2-ch24" class="chapter-link"><div class="chapter-num">Chapter 24</div><div class="chapter-title">Chol HaMoed</div></a>
+      <a href="/teachings/shivchay-p2-ch25" class="chapter-link"><div class="chapter-num">Chapter 25</div><div class="chapter-title">The Chacham's advice</div></a>
+      <a href="/teachings/shivchay-p2-ch26" class="chapter-link"><div class="chapter-num">Chapter 26</div><div class="chapter-title">Journey home</div></a>
+      <a href="/teachings/shivchay-p2-ch27" class="chapter-link"><div class="chapter-num">Chapter 27</div><div class="chapter-title">Conclusion</div></a>
+      <a href="/teachings/shivchay-p2-ch28" class="chapter-link"><div class="chapter-num">Chapter 28</div><div class="chapter-title">His hasaga</div></a>
+      <a href="/teachings/shivchay-p2-ch29" class="chapter-link"><div class="chapter-num">Chapter 29</div><div class="chapter-title">Spiritual conception</div></a>
+      <a href="/teachings/shivchay-p2-ch30" class="chapter-link"><div class="chapter-num">Chapter 30</div><div class="chapter-title">Further insights</div></a>
+      <a href="/teachings/shivchay-p2-ch31" class="chapter-link"><div class="chapter-num">Chapter 31</div><div class="chapter-title">A great arrives</div></a>
+      <a href="/teachings/shivchay-p2-ch32" class="chapter-link"><div class="chapter-num">Chapter 32</div><div class="chapter-title">The great's warning</div></a>
+      <a href="/teachings/shivchay-p2-ch33" class="chapter-link"><div class="chapter-num">Chapter 33</div><div class="chapter-title">After devotions</div></a>
+      <a href="/teachings/shivchay-p2-ch34" class="chapter-link"><div class="chapter-num">Chapter 34</div><div class="chapter-title">Ascending levels</div></a>
+    </div>
+    
+    <div class="note">
+      <strong>Note:</strong> Chapters marked as "Not yet available" are missing from naanaach.blogspot.com. 
+      If you have the complete text, please provide it.
+    </div>
+    
+    <div class="navigation-links">
+      <a href="/teachings" class="nav-link">← Back to Teachings</a>
+    </div>
+  </div>
+</section>
+</Layout>

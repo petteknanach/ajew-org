@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 258</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 258</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה בלא מעשים טובים אינה כלום, אדרבא לא זכה כו&#39;. ומחמת שני הבחינות אלו שצריך להיות להצדיק, למדן וחסיד, והם בחינת מלאך ה&#39; צבאות. על ידי זה נמצא בהצדיק שני כחות שיש להתורה, סם חיים וסם מות. ואפשר להמתקרב אליו, למצא בו דבר שיקצץ בנטיעות, או לכנס ולצאת בשלום: וזהו: &#39;אם הרב דומה למלאך ה&#39; צבאות&#39;, הינו שהוא למדן בתורה, ועובד את ה&#39;, ועל ידי זה הוא מציר אותיות שה
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+258 - WHEN THERE IS DIVISION ON THE PERSON
+When there is division [dispute or opposition] on the person they can to incline him from way of the Name blessed be He and to cause him to fall from his level, G-d forbid. And this that boasted David the king, peace be upon him. "Many my persecutors and my adversaries, from Your testimonies I not turned" [Psalms 119:157] that even that was on him division many with all this not turned from way of the Name blessed be He.
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

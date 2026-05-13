@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 384</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 384</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה תוכיח אותם כנ&quot;ל. ועל ידי התוכחה הזאת, הוא ממשיך אריכות ימים לתוך המלכות, שלא תהיה בבחינת הרבנות מקברת את בעליה, שזהו כשאין מוכיח את האנשים שיש לו ממשלה עליהם וכו&#39;, כנ&quot;ל. אבל על ידי עסק ה
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+Tinyana 98
+REGARDING STRENGTHENING IN HISBODIDUS, SUPPLICATIONS, AND REQUESTS
+He further said regarding strengthening in hisbodidus [secluded prayer], supplications, and requests, that the word has great power to arouse a person. Even though it seems to a person that he has no heart, nevertheless, when he speaks many words of arousal, supplications, and requests, and the like, the very fact that he speaks is the aspect of the revelation of the arousal of his heart and soul to Hashem [G-d], in the aspect of: "My soul went out when he spoke" [Song of Songs 5:6]. For the word itself is the revelation of the soul and the heart. And sometimes, by speaking much, even though it is without heart at all, nevertheless, through this he will come afterward to great arousal in heart and soul. And the principle is that the word itself has great power.
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

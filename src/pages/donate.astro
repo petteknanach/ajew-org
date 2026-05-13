@@ -1,0 +1,138 @@
+---
+import Layout from '../layouts/Layout.astro';
+const pageTitle = "Donate - Support A Jew";
+const pageDescription = "Support ajew.org and spread Rabbi Nachman's light";
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+  <section class="page-header">
+    <h1>Support A Jew</h1>
+    <p>Your generosity spreads Rabbi Nachman's light to Jews worldwide</p>
+    <div class="header-links">
+      <a href="/reader" class="header-link">Browse Teachings</a>
+      <a href="/subscribe" class="header-link">Membership</a>
+    </div>
+  </section>
+
+  <div class="container">
+    <section class="content">
+      <div class="donate-card">
+        <h2>Make a Donation</h2>
+        <p class="donate-desc">
+          Every donation, no matter the size, helps keep ajew.org running and brings more Jews closer to Rabbi Nachman's wisdom.
+        </p>
+        <button onclick="donate()" class="donate-btn">Donate Now</button>
+        <p class="donate-note">
+          Secure payment via Stripe
+        </p>
+      </div>
+
+      <div class="info-section">
+        <h2>Why Your Donation Matters</h2>
+        <p>
+          <strong>A Jew is precious.</strong> Rabbi Nachman taught that every soul is a world unto itself.
+          By supporting ajew.org, you're helping bring Torah, joy, and hitbodedut (personal prayer) to Jews
+          around the world.
+        </p>
+        <p>
+          <strong>What your donation supports:</strong><br>
+          &bull; Server costs and site maintenance<br>
+          &bull; New translations and content<br>
+          &bull; Community programs and events<br>
+          &bull; Spreading Na Nach Nachma Nachman MeUman
+        </p>
+      </div>
+
+      <div class="donate-card membership-card">
+        <h2>Annual Membership</h2>
+        <p class="donate-desc">
+          Get full access to the community chat and commenting for just <strong>$1/year</strong>
+        </p>
+        <a href="https://buy.stripe.com/00w5kD89Ld3Y9F1fsUfUQ03" class="donate-btn membership-btn" target="_blank" rel="noopener">Join for $1/year</a>
+      </div>
+    </section>
+  </div>
+
+  <script is:inline>
+  function donate() {
+    window.location.href = 'https://buy.stripe.com/3cI3cvey95Bw9F13KcfUQ02';
+  }
+  </script>
+</Layout>
+
+<style>
+  .page-header {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    color: white;
+    padding: 4rem 2rem;
+    text-align: center;
+  }
+  .page-header h1 {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 2.5rem;
+    margin: 0 0 0.5rem;
+  }
+  .page-header p { opacity: 0.9; font-size: 1.1em; margin: 0 0 1.5rem; }
+  .header-links { display: flex; justify-content: center; gap: 1rem; }
+  .header-link {
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    background: rgba(255,255,255,0.2);
+    border-radius: 8px;
+    font-size: 0.9em;
+  }
+  .header-link:hover { background: rgba(255,255,255,0.3); }
+
+  .container { max-width: 800px; margin: 0 auto; padding: 0 2rem; }
+  .content { padding: 3rem 0 4rem; }
+
+  .donate-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2.5rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  .donate-card h2 { color: #1a365d; margin: 0 0 1rem; }
+  .donate-desc { color: #666; font-size: 1.05rem; margin: 0 0 1.5rem; line-height: 1.6; }
+  .donate-note { color: #888; font-size: 0.85rem; margin: 1rem 0 0; }
+
+  .donate-btn {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    color: white;
+    border: none;
+    padding: 1rem 2.5rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .donate-btn:hover { transform: scale(1.05); box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
+
+  .membership-card { background: #f0fdf4; }
+  .membership-card h2 { color: #059669; }
+  .membership-btn { background: #1a365d; }
+
+  .info-section {
+    background: #f8f5ef;
+    padding: 2.5rem;
+    border-radius: 16px;
+    margin-bottom: 2rem;
+  }
+  .info-section h2 { color: #059669; margin: 0 0 1rem; }
+  .info-section p { color: #555; line-height: 1.8; margin: 0 0 1rem; }
+  .info-section p:last-child { margin-bottom: 0; }
+
+  @media (max-width: 600px) {
+    .page-header { padding: 2.5rem 1.5rem; }
+    .page-header h1 { font-size: 1.8rem; }
+    .donate-card { padding: 1.5rem; }
+    .info-section { padding: 1.5rem; }
+    .header-links { flex-direction: column; gap: 0.5rem; }
+  }
+</style>

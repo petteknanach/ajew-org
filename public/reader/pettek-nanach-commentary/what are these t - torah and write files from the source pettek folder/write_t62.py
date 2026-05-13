@@ -1,0 +1,143 @@
+import os, json
+
+h = os.path.expanduser('~')
+reader_dir = os.path.join(h, '.openclaw', 'workspace', 'ajew-org', 'public', 'reader')
+pnc_dir = os.path.join(reader_dir, [d for d in os.listdir(reader_dir) if 'nanach' in d.lower()][1])
+out_path = os.path.join(pnc_dir, 'torah-62.json')
+
+def seg(idx, be, bi_en, bi_he, sc_he):
+    return {
+        "index": idx,
+        "beginner": {"en": be, "he": ""},
+        "intermediate": {"en": bi_en, "he": bi_he},
+        "scholarly": {"en": "", "he": sc_he}
+    }
+
+segments = [
+seg(1,
+"This teaching opens with an editorial note: it is presented in the language of Rabbeinu himself, Rabbi Nachman of Breslov, and the key verse is 'And God turned the people' (Exodus 13:18). The teaching also exists in an alternative manuscript version written in Rabbeinu's own hand. The entire torah will decode this verse to reveal the inner mechanism by which Israel's eating creates a cosmic unification of the Holy One and His Shechinah.",
+"Editorial heading: 'leshon Rabbeinu z\"l.' Frame verse: 'Vayisav Elokim et ha'am' (Shemot 13:18). Alternate manuscript exists (nuscha acher mikt\"y Rabbeinu z\"l b'atzmo).",
+"פְּתִיחָה: לְשׁוֹן רַבֵּנוּ זִ\"ל. כֶּתֶר: \"וַיַּסֵּב אֱלקִים אֶת הָעָם\" (שְׁמוֹת י\"ג). קַיָּם נ\"א מִכְּתַ\"י רַבֵּנוּ עַצְמוֹ.",
+"שְׁמוֹת י\"ג:י\"ח. לְשׁוֹן רַבֵּנוּ זִ\"ל. נ\"א מִכְּתַ\"י רַבֵּנוּ."
+),
+seg(2,
+"Know that every time the Jewish people eat food that has been spiritually purified, a mystical unification (yichud) is created between the two aspects of God — the Holy One blessed be He (the transcendent aspect) and the Shechinah (the immanent divine presence). The source is in Ruth: Boaz says to Ruth 'come hither at mealtime' (Ruth 2:14) — 'at mealtime' is the precise point — it is specifically through eating that the drawing-close (yichud) happens. Similarly, the Zohar (Vayigash, page 206, with the Ramaz commentary) reads Judah's 'approach' to Joseph (Genesis 44:18) as the 'approach of king to king' — the two divine aspects coming face to face. The entire mechanism depends on one condition: the food must be fully clarified (berur) — without any mixture of spiritual impurity — because impure food can bring the eater to sin.",
+"Eating of Israel → yichud KBH u'Shechinteh panim b'panim. Prooftexts: Ruth 2:14 'l'et ha'achal geshi halom'; Bereishit 44:18 'vayigash eilav Yehudah' = 'tikreivuta malka b'malka' (Zohar Vayigash 206 + Ramaz). Condition: food must be berur, without taarovet — impure food leads to sin.",
+"אֲכִילַת יִשְׂרָאֵל → יִחוּד קוּדְשָׁא בְּרִיךְ הוּא וּשְׁכִינְתֵּיהּ פָּנִים בְּפָנִים. רוּת ב:יד; בְּרֵ' מד:יח = \"תִּקְרֻבְתָּא מַלְכָּא בְּמַלְכָּא\" (זהַר וַיִּגַּשׁ ר\"ו + רַמָּ\"ז). תְּנַאי: מַאֲכָל מְבֹרָר בְּלִי תַּעֲרוֹבֶת.",
+"רוּת ב:יד; בְּרֵ' מד:יח; זהַר וַיִּגַּשׁ ר\"ו; שְׁמוֹת י\"ג:י\"ח."
+),
+seg(3,
+"The purification (berur) of food happens through faith (emunah). Regarding intellectual doubts and challenges to faith, there are two distinct types. The first type are questions that human intellect can actually answer — about these the Mishnah says (Avot 2): 'Know what to answer to a heretic (apikoros).' The second type are questions that are beyond human intellect, unanswerable until the future world — about these it is forbidden to investigate; one who relies on his intellect to probe them falls into heresy (see Proverbs 2:19 'all who enter her shall not return'). Even questions of the first type can sometimes overwhelm a person, blocking the paths of intellect and casting doubt into him. This is because every person must serve God with both inclinations (Berachot 54): 'With all your heart' means 'with your two inclinations' — the heart must be unified, not divided. When the heart is divided (Hosea 10:2 'their heart is divided'), heresy enters. The root of this inner conflict is the holy controversy between Tannaim and Amoraim in the Talmud — one forbids, one permits. As these controversies descended from their lofty spiritual source into the lower worlds, they gave rise to the evil inclination's inner conflict. The repair: studying the halachic decisors (poskim). A halachic ruling is the peace and resolution of Talmudic controversy. Through learning poskim, one connects to the peace in holiness, neutralizes the inner conflict, can serve God with both inclinations, and opens the gates of intellect. The letters of the word 'shalom' (peace) form the acronym of 've-da ma she-tashiv l'apikoros' — peace is the key to answering doubt. Psalms 119:7: 'I thank You with an upright heart, when I learn Your righteous judgments' — 'heart' (levav, with two vavs) is specifically with both inclinations, achieved through study of the halachic rulings.",
+"Birur = emunah. Two kushiyot: (1) answerable — Avot 2 've-da ma she-tashiv l'apikoros'; (2) unanswerable — forbidden to probe, stand in emunah (Misl 2:19). Must serve HKBH b'shnei yetzarim (Ber 54). Machloket b'lev (Hosh 10:2 'chalak libam') roots in machloket Tannaim/Amoraim. Tikkun: poskim → halachot pesukot → shalom b'kedushah → bittul machloket yetzer ra. SHALOM = acronym 'Sh... v'da Ma she-tashiv L'apikoros Om.' Teh 119:7 'b'lamdi mishpatei tzidkecha' — levav = shnei yetzarim.",
+"בֵּרוּר = אֱמוּנָה. שְׁתֵּי קֻשְׁיוֹת: (א) יֵשׁ תֵּרוּץ — אָבוֹת ב; (ב) אֵין תֵּרוּץ — אָסוּר לְעַיֵּן, מִשְׁלֵי ב:יט. עֲבוֹדַת הַשֵּׁם בִּשְׁנֵי יְצָרִין (בְּרָ' נד). מַחְלוֹקֶת בַּלֵּב (הוֹשֵׁעַ י:ב) נוֹבַעַת מִמַּחְלוֹקֶת תַּנָּאִים וְאָמוֹרָאִים. תִּקּוּן: פּוֹסְקִים → שָׁלוֹם בִּקְדֻשָּׁה. שָׁלוֹ\"ם = נוֹטְרִיקוֹן \"וְדַע מַה שֶּׁתָּשִׁיב לְאֶפִּיקוֹרוֹס.\" תְּהִ' קי\"ט:ז.",
+"אָבוֹת ב; מִשְׁלֵי ב:יט; בְּרָ' נד; הוֹשֵׁעַ י:ב; מִשְׁלֵי כ\"ח:יד; תְּהִ' קי\"ט:ז; תְּהִ' ל\"ז:ג."
+),
+seg(4,
+"The completion and adornment of faith is specifically to bring close the distant — those who are far from God. Zephaniah 3:9 says: 'To call all of them in the name of Hashem' — even idol-worshippers will eventually come close to the faith of Israel and serve Him together, shoulder to shoulder. The beauty and 'adornment' of faith is measured precisely by how many souls, previously far, it draws in. But achieving this requires a prior step: raising the holy sparks (nitzotzot) embedded in the letters of speech.",
+"Sheleimus u'kishutei emunah = lkarev ha'merchakim. Tzeph 3:9 'likra kulam b'shem Hashem' — af akum yikrevu le'emunat Yisrael. Mechanism: requires first raising nitzotzei osiyot ha'dibur.",
+"שְׁלֵמוּת וְקִשּׁוּטֵי אֱמוּנָה = לְקָרֵב הַמְרֻחָקִים. צְפַנְיָה ג:ט. תְּנַאי: הַעֲלַת נִיצוֹצֵי אוֹתִיּוֹת הַדִּבּוּר.",
+"צְפַנְיָה ג:ט."
+),
+seg(5,
+"Rabbeinu now explains the mechanism for bringing the distant close. To complete the faith and draw distant souls in, one must first raise the holy sparks (nitzotzot) that are scattered within the letters of speech. When these sparks of the letters of speech are clarified and elevated, speech itself then turns and gathers the remaining sparks of holiness from among the shells (kelipot) — the spiritual forces of impurity that give vitality to evil in the world. Left without their supply of holy sparks, the kelipot have no more vitality. The idol-worshippers, whose spiritual sustenance comes from the kelipot, then see that their source has dried up and they cast away their false beliefs: 'In that day a man shall cast away his idols of silver and his idols of gold' (Isaiah 2:20). The clarified speech then turns to the nations: 'Then will I turn to the peoples a pure language' (Zephaniah 3:9) — gathering the last remaining sparks from them — and all attach themselves to the faith of Israel, fulfilling 'to call all of them in the name of Hashem.' But to raise these sparks of speech, one needs fasting.",
+"Nitzotzei osiyot ha'dibur raised → dibur berur → dibur gathers sparks from kelipot → kelipot b'lo chiyyut → akum cast emunasam (Yesh 2:20 'b'yom hahu yashlich ha'adam et elilei khaspo') → attach to emunat Yisrael. 'Safah berurah' (Tzeph 3:9) = berured speech turns to nations → 'likra kulam b'shem Hashem.' Mechanism for raising sparks: ta'anit.",
+"הַעֲלַת נִיצוֹצֵי הַדִּבּוּר → בֵּרוּר הַדִּבּוּר → לִקּוּט נִיצוֹצֵי קְדֻשָּׁה מִן הַקְּלִפּוֹת → קְלִפּוֹת בְּלֹא חִיּוּת → הַשְׁלָכַת אֱלִילִים (יְשַׁ' ב:כ) → דְּבֵקוּת לֶאֱמוּנַת יִשְׂרָאֵל. \"שָׂפָה בְרוּרָה\" (צְפַנְיָה ג:ט).",
+"יְשַׁ' ב:כ; צְפַנְיָה ג:ט."
+),
+seg(6,
+"To raise the holy sparks in the letters of speech, one needs fasting (ta'anit). Psalms 107:17 states: 'Through the path of their transgressions they afflict themselves (yit'anu)' — yit'anu is the root of ta'anit (fasting). And then: 'He sends His word (yishlach devaro)' — the speech is repaired. Why fasting? Because the kelipot cannot access holiness from the front — the brightness of holiness is too intense. The kelipot can only suck from behind holiness (achorei kedushah). Sometimes God intentionally allows them to draw from the face of holiness — but only to harm them in the end (Ecclesiastes 8:9). All desires (ta'avot) are aspects of kelipot — they are 'surpluses' (mosaros), excess beyond what the body truly needs, just as a fruit's peel is surplus to the fruit itself. The three chief desires are the three ministers of Pharaoh in Genesis (the butler, baker, and cook), which correspond kabbalistically (per the Ari's Likutei Torah, Parshat Lech Lecha and Vayeshev) to the windpipe, esophagus, and blood-vessels — the physical channels sitting adjacent to the five outlets of the mouth (the organs of speech). These ministers suck from Pharaoh, whose name (Paroh) transposes to 'oref' (nape of neck) — meaning from behind. The main source of their sustenance is from impure, unclarified speech. When desires overpower a person, the channels adjacent to speech drag speech down into the 'straits of the throat' (metzar ha-garon), as in Psalms 69:4 'my throat is parched,' and the person cannot speak before God. Fasting works as 'attachment behind holiness' — just as writing the Divine Name YHVH in its backward form equals 72, and the Name Elokim written backward equals 200, together equaling 272 = the gematria of ra'av (famine). Thus 'there was famine in the land' (Genesis 12:10) corresponds to the fast — d'vekut achorei kedushah. 'And Abram descended to Egypt' means drawing down waters of kindness to moisten the parched throat, enabling 'Call in the throat, do not spare' (Isaiah 58:1). When the back of holiness is attached and the kelipot cannot enter, the face of holiness is revealed and speech shines — and the nations see the kelipot are empty and turn to the faith of Israel. This dynamic is expressed in the Zohar's passage (Sava d'Mishpatim, page 95): 'A beautiful maiden who has no eyes' — faith is beautiful ('you are beautiful, my love,' Song of Songs 6:4) but 'has no eyes' meaning the unanswerable questions one must not probe but simply stand firm in faith. 'Body hidden yet revealed' — the believer cannot give rational reasons for faith, yet to him it is as vivid as direct sight. 'Goes out in the morning and is covered in the day' — faith renews each morning ('they are new every morning,' Lamentations 3:23) but becomes covered during the day by worldly preoccupations. 'Adorned with adornments that were not' — the chief adornment of faith is when people who were never before close to it are brought close.",
+"Ta'anit raises nitzotzei dibur: Teh 107:17 'midrech pisha'am...yit'anu → yishlach devaro.' Kelipot suck from achorei kedushah only. Ta'avot = kelipot = mosaros. Three ministers of Pharaoh = kaneh/voshet/veridin (LkT Arizal Lech Lecha + Vayeshev). Pharaoh = oref = achoraim. Ta'anit = d'vekut achorei kedushah. YHVH achoraim = 72 + Elokim achoraim = 200 = 272 = ra'av. 'Vayhi ra'av ba'aretz' (Ber 12:10). Teh 69:4 'nichar groni'; Yesh 58:1. Zohar Sava Mishpatim p.95: 'ulimta shapirta d'leit lah einain' = emunah (Shir 6:4; Teh 37:3); 'guf tamirta v'itglei'; Eich 3:23; 'mitkashtat b'kishtutin d'la havu.'",
+"תַּעֲנִית מַעֲלֶה נִיצוֹצֵי הַדִּבּוּר: תְּהִ' ק\"ז:יז. קְלִפּוֹת יוֹנְקוֹת מֵאֲחוֹרֵי קְדֻשָּׁה. תַּאֲווֹת = קְלִפּוֹת = מוֹתָרוֹת. שְׁלשָׁה שָׂרֵי פַּרְעה = קָנֶה/וֵשֶׁט/וְרִידִין (לִקּ\"ת הָאָרִ\"י פ' לֶ\"ל וְוַיֵּשֶׁב). פַּרְעה = עֹרֶף. הַוָ\"יָה+אֱלקִים אֲחוֹרַיִם = ע\"ב+ר' = רָעָב (רע\"ב). בְּרֵ' י\"ב:י; תְּהִ' ס\"ט:ד; יְשַׁ' נ\"ח:א. זהַר מִשְׁפָּטִים (סַבָּא) צ\"ה; שִׁיר ו:ד; אֵיכָה ג:כג.",
+"תְּהִ' ק\"ז:יז; קֹהֶ' ח:ט; בְּרֵ' י\"ב:י; תְּהִ' ס\"ט:ד; יְשַׁ' נ\"ח:א; שִׁיר ו:ד; מִשְׁלֵי ל\"א:כח-ל; אֵיכָה ג:כג; זהַר מִשְׁפָּטִים (סַבָּא) צ\"ה."
+),
+seg(7,
+"When a person has reached this level of complete faith, their eating becomes extraordinarily precious — because through it the Holy One blessed be He and the Shechinah are truly unified, as in 'at mealtime, come hither' (Ruth 2:14). At this point, the faith itself advocates before God for those who are still distant, interceding that He draw them close under His wings. What is the root error of those who are far from faith? The underlying issue is that knowledge of God's divinity can only be gained by inferring from the visible (ha-galui) to the hidden (ha-nistar). Because people see only the visible — that the world appears to run through the system of constellations and natural law — they fall into various errors. Some think everything runs automatically by nature, with no divine involvement. Others think one needs to serve an intermediary, as the Jews erred with the Golden Calf, wanting it to mediate between them and God ('which shall go before us,' Exodus 32:1). Many stumble into a subtler version: they believe in God, but treat causes as if they were primary — as if without business dealings God cannot provide a livelihood, or without medicine God cannot heal. This is an error: God is the cause of all causes and the source of all sources, needing no external cause. While we engage in the natural means, we must not make them primary. When the tzaddik through prayer nullifies what the constellation system has decreed, this demonstrates — from the visible outcome — that there is a God who hears the tzaddik and overturns nature. This is how the distant come to know God. The Sages teach (Pesachim 68a): in the future, the righteous will revive the dead — the ultimate revelation of God over nature.",
+"Sheleimus emunah → eating precious → yichud KBH u'Shechinteh (Ruth 2:14). Emunah advocates for merchakim. Root error: yediat Elohut only m'galui al nistar. Errors: (1) hakol al pi ha'teva; (2) worship of intermediary (Golden Calf, Shemot 32:1); (3) causes as primary (parnasah, refuah). HKBH = sibbat kol ha'sibbot. Tzaddik nullifies mazalot decree → galui al nistar → yesh Elohei nimtza. Pesachim 68a.",
+"שְׁלֵמוּת אֱמוּנָה → אֲכִילָה יְקָרָה → יִחוּד (רוּת ב:יד). טָעוּת הָרְחוֹקִים: גָּלוּי עַל נִסְתָּר. טָעוּת אֶמְצָעִי: עֵגֶל (שְׁמוֹת ל\"ב:א). הַקָּדוֹשׁ בָּרוּךְ הוּא סִבַּת כָּל הַסִּבּוֹת. צַדִּיק מְבַטֵּל גְּזֵרַת מַזָּלוֹת → גָּלוּי עַל נִסְתָּר. פְּסָחִים ס\"ח.",
+"רוּת ב:יד; שְׁמוֹת ל\"ב:א; פְּסָחִים ס\"ח."
+),
+seg(8,
+"Rabbeinu now reads the Genesis 44 passage (Judah approaching Joseph) as the Shechinah pleading before God on behalf of distant souls. 'And Judah approached him' — this is the 'approach of king to king' (Zohar Vayigash 206) — the Shechinah drawing close to the Holy One. 'Please, my lord, let your servant speak a word in my lord's ears' — the Shechinah is requesting mercy for those who are distant, asking that no intermediary be interposed any longer. 'Let not your anger burn against your servant' — for the past sins. 'For you are like Pharaoh' — Pharaoh (Paroh) connotes 'revelation' (hisgalut, from the root meaning to uncover/reveal). You — God — are not known to people except through the visible. Because You are known only through the visible, people have fallen into their various errors. But when You nullify Your will before the will of the tzaddik — as the Talmud says (Moed Katan 16b): 'The Holy One blessed be He decrees and the tzaddik nullifies' — then people can know from the visible that there is a God who honors the will of the tzaddik. 'What Pharaoh decrees and does not fulfill' — Pharaoh represents the system of constellations (the revealed, galui) whose decrees should logically hold — 'but You also decree and do not fulfill, for the tzaddik nullifies.'",
+"'Vayigash eilav Yehudah' = Shechinah requests mercy for merchakim. 'Bidaber na avd'cha davar' = v'lo yishama od emtza'i. 'Ki chamocha k'Pharoh' — Paroh = leshon hisgalut. Known only m'galui → errors. MK 16b 'HKBH gozer v'tzaddik m'vateil.' 'Mah Pharoh gozer v'eino m'kayeim' = mazalot. 'Af ata gozer v'eincha m'kayeim' = ki ha'tzaddik m'vateil.",
+"\"וַיִּגַּשׁ אֵלָיו יְהוּדָה\" = שְׁכִינָה מְבַקֶּשֶׁת רַחֲמִים עַל הָרְחוֹקִים. פַּרְעה = לְשׁוֹן הִתְגַּלּוּת. מוֹעֵד קָטָן ט\"ז: \"הַקָּדוֹשׁ בָּרוּךְ הוּא גּוֹזֵר וְצַדִּיק מְבַטֵּל.\"",
+"בְּרֵ' מד:יח; זהַר וַיִּגַּשׁ ר\"ו; מוֹעֵד קָטָן ט\"ז."
+),
+seg(9,
+"Now Rabbeinu returns to the opening verse: 'And God turned (va-yasev) the people' (Exodus 13:18). The Midrash (Shemot Rabba, Parsha 20) reads 'va-yasev' as related to se'udah — a festive meal — meaning 'God arranged a banquet for the people.' And 'chamushim' — usually translated 'armed' — Rashi interprets as 'one in five' (one-fifth of Israel left Egypt, four-fifths perished in the plague of darkness). Here Rabbeinu interprets 'one from five' as the five outlets of the mouth (the five articulatory positions from which all sounds emerge: lips, front teeth, palate, tongue, throat). These five outlets of speech are the mechanism through which all the nations turn to the faith of Israel, to 'serve Him shoulder to shoulder' (Zephaniah 3:9). 'The children of Israel went up from the land of Egypt' — from the straits of the throat (metzar ha-garon, the narrow Egypt of the throat). Through Israel's ascent from the desire-ministers (the three physical channels adjacent to the five speech organs), speech is freed and returned to holiness, which in turn returns the nations to the faith of Israel.",
+"'Vayisav Elokim' (Shemot 13:18) = Midrash Shemot Rabba 20: leshon se'udah. 'Chamushim' = echad mi'chamisha (Rashi) = chamesh motzaot ha'peh. Through them: akum turn to emunat Yisrael, l'avdo shechem echad (Tzeph 3:9). 'Alu bnei Yisrael me'Eretz Mitzraim' = mi'metzar ha'garon — ascent from ta'avot → speech freed → akum return to emunah.",
+"\"וַיַּסֵּב אֱלקִים\" (שְׁמוֹת י\"ג:י\"ח) = מִדְ' שְׁמוֹת רַבָּה כ': לְשׁוֹן סְעֻדָּה. \"חֲמֻשִׁים\" = אֶחָד מֵחֲמִשָּׁה (רַשִׁ\"י) = חֲמֵשֶׁת מוֹצָאוֹת הַפֶּה. \"עָלוּ בְנֵי יִשְׂרָאֵל מֵאֶרֶץ מִצְרַיִם\" = מִמֵּצַר הַגָּרוֹן.",
+"שְׁמוֹת י\"ג:י\"ח; מִדְ' שְׁמוֹת כ'; רַשִׁ\"י שָׁם; צְפַנְיָה ג:ט."
+),
+seg(10,
+"This is the main adornment of faith: bringing close people who were never previously close to it — corresponding to the Zohar's description (Sava d'Mishpatim, page 95) of the 'beautiful maiden adorned with adornments that were not' (mitkashtat b'kishtutin d'la havu) — new adornments that she did not previously have, meaning new souls drawn to faith for the first time. Through faith in its completeness, eating is 'permitted' — becomes yichud — as expressed by 'And God turned (va-yasev).' This is the end of Rabbeinu's own text. The following are addenda to earlier sections. Belonging to Section Bet: Peace (shalom) between Jews — between one person and his neighbor — is another mechanism for neutralizing heresy and disbelief, as explained in LM Torah 27. The Sages say (Bereishit Rabba 38, from Hosea 4:17): 'Ephraim is attached to idols — leave him alone,' meaning when there is peace among Israel, even if they worship idols, they are forgiven. But 'their heart is divided — now they shall bear their guilt' (Hosea 10:2) — because controversy produces denial and heresy.",
+"Main adornment of emunah = 'mitkashtat b'kishtutin d'la havu' (Zohar Sava Mishpatim). Via emunah b'shleimus → eating hutrah = yichud = 'vayasev.' [End leshon Rabbeinu z\"l]. Section Bet addendum: Shalom bein Yisrael nullifies apikorsus (LM 27). BR 38 + Hosh 4:17 'chavur atzabim Ephraim hanach lo' = peace → mochlin af l'ovdei AZ. Hosh 10:2 'chalak libam, ata ye'ashamu' = machloket → kfirot.",
+"עִיקַּר קִשּׁוּטֵי אֱמוּנָה = \"מִתְקַשְּׁטָא בְּקִשּׁוּטִין דְּלָא הֲווֹ\" (זהַר מִשְׁפָּטִים סַבָּא). עַל יְדֵי אֱמוּנָה בִּשְׁלֵמוּת → הֻתְּרָה אֲכִילָה = יִחוּד = \"וַיַּסֵּב\". [עַד כָּאן לְשׁוֹן רַבֵּנוּ ז\"ל]. שְׁלוֹם בֵּין יִשְׂרָאֵל מְבַטֵּל אֶפִּיקוֹרְסוּת (לק\"מ כ\"ז). בְּרֵ\"ר ל\"ח; הוֹשֵׁעַ ד:יז; י:ב.",
+"זהַר מִשְׁפָּטִים (סַבָּא) צ\"ה; הוֹשֵׁעַ ד:יז; י:ב; בְּרֵ\"ר ל\"ח."
+),
+seg(11,
+"When there is controversy, each person clings to his own view. Since people in a state of conflict do not come together to speak openly, they cannot redirect each other's mistaken thinking. Even when they do meet, the competitive spirit of controversy prevents genuine change — each tries to 'win' rather than discover truth. But when there is peace between Jews, the disbelief and heretical ideas that each harbors will naturally dissolve through conversation: they speak to each other, gently redirect each other from mistaken views, and arrive at complete and straight faith together. An additional teaching (from Tehillah L'David) deepens the link between controversy and halachic learning: from controversy, halachic rulings are actually made. The tzaddik learns the letter-combinations (tzerufei otiyot) that are embedded within the dispute itself and reorganizes them to produce a correct halachic ruling (tzeruf halacha). This explains why the teaching places such emphasis on studying halacha and the poskim: it repairs the root controversy by revealing the peace hidden within it.",
+"Machloket → each holds da'ato; cannot influence each other. Shalom → yedabreru zeh im zeh → yashivu zeh et zeh → emunah shleimah. From controversy → halachot (Tehillah L'David): tzaddik learns tzerufei otiyot shel machloket → oseh tzeruf halacha. Learning poskim = tikkun hamachloket.",
+"מַחְלוֹקֶת → כָּל אֶחָד אוֹחֵז בְּדַעְתּוֹ. שָׁלוֹם → שִׂיחָה → תִּיקּוּן דֵּעוֹת → אֱמוּנָה שְׁלֵמָה. מֵהַמַּחְלוֹקֶת נַעֲשׂוֹת הֲלָכוֹת (תְּהִלָּה לְדָוִד): צַדִּיק הוֹפֵךְ צֵרוּפֵי אוֹתִיּוֹת הַמַּחְלוֹקֶת לְצֵרוּף הֲלָכָה. לִמּוּד פּוֹסְקִים = תִּיקּוּן הַמַּחְלוֹקֶת.",
+"הוֹשֵׁעַ ד:יז; י:ב; תְּהִלָּה לְדָוִד."
+),
+seg(12,
+"This is an explicit addendum on the same principle: from controversy, halachic rulings are made (Tehillah L'David). The tzaddik learns the letter-combinations embedded in the dispute — the same letters that constitute both sides of the argument — and transforms them into the letter-combinations of a halachic ruling. The controversy contained within itself the material for its own resolution. This is the deeper reason behind the directive to learn halachot and the halachic decisors: it repairs the root controversy at the level of the letters themselves. Every Torah dispute contains, encoded within its language, the seeds of the halachic resolution that emerges from it.",
+"Continuation: me'machloket na'asim halachot (Tehillah L'David). Tzaddik learns tzerufei otiyot shel machloket → transforms into tzeruf halacha. Learning poskim = tikkun hamachloket b'rashutu.",
+"הֶמְשֵׁךְ: מֵהַמַּחְלוֹקֶת נַעֲשׂוֹת הֲלָכוֹת (תְּהִלָּה לְדָוִד). הַצַּדִּיק לוֹמֵד צֵרוּפֵי אוֹתִיּוֹת הַמַּחְלוֹקֶת וְעוֹשֶׂה מֵהֶם צֵרוּף הֲלָכָה. לִמּוּד פּוֹסְקִים = תִּיקּוּן הַמַּחְלוֹקֶת.",
+"תְּהִלָּה לְדָוִד."
+),
+seg(13,
+"The final teaching — belonging to Section Heh — returns to the principle that all beginnings are the source of all subsequent power. Every new beginning is difficult (Mechilta, Parshat Yitro, cited by Rashi) because one is moving from one extreme to the opposite. The starting point holds the greatest power: all of a person's spiritual service on subsequent days is ultimately sourced from that initial moment. This leads to an extraordinary practical teaching: every single time one travels to the tzaddik, one must come as if it were the very first time — not thinking 'I've been to the tzaddik before,' but rather as though one has never been at all, experiencing it entirely fresh. According to the power and fervor one brings at the beginning, so the entire arc of one's avodah (divine service) is shaped — for the main thing is the beginning. Therefore one must always harbor a healthy concern: perhaps my beginning was not fully as it should have been — and every time, come to the tzaddik anew with great fresh fervor and renewed determination. This is not a metaphor: it is a repeated discipline, every single time.",
+"Kol hatchalot kashos (Mechilta Yitro; Rashi) = yotze me'hefech l'hefech. Power of all days' avodah = the hatchalah. Therefore: b'chol pa'am she'nosa l'tzaddik — must come k'ilu pa'am rishon, never as b'chazarah. K'fi koach v'hislaavut ha'hatchalah, ken kol avodato. Mussar: ulay lo hithil ka'raui → le'hathil mechadash. See Daniel 10 as model of difficult hatchalah.",
+"כָּל הַתְחָלוֹת קָשׁוֹת (מְכִילְתָּא יִתְרוֹ; רַשִׁ\"י). כּחַ כָּל הַיָּמִים = הַהַתְחָלָה. בְּכָל פַּעַם שֶׁנּוֹסֵעַ לַצַּדִּיק — יָבֹא כְּפַעַם רִאשׁוֹנָה. כְּפִי כּחַ הַהִתְלַהֲבוּת שֶׁל הַהַתְחָלָה, כֵּן כָּל עֲבוֹדָתוֹ. חֲשָׁשׁ: אוּלַי לֹא הִתְחִיל כָּרָאוּי → לְהַתְחִיל מֵחָדָשׁ.",
+"מְכִילְתָּא יִתְרוֹ (רַשִׁ\"י); דָּנִיֵּאל י'."
+),
+]
+
+data = {
+    "id": "pnc-1-62",
+    "book": "petten-nanach-commentary",
+    "part": 1,
+    "torah": 62,
+    "title": "T62 Petten Nanach Commentary - Vayisav Elokim (Through Israel's Eating, Yichud is Made)",
+    "hebrewTitle": "ויסב אלקים — על ידי אכילת ישראל נעשה יחוד",
+    "author": "Petten Nanach",
+    "segments": segments
+}
+
+with open(out_path, 'w', encoding='utf-8') as f:
+    json.dump(data, f, ensure_ascii=False, indent=2)
+
+# validate round-trip
+with open(out_path, encoding='utf-8') as f:
+    chk = json.load(f)
+assert len(chk['segments']) == 13
+avg = sum(len(s['beginner']['en']) for s in chk['segments']) / 13
+print(f"Written: {out_path}")
+print(f"Segments: {len(chk['segments'])}, avg beginner chars: {avg:.0f}")
+
+# register in lm-commentaries.json
+lm_path = os.path.join(h, '.openclaw', 'workspace', 'ajew-org', 'src', 'data', 'lm-commentaries.json')
+with open(lm_path, encoding='utf-8') as f:
+    cdata = json.load(f)
+cdata['1']['62']['running_commentary'] = {
+    "book": "petten-nanach-commentary",
+    "slug": "petten-nanach-commentary",
+    "status": "available",
+    "url": "/reader/petten-nanach-commentary/torah-62.json",
+    "layers": ["beginner", "intermediate", "scholarly"],
+    "author": "Petten Nanach",
+    "label": "Petten Nanach Running Commentary - T62 (Vayisav Elokim - Yichud Through Eating, 13 segs)"
+}
+with open(lm_path, 'w', encoding='utf-8') as f:
+    json.dump(cdata, f, ensure_ascii=False, indent=2)
+print("lm-commentaries.json updated for T62")
+
+# git
+import subprocess
+repo = os.path.join(h, '.openclaw', 'workspace', 'ajew-org')
+subprocess.run(['git', 'add', 'public/reader/petten-nanach-commentary/torah-62.json', 'src/data/lm-commentaries.json'], cwd=repo, check=True)
+result = subprocess.run(['git', 'commit', '-m', 'feat: T62 PNC -- Vayisav Elokim (yichud through eating/emunah, 13 segs)'], cwd=repo, capture_output=True, text=True)
+print(result.stdout)
+push = subprocess.run(['git', 'push', 'origin', 'main'], cwd=repo, capture_output=True, text=True)
+print(push.stdout, push.stderr)

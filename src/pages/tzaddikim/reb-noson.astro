@@ -1,0 +1,522 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+// Profile data for Reb Noson of Breslov
+const tzaddik = {
+  name: "Reb Noson (Nathan) of Breslov",
+  hebrew_name: "רבי נתן מברסלב",
+  yahrzeit_hebrew: "י״א בְּתֵּשְׁרֵי",
+  yahrzeit_english: "10 Tishrei (Yom Kippur)",
+  gregorian_date: "December 20, 1844",
+  birth_year: "1780",
+  passing_year: "1844",
+  age_at_passing: "64",
+  location: "Nemirov, Ukraine → Breslov, Ukraine",
+  category: "Breslov Dynasty - Primary Disciple",
+  era: "18th-19th Century",
+  significance: "Primary disciple of Rebbe Nachman, responsible for recording, preserving, and spreading Breslov teachings. Compiled Likutey Moharan and established Breslov as a lasting movement.",
+  
+  // Biography sections
+  biography: [
+    {
+      title: "Early Life and Meeting Rebbe Nachman",
+      content: "Reb Noson was born in 1780 in Nemirov, Ukraine, to a respected family. He was a brilliant Talmudic scholar even before meeting Rebbe Nachman. In 1802, at age 22, he traveled to Breslov and met Rebbe Nachman. This meeting transformed his life, and he became the Rebbe's closest disciple, dedicating himself completely to recording and spreading his teachings."
+    },
+    {
+      title: "Recording and Preserving Teachings",
+      content: "Reb Noson's greatest contribution was meticulously recording Rebbe Nachman's teachings. He compiled Likutey Moharan (Collected Teachings of Our Teacher, Rabbi Nachman), transcribing the Rebbe's discourses often from memory. He also recorded Sichos HaRan (Conversations), Sefer HaMidot (Book of Traits), and the Rebbe's stories. Without Reb Noson's dedication, Breslov teachings might have been lost."
+    },
+    {
+      title: "Leadership After Rebbe Nachman's Passing",
+      content: "When Rebbe Nachman passed away in 1810, many assumed Breslov would disappear like other Chassidic courts without a living rebbe. However, Reb Noson declared, 'We have no rebbe? We have the Rebbe's teachings!' He became the spiritual leader, guiding Breslover Chassidim through the Rebbe's written words rather than through personal authority."
+    },
+    {
+      title: "Persecution and Dedication",
+      content: "Reb Noson faced intense opposition from other Chassidic groups and even from within his own family. He was excommunicated, his writings were burned, and he faced physical danger. Despite this, he continued spreading Breslov teachings, establishing Breslov communities, and ensuring the movement's survival. His dedication in the face of persecution is legendary."
+    },
+    {
+      title: "Literary Legacy",
+      content: "Beyond recording Rebbe Nachman's teachings, Reb Noson authored important works including Likutey Halachos (connecting Rebbe Nachman's teachings to Jewish law), Likutey Tefilos (prayers based on the teachings), and his personal letters which provide guidance for Breslov practice. His writings form the foundation of Breslov literature."
+    }
+  ],
+  
+  // Major works
+  works: [
+    {
+      title: "Likutey Moharan",
+      description: "Primary compilation of Rebbe Nachman's teachings, arranged and transcribed by Reb Noson. The foundational text of Breslov Chassidus."
+    },
+    {
+      title: "Likutey Halachos",
+      description: "Eight-volume work connecting Rebbe Nachman's teachings to practical Jewish law (Halacha), demonstrating how Breslov philosophy applies to daily life."
+    },
+    {
+      title: "Likutey Tefilos",
+      description: "Prayers composed by Reb Noson based on Rebbe Nachman's teachings, providing a template for personal prayer (hitbodedut)."
+    },
+    {
+      title: "Sichos HaRan",
+      description: "Informal conversations of Rebbe Nachman recorded by Reb Noson, offering practical spiritual guidance."
+    },
+    {
+      title: "Alim LiTerufah",
+      description: "Collection of Reb Noson's letters providing guidance to Breslover Chassidim and documenting the early history of the movement."
+    }
+  ],
+  
+  // Teaching connections
+  teachings: [
+    {
+      title: "The Power of Recording Teachings",
+      content: "Reb Noson demonstrated that preserving a rebbe's teachings in writing can sustain a movement even after the rebbe's passing. His meticulous recording created a lasting legacy accessible to future generations."
+    },
+    {
+      title: "Leadership Through Teaching, Not Personality",
+      content: "Reb Noson led Breslov not as a charismatic rebbe but as a teacher guiding people to Rebbe Nachman's written words. This established the unique Breslov model of leadership through teachings rather than personality."
+    },
+    {
+      title: "Perseverance in Spreading Truth",
+      content: "Despite intense opposition, excommunication, and personal danger, Reb Noson never wavered in spreading Breslov teachings. His perseverance established that truth must be spread regardless of opposition."
+    },
+    {
+      title: "Connecting Teachings to Daily Practice",
+      content: "Through Likutey Halachos, Reb Noson showed how Rebbe Nachman's mystical teachings connect to practical Jewish law and daily observance, making Breslov relevant to everyday life."
+    }
+  ],
+  
+  // Legacy
+  legacy: [
+    "Saved Breslov teachings from being lost by meticulously recording them",
+    "Established Breslov as a lasting movement without a living rebbe",
+    "Authored foundational Breslov texts beyond just transcribing teachings",
+    "Modeled leadership through teaching rather than personal authority",
+    "Persevered through intense persecution to spread Breslov",
+    "Created the literary foundation for all subsequent Breslov scholarship",
+    "Demonstrated that a movement can thrive through written teachings alone"
+  ],
+  
+  // Related tzaddikim
+  related: [
+    {
+      name: "Rebbe Nachman of Breslov",
+      path: "/tzaddikim/rebbe-nachman",
+      relationship: "Teacher whose teachings he recorded and spread"
+    },
+    {
+      name: "Rabbi Avraham Chazan",
+      path: "/tzaddikim/avraham-chazan",
+      relationship: "Disciple who continued his work"
+    },
+    {
+      name: "Rabbi Alter of Teplik",
+      path: "/tzaddikim/alter-teplik",
+      relationship: "Key disciple in next generation"
+    },
+    {
+      name: "Saba Yisroel Ber Odesser",
+      path: "/tzaddikim/saba",
+      relationship: "Later Breslov figure connected to the teachings he preserved"
+    }
+  ]
+};
+---
+
+<Layout 
+  title={`Reb Noson of Breslov | Tzaddikim Profiles`}
+  description={`Learn about Reb Noson (Nathan) of Breslov, primary disciple of Rebbe Nachman with yahrzeit on 10 Tishrei. Preserved Breslov teachings through meticulous recording and writing.`}
+>
+  <script type="application/ld+json" set:html={} />
+
+  <div class="tzaddik-profile">
+    <!-- Header with basic info -->
+    <div class="profile-header">
+      <div class="profile-info">
+        <h1 class="profile-name">{tzaddik.name}</h1>
+        <h2 class="profile-hebrew" dir="rtl">{tzaddik.hebrew_name}</h2>
+        
+        <div class="profile-meta">
+          <div class="meta-item">
+            <span class="meta-label">Yahrzeit:</span>
+            <span class="meta-value">{tzaddik.yahrzeit_hebrew} ({tzaddik.yahrzeit_english})</span>
+          </div>
+          
+          <div class="meta-item">
+            <span class="meta-label">Gregorian Date:</span>
+            <span class="meta-value">{tzaddik.gregorian_date}</span>
+          </div>
+          
+          <div class="meta-item">
+            <span class="meta-label">Location:</span>
+            <span class="meta-value">{tzaddik.location}</span>
+          </div>
+          
+          <div class="meta-item">
+            <span class="meta-label">Category:</span>
+            <span class="meta-value">{tzaddik.category}</span>
+          </div>
+          
+          <div class="meta-item">
+            <span class="meta-label">Lifespan:</span>
+            <span class="meta-value">{tzaddik.birth_year} - {tzaddik.passing_year} (Age {tzaddik.age_at_passing})</span>
+          </div>
+        </div>
+        
+        <div class="profile-significance">
+          <h3>Significance</h3>
+          <p>{tzaddik.significance}</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Special Disciple Box -->
+    <div class="special-connection">
+      <h3>🕯️ The Disciple Who Saved Breslov</h3>
+      <p><strong>Without Reb Noson, Breslov might have been lost:</strong> When Rebbe Nachman passed away in 1810, many assumed Breslov would disappear like other Chassidic courts without a living rebbe. Reb Noson declared, "We have no rebbe? We have the Rebbe's teachings!" and dedicated his life to preserving and spreading them.</p>
+      <p><strong>Literary Foundation:</strong> Reb Noson not only transcribed Rebbe Nachman's teachings but authored foundational works that connect Breslov philosophy to practical Jewish life, creating the literary basis for the entire movement.</p>
+    </div>
+    
+    <!-- Biography Sections -->
+    <div class="profile-section">
+      <h2>Biography</h2>
+      {tzaddik.biography.map((section, index) => (
+        <div class="biography-section" key={index}>
+          <h3>{section.title}</h3>
+          <p>{section.content}</p>
+        </div>
+      ))}
+    </div>
+    
+    <!-- Major Works -->
+    <div class="profile-section">
+      <h2>Major Works</h2>
+      <div class="works-grid">
+        {tzaddik.works.map((work, index) => (
+          <div class="work-card" key={index}>
+            <div class="work-title">{work.title}</div>
+            <div class="work-description">{work.description}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+    
+    <!-- Teaching Connections -->
+    <div class="profile-section">
+      <h2>Teaching Connections</h2>
+      {tzaddik.teachings.map((teaching, index) => (
+        <div class="teaching-item" key={index}>
+          <h4>{teaching.title}</h4>
+          <p>{teaching.content}</p>
+        </div>
+      ))}
+    </div>
+    
+    <!-- Legacy -->
+    <div class="profile-section">
+      <h2>Legacy</h2>
+      <ul class="legacy-list">
+        {tzaddik.legacy.map((item, index) => (
+          <li key={index}>{item}</li>
+        ))}
+      </ul>
+    </div>
+    
+    <!-- Related Tzaddikim -->
+    <div class="profile-section">
+      <h2>Related Tzaddikim</h2>
+      <div class="related-tzaddikim">
+        {tzaddik.related.map((related, index) => (
+          <a href={related.path} class="related-link" key={index}>
+            <span class="related-name">{related.name}</span>
+            <span class="related-relationship">{related.relationship}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+    
+    <!-- Navigation -->
+    <div class="profile-navigation">
+      <a href="/" class="nav-link">← Back to Home</a>
+      <a href="/tzaddikim" class="nav-link">View All Tzaddikim →</a>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .tzaddik-profile {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  
+  .profile-header {
+    margin-bottom: 2rem;
+  }
+  
+  .profile-name {
+    font-size: 2.5rem;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+  }
+  
+  .profile-hebrew {
+    font-family: var(--font-hebrew);
+    font-size: 2rem;
+    color: #4b5563;
+    margin-bottom: 1.5rem;
+  }
+  
+  .profile-meta {
+    background: #f9fafb;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid #8b5cf6;
+  }
+  
+  .meta-item {
+    display: flex;
+    margin-bottom: 0.75rem;
+  }
+  
+  .meta-item:last-child {
+    margin-bottom: 0;
+  }
+  
+  .meta-label {
+    font-weight: 600;
+    color: #374151;
+    min-width: 140px;
+  }
+  
+  .meta-value {
+    color: #6b7280;
+  }
+  
+  .profile-significance {
+    background: #ede9fe;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #8b5cf6;
+  }
+  
+  .profile-significance h3 {
+    color: #5b21b6;
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+  }
+  
+  .profile-significance p {
+    color: #6d28d9;
+    margin: 0;
+    line-height: 1.6;
+  }
+  
+  .special-connection {
+    background: linear-gradient(135deg, #f3e8ff, #e9d5ff);
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    border: 2px solid #8b5cf6;
+  }
+  
+  .special-connection h3 {
+    color: #5b21b6;
+    margin-top: 0;
+    margin-bottom: 1rem;
+  }
+  
+  .special-connection p {
+    color: #6d28d9;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+  
+  .special-connection p:last-child {
+    margin-bottom: 0;
+  }
+  
+  .profile-section {
+    margin-bottom: 3rem;
+  }
+  
+  .profile-section h2 {
+    color: #1f2937;
+    border-bottom: 2px solid #8b5cf6;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .biography-section {
+    margin-bottom: 1.5rem;
+  }
+  
+  .biography-section h3 {
+    color: #374151;
+    margin-bottom: 0.5rem;
+  }
+  
+  .biography-section p {
+    color: #6b7280;
+    line-height: 1.8;
+    margin: 0;
+  }
+  
+  .works-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+  
+  .work-card {
+    background: #f5f3ff;
+    padding: 1.25rem;
+    border-radius: 6px;
+    border-left: 3px solid #8b5cf6;
+  }
+  
+  .work-title {
+    font-weight: 600;
+    color: #5b21b6;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+  }
+  
+  .work-description {
+    color: #6d28d9;
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+  
+  .teaching-item {
+    background: #f5f3ff;
+    padding: 1.25rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    border-left: 3px solid #8b5cf6;
+  }
+  
+  .teaching-item h4 {
+    color: #5b21b6;
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+  }
+  
+  .teaching-item p {
+    color: #6d28d9;
+    margin: 0;
+    line-height: 1.6;
+  }
+  
+  .legacy-list {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .legacy-list li {
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    background: #f5f3ff;
+    border-radius: 6px;
+    border-left: 3px solid #8b5cf6;
+    color: #5b21b6;
+  }
+  
+  .related-tzaddikim {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+  
+  .related-link {
+    display: block;
+    padding: 1rem;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  
+  .related-link:hover {
+    background: #f9fafb;
+    border-color: #8b5cf6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .related-name {
+    display: block;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 0.25rem;
+  }
+  
+  .related-relationship {
+    display: block;
+    font-size: 0.875rem;
+    color: #6b7280;
+  }
+  
+  .profile-navigation {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e5e7eb;
+  }
+  
+  .nav-link {
+    padding: 0.75rem 1.5rem;
+    background: #8b5cf6;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  
+  .nav-link:hover {
+    background: #7c3aed;
+    transform: translateY(-2px);
+  }
+  
+  @media (max-width: 768px) {
+    .tzaddik-profile {
+      padding: 1rem;
+    }
+    
+    .profile-name {
+      font-size: 2rem;
+    }
+    
+    .profile-hebrew {
+      font-size: 1.5rem;
+    }
+    
+    .meta-item {
+      flex-direction: column;
+    }
+    
+    .meta-label {
+      min-width: auto;
+      margin-bottom: 0.25rem;
+    }
+    
+    .works-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .related-tzaddikim {
+      grid-template-columns: 1fr;
+    }
+    
+    .profile-navigation {
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .nav-link {
+      text-align: center;
+    }
+  }
+</style>

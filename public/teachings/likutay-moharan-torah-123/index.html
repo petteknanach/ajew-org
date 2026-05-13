@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 123</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 123</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה הנ&quot;ל הזכיר רבנו, זכרונו לברכה, מאמר רבותינו, זכרונם לברכה: &#39;אין מספידין בחנכה&#39; (שבת כא: ובשלחן ערוך סימן תר&quot;ע), ואיני זוכר מה שפרש בו. (והנראה לעניות דעתי, כי ההספד הוא בשביל לתקן הסתלקות הכבוד, שנפגם על ידי הסתלקות הצדיק הזה, שהיה מצדיק את הרבים, שעל ידי זה עקר הארת הכבוד כנ&quot;ל, וכמו שאמרו רבותינו, זכרונם לברכה: &#39;הספדא יקרא דחיי או יקרא דשכבי&#39; (סנהדרין מו:). ועל כן בחנכה אין מספידין בו, כי אז מאיר הכבוד על ידי נר חנכה כנ&quot;ל).<br>
+<br>
+לעיל. וזהו: ולפני כבוד ענוה (משלי טו), כי על ידי ענוה זוכין לכבוד, כמבאר לעיל, שעקר התעלות הכבוד הוא על ידי גרים ובעלי תשובה שעושין, וזה זוכין על ידי תורת חסד וכו&#39;; ול
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+123 – To Bind Oneself to the Tzadik of the Generation
+The foundation upon which everything depends is to bind oneself to the tzadik of the generation and accept his words in all matters—small and great—without deviation, neither to the right nor the left. As our rabbis taught (Sifri, Parashah Shoftim): even if he tells you “to the right” or “to the left,” you are to reject all other wisdom and abandon your own reasoning, relying solely on what you receive from the generation’s tzadik and rav.
+While there remains any independent intellect within a person, true perfection is not attained, nor is one truly bound to the tzadik.
+When Israel stood at Sinai, they possessed great wisdom—for they had been idolaters whose errors stemmed from profound inquiry—but they cast aside their wisdom in order to receive the Torah. Without relinquishing that wisdom, they could have denied even the greatest revelations and miracles Moses wrought before them. Even today, heretics deny through folly and false wisdom. Yet the holy Children of Israel saw the truth, abandoned wisdom, believed in God and in Moses His servant—and through this they received the Torah: “A foolish people and not wise” (Deuteronomy 32:6)—a people who received the Torah precisely by being “not wise,” by surrendering all wisdom.
+This concept—the “foolish-hearted paths”—is the generality of Torah and the ultimate wisdom. The Talmud (Bereishit Rabbah 17) calls it “the withering of the upper wisdom.” [And now the profound translation of “foolish” in this context is clear—and wondrous is this humble idiom: to translate “foolish” in the reception of Torah. Now how sweet these words of the Targum taste.] See Shir HaShirim Rabbati and Psalms 119 on “In innocence Israel received the Torah.”]
+The essence of the service is to be complete, upright, Godfearing, turning from evil—without any wisdom. King Solomon, though described as wiser than all men (Kings I 5:11), said: “For I am more brutish than any man, and have not understanding of a man” (Proverbs 30:2). Asaph said: “And I was brutish, and did not know; I was as a beast before You” (Psalms 73:22). As it is written: “There is no wisdom, nor understanding, nor counsel against the Lord” (Proverbs 21:30).
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

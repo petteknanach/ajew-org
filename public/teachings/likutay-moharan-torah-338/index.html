@@ -1,0 +1,57 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 338</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 338</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה כנ&quot;ל: <br>
+<br>
+(זאת ה
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+LIKUTAY MOHARAN II, TORAH 52: THAT DIFFICULTIES ARE DIFFICULT FOR THE TZADIKIM
+That kushyos [difficulties/questions] are difficult for the tzadikim [righteous ones], this is necessarily so. For the tzadikim resemble their Creator, as brought. And as kushyos are difficult regarding Hashem, blessed be He, so too it is necessarily that kushyos are difficult regarding the tzadik, for he resembles Him, blessed be He. And regarding the kushyos that are difficult regarding Hashem, blessed be He, it is common to say: On the contrary, it is fitting to be specifically so, that there be kushyos regarding Hashem, blessed be He, and this is proper and beautiful for Him, blessed be He, according to His greatness and exaltedness. For from the essence of His greatness and exaltedness, that He is very exalted from our knowledge, therefore certainly it is impossible that we understand and attain His conduct, blessed be He, with our intellect. And therefore, it is necessarily that there be kushyos regarding Him, blessed be He, for this is proper and beautiful for the Creator, blessed be He, that He be exalted and elevated from our knowledge, through which the kushyos are difficult, as mentioned above. And if His conduct were according to the obligation of our knowledge, then, heaven forbid, His knowledge would be like our knowledge.
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

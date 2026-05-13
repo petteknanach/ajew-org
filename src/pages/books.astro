@@ -1,0 +1,254 @@
+---
+// Redirect to the unified reader/library
+return Astro.redirect('/reader', 301);
+import Layout from '../layouts/Layout.astro';
+import fs from 'node:fs';
+import path from 'node:path';
+
+function loadJSON(filePath) {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(process.cwd(), filePath), 'utf8'));
+  } catch (e) { return null; }
+}
+
+const masterCatalog = loadJSON('public/reader/catalog.json') || { books: [] };
+
+const categories = [
+  { title: 'ספרי רבי נחמן', subtitle: 'Rabbi Nachman of Breslov', ids: ['likutay-moharan', 'kitzur-likutay-moharan', 'sefer-hamidos', 'sipurey-maasiyos'] },
+  { title: 'ספרי רבי נתן', subtitle: 'Rabbi Nosson of Breslov', ids: ['likutay-halachos', 'likutay-tefilos', 'likutay-eitzos', 'sichos-haran', 'shivchay-haran', 'chayey-moharan', 'alim-litrufa', 'yemei-moharnat', 'shemos-hatzadikim', 'yemei-hatlaos'] },
+  { title: 'ספרי רבי אלתר טפליקער', subtitle: 'Rabbi Alter of Teplik', ids: ['hashtatfchus-hanefesh', 'meshivas-nefesh'] },
+  { title: 'ספרי הרב מטשערין', subtitle: 'Rabbi Nachman of Tcheryn', ids: ['parparos-lechochma', 'rimzei-hamaasiyos', 'zimras-haaretz', 'yikra-dshabbata', 'yereach-haeitanim', 'nachas-hashulchan', 'likutay-eitzos-basra'] },
+  { title: "ספרי רבי אברהם בר' נחמן", subtitle: 'Rabbi Avraham bar Nachman', ids: ['biur-halikutim', 'chochma-utvuna', 'kokhvei-or'] },
+  { title: 'שיח שרפי קודש', subtitle: 'Levi Yitzchak Bender', ids: ['siach-sarfei-kodesh'] },
+];
+
+const categorizedIds = categories.flatMap(c => c.ids);
+const miscBooks = masterCatalog.books.filter(b => !categorizedIds.includes(b.id) && b.parts.some(p => p.totalTorahs > 0));
+if (miscBooks.length > 0) {
+  categories.push({ title: 'ספרים של תלמידים ועוד', subtitle: 'Students & Other Works', ids: miscBooks.map(b => b.id) });
+}
+
+const totalPages = masterCatalog.books.reduce((sum, b) => sum + b.parts.reduce((s, p) => s + p.totalTorahs, 0), 0);
+---
+
+<Layout title="כל ספרי ברסלב - Breslov Library" description="The complete Breslov library in Hebrew - 47 books, over 7,900 texts. Likutay Moharan, Likutay Halachos, Sipurey Maasiyos, and more.">
+<div class="books-page">
+  <header class="page-header">
+    <h1>כל ספרי ברסלב בלשון הקודש</h1>
+    <p class="subtitle-en">The Complete Breslov Library in Hebrew</p>
+    <div class="stats-row">
+      <span class="stat">{masterCatalog.books.length} ספרים</span>
+      <span class="stat-divider">|</span>
+      <span class="stat">{totalPages.toLocaleString()} דפים</span>
+    </div>
+    <div class="header-actions">
+      <a href="/reader" class="btn-primary">פתח את הספריה המלאה</a>
+      <a href="/search-enhanced" class="btn-secondary">חיפוש בכל הספרים</a>
+    </div>
+  </header>
+
+  {categories.map(cat => {
+    const catBooks = cat.ids.map(id => masterCatalog.books.find(b => b.id === id)).filter(Boolean).filter(b => b.parts.some(p => p.totalTorahs > 0));
+    if (catBooks.length === 0) return null;
+    return (
+      <section class="cat-section">
+        <div class="cat-header">
+          <h2>{cat.title}</h2>
+          <span class="cat-subtitle">{cat.subtitle}</span>
+        </div>
+        <div class="cat-grid">
+          {catBooks.map(book => {
+            const total = book.parts.reduce((s, p) => s + p.totalTorahs, 0);
+            const firstPartUrl = book.parts[0] ? `/reader#${book.id}` : '/reader';
+            return (
+              <a href={firstPartUrl} class="book-card">
+                <div class="book-title">{book.hebrewTitle}</div>
+                <div class="book-english">{book.title}</div>
+                <div class="book-meta">
+                  {total} {book.parts.length > 1 ? `(${book.parts.length} חלקים)` : ''}
+                </div>
+              </a>
+            );
+          })}
+        </div>
+      </section>
+    );
+  })}
+
+  <div class="bottom-cta">
+    <a href="/reader" class="btn-primary large">פתח את הספריה המלאה / Open Full Library</a>
+  </div>
+</div>
+
+<style>
+  .books-page {
+    min-height: 100vh;
+    background: #f8f5ef;
+    padding: 0 24px 80px;
+    direction: rtl;
+  }
+
+  .page-header {
+    text-align: center;
+    padding: 48px 20px 32px;
+    margin-bottom: 32px;
+  }
+  .page-header h1 {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 2.4em;
+    color: #1a365d;
+    margin: 0 0 8px;
+    font-weight: 700;
+  }
+  .subtitle-en {
+    color: #666;
+    font-size: 1.1em;
+    margin: 0 0 16px;
+    font-family: 'Open Sans', sans-serif;
+    direction: ltr;
+  }
+  .stats-row {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .stat {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 1.1em;
+    color: #c4a265;
+    font-weight: 700;
+  }
+  .stat-divider { color: #ddd; }
+
+  .header-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .btn-primary {
+    display: inline-block;
+    background: #1a365d;
+    color: #e8d5a3;
+    padding: 12px 28px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-family: 'Frank Ruhl Libre', serif;
+    font-weight: 700;
+    font-size: 1em;
+    transition: all 0.2s;
+  }
+  .btn-primary:hover {
+    background: #0f2440;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(26,54,93,0.3);
+  }
+  .btn-primary.large {
+    font-size: 1.15em;
+    padding: 16px 36px;
+  }
+  .btn-secondary {
+    display: inline-block;
+    background: transparent;
+    color: #1a365d;
+    padding: 12px 28px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-family: 'Frank Ruhl Libre', serif;
+    font-weight: 700;
+    font-size: 1em;
+    border: 2px solid #1a365d;
+    transition: all 0.2s;
+  }
+  .btn-secondary:hover {
+    background: #1a365d;
+    color: #e8d5a3;
+  }
+
+  .cat-section {
+    max-width: 1000px;
+    margin: 0 auto 40px;
+  }
+  .cat-header {
+    padding-bottom: 10px;
+    border-bottom: 3px solid #1a365d;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .cat-header h2 {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 1.6em;
+    color: #1a365d;
+    margin: 0;
+    font-weight: 700;
+  }
+  .cat-subtitle {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 0.9em;
+    color: #888;
+    direction: ltr;
+  }
+
+  .cat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+  }
+
+  .book-card {
+    display: block;
+    background: white;
+    border: 1px solid #e0d6c2;
+    border-radius: 12px;
+    padding: 16px;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .book-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    border-color: #c4a265;
+  }
+  .book-title {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 1.2em;
+    color: #1a365d;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .book-english {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 0.8em;
+    color: #666;
+    direction: ltr;
+    text-align: right;
+    margin-bottom: 6px;
+  }
+  .book-meta {
+    font-size: 0.75em;
+    color: #999;
+  }
+
+  .bottom-cta {
+    text-align: center;
+    margin: 48px 0 0;
+    padding: 32px;
+    background: white;
+    border-radius: 16px;
+    max-width: 1000px;
+    margin: 48px auto 0;
+  }
+
+  @media (max-width: 768px) {
+    .page-header h1 { font-size: 1.8em; }
+    .cat-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 480px) {
+    .cat-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</Layout>

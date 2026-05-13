@@ -1,0 +1,865 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Chok Breslov - Daily Torah Study Schedule" description="Complete the entire Breslov library in one year with daily Torah study portions. Likutay Moharan, Likutay Halachos, Sichos HaRan, Likutay Tefilos, and more. Track your progress day by day." breadcrumbs={[{name: "Home", url: "https://ajew.org"}, {name: "Daily Study", url: "https://ajew.org/daily-study"}]} jsonLd={{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Chok Breslov - Daily Torah Study",
+  "description": "Complete the entire Breslov library in one year with daily Torah study portions.",
+  "url": "https://ajew.org/daily-study",
+  "isPartOf": { "@type": "WebSite", "name": "A Jew", "url": "https://ajew.org" }
+}}>
+  <div class="chok-container" id="chokApp">
+    <!-- Header -->
+    <header class="chok-header">
+      <h1 class="chok-hebrew-title">חוק ברסלב</h1>
+      <h2 class="chok-english-title">Daily Torah Study</h2>
+      <p class="chok-subtitle">Complete the entire Breslov library in one year<br><span style="font-family: var(--font-hebrew); font-size: 0.85em; opacity: 0.8;" dir="rtl">השלם את כל ספריית ברסלב בשנה אחת</span></p>
+      <div class="chok-date-info" id="dateInfo">
+        <span class="hebrew-date" id="hebrewDateDisplay">Loading...</span>
+        <span class="day-number" id="dayNumber"></span>
+      </div>
+      <div class="chok-progress-bar">
+        <div class="chok-progress-fill" id="progressFill"></div>
+      </div>
+      <p class="chok-progress-text" id="progressText"></p>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="chok-nav">
+      <button class="chok-nav-btn" id="prevDay" title="Previous day">&larr; Yesterday</button>
+      <button class="chok-nav-btn chok-nav-today" id="todayBtn" title="Go to today">Today</button>
+      <button class="chok-nav-btn" id="nextDay" title="Next day">Tomorrow &rarr;</button>
+    </nav>
+    <div class="chok-nav-extra">
+      <label>
+        Jump to day:
+        <input type="number" id="dayPicker" min="1" max="354" class="chok-day-input" />
+      </label>
+      <button class="chok-nav-btn chok-small-btn" id="resetBtn" title="Start from Day 1">Reset to Day 1</button>
+    </div>
+
+    <!-- Stats bar -->
+    <div class="chok-stats" id="statsBar">
+      <div class="chok-stat">
+        <span class="stat-num" id="streakCount">0</span>
+        <span class="stat-label">Day Streak</span>
+      </div>
+      <div class="chok-stat">
+        <span class="stat-num" id="completedCount">0</span>
+        <span class="stat-label">Days Done</span>
+      </div>
+      <div class="chok-stat">
+        <span class="stat-num" id="overallPercent">0%</span>
+        <span class="stat-label">Year Progress</span>
+      </div>
+    </div>
+
+    <!-- Date Letters (Ebay HaNachal) -->
+    <section class="chok-date-letters" id="dateLettersSection" style="display:none;">
+      <h3 class="section-title">Today's Letter</h3>
+      <div id="dateLettersContent"></div>
+    </section>
+
+    <!-- Today's Portions -->
+    <section class="chok-portions" id="portionsGrid">
+      <p class="loading-msg">Loading daily study schedule...</p>
+    </section>
+
+    <!-- Bonus Section -->
+    <section class="chok-bonus-section" id="bonusSection" style="display:none;">
+      <h3 class="section-title bonus-title">Bonus Study</h3>
+      <div id="bonusContent"></div>
+    </section>
+  </div>
+
+  <style>
+    .chok-container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 32px 20px 80px;
+      font-family: 'Open Sans', sans-serif;
+      color: #222;
+    }
+
+    /* Header */
+    .chok-header {
+      text-align: center;
+      margin-bottom: 28px;
+      padding-bottom: 20px;
+      border-bottom: 3px solid #1a365d;
+    }
+    .chok-hebrew-title {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 3em;
+      color: #1a365d;
+      direction: rtl;
+      margin: 0 0 4px;
+      font-weight: 700;
+    }
+    .chok-english-title {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 1.6em;
+      color: #1a365d;
+      margin: 0 0 6px;
+      font-weight: 400;
+    }
+    .chok-subtitle {
+      color: #777;
+      font-size: 0.9em;
+      margin: 0 0 16px;
+    }
+    .chok-date-info {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .hebrew-date {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 1.3em;
+      color: #2d3748;
+      direction: rtl;
+    }
+    .day-number {
+      background: #1a365d;
+      color: #fff;
+      padding: 3px 14px;
+      border-radius: 14px;
+      font-size: 0.85em;
+      font-weight: 600;
+    }
+    .chok-progress-bar {
+      width: 100%;
+      max-width: 400px;
+      height: 8px;
+      background: #e8e0d0;
+      border-radius: 4px;
+      margin: 0 auto 6px;
+      overflow: hidden;
+    }
+    .chok-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #1a365d, #2b6cb0);
+      border-radius: 4px;
+      transition: width 0.5s ease;
+      width: 0%;
+    }
+    .chok-progress-text {
+      color: #888;
+      font-size: 0.8em;
+      margin: 0;
+    }
+
+    /* Navigation */
+    .chok-nav {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 8px;
+    }
+    .chok-nav-btn {
+      background: #f7f0e5;
+      border: 1px solid #d4c9b5;
+      color: #1a365d;
+      padding: 8px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9em;
+      font-family: 'Open Sans', sans-serif;
+      transition: all 0.2s;
+    }
+    .chok-nav-btn:hover {
+      background: #1a365d;
+      color: #fff;
+    }
+    .chok-nav-today {
+      background: #1a365d;
+      color: #fff;
+      font-weight: 600;
+    }
+    .chok-nav-today:hover {
+      background: #2b6cb0;
+    }
+    .chok-nav-extra {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .chok-nav-extra label {
+      font-size: 0.85em;
+      color: #666;
+    }
+    .chok-day-input {
+      width: 60px;
+      padding: 4px 8px;
+      border: 1px solid #d4c9b5;
+      border-radius: 6px;
+      font-size: 0.9em;
+      text-align: center;
+    }
+    .chok-small-btn {
+      font-size: 0.8em;
+      padding: 5px 12px;
+    }
+
+    /* Stats */
+    .chok-stats {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+    .chok-stat {
+      background: #faf6ef;
+      border: 1px solid #e8dcc8;
+      border-radius: 10px;
+      padding: 10px 20px;
+      text-align: center;
+      min-width: 90px;
+    }
+    .stat-num {
+      display: block;
+      font-size: 1.5em;
+      font-weight: 700;
+      color: #1a365d;
+    }
+    .stat-label {
+      font-size: 0.75em;
+      color: #888;
+    }
+
+    /* Section titles */
+    .section-title {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 1.3em;
+      color: #1a365d;
+      margin: 0 0 14px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #e8dcc8;
+    }
+    .bonus-title {
+      color: #7b6d32;
+      border-color: #e8dca0;
+    }
+
+    /* Date Letters */
+    .chok-date-letters {
+      background: linear-gradient(135deg, #fff9e8, #fef5db);
+      border: 2px solid #d4b34a;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+    .chok-date-letters .section-title {
+      color: #8b6914;
+      border-color: #d4b34a;
+    }
+    .date-letter-card {
+      background: #fff;
+      border-radius: 8px;
+      padding: 14px;
+      margin-bottom: 8px;
+    }
+    .date-letter-card .letter-info {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 1.05em;
+      color: #333;
+      margin-bottom: 6px;
+    }
+    .date-letter-card .letter-sub {
+      font-size: 0.85em;
+      color: #888;
+      margin-bottom: 8px;
+    }
+    .date-letter-card a {
+      display: inline-block;
+      background: #8b6914;
+      color: #fff;
+      padding: 5px 14px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 0.85em;
+    }
+    .date-letter-card a:hover {
+      background: #a07c1c;
+    }
+
+    /* Portions Grid */
+    .chok-portions {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    .loading-msg {
+      grid-column: 1 / -1;
+      text-align: center;
+      color: #888;
+      padding: 40px;
+    }
+
+    /* Book card */
+    .book-card {
+      background: #fdfaf5;
+      border: 1px solid #e0d6c2;
+      border-radius: 10px;
+      padding: 16px;
+      position: relative;
+      transition: box-shadow 0.2s, border-color 0.2s;
+    }
+    .book-card:hover {
+      box-shadow: 0 2px 12px rgba(26, 54, 93, 0.1);
+      border-color: #b8a88a;
+    }
+    .book-card.completed {
+      border-color: #48bb78;
+      background: #f0fff4;
+    }
+    .book-card .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+    .book-card .book-name-he {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 1.15em;
+      color: #1a365d;
+      direction: rtl;
+      margin: 0;
+      font-weight: 700;
+    }
+    .book-card .book-name-en {
+      font-size: 0.8em;
+      color: #777;
+      margin: 2px 0 0;
+    }
+    .book-card .check-btn {
+      width: 26px;
+      height: 26px;
+      border: 2px solid #ccc;
+      border-radius: 50%;
+      background: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      transition: all 0.2s;
+      flex-shrink: 0;
+      margin-left: 8px;
+    }
+    .book-card .check-btn:hover {
+      border-color: #48bb78;
+    }
+    .book-card .check-btn.checked {
+      background: #48bb78;
+      border-color: #48bb78;
+      color: #fff;
+    }
+    .book-card .section-ref {
+      font-size: 0.9em;
+      color: #444;
+      margin: 0 0 6px;
+      font-weight: 600;
+    }
+    .book-card .section-preview {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 0.85em;
+      color: #666;
+      direction: rtl;
+      line-height: 1.5;
+      max-height: 3em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin: 0 0 10px;
+    }
+    .book-card .read-link {
+      display: inline-block;
+      background: #1a365d;
+      color: #fff;
+      padding: 5px 16px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 0.85em;
+      transition: background 0.2s;
+    }
+    .book-card .read-link:hover {
+      background: #2b6cb0;
+    }
+    .book-card .book-progress {
+      margin-top: 8px;
+      font-size: 0.75em;
+      color: #999;
+    }
+    .book-card .book-progress-bar {
+      height: 3px;
+      background: #e8e0d0;
+      border-radius: 2px;
+      margin-top: 4px;
+      overflow: hidden;
+    }
+    .book-card .book-progress-fill {
+      height: 100%;
+      background: #48bb78;
+      border-radius: 2px;
+      transition: width 0.3s;
+    }
+
+    /* Bonus section */
+    .chok-bonus-section {
+      background: #fefce8;
+      border: 1px solid #e8dca0;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 28px;
+    }
+
+    /* Dark mode */
+    :global(html.dark-mode) .chok-container { color: #e2e8f0; }
+    :global(html.dark-mode) .chok-header { border-color: #4a5568; }
+    :global(html.dark-mode) .chok-hebrew-title { color: #90cdf4; }
+    :global(html.dark-mode) .chok-english-title { color: #90cdf4; }
+    :global(html.dark-mode) .chok-subtitle { color: #a0aec0; }
+    :global(html.dark-mode) .hebrew-date { color: #e2e8f0; }
+    :global(html.dark-mode) .day-number { background: #2b6cb0; }
+    :global(html.dark-mode) .chok-progress-bar { background: #4a5568; }
+    :global(html.dark-mode) .chok-nav-btn { background: #2d3748; border-color: #4a5568; color: #e2e8f0; }
+    :global(html.dark-mode) .chok-nav-btn:hover { background: #4a5568; }
+    :global(html.dark-mode) .chok-nav-today { background: #2b6cb0; color: #fff; }
+    :global(html.dark-mode) .chok-day-input { background: #2d3748; border-color: #4a5568; color: #e2e8f0; }
+    :global(html.dark-mode) .chok-stat { background: #2d3748; border-color: #4a5568; }
+    :global(html.dark-mode) .stat-num { color: #90cdf4; }
+    :global(html.dark-mode) .stat-label { color: #a0aec0; }
+    :global(html.dark-mode) .section-title { color: #90cdf4; border-color: #4a5568; }
+    :global(html.dark-mode) .chok-date-letters { background: #2d2d1a; border-color: #8b6914; }
+    :global(html.dark-mode) .date-letter-card { background: #1a1a2e; }
+    :global(html.dark-mode) .date-letter-card .letter-info { color: #e2e8f0; }
+    :global(html.dark-mode) .book-card { background: #1e2433; border-color: #4a5568; }
+    :global(html.dark-mode) .book-card:hover { border-color: #718096; box-shadow: 0 2px 12px rgba(0,0,0,0.3); }
+    :global(html.dark-mode) .book-card.completed { background: #1a2e1a; border-color: #38a169; }
+    :global(html.dark-mode) .book-card .book-name-he { color: #90cdf4; }
+    :global(html.dark-mode) .book-card .book-name-en { color: #a0aec0; }
+    :global(html.dark-mode) .book-card .section-ref { color: #e2e8f0; }
+    :global(html.dark-mode) .book-card .section-preview { color: #a0aec0; }
+    :global(html.dark-mode) .book-card .check-btn { background: #2d3748; border-color: #4a5568; }
+    :global(html.dark-mode) .book-card .book-progress { color: #718096; }
+    :global(html.dark-mode) .book-card .book-progress-bar { background: #4a5568; }
+    :global(html.dark-mode) .chok-bonus-section { background: #2d2d1a; border-color: #8b6914; }
+    :global(html.dark-mode) .loading-msg { color: #718096; }
+
+    /* Mobile */
+    @media (max-width: 600px) {
+      .chok-hebrew-title { font-size: 2.2em; }
+      .chok-english-title { font-size: 1.2em; }
+      .chok-portions { grid-template-columns: 1fr; }
+      .chok-nav { flex-wrap: wrap; }
+      .chok-stats { gap: 8px; }
+      .chok-stat { padding: 8px 14px; min-width: 70px; }
+      .stat-num { font-size: 1.2em; }
+    }
+  </style>
+
+  <script is:inline>
+  (function() {
+    'use strict';
+
+    // === Hebrew Calendar Utilities ===
+
+    // Tishrei 1 of year 5786 falls on approximately September 22, 2025
+    const TISHREI_5786 = new Date(2025, 8, 22); // month is 0-indexed
+    // Tishrei 1 of year 5787 falls on approximately September 11, 2026
+    const TISHREI_5787 = new Date(2026, 8, 11);
+    const DAYS_IN_YEAR = 354;
+
+    const HEBREW_MONTHS = ['', 'תשרי', 'חשון', 'כסלו', 'טבת', 'שבט', 'אדר', 'ניסן', 'אייר', 'סיון', 'תמוז', 'אב', 'אלול'];
+    const MONTH_DAYS = [0, 30, 29, 30, 29, 30, 29, 30, 29, 30, 29, 30, 29];
+    const HEBREW_DAY_LETTERS = ['', 'א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט', 'י', 'יא', 'יב', 'יג', 'יד', 'טו', 'טז', 'יז', 'יח', 'יט', 'כ', 'כא', 'כב', 'כג', 'כד', 'כה', 'כו', 'כז', 'כח', 'כט', 'ל'];
+
+    function getDayOfYear(date) {
+      // Calculate which Jewish year we're in
+      let tishrei;
+      if (date >= TISHREI_5787) {
+        // Year 5787: offset from TISHREI_5787
+        tishrei = TISHREI_5787;
+      } else if (date >= TISHREI_5786) {
+        tishrei = TISHREI_5786;
+      } else {
+        // Before 5786, just use 5786 start and wrap
+        tishrei = TISHREI_5786;
+      }
+
+      const diffMs = date.getTime() - tishrei.getTime();
+      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+      // Wrap within 354 days (1-indexed)
+      let dayOfYear = (diffDays % DAYS_IN_YEAR) + 1;
+      if (dayOfYear <= 0) dayOfYear += DAYS_IN_YEAR;
+      return dayOfYear;
+    }
+
+    function dayOfYearToHebrewDate(doy) {
+      let remaining = doy;
+      for (let m = 1; m <= 12; m++) {
+        if (remaining <= MONTH_DAYS[m]) {
+          return HEBREW_DAY_LETTERS[remaining] + ' ' + HEBREW_MONTHS[m];
+        }
+        remaining -= MONTH_DAYS[m];
+      }
+      return doy + '';
+    }
+
+    function dayOfYearToMonthDay(doy) {
+      let remaining = doy;
+      for (let m = 1; m <= 12; m++) {
+        if (remaining <= MONTH_DAYS[m]) {
+          return { month: m, day: remaining };
+        }
+        remaining -= MONTH_DAYS[m];
+      }
+      return { month: 12, day: 29 };
+    }
+
+    // === State ===
+    let chokData = null;
+    let currentDay = getDayOfYear(new Date());
+    const STORAGE_KEY = 'chok-breslov';
+
+    function getStorage() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+      } catch { return {}; }
+    }
+
+    function setStorage(data) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    function isBookDoneForDay(bookId, day) {
+      const store = getStorage();
+      return !!(store.completed && store.completed[day] && store.completed[day][bookId]);
+    }
+
+    function toggleBookDone(bookId, day) {
+      const store = getStorage();
+      if (!store.completed) store.completed = {};
+      if (!store.completed[day]) store.completed[day] = {};
+      store.completed[day][bookId] = !store.completed[day][bookId];
+      if (!store.completed[day][bookId]) delete store.completed[day][bookId];
+      if (Object.keys(store.completed[day]).length === 0) delete store.completed[day];
+      setStorage(store);
+    }
+
+    function getStreak() {
+      const store = getStorage();
+      if (!store.completed) return 0;
+      const today = getDayOfYear(new Date());
+      let streak = 0;
+      for (let d = today; d >= 1; d--) {
+        if (store.completed[d] && Object.keys(store.completed[d]).length > 0) {
+          streak++;
+        } else {
+          break;
+        }
+      }
+      return streak;
+    }
+
+    function getCompletedDays() {
+      const store = getStorage();
+      if (!store.completed) return 0;
+      return Object.keys(store.completed).filter(d => Object.keys(store.completed[d]).length > 0).length;
+    }
+
+    // === Rendering ===
+
+    function renderBookCard(book, day) {
+      const portion = book.portions[day - 1];
+      if (!portion || portion.sections.length === 0) return '';
+
+      const isDone = isBookDoneForDay(book.id, day);
+      const sections = portion.sections;
+      const firstSection = sections[0];
+      const lastSection = sections[sections.length - 1];
+
+      let ref;
+      if (sections.length === 1) {
+        ref = book.sectionLabel + ' ' + firstSection.num;
+      } else {
+        ref = book.sectionLabel + ' ' + firstSection.num + '–' + lastSection.num;
+      }
+
+      // Calculate book-level completion
+      const store = getStorage();
+      let bookDaysCompleted = 0;
+      if (store.completed) {
+        for (const d in store.completed) {
+          if (store.completed[d][book.id]) bookDaysCompleted++;
+        }
+      }
+      const bookPercent = Math.round((bookDaysCompleted / DAYS_IN_YEAR) * 100);
+
+      return '<div class="book-card' + (isDone ? ' completed' : '') + '" data-book="' + book.id + '" data-day="' + day + '">' +
+        '<div class="card-header">' +
+          '<div>' +
+            '<p class="book-name-he">' + book.hebrewTitle + '</p>' +
+            '<p class="book-name-en">' + book.title + '</p>' +
+          '</div>' +
+          '<button class="check-btn' + (isDone ? ' checked' : '') + '" data-book="' + book.id + '" data-day="' + day + '">' +
+            (isDone ? '\u2713' : '') +
+          '</button>' +
+        '</div>' +
+        '<p class="section-ref">' + ref + '</p>' +
+        '<div class="section-preview" data-url="' + firstSection.url + '"></div>' +
+        '<a href="' + firstSection.url + '" class="read-link">Read \u2192</a>' +
+        '<div class="book-progress">' +
+          bookPercent + '% of year completed' +
+          '<div class="book-progress-bar"><div class="book-progress-fill" style="width:' + bookPercent + '%"></div></div>' +
+        '</div>' +
+      '</div>';
+    }
+
+    function renderDateLetters(day) {
+      if (!chokData || !chokData.dateLetters) return;
+
+      const md = dayOfYearToMonthDay(day);
+      const matching = chokData.dateLetters.filter(dl => dl.month === md.month && dl.day === md.day);
+
+      const section = document.getElementById('dateLettersSection');
+      const content = document.getElementById('dateLettersContent');
+
+      if (matching.length === 0) {
+        section.style.display = 'none';
+        return;
+      }
+
+      section.style.display = 'block';
+      let html = '';
+      for (const dl of matching) {
+        for (const letter of dl.letters) {
+          html += '<div class="date-letter-card">' +
+            '<p class="letter-info">Ebay HaNachal Letter ' + letter.num + ' (Part ' + letter.part + ')</p>' +
+            '<p class="letter-sub">Written on this day: ' + dl.hebrewDate + '</p>' +
+            '<a href="' + letter.url + '">Read Letter \u2192</a>' +
+          '</div>';
+        }
+      }
+      content.innerHTML = html;
+    }
+
+    function renderBonus(day) {
+      if (!chokData || !chokData.bonus) return;
+
+      const bonus = chokData.bonus;
+      const portion = bonus.portions[day - 1];
+      if (!portion || portion.sections.length === 0) {
+        document.getElementById('bonusSection').style.display = 'none';
+        return;
+      }
+
+      document.getElementById('bonusSection').style.display = 'block';
+      const sections = portion.sections;
+      const first = sections[0];
+      const last = sections[sections.length - 1];
+      let ref = sections.length === 1
+        ? bonus.sectionLabel + ' ' + first.num
+        : bonus.sectionLabel + ' ' + first.num + '–' + last.num;
+
+      document.getElementById('bonusContent').innerHTML =
+        '<div class="book-card" data-book="' + bonus.id + '" data-day="' + day + '">' +
+          '<div class="card-header">' +
+            '<div>' +
+              '<p class="book-name-he">' + bonus.hebrewTitle + '</p>' +
+              '<p class="book-name-en">' + bonus.title + '</p>' +
+            '</div>' +
+            '<button class="check-btn' + (isBookDoneForDay(bonus.id, day) ? ' checked' : '') + '" data-book="' + bonus.id + '" data-day="' + day + '">' +
+              (isBookDoneForDay(bonus.id, day) ? '\u2713' : '') +
+            '</button>' +
+          '</div>' +
+          '<p class="section-ref">' + ref + ' (Part ' + first.part + ')</p>' +
+          '<a href="' + first.url + '" class="read-link">Read \u2192</a>' +
+        '</div>';
+    }
+
+    function renderAll() {
+      const day = currentDay;
+
+      // Header
+      document.getElementById('hebrewDateDisplay').textContent = dayOfYearToHebrewDate(day);
+      document.getElementById('dayNumber').textContent = 'Day ' + day + ' of ' + DAYS_IN_YEAR;
+      const percent = Math.round((day / DAYS_IN_YEAR) * 100);
+      document.getElementById('progressFill').style.width = percent + '%';
+      document.getElementById('progressText').textContent = 'Day ' + day + ' of ' + DAYS_IN_YEAR + ' \u2014 ' + percent + '% through the year';
+      document.getElementById('dayPicker').value = day;
+
+      // Stats
+      document.getElementById('streakCount').textContent = getStreak();
+      document.getElementById('completedCount').textContent = getCompletedDays();
+      document.getElementById('overallPercent').textContent = Math.round((getCompletedDays() / DAYS_IN_YEAR) * 100) + '%';
+
+      if (!chokData) return;
+
+      // Portions grid
+      let html = '';
+      for (const book of chokData.books) {
+        html += renderBookCard(book, day);
+      }
+      document.getElementById('portionsGrid').innerHTML = html;
+
+      // Date letters
+      renderDateLetters(day);
+
+      // Bonus
+      renderBonus(day);
+
+      // Load previews asynchronously
+      loadPreviews();
+    }
+
+    async function loadPreviews() {
+      const previewEls = document.querySelectorAll('.section-preview[data-url]');
+      for (const el of previewEls) {
+        const url = el.dataset.url;
+        if (!url || el.dataset.loaded) continue;
+        el.dataset.loaded = 'true';
+        try {
+          const resp = await fetch(url + '.json');
+          if (!resp.ok) continue;
+          const data = await resp.json();
+          if (data.segments && data.segments.length > 0) {
+            const text = data.segments[0].he || '';
+            // Show first ~100 chars
+            el.textContent = text.substring(0, 120) + (text.length > 120 ? '...' : '');
+          }
+        } catch(e) {
+          // silent
+        }
+      }
+    }
+
+    // === Event handlers ===
+
+    function setupEvents() {
+      document.getElementById('prevDay').addEventListener('click', function() {
+        currentDay = currentDay <= 1 ? DAYS_IN_YEAR : currentDay - 1;
+        renderAll();
+      });
+
+      document.getElementById('nextDay').addEventListener('click', function() {
+        currentDay = currentDay >= DAYS_IN_YEAR ? 1 : currentDay + 1;
+        renderAll();
+      });
+
+      document.getElementById('todayBtn').addEventListener('click', function() {
+        currentDay = getDayOfYear(new Date());
+        renderAll();
+      });
+
+      document.getElementById('resetBtn').addEventListener('click', function() {
+        currentDay = 1;
+        renderAll();
+      });
+
+      document.getElementById('dayPicker').addEventListener('change', function() {
+        let val = parseInt(this.value, 10);
+        if (isNaN(val) || val < 1) val = 1;
+        if (val > DAYS_IN_YEAR) val = DAYS_IN_YEAR;
+        currentDay = val;
+        renderAll();
+      });
+
+      // Delegate checkbox clicks
+      document.addEventListener('click', function(e) {
+        const btn = e.target.closest('.check-btn');
+        if (!btn) return;
+        const bookId = btn.dataset.book;
+        const day = parseInt(btn.dataset.day, 10);
+        toggleBookDone(bookId, day);
+        renderAll();
+      });
+    }
+
+    // === LT Calendar Override ===
+    let ltCalendarMap = null;
+    let ltUndatedIndex = 0; // tracks which undated prayer we're on
+
+    function getLtPrayerForDay(day) {
+      if (!ltCalendarMap) return null;
+      const md = dayOfYearToMonthDay(day);
+      // Check if there's a dated prayer for this Hebrew date
+      const monthMap = ltCalendarMap.dateMap[md.month];
+      if (monthMap && monthMap[md.day]) {
+        const prayers = monthMap[md.day];
+        return prayers.map(p => ({
+          part: p.part,
+          num: p.num,
+          url: '/reader/likutay-tefilos/' + p.part + '/' + p.num,
+          label: 'Prayer ' + p.num
+        }));
+      }
+      // No dated prayer for today — use next undated prayer in sequence
+      if (ltCalendarMap.undated && ltCalendarMap.undated.length > 0) {
+        const idx = day % ltCalendarMap.undated.length;
+        const p = ltCalendarMap.undated[idx];
+        return [{
+          part: p.part,
+          num: p.num,
+          url: '/reader/likutay-tefilos/' + p.part + '/' + p.num,
+          label: 'Prayer ' + p.num
+        }];
+      }
+      return null;
+    }
+
+    // === Init ===
+
+    async function init() {
+      setupEvents();
+      renderAll(); // initial render with loading state
+
+      try {
+        const [chokResp, ltResp] = await Promise.all([
+          fetch('/chok-breslov.json'),
+          fetch('/lt-calendar-map.json')
+        ]);
+        if (!chokResp.ok) throw new Error('Could not load schedule');
+        chokData = await chokResp.json();
+        if (ltResp.ok) ltCalendarMap = await ltResp.json();
+      } catch(e) {
+        document.getElementById('portionsGrid').innerHTML =
+          '<p class="loading-msg">Could not load daily study schedule. Please run: <code>node scripts/build-chok-breslov.cjs</code></p>';
+        return;
+      }
+
+      // Override LT portions with calendar-based assignments
+      if (chokData && ltCalendarMap) {
+        const ltBook = chokData.books.find(b => b.id === 'likutay-tefilos');
+        if (ltBook) {
+          for (let day = 1; day <= 354; day++) {
+            const ltPrayers = getLtPrayerForDay(day);
+            if (ltPrayers && ltBook.portions[day - 1]) {
+              ltBook.portions[day - 1].sections = ltPrayers;
+            }
+          }
+        }
+      }
+
+      renderAll();
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  })();
+  </script>
+</Layout>

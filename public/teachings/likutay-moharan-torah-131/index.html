@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 131</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 131</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה אלא על הר סיני. וחכמינו, זכרונם לברכה, אמרו (שם ה:), שתפלת השפל אין נמאסת, כמו שכתוב (תהלים נ&quot;א): &quot;לב נשבר&quot; וכו&#39;. ועל ידי תפלה שהיא במסירת נפש, שמבטל כל גשמיותו ואין גבול, וכשאין גבול, אזי יכול להשיג ה
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+131 - If He Needs to Fear and Be Afraid from Honor
+One must fear and dread honor, for honor is a grave danger—jeopardizing one’s life—because honor judges all judgments. As it is written: “King of honor” (Psalms 24:10). Honor represents regal authority that renders judgment, and all scrutinize and ask: “Who is this King of honor?” (Exodus 29:46)—is he truly worthy? The phrase: “And they shall be sanctified in My honor” (Leviticus 22:32) is interpreted not as “in My honor” but “in My honored [status]” (Zevachim 115b). Too much honor may lead to spiritual death. One is weighed in balances: even a minute failure in honor renders the scale of guilt decisive. This is referred to as “scales of justice” (Leviticus 19:36), linking divine justice and regal honor (see Tikkunim, Ma’amar Patach Eliyahu).
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

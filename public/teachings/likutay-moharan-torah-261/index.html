@@ -1,0 +1,57 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 261</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 261</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה מבקשין לקבל נקדות ולהצטיר מפיו, הינו על ידי שפיו ידבר ההשתוקקות והכסופין דקדשה שלו, שעל ידי זה נגמרין ויוצאין הנפשות, ונעשין נקדות להאותיות, ונצטירו ונעשין כלי לקבל טוב. כי על ידי הנקדות, נזדוגו ונצטרפו האותיות כנ&quot;ל:<br>
+<br>
+וזה שכתוב: &quot;תורי זהב נעשה לך עם נקדות הכסף&quot;, כי זהב הוא בחינות זווג, כמו שכתוב (איוב ל&quot;ז): &quot;מצפון זהב יאתה&quot;. ואתערותא דזווגא מסטרא דשמאלא, שהוא צפון (זהר וישב דף קפ&quot;ו:): וזהו: &quot;תורי זהב נעשה לך&quot;, שאותיות ה
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+261 - WHEN A PERSON FALLS FROM HIS LEVEL KNOW THAT FROM HEAVEN IT IS
+When a person falls from his level know that from heaven it is because distancing beginning of drawing near. Therefore fell that he will arouse more to draw near to the Name blessed be He. And his advice that he begin anew to enter in service of Hashem as if not begun yet at all from world. And this rule great in service of Hashem that need actually each day to begin anew. [And see matter this more in several places in books of our rabbi, memory his to blessing how much needs the person to strengthen in service of Hashem and not to fall from any thing in the world only to begin each time anew see well in matter this, and it will be sweet to you forever].
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

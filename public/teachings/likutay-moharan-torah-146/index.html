@@ -1,0 +1,64 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 146</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 146</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה שבכתב, שצריכין דוקא לכתבה [כל זה שמעתי מפיו הקדוש בעת שכתבתי לפניו
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+LIKUTEY MOHARAN 146
+“The Testimony of Hashem is Faithful”
+[In the words of our Master, of blessed memory] — "The testimony of Hashem is faithful, making wise the simple" (Psalms 19:8).
+For this matter is difficult: how can the Torah, which is referred to as a “woman,” be capable of testifying? After all, a woman is disqualified from giving testimony.
+However, "making wise the simple" — it is for this reason that she is able to testify. As brought in Choshen Mishpat, Laws of Testimony, Siman 35, Se’if 14: It is an ordinance of the early authorities that in a place where men are not usually found, women are deemed credible.
+And it is known that the primary cravings [of the evil inclination] occur in private, in the aspect of: "Stolen waters are sweet" (Proverbs 9:17), where people do not commonly frequent.
+Yet the Torah stands there and calls to him: “Whoever is simple, let him turn in here” (Proverbs 9:4); and as mentioned in the Zohar (Zohar, Acharei Mot 58a).
+But due to the strength of his desire, he does not hear her call. And after he has completed the act of his craving, he immediately senses her voice, and instantly regrets the transgression.
+This regret is the aspect of "making wise the simple", because at the time of the transgression, a spirit of foolishness was upon him. But once the act is done, he inclines his ear to the words of the Torah, becomes wise, and repents.
+For this reason, the Torah — although she is called a woman — is fit to testify, because she stands in a place where men are not usually present, as explained above.
+[From Siman 144 until here are the words of our Rebbe, of blessed memory]
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

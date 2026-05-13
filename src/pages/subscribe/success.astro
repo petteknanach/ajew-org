@@ -1,0 +1,180 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Subscription Activated | A Jew" description="Welcome to the NNNNM community">
+  <style>
+    .success-page { max-width: 600px; margin: 4rem auto; padding: 2rem; text-align: center; }
+    .success-icon { font-size: 4rem; margin-bottom: 1rem; }
+    .success-title { font-family: var(--font-hebrew); font-size: 2rem; color: #059669; margin-bottom: 1rem; }
+    .success-message { font-size: 1.1rem; color: #333; line-height: 1.6; margin-bottom: 2rem; }
+    .status { padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-weight: 600; }
+    .status-loading { background: #fef3c7; color: #92400e; }
+    .status-success { background: #d1fae5; color: #065f46; }
+    .status-error { background: #fee2e2; color: #991b1b; }
+    .status-info { background: #dbeafe; color: #1e40af; }
+    .chat-link { display: inline-block; padding: 0.8rem 2rem; background: #059669; color: white; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 1.1rem; margin: 0.5rem; }
+    .chat-link:hover { background: #047857; }
+    .secondary-link { display: inline-block; padding: 0.8rem 2rem; background: #744210; color: white; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 1.1rem; margin: 0.5rem; }
+    .help { margin-top: 2rem; font-size: 0.95rem; color: #555; }
+    .help a { color: #744210; font-weight: 600; }
+  </style>
+
+  <div class="success-page">
+    <div class="success-icon">&#10003;</div>
+    <h1 class="success-title">Thank You!</h1>
+    <p class="success-message">Your payment has been received. Verifying your subscription...</p>
+    <div class="status status-loading" id="status">Checking subscription status...</div>
+    <div id="actionArea"></div>
+    <div class="help">
+      Trouble? Contact <a href="mailto:naanaach@gmail.com">naanaach@gmail.com</a> with the email you paid with.
+    </div>
+  </div>
+
+  <script>
+    import { supabase } from '../../lib/supabaseClient';
+
+    const statusDiv = document.getElementById('status');
+    const actionArea = document.getElementById('actionArea');
+
+    function setStatus(cls, text) {
+      statusDiv.className = 'status ' + cls;
+      statusDiv.textContent = text;
+    }
+
+    function renderActions(html) {
+      actionArea.innerHTML = html;
+    }
+
+    async function checkSubscription(email) {
+      try {
+        const res = await fetch('/api/subscriptions?email=' + encodeURIComponent(email));
+        const data = await res.json();
+        return data && data.subscribed && data.tier && data.tier !== 'free' ? data : null;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    async function pollForActivation(email, maxAttempts = 8) {
+      for (let i = 0; i < maxAttempts; i++) {
+        const sub = await checkSubscription(email);
+        if (sub) return sub;
+        await new Promise(r => setTimeout(r, 2000)); // wait 2s between tries
+      }
+      return null;
+    }
+
+    async function manualActivate(email, username) {
+      const expiry = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString();
+      const { error } = await supabase
+        .from('subscriptions')
+        .upsert({
+          email: email.toLowerCase(),
+          tier: 'basic',
+          expiry,
+          username,
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'email' });
+      return error;
+    }
+
+    // If Stripe returned a session_id in the URL, ask the server to reconcile
+    // the billing email with the auth email (fixes the mismatch case).
+    async function reconcileBySessionId(authEmail, sessionId) {
+      try {
+        const res = await fetch('/api/reconcile-subscription', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sessionId, authEmail })
+        });
+        return res.ok;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    async function run() {
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (!session) {
+        setStatus('status-error', 'Please log in to activate your subscription.');
+        renderActions(`
+          <a href="/auth?next=/subscribe/success" class="chat-link">Log In</a>
+          <p class="help">After logging in, come back to this page — we'll match your payment to your account.</p>
+        `);
+        return;
+      }
+
+      const email = session.user.email.toLowerCase();
+      const username = session.user.user_metadata?.display_name || email.split('@')[0];
+      const sessionId = new URLSearchParams(window.location.search).get('session_id');
+
+      // 1) Fast path: webhook already activated under auth email
+      setStatus('status-loading', 'Verifying payment with Stripe...');
+      let sub = await checkSubscription(email);
+      if (sub) {
+        setStatus('status-success', `Your ${sub.tier.toUpperCase()} subscription is active!`);
+        renderActions(`
+          <a href="/chat" class="chat-link">Enter the Chat</a>
+          <a href="/profile" class="secondary-link">My Profile</a>
+        `);
+        return;
+      }
+
+      // 2) Poll briefly (webhook may still be in-flight)
+      setStatus('status-loading', 'Waiting for payment confirmation (up to 15 seconds)...');
+      sub = await pollForActivation(email);
+      if (sub) {
+        setStatus('status-success', `Your ${sub.tier.toUpperCase()} subscription is active!`);
+        renderActions(`
+          <a href="/chat" class="chat-link">Enter the Chat</a>
+          <a href="/profile" class="secondary-link">My Profile</a>
+        `);
+        return;
+      }
+
+      // 3) Email mismatch reconciliation: if Stripe gave us a session_id, ask the
+      //    server to look up the billing email and copy the subscription to auth email.
+      if (sessionId) {
+        setStatus('status-loading', 'Linking your payment to your account...');
+        const reconciled = await reconcileBySessionId(email, sessionId);
+        if (reconciled) {
+          sub = await checkSubscription(email);
+          if (sub) {
+            setStatus('status-success', `Your ${sub.tier.toUpperCase()} subscription is active!`);
+            renderActions(`
+              <a href="/chat" class="chat-link">Enter the Chat</a>
+              <a href="/profile" class="secondary-link">My Profile</a>
+            `);
+            return;
+          }
+        }
+      }
+
+      // 4) Final fallback: manual activation button
+      setStatus('status-info', "We couldn't automatically match your payment. If you completed payment, click below to activate manually.");
+      renderActions(`
+        <button id="manualBtn" class="chat-link" style="border:none;cursor:pointer;">I paid — activate my account</button>
+        <p class="help">Make sure you used the same email on Stripe as your account: <strong>${email}</strong>.
+        If you paid with a different email, email <a href="mailto:naanaach@gmail.com">naanaach@gmail.com</a>.</p>
+      `);
+
+      document.getElementById('manualBtn').addEventListener('click', async () => {
+        setStatus('status-loading', 'Activating...');
+        const err = await manualActivate(email, username);
+        if (err) {
+          setStatus('status-error', 'Activation failed: ' + err.message + '. Please email naanaach@gmail.com.');
+        } else {
+          setStatus('status-success', 'Subscription activated! Welcome to the community.');
+          renderActions(`
+            <a href="/chat" class="chat-link">Enter the Chat</a>
+            <a href="/profile" class="secondary-link">My Profile</a>
+          `);
+        }
+      });
+    }
+
+    run();
+  </script>
+</Layout>

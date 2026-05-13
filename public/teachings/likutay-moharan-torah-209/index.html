@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 209</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 209</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה היא לשון רבנו, זכרונו לברכה, בעצמו, עד המקום שנרשם לעיל. ומשם והלאה הוא מלשוני, מה ששמעתי עוד דברים שלא נתבארו בלשונו הקדוש. ועוד לאלוה מלין, מה ששמעתי והבנתי מפיו הקדוש בעת שזכיתי לשמע מפיו הקדוש ה
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+209 - PRAYERS CORRESPONDING TO THE TAMIDIM THEY ESTABLISHED
+[In the language of our Rebbe, his memory for blessing] Prayers corresponding to the Tamidim (the Tamid was a twice daily offering in the Temple, and based upon them, the Sages established the morning and afternoon prayers) they established [Berachos 26:] because it is known that there is for every person evil prayers as our Rabbis, their memory for blessing, said (Berachos 63 according to the version of the Ein Yaakov): A thief at the tunnel calls to the Merciful, it is found after that when he stands to pray the proper prayer, then the evil prayer comes and confuses him, and this is aspects of ‘prayers corresponding’ (the Hebrew word, kinnegged, can also mean-), that it, is opposing him, and the repair for this is hospitality of a Talmud Chacham because our Sages, their memory for blessing, said a guest blesses (Berachos 46 from Proverbs 4): "And the way of tzadikim is like the light of dawn" and it is written (there 10): "Blessings to the head of the tzadik", which is aspects of eighteen blessings in the prayer (Zohar Pinchas 244 and in Tikkun 47) it is found, that by him comes the repair of the prayer, and this is the interpretation: ‘Tamidim they established’ this is aspects of hospitality of a Talmud Chacham as our Sages, their memory for blessing, said (Berachos 10:): Who hosts Talmidei Chachamim in his house it is as if he offered Tamidim.
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

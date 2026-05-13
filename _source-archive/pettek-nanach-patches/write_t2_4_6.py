@@ -1,0 +1,208 @@
+import json, os
+
+home = os.path.expanduser('~')
+reader_dir = os.path.join(home, '.openclaw/workspace/ajew-org/public/reader')
+pnc_name = "pettek-nanach-commentary"
+pnc_book_slug = pnc_name
+pnc_dir = os.path.join(reader_dir, pnc_name)
+
+torahs = {
+    4: {
+        "title_en": "U'BeYom HaBikkurim (And on the Day of the First Fruits)",
+        "title_he": "וביום הבכורים",
+        "segs": [
+            {
+                "beginner": "Rebbe Nachman opens with the verse 'And on the day of the first fruits, when you bring a new meal-offering to HaShem on your weeks, it shall be a holy convocation for you; you shall do no laborious work' (Bamidbar 28:26). The verse contains the entire teaching: tzedakah, the breaking of natural cruelty into compassion, the revelation of HaShem's will above nature, and the day of festival when no labor is needed because the world is sustained by chesed.",
+                "intermediate": "פתיחתא: 'וביום הבכורים בהקריבכם מנחה חדשה לה' בשבועותיכם מקרא קודש יהיה לכם כל מלאכת עבודה לא תעשו' (במדבר כ\"ח:כ\"ו). התורה תארגן: צדקה → שבירת אכזריות → התגלות הרצון → 'מלאכת עבודה לא תעשו' = עולם הנהוג בחסד.",
+                "scholarly": "במדבר כ\"ח:כ\"ו; ל\"מ ח\"ב סי' ד'"
+            },
+            {
+                "beginner": "'And I have commanded the ravens to sustain you' (Melachim I 17:4) — said to Eliyahu HaNavi during the famine. This is the aspect of tzedakah, for at first when one begins to give, one must break one's own cruelty and turn it to compassion. The raven (orev) is naturally cruel — it abandons its young — yet was commanded to sustain Eliyahu. This is the essence of the avodah of tzedakah: not the soft-hearted giver, but the breaking of one's own hardness.",
+                "intermediate": "'והעורבים צויתי לכלכלך' (מ\"א י\"ז:ד') = בחי' צדקה. תחלה כשמתחילים לתת — צריך לשבור את האכזריות ולהפכה לרחמנות. עיקר עבודת הצדקה — לא המרחם בטבעו אלא שבירת הקושי. *Insight*: the orev is by nature cruel; commanded to sustain — that command itself is the breaking.",
+                "scholarly": "מ\"א י\"ז:ד'; כתובות ק\"ה ע\"א; ל\"מ ח\"א סי' רמ\"ב; ל\"מ ח\"א סי' קי\"ט"
+            },
+            {
+                "beginner": "Every generous person, every donor, must pass through this 'raven' aspect — first breaking his own cruelty before turning to compassion. The truly compassionate by nature have not yet engaged the avodah; they have simply enacted their disposition. The avodah of tzedakah belongs specifically to one who must contend with himself first.",
+                "intermediate": "כל נדיבי לב, כל מי שהוא נותן — צריך לעבור תחלה דרך בחי' זו, בחי' 'והעורבים': תחלה לשבור האכזריות. *Application*: the easy giver is on the level of natural compassion; the meaningful giver is one who has overcome internal resistance.",
+                "scholarly": "ל\"מ ח\"א סי' רמ\"ב; ליקו\"ה צדקה"
+            },
+            {
+                "beginner": "For every avodah, when one wishes to enter that path of service, one must first open an opening to enter — and this is the aspect of 'all beginnings are difficult.' At the beginning, one must break and open an opening anew. Every threshold demands an act of breaking before passage; this is true of tzedakah, of tefillah, of teshuvah, of any sustained service of HaShem.",
+                "intermediate": "כל דבר ודבר מעבודת ה' — כשרוצים להכנס לדרך זו ולעבודה זו, צריך לפתוח שם פתח להכנס. וזה בחי' 'כל ההתחלות קשות' (מכילתא יתרו), כי בתחלה צריך לשבור ולפתוח פתח חדש.",
+                "scholarly": "מכילתא יתרו פ\"ב; ל\"מ ח\"א סי' ס\"ד; ל\"מ ח\"ב סי' מ\"ח"
+            },
+            {
+                "beginner": "Through every occupation and work that people perform below, the corresponding 'work' is awakened above in the work of creation, and brings vitality and illumination to that aspect of the supernal work which corresponds to the human labor below. The Zohar teaches this: human action triggers the supernal flow that mirrors it. Without our 'awakening from below' (it'aruta dil'tata), the heavens themselves remain inactive.",
+                "intermediate": "ע\"י העסקים והמלאכות שעושים בנ\"א — מתעורר אותו ציור של מלאכה למעלה במלאכת בראשית, ומביא חיות והארה לאותו ציור (זהר). *Architecture*: human labor below ↔ corresponding מלאכה in מעשה בראשית; both feed each other through it'aruta dil'tata.",
+                "scholarly": "זהר תרומה דף קל\"א; זהר ויחי דף ר\"מ; ל\"מ ח\"ב סי' ע\"ב"
+            },
+            {
+                "beginner": "But there is a higher level still: the worlds of complete kindness, where there is no awakening from below at all. Before creation, there was complete absence — no existence to awaken anything. Yet HaShem created the worlds entirely through His chesed without any awakening from below: 'A world of chesed shall be built' (Tehillim 89:3). And once the worlds came into being, the dimension of olam chesed yibaneh remains accessible — the future world is to be sustained on this level alone.",
+                "intermediate": "אחר העדר המוחלט, שלא היה מציאות שיתעורר מלמטה — ואעפ\"כ ברא עולמות מתוך חסדו, בלא התעוררות מלמטה כלל, בחי' (תהלים פ\"ט:ג') 'עולם חסד יבנה'. *Insight*: there are two modes of bestowal — through human action and through pure chesed; the latter is higher and leaves no debt.",
+                "scholarly": "תהלים פ\"ט:ג'; זהר בראשית דף מ\"ז; ל\"מ ח\"ב סי' מ\"ה"
+            },
+            {
+                "beginner": "'They shall be called priests of HaShem' (Yeshayahu 61:5-6) — priests of HaShem specifically, the aspect of chesed, the aspect of 'a world of chesed shall be built.' At this level they will be called priests of HaShem because they do not need to do any work; the world is maintained entirely by His chesed. The kohen is the model: he does not plough or sow, yet eats from the kindness flowing through the Mikdash.",
+                "intermediate": "'ואתם כהני ה' תקראו' (ישעיה ס\"א:ה'-ו') — כהני ה' דייקא, בחי' חסד, בחי' 'עולם חסד יבנה'. הכהן אינו עוסק במלאכה, ואעפ\"כ ניזון בחסד. *Model*: kohen = future paradigm of olam chesed.",
+                "scholarly": "ישעיה ס\"א:ה'-ו'; ספרי במדבר; ל\"מ ח\"א סי' ס\"ב"
+            },
+            {
+                "beginner": "But meanwhile, in this world, the verse 'For You pay a man according to his deed' (Tehillim 62:13) is in force — HaShem pays according to one's deeds and occupations. Why? Because the chesed is delayed at Him, blessed be He, and He does not flow it upon us automatically. We must earn — not because the kindness is unavailable, but because we are not yet vessels capable of receiving it without earning. The earning is itself the rectification of the vessel.",
+                "intermediate": "אבל בינתיים: 'ואתה תשלם לאיש כמעשהו' (תהלים ס\"ב:י\"ג) — לפי מעשיו ועסקיו הוא ית' משלם. כי החסד מתעכב אצלו ית' ואינו משפיעו עלינו, וצריכים אנו לעשות. *Why*: the holding-back of chesed is for the sake of building the recipient.",
+                "scholarly": "תהלים ס\"ב:י\"ג; ל\"מ ח\"א סי' ב'; ל\"מ ח\"ב סי' מ\"ה"
+            },
+            {
+                "beginner": "Through fear of Heaven, an engraving and a conduit are formed to receive the chesed. Without yir'ah, even when chesed is poured, there is no vessel to hold it; with yir'ah, the channel is shaped. As the verse hints: 'And the lawgiver between his feet' (Bereshit 49:10) — 'foot' is the aspect of yir'ah, which is the aspect of 'end,' as it is written 'The end of the matter — fear G-d' (Kohelet 12:13). Yir'ah is the foundation, the foot, the boundary that allows chesed to land.",
+                "intermediate": "ע\"י יראה נעשית חקיקה וצינור לקבל בו החסד, בחי' (בראשית מ\"ט:י') 'ומחוקק מבין רגליו' — רגל = יראה = סוף, כדכתיב (קהלת י\"ב:י\"ג) 'סוף דבר... את האלקים ירא'. *Architecture*: chesed = water; yir'ah = vessel/channel; without channel, water spills.",
+                "scholarly": "בראשית מ\"ט:י'; קהלת י\"ב:י\"ג; ל\"מ ח\"א סי' ט\"ו"
+            },
+            {
+                "beginner": "The three regalim each reveal that all is by HaShem's will, that there is no obligation of nature whatsoever. On Pesach, the exodus — He took us from Egypt with awesome signs, breaking nature itself. On Shavuot, the giving of the Torah with awesome signs. On Sukkot, the surrounding clouds of glory — supernatural protection. Each festival declares: nature is subordinate to ratzon. The 'mo'ed' is the appointed time when Will visibly overrules necessity.",
+                "intermediate": "שלש רגלים מגלים שהכל ברצונו, ואין שום חיוב טבע: פסח = יצי\"מ באותות נוראים; שבועות = מ\"ת באותות נוראים; סוכות = ענני הכבוד. *Pattern*: each regel = ratzon overruling teva.",
+                "scholarly": "שמות י\"ב; שמות י\"ט-כ'; ויקרא כ\"ג; ל\"מ ח\"א סי' י\"ד"
+            },
+            {
+                "beginner": "The opposing claim — that all is according to natural obligation — is the snake's wisdom. If all is mere nature, there is no vengeance on the wicked, for all proceeds by causation alone. But the verse declares: 'The righteous shall rejoice when he sees vengeance; he shall wash his steps in the blood of the wicked' (Tehillim 58:11). His steps specifically — for the lower dimension (action, foot, yir'ah) is where vengeance is enacted, demonstrating that ratzon governs even the realm that seemed mechanical.",
+                "intermediate": "ההיפך — שהכל לפי חיוב טבע — אין נקמה ברשעים, שהכל נוהג רק בסדר הטבע ח\"ו. אך 'ישמח צדיק כי חזה נקם, פעמיו ירחץ בדם הרשע' (תהלים נ\"ח:י\"א) — פעמיו דייקא, שעל הרגל (יראה, פעולה) מתבצעת הנקמה. *Demonstration*: vengeance proves ratzon over teva.",
+                "scholarly": "תהלים נ\"ח:י\"א; שיר השירים רבה ז'; ל\"מ ח\"ב סי' ד'"
+            },
+            {
+                "beginner": "Through this revelation — that there is a G-d who judges by will, who rewards the righteous, and who takes vengeance on the wicked — the joy of yom tov is made. The festival joy is precisely the joy of the revealed will, the joy of breaking out of the prison of necessity into the open space of ratzon. 'You shall rejoice in your festival' is not arbitrary celebration but the felt response to this revelation.",
+                "intermediate": "ע\"י זה: 'ישמח צדיק' — וזו בחי' שמחת יום טוב, ע\"י התגלות הרצון בימים טובים. *Phenomenology*: yom-tov joy = response to ratzon-revealed.",
+                "scholarly": "דברים ט\"ז:י\"ד; ל\"מ ח\"ב סי' ד'"
+            },
+            {
+                "beginner": "Subjugating the 'evil beasts' — those who teach that nature is supreme — is achieved through a great sage in holiness who can connect all the wills back to their root in the supernal Will. This is the aspect of the ascent of Moshe Rabbenu (Zohar Yitro 88b; Naso 129a), and it is the aspect of the metzach — the forehead — of the supernal Will, which overpowers the metzach of the snake (the forehead of the wisdom of nature).",
+                "intermediate": "הכנעת חיות הרעות = חכמי הטבע — ע\"י חכם גדול בקדושה המקשר כל הרצונות לשרש הרצון, בחי' עליית משה רבינו (זהר יתרו פ\"ח ע\"ב; נשא קכ\"ט ע\"א) = מצח הרצון נגד מצח הנחש. *Battle*: forehead vs forehead, ratzon vs teva.",
+                "scholarly": "זהר יתרו פ\"ח ע\"ב; זהר נשא קכ\"ט ע\"א; ל\"מ ח\"א סי' ב'"
+            },
+            {
+                "beginner": "Sometimes, however, the forehead of the snake prevails in action — through a private individual who draws his wisdom from this dark root, the wisdom of nature, and uses it to teach that all is according to nature, ch\"v. There may even be those who enter holiness through this forehead — a corruption that masquerades as holy intelligence — and they wreak destruction. The defense is the elder of the holy: one who in every day of his life adds light of holiness and daas.",
+                "intermediate": "ולפעמים מצח הנחש גובר במעשה — ע\"י איש פרטי היונק חכמתו ממצח הנחש, ומראה בחכמתו שהכל לפי הטבע ח\"ו, ויש שנכנסים בקדושה דרך מצח הנחש (אחיזת ערבוב). *Defense*: elder who adds in every day קדושה ודעת.",
+                "scholarly": "זהר וירא דף ק\"ב; ל\"מ ח\"א סי' ע\"ז; ליקו\"ה גילוח"
+            },
+            {
+                "beginner": "The proper avodah of one's days is to add, in every successive day, more light of holiness and daas than the day before. The Sages teach (Kinim ch. 3): 'The elders of Torah scholars — as long as they age, their daas is settled upon them.' This is the opposite of the elders who chase the world: those grow more confused with age; the holy elders grow clearer. Each day must contain more than the one before; this 'addition' is what defeats the metzach of the snake.",
+                "intermediate": "ימי חייו — להוסיף בכל יום ויום הבא אחריו תוספת אור הקדושה והדעת, כדאמרו רז\"ל (קינים פ\"ג): 'זקני תלמידי חכמים, כל זמן שמזקינים — דעתן מתישבת עליהם'. *Symmetry*: ignorant elders confuse; holy elders clarify; the test is daily addition.",
+                "scholarly": "קינים פ\"ג מ\"ו; שבת קנ\"ב ע\"א; ל\"מ ח\"א סי' ס'"
+            },
+            {
+                "beginner": "'And He called the light day' (Bereshit 1:5) — every day must shine more than the previous one. But when the elders, the long-lived of the generation, blemish their days and do not add light of holiness and daas in each day, from this very blemish the metzach of the snake sucks the wisdom of nature. The elders' failure to grow becomes the snake's nourishment. Stagnation in the holy elder is itself the food of the unholy wisdom.",
+                "intermediate": "'ויקרא לאור יום' (בראשית א':ה') = כל יום צריך להאיר יותר. וכשהזקנים פוגמים בימיהם ואינם מוסיפים — מזה יונק מצח הנחש את חכמת הטבע. *Causation*: stagnation of holy elders = nourishment of unholy nature-wisdom.",
+                "scholarly": "בראשית א':ה'; שבת קנ\"ב ע\"א; ל\"מ ח\"א סי' ס'"
+            },
+            {
+                "beginner": "And tzedakah is what avails for this — through tzedakah one repairs and raises the blemish of the fall of the days and the daas of the elders. Tzedakah's power is to take what fell and lift it back to its root. The breaking-of-cruelty-into-compassion at the heart of tzedakah is the same movement that breaks the stagnation of the elder back into living growth. This is why tzedakah extends life: not as superstition but as mechanism.",
+                "intermediate": "וצדקה מועלת לזה — שע\"י צדקה מתקנים ומרימים פגם נפילת הימים והדעת של הזקנים. *Mechanism*: tzedakah = the same breaking-and-reascent motion; applied to time, it lifts fallen days back into ascending light.",
+                "scholarly": "ב\"ב י' ע\"א; ל\"מ ח\"א סי' רמ\"ב"
+            },
+            {
+                "beginner": "This is the aspect of the war of David and Goliath (Shmuel I 17). Goliath wished to demonstrate, through his nature-wisdom, that all is according to nature — for he sucked from the metzach of the snake. The verse describes 'a forehead of bronze on his legs' (Shmuel I 17:6) — meaning he hung all causes on the necessity of nature, with bronze (the substance of judgments and brute force) at his foundation. He was the metzach-of-the-snake walking on legs of bronze.",
+                "intermediate": "וזה בחי' מלחמת דוד וגלית (שמ\"א י\"ז): גלית רצה להראות בחכמתו שהכל לפי הטבע, יונק ממצח הנחש, בחי' 'ומצחת נחושת על רגליו' (שמ\"א י\"ז:ו') — תלה הכל בחיוב הטבע. *Symbolism*: bronze (low metal of din) on legs (yir'ah/foundation) = inverted yir'ah, fear of nature instead of fear of HaShem.",
+                "scholarly": "שמ\"א י\"ז:ו'; ל\"מ ח\"א סי' ב'; ל\"מ ח\"ב סי' ד'"
+            },
+            {
+                "beginner": "The sustenance of the metzach of the snake is hinted at in 'Send your bread upon the face of the waters, for in the multitude of days you shall find it' (Kohelet 11:1) — the power of tzedakah finds in the multitude of days, in the long-lived. Through tzedakah one raises the fallen days; David, the king of tzedakah (the verse 'and David made tzedakah and mishpat for all his people'), used precisely this avodah to fell Goliath. The stone in the sling carried the power of broken-cruelty-turned-compassion.",
+                "intermediate": "'שלח לחמך על פני המים כי ברב הימים תמצאנו' (קהלת י\"א:א') — כח הצדקה במים = ברב הימים = בארוכי ימים. דוד מלך הצדקה ('ויהי דוד עושה משפט וצדקה לכל עמו') — בכוח הצדקה הפיל את גלית.",
+                "scholarly": "קהלת י\"א:א'; שמ\"ב ח':ט\"ו; ל\"מ ח\"א סי' רמ\"ב"
+            },
+            {
+                "beginner": "Through tzedakah the aspect of the metzach of Will is strengthened. The essence of the avodah of tzedakah is the breaking of cruelty into compassion (the raven-aspect), and from this very breaking the aspect of supernal Will is empowered. The connection: every act of breaking-and-overcoming below stirs the corresponding overcoming above; cruelty broken below stirs ratzon-revealed above.",
+                "intermediate": "ע\"י צדקה — מצח הרצון מתחזק. עיקר עבודת הצדקה: 'והעורבים צויתי' = שבירת אכזריות → רחמנות, ומזה דייקא מצח הרצון מתחזק. *Causation*: chiseled cruelty below = chiseled metzach above.",
+                "scholarly": "מ\"א י\"ז:ד'; ל\"מ ח\"א סי' רמ\"ב; ל\"מ ח\"ב סי' ד'"
+            },
+            {
+                "beginner": "The Rashbam relates a story he witnessed: a beautiful stone in the sea, encircled by a sea-monster (tannin) that came, stirred, and tried to swallow the ship. A female raven (orev) cut the head of the sea-monster, the waters turned to blood from the abundance, and the monster died. The story embeds the Torah: the raven (tzedakah) defeats the tannin (the swallowing nature-power); the head (forehead) is severed; blood (judgment-water) erupts when the forehead of the snake is cut.",
+                "intermediate": "סיפור הרשב\"ם: אבן יפה בים, סובבה תנין הים, באה עורב נקבה וחתכה ראש התנין, המים נהפכו לדם מרוב הדם הגדול. *Allegory*: orev = tzedakah; tannin = forehead-of-snake; cutting the head = the war of metzach against metzach; bloody waters = the dam-of-din released.",
+                "scholarly": "פירוש רשב\"ם על קהלת; ל\"מ ח\"ב סי' ד'"
+            },
+            {
+                "beginner": "Through tzedakah — its essence being the raven-aspect, breaking cruelty to compassion — they prevail over the metzach of the snake, the wisdom of nature. From the very same place from which the snake drew its nourishment, now the tzaddik draws its defeat. The avodah is in the same ground; only the direction of breaking has flipped.",
+                "intermediate": "ע\"י צדקה — בחי' עורב, 'והעורבים צויתי', שבירת אכזריות לרחמנות — מתגברים על מצח הנחש = חכמת הטבע. *Battle-ground*: same metzach, opposite movement — break-into-mercy vs harden-into-causation.",
+                "scholarly": "ל\"מ ח\"א סי' רמ\"ב; ל\"מ ח\"ב סי' ד'"
+            },
+            {
+                "beginner": "All these aspects are made through the avodah described above, for tzedakah is the aspect of opening the mouth of the wound — 'You shall surely open' (paro'ach tiftach, Devarim 15:8) — and chochmah is the aspect of the power of drawing-out, in the aspect of 'the drawing of chochmah is from pearls' (Iyov 28:18), drawn from before and from within. Tzedakah opens the wound; chochmah draws healing through the opening.",
+                "intermediate": "כל הבחינות הנ\"ל — נעשות ע\"י העבודה הנ\"ל: צדקה = פתיחת פה הפצע, בחי' 'פתוח תפתח' (דברים ט\"ו:ח'); חכמה = כח המשיכה, בחי' 'ומשך חכמה מפנינים' (איוב כ\"ח:י\"ח). *Sequence*: tzedakah opens; chochmah draws.",
+                "scholarly": "דברים ט\"ו:ח'; איוב כ\"ח:י\"ח; ל\"מ ח\"א סי' ר\"כ"
+            },
+            {
+                "beginner": "Through the revelation of the will, 'you shall do no laborious work.' For through the revelation of ratzon, fear (yir'ah) is made; through fear, kindness (chesed) is poured; and then there is no need to do any work, for the world is maintained by His chesed — 'a world of chesed shall be built.' Then 'And strangers shall stand and pasture your flocks' (Yeshayahu 61:5) — the verse that opens the prophecy of priests-of-HaShem. The day of the first fruits is the model of the world to come.",
+                "intermediate": "ע\"י התגלות הרצון — 'מלאכת עבודה לא תעשו', שע\"י התגלות הרצון נעשית יראה, וע\"י יראה נשפע חסד, ואז אין צריך לעשות מלאכה, שהעולם מתקיים בחסדו: 'עולם חסד יבנה'. ואז 'ועמדו זרים ורעו צאנכם' (ישעיה ס\"א:ה') — 'ואתם כהני ה' תקראו'. *Synthesis*: yom-bikkurim = miniature olam haba.",
+                "scholarly": "במדבר כ\"ח:כ\"ו; ישעיה ס\"א:ה'; תהלים פ\"ט:ג'; ל\"מ ח\"ב סי' ד'"
+            },
+        ]
+    },
+    6: {
+        "title_en": "Al Yedei Ze'ah Tovah Na'asis Simchah (Through Good Sweat, Joy is Made)",
+        "title_he": "ע\"י זעה טובה נעשית שמחה",
+        "segs": [
+            {
+                "beginner": "Through good sweat — the sweat one produces while exerting oneself in matters of holiness — joy is made. This is the aspect of 'And you shall rejoice in your festival' (Devarim 16:14), the joy of yom tov, which is not the trivial joy of leisure but the joy that emerges from labor turned holy. The body that has sweated for HaShem becomes the body that can hold festival joy.",
+                "intermediate": "ע\"י זעה טובה (כשמזיע מדבר שבקדושה) — נעשית שמחה, בחי' (דברים ט\"ז:י\"ד) 'ושמחת בחגך' = שמחת יום טוב (ולא דוקא שמחה גופנית). *Insight*: sweat in kedushah is the labor-cost of yom-tov joy.",
+                "scholarly": "דברים ט\"ז:י\"ד; שבת ק\"ל ע\"א; ל\"מ ח\"ב סי' ו'"
+            },
+            {
+                "beginner": "And this is what we see clearly: the sick person, immediately when he begins to sweat, joy is drawn upon him. The body's healing is signaled by sweat; the soul's healing carries the same sign. Holy sweat — sweat from labor in mitzvos, in tefillah, in study — itself draws down simchah, just as fever-sweat draws down the breaking of illness. The mechanism is one in body and soul.",
+                "intermediate": "וזה שאנו רואים — שהחולה, מיד כשמזיע, שמחה נמשכת עליו, כי ע\"י זעה נעשית שמחה כנ\"ל. *Empirical confirmation*: the body's healing-sign (sweat) and the soul's healing-sign (simchah) share the same trigger.",
+                "scholarly": "שבת קכ\"ט ע\"א; ל\"מ ח\"ב סי' ו'"
+            },
+        ]
+    },
+}
+
+written = []
+for n, info in torahs.items():
+    if not info.get('segs'):
+        continue
+    segs_out = []
+    for s in info['segs']:
+        segs_out.append({
+            "beginner": {"en": s["beginner"], "he": ""},
+            "intermediate": {"en": s["intermediate"], "he": ""},
+            "scholarly": {"en": "", "he": s["scholarly"]}
+        })
+    data = {
+        "id": f"pnc-2-{n}",
+        "book": pnc_name,
+        "part": 2,
+        "torah": n,
+        "title": f"T{n} (Tinyana) PNC - {info['title_en']}",
+        "hebrewTitle": info['title_he'],
+        "author": "Pettek Nanach",
+        "segments": segs_out
+    }
+    fname = os.path.join(pnc_dir, f"tinyana-{n}.json")
+    with open(fname, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+    with open(fname, 'r', encoding='utf-8') as f:
+        rt = json.load(f)
+    assert rt['id'] == data['id']
+    assert len(rt['segments']) == len(segs_out)
+    written.append((n, len(segs_out)))
+    print(f"OK Tinyana T{n}: wrote {len(segs_out)} segs".encode('ascii','replace').decode())
+
+# Register in lm-commentaries.json under '2'
+cpath = os.path.join(home, '.openclaw/workspace/ajew-org/src/data/lm-commentaries.json')
+with open(cpath, 'r', encoding='utf-8') as f:
+    cdata = json.load(f)
+if '2' not in cdata:
+    cdata['2'] = {}
+for n, info in torahs.items():
+    sn = str(n)
+    if sn not in cdata['2']:
+        cdata['2'][sn] = {}
+    label = f"Pettek Nanach Running Commentary - Tinyana T{n} ({info['title_en']})"
+    cdata['2'][sn]['running_commentary'] = {
+        "book": pnc_name,
+        "slug": pnc_book_slug,
+        "status": "available",
+        "url": f"/reader/{pnc_book_slug}/tinyana-{n}.json",
+        "layers": ["beginner", "intermediate", "scholarly"],
+        "author": "Pettek Nanach",
+        "label": label
+    }
+with open(cpath, 'w', encoding='utf-8') as f:
+    json.dump(cdata, f, ensure_ascii=False, indent=2)
+
+print(f"\nDone: {written}")

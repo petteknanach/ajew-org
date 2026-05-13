@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><title>סקות נחעבי</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Primary sources referenced in the teachings and commentary." />
+  <meta property="og:title" content="סקות" />
+  <meta property="og:url" content="https://petteknanach.github.io/ajew-org/sources/" />
+  <link rel="stylesheet" href="../_astro/styles.css">
+</head>
+<body>
+  <header><h1><a href="/" style="color:inherit">אישי</a></h1><nav id="nav"></nav></header>
+  <main>
+    <h1>סקות נחעבי</h1>
+    <p>Primary sources referenced in teachings and commentary (Likutay Moharan, Rimzay Maaseyos, Likutay Nanach Vol. 4).</p>
+    <div id="sources"></div>
+  </main>
+  <script src="../_astro/app.js"></script>
+  <script>
+    fetch('/includes/nav.json').then(r=>r.json()).then(nav=>{document.getElementById('nav').innerHTML='<a href="/">Home</a> \u00b7 <a href="/healing-words/">Healing Words</a> \u00b7 <a href="/teachings/">Teachings</a>';});
+  </script>
+</body>
+</html>

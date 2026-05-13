@@ -1,0 +1,768 @@
+---
+// Compact Yahrzeit Display for Top Left Corner
+// Always visible — shows today/tomorrow yahrzeits, or the next upcoming significant date
+---
+
+<div class="compact-yahrzeit collapsed" id="compactYahrzeit" style="display: none;">
+  <!-- Close button - dismisses the box entirely (stored in localStorage) -->
+  <button class="close-btn" id="yahrzeitCloseBtn" aria-label="Close yahrzeit box" title="Dismiss">×</button>
+  <!-- Toggle button for mobile - shows icon when collapsed -->
+  <button class="toggle-btn mobile-only" id="yahrzeitToggleBtn" aria-label="Toggle yahrzeit box">
+    <span class="collapsed-icon">🕯️</span>
+    <span class="expanded-icon">×</span>
+  </button>
+
+  <!-- Loading state -->
+  <div id="yahrzeitLoading" class="yahrzeit-loading">
+    <span class="loading-icon">🕯️</span>
+  </div>
+
+  <!-- Today's Yahrzeits -->
+  <div id="todaySection" class="yahrzeit-section today-section" style="display: none;">
+    <div class="section-header">
+      <span class="yahrzeit-icon">🕯️</span>
+      <h4 class="section-title">Today: <span id="todayHebrew"></span></h4>
+    </div>
+    <div id="todayList" class="tzaddikim-list"></div>
+  </div>
+
+  <!-- Tomorrow's Yahrzeits -->
+  <div id="tomorrowSection" class="yahrzeit-section tomorrow-section" style="display: none;">
+    <div class="section-header">
+      <span class="yahrzeit-icon">📅</span>
+      <h4 class="section-title">Tomorrow: <span id="tomorrowHebrew"></span></h4>
+    </div>
+    <div id="tomorrowList" class="tzaddikim-list"></div>
+  </div>
+
+  <!-- Upcoming Important Dates (always shows when no today/tomorrow) -->
+  <div id="upcomingSection" class="yahrzeit-section upcoming-section" style="display: none;">
+    <div class="section-header">
+      <span class="yahrzeit-icon">⭐</span>
+      <h4 class="section-title">Coming Up: <span id="upcomingLabel"></span></h4>
+    </div>
+    <div id="upcomingList" class="tzaddikim-list"></div>
+  </div>
+</div>
+
+<script>
+  // Hebrew month names mapping (matching Hebcal API output)
+  const hebrewMonths = {
+    1: 'Nisan', 2: 'Iyyar', 3: 'Sivan', 4: 'Tamuz',
+    5: 'Av', 6: 'Elul', 7: 'Tishrei', 8: 'Cheshvan',
+    9: 'Kislev', 10: 'Tevet', 11: "Sh'vat", 12: 'Adar',
+    13: 'Adar II'
+  };
+
+  // Important dates — holidays AND major yahrzeits
+  const importantDates = [
+    // === HOLIDAYS ===
+    { month: 'Nisan', day: 1, type: 'birth', name: 'Birth of Rabbainu Na Nach Nachma Nachman', hebrew_name: 'הולדת רבינו נ נח נחמ נחמן', description: 'Rosh Chodesh Nisan', priority: 2 },
+    { month: 'Nisan', day: 10, type: 'yahrzeit', name: 'Miriam HaNeviah', hebrew_name: 'מרים הנביאה', description: 'Sister of Moshe Rabbeinu', priority: 3 },
+    { month: 'Nisan', day: 13, type: 'yahrzeit', name: 'Beis Yosef (R\' Yosef Karo)', hebrew_name: 'הבית יוסף', description: 'Author of Shulchan Aruch (1575)', priority: 2 },
+    { month: 'Nisan', day: 15, type: 'special', name: 'Pesach', hebrew_name: 'פסח', description: 'First night of Passover', priority: 1 },
+    { month: 'Nisan', day: 26, type: 'yahrzeit', name: 'Yehoshua bin Nun', hebrew_name: 'יהושע בן נון', description: 'Student of Moshe Rabbeinu', priority: 3 },
+    { month: 'Iyyar', day: 18, type: 'special', name: 'Lag BaOmer', hebrew_name: 'ל"ג בעומר', description: 'Hilula of Rabbi Shimon bar Yochai', priority: 1 },
+    { month: 'Sivan', day: 6, type: 'special', name: 'Shavuos', hebrew_name: 'שבועות', description: 'Giving of the Torah', priority: 1 },
+    { month: 'Tishrei', day: 1, type: 'special', name: 'Rosh Hashana', hebrew_name: 'ראש השנה', description: 'Be with Rabbainu in Uman!', priority: 1 },
+    { month: 'Tishrei', day: 10, type: 'special', name: 'Yom Kippur', hebrew_name: 'יום כיפור', description: 'Day of Atonement', priority: 1 },
+    { month: 'Tishrei', day: 15, type: 'special', name: 'Sukkos', hebrew_name: 'סוכות', description: 'Festival of Tabernacles', priority: 1 },
+    { month: 'Kislev', day: 25, type: 'special', name: 'Chanukah', hebrew_name: 'חנוכה', description: 'Festival of Lights', priority: 1 },
+    { month: 'Adar', day: 14, type: 'special', name: 'Purim', hebrew_name: 'פורים', description: 'Na Nach Nachma Nachman!', priority: 1 },
+    { month: "Sh'vat", day: 15, type: 'special', name: 'Tu B\'Shvat', hebrew_name: 'ט"ו בשבט', description: 'New Year of the Trees', priority: 2 },
+
+    // === MAJOR YAHRZEITS ===
+    { month: 'Tishrei', day: 18, type: 'yahrzeit', name: "R' Nachman of Breslov", hebrew_name: 'רבי נחמן מברסלב', description: 'Yahrzeit of Rabbeinu (1810)', priority: 1 },
+    { month: 'Tevet', day: 10, type: 'yahrzeit', name: "R' Nosson of Breslov", hebrew_name: 'רבי נתן מברסלב', description: 'Yahrzeit (1844)', priority: 1 },
+    { month: 'Cheshvan', day: 17, type: 'yahrzeit', name: 'Saba Yisroel (R\' Odesser)', hebrew_name: 'סבא ישראל אודסר', description: 'Yahrzeit (1994)', priority: 1 },
+    { month: 'Sivan', day: 6, type: 'yahrzeit', name: 'Baal Shem Tov', hebrew_name: 'הבעל שם טוב', description: 'Yahrzeit (1760)', priority: 1 },
+    { month: 'Tishrei', day: 4, type: 'yahrzeit', name: 'R\' Nachman of Horodenka', hebrew_name: 'רבי נחמן מהורודנקא', description: 'Great-grandfather of Rabbeinu', priority: 3 },
+    { month: 'Iyyar', day: 18, type: 'yahrzeit', name: "R' Shimon bar Yochai", hebrew_name: 'רבי שמעון בר יוחאי', description: 'Author of the Holy Zohar — Lag BaOmer', priority: 2 },
+    { month: 'Tamuz', day: 2, type: 'yahrzeit', name: "R' Nachman of Tulchin", hebrew_name: 'רבי נחמן מטולטשין', description: "R' Nosson's primary student", priority: 3 },
+    { month: 'Av', day: 5, type: 'yahrzeit', name: 'Arizal (R\' Yitzchak Luria)', hebrew_name: 'האריז"ל', description: 'Master of Kabbalah (1572)', priority: 2 },
+    { month: 'Elul', day: 18, type: 'birth', name: 'Birthday of the Baal Shem Tov', hebrew_name: 'הולדת הבעל שם טוב', description: 'Born 1698', priority: 2 },
+
+    // === PURIM TIBERIAS ===
+    { month: 'Kislev', day: 4, type: 'special', name: 'Purim Tiberias', hebrew_name: 'פורים טבריה', description: "Miracle of Tiberias - R' Chaim Abulafia", priority: 4 },
+    { month: 'Sivan', day: 13, type: 'special', name: 'Purim Tiberias', hebrew_name: 'פורים טבריה', description: "Miracle of Tiberias - R' Chaim Abulafia", priority: 4 },
+    { month: 'Tamuz', day: 14, type: 'special', name: 'Purim Tiberias', hebrew_name: 'פורים טבריה', description: "Miracle of Tiberias - R' Chaim Abulafia", priority: 4 },
+    { month: 'Tamuz', day: 15, type: 'special', name: 'Purim Tiberias', hebrew_name: 'פורים טבריה', description: "Miracle of Tiberias - R' Chaim Abulafia", priority: 4 },
+    { month: 'Elul', day: 7, type: 'special', name: 'Purim Tiberias', hebrew_name: 'פורים טבריה', description: "Miracle of Tiberias - R' Chaim Abulafia", priority: 4 },
+    // 23 Sivan - Second Letters of Mordechai and Esther (Esther 8:9)
+    { month: 'Sivan', day: 23, type: 'special', name: 'Second Letters of Mordechai & Esther', hebrew_name: 'כתב השנית - מרדכי ואסתר', description: 'Jews permitted to defend themselves (Esther 8:9)', priority: 3 },
+
+    // === BRESLOV ANSHEI - from Luach Zikaron ===
+    { month: 'Tishrei', day: 14, type: 'yahrzeit', name: "R' Ephraim ben R' Naftali", hebrew_name: "ר' אפרים בן ר' נפתלי", description: "Father-in-law of Rebbe Nachman", priority: 4 },
+    { month: 'Tishrei', day: 19, type: 'yahrzeit', name: "R' Tzvi Dashevsky", hebrew_name: "ר' צבי דאשווסקי", description: "Breslov chassid", priority: 5 },
+    { month: 'Tishrei', day: 21, type: 'yahrzeit', name: "R' Avraham Abutbul", hebrew_name: "ר' אברהם אבטובאל", description: "Breslov chassid", priority: 5 },
+    { month: 'Cheshvan', day: 2, type: 'yahrzeit', name: "R' Sender b'R Tzvi", hebrew_name: "ר' סענדיר ב\"ר צבי", description: "Breslov chassid", priority: 5 },
+    { month: 'Cheshvan', day: 9, type: 'yahrzeit', name: "R' Yisroel Halpern (Karduner)", hebrew_name: "ר' ישראל הלפרין קרדונר", description: "Mentor of the Saba, d. 1918 Tiberias", priority: 3 },
+    { month: 'Cheshvan', day: 13, type: 'yahrzeit', name: "R' Binyamin Ze'ev Cheshin", hebrew_name: "ר' בנימין זאב חשין", description: "Breslov chassid", priority: 5 },
+    { month: 'Cheshvan', day: 23, type: 'yahrzeit', name: "R' Tzvi Aryeh Lupel", hebrew_name: "ר' צבי אריה לופל", description: "Breslov chassid", priority: 5 },
+    { month: 'Kislev', day: 9, type: 'yahrzeit', name: "R' Nosson Tscherner", hebrew_name: "ר' נתן טשכרנר מסטני", description: "Breslov chassid", priority: 5 },
+    { month: 'Kislev', day: 29, type: 'yahrzeit', name: "R' Avraham b'R Nachman (Chazan)", hebrew_name: "ר' אברהם בר נחמן חזן", description: "Author of Kokhvei Or, Biur HaLikutim (d. 1917)", priority: 3 },
+    { month: 'Tevet', day: 16, type: 'yahrzeit', name: "R' Ephraim Tzvi Krakovsky", hebrew_name: "ר' אפרים צבי קרקובסקי", description: "Great Breslov tzaddik, Jerusalem (d. 1946)", priority: 4 },
+    { month: 'Iyyar', day: 2, type: 'yahrzeit', name: "R' Nachman Hilman (the Silent)", hebrew_name: "רבי נחמן הילמן המכונה ר' נחמן שותק", description: "Breslov chassid", priority: 4 },
+    { month: 'Iyyar', day: 2, type: 'yahrzeit', name: "R' Shmuel Shmelka of Nikolsburg", hebrew_name: "רבי שמואל שמלקא מניקלשבורג", description: "תקל\"ח (1778) — student of the Maggid of Mezritch", priority: 3 },
+    { month: 'Adar', day: 14, type: 'yahrzeit', name: "R' Aharon Glidman", hebrew_name: "ר' אהרן גלידמן", description: "Breslov chassid", priority: 5 },
+    { month: 'Sivan', day: 1, type: 'yahrzeit', name: "R' Shimshon Barsky", hebrew_name: "ר' שמשון ברסקי", description: "Descendant of Rebbe Nachman, d. 1935 Uman", priority: 3 },
+    { month: 'Sivan', day: 5, type: 'yahrzeit', name: "Marat Sashia (wife of Rebbe Nachman)", hebrew_name: "מרת סאשיא (אשת רבינו)", description: "Erev Shavuos, d. 1807", priority: 3 },
+    { month: 'Sivan', day: 17, type: 'yahrzeit', name: "R' Baruch Chavitman", hebrew_name: "ר' ברוך חביטמן", description: "Breslov chassid", priority: 5 },
+    { month: 'Elul', day: 12, type: 'yahrzeit', name: "R' Shnia Yosef ben Shalom", hebrew_name: "ר' שניא יוסף בן שלום", description: "Breslov chassid", priority: 5 },
+    { month: 'Elul', day: 14, type: 'yahrzeit', name: "R' Yitzchak Gershon Broski", hebrew_name: "ר' יצחק גרשון ברוסקי", description: "Breslov chassid", priority: 5 },
+    { month: 'Elul', day: 21, type: 'yahrzeit', name: "R' Ben Tzion Apter", hebrew_name: "ר' בן ציון אפטר", description: "Breslov chassid", priority: 5 },
+
+    // === IYYAR YAHRZEITS ===
+    { month: 'Iyyar', day: 9, type: 'yahrzeit', name: "R' Avigdor Kra", hebrew_name: "ר' אביגדור קרא", description: 'Author of Sefer HaKana', priority: 3 },
+    { month: 'Iyyar', day: 10, type: 'yahrzeit', name: "Eli HaKohen and his sons Chofni and Pinchas", hebrew_name: "עלי הכהן ובניו חפני ופנחס", description: 'High Priest and his sons', priority: 3 },
+    { month: 'Iyyar', day: 10, type: 'yahrzeit', name: "The Rif (R' Yitzchok Alfasi)", hebrew_name: 'הרי"ף ר\' יצחק אלפסי', description: 'Author of the Rif — year 4864, buried in Morocco', priority: 2 },
+    { month: 'Iyyar', day: 10, type: 'yahrzeit', name: "R' Meir Margolis", hebrew_name: "ר' מאיר מרגליות", description: "Student of the Baal Shem Tov, author of Me'ir Nesivim", priority: 3 },
+    { month: 'Iyyar', day: 10, type: 'yahrzeit', name: "R' Michoel Yaakov Yisrael (Rav of Rhodes)", hebrew_name: "רבי מיכאל יעקב ישראל רבה של רודוס", description: "Author of Shu\"t Shnot Yamin (1790–1856)", priority: 3 },
+    { month: 'Iyyar', day: 11, type: 'yahrzeit', name: "R' Naftali Ropshitzer", hebrew_name: "ר' נפתלי מרופשיץ", description: 'Author of Zera Kodesh — 5587 (1827)', priority: 3 },
+    { month: 'Iyyar', day: 12, type: 'yahrzeit', name: "R' Moshe Zerach Idelitz", hebrew_name: "ר' משה זרח אידליץ", description: "Author of Or L'Yesharim — 5515", priority: 3 },
+    { month: 'Iyyar', day: 13, type: 'yahrzeit', name: "R' Yeshaya HaLevi (Ba'er Heitev)", hebrew_name: "ר' ישעיה הלוי", description: "Author of Be'er Heitev HaRishon", priority: 3 },
+    { month: 'Iyyar', day: 14, type: 'yahrzeit', name: "R' Yehuda bar Ilai", hebrew_name: "ר' יהודה בר אלעאי", description: 'Tanna — buried in Ein Zeitim', priority: 2 },
+    { month: 'Iyyar', day: 22, type: 'yahrzeit', name: "R' Shlomo Eliezer Alfandri", hebrew_name: "ר' שלמה אליעזר אלפנדרי", description: '5690 — took counsel with Saba Yisroel in the yeshiva by Rabbi Meir bal Hanais', priority: 2 },
+    { month: 'Iyyar', day: 26, type: 'yahrzeit', name: "Rabbi Saadia Gaon", hebrew_name: "רב סעדיה גאון", description: '4702 — one of the greatest Rishonim, author of Emunot V\'Deot', priority: 2 },
+    { month: 'Iyyar', day: 26, type: 'yahrzeit', name: "Ramchal (R' Moshe Chaim Luzzatto)", hebrew_name: "רמח\"ל ר' משה חיים לוצאטו", description: '5507 — author of Mesillat Yesharim, Derech Hashem', priority: 1 },
+    { month: 'Iyyar', day: 10, type: 'yahrzeit', name: "The Rif (R' Yitzchok Alfasi)", hebrew_name: 'הרי"ף ר\' יצחק אלפסי', description: 'Author of the Rif — year 4864, buried in Morocco', priority: 2 },
+    { month: 'Iyyar', day: 10, type: 'yahrzeit', name: "R' Meir Margolis", hebrew_name: "ר' מאיר מרגליות", description: "Student of the Baal Shem Tov, author of Me'ir Nesivim", priority: 3 },
+    { month: 'Iyyar', day: 10, type: 'yahrzeit', name: "R' Michoel Yaakov Yisrael (Rav of Rhodes)", hebrew_name: "רבי מיכאל יעקב ישראל רבה של רודוס", description: "Author of Shu\"t Shnot Yamin (1790–1856)", priority: 3 },
+    { month: 'Iyyar', day: 11, type: 'yahrzeit', name: "R' Naftali Ropshitzer", hebrew_name: "ר' נפתלי מרופשיץ", description: 'Author of Zera Kodesh — 5587 (1827)', priority: 3 },
+    { month: 'Iyyar', day: 12, type: 'yahrzeit', name: "R' Moshe Zerach Idelitz", hebrew_name: "ר' משה זרח אידליץ", description: "Author of Or L'Yesharim — 5515", priority: 3 },
+    { month: 'Iyyar', day: 13, type: 'yahrzeit', name: "R' Yeshaya HaLevi (Ba'er Heitev)", hebrew_name: "ר' ישעיה הלוי", description: "Author of Be'er Heitev HaRishon", priority: 3 },
+    { month: 'Iyyar', day: 14, type: 'yahrzeit', name: "R' Yehuda bar Ilai", hebrew_name: "ר' יהודה בר אלעאי", description: 'Tanna — buried in Ein Zeitim', priority: 2 },
+    { month: 'Iyyar', day: 14, type: 'yahrzeit', name: "R' Meir Ba'al HaNes", hebrew_name: "ר' מאיר בעל הנס", description: 'Tanna — buried in Tiberias', priority: 2 },
+    { month: 'Iyyar', day: 15, type: 'yahrzeit', name: "R' Elazar ben Arach", hebrew_name: "ר' אלעזר בן ערך", description: 'Tanna — buried in Alma', priority: 3 },
+    { month: 'Iyyar', day: 16, type: 'yahrzeit', name: "MaHaRaM of Lublin (R' Meir)", hebrew_name: 'מהר"ם לובלין', description: 'Author of Manhir Einei Chachamim — 5376 (1616)', priority: 3 },
+    { month: 'Iyyar', day: 17, type: 'yahrzeit', name: "R' Moshe Chaim Ephraim of Sudylkov", hebrew_name: "ר' משה חיים אפרים מסודילקוב", description: "Author of Degel Machaneh Ephraim — 5560 (1800)", priority: 2 },
+    { month: 'Iyyar', day: 18, type: 'yahrzeit', name: "Rema (R' Moshe Isserles)", hebrew_name: 'רמ"א ר\' משה איסרליש', description: "Author of HaMapa — 5332 (1572), Krakow", priority: 2 },
+    { month: 'Iyyar', day: 18, type: 'yahrzeit', name: "R' Shalom Buzaglo", hebrew_name: "ר' שלום בוזגלו", description: "Author of Mikdash Melech", priority: 3 },
+  ];
+
+  let tzaddikimDatabase = [];
+
+  // Fetch Hebrew date from Hebcal API
+  async function getHebrewDate(date = new Date()) {
+    const dateStr = date.toISOString().split('T')[0];
+    const response = await fetch(`https://www.hebcal.com/converter?cfg=json&date=${dateStr}&g2h=1`);
+    const data = await response.json();
+    return {
+      hebrew: data.hebrew,
+      month: data.hm,
+      day: data.hd,
+      year: data.hy,
+      monthIndex: data.monthIndex
+    };
+  }
+
+  // Load tzaddikim database
+  async function loadDatabase() {
+    try {
+      const response = await fetch('/data/tzaddikim-database-complete.json');
+      const data = await response.json();
+      tzaddikimDatabase = data.all_tzaddikim || [];
+    } catch (e) {
+      console.error('Failed to load tzaddikim database:', e);
+    }
+  }
+
+  // Normalize Hebrew month names (Hebcal API vs database inconsistencies)
+  function normalizeMonth(m) {
+    if (!m) return '';
+    const lower = m.toLowerCase().trim();
+    const map = {
+      'nisan': 'Nisan', 'nissan': 'Nisan',
+      'iyyar': 'Iyyar', 'iyar': 'Iyyar', 'iyaar': 'Iyyar',
+      'sivan': 'Sivan', 'sivvan': 'Sivan',
+      'tamuz': 'Tamuz', 'tammuz': 'Tamuz',
+      'av': 'Av', 'ab': 'Av',
+      'elul': 'Elul',
+      'tishrei': 'Tishrei', 'tishri': 'Tishrei',
+      'cheshvan': 'Cheshvan', 'marcheshvan': 'Cheshvan', 'heshvan': 'Cheshvan',
+      'kislev': 'Kislev',
+      'tevet': 'Tevet', 'teves': 'Tevet', 'teveis': 'Tevet',
+      "sh'vat": "Sh'vat", 'shvat': "Sh'vat", 'shevat': "Sh'vat", 'shват': "Sh'vat",
+      'adar': 'Adar', 'adar i': 'Adar',
+      'adar ii': 'Adar II', 'adar 2': 'Adar II', 'adar bet': 'Adar II'
+    };
+    return map[lower] || m;
+  }
+
+  // Find yahrzeits for a specific Hebrew date
+  // In a leap year: "Adar" entries show in both Adar I and Adar II (covers both halachic opinions)
+  // "Adar II" entries show only in Adar II
+  function findYahrzeits(month, day) {
+    const normMonth = normalizeMonth(month);
+    return tzaddikimDatabase.filter(tz => {
+      const tzMonth = normalizeMonth(tz.yahrzeit_month);
+      const tzDay = parseInt(tz.yahrzeit_day);
+      if (tzDay !== day) return false;
+      // Exact match (after normalization)
+      if (tzMonth === normMonth) return true;
+      // In Adar II: also show "Adar" entries (covers the opinion that yahrzeits are in Adar II)
+      if (normMonth === 'Adar II' && tzMonth === 'Adar') return true;
+      return false;
+    });
+  }
+
+  // Find important dates for a specific Hebrew date
+  function findImportantDates(month, day) {
+    const normMonth = normalizeMonth(month);
+    return importantDates.filter(d => normalizeMonth(d.month) === normMonth && d.day === day);
+  }
+
+  // Month order for calculating upcoming dates across month boundaries
+  const monthOrder = ['Nisan', 'Iyyar', 'Sivan', 'Tamuz', 'Av', 'Elul',
+    'Tishrei', 'Cheshvan', 'Kislev', 'Tevet', "Sh'vat", 'Adar', 'Adar II'];
+  const daysInMonth = { 'Nisan': 30, 'Iyyar': 29, 'Sivan': 30, 'Tamuz': 29,
+    'Av': 30, 'Elul': 29, 'Tishrei': 30, 'Cheshvan': 29, 'Kislev': 30,
+    'Tevet': 29, "Sh'vat": 30, 'Adar': 29, 'Adar II': 29 };
+
+  // Calculate days between two Hebrew dates (approximate, using month order)
+  function calcDaysUntil(fromMonth, fromDay, toMonth, toDay) {
+    const normFrom = normalizeMonth(fromMonth);
+    const normTo = normalizeMonth(toMonth);
+    const fromIdx = monthOrder.indexOf(normFrom);
+    const toIdx = monthOrder.indexOf(normTo);
+    if (fromIdx < 0 || toIdx < 0) return 999;
+
+    let days = 0;
+    if (fromIdx === toIdx) {
+      // Same month
+      days = toDay - fromDay;
+      if (days <= 0) {
+        // Wrap around full year
+        days = (daysInMonth[normFrom] || 30) - fromDay;
+        for (let i = 1; i < monthOrder.length; i++) {
+          const mIdx = (fromIdx + i) % monthOrder.length;
+          if (mIdx === toIdx) {
+            days += toDay;
+            break;
+          }
+          days += daysInMonth[monthOrder[mIdx]] || 30;
+        }
+      }
+    } else {
+      // Different months - count forward
+      days = (daysInMonth[normFrom] || 30) - fromDay;
+      let curIdx = (fromIdx + 1) % monthOrder.length;
+      while (curIdx !== toIdx) {
+        days += daysInMonth[monthOrder[curIdx]] || 30;
+        curIdx = (curIdx + 1) % monthOrder.length;
+      }
+      days += toDay;
+    }
+    return days;
+  }
+
+  // Find the NEXT upcoming important date (searches entire year, returns closest)
+  // maxDays parameter: if > 0, also returns dates within that window (for "within 7 days" display)
+  function findNextImportantDate(todayMonth, todayDay) {
+    let closest = null;
+    let closestDays = 999;
+
+    for (const date of importantDates) {
+      const days = calcDaysUntil(todayMonth, todayDay, date.month, date.day);
+      if (days > 0 && days < closestDays) {
+        // Prefer higher-priority dates if within same week, otherwise just closest
+        closestDays = days;
+        closest = { ...date, daysUntil: days };
+      } else if (days > 0 && days === closestDays && closest) {
+        // Same day - prefer lower priority number (= more important)
+        if ((date.priority || 5) < (closest.priority || 5)) {
+          closest = { ...date, daysUntil: days };
+        }
+      }
+    }
+    return closest;
+  }
+
+  // Find all important dates within N days (for the "upcoming within 7 days" section)
+  function findUpcomingImportantDates(todayMonth, todayDay, maxDays = 7) {
+    const upcoming = [];
+    for (const date of importantDates) {
+      const days = calcDaysUntil(todayMonth, todayDay, date.month, date.day);
+      if (days > 0 && days <= maxDays) {
+        upcoming.push({
+          ...date,
+          daysUntil: days,
+          dateLabel: `${date.day} ${date.month} (in ${days} day${days === 1 ? '' : 's'})`
+        });
+      }
+    }
+    return upcoming.sort((a, b) => a.daysUntil - b.daysUntil);
+  }
+
+  // Render a tzaddik entry
+  function renderTzaddikLink(tzaddik, isImportant = false) {
+    const div = document.createElement('div');
+    div.className = `tzaddik-link${isImportant ? ' upcoming-event' : ''}`;
+
+    let html = `<span class="tzaddik-name">${tzaddik.name}</span>`;
+    if (tzaddik.hebrew_name) {
+      html += `<span class="tzaddik-hebrew" dir="rtl">${tzaddik.hebrew_name}</span>`;
+    }
+    if (tzaddik.description) {
+      html += `<span class="event-description">${tzaddik.description}</span>`;
+    }
+    if (tzaddik.daysUntil && tzaddik.daysUntil > 1) {
+      html += `<span class="countdown-badge">in ${tzaddik.daysUntil} days</span>`;
+    } else if (tzaddik.daysUntil === 1) {
+      html += `<span class="countdown-badge">tomorrow</span>`;
+    }
+    if (tzaddik.type === 'birth') {
+      html += `<span class="event-type birth-badge">Birthday</span>`;
+    } else if (tzaddik.type === 'special') {
+      html += `<span class="event-type special-badge">Holiday</span>`;
+    } else if (tzaddik.type === 'yahrzeit') {
+      html += `<span class="event-type yahrzeit-badge">Yahrzeit</span>`;
+    }
+
+    div.innerHTML = html;
+    return div;
+  }
+
+  // Main initialization
+  async function initYahrzeit() {
+    const box = document.getElementById('compactYahrzeit');
+
+    // Check if user dismissed the box
+    const dismissed = localStorage.getItem('ajew-yahrzeit-dismissed');
+    if (dismissed && Date.now() < parseInt(dismissed)) {
+      box.style.display = 'none';
+      return;
+    }
+
+    // Set a timeout - if API calls take too long, show fallback
+    const timeout = setTimeout(() => {
+      document.getElementById('yahrzeitLoading').style.display = 'none';
+      // Still show the box with a static message
+      const upSection = document.getElementById('upcomingSection');
+      document.getElementById('upcomingLabel').textContent = '';
+      const upList = document.getElementById('upcomingList');
+      upList.innerHTML = '<div class="tzaddik-link upcoming-event"><span class="tzaddik-name">Loading...</span></div>';
+      upSection.style.display = 'block';
+      box.style.display = 'block';
+      if (window.innerWidth > 768) box.classList.remove('collapsed');
+    }, 8000);
+
+    try {
+      await loadDatabase();
+
+      const today = new Date();
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+
+      const todayHeb = await getHebrewDate(today);
+      const tomorrowHeb = await getHebrewDate(tomorrow);
+
+      clearTimeout(timeout);
+
+      // Find yahrzeits for today and tomorrow
+      const todayYahrzeits = findYahrzeits(todayHeb.month, todayHeb.day);
+      const tomorrowYahrzeits = findYahrzeits(tomorrowHeb.month, tomorrowHeb.day);
+      const todayImportant = findImportantDates(todayHeb.month, todayHeb.day);
+      const tomorrowImportant = findImportantDates(tomorrowHeb.month, tomorrowHeb.day);
+      const upcomingWithin7 = findUpcomingImportantDates(todayHeb.month, todayHeb.day, 7);
+
+      // Determine what to show
+      const hasToday = todayYahrzeits.length > 0 || todayImportant.length > 0;
+      const hasTomorrow = tomorrowYahrzeits.length > 0 || tomorrowImportant.length > 0;
+      const hasUpcoming7 = upcomingWithin7.length > 0;
+
+      // Hide loading
+      document.getElementById('yahrzeitLoading').style.display = 'none';
+
+      // ALWAYS show the box
+      box.style.display = 'block';
+      if (window.innerWidth > 768) {
+        box.classList.remove('collapsed');
+      }
+
+      // Populate today's section
+      if (hasToday) {
+        document.getElementById('todayHebrew').textContent = todayHeb.hebrew;
+        const todayList = document.getElementById('todayList');
+        todayList.innerHTML = '';
+
+        for (const tz of todayYahrzeits) {
+          todayList.appendChild(renderTzaddikLink(tz));
+        }
+        for (const evt of todayImportant) {
+          todayList.appendChild(renderTzaddikLink(evt, true));
+        }
+
+        document.getElementById('todaySection').style.display = 'block';
+      } else {
+        document.getElementById('todaySection').style.display = 'none';
+      }
+
+      // Populate tomorrow's section
+      if (hasTomorrow) {
+        document.getElementById('tomorrowHebrew').textContent = tomorrowHeb.hebrew;
+        const tomorrowList = document.getElementById('tomorrowList');
+        tomorrowList.innerHTML = '';
+
+        for (const tz of tomorrowYahrzeits) {
+          tomorrowList.appendChild(renderTzaddikLink(tz));
+        }
+        for (const evt of tomorrowImportant) {
+          tomorrowList.appendChild(renderTzaddikLink(evt, true));
+        }
+
+        document.getElementById('tomorrowSection').style.display = 'block';
+      } else {
+        document.getElementById('tomorrowSection').style.display = 'none';
+      }
+
+      // Upcoming section: show within-7-days events, OR the single next big date
+      if (hasUpcoming7) {
+        const first = upcomingWithin7[0];
+        document.getElementById('upcomingLabel').textContent = first.dateLabel;
+        const upcomingList = document.getElementById('upcomingList');
+        upcomingList.innerHTML = '';
+
+        for (const evt of upcomingWithin7) {
+          upcomingList.appendChild(renderTzaddikLink(evt, true));
+        }
+        document.getElementById('upcomingSection').style.display = 'block';
+      } else if (!hasToday && !hasTomorrow) {
+        // Nothing today/tomorrow/within 7 days — find the NEXT big date anywhere in the year
+        const next = findNextImportantDate(todayHeb.month, todayHeb.day);
+        if (next) {
+          document.getElementById('upcomingLabel').textContent = '';
+          const upcomingList = document.getElementById('upcomingList');
+          upcomingList.innerHTML = '';
+
+          const div = document.createElement('div');
+          div.className = 'tzaddik-link upcoming-event next-big-date';
+          let html = `<span class="tzaddik-name">${next.name}</span>`;
+          if (next.hebrew_name) {
+            html += `<span class="tzaddik-hebrew" dir="rtl">${next.hebrew_name}</span>`;
+          }
+          if (next.description) {
+            html += `<span class="event-description">${next.description}</span>`;
+          }
+          html += `<span class="countdown-badge">${next.day} ${next.month} — in ${next.daysUntil} days</span>`;
+          div.innerHTML = html;
+          upcomingList.appendChild(div);
+
+          document.getElementById('upcomingSection').style.display = 'block';
+        }
+      } else {
+        document.getElementById('upcomingSection').style.display = 'none';
+      }
+
+    } catch (e) {
+      console.error('Yahrzeit initialization error:', e);
+      // On error, still show box with a simple message
+      document.getElementById('yahrzeitLoading').style.display = 'none';
+      box.style.display = 'block';
+      if (window.innerWidth > 768) box.classList.remove('collapsed');
+      const upSection = document.getElementById('upcomingSection');
+      const upList = document.getElementById('upcomingList');
+      upList.innerHTML = '<div class="tzaddik-link upcoming-event"><span class="event-description">Check back soon</span></div>';
+      upSection.style.display = 'block';
+    }
+  }
+
+  // Mobile toggle
+  function toggleYahrzeit() {
+    const box = document.getElementById('compactYahrzeit');
+    box.classList.toggle('collapsed');
+  }
+
+  // Dismiss the yahrzeit box entirely — stores in localStorage
+  function dismissYahrzeit() {
+    const box = document.getElementById('compactYahrzeit');
+    box.style.display = 'none';
+    const expiry = Date.now() + 24 * 60 * 60 * 1000;
+    localStorage.setItem('ajew-yahrzeit-dismissed', String(expiry));
+  }
+
+  // Initialize on load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initYahrzeit);
+  } else {
+    initYahrzeit();
+  }
+
+  // Bind event listeners (replaces inline onclick which doesn't work with Astro's module bundling)
+  document.getElementById('yahrzeitCloseBtn')?.addEventListener('click', dismissYahrzeit);
+  document.getElementById('yahrzeitToggleBtn')?.addEventListener('click', toggleYahrzeit);
+</script>
+
+<style>
+  .compact-yahrzeit {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background: #fffbeb;
+    border-radius: 8px;
+    padding: 0.5rem;
+    max-width: 240px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+    border: 2px solid #f59e0b;
+    z-index: 20;
+    font-size: 0.9em;
+    color: #1a1a1a;
+  }
+  .compact-yahrzeit * { color: inherit; }
+  .compact-yahrzeit .section-title { color: #92400e; }
+  .compact-yahrzeit .tzaddik-name { color: #1a1a1a; }
+  .compact-yahrzeit .tzaddik-hebrew { color: #333; }
+  .compact-yahrzeit .event-description { color: #065f46; }
+
+  /* On small mobile, shrink and move to bottom-left to avoid covering title */
+  @media (max-width: 480px) {
+    .compact-yahrzeit {
+      top: auto;
+      bottom: 0.5rem;
+      left: 0.5rem;
+    }
+
+    .compact-yahrzeit.collapsed {
+      max-width: 44px;
+      max-height: 44px;
+      padding: 0.5rem;
+      border-radius: 50%;
+      opacity: 0.8;
+    }
+  }
+
+  .yahrzeit-loading {
+    text-align: center;
+    padding: 0.5rem;
+  }
+
+  .loading-icon {
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+
+  .yahrzeit-section {
+    margin-bottom: 0.5rem;
+  }
+
+  .yahrzeit-section:last-child {
+    margin-bottom: 0;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin-bottom: 0.375rem;
+    padding-bottom: 0.125rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .yahrzeit-icon {
+    font-size: 0.875rem;
+  }
+
+  .section-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #92400e;
+    margin: 0;
+  }
+
+  .tzaddikim-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .tzaddik-link {
+    display: flex;
+    flex-direction: column;
+    padding: 0.25rem 0.375rem;
+    background: #fff;
+    border-radius: 4px;
+    border-left: 2px solid #f59e0b;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .tzaddik-link:hover {
+    background: #fef3c7;
+    transform: translateX(2px);
+  }
+
+  .tzaddik-name {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #111;
+  }
+
+  .tzaddik-hebrew {
+    font-size: 0.75rem;
+    color: #333;
+    margin-top: 0.125rem;
+  }
+
+  .upcoming-event {
+    border-left-color: #10b981;
+  }
+
+  .upcoming-event:hover {
+    background: #f0fdf4;
+  }
+
+  .next-big-date {
+    border-left-color: #6366f1;
+    background: #f5f3ff;
+  }
+
+  .next-big-date:hover {
+    background: #ede9fe;
+  }
+
+  .event-description {
+    font-size: 0.65rem;
+    color: #059669;
+    font-style: italic;
+    margin-top: 0.125rem;
+  }
+
+  .countdown-badge {
+    font-size: 0.6rem;
+    font-weight: 600;
+    color: #6366f1;
+    background: #eef2ff;
+    padding: 0.125rem 0.375rem;
+    border-radius: 3px;
+    display: inline-block;
+    align-self: flex-start;
+    margin-top: 0.125rem;
+  }
+
+  .event-type {
+    font-size: 0.6rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 0.125rem;
+  }
+
+  .birth-badge {
+    color: #10b981;
+    background: #f0fdf4;
+    padding: 0.125rem 0.375rem;
+    border-radius: 3px;
+    display: inline-block;
+    align-self: flex-start;
+  }
+
+  .special-badge {
+    color: #7c3aed;
+    background: #f5f3ff;
+    padding: 0.125rem 0.375rem;
+    border-radius: 3px;
+    display: inline-block;
+    align-self: flex-start;
+  }
+
+  .yahrzeit-badge {
+    color: #92400e;
+    background: #fffbeb;
+    padding: 0.125rem 0.375rem;
+    border-radius: 3px;
+    display: inline-block;
+    align-self: flex-start;
+  }
+
+  .toggle-btn {
+    display: none;
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+  }
+
+  .close-btn {
+    position: absolute;
+    top: 0.25rem;
+    right: 0.25rem;
+    background: rgba(0,0,0,0.05);
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    line-height: 1;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+    transition: all 0.2s;
+    z-index: 1;
+  }
+  .close-btn:hover { background: rgba(0,0,0,0.12); color: #333; }
+
+  .mobile-only {
+    display: none;
+  }
+
+  @media (max-width: 768px) {
+    .compact-yahrzeit {
+      transition: all 0.3s ease;
+      overflow: hidden;
+    }
+
+    .compact-yahrzeit.collapsed {
+      max-width: 60px;
+      max-height: 60px;
+      padding: 0.75rem;
+    }
+
+    .compact-yahrzeit:not(.collapsed) {
+      max-width: 220px;
+      max-height: 500px;
+    }
+
+    .compact-yahrzeit.collapsed .yahrzeit-section,
+    .compact-yahrzeit.collapsed .view-all,
+    .compact-yahrzeit.collapsed .yahrzeit-loading {
+      display: none !important;
+    }
+
+    .toggle-btn {
+      display: flex;
+      top: auto;
+      right: auto;
+      bottom: 0.25rem;
+      left: 0.25rem;
+    }
+
+    .collapsed .collapsed-icon {
+      display: inline;
+    }
+
+    .collapsed .expanded-icon {
+      display: none;
+    }
+
+    .compact-yahrzeit:not(.collapsed) .collapsed-icon {
+      display: none;
+    }
+
+    .compact-yahrzeit:not(.collapsed) .expanded-icon {
+      display: inline;
+    }
+
+    .mobile-only {
+      display: flex;
+    }
+  }
+</style>

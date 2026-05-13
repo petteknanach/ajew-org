@@ -1,0 +1,57 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Likutay Moharan Torah 223</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .hebrew { font-family: 'David', 'Times New Roman', serif; direction: rtl; text-align: right; }
+        .english { margin-top: 20px; }
+        .language-toggle { margin-bottom: 20px; }
+        button { margin: 0 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Likutay Moharan Torah 223</h1>
+    
+    <div class="language-toggle">
+        <button onclick="showHebrew()">Hebrew</button>
+        <button onclick="showEnglish()">English</button>
+        <button onclick="showBoth()">Both</button>
+    </div>
+    
+    <div id="hebrew-content" class="hebrew" style="display: none;">
+    <h2>Hebrew Content</h2>
+    <div class="hebrew-text">
+תורה מתלמידי חכמים שדין יהודאין, שיאכל טוב שבגוה, כמו (חגיגה ט&quot;ו:) &#39;רבי מאיר רמון מצא תוכו אכל&#39;. כמו שכתוב (משלי כ&quot;ג): &quot;בני תנה לבך לי&quot;, וכתיב (שם כ&quot;ב): &quot;שמע דברי חכמים ולבך תשית לדעתי&quot;. וכשעושה כן, מעלה טוב הגנוז בגוה, הינו האלפין הנפולים. וזה טית - טובא גנז בגוה (הקדמת הזהר ג.). שתשית לבך לטוב הגנוז בדבריו, ועל ידי זה יוד - הינו תתקן על ידי זה האלפין, בחינת (ישעיה כ&quot;ה): &quot;אודה שמך כי עשית פלא&quot; - דא אלף. וזה יוד צורת אלף. וזה יוד, לשון אודה. יוד, בחינת (איכה ג&#39;): &quot;וידו אבן&quot; - לשון השלכה, הינו קלפתו זרק: (עד כאן לשון רבנו, זכרונו לברכה):<br>
+<br>
+ושמענו מפיו הקדוש, שזאת ה
+    </div>
+</div>
+    
+    <div id="english-content" class="english" style="display: none;">
+        <h2>English Translation</h2>
+        <div class="english-text">
+223 - WHEN THE TZADIK NEEDS TO REQUEST FROM HASHEM, BLESSED BE HE
+When the tzadik needs to request from Hashem, blessed be He, it can be that they do not fulfill his request because sometimes hears and sometimes not etc. (Zohar Vayeira 105:). But there is a tzadik who can decree and say I say that it should be so (Numbers 6): "Thus you shall bless etc. say to them" that is that I say that it should be so "G-d bless you and keep you" etc. amen.
+        </div>
+    </div>
+    
+    <script>
+        function showHebrew() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'none';
+        }
+        function showEnglish() {
+            document.getElementById('hebrew-content').style.display = 'none';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        function showBoth() {
+            document.getElementById('hebrew-content').style.display = 'block';
+            document.getElementById('english-content').style.display = 'block';
+        }
+        
+        // Default to showing both
+        showBoth();
+    </script>
+</body>
+</html>

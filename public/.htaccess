@@ -1,0 +1,153 @@
+# SEO Optimized .htaccess for ajew.org - Enhanced for Search Engines
+
+# ============================================
+# 1. COMPRESSION (Brotli + Gzip)
+# ============================================
+<IfModule mod_deflate.c>
+  # Enable compression for all text-based resources
+  AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/x-javascript application/json application/xml application/rss+xml image/svg+xml
+  
+  # Brotli compression (if available)
+  <IfModule mod_brotli.c>
+    AddOutputFilterByType BROTLI_COMPRESS text/html text/plain text/xml text/css text/javascript application/javascript application/x-javascript application/json application/xml application/rss+xml image/svg+xml
+  </IfModule>
+  
+  # Compression level
+  DeflateCompressionLevel 9
+</IfModule>
+
+# ============================================
+# 2. BROWSER CACHING
+# ============================================
+<IfModule mod_expires.c>
+  ExpiresActive On
+  
+  # Default
+  ExpiresDefault "access plus 1 month"
+  
+  # HTML - short cache for fresh content
+  ExpiresByType text/html "access plus 1 hour"
+  
+  # CSS, JavaScript - long cache
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType text/javascript "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType application/x-javascript "access plus 1 year"
+  
+  # Media files - long cache
+  ExpiresByType image/jpg "access plus 1 year"
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/gif "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType video/mp4 "access plus 1 year"
+  ExpiresByType video/webm "access plus 1 year"
+  
+  # Fonts - long cache
+  ExpiresByType font/ttf "access plus 1 year"
+  ExpiresByType font/otf "access plus 1 year"
+  ExpiresByType font/woff "access plus 1 year"
+  ExpiresByType font/woff2 "access plus 1 year"
+  ExpiresByType application/vnd.ms-fontobject "access plus 1 year"
+  
+  # XML, RSS
+  ExpiresByType application/rss+xml "access plus 1 hour"
+  ExpiresByType application/xml "access plus 1 hour"
+  
+  # JSON data
+  ExpiresByType application/json "access plus 0 seconds"
+  
+  # Manifest files
+  ExpiresByType application/manifest+json "access plus 1 week"
+</IfModule>
+
+# ============================================
+# 3. SECURITY HEADERS
+# ============================================
+<IfModule mod_headers.c>
+  # XSS Protection
+  Header set X-XSS-Protection "1; mode=block"
+  
+  # MIME type sniffing protection
+  Header set X-Content-Type-Options "nosniff"
+  
+  # Referrer Policy
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+  
+  # Permissions Policy
+  Header set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+  
+  # Frame options
+  Header set X-Frame-Options "SAMEORIGIN"
+  
+  # Content Security Policy (basic)
+  Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'"
+  
+  # HSTS (enable for HTTPS)
+  # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+</IfModule>
+
+# ============================================
+# 4. TEXT & PDF FILES - FORCE DOWNLOAD
+# ============================================
+<FilesMatch "\.(txt|pdf)$">
+  # Force download for text files (Torah teachings)
+  Header set Content-Disposition "attachment"
+  # But allow viewing in browser
+  <IfModule mod_mime.c>
+    AddType text/plain .txt
+    AddType application/pdf .pdf
+  </IfModule>
+</FilesMatch>
+
+# ============================================
+# 5. URL REDIRECTS (301 Permanent)
+# ============================================
+# Example redirect if paths change
+# RewriteEngine On
+# RewriteRule ^old-path/(.*)$ /new-path/$1 [R=301,L]
+
+# ============================================
+# 6. CUSTOM ERROR PAGES
+# ============================================
+ErrorDocument 404 /404.html
+ErrorDocument 500 /500.html
+
+# ============================================
+# 7. REMOVE SERVER SIGNATURE
+# ============================================
+ServerSignature Off
+ServerTokens Prod
+
+# ============================================
+# 8. DIRECTORY ACCESS
+# ============================================
+# Prevent directory listing
+Options -Indexes
+
+# Block access to sensitive files
+<FilesMatch "^\.">
+  Require all denied
+</FilesMatch>
+
+<FilesMatch "\.(env|log|ini|conf|sql|bak|swp)$">
+  Require all denied
+</FilesMatch>
+
+# ============================================
+# 9. SEO-FRIENDLY URL REWRITES
+# ============================================
+# Enable rewrite engine
+RewriteEngine On
+
+# Remove trailing slashes from directories
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.+)/$ /$1 [R=301,L]
+
+# ============================================
+# 10. MOBILE OPTIMIZATION
+# ============================================
+# Serve mobile-optimized content if needed
+# RewriteCond %{HTTP_USER_AGENT} "android|blackberry|iphone|ipod|iemobile" [NC]
+# RewriteRule ^$ /mobile/ [L,R=302]

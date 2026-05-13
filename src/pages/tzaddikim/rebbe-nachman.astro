@@ -1,0 +1,513 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+// Profile data for Rebbe Nachman of Breslov
+const tzaddik = {
+  name: "Rebbe Nachman of Breslov",
+  hebrew_name: "רבי נחמן מברסלב",
+  yahrzeit_hebrew: "י״ח בְּתִשְׁרֵי",
+  yahrzeit_english: "18 Tishrei",
+  gregorian_date: "October 16, 1810",
+  birth_year: "1772",
+  passing_year: "1810",
+  age_at_passing: "38",
+  location: "Breslov, Ukraine → Uman, Ukraine",
+  category: "Breslov Dynasty - Founder",
+  era: "18th-19th Century",
+  significance: "Founder of Breslov Chassidus, great-grandson of the Baal Shem Tov, revolutionary teacher who emphasized joy, personal prayer (hitbodedut), and storytelling as paths to God",
+  
+  // Biography sections
+  biography: [
+    {
+      title: "Early Life and Lineage",
+      content: "Rebbe Nachman was born on the first day of Rosh Hashanah 5533 (1772) in Medzhybizh, Ukraine. He was the great-grandson of the Baal Shem Tov, founder of Chassidism, and the grandson of Rabbi Nachman Horodenker. From a young age, he showed extraordinary spiritual depth and dedication to Torah study and prayer."
+    },
+    {
+      title: "Founding Breslov Chassidus",
+      content: "At age 13, Rebbe Nachman married and moved to his father-in-law's home in Medvedevka. There he began attracting disciples and developing his unique approach to Chassidism. Unlike other Chassidic courts, Breslov emphasizes that every Jew can connect directly to God without needing a living rebbe as intermediary after the founder's passing."
+    },
+    {
+      title: "Core Teachings",
+      content: "Rebbe Nachman's teachings revolutionized Jewish spirituality: 1) Hitbodedut - daily personal conversation with God in one's own words, 2) Simcha - maintaining joy as a fundamental spiritual practice, 3) Hisbodedus - secluded meditation, 4) Azamra - finding the good points in oneself and others, 5) Storytelling - using profound tales to convey deep mystical truths."
+    },
+    {
+      title: "Journey to the Land of Israel",
+      content: "In 1798-1799, Rebbe Nachman undertook a dangerous journey to the Land of Israel, traveling through war-torn regions. This pilgrimage profoundly impacted his teachings, and he later said, 'My fire will burn until the coming of Mashiach.' His connection to Israel remains central to Breslov practice."
+    },
+    {
+      title: "Final Years in Uman",
+      content: "In 1810, Rebbe Nachman moved to Uman, Ukraine, where he passed away later that year on the fourth day of Sukkot (18 Tishrei). Before his passing, he said, 'My place is only in Uman,' leading to the annual Rosh Hashanah pilgrimage where hundreds of thousands gather at his gravesite."
+    }
+  ],
+  
+  // Major works
+  works: [
+    {
+      title: "Likutey Moharan",
+      description: "Collected teachings arranged by his disciple Reb Noson. The primary text of Breslov Chassidus, containing deep Torah insights arranged by topic."
+    },
+    {
+      title: "Sippurei Ma'asiyot",
+      description: "Thirteen mystical stories containing profound secrets of Torah. Rebbe Nachman said, 'I am telling you a story, and in it is everything.'"
+    },
+    {
+      title: "Sichos HaRan",
+      description: "Informal conversations and teachings recorded by his disciples, offering practical spiritual guidance."
+    },
+    {
+      title: "Sefer HaMidot",
+      description: "A dictionary of character traits arranged alphabetically, offering insights into personal growth and ethical development."
+    }
+  ],
+  
+  // Teaching connections
+  teachings: [
+    {
+      title: "Hitbodedut - Personal Prayer",
+      content: "Rebbe Nachman taught that every Jew should speak to God daily in their own words, like a child talking to a parent. This practice of hitbodedut (secluded prayer) is central to Breslov spirituality."
+    },
+    {
+      title: "The Power of Joy",
+      content: "'Mitzvah gedolah lihiyot b'simcha tamid' - 'It is a great mitzvah to always be in a state of joy.' Rebbe Nachman taught that depression is worse than sin, and maintaining joy is essential for spiritual growth."
+    },
+    {
+      title: "Finding the Good Points",
+      content: "The teaching of 'Azamra' emphasizes finding and focusing on the good points in oneself and others, using these as leverage for spiritual elevation and repentance."
+    },
+    {
+      title: "Redemption Through Stories",
+      content: "Rebbe Nachman's stories are not mere tales but containers of deep mystical wisdom. He said, 'Through stories, the world will be redeemed.'"
+    }
+  ],
+  
+  // Legacy
+  legacy: [
+    "Founded Breslov Chassidus, one of the most vibrant Chassidic movements today",
+    "Emphasized direct personal connection to God accessible to every Jew",
+    "Revolutionized Jewish spirituality with practices like hitbodedut",
+    "Annual Rosh Hashanah gathering in Uman attracts hundreds of thousands",
+    "Teachings continue to inspire Jews worldwide across all backgrounds",
+    "Stories studied as profound mystical texts",
+    "Emphasis on joy and personal prayer transformed Jewish spiritual practice"
+  ],
+  
+  // Related tzaddikim
+  related: [
+    {
+      name: "Reb Noson of Breslov",
+      path: "/tzaddikim/reb-noson",
+      relationship: "Primary disciple who recorded and spread teachings"
+    },
+    {
+      name: "Baal Shem Tov",
+      path: "/tzaddikim/baal-shem-tov",
+      relationship: "Great-grandfather, founder of Chassidism"
+    },
+    {
+      name: "Saba Yisroel Ber Odesser",
+      path: "/tzaddikim/saba",
+      relationship: "Receiver of the Pettek (Na Nach Nachma Nachman Meuman)"
+    }
+  ]
+};
+---
+
+<Layout 
+  title={`Rebbe Nachman of Breslov | Tzaddikim Profiles`}
+  description={`Learn about Rebbe Nachman of Breslov, founder of Breslov Chassidus with yahrzeit on 18 Tishrei. Revolutionary teacher emphasizing joy, personal prayer, and storytelling.`}
+>
+  <script type="application/ld+json" set:html={} />
+
+  <div class="tzaddik-profile">
+    <!-- Header with basic info -->
+    <div class="profile-header">
+      <div class="profile-info">
+        <h1 class="profile-name">{tzaddik.name}</h1>
+        <h2 class="profile-hebrew" dir="rtl">{tzaddik.hebrew_name}</h2>
+        
+        <div class="profile-meta">
+          <div class="meta-item">
+            <span class="meta-label">Yahrzeit:</span>
+            <span class="meta-value">{tzaddik.yahrzeit_hebrew} ({tzaddik.yahrzeit_english})</span>
+          </div>
+          
+          <div class="meta-item">
+            <span class="meta-label">Gregorian Date:</span>
+            <span class="meta-value">{tzaddik.gregorian_date}</span>
+          </div>
+          
+          <div class="meta-item">
+            <span class="meta-label">Location:</span>
+            <span class="meta-value">{tzaddik.location}</span>
+          </div>
+          
+          <div class="meta-item">
+            <span class="meta-label">Category:</span>
+            <span class="meta-value">{tzaddik.category}</span>
+          </div>
+          
+          <div class="meta-item">
+            <span class="meta-label">Lifespan:</span>
+            <span class="meta-value">{tzaddik.birth_year} - {tzaddik.passing_year} (Age {tzaddik.age_at_passing})</span>
+          </div>
+        </div>
+        
+        <div class="profile-significance">
+          <h3>Significance</h3>
+          <p>{tzaddik.significance}</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Special Founder Box -->
+    <div class="special-connection">
+      <h3>🕯️ Founder of Breslov Chassidus</h3>
+      <p><strong>Revolutionary Approach:</strong> Unlike other Chassidic courts, Breslov emphasizes that every Jew can connect directly to God without needing a living rebbe as intermediary after the founder's passing.</p>
+      <p><strong>Enduring Legacy:</strong> Rebbe Nachman said, "My fire will burn until the coming of Mashiach." Today, hundreds of thousands gather annually at his gravesite in Uman for Rosh Hashanah.</p>
+    </div>
+    
+    <!-- Biography Sections -->
+    <div class="profile-section">
+      <h2>Biography</h2>
+      {tzaddik.biography.map((section, index) => (
+        <div class="biography-section" key={index}>
+          <h3>{section.title}</h3>
+          <p>{section.content}</p>
+        </div>
+      ))}
+    </div>
+    
+    <!-- Major Works -->
+    <div class="profile-section">
+      <h2>Major Works</h2>
+      <div class="works-grid">
+        {tzaddik.works.map((work, index) => (
+          <div class="work-card" key={index}>
+            <div class="work-title">{work.title}</div>
+            <div class="work-description">{work.description}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+    
+    <!-- Teaching Connections -->
+    <div class="profile-section">
+      <h2>Core Teachings</h2>
+      {tzaddik.teachings.map((teaching, index) => (
+        <div class="teaching-item" key={index}>
+          <h4>{teaching.title}</h4>
+          <p>{teaching.content}</p>
+        </div>
+      ))}
+    </div>
+    
+    <!-- Legacy -->
+    <div class="profile-section">
+      <h2>Legacy</h2>
+      <ul class="legacy-list">
+        {tzaddik.legacy.map((item, index) => (
+          <li key={index}>{item}</li>
+        ))}
+      </ul>
+    </div>
+    
+    <!-- Related Tzaddikim -->
+    <div class="profile-section">
+      <h2>Related Tzaddikim</h2>
+      <div class="related-tzaddikim">
+        {tzaddik.related.map((related, index) => (
+          <a href={related.path} class="related-link" key={index}>
+            <span class="related-name">{related.name}</span>
+            <span class="related-relationship">{related.relationship}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+    
+    <!-- Navigation -->
+    <div class="profile-navigation">
+      <a href="/" class="nav-link">← Back to Home</a>
+      <a href="/tzaddikim" class="nav-link">View All Tzaddikim →</a>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .tzaddik-profile {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  
+  .profile-header {
+    margin-bottom: 2rem;
+  }
+  
+  .profile-name {
+    font-size: 2.5rem;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+  }
+  
+  .profile-hebrew {
+    font-family: var(--font-hebrew);
+    font-size: 2rem;
+    color: #4b5563;
+    margin-bottom: 1.5rem;
+  }
+  
+  .profile-meta {
+    background: #f9fafb;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid #10b981;
+  }
+  
+  .meta-item {
+    display: flex;
+    margin-bottom: 0.75rem;
+  }
+  
+  .meta-item:last-child {
+    margin-bottom: 0;
+  }
+  
+  .meta-label {
+    font-weight: 600;
+    color: #374151;
+    min-width: 140px;
+  }
+  
+  .meta-value {
+    color: #6b7280;
+  }
+  
+  .profile-significance {
+    background: #d1fae5;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #10b981;
+  }
+  
+  .profile-significance h3 {
+    color: #065f46;
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+  }
+  
+  .profile-significance p {
+    color: #047857;
+    margin: 0;
+    line-height: 1.6;
+  }
+  
+  .special-connection {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    border: 2px solid #f59e0b;
+  }
+  
+  .special-connection h3 {
+    color: #92400e;
+    margin-top: 0;
+    margin-bottom: 1rem;
+  }
+  
+  .special-connection p {
+    color: #78350f;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+  
+  .special-connection p:last-child {
+    margin-bottom: 0;
+  }
+  
+  .profile-section {
+    margin-bottom: 3rem;
+  }
+  
+  .profile-section h2 {
+    color: #1f2937;
+    border-bottom: 2px solid #10b981;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .biography-section {
+    margin-bottom: 1.5rem;
+  }
+  
+  .biography-section h3 {
+    color: #374151;
+    margin-bottom: 0.5rem;
+  }
+  
+  .biography-section p {
+    color: #6b7280;
+    line-height: 1.8;
+    margin: 0;
+  }
+  
+  .works-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+  
+  .work-card {
+    background: #f0fdf4;
+    padding: 1.25rem;
+    border-radius: 6px;
+    border-left: 3px solid #10b981;
+  }
+  
+  .work-title {
+    font-weight: 600;
+    color: #065f46;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+  }
+  
+  .work-description {
+    color: #047857;
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+  
+  .teaching-item {
+    background: #f0f9ff;
+    padding: 1.25rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    border-left: 3px solid #0ea5e9;
+  }
+  
+  .teaching-item h4 {
+    color: #0369a1;
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+  }
+  
+  .teaching-item p {
+    color: #0c4a6e;
+    margin: 0;
+    line-height: 1.6;
+  }
+  
+  .legacy-list {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .legacy-list li {
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    background: #f0fdf4;
+    border-radius: 6px;
+    border-left: 3px solid #10b981;
+    color: #065f46;
+  }
+  
+  .related-tzaddikim {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+  
+  .related-link {
+    display: block;
+    padding: 1rem;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  
+  .related-link:hover {
+    background: #f9fafb;
+    border-color: #10b981;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .related-name {
+    display: block;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 0.25rem;
+  }
+  
+  .related-relationship {
+    display: block;
+    font-size: 0.875rem;
+    color: #6b7280;
+  }
+  
+  .profile-navigation {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e5e7eb;
+  }
+  
+  .nav-link {
+    padding: 0.75rem 1.5rem;
+    background: #10b981;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  
+  .nav-link:hover {
+    background: #059669;
+    transform: translateY(-2px);
+  }
+  
+  @media (max-width: 768px) {
+    .tzaddik-profile {
+      padding: 1rem;
+    }
+    
+    .profile-name {
+      font-size: 2rem;
+    }
+    
+    .profile-hebrew {
+      font-size: 1.5rem;
+    }
+    
+    .meta-item {
+      flex-direction: column;
+    }
+    
+    .meta-label {
+      min-width: auto;
+      margin-bottom: 0.25rem;
+    }
+    
+    .works-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .related-tzaddikim {
+      grid-template-columns: 1fr;
+    }
+    
+    .profile-navigation {
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .nav-link {
+      text-align: center;
+    }
+  }
+</style>
