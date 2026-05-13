@@ -1,11 +1,9 @@
-import type { APIContext } from 'astro';
 
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = import.meta.env?.SUPABASE_URL || 'https://ekggvujbuusvgmrertgp.supabase.co';
 const supabaseKey = import.meta.env?.SUPABASE_SERVICE_KEY;
 
-export const prerender = false;
 
 // Admin-only: Add subscription manually (uses service key)
 export async function POST({ request }: APIContext) {

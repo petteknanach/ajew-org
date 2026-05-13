@@ -1,6 +1,4 @@
-import type { APIContext } from 'astro';
 
-export const prerender = false;
 
 const QUOTES = [
   { he: 'כל העולם כולו גשר צר מאוד, והעיקר לא לפחד כלל', en: 'The whole world is a very narrow bridge, and the main thing is not to fear at all', src: 'LM II:48' },

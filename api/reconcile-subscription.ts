@@ -1,9 +1,7 @@
-import type { APIContext } from 'astro';
 
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
 
-export const prerender = false;
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: '2025-01-27.acacia'

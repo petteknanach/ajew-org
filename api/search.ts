@@ -1,6 +1,4 @@
-import type { APIContext } from 'astro';
 
-export const prerender = false;
 
 /**
  * Search API v3 - Full-featured Hebrew-aware search
@@ -341,7 +339,8 @@ function searchEndsWith(content: string, query: string) {
 
 // --- Main Handler ---
 
-export async function GET({ request }: APIContext) {
+export default async function handler(req: any, res: any) {
+  const request = req;
   try {
     const url = new URL(request.url);
     const query = url.searchParams.get('q') || '';

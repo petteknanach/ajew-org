@@ -1,4 +1,3 @@
-import type { APIContext } from 'astro';
 
 import { createClient } from '@supabase/supabase-js';
 
@@ -8,10 +7,10 @@ const supabaseKey = import.meta.env?.SUPABASE_SERVICE_ROLE_KEY || import.meta.en
 const supabase = createClient(supabaseUrl, supabaseKey);
 const ADMIN_PASSWORD = 'NaNach2026!';
 
-export const prerender = false;
 
 // Get subscription status
-export async function GET({ request }: APIContext) {
+export default async function handler(req: any, res: any) {
+  const request = req;
   const url = new URL(request.url);
   const email = url.searchParams.get('email');
   

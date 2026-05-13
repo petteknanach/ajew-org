@@ -1,6 +1,4 @@
-import type { APIContext } from 'astro';
 
-export const prerender = false;
 
 /**
  * Verse Lookup API - Quick reference for Tanach and Talmud Bavli
@@ -252,7 +250,8 @@ function tryLocalLookup(ref: string): any | null {
   }
 }
 
-export async function GET({ request }: APIContext) {
+export default async function handler(req: any, res: any) {
+  const request = req;
   try {
     const url = new URL(request.url);
     const rawRef = url.searchParams.get('ref') || '';

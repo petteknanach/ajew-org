@@ -1,6 +1,4 @@
-import type { APIContext } from 'astro';
 
-export const prerender = false;
 
 /**
  * Torah Lens News API

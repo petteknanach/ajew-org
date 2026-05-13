@@ -1,4 +1,3 @@
-import type { APIContext } from 'astro';
 
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
@@ -15,7 +14,6 @@ if (!supabaseKey) {
 
 const supabase = createClient(supabaseUrl, supabaseKey || '');
 
-export const prerender = false;
 
 // Stripe webhook handler
 export async function POST({ request }) {

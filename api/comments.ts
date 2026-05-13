@@ -1,4 +1,3 @@
-import type { APIContext } from 'astro';
 
 import { createClient } from '@supabase/supabase-js';
 
@@ -7,7 +6,6 @@ const supabaseKey = import.meta.env?.PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-export const prerender = false;
 
 // Comments reuse the `messages` table with room="teaching:<teachingId>"
 // This avoids a schema migration and lets "Share to chat" simply repost into room="general".
@@ -16,7 +14,8 @@ function roomForTeaching(teachingId: string): string {
   return `teaching:${teachingId}`;
 }
 
-export async function GET({ request }: APIContext) {
+export default async function handler(req: any, res: any) {
+  const request = req;
   const url = new URL(request.url);
   const teachingId = url.searchParams.get('teaching');
   if (!teachingId) {

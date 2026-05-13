@@ -1,4 +1,3 @@
-import type { APIContext } from 'astro';
 
 import { createClient } from '@supabase/supabase-js';
 
@@ -7,9 +6,9 @@ const supabaseKey = import.meta.env?.PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-export const prerender = false;
 
-export async function GET({ request }: APIContext) {
+export default async function handler(req: any, res: any) {
+  const request = req;
   const url = new URL(request.url);
   const room = url.searchParams.get('room') || 'general';
   

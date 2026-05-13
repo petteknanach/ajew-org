@@ -1,8 +1,6 @@
-import type { APIContext } from 'astro';
 
 import { createClient } from '@supabase/supabase-js';
 
-export const prerender = false;
 
 // Static Stripe payment link — we append ?prefilled_email= so Stripe pre-fills
 // the billing email with the user's auth email, preventing the mismatch where
@@ -14,7 +12,8 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_KEY
 );
 
-export async function GET({ request }: APIContext) {
+export default async function handler(req: any, res: any) {
+  const request = req;
   try {
     const authHeader = request.headers.get('Authorization') || '';
     const token = authHeader.replace('Bearer ', '');

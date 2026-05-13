@@ -1,4 +1,3 @@
-import type { APIContext } from 'astro';
 
 import { createClient } from '@supabase/supabase-js';
 
@@ -7,7 +6,6 @@ const supabaseKey = import.meta.env?.SUPABASE_SERVICE_ROLE_KEY || import.meta.en
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-export const prerender = false;
 
 // Signup - create free account
 export async function POST({ request }) {
