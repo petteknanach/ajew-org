@@ -57,7 +57,19 @@ try {
   const raw = fs.readFileSync(filePath, 'utf8');
   torahData = JSON.parse(raw);
 } catch (e) {
-  error = `Torah ${torah} not found`;
+  // Fallback: fetch from GitHub raw CDN during build
+  try {
+    const fileName = isIntroPage ? `${torah}.json` : `torah-${torahNum}.json`;
+    const url = `https://raw.githubusercontent.com/petteknanach/ajew-org/main/public/reader/likutay-moharan/part-${partNum}/${fileName}`;
+    const resp = await fetch(url);
+    if (resp.ok) {
+      torahData = await resp.json();
+    } else {
+      error = `Torah ${torah} not found`;
+    }
+  } catch (e2) {
+    error = `Torah ${torah} not found`;
+  }
 }
 
 if (!torahData && !error) {
