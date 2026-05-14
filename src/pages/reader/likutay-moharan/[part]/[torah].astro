@@ -51,15 +51,15 @@ const isIntroPage = isNaN(torahNum);
 let torahData = null;
 let error = null;
 
+const fileName = isIntroPage ? `${torah}.json` : `torah-${torahNum}.json`;
+const filePath = path.join(process.cwd(), `public/reader/likutay-moharan/part-${partNum}/${fileName}`);
+
 try {
-  const fileName = isIntroPage ? `${torah}.json` : `torah-${torahNum}.json`;
-  const filePath = path.join(process.cwd(), `public/reader/likutay-moharan/part-${partNum}/${fileName}`);
   const raw = fs.readFileSync(filePath, 'utf8');
   torahData = JSON.parse(raw);
 } catch (e) {
   // Fallback: fetch from GitHub raw CDN during build
   try {
-    const fileName = isIntroPage ? `${torah}.json` : `torah-${torahNum}.json`;
     const url = `https://raw.githubusercontent.com/petteknanach/ajew-org/main/public/reader/likutay-moharan/part-${partNum}/${fileName}`;
     const resp = await fetch(url);
     if (resp.ok) {

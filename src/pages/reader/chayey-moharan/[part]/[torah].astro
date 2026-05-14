@@ -29,8 +29,9 @@ const fileName = isNumeric ? `chapter-${torahNum}.json` : `${torah}.json`;
 let torahData = null;
 let error = null;
 
+const filePath = path.join(process.cwd(), `public/reader/chayey-moharan/${fileName}`);
+
 try {
-  const filePath = path.join(process.cwd(), `public/reader/chayey-moharan/${fileName}`);
   const raw = fs.readFileSync(filePath, 'utf8');
   torahData = JSON.parse(raw);
 } catch (e) {
