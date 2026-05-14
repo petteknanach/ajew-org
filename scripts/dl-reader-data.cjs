@@ -88,4 +88,4 @@ async function go() {
   console.log('Total: ' + total + ' files');
 }
 
-go().catch(e => { console.error(e); process.exit(1); });
+go().catch(e => { console.error('Download failed:', e.message); /* Continue build anyway */ });
