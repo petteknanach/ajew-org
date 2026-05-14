@@ -6,17 +6,19 @@ import Layout from '../layouts/Layout.astro';
   <section class="not-found">
     <div class="container">
       <div class="content">
+        <p class="nanach">נ נח נחמ נחמן מאומן</p>
         <h1 class="code">404</h1>
         <h2 class="message">Page Not Found</h2>
         <p class="hebrew">הדף לא נמצא</p>
-        <p class="quote">"The whole world is a very narrow bridge — the main thing is not to fear at all."</p>
-        <p class="quote-hebrew">כל העולם כולו גשר צר מאוד והעיקר לא לפחד כלל</p>
+        <p class="quote">"If you believe you can damage, believe you can fix."</p>
+        <p class="quote-hebrew">אם אתה מאמין שיכולין לקלקל, תאמין שיכולין לתקן</p>
         <p class="attribution">— Rebbe Nachman of Breslov</p>
 
         <div class="actions">
           <a href="/" class="btn btn-primary">🏠 Home</a>
           <a href="/reader" class="btn btn-secondary">📖 Library</a>
           <a href="/search-enhanced" class="btn btn-secondary">🔍 Search</a>
+          <a href="/tikkun-klali" class="btn btn-gold">🕎 Tikun HaKlali</a>
         </div>
       </div>
     </div>
@@ -31,54 +33,61 @@ import Layout from '../layouts/Layout.astro';
     justify-content: center;
     text-align: center;
     padding: 40px 24px;
-    font-family: 'Open Sans', sans-serif;
   }
   .container {
     max-width: 600px;
   }
+  .nanach {
+    font-family: var(--ds-font-hebrew, 'Frank Ruhl Libre', serif);
+    font-size: 1.5rem;
+    color: var(--ds-gold-500, #d4a017);
+    direction: rtl;
+    margin: 0 0 16px;
+    font-weight: 700;
+  }
   .code {
     font-size: 6em;
     font-weight: 700;
-    color: #1a365d;
+    color: var(--ds-navy-700, #1a365d);
     margin: 0;
     line-height: 1;
     opacity: 0.3;
   }
   .message {
-    font-family: 'Frank Ruhl Libre', serif;
+    font-family: Georgia, serif;
     font-size: 2em;
-    color: #1a365d;
+    color: var(--ds-navy-700, #1a365d);
     margin: 0 0 8px;
   }
   .hebrew {
-    font-family: 'Frank Ruhl Libre', serif;
+    font-family: var(--ds-font-hebrew, 'Frank Ruhl Libre', serif);
     font-size: 1.6em;
-    color: #1a365d;
+    color: var(--ds-navy-700, #1a365d);
     direction: rtl;
     margin: 0 0 24px;
   }
   .quote {
     font-style: italic;
-    color: #555;
+    color: var(--ds-text-secondary, #555);
     font-size: 1.05em;
     margin: 0 0 8px;
     line-height: 1.6;
   }
   .quote-hebrew {
-    font-family: 'Frank Ruhl Libre', serif;
+    font-family: var(--ds-font-hebrew, 'Frank Ruhl Libre', serif);
     font-size: 1.2em;
-    color: #444;
+    color: var(--ds-text-secondary, #444);
     direction: rtl;
     margin: 0 0 4px;
   }
   .attribution {
-    color: #888;
+    color: var(--ds-text-muted, #888);
     font-size: 0.85em;
     margin: 0 0 32px;
   }
   .actions {
     display: flex;
-    gap: 12px;
+    gap: 10px;
     justify-content: center;
     flex-wrap: wrap;
   }
@@ -86,7 +95,7 @@ import Layout from '../layouts/Layout.astro';
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 10px 20px;
+    padding: 10px 18px;
     border-radius: 8px;
     text-decoration: none;
     font-weight: 600;
@@ -94,18 +103,32 @@ import Layout from '../layouts/Layout.astro';
     transition: all 0.2s;
   }
   .btn-primary {
-    background: #1a365d;
+    background: var(--ds-navy-700, #1a365d);
     color: white;
   }
   .btn-primary:hover {
-    background: #2a5a9e;
+    background: var(--ds-navy-600, #2a5a8e);
   }
   .btn-secondary {
-    background: #f0ebe0;
-    color: #1a365d;
-    border: 1px solid #e0d6c2;
+    background: var(--ds-surface-raised, #f0ebe0);
+    color: var(--ds-navy-700, #1a365d);
+    border: 1px solid var(--ds-border, #e0d6c2);
   }
   .btn-secondary:hover {
-    background: #e8dfd0;
+    background: var(--ds-border, #e8dfd0);
+  }
+  .btn-gold {
+    background: var(--ds-gold-500, #d4a017);
+    color: var(--ds-navy-900, #0f2744);
+    border: 1px solid var(--ds-gold-400, #e8b830);
+  }
+  .btn-gold:hover {
+    background: var(--ds-gold-400, #e8b830);
+  }
+  @media (max-width: 600px) {
+    .code { font-size: 4em; }
+    .message { font-size: 1.5em; }
+    .actions { flex-direction: column; }
+    .btn { justify-content: center; }
   }
 </style>
