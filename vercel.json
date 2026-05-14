@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "node scripts/dl-reader-data.cjs && NODE_OPTIONS=--max-old-space-size=8192 npx astro build",
+  "buildCommand": "echo '=== Starting pre-build download ===' && node scripts/dl-reader-data.cjs && echo '=== Download complete ===' && ls public/reader/likutay-moharan/part-1/ | wc -l && echo '=== Starting astro build ===' && NODE_OPTIONS=--max-old-space-size=8192 npx astro build && echo '=== Build complete ==='",
   "installCommand": "npm install",
   "outputDirectory": "dist",
   "framework": null,
