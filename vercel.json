@@ -1,8 +1,13 @@
 {
+  "version": 2,
+  "buildCommand": "NODE_OPTIONS=--max-old-space-size=8192 astro build",
+  "installCommand": "npm install",
+  "outputDirectory": "dist",
+  "framework": null,
+  "devCommand": null,
   "regions": [
     "fra1"
   ],
-  "buildCommand": "NODE_OPTIONS=--max-old-space-size=12288 astro build",
   "rewrites": [
     {
       "source": "/sitemap.xml",
@@ -82,15 +87,6 @@
       ]
     },
     {
-      "source": "/data/(.*).json",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=3600, s-maxage=86400, stale-while-revalidate=3600"
-        }
-      ]
-    },
-    {
       "source": "/images/(.*)",
       "headers": [
         {
@@ -98,42 +94,9 @@
           "value": "public, max-age=2592000, s-maxage=31536000, immutable"
         }
       ]
-    },
-    {
-      "source": "/fonts/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
-      ]
-    },
-    {
-      "source": "/(.*).css",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=2592000, s-maxage=31536000, stale-while-revalidate=86400"
-        }
-      ]
-    },
-    {
-      "source": "/(.*).js",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=2592000, s-maxage=31536000, stale-while-revalidate=86400"
-        }
-      ]
-    },
-    {
-      "source": "/search-index/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=3600, s-maxage=86400, stale-while-revalidate=3600"
-        }
-      ]
     }
-  ]
+  ],
+  "github": {
+    "silent": true
+  }
 }
