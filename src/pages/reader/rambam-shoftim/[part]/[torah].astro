@@ -26,7 +26,19 @@ try {
   const raw = fs.readFileSync(filePath, 'utf8');
   torahData = JSON.parse(raw);
 } catch (e) {
-  error = `Chapter ${torahNum} not found`;
+  // Fallback: fetch from GitHub raw CDN during build
+  try {
+    const url = `https://raw.githubusercontent.com/petteknanach/ajew-org/main/${filePath.replace(process.cwd() + '/', '')}`;
+    const resp = await fetch(url);
+    if (resp.ok) {
+      torahData = await resp.json();
+    } else {
+      error = `rambam-shoftim ${torah} not found`;
+    }
+  } catch (e2) {
+    error = `rambam-shoftim ${torah} not found`;
+  }
+}
 }
 
 if (!torahData && !error) error = 'Content not available';
