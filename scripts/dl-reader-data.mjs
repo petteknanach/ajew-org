@@ -30,6 +30,25 @@ function dl(fp) {
   });
 }
 
+async function dlBatch(files, concurrency = 20) {
+  let downloaded = 0;
+  let idx = 0;
+  async function worker() {
+    while (idx < files.length) {
+      const f = files[idx++];
+      try {
+        const sz = await dl(f);
+        if (sz) downloaded++;
+      } catch (e) {
+        // Skip failed downloads silently
+      }
+    }
+  }
+  const workers = Array(Math.min(concurrency, files.length)).fill(null).map(() => worker());
+  await Promise.all(workers);
+  return downloaded;
+}
+
 async function go() {
   const books = [
     ['likutay-moharan', ['part-1', 'part-2']],
@@ -46,21 +65,23 @@ async function go() {
         const idx = JSON.parse(fs.readFileSync(path.join(DEST, idxP), 'utf8'));
         const items = idx.torahs || [];
         const prefix = bk.includes('tefilos') ? 'prayer' : bk.includes('halachos') ? 'halacha' : 'torah';
+        const files = [];
         for (const t of items) {
-          if (t.number) await dl(bk + '/' + pt + '/' + prefix + '-' + t.number + '.json');
+          if (t.number) files.push(bk + '/' + pt + '/' + prefix + '-' + t.number + '.json');
         }
         for (const intro of (idx.introSections || [])) {
           const s = intro.slug || intro.file;
-          if (s) await dl(bk + '/' + pt + '/' + s + '.json');
+          if (s) files.push(bk + '/' + pt + '/' + s + '.json');
         }
-        total += items.length;
-        console.log(bk + '/' + pt + ': ' + items.length + ' files');
+        const n = await dlBatch(files, 30);
+        total += n;
+        console.log(bk + '/' + pt + ': ' + n + '/' + files.length + ' files');
       } catch (e) {
         console.log('Error ' + bk + '/' + pt + ': ' + e.message);
       }
     }
   }
-  console.log('Downloaded ' + total + ' files');
+  console.log('Total downloaded: ' + total + ' files');
 }
 
 go().catch(e => {
