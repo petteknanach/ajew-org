@@ -6,12 +6,9 @@ scripts/run_*.py
 scripts/integrate*.py
 scripts/build*.cjs
 
-# Large book data directories (loaded dynamically or via separate deploys)
-public/reader/likutay-moharan/
-public/reader/biur-halikutim/
-public/reader/parparos-lechochma/
-public/reader/yichud-hayiruh/
-public/reader/otzar-hayirah/
+# Large book data directories — these MUST be included for static page generation.
+# Reader pages need JSON data at build time for getStaticPaths().
+# If deployment exceeds Vercel size limits, move these to a pre-build download step.
 
 # Git
 .git/
