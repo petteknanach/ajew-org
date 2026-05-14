@@ -1,10 +1,27 @@
 ---
 /**
- * Homepage — ajew.org Phase 1 Renovation
- * ========================================
- * Mission: "Where the Rebbe's teachings come alive — calmly, clearly, and personally."
+ * Homepage — ajew.org Landing Page
+ * A calm, warm, and welcoming entry point to the Breslov Torah library.
  */
 import Layout from '../layouts/Layout.astro';
+import fs from 'node:fs';
+import path from 'node:path';
+
+// Load daily quote data
+const quotes = [
+  { he: 'כל העולם כולו גשר צר מאוד, והעיקר לא לפחד כלל', en: 'The whole world is a very narrow bridge, and the main thing is not to fear at all', src: 'LM II:48' },
+  { he: 'אם אתה מאמין שיכולין לקלקל, תאמין שיכולין לתקן', en: 'If you believe you can damage, believe you can fix', src: 'LM II:112' },
+  { he: 'מצוה גדולה להיות בשמחה תמיד', en: 'It is a great mitzvah to always be happy', src: 'LM II:24' },
+  { he: 'אין שום יאוש בעולם כלל', en: 'There is no despair in the world at all', src: 'LM II:78' },
+  { he: 'התבודדות הוא מעלה עליונה ויתירה על הכל', en: 'Hitbodedut is the highest virtue of all', src: 'LM II:25' },
+  { he: 'עיקר החיות מהשמחה', en: 'The essence of life is from joy', src: 'LM II:24' },
+  { he: 'כשאדם יודע שכל הקורותיו הם לטובתו, זאת הבחינה מעין עולם הבא', en: 'When a person knows all that happens is for his good, this is like the World to Come', src: 'LM I:4' },
+  { he: 'תפילה בלא כוונה כגוף בלא נשמה', en: 'Prayer without intent is like a body without a soul', src: 'LM I:2' },
+  { he: 'צריך לחפש ולבקש למצוא בעצמו איזה מעט טוב', en: 'One must search to find in oneself some small good', src: 'LM I:282' },
+  { he: 'נ נח נחמ נחמן מאומן', en: 'Na Nach Nachma Nachman MeUman', src: 'The Petek' },
+];
+const dayIndex = Math.floor(Date.now() / 86400000) % quotes.length;
+const todayQuote = quotes[dayIndex];
 ---
 
 <Layout
@@ -12,67 +29,97 @@ import Layout from '../layouts/Layout.astro';
   description="Read 226+ sacred texts from Rebbe Nachman of Breslov — Likutay Moharan, Zohar, Talmud, Tanach, Rambam — free, bilingual, and beautifully calm."
 >
 
-<!-- ═══ HERO SECTION ═══ -->
-<section class="renovation-hero">
-  <div class="hero-inner">
-    <div class="hero-nanach">
-      <p class="nanach-he" lang="he" dir="rtl">נ נח נחמ נחמן מאומן</p>
-      <p class="nanach-en">Na Nach Nachma Nachman MeUman</p>
+<!-- ═══════════════════════════════════════
+     HERO — Simple, calm, inviting
+     ═══════════════════════════════════════ -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-nanach" lang="he" dir="rtl">נ נח נחמ נחמן מאומן</div>
+    <h1 class="hero-title">
+      <span class="hero-he" lang="he" dir="rtl">ברוכים הבאים</span>
+      <span class="hero-en">Welcome to the Breslov Library</span>
+    </h1>
+    <p class="hero-subtitle">226+ sacred texts in Hebrew &amp; English — free, forever.</p>
+    <div class="hero-search">
+      <form action="/search-enhanced" method="get">
+        <input type="text" name="q" placeholder="What are you looking for? / ?מה אתה מחפש" dir="auto" autocomplete="off" aria-label="Search Torah" />
+        <button type="submit" aria-label="Search">🔍</button>
+      </form>
     </div>
-    <div class="hero-content">
-      <h1 class="hero-title">
-        <span class="hero-hebrew" lang="he" dir="rtl">רבי נחמן מברסלב</span>
-        <span class="hero-english">Rebbe Nachman of Breslov</span>
-      </h1>
-      <div id="daily-quote" class="daily-quote">
-        <div class="quote-hebrew" id="quote-he"></div>
-        <div class="quote-english" id="quote-en"></div>
-        <div class="quote-source" id="quote-src"></div>
-      </div>
-      <div class="hero-search">
-        <form action="/search-enhanced" method="get" class="search-form">
-          <input type="text" name="q" placeholder="Search Torah… / חפש תורה…" dir="auto" autocomplete="off" aria-label="Search" />
-          <button type="submit" class="search-btn" aria-label="Search">🔍</button>
-        </form>
-      </div>
-    </div>
-  </div>
-  <div class="hero-actions">
-    <a href="/reader" class="btn-hero btn-hero-primary">
-      <span class="btn-icon">📖</span>
-      <span><span class="btn-label">Read Torah</span><span class="btn-sub">קריאה בתורה</span></span>
-    </a>
-    <a href="/reader#likutay-moharan" class="btn-hero btn-hero-secondary">
-      <span class="btn-icon">✡️</span>
-      <span><span class="btn-label">Likutay Moharan</span><span class="btn-sub">ליקוטי מוהר"ן</span></span>
-    </a>
-    <a href="/reader/sipurey-maasiyos" class="btn-hero btn-hero-accent">
-      <span class="btn-icon">📚</span>
-      <span><span class="btn-label">Stories of the Rebbe</span><span class="btn-sub">סיפורי מעשיות</span></span>
-    </a>
-  </div>
-  <div class="hero-topics">
-    <span class="topic-label">Browse by topic:</span>
-    <a href="/topics?q=emunah" class="topic-pill">Emunah</a>
-    <a href="/topics?q=hisbodedus" class="topic-pill">Hisbodedus</a>
-    <a href="/topics?q=simcha" class="topic-pill">Simcha</a>
-    <a href="/topics?q=teshuvah" class="topic-pill">Teshuvah</a>
-    <a href="/topics?q=tefillah" class="topic-pill">Tefillah</a>
-    <a href="/topics?q=shalom" class="topic-pill">Shalom</a>
-    <a href="/healing-words" class="topic-pill">Healing</a>
-    <a href="/topics" class="topic-pill topic-all">All Topics →</a>
   </div>
 </section>
 
-<!-- ═══ CONTINUE READING ═══ -->
-<section id="continue-reading-section" class="continue-section" style="display:none;">
+<!-- ═══════════════════════════════════════
+     DAILY QUOTE — Centerpiece of the page
+     ═══════════════════════════════════════ -->
+<section class="daily-quote-section">
+  <div class="quote-card">
+    <div class="quote-icon">✨</div>
+    <blockquote>
+      <p class="quote-he" lang="he" dir="rtl">{todayQuote.he}</p>
+      <p class="quote-en">"{todayQuote.en}"</p>
+      <cite>— Rebbe Nachman of Breslov · {todayQuote.src}</cite>
+    </blockquote>
+    <a href="/reader/likutay-moharan/1/{dayIndex === 0 ? 48 : dayIndex === 1 ? 112 : dayIndex === 2 ? 24 : dayIndex === 3 ? 78 : dayIndex === 4 ? 25 : dayIndex === 5 ? 24 : dayIndex === 6 ? 4 : dayIndex === 7 ? 2 : dayIndex === 8 ? 282 : 1}" class="quote-cta">Read the full teaching →</a>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     QUICK START — "What do you want to do?"
+     ═══════════════════════════════════════ -->
+<section class="quick-start">
+  <h2 class="section-heading">What would you like to do?</h2>
+  <div class="quick-start-grid">
+    <a href="/reader/likutay-moharan/part-1/torah-1" class="qs-card qs-gold">
+      <span class="qs-icon">🕯️</span>
+      <div class="qs-body">
+        <span class="qs-title">Start Reading</span>
+        <span class="qs-desc">Likutay Moharan 1:1 — the first teaching</span>
+        <span class="qs-he" lang="he" dir="rtl">ליקוטי מוהר"ן א:א</span>
+      </div>
+      <span class="qs-arrow">→</span>
+    </a>
+    <a href="/help-me" class="qs-card qs-green">
+      <span class="qs-icon">💚</span>
+      <div class="qs-body">
+        <span class="qs-title">I Need Help</span>
+        <span class="qs-desc">Torah guidance for whatever you're facing</span>
+        <span class="qs-he" lang="he" dir="rtl">עזרו לי</span>
+      </div>
+      <span class="qs-arrow">→</span>
+    </a>
+    <a href="/reader/sipurey-maasiyos" class="qs-card qs-blue">
+      <span class="qs-icon">📖</span>
+      <div class="qs-body">
+        <span class="qs-title">Rebbe's Stories</span>
+        <span class="qs-desc">13 mystical tales — deep &amp; accessible</span>
+        <span class="qs-he" lang="he" dir="rtl">סיפורי מעשיות</span>
+      </div>
+      <span class="qs-arrow">→</span>
+    </a>
+    <a href="/reader" class="qs-card qs-purple">
+      <span class="qs-icon">📚</span>
+      <div class="qs-body">
+        <span class="qs-title">Browse the Library</span>
+        <span class="qs-desc">226+ books — Talmud, Zohar, Tanach &amp; more</span>
+        <span class="qs-he" lang="he" dir="rtl">הספריה המלאה</span>
+      </div>
+      <span class="qs-arrow">→</span>
+    </a>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     CONTINUE READING — Only shown if history exists
+     ═══════════════════════════════════════ -->
+<section id="continue-section" class="continue-section" style="display:none;">
   <div class="section-inner">
-    <h2 class="section-heading"><span class="heading-icon">📖</span> Continue Reading</h2>
+    <h2 class="section-heading">📖 Pick up where you left off</h2>
     <a id="continue-card" href="#" class="continue-card">
       <div class="continue-info">
         <span id="continue-title" class="continue-title"></span>
         <span id="continue-book" class="continue-book"></span>
-        <div class="continue-progress-bar"><div id="continue-progress-fill" class="continue-progress-fill" style="width:0%"></div></div>
+        <div class="continue-progress"><div id="continue-fill" class="continue-fill" style="width:0%"></div></div>
         <span id="continue-ago" class="continue-ago"></span>
       </div>
       <span class="continue-arrow">→</span>
@@ -80,298 +127,508 @@ import Layout from '../layouts/Layout.astro';
   </div>
 </section>
 
-<!-- ═══ WELCOME ═══ -->
-<section class="welcome-section">
+<!-- ═══════════════════════════════════════
+     FEATURED — The core books, visual cards
+     ═══════════════════════════════════════ -->
+<section class="featured">
   <div class="section-inner">
-    <h2 class="section-heading"><span class="heading-icon">🌱</span> Welcome to the Breslov Digital Sanctuary</h2>
-    <p class="welcome-text">A free library of sacred Jewish texts in Hebrew and English — featuring the teachings of Rebbe Nachman of Breslov (1772–1810), Na Nach classics, and over 200 books including Talmud, Zohar, Tanach, and Rambam. No account needed. Just read.</p>
-    <div class="start-cards">
-      <a href="/reader/likutay-moharan/part-1/torah-1" class="start-card start-card-gold">
-        <span class="start-card-icon">🕯️</span>
-        <span class="start-card-label">The First Teaching</span>
-        <span class="start-card-name" lang="he" dir="rtl">ליקוטי מוהר"ן א:א</span>
-        <span class="start-card-desc">The foundation of Rebbe Nachman's wisdom. A beautiful place to begin.</span>
-      </a>
-      <a href="/reader/sipurey-maasiyos" class="start-card start-card-navy">
-        <span class="start-card-icon">📖</span>
-        <span class="start-card-label">Stories of the Rebbe</span>
-        <span class="start-card-name" lang="he" dir="rtl">סיפורי מעשיות</span>
-        <span class="start-card-desc">13 mystical tales — engaging, deep, and accessible to all.</span>
-      </a>
-      <a href="/help-me" class="start-card start-card-green">
-        <span class="start-card-icon">💚</span>
-        <span class="start-card-label">Going Through Something?</span>
-        <span class="start-card-name" lang="he" dir="rtl">עזרו לי</span>
-        <span class="start-card-desc">Find Torah guidance for whatever you're facing right now.</span>
-      </a>
-      <a href="/reader" class="start-card start-card-teal">
-        <span class="start-card-icon">📚</span>
-        <span class="start-card-label">Explore the Full Library</span>
-        <span class="start-card-name" lang="he" dir="rtl">כל ספרי ברסלב</span>
-        <span class="start-card-desc">226+ sacred texts — Talmud, Zohar, Tanach, Rambam, and more.</span>
-      </a>
-    </div>
-  </div>
-</section>
-
-<!-- ═══ FEATURED ═══ -->
-<section class="featured-section">
-  <div class="section-inner">
-    <h2 class="section-heading"><span class="heading-icon">🔥</span> The Breslov Torah Treasury</h2>
-    <p class="featured-subheading">Over 25,000 pages of sacred texts — free, bilingual, and always calm.</p>
+    <h2 class="section-heading">🔥 The Breslov Torah Treasury</h2>
+    <p class="section-sub">Over 25,000 pages of sacred texts — free, bilingual, and beautifully organized.</p>
     <div class="featured-grid">
-      <div class="featured-card"><div class="card-icon">✡️</div><h3>Likutay Moharan</h3><p class="card-hebrew" lang="he" dir="rtl">ליקוטי מוהר"ן</p><p class="card-desc">411 teachings — the foundation of Breslov hashkafa. Full Hebrew with English translation.</p><a href="/reader#likutay-moharan" class="card-link">Read →</a></div>
-      <div class="featured-card"><div class="card-icon">📜</div><h3>Zohar HaKadosh</h3><p class="card-hebrew" lang="he" dir="rtl">זהר הקדוש</p><p class="card-desc">All 8 volumes — 1,930 pages of Kabbalistic wisdom.</p><a href="/reader#zohar-hakdama" class="card-link">Read →</a></div>
-      <div class="featured-card"><div class="card-icon">📚</div><h3>Talmud Bavli</h3><p class="card-hebrew" lang="he" dir="rtl">תלמוד בבלי</p><p class="card-desc">39 tractates — 5,400 dapim, available to read online.</p><a href="/reader#talmud-bavli-brachot" class="card-link">Read →</a></div>
-      <div class="featured-card"><div class="card-icon">🌟</div><h3>Full Tanach</h3><p class="card-hebrew" lang="he" dir="rtl">תנ״ך מלא</p><p class="card-desc">All 39 books — Torah, Nevi'im, Ketuvim with nikud.</p><a href="/reader#tanach-bereishit" class="card-link">Read →</a></div>
-      <div class="featured-card"><div class="card-icon">⚖️</div><h3>Rambam</h3><p class="card-hebrew" lang="he" dir="rtl">רמב"ם — משנה תורה</p><p class="card-desc">14 books — 1,008 chapters, 15,000+ halachot.</p><a href="/reader#rambam-mada" class="card-link">Read →</a></div>
-      <div class="featured-card"><div class="card-icon">🕎</div><h3>Breslov Classics</h3><p class="card-hebrew" lang="he" dir="rtl">קלאסיקת ברסלב</p><p class="card-desc">Likutay Halachos, Likutay Tefilos, Sichos HaRan, and 40+ more.</p><a href="/reader" class="card-link">Browse All →</a></div>
+      <a href="/reader#likutay-moharan" class="feat-card">
+        <div class="feat-icon">✡️</div>
+        <h3>Likutay Moharan</h3>
+        <p class="feat-he" lang="he" dir="rtl">ליקוטי מוהר"ן</p>
+        <p class="feat-desc">411 teachings — the foundation of Breslov hashkafa</p>
+      </a>
+      <a href="/reader#zohar-hakdama" class="feat-card">
+        <div class="feat-icon">📜</div>
+        <h3>Zohar HaKadosh</h3>
+        <p class="feat-he" lang="he" dir="rtl">זהר הקדוש</p>
+        <p class="feat-desc">8 volumes of Kabbalistic wisdom</p>
+      </a>
+      <a href="/reader#talmud-bavli-brachot" class="feat-card">
+        <div class="feat-icon">📚</div>
+        <h3>Talmud Bavli</h3>
+        <p class="feat-he" lang="he" dir="rtl">תלמוד בבלי</p>
+        <p class="feat-desc">39 tractates — 5,400 dapim</p>
+      </a>
+      <a href="/reader#tanach-bereishit" class="feat-card">
+        <div class="feat-icon">🌟</div>
+        <h3>Full Tanach</h3>
+        <p class="feat-he" lang="he" dir="rtl">תנ״ך מלא</p>
+        <p class="feat-desc">All 39 books with nikud</p>
+      </a>
+      <a href="/reader#rambam-mada" class="feat-card">
+        <div class="feat-icon">⚖️</div>
+        <h3>Rambam</h3>
+        <p class="feat-he" lang="he" dir="rtl">רמב״ם — משנה תורה</p>
+        <p class="feat-desc">14 books — 1,008 chapters of halacha</p>
+      </a>
+      <a href="/reader" class="feat-card feat-more">
+        <div class="feat-icon">🕎</div>
+        <h3>40+ More Books</h3>
+        <p class="feat-he" lang="he" dir="rtl">עוד 40+ ספרים</p>
+        <p class="feat-desc">Likutay Halachos, Tefilos, Sichos HaRan, and more</p>
+        <span class="feat-cta">Browse all →</span>
+      </a>
     </div>
   </div>
 </section>
 
-<!-- ═══ TOOLS ═══ -->
-<section class="tools-section">
+<!-- ═══════════════════════════════════════
+     TOOLS — Quick-access utilities
+     ═══════════════════════════════════════ -->
+<section class="tools">
   <div class="section-inner">
-    <h2 class="section-heading"><span class="heading-icon">🛠️</span> Tools & Special Features</h2>
+    <h2 class="section-heading">🛠️ Tools &amp; Features</h2>
     <div class="tools-grid">
-      <a href="/daily-study" class="tool-card"><span class="tool-icon">📅</span><span><span class="tool-label">Daily Study</span><span class="tool-he" lang="he" dir="rtl">לימוד יומי</span></span></a>
-      <a href="/torah-gps" class="tool-card"><span class="tool-icon">🧭</span><span><span class="tool-label">Torah GPS</span><span class="tool-he" lang="he" dir="rtl">תורה GPS</span></span></a>
-      <a href="/torah-lens" class="tool-card"><span class="tool-icon">🔭</span><span><span class="tool-label">Torah Lens</span><span class="tool-he" lang="he" dir="rtl">עדשת תורה</span></span></a>
-      <a href="/healing-words" class="tool-card tool-card-green"><span class="tool-icon">🩹</span><span><span class="tool-label">Healing Words</span><span class="tool-he" lang="he" dir="rtl">דברי מרפא</span></span></a>
-      <a href="/gematria" class="tool-card"><span class="tool-icon">🔢</span><span><span class="tool-label">Gematria</span><span class="tool-he" lang="he" dir="rtl">גימטריה</span></span></a>
-      <a href="/parsha" class="tool-card"><span class="tool-icon">📜</span><span><span class="tool-label">Parsha</span><span class="tool-he" lang="he" dir="rtl">פרשת שבוע</span></span></a>
+      <a href="/daily-study" class="tool">
+        <span class="tool-icon">📅</span>
+        <div><span class="tool-label">Daily Study</span><span class="tool-he" lang="he" dir="rtl">לימוד יומי</span></div>
+      </a>
+      <a href="/torah-gps" class="tool">
+        <span class="tool-icon">🧭</span>
+        <div><span class="tool-label">Torah GPS</span><span class="tool-he" lang="he" dir="rtl">תורה GPS</span></div>
+      </a>
+      <a href="/torah-lens" class="tool">
+        <span class="tool-icon">🔭</span>
+        <div><span class="tool-label">Torah Lens</span><span class="tool-he" lang="he" dir="rtl">עדשת תורה</span></div>
+      </a>
+      <a href="/healing-words" class="tool tool-green">
+        <span class="tool-icon">🩹</span>
+        <div><span class="tool-label">Healing Words</span><span class="tool-he" lang="he" dir="rtl">דברי מרפא</span></div>
+      </a>
+      <a href="/gematria" class="tool">
+        <span class="tool-icon">🔢</span>
+        <div><span class="tool-label">Gematria</span><span class="tool-he" lang="he" dir="rtl">גימטריה</span></div>
+      </a>
+      <a href="/parsha" class="tool">
+        <span class="tool-icon">📜</span>
+        <div><span class="tool-label">Parsha</span><span class="tool-he" lang="he" dir="rtl">פרשת שבוע</span></div>
+      </a>
     </div>
   </div>
 </section>
 
-<!-- ═══ APP BANNER ═══ -->
+<!-- ═══════════════════════════════════════
+     APP BANNER
+     ═══════════════════════════════════════ -->
 <section class="app-banner">
   <div class="section-inner">
-    <div class="app-banner-inner">
+    <div class="app-inner">
       <span class="app-icon">📱</span>
-      <div class="app-info"><h3>Install the ajew ananach App</h3><p>Offline capable • Bilingual HE/EN • Free</p></div>
-      <a href="https://github.com/petteknanach/ajew-ananach/releases" target="_blank" rel="noopener" class="app-install-btn">Install →</a>
+      <div class="app-body">
+        <h3>Install the ajew ananach App</h3>
+        <p>Offline capable · Bilingual HE/EN · Free forever</p>
+      </div>
+      <a href="https://github.com/petteknanach/ajew-ananach/releases" target="_blank" rel="noopener" class="app-btn">Install →</a>
     </div>
   </div>
 </section>
 
-<!-- ═══ BOTTOM QUOTE ═══ -->
-<section class="bottom-quote">
-  <div class="section-inner">
-    <blockquote>
-      <p class="bq-hebrew" lang="he" dir="rtl">אם אתה מאמין שיכולין לקלקל, תאמין שיכולין לתקן</p>
-      <p class="bq-english">"If you believe you can damage, believe you can fix."</p>
-      <cite>— Rebbe Nachman of Breslov</cite>
-    </blockquote>
-  </div>
-</section>
-
-<!-- ═══ SPREAD ═══ -->
-<section class="spread-section">
-  <div class="section-inner">
-    <h2 class="section-heading">Spread the Light</h2>
-    <p class="spread-desc">The Breslov Torah Treasury is free for everyone. Help others discover these teachings.</p>
-    <div class="spread-buttons">
-      <a href="https://twitter.com/intent/tweet?text=Free%20Breslov%20Torah%20library%20%E2%80%94%20226%2B%20books%2C%2025%2C000%2B%20pages%20in%20Hebrew%20%26%20English.&url=https%3A%2F%2Fajew.org&hashtags=Torah,Breslov,NaNach" target="_blank" rel="noopener" class="spread-btn">Share on X</a>
-      <button type="button" class="spread-btn" id="copyLinkBtn">Copy Link</button>
-      <a href="/rss.xml" class="spread-btn">RSS Feed</a>
-    </div>
-  </div>
+<!-- ═══════════════════════════════════════
+     BOTTOM QUOTE
+     ═══════════════════════════════════════ -->
+<section class="closing-quote">
+  <blockquote>
+    <p class="cq-he" lang="he" dir="rtl">אם אתה מאמין שיכולין לקלקל, תאמין שיכולין לתקן</p>
+    <p class="cq-en">"If you believe you can damage, believe you can fix."</p>
+    <cite>— Rebbe Nachman of Breslov</cite>
+  </blockquote>
 </section>
 
 </Layout>
 
 <script is:inline>
 (function() {
-  var quotes = [
-    { he: 'כל העולם כולו גשר צר מאוד, והעיקר לא לפחד כלל', en: 'The whole world is a very narrow bridge, and the main thing is not to fear at all', src: 'LM II:48' },
-    { he: 'אם אתה מאמין שיכולין לקלקל, תאמין שיכולין לתקן', en: 'If you believe you can damage, believe you can fix', src: 'LM II:112' },
-    { he: 'מצוה גדולה להיות בשמחה תמיד', en: 'It is a great mitzvah to always be happy', src: 'LM II:24' },
-    { he: 'אין שום יאוש בעולם כלל', en: 'There is no despair in the world at all', src: 'LM II:78' },
-    { he: 'התבודדות הוא מעלה עליונה ויתירה על הכל', en: 'Hitbodedut is the highest virtue of all', src: 'LM II:25' },
-    { he: 'עיקר החיות מהשמחה', en: 'The essence of life is from joy', src: 'LM II:24' },
-    { he: 'כשאדם יודע שכל הקורותיו הם לטובתו, זאת הבחינה מעין עולם הבא', en: 'When a person knows all that happens is for his good, this is like the World to Come', src: 'LM I:4' },
-    { he: 'תפילה בלא כוונה כגוף בלא נשמה', en: 'Prayer without intent is like a body without a soul', src: 'LM I:2' },
-    { he: 'צריך לחפש ולבקש למצוא בעצמו איזה מעט טוב', en: 'One must search to find in oneself some small good', src: 'LM I:282' },
-    { he: 'נ נח נחמ נחמן מאומן', en: 'Na Nach Nachma Nachman MeUman', src: 'The Petek' },
-  ];
-  var day = Math.floor(Date.now() / 86400000) % quotes.length;
-  var q = quotes[day];
-  var heEl = document.getElementById('quote-he');
-  var enEl = document.getElementById('quote-en');
-  var srcEl = document.getElementById('quote-src');
-  if (heEl) heEl.textContent = q.he;
-  if (enEl) enEl.textContent = '"' + q.en + '"';
-  if (srcEl) srcEl.textContent = '— ' + q.src;
   try {
     var hist = JSON.parse(localStorage.getItem('ajew-reading-history') || '[]');
     if (hist.length > 0) {
       var last = hist[0];
       if (last.url && last.url.startsWith('/reader/')) {
-        var sec = document.getElementById('continue-reading-section');
-        if (sec) {
-          sec.style.display = 'block';
-          document.getElementById('continue-card').href = last.url;
-          document.getElementById('continue-title').textContent = last.title || 'Unknown';
-          document.getElementById('continue-book').textContent = last.book || '';
-          if (last.progress > 0) document.getElementById('continue-progress-fill').style.width = Math.min(last.progress, 100) + '%';
-          if (last.timestamp) {
-            var diff = Date.now() - parseInt(last.timestamp);
-            var hrs = Math.floor(diff / 3600000);
-            document.getElementById('continue-ago').textContent = hrs < 1 ? 'Just now' : hrs < 24 ? hrs + 'h ago' : Math.floor(hrs / 24) + 'd ago';
-          }
+        var sec = document.getElementById('continue-section');
+        sec.style.display = 'block';
+        document.getElementById('continue-card').href = last.url;
+        document.getElementById('continue-title').textContent = last.title || 'Unknown';
+        document.getElementById('continue-book').textContent = last.book || '';
+        if (last.progress > 0) document.getElementById('continue-fill').style.width = Math.min(last.progress, 100) + '%';
+        if (last.timestamp) {
+          var diff = Date.now() - parseInt(last.timestamp);
+          var hrs = Math.floor(diff / 3600000);
+          document.getElementById('continue-ago').textContent = hrs < 1 ? 'Just now' : hrs < 24 ? hrs + 'h ago' : Math.floor(hrs / 24) + 'd ago';
         }
       }
     }
   } catch(e) {}
-  var copyBtn = document.getElementById('copyLinkBtn');
-  if (copyBtn) copyBtn.addEventListener('click', function() {
-    navigator.clipboard.writeText('https://ajew.org').then(function() { copyBtn.textContent = 'Copied!'; setTimeout(function() { copyBtn.textContent = 'Copy Link'; }, 2000); }).catch(function() {});
-  });
 })();
 </script>
 
 <style>
-  :root { --hero-bg: linear-gradient(135deg, #0f2744 0%, #1a365d 40%, #2a5a8e 100%); --gold: #d4a017; --gold-light: #f0cc5c; --navy: #1a365d; --parchment: #faf7f2; }
-
-  .renovation-hero {
-    background: var(--hero-bg); color: white; padding: 2rem 1.5rem 3rem; text-align: center;
+  /* ============================================
+     HERO
+     ============================================ */
+  .hero {
+    background: linear-gradient(135deg, #0f2744 0%, #1a365d 50%, #2a5a8e 100%);
+    color: white;
+    padding: 3rem 1.5rem 2.5rem;
+    text-align: center;
   }
-  .hero-inner { max-width: 800px; margin: 0 auto; }
-  .hero-nanach { margin-bottom: 1.5rem; }
-  .nanach-he { font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif); font-size: 1.5rem; color: var(--gold-light); direction: rtl; margin: 0; }
-  .nanach-en { font-size: 0.8rem; color: rgba(255,255,255,0.6); margin: 4px 0 0; letter-spacing: 0.15em; text-transform: uppercase; }
-  .hero-title { margin: 0 0 1.5rem; }
-  .hero-hebrew { font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif); font-size: 2.8rem; font-weight: 700; color: var(--gold-light); direction: rtl; display: block; margin-bottom: 4px; }
-  .hero-english { font-family: Georgia, serif; font-size: 1.6rem; font-weight: 400; color: rgba(255,255,255,0.9); display: block; }
+  .hero-content { max-width: 700px; margin: 0 auto; }
+  .hero-nanach {
+    font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif);
+    font-size: 1.4rem;
+    color: var(--gold-light, #f0cc5c);
+    direction: rtl;
+    margin-bottom: 1rem;
+  }
+  .hero-title { margin: 0 0 0.75rem; }
+  .hero-he {
+    font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif);
+    font-size: 2.6rem;
+    font-weight: 700;
+    color: var(--gold-light, #f0cc5c);
+    direction: rtl;
+    display: block;
+    margin-bottom: 4px;
+  }
+  .hero-en {
+    font-family: Georgia, serif;
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: rgba(255,255,255,0.85);
+    display: block;
+  }
+  .hero-subtitle {
+    font-size: 1.05rem;
+    color: rgba(255,255,255,0.65);
+    margin: 0 0 1.5rem;
+  }
+  .hero-search form {
+    display: flex;
+    border-radius: 50px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  .hero-search input {
+    flex: 1;
+    padding: 0.85rem 1.25rem;
+    font-size: 1rem;
+    border: none;
+    outline: none;
+    background: rgba(255,255,255,0.95);
+    color: var(--navy, #1a365d);
+    direction: auto;
+  }
+  .hero-search button {
+    padding: 0.85rem 1.25rem;
+    background: var(--gold, #d4a017);
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: background 0.2s;
+  }
+  .hero-search button:hover { background: var(--gold-light, #f0cc5c); }
 
-  .daily-quote { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 1.25rem 1.5rem; margin: 0 auto 1.5rem; max-width: 680px; }
-  .quote-hebrew { font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif); font-size: 1.15rem; color: var(--gold-light); direction: rtl; text-align: right; margin-bottom: 6px; }
-  .quote-english { font-family: Georgia, serif; font-size: 0.95rem; color: rgba(255,255,255,0.85); font-style: italic; margin-bottom: 4px; }
-  .quote-source { font-size: 0.75rem; color: rgba(255,255,255,0.5); }
+  /* ============================================
+     DAILY QUOTE
+     ============================================ */
+  .daily-quote-section {
+    padding: 0 1.5rem 2.5rem;
+    background: var(--navy, #1a365d);
+  }
+  .quote-card {
+    max-width: 700px;
+    margin: -1.5rem auto 0;
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    border: 1px solid #e0d6c2;
+  }
+  .quote-icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+  .quote-card blockquote { margin: 0 0 1rem; padding: 0; }
+  .quote-he {
+    font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif);
+    font-size: 1.3rem;
+    color: var(--navy, #1a365d);
+    direction: rtl;
+    margin: 0 0 0.5rem;
+  }
+  .quote-en {
+    font-family: Georgia, serif;
+    font-size: 1.05rem;
+    color: #555;
+    font-style: italic;
+    margin: 0 0 0.5rem;
+  }
+  .quote-card cite {
+    font-size: 0.85rem;
+    color: #888;
+    font-style: normal;
+    font-weight: 600;
+  }
+  .quote-cta {
+    display: inline-block;
+    padding: 0.5rem 1.25rem;
+    background: var(--gold, #d4a017);
+    color: var(--navy, #1a365d);
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+  }
+  .quote-cta:hover { background: var(--gold-light, #f0cc5c); }
 
-  .hero-search { max-width: 520px; margin: 0 auto; }
-  .search-form { display: flex; border-radius: 50px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.2); }
-  .search-form input { flex: 1; padding: 0.9rem 1.25rem; font-size: 1rem; border: none; outline: none; background: rgba(255,255,255,0.95); color: var(--navy); direction: auto; }
-  .search-form input::placeholder { color: #999; }
-  .search-btn { padding: 0.9rem 1.25rem; background: var(--gold); border: none; cursor: pointer; font-size: 1.1rem; transition: background 0.2s; }
-  .search-btn:hover { background: var(--gold-light); }
+  /* ============================================
+     QUICK START
+     ============================================ */
+  .quick-start {
+    padding: 2.5rem 1.5rem;
+    background: white;
+  }
+  .section-heading {
+    font-family: Georgia, serif;
+    font-size: 1.4rem;
+    color: var(--navy, #1a365d);
+    margin: 0 0 1.25rem;
+    text-align: center;
+  }
+  .quick-start-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 0.75rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .qs-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.15rem 1.25rem;
+    border-radius: 12px;
+    text-decoration: none;
+    color: var(--navy, #1a365d);
+    border: 1px solid #e0d6c2;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .qs-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+  .qs-gold { background: linear-gradient(135deg, #fdf3d7, #f7e19c); border-color: #e8d5a3; }
+  .qs-green { background: linear-gradient(135deg, #d8f3dc, #95d5b2); border-color: #74c69d; }
+  .qs-blue { background: linear-gradient(135deg, #e0eef7, #b3d6f0); border-color: #8ab4d0; }
+  .qs-purple { background: linear-gradient(135deg, #f0e8f7, #d6b3e8); border-color: #b88ad0; }
+  .qs-icon { font-size: 1.6rem; flex-shrink: 0; }
+  .qs-body { flex: 1; display: flex; flex-direction: column; }
+  .qs-title { font-weight: 700; font-size: 1rem; }
+  .qs-desc { font-size: 0.85rem; color: #666; }
+  .qs-he { font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif); font-size: 0.85rem; color: #888; direction: rtl; }
+  .qs-arrow { font-size: 1.2rem; color: var(--gold, #d4a017); }
 
-  .hero-actions { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; max-width: 800px; margin: 2rem auto 0; }
-  .btn-hero { display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.5rem; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 0.95rem; transition: transform 0.15s; }
-  .btn-hero:hover { transform: translateY(-2px); }
-  .btn-hero-primary { background: var(--gold); color: var(--navy); }
-  .btn-hero-secondary { background: rgba(255,255,255,0.12); color: white; border: 1px solid rgba(255,255,255,0.2); }
-  .btn-hero-accent { background: rgba(212,160,23,0.2); color: var(--gold-light); border: 1px solid rgba(212,160,23,0.3); }
-  .btn-icon { font-size: 1.2rem; }
-  .btn-label { display: block; line-height: 1.2; }
-  .btn-sub { display: block; font-size: 0.75rem; font-weight: 400; opacity: 0.7; font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif); }
-
-  .hero-topics { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; max-width: 800px; margin: 1.5rem auto 0; align-items: center; }
-  .topic-label { font-size: 0.75rem; color: rgba(255,255,255,0.5); margin-right: 4px; }
-  .topic-pill { display: inline-block; padding: 4px 14px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 50px; color: rgba(255,255,255,0.8); font-size: 0.8rem; text-decoration: none; transition: background 0.2s; }
-  .topic-pill:hover { background: rgba(255,255,255,0.15); }
-  .topic-all { background: rgba(212,160,23,0.15); border-color: rgba(212,160,23,0.3); color: var(--gold-light); }
-
-  .continue-section { background: var(--parchment); border-bottom: 1px solid #e0d6c2; padding: 1.5rem; }
+  /* ============================================
+     CONTINUE READING
+     ============================================ */
+  .continue-section {
+    background: #faf7f2;
+    border-top: 1px solid #e0d6c2;
+    border-bottom: 1px solid #e0d6c2;
+    padding: 1.25rem 1.5rem;
+  }
   .section-inner { max-width: 900px; margin: 0 auto; }
-  .section-heading { font-family: Georgia, serif; font-size: 1.3rem; color: var(--navy); margin: 0 0 1rem; display: flex; align-items: center; gap: 0.5rem; }
-  .heading-icon { font-size: 1.1rem; }
-  .continue-card { display: flex; align-items: center; gap: 1rem; padding: 1.25rem; background: white; border: 1px solid #e0d6c2; border-radius: 12px; text-decoration: none; color: var(--navy); transition: box-shadow 0.2s; }
-  .continue-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-color: var(--gold); }
+  .continue-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: white;
+    border: 1px solid #e0d6c2;
+    border-radius: 12px;
+    text-decoration: none;
+    color: var(--navy, #1a365d);
+    transition: box-shadow 0.2s;
+  }
+  .continue-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-color: var(--gold, #d4a017); }
   .continue-info { flex: 1; }
-  .continue-title { display: block; font-weight: 600; font-size: 1.05rem; margin-bottom: 2px; }
+  .continue-title { display: block; font-weight: 600; font-size: 1rem; margin-bottom: 2px; }
   .continue-book { display: block; font-size: 0.85rem; color: #888; }
-  .continue-progress-bar { height: 4px; background: #e8e0d0; border-radius: 2px; margin: 8px 0 4px; overflow: hidden; }
-  .continue-progress-fill { height: 100%; background: var(--gold); border-radius: 2px; transition: width 0.3s; }
+  .continue-progress { height: 4px; background: #e8e0d0; border-radius: 2px; margin: 6px 0 4px; overflow: hidden; }
+  .continue-fill { height: 100%; background: var(--gold, #d4a017); border-radius: 2px; transition: width 0.3s; }
   .continue-ago { font-size: 0.75rem; color: #aaa; }
-  .continue-arrow { font-size: 1.3rem; color: var(--gold); }
+  .continue-arrow { font-size: 1.3rem; color: var(--gold, #d4a017); }
 
-  .welcome-section { padding: 3rem 1.5rem; background: white; }
-  .welcome-text { max-width: 680px; font-size: 1.05rem; line-height: 1.7; color: #555; margin: 0 0 2rem; }
-  .start-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
-  .start-card { display: flex; flex-direction: column; gap: 6px; padding: 1.25rem; border-radius: 12px; text-decoration: none; transition: transform 0.15s; border: 1px solid #e0d6c2; }
-  .start-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.1); }
-  .start-card-gold { background: linear-gradient(135deg, #fdf3d7, #f7e19c); border-color: #e8d5a3; }
-  .start-card-navy { background: linear-gradient(135deg, #e0eef7, #b3d6f0); border-color: #8ab4d0; }
-  .start-card-green { background: linear-gradient(135deg, #d8f3dc, #95d5b2); border-color: #74c69d; }
-  .start-card-teal { background: linear-gradient(135deg, #e8f0fe, #c8d8f0); border-color: #a0b8d0; }
-  .start-card-icon { font-size: 1.5rem; }
-  .start-card-label { font-weight: 700; color: var(--navy); font-size: 0.95rem; }
-  .start-card-name { font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif); font-size: 0.9rem; color: #666; }
-  .start-card-desc { font-size: 0.8rem; color: #777; line-height: 1.4; }
+  /* ============================================
+     FEATURED
+     ============================================ */
+  .featured {
+    padding: 3rem 1.5rem;
+    background: #faf7f2;
+  }
+  .section-sub {
+    max-width: 500px;
+    margin: 0 auto 2rem;
+    color: #777;
+    font-size: 0.95rem;
+    text-align: center;
+  }
+  .featured-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .feat-card {
+    background: white;
+    border: 1px solid #e0d6c2;
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-decoration: none;
+    color: var(--navy, #1a365d);
+    transition: transform 0.15s, box-shadow 0.15s;
+    display: flex;
+    flex-direction: column;
+  }
+  .feat-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+  .feat-more { border-color: var(--gold, #d4a017); }
+  .feat-icon { font-size: 1.8rem; margin-bottom: 0.5rem; }
+  .feat-card h3 { margin: 0 0 2px; font-size: 1.05rem; }
+  .feat-he { font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif); font-size: 0.85rem; color: #888; direction: rtl; margin: 0 0 0.5rem; }
+  .feat-desc { font-size: 0.85rem; color: #666; line-height: 1.4; margin: 0; flex: 1; }
+  .feat-cta { display: inline-block; margin-top: 0.75rem; color: var(--gold, #d4a017); font-weight: 700; font-size: 0.9rem; }
 
-  .featured-section { padding: 3rem 1.5rem; background: var(--parchment); }
-  .featured-subheading { max-width: 600px; color: #777; font-size: 1rem; margin: 0 0 2rem; }
-  .featured-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; }
-  .featured-card { background: white; border: 1px solid #e0d6c2; border-radius: 12px; padding: 1.5rem; transition: transform 0.15s; }
-  .featured-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-  .card-icon { font-size: 1.8rem; margin-bottom: 8px; }
-  .featured-card h3 { margin: 0 0 2px; font-size: 1.1rem; color: var(--navy); }
-  .card-hebrew { font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif); font-size: 0.9rem; color: #888; direction: rtl; margin: 0 0 8px; }
-  .card-desc { font-size: 0.85rem; color: #666; line-height: 1.5; margin: 0 0 12px; }
-  .card-link { color: var(--navy); font-weight: 600; text-decoration: none; font-size: 0.9rem; }
-  .card-link:hover { color: var(--gold); }
-
-  .tools-section { padding: 3rem 1.5rem; background: white; }
-  .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.75rem; }
-  .tool-card { display: flex; align-items: center; gap: 0.75rem; padding: 1rem; background: var(--parchment); border: 1px solid #e0d6c2; border-radius: 10px; text-decoration: none; color: var(--navy); transition: border-color 0.2s; }
-  .tool-card:hover { border-color: var(--gold); }
+  /* ============================================
+     TOOLS
+     ============================================ */
+  .tools {
+    padding: 2.5rem 1.5rem;
+    background: white;
+  }
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 0.75rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .tool {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.9rem 1rem;
+    background: #faf7f2;
+    border: 1px solid #e0d6c2;
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--navy, #1a365d);
+    transition: border-color 0.2s;
+  }
+  .tool:hover { border-color: var(--gold, #d4a017); }
+  .tool-green { background: #e8f5e9; border-color: #a5d6a7; }
   .tool-icon { font-size: 1.3rem; }
   .tool-label { display: block; font-weight: 600; font-size: 0.9rem; }
-  .tool-he { display: block; font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif); font-size: 0.75rem; color: #888; }
+  .tool-he { display: block; font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif); font-size: 0.75rem; color: #888; direction: rtl; }
 
-  .app-banner { padding: 0 1.5rem 2rem; background: white; }
-  .app-banner-inner { display: flex; align-items: center; gap: 1rem; padding: 1.25rem; background: linear-gradient(135deg, var(--navy), #2e5580); border-radius: 14px; color: white; flex-wrap: wrap; }
-  .app-icon { font-size: 2rem; }
-  .app-info { flex: 1; }
-  .app-info h3 { margin: 0 0 4px; font-size: 1.1rem; color: var(--gold-light); }
-  .app-info p { margin: 0; font-size: 0.85rem; color: rgba(255,255,255,0.7); }
-  .app-install-btn { padding: 0.6rem 1.5rem; background: var(--gold); color: var(--navy); font-weight: 700; border-radius: 8px; text-decoration: none; font-size: 0.9rem; }
-  .app-install-btn:hover { background: var(--gold-light); }
-
-  .bottom-quote { padding: 3rem 1.5rem; background: var(--parchment); text-align: center; }
-  .bottom-quote blockquote { max-width: 700px; margin: 0 auto; padding: 0; }
-  .bq-hebrew { font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif); font-size: 1.4rem; color: var(--navy); direction: rtl; margin: 0 0 8px; }
-  .bq-english { font-family: Georgia, serif; font-size: 1.05rem; color: #555; font-style: italic; margin: 0 0 8px; }
-  .bottom-quote cite { font-size: 0.85rem; color: #888; font-style: normal; font-weight: 600; }
-
-  .spread-section { padding: 2rem 1.5rem 3rem; background: white; text-align: center; }
-  .spread-desc { color: #777; max-width: 500px; margin: 0 auto 1.5rem; }
-  .spread-buttons { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
-  .spread-btn { padding: 0.6rem 1.25rem; background: var(--parchment); border: 1px solid #e0d6c2; border-radius: 8px; color: var(--navy); text-decoration: none; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: border-color 0.2s; }
-  .spread-btn:hover { border-color: var(--gold); }
-
-  @media (max-width: 768px) {
-    .renovation-hero { padding: 1.5rem 1rem 2rem; }
-    .hero-hebrew { font-size: 2rem; }
-    .hero-english { font-size: 1.2rem; }
-    .hero-actions { flex-direction: column; align-items: center; }
-    .btn-hero { width: 100%; max-width: 320px; justify-content: center; }
-    .start-cards, .featured-grid { grid-template-columns: 1fr; }
-    .tools-grid { grid-template-columns: repeat(2, 1fr); }
-    .app-banner-inner { flex-direction: column; text-align: center; }
+  /* ============================================
+     APP BANNER
+     ============================================ */
+  .app-banner {
+    padding: 0 1.5rem 2rem;
+    background: white;
   }
+  .app-inner {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem;
+    background: linear-gradient(135deg, var(--navy, #1a365d), #2e5580);
+    border-radius: 14px;
+    color: white;
+    flex-wrap: wrap;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .app-icon { font-size: 2rem; }
+  .app-body { flex: 1; }
+  .app-body h3 { margin: 0 0 4px; font-size: 1.05rem; color: var(--gold-light, #f0cc5c); }
+  .app-body p { margin: 0; font-size: 0.85rem; color: rgba(255,255,255,0.7); }
+  .app-btn {
+    padding: 0.6rem 1.5rem;
+    background: var(--gold, #d4a017);
+    color: var(--navy, #1a365d);
+    font-weight: 700;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.9rem;
+  }
+  .app-btn:hover { background: var(--gold-light, #f0cc5c); }
 
-  [data-theme="night"] .renovation-hero, body.dark-mode .renovation-hero { background: linear-gradient(135deg, #0f0f23, #1a1a3e); }
+  /* ============================================
+     CLOSING QUOTE
+     ============================================ */
+  .closing-quote {
+    padding: 2.5rem 1.5rem 3rem;
+    background: #faf7f2;
+    text-align: center;
+  }
+  .closing-quote blockquote { max-width: 600px; margin: 0 auto; padding: 0; }
+  .cq-he {
+    font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif);
+    font-size: 1.3rem;
+    color: var(--navy, #1a365d);
+    direction: rtl;
+    margin: 0 0 0.5rem;
+  }
+  .cq-en {
+    font-family: Georgia, serif;
+    font-size: 1rem;
+    color: #555;
+    font-style: italic;
+    margin: 0 0 0.5rem;
+  }
+  .closing-quote cite { font-size: 0.85rem; color: #888; font-style: normal; font-weight: 600; }
+
+  /* ============================================
+     DARK MODE
+     ============================================ */
+  [data-theme="night"] .hero, body.dark-mode .hero { background: linear-gradient(135deg, #0f0f23, #1a1a3e); }
+  [data-theme="night"] .quote-card, body.dark-mode .quote-card { background: #1a1a2e; border-color: #3a3a5c; }
+  [data-theme="night"] .quote-he, body.dark-mode .quote-he { color: #8ab4f8; }
+  [data-theme="night"] .quote-en, body.dark-mode .quote-en { color: #8888a0; }
+  [data-theme="night"] .quote-card cite, body.dark-mode .quote-card cite { color: #66667a; }
+  [data-theme="night"] .quick-start, body.dark-mode .quick-start { background: #1a1a2e; }
+  [data-theme="night"] .section-heading, body.dark-mode .section-heading { color: #8ab4f8; }
+  [data-theme="night"] .qs-card, body.dark-mode .qs-card { border-color: #3a3a5c; color: #d0d0e0; }
+  [data-theme="night"] .qs-gold { background: linear-gradient(135deg, #2a2518, #3a3020); }
+  [data-theme="night"] .qs-green { background: linear-gradient(135deg, #1a3a2a, #2a5a3a); }
+  [data-theme="night"] .qs-blue { background: linear-gradient(135deg, #1e3050, #2a4a6e); }
+  [data-theme="night"] .qs-purple { background: linear-gradient(135deg, #2a1a3a, #3a2a50); }
   [data-theme="night"] .continue-section, body.dark-mode .continue-section { background: #22223a; border-color: #3a3a5c; }
   [data-theme="night"] .continue-card, body.dark-mode .continue-card { background: #1a1a2e; border-color: #3a3a5c; color: #d0d0e0; }
-  [data-theme="night"] .section-heading, body.dark-mode .section-heading { color: #8ab4f8; }
-  [data-theme="night"] .continue-progress-bar, body.dark-mode .continue-progress-bar { background: #3a3a5c; }
-  [data-theme="night"] .welcome-section, body.dark-mode .welcome-section { background: #1a1a2e; }
-  [data-theme="night"] .welcome-text, body.dark-mode .welcome-text { color: #8888a0; }
-  [data-theme="night"] .start-card-gold { background: linear-gradient(135deg, #2a2518, #3a3020); border-color: #4a4030; }
-  [data-theme="night"] .start-card-navy { background: linear-gradient(135deg, #1e3050, #2a4a6e); border-color: #3a5a8a; }
-  [data-theme="night"] .start-card-green { background: linear-gradient(135deg, #1a3a2a, #2a5a3a); border-color: #3a6a4a; }
-  [data-theme="night"] .start-card-teal { background: linear-gradient(135deg, #1e2a3a, #2a3a50); border-color: #3a4a60; }
-  [data-theme="night"] .featured-section, body.dark-mode .featured-section { background: #22223a; }
-  [data-theme="night"] .featured-card, body.dark-mode .featured-card { background: #1a1a2e; border-color: #3a3a5c; }
-  [data-theme="night"] .tools-section, body.dark-mode .tools-section { background: #1a1a2e; }
-  [data-theme="night"] .tool-card, body.dark-mode .tool-card { background: #22223a; border-color: #3a3a5c; color: #d0d0e0; }
-  [data-theme="night"] .bottom-quote, body.dark-mode .bottom-quote { background: #22223a; }
-  [data-theme="night"] .bq-hebrew, body.dark-mode .bq-hebrew { color: #8ab4f8; }
-  [data-theme="night"] .bq-english, body.dark-mode .bq-english { color: #8888a0; }
-  [data-theme="night"] .spread-section, body.dark-mode .spread-section { background: #1a1a2e; }
-  [data-theme="night"] .spread-btn, body.dark-mode .spread-btn { background: #22223a; border-color: #3a3a5c; color: #d0d0e0; }
+  [data-theme="night"] .continue-progress, body.dark-mode .continue-progress { background: #3a3a5c; }
+  [data-theme="night"] .featured, body.dark-mode .featured { background: #22223a; }
+  [data-theme="night"] .feat-card, body.dark-mode .feat-card { background: #1a1a2e; border-color: #3a3a5c; }
+  [data-theme="night"] .tools, body.dark-mode .tools { background: #1a1a2e; }
+  [data-theme="night"] .tool, body.dark-mode .tool { background: #22223a; border-color: #3a3a5c; color: #d0d0e0; }
+  [data-theme="night"] .closing-quote, body.dark-mode .closing-quote { background: #22223a; }
+  [data-theme="night"] .cq-he, body.dark-mode .cq-he { color: #8ab4f8; }
+  [data-theme="night"] .cq-en, body.dark-mode .cq-en { color: #8888a0; }
+
+  /* ============================================
+     RESPONSIVE
+     ============================================ */
+  @media (max-width: 600px) {
+    .hero { padding: 2.5rem 1rem 2rem; }
+    .hero-he { font-size: 2rem; }
+    .hero-en { font-size: 1.15rem; }
+    .hero-search form { max-width: 100%; }
+    .quick-start-grid { grid-template-columns: 1fr; }
+    .featured-grid { grid-template-columns: 1fr; }
+    .tools-grid { grid-template-columns: repeat(2, 1fr); }
+    .app-inner { flex-direction: column; text-align: center; }
+    .quote-card { padding: 1.5rem; }
+    .quote-he { font-size: 1.1rem; }
+  }
 </style>
