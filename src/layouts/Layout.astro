@@ -665,13 +665,13 @@ const siteName = "A Jew - Breslov Torah Library";
 
   main {
     flex: 1;
-    width: 100%;
   }
 
   /* Desktop: offset main content for sidebar */
   @media (min-width: 1024px) {
     main {
       margin-left: var(--ds-sidebar-width, 260px);
+      width: calc(100% - var(--ds-sidebar-width, 260px));
     }
   }
 

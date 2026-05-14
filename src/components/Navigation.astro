@@ -686,10 +686,7 @@ function isActive(path: string) {
   }
 
   @media (max-width: 1023px) {
-    .content-wrapper {
-      padding-top: 56px; /* Mobile header height */
-      padding-bottom: calc(var(--ds-mobile-tab-height, 64px) + env(safe-area-inset-bottom));
-    }
+    /* Mobile padding is now handled by <main> in Layout.astro */
 
     /* Hide desktop elements on mobile */
     .desktop-sidebar {
