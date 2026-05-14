@@ -1,0 +1,69 @@
+import https from 'https';
+import fs from 'fs';
+import path from 'path';
+
+const BASE = 'https://raw.githubusercontent.com/petteknanach/ajew-org/main/public/reader';
+const DEST = 'public/reader';
+
+function dl(fp) {
+  return new Promise((ok, fail) => {
+    https.get(BASE + '/' + fp, r => {
+      if (r.statusCode === 302) return https.get(r.headers.location, r2 => {
+        if (r2.statusCode !== 200) return ok(null);
+        const d = [];
+        r2.on('data', c => d.push(c));
+        r2.on('end', () => {
+          fs.mkdirSync(path.dirname(path.join(DEST, fp)), { recursive: true });
+          fs.writeFileSync(path.join(DEST, fp), Buffer.concat(d));
+          ok(d.length);
+        });
+      }).on('error', fail);
+      if (r.statusCode !== 200) return ok(null);
+      const d = [];
+      r.on('data', c => d.push(c));
+      r.on('end', () => {
+        fs.mkdirSync(path.dirname(path.join(DEST, fp)), { recursive: true });
+        fs.writeFileSync(path.join(DEST, fp), Buffer.concat(d));
+        ok(d.length);
+      });
+    }).on('error', fail);
+  });
+}
+
+async function go() {
+  const books = [
+    ['likutay-moharan', ['part-1', 'part-2']],
+    ['likutay-tefilos', ['part-1', 'part-2']],
+    ['likutay-halachos', ['part-1']],
+    ['chumash-lh', ['part-1']],
+  ];
+  let total = 0;
+  for (const [bk, pts] of books) {
+    for (const pt of pts) {
+      try {
+        const idxP = bk + '/' + pt + '/index.json';
+        await dl(idxP);
+        const idx = JSON.parse(fs.readFileSync(path.join(DEST, idxP), 'utf8'));
+        const items = idx.torahs || [];
+        const prefix = bk.includes('tefilos') ? 'prayer' : bk.includes('halachos') ? 'halacha' : 'torah';
+        for (const t of items) {
+          if (t.number) await dl(bk + '/' + pt + '/' + prefix + '-' + t.number + '.json');
+        }
+        for (const intro of (idx.introSections || [])) {
+          const s = intro.slug || intro.file;
+          if (s) await dl(bk + '/' + pt + '/' + s + '.json');
+        }
+        total += items.length;
+        console.log(bk + '/' + pt + ': ' + items.length + ' files');
+      } catch (e) {
+        console.log('Error ' + bk + '/' + pt + ': ' + e.message);
+      }
+    }
+  }
+  console.log('Downloaded ' + total + ' files');
+}
+
+go().catch(e => {
+  console.error(e);
+  process.exit(1);
+});
