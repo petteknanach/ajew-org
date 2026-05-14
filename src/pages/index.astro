@@ -33,8 +33,10 @@ const todayLM = lmTorahMap[dayIndex] || 1;
 
 <!-- ═══════════════════════════════════════
      HERO — Simple, calm, inviting
-     ═══════════════════════════════════════ -->
+<!-- ═══ HERO SECTION ═══ -->
 <section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
   <div class="hero-content">
     <div class="hero-nanach" lang="he" dir="rtl">נ נח נחמ נחמן מאומן</div>
     <h1 class="hero-title">
@@ -48,6 +50,20 @@ const todayLM = lmTorahMap[dayIndex] || 1;
         <button type="submit" aria-label="Search">🔍</button>
       </form>
     </div>
+  </div>
+  <div class="hero-actions">
+    <a href="/reader/likutay-moharan/part-1/torah-1" class="btn-hero btn-hero-primary">
+      <span class="btn-icon">🕯️</span>
+      <span><span class="btn-label">Start Reading</span><span class="btn-sub">ליקוטי מוהר"ן א:א</span></span>
+    </a>
+    <a href="/help-me" class="btn-hero btn-hero-secondary">
+      <span class="btn-icon">💚</span>
+      <span><span class="btn-label">I Need Help</span><span class="btn-sub">עזרו לי</span></span>
+    </a>
+    <a href="/reader/sipurey-maasiyos" class="btn-hero btn-hero-accent">
+      <span class="btn-icon">📖</span>
+      <span><span class="btn-label">Rebbe's Stories</span><span class="btn-sub">סיפורי מעשיות</span></span>
+    </a>
   </div>
 </section>
 
@@ -268,18 +284,41 @@ const todayLM = lmTorahMap[dayIndex] || 1;
 
 <style>
   /* ============================================
-     HERO
+     HERO — Uman tzion background, full viewport
      ============================================ */
   .hero {
-    background: linear-gradient(135deg, #0f2744 0%, #1a365d 50%, #2a5a8e 100%);
-    color: white;
-    padding: 3rem 1.5rem 2.5rem;
+    position: relative;
+    min-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     text-align: center;
+    color: white;
+    overflow: hidden;
   }
-  .hero-content { max-width: 700px; margin: 0 auto; }
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background: url('/images/tomb-uman/rabbi-nachman-tomb-temple.jpg') center center / cover no-repeat;
+    z-index: 0;
+  }
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(15,39,68,0.85) 0%, rgba(26,54,93,0.75) 50%, rgba(15,39,68,0.9) 100%);
+    z-index: 1;
+  }
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+  }
   .hero-nanach {
     font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif);
-    font-size: 1.4rem;
+    font-size: 1.6rem;
     color: var(--gold-light, #f0cc5c);
     direction: rtl;
     margin-bottom: 1rem;
@@ -287,7 +326,7 @@ const todayLM = lmTorahMap[dayIndex] || 1;
   .hero-title { margin: 0 0 0.75rem; }
   .hero-he {
     font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif);
-    font-size: 2.6rem;
+    font-size: 2.8rem;
     font-weight: 700;
     color: var(--gold-light, #f0cc5c);
     direction: rtl;
@@ -298,19 +337,19 @@ const todayLM = lmTorahMap[dayIndex] || 1;
     font-family: Georgia, serif;
     font-size: 1.5rem;
     font-weight: 400;
-    color: rgba(255,255,255,0.85);
+    color: rgba(255,255,255,0.9);
     display: block;
   }
   .hero-subtitle {
-    font-size: 1.05rem;
-    color: rgba(255,255,255,0.65);
+    font-size: 1.1rem;
+    color: rgba(255,255,255,0.7);
     margin: 0 0 1.5rem;
   }
   .hero-search form {
     display: flex;
     border-radius: 50px;
     overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
     max-width: 480px;
     margin: 0 auto;
   }
@@ -324,6 +363,7 @@ const todayLM = lmTorahMap[dayIndex] || 1;
     color: var(--navy, #1a365d);
     direction: auto;
   }
+  .hero-search input::placeholder { color: #999; }
   .hero-search button {
     padding: 0.85rem 1.25rem;
     background: var(--gold, #d4a017);
@@ -333,6 +373,35 @@ const todayLM = lmTorahMap[dayIndex] || 1;
     transition: background 0.2s;
   }
   .hero-search button:hover { background: var(--gold-light, #f0cc5c); }
+  .hero-actions {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    max-width: 800px;
+    margin: 1.5rem auto 0;
+    padding: 0 1.5rem 2rem;
+  }
+  .btn-hero {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: transform 0.15s;
+  }
+  .btn-hero:hover { transform: translateY(-2px); }
+  .btn-hero-primary { background: var(--gold, #d4a017); color: var(--navy, #1a365d); }
+  .btn-hero-secondary { background: rgba(255,255,255,0.12); color: white; border: 1px solid rgba(255,255,255,0.25); backdrop-filter: blur(4px); }
+  .btn-hero-accent { background: rgba(212,160,23,0.2); color: var(--gold-light, #f0cc5c); border: 1px solid rgba(212,160,23,0.4); backdrop-filter: blur(4px); }
+  .btn-icon { font-size: 1.2rem; }
+  .btn-label { display: block; line-height: 1.2; }
+  .btn-sub { display: block; font-size: 0.75rem; font-weight: 400; opacity: 0.7; font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif); }
 
   /* ============================================
      DAILY QUOTE
@@ -595,7 +664,7 @@ const todayLM = lmTorahMap[dayIndex] || 1;
   /* ============================================
      DARK MODE
      ============================================ */
-  [data-theme="night"] .hero, body.dark-mode .hero { background: linear-gradient(135deg, #0f0f23, #1a1a3e); }
+  [data-theme="night"] .hero-overlay, body.dark-mode .hero-overlay { background: linear-gradient(180deg, rgba(15,15,35,0.9) 0%, rgba(26,26,62,0.85) 50%, rgba(15,15,35,0.95) 100%); }
   [data-theme="night"] .quote-card, body.dark-mode .quote-card { background: #1a1a2e; border-color: #3a3a5c; }
   [data-theme="night"] .quote-he, body.dark-mode .quote-he { color: #8ab4f8; }
   [data-theme="night"] .quote-en, body.dark-mode .quote-en { color: #8888a0; }
@@ -622,10 +691,15 @@ const todayLM = lmTorahMap[dayIndex] || 1;
      RESPONSIVE
      ============================================ */
   @media (max-width: 600px) {
-    .hero { padding: 2.5rem 1rem 2rem; }
+    .hero { min-height: 70vh; }
+    .hero-content { padding: 1.5rem 1rem; }
+    .hero-nanach { font-size: 1.3rem; }
     .hero-he { font-size: 2rem; }
     .hero-en { font-size: 1.15rem; }
+    .hero-subtitle { font-size: 0.95rem; }
     .hero-search form { max-width: 100%; }
+    .hero-actions { flex-direction: column; align-items: center; padding: 0 1rem 1.5rem; }
+    .btn-hero { width: 100%; max-width: 320px; justify-content: center; }
     .quick-start-grid { grid-template-columns: 1fr; }
     .featured-grid { grid-template-columns: 1fr; }
     .tools-grid { grid-template-columns: repeat(2, 1fr); }
