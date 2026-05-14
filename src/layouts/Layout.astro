@@ -210,53 +210,6 @@ const siteName = "A Jew - Breslov Torah Library";
     <!-- Phase 1: Navigation Shell -->
     <Navigation currentPath={Astro.url.pathname} />
 
-    <!-- Legacy navbar → replaced by Navigation component, hidden in CSS -->
-    <div class="legacy-nav-hidden" style="display:none;">
-      <div class="nav-container">
-        <a href="/" class="logo">
-          <span class="logo-text">A Jew</span>
-        </a>
-        <span class="nav-controls">
-          <button class="text-size-btn" id="textSmaller" aria-label="Decrease text size" title="Smaller text">A-</button>
-          <button class="text-size-btn" id="textLarger" aria-label="Increase text size" title="Larger text">A+</button>
-          <button class="dark-mode-toggle" id="darkModeToggle" aria-label="Toggle dark mode" title="Toggle dark mode">🌙</button>
-        </span>
-        <button class="mobile-menu-toggle" aria-label="Toggle Menu">
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
-        <div class="nav-links">
-          <a href="/">Home</a>
-          <a href="/reader"><span>Library</span><span class="nav-he">ספרייה</span></a>
-          <a href="/daily-study"><span>Daily Study</span><span class="nav-he">לימוד יומי</span></a>
-          <a href="/ask"><span>Ask</span><span class="nav-he">שאל</span></a>
-          <a href="/search-enhanced"><span>Search</span><span class="nav-he">חיפוש</span></a>
-          <a href="/reference"><span>Reference</span><span class="nav-he">מקורות</span></a>
-          <a href="/topics"><span>Topics</span><span class="nav-he">נושאים</span></a>
-          <a href="/healing-words"><span>Healing Words</span><span class="nav-he">דברי מרפא</span></a>
-          <a href="/parsha"><span>Parsha</span><span class="nav-he">פרשה</span></a>
-          <a href="/torah-gps"><span>Torah GPS</span><span class="nav-he">תורה GPS</span></a>
-          <a href="/mapjs"><span>Torah Map</span><span class="nav-he">מפת תורה</span></a>
-          <a href="/torah-lens"><span>Torah Lens</span><span class="nav-he">עדשת תורה</span></a>
-          <a href="/chain-of-light"><span>Chain of Light</span><span class="nav-he">שרשרת האור</span></a>
-          <a href="/chat"><span>Chat</span><span class="nav-he">צ'אט</span></a>
-          <a href="/blog"><span>Blog</span><span class="nav-he">בלוג</span></a>
-          <a href="/gematria"><span>Gematria</span><span class="nav-he">גימטריה</span></a>
-          <a href="/trivia"><span>Torah Trivia</span><span class="nav-he">טריוויה תורנית</span></a>
-          <a href="/gallery">Gallery</a>
-          <a href="/saba-says"><span>Saba Says</span><span class="nav-he">קולו של סבא</span></a>
-          <a href="/my-sefer"><span>My Sefer</span><span class="nav-he">הספר שלי</span></a>
-          <a href="/my-notes"><span>My Notes</span><span class="nav-he">הערות שלי</span></a>
-          <a href="/my-stats">My Stats</a>
-          <a href="/donate"><span>Donate</span><span class="nav-he">תרומה</span></a>
-          <a href="/subscribe">Subscribe</a>
-          <a href="/about">About</a>
-          <a href="https://github.com/petteknanach/ajew-ananach/releases" target="_blank" rel="noopener" style="color: #c8a050; font-weight: 600;">📱 Install Android App</a>
-        </div>
-      </div>
-    </div>
-
     <main id="main-content">
       <slot />
     </main>
@@ -294,55 +247,6 @@ const siteName = "A Jew - Breslov Torah Library";
     </footer>
 
     <script>
-      const menuToggle = document.querySelector('.mobile-menu-toggle');
-      const navLinks = document.querySelector('.nav-links');
-
-      if (menuToggle && navLinks) {
-        menuToggle.addEventListener('click', () => {
-          menuToggle.classList.toggle('active');
-          navLinks.classList.toggle('active');
-        });
-      }
-
-      // Highlight active nav link
-      const currentPath = window.location.pathname;
-      document.querySelectorAll('.nav-links a').forEach(link => {
-        const href = link.getAttribute('href');
-        if (href === '/') {
-          if (currentPath === '/') link.classList.add('active');
-        } else if (currentPath.startsWith(href)) {
-          link.classList.add('active');
-        }
-      });
-
-      // Text size controls
-      const textSmaller = document.getElementById('textSmaller');
-      const textLarger = document.getElementById('textLarger');
-      function setTextSize(delta) {
-        const current = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
-        const newSize = Math.max(12, Math.min(24, current + delta));
-        document.documentElement.style.fontSize = newSize + 'px';
-        localStorage.setItem('ajew-text-size', String(newSize));
-      }
-      if (textSmaller) textSmaller.addEventListener('click', () => setTextSize(-2));
-      if (textLarger) textLarger.addEventListener('click', () => setTextSize(2));
-
-      // Dark mode toggle
-      const darkToggle = document.getElementById('darkModeToggle');
-      const isDark = localStorage.getItem('ajew-dark-mode') === 'true';
-      if (isDark) {
-        document.body.classList.add('dark-mode');
-        if (darkToggle) darkToggle.textContent = '☀️';
-      }
-      if (darkToggle) {
-        darkToggle.addEventListener('click', () => {
-          document.body.classList.toggle('dark-mode');
-          const nowDark = document.body.classList.contains('dark-mode');
-          localStorage.setItem('ajew-dark-mode', String(nowDark));
-          darkToggle.textContent = nowDark ? '☀️' : '🌙';
-        });
-      }
-
       // Global keyboard shortcuts
       document.addEventListener('keydown', (e) => {
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) return;
@@ -762,6 +666,21 @@ const siteName = "A Jew - Breslov Torah Library";
   main {
     flex: 1;
     width: 100%;
+  }
+
+  /* Desktop: offset main content for sidebar */
+  @media (min-width: 1024px) {
+    main {
+      margin-left: var(--ds-sidebar-width, 260px);
+    }
+  }
+
+  /* Mobile: offset for header + tabbar */
+  @media (max-width: 1023px) {
+    main {
+      padding-top: 56px;
+      padding-bottom: calc(var(--ds-mobile-tab-height, 64px) + env(safe-area-inset-bottom));
+    }
   }
 
   .navbar {
