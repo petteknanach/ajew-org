@@ -22,10 +22,12 @@ const quotes = [
 ];
 const dayIndex = Math.floor(Date.now() / 86400000) % quotes.length;
 const todayQuote = quotes[dayIndex];
+const lmTorahMap = { 0: 48, 1: 112, 2: 24, 3: 78, 4: 25, 5: 24, 6: 4, 7: 2, 8: 282 };
+const todayLM = lmTorahMap[dayIndex] || 1;
 ---
 
 <Layout
-  title="The Breslov Digital Sanctuary — Rebbe Nachman's Teachings in Hebrew & English"
+  title="The Breslov Torah Library — 226+ Sacred Texts in Hebrew & English"
   description="Read 226+ sacred texts from Rebbe Nachman of Breslov — Likutay Moharan, Zohar, Talmud, Tanach, Rambam — free, bilingual, and beautifully calm."
 >
 
@@ -60,7 +62,7 @@ const todayQuote = quotes[dayIndex];
       <p class="quote-en">"{todayQuote.en}"</p>
       <cite>— Rebbe Nachman of Breslov · {todayQuote.src}</cite>
     </blockquote>
-    <a href="/reader/likutay-moharan/1/{dayIndex === 0 ? 48 : dayIndex === 1 ? 112 : dayIndex === 2 ? 24 : dayIndex === 3 ? 78 : dayIndex === 4 ? 25 : dayIndex === 5 ? 24 : dayIndex === 6 ? 4 : dayIndex === 7 ? 2 : dayIndex === 8 ? 282 : 1}" class="quote-cta">Read the full teaching →</a>
+    <a href="/reader/likutay-moharan/1/{todayLM}" class="quote-cta">Read the full teaching →</a>
   </div>
 </section>
 
