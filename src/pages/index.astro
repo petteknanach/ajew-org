@@ -31,12 +31,8 @@ const todayLM = lmTorahMap[dayIndex] || 1;
   description="Read 226+ sacred texts from Rebbe Nachman of Breslov — Likutay Moharan, Zohar, Talmud, Tanach, Rambam — free, bilingual, and beautifully calm."
 >
 
-<!-- ═══════════════════════════════════════
-     HERO — Simple, calm, inviting
 <!-- ═══ HERO SECTION ═══ -->
 <section class="hero">
-  <div class="hero-bg"></div>
-  <div class="hero-overlay"></div>
   <div class="hero-content">
     <div class="hero-nanach" lang="he" dir="rtl">נ נח נחמ נחמן מאומן</div>
     <h1 class="hero-title">
@@ -296,22 +292,21 @@ const todayLM = lmTorahMap[dayIndex] || 1;
     text-align: center;
     color: white;
     overflow: hidden;
+    background: url('/images/tomb-uman/Tzion%20Rabbainu%20before%20house%20IMG-20180325-WA0004.jpg') center center / cover no-repeat;
   }
-  .hero-bg {
+  .hero::before {
+    content: '';
     position: absolute;
     inset: 0;
-    background: url('/images/tomb-uman/rabbi-nachman-tomb-temple.jpg') center center / cover no-repeat;
+    background: linear-gradient(180deg, rgba(15,39,68,0.82) 0%, rgba(26,54,93,0.70) 50%, rgba(15,39,68,0.88) 100%);
     z-index: 0;
+    pointer-events: none;
   }
-  .hero-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, rgba(15,39,68,0.85) 0%, rgba(26,54,93,0.75) 50%, rgba(15,39,68,0.9) 100%);
+  .hero > * {
+    position: relative;
     z-index: 1;
   }
   .hero-content {
-    position: relative;
-    z-index: 2;
     max-width: 700px;
     margin: 0 auto;
     padding: 2rem 1.5rem;
@@ -322,6 +317,7 @@ const todayLM = lmTorahMap[dayIndex] || 1;
     color: var(--gold-light, #f0cc5c);
     direction: rtl;
     margin-bottom: 1rem;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.4);
   }
   .hero-title { margin: 0 0 0.75rem; }
   .hero-he {
@@ -332,24 +328,27 @@ const todayLM = lmTorahMap[dayIndex] || 1;
     direction: rtl;
     display: block;
     margin-bottom: 4px;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.5);
   }
   .hero-en {
     font-family: Georgia, serif;
     font-size: 1.5rem;
     font-weight: 400;
-    color: rgba(255,255,255,0.9);
+    color: white;
     display: block;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.4);
   }
   .hero-subtitle {
     font-size: 1.1rem;
-    color: rgba(255,255,255,0.7);
+    color: rgba(255,255,255,0.9);
     margin: 0 0 1.5rem;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.3);
   }
   .hero-search form {
     display: flex;
     border-radius: 50px;
     overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
     max-width: 480px;
     margin: 0 auto;
   }
@@ -374,8 +373,6 @@ const todayLM = lmTorahMap[dayIndex] || 1;
   }
   .hero-search button:hover { background: var(--gold-light, #f0cc5c); }
   .hero-actions {
-    position: relative;
-    z-index: 2;
     display: flex;
     gap: 0.75rem;
     justify-content: center;
@@ -397,11 +394,11 @@ const todayLM = lmTorahMap[dayIndex] || 1;
   }
   .btn-hero:hover { transform: translateY(-2px); }
   .btn-hero-primary { background: var(--gold, #d4a017); color: var(--navy, #1a365d); }
-  .btn-hero-secondary { background: rgba(255,255,255,0.12); color: white; border: 1px solid rgba(255,255,255,0.25); backdrop-filter: blur(4px); }
-  .btn-hero-accent { background: rgba(212,160,23,0.2); color: var(--gold-light, #f0cc5c); border: 1px solid rgba(212,160,23,0.4); backdrop-filter: blur(4px); }
+  .btn-hero-secondary { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); backdrop-filter: blur(4px); }
+  .btn-hero-accent { background: rgba(212,160,23,0.25); color: var(--gold-light, #f0cc5c); border: 1px solid rgba(212,160,23,0.5); backdrop-filter: blur(4px); }
   .btn-icon { font-size: 1.2rem; }
   .btn-label { display: block; line-height: 1.2; }
-  .btn-sub { display: block; font-size: 0.75rem; font-weight: 400; opacity: 0.7; font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif); }
+  .btn-sub { display: block; font-size: 0.75rem; font-weight: 400; opacity: 0.8; font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif); }
 
   /* ============================================
      DAILY QUOTE
@@ -664,7 +661,7 @@ const todayLM = lmTorahMap[dayIndex] || 1;
   /* ============================================
      DARK MODE
      ============================================ */
-  [data-theme="night"] .hero-overlay, body.dark-mode .hero-overlay { background: linear-gradient(180deg, rgba(15,15,35,0.9) 0%, rgba(26,26,62,0.85) 50%, rgba(15,15,35,0.95) 100%); }
+  [data-theme="night"] .hero::before, body.dark-mode .hero::before { background: linear-gradient(180deg, rgba(15,15,35,0.92) 0%, rgba(26,26,62,0.88) 50%, rgba(15,15,35,0.95) 100%); }
   [data-theme="night"] .quote-card, body.dark-mode .quote-card { background: #1a1a2e; border-color: #3a3a5c; }
   [data-theme="night"] .quote-he, body.dark-mode .quote-he { color: #8ab4f8; }
   [data-theme="night"] .quote-en, body.dark-mode .quote-en { color: #8888a0; }
