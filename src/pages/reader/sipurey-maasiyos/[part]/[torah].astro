@@ -27,19 +27,7 @@ try {
   const raw = fs.readFileSync(filePath, 'utf8');
   torahData = JSON.parse(raw);
 } catch (e) {
-  // Fallback: fetch from GitHub raw CDN during build
-  try {
-    const url = `https://raw.githubusercontent.com/petteknanach/ajew-org/main/${filePath.replace(process.cwd() + '/', '')}`;
-    const resp = await fetch(url);
-    if (resp.ok) {
-      torahData = await resp.json();
-    } else {
-      error = `sipurey-maasiyos ${torah} not found`;
-    }
-  } catch (e2) {
-    error = `sipurey-maasiyos ${torah} not found`;
-  }
-}
+  error = `Section ${torah} not found`;
 }
 
 if (!torahData && !error) error = 'Content not available';

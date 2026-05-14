@@ -26,25 +26,12 @@ const torahNum = parseInt(torah);
 let torahData = null;
 let error = null;
 
-const filePath = path.join(process.cwd(), `public/reader/michtevay-shmuel/part-${partNum}/letter-${torahNum}.json`);
-
 try {
+  const filePath = path.join(process.cwd(), `public/reader/michtevay-shmuel/part-${partNum}/letter-${torahNum}.json`);
   const raw = fs.readFileSync(filePath, 'utf8');
   torahData = JSON.parse(raw);
 } catch (e) {
-  // Fallback: fetch from GitHub raw CDN during build
-  try {
-    const url = `https://raw.githubusercontent.com/petteknanach/ajew-org/main/${filePath.replace(process.cwd() + '/', '')}`;
-    const resp = await fetch(url);
-    if (resp.ok) {
-      torahData = await resp.json();
-    } else {
-      error = `michtevay-shmuel ${torah} not found`;
-    }
-  } catch (e2) {
-    error = `michtevay-shmuel ${torah} not found`;
-  }
-}
+  error = `Letter ${torahNum} not found`;
 }
 
 if (!torahData && !error) error = 'Content not available';

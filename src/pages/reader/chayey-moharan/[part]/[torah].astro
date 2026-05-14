@@ -29,25 +29,12 @@ const fileName = isNumeric ? `chapter-${torahNum}.json` : `${torah}.json`;
 let torahData = null;
 let error = null;
 
-const filePath = path.join(process.cwd(), `public/reader/chayey-moharan/${fileName}`);
-
 try {
+  const filePath = path.join(process.cwd(), `public/reader/chayey-moharan/${fileName}`);
   const raw = fs.readFileSync(filePath, 'utf8');
   torahData = JSON.parse(raw);
 } catch (e) {
-  // Fallback: fetch from GitHub raw CDN during build
-  try {
-    const url = `https://raw.githubusercontent.com/petteknanach/ajew-org/main/${filePath.replace(process.cwd() + '/', '')}`;
-    const resp = await fetch(url);
-    if (resp.ok) {
-      torahData = await resp.json();
-    } else {
-      error = `chayey-moharan ${torah} not found`;
-    }
-  } catch (e2) {
-    error = `chayey-moharan ${torah} not found`;
-  }
-}
+  error = `Content not found`;
 }
 
 if (!torahData && !error) error = 'Content not available';
