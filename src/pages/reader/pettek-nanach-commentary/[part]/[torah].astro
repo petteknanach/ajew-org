@@ -212,22 +212,41 @@ const structuredData = torahData ? JSON.stringify({
 
       <div class="reader-content mode-hebrew">
         <div class="reader-content-original">
-{torahData.segments.map((seg) => {
-            // Handle multiple data formats:
-            // 1. Flat: seg.he / seg.en
-            // 2. Nested layers: seg.layers.beginner.he / seg.layers.intermediate.en etc.
-            // 3. Direct levels: seg.beginner.he / seg.intermediate.en etc. (tinyana format)
-            const layers = seg.layers || seg;
-            const heText = seg.he || layers.intermediate?.he || layers.scholarly?.he || layers.beginner?.he || '';
-            const enText = seg.en || layers.beginner?.en || layers.intermediate?.en || layers.scholarly?.en || '';
+{torahData.segments.map((seg, i) => {
+            const idx = seg.index || (i + 1);
+            
+            let heText = '';
+            let enText = '';
+            
+            if (seg.he) {
+              // Format 1: Flat seg.he / seg.en
+              heText = seg.he;
+              enText = seg.en || '';
+            } else if (seg.beginner || seg.intermediate) {
+              // PNC layered format - could be strings or objects
+              const b = seg.beginner;
+              const inter = seg.intermediate;
+              const s = seg.scholarly || {};
+              
+              if (typeof b === 'string') {
+                // Torah 1-286 format: beginner=EN string, intermediate=HE string
+                enText = b;
+                heText = typeof inter === 'string' ? inter : '';
+              } else if (b && typeof b === 'object') {
+                // Tinyana format: beginner.en, intermediate.en, scholarly.he
+                enText = b.en || inter?.en || '';
+                heText = s.he || inter?.he || '';
+              }
+            }
+            
             return (
-          <div class="reader-segment-pair" id={`seg-${seg.index}`}>
-            <div class="reader-segment segment-he" data-index={String(seg.index)}>
-              <span class="segment-number">{seg.index}</span>
+          <div class="reader-segment-pair" id={`seg-${idx}`}>
+            <div class="reader-segment segment-he" data-index={String(idx)}>
+              <span class="segment-number">{idx}</span>
               <p data-nikud={heText}>{heText}</p>
             </div>
-            <div class={`reader-segment segment-en ${!enText ? 'empty-translation' : ''}`} data-index={String(seg.index)}>
-              <span class="segment-number">{seg.index}</span>
+            <div class={`reader-segment segment-en ${!enText ? 'empty-translation' : ''}`} data-index={String(idx)}>
+              <span class="segment-number">{idx}</span>
               <p>{enText || 'Translation not yet available'}</p>
             </div>
           </div>
