@@ -99,9 +99,9 @@ async function go() {
     return;
   }
 
-  // Filter to PNC JSON files (torah-*.json, tinyana-*.json, index.json)
+  // Filter to PNC JSON files (torah-*.json, tinyana-*.json, index.json, and intro/front matter files)
   const pncFiles = listing
-    .filter(f => f.name.endsWith('.json') && (f.name.startsWith('torah-') || f.name.startsWith('tinyana-') || f.name === 'index.json'))
+    .filter(f => f.name.endsWith('.json'))
     .map(f => PNC_PATH + '/' + f.name);
 
   console.log(`PNC: Found ${pncFiles.length} files on remote`);

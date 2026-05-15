@@ -24,6 +24,18 @@ export function getStaticPaths() {
       const num = parseInt(f.match(/tinyana-(\d+)\.json/)[1]);
       paths.push({ params: { part: '2', torah: String(num) } });
     }
+
+    // Scan intro/front matter files (any .json that isn't torah-N, tinyana-N, or index)
+    const introFiles = fs.readdirSync(pncDir).filter(f =>
+      f.endsWith('.json') &&
+      f !== 'index.json' &&
+      !/^torah-\d+\.json$/.test(f) &&
+      !/^tinyana-\d+\.json$/.test(f)
+    );
+    for (const f of introFiles) {
+      const slug = f.replace('.json', '');
+      paths.push({ params: { part: '1', torah: slug } });
+    }
   }
 
   return paths;
@@ -32,62 +44,80 @@ export function getStaticPaths() {
 const { part, torah } = Astro.params;
 const partNum = parseInt(part);
 const torahNum = parseInt(torah);
+const isIntroPage = isNaN(torahNum);
 
 let torahData = null;
 let error = null;
 
 try {
-  // Part 1 uses torah-N.json, Part 2 uses tinyana-N.json
-  const fileName = partNum === 2 ? `tinyana-${torahNum}.json` : `torah-${torahNum}.json`;
+  let fileName;
+  if (isIntroPage) {
+    // Intro/front matter files are loaded by slug name
+    fileName = `${torah}.json`;
+  } else if (partNum === 2) {
+    fileName = `tinyana-${torahNum}.json`;
+  } else {
+    fileName = `torah-${torahNum}.json`;
+  }
   const filePath = path.join(process.cwd(), `public/reader/pettek-nanach-commentary/${fileName}`);
   const raw = fs.readFileSync(filePath, 'utf8');
   torahData = JSON.parse(raw);
 } catch (e) {
-  error = `Torah ${torahNum} not found`;
+  error = isIntroPage ? `Page "${torah}" not found` : `Torah ${torahNum} not found`;
 }
 
 if (!torahData && !error) error = 'Content not available';
 
 if (torahData) {
-  // Dynamic: scan actual files for the max torah number in this part
-  const pncDir = path.join(process.cwd(), 'public/reader/pettek-nanach-commentary');
-  const prefix = partNum === 2 ? 'tinyana' : 'torah';
-  const regex = new RegExp(`^${prefix}-(\\d+)\\.json$`);
-  const partFiles = fs.existsSync(pncDir) ? fs.readdirSync(pncDir).filter(f => regex.test(f)) : [];
-  const partNums = partFiles.map(f => parseInt(f.match(regex)[1]));
-  const maxTorah = partNums.length > 0 ? Math.max(...partNums) : 999;
-  if (!torahData.navigation) {
-    torahData.navigation = {
-      prevUrl: torahNum > 1 ? `/reader/pettek-nanach-commentary/${partNum}/${torahNum - 1}` : null,
-      nextUrl: torahNum < maxTorah ? `/reader/pettek-nanach-commentary/${partNum}/${torahNum + 1}` : null,
-    };
+  if (!isIntroPage) {
+    // Dynamic: scan actual files for the max torah number in this part
+    const pncDir = path.join(process.cwd(), 'public/reader/pettek-nanach-commentary');
+    const prefix = partNum === 2 ? 'tinyana' : 'torah';
+    const regex = new RegExp(`^${prefix}-(\\d+)\\.json$`);
+    const partFiles = fs.existsSync(pncDir) ? fs.readdirSync(pncDir).filter(f => regex.test(f)) : [];
+    const partNums = partFiles.map(f => parseInt(f.match(regex)[1]));
+    const maxTorah = partNums.length > 0 ? Math.max(...partNums) : 999;
+    if (!torahData.navigation) {
+      torahData.navigation = {
+        prevUrl: torahNum > 1 ? `/reader/pettek-nanach-commentary/${partNum}/${torahNum - 1}` : null,
+        nextUrl: torahNum < maxTorah ? `/reader/pettek-nanach-commentary/${partNum}/${torahNum + 1}` : null,
+      };
+    }
+  } else {
+    // For intro pages, set up navigation to first torah
+    if (!torahData.navigation) {
+      torahData.navigation = {
+        prevUrl: null,
+        nextUrl: `/reader/pettek-nanach-commentary/1/1`,
+      };
+    }
   }
   torahData.segments.forEach((seg, i) => {
     if (!seg.index) seg.index = i + 1;
   });
 }
 
-const bookName = 'Petek Nanach Commentary';
+const bookName = 'Pettek Nanach Commentary';
 const bookHebrew = 'פירוש פתק נ נח';
-const itemName = 'Torah';
+const itemName = isIntroPage ? 'Section' : 'Torah';
 
 const pageTitle = torahData
-  ? `${torahData.hebrewTitle || torahData.title} - Petek Nanach Commentary`
-  : 'Torah Not Found';
+  ? `${torahData.hebrewTitle || torahData.title} - Pettek Nanach Commentary`
+  : (isIntroPage ? 'Section Not Found' : 'Torah Not Found');
 const pageDesc = torahData
-  ? `Read ${torahData.title} from Petek Nanach Running Commentary on Likutey Moharan`
+  ? `Read ${torahData.title} from Pettek Nanach Running Commentary on Likutey Moharan`
   : '';
 
 const structuredData = torahData ? JSON.stringify({
   "@context": "https://schema.org",
   "@type": "Article",
-  "headline": `${torahData.title} - Petek Nanach Commentary`,
+  "headline": `${torahData.title} - Pettek Nanach Commentary`,
   "alternativeHeadline": torahData.hebrewTitle || '',
   "author": { "@type": "Person", "name": "Pettek Nanach" },
   "publisher": { "@type": "Organization", "name": "ajew.org" },
   "inLanguage": ["he", "en"],
-  "isPartOf": { "@type": "Book", "name": "Petek Nanach Running Commentary on Likutey Moharan" },
-  "url": `https://ajew.org/reader/pettek-nanach-commentary/${partNum}/${torahNum}`
+  "isPartOf": { "@type": "Book", "name": "Pettek Nanach Running Commentary on Likutey Moharan" },
+  "url": `https://ajew.org/reader/pettek-nanach-commentary/${partNum}/${torah}`
 }) : '';
 ---
 

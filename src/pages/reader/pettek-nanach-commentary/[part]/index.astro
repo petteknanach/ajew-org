@@ -40,6 +40,30 @@ if (fs.existsSync(pncDir)) {
   }
 }
 
+// Also load intro/front matter sections (non-numbered JSON files)
+const introSections = [];
+if (fs.existsSync(pncDir) && partNum === 1) {
+  const allFiles = fs.readdirSync(pncDir);
+  const introFiles = allFiles.filter(f =>
+    f.endsWith('.json') &&
+    f !== 'index.json' &&
+    !/^torah-\d+\.json$/.test(f) &&
+    !/^tinyana-\d+\.json$/.test(f)
+  );
+  for (const f of introFiles) {
+    const slug = f.replace('.json', '');
+    try {
+      const data = JSON.parse(fs.readFileSync(path.join(pncDir, f), 'utf8'));
+      introSections.push({
+        slug,
+        title: data.title || slug,
+        hebrewTitle: data.hebrewTitle || '',
+        url: `/reader/pettek-nanach-commentary/1/${slug}`,
+      });
+    } catch (e) {}
+  }
+}
+
 // Sort by number
 partTorahs.sort((a, b) => a.number - b.number);
 
@@ -75,6 +99,21 @@ const part2Max = allLocalFiles.filter(f => /^tinyana-\d+\.json$/.test(f)).map(f 
         <a href="/reader/pettek-nanach-commentary/2" style="display: inline-block; padding: 10px 24px; margin: 4px; border-radius: 6px; text-decoration: none; font-weight: 600; {partNum === 2 ? 'background: #1e3a5f; color: #fff;' : 'background: #f0ebe0; color: #1e3a5f;'}">Part 2: Tinyana 1-{part2Max || '...'}</a>
       )}
     </div>
+
+    {introSections.length > 0 && (
+      <div style="margin-bottom: 24px;">
+        <h2 style="font-family: 'Cinzel', serif; font-size: 1.3em; color: #1e3a5f; margin-bottom: 12px; border-bottom: 2px solid #a07830; padding-bottom: 8px;">
+          Front Matter / הקדמות
+        </h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 8px;">
+          {introSections.map(s => (
+            <a href={s.url} style="display: block; padding: 12px 14px; background: #fdf8ec; border-radius: 6px; text-decoration: none; border-right: 3px solid #d4a017;">
+              <span style="color: #1e3a5f; font-weight: 600; font-size: 0.9em;">{s.hebrewTitle || s.title}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    )}
 
     {partTorahs.length > 0 && (
       <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px;">
