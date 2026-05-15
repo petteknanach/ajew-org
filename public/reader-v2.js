@@ -116,6 +116,18 @@
     state.mode = mode;
     savePrefs();
     applyMode();
+
+    // Auto-close commentary sidebar in 'both' mode for full-width bilingual view
+    if (mode === 'both') {
+      const body = document.body;
+      if (body.classList.contains('has-commentary-sidebar-open')) {
+        body.classList.remove('has-commentary-sidebar-open');
+        const sidebar = document.querySelector('.commentary-sidebar');
+        if (sidebar) sidebar.classList.remove('is-open');
+        const toggle = document.querySelector('.commentary-sidebar-toggle');
+        if (toggle) toggle.setAttribute('aria-expanded', 'false');
+      }
+    }
   }
 
   // ─── Font Size ───
