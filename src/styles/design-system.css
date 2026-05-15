@@ -484,6 +484,24 @@ body.dark-mode .ds-badge-gold {
 }
 
 
+@keyframes fireFlicker {
+  0%   { text-shadow: 0 0 4px #ff0000, 0 0 11px #ff0000, 0 0 19px #ff0000, 0 0 40px #ff7700, 0 0 70px #ff7700, 0 0 100px #ff7700, 0 0 140px #ff7700; }
+  15%  { text-shadow: 0 0 6px #ff2200, 0 0 14px #ff3300, 0 0 22px #ff5500, 0 0 45px #ff9900, 0 0 75px #ffaa00, 0 0 110px #ffaa00, 0 0 150px #ffaa00; }
+  30%  { text-shadow: 0 0 5px #ff0000, 0 0 13px #ff2200, 0 0 20px #ff4400, 0 0 42px #ff6600, 0 0 72px #ff8800, 0 0 105px #ff8800, 0 0 145px #ff8800; }
+  45%  { text-shadow: 0 0 7px #ff1100, 0 0 16px #ff4400, 0 0 25px #ff6600, 0 0 48px #ffaa00, 0 0 80px #ffcc00, 0 0 120px #ffcc00, 0 0 160px #ffcc00; }
+  60%  { text-shadow: 0 0 4px #ff3300, 0 0 10px #ff5500, 0 0 17px #ff7700, 0 0 38px #ff9900, 0 0 65px #ffbb00, 0 0 95px #ffbb00, 0 0 130px #ffbb00; }
+  75%  { text-shadow: 0 0 8px #ff0000, 0 0 18px #ff3300, 0 0 28px #ff5500, 0 0 52px #ff8800, 0 0 85px #ffaa00, 0 0 125px #ffaa00, 0 0 170px #ffaa00; }
+  90%  { text-shadow: 0 0 5px #ff2200, 0 0 12px #ff4400, 0 0 21px #ff6600, 0 0 44px #ff7700, 0 0 74px #ff9900, 0 0 108px #ff9900, 0 0 148px #ff9900; }
+  100% { text-shadow: 0 0 4px #ff0000, 0 0 11px #ff0000, 0 0 19px #ff0000, 0 0 40px #ff7700, 0 0 70px #ff7700, 0 0 100px #ff7700, 0 0 140px #ff7700; }
+}
+@keyframes fireRise {
+  0%   { transform: translateY(0) scale(1); }
+  25%  { transform: translateY(-2px) scale(1.01); }
+  50%  { transform: translateY(-4px) scale(1.02); }
+  75%  { transform: translateY(-1px) scale(1.01); }
+  100% { transform: translateY(0) scale(1); }
+}
+
 /* Fire text animation - reusable across pages */
 .fire-text {
   animation: fireFlicker 1.5s ease-in-out infinite, fireRise 2s ease-in-out infinite;
