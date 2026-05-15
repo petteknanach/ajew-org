@@ -17,7 +17,7 @@ const navItems = [
   { label: 'Reader', labelHe: 'קורא', icon: '📖', href: '/reader', key: 'reader' },
   { label: 'Search', labelHe: 'חיפוש', icon: '🔍', href: '/search-enhanced', key: 'search' },
   { label: 'Daily Study', labelHe: 'לימוד יומי', icon: '📅', href: '/daily-study', key: 'daily' },
-  { label: 'My Fire', labelHe: 'הלהבה שלי', icon: '🔥', href: '/my-flame', key: 'flame' },
+  { label: 'My Fire', labelHe: 'האש שלי', icon: '🔥', href: '/my-flame', key: 'flame' },
   { label: 'Torah GPS', labelHe: 'תורה GPS', icon: '🧭', href: '/torah-gps', key: 'gps' },
   { label: 'Topics', labelHe: 'נושאים', icon: '☰', href: '/topics', key: 'topics' },
   { label: 'Help Me', labelHe: 'עזרו לי', icon: '💬', href: '/help-me', key: 'help' },
@@ -36,10 +36,10 @@ function isActive(path: string) {
 <aside class="desktop-sidebar" role="navigation" aria-label="Main navigation">
   <!-- Logo -->
   <a href="/" class="sidebar-logo">
-    <span class="logo-emoji">✡️</span>
+    <img src="/images/nanach/nanach-breslov-logo.jpg" alt="Na Nach" class="logo-nanach" width="40" height="34" />
     <div class="logo-text">
       <span class="logo-name">ajew.org</span>
-      <span class="logo-tagline">Breslov Digital Sanctuary</span>
+      <span class="logo-tagline">Na Nach Breslov — Rabbainu's Torah</span>
     </div>
   </a>
 
@@ -83,7 +83,7 @@ function isActive(path: string) {
      ═══════════════════════════════════════ -->
 <header class="mobile-header" role="banner">
   <a href="/" class="mobile-logo">
-    <span class="logo-emoji">✡️</span>
+    <img src="/images/nanach/nanach-breslov-logo.jpg" alt="Na Nach" class="logo-nanach-mobile" width="32" height="27" />
     <span class="logo-name">ajew</span>
   </a>
   <div class="mobile-header-actions">
@@ -207,6 +207,14 @@ function isActive(path: string) {
 
   .logo-emoji {
     font-size: 1.5rem;
+  }
+  .logo-nanach {
+    border-radius: 4px;
+    object-fit: contain;
+  }
+  .logo-nanach-mobile {
+    border-radius: 3px;
+    object-fit: contain;
   }
 
   .logo-text {
