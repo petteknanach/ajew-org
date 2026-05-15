@@ -103,6 +103,19 @@
   /* grid is already set above */
 }
 
+/* Ensure full-width content in both mode - override any commentary sidebar styles */
+.reader-container {
+  max-width: var(--ds-max-page, 1200px) !important;
+  margin-right: auto !important;
+  margin-left: auto !important;
+}
+
+/* Only shift content when commentary sidebar is actually open */
+body.has-commentary-sidebar-open .reader-container {
+  max-width: calc(100% - 40%) !important;
+  margin-right: 40% !important;
+}
+
 /* ─── Immerse Mode ─── */
 .reader-container.immerse-mode {
   max-width: var(--ds-max-content, 720px);
