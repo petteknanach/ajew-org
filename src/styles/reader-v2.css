@@ -34,10 +34,30 @@
   grid-template-columns: 1fr 1fr;
 }
 
+.reader-content-original {
+  display: contents;
+}
+
+.reader-segment-pair {
+  display: contents;
+}
+
+.reader-segment-pair .segment-he {
+  grid-column: 1;
+}
+
+.reader-segment-pair .segment-en {
+  grid-column: 2;
+}
+
 @media (max-width: 900px) {
   .reader-content {
     grid-template-columns: 1fr;
     gap: var(--ds-space-6, 1.5rem);
+  }
+  .reader-segment-pair .segment-he,
+  .reader-segment-pair .segment-en {
+    grid-column: 1;
   }
 }
 
