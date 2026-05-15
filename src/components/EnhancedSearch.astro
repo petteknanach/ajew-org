@@ -112,91 +112,11 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
             </select>
             <span class="mode-label" id="minWordsHint">of <span id="totalWordsCount">0</span> words</span>
           </div>
-          <!-- Book filter -->
-          <div class="mode-group book-filter-group">
+          <!-- Book filter — replaced by AdvancedSearchOptions checkboxes -->
+          <div class="mode-group book-filter-group" style="display:none;">
             <span class="mode-label">Book:</span>
             <select id="bookFilter" class="min-words-select" title="Filter results by book">
               <option value="">All Books</option>
-              <optgroup label="R' Nachman">
-                <option value="likutay-moharan">Likutay Moharan</option>
-                <option value="sefer-hamidos">Sefer HaMidos</option>
-                <option value="sipurey-maasiyos">Sipurey Maasiyos</option>
-                <option value="sichos-haran">Sichos HaRan</option>
-                <option value="chayey-moharan">Chayey Moharan</option>
-                <option value="praises-of-rabbi-nachman">Praises of R' Nachman</option>
-              </optgroup>
-              <optgroup label="R' Nosson">
-                <option value="likutay-halachos">Likutay Halachos</option>
-                <option value="likutay-tefilos">Likutay Tefilos</option>
-                <option value="likutay-eitzos">Likutay Eitzos</option>
-                <option value="likutay-eitzos-basra">Likutay Eitzos Basra</option>
-                <option value="yemei-moharnat">Yemay Moharnat</option>
-                <option value="shemos-hatzadikim">Shemos HaTzadikim</option>
-                <option value="alim-litrufa">Alim Litrufa</option>
-                <option value="yemei-hatlaos">Yemay HaTlaos</option>
-              </optgroup>
-              <optgroup label="R' Yisroel Dov Odesser (Saba)">
-                <option value="yisroel-saba">Yisroel Saba</option>
-                <option value="fires-of-israel">Fires of Israel</option>
-                <option value="sichos-chayay-saba">Sichos Chayay Saba</option>
-                <option value="saba-tape-transcripts">Saba Tape Transcripts</option>
-                <option value="ebay-hanachal">Ebay HaNachal</option>
-                <option value="likutay-nanach">Likutay Nanach</option>
-                <option value="misc-אגרת-הפורים">Igeres HaPurim</option>
-              </optgroup>
-              <optgroup label="Other Breslov">
-                <option value="kitzur-likutay-moharan">Kitzur LM</option>
-                <option value="hashtatfchus-hanefesh">Hashtatfchus HaNefesh</option>
-                <option value="meshivas-nefesh">Meshivas Nefesh</option>
-                <option value="parparos-lechochma">Parparos LeChochma</option>
-                <option value="rimzei-hamaasiyos">Rimzei HaMaasiyos</option>
-                <option value="zimras-haaretz">Zimras HaAretz</option>
-                <option value="yikra-dshabbata">Yikra DShabbata</option>
-                <option value="yereach-haeitanim">Yereach HaEitanim</option>
-                <option value="nachas-hashulchan">Nachas HaShulchan</option>
-                <option value="otzar-hayirah">Otzar HaYirah</option>
-                <option value="biur-halikutim">Biur HaLikutim</option>
-                <option value="chochma-utvuna">Chochma UTvuna</option>
-                <option value="kokhvei-or">Kokhvei Or</option>
-                <option value="siach-sarfei-kodesh">Siach Sarfei Kodesh</option>
-                <option value="pettek-nanach-commentary">Petek Nanach Commentary</option>
-              </optgroup>
-              <optgroup label="R' Shimshon Barsky">
-                <option value="shimshon-גבורות-שמשון">Gevuros Shimshon</option>
-                <option value="shimshon-עצות-המבוארות">Eitzos HaMevuaros</option>
-                <option value="aitzoas-hamivooaroas">Aitzoas HaMivooaroas</option>
-                <option value="gevuros-shimshon">Gevuros Shimshon (other)</option>
-              </optgroup>
-              <optgroup label="Breslov Pamphlets">
-                <option value="azamra">Azamra</option>
-                <option value="misc-עצות-ישרות">Eitzos Yesharos</option>
-                <option value="misc-שיחת-הנפש">Sichas HaNefesh</option>
-                <option value="misc-ספר-ההשתטחות">Sefer HaHishtatchus</option>
-                <option value="misc-ליקוטי-אבן">Likutay Even</option>
-                <option value="misc-קונטרס-קיום-התורה">Kiyum HaTorah</option>
-                <option value="misc-קונטרס-תורה-אור">Torah Or</option>
-                <option value="misc-טובות-זכרונות">Tovos Zichronos</option>
-                <option value="misc-תולדות-שמואל">Toldos Shmuel</option>
-              </optgroup>
-              <optgroup label="Ramchal">
-                <option value="ramchal-mesillas-yesharim">Mesillas Yesharim</option>
-                <option value="ramchal-derech-hashem">Derech Hashem</option>
-                <option value="ramchal-daas-tevunos">Daas Tevunos</option>
-                <option value="ramchal-klach-pitchei-chochma">Klach Pitchei Chochma</option>
-                <option value="ramchal-adir-bamuroam">Adir BaMurom</option>
-                <option value="ramchal-derech-etz-chaim">Derech Etz Chaim</option>
-                <option value="ramchal-maamar-haikkarim">Ma'amar HaIkkurim</option>
-                <option value="ramchal-asara-perakim">Asara Perakim</option>
-              </optgroup>
-              <optgroup label="Zohar">
-                <option value="zohar-bereishit">Zohar Bereishit</option>
-                <option value="zohar-shemos">Zohar Shemos</option>
-                <option value="zohar-vayikra">Zohar Vayikra</option>
-                <option value="zohar-bamidbar">Zohar Bamidbar</option>
-                <option value="zohar-devarim">Zohar Devarim</option>
-                <option value="zohar-tikunim">Zohar Tikunim</option>
-                <option value="zohar-hadash">Zohar Hadash</option>
-              </optgroup>
             </select>
           </div>
         </div>
@@ -333,7 +253,7 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
       });
     }
 
-    // Book filter
+    // Book filter dropdown (hidden — replaced by AdvancedSearchOptions checkboxes)
     const bookFilter = document.getElementById('bookFilter') as HTMLSelectElement;
     if (bookFilter) {
       bookFilter.addEventListener('change', () => {
@@ -377,6 +297,12 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
     
     searchState.query = query;
     updateUrl(query);
+    
+    // Read selected books from AdvancedSearchOptions checkboxes
+    const selectedBookCheckboxes = document.querySelectorAll('input[name="searchBook"]:checked');
+    if (selectedBookCheckboxes.length > 0) {
+      searchState.advancedOptions.books = Array.from(selectedBookCheckboxes).map((cb: any) => cb.value);
+    }
     
     // Dispatch search event
     document.dispatchEvent(new CustomEvent('enhanced-search', {

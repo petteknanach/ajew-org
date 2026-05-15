@@ -113,6 +113,21 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         await performSearch(detail.query || '', detail.filters || {}, detail.advancedOptions || {});
       });
 
+      // Listen for advanced options changes
+      let searchState = { advancedOptions: {} };
+
+      function getSelectedBooks() {
+        const checkboxes = document.querySelectorAll('input[name="searchBook"]:checked');
+        return Array.from(checkboxes).map(cb => cb.value);
+      }
+
+      // Auto-detect advanced options changes
+      document.addEventListener('change', function(e) {
+        if (e.target instanceof HTMLInputElement && e.target.name === 'searchBook') {
+          searchState.advancedOptions.books = getSelectedBooks();
+        }
+      });
+
       async function performSearch(query, filters = {}, advanced = {}) {
         if (!query?.trim()) {
           showWelcome();
@@ -133,7 +148,16 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         const docs = index.documents;
         const searchType = advanced.searchType || 'google';
         const minWords = advanced.minWords || 0;
-        const books = advanced.books || [];
+        // Get selected books from the advanced options panel
+        // Always read from checkboxes at search time for accurate state
+        let books: string[] = [];
+        if (advanced.books && advanced.books.length > 0) {
+          books = advanced.books;
+        } else {
+          // Read from checkboxes
+          const checkboxes = document.querySelectorAll('input[name="searchBook"]:checked');
+          books = Array.from(checkboxes).map(cb => (cb as HTMLInputElement).value);
+        }
 
         // Filter by books if specified
         let candidates = docs;
