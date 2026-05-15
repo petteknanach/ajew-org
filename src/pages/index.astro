@@ -62,6 +62,9 @@ const todayLM = lmTorahMap[dayIndex] || 1;
 <section class="hero">
   <div class="hero-content">
     <div class="hero-nanach fire-text" lang="he" dir="rtl">נ נח נחמ נחמן מאומן</div>
+    <div class="hero-fire-image">
+      <img src="/images/nanach/nanach-fire-huaish-sheli.jpg" alt="האש שלי — My Fire" class="fire-img" />
+    </div>
     <h1 class="hero-title">
       <span class="hero-he" lang="he" dir="rtl">ברוכים הבאים</span>
       <span class="hero-en">Na Nach Breslov — Rabbainu's Torah</span>
@@ -349,6 +352,21 @@ const todayLM = lmTorahMap[dayIndex] || 1;
     background-clip: text;
     -webkit-text-fill-color: transparent;
     filter: drop-shadow(0 0 8px rgba(255, 100, 0, 0.7));
+  }
+  .hero-fire-image {
+    margin: 0.5rem auto 1rem;
+    max-width: 320px;
+    animation: fireFlicker 2s ease-in-out infinite;
+    filter: drop-shadow(0 0 12px rgba(255, 100, 0, 0.8)) drop-shadow(0 0 24px rgba(255, 60, 0, 0.5));
+    transition: transform 0.3s ease;
+  }
+  .hero-fire-image:hover {
+    transform: scale(1.05);
+  }
+  .fire-img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
   }
   .hero-title { margin: 0 0 0.75rem; }
   .hero-he {
