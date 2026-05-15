@@ -255,6 +255,10 @@ const structuredData = torahData ? JSON.stringify({
                   <span class="segment-number">{seg.index}</span>
                   <p>{seg.he || '\u00A0'}</p>
                 </div>
+                <div class={`reader-segment segment-en ${!seg.en ? 'empty-translation' : ''}`} data-index={String(seg.index)}>
+                  <span class="segment-number">{seg.index}</span>
+                  <p>{seg.en || '\u00A0'}</p>
+                </div>
               </div>
             ))}
           </div>
