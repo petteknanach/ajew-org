@@ -233,6 +233,7 @@ const pageDesc = torahData
           <button class="reader-btn reader-btn-icon" data-theme-btn="night" title="Night mode">Night</button>
         </div>
         <div class="reader-toolbar-group">
+          <button class="reader-btn reader-btn-icon" id="btn-align" title="Sentence-by-sentence aligned view">Align</button>
           <button class="reader-btn reader-btn-icon" id="btn-listen">Listen</button>
           <button class="reader-btn reader-btn-icon" id="btn-search" title="Search (Ctrl+F)">Search</button>
           <button class="reader-btn reader-btn-icon" id="btn-bookmark" title="Bookmark (S)">Bookmark</button>
@@ -327,6 +328,10 @@ const pageDesc = torahData
                   <span class="segment-number">{seg.index}</span>
                   <p>{seg.he || '\u00A0'}</p>
                 </div>
+                <div class={`reader-segment segment-en ${!seg.en ? 'empty-translation' : ''}`} data-index={String(seg.index)}>
+                  <span class="segment-number">{seg.index}</span>
+                  <p>{seg.en || '\u00A0'}</p>
+                </div>
               </div>
             ))}
           </div>
@@ -356,6 +361,7 @@ const pageDesc = torahData
           <div class="shortcut-row"><span>Hebrew mode</span><span class="shortcut-key">H</span></div>
           <div class="shortcut-row"><span>English mode</span><span class="shortcut-key">E</span></div>
           <div class="shortcut-row"><span>Both columns</span><span class="shortcut-key">B</span></div>
+          <div class="shortcut-row"><span>Sentence-aligned view</span><span class="shortcut-key">A</span></div>
           <div class="shortcut-row"><span>Toggle nikud</span><span class="shortcut-key">N</span></div>
           <div class="shortcut-row"><span>Fullscreen</span><span class="shortcut-key">F</span></div>
           <div class="shortcut-row"><span>Table of contents</span><span class="shortcut-key">T</span></div>

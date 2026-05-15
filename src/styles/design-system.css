@@ -482,3 +482,14 @@ body.dark-mode .ds-badge-gold {
     box-shadow: none !important;
   }
 }
+
+
+/* Fire text animation - reusable across pages */
+.fire-text {
+  animation: fireFlicker 1.5s ease-in-out infinite, fireRise 2s ease-in-out infinite;
+  background: linear-gradient(180deg, #ffee88 0%, #ff8800 40%, #ff4400 70%, #cc0000 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 8px rgba(255, 100, 0, 0.7));
+}

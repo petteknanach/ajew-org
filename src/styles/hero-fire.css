@@ -1,0 +1,97 @@
+
+/* ─── Hero Fire Animation — האש שלי ─── */
+/* Realistic flickering fire effect on the Hebrew letters */
+@keyframes fireFlicker {
+  0%   { text-shadow: 0 0 4px #ff0000, 0 0 11px #ff0000, 0 0 19px #ff0000, 0 0 40px #ff7700, 0 0 70px #ff7700, 0 0 100px #ff7700, 0 0 140px #ff7700; }
+  15%  { text-shadow: 0 0 6px #ff2200, 0 0 14px #ff3300, 0 0 22px #ff5500, 0 0 45px #ff9900, 0 0 75px #ffaa00, 0 0 110px #ffaa00, 0 0 150px #ffaa00; }
+  30%  { text-shadow: 0 0 5px #ff0000, 0 0 13px #ff2200, 0 0 20px #ff4400, 0 0 42px #ff6600, 0 0 72px #ff8800, 0 0 105px #ff8800, 0 0 145px #ff8800; }
+  45%  { text-shadow: 0 0 7px #ff1100, 0 0 16px #ff4400, 0 0 25px #ff6600, 0 0 48px #ffaa00, 0 0 80px #ffcc00, 0 0 120px #ffcc00, 0 0 160px #ffcc00; }
+  60%  { text-shadow: 0 0 4px #ff3300, 0 0 10px #ff5500, 0 0 17px #ff7700, 0 0 38px #ff9900, 0 0 65px #ffbb00, 0 0 95px #ffbb00, 0 0 130px #ffbb00; }
+  75%  { text-shadow: 0 0 8px #ff0000, 0 0 18px #ff3300, 0 0 28px #ff5500, 0 0 52px #ff8800, 0 0 85px #ffaa00, 0 0 125px #ffaa00, 0 0 170px #ffaa00; }
+  90%  { text-shadow: 0 0 5px #ff2200, 0 0 12px #ff4400, 0 0 21px #ff6600, 0 0 44px #ff7700, 0 0 74px #ff9900, 0 0 108px #ff9900, 0 0 148px #ff9900; }
+  100% { text-shadow: 0 0 4px #ff0000, 0 0 11px #ff0000, 0 0 19px #ff0000, 0 0 40px #ff7700, 0 0 70px #ff7700, 0 0 100px #ff7700, 0 0 140px #ff7700; }
+}
+
+@keyframes fireRise {
+  0%   { transform: translateY(0) scale(1); }
+  25%  { transform: translateY(-2px) scale(1.01); }
+  50%  { transform: translateY(-4px) scale(1.02); }
+  75%  { transform: translateY(-1px) scale(1.01); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+@keyframes emberGlow {
+  0%   { filter: brightness(1) drop-shadow(0 0 8px rgba(255, 100, 0, 0.6)); }
+  50%  { filter: brightness(1.1) drop-shadow(0 0 16px rgba(255, 150, 0, 0.8)); }
+  100% { filter: brightness(1) drop-shadow(0 0 8px rgba(255, 100, 0, 0.6)); }
+}
+
+@keyframes sparkFloat {
+  0%   { opacity: 0; transform: translateY(0) scale(0.5); }
+  10%  { opacity: 1; }
+  90%  { opacity: 0.6; }
+  100% { opacity: 0; transform: translateY(-60px) scale(1.2); }
+}
+
+/* Main fire text class */
+.fire-text {
+  display: inline-block;
+  font-family: var(--ds-font-hebrew, 'Frank Ruhl Libre', serif);
+  font-weight: 700;
+  animation: 
+    fireFlicker 1.5s ease-in-out infinite,
+    fireRise 2s ease-in-out infinite;
+  color: #ffaa33;
+  background: linear-gradient(180deg, #ffee88 0%, #ff8800 40%, #ff4400 70%, #cc0000 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 8px rgba(255, 100, 0, 0.7));
+}
+
+/* Ember particles container */
+.fire-embers {
+  position: relative;
+  display: inline-block;
+}
+
+.fire-embers::before,
+.fire-embers::after {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  background: radial-gradient(circle, #ffcc00 0%, #ff6600 50%, transparent 100%);
+  border-radius: 50%;
+  animation: sparkFloat 2.5s ease-out infinite;
+}
+
+.fire-embers::before {
+  animation-delay: 0s;
+  left: 30%;
+}
+
+.fire-embers::after {
+  animation-delay: 1.2s;
+  left: 70%;
+}
+
+/* Dark mode adjustments */
+[data-theme="night"] .fire-text,
+body.dark-mode .fire-text {
+  filter: drop-shadow(0 0 12px rgba(255, 120, 0, 0.9));
+}
+
+/* Hero section fire badge */
+.hero-fire-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0.4em 1em;
+  background: rgba(255, 100, 0, 0.1);
+  border: 1px solid rgba(255, 100, 0, 0.3);
+  border-radius: 20px;
+  font-size: 0.85em;
+}

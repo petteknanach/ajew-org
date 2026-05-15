@@ -138,6 +138,54 @@
     applyFontSize();
   }
 
+  // ─── Aligned View Toggle ───
+  let alignedView = false;
+
+  function toggleAligned() {
+    const original = document.querySelector('.reader-content-original');
+    const aligned = document.querySelector('.reader-content-aligned');
+    const tocList = document.querySelector('.reader-toc-list');
+    const tocHeading = document.querySelector('.reader-toc h3');
+    const btn = document.getElementById('btn-align');
+    if (!original || !aligned) return;
+
+    alignedView = !alignedView;
+
+    if (alignedView) {
+      original.style.display = 'none';
+      aligned.style.display = '';
+      if (btn) btn.classList.add('active');
+      // Update TOC to show aligned segment links
+      if (tocList) {
+        const alignedSegs = document.querySelectorAll('.reader-content-aligned .reader-segment-pair');
+        if (alignedSegs.length > 0) {
+          tocHeading.textContent = 'SEGMENTS';
+          tocList.innerHTML = Array.from(alignedSegs).map(seg => {
+            const idx = seg.querySelector('.segment-number')?.textContent || '';
+            return `<li><a href="#${seg.id}" data-index="${idx}">${idx}</a></li>`;
+          }).join('');
+        }
+      }
+    } else {
+      original.style.display = '';
+      aligned.style.display = 'none';
+      if (btn) btn.classList.remove('active');
+      // Restore TOC to paragraph links
+      if (tocHeading) tocHeading.textContent = 'PARAGRAPHS';
+      // Restore original TOC from page
+      const container = document.querySelector('.reader-container');
+      if (container) {
+        const origSegs = document.querySelectorAll('.reader-content-original .reader-segment-pair');
+        if (origSegs.length > 0 && tocList) {
+          tocList.innerHTML = Array.from(origSegs).map(seg => {
+            const idx = seg.querySelector('.segment-number')?.textContent || '';
+            return `<li><a href="#${seg.id}" data-index="${idx}">Paragraph ${idx}</a></li>`;
+          }).join('');
+        }
+      }
+    }
+  }
+
   // ─── Immerse Mode ───
   function toggleImmerse() {
     state.immerse = !state.immerse;
@@ -512,6 +560,7 @@
         case 'h': setMode('hebrew'); break;
         case 'e': setMode('english'); break;
         case 'b': setMode('both'); break;
+        case 'a': toggleAligned(); break;
         case 'f':
           if (e.ctrlKey || e.metaKey) {
             e.preventDefault();
@@ -591,6 +640,9 @@
     document.querySelectorAll('[data-mode]').forEach(btn => {
       btn.addEventListener('click', () => setMode(btn.dataset.mode));
     });
+
+    const alignBtn = document.getElementById('btn-align');
+    if (alignBtn) alignBtn.addEventListener('click', toggleAligned);
 
     const immerseBtn = document.getElementById('btn-immserate');
     if (immerseBtn) immerseBtn.addEventListener('click', toggleImmerse);
