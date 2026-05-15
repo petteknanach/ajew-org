@@ -401,6 +401,20 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
 
       // Render history on load
       renderSearchHistory();
+
+      // Auto-search if URL has ?q= parameter
+      const urlParams = new URLSearchParams(window.location.search);
+      const initialQuery = urlParams.get('q');
+      if (initialQuery) {
+        (document.getElementById('searchInput') as HTMLInputElement).value = initialQuery;
+        // Wait a tick for DOM to be ready, then search
+        setTimeout(async () => {
+          await performSearch(initialQuery, {}, {
+            searchType: urlParams.get('searchType') || 'google',
+            minWords: parseInt(urlParams.get('minWords') || '0'),
+          });
+        }, 100);
+      }
     });
   </script>
 
