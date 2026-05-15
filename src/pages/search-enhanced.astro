@@ -81,12 +81,39 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
       const clearResults = document.getElementById('clearResults');
       const resultsSection = document.getElementById('resultsSection');
 
-      // Listen for search events
-      document.addEventListener('enhanced-search', (e: any) => {
-        performSearch(e.detail.query, e.detail.filters, e.detail.advancedOptions);
+      // Client-side search index (loaded on demand)
+      let searchIndex = null;
+      let indexLoading = false;
+      const indexLoadPromise = new Promise((resolve) => {
+        // Will be resolved when index is loaded
+        window._searchIndexReady = resolve;
       });
 
-      function performSearch(query: string, filters: any = {}, advanced: any = {}) {
+      async function loadSearchIndex() {
+        if (searchIndex) return searchIndex;
+        if (indexLoading) { await indexLoadPromise; return searchIndex; }
+        indexLoading = true;
+        try {
+          const res = await fetch('/data/browser-search-index.json');
+          if (!res.ok) throw new Error('Failed to load search index: ' + res.status);
+          searchIndex = await res.json();
+          console.log('Search index loaded:', searchIndex.totalDocuments, 'documents');
+        } catch (e) {
+          console.error('Failed to load search index:', e);
+        } finally {
+          indexLoading = false;
+          window._searchIndexReady();
+        }
+        return searchIndex;
+      }
+
+      // Listen for search events
+      document.addEventListener('enhanced-search', async (e) => {
+        const detail = e.detail || {};
+        await performSearch(detail.query || '', detail.filters || {}, detail.advancedOptions || {});
+      });
+
+      async function performSearch(query, filters = {}, advanced = {}) {
         if (!query?.trim()) {
           showWelcome();
           return;
@@ -95,36 +122,81 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         showLoading();
         saveSearchHistory(query);
 
-        const url = new URL('/api/search', window.location.origin);
-        url.searchParams.set('q', query);
-        if (advanced.searchType) url.searchParams.set('searchType', advanced.searchType);
-        if (advanced.proximity > 0) url.searchParams.set('proximity', String(advanced.proximity));
-        if (advanced.acronymOrder) url.searchParams.set('acronymOrder', advanced.acronymOrder);
-        if (advanced.minWords > 0) url.searchParams.set('minWords', String(advanced.minWords));
-        if (advanced.books?.length > 0) url.searchParams.set('books', advanced.books.join(','));
+        // Load index if not already loaded
+        const index = await loadSearchIndex();
+        if (!index || !index.documents) {
+          loading.classList.add('hidden');
+          showNoResults(query, 'Search index not available. Please try again.');
+          return;
+        }
 
-        fetch(url.toString())
-          .then(res => res.json())
-          .then((data: any) => {
-            loading.classList.add('hidden');
-            if (data?.error) {
-              showNoResults(query, 'Error: ' + data.error);
-              return;
+        const docs = index.documents;
+        const searchType = advanced.searchType || 'google';
+        const minWords = advanced.minWords || 0;
+        const books = advanced.books || [];
+
+        // Filter by books if specified
+        let candidates = docs;
+        if (books.length > 0) {
+          candidates = docs.filter(d => books.includes(d.book));
+        }
+
+        // Nikud-aware search: strip nikud from both query and content
+        const nikudRegex = /[\u0591-\u05BD\u05BF-\u05C7]/g;
+        const cleanQuery = query.replace(nikudRegex, '').toLowerCase();
+        const queryWords = cleanQuery.split(/\s+/).filter(w => w.length > 0 && !['and','or','not'].includes(w));
+
+        let results = [];
+
+        for (const doc of candidates) {
+          const searchable = (doc.searchable || '').replace(nikudRegex, '').toLowerCase();
+          let score = 0;
+          let matchedWords = 0;
+
+          if (searchType === 'exact') {
+            if (searchable.includes(cleanQuery)) score = 100;
+          } else if (searchType === 'all') {
+            matchedWords = queryWords.filter(w => searchable.includes(w)).length;
+            if (matchedWords === queryWords.length) score = 50 + (matchedWords * 10);
+          } else if (searchType === 'any') {
+            matchedWords = queryWords.filter(w => searchable.includes(w)).length;
+            if (matchedWords > 0) score = matchedWords * 20;
+          } else {
+            // Google-style: rank by relevance
+            matchedWords = queryWords.filter(w => searchable.includes(w)).length;
+            if (matchedWords > 0) {
+              score = (matchedWords / queryWords.length) * 100;
+              // Bonus for title match
+              const title = (doc.title || '').replace(nikudRegex, '').toLowerCase();
+              const heTitle = (doc.hebrewTitle || '').replace(nikudRegex, '').toLowerCase();
+              if (title.includes(cleanQuery) || heTitle.includes(cleanQuery)) score += 50;
             }
-            // Support both old format (flat array) and new format ({ results, total })
-            const results = Array.isArray(data) ? data : (data.results || []);
-            const total = Array.isArray(data) ? results.length : (data.total || results.length);
-            if (results.length > 0) {
-              displayResults(results, query, total);
-            } else {
-              showNoResults(query);
-            }
-          })
-          .catch(err => {
-            console.error('Search error:', err);
-            loading.classList.add('hidden');
-            showNoResults(query, 'Search failed. Please try again.');
-          });
+          }
+
+          if (minWords > 0 && matchedWords < minWords) score = 0;
+
+          if (score > 0) {
+            results.push({
+              ...doc,
+              relevance: Math.min(Math.round(score), 100),
+              matchedWords: matchedWords,
+              link: doc.url || '#',
+              snippet: (doc.content || '').substring(0, 200),
+              subcategory: doc.book || '',
+            });
+          }
+        }
+
+        // Sort by relevance
+        results.sort((a, b) => b.relevance - a.relevance || b.matchedWords - a.matchedWords);
+
+        loading.classList.add('hidden');
+
+        if (results.length > 0) {
+          displayResults(results, query, results.length);
+        } else {
+          showNoResults(query);
+        }
       }
 
       function displayResults(results: any[], query: string, total?: number) {
@@ -168,39 +240,19 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         resultsList.innerHTML = html;
 
         // Add "Load More" if there are more results
-        if (count > results.length) {
+        if (count > 50) {
           const loadMore = document.createElement('button');
           loadMore.className = 'load-more-btn';
-          loadMore.textContent = `Load more (showing ${results.length} of ${count})`;
+          loadMore.textContent = `Load more (showing 50 of ${count})`;
           loadMore.addEventListener('click', () => {
-            const currentPage = Math.floor(results.length / 50) + 1;
-            const advanced = searchState?.advancedOptions || {};
-            const url = new URL('/api/search', window.location.origin);
-            url.searchParams.set('q', query);
-            url.searchParams.set('page', String(currentPage + 1));
-            if (advanced.searchType) url.searchParams.set('searchType', advanced.searchType);
-            if (advanced.books?.length > 0) url.searchParams.set('books', advanced.books.join(','));
-            loadMore.textContent = 'Loading...';
-            fetch(url.toString())
-              .then(r => r.json())
-              .then(data => {
-                if (data.results?.length > 0) {
-                  const moreHtml = data.results.map((r: any) => {
-                    const s = highlightQuery(r.snippet || '', query, r.extraInfo || '');
-                    const t = highlightQuery(r.title || '', query);
-                    const ht = r.hebrewTitle ? highlightQuery(r.hebrewTitle, query) : '';
-                    const linkWithQ = (r.link||'#') + ((r.link||'').includes('?') ? '&' : '?') + 'q=' + encodeURIComponent(query);
-                    return '<div class="result-item"><div class="result-top"><h4 class="result-title"><a href="' + linkWithQ + '">' + t + (ht ? ' <span class="result-he-title">'+ht+'</span>' : '') + '</a></h4></div><p class="result-snippet">' + s + '</p><div class="result-footer"><a href="' + linkWithQ + '" class="view-link">Read Full →</a></div></div>';
-                  }).join('');
-                  loadMore.insertAdjacentHTML('beforebegin', moreHtml);
-                  const totalShown = resultsList.querySelectorAll('.result-item').length;
-                  if (totalShown >= count) loadMore.remove();
-                  else loadMore.textContent = `Load more (showing ${totalShown} of ${count})`;
-                } else {
-                  loadMore.remove();
-                }
-              })
-              .catch(() => { loadMore.textContent = 'Failed to load. Try again.'; });
+            // Client-side: just show all remaining results
+            const allItems = resultsList.querySelectorAll('.result-item');
+            const hiddenCount = count - allItems.length;
+            if (hiddenCount > 0) {
+              // Re-display all results
+              displayResults(results, query, count);
+            }
+            loadMore.remove();
           });
           resultsList.appendChild(loadMore);
         }
