@@ -116,12 +116,22 @@ function main() {
         } else {
           indexPath = path.join(bookDir, `part-${part.part}`, 'index.json');
           if (!fs.existsSync(indexPath)) indexPath = path.join(bookDir, `volume-${part.part}`, 'index.json');
+          // Fallback for flat-file books (PNC, etc.) where all data is in book root index
+          if (!fs.existsSync(indexPath)) {
+            indexPath = path.join(bookDir, 'index.json');
+          }
         }
         if (!fs.existsSync(indexPath)) continue;
 
         const partCatalog = JSON.parse(fs.readFileSync(indexPath, 'utf8'));
         const partDir = path.dirname(indexPath);
-        const entries = partCatalog.torahs || partCatalog.items || [];
+        const entries = (partCatalog.torahs || partCatalog.items || []).filter(t => {
+          // Filter by part for books with shared index (PNC, etc.)
+          if (book.parts.length > 1) {
+            return t.part === part.part;
+          }
+          return true;
+        });
 
         for (const entry of entries) {
           const num = entry.number || entry.torah;

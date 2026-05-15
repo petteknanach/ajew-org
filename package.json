@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "node scripts/create-app-aliases.cjs && node scripts/build-parsha-connections.cjs && node scripts/build-search-index-v2.cjs && astro build",
+    "build": "node scripts/dl-pnc-data.cjs && node scripts/dl-reader-data.cjs && node scripts/create-app-aliases.cjs && node scripts/build-parsha-connections.cjs && node scripts/build-search-index-v2.cjs && astro build",
     "preview": "astro preview",
     "astro": "astro",
     "search": "node gen-search-index.js",

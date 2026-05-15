@@ -8,14 +8,24 @@ import path from 'node:path';
 
 export function getStaticPaths() {
   const paths = [];
-  // Part 1: torahs 1-286
-  for (let torah = 1; torah <= 286; torah++) {
-    paths.push({ params: { part: '1', torah: String(torah) } });
+  const pncDir = path.join(process.cwd(), 'public/reader/pettek-nanach-commentary');
+
+  if (fs.existsSync(pncDir)) {
+    // Scan all torah-N.json files (Part 1)
+    const torahFiles = fs.readdirSync(pncDir).filter(f => /^torah-\d+\.json$/.test(f));
+    for (const f of torahFiles) {
+      const num = parseInt(f.match(/torah-(\d+)\.json/)[1]);
+      paths.push({ params: { part: '1', torah: String(num) } });
+    }
+
+    // Scan all tinyana-N.json files (Part 2)
+    const tinyanaFiles = fs.readdirSync(pncDir).filter(f => /^tinyana-\d+\.json$/.test(f));
+    for (const f of tinyanaFiles) {
+      const num = parseInt(f.match(/tinyana-(\d+)\.json/)[1]);
+      paths.push({ params: { part: '2', torah: String(num) } });
+    }
   }
-  // Part 2: tinyana 1-59
-  for (let torah = 1; torah <= 59; torah++) {
-    paths.push({ params: { part: '2', torah: String(torah) } });
-  }
+
   return paths;
 }
 
@@ -39,7 +49,13 @@ try {
 if (!torahData && !error) error = 'Content not available';
 
 if (torahData) {
-  const maxTorah = partNum === 2 ? 59 : 286;
+  // Dynamic: scan actual files for the max torah number in this part
+  const pncDir = path.join(process.cwd(), 'public/reader/pettek-nanach-commentary');
+  const prefix = partNum === 2 ? 'tinyana' : 'torah';
+  const regex = new RegExp(`^${prefix}-(\\d+)\\.json$`);
+  const partFiles = fs.existsSync(pncDir) ? fs.readdirSync(pncDir).filter(f => regex.test(f)) : [];
+  const partNums = partFiles.map(f => parseInt(f.match(regex)[1]));
+  const maxTorah = partNums.length > 0 ? Math.max(...partNums) : 999;
   if (!torahData.navigation) {
     torahData.navigation = {
       prevUrl: torahNum > 1 ? `/reader/pettek-nanach-commentary/${partNum}/${torahNum - 1}` : null,
