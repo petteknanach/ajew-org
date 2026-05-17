@@ -412,15 +412,35 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
             idxSpan.textContent = String(seg.index || '');
             pair.appendChild(idxSpan);
 
-            // Support both new 3-layer format and legacy single-field format
+            // Support three formats:
+            // 1. seg.layers[current] = {he, en, he_nikud} (structured)
+            // 2. seg[current] = string (PNC direct layer content)
+            // 3. seg.he / seg.en (legacy flat)
             var layer = seg.layers && seg.layers[current] ? seg.layers[current] : null;
-            var heText = layer ? (layer.he_nikud || layer.he || '') : (seg.he_nikud || seg.he || '');
-            var enText = layer ? (layer.en || '') : (seg.en || '');
+            var directText = (seg[current] && typeof seg[current] === 'string') ? seg[current] : '';
+            var heText, enText, isDirect = false;
 
-            // Respect the main reader's language mode
+            if (layer && typeof layer === 'object') {
+              // Format 1: structured layer object
+              heText = layer.he_nikud || layer.he || '';
+              enText = layer.en || '';
+            } else if (directText) {
+              // Format 2: direct string content (PNC format)
+              // PNC layers are pre-filtered: beginner=EN, intermediate=mixed, scholarly=HE
+              // Show content regardless of reader language mode
+              heText = directText;
+              enText = directText;
+              isDirect = true;
+            } else {
+              // Format 3: legacy flat
+              heText = seg.he_nikud || seg.he || '';
+              enText = seg.en || '';
+            }
+
+            // Respect the main reader's language mode (skip for PNC direct content)
             var mode = getReaderMode();
-            var showHe = (mode !== 'english');
-            var showEn = (mode !== 'hebrew');
+            var showHe = isDirect || (mode !== 'english');
+            var showEn = isDirect || (mode !== 'hebrew');
 
             // English first (for beginner/intermediate which are EN-primary), then Hebrew
             if (enText && showEn) {
