@@ -7,13 +7,29 @@ const topicsPath = path.join(process.cwd(), 'public/reader/likutay-tefilos/toc-t
 const specialPath = path.join(process.cwd(), 'public/reader/likutay-tefilos/special-prayers.json');
 const topicsData = JSON.parse(fs.readFileSync(topicsPath, 'utf8'));
 const specialData = JSON.parse(fs.readFileSync(specialPath, 'utf8'));
+const englishFallback = {
+  'אֱמֶת': 'Truth',
+  'אֱמוּנָה': 'Faith',
+  'אֶרֶץ־יִשְׂרָאֵל': 'Land of Israel',
+  'בָּנִים': 'Children',
+  'יִרְאָה': 'Fear of Heaven',
+  'מָמוֹן וּפַרְנָסָה': 'Money and Livelihood',
+  'רְפוּאָה': 'Healing',
+  'שַׁבָּת': 'Shabbos',
+  'שָׁלוֹם': 'Peace',
+  'שִׂמְחָה': 'Joy',
+  'תְּפִלָה': 'Prayer',
+  'תְשׁוּבָה': 'Repentance',
+};
+const commonTopicOrder = ['אֱמוּנָה', 'שִׂמְחָה', 'רְפוּאָה', 'בָּנִים', 'מָמוֹן וּפַרְנָסָה', 'תְשׁוּבָה', 'תְּפִלָה', 'אֱמֶת', 'שָׁלוֹם', 'אֶרֶץ־יִשְׂרָאֵל', 'יִרְאָה', 'שַׁבָּת'];
 const allTopics = (topicsData.topics || []).map((topic) => ({
   ...topic,
-  english: topic.english || topic.topic,
+  english: topic.english || englishFallback[topic.topic] || topic.topic,
   total: (topic.part1_prayers || []).length + (topic.part2_prayers || []).length,
 })).sort((a, b) => (a.english || '').localeCompare(b.english || ''));
-const featuredEnglish = new Set(['Faith', 'Joy', 'Healing', 'Children', 'Livelihood', 'Repentance', 'Prayer', 'Truth', 'Peace', 'Land of Israel', 'Fear of Heaven', 'Shabbos']);
-const featured = allTopics.filter((t) => featuredEnglish.has(t.english)).slice(0, 12);
+const featured = commonTopicOrder
+  .map((topicName) => allTopics.find((t) => t.topic === topicName))
+  .filter(Boolean);
 const specialTopics = (specialData.topics || []).map((topic) => {
   const match = allTopics.find((t) => t.topic === topic.topic) || {};
   return {
