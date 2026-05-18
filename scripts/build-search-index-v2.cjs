@@ -116,22 +116,12 @@ function main() {
         } else {
           indexPath = path.join(bookDir, `part-${part.part}`, 'index.json');
           if (!fs.existsSync(indexPath)) indexPath = path.join(bookDir, `volume-${part.part}`, 'index.json');
-          // Fallback for flat-file books (PNC, etc.) where all data is in book root index
-          if (!fs.existsSync(indexPath)) {
-            indexPath = path.join(bookDir, 'index.json');
-          }
         }
         if (!fs.existsSync(indexPath)) continue;
 
         const partCatalog = JSON.parse(fs.readFileSync(indexPath, 'utf8'));
         const partDir = path.dirname(indexPath);
-        const entries = (partCatalog.torahs || partCatalog.items || []).filter(t => {
-          // Filter by part for books with shared index (PNC, etc.)
-          if (book.parts.length > 1) {
-            return t.part === part.part;
-          }
-          return true;
-        });
+        const entries = partCatalog.torahs || partCatalog.items || [];
 
         for (const entry of entries) {
           const num = entry.number || entry.torah;
@@ -171,56 +161,6 @@ function main() {
         }
       }
       if (bookCount > 0) console.log(`  ${book.title}: ${bookCount} items indexed`);
-
-      // For PNC: also index intro/front matter files (non-torah, non-tinyana JSON files)
-      if (book.id === 'pettek-nanach-commentary' && fs.existsSync(bookDir)) {
-        const allFiles = fs.readdirSync(bookDir).filter(f => f.endsWith('.json'));
-        const introFiles = allFiles.filter(f =>
-          f !== 'index.json' &&
-          !/^torah-\d+\.json$/.test(f) &&
-          !/^tinyana-\d+\.json$/.test(f)
-        );
-        for (const f of introFiles) {
-          try {
-            const filePath = path.join(bookDir, f);
-            const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-            const slug = f.replace('.json', '');
-            const heText = (data.segments || []).map(s => {
-              // Handle layered segments
-              if (s.beginner) return s.beginner.he || '';
-              if (s.intermediate) return s.intermediate.he || '';
-              return s.he || '';
-            }).filter(Boolean).join('\n\n');
-            const enText = (data.segments || []).map(s => {
-              if (s.beginner) return s.beginner.en || '';
-              if (s.intermediate) return s.intermediate.en || '';
-              return s.en || '';
-            }).filter(Boolean).join('\n\n');
-            const searchHe = stripNikud(heText);
-
-            documents.push({
-              id: data.id || `${book.id}-intro-${slug}`,
-              book: book.id,
-              bookName: book.title,
-              part: 1,
-              torah: slug,
-              displayNumber: slug,
-              title: data.title || slug,
-              hebrewTitle: data.hebrewTitle || '',
-              themes: data.themes || [],
-              url: `/reader/${book.id}/1/${slug}`,
-              wordCount: searchHe.split(/\s+/).length,
-              content: searchHe.substring(0, MAX_CONTENT),
-              enContent: enText.substring(0, MAX_CONTENT),
-              preview: heText.substring(0, MAX_PREVIEW).replace(/\n/g, ' '),
-              hasEnglish: enText.length > 0,
-              englishPreview: enText.substring(0, MAX_EN_PREVIEW),
-            });
-            bookCount++;
-          } catch (e) {}
-        }
-        if (introFiles.length > 0) console.log(`  ${book.title} intro: ${introFiles.length} sections indexed`);
-      }
     }
   }
 

@@ -3,7 +3,9 @@
  * Provides offline support for reader pages and core assets
  */
 
-const CACHE_NAME = 'ajew-v1';
+// Bumped 2026-05-05 (after Vercel rollback) to invalidate stale catalog/index
+// caches and let users see the new tinyana §60-§71 commentary.
+const CACHE_NAME = 'ajew-v3';
 const CORE_ASSETS = [
   '/',
   '/reader',
@@ -46,17 +48,20 @@ self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   if (url.pathname.startsWith('/api/')) return;
 
-  // Reader JSON files — cache-first
+  // Reader JSON files - stale-while-revalidate.
+  // Returns cached copy instantly, refreshes in background so commentary edits
+  // propagate without needing another CACHE_NAME bump.
   if (url.pathname.match(/\/reader\/.*\.json$/)) {
     event.respondWith(
-      caches.match(event.request).then((cached) => {
-        if (cached) return cached;
-        return fetch(event.request).then((response) => {
-          if (response.ok) {
-            const clone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-          }
-          return response;
+      caches.open(CACHE_NAME).then((cache) => {
+        return cache.match(event.request).then((cached) => {
+          const networkFetch = fetch(event.request).then((response) => {
+            if (response && response.ok) {
+              cache.put(event.request, response.clone());
+            }
+            return response;
+          }).catch(() => cached);
+          return cached || networkFetch;
         });
       })
     );

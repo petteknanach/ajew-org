@@ -85,7 +85,6 @@ try {
             return (
               <a href={`/reader/likutay-tefilos/${partNum}/${firstPrayer}`} style="display: block; padding: 10px 14px; background: #f0ebe0; border-radius: 6px; text-decoration: none;">
                 <span style="color: #1e3a5f; font-weight: 600; font-size: 0.9em; direction: rtl; display: block; text-align: right;">{topic.topic}</span>
-                {topic.english && <span style="color: #5a7a9a; font-size: 0.8em; display: block; text-align: right;">{topic.english}</span>}
                 <span style="color: #888; font-size: 0.75em;">Prayers: {prayers.slice(0, 8).join(', ')}{prayers.length > 8 ? '...' : ''}</span>
               </a>
             );

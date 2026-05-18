@@ -213,10 +213,9 @@ for (const book of booksToScan) {
         let url = '/reader' + relPath
           .replace('.json', '')
           .replace(/\/part-(\d+)\//, '/$1/')
-          .replace(/\/volume-(\d+)\//, '/$1/')
           .replace(/\/(torah|halacha|section|topic|letter|prayer|sicha|story|chapter)-(\d+)$/, '/$2');
         // Flat books (no part-N dir) need /1/ inserted: /reader/book/5 -> /reader/book/1/5
-        if (!relPath.includes('/part-') && !relPath.includes('/volume-') && /\/(\d+)$/.test(url)) {
+        if (!relPath.includes('/part-') && /\/\d+$/.test(url)) {
           url = url.replace(/\/(\d+)$/, '/1/$1');
         }
 

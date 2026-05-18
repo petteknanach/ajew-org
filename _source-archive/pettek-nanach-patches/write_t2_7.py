@@ -1,7 +1,7 @@
 import json, os
 
 home = os.path.expanduser('~')
-reader_dir = os.path.join(home, 'ajew-org/public/reader')
+reader_dir = os.path.join(home, '.openclaw/workspace/ajew-org/public/reader')
 pnc_name = "pettek-nanach-commentary"
 pnc_book_slug = pnc_name
 pnc_dir = os.path.join(reader_dir, pnc_name)
@@ -186,7 +186,7 @@ for n, info in torahs.items():
     written.append((n, len(segs_out)))
     print(f"OK Tinyana T{n}: wrote {len(segs_out)} segs".encode('ascii','replace').decode())
 
-cpath = os.path.join(home, 'ajew-org/src/data/lm-commentaries.json')
+cpath = os.path.join(home, '.openclaw/workspace/ajew-org/src/data/lm-commentaries.json')
 with open(cpath, 'r', encoding='utf-8') as f:
     cdata = json.load(f)
 if '2' not in cdata:

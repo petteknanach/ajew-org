@@ -1,7 +1,7 @@
 import os, json
 
 h = os.path.expanduser('~')
-reader_dir = os.path.join(h, 'ajew-org', 'public', 'reader')
+reader_dir = os.path.join(h, '.openclaw', 'workspace', 'ajew-org', 'public', 'reader')
 pnc_dir = os.path.join(reader_dir, [d for d in os.listdir(reader_dir) if 'nanach' in d.lower()][1])
 out_path = os.path.join(pnc_dir, 'torah-62.json')
 
@@ -117,7 +117,7 @@ print(f"Written: {out_path}")
 print(f"Segments: {len(chk['segments'])}, avg beginner chars: {avg:.0f}")
 
 # register in lm-commentaries.json
-lm_path = os.path.join(h, 'ajew-org', 'src', 'data', 'lm-commentaries.json')
+lm_path = os.path.join(h, '.openclaw', 'workspace', 'ajew-org', 'src', 'data', 'lm-commentaries.json')
 with open(lm_path, encoding='utf-8') as f:
     cdata = json.load(f)
 cdata['1']['62']['running_commentary'] = {
@@ -135,8 +135,8 @@ print("lm-commentaries.json updated for T62")
 
 # git
 import subprocess
-repo = os.path.join(h, 'ajew-org')
-subprocess.run(['git', 'add', 'public/reader/pettek-nanach-commentary/torah-62.json', 'src/data/lm-commentaries.json'], cwd=repo, check=True)
+repo = os.path.join(h, '.openclaw', 'workspace', 'ajew-org')
+subprocess.run(['git', 'add', 'public/reader/petten-nanach-commentary/torah-62.json', 'src/data/lm-commentaries.json'], cwd=repo, check=True)
 result = subprocess.run(['git', 'commit', '-m', 'feat: T62 PNC -- Vayisav Elokim (yichud through eating/emunah, 13 segs)'], cwd=repo, capture_output=True, text=True)
 print(result.stdout)
 push = subprocess.run(['git', 'push', 'origin', 'main'], cwd=repo, capture_output=True, text=True)

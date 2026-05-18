@@ -404,43 +404,30 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
             segsWrap.appendChild(empty);
             return;
           }
-          segs.forEach(function (seg) {
+          segs.forEach(function (seg, segIdx) {
             var pair = document.createElement('div');
             pair.className = 'commentary-sidebar-segment';
             var idxSpan = document.createElement('span');
             idxSpan.className = 'commentary-sidebar-seg-num';
-            idxSpan.textContent = String(seg.index || '');
+            idxSpan.textContent = String(seg.index || (segIdx + 1));
             pair.appendChild(idxSpan);
 
-            // Support three formats:
-            // 1. seg.layers[current] = {he, en, he_nikud} (structured)
-            // 2. seg[current] = string (PNC direct layer content)
-            // 3. seg.he / seg.en (legacy flat)
-            var layer = seg.layers && seg.layers[current] ? seg.layers[current] : null;
-            var directText = (seg[current] && typeof seg[current] === 'string') ? seg[current] : '';
-            var heText, enText, isDirect = false;
+            // Schema variants in this corpus:
+            //   A (torah-1..60):    seg.layers.{beginner,intermediate,scholarly}.{en,he}
+            //   B (torah-61..286):  seg.{beginner,intermediate,scholarly}.{en,he}   (no layers wrapper)
+            //   C (tinyana-N):      seg.{beginner,intermediate,scholarly}.{en,he}   (Hebrew often inlined in intermediate.en)
+            // Plus a legacy fallback for flat seg.he / seg.en.
+            var layersBag = (seg.layers && (seg.layers.beginner || seg.layers.intermediate || seg.layers.scholarly))
+              ? seg.layers
+              : ((seg.beginner || seg.intermediate || seg.scholarly) ? seg : null);
+            var layer = layersBag && layersBag[current] ? layersBag[current] : null;
+            var heText = layer ? (layer.he_nikud || layer.he || '') : (seg.he_nikud || seg.he || '');
+            var enText = layer ? (layer.en || '') : (seg.en || '');
 
-            if (layer && typeof layer === 'object') {
-              // Format 1: structured layer object
-              heText = layer.he_nikud || layer.he || '';
-              enText = layer.en || '';
-            } else if (directText) {
-              // Format 2: direct string content (PNC format)
-              // PNC layers are pre-filtered: beginner=EN, intermediate=mixed, scholarly=HE
-              // Show content regardless of reader language mode
-              heText = directText;
-              enText = directText;
-              isDirect = true;
-            } else {
-              // Format 3: legacy flat
-              heText = seg.he_nikud || seg.he || '';
-              enText = seg.en || '';
-            }
-
-            // Respect the main reader's language mode (skip for PNC direct content)
+            // Respect the main reader's language mode
             var mode = getReaderMode();
-            var showHe = isDirect || (mode !== 'english');
-            var showEn = isDirect || (mode !== 'hebrew');
+            var showHe = (mode !== 'english');
+            var showEn = (mode !== 'hebrew');
 
             // English first (for beginner/intermediate which are EN-primary), then Hebrew
             if (enText && showEn) {

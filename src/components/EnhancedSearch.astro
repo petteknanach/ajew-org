@@ -112,11 +112,29 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
             </select>
             <span class="mode-label" id="minWordsHint">of <span id="totalWordsCount">0</span> words</span>
           </div>
-          <!-- Book filter — replaced by AdvancedSearchOptions checkboxes -->
-          <div class="mode-group book-filter-group" style="display:none;">
+          <!-- Book filter -->
+          <div class="mode-group book-filter-group">
             <span class="mode-label">Book:</span>
             <select id="bookFilter" class="min-words-select" title="Filter results by book">
               <option value="">All Books</option>
+              <optgroup label="R' Nachman">
+                <option value="likutay-moharan">Likutay Moharan</option>
+                <option value="sefer-hamidos">Sefer HaMidos</option>
+                <option value="sipurey-maasiyos">Sipurey Maasiyos</option>
+              </optgroup>
+              <optgroup label="R' Nosson">
+                <option value="likutay-halachos">Likutay Halachos</option>
+                <option value="likutay-tefilos">Likutay Tefilos</option>
+                <option value="sichos-haran">Sichos HaRan</option>
+                <option value="shivchay-haran">Shivchay HaRan</option>
+                <option value="likutay-eitzos">Likutay Eitzos</option>
+              </optgroup>
+              <optgroup label="Other Breslov">
+                <option value="kitzur-likutay-moharan">Kitzur LM</option>
+                <option value="hashtatfchus-hanefesh">Hashtatfchus</option>
+                <option value="meshivas-nefesh">Meshivas Nefesh</option>
+                <option value="parparos-lechochma">Parparos</option>
+              </optgroup>
             </select>
           </div>
         </div>
@@ -253,7 +271,7 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
       });
     }
 
-    // Book filter dropdown (hidden — replaced by AdvancedSearchOptions checkboxes)
+    // Book filter
     const bookFilter = document.getElementById('bookFilter') as HTMLSelectElement;
     if (bookFilter) {
       bookFilter.addEventListener('change', () => {
@@ -297,12 +315,6 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
     
     searchState.query = query;
     updateUrl(query);
-    
-    // Read selected books from AdvancedSearchOptions checkboxes
-    const selectedBookCheckboxes = document.querySelectorAll('input[name="searchBook"]:checked');
-    if (selectedBookCheckboxes.length > 0) {
-      searchState.advancedOptions.books = Array.from(selectedBookCheckboxes).map((cb: any) => cb.value);
-    }
     
     // Dispatch search event
     document.dispatchEvent(new CustomEvent('enhanced-search', {

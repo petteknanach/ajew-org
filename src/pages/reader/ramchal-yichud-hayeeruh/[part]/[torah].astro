@@ -2,7 +2,6 @@
 import Layout from '../../../../layouts/Layout.astro';
 import Comments from '../../../../components/Comments.astro';
 import '../../../../styles/reader.css';
-import '../../../../styles/reader-v2.css';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -98,8 +97,7 @@ const breadcrumbs = torahData ? [
   {error ? (
     <div style="text-align: center; padding: 80px 20px;">
       <h1>{error}</h1>
-      <p><a href={`/reader/ramchal-yichud-hayeeruh/${partNum}`}>Book Index</a>
-        <a href="/reader">Back to Reader</a></p>
+      <p><a href="/reader">Back to Reader</a></p>
     </div>
   ) : (
     <div
@@ -207,9 +205,7 @@ const breadcrumbs = torahData ? [
       )}
 
 
-      <script src="/reader-script.js" defer></script>
-      <script src="/reader-v2.js" defer></script>
-      <script src="/pwa-register.js" defer></script>
+      <script src="/reader-script.js?v=4" defer></script>
       <script src="/tts-fix.js" defer></script>
     </div>
   )}

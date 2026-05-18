@@ -264,143 +264,7 @@ const breadcrumbData = JSON.stringify({
         </div>
       )}
 
-      {/* Likutay Halachos Teachings for this Parsha */}
-      {slug === 'behar' && (() => {
-        let lhTeachings = [];
-        try {
-          const teachingsPath = path.join(process.cwd(), 'public', 'data', 'behar-teachings.json');
-          lhTeachings = JSON.parse(fs.readFileSync(teachingsPath, 'utf8'));
-        } catch (e) {}
-        const hasAnyEn = lhTeachings.some(t => t.en && t.en.trim().length > 0);
-        return lhTeachings.length > 0 && (
-          <div class="lh-teachings-section">
-            <h2>ליקוטי הלכות על פרשת בהר</h2>
-            <p class="lh-teachings-subtitle">Likutay Halachos on Parshat Behar — teachings from Rabbi Nosson of Breslov</p>
-            
-            <div class="lang-toggle">
-              <button class="lang-btn active" data-lang="he" onclick="toggleLhLanguage('he')">עברית</button>
-              {hasAnyEn && <button class="lang-btn" data-lang="en" onclick="toggleLhLanguage('en')">English</button>}
-              {hasAnyEn && <button class="lang-btn" data-lang="both" onclick="toggleLhLanguage('both')">Both</button>}
-            </div>
-
-            <div class="lh-teachings-list">
-              {lhTeachings.map((teaching, idx) => (
-                <div class="lh-teaching-item" id={`lh-teaching-${idx}`}>
-                  <div class="lh-teaching-verse">{teaching.verse}</div>
-                  <div class="lh-teaching-verse-text">{teaching.verseText}</div>
-                  
-                  <div class="lh-teaching-he" dir="rtl" lang="he">
-                    <div class="lh-teaching-text" set:html={teaching.he.replace(/\n/g, '<br>')}></div>
-                  </div>
-                  
-                  {teaching.en && teaching.en.trim().length > 0 && (
-                    <div class="lh-teaching-en" lang="en">
-                      <div class="lh-teaching-text" set:html={teaching.en.replace(/\n/g, '<br>')}></div>
-                    </div>
-                  )}
-                  
-                  <div class="lh-teaching-source">{teaching.source}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        );
-      })()}
-
-      {/* Likutay Halachos Teachings for Bechukosai */}
-      {slug === 'bechukotai' && (() => {
-        let lhTeachings = [];
-        try {
-          const teachingsPath = path.join(process.cwd(), 'public', 'data', 'bechukosai-teachings.json');
-          lhTeachings = JSON.parse(fs.readFileSync(teachingsPath, 'utf8'));
-        } catch (e) {}
-        const hasAnyEn = lhTeachings.some(t => t.en && t.en.trim().length > 0);
-        return lhTeachings.length > 0 && (
-          <div class="lh-teachings-section">
-            <h2>ליקוטי הלכות על פרשת בחוקותי</h2>
-            <p class="lh-teachings-subtitle">Likutay Halachos on Parshat Bechukosai — teachings from Rabbi Nosson of Breslov</p>
-            
-            <div class="lang-toggle">
-              <button class="lang-btn active" data-lang="he" onclick="toggleLhLanguage('he')">עברית</button>
-              {hasAnyEn && <button class="lang-btn" data-lang="en" onclick="toggleLhLanguage('en')">English</button>}
-              {hasAnyEn && <button class="lang-btn" data-lang="both" onclick="toggleLhLanguage('both')">Both</button>}
-            </div>
-
-            <div class="lh-teachings-list">
-              {lhTeachings.map((teaching, idx) => (
-                <div class="lh-teaching-item" id={`lh-teaching-bc-${idx}`}>
-                  <div class="lh-teaching-verse">{teaching.verse}</div>
-                  <div class="lh-teaching-verse-text">{teaching.verseText}</div>
-                  
-                  <div class="lh-teaching-he" dir="rtl" lang="he">
-                    <div class="lh-teaching-text" set:html={teaching.he.replace(/\n/g, '<br>')}></div>
-                  </div>
-                  
-                  {teaching.en && teaching.en.trim().length > 0 && (
-                    <div class="lh-teaching-en" lang="en">
-                      <div class="lh-teaching-text" set:html={teaching.en.replace(/\n/g, '<br>')}></div>
-                    </div>
-                  )}
-                  
-                  <div class="lh-teaching-source">{teaching.source}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        );
-      })()}
-
-      {/* Likutay Nanach Volume 1 — Behar */}
-      {slug === 'behar' && (() => {
-        let lnTeachings = [];
-        try {
-          const lnPath = path.join(process.cwd(), 'public', 'data', 'behar-ln-teachings.json');
-          lnTeachings = JSON.parse(fs.readFileSync(lnPath, 'utf8')).teachings || [];
-        } catch (e) {}
-        return lnTeachings.length > 0 && (
-          <div class="ln-teachings-section">
-            <h2>ליקוטי נ נח נחמ נחמן — פרשת בהר</h2>
-            <p class="ln-teachings-subtitle">Likutay Nanach Na — Al HaTorah, Parshat Behar</p>
-            <div class="ln-teachings-list">
-              {lnTeachings.map((t, idx) => (
-                <div class="ln-teaching-item" id={`ln-teaching-bh-${idx}`}>
-                  <div class="ln-teaching-text" dir="rtl" lang="he" set:html={t.he.replace(/\n/g, '<br>')}></div>
-                  {t.en && t.en.trim().length > 0 && (
-                    <div class="ln-teaching-en" lang="en" set:html={t.en.replace(/\n/g, '<br>')}></div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        );
-      })()}
-
-      {/* Likutay Nanach Volume 1 — Bechukotai */}
-      {slug === 'bechukotai' && (() => {
-        let lnTeachings = [];
-        try {
-          const lnPath = path.join(process.cwd(), 'public', 'data', 'bechukotai-ln-teachings.json');
-          lnTeachings = JSON.parse(fs.readFileSync(lnPath, 'utf8')).teachings || [];
-        } catch (e) {}
-        return lnTeachings.length > 0 && (
-          <div class="ln-teachings-section">
-            <h2>ליקוטי נ נח נחמ נחמן — פרשת בחוקותי</h2>
-            <p class="ln-teachings-subtitle">Likutay Nanach Na — Al HaTorah, Parshat Bechukotai</p>
-            <div class="ln-teachings-list">
-              {lnTeachings.map((t, idx) => (
-                <div class="ln-teaching-item" id={`ln-teaching-bc-${idx}`}>
-                  <div class="ln-teaching-text" dir="rtl" lang="he" set:html={t.he.replace(/\n/g, '<br>')}></div>
-                  {t.en && t.en.trim().length > 0 && (
-                    <div class="ln-teaching-en" lang="en" set:html={t.en.replace(/\n/g, '<br>')}></div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        );
-      })()}
-
-      {/* Chumash-LH Direct Text Display (English default) */}
+      <!-- Chumash-LH Direct Text Display (English default) -->
       {chumashLhData && (
         <div class="chumash-lh-text-section">
           <h3>English Text (from Chumash with Likutey Halachos)</h3>
@@ -870,183 +734,36 @@ const breadcrumbData = JSON.stringify({
     /* Language visibility */
     .seg-he.hidden { display: none; }
     .seg-en.hidden { display: none; }
-    .lh-teaching-he.hidden { display: none; }
-    .lh-teaching-en.hidden { display: none; }
-    
-    /* LH Teachings Section */
-    .lh-teachings-section {
-      margin-bottom: 32px;
-      padding: 20px;
-      background: #faf6ee;
-      border: 1px solid #e0d6c2;
-      border-radius: 12px;
-    }
-    .lh-teachings-section h2 {
-      font-family: 'Frank Ruhl Libre', serif;
-      color: #1a365d;
-      font-size: 1.3em;
-      margin: 0 0 4px;
-      text-align: center;
-    }
-    .lh-teachings-subtitle {
-      color: #888;
-      font-size: 0.85em;
-      margin: 0 0 16px;
-      text-align: center;
-    }
-    .lh-teachings-list {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-    .lh-teaching-item {
-      padding: 16px;
-      background: white;
-      border-radius: 8px;
-      border-right: 3px solid #a07830;
-    }
-    .lh-teaching-verse {
-      font-family: 'Frank Ruhl Libre', serif;
-      font-size: 0.85em;
-      color: #a07830;
-      margin-bottom: 4px;
-    }
-    .lh-teaching-verse-text {
-      font-family: 'Frank Ruhl Libre', serif;
-      font-size: 1.1em;
-      color: #1a365d;
-      direction: rtl;
-      margin-bottom: 12px;
-    }
-    .lh-teaching-he {
-      direction: rtl;
-      text-align: right;
-      font-family: 'Times New Roman', serif;
-      font-size: 1.05em;
-      line-height: 1.7;
-      color: #333;
-      margin-bottom: 12px;
-    }
-    .lh-teaching-en {
-      direction: ltr;
-      text-align: left;
-      font-family: 'Open Sans', sans-serif;
-      line-height: 1.6;
-      color: #444;
-      margin-bottom: 12px;
-    }
-    .lh-teaching-text br {
-      content: "";
-      display: block;
-      margin-bottom: 6px;
-    }
-    .lh-teaching-source {
-      font-size: 0.8em;
-      color: #888;
-      font-style: italic;
-      direction: rtl;
-      text-align: right;
-      border-top: 1px solid #eee;
-      padding-top: 8px;
-    }
-
-    /* Likutay Nanach Section */
-    .ln-teachings-section {
-      margin-bottom: 32px;
-      padding: 20px;
-      background: linear-gradient(135deg, #f0f7e8 0%, #e8f5e0 100%);
-      border: 1px solid #b8d4a8;
-      border-radius: 12px;
-    }
-    .ln-teachings-section h2 {
-      font-family: 'Frank Ruhl Libre', serif;
-      color: #1a365d;
-      font-size: 1.3em;
-      margin: 0 0 4px;
-      direction: rtl;
-      text-align: center;
-    }
-    .ln-teachings-subtitle {
-      color: #666;
-      font-size: 0.85em;
-      margin: 0 0 16px;
-      text-align: center;
-    }
-    .ln-teachings-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    .ln-teaching-item {
-      padding: 14px 16px;
-      background: white;
-      border-radius: 8px;
-      border-right: 3px solid #4a9e3f;
-    }
-    .ln-teaching-text {
-      font-family: 'Frank Ruhl Libre', serif;
-      font-size: 1.05em;
-      line-height: 1.7;
-      color: #333;
-      direction: rtl;
-      text-align: right;
-    }
-    .ln-teaching-en {
-      font-size: 0.95em;
-      line-height: 1.6;
-      color: #555;
-      margin-top: 8px;
-      padding-top: 8px;
-      border-top: 1px dashed #ccc;
-    }
   </style>
 
   <script is:inline>
     function toggleLanguage(lang) {
+      // Update button states
       document.querySelectorAll('.lang-btn').forEach(btn => {
         btn.classList.remove('active');
         if (btn.dataset.lang === lang) btn.classList.add('active');
       });
+      
+      // Show/hide segments
       const heSegs = document.querySelectorAll('.seg-he');
       const enSegs = document.querySelectorAll('.seg-en');
+      
       if (lang === 'he') {
+        // Show Hebrew, hide English
         heSegs.forEach(el => el.classList.remove('hidden'));
         enSegs.forEach(el => el.classList.add('hidden'));
       } else if (lang === 'en') {
+        // Show English, hide Hebrew
         heSegs.forEach(el => el.classList.add('hidden'));
         enSegs.forEach(el => el.classList.remove('hidden'));
-      } else {
+      } else { // both
+        // Show both
         heSegs.forEach(el => el.classList.remove('hidden'));
         enSegs.forEach(el => el.classList.remove('hidden'));
       }
     }
     
-    function toggleLhLanguage(lang) {
-      const heSegs = document.querySelectorAll('.lh-teaching-he');
-      const enSegs = document.querySelectorAll('.lh-teaching-en');
-      if (lang === 'he') {
-        heSegs.forEach(el => el.classList.remove('hidden'));
-        enSegs.forEach(el => el.classList.add('hidden'));
-      } else if (lang === 'en') {
-        heSegs.forEach(el => el.classList.add('hidden'));
-        enSegs.forEach(el => el.classList.remove('hidden'));
-      } else {
-        heSegs.forEach(el => el.classList.remove('hidden'));
-        enSegs.forEach(el => el.classList.remove('hidden'));
-      }
-      // Update LH toggle buttons
-      const container = document.querySelector('.lh-teachings-section');
-      if (container) {
-        container.querySelectorAll('.lang-btn').forEach(btn => {
-          btn.classList.remove('active');
-          if (btn.dataset.lang === lang) btn.classList.add('active');
-        });
-      }
-    }
-    
-    // Set Hebrew as default for LH teachings
-    toggleLhLanguage('he');
-    // Set English as default for Chumash-LH
+    // Set English as default on page load
     toggleLanguage('en');
   </script>
 </Layout>

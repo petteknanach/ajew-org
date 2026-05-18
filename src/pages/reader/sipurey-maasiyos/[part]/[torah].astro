@@ -2,13 +2,11 @@
 import Layout from '../../../../layouts/Layout.astro';
 import Comments from '../../../../components/Comments.astro';
 import '../../../../styles/reader.css';
-import '../../../../styles/reader-v2.css';
 import fs from 'node:fs';
 import path from 'node:path';
 
 export function getStaticPaths() {
   const paths = [];
-  paths.push({ params: { part: '1', torah: 'intro' } });
   for (let torah = 1; torah <= 15; torah++) {
     paths.push({ params: { part: '1', torah: String(torah) } });
   }
@@ -17,17 +15,17 @@ export function getStaticPaths() {
 
 const { part, torah } = Astro.params;
 const partNum = parseInt(part);
+const torahNum = parseInt(torah);
 
 let torahData = null;
 let error = null;
 
 try {
-  const fileName = torah === 'intro' ? 'intro' : 'story-' + torah;
-  const filePath = path.join(process.cwd(), `public/reader/sipurey-maasiyos/${fileName}.json`);
+  const filePath = path.join(process.cwd(), `public/reader/sipurey-maasiyos/story-${torahNum}.json`);
   const raw = fs.readFileSync(filePath, 'utf8');
   torahData = JSON.parse(raw);
 } catch (e) {
-  error = `Section ${torah} not found`;
+  error = `Section ${torahNum} not found`;
 }
 
 if (!torahData && !error) error = 'Content not available';
@@ -54,7 +52,7 @@ const structuredData = torahData ? JSON.stringify({
   "publisher": { "@type": "Organization", "name": "ajew.org" },
   "inLanguage": ["he", "en"],
   "isPartOf": { "@type": "Book", "name": "Sipurey Maasiyos" },
-  "url": `https://ajew.org/reader/sipurey-maasiyos/${partNum}/${torah}`
+  "url": `https://ajew.org/reader/sipurey-maasiyos/${partNum}/${torahNum}`
 }) : '';
 const breadcrumbData = torahData ? JSON.stringify({
   "@context": "https://schema.org",
@@ -116,7 +114,7 @@ const breadcrumbData = torahData ? JSON.stringify({
   </div>
   
   <!-- Hidden data element for book/part/torah -->
-  <div id="en-tts-player" data-book="sipurey-maasiyos" data-part={partNum} data-torah={torah} style="display:none;"></div>
+  <div id="en-tts-player" data-book="sipurey-maasiyos" data-part={partNum} data-torah={torahNum} style="display:none;"></div>
   
   <div id="audio-panel-he" style="display:none; background:var(--reader-bg-secondary,#f8f5f0); 
     border:1px solid var(--reader-border,#ddd); border-top:none; border-radius:0 0 8px 8px; padding:12px 16px;">
@@ -172,7 +170,6 @@ const breadcrumbData = torahData ? JSON.stringify({
           <button class="reader-btn reader-btn-icon" data-theme-btn="night">Night</button>
         </div>
         <div class="reader-toolbar-group">
-          <button class="reader-btn reader-btn-icon" id="btn-align" title="Sentence-by-sentence aligned view">Align</button>
           <button class="reader-btn reader-btn-icon" id="btn-listen">Listen</button>
           <button class="reader-btn reader-btn-icon" id="btn-search">Search</button>
           <button class="reader-btn reader-btn-icon" id="btn-bookmark">Bookmark</button>
@@ -210,7 +207,6 @@ const breadcrumbData = torahData ? JSON.stringify({
         {torahData.navigation?.prevUrl ? (
           <a href={torahData.navigation?.prevUrl} data-dir="prev">&larr; Previous</a>
         ) : <span class="disabled">&larr; Previous</span>}
-        <a href={`/reader/sipurey-maasiyos/${partNum}`}>Book Index</a>
         <a href="/reader">All Books</a>
         {torahData.navigation?.nextUrl ? (
           <a href={torahData.navigation?.nextUrl} data-dir="next">Next &rarr;</a>
@@ -254,7 +250,6 @@ const breadcrumbData = torahData ? JSON.stringify({
         {torahData.navigation?.prevUrl ? (
           <a href={torahData.navigation?.prevUrl} data-dir="prev">&larr; Previous</a>
         ) : <span class="disabled">&larr; Previous</span>}
-        <a href={`/reader/sipurey-maasiyos/${partNum}`}>Book Index</a>
         <a href="/reader">All Books</a>
         {torahData.navigation?.nextUrl ? (
           <a href={torahData.navigation?.nextUrl} data-dir="next">Next &rarr;</a>
@@ -287,9 +282,7 @@ const breadcrumbData = torahData ? JSON.stringify({
       )}
 
 
-      <script src="/reader-script.js" defer></script>
-      <script src="/reader-v2.js" defer></script>
-      <script src="/pwa-register.js" defer></script>
+      <script src="/reader-script.js?v=4" defer></script>
       <script src="/tts-fix.js" defer></script>
       <script src="/reader-notes.js" is:inline></script>
     </div>
