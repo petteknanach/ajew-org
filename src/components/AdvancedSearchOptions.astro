@@ -1,492 +1,399 @@
 ---
-// Advanced Search Options Component - Redesigned
-// Individual book selection with per-category toggle
-import BookSelectionFilter from './BookSelectionFilter.astro';
+// Advanced Search Options — Clean, functional book filter
+import fs from 'fs';
+import path from 'path';
+
+// Load browser search index for COMPLETE book list (236 books)
+const indexPath = path.join(process.cwd(), 'public/data/browser-search-index.json');
+let allBooks: { id: string; name: string; count: number }[] = [];
+
+try {
+  const indexData = JSON.parse(fs.readFileSync(indexPath, 'utf-8'));
+  const docs = indexData.documents || [];
+  const counts: Record<string, number> = {};
+  for (const doc of docs) {
+    const book = doc.book || '';
+    if (book) counts[book] = (counts[book] || 0) + 1;
+  }
+  allBooks = Object.entries(counts)
+    .map(([id, count]) => ({ id, name: id, count }))
+    .sort((a, b) => b.count - a.count);
+} catch (e) {}
+
+// Hebrew names
+const hebrewNames: Record<string, string> = {
+  'likutay-moharan': 'ליקוטי מוהר"ן',
+  'kitzur-likutay-moharan': 'קיצור ליקוטי מוהר"ן',
+  'sefer-hamidos': 'ספר המידות',
+  'sipurey-maasiyos': 'סיפורי מעשיות',
+  'likutay-halachos': 'ליקוטי הלכות',
+  'likutay-tefilos': 'ליקוטי תפילות',
+  'likutay-eitzos': 'ליקוטי עצות',
+  'likutay-eitzos-basra': 'ליקוטי עצות מהד"ב',
+  'sichos-haran': 'שיחות הר"ן',
+  'shivchay-haran': 'שבחי הר"ן',
+  'chayey-moharan': 'חיי מוהר"ן',
+  'alim-litrufa': 'עלים לתרופה',
+  'yemei-moharnat': 'ימי מוהרנ"ת',
+  'ebay-hanachal': 'אבי הנחל',
+  'shemos-hatzadikim': 'שמות הצדיקים',
+  'yemei-hatlaos': 'ימי התלאות',
+  'parparos-lechochma': 'פרפראות לחוכמה',
+  'rimzei-hamaasiyos': 'רמזי המעשיות',
+  'zimras-haaretz': 'זמרת הארץ',
+  'yikra-dshabbata': 'יקרא דשבתא',
+  'yereach-haeitanim': 'ירח האיתנים',
+  'nachas-hashulchan': 'נחת השולחן',
+  'hashtatfchus-hanefesh': 'השתפכות הנפש',
+  'meshivas-nefesh': 'משיבת נפש',
+  'biur-halikutim': 'ביאור הליקוטים',
+  'chochma-utvuna': 'חכמה ותבונה',
+  'kokhvei-or': 'כוכבי אור',
+  'siach-sarfei-kodesh': 'שיח שרפי קודש',
+  'otzar-hayirah': 'אוצר היראה',
+  'yisroel-saba': 'ישראל סבא',
+  'chumash-lh': 'חומש ליקוטי הלכות',
+  'toldos-adam': 'תולדות אדם',
+  'kuntrass-hiskashrus': 'קונטרס התקשרות',
+  'pettek-nanach-commentary': 'פתק נ נח',
+  'likutay-nanach': 'ליקוטי נ נח',
+  'fires-of-israel': 'אש ישראל',
+  'sichos-chayay-saba': 'שיחי חיי סבא',
+  'saba-tape-transcripts': 'קלטות סבא',
+  'michtevay-shmuel': 'מכתבי שמואל',
+  'hisbodidus-alone-time': 'התבודדות',
+  'seven-pillars': 'שבעה עמודים',
+  'azamra': 'אזמרה',
+  'breiter-seder-hayom': 'סדר היום',
+  'shimshon-גבורות-שמשון': 'גבורות שמשון',
+  'shimshon-עצות-המבוארות': 'עצות המבוארות',
+  'gevuros-shimshon': 'גבורות שמשון',
+  'aitzoas-hamivooaroas': 'עצות המבוארות',
+  'aitzoas-yeshuroas': 'עצות ישרות',
+  'misc-אגרת-הפורים': 'אגרת הפורים',
+  'misc-טובות-זכרונות': 'טובות זכרונות',
+  'misc-ליקוטי-אבן': 'ליקוטי אבן',
+  'misc-מכתב-רבי-געציל-לרב-קוק': 'מכתב רבי געציל',
+  'misc-ספר-ההשתטחות': 'ספר ההשתטחות',
+  'misc-ספר-שיר-ידידות': 'שיר ידידות',
+  'misc-עצות-ישרות': 'עצות ישרות',
+  'misc-קונטרס-קיום-התורה': 'קיום התורה',
+  'misc-קונטרס-תורה-אור': 'תורה אור',
+  'misc-תולדות-שמואל': 'תולדות שמואל',
+  'misc-שיחת-הנפש': 'שיחת הנפש',
+  'misc-שיר-ידידות-מר-יחיאל-מענדל': 'שיר ידידות',
+};
+
+// Categories
+const categories = [
+  { icon: '📖', label: 'Rebbe Nachman / רבי נחמן', ids: ['likutay-moharan', 'kitzur-likutay-moharan', 'sefer-hamidos', 'sipurey-maasiyos', 'sichos-haran', 'shivchay-haran', 'chayey-moharan', 'azamra'] },
+  { icon: '📘', label: 'Rabbi Nosson / רבי נתן', ids: ['likutay-halachos', 'likutay-tefilos', 'likutay-eitzos', 'likutay-eitzos-basra', 'yemei-moharnat', 'alim-litrufa', 'shemos-hatzadikim', 'yemei-hatlaos'] },
+  { icon: '🔥', label: 'Saba / סבא', ids: ['yisroel-saba', 'fires-of-israel', 'sichos-chayay-saba', 'saba-tape-transcripts', 'ebay-hanachal', 'likutay-nanach', 'misc-אגרת-הפורים'] },
+  { icon: '📗', label: 'Tcheryn / הרב מטשערין', ids: ['parparos-lechochma', 'rimzei-hamaasiyos', 'zimras-haaretz', 'yikra-dshabbata', 'yereach-haeitanim', 'nachas-hashulchan'] },
+  { icon: '📙', label: "R' Alter Tepliker / רבי אלתר", ids: ['hashtatfchus-hanefesh', 'meshivas-nefesh'] },
+  { icon: '📕', label: "R' Avraham / רבי אברהם", ids: ['biur-halikutim', 'chochma-utvuna', 'kokhvei-or'] },
+  { icon: '📚', label: 'Siach Sarfei Kodesh / שיח שרפי קודש', ids: ['siach-sarfei-kodesh'] },
+  { icon: '✨', label: 'Zohar / זוהר', ids: ['zohar-bereishit', 'zohar-shemos', 'zohar-vayikra', 'zohar-bamidbar', 'zohar-devarim', 'zohar-tikunim', 'zohar-hadash', 'zohar-hakdama'] },
+  { icon: '⚖️', label: 'Rambam / רמב"ם', prefix: 'rambam-' },
+  { icon: '📜', label: 'Tanach / תנ"ך', prefix: 'tanach-' },
+  { icon: '📚', label: 'Talmud Bavli / תלמוד בבלי', prefix: 'talmud-bavli-' },
+  { icon: '📖', label: 'Mishna / משנה', prefix: 'mishna-' },
+  { icon: '📚', label: 'Ramchal / רמח"ל', prefix: 'ramchal-' },
+  { icon: '📚', label: 'Other / אחרים', ids: [], other: true },
+];
+
+const knownIds = new Set(categories.flatMap(c => c.ids || []));
+const knownPrefixes = new Set(categories.map(c => c.prefix).filter(Boolean));
+
+function categorize(id: string) {
+  if (knownIds.has(id)) {
+    for (const cat of categories) {
+      if (cat.ids?.includes(id)) return cat;
+    }
+  }
+  for (const cat of categories) {
+    if (cat.prefix && id.startsWith(cat.prefix)) return cat;
+  }
+  return categories[categories.length - 1]; // Other
+}
+
+// Build categorized books
+const categorized = new Map<string, typeof allBooks>();
+for (const book of allBooks) {
+  const cat = categorize(book.id);
+  if (!categorized.has(cat.label)) categorized.set(cat.label, []);
+  categorized.get(cat.label)!.push(book);
+}
+
+// Attach book lists to categories
+for (const cat of categories) {
+  if (cat.prefix) {
+    cat.books = allBooks.filter(b => b.id.startsWith(cat.prefix));
+  } else if (cat.ids) {
+    cat.books = allBooks.filter(b => cat.ids!.includes(b.id));
+  } else {
+    cat.books = allBooks.filter(b => !knownIds.has(b.id) && ![...knownPrefixes].some(p => b.id.startsWith(p)));
+  }
+  cat.books.sort((a, b) => b.count - a.count);
+}
 ---
 
 <div class="advanced-search-options">
   <div class="options-header">
-    <h4 class="options-title">⚙️ אפשרויות חיפוש מתקדמות / Advanced Search Options</h4>
-    <button type="button" class="options-toggle" id="toggleAdvancedOptions">
-      <span class="toggle-text">הצג אפשרויות / Show Options</span>
-      <span class="toggle-icon">▼</span>
-    </button>
+    <h4 class="options-title">📚 Search in specific books / חיפוש בספרים מסוימים</h4>
+    <div class="header-actions">
+      <span class="selected-count" id="selectedCount">All {allBooks.length} books selected</span>
+      <button type="button" class="options-toggle" id="toggleBooksPanel">
+        <span class="toggle-text">Select / Deselect</span>
+        <span class="toggle-icon">▼</span>
+      </button>
+    </div>
   </div>
-  
-  <div class="options-content" id="advancedOptionsContent" style="display: none;">
-    
-    <!-- Book Selection — Individual books with per-category toggle -->
-    <BookSelectionFilter />
-    
-    <!-- Search Type -->
-    <div class="option-group">
-      <h5 class="option-group-title">🔍 סוג חיפוש / Search Type:</h5>
-      <div class="search-type-options">
-        <label class="search-type-option">
-          <input type="radio" name="searchType" value="contains" checked>
-          <div>
-            <span class="type-label">מכיל / Contains</span>
-            <span class="option-description">Finds text anywhere in document</span>
-          </div>
-        </label>
-        
-        <label class="search-type-option">
-          <input type="radio" name="searchType" value="exact">
-          <div>
-            <span class="type-label">מדויק / Exact phrase</span>
-            <span class="option-description">Words in exact order</span>
-          </div>
-        </label>
-        
-        <label class="search-type-option">
-          <input type="radio" name="searchType" value="boolean">
-          <div>
-            <span class="type-label">בוליאני / Boolean</span>
-            <span class="option-description">Use AND, OR, NOT operators</span>
-          </div>
-        </label>
-        
-        <label class="search-type-option">
-          <input type="radio" name="searchType" value="startsWith">
-          <div>
-            <span class="type-label">מתחיל ב / Starts with</span>
-            <span class="option-description">Text begins with search term</span>
-          </div>
-        </label>
-        
-        <label class="search-type-option">
-          <input type="radio" name="searchType" value="endsWith">
-          <div>
-            <span class="type-label">מסתיים ב / Ends with</span>
-            <span class="option-description">Text ends with search term</span>
-          </div>
-        </label>
-      </div>
+
+  <div class="options-content" id="bookSelectionPanel" style="display: none;">
+    <div class="quick-actions">
+      <button type="button" class="quick-btn" onclick="selectAllBooks(true)">✓ Select All</button>
+      <button type="button" class="quick-btn" onclick="selectAllBooks(false)">✗ Deselect All</button>
+      <button type="button" class="quick-btn" onclick="selectBreslovOnly()">🔥 Breslov Only</button>
+      <input type="text" class="book-search-input" id="bookSearchInput" placeholder="Filter books... / סנן ספרים..." oninput="filterBooks(this.value)" />
     </div>
-    
-    <!-- Proximity Search -->
-    <div class="option-group">
-      <h5 class="option-group-title">📏 חיפוש קרבה / Proximity Search:</h5>
-      <div class="proximity-options">
-        <label for="proximity" class="proximity-label">Maximum words between search terms:</label>
-        <select name="proximity" id="proximity" class="proximity-select">
-          <option value="0">ללא הגבלה / No limit</option>
-          <option value="1">1 word apart</option>
-          <option value="2">2 words apart</option>
-          <option value="3">3 words apart</option>
-          <option value="5">5 words apart</option>
-          <option value="10">10 words apart</option>
-        </select>
-        <span class="option-description">For multi-word searches: words must be this close to each other</span>
-      </div>
-    </div>
-    
-    <!-- Action Buttons -->
-    <div class="option-actions">
-      <button type="button" class="action-btn apply-btn" id="applyAdvancedOptions">
-        החל אפשרויות / Apply Options
-      </button>
-      <button type="button" class="action-btn reset-btn" id="resetAdvancedOptions">
-        אפס / Reset
-      </button>
+
+    <div class="book-list-container" id="bookListContainer">
+      {categories.filter(cat => cat.books && cat.books.length > 0).map(cat => (
+        <details class="book-category-details" open={false}>
+          <summary class="category-summary" onclick={`toggleCategory(this)`}>
+            <span class="category-icon">{cat.icon}</span>
+            <span class="category-label">{cat.label}</span>
+            <span class="category-count">({cat.books!.reduce((s, b) => s + b.count, 0)} docs)</span>
+            <button type="button" class="cat-toggle-btn" onclick={`event.stopPropagation(); toggleCategoryBooks(this)`}>All</button>
+          </summary>
+          <div class="book-category">
+            {cat.books!.map(book => (
+              <label class="book-checkbox">
+                <input type="checkbox" name="searchBook" value={book.id} checked onchange="updateSelectedCount()" />
+                <span class="book-name">{hebrewNames[book.id] || book.id}</span>
+                <span class="book-count">{book.count}</span>
+              </label>
+            ))}
+          </div>
+        </details>
+      ))}
     </div>
   </div>
 </div>
 
 <style>
   .advanced-search-options {
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    margin: 0.75rem 0;
+    background: #f8f9fa;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    margin: 0.5rem 0;
     overflow: hidden;
   }
-  
   .options-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.75rem 1rem;
-    background: #f8f9fa;
-    border-bottom: 1px solid #e9ecef;
+    padding: 0.5rem 0.75rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
   }
-  
   .options-title {
     margin: 0;
-    font-size: 0.95rem;
+    font-size: 0.85rem;
     color: #374151;
+    font-weight: 600;
   }
-  
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .selected-count {
+    font-size: 0.75rem;
+    color: #6b7280;
+  }
   .options-toggle {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
-    padding: 0.4rem 0.8rem;
+    gap: 0.3rem;
+    padding: 0.3rem 0.6rem;
     background: #6366f1;
     color: white;
     border: none;
-    border-radius: 6px;
-    font-size: 0.8rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-  
-  .options-toggle:hover {
-    background: #4f46e5;
-  }
-  
-  .toggle-icon {
-    transition: transform 0.3s;
-    font-size: 0.7rem;
-  }
-  
-  .toggle-icon.rotated {
-    transform: rotate(180deg);
-  }
-  
-  .options-content {
-    padding: 1rem;
-  }
-  
-  .option-group {
-    margin-bottom: 1.25rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid #f0f0f0;
-  }
-  
-  .option-group:last-of-type {
-    border-bottom: none;
-    margin-bottom: 0.75rem;
-  }
-  
-  .options-header-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.5rem;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-  
-  .option-group-title {
-    margin: 0;
-    font-size: 0.9rem;
-    color: #4b5563;
-  }
-  
-  .quick-buttons {
-    display: flex;
-    gap: 0.4rem;
-  }
-  
-  .quick-btn {
-    padding: 0.3rem 0.65rem;
-    border: 1px solid #d1d5db;
     border-radius: 4px;
     font-size: 0.75rem;
     cursor: pointer;
-    transition: all 0.2s;
+  }
+  .options-toggle:hover { background: #4f46e5; }
+  .toggle-icon { font-size: 0.6rem; transition: transform 0.2s; }
+  .toggle-icon.rotated { transform: rotate(180deg); }
+  .options-content { padding: 0.5rem; border-top: 1px solid #e5e7eb; }
+  .quick-actions {
+    display: flex;
+    gap: 0.4rem;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .quick-btn {
+    padding: 0.25rem 0.6rem;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    cursor: pointer;
     background: white;
     color: #374151;
   }
-  
-  .quick-btn.select-all {
-    background: #ecfdf5;
-    border-color: #6ee7b7;
-    color: #065f46;
+  .quick-btn:hover { background: #f3f4f6; }
+  .book-search-input {
+    flex: 1;
+    min-width: 150px;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    font-size: 0.75rem;
   }
-  
-  .quick-btn.deselect-all {
-    background: #fef2f2;
-    border-color: #fca5a5;
-    color: #991b1b;
-  }
-  
-  .quick-btn:hover {
-    filter: brightness(0.95);
-  }
-  
-  .book-checkboxes-container {
-    max-height: 350px;
+  .book-list-container {
+    max-height: 400px;
     overflow-y: auto;
-    padding: 0.5rem;
     border: 1px solid #e5e7eb;
     border-radius: 6px;
-    background: #fafafa;
-  }
-  
-  .book-category-details {
-    margin-bottom: 0.5rem;
     background: white;
-    border-radius: 6px;
-    border: 1px solid #f0f0f0;
-    overflow: hidden;
   }
-  
+  .book-category-details {
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .book-category-details:last-child { border-bottom: none; }
   .category-summary {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 0.75rem;
+    gap: 0.4rem;
+    padding: 0.4rem 0.6rem;
     cursor: pointer;
     font-weight: 600;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: #374151;
     background: #f9fafb;
     user-select: none;
-    transition: background 0.15s;
+    list-style: none;
   }
-  
-  .category-summary:hover {
-    background: #f3f4f6;
+  .category-summary::-webkit-details-marker { display: none; }
+  .category-summary:hover { background: #f3f4f6; }
+  .category-icon { font-size: 0.85rem; }
+  .category-count { font-size: 0.7rem; color: #9ca3af; font-weight: 400; }
+  .cat-toggle-btn {
+    margin-left: auto;
+    font-size: 0.65rem;
+    padding: 1px 6px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    background: #f5f5f5;
+    cursor: pointer;
   }
-  
-  .category-icon {
-    font-size: 0.9rem;
-  }
-  
-  .category-count {
-    font-size: 0.75rem;
-    color: #9ca3af;
-    font-weight: 400;
-  }
-  
+  .cat-toggle-btn:hover { background: #e0e0e0; }
   .book-category {
-    padding: 0.25rem 0.5rem 0.5rem 2rem;
+    padding: 0.2rem 0.4rem 0.4rem 1.5rem;
   }
-  
   .book-checkbox {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.3rem 0.5rem;
+    gap: 0.4rem;
+    padding: 0.2rem 0.4rem;
     cursor: pointer;
-    border-radius: 4px;
-    font-size: 0.82rem;
-    transition: background 0.15s;
+    border-radius: 3px;
+    font-size: 0.75rem;
+    transition: background 0.1s;
   }
-  
-  .book-checkbox:hover {
-    background: #f3f4f6;
-  }
-  
-  .book-checkbox input[type="checkbox"] {
-    flex-shrink: 0;
-  }
-  
-  .book-name {
-    flex: 1;
-    color: #374151;
-  }
-  
+  .book-checkbox:hover { background: #f3f4f6; }
+  .book-checkbox input { flex-shrink: 0; width: 14px; height: 14px; }
+  .book-name { flex: 1; color: #374151; }
   .book-count {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     color: #9ca3af;
     background: #f3f4f6;
-    padding: 0.1rem 0.4rem;
-    border-radius: 10px;
+    padding: 0.05rem 0.3rem;
+    border-radius: 8px;
   }
-  
-  .search-type-options {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-  }
-  
-  .search-type-option {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.4rem 0.75rem;
-    cursor: pointer;
-    border: 1px solid #e5e7eb;
-    border-radius: 6px;
-    transition: all 0.15s;
-    background: white;
-    font-size: 0.82rem;
-  }
-  
-  .search-type-option:has(input:checked) {
-    background: #eef2ff;
-    border-color: #818cf8;
-  }
-  
-  .search-type-option:hover {
-    border-color: #c7d2fe;
-  }
-  
-  .search-type-option input[type="radio"] {
-    flex-shrink: 0;
-  }
-  
-  .type-label {
-    font-weight: 600;
-    color: #374151;
-  }
-  
-  .option-description {
-    display: block;
-    font-size: 0.72rem;
-    color: #9ca3af;
-    margin-top: 0.1rem;
-  }
-  
-  .proximity-options {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-  }
-  
-  .proximity-label {
-    font-size: 0.85rem;
-    color: #4b5563;
-  }
-  
-  .proximity-select {
-    padding: 0.4rem 0.6rem;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    max-width: 250px;
-    font-size: 0.85rem;
-    background: white;
-  }
-  
-  .option-actions {
-    display: flex;
-    gap: 0.6rem;
-    padding-top: 0.75rem;
-    border-top: 1px solid #e5e7eb;
-  }
-  
-  .action-btn {
-    padding: 0.5rem 1.2rem;
-    border: none;
-    border-radius: 6px;
-    font-weight: 600;
-    font-size: 0.85rem;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  
-  .apply-btn {
-    background: #10b981;
-    color: white;
-  }
-  
-  .apply-btn:hover {
-    background: #059669;
-  }
-  
-  .reset-btn {
-    background: #f3f4f6;
-    color: #374151;
-  }
-  
-  .reset-btn:hover {
-    background: #e5e7eb;
-  }
-  
-  /* Mobile */
+  .book-checkbox.hidden { display: none; }
+  .book-category-details.hidden-category { display: none; }
   @media (max-width: 640px) {
-    .options-header {
-      flex-direction: column;
-      gap: 0.5rem;
-      align-items: flex-start;
-    }
-    
-    .options-title {
-      font-size: 0.85rem;
-    }
-    
-    .options-header-row {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-    
-    .search-type-options {
-      flex-direction: column;
-    }
-    
-    .search-type-option {
-      width: 100%;
-    }
-    
-    .option-actions {
-      flex-direction: column;
-    }
-    
-    .action-btn {
-      width: 100%;
-      text-align: center;
-    }
+    .options-header { flex-direction: column; align-items: flex-start; }
+    .header-actions { width: 100%; justify-content: space-between; }
+    .quick-actions { flex-direction: column; }
+    .book-search-input { min-width: 100%; }
   }
 </style>
 
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const toggleBtn = document.getElementById('toggleAdvancedOptions');
-    const optionsContent = document.getElementById('advancedOptionsContent');
-    const toggleText = toggleBtn.querySelector('.toggle-text');
-    const toggleIcon = toggleBtn.querySelector('.toggle-icon');
-    
-    let isOpen = false;
-    
-    toggleBtn.addEventListener('click', function() {
-      isOpen = !isOpen;
-      optionsContent.style.display = isOpen ? 'block' : 'none';
-      toggleText.textContent = isOpen ? 'הסתר אפשרויות / Hide Options' : 'הצג אפשרויות / Show Options';
-      toggleIcon.classList.toggle('rotated', isOpen);
-    });
-    
-    // Select All / Deselect All
-    document.getElementById('selectAllBooks').addEventListener('click', function() {
-      document.querySelectorAll('input[name="book"]').forEach(cb => cb.checked = true);
-    });
-    
-    document.getElementById('deselectAllBooks').addEventListener('click', function() {
-      document.querySelectorAll('input[name="book"]').forEach(cb => cb.checked = false);
-    });
+<script is:inline>
+(function() {
+  var panel = document.getElementById('bookSelectionPanel');
+  var toggleBtn = document.getElementById('toggleBooksPanel');
+  var toggleIcon = toggleBtn.querySelector('.toggle-icon');
+  var isOpen = false;
 
-    // Apply options
-    document.getElementById('applyAdvancedOptions').addEventListener('click', function() {
-      const options = getAdvancedOptions();
-      document.dispatchEvent(new CustomEvent('advanced-search-options', { detail: options }));
-      
-      // Visual feedback
-      const btn = this;
-      const orig = btn.textContent;
-      btn.textContent = '✓ הוחל / Applied!';
-      btn.style.background = '#059669';
-      setTimeout(() => { btn.textContent = orig; btn.style.background = ''; }, 1500);
-    });
-    
-    // Reset options
-    document.getElementById('resetAdvancedOptions').addEventListener('click', function() {
-      resetAdvancedOptions();
-      const btn = this;
-      const orig = btn.textContent;
-      btn.textContent = '✓ אופס / Reset!';
-      setTimeout(() => { btn.textContent = orig; }, 1000);
-    });
-    
-    function getAdvancedOptions() {
-      const selectedBooks = Array.from(document.querySelectorAll('input[name="book"]:checked'))
-        .map(cb => cb.value);
-      
-      const searchType = document.querySelector('input[name="searchType"]:checked')?.value || 'contains';
-      const proximity = parseInt(document.getElementById('proximity').value);
-      
-      return { books: selectedBooks, searchType, proximity };
-    }
-    
-    function resetAdvancedOptions() {
-      document.querySelectorAll('input[name="book"]').forEach(cb => cb.checked = true);
-      document.querySelector('input[name="searchType"][value="contains"]').checked = true;
-      document.getElementById('proximity').value = '0';
-    }
-    
-    // Initialize
-    resetAdvancedOptions();
+  toggleBtn.addEventListener('click', function() {
+    isOpen = !isOpen;
+    panel.style.display = isOpen ? 'block' : 'none';
+    toggleIcon.classList.toggle('rotated', isOpen);
+    toggleBtn.querySelector('.toggle-text').textContent = isOpen ? 'Hide' : 'Show';
   });
+
+  window.toggleCategory = function(summary) {
+    var details = summary.closest('details');
+    details.open = !details.open;
+  };
+
+  window.toggleCategoryBooks = function(btn) {
+    var details = btn.closest('details');
+    var boxes = details.querySelectorAll('input[type=checkbox]');
+    var allChecked = Array.from(boxes).every(function(b) { return b.checked; });
+    boxes.forEach(function(b) { b.checked = !allChecked; });
+    btn.textContent = allChecked ? 'All' : 'None';
+    updateSelectedCount();
+  };
+
+  window.selectAllBooks = function(select) {
+    document.querySelectorAll('input[name="searchBook"]').forEach(function(cb) {
+      cb.checked = select;
+    });
+    updateSelectedCount();
+  };
+
+  window.selectBreslovOnly = function() {
+    var breslovPrefixes = ['likutay-', 'sefer-', 'sipurey-', 'sichos-', 'shivchay-', 'chayey-', 'alim-', 'yemei-', 'ebay-', 'shemos-', 'yereach-', 'nachas-', 'hashtatfchus-', 'meshivas-', 'biur-', 'chochma-', 'kokhvei-', 'siach-', 'otzar-', 'yisroel-', 'chumash-', 'toldos-', 'kuntrass-', 'pettek-', 'fires-', 'azamra-', 'hisbodidus-', 'seven-', 'breiter-', 'michtevay-', 'shimshon-', 'gevuros-', 'aitzoas-', 'misc-'];
+    document.querySelectorAll('input[name="searchBook"]').forEach(function(cb) {
+      var isBreslov = breslovPrefixes.some(function(p) { return cb.value.startsWith(p); });
+      cb.checked = isBreslov;
+    });
+    updateSelectedCount();
+  };
+
+  window.filterBooks = function(query) {
+    query = query.toLowerCase().trim();
+    document.querySelectorAll('.book-checkbox').forEach(function(label) {
+      var name = label.querySelector('.book-name').textContent.toLowerCase();
+      var id = label.querySelector('input').value.toLowerCase();
+      var match = !query || name.includes(query) || id.includes(query);
+      label.classList.toggle('hidden', !match);
+    });
+    // Hide empty categories
+    document.querySelectorAll('.book-category-details').forEach(function(details) {
+      var visible = details.querySelectorAll('.book-checkbox:not(.hidden)').length;
+      details.classList.toggle('hidden-category', visible === 0 && query);
+    });
+  };
+
+  window.updateSelectedCount = function() {
+    var total = document.querySelectorAll('input[name="searchBook"]').length;
+    var checked = document.querySelectorAll('input[name="searchBook"]:checked').length;
+    var el = document.getElementById('selectedCount');
+    if (el) {
+      el.textContent = checked === total ? 'All ' + total + ' books selected' : checked + ' of ' + total + ' books selected';
+    }
+  };
+
+  // Initialize
+  updateSelectedCount();
+})();
 </script>

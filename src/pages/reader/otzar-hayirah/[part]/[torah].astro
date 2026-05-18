@@ -2,13 +2,14 @@
 import Layout from '../../../../layouts/Layout.astro';
 import Comments from '../../../../components/Comments.astro';
 import '../../../../styles/reader.css';
+import '../../../../styles/reader-v2.css';
 import fs from 'node:fs';
 import path from 'node:path';
 
 export function getStaticPaths() {
   const paths = [];
-  // Part 1: Volume 1 (א–ד) - up to 115 torahs
-  for (let torah = 1; torah <= 115; torah++) {
+  // Part 1: Volume 1 (א–ד) - 111 torahs
+  for (let torah = 1; torah <= 111; torah++) {
     paths.push({ params: { part: '1', torah: String(torah) } });
   }
   // Part 2: Volume 2 (ה–ל) - 16 torahs
@@ -179,6 +180,7 @@ const breadcrumbData = torahData ? JSON.stringify({
           <button class="reader-btn reader-btn-icon" data-theme-btn="night">Night</button>
         </div>
         <div class="reader-toolbar-group">
+          <button class="reader-btn reader-btn-icon" id="btn-align" title="Sentence-by-sentence aligned view">Align</button>
           <button class="reader-btn reader-btn-icon" id="btn-listen">Listen</button>
           <button class="reader-btn reader-btn-icon" id="btn-search">Search</button>
           <button class="reader-btn reader-btn-icon" id="btn-bookmark">Bookmark</button>
@@ -293,7 +295,9 @@ const breadcrumbData = torahData ? JSON.stringify({
       )}
 
 
-      <script src="/reader-script.js?v=4" defer></script>
+      <script src="/reader-script.js" defer></script>
+      <script src="/reader-v2.js" defer></script>
+      <script src="/pwa-register.js" defer></script>
       <script src="/tts-fix.js" defer></script>
       <script src="/reader-notes.js" is:inline></script>
     </div>

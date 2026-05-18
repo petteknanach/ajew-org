@@ -1,11 +1,15 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
-import vercel from '@astrojs/vercel';
+import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
   site: 'https://ajew.org',
   output: 'static',
+
+  vite: {
+    plugins: [tailwindcss()],
+  },
 
   integrations: [
     sitemap({
@@ -54,6 +58,4 @@ export default defineConfig({
       entryLimit: 50000,
     })
   ],
-
-  adapter: vercel({ isr: false }),
 });

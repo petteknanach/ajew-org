@@ -2,33 +2,34 @@
 import Layout from '../../../../layouts/Layout.astro';
 import Comments from '../../../../components/Comments.astro';
 import '../../../../styles/reader.css';
+import '../../../../styles/reader-v2.css';
 import fs from 'node:fs';
 import path from 'node:path';
 
 export function getStaticPaths() {
   const paths = [];
-  for (let torah = 1; torah <= 60; torah++) {
+  for (let torah = 1; torah <= 214; torah++) {
     paths.push({ params: { part: '1', torah: String(torah) } });
   }
-  for (let torah = 1; torah <= 55; torah++) {
+  for (let torah = 1; torah <= 214; torah++) {
     paths.push({ params: { part: '2', torah: String(torah) } });
   }
-  for (let torah = 1; torah <= 85; torah++) {
+  for (let torah = 1; torah <= 214; torah++) {
     paths.push({ params: { part: '3', torah: String(torah) } });
   }
-  for (let torah = 1; torah <= 110; torah++) {
+  for (let torah = 1; torah <= 214; torah++) {
     paths.push({ params: { part: '4', torah: String(torah) } });
   }
-  for (let torah = 1; torah <= 115; torah++) {
+  for (let torah = 1; torah <= 214; torah++) {
     paths.push({ params: { part: '5', torah: String(torah) } });
   }
-  for (let torah = 1; torah <= 35; torah++) {
+  for (let torah = 1; torah <= 214; torah++) {
     paths.push({ params: { part: '6', torah: String(torah) } });
   }
-  for (let torah = 1; torah <= 95; torah++) {
+  for (let torah = 1; torah <= 214; torah++) {
     paths.push({ params: { part: '7', torah: String(torah) } });
   }
-  for (let torah = 1; torah <= 90; torah++) {
+  for (let torah = 1; torah <= 214; torah++) {
     paths.push({ params: { part: '8', torah: String(torah) } });
   }
   return paths;
@@ -172,8 +173,6 @@ const structuredData = torahData ? JSON.stringify({
       <div class="reader-toolbar">
         <div class="reader-toolbar-group">
           <button class="reader-btn" data-mode="hebrew">Hebrew</button>
-          <button class="reader-btn" data-mode="english">English</button>
-          <button class="reader-btn" data-mode="both">Both</button>
         </div>
         <div class="reader-toolbar-group">
           <button class="reader-btn" id="btn-nikud">Nikud</button>
@@ -192,6 +191,7 @@ const structuredData = torahData ? JSON.stringify({
           <button class="reader-btn reader-btn-icon" id="btn-listen" onclick="toggleSpeaking()">Listen</button>
           <button class="reader-btn reader-btn-icon" id="btn-search">Search</button>
           <button class="reader-btn reader-btn-icon" id="btn-bookmark">Bookmark</button>
+          <button class="reader-btn reader-btn-icon" id="btn-align" title="Sentence-by-sentence aligned view">Align</button>
           <button class="reader-btn reader-btn-icon" id="btn-fullscreen">Fullscreen</button>
         </div>
       </div>
@@ -225,6 +225,7 @@ const structuredData = torahData ? JSON.stringify({
         {torahData.navigation.prevUrl ? (
           <a href={torahData.navigation.prevUrl} data-dir="prev">&larr; Previous</a>
         ) : <span class="disabled">&larr; Previous</span>}
+        <a href={`/reader/likutay-halachos/${partNum}`}>Book Index</a>
         <a href="/reader">All Books</a>
         {torahData.navigation.nextUrl ? (
           <a href={torahData.navigation.nextUrl} data-dir="next">Next &rarr;</a>
@@ -268,6 +269,7 @@ const structuredData = torahData ? JSON.stringify({
         {torahData.navigation.prevUrl ? (
           <a href={torahData.navigation.prevUrl} data-dir="prev">&larr; Previous</a>
         ) : <span class="disabled">&larr; Previous</span>}
+        <a href={`/reader/likutay-halachos/${partNum}`}>Book Index</a>
         <a href="/reader">All Books</a>
         {torahData.navigation.nextUrl ? (
           <a href={torahData.navigation.nextUrl} data-dir="next">Next &rarr;</a>
@@ -295,7 +297,9 @@ const structuredData = torahData ? JSON.stringify({
       )}
 
 
-      <script src="/reader-script.js?v=4" defer></script>
+      <script src="/reader-script.js" defer></script>
+      <script src="/reader-v2.js" defer></script>
+      <script src="/pwa-register.js" defer></script>
       <script src="/tts-fix.js" defer></script>
     </div>
   )}

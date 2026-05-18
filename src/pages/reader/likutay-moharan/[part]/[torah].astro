@@ -3,6 +3,7 @@ import Layout from '../../../../layouts/Layout.astro';
 import CommentarySidebar from '../../../../components/CommentarySidebar.astro';
 import Comments from '../../../../components/Comments.astro';
 import '../../../../styles/reader.css';
+import '../../../../styles/reader-v2.css';
 import commentaryRegistry from '../../../../data/lm-commentaries.json';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -19,11 +20,11 @@ export function getStaticPaths() {
   paths.push({ params: { part: '1', torah: 'intro-lm' } });
   paths.push({ params: { part: '1', torah: 'intro-manuscripts' } });
   // Part 1 preface sections (one per LM Vol 1 section group)
-  for (let i = 1; i <= 5; i++) {
+  for (let i = 1; i <= 297; i++) {
     paths.push({ params: { part: '1', torah: `preface-section-${i}` } });
   }
   // Part 1: 286 torahs (1-286, all present including 272)
-  for (let torah = 1; torah <= 286; torah++) {
+  for (let torah = 1; torah <= 297; torah++) {
     paths.push({ params: { part: '1', torah: String(torah) } });
   }
   // Part 2 intro pages
@@ -31,11 +32,11 @@ export function getStaticPaths() {
   paths.push({ params: { part: '2', torah: 'omission' } });
   paths.push({ params: { part: '2', torah: 'intro-volume-2' } });
   // Part 2 (Tinyana): 125 torahs (1-125, all present including 51)
-  for (let torah = 1; torah <= 125; torah++) {
+  for (let torah = 1; torah <= 297; torah++) {
     paths.push({ params: { part: '2', torah: String(torah) } });
   }
   // Part 2 manuscripts (Ksav Yad)
-  for (let i = 1; i <= 6; i++) {
+  for (let i = 1; i <= 297; i++) {
     paths.push({ params: { part: '2', torah: `manuscript-${i}` } });
   }
   return paths;
@@ -216,9 +217,9 @@ const pageDesc = torahData
 
       <div class="reader-toolbar">
         <div class="reader-toolbar-group">
+          <button class="reader-btn active" data-mode="both">Both</button>
           <button class="reader-btn" data-mode="hebrew">Hebrew</button>
           <button class="reader-btn" data-mode="english">English</button>
-          <button class="reader-btn" data-mode="both">Both</button>
         </div>
         <div class="reader-toolbar-group">
           <button class="reader-btn" id="btn-nikud">Nikud</button>
@@ -234,6 +235,7 @@ const pageDesc = torahData
           <button class="reader-btn reader-btn-icon" data-theme-btn="night" title="Night mode">Night</button>
         </div>
         <div class="reader-toolbar-group">
+          <button class="reader-btn reader-btn-icon" id="btn-align" title="Sentence-by-sentence aligned view">Align</button>
           <button class="reader-btn reader-btn-icon" id="btn-listen">Listen</button>
           <button class="reader-btn reader-btn-icon" id="btn-search" title="Search (Ctrl+F)">Search</button>
           <button class="reader-btn reader-btn-icon" id="btn-bookmark" title="Bookmark (S)">Bookmark</button>
@@ -291,15 +293,16 @@ const pageDesc = torahData
       <!-- Top Navigation -->
       <div class="reader-nav">
         {torahData.navigation.prevUrl ? (
-          <a href={torahData.navigation.prevUrl} data-dir="prev">&larr; Previous Torah</a>
+          <a href={torahData.navigation.prevUrl} data-dir="prev">&larr; Previous</a>
         ) : (
-          <span class="disabled">&larr; Previous Torah</span>
+          <span class="disabled">&larr; Previous</span>
         )}
-        <a href="/reader">All Torahs</a>
+        <a href="/reader#likutay-moharan">Book Index</a>
+        <a href="/reader">All Books</a>
         {torahData.navigation.nextUrl ? (
-          <a href={torahData.navigation.nextUrl} data-dir="next">Next Torah &rarr;</a>
+          <a href={torahData.navigation.nextUrl} data-dir="next">Next &rarr;</a>
         ) : (
-          <span class="disabled">Next Torah &rarr;</span>
+          <span class="disabled">Next &rarr;</span>
         )}
       </div>
 
@@ -340,15 +343,16 @@ const pageDesc = torahData
       <!-- Bottom Navigation -->
       <div class="reader-nav">
         {torahData.navigation.prevUrl ? (
-          <a href={torahData.navigation.prevUrl} data-dir="prev">&larr; Previous Torah</a>
+          <a href={torahData.navigation.prevUrl} data-dir="prev">&larr; Previous</a>
         ) : (
-          <span class="disabled">&larr; Previous Torah</span>
+          <span class="disabled">&larr; Previous</span>
         )}
-        <a href="/reader">All Torahs</a>
+        <a href="/reader#likutay-moharan">Book Index</a>
+        <a href="/reader">All Books</a>
         {torahData.navigation.nextUrl ? (
-          <a href={torahData.navigation.nextUrl} data-dir="next">Next Torah &rarr;</a>
+          <a href={torahData.navigation.nextUrl} data-dir="next">Next &rarr;</a>
         ) : (
-          <span class="disabled">Next Torah &rarr;</span>
+          <span class="disabled">Next &rarr;</span>
         )}
       </div>
 
@@ -359,6 +363,7 @@ const pageDesc = torahData
           <div class="shortcut-row"><span>Hebrew mode</span><span class="shortcut-key">H</span></div>
           <div class="shortcut-row"><span>English mode</span><span class="shortcut-key">E</span></div>
           <div class="shortcut-row"><span>Both columns</span><span class="shortcut-key">B</span></div>
+          <div class="shortcut-row"><span>Sentence-aligned view</span><span class="shortcut-key">A</span></div>
           <div class="shortcut-row"><span>Toggle nikud</span><span class="shortcut-key">N</span></div>
           <div class="shortcut-row"><span>Fullscreen</span><span class="shortcut-key">F</span></div>
           <div class="shortcut-row"><span>Table of contents</span><span class="shortcut-key">T</span></div>
@@ -382,7 +387,9 @@ const pageDesc = torahData
 
       <!-- Reader Script -->
       <script src="/reader-script.js?v=4" defer></script>
+      <script src="/reader-v2.js?v=5" defer></script>
       <script src="/tts-fix.js" defer></script>
+      <script src="/pwa-register.js" defer></script>
       <script src="/reader-notes.js" is:inline></script>
 
       {!isIntroPage && (

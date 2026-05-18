@@ -2,6 +2,7 @@
 import Layout from '../../../../layouts/Layout.astro';
 import Comments from '../../../../components/Comments.astro';
 import '../../../../styles/reader.css';
+import '../../../../styles/reader-v2.css';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -59,7 +60,8 @@ const pageTitle = torahData
     {error ? (
       <div class="error-message">
         <h2>{error}</h2>
-        <p><a href="/reader">&larr; Back to Library</a></p>
+        <p><a href={`/reader/likutay-nanach/${partNum}`}>Book Index</a>
+        <a href="/reader">&larr; Back to Library</a></p>
       </div>
     ) : (
       <div id="reader-content">

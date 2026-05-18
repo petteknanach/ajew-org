@@ -1,0 +1,20 @@
+# Source archive (2.8M, not needed at runtime)
+_source-archive/
+
+# Data-processing/integration scripts only (not the build scripts)
+scripts/run_*.py
+scripts/integrate*.py
+scripts/build*.cjs
+
+# Large book data directories — these MUST be included for static page generation.
+# Reader pages need JSON data at build time for getStaticPaths().
+# If deployment exceeds Vercel size limits, move these to a pre-build download step.
+
+# Git
+.git/
+
+# Node modules
+node_modules/
+
+# Pre-built output
+dist/

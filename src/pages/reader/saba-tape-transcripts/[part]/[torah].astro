@@ -2,6 +2,7 @@
 import Layout from '../../../../layouts/Layout.astro';
 import Comments from '../../../../components/Comments.astro';
 import '../../../../styles/reader.css';
+import '../../../../styles/reader-v2.css';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -52,7 +53,8 @@ const pageDesc = torahData
   {error ? (
     <div style="text-align: center; padding: 80px 20px;">
       <h1>{error}</h1>
-      <p><a href="/reader">Back to Reader</a></p>
+      <p><a href={`/reader/saba-tape-transcripts/${partNum}`}>Book Index</a>
+        <a href="/reader">Back to Reader</a></p>
     </div>
   ) : (
     <div class="reader-container" data-book={bookSlug}>
@@ -137,6 +139,7 @@ const pageDesc = torahData
         <div class="reader-toolbar-group">
           <button class="reader-btn reader-btn-icon" id="btn-search">Search</button>
           <button class="reader-btn reader-btn-icon" id="btn-bookmark">Bookmark</button>
+          <button class="reader-btn reader-btn-icon" id="btn-align" title="Sentence-by-sentence aligned view">Align</button>
           <button class="reader-btn reader-btn-icon" id="btn-fullscreen">Fullscreen</button>
         </div>
       </div>

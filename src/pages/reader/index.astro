@@ -26,7 +26,7 @@ function loadBookIndexes(book) {
 
 // Group books by category
 const categories = [
-  { title: 'Rabbi Nachman of Breslov / רבי נחמן מברסלב', ids: ['likutay-moharan', 'kitzur-likutay-moharan', 'sefer-hamidos', 'sipurey-maasiyos', 'sipurey-maasiyos-english', 'sichos-haran', 'shivchay-haran', 'chayey-moharan', 'praises-of-rabbi-nachman'] },
+  { title: 'Rabbi Nachman of Breslov / רבי נחמן מברסלב', ids: ['likutay-moharan', 'kitzur-likutay-moharan', 'sefer-hamidos', 'sipurey-maasiyos', 'sipurey-maasiyos-english', 'sichos-haran', 'shivchay-haran', 'chayey-moharan', 'praises-of-rabbi-nachman', 'pettek-nanach-commentary', 'likutay-nanach'] },
   { title: 'Rabbi Nosson of Breslov / רבי נתן מברסלב', ids: ['likutay-halachos', 'likutay-tefilos', 'likutay-eitzos', 'alim-litrufa', 'yemei-moharnat', 'shemos-hatzadikim', 'yemei-hatlaos', 'nosson-by-מכתבי-ר--נתן-ב--ר-יה', 'nosson-by-קונטרס-הצירופים-עם-ה', 'nosson-by-קונטרס-הצרופים'] },
   { title: 'Chumash with Likutey Halachos / חומש עם ליקוטי הלכות', ids: ['chumash-lh'] },
   { title: 'Rabbi Alter of Teplik / רבי אלתר טפליקער', ids: ['hashtatfchus-hanefesh', 'meshivas-nefesh'] },
@@ -51,7 +51,7 @@ const categories = [
   { title: 'Mishna Taharot / משנה טהרות', ids: ['mishna-kelim', 'mishna-parah', 'mishna-taharot', 'mishna-mikvaot', 'mishna-niddah', 'mishna-machshirin', 'mishna-zavim'] },
   { title: 'Rambam - Mishneh Torah / רמב"ם - משנה תורה', ids: ['rambam-mada', 'rambam-ahava', 'rambam-zmanim', 'rambam-nashim', 'rambam-kedusha', 'rambam-haflaa', 'rambam-zeraim', 'rambam-avoda', 'rambam-korbanot', 'rambam-tahara', 'rambam-nezikin', 'rambam-kinyan', 'rambam-mishpatim', 'rambam-shoftim'] },
   { title: 'Zohar HaKadosh / זוהר הקדוש', ids: ['zohar-hakdama', 'zohar-bereishit', 'zohar-shemos', 'zohar-vayikra', 'zohar-bamidbar', 'zohar-devarim', 'zohar-tikunim', 'zohar-hadash'] },
-  { title: 'Ramchal / רמח"ל', ids: ['ramchal-mesillas-yesharim', 'ramchal-derech-hashem', 'ramchal-daas-tevunos', 'ramchal-klach-pitchei-chochma', 'ramchal-adir-bamuroam', 'ramchal-derech-etz-chaim', 'ramchal-maamar-haikkarim', 'ramchal-asara-perakim', 'ramchal-ruzin-gineezin'] },
+  { title: 'Ramchal / רמח"ל', ids: ['ramchal-mesillas-yesharim', 'ramchal-derech-hashem', 'ramchal-daas-tevunos', 'ramchal-klach-pitchei-chochma', 'ramchal-adir-bamuroam', 'ramchal-derech-etz-chaim', 'ramchal-maamar-haikkarim', 'ramchal-asara-perakim', 'ramchal-ruzin-gineezin', 'ramchal-tikunim-chadashim', 'ramchal-yichud-hayeeruh', 'ramchal-otzros-ramchal', 'ramchal-shaaray-ramchal'] },
   { title: 'Halacha & More / הלכה ועוד', ids: [] },
   { title: 'Breslov Pamphlets & Letters / קונטרסים ומכתבים', ids: ['misc-קונטרס-קיום-התורה', 'misc-קונטרס-תורה-אור', 'misc-שיחת-הנפש', 'misc-ספר-שיר-ידידות', 'misc-ספר-ההשתטחות', 'misc-ליקוטי-אבן', 'misc-מכתב-רבי-געציל-לרב-קוק', 'misc-עצות-ישרות', 'azamra'] },
   { title: 'History & Stories / תולדות וסיפורים', ids: ['misc-תולדות-שמואל', 'misc-טובות-זכרונות', 'stories-סיפורי-ר--משה-גלידמא', 'stories-סיפורים-מר--שמואל-הו'] },
@@ -974,4 +974,12 @@ const lmVol1Groups = (() => {
     document.querySelectorAll('.book-dropdown').forEach(book => { book.open = true; });
   }
   </script>
+
+  <!-- Android App Install -->
+  <div style="margin: 32px auto 24px; max-width: 600px; padding: 20px 24px; background: linear-gradient(135deg, #1a365d 0%, #2e5580 100%); border-radius: 12px; text-align: center;">
+    <p style="color: #c8bfa0; font-size: 0.8em; font-family: 'Cinzel', serif; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 4px;">📱 Android App</p>
+    <h3 style="color: #f5ead0; font-family: 'Cinzel', serif; font-size: 1.1em; margin: 0 0 4px;">ajew ananach</h3>
+    <p style="color: #e8dfc0; font-size: 0.85em; margin: 0 0 12px;">Read Breslov Torah on your phone — offline capable, bilingual Hebrew/English</p>
+    <a href="https://github.com/petteknanach/ajew-ananach/releases" target="_blank" rel="noopener" style="display: inline-block; background: #c8a050; color: #1c1c2e; padding: 10px 28px; border-radius: 6px; text-decoration: none; font-weight: 700; font-size: 0.95em; font-family: 'Cinzel', serif; letter-spacing: 1px;">Install App →</a>
+  </div>
 </Layout>

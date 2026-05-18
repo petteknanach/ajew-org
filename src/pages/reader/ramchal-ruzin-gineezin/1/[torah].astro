@@ -1,6 +1,7 @@
 ---
 import Layout from '../../../../layouts/Layout.astro';
 import '../../../../styles/reader.css';
+import '../../../../styles/reader-v2.css';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -165,6 +166,7 @@ const breadcrumbs = torahData ? [
         {torahNum > 1 ? (
           <a href={`/reader/ramchal-ruzin-gineezin/1/${torahNum - 1}`} data-dir="prev">&larr; Previous</a>
         ) : <span class="disabled">&larr; Previous</span>}
+        <a href={`/reader/ramchal-ruzin-gineezin/${partNum}`}>Book Index</a>
         <a href="/ramchal">Ramchal Library</a>
         {torahNum < 7 ? (
           <a href={`/reader/ramchal-ruzin-gineezin/1/${torahNum + 1}`} data-dir="next">Next &rarr;</a>
@@ -190,6 +192,7 @@ const breadcrumbs = torahData ? [
         {torahNum > 1 ? (
           <a href={`/reader/ramchal-ruzin-gineezin/1/${torahNum - 1}`} data-dir="prev">&larr; Previous</a>
         ) : <span class="disabled">&larr; Previous</span>}
+        <a href={`/reader/ramchal-ruzin-gineezin/${partNum}`}>Book Index</a>
         <a href="/ramchal">Ramchal Library</a>
         {torahNum < 7 ? (
           <a href={`/reader/ramchal-ruzin-gineezin/1/${torahNum + 1}`} data-dir="next">Next &rarr;</a>
@@ -217,7 +220,9 @@ const breadcrumbs = torahData ? [
         </div>
       </div>
 
-      <script src="/reader-script.js?v=4" defer></script>
+      <script src="/reader-script.js" defer></script>
+      <script src="/reader-v2.js" defer></script>
+      <script src="/pwa-register.js" defer></script>
       <script src="/tts-fix.js" defer></script>
       <script src="/reader-notes.js" is:inline></script>
     </div>

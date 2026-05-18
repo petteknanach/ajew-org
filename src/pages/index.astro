@@ -1,1423 +1,769 @@
 ---
+/**
+ * Homepage — ajew.org Landing Page
+ * A calm, warm, and welcoming entry point to the Breslov Torah library.
+ */
 import Layout from '../layouts/Layout.astro';
-import CompactYahrzeit from '../components/CompactYahrzeit.astro';
+import fs from 'node:fs';
+import path from 'node:path';
+
+// Load daily quote data
+const quotes = [
+  { he: 'כל העולם כולו גשר צר מאוד, והעיקר לא לפחד כלל', en: 'The whole world is a very narrow bridge, and the main thing is not to fear at all', src: 'LM II:48' },
+  { he: 'אם אתה מאמין שיכולין לקלקל, תאמין שיכולין לתקן', en: 'If you believe you can damage, believe you can fix', src: 'LM II:112' },
+  { he: 'מצוה גדולה להיות בשמחה תמיד', en: 'It is a great mitzvah to always be happy', src: 'LM II:24' },
+  { he: 'אין שום יאוש בעולם כלל', en: 'There is no despair in the world at all', src: 'LM II:78' },
+  { he: 'התבודדות הוא מעלה עליונה ויתירה על הכל', en: 'Hitbodedut is the highest virtue of all', src: 'LM II:25' },
+  { he: 'עיקר החיות מהשמחה', en: 'The essence of life is from joy', src: 'LM II:24' },
+  { he: 'כשאדם יודע שכל הקורותיו הם לטובתו, זאת הבחינה מעין עולם הבא', en: 'When a person knows all that happens is for his good, this is like the World to Come', src: 'LM I:4' },
+  { he: 'תפילה בלא כוונה כגוף בלא נשמה', en: 'Prayer without intent is like a body without a soul', src: 'LM I:2' },
+  { he: 'צריך לחפש ולבקש למצוא בעצמו איזה מעט טוב', en: 'One must search to find in oneself some small good', src: 'LM I:282' },
+  { he: 'נ נח נחמ נחמן מאומן', en: 'Na Nach Nachma Nachman MeUman', src: 'The Petek' },
+];
+const dayIndex = Math.floor(Date.now() / 86400000) % quotes.length;
+const todayQuote = quotes[dayIndex];
+const lmTorahMap = { 0: 48, 1: 112, 2: 24, 3: 78, 4: 25, 5: 24, 6: 4, 7: 2, 8: 282 };
+const todayLM = lmTorahMap[dayIndex] || 1;
 ---
 
-<Layout title="The Largest Online Breslov Torah Library" description="226+ sacred Jewish texts, 25,000+ pages free online. Likutay Moharan, Likutay Halachos, Zohar, Talmud, Mishna, Rambam, Tanach in Hebrew with English translations. Rabbi Nachman of Breslov.">
-  <section class="hero">
-    <!-- Top left: Compact Yahrzeit Display -->
-    <CompactYahrzeit />
-    
-    <!-- Bottom left: nanach.tv logo (moved from top left) -->
-    <a href="https://nanach.tv" target="_blank" rel="noopener" class="corner-btn corner-btn-bottom-left">
-      <span class="logo-text">nanach.tv</span>
-    </a>
-    
-    <!-- Top right buttons -->
-    <a href="/subscribe" class="corner-btn corner-btn-top-right">
-      <span>💛 Subscribe</span>
-    </a>
+<Layout
+  title="Na Nach Breslov — Complete Torah of Rebbe Nachman | A Jew"
+  description="The complete Breslov library — Rebbe Nachman, Rabbi Nosson, Saba Yisroel. Likutay Moharan, Likutay Halachos, Sefer HaMidos, Sipurey Maasiyos and all Breslov classics free online."
+>
 
-    <div class="hero-content">
-      <h1 class="hero-title">
-        <span class="hebrew" lang="he" dir="rtl">רבי נחמן מברסלב</span>
-        <span class="english">Rebbe Nachman of Breslov</span>
-        <span class="tagline">The Breslov Torah Treasury — Free & Open to All</span>
-      </h1>
-      <p class="hero-subtitle">
-        <span class="hebrew" lang="he" dir="rtl">"כִּי בָּעוֹלָם הַזֶּה צָרִיךְ לַעֲבֹר עַל גֶּשֶׁר צַר מְאֹד"</span>
-        <span class="english">"In this world, a person must traverse a very narrow bridge — the main thing is not to fear at all."</span>
-      </p>
-      
-      <!-- Quick search on hero -->
-      <div class="hero-search">
-        <form action="/search-enhanced" method="get" class="hero-search-form">
-          <input type="text" name="q" placeholder="Search 30,000+ pages... / חפש..." dir="auto" autocomplete="off" />
-          <button type="submit">Search</button>
-        </form>
-      </div>
+<!-- Fire animation CSS -->
+<style>
+@keyframes fireFlicker {
+  0%   { text-shadow: 0 0 4px #ff0000, 0 0 11px #ff0000, 0 0 19px #ff0000, 0 0 40px #ff7700, 0 0 70px #ff7700, 0 0 100px #ff7700, 0 0 140px #ff7700; }
+  15%  { text-shadow: 0 0 6px #ff2200, 0 0 14px #ff3300, 0 0 22px #ff5500, 0 0 45px #ff9900, 0 0 75px #ffaa00, 0 0 110px #ffaa00, 0 0 150px #ffaa00; }
+  30%  { text-shadow: 0 0 5px #ff0000, 0 0 13px #ff2200, 0 0 20px #ff4400, 0 0 42px #ff6600, 0 0 72px #ff8800, 0 0 105px #ff8800, 0 0 145px #ff8800; }
+  45%  { text-shadow: 0 0 7px #ff1100, 0 0 16px #ff4400, 0 0 25px #ff6600, 0 0 48px #ffaa00, 0 0 80px #ffcc00, 0 0 120px #ffcc00, 0 0 160px #ffcc00; }
+  60%  { text-shadow: 0 0 4px #ff3300, 0 0 10px #ff5500, 0 0 17px #ff7700, 0 0 38px #ff9900, 0 0 65px #ffbb00, 0 0 95px #ffbb00, 0 0 130px #ffbb00; }
+  75%  { text-shadow: 0 0 8px #ff0000, 0 0 18px #ff3300, 0 0 28px #ff5500, 0 0 52px #ff8800, 0 0 85px #ffaa00, 0 0 125px #ffaa00, 0 0 170px #ffaa00; }
+  90%  { text-shadow: 0 0 5px #ff2200, 0 0 12px #ff4400, 0 0 21px #ff6600, 0 0 44px #ff7700, 0 0 74px #ff9900, 0 0 108px #ff9900, 0 0 148px #ff9900; }
+  100% { text-shadow: 0 0 4px #ff0000, 0 0 11px #ff0000, 0 0 19px #ff0000, 0 0 40px #ff7700, 0 0 70px #ff7700, 0 0 100px #ff7700, 0 0 140px #ff7700; }
+}
+@keyframes fireRise {
+  0%   { transform: translateY(0) scale(1); }
+  25%  { transform: translateY(-2px) scale(1.01); }
+  50%  { transform: translateY(-4px) scale(1.02); }
+  75%  { transform: translateY(-1px) scale(1.01); }
+  100% { transform: translateY(0) scale(1); }
+}
+@keyframes sparkFloat {
+  0%   { opacity: 0; transform: translateY(0) scale(0.5); }
+  10%  { opacity: 1; }
+  90%  { opacity: 0.6; }
+  100% { opacity: 0; transform: translateY(-60px) scale(1.2); }
+}
+</style>
 
-      <!-- Topic navigation pills -->
-      <div class="topic-nav">
-        <a href="/topics?q=emunah" class="topic-pill">Emunah</a>
-        <a href="/topics?q=tefillah" class="topic-pill">Tefillah</a>
-        <a href="/topics?q=teshuvah" class="topic-pill">Teshuvah</a>
-        <a href="/topics?q=simcha" class="topic-pill">Simcha</a>
-        <a href="/topics?q=shalom" class="topic-pill">Shalom</a>
-        <a href="/topics?q=parnassah" class="topic-pill">Parnassah</a>
-        <a href="/healing-words" class="topic-pill">Healing</a>
-        <a href="/topics?q=bris" class="topic-pill">Shmiras HaBris</a>
-        <a href="/topics?q=hisbodedus" class="topic-pill">Hisbodedus</a>
-        <a href="/topics" class="topic-pill">All Topics →</a>
-      </div>
-
-      <!-- Main navigation - symmetrical -->
-      <nav class="main-nav">
-        <!-- Left side -->
-        <div class="nav-group nav-group-left">
-          <a href="/gallery" class="btn btn-small btn-gallery">
-            <span class="btn-icon">📷</span>
-            <span class="btn-text">Gallery</span>
-          </a>
-          <a href="https://malevegadish.com" target="_blank" rel="noopener" class="btn btn-small btn-store">
-            <span class="btn-icon">🛒</span>
-            <span class="btn-text">Store</span>
-          </a>
-          <a href="/search-enhanced" class="btn btn-small btn-search">
-            <span class="btn-icon">🔍</span>
-            <span class="btn-text">Search / חיפוש</span>
-          </a>
-        </div>
-        
-        <!-- Center prominent button -->
-        <a href="/reader" class="btn btn-center">
-          <span class="btn-icon">📖</span>
-          <span class="btn-text">Teachings / תורות</span>
-        </a>
-        
-        <!-- Right side -->
-        <div class="nav-group nav-group-right">
-          <a href="/reader" class="btn btn-small btn-books">
-            <span class="btn-icon">📚</span>
-            <span class="btn-text" lang="he" dir="rtl">כל ספרי ברסלב</span>
-          </a>
-          <a href="/donate" class="btn btn-small btn-amazon">
-            <span class="btn-icon">💛</span>
-            <span class="btn-text">Donate</span>
-          </a>
-          <a href="/gematria" class="btn btn-small btn-gematria">
-            <span class="btn-icon">🔢</span>
-            <span class="btn-text" lang="he" dir="rtl">גימטריה</span>
-          </a>
-          <a href="/start" class="btn btn-small btn-start" style="background: #059669; color: white; border-color: #059669;">
-            <span class="btn-icon">🌱</span>
-            <span class="btn-text">New Here?</span>
-          </a>
-          <a href="/help-me" class="btn btn-small btn-help" style="background: #c62828; color: white; border-color: #c62828;">
-            <span class="btn-icon">🆘</span>
-            <span class="btn-text">Help</span>
-          </a>
-        </div>
-      </nav>
-      
-      <!-- Seasonal: Sfiras HaOmer (Pesach through Shavuos) -->
-      <div id="omerBanner" class="omer-banner" style="display: none;">
-        <a href="/omer" class="btn btn-omer">
-          <span class="btn-icon">🌾</span>
-          <span class="btn-text">Sfiras HaOmer</span>
-          <span class="btn-subtitle-omer" lang="he" dir="rtl">ספירת העומר</span>
-        </a>
-      </div>
-      <script is:inline>
-      (function() {
-        // Dynamic Omer calculation using Gauss's Pesach algorithm
-        // Pesach falls on 15 Nisan; Omer starts 16 Nisan through 6 Sivan (50 days)
-        var now = new Date();
-        var year = now.getFullYear();
-
-        // Gauss's algorithm for Pesach date (approximate, works for most years)
-        var a = (12 * year + 17) % 19;
-        var b = year % 4;
-        var m = 32.044093161144 + 1.5542417966212 * a + b / 4.0 - 0.0031777940220923 * year;
-        var c = Math.floor((m + 3 * (year + 5) / 4.0 + 8.5) % 7);
-        var pesachDay = Math.floor(m);
-        // April adjustment
-        var pesachMonth = 2; // March (0-indexed)
-        if (pesachDay > 31) { pesachDay -= 31; pesachMonth = 3; } // April
-
-        var pesachDate = new Date(year, pesachMonth, pesachDay);
-        var omerStart = new Date(pesachDate.getTime() + 86400000); // day after Pesach
-        var shavuosEnd = new Date(pesachDate.getTime() + 51 * 86400000); // 50 days later + 1
-
-        if (now >= omerStart && now <= shavuosEnd) {
-          var banner = document.getElementById('omerBanner');
-          if (banner) banner.style.display = 'flex';
-        }
-      })();
-      </script>
-
-      <!-- NEW FEATURES ROW - prominent -->
-      <div class="feature-links">
-        <a href="/daily-study" class="btn btn-feature">
-          <span class="btn-icon">📅</span>
-          <span class="btn-text">Daily Study</span>
-          <span class="btn-subtitle" lang="he" dir="rtl">לימוד יומי</span>
-        </a>
-        <a href="/torah-gps" class="btn btn-feature">
-          <span class="btn-icon">🧭</span>
-          <span class="btn-text">Torah GPS</span>
-          <span class="btn-subtitle" lang="he" dir="rtl">תורה GPS</span>
-        </a>
-        <a href="/torah-lens" class="btn btn-feature">
-          <span class="btn-icon">🔭</span>
-          <span class="btn-text">Torah Lens</span>
-          <span class="btn-subtitle" lang="he" dir="rtl">עדשת תורה</span>
-        </a>
-        <a href="/healing-words" class="btn btn-feature">
-          <span class="btn-icon">🩺</span>
-          <span class="btn-text">Healing Words</span>
-          <span class="btn-subtitle" lang="he" dir="rtl">דברי מרפא</span>
-        </a>
-        <a href="/trivia" class="btn btn-feature">
-          <span class="btn-icon">🔥</span>
-          <span class="btn-text">Torah Trivia</span>
-          <span class="btn-subtitle" lang="he" dir="rtl">טריוויה תורנית</span>
-        </a>
-      </div>
-
-      <!-- Second row: more tools -->
-      <div class="external-links">
-        <a href="/ramchal" class="btn btn-external">
-          <span class="btn-icon">✡️</span>
-          <span class="btn-text">Ramchal</span>
-          <span class="btn-he" lang="he" dir="rtl">רמח"ל</span>
-        </a>
-        <a href="/chain-of-light" class="btn btn-external">
-          <span class="btn-icon">🔗</span>
-          <span class="btn-text">Chain of Light</span>
-          <span class="btn-he" lang="he" dir="rtl">שרשרת האור</span>
-        </a>
-        <a href="/my-sefer" class="btn btn-external">
-          <span class="btn-icon">📖</span>
-          <span class="btn-text">My Sefer</span>
-          <span class="btn-he" lang="he" dir="rtl">הספר שלי</span>
-        </a>
-        <a href="/parsha" class="btn btn-external">
-          <span class="btn-icon">📜</span>
-          <span class="btn-text">Parsha</span>
-          <span class="btn-he" lang="he" dir="rtl">פרשה</span>
-        </a>
-        <a href="/ask" class="btn btn-external">
-          <span class="btn-icon">❓</span>
-          <span class="btn-text">Ask</span>
-          <span class="btn-he" lang="he" dir="rtl">שאל</span>
-        </a>
-        <a href="/topics" class="btn btn-external">
-          <span class="btn-icon">📋</span>
-          <span class="btn-text">Topics</span>
-          <span class="btn-he" lang="he" dir="rtl">נושאים</span>
-        </a>
-      </div>
-
-      <!-- Third row: media & community -->
-      <div class="external-links">
-        <a href="/videos" class="btn btn-external">
-          <span class="btn-icon">🎬</span>
-          <span class="btn-text">Videos</span>
-          <span class="btn-he" lang="he" dir="rtl">סרטונים</span>
-        </a>
-        <a href="/chat" class="btn btn-external">
-          <span class="btn-icon">💬</span>
-          <span class="btn-text">Chat</span>
-          <span class="btn-he" lang="he" dir="rtl">צ'אט</span>
-        </a>
-        <a href="https://music.nanach.tv" target="_blank" rel="noopener" class="btn btn-external">
-          <span class="btn-icon">🎵</span>
-          <span class="btn-text">Music</span>
-          <span class="btn-he" lang="he" dir="rtl">מוזיקה</span>
-        </a>
-        <a href="/saba-says" class="btn btn-external">
-          <span class="btn-icon">🎙️</span>
-          <span class="btn-text">Saba Says</span>
-          <span class="btn-he" lang="he" dir="rtl">קולו של סבא</span>
-        </a>
-      </div>
-
-      <!-- Community links - compact -->
-      <div class="community-links community-compact">
-        <a href="https://breslovmatch.com" target="_blank" rel="noopener" class="btn btn-community-sm">
-          <span>💑 Breslov Match</span>
-        </a>
-        <a href="https://yesodyosef.com" target="_blank" rel="noopener" class="btn btn-community-sm">
-          <span>🤝 Yesod Yosef</span>
-        </a>
-        <a href="https://breslovbooks.com" target="_blank" rel="noopener" class="btn btn-community-sm">
-          <span>📖 Breslov Books</span>
-        </a>
-      </div>
-      
-      <!-- The most important thing - Na Nach phrase -->
-      <div class="nanach-phrase">
-        <p class="nanach-phrase-hebrew">נ נח נחמ נחמן מאומן</p>
-        <p class="nanach-phrase-english">Na Nach Nachma Nachman MeUman</p>
-      </div>
+<!-- ═══ HERO SECTION ═══ -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-nanach fire-text" lang="he" dir="rtl">נ נח נחמ נחמן מאומן</div>
+    <div class="hero-huaish-sheli">
+      <img src="/images/nanach/nanach-fire-huaish-sheli-letters.png" alt="האש שלי — My Fire" class="huaish-sheli-img" />
     </div>
-  </section>
+    <h1 class="hero-title">
+      <span class="hero-he" lang="he" dir="rtl">מפעל היהדות</span>
+      <span class="hero-en">The Factory of Judaism</span>
+    </h1>
+    <p class="hero-subtitle">All the original teachings of Rabbi Nachman of Breslov in English &amp; Hebrew — free.</p>
+    <div class="hero-search">
+      <form action="/search-enhanced" method="get">
+        <input type="text" name="q" placeholder="What are you looking for? / ?מה אתה מחפש" dir="auto" autocomplete="off" aria-label="Search Torah" />
+        <button type="submit" aria-label="Search">🔍</button>
+      </form>
+    </div>
+  </div>
+  <div class="hero-actions">
+    <a href="/reader/likutay-moharan/1/1" class="btn-hero btn-hero-primary">
+      <span class="btn-icon">🕯️</span>
+      <span><span class="btn-label">Start Reading</span><span class="btn-sub">ליקוטי מוהר"ן א:א</span></span>
+    </a>
+    <a href="/help-me" class="btn-hero btn-hero-secondary">
+      <span class="btn-icon">💚</span>
+      <span><span class="btn-label">I Need Help</span><span class="btn-sub">עזרו לי</span></span>
+    </a>
+    <a href="/reader/sipurey-maasiyos/1/intro" class="btn-hero btn-hero-accent">
+      <span class="btn-icon">📖</span>
+      <span><span class="btn-label">Rebbe's Stories</span><span class="btn-sub">סיפורי מעשיות</span></span>
+    </a>
+  </div>
+</section>
 
-  <!-- Continue Reading -->
-  <div id="continueReading" class="continue-reading" style="display:none;">
-    <div class="container">
-      <a id="continueLink" href="#" class="continue-card">
-        <span class="continue-label">Continue Reading</span>
-        <span id="continueTitle" class="continue-title"></span>
-        <span id="continueProgress" class="continue-progress"></span>
+<!-- ═══════════════════════════════════════
+     DAILY QUOTE — Centerpiece of the page
+     ═══════════════════════════════════════ -->
+<section class="daily-quote-section">
+  <div class="quote-card">
+    <div class="quote-icon">✨</div>
+    <blockquote>
+      <p class="quote-he" lang="he" dir="rtl">{todayQuote.he}</p>
+      <p class="quote-en">"{todayQuote.en}"</p>
+      <cite>— Rebbe Nachman of Breslov · {todayQuote.src}</cite>
+    </blockquote>
+    <a href={`/reader/likutay-moharan/1/${todayLM}`} class="quote-cta">Read the full teaching →</a>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     QUICK START — "What do you want to do?"
+     ═══════════════════════════════════════ -->
+<section class="quick-start">
+  <h2 class="section-heading">What would you like to do?</h2>
+  <div class="quick-start-grid">
+    <a href="/reader/likutay-moharan/1/1" class="qs-card qs-gold">
+      <span class="qs-icon">🕯️</span>
+      <div class="qs-body">
+        <span class="qs-title">Start Reading</span>
+        <span class="qs-desc">Likutay Moharan 1:1 — the first teaching</span>
+        <span class="qs-he" lang="he" dir="rtl">ליקוטי מוהר"ן א:א</span>
+      </div>
+      <span class="qs-arrow">→</span>
+    </a>
+    <a href="/help-me" class="qs-card qs-green">
+      <span class="qs-icon">💚</span>
+      <div class="qs-body">
+        <span class="qs-title">I Need Help</span>
+        <span class="qs-desc">Torah guidance for whatever you're facing</span>
+        <span class="qs-he" lang="he" dir="rtl">עזרו לי</span>
+      </div>
+      <span class="qs-arrow">→</span>
+    </a>
+    <a href="/reader/sipurey-maasiyos/1/intro" class="qs-card qs-blue">
+      <span class="qs-icon">📖</span>
+      <div class="qs-body">
+        <span class="qs-title">Rebbe's Stories</span>
+        <span class="qs-desc">13 mystical tales — deep &amp; accessible</span>
+        <span class="qs-he" lang="he" dir="rtl">סיפורי מעשיות</span>
+      </div>
+      <span class="qs-arrow">→</span>
+    </a>
+    <a href="/reader" class="qs-card qs-purple">
+      <span class="qs-icon">📚</span>
+      <div class="qs-body">
+        <span class="qs-title">Browse the Library</span>
+        <span class="qs-desc">Rabbainu, Rabbi Nosson, Saba &amp; all Breslov classics</span>
+        <span class="qs-he" lang="he" dir="rtl">הספריה המלאה</span>
+      </div>
+      <span class="qs-arrow">→</span>
+    </a>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     CONTINUE READING — Only shown if history exists
+     ═══════════════════════════════════════ -->
+<section id="continue-section" class="continue-section" style="display:none;">
+  <div class="section-inner">
+    <h2 class="section-heading">📖 Pick up where you left off</h2>
+    <a id="continue-card" href="#" class="continue-card">
+      <div class="continue-info">
+        <span id="continue-title" class="continue-title"></span>
+        <span id="continue-book" class="continue-book"></span>
+        <div class="continue-progress"><div id="continue-fill" class="continue-fill" style="width:0%"></div></div>
+        <span id="continue-ago" class="continue-ago"></span>
+      </div>
+      <span class="continue-arrow">→</span>
+    </a>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     FEATURED — Rabbainu's works first
+     ═══════════════════════════════════════ -->
+<section class="featured">
+  <div class="section-inner">
+    <h2 class="section-heading">🔥 Rabbainu's Sacred Works</h2>
+    <p class="section-sub">Rebbe Nachman's complete teachings, Rabbi Nosson's commentaries, Saba's revelations, and the full Breslov library.</p>
+    <div class="featured-grid">
+      <a href="/reader#likutay-moharan" class="feat-card feat-gold">
+        <div class="feat-icon">✡️</div>
+        <h3>Likutay Moharan</h3>
+        <p class="feat-he" lang="he" dir="rtl">ליקוטי מוהר"ן</p>
+        <p class="feat-desc">411 teachings — the foundation of Breslov hashkafa</p>
+      </a>
+      <a href="/reader#likutay-halachos" class="feat-card feat-gold">
+        <div class="feat-icon">📜</div>
+        <h3>Likutay Halachos</h3>
+        <p class="feat-he" lang="he" dir="rtl">ליקוטי הלכות</p>
+        <p class="feat-desc">600 halachos — Rabbi Nosson's commentary on the Shulchan Aruch</p>
+      </a>
+      <a href="/reader#sefer-hamidos" class="feat-card feat-gold">
+        <div class="feat-icon">🌟</div>
+        <h3>Sefer HaMidos</h3>
+        <p class="feat-he" lang="he" dir="rtl">ספר המידות</p>
+        <p class="feat-desc">Alphabetical guide to character traits and spiritual growth</p>
+      </a>
+      <a href="/reader#sipurey-maasiyos" class="feat-card feat-gold">
+        <div class="feat-icon">📖</div>
+        <h3>Sipurey Maasiyos</h3>
+        <p class="feat-he" lang="he" dir="rtl">סיפורי מעשיות</p>
+        <p class="feat-desc">13 mystical tales — deep &amp; accessible</p>
+      </a>
+      <a href="/reader#sichos-haran" class="feat-card feat-gold">
+        <div class="feat-icon">🕎</div>
+        <h3>Sichos HaRan</h3>
+        <p class="feat-he" lang="he" dir="rtl">שיחות הר"ן</p>
+        <p class="feat-desc">309 conversations — direct words of the Rebbe</p>
+      </a>
+      <a href="/reader" class="feat-card feat-more">
+        <div class="feat-icon">📚</div>
+        <h3>+ All Breslov Classics</h3>
+        <p class="feat-he" lang="he" dir="rtl">כל ספרי ברסלב</p>
+        <p class="feat-desc">Plus Tanach, Talmud, Mishna, Rambam &amp; more for reference</p>
+        <span class="feat-cta">Browse all →</span>
       </a>
     </div>
   </div>
-  <script is:inline>
-  (function() {
-    try {
-      const history = JSON.parse(localStorage.getItem('ajew-reading-history') || '[]');
-      if (history.length === 0) return;
-      const last = history[0];
-      if (!last.url || !last.url.startsWith('/reader/')) return;
-      document.getElementById('continueReading').style.display = 'block';
-      document.getElementById('continueLink').href = last.url;
-      document.getElementById('continueTitle').textContent = last.title;
-      const pct = last.progress ? last.progress + '% read' : '';
-      document.getElementById('continueProgress').textContent = pct;
-    } catch(e) {}
-  })();
-  </script>
+</section>
 
-  <!-- New Here? Welcome Section -->
-  <section class="welcome-newcomer" id="newHere">
-    <div class="container">
-      <h2 class="welcome-heading">Welcome to A Jew</h2>
-      <p class="welcome-description">
-        A free library of sacred Jewish texts in Hebrew and English — featuring the teachings
-        of Rebbe Nachman of Breslov (1772-1810), Na Nach classics, and over 200 books
-        including Talmud, Zohar, Tanach, and Rambam. No account needed. Just read.
-      </p>
-      <div class="start-here-box">
-        <h3 class="start-here-title">New here? Begin with one of these:</h3>
-        <div class="start-cards">
-          <a href="/reader/likutay-moharan/part-1/torah-1" class="start-card">
-            <span class="start-card-label">The First Teaching</span>
-            <span class="start-card-name">Likutay Moharan, Torah 1</span>
-            <span class="start-card-desc">The foundation of Rebbe Nachman's wisdom. A beautiful place to begin.</span>
-          </a>
-          <a href="/reader/sipurey-maasiyos" class="start-card">
-            <span class="start-card-label">Stories</span>
-            <span class="start-card-name">Sipurey Maasiyos</span>
-            <span class="start-card-desc">Rebbe Nachman's 13 mystical tales. Engaging, deep, and accessible to all.</span>
-          </a>
-          <a href="/help-me" class="start-card start-card-help">
-            <span class="start-card-label">Going Through Something?</span>
-            <span class="start-card-name">Help Me</span>
-            <span class="start-card-desc">Find Torah guidance for whatever you are facing right now.</span>
-          </a>
-          <a href="/reader" class="start-card start-card-library">
-            <span class="start-card-label">Explore Everything</span>
-            <span class="start-card-name">The Full Library</span>
-            <span class="start-card-desc">Over 200 sacred texts -- Talmud, Zohar, Tanach, Rambam, and more. All free.</span>
-          </a>
-        </div>
+<!-- ═══════════════════════════════════════
+     TOOLS — Quick-access utilities
+     ═══════════════════════════════════════ -->
+<section class="tools">
+  <div class="section-inner">
+    <h2 class="section-heading">🛠️ Tools &amp; Features</h2>
+    <div class="tools-grid">
+      <a href="/daily-study" class="tool">
+        <span class="tool-icon">📅</span>
+        <div><span class="tool-label">Daily Study</span><span class="tool-he" lang="he" dir="rtl">לימוד יומי</span></div>
+      </a>
+      <a href="/torah-gps" class="tool">
+        <span class="tool-icon">🧭</span>
+        <div><span class="tool-label">Torah GPS</span><span class="tool-he" lang="he" dir="rtl">תורה GPS</span></div>
+      </a>
+      <a href="/torah-lens" class="tool">
+        <span class="tool-icon">🔭</span>
+        <div><span class="tool-label">Torah Lens</span><span class="tool-he" lang="he" dir="rtl">עדשת תורה</span></div>
+      </a>
+      <a href="/healing-words" class="tool tool-green">
+        <span class="tool-icon">🩹</span>
+        <div><span class="tool-label">Healing Words</span><span class="tool-he" lang="he" dir="rtl">דברי מרפא</span></div>
+      </a>
+      <a href="/gematria" class="tool">
+        <span class="tool-icon">🔢</span>
+        <div><span class="tool-label">Gematria</span><span class="tool-he" lang="he" dir="rtl">גימטריה</span></div>
+      </a>
+      <a href="/parsha" class="tool">
+        <span class="tool-icon">📜</span>
+        <div><span class="tool-label">Parsha</span><span class="tool-he" lang="he" dir="rtl">פרשת שבוע</span></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     APP BANNER
+     ═══════════════════════════════════════ -->
+<section class="app-banner">
+  <div class="section-inner">
+    <div class="app-inner">
+      <span class="app-icon">📱</span>
+      <div class="app-body">
+        <h3>Install the ajew ananach App</h3>
+        <p>Offline capable · Bilingual HE/EN · Free forever</p>
       </div>
+      <a href="https://github.com/petteknanach/ajew-ananach/releases" target="_blank" rel="noopener" class="app-btn">Install →</a>
     </div>
-  </section>
+  </div>
+</section>
 
-  <section class="intro">
-    <div class="container">
-      <h2>About Rebbe Nachman</h2>
-      <p>
-        Rebbe Nachman of Breslov was a great-grandson of the Baal Shem Tov,
-        founder of Chassidus. His teachings continue to inspire and guide millions of
-        people around the world in their service of Hashem.
-      </p>
-      <p>
-        This site is dedicated to spreading the light of his Torah, stories, and
-        practical guidance for living a life of joy, faith, and connection to the Creator.
-      </p>
-    </div>
-  </section>
+<!-- ═══════════════════════════════════════
+     BOTTOM QUOTE
+     ═══════════════════════════════════════ -->
+<section class="closing-quote">
+  <blockquote>
+    <p class="cq-he" lang="he" dir="rtl">אם אתה מאמין שיכולין לקלקל, תאמין שיכולין לתקן</p>
+    <p class="cq-en">"If you believe you can damage, believe you can fix."</p>
+    <cite>— Rebbe Nachman of Breslov</cite>
+  </blockquote>
+</section>
 
-  <!-- Daily Quote -->
-  <section class="daily-quote" id="dailyQuote">
-    <div class="container">
-      <div class="quote-card" id="quoteCard"></div>
-    </div>
-  </section>
-  <script is:inline>
-  (function() {
-    const quotes = [
-      { he: 'כל העולם כולו גשר צר מאוד, והעיקר לא לפחד כלל', en: 'The whole world is a very narrow bridge, and the main thing is not to fear at all', src: 'LM II:48' },
-      { he: 'אם אתה מאמין שיכולין לקלקל, תאמין שיכולין לתקן', en: 'If you believe you can damage, believe you can fix', src: 'LM II:112' },
-      { he: 'מצוה גדולה להיות בשמחה תמיד', en: 'It is a great mitzvah to always be happy', src: 'LM II:24' },
-      { he: 'אין שום יאוש בעולם כלל', en: 'There is no despair in the world at all', src: 'LM II:78' },
-      { he: 'התבודדות הוא מעלה עליונה ויתירה על הכל', en: 'Hitbodedut is the highest virtue of all', src: 'LM II:25' },
-      { he: 'עיקר החיות מהשמחה', en: 'The essence of life is from joy', src: 'LM II:24' },
-      { he: 'כשאדם יודע שכל הקורותיו הם לטובתו, זאת הבחינה מעין עולם הבא', en: 'When a person knows all that happens is for his good, this is like the World to Come', src: 'LM I:4' },
-      { he: 'תפילה בלא כוונה כגוף בלא נשמה', en: 'Prayer without intent is like a body without a soul', src: 'LM I:2' },
-      { he: 'שכל אחד ואחד מישראל יש לו חלק בתורה', en: 'Every single Jew has a portion in Torah', src: 'LM I:22' },
-      { he: 'העולם ברובו שוטים', en: 'Most of the world is foolish', src: 'Sichos HaRan' },
-      { he: 'צריך לחפש ולבקש למצוא בעצמו איזה מעט טוב', en: 'One must search to find in oneself some small good', src: 'LM I:282' },
-      { he: 'נ נח נחמ נחמן מאומן', en: 'Na Nach Nachma Nachman MeUman', src: 'The Petek' },
-    ];
-    const day = Math.floor(Date.now() / 86400000) % quotes.length;
-    const q = quotes[day];
-    const card = document.getElementById('quoteCard');
-    if (card) {
-      card.innerHTML = '<div class="quote-he">' + q.he + '</div><div class="quote-en">"' + q.en + '"</div><div class="quote-src">— ' + q.src + '</div><button class="quote-share" onclick="shareQuote()">Share</button>';
-      window._currentQuote = q;
-    }
-  })();
-  function shareQuote() {
-    var q = window._currentQuote;
-    if (!q) return;
-    var text = q.he + '\n\n"' + q.en + '"\n\n— ' + q.src + '\najew.org';
-    if (navigator.share) {
-      navigator.share({title: 'Daily Torah Quote', text: text}).catch(function(){});
-    } else {
-      navigator.clipboard.writeText(text).then(function() {
-        var btn = document.querySelector('.quote-share');
-        if (btn) { btn.textContent = 'Copied!'; setTimeout(function() { btn.textContent = 'Share'; }, 2000); }
-      }).catch(function(){});
-    }
-  }
-  </script>
-
-  <section class="featured">
-    <div class="container">
-      <h2>Online Torah Library — 213 Books</h2>
-      <p style="text-align: center; color: #666; margin-bottom: 1.5rem;">Read sacred Jewish texts in Hebrew with English translations. All free, no account needed.</p>
-      <div class="cards">
-        <div class="card">
-          <h3>Likutay Moharan</h3>
-          <p>411 teachings of Rebbe Nachman covering all aspects of spiritual life. Full Hebrew with English translation.</p>
-          <a href="/reader#likutay-moharan" class="card-link">Read Likutay Moharan →</a>
-        </div>
-        <div class="card">
-          <h3>Zohar HaKadosh</h3>
-          <p>All 8 volumes of the Holy Zohar — 1,930 pages of Kabbalistic wisdom online.</p>
-          <a href="/reader#zohar-hakdama" class="card-link">Read the Zohar →</a>
-        </div>
-        <div class="card">
-          <h3>Talmud Bavli</h3>
-          <p>39 tractates of the Babylonian Talmud — 5,400 dapim available to read online.</p>
-          <a href="/reader#talmud-bavli-brachot" class="card-link">Read Talmud →</a>
-        </div>
-        <div class="card">
-          <h3>Full Tanach</h3>
-          <p>All 39 books — Torah, Nevi'im, Ketuvim. 929 chapters with nikud (vowels).</p>
-          <a href="/reader#tanach-bereishit" class="card-link">Read Tanach →</a>
-        </div>
-        <div class="card">
-          <h3>Rambam (Mishneh Torah)</h3>
-          <p>All 14 books of Maimonides' Mishneh Torah — 1,008 chapters, 15,000+ halachot.</p>
-          <a href="/reader#rambam-mada" class="card-link">Read Rambam →</a>
-        </div>
-        <div class="card">
-          <h3>Breslov Classics</h3>
-          <p>Likutay Halachos, Sipurey Maasiyos, Sichos HaRan, Likutay Tefilos, and 40+ more Breslov texts.</p>
-          <a href="/reader" class="card-link">Browse Full Library →</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="quote">
-    <div class="container">
-      <blockquote>
-        <p class="hebrew-quote">אם אתה מאמין שיכולין לקלקל, תאמין שיכולין לתקן</p>
-        <p class="english-quote">"If you believe you can damage, believe you can fix."</p>
-        <cite>— Rebbe Nachman of Breslov</cite>
-      </blockquote>
-    </div>
-  </section>
-
-  <section class="nanach">
-    <div class="container">
-      <h2>Na Nach Nachma Nachman Me'Uman</h2>
-      <p class="petek-text">
-        In 1922, Rabbi Yisroel Ber Odesser (Saba Yisroel) received a miraculous letter — 
-        the Petek — revealing the power of this song-name. Today, the Na Nach movement 
-        continues to spread joy and the teachings of Rebbe Nachman throughout the world.
-      </p>
-      <a href="/gallery/saba" class="btn btn-primary">Photos of Saba Yisroel</a>
-    </div>
-  </section>
-
-  <!-- Spread the Word - Social Sharing -->
-  <section class="spread-the-word">
-    <div class="container">
-      <h2>Spread the Light</h2>
-      <p class="spread-desc">
-        The Breslov Torah Treasury is free for everyone. Help others discover these teachings.
-      </p>
-      <div class="spread-buttons">
-        <a href="https://twitter.com/intent/tweet?text=Free%20Breslov%20Torah%20library%20%E2%80%94%20226%2B%20books%2C%2025%2C000%2B%20pages%20in%20Hebrew%20%26%20English.%20Likutay%20Moharan%2C%20Zohar%2C%20Talmud%2C%20Tanach.%20All%20free.&url=https%3A%2F%2Fajew.org&hashtags=Torah,Breslov,NaNach" target="_blank" rel="noopener" class="btn btn-share btn-share-x">
-          Share on X
-        </a>
-        <button class="btn btn-share btn-share-copy" onclick="copySiteLink()">
-          Copy Link
-        </button>
-        <a href="/rss.xml" class="btn btn-share btn-share-rss">
-          RSS Feed
-        </a>
-      </div>
-      <p class="spread-sites">
-        Help ajew.org grow — link to us from your site, shul newsletter, or WhatsApp group.<br>
-        Every backlink helps more people find these teachings.
-      </p>
-    </div>
-  </section>
 </Layout>
 
 <script is:inline>
-function copySiteLink() {
-  navigator.clipboard.writeText('https://ajew.org — Free Breslov Torah Library').then(function() {
-    var btn = document.querySelector('.btn-share-copy');
-    if (btn) { btn.textContent = 'Copied!'; setTimeout(function() { btn.textContent = 'Copy Link'; }, 2000); }
-  }).catch(function(){});
-}
+(function() {
+  try {
+    var hist = JSON.parse(localStorage.getItem('ajew-reading-history') || '[]');
+    if (hist.length > 0) {
+      var last = hist[0];
+      if (last.url && last.url.startsWith('/reader/')) {
+        var sec = document.getElementById('continue-section');
+        sec.style.display = 'block';
+        document.getElementById('continue-card').href = last.url;
+        document.getElementById('continue-title').textContent = last.title || 'Unknown';
+        document.getElementById('continue-book').textContent = last.book || '';
+        if (last.progress > 0) document.getElementById('continue-fill').style.width = Math.min(last.progress, 100) + '%';
+        if (last.timestamp) {
+          var diff = Date.now() - parseInt(last.timestamp);
+          var hrs = Math.floor(diff / 3600000);
+          document.getElementById('continue-ago').textContent = hrs < 1 ? 'Just now' : hrs < 24 ? hrs + 'h ago' : Math.floor(hrs / 24) + 'd ago';
+        }
+      }
+    }
+  } catch(e) {}
+})();
 </script>
 
 <style>
+  /* ============================================
+     HERO — Uman tzion background, full viewport
+     ============================================ */
   .hero {
-    background: linear-gradient(135deg, rgba(26, 54, 93, 0.85) 0%, rgba(44, 82, 130, 0.85) 100%),
-                url('/images/tomb of rabbi nachman and building painting.avif') center/cover no-repeat;
-    color: white;
-    padding: 4rem 2rem;
-    text-align: center;
-    min-height: 55vh;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
     position: relative;
+    min-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: white;
+    overflow: hidden;
+    background: url('/images/tomb-uman/uman-wide-tzion.jpg') center center / cover no-repeat;
   }
-
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(15,39,68,0.82) 0%, rgba(26,54,93,0.70) 50%, rgba(15,39,68,0.88) 100%);
+    z-index: 0;
+    pointer-events: none;
+  }
+  .hero > * {
+    position: relative;
+    z-index: 1;
+  }
   .hero-content {
-    max-width: 900px;
+    max-width: 700px;
     margin: 0 auto;
-    padding-top: 0.5rem;
+    padding: 2rem 1.5rem;
   }
-
-  .hero-title {
+  .hero-nanach {
+    font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif);
+    font-size: 1.6rem;
+    direction: rtl;
     margin-bottom: 1rem;
+    animation: fireFlicker 1.5s ease-in-out infinite, fireRise 2s ease-in-out infinite;
+    background: linear-gradient(180deg, #ffee88 0%, #ff8800 40%, #ff4400 70%, #cc0000 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 8px rgba(255, 100, 0, 0.7));
   }
-
-  .hero-title .hebrew {
-    display: block;
-    font-family: var(--font-hebrew);
-    font-size: 3rem;
-    margin-bottom: 0.5rem;
+  .hero-huaish-sheli {
+    margin: 0.6rem auto 0.8rem;
+    max-width: 140px;
+    animation: huaishFire 2s ease-in-out infinite;
+    filter: drop-shadow(0 0 15px rgba(255, 80, 0, 0.9)) drop-shadow(0 0 30px rgba(255, 40, 0, 0.6)) drop-shadow(0 -5px 20px rgba(255, 200, 0, 0.8));
+    transition: transform 0.3s ease;
   }
-
-  .hero-title .english {
+  .hero-huaish-sheli:hover {
+    transform: scale(1.08);
+  }
+  .huaish-sheli-img {
+    width: 100%;
+    height: auto;
     display: block;
-    font-size: 2rem;
+    animation: fireFlicker 1.8s ease-in-out infinite;
+  }
+  @keyframes huaishFire {
+    0%   { filter: drop-shadow(0 0 15px rgba(255, 80, 0, 0.9)) drop-shadow(0 0 30px rgba(255, 40, 0, 0.6)) drop-shadow(0 -5px 20px rgba(255, 200, 0, 0.8)); transform: translateY(0) scale(1); }
+    15%  { filter: drop-shadow(0 0 20px rgba(255, 100, 0, 1)) drop-shadow(0 0 35px rgba(255, 60, 0, 0.7)) drop-shadow(0 -8px 25px rgba(255, 220, 0, 0.9)); transform: translateY(-2px) scale(1.01); }
+    30%  { filter: drop-shadow(0 0 12px rgba(255, 60, 0, 0.8)) drop-shadow(0 0 25px rgba(255, 20, 0, 0.5)) drop-shadow(0 -3px 15px rgba(255, 180, 0, 0.7)); transform: translateY(-1px) scale(1.005); }
+    45%  { filter: drop-shadow(0 0 22px rgba(255, 120, 0, 1)) drop-shadow(0 0 40px rgba(255, 70, 0, 0.8)) drop-shadow(0 -10px 30px rgba(255, 240, 0, 1)); transform: translateY(-3px) scale(1.02); }
+    60%  { filter: drop-shadow(0 0 10px rgba(255, 50, 0, 0.7)) drop-shadow(0 0 20px rgba(255, 10, 0, 0.4)) drop-shadow(0 -2px 12px rgba(255, 160, 0, 0.6)); transform: translateY(-1px) scale(1); }
+    75%  { filter: drop-shadow(0 0 18px rgba(255, 90, 0, 0.95)) drop-shadow(0 0 32px rgba(255, 50, 0, 0.65)) drop-shadow(0 -6px 22px rgba(255, 210, 0, 0.85)); transform: translateY(-2px) scale(1.015); }
+    100% { filter: drop-shadow(0 0 15px rgba(255, 80, 0, 0.9)) drop-shadow(0 0 30px rgba(255, 40, 0, 0.6)) drop-shadow(0 -5px 20px rgba(255, 200, 0, 0.8)); transform: translateY(0) scale(1); }
+  }
+  .hero-title { margin: 0 0 0.75rem; }
+  .hero-he {
+    font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif);
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: var(--gold-light, #f0cc5c);
+    direction: rtl;
+    display: block;
+    margin-bottom: 4px;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.5);
+  }
+  .hero-en {
+    font-family: Georgia, serif;
+    font-size: 1.5rem;
     font-weight: 400;
-    opacity: 0.9;
-  }
-
-  .hero-title .tagline {
+    color: white;
     display: block;
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: var(--color-accent);
-    margin-top: 0.5rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.4);
   }
-
   .hero-subtitle {
     font-size: 1.1rem;
-    font-style: italic;
-    opacity: 0.9;
-    margin-bottom: 1.5rem;
+    color: rgba(255,255,255,0.9);
+    margin: 0 0 1.5rem;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.3);
   }
-
-  /* Top corner buttons */
-  .corner-btn {
-    position: absolute;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 0.9rem;
-    transition: all 0.2s;
-    z-index: 10;
-  }
-
-  .corner-btn-bottom-left {
-    bottom: 1.5rem;
-    left: 1rem;
-    background: linear-gradient(135deg, #c53030, #9b2c2c);
-    color: white;
-    border: 2px solid #c53030;
-    font-size: 1.1rem;
-    padding: 0.6rem 1.2rem;
-  }
-
-  .corner-btn-bottom-left:hover {
-    background: linear-gradient(135deg, #9b2c2c, #c53030);
-    transform: scale(1.05);
-  }
-
-  .logo-text {
-    font-family: var(--font-hebrew);
-  }
-
-  .corner-btn-top-right {
-    top: 1rem;
-    right: 1rem;
-    background: #48bb78;
-    color: white;
-    border: 2px solid #48bb78;
-  }
-
-  .corner-btn-top-right:hover {
-    background: #38a169;
-    border-color: #38a169;
-  }
-
-  /* Main Navigation */
-  .main-nav {
+  .hero-search form {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-    flex-wrap: wrap;
-    max-width: 700px;
-    margin-left: auto;
-    margin-right: auto;
+    border-radius: 50px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    max-width: 480px;
+    margin: 0 auto;
   }
-
-  .nav-group {
-    display: flex;
-    gap: 0.4rem;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  .nav-group-left {
-    justify-content: center;
-    order: 1;
-  }
-
-  .nav-group-right {
-    justify-content: center;
-    order: 3;
-  }
-
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.2s;
-    white-space: nowrap;
-  }
-
-  .btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  }
-
-  .btn-icon {
+  .hero-search input {
+    flex: 1;
+    padding: 0.85rem 1.25rem;
     font-size: 1rem;
-  }
-
-  /* Center prominent button */
-  .btn-center {
-    background: var(--color-accent);
-    color: white;
-    padding: 0.8rem 2rem;
-    font-size: 1.2rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    order: 2;
-    flex-shrink: 0;
-  }
-
-  .btn-center:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.35);
-  }
-
-  .btn-center .btn-icon {
-    font-size: 1.2rem;
-  }
-
-  /* Small side buttons */
-  .btn-small {
-    background: rgba(255,255,255,0.15);
-    color: white;
-    border: 1px solid rgba(255,255,255,0.3);
-    font-size: 0.9rem;
-    padding: 0.45rem 0.8rem;
-  }
-
-  .btn-small:hover {
-    background: rgba(255,255,255,0.25);
-  }
-
-  /* Chat button - distinct color */
-  .btn-chat {
-    background: rgba(128, 90, 213, 0.3);
-    border-color: rgba(128, 90, 213, 0.5);
-  }
-
-  .btn-chat:hover {
-    background: rgba(128, 90, 213, 0.5);
-  }
-  
-  .btn-chat-ext {
-    background: rgba(128, 90, 213, 0.4) !important;
-    border-color: rgba(128, 90, 213, 0.6) !important;
-  }
-  
-  .btn-chat-ext:hover {
-    background: rgba(128, 90, 213, 0.6) !important;
-  }
-  
-  /* Amazon button */
-  .btn-amazon {
-    background: rgba(255, 153, 0, 0.3);
-    border-color: rgba(255, 153, 0, 0.5);
-  }
-  
-  .btn-amazon:hover {
-    background: rgba(255, 153, 0, 0.5);
-  }
-
-  /* External links row */
-  .external-links {
-    display: flex;
-    justify-content: center;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
-    flex-wrap: wrap;
-  }
-
-  .btn-external {
-    background: rgba(139, 69, 19, 0.4);
-    color: white;
-    border: 1px solid rgba(139, 69, 19, 0.6);
-    font-size: 0.85rem;
-    padding: 0.4rem 0.8rem;
-    flex-direction: column;
-    gap: 0.1rem;
-    text-align: center;
-  }
-
-  .btn-external:hover {
-    background: rgba(139, 69, 19, 0.6);
-  }
-
-  .btn-he {
-    font-family: var(--font-hebrew);
-    font-size: 0.65rem;
-    opacity: 0.8;
-    font-weight: 400;
-  }
-
-  /* Pesach seasonal banner */
-  .omer-banner {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 1rem;
-  }
-
-  .btn-omer {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.6rem;
-    padding: 0.7rem 2rem;
-    background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 50%, #c4b5fd 100%);
-    color: white;
-    border: 2px solid rgba(255, 255, 255, 0.4);
-    border-radius: 12px;
-    text-decoration: none;
-    font-weight: 700;
-    font-size: 1.1rem;
-    box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4), inset 0 1px 0 rgba(255,255,255,0.2);
-    transition: all 0.3s ease;
-    animation: omerGlow 2s ease-in-out infinite alternate;
-  }
-
-  .btn-omer:hover {
-    transform: translateY(-3px) scale(1.03);
-    box-shadow: 0 6px 25px rgba(124, 58, 237, 0.5), inset 0 1px 0 rgba(255,255,255,0.3);
-  }
-
-  .btn-omer .btn-icon {
-    font-size: 1.4rem;
-  }
-
-  .btn-subtitle-omer {
-    font-family: var(--font-hebrew);
-    font-size: 0.8rem;
-    opacity: 0.9;
-    font-weight: 600;
-  }
-
-  @keyframes omerGlow {
-    0% { box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4), inset 0 1px 0 rgba(255,255,255,0.2); }
-    100% { box-shadow: 0 4px 20px rgba(167, 139, 250, 0.6), inset 0 1px 0 rgba(255,255,255,0.3); }
-  }
-
-  /* Community links row */
-  /* Feature links - prominent new features */
-  .feature-links {
-    display: flex;
-    justify-content: center;
-    gap: 0.6rem;
-    margin-bottom: 1rem;
-    flex-wrap: wrap;
-  }
-
-  .btn-feature {
-    background: rgba(201, 168, 76, 0.25);
-    color: white;
-    border: 2px solid rgba(201, 168, 76, 0.5);
-    font-size: 0.85rem;
-    padding: 0.6rem 1rem;
-    flex-direction: column;
-    gap: 0.15rem;
-    min-width: 130px;
-    text-align: center;
-    border-radius: 10px;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    transition: all 0.2s;
-  }
-
-  .btn-feature:hover {
-    background: rgba(201, 168, 76, 0.4);
-    border-color: rgba(201, 168, 76, 0.7);
-    transform: translateY(-2px);
-  }
-
-  .btn-feature .btn-icon { font-size: 1.4rem; }
-  .btn-feature .btn-text { font-weight: 700; font-size: 0.95rem; }
-  .btn-feature .btn-subtitle { font-size: 0.7rem; opacity: 0.85; font-weight: 400; font-family: var(--font-hebrew); }
-
-  /* Community links - compact */
-  .community-links {
-    display: flex;
-    justify-content: center;
-    gap: 0.75rem;
-    margin-bottom: 1.5rem;
-    flex-wrap: wrap;
-  }
-
-  .community-compact {
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-  }
-
-  .btn-community-sm {
-    background: rgba(72, 187, 120, 0.15);
-    color: rgba(255,255,255,0.8);
-    border: 1px solid rgba(72, 187, 120, 0.3);
-    font-size: 0.7rem;
-    padding: 0.3rem 0.7rem;
-    border-radius: 6px;
-    text-decoration: none;
-    display: inline-block;
-    transition: all 0.2s;
-  }
-
-  .btn-community-sm:hover {
-    background: rgba(72, 187, 120, 0.3);
-    color: white;
-  }
-
-  .btn-community {
-    background: rgba(72, 187, 120, 0.2);
-    color: white;
-    border: 1px solid rgba(72, 187, 120, 0.4);
-    font-size: 0.8rem;
-    padding: 0.5rem 1rem;
-    flex-direction: column;
-    gap: 0.2rem;
-    min-width: 160px;
-    text-align: center;
-  }
-
-  .btn-community-center {
-    min-width: 220px;
-    background: rgba(72, 187, 120, 0.3);
-    border-color: rgba(72, 187, 120, 0.5);
-  }
-
-  .btn-community:hover {
-    background: rgba(72, 187, 120, 0.35);
-  }
-
-  .btn-community .btn-icon {
-    font-size: 1.2rem;
-  }
-
-  .btn-community .btn-text {
-    font-weight: 700;
-    font-size: 0.9rem;
-  }
-
-  .btn-community .btn-subtitle {
-    font-size: 0.7rem;
-    opacity: 0.85;
-    font-weight: 400;
-  }
-
-  /* Na Nach phrase - most important */
-  .nanach-phrase {
-    text-align: center;
-    padding: 1rem;
-    background: rgba(0,0,0,0.2);
-    border-radius: 8px;
-  }
-
-  .nanach-phrase-hebrew {
-    font-family: var(--font-hebrew);
-    font-size: 2.2rem;
-    font-weight: bold;
-    color: var(--color-accent);
-    margin-bottom: 0.3rem;
-    letter-spacing: 0.15em;
-  }
-
-  .nanach-phrase-english {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: white;
-    letter-spacing: 0.1em;
-  }
-
-  .container {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 0 2rem;
-  }
-
-  section {
-    padding: 4rem 0;
-  }
-
-  section h2 {
-    font-family: var(--font-hebrew);
-    font-size: 2rem;
-    color: var(--color-primary);
-    margin-bottom: 1.5rem;
-    text-align: center;
-  }
-
-  /* Continue Reading */
-  .continue-reading {
-    padding: 12px 0;
-    background: #eef2f7;
-  }
-  .continue-reading .container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 0 1rem;
-  }
-  .continue-card {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 16px;
-    background: white;
-    border-radius: 10px;
-    text-decoration: none;
-    border: 1px solid #d1d5db;
-    transition: border-color 0.2s;
-  }
-  .continue-card:hover { border-color: #1a365d; }
-  .continue-label {
-    font-size: 0.75em;
-    color: #888;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    white-space: nowrap;
-  }
-  .continue-title {
-    color: #1a365d;
-    font-weight: 600;
-    font-size: 0.9em;
-    flex: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .continue-progress {
-    color: #888;
-    font-size: 0.75em;
-    white-space: nowrap;
-  }
-
-  .intro p {
-    font-size: 1.1rem;
-    line-height: 1.8;
-    margin-bottom: 1rem;
-    text-align: center;
-  }
-
-  /* Hero Search */
-  .hero-search {
-    max-width: 640px;
-    margin: 0 auto 1.2rem;
-  }
-  .hero-search-form {
-    display: flex;
-    gap: 0;
-    border-radius: 32px;
-    overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.35);
-    border: 2px solid #ed8936;
-  }
-  .hero-search-form input {
-    flex: 1;
-    padding: 15px 24px;
     border: none;
-    font-size: 1.1em;
-    font-family: 'Frank Ruhl Libre', serif;
     outline: none;
-    background: #fff;
+    background: rgba(255,255,255,0.95);
+    color: var(--navy, #1a365d);
+    direction: auto;
   }
-  .hero-search-form button {
-    padding: 15px 32px;
-    background: #ed8936;
-    color: white;
+  .hero-search input::placeholder { color: #999; }
+  .hero-search button {
+    padding: 0.85rem 1.25rem;
+    background: var(--gold, #d4a017);
     border: none;
-    font-weight: 700;
     cursor: pointer;
-    font-size: 1.05em;
-    white-space: nowrap;
-  }
-  .hero-search-form button:hover { background: #dd7726; }
-
-  /* Topic Navigation */
-  .topic-nav {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.5rem;
-    max-width: 640px;
-    margin: 0 auto 1.5rem;
-  }
-  .topic-pill {
-    display: inline-block;
-    padding: 6px 16px;
-    border-radius: 20px;
-    background: rgba(255,255,255,0.15);
-    color: #fff;
-    text-decoration: none;
-    font-size: 0.9em;
-    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 1.1rem;
     transition: background 0.2s;
-    backdrop-filter: blur(4px);
   }
-  .topic-pill:hover {
-    background: rgba(255,255,255,0.3);
+  .hero-search button:hover { background: var(--gold-light, #f0cc5c); }
+  .hero-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    max-width: 800px;
+    margin: 1.5rem auto 0;
+    padding: 0 1.5rem 2rem;
   }
+  .btn-hero {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: transform 0.15s;
+  }
+  .btn-hero:hover { transform: translateY(-2px); }
+  .btn-hero-primary { background: var(--gold, #d4a017); color: var(--navy, #1a365d); }
+  .btn-hero-secondary { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); backdrop-filter: blur(4px); }
+  .btn-hero-accent { background: rgba(212,160,23,0.25); color: var(--gold-light, #f0cc5c); border: 1px solid rgba(212,160,23,0.5); backdrop-filter: blur(4px); }
+  .btn-icon { font-size: 1.2rem; }
+  .btn-label { display: block; line-height: 1.2; }
+  .btn-sub { display: block; font-size: 0.75rem; font-weight: 400; opacity: 0.8; font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif); }
 
-  /* Daily Quote */
-  .daily-quote {
-    padding: 2rem 1rem;
-    background: #f8f5ef;
+  /* ============================================
+     DAILY QUOTE
+     ============================================ */
+  .daily-quote-section {
+    padding: 0 1.5rem 2.5rem;
+    background: var(--navy, #1a365d);
   }
   .quote-card {
     max-width: 700px;
-    margin: 0 auto;
+    margin: -1.5rem auto 0;
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
     text-align: center;
-    padding: 1.5rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    border: 1px solid #e0d6c2;
   }
+  .quote-icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+  .quote-card blockquote { margin: 0 0 1rem; padding: 0; }
   .quote-he {
-    font-family: 'Frank Ruhl Libre', serif;
-    font-size: 1.6rem;
-    color: #1a365d;
+    font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif);
+    font-size: 1.3rem;
+    color: var(--navy, #1a365d);
     direction: rtl;
-    line-height: 1.8;
-    margin-bottom: 0.75rem;
+    margin: 0 0 0.5rem;
   }
   .quote-en {
-    font-style: italic;
-    color: #555;
+    font-family: Georgia, serif;
     font-size: 1.05rem;
-    line-height: 1.6;
-    margin-bottom: 0.5rem;
+    color: #555;
+    font-style: italic;
+    margin: 0 0 0.5rem;
   }
-  .quote-src {
-    color: #888;
+  .quote-card cite {
     font-size: 0.85rem;
-    margin-bottom: 8px;
-  }
-  .quote-share {
-    background: #1a365d;
-    color: white;
-    border: none;
-    padding: 6px 16px;
-    border-radius: 16px;
-    font-size: 0.8rem;
+    color: #888;
+    font-style: normal;
     font-weight: 600;
-    cursor: pointer;
   }
-  .quote-share:hover { background: #2a5a9e; }
-
-  .featured {
-    background: #f7f5f0;
-  }
-
-  .cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2rem;
-    margin-top: 2rem;
-  }
-
-  .card {
-    background: white;
-    padding: 2rem;
+  .quote-cta {
+    display: inline-block;
+    padding: 0.5rem 1.25rem;
+    background: var(--gold, #d4a017);
+    color: var(--navy, #1a365d);
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  }
-
-  .card h3 {
-    color: var(--color-primary);
-    margin-bottom: 1rem;
-  }
-
-  .card p {
-    color: #666;
-    line-height: 1.6;
-    margin-bottom: 1rem;
-  }
-
-  .card-link {
-    color: var(--color-accent);
     text-decoration: none;
     font-weight: 600;
+    font-size: 0.9rem;
+    transition: background 0.2s;
   }
+  .quote-cta:hover { background: var(--gold-light, #f0cc5c); }
 
-  .card-link:hover {
-    text-decoration: underline;
+  /* ============================================
+     QUICK START
+     ============================================ */
+  .quick-start {
+    padding: 2.5rem 1.5rem;
+    background: white;
   }
-
-  .quote {
-    background: var(--color-primary);
-    color: white;
-  }
-
-  blockquote {
+  .section-heading {
+    font-family: Georgia, serif;
+    font-size: 1.4rem;
+    color: var(--navy, #1a365d);
+    margin: 0 0 1.25rem;
     text-align: center;
   }
-
-  .hebrew-quote {
-    font-family: var(--font-hebrew);
-    font-size: 1.8rem;
-    margin-bottom: 1rem;
-  }
-
-  .english-quote {
-    font-size: 1.3rem;
-    font-style: italic;
-    opacity: 0.9;
-    margin-bottom: 1rem;
-  }
-
-  cite {
-    opacity: 0.8;
-  }
-
-  .nanach {
-    text-align: center;
-  }
-
-  .petek-text {
-    font-size: 1.1rem;
-    line-height: 1.8;
-    margin-bottom: 2rem;
-  }
-
-  .btn-primary {
-    background: var(--color-accent);
-    color: white;
-    padding: 0.8rem 2rem;
-  }
-
-  @media (max-width: 768px) {
-    .hero {
-      padding: 3rem 1rem;
-      min-height: 50vh;
-    }
-    
-    .hero-title .hebrew {
-      font-size: 2rem;
-    }
-
-    .hero-title .english {
-      font-size: 1.3rem;
-    }
-
-    .hero-subtitle {
-      font-size: 1rem;
-    }
-
-    .main-nav {
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-
-    .nav-group {
-      justify-content: center;
-    }
-
-    .nav-group-left,
-    .nav-group-right {
-      justify-content: center;
-    }
-
-    .btn-center {
-      padding: 0.9rem 1.8rem;
-      font-size: 1.2rem;
-      width: 100%;
-      justify-content: center;
-    }
-
-    .btn-small {
-      padding: 0.4rem 0.7rem;
-      font-size: 0.8rem;
-    }
-
-    .external-links,
-    .community-links {
-      gap: 0.5rem;
-    }
-
-    .btn-community {
-      flex-direction: row;
-      align-items: center;
-      gap: 0.3rem;
-    }
-
-    .btn-community .btn-subtitle {
-      display: none;
-    }
-
-    .nanach-phrase {
-      padding: 0.8rem;
-    }
-
-    .nanach-phrase-hebrew {
-      font-size: 1.6rem;
-    }
-
-    .nanach-phrase-english {
-      font-size: 1rem;
-    }
-    
-    .corner-btn {
-      padding: 0.35rem 0.5rem !important;
-      font-size: 0.65rem !important;
-    }
-    
-    .corner-btn-bottom-left,
-    .corner-btn-top-right {
-      top: auto;
-    }
-    
-    .corner-btn-bottom-left {
-      bottom: 0.3rem;
-      left: 0.3rem;
-    }
-    
-    .corner-btn-top-right {
-      top: 0.3rem;
-      right: 0.3rem;
-    }
-
-    .start-cards {
-      flex-direction: column;
-    }
-
-    .start-card {
-      min-width: unset;
-    }
-
-    .welcome-heading {
-      font-size: 1.6rem !important;
-    }
-  }
-
-  /* Welcome / New Here Section */
-  .welcome-newcomer {
-    padding: 3rem 0 2rem;
-    background: linear-gradient(180deg, #eef2f7 0%, #f8f5ef 100%);
-  }
-
-  .welcome-heading {
-    font-family: var(--font-hebrew);
-    font-size: 2rem;
-    color: var(--color-primary);
-    margin-bottom: 0.75rem;
-    text-align: center;
-  }
-
-  .welcome-description {
-    font-size: 1.1rem;
-    line-height: 1.7;
-    text-align: center;
-    color: #444;
-    max-width: 700px;
-    margin: 0 auto 2rem;
-  }
-
-  .start-here-box {
-    max-width: 800px;
+  .quick-start-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 0.75rem;
+    max-width: 900px;
     margin: 0 auto;
   }
-
-  .start-here-title {
-    text-align: center;
-    font-size: 1.15rem;
-    color: var(--color-primary);
-    margin-bottom: 1.25rem;
-    font-weight: 600;
-  }
-
-  .start-cards {
+  .qs-card {
     display: flex;
-    gap: 1.25rem;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-bottom: 1.5rem;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.15rem 1.25rem;
+    border-radius: 12px;
+    text-decoration: none;
+    color: var(--navy, #1a365d);
+    border: 1px solid #e0d6c2;
+    transition: transform 0.15s, box-shadow 0.15s;
   }
+  .qs-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+  .qs-gold { background: linear-gradient(135deg, #fdf3d7, #f7e19c); border-color: #e8d5a3; }
+  .qs-green { background: linear-gradient(135deg, #d8f3dc, #95d5b2); border-color: #74c69d; }
+  .qs-blue { background: linear-gradient(135deg, #e0eef7, #b3d6f0); border-color: #8ab4d0; }
+  .qs-purple { background: linear-gradient(135deg, #f0e8f7, #d6b3e8); border-color: #b88ad0; }
+  .qs-icon { font-size: 1.6rem; flex-shrink: 0; }
+  .qs-body { flex: 1; display: flex; flex-direction: column; }
+  .qs-title { font-weight: 700; font-size: 1rem; }
+  .qs-desc { font-size: 0.85rem; color: #666; }
+  .qs-he { font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif); font-size: 0.85rem; color: #888; direction: rtl; }
+  .qs-arrow { font-size: 1.2rem; color: var(--gold, #d4a017); }
 
-  .start-card {
+  /* ============================================
+     CONTINUE READING
+     ============================================ */
+  .continue-section {
+    background: #faf7f2;
+    border-top: 1px solid #e0d6c2;
+    border-bottom: 1px solid #e0d6c2;
+    padding: 1.25rem 1.5rem;
+  }
+  .section-inner { max-width: 900px; margin: 0 auto; }
+  .continue-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: white;
+    border: 1px solid #e0d6c2;
+    border-radius: 12px;
+    text-decoration: none;
+    color: var(--navy, #1a365d);
+    transition: box-shadow 0.2s;
+  }
+  .continue-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-color: var(--gold, #d4a017); }
+  .continue-info { flex: 1; }
+  .continue-title { display: block; font-weight: 600; font-size: 1rem; margin-bottom: 2px; }
+  .continue-book { display: block; font-size: 0.85rem; color: #888; }
+  .continue-progress { height: 4px; background: #e8e0d0; border-radius: 2px; margin: 6px 0 4px; overflow: hidden; }
+  .continue-fill { height: 100%; background: var(--gold, #d4a017); border-radius: 2px; transition: width 0.3s; }
+  .continue-ago { font-size: 0.75rem; color: #aaa; }
+  .continue-arrow { font-size: 1.3rem; color: var(--gold, #d4a017); }
+
+  /* ============================================
+     FEATURED
+     ============================================ */
+  .featured {
+    padding: 3rem 1.5rem;
+    background: #faf7f2;
+  }
+  .section-sub {
+    max-width: 500px;
+    margin: 0 auto 2rem;
+    color: #777;
+    font-size: 0.95rem;
+    text-align: center;
+  }
+  .featured-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .feat-card {
+    background: white;
+    border: 1px solid #e0d6c2;
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-decoration: none;
+    color: var(--navy, #1a365d);
+    transition: transform 0.15s, box-shadow 0.15s;
     display: flex;
     flex-direction: column;
+  }
+  .feat-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+  .feat-more { border-color: var(--gold, #d4a017); }
+  .feat-gold { border-color: var(--gold, #d4a017); background: linear-gradient(135deg, #fdf3d7, #f7e19c); }
+  .feat-gold:hover { box-shadow: 0 4px 16px rgba(212,160,23,0.2); }
+  .feat-icon { font-size: 1.8rem; margin-bottom: 0.5rem; }
+  .feat-card h3 { margin: 0 0 2px; font-size: 1.05rem; }
+  .feat-he { font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif); font-size: 0.85rem; color: #888; direction: rtl; margin: 0 0 0.5rem; }
+  .feat-desc { font-size: 0.85rem; color: #666; line-height: 1.4; margin: 0; flex: 1; }
+  .feat-cta { display: inline-block; margin-top: 0.75rem; color: var(--gold, #d4a017); font-weight: 700; font-size: 0.9rem; }
+
+  /* ============================================
+     TOOLS
+     ============================================ */
+  .tools {
+    padding: 2.5rem 1.5rem;
     background: white;
-    border: 2px solid #d1d5db;
-    border-radius: 10px;
-    padding: 1.25rem 1.5rem;
-    text-decoration: none;
-    min-width: 220px;
-    flex: 1;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
   }
-
-  .start-card:hover {
-    border-color: var(--color-accent);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
-    transform: translateY(-2px);
-  }
-
-  .start-card-label {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #888;
-    font-weight: 600;
-    margin-bottom: 0.3rem;
-  }
-
-  .start-card-name {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--color-primary);
-    margin-bottom: 0.4rem;
-  }
-
-  .start-card-desc {
-    font-size: 0.9rem;
-    color: #666;
-    line-height: 1.5;
-  }
-
-  .start-card-help {
-    border-color: #c62828;
-    background: #fef2f2;
-  }
-
-  .start-card-help:hover {
-    border-color: #c62828;
-    box-shadow: 0 4px 16px rgba(198,40,40,0.15);
-  }
-
-  .start-card-help .start-card-name {
-    color: #c62828;
-  }
-
-  .start-card-library {
-    border-color: #1565c0;
-    background: #f0f7ff;
-  }
-
-  .start-card-library:hover {
-    border-color: #1565c0;
-    box-shadow: 0 4px 16px rgba(21,101,192,0.15);
-  }
-
-  .start-card-library .start-card-name {
-    color: #1565c0;
-  }
-
-  .start-or {
-    text-align: center;
-    font-size: 0.95rem;
-    color: #666;
-  }
-
-  .start-or a {
-    color: var(--color-accent);
-    font-weight: 600;
-    text-decoration: none;
-  }
-
-  .start-or a:hover {
-    text-decoration: underline;
-  }
-
-  /* Spread the Word */
-  .spread-the-word {
-    background: linear-gradient(135deg, #1a365d, #2c5282);
-    color: white;
-    padding: 3rem 1rem;
-    text-align: center;
-  }
-  .spread-the-word h2 {
-    color: var(--color-accent);
-    font-size: 1.8rem;
-    margin-bottom: 0.75rem;
-  }
-  .spread-desc {
-    font-size: 1.1rem;
-    opacity: 0.9;
-    max-width: 500px;
-    margin: 0 auto 1.5rem;
-  }
-  .spread-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-    margin-bottom: 1.5rem;
-  }
-  .btn-share {
-    padding: 0.7rem 1.5rem;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 1rem;
-    text-decoration: none;
-    border: 2px solid rgba(255,255,255,0.3);
-    color: white;
-    background: rgba(255,255,255,0.1);
-    cursor: pointer;
-    transition: all 0.2s;
-    font-family: inherit;
-  }
-  .btn-share:hover {
-    background: rgba(255,255,255,0.2);
-    transform: translateY(-2px);
-  }
-  .btn-share-x { background: rgba(0,0,0,0.3); }
-  .btn-share-rss { background: rgba(255, 153, 0, 0.3); }
-  .spread-sites {
-    font-size: 0.85rem;
-    opacity: 0.7;
-    max-width: 480px;
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 0.75rem;
+    max-width: 900px;
     margin: 0 auto;
-    line-height: 1.6;
   }
+  .tool {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.9rem 1rem;
+    background: #faf7f2;
+    border: 1px solid #e0d6c2;
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--navy, #1a365d);
+    transition: border-color 0.2s;
+  }
+  .tool:hover { border-color: var(--gold, #d4a017); }
+  .tool-green { background: #e8f5e9; border-color: #a5d6a7; }
+  .tool-icon { font-size: 1.3rem; }
+  .tool-label { display: block; font-weight: 600; font-size: 0.9rem; }
+  .tool-he { display: block; font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif); font-size: 0.75rem; color: #888; direction: rtl; }
 
+  /* ============================================
+     APP BANNER
+     ============================================ */
+  .app-banner {
+    padding: 0 1.5rem 2rem;
+    background: white;
+  }
+  .app-inner {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem;
+    background: linear-gradient(135deg, var(--navy, #1a365d), #2e5580);
+    border-radius: 14px;
+    color: white;
+    flex-wrap: wrap;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .app-icon { font-size: 2rem; }
+  .app-body { flex: 1; }
+  .app-body h3 { margin: 0 0 4px; font-size: 1.05rem; color: var(--gold-light, #f0cc5c); }
+  .app-body p { margin: 0; font-size: 0.85rem; color: rgba(255,255,255,0.7); }
+  .app-btn {
+    padding: 0.6rem 1.5rem;
+    background: var(--gold, #d4a017);
+    color: var(--navy, #1a365d);
+    font-weight: 700;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.9rem;
+  }
+  .app-btn:hover { background: var(--gold-light, #f0cc5c); }
+
+  /* ============================================
+     CLOSING QUOTE
+     ============================================ */
+  .closing-quote {
+    padding: 2.5rem 1.5rem 3rem;
+    background: #faf7f2;
+    text-align: center;
+  }
+  .closing-quote blockquote { max-width: 600px; margin: 0 auto; padding: 0; }
+  .cq-he {
+    font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif);
+    font-size: 1.3rem;
+    color: var(--navy, #1a365d);
+    direction: rtl;
+    margin: 0 0 0.5rem;
+  }
+  .cq-en {
+    font-family: Georgia, serif;
+    font-size: 1rem;
+    color: #555;
+    font-style: italic;
+    margin: 0 0 0.5rem;
+  }
+  .closing-quote cite { font-size: 0.85rem; color: #888; font-style: normal; font-weight: 600; }
+
+  /* ============================================
+     DARK MODE
+     ============================================ */
+  [data-theme="night"] .hero::before, body.dark-mode .hero::before { background: linear-gradient(180deg, rgba(15,15,35,0.92) 0%, rgba(26,26,62,0.88) 50%, rgba(15,15,35,0.95) 100%); }
+  [data-theme="night"] .quote-card, body.dark-mode .quote-card { background: #1a1a2e; border-color: #3a3a5c; }
+  [data-theme="night"] .quote-he, body.dark-mode .quote-he { color: #8ab4f8; }
+  [data-theme="night"] .quote-en, body.dark-mode .quote-en { color: #8888a0; }
+  [data-theme="night"] .quote-card cite, body.dark-mode .quote-card cite { color: #66667a; }
+  [data-theme="night"] .quick-start, body.dark-mode .quick-start { background: #1a1a2e; }
+  [data-theme="night"] .section-heading, body.dark-mode .section-heading { color: #8ab4f8; }
+  [data-theme="night"] .qs-card, body.dark-mode .qs-card { border-color: #3a3a5c; color: #d0d0e0; }
+  [data-theme="night"] .qs-gold { background: linear-gradient(135deg, #2a2518, #3a3020); }
+  [data-theme="night"] .qs-green { background: linear-gradient(135deg, #1a3a2a, #2a5a3a); }
+  [data-theme="night"] .qs-blue { background: linear-gradient(135deg, #1e3050, #2a4a6e); }
+  [data-theme="night"] .qs-purple { background: linear-gradient(135deg, #2a1a3a, #3a2a50); }
+  [data-theme="night"] .continue-section, body.dark-mode .continue-section { background: #22223a; border-color: #3a3a5c; }
+  [data-theme="night"] .continue-card, body.dark-mode .continue-card { background: #1a1a2e; border-color: #3a3a5c; color: #d0d0e0; }
+  [data-theme="night"] .continue-progress, body.dark-mode .continue-progress { background: #3a3a5c; }
+  [data-theme="night"] .featured, body.dark-mode .featured { background: #22223a; }
+  [data-theme="night"] .feat-card, body.dark-mode .feat-card { background: #1a1a2e; border-color: #3a3a5c; }
+  [data-theme="night"] .tools, body.dark-mode .tools { background: #1a1a2e; }
+  [data-theme="night"] .tool, body.dark-mode .tool { background: #22223a; border-color: #3a3a5c; color: #d0d0e0; }
+  [data-theme="night"] .closing-quote, body.dark-mode .closing-quote { background: #22223a; }
+  [data-theme="night"] .cq-he, body.dark-mode .cq-he { color: #8ab4f8; }
+  [data-theme="night"] .cq-en, body.dark-mode .cq-en { color: #8888a0; }
+
+  /* ============================================
+     RESPONSIVE
+     ============================================ */
+  @media (max-width: 600px) {
+    .hero { min-height: 70vh; }
+    .hero-content { padding: 1.5rem 1rem; }
+    .hero-nanach { font-size: 1.3rem; }
+    .hero-he { font-size: 2rem; }
+    .hero-en { font-size: 1.15rem; }
+    .hero-subtitle { font-size: 0.95rem; }
+    .hero-search { flex-direction: column; gap: 4px; }
+    .hero-search form { max-width: 100%; }
+    .hero-actions { flex-direction: column; align-items: center; padding: 0 1rem 1.5rem; }
+    .btn-hero { width: 100%; max-width: 320px; justify-content: center; }
+    .quick-start-grid { grid-template-columns: 1fr; }
+    .featured-grid { grid-template-columns: 1fr; }
+    .tools-grid { grid-template-columns: repeat(2, 1fr); }
+    .app-inner { flex-direction: column; text-align: center; }
+    .quote-card { padding: 1.5rem; }
+    .quote-he { font-size: 1.1rem; }
+  }
 </style>

@@ -2,12 +2,13 @@
 import Layout from '../../../../layouts/Layout.astro';
 import Comments from '../../../../components/Comments.astro';
 import '../../../../styles/reader.css';
+import '../../../../styles/reader-v2.css';
 import fs from 'node:fs';
 import path from 'node:path';
 
 export function getStaticPaths() {
   const paths = [];
-  for (let torah = 1; torah <= 188; torah++) {
+  for (let torah = 1; torah <= 183; torah++) {
     paths.push({ params: { part: '1', torah: String(torah) } });
   }
   return paths;
@@ -165,6 +166,7 @@ const breadcrumbData = torahData ? JSON.stringify({
           <button class="reader-btn reader-btn-icon" data-theme-btn="night">Night</button>
         </div>
         <div class="reader-toolbar-group">
+          <button class="reader-btn reader-btn-icon" id="btn-align" title="Sentence-by-sentence aligned view">Align</button>
           <button class="reader-btn reader-btn-icon" id="btn-listen">Listen</button>
           <button class="reader-btn reader-btn-icon" id="btn-search">Search</button>
           <button class="reader-btn reader-btn-icon" id="btn-bookmark">Bookmark</button>
@@ -202,6 +204,7 @@ const breadcrumbData = torahData ? JSON.stringify({
         {torahData.navigation.prevUrl ? (
           <a href={torahData.navigation.prevUrl} data-dir="prev">&larr; Previous</a>
         ) : <span class="disabled">&larr; Previous</span>}
+        <a href={`/reader/meshivas-nefesh/${partNum}`}>Book Index</a>
         <a href="/reader">All Books</a>
         {torahData.navigation.nextUrl ? (
           <a href={torahData.navigation.nextUrl} data-dir="next">Next &rarr;</a>
@@ -245,6 +248,7 @@ const breadcrumbData = torahData ? JSON.stringify({
         {torahData.navigation.prevUrl ? (
           <a href={torahData.navigation.prevUrl} data-dir="prev">&larr; Previous</a>
         ) : <span class="disabled">&larr; Previous</span>}
+        <a href={`/reader/meshivas-nefesh/${partNum}`}>Book Index</a>
         <a href="/reader">All Books</a>
         {torahData.navigation.nextUrl ? (
           <a href={torahData.navigation.nextUrl} data-dir="next">Next &rarr;</a>
@@ -277,7 +281,9 @@ const breadcrumbData = torahData ? JSON.stringify({
       )}
 
 
-      <script src="/reader-script.js?v=4" defer></script>
+      <script src="/reader-script.js" defer></script>
+      <script src="/reader-v2.js" defer></script>
+      <script src="/pwa-register.js" defer></script>
       <script src="/tts-fix.js" defer></script>
       <script src="/reader-notes.js" is:inline></script>
     </div>

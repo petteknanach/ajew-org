@@ -1,0 +1,121 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import Comments from '../../../../components/Comments.astro';
+import '../../../../styles/reader.css';
+import '../../../../styles/reader-v2.css';
+import fs from 'node:fs';
+import path from 'node:path';
+
+export function getStaticPaths() {
+  const paths = [];
+  for (let section = 1; section <= 5; section++) {
+    paths.push({ params: { part: '1', torah: String(section) } });
+  }
+  return paths;
+}
+
+const { part, torah } = Astro.params;
+const partNum = parseInt(part);
+const torahNum = parseInt(torah);
+
+let torahData = null;
+let error = null;
+
+try {
+  const filePath = path.join(process.cwd(), `public/reader/ramchal-ruzin-gineezin/section-${torahNum}.json`);
+  const raw = fs.readFileSync(filePath, 'utf8');
+  torahData = JSON.parse(raw);
+} catch (e) {
+  error = `Section ${torahNum} not found`;
+}
+
+if (!torahData && !error) error = 'Content not available';
+
+if (torahData) {
+  if (!torahData.navigation) {
+    torahData.navigation = {
+      prevUrl: torahNum > 1 ? `/reader/ramchal-ruzin-gineezin/${partNum}/${torahNum - 1}` : null,
+      nextUrl: torahNum < 5 ? `/reader/ramchal-ruzin-gineezin/${partNum}/${torahNum + 1}` : null,
+    };
+  }
+  torahData.segments.forEach((seg, i) => {
+    if (!seg.index) seg.index = i + 1;
+  });
+}
+
+const bookName = 'Ruzin Gineezin (Hidden Treasures)';
+const bookHebrew = 'רוזין גינזין';
+---
+
+<Layout title={torahData ? `${torahData.hebrewTitle || torahData.title} - ${bookName}` : 'Not Found'}>
+  {error ? (
+    <div style="text-align: center; padding: 80px 20px;">
+      <h1>{error}</h1>
+      <p><a href="/reader">Back to Reader</a></p>
+    </div>
+  ) : (
+    <div class="reader-container">
+      <div class="reader-progress"></div>
+      <div class="reader-breadcrumb">
+        <a href="/reader">Reader</a>
+        <span>&rsaquo;</span>
+        <a href="/reader">{bookName}</a>
+        <span>&rsaquo;</span>
+        {torahData.hebrewTitle || torahData.title}
+      </div>
+      <div class="reader-toolbar">
+        <div class="reader-toolbar-group">
+          <button class="reader-btn" data-mode="hebrew">Hebrew</button>
+          <button class="reader-btn" data-mode="english">English</button>
+          <button class="reader-btn" data-mode="both">Both</button>
+        </div>
+      </div>
+      <div class="reader-header">
+        {torahData.hebrewTitle && <div class="hebrew-title">{torahData.hebrewTitle}</div>}
+        <h1>{torahData.title}</h1>
+        <p style="color: var(--reader-text-secondary); font-size: 0.9em;">{bookHebrew} - {bookName}</p>
+      </div>
+      <div class="reader-nav">
+        {torahData.navigation.prevUrl ? (
+          <a href={torahData.navigation.prevUrl} data-dir="prev">&larr; Previous</a>
+        ) : <span class="disabled">&larr; Previous</span>}
+        <a href="/reader">All Books</a>
+        {torahData.navigation.nextUrl ? (
+          <a href={torahData.navigation.nextUrl} data-dir="next">Next &rarr;</a>
+        ) : <span class="disabled">Next &rarr;</span>}
+      </div>
+      <div class="reader-content mode-hebrew">
+        <div class="reader-content-original">
+          {torahData.segments.map((seg) => {
+            const heText = seg.he || '';
+            const enText = seg.en || '';
+            return (
+              <div class="reader-segment-pair" id={`seg-${seg.index}`}>
+                <div class="reader-segment segment-he" data-index={String(seg.index)}>
+                  <span class="segment-number">{seg.index}</span>
+                  <p data-nikud={heText}>{heText}</p>
+                </div>
+                <div class={`reader-segment segment-en ${!enText ? 'empty-translation' : ''}`} data-index={String(seg.index)}>
+                  <span class="segment-number">{seg.index}</span>
+                  <p>{enText || 'Translation not yet available'}</p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+      <div class="reader-nav">
+        {torahData.navigation.prevUrl ? (
+          <a href={torahData.navigation.prevUrl} data-dir="prev">&larr; Previous</a>
+        ) : <span class="disabled">&larr; Previous</span>}
+        <a href="/reader">All Books</a>
+        {torahData.navigation.nextUrl ? (
+          <a href={torahData.navigation.nextUrl} data-dir="next">Next &rarr;</a>
+        ) : <span class="disabled">Next &rarr;</span>}
+      </div>
+      <script src="/reader-script.js" defer></script>
+      <script src="/reader-v2.js" defer></script>
+      <script src="/pwa-register.js" defer></script>
+    </div>
+  )}
+</Layout>

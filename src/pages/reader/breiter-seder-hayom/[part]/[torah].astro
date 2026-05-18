@@ -2,6 +2,7 @@
 import Layout from '../../../../layouts/Layout.astro';
 import Comments from '../../../../components/Comments.astro';
 import '../../../../styles/reader.css';
+import '../../../../styles/reader-v2.css';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -110,6 +111,7 @@ const breadcrumbData = torahData ? JSON.stringify({
           <button class="reader-btn reader-btn-icon" data-theme-btn="night">Night</button>
         </div>
         <div class="reader-toolbar-group">
+          <button class="reader-btn reader-btn-icon" id="btn-align" title="Sentence-by-sentence aligned view">Align</button>
           <button class="reader-btn reader-btn-icon" id="btn-listen">Listen</button>
           <button class="reader-btn reader-btn-icon" id="btn-search">Search</button>
           <button class="reader-btn reader-btn-icon" id="btn-bookmark">Bookmark</button>
@@ -147,6 +149,7 @@ const breadcrumbData = torahData ? JSON.stringify({
         {torahNum > 1 ? (
           <a href={torahNum > 1} data-dir="prev">&larr; Previous</a>
         ) : <span class="disabled">&larr; Previous</span>}
+        <a href={`/reader/breiter-seder-hayom/${partNum}`}>Book Index</a>
         <a href="/reader">All Books</a>
         {torahNum < 27 ? (
           <a href={torahNum < 27} data-dir="next">Next &rarr;</a>
@@ -190,6 +193,7 @@ const breadcrumbData = torahData ? JSON.stringify({
         {torahNum > 1 ? (
           <a href={torahNum > 1} data-dir="prev">&larr; Previous</a>
         ) : <span class="disabled">&larr; Previous</span>}
+        <a href={`/reader/breiter-seder-hayom/${partNum}`}>Book Index</a>
         <a href="/reader">All Books</a>
         {torahNum < 27 ? (
           <a href={torahNum < 27} data-dir="next">Next &rarr;</a>
@@ -200,7 +204,9 @@ const breadcrumbData = torahData ? JSON.stringify({
       )}
 
 
-      <script src="/reader-script.js?v=4" defer></script>
+      <script src="/reader-script.js" defer></script>
+      <script src="/reader-v2.js" defer></script>
+      <script src="/pwa-register.js" defer></script>
       <script src="/tts-fix.js" defer></script>
     </div>
   )}

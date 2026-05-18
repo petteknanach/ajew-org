@@ -1,0 +1,607 @@
+---
+/**
+ * My Fire Dashboard Component
+ * Reading history, saved highlights, notes, progress tracking
+ * Uses localStorage for now → later Supabase sync
+ */
+
+const STORAGE_KEYS = {
+  history: 'ajew-reading-history',
+  highlights: 'ajew-highlights',
+  notes: 'ajew-notes',
+  bookmarks: 'ajew-bookmarks',
+};
+
+// Load data from localStorage (client-side only)
+// Data structure is maintained by reader-v2.js
+---
+
+<div id="my-flame-dashboard" class="flame-dashboard">
+  <!-- Flame header -->
+  <div class="flame-header">
+    <div class="fire-image-container">
+      <img src="/images/nanach/nanach-fire-huaish-sheli.jpg" alt="האש שלי - My Fire" class="fire-image" />
+    </div>
+    <h1 class="flame-title">
+      <span class="flame-emoji">🔥</span>
+      My Fire
+      <span class="flame-he" lang="he" dir="rtl">האש שלי</span>
+    </h1>
+    <p class="flame-subtitle">"My fire will burn until Mashiach comes" — Rabbainu Hakadosh</p>
+
+    <!-- Reading streak badge -->
+    <div id="streak-badge" class="streak-badge" style="display:none;">
+      <span class="streak-fire">🔥</span>
+      <span class="streak-count" id="streak-count">0</span>
+      <span class="streak-label">day streak</span>
+    </div>
+  </div>
+
+  <!-- Continue reading card -->
+  <div id="continue-reading-card" class="continue-reading-card" style="display:none;">
+    <h2 class="card-heading">Continue Reading</h2>
+    <a id="continue-reading-link" href="#" class="continue-reading-link">
+      <div class="continue-reading-info">
+        <span id="continue-reading-title" class="cr-title"></span>
+        <span id="continue-reading-book" class="cr-book"></span>
+        <div id="continue-reading-progress" class="cr-progress-bar">
+          <div class="cr-progress-fill" style="width: 0%"></div>
+        </div>
+      </div>
+      <span class="cr-arrow">→</span>
+    </a>
+  </div>
+
+  <!-- Stats summary -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">📖</div>
+      <div class="stat-value" id="stat-books">0</div>
+      <div class="stat-label">Books visited</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">✨</div>
+      <div class="stat-value" id="stat-highlights">0</div>
+      <div class="stat-label">Highlights saved</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">📝</div>
+      <div class="stat-value" id="stat-notes">0</div>
+      <div class="stat-label">Notes written</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🔖</div>
+      <div class="stat-value" id="stat-bookmarks">0</div>
+      <div class="stat-label">Bookmarks</div>
+    </div>
+  </div>
+
+  <!-- Reading History -->
+  <section class="flame-section">
+    <h2 class="section-heading">Recent Reading</h2>
+    <ul id="reading-history-list" class="history-list">
+      <li class="history-empty">Your reading history will appear here as you explore the library.</li>
+    </ul>
+  </section>
+
+  <!-- Saved Highlights -->
+  <section class="flame-section">
+    <h2 class="section-heading">Saved Highlights</h2>
+    <ul id="highlights-list" class="highlights-list">
+      <li class="highlights-empty">No highlights yet. Click and highlight text while reading to save.</li>
+    </ul>
+  </section>
+
+  <!-- Notes -->
+  <section class="flame-section">
+    <h2 class="section-heading">My Notes</h2>
+    <ul id="notes-list" class="notes-list">
+      <li class="notes-empty">No notes yet. Add notes to your highlights while reading.</li>
+    </ul>
+  </section>
+</div>
+
+<style>
+  .flame-dashboard {
+    max-width: var(--ds-max-page, 1200px);
+    margin: 0 auto;
+    padding: var(--ds-space-8, 2rem) var(--ds-space-6, 1.5rem);
+    font-family: var(--ds-font-body, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif);
+  }
+
+  /* Header */
+  .flame-header {
+    text-align: center;
+    padding-bottom: var(--ds-space-8, 2rem);
+    border-bottom: 1px solid var(--ds-border, #e0d6c2);
+    margin-bottom: var(--ds-space-8, 2rem);
+  }
+
+  .flame-title {
+    font-size: var(--ds-text-3xl, 1.75rem);
+    font-family: var(--ds-font-heading, Georgia, serif);
+    color: var(--ds-navy-700, #1a365d);
+    margin: 0 0 var(--ds-space-2, 0.5rem);
+  }
+
+  .flame-subtitle {
+    color: var(--ds-text-secondary, #555);
+    font-size: var(--ds-text-base, 1rem);
+    margin: 0;
+  }
+
+  /* Streak badge */
+  .streak-badge {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--ds-space-1, 0.25rem);
+    margin-top: var(--ds-space-4, 1rem);
+    padding: var(--ds-space-2, 0.5rem) var(--ds-space-5, 1.25rem);
+    background: linear-gradient(135deg, var(--ds-gold-300, #f0cc5c), var(--ds-gold-500, #d4a017));
+    color: var(--ds-navy-900, #0f2744);
+    border-radius: var(--ds-radius-pill, 9999px);
+    font-weight: 600;
+    font-size: var(--ds-text-sm, 0.875rem);
+  }
+
+  .streak-count {
+    font-size: var(--ds-text-xl, 1.25rem);
+    font-weight: 700;
+  }
+
+  /* Continue reading card */
+  .continue-reading-card {
+    margin-bottom: var(--ds-space-8, 2rem);
+  }
+
+  .continue-reading-link {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-4, 1rem);
+    padding: var(--ds-space-5, 1.25rem);
+    background: var(--ds-surface, #faf7f2);
+    border: 1px solid var(--ds-border, #e0d6c2);
+    border-radius: var(--ds-radius-md, 10px);
+    text-decoration: none;
+    color: var(--ds-text-primary, #1a1a1a);
+    transition: box-shadow 200ms ease, border-color 200ms ease;
+  }
+
+  .continue-reading-link:hover {
+    box-shadow: var(--ds-shadow-md);
+    border-color: var(--ds-navy-500, #3a7abd);
+  }
+
+  .cr-title {
+    font-weight: 600;
+    font-size: var(--ds-text-base, 1rem);
+    color: var(--ds-navy-700, #1a365d);
+    display: block;
+  }
+
+  .cr-book {
+    font-size: var(--ds-text-sm, 0.875rem);
+    color: var(--ds-text-muted, #888);
+    display: block;
+    margin-top: var(--ds-space-1, 0.25rem);
+  }
+
+  .cr-progress-bar {
+    height: 4px;
+    background: var(--ds-border, #e0d6c2);
+    border-radius: 2px;
+    margin-top: var(--ds-space-3, 0.75rem);
+    overflow: hidden;
+  }
+
+  .cr-progress-fill {
+    height: 100%;
+    background: var(--ds-navy-500, #3a7abd);
+    border-radius: 2px;
+    transition: width 300ms ease;
+  }
+
+  .cr-arrow {
+    font-size: var(--ds-text-xl, 1.25rem);
+    color: var(--ds-navy-500, #3a7abd);
+  }
+
+  /* Stats grid */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--ds-space-4, 1rem);
+    margin-bottom: var(--ds-space-8, 2rem);
+  }
+
+  .stat-card {
+    text-align: center;
+    padding: var(--ds-space-5, 1.25rem);
+    background: var(--ds-surface, #faf7f2);
+    border: 1px solid var(--ds-border, #e0d6c2);
+    border-radius: var(--ds-radius-md, 10px);
+  }
+
+  .stat-icon {
+    font-size: 1.5rem;
+    margin-bottom: var(--ds-space-2, 0.5rem);
+  }
+
+  .stat-value {
+    font-size: var(--ds-text-2xl, 1.5rem);
+    font-weight: 700;
+    color: var(--ds-navy-700, #1a365d);
+    line-height: 1.2;
+  }
+
+  .stat-label {
+    font-size: var(--ds-text-xs, 0.75rem);
+    color: var(--ds-text-muted, #888);
+    margin-top: var(--ds-space-1, 0.25rem);
+  }
+
+  @media (max-width: 640px) {
+    .stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  /* Sections */
+  .flame-section {
+    margin-bottom: var(--ds-space-8, 2rem);
+  }
+
+  .section-heading {
+    font-family: var(--ds-font-heading, Georgia, serif);
+    font-size: var(--ds-text-xl, 1.25rem);
+    color: var(--ds-navy-700, #1a365d);
+    margin: 0 0 var(--ds-space-4, 1rem);
+    padding-bottom: var(--ds-space-3, 0.75rem);
+    border-bottom: 1px solid var(--ds-border, #e0d6c2);
+  }
+
+  .card-heading {
+    font-family: var(--ds-font-heading, Georgia, serif);
+    font-size: var(--ds-text-lg, 1.125rem);
+    color: var(--ds-navy-700, #1a365d);
+    margin: 0 0 var(--ds-space-4, 1rem);
+  }
+
+  /* History list */
+  .history-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .history-list li {
+    padding: var(--ds-space-4, 1rem);
+    border-bottom: 1px solid var(--ds-border, #e0d6c2);
+  }
+
+  .history-list li:last-child {
+    border-bottom: none;
+  }
+
+  .history-item-link {
+    display: block;
+    text-decoration: none;
+    color: var(--ds-text-primary, #1a1a1a);
+  }
+
+  .history-item-link:hover .history-item-title {
+    color: var(--ds-navy-700, #1a365d);
+  }
+
+  .history-item-title {
+    font-weight: 600;
+    color: var(--ds-navy-700, #1a365d);
+    transition: color 150ms ease;
+  }
+
+  .history-item-book {
+    font-size: var(--ds-text-sm, 0.875rem);
+    color: var(--ds-text-muted, #888);
+    display: block;
+    margin-top: 2px;
+  }
+
+  .history-item-date {
+    font-size: var(--ds-text-xs, 0.75rem);
+    color: var(--ds-text-muted, #888);
+  }
+
+  .history-item-progress {
+    font-size: var(--ds-text-xs, 0.75rem);
+    color: var(--ds-navy-500, #3a7abd);
+  }
+
+  .history-empty {
+    color: var(--ds-text-muted, #888);
+    font-style: italic;
+    text-align: center;
+    padding: var(--ds-space-8, 2rem) !important;
+  }
+
+  /* Highlights list */
+  .highlights-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .highlights-list li {
+    padding: var(--ds-space-4, 1rem);
+    border-left: 3px solid var(--ds-gold-500, #d4a017);
+    background: var(--ds-gold-100, #fdf3d7);
+    margin-bottom: var(--ds-space-3, 0.75rem);
+    border-radius: 0 var(--ds-radius-sm, 6px) var(--ds-radius-sm, 6px) 0;
+  }
+
+  .highlight-text {
+    font-size: var(--ds-text-base, 1rem);
+    color: var(--ds-navy-900, #0f2744);
+    font-style: italic;
+    line-height: 1.6;
+  }
+
+  .highlight-source {
+    font-size: var(--ds-text-xs, 0.75rem);
+    color: var(--ds-text-muted, #888);
+    margin-top: var(--ds-space-2, 0.5rem);
+  }
+
+  .highlight-note {
+    font-size: var(--ds-text-sm, 0.875rem);
+    color: var(--ds-text-secondary, #555);
+    margin-top: var(--ds-space-2, 0.5rem);
+    padding: var(--ds-space-2, 0.5rem);
+    background: var(--ds-white, #fefdfb);
+    border-radius: var(--ds-radius-sm, 6px);
+  }
+
+  .highlights-empty {
+    color: var(--ds-text-muted, #888);
+    font-style: italic;
+    text-align: center;
+    padding: var(--ds-space-8, 2rem) !important;
+    border: none;
+    background: none;
+  }
+
+  /* Notes list */
+  .notes-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .notes-list li {
+    padding: var(--ds-space-5, 1.25rem);
+    background: var(--ds-surface, #faf7f2);
+    border: 1px solid var(--ds-border, #e0d6c2);
+    border-radius: var(--ds-radius-md, 10px);
+    margin-bottom: var(--ds-space-3, 0.75rem);
+  }
+
+  .note-text {
+    font-size: var(--ds-text-base, 1rem);
+    line-height: 1.6;
+    color: var(--ds-text-primary, #1a1a1a);
+  }
+
+  .note-source {
+    font-size: var(--ds-text-xs, 0.75rem);
+    color: var(--ds-text-muted, #888);
+    margin-top: var(--ds-space-3, 0.75rem);
+  }
+
+  .notes-empty {
+    color: var(--ds-text-muted, #888);
+    font-style: italic;
+    text-align: center;
+    padding: var(--ds-space-8, 2rem) !important;
+  }
+</style>
+
+<script is:inline>
+(function() {
+  'use strict';
+
+  // Helper: load JSON from localStorage
+  function load(key) {
+    try {
+      return JSON.parse(localStorage.getItem(key) || '[]');
+    } catch (e) { return []; }
+  }
+
+  function loadObj(key) {
+    try {
+      return JSON.parse(localStorage.getItem(key) || '{}');
+    } catch (e) { return {}; }
+  }
+
+  // Load data
+  var history = load('ajew-reading-history');
+  var highlights = load('ajew-highlights');
+  var notes = load('ajew-notes');
+  var bookmarks = loadObj('ajew-bookmarks');
+  var bookmarkCount = Object.keys(bookmarks).length;
+
+  // === STREAK CALCULATION ===
+  function calcStreak(hist) {
+    if (!hist || hist.length === 0) return 0;
+    var streak = 0;
+    var today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    for (var i = 0; i < 365; i++) {
+      var checkDate = new Date(today.getTime() - i * 86400000);
+      var dayStr = checkDate.toISOString().slice(0, 10);
+      var found = hist.some(function(h) {
+        try {
+          var d = new Date(h.timestamp || h.date);
+          return d.toISOString().slice(0, 10) === dayStr;
+        } catch(e) { return false; }
+      });
+      if (found) {
+        streak++;
+        if (i > 0) continue; // allow gap start from yesterday
+      } else if (i === 0) {
+        // Today might not have activity yet — check yesterday
+        var yesterday = new Date(today.getTime() - 86400000);
+        var yesterdayStr = yesterday.toISOString().slice(0, 10);
+        var foundYesterday = hist.some(function(h) {
+          try { return new Date(h.timestamp || h.date).toISOString().slice(0, 10) === yesterdayStr; } catch(e) { return false; }
+        });
+        if (!foundYesterday) return 0;
+      } else {
+        break;
+      }
+    }
+    return streak;
+  }
+
+  var streak = calcStreak(history);
+  var streakBadge = document.getElementById('streak-badge');
+  if (streak > 0 && streakBadge) {
+    streakBadge.style.display = 'inline-flex';
+    document.getElementById('streak-count').textContent = streak;
+  }
+
+  // === CONTINUE READING ===
+  if (history && history.length > 0) {
+    var last = history[0];
+    var crCard = document.getElementById('continue-reading-card');
+    if (crCard) {
+      crCard.style.display = 'block';
+      var link = document.getElementById('continue-reading-link');
+      var title = document.getElementById('continue-reading-title');
+      var book = document.getElementById('continue-reading-book');
+      if (link) link.href = last.url || '#';
+      if (title) title.textContent = last.title || 'Unknown';
+      if (book) book.textContent = last.book || '';
+
+      if (last.progress && last.progress > 0) {
+        var fill = document.querySelector('.cr-progress-fill');
+        if (fill) fill.style.width = Math.min(last.progress, 100) + '%';
+      }
+    }
+  }
+
+  // === STATS ===
+  function uniqueBooks(hist) {
+    var seen = {};
+    hist.forEach(function(h) { if (h.book) seen[h.book] = true; });
+    return Object.keys(seen).length;
+  }
+
+  var statBooks = document.getElementById('stat-books');
+  var statHighlights = document.getElementById('stat-highlights');
+  var statNotesEl = document.getElementById('stat-notes');
+  var statBookmarks = document.getElementById('stat-bookmarks');
+
+  if (statBooks) statBooks.textContent = uniqueBooks(history);
+  if (statHighlights) statHighlights.textContent = (highlights || []).length;
+  if (statNotesEl) statNotesEl.textContent = (notes || []).length;
+  if (statBookmarks) statBookmarks.textContent = bookmarkCount;
+
+  // === READING HISTORY ===
+  var histList = document.getElementById('reading-history-list');
+  if (histList && history && history.length > 0) {
+    histList.innerHTML = '';
+    history.slice(0, 20).forEach(function(item) {
+      var li = document.createElement('li');
+      var a = document.createElement('a');
+      a.href = item.url || '#';
+      a.className = 'history-item-link';
+
+      var titleDiv = document.createElement('span');
+      titleDiv.className = 'history-item-title';
+      titleDiv.textContent = item.title || 'Untitled';
+
+      var bookDiv = document.createElement('span');
+      bookDiv.className = 'history-item-book';
+      bookDiv.textContent = item.book || '';
+
+      var dateSpan = document.createElement('span');
+      dateSpan.className = 'history-item-date';
+      try {
+        var d = new Date(item.timestamp || item.date);
+        dateSpan.textContent = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+      } catch(e) {}
+
+      var infoDiv = document.createElement('div');
+      infoDiv.appendChild(titleDiv);
+      infoDiv.appendChild(bookDiv);
+      infoDiv.appendChild(dateSpan);
+
+      if (item.progress && item.progress > 0) {
+        var progSpan = document.createElement('span');
+        progSpan.className = 'history-item-progress';
+        progSpan.textContent = Math.round(item.progress) + '% read';
+        infoDiv.appendChild(progSpan);
+      }
+
+      a.appendChild(infoDiv);
+      li.appendChild(a);
+      histList.appendChild(li);
+    });
+  }
+
+  // === HIGHLIGHTS ===
+  var hlList = document.getElementById('highlights-list');
+  if (hlList && highlights && highlights.length > 0) {
+    hlList.innerHTML = '';
+    highlights.reverse().slice(0, 20).forEach(function(h) {
+      var li = document.createElement('li');
+      var textDiv = document.createElement('div');
+      textDiv.className = 'highlight-text';
+      // Truncate long highlights
+      var text = h.text || '';
+      textDiv.textContent = text.length > 200 ? text.slice(0, 200) + '...' : text;
+
+      var sourceDiv = document.createElement('div');
+      sourceDiv.className = 'highlight-source';
+      sourceDiv.textContent = h.source || '';
+
+      li.appendChild(textDiv);
+      li.appendChild(sourceDiv);
+
+      if (h.note && h.note.trim()) {
+        var noteDiv = document.createElement('div');
+        noteDiv.className = 'highlight-note';
+        noteDiv.textContent = h.note;
+        li.appendChild(noteDiv);
+      }
+
+      hlList.appendChild(li);
+    });
+  }
+
+  // === NOTES ===
+  var notesList = document.getElementById('notes-list');
+  if (notesList && notes && notes.length > 0) {
+    notesList.innerHTML = '';
+    notes.reverse().slice(0, 20).forEach(function(n) {
+      var li = document.createElement('li');
+      var textDiv = document.createElement('div');
+      textDiv.className = 'note-text';
+      textDiv.textContent = n.text || '';
+
+      var sourceDiv = document.createElement('div');
+      sourceDiv.className = 'note-source';
+      var src = n.source || '';
+      try {
+        var d = new Date(n.createdAt || n.date);
+        src += ' — ' + d.toLocaleDateString();
+      } catch(e) {}
+      sourceDiv.textContent = src;
+
+      li.appendChild(textDiv);
+      li.appendChild(sourceDiv);
+      notesList.appendChild(li);
+    });
+  }
+})();
+</script>
