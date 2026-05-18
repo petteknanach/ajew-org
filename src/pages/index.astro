@@ -109,6 +109,21 @@ const todayLM = lmTorahMap[dayIndex] || 1;
 </section>
 
 <!-- ═══════════════════════════════════════
+     PRAYERS FOR ALL OCCASIONS — Likutay Tefilos topics
+     ═══════════════════════════════════════ -->
+<section class="home-prayers-section">
+  <div class="home-prayers-card">
+    <div class="home-prayers-icon">🙏</div>
+    <div class="home-prayers-copy">
+      <p class="home-prayers-he" lang="he" dir="rtl">תפילות לכל צורך ומקרה</p>
+      <h2>Prayers for All Occasions</h2>
+      <p>Find the right Likutay Tefilos prayer by topic — faith, healing, children, livelihood, joy, repentance, peace and more.</p>
+    </div>
+    <a href="/prayers" class="home-prayers-cta">Open prayer index →</a>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
      QUICK START — "What do you want to do?"
      ═══════════════════════════════════════ -->
 <section class="quick-start">
@@ -766,4 +781,15 @@ const todayLM = lmTorahMap[dayIndex] || 1;
     .quote-card { padding: 1.5rem; }
     .quote-he { font-size: 1.1rem; }
   }
+
+.home-prayers-section { padding: 0 1.25rem 2.5rem; }
+.home-prayers-card { max-width: 1040px; margin: 0 auto; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 1.25rem; padding: 1.35rem; border-radius: 28px; background: linear-gradient(135deg, #fff8df 0%, #f0fff4 100%); border: 1px solid #e7c874; box-shadow: 0 18px 50px rgba(160,120,48,0.16); }
+.home-prayers-icon { font-size: 2.6rem; }
+.home-prayers-copy h2 { margin: 0.1rem 0; color: var(--ds-navy-700, #1a365d); font-size: clamp(1.5rem, 4vw, 2.4rem); }
+.home-prayers-copy p { margin: 0; color: #506070; line-height: 1.55; }
+.home-prayers-he { font-family: var(--ds-font-hebrew, 'Frank Ruhl Libre', serif); color: #a07830 !important; font-size: 1.35rem; }
+.home-prayers-cta { justify-self: end; padding: 0.9rem 1.15rem; border-radius: 999px; background: #1a365d; color: white; text-decoration: none; font-weight: 800; white-space: nowrap; }
+[data-theme="night"] .home-prayers-card, body.dark-mode .home-prayers-card { background: linear-gradient(135deg, #2c2415 0%, #123021 100%); border-color: #6d5526; }
+[data-theme="night"] .home-prayers-copy h2, body.dark-mode .home-prayers-copy h2 { color: #e8d9b7; }
+@media (max-width: 760px) { .home-prayers-card { grid-template-columns: 1fr; text-align: center; } .home-prayers-cta { justify-self: center; } }
 </style>

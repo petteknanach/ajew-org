@@ -1,0 +1,119 @@
+---
+import Layout from '../layouts/Layout.astro';
+import fs from 'node:fs';
+import path from 'node:path';
+
+const topicsPath = path.join(process.cwd(), 'public/reader/likutay-tefilos/toc-topics.json');
+const specialPath = path.join(process.cwd(), 'public/reader/likutay-tefilos/special-prayers.json');
+const topicsData = JSON.parse(fs.readFileSync(topicsPath, 'utf8'));
+const specialData = JSON.parse(fs.readFileSync(specialPath, 'utf8'));
+const allTopics = (topicsData.topics || []).map((topic) => ({
+  ...topic,
+  english: topic.english || topic.topic,
+  total: (topic.part1_prayers || []).length + (topic.part2_prayers || []).length,
+})).sort((a, b) => (a.english || '').localeCompare(b.english || ''));
+const featuredEnglish = new Set(['Faith', 'Joy', 'Healing', 'Children', 'Livelihood', 'Repentance', 'Prayer', 'Truth', 'Peace', 'Land of Israel', 'Fear of Heaven', 'Shabbos']);
+const featured = allTopics.filter((t) => featuredEnglish.has(t.english)).slice(0, 12);
+const specialTopics = (specialData.topics || []).map((topic) => {
+  const match = allTopics.find((t) => t.topic === topic.topic) || {};
+  return {
+    ...topic,
+    english: match.english || topic.topic,
+    total: (topic.part1_prayers || []).length + (topic.part2_prayers || []).length,
+  };
+});
+function firstPrayerUrl(topic) {
+  const p1 = (topic.part1_prayers || []).filter(Boolean)[0];
+  if (p1) return `/reader/likutay-tefilos/1/${p1}`;
+  const p2 = (topic.part2_prayers || []).filter(Boolean)[0];
+  if (p2) return `/reader/likutay-tefilos/2/${p2}`;
+  return '/reader/likutay-tefilos/1/1';
+}
+function refs(topic) {
+  const a = [];
+  if ((topic.part1_prayers || []).length) a.push(`I: ${[...new Set(topic.part1_prayers)].slice(0, 8).join(', ')}`);
+  if ((topic.part2_prayers || []).length) a.push(`II: ${[...new Set(topic.part2_prayers)].slice(0, 8).join(', ')}`);
+  return a.join(' · ');
+}
+---
+
+<Layout title="Prayers for All Occasions — Likutay Tefilos Topics" description="Find the right Likutay Tefilos prayer by need, occasion, and topic. Hebrew topic index with direct links into the reader.">
+  <section class="prayers-hero">
+    <div class="hero-kicker">ליקוטי תפילות לפי נושאים</div>
+    <h1>Prayers for All Occasions</h1>
+    <p>When you need words for faith, healing, children, livelihood, joy, repentance, peace, or any situation — jump directly into Rabbi Nosson's Likutay Tefilos using the traditional topic index.</p>
+    <form class="prayers-search" action="/search-enhanced" method="get">
+      <input name="q" value="ליקוטי תפילות " aria-label="Search prayers" />
+      <button>Search all prayers</button>
+    </form>
+    <div class="hero-actions-prayers">
+      <a href="/reader/likutay-tefilos/1/1">Start Likutay Tefilos</a>
+      <a href="/tikkun-klali">Tikun HaKlali</a>
+      <a href="/help-me">I Need Help</a>
+    </div>
+  </section>
+
+  <section class="prayer-featured">
+    <div class="section-head">
+      <h2>Common needs</h2>
+      <p>Fast entry points into the topic index.</p>
+    </div>
+    <div class="featured-prayer-grid">
+      {featured.map((topic) => (
+        <a class="featured-prayer-card" href={firstPrayerUrl(topic)}>
+          <span class="topic-he" lang="he" dir="rtl">{topic.topic}</span>
+          <strong>{topic.english}</strong>
+          <em>{topic.total} prayer references</em>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="all-prayer-topics">
+    <div class="section-head">
+      <h2>Full topic index</h2>
+      <p>{allTopics.length} topics from Likutay Tefilos. Each card opens the first prayer and lists more references.</p>
+    </div>
+    <div class="topics-index-grid">
+      {allTopics.map((topic) => (
+        <article class="topic-index-card" data-topic={`${topic.english} ${topic.topic}`}>
+          <div>
+            <h3>{topic.english}</h3>
+            <p class="topic-index-he" lang="he" dir="rtl">{topic.topic}</p>
+            <p class="topic-refs">{refs(topic)}</p>
+          </div>
+          <a href={firstPrayerUrl(topic)}>Open prayer →</a>
+        </article>
+      ))}
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .prayers-hero { margin: 0 auto; padding: clamp(3rem, 7vw, 6rem) 1.25rem; max-width: 1100px; text-align: center; }
+  .hero-kicker { font-family: var(--ds-font-hebrew, 'Frank Ruhl Libre', serif); color: #a07830; font-size: clamp(1.4rem, 4vw, 2.4rem); margin-bottom: 0.6rem; }
+  .prayers-hero h1 { margin: 0; color: var(--ds-navy-700, #1a365d); font-size: clamp(2.4rem, 7vw, 5rem); line-height: 1; }
+  .prayers-hero p { max-width: 760px; margin: 1rem auto 1.5rem; color: var(--ds-text-muted, #5f6673); font-size: 1.1rem; line-height: 1.7; }
+  .prayers-search { display: flex; max-width: 680px; margin: 1.25rem auto; border: 1px solid #e0d6c2; border-radius: 999px; overflow: hidden; background: white; box-shadow: 0 16px 36px rgba(26,54,93,0.12); }
+  .prayers-search input { flex: 1; border: 0; padding: 1rem 1.25rem; font-size: 1rem; outline: none; }
+  .prayers-search button { border: 0; padding: 0 1.25rem; background: #1a365d; color: white; font-weight: 800; cursor: pointer; }
+  .hero-actions-prayers { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; }
+  .hero-actions-prayers a { padding: 0.75rem 1rem; border-radius: 999px; text-decoration: none; background: #fff8df; color: #7c5b16; border: 1px solid #e7c874; font-weight: 800; }
+  .prayer-featured, .all-prayer-topics { max-width: 1180px; margin: 0 auto 3rem; padding: 0 1.25rem; }
+  .section-head { text-align: center; margin-bottom: 1.25rem; }
+  .section-head h2 { color: var(--ds-navy-700, #1a365d); font-size: clamp(1.7rem, 4vw, 2.6rem); margin-bottom: 0.25rem; }
+  .section-head p { color: var(--ds-text-muted, #687080); }
+  .featured-prayer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 1rem; }
+  .featured-prayer-card { display: grid; gap: 0.35rem; padding: 1.15rem; border-radius: 20px; background: linear-gradient(135deg, #fffaf0, #eefcf3); border: 1px solid #e7d5a2; text-decoration: none; color: #1a365d; box-shadow: 0 12px 28px rgba(26,54,93,0.08); }
+  .featured-prayer-card .topic-he { font-size: 1.45rem; color: #9a6b12; }
+  .featured-prayer-card em { font-style: normal; color: #5f6673; font-size: 0.9rem; }
+  .topics-index-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0.85rem; }
+  .topic-index-card { display: flex; flex-direction: column; justify-content: space-between; gap: 0.8rem; padding: 1rem; border: 1px solid #e5dcc9; border-radius: 16px; background: white; }
+  .topic-index-card h3 { margin: 0; color: #1a365d; font-size: 1rem; }
+  .topic-index-he { margin: 0.25rem 0; font-size: 1.3rem; color: #7c5b16; font-family: var(--ds-font-hebrew, 'Frank Ruhl Libre', serif); }
+  .topic-refs { color: #687080; font-size: 0.85rem; line-height: 1.45; margin: 0; }
+  .topic-index-card a { color: #0f766e; font-weight: 800; text-decoration: none; }
+  [data-theme="night"] .topic-index-card, body.dark-mode .topic-index-card, [data-theme="night"] .prayers-search, body.dark-mode .prayers-search { background: #22223a; border-color: #3a3a5c; }
+  [data-theme="night"] .prayers-hero h1, body.dark-mode .prayers-hero h1, [data-theme="night"] .section-head h2, body.dark-mode .section-head h2, [data-theme="night"] .topic-index-card h3, body.dark-mode .topic-index-card h3 { color: #e8d9b7; }
+  @media (max-width: 640px) { .prayers-search { border-radius: 18px; flex-direction: column; } .prayers-search button { padding: 0.85rem; } }
+</style>

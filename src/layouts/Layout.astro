@@ -12,6 +12,9 @@ interface Props {
   hreflangs?: Array<'en' | 'he'>;
 }
 
+import Navigation from '../components/Navigation.astro';
+import CompactYahrzeit from '../components/CompactYahrzeit.astro';
+
 const {
   title,
   description = "The largest online Breslov Torah library. 226+ sacred Jewish texts — Likutay Moharan, Zohar, Talmud, Mishna, Rambam, Tanach — in Hebrew with English translations. Free.",
@@ -194,50 +197,8 @@ const siteName = "A Jew - Breslov Torah Library";
   </head>
   <body>
     <a href="#main-content" class="skip-link">Skip to content</a>
-    <nav class="navbar" role="navigation" aria-label="Main navigation">
-      <div class="nav-container">
-        <a href="/" class="logo">
-          <span class="logo-text">A Jew</span>
-        </a>
-        <span class="nav-controls">
-          <button class="text-size-btn" id="textSmaller" aria-label="Decrease text size" title="Smaller text">A-</button>
-          <button class="text-size-btn" id="textLarger" aria-label="Increase text size" title="Larger text">A+</button>
-          <button class="dark-mode-toggle" id="darkModeToggle" aria-label="Toggle dark mode" title="Toggle dark mode">🌙</button>
-        </span>
-        <button class="mobile-menu-toggle" aria-label="Toggle Menu">
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
-        <div class="nav-links">
-          <a href="/">Home</a>
-          <a href="/reader"><span>Library</span><span class="nav-he">ספרייה</span></a>
-          <a href="/daily-study"><span>Daily Study</span><span class="nav-he">לימוד יומי</span></a>
-          <a href="/ask"><span>Ask</span><span class="nav-he">שאל</span></a>
-          <a href="/search-enhanced"><span>Search</span><span class="nav-he">חיפוש</span></a>
-          <a href="/reference"><span>Reference</span><span class="nav-he">מקורות</span></a>
-          <a href="/topics"><span>Topics</span><span class="nav-he">נושאים</span></a>
-          <a href="/healing-words"><span>Healing Words</span><span class="nav-he">דברי מרפא</span></a>
-          <a href="/parsha"><span>Parsha</span><span class="nav-he">פרשה</span></a>
-          <a href="/torah-gps"><span>Torah GPS</span><span class="nav-he">תורה GPS</span></a>
-          <a href="/mapjs"><span>Torah Map</span><span class="nav-he">מפת תורה</span></a>
-          <a href="/torah-lens"><span>Torah Lens</span><span class="nav-he">עדשת תורה</span></a>
-          <a href="/chain-of-light"><span>Chain of Light</span><span class="nav-he">שרשרת האור</span></a>
-          <a href="/chat"><span>Chat</span><span class="nav-he">צ'אט</span></a>
-          <a href="/blog"><span>Blog</span><span class="nav-he">בלוג</span></a>
-          <a href="/gematria"><span>Gematria</span><span class="nav-he">גימטריה</span></a>
-          <a href="/trivia"><span>Torah Trivia</span><span class="nav-he">טריוויה תורנית</span></a>
-          <a href="/gallery">Gallery</a>
-          <a href="/saba-says"><span>Saba Says</span><span class="nav-he">קולו של סבא</span></a>
-          <a href="/my-sefer"><span>My Sefer</span><span class="nav-he">הספר שלי</span></a>
-          <a href="/my-notes"><span>My Notes</span><span class="nav-he">הערות שלי</span></a>
-          <a href="/my-stats">My Stats</a>
-          <a href="/donate"><span>Donate</span><span class="nav-he">תרומה</span></a>
-          <a href="/subscribe">Subscribe</a>
-          <a href="/about">About</a>
-        </div>
-      </div>
-    </nav>
+    <Navigation currentPath={Astro.url.pathname} />
+    <CompactYahrzeit />
     
     <main id="main-content">
       <slot />
@@ -744,6 +705,20 @@ const siteName = "A Jew - Breslov Torah Library";
   main {
     flex: 1;
     width: 100%;
+  }
+
+  @media (min-width: 1024px) {
+    main {
+      margin-left: var(--ds-sidebar-width, 260px);
+      width: calc(100% - var(--ds-sidebar-width, 260px));
+    }
+  }
+
+  @media (max-width: 1023px) {
+    main {
+      padding-top: 64px;
+      padding-bottom: 76px;
+    }
   }
 
   .navbar {

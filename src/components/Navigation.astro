@@ -16,8 +16,9 @@ const { currentPath = Astro.url.pathname } = Astro.props;
 const navItems = [
   { label: 'Reader', labelHe: 'קורא', icon: '📖', href: '/reader', key: 'reader' },
   { label: 'Search', labelHe: 'חיפוש', icon: '🔍', href: '/search-enhanced', key: 'search' },
+  { label: 'Prayers', labelHe: 'תפילות', icon: '🙏', href: '/prayers', key: 'prayers', featured: true },
+  { label: 'My Fire', labelHe: 'האש שלי', icon: '🔥', href: '/my-flame', key: 'flame', fire: true },
   { label: 'Daily Study', labelHe: 'לימוד יומי', icon: '📅', href: '/daily-study', key: 'daily' },
-  { label: 'My Fire', labelHe: 'האש שלי', icon: '🔥', href: '/my-flame', key: 'flame' },
   { label: 'Gallery', labelHe: 'גלריה', icon: '🖼️', href: '/gallery', key: 'gallery' },
   { label: 'Videos', labelHe: 'וידאו', icon: '🎬', href: '/videos', key: 'videos' },
   { label: 'Saba Says', labelHe: 'סבא אומר', icon: '🎙️', href: '/saba-says', key: 'saba' },
@@ -25,6 +26,50 @@ const navItems = [
   { label: 'Topics', labelHe: 'נושאים', icon: '☰', href: '/topics', key: 'topics' },
   { label: 'Help Me', labelHe: 'עזרו לי', icon: '💬', href: '/help-me', key: 'help' },
   { label: 'Ask', labelHe: 'שאל', icon: '🆘', href: '/ask', key: 'ask' },
+];
+
+
+const importantLinkGroups = [
+  {
+    title: 'Learning',
+    links: [
+      { label: 'Library', href: '/reader' },
+      { label: 'Likutay Moharan', href: '/reader/likutay-moharan/1/1' },
+      { label: 'Likutay Tefilos', href: '/reader/likutay-tefilos/1/1' },
+      { label: 'Topics', href: '/topics' },
+      { label: 'Reference', href: '/reference' },
+    ]
+  },
+  {
+    title: 'Daily + Help',
+    links: [
+      { label: 'Prayers for All Occasions', href: '/prayers' },
+      { label: 'Tikun HaKlali', href: '/tikkun-klali' },
+      { label: 'Help Me', href: '/help-me' },
+      { label: 'Daily Study', href: '/daily-study' },
+      { label: 'Parsha', href: '/parsha' },
+    ]
+  },
+  {
+    title: 'Na Nach',
+    links: [
+      { label: 'My Fire', href: '/my-flame' },
+      { label: 'Saba Says', href: '/saba-says' },
+      { label: 'Gallery', href: '/gallery' },
+      { label: 'Videos', href: '/videos' },
+      { label: 'Tzaddikim / Yahrzeits', href: '/tzaddikim' },
+    ]
+  },
+  {
+    title: 'Site',
+    links: [
+      { label: 'Torah GPS', href: '/torah-gps' },
+      { label: 'Torah Map', href: '/mapjs' },
+      { label: "What's New", href: '/whats-new' },
+      { label: 'About', href: '/about' },
+      { label: 'Contact', href: '/contact' },
+    ]
+  },
 ];
 
 function isActive(path: string) {
@@ -64,6 +109,26 @@ function isActive(path: string) {
     </ul>
   </nav>
 
+  <div class="sidebar-quick" aria-label="Important site links">
+    <a href="/prayers" class="sidebar-prayer-card">
+      <span class="quick-icon">🙏</span>
+      <span><strong>Prayers for All Occasions</strong><em>תפילות לפי נושאים</em></span>
+    </a>
+    <details class="sidebar-all-links">
+      <summary>All important links</summary>
+      <div class="all-links-groups">
+        {importantLinkGroups.map(group => (
+          <div class="all-links-group">
+            <h4>{group.title}</h4>
+            {group.links.map(link => (
+              <a href={link.href}>{link.label}</a>
+            ))}
+          </div>
+        ))}
+      </div>
+    </details>
+  </div>
+
   <!-- Sidebar footer: theme toggle + Na Nach -->
   <div class="sidebar-footer">
     <button
@@ -90,6 +155,7 @@ function isActive(path: string) {
     <span class="logo-name">ajew</span>
   </a>
   <div class="mobile-header-actions">
+    <a href="/prayers" class="mobile-search-btn mobile-prayers-btn" aria-label="Prayers">🙏</a>
     <a href="/search-enhanced" class="mobile-search-btn" aria-label="Search">🔍</a>
     <button
       id="theme-toggle-mobile"
@@ -116,9 +182,9 @@ function isActive(path: string) {
     <span class="mobile-tab-icon">🔍</span>
     <span class="mobile-tab-label">Search</span>
   </a>
-  <a href="/my-flame" class:list={['mobile-tab', { active: isActive('/my-flame') }]} aria-label="My Fire">
-    <span class="mobile-tab-icon">🔥</span>
-    <span class="mobile-tab-label">Fire</span>
+  <a href="/prayers" class:list={['mobile-tab', { active: isActive('/prayers') }]} aria-label="Prayers">
+    <span class="mobile-tab-icon">🙏</span>
+    <span class="mobile-tab-label">Pray</span>
   </a>
   <!-- "More" tab opens bottom sheet with remaining items -->
   <button class="mobile-tab mobile-tab-more" type="button" id="mobile-more-btn" aria-label="More options">
@@ -136,7 +202,7 @@ function isActive(path: string) {
       <button class="more-sheet-close" id="more-sheet-close" aria-label="Close">✕</button>
     </div>
     <ul class="more-sheet-list">
-      {navItems.slice(4).map(item => (
+      {navItems.slice(3).map(item => (
         <li>
           <a href={item.href} class="more-sheet-link">
             <span class="more-sheet-icon">{item.icon}</span>
@@ -146,6 +212,14 @@ function isActive(path: string) {
         </li>
       ))}
     </ul>
+    <div class="more-sheet-important">
+      <h4>Important links</h4>
+      <div class="more-links-grid">
+        {importantLinkGroups.flatMap(group => group.links).map(link => (
+          <a href={link.href}>{link.label}</a>
+        ))}
+      </div>
+    </div>
     <div class="more-sheet-footer">
       <div class="more-sheet-nanach">נ נח נחמ נחמן מאומן</div>
     </div>
