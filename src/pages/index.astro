@@ -483,7 +483,7 @@ const todayLM = lmTorahMap[dayIndex] || 1;
   .btn-label { display: block; line-height: 1.2; }
   .btn-sub { display: block; font-size: 0.75rem; font-weight: 400; opacity: 0.8; font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif); }
 
-  .hero-holy-figure {
+  .hero > .hero-holy-figure {
     position: absolute;
     z-index: 2;
     display: block;
@@ -493,7 +493,7 @@ const todayLM = lmTorahMap[dayIndex] || 1;
     filter: drop-shadow(0 0 12px rgba(240,204,92,0.85)) drop-shadow(0 0 28px rgba(255,120,0,0.35));
     transition: transform 0.25s ease, filter 0.25s ease;
   }
-  .hero-holy-figure::before {
+  .hero > .hero-holy-figure::before {
     content: '';
     position: absolute;
     inset: 12% 6%;
@@ -502,7 +502,7 @@ const todayLM = lmTorahMap[dayIndex] || 1;
     animation: holyPulse 2.8s ease-in-out infinite;
     z-index: -1;
   }
-  .hero-holy-figure::after {
+  .hero > .hero-holy-figure::after {
     content: '';
     position: absolute;
     inset: -8% -8%;
@@ -512,8 +512,8 @@ const todayLM = lmTorahMap[dayIndex] || 1;
     z-index: -2;
     pointer-events: none;
   }
-  .hero-holy-figure img { display: block; width: 100%; height: auto; }
-  .hero-holy-figure:hover { transform: translateY(-8px) scale(1.05); filter: drop-shadow(0 0 18px rgba(255,236,150,1)) drop-shadow(0 0 42px rgba(255,90,0,0.55)); }
+  .hero > .hero-holy-figure img { display: block; width: 100%; height: auto; }
+  .hero > .hero-holy-figure:hover { transform: translateY(-8px) scale(1.05); filter: drop-shadow(0 0 18px rgba(255,236,150,1)) drop-shadow(0 0 42px rgba(255,90,0,0.55)); }
   .hero-saba-link {
     right: clamp(10px, 2.5vw, 40px);
     bottom: 1rem;
