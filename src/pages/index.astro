@@ -78,7 +78,10 @@ const todayLM = lmTorahMap[dayIndex] || 1;
     </div>
   </div>
 
-  <a href="/reader/yisroel-saba/1/1" class="hero-holy-figure hero-saba-link" aria-label="Open the teachings of Saba Yisroel">
+  <img src="/images/nanach/nanach-van-left.png" alt="Na Nach van" class="hero-corner-pic hero-corner-bottom-left hero-van-left" loading="eager" />
+  <img src="/images/nanach/nanach-van-right.png" alt="Na Nach van" class="hero-corner-pic hero-corner-bottom-right hero-van-right" loading="eager" />
+
+  <a href="/reader/sichos-chayay-saba/1/1" class="hero-holy-figure hero-saba-link" aria-label="Open the teachings of Saba Yisroel">
     <img src="/images/home/saba-hands-up-isolated.png" alt="Saba Yisroel with raised holy hands" />
   </a>
   <a href="/reader/likutay-halachos/1/1" class="hero-holy-figure hero-nosson-link" aria-label="Open the teachings of Rabbi Nosson">
@@ -435,6 +438,32 @@ const todayLM = lmTorahMap[dayIndex] || 1;
     max-width: 480px;
     margin: 0 auto;
   }
+  .hero-corner-pic {
+    position: absolute;
+    z-index: 2;
+    height: auto;
+    object-fit: contain;
+    pointer-events: none;
+    filter: drop-shadow(0 8px 14px rgba(0,0,0,0.55)) drop-shadow(0 0 12px rgba(240,204,92,0.45));
+  }
+  .hero-corner-bottom-left { left: clamp(8px, 2.2vw, 34px); bottom: 0.8rem; }
+  .hero-corner-bottom-right { right: clamp(8px, 2.2vw, 34px); bottom: 0.8rem; }
+  .hero-van-left {
+    width: clamp(110px, 15vw, 210px);
+    animation: vanCornerLeft 5.5s ease-in-out infinite;
+  }
+  .hero-van-right {
+    width: clamp(110px, 15vw, 210px);
+    animation: vanCornerRight 5.5s ease-in-out infinite;
+  }
+  @keyframes vanCornerLeft {
+    0%, 100% { transform: translateY(0) rotate(-1deg); }
+    50% { transform: translateY(-8px) rotate(1deg); }
+  }
+  @keyframes vanCornerRight {
+    0%, 100% { transform: translateY(0) rotate(1deg); }
+    50% { transform: translateY(-8px) rotate(-1deg); }
+  }
   .hero-search input {
     flex: 1;
     padding: 0.85rem 1.25rem;
@@ -504,8 +533,8 @@ const todayLM = lmTorahMap[dayIndex] || 1;
   }
   .hero-holy-figure img { display: block; width: 100%; height: auto; }
   .hero-holy-figure:hover { transform: translateY(-8px) scale(1.05); filter: drop-shadow(0 0 18px rgba(255,236,150,1)) drop-shadow(0 0 42px rgba(255,90,0,0.55)); }
-  .hero-saba-link { right: clamp(12px, 3vw, 42px); bottom: 5.6rem; width: clamp(108px, 12vw, 178px); animation: sabaBlessingFloat 5.2s ease-in-out infinite; }
-  .hero-nosson-link { left: clamp(12px, 3vw, 42px); bottom: 5.5rem; width: clamp(140px, 17vw, 245px); animation: nossonTzionGlow 5.8s ease-in-out infinite; }
+  .hero-saba-link { right: clamp(8px, 2.2vw, 34px); top: 1rem; width: clamp(108px, 12vw, 178px); animation: sabaBlessingFloat 5.2s ease-in-out infinite; }
+  .hero-nosson-link { left: clamp(8px, 2.2vw, 34px); top: 1rem; width: clamp(140px, 17vw, 245px); animation: nossonTzionGlow 5.8s ease-in-out infinite; }
   @keyframes holyPulse { 0%,100% { opacity: 0.45; transform: scale(0.94); } 50% { opacity: 0.9; transform: scale(1.08); } }
   @keyframes sabaBlessingFloat { 0%,100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-10px) rotate(1deg); } }
   @keyframes nossonTzionGlow { 0%,100% { transform: translateY(0) rotate(0.5deg); } 50% { transform: translateY(-7px) rotate(-0.5deg); } }
@@ -806,9 +835,11 @@ const todayLM = lmTorahMap[dayIndex] || 1;
     .hero-he { font-size: 2rem; }
     .hero-en { font-size: 1.15rem; }
     .hero-subtitle { font-size: 0.95rem; white-space: normal; }
-    .hero-saba-link { width: 96px; right: 4px; bottom: 5rem; opacity: 0.9; }
-    .hero-nosson-link { width: 118px; left: 4px; bottom: 5rem; opacity: 0.9; }
-    .hero-search { flex-direction: column; gap: 4px; }
+    .hero-saba-link { width: 86px; right: 4px; top: 0.6rem; opacity: 0.9; }
+    .hero-nosson-link { width: 104px; left: 4px; top: 0.6rem; opacity: 0.9; }
+    .hero-corner-bottom-left { left: 4px; bottom: 0.3rem; }
+    .hero-corner-bottom-right { right: 4px; bottom: 0.3rem; }
+    .hero-van-left, .hero-van-right { width: 82px; }
     .hero-search form { max-width: 100%; }
     .hero-actions { flex-direction: column; align-items: center; padding: 0 1rem 1.5rem; }
     .btn-hero { width: 100%; max-width: 320px; justify-content: center; }
