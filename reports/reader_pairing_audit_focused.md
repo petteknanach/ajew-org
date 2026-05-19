@@ -1,93 +1,40 @@
 # Focused Reader HE/EN Pairing Audit
 
 JSON files scanned: 29091
-Files needing review (excluding normal untranslated books): 1751
+Files needing review (excluding normal untranslated books): 1377
 
 ## Severity by book
-- likutay-halachos: critical=0, severe=496, review=134, minor=59, flags=7777
-- likutay-moharan: critical=0, severe=60, review=155, minor=23, flags=480
-- chumash-lh: critical=0, severe=29, review=9, minor=34, flags=1013
+- likutay-halachos: critical=0, severe=475, review=79, minor=79, flags=7539
+- chumash-lh: critical=0, severe=29, review=8, minor=30, flags=989
 - kitzur-likutay-moharan: critical=0, severe=22, review=11, minor=78, flags=377
-- ramchal-tikunim-chadashim: critical=0, severe=20, review=31, minor=0, flags=482
-- pettek-nanach-commentary: critical=0, severe=15, review=6, minor=0, flags=73
 - otzar-hayirah: critical=0, severe=11, review=158, minor=0, flags=247
-- ebay-hanachal: critical=0, severe=9, review=3, minor=12, flags=56
 - hashtatfchus-hanefesh: critical=0, severe=9, review=0, minor=3, flags=42
-- likutay-tefilos: critical=0, severe=5, review=26, minor=124, flags=317
-- chayey-moharan: critical=0, severe=3, review=4, minor=0, flags=91
 - ramchal-adir-bamuroam: critical=0, severe=3, review=0, minor=2, flags=16
-- ramchal-shaaray-ramchal: critical=0, severe=2, review=8, minor=0, flags=188
+- likutay-tefilos: critical=0, severe=2, review=6, minor=126, flags=385
 - aitzoas-yeshuroas: critical=0, severe=2, review=0, minor=0, flags=2
-- nosson-by-מכתבי-ר--נתן-ב--ר-יה: critical=0, severe=1, review=24, minor=12, flags=38
-- yemei-moharnat: critical=0, severe=1, review=2, minor=2, flags=5
-- yikra-dshabbata: critical=0, severe=1, review=1, minor=0, flags=20
+- likutay-moharan: critical=0, severe=1, review=7, minor=41, flags=90
+- ramchal-tikunim-chadashim: critical=0, severe=1, review=3, minor=9, flags=198
 - yisroel-saba: critical=0, severe=1, review=0, minor=19, flags=44
+- ebay-hanachal: critical=0, severe=1, review=0, minor=12, flags=15
+- nosson-by-מכתבי-ר--נתן-ב--ר-יה: critical=0, severe=1, review=0, minor=12, flags=14
+- ramchal-shaaray-ramchal: critical=0, severe=0, review=6, minor=2, flags=128
 - ramchal-yichud-hayeeruh: critical=0, severe=0, review=2, minor=7, flags=48
-- nachas-hashulchan: critical=0, severe=0, review=2, minor=0, flags=10
+- chayey-moharan: critical=0, severe=0, review=2, minor=2, flags=39
 - ramchal-otzros-ramchal: critical=0, severe=0, review=1, minor=2, flags=16
 - alim-litrufa: critical=0, severe=0, review=0, minor=74, flags=85
 - michtevay-shmuel: critical=0, severe=0, review=0, minor=20, flags=22
 - ramchal-ruzin-gineezin: critical=0, severe=0, review=0, minor=3, flags=10
+- yikra-dshabbata: critical=0, severe=0, review=0, minor=2, flags=5
 - yereach-haeitanim: critical=0, severe=0, review=0, minor=3, flags=3
 - ramchal-ginzay-ramchal: critical=0, severe=0, review=0, minor=2, flags=2
 - ramchal-maamar-haikkarim: critical=0, severe=0, review=0, minor=2, flags=2
+- yemei-moharnat: critical=0, severe=0, review=0, minor=2, flags=2
+- nachas-hashulchan: critical=0, severe=0, review=0, minor=1, flags=1
 - parparos-lechochma: critical=0, severe=0, review=0, minor=1, flags=1
 - ramchal-asara-perakim: critical=0, severe=0, review=0, minor=1, flags=1
 - sichos-chayay-saba: critical=0, severe=0, review=0, minor=1, flags=1
 
 ## Top review files
-### SEVERE public/reader/ramchal-tikunim-chadashim/part-1/torah-1.json flags=260 bilingual_segments=1343/2636
-- hebrew_in_english_field at segments[2]/segment
-  HE: לרבינו רמח"ל זצ"ל
-  EN: תיקונים חדשים
-- tiny_he_long_en at segments[12]/segment
-  HE: הערת שוליים
-  EN: The Tikunim Chadashim — the New Tikunim — are one of the Ramchal’s most extraordinary compositions. The work is modeled directly on the Tikkunay Zohar, the ancient Kabbalistic clas
-- tiny_he_long_en at segments[14]/segment
-  HE: רס"א).
-  EN: What distinguishes the Tikunim Chadashim from its classical model is not form but content. The Ramchal himself, in a private letter appended to the work — his own explanation of a 
-- hebrew_in_english_field at segments[31]/segment
-  HE: (ישעיה כו יט) ודא יו"ד ק"א וא"ו בח"ס. ואיהו טל דאתפרש לתרין, בתרין מזלין עלאה ותתאה. בג"כ כי טל אורות טלך. ותרין זמנין טל איהו לחם, ודא מן דכתיב ביה הנני ממטיר לכם לחם מן השמים (שמ
-  EN: נא נח נחמא נחמן מאומן
-- hebrew_in_english_field at segments[35]/segment
-  HE: ב. א\'ל יישוב ד\'ך נ\'כלם ר"ת אדנ"י.
-  EN: תיקונים חדשים
-- long_he_tiny_en at segments[37]/segment
-  HE: ועוד המשכילים אלין תרין משיחין כמה דאתמר. והמשכילים, אלין כלהו ראשי סנהדראין, דכלהו קיימין הכי ברזא דמשכילים לאפקא נהירו לישראל, ואלין בני מתיבתא דתרין משיחין, ואלין ואלין יקומון ב
-  EN: New Rectifications
-- tiny_he_long_en at segments[45]/segment
-  HE: ממעלה למטה.
-  EN: These holy words are few in number but contain myriads of encoded meanings — Gematrios, acronyms (notarikon), Kabbalistic allusions to the Sefirot, the two Mashiachs, the Shechina 
-- hebrew_in_english_field at segments[47]/segment
-  HE: רמה ידך (ישעיה כו יא) יד שמאלא, כדין בל יחזיון. בההוא זמנא וארץ רפאים תפיל (שם שם יט). ורזא דא ערב רב אמרו אלה אלהיך ישראל (שמות לב ד) לאפרשא אל"ה ממ"י. וכדין מתמן מתתקפן אלקים אחר
-  EN: הקדמות — הקדמה ראשונה ושניה
-
-### SEVERE public/reader/likutay-halachos/part-2/halacha-32.json flags=161 bilingual_segments=331/406
-- hebrew_in_english_field at segments[10]/segment
-  HE: אות ד ויש לרמז גם בפרטיות הארבעה מיני לחם שמביאין בקרבן תודה שהם כנגד בחינת התקונים שנעשין על ידי שמחת המצוה שזהו בחינת קרבן תודה כנ"ל. כי מבאר שם בהתורה הנ"ל שעל ידי שמחת המצוה עו
-  EN: 16 גָּאַלְתָּ בִּזְרוֹעַ עַמֶּךָ בְּנֵי-יַעֲקֹב וְיוֹסֵף סֶלָה
-- hebrew_in_english_field at segments[16]/segment
-  HE: וכל אלו השלש באות מצה. ועוד צריכין להביא בתודה עשר חלות חמץ כמו שכתוב על חלות לחם חמץ , שזהו נפלאות נוראות הקרבן תודה שהיא משנה מכל הקרבנות שאסור בהם חמץ כמו שכתוב כי כל שאור וכו' 
-  EN: 18 זֹרְמוּ מַיִם עָבוֹת קוֹל נָתְנוּ שְׁחָקִים אַף-חֲצָצֶיךָ יִתְהַלָּכוּ
-- hebrew_in_english_field at segments[19]/segment
-  HE: כי הארבעה צריכין להודות, מבארין במזמור הודו כמבאר בגמרא שמשם למדו שאלו הארבעה צריכין להודות, והם הולכי מדבריות כמו שכתוב תעו במדבר וכו'. וזה כנגד בחינת מלכות שיוצאה מהגלות על ידי ש
-  EN: 19 קוֹל רַעַמְךָ בַּגַּלְגַּל הֵאִירוּ בְרָקִים תֵּבֵל רָגְזָה וַתִּרְעַשׁ הָאָרֶץ
-- hebrew_in_english_field at segments[22]/segment
-  HE: אות ו וזה לה' חסדו ונפלאותיו לבני אדם . חסדו, זה בחינת הארת המחין שהם על ידי ברכת הידים שהם בחינת חסד גבורה תפארת, שעקר הוא החסד כי א"ל נהירו דחכמתא והוא יומא דאזל עם כלהו יומין, ב
-  EN: 20 בַּיָּם דַּרְכֶּךָ וּשְׁבִילְךָ בְּמַיִם רַבִּים וְעִקְּבוֹתֶיךָ לֹא נֹדָעוּ
-- hebrew_in_english_field at segments[32]/segment
-  HE: אות י וזה בחינת מה שמבאר בהתורה הנ"ל שהסבי דבי אתונא אמרו ליה מי יימר, מי הוא זה שיכנס בהיכלי התמורות למקום הקלפות להעלות משם הקדשה וכו', והשיב להם איתו אשלי ומושחו, הינו עקר עלית 
-  EN: 2 בְּטֶרֶם הָרִים יֻלָּדוּ וַתְּחוֹלֵל אֶרֶץ וְתֵבֵל וּמֵעוֹלָם עַד-עוֹלָם אַתָּה אֵל
-- hebrew_in_english_field at segments[41]/segment
-  HE: וכבר כתבנו שכונתו הקדושה היתה על כל אחד מישראל אפלו על הגרוע שבגרועים וכו', כי כל אחד בכל מקום שהוא כל זמן ששם ישראל נקרא עליו ועוסק באיזה מצוה כגון בבקר שמתעטף בציצית, יש בכחו לשמ
-  EN: 5 זְרַמְתָּם שֵׁנָה יִהְיוּ בַּבֹּקֶר כֶּחָצִיר יַחֲלֹף
-- hebrew_in_english_field at segments[46]/segment
-  HE: וזהו לך לך מארצך וכו', שיעלה בחינת חלקו במלכות שנקרא אברם וילך ויעלה אותה משם ויתקן כלי ההליכה (שהם בחינת נצח הוד יסוד כנ"ל), ועל ידי ההליכה ואעשך לגוי גדול, כי יודיע אלקותו בכל הע
-  EN: 7 כִּי-כָלִינוּ בְאַפֶּךָ וּבַחֲמָתְךָ נִבְהָלְנוּ
-- hebrew_in_english_field at segments[52]/segment
-  HE: אות יח וזה בחינת כל המלחמה שהיה בין יעקב ועשו כי עקר השמחה הוא בחינת קדשת יעקב שהיתה מטתו שלמה בחינת יגל יעקב ישמח ישראל , וכתיב ישמח ישראל בעושיו. ועשו הוא אדום שממנו כל הגליות, ע
-  EN: 9 כִּי כָל-יָמֵינוּ פָּנוּ בְעֶבְרָתֶךָ כִּלִּינוּ שָׁנֵינוּ כְמוֹ-הֶגֶה
-
 ### SEVERE public/reader/likutay-halachos/part-2/halacha-44.json flags=159 bilingual_segments=422/522
 - tiny_he_long_en at aligned_segments[1]/segment
   HE: אות א
@@ -114,83 +61,135 @@ Files needing review (excluding normal untranslated books): 1751
   HE: ועל-כן הצדיק צריך לקבל כל כחו מכנסת ישראל, שהם בחינת מלכות בחינת אין מלך בלא עם. כי דיקא עליהם נתגלה מלכותו ואז הצדיק מתגבר בהשגותיו העצומים שהם בחינת ביתא עלאה בחינת אוריתא דעתיקא
   EN: [continued]
 
-### SEVERE public/reader/likutay-halachos/part-2/halacha-8.json flags=128 bilingual_segments=419/530
+### SEVERE public/reader/likutay-halachos/part-2/halacha-32.json flags=121 bilingual_segments=291/406
+- tiny_he_long_en at aligned_segments[1]/segment
+  HE: אות א
+  EN: This is the aspect of "Lech l'cha mai'artzecha... el ha'aretz asher ar'eka" — "Go for yourself from your land... to the land that I will show you" (Beraishis 12). Rashi explains: H
+- long_he_tiny_en at aligned_segments[3]/segment
+  HE: וצריך אתה המעין שתדע ותאמין שכל מה שנאמר שם, נעשה על ידי כל אחד מישראל כשזוכה להתגבר לעשות המצוה בשמחה, כי לא בשמים היא שלא נאמרה התורה לעולי שמים וכו', כי קרוב אלינו הדבר מאד וכו'
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[6]/segment
+  HE: כי כל הצרות רחמנא לצלן הם בחינת גלות השכינה כי בכל צרתם לו צר כידוע . ועקר גלות השכינה הוא מה שהעצבות מתגבר על לב ישראל, בחינת ויתעצב אל לבו כמבאר שם בהתורה הנ"ל. שמשם כל התאוות בפ
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[8]/segment
+  HE: ובשביל זה מביאין בקרבן תודה ארבעה מיני לחם, וכל אחד עשרה חלות, כי עקר העצבות נאחז בהלחם בבחינת בעצבון תאכלנה, בזעת אפך תאכל לחם . ולהפך עקר תקון האכילה על ידי שמחה בבחינת אכל בשמחה
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[10]/segment
+  HE: ויש לרמז גם בפרטיות הארבעה מיני לחם שמביאין בקרבן תודה שהם כנגד בחינת התקונים שנעשין על ידי שמחת המצוה שזהו בחינת קרבן תודה כנ"ל. כי מבאר שם בהתורה הנ"ל שעל ידי שמחת המצוה עולה מלכ
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[11]/segment
+  HE: וזה בחינת הארבעה מיני לחם שמביאין בקרבן תודה, שהוא בחינת שמחת המצוה כנ"ל, שהם כנגד ארבעה בחינת תקונים הנזכרים לעיל שנעשין על ידי שמחת המצוה. כי חלות מצות, זה בחינת מלכות שנקראת חלה
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[14]/segment
+  HE: . אבל הצדיקים שהם בחינת משיח שעושין המצוות בשמחה ומזכין את ישראל לזה, יכניעם ויהדקם בבחינת תדק ותסף כל אלין וכו'. והיא תקום לעלמיא וכו' (שם ב). וזה מרמז רקיקין שמהדקין אותן, וזה בח
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[16]/segment
+  HE: וכל אלו השלש באות מצה. ועוד צריכין להביא בתודה עשר חלות חמץ כמו שכתוב על חלות לחם חמץ , שזהו נפלאות נוראות הקרבן תודה שהיא משנה מכל הקרבנות שאסור בהם חמץ כמו שכתוב כי כל שאור וכו' 
+  EN: [continued]
+
+### SEVERE public/reader/likutay-halachos/part-2/halacha-8.json flags=120 bilingual_segments=412/530
 - long_he_tiny_en at segments[212]/segment
   HE: אות פח וזה בחינת אין מזמנין על הפרות, כי אין קבע לפרות רק ללחם העשוי מחמשה מינין שרק הוא משביע ומזין כי כבר מבאר בהלכות ברכת המזון (באות עה) שעקר ברכת הזמון הוא בחינת התגלות הרצון 
   EN: Tikun HaKlali
-- hebrew_in_english_field at segments[213]/segment
-  HE: ועל-כן אין ברכת הזמון שהוא התגלות הארת הרצון ביותר כי אם על הלחם, כי עקר הארת הרצון מתגלה ביותר על ידי הקבוץ של ישראל שעל ידי זה עקר כלליות העולמות וכו'. וכמבאר לעיל שזהו בחינת אין
-  EN: תִּקּוּן הַכְּלָלִי
-- long_he_tiny_en at segments[213]/segment
-  HE: ועל-כן אין ברכת הזמון שהוא התגלות הארת הרצון ביותר כי אם על הלחם, כי עקר הארת הרצון מתגלה ביותר על ידי הקבוץ של ישראל שעל ידי זה עקר כלליות העולמות וכו'. וכמבאר לעיל שזהו בחינת אין
-  EN: תִּקּוּן הַכְּלָלִי
 - long_he_tiny_en at segments[216]/segment
   HE: אות פט וזה בחינת ראש השנה שאז כל ישראל עוסקין בזה שכל אחד טורח ומתיגע לבא להקבוץ הקדוש של ישראל שזהו בחינת בתוך עמי אנכי יושבת, הנאמר על ראש השנה כמו שאיתא בזהר הקדוש. ואפלו מכל הכ
   EN: ch = kh
 - long_he_tiny_en at segments[218]/segment
   HE: אות צ וזהו בחינת החלוק שיש בין אכילת לחם לשאר פרות ומאכלים שעקר השביעה וחיות האדם וקיומו הוא על ידי הלחם, אבל שארי פרות ומאכלים אף שהם מחיין ומשיבין את הנפש, אבל הוא רק לפי שעה וכל
   EN: iy = eye
-- hebrew_in_english_field at segments[237]/segment
-  HE: וכל קרבן מנחתך במלח תמלח ולא תשבית מלח ברית אלקיך וכו'. שמפליג מאד בשבח המלח שכרת עמו ברית עולם להורות ולהודיע שאף על פי שצוה להביא קרבן ראשית משאור ודבש. אף על פי כן עקר התקון על 
-  EN: 6 חֲבָלִים נָפְלוּ-לִי בַּנְּעִמִים אַף-נַחֲלָת שָׁפְרָה עָלָי
-- hebrew_in_english_field at segments[243]/segment
-  HE: אות צט והנה כל ענין ראש השנה ויום כפור וסכות וארבעה מינים. כבר מבאר הרבה מזה על פי התורה הנ"ל כי מרחמם ינהגם בהלכות הקודמין. בהלכות סכה הלכה ד. ובהלכות נדרים הלכה ד אות ח. ובהלכות 
-  EN: 8 שִׁוִּיתִי יי לְנֶגְדִּי תָמִיד כִּי מִימִינִי בַּל-אֶמּוֹט
-- hebrew_in_english_field at segments[246]/segment
-  HE: אות נט . וזה בחינת כל האזרח בישראל ישבו בסכת לרמז על כלל נפשות ישראל שמתקבצין לתוך סכת שלום. ועל כן נכנסין כל השבעה רועים לתוך הסכה, כי הם בחינת כלל כל הרועים האמתיים שבכל דור שהם 
-  EN: 9 לָכֵן שָׂמַח לִבִּי וַיָּגֶל כְּבוֹדִי אַף-בְּשָׂרִי יִשְׁכֹּן לָבֶטַח
+- tiny_he_long_en at aligned_segments[1]/segment
+  HE: אות א
+  EN: This is the aspect of "T'hillah l'David" [Psalm 145 — "Ashray"] that we recite beforehand. Our Sages said (brachos 4b): "Whoever says T'hillah l'David three times each day is guara
+- tiny_he_long_en at aligned_segments[6]/segment
+  HE: אות ב
+  EN: This is the aspect of the making of the Menorah — which is the aspect of the Torah, as it says (Mishlai 6): "Ki nair mitzvah v'Torah or" — "For a mitzvah is a lamp and Torah is lig
+- tiny_he_long_en at aligned_segments[8]/segment
+  HE: אות ג
+  EN: The Core Teaching: To reach Eretz Yisrael, one must draw Torah — but only through mercy and supplication, never through the "staff of strength" of one's own merit. Moshe's error at
+- tiny_he_long_en at aligned_segments[12]/segment
+  HE: אות ה
+  EN: §14 — Aravos beaten alone: Until now, the wicked were rectified only when bound to the tzadik (aravah bound to lulav). Now on Hoshana Rabbah they stand alone — the tzadik has so th
+- tiny_he_long_en at aligned_segments[14]/segment
+  HE: אות ו
+  EN: §§17-18 — Application to eating: All food holiness derives from Eretz Yisrael. All berachos were derived from Birchas HaMazon — which blesses for the Land. Bread = Torah = water + 
 
-### SEVERE public/reader/likutay-halachos/part-2/halacha-27.json flags=93 bilingual_segments=196/242
-- hebrew_in_english_field at segments[4]/segment
-  HE: והנה על פי הדברים האלה יבין המשכיל קצת. שאין שום יאוש בעולם כלל, כמו שכתב רבנו זכרונו לברכה כמה פעמים , ומכל הנפילות והירידות יכולים לעלות. והירידה תהיה תכלית העליה. והכל בכח הצדיק
-  EN: 9 לָכֵן שָׂמַח לִבִּי וַיָּגֶל כְּבוֹדִי אַף-בְּשָׂרִי יִשְׁכֹּן לָבֶטַח
-- hebrew_in_english_field at segments[10]/segment
-  HE: אות ג אבל בודאי אין שום אדם יכול לסמך על זה חס ושלום, כי האומר אחטא ואשוב אין מספיקין בידו לעשות תשובה . כי מי יודע אם יהיה לו כח לעמד שם, כי לפעמים התגברות הסטרא אחרא גדולה כל כך 
-  EN: 11 תּוֹדִיעֵנִי אֹרַח חַיִּים שֹׂבַע שְׂמָחוֹת אֶת-פָּנֶיךָ נְעִמוֹת בִּימִינְךָ נֶצַח
-- hebrew_in_english_field at segments[17]/segment
-  HE: אות ו וזה בחינת סעדת פורים שהיא מצוה גדולה להרבות בסעדה. לאכל ולשתות ולשמח, כי אז האכילה בקדשה בבחינת מזונא דנשמתא. כי על ידי הריח טוב שנמשך על ידי התפלה בבחינת דין וכו' כנ"ל על יד
-  EN: 2 אַשְׁרֵי אָדָם לֹא יַחְשֹׁב יי לוֹ עָוֹן וְאֵין בְּרוּחוֹ רְמִיָּה
-- hebrew_in_english_field at segments[26]/segment
-  HE: אות י וזה בחינת חמץ ומצה. שעקר הזהירות מחמץ למצה הוא במים דיקא כנ"ל, כי תכף כשבא מים על העסה תכף ומיד צריכין לזהר מאד מחמץ לבלי להשהות את העסה כלל. כדי שלא יתאחזו בהמים הכפירות של 
-  EN: 5 חַטָּאתִי אוֹדִיעֲךָ וַעֲוֹנִי לֹא-כִסִּיתִי אָמַרְתִּי אוֹדֶה עֲלֵי פְשָׁעַי לַיי וְאַתָּה נָשָׂאתָ עֲוֹן חַטָּאתִי סֶלָה
-- hebrew_in_english_field at segments[29]/segment
-  HE: אות יא על-פי התורה הנ"ל מבאר ענין ברכת הריח שמברכין לפניו ולא לאחריו, כמבאר בשלחן ערוך על הריח מברכין לפניו אבל לאחריו אין צריך לברך כלום , כי מבאר בהתורה הנ"ל. שעקר האמונה זוכין ע
-  EN: 6 עַל-זֹאת יִתְפַּלֵּל כָּל-חָסִיד אֵלֶיךָ לְעֵת מְצֹא רַק לְשֵׁטֶף מַיִם רַבִּים אֵלָיו לֹא יַגִּיעוּ
-- hebrew_in_english_field at segments[32]/segment
-  HE: אות יב נמצא, שברכה ראשונה וברכה אחרונה שמברכין על כל דבר הוא בבחינת אמונת חדוש העולם של עכשו. שזהו בחינת ברכה הראשונה. ובחינת אמונת חדוש העולם של לעתיד שזהו בחינת ברכה אחרונה שהיא 
-  EN: 7 אַתָּה סֵתֶר לִי מִצַּר תִּצְּרֵנִי רָנֵּי פַלֵּט תְּסוֹבְבֵנִי סֶלָה
-- hebrew_in_english_field at segments[38]/segment
-  HE: אות טו נמצא שעקר אחיזת המדמה הוא רק בעשיה גשמית. ששם צריכין עקר הברור. ועל כן על הריח אין צריך לברך רק ברכה ראשונה. שאז עדין נאחז הריח בדבר גשמי על כן צריכין לברך הברכה ראשונה. כדי
-  EN: 9 אַל-תִּהְיוּ כְּסוּס כְּפֶרֶד אֵין הָבִין בְּמֶתֶג-וָרֶסֶן עֶדְיוֹ לִבְלוֹם בַּל קְרוֹב אֵלֶיךָ
-- hebrew_in_english_field at segments[41]/segment
-  HE: ובשביל זה נקרא הארץ אדמה. לשון דמיון, הינו בחינת המדמה, כמו שכתוב: וביד הנביאים אדמה. כי עקר אחיזת המדמה הוא בבחינת הארץ שהוא תכלית הגשמיות כנ"ל. ובשביל זה נקרא האדם בשם אדם על שם 
-  EN: 10 רַבִּים מַכְאוֹבִים לָרָשָׁע וְהַבּוֹטֵחַ בַּיי חֶסֶד יְסוֹבְבֶנּוּ
+### SEVERE public/reader/likutay-halachos/part-1/halacha-27.json flags=94 bilingual_segments=198/198
+- tiny_he_long_en at segments[1]/segment
+  HE: הלכה ג
+  EN: In truth, I am but an ignorant man, and the understanding of a person is not with me. I do not merit to understand what I have seen written in several sefarim of Kabbalah — impreci
+- tiny_he_long_en at segments[2]/segment
+  HE: אות א
+  EN: In truth, I know that the Rav mentioned above, and all the other sefarim in which such language is written — their intention was as I have written. Only, with forgiveness of their 
+- tiny_he_long_en at segments[5]/segment
+  HE: אות ב
+  EN: And likewise it is explained at the end of the Ma'aseh that the Name is the aspect of the light of the ner. As explained there at the end: the moon holds a ner in her hand and says
+- tiny_he_long_en at segments[7]/segment
+  HE: אות ג
+  EN: This is the aspect of the Ner Shabbos [Shabbos candle]. For Shabbos is king — the aspect of "Shabbos malchusa" — and the six weekdays are the aspect of avdus, for during them one p
+- tiny_he_long_en at segments[9]/segment
+  HE: אות ד
+  EN: Connected to what was said above: therefore there are eight days of Chanukah, corresponding to the eight kings of kedushah of Yisrael, which are in turn corresponding to the eight 
+- tiny_he_long_en at segments[11]/segment
+  HE: אות ה
+  EN: Therefore, Yisrael are sometimes called by the name of avadim [servants] to Hashem and sometimes by the name of banim [sons]. As it is written (Vayikra 25): "Ki li bnay Yisrael ava
+- tiny_he_long_en at segments[13]/segment
+  HE: אות ו
+  EN: Therefore it is called Chanukah — after the chanukas [dedication of] the Beis HaMikdash that was dedicated then, as our Sages said. For on Chanukah we draw the aspect of the holine
+- tiny_he_long_en at segments[15]/segment
+  HE: אות ז
+  EN: All this is the aspect of Arichas Apayim — to always extend one's spirit all the days of his life, however things may be, never falling from anything, always beginning to draw clos
 
-### SEVERE public/reader/likutay-halachos/part-4/halacha-60.json flags=84 bilingual_segments=177/224
-- hebrew_in_english_field at segments[2]/segment
-  HE: אות ב הלכות הכשר כלים ובו ענין ספיר' ושבועות על פי התורה ויהי' נא פי שנים ברוחך אלי (בל"א) סי' ס"ו) ע"כ כל התורה:
-  EN: 9 אֲשֶׁר כָּרַת אֶת-אַבְרָהָם וּשְׁבוּעָתוֹ לְיִשְׂחָק
-- hebrew_in_english_field at segments[4]/segment
-  HE: כי כל אדם צריך לעסוק בתיקון הבריאה כי הכל צריך תיקון. כי אע"פ שהש"י כבר ברא את כל הבריאה אבל הכל נברא מחוסר תיקון כידוע. כי הכל נברא בשביל האדם שהוא איש הישראלי שהוא יעסוק בתיקון ה
-  EN: 10 וַיַּעֲמִידֶהָ לְיַעֲקֹב לְחֹק לְיִשְׂרָאֵל בְּרִית עוֹלָם
-- hebrew_in_english_field at segments[11]/segment
-  HE: אות ו וזה בחי' ספירה שסופרין הימים הם בחי' מוציא מכח אל הפועל כי שבעה שבועות של ימי הספירההם כנגד ז' ימי בראשית שכל יום כלול משבעה. ובכל יום היה בו בריאה מיוחדת שהוא בחי' מוציא מכח
-  EN: 13 וַיִּתְהַלְּכוּ מִגּוֹי אֶל-גּוֹי מִמַּמְלָכָה אֶל-עַם אַחֵר
-- hebrew_in_english_field at segments[13]/segment
-  HE: אות ז וזה בחינת טבילת כלים. וזה בחי' עוצחם מעלת טבילת מקוה של ישראל שא"א לצאת מטומאה לטהרה כ"א ע"י טבילת מקוה. כי מבואר בהתורה הנ"ל שכל אדם יש לו חיות למטה וחיות למעלה שהם בחי' הרו
-  EN: 14 לֹא-הִנִּיחַ אָדָם לְעָשְׁקָם וַיּוֹכַח עֲלֵיהֶם מְלָכִים
-- hebrew_in_english_field at segments[16]/segment
-  HE: אות ט
-  EN: 15 אַל-תִּגְּעוּ בִמְשִׁיחָי וְלִנְבִיאַי אַל-תָּרֵעוּ
-- hebrew_in_english_field at segments[21]/segment
-  HE: אות יא וזהו בחי' י"ג מדות של רחמים שמתחילין ה' ה' שזהו בחי' פי שנים הנ" לשעל ידי זה עיקר המשכת רחמיו הגדולים והמרובים מאדמ אדמ שעל ידי זה עיקר מחילת עונות אפילו אם קלקל כמו שקלקל ח
-  EN: 17 שָׁלַח לִפְנֵיהֶם אִישׁ לְעֶבֶד נִמְכַּר יוֹסֵף
-- hebrew_in_english_field at segments[24]/segment
-  HE: אות יב וזה בחי' טבילת מקוה שעל ידי זה כל הטמאים יוצאין מטומאה לטהרה כי כל הטומאו' שהם בחי' עבירות שעל ידם שורה רוח הטומאה חס ושלום כולם נמשכין ע"י פגם התפתחות הידים שהוא בחי' פגם מ
-  EN: 18 עִנּוּ בַכֶּבֶל רַגְלוֹ בַּרְזֶל בָּאָה נַפְשׁוֹ
-- hebrew_in_english_field at segments[30]/segment
-  HE: אות טו וכל זה היה סמוך להסתלקות משה שאז היה מעשה בלעם הרשע ומלחמת מדין כמ"ש שם אחר תאסף אל עמך. ואז בא משה לכלל כעס על שהחיו את בנות מדין שהכשילו את ישראל בדבר בעלם. כי משה רבינו ר
-  EN: 20 שָׁלַח מֶלֶךְ וַיַּתִּירֵהוּ מוֹשֵׁל עַמִּים וַיְפַתְּחֵהוּ
+### SEVERE public/reader/likutay-halachos/part-1/halacha-26.json flags=88 bilingual_segments=196/196
+- tiny_he_long_en at segments[1]/segment
+  HE: הלכה ג
+  EN: This is the aspect of the sale of Yosef — the aspect of (Tehillim 105) "l'eved nimkar Yosef" — "Yosef was sold as a slave" — which we read in the parshiyos of the sale of Yosef and
+- tiny_he_long_en at segments[2]/segment
+  HE: אות א
+  EN: This is the aspect of why the mother's name specifically is mentioned when praying for a sick person. For all illness of a person is drawn from the aspect of the exchange of the Pr
+- tiny_he_long_en at segments[5]/segment
+  HE: אות ב
+  EN: It follows that the essential aspect of death is through the overpowering of the slave over the son — the body over the neshamah — which is the aspect of the sin of Adam HaRishon, 
+- tiny_he_long_en at segments[7]/segment
+  HE: אות ג
+  EN: Therefore, when a person is ill — which is the beginning of death, where the neshamah begins to withdraw, drawn from the aspect of tosif rucham yigva'un, so that he will merit in t
+- tiny_he_long_en at segments[9]/segment
+  HE: אות ד
+  EN: This is the aspect of what we find in all of Sefer Melachim: for all the kings of Beis Dovid, the mother's name of the king is always mentioned. For kingship is the aspect of the N
+- tiny_he_long_en at segments[11]/segment
+  HE: אות ה
+  EN: This is the aspect of Pesukay dizimra that are recited after Parshas HaKorbanos. This is the secret of the aspect of the man of the forest in the Ma'aseh, who took the Prince and b
+- tiny_he_long_en at segments[13]/segment
+  HE: אות ו
+  EN: This is the aspect of why all the Avos were shepherds of animals — all in order to refine the exchange, which is the aspect of the intermingling and exchange of the spirit of man w
+- tiny_he_long_en at segments[15]/segment
+  HE: אות ז
+  EN: Let us return to the matter of Chanukah. For all of this is the aspect of Chanukah. The mitzvah of Chanukah — to draw the light of truth into the world — is all in order to magnify
+
+### SEVERE public/reader/likutay-halachos/part-1/halacha-49.json flags=80 bilingual_segments=184/184
+- tiny_he_long_en at segments[1]/segment
+  HE: הלכה ו
+  EN: The essential point: through instilling in every Yid that he should bless and give thanks for his portion — that he is from the seed of Yisrael, and "shelo asani goy," etc. — as ex
+- tiny_he_long_en at segments[2]/segment
+  HE: אות א
+  EN: Therefore, after Kri'as Yam Suf, chametz was permitted. For the essential prohibition of chametz is not to "leaven" the mind with the investigations whose root is from the secret o
+- tiny_he_long_en at segments[6]/segment
+  HE: אות ב
+  EN: This is the aspect of "chatzos lailah akum l'hodos l'cha" — for kimas chatzos and Bircas HaTorah are one aspect. Through them one awakens the nekudah tovah within him from the kedu
+- tiny_he_long_en at segments[8]/segment
+  HE: אות ג
+  EN: All of this is the aspect of Pesach — the prohibition of chametz and the mitzvah of eating matzah. As explained above regarding the statement of our Sages: "The difference between 
+- tiny_he_long_en at segments[10]/segment
+  HE: אות ד
+  EN: For the essential geulah from Mitzrayim and from all the exiles, and all of Yisrael's drawing close to Hashem, is through the aspect of pidyonos — the sweetening of the dinim — thr
+- tiny_he_long_en at segments[12]/segment
+  HE: אות ה
+  EN: For this reason Moshe refused his mission repeatedly and said : "Sh'lach na b'yad tishlach" — "Send through whomever You will send" — for "I know that I am not the one who will red
+- tiny_he_long_en at segments[14]/segment
+  HE: אות ו
+  EN: However, at the time of Yetzias Mitzrayim — before receiving the Torah — it was not possible to ascend to there, as understood in the Kavanos. And the contamination of Mitzrayim wa
+- tiny_he_long_en at segments[16]/segment
+  HE: אות ז
+  EN: Therefore at the time of Yetzias Mitzrayim — although they did not ascend to the Dikna from which comes the upper all-encompassing pidyon, and the geulah was through the twenty-fou
 
 ### SEVERE public/reader/likutay-halachos/part-3/halacha-7.json flags=76 bilingual_segments=238/312
 - tiny_he_long_en at aligned_segments[1]/segment
@@ -244,57 +243,83 @@ Files needing review (excluding normal untranslated books): 1751
   HE: וזה בחינת התשובה שמתחלת בראש השנה שהוא יום ראשון לעשרת ימי תשובה. כי עקר התשובה על ידי בחינת הבטול הנזכר לעיל שזהו בחינת ראש השנה כנזכר לעיל. וזהו בחינת כל התעניתים והסגופים שגוזרי
   EN: [continued]
 
-### SEVERE public/reader/likutay-halachos/part-1/halacha-55.json flags=72 bilingual_segments=272/300
-- hebrew_in_english_field at segments[4]/segment
-  HE: וזה בחינתמצות בנין בית הכנסת ובית המדרש שהיא מצוה רבה מאד הקיימת לדורות אם כוונתו לשם שמים. כי בבית הכנסת מתכנסים כל הנפשות של קיבוץ בני ישראל להתפלל ולומר קדושה וברכו וכו', ולשם מ
-  EN: 15 שַׂמְּחֵנוּ כִּימוֹת עִנִּיתָנוּ שְׁנוֹת רָאִינוּ רָעָה
-- hebrew_in_english_field at segments[10]/segment
-  HE: אות ד ועל כן קדושת בית המדרש חמורה יותר מקדושת בית הכנסת. כי שם בבית המדרש עוסקים בתורה שזהו בחינת קבלת התרוה שעל ידי זה עיקר בירור האמונה כנ"ל. וגם בבית הכנסת עוסקים בתורה, כי אומ
-  EN: 17 וִיהִי נֹעַם אֲדֹנָי אֱ-לֹהֵינוּ עָלֵינוּ וּמַעֲשֵׂה יָדֵינוּ כּוֹנְנָה עָלֵינוּ וּמַעֲשֵׂה יָדֵינוּ כּוֹנְנֵהוּ
-- hebrew_in_english_field at segments[14]/segment
-  HE: ועל כן (ברכות ח') רב אמי ורב אסי אף על גב דהוי להו תליסר בי כנישתא לא הוו מצלי אלא היכי דהוו גרסי. כי מסיר אזנו משמוע תורה גם תפלתו תועבה. משמוע דייקא. כי שמיעה בלבא תליא. בחינת הט
-  EN: 1 הוֹדוּ לַיי קִרְאוּ בִּשְׁמוֹ הוֹדִיעוּ בָעַמִּים עֲלִילוֹתָיו
-- hebrew_in_english_field at segments[17]/segment
-  HE: אות ח
-  EN: 2 שִׁירוּ-לוֹ זַמְּרוּ-לוֹ שִׂיחוּ בְּכָל-נִפְלְאוֹתָיו
-- hebrew_in_english_field at segments[26]/segment
-  HE: אות יב וזה בחינת מלאכת המשכן. כי המשכן הוא בחינת הבית המקדש כמו שכתוב (שמות כ"ה) ועשו לי מקדש וכו'. שהוא בית התפלה כמו שכתוב (ישעיה נ"ו) והבי~ אותים וכו' כי ביתי בית תפלה יקרא לכל 
-  EN: 5 זִכְרוּ נִפְלְאוֹתָיו אֲשֶׁר-עָשָׂה מֹפְתָיו וּמִשְׁפְּטֵי-פִיו
-- hebrew_in_english_field at segments[32]/segment
-  HE: אות טו והיריעות של המשכן שהיו של מיני בגדים תכלת וארגמן, זה בחינת הכבוד שנתרבה על ידי התפלה הנ"ל שהוא בחינת לבושים כי ר' יוחנן קרא למאני' מכבדותא (שבת קי"ג). כי היריעות היו חופין ע
-  EN: 7 הוּא יי אֱ-לֹהֵינוּ בְּכָל-הָאָרֶץ מִשְׁפָּטָיו
-- hebrew_in_english_field at segments[38]/segment
-  HE: אות יח ועל כן כל המשכן וכליו נמשח בשמן המשחה שהוא ריח טוב מאד. כי כל קדושת המשכן וכליו נמשך רק על ידי הצדיק בחינת משה שעוסק בכחו הגדול בכל התקונים הנ"ל עד שממשיך בחינת ריח טוב שהוא
-  EN: 9 אֲשֶׁר כָּרַת אֶת-אַבְרָהָם וּשְׁבוּעָתוֹ לְיִשְׂחָק
-- hebrew_in_english_field at segments[40]/segment
-  HE: אות יט ועיקר תיקון המשכן היה בשביל שילך עמם במדבר שפרקוהו והעמידוהו בכל פעם והוא מרמז על החורבן והגלות שכל קיומינו הוא על ידי בחינתתיקוני המשכן הנ"ל בבחינת (שמות ל"ח) אלה פקודי המש
-  EN: 10 וַיַּעֲמִידֶהָ לְיַעֲקֹב לְחֹק לְיִשְׂרָאֵל בְּרִית עוֹלָם
+### SEVERE public/reader/likutay-halachos/part-1/halacha-54.json flags=72 bilingual_segments=154/154
+- tiny_he_long_en at segments[1]/segment
+  HE: הלכה ה
+  EN: This is the aspect of the blemish of the Eirev Rav who made the Eigel through saying: "Ki zeh Moshe ha'ish lo yadanu meh hayah lo" — "For this man Moshe — we do not know what has b
+- tiny_he_long_en at segments[2]/segment
+  HE: אות א
+  EN: All this was because Moshe delayed slightly in coming — the aspect of : "Vayar ha'am ki voshaish Moshe..." — "The people saw that Moshe was delayed..." For whoever wishes to draw u
+- tiny_he_long_en at segments[5]/segment
+  HE: אות ב
+  EN: Regarding this we pray after Bircas Ga'al Yisrael: "Hashkivainu l'shalom... v'ha'amidainu l'shalom, v'hasair mimenu oyaiv..." — "Lay us down in peace... raise us up to peace, and r
+- tiny_he_long_en at segments[7]/segment
+  HE: אות ג
+  EN: On Shabbos we bless "HaForais Sukas Shalom" — for the essential tikkun is through Shabbos, when the essential illumination of the Ratzon shines. Therefore on Shabbos one does not n
+- tiny_he_long_en at segments[9]/segment
+  HE: אות ד
+  EN: All of this is the aspect of the fourth berachah of Kri'as Shma at Ma'ariv — Bircas Hashkiveinu — for the strengthening of the ratzon. How beautiful and pleasant are the words of o
+- tiny_he_long_en at segments[11]/segment
+  HE: אות ה
+  EN: Therefore in the later generations, when they saw that the galus was being greatly prolonged, they added the berachah of "Baruch Hashem L'Olam Amein v'Amein..." which speaks entire
+- tiny_he_long_en at segments[13]/segment
+  HE: אות ו
+  EN: Therefore Eliyahu said to them : "Ad masai atem pos'chim al shtai has'ifim — im Hashem..." — "How long will you hop between two opinions? If Hashem [is God, follow Him]..." — "pos'
+- tiny_he_long_en at segments[15]/segment
+  HE: אות ז
+  EN: This is: "Ilmalai shamru Yisrael shtai Shabbasos miyad hayu nig'alin" — "Had Yisrael kept two Shabbosos, they would have been immediately redeemed" — "If Yisrael kept two Shabbosos
 
-### SEVERE public/reader/likutay-halachos/part-3/halacha-21.json flags=70 bilingual_segments=193/242
-- hebrew_in_english_field at segments[20]/segment
-  HE: ועל פי כל זה תוכל להבין קצת קשר כל התורה הנ"ל היטב ותוכל לקבל משם הצלה לנפשך בכל עת אם תרצה באמת לאמתו:
-  EN: 5 חַטָּאתִי אוֹדִיעֲךָ וַעֲוֹנִי לֹא-כִסִּיתִי אָמַרְתִּי אוֹדֶה עֲלֵי פְשָׁעַי לַיי וְאַתָּה נָשָׂאתָ עֲוֹן חַטָּאתִי סֶלָה
-- hebrew_in_english_field at segments[26]/segment
-  HE: ועל כן הם ג' ספרים כמו שאמרו רז"ל צדיקים נכתבים לאלתר לחיים. רשעים לאלתר למיתה בינונים תלויים ועומדים עד יום כפור ולמדו מפסוק ימחו מספר חיים וכו'. כי צדיקים הם התלמידי חכמים האמתיי
-  EN: 7 אַתָּה סֵתֶר לִי מִצַּר תִּצְּרֵנִי רָנֵּי פַלֵּט תְּסוֹבְבֵנִי סֶלָה
-- hebrew_in_english_field at segments[32]/segment
-  HE: אות יג ועל כן נקבע חנוכה בסוף חודש כסליו ובראש חדש ותחילת חודש טבת מה שלא מצינו בשום יום טוב כי אז הוא בחינת תיקון פגימת הלבנה שעיקר תיקונה כשמתמעטת בתכלית המיעוט בסוף החדש וחוזרת 
-  EN: 9 אַל-תִּהְיוּ כְּסוּס כְּפֶרֶד אֵין הָבִין בְּמֶתֶג-וָרֶסֶן עֶדְיוֹ לִבְלוֹם בַּל קְרוֹב אֵלֶיךָ
-- hebrew_in_english_field at segments[38]/segment
-  HE: אות טז כי עיקר חינוך המשכן הוא בחינת להשלים את התורה בחינת לוחות הבן שעמדו בארון שמשם כל קדושת המשכן והבית המקדש שבשביל זה חנכו אותו כדי לתקן פגם הערב רב שעשו את העגל על ידי שפגמו 
-  EN: 11 שִׂמְחוּ בַיי וְגִילוּ צַדִּיקִים וְהַרְנִינוּ כָּל-יִשְׁרֵי-לֵב
-- hebrew_in_english_field at segments[42]/segment
-  HE: ועל כן בני ישכר שהיו בקיאים בסוד העיבור נאמר בהם ומבני יששכר יודעי בינה לעתים לדעת מה יעשה ישראל שמזה הפסוק למדו שהיו יודעים ומבינים בסוד העיבור לעבר שנים ולקבוע חדשים בעתם ובזמנם.
-  EN: 1 לַמְנַצֵּחַ מִזְמוֹר לְדָוִד
-- hebrew_in_english_field at segments[48]/segment
-  HE: אות כא ועל כן גם גדולת החמה שתתגדל לעתיד יהיה רק על ידי גדולת הלבנה. שתתגדל על ידי שישובו ישראל להשם יתברך כמו שכתוב והיה אור הלבנה. כאור החמה ואור החמה יהיה שבעתים כאור שבעת הימים
-  EN: 3 יי יִשְׁמְרֵהוּ וִיחַיֵּהוּ וְאֻשַּׁר בָּאָרֶץ וְאַל-תִּתְּנֵהוּ בְּנֶפֶשׁ אֹיְבָיו
-- hebrew_in_english_field at segments[57]/segment
-  HE: אות כד כי הבירורים של כל ימי החול שהם בחינת ל"ט מלאכות הם לברר המאכל מהעשנים סרוחים שנמשכו על ידי פגם האכילה של אדם הראשון שאכל מעץ הדעת טוב ורע שפגם אז באמונת חכמים של האמין בעצמו
-  EN: 6 אוֹיְבַי יֹאמְרוּ רַע לִי מָתַי יָמוּת וְאָבַד שְׁמוֹ
-- hebrew_in_english_field at segments[60]/segment
-  HE: כי יש ספרים קדושים מחידושי תורה שהם בחינת שבת שאז תכלית היחוד בין תורה שבכתב ותורה שבעל פה. היינו שתורה שבעל פה שהוא מש המחדשין החכמים הגדולים האמיתיים הוא עולה עד שורש התורה שבכתר
-  EN: 7 וְאִם-בָּא לִרְאוֹת שָׁוְא יְדַבֵּר לִבּוֹ יִקְבָּץ-אָוֶן לוֹ יֵצֵא לַחוּץ יְדַבֵּר
+### SEVERE public/reader/likutay-halachos/part-2/halacha-27.json flags=72 bilingual_segments=175/242
+- long_he_tiny_en at segments[49]/segment
+  HE: ועל-פי זה תבין מה שמבאר בהתורה הנ"ל. שצריכין לראות להשתדל מאד להתקרב לצדיק אמתי. כדי לזכות לברר המדמה. שעל ידי זה יזכה לאמונה שלמה שהיא העקר כנ"ל. ולכאורה קשה. הלא גם להצדיק האמת ב
+  EN: Lamnatzai-ach mizmohr liduvveed.
+- tiny_he_long_en at aligned_segments[1]/segment
+  HE: אות א
+  EN: This is the aspect of the prohibition of chametz on Pesach, which is exceedingly severe — it is the aspect of the sin of the Aitz HaDa'as = sitra d'mosa. As is brought: "machmetzes
+- long_he_tiny_en at aligned_segments[6]/segment
+  HE: . הינו שעקר הכח להיות עז כנמר כנגד כל התאוות והפתויים הוא רק על ידי חכמה אמתיות שהוא בחינת מחין דגדלות, כי המחין הם בחינת מחצות פרוסות כנגד תאות נאוף, כמבאר בהתורה הנ"ל. הכלל שהאדם
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[8]/segment
+  HE: כי אין זה דרך הענוה להקטין כחו ולומר שאין לו נשמה גבה כמו הצדיקים והכשרים כאלו אין בידו להיות איש כשר או צדיק כי ענוה כזו אסורה והיא ענוה פסולה ואין זה ענוה כלל, רק מחין דקטנות שצר
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[10]/segment
+  HE: אבל בודאי אין שום אדם יכול לסמך על זה חס ושלום, כי האומר אחטא ואשוב אין מספיקין בידו לעשות תשובה . כי מי יודע אם יהיה לו כח לעמד שם, כי לפעמים התגברות הסטרא אחרא גדולה כל כך עד שבו
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[12]/segment
+  HE: וזה בחינת מלחמת עמלק שבכל דור ודור, כי זה עקר הבחירה של כל אדם כנ"ל. והבחירה של כל אדם לעמד כנגד היצר הרע. זה בחינת מלחמת עמלק. שהוא עקר זהמת הנחש שמשם עקר היצר הרע כידוע:
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[13]/segment
+  HE: וזה בחינת פורים שהוא מלחמת המן עמלק. שעקר הכנעתו היתה על ידי לקיחת אסתר לבית אחשורוש שזהו בחינת תפלה בבחינת דין של הבעל כח. שעל ידי זה עקר מפלת המן עמלק כנ"ל. כי אסתר היא בחינת התפ
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[15]/segment
+  HE: וזהו בחינת תקף הנס של פורים שהוא נס נפלא אשר כמוהו לא נהיתה. וכמבאר בדברי רבותינו זכרונם לברכה מגדל הפלגת הנס של פורים. אשר אין דגמתו בכל הנסים שעברו עד ביאת משיח צדקנו. וכמו שאמרו
+  EN: [continued]
+
+### SEVERE public/reader/likutay-halachos/part-1/halacha-22.json flags=70 bilingual_segments=184/184
+- tiny_he_long_en at segments[1]/segment
+  HE: הלכה ה
+  EN: This is what our Sages said (Shabbos 49a): "Tefillin require a clean body — that one not pass wind while wearing them." For n'fichah [flatulence/puffing] comes from the pesoless [w
+- tiny_he_long_en at segments[2]/segment
+  HE: אות א
+  EN: This is the aspect of Tefillin shel Rosh: from there the light emerges — the kesher [knot] of Dalet attached to the shel Rosh = "Melech asur barahatim" — Malchus bound within the M
+- tiny_he_long_en at segments[5]/segment
+  HE: אות ב
+  EN: This is the aspect of Bircas HaShachar [Morning Blessings]. When one arises from sleep, one must wash the hands and bless "Al netilas yadayim." Waking from sleep = Techiyas HaMaisi
+- tiny_he_long_en at segments[7]/segment
+  HE: אות ג
+  EN: This is the aspect of the blessing "HaNoasain laSechvi vinah l'havchin bein yom oovayn lailah" — "Who gives the rooster understanding to distinguish between day and night." Night =
+- tiny_he_long_en at segments[9]/segment
+  HE: אות ד
+  EN: For in truth, the essential death came because Adam blemished through ge'us (the Tree of Knowledge). The essence of the side of death is that the neshamah separates from the body. 
+- tiny_he_long_en at segments[11]/segment
+  HE: אות ה
+  EN: This is the aspect of Purim — to subdue and bring down Haman the wicked. Haman = ge'us — he was exceedingly arrogant, wanting all to bow to him, envying Mordechai. He made himself 
+- tiny_he_long_en at segments[13]/segment
+  HE: אות ו
+  EN: Through all this one merits Shavuos = Yom HaBikurim [Day of the Firstfruits], when we read the Viduy bikurim: "Arami oveid avi" — "An Aramean sought to destroy my father" = Lavan H
+- long_he_tiny_en at segments[24]/segment
+  HE: וזהו בחינת מעברתא של תפילין ששם עוברים הרצועות שהוא בחינת מעבר יב"ק כמובא בכוונות כי הרצועות הם בחינת המשכת המוחין של התפילין שהוא בחינת אור הפנים שהוא בחינת י"ג תקוני דיקנא בחינת 
+  EN: 48 Menachos 39a.
 
 ### SEVERE public/reader/chumash-lh/section-49.json flags=69 bilingual_segments=249/260
 - long_he_tiny_en at segments[10]/segment
@@ -374,6 +399,58 @@ Files needing review (excluding normal untranslated books): 1751
   HE: אות ח
   EN: And this is what our Sages, of blessed memory, said: “The judge should see as if Gehinnom is open beneath him, and as if a sword” etc. (Sanhedrin 7a). For certainly it is a great w
 
+### SEVERE public/reader/likutay-halachos/part-1/halacha-43.json flags=64 bilingual_segments=146/146
+- tiny_he_long_en at segments[1]/segment
+  HE: הלכה ה
+  EN: About this Dovid HaMelech prayed : "Arov avdecha l'tov — al ya'ashkuni zeidim" — that the wicked ones, who are the Sitra Achra and kelipos that oppress the neshamos in the tikla, s
+- tiny_he_long_en at segments[2]/segment
+  HE: אות א
+  EN: This is the aspect of : "Chaltzeini Hashem me'adam ra, me'ish chamasim tintzereini." And the aspect of : "Yechalku vegadai lahem, v'al levushi yapilu goral... hatzilah meicherev na
+- tiny_he_long_en at segments[4]/segment
+  HE: אות ב
+  EN: Therefore Dovid HaMelech specifically multiplied in prayer about this more than any other tzaddik, for the essential tikun of Heichalei HaTemuros is through Dovid, who worked on th
+- tiny_he_long_en at segments[6]/segment
+  HE: אות ג
+  EN: Therefore he was truly in great danger all his days from the Sitra Achra that overpowered him at all times, as it is written : "Lulei Hashem ezrasah li, kim'at shachnah dumah nafsh
+- tiny_he_long_en at segments[8]/segment
+  HE: אות ד
+  EN: For this is not the path of true humility — to consider oneself a complete rasha, chas v'shalom, and to diminish the greatness of one's holy nefesh. Rather, the opposite: one must 
+- tiny_he_long_en at segments[10]/segment
+  HE: אות ה
+  EN: This is the aspect of : "Vayigbah libo b'darkei Hashem" — "His heart was elevated in the ways of Hashem." One must elevate his heart and his mind in the ways of Hashem and say in h
+- tiny_he_long_en at segments[13]/segment
+  HE: אות ו
+  EN: This very matter — that people err about themselves and think their nefesh is not precious and holy, and because of this they do not strengthen themselves to act like the tzaddikim
+- tiny_he_long_en at segments[15]/segment
+  HE: אות ז
+  EN: But in truth, a person must know and believe that the nefesh of every Jew is exceedingly lofty and precious, and all of them are children of kings, and they can merit exceedingly l
+
+### SEVERE public/reader/likutay-halachos/part-4/halacha-60.json flags=63 bilingual_segments=156/224
+- long_he_tiny_en at aligned_segments[3]/segment
+  HE: כי קודם שמוציאין מכח אל הפועל אזי הכח והפועל אחד וכו'. וצריך כל אחד להשתדל והלוציא מכח אל הפועל לפתוח הידים שיהיה נמשך ונפתח הרוח דלתתא מן הרוח דלעילא וכו' וכו'. וכל המצות ועבירו ת
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[4]/segment
+  HE: כי כל אדם צריך לעסוק בתיקון הבריאה כי הכל צריך תיקון. כי אע"פ שהש"י כבר ברא את כל הבריאה אבל הכל נברא מחוסר תיקון כידוע. כי הכל נברא בשביל האדם שהוא איש הישראלי שהוא יעסוק בתיקון ה
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[5]/segment
+  HE: כי עיקר השלימות שיתפתחו הידים ויהי' ניכר ונגלה הרוח דלתתא ויצא מכח אל הפועל מהרוח דלעילא כמ"ש שם. אבל העיקר שאחר התפתחות הידים שהם בחי' ב' הרוחות ב' היודין הנ"ל יהיו עדיין גם אח"כ 
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[7]/segment
+  HE: וזה בחי' ל"ג בעומר בחי' הילולא דרשב"י בח'י גדולים צדיקים במיתתן יותר מבחייהם. כי הצדיק הגדול מתייגע כל ימיו ביגיעות עצומות מאד בשביל תקנות ישראל להשיבם כולם לאביהם שבשמים. אבל הבעל
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[9]/segment
+  HE: אבל א"א לינק ולקבל מהשארת תורתם הקדושה של הצדיקי אמת כ"א ע"י שבירת מניעות. ע"י עוצם החשק והכיסופין להתקרב לנקודות האמת. וכ"ש שם ענין זה באריכות בהתורה הנ"ל ע"ש. וזה בחי' עומר שעורי
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[11]/segment
+  HE: וזה בחי' ספירה שסופרין הימים הם בחי' מוציא מכח אל הפועל כי שבעה שבועות של ימי הספירההם כנגד ז' ימי בראשית שכל יום כלול משבעה. ובכל יום היה בו בריאה מיוחדת שהוא בחי' מוציא מכח אל הפ
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[13]/segment
+  HE: וזה בחינת טבילת כלים. וזה בחי' עוצחם מעלת טבילת מקוה של ישראל שא"א לצאת מטומאה לטהרה כ"א ע"י טבילת מקוה. כי מבואר בהתורה הנ"ל שכל אדם יש לו חיות למטה וחיות למעלה שהם בחי' הרוח חיים
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[15]/segment
+  HE: וזה בחי' לא תירא לביתה משלג כי כל ביתה לבוש שנים. ודרז"ל לשון שניים. היינו שעיקר התיקון ע"י בחי' פי שנים הנ"ל. וזה בחי' ממרחק תביא לחמה שעיקר התיקון צריכין לקבל ממרחק מבחי' הגבוה ו
+  EN: [continued]
+
 ### SEVERE public/reader/likutay-halachos/part-2/halacha-13.json flags=62 bilingual_segments=181/232
 - tiny_he_long_en at aligned_segments[1]/segment
   HE: אות א
@@ -399,58 +476,6 @@ Files needing review (excluding normal untranslated books): 1751
 - long_he_tiny_en at aligned_segments[16]/segment
   HE: וזהו בפרט ובכלל, כי בפרטיות על כל אדם צריך לעבר כל זה שצריך להתיגע לברר בברור אחר ברור. והברור האחרון שהיא בבחינת אכילה קשה מכלם. וזה שבקש דוד המלך עליו השלום: לעשות רצונך אלקי חפצ
   EN: [continued]
-
-### SEVERE public/reader/likutay-halachos/part-7/halacha-32.json flags=61 bilingual_segments=153/200
-- tiny_he_long_en at aligned_segments[1]/segment
-  HE: אות א
-  EN: And this is the aspect of pekidas akoros [the visitation of the barren ones] — the visitation of Chanah the barren one, who was visited and gave birth to Shmuel, whose spiritual at
-- tiny_he_long_en at aligned_segments[4]/segment
-  HE: אות ב
-  EN: And it is brought in the holy Zohar and cited in the words of Rabbainu [Rebbe Nachman] of blessed memory (Likutay Moharan §49) that this is the praise and the greatness of Yisroel 
-- tiny_he_long_en at aligned_segments[6]/segment
-  HE: אות ג
-  EN: And this is the aspect of the fire of the kindling of the Chanukah light. For it is the nature of fire to consume everything that burns within it, and with the oil of Chanukah a gr
-- tiny_he_long_en at aligned_segments[8]/segment
-  HE: אות ד
-  EN: And through yir'ah — in the aspect of yir'as Hashem tosif yamim — through this great wealth is drawn. And this is the aspect of Chanukah, chanu kaf-heh [חנוכה — חנו כה] — "they res
-- tiny_he_long_en at aligned_segments[10]/segment
-  HE: אות ה
-  EN: And this is the reason why our Sages of blessed memory prohibited making use of the light of Chanukah — l'hishtamesh l'or Chanukah. This prohibition is the aspect of shmirah [guard
-- tiny_he_long_en at aligned_segments[12]/segment
-  HE: אות ו
-  EN: And through the wealth that is drawn through yir'ah, one merits great hisbonenus [contemplative understanding]. For the saichel [intellect] burns through the shmanim [oils] within 
-- tiny_he_long_en at aligned_segments[14]/segment
-  HE: אות ז
-  EN: For tzedakah is in the aspect of yir'ah, in the aspect of "yir'as Hashem tosif yamim". For according to the natural order, it would seem that giving tzedakah should diminish one's 
-- tiny_he_long_en at aligned_segments[16]/segment
-  HE: אות ח
-  EN: And the essential hold of hevel ha'yoafee is upon the woman, and therefore the essential praise of the woman comes through yir'ah, as it is written: "eesha yir'as Hashem" — in orde
-
-### SEVERE public/reader/likutay-halachos/part-7/halacha-79.json flags=60 bilingual_segments=99/100
-- hebrew_in_english_field at segments[3]/segment
-  HE: ע"פ התורה אמר ר' עקיבה כשתגיעו לאבני שיש טהור אל תאמרו מים מים שנא' דובר שקרים לא יכון לנגד עיני וכו' (סי' נ"א לק"א). והכלל שהשקר מזיק לעינים בגשמיות ורוחניות כי ע"י השקר נתעכר דמי
-  EN: 6 חִשַּׁבְתִּי יָמִים מִקֶּדֶם שְׁנוֹת עוֹלָמִים
-- hebrew_in_english_field at segments[6]/segment
-  HE: נמצא שעיקר שלימות הבריאה הוא דייקא ע"י הבחירה שנתהוה אחר שיצאה הבריאה מכח אל הפועל דייקא. והעיקר הוא האמת שצריכין להאמין בהאמת שגם אחר הבריאה הש"י משגיח בהשגחה פרטיית על כל הדברים 
-  EN: 7 אֶזְכְּרָה נְגִינָתִי בַּלָּיְלָה עִם-לְבָבִי אָשִׂיחָה וַיְחַפֵּשׂ רוּחִי
-- hebrew_in_english_field at segments[9]/segment
-  HE: וע"כ בכל התורה כולה שלוחו של אדם כמותו. כי זהו בחי' כלליות התורה והמצוות כדי שיוכלל השליח בהמשלח שיהי' השליח והמשלח הכל אחד שהוא בחי' כלליות הבריאה בקודם הבריאה שיהיה כולו אחד כולו
-  EN: 8 הַלְעוֹלָמִים יִזְנַח אֲדֹנָי וְלֹא-יוֹסִיף לִרְצוֹת עוֹד
-- hebrew_in_english_field at segments[11]/segment
-  HE: וע"כ אין שליח לדבר עבירה. כי ע"י העבירה עושין פירוד ח"ו ומפרידין ח"ו אחר הבריאה מקודם הבריאה שזהו בחי' ביטול השליחות כנ"ל:
-  EN: 9 הֶאָפֵס לָנֶצַח חַסְדּוֹ גָּמַר אֹמֶר לְדֹר וָדֹר
-- hebrew_in_english_field at segments[14]/segment
-  HE: וזה בחי' חנוכה כי מלכות יון הרשעה עמדו על ישראל לבטלם מהתורה והמצות כי היוונים הם אפיקורסים גדולים ואין מאמינים בהשגחותו ית' כי כל חכמות החיצונים נקראים חכמות יון שמהם כל האפיקורסו
-  EN: 10 הֲשָׁכַח חַנּוֹת אֵל אִם-קָפַץ בְּאַף רַחֲמָיו סֶלָה
-- hebrew_in_english_field at segments[17]/segment
-  HE: וזה בחי' נר חנוכה סמוך לפתח הבית. כי הבי תהוא רשות היחיד שהוא בחי' רשות יחידו של עולם כ"ש בזוה"ק ששם מתגלה ביותר אחדותו ית'. כי התורהמתחלת בבית מבראשית שהוא ראש בית וע"י התורה נכלל
-  EN: 11 וָאֹמַר חַלּוֹתִי הִיא שְׁנוֹת יְמִין עֶלְיוֹן
-- hebrew_in_english_field at segments[20]/segment
-  HE: וע"כ כל הכוונות של חנוכה הוא להמשיך אור האמת כמבואר בכונת האר"י מענין הח' פעמים אמת של אמצת ויציב המאירין בחי' ימי חנוכה כי עיקר המשכת אור ההשגחה שהוא בחי' נר חנוכה הוא ע"י אמת כנ"
-  EN: 12 אֶזְכּוֹר מַעַלְלֵי-יָהּ כִּי-אֶזְכְּרָה מִקֶּדֶם פִּלְאֶךָ
-- hebrew_in_english_field at segments[23]/segment
-  HE: וע"כ צריכין לבכות דייקא על חורבן ביהמ"ק וכן על חטאיו כי אין הדין נמתק אלא בשרשו כי בכיית ישראל הוא בחי' בכיית המים התחתונים שבוכין אנן בעינן למהוי קדם מלכא שזהו עיקר בכיית ישראל שב
-  EN: 13 וְהָגִיתִי בְכָל-פָּעֳלֶךָ וּבַעֲלִילוֹתֶיךָ אָשִׂיחָה
 
 ### SEVERE public/reader/likutay-halachos/part-4/halacha-76.json flags=57 bilingual_segments=156/196
 - long_he_tiny_en at segments[61]/segment
@@ -478,31 +503,57 @@ Files needing review (excluding normal untranslated books): 1751
   HE: וזה בחי' קימת חצות לבטל השינה שמשם אחיזת הזמן שמשם כל השינויים. וע"כ שינה לשון שינוי כי ע"י השינה ותרדימה בחינת הסתלקות הדעת משם עיקר אחיזת טרדת הזמן שמשם כל השינויים כנ"ל וע"כ היה
   EN: [continued]
 
-### SEVERE public/reader/likutay-halachos/part-4/halacha-49.json flags=54 bilingual_segments=109/136
-- hebrew_in_english_field at segments[2]/segment
-  HE: אות א על פי התורה מישרא בסימן למ"ד עיין שם כל התורה: והכלל שצריכין דייקא הרבי הגדול ביותר וכו' כדי לזכות להשגות אלקות שאי אפשר לקבל כי אם על ידי כמה צמצומים משכל עליון לשכל תחתון ו
-  EN: 4 כִּי יוֹמָם וָלַיְלָה תִּכְבַּד עָלַי יָדֶךָ נֶהְפַּךְ לְשַׁדִּי בְּחַרְבֹנֵי קַיִץ סֶלָה
-- hebrew_in_english_field at segments[5]/segment
-  HE: אות ב כי איתא בדבריו ז"ל שבכל מקום יש יושר ואפילו מיש עושה עוולות גדולות בהכרח שימצא אצלו גם כן איזה יושר,ף רק שהחילוק הוא מתךי מתחיל היושר. כי אצל איש כשר מתחיל היושר מיד כי בודאי
-  EN: 5 חַטָּאתִי אוֹדִיעֲךָ וַעֲוֹנִי לֹא-כִסִּיתִי אָמַרְתִּי אוֹדֶה עֲלֵי פְשָׁעַי לַיי וְאַתָּה נָשָׂאתָ עֲוֹן חַטָּאתִי סֶלָה
-- hebrew_in_english_field at segments[11]/segment
-  HE: אות ה וזה בחינת איסור בשר בחלב. בחינת לא תבשל גדי בחלב אמו. כי כל מה שבעולם דומם צומח חי מדבר הכל יונק חיותךו מבחינת הצמצומים הנ"ל שעל ידם משיגין אלקוךתו יתברך וכולם צריכין בירור א
-  EN: 7 אַתָּה סֵתֶר לִי מִצַּר תִּצְּרֵנִי רָנֵּי פַלֵּט תְּסוֹבְבֵנִי סֶלָה
-- hebrew_in_english_field at segments[17]/segment
-  HE: אות ח וזהו אל תאמיןך בעצמך עד יום מותך, בעצמך דייקא כי כשהוא בעצמו דהיינו שחולק עצמו מהצדיק האמת בודאי אין לו להאמין בעצמו כי יפול באין סומך וכנ"ל. וזהו אל תאמין בעצמך עד יום מותד 
-  EN: 9 אַל-תִּהְיוּ כְּסוּס כְּפֶרֶד אֵין הָבִין בְּמֶתֶג-וָרֶסֶן עֶדְיוֹ לִבְלוֹם בַּל קְרוֹב אֵלֶיךָ
-- hebrew_in_english_field at segments[20]/segment
-  HE: נמצא שכל ההולדותך נמשכין מהצמצומים והשכליות הנ"ל, ומחמת שכנגד כל צמצום ושכל יש כנגדו בחינךת קליפת עמלק כנ"ל מזה המשך חבלי לידה. וכמובן בדבריו ז"ל שאמר אחר התורה הנ"ל. ועל זה נתבטל 
-  EN: 10 רַבִּים מַכְאוֹבִים לָרָשָׁע וְהַבּוֹטֵחַ בַּיי חֶסֶד יְסוֹבְבֶנּוּ
-- hebrew_in_english_field at segments[27]/segment
-  HE: אות יג
-  EN: 1 לַמְנַצֵּחַ מִזְמוֹר לְדָוִד
-- long_he_tiny_en at segments[28]/segment
-  HE: וזה בחינת הקילקול של השפלים במדריגתם והפגומים הרוצים להתקרב להקטן במעלה, כי לא די שלא יתקנו אף גם יקלקל לו הרבה, כי הרע שלו יתגבר ביותר על ייד שיהיה יונק מהרע של רבו הקטן במעלה שלא
-  EN: Lamnatzai-ach mizmohr liduvveed.
-- hebrew_in_english_field at segments[36]/segment
-  HE: אות יז וזה בחינת פורים שהו אהכנעת המן עמלק כי עמלק הוא בחינתך כלליות הז' מלכויות שעיקרם הוא עמלק וכו'. ועל כן עיקר התגרותך המןך היה במרדכי ושהוא הצדיק האמתצ הגדול במעלה מאד. ורצה ל
-  EN: 4 יי יִסְעָדֶנּוּ עַל-עֶרֶשׂ דְּוָי כָּל-מִשְׁכָּבוֹ הָפַכְתָּ בְחָלְיוֹ
+### SEVERE public/reader/likutay-halachos/part-1/halacha-16.json flags=54 bilingual_segments=122/122
+- tiny_he_long_en at segments[1]/segment
+  HE: הלכה ה
+  EN: All this power is received from the aspect of the Zakein d'Kedushah — the Blind Beggar — the elder of elders, Sava d'Savin, who merited such holy ziknah until he said he is exceedi
+- tiny_he_long_en at segments[5]/segment
+  HE: אות ב
+  EN: Therefore one must bind the Tefillin on the left arm — the aspect of yad keihah [the weaker hand], as our Sages said. For the essential Tefillin = Erech apeye'im: to sweeten and nu
+- tiny_he_long_en at segments[7]/segment
+  HE: אות ג
+  EN: This is the aspect of: "Kadeish li chol bechor peter kol rechem bivnei Yisrael" — "Sanctify to Me every firstborn, the first issue of every womb among the children of Yisrael" (She
+- tiny_he_long_en at segments[9]/segment
+  HE: אות ד
+  EN: One retzuah extends down to the heart. For the retzuah is the aspect of the light drawn from Arichas apeye'im. Therefore it must be drawn down to the heart — to introduce Arichas a
+- tiny_he_long_en at segments[11]/segment
+  HE: אות ה
+  EN: And this is what is written: "And you shall see it, and you shall remember all the mitzvos of Hashem" . For all the mitzvos depend on this, since the tzitzis are in the aspect of t
+- tiny_he_long_en at segments[13]/segment
+  HE: אות ו
+  EN: And therefore, it is permitted to enter with tzitzis into a lavatory . And it is brought7 that this is the aspect of: "Umalchuso bakol mashalah" — "And His kingship rules over all"
+- tiny_he_long_en at segments[15]/segment
+  HE: אות ז
+  EN: It follows that they return and attach themselves to the very essence of the holiness from which they had been receiving vitality. And this is their subjugation, for their vitality
+- tiny_he_long_en at segments[19]/segment
+  HE: אות ט
+  EN: And because of this very thing, tzitzis are also made from linen. For in flax, which is the lowest level from which the chitzonim draw sustenance — the aspect of Kayin — there spec
+
+### SEVERE public/reader/likutay-halachos/part-1/halacha-32.json flags=54 bilingual_segments=118/118
+- tiny_he_long_en at segments[1]/segment
+  HE: הלכה ד
+  EN: Therefore at Ma'ariv one blesses two berachos after Kri'as Shma, adding Bircas HaHashkivah v'HaKimah [the berachah of Lying Down and Rising] — "Hashkivainu..." — "Lay us down [in p
+- tiny_he_long_en at segments[2]/segment
+  HE: אות א
+  EN: This is what our Sages said (brachos 4b) regarding Bircas Hashkiveinu: since the Sages established it, it is considered like an extended geulah — "ki'geulah arichta damya" — "it re
+- tiny_he_long_en at segments[5]/segment
+  HE: אות ב
+  EN: This is: "Nason titain" — "give, you shall give — even a hundred times" — said regarding tzedakah. And similarly: "Paso'ach tiftach" — "open, you shall open [your hand]." For the e
+- tiny_he_long_en at segments[7]/segment
+  HE: אות ג
+  EN: Also, through the abundance of holy sefarim in which Torah novellae are taught — through this the doubts that the metzach of the nachash seeks to cast upon the ratzon are nullified
+- tiny_he_long_en at segments[9]/segment
+  HE: אות ד
+  EN: This is also what is explained (in Siman 61, the Torah "Chadi Rabbi Shimon") [LM I:61]: through machlokes, a sefer is made — the aspect of (Iyov 31): "V'saifer kasav ish rivi" — "T
+- tiny_he_long_en at segments[11]/segment
+  HE: אות ה
+  EN: This is the Kri'as Yam Suf — when Hashem turned sea into dry land, froze the depths in the heart of the sea, and made a wondrous bridge for them to cross. All this was through Yaak
+- tiny_he_long_en at segments[13]/segment
+  HE: אות ו
+  EN: This is the aspect of the three wrappings on the middle finger, which is on the level of Yaakov and Moshe — the bariach hatichon [middle bolt] running through the beams from end to
+- tiny_he_long_en at segments[15]/segment
+  HE: אות ז
+  EN: "V'eirastich li l'olam" — "I will betroth you to Me forever" — arichas chayim, eternal life. "V'eirastich li b'tzedek uv'mishpat uv'chesed uv'rachamim" — these are the Ateres Tifer
 
 ### SEVERE public/reader/chumash-lh/section-40.json flags=53 bilingual_segments=116/119
 - long_he_tiny_en at segments[7]/segment
@@ -554,58 +605,6 @@ Files needing review (excluding normal untranslated books): 1751
   EN: [continued]
 - long_he_tiny_en at segments[19]/segment
   HE: וְזֶה סְמִיכוּת הַפְּסוּקִים הַנִּזְכָּרִים לְעֵיל שֶׁאַחַר שֶׁאָמַר ה' מָעוֹן אַתָּה הָיִיתָ לָנוּ בְּדוֹר וָדוֹר שֶׁהוּא בְּחִינַת הַבֵּית הַמִּדְרָשׁ הַנִּזְכָּר לְעֵיל שֶׁהוּא 
-  EN: [continued]
-
-### SEVERE public/reader/likutay-halachos/part-1/halacha-49.json flags=53 bilingual_segments=143/184
-- hebrew_in_english_field at segments[4]/segment
-  HE: וזה בחינת קריאת התורה בצבור בספר תורה כשרה בניגון ובטעמים. ועיקר הקריאה הוא בשבת ויום טוב שאז תיקן משה לקרות בתורה. אך כשהלכו ישראל בלא מים ג' ימים, עמדו הנביאים שביניהם ותקנו הקרי
-  EN: 12 בְּזֹאת יָדַעְתִּי כִּי-חָפַצְתָּ בִּי כִּי לֹא-יָרִיעַ אֹיְבִי עָלָי
-- hebrew_in_english_field at segments[7]/segment
-  HE: אות ב אבל כשהלכו ישראל ג' ימים בלא תורה, עמדו הנביאים שביניהם ותקנו שיהיו קורין בשני וחמישי. והנביאים דיקיא. כי מבואר בהתורה הנ"ל שכשהסטרא אחרא יונקת מהרחמנות וכו', אזי צריכין בעל 
-  EN: 13 וַאֲנִי בְּתֻמִּי תָּמַכְתָּ בִּי וַתַּצִּיבֵנִי לְפָנֶיךָ לְעוֹלָם
-- hebrew_in_english_field at segments[14]/segment
-  HE: אות ו
-  EN: 1 לַמְנַצֵּחַ מַשְׂכִּיל לִבְנֵי-קֹרַח
-- hebrew_in_english_field at segments[25]/segment
-  HE: אות יא וזה שאמרו רז"ל (ב"ק פ"ב) שקריאת התורה בשני וחמישי תקנו מחמת שהלכו ג' ימים וכו' כדי שלא יעברו ג' ימים בלא תורה. ג' ימים דייקא. כי העיקר הוא לתקן הג' מוחין שיהיו ג' מחיצות פרו
-  EN: 5 אֵלֶּה אֶזְכְּרָה וְאֶשְׁפְּכָה עָלַי נַפְשִׁי כִּי אֶעֱבֹר בַּסָּךְ אֶדַּדֵּם עַד-בֵּית א-ל בְּקוֹל-רִנָּה וְתוֹדָה הָמוֹן חוֹגֵג
-- hebrew_in_english_field at segments[31]/segment
-  HE: אות יד וכבר מבואר שעיקר קריאת התורה בצבור בניגון ובטעמם הוא לעורר ולהמשיך בחינת נתינת התורה. כי צריך בשעת קריאת התרוה לעמוד באימה וביראה וכו' כאלו היום ניתנה בסיני וכנ"ל (ב~ אות יו
-  EN: 7 אֱ-לֹהַי עָלַי נַפְשִׁי תִשְׁתּוֹחָח עַל-כֵּן אֶזְכָּרְךָ מֵאֶרֶץ יַרְדֵּן וְחֶרְמוֹנִים מֵהַר מִצְעָר
-- hebrew_in_english_field at segments[39]/segment
-  HE: אות יח ובשביל זה תיקנו לנו משה רבינו והנביאים לקרות בתורה בצבור כדי להזכיר ~ אותנו בכל פעם מתן תורה כדי שנזכה לקבל עלינו קבלת התורה בכל יום מחדש כנ"ל. ועל כן עיקר קריאת התורה בשבת 
-  EN: 10 אוֹמְרָה לְאֵל סַלְעִי לָמָה שְׁכַחְתָּנִי לָמָּה-קֹדֵר אֵלֵךְ בְּלַחַץ אוֹיֵב
-- hebrew_in_english_field at segments[42]/segment
-  HE: ובזה מרמזין לנו כל הנ"ל. וזה בחינת מה ששאל משה (שמות ג') הנה אנכי בא אל בני ישראל ואמרתי להם אלקי אבותיכם שלחני אליכם ואמרו לי מה שמו מה אומר אליהם ויאמר אלקים אל משה אהיה אשר אהיה
-  EN: 11 בְּרֶצַח בְּעַצְמוֹתַי חֵרְפוּנִי צוֹרְרָי בְּאָמְרָם אֵלַי כָּל-הַיּוֹם אַיֵּה אֱ-לֹהֶיךָ
-- hebrew_in_english_field at segments[52]/segment
-  HE: אות כד ועל כן בשמחת תורה כשמסיימין התורה עוסקים אז בשיר וניגון בשמחה גדולה. כי כל זה נמשך משמחת הניגון הקדוש הנ"ל שזוכין על ידי קבלת התורה וכנ"ל:
-  EN: 2 הַצִּילֵנִי מֵאֹיְבַי א-להי מִמִּתְקוֹמְמַי תְּשַׂגְּבֵנִי
-
-### SEVERE public/reader/likutay-halachos/part-2/halacha-23.json flags=53 bilingual_segments=123/146
-- long_he_tiny_en at segments[62]/segment
-  HE: אות כ ועל-כן צוה ה' יתברך לספר אותם וכל אחד נקרא יוצא צבא, כמו שכתוב: בכל מספר של כל שבט. במספר שמות כל יצא צבא. כי כל אחד צריך להיות בכלל יוצאי צבא, 'יוצאי צבא' דיקא, הינו כשהוא ב
-  EN: Tikun HaKlali
-- hebrew_in_english_field at segments[63]/segment
-  HE: כשחטאו בעגל מנאם. כי כל אלה תקוני המשכן ומחנה הדגלים ומספר בני ישראל הכל צוה ה' יתברך אחר מעשה העגל שחטאו ישראל מאד ואז התיגע משה מאד עד שזכה במ"ם יום האחרונים להמשיך דרך התשובה בע
-  EN: תִּקּוּן הַכְּלָלִי
-- long_he_tiny_en at segments[63]/segment
-  HE: כשחטאו בעגל מנאם. כי כל אלה תקוני המשכן ומחנה הדגלים ומספר בני ישראל הכל צוה ה' יתברך אחר מעשה העגל שחטאו ישראל מאד ואז התיגע משה מאד עד שזכה במ"ם יום האחרונים להמשיך דרך התשובה בע
-  EN: תִּקּוּן הַכְּלָלִי
-- long_he_tiny_en at segments[66]/segment
-  HE: אות כא וזה בחינת הארבע חיות שבמרכבה שהם בחינת תקוני התפלה שדומה לקרבנות, הינו בחינת תקון המחשבות שעל ידי זה עקר תקון התפלה כשזוכין להתגבר לסלק המחשבות רעות שהם בחינת חיות רעות ולחש
-  EN: ch = kh
-- hebrew_in_english_field at segments[73]/segment
-  HE: הלכות ברכת הפרות הלכה ו נכללת בהלכות נטילת ידים הלכה ו
-  EN: 1 מִכְתָּם לְדָוִד שָׁמְרֵנִי א-ל כִּי-חָסִיתִי בָךְ
-- tiny_he_long_en at aligned_segments[1]/segment
-  HE: אות א
-  EN: After tefillah we fall on our faces — this is the aspect of ha'ala'as mayin nukvin [raising feminine waters] achieved through hishtokekus [longing] and kisufin d'kedushah [holy yea
-- long_he_tiny_en at aligned_segments[3]/segment
-  HE: על פי מה שכתוב בלקוטי תנינא סימן פח מבאר שם שיש דברים אבודים וכו'. ועל כן צריכין לזהר שלא לאכל פרי קדם שנתבשלה וכו'. כי יכול לאבד נפשו, אך עם כל זה אם מברך הברכה שעל הפרי בכונה ובי
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[4]/segment
-  HE: והנה מבאר היטב בהתורה הזאת ענין ברכת הפרות. וכמה וכמה צריך האדם לזהר לברך ברכת הפרות בכונה גדולה. כדי שיוכל למצא בחינת האבדות הנעלמים שם כמובן לעיל, כי גם כשנזהר ואינו אוכל הפרי עד
   EN: [continued]
 
 ### SEVERE public/reader/chumash-lh/section-46.json flags=52 bilingual_segments=138/150
@@ -660,30 +659,82 @@ Files needing review (excluding normal untranslated books): 1751
   HE: (הלכה ג)
   EN: Therefore the brazen-faced think that the truly upright have no azus, and therefore they wish, chas v'sholom, to overpower them with their evil boldness, to confuse them from their
 
-### SEVERE public/reader/likutay-halachos/part-2/halacha-37.json flags=50 bilingual_segments=124/142
-- hebrew_in_english_field at segments[29]/segment
-  HE: אות יא כי ראש השנה וראש חדש שהם בבחינת זכרון עולם הבא, הם בבחינת זכרון בכלליות ובפרטיות שהם בחינת אור החמה ואור הלבנה. כי עקר אור החמה והלבנה שמאירין על הארץ בכל יום הוא בחינת הארת
-  EN: 4 הַלְלוּהוּ בְתֹף וּמָחוֹל הַלְלוּהוּ בְּמִנִּים וְעוּגָב
-- hebrew_in_english_field at segments[35]/segment
-  HE: והמאמר הזה הוא כלו תמוה ונפלא ונעלם מאד כאשר נדחקו כל המפרשים למצא בו איזה רמז דק בעלמא כמחט סדקית. כי ידוע שזה המאמר הוא מעמקי עמקי סודות התורה מענין פגימת הלבנה ומלואה ותקונה אשר
-  EN: 6 כֹּל הַנְּשָׁמָה תְּהַלֵּל יָהּ הַלְלוּי-ה
-- long_he_tiny_en at segments[39]/segment
-  HE: כי הרע עין שהוא הסטרא אחרא בהכרח שלא יתבטל לגמרי עד עת קץ כמובא כדי שיהיה בחירה בעולם, ועל כן בהכרח שתתמעט אור הלבנה, כדי שלא יראו הכל גדלת ישראל שמונין ללבנה מה שמשיגין על ידי האמ
-  EN: Short Prayer
-- long_he_tiny_en at segments[69]/segment
-  HE: וזה בחינת מה שאמרו שם במשנה שהיו אומרות אל תתן עיניך בנוי תן עיניך במשפחה וכו'. הינו שלא תהיה כרוך אחר הרע עין שמסתכל רק על הנוי על תאות עולם הזה, רק תן עיניך במשפחה, דהינו על האבו
-  EN: Likutay Halachos
+### SEVERE public/reader/likutay-halachos/part-3/halacha-21.json flags=51 bilingual_segments=174/242
 - tiny_he_long_en at aligned_segments[1]/segment
   HE: אות א
-  EN: This is the aspect of Kri'as HaTorah in the tzibbur [congregation], from a kosher Sefer Torah, with niggun [melody] and t'amim [cantillation notes]. The essential reading is on Sha
-- tiny_he_long_en at aligned_segments[5]/segment
+  EN: And therefore on Shabbos it is forbidden to walk on the road beyond the t’chum Shabbos. For it has already been well explained that the main purpose of the roads in this world is f
+- tiny_he_long_en at aligned_segments[4]/segment
   HE: אות ב
-  EN: This is the aspect of what the Sages said regarding the number of olim on various days (Megillah 23): Monday and Thursday — three; Rosh Chodesh and Chol HaMo'aid — four; Yom Tov — 
-- long_he_tiny_en at aligned_segments[9]/segment
-  HE: ועל-כן צריכין לבכות מאד בין המצרים ובפרט בתשעה באב על חרבן בית המקדש, עיני עיני ירדה מים . כדי להכניע על ידי הדמעות של העינים את ארס הרע עין. וכמו שכתוב בדוד כשבא עליו הרע עין של א
+  EN: And this is the aspect of Shabbos Kodesh: that Shabbos is a semblance of the World to Come, and an illumination is drawn from this aspect of the future. And therefore on Shabbos th
+- tiny_he_long_en at aligned_segments[6]/segment
+  HE: אות ג
+  EN: For certainly the mitzvos of the Torah will not change, not even a single detail, in the days of Mashiach. On the contrary, the main purpose of the coming of Mashiach is to teach u
+- tiny_he_long_en at aligned_segments[8]/segment
+  HE: אות ד
+  EN: And even though there have already been many true tzaddikim and chachamim who made many ordinances and fences and added many mitzvos d’Rabbanan and decrees — all of which are the a
+- tiny_he_long_en at aligned_segments[10]/segment
+  HE: אות ה
+  EN: And this is the main superiority of the Torah that will be revealed in the days of Mashiach Tzidkainu, speedily in our days — that we will merit such aitzos that the sitra achra wi
+- tiny_he_long_en at aligned_segments[12]/segment
+  HE: אות ו
+  EN: For all the mitzvos are called aitzos, in the aspect of taryag itin d’Oraisa [613 counsels of the Torah]. That is, they are aitzos to attain His G-dliness, yisbarach, through them.
+- tiny_he_long_en at aligned_segments[16]/segment
+  HE: אות ז
+  EN: And the main thing is emunah, which is the aspect of Shabbos, as above. For as long as one has emunah, certainly one will return to Him, yisbarach. And therefore a person should st
+- tiny_he_long_en at aligned_segments[21]/segment
+  HE: אות ח
+  EN: And this is the aspect of the 2,000 amos of t’chum Shabbos. For on Shabbos the roads that are for the purpose of drawing spiritual G-dliness into the constrictions of the weekdays,
+
+### SEVERE public/reader/likutay-halachos/part-1/halacha-14.json flags=50 bilingual_segments=110/110
+- tiny_he_long_en at segments[1]/segment
+  HE: הלכה ג
+  EN: Every person is obligated to say: "The world was created for my sake" (Sanhedrin 37a). How does one know whether it is before or after a decree? Through the mitzvos that we perform
+- tiny_he_long_en at segments[2]/segment
+  HE: אות א
+  EN: Tefillin are in the aspect of re'amim (thunder) — the rectification of the Mochin — through which the akmimiyus in the heart is straightened and one merits simchah. This is the asp
+- tiny_he_long_en at segments[5]/segment
+  HE: אות ב
+  EN: When one believes this — that truly "eilu va'eilu divrei Elokim cha'yim" and the dispute is only for his sake — which is the rectification of the brain, and through this precisely 
+- tiny_he_long_en at segments[7]/segment
+  HE: אות ג
+  EN: When the akmimiyus in the heart is straightened through Tefillin (which are the aspect of thunder), one merits simchah — the joy of Tefillin. This is the aspect of "Zachrehu mei'ec
+- tiny_he_long_en at segments[9]/segment
+  HE: אות ד
+  EN: And this is: "And Yosef shall place his hand upon your eyes" — "his hand" specifically, "your eyes" specifically, as above. That is, even when they return from the bittul — which i
+- tiny_he_long_en at segments[11]/segment
+  HE: אות ה
+  EN: For every member of Yisrael, in the innermost part of his soul, yearns and burns exceedingly for Hashem, because in his innermost being he gazes at all times toward the tachlis, wh
+- tiny_he_long_en at segments[13]/segment
+  HE: אות ו
+  EN: And therefore, tzitzis is the first mitzvah in the morning — that immediately in the morning upon awakening from sleep, which is the aspect of bittul toward the tachlis, one must i
+- tiny_he_long_en at segments[15]/segment
+  HE: אות ז
+  EN: And this is: "V'lo sasuru acharei l'vavchem v'acharei eineichem asher atem zonim achareihem" — "And you shall not stray after your hearts and after your eyes, which you go astray a
+
+### SEVERE public/reader/likutay-halachos/part-2/halacha-23.json flags=50 bilingual_segments=121/146
+- long_he_tiny_en at segments[62]/segment
+  HE: אות כ ועל-כן צוה ה' יתברך לספר אותם וכל אחד נקרא יוצא צבא, כמו שכתוב: בכל מספר של כל שבט. במספר שמות כל יצא צבא. כי כל אחד צריך להיות בכלל יוצאי צבא, 'יוצאי צבא' דיקא, הינו כשהוא ב
+  EN: Tikun HaKlali
+- long_he_tiny_en at segments[66]/segment
+  HE: אות כא וזה בחינת הארבע חיות שבמרכבה שהם בחינת תקוני התפלה שדומה לקרבנות, הינו בחינת תקון המחשבות שעל ידי זה עקר תקון התפלה כשזוכין להתגבר לסלק המחשבות רעות שהם בחינת חיות רעות ולחש
+  EN: ch = kh
+- tiny_he_long_en at aligned_segments[1]/segment
+  HE: אות א
+  EN: After tefillah we fall on our faces — this is the aspect of ha'ala'as mayin nukvin [raising feminine waters] achieved through hishtokekus [longing] and kisufin d'kedushah [holy yea
+- long_he_tiny_en at aligned_segments[3]/segment
+  HE: על פי מה שכתוב בלקוטי תנינא סימן פח מבאר שם שיש דברים אבודים וכו'. ועל כן צריכין לזהר שלא לאכל פרי קדם שנתבשלה וכו'. כי יכול לאבד נפשו, אך עם כל זה אם מברך הברכה שעל הפרי בכונה ובי
   EN: [continued]
-- long_he_tiny_en at aligned_segments[10]/segment
-  HE: ואיכה יועם נאמר על הסתלקות הצדיק. כי כל איכה יועם נאמר על הסתלקות הצדיק יאשיהו וכמו שאמרו רבותינו זכרונם לברכה . הינו בחינת קדשת האדם כנ"ל. כי גם אחר החרבן שנחרב הבית המקדש ואין לנ
+- long_he_tiny_en at aligned_segments[4]/segment
+  HE: והנה מבאר היטב בהתורה הזאת ענין ברכת הפרות. וכמה וכמה צריך האדם לזהר לברך ברכת הפרות בכונה גדולה. כדי שיוכל למצא בחינת האבדות הנעלמים שם כמובן לעיל, כי גם כשנזהר ואינו אוכל הפרי עד
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[5]/segment
+  HE: י"י אלקיך ומצאת כי תדרשנו בכל לבבך ובכל נפשך. וכתיב: אם תבקשנה ככסף וכמטמונים וגו' אז תבין יראת ה'. כי צריכין לבקש ולחפש מאד מאד אחר דרכי הקדשה. כי כל מה שהאדם רחוק מה' יתברך. הוא 
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[6]/segment
+  HE: וזה בחינת ראש השנה. שהוא יום ראשון לתשובה כי הוא יום ראשון לעשרת ימי תשובה שאז תוקעין בשופר, כי באתערותא דלתתא אתער לעלא, כי על ידי מה שאנו תוקעין בשופר, על ידי זה מעוררין ביותר ונ
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[7]/segment
+  HE: ועל-כן קורין בתורה בראש השנה וה' פקד את שרה כאשר אמר וכו'. וביום שני ויהי אחר הדברים וכו'. עד שמסימין ביום שני מה שהגד לאברהם שנולד הזווג של יצחק, כמו שכתוב: ובתואל ילד את רבקה וכו
   EN: [continued]
 
 ### SEVERE public/reader/likutay-halachos/part-4/halacha-22.json flags=50 bilingual_segments=139/174
@@ -712,32 +763,6 @@ Files needing review (excluding normal untranslated books): 1751
   HE: וזה בחינת הלולא דרבי שמעון בר יוחאי בל"ג בעמר, כי תלמידי רבי עקיבא נסתלקו עד ל"ג בעמר מחמת מחלקת, שלא היה ביניהם שלום, שעל ידי זה אין הדבור נשמע למרחוק. ועל כן נסתלקו בימי הספירה ד
   EN: [continued]
 
-### SEVERE public/reader/likutay-halachos/part-7/halacha-82.json flags=50 bilingual_segments=110/144
-- hebrew_in_english_field at segments[2]/segment
-  HE: אות ד וזה בח'י מו"מ. וזה בחי' ספירה ושבועות. כי מבואר בהתורה הנ"ל שצריכין לבקש ולחפש מאד מאד את הצדיק האמת שיש לו בחי' רוה"ק וכו' שעיקר האמונה השלימה דהיינו אמונת חידוש העולם על יד
-  EN: 7 הוּא יי אֱ-לֹהֵינוּ בְּכָל-הָאָרֶץ מִשְׁפָּטָיו
-- hebrew_in_english_field at segments[8]/segment
-  HE: אות ז ואפי' הרבה האמת בעצמו צריך לחפש ולבקש הרבה עד שיוכל למצוא ולהשיג קדושת הרוח הקודש של רבו האמתי שקיבל ממנו עד שימצא את עצמו עד שידע איך לדבר ולייעץ ולהנהיג את עם עני ודל החוסי
-  EN: 9 אֲשֶׁר כָּרַת אֶת-אַבְרָהָם וּשְׁבוּעָתוֹ לְיִשְׂחָק
-- hebrew_in_english_field at segments[10]/segment
-  HE: אות ח וזה בחי' ספירת העומר שהוא הכנה לקבלת התורה בשבועות שהוא יום הששי בסיון שכל העולם תלוי בו, היינו אמונת חידוש העולם שהוא העיקר, תלוי ביום הקדוש והנורא והנשגב הזה כי בו קיבלו יש
-  EN: 10 וַיַּעֲמִידֶהָ לְיַעֲקֹב לְחֹק לְיִשְׂרָאֵל בְּרִית עוֹלָם
-- hebrew_in_english_field at segments[12]/segment
-  HE: אות ט אבל גם אח"כ שקיבלו ישראל את התורה וזכו לבח'י רוה"ק ע"י הצדיק האמת שהוא משה רבינו ופסקה זוהמתן זוהמת הנחש אז כמו שארז"ל. אעפ"כ עדיין הי' צריכין לחפש ולבקש הרבה עוד למצוא ביותר
-  EN: 11 לֵאמֹר לְךָ אֶתֵּן אֶת-אֶרֶץ-כְּנָעַן חֶבֶל נַחֲלַתְכֶם
-- hebrew_in_english_field at segments[14]/segment
-  HE: אות י וזה שבאו אל אהרן ואמרו לו קום עשה לנו אלהים כי זה משה האיש לא ידענו מה היה לו. ועתה בוא וראה אתה המעיין המסתכל בתורה בעין האמת שמפורש כאן שכל טעותם הי' בענין הנ"ל שלא השתדלו 
-  EN: 12 בִּהְיוֹתָם מְתֵי מִסְפָּר כִּמְעַט וְגָרִים בָּהּ
-- hebrew_in_english_field at segments[22]/segment
-  HE: אות יד וזהו הצדיק אבד ואין איש שם על לב, היינו שבאמת הצדיק לא מת כנ"ל רק שאבד אבידות היינו את נפשות ישראל שלא זכו לחפש אחריו כראוי עד שנסתלק ואז הם כאבודים ושכוחים בחי' נשכחתי כמת 
-  EN: 15 אַל-תִּגְּעוּ בִמְשִׁיחָי וְלִנְבִיאַי אַל-תָּרֵעוּ
-- hebrew_in_english_field at segments[24]/segment
-  HE: אות טו וזהו תעיתי כשה אובד בקש עבדך, כי האדם שהאו בבחי' אבידה מרבו כנ"ל אע"פ שכל האבידות נקראים על שם האובדה מחמת שאין בהאבידה דעת להבין שנאבדה, אעפ"כ האדם יש לו בחירה וצריך לשום א
-  EN: 16 וַיִּקְרָא רָעָב עַל-הָאָרֶץ כָּל-מַטֵּה-לֶחֶם שָׁבָר
-- hebrew_in_english_field at segments[27]/segment
-  HE: שייך להלכות שלוחין ע"פ התורה תקעו תוכחה הנ"ל:
-  EN: 17 שָׁלַח לִפְנֵיהֶם אִישׁ לְעֶבֶד נִמְכַּר יוֹסֵף
-
 ### SEVERE public/reader/chumash-lh/section-p5-t3.json flags=48 bilingual_segments=126/150
 - long_he_tiny_en at segments[1]/segment
   HE: וְזֶהוּ "וְהָיָה עֵקֶב תִּשְׁמְעוּן אֶת הַמִּשְׁפָּטִים הָאֵלֶּה", 'עֵקֶב' דַּיְקָא, הַיְנוּ כְּשֶׁהַשֹּוֹנְאִים מִתְגַּבְּרִים עַד שֶׁהוּא תַּחַת עָקֵב וְרַגְלַיִן, שֶׁדּוֹרְסִים 
@@ -764,57 +789,109 @@ Files needing review (excluding normal untranslated books): 1751
   HE: וזה בחי' מו"מ בחי' קנין סודר שעי"ז עיקר כל הקנינים שלאיוכלו לשנות עוד. כי כל המשא ומתן הוא לברר ניצוצי האמונה כי יש בכל חפץ שבעולם בחי' ניצוצות הקדושים שהם בחי'ניצוצי האמונה הק' וצ
   EN: [continued]
 
-### SEVERE public/reader/likutay-halachos/part-1/halacha-27.json flags=48 bilingual_segments=150/198
-- tiny_he_long_en at aligned_segments[1]/segment
-  HE: הלכה ג
-  EN: In truth, I am but an ignorant man, and the understanding of a person is not with me. I do not merit to understand what I have seen written in several sefarim of Kabbalah — impreci
-- tiny_he_long_en at aligned_segments[2]/segment
+### SEVERE public/reader/likutay-halachos/part-1/halacha-23.json flags=48 bilingual_segments=154/154
+- tiny_he_long_en at segments[1]/segment
+  HE: הלכה ו
+  EN: "U'Mordechai yatza milifnei hamelech bilvush malchus techeiles vachor..." (Esther 8:15) — through this, "LaYehudim haysah orah" — "The Jews had light" — which is Torah (Megillah 16
+- tiny_he_long_en at segments[2]/segment
   HE: אות א
-  EN: In truth, I know that the Rav mentioned above, and all the other sefarim in which such language is written — their intention was as I have written. Only, with forgiveness of their 
+  EN: The Sitra Achra — the contamination of the serpent, the kelipah of Haman-Amalek — from which the trait of ge'us in the world derives — fights hardest specifically to distance peopl
+- tiny_he_long_en at segments[4]/segment
+  HE: אות ב
+  EN: This is the aspect of the joy of Purim. "Chayav inash l'v'sumei b'Puraya ad d'lo yada bein arur Haman l'varuch Mordechai" (Megillah 7b). On Purim, the ge'us (= kelipah of Haman-Ama
+- tiny_he_long_en at segments[6]/segment
+  HE: אות ג
+  EN: This is the aspect of the Purim feast and Mishloach Manos. Through all the above, one merits bushah — being ashamed even to bring food to one's mouth: "Misham chafar ochel." But wh
+- tiny_he_long_en at segments[8]/segment
+  HE: אות ד
+  EN: This is the aspect of Sefiras HaOmer and Shavuos (= Mattan Torah). Through Ruach Elokim received from the tzadik → Torah innovations = receiving the Torah. But one can only merit t
+- tiny_he_long_en at segments[10]/segment
+  HE: אות ה
+  EN: This is why the Omer was sifted through thirteen sieves. The moaach must be purified through many stages of clarification. The completed purification of the moaach is called a nafa
+- tiny_he_long_en at segments[12]/segment
+  HE: אות ו
+  EN: This is why the early authorities gave the mnemonic "PLG" — on whatever day Purim falls, Lag BaOmer will fall on the same day of the week — as recorded in the Shulchan Aruch. This 
+- tiny_he_long_en at segments[14]/segment
+  HE: אות ז
+  EN: Through this voice, Haman-Amalek was subdued — the contamination of the serpent, the heel of Eisav. Our Sages said : "Haman from the Torah — where? 'Hamin ha'eitz' — 'Is it from th
+
+### SEVERE public/reader/likutay-halachos/part-1/halacha-35.json flags=48 bilingual_segments=104/104
+- tiny_he_long_en at segments[1]/segment
+  HE: הלכה ד
+  EN: The twenty-four types of pidyonos [redemptions — the practice of bringing a monetary redemption to a tzaddik to sweeten harsh judgments] that sweeten the twenty-four courts [batai 
+- tiny_he_long_en at segments[2]/segment
+  HE: אות א
+  EN: The essential Sefirah begins with the waving of the omer and counting — to draw the mochin [Kabbalistic intellective lights — channels of holy consciousness] in orderly fashion, le
+- tiny_he_long_en at segments[5]/segment
+  HE: אות ב
+  EN: This is the aspect of what we say every day after Bircas HaTorah: the Mishnah of "Elu d'varim sh'ain lahem shi'ur" — "These are the things that have no measure: pe'ah, bikurim, r'a
+- tiny_he_long_en at segments[9]/segment
+  HE: אות ד
+  EN: For certainly, when one merits through the pidyon to ascend from sh'mad to ratzon and to draw the illumination of the Ratzon in the world — through which teshuvah is accomplished, 
+- tiny_he_long_en at segments[11]/segment
+  HE: אות ה
+  EN: This is the aspect of Bircas HaShachar [Morning Blessings]. When one arises from sleep, one must wash the hands and bless "Al netilas yadayim." Waking from sleep = Techiyas HaMeisi
+- tiny_he_long_en at segments[13]/segment
+  HE: אות ו
+  EN: Therefore Yisro, who said to Moshe "V'atah sechezeh" — through which Techiyas HaMeisim is drawn — is alluded to in "V'rabim miyeshnei admas afar yakitzu" , whose final letters spel
+- tiny_he_long_en at segments[15]/segment
+  HE: אות ז
+  EN: Therefore Korach, who blemished through ge'us — for his entire rebellion against Moshe and Aharon was only through his great arrogance, envying Aharon's greatness and Elitzafan's a
+- tiny_he_long_en at segments[17]/segment
+  HE: אות ח
+  EN: For in truth, the essential death came because Adam blemished through ge'us (the Tree of Knowledge). The essence of the side of death is that the neshamah separates from the body. 
+
+### SEVERE public/reader/likutay-halachos/part-1/halacha-44.json flags=48 bilingual_segments=110/110
+- tiny_he_long_en at segments[1]/segment
+  HE: הלכה ד
+  EN: For as long as a person is healthy and there is peace between the neshamah and the body — which are the aspects of the father's name and the mother's name — the essential one is th
+- tiny_he_long_en at segments[2]/segment
+  HE: אות א
+  EN: But now, when the person is sick, chas v'shalom — which is the aspect of death, as above, drawn from the aspect of tosif rucham — this aspect of tosif rucham, drawn from the Sheim 
+- tiny_he_long_en at segments[6]/segment
+  HE: אות ב
+  EN: This is the aspect of Parshas HaTamid and the other korbanos that are recited in the morning. For all the korbanos are for the purpose of refining the spirit of man from the spirit
+- tiny_he_long_en at segments[8]/segment
+  HE: אות ג
+  EN: This is the secret of all the korbanos. For all of a person's sins are the aspect of beheimos [animals] — the aspect of the animal spirit, from which come all the desires — the ani
+- tiny_he_long_en at segments[10]/segment
+  HE: אות ד
+  EN: Through sins, chas v'shalom, one causes the spirit of man to be intermixed and exchanged with the spirit of the animal — the aspect of the Prince with the son of the slave — which 
+- tiny_he_long_en at segments[12]/segment
+  HE: אות ה
+  EN: This is the aspect of the Mishnah of "Aizehu Mekoman" [which is recited every day]: through clarifying the places of the korbanos, we refine and reveal the spirit of man that has f
+- tiny_he_long_en at segments[14]/segment
+  HE: אות ו
+  EN: This is the aspect of Pesukay D'Zimrah that are recited after Parshas HaKorbanos. This is the secret of the aspect of the man of the forest in the Ma'aseh, who took the Prince and 
+- tiny_he_long_en at segments[16]/segment
+  HE: אות ז
+  EN: Therefore, the essential tikun of the Prince — after he received his punishment through the animals — when it came time to repair him, he merited to hear the voice of the niggun, a
+
+### SEVERE public/reader/likutay-halachos/part-2/halacha-37.json flags=48 bilingual_segments=122/142
+- long_he_tiny_en at segments[39]/segment
+  HE: כי הרע עין שהוא הסטרא אחרא בהכרח שלא יתבטל לגמרי עד עת קץ כמובא כדי שיהיה בחירה בעולם, ועל כן בהכרח שתתמעט אור הלבנה, כדי שלא יראו הכל גדלת ישראל שמונין ללבנה מה שמשיגין על ידי האמ
+  EN: Short Prayer
+- long_he_tiny_en at segments[69]/segment
+  HE: וזה בחינת מה שאמרו שם במשנה שהיו אומרות אל תתן עיניך בנוי תן עיניך במשפחה וכו'. הינו שלא תהיה כרוך אחר הרע עין שמסתכל רק על הנוי על תאות עולם הזה, רק תן עיניך במשפחה, דהינו על האבו
+  EN: Likutay Halachos
+- tiny_he_long_en at aligned_segments[1]/segment
+  HE: אות א
+  EN: This is the aspect of Kri'as HaTorah in the tzibbur [congregation], from a kosher Sefer Torah, with niggun [melody] and t'amim [cantillation notes]. The essential reading is on Sha
 - tiny_he_long_en at aligned_segments[5]/segment
   HE: אות ב
-  EN: And likewise it is explained at the end of the Ma'aseh that the Name is the aspect of the light of the ner. As explained there at the end: the moon holds a ner in her hand and says
-- tiny_he_long_en at aligned_segments[7]/segment
-  HE: אות ג
-  EN: This is the aspect of the Ner Shabbos [Shabbos candle]. For Shabbos is king — the aspect of "Shabbos malchusa" — and the six weekdays are the aspect of avdus, for during them one p
-- tiny_he_long_en at aligned_segments[9]/segment
-  HE: אות ד
-  EN: Connected to what was said above: therefore there are eight days of Chanukah, corresponding to the eight kings of kedushah of Yisrael, which are in turn corresponding to the eight 
-- tiny_he_long_en at aligned_segments[11]/segment
-  HE: אות ה
-  EN: Therefore, Yisrael are sometimes called by the name of avadim [servants] to Hashem and sometimes by the name of banim [sons]. As it is written (Vayikra 25): "Ki li bnay Yisrael ava
-- tiny_he_long_en at aligned_segments[13]/segment
-  HE: אות ו
-  EN: Therefore it is called Chanukah — after the chanukas [dedication of] the Beis HaMikdash that was dedicated then, as our Sages said. For on Chanukah we draw the aspect of the holine
-- tiny_he_long_en at aligned_segments[15]/segment
-  HE: אות ז
-  EN: All this is the aspect of Arichas Apayim — to always extend one's spirit all the days of his life, however things may be, never falling from anything, always beginning to draw clos
-
-### SEVERE public/reader/likutay-halachos/part-1/halacha-54.json flags=48 bilingual_segments=118/154
-- hebrew_in_english_field at segments[6]/segment
-  HE: אות ב וזה בחינת מה שהיו ישראל מהלכיםן במדבר עם המשכן ובכל מקום היו מקימין המשכן היה המקום קדוש בקדושת הבית המקדש. כי ישראל היו הולכין לכבוש ארץ ישראל שלזה צריכין להמשיך בחינת כח מע
-  EN: 11 וָאֹמַר חַלּוֹתִי הִיא שְׁנוֹת יְמִין עֶלְיוֹן
-- hebrew_in_english_field at segments[12]/segment
-  HE: אות ה ועל כן הזהירו רז"ל להתפלל בבית הכנסת ואפילו כשאין שם מנין כמבואר בספרים. כיע קיר שלימות התפלה הוא בבית הכנסת כי כבר מבואר שעיקר קדושת הבית הכנסת נמשך מבחינת החסד חנם שהיה מקי
-  EN: 13 וְהָגִיתִי בְכָל-פָּעֳלֶךָ וּבַעֲלִילוֹתֶיךָ אָשִׂיחָה
-- hebrew_in_english_field at segments[18]/segment
-  HE: אות ח וזה בחינת משא ומתן. וזה לשון השלחן ערוך בסוף הלכות בית הכנסת בסימן קנ"ו. אחר כך ילך לעסקיו דכל תורה שאין עמה מלאכה סופה בטילה וגוררת עון וכו' ומכל מקום לא יעשה מלאכתו עיקר אל
-  EN: 15 אַתָּה הָאֵל עֹשֵׂה פֶלֶא הוֹדַעְתָּ בָעַמִּים עֻזֶּךָ
-- hebrew_in_english_field at segments[24]/segment
-  HE: אות יא וזה בחינת (דברים ל"ג) שמח זבולון בצאתך ויששכר באהלך. כי דייקא כשיששכר באהלך שהצדיק עוסק בתורה ואתה מחזיק ~ אותו, אז יש לך לשמוח בצאתך לסחורה ומשא ומתן. כי הצדיק יחיה ויקיים 
-  EN: 17 רָאוּךָ מַּיִם א-לֹהִים רָאוּךָ מַּיִם יָחִילוּ אַף יִרְגְּזוּ תְהֹמוֹת
-- hebrew_in_english_field at segments[33]/segment
-  HE: אות טז ועל כן צריכין לנסוע לצדיקי אמת על ראש השנה. כי זה החסד חנם שהיה מקיים העולם קודם מתן תורה שהוא הדרך לארץ ישראל אין מי שיוכל להמשיכו בעולם כי אם הצדיקים האמתיים הגדולים במעלה
-  EN: 20 בַּיָּם דַּרְכֶּךָ וּשְׁבִילְךָ בְּמַיִם רַבִּים וְעִקְּבוֹתֶיךָ לֹא נֹדָעוּ
-- hebrew_in_english_field at segments[46]/segment
-  HE: אות כב ועל כן הם עשרת ימי תשובה כנגד העשרה מאמרות בהם נברא העולם שהם בחינת חסד חנם הנ"ל שעיקר התשובה הוא על ידי זה כנ"ל. ועל כן ביום הכפורים שהוא סוף העשרת ימי תשובה אז ניתנו הלוחו
-  EN: 3 תָּשֵׁב אֱנוֹשׁ עַד-דַּכָּא וַתֹּאמֶר שׁוּבוּ בְנֵי-אָדָם
-- hebrew_in_english_field at segments[52]/segment
-  HE: אות כה וזה בחינת סוכות שאז נמשכין כל החסדים כידוע בכוונות. דהיינו בחינת חסד חנם הנ" שהתחלנו להמשיכו בראש השנה שאז נברא העולם כנ"ל. ועתה בסוכות נמשכין ונתגלין כל החסדים על ידי זה. כ
-  EN: 5 זְרַמְתָּם שֵׁנָה יִהְיוּ בַּבֹּקֶר כֶּחָצִיר יַחֲלֹף
-- hebrew_in_english_field at segments[57]/segment
-  HE: אות כח
-  EN: 7 כִּי-כָלִינוּ בְאַפֶּךָ וּבַחֲמָתְךָ נִבְהָלְנוּ
+  EN: This is the aspect of what the Sages said regarding the number of olim on various days (Megillah 23): Monday and Thursday — three; Rosh Chodesh and Chol HaMo'aid — four; Yom Tov — 
+- long_he_tiny_en at aligned_segments[9]/segment
+  HE: ועל-כן צריכין לבכות מאד בין המצרים ובפרט בתשעה באב על חרבן בית המקדש, עיני עיני ירדה מים . כדי להכניע על ידי הדמעות של העינים את ארס הרע עין. וכמו שכתוב בדוד כשבא עליו הרע עין של א
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[10]/segment
+  HE: ואיכה יועם נאמר על הסתלקות הצדיק. כי כל איכה יועם נאמר על הסתלקות הצדיק יאשיהו וכמו שאמרו רבותינו זכרונם לברכה . הינו בחינת קדשת האדם כנ"ל. כי גם אחר החרבן שנחרב הבית המקדש ואין לנ
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[12]/segment
+  HE: ועקר תשעה באב נמשך על ידי שנגע הס"ם בכף ירך יעקב, כמו שאיתא בזהר על פסוק על כן לא יאכלו בני ישראל את גיד הנשה וכו' עין שם. כי עשו וארבע מאות איש שהתירא מהם יעקב מאד זה בחינת הרע עי
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[14]/segment
+  HE: ועל-כן צריכין לזהר מאד לקום בכל לילה בחצות ולבכות הרבה על עוונותיו שמעכב בנין בית המקדש כדי להכניע הרע עין על ידי זה וכנ"ל, כדי שיוכל להזכיר את עצמו בכל יום בעולם הבא. כי תכף כשקמי
+  EN: [continued]
 
 ### SEVERE public/reader/chumash-lh/section-45.json flags=46 bilingual_segments=155/166
 - long_he_tiny_en at segments[4]/segment
@@ -842,83 +919,31 @@ Files needing review (excluding normal untranslated books): 1751
   HE: אַךְ אִם כֵּן לִכְאוֹרָה קָשֶׁה מַה פָּעֲלוּ הַצַּדִּיקִים הָאֲמִתִּיִּים שֶׁהָיוּ בְּכָל הַדּוֹרוֹת שֶׁלְּפָנֵינוּ שֶׁחִבְּרוּ סְפָרִים קְדוֹשִׁים בְּרוּחַ הַקֹּדֶשׁ שֶׁלָּהֶם הַכ
   EN: [continued]
 
-### SEVERE public/reader/likutay-halachos/part-1/halacha-26.json flags=45 bilingual_segments=148/196
-- tiny_he_long_en at aligned_segments[1]/segment
-  HE: הלכה ג
-  EN: This is the aspect of the sale of Yosef — the aspect of (Tehillim 105) "l'eved nimkar Yosef" — "Yosef was sold as a slave" — which we read in the parshiyos of the sale of Yosef and
-- tiny_he_long_en at aligned_segments[2]/segment
-  HE: אות א
-  EN: This is the aspect of why the mother's name specifically is mentioned when praying for a sick person. For all illness of a person is drawn from the aspect of the exchange of the Pr
-- tiny_he_long_en at aligned_segments[5]/segment
-  HE: אות ב
-  EN: It follows that the essential aspect of death is through the overpowering of the slave over the son — the body over the neshamah — which is the aspect of the sin of Adam HaRishon, 
-- tiny_he_long_en at aligned_segments[7]/segment
-  HE: אות ג
-  EN: Therefore, when a person is ill — which is the beginning of death, where the neshamah begins to withdraw, drawn from the aspect of tosif rucham yigva'un, so that he will merit in t
-- tiny_he_long_en at aligned_segments[9]/segment
-  HE: אות ד
-  EN: This is the aspect of what we find in all of Sefer Melachim: for all the kings of Beis Dovid, the mother's name of the king is always mentioned. For kingship is the aspect of the N
-- tiny_he_long_en at aligned_segments[11]/segment
-  HE: אות ה
-  EN: This is the aspect of Pesukay dizimra that are recited after Parshas HaKorbanos. This is the secret of the aspect of the man of the forest in the Ma'aseh, who took the Prince and b
-- tiny_he_long_en at aligned_segments[13]/segment
-  HE: אות ו
-  EN: This is the aspect of why all the Avos were shepherds of animals — all in order to refine the exchange, which is the aspect of the intermingling and exchange of the spirit of man w
-- tiny_he_long_en at aligned_segments[15]/segment
-  HE: אות ז
-  EN: Let us return to the matter of Chanukah. For all of this is the aspect of Chanukah. The mitzvah of Chanukah — to draw the light of truth into the world — is all in order to magnify
-
-### SEVERE public/reader/likutay-halachos/part-6/halacha-27.json flags=45 bilingual_segments=116/144
-- hebrew_in_english_field at segments[2]/segment
-  HE: אות א ענין יבום וחליצה על פי התורה המתחיל שאלו את ר' יוסי בן קיסמא אימתי בן דוד בא אמר להם: לכשיפול השער הזה וכולי (סימן נ"ז) והכלל כי עיקר הוא אמונת חכמים, ומי שפוגם באמונת חכמים 
-  EN: 9 וְאַתָּה יי תִּשְׂחַק-לָמוֹ תִּלְעַג לְכָל-גּוֹיִם
-- hebrew_in_english_field at segments[5]/segment
-  HE: אות ב וזה בחינת החיוב שמחויב כל אחד לעסוק בישוב העולם דהיינו לישא אשה ולהוליד ממנה בנים, והיא מצוה הראשונה בתורה, ומי שאינו משתדל בזה ואינו מניח ח"ו בנים בעולם אינו יכול לעלות למעל
-  EN: 10 עֻזּוֹ אֵלֶיךָ אֶשְׁמֹרָה כִּי-א-לֹהִים מִשְׂגַּבִּי
-- hebrew_in_english_field at segments[8]/segment
-  HE: אות ג ואמונת חכמים נמשך על ידי נדר וכולי כנ"ל במאמר הנ"ל, וזה בחינת מה שהבעל מיפר נדרי אשתו כי כל חיות האשה ובנינה הוא על ידי בעלה כמובא בבחינת אין האשה מתברכת אלא מפרי בטנו של איש
-  EN: 11 א-להי חַסְדִּי יְקַדְּמֵנִי א-לֹהִים יַרְאֵנִי בְשֹׁרְרָי
-- hebrew_in_english_field at segments[11]/segment
-  HE: ועל כן זווגן של תלמידי חכמים בשבת כי אז בשבת מתחבר תורה שבכתב ותורה שבעל פה, כי אז זוכין לאמונת חכמים תורה שבעל פה כנ"ל ומתחבר יחד עם תורה שבכתב שכלולה באבהן שהם שלשה קוי האמת בחינ
-  EN: 12 אַל-תַּהַרְגֵם פֶּן-יִשְׁכְּחוּ עַמִּי הֲנִיעֵמוֹ בְחֵילְךָ וְהוֹרִידֵמוֹ מָגִנֵּנוּ אֲדֹנָי
-- hebrew_in_english_field at segments[16]/segment
-  HE: נחזור לענינינו, נמצא שעיקר פגם מהשנאה הוא שנאת אח לרעהו שהוא היפך האהבה מהיפך אל היפך שזהו בחינת שנאת עשו שהוא השונא הגדול שמשם נמשך עיקר השנאה, ומשם עיקר הפגם והעונש של זה המת בלא
-  EN: 14 כַּלֵּה בְחֵמָה כַּלֵּה וְאֵינֵמוֹ וְיֵדְעוּ כִּי-א-לֹהִים מֹשֵׁל בְּיַעֲקֹב לְאַפְסֵי הָאָרֶץ סֶלָה
-- hebrew_in_english_field at segments[19]/segment
-  HE: נמצא שבחינת ההוא רוחא הנ"ל הוא בחינת נדר בחינת בנימין, ועל כן על ידי זה יכול אחיו היבם לתקן את נפשו על ידי שהתחיל זה המת לתקן בחינת אמונת חכמים על ידי ההוא רוחא כנ"ל שנמשך מבחינת נ
-  EN: 15 וְיָשׁוּבוּ לָעֶרֶב יֶהֱמוּ כַכָּלֶב וִיסוֹבְבוּ עִיר
-- hebrew_in_english_field at segments[22]/segment
-  HE: ועל כן כשלובשין המנעלים בבוקר מברכין שעשה לי כל צרכי, ולכאורה תמוה מאד מפני מה אין מברכין על שום מלבוש ואפילו על מלבוש חשוב, וכן על שום דבר שבעולם אין מברכין שעשה לי כל צרכי רק על 
-  EN: 16 הֵמָּה יְנִיעוּן לֶאֱכֹל אִם-לֹא יִשְׂבְּעוּ וַיָּלִינוּ
-- hebrew_in_english_field at segments[32]/segment
-  HE: אות יא
-  EN: 1 לַמְנַצֵּחַ עַל-יְדוּתוּן לְאָסָף מִזְמוֹר
-
-### SEVERE public/reader/likutay-halachos/part-8/halacha-55.json flags=45 bilingual_segments=119/154
-- hebrew_in_english_field at segments[25]/segment
-  HE: אות יא וזה שארז"ל ענין הגנב שעשה עין של מטה כאילו אינו רואה ובשביל זה הגנב חמור מגזלן. ולכאורה אינו מובן כי הלא בודאי גם הגזלן אינו מאמין בהשגחתו ית' כי אם הי' מאמין שהש"י משגיח על
-  EN: 2 אַשְׁרֵי אָדָם לֹא יַחְשֹׁב יי לוֹ עָוֹן וְאֵין בְּרוּחוֹ רְמִיָּה
-- hebrew_in_english_field at segments[28]/segment
-  HE: יג) ד' וה' בבחי' תחת הנחשת אביא זהב ותחת הברזל אביא כסף ותחת העצים נחשת ותחת האבנים ברזל וכו'. וארז,ל תחת ר"ע וחביריו וכו' שהם יו"ד הרוגי מלכות שהי' ע"י הפגם שפגמו במכירת יוסף שגנב
-  EN: 3 כִּי-הֶחֱרַשְׁתִּי בָּלוּ עֲצָמַי בְּשַׁאֲגָתִי כָּל-הַיּוֹם
-- hebrew_in_english_field at segments[37]/segment
-  HE: אות יז וזה שלקח יעקב י"ב אבנים וישם מראשותיו ונסה עי"ז אם תהי' מטתו שלימה כ"ש במדרש. כי האבנים מרמזין על אבני נגף שנכשלין בהם ע"י החשך והוא נסה בזה דייקא שע"י תוקף האמת שלו יתבטלו 
-  EN: 6 עַל-זֹאת יִתְפַּלֵּל כָּל-חָסִיד אֵלֶיךָ לְעֵת מְצֹא רַק לְשֵׁטֶף מַיִם רַבִּים אֵלָיו לֹא יַגִּיעוּ
-- hebrew_in_english_field at segments[43]/segment
-  HE: וזה שארז"ל שור שבטלו ממלאכתו צריך לשלם ה' שה שלא בטלו ממלאכתו משלם ד'. כי עיקר מלאכת מעשה בראשית דהיינו כל קיום של כל העולם שברא הש"י שנקרא בשם מלאכה כ"ש ויכל אלקים ביום השביעי מלא
-  EN: 8 אַשְׂכִּילְךָ וְאוֹרְךָ בְּדֶרֶךְ-זוּ תֵלֵךְ אִיעֲצָה עָלֶיךָ עֵינִי
-- hebrew_in_english_field at segments[49]/segment
-  HE: ונחזור לענין חנוכה: כי היונים טמאו כל השמנים שהם האורות בחי' אמת היינו שרוצים לטמאות ולקלקל ח"ו גם את האמת בעצמו כיהם אומרים להיפך שכך היא האמת כפי דעתו. והנס הי' ע"י שמן של הכה"ג 
-  EN: 10 רַבִּים מַכְאוֹבִים לָרָשָׁע וְהַבּוֹטֵחַ בַּיי חֶסֶד יְסוֹבְבֶנּוּ
-- hebrew_in_english_field at segments[56]/segment
-  HE: אות כה
-  EN: 1 לַמְנַצֵּחַ מִזְמוֹר לְדָוִד
-- long_he_tiny_en at segments[57]/segment
-  HE: כי צריכין לדבק א"ע כ"כ אל האמת ולדבר הדיבור באמת גדול עד שיראה הפתחים ויתפלל בשלימות כראוי עד שיכניס כל כחו בידבורי התפילה ויחדש כחו וחיותו שם כ"ש בתחילת התו' הנ"ל (וכ"ש במ"א שכמתפ
-  EN: Lamnatzai-ach mizmohr liduvveed.
-- hebrew_in_english_field at segments[62]/segment
-  HE: אות כז וזה שקורין בקרבנות הי"ב נשיאים בחנוכה, כי הם כלליות הי"ב שבטים בחי' י"ב נוסחאות התפלה שתקונם ע"י האמת שהוא בחי' נר חנוכה כי הקרבנות הם בחי' תפלה כ"ש במ"א:
-  EN: 3 יי יִשְׁמְרֵהוּ וִיחַיֵּהוּ וְאֻשַּׁר בָּאָרֶץ וְאַל-תִּתְּנֵהוּ בְּנֶפֶשׁ אֹיְבָיו
+### SEVERE public/reader/likutay-halachos/part-7/halacha-79.json flags=44 bilingual_segments=83/100
+- long_he_tiny_en at aligned_segments[3]/segment
+  HE: ע"פ התורה אמר ר' עקיבה כשתגיעו לאבני שיש טהור אל תאמרו מים מים שנא' דובר שקרים לא יכון לנגד עיני וכו' (סי' נ"א לק"א). והכלל שהשקר מזיק לעינים בגשמיות ורוחניות כי ע"י השקר נתעכר דמי
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[4]/segment
+  HE: וזה בחי' שלוחו של אדם כמותו בכל התורה כולה. כי כלל כל התורה הוא בשביל לכלול באחד, לכלול אחר הבריאה בקודם הבריאה שהוא כולו אחד כולו טוב כי זה עיקר התכגלית שבשביל זה נברא האדם כדי לכ
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[5]/segment
+  HE: ועיקר הבריאה היתה רק בשביל הבחירה כי רק בשביל זה ברא השש,י כל העולמות כולם מראש ועד סוף וכולם נבראו בשביל האדם התחתון שבעוה"ז המלובש בגוף עכור שיש לו בחירה לבחור בטוב או בהיפך ח"ו.
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[6]/segment
+  HE: נמצא שעיקר שלימות הבריאה הוא דייקא ע"י הבחירה שנתהוה אחר שיצאה הבריאה מכח אל הפועל דייקא. והעיקר הוא האמת שצריכין להאמין בהאמת שגם אחר הבריאה הש"י משגיח בהשגחה פרטיית על כל הדברים 
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[7]/segment
+  HE: וע"כ נקרא האדם בזה העולם שליח כ"ש (שמואל ב' כ"ד) מה אשיב שלוחי דבר וכ,ש ציר נאמן לשולחיו (משלי). כי האדם נשלח מלמעלה בזה העולם הגשמי כדי שיעלה כל העולמות לשרשן לכוללן באחד כנ"ל שיה
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[8]/segment
+  HE: כי עיקר כח הבחירה הוא ע"י שיש בחי' שליח שהוא בחי' מלאך שנקרא שליח שהוא בחי' מט"ט שמשם אחיזת עץ הדעת טו"ר שהוא בחי' הבחירה בידוע כי עיקר כח הבחירה הוא ע"י הטבע. כי אם לא הי' בחירה כ
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[9]/segment
+  HE: וע"כ בכל התורה כולה שלוחו של אדם כמותו. כי זהו בחי' כלליות התורה והמצוות כדי שיוכלל השליח בהמשלח שיהי' השליח והמשלח הכל אחד שהוא בחי' כלליות הבריאה בקודם הבריאה שיהיה כולו אחד כולו
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[10]/segment
+  HE: וע"כ אם שינה השליח כל שהוא השליחות בטל. כי עיקר כלליות השליח בהמשלח בחי' אחר הבריאה בקודם הבריאה הוא ע"י אמת כנ"ל וע"כ אם שינה השליח שהוא פגם האמת, השליחות בטל כי ע"י השקר בחי' שינ
+  EN: [continued]
 
 ### SEVERE public/reader/likutay-halachos/part-2/halacha-12.json flags=43 bilingual_segments=118/132
 - long_he_tiny_en at segments[11]/segment
@@ -972,32 +997,6 @@ Files needing review (excluding normal untranslated books): 1751
   HE: אות ח
   EN: And this is the claim that the daughters of Tzlofchad made: "If we are considered offspring, give us an inheritance — and if not, let our mother perform yibum." For the essential y
 
-### SEVERE public/reader/likutay-halachos/part-1/halacha-43.json flags=42 bilingual_segments=123/146
-- long_he_tiny_en at segments[18]/segment
-  HE: וזהו בחינת שירת הים שאומרים בכל יום קודם קריאת שמע ותפלה. כי קריאעת ים סוף הוא בבחינת כתיבת ספרים הקדושים של התורה שהוא דבר נפלא מאד שיהיו יכולים להצטייר אור ~ אותיו התורה על הספר 
-  EN: Sanhedrin 17a. 118
-- long_he_tiny_en at segments[33]/segment
-  HE: אות טז ואחר כך נסמכה הפרשה של הסתלקות משה. כי משה הוא צדיק הדור בחינת נקודה הכללית הואו נתן התורה לישראל שהוא בחינת הנקודה כנ"ל. והוא היה צריך להכניס את ישראל לארץ ישראל ששם נקודת 
-  EN: Menachos 39a. 133
-- hebrew_in_english_field at segments[44]/segment
-  HE: וזה בחינת השיר של יום שאומרים אחר כך. כי התקשרות והארת הנקודה לכל העולמות הוא על ידי שיר וניגון בחינת עשרה מיני נגינה כנ"ל שזהו מה שהיו צריכין הלוים לעסוק בשירה בשעת עבודת הקרבנות.
-  EN: תִּקּוּן הַכְּלָלִי
-- long_he_tiny_en at segments[44]/segment
-  HE: וזה בחינת השיר של יום שאומרים אחר כך. כי התקשרות והארת הנקודה לכל העולמות הוא על ידי שיר וניגון בחינת עשרה מיני נגינה כנ"ל שזהו מה שהיו צריכין הלוים לעסוק בשירה בשעת עבודת הקרבנות.
-  EN: תִּקּוּן הַכְּלָלִי
-- long_he_tiny_en at segments[49]/segment
-  HE: אות ג וזה בחינת קריאת התורה בצבור בשעת התפלה. כי התפלה היא לקשר הנקודה אל הלב כנ"ל. ועיקר הנקודה היא התורה הקדושה שכלולה בעשרת הדברות כמו שכתוב שם. כי עיקר צדקת הצדיק שזוכה להנקודה
-  EN: iy = eye
-- hebrew_in_english_field at segments[63]/segment
-  HE: אות ל ועל כן ביום הכפורים סמוך ביותר לקדושת שבת יותר מכל הימים טובים והוא סמוך וקרוב לקדושת שבת בתכלית הסמיכה בבחינת (מגילה ') אין בין יום הכפורים לשבת וכו'. נמצא שאין ביניהם אלא ח
-  EN: 4 יִרְבּוּ עַצְּבוֹתָם אַחֵר מָהָרוּ בַּל-אַסִּיךְ נִסְכֵּיהֶם מִדָּם וּבַל-אֶשָּׂא אֶת-שְׁמוֹתָם עַל-שְׂפָתָי
-- hebrew_in_english_field at segments[65]/segment
-  HE: אות לא ועל כן נוהגין בשמחת תורה שהוא שמיני עצרת לקרות כל ישראל לעלות לתורה. כי אז גומרין התורה שהוא כלל הנקודה שכלולה מכל הנקודות שיש בכל אחד ואחד מישראל. כי נקודת כל אחד מישראל הו
-  EN: 5 יי מְנָת-חֶלְקִי וְכוֹסִי אַתָּה תּוֹמִיךְ גּוֹרָלִי
-- hebrew_in_english_field at segments[68]/segment
-  HE: (הלכות נשיאת כפים הלכה ו' נכללת בהלכות ברכת השחר הלכה ה'
-  EN: 6 חֲבָלִים נָפְלוּ-לִי בַּנְּעִמִים אַף-נַחֲלָת שָׁפְרָה עָלָי
-
 ### SEVERE public/reader/likutay-halachos/part-3/halacha-12.json flags=42 bilingual_segments=137/180
 - tiny_he_long_en at aligned_segments[1]/segment
   HE: הלכה ה
@@ -1050,36 +1049,33 @@ Files needing review (excluding normal untranslated books): 1751
   HE: כִּי עִקַּר הַהוֹלָדָה עַל-יְדֵי זֶה שֶׁבְּהֶכְרֵחַ שֶׁתַּעֲבֹר הַנְּשָׁמָה מֵרוּם כָּל דַּרְגִין מִלְּמַעְלָה מִכָּל הָאַרְבָּעָה עוֹלָמוֹת אֲצִילוּת בְּרִיאָה יְצִירָה עֲשִׂיָּה 
   EN: [continued]
 
-### SEVERE public/reader/chayey-moharan/part-5.json flags=39 bilingual_segments=469/469
-- hebrew_in_english_field at segments[125]/segment
-  HE: גַּם-כֵּן כָּל זְמַן שֶׁהוּא צָרִיךְ לִחְיוֹת, כִּי אִם לָאו חַס וְשָׁלוֹם יִסְתַּלֵּק בְּלֹא עִתּוֹ וְעַל-כֵּן בְּהֶכְרֵחַ שֶׁיִּהְיֶה רָצוֹא וָשׁוֹב:
-  EN: <הַתּוֹרוֹת שֶׁנִּכְתְּבוּ בִּלְשׁוֹנוֹ הַקָּדוֹשָׁה בְּעַצְמוֹ אָסוּר שֶׁיְּכוֹלִים לְדַקְדֵּק בָּהֶם כְּמוֹ בַּמִּקְרָא, כִּי יֵשׁ שָׁם כַּוָּנוֹת הַרְבֵּה כִּי לִפְעָמִים הוּא ח
-- hebrew_in_english_field at segments[135]/segment
-  HE: מֵחֻפָּתוֹ רַק כְּשֶׁמָּסַר לָנוּ הַתּוֹרָה הַזּאת בִּכְתַב-יָדוֹ הַקָּדוֹשׁ הִתְחִיל מִפָּסוּק לַשֶּׁמֶשׁ שָׂם אהֶל בָּהֶם כַּנִּדְפַּס (בְּלִקּוּטֵי א' סִימָן מ"ט הַנַּ"ל) וְאַחַ
-  EN: <לְפַרְצוּף כָּל הָעוֹלָמוֹת>
-- long_he_tiny_en at segments[135]/segment
-  HE: מֵחֻפָּתוֹ רַק כְּשֶׁמָּסַר לָנוּ הַתּוֹרָה הַזּאת בִּכְתַב-יָדוֹ הַקָּדוֹשׁ הִתְחִיל מִפָּסוּק לַשֶּׁמֶשׁ שָׂם אהֶל בָּהֶם כַּנִּדְפַּס (בְּלִקּוּטֵי א' סִימָן מ"ט הַנַּ"ל) וְאַחַ
-  EN: <לְפַרְצוּף כָּל הָעוֹלָמוֹת>
-- hebrew_in_english_field at segments[154]/segment
-  HE: בִּבְחִינַת (אֵיכָה ד): "תִּשְׁתַּפֵּכְנָה אַבְנֵי קדֶשׁ", וְנִקְרָא שְׁפִיכָה מֵחֲמַת שֶׁעֲדַיִן אֵין לָהֶם כָּל הַשְּׁלֵמוּת וְנוֹפְלִים קדֶם שֶׁנִּשְׁלָמִים. אֲבָל הַנְּשָׁמָה ג
-  EN: <הוֹסָפָה מִסֵּפֶר 'בֵּאוּר הַלִּקּוּטִים', מִמּוֹרֵנוּ הָרַב אַבְרָהָם בֶּן רַבִּי נַחְמָן זצ"ל, (סוֹף סִימָן רפ"ב): "דִּבּוּרוֹ וּמַאֲמָרוֹ הַקָּדוֹשׁ בְּעִנְיַן לִמּוּד סְפָרָיו
-- hebrew_in_english_field at segments[163]/segment
-  HE: בַּאשַׁאפֶען גִיוָוארְן) וְכוּ'. אַחַר- כָּךְ בְּאֵיזֶה עֵת עָמַד זֶה הָאִישׁ אַחַר כָּתְלֵי רַבֵּנוּ זִכְרוֹנוֹ
-  EN: <אָמַר הַמַּעְתִּיק: לְעִנְיַן הַעֲלָמַת הָאוֹר הַגָּדוֹל וְהַנִּפְלָא שֶׁל אַדְמוֹ"ר זַ"ל, אֲשֶׁר חִדּוּשׁ כָּמוֹהוּ עֲדַיִן לֹא הָיָה אֲפִלּוּ בַּדּוֹרוֹת הַקּוֹדְמִים... יְהִי ר
-- tiny_he_long_en at aligned_segments[4]/segment
-  HE: אָמַראֲנִי
-  EN: (3.) He said: "I would seek and pray very greatly that Hashem Yisburach bring me a trial — for I was firm in my conviction that unless He make me insane, if it is within his unders
-- tiny_he_long_en at aligned_segments[18]/segment
-  HE: הָיִיתִי
-  EN: (3.) Regarding worldly matters and even frivolous matters — that great tzaddikim can elevate those words and make from stories of mundane matters a great service of G-d — as is som
-- tiny_he_long_en at aligned_segments[35]/segment
-  HE: פַּעַם אַחַתאָמַר:
-  EN: (19.) He said to one person that it comes into his mind that he would take his wife and travel to distant places and be there in great concealment from the world — and he would go 
+### SEVERE public/reader/likutay-halachos/part-4/halacha-49.json flags=41 bilingual_segments=96/136
+- long_he_tiny_en at segments[28]/segment
+  HE: וזה בחינת הקילקול של השפלים במדריגתם והפגומים הרוצים להתקרב להקטן במעלה, כי לא די שלא יתקנו אף גם יקלקל לו הרבה, כי הרע שלו יתגבר ביותר על ייד שיהיה יונק מהרע של רבו הקטן במעלה שלא
+  EN: Lamnatzai-ach mizmohr liduvveed.
+- long_he_tiny_en at aligned_segments[2]/segment
+  HE: על פי התורה מישרא בסימן למ"ד עיין שם כל התורה: והכלל שצריכין דייקא הרבי הגדול ביותר וכו' כדי לזכות להשגות אלקות שאי אפשר לקבל כי אם על ידי כמה צמצומים משכל עליון לשכל תחתון וכו'. ע
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[3]/segment
+  HE: כי באמת מי שמקרב עצמו לקטן במעלה אף על פי שהוא טוב ממנו הרבה וכנגדו הוא צדיק, אף על פי כן לא די שאינו מועיל לו מחמת שהו אגחולה גדול ביותר, שקטן במעלה אינו יכול לרפאות חוליי נפשו הע
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[5]/segment
+  HE: כי איתא בדבריו ז"ל שבכל מקום יש יושר ואפילו מיש עושה עוולות גדולות בהכרח שימצא אצלו גם כן איזה יושר,ף רק שהחילוק הוא מתךי מתחיל היושר. כי אצל איש כשר מתחיל היושר מיד כי בודאי אסור 
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[7]/segment
+  HE: כי בכל מקום שהעוולות גדולות ביותר שם היושר רחוק ביותר, אבל אף על פי כן בל להודיע שם שעושה עולה. אבל מי שטועה עצמו ואומר שכל מה שעושה הכל ושר ומהפך העולה והרציחה ליושר, שם קשה מאד ל
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[9]/segment
+  HE: כי זה כלל גדול שבכל דרגא ודרגא ובכל עולם ועולם יש קליפה הקדומת לפרי ואפילו במדריגות העליונות שאין שם קליפה גמורה, יש שם אחיזת איזה קליפה דקה. וכלח מה שאחיזת הקליפה והשקר דק יותר, ק
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[11]/segment
+  HE: וזה בחינת איסור בשר בחלב. בחינת לא תבשל גדי בחלב אמו. כי כל מה שבעולם דומם צומח חי מדבר הכל יונק חיותךו מבחינת הצמצומים הנ"ל שעל ידם משיגין אלקוךתו יתברך וכולם צריכין בירור אחר ביר
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[13]/segment
+  HE: ועל כן אסרו לאכול מהבמה בחיים. כי בחייו צריך הבעל חי לקבל החיות בהדרגה כפי מדריגתו, דהיינו החיות השיך לבעל חי כי אי אפשר לו לקבל חיות הגבוה יותר שהו א חיות האדם כי יתבטל במציאות. ו
+  EN: [continued]
 
-### SEVERE public/reader/likutay-halachos/part-3/halacha-30.json flags=39 bilingual_segments=116/152
-- hebrew_in_english_field at segments[25]/segment
-  HE: אות יב
-  EN: 7 כִּי-כָלִינוּ בְאַפֶּךָ וּבַחֲמָתְךָ נִבְהָלְנוּ
+### SEVERE public/reader/likutay-halachos/part-3/halacha-30.json flags=38 bilingual_segments=115/152
 - tiny_he_long_en at aligned_segments[1]/segment
   HE: הלכה ט
   EN: The essential tikkun is that one must separate the Malchus so that she not be in the aspect of back to back, attached in one wall for both of them; rather, to separate the Malchus 
@@ -1101,37 +1097,11 @@ Files needing review (excluding normal untranslated books): 1751
 - tiny_he_long_en at aligned_segments[15]/segment
   HE: אות ז
   EN: And this is the aspect of Rosh HaShanah, when we engage in raising and building the tefillah, which is the aspect of Malchus — to separate her from Z'eir Anpin, from the aspect of 
+- tiny_he_long_en at aligned_segments[17]/segment
+  HE: אות ח
+  EN: And this is the aspect of the sleep and the dormita that falls upon Z'eir Anpin, which is the Torah, and afterward he is awakened through the shofar — through which the Malchus is 
 
-### SEVERE public/reader/likutay-halachos/part-7/halacha-34.json flags=39 bilingual_segments=77/98
-- tiny_he_long_en at aligned_segments[1]/segment
-  HE: אות א
-  EN: And therefore the get indicates to her that she is separated from him, and yet even so she remains worthy of a Jewish man — and one writes to her: "v'harei at muteres l'chol adam" 
-- tiny_he_long_en at aligned_segments[4]/segment
-  HE: אות ב
-  EN: And this is the dimension of the date written in the get — one writes the day, the week, the month, and the year — which is the dimension of all the boundaries of the days and time
-- tiny_he_long_en at aligned_segments[6]/segment
-  HE: אות ג
-  EN: And therefore the ketanah (minor girl) exits through me'un (refusal). For the ketanah, who has no da'as, is not bound to her husband at all. For the essential bond is through da'as
-- tiny_he_long_en at aligned_segments[8]/segment
-  HE: אות ד
-  EN: But when she exits through a get, she remains bound to her husband forever — and therefore she is forbidden to his relatives and so forth. For the get is in the dimension of da'as 
-- hebrew_in_english_field at aligned_segments[9]/segment
-  HE: נמצא שכל המצוות שעושין הם בבחי' פריעת חוב אבל הלוה אינו נפטר מן החוב עד שיסלק ליד המלוה בעצמו. והמלוה בעצמו הוא הש"י כביכול שצריכין להחזיר לידו ממש כביכול כל הבריאה שכלול בנשמות יש
-  EN: עִנְיַן גֵּט, עַל-פִּי הַתּוֹרָה "וּבְיוֹם הַבִּכּוּרִים" לְמַעַן יַאֲרִיךְ יָמִים עַל מַמְלַכְתּוֹ (סִימָן נו), עַיֵּן שָׁם הֵיטֵב: וְיוֹצֵא מִשָּׁם שֶׁצָּרִיךְ לְהַמְשִׁיךְ חַיִּ
-- hebrew_in_english_field at aligned_segments[10]/segment
-  HE: אות ה
-  EN: וְזֶה בְּחִינַת גֵּט, שֶׁהוּא בְְּחִינַת שֶׁמְּגַלִּין הַתּוֹרָה הַמְלֻבֶּשֶׁת בְּתוֹךְ בְּחִינַת הַסְתָּרַת פָּנִים, כִּי הָאִשָּׁה הִיא בְּחִינַת מַלְכוּת וְכָל חִיּוּתָהּ עַל-יְ
-- tiny_he_long_en at aligned_segments[10]/segment
-  HE: אות ה
-  EN: וְזֶה בְּחִינַת גֵּט, שֶׁהוּא בְְּחִינַת שֶׁמְּגַלִּין הַתּוֹרָה הַמְלֻבֶּשֶׁת בְּתוֹךְ בְּחִינַת הַסְתָּרַת פָּנִים, כִּי הָאִשָּׁה הִיא בְּחִינַת מַלְכוּת וְכָל חִיּוּתָהּ עַל-יְ
-- hebrew_in_english_field at aligned_segments[11]/segment
-  HE: וזה שמבואר במאמר הנ"ל שע"י הצדיק שעושה המצווה בשמחה גדולה כנ"ל שהוא בחי' משה כנ"ל על ידו דייקא נתתקן העולם וכו' כי הוא ממלא חסרון העולם וכו' כנ"ל. כי ע"י זה הצדיק נכלל כל העולם ומל
-  EN: וְעַל-כֵּן כְּשֶׁנַּעֲשֶׂה שִׂנְאָה בֵּין אִישׁ וְאִשָּׁה, שֶׁהוּא בְּחִינַת הַסְתָּרַת פָּנִים, אִי אֶפְשָׁר לָהּ לִפָּרֵד מִמֶּנּוּ בִּוְלֹא כְלוּם, כִּי יִתְגַּבֵּר סִטְרָא דְּמ
-
-### SEVERE public/reader/likutay-halachos/part-3/halacha-19.json flags=38 bilingual_segments=130/164
-- hebrew_in_english_field at segments[61]/segment
-  HE: אות כט
-  EN: תִּקּוּן הַכְּלָלִי
+### SEVERE public/reader/likutay-halachos/part-3/halacha-19.json flags=37 bilingual_segments=129/164
 - tiny_he_long_en at aligned_segments[1]/segment
   HE: אות א
   EN: And this is the aspect of what Rabbainu wrote in the aforementioned teaching — that we need Hashem to place the rachamanus in our hands, that we ourselves should have mercy upon ou
@@ -1153,14 +1123,11 @@ Files needing review (excluding normal untranslated books): 1751
 - tiny_he_long_en at aligned_segments[16]/segment
   HE: אות ז
   EN: For all the travels and displacements come from the aspect of the sin of Adam HaRishon, which is the aspect of the corruption of the seal of the feet — through which came nidas, th
+- tiny_he_long_en at aligned_segments[18]/segment
+  HE: אות ח
+  EN: And this is the aspect of eruvay techumin — that in the place where one places the measure of a meal, from there the t’chum Shabbos begins. For the main t’chum Shabbos, which is th
 
-### SEVERE public/reader/likutay-halachos/part-5/halacha-4.json flags=38 bilingual_segments=132/164
-- hebrew_in_english_field at segments[16]/segment
-  HE: אות ט
-  EN: תִּקּוּן הַכְּלָלִי
-- hebrew_in_english_field at segments[69]/segment
-  HE: [שייך לעיל לאות כ"ט] כלל הדבר שבר"ה אנו נוסעין לצדיקים ואז אנו מקבלין מהצדיקים לצעוק תמיד להש"י יהי' איך שיהי' שזהו בחי' שמיעת קול שופר שהתוקע אחד וכל העולם שומעים וכנ"ל. וביוה"כ כ
-  EN: 6 חֲבָלִים נָפְלוּ-לִי בַּנְּעִמִים אַף-נַחֲלָת שָׁפְרָה עָלָי
+### SEVERE public/reader/likutay-halachos/part-5/halacha-4.json flags=36 bilingual_segments=130/164
 - tiny_he_long_en at aligned_segments[1]/segment
   HE: אות ב
   EN: And therefore, the shochet must have a portion in the Torah, and one must seek out very much a shochet who is valid [kasher] and G-d-fearing [yirai Shamayim]. For the more he is a 
@@ -1179,162 +1146,38 @@ Files needing review (excluding normal untranslated books): 1751
 - tiny_he_long_en at aligned_segments[12]/segment
   HE: אות ז
   EN: However, even so, derasah is invalid. For even though one must be very swift in the shechitah — that is, in the aspect of when one wants to elevate the soul, to strip it from the s
+- tiny_he_long_en at aligned_segments[14]/segment
+  HE: אות ח
+  EN: And this is the aspect of the slaughter of the simanim [signs] by their majority . For the souls, before their rectification, are in the aspect of palga [incompleteness/halves] . A
+- tiny_he_long_en at aligned_segments[16]/segment
+  HE: אות ט
+  EN: And therefore, a person is judged according to his majority, as our Sages of blessed memory said. For as soon as the balance is tipped even slightly — by a hair's breadth — toward 
 
-### SEVERE public/reader/likutay-halachos/part-6/halacha-22.json flags=37 bilingual_segments=112/138
-- hebrew_in_english_field at segments[3]/segment
-  HE: על פי התורה חדי ר' שמעון ואמר בליקוטי הראשון (בסימן סא') עיין שם כל המאמר. והכלל לעניננו שעל ידי פגם אמונת חכמים נפגמין כל הבחינות המבוארים שם, ועל ידי זה נחלקה עצתו וכולי עיין שם.
-  EN: 11 תּוֹדִיעֵנִי אֹרַח חַיִּים שֹׂבַע שְׂמָחוֹת אֶת-פָּנֶיךָ נְעִמוֹת בִּימִינְךָ נֶצַח
-- hebrew_in_english_field at segments[7]/segment
-  HE: ועל כן כשהבעל אינו חפץ באשתו ורצה לפוטרה ממנו, אזי צריך לכתוב לה ספר כריתות שהוא הגט, כי הגט נקרא ספר בחינת ספר כריתות, ועל ידי זה הספר של הגט שצוותה התורה על ידי זה עולה לבחינת שכ
-  EN: 1 לְדָוִד מַשְׂכִּיל אַשְׁרֵי נְשׂוּי-פֶּשַׁע כְּסוּי חֲטָאָה
-- hebrew_in_english_field at segments[10]/segment
-  HE: ד וזהו והיה מספר בני ישראל כחול הים וכולי, והיה במקום אשר יאמר להם לא עמי אתם יאמר להם בני אל חי, ופירש רש"י: מה ענין נחמה וצרה סמוכים זה לזה אלא משל למלך שהיה לו כעס עם אשתו ושלח 
-  EN: 2 אַשְׁרֵי אָדָם לֹא יַחְשֹׁב יי לוֹ עָוֹן וְאֵין בְּרוּחוֹ רְמִיָּה
-- hebrew_in_english_field at segments[13]/segment
-  HE: וזהו בחינת הפרת נדרים של הבעל והאב, כי הבעל הוא בחינת השכל הממתיק הצמצום והדין שהיא בחינת בת זוגו וכנ"ל, ועיקר ההמתקה הוא על ידי שמקבל משכל הכולל וכנ"ל, ועיקר ההמתקה הוא על ידי שמק
-  EN: 3 כִּי-הֶחֱרַשְׁתִּי בָּלוּ עֲצָמַי בְּשַׁאֲגָתִי כָּל-הַיּוֹם
-- hebrew_in_english_field at segments[16]/segment
-  HE: אות ז ועל כן יעקב אבינו בעת שהלך לישא אשה אז דייקא פגע במקום ההוא שהוא מקום האבן שתיה מקום קדש קדשים, ושם נכללו כל האבנים באבן שתיה בבחינת קדש קדשים שהוא בחינת המתקת כל הצמצומים וה
-  EN: 4 כִּי יוֹמָם וָלַיְלָה תִּכְבַּד עָלַי יָדֶךָ נֶהְפַּךְ לְשַׁדִּי בְּחַרְבֹנֵי קַיִץ סֶלָה
-- hebrew_in_english_field at segments[22]/segment
-  HE: אות י וזהו בחינת איסור מחזיר גרושתו משנשאת, כי אי אפשר לה להנשא לאחר כי אם בכח הגט שהוא הספר כריתות שנותן לה בעלה הראשון, נמצא שבעלה השני הוא בעל מחלוקת גדול להבעל הראשון כי דעתם ה
-  EN: 6 עַל-זֹאת יִתְפַּלֵּל כָּל-חָסִיד אֵלֶיךָ לְעֵת מְצֹא רַק לְשֵׁטֶף מַיִם רַבִּים אֵלָיו לֹא יַגִּיעוּ
-- hebrew_in_english_field at segments[25]/segment
-  HE: ועל כן יש י"ב שיטין בהגט כנגד י"ב אבני יעקב שהם כנגד י"ב שבטים שנכללו באבן שתיה בעת שהלך לישא אשה, שדייקא בכח הזה צריכין עכשיו לבטל הקשר בשרשו כנ"ל:
-  EN: 7 אַתָּה סֵתֶר לִי מִצַּר תִּצְּרֵנִי רָנֵּי פַלֵּט תְּסוֹבְבֵנִי סֶלָה
-- hebrew_in_english_field at segments[28]/segment
-  HE: אות יב ועל כן צריכין להזכיר שמו ושמה ושם מקומם והזמן בתוך הגט שזהו עיקר תוקף הגט, כי שמם ושם מקומם והזמן הם בחינת כלליות כל הצמצומים שכולם כלולים בבחינת השם שהוא שורש כל הצמצומים ש
-  EN: 8 אַשְׂכִּילְךָ וְאוֹרְךָ בְּדֶרֶךְ-זוּ תֵלֵךְ אִיעֲצָה עָלֶיךָ עֵינִי
-
-### SEVERE public/reader/likutay-halachos/part-7/halacha-80.json flags=37 bilingual_segments=73/90
-- hebrew_in_english_field at segments[2]/segment
-  HE: אות א בכל דבר שלוחו של אדם כמותו חוץ מלדבר עבירה:
-  EN: 7 כִּי-כָלִינוּ בְאַפֶּךָ וּבַחֲמָתְךָ נִבְהָלְנוּ
-- hebrew_in_english_field at segments[5]/segment
-  HE: אות ב וזה ענין השליחות נמשך מבחי' זאת מחמת שהאדם בשרשו יש לו ממשלה על המלאכים כי בשביל זה נברא וזה תכליתו וסופו ומלאכים הם בחי' שלוחים כי מלאך פירושו שליח. ומחמת שהאדם נברא שיהי' ל
-  EN: 8 שַׁתָּה עֲוֹנֹתֵינוּ לְנֶגְדֶּךָ עֲלֻמֵנוּ לִמְאוֹר פָּנֶיךָ
-- hebrew_in_english_field at segments[11]/segment
-  HE: אות ה כי כלל עבודת האדם בזה העולם הוא בחי' שליחות כי האדם נשתלח מלמעלה ממקור שנחצבה נשמתו משם מבחי' כסא הכבוד שהוא למעלה מהמקום, וירד לזה העולם שהוא במקום ובזמן ונתלבש בזה הגוף שלו
-  EN: 10 יְמֵי-שְׁנוֹתֵינוּ בָהֶם שִׁבְעִים שָׁנָה וְאִם בִּגְבוּרֹת שְׁמוֹנִים שָׁנָה וְרָהְבָּם עָמָל וָאָוֶן כִּי-גָז חִישׁ וַנָּעֻפָה
-- hebrew_in_english_field at segments[14]/segment
-  HE: וע"כ מצוה בו יותר מבשלוחו כי אפילו כשהאדם עושה בעצמו הוא בסכנה גדולה שיזכה לעשות העבודה בשלימות שלא יבלבל אותו גשמיית מוקמו שנשתלח לשם מלמעלה, להעלותו לשרשו כנ"ל. מכ"ש כשעושה ע"י ש
-  EN: 11 מִי-יוֹדֵעַ עֹז אַפֶּךָ וּכְיִרְאָתְךָ עֶבְרָתֶךָ
-- hebrew_in_english_field at segments[20]/segment
-  HE: אות ט וע"כ התפלה עיקר שלימות דייקא ע"י השליח ציבור כי ע"י זה השליח של התפלה שהוא הש"צ מתקנין וממתיקין ומעלין כל הפגמים הנמשכים ע"י בחי' ההנהגה ע"י שליח שהוא בחי' מלאך שמשם אחיזת הט
-  EN: 13 שׁוּבָה יי עַד-מָתָי וְהִנָּחֵם עַל-עֲבָדֶיךָ
-- hebrew_in_english_field at segments[26]/segment
-  HE: אות יב וע"כ צריך הש"ץ שיהי' הגון ביותר בפרט בר"ה ויוה"כ כי הש"ץ צריך להיות מובחר שבעדה שיכול לקשר א"ע לשרשי נשמות ישראל ע"י התפילה. עד שיהי' לו כח לירד לתוך עומק מקומו של כ"א וא' מ
-  EN: 15 שַׂמְּחֵנוּ כִּימוֹת עִנִּיתָנוּ שְׁנוֹת רָאִינוּ רָעָה
-- hebrew_in_english_field at segments[32]/segment
-  HE: אות טו וזהו בחי' הד' קולות שתוקעין בר"ה שהם תשר"ת. כי מבואר שם בהתורה הנ"ל בסופו בפירוש הפסוק תקעו וכו' ומפורש שם ששופר הוא בחי הלב וכו'. גם שופר בחי' יראה וכו'. גם שופר בחי' נבואה
-  EN: 17 וִיהִי נֹעַם אֲדֹנָי אֱ-לֹהֵינוּ עָלֵינוּ וּמַעֲשֵׂה יָדֵינוּ כּוֹנְנָה עָלֵינוּ וּמַעֲשֵׂה יָדֵינוּ כּוֹנְנֵהוּ
-- hebrew_in_english_field at segments[36]/segment
-  HE: וכל זה צריכין לתקן בר"ה שאז חטא אדה"ר בעץ הדעת ואז נאמר ויגרש את האדם וישכן מקדם לגן עדן וכו' לשמור את דרך עץ החיים. ומחמת זה אין יודעין הדרך לעץ החיים ששם צריכין כל הנשמות לבא לשם
-  EN: 1 הוֹדוּ לַיי קִרְאוּ בִּשְׁמוֹ הוֹדִיעוּ בָעַמִּים עֲלִילוֹתָיו
-
-### SEVERE public/reader/likutay-halachos/part-1/halacha-22.json flags=36 bilingual_segments=139/184
-- tiny_he_long_en at aligned_segments[1]/segment
-  HE: הלכה ה
-  EN: This is what our Sages said (Shabbos 49a): "Tefillin require a clean body — that one not pass wind while wearing them." For n'fichah [flatulence/puffing] comes from the pesoless [w
-- tiny_he_long_en at aligned_segments[2]/segment
-  HE: אות א
-  EN: This is the aspect of Tefillin shel Rosh: from there the light emerges — the kesher [knot] of Dalet attached to the shel Rosh = "Melech asur barahatim" — Malchus bound within the M
-- tiny_he_long_en at aligned_segments[5]/segment
-  HE: אות ב
-  EN: This is the aspect of Bircas HaShachar [Morning Blessings]. When one arises from sleep, one must wash the hands and bless "Al netilas yadayim." Waking from sleep = Techiyas HaMaisi
-- tiny_he_long_en at aligned_segments[7]/segment
-  HE: אות ג
-  EN: This is the aspect of the blessing "HaNoasain laSechvi vinah l'havchin bein yom oovayn lailah" — "Who gives the rooster understanding to distinguish between day and night." Night =
-- tiny_he_long_en at aligned_segments[9]/segment
-  HE: אות ד
-  EN: For in truth, the essential death came because Adam blemished through ge'us (the Tree of Knowledge). The essence of the side of death is that the neshamah separates from the body. 
-- tiny_he_long_en at aligned_segments[11]/segment
-  HE: אות ה
-  EN: This is the aspect of Purim — to subdue and bring down Haman the wicked. Haman = ge'us — he was exceedingly arrogant, wanting all to bow to him, envying Mordechai. He made himself 
-- tiny_he_long_en at aligned_segments[13]/segment
-  HE: אות ו
-  EN: Through all this one merits Shavuos = Yom HaBikurim [Day of the Firstfruits], when we read the Viduy bikurim: "Arami oveid avi" — "An Aramean sought to destroy my father" = Lavan H
-- long_he_tiny_en at aligned_segments[24]/segment
-  HE: וזהו בחינת מעברתא של תפילין ששם עוברים הרצועות שהוא בחינת מעבר יב"ק כמובא בכוונות כי הרצועות הם בחינת המשכת המוחין של התפילין שהוא בחינת אור הפנים שהוא בחינת י"ג תקוני דיקנא בחינת 
-  EN: 48 Menachos 39a.
-
-### SEVERE public/reader/likutay-halachos/part-5/halacha-42.json flags=36 bilingual_segments=130/158
-- hebrew_in_english_field at segments[54]/segment
-  HE: אות כא וזהו בחי' מה דאיתא בכתבי האר"י שבשעת השינה נסתלקין המוחין מז"א למעלה ואז נמשכין הגבורות למלכות שלא ע"י ז"א ועי"ז ננסרת המלכות וחוזרת פב"פ שזהו סוד כוונת ר"ה סוד הנסירה סוד ה
-  EN: 8 אַשְׂכִּילְךָ וְאוֹרְךָ בְּדֶרֶךְ-זוּ תֵלֵךְ אִיעֲצָה עָלֶיךָ עֵינִי
-- hebrew_in_english_field at segments[57]/segment
-  HE: וכשמגיע חצות לילה אז המלכות בתכלית המעוט ויורדת למטה מאד ואז צועקת בקול גדול להעלותה משם. כי בכל שעה נתמעט כח המשפט בשעת שינה. וע"כ כל מי שרוצה לחוס על כבוד קונו ועל כבוד שמו ונפשו
-  EN: 9 אַל-תִּהְיוּ כְּסוּס כְּפֶרֶד אֵין הָבִין בְּמֶתֶג-וָרֶסֶן עֶדְיוֹ לִבְלוֹם בַּל קְרוֹב אֵלֶיךָ
-- hebrew_in_english_field at segments[60]/segment
-  HE: ושבת שהוא ביטול הרע כנ"ל. ע"כ אין צריכין אז לעורר משפט וע"כ אין דנין בשבת ויו"ט. וע"כ אין מניחין תפילין בשבת כי אז אין צריכין לעורר משפט הנ"ל לבטל הרע כי אז השכינה שובבת וכו' כנ"ל:
-  EN: 10 רַבִּים מַכְאוֹבִים לָרָשָׁע וְהַבּוֹטֵחַ בַּיי חֶסֶד יְסוֹבְבֶנּוּ
-- hebrew_in_english_field at segments[63]/segment
-  HE: וזה בחי' מה שכתוב בזוה"ק כד פריש ליליא גדפהא אזי מסתתמין תרעין דג"ע ונימוסי גרדיני נפקין בעלמא ועלמא אתנהג בידא דמטרוניתא הינו כנ"ל. כי בלילה נסתלקין המוחין שהוא בחי' שערי ג"ע כמוב
-  EN: 11 שִׂמְחוּ בַיי וְגִילוּ צַדִּיקִים וְהַרְנִינוּ כָּל-יִשְׁרֵי-לֵב
-- hebrew_in_english_field at segments[67]/segment
-  HE: כי יש שני בחי' במשפט. הא' מה שהאדם צריך לשפוט את עצמו בכל יום דהיינו להתבודד בינו לבין קונו ולפרש שיחתו לפניו ית' ואת כל אשר עם לבבו ישיח לפני הש"י ויחשוב דרכיו וישפוט עצמו על כל ד
-  EN: 1 לַמְנַצֵּחַ מִזְמוֹר לְדָוִד
-- long_he_tiny_en at segments[68]/segment
-  HE: והנה לשפוט א"ע זה יכול כל אדם לקיים כנ"ל. אבל בחי' ב' הנ"ל דהיינו לכלכל דבריו במשפט כנ"ל. זה צריכין סיוע גדול מלעיאל שיזכה לדעת הזה. וגם אח"כ א"א לסמוך על חכמתו ומשפטו לבד כי יש רש
-  EN: Lamnatzai-ach mizmohr liduvveed.
-- hebrew_in_english_field at segments[73]/segment
-  HE: אות כט וזה בחי' מה שהשמש מכה בבקר בפטיש לעור רהעולם שילכו לביהכ"נ. כי בבקר הוא התעוררות המשפט כי אז יוציא לאור משפט כנ"ל בבחי' דינו לבקר משפט כנ"ל. וזה בחי' הכאה בפטיש כי הכאה היא 
-  EN: 3 יי יִשְׁמְרֵהוּ וִיחַיֵּהוּ וְאֻשַּׁר בָּאָרֶץ וְאַל-תִּתְּנֵהוּ בְּנֶפֶשׁ אֹיְבָיו
-- hebrew_in_english_field at segments[79]/segment
-  HE: (הלכות גרים הלכה ד' בהלכות מילה אות ט"ז. הלכה ה' בהל' מילה הלכה ה' אות ט"ו):
-  EN: 5 אֲנִי-אָמַרְתִּי יי חָנֵּנִי רְפָאָה נַפְשִׁי כִּי-חָטָאתִי לָךְ
-
-### SEVERE public/reader/likutay-halachos/part-4/halacha-88.json flags=35 bilingual_segments=82/102
-- hebrew_in_english_field at segments[2]/segment
-  HE: ע"פ המאמר רציצא דמיית בבעותי' וכו' בליקוטי ח"א סי' כ"ז ע"ש כל המאמר. והכלל שע"י השלום יכולין להחזיר כל העולם כולו לעבודתו יתברך. ו א,א לבא לבחי' שלום אלא ע"י הארת פנים הדרת פנים בח
-  EN: 1 לַמְנַצֵּחַ מִזְמוֹר לְדָוִד
-- long_he_tiny_en at segments[3]/segment
-  HE: כי באמת כל אחד מישראל יש לו כח להחזיר כל העולם בתשובה כי חייב כל אדם לומר בשבילי נברא העולם. כי כל אחד מישראל הוא כלול מכל התורהכולה כ"ש זאת התורה. כי כ"א מישראל כלול מרמ"ח אברים ו
-  EN: Lamnatzai-ach mizmohr liduvveed.
-- hebrew_in_english_field at segments[11]/segment
-  HE: אות ה ואע"פ שעיקר השלום נעשה ע"י קול רנה כמ"ש רבינו ז"ל במאמרא הנ"ל מבחי' שיר השירים אשר לשלמה וכו' ע"ש. אעפ"כ דרך השלום להתלבש במרירות בבחי' הנה לשלםו מר לי מר בחי' שבת במרה נצטוו
-  EN: 4 יי יִסְעָדֶנּוּ עַל-עֶרֶשׂ דְּוָי כָּל-מִשְׁכָּבוֹ הָפַכְתָּ בְחָלְיוֹ
-- hebrew_in_english_field at segments[17]/segment
-  HE: אות ח וזה בחי' איסור גילוח של הנזיר כי נזר אלקיו על ראשו. כי מחת קדושת נזרו גם המותרי מוחין שבשערות הם ג"כ קדושים מאד ואסור לגלחם עד שיעברו ימי נזרו. ואז צריך לגלחם פתח אהל מועד ול
-  EN: 6 אוֹיְבַי יֹאמְרוּ רַע לִי מָתַי יָמוּת וְאָבַד שְׁמוֹ
-- hebrew_in_english_field at segments[23]/segment
-  HE: וע"כ ניתנה המלוכ לדוד שהי' עוסק בזה ביותר לקר הכל להש"י כשרז"ל לא הי' דוד ראוי לאותו מעשה אלא כדי להורות תשובה וכ"ש יחוס על דל ואביון ונפשות אביונים יושיע. שהמלך ישראל צריך לחוס ול
-  EN: 8 יַחַד עָלַי יִתְלַחֲשׁוּ כָּל-שֹׂנְאָי עָלַי יַחְשְׁבוּ רָעָה לִי
-- hebrew_in_english_field at segments[37]/segment
-  HE: אות טז וזה בחי' דורש טוב לעמו ודובר שלום לכל זרעו. דורש טוב לעמו זהבחי' שדורש לעמו דרושי התורה בי"ג מדות וכו'. כי התורה נקראת טוב כשרז"ל אין טוב אלא תורה וכו'. וע"י דרושי התורה שהו
-  EN: 13 וַאֲנִי בְּתֻמִּי תָּמַכְתָּ בִּי וַתַּצִּיבֵנִי לְפָנֶיךָ לְעוֹלָם
-- hebrew_in_english_field at segments[44]/segment
-  HE: וע"כ הכהנים מוזהרין ביותר על איסור קרחה ושריטה כ"ש לא יקרחו קרחה וכו' כי אצלם נכפלה האזהרה כי איסרו קריחה ושריטה הוא פגם הארת פנים פגם השלום כנ"ל. והכהנים צריכין ביותר לשלום כנ"ל. 
-  EN: 1 לַמְנַצֵּחַ מַשְׂכִּיל לִבְנֵי-קֹרַח
-- hebrew_in_english_field at segments[50]/segment
-  HE: אות כב וזה בחי' מה שמשנין עצמם בפורים ומלבישין את פניהם ומדמין עצמן לאומה אחרת לישמעאל או לעכו"ם אחר וכיוצא בזה. זה בחי' משנין מפני דרכי השלום. כי כשצריכין להרבות שלום צריכין לפעמי
-  EN: 3 צָמְאָה נַפְשִׁי לֵא-לֹהִים לְאֵל חָי מָתַי אָבוֹא וְאֵרָאֶה פְּנֵי א-ל
-
-### SEVERE public/reader/likutay-halachos/part-4/halacha-91.json flags=35 bilingual_segments=72/90
-- hebrew_in_english_field at segments[2]/segment
-  HE: אות א לא תקיפו פאת ראשכם ולא תשחית את פאת זקנך וכו'. ע"פ המאמר מישררא דסכינא וכו' בליקוטי הראשון (סי' ל') ע"ש כל המאמר כולו מראשו לסופו:
-  EN: 9 יוֹמָם יְצַוֶּה יי חַסְדּוֹ וּבַלַּיְלָה שִׁירוֹ עִמִּי תְּפִלָּה לְאֵל חַיָּי
-- hebrew_in_english_field at segments[5]/segment
-  HE: אות ב וע"כ עיקר הדת ישראל ועיקר היהדות תלוי בזקן ופאו תובהם ניכר היהודי כי הוא מזרע בירך ה' מזרע ישראל. ומ ישרוח אחרת עמו חס ושלום ורוצה לכפור חס ושלום באלקי ישראל תחלת הכפירה הוא 
-  EN: 10 אוֹמְרָה לְאֵל סַלְעִי לָמָה שְׁכַחְתָּנִי לָמָּה-קֹדֵר אֵלֵךְ בְּלַחַץ אוֹיֵב
-- hebrew_in_english_field at segments[11]/segment
-  HE: וע"כ קידוש החודש היא מצוה ראשונה שנצטוו ישראל. כי קידוש החודש הוא בחי' מלכות חכמה תתאה הנ"ל. בחי' צמצומים של השגת אלקותו ית'. שבזה כלול כל התורה כולה כנ"ל:
-  EN: 12 מַה-תִּשְׁתּוֹחֲחִי נַפְשִׁי וּמַה-תֶּהֱמִי עָלָי הוֹחִילִי לֵא-לֹהִים כִּי-עוֹד אוֹדֶנּוּ יְשׁוּעֹת פָּנַי וֵא-לֹהָי
-- hebrew_in_english_field at segments[15]/segment
-  HE: פ' החודש זה עיקר בחי' עליית המלכות שהוא בחי' ראש חודש כנ"ל. שעל ידי הראשי חדשים הם תיקוין כל המועדות שאז עליית המלכות וכו' כנ"ל:
-  EN: 1 לַמְנַצֵּחַ אַל-תַּשְׁחֵת לְדָוִד מִכְתָּם בִּשְׁלֹחַ שָׁאוּל וַיִּשְׁמְרוּ אֶת-הַבַּיִת לַהֲמִיתוֹ
-- hebrew_in_english_field at segments[21]/segment
-  HE: כי א"א להתקרב וליכנוס לושם קדושה לשום השגה ולשום ידיעה מהש"י כי אם על ידי האמונה הקדושה. וכל המלחמות וכל הנסיונות שיש להאדם בעבודת השי"ת, א"א לנצח שום מלחמה ולעמוד בנסיון כ"א ע"י ה
-  EN: 3 הַצִּילֵנִי מִפֹּעֲלֵי אָוֶן וּמֵאַנְשֵׁי דָמִים הוֹשִׁיעֵנִי
-- hebrew_in_english_field at segments[27]/segment
-  HE: אות יא כי באמת ע"פ חכמות בודאי א,א להשיגו ולידע ממנו כלל. כי יוכל לתעות בחכמתו מאד כדרך שנבוכו המחקרים ר"ל עד שבאו לאפיקורסית גמור על ידי טעות חכמתם הנבוכה. וע"כ העיקר היא האמונה א
-  EN: 5 בְּלִי-עָוֹן יְרוּצוּן וְיִכּוֹנָנוּ עוּרָה לִקְרָאתִי וּרְאֵה
-- hebrew_in_english_field at segments[29]/segment
-  HE: אות יב וזה בחי' מצה. כי בפסח נתגלה אור גדול ביותר כמובא וזה האור א"א להשיגו בשום אופן. בפרט קודם מתן תורה שאין לנו כלים להשיגו כי כל הכלים והשיעורים והצמצומים נעשין רק ע"י התורה הק
-  EN: 6 וְאַתָּה יי-א-לֹהִים צְבָאוֹת אֱ-לֹהֵי יִשְׂרָאֵל הָקִיצָה לִפְקֹד כָּל-הַגּוֹיִם אַל-תָּחֹן כָּל-בֹּגְדֵי אָוֶן סֶלָה
-- hebrew_in_english_field at segments[32]/segment
-  HE: אות יג וזה שנקראת המצה לחם עוני. כי לכאורה קשה כי איתא בכתבי האריז"ל שהמצה הואמוחין גדולים מאד מאד וכו' ע"ש. ומדוע נקרא לחם עני שהוא בחי' העדר הדעת כי אין עני אלא מן הדעת. אך באמת 
-  EN: 7 יָשׁוּבוּ לָעֶרֶב יֶהֱמוּ כַכָּלֶב וִיסוֹבְבוּ עִיר
+### SEVERE public/reader/likutay-halachos/part-7/halacha-82.json flags=36 bilingual_segments=96/144
+- long_he_tiny_en at aligned_segments[2]/segment
+  HE: וזה בח'י מו"מ. וזה בחי' ספירה ושבועות. כי מבואר בהתורה הנ"ל שצריכין לבקש ולחפש מאד מאד את הצדיק האמת שיש לו בחי' רוה"ק וכו' שעיקר האמונה השלימה דהיינו אמונת חידוש העולם על ידו. כי 
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[4]/segment
+  HE: וזה בחי' ספירה ושבועות זמן מתן תורתינו. כי כבר כתבנו שצריכין ליזהר בזה מאד לבקש ולחפש אחרי צדיק אמתי כזה. וכל אדם שבעולם מקטן ועד גדול צריך ליזהר בזה מאד כל ימיו לבקש ולחפש רבי אמת
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[6]/segment
+  HE: כי אפי' מי שזוכה למצוא לעצמו רבי או חבר אמתי שקיבל צדיקי אמת דברי אמת המועילים לנפשו באמת, אעפ"כ עדיין צריך לחפש הרבה בכל יום. כי אפילו אם היו כבר מעשיו מתוקנים כראוי צריך ג"כ לחפש
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[8]/segment
+  HE: ואפי' הרבה האמת בעצמו צריך לחפש ולבקש הרבה עד שיוכל למצוא ולהשיג קדושת הרוח הקודש של רבו האמתי שקיבל ממנו עד שימצא את עצמו עד שידע איך לדבר ולייעץ ולהנהיג את עם עני ודל החוסים בו. 
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[10]/segment
+  HE: וזה בחי' ספירת העומר שהוא הכנה לקבלת התורה בשבועות שהוא יום הששי בסיון שכל העולם תלוי בו, היינו אמונת חידוש העולם שהוא העיקר, תלוי ביום הקדוש והנורא והנשגב הזה כי בו קיבלו ישראל את
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[12]/segment
+  HE: אבל גם אח"כ שקיבלו ישראל את התורה וזכו לבח'י רוה"ק ע"י הצדיק האמת שהוא משה רבינו ופסקה זוהמתן זוהמת הנחש אז כמו שארז"ל. אעפ"כ עדיין הי' צריכין לחפש ולבקש הרבה עוד למצוא ביותר שלימו
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[14]/segment
+  HE: וזה שבאו אל אהרן ואמרו לו קום עשה לנו אלהים כי זה משה האיש לא ידענו מה היה לו. ועתה בוא וראה אתה המעיין המסתכל בתורה בעין האמת שמפורש כאן שכל טעותם הי' בענין הנ"ל שלא השתדלו לחפםש 
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[16]/segment
+  HE: וזה שאמר להם משה כי ידעתי אחרי מותי כי השחת תשחיתון. הן בעודני חי עמכם ממרים הייתים וכו' הקהילו אלי וכו'. ואעידה בם וכו' שהוא שירת האזינו. והקשה רש"י והלא כל ימי יהושע לא השחיתו וכ
+  EN: [continued]
 
 ### SEVERE public/reader/likutay-halachos/part-7/halacha-35.json flags=35 bilingual_segments=117/152
 - tiny_he_long_en at aligned_segments[1]/segment
@@ -1362,31 +1205,31 @@ Files needing review (excluding normal untranslated books): 1751
   HE: אות ז
   EN: This is the dimension of the prohibition of aishes ish (another man's wife). For the essential holy union (zivoug d'kedushah) is in the dimension of drawing the holy saichel to swe
 
-### SEVERE public/reader/likutay-halachos/part-8/halacha-64.json flags=35 bilingual_segments=127/158
-- hebrew_in_english_field at segments[72]/segment
-  HE: וזה יבין האדם לכל הדברים שבעולם שצריך להתרחק מאד מאד ממחלוקת ולבלי לבקש קנאה ושנאה על חבירו, אדרבא ישתדל בכל כחו לדון את חבירו לכ"ז. כי לפעמים נדמה להאדם שחבירו מתכוון במעשיו להקני
-  EN: 12 אֶזְכּוֹר מַעַלְלֵי-יָהּ כִּי-אֶזְכְּרָה מִקֶּדֶם פִּלְאֶךָ
-- hebrew_in_english_field at segments[75]/segment
-  HE: וזוה וא"ל מילי דברכות, זה בחי' השגת אלקות שזוכין ע"י האבות שהם הצדיקי אמת שאומרים לנו תוכחה ומוסר שעל ידם נמשך חסד ומכניעין ומפילין החכמות חיצוניות שהם בחי' ד' מלכיות דסט"א שהם בחי
-  EN: 13 וְהָגִיתִי בְכָל-פָּעֳלֶךָ וּבַעֲלִילוֹתֶיךָ אָשִׂיחָה
+### SEVERE public/reader/likutay-halachos/part-8/halacha-55.json flags=35 bilingual_segments=109/154
+- long_he_tiny_en at segments[57]/segment
+  HE: כי צריכין לדבק א"ע כ"כ אל האמת ולדבר הדיבור באמת גדול עד שיראה הפתחים ויתפלל בשלימות כראוי עד שיכניס כל כחו בידבורי התפילה ויחדש כחו וחיותו שם כ"ש בתחילת התו' הנ"ל (וכ"ש במ"א שכמתפ
+  EN: Lamnatzai-ach mizmohr liduvveed.
 - tiny_he_long_en at aligned_segments[1]/segment
   HE: אות א
-  EN: And this is "Vay'sapeir lahem Haman es k'vod ashro v'rov banav" ["Haman told them of the glory of his wealth and the multitude of his sons"] (Esther 5:11). "V'rov" specifically — m
+  EN: However, a king of flesh and blood can only punish him until his soul departs. And therefore sometimes he cannot collect from him properly according to his debts. And sometimes [th
+- tiny_he_long_en at aligned_segments[2]/segment
+  HE: הגנב משלם כפל:
+  EN: And the Tzadikay emes, the aspect of the aforementioned great Lender, who merit the Word of Hashem — which is the root of everything — are included in Him, Yisborach, and have an e
 - tiny_he_long_en at aligned_segments[4]/segment
   HE: אות ב
-  EN: And likewise it is a plague that walks among the majority of people who do not look at the tachlis. Each and every person, to the extent that he has not yet purified himself from t
-- hebrew_in_english_field at aligned_segments[6]/segment
+  EN: But his way is to do good constantly. And he orchestrates causes and various cycles without measure, through the paths of his wondrous goodness and kindness — until [the person] wi
+- tiny_he_long_en at aligned_segments[6]/segment
   HE: אות ג
-  EN: הלכות העושה שליח לגבות חובו, הלכה ג
-- tiny_he_long_en at aligned_segments[9]/segment
+  EN: And this is the aspect of: "What pledge shall I give you?" And she said: "Your signet-ring, your cord, and your staff" etc. For they needed to draw the soul of Mashiach into the wo
+- tiny_he_long_en at aligned_segments[8]/segment
   HE: אות ד
-  EN: And therefore they advised him to make a tree fifty amos [cubits] high — this is the aspect of the Aitz HaDa'as Tov vaRa [the Tree of Knowledge of Good and Evil], from which the wi
-- tiny_he_long_en at aligned_segments[11]/segment
+  EN: And this is the aspect of: "Your signet-ring, your cord, and your staff." "Your signet-ring" — this is the aspect of the rectification of the seal, the sign of the holy bris, which
+- tiny_he_long_en at aligned_segments[10]/segment
   HE: אות ה
-  EN: And all of this was through the power of the fiftieth gate, as it is written, "Vachamushim alu b'nai Yisroel mai'eretz Mitzrayim" ["And the Children of Israel went up chamushim (ar
-- tiny_he_long_en at aligned_segments[13]/segment
+  EN: And therefore a guarantor at the time of the giving of the money becomes obligated. For one who lends to his fellow and bestows kindness upon him — through this he is included in t
+- tiny_he_long_en at aligned_segments[12]/segment
   HE: אות ו
-  EN: And this is the aspect of specifically hanging — that he wanted specifically to hang him. For these sha'arai tumah that are opposite the sha'arai k'dushah — there is the main b'chi
+  EN: But after the giving of the money, he does not become obligated. For since the borrower has already borrowed and does not repay — which is drawn from his having become distant from
 
 ### SEVERE public/reader/likutay-halachos/part-2/halacha-17.json flags=34 bilingual_segments=98/124
 - tiny_he_long_en at aligned_segments[1]/segment
@@ -1439,84 +1282,6 @@ Files needing review (excluding normal untranslated books): 1751
 - long_he_tiny_en at aligned_segments[13]/segment
   HE: וזה שאוכלין מאכלי חלב בשבועות. כי אז קבלנו התורה על כן אנו אוכלין מאכלי חלב ואחר כך מאכלי בשר להורות שכל עבודתינו בזה העולם שהוא כלל קבלת התורה הכל הוא כלול משני הבחינות הנ"ל אתעור
   EN: [continued]
-
-### SEVERE public/reader/likutay-halachos/part-5/halacha-64.json flags=34 bilingual_segments=94/118
-- hebrew_in_english_field at segments[3]/segment
-  HE: אות א ע"פ הַתּוֹרָה תִּקְעוּ מֶמְשָׁלָה (בלק"ת סי' א') וְהַכְּלָל לָעִנְיָנֵינוּ כִּי אִישׁ הַ ִשְרְאֵלִי נִבְרָא שֶׁ ְהִי' לוֹ מֶמְשָׁלָה עַל הַמַּלְאָכִים וְכוּ'. אַךְ צְרִיכִין 
-  EN: 28 שָׁלַח חֹשֶׁךְ וַיַּחְשִׁךְ וְלֹא-מָרוּ אֶת-דְּבָרוֹ
-- hebrew_in_english_field at segments[15]/segment
-  HE: אות ז נמצא שעיקר הראש וההתחלה הוא מר"ה כנ"ל. ועיקר ההתחלה הוא מה שבר"ה מתחילין הלכ לצעוק מעומק הלב להש"י בחי' ממעמקים קראתיך ה'. וזאת ההתחלה נמשכת על כל השנה כולה על כל מי שבא לשוב
-  EN: 32 נָתַן גִּשְׁמֵיהֶם בָּרָד אֵשׁ לֶהָבוֹת בְּאַרְצָם
-- hebrew_in_english_field at segments[18]/segment
-  HE: אות ח ובשביל זה נוסעין על קברי צדיקים בראש השנה כי במקום מנוחת הצדיקים שם כלולים כל המקומות של כל אחד ואחד כי במקום מנוחתו שם נמשך קדושת הכסא כבוד שהוא נחלתם כ"ש וכסא כבוד ינחילם. 
-  EN: 33 וַיַּךְ גַּפְנָם וּתְאֵנָתָם וַיְשַׁבֵּר עֵץ גְּבוּלָם
-- hebrew_in_english_field at segments[21]/segment
-  HE: וע"כ קבע התנא דיני קידוש החודש במס' ר"ה. כי עיקר בחי' קידוש החודש הוא ע"י ר"ה שקבע אותו הש"י ברחמיו העצומים בר"ח שהוא חסד גדול ועליון מאד וכנ"ל:
-  EN: 34 אָמַר וַיָּבֹא אַרְבֶּה וְיֶלֶק וְאֵין מִסְפָּר
-- hebrew_in_english_field at segments[27]/segment
-  HE: אות יא וזה בחי' סוכה שעושין לאחר ר"ה ויוה"כ. כי ר"ה ויו"כ וסוכת כולם בבחינות כסא הכבוד שהקב"ה יושב עליו בימים האלו כדי לדון אותנו לכ"ז מחמת שכסא הכבוד הוא בבחי' מקומו של עולם שעי"ז
-  EN: 36 וַיַּךְ כָּל-בְּכוֹר בְּאַרְצָם רֵאשִׁית לְכָל-אוֹנָם
-- hebrew_in_english_field at segments[39]/segment
-  HE: אות טז וזהו בחי' הו"ר שאז הוא גמר החותם. ואז הוא גמר התיקון שהתחלנו בר"ה. היינו שבר"ה ריחם עלינו הש"י ודן אותנו לכ"ז לפי מקומינו. כי הוא יודע יצרו של כ"א לפי מקומו כי הוא ית' מקומו
-  EN: 40 שָׁאַל וַיָּבֵא שְׂלָו וְלֶחֶם שָׁמַיִם יַשְׂבִּיעֵם
-- hebrew_in_english_field at segments[42]/segment
-  HE: אות יז נחזור לענין שלש שני ערלה ונטע רבעי הנ"ל. ובשביל זהצריכין להמתין באילן שנוטעין ג' שנים דייקא כי ע"פ הנ"ל מבואר שעיקר התיקון הוא ראש השנה כנ"ל. ע"כ א"א לגרש הקליפות הנאחזות בא
-  EN: 41 פָּתַח צוּר וַיָּזוּבוּ מָיִם הָלְכוּ בַּצִּיּוֹת נָהָר
-- hebrew_in_english_field at segments[54]/segment
-  HE: אות כג וזה בחי' אכיל תמן בחי' לא ניתנה תורה אלא לאוכלי המן כי אז בימי שמה כשיצאו ממצרים על ידי ריבוי הצעקות שצעקו אליו ית' ואז זכו לקבל קדושת הג' רגלים שהם כולם זכר ליציאת מצרים וא
-  EN: 45 בַּעֲבוּר יִשְׁמְרוּ חֻקָּיו וְתוֹרֹתָיו יִנְצֹרוּ הַלְלוּי-ה
-
-### SEVERE public/reader/likutay-halachos/part-7/halacha-86.json flags=34 bilingual_segments=67/80
-- hebrew_in_english_field at segments[2]/segment
-  HE: אות א ענין קנין סודר ושאר כל הקנינים שהם מסירה ומשיכה והגבהה
-  EN: 2 עַל-עֲרָבִים בְּתוֹכָהּ תָּלִינוּ כִּנֹּרוֹתֵינוּ
-- hebrew_in_english_field at segments[7]/segment
-  HE: אות ג ועיקר הבירור מה שאנו צריכין להתייגע ולטרוח לבררם נמשך מאלו התורות שאינם זוכין לעלות להשכינה שהם נתפזרים באויר, אשר לפעמים נעשין מהם ל"ט מלאכות בחי' בזעת אפך וכו' כנ"ל. וע"כ צ
-  EN: 4 אֵיךְ נָשִׁיר אֶת-שִׁיר-יי עַל אַדְמַת נֵכָר
-- hebrew_in_english_field at segments[10]/segment
-  HE: אות ה
-  EN: 5 אִם-אֶשְׁכָּחֵךְ יְרוּשָׁלִָם תִּשְׁכַּח יְמִינִי
-- hebrew_in_english_field at segments[15]/segment
-  HE: נמצא שע"י הצדיק האמת נתבררים גם כל הלימודים של שאר העולם שאינם זוכין שיהי' לימודם עולה להשכינה כנ"ל. כי אצל הצדיק נעשה מלימודם ט"ל תורה היפך הל"ט מלאכות וכו' כנ"ל:
-  EN: 7 זְכֹר יי לִבְנֵי אֱדוֹם אֵת יוֹם יְרוּשָׁלִָם הָאֹמְרִים עָרוּ עָרוּ עַד הַיְסוֹד בָּהּ
-- hebrew_in_english_field at segments[18]/segment
-  HE: וזהו אשרי האיש אשר לא הלך בעצת רשעים וכו' כי אם בתורת ה' חפצו ובתורתו יהגה יומם ולילה. היינו שטוב לאיש שמתרחק מרשעים וכו' רק עיקר כל תורתו ועבודתו הוא נכלל בתורת ה' שהוא התורה של ה
-  EN: 8 בַּת-בָּבֶל הַשְּׁדוּדָה אַשְׁרֵי שֶׁיְשַׁלֶּם-לָךְ אֶת-גְּמוּלֵךְ שֶׁגָּמַלְתְּ לָנוּ
-- hebrew_in_english_field at segments[21]/segment
-  HE: אות ב מפסוק זה. שעתידין צדיקים שיהי' מחיצתן לפנים ממלאכי השרת, והמלאכים ישאלו את ישראל מה פעל אל. וכמו שהביא רבינו ז"ל מאמר זה במ"א (בלק"ת סי' ז) ע"ש. וזהו בחי' שפע רוחניו תכי עיקר
-  EN: 9 אַשְׁרֵי שֶׁיֹּאחֵז וְנִפֵּץ אֶת-עֹלָלַיִךְ אֶל-הַסָּלַע
-- hebrew_in_english_field at segments[30]/segment
-  HE: אבל מי שרוצה ליקח את הדעת קודם זמנו זהו בחי' חטא עץ הדעת טוב ורע, דהיינו שרוצה לדעת ולהכיר אותו ית' ולהשיג השגת אלקותו ית' קדם ששבר את הגוף, בחי' שמאל, זהו בחי' מחלוקת שהוא פגם עץ 
-  EN: 3 הַלְלוּהוּ בְּתֵקַע שׁוֹפָר הַלְלוּהוּ בְּנֵבֶל וְכִנּוֹר
-- hebrew_in_english_field at segments[36]/segment
-  HE: אות יב כי מבואר שם בהתורה הנ"ל שהלימוד שאינו עולה להשכינה נתפזר באויר וכו' וכשמגיע להצדיק נעשה מזה ט"ל תורה שהוא חידושין דאורייתא, וכשמגיע לשאר אנשים שאינם הגונים נעשה מזה ל"ט מלאכ
-  EN: 5 הַלְלוּהוּ בְצִלְצְלֵי-שָׁמַע הַלְלוּהוּ בְּצִלְצְלֵי תְרוּעָה
-
-### SEVERE public/reader/likutay-halachos/part-8/halacha-65.json flags=34 bilingual_segments=81/102
-- hebrew_in_english_field at segments[2]/segment
-  HE: אות א אדם מועד לעולם בין בשוגג בין במזיד בין ער בין ישן:
-  EN: 15 אַתָּה הָאֵל עֹשֵׂה פֶלֶא הוֹדַעְתָּ בָעַמִּים עֻזֶּךָ
-- hebrew_in_english_field at segments[5]/segment
-  HE: אות ב וע"כ אדם צריך ליזהר מאד לבלי להזיק ממון חבירו ממון ישראלי שיקר מאד. אדרבה חובה עלי ולהשתדל להצילו מהיזק כשרז"ל יהי ממון חבירך חביב עליך כשלך. וכן הוא מחויב להשתדל להשיב אבידה
-  EN: 16 גָּאַלְתָּ בִּזְרוֹעַ עַמֶּךָ בְּנֵי-יַעֲקֹב וְיוֹסֵף סֶלָה
-- hebrew_in_english_field at segments[11]/segment
-  HE: אות ה וההבער זה בחי' פגם ניאוף בכמה בחי' הנמשך ע"י זוהמת הגרים הנ"ל שנעשין ע"י עליית האמונה מנפילתה וכו' כ"ש שם. וזה בחי' הבער בחי' תבערת המדורה של תאוה הנ"ל. נמצא שכל הד' אבות נזי
-  EN: 18 זֹרְמוּ מַיִם עָבוֹת קוֹל נָתְנוּ שְׁחָקִים אַף-חֲצָצֶיךָ יִתְהַלָּכוּ
-- hebrew_in_english_field at segments[17]/segment
-  HE: אות ח וזה פגם דתן ואבירם שפגמו במשפט נגד משה ואמרו מי שמך לאיש שר ושופט עלינו וכו'. ומסור אותו כ"ש הלהרגני אתה אומר כאשר הרגת את המצרי וכו' וכשרז"ל שהם הלשינו עליו. ואח"כ חלקו עלי 
-  EN: 20 בַּיָּם דַּרְכֶּךָ וּשְׁבִילְךָ בְּמַיִם רַבִּים וְעִקְּבוֹתֶיךָ לֹא נֹדָעוּ
-- hebrew_in_english_field at segments[20]/segment
-  HE: והנה מבואר שם שגם הצדקיי הגול והנורא והנשגב מאד גם הוא אינו זוכה לבח'י תקון המשפט כ"א ע"י תמימות ופשיטות שמשליך כל חכמתו ומשליך עצמו לתוך רפש וטיט בשביל הש"י ועי"ז הש"י חומל עלי וו
-  EN: 21 נָחִיתָ כַצֹּאן עַמֶּךָ בְּיַד-מֹשֶׁה וְאַהֲרֹן
-- hebrew_in_english_field at segments[24]/segment
-  HE: וע"כ באמת צריכין לזה לימוד גדול להתאבק בעפר רגלי התמימים והכשרים בלבותם ולהשתדל כל ימיו להיות נכלל בבחי' הישיבה של הצדיק האמת שעוסק בלימוד האמיתי של קיום התורה שזה העיקר להכניס אמו
-  EN: 1 תְּפִלָּה לְמֹשֶׁה אִישׁ-הָאֱ-לֹהִים אֲדֹנָי מָעוֹן אַתָּה הָיִיתָ לָּנוּ בְּדֹר וָדֹר
-- hebrew_in_english_field at segments[30]/segment
-  HE: אות יד וזה כל המלחמה שלוחמין הצדיקים הגדולים בר,ה כמובן בזוה"ק ובתיקונים שאז בר"ה והנה עשו אחיו בא מצידו וכו'. ועיקר המלחמה כי צרייכן תיקון המשפט ולזה צריכין לגרש בחי' טיפת עשו ויש
-  EN: 3 תָּשֵׁב אֱנוֹשׁ עַד-דַּכָּא וַתֹּאמֶר שׁוּבוּ בְנֵי-אָדָם
-- hebrew_in_english_field at segments[33]/segment
-  HE: ועיין בפרש"י מה שפירש על מאמר הנ"ל כל המנחש לו נחש שנא' כי לא נחש ביעקב הוא בלמד אלף כתיב אלא משום מדה כנגד מדה ופרש"י לו נחש מאן דקפיד קפדין בהדי' מדה כנגד מדה. דבמדה שאדם מודד מו
-  EN: 4 כִּי אֶלֶף שָׁנִים בְּעֵינֶיךָ כְּיוֹם אֶתְמוֹל כִּי יַעֲבֹר וְאַשְׁמוּרָה בַלָּיְלָה
 
 ### SEVERE public/reader/likutay-halachos/part-5/halacha-88.json flags=33 bilingual_segments=112/144
 - long_he_tiny_en at segments[25]/segment
@@ -1596,58 +1361,6 @@ Files needing review (excluding normal untranslated books): 1751
   HE: אסור לעונן ולנחש. דהיינו לומר עת פלוני יפה עת פלוני וכו'. משום שנאמר תמים תהיה וכו' כי כשאומר עת פ' יפה עת פ' רע. נמצא שנותן כח ושליטה להעת רעה. וכל זה תלוי בפגם הברית שעל ידי זה מ
   EN: [continued]
 
-### SEVERE public/reader/likutay-halachos/part-3/halacha-46.json flags=32 bilingual_segments=84/108
-- hebrew_in_english_field at segments[26]/segment
-  HE: אות יב וזה שמוציאין את התיבה לחוץ בתעניות שעל הגשמים כדי לעורר העם לתשובה כמו שאמרו רז"ל. היינו כדי לעורר העם שישובו על פגם אמונת חכמים שעל ידי זה נפגמת כל התורה (כמובן בהתורה הנ"ל
-  EN: 45 בַּעֲבוּר יִשְׁמְרוּ חֻקָּיו וְתוֹרֹתָיו יִנְצֹרוּ הַלְלוּי-ה
-- hebrew_in_english_field at segments[32]/segment
-  HE: אות טו וזה בחינת מה שקינטר הג' שבטים הראשונים על שנמשכו אחר עצות לא טובות. ואמר לראובן פחז כמים אל תותר וכו' כי לא היתה עצתו טובה מה שבלבל יצועי אביו שנדמה לו שהוא עצה טובתבוא עלבו
-  EN: 2 עַל-עֲרָבִים בְּתוֹכָהּ תָּלִינוּ כִּנֹּרוֹתֵינוּ
-- hebrew_in_english_field at segments[40]/segment
-  HE: אות יט ועל כן סיבב השם יתברך ברחמיו שיהיו ימי הפורים באדר ועיקר הנס של פורים היה על ידי השקלים כמו שאמרו רז"ל רשע כבר קדמו שקליהם לשקליך כי המן היה זוהמת הנחש קליפות עמלק שהוא שונא
-  EN: 5 אִם-אֶשְׁכָּחֵךְ יְרוּשָׁלִָם תִּשְׁכַּח יְמִינִי
-- hebrew_in_english_field at segments[48]/segment
-  HE: אות כג כי באמת בענין המתקת הדינים המבואר שם שצריכין להמתיק הכל על ידי השכל הכולל העליו יש בזה כמה בחינות. והכלל שיניקת הדינים הוא מהשכל. ושם המתקתם וביטולם. כי כולם במחשבה איתברירו
-  EN: 8 בַּת-בָּבֶל הַשְּׁדוּדָה אַשְׁרֵי שֶׁיְשַׁלֶּם-לָךְ אֶת-גְּמוּלֵךְ שֶׁגָּמַלְתְּ לָנוּ
-- hebrew_in_english_field at segments[54]/segment
-  HE: ועל כן חייב אינש לבסומי בפוריא עד דדלא ידע בין ארור המן לברוך מרדכי כי השכרות אסור תמיד כי על ידי השכרות יוכל לקלקל הרבה כי היין הוא בחינת גבורות ודינים ומי שזוכה לשתות כראוי אז מע
-  EN: 1 הַלְלוּי-ה הַלְלוּ-א-ל בְּקָדְשׁוֹ הַלְלוּהוּ בִּרְקִיעַ עֻזּוֹ
-- tiny_he_long_en at aligned_segments[1]/segment
-  HE: הלכה ד
-  EN: And this is [the significance of the fact] that we bless the [new] month on the Shabbos that precedes it. For Shabbos is k'vi'a v'kayyama (fixed and established). And all the holin
-- tiny_he_long_en at aligned_segments[5]/segment
-  HE: אות ב
-  EN: And on Shabbos all melachah is forbidden, for on Shabbos there is no clarification through any physical action or labor — rather, everything ascends and is clarified of itself and 
-- tiny_he_long_en at aligned_segments[7]/segment
-  HE: אות ג
-  EN: But on Yom Tov it is "mikra kodesh" — one calls the aspect of the Written Torah from its place, that it should descend to the aspect of the Oral Torah. Therefore there is then stil
-
-### SEVERE public/reader/likutay-halachos/part-4/halacha-47.json flags=32 bilingual_segments=70/92
-- long_he_tiny_en at segments[3]/segment
-  HE: כי זה כלל גדול שצריך האדם להתחיל בכל פעם מחדש כאש הזהיר רבינו ז"ל על זה פעמים אין מספר כמבואר בספריו הקדושים בכמה מקומות. וכמבואר בסיפור שבחיו הקדושים שהוא בעצמו זכה למה שזכה על יד
-  EN: ch = kh
-- long_he_tiny_en at segments[5]/segment
-  HE: אות ב וזה בחינת מצות שלוח הקן. כי מבואר בתיקוינם שקן צפור מרמז לע נשמתין דאתתרכו מאתרייה, היינו הנשמות הרחוקים מהםש יתברך על ידי מעשיהם שאינם טובים, ועל זה מרמז הפסוק כי יקרא קן צפ
-  EN: iy = eye
-- hebrew_in_english_field at segments[19]/segment
-  HE: אות ט ועל כן השבטים כשפדמו במכירות יוסף שחטו שעיר עיזים. כיעיקר המחלוקת שלהם היה בעני המלכות שאמרו שיוסף רוצה למלוך עליה םשלא כדין. ולפי דעתם נדמה להם שיוסף רוצהלמלוך רק על ידי עזו
-  EN: 4 יִרְבּוּ עַצְּבוֹתָם אַחֵר מָהָרוּ בַּל-אַסִּיךְ נִסְכֵּיהֶם מִדָּם וּבַל-אֶשָּׂא אֶת-שְׁמוֹתָם עַל-שְׂפָתָי
-- hebrew_in_english_field at segments[21]/segment
-  HE: אות י נמצא שעיקר איסור בשר בחלב הוא שלא יתגבר עזות דסטרא אחרא ויחלוש עזות דקדושה חס ושלום על ידי שיונק ומתערב יניקת העזות דסטרא אחרא ביניקת הבשת והחלישות דסטרא אחרא שהם בחנית תערוב
-  EN: 5 יי מְנָת-חֶלְקִי וְכוֹסִי אַתָּה תּוֹמִיךְ גּוֹרָלִי
-- hebrew_in_english_field at segments[30]/segment
-  HE: אות יד וזה בחינת בשרו מיום אל יום ישועתו. שבכל וןם ויום שולח הקדוש ברוך הוא ישועות חדושךת להציל את האדם מהסטרא אחרא המתגברת בלכ יום כמו שאמרו רבתינ ז"ל בכל יום יצרו של אדם מתגבר על
-  EN: 8 שִׁוִּיתִי יי לְנֶגְדִּי תָמִיד כִּי מִימִינִי בַּל-אֶמּוֹט
-- hebrew_in_english_field at segments[33]/segment
-  HE: אות טו וזה בחינת חנוכה. כי חנוכה לשון חינוך והתחלה. היינו שלע ידי מצוות חנוכה אנו זוכין להמשיך עלינו עזות דקדושה באופן שנזכה להתחזק בעבודת ה' תמיד. והעיקר להתחיל בכל פעם מחדש שזהו 
-  EN: 9 לָכֵן שָׂמַח לִבִּי וַיָּגֶל כְּבוֹדִי אַף-בְּשָׂרִי יִשְׁכֹּן לָבֶטַח
-- hebrew_in_english_field at segments[36]/segment
-  HE: אות טז וזה בחנית הלל של חנוכה שזה עיקר בחינת חנוכה כמו שכתבו וקבעו שמונת ימי חנוכ האלו להודות ולהלל לשמך הגדול. כי עיקר השמח השהוא בחנית עזות דקדושה זוכין על ידי תפילה ביותר שהי א 
-  EN: 10 כִּי לֹא-תַעֲזֹב נַפְשִׁי לִשְׁאוֹל לֹא-תִתֵּן חֲסִידְךָ לִרְאוֹת שָׁחַת
-- hebrew_in_english_field at segments[46]/segment
-  HE: אות כא ועל כן הם ח' ימי חנוכה כנגד ח' בגדי כהן גדול שנסמכו בפךרשת ואתה תצוה לשמן המנורה שהוא בחינת חנוכה. וזה בחינתך בכל עת יהיו בגדך לבני םושמן על ראשך אל יחסר, בגדיך לבנים זה בחי
-  EN: 2 אַשְׁרֵי אָדָם לֹא יַחְשֹׁב יי לוֹ עָוֹן וְאֵין בְּרוּחוֹ רְמִיָּה
-
 ### SEVERE public/reader/likutay-halachos/part-4/halacha-67.json flags=32 bilingual_segments=81/94
 - long_he_tiny_en at segments[3]/segment
   HE: וע"כ ע"ז של ישראל אין לה ביטול. כי גם העכו"ם כחם מטעותים הנ"ל שהשדין יהודאין מטעין כל כך עד שואמרים שצריכין לעבוד ע"ז כי אומרים שזהו רצונו חס ושלום. כי גם כל העכו"ם מודים בהש"י כשר
@@ -1726,161 +1439,109 @@ Files needing review (excluding normal untranslated books): 1751
   HE: וזהו רמז שאסור לדחוק את השעה כמובן בדבריו ז"ל בכמה מקומות. ואע"פ שבני ןהיכל הקודש הנ"ל יקר מאד כי זה עיקר כבודו וגדולתו ית' אעפ"כ אסור לדחוק את השעה וע"ז נאמר לא תוכל כלותם מהר. שא
   EN: [continued]
 
-### SEVERE public/reader/likutay-halachos/part-1/halacha-44.json flags=31 bilingual_segments=85/110
-- hebrew_in_english_field at segments[19]/segment
-  HE: אות ח וזה בחינת ד' פרשיות, פרשת שקלים, ופרשת זכור, ופרשת פרה, ופרשת החדש, שקורין באדר סמוך לפורים מלפניו ומלאחריו. שכל זה הוא הכנה לגאולת וישועת ישראל שנזכה בניסן שבו נגאלו ובו עתי
-  EN: 11 תּוֹדִיעֵנִי אֹרַח חַיִּים שֹׂבַע שְׂמָחוֹת אֶת-פָּנֶיךָ נְעִמוֹת בִּימִינְךָ נֶצַח
-- hebrew_in_english_field at segments[23]/segment
-  HE: וזהו החילוק שבין פסח לשבועות. ובשביל זה בפסח אסור החמץ בבל יראה ובל ימצא באיסור חמור מאד באיסור כרת. ובשבועות צריכין להביא שתי הלחם מחמץ דייקא. כי איתא בפרי עץ חיים בכוונות של פסח,
-  EN: 1 לְדָוִד מַשְׂכִּיל אַשְׁרֵי נְשׂוּי-פֶּשַׁע כְּסוּי חֲטָאָה
-- hebrew_in_english_field at segments[29]/segment
-  HE: אות יג וזהו החילוק שבין ישראל לעובדי כוכבים. כי בישראל נאמר (דברים ז') כי אתם המעט מכל העמים שאתם ממעיטין עצמיכם כשאני משפיע לכם טובה (כמובא בפירוש רשי). שכשהשם יתברך מאיר עליהם הא
-  EN: 3 כִּי-הֶחֱרַשְׁתִּי בָּלוּ עֲצָמַי בְּשַׁאֲגָתִי כָּל-הַיּוֹם
-- hebrew_in_english_field at segments[35]/segment
-  HE: אות טז וזהו (שמות ל') כי תשא את ראש בני ישראל לפקודיהם וכו' היינו כשתרצה למנות את ישראל ואז צריכין שמירה ותיקון שלא ישלוט סטרא דמותא ח"ו על ידי המנין כמו שכתוב (שם) ואל יהיה בהם נג
-  EN: 5 חַטָּאתִי אוֹדִיעֲךָ וַעֲוֹנִי לֹא-כִסִּיתִי אָמַרְתִּי אוֹדֶה עֲלֵי פְשָׁעַי לַיי וְאַתָּה נָשָׂאתָ עֲוֹן חַטָּאתִי סֶלָה
-- hebrew_in_english_field at segments[38]/segment
-  HE: אות יז וזה בחינת מחצית השקל. מחצית השקל דייקא בחינת מחצית השקל תרומה לה'. כי השגה הנפלאה הזאת שהם השגת הט' היכלין הנ"ל שזוכין על ידי השקלים שהם בחינת עשיית המצוה בשמחה. זאת השגה הי
-  EN: 6 עַל-זֹאת יִתְפַּלֵּל כָּל-חָסִיד אֵלֶיךָ לְעֵת מְצֹא רַק לְשֵׁטֶף מַיִם רַבִּים אֵלָיו לֹא יַגִּיעוּ
-- hebrew_in_english_field at segments[44]/segment
-  HE: אות כ ואחר כך קורין פרשת החדש. כי כל זה הוא סוד קידוש החדש שהוא בחינת תיקון הלבנה מפגימתה. כי חמה ולבנה שווים נבראו. כמו שכתוב (בראשית א') את שני המאורות הגדולים. וכמו שאמרו רז"ל (
-  EN: 8 אַשְׂכִּילְךָ וְאוֹרְךָ בְּדֶרֶךְ-זוּ תֵלֵךְ אִיעֲצָה עָלֶיךָ עֵינִי
-- hebrew_in_english_field at segments[50]/segment
-  HE: אות כג ועל כן דוד דייקא זכה לזה. כי דוד הוא בחינת מלכות משיח והוא בחינת אתערותא דלתתא בבחינת (תהלים נ"ז) עורה כבודי עורה הנבל וכנור אעירה שחר. ודרשו רז"ל (ברכות ד') אני מעורר השחר 
-  EN: 10 רַבִּים מַכְאוֹבִים לָרָשָׁע וְהַבּוֹטֵחַ בַּיי חֶסֶד יְסוֹבְבֶנּוּ
-- tiny_he_long_en at aligned_segments[1]/segment
-  HE: הלכה ד
-  EN: For as long as a person is healthy and there is peace between the neshamah and the body — which are the aspects of the father's name and the mother's name — the essential one is th
-
-### SEVERE public/reader/likutay-halachos/part-5/halacha-46.json flags=30 bilingual_segments=93/118
-- hebrew_in_english_field at segments[13]/segment
-  HE: אות ו
-  EN: 1 לַמְנַצֵּחַ מַשְׂכִּיל לִבְנֵי-קֹרַח
-- hebrew_in_english_field at segments[43]/segment
-  HE: אות יט וזה בחי' מ"ש במדרש פ' חיי שרה שנזכר י' פעמים בני חת בפר' זאת בענין קניית המערת המכפלה ללמדך שכל המברר מקחו של צדיק כאלו קיים כל העשרת הדברות. כי מערת המכפלה היא הנחלה הראשונ
-  EN: 7 אֱ-לֹהַי עָלַי נַפְשִׁי תִשְׁתּוֹחָח עַל-כֵּן אֶזְכָּרְךָ מֵאֶרֶץ יַרְדֵּן וְחֶרְמוֹנִים מֵהַר מִצְעָר
-- hebrew_in_english_field at segments[51]/segment
-  HE: אות כג נמצא שאחר סוכות ביום ש"ע שאז גמר התיקון של ר"ה שיוצאין משנה שעברה לזאת השנה החדשה שעיקר התיקון התחדשות כנ"ל. וע"כ מתחילין אז התורהמחדש כי עיקר ההתחדשות הוא התחדשות הדעת והמו
-  EN: 10 אוֹמְרָה לְאֵל סַלְעִי לָמָה שְׁכַחְתָּנִי לָמָּה-קֹדֵר אֵלֵךְ בְּלַחַץ אוֹיֵב
-- hebrew_in_english_field at segments[57]/segment
-  HE: אות כו וזהו בחי' מזמור שי חנוכת הבית שאומרי' בכל יום כי בחי' חנוכת הבית שהוא בחי' חנוכת הבית המקדש שהוא בחינת התחדשות המוחין צריכין להמשיך בכל יום מחדש. וע"כ מזכירין שם ביותר מענין
-  EN: 12 מַה-תִּשְׁתּוֹחֲחִי נַפְשִׁי וּמַה-תֶּהֱמִי עָלָי הוֹחִילִי לֵא-לֹהִים כִּי-עוֹד אוֹדֶנּוּ יְשׁוּעֹת פָּנַי וֵא-לֹהָי
+### SEVERE public/reader/likutay-halachos/part-6/halacha-27.json flags=31 bilingual_segments=102/144
 - tiny_he_long_en at aligned_segments[1]/segment
   HE: אות א
-  EN: And then when one merits to be a hero and warrior-of-strength who overcomes his desire — even though by necessity the arousal of union comes from the side of Gevurah — with all tha
+  EN: And when one raises the kavod, one must return it to its root, which is yirah. And therefore one must honor those who fear Hashem — in the aspect of "and those who fear Hashem he h
 - tiny_he_long_en at aligned_segments[4]/segment
   HE: אות ב
-  EN: And therefore one must give the firstborn — which is the first birth — to the Kohen: in order to draw holiness to the firstborn, to the first birth, through the holiness of the Koh
-- tiny_he_long_en at aligned_segments[6]/segment
-  HE: אות ג
-  EN: And therefore the essential Exodus from Egypt came about through the Plague of the Firstborn — which was the final plague and with advance warning. For all the plagues of Egypt all
-- tiny_he_long_en at aligned_segments[8]/segment
-  HE: אות ד
-  EN: And this is also the aspect of honey which the Torah permitted — for honey is the aspect of Gevurot (divine powers), as is known, in the aspect of "what is sweeter than honey and w
-
-### SEVERE public/reader/likutay-halachos/part-1/halacha-32.json flags=29 bilingual_segments=90/118
-- long_he_tiny_en at segments[58]/segment
-  HE: אות יט וזה בחינת מעשה המנורה שהוא בחינת התורה כמו שכתוב (משלי י') כי נר מצוה ותורה אור וכמובא. וזה בחינת נר המערבי שהוא עדות לכל ישראל. כי ממנו היה מתחיל ובו היה מסיים (מנחו פרק ו'
-  EN: Translator's Overview
-- tiny_he_long_en at aligned_segments[1]/segment
-  HE: הלכה ד
-  EN: Therefore at Ma'ariv one blesses two berachos after Kri'as Shma, adding Bircas HaHashkivah v'HaKimah [the berachah of Lying Down and Rising] — "Hashkivainu..." — "Lay us down [in p
-- tiny_he_long_en at aligned_segments[2]/segment
-  HE: אות א
-  EN: This is what our Sages said (brachos 4b) regarding Bircas Hashkiveinu: since the Sages established it, it is considered like an extended geulah — "ki'geulah arichta damya" — "it re
-- tiny_he_long_en at aligned_segments[5]/segment
-  HE: אות ב
-  EN: This is: "Nason titain" — "give, you shall give — even a hundred times" — said regarding tzedakah. And similarly: "Paso'ach tiftach" — "open, you shall open [your hand]." For the e
+  EN: And this is alluded to in the aforementioned ma'amar: that the children of talmidei chachamim — their neshamos are luminous and pure, because they drew a luminous and pure neshamah
 - tiny_he_long_en at aligned_segments[7]/segment
   HE: אות ג
-  EN: Also, through the abundance of holy sefarim in which Torah novellae are taught — through this the doubts that the metzach of the nachash seeks to cast upon the ratzon are nullified
+  EN: It turns out that when one gives kavod to his father and mother, then kavod is drawn upon him from them, in the aspect of "for those who honor Me, I will honor." And upon this depe
 - tiny_he_long_en at aligned_segments[9]/segment
   HE: אות ד
-  EN: This is also what is explained (in Siman 61, the Torah "Chadi Rabbi Shimon") [LM I:61]: through machlokes, a sefer is made — the aspect of (Iyov 31): "V'saifer kasav ish rivi" — "T
+  EN: Also, through giving kavod to his father and mother, through this he returns the kavod to its root, which is yirah. For there, by the father and mother, is the root of yirah. For t
+- tiny_he_long_en at aligned_segments[12]/segment
+  HE: אות ה
+  EN: And therefore no mitzvah overrides honoring father and mother. As it is written, "Each man — his mother and his father you shall fear, and My Sabbaths you shall keep" (Leviticus 19
+- tiny_he_long_en at aligned_segments[14]/segment
+  HE: אות ו
+  EN: And therefore Torah study is greater than honoring father and mother (Megillah 16b). For the primary honoring of father and mother is to draw garments for his neshamah, the aspect 
+- tiny_he_long_en at aligned_segments[17]/segment
+  HE: אות ז
+  EN: And therefore Aisav the wicked fulfilled honoring father and mother somewhat. For it is known that by Aisav there were many holy neshamos, as it is written, "for prey was in his mo
+- tiny_he_long_en at aligned_segments[20]/segment
+  HE: אות ח
+  EN: And this is what is brought in the sefarim: that the length of the exile is because Aisav fulfilled somewhat the mitzvah of kavod. That is, as mentioned above. For our Sages of ble
+
+### SEVERE public/reader/likutay-halachos/part-8/halacha-64.json flags=31 bilingual_segments=123/158
+- tiny_he_long_en at aligned_segments[1]/segment
+  HE: אות א
+  EN: And this is "Vay'sapeir lahem Haman es k'vod ashro v'rov banav" ["Haman told them of the glory of his wealth and the multitude of his sons"] (Esther 5:11). "V'rov" specifically — m
+- tiny_he_long_en at aligned_segments[4]/segment
+  HE: אות ב
+  EN: And likewise it is a plague that walks among the majority of people who do not look at the tachlis. Each and every person, to the extent that he has not yet purified himself from t
+- tiny_he_long_en at aligned_segments[9]/segment
+  HE: אות ד
+  EN: And therefore they advised him to make a tree fifty amos [cubits] high — this is the aspect of the Aitz HaDa'as Tov vaRa [the Tree of Knowledge of Good and Evil], from which the wi
 - tiny_he_long_en at aligned_segments[11]/segment
   HE: אות ה
-  EN: This is the Kri'as Yam Suf — when Hashem turned sea into dry land, froze the depths in the heart of the sea, and made a wondrous bridge for them to cross. All this was through Yaak
+  EN: And all of this was through the power of the fiftieth gate, as it is written, "Vachamushim alu b'nai Yisroel mai'eretz Mitzrayim" ["And the Children of Israel went up chamushim (ar
 - tiny_he_long_en at aligned_segments[13]/segment
   HE: אות ו
-  EN: This is the aspect of the three wrappings on the middle finger, which is on the level of Yaakov and Moshe — the bariach hatichon [middle bolt] running through the beams from end to
-
-### SEVERE public/reader/likutay-halachos/part-2/halacha-31.json flags=29 bilingual_segments=78/92
-- hebrew_in_english_field at segments[43]/segment
-  HE: אות יד
-  EN: 13 וְהָגִיתִי בְכָל-פָּעֳלֶךָ וּבַעֲלִילוֹתֶיךָ אָשִׂיחָה
-- tiny_he_long_en at aligned_segments[1]/segment
-  HE: אות א
-  EN: This is what we say in the Viduy: "Tavo l'fanecha t'filasainu v'al tis'aleim mis'chinasainu, she'ain anu azay panim uk'shay oref lomar l'fanecha Hashem Eloakeyenu v'Elokay avosainu
-- long_he_tiny_en at aligned_segments[4]/segment
-  HE: והכלל שצדקה מנהגת כל גלגלי הרקיע וכו', וכל היסורים שיש לאדם בדרכים הוא בסבת גלגלי הרקיע וכו'. כי יש כוכבים שהם מחיבים שיהיה דרך וכו', ויש שהם מחיבים שיהא מדבר וכו'. ועל כן התקנה לז
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[5]/segment
-  HE: ועין במה ששיך לזה הנדפס סמוך לזה בלשוני. וכלל הדבר שמאד יקר הכסופין וההשתוקקות לדבר שבקדשה, כי על ידם נתהוה נפש טוב ונגמר על ידי הדבור ויוצא ומתגלגל, ולפעמים מתגלגל ובא הנפש דקדשה 
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[6]/segment
-  HE: ועין שם מענין ארבעה שנכנסו לפרדס וכו', ומבאר שם שמי שמפריד למדן מצדיק שאומר שלמדן לבד הוא מעלה הוא בחינת אחר שקצץ בנטיעות שהפריד בחינת מט"ט בחינת מלאך שהוא בחינת למדן בחינת כשר ופס
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[7]/segment
-  HE: וזה בחינת ארבעה צריכין להודות על הנס שנעשה להם שהיו בצרה ונצולו שהם תועים במדבר וכו', כי כל הצרות והישועות והנסים שעוברין על האדם כל ימי חייו הכל הוא כפי מה שזוכה לציר אותיות התורה
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[9]/segment
-  HE: וזה בחינת ארבעה צריכין להודות הנ"ל, שהם תעו במדבר בישימון דרך וכו', ויושבי חשך שהם יושבים בבית האסורים כשיוצאים, וחולה ונתרפא ויורדי הים כשעולים משם. כי כל הסכנות העוברים על אלו הא
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[10]/segment
-  HE: כי 'תעו במדבר בישימון דרך', זהו נמשך כפי מה שפגם בצדקה שהיא מנהגת כל גלגלי הרקיע כמו שמבאר שם באות ד'. וזה לשונו, ודע שהיסורים שיש לאדם בדרכים הוא בסבת גלגלי הרקיע וכו'. וזהו בחינת
-  EN: [continued]
-
-### SEVERE public/reader/likutay-halachos/part-2/halacha-36.json flags=29 bilingual_segments=74/86
-- hebrew_in_english_field at segments[17]/segment
-  HE: אות ה
-  EN: 2 עַל-עֲרָבִים בְּתוֹכָהּ תָּלִינוּ כִּנֹּרוֹתֵינוּ
-- hebrew_in_english_field at segments[33]/segment
-  HE: אות יא
-  EN: 5 אִם-אֶשְׁכָּחֵךְ יְרוּשָׁלִָם תִּשְׁכַּח יְמִינִי
-- hebrew_in_english_field at segments[36]/segment
-  HE: אות יב נמצא שבכל ראש חדש ממשיכין תקון לפגימת הלבנה שהוא בחינת שלום. ועקר תקון פגימת הלבנה הוא על ידי העבור, שעל ידי זה משוין שנות החמה עם שנות הלבנה, שזהו עקר תקון פגימת הלבנה, בחי
-  EN: 6 תִּדְבַּק-לְשׁוֹנִי לְחִכִּי אִם-לֹא אֶזְכְּרֵכִי אִם-לֹא אַעֲלֶה אֶת-יְרוּשָׁלִַם עַל רֹאשׁ שִׂמְחָתִי
-- hebrew_in_english_field at segments[41]/segment
-  HE: אות יד . וזה שמסים הפסוק שכולל כל הקרבנות מסים בשלמים. כמו שכתוב זאת התורה לעלה ולמנחה וכו' ולזבח השלמים. כי עקר תכלית כל הקרבנות הוא שלום כנ"ל. ועל כן השקלים שממשיכין שלום הפילו ה
-  EN: 8 בַּת-בָּבֶל הַשְּׁדוּדָה אַשְׁרֵי שֶׁיְשַׁלֶּם-לָךְ אֶת-גְּמוּלֵךְ שֶׁגָּמַלְתְּ לָנוּ
-- tiny_he_long_en at aligned_segments[1]/segment
-  HE: אות א
-  EN: This is the aspect of Kri'as HaTorah after tefillah. Tefillah = mikra kodesh [holy calling] that calls and reveals the Ratzon [Divine Will] — that everything is governed only by Hi
-- tiny_he_long_en at aligned_segments[4]/segment
-  HE: אות עא
-  EN: This is the aspect of Hagbahas HaTorah [raising the Torah] after the reading — when we raise the Torah and the custom is to purchase this honor at great cost (Shulchan Aruch, Siman
-- long_he_tiny_en at aligned_segments[6]/segment
-  HE: ועל-כן עקר קדשת ארץ ישראל נמשך על ידי קדשת התענית, כי זה ידוע שעקר קדשת ארץ ישראל נמשך מבית המקדש מקדשי קדשים ששם תכלית הקדשה העליונה של כל העשר קדשות שבארץ ישראל. כי קדשי קדשים מק
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[8]/segment
-  HE: וזה בחינת ברכת הראיה, בחינת שהחינו וקימנו והגיענו לזמן הזה שמברכין מזמן לזמן דיקא, כגון הרואה את חברו לאחר זמן שהוא לאחר שלשים יום שהוא שעור חדש. וכן על פרי המתחדש מזמן לזמן משנה ל
-  EN: [continued]
-
-### SEVERE public/reader/likutay-halachos/part-8/halacha-78.json flags=29 bilingual_segments=86/104
-- hebrew_in_english_field at segments[2]/segment
-  HE: אות א אסור להכות חבירו וכו' ואפילו בהרמת יד נקרא רשע וכו' החובל בחבירו משלם ה' דברים שהם נזק וצער ריפוי שבת ובשת וכו':
-  EN: 42 כִּי-זָכַר אֶת-דְּבַר קָדְשׁוֹ אֶת-אַבְרָהָם עַבְדּוֹ
-- hebrew_in_english_field at segments[11]/segment
-  HE: ריפוי ושבת זה בחי' יד החזדקה ויד הגדולה שעל ידם מולידין את הנפש ומגדלין את הנפש. כי ריפוי הוא בחי' הולדת הנפש. כי המכה והחבלה הואבחי' יציאת הנפש כנ"ל. כי במקום המכה שם הוא בחי' יצי
-  EN: 45 בַּעֲבוּר יִשְׁמְרוּ חֻקָּיו וְתוֹרֹתָיו יִנְצֹרוּ הַלְלוּי-ה
-- hebrew_in_english_field at segments[17]/segment
-  HE: אות ו
-  EN: 2 עַל-עֲרָבִים בְּתוֹכָהּ תָּלִינוּ כִּנֹּרוֹתֵינוּ
-- hebrew_in_english_field at segments[25]/segment
+  EN: And this is the aspect of specifically hanging — that he wanted specifically to hang him. For these sha'arai tumah that are opposite the sha'arai k'dushah — there is the main b'chi
+- tiny_he_long_en at aligned_segments[15]/segment
+  HE: אות ז
+  EN: And Haman, through the intensity of his overpowering in the k'lipah, wanted to cast him down from there, for he wanted to twist his heart and mislead him until he would fall comple
+- tiny_he_long_en at aligned_segments[17]/segment
+  HE: אות ח
+  EN: And this is the aspect of the hanging that Haman wanted — to hang Mordechai, who is the true Tzadik in every generation, who is entirely pure and holy — he wanted to bring him into
+- tiny_he_long_en at aligned_segments[19]/segment
   HE: אות ט
-  EN: 5 אִם-אֶשְׁכָּחֵךְ יְרוּשָׁלִָם תִּשְׁכַּח יְמִינִי
-- hebrew_in_english_field at segments[28]/segment
-  HE: אות י וזה בח'י מה שנוסעין והולכין על קברי הצדיקים. והעיקר בשביל תיקון הברית קודש כידוע שעיקר מה שהולכין על קברי הצדיקים הוא בשביל תיקון הברית וכמ וששמעתי מפי רבינו ז,ל שהוא תיקון ג
-  EN: 6 תִּדְבַּק-לְשׁוֹנִי לְחִכִּי אִם-לֹא אֶזְכְּרֵכִי אִם-לֹא אַעֲלֶה אֶת-יְרוּשָׁלִַם עַל רֹאשׁ שִׂמְחָתִי
-- hebrew_in_english_field at segments[30]/segment
-  HE: אות יא וע"כ הלך כלב ונשתטח על קברי אבות. כ"ש ויבא עד חברון שהלך על קברי אבו תשלא יהיה ניסת בעצת המרגלים. כי המרגלים פגמו בא"י ששם עיקר כבודה' כנ" לכי עיקר השראת שכינתו וכבודו ית' ה
-  EN: 7 זְכֹר יי לִבְנֵי אֱדוֹם אֵת יוֹם יְרוּשָׁלִָם הָאֹמְרִים עָרוּ עָרוּ עַד הַיְסוֹד בָּהּ
-- hebrew_in_english_field at segments[36]/segment
-  HE: אות יד וע"כ זכה יוסף להגביר שבע שני השבע על שבע שני הרעב כי הרעב הוא בחי' תאוות האכילה שהוא רעב לאכול ואין לו שביעה במעיו וכמבואר בדברי רבינו ז,ל במ"א שהרעב הוא בחי' תאוות אכילה וה
-  EN: 9 אַשְׁרֵי שֶׁיֹּאחֵז וְנִפֵּץ אֶת-עֹלָלַיִךְ אֶל-הַסָּלַע
-- hebrew_in_english_field at segments[39]/segment
-  HE: ובשביל זה לקח משה רבינו את בת יתרו כי כבר מבואר ע"פ האמור למעלה שאשה יראת ה' היא בחי' הכבוד דקדושה שהיא בחי' חוה אם כל כחי כנ"ל. ולהיפך אשה זונה בת עכו"ם היא בחי' הכבוד דסט"א. ומשה
-  EN: 1 הַלְלוּי-ה הַלְלוּ-א-ל בְּקָדְשׁוֹ הַלְלוּהוּ בִּרְקִיעַ עֻזּוֹ
+  EN: For against the k'lipah of Haman-Amalaik — which is the aspect of the prolonged galus of the present time, called galus Edom [the exile of Edom] — there is no wisdom and no underst
+
+### SEVERE public/reader/likutay-halachos/part-1/halacha-2.json flags=30 bilingual_segments=72/72
+- tiny_he_long_en at segments[1]/segment
+  HE: אות א
+  EN: And this is the aspect of: "Awake, my glory! Awake, O nevel and kinor! I shall awaken the dawn!" (Psalms 57:9). That is, a person must arouse himself from his sleep and from his fa
+- tiny_he_long_en at segments[4]/segment
+  HE: אות ב
+  EN: It emerges that the essential aspect of the awakening from sleep is through the nekudos tovos that one finds within himself, even when he is, G-d forbid, in the very lowest level, 
+- tiny_he_long_en at segments[6]/segment
+  HE: אות ג
+  EN: And this is the aspect of: "the Kohanim at their service, and the Levi'im on their platform, and the Israelites at their post [ma'amad]" (Megillah 3a). For the essential rectificat
+- tiny_he_long_en at segments[8]/segment
+  HE: אות ד
+  EN: And this is the aspect of the donning of garments: that one must grasp the garment with the right side and always give precedence to the right over the left. For the essential matt
+- tiny_he_long_en at segments[10]/segment
+  HE: אות ה
+  EN: And this is the aspect of the Four Special Parshiyos. Parashas Shekalim — the aspect of tzedakah, for tzedakah is the aspect of "chesed to Avraham" (Micah 7:20), who performed char
+- tiny_he_long_en at segments[13]/segment
+  HE: אות ו
+  EN: And this is the aspect of how our Sages, of blessed memory, delved deeply into the matter of the knowledge of how to determine exactly when midnight falls, as it is brought in brac
+- tiny_he_long_en at segments[15]/segment
+  HE: אות ז
+  EN: And therefore David knew exactly when midnight was, through the harp mentioned above. For he was a skilled musician . For this entire holy teaching — to search for the good and to 
+- tiny_he_long_en at segments[17]/segment
+  HE: אות ח
+  EN: And this is the aspect of: "Awake, my glory! Awake, O nevel and kinor! I shall awaken the dawn!" . That is, a person must arouse himself from his sleep and from his fallen state. A
+
+### SEVERE public/reader/likutay-halachos/part-1/halacha-9.json flags=30 bilingual_segments=68/68
+- tiny_he_long_en at segments[1]/segment
+  HE: הלכה ב
+  EN: And the general principle is that even filthy places and houses of idol worship also receive vitality from the Creator, blessed be His Name. And even though His glory, blessed be H
+- tiny_he_long_en at segments[2]/segment
+  HE: אות א
+  EN: And this is the aspect of tzitzis, which are the rectification of the garments — a protection from the klipos, as is brought. That is: the garments are the aspect of Kavod, for Rab
+- tiny_he_long_en at segments[5]/segment
+  HE: אות ב
+  EN: And this is the aspect of wrapping oneself in a tallis on Yom HaKipurim while it is still day (Shulchan Aruch, Siman 18, Se'if 1, in the Rema). For the atonement of Yom Kippur is t
+- tiny_he_long_en at segments[7]/segment
+  HE: אות ג
+  EN: For the food of Israel must be in great holiness. And the essential sanctity of eating is through the da'as — which is the revelation of hashgachah. And this is the aspect of eatin
+- tiny_he_long_en at segments[9]/segment
+  HE: אות ד
+  EN: And this is: "And you shall eat and be sated, and you shall bless Hashem your G-d for the good land" — etc. — that is, you shall bless Hashem after eating — that you shall know tha
+- tiny_he_long_en at segments[11]/segment
+  HE: אות ה
+  EN: And therefore, the vessel that was in the possession of idolaters — who are from the sitra d'mesaavusa [side of impurity] — for they attribute things to nature, from which is the e
+- tiny_he_long_en at segments[13]/segment
+  HE: אות ו
+  EN: For nature is the aspect of darkness and night, the aspect of the blemish of the moon, as above — from which is the essential poverty, as is known. And these two aspects are encomp
+- tiny_he_long_en at segments[15]/segment
+  HE: אות ז
+  EN: And therefore, at the time of the redemption from Egypt — when the hashgachah was revealed — then it is a mitzvah to drink four cups of wine. For then the wine is in the aspect of:
 
 ### SEVERE public/reader/kitzur-likutay-moharan/part-2/torah-6.json flags=28 bilingual_segments=39/39
 - long_he_tiny_en at segments[3]/segment
@@ -1906,6 +1567,58 @@ Files needing review (excluding normal untranslated books): 1751
   EN: [continued]
 - long_he_tiny_en at segments[12]/segment
   HE: יא. עַל־יְדֵי שֶׁמְּשַׁבְּרִין הִרְהוּרֵי נִאוּף וְזוֹכִין לְתִקּוּן הַמֹּחִין כַּנַּ"ל, עַל־יְדֵי־זֶה זוֹכִין לַחֲלוֹם עַל־יְדֵי מַלְאָךְ, וְאָז הוּא נִקְרָא אָדָם, וְכֵן לְהֵפֶךְ
+  EN: [continued]
+
+### SEVERE public/reader/likutay-halachos/part-1/halacha-24.json flags=28 bilingual_segments=56/56
+- tiny_he_long_en at segments[1]/segment
+  HE: הלכה ז
+  EN: This is the aspect of Tefillin. The matter of Tefillin is explained there (LM II:67), on the verse: "Va'amalei oso Ruach Elokim b'chochmah u'visvunah u'veda'as u'vchol melachah" (S
+- tiny_he_long_en at segments[2]/segment
+  HE: אות א
+  EN: All this = Tefillin. The Arizal's writings explain that the light of Tefillin emerges through the rectifications accomplished by Kimas Chatzos. Through the tzadikim and upright one
+- tiny_he_long_en at segments[5]/segment
+  HE: אות ב
+  EN: This is the aspect of Tefillin made from or [leather/skin] — to rectify and clarify "kasnos or" [garments of skin], which are the aspect of fingernails. Our Sages said (Bereishis R
+- tiny_he_long_en at segments[7]/segment
+  HE: אות ג
+  EN: One cannot know, make known, or magnify Shem Hashem except through the true tzadik = tzadik Yesod Olam, whose essential greatness is through guarding the Bris in ultimate holiness.
+- tiny_he_long_en at segments[9]/segment
+  HE: אות ד
+  EN: All this = Purim and Parshas Zachor read beforehand — the subduing of kelipas Amalek, the essential kelipah of the orlah covering the holy Bris, from which the concealment always f
+- tiny_he_long_en at segments[11]/segment
+  HE: אות ה
+  EN: See also Hilchos Shabbos, Halacha 4, where Parshas Zachor is also explained based on this same Torah. But the Torah is longer than the earth's measure — what one passage lacks, ano
+- tiny_he_long_en at segments[13]/segment
+  HE: אות ו
+  EN: This is what the Zohar HaKadosh writes (Parashas cha'yai Sarah): the mystery of Tefillin is that they are in the aspect of "V'asu li Mikdash" — "Make Me a Sanctuary." As it says th
+- tiny_he_long_en at segments[15]/segment
+  HE: אות ז
+  EN: This is the aspect of Bircas HaTorah. For the Torah is the aspect of the Aron HaAidus [Ark of Testimony] — when it was placed upon the cows, they began to sing. All this pertains t
+
+### SEVERE public/reader/likutay-halachos/part-2/halacha-31.json flags=28 bilingual_segments=77/92
+- tiny_he_long_en at aligned_segments[1]/segment
+  HE: אות א
+  EN: This is what we say in the Viduy: "Tavo l'fanecha t'filasainu v'al tis'aleim mis'chinasainu, she'ain anu azay panim uk'shay oref lomar l'fanecha Hashem Eloakeyenu v'Elokay avosainu
+- long_he_tiny_en at aligned_segments[4]/segment
+  HE: והכלל שצדקה מנהגת כל גלגלי הרקיע וכו', וכל היסורים שיש לאדם בדרכים הוא בסבת גלגלי הרקיע וכו'. כי יש כוכבים שהם מחיבים שיהיה דרך וכו', ויש שהם מחיבים שיהא מדבר וכו'. ועל כן התקנה לז
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[5]/segment
+  HE: ועין במה ששיך לזה הנדפס סמוך לזה בלשוני. וכלל הדבר שמאד יקר הכסופין וההשתוקקות לדבר שבקדשה, כי על ידם נתהוה נפש טוב ונגמר על ידי הדבור ויוצא ומתגלגל, ולפעמים מתגלגל ובא הנפש דקדשה 
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[6]/segment
+  HE: ועין שם מענין ארבעה שנכנסו לפרדס וכו', ומבאר שם שמי שמפריד למדן מצדיק שאומר שלמדן לבד הוא מעלה הוא בחינת אחר שקצץ בנטיעות שהפריד בחינת מט"ט בחינת מלאך שהוא בחינת למדן בחינת כשר ופס
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[7]/segment
+  HE: וזה בחינת ארבעה צריכין להודות על הנס שנעשה להם שהיו בצרה ונצולו שהם תועים במדבר וכו', כי כל הצרות והישועות והנסים שעוברין על האדם כל ימי חייו הכל הוא כפי מה שזוכה לציר אותיות התורה
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[9]/segment
+  HE: וזה בחינת ארבעה צריכין להודות הנ"ל, שהם תעו במדבר בישימון דרך וכו', ויושבי חשך שהם יושבים בבית האסורים כשיוצאים, וחולה ונתרפא ויורדי הים כשעולים משם. כי כל הסכנות העוברים על אלו הא
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[10]/segment
+  HE: כי 'תעו במדבר בישימון דרך', זהו נמשך כפי מה שפגם בצדקה שהיא מנהגת כל גלגלי הרקיע כמו שמבאר שם באות ד'. וזה לשונו, ודע שהיסורים שיש לאדם בדרכים הוא בסבת גלגלי הרקיע וכו'. וזהו בחינת
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[12]/segment
+  HE: וחולה שנתרפא הוא כפי הפגם והתקון של בחינת ברית תתאה, שהוא אסור והתר שהוא בחינת רקיע המבדיל בין מיין דכין למיין מסאבין בין אסור והתר וכו', כמו שמבאר שם. שזהו בחינת ההבדלה והברור בין
   EN: [continued]
 
 ### SEVERE public/reader/likutay-halachos/part-3/halacha-13.json flags=28 bilingual_segments=82/110
@@ -1934,57 +1647,31 @@ Files needing review (excluding normal untranslated books): 1751
   HE: אות ז
   EN: Therefore Rosh HaShanah is called Yom HaZikaron [the Day of Remembrance]. For then is the first of the Ten Days of Teshuvah, and the essential teshuvah is through remembrance — rem
 
-### SEVERE public/reader/likutay-halachos/part-3/halacha-28.json flags=28 bilingual_segments=83/108
-- hebrew_in_english_field at segments[25]/segment
-  HE: אות יב
-  EN: 13 וְהָגִיתִי בְכָל-פָּעֳלֶךָ וּבַעֲלִילוֹתֶיךָ אָשִׂיחָה
-- tiny_he_long_en at aligned_segments[1]/segment
-  HE: הלכה ז
-  EN: And this is the aspect of Sefiras HaOmer (the counting of the Omer). The mitzvah is to count the days, in order to purify us from our impurity — to count, specifically. So that the
-- tiny_he_long_en at aligned_segments[2]/segment
-  HE: אות א
-  EN: And through this specifically, one reveals the concealment. For the concealment is the aspect of the grip of the wicked kingdom, whose sustenance is from the shattering of vessels,
-- tiny_he_long_en at aligned_segments[5]/segment
-  HE: אות ב
-  EN: Therefore, beforehand, the counting was needed — which is a preparation for receiving the Torah. That is: one counts and measures the days, in the aspect of "the measure of my days
-- tiny_he_long_en at aligned_segments[7]/segment
-  HE: אות ג
-  EN: And the entire creation was suspended until the day of the Giving of the Torah, which is the sixth of Sivan, as our Sages, of blessed memory, said. Therefore, before the Giving of 
-- tiny_he_long_en at aligned_segments[9]/segment
-  HE: אות ד
-  EN: Also, the four cups of wine are likewise in the aspect of the ascent of the holy Malchus from within the aspect of concealment. As Rabeinu, may his light shine, wrote: the four cup
-- tiny_he_long_en at aligned_segments[11]/segment
-  HE: אות ה
-  EN: And this is the aspect of the Omer of barley, from which the days of the counting begin. An Omer is a measure — the aspect of attributes and vessels, as mentioned above. And this i
-- tiny_he_long_en at aligned_segments[13]/segment
-  HE: אות ו
-  EN: And this is why the custom is to let the hair grow during the days of the Sefirah. For the hairs are the aspect of tzimtzumim and measurements through which the light of the brain 
-
-### SEVERE public/reader/likutay-halachos/part-1/halacha-16.json flags=27 bilingual_segments=99/122
-- tiny_he_long_en at aligned_segments[1]/segment
-  HE: הלכה ה
-  EN: All this power is received from the aspect of the Zakein d'Kedushah — the Blind Beggar — the elder of elders, Sava d'Savin, who merited such holy ziknah until he said he is exceedi
-- tiny_he_long_en at aligned_segments[5]/segment
-  HE: אות ב
-  EN: Therefore one must bind the Tefillin on the left arm — the aspect of yad keihah [the weaker hand], as our Sages said. For the essential Tefillin = Erech apeye'im: to sweeten and nu
-- tiny_he_long_en at aligned_segments[7]/segment
-  HE: אות ג
-  EN: This is the aspect of: "Kadeish li chol bechor peter kol rechem bivnei Yisrael" — "Sanctify to Me every firstborn, the first issue of every womb among the children of Yisrael" (She
-- tiny_he_long_en at aligned_segments[9]/segment
-  HE: אות ד
-  EN: One retzuah extends down to the heart. For the retzuah is the aspect of the light drawn from Arichas apeye'im. Therefore it must be drawn down to the heart — to introduce Arichas a
-- tiny_he_long_en at aligned_segments[11]/segment
-  HE: אות ה
-  EN: And this is what is written: "And you shall see it, and you shall remember all the mitzvos of Hashem" . For all the mitzvos depend on this, since the tzitzis are in the aspect of t
-- tiny_he_long_en at aligned_segments[13]/segment
-  HE: אות ו
-  EN: And therefore, it is permitted to enter with tzitzis into a lavatory . And it is brought7 that this is the aspect of: "Umalchuso bakol mashalah" — "And His kingship rules over all"
-- tiny_he_long_en at aligned_segments[15]/segment
-  HE: אות ז
-  EN: It follows that they return and attach themselves to the very essence of the holiness from which they had been receiving vitality. And this is their subjugation, for their vitality
-- tiny_he_long_en at aligned_segments[19]/segment
-  HE: אות ט
-  EN: And because of this very thing, tzitzis are also made from linen. For in flax, which is the lowest level from which the chitzonim draw sustenance — the aspect of Kayin — there spec
+### SEVERE public/reader/likutay-halachos/part-4/halacha-88.json flags=28 bilingual_segments=75/102
+- long_he_tiny_en at segments[3]/segment
+  HE: כי באמת כל אחד מישראל יש לו כח להחזיר כל העולם בתשובה כי חייב כל אדם לומר בשבילי נברא העולם. כי כל אחד מישראל הוא כלול מכל התורהכולה כ"ש זאת התורה. כי כ"א מישראל כלול מרמ"ח אברים ו
+  EN: Lamnatzai-ach mizmohr liduvveed.
+- long_he_tiny_en at aligned_segments[2]/segment
+  HE: ע"פ המאמר רציצא דמיית בבעותי' וכו' בליקוטי ח"א סי' כ"ז ע"ש כל המאמר. והכלל שע"י השלום יכולין להחזיר כל העולם כולו לעבודתו יתברך. ו א,א לבא לבחי' שלום אלא ע"י הארת פנים הדרת פנים בח
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[3]/segment
+  HE: כי באמת כל אחד מישראל יש לו כח להחזיר כל העולם בתשובה כי חייב כל אדם לומר בשבילי נברא העולם. כי כל אחד מישראל הוא כלול מכל התורהכולה כ"ש זאת התורה. כי כ"א מישראל כלול מרמ"ח אברים ו
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[5]/segment
+  HE: וע"כ אסרה התורה כתובת קעקע כ"ש וכתובת קעקע לא תתנו בבשרכם וכו' כי צריך לשמור בשר הגוף שלא לקלקלו שלא לחקוק בו כתובת קעקע שלא לקלק צלם דמות האדם שכלול מכל העולמות ויש לו גבכח בכל אב
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[7]/segment
+  HE: וזה בחי' איסור שריטה על מת. כי אע"פ שמחוייבין להצטער על המת על הסתלקות נפש מישראל מחוייבין להתאבל עליו. אלב עיקר ההספד והאבילות עלי והוא בשביל לחזור ולהמשיך בחי' הדרת פנים בחי' שלו
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[9]/segment
+  HE: וע"כ הוא דבר גדול מאד מאד להרבות לילך על קברי צדקיים האמתיים. כי ע"י זה שבאים אל מקום קבורתם הקדושה שהוא בחי' ארץ ישראל כמ"ש צדיקים יירש וארץ כמ ושאומרים בשם הבעש"ט ז"ל. וא"י הוא א
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[11]/segment
+  HE: ואע"פ שעיקר השלום נעשה ע"י קול רנה כמ"ש רבינו ז"ל במאמרא הנ"ל מבחי' שיר השירים אשר לשלמה וכו' ע"ש. אעפ"כ דרך השלום להתלבש במרירות בבחי' הנה לשלםו מר לי מר בחי' שבת במרה נצטוו וכו' 
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[13]/segment
+  HE: נמצא שעיקר כל האבילות וההספד חס ושלום הוא רק בשביל הדרת פנים ושלום כדי לחזור ולהמשיך נפש המת בגוופ כדי לעורר השלום ביותר וכו' כנ"ל. ע"כ הזהירה תורה לבלי לשרוט גופו על המת חס ושלום 
+  EN: [continued]
 
 ### SEVERE public/reader/likutay-halachos/part-2/halacha-22.json flags=27 bilingual_segments=71/90
 - tiny_he_long_en at aligned_segments[1]/segment
@@ -2012,31 +1699,57 @@ Files needing review (excluding normal untranslated books): 1751
   HE: וזה בחינת פגם המרגלים מוציאי דבת הארץ רעה שאמרו: באנו אל הארץ אשר שלחתנו וגם ארץ זבת חלב ודבש היא וזה פריה. אפס כי עז העם וכו'. הינו שיש שם שבעה עממין שנמשכין מהרע שבחובלים שאינם מ
   EN: [continued]
 
-### SEVERE public/reader/likutay-halachos/part-7/halacha-26.json flags=27 bilingual_segments=80/104
-- hebrew_in_english_field at aligned_segments[1]/segment
+### SEVERE public/reader/likutay-halachos/part-3/halacha-28.json flags=27 bilingual_segments=82/108
+- tiny_he_long_en at aligned_segments[1]/segment
+  HE: הלכה ז
+  EN: And this is the aspect of Sefiras HaOmer (the counting of the Omer). The mitzvah is to count the days, in order to purify us from our impurity — to count, specifically. So that the
+- tiny_he_long_en at aligned_segments[2]/segment
   HE: אות א
-  EN: וְזֶה שֶׁנִּצְטַוּוּ עַל מְלֶאכֶת הַמִּשְׁכָּן אַחַר מַעֲשֵׂה הָעֵגֶל...
-- hebrew_in_english_field at aligned_segments[4]/segment
+  EN: And through this specifically, one reveals the concealment. For the concealment is the aspect of the grip of the wicked kingdom, whose sustenance is from the shattering of vessels,
+- tiny_he_long_en at aligned_segments[5]/segment
   HE: אות ב
-  EN: וְנָדָב וַאֲבִיהוּא שֶׁהָיוּ צַדִּיקִים נוֹרָאִים, אֲבָל הֵם פָּגְמוּ לְהֵפֶךְ...
-- hebrew_in_english_field at aligned_segments[6]/segment
+  EN: Therefore, beforehand, the counting was needed — which is a preparation for receiving the Torah. That is: one counts and measures the days, in the aspect of "the measure of my days
+- tiny_he_long_en at aligned_segments[7]/segment
   HE: אות ג
-  EN: וְזֶה בְּחִינַת אֵיזֶהוּ עָשִׁיר הַשָּמֵחַ בְּחֶלְקוֹ...
-- tiny_he_long_en at aligned_segments[8]/segment
+  EN: And the entire creation was suspended until the day of the Giving of the Torah, which is the sixth of Sivan, as our Sages, of blessed memory, said. Therefore, before the Giving of 
+- tiny_he_long_en at aligned_segments[9]/segment
   HE: אות ד
-  EN: The essential perfection is when one merits to ascend there in the aspect of ratzo vashov, until one merits to draw divine bounty from there — which is the aspect of the descent of
-- tiny_he_long_en at aligned_segments[10]/segment
+  EN: Also, the four cups of wine are likewise in the aspect of the ascent of the holy Malchus from within the aspect of concealment. As Rabeinu, may his light shine, wrote: the four cup
+- tiny_he_long_en at aligned_segments[11]/segment
   HE: אות ה
-  EN: But to each person it reaches according to his world and level. For even in the world of Asiyah there is an aspect of sparkling from the nine chambers mentioned above. And even tho
-- hebrew_in_english_field at aligned_segments[12]/segment
+  EN: And this is the aspect of the Omer of barley, from which the days of the counting begin. An Omer is a measure — the aspect of attributes and vessels, as mentioned above. And this i
+- tiny_he_long_en at aligned_segments[13]/segment
   HE: אות ו
-  EN: וְזֶה בְּחִינַת מַה שֶּׁחַיָּב לִתֵּן לְאִשְׁתּוֹ כְּתֻבָּה...
-- tiny_he_long_en at aligned_segments[14]/segment
+  EN: And this is why the custom is to let the hair grow during the days of the Sefirah. For the hairs are the aspect of tzimtzumim and measurements through which the light of the brain 
+- tiny_he_long_en at aligned_segments[15]/segment
   HE: אות ז
-  EN: Therefore one must give her a kesuvah — obligating himself to give her the divine bounty of wealth when she leaves him — to indicate that a residual impression [rshimu] from the un
-- hebrew_in_english_field at aligned_segments[16]/segment
+  EN: Therefore, then — on the day of the waving of the Omer — was also the downfall of many great nations, all of whom are in the aspect of the wicked kingdom that is subdued through th
+
+### SEVERE public/reader/likutay-halachos/part-3/halacha-46.json flags=27 bilingual_segments=79/108
+- tiny_he_long_en at aligned_segments[1]/segment
+  HE: הלכה ד
+  EN: And this is [the significance of the fact] that we bless the [new] month on the Shabbos that precedes it. For Shabbos is k'vi'a v'kayyama (fixed and established). And all the holin
+- tiny_he_long_en at aligned_segments[5]/segment
+  HE: אות ב
+  EN: And on Shabbos all melachah is forbidden, for on Shabbos there is no clarification through any physical action or labor — rather, everything ascends and is clarified of itself and 
+- tiny_he_long_en at aligned_segments[7]/segment
+  HE: אות ג
+  EN: But on Yom Tov it is "mikra kodesh" — one calls the aspect of the Written Torah from its place, that it should descend to the aspect of the Oral Torah. Therefore there is then stil
+- tiny_he_long_en at aligned_segments[9]/segment
+  HE: אות ד
+  EN: But there are chiddushai Torah of the Oral Torah that are also holy and true, but it is difficult to align them precisely within the words of the [Written] Torah — only through all
+- tiny_he_long_en at aligned_segments[11]/segment
+  HE: אות ה
+  EN: And this is the aspect of the tremendous power of the miracle of Chanukah: that then they established for us to kindle the Chanukah candle below ten t'fachim (handbreadths). It is 
+- tiny_he_long_en at aligned_segments[13]/segment
+  HE: אות ו
+  EN: And therefore the oil was sealed with the seal of the Kohen Gadol. For the Kohen Gadol would enter the innermost sanctum on Yom Kippur, to the aspect of Kodesh HaKodashim — where t
+- tiny_he_long_en at aligned_segments[15]/segment
+  HE: אות ז
+  EN: And this is the aspect of: "The Shulchan (Table) in the north and the Menorah in the south" — the Shulchan with the Lechem HaPanim (Showbread) was opposite the Menorah, as it is wr
+- tiny_he_long_en at aligned_segments[17]/segment
   HE: אות ח
-  EN: וְנַחֲזֹר לְעִנְיָנֵנוּ, וְעַל-כֵּן אָסוּר לָדוּר עִם אִשְׁתּוֹ בְּלֹא כְּתֻבָּה...
+  EN: And the essential holiness of Rosh HaShanah and Yom Kippur according to this Torah [discourse] is that one must draw emunas chachamim through the abundance of s'farim that one meri
 
 ### SEVERE public/reader/likutay-halachos/part-7/halacha-3.json flags=27 bilingual_segments=87/116
 - tiny_he_long_en at aligned_segments[3]/segment
@@ -2064,83 +1777,161 @@ Files needing review (excluding normal untranslated books): 1751
   HE: אות ט
   EN: And so it is brought in the discourse "U'v'Yom HaBikurim" — that the purifying waters mentioned in the verse "And I will sprinkle" cited above are the aspect of the supernal mikveh
 
-### SEVERE public/reader/likutay-halachos/part-1/halacha-35.json flags=26 bilingual_segments=78/104
-- long_he_tiny_en at segments[18]/segment
-  HE: אות ח וכן הכת שאמרו שעיקר התכלית שמחה ושכרות מבואר גם כן קצת. כי שמחה דקדושה הוא בוודאי דבר גדול מאד. דהיינו לשמוח בה' ובתורתו הקדושה שזה עיקר שלימות העבודה. כמו שכתוב (דברים כ"ח) 
-  EN: Translator's Overview
-- tiny_he_long_en at aligned_segments[1]/segment
+### SEVERE public/reader/likutay-halachos/part-1/halacha-11.json flags=26 bilingual_segments=50/50
+- tiny_he_long_en at segments[1]/segment
   HE: הלכה ד
-  EN: The twenty-four types of pidyonos [redemptions — the practice of bringing a monetary redemption to a tzaddik to sweeten harsh judgments] that sweeten the twenty-four courts [batai 
-- tiny_he_long_en at aligned_segments[2]/segment
+  EN: And this is the aspect of tzitzis. For tzitzis are the aspect of the thread of Chesed that is woven and twisted from the 72 strands (nimin) upon which the song of Chesed will be pl
+- tiny_he_long_en at segments[2]/segment
   HE: אות א
-  EN: The essential Sefirah begins with the waving of the omer and counting — to draw the mochin [Kabbalistic intellective lights — channels of holy consciousness] in orderly fashion, le
-- tiny_he_long_en at aligned_segments[5]/segment
+  EN: For tzitzis are the aspect of the harp of David, as brought in the holy Zohar and in the Tikunim, Tikkun 10. And this is the aspect of: "Mikanaf ha'aretz zemiros shamanu" — "From t
+- tiny_he_long_en at segments[4]/segment
   HE: אות ב
-  EN: This is the aspect of what we say every day after Bircas HaTorah: the Mishnah of "Elu d'varim sh'ain lahem shi'ur" — "These are the things that have no measure: pe'ah, bikurim, r'a
-- tiny_he_long_en at aligned_segments[9]/segment
+  EN: The essential purpose of tzitzis is to rectify the garments. For the root of tzitzis, which is the niggun — the thread of Chesed — is drawn from tefillah in the aspect of din. Thro
+- tiny_he_long_en at segments[6]/segment
+  HE: אות ג
+  EN: Therefore, the essential beginning of accepting the yoke of Torah and mitzvos is through tzitzis. For when a child begins to be educated in mitzvos, the first mitzvah he is taught 
+- tiny_he_long_en at segments[8]/segment
   HE: אות ד
-  EN: For certainly, when one merits through the pidyon to ascend from sh'mad to ratzon and to draw the illumination of the Ratzon in the world — through which teshuvah is accomplished, 
-- tiny_he_long_en at aligned_segments[11]/segment
+  EN: This is what our Sages said (Rosh Hashanah 17b): "This teaches that the Holy One wrapped Himself as a prayer leader and arranged before Moshe the 13 attributes of mercy." For the 1
+- tiny_he_long_en at segments[10]/segment
   HE: אות ה
-  EN: This is the aspect of Bircas HaShachar [Morning Blessings]. When one arises from sleep, one must wash the hands and bless "Al netilas yadayim." Waking from sleep = Techiyas HaMeisi
-- tiny_he_long_en at aligned_segments[13]/segment
+  EN: For the garments that Yaakov wore then were the garments of Adam HaRishon that Hashem made for them after the sin (see Pirkay diRabbi Eliezer ch. 24), as written: "Vaya'as Hashem E
+- tiny_he_long_en at segments[12]/segment
   HE: אות ו
-  EN: Therefore Yisro, who said to Moshe "V'atah sechezeh" — through which Techiyas HaMeisim is drawn — is alluded to in "V'rabim miyeshnei admas afar yakitzu" , whose final letters spel
-- tiny_he_long_en at aligned_segments[15]/segment
+  EN: For wine brings sleep — the aspect of the medameh. Therefore wine has two powers: if he merits, it gladdens him; if he does not merit, it devastates him (Yoma 76b) — the joyful win
+- tiny_he_long_en at segments[14]/segment
   HE: אות ז
-  EN: Therefore Korach, who blemished through ge'us — for his entire rebellion against Moshe and Aharon was only through his great arrogance, envying Aharon's greatness and Elitzafan's a
+  EN: This is the aspect of the wine of the libations (nesachim) over which song is said — for "one says song only over wine." All the sacrifices are the aspect of clarifying the medameh
 
-### SEVERE public/reader/likutay-halachos/part-3/halacha-20.json flags=26 bilingual_segments=68/90
-- hebrew_in_english_field at segments[23]/segment
-  HE: אות יא ובענין פגם המשפט צריכין לדבר הרבה כי אדמו"ר ז"ל דיבר בקדשו בדרך כלל שפגם המשפט הוא על ידי דיינים שמעוותין המשפט אבל בוודאי גם כל אדם צריך ליזהר שלא לפגום במשפט. אף על פי שאי
-  EN: 6 חֲבָלִים נָפְלוּ-לִי בַּנְּעִמִים אַף-נַחֲלָת שָׁפְרָה עָלָי
-- hebrew_in_english_field at segments[29]/segment
-  HE: אות יד וזה בחינת איסור חמץ בפסח. כי כבר מבואר שבפסח עדיין לא זכינו לבחינ תיקון המשפט. ועל כן יצאו בחיפזון. ועל כן אסור בחמץ כי עיקר החמץ הוא כשנותנין מים בעיסה. מים הוא בחינת משפט.
-  EN: 8 שִׁוִּיתִי יי לְנֶגְדִּי תָמִיד כִּי מִימִינִי בַּל-אֶמּוֹט
-- hebrew_in_english_field at segments[35]/segment
-  HE: אות יז וזה קשין מזונותיו של אדם כקריעת ים סוף. כי עיקר רוב העקמימיות שבלב בני אדם הוא בענין הפרנסה והמזונות שכל אחד קשה בעיניו על חסרון פרנסתו ואומרים שמחמת זה אינם יכולים לעסוק בת
-  EN: 10 כִּי לֹא-תַעֲזֹב נַפְשִׁי לִשְׁאוֹל לֹא-תִתֵּן חֲסִידְךָ לִרְאוֹת שָׁחַת
-- hebrew_in_english_field at segments[45]/segment
-  HE: אות כב ועל כן בערב ראש השנה הולכין ביותר על קברי הצדיקים. כי אז אנו צריכין ביותר לבחינת תיקון המשפט כי אז הקדוש ברוך הוא יושב על כסא המשפט ואז עיקר תיקון של פגם המשפט שפגמו על ידי 
-  EN: 2 אַשְׁרֵי אָדָם לֹא יַחְשֹׁב יי לוֹ עָוֹן וְאֵין בְּרוּחוֹ רְמִיָּה
+### SEVERE public/reader/likutay-halachos/part-1/halacha-17.json flags=26 bilingual_segments=50/50
+- tiny_he_long_en at segments[1]/segment
+  HE: הלכה ז
+  EN: This is the aspect of Hashem's praise for Kneses Yisrael: "Shor'rareich agan hasahar al yechsar hamezeg" — "Your navel is a round basin; let the blended wine not be lacking" (Shir 
+- tiny_he_long_en at segments[2]/segment
+  HE: אות א
+  EN: Even now in this world, the tzadikim who truly serve Hashem draw upon themselves eternal life through Torah, tefillah, and ma'asim tovim. Though their entire aspiration is to live 
+- tiny_he_long_en at segments[4]/segment
+  HE: אות ב
+  EN: For Dovid had no chiyus of his own at all. He was destined to be a nefel [stillbirth]. Only Adam HaRishon gave him seventy years from his own lifespan, as our Sages said. The chiyu
+- tiny_he_long_en at segments[6]/segment
+  HE: אות ג
+  EN: This is the aspect of Rosh HaShanah. Rosh HaShanah is the aspect of Tefillin — the renewal one merits each day through sleep, when the Mochin are renewed within emunah — this is Ro
+- tiny_he_long_en at segments[8]/segment
+  HE: אות ד
+  EN: Behold, the sum total of Tefillin is the aspect of Mochin cha'yim [living brains]: to begin living anew each time — whether tzadik, beinoni, or rasha. As long as the name Yisrael i
+- tiny_he_long_en at segments[10]/segment
+  HE: אות ה
+  EN: And then, when Hashem, blessed be He, wishes to have mercy upon him in His abundant mercy, He elevates him from that place to the aspect of "above place." And there, everything is 
+- tiny_he_long_en at segments[12]/segment
+  HE: אות ו
+  EN: And even one who has fallen to some bad place through his sins — even if he has fallen to the place where he has fallen, to a very low and materialistic and filthy place, G-d forbi
+- tiny_he_long_en at segments[14]/segment
+  HE: אות ז
+  EN: And therefore, tzitzis gathers the dispersed from the four corners of the earth — in the aspect of: "Vahavi'einu l'shalom mei'arba kanfos," etc. [And bring us in peace from the fou
+
+### SEVERE public/reader/likutay-halachos/part-4/halacha-47.json flags=26 bilingual_segments=64/92
+- long_he_tiny_en at segments[3]/segment
+  HE: כי זה כלל גדול שצריך האדם להתחיל בכל פעם מחדש כאש הזהיר רבינו ז"ל על זה פעמים אין מספר כמבואר בספריו הקדושים בכמה מקומות. וכמבואר בסיפור שבחיו הקדושים שהוא בעצמו זכה למה שזכה על יד
+  EN: ch = kh
+- long_he_tiny_en at segments[5]/segment
+  HE: אות ב וזה בחינת מצות שלוח הקן. כי מבואר בתיקוינם שקן צפור מרמז לע נשמתין דאתתרכו מאתרייה, היינו הנשמות הרחוקים מהםש יתברך על ידי מעשיהם שאינם טובים, ועל זה מרמז הפסוק כי יקרא קן צפ
+  EN: iy = eye
+- long_he_tiny_en at aligned_segments[3]/segment
+  HE: כי זה כלל גדול שצריך האדם להתחיל בכל פעם מחדש כאש הזהיר רבינו ז"ל על זה פעמים אין מספר כמבואר בספריו הקדושים בכמה מקומות. וכמבואר בסיפור שבחיו הקדושים שהוא בעצמו זכה למה שזכה על יד
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[5]/segment
+  HE: וזה בחינת מצות שלוח הקן. כי מבואר בתיקוינם שקן צפור מרמז לע נשמתין דאתתרכו מאתרייה, היינו הנשמות הרחוקים מהםש יתברך על ידי מעשיהם שאינם טובים, ועל זה מרמז הפסוק כי יקרא קן צפור לפנ
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[7]/segment
+  HE: וזהו בחינתך איסור בש רבחלב שאסור לבשל ולאכול בשר בחלב. כי חלב אם זה בחינת החיות והשכל שמשך ממעי אמו שהוא מחיה ומקיים את הולד. אבל אף על פי שהוא עיקר חיות וקיום הולד אף על פי כן צרי
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[9]/segment
+  HE: וזה בחינת איסור בשר בחלב, כי חלב הוא בחינת חלישות בחינת בושה כנראאה בחוש שהחלב הוא מאכל קטנים ואני מחזיק את הגוף אדרבא מחליש אותו כמו שדרשו רבותינ ז"ל על פי מי םשאל חלב נתךנה שהחלב
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[11]/segment
+  HE: וזה בחינת שחיטה שאי אפשר לאכול שום בעל חי כי אם עלידי השחיטה. כי השחיטה הוא כדי להכניע מהבהמה רוח הבהמיות שששם נאחז עזות דסטרא אחרא עזותך הגוף שהוא בחנית רוח הבהמיות שמשם כל התאוות
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[13]/segment
+  HE: נמצא שעיקר האיסרו של המינים טמאים הוא מחמךת שהם בבחינת העזותך דסטרא אחרא שאי אפשר לנו לבררם, ומינם המותרים יש בהם גם כן אחיזת העזות דסטרא אחרא רק שיש לנו כח לבררם על ידי מצות התורה
+  EN: [continued]
+
+### SEVERE public/reader/likutay-halachos/part-5/halacha-46.json flags=26 bilingual_segments=89/118
 - tiny_he_long_en at aligned_segments[1]/segment
   HE: אות א
-  EN: And this is the aspect of all the korbanos [sacrifices] that are brought for atonement. For the korbanos are from animals, because the main beginning of the blemish is in the aspec
+  EN: And then when one merits to be a hero and warrior-of-strength who overcomes his desire — even though by necessity the arousal of union comes from the side of Gevurah — with all tha
 - tiny_he_long_en at aligned_segments[4]/segment
   HE: אות ב
-  EN: And perhaps this is the secret of what is written regarding the rectification of the kings who died, the aspect of the breaking of the vessels. When they begin to be rectified, the
+  EN: And therefore one must give the firstborn — which is the first birth — to the Kohen: in order to draw holiness to the firstborn, to the first birth, through the holiness of the Koh
 - tiny_he_long_en at aligned_segments[6]/segment
   HE: אות ג
-  EN: And the main cause is the lack of proper counsel — that one does not merit complete and true aitzos and does not know how to conduct oneself or how to earn a living. And because of
+  EN: And therefore the essential Exodus from Egypt came about through the Plague of the Firstborn — which was the final plague and with advance warning. For all the plagues of Egypt all
 - tiny_he_long_en at aligned_segments[8]/segment
   HE: אות ד
-  EN: And the aitzos are drawn from the depths, etc., and one needs to draw spiritual G-dliness into constrictions, etc., as above. And the matter of drawing spiritual G-dliness into con
+  EN: And this is also the aspect of honey which the Torah permitted — for honey is the aspect of Gevurot (divine powers), as is known, in the aspect of "what is sweeter than honey and w
+- tiny_he_long_en at aligned_segments[11]/segment
+  HE: אות ה
+  EN: And Shimshon the mighty — because he needed then to extract the vitality from the sitra achra to overpower them — was therefore compelled to employ the aspect of prayer in the mode
+- tiny_he_long_en at aligned_segments[15]/segment
+  HE: אות ז
+  EN: And this is the aspect of Shavuos — which is the Giving of the Torah. For "the Torah was given from the mouth of the Gevurah (מִפִּי הַגְּבוּרָה)" — from the aspect of Gevurot. For
+- tiny_he_long_en at aligned_segments[17]/segment
+  HE: אות ח
+  EN: And because honey is drawn from this aspect — from the prayer in the mode of judgment of the warrior-of-strength — therefore it is said of it: "Have you found honey? Eat your fill 
+- tiny_he_long_en at aligned_segments[19]/segment
+  HE: אות ט
+  EN: The Torah does not list kosher signs for birds as it does for land animals. Instead it lists the non-kosher species by name, and our Sages derived four signs — a crop, a peelable g
 
-### SEVERE public/reader/likutay-halachos/part-8/halacha-67.json flags=26 bilingual_segments=67/86
-- hebrew_in_english_field at segments[3]/segment
-  HE: כיכל החבלות וההכאות באין ע"י ריבוי המחלוקת ההשנאוי ומגונה מאד שהיו חולקים ומריבין אנשים והכה איש את רעהו באבן וכו'. וכשפרש"י אין שלום יוצא מתוך מריבה וכו'. וע"י המחלוקת פוגם מאד בא
-  EN: 12 לִמְנוֹת יָמֵינוּ כֵּן הוֹדַע וְנָבִיא לְבַב חָכְמָה
-- hebrew_in_english_field at segments[15]/segment
-  HE: אות לב וזהו בחי' מאמר הנ"ל שהשמן שהי' חתום לא הי' בו להדליק כ"א יום אחד ונעשה נס ודלק שמונה ימים, היינו כי היוונים שהם הס"א והקליפות האורבים לקלקל בכל הקלקולים הנ"ל, כי מתחילה מתגב
-  EN: 16 יֵרָאֶה אֶל-עֲבָדֶיךָ פָעֳלֶךָ וַהֲדָרְךָ עַל-בְּנֵיהֶם
-- hebrew_in_english_field at segments[22]/segment
-  HE: כי כבר מבואר שנר חנוכה הוא אור תורת אמת המאיר לעולם ע"י לימוד הישיבות הקדושות שבישראל. וע"כ יש בהם ג' בחינות. שהם הג' בחינות שבמצות נר חנוכה. והוא, כי עיקר נר חונכה הוא איש וביתו כ
-  EN: 1 הוֹדוּ לַיי קִרְאוּ בִּשְׁמוֹ הוֹדִיעוּ בָעַמִּים עֲלִילוֹתָיו
-- hebrew_in_english_field at segments[25]/segment
-  HE: אות לז
-  EN: 2 שִׁירוּ-לוֹ זַמְּרוּ-לוֹ שִׂיחוּ בְּכָל-נִפְלְאוֹתָיו
-- hebrew_in_english_field at segments[34]/segment
-  HE: אות מא וכל זה הוא בי' הדלקת נר חנוכה משתשקע החמה שאז מסתלק אור יום שהוא בחי' אור העצות כנ"ל, ואז צריכין להדליק נר חנוכה שהוא בחי' להמשיך קדושת הדלקת שבע קני המנורה שבביהמ"ק כדי להמ
-  EN: 5 זִכְרוּ נִפְלְאוֹתָיו אֲשֶׁר-עָשָׂה מֹפְתָיו וּמִשְׁפְּטֵי-פִיו
-- hebrew_in_english_field at segments[40]/segment
-  HE: אות מד וכ לזה א"א לזכות כ"א ע"י לימוד הרבה בישיבה הק' כנ"ל כי מחמת שצריכין עצות עמוקות הרבה בכל יםו ובכל עת ועיקר בעת החשך. כי לפעמים נחשך אצל האדם העצה גם ביםו ואז לפי בחינתו הוא 
-  EN: 7 הוּא יי אֱ-לֹהֵינוּ בְּכָל-הָאָרֶץ מִשְׁפָּטָיו
-- hebrew_in_english_field at segments[43]/segment
-  HE: כי מבואר במדרש תנחומא פ' בהעלותךם שהצדיקים נקראים בעלי אסופות. מחמת שעיקר יגיעתם בתורה הוא אחר שנאסף הצדיק. כי בחייו הי' יכול לשאול אות וכל ספיקותיו אלב עתה ממי ישאל וצריך להתייגע 
-  EN: 8 זָכַר לְעוֹלָם בְּרִיתוֹ דָּבָר צִוָּה לְאֶלֶף דּוֹר
-- tiny_he_long_en at aligned_segments[1]/segment
-  HE: אות כו
-  EN: That is, exactly the matter explained above: As long as there is no mishpat, the mishpat has the ko'ach to clothe itself in all the things in the world, in the aspect of "l'mishpat
+### SEVERE public/reader/likutay-halachos/part-5/halacha-64.json flags=26 bilingual_segments=86/118
+- tiny_he_long_en at aligned_segments[2]/segment
+  HE: אות א
+  EN: And this is: "and the number of the children of Israel shall be as the sand of the sea, and it shall be that in the place where it was said to them, 'you are not My people,' it sha
+- tiny_he_long_en at aligned_segments[4]/segment
+  HE: אות ב
+  EN: And therefore the essential union and unification is on Shabbas — for the essential union is to include after creation in before creation — and this corresponds to the six days of 
+- tiny_he_long_en at aligned_segments[6]/segment
+  HE: אות ג
+  EN: And this is the dimension of Hoshana Rabbah — when the willows are taken alone — for all six days they were bound with the four species and shaken in the six directions — and throu
+- tiny_he_long_en at aligned_segments[8]/segment
+  HE: אות ד
+  EN: And this is the dimension of the prohibitions that cannot be nullified even in sixty — such as all important things: a creature [briyah], a significant cut of meat fit for honour [
+- tiny_he_long_en at aligned_segments[10]/segment
+  HE: אות ה
+  EN: And this is the dimension of: one may not intentionally nullify a prohibition from the outset — for even the wicked who may be drawn close — the dimension of prohibitions that can 
+- tiny_he_long_en at aligned_segments[12]/segment
+  HE: אות ו
+  EN: And this is the dimension of: "and Moshe assembled" [Exodus 35:1] — and warned them regarding the work of the Mishkan. And before this he warned them regarding the observance of Sh
+- tiny_he_long_en at aligned_segments[14]/segment
+  HE: אות ז
+  EN: And this is the allusion that it is forbidden to force the hour [lidchok es ha-sha'ah] — as is understood from his words of blessed memory in several places. And even though the bu
+- tiny_he_long_en at aligned_segments[17]/segment
+  HE: אות ח
+  EN: And therefore on Yom Kippur — which is the essential rectification of the Holy Palace — the Kohen Gadol enters the inner sanctuary, to the place of the Ark — where the essential in
+
+### SEVERE public/reader/likutay-halachos/part-7/halacha-80.json flags=26 bilingual_segments=62/90
+- long_he_tiny_en at aligned_segments[3]/segment
+  HE: ע"פ התורה תקעו ממשלה בלק"ת סי' א' ע"ש כל התורה היטב וזה הכלל כי איש הישראלי נברא שיהי' לו ממשלה על המלאכים וזה התכלית והסוף של ישראל וכו' אך צריך לראות שתתקיים ממשלתו וכו' וזה ע"י 
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[5]/segment
+  HE: וזה ענין השליחות נמשך מבחי' זאת מחמת שהאדם בשרשו יש לו ממשלה על המלאכים כי בשביל זה נברא וזה תכליתו וסופו ומלאכים הם בחי' שלוחים כי מלאך פירושו שליח. ומחמת שהאדם נברא שיהי' לו ממשל
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[7]/segment
+  HE: וע"כ אין שליח לדבר עבירה כי ע"י עבירה ח"ו הוא מתרחק מבחי' מקומו של עולם מבחי' כסא הכבוד. כי האדם מצד שורש נמשתו הוא בבחי' מקומו של עולם בחי' כסא הכבוד שמשם חצובה נמשתו כנ"ל. אבל שם
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[9]/segment
+  HE: וע"כ אין שליחות לעכו"ם כי העכו"ם בוודאי אין בו כח להגביה בחי' המקום לבחי' למעלה מהמקום לבחי' מקומו של עולם שזהו עיקר עבודת איש הישראלי בזה העולם. אב להעכו"ם אין לו כח לזה ע"כ אין ב
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[11]/segment
+  HE: כי כלל עבודת האדם בזה העולם הוא בחי' שליחות כי האדם נשתלח מלמעלה ממקור שנחצבה נשמתו משם מבחי' כסא הכבוד שהוא למעלה מהמקום, וירד לזה העולם שהוא במקום ובזמן ונתלבש בזה הגוף שלו. וכל 
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[13]/segment
+  HE: וע"כ בכל התורה שלוחו של אדם כמותו כי כל עבודת האדם בזה העולם צריך לעשות ע,פ התורה כדי שיקשר מקומו לבחי' למעלה מהמקום ששם שרשו וע"כ שלוחו כמותו בוודאי כי למעלה מהמקום נתבטל השליחות 
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[14]/segment
+  HE: וע"כ מצוה בו יותר מבשלוחו כי אפילו כשהאדם עושה בעצמו הוא בסכנה גדולה שיזכה לעשות העבודה בשלימות שלא יבלבל אותו גשמיית מוקמו שנשתלח לשם מלמעלה, להעלותו לשרשו כנ"ל. מכ"ש כשעושה ע"י ש
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[16]/segment
+  HE: וע"כ בתפילה עיקר שלימותה דייקא ע"י שליח דהיינו החזן שהוא שליח ציבור. כי עיקר כלליות בבחי' למעלה מהמקום הוא ע"י תפילה שעי"ז זוכין לאחוז בכסא הכבוד שרשי הנשמות שהוא בחי' מקומו של עול
+  EN: [continued]
 
 ### SEVERE public/reader/chumash-lh/section-44.json flags=25 bilingual_segments=54/55
 - long_he_tiny_en at segments[1]/segment
@@ -2194,6 +1985,32 @@ Files needing review (excluding normal untranslated books): 1751
   HE: בְּעִנְיַן עִצְּבוֹן יָדַיִם וְכוּ', עַד שֶׁכִּמְעַט תֵּצֵא נַפְשׁוֹ חַס וְשָׁלוֹם לוּלֵא ה' עֶזְרָתָה לָנוּ שֶׁמֵּאִיר עָלֵינוּ מֵרָחוֹק בְּכֹחַ הַצַּדִּיקֵי אֱמֶת לְשַֹמֵּחַ נַפְ
   EN: [continued]
 
+### SEVERE public/reader/likutay-halachos/part-2/halacha-36.json flags=25 bilingual_segments=70/86
+- tiny_he_long_en at aligned_segments[1]/segment
+  HE: אות א
+  EN: This is the aspect of Kri'as HaTorah after tefillah. Tefillah = mikra kodesh [holy calling] that calls and reveals the Ratzon [Divine Will] — that everything is governed only by Hi
+- tiny_he_long_en at aligned_segments[4]/segment
+  HE: אות עא
+  EN: This is the aspect of Hagbahas HaTorah [raising the Torah] after the reading — when we raise the Torah and the custom is to purchase this honor at great cost (Shulchan Aruch, Siman
+- long_he_tiny_en at aligned_segments[6]/segment
+  HE: ועל-כן עקר קדשת ארץ ישראל נמשך על ידי קדשת התענית, כי זה ידוע שעקר קדשת ארץ ישראל נמשך מבית המקדש מקדשי קדשים ששם תכלית הקדשה העליונה של כל העשר קדשות שבארץ ישראל. כי קדשי קדשים מק
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[8]/segment
+  HE: וזה בחינת ברכת הראיה, בחינת שהחינו וקימנו והגיענו לזמן הזה שמברכין מזמן לזמן דיקא, כגון הרואה את חברו לאחר זמן שהוא לאחר שלשים יום שהוא שעור חדש. וכן על פרי המתחדש מזמן לזמן משנה ל
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[9]/segment
+  HE: כי עקר הבריאה היתה בשביל כבודו יתברך שהוא רצונו, דהינו לעשות רצונו יתברך, כי הכבוד הוא הרצון, כמו שאמרו רבותינו זכרונם לברכה רצונו של אדם זהו כבודו. וזה עקר עבודת האדם כל ימי חייו 
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[10]/segment
+  HE: וזה בחינת גדל מעלת השלום, וזהו בחינת גדל מעלת ארץ ישראל וירושלים ובית המקדש ובית קדשי קדשים שהם בחינת שלום כנ"ל, כי ה' יתברך ברא העולם בשנויים רבים לאין מספר, והשנויים כלולים בבחינ
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[11]/segment
+  HE: כי השנויים הם בבחינת זמן, כמו שרואים בחוש רבוי השנויים שבין הזמנים כמו שכתוב ובתבונה משנה עתים ומחליף את הזמנים וכו', כי בזמן זה יום, ובזמן זה לילה. וכן שנויים שבין קיץ וחרף ושאר ה
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[13]/segment
+  HE: ועקר החיות נמשך על ידי אחדות וחבור בחינת שלום, דהינו על ידי שנכללים כל השנויים באחד, שזה זוכין על ידי התורה הקדושה. כי עקר החיות הוא חבור הנשמה והגוף שהם שני הפכים והם משנים זה מזה
+  EN: [continued]
+
 ### SEVERE public/reader/likutay-halachos/part-3/halacha-6.json flags=25 bilingual_segments=82/106
 - tiny_he_long_en at aligned_segments[1]/segment
   HE: הלכה ו
@@ -2220,30 +2037,30 @@ Files needing review (excluding normal untranslated books): 1751
   HE: אות ז
   EN: And therefore, through the Tzadik and Shabbos, the eyes are opened. And one merits to look at oneself regarding all the middos [character traits] — how one holds by them. For all t
 
-### SEVERE public/reader/likutay-halachos/part-4/halacha-6.json flags=25 bilingual_segments=72/90
-- hebrew_in_english_field at segments[22]/segment
-  HE: אות יא
-  EN: 2 שִׁירוּ-לוֹ זַמְּרוּ-לוֹ שִׂיחוּ בְּכָל-נִפְלְאוֹתָיו
-- hebrew_in_english_field at segments[32]/segment
-  HE: אות טו וזה בחי' י"ב בדיקות הסכין כנגד י"ב אבני יעקב וכו'. וזה בחי' פגימת הסכין כפגימת המזבח שממתיק הדין ע""י בחי' ק"ק שמשם נמשך ההמתקה והתיקון של כל הקרבנות כולם. וע"כ אסור שהייה ו
-  EN: 4 דִּרְשׁוּ יי וְעֻזּוֹ בַּקְּשׁוּ פָנָיו תָּמִיד
-- hebrew_in_english_field at segments[35]/segment
-  HE: אות טז ועתה מובן קצת דברי רז"ל (פסחים פ' ע"פ ד' קי"ז) שאמרו ע"פ מושיבי עקרת הבית עשאוני בניך כחולדה זו שדרה בעיקרי בתים ופרש"י בעוונות ישראל. כי ע"י עוונות ישראל מתגברת ההעלמה שהיא
-  EN: 5 זִכְרוּ נִפְלְאוֹתָיו אֲשֶׁר-עָשָׂה מֹפְתָיו וּמִשְׁפְּטֵי-פִיו
-- hebrew_in_english_field at segments[41]/segment
-  HE: אות יח וזה בחי' פרשת פרה שקורין אחר פורים וכתב אדמו"ר ז"ל (בסי' ע"ד בל"ת) שבתחלה הוא פור ואח"כ נעשה פרה. ולכאורה מה שייכות פור לפרה. אך ע"פ הנ"ל שע"י הפור רצה לפגום בהגורל של יוה"כ
-  EN: 7 הוּא יי אֱ-לֹהֵינוּ בְּכָל-הָאָרֶץ מִשְׁפָּטָיו
+### SEVERE public/reader/likutay-halachos/part-4/halacha-91.json flags=25 bilingual_segments=62/90
 - long_he_tiny_en at aligned_segments[3]/segment
-  HE: וזה בחי' שחיטה. כי עיקר מצות שחיטה הוא בשביל תיקון הנפש שבחי להעלותו מחי לאדם שהוא בחי' הדעת. כי הניצוצות והנפשות שבחיות ובהמות ועופות הם גלגולי נפשות אדם שנפלו בעונותיהם צבחי' אדם
+  HE: וזה בחי' איסור גלוח הפאות והזקן שהם השערות הסמוכין להפנים. כי מלכות חכמה תתאה הנאמר במאמר הנ"ל היא בחינת שערות בחי' שיעורא דאתוון דאוריית' כמבואר שם היטב במאמר הנ"ל, שע"י אלו השערו
   EN: [continued]
 - long_he_tiny_en at aligned_segments[5]/segment
-  HE: וע"כ התיקון ע"י שחיטה. כי הסכין והחרב של שחיטה זה בחי' מחלוקת שנקרא חרב כ"ש חרב פתחו רשעים ופרש"י מחלוקת. עי תיקון אמונת חכמים הוא ע"י מחלוקת (כמבואר בהתורה הנ"ל) שע"י המחלוקת שבין
+  HE: וע"כ עיקר הדת ישראל ועיקר היהדות תלוי בזקן ופאו תובהם ניכר היהודי כי הוא מזרע בירך ה' מזרע ישראל. ומ ישרוח אחרת עמו חס ושלום ורוצה לכפור חס ושלום באלקי ישראל תחלת הכפירה הוא שמשליך
   EN: [continued]
 - long_he_tiny_en at aligned_segments[7]/segment
-  HE: ועיקר תיקון ושלימות הסכין בלי פגם הוא בחודו של סכין שהוא חותך הסימנים. זה בחי' גמר העצה שתהיה כתקנה באמת לאמתו שהוא בחי' חיתוך ההלכה בחי' פסק הלכה כמו שרגיל זה הלשון בדרז"ל שחותכין
+  HE: ועיקר החסד שעל ידו חותכין את המלכות מן הד' מלכיות כנ"ל נמשך ע"י תוכחה שע"י תוכחה נתגלה חסד. והתוכחה הוא כפי התורה והתפלה של כ"א וא' כפי העזות של כ"א ואחד וכו' כמבואר היטב שם במאמר 
   EN: [continued]
 - long_he_tiny_en at aligned_segments[9]/segment
-  HE: וזה בחי' י"ב בדיקות הסכין כנגד י"ב אבני יעקב שנכללו באבן אחד. שזה זוכין ע"י תיקון אמונת חכמים שנעשה ע"י ריבוי הספרים שנעשין ע"י תיקון המחלוקת שמשם שלימות הסכין בלי פגם (וכמבואר כל 
+  HE: וע"כ עיקר השלש רגלים תלויים בחכמי הדור שהם זקני הדור כשרז"ל אשר תקראו אתם במועדם, אתם אפילו שוגגים וכו' כי עליית המלכות ברגלים לאור הפנים, זה תלוי בזקנים דייקא כי הזקן הוא בחינת או
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[10]/segment
+  HE: כי הזקנים והחכמים יודעים לשמוראת חודש האביב שיהיה במועדו והם מעברים שנים וקובעים חדשים שבהם תלויים תיקון המועדות כולם כי החדשים הם י"ב. וכללותם י"ג. וזה בחי' סוד העיבור שהוא חודש ה
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[13]/segment
+  HE: וזה בחי' ד' פרשיות שקורין קודם פסח שהוא ראש לשלש רגלים. שאז התחלת התגלות אלקותו ית' שנתגלה לישראל על ידי יציאת מצרים וקריעת ים סוף וכו'. כי ארבע פרשיות הם כנגד בחי' מלכות שהיא בחינ
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[14]/segment
+  HE: וזה בחי' פרשת שקלים שקורין תחלה. זה בחי' צדקה בחי' חסד הנ"ל. שעל ידו קוצרין וחותכין את המלכות הנ"ל מן הארבע מלכיות. בבחי' זרעו לכם לצדקה וקצרו לפי חסד כנ"ל במאמר הנ"ל. פרשת זכור זה
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[17]/segment
+  HE: וכל אלו הד' פרשיות שעל ידם חותכין המלכות מד' מלכיות. ואח"כ עולה לאור הפנים בשלש רגלים. זה בחי' ארבעה בנים המבוארים בממאר הנ"ל שהם בחינת המלכות שהיא בחי' ד' כ"ש שם. פרשת שקלים שהוא 
   EN: [continued]
 
 ### SEVERE public/reader/likutay-halachos/part-7/halacha-38.json flags=25 bilingual_segments=78/102
@@ -2272,6 +2089,110 @@ Files needing review (excluding normal untranslated books): 1751
   HE: אות ז
   EN: All of this flows from sins and transgressions — for when one transgresses a mitzvah, the counsel is damaged according to the mitzvah he has flawed — and accordingly he cannot rece
 
+### SEVERE public/reader/likutay-halachos/part-7/halacha-86.json flags=25 bilingual_segments=58/80
+- long_he_tiny_en at aligned_segments[3]/segment
+  HE: ע"פ התורה המתחלת דע שיש אמצעי (סי' קנ"ט) ע"ש כל התורה. והכלל כי יש שני מיני לימודים בהתורה הקדושה, יש לימוד של הצדיק האמת שעולה להשכינה שהיא אמצעי בינו ית' ובין העולם, ואז נעשה מהי
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[5]/segment
+  HE: וזה בחי' משא ומתן כי עיקר המו"מ הוא בשביל לברר ניצוצות הקדושים המלובשין בכל חפצי המו"מ כידוע. ועיקר הבירור הוא לברר הניצוצות הקדושים שהם בחי' נצוצי אותיות התורה הקדושה, לבררם מבחי'
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[7]/segment
+  HE: ועיקר הבירור מה שאנו צריכין להתייגע ולטרוח לבררם נמשך מאלו התורות שאינם זוכין לעלות להשכינה שהם נתפזרים באויר, אשר לפעמים נעשין מהם ל"ט מלאכות בחי' בזעת אפך וכו' כנ"ל. וע"כ צריכין 
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[9]/segment
+  HE: וא"א לברר אלו הנצוצות הקדושים מתוך הל"ט מלאכות כ"א כשמקשרים עצמן לצדיק הדור שהוא בחי' יוסף. כי יוסף הוא השליט הוא המשביר וכו' (בראשית מב9 שכל המכירות וקנינים שבעולם כולם נעשין ע"י 
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[11]/segment
+  HE: כי באמת כלהחיות של כל העולם ומלואו הוא רק מהתורה הקדושה כידוע כ"ש בראשית ברא אלהים את השמים ואת הארץ, בראשית זההתורה שנקראת ראשית חכמה (תהלים קיא), ובה ברא הש"י כל העולם ומלואו והי
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[12]/segment
+  HE: וע"כ עיקר הבירור והתיקון הוא ע"י הצדיק הודר שהוא בחי' יוסף כנ"ל. כי הצדיק לומד תורתו לשמה ולימודו עולה להשכינה ונמשכין על ידו כל ההשפעות שבעולם שפע רוחניות ושפע גשמיות וכו' כנ"ל. ו
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[14]/segment
+  HE: וע"כ כל אדם בשעת לימודו ועבודתו צריך שיקשר עצמו להצדיקים אמתיים שבדור. כי בוודאי לאו כלאדם זוכה שיהי' לימודו ועבודתו עולה להשכינה, ואזי מתפזרת באויר ויכולה להגיע לאיש שאינו כשר ויה
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[15]/segment
+  HE: נמצא שע"י הצדיק האמת נתבררים גם כל הלימודים של שאר העולם שאינם זוכין שיהי' לימודם עולה להשכינה כנ"ל. כי אצל הצדיק נעשה מלימודם ט"ל תורה היפך הל"ט מלאכות וכו' כנ"ל:
+  EN: [continued]
+
+### SEVERE public/reader/likutay-halachos/part-1/halacha-19.json flags=24 bilingual_segments=50/50
+- tiny_he_long_en at segments[1]/segment
+  HE: הלכה ב
+  EN: Therefore Tefillin must be written on the hide of a kosher animal specifically (Shulchan Aruch, Siman 32, Se'if 12). For the hide [or] is the aspect of the medameh [imaginative fac
+- tiny_he_long_en at segments[2]/segment
+  HE: אות א
+  EN: Therefore the hide must be from a kosher animal or wild beast specifically — from a species permitted for consumption — even from neveilos and treifos of those species — as long as
+- tiny_he_long_en at segments[4]/segment
+  HE: אות ב
+  EN: Also, the Tefillin must be sewn with sinews specifically. Even after placing the parshiyos inside the batim, one cannot receive the light until they are sewn with gidin [sinews] — 
+- tiny_he_long_en at segments[6]/segment
+  HE: אות ג
+  EN: This is the aspect of Me'aras HaMachpailah — doubled in couples: Adam and Chavah, Avraham and Sarah, etc. (Eiruvin 53a). The city is called "Kiryas Arba" — for the four couples. Th
+- tiny_he_long_en at segments[8]/segment
+  HE: אות ד
+  EN: Therefore one counts 49 days — the aspect of the filling of the moon: "V'hayah or halevanah k'or hachamah, v'or hachamah yih'yeh shiv'asayim" — "The light of the moon shall be like
+- tiny_he_long_en at segments[10]/segment
+  HE: אות ה
+  EN: Through the diminishing — the strengthening of "place" — the grip of the Sitra Achara was drawn; the primary darkness of night through diminishing the moon. Before, "the night woul
+- tiny_he_long_en at segments[12]/segment
+  HE: אות ו
+  EN: This is: "Whoever delights in Shabbos is given an inheritance without boundaries" — "above place," no narrowness — Yaakov's inheritance: "Ufaratzta yamah vakeidmah" . He was above 
+- tiny_he_long_en at segments[14]/segment
+  HE: אות ז
+  EN: Therefore on Shabbos at Minchah, saying "Va'ani sefilasi… eis ratzon," one wraps in tzitzis. Tzitzis are "above place," drawing great ratzon. This is tzitzis of wool — great mercy 
+
+### SEVERE public/reader/likutay-halachos/part-1/halacha-28.json flags=24 bilingual_segments=60/60
+- tiny_he_long_en at segments[1]/segment
+  HE: הלכה א
+  EN: This is known in the Kisvai [writings of the Arizal]: the secret of Ra'ava d'Ra'avin is a hidden, sealed, and concealed secret from the eyes of all. Even Moshe Rabbeinu did not att
+- tiny_he_long_en at segments[2]/segment
+  HE: אות א
+  EN: This is the aspect of the awakening from sleep. The essential awakening is at chatzos lailah [midnight]. This point of chatzos is very difficult to perceive — to the extent that ou
+- tiny_he_long_en at segments[10]/segment
+  HE: אות ב
+  EN: We pray: "Al tashlicheinu l'eis ziknah, kichlos kocheinu al ta'azveinu" — "Cast us not away in the time of old age; when our strength fails, forsake us not" — that we should not fa
+- tiny_he_long_en at segments[12]/segment
+  HE: אות ג
+  EN: Therefore one must wear Tefillin of Rabbeinu Tam — the Mochin drawn from the Tzaddikim who can enter the initial Tzimtzum of the Chalal HaPanui, sweeten the Din there, and reveal H
+- tiny_he_long_en at segments[15]/segment
+  HE: אות ד
+  EN: This is why "Uva l'Tziyon Go'el" is juxtaposed to Mizmor "Ya'ancha". It is explained in the Kavanos that Mizmor Ya'ancha is recited to give birth to the Mochin and shefa and draw t
+- tiny_he_long_en at segments[17]/segment
+  HE: אות ה
+  EN: Therefore Tefillin must be written on the hide of a kosher animal specifically . For the hide [or] is the aspect of the medameh [imaginative faculty] — the external garment of the 
+- tiny_he_long_en at segments[19]/segment
+  HE: אות ו
+  EN: This hide — the external vessel of the body — corresponds to the medameh — the external power of the intellect. The medameh is the animalistic power, the life-force of the animal a
+- tiny_he_long_en at segments[21]/segment
+  HE: אות ז
+  EN: The essential confusion of the medameh — which includes all foreign thoughts, evil fantasies, philosophical inquiries, questions, kefiros, apikorsus, and all varieties of thoughts 
+
+### SEVERE public/reader/likutay-halachos/part-1/halacha-7.json flags=24 bilingual_segments=52/52
+- tiny_he_long_en at segments[2]/segment
+  HE: אות א
+  EN: And this is the aspect of nitteylas yadayim shacharis — the washing of the hands in the morning upon rising from sleep. For day and night correspond to the aspect of Adam and Chava
+- tiny_he_long_en at segments[5]/segment
+  HE: אות ב
+  EN: And this is the aspect of Rosh Hashanah, the aspect of the blowing of the shofar — which is the aspect of the awakening from sleep, as is explained in the Kavanos — that on Rosh Ha
+- tiny_he_long_en at segments[7]/segment
+  HE: אות ג
+  EN: And this is the aspect of the yahrzeit — which is the day on which one's father or mother died — when one says Kaddish (Shulchan Aruch, Yoreh Daya 376:5, in the Rema) and fasts on 
+- tiny_he_long_en at segments[9]/segment
+  HE: אות לד
+  EN: And therefore, this is practiced each year on the day that one's father or mother died. For the cycles of the year — that Hashem yisbarach revolves and turns the spheres each year 
+- tiny_he_long_en at segments[11]/segment
+  HE: אות ה
+  EN: And this is what our Sages said (brachos 15a): "Whoever relieves himself, and washes his hands, and dons tefillin, and recites Krias Shema, and prays — it is as if he accepted the 
+- tiny_he_long_en at segments[13]/segment
+  HE: אות ו
+  EN: And this is the aspect of the morning washing: that one draws pure waters drawn from the aspect of the mikveh. And through this, one purifies his hands — which are the aspect of th
+- tiny_he_long_en at segments[15]/segment
+  HE: אות ז
+  EN: And therefore, one must rise at midnight — to break the sleep — to break the aspect of darkness and night — which is the aspect of the intensity of the exile that is compared to ni
+- tiny_he_long_en at segments[17]/segment
+  HE: אות ח
+  EN: And therefore, the redemption was at midnight specifically — that is, He broke the night and the darkness, which are the aspect of the wisdom of nature — and revealed hashgachah in
+
 ### SEVERE public/reader/likutay-halachos/part-2/halacha-43.json flags=24 bilingual_segments=72/78
 - tiny_he_long_en at aligned_segments[1]/segment
   HE: אות א
@@ -2296,32 +2217,6 @@ Files needing review (excluding normal untranslated books): 1751
   EN: [continued]
 - long_he_tiny_en at aligned_segments[15]/segment
   HE: וזה בחינת תפלת ערבית שתקן יעקב . כי יעקב הוא שלמות האבות והוא עקר התקון של חטא אדם הראשון שפגם בבחינת החובלים הנ"ל כנ"ל. כי אברהם התחיל להמשיך בחינת הנעם על ידי רבוי החסד שעשה, כי 
-  EN: [continued]
-
-### SEVERE public/reader/likutay-halachos/part-4/halacha-5.json flags=24 bilingual_segments=66/82
-- hebrew_in_english_field at segments[1]/segment
-  HE: אות א
-  EN: 1 לַמְנַצֵּחַ מַשְׂכִּיל לִבְנֵי-קֹרַח
-- long_he_tiny_en at aligned_segments[2]/segment
-  HE: ע"פ התורה דרשו ה' ועוזו בסי' ל"ז ע"ש שמדבר שם מענין שחיטה ע"ש באות וא"ו מ"ש שם. וזהו הזהרו בוורידין כר"ע כי הדם הוא הנפש שבא בגלגול וצריך השוחט לכוין להעלות הנפש שבדם גם עיקר חסרון
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[3]/segment
-  HE: וזה בחי' ה' הלכות שחיטה כנגד ה' בחי' שיש לנפש שהם בחי' ה' דמים בחי' ה' אותיות מנצפ"ך כמובא שם בהתורה הנ"ל שכ"ז צריכין לתקן ע"י השחיטה וע"כ הם ה' הלכות שחיטה שהיא דרסה וכו' כנגד ה' 
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[5]/segment
-  HE: וזה בחי' מה שהשוחט צריך להראות סכינו לחכם כשרז"ל כי עיקר תיקון השחיטה שהוא להעלות הנפש הוא ע"י החכם בתורה דייקא כי הנפש דקדושה הוא בחי' חכמת התורה (כמבואר שם בהתורה הנ"ל כ"פ) ע"כ א
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[6]/segment
-  HE: וע"כ שחיטת נכרי נבילה אפילו אינו עע"א. כי תןקון השחיטה הוא להעלות הנפש שהוא בחי' תורה. ע"כ א"א לעשות ליקון זה אלא ע"י בר ישראל שיש לו חלק בתורה. אבך לא ע"י עכו"ם וכן ישראל מומר וכו
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[8]/segment
-  HE: וזה בחי' אותו ואת בנו לא תשחטו ביום אחד. כי באמת כל הנפשות שבבהמות וחיות ועופות הם נפשות אדם ממש שנתגלגלו בהם (כמובן בהתורה הנ"ל ובשאר מקומות) וזה עיקר תיקון השחיטה להעלות הנפש שבח
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[9]/segment
-  HE: וז"ש בק"ש והיו הדברים האלה אשר אנכי מצוך היום על לבבך ושננתם לבניך שנסמך ושננתם לבניך שנסמך ושננתם לבניך לאשר אנכי מצוך היום כי שניהם אחד, כי אשר אנכי מצוך היום, היום דייקא. זה אזה
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[11]/segment
-  HE: וזהו בחי' איסור אותו ואת בנו שלא לשוחטם ביום אחד. כי כמו שבבני אדם צריכין לברר מיום ליום דייקא ומדור לדור קייקא כמו כן בבהמות וחיות וכו' צריכין בירורים חדשים בכל יום ובכל דור ודור 
   EN: [continued]
 
 ### SEVERE public/reader/likutay-halachos/part-4/halacha-72.json flags=24 bilingual_segments=66/84
@@ -2506,31 +2401,83 @@ Files needing review (excluding normal untranslated books): 1751
   HE: אות טו
   EN: And in truth they do not speak with knowledge. For everything has its time and season — for every purpose [Ecclesiastes 3:1]. For who compels him to study this [particular] book? A
 
-### SEVERE public/reader/likutay-halachos/part-8/halacha-57.json flags=23 bilingual_segments=62/76
-- hebrew_in_english_field at segments[12]/segment
-  HE: נמצא שכלל כל המצוות הוא בשביל להמתיק הצמצומים והדינים כנ"ל והעיקר תלוי בממון ששם כל הצמצומים כנ"ל. וע"כ צריין לפזר ממון בשביל כל מצוה ומצוה כ"ש אמת קנה וכמובא בדברי ריבונו ז"ל במ"א
-  EN: 11 וְאַתָּה יי חָנֵּנִי וַהֲקִימֵנִי וַאֲשַׁלְּמָה לָהֶם
-- hebrew_in_english_field at segments[18]/segment
-  HE: אות ח וע"כ אין תקנה לגזילה כ"א כשמשיב את הגזדילה לבעליו כ"ש והשיב את הגזילה וכו' וכל זמן שאינו משיב את הגזילה לבעליואין לו תקנה בשום תשובה בעולם. כי כל התשובות של כל החטאים הוא ע"י
-  EN: 13 וַאֲנִי בְּתֻמִּי תָּמַכְתָּ בִּי וַתַּצִּיבֵנִי לְפָנֶיךָ לְעוֹלָם
-- hebrew_in_english_field at segments[21]/segment
-  HE: וזה בח'י כל הקרבנות שהיו בבימה"ק בשבי לכפרה על נונות, כי הבהמ"ק שם מאיר השכל הכולל בחי' אבן שתי' שהי' בבהמ"ק וע"י שהי' האדם מביא קרבן מיגיע כפו מממונו לתוך הביהמ"ק עי"ז הי' מעלה ומ
-  EN: 14 בָּרוּךְ יי אֱ-לֹהֵי יִשְׂרָאֵל מֵהָעוֹלָם וְעַד הָעוֹלָם אָמֵן וְאָמֵן
-- hebrew_in_english_field at segments[25]/segment
-  HE: וזה בחי' גזל ואינו יודע למי גזל יעשה מהן צרכי רבים. כי מאחר שאינו יודע את מי גזל ואעפ"כ הוא חפץ לתקן חטאו ע"כ נתנו לו חז,ל עצה לעשות צרכי רבי םכי ע"י שיעשה צרכי רבים שהם נכללים יחד
-  EN: 1 לַמְנַצֵּחַ מַשְׂכִּיל לִבְנֵי-קֹרַח
-- hebrew_in_english_field at segments[31]/segment
-  HE: אות יב ועיקר הדבר תלוי ברצון ואהבה כי א"א להכלל שם בבחי' אבן שתי' ק"ק כ"א ע"י בחי' אהבה וכלליות כנ"ל, וע"י צריך שיהי' המכריה ברצון טוב ובדיעה מיושבת כי עיקר הכלייות שם בבחי' אבן שת
-  EN: 3 צָמְאָה נַפְשִׁי לֵא-לֹהִים לְאֵל חָי מָתַי אָבוֹא וְאֵרָאֶה פְּנֵי א-ל
-- hebrew_in_english_field at segments[36]/segment
-  HE: אות יד וזה בחי' מה שגזל הגר שמת ואין לו יורשים צריך להחזיר הגזילה לכהנים בזמן שביהמ"ק קיים וכו' כמבואר הדין בגמ' כי הכהן איש חסד והוא ממתיק כל הדינים שהם כל הצמצומים כי הכהן מקבל מ
-  EN: 5 אֵלֶּה אֶזְכְּרָה וְאֶשְׁפְּכָה עָלַי נַפְשִׁי כִּי אֶעֱבֹר בַּסָּךְ אֶדַּדֵּם עַד-בֵּית א-ל בְּקוֹל-רִנָּה וְתוֹדָה הָמוֹן חוֹגֵג
-- tiny_he_long_en at aligned_segments[1]/segment
+### SEVERE public/reader/likutay-halachos/part-1/halacha-31.json flags=22 bilingual_segments=44/44
+- tiny_he_long_en at segments[1]/segment
+  HE: הלכה ג
+  EN: This is what is brought in the Kavanos regarding Pesach: then the illumination of Leah enters Rachel. This is the secret of the destruction of chametz on the night of the fourteent
+- tiny_he_long_en at segments[2]/segment
   HE: אות א
-  EN: For great and wondrous craftsmanship is needed for this — to elevate from the lowest depths upward, upward, to the aspect of above the Makom. For Hashem Yisborach desires the conti
-- tiny_he_long_en at aligned_segments[4]/segment
+  EN: Therefore, when Yehudah was born — from whom came forth Mashiach ben Dovid — Leah said (Bereishis 29): "Hapa'am odeh es Hashem" — "This time I will give thanks to Hashem." Therefor
+- tiny_he_long_en at segments[5]/segment
   HE: אות ב
-  EN: And therefore his punishment was that he was choked in his throat — as is explained above regarding the teaching of our Sages, zichronam livrachah: "Behold, one who chokes his fell
+  EN: This is what our Sages said (Pesachim 56a) regarding Baruch Shaim Kevod Malchuso Li'Oalam Va'ed — that Yaakov said it before his histalkus. As they expounded on the verse (Bereishi
+- tiny_he_long_en at segments[7]/segment
+  HE: אות ג
+  EN: After Kri'as Shma we say the berachah of geulah — the berachah of Emes V'Yatziv. There we mention the geulah of Mitzrayim and ask for the future geulah, as it says: "U'f'dai chin'u
+- tiny_he_long_en at segments[9]/segment
+  HE: אות ד
+  EN: This is also what is explained (in Siman 61, the Torah "Chadi Rabbi Shimon") [LM I:61]: through machlokes, a sefer is made — the aspect of (Iyov 31): "V'saifer kasav ish rivi" — "T
+- tiny_he_long_en at segments[11]/segment
+  HE: אות ה
+  EN: As explained in the Torah "Uv'yom HaBikurim — Hastarah" : chiyus is drawn constantly from Chei HaChayim [the Living G-d], and the essential tikun is that through the Torah (which i
+- tiny_he_long_en at segments[13]/segment
+  HE: אות ו
+  EN: Therefore Tefillin (= Chayim = the Name of Hashem: "All peoples will see that the Name of Hashem is called upon you — these are Tefillin") must be sewn with sinews — to contract th
+- tiny_he_long_en at segments[15]/segment
+  HE: אות ז
+  EN: "Vayihyu chayei Sarah me'ah shanah v'esrim shanah v'sheva shanim, shnei chayei Sarah" — "The life of Sarah was one hundred years and twenty years and seven years, the years of the 
+
+### SEVERE public/reader/likutay-halachos/part-1/halacha-4.json flags=22 bilingual_segments=48/48
+- tiny_he_long_en at segments[2]/segment
+  HE: אות א
+  EN: And all this takes place each morning, when at Shacharis the ayeles hashachar ascends — which is the aspect of the ascent of the morning pillar [amud hashachar] — which is the aspe
+- tiny_he_long_en at segments[4]/segment
+  HE: אות ב
+  EN: And this is the aspect of kimas chatzos — that one must muster great strength to rise at midnight, to mourn greatly over the destruction of the Beis HaMikdash. And through this is 
+- tiny_he_long_en at segments[6]/segment
+  HE: אות ג
+  EN: For one must banish sleep from his eyes and slumber from his eyelids — to wander, to seek, and to multiply prayer and supplications — that he should merit to find the true Tzadik w
+- tiny_he_long_en at segments[8]/segment
+  HE: אות ד
+  EN: And therefore, it is forbidden to wipe with the right hand (Shulchan Aruch, Orach Chaim 3:10) — because one ties tefillin with it. For the chochmos chitzoniyos, through which kefir
+- tiny_he_long_en at segments[10]/segment
+  HE: אות ה
+  EN: And this is the aspect of the dispute between Beis Shammaye and Beis Hillel (Shabbos 21b). Beis Shammaye say: one decreases each day. And Beis Hillel say: one increases each day. F
+- tiny_he_long_en at segments[12]/segment
+  HE: אות א
+  EN: And this is the aspect of: "For a candle is a mitzvah, and the Torah is light, and the way of life is the rebuke of discipline" (Proverbs 6:23). For it is explained there in the To
+- tiny_he_long_en at segments[14]/segment
+  HE: אות ב
+  EN: And this is the aspect of why the poor go around on Chanukah to receive ma'os Chanukah [Chanukah money]. This is the aspect of the illumination of the Face from above — that Hashem
+- tiny_he_long_en at segments[17]/segment
+  HE: אות ד
+  EN: And this is what he dreamed (Genesis 37:7): "And behold, we were binding sheaves [alumim] in the midst of the field." The meaning of alumim is bundles/knots. That is, the aspect of
+
+### SEVERE public/reader/likutay-halachos/part-1/halacha-6.json flags=22 bilingual_segments=46/46
+- tiny_he_long_en at segments[1]/segment
+  HE: אות ט
+  EN: And when the da'as mentioned above departs — that is, when one does not know, G-d forbid, that everything is conducted only through hashgachah from Hashem yisbarach alone, and one 
+- tiny_he_long_en at segments[3]/segment
+  HE: אות י
+  EN: And therefore, one must rise at midnight — to break the sleep — to break the aspect of darkness and night — which is the aspect of the intensity of the exile that is compared to ni
+- tiny_he_long_en at segments[5]/segment
+  HE: אות יא
+  EN: And this is the aspect of: "And he divided against them" (Genesis 14:15) — said regarding Avraham when he pursued the kings. For Avraham revealed the hashgachah of Hashem yisbarach
+- tiny_he_long_en at segments[7]/segment
+  HE: אות יב
+  EN: And this is the aspect of Shabbos HaGadol — that the Shabbos before Pesach is called Shabbos HaGadol — on account of the miracle, etc. For the essential miracles and wonders that o
+- tiny_he_long_en at segments[9]/segment
+  HE: אות יג
+  EN: And this is the aspect of "a night of watching" (Exodus 12:42) — which is guarded from the harmful spirits. For the essential harmful spirits are from the aspect of the wisdom of n
+- tiny_he_long_en at segments[11]/segment
+  HE: אות יד
+  EN: And this is the aspect of (Pesachim 5a): "The removal of chametz is only through burning." For: "from the fire they came forth, and the fire shall consume them" (Ezekiel 15:7). For
+- tiny_he_long_en at segments[14]/segment
+  HE: אות טו
+  EN: And this is the aspect of the two tears that [the Holy One, blessed be He] drops into the Great Sea — as stated above in the discourse of our Rebbe mentioned above. For the tears a
+- tiny_he_long_en at segments[16]/segment
+  HE: אות טז
+  EN: And this is the aspect of the wine of the Four Cups. For wine contains two aspects — as our Sages said (Yoma 76b): "If he merits — it makes him a head [rosh]; if he does not merit 
 
 ### SEVERE public/reader/likutay-halachos/part-2/halacha-16.json flags=22 bilingual_segments=64/80
 - long_he_tiny_en at aligned_segments[5]/segment
@@ -2558,83 +2505,57 @@ Files needing review (excluding normal untranslated books): 1751
   HE: וזה בחינת כוס של ברכת המזון שצריך יוד [עשרה] דברים, כי הנקדה הנ"ל הוא בחינת יוד, בחינת קדש, כי הכוס הוא בחינת מלכות פה כידוע בחינת כוס ישועות אשא הנאמר בדוד המלך עליו השלום . ושם ב
   EN: [continued]
 
-### SEVERE public/reader/likutay-halachos/part-2/halacha-3.json flags=22 bilingual_segments=84/102
-- hebrew_in_english_field at segments[6]/segment
-  HE: כי כשבטחונו חזק ביותר בה' יתברך אזי הוא עושה כלי להשפע, דהינו גבול וזמן על ידי הבטחון לבד שהוא בחינת כח הראות בחינת אור הישר ואור החוזר וכנ"ל, ועקר המשא ומתן הוא רק מחמת חלישות הבט
-  EN: 10 עֻזּוֹ אֵלֶיךָ אֶשְׁמֹרָה כִּי-א-לֹהִים מִשְׂגַּבִּי
-- hebrew_in_english_field at segments[12]/segment
-  HE: נמצא, שישראל שיש להם אמונה ובטחון שלם בה' יתברך זהו בחינת כח הראות שהוא בחינת אור הישר ואור החוזר, דהינו שאור עיני דעתם הולך בישר לה' יתברך שמאמינים במציאותו יתברך בגדלתו וברוממותו
-  EN: 12 אַל-תַּהַרְגֵם פֶּן-יִשְׁכְּחוּ עַמִּי הֲנִיעֵמוֹ בְחֵילְךָ וְהוֹרִידֵמוֹ מָגִנֵּנוּ אֲדֹנָי
-- hebrew_in_english_field at segments[17]/segment
-  HE: כי מה שאנו מצמצמין דעתנו להאמין בהשגחתו הפרטית אף על פי שהוא מרומם ומנשא מאד מאד. זה הצמצום הוא בחינת שם ה', כי שם הוא בחינת מלכות בחינת צמצום כידוע . אבל העובדי כוכבים הכופרים בהש
-  EN: 14 כַּלֵּה בְחֵמָה כַּלֵּה וְאֵינֵמוֹ וְיֵדְעוּ כִּי-א-לֹהִים מֹשֵׁל בְּיַעֲקֹב לְאַפְסֵי הָאָרֶץ סֶלָה
-- hebrew_in_english_field at segments[20]/segment
-  HE: אות ו וזה בחינת עמר שעורים, בחינת ספירת העמר כדי להמשיך השפע בגבול ובזמן. וזה בחינת קבלת התורה בשבועות. כי התורה הוא בחינת כח הראות בחינת טנת"א (טעמים, נקדות, תגים, אותיות) בחינת ב
-  EN: 15 וְיָשׁוּבוּ לָעֶרֶב יֶהֱמוּ כַכָּלֶב וִיסוֹבְבוּ עִיר
-- hebrew_in_english_field at segments[29]/segment
-  HE: אות י ועל-כן נעורים כל הלילה בשבועות לתקן את העינים כדי לכון עינינו לה' יתברך לבד על ידי עסק התורה בכל הלילה שהוא בחינת עינים, שזהו עקר יסוד כל התורה כלה כנ"ל. וכמו שכתוב: עיניך לנ
-  EN: 18 עֻזִּי אֵלֶיךָ אֲזַמֵּרָה כִּי-א-לֹהִים מִשְׂגַּבִּי א-להי חַסְדִּי
-- hebrew_in_english_field at segments[33]/segment
-  HE: אות יב
-  EN: 1 לַמְנַצֵּחַ עַל-יְדוּתוּן לְאָסָף מִזְמוֹר
-- hebrew_in_english_field at segments[39]/segment
-  HE: אות יד וזה בחינת מחלקת קרח שאמרו רבותינו זכרונם לברכה שמחלקתו היה ששאל: טלית שכלה תכלת חיבת בציצית? אמר לו הן! התחיל משחק עליו: מה טלית של מין אחר חוט אחד של תכלת פוטרה, קל וחמר וכ
-  EN: 3 בְּיוֹם צָרָתִי אֲדֹנָי דָּרַשְׁתִּי יָדִי לַיְלָה נִגְּרָה וְלֹא תָפוּג מֵאֲנָה הִנָּחֵם נַפְשִׁי
-- hebrew_in_english_field at segments[42]/segment
-  HE: אות טו ועל-כן אין המצוה נקראת אלא על מי שגומרה , כי דיקא בעת הגמר אז זוכין לפעל פעלתו בשלמות לכלל בו יתברך. וזהו בכלליות ובפרטיות בכל אדם. וכן בכלליות העולם, כי כל אדם אפלו כשזוכה 
-  EN: 4 אֶזְכְּרָה א-לֹהִים וְאֶהֱמָיָה אָשִׂיחָה וְתִתְעַטֵּף רוּחִי סֶלָה
-
-### SEVERE public/reader/likutay-halachos/part-4/halacha-55.json flags=22 bilingual_segments=54/70
-- hebrew_in_english_field at segments[2]/segment
-  HE: אות א ענין איסור מאכלי עכו"ם דהיינו איסור בישולי עכו"ם שאפי' מאכל היתר שנתבשל ע"י עכו"ם אסור באכילה. על פי מ"ש רבינו ז"ל במאמר תקעו בחודש שופר המתחיל מתוכחה ע"ש היטב (בלק"ת סי' ח')
-  EN: 8 הַלְעוֹלָמִים יִזְנַח אֲדֹנָי וְלֹא-יוֹסִיף לִרְצוֹת עוֹד
-- hebrew_in_english_field at segments[4]/segment
-  HE: והנה הכלל שע"י מזונא דגופא נחלש מזונא דנשמתא. וא"כ לכאורה תמוה איך הותר לנו לאכול הלא ע"י מזונא דגופא נחלש מזונא דנשמתא חס ושלום. אך באמת ישראל קדושים כל אכילתם אפי' מאכל הגוף שלהם
-  EN: 9 הֶאָפֵס לָנֶצַח חַסְדּוֹ גָּמַר אֹמֶר לְדֹר וָדֹר
-- hebrew_in_english_field at segments[10]/segment
-  HE: אות ד וע"כ חנניה מישאל ועזרי' שנזהרו ממאכלי עכו"ם לא שלטה בהם אש כי מאכלי עכו"ם הם מסטרא דאש הקשה אש של גיהנם. וע"כ ע"י שנזהרו מזה לא שלטה בהם אש. וז"ש וריח נור לא עדת בהון. ריח די
-  EN: 11 וָאֹמַר חַלּוֹתִי הִיא שְׁנוֹת יְמִין עֶלְיוֹן
-- hebrew_in_english_field at segments[16]/segment
-  HE: אות ז וזה בחי' איסור יין נסך שגזרו חז"ל על סתם ייינם. ואפי' יין שלנו שנגע בו העכו"ם אסור בשתיה ובהנאה מדינא, על פי המאמר תקעו ג' הנזכר לעיל עיין שם היטב. כי מזונא דנשמתא ומזונא דגו
-  EN: 13 וְהָגִיתִי בְכָל-פָּעֳלֶךָ וּבַעֲלִילוֹתֶיךָ אָשִׂיחָה
-- hebrew_in_english_field at segments[25]/segment
-  HE: אות יא וזהו בחי' עיקר כל העבודות שלנו בכל ששת ימי המעשה. שאנו עוסקים לברר הטוב מן הרע הנאחז בששת ימי המעשה שהוא בי' עשיה ששם אחיזתם. ואנו צריכים לברר ולהעלות משם הטוב שהיה כבוש בעמ
-  EN: 16 גָּאַלְתָּ בִּזְרוֹעַ עַמֶּךָ בְּנֵי-יַעֲקֹב וְיוֹסֵף סֶלָה
-- long_he_tiny_en at aligned_segments[2]/segment
-  HE: ענין איסור מאכלי עכו"ם דהיינו איסור בישולי עכו"ם שאפי' מאכל היתר שנתבשל ע"י עכו"ם אסור באכילה. על פי מ"ש רבינו ז"ל במאמר תקעו בחודש שופר המתחיל מתוכחה ע"ש היטב (בלק"ת סי' ח') :
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[3]/segment
-  HE: והנה איתא שם כי יש מזונא דגופא ויש מזונא דנשמתא שהוא הריח. ועל ידי מזונא דגופא מגדילין חס ושלום עקב דס"א שעל ידו נחלש מזונ' דנשמתא שהוא היראה והריח. והתיקון לזה בחי' קול בחי' נשאו 
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[4]/segment
-  HE: והנה הכלל שע"י מזונא דגופא נחלש מזונא דנשמתא. וא"כ לכאורה תמוה איך הותר לנו לאכול הלא ע"י מזונא דגופא נחלש מזונא דנשמתא חס ושלום. אך באמת ישראל קדושים כל אכילתם אפי' מאכל הגוף שלהם
-  EN: [continued]
-
-### SEVERE public/reader/likutay-halachos/part-5/halacha-54.json flags=22 bilingual_segments=58/74
-- hebrew_in_english_field at segments[3]/segment
-  HE: ע"פ מ"ש בסי' ע"ב שיחות נפלאות כמה צריכין להתחזק בכל פעם כנגד היצה"ר ע"ש היטב כי יש כמה בחי' ביצה"ר. ובכל פעם שאדם מתעורר להש"י ורוצה לעשות איזה עובדא דקדושה בפרט להתקרב לצדיקי אמת 
-  EN: 13 חַטַּאת-פִּימוֹ דְּבַר-שְׂפָתֵימוֹ וְיִלָּכְדוּ בִגְאוֹנָם וּמֵאָלָה וּמִכַּחַשׁ יְסַפֵּרוּ
-- hebrew_in_english_field at segments[5]/segment
-  HE: אות ב וזה בחי' כי יקרא קן צפור לפניך בדרך.כי איתא בזוה"ק שזה מרמז על נשמות דאתתרכו מאתרייהו וכו'. וזה ידוע שכל התורה ותפילה ומע"ט שהאדם עוסק בהם בכולם הוא עוסק לברר ניצוצות קדושות.
-  EN: 14 כַּלֵּה בְחֵמָה כַּלֵּה וְאֵינֵמוֹ וְיֵדְעוּ כִּי-א-לֹהִים מֹשֵׁל בְּיַעֲקֹב לְאַפְסֵי הָאָרֶץ סֶלָה
-- hebrew_in_english_field at segments[17]/segment
-  HE: אות ח וזה בחי' מחלוקת קרח וכל עדתו שהי' אנשים גדולים מאד מאד בעלי השגה ורוה"ק כ"ש נשיאי עדה קריאי מועד וכו' ראשי ססנהדראות וכו'. ובפרט קרח שהי' גדול מכל הלווים כמבואר בכל הספרים ומ
-  EN: 18 עֻזִּי אֵלֶיךָ אֲזַמֵּרָה כִּי-א-לֹהִים מִשְׂגַּבִּי א-להי חַסְדִּי
-- hebrew_in_english_field at segments[21]/segment
-  HE: אות י
-  EN: 1 לַמְנַצֵּחַ עַל-יְדוּתוּן לְאָסָף מִזְמוֹר
-- hebrew_in_english_field at segments[27]/segment
-  HE: אות יב וזה בחי' האל תמים דרכו אמרת ה' צרופה מגן הוא לכל החוסים בו, לכל החוסים בו דייקא יהי' מי שיהי' מקטן ועד גדול ולמעלה מעלה מהגדול שבגדולים ולטה מטה מהפחות שבפחותים, לכולם התורה
-  EN: 3 בְּיוֹם צָרָתִי אֲדֹנָי דָּרַשְׁתִּי יָדִי לַיְלָה נִגְּרָה וְלֹא תָפוּג מֵאֲנָה הִנָּחֵם נַפְשִׁי
-- hebrew_in_english_field at segments[33]/segment
-  HE: אות טו וזה בחי' מה שנצטוו לאחר מחלוקת קרח ליקח המטות של כל נשיאי ישראל ומטה אהרן וכו' ויבא משה אל אהל העדות והנה פרח מטה אהרן לבית לוי וכו'. מטה הוא בחי' הבחירה שהוא בחי' מטה משה ש
-  EN: 5 אָחַזְתָּ שְׁמֻרוֹת עֵינָי נִפְעַמְתִּי וְלֹא אֲדַבֵּר
+### SEVERE public/reader/likutay-halachos/part-3/halacha-20.json flags=22 bilingual_segments=64/90
 - tiny_he_long_en at aligned_segments[1]/segment
   HE: אות א
-  EN: And through this very thing — that he looked at himself and saw that he is far from His glory Yisborach, etc., as stated — through this he merited the aspect of אַיֵּה, etc. And th
+  EN: And this is the aspect of all the korbanos [sacrifices] that are brought for atonement. For the korbanos are from animals, because the main beginning of the blemish is in the aspec
 - tiny_he_long_en at aligned_segments[4]/segment
   HE: אות ב
-  EN: The matter is: the King's Daughter is the aspect of the souls of Israel, called the King's Daughter — the aspect of "Hearken, O daughter, and see" (שִׁמְעִי בַת וּרְאִי), the aspec
+  EN: And perhaps this is the secret of what is written regarding the rectification of the kings who died, the aspect of the breaking of the vessels. When they begin to be rectified, the
+- tiny_he_long_en at aligned_segments[6]/segment
+  HE: אות ג
+  EN: And the main cause is the lack of proper counsel — that one does not merit complete and true aitzos and does not know how to conduct oneself or how to earn a living. And because of
+- tiny_he_long_en at aligned_segments[8]/segment
+  HE: אות ד
+  EN: And the aitzos are drawn from the depths, etc., and one needs to draw spiritual G-dliness into constrictions, etc., as above. And the matter of drawing spiritual G-dliness into con
+- tiny_he_long_en at aligned_segments[10]/segment
+  HE: אות ה
+  EN: For Hashem, yisbarach, gave man the power to create new creations. And even in the physical sense, we see this. For example, wheat — when one makes from it bread and loaves, the br
+- tiny_he_long_en at aligned_segments[12]/segment
+  HE: אות ו
+  EN: And had Adam HaRishon not sinned, the world would truly have been rectified immediately, as is known. But through the sin of Adam HaRishon and the sins of the generations, the worl
+- tiny_he_long_en at aligned_segments[14]/segment
+  HE: אות ז
+  EN: And the main rectification is Shabbos. For Shabbos protected Adam HaRishon. For on Shabbos there is no labor or constriction, for “on it He rested and was refreshed.” For Hashem, y
+- tiny_he_long_en at aligned_segments[16]/segment
+  HE: אות ח
+  EN: For the main purpose of all the constrictions is this physical earth, which is the ultimate physical constriction of all constrictions. And all constrictions must receive from ther
+
+### SEVERE public/reader/likutay-halachos/part-4/halacha-5.json flags=22 bilingual_segments=65/82
+- long_he_tiny_en at aligned_segments[2]/segment
+  HE: ע"פ התורה דרשו ה' ועוזו בסי' ל"ז ע"ש שמדבר שם מענין שחיטה ע"ש באות וא"ו מ"ש שם. וזהו הזהרו בוורידין כר"ע כי הדם הוא הנפש שבא בגלגול וצריך השוחט לכוין להעלות הנפש שבדם גם עיקר חסרון
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[3]/segment
+  HE: וזה בחי' ה' הלכות שחיטה כנגד ה' בחי' שיש לנפש שהם בחי' ה' דמים בחי' ה' אותיות מנצפ"ך כמובא שם בהתורה הנ"ל שכ"ז צריכין לתקן ע"י השחיטה וע"כ הם ה' הלכות שחיטה שהיא דרסה וכו' כנגד ה' 
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[5]/segment
+  HE: וזה בחי' מה שהשוחט צריך להראות סכינו לחכם כשרז"ל כי עיקר תיקון השחיטה שהוא להעלות הנפש הוא ע"י החכם בתורה דייקא כי הנפש דקדושה הוא בחי' חכמת התורה (כמבואר שם בהתורה הנ"ל כ"פ) ע"כ א
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[6]/segment
+  HE: וע"כ שחיטת נכרי נבילה אפילו אינו עע"א. כי תןקון השחיטה הוא להעלות הנפש שהוא בחי' תורה. ע"כ א"א לעשות ליקון זה אלא ע"י בר ישראל שיש לו חלק בתורה. אבך לא ע"י עכו"ם וכן ישראל מומר וכו
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[8]/segment
+  HE: וזה בחי' אותו ואת בנו לא תשחטו ביום אחד. כי באמת כל הנפשות שבבהמות וחיות ועופות הם נפשות אדם ממש שנתגלגלו בהם (כמובן בהתורה הנ"ל ובשאר מקומות) וזה עיקר תיקון השחיטה להעלות הנפש שבח
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[9]/segment
+  HE: וז"ש בק"ש והיו הדברים האלה אשר אנכי מצוך היום על לבבך ושננתם לבניך שנסמך ושננתם לבניך שנסמך ושננתם לבניך לאשר אנכי מצוך היום כי שניהם אחד, כי אשר אנכי מצוך היום, היום דייקא. זה אזה
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[11]/segment
+  HE: וזהו בחי' איסור אותו ואת בנו שלא לשוחטם ביום אחד. כי כמו שבבני אדם צריכין לברר מיום ליום דייקא ומדור לדור קייקא כמו כן בבהמות וחיות וכו' צריכין בירורים חדשים בכל יום ובכל דור ודור 
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[13]/segment
+  HE: וע"כ עיקר התענית השלם אינו פחות מיום אחד. כמו תענית יוה"כ והתעניתים שגזרו רז"ל שכולם שיעורם יום א' וכן כל התעניתים שמקבלים על עצמן לתשובה כולם שיעורם לא פחות מיום א' כי עיקר תיקון 
+  EN: [continued]
 
 ### SEVERE public/reader/likutay-halachos/part-2/halacha-21.json flags=21 bilingual_segments=61/74
 - tiny_he_long_en at aligned_segments[1]/segment
@@ -2688,108 +2609,30 @@ Files needing review (excluding normal untranslated books): 1751
   HE: אות ו
   EN: Based on what our rebbe, whose light should shine, wrote — that the aspect of tamid (the daily offering) is the tikkun (rectification) of prayer, in the aspect of "the prayers were
 
-### SEVERE public/reader/likutay-halachos/part-3/halacha-42.json flags=21 bilingual_segments=50/66
-- hebrew_in_english_field at segments[8]/segment
-  HE: אות ג וזה בחינת חול המועד. כי מחמת שענין זה הוא מלחמה גדולה (כמובן שם בהתורה הנ"ל) שצריכין לזה בעל כח גדול שיוכל להתפלל תפילה הנ"ל עד שיכניע הסטרא אחרא שתקיא כל הקדושות וכו'. על כן
-  EN: 27 שָׂמוּ-בָם דִּבְרֵי אֹתוֹתָיו וּמֹפְתִים בְּאֶרֶץ חָם
-- hebrew_in_english_field at segments[14]/segment
-  HE: אות ו כי הצדיק הגדול אף על פי שבגודל כחו שמתפלל התפילה הנ"ל הוא מוציא מהסטרא אחרא כל הקדושות שבלעה עד שנעשין גם גרים כנ"ל. אף על פי כן בוודאי אלו הגרים והבעלי תשובה שמוציא מהסטרא א
-  EN: 29 הָפַךְ אֶת-מֵימֵיהֶם לְדָם וַיָּמֶת אֶת-דְּגָתָם
-- hebrew_in_english_field at segments[20]/segment
-  HE: אות ט וזה בחינת הדלקת נר חנוכה שהוא להמשיך אור הצדיקי אמת שיש להם רוח נבואה שזהו בחינת אור התורה שכלולה מכל המדריגות של נבואה שזהו בחינת אור בחינת כי נר מצוה ותורה אור וכן הצדיק נק
-  EN: 31 אָמַר וַיָּבֹא עָרֹב כִּנִּים בְּכָל-גְּבוּלָם
-- hebrew_in_english_field at segments[26]/segment
-  HE: אות יב וזה בחינת שנקרא חנוכה שהוא בחינת חנוכת הבית. כי עיקר שלימות כל התיקונים הנ"ל הם בבית המקדש כי עיקר יציאת מצרים שהיה על ידי תפילה בבחינת דין הנ"ל. שעל ידי זה נעשין גרים ונתגל
-  EN: 33 וַיַּךְ גַּפְנָם וּתְאֵנָתָם וַיְשַׁבֵּר עֵץ גְּבוּלָם
-- tiny_he_long_en at aligned_segments[1]/segment
-  HE: הלכה ד
-  EN: And this itself is the aspect of filling the blemish of the moon — for "the face of Yehoshua was like the face of the moon," etc. And the essential wisdom that one needs to receive
-- tiny_he_long_en at aligned_segments[2]/segment
-  HE: אות א
-  EN: And so the Torah was transmitted from generation to generation — from Yehoshua to the Elders, etc., until the Men of the Great Assembly, etc. — all of which is the aspect of the s'
-- tiny_he_long_en at aligned_segments[5]/segment
-  HE: אות ב
-  EN: And then, when the s'michah and all the tikkunim mentioned above existed, they knew how to give counsel to their souls — through the true Sages who held s'michah, for the essential
-- tiny_he_long_en at aligned_segments[7]/segment
-  HE: אות ג
-  EN: And through this one merits even now complete counsel, as mentioned. Therefore whoever truly wants to think about his eternal purpose — so that he should not be lost in his sins, e
-
-### SEVERE public/reader/likutay-halachos/part-5/halacha-63.json flags=21 bilingual_segments=50/64
-- hebrew_in_english_field at segments[3]/segment
-  HE: א זוה בחי' ג' שני ערלה. כי הם כנגד התלת מוחין שהם שלש מחיצות פרוסדות בפני תאוות ניאוף. כי מבוראר שם שיש מזונא דגופא ומזנוא דנשמתא. ועי מזונא דגופא נחלש מזונא דנשמתא וכן להיפך ע"י ש
-  EN: 17 שָׁלַח לִפְנֵיהֶם אִישׁ לְעֶבֶד נִמְכַּר יוֹסֵף
-- hebrew_in_english_field at segments[6]/segment
-  HE: אות ג' ויתפרו עלה תאנה ויעשו להם חגורות. חגורה זה בחי' תפילה בחי' חגור חרבך על ירך גבור. היינו שצריכין לחגור א"ע בכח גדול ובגבורה גדולה להתפלל תפילה בבחי' דין שהו אנקראת חרב בחי' ר
-  EN: 18 עִנּוּ בַכֶּבֶל רַגְלוֹ בַּרְזֶל בָּאָה נַפְשׁוֹ
-- hebrew_in_english_field at segments[9]/segment
-  HE: אות ד וזה בחי' נטע רבעי כ"ש ובשנה הרביעית יהי'כל פריו קדש הלולים לה' כי אחר השלש שני ערלה שאז שולט הס"א על הפירות ואז אסור לאכול הפירות לגמרי כדי שלא יתגבר מזונא דגופא ח"ו. ואחר אל
-  EN: 19 עַד-עֵת בֹּא-דְבָרוֹ אִמְרַת יי צְרָפָתְהוּ
-- hebrew_in_english_field at segments[15]/segment
-  HE: אות ז וזה בחי' קטורת ישמח לב. כי ע"י י"א סמני הקטורת זוכין לקול הנ"ל שהוא בחי' עשרה מיני נגינה שהם בחי' שמחה. כ"ש (תהלים צ"ב) עלי עשור ועלי נבל וגו' כי שמחתני ה' בפעליך. וע"כ נאמר 
-  EN: 21 שָׂמוֹ אָדוֹן לְבֵיתוֹ וּמוֹשֵׁל בְּכָל-קִנְיָנוֹ
-- hebrew_in_english_field at segments[23]/segment
-  HE: אות יא וזה בחי' (ר"ה א') ארבעה ראשי שנים הן כי בכל ר"ה אז התפילה בבחי' דין כנזכר במאמר הנ"ל לענין עיקר הר"ה. וכן בכל הד' ראשי שנים שהם ימי דין כי עיקר בירור הדינים הוא ע"י המוח שהו
-  EN: 24 וַיֶּפֶר אֶת-עַמּוֹ מְאֹד וַיַּעֲצִמֵהוּ מִצָּרָיו
-- hebrew_in_english_field at segments[29]/segment
-  HE: אות יד וזה בחי' הבכורה שלקח יעקב מעשו במרמה ע"י שהאכילהו מן האדום האדום הזה. כי הבכורה הוא בחי' דעת כי הבכור הוא ראשית בחי' ראשית דעת כמובא במ"א. וע"כ על ידי שהאכילהו מן האדם האדם 
-  EN: 26 שָׁלַח מֹשֶׁה עַבְדּוֹ אַהֲרֹן אֲשֶׁר בָּחַר-בּוֹ
-- hebrew_in_english_field at segments[32]/segment
-  HE: וזה בחי' כי שמע ה' כי שנואה אנכי ותקרא את שמו שמעון כי תקונו והמתקתו של שמעון שהוא תוקף הדין הוא ע"י התפילה בבחי' דין שעי"ז זוכין לתוכחה שאז אפילו כל העוונות מעלין ריח טוב וכו' כנ"
-  EN: 27 שָׂמוּ-בָם דִּבְרֵי אֹתוֹתָיו וּמֹפְתִים בְּאֶרֶץ חָם
-- tiny_he_long_en at aligned_segments[1]/segment
-  HE: אות ב
-  EN: And this is the dimension of "for all her household is clothed in crimson [shanim]" — that is, two [shnayim] — the dimension of doubling: "open you shall open, etc." — meaning that
-
-### SEVERE public/reader/likutay-halachos/part-7/halacha-39.json flags=21 bilingual_segments=78/100
-- hebrew_in_english_field at segments[2]/segment
-  HE: אות א ענין הרשאה שאין השליח יכול לתבוע את הלוה עד שיבא בהרשאה שיכתוב לו דון וזכה ואפיק לנפשך וכל דמתעני לך מן דינא עלי הדר:
-  EN: הלכות העושה שליח לגבות חובו, הלכה ג
-- tiny_he_long_en at aligned_segments[1]/segment
-  HE: אות א
-  EN: As Dovid Hamelech, peace be upon him, cried: 'I am sunk in deep mire where there is no standing, I have come into deep waters...' (Tehillim 69:3). And this is the dimension of (Teh
-- tiny_he_long_en at aligned_segments[4]/segment
-  HE: אות ב
-  EN: And this is what Rabbeinu of blessed memory said (§247): that 'taikoo' said in the Shas (Talmud) is in the dimension of missing rectification, and the nun is bent and becomes kinot
-- tiny_he_long_en at aligned_segments[6]/segment
-  HE: אות ג
-  EN: And then from the tikkun it becomes the dimension of kinot, as is said on Tisha B'Av, which is the dimension of 'Aichah' as above. And through this very thing it returns and is rec
-- tiny_he_long_en at aligned_segments[8]/segment
-  HE: אות ד
-  EN: And when one merits through this very thing to ascend — through this itself the primary ascent comes. And then one merits through teshuvah that transgressions are transformed into 
-- tiny_he_long_en at aligned_segments[10]/segment
-  HE: אות ה
-  EN: And it is already explained in the Torah 'Chadee Rabbi Shimon' above that the essential divided counsel flows through the residue of food that rises to the brain and heart and conf
-- tiny_he_long_en at aligned_segments[12]/segment
-  HE: אות ו
-  EN: And this is the secret of the saliva (rok) of the chalitzah — for the saliva is in the dimension of the clarifying and expelling power that pushes away the waste and residue, as ab
-- tiny_he_long_en at aligned_segments[14]/segment
-  HE: אות ז
-  EN: And the woman receives this power of clarification and expulsion — which is the dimension of the clarification of counsel — from her husband, through the 'that breath He casts with
-
-### SEVERE public/reader/likutay-halachos/part-7/halacha-72.json flags=21 bilingual_segments=51/64
-- hebrew_in_english_field at segments[16]/segment
-  HE: אות ז וע"כ קורין פ' דברים תמיד בשבת חזון סמוך לת"ב כי כל פ' דברים מדבר מה שגרמו בעוונותיהם לסבב גבולי א"י ולא יכלו לכנוס בדרך הישר דרך ארץ אדום לכבוש א"י וכל זה מחמת שבעונותיהם נתנ
-  EN: 7 אֱ-לֹהַי עָלַי נַפְשִׁי תִשְׁתּוֹחָח עַל-כֵּן אֶזְכָּרְךָ מֵאֶרֶץ יַרְדֵּן וְחֶרְמוֹנִים מֵהַר מִצְעָר
-- hebrew_in_english_field at segments[21]/segment
-  HE: נמצא שעיקר הפגם הוא ע"י שפגמו בכבוד הצדיק ועי"ז היו כל החורבנות וכל הצרות. ועיקר התקוה והישועה הוא ע"י התקרבות לצדיקים (וכ"ש בהא"ב ביאת המשיח תלוי ברבת הצדיקים) וזה בחי' כל הדברים 
-  EN: 9 יוֹמָם יְצַוֶּה יי חַסְדּוֹ וּבַלַּיְלָה שִׁירוֹ עִמִּי תְּפִלָּה לְאֵל חַיָּי
-- hebrew_in_english_field at segments[27]/segment
-  HE: אות יא וזהו חטאו בהוא חטאו בזה חטאו ביש, ובהם לקו וכו'. הוא זה יש, זה בחי' המוחין שהם בחי' הנהר היוצא מעדן להשקות את הגן. כי עיקר המוחין שממשיך הראש בית הוא לדעת ולהכיר אותו יתב' ב
-  EN: 11 בְּרֶצַח בְּעַצְמוֹתַי חֵרְפוּנִי צוֹרְרָי בְּאָמְרָם אֵלַי כָּל-הַיּוֹם אַיֵּה אֱ-לֹהֶיךָ
+### SEVERE public/reader/likutay-halachos/part-4/halacha-6.json flags=21 bilingual_segments=68/90
 - long_he_tiny_en at aligned_segments[3]/segment
-  HE: כי מבואר בהתורה הנ"ל שעיקר קיום הד' יסודות הוא ע"י יסוד הפשוט שהוא בחי' הצדיק יסוד עולם שהוא בחי' הנהר היוצא מעדן להשקות את הגן ומשם יפרד והי' לארבעה ראשים שהם הד' יסודות וכו' ע"ש.
+  HE: וזה בחי' שחיטה. כי עיקר מצות שחיטה הוא בשביל תיקון הנפש שבחי להעלותו מחי לאדם שהוא בחי' הדעת. כי הניצוצות והנפשות שבחיות ובהמות ועופות הם גלגולי נפשות אדם שנפלו בעונותיהם צבחי' אדם
   EN: [continued]
 - long_he_tiny_en at aligned_segments[5]/segment
-  HE: כי עיקר התהוות של כל העולם ומלואו הוא מהד' יסודות ארמ"ע. כי השי"ת ברא הד' יסודות ומהם הרכיב והמזיג כל העולם ומלואו שהם דצח"ם שבכ"א מעורבים כל הד' יסודות רק שבדומם העיקר הוא בחי' עפ
+  HE: וע"כ התיקון ע"י שחיטה. כי הסכין והחרב של שחיטה זה בחי' מחלוקת שנקרא חרב כ"ש חרב פתחו רשעים ופרש"י מחלוקת. עי תיקון אמונת חכמים הוא ע"י מחלוקת (כמבואר בהתורה הנ"ל) שע"י המחלוקת שבין
   EN: [continued]
 - long_he_tiny_en at aligned_segments[7]/segment
-  HE: נמצא שעיקר קיום כל הדברים שבעולם הוא ע"י השלום שנעשה ע"י הצדיק יסוד עולם שהוא בחי' רבית שלום שהוא בחי' יסוד הפשוט וכנ"ל וע"כ לא מצא הקב"ה כלי מחזקי ברכה לישראל אלא השלום. כי אפילו 
+  HE: ועיקר תיקון ושלימות הסכין בלי פגם הוא בחודו של סכין שהוא חותך הסימנים. זה בחי' גמר העצה שתהיה כתקנה באמת לאמתו שהוא בחי' חיתוך ההלכה בחי' פסק הלכה כמו שרגיל זה הלשון בדרז"ל שחותכין
   EN: [continued]
-- long_he_tiny_en at aligned_segments[8]/segment
-  HE: וע"כ ארז"ל כל המענג את השבת נותנין לו נחלה בלי מצרים כי שבת הוא בחי' הצדיק הראש בית כמבואר שם בהתורה הנ"ל וע"כ ע"י שבת נתבטלין המצרים כיע"י הצדיק הראש בית בחי' שבת נמשךם היסוד הפשו
+- long_he_tiny_en at aligned_segments[9]/segment
+  HE: וזה בחי' י"ב בדיקות הסכין כנגד י"ב אבני יעקב שנכללו באבן אחד. שזה זוכין ע"י תיקון אמונת חכמים שנעשה ע"י ריבוי הספרים שנעשין ע"י תיקון המחלוקת שמשם שלימות הסכין בלי פגם (וכמבואר כל 
   EN: [continued]
-- long_he_tiny_en at aligned_segments[10]/segment
-  HE: וע"כ הזהירו רז"ל על דינא דבר מצרא שלא לקנות שדה על מיצר חבירו אם חבירו רוצה בה כי צריכין להשתדל בכל כחו למעט המצרים כדי להרחיב גבול הקדושה כי כל מה שמתרחב הגבול של כל אחד מישראל ונ
+- long_he_tiny_en at aligned_segments[11]/segment
+  HE: וזה בחי' איסור חלדה בשחיטה שלא יכסה שום דבר על הסכין של שחיטה. ונקראת חלדה לשון חולדה כמו שפרש"י (חולין ד' ט') כחולדה זו התחובה בחורין. כי עיקר השחיטה הוא להעלות הנפש מחי למדבר ועי
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[13]/segment
+  HE: וזה שהתחיל האזינו כל יושבי חלד. ודרז"ל שקרא העולם יושבי חלד כי כל מה שיש ביבשה יש בים חוץ מן החולדה, והדבר תמוה מאד וכי בשביל זה יקרא כל בני עולם יושבי חלד על שם החולדה שיש ביניהם 
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[15]/segment
+  HE: כי צריכין שכל עליון וגבוה ועמוק מאד לגלות עוצם ההעלמה שבעולם שהתפשט הבע"ד כ"כ והעלים האמת מן העולם שזה השכל הוא בחי' אבן שתיה בחי' ק"ק. וזה בחי' כל מעשי המשכן וביהמ"ק שהכל בשביל לג
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[17]/segment
+  HE: וע"כ התחיל משה לדבר מעשיית הארון תחילה ובצלאל עשה להיפך המשכן תחילה כי אמר כלים שאני עושה היכן אכניסם וכו' כשארז"ל. כי משה שהוא צדיק הדור צריך להמשיך ההמתקה הנ"ל מק"ק מבחי' הארון ת
   EN: [continued]
 
 ### SEVERE public/reader/otzar-hayirah/part-1/torah-84.json flags=21 bilingual_segments=79/118
@@ -2818,6 +2661,32 @@ Files needing review (excluding normal untranslated books): 1751
   HE: ֹל בְּסִבָּה קַלָּה מְאֹד, שֶׁהִיא כִּמְעַט בְּלִי שׁוּם דֶּרֶךְ הַטֶּבַע, וְכָל הָעוֹלָם מָלֵא מִמַּעֲשִׂיּוֹת כָּאֵלּוּ, שֶׁהֵם שְׁכִיחִים מְאֹד בָּעוֹלָם כִּמְעַט בְּכָל אֶחָד ו
   EN: [continued]
 
+### SEVERE public/reader/likutay-halachos/part-1/halacha-45.json flags=20 bilingual_segments=52/52
+- tiny_he_long_en at segments[1]/segment
+  HE: הלכה ו
+  EN: Therefore the miracle was through the oil of the Menorah — which is the aspect of a Name, as it is written : "Tov sheim mishemen tov," and as it is written : "L'rei'ach shmanecha t
+- tiny_he_long_en at segments[2]/segment
+  HE: אות א
+  EN: For the essential light of the ner shel mitzvah, which is the aspect of Ner Chanukah, is the light of the Torah — which is the aspect of the holy Name, for the Torah is His Name, a
+- tiny_he_long_en at segments[4]/segment
+  HE: אות ב
+  EN: And likewise it is explained at the end of the Ma'aseh that the Name is the aspect of the light of the ner. As explained there at the end: the moon holds a ner in her hand and says
+- tiny_he_long_en at segments[6]/segment
+  HE: אות ג
+  EN: As in the Ma'aseh itself: the midwife exchanged the infants and placed the Prince with the maidservant and the son of the maidservant with the queen. Through this, the world erred 
+- tiny_he_long_en at segments[8]/segment
+  HE: אות ד
+  EN: For the true tzaddik, wherever he is, is a true tzaddik — and his actual person certainly cannot be exchanged, chas v'shalom. Only the essential exchange is in the name: they call 
+- tiny_he_long_en at segments[10]/segment
+  HE: אות ה
+  EN: It is understood there that the essential exchange, error, and falsehood in the world is in the aspect of the Name specifically. All this is the aspect of lighting the Ner Chanukah
+- tiny_he_long_en at segments[13]/segment
+  HE: אות ו
+  EN: Through Ner Chanukah, we draw the light of truth into the world, as above — which is the aspect of the truth of the Name of kedushah: not to exchange the Name of Hashem, chas v'sha
+- tiny_he_long_en at segments[15]/segment
+  HE: אות ז
+  EN: This is the aspect of lighting Ner Chanukah, as above — that Hashem gave us this holy mitzvah to sustain us as on this day, in the depth of this bitter exile where falsehood prevai
+
 ### SEVERE public/reader/likutay-halachos/part-3/halacha-11.json flags=20 bilingual_segments=65/86
 - tiny_he_long_en at aligned_segments[5]/segment
   HE: אות ב
@@ -2844,58 +2713,6 @@ Files needing review (excluding normal untranslated books): 1751
   HE: אות י
   EN: For the essential arousal and strengthening to return to Hashem always — this is through the power of the aforementioned Tzadik who is all his days in a state of teshuvah. Even tho
 
-### SEVERE public/reader/likutay-halachos/part-5/halacha-55.json flags=20 bilingual_segments=47/60
-- hebrew_in_english_field at segments[2]/segment
-  HE: אות א כי יקרא קן צפור לפניך בדרך בכל עת וכו'. ע"פ התורה סוד כוונת המילה בסי' ג"ג על הפסוק שרפים וכו' שש כנפים וכו' ע"ש ענין מגלה טפח ומכסה טפח אצל הצדיק ואצל הש"י שלפעמים הצדיק אצל
-  EN: 7 אֶזְכְּרָה נְגִינָתִי בַּלָּיְלָה עִם-לְבָבִי אָשִׂיחָה וַיְחַפֵּשׂ רוּחִי
-- hebrew_in_english_field at segments[10]/segment
-  HE: אות ה וזהו הסבי עיניך מנגדי שהם הרהיבוני עיין פירוש רש"י כי בודאי שערך כעדר העזים וכו' שניך כעדר הקצובות וכו' כפלח הרמון רקתך שפירש רש"י שם הכלעל ריבוי החביבות שהש"י מחבב הטוב והמצ
-  EN: 10 הֲשָׁכַח חַנּוֹת אֵל אִם-קָפַץ בְּאַף רַחֲמָיו סֶלָה
-- hebrew_in_english_field at segments[19]/segment
-  HE: אות ט והמהדרין מן המהדרין מוסיף והולך בכל יום, כי לא די שממשיך האור לעצמו בפרטיות אעפ"כ שהוא מרחוק מאד וכנ"ל כי אדרבא זהו עיקר תקונו וכנ"ל. אף גם הוא מוסיף והולך בכל יום כי מי שהוא
-  EN: 13 וְהָגִיתִי בְכָל-פָּעֳלֶךָ וּבַעֲלִילוֹתֶיךָ אָשִׂיחָה
-- hebrew_in_english_field at segments[25]/segment
-  HE: אות יב וזה שאמרו בבי תשני בשמחת בית השואבה אבותינו שהיו במקום הזה אחוריהם וכו' ואנו לי"ה עינינו. והיו כופלים ואומרים אנו לי"ה ולי"ה עינינו. ופירשו שם בגמ' דאמרי הכי אנו לי"ה משתחוי
-  EN: 15 אַתָּה הָאֵל עֹשֵׂה פֶלֶא הוֹדַעְתָּ בָעַמִּים עֻזֶּךָ
-- hebrew_in_english_field at segments[28]/segment
-  HE: אות יג וזה בחי' מזמור שיר חנוכת הבית לדוד שאומרים בכל יםו קודם התפילה שמדבר מכל אדם בפרטיות מגודל הישועה הנפלאה שהושיע לו ברחמיו ובתוך כך מבקש הרבה על להבא שמזה מדבר כל המזמור הזה 
-  EN: 16 גָּאַלְתָּ בִּזְרוֹעַ עַמֶּךָ בְּנֵי-יַעֲקֹב וְיוֹסֵף סֶלָה
-- tiny_he_long_en at aligned_segments[1]/segment
-  HE: אות א
-  EN: Whoever wishes to attend to his genuine life must take counsel from all of this: that in all the bitterness, grief, and suffering that passes over him — and especially the truest s
-- tiny_he_long_en at aligned_segments[3]/segment
-  HE: אות ב
-  EN: Therefore, the luz and the egg — which allude to the essential consolation — ripen specifically in twenty-one days, alluding to the mourning of Bein ha-Metzarim, to teach all of th
-- tiny_he_long_en at aligned_segments[5]/segment
-  HE: אות ג
-  EN: And even with both signs — shape and verbal identification [knowing which bird it came from] — the sign is still not absolute, because one sign alone is insufficient. The egg's pur
-
-### SEVERE public/reader/likutay-halachos/part-5/halacha-59.json flags=20 bilingual_segments=54/66
-- hebrew_in_english_field at segments[4]/segment
-  HE: ןוזה בחי' איסור חדש. שאסור לאכול תבואה מחמשת מניי דגן עד שיקריבו עומר שעורים ממחרת השבת בט"ז בניסן. ואפי' לקצור התבואה אסור קודם קצירת העומר. כי בט"ו בניסן יצאנ וממצרים. ועיקר יציא
-  EN: 10 יְמֵי-שְׁנוֹתֵינוּ בָהֶם שִׁבְעִים שָׁנָה וְאִם בִּגְבוּרֹת שְׁמוֹנִים שָׁנָה וְרָהְבָּם עָמָל וָאָוֶן כִּי-גָז חִישׁ וַנָּעֻפָה
-- hebrew_in_english_field at segments[10]/segment
-  HE: אות ה וזה בחי' מכת בכורות שהי' ע"י הדם של הקרבן פסח שעי"ז עבר ה' לנגוף את מצרים ופסח על בני ישראל וכו' היינו כנ"ל כי הקרבת הספח הוא בחינת התעלות הנפש מבהמה לאדם מגוף לנפש מחשך לאור
-  EN: 12 לִמְנוֹת יָמֵינוּ כֵּן הוֹדַע וְנָבִיא לְבַב חָכְמָה
-- hebrew_in_english_field at segments[13]/segment
-  HE: וע"י שנתגרשו אדה"ר ע"י פגם אכילת עץ הדעת עי"ז נגזר עליו בזעת אפיך תאכל לחם וכו' שהוא עובדין דחול שהם ל"ט מלאכות שהם ל"ט מלקיות כנגד ל"ו קללות שנתקללו ע"י חטא עץ הדעת כי נתגבר הגוף 
-  EN: 13 שׁוּבָה יי עַד-מָתָי וְהִנָּחֵם עַל-עֲבָדֶיךָ
-- hebrew_in_english_field at segments[19]/segment
-  HE: אות ט וזה בחי' קידוש החדש ועיבור שנים שמצוה זאת הוא בחי' תיקון ומילוי הלבנה כדי להשוות שנות הלבנה עם שנות החמה. שזהו בחי' מלוי הירח שיהי' אור הלבנה כאור החמה. וע"כ עיקר מצווה זאת ה
-  EN: 15 שַׂמְּחֵנוּ כִּימוֹת עִנִּיתָנוּ שְׁנוֹת רָאִינוּ רָעָה
-- hebrew_in_english_field at segments[25]/segment
-  HE: אות יב וע"כ קיבל יעקב הברכות מיצחק דייקא. כי יעקב זכה ע"י עבודתו להמתיק גבורות יצחק עד שקיבל משם דייקא את הברכות שהם בחי' התעלות הנפש על הגוף בחי' המתקת הדין שנתהפך מדה"ד למדה"ר שז
-  EN: 17 וִיהִי נֹעַם אֲדֹנָי אֱ-לֹהֵינוּ עָלֵינוּ וּמַעֲשֵׂה יָדֵינוּ כּוֹנְנָה עָלֵינוּ וּמַעֲשֵׂה יָדֵינוּ כּוֹנְנֵהוּ
-- hebrew_in_english_field at segments[29]/segment
-  HE: וע"כ גם הקצירה בעצמה של העומר הוא מצוה כשרז"ל יצא קציר העומר שהוא מצוה ואסור לקצור שום תבואה קודם קצירת העומר כי קצירת התבואה של ישראל צריך שיהי' בקדוש' גדולה כי בשעת הקציר אז קוצר
-  EN: 1 הוֹדוּ לַיי קִרְאוּ בִּשְׁמוֹ הוֹדִיעוּ בָעַמִּים עֲלִילוֹתָיו
-- hebrew_in_english_field at segments[32]/segment
-  HE: אות טו וזה בחי' יודוך עמים אלקים יודוך עמים כולם ארץ נתנה יבולה וכו' (תהלים ס"ז) כי ע"י שארץ נותנה יבולה שהוא בחי' התעלות הנפש על הגוף עי"ז נתבטלין העמים שהם בחי' גוף ובאים ג"כ להת
-  EN: 2 שִׁירוּ-לוֹ זַמְּרוּ-לוֹ שִׂיחוּ בְּכָל-נִפְלְאוֹתָיו
-- tiny_he_long_en at aligned_segments[1]/segment
-  HE: אות א
-  EN: For in truth we know nothing at all — as it says in the Etz Chaim: Shlomo the King, peace upon him, who was wiser than any person, said [Proverbs 30:2-3]: "I said I would be wise —
-
 ### SEVERE public/reader/likutay-halachos/part-5/halacha-74.json flags=20 bilingual_segments=74/94
 - tiny_he_long_en at aligned_segments[1]/segment
   HE: אות א
@@ -2921,32 +2738,6 @@ Files needing review (excluding normal untranslated books): 1751
 - tiny_he_long_en at aligned_segments[18]/segment
   HE: אות ט
   EN: And this is the aspect of the printing press [hadfus] — that Hashem, may He be blessed, had mercy on us in the end of days and brought to the world the wisdom of printing so that h
-
-### SEVERE public/reader/likutay-halachos/part-7/halacha-71.json flags=20 bilingual_segments=65/78
-- hebrew_in_english_field at segments[19]/segment
-  HE: אות י
-  EN: 1 לַמְנַצֵּחַ מַשְׂכִּיל לִבְנֵי-קֹרַח
-- long_he_tiny_en at aligned_segments[2]/segment
-  HE: ענין מצרנות ע"פ התורה ויאמר בועז אל רות (סי' סה) כמבואר מזה כבר בדרוש הא' ע"ש. ולבאר קצת יותר כי מבואר בהתורה ויאמר בועז הנ"ל שיש בעל השדה היינו הצדיק הגדול שהוא עוסק בתיקון הנשמות
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[4]/segment
-  HE: וזהו בחי' מצרנות שתיקנו חז"ל שבעל המצר קודם ליקח השדה הסמוכה לו כדי שיהיו שדותיו יחד כי זה ועיקר תיקון השדה שתהי' השדה נכללת באחד. כי השדה התחתון מרמזת לשדה העליון שגדלים בה נשמות 
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[6]/segment
-  HE: וזהו בחי' מה שמתענין ביום שמת בו אביו ואמו בכל שנה ושנה שהוא יאר צייט ומדליקין נר ואומרים קדיש, כי כ"ז עושין הבנים בשביל לתקן ולהעלות נשמות אביהם ואמם וע"כ עושין זאת בכל שנה ושנה. 
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[8]/segment
-  HE: וזהו בחי' עשר תעשר את כל תבואת זרעך היוצא השדה שנה שנה. כי התבואה היוצא בכל שנה ושנה, בכל שנה דייקא כנ"ל צריכין לתקנה שתהי' נכללת בבחי' כולו אחד שהוא תיקון השדה כנ"ל וע"כ צריכין לי
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[9]/segment
-  HE: וזהו בחי' מעשר מן המעשר שהוא בסוד מאה ברכות בכל יום כמובא שהוא בחי' התפילה שכלולה מכל המאה ברכות שהוא בחי' ויזרע יצחק בארץ ההוא וימצא בשנה ההוא מאה שערים ויברכהו ה' כידוע. שכ"ז הוא
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[11]/segment
-  HE: וע"כ יעקב אבינו שזכה להוליד י"ב שבטים בקדושה כי מטתו הי' שלימה בלי פסול ע"כ זכה לנחלה בלי מצרים כי נתבטלו כל המצרים והדינים ע"י שזכה להכניס כל הי"ב גבולים לפנים בבחי' כולו אחד כי א
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[13]/segment
-  HE: וזהו בחי' שבת שאז נכללין בבחי' כולו אחד כי שבת מעין עוה"ב שאז יהי' ה' אחד ושמו אחד שהוא כולו אחד כולו טוב. כ"ש שם בהתורה הנ"ל. וכ"ש בזוה"ק רזא דשבת איהו שבת דאתאחדת ברזא דאחד וכו',
-  EN: [continued]
 
 ### SEVERE public/reader/likutay-halachos/part-8/halacha-29.json flags=20 bilingual_segments=75/94
 - tiny_he_long_en at aligned_segments[1]/segment
@@ -3000,32 +2791,6 @@ Files needing review (excluding normal untranslated books): 1751
   HE: אות ט
   EN: The oath against the orphans of the borrower — only the lender himself can swear it, while he is alive. For in life he can clarify the truth through the oath, which is the aspect o
 
-### SEVERE public/reader/likutay-halachos/part-3/halacha-38.json flags=19 bilingual_segments=55/72
-- hebrew_in_english_field at segments[11]/segment
-  HE: אות ה
-  EN: 15 אַל-תִּגְּעוּ בִמְשִׁיחָי וְלִנְבִיאַי אַל-תָּרֵעוּ
-- tiny_he_long_en at aligned_segments[1]/segment
-  HE: הלכה ה
-  EN: And this is the aspect of "seven complete (t'mimos) Shabbosos they shall be" — specifically. For one must then draw upon oneself the ways of t'mimus, for the essential tikkun is th
-- tiny_he_long_en at aligned_segments[2]/segment
-  HE: אות א
-  EN: And therefore the students of Rabbi Akiva died then — because there was no love between them, as our Sages, of blessed memory, said. For Rabbi Akiva had a great yeshivah and drew d
-- tiny_he_long_en at aligned_segments[5]/segment
-  HE: אות ב
-  EN: And this is the aspect of the prohibition of chamaitz on Pesach. For it has already been explained that on Pesach we had not yet merited the aspect of tikkun hamishpat. And therefo
-- tiny_he_long_en at aligned_segments[7]/segment
-  HE: אות ג
-  EN: And therefore in truth at the time of the splitting of the Sea of Reeds, Yisrael were placed under judgment and law, as our Sages, of blessed memory, said — until Hashem, blessed b
-- tiny_he_long_en at aligned_segments[9]/segment
-  HE: אות ד
-  EN: And this is the aspect of: "Who places in the sea a path and in mighty waters a pathway" — which was said about the splitting of the Sea of Reeds, the aspect of "the pathways of ju
-- tiny_he_long_en at aligned_segments[11]/segment
-  HE: אות ה
-  EN: And therefore on Shavuos we bring the Two Loaves (Sh'tai HaLechem) from chamaitz specifically. For then is the fiftieth day, the day of receiving the Torah — when the essential tik
-- tiny_he_long_en at aligned_segments[15]/segment
-  HE: אות ז
-  EN: And this is: "And make a fence for the Torah" — the aspect of a barrier and a partition, so that no stranger should mingle, so as not to draw close one who should not be drawn clos
-
 ### SEVERE public/reader/likutay-halachos/part-5/halacha-87.json flags=19 bilingual_segments=66/84
 - tiny_he_long_en at aligned_segments[2]/segment
   HE: אות א
@@ -3078,6 +2843,32 @@ Files needing review (excluding normal untranslated books): 1751
   HE: וביוה"כ אז נפשט עקמימיות שבלב שזהו בחי' סליחה וביטל עוונות שהם בחי' עקמימיות שבלב בחי' לבי סחרחר (תהלים ל"ח). וביהו"כ אז נתבטלין ונמחלין כל העוונות שהם עקמימיות שבלבל. כי ר"ה התחלת
   EN: [continued]
 
+### SEVERE public/reader/likutay-halachos/part-7/halacha-71.json flags=19 bilingual_segments=64/78
+- long_he_tiny_en at aligned_segments[2]/segment
+  HE: ענין מצרנות ע"פ התורה ויאמר בועז אל רות (סי' סה) כמבואר מזה כבר בדרוש הא' ע"ש. ולבאר קצת יותר כי מבואר בהתורה ויאמר בועז הנ"ל שיש בעל השדה היינו הצדיק הגדול שהוא עוסק בתיקון הנשמות
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[4]/segment
+  HE: וזהו בחי' מצרנות שתיקנו חז"ל שבעל המצר קודם ליקח השדה הסמוכה לו כדי שיהיו שדותיו יחד כי זה ועיקר תיקון השדה שתהי' השדה נכללת באחד. כי השדה התחתון מרמזת לשדה העליון שגדלים בה נשמות 
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[6]/segment
+  HE: וזהו בחי' מה שמתענין ביום שמת בו אביו ואמו בכל שנה ושנה שהוא יאר צייט ומדליקין נר ואומרים קדיש, כי כ"ז עושין הבנים בשביל לתקן ולהעלות נשמות אביהם ואמם וע"כ עושין זאת בכל שנה ושנה. 
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[8]/segment
+  HE: וזהו בחי' עשר תעשר את כל תבואת זרעך היוצא השדה שנה שנה. כי התבואה היוצא בכל שנה ושנה, בכל שנה דייקא כנ"ל צריכין לתקנה שתהי' נכללת בבחי' כולו אחד שהוא תיקון השדה כנ"ל וע"כ צריכין לי
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[9]/segment
+  HE: וזהו בחי' מעשר מן המעשר שהוא בסוד מאה ברכות בכל יום כמובא שהוא בחי' התפילה שכלולה מכל המאה ברכות שהוא בחי' ויזרע יצחק בארץ ההוא וימצא בשנה ההוא מאה שערים ויברכהו ה' כידוע. שכ"ז הוא
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[11]/segment
+  HE: וע"כ יעקב אבינו שזכה להוליד י"ב שבטים בקדושה כי מטתו הי' שלימה בלי פסול ע"כ זכה לנחלה בלי מצרים כי נתבטלו כל המצרים והדינים ע"י שזכה להכניס כל הי"ב גבולים לפנים בבחי' כולו אחד כי א
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[13]/segment
+  HE: וזהו בחי' שבת שאז נכללין בבחי' כולו אחד כי שבת מעין עוה"ב שאז יהי' ה' אחד ושמו אחד שהוא כולו אחד כולו טוב. כ"ש שם בהתורה הנ"ל. וכ"ש בזוה"ק רזא דשבת איהו שבת דאתאחדת ברזא דאחד וכו',
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[14]/segment
+  HE: וזהו בחי' התענית שמתענין בכל שנה ביום היאר צייט כי תענית הואבחי' שסותמין עיניו מחיזו דהאי עלמא שעי"ז נכללין בהתכלית שהוא עוה,ב שכולו אחד כולו טוב שאין בו אכילה ושתי' וכמבואר בהתורה
+  EN: [continued]
+
 ### SEVERE public/reader/likutay-halachos/part-8/halacha-33.json flags=19 bilingual_segments=59/78
 - tiny_he_long_en at aligned_segments[1]/segment
   HE: אות כו
@@ -3104,31 +2895,31 @@ Files needing review (excluding normal untranslated books): 1751
   HE: אות לג
   EN: For the essential revelation of His holiness, Yisborach, the aspect of "the whole earth is full of His glory," is in the Beis HaMikdash. But it is impossible to merit this — the ho
 
-### SEVERE public/reader/chayey-moharan/part-6.json flags=18 bilingual_segments=367/367
-- hebrew_in_english_field at segments[11]/segment
-  HE: עוֹשֶׂה תְּשׁוּבָה (הָאט וִויא אִיר זֶעהט מִיךְ אִיךְ זָאל חַס וְשָׁלוֹם עוֹבֵר זַיין דִיא גְרֶעסְטֶע עֲבֵרָה ;,וָואלְט דָאס מִיךְ גָאר נִיט אַרָאפּ גִיוָוארְפְן, אִיךְ וָואלְט נָא
-  EN: <אָמַר: (הָאט וִויא אִיר זֶעהט מִיךְ, קֶען גִימָאלְט זַיין) לְמ"ר שׁעַ"ו ב"שׁ — כְּמוֹ שֶׁאַתֶּם רוֹאִים אוֹתִי, יִתְכֵּן... אָמַר הַמַּעְתִּיק: רָצָה לוֹמַר שֶׁהָיָה מִתְיָרֵא וְח
-- hebrew_in_english_field at segments[52]/segment
-  HE: שָׁנִים. אַחַר-כָּךְכְּשֶׁבָּא מִלֶּמְבֶּרְגְּ צִוָּה עָלֵינוּ שֶׁלּא לְהִתְעַנּוֹת כְּלָל. וְאָמַר הֲלֹא מִי שֶׁאֵינוֹ זוֹכֶה לִהְיוֹת אֶצְלִי עַל ראשׁ- הַשָּׁנָה הוּא אֵין לוֹ לְ
-  EN: <אַלּוּ הֵן הַיָּמִים שֶׁהָיוּ לִי: אֲדָר כ"ב, אִייָר ב' ט"ז, סִיוָן י"א י"ט, טֵבֵת ג' י"ט>
-- hebrew_in_english_field at segments[75]/segment
-  HE: (בְּהַקְדָמַת הַזּהַר) לְעִנְיַן הָאוֹתִיּוֹת בִּשְׁעַת בְּרִיאַת הָעוֹלָם. שֶׁבָּאוּ הָאוֹתִיּוֹת לִפְנֵי הַשֵּׁם יִתְבָּרַךְ וְכָל אֶחָד רָצָה שֶׁיִבְרָא בּוֹ הַשֵּׁם יִתְבָּרַךְ
-  EN: <אָמַר: כְּשֶׁנִּכְבֶּה נֵר בָּא חֹשֶׁךְ, וּכְשֶׁדּוֹלְקִין הַרְבֵּה נֵרוֹת אָז כְּשֶׁנִּכְבִּין בָּא חֹשֶׁךְ גָּדוֹל בְּיוֹתֵר, כִּי כָּל מַה שֶּׁהָאוֹר גָּדוֹל כֵּן נִגְדַּל הַחֹ
-- hebrew_in_english_field at segments[76]/segment
-  HE: (בְּרֵאשִׁית כ"ה): "הַלְעִיטֵנִי נָא", רַק לְהַרְגִּיל עַצְמוֹ לֶאֱכל בִּמְתִינוּת בְּיִשּׁוּב הַדַּעַת וּבְדֶרֶךְ אֶרֶץ כְּדֶרֶךְ שֶׁאוֹכְלִין בְּדֶרֶךְ אֶרֶץ כְּשֶׁיּוֹשֵׁב אָדָם
-  EN: <הוּא כְּמוֹ שְׂחוֹק שֶׁל אֲחַשְׁוֵרוֹשׁ, שֶׁאֶחָד מֵהֶם מָרְדְּכַי. וְקָשֶׁה לִי תָּמִיד: לָמָּה זֶה מָרְדְּכַי וְלָמָּה זֶה הָמָן וְכַיּוֹצֵא? אַךְ שֶׁמֻּכְרָח לִהְיוֹת כָּךְ הַש
-- hebrew_in_english_field at segments[77]/segment
-  HE: (תַּעֲנִית ל"א) זֶה דַּיְקָא, וְאָמַר בִּלְשׁוֹן אַשְׁכְּנַז שֶׁיּאמְרוּ כָּל אֶחָד טַאקֶי צוּ דֶעם גָאט הָאבְּן מִיר גִיהָאפְט [בֶּאֱמֶת לַה' זֶה הָיִינוּ מְקַוִּים]. כְּלוֹמַר שׁ
-  EN: <עוֹד אָמַר: הוּא כְּמוֹ קוֹף שֶׁלּוֹבְשִׁין אוֹתוֹ בְּמַלְבּוּשִׁים שֶׁל אָדָם... אָמַר: זֶה אֲנִי יוֹדֵעַ מִכְּבָר, שֶׁעַכְשָׁו אִי אֶפְשָׁר לְהַמְשִׁיךְ הַשְׁפָּעָה, הַיְנוּ עֲש
-- hebrew_in_english_field at segments[112]/segment
-  HE: (קי) פַּעַם אַחַתסִפַּרְתִּי לְפָנָיו מֵעִנְיַן הֶחָסִיד מֵאַמְשְׂטֶרְדַּם שֶׁהָיָה מְפֻרְסָם בִּבְּרָאד שֶׁנָּסַע לְאֶרֶץ יִשְׂרָאֵל וּרְאִיתִיו בִּקְהִלַּת קְרֶעמִינִיץ בַּחֲזִיר
-  EN: <כִּי אֵין בָּזֶה שׁוּם אִסּוּר כְּלָל, רַק שֶׁרָצוּ לְבַלְבֵּל אוֹתוֹ בְּמָרָה שְׁחוֹרָה, עַל-כֵּן קָפַץ וְנִשְׁבַּע שֶׁדַּוְקָא יְעַשֵּׁן הַלּוּלְקֶע בְּנֵר שֶׁל חֵלֶב>
-- hebrew_in_english_field at segments[113]/segment
-  HE: (אָמַר הַמַּעְתִּיקהַכְּלָל הַיּוֹצֵא מִדְּבָרִים אֵלּוּ וְכַיּוֹצֵא בָּהֶם, שֶׁרָצָה רַבֵּנוּ זִכְרוֹנוֹ לִבְרָכָה לְהַכְנִיס בְּאַנְשֵׁי-שְׁלוֹמֵנוּ אֱמוּנַת חֲכָמִים שְׁלֵמָה וְ
-  EN: <אָמַר לְעִנְיַן צַדִּיק מְפֻרְסָם שֶׁלֹּא הָיוּ לוֹ בָּנִים הֲגוּנִים, וְאָמַר שֶׁזֶּה מֵחֲמַת ז' שֶׁאֵינוֹ ב"ר כְּמוֹ ב"ז לְעִנְיַן ע"שׁ... וְעוֹד יֵשׁ בָּזֶה מַעֲשֶׂה לְעִנְיַן 
-- hebrew_in_english_field at segments[114]/segment
-  HE: (קיב) אָמַרלִי וְכִי אֵין אַתָּה יוֹדֵעַ מַה שֶּׁהַשֵּׁם יִתְבָּרַךְ חָפֵץ, הַשֵּׁם יִתְבָּרַךְ אוֹהֵב אָדָם מְרֻקָּח.
-  EN: <שָׁמַעְתִּי מִפִּיו הַקָּדוֹשׁ שֶׁאָמַר: וְזֶה אֵין אַתָּה יוֹדֵעַ, שֶׁחָסִיד שֶׁנָּפַל גָּרוּעַ מִמּוּמָר. וְאָמַר זֹאת לְעִנְיַן מַה שֶּׁדִּבַּרְתִּי עִמּוֹ כְּשֶׁהָיִיתִי בְּמֶ
+### SEVERE public/reader/likutay-halachos/part-8/halacha-65.json flags=19 bilingual_segments=66/102
+- tiny_he_long_en at aligned_segments[1]/segment
+  HE: אות א
+  EN: And therefore wine has two powers: "zachah — na'aseh rosh; lo zachah — na'aseh rash" ["if he merits — he becomes a head; if he does not merit — he becomes poor"] (Sanhedrin 70a). F
+- tiny_he_long_en at aligned_segments[4]/segment
+  HE: אות ב
+  EN: That is, because at that time the ruach chayim had not yet been sorted through one's deeds, and there was still the hold of the Egyptians upon them — for they left from there by st
+- tiny_he_long_en at aligned_segments[6]/segment
+  HE: אות ג
+  EN: And therefore one breaks the matzah — for "what is the way of a poor person? With a broken piece." The breaking of the matzah is the aspect of deficiency, that we break and diminis
+- tiny_he_long_en at aligned_segments[8]/segment
+  HE: אות ד
+  EN: And therefore the matzos are three, corresponding to three directions of the world, for tzafon [the north] is chasair [deficient]. And the wine is four cups, corresponding to all f
+- tiny_he_long_en at aligned_segments[10]/segment
+  HE: אות ה
+  EN: And therefore chamaitz is forbidden even in the smallest amount. This is the aspect of "dilma shaklis midi minaihu" etc. ["lest you take anything from them"] — meaning, it is forbi
+- tiny_he_long_en at aligned_segments[12]/segment
+  HE: אות ו
+  EN: And still, who knows if I have even touched a drop of the sea in the aforementioned Torah, for his exalted words, z"l [of blessed memory], are deep and wide, more than the sea, and
+- tiny_he_long_en at aligned_segments[16]/segment
+  HE: אות ח
+  EN: Even though one may give [the debt] into the hand of the shaliach [agent], nevertheless, if he does not wish to give it, he is not required to give it unless [the agent] has a ko'a
+- tiny_he_long_en at aligned_segments[18]/segment
+  HE: אות ט
+  EN: And the general principle: When the ko'ach [power] of the letters of Ma'aseh B'reishis [the Act of Creation] is blemished — which is the aspect of sukkah, the aspect of Eretz Yisro
 
 ### SEVERE public/reader/chumash-lh/part-5/torah-10.json flags=18 bilingual_segments=52/60
 - tiny_he_long_en at segments[6]/segment
@@ -3182,31 +2973,31 @@ Files needing review (excluding normal untranslated books): 1751
   HE: אות ז
   EN: Therefore, the redemption from Egypt took place at chatzos, as it is written (Shemos 11:4): "At about midnight, I will go out in the midst of Egypt." For chatzos is in the aspect o
 
-### SEVERE public/reader/likutay-halachos/part-3/halacha-26.json flags=18 bilingual_segments=51/64
-- hebrew_in_english_field at segments[13]/segment
-  HE: אות ו
-  EN: 1 לַמְנַצֵּחַ עַל-יְדוּתוּן לְאָסָף מִזְמוֹר
+### SEVERE public/reader/likutay-halachos/part-3/halacha-38.json flags=18 bilingual_segments=54/72
 - tiny_he_long_en at aligned_segments[1]/segment
   HE: הלכה ה
-  EN: Therefore, on every day that has greater holiness and the daas is revealed to a greater degree and teshuvah is revealed to a greater degree — such as Rosh Chodesh, Yom Tov, Yom HaK
+  EN: And this is the aspect of "seven complete (t'mimos) Shabbosos they shall be" — specifically. For one must then draw upon oneself the ways of t'mimus, for the essential tikkun is th
 - tiny_he_long_en at aligned_segments[2]/segment
   HE: אות א
-  EN: And this is why the Torah is read before Musaf, as mentioned above. For the essential Torah reading is on account of the additional holiness that exists on that day — when one call
+  EN: And therefore the students of Rabbi Akiva died then — because there was no love between them, as our Sages, of blessed memory, said. For Rabbi Akiva had a great yeshivah and drew d
 - tiny_he_long_en at aligned_segments[5]/segment
   HE: אות ב
-  EN: And this is why we bless the month on the Shabbos before it, which is in place of Kiddush HaChodesh. For now, in exile, we do not have the power to sanctify the month through a Bai
+  EN: And this is the aspect of the prohibition of chamaitz on Pesach. For it has already been explained that on Pesach we had not yet merited the aspect of tikkun hamishpat. And therefo
 - tiny_he_long_en at aligned_segments[7]/segment
   HE: אות ג
-  EN: For all the Roshei Chadashim (new moons) and the festivals that depend on the fixing of Rosh Chodesh — all of them depend on Shabbos, from which they receive their holiness. And th
+  EN: And therefore in truth at the time of the splitting of the Sea of Reeds, Yisrael were placed under judgment and law, as our Sages, of blessed memory, said — until Hashem, blessed b
 - tiny_he_long_en at aligned_segments[9]/segment
   HE: אות ד
-  EN: Therefore, on the contrary, from Shabbos one calls the vitality and daas into the festivals and Roshei Chadashim. For through the daas drawn from Shabbos, one reveals the concealme
+  EN: And this is the aspect of: "Who places in the sea a path and in mighty waters a pathway" — which was said about the splitting of the Sea of Reeds, the aspect of "the pathways of ju
 - tiny_he_long_en at aligned_segments[11]/segment
   HE: אות ה
-  EN: And this is the aspect of: "The son of Dovid will not come except in a generation that is entirely righteous or entirely wicked." For if entirely righteous, they would be worthy of
-- tiny_he_long_en at aligned_segments[13]/segment
-  HE: אות ו
-  EN: For the Exodus from Egypt, which is the aspect of the revelation of the concealment, depends on Shabbos, as mentioned above. For the Pesach offering in Egypt was taken on the tenth
+  EN: And therefore on Shavuos we bring the Two Loaves (Sh'tai HaLechem) from chamaitz specifically. For then is the fiftieth day, the day of receiving the Torah — when the essential tik
+- tiny_he_long_en at aligned_segments[15]/segment
+  HE: אות ז
+  EN: And this is: "And make a fence for the Torah" — the aspect of a barrier and a partition, so that no stranger should mingle, so as not to draw close one who should not be drawn clos
+- tiny_he_long_en at aligned_segments[17]/segment
+  HE: אות ח
+  EN: Just as it was at the time of the splitting of the Sea of Reeds, when they were in great distress from every side — yet they seized the craft of their fathers and cried out to Hash
 
 ### SEVERE public/reader/likutay-halachos/part-3/halacha-5.json flags=18 bilingual_segments=66/80
 - tiny_he_long_en at aligned_segments[1]/segment
@@ -3260,84 +3051,6 @@ Files needing review (excluding normal untranslated books): 1751
   HE: אות ז
   EN: And this is the aspect of the essence of t’shuvah [repentance / return] — to rectify the blemish of the bris, as Rabainu wrote in the teaching “A drop that dies in its prayer — fro
 
-### SEVERE public/reader/likutay-halachos/part-4/halacha-50.json flags=18 bilingual_segments=44/56
-- hebrew_in_english_field at segments[9]/segment
-  HE: אות ד ומחמת זה ישראל מצויינים במצוות כדי של יתערבו בגוים חס ושלום. ועל כן הזהירם השם יתברך שכשיבואו בגלות של הע' אומות שיהיו מצויינים במצוות. כמו שאמרו רבותינו ז"ל על פסוק צאי לך ב
-  EN: 10 אוֹמְרָה לְאֵל סַלְעִי לָמָה שְׁכַחְתָּנִי לָמָּה-קֹדֵר אֵלֵךְ בְּלַחַץ אוֹיֵב
-- hebrew_in_english_field at segments[12]/segment
-  HE: אות ה וזהו שאסרו רבותינו ז"ל כמה דברים רק מפני מראית העין אף שאין בהם איסור מן הדין. כי מאחר שנדמה להעין שהוא איסור אזי נאסר כי נאחז בו הרע עין כנ"ל. ועל כן אסור אפילו בחדרי חדרים 
-  EN: 11 בְּרֶצַח בְּעַצְמוֹתַי חֵרְפוּנִי צוֹרְרָי בְּאָמְרָם אֵלַי כָּל-הַיּוֹם אַיֵּה אֱ-לֹהֶיךָ
-- hebrew_in_english_field at segments[22]/segment
-  HE: אות י ועל כן אין מבטלין איסור לכתחילה. כי עיקר ביטול האיסור הוא על ידי הסתרת הידיעה דהיינו על ידי שיוצא האיסור ועובר מעיני הדעת ונתערב. שעל ידי זה יוצא מודאי לספק מבחינת רע לגמרי ש
-  EN: 2 הַצִּילֵנִי מֵאֹיְבַי א-להי מִמִּתְקוֹמְמַי תְּשַׂגְּבֵנִי
-- long_he_tiny_en at aligned_segments[3]/segment
-  HE: כל האיסורין שבתורה בסמ"ך. כי כל האיסורין הם בחינת אותיות נפילות שנפלו וירדו למטה מאד עד שבאו בעומק הקליפות ונעשה מהם איסור. שהוא בחינת רע הכולל בחינת לשונות של ע' עממין כי כל האיסו
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[5]/segment
-  HE: כי כל עיקר הביטול הוא רק בשביל הטעם כמובא בפוסקים כי טעם כעיקר דאורייתא. כי עיקר המאכל הוא הטעם הנרגש בו. ועל כן נקרא בשם טעם. טעם ממש לשון דיברו. כמו שכתוב באביגיל וברוך טעמך. כי 
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[7]/segment
-  HE: אבל במקום שאין טעם כגון יבש ביבש נתבטל ברוב. כי אחרי רבים להטות כתיב, להטות ממש. כי יש כח בהרוב להטות את האיסור ולבטלו ממש כמו שמובא בדברי רבינו נ"י (בסימן קפ"א) כי יש כח בהנפשות כ
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[9]/segment
-  HE: ומחמת זה ישראל מצויינים במצוות כדי של יתערבו בגוים חס ושלום. ועל כן הזהירם השם יתברך שכשיבואו בגלות של הע' אומות שיהיו מצויינים במצוות. כמו שאמרו רבותינו ז"ל על פסוק צאי לך בעקבי ה
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[10]/segment
-  HE: וזהו בחינת סימני טהרה של בהמות וחיות ושאר מינים טהורים שבראים השם יתברך בסימנים דייקא כדי שיהיו ניכרין לעין כל שהן מן הקדושה כנ"ל. וכן השחיטה הוא בחינת סימן כמו שאמרו רבותינו ז"ל ש
-  EN: [continued]
-
-### SEVERE public/reader/likutay-halachos/part-5/halacha-104.json flags=18 bilingual_segments=46/58
-- hebrew_in_english_field at segments[2]/segment
-  HE: אות א וראשית גז צאנך תתן לו. כי בו בחר ה' וכו':
-  EN: 29 הָפַךְ אֶת-מֵימֵיהֶם לְדָם וַיָּמֶת אֶת-דְּגָתָם
-- hebrew_in_english_field at segments[11]/segment
-  HE: אות ד וזה הלא כבני כושיים אתם לי בית ישראל וכו' והוא פליאה נשגבה מאד וכל רואה ישתומם ע"ז איך יעלה על הדעת שהש"י ידמה את ישראל ח"ו לבני כושים הלא כבר בחר בנו מכל עם. והבטיחנו שלא יע
-  EN: 32 נָתַן גִּשְׁמֵיהֶם בָּרָד אֵשׁ לֶהָבוֹת בְּאַרְצָם
-- hebrew_in_english_field at segments[17]/segment
-  HE: אות ז וזה בחי' שבת נחמו אחר ת"ב כי לכאורה תמטוה שקודם ת"ב שהוא קודם עיקר חורבן ביהמ"ק מתאבלין הרבה על הגלו תועל החורבן כל הימים שבין המצרים. ובת"ב מתאבלין מאד ואין מניחין תפילין ות
-  EN: 34 אָמַר וַיָּבֹא אַרְבֶּה וְיֶלֶק וְאֵין מִסְפָּר
-- hebrew_in_english_field at segments[23]/segment
-  HE: וע"כ תיכף אחר ת"ב פוסקין דיני האבילות של בין המצרים ומנחמין אותנו הרבה בשבע דנחמתא. כי תיכף שנחרב הביהמ"ק כאלו אין עוד התפארות בישראל כל לח"ו תיכף נתגלה ונתראה כמה מעלות טובות לישר
-  EN: 36 וַיַּךְ כָּל-בְּכוֹר בְּאַרְצָם רֵאשִׁית לְכָל-אוֹנָם
-- hebrew_in_english_field at segments[29]/segment
-  HE: וזה בחי' המשל שהביא במדרש על פסוק אל תראוני שאני שחרחורת וכו' מהשפחה שאמרה לחברתה למחר אדוני מגרש את אשתו ונוטלני לאשה בשביל שראה ידיה של גבירתה מפוחמת א"ל וכו' ומה את שכולך מפוחמת
-  EN: 38 שָׂמַח מִצְרַיִם בְּצֵאתָם כִּי-נָפַל פַּחְדָּם עֲלֵיהֶם
-- tiny_he_long_en at aligned_segments[1]/segment
-  HE: אות א
-  EN: And this is the aspect of matzah, which is the aspect of haste, as mentioned — for the beginning of the awakening, the aspect of Pesach, is with great enthusiasm and arousal, and o
-- tiny_he_long_en at aligned_segments[4]/segment
-  HE: אות ב
-  EN: And this is "bread of affliction" (Devarim 16:3) — that one recalls the affliction with which they were afflicted in Egypt, and "upon which they answer (onin) many things" (she'oni
-- tiny_he_long_en at aligned_segments[8]/segment
-  HE: אות ג
-  EN: For this is the aspect of chametz in ches — the opening and hollow is closed. This is the aspect of the "leavening of the brain" (chamitz ha-mo'ach), the aspect of "for my heart is
-
-### SEVERE public/reader/likutay-halachos/part-5/halacha-105.json flags=18 bilingual_segments=64/78
-- hebrew_in_english_field at segments[3]/segment
-  HE: וזה בחי' מצות ראשי תהגז ליתן לכהן. כי גיזת הצאן הם בחי' הלכות של התורה כמבואר בהתורה הזאת בבחי' כבשים ללבושיך בבחי' כרחל לפני גוזזיה שגוזזין ממנה הלכות. וזה בחי' פרנסה ועשירות כי כ
-  EN: 39 פָּרַשׂ עָנָן לְמָסָךְ וְאֵשׁ לְהָאִיר לָיְלָה
-- hebrew_in_english_field at segments[6]/segment
-  HE: אות ב וע"כ נבל שהוא בחי' לבן הארמי כמובא בחי' הלמדן שאינו כשר שהוא מתנגד וחולק על הצדיק ע"י שנוטה רק לשמאל שהוא בחי' שלא לשמה שמשם העשירות וכו' כ"ש שם. ע"כ מרד נבל וחלק על דוד המלך
-  EN: 40 שָׁאַל וַיָּבֵא שְׂלָו וְלֶחֶם שָׁמַיִם יַשְׂבִּיעֵם
-- hebrew_in_english_field at segments[12]/segment
-  HE: אות ה וזה בחי' כל פ' בלעם ששכרו בלק כי אמר אין כחו של משה אלא בפיו אף אנו נעמוד עליו באדם שכחו בפיו כי איאת בספרי קבלה שלבן ונבל ובלעם הם בחי' אחת בסוד הגלגול. היינו בחי' הלמדן שאי
-  EN: 42 כִּי-זָכַר אֶת-דְּבַר קָדְשׁוֹ אֶת-אַבְרָהָם עַבְדּוֹ
-- hebrew_in_english_field at segments[27]/segment
-  HE: אות י וזה שיצא המלאך נגד בלעם הרשע וחרבו שלופה בידו כי הראה לו שישראל יש להם גם כח החרב שבשמאל כי השמאל נכלל בימין וע"כ אמר לו אתה רוצה להחליף אמונתך וכו' כי הלא ישראל יש להם ב' הכ
-  EN: 2 עַל-עֲרָבִים בְּתוֹכָהּ תָּלִינוּ כִּנֹּרוֹתֵינוּ
-- hebrew_in_english_field at segments[35]/segment
-  HE: אות יד וזה בחי' המעשה של המלאך שבא ליהושע ויאמר לו הלנו אתה אם לצרינו ויאמר לו לא וכו' עתה באתי וארז"ל שאמר לו אתמול בטלתם התמיד ועתה בטלתם עסק התורה ושאל לו על מה באת והשיב לו עתה
-  EN: 5 אִם-אֶשְׁכָּחֵךְ יְרוּשָׁלִָם תִּשְׁכַּח יְמִינִי
-- tiny_he_long_en at aligned_segments[1]/segment
-  HE: אות א
-  EN: Therefore our Sages of blessed memory truly said: "One who reneges on his word is as if he worshipped idols" (ha-machlif b'diburo k'ilu avad avodah zarah). For certainly when one l
-- tiny_he_long_en at aligned_segments[5]/segment
-  HE: אות ב
-  EN: And this is what Shlomo the king, may he rest in peace, praised the holy Emunah: "A woman of valor, who can find?" (eshes chayil mi yimtza) — for holy Emunah is called "woman of va
-- tiny_he_long_en at aligned_segments[7]/segment
-  HE: אות ג
-  EN: And these holy contractions through which Hashem the Blessed contracted His light until the truth can only be known through Emunah, as mentioned — these contractions are the aspect
-
 ### SEVERE public/reader/likutay-halachos/part-5/halacha-7.json flags=18 bilingual_segments=67/76
 - tiny_he_long_en at aligned_segments[1]/segment
   HE: אות א
@@ -3364,57 +3077,57 @@ Files needing review (excluding normal untranslated books): 1751
   HE: אות ח
   EN: And therefore, everything that exists on dry land exists in the sea — except for the chuldah. For the essential concealment and hiddenness is in this world, on the physical earth u
 
-### SEVERE public/reader/likutay-halachos/part-6/halacha-24.json flags=18 bilingual_segments=49/64
-- hebrew_in_english_field at segments[4]/segment
-  HE: אות ב כי זה ידוע שאיש ואשה הם בחינת חכמה עילאה וחכמה תתאה (וכמובן בהתורה הזאת כמו שכתוב שם על הביאו בני ובנותי וכולי עיין שם), ועיקר החיבור שלהם בקדושה הוא בשביל הולדת והמשכת המוחי
-  EN: 13 וַאֲנִי בְּתֻמִּי תָּמַכְתָּ בִּי וַתַּצִּיבֵנִי לְפָנֶיךָ לְעוֹלָם
-- hebrew_in_english_field at segments[11]/segment
-  HE: אות ו
-  EN: 1 לַמְנַצֵּחַ מַשְׂכִּיל לִבְנֵי-קֹרַח
-- hebrew_in_english_field at segments[19]/segment
-  HE: אות ט ועל כן מי שיש לו בן, מכל מקום, פוטר את אשתו מן החליצה ומן היבום, כי אפלו בן רשע פוטר, כי כנגד ארבעה בנים דברה תורה ואחד מהם רשע, וגם הוא בכלל הארבעה בנים אשר על ידם ממשיכין ה
-  EN: 4 הָיְתָה-לִּי דִמְעָתִי לֶחֶם יוֹמָם וָלָיְלָה בֶּאֱמֹר אֵלַי כָּל-הַיּוֹם אַיֵּה אֱ-לֹהֶיךָ
-- hebrew_in_english_field at segments[25]/segment
-  HE: אות יב וזה מה שאמרו רבותינו זכרונם לברכה שחנוך היה תופר מנעלים, כי חנוך זה מט"ט שר הפנים משם שנמשך תקון המנעלים שהם שמירה לרגלין, שהוא חכמה תתאה, כי תקון המנעלים נמשך מבחינת אור הפ
-  EN: 6 מַה-תִּשְׁתּוֹחֲחִי נַפְשִׁי וַתֶּהֱמִי עָלָי הוֹחִילִי לֵא-לֹהִים כִּי-עוֹד אוֹדֶנּוּ יְשׁוּעוֹת פָּנָיו
-- tiny_he_long_en at aligned_segments[1]/segment
-  HE: אות א
-  EN: But also, the completeness of the korban certainly could not be in Egypt, in chutz la'aretz. For the primary completeness of the korban is only in Eretz Yisra'ail, in the Bais HaMi
-- tiny_he_long_en at aligned_segments[3]/segment
-  HE: אות ב
-  EN: And behold, the light that was revealed in Egypt was in truth a very exalted and awesome light — the aspect of the flow of light from the no'am ha'elyon itself. And as is explained
-- tiny_he_long_en at aligned_segments[5]/segment
-  HE: אות ג
-  EN: And in truth, when the no'am ha'elyon flows — that is, when there is a complete vessel through tzedakah — then also the chovlim come and fall into the no'am and are rectified as we
-- tiny_he_long_en at aligned_segments[7]/segment
-  HE: אות ד
-  EN: And this is the aspect of the severe prohibition of chametz on Pesach — that it is forbidden specifically on Pesach, but the rest of the entire year it is permitted. For on Pesach,
+### SEVERE public/reader/likutay-halachos/part-7/halacha-72.json flags=18 bilingual_segments=48/64
+- long_he_tiny_en at aligned_segments[3]/segment
+  HE: כי מבואר בהתורה הנ"ל שעיקר קיום הד' יסודות הוא ע"י יסוד הפשוט שהוא בחי' הצדיק יסוד עולם שהוא בחי' הנהר היוצא מעדן להשקות את הגן ומשם יפרד והי' לארבעה ראשים שהם הד' יסודות וכו' ע"ש.
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[5]/segment
+  HE: כי עיקר התהוות של כל העולם ומלואו הוא מהד' יסודות ארמ"ע. כי השי"ת ברא הד' יסודות ומהם הרכיב והמזיג כל העולם ומלואו שהם דצח"ם שבכ"א מעורבים כל הד' יסודות רק שבדומם העיקר הוא בחי' עפ
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[7]/segment
+  HE: נמצא שעיקר קיום כל הדברים שבעולם הוא ע"י השלום שנעשה ע"י הצדיק יסוד עולם שהוא בחי' רבית שלום שהוא בחי' יסוד הפשוט וכנ"ל וע"כ לא מצא הקב"ה כלי מחזקי ברכה לישראל אלא השלום. כי אפילו 
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[8]/segment
+  HE: וע"כ ארז"ל כל המענג את השבת נותנין לו נחלה בלי מצרים כי שבת הוא בחי' הצדיק הראש בית כמבואר שם בהתורה הנ"ל וע"כ ע"י שבת נתבטלין המצרים כיע"י הצדיק הראש בית בחי' שבת נמשךם היסוד הפשו
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[10]/segment
+  HE: וע"כ הזהירו רז"ל על דינא דבר מצרא שלא לקנות שדה על מיצר חבירו אם חבירו רוצה בה כי צריכין להשתדל בכל כחו למעט המצרים כדי להרחיב גבול הקדושה כי כל מה שמתרחב הגבול של כל אחד מישראל ונ
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[12]/segment
+  HE: וע"כ כבש משה רבינו בעצמו ארץ סיחון ועוג אע"פ ששאר א"י לא כבש. כי ארץ סיחון ועוג עומד על הציצר של א"י, וזה עיקר תוקף המלחמה לכבוש המיצר ואז ממילא כובשין א"י. וע"כ באמת לא אבה סיחון 
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[14]/segment
+  HE: וזה שאיתא במדרש איכה (סוף פ"א) חטאו בראש ולקו בראש ומתנחמים בראש וכו' היינו כנ"ל כי עיקר החטא והחורבן הי' ע"י שפגמו בהראש בי תואמרו נתנה ראש ונשובה מצרימה ועי"ז גרמו כל ראש לחלי וכ
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[16]/segment
+  HE: וע"כ קורין פ' דברים תמיד בשבת חזון סמוך לת"ב כי כל פ' דברים מדבר מה שגרמו בעוונותיהם לסבב גבולי א"י ולא יכלו לכנוס בדרך הישר דרך ארץ אדום לכבוש א"י וכל זה מחמת שבעונותיהם נתנו כח ל
+  EN: [continued]
 
-### SEVERE public/reader/likutay-halachos/part-6/halacha-4.json flags=18 bilingual_segments=54/68
-- hebrew_in_english_field at segments[22]/segment
-  HE: אות י וזהו בחינת ראש השנה ויום הכפורים ועשרת ימי תשובה, כי הם עשרת ימי תשובה כנגד עשרה מיני נגינה שהם כלליות השמחה כנ"ל, ועל כן בראש השנה שהוא יום א' של עשרת ימי תשובה, אז מעוררין 
-  EN: נִמְצָא, שֶׁעִקַּר פְּסוּל הַמִּשְׁפָּחָה הוּא עַל-יְדֵי עַזּוּת דְּסִטְרָא אָחֳרָא, שֶׁכָּל מִשְׁפָּחָה שֶׁרוֹאִין בָּהֶם שֶׁהֵם עַזֵּי פָּנִים בְּיוֹתֵר וּבַעֲלֵי רִיב וּמַצָּה, 
-- hebrew_in_english_field at segments[23]/segment
-  HE: בזמן שאדם מצטער שכינה מה אומרת קלני מראשי קלני מזרועי, וכמו שכתוב: רחל מבכה על בניה מאנה להנחם על בניה וכולי, ועל זה נאמר: דרך קשתו ויציבני כמטרה לחץ, הביא בכליותי בני אשפתו. כי כל
-  EN: [הטקסט המלא לעיל בלשון המחבר]
-- hebrew_in_english_field at segments[30]/segment
-  HE: אות יג ועל כן חייב אדם להוליד בן ובת, כי עיקר מה שמחוייב כל אדם להעמיד תולדות לקיים העולם הוא בשביל הגדלת השמחה, שבשביל זה נברא העולם כדי להגדיל ולהשלים השמחה על ידי שתעלה השמחה מז
-  EN: 2 בְּטֶרֶם הָרִים יֻלָּדוּ וַתְּחוֹלֵל אֶרֶץ וְתֵבֵל וּמֵעוֹלָם עַד-עוֹלָם אַתָּה אֵל
+### SEVERE public/reader/likutay-halachos/part-8/halacha-67.json flags=18 bilingual_segments=59/86
 - tiny_he_long_en at aligned_segments[1]/segment
-  HE: אות א
-  EN: And this is the reason the Torah introduced parshas Nedarim [with the words]: "And Moshe spoke to the heads of the tribes…" (Numbers 30:2) which is not said regarding the other mit
+  HE: אות כו
+  EN: That is, exactly the matter explained above: As long as there is no mishpat, the mishpat has the ko'ach to clothe itself in all the things in the world, in the aspect of "l'mishpat
 - tiny_he_long_en at aligned_segments[4]/segment
-  HE: אות ב
-  EN: And this is the aspect of the light of the seven days of creation, through which Adam could see from one end of the world to the other. That is, through this light one could gaze a
+  HE: אות כז
+  EN: It turns out that this one who is a defendant and did not pay his fellow on his own before coming to mishpat — he has blemished the mishpat. And when there is no mishpat — meaning,
 - tiny_he_long_en at aligned_segments[6]/segment
-  HE: אות ג
-  EN: And because sustenance was drawn through the sin of Adam HaRishon to the aspect of the ten types of blood, whose sustenance derives from the aforementioned aspect — therefore the l
+  HE: אות כח
+  EN: And because of this very thing, a person must have mercy on himself and guard himself very, very much — to judge himself on his own, so that the din should not need, chas v'shalom,
 - tiny_he_long_en at aligned_segments[8]/segment
-  HE: אות ד
-  EN: And this itself is the aspect of the seven clean days that the nidah counts in order to become pure to her husband. For the holy union of Israel is the aspect of the drawing-down o
-- tiny_he_long_en at aligned_segments[11]/segment
-  HE: אות ה
-  EN: For when one needs to ascend from impurity to purity, to purify oneself from dam nidos, one must attach oneself to the aspect of the or haganuz [hidden light] — that is, the concea
+  HE: אות כט
+  EN: For there is no good except one [i.e., unity], as is brought in the words of Rabbeinu z"l many times — that the essential good is the aspect of echad [one], as Chazal said (P'sachi
+- tiny_he_long_en at aligned_segments[10]/segment
+  HE: אות ל
+  EN: And then, when he judges himself and the din from Above does not need to clothe itself in other things, then [the chitzonim] have no sustenance at all. And then Hashem Yisbarach ju
+- tiny_he_long_en at aligned_segments[12]/segment
+  HE: אות לא
+  EN: And this is: "Al tavo v'mishpat es avdecha" — which is the aspect of Hashem Yisbarach coming in a clothed manner, in the aspect of "Hinai Anochi ba ailecha b'av he'anan" ["Behold, 
+- tiny_he_long_en at aligned_segments[14]/segment
+  HE: אות לב
+  EN: And one must then look well to recognize Him Yisbarach. For in truth, even if a person did not merit to examine his deeds and judge himself beforehand — before the din came upon hi
+- tiny_he_long_en at aligned_segments[16]/segment
+  HE: אות לג
+  EN: And this is: "Al tavo v'mishpat es avdecha" — that the mishpat should not come, meaning, that it should not clothe itself in other things distant from Him Yisbarach. For then certa
 
 ### SEVERE public/reader/otzar-hayirah/part-1/torah-85.json flags=18 bilingual_segments=18/36
 - long_he_tiny_en at aligned_segments[1]/segment
@@ -3468,83 +3181,57 @@ Files needing review (excluding normal untranslated books): 1751
   HE: "נֵהַלְתָּ בְעָזְּךָ אֶל נְוֵה קָדְשֶׁךָ", וְיִתְקָרֵב יוֹתֵר אֶל הַתּוֹרָה וְאֶל הַתְּפִלָּה וְאֶל הַצַּדִּיקֵי־אֱמֶת. וְכָל מַה שֶּׁזּוֹכֶה לְתוֹרָה וּתְפִלָּה יוֹתֵר, כְּמוֹ־ כֵ
   EN: [continued]
 
-### SEVERE public/reader/ramchal-shaaray-ramchal/part-1/torah-2.json flags=18 bilingual_segments=346/510
-- hebrew_in_english_field at segments[1]/segment
-  HE: מאמר הויכוח שערי רמח"ל מבוא למאמר הויכוח מאת עורכי הספר וידעת היום והשבת אל לבבך .רבינו הגדול איש האלקים רבי משה חיים לוצאטו זצוק״ל מגדיר בתחילת ספר קל״ח פתחי חכמה (בפירוש לפתח הרא
-  EN: מַאֲמַר הַוִּכּוּחַ
-- long_he_tiny_en at segments[1]/segment
-  HE: מאמר הויכוח שערי רמח"ל מבוא למאמר הויכוח מאת עורכי הספר וידעת היום והשבת אל לבבך .רבינו הגדול איש האלקים רבי משה חיים לוצאטו זצוק״ל מגדיר בתחילת ספר קל״ח פתחי חכמה (בפירוש לפתח הרא
-  EN: מַאֲמַר הַוִּכּוּחַ
-- hebrew_in_english_field at segments[2]/segment
-  HE: חֵלֶק רִאשׁוֹן
-  EN: חֵלֶק רִאשׁוֹן
-- hebrew_in_english_field at segments[104]/segment
-  HE: חֵלֶק שֵׁנִי
-  EN: חֵלֶק שֵׁנִי
-- hebrew_in_english_field at segments[127]/segment
-  HE: חֵלֶק שְׁלִישִׁי
-  EN: חֵלֶק שְׁלִישִׁי
-- hebrew_in_english_field at segments[148]/segment
-  HE: חֵלֶק רְבִיעִי
-  EN: חֵלֶק רְבִיעִי
-- hebrew_in_english_field at segments[154]/segment
-  HE: חֵלֶק חֲמִישִׁי
-  EN: חֵלֶק חֲמִישִׁי
-- hebrew_in_english_field at segments[241]/segment
-  HE: מַה מְּלַמֶּדֶת חָכְמַת הָאֱמֶת
-  EN: מַה מְּלַמֶּדֶת חָכְמַת הָאֱמֶת
-
-### SEVERE public/reader/ramchal-shaaray-ramchal/section-2.json flags=18 bilingual_segments=346/510
-- hebrew_in_english_field at segments[1]/segment
-  HE: מאמר הויכוח שערי רמח"ל מבוא למאמר הויכוח מאת עורכי הספר וידעת היום והשבת אל לבבך .רבינו הגדול איש האלקים רבי משה חיים לוצאטו זצוק״ל מגדיר בתחילת ספר קל״ח פתחי חכמה (בפירוש לפתח הרא
-  EN: מַאֲמַר הַוִּכּוּחַ
-- long_he_tiny_en at segments[1]/segment
-  HE: מאמר הויכוח שערי רמח"ל מבוא למאמר הויכוח מאת עורכי הספר וידעת היום והשבת אל לבבך .רבינו הגדול איש האלקים רבי משה חיים לוצאטו זצוק״ל מגדיר בתחילת ספר קל״ח פתחי חכמה (בפירוש לפתח הרא
-  EN: מַאֲמַר הַוִּכּוּחַ
-- hebrew_in_english_field at segments[2]/segment
-  HE: חֵלֶק רִאשׁוֹן
-  EN: חֵלֶק רִאשׁוֹן
-- hebrew_in_english_field at segments[104]/segment
-  HE: חֵלֶק שֵׁנִי
-  EN: חֵלֶק שֵׁנִי
-- hebrew_in_english_field at segments[127]/segment
-  HE: חֵלֶק שְׁלִישִׁי
-  EN: חֵלֶק שְׁלִישִׁי
-- hebrew_in_english_field at segments[148]/segment
-  HE: חֵלֶק רְבִיעִי
-  EN: חֵלֶק רְבִיעִי
-- hebrew_in_english_field at segments[154]/segment
-  HE: חֵלֶק חֲמִישִׁי
-  EN: חֵלֶק חֲמִישִׁי
-- hebrew_in_english_field at segments[241]/segment
-  HE: מַה מְּלַמֶּדֶת חָכְמַת הָאֱמֶת
-  EN: מַה מְּלַמֶּדֶת חָכְמַת הָאֱמֶת
-
-### SEVERE public/reader/likutay-halachos/part-2/halacha-28.json flags=17 bilingual_segments=35/44
-- hebrew_in_english_field at segments[10]/segment
-  HE: אות ד וזה בחינת ברכה ראשונה וברכה אחרונה. כי כל דבר יש לו תכלית שבשביל זה נברא ויצא מכח אל הפעל. כי כל הדברים שברא ה' יתברך הכל יצאו מכח אל הפעל בשביל האדם שמשלים אותם וחוזר ומעלה 
-  EN: 3 הַצִּילֵנִי מִפֹּעֲלֵי אָוֶן וּמֵאַנְשֵׁי דָמִים הוֹשִׁיעֵנִי
-- hebrew_in_english_field at segments[16]/segment
-  HE: אות ז וזה בחינת פגם המרגלים שפגמו בארץ ישראל. כי עקר הרצון זוכין על ידי ארץ ישראל. כי שם בארץ ישראל עקר הארת הרצון וההשתוקקות והכסופין לה' יתברך בבחינת רצית ה' ארצך . וכן אמרו רבות
-  EN: 5 בְּלִי-עָוֹן יְרוּצוּן וְיִכּוֹנָנוּ עוּרָה לִקְרָאתִי וּרְאֵה
-- hebrew_in_english_field at segments[18]/segment
-  HE: ועל-כן עתה מקשר יפה מה שאמרו וזה פריה אפס כי עז העם, הינו שאמרו שהפרות טובים ונפלאים מאד שזהו מורה על הארת הרצון, אפס כי עז העם וכו' שהמניעות חזקים יותר מהם. וזה היה עקר הפגם והכפי
-  EN: 6 וְאַתָּה יי-א-לֹהִים צְבָאוֹת אֱ-לֹהֵי יִשְׂרָאֵל הָקִיצָה לִפְקֹד כָּל-הַגּוֹיִם אַל-תָּחֹן כָּל-בֹּגְדֵי אָוֶן סֶלָה
-- hebrew_in_english_field at segments[21]/segment
-  HE: אות ח וזה בחינת מה שנסמך פרשת מנחות נסכים לפרשת המרגלים . כי קרבן מנחה הוא בחינת הארת הרצון, כמו שכתוב: ונפש כי תקריב קרבן מנחה וכמו שפרש רש"י: לא נאמר נפש אלא במנחה. מי דרכו להקרי
-  EN: 7 יָשׁוּבוּ לָעֶרֶב יֶהֱמוּ כַכָּלֶב וִיסוֹבְבוּ עִיר
+### SEVERE public/reader/likutay-halachos/part-3/halacha-26.json flags=17 bilingual_segments=50/64
 - tiny_he_long_en at aligned_segments[1]/segment
+  HE: הלכה ה
+  EN: Therefore, on every day that has greater holiness and the daas is revealed to a greater degree and teshuvah is revealed to a greater degree — such as Rosh Chodesh, Yom Tov, Yom HaK
+- tiny_he_long_en at aligned_segments[2]/segment
   HE: אות א
-  EN: The principle: the essential tikkun of all worlds is through placing action before hearing (= emunah) — performing all mitzvos with great simchah through emunah alone, even without
-- tiny_he_long_en at aligned_segments[4]/segment
+  EN: And this is why the Torah is read before Musaf, as mentioned above. For the essential Torah reading is on account of the additional holiness that exists on that day — when one call
+- tiny_he_long_en at aligned_segments[5]/segment
   HE: אות ב
-  EN: Therefore after Parshas Sh'kalim we read Parshas Zachor — the aspect of wiping out Amalak and Haman yimach sh'mo [may his name be erased]. They = the denials of the investigators =
-- long_he_tiny_en at aligned_segments[6]/segment
-  HE: איזהו דבר שהנשמה נהנה ממנו? זה הריח. כי התגברות החשק בשעת המניעות הוא על ידי בחינת ריח. כי באמת עקר כל המניעות הם מניעות המח כמו שכתוב במקום אחר , כי עקר המניעה מחמת שמבלבלין מחו ב
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[8]/segment
-  HE: וכל הברכות שמברכין על כל הדברים כלם הם בבחינת מוציא מכח אל הפעל, כי קדם שמברכין על הדבר ומודים שה' יתברך ברא אותו קדם לזה, אין שלמות להדבר, ואין נמשך שלמות החיות דקדשה לאותו הדבר, 
-  EN: [continued]
+  EN: And this is why we bless the month on the Shabbos before it, which is in place of Kiddush HaChodesh. For now, in exile, we do not have the power to sanctify the month through a Bai
+- tiny_he_long_en at aligned_segments[7]/segment
+  HE: אות ג
+  EN: For all the Roshei Chadashim (new moons) and the festivals that depend on the fixing of Rosh Chodesh — all of them depend on Shabbos, from which they receive their holiness. And th
+- tiny_he_long_en at aligned_segments[9]/segment
+  HE: אות ד
+  EN: Therefore, on the contrary, from Shabbos one calls the vitality and daas into the festivals and Roshei Chadashim. For through the daas drawn from Shabbos, one reveals the concealme
+- tiny_he_long_en at aligned_segments[11]/segment
+  HE: אות ה
+  EN: And this is the aspect of: "The son of Dovid will not come except in a generation that is entirely righteous or entirely wicked." For if entirely righteous, they would be worthy of
+- tiny_he_long_en at aligned_segments[13]/segment
+  HE: אות ו
+  EN: For the Exodus from Egypt, which is the aspect of the revelation of the concealment, depends on Shabbos, as mentioned above. For the Pesach offering in Egypt was taken on the tenth
+- tiny_he_long_en at aligned_segments[15]/segment
+  HE: אות ז
+  EN: Therefore, in Nissan, in which the redemption from Egypt took place — which is the aspect of Kiddush HaChodesh, the aspect of Rosh Chodesh — therefore it is called Rosh Chadashim (
+
+### SEVERE public/reader/likutay-halachos/part-3/halacha-42.json flags=17 bilingual_segments=46/66
+- tiny_he_long_en at aligned_segments[1]/segment
+  HE: הלכה ד
+  EN: And this itself is the aspect of filling the blemish of the moon — for "the face of Yehoshua was like the face of the moon," etc. And the essential wisdom that one needs to receive
+- tiny_he_long_en at aligned_segments[2]/segment
+  HE: אות א
+  EN: And so the Torah was transmitted from generation to generation — from Yehoshua to the Elders, etc., until the Men of the Great Assembly, etc. — all of which is the aspect of the s'
+- tiny_he_long_en at aligned_segments[5]/segment
+  HE: אות ב
+  EN: And then, when the s'michah and all the tikkunim mentioned above existed, they knew how to give counsel to their souls — through the true Sages who held s'michah, for the essential
+- tiny_he_long_en at aligned_segments[7]/segment
+  HE: אות ג
+  EN: And through this one merits even now complete counsel, as mentioned. Therefore whoever truly wants to think about his eternal purpose — so that he should not be lost in his sins, e
+- tiny_he_long_en at aligned_segments[9]/segment
+  HE: אות ד
+  EN: And it has already been explained in our words elsewhere regarding this: that only from s'farim that were founded upon the external wisdoms — namely Aristotle, may his name be blot
+- tiny_he_long_en at aligned_segments[11]/segment
+  HE: אות ה
+  EN: The general principle is that the tikkun of the moon's blemish — which is the mitzvah of the holiness of Rosh Chodesh, which is the aspect of the secret of the intercalation — is a
+- tiny_he_long_en at aligned_segments[13]/segment
+  HE: אות ו
+  EN: And therefore the din and mishpat of Rosh HaShanah — in which every single person is judged — is called by the name of "the writing of s'farim," as our Sages, of blessed memory, sa
+- tiny_he_long_en at aligned_segments[15]/segment
+  HE: אות ז
+  EN: And therefore the fifth t'fillah that is added on Yom Kippur is called N'ilah (Closing) — for through it we lock and bind and include together the Written Torah and the Oral Torah,
 
 ### SEVERE public/reader/likutay-halachos/part-3/halacha-52.json flags=17 bilingual_segments=61/72
 - tiny_he_long_en at aligned_segments[1]/segment
@@ -3598,31 +3285,31 @@ Files needing review (excluding normal untranslated books): 1751
   HE: וזה בחינת זבע שבתות. כי עיקר הרצון וכיסופין דקדושה שמזה נישין נפשות הוא בשבת. כי שבת הוא רצון וכיסופין דקדושה. כמו שכתוב באהבה וברצון הנחלתנו ואז מתגלה רעוא דרעוין רצון שברצונות. ו
   EN: [continued]
 
-### SEVERE public/reader/likutay-halachos/part-5/halacha-102.json flags=17 bilingual_segments=45/54
-- hebrew_in_english_field at segments[3]/segment
-  HE: ע"פ המאמר כי מרחמם ינהגם בסי' ז' וכו' ע"ש כל המאמר וכבר הובא זה המאמר כ"פ. והכלל לענינינו שהצדיק הדור צריך להשאיר השארה אחריו להאיר בבנים ותלמידים כי העיקר הרחמנות הוא להמשיך הדעת 
-  EN: 12 בִּהְיוֹתָם מְתֵי מִסְפָּר כִּמְעַט וְגָרִים בָּהּ
-- hebrew_in_english_field at segments[6]/segment
-  HE: וזה מה שצותה תורה ליתן ראשית הגז לכהן כי הכהן הוא כלול מבן ותלמיד כ"ש להורות את בני ישראל כוו' כמבואר שם במאמר הנ"ל כיהכהן הוא בחי' הצדיק והרב שבדור שמאיר בבן ותלמיד כ"ש כי שפת יכה
-  EN: 13 וַיִּתְהַלְּכוּ מִגּוֹי אֶל-גּוֹי מִמַּמְלָכָה אֶל-עַם אַחֵר
-- hebrew_in_english_field at segments[8]/segment
-  HE: אות ג וגם עיקר התיקון של המשכת המקיפין הנ"ל הוא ע"י השתיקה שהוא בחי' סייג לחכמה שתיקה כי אין מי שיוכל להמשיך המקיפין הנ"ל כראוי ולהכניס דעת בישראל לדעת כי ה' הוא האלקים כ"א מי שהוא
-  EN: 14 לֹא-הִנִּיחַ אָדָם לְעָשְׁקָם וַיּוֹכַח עֲלֵיהֶם מְלָכִים
-- hebrew_in_english_field at segments[11]/segment
-  HE: אות ה
-  EN: 15 אַל-תִּגְּעוּ בִמְשִׁיחָי וְלִנְבִיאַי אַל-תָּרֵעוּ
-- hebrew_in_english_field at segments[13]/segment
-  HE: וזהו שנסמך פ' בגדי כהונה למצות שמן המנורה. כ"ש בתחילת פ' תצוה כי שמן המנורה זה בחי' המקיפים הנ"ל. בחי' להצהיל פנים משמן כוו'. שזהו בח'י חנוכה שזוכין ע"י יוה"כ כ"ש שם ע"ש. וזהו בחי'
-  EN: 16 וַיִּקְרָא רָעָב עַל-הָאָרֶץ כָּל-מַטֵּה-לֶחֶם שָׁבָר
-- hebrew_in_english_field at segments[16]/segment
-  HE: אות ז וזה בחי' ויוגד לתמר לאמר הנה חמיך עולה תמנתה לגזוז צאנו לגוז צאנו דייקא כי יהודה ותמר הי' צריכין לתקן נשמת ער ואונן שהי' משחיתים דרכם שזהו העון הגדול בתורה והוא כלל כל העוונו
-  EN: 17 שָׁלַח לִפְנֵיהֶם אִישׁ לְעֶבֶד נִמְכַּר יוֹסֵף
-- hebrew_in_english_field at segments[25]/segment
-  HE: וזהו ג"כ בחי' קריעה על המת ח"ו. כי נפגם הלבושין שהם בחי' חשמ"ל כי נסתלק נשמה מישראל שהוא בחי' דעת. כ"ש ונשמת שד"י תבינם. וכפי הסתלקות הדעת כן נסתלק החשמ"ל שהוא בחי' לבושין. וע"כ רמ
-  EN: 20 שָׁלַח מֶלֶךְ וַיַּתִּירֵהוּ מוֹשֵׁל עַמִּים וַיְפַתְּחֵהוּ
-- tiny_he_long_en at aligned_segments[1]/segment
-  HE: אות א
-  EN: All these contractions and measures — the aspect of shi'urin d'atun d'Oraisa — are all the aspect of hairs, as mentioned, and all of them are drawn from the hairs of the holy beard
+### SEVERE public/reader/likutay-halachos/part-4/halacha-55.json flags=17 bilingual_segments=49/70
+- long_he_tiny_en at aligned_segments[2]/segment
+  HE: ענין איסור מאכלי עכו"ם דהיינו איסור בישולי עכו"ם שאפי' מאכל היתר שנתבשל ע"י עכו"ם אסור באכילה. על פי מ"ש רבינו ז"ל במאמר תקעו בחודש שופר המתחיל מתוכחה ע"ש היטב (בלק"ת סי' ח') :
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[3]/segment
+  HE: והנה איתא שם כי יש מזונא דגופא ויש מזונא דנשמתא שהוא הריח. ועל ידי מזונא דגופא מגדילין חס ושלום עקב דס"א שעל ידו נחלש מזונ' דנשמתא שהוא היראה והריח. והתיקון לזה בחי' קול בחי' נשאו 
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[4]/segment
+  HE: והנה הכלל שע"י מזונא דגופא נחלש מזונא דנשמתא. וא"כ לכאורה תמוה איך הותר לנו לאכול הלא ע"י מזונא דגופא נחלש מזונא דנשמתא חס ושלום. אך באמת ישראל קדושים כל אכילתם אפי' מאכל הגוף שלהם
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[6]/segment
+  HE: נמצא שגם העאש של ישראל נמשך עלי' מקדושת שבת ע"י ברכת בורא במאורי האש שמברכין במ"ש כנ"ל. ועל כן המאכלים שאנו מתקנין אצל האש הם בבחינת מזונא דנשמתא. כי נמשך עליהם ריח טוב מקדושת שבת 
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[8]/segment
+  HE: נמצא שבישול ותיקון המאכלים צריך להיות ע"י ישראל דווקא שהם בני יעקב שזכה לקול ולריח הנ"ל ולא על ידי עכו"ם שהם מסטרא דעשו שהוא ההיפך ממש כנ"ל. וע"כ בשעה שהביא יעקב המאכלים לאביו נאמר
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[10]/segment
+  HE: וע"כ חנניה מישאל ועזרי' שנזהרו ממאכלי עכו"ם לא שלטה בהם אש כי מאכלי עכו"ם הם מסטרא דאש הקשה אש של גיהנם. וע"כ ע"י שנזהרו מזה לא שלטה בהם אש. וז"ש וריח נור לא עדת בהון. ריח דייקא הי
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[14]/segment
+  HE: וע"כ כלי סעודה שיוצאין מרשות עכו"ם צריכין טבילה. כי הטבילה במקוה או במעיין הוא בבחי' נהר היוצא מעדן וכו' ועל ידי זה מטהרין הכלים היוצאין מרשותן שיהיו ראויים לאכול בהם מאכל ישראל דה
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[16]/segment
+  HE: וזה בחי' איסור יין נסך שגזרו חז"ל על סתם ייינם. ואפי' יין שלנו שנגע בו העכו"ם אסור בשתיה ובהנאה מדינא, על פי המאמר תקעו ג' הנזכר לעיל עיין שם היטב. כי מזונא דנשמתא ומזונא דגופא הם 
+  EN: [continued]
 
 ### SEVERE public/reader/likutay-halachos/part-7/halacha-58.json flags=17 bilingual_segments=50/66
 - long_he_tiny_en at aligned_segments[2]/segment
@@ -3702,31 +3389,31 @@ Files needing review (excluding normal untranslated books): 1751
   HE: וע"כ נכנסין כל השבעה רועים לתוך הסוכה, כי סוכה בחי' שפע של אדם שזהו בחי' התיקון הנמשך ע"י השבעה רועים וכנ"ל. ועיקר גמר התיקון של כל השבעה רועים הוא ע, ידוד המעש"ה שהוא השביעי שהוא 
   EN: [continued]
 
-### SEVERE public/reader/likutay-halachos/part-8/halacha-52.json flags=17 bilingual_segments=54/68
-- hebrew_in_english_field at segments[32]/segment
-  HE: אות יד
-  EN: תִּקּוּן הַכְּלָלִי
+### SEVERE public/reader/likutay-halachos/part-8/halacha-57.json flags=17 bilingual_segments=56/76
 - tiny_he_long_en at aligned_segments[1]/segment
   HE: אות א
-  EN: And therefore the agent has no power to sue them through law and justice unless he comes with an explicit authorization for this. And he too is called "one who did not do well amon
-- tiny_he_long_en at aligned_segments[5]/segment
+  EN: For great and wondrous craftsmanship is needed for this — to elevate from the lowest depths upward, upward, to the aspect of above the Makom. For Hashem Yisborach desires the conti
+- tiny_he_long_en at aligned_segments[4]/segment
   HE: אות ב
-  EN: And therefore, when Hashem Yisborach consented to Moshe that He would not send an agent, but would rather go Himself with Israel — then He revealed to him the measure of His goodne
-- tiny_he_long_en at aligned_segments[7]/segment
+  EN: And therefore his punishment was that he was choked in his throat — as is explained above regarding the teaching of our Sages, zichronam livrachah: "Behold, one who chokes his fell
+- tiny_he_long_en at aligned_segments[6]/segment
   HE: אות ג
-  EN: For this is known in the Midrashim and in all the holy books — the great prosecution of the angels against the receiving of the Torah, who said: "How mighty is Your Name in all the
-- tiny_he_long_en at aligned_segments[9]/segment
+  EN: And this is: "How beautiful are your feet in sandals, daughter of the noble one" etc. — which is said about those who go up for the Regel [pilgrimage festival]. And likewise about 
+- tiny_he_long_en at aligned_segments[8]/segment
   HE: אות ד
-  EN: And one who is a man of valor and wishes to have mercy on his life and his eternal purpose — he strengthens himself like a lion and is bold as a leopard at every turn and does not 
-- tiny_he_long_en at aligned_segments[11]/segment
+  EN: And this is what is brought in Midrash Rabbah, Vayishlach, Parashah 78: "All those years that Yaakov Avinu was in Bais Eil, he did not refrain from pouring libations." Rabbi Chanan
+- tiny_he_long_en at aligned_segments[10]/segment
   HE: אות ה
-  EN: Now, at first glance, the counsel written in this Torah is difficult to understand — to stand against the prosecution of the angels by grasping oneself in the Keesay HaKavod etc. —
-- tiny_he_long_en at aligned_segments[16]/segment
+  EN: And this is the aspect of: "Behold, how good and how pleasant it is for brothers to dwell together; like the good oil upon the head" — which is the anointing oil. For according to 
+- tiny_he_long_en at aligned_segments[13]/segment
+  HE: אות ו
+  EN: But all of this Korach would have merited had he recognized his place — how he was not fit for this from the side of his deeds, but only through the power of Moshe his master. And 
+- tiny_he_long_en at aligned_segments[15]/segment
   HE: אות ז
-  EN: And therefore the Tanna began this tractate, which is Avos, with "Moshe received the Torah from Sinai" specifically. For Sinai is the aspect of humility and lowliness, as our Sages
-- tiny_he_long_en at aligned_segments[18]/segment
+  EN: And therefore Korach wanted to separate the heads of the generation from Moshe and to dispute him. And in truth it was a time of great distress. And this is: "And Korach took" — "a
+- tiny_he_long_en at aligned_segments[17]/segment
   HE: אות ח
-  EN: Rather, only this Tzadik who is humble like Moshe — who is actual Ayin in the ultimate degree of true self-nullification — since he is in the aspect of Ayin in truth, he has no pla
+  EN: And therefore their downfall was through k'tores — for they wanted to offer alien k'tores. For the fragrance of the k'tores is the essential rectification and elevation of all the 
 
 ### SEVERE public/reader/chumash-lh/section-39.json flags=16 bilingual_segments=48/50
 - long_he_tiny_en at segments[16]/segment
@@ -3806,57 +3493,83 @@ Files needing review (excluding normal untranslated books): 1751
   HE: א.
   EN: The true leaders of the generation — the Tzadikim — are the aspect of wind [ruach]. As it is written [Numbers 27:18]: ""a man in whom there is spirit"" — who knows how to walk acco
 
-### SEVERE public/reader/likutay-halachos/part-1/halacha-2.json flags=16 bilingual_segments=57/72
-- tiny_he_long_en at aligned_segments[1]/segment
+### SEVERE public/reader/likutay-halachos/part-1/halacha-42.json flags=16 bilingual_segments=36/36
+- tiny_he_long_en at segments[1]/segment
+  HE: הלכה ד
+  EN: This is the call of the rooster — which cries out and awakens the world to serve the Creator, as explained in the Zohar. It comes specifically from the chain of Gevuros — for the G
+- tiny_he_long_en at segments[2]/segment
   HE: אות א
-  EN: And this is the aspect of: "Awake, my glory! Awake, O nevel and kinor! I shall awaken the dawn!" (Psalms 57:9). That is, a person must arouse himself from his sleep and from his fa
-- tiny_he_long_en at aligned_segments[4]/segment
-  HE: אות ב
-  EN: It emerges that the essential aspect of the awakening from sleep is through the nekudos tovos that one finds within himself, even when he is, G-d forbid, in the very lowest level, 
-- tiny_he_long_en at aligned_segments[6]/segment
+  EN: Therefore we bless: "HaNosein laSechvi vinah" — for through the illumination of Binah (= the Mochin) into the Gevuros, they are transformed and become Da'as. "L'havchin bein yom u'
+- tiny_he_long_en at segments[7]/segment
   HE: אות ג
-  EN: And this is the aspect of: "the Kohanim at their service, and the Levi'im on their platform, and the Israelites at their post [ma'amad]" (Megillah 3a). For the essential rectificat
-- tiny_he_long_en at aligned_segments[8]/segment
+  EN: Based on the Ma'aseh of the Prince who was exchanged with the Son of the Maidservant, etc. See there the entire story from beginning to end — it is wondrous. As the Rebbe said afte
+- tiny_he_long_en at segments[9]/segment
   HE: אות ד
-  EN: And this is the aspect of the donning of garments: that one must grasp the garment with the right side and always give precedence to the right over the left. For the essential matt
-- tiny_he_long_en at aligned_segments[10]/segment
+  EN: All this is drawn from the aspect of the exchange of the Prince who was switched — this is the secret of Heichalei HaTemuros [the Chambers of Exchanges], where neshamos are sometim
+- tiny_he_long_en at segments[11]/segment
   HE: אות ה
-  EN: And this is the aspect of the Four Special Parshiyos. Parashas Shekalim — the aspect of tzedakah, for tzedakah is the aspect of "chesed to Avraham" (Micah 7:20), who performed char
-- tiny_he_long_en at aligned_segments[13]/segment
+  EN: Through this, the aspect of Lahat HaCherev HaMishapechos [the Flaming, Turning Sword] was empowered — which is the aspect of Heichalei HaTemuros, the aspect of transformation from 
+- tiny_he_long_en at segments[13]/segment
   HE: אות ו
-  EN: And this is the aspect of how our Sages, of blessed memory, delved deeply into the matter of the knowledge of how to determine exactly when midnight falls, as it is brought in brac
-- tiny_he_long_en at aligned_segments[15]/segment
+  EN: But now in exile, in our great sins, the matter has been exchanged — the nations are kings and rulers, and Yisrael are, chas v'shalom, like slaves. All this is drawn from Heichalei
+- tiny_he_long_en at segments[15]/segment
   HE: אות ז
-  EN: And therefore David knew exactly when midnight was, through the harp mentioned above. For he was a skilled musician . For this entire holy teaching — to search for the good and to 
-- tiny_he_long_en at aligned_segments[17]/segment
+  EN: This is the secret of Yitzchak and Yishmael, Yaakov and Eisav. Because of Heichalei HaTemuros, Avraham was compelled to take a maidservant to first expel the p'soles [impurity/wast
+- tiny_he_long_en at segments[17]/segment
   HE: אות ח
-  EN: And this is the aspect of: "Awake, my glory! Awake, O nevel and kinor! I shall awaken the dawn!" . That is, a person must arouse himself from his sleep and from his fallen state. A
+  EN: For it is explained in the writings of the Arizal: we see that sometimes a great tzaddik and servant of Hashem falls from his service, and sometimes falls into complete transgressi
 
-### SEVERE public/reader/likutay-halachos/part-1/halacha-9.json flags=16 bilingual_segments=51/68
-- tiny_he_long_en at aligned_segments[1]/segment
-  HE: הלכה ב
-  EN: And the general principle is that even filthy places and houses of idol worship also receive vitality from the Creator, blessed be His Name. And even though His glory, blessed be H
-- tiny_he_long_en at aligned_segments[2]/segment
+### SEVERE public/reader/likutay-halachos/part-1/halacha-47.json flags=16 bilingual_segments=42/42
+- tiny_he_long_en at segments[1]/segment
+  HE: הלכה ג
+  EN: This is : "Mimizrach shemesh ad mevo'o mehulal Sheim Hashem" — for after the setting of the sun, it is the darkness of night, where the essential hold of the slave is — the aspect 
+- tiny_he_long_en at segments[2]/segment
   HE: אות א
-  EN: And this is the aspect of tzitzis, which are the rectification of the garments — a protection from the klipos, as is brought. That is: the garments are the aspect of Kavod, for Rab
-- tiny_he_long_en at aligned_segments[5]/segment
+  EN: This is: "Mimizrach shemesh ad mevo'o" — from one end to the other, from the upper end to the lower end, from day to night, from the ultimate light to the ultimate darkness — "mehu
+- tiny_he_long_en at segments[6]/segment
   HE: אות ב
-  EN: And this is the aspect of wrapping oneself in a tallis on Yom HaKipurim while it is still day (Shulchan Aruch, Siman 18, Se'if 1, in the Rema). For the atonement of Yom Kippur is t
-- tiny_he_long_en at aligned_segments[7]/segment
+  EN: This is: "Banim atem laHashem Elokeichem, lo sisgod'du v'lo sasimu korchah bein eineichem al meis." Adjacent to this mitzvah specifically, He calls them by the name of sons — for o
+- tiny_he_long_en at segments[8]/segment
   HE: אות ג
-  EN: For the food of Israel must be in great holiness. And the essential sanctity of eating is through the da'as — which is the revelation of hashgachah. And this is the aspect of eatin
-- tiny_he_long_en at aligned_segments[9]/segment
+  EN: Therefore it is called Chanukah — after the chanukas [dedication of] the Beis HaMikdash that was dedicated then, as our Sages said. For on Chanukah we draw the aspect of the holine
+- tiny_he_long_en at segments[10]/segment
   HE: אות ד
-  EN: And this is: "And you shall eat and be sated, and you shall bless Hashem your G-d for the good land" — etc. — that is, you shall bless Hashem after eating — that you shall know tha
-- tiny_he_long_en at aligned_segments[11]/segment
-  HE: אות ה
-  EN: And therefore, the vessel that was in the possession of idolaters — who are from the sitra d'mesaavusa [side of impurity] — for they attribute things to nature, from which is the e
-- tiny_he_long_en at aligned_segments[13]/segment
+  EN: From this you can understand and perceive a little of the greatness of our holy and awesome Rebbe z"l, and the greatness of his Stories that he told. For Hashem knows that I know i
+- tiny_he_long_en at segments[14]/segment
   HE: אות ו
-  EN: For nature is the aspect of darkness and night, the aspect of the blemish of the moon, as above — from which is the essential poverty, as is known. And these two aspects are encomp
-- tiny_he_long_en at aligned_segments[15]/segment
+  EN: This is known in the Kisvai [writings of the Arizal]: the secret of Ra'ava d'Ra'avin is a hidden, sealed, and concealed secret from the eyes of all. Even Moshe Rabbeinu did not att
+- tiny_he_long_en at segments[16]/segment
   HE: אות ז
-  EN: And therefore, at the time of the redemption from Egypt — when the hashgachah was revealed — then it is a mitzvah to drink four cups of wine. For then the wine is in the aspect of:
+  EN: But this pidyon and hamsakah drawn from the aspect of Ra'ava d'Ra'avin is above all intellects and wisdoms. It is the upper root of all wisdoms. It is the aspect of the ultimate kn
+- tiny_he_long_en at segments[19]/segment
+  HE: אות ח
+  EN: On this depends the entire kedushah of every Yid. For all Yisrael are included in Moshe, who is the aspect of the true tzaddik in every generation — who includes within him the nes
+
+### SEVERE public/reader/likutay-halachos/part-1/halacha-53.json flags=16 bilingual_segments=34/34
+- tiny_he_long_en at segments[1]/segment
+  HE: הלכה ד
+  EN: This is the aspect of the Kedushah said within Bircas Yotzer Or — for this is the essential kedushah: when one publicizes that everything is through His will, the aspect of Mikra K
+- tiny_he_long_en at segments[2]/segment
+  HE: אות א
+  EN: At the end of the berachah — in "l'Ail baruch n'imos" [the concluding section of Yotzer Or] — we again mention "oseh chadashos" [He makes new things] and conclude: "Ham'chadesh b't
+- tiny_he_long_en at segments[4]/segment
+  HE: אות ב
+  EN: It follows: through this berachah we draw upon ourselves additional light, kedushah, and da'as — through which we are included among the elders of kedushah, etc. — through which th
+- tiny_he_long_en at segments[6]/segment
+  HE: אות ג
+  EN: Thus the sum of the Torah is to bind all the retzonos in the world to the root of the Ratzon. This is the aspect of Bircas Ahavas Olam — where we ask for the fulfillment of Torah: 
+- tiny_he_long_en at segments[8]/segment
+  HE: אות ד
+  EN: After Kri'as Shma we say the berachah of geulah — the berachah of Emes V'Yatziv. There we mention the geulah of Mitzrayim and ask for the future geulah, as it says: "U'f'dai chin'u
+- tiny_he_long_en at segments[12]/segment
+  HE: אות ו
+  EN: This is the aspect of needing to include the quality of night within day and day within night — for it is all one. Emunah and holy da'as are one, as it is written : "V'airastich li
+- tiny_he_long_en at segments[14]/segment
+  HE: אות ז
+  EN: Afterward we add Bircas Hashkiveinu. This is the aspect of what is explained in the Torah : even when the Ratzon is revealed through tzedakah, the metzach of the nachash returns an
+- tiny_he_long_en at segments[16]/segment
+  HE: אות ח
+  EN: This is a general rule: all distancings and falls at their root are drawn from the blemish of emunas haRatzon — from which all the desires stem. The essential source is the above: 
 
 ### SEVERE public/reader/likutay-halachos/part-2/halacha-41.json flags=16 bilingual_segments=60/64
 - tiny_he_long_en at aligned_segments[1]/segment
@@ -3988,213 +3701,31 @@ Files needing review (excluding normal untranslated books): 1751
   HE: וזה בחינת פרשת קרבן התמיד שאומרים בבקר שהוא לטהר ולתקן עולם העשיה כידוע. והעיקר להכניע הקליפה שנקרא תולע על ידי בחינת עולת תמיד (כמו שכתוב בכוונות). כי שם בעשיה עיקר אחיזת בחינת תו
   EN: [continued]
 
-### SEVERE public/reader/likutay-halachos/part-4/halacha-54.json flags=16 bilingual_segments=35/42
-- hebrew_in_english_field at segments[2]/segment
-  HE: ע"פ התורה תפלה לחבקוק (בסי' י"ט) הנ"ל בהל' שחיטה הלכה ב') :
-  EN: 1 לַמְנַצֵּחַ עַל-יְדוּתוּן לְאָסָף מִזְמוֹר
-- hebrew_in_english_field at segments[8]/segment
-  HE: אות ד וזה בחי' איסור שאסרו רז"ל גבינות של נכרים גבינות דוקא אבל לא החמאה וע"כ נוהגין היתר בחמאה שלהם בכמה מקומות. ע"פ מ"ש לעיל בה' בב"ח (הלכה א' שבהחלב יש בה עדיין קצ תאחיזה להם שז
-  EN: 3 בְּיוֹם צָרָתִי אֲדֹנָי דָּרַשְׁתִּי יָדִי לַיְלָה נִגְּרָה וְלֹא תָפוּג מֵאֲנָה הִנָּחֵם נַפְשִׁי
-- hebrew_in_english_field at segments[20]/segment
-  HE: וע"כ גם כששולחין ע"י ישראל מומר וחשוד צריך ג"כ ב' החותמות הנ"ל. כי המומר היינו המועד ומחוזק לכך. ועיקר החזקה הוא בג' פעמים כי כשעובר עבירה ג"פ נעשה מומר לאותו דבר כי הואבחי' הסתרה 
-  EN: 7 אֶזְכְּרָה נְגִינָתִי בַּלָּיְלָה עִם-לְבָבִי אָשִׂיחָה וַיְחַפֵּשׂ רוּחִי
-- long_he_tiny_en at aligned_segments[3]/segment
-  HE: א וזהו בחי' איסור בישולי עכו"ם כי הבישול הוא הכנה לזווג כנ"ל בהלכות בב"ח (הלכה א'). כי הבישול הוא בבחי' תיקון הברית שצריך לתקן כל המאכלים להעביר משם בחי' הרע בחי' פגם הברית כדי לבר
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[4]/segment
-  HE: וזה שארז"ל שכל העולה על שלחן מלכים יש בו משום בישולי עכו"ם. כי כשיש בו חשיבות שראוי להתכבד ולעלות על שלחן מלכים, נמצא שהוא מאכל חשוב ומכובד שיש בו קדושה ביותר. כיכל דבר החשוב ומכוב
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[6]/segment
-  HE: וכן הפת אסור רז"ל ג"כ פת של עכו"ם. כי הלחם הוא דבר חשוב מאד כנ"ל בהל'ד נטילת ידים (הלכה א') וזה שאמרו רז"ל שגזרו על מאכלי עכו"ם משום יינן כי כשפוגם במאכלי עכו"ם שזהו בחי' פגם הברית
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[8]/segment
-  HE: וזה בחי' איסור שאסרו רז"ל גבינות של נכרים גבינות דוקא אבל לא החמאה וע"כ נוהגין היתר בחמאה שלהם בכמה מקומות. ע"פ מ"ש לעיל בה' בב"ח (הלכה א' שבהחלב יש בה עדיין קצ תאחיזה להם שזהו בחי
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[10]/segment
-  HE: וזה שאסרו רז"ל שלא לשתות משקה המשכר בבית עכו"ם. כי השכרות הוא בחי' עץ הדעת טו"ר בחי' עירבוב הדעת כנ"ל בה' סינמי בהמה וחיה טהורה (הלכה א.) וע"כ אסור להשתכר בבית העכו"ם פן יהי' נלכד 
-  EN: [continued]
-
-### SEVERE public/reader/likutay-halachos/part-4/halacha-8.json flags=16 bilingual_segments=38/48
-- long_he_tiny_en at segments[22]/segment
-  HE: אות י וע"כ צריכיןת ליתן מן הבהמה מתנות כהונה לכהן. כדי לקשר על ידי זה את הבהמה לבחי' כהן שהוא בחי' אהבה דקדושה בחי' וקמץ הכהן כנ"ל. שזהו בחי' בירור המדמה שהבררין ומעלין אהבות הנפול
-  EN: Tikun HaKlali
-- hebrew_in_english_field at segments[23]/segment
-  HE: להכה ג ענין ח"י טריפות כי כתב רבינו זץ במאמר הצילה מחרב נפשי מיד כלב וכו' (סבי' נ') שיש מיין מתוקין שהוא בחי' שמירת הברית ויש מיין מרורין וכו' שהוא פגם הברית. ואז כלבא נחית למיכל ק
-  EN: תִּקּוּן הַכְּלָלִי
-- long_he_tiny_en at segments[23]/segment
-  HE: להכה ג ענין ח"י טריפות כי כתב רבינו זץ במאמר הצילה מחרב נפשי מיד כלב וכו' (סבי' נ') שיש מיין מתוקין שהוא בחי' שמירת הברית ויש מיין מרורין וכו' שהוא פגם הברית. ואז כלבא נחית למיכל ק
-  EN: תִּקּוּן הַכְּלָלִי
-- long_he_tiny_en at aligned_segments[3]/segment
-  HE: והכלל כי צריך לשמור מאד את הזכרון דהיינו לזכור תמיד בעלמא דאתי וכו'. ולשמור את הזכרון צריך לשמור א"ע שלא יפול לבחי' רע עין וכו' וכו'. ואפילו מי שהוא טוב עין צריך לשמור א"ע מכח המדמ
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[5]/segment
-  HE: וזה בחי' ח"י טריפות, שאנו בני ישראל מוזהקין לבלי לאכול מהחי שיש לו איזה נקב וחסרון באיזה אבר שהנשמה תלויה בו. כי החי הוא בבחי' כח המדמה כח הבהמיות וע"כ א"א לנו לאכול בשר החי כ"א כש
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[6]/segment
-  HE: וזה בחי' ברכת המזון. בחי' כוס של ברכת המזון שטעון עשרה דברים שהם בחי' עשרה מיני נגינה שכולם כלולים בבחי' כוס של ברכה שהוא בחי' מלכות וכו' כידוע. נמצא שעיקר תיקון ובירור האכילה הוא 
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[8]/segment
-  HE: וזה בחחי' שחיטה. כי הבהמה שמתה מאליה היא נבילה ואסורה לאכילת ישראל עם קדוש. כי אנחנו ישראל עם קדוש א"א לנו לאכול בשר החי ששם שורה כח המדמה שהוא כח הבהמיות כנ"ל כ"א כשמבררין אותו קו
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[10]/segment
-  HE: ועיקר השחיטה היא במקום הצוואר כי הצוואר והגרון מפסיק בין הראש והגוף שהם בבחי' רוח האדם ורוח הבהמה סחי' זכרון ושכחה, בחי' עלמא דאתי ועלמא דין, כי הראש הוא בחי' הדעת שהוא בחי' זכרון 
-  EN: [continued]
-
-### SEVERE public/reader/likutay-halachos/part-5/halacha-67.json flags=16 bilingual_segments=49/58
-- hebrew_in_english_field at segments[3]/segment
-  HE: וזה בחינו תכל איסורי כלאים שהם כלאי אילן וזרעים וכלאי הכרם וכלאי בהמה וכלאי בגדיםך שכולם סמכן התורה זה לזה כ"ש בפ' קדושים את חוקותי תשמורו בהמתך לא תרביע כלאים שדך לא תזרע כלאים וב
-  EN: 1 הַלְלוּי-ה הַלְלוּ-א-ל בְּקָדְשׁוֹ הַלְלוּהוּ בִּרְקִיעַ עֻזּוֹ
-- hebrew_in_english_field at segments[6]/segment
-  HE: אות ט וזה בחי' פורים כי המן התגאה מאד כשארז"ל ורף את הצדיק האמת בחי' מרדכי עד שרצה להשמיד וכו' ח"ו את כל היהודים כי הוא מזרע עמלק שהוא מעולם רצועה מרדות לישראל והוא עיקר זוהמת הנחש
-  EN: 2 הַלְלוּהוּ בִגְבוּרֹתָיו הַלְלוּהוּ כְּרוֹב גֻּדְלוֹ
-- hebrew_in_english_field at segments[12]/segment
-  HE: אות יב וע"כ עשה המן עץ גבוה חמשים אמה לתלות את מרדכי עליו כי כלל כל אותיות התורה שהםכלל ישראל שרשי נשמות כנ"ל כולם כלולים בחמשים שעיר בינה וע"כ ניתנה התורה ביום החמשים שהוא שבועות 
-  EN: 4 הַלְלוּהוּ בְתֹף וּמָחוֹל הַלְלוּהוּ בְּמִנִּים וְעוּגָב
-- long_he_tiny_en at segments[22]/segment
-  HE: אות יז וזה בחי' שבע ועשים ומאה מדינה. כי רז"ל דרשו שהם כנגד מאה שנה ועשריםשנה ושבע שנים שחיתה שרה. היינו כי שרההיא בחי' מלכות דקדושה בחי' ששרה על כל העולם כולו שעיקרה ענוה בחי' במק
-  EN: Short Prayer
-- tiny_he_long_en at aligned_segments[2]/segment
-  HE: אות ח
-  EN: And this is what Yitzchak said to Eisav: «take up now your vessels» [Bereishis 27:3] — and then «and make me delicacies as I love». For Yitzchak admonished him to first see to rect
-- tiny_he_long_en at aligned_segments[7]/segment
-  HE: אות י
-  EN: For every person must engage in the rectification [tikun] of creation, because everything requires rectification. Even though Hashem [ה' יתברך] already created all of creation, nev
-- tiny_he_long_en at aligned_segments[9]/segment
-  HE: אות יא
-  EN: For the essential perfection is that the hands should open, and the spirit below [ruach dil'tata] should become visible and revealed, and come forth from potential into actuality, 
-- tiny_he_long_en at aligned_segments[11]/segment
-  HE: אות יב
-  EN: But it is impossible to draw and receive from the legacy of the holy Torah of the true tzadikim — except through the breaking of obstacles [menius], through the intensity of the ye
-
-### SEVERE public/reader/likutay-halachos/part-6/halacha-13.json flags=16 bilingual_segments=38/48
-- hebrew_in_english_field at segments[17]/segment
-  HE: אות יז וזהו בחינת ויפן כה וכה וירא כי אין איש וכולי, ויפן כה וכה איתא בתיקוני זוהר שהם בחינת חמשין אתוון של קריאת שמע, היינו בחינת הנ"ל כשנכללין באחדותו יתברך בשמע ישראל צריכין להמ
-  EN: כִּי מְבֹאָר בְּדִבְרֵי רַבֵּנוּ זִכְרוֹנוֹ לִבְרָכָה בַּסֵּפֶר לִקּוּטֵי מוֹהֲרַ"ן הָרִאשׁוֹן (סִימָן קעג) שֶׁעַל-יְדֵי הַכְּתָב יְכוֹלִין לְהַכִּיר הַנֶּפֶשׁ וּפְנִימִיּוּת הַנֶּ
-- hebrew_in_english_field at segments[18]/segment
-  HE: (שייך לעיל לענין חמשים קרסי זהב וכולי)
-  EN: נִמְצָא, שֶׁעַל-יְדֵי הַכְּתָב שֶׁכּוֹתְבִין מְגַלִּין בְּחִינַת הַנֶּפֶשׁ וּפְנִימִיּוּת הַנֶּפֶשׁ, וְעַל-כֵּן עִקַּר הִתְקַשְּׁרוּת יִשְׂרָאֵל לַאֲבִיהֶם שֶׁבַּשָּׁמַיִם בִּתְחִל
-- hebrew_in_english_field at segments[20]/segment
-  HE: אות יח וזה ונתת את הפרוכת תחת הקרסים כולי, כי הפרוכת שבין בית קדש הקדשים לאוהל מועד זה בחינת הפריסא הנזכרת במאמר הזוהר הקדוש המובא בהתורה הנ"ל עיין שם, שהוא בחינת המיישב והמסדר בחי
-  EN: וְזֶה בְּחִינַת הִתְקַשְּׁרוּת שֶׁבֵּין אִישׁ וְאִשָּׁה עַל-יְדֵי בְּחִינַת הַכְּתָב, דְּהַיְנוּ עַל-יְדֵי הַשְּׁטָר, וְגַם אִם אֵינוֹ מְקַדְּשָׁהּ בִּשְׁטָר, בְּהֶכְרֵחַ צָרִיךְ ל
-- hebrew_in_english_field at segments[22]/segment
-  HE: אות יט וזה וירא אליו ה' באלוני ממרא והוא יושב פתח האהל כחום היום, וירא אליו ה' זה בחינת התגלות אלקות שזוכין על ידי השגות הט' היכלין הנ"ל שמשם כל ההשגות וכל ההתגלות כנ"ל, וזה אי אפש
-  EN: וְעַל-כֵּן אִי אֶפְשָׁר לָהֶם לְהִפָּרֵד בְּשׁוּם אֹפֶן בָּעוֹלָם כִּי אִם עַל-יְדֵי הַכְּתָב, דְּהַיְנוּ עַל-יְדֵי הַגֵּט כְּרִיתוּת שֶׁנּוֹתֵן לָהּ בִּכְתָב, כְּמוֹ שֶׁכָּתוּב, "
-- hebrew_in_english_field at segments[23]/segment
-  HE: וזה והוא יושב פתח האוהל כחום היום, ישיבה לשון עכבה זמן רב, כמו: ותשבו בקדש ימים רבים, היינו שזכה לזה שיתגלה אליו ה' על ידי שישב ונתעכב ימים רבים אצל פתח האהל שהוא פתח הקדושה, שהוא 
-  EN: וְעַל-כֵּן צָרִיךְ לְדַבֵּר לָהּ גַּם כֵּן בְּפִיו בְּשָׁעָה שֶׁמְּגָרְשָׁהּ, כִּי צָרִיךְ לוֹמַר לָהּ, הֲרֵי זֶה גִּטֵּךְ וְכוּ', כַּמְבֹאָר בַּשֻּׁלְחָן עָרוּךְ, כִּי הַדִּבּוּר 
-- tiny_he_long_en at aligned_segments[1]/segment
-  HE: אות י
-  EN: For the Torah mentioned several times regarding the mitzvah of Shabbos: "six days you shall work" etc. And at first glance, this is superfluous, for it is not a commandment to work
-- tiny_he_long_en at aligned_segments[3]/segment
-  HE: אות יא
-  EN: And this is "Honor your father and your mother, so that your days may be lengthened" (Exodus 20:12) etc. And our Sages of blessed memory expounded: "in the world that is entirely l
-- tiny_he_long_en at aligned_segments[5]/segment
-  HE: אות יב
-  EN: But in truth, for the sake of the tachlis — that even the lowest of the low and the lightest of the light will merit — certainly all the sufferings and troubles endured in this wor
-
-### SEVERE public/reader/likutay-halachos/part-6/halacha-17.json flags=16 bilingual_segments=59/68
-- hebrew_in_english_field at segments[21]/segment
-  HE: אות כ
-  EN: תִּקּוּן הַכְּלָלִי
-- hebrew_in_english_field at segments[31]/segment
-  HE: וזהו שמבקשת השכינה וכנסת ישראל מהשם יתברך שימני כחותם על לבך כחותם על זרועך, חותם הוא בחינת הדפסת ספרים כי ההדפסה הוא בחינת חותם וכנ"ל שזהו בחינת תפילין כנ"ל, כי ה הפסוק שימני כחות
-  EN: 1 מִכְתָּם לְדָוִד שָׁמְרֵנִי א-ל כִּי-חָסִיתִי בָךְ
-- tiny_he_long_en at aligned_segments[1]/segment
-  HE: אות יא
-  EN: And therefore one must honor also the elder in years, even though he is not a chacham, as long as he is not wicked — who is the zakain ashmay. For the primary zakain ashmay, who is
-- tiny_he_long_en at aligned_segments[3]/segment
-  HE: אות יב
-  EN: And this is the aspect of the zakain ashmay, who is the wicked one. For the primary wicked one is one who disputes the tzadik, and he is the opposite of the tzadik. And therefore h
-- tiny_he_long_en at aligned_segments[5]/segment
-  HE: אות יג
-  EN: And one can hint that for this reason they called the wicked one and the disputer by the name zakain ashmay — to hint that the primary wicked one is the one who disputes the true t
-- tiny_he_long_en at aligned_segments[7]/segment
-  HE: אות יד
-  EN: It turns out that "and you shall honor the face of an elder" is juxtaposed to "before a gray head you shall rise" — to say that the primary rising and hidur before the one with gra
-- tiny_he_long_en at aligned_segments[10]/segment
-  HE: אות טו
-  EN: And this is the aspect of "a person is obligated to teach his son Torah, and likewise his son's son" etc., as it is said, "And you shall make them known to your children and to you
-- tiny_he_long_en at aligned_segments[13]/segment
-  HE: אות טז
-  EN: And therefore the first question that is asked of a person after his death when he is brought to judgment is whether he remembers his name, as is brought in all the sefarim. For in
-
-### SEVERE public/reader/likutay-halachos/part-6/halacha-2.json flags=16 bilingual_segments=57/72
-- hebrew_in_english_field at segments[32]/segment
-  HE: אות יג וזה שאמרו רז"ל השרוי בלא אשה שרוי בלא שמחה בלא תורה, כי בחינת תורה שבעל פה, בחינת אמונת חכמים כנ"ל שעל ידי זה נשלם בחינת תורה שבכתב כנ"ל, שעל ידי זה בחינת שמחה כנ"ל:
-  EN: 8 שִׁוִּיתִי יי לְנֶגְדִּי תָמִיד כִּי מִימִינִי בַּל-אֶמּוֹט
+### SEVERE public/reader/likutay-halachos/part-5/halacha-54.json flags=16 bilingual_segments=52/74
 - tiny_he_long_en at aligned_segments[1]/segment
   HE: אות א
-  EN: According to the Talmudic saying: “Rabbi Akiva said: When you reach the stones of pure marble, do not say ‘water, water!’ as it is written, ‘one who speaks falsehood shall not stan
-- tiny_he_long_en at aligned_segments[5]/segment
-  HE: אות ב
-  EN: And this is the aspect of what is forbidden: to emancipate the slave — as it is written, “and you shall bequeath them to your children after you… you shall work them forever”. For 
-- tiny_he_long_en at aligned_segments[8]/segment
-  HE: אות ג
-  EN: And this is the aspect of S’firas ha-Omer — to ascend from impurity to purity through the counting of the Omer, which is the aspect of mispar d’kedushah included in its root in the
-- tiny_he_long_en at aligned_segments[10]/segment
-  HE: אות ד
-  EN: And this is the aspect of the ger [convert] who comes to convert — who must also undergo milah and immersion, to subdue the orlah which is the evil, which is the impurity of the na
-- tiny_he_long_en at aligned_segments[12]/segment
-  HE: אות ה
-  EN: And this is the aspect of Birchas Kohanim [the Priestly Blessing]. For the Kohanim are in the aspect of right, which is the aspect of pre-creation, as above — and from there all bl
-- tiny_he_long_en at aligned_segments[14]/segment
-  HE: אות ו
-  EN: However, the explanation is based on what our Rebbe of blessed memory elucidated on the verse "And I beseeched Hashem at that time, saying" (Deuteronomy 3:23), in the discourse tha
-- tiny_he_long_en at aligned_segments[16]/segment
-  HE: אות ז
-  EN: And the tzadik in the time of his simplicity — that is, at the time when he ceases from the Torah — sustains himself through this aspect: through the aspect of the Torah that is co
-
-### SEVERE public/reader/likutay-halachos/part-7/halacha-8.json flags=16 bilingual_segments=51/66
-- hebrew_in_english_field at segments[7]/segment
-  HE: אות ג כלל הדבר שהתורה נקראת עדות שמעידת על מציאותו ואחדותו וממשלתו ית' וית'. וע"כ התורה ניתנה בשני לוחות העדות כי אין עדות פחות משנים. וזה בחי' שמע ובשכמל"ו שבזה אנו מעידין על אחדו
-  EN: 2 בְּטֶרֶם הָרִים יֻלָּדוּ וַתְּחוֹלֵל אֶרֶץ וְתֵבֵל וּמֵעוֹלָם עַד-עוֹלָם אַתָּה אֵל
+  EN: And through this very thing — that he looked at himself and saw that he is far from His glory Yisborach, etc., as stated — through this he merited the aspect of אַיֵּה, etc. And th
 - tiny_he_long_en at aligned_segments[4]/segment
   HE: אות ב
-  EN: And therefore he erred and married foreign women, for he relied upon his strength and his holiness — upon the exceeding great joy that he merited in his days — that he would transf
+  EN: The matter is: the King's Daughter is the aspect of the souls of Israel, called the King's Daughter — the aspect of "Hearken, O daughter, and see" (שִׁמְעִי בַת וּרְאִי), the aspec
 - tiny_he_long_en at aligned_segments[6]/segment
   HE: אות ג
-  EN: And this is the aspect of "On the day of his wedding" — this is the Giving of the Torah — for the Giving of the Torah, when Yisro was converted and was transformed toward holiness 
+  EN: She fled inside all ten walls of water — Torah — and weakened from the poisoned arrows. And he who is born without hands heals her — through ten types of melody (נְגִינָה), which a
 - tiny_he_long_en at aligned_segments[8]/segment
   HE: אות ד
-  EN: And this is [the meaning of] "Who has ascended to heaven and descended" — according to how Rabbeinu, of blessed memory, explained this verse in the Torah[-teaching] "Vay'hi Mikeitz
-- tiny_he_long_en at aligned_segments[11]/segment
-  HE: אות ה
-  EN: And it is known that the Book of Tehillim is comprised of all the expressions of prayer and supplication, etc., as mentioned above, for the majority of the Book of Tehillim speaks 
-- tiny_he_long_en at aligned_segments[13]/segment
-  HE: אות ו
-  EN: For all the voices, which are the aspect of the ten kinds of melody, this is the aspect of the sense of hearing, where the perception of melody and voices resides, the aspect of : 
-- tiny_he_long_en at aligned_segments[15]/segment
-  HE: אות ז
-  EN: And especially the rest of us, simple people like ourselves today, whose entire vitality and holiness is in the aspect of the sense of hearing — that we hear the voice of our foref
-- tiny_he_long_en at aligned_segments[17]/segment
-  HE: אות ח
-  EN: And the engagement in Torah study is also the aspect of the ten kinds of melody, for this is the aspect of the te'amim [cantillation notes] of the Torah, which are above all the ho
-
-### SEVERE public/reader/likutay-halachos/part-8/halacha-11.json flags=16 bilingual_segments=48/60
-- long_he_tiny_en at segments[21]/segment
-  HE: אות ט וזה בחי' מצות השבת אבידהכי השבת אבידה זה בחי' שבירת תאוות ממון כי לוקח החפץ שמצא ששוה ממון ויכול ליקחו לעצמו והוא לוקחו ומחזירו לבעליו נמצא שהוא בחי' שבירת תאוות ממון בחי' צד
-  EN: &bull; &bull; &bull;
-- hebrew_in_english_field at segments[22]/segment
-  HE: אות י כי באמת צריך כל אדם ליזהר מאוד לשמור ממונו וחפציו כבבת עין כאשר הזהירנו אדמו"ר ז"ל על זה כ"פ, כי אע"פ שתאוות ממון מגונה מאד אעפ"כ ממון של איש ישראלי צריכין לשמרו מעאד אדרבא מ
-  EN: 2 הַלְלוּהוּ בִגְבוּרֹתָיו הַלְלוּהוּ כְּרוֹב גֻּדְלוֹ
-- tiny_he_long_en at aligned_segments[1]/segment
-  HE: אות א
-  EN: And this is: "The testimony of Hashem is trustworthy; it makes the simple wise" (Psalms 19:8). That is, one who takes to heart that aidus Hashem — which is the Torah — is trustwort
-- tiny_he_long_en at aligned_segments[4]/segment
-  HE: אות ב
-  EN: And this is the aspect of Rosh HaShanah being on Rosh Chodesh. For it is known that Rosh HaShanah and Rosh Chodesh are the aspect of the sun and the moon. For years are counted by 
-- tiny_he_long_en at aligned_segments[8]/segment
-  HE: אות ג
-  EN: And it is found there that through the completeness of yir'ah [fear/awe of G-d] — which is completed through receiving properly the Shalosh R'galim [Three Pilgrimage Festivals] — t
+  EN: She fled into the waters — the aspect of "The earth was formless and empty and darkness..." — the aspect of the broken worlds from which the evil kingdom draws its strength. "And t
 - tiny_he_long_en at aligned_segments[10]/segment
-  HE: אות ד
-  EN: It emerges that all of them are in the aspect of borrowers, one from another and this one from that one, up to the great Lender, who is the aspect of the Ba'al T'filah [Master of P
-- tiny_he_long_en at aligned_segments[12]/segment
   HE: אות ה
-  EN: And therefore, when one lends his fellow money or the like and does g'milus chesed [an act of lovingkindness] with him — through lending to his fellow, through this, by an arousal 
-- tiny_he_long_en at aligned_segments[14]/segment
+  EN: This is the aspect of the Splitting of the Reed Sea — the aspect of "And the waters were a wall unto them" (וְהַמַּיִם לָהֶם חוֹמָה) — drawn from the aspect of the ten walls mentio
+- tiny_he_long_en at aligned_segments[12]/segment
   HE: אות ו
-  EN: And g'milus chesed — that is, a gracious loan — is greater than tz'dakah, and through it one arouses even more the bounty to descend from level to level down to below. For the draw
+  EN: And he shot all ten arrows after them — the aspect of "And the angel of God... went behind them." Rashi explains: they received all the arrows and sling-stones of Egypt. And the te
+- tiny_he_long_en at aligned_segments[14]/segment
+  HE: אות ז
+  EN: When you examine the tale carefully, you will find that our Rebbe spoke of four things, each comprising ten: (1) ten types of arrows; (2) ten walls of water, which are the ten type
+- tiny_he_long_en at aligned_segments[16]/segment
+  HE: אות ח
+  EN: It thus emerges: the World of Asiyah corresponds to the aspect of dust — there is the primary grip of the above-mentioned arrows, i.e., the power of the husks and the Other Side. T
 
 ### SEVERE public/reader/likutay-halachos/part-8/halacha-3.json flags=16 bilingual_segments=56/70
 - tiny_he_long_en at aligned_segments[1]/segment
@@ -4221,6 +3752,32 @@ Files needing review (excluding normal untranslated books): 1751
 - tiny_he_long_en at aligned_segments[17]/segment
   HE: אות ח
   EN: And therefore Yaakov gave to Yosayf specifically “one portion above your brothers” — which is the birthright, that his tribe should be divided into two. For this is the secret of i
+
+### SEVERE public/reader/likutay-halachos/part-8/halacha-52.json flags=16 bilingual_segments=53/68
+- tiny_he_long_en at aligned_segments[1]/segment
+  HE: אות א
+  EN: And therefore the agent has no power to sue them through law and justice unless he comes with an explicit authorization for this. And he too is called "one who did not do well amon
+- tiny_he_long_en at aligned_segments[5]/segment
+  HE: אות ב
+  EN: And therefore, when Hashem Yisborach consented to Moshe that He would not send an agent, but would rather go Himself with Israel — then He revealed to him the measure of His goodne
+- tiny_he_long_en at aligned_segments[7]/segment
+  HE: אות ג
+  EN: For this is known in the Midrashim and in all the holy books — the great prosecution of the angels against the receiving of the Torah, who said: "How mighty is Your Name in all the
+- tiny_he_long_en at aligned_segments[9]/segment
+  HE: אות ד
+  EN: And one who is a man of valor and wishes to have mercy on his life and his eternal purpose — he strengthens himself like a lion and is bold as a leopard at every turn and does not 
+- tiny_he_long_en at aligned_segments[11]/segment
+  HE: אות ה
+  EN: Now, at first glance, the counsel written in this Torah is difficult to understand — to stand against the prosecution of the angels by grasping oneself in the Keesay HaKavod etc. —
+- tiny_he_long_en at aligned_segments[16]/segment
+  HE: אות ז
+  EN: And therefore the Tanna began this tractate, which is Avos, with "Moshe received the Torah from Sinai" specifically. For Sinai is the aspect of humility and lowliness, as our Sages
+- tiny_he_long_en at aligned_segments[18]/segment
+  HE: אות ח
+  EN: Rather, only this Tzadik who is humble like Moshe — who is actual Ayin in the ultimate degree of true self-nullification — since he is in the aspect of Ayin in truth, he has no pla
+- tiny_he_long_en at aligned_segments[20]/segment
+  HE: אות ט
+  EN: For the essential receiving of the Torah that Moshe merited was principally the great strength and battle to receive it in such a way that he could transmit it to Y'hoshua his stud
 
 ### SEVERE public/reader/chumash-lh/section-50.json flags=15 bilingual_segments=38/44
 - long_he_tiny_en at segments[1]/segment
@@ -4273,32 +3830,6 @@ Files needing review (excluding normal untranslated books): 1751
 - long_he_tiny_en at aligned_segments[1]/segment
   HE: וְזֶה בְּחִינַת גֹּדֶל הַיִּסּוּרִים שֶׁצְּרִיכִין לִסְבֹּל קֹדֶם שֶׁבָּאִין לְאֶרֶץ -יִשְׂרָאֵל וְעֹצֶם רִבּוּי הַמְנִיעוֹת בְּלִי שִׁעוּר שֶׁצְּרִיכִין לְשַׁבֵּר קֹדֶם שֶׁבָּאִין
   EN: [continued]
-
-### SEVERE public/reader/likutay-halachos/part-1/halacha-24.json flags=15 bilingual_segments=43/56
-- tiny_he_long_en at aligned_segments[1]/segment
-  HE: הלכה ז
-  EN: This is the aspect of Tefillin. The matter of Tefillin is explained there (LM II:67), on the verse: "Va'amalei oso Ruach Elokim b'chochmah u'visvunah u'veda'as u'vchol melachah" (S
-- tiny_he_long_en at aligned_segments[2]/segment
-  HE: אות א
-  EN: All this = Tefillin. The Arizal's writings explain that the light of Tefillin emerges through the rectifications accomplished by Kimas Chatzos. Through the tzadikim and upright one
-- tiny_he_long_en at aligned_segments[5]/segment
-  HE: אות ב
-  EN: This is the aspect of Tefillin made from or [leather/skin] — to rectify and clarify "kasnos or" [garments of skin], which are the aspect of fingernails. Our Sages said (Bereishis R
-- tiny_he_long_en at aligned_segments[7]/segment
-  HE: אות ג
-  EN: One cannot know, make known, or magnify Shem Hashem except through the true tzadik = tzadik Yesod Olam, whose essential greatness is through guarding the Bris in ultimate holiness.
-- tiny_he_long_en at aligned_segments[9]/segment
-  HE: אות ד
-  EN: All this = Purim and Parshas Zachor read beforehand — the subduing of kelipas Amalek, the essential kelipah of the orlah covering the holy Bris, from which the concealment always f
-- tiny_he_long_en at aligned_segments[11]/segment
-  HE: אות ה
-  EN: See also Hilchos Shabbos, Halacha 4, where Parshas Zachor is also explained based on this same Torah. But the Torah is longer than the earth's measure — what one passage lacks, ano
-- tiny_he_long_en at aligned_segments[13]/segment
-  HE: אות ו
-  EN: This is what the Zohar HaKadosh writes (Parashas cha'yai Sarah): the mystery of Tefillin is that they are in the aspect of "V'asu li Mikdash" — "Make Me a Sanctuary." As it says th
-- tiny_he_long_en at aligned_segments[15]/segment
-  HE: אות ז
-  EN: This is the aspect of Bircas HaTorah. For the Torah is the aspect of the Aron HaAidus [Ark of Testimony] — when it was placed upon the cows, they began to sing. All this pertains t
 
 ### SEVERE public/reader/likutay-halachos/part-2/halacha-42.json flags=15 bilingual_segments=51/54
 - tiny_he_long_en at aligned_segments[1]/segment
@@ -4378,6 +3909,32 @@ Files needing review (excluding normal untranslated books): 1751
   HE: והנה מי שהוא חזק באמונתו כל כך עד שזוכה אח"כ להבין בשכל וממשיך אור השכל לתוך האמונה זה בחי' יחוד קוב"ה ושכינתי'. כי קוב"ה הוא בחי' החכמה והשכל כביכול והשכינה היא בחי' מלכות אמונה כ
   EN: [continued]
 
+### SEVERE public/reader/likutay-halachos/part-4/halacha-50.json flags=15 bilingual_segments=41/56
+- long_he_tiny_en at aligned_segments[3]/segment
+  HE: כל האיסורין שבתורה בסמ"ך. כי כל האיסורין הם בחינת אותיות נפילות שנפלו וירדו למטה מאד עד שבאו בעומק הקליפות ונעשה מהם איסור. שהוא בחינת רע הכולל בחינת לשונות של ע' עממין כי כל האיסו
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[5]/segment
+  HE: כי כל עיקר הביטול הוא רק בשביל הטעם כמובא בפוסקים כי טעם כעיקר דאורייתא. כי עיקר המאכל הוא הטעם הנרגש בו. ועל כן נקרא בשם טעם. טעם ממש לשון דיברו. כמו שכתוב באביגיל וברוך טעמך. כי 
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[7]/segment
+  HE: אבל במקום שאין טעם כגון יבש ביבש נתבטל ברוב. כי אחרי רבים להטות כתיב, להטות ממש. כי יש כח בהרוב להטות את האיסור ולבטלו ממש כמו שמובא בדברי רבינו נ"י (בסימן קפ"א) כי יש כח בהנפשות כ
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[9]/segment
+  HE: ומחמת זה ישראל מצויינים במצוות כדי של יתערבו בגוים חס ושלום. ועל כן הזהירם השם יתברך שכשיבואו בגלות של הע' אומות שיהיו מצויינים במצוות. כמו שאמרו רבותינו ז"ל על פסוק צאי לך בעקבי ה
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[10]/segment
+  HE: וזהו בחינת סימני טהרה של בהמות וחיות ושאר מינים טהורים שבראים השם יתברך בסימנים דייקא כדי שיהיו ניכרין לעין כל שהן מן הקדושה כנ"ל. וכן השחיטה הוא בחינת סימן כמו שאמרו רבותינו ז"ל ש
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[12]/segment
+  HE: וזהו שאסרו רבותינו ז"ל כמה דברים רק מפני מראית העין אף שאין בהם איסור מן הדין. כי מאחר שנדמה להעין שהוא איסור אזי נאסר כי נאחז בו הרע עין כנ"ל. ועל כן אסור אפילו בחדרי חדרים כמו שא
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[14]/segment
+  HE: ועל כן יש דברים חשובים שאין להם ביטול מפני חשיבותן כגון חתיכה הראויה להתכבד. כי כל הנפשות שרשם בכבוד ועל כן הביטול של כל האיסורים על ידי בחינת הכבוד על ידי שנקבצין מחלקי הכבוד של ה
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[16]/segment
+  HE: ועל כן אין מועיל ביטול ברוב כי אם כשהאיסור נע ונד. אבל כשהוא קבוע במקומו אין לה ביטול כמו שאמרו רבותינו ז"ל כל קבוע במקומו הוא חזק ביותר כמו שכתוב שאנן מואב מנעוריו וכו' ובגולה לא 
+  EN: [continued]
+
 ### SEVERE public/reader/likutay-halachos/part-4/halacha-68.json flags=15 bilingual_segments=40/50
 - long_he_tiny_en at aligned_segments[1]/segment
   HE: ע"פ המאמר וביום הבכורים ואת העורבים צויתי לכלכלך וכו' (בלק"ת סימן ד') עיין שם כל המאמר כולו מראשו לסופו. והכלל שעיקר היראה נעשה על ידי הרצון. על ידי שיודעים שהכל מתנהג ברצונו ית' ל
@@ -4402,58 +3959,6 @@ Files needing review (excluding normal untranslated books): 1751
   EN: [continued]
 - long_he_tiny_en at aligned_segments[15]/segment
   HE: כי כוס של ברכה הוא בחי' צדקה שעל ידו עיקר התגלות הרצון כמ"ש שם בבחי' טוב עין הוא יבורך כי נתן מלחמו לדל שזה נאמר על כוס של ברכה. כי באמת בכל מקום שבא כוס של ברכה שם צריכין ביותר לח
-  EN: [continued]
-
-### SEVERE public/reader/likutay-halachos/part-4/halacha-81.json flags=15 bilingual_segments=35/42
-- hebrew_in_english_field at segments[6]/segment
-  HE: כי כח המדמה הוא בבחי' עת הדעת טו"ר בחי' נוגה שהוא לפעמים נכלל בטוב ולפעמים להיפך. כי האו בח'י דמיון ולמקום שמדמה עצמו שם נכלל. ועיקר הבחירה והנסיון של האדם הוא בכח המדמה. וצריך כל 
-  EN: 1 מִכְתָּם לְדָוִד שָׁמְרֵנִי א-ל כִּי-חָסִיתִי בָךְ
-- hebrew_in_english_field at segments[12]/segment
-  HE: אות ה וזה בחי' שקלים שעל ידי זה היה עיקר הנס של פורים כשרז"ל רשע כבר קדמו שקליהם לשקליך. וע"כ בא' באדר משמיעין על השקלים. כי עיקר קנאת המן עמלק על ישראל הי' בשביל זה. על שישראל הם 
-  EN: 3 לִקְדוֹשִׁים אֲשֶׁר-בָּאָרֶץ הֵמָּה וְאַדִּירֵי כָּל-חֶפְצִי-בָם
-- hebrew_in_english_field at segments[20]/segment
-  HE: אות ט וזה בחי' משנכס אדר מרבין בשמחה כי אז צריכין להכניע קליפת המן עמלק שהוא המדמה כנ"ל. וע"כ צריכין להרבות בשמחה. כי צריכין לשמוח מאד בהמ שזכינו להיות מזרע ישראל ולא עשני גוי ועל 
-  EN: 6 חֲבָלִים נָפְלוּ-לִי בַּנְּעִמִים אַף-נַחֲלָת שָׁפְרָה עָלָי
-- long_he_tiny_en at aligned_segments[2]/segment
-  HE: ובחוקותיהם לא תלכו. וז"ל השו"ע סי' קע"ח, אין הולכין בחוקת העכו"ם ולא מדמין להם, ולא ילבש מלבוש המיוחד להם ולא יגדל ציצית ראשו כמו ציצית ראשם וכו'. כי איתא בדברי רבינו ז"ל במאמר אחו
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[3]/segment
-  HE: וזה בחי' האיסור ללכת בחוקותיה'. וצריכין להתרחק מהם בכל הדברים שלא להתדמות להם בשום דבר שבעולם. אף על פי שאין בזה הדבר שום איסור מצד עצמו אעפ"כ אסור להתדמות להם בשום ענין שבעולם. וא
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[4]/segment
-  HE: וע"כ גזרה עלינו התור' שלא ללכת בחוקתיהם ושלא להתדמות להם בשום דבר. שלא להתדמות להם דייקא כדי שלא ליתן כח חס ושלום להכח המדמה. כי העכו"ם הם הרע של כל התאוות והמדות כמובא בדברי רבינו
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[6]/segment
-  HE: כי כח המדמה הוא בבחי' עת הדעת טו"ר בחי' נוגה שהוא לפעמים נכלל בטוב ולפעמים להיפך. כי האו בח'י דמיון ולמקום שמדמה עצמו שם נכלל. ועיקר הבחירה והנסיון של האדם הוא בכח המדמה. וצריך כל 
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[8]/segment
-  HE: וזה בחי' מה שמובא בדבר רבינו ז"ל בשיחות הר"נ, שע"י שעושין לעצמו רוגז בתפלה על ידי זה זוכין באמת להתפלל בחמימות והתלהבות דקודשה. וכן על ידי שעושין עצמו כאלו הוא שמח על ידי זה זוכה ל
-  EN: [continued]
-
-### SEVERE public/reader/likutay-halachos/part-4/halacha-92.json flags=15 bilingual_segments=31/40
-- hebrew_in_english_field at segments[2]/segment
-  HE: אות א גודל חומר העון של גילוח פאות הזקן והראש שכל דת ישראל תלוי בזה כמ ושאנו רואין שעיקר הסימן בין ישראל לעכו"ם הוא בפאות וזקן. ומי שפורק עול תורה ומצוות ומגלח זקנו ופאותיו הוא כמו
-  EN: 12 אַל-תַּהַרְגֵם פֶּן-יִשְׁכְּחוּ עַמִּי הֲנִיעֵמוֹ בְחֵילְךָ וְהוֹרִידֵמוֹ מָגִנֵּנוּ אֲדֹנָי
-- hebrew_in_english_field at segments[10]/segment
-  HE: אות ד נמצא שעיקר ידיעת האמת שהוא בחי' פני םהוא על ידי האמונה שהיא נמשכת דרך צמצומים הנמשכין משכליים גבוהים ונוראים מאד שהשם יתברך צמצם אורו בדרכים ובצמצומים נפלאים עד שהמשיך מדת הא
-  EN: 15 וְיָשׁוּבוּ לָעֶרֶב יֶהֱמוּ כַכָּלֶב וִיסוֹבְבוּ עִיר
-- hebrew_in_english_field at segments[16]/segment
-  HE: אות ז וזהו על כן יעזוב איש את אביו ואת אמו ודבק באשתו והיו לבשר אחד. אביו ואמו זה בחי' החכמות השכליים כי אב בחכמה ואם לבינה. היינו שצריכין לעזוב את כל החכמות רק לדבק עצמו בהאשה ירא
-  EN: 17 וַאֲנִי אָשִׁיר עֻזֶּךָ וַאֲרַנֵּן לַבֹּקֶר חַסְדֶּךָ כִּי-הָיִיתָ מִשְׂגָּב לִי וּמָנוֹס בְּיוֹם צַר-לִי
-- long_he_tiny_en at aligned_segments[2]/segment
-  HE: גודל חומר העון של גילוח פאות הזקן והראש שכל דת ישראל תלוי בזה כמ ושאנו רואין שעיקר הסימן בין ישראל לעכו"ם הוא בפאות וזקן. ומי שפורק עול תורה ומצוות ומגלח זקנו ופאותיו הוא כמו מומר 
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[3]/segment
-  HE: ע"פ מ"ש בסי' כ"ג בהתורה צוית צדק שיש פנים דקדושה שהם אנפין נהירין בחי' חיים כמ"ש באור פני מלך חיים בחי' שמחה וכו' ויש פנים דסט"א שהם אנפין חשוכין מרה שחורה ע"א וכו'. ומבואר שם שמי 
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[4]/segment
-  HE: כי העיקר הוא הפנים. כי בכל דבר בעולם עיקר הדבר הוא בחי' פנים שלו. כמו אצל האדם עיקר האדם הוא הפנים כי כל המוח והדעת והדיבור הכל בהפנים. כמ"ש חכמת אדם תאיר פניו. וכל העסקים שיש עם ה
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[6]/segment
-  HE: אבל עיקר אור הפנים א"א לקבל כ"א ע"י אמונה. כי עצם הפנים שהוא האמת דהיינו ידיעת אמתת אלקותו ית' א"א לקבל מחמת ריבוי אור. כי אם הי' מתגלה לעין כל אמתתו באתגליא הי' העולם מתבטל במציאו
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[8]/segment
-  HE: הכלל שעיקר קיום העולם הוא על ידי אמונה כמ"ש וכל מעשהו באמונה וכל התורה כולה עומדת על האמונה כמ"ש כל מצותיך אמונה. וכשרז"ל בא חבקוק והעמידן על אחת וצדיק באמונתו יחיה. כי ברוך השם יש
   EN: [continued]
 
 ### SEVERE public/reader/likutay-halachos/part-5/halacha-38.json flags=15 bilingual_segments=50/64
@@ -4508,6 +4013,32 @@ Files needing review (excluding normal untranslated books): 1751
   HE: אות ז
   EN: And this is what our Sages of blessed memory said: roasting [tzli] requires no salting. For fire is the rectification — of the aspect of: "Everything that comes into fire, you shal
 
+### SEVERE public/reader/likutay-halachos/part-5/halacha-55.json flags=15 bilingual_segments=42/60
+- tiny_he_long_en at aligned_segments[1]/segment
+  HE: אות א
+  EN: Whoever wishes to attend to his genuine life must take counsel from all of this: that in all the bitterness, grief, and suffering that passes over him — and especially the truest s
+- tiny_he_long_en at aligned_segments[3]/segment
+  HE: אות ב
+  EN: Therefore, the luz and the egg — which allude to the essential consolation — ripen specifically in twenty-one days, alluding to the mourning of Bein ha-Metzarim, to teach all of th
+- tiny_he_long_en at aligned_segments[5]/segment
+  HE: אות ג
+  EN: And even with both signs — shape and verbal identification [knowing which bird it came from] — the sign is still not absolute, because one sign alone is insufficient. The egg's pur
+- tiny_he_long_en at aligned_segments[7]/segment
+  HE: אות ד
+  EN: The standard measure of food in halacha is a kebeitzah — an egg-volume. This is because the egg, as explained, is the dimension of chochmah tata'ah [lower wisdom], the dimension of
+- tiny_he_long_en at aligned_segments[9]/segment
+  HE: אות ה
+  EN: And this is the aspect of the five priestly gifts corresponding to the five festivals — for all five represent dimensions of holiness that flow from the five books of Torah and the
+- tiny_he_long_en at aligned_segments[11]/segment
+  HE: אות ו
+  EN: An egg laid on the first day of Yom Tov is forbidden to be eaten on that day. The reason alludes to the spiritual dimension: on the first day of Yom Tov, the holiness is at its pea
+- tiny_he_long_en at aligned_segments[13]/segment
+  HE: אות ז
+  EN: This corresponds to the dimension of chotam b'soch chotam [seal within seal], which is the seal of the inner self: the egg that has fully formed its own sealed shell is a complete 
+- tiny_he_long_en at aligned_segments[16]/segment
+  HE: אות ח
+  EN: But all of this teaches and alludes to the person that it is impossible for any human being — in general and in particular — to arrive at genuine good hope except through pain, suf
+
 ### SEVERE public/reader/likutay-halachos/part-5/halacha-70.json flags=15 bilingual_segments=49/54
 - long_he_tiny_en at segments[3]/segment
   HE: ע"פ המאמר אנכי ה' אלקיך וכו' בליקוטי הראשון בסי' ד' ע"ש כל המאמר כולו מראשו לסופו והכלל שע"י ווידוי דברים לפני הת"ח עי"ז מחזירין את המלכות לשרשה ועי"ז עולה המלכות שהוא בחי' אלקים ב
@@ -4559,6 +4090,58 @@ Files needing review (excluding normal untranslated books): 1751
 - tiny_he_long_en at aligned_segments[17]/segment
   HE: אות ח
   EN: It is forbidden to divine (le'onayn) and to take omens (lenachaysh) — that is, to say: "such-and-such a time is favorable, such-and-such a time is unfavorable" and so on. This is o
+
+### SEVERE public/reader/likutay-halachos/part-6/halacha-2.json flags=15 bilingual_segments=56/72
+- tiny_he_long_en at aligned_segments[1]/segment
+  HE: אות א
+  EN: According to the Talmudic saying: “Rabbi Akiva said: When you reach the stones of pure marble, do not say ‘water, water!’ as it is written, ‘one who speaks falsehood shall not stan
+- tiny_he_long_en at aligned_segments[5]/segment
+  HE: אות ב
+  EN: And this is the aspect of what is forbidden: to emancipate the slave — as it is written, “and you shall bequeath them to your children after you… you shall work them forever”. For 
+- tiny_he_long_en at aligned_segments[8]/segment
+  HE: אות ג
+  EN: And this is the aspect of S’firas ha-Omer — to ascend from impurity to purity through the counting of the Omer, which is the aspect of mispar d’kedushah included in its root in the
+- tiny_he_long_en at aligned_segments[10]/segment
+  HE: אות ד
+  EN: And this is the aspect of the ger [convert] who comes to convert — who must also undergo milah and immersion, to subdue the orlah which is the evil, which is the impurity of the na
+- tiny_he_long_en at aligned_segments[12]/segment
+  HE: אות ה
+  EN: And this is the aspect of Birchas Kohanim [the Priestly Blessing]. For the Kohanim are in the aspect of right, which is the aspect of pre-creation, as above — and from there all bl
+- tiny_he_long_en at aligned_segments[14]/segment
+  HE: אות ו
+  EN: However, the explanation is based on what our Rebbe of blessed memory elucidated on the verse "And I beseeched Hashem at that time, saying" (Deuteronomy 3:23), in the discourse tha
+- tiny_he_long_en at aligned_segments[16]/segment
+  HE: אות ז
+  EN: And the tzadik in the time of his simplicity — that is, at the time when he ceases from the Torah — sustains himself through this aspect: through the aspect of the Torah that is co
+- tiny_he_long_en at aligned_segments[19]/segment
+  HE: אות ח
+  EN: And this is what the holy Torah revealed to us through this mitzvah of nedarim and shevuos — that through this mitzvah one can make Torah and mitzvos from all things in the world, 
+
+### SEVERE public/reader/likutay-halachos/part-6/halacha-4.json flags=15 bilingual_segments=51/68
+- tiny_he_long_en at aligned_segments[1]/segment
+  HE: אות א
+  EN: And this is the reason the Torah introduced parshas Nedarim [with the words]: "And Moshe spoke to the heads of the tribes…" (Numbers 30:2) which is not said regarding the other mit
+- tiny_he_long_en at aligned_segments[4]/segment
+  HE: אות ב
+  EN: And this is the aspect of the light of the seven days of creation, through which Adam could see from one end of the world to the other. That is, through this light one could gaze a
+- tiny_he_long_en at aligned_segments[6]/segment
+  HE: אות ג
+  EN: And because sustenance was drawn through the sin of Adam HaRishon to the aspect of the ten types of blood, whose sustenance derives from the aforementioned aspect — therefore the l
+- tiny_he_long_en at aligned_segments[8]/segment
+  HE: אות ד
+  EN: And this itself is the aspect of the seven clean days that the nidah counts in order to become pure to her husband. For the holy union of Israel is the aspect of the drawing-down o
+- tiny_he_long_en at aligned_segments[11]/segment
+  HE: אות ה
+  EN: For when one needs to ascend from impurity to purity, to purify oneself from dam nidos, one must attach oneself to the aspect of the or haganuz [hidden light] — that is, the concea
+- tiny_he_long_en at aligned_segments[13]/segment
+  HE: אות ו
+  EN: And this is the aspect of the mikveh, which is the aspect of the hidden light, the concealed Torah, as mentioned above. And this is the aspect of a mikveh of forty se'ah, the aspec
+- tiny_he_long_en at aligned_segments[15]/segment
+  HE: אות ז
+  EN: And this is the aspect of "the waters preceded the world" — that is, the aspect of the waters of chasadim [kindnesses], the aspect of the aforementioned chesed that preceded the wo
+- tiny_he_long_en at aligned_segments[17]/segment
+  HE: אות ח
+  EN: And this is what is brought in the Midrash — that Moshe Rabbeinu, peace be upon him, wanted to enter Eretz Yisra'ail through the aspect of hataras nedarim [annulment of vows], as o
 
 ### SEVERE public/reader/likutay-halachos/part-7/halacha-19.json flags=15 bilingual_segments=49/64
 - tiny_he_long_en at aligned_segments[1]/segment
@@ -4612,31 +4195,57 @@ Files needing review (excluding normal untranslated books): 1751
   HE: אות ח
   EN: And the essential rectification for this is tzedakah to worthy poor people, and to support Torah scholars who serve G-d in truth. For through tzedakah one breaks the craving for mo
 
-### SEVERE public/reader/likutay-halachos/part-7/halacha-56.json flags=15 bilingual_segments=42/52
-- hebrew_in_english_field at segments[23]/segment
+### SEVERE public/reader/likutay-halachos/part-7/halacha-8.json flags=15 bilingual_segments=50/66
+- tiny_he_long_en at aligned_segments[4]/segment
+  HE: אות ב
+  EN: And therefore he erred and married foreign women, for he relied upon his strength and his holiness — upon the exceeding great joy that he merited in his days — that he would transf
+- tiny_he_long_en at aligned_segments[6]/segment
+  HE: אות ג
+  EN: And this is the aspect of "On the day of his wedding" — this is the Giving of the Torah — for the Giving of the Torah, when Yisro was converted and was transformed toward holiness 
+- tiny_he_long_en at aligned_segments[8]/segment
+  HE: אות ד
+  EN: And this is [the meaning of] "Who has ascended to heaven and descended" — according to how Rabbeinu, of blessed memory, explained this verse in the Torah[-teaching] "Vay'hi Mikeitz
+- tiny_he_long_en at aligned_segments[11]/segment
   HE: אות ה
-  EN: תִּקּוּן הַכְּלָלִי
-- long_he_tiny_en at aligned_segments[2]/segment
-  HE: וכן כל המחיצות קרוין כתלים על שם זה, כי איתא בדברי רבינו (שם סי' ס"ה) שכשרוצין להסתכל על התכלית שהוא כולו טוב כולו אחד אזי צריכין לצמצם ולכווין הראות לבלי להסתכל מן הצדלבלי להסתכל 
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[4]/segment
-  HE: וז"ש רבינו נ"י (סי' רס"ו) שצריך לבנות הבית בחכמה בבחי' בחכמה יבנה בית ואזי נשפעין לשם כל ההשפעות. וכשפוגמין בזה ואין בונין הבית בחכמה אזי מתמסכן ע"ש. היינו שצריך לבנות הבית בכוונה 
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[6]/segment
-  HE: וזה בחי' ד' אות שהוא שעירו הבית ושיעור מקום לכל דבר, ולענין חלוקת החצר של השותפין. כי איתא שד' אמוחת הם בחי' ד' אלפין הנמשכין מד' מוחין שהם בחי' מוחי המלכות וע"כ הבית שהוא מקום ההש
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[7]/segment
-  HE: גם אפשר לומר שד' אמות של הפתח וד' אמות שבחצר הם בחי' שני דלתין שדרך שם יורדת השפע בבחי' ודלתי שמים פתח כמובא בדברי רבינו נ"י (סי' קל"ד) וזה בחי' ד' אמות של עאדם קונות לו. כי כל הקנ
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[9]/segment
-  HE: וזהו ג,כ בחי' קנין סודר כי הבגדים הם ג"כ בבחי' חכמה כמובא במאמר האי מאן דאזיל (סי' כט) ששלימות הבגדים ע"י המוחין ע"י קנה חכמה וקנה בינה בבחי' כנשר יעיר קנו ע"ש וע"כ על ידי הבגדים נ
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[12]/segment
-  HE: וע"כ בית שאין בו ד"א, אין לו ד"א לפני הפתח. כי אינו מקום לקבל שפע כי אי ןבו ד"א שהם בחי' המוחין כנ"ל וע"כ אינו בית כלל לשום דבר ואינו חייב במזוזה כנ"ל וע"כ אין לו ג"כ ד' אמות לפני 
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[14]/segment
-  HE: ע"פ המאמר המתחיל בקרוב עלי מרעים וכו' המדבר מק"ש (סי' ל"ו) ע"ש כי יש עי"ן נפש בית יעקב ע' פנים לתורה וכל נפש מישרא לקודם שיש לה התגלות בתורה או בעבודה צריך להצטרף בגלות של עי"ן אומ
-  EN: [continued]
+  EN: And it is known that the Book of Tehillim is comprised of all the expressions of prayer and supplication, etc., as mentioned above, for the majority of the Book of Tehillim speaks 
+- tiny_he_long_en at aligned_segments[13]/segment
+  HE: אות ו
+  EN: For all the voices, which are the aspect of the ten kinds of melody, this is the aspect of the sense of hearing, where the perception of melody and voices resides, the aspect of : 
+- tiny_he_long_en at aligned_segments[15]/segment
+  HE: אות ז
+  EN: And especially the rest of us, simple people like ourselves today, whose entire vitality and holiness is in the aspect of the sense of hearing — that we hear the voice of our foref
+- tiny_he_long_en at aligned_segments[17]/segment
+  HE: אות ח
+  EN: And the engagement in Torah study is also the aspect of the ten kinds of melody, for this is the aspect of the te'amim [cantillation notes] of the Torah, which are above all the ho
+- tiny_he_long_en at aligned_segments[19]/segment
+  HE: אות ט
+  EN: And this is the aspect of Kohen, Levi, Yisra'el, which are the aspect of right, left, and center, which are the totality of holiness, as is known. For a Kohen is the aspect of ches
+
+### SEVERE public/reader/likutay-halachos/part-8/halacha-11.json flags=15 bilingual_segments=47/60
+- long_he_tiny_en at segments[21]/segment
+  HE: אות ט וזה בחי' מצות השבת אבידהכי השבת אבידה זה בחי' שבירת תאוות ממון כי לוקח החפץ שמצא ששוה ממון ויכול ליקחו לעצמו והוא לוקחו ומחזירו לבעליו נמצא שהוא בחי' שבירת תאוות ממון בחי' צד
+  EN: &bull; &bull; &bull;
+- tiny_he_long_en at aligned_segments[1]/segment
+  HE: אות א
+  EN: And this is: "The testimony of Hashem is trustworthy; it makes the simple wise" (Psalms 19:8). That is, one who takes to heart that aidus Hashem — which is the Torah — is trustwort
+- tiny_he_long_en at aligned_segments[4]/segment
+  HE: אות ב
+  EN: And this is the aspect of Rosh HaShanah being on Rosh Chodesh. For it is known that Rosh HaShanah and Rosh Chodesh are the aspect of the sun and the moon. For years are counted by 
+- tiny_he_long_en at aligned_segments[8]/segment
+  HE: אות ג
+  EN: And it is found there that through the completeness of yir'ah [fear/awe of G-d] — which is completed through receiving properly the Shalosh R'galim [Three Pilgrimage Festivals] — t
+- tiny_he_long_en at aligned_segments[10]/segment
+  HE: אות ד
+  EN: It emerges that all of them are in the aspect of borrowers, one from another and this one from that one, up to the great Lender, who is the aspect of the Ba'al T'filah [Master of P
+- tiny_he_long_en at aligned_segments[12]/segment
+  HE: אות ה
+  EN: And therefore, when one lends his fellow money or the like and does g'milus chesed [an act of lovingkindness] with him — through lending to his fellow, through this, by an arousal 
+- tiny_he_long_en at aligned_segments[14]/segment
+  HE: אות ו
+  EN: And g'milus chesed — that is, a gracious loan — is greater than tz'dakah, and through it one arouses even more the bounty to descend from level to level down to below. For the draw
+- tiny_he_long_en at aligned_segments[16]/segment
+  HE: אות ז
+  EN: And therefore all the properties of the borrower are encumbered to the lender — even what he sold and gave after the loan is all encumbered to the lender, by law. For all the purch
 
 ### SEVERE public/reader/likutay-halachos/part-8/halacha-31.json flags=15 bilingual_segments=45/60
 - tiny_he_long_en at aligned_segments[1]/segment
@@ -4690,57 +4299,83 @@ Files needing review (excluding normal untranslated books): 1751
   HE: ~ אות ה
   EN: And therefore on Shabbos, when one merits the ratzon of k'dushah, through this one merits t'shuvah, which is the aspect of Shabbos, as Rabbainu z"l wrote elsewhere — the aspect of 
 
-### SEVERE public/reader/likutay-halachos/part-1/halacha-17.json flags=14 bilingual_segments=37/50
+### SEVERE public/reader/likutay-halachos/part-1/halacha-13.json flags=14 bilingual_segments=28/28
+- tiny_he_long_en at segments[1]/segment
+  HE: הלכה ב
+  EN: The essential principle: through the holy Nekudah [point] — the light of holy love that dwells in the aspect of tzadik/Yesod, which is revealed and illuminates through the mouth, "
+- tiny_he_long_en at segments[2]/segment
+  HE: אות א
+  EN: This is the aspect of Tefillin, whose mitzvah is opposite the heart — to subjugate desires and thoughts of the heart to His service. That is, to nullify all the fallen and broken l
+- tiny_he_long_en at segments[5]/segment
+  HE: אות ב
+  EN: This is the aspect of the Shin of three heads and Shin of four heads. The Nekudah is comprised of two Nekudos. Also, the comprehensive Nekudah of the tzadik HaDor (which encompasse
+- tiny_he_long_en at segments[7]/segment
+  HE: אות ג
+  EN: The totality of the two Shins is seven heads — the aspect of Yesod, which is Shabbos, the seventh day. This is the aspect of Melupum [cholam] where the Nekudah resides — a Yud upon
+- tiny_he_long_en at segments[9]/segment
+  HE: אות ד
+  EN: This is the aspect of the three daily prayers — Shacharis, Minchah, Arvis — corresponding to the three Nekudos, for the Nekudos illuminate through prayer: "Pi yedaber." Shacharis a
+- tiny_he_long_en at segments[11]/segment
+  HE: אות ה
+  EN: This is the aspect of the severe prohibition of hotza'as zera l'vatalah [wasteful emission]. As explained above, the Nekudah dwelling at Bris Shalom is fixed in holiness always, ne
+- tiny_he_long_en at segments[13]/segment
+  HE: אות ו
+  EN: For this holy kindling is the aspect of drawing the light and the radiance of the reshimu from the bittul — from which comes the receiving of the Torah. Through this we prevail aga
 - tiny_he_long_en at aligned_segments[1]/segment
-  HE: הלכה ז
-  EN: This is the aspect of Hashem's praise for Kneses Yisrael: "Shor'rareich agan hasahar al yechsar hamezeg" — "Your navel is a round basin; let the blended wine not be lacking" (Shir 
+  HE: הלכה ב
+  EN: The essential principle: through the holy Nekudah [point] — the light of holy love that dwells in the aspect of tzadik/Yesod, which is revealed and illuminates through the mouth, "
+
+### SEVERE public/reader/likutay-halachos/part-1/halacha-21.json flags=14 bilingual_segments=30/30
+- tiny_he_long_en at segments[2]/segment
+  HE: אות א
+  EN: This is the aspect of Tefillin. For Tefillin are the sparkling of the Mochin, as is known and explained elsewhere (LM I:38). Through this one merits Gadlus/Malchus: "Melech asur ba
+- tiny_he_long_en at segments[4]/segment
+  HE: אות ב
+  EN: Therefore Shabbos is not a time for Tefillin. For Shabbos itself is the aspect of the World to Come, cha'yim Nitzchiyim: "To'ameiha chayim zachu" — as written in the Torah there at
+- tiny_he_long_en at segments[6]/segment
+  HE: אות ג
+  EN: Therefore the essential light of Tefillin emerges through waking at midnight to study Torah, as explained in the Arizal's writings at length — the light of Tefillin issues from the
+- tiny_he_long_en at segments[8]/segment
+  HE: אות ד
+  EN: This is the aspect of the Name Shakeye on the Tefillin. Shakeye — because "there is dai [enough / sufficient] in His G-dliness for every creature", which is the opposite of gadlus 
+- tiny_he_long_en at segments[10]/segment
+  HE: אות ה
+  EN: Therefore the essential Techiyas HaMaisim will come through the seed of Aharon HaKohen. As our Sages said (end of Sotah): Techiyas HaMaisim comes through Eliyahu, remembered for go
+- tiny_he_long_en at segments[12]/segment
+  HE: אות ו
+  EN: This is the aspect of the mitzvah of eating matzah and the prohibition of chametz on Pesach — mentioned in the parshiyos of Tefillin: "Shiv'as yamim tochal matzos" (Shemos 13:6-7).
+- long_he_tiny_en at segments[13]/segment
+  HE: וכל בחינת תפילין על עור בהמה, זה בחינת (תהלים סח) גער חית קנה, חית קנה זה בחינת בהמיות ועל ידי שלוקחין עור בהמה ומעבדין ~ אותו לשם תפילין וכותבין עליו פרשיות של תפילין על ידי זה מכ
+  EN: 11 Bamidbar 15:39.
 - tiny_he_long_en at aligned_segments[2]/segment
   HE: אות א
-  EN: Even now in this world, the tzadikim who truly serve Hashem draw upon themselves eternal life through Torah, tefillah, and ma'asim tovim. Though their entire aspiration is to live 
-- tiny_he_long_en at aligned_segments[4]/segment
-  HE: אות ב
-  EN: For Dovid had no chiyus of his own at all. He was destined to be a nefel [stillbirth]. Only Adam HaRishon gave him seventy years from his own lifespan, as our Sages said. The chiyu
-- tiny_he_long_en at aligned_segments[6]/segment
-  HE: אות ג
-  EN: This is the aspect of Rosh HaShanah. Rosh HaShanah is the aspect of Tefillin — the renewal one merits each day through sleep, when the Mochin are renewed within emunah — this is Ro
-- tiny_he_long_en at aligned_segments[8]/segment
-  HE: אות ד
-  EN: Behold, the sum total of Tefillin is the aspect of Mochin cha'yim [living brains]: to begin living anew each time — whether tzadik, beinoni, or rasha. As long as the name Yisrael i
-- tiny_he_long_en at aligned_segments[10]/segment
-  HE: אות ה
-  EN: And then, when Hashem, blessed be He, wishes to have mercy upon him in His abundant mercy, He elevates him from that place to the aspect of "above place." And there, everything is 
-- tiny_he_long_en at aligned_segments[12]/segment
-  HE: אות ו
-  EN: And even one who has fallen to some bad place through his sins — even if he has fallen to the place where he has fallen, to a very low and materialistic and filthy place, G-d forbi
-- tiny_he_long_en at aligned_segments[14]/segment
-  HE: אות ז
-  EN: And therefore, tzitzis gathers the dispersed from the four corners of the earth — in the aspect of: "Vahavi'einu l'shalom mei'arba kanfos," etc. [And bring us in peace from the fou
+  EN: This is the aspect of Tefillin. For Tefillin are the sparkling of the Mochin, as is known and explained elsewhere (LM I:38). Through this one merits Gadlus/Malchus: "Melech asur ba
 
-### SEVERE public/reader/likutay-halachos/part-4/halacha-65.json flags=14 bilingual_segments=36/44
-- hebrew_in_english_field at segments[3]/segment
-  HE: ע"פ התורה שבסימן כ"ו בלק"ת ע"ש. מבואר שם שצריך להרחיק משכרות וכו'. כי מעט השתיה טובה להרחיב דעתו כי הדעת מלובש בחסדים. וכששותה במדה כראוי וכו' אז נתרחב ונתרומם דעתו ואזי נגדלין החס
-  EN: 6 כֹּל הַנְּשָׁמָה תְּהַלֵּל יָהּ הַלְלוּי-ה
-- long_he_tiny_en at segments[7]/segment
-  HE: וזה בחי' תורה ותפילה. כי כלליות התורה הוא בבחי' מחשבה ודעת בחי' משה שזהו בחי' תורה שבכתב. ותפילה היא בחינת מביא לידי מעשה בחי' דיבור בחי' תורה שבע"פ כי עיקר ההתגברות על היצה"ר והדמ
-  EN: Short Prayer
-- long_he_tiny_en at aligned_segments[3]/segment
-  HE: ע"פ התורה שבסימן כ"ו בלק"ת ע"ש. מבואר שם שצריך להרחיק משכרות וכו'. כי מעט השתיה טובה להרחיב דעתו כי הדעת מלובש בחסדים. וכששותה במדה כראוי וכו' אז נתרחב ונתרומם דעתו ואזי נגדלין החס
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[4]/segment
-  HE: וזה בחי' איסור סתם יינם שהוא יין שנגע בו עכו"ם. כי יין דקדושה גבוה מאד כי הוא משמח אלקים ואנשים. כשרז"ל אם אנשים משמח אלקים במה משמח מכאן שאין אומרים שירה אלא על היין. אך היין צריך
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[6]/segment
-  HE: ושני בחי' אלו הם בחי' משה ודוד. היינו משה הוא בחי' האזהרה והזכרה שמזהיר את כ"א וא' מישראל בכל אבר ואבר לעשות את המצוות וכו' כנ"ל. אבל אח,כ כשבא לעשות על ידי האזהרה הזאת של משה. אזי
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[7]/segment
-  HE: וזה בחי' תורה ותפילה. כי כלליות התורה הוא בבחי' מחשבה ודעת בחי' משה שזהו בחי' תורה שבכתב. ותפילה היא בחינת מביא לידי מעשה בחי' דיבור בחי' תורה שבע"פ כי עיקר ההתגברות על היצה"ר והדמ
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[9]/segment
-  HE: וזה ידוע שדוד המלך הוא בבחי' כוס יין של ברכה. בבחי' כוס ישועות אשא וכו' בחי' כוסי רויה וכשרז"ל שלעתיד יאמר דוד לי נאה לברך וכו'. כי יין זה בחי' חמימות הדמים כנראה בחוש שהיין ושאר מ
-  EN: [continued]
-- long_he_tiny_en at aligned_segments[11]/segment
-  HE: וע"כ צרייכן לשמוראת היין מאד מאד ממגע עכו"ם כי אפי' יין של היתר צריכין שמירה גדולה מאד שלא לשתות בסעודת הרשות וכיוצא כי לא זכה משממו וכו' ואפילו בסעודת מצוה צריך ליזהר שלא לשתות יו
-  EN: [continued]
+### SEVERE public/reader/likutay-halachos/part-1/halacha-34.json flags=14 bilingual_segments=26/26
+- tiny_he_long_en at segments[1]/segment
+  HE: הלכה ג
+  EN: This is the aspect of Pesach and Shavuos. For on Pesach was the beginning of Yisrael's drawing close to their Father in heaven — when they left the impurity of the idol-worshipping
+- tiny_he_long_en at segments[2]/segment
+  HE: אות א
+  EN: For chametz is the aspect of the labors and toil through which people exert themselves to draw their livelihood — as though there is some way of nature. In truth this is falsehood 
+- tiny_he_long_en at segments[4]/segment
+  HE: אות ב
+  EN: Therefore on Shavuos one brings the Shtai HaLechem [Two Loaves] — specifically from chametz. This is the aspect of the todah. For Pesach and Shavuos are bound to one another — "mim
+- tiny_he_long_en at segments[6]/segment
+  HE: אות ג
+  EN: For the essential sweetening is drawn through the Torah, which is expounded through the thirteen rules — the aspect of the Yud-Gimmel Tikunay Dikna, from which the pidyon is drawn.
+- tiny_he_long_en at segments[8]/segment
+  HE: אות ד
+  EN: In the Idra Rabbah it states: "There is a metzach and there is a metzach." "Metzach" [forehead] — its letters reversed spell "chametz." This is the aspect of (Yirmiyahu 3): "U'metz
+- tiny_he_long_en at segments[10]/segment
+  HE: אות ה
+  EN: This is what our Sages said (Pesachim 56a) regarding Baruch Shaim Kevod Malchuso Li'Oalam Va'ed — concluding with the parable of the princess who smelled the fragrance of the spice
+- tiny_he_long_en at segments[12]/segment
+  HE: אות ו
+  EN: This is the aspect of Tefillin shel Rosh: from there the light emerges — the kesher [knot] of Dalet attached to the shel Rosh = "Melech asur barahatim" — Malchus bound within the M
+- tiny_he_long_en at aligned_segments[1]/segment
+  HE: הלכה ג
+  EN: This is the aspect of Pesach and Shavuos. For on Pesach was the beginning of Yisrael's drawing close to their Father in heaven — when they left the impurity of the idol-worshipping
 
 ### SEVERE public/reader/likutay-halachos/part-4/halacha-75.json flags=14 bilingual_segments=29/30
 - long_he_tiny_en at aligned_segments[2]/segment
@@ -4766,6 +4401,32 @@ Files needing review (excluding normal untranslated books): 1751
   EN: [continued]
 - long_he_tiny_en at aligned_segments[10]/segment
   HE: וזה חצות לילה אקום וכו'. כי זה מעלת צות נידוד השינה שמשם כל השינויים שעל ידי זה תיקון הכל כנ"ל. וע"כ הי' יציאת מצרים בחצות וכנ"ל. וע"כ חצות מסוגל כמו פדיון שהוא ע"י מעות הצדקה שנות
+  EN: [continued]
+
+### SEVERE public/reader/likutay-halachos/part-4/halacha-8.json flags=14 bilingual_segments=37/48
+- long_he_tiny_en at segments[22]/segment
+  HE: אות י וע"כ צריכיןת ליתן מן הבהמה מתנות כהונה לכהן. כדי לקשר על ידי זה את הבהמה לבחי' כהן שהוא בחי' אהבה דקדושה בחי' וקמץ הכהן כנ"ל. שזהו בחי' בירור המדמה שהבררין ומעלין אהבות הנפול
+  EN: Tikun HaKlali
+- long_he_tiny_en at aligned_segments[3]/segment
+  HE: והכלל כי צריך לשמור מאד את הזכרון דהיינו לזכור תמיד בעלמא דאתי וכו'. ולשמור את הזכרון צריך לשמור א"ע שלא יפול לבחי' רע עין וכו' וכו'. ואפילו מי שהוא טוב עין צריך לשמור א"ע מכח המדמ
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[5]/segment
+  HE: וזה בחי' ח"י טריפות, שאנו בני ישראל מוזהקין לבלי לאכול מהחי שיש לו איזה נקב וחסרון באיזה אבר שהנשמה תלויה בו. כי החי הוא בבחי' כח המדמה כח הבהמיות וע"כ א"א לנו לאכול בשר החי כ"א כש
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[6]/segment
+  HE: וזה בחי' ברכת המזון. בחי' כוס של ברכת המזון שטעון עשרה דברים שהם בחי' עשרה מיני נגינה שכולם כלולים בבחי' כוס של ברכה שהוא בחי' מלכות וכו' כידוע. נמצא שעיקר תיקון ובירור האכילה הוא 
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[8]/segment
+  HE: וזה בחחי' שחיטה. כי הבהמה שמתה מאליה היא נבילה ואסורה לאכילת ישראל עם קדוש. כי אנחנו ישראל עם קדוש א"א לנו לאכול בשר החי ששם שורה כח המדמה שהוא כח הבהמיות כנ"ל כ"א כשמבררין אותו קו
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[10]/segment
+  HE: ועיקר השחיטה היא במקום הצוואר כי הצוואר והגרון מפסיק בין הראש והגוף שהם בבחי' רוח האדם ורוח הבהמה סחי' זכרון ושכחה, בחי' עלמא דאתי ועלמא דין, כי הראש הוא בחי' הדעת שהוא בחי' זכרון 
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[12]/segment
+  HE: וזה בחי' ובשר בשדה טרפה לא תאכלו לכלב תשליכון אותו, לא תשא שמע שוא ודרז"ל (פסחים קי"ח) שהמספר לשון הרע ראוי להשליכו לכלבים כי הם בחי' אחת. היינו עון לשון הרע ואיסור טריפות כי עיקר 
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[14]/segment
+  HE: וע"כ הם ח"י טריפות כנגד צדיק ח"י עלמין שהוא בחי' יוסף הצדיק דנטיר ברית שעיקר התיקון של המדמה הוא על ידו בבחי' ויוסף ישית ידו על עיניץ (כמבואר שם במאמר הנ"ל). כי עיקר בירור המדמה לה
   EN: [continued]
 
 ### SEVERE public/reader/likutay-halachos/part-5/halacha-44.json flags=14 bilingual_segments=53/66
@@ -4794,83 +4455,57 @@ Files needing review (excluding normal untranslated books): 1751
   HE: אות ח
   EN: "Every word of G-d is pure" (כָּל אִמְרַת אֱלוֹקַ צְרוּפָה, Proverbs 30:5) etc. — in the aspect of "You shall not add to the word and you shall not subtract from it" (לֹא תוֹסִיפוּ
 
-### SEVERE public/reader/likutay-halachos/part-5/halacha-56.json flags=14 bilingual_segments=32/40
-- hebrew_in_english_field at segments[4]/segment
-  HE: אות טז וזהו בחי' עומר שעורים שמקריבים אז שהוא מתיר החדש כי כל הישועת וכל התקרבות ישראל לאביהם שבשמים וכל הפרנסה וכל ההשפעות הלכ נמשך מן המקום ההוא שהוא מקום הביהמ"ק שעליו נאמר וירא
-  EN: 18 זֹרְמוּ מַיִם עָבוֹת קוֹל נָתְנוּ שְׁחָקִים אַף-חֲצָצֶיךָ יִתְהַלָּכוּ
-- hebrew_in_english_field at segments[10]/segment
-  HE: אות יט כי עיקר בחי' זאת להתקרב דייקא ע"י התרחקות בבחי' שלו םלרחוק ולקרוב הנ"ל. א"א לזכות כ"א ע"י הדיבור דקודשה ועיקר ע"י תפילה כי ענין רחוק וקרוב הנ"ל הם נראים בתחלה כסותרים זה את 
-  EN: 20 בַּיָּם דַּרְכֶּךָ וּשְׁבִילְךָ בְּמַיִם רַבִּים וְעִקְּבוֹתֶיךָ לֹא נֹדָעוּ
-- hebrew_in_english_field at segments[13]/segment
-  HE: אות כא וע"כ כל ענין זה של שלום לרחוק ולקרוב מרומז בפ' קן צפור וכו' כנ"ל. כי כל ענין זההוא בבחי' תקון הכנפים כנ"ל שהוא בחי' צפרים ועופות שהם בעלי כנפים:
-  EN: 21 נָחִיתָ כַצֹּאן עַמֶּךָ בְּיַד-מֹשֶׁה וְאַהֲרֹן
-- hebrew_in_english_field at segments[17]/segment
-  HE: וזה בחי' מה שהבטיח הש"י ליעקב אנכי ארד עמך מצרימה ואנכי אעלך גם עלה ומובן בספרים שבזה הפסוק מרמז כל סוד גלות ישראל ועיקר הוא גלות הנפש כל העליות והירידות העוברים על איש הישראל שזה 
-  EN: 1 תְּפִלָּה לְמֹשֶׁה אִישׁ-הָאֱ-לֹהִים אֲדֹנָי מָעוֹן אַתָּה הָיִיתָ לָּנוּ בְּדֹר וָדֹר
-- hebrew_in_english_field at segments[20]/segment
-  HE: ואם תדקדק יותר תראה נפלאות. כי הלא היוד של ואנכי הנ"ל שהיא מצטרפת לתיבת אעלך גם עלה שמשם עיקר העליה כי הוא שעמדה לנו ולאבותינו בגלותינו שאינה מנחת שתתפשט הסט"א גם עליה וכו' וכנ"ל ז
-  EN: 2 בְּטֶרֶם הָרִים יֻלָּדוּ וַתְּחוֹלֵל אֶרֶץ וְתֵבֵל וּמֵעוֹלָם עַד-עוֹלָם אַתָּה אֵל
+### SEVERE public/reader/likutay-halachos/part-5/halacha-63.json flags=14 bilingual_segments=43/64
 - tiny_he_long_en at aligned_segments[1]/segment
-  HE: אות טו
-  EN: For from all these souls, a merkavah [Divine chariot] is formed for holiness — and in the merkavah there is man, beast, and fowl: the dimensions of human, lion, ox, and eagle. Acco
-- tiny_he_long_en at aligned_segments[3]/segment
-  HE: אות טז
-  EN: As Rabbainu of blessed memory explained [in Siman 123], on the verse "a foolish and not wise people" [Deuteronomy 32:6] — the nation that received the Torah and [yet] were not wise
-- tiny_he_long_en at aligned_segments[5]/segment
-  HE: אות יז
-  EN: And this is "the mother resting upon the chicks" — the intellect [seichel] that each person is born with, which rests upon his soul to give it life and nurture it. But because of A
-
-### SEVERE public/reader/likutay-halachos/part-5/halacha-95.json flags=14 bilingual_segments=36/44
-- hebrew_in_english_field at segments[3]/segment
-  HE: ע"פ התורה ישראל נעשים אדונים לבעליהם וכו' (בלק"ת בסי' ע"ו) ע"ש. והכלל שבכל מקום שישראל באים לשם בגלות בתחילה הם שם כבושים בגולה ויש להם יסורים גדולים. בגשמיות ורוחניות כ"א לפי בחינ
-  EN: תִּקּוּן הַכְּלָלִי
-- long_he_tiny_en at segments[3]/segment
-  HE: ע"פ התורה ישראל נעשים אדונים לבעליהם וכו' (בלק"ת בסי' ע"ו) ע"ש. והכלל שבכל מקום שישראל באים לשם בגלות בתחילה הם שם כבושים בגולה ויש להם יסורים גדולים. בגשמיות ורוחניות כ"א לפי בחינ
-  EN: תִּקּוּן הַכְּלָלִי
-- long_he_tiny_en at segments[8]/segment
-  HE: וע"כ כל מה שהאמכל סמוך לגמרו יותר דהיינו שיתנהו ממנו וירגישו בו טעמו צריך בירור יותר וע"כ בעת גמר התבואה והפירו תצריכין להפריש מהם ביכורים ותרומות ומעשרות ואח"כ כשעושין קמח מהתבואה
-  EN: iy = eye
-- hebrew_in_english_field at segments[22]/segment
-  HE: (הלכות חלה הלכה ה' נכללת בה' פדיון בכור הלכה ה' אות כ"ו)
-  EN: 4 יִרְבּוּ עַצְּבוֹתָם אַחֵר מָהָרוּ בַּל-אַסִּיךְ נִסְכֵּיהֶם מִדָּם וּבַל-אֶשָּׂא אֶת-שְׁמוֹתָם עַל-שְׂפָתָי
-- tiny_he_long_en at aligned_segments[1]/segment
-  HE: אות א
-  EN: And therefore the parchment must be processed lishma — for its holy purpose. This corresponds to the processing and clarification of the medam'eh, which is in the dimension of anim
-- tiny_he_long_en at aligned_segments[4]/segment
   HE: אות ב
-  EN: Furthermore, writing is for a lasting memorial — for all writing is a memorial — and when one writes upon one's body a chesoves ka'aka, it is as though one is denying, G-d forbid, 
-- tiny_he_long_en at aligned_segments[6]/segment
-  HE: אות ג
-  EN: And the core of the prohibition is the chesoves ka'aka — writing through engraving — because when the writing is more physical and concrete, namely writing through engraving, the m
-- tiny_he_long_en at aligned_segments[9]/segment
-  HE: אות ד
-  EN: And therefore the Kohanim are warned with a special warning regarding the prohibition of cutting, as it says, "and they shall not make a cut in their flesh" (Vayikra 21:5). For the
-
-### SEVERE public/reader/likutay-halachos/part-7/halacha-22.json flags=14 bilingual_segments=49/60
-- tiny_he_long_en at aligned_segments[1]/segment
-  HE: אות א
-  EN: And therefore Yitzchak rectified the wells, which are the aspect of the revelation of the da’as of Avraham that the Philistines had damaged, as mentioned above. And Yitzchak, who i
+  EN: And this is the dimension of "for all her household is clothed in crimson [shanim]" — that is, two [shnayim] — the dimension of doubling: "open you shall open, etc." — meaning that
 - tiny_he_long_en at aligned_segments[5]/segment
-  HE: אות ב
-  EN: And this is the aspect of those disqualified for the Kehunah (priesthood), which are: a divorcee, a zonah (harlot), and a chalalah (profaned woman) — all of whom are in the aspect 
-- tiny_he_long_en at aligned_segments[9]/segment
-  HE: אות ג
-  EN: This ruling derives from the Mishnah, Kidushin, chapter 3. The text of that Mishnah is: "Wherever there is valid kidushin [betrothal] and no transgression, the child follows the fa
-- hebrew_in_english_field at aligned_segments[11]/segment
-  HE: נמצא שעיקר העשירות שהוא בחינת חומה נמשך מבחינת משפט שהוא בחי' בית כנ"ל וזה בחי' הון ביתו. כי ההון שהוא בחי' חומה כ"ש במאמר הנ"ל. נמשך מבחינת בית שהוא בחי' משפט כנ"ל:
-  EN: עַל-פִּי הַתּוֹרָה "אֶמְצָעִיתָא דְּעָלְמָא" בְּסִימָן כד, עַיֵּן שָׁם. וְהַכְּלָל שֶׁעַל-יְדֵי עֲשִׂיַּת הַמִּצְוָה בְּשִׂמְחָה, מַעֲלִין הַקְּדֻשָּׁה מֵהַקְּלִפּוֹת בִּבְחִינַת ק
-- tiny_he_long_en at aligned_segments[12]/segment
+  HE: אות ג'
+  EN: And this is what is said in the consolations of Isaiah the prophet [chapters 42-43] — where he strengthens them greatly to draw near to God, blessed be He, after everything they ha
+- tiny_he_long_en at aligned_segments[8]/segment
   HE: אות ד
-  EN: And this is the essential purpose of a person who comes to this world — namely, to come to know Him, may He be blessed — and this is achieved through the abovementioned principle: 
-- tiny_he_long_en at aligned_segments[14]/segment
-  HE: אות עב
-  EN: For man and woman flow in their supernal root from the two aspects mentioned — pursuit and restraint. The man is in the aspect of the [driving of] intellectual light [moichin], whi
-- tiny_he_long_en at aligned_segments[16]/segment
+  EN: And this is the essential war of Amalek in every generation — for he strengthens himself at every level, and from there all the strife of every generation is drawn — for falsehood 
+- tiny_he_long_en at aligned_segments[10]/segment
   HE: אות ה
-  EN: And this is the aspect of the great obligation to gladden the bride and groom, as our Sages of blessed memory said. And this is the aspect of what our Sages said: "One who has no c
-- hebrew_in_english_field at aligned_segments[17]/segment
-  HE: וע"כ גדולה גמילו חסד יותר מן הצדקה כי כשנותן לו צדקה אינו נותן לו רק מעט כדי מתנת ידו. אבל הלוואת חן הוא מלוה לו איזה סך מסוים. וע,י שמלוה לו לשעה. עי"ז נעש עכשיו המעות אצל הלוה כש
-  EN: וְזֶה עִקַּר הַתַּכְלִית שֶׁל הָאָדָם שֶׁבָּא לָעוֹלָם הַזֶּה בִּשְׁבִיל זֶה כְּדֵי לְהַכִּיר אוֹתוֹ יִתְבָּרַךְ... וְזֶה עִקַּר הַמִּצְוָה לְהַעֲמִיד בָּנִים בָּעוֹלָם כְּדֵי לְהַ
+  EN: For all the nullification [bitul] is only for the sake of the taste [taam] — as the halachic authorities bring, for taste is like the essence by Torah law [taam k'ikar d'orayta], f
+- tiny_he_long_en at aligned_segments[12]/segment
+  HE: אות ו
+  EN: And because of this, Israel is distinguished through mitzvos — so that they should not become mixed among the nations, God forbid. Therefore God, blessed be He, cautioned them that
+- tiny_he_long_en at aligned_segments[14]/segment
+  HE: אות ז
+  EN: And therefore there are important things that cannot be nullified because of their importance [chashivus] — such as a significant cut of meat fit to be honoured [chaticha ha-reuyah
+- tiny_he_long_en at aligned_segments[16]/segment
+  HE: אות ח
+  EN: And this is the dimension of: doubt in Torah law [safek d'orayta] is treated strictly [l'chumra]; doubt in Rabbinic law [safek d'rabbanan] is treated leniently [l'kula]; and a doub
+- tiny_he_long_en at aligned_segments[18]/segment
+  HE: אות ט
+  EN: And there is a dimension in which an accident [shogeig] is more severe than intentional sin [meizid] — for the husk of the Tree of Knowledge is very severe as mentioned in Laws of 
+
+### SEVERE public/reader/likutay-halachos/part-6/halacha-24.json flags=14 bilingual_segments=45/64
+- tiny_he_long_en at aligned_segments[1]/segment
+  HE: אות א
+  EN: But also, the completeness of the korban certainly could not be in Egypt, in chutz la'aretz. For the primary completeness of the korban is only in Eretz Yisra'ail, in the Bais HaMi
+- tiny_he_long_en at aligned_segments[3]/segment
+  HE: אות ב
+  EN: And behold, the light that was revealed in Egypt was in truth a very exalted and awesome light — the aspect of the flow of light from the no'am ha'elyon itself. And as is explained
+- tiny_he_long_en at aligned_segments[5]/segment
+  HE: אות ג
+  EN: And in truth, when the no'am ha'elyon flows — that is, when there is a complete vessel through tzedakah — then also the chovlim come and fall into the no'am and are rectified as we
+- tiny_he_long_en at aligned_segments[7]/segment
+  HE: אות ד
+  EN: And this is the aspect of the severe prohibition of chametz on Pesach — that it is forbidden specifically on Pesach, but the rest of the entire year it is permitted. For on Pesach,
+- tiny_he_long_en at aligned_segments[9]/segment
+  HE: אות ה
+  EN: For if, G-d forbid, even some mashehu of the aspect of chametz would become mixed into the matzah — which is the aspect of the mochin of chutz la'aretz, which are the aspect of cha
+- tiny_he_long_en at aligned_segments[13]/segment
+  HE: אות ז
+  EN: And therefore now, at the time of the Exodus from Egypt, when this supernal light — the aspect of no'am ha'elyon — is being revealed in a very great revelation, then certainly the 
+- tiny_he_long_en at aligned_segments[16]/segment
+  HE: אות ח
+  EN: And because of this, they could not rectify the aspect of the chovlim, the aspect of the blemished mochin. And this is the aspect of the prohibition of chametz, as mentioned above.
+- tiny_he_long_en at aligned_segments[18]/segment
+  HE: אות ט
+  EN: And this is the aspect of Sefiras Ha'Omer, which is in order to purify oneself — each person — from the aspect of dam niddus [the blood of impurity], which is the aspect of the ble
 
 ### SEVERE public/reader/likutay-halachos/part-7/halacha-46.json flags=14 bilingual_segments=48/62
 - tiny_he_long_en at aligned_segments[2]/segment
@@ -4898,6 +4533,32 @@ Files needing review (excluding normal untranslated books): 1751
   HE: אות ט
   EN: As is well known, all these matters that are heard from many magnates — woe to them, woe to their souls! For upon themselves they look not at all — as though they are entitled from
 
+### SEVERE public/reader/likutay-halachos/part-7/halacha-56.json flags=14 bilingual_segments=41/52
+- long_he_tiny_en at aligned_segments[2]/segment
+  HE: וכן כל המחיצות קרוין כתלים על שם זה, כי איתא בדברי רבינו (שם סי' ס"ה) שכשרוצין להסתכל על התכלית שהוא כולו טוב כולו אחד אזי צריכין לצמצם ולכווין הראות לבלי להסתכל מן הצדלבלי להסתכל 
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[4]/segment
+  HE: וז"ש רבינו נ"י (סי' רס"ו) שצריך לבנות הבית בחכמה בבחי' בחכמה יבנה בית ואזי נשפעין לשם כל ההשפעות. וכשפוגמין בזה ואין בונין הבית בחכמה אזי מתמסכן ע"ש. היינו שצריך לבנות הבית בכוונה 
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[6]/segment
+  HE: וזה בחי' ד' אות שהוא שעירו הבית ושיעור מקום לכל דבר, ולענין חלוקת החצר של השותפין. כי איתא שד' אמוחת הם בחי' ד' אלפין הנמשכין מד' מוחין שהם בחי' מוחי המלכות וע"כ הבית שהוא מקום ההש
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[7]/segment
+  HE: גם אפשר לומר שד' אמות של הפתח וד' אמות שבחצר הם בחי' שני דלתין שדרך שם יורדת השפע בבחי' ודלתי שמים פתח כמובא בדברי רבינו נ"י (סי' קל"ד) וזה בחי' ד' אמות של עאדם קונות לו. כי כל הקנ
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[9]/segment
+  HE: וזהו ג,כ בחי' קנין סודר כי הבגדים הם ג"כ בבחי' חכמה כמובא במאמר האי מאן דאזיל (סי' כט) ששלימות הבגדים ע"י המוחין ע"י קנה חכמה וקנה בינה בבחי' כנשר יעיר קנו ע"ש וע"כ על ידי הבגדים נ
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[12]/segment
+  HE: וע"כ בית שאין בו ד"א, אין לו ד"א לפני הפתח. כי אינו מקום לקבל שפע כי אי ןבו ד"א שהם בחי' המוחין כנ"ל וע"כ אינו בית כלל לשום דבר ואינו חייב במזוזה כנ"ל וע"כ אין לו ג"כ ד' אמות לפני 
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[14]/segment
+  HE: ע"פ המאמר המתחיל בקרוב עלי מרעים וכו' המדבר מק"ש (סי' ל"ו) ע"ש כי יש עי"ן נפש בית יעקב ע' פנים לתורה וכל נפש מישרא לקודם שיש לה התגלות בתורה או בעבודה צריך להצטרף בגלות של עי"ן אומ
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[17]/segment
+  HE: וזה בחי' מצוות הרחקת הנזק על כ"א מישראל שמוטל עליו להרחיק הנזק מחבירו ואפילו ברשותו אסור עליו לעשות דבר שיגרום בו נזק לחבירו וחייב להרחיק כמו שנתנו רז"ל שיעור ההרחקה על כל דבר ודבר
+  EN: [continued]
+
 ### SEVERE public/reader/likutay-halachos/part-8/halacha-53.json flags=14 bilingual_segments=48/60
 - tiny_he_long_en at aligned_segments[1]/segment
   HE: אות א
@@ -4923,84 +4584,6 @@ Files needing review (excluding normal untranslated books): 1751
 - tiny_he_long_en at aligned_segments[19]/segment
   HE: אות ח
   EN: And because of this one needs to distance from the arvus, as Chazal said. For who can enter himself into this — to settle the debts and loans of his fellow? For it would be enough 
-
-### SEVERE public/reader/likutay-halachos/part-8/halacha-62.json flags=14 bilingual_segments=39/50
-- hebrew_in_english_field at segments[17]/segment
-  HE: נמצא שכל דיינ נזיקין דהיינו לשמור מהיזק הוא תלוי בשמירת הלב דהיינו שלא יחמוד את של חבירו כנ"ל ובזה תלוי כל המו"מ באמונה שהוא בחי' דיני ממונות כנ"ל. וע"כ כל דיני מונות קרא התנא בשם 
-  EN: 12 אַל-תַּהַרְגֵם פֶּן-יִשְׁכְּחוּ עַמִּי הֲנִיעֵמוֹ בְחֵילְךָ וְהוֹרִידֵמוֹ מָגִנֵּנוּ אֲדֹנָי
-- hebrew_in_english_field at segments[25]/segment
-  HE: אות יא וזה בחי' כה אמר ה' אל יעקב אשר פדה את אברהם. כי ע"י בחי' יעקב ניצול אברהם שהוא בחי' החכמה כנ"ל. וזהו אשר פדה את אברהם דהיינו מאור כשדים כשרז"ל שבזכות יעקב ניצול אברהם מאור כ
-  EN: 15 וְיָשׁוּבוּ לָעֶרֶב יֶהֱמוּ כַכָּלֶב וִיסוֹבְבוּ עִיר
-- tiny_he_long_en at aligned_segments[1]/segment
-  HE: אות א
-  EN: §22: Mitzvah of halvaas chain ug'milus chesed: "Im kesef talveh es ami" (Sh'mos 22:24, Chazal: chovah). Must cleave to midos of Hashem. Hashem sustained world b'chesed as halvaah (
-- hebrew_in_english_field at aligned_segments[4]/segment
-  HE: ע"פ המאמר אשרי העם יודעי תורעה (סי' לה) המתחיל דעכי תשובה היא בחי' זרקא דאזדריקת לאתר דאיתנטילת מתמן ומאן ההוא אתר חכמה כי חכמה הוא שורש כל הדברים כ,ש כולם בחכמה עשית. לכן צריך כל 
-  EN: הלכות העושה שליח לגבות חובו, הלכה ג
-- tiny_he_long_en at aligned_segments[7]/segment
-  HE: אות ג
-  EN: And behold, the Malveh [lender] who does chesed [kindness] with the Loveh [borrower] and lends him his money — he is in the aspect of the Tzadik who completes the deficiency, becau
-- tiny_he_long_en at aligned_segments[9]/segment
-  HE: אות ד
-  EN: that the Tzadik draws to them at every moment. As it is written, "Kol pa'al Hashem l'ma'anaihu" ["Hashem made everything for His sake"] (Mishlei 16:4). Therefore, the main thing is
-- tiny_he_long_en at aligned_segments[11]/segment
-  HE: אות ה
-  EN: But one who is not attached and close to the true Tzadik — then even though he does not dispute him, he does not return the ruach chayim immediately to the Tzadik himself, but rath
-- tiny_he_long_en at aligned_segments[13]/segment
-  HE: אות ו
-  EN: Therefore, one who is not close to the Tzadik, even though he is a somewhat kosher person, since he is not close to the Tzadik, he returns the chiyus to the Tzadik through the aspe
-
-### SEVERE public/reader/likutay-halachos/part-8/halacha-63.json flags=14 bilingual_segments=43/54
-- hebrew_in_english_field at segments[27]/segment
-  HE: בילא"ו:
-  EN: 1 לַמְנַצֵּחַ עַל-יְדוּתוּן לְאָסָף מִזְמוֹר
-- tiny_he_long_en at aligned_segments[1]/segment
-  HE: אות א
-  EN: And behold, even though all Yisroel saw then the greatness of the power of Moshe, that all the ruach chayim of all the things in the world was with him, as above, and likewise they
-- tiny_he_long_en at aligned_segments[4]/segment
-  HE: אות ב
-  EN: And this is what is written: "Al riv b'nai Yisroel v'al nasosam es Hashem laimor hayaish Hashem b'kirbainu im ayin, vayavo Amalaik" etc. ["Because of the quarrel of the Children of
-- tiny_he_long_en at aligned_segments[7]/segment
-  HE: אות ג
-  EN: And this is "vay'hi yadav emunah" — "yadav" [his hands] is the aspect of the ruach chayim, which is the aspect of the ten types of pulses whose main [presence] is in the hands, whe
-- tiny_he_long_en at aligned_segments[9]/segment
-  HE: אות ד
-  EN: And this is the aspect of Purim, for Haman from the seed of Amalaik plotted against the Jews to destroy them. For he saw that Yisroel had been in galus for so many years, when the 
-- tiny_he_long_en at aligned_segments[11]/segment
-  HE: אות ה
-  EN: And therefore there truly was then a great danger, a time of trouble the like of which had never been. But Hashem Yisbarach had mercy on His people and sent them Mordechai and Esth
-- tiny_he_long_en at aligned_segments[13]/segment
-  HE: אות ו
-  EN: And from the sin of Adam HaRishon, all the n'shamos [souls] became intermingled between good and evil. And therefore it is impossible to draw forth and beget any n'shamah in this w
-- tiny_he_long_en at aligned_segments[15]/segment
-  HE: אות ז
-  EN: And this is the aspect of the taking of Sarah to the house of Pharaoh, which is the aspect of "ais asher shalat ha'adam b'adam l'ra lo" ["a time when one man rules over another to 
-
-### SEVERE public/reader/likutay-halachos/part-8/halacha-69.json flags=14 bilingual_segments=33/42
-- hebrew_in_english_field at segments[2]/segment
-  HE: אות א ענין מסור שהחמירו בו חז"ל מאד מאד יותר מכל עבירות שבתורה ודינו כמומר גמור. וגם אפילו גרוע ממומר כמובא בש"ך שם. ומורידין אותו ולא מעלין. ופסול לכתוב ס"ת ותפילין ומזוזות וכו':
-  EN: 12 בִּהְיוֹתָם מְתֵי מִסְפָּר כִּמְעַט וְגָרִים בָּהּ
-- hebrew_in_english_field at segments[5]/segment
-  HE: אות ב והנה בזה המאמר מבואר באר היטב חומר האיסור והפגם הגדול והנורא מאד של המסור שמוסר ח"ו ממון של ישראל, שהוא ממון דקדושה ששם מתגלין ומאירין גוונין עילאין וכו', ביד גוי ח"ו. יכ הגו
-  EN: 13 וַיִּתְהַלְּכוּ מִגּוֹי אֶל-גּוֹי מִמַּמְלָכָה אֶל-עַם אַחֵר
-- hebrew_in_english_field at segments[7]/segment
-  HE: אות ג וע"כ דינו כמומר וכו'. כי יוצא מקדושת ישראל. כי עיקר קדושת ישראל הוא בבחי' ישראל אשר בך אתפאר שזהו עיקר קדושת ישראל שהש"י מתפאר בהם וכל אחד מישראל אפילו הקטן שבהם יש לו חלק בז
-  EN: 14 לֹא-הִנִּיחַ אָדָם לְעָשְׁקָם וַיּוֹכַח עֲלֵיהֶם מְלָכִים
-- hebrew_in_english_field at segments[10]/segment
-  HE: אות ה
-  EN: 15 אַל-תִּגְּעוּ בִמְשִׁיחָי וְלִנְבִיאַי אַל-תָּרֵעוּ
-- hebrew_in_english_field at segments[15]/segment
-  HE: אות ז וזה בחי' מה שהמסור פסול לכתוב דברים שבקדושה דהיינו ס"ת תפילין ומזוזות. כי עיקר הפסול של הפסולים לכתוב ס"ת תפילין ומזוזות למדו רז"ל מפסוק וקשרתם וכתבתם כל שישנו בקשירה ישנו בכ
-  EN: 17 שָׁלַח לִפְנֵיהֶם אִישׁ לְעֶבֶד נִמְכַּר יוֹסֵף
-- hebrew_in_english_field at segments[21]/segment
-  HE: (שייך לעיל) וע"כ אין כותבין כ"א על גבי עור בהמה וחיה. כדי להכניע כח המדמה. שהוא רוח הבהמיות שזהו בחי' קרבנות כנ"ל. כי ע"י הכתב אותיות התורה שהם בחי' גוונין עילאין שנכללין יחד כנ"ל 
-  EN: 19 עַד-עֵת בֹּא-דְבָרוֹ אִמְרַת יי צְרָפָתְהוּ
-- tiny_he_long_en at aligned_segments[1]/segment
-  HE: אות א
-  EN: And these three aspects are the aspect of the three Avos [Patriarchs], for the main ascent of the malchus on Shabbos is to be included in them. This is the aspect of the three s'ud
-- tiny_he_long_en at aligned_segments[4]/segment
-  HE: אות ב
-  EN: And therefore the Mikdash of the future, which will correspond to Yaakov, will never be destroyed, as Chazal said. For the main tikkun of the building of the Bais HaMikdash is thro
 
 ### SEVERE public/reader/likutay-halachos/part-8/halacha-9.json flags=14 bilingual_segments=46/58
 - tiny_he_long_en at aligned_segments[1]/segment
@@ -5028,32 +4611,6 @@ Files needing review (excluding normal untranslated books): 1751
   HE: אות ח
   EN: And therefore, immediately adjacent is: "A testimony upon Yehosef He placed it" etc. . Yosef alludes to the Jewish people as a whole, who are called by the name of Yosef, as our Sa
 
-### SEVERE public/reader/yikra-dshabbata/section-3.json flags=14 bilingual_segments=1174/1261
-- hebrew_in_english_field at segments[61]/segment
-  HE: ועיקר שלימות התשובה הוא בבחינת תשובה על תשובה ועל כן נקרא קדושת שבת. שבת שבתון בפרשה כי תבא ובפרשת ויקהל ובפרשת אמור.
-  EN: נ נח נחמ נחמן מאומן
-- hebrew_in_english_field at segments[126]/segment
-  HE: וזה בחינת מה שחכמינו הראשונים ז"ל היו זהירים מאד בכבוד שבת וכבודם היו לאין אצלן נגד כבוד שבת כמו שהאריכו רז"ל (שבת דף קיט) ר' אבוהו הוה יתיב וכו' ומושיף נורא. רב ענן לביש גינדא וכו
-  EN: נ נח נחמ נחמן מאומן
-- hebrew_in_english_field at segments[218]/segment
-  HE: עיקר השפע אלקי הקדוש שהוא בחינת שכל הפנים מאיר בשבת בבחינת ואנפהא נהירין וכו'. ומזה נמשך גם בחינת אור הפנים של האדם בשבת כמו שאמרו רז"ל ברכו באור פניו של אדם. וזה בחינת פני שבת נקב
-  EN: נ נח נחמ נחמן מאומן
-- hebrew_in_english_field at segments[221]/segment
-  HE: היינו בחינת רוח חכמה הבא מקדש שזה בחינת ושמרתם את השבת כי קדש הוא וכמובא בכתבי האריז"ל ורוח הקדש הזה הוא בחינת סוכה. וזה בחינת סוכת שלום שנפרסת בשבת, ועל כן מברכין הפורס סוכת שלום 
-  EN: נ נח נחמ נחמן מאומן
-- hebrew_in_english_field at segments[281]/segment
-  HE: וגם שם צריך אמונה בחינת 'אמון מופלא'. וזה בחינת שמפנימיות חג"ת ומפנימיות מלכות דיצירה נעשה כתר דעשיה וכו' כמבואר בפנים, וזה בחינת "ויודו שמים פלאך ה'" (בחינת כתר בחינת פלא) "אף אמו
-  EN: נ נח נחמ נחמן מאומן
-- hebrew_in_english_field at segments[359]/segment
-  HE: כמו שכתוב "אודיע אמונתך בפי" וכמבואר במקום אחר, וזוכין לברר ולהעלות גם הטוב שבאלפין הנפולין שזה בחינת (ירמיה טו) "אם תוציא יקר מזולל כפי תהיה". וגם כי זוכה לבחינת תורת חסד, שהוא בח
-  EN: נ נח נחמ נחמן מאומן
-- hebrew_in_english_field at segments[422]/segment
-  HE: וכן "שמעון ולוי אחים וכו' ארור אפם כי עז" וכו' היינו גם כן כנ"ל. ועל ידי התוכחה הנ"ל העלה את המלכות שהוא בחינת עזות דקדושה שלא יהיה בה אחיזת המלכות דסטרא אחרא, ואז התחיל לברך את יה
-  EN: נ נח נחמ נחמן מאומן
-- hebrew_in_english_field at segments[540]/segment
-  HE: וזה "וקראת לשבת ענג", כי הדיבור דקדושה נקרא ענג דקדושה היפוך בחינת הדיבור דסטרא אחרא של בחינת 'קץ כל בשר' שמוצאים חוב ופסולת בכל אחד.
-  EN: נ נח נחמ נחמן מאומן
-
 ### SEVERE public/reader/kitzur-likutay-moharan/part-2/torah-49.json flags=13 bilingual_segments=20/20
 - long_he_tiny_en at segments[3]/segment
   HE: ב. אִם אַתָּה רָחוֹק מְאֹד מְאֹד מֵהַשֵּׁם יִתְבָּרַךְ, וְנִדְמֶה לְךָ שֶׁאַתָּה פּוֹגֵם בְּכָל שָׁעָה מַמָּשׁ נֶגְדּוֹ יִתְבָּרַךְ, נֶגֶד זֶה תֵּדַע שֶׁאִישׁ כָּזֶה שֶׁהוּא מְגֻשּ
@@ -5080,159 +4637,601 @@ Files needing review (excluding normal untranslated books): 1751
   HE: ב. אִם אַתָּה רָחוֹק מְאֹד מְאֹד מֵהַשֵּׁם יִתְבָּרַךְ, וְנִדְמֶה לְךָ שֶׁאַתָּה פּוֹגֵם בְּכָל שָׁעָה מַמָּשׁ נֶגְדּוֹ יִתְבָּרַךְ, נֶגֶד זֶה תֵּדַע שֶׁאִישׁ כָּזֶה שֶׁהוּא מְגֻשּ
   EN: [continued]
 
-### SEVERE public/reader/likutay-halachos/part-1/halacha-11.json flags=13 bilingual_segments=41/50
+### SEVERE public/reader/likutay-halachos/part-2/halacha-18.json flags=13 bilingual_segments=41/50
 - tiny_he_long_en at aligned_segments[1]/segment
-  HE: הלכה ד
-  EN: And this is the aspect of tzitzis. For tzitzis are the aspect of the thread of Chesed that is woven and twisted from the 72 strands (nimin) upon which the song of Chesed will be pl
-- tiny_he_long_en at aligned_segments[2]/segment
   HE: אות א
-  EN: For tzitzis are the aspect of the harp of David, as brought in the holy Zohar and in the Tikunim, Tikkun 10. And this is the aspect of: "Mikanaf ha'aretz zemiros shamanu" — "From t
-- tiny_he_long_en at aligned_segments[4]/segment
-  HE: אות ב
-  EN: The essential purpose of tzitzis is to rectify the garments. For the root of tzitzis, which is the niggun — the thread of Chesed — is drawn from tefillah in the aspect of din. Thro
-- tiny_he_long_en at aligned_segments[6]/segment
-  HE: אות ג
-  EN: Therefore, the essential beginning of accepting the yoke of Torah and mitzvos is through tzitzis. For when a child begins to be educated in mitzvos, the first mitzvah he is taught 
-- tiny_he_long_en at aligned_segments[8]/segment
-  HE: אות ד
-  EN: This is what our Sages said (Rosh Hashanah 17b): "This teaches that the Holy One wrapped Himself as a prayer leader and arranged before Moshe the 13 attributes of mercy." For the 1
-- tiny_he_long_en at aligned_segments[10]/segment
-  HE: אות ה
-  EN: For the garments that Yaakov wore then were the garments of Adam HaRishon that Hashem made for them after the sin (see Pirkay diRabbi Eliezer ch. 24), as written: "Vaya'as Hashem E
-- tiny_he_long_en at aligned_segments[12]/segment
-  HE: אות ו
-  EN: For wine brings sleep — the aspect of the medameh. Therefore wine has two powers: if he merits, it gladdens him; if he does not merit, it devastates him (Yoma 76b) — the joyful win
-- tiny_he_long_en at aligned_segments[14]/segment
-  HE: אות ז
-  EN: This is the aspect of the wine of the libations (nesachim) over which song is said — for "one says song only over wine." All the sacrifices are the aspect of clarifying the medameh
-
-### SEVERE public/reader/likutay-halachos/part-1/halacha-19.json flags=13 bilingual_segments=37/50
-- tiny_he_long_en at aligned_segments[1]/segment
-  HE: הלכה ב
-  EN: Therefore Tefillin must be written on the hide of a kosher animal specifically (Shulchan Aruch, Siman 32, Se'if 12). For the hide [or] is the aspect of the medameh [imaginative fac
-- tiny_he_long_en at aligned_segments[2]/segment
-  HE: אות א
-  EN: Therefore the hide must be from a kosher animal or wild beast specifically — from a species permitted for consumption — even from neveilos and treifos of those species — as long as
-- tiny_he_long_en at aligned_segments[4]/segment
-  HE: אות ב
-  EN: Also, the Tefillin must be sewn with sinews specifically. Even after placing the parshiyos inside the batim, one cannot receive the light until they are sewn with gidin [sinews] — 
-- tiny_he_long_en at aligned_segments[6]/segment
-  HE: אות ג
-  EN: This is the aspect of Me'aras HaMachpailah — doubled in couples: Adam and Chavah, Avraham and Sarah, etc. (Eiruvin 53a). The city is called "Kiryas Arba" — for the four couples. Th
-- tiny_he_long_en at aligned_segments[8]/segment
-  HE: אות ד
-  EN: Therefore one counts 49 days — the aspect of the filling of the moon: "V'hayah or halevanah k'or hachamah, v'or hachamah yih'yeh shiv'asayim" — "The light of the moon shall be like
-- tiny_he_long_en at aligned_segments[10]/segment
-  HE: אות ה
-  EN: Through the diminishing — the strengthening of "place" — the grip of the Sitra Achara was drawn; the primary darkness of night through diminishing the moon. Before, "the night woul
-- tiny_he_long_en at aligned_segments[12]/segment
-  HE: אות ו
-  EN: This is: "Whoever delights in Shabbos is given an inheritance without boundaries" — "above place," no narrowness — Yaakov's inheritance: "Ufaratzta yamah vakeidmah" . He was above 
-- tiny_he_long_en at aligned_segments[14]/segment
-  HE: אות ז
-  EN: Therefore on Shabbos at Minchah, saying "Va'ani sefilasi… eis ratzon," one wraps in tzitzis. Tzitzis are "above place," drawing great ratzon. This is tzitzis of wool — great mercy 
-
-### SEVERE public/reader/likutay-halachos/part-1/halacha-28.json flags=13 bilingual_segments=48/60
-- tiny_he_long_en at aligned_segments[1]/segment
-  HE: הלכה א
-  EN: This is known in the Kisvai [writings of the Arizal]: the secret of Ra'ava d'Ra'avin is a hidden, sealed, and concealed secret from the eyes of all. Even Moshe Rabbeinu did not att
-- tiny_he_long_en at aligned_segments[2]/segment
-  HE: אות א
-  EN: This is the aspect of the awakening from sleep. The essential awakening is at chatzos lailah [midnight]. This point of chatzos is very difficult to perceive — to the extent that ou
-- tiny_he_long_en at aligned_segments[10]/segment
-  HE: אות ב
-  EN: We pray: "Al tashlicheinu l'eis ziknah, kichlos kocheinu al ta'azveinu" — "Cast us not away in the time of old age; when our strength fails, forsake us not" — that we should not fa
-- tiny_he_long_en at aligned_segments[12]/segment
-  HE: אות ג
-  EN: Therefore one must wear Tefillin of Rabbeinu Tam — the Mochin drawn from the Tzaddikim who can enter the initial Tzimtzum of the Chalal HaPanui, sweeten the Din there, and reveal H
-- tiny_he_long_en at aligned_segments[15]/segment
-  HE: אות ד
-  EN: This is why "Uva l'Tziyon Go'el" is juxtaposed to Mizmor "Ya'ancha". It is explained in the Kavanos that Mizmor Ya'ancha is recited to give birth to the Mochin and shefa and draw t
-- tiny_he_long_en at aligned_segments[17]/segment
-  HE: אות ה
-  EN: Therefore Tefillin must be written on the hide of a kosher animal specifically . For the hide [or] is the aspect of the medameh [imaginative faculty] — the external garment of the 
-- tiny_he_long_en at aligned_segments[19]/segment
-  HE: אות ו
-  EN: This hide — the external vessel of the body — corresponds to the medameh — the external power of the intellect. The medameh is the animalistic power, the life-force of the animal a
-- tiny_he_long_en at aligned_segments[21]/segment
-  HE: אות ז
-  EN: The essential confusion of the medameh — which includes all foreign thoughts, evil fantasies, philosophical inquiries, questions, kefiros, apikorsus, and all varieties of thoughts 
-
-### SEVERE public/reader/likutay-halachos/part-1/halacha-45.json flags=13 bilingual_segments=45/52
-- hebrew_in_english_field at segments[2]/segment
-  HE: אות א
-  EN: 1 לַמְנַצֵּחַ מִזְמוֹר לְדָוִד
-- hebrew_in_english_field at segments[24]/segment
-  HE: וזה בחינת אשרי שאומרים מקודם. דהיינו תהלה לדוש שנתייסד על פי א"ב שכלולים בו הכ"ב אתוון. כי תהלה לדוד זה בחינת מלכות פה כדי שתהיה נכללת בבחינת א"ב כסדר על ידי קדושה דסידרא כנ"ל:
-  EN: 4 יי יִסְעָדֶנּוּ עַל-עֶרֶשׂ דְּוָי כָּל-מִשְׁכָּבוֹ הָפַכְתָּ בְחָלְיוֹ
-- tiny_he_long_en at aligned_segments[1]/segment
-  HE: הלכה ו
-  EN: Therefore the miracle was through the oil of the Menorah — which is the aspect of a Name, as it is written : "Tov sheim mishemen tov," and as it is written : "L'rei'ach shmanecha t
-- tiny_he_long_en at aligned_segments[2]/segment
-  HE: אות א
-  EN: For the essential light of the ner shel mitzvah, which is the aspect of Ner Chanukah, is the light of the Torah — which is the aspect of the holy Name, for the Torah is His Name, a
-- tiny_he_long_en at aligned_segments[4]/segment
-  HE: אות ב
-  EN: And likewise it is explained at the end of the Ma'aseh that the Name is the aspect of the light of the ner. As explained there at the end: the moon holds a ner in her hand and says
-- tiny_he_long_en at aligned_segments[6]/segment
-  HE: אות ג
-  EN: As in the Ma'aseh itself: the midwife exchanged the infants and placed the Prince with the maidservant and the son of the maidservant with the queen. Through this, the world erred 
-- tiny_he_long_en at aligned_segments[8]/segment
-  HE: אות ד
-  EN: For the true tzaddik, wherever he is, is a true tzaddik — and his actual person certainly cannot be exchanged, chas v'shalom. Only the essential exchange is in the name: they call 
-- tiny_he_long_en at aligned_segments[10]/segment
-  HE: אות ה
-  EN: It is understood there that the essential exchange, error, and falsehood in the world is in the aspect of the Name specifically. All this is the aspect of lighting the Ner Chanukah
-
-### SEVERE public/reader/likutay-halachos/part-1/halacha-53.json flags=13 bilingual_segments=26/34
-- hebrew_in_english_field at segments[3]/segment
-  HE: הלכה ד על פי התורה המתחלת יברכנו אלהים ויראו ~ אותו כל אפסי ארץ (בסימן ע"ה ליקוטי חלק א') עיין שם כל התורה. והכלל שדיבורי תורה ותפלה הם בחינת העלמת מסירות נפש שעל ידי זה נעשה שלום.
-  EN: 4 אֶזְכְּרָה א-לֹהִים וְאֶהֱמָיָה אָשִׂיחָה וְתִתְעַטֵּף רוּחִי סֶלָה
-- hebrew_in_english_field at segments[9]/segment
-  HE: אות ד ועל כן חששו רז"ל ביותר על השלום בבית הכנסת כמו שאמרו רז"ל (גיטין נ"ט) שתיקנו בבית הכנסת כהן קורא ראשון וכו' מפעני דרכי שלום כי היכי דלא ליתי לאיצנויי.כי עיקר קדושת הבית הכנסת
-  EN: 6 חִשַּׁבְתִּי יָמִים מִקֶּדֶם שְׁנוֹת עוֹלָמִים
-- hebrew_in_english_field at segments[15]/segment
-  HE: אות ז ועל כן אמרו רז"ל (עיין מגיהל כ"ט) עתידין כל בתי כנסיות שיעלו לירושלים כי על ידי קדושת הבית כנסת והיראה שנוהגין בו על ידי זה נתבטל כל הארציות משם לגמרי. ועל כן מאחר ששם נתבטל 
-  EN: 8 הַלְעוֹלָמִים יִזְנַח אֲדֹנָי וְלֹא-יוֹסִיף לִרְצוֹת עוֹד
-- hebrew_in_english_field at segments[17]/segment
-  HE: אות ח וזה בחינת (מגילה ט') מעלין בקודש ולא מורידין. ועיקר תכלית הקושה הוא קדושת ספר תורה כמבואר במשנה (מגילה כ"ה) ובשלחן ערוך, בני העיר שמכרו וכו'. מכרו בית הכנסת לוקחין וכו'. עד מ
-  EN: 9 הֶאָפֵס לָנֶצַח חַסְדּוֹ גָּמַר אֹמֶר לְדֹר וָדֹר
-- tiny_he_long_en at aligned_segments[1]/segment
-  HE: הלכה ד
-  EN: This is the aspect of the Kedushah said within Bircas Yotzer Or — for this is the essential kedushah: when one publicizes that everything is through His will, the aspect of Mikra K
-- tiny_he_long_en at aligned_segments[2]/segment
-  HE: אות א
-  EN: At the end of the berachah — in "l'Ail baruch n'imos" [the concluding section of Yotzer Or] — we again mention "oseh chadashos" [He makes new things] and conclude: "Ham'chadesh b't
-- tiny_he_long_en at aligned_segments[4]/segment
-  HE: אות ב
-  EN: It follows: through this berachah we draw upon ourselves additional light, kedushah, and da'as — through which we are included among the elders of kedushah, etc. — through which th
-- tiny_he_long_en at aligned_segments[6]/segment
-  HE: אות ג
-  EN: Thus the sum of the Torah is to bind all the retzonos in the world to the root of the Ratzon. This is the aspect of Bircas Ahavas Olam — where we ask for the fulfillment of Torah: 
-
-### SEVERE public/reader/likutay-halachos/part-1/halacha-7.json flags=13 bilingual_segments=39/52
-- tiny_he_long_en at aligned_segments[2]/segment
-  HE: אות א
-  EN: And this is the aspect of nitteylas yadayim shacharis — the washing of the hands in the morning upon rising from sleep. For day and night correspond to the aspect of Adam and Chava
+  EN: Explained there is the matter of tefillah: to bind the N'kudah [the holy point] — the aspect of tzadik moshail [the Righteous One who rules] — to the heart. This is the matter of s
 - tiny_he_long_en at aligned_segments[5]/segment
   HE: אות ב
-  EN: And this is the aspect of Rosh Hashanah, the aspect of the blowing of the shofar — which is the aspect of the awakening from sleep, as is explained in the Kavanos — that on Rosh Ha
+  EN: On the basis of this Torah, the essential tefillah is to illuminate and bind the N'kudah ("Pi y'daber chochmos") to the heart ("v'hagus libi s'vunos") = M'lapum = tzadik moshail. F
+- long_he_tiny_en at aligned_segments[8]/segment
+  HE: וכן עדת קרח שאמרו: אף לא אל ארץ וכו'. ורצו להטעות את ישראל כאלו משה רבנו חס ושלום, הטעה אותם. ולמדו קל וחמר של שטות: ומה חוט אחד של תכלת פוטר את הטלית וכו'. נמצא, שעקר פגמם היה על 
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[9]/segment
+  HE: וכן המן שאמר: אף לא הביאה אסתר וכו'. ולמד בדעתו שהוא לטובתו ונתגאה מאד על ידי זה עד שרצה לתלות את מרדכי, ובאמת הכל היה לרעתו, כי גחלים היתה חותה על ראשו בזה שהביאה אותו על המשתה, כ
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[11]/segment
+  HE: וזה בחינת ארבע ברכות של ברכת המזון בפרטיות, כי ברכה ראשונה שהוא הזן, הוא כנגד בחינת החסד שצריכין להמשיך שעל ידי זה מתקנין הד אלפין הנ"ל כמו שמבאר שם בהתורה הנ"ל. וזהו בחינת ברכת הז
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[13]/segment
+  HE: הכלל לעבדא שצריכין להתפלל מאד לה' יתברך שינצל מלמודים רעים הנמשכין מבחינת התורות הנפולות הנזכרות לעיל, כי הרבה הרבה נשקעו בזה, כי הכל חפצים ליראה את ה' יתברך, בפרט בני הנעורים שמחמ
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[15]/segment
+  HE: וזה בחינת הליכת ישראל במדבר. וזה בחינת המשכן שנסע לפניהם ופרקו והקימו אותו בכל פעם, כי המשכן היה לתקן חטא העגל, כמו שאמרו רבותינו זכרונם לברכה . ועקר חטא העגל שהוא עבודה זרה נמשך מ
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[16]/segment
+  HE: וזהו: ויהי בנסוע הארון ויאמר משה קומה ה' ויפצו איביך וינסו משנאיך וכו' . הינו האויבים והשונאים הנ"ל שהם המתנגדים אל האמת שיונקים מהתורות הנפולות כנ"ל, כי נסים ונתבטלים על ידי נסיעת
+  EN: [continued]
+
+### SEVERE public/reader/likutay-halachos/part-2/halacha-28.json flags=13 bilingual_segments=31/44
+- tiny_he_long_en at aligned_segments[1]/segment
+  HE: אות א
+  EN: The principle: the essential tikkun of all worlds is through placing action before hearing (= emunah) — performing all mitzvos with great simchah through emunah alone, even without
+- tiny_he_long_en at aligned_segments[4]/segment
+  HE: אות ב
+  EN: Therefore after Parshas Sh'kalim we read Parshas Zachor — the aspect of wiping out Amalak and Haman yimach sh'mo [may his name be erased]. They = the denials of the investigators =
+- long_he_tiny_en at aligned_segments[6]/segment
+  HE: איזהו דבר שהנשמה נהנה ממנו? זה הריח. כי התגברות החשק בשעת המניעות הוא על ידי בחינת ריח. כי באמת עקר כל המניעות הם מניעות המח כמו שכתוב במקום אחר , כי עקר המניעה מחמת שמבלבלין מחו ב
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[8]/segment
+  HE: וכל הברכות שמברכין על כל הדברים כלם הם בבחינת מוציא מכח אל הפעל, כי קדם שמברכין על הדבר ומודים שה' יתברך ברא אותו קדם לזה, אין שלמות להדבר, ואין נמשך שלמות החיות דקדשה לאותו הדבר, 
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[10]/segment
+  HE: וזה בחינת ברכה ראשונה וברכה אחרונה. כי כל דבר יש לו תכלית שבשביל זה נברא ויצא מכח אל הפעל. כי כל הדברים שברא ה' יתברך הכל יצאו מכח אל הפעל בשביל האדם שמשלים אותם וחוזר ומעלה אותם ע
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[12]/segment
+  HE: וזה בחינת הוי רץ למצוה קלה ובורח מן העברה שמצוה גוררת מצוה ועברה גוררת עברה ששכר מצוה מצוה ושכר עברה עברה . כי כל מה שעושין איזה מצוה זוכין לרצון חזק יותר לה' יתברך, כי זהו התכלית 
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[14]/segment
+  HE: וזה בחינת ברכה ראשונה וברכה אחרונה שמברכין על כל דבר שאוכלין, כי הברכה ראשונה היא בבחינת מוציא מכח אל הפעל, כי על ידי הברכה ממשיך שלמות חיותה של הפרי שמברך עליה ונחשב כאלו בראה עתה
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[16]/segment
+  HE: וזה בחינת פגם המרגלים שפגמו בארץ ישראל. כי עקר הרצון זוכין על ידי ארץ ישראל. כי שם בארץ ישראל עקר הארת הרצון וההשתוקקות והכסופין לה' יתברך בבחינת רצית ה' ארצך . וכן אמרו רבותינו זכ
+  EN: [continued]
+
+### SEVERE public/reader/likutay-halachos/part-3/halacha-27.json flags=13 bilingual_segments=40/52
+- tiny_he_long_en at aligned_segments[1]/segment
+  HE: הלכה ו
+  EN: Therefore, Hillel would wrap them together — to show that in truth, "these and these are the words of the living G-d", and it is a machlokes within holiness, which is great peace a
+- tiny_he_long_en at aligned_segments[2]/segment
+  HE: אות א
+  EN: And afterward we eat the Afikoman. It is called Tzafun (hidden) in the order of the Haggadah. This is the aspect of the cake they brought out of Egypt — they tasted in it the taste
 - tiny_he_long_en at aligned_segments[7]/segment
   HE: אות ג
-  EN: And this is the aspect of the yahrzeit — which is the day on which one's father or mother died — when one says Kaddish (Shulchan Aruch, Yoreh Daya 376:5, in the Rema) and fasts on 
+  EN: And this is the aspect of the hand-washing after the Haggadah, which is the aspect of crying out and sighing — through which one purifies the hands, as is explained there. Therefor
 - tiny_he_long_en at aligned_segments[9]/segment
-  HE: אות לד
-  EN: And therefore, this is practiced each year on the day that one's father or mother died. For the cycles of the year — that Hashem yisbarach revolves and turns the spheres each year 
+  HE: אות ד
+  EN: For at first, when Yisrael went out of Egypt, they merited the mikveh — that is, daas — for they all immersed then. And afterward, through the counting — which are days of teshuvah
 - tiny_he_long_en at aligned_segments[11]/segment
   HE: אות ה
-  EN: And this is what our Sages said (brachos 15a): "Whoever relieves himself, and washes his hands, and dons tefillin, and recites Krias Shema, and prays — it is as if he accepted the 
+  EN: And this is the aspect of Karpas, which is the mochin d'katnus (constricted consciousness) from which the judgments draw sustenance — which are the aspect of the hiding of the Face
 - tiny_he_long_en at aligned_segments[13]/segment
   HE: אות ו
-  EN: And this is the aspect of the morning washing: that one draws pure waters drawn from the aspect of the mikveh. And through this, one purifies his hands — which are the aspect of th
+  EN: The dipping of the vegetable alludes to the thread of chesed that is drawn into the aspect of concealment — the aspect of "Esther was greenish" etc., as mentioned above. Through th
 - tiny_he_long_en at aligned_segments[15]/segment
   HE: אות ז
-  EN: And therefore, one must rise at midnight — to break the sleep — to break the aspect of darkness and night — which is the aspect of the intensity of the exile that is compared to ni
+  EN: And to allude to Moshe's aforementioned answer, we take a vegetable for Karpas. For through the revelation of the concealment, from it comes the arousal of teshuvah, the aspect of 
 - tiny_he_long_en at aligned_segments[17]/segment
   HE: אות ח
-  EN: And therefore, the redemption was at midnight specifically — that is, He broke the night and the darkness, which are the aspect of the wisdom of nature — and revealed hashgachah in
+  EN: And this is the aspect of Moshe's answer mentioned above. For they asked him: "You are bringing straw to Afarayim?" — for Yisrael, when they are on a lowly level, are likened to du
+
+### SEVERE public/reader/likutay-halachos/part-4/halacha-3.json flags=13 bilingual_segments=37/50
+- long_he_tiny_en at aligned_segments[3]/segment
+  HE: כע םגענצ הסכין הוא סארא דמותא כמובא וישראל הם עם קדוש ואסורים לאכול נבילה דהיינו שמתה מעצמה ע"י מלאך המות ושליט עליו סטרא דמותא שזה צחי' פגם הברית, וזה שכתוב לא לאכלו כל נבילה וכו'
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[5]/segment
+  HE: וזה בחי' י"ב בדיקות הסכין כנגד שנים עשר שבטי י ה שמלכות דקדושה עומדת עליהם שהם בחי' תיקון הברית (כמובא לעיל). וכן יש י"ב תיבות בברכת השחיטה כנגד י"ב שבטי י ה כנ"ל. כי הסכין חרב לה'
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[7]/segment
+  HE: וע"כ שיעור פגימה בכל שהוא להחמיר. ועל כל פנים בכחוט השערה בודאי נפגם לכ"ע, זה בחי' צדיקים הקב"ה מדקדק עליהם אפילו כחוט השערה וצדיק הוא מאן דנטיר ברית. ובבחי' שמירת הברית הקב"ה מדקד
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[9]/segment
+  HE: וע"כ אין השחיטה כשירה אלא בישראל אבל שחיטת נכרי נבילה אפילו אינו עובד ע"א ואפילו הוא קטן ואפילו אחרים רואין אותו. עי אדרבה העכו"ם מנבל החי בשחיטתו, כי הוא מן הע' אומות שהם משוקעים 
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[11]/segment
+  HE: וזשארז"ל שאסור לשחוט כי אם כשמראה סכינו לחכם שהוא יבדוק לו הסכין להשוחט ואח"כ ישחוט כי שלימות לה"ק שהוא בחי' חרב לה' הנ"ל בחי' הסכין כנ"ל א"א לקבלו כי אם מהצדיק וחכם הדור שהוא זוכה
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[13]/segment
+  HE: [שייך לעיל] וע"כ צריך להיות בקי ויודע ה' הלכות שחיטה כנגד ה' הדעת שהוא בחי' תיקון הברית שע"י בחי' השחיטה הכשרה כנ"ל. וזה בחי' מומחה ומוחסק שצריך השוחט להיות. היינו מומחה הוא בחי' ש
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[15]/segment
+  HE: וזהו שאסור לשחוט קודם שיעברו עליו שמונה ימים אחר שנולד כמו הקרבן שכתוב בו שבעת ימים יהיה תחת אמן ומיום השמיני והלאה ירצה לקרבן וכו'. כי הקרבנות הם בחי' תיקון הברית כי באים להכניע ו
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[17]/segment
+  HE: וזה בחי' כיסוי דם בעפר. בעפר דייקא שהוא בחי' חרב הנ"ל שהוא בחי' תפלה בחי' מלכות בחי' הדיבור של שלימות לה"ק כנ"ל. שכל זה הוא בחי' עפר שהוא בחי' תפלה בחי' חרב הנ"ל כ"ש רבינו נ"י בצ"א
+  EN: [continued]
+
+### SEVERE public/reader/likutay-halachos/part-4/halacha-54.json flags=13 bilingual_segments=32/42
+- long_he_tiny_en at aligned_segments[3]/segment
+  HE: א וזהו בחי' איסור בישולי עכו"ם כי הבישול הוא הכנה לזווג כנ"ל בהלכות בב"ח (הלכה א'). כי הבישול הוא בבחי' תיקון הברית שצריך לתקן כל המאכלים להעביר משם בחי' הרע בחי' פגם הברית כדי לבר
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[4]/segment
+  HE: וזה שארז"ל שכל העולה על שלחן מלכים יש בו משום בישולי עכו"ם. כי כשיש בו חשיבות שראוי להתכבד ולעלות על שלחן מלכים, נמצא שהוא מאכל חשוב ומכובד שיש בו קדושה ביותר. כיכל דבר החשוב ומכוב
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[6]/segment
+  HE: וכן הפת אסור רז"ל ג"כ פת של עכו"ם. כי הלחם הוא דבר חשוב מאד כנ"ל בהל'ד נטילת ידים (הלכה א') וזה שאמרו רז"ל שגזרו על מאכלי עכו"ם משום יינן כי כשפוגם במאכלי עכו"ם שזהו בחי' פגם הברית
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[8]/segment
+  HE: וזה בחי' איסור שאסרו רז"ל גבינות של נכרים גבינות דוקא אבל לא החמאה וע"כ נוהגין היתר בחמאה שלהם בכמה מקומות. ע"פ מ"ש לעיל בה' בב"ח (הלכה א' שבהחלב יש בה עדיין קצ תאחיזה להם שזהו בחי
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[10]/segment
+  HE: וזה שאסרו רז"ל שלא לשתות משקה המשכר בבית עכו"ם. כי השכרות הוא בחי' עץ הדעת טו"ר בחי' עירבוב הדעת כנ"ל בה' סינמי בהמה וחיה טהורה (הלכה א.) וע"כ אסור להשתכר בבית העכו"ם פן יהי' נלכד 
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[12]/segment
+  HE: וזה שאסרה תורה לעשות סחורה בדברים האסורים. כי המשא ומתן הוא בחינת תיקון הכללי בחי' תיקון הברית כמבואר במאמר האי מאן וכו' הנ"ל ע"ש היטב. ועל כן בודאי א"א לעשות תיקון הזה על ידי מו"מ
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[13]/segment
+  HE: וזהו שקראו את הקנין והמכירה בשם משא ומתן שהוא בחי' הפגם והתיקון כנ"ל. וע"כ זה התיקון של המו"מ שהוא בחי' מתן נעשה ע"י הצדקה כ"ש שם. כיהצדק' היא משברת ומבטלת בחי' בעצבון שהוא בחינת ת
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[15]/segment
+  HE: וז"ש בשו"ע שאם נדזדמנה לו נבילה שימהר למוכרה מיד. כי אפילו במו"מ של היתר צריך למהר ולמכור הסחורה ולא ישהה אותה אצלו הרבה כשרז"ל זבין ותתחרט כדי למהר להשליך מעליו המשא כבד שמוטלת על
+  EN: [continued]
+
+### SEVERE public/reader/likutay-halachos/part-4/halacha-65.json flags=13 bilingual_segments=35/44
+- long_he_tiny_en at segments[7]/segment
+  HE: וזה בחי' תורה ותפילה. כי כלליות התורה הוא בבחי' מחשבה ודעת בחי' משה שזהו בחי' תורה שבכתב. ותפילה היא בחינת מביא לידי מעשה בחי' דיבור בחי' תורה שבע"פ כי עיקר ההתגברות על היצה"ר והדמ
+  EN: Short Prayer
+- long_he_tiny_en at aligned_segments[3]/segment
+  HE: ע"פ התורה שבסימן כ"ו בלק"ת ע"ש. מבואר שם שצריך להרחיק משכרות וכו'. כי מעט השתיה טובה להרחיב דעתו כי הדעת מלובש בחסדים. וכששותה במדה כראוי וכו' אז נתרחב ונתרומם דעתו ואזי נגדלין החס
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[4]/segment
+  HE: וזה בחי' איסור סתם יינם שהוא יין שנגע בו עכו"ם. כי יין דקדושה גבוה מאד כי הוא משמח אלקים ואנשים. כשרז"ל אם אנשים משמח אלקים במה משמח מכאן שאין אומרים שירה אלא על היין. אך היין צריך
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[6]/segment
+  HE: ושני בחי' אלו הם בחי' משה ודוד. היינו משה הוא בחי' האזהרה והזכרה שמזהיר את כ"א וא' מישראל בכל אבר ואבר לעשות את המצוות וכו' כנ"ל. אבל אח,כ כשבא לעשות על ידי האזהרה הזאת של משה. אזי
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[7]/segment
+  HE: וזה בחי' תורה ותפילה. כי כלליות התורה הוא בבחי' מחשבה ודעת בחי' משה שזהו בחי' תורה שבכתב. ותפילה היא בחינת מביא לידי מעשה בחי' דיבור בחי' תורה שבע"פ כי עיקר ההתגברות על היצה"ר והדמ
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[9]/segment
+  HE: וזה ידוע שדוד המלך הוא בבחי' כוס יין של ברכה. בבחי' כוס ישועות אשא וכו' בחי' כוסי רויה וכשרז"ל שלעתיד יאמר דוד לי נאה לברך וכו'. כי יין זה בחי' חמימות הדמים כנראה בחוש שהיין ושאר מ
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[11]/segment
+  HE: וע"כ צרייכן לשמוראת היין מאד מאד ממגע עכו"ם כי אפי' יין של היתר צריכין שמירה גדולה מאד שלא לשתות בסעודת הרשות וכיוצא כי לא זכה משממו וכו' ואפילו בסעודת מצוה צריך ליזהר שלא לשתות יו
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[12]/segment
+  HE: וזהבי' הדפוס. שחמל עלינו הש"י באחרית הימים והמציא בעולם חכמת הדפוס כדי שיתרבו ספרים קדושים בעולם. כי ארז"ל דברי םשבכתב אי אתה רשאי לאומרים בע"פ דברי שבע"פ אי אתה רשאי לאומרם בכתב. 
+  EN: [continued]
+
+### SEVERE public/reader/likutay-halachos/part-5/halacha-104.json flags=13 bilingual_segments=41/58
+- tiny_he_long_en at aligned_segments[1]/segment
+  HE: אות א
+  EN: And this is the aspect of matzah, which is the aspect of haste, as mentioned — for the beginning of the awakening, the aspect of Pesach, is with great enthusiasm and arousal, and o
+- tiny_he_long_en at aligned_segments[4]/segment
+  HE: אות ב
+  EN: And this is "bread of affliction" (Devarim 16:3) — that one recalls the affliction with which they were afflicted in Egypt, and "upon which they answer (onin) many things" (she'oni
+- tiny_he_long_en at aligned_segments[8]/segment
+  HE: אות ג
+  EN: For this is the aspect of chametz in ches — the opening and hollow is closed. This is the aspect of the "leavening of the brain" (chamitz ha-mo'ach), the aspect of "for my heart is
+- tiny_he_long_en at aligned_segments[10]/segment
+  HE: אות ד
+  EN: And this is the aspect of broken matzah (matzah prosah), the aspect of "bread of affliction — as is the way of the poor, with a broken piece" (mah darko shel ani bi'prusa) — as men
+- tiny_he_long_en at aligned_segments[12]/segment
+  HE: אות ה
+  EN: Now, on the first day of Pesach, a great light from above was revealed. Afterward the great light immediately departed and began to enter in stages, in order. And this is the aspec
+- tiny_he_long_en at aligned_segments[14]/segment
+  HE: אות ו
+  EN: And this is the aspect of counting (sefirah), which is the aspect of contractions for the comprehension of His divinity — the said Lower Wisdom. For "before One, what do you count?
+- tiny_he_long_en at aligned_segments[16]/segment
+  HE: אות ז
+  EN: Therefore on the first day of the Counting — the day of the reaping of the Omer — was the downfall of Haman-Amalek. For then Malchus-Lower Wisdom is reaped from them, in the aspect
+- tiny_he_long_en at aligned_segments[19]/segment
+  HE: אות ח
+  EN: Therefore, after Moshe Rabbeinu performed many miracles for Israel in Egypt and at the sea — and ten miracles were performed for our forefathers in Egypt and ten at the sea, etc. —
+
+### SEVERE public/reader/likutay-halachos/part-5/halacha-32.json flags=13 bilingual_segments=51/58
+- long_he_tiny_en at segments[11]/segment
+  HE: וזה בחי' מצוות מילה בשמיני. כי גם בשביל זה צריכין לעבור על התינוק ז' ימי ערלה ואח"כ בשמיני מלין אותו. כי זהו בחי' מה שא"א הי' תחילה ביד כנען ואח"כ ניתנה לישראל. ומה שהי' העולם מתקי
+  EN: Hilchos Shabbos 1
+- long_he_tiny_en at segments[21]/segment
+  HE: אות ח וזהו שמאר משה ואם אין מחני נא וכו'. כי באמת לא היתה התורה צריכה לספר רק עצם המצות כגון מצות ציצית מצות תפילין וכו' שזהו עיקר התורה כדי לקיים מצותיה. אבל כל הסיפורים של התורה 
+  EN: Hilchos Shabbos 2
+- long_he_tiny_en at segments[29]/segment
+  HE: אות יא נמצא שמילת ישמעאל בן האמה קודם ליצחק, הוא בחי' כבישת עבר הירדן קודם לא"י. וע"כ הי' ישמעאל בן י"ד שנה בעת שנימול יצחק זה בחי' י"ד שנים שקדם כבוש עבר הירדן לא"י שהם ז' שכבשו ו
+  EN: Likutay Halachos
+- tiny_he_long_en at aligned_segments[1]/segment
+  HE: אות א
+  EN: It follows that the foods that come into the body are refined through refinement after refinement, until the purity and clarity within them is refined — the choicest richness withi
+- tiny_he_long_en at aligned_segments[4]/segment
+  HE: אות ב
+  EN: And therefore the chailev — because it is the aspect of the grip of the Sitra Achara in a lofty place, in the aspect of the brain, as mentioned above — therefore, even though it gr
+- tiny_he_long_en at aligned_segments[6]/segment
+  HE: אות ג
+  EN: And therefore the essential korban is the chailev that is offered upon the mizbe'ach [altar]. For there is clothed within it a lofty life-force, as mentioned above. It is only that
+- tiny_he_long_en at aligned_segments[10]/segment
+  HE: אות ד
+  EN: And this is the aspect of the prohibition of dam [blood]. For the blood is the nefesh — which is the life-force. Therefore the Sitra Achara grips there the most, for its essential 
+- tiny_he_long_en at aligned_segments[13]/segment
+  HE: אות ה
+  EN: For the life-force clothed in the chailev — which is from the aspect of Mochin [brains/intellect], that is, from the aspect of the last level, from the aspect of the raglayim [feet
+
+### SEVERE public/reader/likutay-halachos/part-5/halacha-59.json flags=13 bilingual_segments=47/66
+- tiny_he_long_en at aligned_segments[1]/segment
+  HE: אות א
+  EN: For in truth we know nothing at all — as it says in the Etz Chaim: Shlomo the King, peace upon him, who was wiser than any person, said [Proverbs 30:2-3]: "I said I would be wise —
+- tiny_he_long_en at aligned_segments[5]/segment
+  HE: אות ג
+  EN: And so in every generation, enemies in physical and spiritual form stand to prevent and annul the work of Heaven. And the Holy One helps us each time — as we say in our prayers: "W
+- tiny_he_long_en at aligned_segments[7]/segment
+  HE: אות ד
+  EN: And it may be alluded to that this is the dimension of what our Sages of blessed memory said: "meat in milk is a chiddush [novelty]" — specifically a chiddush. For the essential pr
+- tiny_he_long_en at aligned_segments[9]/segment
+  HE: אות ה
+  EN: And this is the dimension of the Chanukah light commandment which must be performed with oil — this is the dimension of holy azus that one receives through joy, attained through na
+- tiny_he_long_en at aligned_segments[11]/segment
+  HE: אות ו
+  EN: And this is the dimension of "Set me as a seal upon your heart, as a seal upon your arm — for love is as strong as death, passion as fierce as the grave; its flashes are flashes of
+- tiny_he_long_en at aligned_segments[16]/segment
+  HE: אות ח
+  EN: And this is why the portion of the Choshen and Eifod is juxtaposed to the commandment of kindling the Menorah lamps — as it says at the beginning of "And you shall command" [Exodus
+- tiny_he_long_en at aligned_segments[18]/segment
+  HE: אות ט
+  EN: And it is explained there that this is the dimension of being included in ayin [nothingness] — the dimension of "he is answered first." And this is: "for You meet him with the bles
+- tiny_he_long_en at aligned_segments[20]/segment
+  HE: אות י
+  EN: And this is why King David, peace upon him, requested many times for holy azus and the subduing of evil azus: "His strength I will guard for You" and concluded "my strength to You 
+
+### SEVERE public/reader/likutay-halachos/part-5/halacha-67.json flags=13 bilingual_segments=46/58
+- long_he_tiny_en at segments[22]/segment
+  HE: אות יז וזה בחי' שבע ועשים ומאה מדינה. כי רז"ל דרשו שהם כנגד מאה שנה ועשריםשנה ושבע שנים שחיתה שרה. היינו כי שרההיא בחי' מלכות דקדושה בחי' ששרה על כל העולם כולו שעיקרה ענוה בחי' במק
+  EN: Short Prayer
+- tiny_he_long_en at aligned_segments[2]/segment
+  HE: אות ח
+  EN: And this is what Yitzchak said to Eisav: «take up now your vessels» [Bereishis 27:3] — and then «and make me delicacies as I love». For Yitzchak admonished him to first see to rect
+- tiny_he_long_en at aligned_segments[7]/segment
+  HE: אות י
+  EN: For every person must engage in the rectification [tikun] of creation, because everything requires rectification. Even though Hashem [ה' יתברך] already created all of creation, nev
+- tiny_he_long_en at aligned_segments[9]/segment
+  HE: אות יא
+  EN: For the essential perfection is that the hands should open, and the spirit below [ruach dil'tata] should become visible and revealed, and come forth from potential into actuality, 
+- tiny_he_long_en at aligned_segments[11]/segment
+  HE: אות יב
+  EN: But it is impossible to draw and receive from the legacy of the holy Torah of the true tzadikim — except through the breaking of obstacles [menius], through the intensity of the ye
+- tiny_he_long_en at aligned_segments[13]/segment
+  HE: אות יג
+  EN: And this is the aspect of the immersion [tevilah] of vessels [kailim]. And this is the aspect of the great virtue of immersion in the mikveh of Israel — that it is impossible to pa
+- tiny_he_long_en at aligned_segments[15]/segment
+  HE: אות יד
+  EN: And this is the aspect of the holiness of Shabbosim and yomim tovim [festivals] and Rosh Chodesh [the New Month] — which have an additional [mussaf] offering — and similarly all th
+- tiny_he_long_en at aligned_segments[17]/segment
+  HE: אות טו
+  EN: And this is the aspect of the sh'losh esray midos shel rachamim [Thirteen Attributes of Mercy] which begin: ה' ה' [Hashem, Hashem] — which is the aspect of pi shnayim mentioned abo
+
+### SEVERE public/reader/likutay-halachos/part-7/halacha-4.json flags=13 bilingual_segments=40/54
+- tiny_he_long_en at aligned_segments[3]/segment
+  HE: אות ב
+  EN: This halacha, based on Likutay Moharan II, Torah 7 ("Vayehi Mikeitz — Ki Merachamam Yenahaigem"), explains the mitzvah of procreation (having a son and a daughter) as a profound sp
+- tiny_he_long_en at aligned_segments[5]/segment
+  HE: אות ג
+  EN: Halachic Application: The Kohen Gadol can only enter the Kodesh Kodashim on Yom Kippur, when he atones for all Israel — including the lowest sinners. He must have a wife ("for hims
+- tiny_he_long_en at aligned_segments[7]/segment
+  HE: אות ד
+  EN: And this is the aspect of "joy and gladness shall they attain", etc. — that the joy and gladness pursue and reach and seize the sorrow and sighing into the joy against their will, 
+- tiny_he_long_en at aligned_segments[9]/segment
+  HE: אות ה
+  EN: And this is the aspect of the mitzvah of procreation, that a person needs specifically to fulfill this mitzvah in holiness and purity. And through this mitzvah, he merits to seize 
+- tiny_he_long_en at aligned_segments[11]/segment
+  HE: אות ו
+  EN: And this is the aspect of musical instruments that are played at the wedding for the sake of joy. For the musical instruments are the aspect of the ten kinds of melody, through whi
+- tiny_he_long_en at aligned_segments[13]/segment
+  HE: אות ז
+  EN: And because the essential unification of the wedding is in this aspect — to transform sorrow and sighing into joy — therefore it is customary as a great obligation that there be mu
+- tiny_he_long_en at aligned_segments[15]/segment
+  HE: אות ח
+  EN: And therefore Nadav and Avihu, who entered to offer ketores and did not marry, were therefore punished with death. For the clarification and unification that is made through the ke
+- tiny_he_long_en at aligned_segments[17]/segment
+  HE: אות ט
+  EN: And therefore, even one who is a great and very holy tzadik and could be completely ascetic in great holiness — he is necessarily obligated to marry a wife, for it is the first mit
+
+### SEVERE public/reader/likutay-halachos/part-8/halacha-44.json flags=13 bilingual_segments=49/62
+- tiny_he_long_en at aligned_segments[1]/segment
+  HE: אות א
+  EN: And know: in every world and every level, there are these dimyonos [imaginations/illusions] etc. And when a person moves from level to level, he must then pass through these dimyon
+- tiny_he_long_en at aligned_segments[4]/segment
+  HE: אות ב
+  EN: But it is impossible to merit the Torah, which is the seichel dik'dushah, except when one first breaks the m'dameh and the k'lipah that precedes the fruit, at every level, as above
+- tiny_he_long_en at aligned_segments[6]/segment
+  HE: אות ג
+  EN: And this is: "Torah is good together with derech eretz, for the exertion of both of them causes sin to be forgotten." For the Torah is the seichel dik'dushah, which is the opposite
+- tiny_he_long_en at aligned_segments[9]/segment
+  HE: אות ד
+  EN: It emerges that the Exodus from Egypt is the aspect of breaking the m'dameh, and meriting the seichel, which is the receiving of the Torah, as above. Therefore Hashem Yisborach war
+- tiny_he_long_en at aligned_segments[12]/segment
+  HE: אות ה
+  EN: And Binah is seichel b'fo'al — that is, when one contemplates with his wisdom and brings out the sweetness of his intellect from potential into actuality, and understands one thing
+- tiny_he_long_en at aligned_segments[14]/segment
+  HE: אות ו
+  EN: And this is the aspect of Oryan t'lisa'ah [the threefold Torah], which is: Mikra [Scripture], Mishnah, Talmud. For Mikra is the aspect of seichel b'ko'ach, for there in Mikra one d
+- tiny_he_long_en at aligned_segments[16]/segment
+  HE: אות ז
+  EN: And this is the aspect of: "A person should always divide his money into thirds: a third in his hand, a third in commerce, and a third in land" — as our Sages, zichronam livrachah,
+- tiny_he_long_en at aligned_segments[20]/segment
+  HE: אות ט
+  EN: And every person of Israel must strive that he should merit that all his money be mamon dik'dushah, in a way that through the holiness of his money he will merit to subjugate the m
+
+### SEVERE public/reader/likutay-halachos/part-8/halacha-46.json flags=13 bilingual_segments=49/64
+- tiny_he_long_en at aligned_segments[1]/segment
+  HE: אות א
+  EN: And therefore, everyone who receives anything from the world — it is all in the aspect of a loan from the great Lender, as above. And he must see to discharge to the great Lender t
+- tiny_he_long_en at aligned_segments[4]/segment
+  HE: אות ב
+  EN: It emerges that whatever they discharge the debt and loan to the Tzadik, the aforementioned Lender — immediately he returns and gives and bestows upon them and lends to them doubly
+- tiny_he_long_en at aligned_segments[6]/segment
+  HE: אות ג
+  EN: And if the world would conduct itself thus, all good influences would return to Israel — until all the greatness would return to Israel, as we hope to merit when Mashiach comes spe
+- tiny_he_long_en at aligned_segments[8]/segment
+  HE: אות ד
+  EN: And this is: "The wicked one borrows and does not pay, but the Tzadik is gracious and gives" — that is, the verse expresses astonishment at the blemish of the wicked borrower who d
+- tiny_he_long_en at aligned_segments[10]/segment
+  HE: אות ה
+  EN: And all the loans in the world are drawn from this — from the aforementioned blemish: that through blemishing the aforementioned aspect and not discharging the loan to the Tzadik, 
+- tiny_he_long_en at aligned_segments[14]/segment
+  HE: אות ו
+  EN: And therefore the essential servitude and lien takes effect upon the land. For there arrives the essential blemish of the aforementioned avodos, from which comes the toil and burde
+- tiny_he_long_en at aligned_segments[16]/segment
+  HE: אות ז
+  EN: And the essential tikkun is through rectifying the t'filah in perfection, as above. For the essential tikkun is specifically through the adamah [earth/ground]. For from there, from
+- tiny_he_long_en at aligned_segments[18]/segment
+  HE: אות ח
+  EN: But as long as the powers have not come and reached the earth, their activity has not yet been completed. And therefore it is impossible to discharge the loans — that is, to return
+
+### SEVERE public/reader/likutay-halachos/part-8/halacha-63.json flags=13 bilingual_segments=42/54
+- tiny_he_long_en at aligned_segments[1]/segment
+  HE: אות א
+  EN: And behold, even though all Yisroel saw then the greatness of the power of Moshe, that all the ruach chayim of all the things in the world was with him, as above, and likewise they
+- tiny_he_long_en at aligned_segments[4]/segment
+  HE: אות ב
+  EN: And this is what is written: "Al riv b'nai Yisroel v'al nasosam es Hashem laimor hayaish Hashem b'kirbainu im ayin, vayavo Amalaik" etc. ["Because of the quarrel of the Children of
+- tiny_he_long_en at aligned_segments[7]/segment
+  HE: אות ג
+  EN: And this is "vay'hi yadav emunah" — "yadav" [his hands] is the aspect of the ruach chayim, which is the aspect of the ten types of pulses whose main [presence] is in the hands, whe
+- tiny_he_long_en at aligned_segments[9]/segment
+  HE: אות ד
+  EN: And this is the aspect of Purim, for Haman from the seed of Amalaik plotted against the Jews to destroy them. For he saw that Yisroel had been in galus for so many years, when the 
+- tiny_he_long_en at aligned_segments[11]/segment
+  HE: אות ה
+  EN: And therefore there truly was then a great danger, a time of trouble the like of which had never been. But Hashem Yisbarach had mercy on His people and sent them Mordechai and Esth
+- tiny_he_long_en at aligned_segments[13]/segment
+  HE: אות ו
+  EN: And from the sin of Adam HaRishon, all the n'shamos [souls] became intermingled between good and evil. And therefore it is impossible to draw forth and beget any n'shamah in this w
+- tiny_he_long_en at aligned_segments[15]/segment
+  HE: אות ז
+  EN: And this is the aspect of the taking of Sarah to the house of Pharaoh, which is the aspect of "ais asher shalat ha'adam b'adam l'ra lo" ["a time when one man rules over another to 
+- tiny_he_long_en at aligned_segments[17]/segment
+  HE: אות ח
+  EN: And therefore, against Amalaik it is impossible to stand except through t'filah, to greatly increase t'filah and tachanunim [supplications] very, very much, in order to arouse each
+
+### SEVERE public/reader/kitzur-likutay-moharan/part-2/torah-3.json flags=12 bilingual_segments=30/30
+- long_he_tiny_en at segments[3]/segment
+  HE: ב. עִקַּר שַׁעֲשׁוּעַ עוֹלָם הַבָּא הוּא לְהוֹדוֹת וּלְהַלֵּל לִשְׁמוֹ יִתְבָּרַךְ וְלָדַעַת וּלְהַכִּיר אוֹתוֹ יִתְבָּרַךְ, שֶׁעַל־יְדֵי־זֶה סְמוּכִין וּקְרוֹבִים אֵלָיו יִתְבָּרַ
+  EN: [continued]
+- long_he_tiny_en at segments[8]/segment
+  HE: ז. כְּשֶׁזּוֹכִין לְהַלֵּל וְהוֹדָאָה לְהַשֵּׁם יִתְבָּרַךְ בְּכָל עֵת עַל כָּל מַה שֶּׁעוֹבֵר עָלָיו, בִּפְרָט כְּשֶׁיּוֹצֵא מֵאֵיזֶה צָרָה חַס וְשָׁלוֹם, וְכֵן עַל־יְדֵי לִמּוּד 
+  EN: [continued]
+- long_he_tiny_en at segments[9]/segment
+  HE: ח. אַרְבָּעָה חֶלְקֵי הַדִּבּוּר הֵם: (א) 'דִּבּוּר שֶׁל צְדָקָה', כִּי גֶּדֶר הָאָדָם הוּא הַדִּבּוּר, וְזֶה הַדִּבּוּר נִמְשָׁךְ מִצְּדָקָה, כִּי צְדָקָה וָחֶסֶד הוּא גַּם כֵּן ג
+  EN: [continued]
+- long_he_tiny_en at segments[11]/segment
+  HE: י. תָּמְכֵי אוֹרַיְתָא שֶׁנּוֹתְנִים מָמוֹן לְתַלְמִידֵי חֲכָמִים זְכוּתָם גָּדוֹל מְאֹד. כִּי עַל־יְדֵי מָמוֹנָם שֶׁמַּחֲזִיקִין הַתַּלְמִידֵי־חֲכָמִים, עַל־יְדֵי־זֶה יְכוֹלִים הַ
+  EN: [continued]
+- long_he_tiny_en at segments[12]/segment
+  HE: יא. עַל־יְדֵי הַתְּפִלָּה שֶׁיִּשְׂרָאֵל מִתְפַּלְּלִין בֶּאֱמֶת, נִקְרָאִים בְּשֵׁם אֵל. כִּי הַקָּדוֹשׁ־בָּרוּךְ־הוּא נִקְרָא אֵל עַל שֵׁם הַכֹּחַ, כִּי הוּא תַּקִּיף וּבַעַל הַי
+  EN: [continued]
+- long_he_tiny_en at segments[13]/segment
+  HE: יב. עַל־יְדֵי הַדְלָקַת נֵר חֲנֻכָּה וְעַל־יְדֵי הַהַלֵּל וְהַהוֹדָאָה שֶׁל חֲנֻכָּה, שֶׁזֶּה עִקַּר שַׁעֲשׁוּעַ עוֹלָם הַבָּא כַּנַּ"ל, עַל־יְדֵי־זֶה זוֹכִין גַּם כֵּן שֶׁיָּאִירו
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[3]/segment
+  HE: ב. עִקַּר שַׁעֲשׁוּעַ עוֹלָם הַבָּא הוּא לְהוֹדוֹת וּלְהַלֵּל לִשְׁמוֹ יִתְבָּרַךְ וְלָדַעַת וּלְהַכִּיר אוֹתוֹ יִתְבָּרַךְ, שֶׁעַל־יְדֵי־זֶה סְמוּכִין וּקְרוֹבִים אֵלָיו יִתְבָּרַ
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[8]/segment
+  HE: ז. כְּשֶׁזּוֹכִין לְהַלֵּל וְהוֹדָאָה לְהַשֵּׁם יִתְבָּרַךְ בְּכָל עֵת עַל כָּל מַה שֶּׁעוֹבֵר עָלָיו, בִּפְרָט כְּשֶׁיּוֹצֵא מֵאֵיזֶה צָרָה חַס וְשָׁלוֹם, וְכֵן עַל־יְדֵי לִמּוּד 
+  EN: [continued]
+
+### SEVERE public/reader/likutay-halachos/part-1/halacha-10.json flags=12 bilingual_segments=24/24
+- tiny_he_long_en at segments[1]/segment
+  HE: הלכה ג
+  EN: And this is the aspect of tzitzis. For tzitzis are in the aspect of the Kisei HaKavod, the roots of the souls, as our Sages, of blessed memory, said (Menachos 43b): "Techeiles rese
+- tiny_he_long_en at segments[2]/segment
+  HE: אות א
+  EN: And to grasp onto His Throne of Glory, blessed be He, one needs to guard the yirah in the heart, which is the aspect of the building of Yerushalayim. And this is accomplished throu
+- tiny_he_long_en at segments[5]/segment
+  HE: אות ב
+  EN: And therefore, the primary rectification of prayer is through tzitzis. For the tzitzis are drawn from the three festivals that illuminate the bas ayin, the aspect of prayer, as abo
+- tiny_he_long_en at segments[7]/segment
+  HE: אות ג
+  EN: It follows that through tzitzis, the light is drawn from the three festivals to rectify the three traits mentioned above — which is the aspect of the Exodus from Egypt. And through
+- tiny_he_long_en at segments[9]/segment
+  HE: אות ד
+  EN: And therefore, tzitzis gathers the dispersed from the four corners of the earth, from all the places to which they have been scattered. For every one of the dispersed fell to the p
+- tiny_he_long_en at segments[11]/segment
+  HE: אות ה
+  EN: And this is the aspect of Sefiras Ha'Omer — that one brings an omer of barley immediately on the second day of Pesach, and afterward one counts seven weeks, 49 days, in order to ex
+- tiny_he_long_en at aligned_segments[1]/segment
+  HE: הלכה ג
+  EN: And this is the aspect of tzitzis. For tzitzis are in the aspect of the Kisei HaKavod, the roots of the souls, as our Sages, of blessed memory, said (Menachos 43b): "Techeiles rese
+- tiny_he_long_en at aligned_segments[2]/segment
+  HE: אות א
+  EN: And to grasp onto His Throne of Glory, blessed be He, one needs to guard the yirah in the heart, which is the aspect of the building of Yerushalayim. And this is accomplished throu
+
+### SEVERE public/reader/likutay-halachos/part-2/halacha-7.json flags=12 bilingual_segments=41/52
+- tiny_he_long_en at aligned_segments[1]/segment
+  HE: אות א
+  EN: This is the aspect of the morning Kri'as Shma and the evening Kri'as Shma. The evening Kri'as Shma — its time is the entire night, all the time of lying down. The morning Kri'as Sh
+- tiny_he_long_en at aligned_segments[6]/segment
+  HE: אות ב
+  EN: This is hinted in the verses (Shmuel II:23) that Rabbainu z"l brought (LM II:73) regarding the greatness of reciting Tehillim: "U'n'um hagever hukam al" — "the utterance of the man
+- tiny_he_long_en at aligned_segments[8]/segment
+  HE: אות ג
+  EN: And this is the aspect of the Jewish custom to eat bread with honey on Rosh Hashanah — for one dips the prusa d'hamotzi [the piece of bread over which the hamotzi blessing was reci
+- tiny_he_long_en at aligned_segments[10]/segment
+  HE: אות ד
+  EN: For the main sin of Adam the First was in this matter — that he was drawn after the pleasantness and sweetness of the Tree of Knowledge, which is the bodily desire [ta'avas ha'guf]
+- tiny_he_long_en at aligned_segments[12]/segment
+  HE: אות ה
+  EN: For on Rosh Hashanah is the main holy gathering — when all Israel gather in synagogues and houses of study. And primarily, those who gather by the true tzadikim, who are the aspect
+- tiny_he_long_en at aligned_segments[14]/segment
+  HE: אות ו
+  EN: For all the offerings come only from matzah [unleavened bread], which is the aspect of manna that contained all the flavors — as our Sages, may their memory be for a blessing, said
+- tiny_he_long_en at aligned_segments[16]/segment
+  HE: אות ז
+  EN: And behold, the entire matter of Rosh Hashanah, Yom Kippur, Sukkos, and the Four Species has already been explained extensively according to the above-mentioned Torah ["For He who 
+- tiny_he_long_en at aligned_segments[18]/segment
+  HE: אות ח
+  EN: And therefore the commandment of hakhel [the assembly] is on Sukkos — for then is the main time of gathering, as above. And therefore in Parashas Vayeilech — which speaks of the en
+
+### SEVERE public/reader/likutay-halachos/part-3/halacha-17.json flags=12 bilingual_segments=35/46
+- tiny_he_long_en at aligned_segments[2]/segment
+  HE: אות א
+  EN: Amalek — the muddying of the blood — is the aspect of sadness, from which the strengthening of desires whose totality is the desire of mishgal: "that he chanced upon you on the way
+- tiny_he_long_en at aligned_segments[4]/segment
+  HE: אות ב
+  EN: Yehoshua was saved from the spies' counsel through Moshe's power — he subdues and cuts off the kelipah of Amalek, so he was not ensnared by their grapes. On the contrary, he merite
+- tiny_he_long_en at aligned_segments[6]/segment
+  HE: אות ג
+  EN: This is what our Sages expounded: "Remember the day of Shabbos to sanctify it" — "remember it over wine" (Kiddush), and also: "remember it from the first day of the week." These ar
+- tiny_he_long_en at aligned_segments[8]/segment
+  HE: אות ד
+  EN: This is the summary of our words in this entire halachah: to strengthen ourselves through meriting to receive Shabbos, through which we always remind ourselves through the true Tza
+- tiny_he_long_en at aligned_segments[10]/segment
+  HE: אות ה
+  EN: He was forced to enter the teivah — built with lofty wisdom and holiness, with deep kavanos in its dimensions. It hints at teshuvah on Yom Kippur: "Noach's teivah — this is Yom Kip
+- tiny_he_long_en at aligned_segments[12]/segment
+  HE: אות ו
+  EN: Therefore the entire rectification was through the rainbow of the covenant that Hashem promised (Bereishis 9): "My bow I have placed in the cloud." The rainbow of the covenant is t
+- tiny_he_long_en at aligned_segments[14]/segment
+  HE: אות ז
+  EN: This is the aspect of Eiruvei Techumin: where one places the Shabbos meal, from there the Techum Shabbos begins. Shabbos is the aspect of teshuvah, whose essence is the two experti
+- tiny_he_long_en at aligned_segments[16]/segment
+  HE: אות ח
+  EN: The essential Techum Shabbos is derived from the Machaneh Yisrael, which was twelve mil. Therefore mid'Oraisa the techum is twelve mil. But our Sages enacted only two thousand amos
+
+### SEVERE public/reader/likutay-halachos/part-3/halacha-77.json flags=12 bilingual_segments=37/48
+- tiny_he_long_en at aligned_segments[1]/segment
+  HE: הלכה ג
+  EN: But afterward, when one is purified and sanctified completely through proper t’shuvah — which is the aspect of the S’firah — then one merits Shavuos, the ultimate perception, the a
+- tiny_he_long_en at aligned_segments[2]/segment
+  HE: אות א
+  EN: But afterward, when one merits the tikkun and subdues the Sitra Achara completely, and then merits perception — then his tikkun is specifically through the aspect of “leavening the
+- tiny_he_long_en at aligned_segments[5]/segment
+  HE: אות ב
+  EN: And this is why Shabbas is mentioned at the beginning and end of the S’firah, as it is written: “And you shall count for yourselves from the morrow of the Shabbas… until the morrow
+- tiny_he_long_en at aligned_segments[7]/segment
+  HE: אות ג
+  EN: And then one merits the fiftieth day, which is the aspect of Yovel [Jubilee], which also comes after seven sabbaticals of years. And it is the aspect of the supernal gate, the ulti
+- tiny_he_long_en at aligned_segments[9]/segment
+  HE: אות ד
+  EN: And this is the aspect of “refined seven times over” (Tehillim 12:7) — seven times seven, the aspect of Shabbas Shabboson [a Shabbas of Shabbosos] — namely, that one does t’shuvah 
+- tiny_he_long_en at aligned_segments[11]/segment
+  HE: אות ה
+  EN: And therefore, regarding the ultimate redemption, it is written: “For not in haste shall you go out… for Hashem goes before you, and the G-d of Yisrael gathers you in” (Yeshaya 52:
+- tiny_he_long_en at aligned_segments[13]/segment
+  HE: אות ו
+  EN: And this is: “For Hashem goes before you, and the G-d of Yisrael gathers you in” — namely, ahead of the running of the thought, so to speak, Hashem, blessed be He, Himself is the G
+- tiny_he_long_en at aligned_segments[15]/segment
+  HE: אות ח
+  EN: This halacha is built on Likutay Moharan I:6 (“Call Yehoshua”), which teaches that t’shuvah = Keser (Crown), and that the one who comes to purify himself is told “Wait” — a word wh
+
+### SEVERE public/reader/likutay-halachos/part-4/halacha-13.json flags=12 bilingual_segments=34/44
+- long_he_tiny_en at aligned_segments[3]/segment
+  HE: וע"כ מחמירין מאד בבשר שנתעלם מן העין. כי עיקר תיקון השחיטה הוא להכניע רע הכולל רוח הבהמיות ע"י בחי' שלימות לה"ק כנ"ל. שזה בחי' תיקון העינים כי עיקר הניאוף שהוא רע הכולל הנ"ל הוא תל
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[5]/segment
+  HE: וע"כ צריך לשמור את הבשר מאד וליתן עיניו בו להצילו ולשומרו שלא תשלוט עין הרע של עי"ן אומות היינו בחי' רע הכולל הנ"ל. שעד עתה היו האותיות והנפשות כבושים אצלם ועתה שזכו להכניעם צריך ל
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[7]/segment
+  HE: וע"כ אסור שיתעלם הבשר מן העין.כי צריך ליתן עיניו בו לשומרו מעי"ן אומות כנ"ל.בבחי' כוס של ברכה צריך ליתן עינין בו,בבחי' וראיתם אותו הנאמר בציצת שכל זה בחי' אחת.שצריך ליתן שם העינים 
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[9]/segment
+  HE: ועתה מבואר היטב ומחובר יפה הד' דברים שהחמירו בהם רבותינו ז"ל שצריכין חותם בתוך חותם דוקא כשנשלחין ע"י נוכרי והסימן חבי"ת והם "חתיכת דג "בשר "יין "תכלת. כי כל אלו הם בבחי' אחת כי כו
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[11]/segment
+  HE: וע"כ דגים אין צריכים שחיטה. כי אין העי"ן שולטת בהם כי הם נעלמים מן העין. כי מונחים בתןך המים תמיד והמים מכסה עליהם מן העין רעה של העי"ן אומות הנ"ל ע"כ אין צריכין שחיטה כי עיקר השחי
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[13]/segment
+  HE: כי עיקר השחיטה התחילה רק מהח. כי מימי אדה"ו עד החלא הותר להם להרוג בהמה ולאכלה. כי קודם החטא של אדה"ר היו כולם קדושים ואפילו בבהמות וחיות לא היה לאם אחיזה. וע"כ לא היו צריכים לשחיט
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[14]/segment
+  HE: וע"כדגים אין טעונין שחיטה כי הם לא נפגמו בפגם וחטא של דור המבול. וע"כלא שלט בהם המבול ולא הוצרכו לבא אל התיבה כלל כ"ש מכל אשר בחרבה מתו ולא דגים שבים. כי בהם לא הגיע הפגם וחטא של ד
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[16]/segment
+  HE: וע"כ הדגים הם מאכלים של שבת ויו"ט כי שבת ויו"ט הוא בחי' עלמא דאתי כנ"ל. ואח"כ כשהדגים באים לאויר העולם הם מתים מיד כי אין יכולין לחיות אלא במים כי שם מקומם כנ"ל.ואז כשהם באויר העול
+  EN: [continued]
+
+### SEVERE public/reader/likutay-halachos/part-4/halacha-66.json flags=12 bilingual_segments=37/42
+- long_he_tiny_en at aligned_segments[3]/segment
+  HE: ע"פ התורה בקרוב עלי מרעים וכו' בסי' ל"ו ע"ש מבואר שם שעיקר נסיון וצירוף של כל אדם הוא בתאוות ניאוף שהיא כלליות כל התאוות והמדות רעות שלכל השבעים אומו. כי כל נפש מישראל מושרש בע' נפ
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[4]/segment
+  HE: וזהו בחי' איסור יין שנגע בו העכו"ם. כי יין כלול מב' בחינות מטוב ורע וכו'. כי שורש היין בקדושה גבוה מאד. כי הוא כלול מכל הע' פנים לתורה. שהם בחי' שבעים נפשות בית יעקב בחי' ע' זקנים.
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[6]/segment
+  HE: וע"כ צריכין לשמור היין מאד ממגע עכו"ם. כי העכו"ם נאחזין בהרע של כל התאוות שעיקרם הוא תאוה הנ"ל וע"כ תיכף שהן נוגעי ןבהיין נתהפך היין לרע גמור כי נאחז בו הרע של העכו"ם שהוא ההיפך מק
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[8]/segment
+  HE: וע"כ אפילו יין כשר של ישראל. צריך כל איש ישראלי ליזהר מאד ממנו. כמובא בכל הספרי קודש גודל האזהרה להתרחק מאד מאד ממשקה המשכר. בפרט מלשתות הרבה חס ושלום עד שיוכל לבא לידי שכרות חס וש
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[10]/segment
+  HE: כי אין לשתות יין ומשקה המשכר כ"א מעט להרחיב דעתו וגם זה בשבת ויו"ט ובסעודת מצוה דייקא. כי עיקר קדושת היין נמשך רק מקדושת שבת שהוא תחלה למקראי קודש שכל קדושת הימים טובים נמשך משם שז
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[12]/segment
+  HE: ועיקר הכל תלוי בהתקשרות לצדיקי אמת שכבר זכו לקדושת הברית בתכלית השלימות שאין שלימות אחריו שעל ידם יכול כ"א להמשיך על עצמו בחי' קדושת שבת שהוא בחי' קדושת הברית שהוא בחי' ע' פנים ע' 
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[14]/segment
+  HE: אבל מי שקובע עצמו על היין בכל יום ושותה הרבה בערב ובבקר בכל ימות החול. עד שבא כמה פעמים לידי שכרות גם בימי החול. ולא די להם בכל זה כ"א שחולקים מאד על הצדיקי האמת והנלווים אליהם. וח
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[16]/segment
+  HE: וכל אריכת הגלות בעוה"ז נמשך על ידי זה. כי עיקר הגלות נמשך ע"י גלות נפשות ישראל בתאוותיהן ומדותיהן הרעות שעיקרם הוא תאוות ניאוף כמבואר בהתורה הנ"ל שכל נפש מישראל מוכרח לבא בגלות הנ"
+  EN: [continued]
+
+### SEVERE public/reader/likutay-halachos/part-4/halacha-71.json flags=12 bilingual_segments=25/30
+- long_he_tiny_en at segments[6]/segment
+  HE: אות ב וע"כ בתחלת איסורה של ע"ז בשעה שנעשית ע"ז הוא להיפך שהע"ז של העכו"ם אסורה מיד ושל ישראל אינה אסורה עד שתיעבד כי באמת ישראל רחוקים לגמרי מע"ז כי ישראל בכלל הם בבחי' הארת הגווני
+  EN: 050 Likutay_Halachos_Masa_Umasan_5 (1).html
+- long_he_tiny_en at segments[8]/segment
+  HE: נמצא שהעכו"ם הם בבחי' המדמה וישראל בבחי' השכל. וע"כ עיקר הע"ז אצל העכו"ם כמ"ש אשר חלק להם כי עיקר הע"ז הוא מכח המדמה כנ"ל. ועל כן העכו"ם שהם בבחי' המדמה הם קרובים וסמוכים לע"ז מאד 
+  EN: 060 Likutay_Halachos_Netilas_Yadayim_LSeudah_1 (1).html
+- long_he_tiny_en at aligned_segments[2]/segment
+  HE: ע"א של עכו"ם יש לה ביטול ושל ישראל אין לה ביטול עלמית. ולענין איסורה בתחלה הוא להיפך כי ע"ז של עכו"ם נאסרה מיד ושל ישראל אינה נאסרת עד שתיעבד כמבואר ביו"ד ע"ש.
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[3]/segment
+  HE: ע"פ התורה אחוי לן מנא דלא שוי' לחבלא וכו' בסי' כ"ה ע"ש. והכלל כי צריך כל אדם להוציא א"ע מהמדמה ולעלות אל השכל וכו'. כי הכח המדמה הוא כח הבהמיות שמשם כל התואות והבלבולים שהם הקליפות
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[4]/segment
+  HE: כי עיקר כח הע"ז מה שיש כח ביד הדם לעשות ע"ז ולאסרה בהנאה ולהטעות בה את הבריות, זה נמשך רק מפגם הגוונין הנ"ל שעל ידי זה מתגבר הכח המדמה דהיינו שמתגבר הרע שבמדמה שהוא בלבול המדמה שמש
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[6]/segment
+  HE: וע"כ בתחלת איסורה של ע"ז בשעה שנעשית ע"ז הוא להיפך שהע"ז של העכו"ם אסורה מיד ושל ישראל אינה אסורה עד שתיעבד כי באמת ישראל רחוקים לגמרי מע"ז כי ישראל בכלל הם בבחי' הארת הגוונין בבחי
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[8]/segment
+  HE: נמצא שהעכו"ם הם בבחי' המדמה וישראל בבחי' השכל. וע"כ עיקר הע"ז אצל העכו"ם כמ"ש אשר חלק להם כי עיקר הע"ז הוא מכח המדמה כנ"ל. ועל כן העכו"ם שהם בבחי' המדמה הם קרובים וסמוכים לע"ז מאד 
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[10]/segment
+  HE: וע"כ לא יצאו ישראל ממצרים עד ששאלו מה םכלי כסף וכלי זהב ושמלות כמ"ש דבר נא באזני העם וישאלו וכו'. כי פרעה ומצרים זה בחי' הקליפות בחי' כח המדמה כמ"ש בהתורהויהי מקץ (סימן נ"ד ליקוטי 
+  EN: [continued]
+
+### SEVERE public/reader/likutay-halachos/part-4/halacha-81.json flags=12 bilingual_segments=32/42
+- long_he_tiny_en at aligned_segments[2]/segment
+  HE: ובחוקותיהם לא תלכו. וז"ל השו"ע סי' קע"ח, אין הולכין בחוקת העכו"ם ולא מדמין להם, ולא ילבש מלבוש המיוחד להם ולא יגדל ציצית ראשו כמו ציצית ראשם וכו'. כי איתא בדברי רבינו ז"ל במאמר אחו
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[3]/segment
+  HE: וזה בחי' האיסור ללכת בחוקותיה'. וצריכין להתרחק מהם בכל הדברים שלא להתדמות להם בשום דבר שבעולם. אף על פי שאין בזה הדבר שום איסור מצד עצמו אעפ"כ אסור להתדמות להם בשום ענין שבעולם. וא
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[4]/segment
+  HE: וע"כ גזרה עלינו התור' שלא ללכת בחוקתיהם ושלא להתדמות להם בשום דבר. שלא להתדמות להם דייקא כדי שלא ליתן כח חס ושלום להכח המדמה. כי העכו"ם הם הרע של כל התאוות והמדות כמובא בדברי רבינו
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[6]/segment
+  HE: כי כח המדמה הוא בבחי' עת הדעת טו"ר בחי' נוגה שהוא לפעמים נכלל בטוב ולפעמים להיפך. כי האו בח'י דמיון ולמקום שמדמה עצמו שם נכלל. ועיקר הבחירה והנסיון של האדם הוא בכח המדמה. וצריך כל 
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[8]/segment
+  HE: וזה בחי' מה שמובא בדבר רבינו ז"ל בשיחות הר"נ, שע"י שעושין לעצמו רוגז בתפלה על ידי זה זוכין באמת להתפלל בחמימות והתלהבות דקודשה. וכן על ידי שעושין עצמו כאלו הוא שמח על ידי זה זוכה ל
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[10]/segment
+  HE: וזה שהזהירה התורה ולא תחנם, לא תתן להם חן שאסור לומר כמה נאה עכו"ם זה וכו'. כי אסור לפאר אותם בשום דבר. כי עקיר ההתפארות והגוונין הוא רק אצל ישראל בחינת ישראל אשר בך אתפאר, וכשמפאר
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[12]/segment
+  HE: וזה בחי' שקלים שעל ידי זה היה עיקר הנס של פורים כשרז"ל רשע כבר קדמו שקליהם לשקליך. וע"כ בא' באדר משמיעין על השקלים. כי עיקר קנאת המן עמלק על ישראל הי' בשביל זה. על שישראל הם מרחיקי
+  EN: [continued]
+- long_he_tiny_en at aligned_segments[14]/segment
+  HE: וזהבח'י מחצית השקל תרומה לה'. כי בחי' המדמה הוא בחי' עץ הדעת בחי' נוגה שהוא עיקר המתקלא והנסיון בחי' מחצית השקל שהאדם עומד בו על המשקל והנסיון מחציתו מכריעו לכאן ומחציתו לכאן כדרך 
+  EN: [continued]
 
