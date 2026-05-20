@@ -69,7 +69,7 @@ const todayLM = lmTorahMap[dayIndex] || 1;
       <span class="hero-he" lang="he" dir="rtl">מפעל היהדות</span>
       <span class="hero-en">The Factory of Judaism</span>
     </h1>
-    <p class="hero-subtitle">All the original teachings of Rabbi Nachman of Breslov in English &amp; Hebrew — free.</p>
+    <p class="hero-subtitle">All the teachings of Rabbi Nachman of Breslov in <span class="no-break">English &amp; Hebrew&nbsp;—&nbsp;free.</span></p>
     <div class="hero-search">
       <form action="/search-enhanced" method="get">
         <input type="text" name="q" placeholder="What are you looking for? / ?מה אתה מחפש" dir="auto" autocomplete="off" aria-label="Search Torah" />
@@ -77,6 +77,13 @@ const todayLM = lmTorahMap[dayIndex] || 1;
       </form>
     </div>
   </div>
+
+  <a href="/reader/sichos-chayay-saba/1/1" class="hero-holy-figure hero-saba-link" aria-label="Open the teachings of Saba Yisroel">
+    <img src="/images/home/saba-hands-up-isolated.png" alt="Saba Yisroel with raised holy hands" />
+  </a>
+  <a href="/reader/likutay-halachos/1/1" class="hero-holy-figure hero-nosson-link" aria-label="Open the teachings of Rabbi Nosson">
+    <img src="/images/home/rabbi-nosson-tomb-house-isolated.png" alt="Tombsite of Rabbi Nosson" />
+  </a>
   <div class="hero-actions">
     <a href="/reader/likutay-moharan/1/1" class="btn-hero btn-hero-primary">
       <span class="btn-icon">🕯️</span>
@@ -92,7 +99,7 @@ const todayLM = lmTorahMap[dayIndex] || 1;
     </a>
     <a href="/shavuos" class="btn-hero btn-hero-secondary">
       <span class="btn-icon">📜</span>
-      <span><span class="btn-label">Shavuos</span><span class="btn-sub">חג השבועות</span></span>
+      <span><span class="btn-label">Shavuos / שבועות</span><span class="btn-sub">חג השבועות teachings</span></span>
     </a>
   </div>
 </section>
@@ -109,6 +116,21 @@ const todayLM = lmTorahMap[dayIndex] || 1;
       <cite>— Rebbe Nachman of Breslov · {todayQuote.src}</cite>
     </blockquote>
     <a href={`/reader/likutay-moharan/1/${todayLM}`} class="quote-cta">Read the full teaching →</a>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     PRAYERS FOR ALL OCCASIONS — Likutay Tefilos topics
+     ═══════════════════════════════════════ -->
+<section class="home-prayers-section">
+  <div class="home-prayers-card">
+    <div class="home-prayers-icon">🙏</div>
+    <div class="home-prayers-copy">
+      <p class="home-prayers-he" lang="he" dir="rtl">תפילות לכל צורך ומקרה</p>
+      <h2>Prayers for All Occasions</h2>
+      <p>Find the right Likutay Tefilos prayer by topic — faith, healing, children, livelihood, joy, repentance, peace and more.</p>
+    </div>
+    <a href="/prayers" class="home-prayers-cta">Open prayer index →</a>
   </div>
 </section>
 
@@ -358,7 +380,7 @@ const todayLM = lmTorahMap[dayIndex] || 1;
     filter: drop-shadow(0 0 8px rgba(255, 100, 0, 0.7));
   }
   .hero-huaish-sheli {
-    margin: 0.6rem auto 0.8rem;
+    margin: 0.6rem auto 1.15in;
     max-width: 140px;
     animation: huaishFire 2s ease-in-out infinite;
     filter: drop-shadow(0 0 15px rgba(255, 80, 0, 0.9)) drop-shadow(0 0 30px rgba(255, 40, 0, 0.6)) drop-shadow(0 -5px 20px rgba(255, 200, 0, 0.8));
@@ -402,11 +424,13 @@ const todayLM = lmTorahMap[dayIndex] || 1;
     text-shadow: 0 2px 8px rgba(0,0,0,0.4);
   }
   .hero-subtitle {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     color: rgba(255,255,255,0.9);
-    margin: 0 0 1.5rem;
+    margin: 0 0 1.75rem;
+    white-space: nowrap;
     text-shadow: 0 1px 4px rgba(0,0,0,0.3);
   }
+  .no-break { white-space: nowrap; }
   .hero-search form {
     display: flex;
     border-radius: 50px;
@@ -462,6 +486,54 @@ const todayLM = lmTorahMap[dayIndex] || 1;
   .btn-icon { font-size: 1.2rem; }
   .btn-label { display: block; line-height: 1.2; }
   .btn-sub { display: block; font-size: 0.75rem; font-weight: 400; opacity: 0.8; font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif); }
+
+  .hero > .hero-holy-figure {
+    position: absolute;
+    z-index: 2;
+    display: block;
+    text-decoration: none;
+    pointer-events: auto;
+    transform-origin: bottom center;
+    filter: drop-shadow(0 0 12px rgba(240,204,92,0.85)) drop-shadow(0 0 28px rgba(255,120,0,0.35));
+    transition: transform 0.25s ease, filter 0.25s ease;
+  }
+  .hero > .hero-holy-figure::before {
+    content: '';
+    position: absolute;
+    inset: 12% 6%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,244,180,0.28), rgba(255,130,0,0.12) 45%, transparent 72%);
+    animation: holyPulse 2.8s ease-in-out infinite;
+    z-index: -1;
+  }
+  .hero > .hero-holy-figure::after {
+    content: '';
+    position: absolute;
+    inset: -8% -8%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,220,0.15) 0%, rgba(255,200,50,0.08) 30%, transparent 60%);
+    animation: holyAura 3.5s ease-in-out infinite;
+    z-index: -2;
+    pointer-events: none;
+  }
+  .hero > .hero-holy-figure img { display: block; width: 100%; height: auto; }
+  .hero > .hero-holy-figure:hover { transform: translateY(-8px) scale(1.05); filter: drop-shadow(0 0 18px rgba(255,236,150,1)) drop-shadow(0 0 42px rgba(255,90,0,0.55)); }
+  .hero-saba-link {
+    right: clamp(60px, 10vw, 180px);
+    bottom: 3.5rem;
+    width: clamp(80px, 9vw, 130px);
+    animation: sabaBlessingFloat 5.2s ease-in-out infinite;
+  }
+  .hero-nosson-link {
+    left: clamp(10px, 2.5vw, 40px);
+    bottom: 1rem;
+    width: clamp(90px, 11vw, 155px);
+    animation: nossonTzionGlow 5.8s ease-in-out infinite;
+  }
+  @keyframes holyPulse { 0%,100% { opacity: 0.45; transform: scale(0.94); } 50% { opacity: 0.9; transform: scale(1.08); } }
+  @keyframes holyAura { 0%,100% { opacity: 0.3; transform: scale(0.9); } 50% { opacity: 0.7; transform: scale(1.15); } }
+  @keyframes sabaBlessingFloat { 0%,100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-10px) rotate(1deg); } }
+  @keyframes nossonTzionGlow { 0%,100% { transform: translateY(0) rotate(0.5deg); } 50% { transform: translateY(-7px) rotate(-0.5deg); } }
 
   /* ============================================
      DAILY QUOTE
@@ -758,8 +830,9 @@ const todayLM = lmTorahMap[dayIndex] || 1;
     .hero-nanach { font-size: 1.3rem; }
     .hero-he { font-size: 2rem; }
     .hero-en { font-size: 1.15rem; }
-    .hero-subtitle { font-size: 0.95rem; }
-    .hero-search { flex-direction: column; gap: 4px; }
+    .hero-subtitle { font-size: 0.95rem; white-space: normal; }
+    .hero-saba-link { width: 72px; right: 6px; bottom: 0.5rem; opacity: 0.9; }
+    .hero-nosson-link { width: 82px; left: 6px; bottom: 0.5rem; opacity: 0.9; }
     .hero-search form { max-width: 100%; }
     .hero-actions { flex-direction: column; align-items: center; padding: 0 1rem 1.5rem; }
     .btn-hero { width: 100%; max-width: 320px; justify-content: center; }
@@ -770,4 +843,15 @@ const todayLM = lmTorahMap[dayIndex] || 1;
     .quote-card { padding: 1.5rem; }
     .quote-he { font-size: 1.1rem; }
   }
+
+.home-prayers-section { padding: 0 1.25rem 2.5rem; }
+.home-prayers-card { max-width: 1040px; margin: 0 auto; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 1.25rem; padding: 1.35rem; border-radius: 28px; background: linear-gradient(135deg, #fff8df 0%, #f0fff4 100%); border: 1px solid #e7c874; box-shadow: 0 18px 50px rgba(160,120,48,0.16); }
+.home-prayers-icon { font-size: 2.6rem; }
+.home-prayers-copy h2 { margin: 0.1rem 0; color: var(--ds-navy-700, #1a365d); font-size: clamp(1.5rem, 4vw, 2.4rem); }
+.home-prayers-copy p { margin: 0; color: #506070; line-height: 1.55; }
+.home-prayers-he { font-family: var(--ds-font-hebrew, 'Frank Ruhl Libre', serif); color: #a07830 !important; font-size: 1.35rem; }
+.home-prayers-cta { justify-self: end; padding: 0.9rem 1.15rem; border-radius: 999px; background: #1a365d; color: white; text-decoration: none; font-weight: 800; white-space: nowrap; }
+[data-theme="night"] .home-prayers-card, body.dark-mode .home-prayers-card { background: linear-gradient(135deg, #2c2415 0%, #123021 100%); border-color: #6d5526; }
+[data-theme="night"] .home-prayers-copy h2, body.dark-mode .home-prayers-copy h2 { color: #e8d9b7; }
+@media (max-width: 760px) { .home-prayers-card { grid-template-columns: 1fr; text-align: center; } .home-prayers-cta { justify-self: center; } }
 </style>
