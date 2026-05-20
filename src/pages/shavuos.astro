@@ -1,0 +1,407 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const pageTitle = "Shavuos - Breslov Teachings for Receiving the Torah";
+const pageDescription = "A Shavuos learning page collecting the direct Breslov teachings on Shavuos, Kabbalas HaTorah, the Omer preparation, all-night learning, dairy foods, and unity from Rabbi Nachman and Rabbi Nosson.";
+
+const primaryTeachings = [
+  {
+    title: 'Otzar HaYirah — Pesach, Sefira & Shavuos I',
+    hebrewTitle: 'אוצר היראה — פסח ספירה ושבועות א',
+    url: '/reader/otzar-hayirah/1/22',
+    source: 'Otzar HaYirah 22',
+    theme: 'From Pesach light into gradual preparation',
+    snippet: 'The first lights of Pesach begin the path toward Shavuos; the soul must receive the Torah through measured preparation and ascent.'
+  },
+  {
+    title: 'Otzar HaYirah — Pesach, Sefira & Shavuos II',
+    hebrewTitle: 'אוצר היראה — פסח ספירה ושבועות ב',
+    url: '/reader/otzar-hayirah/1/23',
+    source: 'Otzar HaYirah 23',
+    theme: 'Sefira as the work before receiving Torah',
+    snippet: 'The days of Sefira gather and refine the scattered desires of the heart so they can be brought to the holiness of Torah.'
+  },
+  {
+    title: 'Otzar HaYirah — Pesach, Sefira & Shavuos III',
+    hebrewTitle: 'אוצר היראה — פסח ספירה ושבועות ג',
+    url: '/reader/otzar-hayirah/1/24',
+    source: 'Otzar HaYirah 24',
+    theme: 'The barley Omer and holy counting',
+    snippet: 'The Omer lifts even the animalistic levels of desire, counting every day and every soul until nothing holy is lost.'
+  },
+  {
+    title: 'Otzar HaYirah — Pesach, Sefira & Shavuos Completion',
+    hebrewTitle: 'אוצר היראה — פסח ספירה ושבועות גמר',
+    url: '/reader/otzar-hayirah/1/25',
+    source: 'Otzar HaYirah 25',
+    theme: 'Completion of the path to Shavuos',
+    snippet: 'The movement from Pesach through Sefira reaches completion in Shavuos: gathering, holiness, and readiness for Torah.'
+  },
+  {
+    title: 'Likutay Halachos — Shavuos I',
+    hebrewTitle: 'ליקוטי הלכות — ענין שבועות א',
+    url: '/reader/likutay-halachos/3/33',
+    source: 'Likutay Halachos, Orach Chaim III, Halacha 33',
+    theme: 'Kabbalas HaTorah through gathered souls',
+    snippet: 'Shavuos is called Atzeres — gathering and assembling — because receiving the Torah depends on gathering all souls together in unity.'
+  },
+  {
+    title: 'Likutay Halachos — Chag HaShavuos II',
+    hebrewTitle: 'ליקוטי הלכות — חג השבועות ב',
+    url: '/reader/likutay-halachos/3/34',
+    source: 'Likutay Halachos, Orach Chaim III, Halacha 34',
+    theme: 'Yom Tov, Shavuos, and revealed goodness',
+    snippet: 'Yom Tov draws the light of the ultimate good into the days of this world; Shavuos reveals Torah as living divine awareness.'
+  }
+];
+
+const relatedTeachings = [
+  {
+    title: 'Likutay Moharan I:49 — The 49 Gates',
+    hebrewTitle: 'ליקוטי מוהר״ן א:מט',
+    url: '/reader/likutay-moharan/1/49',
+    note: 'The inner structure of forty-nine levels, a key to understanding the Sefira path into Shavuos.'
+  },
+  {
+    title: 'Likutay Moharan I:56 — Torah, Daas, and Malchus',
+    hebrewTitle: 'ליקוטי מוהר״ן א:נו',
+    url: '/reader/likutay-moharan/1/56',
+    note: 'Torah reveals daas and helps every person find the divine message in each day and situation.'
+  },
+  {
+    title: 'Likutay Moharan I:13 — Hashgachah and Giving',
+    hebrewTitle: 'ליקוטי מוהר״ן א:יג',
+    url: '/reader/likutay-moharan/1/13',
+    note: 'The teaching used by Rabbi Nosson as the foundation for Likutay Halachos on Shavuos I.'
+  },
+  {
+    title: 'Likutay Tefilos 49 — Prayer to Receive Torah',
+    hebrewTitle: 'ליקוטי תפילות מט',
+    url: '/reader/likutay-tefilos/1/49',
+    note: 'A prayerful companion for the inner work of the forty-nine days and Kabbalas HaTorah.'
+  },
+  {
+    title: 'Sfiras HaOmer Page',
+    hebrewTitle: 'ספירת העומר',
+    url: '/omer',
+    note: 'The daily preparation page leading into Shavuos, with the 49-day sefiros grid.'
+  }
+];
+
+const themes = [
+  { icon: '📜', title: 'Receiving the Torah', he: 'קבלת התורה', text: 'Shavuos is not only a memorial of Sinai. Every year the Torah can be received anew — with fresh daas, holy sight, and practical avodah.' },
+  { icon: '🤝', title: 'Unity of Souls', he: 'ויחן שם ישראל', text: 'Rabbi Nosson explains Atzeres as gathering: all the scattered nefashos and good desires are assembled together so Torah can be revealed.' },
+  { icon: '🌾', title: 'The Omer Preparation', he: 'ספירת העומר', text: 'The barley Omer lifts even low, animalistic desires. Counting means not letting any day, spark, or soul be lost.' },
+  { icon: '👁️', title: 'Awake All Night', he: 'נעורים בלילה', text: 'The all-night learning hints to the open eye of hashgachah — “the eye that does not sleep” — awakened by Torah.' },
+  { icon: '🥛', title: 'Milk and Torah', he: 'יין וחלב', text: 'The custom of dairy is tied to Torah as milk and wine: nourishment, sweetness, and the clear white light of divine watchfulness.' },
+  { icon: '🔥', title: 'Na Nach Kabbalas HaTorah', he: 'נ נח נחמ נחמן מאומן', text: 'Receiving the Torah through the Tzaddik means receiving hope, simplicity, joy, and the strength to begin again.' }
+];
+
+const breadcrumbs = [
+  { name: 'Home', url: 'https://ajew.org/' },
+  { name: 'Shavuos', url: 'https://ajew.org/shavuos' }
+];
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: pageTitle,
+  description: pageDescription,
+  url: 'https://ajew.org/shavuos',
+  inLanguage: ['en', 'he'],
+  about: {
+    '@type': 'Event',
+    name: 'Shavuos',
+    alternateName: ['שבועות', 'Chag HaShavuos', 'Kabbalas HaTorah'],
+    description: 'The Jewish festival of receiving the Torah.'
+  },
+  publisher: { '@type': 'Organization', name: 'A Jew', url: 'https://ajew.org' }
+};
+---
+
+<Layout title={pageTitle} description={pageDescription} jsonLd={jsonLd} breadcrumbs={breadcrumbs}>
+  <main class="shavuos-page">
+    <section class="shavuos-hero">
+      <div class="hero-glow" aria-hidden="true"></div>
+      <p class="nanach">נ נח נחמ נחמן מאומן</p>
+      <h1 dir="rtl">חג השבועות</h1>
+      <h2>Shavuos</h2>
+      <p class="subtitle">Breslov teachings for Kabbalas HaTorah — receiving the Torah anew</p>
+      <div class="hero-actions">
+        <a href="#direct-teachings" class="hero-btn primary">All Shavuos Teachings</a>
+        <a href="/omer" class="hero-btn secondary">Sfiras HaOmer →</a>
+      </div>
+    </section>
+
+    <section class="intro-card">
+      <p>
+        Shavuos is the fiftieth day — the completion of the Omer and the moment of <strong>Kabbalas HaTorah</strong>.
+        Rabbi Nosson teaches that Shavuos is called <em>Atzeres</em>, gathering, because Torah is received when the scattered points of good,
+        desire, and holy souls are assembled into one heart.
+      </p>
+      <p dir="rtl" lang="he" class="intro-he">
+        וַיִּחַן שָׁם יִשְׂרָאֵל נֶגֶד הָהָר — כאיש אחד בלב אחד.
+      </p>
+    </section>
+
+    <section class="theme-section" aria-labelledby="themes-heading">
+      <h2 id="themes-heading">Shavuos Themes</h2>
+      <div class="theme-grid">
+        {themes.map(theme => (
+          <article class="theme-card">
+            <span class="theme-icon">{theme.icon}</span>
+            <h3>{theme.title}</h3>
+            <p class="theme-he" dir="rtl" lang="he">{theme.he}</p>
+            <p>{theme.text}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section id="direct-teachings" class="teachings-section" aria-labelledby="direct-heading">
+      <div class="section-heading-wrap">
+        <h2 id="direct-heading">Direct Shavuos Teachings</h2>
+        <p>Primary reader sources whose titles and content explicitly cover Shavuos / שבועות.</p>
+      </div>
+      <div class="teachings-list">
+        {primaryTeachings.map((teaching, index) => (
+          <article class="teaching-card">
+            <div class="teaching-num">{index + 1}</div>
+            <div class="teaching-body">
+              <p class="source-label">{teaching.source}</p>
+              <h3><a href={teaching.url}>{teaching.title}</a></h3>
+              <p class="he-title" dir="rtl" lang="he">{teaching.hebrewTitle}</p>
+              <p class="theme-line">{teaching.theme}</p>
+              <p class="snippet">{teaching.snippet}</p>
+              <a class="read-link" href={teaching.url}>Read in the ajew.org Reader →</a>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="related-section" aria-labelledby="related-heading">
+      <div class="section-heading-wrap">
+        <h2 id="related-heading">Related Torah for Shavuos Preparation</h2>
+        <p>Foundational teachings connected to the Omer, daas, hashgachah, and receiving Torah.</p>
+      </div>
+      <div class="related-grid">
+        {relatedTeachings.map(item => (
+          <a class="related-card" href={item.url}>
+            <span class="related-title">{item.title}</span>
+            <span class="related-he" dir="rtl" lang="he">{item.hebrewTitle}</span>
+            <span class="related-note">{item.note}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="closing-card">
+      <p dir="rtl" lang="he" class="closing-he">שנזכה לקבל את התורה בשמחה ובפנימיות, על ידי רבינו הקדוש נ נח נחמ נחמן מאומן.</p>
+      <p>May we merit to receive the Torah with joy, simplicity, unity, and a new heart.</p>
+    </section>
+  </main>
+</Layout>
+
+<style>
+  .shavuos-page {
+    --shavuos-blue: #1a365d;
+    --shavuos-sky: #dbeafe;
+    --shavuos-gold: #d4a017;
+    --shavuos-border: #e0d6c2;
+    --shavuos-cream: #fffaf0;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 1.5rem;
+    color: var(--reader-text, #1f2937);
+  }
+  .shavuos-hero {
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+    padding: clamp(2.5rem, 7vw, 5rem) 1.5rem;
+    border: 1px solid var(--shavuos-border);
+    border-radius: 24px;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255,255,255,0.95), rgba(219,234,254,0.75) 45%, rgba(255,250,240,0.9)),
+      linear-gradient(135deg, #eff6ff, #fff7ed);
+    box-shadow: 0 18px 50px rgba(26, 54, 93, 0.12);
+  }
+  .hero-glow {
+    position: absolute;
+    inset: 12% 20%;
+    background: radial-gradient(circle, rgba(255, 240, 170, 0.55), transparent 65%);
+    filter: blur(10px);
+    animation: pulseTorah 4s ease-in-out infinite;
+  }
+  .shavuos-hero > *:not(.hero-glow) { position: relative; z-index: 1; }
+  .nanach {
+    margin: 0 0 0.75rem;
+    color: var(--shavuos-gold);
+    font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+  }
+  .shavuos-hero h1 {
+    margin: 0;
+    color: var(--shavuos-blue);
+    font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif);
+    font-size: clamp(2.4rem, 8vw, 5rem);
+    line-height: 1;
+  }
+  .shavuos-hero h2 {
+    margin: 0.35rem 0;
+    color: #315987;
+    font-size: clamp(1.8rem, 5vw, 3.25rem);
+    font-family: Georgia, serif;
+  }
+  .subtitle {
+    margin: 0.75rem auto 1.5rem;
+    max-width: 620px;
+    color: #52647a;
+    font-size: 1.05rem;
+    line-height: 1.7;
+  }
+  .hero-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .hero-btn {
+    display: inline-block;
+    padding: 0.8rem 1.25rem;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 700;
+    border: 1px solid transparent;
+  }
+  .hero-btn.primary { background: var(--shavuos-blue); color: white; }
+  .hero-btn.secondary { background: rgba(255,255,255,0.8); color: var(--shavuos-blue); border-color: var(--shavuos-border); }
+
+  .intro-card, .closing-card {
+    margin: 1.5rem 0;
+    padding: 1.5rem;
+    border: 1px solid var(--shavuos-border);
+    border-radius: 18px;
+    background: var(--shavuos-cream);
+    line-height: 1.75;
+  }
+  .intro-card p, .closing-card p { margin: 0.4rem 0; }
+  .intro-he, .closing-he {
+    color: #6b5a42;
+    font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif);
+    font-size: 1.25rem;
+  }
+  .theme-section, .teachings-section, .related-section { margin: 2.5rem 0; }
+  .theme-section h2, .section-heading-wrap h2 {
+    color: var(--shavuos-blue);
+    text-align: center;
+    font-family: Georgia, serif;
+    font-size: clamp(1.6rem, 4vw, 2.3rem);
+    margin-bottom: 0.5rem;
+  }
+  .section-heading-wrap p {
+    text-align: center;
+    color: #667085;
+    margin: 0 auto 1.25rem;
+    max-width: 650px;
+  }
+  .theme-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(245px, 1fr));
+    gap: 1rem;
+  }
+  .theme-card {
+    padding: 1.25rem;
+    background: white;
+    border: 1px solid var(--shavuos-border);
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(26,54,93,0.06);
+  }
+  .theme-icon { font-size: 1.7rem; }
+  .theme-card h3 { margin: 0.5rem 0 0.2rem; color: var(--shavuos-blue); }
+  .theme-he { margin: 0 0 0.75rem; color: #8a6a21; font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif); font-weight: 700; }
+  .theme-card p { line-height: 1.65; }
+
+  .teachings-list { display: grid; gap: 1rem; }
+  .teaching-card {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1rem;
+    padding: 1.25rem;
+    background: white;
+    border: 1px solid var(--shavuos-border);
+    border-radius: 16px;
+  }
+  .teaching-num {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(135deg, var(--shavuos-blue), #4f7ab1);
+    color: white;
+    font-weight: 800;
+  }
+  .source-label { margin: 0; color: var(--shavuos-gold); font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  .teaching-body h3 { margin: 0.15rem 0; font-size: 1.25rem; }
+  .teaching-body h3 a { color: var(--shavuos-blue); text-decoration: none; }
+  .teaching-body h3 a:hover { text-decoration: underline; }
+  .he-title { margin: 0.2rem 0 0.65rem; color: #6b5a42; font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif); font-size: 1.05rem; }
+  .theme-line { margin: 0.2rem 0; font-weight: 700; color: #315987; }
+  .snippet { margin: 0.25rem 0 0.8rem; color: #4b5563; line-height: 1.65; }
+  .read-link { color: #0f4c81; font-weight: 700; text-decoration: none; }
+  .read-link:hover { text-decoration: underline; }
+
+  .related-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 0.85rem;
+  }
+  .related-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 1rem;
+    color: var(--shavuos-blue);
+    background: linear-gradient(135deg, #ffffff, #eff6ff);
+    border: 1px solid var(--shavuos-border);
+    border-radius: 14px;
+    text-decoration: none;
+  }
+  .related-card:hover { box-shadow: 0 8px 20px rgba(26,54,93,0.1); transform: translateY(-1px); }
+  .related-title { font-weight: 800; }
+  .related-he { color: #6b5a42; font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif); }
+  .related-note { color: #586578; line-height: 1.55; font-size: 0.92rem; }
+
+  .closing-card { text-align: center; background: linear-gradient(135deg, #fffaf0, #eff6ff); }
+
+  [data-theme="night"] .shavuos-page, body.dark-mode .shavuos-page { color: #d0d0e0; }
+  [data-theme="night"] .shavuos-hero, body.dark-mode .shavuos-hero { background: linear-gradient(135deg, #172033, #26233a); border-color: #3a3a5c; }
+  [data-theme="night"] .shavuos-hero h1, body.dark-mode .shavuos-hero h1,
+  [data-theme="night"] .shavuos-hero h2, body.dark-mode .shavuos-hero h2,
+  [data-theme="night"] .theme-section h2, body.dark-mode .theme-section h2,
+  [data-theme="night"] .section-heading-wrap h2, body.dark-mode .section-heading-wrap h2 { color: #8ab4f8; }
+  [data-theme="night"] .subtitle, body.dark-mode .subtitle,
+  [data-theme="night"] .section-heading-wrap p, body.dark-mode .section-heading-wrap p { color: #a8b0c4; }
+  [data-theme="night"] .intro-card, body.dark-mode .intro-card,
+  [data-theme="night"] .closing-card, body.dark-mode .closing-card,
+  [data-theme="night"] .theme-card, body.dark-mode .theme-card,
+  [data-theme="night"] .teaching-card, body.dark-mode .teaching-card,
+  [data-theme="night"] .related-card, body.dark-mode .related-card { background: #1e1e2e; border-color: #3a3a5c; }
+  [data-theme="night"] .teaching-body h3 a, body.dark-mode .teaching-body h3 a,
+  [data-theme="night"] .related-card, body.dark-mode .related-card { color: #8ab4f8; }
+  [data-theme="night"] .snippet, body.dark-mode .snippet,
+  [data-theme="night"] .related-note, body.dark-mode .related-note { color: #c8c8d8; }
+
+  @keyframes pulseTorah {
+    0%, 100% { opacity: 0.55; transform: scale(0.95); }
+    50% { opacity: 0.9; transform: scale(1.08); }
+  }
+  @media (max-width: 640px) {
+    .shavuos-page { padding: 1rem; }
+    .teaching-card { grid-template-columns: 1fr; }
+    .teaching-num { width: 2rem; height: 2rem; }
+  }
+</style>
