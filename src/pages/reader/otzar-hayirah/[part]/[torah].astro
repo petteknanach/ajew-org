@@ -201,7 +201,7 @@ const breadcrumbData = torahData ? JSON.stringify({
         <h3>Sections</h3>
         <ul class="reader-toc-list">
           {torahData.segments.map((seg, i) => (
-            <li><a href={`#seg-${seg.index}`} data-index={String(seg.index)}>{seg.index}</a></li>
+            <li><a href={`#seg-${seg.siman || seg.index}`} data-index={String(seg.siman || seg.index)}>{seg.siman || seg.index}</a></li>
           ))}
         </ul>
       </div>
@@ -228,13 +228,13 @@ const breadcrumbData = torahData ? JSON.stringify({
       <div class="reader-content mode-hebrew">
         <div class="reader-content-original">
 {torahData.segments.map((seg) => (
-          <div class="reader-segment-pair" id={`seg-${seg.index}`}>
-            <div class="reader-segment segment-he" data-index={String(seg.index)}>
-              <span class="segment-number">{seg.index}</span>
+          <div class="reader-segment-pair" id={`seg-${seg.siman || seg.index}`}>
+            <div class="reader-segment segment-he" data-index={String(seg.siman || seg.index)}>
+              <span class="segment-number">{seg.siman || seg.index}</span>
               <p data-nikud={seg.he_nikud || seg.he}>{seg.he}</p>
             </div>
-            <div class={`reader-segment segment-en ${!seg.en ? 'empty-translation' : ''}`} data-index={String(seg.index)}>
-              <span class="segment-number">{seg.index}</span>
+            <div class={`reader-segment segment-en ${!seg.en ? 'empty-translation' : ''}`} data-index={String(seg.siman || seg.index)}>
+              <span class="segment-number">{seg.siman || seg.index}</span>
               <p>{seg.en || 'Translation not yet available'}</p>
             </div>
           </div>
