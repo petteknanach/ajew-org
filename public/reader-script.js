@@ -2144,9 +2144,15 @@
           type: 'explanation'
         });
       }
+
+      // Likutay Nanach Vol 4 — automatic per-torah commentary lookup
+      var ln4sources = getLN4Commentary(bookId, torah);
+      for (var li = 0; li < ln4sources.length; li++) {
+        sources.push(ln4sources[li]);
+      }
     }
 
-    // Sipurey Maasiyos gets Rimzei HaMaasiyos
+    // Sipurey Maasiyos gets Rimzei HaMaasiyos + Likutay Nanach
     if (bookId === 'sipurey-maasiyos' && torah <= 13) {
       sources.push({
         id: 'rimzei',
@@ -2154,6 +2160,71 @@
         labelHe: 'רמזי המעשיות',
         url: '/reader/rimzei-hamaasiyos/story-' + torah + '.json',
         readerUrl: '/reader/rimzei-hamaasiyos/1/' + torah,
+        type: 'commentary'
+      });
+      // LN commentary on story 9
+      if (torah === 9) {
+        sources.push({
+          id: 'likutay-nanach',
+          label: 'Na Nach',
+          labelHe: 'ליקוטי נ נח',
+          url: '/reader/likutay-nanach/volume-4/chapter-25.json',
+          readerUrl: '/reader/likutay-nanach/4/25',
+          type: 'commentary'
+        });
+      }
+    }
+
+    // Sichos HaRan gets Likutay Nanach
+    if (bookId === 'sichos-haran') {
+      var lnSichos = { 3: 29, 8: 27, 10: 28 };
+      if (lnSichos[torah]) {
+        sources.push({
+          id: 'likutay-nanach',
+          label: 'Na Nach',
+          labelHe: 'ליקוטי נ נח',
+          url: '/reader/likutay-nanach/volume-4/chapter-' + lnSichos[torah] + '.json',
+          readerUrl: '/reader/likutay-nanach/4/' + lnSichos[torah],
+          type: 'commentary'
+        });
+      }
+    }
+
+    // Chayey Moharan gets Likutay Nanach
+    if (bookId === 'chayey-moharan') {
+      var lnChayey = { 5: 8, 7: 9, 10: 18, 11: 19, 2: 7 };
+      if (lnChayey[torah]) {
+        sources.push({
+          id: 'likutay-nanach',
+          label: 'Na Nach',
+          labelHe: 'ליקוטי נ נח',
+          url: '/reader/likutay-nanach/volume-4/chapter-' + lnChayey[torah] + '.json',
+          readerUrl: '/reader/likutay-nanach/4/' + lnChayey[torah],
+          type: 'commentary'
+        });
+      }
+    }
+
+    // Shivchey HaRan gets Likutay Nanach
+    if (bookId === 'shivchey-haran' && torah === 50) {
+      sources.push({
+        id: 'likutay-nanach',
+        label: 'Na Nach',
+        labelHe: 'ליקוטי נ נח',
+        url: '/reader/likutay-nanach/volume-4/chapter-34.json',
+        readerUrl: '/reader/likutay-nanach/4/34',
+        type: 'commentary'
+      });
+    }
+
+    // Likutay Halachos gets Likutay Nanach
+    if (bookId === 'likutay-halachos' && torah === 11) {
+      sources.push({
+        id: 'likutay-nanach',
+        label: 'Na Nach',
+        labelHe: 'ליקוטי נ נח',
+        url: '/reader/likutay-nanach/volume-4/chapter-26.json',
+        readerUrl: '/reader/likutay-nanach/4/26',
         type: 'commentary'
       });
     }
@@ -2182,6 +2253,62 @@
       });
     }
 
+
+        // === Likutay Nanach Vol 4 — LM & Tinyana per-torah commentary ===
+    var ln4Lookup = {};
+    (function(){ var d = var ln4Map={{"k":"likutay-moharan_1","v":4,"c":5},{"k":"likutay-moharan_2","v":4,"c":6},{"k":"likutay-moharan_3","v":4,"c":7},{"k":"likutay-moharan_4","v":4,"c":8},{"k":"likutay-moharan_5","v":4,"c":9},{"k":"likutay-moharan_6","v":4,"c":10},{"k":"likutay-moharan_7","v":4,"c":11},{"k":"likutay-moharan_8","v":4,"c":12},{"k":"likutay-moharan_9","v":4,"c":13},{"k":"likutay-moharan_10","v":4,"c":14},{"k":"likutay-moharan_11","v":4,"c":15},{"k":"likutay-moharan_12","v":4,"c":16},{"k":"likutay-moharan_13","v":4,"c":17},{"k":"likutay-moharan_14","v":4,"c":18},{"k":"likutay-moharan_15","v":4,"c":19},{"k":"likutay-moharan_16","v":4,"c":20},{"k":"likutay-moharan_17","v":4,"c":21},{"k":"likutay-moharan_18","v":4,"c":22},{"k":"likutay-moharan_19","v":4,"c":23},{"k":"likutay-moharan_20","v":4,"c":24},{"k":"likutay-moharan_21","v":4,"c":25},{"k":"likutay-moharan_22","v":4,"c":26},{"k":"likutay-moharan_23","v":4,"c":27},{"k":"likutay-moharan_24","v":4,"c":28},{"k":"likutay-moharan_25","v":4,"c":29},{"k":"likutay-moharan_26","v":4,"c":30},{"k":"likutay-moharan_27","v":4,"c":31},{"k":"likutay-moharan_28","v":4,"c":32},{"k":"likutay-moharan_29","v":4,"c":33},{"k":"likutay-moharan_30","v":4,"c":34},{"k":"likutay-moharan_31","v":4,"c":35},{"k":"likutay-moharan_32","v":4,"c":36},{"k":"likutay-moharan_33","v":4,"c":37},{"k":"likutay-moharan_34","v":4,"c":38},{"k":"likutay-moharan_35","v":4,"c":39},{"k":"likutay-moharan_36","v":4,"c":40},{"k":"likutay-moharan_37","v":4,"c":41},{"k":"likutay-moharan_38","v":4,"c":42},{"k":"likutay-moharan_39","v":4,"c":43},{"k":"likutay-moharan_40","v":4,"c":44},{"k":"likutay-moharan_41","v":4,"c":45},{"k":"likutay-moharan_42","v":4,"c":46},{"k":"likutay-moharan_43","v":4,"c":47},{"k":"likutay-moharan_44","v":4,"c":48},{"k":"likutay-moharan_47","v":4,"c":49},{"k":"likutay-moharan_48","v":4,"c":50},{"k":"likutay-moharan_49","v":4,"c":51},{"k":"likutay-moharan_50","v":4,"c":52},{"k":"likutay-moharan_51","v":4,"c":53},{"k":"likutay-moharan_52","v":4,"c":54},{"k":"likutay-moharan_53","v":4,"c":55},{"k":"likutay-moharan_54","v":4,"c":56},{"k":"likutay-moharan_55","v":4,"c":57},{"k":"likutay-moharan_56","v":4,"c":58},{"k":"likutay-moharan_57","v":4,"c":59},{"k":"likutay-moharan_58","v":4,"c":60},{"k":"likutay-moharan_59","v":4,"c":61},{"k":"likutay-moharan_60","v":4,"c":62},{"k":"likutay-moharan_61","v":4,"c":63},{"k":"likutay-moharan_92","v":4,"c":85},{"k":"likutay-moharan_93","v":4,"c":86},{"k":"likutay-moharan_94","v":4,"c":87},{"k":"likutay-moharan_95","v":4,"c":88},{"k":"likutay-moharan_98","v":4,"c":89},{"k":"likutay-moharan_99","v":4,"c":90},{"k":"likutay-moharan_101","v":4,"c":91},{"k":"likutay-moharan_107","v":4,"c":92},{"k":"likutay-moharan_108","v":4,"c":93},{"k":"likutay-moharan_109","v":4,"c":94},{"k":"likutay-moharan_111","v":4,"c":95},{"k":"likutay-moharan_112","v":4,"c":96},{"k":"likutay-moharan_115","v":4,"c":97},{"k":"likutay-moharan_117","v":4,"c":98},{"k":"likutay-moharan_118","v":4,"c":99},{"k":"likutay-moharan_119","v":4,"c":100},{"k":"likutay-moharan_121","v":4,"c":101},{"k":"likutay-moharan_125","v":4,"c":102},{"k":"likutay-moharan_129","v":4,"c":103},{"k":"likutay-moharan_136","v":4,"c":104},{"k":"likutay-moharan_246","v":4,"c":156},{"k":"likutay-moharan_247","v":4,"c":157},{"k":"likutay-moharan_250","v":4,"c":158},{"k":"likutay-moharan_251","v":4,"c":159},{"k":"likutay-moharan_252","v":4,"c":160},{"k":"likutay-moharan_256","v":4,"c":161},{"k":"likutay-moharan_259","v":4,"c":162},{"k":"likutay-moharan_260","v":4,"c":163},{"k":"likutay-moharan_262","v":4,"c":164},{"k":"likutay-moharan_265","v":4,"c":165},{"k":"likutay-moharan_266","v":4,"c":166},{"k":"likutay-moharan_269","v":4,"c":167},{"k":"likutay-moharan_271","v":4,"c":168},{"k":"likutay-moharan_272","v":4,"c":169},{"k":"likutay-moharan_273","v":4,"c":170},{"k":"likutay-moharan_274","v":4,"c":171},{"k":"likutay-moharan_270","v":4,"c":172},{"k":"likutay-moharan_280","v":4,"c":173},{"k":"likutay-moharan_281","v":4,"c":174},{"k":"likutay-moharan_282","v":4,"c":175},{"k":"likutay-moharan_283","v":4,"c":177},{"k":"likutay-moharan_284","v":4,"c":178},{"k":"likutay-moharan-tinyana_1","v":4,"c":180},{"k":"likutay-moharan-tinyana_2","v":4,"c":181},{"k":"likutay-moharan-tinyana_3","v":4,"c":182},{"k":"likutay-moharan-tinyana_4","v":4,"c":183},{"k":"likutay-moharan-tinyana_5","v":4,"c":184},{"k":"likutay-moharan-tinyana_7","v":4,"c":185},{"k":"likutay-moharan-tinyana_8","v":4,"c":186},{"k":"likutay-moharan-tinyana_10","v":4,"c":187},{"k":"likutay-moharan-tinyana_11","v":4,"c":188},{"k":"likutay-moharan-tinyana_12","v":4,"c":189},{"k":"likutay-moharan-tinyana_15","v":4,"c":190},{"k":"likutay-moharan-tinyana_17","v":4,"c":191},{"k":"likutay-moharan-tinyana_18","v":4,"c":192},{"k":"likutay-moharan-tinyana_19","v":4,"c":193},{"k":"likutay-moharan-tinyana_23","v":4,"c":194},{"k":"likutay-moharan-tinyana_24","v":4,"c":195},{"k":"likutay-moharan-tinyana_25","v":4,"c":196},{"k":"likutay-moharan-tinyana_29","v":4,"c":197},{"k":"likutay-moharan-tinyana_32","v":4,"c":198},{"k":"likutay-moharan-tinyana_33","v":4,"c":199},{"k":"likutay-moharan-tinyana_36","v":4,"c":200},{"k":"likutay-moharan-tinyana_34","v":4,"c":201},{"k":"likutay-moharan-tinyana_37","v":4,"c":202},{"k":"likutay-moharan-tinyana_39","v":4,"c":203},{"k":"likutay-moharan-tinyana_44","v":4,"c":204},{"k":"likutay-moharan-tinyana_46","v":4,"c":205},{"k":"likutay-moharan-tinyana_48","v":4,"c":206},{"k":"likutay-moharan-tinyana_49","v":4,"c":207},{"k":"likutay-moharan-tinyana_50","v":4,"c":208},{"k":"likutay-moharan-tinyana_52","v":4,"c":209},{"k":"likutay-moharan-tinyana_54","v":4,"c":210},{"k":"likutay-moharan-tinyana_57","v":4,"c":212},{"k":"likutay-moharan-tinyana_58","v":4,"c":213},{"k":"likutay-moharan-tinyana_59","v":4,"c":214},{"k":"likutay-moharan-tinyana_61","v":4,"c":215},{"k":"likutay-moharan-tinyana_93","v":4,"c":232},{"k":"likutay-moharan-tinyana_95","v":4,"c":233},{"k":"likutay-moharan-tinyana_100","v":4,"c":234},{"k":"likutay-moharan-tinyana_101","v":4,"c":235},{"k":"likutay-moharan-tinyana_108","v":4,"c":236},{"k":"likutay-moharan-tinyana_109","v":4,"c":237},{"k":"likutay-moharan-tinyana_110","v":4,"c":238},{"k":"likutay-moharan-tinyana_111","v":4,"c":239},{"k":"likutay-moharan-tinyana_112","v":4,"c":240},{"k":"likutay-moharan-tinyana_116","v":4,"c":241},{"k":"likutay-moharan-tinyana_117","v":4,"c":242},{"k":"likutay-moharan-tinyana_118","v":4,"c":243},{"k":"likutay-moharan-tinyana_119","v":4,"c":244},{"k":"likutay-moharan-tinyana_120","v":4,"c":245},{"k":"likutay-moharan-tinyana_121","v":4,"c":246},{"k":"likutay-moharan-tinyana_122","v":4,"c":247},{"k":"likutay-moharan-tinyana_123","v":4,"c":248},{"k":"likutay-moharan-tinyana_124","v":4,"c":249},{"k":"likutay-moharan-tinyana_125","v":4,"c":250},{"k":"sipurey-maasiyos_0","v":4,"c":254},{"k":"sipurey-maasiyos_0","v":4,"c":255},{"k":"sipurey-maasiyos_0","v":4,"c":256},{"k":"sipurey-maasiyos_0","v":4,"c":257},{"k":"sipurey-maasiyos_0","v":4,"c":258},{"k":"sipurey-maasiyos_0","v":4,"c":259},{"k":"sipurey-maasiyos_0","v":4,"c":260},{"k":"sipurey-maasiyos_0","v":4,"c":261},{"k":"sipurey-maasiyos_0","v":4,"c":262},{"k":"sipurey-maasiyos_0","v":4,"c":263},{"k":"sipurey-maasiyos_0","v":4,"c":264},{"k":"sipurey-maasiyos_0","v":4,"c":265},{"k":"sipurey-maasiyos_0","v":4,"c":266},{"k":"chayey-moharan_0","v":4,"c":268},{"k":"sichos-haran_0","v":4,"c":272}};; for (var k in d) ln4Lookup[k] = d[k]; })();
+    function getLN4Commentary(bookId, torah) {
+      var key = bookId + '_' + torah;
+      var ch = ln4Lookup[key];
+      if (!ch) return [];
+      return [{id:'ln',label:'Na Nach',labelHe:'ליקוטי נ נח',
+        url:'/reader/likutay-nanach/volume-'+ch.v+'/chapter-'+ch.c+'.json',
+        readerUrl:'/reader/likutay-nanach/'+ch.v+'/'+ch.c,type:'commentary'}];
+    }
+
+    // === Likutay Nanach Vol 1-3 — Chumash/Neviim/Mishna commentary lookup ===
+    var lnVolMap = {"mishna-arachin":{3:[51]},"mishna-avodah-zarah":{3:[41,42,74]},"mishna-avot":{3:[44,45,82]},"mishna-bava-batra":{3:[36]},"mishna-bava-kamma":{3:[34]},"mishna-bava-metzia":{3:[59]},"mishna-brachot":{3:[4,65]},"mishna-chagigah":{3:[26]},"mishna-chullin":{3:[49]},"mishna-demai":{3:[6,11]},"mishna-eduyot":{3:[43]},"mishna-eruvin":{3:[16]},"mishna-gittin":{3:[32,35]},"mishna-keilim":{3:[54]},"mishna-ketubot":{3:[28]},"mishna-kiddushin":{3:[33]},"mishna-makkot":{3:[39]},"mishna-megillah":{3:[24]},"mishna-menachot":{3:[48]},"mishna-middot":{3:[57]},"mishna-mikvaot":{3:[61]},"mishna-moed-katan":{3:[25]},"mishna-nedarim":{3:[29]},"mishna-peah":{3:[5]},"mishna-pesachim":{3:[17,18]},"mishna-rosh-hashanah":{3:[22]},"mishna-sanhedrin":{3:[38]},"mishna-shabbat":{3:[15,19,20,21,27,40,60,62,69,78,81]},"mishna-shekalim":{3:[30]},"mishna-sotah":{3:[31]},"mishna-taanit":{3:[23,58]},"mishna-tamid":{3:[56]},"mishna-temurah":{3:[52]},"mishna-yoma":{3:[77]},"mishna-zevachim":{3:[46]},"talmud-bavli-brachot":{3:[3,37]},"tanach-bamidbar":{1:[38,39,41,42,43,44,46,47]},"tanach-bereishit":{1:[6,7,8,9,10,11,12,13,14,15,16,45]},"tanach-daniel":{2:[31]},"tanach-devarim":{1:[48,49,50,51,53,54,55,56,57,58]},"tanach-divrei-hayamim":{2:[34]},"tanach-eicha":{2:[28]},"tanach-esther":{2:[30]},"tanach-ezra":{2:[32]},"tanach-iyov":{2:[25]},"tanach-kohelet":{2:[29]},"tanach-melachim":{2:[7,26]},"tanach-mishlei":{2:[23]},"tanach-nechemya":{2:[33]},"tanach-rut":{2:[17,19,27]},"tanach-shemos":{1:[17,18,19,20,21,22,23,24,25,26,27]},"tanach-shmuel":{2:[5,6,12]},"tanach-shofetim":{2:[4]},"tanach-tehillim":{2:[24]},"tanach-trei-asar":{2:[11,13]},"tanach-vayikra":{1:[28,29,30,31,32,33,35,36,37]},"tanach-yechezkel":{2:[10]},"tanach-yehoshua":{2:[3]},"tanach-yeshayahu":{2:[8]},"tanach-yirmiyahu":{2:[9]},"zohar-bereishit":{3:[63]}};
+    function getLNVolumeCommentary(bookId) {
+      var volMap = lnVolMap[bookId];
+      if (!volMap) return [];
+      var sources = [];
+      for (var volNum in volMap) {
+        var chapters = volMap[volNum];
+        if (chapters && chapters.length > 0) {
+          sources.push({
+            id: 'ln-vol-' + volNum, label: 'Na Nach', labelHe: 'ליקוטי נ נח',
+            readerUrl: '/reader/likutay-nanach/' + volNum,
+            type: 'reference', isVolumeIndex: true, volumeNum: parseInt(volNum),
+            chapterCount: chapters.length
+          });
+        }
+      }
+
+    // === Likutay Nanach Vol 1-3 — volume-level commentary for all books ===
+    var lnVolSources = getLNVolumeCommentary(bookId);
+    for (var vi = 0; vi < lnVolSources.length; vi++) {
+      var vs = lnVolSources[vi];
+      if (vs.chapterCount > 0) {
+        sources.push({
+          id: vs.id, label: vs.label + " V" + vs.volumeNum,
+          labelHe: vs.labelHe + " כרך " + vs.volumeNum,
+          readerUrl: vs.readerUrl, url: vs.readerUrl + "/index.json",
+          type: vs.type
+        });
+      }
+    }
+      return sources;
+    }
+
+// === Likutay Nanach Vol 2 — Tehillim chapter-by-chapter (10 chapters) ===
+    if (bookId === 'tanach-tehillim') {
+      var tehillimMap = {12:2, 16:3, 32:4, 41:5, 42:6, 59:7, 77:8, 90:9, 105:10, 137:11};
+      if (tehillimMap[torah]) {
+        sources.push({id:'ln-tehillim',label:'Na Nach',labelHe:'ליקוטי נ נח',
+          url:'/reader/likutay-nanach/volume-2/chapter-'+tehillimMap[torah]+'.json',
+          readerUrl:'/reader/likutay-nanach/2/'+tehillimMap[torah],type:'commentary'});
+      }
+    }
     return sources;
   }
 
