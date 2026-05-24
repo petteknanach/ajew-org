@@ -16,45 +16,23 @@ export function getStaticPaths() {
 const { part } = Astro.params;
 const partNum = parseInt(part);
 
-// Load main index for volume metadata
-let mainIndex = null;
-try {
-  mainIndex = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'public/reader/likutay-nanach/index.json'), 'utf8'));
-} catch (e) {}
-
-const volumeMeta = mainIndex?.parts?.find(p => p.part === partNum);
-const volumeTitle = volumeMeta?.title || `Volume ${partNum}`;
-
 let indexData = null;
 try {
-  const idxPath = path.join(process.cwd(), 'public/reader/likutay-nanach/volume-' + partNum + '/index.json');
+  const idxPath = path.join(process.cwd(), 'public/reader/likutay-nanach/part-' + partNum + '/index.json');
   indexData = JSON.parse(fs.readFileSync(idxPath, 'utf8'));
 } catch (e) {
   console.error('Error loading index:', e);
 }
 
 const totalSections = indexData?.torahs?.length || 0;
-const allParts = mainIndex?.parts || [];
 ---
 
-<Layout title={`ליקוטי נ נח נחמ נחמן — ${volumeTitle}`}>
+<Layout title=`ליקוטי נ נח נחמ נחמן — Part ${partNum} Index`>
   <div style="max-width: 900px; margin: 0 auto; padding: 40px 20px;">
-    <div style="text-align: center; margin-bottom: 20px;">
-      <h1 style="font-family: 'Cinzel', serif; color: #1e3a5f; margin-bottom: 4px;">ליקוטי נ נח נחמ נחמן</h1>
-      <h2 style="color: #555; font-size: 1.1em; margin: 4px 0;">{volumeTitle}</h2>
-      <p style="color: #888; font-size: 0.9em;">{totalSections} sections</p>
+    <div style="text-align: center; margin-bottom: 40px;">
+      <h1 style="font-family: 'Cinzel', serif; color: #1e3a5f; margin-bottom: 8px;">ליקוטי נ נח נחמ נחמן</h1>
+      <p style="color: #888; font-size: 0.9em;">Part {partNum} &middot; {totalSections} sections</p>
     </div>
-
-    {allParts.length > 1 && (
-      <div style="display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-bottom: 24px;">
-        {allParts.map(p => (
-          <a href={`/reader/likutay-nanach/${p.part}`} 
-             style={`padding: 6px 14px; border-radius: 6px; text-decoration: none; font-size: 0.85em; ${p.part === partNum ? 'background: #1e3a5f; color: #fff;' : 'background: #f0ede5; color: #555;'}`}>
-            {p.part}. {p.title || p.name}
-          </a>
-        ))}
-      </div>
-    )}
 
     {indexData && (
       <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px;">

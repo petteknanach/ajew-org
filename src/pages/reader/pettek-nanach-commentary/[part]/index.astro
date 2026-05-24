@@ -85,10 +85,10 @@ const part1Max = allLocalFiles.filter(f => /^torah-\d+\.json$/.test(f)).map(f =>
 const part2Max = allLocalFiles.filter(f => /^tinyana-\d+\.json$/.test(f)).map(f => parseInt(f.match(/^tinyana-(\d+)\.json/)[1])).reduce((a, b) => Math.max(a, b), 0);
 ---
 
-<Layout title={`Pettek Nanach Commentary — ${partTitle}`}>
+<Layout title={`Petek Nanach Commentary — ${partTitle}`}>
   <div style="max-width: 900px; margin: 0 auto; padding: 40px 20px;">
     <div style="text-align: center; margin-bottom: 40px;">
-      <h1 style="font-family: 'Cinzel', serif; font-size: 2em; color: #1e3a5f;">Pettek Nanach Commentary</h1>
+      <h1 style="font-family: 'Cinzel', serif; font-size: 2em; color: #1e3a5f;">Petek Nanach Commentary</h1>
       <p style="font-family: 'Noto Serif Hebrew', serif; font-size: 1.2em; color: #6b5a42; direction: rtl;">פירוש פתק נ נח</p>
       <p style="color: #888; margin-top: 8px;">{partTitle} — {partHebrew}</p>
     </div>
