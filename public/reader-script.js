@@ -2273,6 +2273,16 @@
       });
     }
 
+
+    // === Likutay Nanach Vol 2 — Tehillim chapter-by-chapter (10 chapters) ===
+    if (bookId === 'tanach-tehillim') {
+      var tehillimMap = {12:2, 16:3, 32:4, 41:5, 42:6, 59:7, 77:8, 90:9, 105:10, 137:11};
+      if (tehillimMap[torah]) {
+        sources.push({id:'ln-tehillim',label:'Na Nach',labelHe:'ליקוטי נ נח',
+          url:'/reader/likutay-nanach/volume-2/chapter-'+tehillimMap[torah]+'.json',
+          readerUrl:'/reader/likutay-nanach/2/'+tehillimMap[torah],type:'commentary'});
+      }
+    }
     return sources;
   }
 
