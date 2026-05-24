@@ -2266,6 +2266,40 @@
         readerUrl:'/reader/likutay-nanach/'+ch.v+'/'+ch.c,type:'commentary'}];
     }
 
+    // === Likutay Nanach Vol 1-3 — Chumash/Neviim/Mishna commentary lookup ===
+    var lnVolMap = {"mishna-arachin":{3:[51]},"mishna-avodah-zarah":{3:[41,42,74]},"mishna-avot":{3:[44,45,82]},"mishna-bava-batra":{3:[36]},"mishna-bava-kamma":{3:[34]},"mishna-bava-metzia":{3:[59]},"mishna-brachot":{3:[4,65]},"mishna-chagigah":{3:[26]},"mishna-chullin":{3:[49]},"mishna-demai":{3:[6,11]},"mishna-eduyot":{3:[43]},"mishna-eruvin":{3:[16]},"mishna-gittin":{3:[32,35]},"mishna-keilim":{3:[54]},"mishna-ketubot":{3:[28]},"mishna-kiddushin":{3:[33]},"mishna-makkot":{3:[39]},"mishna-megillah":{3:[24]},"mishna-menachot":{3:[48]},"mishna-middot":{3:[57]},"mishna-mikvaot":{3:[61]},"mishna-moed-katan":{3:[25]},"mishna-nedarim":{3:[29]},"mishna-peah":{3:[5]},"mishna-pesachim":{3:[17,18]},"mishna-rosh-hashanah":{3:[22]},"mishna-sanhedrin":{3:[38]},"mishna-shabbat":{3:[15,19,20,21,27,40,60,62,69,78,81]},"mishna-shekalim":{3:[30]},"mishna-sotah":{3:[31]},"mishna-taanit":{3:[23,58]},"mishna-tamid":{3:[56]},"mishna-temurah":{3:[52]},"mishna-yoma":{3:[77]},"mishna-zevachim":{3:[46]},"talmud-bavli-brachot":{3:[3,37]},"tanach-bamidbar":{1:[38,39,41,42,43,44,46,47]},"tanach-bereishit":{1:[6,7,8,9,10,11,12,13,14,15,16,45]},"tanach-daniel":{2:[31]},"tanach-devarim":{1:[48,49,50,51,53,54,55,56,57,58]},"tanach-divrei-hayamim":{2:[34]},"tanach-eicha":{2:[28]},"tanach-esther":{2:[30]},"tanach-ezra":{2:[32]},"tanach-iyov":{2:[25]},"tanach-kohelet":{2:[29]},"tanach-melachim":{2:[7,26]},"tanach-mishlei":{2:[23]},"tanach-nechemya":{2:[33]},"tanach-rut":{2:[17,19,27]},"tanach-shemos":{1:[17,18,19,20,21,22,23,24,25,26,27]},"tanach-shmuel":{2:[5,6,12]},"tanach-shofetim":{2:[4]},"tanach-tehillim":{2:[24]},"tanach-trei-asar":{2:[11,13]},"tanach-vayikra":{1:[28,29,30,31,32,33,35,36,37]},"tanach-yechezkel":{2:[10]},"tanach-yehoshua":{2:[3]},"tanach-yeshayahu":{2:[8]},"tanach-yirmiyahu":{2:[9]},"zohar-bereishit":{3:[63]}};
+    function getLNVolumeCommentary(bookId) {
+      var volMap = lnVolMap[bookId];
+      if (!volMap) return [];
+      var sources = [];
+      for (var volNum in volMap) {
+        var chapters = volMap[volNum];
+        if (chapters && chapters.length > 0) {
+          sources.push({
+            id: 'ln-vol-' + volNum, label: 'Na Nach', labelHe: 'ליקוטי נ נח',
+            readerUrl: '/reader/likutay-nanach/' + volNum,
+            type: 'reference', isVolumeIndex: true, volumeNum: parseInt(volNum),
+            chapterCount: chapters.length
+          });
+        }
+      }
+
+    // === Likutay Nanach Vol 1-3 — volume-level commentary for all books ===
+    var lnVolSources = getLNVolumeCommentary(bookId);
+    for (var vi = 0; vi < lnVolSources.length; vi++) {
+      var vs = lnVolSources[vi];
+      if (vs.chapterCount > 0) {
+        sources.push({
+          id: vs.id, label: vs.label + " V" + vs.volumeNum,
+          labelHe: vs.labelHe + " כרך " + vs.volumeNum,
+          readerUrl: vs.readerUrl, url: vs.readerUrl + "/index.json",
+          type: vs.type
+        });
+      }
+    }
+      return sources;
+    }
+
 // === Likutay Nanach Vol 2 — Tehillim chapter-by-chapter (10 chapters) ===
     if (bookId === 'tanach-tehillim') {
       var tehillimMap = {12:2, 16:3, 32:4, 41:5, 42:6, 59:7, 77:8, 90:9, 105:10, 137:11};
