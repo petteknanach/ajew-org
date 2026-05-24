@@ -2144,9 +2144,35 @@
           type: 'explanation'
         });
       }
+
+      // Likutay Nanach — commentary on select LM torahs (Hebrew only)
+      // Part 1 torahs with LN: 1-6, 8-11, 16, 35, 37-40, 50
+      var lnPart1 = [1,2,3,4,5,6,8,9,10,11,16,35,37,38,39,40,50];
+      if (part === 1 && lnPart1.indexOf(torah) !== -1) {
+        sources.push({
+          id: 'likutay-nanach',
+          label: 'Na Nach',
+          labelHe: 'ליקוטי נ נח',
+          url: '/reader/likutay-nanach/volume-4/chapter-' + torah + '.json',
+          readerUrl: '/reader/likutay-nanach/4/' + torah,
+          type: 'commentary'
+        });
+      }
+      // Part 2 (Tinyana) torahs with LN: 1-3, 92
+      var lnPart2 = [1,2,3,92];
+      if (part === 2 && lnPart2.indexOf(torah) !== -1) {
+        sources.push({
+          id: 'likutay-nanach',
+          label: 'Na Nach',
+          labelHe: 'ליקוטי נ נח',
+          url: '/reader/likutay-nanach/volume-4/chapter-' + torah + '.json',
+          readerUrl: '/reader/likutay-nanach/4/' + torah,
+          type: 'commentary'
+        });
+      }
     }
 
-    // Sipurey Maasiyos gets Rimzei HaMaasiyos
+    // Sipurey Maasiyos gets Rimzei HaMaasiyos + Likutay Nanach
     if (bookId === 'sipurey-maasiyos' && torah <= 13) {
       sources.push({
         id: 'rimzei',
@@ -2154,6 +2180,71 @@
         labelHe: 'רמזי המעשיות',
         url: '/reader/rimzei-hamaasiyos/story-' + torah + '.json',
         readerUrl: '/reader/rimzei-hamaasiyos/1/' + torah,
+        type: 'commentary'
+      });
+      // LN commentary on story 9
+      if (torah === 9) {
+        sources.push({
+          id: 'likutay-nanach',
+          label: 'Na Nach',
+          labelHe: 'ליקוטי נ נח',
+          url: '/reader/likutay-nanach/volume-4/chapter-25.json',
+          readerUrl: '/reader/likutay-nanach/4/25',
+          type: 'commentary'
+        });
+      }
+    }
+
+    // Sichos HaRan gets Likutay Nanach
+    if (bookId === 'sichos-haran') {
+      var lnSichos = { 3: 29, 8: 27, 10: 28 };
+      if (lnSichos[torah]) {
+        sources.push({
+          id: 'likutay-nanach',
+          label: 'Na Nach',
+          labelHe: 'ליקוטי נ נח',
+          url: '/reader/likutay-nanach/volume-4/chapter-' + lnSichos[torah] + '.json',
+          readerUrl: '/reader/likutay-nanach/4/' + lnSichos[torah],
+          type: 'commentary'
+        });
+      }
+    }
+
+    // Chayey Moharan gets Likutay Nanach
+    if (bookId === 'chayey-moharan') {
+      var lnChayey = { 5: 8, 7: 9, 10: 18, 11: 19, 2: 7 };
+      if (lnChayey[torah]) {
+        sources.push({
+          id: 'likutay-nanach',
+          label: 'Na Nach',
+          labelHe: 'ליקוטי נ נח',
+          url: '/reader/likutay-nanach/volume-4/chapter-' + lnChayey[torah] + '.json',
+          readerUrl: '/reader/likutay-nanach/4/' + lnChayey[torah],
+          type: 'commentary'
+        });
+      }
+    }
+
+    // Shivchey HaRan gets Likutay Nanach
+    if (bookId === 'shivchey-haran' && torah === 50) {
+      sources.push({
+        id: 'likutay-nanach',
+        label: 'Na Nach',
+        labelHe: 'ליקוטי נ נח',
+        url: '/reader/likutay-nanach/volume-4/chapter-34.json',
+        readerUrl: '/reader/likutay-nanach/4/34',
+        type: 'commentary'
+      });
+    }
+
+    // Likutay Halachos gets Likutay Nanach
+    if (bookId === 'likutay-halachos' && torah === 11) {
+      sources.push({
+        id: 'likutay-nanach',
+        label: 'Na Nach',
+        labelHe: 'ליקוטי נ נח',
+        url: '/reader/likutay-nanach/volume-4/chapter-26.json',
+        readerUrl: '/reader/likutay-nanach/4/26',
         type: 'commentary'
       });
     }
