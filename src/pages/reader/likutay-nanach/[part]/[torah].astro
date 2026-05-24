@@ -8,19 +8,19 @@ import path from 'node:path';
 
 export function getStaticPaths() {
   const paths = [];
-  for (let torah = 1; torah <= 24; torah++) {
+  for (let torah = 1; torah <= 59; torah++) {
     paths.push({ params: { part: "1", torah: String(torah) } });
   }
-  for (let torah = 1; torah <= 11; torah++) {
+  for (let torah = 1; torah <= 34; torah++) {
     paths.push({ params: { part: "2", torah: String(torah) } });
   }
-  for (let torah = 1; torah <= 18; torah++) {
+  for (let torah = 1; torah <= 89; torah++) {
     paths.push({ params: { part: "3", torah: String(torah) } });
   }
-  for (let torah = 1; torah <= 40; torah++) {
+  for (let torah = 1; torah <= 282; torah++) {
     paths.push({ params: { part: "4", torah: String(torah) } });
   }
-  for (let torah = 1; torah <= 8; torah++) {
+  for (let torah = 1; torah <= 231; torah++) {
     paths.push({ params: { part: "5", torah: String(torah) } });
   }
   return paths;
