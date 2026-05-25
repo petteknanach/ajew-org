@@ -2310,6 +2310,20 @@
           readerUrl:'/reader/likutay-nanach/2/'+tehillimMap[torah],type:'commentary'});
       }
     }
+
+    // === Likutay Nanach Vol 1-3 — volume-level commentary for all books ===
+    var lnVolSources = getLNVolumeCommentary(bookId);
+    for (var vi = 0; vi < lnVolSources.length; vi++) {
+      var vs = lnVolSources[vi];
+      if (vs.chapterCount > 0) {
+        sources.push({
+          id: vs.id, label: vs.label + " V" + vs.volumeNum,
+          labelHe: vs.labelHe + " \u05db\u05e8\u05da " + vs.volumeNum,
+          readerUrl: vs.readerUrl, url: vs.readerUrl + "/index.json",
+          type: vs.type
+        });
+      }
+    }
     return sources;
   }
 

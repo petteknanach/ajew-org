@@ -97,6 +97,58 @@ if (torahData) {
   });
 }
 
+function layerText(layer, lang) {
+  if (!layer) return '';
+  if (typeof layer === 'string') return layer;
+  if (typeof layer === 'object') return layer[lang] || '';
+  return '';
+}
+
+function extractPncTexts(seg) {
+  const heParts = [];
+  const enParts = [];
+
+  if (seg.he || seg.en) {
+    if (seg.he) heParts.push(seg.he);
+    if (seg.en) enParts.push(seg.en);
+  }
+
+  // Newer PNC files use seg.layers.{beginner,intermediate,scholarly}.
+  // Older files put beginner/intermediate/scholarly directly on the segment.
+  const layers = seg.layers || seg;
+  const b = layers.beginner;
+  const inter = layers.intermediate;
+  const schol = layers.scholarly;
+
+  if (b || inter || schol) {
+    if (typeof b === 'string') {
+      // Older Torah 1-286 flat-string format: beginner=English, intermediate=Hebrew, scholarly=sources/Hebrew.
+      if (b) enParts.push(b);
+      if (typeof inter === 'string' && inter) heParts.push(inter);
+      if (typeof schol === 'string' && schol) heParts.push(schol);
+    } else {
+      const bEn = layerText(b, 'en');
+      const iEn = layerText(inter, 'en');
+      const sEn = layerText(schol, 'en');
+      const bHe = layerText(b, 'he');
+      const iHe = layerText(inter, 'he');
+      const sHe = layerText(schol, 'he');
+
+      if (bEn) enParts.push(`Beginner:\n${bEn}`);
+      if (iEn) enParts.push(`Intermediate:\n${iEn}`);
+      if (sEn) enParts.push(`Scholarly:\n${sEn}`);
+      if (bHe) heParts.push(`מתחיל:\n${bHe}`);
+      if (iHe) heParts.push(`ביניים:\n${iHe}`);
+      if (sHe) heParts.push(`עיוני:\n${sHe}`);
+    }
+  }
+
+  return {
+    heText: heParts.filter(Boolean).join('\n\n'),
+    enText: enParts.filter(Boolean).join('\n\n'),
+  };
+}
+
 const bookName = 'Pettek Nanach Commentary';
 const bookHebrew = 'פירוש פתק נ נח';
 const itemName = isIntroPage ? 'Section' : 'Torah';
@@ -134,14 +186,14 @@ const structuredData = torahData ? JSON.stringify({
     <div
       class="reader-container"
       data-torah-id={torahData.id}
-      data-torah-title={`${torahData.title} - Petek Nanach Commentary`}
+      data-torah-title={`${torahData.title} - Pettek Nanach Commentary`}
     >
       <div class="reader-progress"></div>
 
       <div class="reader-breadcrumb">
         <a href="/reader">Reader</a>
         <span>&rsaquo;</span>
-        <a href="/reader">Petek Nanach Commentary</a>
+        <a href="/reader">Pettek Nanach Commentary</a>
         <span>&rsaquo;</span>
         {torahData.hebrewTitle || torahData.title}
       </div>
@@ -195,7 +247,7 @@ const structuredData = torahData ? JSON.stringify({
         {torahData.hebrewTitle && <div class="hebrew-title">{torahData.hebrewTitle}</div>}
         <h1>{torahData.title}</h1>
         <p style="color: var(--reader-text-secondary); font-size: 0.9em; font-family: 'Open Sans', sans-serif;">
-          Petek Nanach Running Commentary on Likutey Moharan
+          Pettek Nanach Running Commentary on Likutey Moharan
         </p>
       </div>
 
@@ -214,40 +266,17 @@ const structuredData = torahData ? JSON.stringify({
         <div class="reader-content-original">
 {torahData.segments.map((seg, i) => {
             const idx = seg.index || (i + 1);
-            
-            let heText = '';
-            let enText = '';
-            
-            if (seg.he) {
-              // Format 1: Flat seg.he / seg.en
-              heText = seg.he;
-              enText = seg.en || '';
-            } else if (seg.beginner || seg.intermediate) {
-              // PNC layered format - could be strings or objects
-              const b = seg.beginner;
-              const inter = seg.intermediate;
-              const s = seg.scholarly || {};
-              
-              if (typeof b === 'string') {
-                // Torah 1-286 format: beginner=EN string, intermediate=HE string
-                enText = b;
-                heText = typeof inter === 'string' ? inter : '';
-              } else if (b && typeof b === 'object') {
-                // Tinyana format: beginner.en, intermediate.en, scholarly.he
-                enText = b.en || inter?.en || '';
-                heText = s.he || inter?.he || '';
-              }
-            }
+            const { heText, enText } = extractPncTexts(seg);
             
             return (
           <div class="reader-segment-pair" id={`seg-${idx}`}>
             <div class="reader-segment segment-he" data-index={String(idx)}>
               <span class="segment-number">{idx}</span>
-              <p data-nikud={heText}>{heText}</p>
+              <p data-nikud={heText} style="white-space: pre-wrap;">{heText}</p>
             </div>
             <div class={`reader-segment segment-en ${!enText ? 'empty-translation' : ''}`} data-index={String(idx)}>
               <span class="segment-number">{idx}</span>
-              <p>{enText || 'Translation not yet available'}</p>
+              <p style="white-space: pre-wrap;">{enText || 'Translation not yet available'}</p>
             </div>
           </div>
             );
