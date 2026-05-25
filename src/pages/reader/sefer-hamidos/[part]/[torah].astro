@@ -54,15 +54,16 @@ const structuredData = torahData ? JSON.stringify({
   "url": `https://ajew.org/reader/sefer-hamidos/${partNum}/${torahNum}`
 }) : '';
 
-// LN commentary entry — same chapter for all 108 topics
+// LN commentary entry — per-topic excerpt from Likutay Nanach
+const lnUrl = `/reader/likutay-nanach/volume-4/chapter-251-topic-${torahNum}.json`;
 const commentaryEntry = torahData ? {
   related_commentaries: [
     {
       book: "likutay-nanach",
-      section: "chapter-251",
+      section: `chapter-251-topic-${torahNum}`,
       label: "Likutay Nanach",
       sectionTitle: "ספר המדות",
-      url: "/reader/likutay-nanach/volume-4/chapter-251.json"
+      url: lnUrl
     }
   ]
 } : null;
