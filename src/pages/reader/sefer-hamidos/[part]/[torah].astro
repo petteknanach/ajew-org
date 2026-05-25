@@ -1,6 +1,7 @@
 ---
 import Layout from '../../../../layouts/Layout.astro';
 import Comments from '../../../../components/Comments.astro';
+import CommentarySidebar from '../../../../components/CommentarySidebar.astro';
 import '../../../../styles/reader.css';
 import '../../../../styles/reader-v2.css';
 import fs from 'node:fs';
@@ -52,6 +53,19 @@ const structuredData = torahData ? JSON.stringify({
   "isPartOf": { "@type": "Book", "name": "Sefer Hamidos" },
   "url": `https://ajew.org/reader/sefer-hamidos/${partNum}/${torahNum}`
 }) : '';
+
+// LN commentary entry — same chapter for all 108 topics
+const commentaryEntry = torahData ? {
+  related_commentaries: [
+    {
+      book: "likutay-nanach",
+      section: "chapter-251",
+      label: "Likutay Nanach",
+      sectionTitle: "ספר המדות",
+      url: "/reader/likutay-nanach/volume-4/chapter-251"
+    }
+  ]
+} : null;
 const breadcrumbData = torahData ? JSON.stringify({
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
@@ -280,6 +294,9 @@ const breadcrumbData = torahData ? JSON.stringify({
       </div>
       {torahData && (
         <Comments teachingId={`sefer-hamidos-${part}-${torah}`} teachingTitle={`sefer-hamidos ${part}:${torah}${torahData?.title ? ' — ' + torahData.title : ''}`} />
+      )}
+      {torahData && commentaryEntry && (
+        <CommentarySidebar part={partNum} torah={torahNum} entry={commentaryEntry} />
       )}
 
 
