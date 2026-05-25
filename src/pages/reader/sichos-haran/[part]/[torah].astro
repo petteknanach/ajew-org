@@ -1,6 +1,7 @@
 ---
 import Layout from '../../../../layouts/Layout.astro';
 import Comments from '../../../../components/Comments.astro';
+import CommentarySidebar from '../../../../components/CommentarySidebar.astro';
 import '../../../../styles/reader.css';
 import '../../../../styles/reader-v2.css';
 import fs from 'node:fs';
@@ -49,6 +50,19 @@ const bookName = 'Sichos HaRan';
 const bookHebrew = 'שיחות הר"ן';
 const itemName = 'Sicha';
 
+
+// LN commentary entry
+const commentaryEntry = torahData ? {
+  related_commentaries: [
+    {
+      book: "likutay-nanach",
+      section: "chapter-272",
+      label: "Likutay Nanach",
+      sectionTitle: "שיחות הר"ן",
+      url: "/reader/likutay-nanach/volume-4/chapter-272.json"
+    }
+  ]
+} : null;
 const pageTitle = torahData
   ? `${torahData.hebrewTitle || torahData.title} - Sichos HaRan`
   : 'Sicha Not Found';
@@ -329,6 +343,9 @@ const structuredData = torahData ? JSON.stringify({
       </div>
       {torahData && (
         <Comments teachingId={`sichos-haran-${part}-${torah}`} teachingTitle={`sichos-haran ${part}:${torah}${torahData?.title ? ' — ' + torahData.title : ''}`} />
+      )}
+      {torahData && commentaryEntry && (
+        <CommentarySidebar part={partNum} torah={torahNum} entry={commentaryEntry} />
       )}
 
 
