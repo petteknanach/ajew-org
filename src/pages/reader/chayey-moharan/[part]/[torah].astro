@@ -162,6 +162,58 @@ const structuredData = torahData ? JSON.stringify({
 </div>
 <script src="/unified-audio.js" defer></script>
 
+<!-- Unified Audio Player -->
+<div id="audio-controls" style="margin:0 auto 12px auto; max-width:700px; font-family:'Open Sans',sans-serif;">
+  <div style="display:flex; gap:0; border-radius:8px; overflow:hidden; border:1px solid var(--reader-border,#ddd);">
+    <button id="audio-btn-he" onclick="toggleAudio('he')" 
+      style="flex:1; padding:8px 12px; border:none; cursor:pointer; font-size:0.85em; font-weight:600;
+      background:var(--reader-bg-secondary,#f8f5f0); color:var(--reader-text,#333);">
+      🎧 Hebrew
+    </button>
+    <button id="audio-btn-en" onclick="toggleAudio('en')" 
+      style="flex:1; padding:8px 12px; border:none; cursor:pointer; font-size:0.85em; font-weight:600;
+      background:var(--reader-bg-secondary,#f8f5f0); color:var(--reader-text,#333); border-left:1px solid var(--reader-border,#ddd);">
+      🔊 English
+    </button>
+  </div>
+  
+  <!-- Hidden data element for book/part/torah -->
+  <div id="en-tts-player" data-book="chayey-moharan" data-part={partNum} data-torah={torahNum} style="display:none;"></div>
+  
+  <div id="audio-panel-he" style="display:none; background:var(--reader-bg-secondary,#f8f5f0); 
+    border:1px solid var(--reader-border,#ddd); border-top:none; border-radius:0 0 8px 8px; padding:12px 16px;">
+    <audio id="kol-hatzadik-audio" controls preload="none" style="width:100%; border-radius:4px;"></audio>
+    <div id="kol-hatzadik-note" style="font-size:0.8em; color:var(--reader-text-secondary,#888); margin-top:4px;"></div>
+  </div>
+  
+  <div id="audio-panel-en" style="display:none; background:#1a3a1a; 
+    border:1px solid #2d5a2d; border-top:none; border-radius:0 0 8px 8px; padding:12px 16px;">
+    <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+      <span style="font-size:1em;">🔊</span>
+      <strong style="color:#7fff7f; font-size:0.85em;">English Audio</strong>
+      <div style="margin-left:auto; display:flex; gap:4px;">
+        <button id="en-btn-ryan" onclick="enSetVoice('ryan')" 
+          style="background:#7fff7f20; border:2px solid #7fff7f; color:#fff; border-radius:4px; 
+          padding:2px 8px; cursor:pointer; font-size:0.8em;">🇬🇧</button>
+        <button id="en-btn-guy" onclick="enSetVoice('guy')" 
+          style="background:#7fff7f10; border:1px solid #7fff7f40; color:#fff; border-radius:4px; 
+          padding:2px 8px; cursor:pointer; font-size:0.8em;">🇺🇸</button>
+        <button id="en-btn-connor" onclick="enSetVoice('connor')" 
+          style="background:#7fff7f10; border:1px solid #7fff7f40; color:#fff; border-radius:4px; 
+          padding:2px 8px; cursor:pointer; font-size:0.8em;">🇮🇪</button>
+      </div>
+    </div>
+    <button id="en-btn-play" onclick="enTogglePlay()" 
+      style="background:#2d8a2d; color:#fff; border:none; border-radius:4px; padding:6px 16px; 
+      cursor:pointer; font-size:0.9em; font-weight:bold; width:100%;">▶ Play English</button>
+    <div id="en-progress" style="margin-top:4px; height:3px; background:#2d5a2d; border-radius:2px; 
+      overflow:hidden; display:none;">
+      <div id="en-progress-bar" style="height:100%; width:0%; background:#7fff7f;"></div>
+    </div>
+  </div>
+</div>
+<script src="/unified-audio.js" defer></script>
+
       <div class="reader-toolbar">
         <div class="reader-toolbar-group">
           <button class="reader-btn" data-mode="hebrew">Hebrew</button>

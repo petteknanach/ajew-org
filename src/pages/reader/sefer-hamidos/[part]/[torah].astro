@@ -216,7 +216,7 @@ const breadcrumbData = torahData ? JSON.stringify({
       <div class="reader-content mode-hebrew">
         <div class="reader-content-original">
 {torahData.segments.map((seg) => (
-          <div class="reader-segment-pair" id={`seg-${seg.index}`}>
+          <div class="reader-segment-pair" id={`seg-${seg.index}`} data-share-id={seg.id || ''}>
             <div class="reader-segment segment-he" data-index={String(seg.index)}>
               <span class="segment-number">{seg.index}</span>
               <p data-nikud={seg.he_nikud || seg.he}>{seg.he}</p>

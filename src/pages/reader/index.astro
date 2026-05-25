@@ -28,7 +28,6 @@ function loadBookIndexes(book) {
 const categories = [
   { title: 'Rabbi Nachman of Breslov / רבי נחמן מברסלב', ids: ['likutay-moharan', 'kitzur-likutay-moharan', 'sefer-hamidos', 'sipurey-maasiyos', 'sipurey-maasiyos-english', 'sichos-haran', 'shivchay-haran', 'chayey-moharan', 'praises-of-rabbi-nachman', 'pettek-nanach-commentary', 'likutay-nanach'] },
   { title: 'Rabbi Nosson of Breslov / רבי נתן מברסלב', ids: ['likutay-halachos', 'likutay-tefilos', 'likutay-eitzos', 'alim-litrufa', 'yemei-moharnat', 'shemos-hatzadikim', 'yemei-hatlaos'] },
-  { title: 'Rabbi Yisroel Dov Odesser (Saba) / רבי ישראל דב אודסר זצ"ל', ids: ['ebay-hanachal', 'yisroel-saba', 'fires-of-israel', 'sichos-chayay-saba', 'saba-tape-transcripts', 'misc-אגרת-הפורים'] },
   { title: 'Rabbi Nosson bar Yehuda / רבי נתן בר יהודה', ids: ['nosson-by-מכתבי-ר--נתן-ב--ר-יה', 'nosson-by-קונטרס-הצירופים-עם-ה', 'nosson-by-קונטרס-הצרופים'] },
   { title: 'Chumash with Likutey Halachos / חומש עם ליקוטי הלכות', ids: ['chumash-lh'] },
   { title: 'Rabbi Alter of Teplik / רבי אלתר טפליקער', ids: ['hashtatfchus-hanefesh', 'meshivas-nefesh'] },
@@ -36,6 +35,8 @@ const categories = [
   { title: "Rabbi Avraham bar Nachman / רבי אברהם בר' נחמן", ids: ['biur-halikutim', 'chochma-utvuna', 'kokhvei-or'] },
   { title: "R' Shimshon Barsky / ר' שמשון בארסקי", ids: ['shimshon-גבורות-שמשון', 'shimshon-עצות-המבוארות', 'gevuros-shimshon', 'aitzoas-hamivooaroas'] },
   { title: 'Siach Sarfei Kodesh / שיח שרפי קודש', ids: ['siach-sarfei-kodesh'] },
+  { title: 'Rabbi Yisroel Dov Odesser (Saba) / רבי ישראל דב אודסר זצ"ל', ids: ['ebay-hanachal', 'yisroel-saba', 'fires-of-israel', 'sichos-chayay-saba', 'saba-tape-transcripts', 'likutay-nanach', 'misc-אגרת-הפורים'] },
+  { title: 'Likutay Nanach / ליקוטי נ נח', ids: ['likutay-nanach'] },
   { title: "R' Yitzchak Breiter / ר' יצחק ברייטער", ids: ['breiter-seder-hayom', 'seven-pillars', 'hisbodidus-alone-time', 'misc-שיר-ידידות-מר-יחיאל-מענדל'] },
   { title: "R' Yisroel Karduner / ר' ישראל קרדונר", ids: ['kuntrass-hiskashrus'] },
   { title: 'Michtevay Shmuel / מכתבי שמואל', ids: ['michtevay-shmuel'] },
@@ -740,8 +741,91 @@ const lmVol1Groups = (() => {
     </script>
 
     <!-- All Books by Category -->
+
+    <!-- Likutay Moharan - in its own collapsible section -->
+    <details class="category-section" id="likutay-moharan">
+      <summary class="category-title">Likutay Moharan / ליקוטי מוהר"ן <span class="cat-count">({(catalog1?.totalTorahs || 0) + (catalog2?.totalTorahs || 0)} torahs)</span></summary>
+
+      <div class="volume-section" style="margin-bottom: 20px;">
+        <h3 class="volume-title" style="font-size: 1.2em;">Volume 1 (Kama) — מהדורא קמא</h3>
+        {catalog1 && <p class="volume-count">{catalog1.totalTorahs} Torahs</p>}
+        <div style="margin-bottom: 8px;">
+          <ul class="torah-list">
+            <li><a href="/reader/likutay-moharan/1/haskamos" class="lm-gold-box"><span class="lm-gold-en">Approbations</span><span class="lm-gold-he" lang="he" dir="rtl">הסכמות</span></a></li>
+            <li><a href="/reader/likutay-moharan/1/intro" class="lm-gold-box"><span class="lm-gold-en">Rabbi Nachman's Poem</span><span class="lm-gold-he" lang="he" dir="rtl">שיר נעים</span></a></li>
+            <li><a href="/reader/likutay-moharan/1/intro-shimon" class="lm-gold-box"><span class="lm-gold-en">Greatness of R' Shimon</span><span class="lm-gold-he" lang="he" dir="rtl">ר׳ שמעון</span></a></li>
+            <li><a href="/reader/likutay-moharan/1/hakdama" class="lm-gold-box"><span class="lm-gold-en">Hakdama (Hebrew)</span><span class="lm-gold-he" lang="he" dir="rtl">הקדמה</span></a></li>
+            <li><a href="/reader/likutay-moharan/1/intro-lm" class="lm-gold-box"><span class="lm-gold-en">Introduction to Likutay Moharan</span><span class="lm-gold-he" lang="he" dir="rtl">מבוא לליקוטי מוהר״ן</span></a></li>
+            <li><a href="/reader/likutay-moharan/1/intro-manuscripts" class="lm-gold-box"><span class="lm-gold-en">Intro to Manuscripts</span><span class="lm-gold-he" lang="he" dir="rtl">מבוא לכתבי היד</span></a></li>
+          </ul>
+        </div>
+        {catalog1 ? (
+          <div>
+            {lmVol1Groups.map((g) => (
+              <div class="lm-section-group">
+                <h4 class="lm-section-header">
+                  <span class="lm-section-en">{g.english}</span>
+                  <span class="lm-section-he" lang="he" dir="rtl">{g.hebrew}</span>
+                  <span class="lm-section-range">({g.rangeLabel})</span>
+                </h4>
+                {g.prefaceSlug && (
+                  <ul class="torah-list" style="margin-bottom: 8px;">
+                    <li>
+                      <a href={`/reader/likutay-moharan/1/${g.prefaceSlug}`} class="lm-gold-box">
+                        <span class="lm-gold-en">📖 Preface</span>
+                        <span class="lm-gold-he" lang="he" dir="rtl">פתיחה</span>
+                      </a>
+                    </li>
+                  </ul>
+                )}
+                <ul class="torah-list">
+                  {g.sectionTorahs.map((t) => (
+                    <li>
+                      <a href={t.url}>
+                        <span class="torah-num">{t.displayNumber || t.number}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p>Loading...</p>
+        )}
+      </div>
+
+      <div class="volume-section">
+        <h3 class="volume-title" style="font-size: 1.2em;">Volume 2 (Tinyana) — מהדורא בתרא (תנינא)</h3>
+        {catalog2 && <p class="volume-count">{catalog2.totalTorahs} Torahs</p>}
+        {catalog2 ? (
+          <Fragment>
+            <div style="margin-bottom: 8px;">
+              <ul class="torah-list">
+                <li><a href="/reader/likutay-moharan/2/intro-volume-2" class="lm-gold-box"><span class="lm-gold-en">Introduction</span><span class="lm-gold-he" lang="he" dir="rtl">הקדמה</span></a></li>
+                <li><a href="/reader/likutay-moharan/2/omission" class="lm-gold-box"><span class="lm-gold-en">Omission — There Was One Abraham</span><span class="lm-gold-he" lang="he" dir="rtl">השמטה — אחד היה אברהם</span></a></li>
+              </ul>
+            </div>
+            <ul class="torah-list">
+              {catalog2.torahs.map(t => (
+                <li>
+                  <a href={t.url}>
+                    <span class="torah-num">{t.displayNumber || t.number}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </Fragment>
+        ) : (
+          <p>Loading...</p>
+        )}
+      </div>
+    </details>
+
+    <!-- All Other Books by Category -->
     {categories.map(cat => {
       const catBooks = cat.ids
+        .filter(id => id !== 'likutay-moharan') // LM has its own section above
         .map(id => masterCatalog.books.find(b => b.id === id)).filter(Boolean).filter(b => b.parts.some(p => p.totalTorahs > 0));
       if (catBooks.length === 0) return null;
       const totalCatPages = catBooks.reduce((s, b) => s + b.parts.reduce((s2, p) => s2 + p.totalTorahs, 0), 0);
@@ -749,131 +833,71 @@ const lmVol1Groups = (() => {
         <details class="category-section">
           <summary class="category-title">{cat.title} <span class="cat-count">({catBooks.length} books, {totalCatPages} pages)</span></summary>
           {catBooks.map(book => {
+            const indexes = loadBookIndexes(book);
             const totalPages = book.parts.reduce((s, p) => s + p.totalTorahs, 0);
-            // Likutay Moharan gets special rendering
-            if (book.id === 'likutay-moharan') {
-              return (
-                <div class="volume-section" id={book.id} style="margin-bottom: 30px;">
-                  <details class="book-dropdown" open>
+            return (
+              <div class="volume-section" id={book.id} style="margin-bottom: 30px;">
+                {totalPages > 40 ? (
+                  <details class="book-dropdown">
                     <summary class="volume-title" style="font-size: 1.2em; cursor: pointer;">
                       {book.title} <span class="volume-hebrew" lang="he" dir="rtl" style="display: inline; margin-left: 8px;">{book.hebrewTitle}</span>
                       <span class="volume-count" style="display: inline; margin-left: 8px; font-size: 0.8em;">({totalPages})</span>
                     </summary>
-                    <div class="volume-section" style="margin-bottom: 20px;">
-                      <h3 class="volume-title" style="font-size: 1.2em;">Volume 1 (Kama) — מהדורא קמא</h3>
-                      {catalog1 && <p class="volume-count">{catalog1.totalTorahs} Torahs</p>}
-                      <div style="margin-bottom: 8px;">
+                    {book.id === 'likutay-tefilos' && (
+                      <div style="margin: 12px 0; padding: 12px 16px; background: linear-gradient(135deg, #1e3a5f 0%, #2e5580 100%); border-radius: 8px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                        <div>
+                          <span style="color: #c8bfa0; font-size: 0.85em; font-family: 'Cinzel', serif; letter-spacing: 1px;">SPECIAL PRAYERS</span>
+                          <p style="color: #e8dfc0; font-size: 0.8em; margin: 4px 0 0;">Find prayers for every need & occasion — by topic</p>
+                        </div>
+                        <a href="/reader/likutay-tefilos/special" style="background: #c8a050; color: #1c1c2e; padding: 8px 20px; border-radius: 4px; text-decoration: none; font-weight: 600; font-size: 0.9em; white-space: nowrap; font-family: 'Cinzel', serif; letter-spacing: 1px;">Browse by Topic →</a>
+                      </div>
+                    )}
+                    {bookDescriptions[book.id] && <p class="book-desc">{bookDescriptions[book.id]}</p>}
+                    {indexes.map(partData => (
+                      <div style={book.parts.length > 1 ? "margin-bottom: 12px;" : ""}>
+                        {book.parts.length > 1 && (
+                          <h4 style="font-size: 0.9em; color: #6b5a42; margin: 8px 0 4px; font-style: italic;">
+                            {partData.title || partData.hebrewTitle} ({partData.totalTorahs})
+                          </h4>
+                        )}
                         <ul class="torah-list">
-                          <li><a href="/reader/likutay-moharan/1/haskamos" class="lm-gold-box"><span class="lm-gold-en">Approbations</span><span class="lm-gold-he" lang="he" dir="rtl">הסכמות</span></a></li>
-                          <li><a href="/reader/likutay-moharan/1/intro" class="lm-gold-box"><span class="lm-gold-en">Rabbi Nachman's Poem</span><span class="lm-gold-he" lang="he" dir="rtl">שיר נעים</span></a></li>
-                          <li><a href="/reader/likutay-moharan/1/intro-shimon" class="lm-gold-box"><span class="lm-gold-en">Greatness of R' Shimon</span><span class="lm-gold-he" lang="he" dir="rtl">ר׳ שמעון</span></a></li>
-                          <li><a href="/reader/likutay-moharan/1/hakdama" class="lm-gold-box"><span class="lm-gold-en">Hakdama (Hebrew)</span><span class="lm-gold-he" lang="he" dir="rtl">הקדמה</span></a></li>
-                          <li><a href="/reader/likutay-moharan/1/intro-lm" class="lm-gold-box"><span class="lm-gold-en">Introduction to Likutay Moharan</span><span class="lm-gold-he" lang="he" dir="rtl">מבוא לליקוטי מוהר״ן</span></a></li>
-                          <li><a href="/reader/likutay-moharan/1/intro-manuscripts" class="lm-gold-box"><span class="lm-gold-en">Intro to Manuscripts</span><span class="lm-gold-he" lang="he" dir="rtl">מבוא לכתבי היד</span></a></li>
+                          {(partData.index.torahs || partData.index.items || []).map(t => (
+                            <li>
+                              <a href={t.url || `/reader/${book.id}/${partData.part}/${t.number}`}>
+                                <span class="torah-num">{t.title || `[${t.number}]`}{t.hebrewTitle ? <span class="torah-he" lang="he" dir="rtl"> — {t.hebrewTitle}</span> : ''}</span>
+                              </a>
+                            </li>
+                          ))}
                         </ul>
                       </div>
-                      {catalog1 ? (
-                        <div>
-                          {lmVol1Groups.map((g) => (
-                            <div class="lm-section-group">
-                              <h4 class="lm-section-header">
-                                <span class="lm-section-en">{g.english}</span>
-                                <span class="lm-section-he" lang="he" dir="rtl">{g.hebrew}</span>
-                                <span class="lm-section-range">({g.rangeLabel})</span>
-                              </h4>
-                              {g.prefaceSlug && (
-                                <ul class="torah-list" style="margin-bottom: 8px;">
-                                  <li>
-                                    <a href={`/reader/likutay-moharan/1/${g.prefaceSlug}`} class="lm-gold-box">
-                                      <span class="lm-gold-en">📖 Preface</span>
-                                      <span class="lm-gold-he" lang="he" dir="rtl">פתיחה</span>
-                                    </a>
-                                  </li>
-                                </ul>
-                              )}
-                              <ul class="torah-list">
-                                {g.sectionTorahs.map((t) => (
-                                  <li>
-                                    <a href={t.url}>
-                                      <span class="torah-num">{t.displayNumber || t.number}</span>
-                                    </a>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <p>Loading...</p>
-                      )}
-                    </div>
-                    <div class="volume-section">
-                      <h3 class="volume-title" style="font-size: 1.2em;">Volume 2 (Tinyana) — מהדורא בתרא (תנינא)</h3>
-                      {catalog2 && <p class="volume-count">{catalog2.totalTorahs} Torahs</p>}
-                      {catalog2 ? (
-                        <Fragment>
-                          <div style="margin-bottom: 8px;">
-                            <ul class="torah-list">
-                              <li><a href="/reader/likutay-moharan/2/intro-volume-2" class="lm-gold-box"><span class="lm-gold-en">Introduction</span><span class="lm-gold-he" lang="he" dir="rtl">הקדמה</span></a></li>
-                              <li><a href="/reader/likutay-moharan/2/omission" class="lm-gold-box"><span class="lm-gold-en">Omission — There Was One Abraham</span><span class="lm-gold-he" lang="he" dir="rtl">השמטה — אחד היה אברהם</span></a></li>
-                            </ul>
-                          </div>
-                          <ul class="torah-list">
-                            {catalog2.torahs.map(t => (
-                              <li>
-                                <a href={t.url}>
-                                  <span class="torah-num">{t.displayNumber || t.number}</span>
-                                </a>
-                              </li>
-                            ))}
-                          </ul>
-                        </Fragment>
-                      ) : (
-                        <p>Loading...</p>
-                      )}
-                    </div>
+                    ))}
                   </details>
-                </div>
-              );
-            }
-            // Generic book rendering
-            const indexes = loadBookIndexes(book);
-            return (
-              <div class="volume-section" id={book.id} style="margin-bottom: 30px;">
-                <details class="book-dropdown">
-                  <summary class="volume-title" style="font-size: 1.2em; cursor: pointer;">
-                    {book.title} <span class="volume-hebrew" lang="he" dir="rtl" style="display: inline; margin-left: 8px;">{book.hebrewTitle}</span>
-                    <span class="volume-count" style="display: inline; margin-left: 8px; font-size: 0.8em;">({totalPages})</span>
-                  </summary>
-                  {book.id === 'likutay-tefilos' && (
-                    <div style="margin: 12px 0; padding: 12px 16px; background: linear-gradient(135deg, #1e3a5f 0%, #2e5580 100%); border-radius: 8px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
-                      <div>
-                        <span style="color: #c8bfa0; font-size: 0.85em; font-family: 'Cinzel', serif; letter-spacing: 1px;">SPECIAL PRAYERS</span>
-                        <p style="color: #e8dfc0; font-size: 0.8em; margin: 4px 0 0;">Find prayers for every need & occasion — by topic</p>
+                ) : (
+                  <Fragment>
+                    <h3 class="volume-title" style="font-size: 1.2em;">{book.title}</h3>
+                    <div class="volume-hebrew" lang="he" dir="rtl">{book.hebrewTitle}</div>
+                    <p class="volume-count">{totalPages} sections{book.parts.length > 1 ? ` (${book.parts.length} parts)` : ''}</p>
+                    {bookDescriptions[book.id] && <p class="book-desc">{bookDescriptions[book.id]}</p>}
+                    {indexes.map(partData => (
+                      <div style={book.parts.length > 1 ? "margin-bottom: 12px;" : ""}>
+                        {book.parts.length > 1 && (
+                          <h4 style="font-size: 0.9em; color: #6b5a42; margin: 8px 0 4px; font-style: italic;">
+                            {partData.title || partData.hebrewTitle} ({partData.totalTorahs})
+                          </h4>
+                        )}
+                        <ul class="torah-list">
+                          {(partData.index.torahs || partData.index.items || []).map(t => (
+                            <li>
+                              <a href={t.url || `/reader/${book.id}/${partData.part}/${t.number}`}>
+                                <span class="torah-num">{t.title || `[${t.number}]`}{t.hebrewTitle ? <span class="torah-he" lang="he" dir="rtl"> — {t.hebrewTitle}</span> : ''}</span>
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
                       </div>
-                      <a href="/reader/likutay-tefilos/special" style="background: #c8a050; color: #1c1c2e; padding: 8px 20px; border-radius: 4px; text-decoration: none; font-weight: 600; font-size: 0.9em; white-space: nowrap; font-family: 'Cinzel', serif; letter-spacing: 1px;">Browse by Topic →</a>
-                    </div>
-                  )}
-                  {bookDescriptions[book.id] && <p class="book-desc">{bookDescriptions[book.id]}</p>}
-                  {indexes.map(partData => (
-                    <div style={book.parts.length > 1 ? "margin-bottom: 12px;" : ""}>
-                      {book.parts.length > 1 && (
-                        <h4 style="font-size: 0.9em; color: #6b5a42; margin: 8px 0 4px; font-style: italic;">
-                          {partData.title || partData.hebrewTitle} ({partData.totalTorahs})
-                        </h4>
-                      )}
-                      <ul class="torah-list">
-                        {(partData.index.torahs || partData.index.items || []).map(t => (
-                          <li>
-                            <a href={t.url || `/reader/${book.id}/${partData.part}/${t.number}`}>
-                              <span class="torah-num">{t.displayNumber || t.number}{t.hebrewTitle ? <span class="torah-he" lang="he" dir="rtl"> — {t.hebrewTitle}</span> : ''}</span>
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
-                </details>
+                    ))}
+                  </Fragment>
+                )}
               </div>
             );
           })}
