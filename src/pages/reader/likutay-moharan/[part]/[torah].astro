@@ -103,15 +103,13 @@ const breadcrumbData = torahData ? JSON.stringify({
   ]
 }) : '';
 
-// Look up commentary registry entry for this torah (only for numeric torahs)
+// Look up commentary registry entry for this torah (numeric + intro pages)
 let commentaryEntry: any = null;
-if (!isIntroPage && !isNaN(partNum) && !isNaN(torahNum)) {
-  const partKey = String(partNum);
-  const torahKey = String(torahNum);
-  const registry: any = commentaryRegistry as any;
-  if (registry && registry[partKey] && registry[partKey][torahKey]) {
-    commentaryEntry = registry[partKey][torahKey];
-  }
+const partKey = String(partNum);
+const torahKey = isIntroPage ? torah : String(torahNum);
+const registry: any = commentaryRegistry as any;
+if (registry && registry[partKey] && registry[partKey][torahKey]) {
+  commentaryEntry = registry[partKey][torahKey];
 }
 
 const pageTitle = torahData
