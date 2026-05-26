@@ -1,6 +1,7 @@
 ---
 import Layout from '../../../../layouts/Layout.astro';
 import Comments from '../../../../components/Comments.astro';
+import CommentarySidebar from '../../../../components/CommentarySidebar.astro';
 import '../../../../styles/reader.css';
 import '../../../../styles/reader-v2.css';
 import fs from 'node:fs';
@@ -55,6 +56,20 @@ const structuredData = torahData ? JSON.stringify({
   "isPartOf": { "@type": "Book", "name": "Tanach - Song of Songs" },
   "url": `https://ajew.org/reader/tanach-shir-hashirim/${partNum}/${torahNum}`
 }) : '';
+
+// LN verse-by-verse commentary
+const lnBookSlug = 'tanach-shir-hashirim';
+const commentaryEntry = torahData ? {
+  related_commentaries: [
+    {
+      book: "likutay-nanach",
+      section: lnBookSlug,
+      label: "Likutay Nanach",
+      sectionTitle: "Verse-by-Verse",
+      url: `/reader/likutay-nanach/tanach/${lnBookSlug}.json`
+    }
+  ]
+} : null;
 const breadcrumbData = torahData ? JSON.stringify({
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
@@ -206,6 +221,9 @@ const breadcrumbData = torahData ? JSON.stringify({
       </div>
       {torahData && (
         <Comments teachingId={`tanach-shir-hashirim-${part}-${torah}`} teachingTitle={`tanach-shir-hashirim ${part}:${torah}${torahData?.title ? ' — ' + torahData.title : ''}`} />
+      )}
+      {torahData && commentaryEntry && (
+        <CommentarySidebar part={partNum} torah={torahNum} entry={commentaryEntry} />
       )}
 
 
