@@ -95,18 +95,26 @@ import Layout from '../layouts/Layout.astro';
 
     const searchTerms = extractSearchTerms(question);
     
-    // Client-side search using light index
+    // Client-side search using light index (cached in memory)
+    if (!window._askSearchIndex) {
+      try {
+        const idxRes = await fetch('/data/light-search-index.json.gz');
+        const ds = new DecompressionStream('gzip');
+        const stream = idxRes.body.pipeThrough(ds);
+        window._askSearchIndex = await new Response(stream).json();
+      } catch(e) {
+        console.error('Index load failed:', e);
+        window._askSearchIndex = [];
+      }
+    }
+    const searchIndex = window._askSearchIndex;
+    
     try {
-      const idxRes = await fetch('/data/light-search-index.json.gz');
-      const ds = new DecompressionStream('gzip');
-      const stream = idxRes.body.pipeThrough(ds);
-      const searchIndex = await new Response(stream).json();
-      
       const q = searchTerms.toLowerCase().trim();
       const words = q.split(/\s+/).filter(w => w.length > 0);
       let resultsData = [];
       for (const doc of searchIndex) {
-        const searchText = ((doc.t || '') + ' ' + (doc.ht || '') + ' ' + (doc.s || '') + ' ' + (doc.tx || '')).toLowerCase();
+        const searchText = ((doc.t || '') + ' ' + (doc.h || '') + ' ' + (doc.s || '') + ' ' + (doc.x || '')).toLowerCase();
         let matches = 0;
         for (const word of words) {
           if (searchText.includes(word)) matches++;
@@ -114,8 +122,8 @@ import Layout from '../layouts/Layout.astro';
         if (matches >= 1) {
           resultsData.push({
             title: doc.t || 'Untitled',
-            hebrewTitle: doc.ht || '',
-            snippet: (doc.s || doc.tx || '').substring(0, 300),
+            hebrewTitle: doc.h || '',
+            snippet: (doc.s || doc.x || '').substring(0, 300),
             link: doc.l || '#',
             book: doc.b || ''
           });
