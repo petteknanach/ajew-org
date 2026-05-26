@@ -82,6 +82,93 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
       const resultsSection = document.getElementById('resultsSection');
 
       // Listen for search events
+      // Client-side search index (lazy loaded, cached in memory)
+      let searchIndex = null;
+      let searchIndexLoading = false;
+      let searchIndexPromise = null;
+
+      function loadSearchIndex() {
+        if (searchIndex) return Promise.resolve(searchIndex);
+        if (searchIndexPromise) return searchIndexPromise;
+        
+        searchIndexLoading = true;
+        searchIndexPromise = fetch('/data/light-search-index.json.gz')
+          .then(res => {
+            if (!res.ok) throw new Error('Failed to load index');
+            // Decompress gzip using native DecompressionStream
+            const ds = new DecompressionStream('gzip');
+            const stream = res.body.pipeThrough(ds);
+            return new Response(stream).json();
+          })
+          .then(data => {
+            searchIndex = data;
+            searchIndexLoading = false;
+            console.log('Search index loaded:', searchIndex.length, 'documents');
+            return searchIndex;
+          })
+          .catch(err => {
+            console.error('Index load failed, trying uncompressed:', err);
+            // Fallback to uncompressed
+            return fetch('/data/light-search-index.json')
+              .then(res => res.json())
+              .then(data => {
+                searchIndex = data;
+                searchIndexLoading = false;
+                return searchIndex;
+              });
+          });
+        return searchIndexPromise;
+      }
+
+      function clientSearch(query, advanced) {
+        if (!searchIndex) return { results: [], total: 0 };
+        
+        const q = query.toLowerCase().trim();
+        const words = q.split(/\s+/).filter(w => w.length > 0);
+        const searchType = advanced?.searchType || 'google';
+        const minWords = advanced?.minWords || 1;
+        const books = advanced?.books || [];
+        
+        let results = [];
+        const maxResults = 50;
+        
+        for (const doc of searchIndex) {
+          // Book filter
+          if (books.length > 0 && !books.includes(doc.b)) continue;
+          
+          const searchText = ((doc.t || '') + ' ' + (doc.ht || '') + ' ' + (doc.s || '') + ' ' + (doc.tx || '')).toLowerCase();
+          
+          let matches = 0;
+          if (searchType === 'exact') {
+            if (searchText.includes(q)) matches = words.length;
+          } else {
+            for (const word of words) {
+              if (searchText.includes(word)) matches++;
+            }
+          }
+          
+          if (matches >= minWords) {
+            results.push({
+              title: doc.t || 'Untitled',
+              hebrewTitle: doc.ht || '',
+              snippet: (doc.s || doc.tx || '').substring(0, 300),
+              link: doc.l || '#',
+              book: doc.b || '',
+              subcategory: doc.sc || '',
+              relevance: Math.round((matches / words.length) * 100),
+              extraInfo: (doc.b || '') + (doc.p ? ' ' + doc.p : '') + (doc.n ? ':' + doc.n : '')
+            });
+          }
+          
+          if (results.length >= maxResults) break;
+        }
+        
+        // Sort by relevance
+        results.sort((a, b) => b.relevance - a.relevance);
+        
+        return { results, total: results.length };
+      }
+
       document.addEventListener('enhanced-search', (e: any) => {
         performSearch(e.detail.query, e.detail.filters, e.detail.advancedOptions);
       });
@@ -95,36 +182,20 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         showLoading();
         saveSearchHistory(query);
 
-        const url = new URL('/api/search', window.location.origin);
-        url.searchParams.set('q', query);
-        if (advanced.searchType) url.searchParams.set('searchType', advanced.searchType);
-        if (advanced.proximity > 0) url.searchParams.set('proximity', String(advanced.proximity));
-        if (advanced.acronymOrder) url.searchParams.set('acronymOrder', advanced.acronymOrder);
-        if (advanced.minWords > 0) url.searchParams.set('minWords', String(advanced.minWords));
-        if (advanced.books?.length > 0) url.searchParams.set('books', advanced.books.join(','));
-
-        fetch(url.toString())
-          .then(res => res.json())
-          .then((data: any) => {
-            loading.classList.add('hidden');
-            if (data?.error) {
-              showNoResults(query, 'Error: ' + data.error);
-              return;
-            }
-            // Support both old format (flat array) and new format ({ results, total })
-            const results = Array.isArray(data) ? data : (data.results || []);
-            const total = Array.isArray(data) ? results.length : (data.total || results.length);
-            if (results.length > 0) {
-              displayResults(results, query, total);
-            } else {
-              showNoResults(query);
-            }
-          })
-          .catch(err => {
-            console.error('Search error:', err);
-            loading.classList.add('hidden');
-            showNoResults(query, 'Search failed. Please try again.');
-          });
+        loadSearchIndex().then(() => {
+          const { results, total } = clientSearch(query, advanced);
+          loading.classList.add('hidden');
+          
+          if (results.length > 0) {
+            displayResults(results, query, total);
+          } else {
+            showNoResults(query);
+          }
+        }).catch(err => {
+          console.error('Search error:', err);
+          loading.classList.add('hidden');
+          showNoResults(query, 'Search unavailable. Please try again.');
+        });
       }
 
       function displayResults(results: any[], query: string, total?: number) {
