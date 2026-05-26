@@ -136,7 +136,7 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
           // Book filter
           if (books.length > 0 && !books.includes(doc.b)) continue;
           
-          const searchText = ((doc.t || '') + ' ' + (doc.ht || '') + ' ' + (doc.s || '') + ' ' + (doc.tx || '')).toLowerCase();
+          const searchText = ((doc.t || '') + ' ' + (doc.h || '') + ' ' + (doc.s || '') + ' ' + (doc.x || '')).toLowerCase();
           
           let matches = 0;
           if (searchType === 'exact') {
@@ -150,8 +150,8 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
           if (matches >= minWords) {
             results.push({
               title: doc.t || 'Untitled',
-              hebrewTitle: doc.ht || '',
-              snippet: (doc.s || doc.tx || '').substring(0, 300),
+              hebrewTitle: doc.h || '',
+              snippet: (doc.s || doc.x || '').substring(0, 300),
               link: doc.l || '#',
               book: doc.b || '',
               subcategory: doc.sc || '',
