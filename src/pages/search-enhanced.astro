@@ -92,6 +92,13 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         if (searchIndexPromise) return searchIndexPromise;
         
         searchIndexLoading = true;
+        // Show subtle loading state in the results area
+        const idxLoading = document.createElement('div');
+        idxLoading.className = 'index-loading';
+        idxLoading.innerHTML = '<span class="idx-spinner"></span> טוען אינדקס חיפוש... Loading search index...';
+        idxLoading.id = 'indexLoading';
+        resultsSection.insertBefore(idxLoading, resultsSection.firstChild);
+        
         searchIndexPromise = fetch('/data/light-search-index.json.gz')
           .then(res => {
             if (!res.ok) throw new Error('Failed to load index');
@@ -104,6 +111,9 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
             searchIndex = data;
             searchIndexLoading = false;
             console.log('Search index loaded:', searchIndex.length, 'documents');
+            // Remove loading indicator
+            const el = document.getElementById('indexLoading');
+            if (el) el.remove();
             return searchIndex;
           })
           .catch(err => {
@@ -114,11 +124,16 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
               .then(data => {
                 searchIndex = data;
                 searchIndexLoading = false;
+                const el = document.getElementById('indexLoading');
+                if (el) el.remove();
                 return searchIndex;
               });
           });
         return searchIndexPromise;
       }
+
+      // Pre-load index immediately (don't wait for first search)
+      loadSearchIndex();
 
       function clientSearch(query, advanced) {
         if (!searchIndex) return { results: [], total: 0 };
@@ -512,11 +527,30 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
       margin: 0 auto 0.75rem;
     }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
 
-    .hidden {
+.index-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 2rem 1rem;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+.idx-spinner {
+  display: inline-block;
+  border: 3px solid #f3f4f6;
+  border-top: 3px solid #6366f1;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  animation: spin 0.8s linear infinite;
+}
+
+.hidden {
       display: none !important;
     }
 
