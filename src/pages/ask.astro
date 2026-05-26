@@ -94,11 +94,37 @@ import Layout from '../layouts/Layout.astro';
     results.style.display = 'none';
 
     const searchTerms = extractSearchTerms(question);
-    const url = '/api/search?q=' + encodeURIComponent(searchTerms) + '&searchType=google&pageSize=10';
-
+    
+    // Client-side search using light index
     try {
-      const res = await fetch(url);
-      const data = await res.json();
+      const idxRes = await fetch('/data/light-search-index.json.gz');
+      const ds = new DecompressionStream('gzip');
+      const stream = idxRes.body.pipeThrough(ds);
+      const searchIndex = await new Response(stream).json();
+      
+      const q = searchTerms.toLowerCase().trim();
+      const words = q.split(/\s+/).filter(w => w.length > 0);
+      let resultsData = [];
+      for (const doc of searchIndex) {
+        const searchText = ((doc.t || '') + ' ' + (doc.ht || '') + ' ' + (doc.s || '') + ' ' + (doc.tx || '')).toLowerCase();
+        let matches = 0;
+        for (const word of words) {
+          if (searchText.includes(word)) matches++;
+        }
+        if (matches >= 1) {
+          resultsData.push({
+            title: doc.t || 'Untitled',
+            hebrewTitle: doc.ht || '',
+            snippet: (doc.s || doc.tx || '').substring(0, 300),
+            link: doc.l || '#',
+            book: doc.b || ''
+          });
+        }
+        if (resultsData.length >= 10) break;
+      }
+      resultsData.sort((a, b) => words.filter(k => (a.snippet||'').toLowerCase().includes(k)).length - words.filter(k => (b.snippet||'').toLowerCase().includes(k)).length);
+      
+      const data = { results: resultsData, total: resultsData.length };
       loading.style.display = 'none';
 
       const title = document.getElementById('resultsTitle');
