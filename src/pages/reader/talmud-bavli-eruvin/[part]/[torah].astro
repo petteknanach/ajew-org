@@ -1,5 +1,6 @@
 ---
 import Layout from '../../../../layouts/Layout.astro';
+import CommentarySidebar from '../../../../components/CommentarySidebar.astro';
 import Comments from '../../../../components/Comments.astro';
 import '../../../../styles/reader.css';
 import '../../../../styles/reader-v2.css';
@@ -55,6 +56,18 @@ const structuredData = torahData ? JSON.stringify({
   "isPartOf": { "@type": "Book", "name": "Talmud Bavli - Eruvin" },
   "url": `https://ajew.org/reader/talmud-bavli-eruvin/${partNum}/${torahNum}`
 }) : '';
+const commentaryEntry = torahData ? {
+  related_commentaries: [
+    {
+      book: "likutay-nanach",
+      section: "mishna-eruvin",
+      label: "Likutay Nanach",
+      sectionTitle: "mishna-eruvin",
+      url: "/reader/likutay-nanach/oral-torah/mishna-eruvin.json"
+    }
+  ]
+} : null;
+
 const breadcrumbData = torahData ? JSON.stringify({
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
@@ -84,6 +97,9 @@ const breadcrumbData = torahData ? JSON.stringify({
       data-torah-id={torahData.id}
       data-torah-title={`${torahData.title} - Talmud Bavli`}
     >
+      {torahData && commentaryEntry && (
+        <CommentarySidebar part={partNum} torah={torahNum} entry={commentaryEntry} />
+      )}
       <div class="reader-progress"></div>
 
       <div class="reader-breadcrumb">

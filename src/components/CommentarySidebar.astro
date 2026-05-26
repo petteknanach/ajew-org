@@ -624,10 +624,10 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
       }
 
       function fetchSection(def) {
-        if (!def.book || !def.section) {
+        var url = def.url || (def.book && def.section ? '/reader/' + def.book + '/' + def.section + '.json' : null);
+        if (!url) {
           return Promise.reject(new Error('Missing commentary source info.'));
         }
-        var url = '/reader/' + def.book + '/' + def.section + '.json';
         if (cache[url]) return Promise.resolve(cache[url]);
         return fetch(url, { credentials: 'same-origin' }).then(function (r) {
           if (!r.ok) throw new Error('HTTP ' + r.status);

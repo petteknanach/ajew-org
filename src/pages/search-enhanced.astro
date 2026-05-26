@@ -144,6 +144,9 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         const minWords = advanced?.minWords || 1;
         const books = advanced?.books || [];
         
+        // Detect if query is primarily Hebrew (contains Hebrew Unicode chars)
+        const isHebrewQuery = /[\u0590-\u05FF]/.test(query);
+        
         let results = [];
         const maxResults = 50;
         
@@ -163,10 +166,12 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
           }
           
           if (matches >= minWords) {
+            // For Hebrew queries: show Hebrew title and Hebrew content as snippet
+            // For English queries: show English title and English snippet
             results.push({
-              title: doc.t || 'Untitled',
+              title: (isHebrewQuery && doc.h) ? doc.h : (doc.t || 'Untitled'),
               hebrewTitle: doc.h || '',
-              snippet: (doc.s || doc.x || '').substring(0, 300),
+              snippet: (isHebrewQuery ? (doc.x || doc.s || '') : (doc.s || doc.x || '')).substring(0, 300),
               link: doc.l || '#',
               book: doc.b || '',
               subcategory: doc.sc || '',

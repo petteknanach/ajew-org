@@ -112,6 +112,7 @@ import Layout from '../layouts/Layout.astro';
     try {
       const q = searchTerms.toLowerCase().trim();
       const words = q.split(/\s+/).filter(w => w.length > 0);
+      const isHebrewQuery = /[\u0590-\u05FF]/.test(searchTerms);
       let resultsData = [];
       for (const doc of searchIndex) {
         const searchText = ((doc.t || '') + ' ' + (doc.h || '') + ' ' + (doc.s || '') + ' ' + (doc.x || '')).toLowerCase();
@@ -121,9 +122,9 @@ import Layout from '../layouts/Layout.astro';
         }
         if (matches >= 1) {
           resultsData.push({
-            title: doc.t || 'Untitled',
+            title: (isHebrewQuery && doc.h) ? doc.h : (doc.t || 'Untitled'),
             hebrewTitle: doc.h || '',
-            snippet: (doc.s || doc.x || '').substring(0, 300),
+            snippet: (isHebrewQuery ? (doc.x || doc.s || '') : (doc.s || doc.x || '')).substring(0, 300),
             link: doc.l || '#',
             book: doc.b || ''
           });
