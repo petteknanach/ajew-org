@@ -1,6 +1,7 @@
 ---
 import Layout from '../../../../layouts/Layout.astro';
 import Comments from '../../../../components/Comments.astro';
+import CommentarySidebar from '../../../../components/CommentarySidebar.astro';
 import '../../../../styles/reader.css';
 import '../../../../styles/reader-v2.css';
 import fs from 'node:fs';
@@ -55,6 +56,19 @@ const structuredData = torahData ? JSON.stringify({
   "isPartOf": { "@type": "Book", "name": "Talmud Bavli - Chagigah" },
   "url": `https://ajew.org/reader/talmud-bavli-chagigah/${partNum}/${torahNum}`
 }) : '';
+
+// LN Oral Torah commentary
+const commentaryEntry = torahData ? {
+  related_commentaries: [
+    {
+      book: "likutay-nanach",
+      section: "mishna-chagigah",
+      label: "Likutay Nanach",
+      sectionTitle: "talmud-bavli-chagigah",
+      url: "/reader/likutay-nanach/oral-torah/mishna-chagigah.json"
+    }
+  ]
+} : null;
 const breadcrumbData = torahData ? JSON.stringify({
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
@@ -207,6 +221,9 @@ const breadcrumbData = torahData ? JSON.stringify({
       </div>
       {torahData && (
         <Comments teachingId={`talmud-bavli-chagigah-${part}-${torah}`} teachingTitle={`talmud-bavli-chagigah ${part}:${torah}${torahData?.title ? ' — ' + torahData.title : ''}`} />
+      )}
+      {torahData && commentaryEntry && (
+        <CommentarySidebar part={partNum} torah={torahNum} entry={commentaryEntry} />
       )}
 
 

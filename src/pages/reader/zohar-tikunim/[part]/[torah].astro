@@ -1,6 +1,7 @@
 ---
 import Layout from '../../../../layouts/Layout.astro';
 import Comments from '../../../../components/Comments.astro';
+import CommentarySidebar from '../../../../components/CommentarySidebar.astro';
 import '../../../../styles/reader.css';
 import '../../../../styles/reader-v2.css';
 import fs from 'node:fs';
@@ -55,6 +56,19 @@ const structuredData = torahData ? JSON.stringify({
   "isPartOf": { "@type": "Book", "name": "Zohar HaKadosh - Tikunei Zohar" },
   "url": `https://ajew.org/reader/zohar-tikunim/${partNum}/${torahNum}`
 }) : '';
+
+// LN Oral Torah commentary
+const commentaryEntry = torahData ? {
+  related_commentaries: [
+    {
+      book: "likutay-nanach",
+      section: "zohar",
+      label: "Likutay Nanach",
+      sectionTitle: "zohar-tikunim",
+      url: "/reader/likutay-nanach/oral-torah/zohar.json"
+    }
+  ]
+} : null;
 const breadcrumbData = torahData ? JSON.stringify({
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
@@ -185,6 +199,9 @@ const breadcrumbData = torahData ? JSON.stringify({
       </div>
       {torahData && (
         <Comments teachingId={`zohar-tikunim-${part}-${torah}`} teachingTitle={`zohar-tikunim ${part}:${torah}${torahData?.title ? ' — ' + torahData.title : ''}`} />
+      )}
+      {torahData && commentaryEntry && (
+        <CommentarySidebar part={partNum} torah={torahNum} entry={commentaryEntry} />
       )}
 
 
