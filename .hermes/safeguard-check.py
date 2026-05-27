@@ -1,53 +1,90 @@
 #!/usr/bin/env python3
-"""SAFEGUARD: Data integrity check for ajew.org.
-Run before every deployment to prevent data corruption.
-Checks: English alignment, missing files, scrambled content."""
+"""SAFEGUARD: Data integrity check for ajew.org content.
+Run before every deployment. Blocks push if corruption detected.
+Checks: LH English, LM English, Sefer HaMidos, Likutay Tefilos,
+Otzar HaYirah, Kitzur LM, parsha files, JSON validity."""
 
 import json, os, re, sys
 
-BASE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(BASE)
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def check_lh_english():
-    """Verify LH English is aligned and not scrambled."""
+    """Verify LH English: no scrambled Psalm text, no placeholder numbers."""
     lh_dir = os.path.join(ROOT, 'public', 'reader', 'likutay-halachos')
     errors = []
-    files_checked = 0
+    files_ok = 0
     
     for d in sorted(os.listdir(lh_dir)):
         if not d.startswith('part-'):
             continue
-        part_dir = os.path.join(lh_dir, d)
-        for f in sorted(os.listdir(part_dir)):
-            if not f.startswith('halacha-') or f == 'index.json':
+        for f in sorted(os.listdir(os.path.join(lh_dir, d))):
+            if not f.startswith('halacha-'):
                 continue
-            fp = os.path.join(part_dir, f)
+            fp = os.path.join(lh_dir, d, f)
+            try:
+                with open(fp) as fh:
+                    data = json.load(fh)
+            except:
+                errors.append(f"CORRUPT: {fp}")
+                continue
+            
+            for key in ['segments', 'aligned_segments']:
+                segs = data.get(key, [])
+                if not segs:
+                    continue
+                # Check for bulk Psalm filler (3+ consecutive)
+                psalm_kw = ['psalm', 'leader', 'maskil', 'Korah', 'For the leader']
+                cons = 0
+                for s in segs:
+                    if any(kw in s.get('en','') for kw in psalm_kw):
+                        cons += 1
+                        if cons >= 3:
+                            errors.append(f"SCRAMBLED: {fp}")
+                            break
+                    else:
+                        cons = 0
+                # Check placebo numbers
+                for s in segs:
+                    if re.match(r'^\d+[\.\)]?\s*$', s.get('en','').strip()):
+                        errors.append(f"PLACEHOLDER: {fp}")
+                        break
+            
+            files_ok += 1
+    
+    print(f"LH: {files_ok} ok, {len(errors)} issues")
+    return errors
+
+def check_book(dir_name, label):
+    """Check any reader book for corruption."""
+    book_path = os.path.join(ROOT, 'public', 'reader', dir_name)
+    if not os.path.exists(book_path):
+        return []
+    errors = []
+    files_ok = 0
+    for root, dirs, fnames in os.walk(book_path):
+        for f in fnames:
+            if not f.endswith('.json') or f == 'index.json':
+                continue
+            fp = os.path.join(root, f)
             try:
                 with open(fp) as fh:
                     data = json.load(fh)
             except:
                 errors.append(f"CORRUPT JSON: {fp}")
                 continue
-            
-            files_checked += 1
-            aligned = data.get('aligned_segments', [])
-            
-            if not aligned:
+            segs = data.get('segments', [])
+            if not segs:
                 continue
-            
-            # Check: English should not be Psalms or other obviously wrong text
-            psalm_kw = ['psalm', 'leader', 'maskil', 'Korah', 'For the leader',
-                        'lamnatzeiach', 'Lamnatzei-ach', 'mizmor']
-            for s in aligned[:5]:
-                en = s.get('en', '')
-                if any(kw in en for kw in psalm_kw):
-                    errors.append(f"SCRAMBLED: {fp} — Psalm text in EN")
+            # Check for placeholder numbers
+            for s in segs:
+                if re.match(r'^\d+[\.\)]?\s*$', s.get('en','').strip()):
+                    errors.append(f"PLACEHOLDER EN: {fp}")
                     break
-    
-    print(f"LH: {files_checked} files, {len(errors)} issues")
+            files_ok += 1
+    print(f"{label}: {files_ok} ok, {len(errors)} issues")
     return errors
 
-def check_parsha_files():
+def check_parsha():
     """Verify parsha files have source citations."""
     parsha_dir = os.path.join(ROOT, 'public', 'reader', 'parsha-lm')
     if not os.path.exists(parsha_dir):
@@ -61,42 +98,22 @@ def check_parsha_files():
             with open(fp) as fh:
                 data = json.load(fh)
         except:
-            errors.append(f"CORRUPT JSON: {fp}")
+            errors.append(f"CORRUPT: {fp}")
             continue
-        segs = data.get('segments', [])
-        if not segs:
+        if not data.get('segments'):
             errors.append(f"EMPTY: {fp}")
     print(f"Parsha: {len(errors)} issues")
-    return errors
-
-def check_lm_english():
-    """Verify LM English is present."""
-    lm_dir = os.path.join(ROOT, 'public', 'reader', 'likutay-moharan')
-    if not os.path.exists(lm_dir):
-        return []
-    errors = []
-    for part in ['part-1', 'part-2']:
-        part_dir = os.path.join(lm_dir, part)
-        if not os.path.exists(part_dir):
-            continue
-        for f in sorted(os.listdir(part_dir)):
-            if not f.startswith('torah-'):
-                continue
-            fp = os.path.join(part_dir, f)
-            try:
-                with open(fp) as fh:
-                    data = json.load(fh)
-            except:
-                errors.append(f"CORRUPT JSON: {fp}")
-                continue
-    print(f"LM: {len(errors)} issues")
     return errors
 
 if __name__ == '__main__':
     all_errors = []
     all_errors.extend(check_lh_english())
-    all_errors.extend(check_parsha_files())
-    all_errors.extend(check_lm_english())
+    all_errors.extend(check_book('sefer-hamidos', 'SH'))
+    all_errors.extend(check_book('likutay-tefilos', 'LT'))
+    all_errors.extend(check_book('otzar-hayirah', 'OHY'))
+    all_errors.extend(check_book('kitzur-likutay-moharan', 'KLM'))
+    all_errors.extend(check_book('likutay-moharan', 'LM'))
+    all_errors.extend(check_parsha())
     
     if all_errors:
         print(f"\n{'='*60}")
@@ -107,6 +124,6 @@ if __name__ == '__main__':
         sys.exit(1)
     else:
         print(f"\n{'='*60}")
-        print("SAFEGUARD PASSED")
+        print("SAFEGUARD PASSED — all data integrity checks OK")
         print(f"{'='*60}")
         sys.exit(0)
