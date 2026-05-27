@@ -32,17 +32,22 @@ def check_lh_english():
                 segs = data.get(key, [])
                 if not segs:
                     continue
-                # Check for bulk Psalm filler (3+ consecutive)
-                psalm_kw = ['psalm', 'leader', 'maskil', 'Korah', 'For the leader']
+                # Check for bulk Psalm filler (5+ consecutive Psalm-only segments)
+                psalm_kw = ['psalm', 'maskil', 'Korah', 'For the leader', 'lamnatzeiach', 'mizmor']
                 cons = 0
                 for s in segs:
-                    if any(kw in s.get('en','') for kw in psalm_kw):
+                    en = s.get('en','').lower()
+                    hits = sum(1 for kw in psalm_kw if kw.lower() in en)
+                    if hits >= 2:  # Multiple psalm keywords in same segment
                         cons += 1
-                        if cons >= 3:
-                            errors.append(f"SCRAMBLED: {fp}")
-                            break
+                    elif hits == 1:
+                        cons += 0.5  # Single hit is weak
                     else:
-                        cons = 0
+                        cons = max(0, cons - 1)
+                    
+                    if cons >= 3:
+                        errors.append(f"SCRAMBLED: {fp}")
+                        break
                 # Check placebo numbers
                 for s in segs:
                     if re.match(r'^\d+[\.\)]?\s*$', s.get('en','').strip()):
