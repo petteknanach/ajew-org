@@ -124,7 +124,7 @@ import Layout from '../layouts/Layout.astro';
           resultsData.push({
             title: (isHebrewQuery && doc.h) ? doc.h : (doc.t || 'Untitled'),
             hebrewTitle: doc.h || '',
-            snippet: (isHebrewQuery ? (doc.x || doc.s || '') : (doc.s || doc.x || '')).substring(0, 300),
+            snippet: (isHebrewQuery ? (doc.s || doc.x || '') : (doc.e || doc.t || doc.s || '')).substring(0, 300),
             link: doc.l || '#',
             book: doc.b || ''
           });

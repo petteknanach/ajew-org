@@ -89,6 +89,63 @@ def check_book(dir_name, label):
     print(f"{label}: {files_ok} ok, {len(errors)} issues")
     return errors
 
+def check_saba():
+    """Verify Saba books alignment: correct opening, no Hebrew in English."""
+    books = ['yisroel-saba', 'saba-tape-transcripts', 'sichos-chayay-saba']
+    errors = []
+    
+    for book in books:
+        book_path = os.path.join(ROOT, 'public', 'reader', book)
+        if not os.path.exists(book_path):
+            errors.append(f"MISSING: {book}")
+            continue
+        
+        files_ok = 0
+        for root, dirs, fnames in os.walk(book_path):
+            for f in fnames:
+                if not f.endswith('.json') or f == 'index.json':
+                    continue
+                fp = os.path.join(root, f)
+                try:
+                    with open(fp) as fh:
+                        data = json.load(fh)
+                except:
+                    errors.append(f"CORRUPT JSON: {fp}")
+                    continue
+                
+                segs = data.get('segments', [])
+                if not segs:
+                    continue
+                
+                # Check: no Hebrew characters in English fields
+                for s in segs:
+                    en = s.get('en', '').strip()
+                    if en and len(en) > 10:
+                        he_chars = sum(1 for c in en if '\u0590' <= c <= '\u05FF')
+                        if he_chars > len(en) * 0.5:
+                            errors.append(f"HEBREW IN EN: {fp} seg {s.get('index','?')}")
+                            break
+                
+                files_ok += 1
+        
+        print(f"  {book}: {files_ok} ok, {len([e for e in errors if book in e])} issues")
+    
+    # Specific check: Yisroel Saba chapter 1 must open correctly
+    ch1 = os.path.join(ROOT, 'public', 'reader', 'yisroel-saba', 'chapter-1.json')
+    if os.path.exists(ch1):
+        with open(ch1) as fh:
+            data = json.load(fh)
+        segs = data.get('segments', [])
+        if segs:
+            first_he = segs[0].get('he', '')
+            first_en = segs[0].get('en', '')
+            if 'רבי ישראל משורר' not in first_he:
+                errors.append(f"MISALIGNED OPENING: yisroel-saba chapter-1 — wrong first HE line")
+            if 'Rabbi Yisroel chants' not in first_en:
+                errors.append(f"MISALIGNED OPENING: yisroel-saba chapter-1 — wrong first EN line")
+    
+    return errors
+
 def check_parsha():
     """Verify parsha files have source citations."""
     parsha_dir = os.path.join(ROOT, 'public', 'reader', 'parsha-lm')
@@ -113,6 +170,7 @@ def check_parsha():
 if __name__ == '__main__':
     all_errors = []
     all_errors.extend(check_lh_english())
+    all_errors.extend(check_saba())
     all_errors.extend(check_book('sefer-hamidos', 'SH'))
     all_errors.extend(check_book('likutay-tefilos', 'LT'))
     all_errors.extend(check_book('otzar-hayirah', 'OHY'))

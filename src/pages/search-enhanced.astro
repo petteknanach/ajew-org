@@ -166,12 +166,12 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
           }
           
           if (matches >= minWords) {
-            // For Hebrew queries: show Hebrew title and Hebrew content as snippet
-            // For English queries: show English title and English snippet
+            // Hebrew query: show Hebrew titles and Hebrew snippets
+            // English query: show English titles and English snippets
             results.push({
               title: (isHebrewQuery && doc.h) ? doc.h : (doc.t || 'Untitled'),
               hebrewTitle: doc.h || '',
-              snippet: (isHebrewQuery ? (doc.x || doc.s || '') : (doc.s || doc.x || '')).substring(0, 300),
+              snippet: (isHebrewQuery ? (doc.s || doc.x || '') : (doc.e || doc.t || doc.s || '')).substring(0, 300),
               link: doc.l || '#',
               book: doc.b || '',
               subcategory: doc.sc || '',
