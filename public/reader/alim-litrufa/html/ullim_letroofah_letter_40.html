@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ullim LeTroofah – Letter Forty | Reb Nussun: Plague, Fear, and Cast Your Burden Upon Hashem</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Cinzel:wght@400;500;600&family=Frank+Ruhl+Libre:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--parchment:#f5efe0;--parchment-dark:#ede3cc;--ink:#1c1209;--ink-mid:#3b2a14;--ink-soft:#5c4530;--gold:#8b6914;--gold-pale:#e8d9a0;--crimson:#7a1c1c;--teal:#1a4a4a;--highlight-y:rgba(220,195,80,0.22);--highlight-b:rgba(26,74,74,0.12);}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background-color:#2a1f0e;background-image:radial-gradient(ellipse at 20% 10%,rgba(90,60,20,0.4) 0%,transparent 60%),radial-gradient(ellipse at 80% 90%,rgba(50,30,10,0.5) 0%,transparent 60%);min-height:100vh;font-family:'EB Garamond',Georgia,serif;color:var(--ink);padding:2rem 1rem 4rem;}
+  .manuscript{max-width:780px;margin:0 auto;background-color:var(--parchment);border:1px solid var(--parchment-dark);box-shadow:0 0 0 6px #1a1005,0 0 0 8px #8b6914,0 0 0 10px #1a1005,0 30px 80px rgba(0,0,0,0.7),inset 0 0 60px rgba(180,140,60,0.08);padding:3.5rem 4rem 4rem;position:relative;}
+  .manuscript::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(180deg,rgba(200,170,90,0.06) 0%,transparent 30%,transparent 70%,rgba(150,110,40,0.05) 100%);pointer-events:none;}
+  .series-header{text-align:center;border-bottom:2px solid var(--gold);padding-bottom:1.6rem;margin-bottom:2.2rem;position:relative;}
+  .series-header::after{content:'✦';position:absolute;bottom:-0.65em;left:50%;transform:translateX(-50%);background:var(--parchment);padding:0 0.6em;color:var(--gold);font-size:0.9rem;}
+  .series-title{font-family:'Cinzel',serif;font-size:1.1rem;letter-spacing:0.18em;color:var(--gold);text-transform:uppercase;margin-bottom:0.3rem;}
+  .series-heb{font-family:'Frank Ruhl Libre',serif;font-size:1.25rem;color:var(--ink-mid);margin-bottom:0.3rem;}
+  .series-subtitle{font-size:0.95rem;color:var(--ink-mid);font-style:italic;margin-bottom:0.2rem;}
+  .series-byline{font-size:0.8rem;color:var(--ink-soft);letter-spacing:0.04em;}
+  .letter-heading{text-align:center;margin-bottom:1.6rem;}
+  .letter-number{font-family:'Cinzel',serif;font-size:2.4rem;font-weight:600;color:var(--gold);letter-spacing:0.1em;line-height:1;margin-bottom:0.3rem;}
+  .letter-meta{font-size:0.9rem;color:var(--ink-soft);font-style:italic;line-height:1.65;}
+  .addressee{border-left:3px solid var(--gold);padding:0.75rem 1rem;margin-bottom:1.7rem;font-size:0.95rem;color:var(--ink-mid);font-style:italic;line-height:1.75;background:rgba(200,170,80,0.06);}
+  .addressee .label{font-family:'Cinzel',serif;font-size:0.7rem;letter-spacing:0.13em;color:var(--gold);font-style:normal;display:block;margin-bottom:0.3rem;text-transform:uppercase;}
+  .letter-body{text-align:justify;line-height:1.90;font-size:1.06rem;}
+  .letter-body p{margin-bottom:1.15rem;text-indent:1.6em;}
+  .letter-body p.no-indent{text-indent:0;}
+  .translit{font-style:italic;color:var(--teal);font-weight:500;}
+  mark.gold{background:var(--highlight-y);padding:0 2px;border-radius:2px;}
+  mark.teal{background:var(--highlight-b);padding:0 2px;border-radius:2px;}
+  cite{font-style:italic;color:var(--crimson);}
+  .verse-src{font-size:0.82em;color:var(--crimson);font-style:normal;font-weight:500;}
+  .crisis-block{margin:0.3rem 0 0.5rem 0;padding:1.1rem 1.4rem;border-left:4px solid var(--crimson);background:rgba(122,28,28,0.06);line-height:1.96;font-size:1.04rem;color:var(--ink-mid);}
+  .crisis-block p{margin-bottom:0.8rem;text-indent:0;}
+  .crisis-block p:last-child{margin-bottom:0;}
+  .chizuk-block{margin:0.3rem 0 0.5rem 0;padding:1.2rem 1.5rem;border:1px solid var(--gold-pale);border-top:2px solid var(--gold);background:rgba(220,195,80,0.09);line-height:2.0;font-size:1.04rem;color:var(--ink-mid);}
+  .chizuk-block p{margin-bottom:0.8rem;text-indent:0;}
+  .chizuk-block p:last-child{margin-bottom:0;}
+  .yiddish-note{font-size:0.78rem;color:var(--ink-soft);font-style:italic;border-top:1px dashed var(--gold-pale);margin-top:0.7rem;padding-top:0.5rem;}
+  .scribal-gloss{font-size:0.87rem;color:var(--ink-soft);font-style:italic;border-left:2px solid var(--gold-pale);padding:0.5rem 0.9rem;margin:0 0 1.1rem 0;background:rgba(200,170,80,0.04);line-height:1.75;}
+  .scribal-gloss-label{font-family:'Cinzel',serif;font-size:0.67rem;letter-spacing:0.1em;color:var(--gold);font-style:normal;text-transform:uppercase;display:block;margin-bottom:0.3rem;}
+  .ps-label{font-family:'Cinzel',serif;font-size:0.74rem;letter-spacing:0.12em;color:var(--gold);text-transform:uppercase;display:block;margin:1.5rem 0 0.25rem;}
+  .closing{margin-top:1.8rem;border-top:1px solid var(--gold-pale);padding-top:1.2rem;}
+  .signature{text-align:right;font-style:italic;color:var(--ink-mid);font-size:1.0rem;margin-top:0.35rem;text-indent:0!important;}
+  .signature strong{font-style:normal;color:var(--ink);}
+  .scribal-end-note{font-size:0.82rem;color:var(--ink-soft);font-style:italic;border-left:2px solid var(--gold-pale);padding:0.4rem 0.85rem;margin:0.5rem 0 1rem;background:rgba(200,170,80,0.04);line-height:1.7;}
+  .translator-section{margin-top:3rem;border-top:2px solid var(--gold);padding-top:1.6rem;position:relative;}
+  .translator-section::before{content:"— From the Translator —";position:absolute;top:-0.75em;left:50%;transform:translateX(-50%);background:var(--parchment);padding:0 0.9em;font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:0.16em;color:var(--gold);text-transform:uppercase;white-space:nowrap;}
+  .translator-section p{font-size:0.93rem;color:var(--ink-mid);line-height:1.78;margin-bottom:0.8rem;text-indent:0;}
+  .translator-section p:last-child{margin-bottom:0;}
+  .translator-section h3{font-family:'Cinzel',serif;font-size:0.8rem;letter-spacing:0.12em;color:var(--gold);text-transform:uppercase;margin:1.2rem 0 0.5rem;}
+  .themes-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:0.8rem;margin-top:0.6rem;}
+  .theme-card{background:var(--parchment-dark);border-top:2px solid var(--gold);padding:0.75rem 0.9rem;font-size:0.85rem;color:var(--ink-mid);line-height:1.55;}
+  .theme-card strong{display:block;font-family:'Cinzel',serif;font-size:0.71rem;letter-spacing:0.1em;color:var(--gold);text-transform:uppercase;margin-bottom:0.3rem;}
+  .ms-footer{text-align:center;margin-top:2.5rem;padding-top:1rem;border-top:1px solid var(--gold-pale);font-size:0.78rem;color:var(--ink-soft);font-style:italic;letter-spacing:0.04em;}
+  @media(max-width:600px){.manuscript{padding:2rem 1.4rem 2.5rem;}.letter-number{font-size:1.8rem;}}
+</style>
+</head>
+<body>
+<div class="manuscript">
+
+  <div class="series-header">
+    <div class="series-title">Ullim LeTroofah</div>
+    <div class="series-heb">עלים לתרופה</div>
+    <div class="series-subtitle">Leaves for Healing</div>
+    <div class="series-byline">The Sacred Letters of Rebbe Nachman of Breslov and Reb Nussun of Breslov, of blessed memory</div>
+  </div>
+
+  <div class="letter-heading">
+    <div class="letter-number">LETTER FORTY</div>
+    <div class="letter-meta">
+      Blessed be Hashem &nbsp;·&nbsp; Eve of Monday, Parshas Sh'mos, 18th of Teves &nbsp;·&nbsp; Year 5591 (1831)<br>
+      Written from <strong>Breslov</strong>
+    </div>
+  </div>
+
+  <div class="addressee">
+    <span class="label">To</span>
+    Peace — to my beloved son, my dear one —
+    our Teacher the Rabbi <strong>Yitzchok</strong> — may he live.
+  </div>
+
+  <div class="letter-body">
+
+    <!-- Line 3: opening blessing -->
+    <p class="no-indent">
+      May Hashem Yisborach guard you from all evil, and remove illness from your midst,
+      and grant you good and long life — <em>Omain, so may it be His will.</em>
+    </p>
+
+    <!-- Line 4: FIRST YIDDISH PASSAGE —
+         anguish at the tidings from Yitzchok's household; the plague;
+         Breslov worse than Tultshin; many gone missing; daughter-in-law Chaya ill;
+         no counsel possible; only to beseech Hashem -->
+    <div class="crisis-block">
+      <p>
+        <mark class="gold">Beloved children — you yourselves can understand the anguish
+        from your letter</mark> — from what I have heard of the tidings from your
+        household, one after another. May Hashem Yisborach already have compassion.
+        But who can help today — <mark class="teal">none other than Hashem Yisborach
+        alone.</mark> And we can do no more than beseech Him always — perhaps He will
+        have mercy. No doubt you have heard what is happening here. Many say that here,
+        <span class="translit">chas v'sholom</span> [G-d forbid], it has been worse
+        than in Tultshin — very many people have gone missing [died]. May Hashem
+        Yisborach already have mercy. And so — what counsel can I give you today?
+        One hears every day that they will, <span class="translit">chas v'sholom</span>,
+        seal off the town. In my own house as well, my daughter-in-law Chaya — may she
+        live — is unwell. <mark class="gold">May Hashem Yisborach send her a complete
+        recovery soon.</mark> The anguish and the suffering and the fears that each
+        person carries in these times — you yourselves understand. Today it is impossible
+        to give any counsel whatsoever. One cannot help — only to beseech Hashem
+        Yisborach with mercy and supplication — <cite>perhaps He will relent, perhaps
+        He will have mercy.</cite>
+      </p>
+      <div class="yiddish-note">
+        Written by Reb Nussun in Yiddish — the vernacular of intimacy and urgency.
+        The scribal Hebrew paraphrase below is the transmitter's rendering of these
+        same words into the sacred tongue.
+      </div>
+    </div>
+
+    <!-- Line 5: SCRIBAL HEBREW GLOSS of the first Yiddish passage -->
+    <div class="scribal-gloss">
+      <span class="scribal-gloss-label">Scribal Hebrew rendering of the Yiddish above</span>
+      Beloved children. You yourselves can understand the anguish from your letter —
+      from what I heard of the tidings from your household, one after another. May
+      Hashem Yisborach already have mercy. Who is able to help today — only Hashem
+      Yisborach alone — and we cannot do other than beseech Him always, perhaps He
+      will have mercy. No doubt you have heard what is happening here. Many say that
+      here, <span class="translit">chas v'sholom</span>, it is worse than in Tultshin —
+      many people are missing there. May Hashem Yisborach already have mercy. And
+      therefore — what counsel can I give — one hears every day that they will,
+      <span class="translit">chas v'sholom</span>, seal off. In my own house my
+      daughter-in-law Chaya — may she live — is not in good health. May Hashem
+      Yisborach send her a complete recovery soon. The anguish and the suffering and
+      the fears that we have now — you yourselves understand. Today it is impossible
+      to give any counsel, and it is impossible to help — only to beseech Hashem
+      Yisborach with mercy and supplication — perhaps He will relent, perhaps He will
+      have mercy.
+    </div>
+
+    <!-- Line 6: SECOND YIDDISH PASSAGE —
+         awaiting news of the sick children who are lodging at Yitzchok's home;
+         prayer for their recovery -->
+    <p class="no-indent">
+      Meanwhile I look out every hour to hear from the children who are lodging at your
+      home — what they are doing [how they are faring].
+      <mark class="gold">May Hashem Yisborach send them a complete recovery from Heaven
+      soon, and guard all of you from now on, and gladden your souls with all goodness
+      speedily.</mark>
+    </p>
+    <div class="scribal-gloss">
+      <span class="scribal-gloss-label">Scribal Hebrew rendering of the Yiddish above</span>
+      Meanwhile I await every hour to hear from the sick children who are with you —
+      how they are faring. May Hashem Yisborach send them a complete recovery from
+      Heaven soon, and guard all of you from now on, and gladden your souls with all
+      goodness speedily.
+    </div>
+
+    <!-- Line 8: THIRD YIDDISH PASSAGE —
+         the call to chizuk and bitachon; "but surely He will not stretch out His hand";
+         everything is for the good; as a father desires his son;
+         cannot write more from anguish -->
+    <div class="chizuk-block">
+      <p>
+        <mark class="gold">Beloved children — for the sake of Hashem — strengthen
+        yourselves, and do not let yourselves go.</mark> Have
+        <span class="translit">bitachon</span> [trust] in Hashem Yisborach — He will
+        not abandon you, <span class="translit">chas v'sholom</span>.
+        <cite>But surely He will not stretch out His hand</cite>
+        <span class="verse-src">[Iyov 30:24]</span> — He will yet help you and console
+        you with all manner of consolations and great salvations. Whatever has been —
+        it was surely all for the good. And going forward He will surely watch over you,
+        and <cite>as a father who desires his son</cite>
+        <span class="verse-src">[Mishlai 3:12]</span> — He will cherish you and save
+        you with all goodness — and everything will be transformed to good. And more
+        than this I cannot write, on account of the great anguish I feel for you and
+        from every direction.
+      </p>
+      <div class="yiddish-note">
+        Written by Reb Nussun in Yiddish. The scribal Hebrew rendering follows.
+      </div>
+    </div>
+    <div class="scribal-gloss">
+      <span class="scribal-gloss-label">Scribal Hebrew rendering of the Yiddish above</span>
+      Beloved children. For the sake of Hashem — strengthen yourselves and do not
+      forsake your trust in Hashem Yisborach — and He will not forsake you,
+      <span class="translit">chas v'sholom</span>.
+      <cite>But surely He will not stretch out His hand</cite> — and He will help
+      you and console you with all the consolations and great salvations. Everything
+      that has been was surely for the good, and going forward He will surely guard
+      you — and as a father who desires his son — He will cherish you and save you
+      with all goodness — and everything will be transformed to good. And more I am
+      unable to write on account of the anguish for you and from every direction.
+    </div>
+
+    <!-- Line 10: prayer for Hashem's mercy over all Israel; the angel withdrawing his hand -->
+    <p class="no-indent">
+      May Hashem Yisborach have mercy upon us and upon all of Israel, and say to the
+      angel: <cite>Withdraw your hand</cite>
+      <span class="verse-src">[Sh'muel Bais 24:16]</span> — and return to us and
+      have compassion upon us.
+    </p>
+
+    <!-- Lines 11–12: closing and signature — "words of one who awaits salvation" -->
+    <div class="closing">
+      <p class="no-indent">
+        The words of your father — who awaits every moment to hear the good from you.
+        Please hasten to inform me at once from your household and of the welfare of
+        each one individually. May Hashem Yisborach have mercy and cause us to hear
+        good tidings from one another always. The words of one who awaits salvation.
+      </p>
+      <p class="signature"><strong>Nussun</strong> of Breslov.</p>
+    </div>
+
+    <!-- Line 13: FIRST POSTSCRIPT —
+         greetings to Rabbi Aizik (sister's son) and all the community;
+         "a time of trouble for Yaakov — and from it he will be saved" -->
+    <span class="ps-label">Postscript — Greetings to the Community</span>
+    <p class="no-indent">
+      Inform us also of the welfare of my sister's son, Rabbi Aizik — may his light
+      shine — and of the welfare of all our
+      <span class="translit">anshei shlomaynu</span> [members of our community] and
+      our beloved friends and companions. May Hashem have mercy in His abundant mercies
+      from now on — upon us and upon all of Israel —
+      <cite>for it is a time of trouble for Yaakov — and from it he will be saved.</cite>
+      <span class="verse-src">[Yirmiyahu 30:7]</span>
+    </p>
+
+    <!-- Line 14: SECOND POSTSCRIPT — addressed personally to Yitzchok alone:
+         the wing of a dove; the mountain between them (Talmudic Aramaic — roads sealed
+         by plague quarantine); for the sake of Hashem — be strong even now;
+         deposit your soul in His hands; cast yourself upon Hashem -->
+    <span class="ps-label">Postscript — Would I Had the Wing of a Dove</span>
+    <p class="no-indent">
+      My beloved son — <mark class="teal">would that He had given me the wing of a
+      dove — that I could fly to you and see you face to face.</mark> But what is to
+      be done — for <cite>the mountain stands high between us</cite>
+      <span class="verse-src">[Aramaic idiom; cf. Brochos 7a — here: the roads are
+      sealed by the plague]</span> — and for one who goes out or comes in there is
+      no peace. <mark class="gold">For the sake of Hashem — for the sake of Hashem —
+      be strong and resolute — now — even now</mark> — and do not let yourself be
+      pulled after the sorrow so greatly, <span class="translit">chas v'sholom</span>.
+      For Hashem is with you — fear not and be not dismayed. Trust in Hashem, for He
+      will not forsake you. We are obligated to deposit our spirit and our souls into
+      His hands, Yisborach — and the good in His eyes He will do with us. Now everyone
+      knows that there is no counsel and no strategy —
+      <mark class="gold">only to cast oneself upon Hashem Yisborach.</mark>
+    </p>
+
+    <!-- Line 15: the verse of the summer — Hashlaich al Hashem —
+         how it gave Yitzchok life this past summer;
+         now is the time to use it even more;
+         until a letter arrives; salvation belongs to Hashem -->
+    <p>
+      <mark class="teal">Remember now how much you gave yourself life with the verse
+      <cite>Cast upon Hashem your burden, and He will sustain you</cite>
+      <span class="verse-src">[Tehillim 55:23]</span> and so forth —
+      this past summer.</mark> Now — now — the time has arrived for you to give yourself
+      life with this verse more and more. And Hashem will save you. And at this time it
+      is impossible to extend further — until a letter reaches me from you speedily —
+      and salvation belongs to Hashem.
+    </p>
+
+    <!-- Line 16: THIRD POSTSCRIPT —
+         the half new-ruble received; the prayer of the twenty-four kinds of pidyonos;
+         may the tzadik's heart be roused; annul the harsh decrees;
+         blessed be G-d Who has helped us until here;
+         we still know of such exalted matters — power to give life and gladden the soul;
+         scribal end-note: the plague subsided within a week, the land was still -->
+    <span class="ps-label">Postscript — The Half-Ruble; The Twenty-Four Redemptions</span>
+    <p class="no-indent">
+      The half new-ruble I received, and I did what is incumbent upon me — to pray to
+      Hashem Yisborach on the eve of Shabbos close to the reception of Shabbos — and
+      I recited the prayer of the twenty-four
+      [<span class="translit">esrim v'arba</span>] kinds of
+      <span class="translit">pidyonos</span> [redemptions] and so forth. May Hashem
+      Yisborach rouse the heart of the <span class="translit">tzadik</span> who is
+      able to perform this <span class="translit">pidyon</span> — and annul all the
+      harsh decrees from upon us and upon all of Israel.
+    </p>
+
+    <p>
+      <mark class="gold">Blessed be our G-d Who has helped us until here — that we
+      know even now of such exalted matters as these</mark> — which carry within them
+      the power to give us life even now, and to gladden our souls always — if we but
+      resolve to strengthen ourselves and to set our hearts well upon all the
+      <span class="translit">chassodim</span> [acts of lovingkindness] and the
+      goodnesses — eternal, wondrous, and awesome — which He has bestowed upon us in
+      His mercy and the abundance of His lovingkindness.
+    </p>
+
+    <div class="scribal-end-note">
+      Thus far extended the aforementioned illness. From here onward it began to quiet
+      down — for approximately one week or more — and then the land was still.
+      Thanks be to G-d. — Scribal note added retrospectively by the transmitter.
+    </div>
+
+  </div><!-- end letter-body -->
+
+  <div class="translator-section">
+    <p>
+      <strong>Overview:</strong> One of the most raw and heartbreaking letters in the
+      entire collection — and structurally one of the most unusual. Written during the
+      cholera epidemic of 1831 that was devastating the Jewish communities of Breslov
+      and Tultshin. Reb Nussun writes three successive passages in Yiddish — the
+      vernacular of home and urgency — each followed immediately by the scribe's
+      Hebrew paraphrase of his own words. This double-layer structure (Yiddish original
+      / Hebrew gloss) is preserved in the manuscript and speaks to how the community
+      both received and sanctified his most unguarded moments. Sick children are lodging
+      at Yitzchok's home. Reb Nussun's own daughter-in-law is ill. The roads are sealed
+      by quarantine. And yet — out of total helplessness — rises the most concentrated
+      Breslov teaching: <em>cast yourself upon Hashem.</em> The scribal postscript
+      noting that the plague subsided within a week transforms the letter retrospectively
+      into a testimony of answered prayer.
+    </p>
+    <h3>Key Themes</h3>
+    <div class="themes-grid">
+      <div class="theme-card">
+        <strong>Total Helplessness — The Only Counsel</strong>
+        Three times Reb Nussun writes: no counsel is possible, no help can be given.
+        This is not despair — it is Breslov
+        <span class="translit">bitul</span> (self-nullification) lived under mortal
+        pressure. When every human means fails, the only remaining act is to cast
+        oneself upon G-d. That very casting is itself the counsel.
+      </div>
+      <div class="theme-card">
+        <strong>Cast Your Burden — This Past Summer</strong>
+        Reb Nussun reminds Yitzchok that the verse from Tehillim 55 —
+        <em>Hashlaich al Hashem yehavcha</em> — had already given him life during the
+        previous summer's hardships. Now, in a far deeper darkness, the same verse is
+        the prescription. A holy verse truly internalized becomes an inexhaustible well:
+        what saved you once will save you again.
+      </div>
+      <div class="theme-card">
+        <strong>Yiddish — The Language of Crisis</strong>
+        The shift from Hebrew to Yiddish — three times in one letter — is rare and
+        deeply significant. Hebrew was the tongue of measured teaching; Yiddish was
+        the mother tongue, raw and immediate. The scribe's tradition of rendering each
+        Yiddish passage into Hebrew shows how the community both preserved and elevated
+        Reb Nussun's most unguarded words.
+      </div>
+      <div class="theme-card">
+        <strong>The Mountain Between — Roads Sealed</strong>
+        <cite>Gavah tura bainan</cite> — the mountain stands high between us — is a
+        Talmudic Aramaic expression (Brochos 7a). Here it is not metaphor: the plague
+        quarantine had literally sealed the roads. Reb Nussun aches to see his son
+        face to face and cannot reach him.
+      </div>
+      <div class="theme-card">
+        <strong>The Pidyon and the Tzadik</strong>
+        Reb Nussun performs the twenty-four-fold <span class="translit">pidyon</span>
+        with the half-ruble sent by his son, praying that the Tzadik's power —
+        Rebbe Nachman's, from the <span class="translit">tziyun</span> in Uman — be
+        roused to annul the harsh decree. Even at the edge of catastrophe the channel
+        of the Tzadik remains the primary instrument of intercession.
+      </div>
+      <div class="theme-card">
+        <strong>Gratitude Within the Darkness</strong>
+        Before the plague-note the letter closes with a burst of gratitude: <em>Blessed
+        be our G-d Who has helped us until here</em> — that even now, amid epidemic and
+        fear, the community still possesses teachings with power to gladden the soul.
+        The darkness does not extinguish the light; it reveals how much light there
+        truly is.
+      </div>
+    </div>
+  </div>
+
+  <div class="ms-footer">
+    Translated in the merit of Na Nach Nachma Nachman MayUman &nbsp;·&nbsp; May HY bless this work.
+  </div>
+
+</div>
+</body>
+</html>

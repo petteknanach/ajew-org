@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ullim LeTroofah – Letter Twenty-Five | Reb Nussun: Truth as Light, Recovery of Manuscripts</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Cinzel:wght@400;500;600&family=Frank+Ruhl+Libre:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --parchment:      #f5efe0;
+    --parchment-dark: #ede3cc;
+    --ink:            #1c1209;
+    --ink-mid:        #3b2a14;
+    --ink-soft:       #5c4530;
+    --gold:           #8b6914;
+    --gold-pale:      #e8d9a0;
+    --crimson:        #7a1c1c;
+    --teal:           #1a4a4a;
+    --highlight-y:    rgba(220,195,80,0.22);
+    --highlight-b:    rgba(26,74,74,0.12);
+    --highlight-r:    rgba(122,28,28,0.09);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background-color: #2a1f0e;
+    background-image:
+      radial-gradient(ellipse at 20% 10%, rgba(90,60,20,0.4) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 90%, rgba(50,30,10,0.5) 0%, transparent 60%);
+    min-height: 100vh;
+    font-family: 'EB Garamond', Georgia, serif;
+    color: var(--ink);
+    padding: 2rem 1rem 4rem;
+  }
+  .manuscript {
+    max-width: 780px;
+    margin: 0 auto;
+    background-color: var(--parchment);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    border: 1px solid var(--parchment-dark);
+    box-shadow:
+      0 0 0 6px #1a1005,
+      0 0 0 8px #8b6914,
+      0 0 0 10px #1a1005,
+      0 30px 80px rgba(0,0,0,0.7),
+      inset 0 0 60px rgba(180,140,60,0.08);
+    padding: 3.5rem 4rem 4rem;
+    position: relative;
+  }
+  .manuscript::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(180deg, rgba(200,170,90,0.06) 0%, transparent 30%, transparent 70%, rgba(150,110,40,0.05) 100%);
+    pointer-events: none;
+  }
+
+  .series-header {
+    text-align: center; border-bottom: 2px solid var(--gold);
+    padding-bottom: 1.6rem; margin-bottom: 2.2rem; position: relative;
+  }
+  .series-header::after {
+    content: '✦'; position: absolute; bottom: -0.65em; left: 50%;
+    transform: translateX(-50%); background: var(--parchment); padding: 0 0.6em;
+    color: var(--gold); font-size: 0.9rem;
+  }
+  .series-title {
+    font-family: 'Cinzel', serif; font-size: 1.1rem; letter-spacing: 0.18em;
+    color: var(--gold); text-transform: uppercase; margin-bottom: 0.3rem;
+  }
+  .series-heb { font-family: 'Frank Ruhl Libre', serif; font-size: 1.25rem; color: var(--ink-mid); margin-bottom: 0.3rem; }
+  .series-subtitle { font-size: 0.95rem; color: var(--ink-mid); font-style: italic; margin-bottom: 0.2rem; }
+  .series-byline { font-size: 0.8rem; color: var(--ink-soft); letter-spacing: 0.04em; }
+
+  .letter-heading { text-align: center; margin-bottom: 1.6rem; }
+  .letter-number {
+    font-family: 'Cinzel', serif; font-size: 2.4rem; font-weight: 600;
+    color: var(--gold); letter-spacing: 0.1em; line-height: 1; margin-bottom: 0.3rem;
+  }
+  .letter-meta { font-size: 0.9rem; color: var(--ink-soft); font-style: italic; line-height: 1.65; }
+
+  .bezras-hashem {
+    text-align: center; font-style: italic; color: var(--gold);
+    font-size: 1.0rem; margin-bottom: 0.5rem; letter-spacing: 0.03em;
+  }
+
+  .addressee {
+    border-left: 3px solid var(--gold);
+    padding: 0.75rem 1rem; margin-bottom: 1.7rem;
+    font-size: 0.95rem; color: var(--ink-mid); font-style: italic; line-height: 1.75;
+    background: rgba(200,170,80,0.06);
+  }
+  .addressee .label {
+    font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 0.13em;
+    color: var(--gold); font-style: normal; display: block; margin-bottom: 0.3rem;
+    text-transform: uppercase;
+  }
+
+  .letter-body { text-align: justify; line-height: 1.90; font-size: 1.06rem; }
+  .letter-body p { margin-bottom: 1.15rem; text-indent: 1.6em; }
+  .letter-body p.no-indent { text-indent: 0; }
+
+  .translit  { font-style: italic; color: var(--teal); font-weight: 500; }
+  mark.gold  { background: var(--highlight-y); padding: 0 2px; border-radius: 2px; }
+  mark.teal  { background: var(--highlight-b); padding: 0 2px; border-radius: 2px; }
+  mark.crim  { background: var(--highlight-r); padding: 0 2px; border-radius: 2px; }
+  cite       { font-style: italic; color: var(--crimson); }
+  .verse-src { font-size: 0.82em; color: var(--crimson); font-style: normal; font-weight: 500; }
+
+  /* truth-as-light — the central teaching block */
+  .truth-block {
+    margin: 0.3rem 0 1.15rem 0;
+    padding: 1.3rem 1.6rem;
+    border-left: 4px solid var(--gold);
+    border-right: 1px solid var(--gold-pale);
+    background: rgba(200,170,80,0.08);
+    line-height: 1.98;
+    font-size: 1.05rem;
+    color: var(--ink-mid);
+  }
+  .truth-block p { margin-bottom: 0.85rem; text-indent: 0; }
+  .truth-block p:last-child { margin-bottom: 0; }
+
+  /* ps labels */
+  .ps-label {
+    font-family: 'Cinzel', serif; font-size: 0.74rem; letter-spacing: 0.12em;
+    color: var(--gold); text-transform: uppercase; display: block; margin: 1.5rem 0 0.25rem;
+  }
+
+  /* second addressee */
+  .addressee-2 {
+    border-left: 3px solid var(--teal);
+    padding: 0.75rem 1rem; margin: 1.5rem 0 0.8rem;
+    font-size: 0.95rem; color: var(--ink-mid); font-style: italic; line-height: 1.75;
+    background: rgba(26,74,74,0.05);
+  }
+  .addressee-2 .label {
+    font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 0.13em;
+    color: var(--teal); font-style: normal; display: block; margin-bottom: 0.3rem;
+    text-transform: uppercase;
+  }
+
+  /* manuscript demand block */
+  .manuscript-demand {
+    margin: 0.3rem 0 1.15rem 0;
+    padding: 1.1rem 1.4rem;
+    border: 1px solid var(--gold-pale);
+    border-left: 3px solid var(--crimson);
+    background: var(--highlight-r);
+    font-size: 1.02rem;
+    line-height: 1.88;
+    color: var(--ink-mid);
+  }
+  .manuscript-demand .ml {
+    font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 0.13em;
+    color: var(--crimson); display: block; margin-bottom: 0.4rem; text-transform: uppercase;
+  }
+  .manuscript-demand p { margin-bottom: 0.8rem; text-indent: 0; }
+  .manuscript-demand p:last-child { margin-bottom: 0; }
+
+  .closing {
+    margin-top: 1.8rem; border-top: 1px solid var(--gold-pale); padding-top: 1.2rem;
+  }
+  .signature {
+    text-align: right; font-style: italic; color: var(--ink-mid);
+    font-size: 1.0rem; margin-top: 0.4rem; text-indent: 0 !important;
+  }
+  .signature strong { font-style: normal; color: var(--ink); }
+
+  /* TRANSLATOR SECTION */
+  .translator-section {
+    margin-top: 3rem; border-top: 2px solid var(--gold);
+    padding-top: 1.6rem; position: relative;
+  }
+  .translator-section::before {
+    content: "— From the Translator —";
+    position: absolute; top: -0.75em; left: 50%;
+    transform: translateX(-50%);
+    background: var(--parchment); padding: 0 0.9em;
+    font-family: 'Cinzel', serif; font-size: 0.72rem;
+    letter-spacing: 0.16em; color: var(--gold); text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .translator-section p {
+    font-size: 0.93rem; color: var(--ink-mid); line-height: 1.78;
+    margin-bottom: 0.8rem; text-indent: 0;
+  }
+  .translator-section p:last-child { margin-bottom: 0; }
+  .translator-section h3 {
+    font-family: 'Cinzel', serif; font-size: 0.8rem; letter-spacing: 0.12em;
+    color: var(--gold); text-transform: uppercase; margin: 1.2rem 0 0.5rem;
+  }
+
+  .themes-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(175px,1fr));
+    gap: 0.8rem; margin-top: 0.6rem;
+  }
+  .theme-card {
+    background: var(--parchment-dark); border-top: 2px solid var(--gold);
+    padding: 0.75rem 0.9rem; font-size: 0.85rem; color: var(--ink-mid); line-height: 1.55;
+  }
+  .theme-card strong {
+    display: block; font-family: 'Cinzel', serif; font-size: 0.71rem;
+    letter-spacing: 0.1em; color: var(--gold); text-transform: uppercase; margin-bottom: 0.3rem;
+  }
+
+  .ms-footer {
+    text-align: center; margin-top: 2.5rem; padding-top: 1rem;
+    border-top: 1px solid var(--gold-pale);
+    font-size: 0.78rem; color: var(--ink-soft); font-style: italic; letter-spacing: 0.04em;
+  }
+
+  @media (max-width: 600px) {
+    .manuscript { padding: 2rem 1.4rem 2.5rem; }
+    .letter-number { font-size: 1.8rem; }
+  }
+</style>
+</head>
+<body>
+<div class="manuscript">
+
+  <div class="series-header">
+    <div class="series-title">Ullim LeTroofah</div>
+    <div class="series-heb">עלים לתרופה</div>
+    <div class="series-subtitle">Leaves for Healing</div>
+    <div class="series-byline">The Sacred Letters of Rebbe Nachman of Breslov and Reb Nussun of Breslov, of blessed memory</div>
+  </div>
+
+  <div class="letter-heading">
+    <div class="letter-number">LETTER TWENTY-FIVE</div>
+    <div class="letter-meta">
+      Monday, after the third day of Pesach, 17th of Nissan
+      &nbsp;·&nbsp; Year 5586 (1826)<br>
+      Written from <strong>Breslov</strong>, to the community of
+      <strong>Odessa</strong>
+    </div>
+  </div>
+
+  <div class="bezras-hashem">Blessed be Hashem</div>
+
+  <div class="addressee">
+    <span class="label">To</span>
+    My dear friend and beloved as my soul and heart — he who is the
+    outstanding scholar — our Teacher the Rabbi <strong>Shimshon</strong>
+    — may his light shine and radiate. Peace and abundant salvation.
+  </div>
+
+  <div class="letter-body">
+
+    <!-- LINE 253: receipt of letter with wine — Erev Pesach -->
+    <p class="no-indent">
+      Your pleasant letter I received on the eve of the fourteenth of
+      Nissan — along with the grape wine for the four cups of
+      redemption. <mark class="gold">May he lift the cup of salvations
+      from Hashem — with abundant blessings and all good, in this world
+      and in the next, for eternity.</mark>
+    </p>
+
+    <!-- LINE 254: the books are enough; truth as light — the tzohar teaching -->
+    <p>
+      You have given me life with your pleasant words that reveal the
+      longing of your heart for truth. And to respond to you with words
+      of truth as you desire — a multitude of sheets would fall short —
+      for it would be necessary to copy all the books of our Master, of
+      blessed memory. And already explained in them is what is needed
+      for each and every person according to his level, according to his
+      place and his time — in his sitting at home and in his going on
+      the road. <mark class="teal">There is nothing hidden from you
+      that you will not find in the holy and awesome books — if you
+      examine them with all your heart in truth.</mark> Turn them over
+      and turn them over — and from them do not stir — for you have no
+      better quality than them.
+    </p>
+
+    <p>
+      Be strong and courageous, my brother, my beloved, my dear friend
+      — and remember your Creator at every time, even in the hour of
+      business dealings — and all the more so in times of leisure. For
+      the sake of Hashem — snatch some hour to pour out your speech
+      before Him, may He be blessed — as our Master, of blessed memory,
+      warned us times without number. Be strong and strong in this —
+      with renewed strengthening each day. And <mark class="teal">let
+      not your thoughts terrify you on account of anything in the world
+      — and however it passes over you — whether in matters of the body,
+      or in matters of the soul, or in matters of money and business —
+      however it may be, however it may be — do not abandon your
+      place</mark>. For there are words of truth to speak before the
+      Blessed Place each day, always — however it passes over a person
+      — whether in ascent or in descent, whether in good or in
+      difficulty, G-d forbid. And there is no excuse in the world at
+      all.
+    </p>
+
+    <!-- The truth-as-light teaching -->
+    <div class="truth-block">
+      <p>
+        For <mark class="gold">the truth of Hashem is forever</mark>
+        — that is: the truth of Hashem is forever, always — and there
+        is nothing in the world that passes over a person, however it
+        may be, that can conceal and hide the truth of Hashem, G-d
+        forbid. For truth is the light of Hashem Himself — and
+        <mark class="gold">the true speech illuminates in every manner
+        of darkness and shadow in the world</mark> — and always one
+        can find openings to return to Hashem Yisborach through true
+        speech, however it may be. As all this is explained on the
+        verse <cite>Make a window for the ark</cite>
+        <span class="verse-src">[Bereishis 6:16]</span> — in two
+        places <span class="verse-src">(Likutay Moharan I, 112)</span>
+        — see there carefully.
+      </p>
+      <p>
+        Accustom yourself to walk with this Torah — to draw yourself
+        only to truth — and always look upon the truth in its
+        truthfulness — and see to emit speech from your mouth in truth
+        always. And then <mark class="gold">the light of Hashem
+        Yisborach will shine for you in every place where you are at
+        every time</mark> — and you will see the openings to go out
+        from darkness to great light — and you will be able to
+        remember Hashem Yisborach always. For He, may He be blessed,
+        is found at every time and in every place and in every person
+        — at whatever level he may be.
+      </p>
+      <p>
+        And for the sake of Hashem — let these words not become stale
+        for you, G-d forbid, on account of your thinking that you
+        already know them from before. For in truth <mark class="teal">you
+        have not yet begun to know — to what depths, to what depths
+        these matters reach</mark>. And the essential thing is to
+        fulfil them simply, in truth — and they should be in your
+        eyes each day as new. And in particular these matters renew
+        themselves each morning fresh — in the aspect of
+        <cite>new every morning — great is Your faithfulness</cite>
+        <span class="verse-src">[Eichah 3:23]</span>. And to explain
+        this to you is impossible in writing, in an open field — and
+        even mouth to ear it is impossible except like a drop from the
+        great sea. And here too I am preoccupied — but your great and
+        true longing compelled me to write these few words of mine,
+        which contain much strengthening. And enough in this for now.
+      </p>
+    </div>
+
+    <!-- LINE 255: joy through foolishness -->
+    <p class="no-indent">
+      And be vigilant and vigilant to always be in joy — and
+      <mark class="gold">do not allow sadness into your home in any
+      manner</mark>. And you already know many paths and counsels for
+      strengthening yourself in joy always. And the essential —
+      through <cite>who has not made me a gentile</cite> and so forth
+      and so forth <span class="verse-src">[the morning blessings]</span>.
+      And also through <mark class="teal"><span class="translit">mili
+      d'shtuta u'vdichuta</span> — words of foolishness and
+      jesting</mark>. And there is no need to elaborate on this — I
+      have come only to remind you of the main points — and you will
+      understand from yourself, as we have spoken about this many
+      times, and as explained in his holy books many times.
+    </p>
+
+    <!-- LINE 256–257: closing of main letter -->
+    <div class="closing">
+      <p class="no-indent">
+        The words of one who loves him in truth for eternity — who
+        awaits seeing him in joy speedily.
+      </p>
+      <p class="signature">
+        <strong>Nussun</strong>, son of our Teacher the Rabbi
+        <strong>Naftali Hirtz</strong> — may his light shine and
+        radiate — of Breslov.
+      </p>
+    </div>
+
+    <!-- LINE 258–260: postscript to Rabbi Tzvi Hirsh — Uman for Rosh Hashana -->
+    <span class="ps-label">Postscript — To Rabbi Tzvi Hirsh; The Uman Imperative</span>
+    <div class="addressee-2">
+      <span class="label">Also To</span>
+      Abundant peace to my dear friend and beloved — the distinguished
+      scholar — our Teacher the Rabbi <strong>Tzvi Hirsh</strong>
+      — may his light shine and radiate.
+    </div>
+    <p class="no-indent">
+      All these words were said to him as well — and to all our
+      <span class="translit">anshay shlomaynu</span> — and there is
+      no need to repeat the words. And may you be well and delight in
+      abundant peace — as your soul and the soul of those who love you
+      truly for eternity desires. Who awaits seeing you on the coming
+      Rosh Hashana — which comes upon us for good —
+      <mark class="gold"><strong>in Uman — come he shall surely come,
+      with joy</strong></mark> — then it will be good for him in this
+      world and the next, for eternity.
+    </p>
+    <p class="signature"><strong>Nussun</strong>, as above.</p>
+
+    <!-- LINE 261: greetings to family -->
+    <span class="ps-label">Postscript — Greetings to Family</span>
+    <p class="no-indent">
+      To all the members of my household — peace and abundant
+      salvation.
+    </p>
+
+    <!-- LINE 262–264: the urgent demand for Rebbe Nachman's manuscripts -->
+    <span class="ps-label">Postscript — Urgent Recovery of Rebbe Nachman's Manuscripts</span>
+    <div class="manuscript-demand">
+      <span class="ml">⚠ Urgent — Return of Sacred Manuscripts</span>
+      <p>
+        My beloved and dear friend — I have heard from the mouth of
+        our veteran friend our Teacher the Rabbi <strong>Gershon</strong>
+        that there are in the possession of my dear friend the
+        distinguished scholar our Teacher the Rabbi
+        <strong>Beer of Lipivitz</strong> — writings in the
+        <mark class="crim">handwriting of our Master, of blessed
+        memory</mark>. Therefore see to it to receive them from him
+        and send them to me immediately.
+      </p>
+      <p>
+        For he himself knows that <mark class="gold">all these writings
+        are mine — which I received personally from the hand of our
+        Master, of blessed memory — for there is no one who received
+        his holy handwriting from him except me</mark>, as is known
+        to all. And I need them greatly for the matter of the books of
+        our Master, of blessed memory — and great benefit will come
+        from this in many matters, and merit for the many. And he has
+        no need of them at all — only I need them. Therefore it is his
+        obligation to return them to me immediately.
+      </p>
+      <p>
+        And I am confident in him that he will fulfil my words — and
+        in this he will cause merit for the many for generations, and
+        his reward will be great. More than if they remain concealed
+        in his possession — which would be under the prohibition of
+        theft, G-d forbid, as above. And there is no need to elaborate
+        further for an upright man and a faithful lover such as he.
+        And in exchange I will give him other matters that he needs —
+        namely: printed <span class="translit">Teffilos</span> and
+        <span class="translit">Teffilos</span> that have not yet been
+        printed — which exist only in manuscript — and other such
+        matters.
+      </p>
+    </div>
+
+    <div class="closing" style="border-top:none; margin-top:0.5rem; padding-top:0;">
+      <p class="no-indent">The words of one who loves them in truth.</p>
+      <p class="signature"><strong>Nussun</strong>, as above.</p>
+    </div>
+
+  </div>
+
+  <!-- TRANSLATOR SECTION -->
+  <div class="translator-section">
+
+    <p>
+      <strong>Overview:</strong> This multi-part letter, written just
+      after Pesach 5586 to the Odessa community, is one of the most
+      varied in the collection: a warm opening blessing over wine sent
+      for the four cups, a soaring teaching on truth as the light of
+      Hashem that pierces all darkness, the instruction on joy through
+      foolishness, the Uman charge to Rabbi Tzvi Hirsh, and — in a
+      sharply different register — a formal demand for the return of
+      Rebbe Nachman's own manuscripts that have found their way into
+      another person's possession.
+    </p>
+
+    <h3>Key Themes</h3>
+    <div class="themes-grid">
+      <div class="theme-card">
+        <strong>Make a Window for the Ark — Tzohar</strong>
+        The teaching on truth as light is rooted in
+        <em>Likutay Moharan</em> I:112, which interprets the verse
+        <em>tzohar ta'aseh la'teivah</em> (make a window for the ark)
+        as: make light (<span class="translit">tzohar</span>) for
+        the word (<span class="translit">teivah</span> — ark and
+        word share the same letters). True speech creates a window
+        of light in any darkness. No circumstance can prevent it.
+      </div>
+      <div class="theme-card">
+        <strong>Joy Through Foolishness</strong>
+        <span class="translit">Mili d'shtuta u'vdichuta</span> —
+        words of foolishness and jesting — is a specific Breslov
+        teaching on using lightness, humour, and deliberate silliness
+        to escape melancholy. It appears in <em>Likutay Moharan</em>
+        and in <em>Sichos HaRan</em>. Reb Nussun names it directly
+        as one of the main tools of joy.
+      </div>
+      <div class="theme-card">
+        <strong>New Every Morning</strong>
+        The verse from Eichah 3:23 appears for the third time in the
+        collection (Letters 20, 23, 25) — Reb Nussun's touchstone
+        for the renewal of Divine kindness. Here it is applied with
+        a new depth: the teachings of truth themselves renew every
+        morning. They are not stale knowledge — they are living water.
+      </div>
+      <div class="theme-card">
+        <strong>Only I Received His Handwriting</strong>
+        Reb Nussun's claim — that no one received Rebbe Nachman's
+        handwritten manuscripts from him except Reb Nussun himself —
+        is both a historical statement and a declaration of
+        responsibility. These manuscripts belong to the whole of
+        Israel. Holding them is theft. Returning them creates merit
+        for all generations.
+      </div>
+    </div>
+
+    <h3>Note on the Manuscripts</h3>
+    <p>
+      The demand for Rebbe Nachman's handwritten manuscripts in Lines
+      262–264 is one of the most historically significant passages in
+      the collection. Reb Nussun makes clear that he received these
+      documents directly from Rebbe Nachman's own hand — that they
+      are the sole repository of Rebbe Nachman's autograph — and that
+      they are needed for the ongoing editing and publication of
+      Rebbe Nachman's works. The offer to exchange them for printed
+      and unprinted <em>Teffilos</em> reveals that the publication
+      of <em>Likutay Teffilos</em> is still in progress and that
+      manuscript versions of unpublished prayers exist in Reb Nussun's
+      possession.
+    </p>
+
+  </div>
+
+  <div class="ms-footer">
+    Translated in the merit of Na Nach Nachma Nachman MayUman &nbsp;·&nbsp; May HY bless this work.
+  </div>
+
+</div>
+</body>
+</html>

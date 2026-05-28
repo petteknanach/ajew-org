@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ullim LeTroofah – Letter Three | Leaves for Healing</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Cinzel:wght@400;500;600&family=Frank+Ruhl+Libre:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --parchment:      #f5efe0;
+    --parchment-dark: #ede3cc;
+    --ink:            #1c1209;
+    --ink-mid:        #3b2a14;
+    --ink-soft:       #5c4530;
+    --gold:           #8b6914;
+    --gold-pale:      #e8d9a0;
+    --crimson:        #7a1c1c;
+    --teal:           #1a4a4a;
+    --highlight-y:    rgba(220,195,80,0.22);
+    --highlight-b:    rgba(26,74,74,0.12);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background-color: #2a1f0e;
+    background-image:
+      radial-gradient(ellipse at 20% 10%, rgba(90,60,20,0.4) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 90%, rgba(50,30,10,0.5) 0%, transparent 60%);
+    min-height: 100vh;
+    font-family: 'EB Garamond', Georgia, serif;
+    color: var(--ink);
+    padding: 2rem 1rem 4rem;
+  }
+  .manuscript {
+    max-width: 780px;
+    margin: 0 auto;
+    background-color: var(--parchment);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    border: 1px solid var(--parchment-dark);
+    box-shadow:
+      0 0 0 6px #1a1005,
+      0 0 0 8px #8b6914,
+      0 0 0 10px #1a1005,
+      0 30px 80px rgba(0,0,0,0.7),
+      inset 0 0 60px rgba(180,140,60,0.08);
+    padding: 3.5rem 4rem 4rem;
+    position: relative;
+  }
+  .manuscript::before {
+    content: '';
+    position: absolute; top:0; left:0; right:0; bottom:0;
+    background: linear-gradient(180deg, rgba(200,170,90,0.06) 0%, transparent 30%, transparent 70%, rgba(150,110,40,0.05) 100%);
+    pointer-events: none;
+  }
+
+  .series-header {
+    text-align: center;
+    border-bottom: 2px solid var(--gold);
+    padding-bottom: 1.6rem;
+    margin-bottom: 2.2rem;
+    position: relative;
+  }
+  .series-header::after {
+    content: '✦';
+    position: absolute; bottom: -0.65em; left: 50%;
+    transform: translateX(-50%);
+    background: var(--parchment); padding: 0 0.6em;
+    color: var(--gold); font-size: 0.9rem;
+  }
+  .series-title {
+    font-family: 'Cinzel', serif; font-size: 1.1rem; letter-spacing: 0.18em;
+    color: var(--gold); text-transform: uppercase; margin-bottom: 0.3rem;
+  }
+  .series-heb {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 1.25rem; color: var(--ink-mid); margin-bottom: 0.3rem;
+  }
+  .series-subtitle { font-size: 0.95rem; color: var(--ink-mid); font-style: italic; margin-bottom: 0.2rem; }
+  .series-byline { font-size: 0.8rem; color: var(--ink-soft); letter-spacing: 0.04em; }
+
+  .letter-heading { text-align: center; margin-bottom: 1.6rem; }
+  .letter-number {
+    font-family: 'Cinzel', serif; font-size: 2.4rem; font-weight: 600;
+    color: var(--gold); letter-spacing: 0.1em; line-height: 1; margin-bottom: 0.3rem;
+  }
+  .letter-meta { font-size: 0.9rem; color: var(--ink-soft); font-style: italic; line-height: 1.65; }
+
+  .bezras-hashem {
+    text-align: center; font-style: italic;
+    color: var(--gold); font-size: 1.0rem;
+    margin-bottom: 0.5rem; letter-spacing: 0.03em;
+  }
+
+  .editorial-note {
+    background: var(--parchment-dark);
+    border-left: 3px solid var(--gold);
+    padding: 0.9rem 1.2rem 0.9rem 1.1rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.93rem; color: var(--ink-mid);
+    font-style: italic; line-height: 1.78;
+    border-radius: 0 3px 3px 0;
+  }
+  .editorial-note .label {
+    font-family: 'Cinzel', serif; font-size: 0.72rem;
+    letter-spacing: 0.14em; color: var(--gold); font-style: normal;
+    display: block; margin-bottom: 0.4rem; text-transform: uppercase;
+  }
+
+  .addressee {
+    border-left: 3px solid var(--gold);
+    padding: 0.75rem 1rem 0.75rem 1rem;
+    margin-bottom: 1.7rem;
+    font-size: 0.95rem; color: var(--ink-mid);
+    font-style: italic; line-height: 1.75;
+    background: rgba(200,170,80,0.06);
+  }
+  .addressee .label {
+    font-family: 'Cinzel', serif; font-size: 0.7rem;
+    letter-spacing: 0.13em; color: var(--gold); font-style: normal;
+    display: block; margin-bottom: 0.3rem; text-transform: uppercase;
+  }
+
+  .letter-body { text-align: justify; line-height: 1.88; font-size: 1.06rem; }
+  .letter-body p { margin-bottom: 1.15rem; text-indent: 1.6em; }
+  .letter-body p.no-indent { text-indent: 0; }
+
+  .translit  { font-style: italic; color: var(--teal); font-weight: 500; }
+  mark.gold  { background: var(--highlight-y); padding: 0 2px; border-radius: 2px; }
+  mark.teal  { background: var(--highlight-b); padding: 0 2px; border-radius: 2px; }
+  cite       { font-style: italic; color: var(--crimson); }
+  .verse-src { font-size: 0.82em; color: var(--crimson); font-style: normal; font-weight: 500; }
+
+  /* seed-and-tree passage — special indent block */
+  .parable-block {
+    margin: 0.2rem 0 1.15rem 2rem;
+    padding-left: 1.1rem;
+    border-left: 2px solid var(--gold-pale);
+    font-style: italic;
+    color: var(--ink-mid);
+    line-height: 1.9;
+    text-indent: 0;
+  }
+
+  .ps-label {
+    font-family: 'Cinzel', serif; font-size: 0.74rem;
+    letter-spacing: 0.12em; color: var(--gold); text-transform: uppercase;
+    display: block; margin: 1.5rem 0 0.25rem;
+  }
+
+  .closing { margin-top: 1.6rem; border-top: 1px solid var(--gold-pale); padding-top: 1.1rem; }
+  .signature {
+    text-align: right; font-style: italic; color: var(--ink-mid);
+    font-size: 1.0rem; margin-top: 0.35rem; text-indent: 0 !important;
+  }
+  .signature strong { font-style: normal; color: var(--ink); }
+
+  .translator-summary {
+    margin-top: 2.8rem; border: 1px solid var(--gold-pale); border-radius: 4px;
+    padding: 1.5rem 1.7rem; background: rgba(200,170,80,0.07); position: relative;
+  }
+  .translator-summary::before {
+    content: "Translator's Summary";
+    position: absolute; top: -0.75em; left: 1.2rem;
+    background: var(--parchment); padding: 0 0.6em;
+    font-family: 'Cinzel', serif; font-size: 0.72rem;
+    letter-spacing: 0.14em; color: var(--gold); text-transform: uppercase;
+  }
+  .translator-summary p {
+    font-size: 0.93rem; color: var(--ink-mid); line-height: 1.75;
+    margin-bottom: 0.75rem; text-indent: 0;
+  }
+  .translator-summary p:last-child { margin-bottom: 0; }
+
+  .themes-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(175px,1fr));
+    gap: 0.8rem; margin-top: 1rem;
+  }
+  .theme-card {
+    background: var(--parchment-dark); border-top: 2px solid var(--gold);
+    padding: 0.75rem 0.9rem; font-size: 0.85rem; color: var(--ink-mid); line-height: 1.55;
+  }
+  .theme-card strong {
+    display: block; font-family: 'Cinzel', serif; font-size: 0.71rem;
+    letter-spacing: 0.1em; color: var(--gold); text-transform: uppercase; margin-bottom: 0.3rem;
+  }
+
+  .ms-footer {
+    text-align: center; margin-top: 2.5rem; padding-top: 1rem;
+    border-top: 1px solid var(--gold-pale);
+    font-size: 0.78rem; color: var(--ink-soft); font-style: italic; letter-spacing: 0.04em;
+  }
+
+  @media (max-width: 600px) {
+    .manuscript { padding: 2rem 1.4rem 2.5rem; }
+    .letter-number { font-size: 1.8rem; }
+  }
+</style>
+</head>
+<body>
+<div class="manuscript">
+
+  <div class="series-header">
+    <div class="series-title">Ullim LeTroofah</div>
+    <div class="series-heb">עלים לתרופה</div>
+    <div class="series-subtitle">Leaves for Healing</div>
+    <div class="series-byline">The Sacred Letters of Rebbe Nachman of Breslov and Reb Nussun of Breslov, of blessed memory</div>
+  </div>
+
+  <div class="letter-heading">
+    <div class="letter-number">LETTER THREE</div>
+    <div class="letter-meta">
+      Monday, 17th of Iyar, Parshas Bechukosai &nbsp;·&nbsp; Year 5567 (1807)<br>
+      Written from the holy community of <strong>Zaslav</strong>
+    </div>
+  </div>
+
+  <!-- EDITOR'S NOTE — this letter has a special editorial introduction -->
+  <div class="editorial-note">
+    <span class="label">Editor's Introduction</span>
+    A verbatim, letter-for-letter copy of a letter in the handwriting of our
+    Master himself, of blessed memory, which he wrote to his brother the Rabbi,
+    our Teacher <strong>Yechiel</strong>, of blessed memory, of
+    <strong>Krementchuk</strong>. There was at that time a
+    <span class="translit">machlokes</span> (controversy and strife) against him
+    there, stirred up by wicked <span class="translit">misnagdim</span> (opponents
+    of Chassidus), who caused him very great distress — as is evident from our
+    Master's own words in this letter.
+  </div>
+
+  <!-- OPENING INVOCATION -->
+  <div class="bezras-hashem">With the help of G-d, may He be blessed</div>
+
+  <!-- ADDRESSEE -->
+  <div class="addressee">
+    <span class="label">To</span>
+    My beloved brother, my dear and cherished friend — the extraordinary and
+    outstanding scholar, the complete and perfect sage, and so forth — our
+    Teacher the Rabbi <strong>Yechiel Tzvi</strong> — may his light shine
+    and radiate.
+  </div>
+
+  <div class="letter-body">
+
+    <!-- LINE 42: grief at the persecution -->
+    <p class="no-indent">
+      Your letter reached me here in the holy community of <strong>Zaslav</strong>,
+      and it caused me very great grief — <mark class="gold">how could the hearts of
+      these wicked men have been so filled, and how could they have been so brazen
+      against you</mark>. And I marvel that no righteous person was found to stand
+      against the evil and to oppose them, to root out the wickedness.
+    </p>
+
+    <!-- LINE 43: the great encouragement — seed and tree parable -->
+    <p class="no-indent">
+      My beloved brother, my very soul and my heart —
+      <mark class="gold"><strong>fear them not, and be not broken before them</strong></mark>.
+      Only be strong and courageous in Torah and in the fear of Hashem all day long —
+      as we have spoken between us. And the merit of your forebears will support you.
+      For <mark class="teal">all of this is in order to elevate you, to increase your
+      honor, and to enlarge your mind</mark>. For just as it is impossible for all
+      manner of seeds to reach the fullness of their growth — until the seed is first
+      placed in the earth, and then the seed decays, and only after its decay does it
+      sprout and blossom and become a great tree — so too is this very matter:
+    </p>
+    <div class="parable-block">
+      Through their casting you down to the dust — through this very thing — you will
+      grow great and blossom and flourish in the world. Were these wicked ones to know
+      this, they would certainly not be disgracing you — but their entire intention is
+      for evil.
+    </div>
+
+    <!-- LINE 44: plans to stay in Zaslav -->
+    <p>
+      I hereby inform your eminence that it is my intention to remain here in the
+      holy community of <strong>Zaslav</strong> for approximately three months — and
+      afterward I shall know which direction to turn.
+    </p>
+
+    <!-- LINE 45: wife's deteriorating health and expenses -->
+    <p>
+      I hereby inform you that my wife — at first she had experienced a change for
+      the better, but now it has reversed and is going the other way, and
+      <mark class="gold">her strength diminishes each day</mark>. And the expenses
+      here are considerable — for I have had expenses here of fifty-four
+      <span class="translit">adumim</span> (red coins). Nothing further for now —
+      only life and peace.
+    </p>
+
+    <!-- LINE 46: closing salutation -->
+    <div class="closing">
+      <p class="no-indent">
+        From me, your brother, who loves your soul, who constantly seeks your
+        welfare, and who longs to hear good tidings from you and to see you in
+        life and in peace.
+      </p>
+      <p class="signature">
+        <strong>Nachman</strong>, son of our Teacher the Rabbi <strong>Simcha</strong> —
+        may his Rock protect him and give him life.
+      </p>
+    </div>
+
+    <!-- LINE 48: postscript — greetings from family; encouragement to followers -->
+    <span class="ps-label">Postscript — From the Family; To His Followers</span>
+    <p class="no-indent">
+      My wife extends greetings of peace to your wife. My daughter Miriam extends
+      greetings of peace to all of you. And extend greetings of peace to his supporters
+      and to all those attached to him.
+      <mark class="gold"><strong>Be strong and courageous — for there is reward for
+      your efforts, in this world and in the World to Come.</strong></mark>
+    </p>
+    <p class="signature"><strong>Nachman</strong>, as above.</p>
+
+  </div>
+
+  <div class="translator-summary">
+    <p>
+      <strong>Overview:</strong> Written just eleven days after Letter 2, this letter
+      to Rebbe Nachman's brother Reb Yechiel Tzvi in Krementchuk is one of the most
+      spiritually charged in the collection. Rebbe Nachman's brother was enduring fierce
+      persecution from <em>misnagdim</em> — opponents of Chassidus — and Rebbe Nachman
+      responds with passionate encouragement, a luminous parable, and a glimpse into
+      the Tzaddik's own personal circumstances: his wife's worsening illness and
+      mounting expenses.
+    </p>
+    <p><strong>Key themes:</strong></p>
+    <div class="themes-grid">
+      <div class="theme-card">
+        <strong>The Seed and the Tree</strong>
+        This is the heart of the letter: humiliation and being cast down are not
+        defeat — they are the necessary precondition for true growth. The seed must
+        decay in the earth before it can become a great tree. Suffering at the hands
+        of the wicked is the soil of eventual greatness.
+      </div>
+      <div class="theme-card">
+        <strong>Machlokes and the Tzaddik</strong>
+        Rebbe Nachman expresses genuine grief and bewilderment that no one rose to
+        defend his brother. This letter is a window into the very real suffering
+        that Breslov Chassidim endured from their opponents — not an abstraction.
+      </div>
+      <div class="theme-card">
+        <strong>Chazak Ve'ematz</strong>
+        <em>"Be strong and courageous"</em> — the same words spoken to Yehoshua
+        before entering the land — appears twice in this letter. Rebbe Nachman
+        consciously invokes this Biblical formula to fortify his brother and his
+        followers against persecution.
+      </div>
+      <div class="theme-card">
+        <strong>Reward in Both Worlds</strong>
+        The postscript closes with a direct promise: <em>"there is reward for your
+        efforts in this world and in the World to Come."</em> Rebbe Nachman does not
+        offer vague consolation — he offers a categorical assurance rooted in his
+        certainty of Divine justice.
+      </div>
+    </div>
+    <p style="margin-top:1rem;">
+      <strong>Wordplay note:</strong> The root <strong>ג-ד-ל</strong> (gadol — to
+      grow great) appears three times in rapid succession in the original — "to
+      elevate you… to increase your honor… to enlarge your mind" — and then again:
+      "you will grow great and blossom." This deliberate repetition of the root
+      intensifies the promise: every dimension of the person will be enlarged
+      through the very affliction that seems to diminish him.
+    </p>
+  </div>
+
+  <div class="ms-footer">
+    Translated in the merit of Na Nach Nachma Nachman MayUman &nbsp;·&nbsp; May HY bless this work.
+  </div>
+
+</div>
+</body>
+</html>

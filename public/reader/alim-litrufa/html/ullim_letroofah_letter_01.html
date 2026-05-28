@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ullim LeTroofah – Letter One | Leaves for Healing</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Cinzel:wght@400;500;600&family=Frank+Ruhl+Libre:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --parchment:      #f5efe0;
+    --parchment-dark: #ede3cc;
+    --ink:            #1c1209;
+    --ink-mid:        #3b2a14;
+    --ink-soft:       #5c4530;
+    --gold:           #8b6914;
+    --gold-pale:      #e8d9a0;
+    --crimson:        #7a1c1c;
+    --teal:           #1a4a4a;
+    --highlight-y:    rgba(220,195,80,0.22);
+    --highlight-b:    rgba(26,74,74,0.12);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background-color: #2a1f0e;
+    background-image:
+      radial-gradient(ellipse at 20% 10%, rgba(90,60,20,0.4) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 90%, rgba(50,30,10,0.5) 0%, transparent 60%);
+    min-height: 100vh;
+    font-family: 'EB Garamond', Georgia, serif;
+    color: var(--ink);
+    padding: 2rem 1rem 4rem;
+  }
+
+  .manuscript {
+    max-width: 780px;
+    margin: 0 auto;
+    background-color: var(--parchment);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    border: 1px solid var(--parchment-dark);
+    box-shadow:
+      0 0 0 6px #1a1005,
+      0 0 0 8px #8b6914,
+      0 0 0 10px #1a1005,
+      0 30px 80px rgba(0,0,0,0.7),
+      inset 0 0 60px rgba(180,140,60,0.08);
+    padding: 3.5rem 4rem 4rem;
+    position: relative;
+  }
+  .manuscript::before {
+    content: '';
+    position: absolute; top:0; left:0; right:0; bottom:0;
+    background: linear-gradient(180deg, rgba(200,170,90,0.06) 0%, transparent 30%, transparent 70%, rgba(150,110,40,0.05) 100%);
+    pointer-events: none;
+  }
+
+  /* SERIES HEADER */
+  .series-header {
+    text-align: center;
+    border-bottom: 2px solid var(--gold);
+    padding-bottom: 1.6rem;
+    margin-bottom: 2.2rem;
+    position: relative;
+  }
+  .series-header::after {
+    content: '✦';
+    position: absolute; bottom: -0.65em; left: 50%;
+    transform: translateX(-50%);
+    background: var(--parchment); padding: 0 0.6em;
+    color: var(--gold); font-size: 0.9rem;
+  }
+  .series-title {
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem; letter-spacing: 0.18em;
+    color: var(--gold); text-transform: uppercase; margin-bottom: 0.3rem;
+  }
+  .series-heb {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 1.25rem; color: var(--ink-mid); margin-bottom: 0.3rem;
+  }
+  .series-subtitle {
+    font-size: 0.95rem; color: var(--ink-mid); font-style: italic; margin-bottom: 0.2rem;
+  }
+  .series-byline {
+    font-size: 0.8rem; color: var(--ink-soft); letter-spacing: 0.04em;
+  }
+
+  /* LETTER HEADING */
+  .letter-heading { text-align: center; margin-bottom: 2rem; }
+  .letter-number {
+    font-family: 'Cinzel', serif; font-size: 2.4rem; font-weight: 600;
+    color: var(--gold); letter-spacing: 0.1em; line-height: 1; margin-bottom: 0.3rem;
+  }
+  .letter-meta { font-size: 0.9rem; color: var(--ink-soft); font-style: italic; }
+
+  /* EDITORIAL NOTE */
+  .editorial-note {
+    background: var(--parchment-dark);
+    border-left: 3px solid var(--gold);
+    padding: 0.9rem 1.2rem 0.9rem 1.1rem;
+    margin-bottom: 1.8rem;
+    font-size: 0.93rem; color: var(--ink-mid);
+    font-style: italic; line-height: 1.78;
+    border-radius: 0 3px 3px 0;
+  }
+  .editorial-note .label {
+    font-family: 'Cinzel', serif; font-size: 0.72rem;
+    letter-spacing: 0.14em; color: var(--gold); font-style: normal;
+    display: block; margin-bottom: 0.4rem; text-transform: uppercase;
+  }
+  .source-note {
+    font-size: 0.78rem; color: var(--ink-soft); margin-top: 0.5rem; font-style: normal;
+  }
+
+  /* LETTER BODY */
+  .letter-body { text-align: justify; line-height: 1.88; font-size: 1.06rem; }
+  .letter-body p { margin-bottom: 1.1rem; text-indent: 1.6em; }
+  .letter-body p.no-indent { text-indent: 0; }
+  .salutation { text-indent: 0 !important; font-size: 1.08rem; color: var(--ink-mid); margin-bottom: 1.2rem !important; }
+
+  /* inline */
+  .translit  { font-style: italic; color: var(--teal); font-weight: 500; }
+  mark.gold  { background: var(--highlight-y); padding: 0 2px; border-radius: 2px; }
+  mark.teal  { background: var(--highlight-b); padding: 0 2px; border-radius: 2px; }
+  cite       { font-style: italic; color: var(--crimson); }
+  .verse-src { font-size: 0.82em; color: var(--crimson); font-style: normal; font-weight: 500; }
+
+  .ps-label {
+    font-family: 'Cinzel', serif; font-size: 0.74rem;
+    letter-spacing: 0.12em; color: var(--gold); text-transform: uppercase;
+    display: block; margin: 1.4rem 0 0.2rem;
+  }
+
+  .closing { margin-top: 1.8rem; border-top: 1px solid var(--gold-pale); padding-top: 1.2rem; }
+  .signature {
+    text-align: right; font-style: italic; color: var(--ink-mid);
+    font-size: 1.0rem; margin-top: 0.4rem; text-indent: 0 !important;
+  }
+  .signature strong { font-style: normal; color: var(--ink); }
+
+  .ornament { text-align: center; color: var(--gold); letter-spacing: 0.5em; margin: 1.8rem 0 1.4rem; opacity: 0.7; }
+
+  /* TRANSLATOR SUMMARY */
+  .translator-summary {
+    margin-top: 2.8rem; border: 1px solid var(--gold-pale); border-radius: 4px;
+    padding: 1.5rem 1.7rem; background: rgba(200,170,80,0.07); position: relative;
+  }
+  .translator-summary::before {
+    content: "Translator's Summary";
+    position: absolute; top: -0.75em; left: 1.2rem;
+    background: var(--parchment); padding: 0 0.6em;
+    font-family: 'Cinzel', serif; font-size: 0.72rem;
+    letter-spacing: 0.14em; color: var(--gold); text-transform: uppercase;
+  }
+  .translator-summary p {
+    font-size: 0.93rem; color: var(--ink-mid); line-height: 1.75;
+    margin-bottom: 0.75rem; text-indent: 0;
+  }
+  .translator-summary p:last-child { margin-bottom: 0; }
+
+  .themes-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(175px,1fr));
+    gap: 0.8rem; margin-top: 1rem;
+  }
+  .theme-card {
+    background: var(--parchment-dark); border-top: 2px solid var(--gold);
+    padding: 0.75rem 0.9rem; font-size: 0.85rem; color: var(--ink-mid); line-height: 1.55;
+  }
+  .theme-card strong {
+    display: block; font-family: 'Cinzel', serif; font-size: 0.71rem;
+    letter-spacing: 0.1em; color: var(--gold); text-transform: uppercase; margin-bottom: 0.3rem;
+  }
+
+  .ms-footer {
+    text-align: center; margin-top: 2.5rem; padding-top: 1rem;
+    border-top: 1px solid var(--gold-pale);
+    font-size: 0.78rem; color: var(--ink-soft); font-style: italic; letter-spacing: 0.04em;
+  }
+
+  @media (max-width: 600px) {
+    .manuscript { padding: 2rem 1.4rem 2.5rem; }
+    .letter-number { font-size: 1.8rem; }
+  }
+</style>
+</head>
+<body>
+<div class="manuscript">
+
+  <div class="series-header">
+    <div class="series-title">Ullim LeTroofah</div>
+    <div class="series-heb">עלים לתרופה</div>
+    <div class="series-subtitle">Leaves for Healing</div>
+    <div class="series-byline">The Sacred Letters of Rebbe Nachman of Breslov and Reb Nussun of Breslov, of blessed memory</div>
+  </div>
+
+  <div class="letter-heading">
+    <div class="letter-number">LETTER ONE</div>
+    <div class="letter-meta">Year 5567 &nbsp;(1806–1807) &nbsp;·&nbsp; Written from Ostroha</div>
+  </div>
+
+  <div class="editorial-note">
+    <span class="label">Editor's Introduction</span>
+    This letter was written by our Master, Teacher, and Rabbi — <strong>Moharán</strong> — of
+    blessed memory, from <strong>Ostroha</strong>, to the general community of his followers,
+    requesting that they pray on his behalf, for at that time he was suffering a grievous physical
+    ailment. He implored them greatly to pray for him — and afterward he recovered. Upon returning
+    home he declared that it was their prayers that had restored him from the above-mentioned illness.
+    <div class="source-note">
+      (Found in the possession of R. Sender Travitzer of Tzfas; copied by R. Shmuël Horowitz, <em>z"l</em>.)
+    </div>
+  </div>
+
+  <div class="letter-body">
+
+    <p class="salutation">
+      To my good and dear friends — my beloved and pleasant companions and partners.
+    </p>
+
+    <p>
+      <mark class="gold">I beg you most earnestly, most earnestly</mark>, that you give to my wife
+      one hundred <span class="translit">adumim</span> (red coins). For I am in great need of
+      much money for expenses — the expenses here are very great — as the bearer of this letter
+      will tell you. Not doubled, mind you — but <strong>four times as much</strong>; for I have
+      not even a single <span class="translit">perutah</span> (the smallest coin).
+    </p>
+
+    <p>
+      I earnestly beg you — Rabbi Mosheh son of Rabbi Yisroel, together with Rabbi Mosheh
+      son of Henyeh — to send me the money as stated above.
+    </p>
+
+    <p>
+      If G-d wills it that I return home, I shall settle the account however you wish.
+      <mark class="gold">The matter is doubled and tripled</mark> — there is
+      <strong>no other course of action</strong> — only to send the hundred <span class="translit">adumim</span>.
+    </p>
+
+    <p>
+      Also, urge my wife to travel — that she should depart <strong>immediately and without delay</strong>.
+    </p>
+
+    <p>
+      Also, inform my dear friend our Teacher, the Rabbi <strong>Reb Nussun</strong> of
+      <strong>Nemirov</strong> — and all our <span class="translit">anshay shlomaynu</span>
+      (our fellowship of followers) — that they should pray to G-d for me, that He send me a
+      <span class="translit">refuah shleimah</span> (a complete healing). My illness I will
+      not write to you — <cite>ki haychay d'lo lisra mazlalay</cite> — so as not to worsen
+      one's fortune <span class="verse-src">(Nedarim 40)</span>. Only:
+      <mark class="teal">let them pray for me in every single prayer</mark>.
+    </p>
+
+    <p>
+      And <strong>do not forget</strong> the kindnesses I have shown to each one of you until now.
+    </p>
+
+    <p>
+      And perhaps when Hashem Yisborach grants me <mark class="gold">healing</mark>, you will yet
+      again be able to receive good from me.
+    </p>
+
+    <div class="ornament">· · · ✦ · · ·</div>
+
+    <p>
+      My beloved brothers and friends — <mark class="gold"><strong>I beg you most earnestly to
+      beseech on behalf of my downtrodden soul</strong></mark> — to beseech with
+      <span class="translit">kavanas ha'lev</span> (with the full devotion of the heart). Let each
+      one of you recall how you were when I first came to <strong>Breslov</strong> — and how much
+      spiritual and material <span class="translit">kochos</span> (strength and vital energy) I
+      expended on your account. It is therefore right and just that you now pray to Hashem Yisborach
+      for me — that Hashem Yisborach heal me — as Hashem shows me
+      <cite>the sweetness of His radiance</cite>
+      (<span class="translit">no'am zivo</span>).
+    </p>
+
+    <p>
+      Also, urge my wife to travel — for a <span class="translit">eshes ne'urim</span>
+      (a wife of one's youth) is not easily replaced — and especially given that this involves
+      only great expenses.
+    </p>
+
+    <p>
+      Also, I ask of you that <strong>no one among you should dare come</strong> to me.
+      I myself, if G-d wills it, will soon travel and come.
+    </p>
+
+    <div class="closing">
+      <p class="no-indent">
+        Are these not the words of one who truly loves you — with every one of you
+        <mark class="gold">dwelling in the yearning of my heart</mark>?
+      </p>
+      <p class="signature">
+        <strong>Nachman</strong>, son of our Teacher, the Rabbi <strong>Simcha</strong> —
+        may his Rock protect him and give him life.
+      </p>
+    </div>
+
+    <span class="ps-label">Postscript</span>
+    <p class="no-indent">
+      Greetings of peace to all our <span class="translit">anshay shlomaynu</span> —
+      to each and every one, according to his high standing.
+    </p>
+    <p class="signature"><strong>Nachman</strong>, as above.</p>
+
+    <span class="ps-label">Postscript — Repeated with Urgency</span>
+    <p class="no-indent">
+      <mark class="gold"><strong>I repeat urgently</strong></mark>: urge my wife that she should
+      travel <strong>quickly</strong> — and do not say anything about this matter, neither to
+      her nor to the children.
+    </p>
+    <p class="signature"><strong>Nachman</strong> son of our Teacher the Rabbi Simcha, as above.</p>
+
+  </div>
+
+  <div class="translator-summary">
+    <p>
+      <strong>Overview:</strong> This is the opening letter of the <em>Ullim LeTroofah</em>
+      collection, written by Rebbe Nachman of Breslov in 5567 (1806–7) while seriously ill in
+      Ostroha. Its raw urgency is striking — the Tzaddik who poured himself out for his followers
+      now turns to them in vulnerability, pleading for their prayers with his characteristic
+      passion and directness.
+    </p>
+    <p><strong>Key themes:</strong></p>
+    <div class="themes-grid">
+      <div class="theme-card">
+        <strong>Reciprocity of the Tzaddik</strong>
+        Rebbe Nachman reminds his followers of all the spiritual and material effort he
+        invested in them — and on that basis calls on them now to pray for him. The bond
+        between Tzaddik and disciple runs powerfully in both directions.
+      </div>
+      <div class="theme-card">
+        <strong>Healing Through Prayer</strong>
+        Following the teaching of Nedarim 40, the illness is not named publicly lest it
+        worsen one's fortune. Yet communal prayer — especially with <em>kavanas ha'lev</em>
+        — is the primary means of healing sought throughout this letter.
+      </div>
+      <div class="theme-card">
+        <strong>The Downtrodden Soul</strong>
+        Rebbe Nachman calls his own soul <em>ha'aluva</em> — the "downtrodden" or "lowly"
+        soul. This reflects the profound humility (<em>anavah</em>) at the core of
+        Breslov teaching, even in the Tzaddik himself.
+      </div>
+      <div class="theme-card">
+        <strong>Urgency and Repetition</strong>
+        The instruction to urge the Rebbetzin to travel appears three separate times.
+        This is not carelessness — repetition in Rebbe Nachman's language signals
+        spiritual weight and absolute necessity.
+      </div>
+    </div>
+  </div>
+
+  <div class="ms-footer">
+    Translated in the merit of Na Nach Nachma Nachman MayUman &nbsp;·&nbsp; May HY bless this work.
+  </div>
+
+</div>
+</body>
+</html>

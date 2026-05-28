@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ullim LeTroofah – Letter Twenty-Three | Reb Nussun: The Toil Is Precious as Sacrifices</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Cinzel:wght@400;500;600&family=Frank+Ruhl+Libre:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --parchment:      #f5efe0;
+    --parchment-dark: #ede3cc;
+    --ink:            #1c1209;
+    --ink-mid:        #3b2a14;
+    --ink-soft:       #5c4530;
+    --gold:           #8b6914;
+    --gold-pale:      #e8d9a0;
+    --crimson:        #7a1c1c;
+    --teal:           #1a4a4a;
+    --highlight-y:    rgba(220,195,80,0.22);
+    --highlight-b:    rgba(26,74,74,0.12);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background-color: #2a1f0e;
+    background-image:
+      radial-gradient(ellipse at 20% 10%, rgba(90,60,20,0.4) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 90%, rgba(50,30,10,0.5) 0%, transparent 60%);
+    min-height: 100vh;
+    font-family: 'EB Garamond', Georgia, serif;
+    color: var(--ink);
+    padding: 2rem 1rem 4rem;
+  }
+  .manuscript {
+    max-width: 780px;
+    margin: 0 auto;
+    background-color: var(--parchment);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    border: 1px solid var(--parchment-dark);
+    box-shadow:
+      0 0 0 6px #1a1005,
+      0 0 0 8px #8b6914,
+      0 0 0 10px #1a1005,
+      0 30px 80px rgba(0,0,0,0.7),
+      inset 0 0 60px rgba(180,140,60,0.08);
+    padding: 3.5rem 4rem 4rem;
+    position: relative;
+  }
+  .manuscript::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(180deg, rgba(200,170,90,0.06) 0%, transparent 30%, transparent 70%, rgba(150,110,40,0.05) 100%);
+    pointer-events: none;
+  }
+
+  .series-header {
+    text-align: center; border-bottom: 2px solid var(--gold);
+    padding-bottom: 1.6rem; margin-bottom: 2.2rem; position: relative;
+  }
+  .series-header::after {
+    content: '✦'; position: absolute; bottom: -0.65em; left: 50%;
+    transform: translateX(-50%); background: var(--parchment); padding: 0 0.6em;
+    color: var(--gold); font-size: 0.9rem;
+  }
+  .series-title {
+    font-family: 'Cinzel', serif; font-size: 1.1rem; letter-spacing: 0.18em;
+    color: var(--gold); text-transform: uppercase; margin-bottom: 0.3rem;
+  }
+  .series-heb { font-family: 'Frank Ruhl Libre', serif; font-size: 1.25rem; color: var(--ink-mid); margin-bottom: 0.3rem; }
+  .series-subtitle { font-size: 0.95rem; color: var(--ink-mid); font-style: italic; margin-bottom: 0.2rem; }
+  .series-byline { font-size: 0.8rem; color: var(--ink-soft); letter-spacing: 0.04em; }
+
+  .letter-heading { text-align: center; margin-bottom: 1.6rem; }
+  .letter-number {
+    font-family: 'Cinzel', serif; font-size: 2.4rem; font-weight: 600;
+    color: var(--gold); letter-spacing: 0.1em; line-height: 1; margin-bottom: 0.3rem;
+  }
+  .letter-meta { font-size: 0.9rem; color: var(--ink-soft); font-style: italic; line-height: 1.65; }
+
+  .addressee {
+    border-left: 3px solid var(--gold);
+    padding: 0.75rem 1rem; margin-bottom: 1.7rem;
+    font-size: 0.95rem; color: var(--ink-mid); font-style: italic; line-height: 1.75;
+    background: rgba(200,170,80,0.06);
+  }
+  .addressee .label {
+    font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 0.13em;
+    color: var(--gold); font-style: normal; display: block; margin-bottom: 0.3rem;
+    text-transform: uppercase;
+  }
+
+  .letter-body { text-align: justify; line-height: 1.90; font-size: 1.06rem; }
+  .letter-body p { margin-bottom: 1.15rem; text-indent: 1.6em; }
+  .letter-body p.no-indent { text-indent: 0; }
+
+  .translit  { font-style: italic; color: var(--teal); font-weight: 500; }
+  mark.gold  { background: var(--highlight-y); padding: 0 2px; border-radius: 2px; }
+  mark.teal  { background: var(--highlight-b); padding: 0 2px; border-radius: 2px; }
+  cite       { font-style: italic; color: var(--crimson); }
+  .verse-src { font-size: 0.82em; color: var(--crimson); font-style: normal; font-weight: 500; }
+
+  /* the toil-as-sacrifice teaching — elevated central block */
+  .sacrifice-block {
+    margin: 0.3rem 0 1.15rem 0;
+    padding: 1.3rem 1.6rem;
+    border: 1px solid var(--gold-pale);
+    border-left: 4px solid var(--gold);
+    background: rgba(220,195,80,0.09);
+    line-height: 2.0;
+    font-size: 1.05rem;
+    color: var(--ink-mid);
+  }
+  .sacrifice-block p { margin-bottom: 0.8rem; text-indent: 0; }
+  .sacrifice-block p:last-child { margin-bottom: 0; }
+
+  /* sources — the three citations -->
+  .sources-block {
+    margin: 0.3rem 0 1.15rem 0;
+    padding: 1.1rem 1.4rem;
+    border: 1px solid var(--gold-pale);
+    border-left: 3px solid var(--teal);
+    background: rgba(26,74,74,0.05);
+    line-height: 1.92;
+    font-size: 1.02rem;
+    color: var(--ink-mid);
+  }
+  .sources-block .sl {
+    font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 0.13em;
+    color: var(--teal); display: block; margin-bottom: 0.5rem; text-transform: uppercase;
+  }
+  .sources-block p { margin-bottom: 0.75rem; text-indent: 0; }
+  .sources-block p:last-child { margin-bottom: 0; }
+
+  /* the closing burst of faith */
+  .faith-burst {
+    margin: 0.3rem 0 1.15rem 0;
+    padding: 1.1rem 1.4rem;
+    border-top: 2px solid var(--gold-pale);
+    border-bottom: 2px solid var(--gold-pale);
+    background: rgba(200,170,80,0.07);
+    line-height: 1.96;
+    font-size: 1.04rem;
+    color: var(--ink-mid);
+    text-align: center;
+    font-style: italic;
+  }
+
+  .closing {
+    margin-top: 1.8rem; border-top: 1px solid var(--gold-pale); padding-top: 1.2rem;
+  }
+  .signature {
+    text-align: right; font-style: italic; color: var(--ink-mid);
+    font-size: 1.0rem; margin-top: 0.4rem; text-indent: 0 !important;
+  }
+  .signature strong { font-style: normal; color: var(--ink); }
+
+  /* TRANSLATOR SECTION */
+  .translator-section {
+    margin-top: 3rem; border-top: 2px solid var(--gold);
+    padding-top: 1.6rem; position: relative;
+  }
+  .translator-section::before {
+    content: "— From the Translator —";
+    position: absolute; top: -0.75em; left: 50%;
+    transform: translateX(-50%);
+    background: var(--parchment); padding: 0 0.9em;
+    font-family: 'Cinzel', serif; font-size: 0.72rem;
+    letter-spacing: 0.16em; color: var(--gold); text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .translator-section p {
+    font-size: 0.93rem; color: var(--ink-mid); line-height: 1.78;
+    margin-bottom: 0.8rem; text-indent: 0;
+  }
+  .translator-section p:last-child { margin-bottom: 0; }
+  .translator-section h3 {
+    font-family: 'Cinzel', serif; font-size: 0.8rem; letter-spacing: 0.12em;
+    color: var(--gold); text-transform: uppercase; margin: 1.2rem 0 0.5rem;
+  }
+
+  .themes-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(175px,1fr));
+    gap: 0.8rem; margin-top: 0.6rem;
+  }
+  .theme-card {
+    background: var(--parchment-dark); border-top: 2px solid var(--gold);
+    padding: 0.75rem 0.9rem; font-size: 0.85rem; color: var(--ink-mid); line-height: 1.55;
+  }
+  .theme-card strong {
+    display: block; font-family: 'Cinzel', serif; font-size: 0.71rem;
+    letter-spacing: 0.1em; color: var(--gold); text-transform: uppercase; margin-bottom: 0.3rem;
+  }
+
+  .ms-footer {
+    text-align: center; margin-top: 2.5rem; padding-top: 1rem;
+    border-top: 1px solid var(--gold-pale);
+    font-size: 0.78rem; color: var(--ink-soft); font-style: italic; letter-spacing: 0.04em;
+  }
+
+  @media (max-width: 600px) {
+    .manuscript { padding: 2rem 1.4rem 2.5rem; }
+    .letter-number { font-size: 1.8rem; }
+  }
+</style>
+</head>
+<body>
+<div class="manuscript">
+
+  <div class="series-header">
+    <div class="series-title">Ullim LeTroofah</div>
+    <div class="series-heb">עלים לתרופה</div>
+    <div class="series-subtitle">Leaves for Healing</div>
+    <div class="series-byline">The Sacred Letters of Rebbe Nachman of Breslov and Reb Nussun of Breslov, of blessed memory</div>
+  </div>
+
+  <div class="letter-heading">
+    <div class="letter-number">LETTER TWENTY-THREE</div>
+    <div class="letter-meta">
+      No date recorded &nbsp;·&nbsp; Written from <strong>Breslov</strong>
+    </div>
+  </div>
+
+  <div class="addressee">
+    <span class="label">To</span>
+    Peace to my beloved son, may he live.
+  </div>
+
+  <div class="letter-body">
+
+    <!-- LINE 240: opening — the bearer will tell you; the crying complaint answered -->
+    <p class="no-indent">
+      The bearer of this letter will tell you everything. My wish is
+      that you write immediately a letter to Rabbi Naftali, and so
+      forth. And as for your crying out in every letter — I said I
+      would place a muzzle on my mouth and not respond to you now.
+      But out of love for you I could not hold back — and I will
+      respond to you a little.
+    </p>
+
+    <p>
+      What you wrote — <mark class="teal">they harass you</mark>
+      (<span class="translit">me mutshest dich</span>) and so forth
+      — know that <mark class="gold">they harass everyone</mark>. As
+      for me — they have already harassed me very greatly beyond what
+      you can imagine. And man was created so that they should toil
+      and afflict him — and he should strive and strengthen himself
+      against them. For <cite>man is born to toil</cite>
+      <span class="verse-src">[Iyov 5:7]</span>.
+    </p>
+
+    <!-- The toil-as-sacrifice teaching — the heart of this letter -->
+    <div class="sacrifice-block">
+      <p>
+        <mark class="gold"><strong>Happy is the one who toils and
+        labours and suffers in fleeing from the vain thoughts — for
+        the toil itself is precious in the eyes of Hashem Yisborach
+        like sacrifices.</strong></mark>
+      </p>
+      <p>
+        For this is the aspect of <cite>For Your sake we are slain
+        all the day long — we are reckoned as sheep for the
+        slaughter</cite>
+        <span class="verse-src">[Tehillim 44:23]</span> — as
+        explained in his holy books
+        <span class="verse-src">(Sichos HaRan, 12)</span>.
+      </p>
+    </div>
+
+    <!-- LINE 241: the full teaching on mastering thought — with three sources -->
+    <p class="no-indent">
+      And you already know — and you must return and remember this
+      each day and at every time — that
+      <mark class="gold">the thought is in a person's hand to direct
+      it as he wishes</mark> — and it is impossible for two thoughts
+      to exist simultaneously, and so forth. And if even so, each
+      time the thought flees to the filthy places — one must seize it
+      like a horse by its bridle and return it to its place. And you
+      already know that one must not look backward at all — and let
+      the uncircumcised one stand there, and so forth
+      <span class="verse-src">(see Likutay Moharan I, 72)</span>.
+      And you should do your own part — in your business dealings or
+      in words of Torah — and do not look backward at all. And also
+      to strengthen yourself from within all the confusions and
+      thoughts — to gladden yourself that despite everything
+      <mark class="teal">you are not in opposition to the point of
+      truth, to such a light</mark>, and so forth.
+    </p>
+
+    <!-- The three specific Breslov sources -->
+    <div class="sources-block">
+      <span class="sl">Three Teachings from the Holy Books</span>
+      <p>
+        <strong>First</strong> — what is explained in his holy books
+        <span class="verse-src">(Likutay Moharan II, 48)</span>:
+        that correspondingly to this — know that for such a person,
+        <mark class="teal">every single movement and shift by which
+        he detaches himself from bad to good is exceedingly precious
+        to Him, may He be blessed</mark>.
+      </p>
+      <p>
+        <strong>Second</strong> — what he said
+        <span class="verse-src">(Likutay Moharan, 233)</span>: that
+        sometimes it is allowed intentionally that the animals should
+        battle one another — the impure animals with the pure animals
+        — which are the good thoughts and the bad thoughts, and so
+        forth.
+      </p>
+      <p>
+        <strong>Third</strong> — and many more like these that we
+        merited to receive from him, of blessed memory — all of which
+        are counsel and strengthening very greatly. <mark class="gold">The
+        principle is that one must strengthen himself with all his
+        power so that the thought should be in his hand.</mark> And
+        whatever they do to him — let him not look at that at all.
+      </p>
+      <p>
+        And over all of them — remember and know and believe in the
+        greatness of the power of the holy Elder in whom we take
+        shelter for eternity. And also what he said
+        <span class="verse-src">(Chayay Moharan, 67)</span>: that
+        Hashem Yisborach is very great and no one knows at all —
+        and <mark class="gold">everything turns to the good through
+        his great power, which draws wondrous new kindnesses at every
+        time</mark>.
+      </p>
+    </div>
+
+    <!-- The closing burst of faith from Eichah -->
+    <div class="faith-burst">
+      <cite>The kindnesses of Hashem — for they have not ceased</cite>
+      <span class="verse-src">[Eichah 3:22]</span> and so forth —
+      <mark class="gold"><cite>new every morning</cite>
+      <span class="verse-src">[ibid. 3:23]</span></mark> and so forth.
+      And at every time and at every moment —
+      <mark class="teal"><strong>be strong and let your heart take
+      courage — and hope to Hashem</strong></mark>
+      <span class="verse-src">[Tehillim 27:14]</span>.
+    </div>
+
+    <!-- LINE 242: closing -->
+    <div class="closing">
+      <p class="signature">
+        The words of your father — <strong>Nussun</strong> of Breslov.
+      </p>
+    </div>
+
+  </div>
+
+  <!-- TRANSLATOR SECTION -->
+  <div class="translator-section">
+
+    <p>
+      <strong>Overview:</strong> This compact, undated letter is one of
+      the most theologically concentrated in the entire collection. It
+      is framed as a brief response to a son who has been crying out
+      in every letter about being harassed and burdened. Reb Nussun
+      begins by saying he almost didn't answer — and then delivers a
+      complete doctrine of spiritual combat in two dense paragraphs,
+      citing five specific teachings from Rebbe Nachman by name and
+      reference. The central revelation: the very toil of struggling
+      against bad thoughts is itself precious to G-d as sacrifices.
+    </p>
+
+    <h3>Key Themes</h3>
+    <div class="themes-grid">
+      <div class="theme-card">
+        <strong>Toil as Sacrifice</strong>
+        The teaching from <em>Sichos HaRan</em> 12 — that the struggle
+        itself, the exhausting daily battle against vain thoughts, is
+        precious to Hashem like Temple sacrifices — is one of the most
+        liberating teachings in Breslov. You do not have to win the
+        battle. You have to fight it. The fighting is the
+        <span class="translit">korban</span>.
+      </div>
+      <div class="theme-card">
+        <strong>Every Movement from Bad to Good</strong>
+        The teaching from <em>Likutay Moharan II</em>, 48 — that every
+        smallest shift away from bad toward good is exceedingly precious
+        to Hashem — builds on the sacrifice teaching. Even a half-step,
+        even a flicker of will in the right direction, registers in the
+        highest realms.
+      </div>
+      <div class="theme-card">
+        <strong>The Animals in Battle</strong>
+        The teaching from <em>Likutay Moharan</em> 233 — that sometimes
+        G-d deliberately allows the impure thoughts to battle the pure
+        ones — reframes the whole experience of inner conflict. It is
+        not a sign of failure or distance from G-d. It is something
+        that is sometimes <em>allowed intentionally</em>. The battle
+        itself has a purpose.
+      </div>
+      <div class="theme-card">
+        <strong>New Every Morning</strong>
+        The closing verses from Eichah 3:22–23 — <em>the kindnesses of
+        Hashem have not ceased — they are new every morning</em> —
+        are the great counter-declaration to every form of despair.
+        Each morning is a genuinely new creation of Divine kindness.
+        Nothing from yesterday can exhaust today's supply.
+      </div>
+    </div>
+
+    <h3>On the Yiddish Opening</h3>
+    <p>
+      The son's complaint is quoted verbatim in Yiddish —
+      <em>me mutshest dich</em> (they harass you) — and Reb Nussun
+      responds by matching it in Yiddish before switching to Hebrew:
+      <em>me mutshest itlekhn</em> (they harass everyone). This
+      mirroring of the son's own language — entering his register
+      before elevating it — is a mark of Reb Nussun's pastoral
+      genius. He meets his son where he is before taking him
+      somewhere higher.
+    </p>
+
+    <h3>Sources in This Letter</h3>
+    <p>
+      Five specific citations in a letter of three paragraphs: Iyov
+      5:7, Tehillim 44:23, <em>Sichos HaRan</em> 12,
+      <em>Likutay Moharan</em> I:72, <em>Likutay Moharan</em> II:48,
+      <em>Likutay Moharan</em> 233, and <em>Chayay Moharan</em> 67
+      — plus the closing triad from Eichah 3:22–23 and Tehillim
+      27:14. Every claim is grounded, every teaching sourced. Reb
+      Nussun is not offering personal opinion — he is transmitting
+      the received tradition of his Master, cited precisely.
+    </p>
+
+  </div>
+
+  <div class="ms-footer">
+    Translated in the merit of Na Nach Nachma Nachman MayUman &nbsp;·&nbsp; May HY bless this work.
+  </div>
+
+</div>
+</body>
+</html>

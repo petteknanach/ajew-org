@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ullim LeTroofah – Letter One Hundred and Three | Reb Nussun: I Am Dark but Comely — Turn Grief into Joy — All Sins Turn to Merits</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Cinzel:wght@400;500;600&family=Frank+Ruhl+Libre:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--parchment:#f5efe0;--parchment-dark:#ede3cc;--ink:#1c1209;--ink-mid:#3b2a14;--ink-soft:#5c4530;--gold:#8b6914;--gold-pale:#e8d9a0;--crimson:#7a1c1c;--teal:#1a4a4a;--highlight-y:rgba(220,195,80,0.22);--highlight-b:rgba(26,74,74,0.12);}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background-color:#2a1f0e;background-image:radial-gradient(ellipse at 20% 10%,rgba(90,60,20,0.4) 0%,transparent 60%),radial-gradient(ellipse at 80% 90%,rgba(50,30,10,0.5) 0%,transparent 60%);min-height:100vh;font-family:'EB Garamond',Georgia,serif;color:var(--ink);padding:2rem 1rem 4rem;}
+  .manuscript{max-width:780px;margin:0 auto;background-color:var(--parchment);border:1px solid var(--parchment-dark);box-shadow:0 0 0 6px #1a1005,0 0 0 8px #8b6914,0 0 0 10px #1a1005,0 30px 80px rgba(0,0,0,0.7),inset 0 0 60px rgba(180,140,60,0.08);padding:3.5rem 4rem 4rem;position:relative;}
+  .manuscript::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(180deg,rgba(200,170,90,0.06) 0%,transparent 30%,transparent 70%,rgba(150,110,40,0.05) 100%);pointer-events:none;}
+  .series-header{text-align:center;border-bottom:2px solid var(--gold);padding-bottom:1.6rem;margin-bottom:2.2rem;position:relative;}
+  .series-header::after{content:'✦';position:absolute;bottom:-0.65em;left:50%;transform:translateX(-50%);background:var(--parchment);padding:0 0.6em;color:var(--gold);font-size:0.9rem;}
+  .series-title{font-family:'Cinzel',serif;font-size:1.1rem;letter-spacing:0.18em;color:var(--gold);text-transform:uppercase;margin-bottom:0.3rem;}
+  .series-heb{font-family:'Frank Ruhl Libre',serif;font-size:1.25rem;color:var(--ink-mid);margin-bottom:0.3rem;}
+  .series-subtitle{font-size:0.95rem;color:var(--ink-mid);font-style:italic;margin-bottom:0.2rem;}
+  .series-byline{font-size:0.8rem;color:var(--ink-soft);letter-spacing:0.04em;}
+  .letter-heading{text-align:center;margin-bottom:1.6rem;}
+  .letter-number{font-family:'Cinzel',serif;font-size:2.4rem;font-weight:600;color:var(--gold);letter-spacing:0.1em;line-height:1;margin-bottom:0.3rem;}
+  .letter-meta{font-size:0.9rem;color:var(--ink-soft);font-style:italic;line-height:1.65;}
+  .addressee{border-left:3px solid var(--gold);padding:0.75rem 1rem;margin-bottom:1.7rem;font-size:0.95rem;color:var(--ink-mid);font-style:italic;line-height:1.75;background:rgba(200,170,80,0.06);}
+  .addressee .label{font-family:'Cinzel',serif;font-size:0.7rem;letter-spacing:0.13em;color:var(--gold);font-style:normal;display:block;margin-bottom:0.3rem;text-transform:uppercase;}
+  .letter-body{text-align:justify;line-height:1.90;font-size:1.06rem;}
+  .letter-body p{margin-bottom:1.15rem;text-indent:1.6em;}
+  .letter-body p.no-indent{text-indent:0;}
+  .translit{font-style:italic;color:var(--teal);font-weight:500;}
+  mark.gold{background:var(--highlight-y);padding:0 2px;border-radius:2px;}
+  mark.teal{background:var(--highlight-b);padding:0 2px;border-radius:2px;}
+  cite{font-style:italic;color:var(--crimson);}
+  .verse-src{font-size:0.82em;color:var(--crimson);font-style:normal;font-weight:500;}
+  .bracket{color:var(--ink-soft);font-size:0.9em;font-style:italic;}
+  .shechorah-block{margin:0.3rem 0 1.15rem 0;padding:1.2rem 1.6rem;border-left:4px solid var(--gold);border-top:2px solid var(--gold);background:rgba(220,195,80,0.09);line-height:2.05;font-size:1.04rem;color:var(--ink-mid);}
+  .shechorah-block p{margin-bottom:0.9rem;text-indent:0;}
+  .shechorah-block p:last-child{margin-bottom:0;}
+  .ps-label{font-family:'Cinzel',serif;font-size:0.74rem;letter-spacing:0.12em;color:var(--teal);text-transform:uppercase;display:block;margin-bottom:0.4rem;}
+  .nephew-block{margin:1.3rem 0 1.15rem 0;padding:1.2rem 1.6rem;border-left:4px solid var(--teal);border-top:2px solid var(--teal);background:rgba(26,74,74,0.06);line-height:2.05;font-size:1.04rem;color:var(--ink-mid);}
+  .nephew-block p{margin-bottom:0.9rem;text-indent:0;}
+  .nephew-block p:last-child{margin-bottom:0;}
+  .closing{margin-top:1.8rem;border-top:1px solid var(--gold-pale);padding-top:1.2rem;}
+  .signature{text-align:right;font-style:italic;color:var(--ink-mid);font-size:1.0rem;margin-top:0.35rem;text-indent:0!important;}
+  .signature strong{font-style:normal;color:var(--ink);}
+  .translator-section{margin-top:3rem;border-top:2px solid var(--gold);padding-top:1.6rem;position:relative;}
+  .translator-section::before{content:"— From the Translator —";position:absolute;top:-0.75em;left:50%;transform:translateX(-50%);background:var(--parchment);padding:0 0.9em;font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:0.16em;color:var(--gold);text-transform:uppercase;white-space:nowrap;}
+  .translator-section p{font-size:0.93rem;color:var(--ink-mid);line-height:1.78;margin-bottom:0.8rem;text-indent:0;}
+  .translator-section p:last-child{margin-bottom:0;}
+  .translator-section h3{font-family:'Cinzel',serif;font-size:0.8rem;letter-spacing:0.12em;color:var(--gold);text-transform:uppercase;margin:1.2rem 0 0.5rem;}
+  .themes-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:0.8rem;margin-top:0.6rem;}
+  .theme-card{background:var(--parchment-dark);border-top:2px solid var(--gold);padding:0.75rem 0.9rem;font-size:0.85rem;color:var(--ink-mid);line-height:1.55;}
+  .theme-card strong{display:block;font-family:'Cinzel',serif;font-size:0.71rem;letter-spacing:0.1em;color:var(--gold);text-transform:uppercase;margin-bottom:0.3rem;}
+  .ms-footer{text-align:center;margin-top:2.5rem;padding-top:1rem;border-top:1px solid var(--gold-pale);font-size:0.78rem;color:var(--ink-soft);font-style:italic;letter-spacing:0.04em;}
+  @media(max-width:600px){.manuscript{padding:2rem 1.4rem 2.5rem;}.letter-number{font-size:1.8rem;}}
+</style>
+</head>
+<body>
+<div class="manuscript">
+
+  <div class="series-header">
+    <div class="series-title">Ullim LeTroofah</div>
+    <div class="series-heb">עלים לתרופה</div>
+    <div class="series-subtitle">Leaves for Healing</div>
+    <div class="series-byline">The Sacred Letters of Rebbe Nachman of Breslov and Reb Nussun of Breslov, of blessed memory</div>
+  </div>
+
+  <div class="letter-heading">
+    <div class="letter-number">LETTER ONE HUNDRED AND THREE</div>
+    <div class="letter-meta">
+      With the help of Hashem Yisborach &nbsp;·&nbsp; Monday, Parshas Pekudei &nbsp;·&nbsp; Year 5593 (1833)
+    </div>
+  </div>
+
+  <div class="addressee">
+    <span class="label">To</span>
+    My beloved son, my dear one. [<strong>Yitzchok</strong>]
+  </div>
+
+  <div class="letter-body">
+
+    <p class="no-indent">
+      Your letter I received on the night of Shabbos Kodesh before the Kiddush —
+      as well as the letter from my friend Rabbi Hera — may his light shine — and
+      it was a comfort to me. And now there is nothing new to add. And behold — to
+      revive you with true words — the time does not now permit it. And you have
+      already heard much that suffices to revive and gladden your soul at every time
+      — however it is, however it is. For all that we spoke much about — that one
+      must revive oneself through every good point — and especially in the matter of
+      what we merited and that we were saved from opposition to the very truth itself
+      — all of it is not mere empty words — but the essential thing is to walk by
+      them and fulfil them. And the essential thing —
+      <mark class="teal">at the time when a person is truly distressed because of
+      his failings — precisely then he needs more to revive himself through all of
+      this — and to turn the grief and sighing into joy</mark> — for all that grows
+      stronger upon him — the grief and sighing — and seeks to cast upon him sadness
+      and melancholy because of what he has done — he should turn all of it into joy.
+    </p>
+
+    <div class="shechorah-block">
+      <p>
+        And let him say in his heart: on the contrary — even so I merited and even
+        so I do not oppose at all. And
+        <mark class="gold">even if I am dark in my deeds — I am comely through the
+        deeds of our awesome Rebbe — of blessed and holy memory — and also in my
+        own deeds there are comely ones</mark>
+        <span class="bracket">[אִם שְׁחוֹרָה אֲנִי בְּמַעֲשַׂי נָאוָה אֲנִי
+        בְּמַעֲשֵׂי רַבֵּנוּ — from Shir HaShirim 1:5: <em>Shechorah ani v'navah</em>
+        — "I am dark but comely." The verse of the beloved who acknowledges her
+        darkness — tanned by the sun, dark as the tents of Kedar — while asserting
+        her comeliness: "yet comely as the curtains of Shlomo." Rashi explains: the
+        dark tents are the deeds that are flawed; the comely curtains are the
+        holiness of the Shechinah's dwelling. Reb Nussun applies it as a daily
+        spiritual practice: even one whose own deeds are dark may say — I am comely
+        through the holy deeds and teachings of the Rebbe, and even in my own deeds
+        there is some comeliness. Darkness and beauty coexist in a single breath —
+        the verse does not demand perfection as the condition of beauty]</span>
+        <span class="verse-src">[Shir HaShirim 1:5 — see Rashi there]</span>.
+        And I have already spoken — praise be to G-d — much about this matter on
+        the nearby Shabbosos that have passed. Please, my beloved son — go in this
+        path to revive and gladden your soul at every time — and to turn the grief
+        and sighing precisely into joy — and through this you will still be able to
+        strengthen yourself to engage in Torah and prayer with joy. And to Hashem
+        is salvation — that everything will be turned for good.
+      </p>
+      <p>
+        And <mark class="gold">all the sins will be turned to merits — all of it
+        through his merit and his great and very awesome power</mark>
+        <span class="bracket">[וְכָל הָעֲווֹנוֹת יִתְהַפְּכוּ לִזְכֻיּוֹת —
+        all sins transformed into merits through the Rebbe's merit and power. The
+        weight of direct transmission: <em>kasher shamati mipihu hakadosh b'ferush</em>
+        — as I heard from his holy mouth explicitly. Not deduction but a direct
+        statement the Rebbe made in Reb Nussun's personal hearing, preserved here]
+        </span>
+        — as I heard from his holy mouth explicitly. And this suffices for now.
+      </p>
+    </div>
+
+    <div class="closing">
+      <p class="no-indent">
+        The words of your father — who waits and hopes to revive you and gladden
+        you in the salvation of Hashem — who merited
+        <mark class="teal">to draw living waters such as these from the springs of
+        salvation</mark>
+        <span class="bracket">[אֲשֶׁר זָכִינוּ לִשְׁאֹב מַיִם חַיִּים כָּאֵלֶּה
+        מִמַּעְיְנֵי הַיְשׁוּעָה — a direct quotation of Yeshayahu 12:3:
+        <em>u'sh'avtem mayim b'sasson mima'ayanei ha'yeshuah</em> — "and you shall
+        draw water in joy from the springs of salvation." This verse is the central
+        verse of the great water-drawing ceremony — <em>Simchas Beis HaSho'evah</em>
+        — on Sukkos, perhaps the single most joyful moment in the entire Temple
+        calendar. The Mishnah (Sukkah 5:1) declares: "whoever has not seen the
+        Simchas Beis HaSho'evah has never seen joy in his life." Reb Nussun's closing
+        signature — "who merited to draw living waters from the springs of salvation"
+        — places the entire act of letter-writing within the framework of Yeshayahu's
+        Messianic vision of supreme joy: the letters themselves are drawn from these
+        very springs]</span>.
+      </p>
+      <p class="signature"><strong>Nussun</strong> of Breslov.</p>
+    </div>
+
+    <div class="nephew-block">
+      <span class="ps-label">To Rabbi Yitzchok Ayzik — Reb Nussun's Nephew</span>
+      <p>
+        And peace to all our <span class="translit">anshei sh'lomaynu</span> with
+        great love — and especially to my friend, my sister's son, the Rabbinic one,
+        our Teacher the Rabbi Yitzchok Ayzik — may his light shine. Be strong and
+        resolute — and trust in Hashem — that He will send you a complete healing
+        speedily. And do not engage in remedies — and even to apply leeches — send
+        them to your enemies and adversaries — and you will receive healing from
+        Hashem from heaven. And strengthen yourself from now to engage in Torah each
+        day — a little or a great deal — in any case let there not pass over you a
+        single day all the days of your life without engagement in Torah. And the
+        essential thing is to study a halachic authority each day without fail — a
+        fixed practice, never to be broken — all the days of your life. And also to
+        increase in prayers and supplications and petitions each day — and to give
+        charity according to your capacity — and a little more than your capacity.
+        And then it will be good for you in this world and the next forever. For
+        the days of our life are vanity — like a passing shadow — and nothing will
+        remain of us except the small good that we snatched in these days of vanity
+        — and it will be
+        <mark class="gold">a great spoil for us afterwards when our end comes</mark>
+        <span class="bracket">[וְיִהְיֶה לָנוּ לְשָׁלָל גָּדוֹל — the image of the
+        soldier who returns home laden with the spoils of battle: the good deeds
+        snatched from the vanity of days are the plunder carried home as great
+        treasure when the battle ends. The *chatof v'echol* idiom from Eruvin 54a
+        in Letter 86 now expressed as the warrior's *shalal gadol*]</span>.
+        <mark class="gold">It is good for a person to set all his aspiration only
+        upon this — and to gladden his soul in it all his days — and then his end
+        will be good forever</mark>
+        <span class="bracket">[טוֹב לְגֶבֶר לָשִׂים כָּל מְגַמָּתוֹ רַק עַל זֶה
+        — echoing Eichah 3:27-28: <em>tov lagever ki yissa ol bine'urav — yeshev
+        badad v'yiddom</em> — "it is good for a man that he bear the yoke in his
+        youth — let him sit in solitude and be still." The counsel of Eichah to the
+        one who suffers: bear the yoke, sit in stillness. Reb Nussun transforms it:
+        the <em>yoke</em> that one bears is the yoke of Torah, prayer, and charity —
+        not the yoke of suffering but the yoke of aspiration. And the <em>megamah</em>
+        — aspiration, direction — is set entirely upon this single worthy goal.
+        The solitude of Eichah's *yeshev badad* becomes the focused inner life of
+        the person who has set all his <em>megamah</em> upon Torah and prayer]</span>.
+      </p>
+    </div>
+
+    <p class="signature" style="margin-top:0.5rem;"><strong>Nussun</strong> as above.</p>
+
+  </div>
+
+  <div class="translator-section">
+    <p>
+      <strong>Overview:</strong> Parshas Pekudei, Monday. *Shechorah ani v'navah*
+      (Shir HaShirim 1:5) with Rashi — darkness and beauty in one breath. *Kol
+      ha'avonos yithapchu lizchuyos* — heard from the Rebbe's holy mouth explicitly.
+      The closing signature is now identified as Yeshayahu 12:3 — *ushavtem mayim
+      b'sasson mima'ayanei ha'yeshuah* — the verse of *Simchas Beis HaSho'evah*,
+      the most joyful moment in the Temple calendar. Letter-writing itself placed
+      within the framework of Messianic joy. *Tov lagever* (Eichah 3:27-28) with its
+      fuller context: *yeshev badad v'yiddom* — bear the yoke, sit in stillness —
+      the counsel of Eichah transformed into the counsel of focused aspiration
+      toward Torah and prayer.
+    </p>
+    <h3>Key Themes</h3>
+    <div class="themes-grid">
+      <div class="theme-card">
+        <strong>Shechorah Ani V'navah — Shir HaShirim 1:5 / Rashi</strong>
+        "I am dark but comely." Dark in my own deeds, comely through the Rebbe's
+        deeds — and even in my own deeds there is comeliness. Darkness and beauty
+        held together in one breath: the verse that does not demand perfection as
+        the condition of beauty.
+      </div>
+      <div class="theme-card">
+        <strong>Ushavtem Mayim B'sasson — Yeshayahu 12:3</strong>
+        "You shall draw water in joy from the springs of salvation" — the central
+        verse of *Simchas Beis HaSho'evah*, the most joyful moment of the Temple
+        calendar. Reb Nussun's closing signature places letter-writing itself within
+        Yeshayahu's vision of Messianic joy.
+      </div>
+      <div class="theme-card">
+        <strong>Kol Ha'avonos Yithapchu — Explicit Transmission</strong>
+        All sins turned to merits — heard from the Rebbe's holy mouth explicitly.
+        Direct personal transmission, not deduction. The most extraordinary promise
+        in the collection, given the precision of its sourcing.
+      </div>
+      <div class="theme-card">
+        <strong>Tov Lagever — Eichah 3:27-28</strong>
+        "It is good for a man to bear the yoke in his youth — let him sit in
+        solitude and be still." Eichah's counsel of bearing and stillness transformed:
+        the yoke is Torah and prayer, not suffering; the solitude is the focused
+        inner life of one whose aspiration is set on a single worthy goal.
+      </div>
+    </div>
+  </div>
+
+  <div class="ms-footer">
+    Translated in the merit of Na Nach Nachma Nachman MayUman &nbsp;·&nbsp; May HY bless this work.
+  </div>
+
+</div>
+</body>
+</html>

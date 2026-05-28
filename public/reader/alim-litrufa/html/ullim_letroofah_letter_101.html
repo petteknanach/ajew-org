@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ullim LeTroofah – Letter One Hundred and One | Reb Nussun: Awaken, My Son — Redemption Hangs on Midnight — And Yet a Little and There Is No Wicked One</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Cinzel:wght@400;500;600&family=Frank+Ruhl+Libre:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--parchment:#f5efe0;--parchment-dark:#ede3cc;--ink:#1c1209;--ink-mid:#3b2a14;--ink-soft:#5c4530;--gold:#8b6914;--gold-pale:#e8d9a0;--crimson:#7a1c1c;--teal:#1a4a4a;--highlight-y:rgba(220,195,80,0.22);--highlight-b:rgba(26,74,74,0.12);}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background-color:#2a1f0e;background-image:radial-gradient(ellipse at 20% 10%,rgba(90,60,20,0.4) 0%,transparent 60%),radial-gradient(ellipse at 80% 90%,rgba(50,30,10,0.5) 0%,transparent 60%);min-height:100vh;font-family:'EB Garamond',Georgia,serif;color:var(--ink);padding:2rem 1rem 4rem;}
+  .manuscript{max-width:780px;margin:0 auto;background-color:var(--parchment);border:1px solid var(--parchment-dark);box-shadow:0 0 0 6px #1a1005,0 0 0 8px #8b6914,0 0 0 10px #1a1005,0 30px 80px rgba(0,0,0,0.7),inset 0 0 60px rgba(180,140,60,0.08);padding:3.5rem 4rem 4rem;position:relative;}
+  .manuscript::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(180deg,rgba(200,170,90,0.06) 0%,transparent 30%,transparent 70%,rgba(150,110,40,0.05) 100%);pointer-events:none;}
+  .series-header{text-align:center;border-bottom:2px solid var(--gold);padding-bottom:1.6rem;margin-bottom:2.2rem;position:relative;}
+  .series-header::after{content:'✦';position:absolute;bottom:-0.65em;left:50%;transform:translateX(-50%);background:var(--parchment);padding:0 0.6em;color:var(--gold);font-size:0.9rem;}
+  .series-title{font-family:'Cinzel',serif;font-size:1.1rem;letter-spacing:0.18em;color:var(--gold);text-transform:uppercase;margin-bottom:0.3rem;}
+  .series-heb{font-family:'Frank Ruhl Libre',serif;font-size:1.25rem;color:var(--ink-mid);margin-bottom:0.3rem;}
+  .series-subtitle{font-size:0.95rem;color:var(--ink-mid);font-style:italic;margin-bottom:0.2rem;}
+  .series-byline{font-size:0.8rem;color:var(--ink-soft);letter-spacing:0.04em;}
+  .letter-heading{text-align:center;margin-bottom:1.6rem;}
+  .letter-number{font-family:'Cinzel',serif;font-size:2.4rem;font-weight:600;color:var(--gold);letter-spacing:0.1em;line-height:1;margin-bottom:0.3rem;}
+  .letter-meta{font-size:0.9rem;color:var(--ink-soft);font-style:italic;line-height:1.65;}
+  .addressee{border-left:3px solid var(--gold);padding:0.75rem 1rem;margin-bottom:1.7rem;font-size:0.95rem;color:var(--ink-mid);font-style:italic;line-height:1.75;background:rgba(200,170,80,0.06);}
+  .addressee .label{font-family:'Cinzel',serif;font-size:0.7rem;letter-spacing:0.13em;color:var(--gold);font-style:normal;display:block;margin-bottom:0.3rem;text-transform:uppercase;}
+  .letter-body{text-align:justify;line-height:1.90;font-size:1.06rem;}
+  .letter-body p{margin-bottom:1.15rem;text-indent:1.6em;}
+  .letter-body p.no-indent{text-indent:0;}
+  .translit{font-style:italic;color:var(--teal);font-weight:500;}
+  mark.gold{background:var(--highlight-y);padding:0 2px;border-radius:2px;}
+  mark.teal{background:var(--highlight-b);padding:0 2px;border-radius:2px;}
+  cite{font-style:italic;color:var(--crimson);}
+  .verse-src{font-size:0.82em;color:var(--crimson);font-style:normal;font-weight:500;}
+  .bracket{color:var(--ink-soft);font-size:0.9em;font-style:italic;}
+  .chatsos-block{margin:0.3rem 0 1.15rem 0;padding:1.2rem 1.6rem;border-left:4px solid var(--gold);border-top:2px solid var(--gold);background:rgba(220,195,80,0.09);line-height:2.05;font-size:1.04rem;color:var(--ink-mid);}
+  .ps-block{margin:1.5rem 0 0 0;padding:1.1rem 1.4rem;border:1px solid var(--gold-pale);background:rgba(200,170,80,0.04);line-height:1.88;font-size:0.95rem;color:var(--ink-mid);position:relative;}
+  .ps-block::before{content:"— Written After Receiving the Letter —";display:block;font-family:'Cinzel',serif;font-size:0.7rem;letter-spacing:0.14em;color:var(--gold);text-transform:uppercase;margin-bottom:0.5rem;}
+  .closing{margin-top:1.8rem;border-top:1px solid var(--gold-pale);padding-top:1.2rem;}
+  .signature{text-align:right;font-style:italic;color:var(--ink-mid);font-size:1.0rem;margin-top:0.35rem;text-indent:0!important;}
+  .signature strong{font-style:normal;color:var(--ink);}
+  .translator-section{margin-top:3rem;border-top:2px solid var(--gold);padding-top:1.6rem;position:relative;}
+  .translator-section::before{content:"— From the Translator —";position:absolute;top:-0.75em;left:50%;transform:translateX(-50%);background:var(--parchment);padding:0 0.9em;font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:0.16em;color:var(--gold);text-transform:uppercase;white-space:nowrap;}
+  .translator-section p{font-size:0.93rem;color:var(--ink-mid);line-height:1.78;margin-bottom:0.8rem;text-indent:0;}
+  .translator-section p:last-child{margin-bottom:0;}
+  .translator-section h3{font-family:'Cinzel',serif;font-size:0.8rem;letter-spacing:0.12em;color:var(--gold);text-transform:uppercase;margin:1.2rem 0 0.5rem;}
+  .themes-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:0.8rem;margin-top:0.6rem;}
+  .theme-card{background:var(--parchment-dark);border-top:2px solid var(--gold);padding:0.75rem 0.9rem;font-size:0.85rem;color:var(--ink-mid);line-height:1.55;}
+  .theme-card strong{display:block;font-family:'Cinzel',serif;font-size:0.71rem;letter-spacing:0.1em;color:var(--gold);text-transform:uppercase;margin-bottom:0.3rem;}
+  .ms-footer{text-align:center;margin-top:2.5rem;padding-top:1rem;border-top:1px solid var(--gold-pale);font-size:0.78rem;color:var(--ink-soft);font-style:italic;letter-spacing:0.04em;}
+  @media(max-width:600px){.manuscript{padding:2rem 1.4rem 2.5rem;}.letter-number{font-size:1.8rem;}}
+</style>
+</head>
+<body>
+<div class="manuscript">
+
+  <div class="series-header">
+    <div class="series-title">Ullim LeTroofah</div>
+    <div class="series-heb">עלים לתרופה</div>
+    <div class="series-subtitle">Leaves for Healing</div>
+    <div class="series-byline">The Sacred Letters of Rebbe Nachman of Breslov and Reb Nussun of Breslov, of blessed memory</div>
+  </div>
+
+  <div class="letter-heading">
+    <div class="letter-number">LETTER ONE HUNDRED AND ONE</div>
+    <div class="letter-meta">
+      With the help of Hashem Yisborach &nbsp;·&nbsp; Sunday, Parshas B'shalach &nbsp;·&nbsp; Year 5593 (1833)<br>
+      Written from <strong>Breslov</strong>
+      <span style="font-size:0.82em;"> — before the Shabbos meal, while still weak</span>
+    </div>
+  </div>
+
+  <div class="addressee">
+    <span class="label">To</span>
+    My beloved son —
+    <mark class="gold">the delight of my eyes</mark>
+    <span class="bracket" style="font-size:0.85em;">[מַחְמַד עֵינַי — Yechezkel 24:16 and 24:21: Hashem says to Yechezkel: "behold I am taking from you the delight of your eyes" — referring to both his wife and to the Temple. <em>Machmad einayim</em> is the prophetic term for the thing most precious, whose loss constitutes the deepest grief. Reb Nussun applies it as his highest term of endearment for Yitzchok]</span>
+    —
+    <mark class="gold">bound to the walls of my heart</mark>
+    <span class="bracket" style="font-size:0.85em;">[נִצְמָד בְּקִירוֹת לְבָבִי — the root <em>nitzmed</em> appears in Bamidbar 25:3 for the illicit attachment of Israel to Baal Pe'or — a deeply negative Talmudic association. Here Reb Nussun uses the same root for its radical redemption: the holy bond of a father to his son, written into the very walls of the heart. The language of dangerous attachment becomes the language of sacred love]</span>.
+    <strong>Peace to you — do not fear — be strong and resolute!</strong>
+  </div>
+
+  <div class="letter-body">
+
+    <p class="no-indent">
+      Know, my beloved son — that I have still not received your letter today. And
+      today is Sunday — which you know that I am weak — and my mind is not clear as
+      is known to you. But my love for you compelled me to write to you now before
+      the meal — for it was from Hashem that I was engaged in writing Torah about the
+      holy study of <cite>I will sing to my G-d while I yet exist</cite> — which I
+      spoke of yesterday at the third Shabbos meal — which is in the aspect of
+      <mark class="teal">the rising at midnight</mark>
+      <span class="bracket">[בְּחִינַת קִימַת חֲצוֹת לַיְלָה — the Tikun Chatzos
+      midnight vigil for the Shechinah in exile. The Talmudic teaching (Brochos 3b)
+      that Hashem mourns at the first watch of the night is the spiritual ground of
+      the midnight rising. The new dimension of the <em>azamra</em> Torah: it is from
+      the midnight of one's lowest point that the going-out of redemption begins]
+      </span>
+      — upon which redemption depends — in the aspect of
+      <cite>at about midnight I will go out</cite>
+      <span class="bracket">[כַּחֲצוֹת לַיְלָה אֲנִי יוֹצֵא — Sh'mos 11:4: Moshe's
+      declaration to Pharaoh before the plague of the firstborn. The word
+      <em>kachatzos</em> — at about midnight — connects the midnight moment to the
+      act of going out, of exodus, of redemption]</span>
+      and so forth. And as I was writing — I was reminded of my love for you — for
+      I knew that you are very much in need of these words. Especially since
+      <mark class="gold">all the new teachings I developed with the help of Hashem
+      Yisborach at these times — wondrous new teachings in His great salvation — all
+      of it came about through you</mark> — through the letter that reached me from
+      you on Erev Shabbos Kodesh close to evening through my friend Rabbi Nachman
+      HaYisiner — as I told you a little of this when you were here.
+    </p>
+
+    <div class="chatsos-block">
+      <p>
+        Therefore I said —
+        <mark class="teal">whatever the outcome — I will run these words to you</mark>
+        <span class="bracket">[וִיהִי מָה אָרוּצָה דְּבָרַי אֵלֶּה אֵלֶיךָ — an
+        echo of Sh'muel II 18:19-23: Achima'atz son of Tzadok said to Yoav: "let me
+        now run and bring the king tidings" — Yoav refused — but Achima'atz pressed:
+        <em>viy'hi mah aruzah</em> — "and whatever it will be — let me run." And
+        then: "so Achima'atz ran." The image is of the messenger who cannot be
+        stopped, who must run with the news regardless of the outcome. Reb Nussun
+        casts himself as Achima'atz — unable to withhold these words from Yitzchok
+        even in his weakness — <em>viy'hi mah</em> — and whatever comes of it —
+        he runs]</span>.
+        Perhaps I will merit to awaken you from your sleep — to revive you and
+        strengthen you. <mark class="gold">Awaken, my son — awaken! Do not let your
+        thoughts frighten you from whatever passes over you.</mark> Know and believe
+        that all your good points are very, very precious in His eyes — and you can
+        revive yourself through them always. And to enter into genuine merit — in the
+        aspect of
+        <cite>and yet a little while and there is no wicked one</cite>
+        <span class="bracket">[וְעוֹד מְעַט וְאֵין רָשָׁע — Tehillim 37:10: even
+        the *rasha* aspect dissolves with a small additional turning toward the good
+        point]</span>
+        and so forth. Remember — remember well these awesome words — and do not let
+        them seem old — rather return to them and return — well, well — and each day
+        let them be in your eyes as new. And I longed greatly to copy for you a
+        little of what I wrote about this — but it is impossible — for there is
+        insufficient time. But I hoped in Hashem — when you will be here for the
+        coming Shabbos Kodesh — we will speak of this — with the help of Hashem
+        Yisborach — together with additional holy conversations — flowing from the
+        holy and very awesome source of wisdom. And inform me immediately if you will
+        be here for Shabbos Kodesh — for I longed greatly that you be here for this
+        Shabbos — only if there is a delay because of your brother-in-law's wedding
+        — certainly you cannot come — and
+        <mark class="teal">one who is under compulsion — the Merciful One exempts him
+        </mark>
+        <span class="bracket">[אֹנֶס רַחֲמָנָא פַּטְרֵיהּ — Bava Kamma 28b: the
+        Talmudic principle that the Merciful One exempts under unavoidable compulsion.
+        Applied with characteristic lightness: if the wedding is unavoidable, Hashem
+        exempts the son from coming to his father on this particular Shabbos]
+        </span>
+        — and come, if Hashem wills, on some other Shabbos.
+      </p>
+    </div>
+
+    <div class="closing">
+      <p class="no-indent">
+        The words of your father — who seeks your welfare with great love.
+      </p>
+      <p class="signature"><strong>Nussun</strong> of Breslov.</p>
+    </div>
+
+    <p class="no-indent" style="margin-top:0.8rem;font-style:italic;font-size:0.95rem;color:var(--ink-mid);">
+      And peace to all our <span class="translit">anshei sh'lomaynu</span> with great
+      love. All the above is also addressed to them — be strong and let your hearts
+      take courage — all who hope in Hashem.
+    </p>
+
+    <div class="ps-block">
+      <p>
+        And behold — now I have already received your letter — and it was a comfort
+        to me. And by the looks of your letter you will not be able to be here for
+        the coming Shabbos Kodesh. And certainly all is for good. May Hashem Yisborach
+        help you that you be glad there at home and at the wedding — for
+        <mark class="gold">the joy of Hashem is your strength</mark>
+        <span class="bracket">[חֶדְוַת ה' הִיא מָעֻזְּכֶם — Nechemiah 8:10: Ezra
+        and Nechemiah's declaration on the day the people heard the Torah and wept:
+        "the joy of Hashem is your strength." The joy itself is the fortress that
+        cannot be breached]</span>.
+        And all my intention in this letter is to gladden your souls in His great
+        salvation — which He helps us at every time — as it is written:
+        <mark class="teal"><cite>behold — G-d is my helper</cite></mark>
+        <span class="bracket">[הִנֵּה אֱלֹקִים עוֹזֵר לִי — Tehillim 54:6: "behold
+        G-d is my helper — Hashem is with those who support my soul." The word
+        <em>hinei</em> — behold — is present tense: not "He was" or "He will be"
+        but "He is my helper — now, here, present"]</span>
+        <span class="verse-src">[Tehillim 54:6]</span>
+        and so forth. And let him petition Hashem Yisborach and trust in Him — that
+        as Hashem Yisborach has begun to show His kindness to him — so He will
+        complete it — for there was for him a great miracle and wondrous salvation.
+        May Hashem Yisborach give him merit to understand through this great hints
+        to draw near to Him at every time — from whatever place he may be. And
+        because of the depth of night there is no more to extend. And may Hashem
+        Yisborach gladden your souls forever.
+      </p>
+      <p class="signature"><strong>Nussun</strong> as above.</p>
+    </div>
+
+  </div>
+
+  <div class="translator-section">
+    <p>
+      <strong>Overview:</strong> Parshas B'shalach, Sunday. *Machmad einai*: the
+      prophetic term from Yechezkel 24 for the thing most precious — applied as the
+      highest endearment. *Nitzmed b'kirot levavi*: the root of Baal Pe'or's illicit
+      attachment radically redeemed as the language of holy paternal love. *Viy'hi
+      mah aruzah*: Achima'atz of Sh'muel II 18 — the messenger who cannot be stopped,
+      who runs whatever the outcome. *Kimat chatsos layla* — the midnight dimension
+      of *azamra* — redemption hangs on the midnight rising. *V'od me'at v'ein rasha*
+      (Tehillim 37:10). *Anuss Rachmana patrei*. Postscript: *chedvas Hashem hi
+      ma'uzchem* (Nechemiah 8:10). *Hinei Elokim ozer li* (Tehillim 54:6) — the
+      present-tense divine help.
+    </p>
+    <h3>Key Themes</h3>
+    <div class="themes-grid">
+      <div class="theme-card">
+        <strong>Machmad Einai / Nitzmed — Yechezkel 24 / Bamidbar 25</strong>
+        *Machmad einayim*: Yechezkel's term for the thing most precious (wife and
+        Temple) — applied as highest endearment. *Nitzmed*: the root of Baal Pe'or's
+        dangerous attachment radically redeemed — the same word for the holy bond
+        of a father's love written into the walls of the heart.
+      </div>
+      <div class="theme-card">
+        <strong>Viy'hi Mah Aruzah — Sh'muel II 18</strong>
+        Achima'atz the messenger: "whatever the outcome — let me run." The image of
+        the one who cannot be stopped from delivering his news. Reb Nussun casts
+        himself as Achima'atz — running these words to Yitzchok even in weakness,
+        *viy'hi mah*.
+      </div>
+      <div class="theme-card">
+        <strong>Kimat Chatsos Layla — Azamra's Midnight</strong>
+        The *azamra* Torah in its midnight dimension. The lowest midnight of one's
+        spiritual state is the moment of *kachatzos layla ani yotze* — the going-out
+        of redemption. Redemption hangs on the midnight rising.
+      </div>
+      <div class="theme-card">
+        <strong>Hinei Elokim Ozer Li — Tehillim 54:6</strong>
+        "Behold — G-d is my helper." *Hinei* — present tense: not "He was" or "He
+        will be" but "He is my helper — now, here." Present-moment divine assistance,
+        available at every time from every place.
+      </div>
+    </div>
+  </div>
+
+  <div class="ms-footer">
+    Translated in the merit of Na Nach Nachma Nachman MayUman &nbsp;·&nbsp; May HY bless this work.
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ullim LeTroofah – Letter Twenty-Nine | Reb Nussun: Two Deaths, Tisha B'Av, and the Bond of Brothers</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Cinzel:wght@400;500;600&family=Frank+Ruhl+Libre:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --parchment: #f5efe0; --parchment-dark: #ede3cc;
+    --ink: #1c1209; --ink-mid: #3b2a14; --ink-soft: #5c4530;
+    --gold: #8b6914; --gold-pale: #e8d9a0; --crimson: #7a1c1c; --teal: #1a4a4a;
+    --highlight-y: rgba(220,195,80,0.22); --highlight-b: rgba(26,74,74,0.12);
+    --highlight-r: rgba(122,28,28,0.09);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background-color: #2a1f0e; background-image: radial-gradient(ellipse at 20% 10%, rgba(90,60,20,0.4) 0%, transparent 60%), radial-gradient(ellipse at 80% 90%, rgba(50,30,10,0.5) 0%, transparent 60%); min-height: 100vh; font-family: 'EB Garamond', Georgia, serif; color: var(--ink); padding: 2rem 1rem 4rem; }
+  .manuscript { max-width: 780px; margin: 0 auto; background-color: var(--parchment); border: 1px solid var(--parchment-dark); box-shadow: 0 0 0 6px #1a1005, 0 0 0 8px #8b6914, 0 0 0 10px #1a1005, 0 30px 80px rgba(0,0,0,0.7), inset 0 0 60px rgba(180,140,60,0.08); padding: 3.5rem 4rem 4rem; position: relative; }
+  .manuscript::before { content: ''; position: absolute; top:0; left:0; right:0; bottom:0; background: linear-gradient(180deg, rgba(200,170,90,0.06) 0%, transparent 30%, transparent 70%, rgba(150,110,40,0.05) 100%); pointer-events: none; }
+  .series-header { text-align: center; border-bottom: 2px solid var(--gold); padding-bottom: 1.6rem; margin-bottom: 2.2rem; position: relative; }
+  .series-header::after { content: '✦'; position: absolute; bottom: -0.65em; left: 50%; transform: translateX(-50%); background: var(--parchment); padding: 0 0.6em; color: var(--gold); font-size: 0.9rem; }
+  .series-title { font-family: 'Cinzel', serif; font-size: 1.1rem; letter-spacing: 0.18em; color: var(--gold); text-transform: uppercase; margin-bottom: 0.3rem; }
+  .series-heb { font-family: 'Frank Ruhl Libre', serif; font-size: 1.25rem; color: var(--ink-mid); margin-bottom: 0.3rem; }
+  .series-subtitle { font-size: 0.95rem; color: var(--ink-mid); font-style: italic; margin-bottom: 0.2rem; }
+  .series-byline { font-size: 0.8rem; color: var(--ink-soft); letter-spacing: 0.04em; }
+  .letter-heading { text-align: center; margin-bottom: 1.6rem; }
+  .letter-number { font-family: 'Cinzel', serif; font-size: 2.4rem; font-weight: 600; color: var(--gold); letter-spacing: 0.1em; line-height: 1; margin-bottom: 0.3rem; }
+  .letter-meta { font-size: 0.9rem; color: var(--ink-soft); font-style: italic; line-height: 1.65; }
+  .bezras-hashem { text-align: center; font-style: italic; color: var(--gold); font-size: 1.0rem; margin-bottom: 0.5rem; letter-spacing: 0.03em; }
+  .addressee { border-left: 3px solid var(--gold); padding: 0.75rem 1rem; margin-bottom: 1.7rem; font-size: 0.95rem; color: var(--ink-mid); font-style: italic; line-height: 1.75; background: rgba(200,170,80,0.06); }
+  .addressee .label { font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 0.13em; color: var(--gold); font-style: normal; display: block; margin-bottom: 0.3rem; text-transform: uppercase; }
+  .letter-body { text-align: justify; line-height: 1.90; font-size: 1.06rem; }
+  .letter-body p { margin-bottom: 1.15rem; text-indent: 1.6em; }
+  .letter-body p.no-indent { text-indent: 0; }
+  .translit { font-style: italic; color: var(--teal); font-weight: 500; }
+  mark.gold { background: var(--highlight-y); padding: 0 2px; border-radius: 2px; }
+  mark.teal { background: var(--highlight-b); padding: 0 2px; border-radius: 2px; }
+  mark.crim { background: var(--highlight-r); padding: 0 2px; border-radius: 2px; }
+  cite { font-style: italic; color: var(--crimson); }
+  .verse-src { font-size: 0.82em; color: var(--crimson); font-style: normal; font-weight: 500; }
+  .mourning-block { margin: 0 0 1.2rem 0; padding: 1.2rem 1.5rem; border-left: 4px solid var(--ink-soft); background: rgba(60,40,14,0.06); line-height: 1.96; font-size: 1.04rem; color: var(--ink-mid); }
+  .mourning-block p { margin-bottom: 0.8rem; text-indent: 0; }
+  .mourning-block p:last-child { margin-bottom: 0; }
+  .tishabav-block { margin: 0.3rem 0 1.15rem 0; padding: 1.1rem 1.4rem; border: 1px solid var(--gold-pale); border-left: 3px solid var(--ink-soft); background: rgba(60,40,14,0.05); font-size: 1.02rem; line-height: 1.88; color: var(--ink-mid); }
+  .testimony-block { margin: 0.3rem 0 1.15rem 0; padding: 1.3rem 1.6rem; border-left: 4px solid var(--gold); border-right: 1px solid var(--gold-pale); background: rgba(200,170,80,0.09); line-height: 2.0; font-size: 1.06rem; color: var(--ink-mid); }
+  .testimony-block p { margin-bottom: 0.85rem; text-indent: 0; }
+  .testimony-block p:last-child { margin-bottom: 0; }
+  .appeal-block { margin: 0.3rem 0 1.15rem 0; padding: 1.0rem 1.3rem; border: 1px solid var(--gold-pale); border-left: 3px solid var(--gold); background: rgba(200,170,80,0.06); font-size: 1.02rem; line-height: 1.88; color: var(--ink-mid); }
+  .ps-label { font-family: 'Cinzel', serif; font-size: 0.74rem; letter-spacing: 0.12em; color: var(--gold); text-transform: uppercase; display: block; margin: 1.5rem 0 0.25rem; }
+  .year-divider { text-align: center; margin: 2.5rem 0 0; padding: 0.7rem 1rem; background: var(--parchment-dark); border-top: 1px solid var(--gold-pale); border-bottom: 1px solid var(--gold-pale); font-family: 'Cinzel', serif; font-size: 0.78rem; letter-spacing: 0.14em; color: var(--gold); text-transform: uppercase; }
+  .closing { margin-top: 1.8rem; border-top: 1px solid var(--gold-pale); padding-top: 1.2rem; }
+  .signature { text-align: right; font-style: italic; color: var(--ink-mid); font-size: 1.0rem; margin-top: 0.35rem; text-indent: 0 !important; }
+  .signature strong { font-style: normal; color: var(--ink); }
+  .translator-section { margin-top: 3rem; border-top: 2px solid var(--gold); padding-top: 1.6rem; position: relative; }
+  .translator-section::before { content: "— From the Translator —"; position: absolute; top: -0.75em; left: 50%; transform: translateX(-50%); background: var(--parchment); padding: 0 0.9em; font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 0.16em; color: var(--gold); text-transform: uppercase; white-space: nowrap; }
+  .translator-section p { font-size: 0.93rem; color: var(--ink-mid); line-height: 1.78; margin-bottom: 0.8rem; text-indent: 0; }
+  .translator-section p:last-child { margin-bottom: 0; }
+  .translator-section h3 { font-family: 'Cinzel', serif; font-size: 0.8rem; letter-spacing: 0.12em; color: var(--gold); text-transform: uppercase; margin: 1.2rem 0 0.5rem; }
+  .themes-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(175px,1fr)); gap: 0.8rem; margin-top: 0.6rem; }
+  .theme-card { background: var(--parchment-dark); border-top: 2px solid var(--gold); padding: 0.75rem 0.9rem; font-size: 0.85rem; color: var(--ink-mid); line-height: 1.55; }
+  .theme-card strong { display: block; font-family: 'Cinzel', serif; font-size: 0.71rem; letter-spacing: 0.1em; color: var(--gold); text-transform: uppercase; margin-bottom: 0.3rem; }
+  .ms-footer { text-align: center; margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid var(--gold-pale); font-size: 0.78rem; color: var(--ink-soft); font-style: italic; letter-spacing: 0.04em; }
+  @media (max-width: 600px) { .manuscript { padding: 2rem 1.4rem 2.5rem; } .letter-number { font-size: 1.8rem; } }
+</style>
+</head>
+<body>
+<div class="manuscript">
+  <div class="series-header">
+    <div class="series-title">Ullim LeTroofah</div>
+    <div class="series-heb">עלים לתרופה</div>
+    <div class="series-subtitle">Leaves for Healing</div>
+    <div class="series-byline">The Sacred Letters of Rebbe Nachman of Breslov and Reb Nussun of Breslov, of blessed memory</div>
+  </div>
+
+  <div class="letter-heading">
+    <div class="letter-number">LETTER TWENTY-NINE</div>
+    <div class="letter-meta">
+      Monday, Parshas Ekev, 13th of Av &nbsp;·&nbsp; Year 5587 (1827)<br>
+      Written from <strong>Breslov</strong>
+    </div>
+  </div>
+
+  <div class="bezras-hashem">With the help of G-d, may He be blessed</div>
+
+  <div class="addressee">
+    <span class="label">To</span>
+    Abundant peace and blessing — to the honor of my beloved, my
+    brother, my dear one and friend — he who is the veteran, outstanding
+    scholar in Torah and fear of G-d, and so forth — our Teacher the
+    Rabbi <strong>Naftali</strong> — may his light shine and radiate
+    for eternity.
+  </div>
+
+  <div class="letter-body">
+
+    <!-- LINE 305: restrained by words — two deaths -->
+    <div class="mourning-block">
+      <p>
+        <mark class="gold">Restrained by words — who can hold back from
+        pouring out my speech and my grief before my brother — as my
+        own soul</mark> — one who loves, cleaving more than a brother.
+        For surely already heard by your ears is the evil tidings — the
+        hand of Hashem that has struck our city — that taken from us
+        were <mark class="crim">two beloved of our eyes</mark> — the
+        beloved and the pleasant in their lives and in their death —
+        they are the veteran our Teacher the Rabbi
+        <strong>Yisroel HaKohen</strong>, of blessed memory — and his
+        distinguished brother-in-law, the veteran our Teacher the Rabbi
+        <strong>Asher Zelig</strong>, of blessed memory.
+      </p>
+      <p>
+        Woe to us for our brokenness! May the Master of salvations
+        and the Master of consolations save and console us speedily —
+        and raise their souls to His throne of glory — to the source
+        from which they were hewn — and may they merit immediately
+        to receive the radiant countenance of the <span class="translit">Atik
+        Yomin</span> (the Ancient of Days) — the face of our Master,
+        our Teacher and Rebbe — the new light — may the memory of the
+        righteous and holy one be for a blessing. And may their souls
+        be bound in the bond of life forever. And may He console us
+        and save us from all our troubles — and in particular from the
+        trouble of the soul — that we merit at least from now to accustom
+        ourselves to be in the World to Come — in such a manner that
+        we will always be as He desires. Amen.
+      </p>
+    </div>
+
+    <!-- LINE 306: Tisha B'Av — Rabbi Mikhl and Rabbi Nachum Yitzchok arrive -->
+    <div class="tishabav-block">
+      <p>
+        And behold — on the day of <span class="translit">Tisha B'Av</span>
+        (the ninth of Av) — in the midst of the depth of my grief and
+        mourning over the destruction of the Holy Temple and over our
+        deeds that delay its rebuilding — in the midst of this, the
+        bearer of this letter came to my home — he is
+        <strong>Rabbi Mikhl</strong> — and with him
+        <strong>Rabbi Nachum Yitzchok</strong> — may his light shine.
+        And I stood trembling and astonished — in particular because
+        Rabbi Mikhl is very weak in his legs. <span style="font-style:italic; color:var(--ink-soft);">[And yet he is not the beggar who has no legs — may Hashem grant us to hear that story too.]</span>
+        And I also understood from their words that they went from
+        Uman without permission — for they did not receive leave
+        from his eminence — what they call
+        <span class="translit">gizeginen</span> (taking formal leave)
+        before their journey on foot.
+      </p>
+      <p>
+        And I wanted to hold myself back with all my strength from
+        causing them grief — but I could not hold back. And I rebuked
+        them to their faces and spoke with them very hard words — like
+        sinews — which were to them like the piercings of a sword —
+        their coming to me now in this manner. And in truth in my
+        heart I had great compassion for them — for I knew that
+        despite everything their intention was for Heaven in truth.
+        But even so I could not hold back — and I spoke with them
+        very many hard words. And it was my intention not to receive
+        them at my home for Shabbos — but since there were also some
+        other guests from Nemrov — I did not want to shame them so
+        greatly. And behold now I am compelled to send them home
+        and to pay for them the wagon fare — since for me it is a
+        mortal danger that Rabbi Mikhl should walk on his legs, G-d
+        forbid — so weak are they. And Rabbi Mikhl defended himself
+        greatly before me and said he was not so eager to come to me
+        — only through the words of your eminence — who spoke with
+        him many times and told him that he must specifically be at
+        my home in Breslov. And he told me several words that your
+        eminence spoke with him — that it was necessary he be with
+        me. And yet he was afraid to take leave from your eminence —
+        lest now you prevent him — since he has no strength in his
+        legs — as indeed it would have been right to prevent him.
+      </p>
+    </div>
+
+    <!-- The intercession and appeal for mercy on Rabbi Mikhl -->
+    <div class="appeal-block">
+      Therefore I now come in prayer and supplication on his behalf
+      and on behalf of Rabbi Nachum Yitzchok — that your eminence
+      have mercy on them and not continue to afflict them — for they
+      have already suffered greatly at my home — quite apart from the
+      afflictions and jolting on the road. Therefore now it is fitting
+      that you have mercy on them — to draw them close and not push
+      them away, G-d forbid — for their intention is for Heaven.
+    </div>
+
+    <!-- LINE 306 cont.: the great mutual testimony — Nussun and Naftali -->
+    <div class="testimony-block">
+      <p>
+        Please, my dear brother — remember the mercy and love of our
+        Master, our Teacher and Rebbe, of blessed memory — toward us
+        — that he took us from where he took us, and brought us out
+        from where he brought us, and drew us close with such great
+        closeness — <mark class="gold">more than all the world — and
+        even more than all his righteous people</mark> — as was heard
+        from his holy mouth explicitly many times. That we know from
+        him more than all of them.
+      </p>
+      <p>
+        And in truth — even I and you — we do not know what G-d has
+        done for us: <mark class="gold">that we two specifically — know
+        from such a great, holy, awesome, and most exalted light —
+        more than all who come into the world — and even more than
+        his righteous men</mark> — and it is impossible to elaborate
+        on this in writing. For the matter of our closeness to him,
+        of blessed memory, is a story from ancient times — and enough
+        for the one who understands.
+      </p>
+      <p>
+        At all events — it is fitting for us to fulfil his will, of
+        blessed memory — to walk in his ways — to have <mark class="teal">his
+        mercy on all who desire to draw close to his awesome name, of
+        blessed memory</mark> — and not to look at the bad or the lack
+        of each person — only to look at the good in them alone.
+      </p>
+      <p>
+        Please, my dear brother — my soul and my heart — remember and
+        look and set your heart well to all these matters — for it is
+        not an empty thing. For in truth I have not come to appease
+        you only for their sake — but for the sake of all our
+        <span class="translit">anshay shlomaynu</span> in the holy
+        community of Uman — for it has already become known to me that
+        for several weeks now you have been angry with them for no
+        reason — over nothing — and in particular with Rabbi Ozer —
+        against whom you have greatly multiplied your anger. And if
+        he erred in that he did not reveal to you when the man Moshe
+        left Uman for here without your permission — he is not to be
+        blamed so much — for even for that very matter you were very
+        angry with him — yet despite that you already know that one
+        must fulfil: <cite>in anger, remember to show mercy</cite>
+        <span class="verse-src">[Chavakuk 3:2]</span> — to hold fast
+        to the qualities of Hashem Yisborach: that in the very midst
+        of great anger — to remember to show mercy specifically — as
+        explained in the Torah <em>Kartilisa</em>
+        <span class="verse-src">(Likutay Moharan I, 18)</span>.
+      </p>
+      <p>
+        And in particular since both I and you know that Rabbi Ozer's
+        intention too was for the good — to bring a soul close to our
+        Master, of blessed memory — and not to anger you, G-d forbid.
+        And if in our opinion he may have erred in this — even so it
+        is upon you and upon me to forgive him — especially since you
+        have already been angry with him more than enough. And
+        <mark class="teal">he has already received his portion of
+        suffering</mark> — and it is fitting for you to have mercy on
+        him and on all our <span class="translit">anshay shlomaynu</span>
+        there — to draw them close and not push them away, G-d forbid
+        — for their intention is for Heaven.
+      </p>
+      <p>
+        And it is His will, may He be blessed, and the will of our
+        Master, of blessed memory — that we draw them close. And in
+        particular — you must be careful lest there be from this a
+        desecration of G-d's Name, G-d forbid. For what will people
+        say — especially those who already oppose our fellowship —
+        that G-d forbid, even between Nussun and Naftali a quarrel
+        has already been made — G-d forbid. <mark class="crim">Woe
+        to the ears that hear such things!</mark> We already grieve
+        over the quarrel from Dashov — and far be it to add to it,
+        G-d forbid — especially between us. For there are no men in
+        all our <span class="translit">anshay shlomaynu</span> who
+        are brothers — loving and faithful — as we are. And surely
+        it is fitting for us to love one another with even greater
+        abundance and might — <mark class="gold">because we merited
+        to know so much from him, of blessed memory — and to have
+        such a portion in so many merits of the many, for
+        generations</mark>. Therefore we must guard ourselves very
+        greatly so that the love between us not be blemished, G-d
+        forbid, by so much as a hair. And even if in truth it has not
+        been blemished at all — we must go out still more before
+        people — that they not say what they would say, G-d forbid.
+        Therefore — the past is gone. Now — hear my voice, my dear
+        brother — abandon the grudge and anger in your heart toward
+        them — and return to them and have mercy on them and draw
+        them close with love. <mark class="gold">For in truth you
+        will give life to their souls</mark> — and you will literally
+        fulfil the preservation of many souls of Israel — as if you
+        sustained an entire world. For in truth they have already
+        wept greatly before Hashem Yisborach and before me over your
+        pushing them away. Therefore I could not hold back from
+        writing you these words of mine. And I am confident in the
+        greatness of our love — that you will fulfil these words of
+        mine — spoken in truth and with wholeness of heart.
+      </p>
+    </div>
+
+    <!-- LINE 307: inquiry about Marat Sarah; closing -->
+    <p class="no-indent">
+      And beyond this there is no time to elaborate in writing — and
+      if Hashem be with me, we will speak of this face to face, if
+      G-d wills it. And I have also requested greatly that you inform
+      me — perhaps you have some news of the daughter of our Master
+      the righteous one — <strong>Marat Sarah</strong>, may she live
+      — what has become of her — whether she has already given birth
+      in peace — for our grief is very great that we have no news from
+      there. May Hashem Yisborach cause us to hear good tidings
+      speedily.
+    </p>
+
+    <div class="closing">
+      <p class="no-indent">The words of one who loves you in truth for eternity.</p>
+      <p class="signature"><strong>Nussun</strong> of Breslov.</p>
+    </div>
+
+    <!-- Greetings from Marat Adil and family -->
+    <span class="ps-label">Postscript — Greetings</span>
+    <p class="no-indent">
+      The righteous <strong>Marat Adil</strong>, may she live — and
+      her veteran son our Teacher the Rabbi <strong>Avraham Beer</strong>,
+      may he live — who prays with devotion — and her daughter
+      <strong>Rivka Miriam</strong>, may she live — extend greetings
+      of peace to you. All our <span class="translit">anshay
+      shlomaynu</span> extend greetings of peace with love.
+    </p>
+
+    <div class="year-divider">✦ &nbsp; Letters of the Year 5589 &nbsp; ✦</div>
+
+  </div>
+
+  <div class="translator-section">
+    <p>
+      <strong>Overview:</strong> Written just four days after Tisha
+      B'Av 5587, this is one of the most dramatically alive letters
+      in the collection. Two beloved members of the Breslov community
+      have just died. On Tisha B'Av itself, in the midst of Reb Nussun's
+      grief, two men arrived on foot from Uman — one with barely the
+      strength to walk. Reb Nussun's response — rebuke, compassion,
+      hard words, mercy, paying their wagon fare home — is a window
+      into his complex pastoral humanity. The letter then turns to an
+      extraordinary plea to Rabbi Naftali to release his anger toward
+      the Uman community — containing one of the most intimate mutual
+      testimonies in all of Reb Nussun's writing.
+    </p>
+    <h3>Key Themes</h3>
+    <div class="themes-grid">
+      <div class="theme-card">
+        <strong>We Two — More Than All</strong>
+        The statement that Reb Nussun and Rabbi Naftali together
+        know from Rebbe Nachman more than all who come into the
+        world — including his righteous disciples — and that this
+        closeness is a story from ancient times — is the most
+        intimate mutual declaration in the collection. It is spoken
+        not from pride, but as the very foundation of their
+        obligation to love and forgive.
+      </div>
+      <div class="theme-card">
+        <strong>Woe to the Ears That Hear</strong>
+        The horror of even the appearance of a quarrel between
+        Nussun and Naftali — what the opponents of the fellowship
+        would say — drives Reb Nussun's appeal. The phrase
+        <em>"woe to the ears that hear such things"</em> echoes
+        the Yom Kippur liturgy. To their enemies, a rift would
+        be a triumph. To Reb Nussun, this is unbearable.
+      </div>
+      <div class="theme-card">
+        <strong>In Anger Remember Mercy</strong>
+        The verse from Chavakuk 3:2 — <em>b'rogez rachem tizkor</em>
+        — cited to <em>Likutay Moharan</em> I:18 (the
+        <em>Kartilisa</em> teaching on the quality of mercy) — is
+        the theological anchor for the entire reconciliation appeal.
+        Even when anger is justified, remembering mercy is a
+        Divine quality that must be imitated.
+      </div>
+      <div class="theme-card">
+        <strong>Marat Sarah</strong>
+        The inquiry about Marat Sarah — Rebbe Nachman's daughter —
+        her pregnancy and welfare — is the third appearance of
+        Rebbe Nachman's children in the collection, after Letters
+        7, 8, and 19. Reb Nussun's ongoing concern for the Rebbe's
+        family is a thread of love running through all the letters.
+      </div>
+    </div>
+    <h3>Note on the Beggar Without Legs</h3>
+    <p>
+      The parenthetical remark — <em>"he is not the beggar without
+      legs — may Hashem grant us to hear that story too"</em> — is
+      a reference to the fifth of the Seven Beggars in
+      <em>Sipuray Maasiyos</em>. It reveals that in 5587, some
+      of the stories were not yet widely known or perhaps not
+      yet written down — a glimpse into the living oral tradition
+      around Rebbe Nachman's stories.
+    </p>
+  </div>
+
+  <div class="ms-footer">
+    Translated in the merit of Na Nach Nachma Nachman MayUman &nbsp;·&nbsp; May HY bless this work.
+  </div>
+</div>
+</body>
+</html>

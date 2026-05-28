@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ullim LeTroofah – Letter Six | Leaves for Healing</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Cinzel:wght@400;500;600&family=Frank+Ruhl+Libre:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --parchment:      #f5efe0;
+    --parchment-dark: #ede3cc;
+    --ink:            #1c1209;
+    --ink-mid:        #3b2a14;
+    --ink-soft:       #5c4530;
+    --gold:           #8b6914;
+    --gold-pale:      #e8d9a0;
+    --crimson:        #7a1c1c;
+    --teal:           #1a4a4a;
+    --highlight-y:    rgba(220,195,80,0.22);
+    --highlight-b:    rgba(26,74,74,0.12);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background-color: #2a1f0e;
+    background-image:
+      radial-gradient(ellipse at 20% 10%, rgba(90,60,20,0.4) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 90%, rgba(50,30,10,0.5) 0%, transparent 60%);
+    min-height: 100vh;
+    font-family: 'EB Garamond', Georgia, serif;
+    color: var(--ink);
+    padding: 2rem 1rem 4rem;
+  }
+  .manuscript {
+    max-width: 780px;
+    margin: 0 auto;
+    background-color: var(--parchment);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.04'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    border: 1px solid var(--parchment-dark);
+    box-shadow:
+      0 0 0 6px #1a1005,
+      0 0 0 8px #8b6914,
+      0 0 0 10px #1a1005,
+      0 30px 80px rgba(0,0,0,0.7),
+      inset 0 0 60px rgba(180,140,60,0.08);
+    padding: 3.5rem 4rem 4rem;
+    position: relative;
+  }
+  .manuscript::before {
+    content: '';
+    position: absolute; top:0; left:0; right:0; bottom:0;
+    background: linear-gradient(180deg, rgba(200,170,90,0.06) 0%, transparent 30%, transparent 70%, rgba(150,110,40,0.05) 100%);
+    pointer-events: none;
+  }
+
+  .series-header {
+    text-align: center; border-bottom: 2px solid var(--gold);
+    padding-bottom: 1.6rem; margin-bottom: 2.2rem; position: relative;
+  }
+  .series-header::after {
+    content: '✦'; position: absolute; bottom: -0.65em; left: 50%;
+    transform: translateX(-50%); background: var(--parchment); padding: 0 0.6em;
+    color: var(--gold); font-size: 0.9rem;
+  }
+  .series-title {
+    font-family: 'Cinzel', serif; font-size: 1.1rem; letter-spacing: 0.18em;
+    color: var(--gold); text-transform: uppercase; margin-bottom: 0.3rem;
+  }
+  .series-heb { font-family: 'Frank Ruhl Libre', serif; font-size: 1.25rem; color: var(--ink-mid); margin-bottom: 0.3rem; }
+  .series-subtitle { font-size: 0.95rem; color: var(--ink-mid); font-style: italic; margin-bottom: 0.2rem; }
+  .series-byline { font-size: 0.8rem; color: var(--ink-soft); letter-spacing: 0.04em; }
+
+  .letter-heading { text-align: center; margin-bottom: 1.6rem; }
+  .letter-number {
+    font-family: 'Cinzel', serif; font-size: 2.4rem; font-weight: 600;
+    color: var(--gold); letter-spacing: 0.1em; line-height: 1; margin-bottom: 0.3rem;
+  }
+  .letter-meta { font-size: 0.9rem; color: var(--ink-soft); font-style: italic; line-height: 1.65; }
+
+  .bezras-hashem {
+    text-align: center; font-style: italic; color: var(--gold);
+    font-size: 1.0rem; margin-bottom: 0.5rem; letter-spacing: 0.03em;
+  }
+
+  .addressee {
+    border-left: 3px solid var(--gold);
+    padding: 0.75rem 1rem; margin-bottom: 1.7rem;
+    font-size: 0.95rem; color: var(--ink-mid); font-style: italic; line-height: 1.75;
+    background: rgba(200,170,80,0.06);
+  }
+  .addressee .label {
+    font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 0.13em;
+    color: var(--gold); font-style: normal; display: block; margin-bottom: 0.3rem;
+    text-transform: uppercase;
+  }
+
+  .letter-body { text-align: justify; line-height: 1.88; font-size: 1.06rem; }
+  .letter-body p { margin-bottom: 1.15rem; text-indent: 1.6em; }
+  .letter-body p.no-indent { text-indent: 0; }
+
+  .translit  { font-style: italic; color: var(--teal); font-weight: 500; }
+  mark.gold  { background: var(--highlight-y); padding: 0 2px; border-radius: 2px; }
+  mark.teal  { background: var(--highlight-b); padding: 0 2px; border-radius: 2px; }
+  cite       { font-style: italic; color: var(--crimson); }
+  .verse-src { font-size: 0.82em; color: var(--crimson); font-style: normal; font-weight: 500; }
+
+  .ps-label {
+    font-family: 'Cinzel', serif; font-size: 0.74rem; letter-spacing: 0.12em;
+    color: var(--gold); text-transform: uppercase; display: block; margin: 1.5rem 0 0.25rem;
+  }
+
+  .closing { margin-top: 1.6rem; border-top: 1px solid var(--gold-pale); padding-top: 1.1rem; }
+  .signature {
+    text-align: right; font-style: italic; color: var(--ink-mid);
+    font-size: 1.0rem; margin-top: 0.35rem; text-indent: 0 !important;
+  }
+  .signature strong { font-style: normal; color: var(--ink); }
+
+  .year-divider {
+    text-align: center; margin: 2.5rem 0 0;
+    padding: 0.7rem 1rem;
+    background: var(--parchment-dark);
+    border-top: 1px solid var(--gold-pale);
+    border-bottom: 1px solid var(--gold-pale);
+    font-family: 'Cinzel', serif; font-size: 0.78rem;
+    letter-spacing: 0.14em; color: var(--gold); text-transform: uppercase;
+  }
+  .year-divider-sub {
+    text-align: center; margin-top: 0.6rem;
+    font-size: 0.88rem; color: var(--ink-mid); font-style: italic; line-height: 1.65;
+  }
+
+  /* TRANSLATOR SECTION */
+  .translator-section {
+    margin-top: 3rem; border-top: 2px solid var(--gold);
+    padding-top: 1.6rem; position: relative;
+  }
+  .translator-section::before {
+    content: "— From the Translator —";
+    position: absolute; top: -0.75em; left: 50%;
+    transform: translateX(-50%);
+    background: var(--parchment); padding: 0 0.9em;
+    font-family: 'Cinzel', serif; font-size: 0.72rem;
+    letter-spacing: 0.16em; color: var(--gold); text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .translator-section p {
+    font-size: 0.93rem; color: var(--ink-mid); line-height: 1.78;
+    margin-bottom: 0.8rem; text-indent: 0;
+  }
+  .translator-section p:last-child { margin-bottom: 0; }
+  .translator-section h3 {
+    font-family: 'Cinzel', serif; font-size: 0.8rem; letter-spacing: 0.12em;
+    color: var(--gold); text-transform: uppercase; margin: 1.2rem 0 0.5rem;
+  }
+
+  .themes-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(175px,1fr));
+    gap: 0.8rem; margin-top: 0.6rem;
+  }
+  .theme-card {
+    background: var(--parchment-dark); border-top: 2px solid var(--gold);
+    padding: 0.75rem 0.9rem; font-size: 0.85rem; color: var(--ink-mid); line-height: 1.55;
+  }
+  .theme-card strong {
+    display: block; font-family: 'Cinzel', serif; font-size: 0.71rem;
+    letter-spacing: 0.1em; color: var(--gold); text-transform: uppercase; margin-bottom: 0.3rem;
+  }
+
+  .ms-footer {
+    text-align: center; margin-top: 2.5rem; padding-top: 1rem;
+    border-top: 1px solid var(--gold-pale);
+    font-size: 0.78rem; color: var(--ink-soft); font-style: italic; letter-spacing: 0.04em;
+  }
+
+  @media (max-width: 600px) {
+    .manuscript { padding: 2rem 1.4rem 2.5rem; }
+    .letter-number { font-size: 1.8rem; }
+  }
+</style>
+</head>
+<body>
+<div class="manuscript">
+
+  <div class="series-header">
+    <div class="series-title">Ullim LeTroofah</div>
+    <div class="series-heb">עלים לתרופה</div>
+    <div class="series-subtitle">Leaves for Healing</div>
+    <div class="series-byline">The Sacred Letters of Rebbe Nachman of Breslov and Reb Nussun of Breslov, of blessed memory</div>
+  </div>
+
+  <div class="letter-heading">
+    <div class="letter-number">LETTER SIX</div>
+    <div class="letter-meta">
+      Sunday, Parshas Emor, 11th of Iyar — the 26th by the count of the Children
+      of Israel &nbsp;·&nbsp; Year 5568 (1808)<br>
+      Written from <strong>Lemberg (Lvov)</strong>
+    </div>
+  </div>
+
+  <div class="bezras-hashem">With the help of G-d, may He be blessed</div>
+
+  <div class="addressee">
+    <span class="label">To</span>
+    Peace and abundant salvation to my beloved friend — he who is the
+    extraordinary scholar, and so forth — our Teacher the Rabbi
+    <strong>Yaakov</strong> — may his light shine and radiate.
+  </div>
+
+  <div class="letter-body">
+
+    <!-- LINE 72: receipt of letters; the printing project -->
+    <p class="no-indent">
+      Your letter has now reached me a second time. In the first letter there were
+      enclosed the introductions (<span class="translit">haktamos</span>) of my
+      friend our Teacher the Rabbi <strong>Nussun</strong> of Nemirov. And now
+      there has reached me a second time a letter from your lofty eminence, and
+      within it is enclosed the text for the printing. And your eminence also
+      writes to me that I should send for this
+      <mark class="teal">no less than one hundred <span class="translit">adumim</span></mark>
+      (red coins).
+    </p>
+
+    <!-- LINE 73: the detailed publishing questions -->
+    <p>
+      <mark class="gold">I marvel at your eminence — how you do not write by whose
+      hand I should send it, and to whose hand I should send it, and in whose name
+      I should send it.</mark> And I also marvel at your eminence for not writing
+      to me the total number of copies to be printed — a thousand, or more. And
+      also: on what paper — on <span class="translit">shrayb</span> (writing paper)
+      or on <span class="translit">rigahl</span> (ruled / lined paper) — and how
+      many on <span class="translit">shrayb</span> and how many on
+      <span class="translit">rigahl</span>. And how much your eminence is paying
+      the printer as the fee for printing per
+      <span class="translit">boygin</span> (signature / gathering of pages). And
+      how many <span class="translit">boygin</span> this book will contain in
+      total. Thus let your eminence write to me every detail, by return.
+    </p>
+
+    <!-- LINE 74: the Rav's involvement; purity of the sefer; health update -->
+    <p>
+      And regarding what your eminence wrote to me — that you have difficulties
+      with the Rav, and also that he wishes to print within the book certain
+      things of his own — <mark class="gold">behold, I have placed everything
+      in your hands, and everything is under your authority</mark>. Therefore,
+      if you understand with your own understanding that you have no need of the
+      Rav — cease from him. But if you do need him, <mark class="teal">I warn you
+      that he should not allow even a single letter of his own to go to press —
+      so that no stranger should be intermingled within the book</mark>. And as
+      for those two introductions which you sent me — they are upright in my
+      humble eyes. And regarding the
+      <span class="translit">haskamos</span> (approbations) — I spoke with the
+      Rav that he should not make an issue of this, and so forth. And regarding
+      what your eminence wrote to me — that the brother-in-law of the printer,
+      who is the extraordinary scholar, and so forth, our Teacher the Rabbi
+      <strong>Mosheh</strong> — may his light shine and radiate — is doing you
+      favors: with the help of Hashem Yisborach
+      <mark class="gold">I shall repay him measure for measure</mark>. And may
+      Hashem Yisborach grant you strength — in material matters and in spiritual
+      matters — to complete the printing without any hindrance whatsoever.
+    </p>
+
+    <p>
+      And regarding the health of my body — I hereby inform you that for some
+      days now I have strengthened somewhat, but
+      <mark class="teal">I still stand in need of great mercies</mark> —
+      <cite>u'man d'rachim li li'ba'ay alai rachamim</cite> — whoever loves me
+      should beseech mercy for me <span class="verse-src">(Nedarim 40)</span>.
+    </p>
+
+    <!-- LINE 75–76: closing and signature -->
+    <div class="closing">
+      <p class="no-indent">
+        Thus speak the words of one who loves your soul and constantly seeks
+        your welfare.
+      </p>
+      <p class="signature">
+        <strong>Nachman</strong>, son of our Teacher the Rabbi <strong>Simcha</strong> —
+        may his Rock protect him and give him life.
+      </p>
+    </div>
+
+    <!-- LINE 77: postscript -->
+    <span class="ps-label">Postscript</span>
+    <p class="no-indent">
+      Also — to send out the letters
+      <mark class="teal">by way of the postal service</mark>, each one to its
+      place.
+    </p>
+
+    <!-- LINES 78–79: year marker and note on next letter -->
+    <div class="year-divider">
+      ✦ &nbsp; Letters of the Year 5569 &nbsp; ✦
+    </div>
+    <div class="year-divider-sub">
+      (A letter from our Master, Teacher, and Rabbi — may the memory of the
+      righteous be for a blessing — to his daughter
+      <strong>Marat Sarah</strong>, of blessed and holy memory, and to her
+      husband our Teacher the Rabbi <strong>Yitzchok Ayzik</strong> — may
+      the memory of the righteous be for a blessing.)
+    </div>
+
+  </div>
+
+  <!-- TRANSLATOR SECTION -->
+  <div class="translator-section">
+
+    <p>
+      <strong>Overview:</strong> Written from Lemberg in 5568, this letter is
+      unique in the collection: it is almost entirely devoted to the practical
+      logistics of printing a holy book — almost certainly
+      <em>Likutay Moharan</em>, Rebbe Nachman's magnum opus, the first part of
+      which was published in Ostrog in 1808. The letter reveals Rebbe Nachman
+      as a remarkably hands-on, detail-oriented overseer of the printing process:
+      paper types, print-run quantities, payment per signature, the chain of
+      custody for funds, and — above all — the absolute purity of the text. Not
+      a single foreign letter was to enter his book.
+    </p>
+
+    <h3>Key Themes</h3>
+    <div class="themes-grid">
+      <div class="theme-card">
+        <strong>Purity of the Holy Text</strong>
+        Rebbe Nachman's warning — <em>"not even a single letter of his own
+        should go to press, so that no stranger be intermingled within the
+        book"</em> — reflects the deep Kabbalistic understanding that a holy
+        sefer is a spiritual vessel. Foreign content, however well-intentioned,
+        contaminates that vessel.
+      </div>
+      <div class="theme-card">
+        <strong>The Printing of Likutay Moharan</strong>
+        The reference to introductions by Reb Nussun, the payment negotiations,
+        the paper types and signature counts — all point to the landmark first
+        printing of <em>Likutay Moharan</em> (Ostrog, 5568/1808). This letter
+        is therefore a direct window into one of the most significant moments
+        in Breslov history.
+      </div>
+      <div class="theme-card">
+        <strong>I Still Need Great Mercies</strong>
+        Despite the businesslike tone of most of the letter, Rebbe Nachman
+        closes with the same plea that runs through Letters 1 and 4: he is
+        still ill, still vulnerable, and still needs the prayers of those who
+        love him. The Aramaic phrase from Nedarim 40 reappears — a thread
+        of personal vulnerability woven through all these letters.
+      </div>
+      <div class="theme-card">
+        <strong>Measure for Measure</strong>
+        <em>"I shall repay him measure for measure"</em> — Rebbe Nachman
+        promises spiritual repayment for material kindness. This is the Tzaddik
+        operating as an intermediary: human generosity is received by him and
+        returned transformed, on a higher plane.
+      </div>
+    </div>
+
+    <h3>Note on the Dateline</h3>
+    <p>
+      The phrase <em>"the 26th by the count of the Children of Israel"</em>
+      refers to the <span class="translit">Sefiras Ha'Omer</span> count — the
+      daily counting of the forty-nine days between Pesach and Shavuos. The
+      11th of Iyar is the 26th day of the <span class="translit">omer</span>.
+      Rebbe Nachman records both the calendar date and the
+      <span class="translit">omer</span> count in the dateline, reflecting
+      the sanctity of each individual day in this period.
+    </p>
+
+    <h3>Note on Lines 78–79</h3>
+    <p>
+      The two lines closing this letter are editorial markers from the
+      compiler of the collection. Line 78 announces the beginning of the
+      letters of 5569. Line 79 is a parenthetical identification of the
+      recipient of Letter 7 — Rebbe Nachman's own daughter Marat Sarah and
+      her husband Reb Yitzchok Ayzik, both of blessed memory. Both are
+      rendered within the manuscript page as structural signposts.
+    </p>
+
+  </div>
+
+  <div class="ms-footer">
+    Translated in the merit of Na Nach Nachma Nachman MayUman &nbsp;·&nbsp; May HY bless this work.
+  </div>
+
+</div>
+</body>
+</html>

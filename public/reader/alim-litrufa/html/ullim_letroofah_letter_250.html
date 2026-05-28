@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ullim LeTroofah – Letter 250 | Erev Shabbas Kodesh 5598 — The Great Shabbas Letter</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Cinzel:wght@400;500;600&family=Frank+Ruhl+Libre:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--parchment:#f5efe0;--parchment-dark:#ede3cc;--ink:#1c1209;--ink-mid:#3b2a14;--ink-soft:#5c4530;--gold:#8b6914;--gold-pale:#e8d9a0;--crimson:#7a1c1c;--teal:#1a4a4a;--highlight-y:rgba(220,195,80,0.22);--highlight-b:rgba(26,74,74,0.12);}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background-color:#2a1f0e;min-height:100vh;font-family:'EB Garamond',Georgia,serif;color:var(--ink);padding:2rem 1rem 4rem;}
+.manuscript{max-width:780px;margin:0 auto;background-color:var(--parchment);border:1px solid var(--parchment-dark);box-shadow:0 0 0 6px #1a1005,0 0 0 8px #8b6914,0 0 0 10px #1a1005,0 30px 80px rgba(0,0,0,0.7),inset 0 0 60px rgba(180,140,60,0.08);padding:3.5rem 4rem 4rem;position:relative;}
+.manuscript::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(180deg,rgba(200,170,90,0.06) 0%,transparent 30%,transparent 70%,rgba(150,110,40,0.05) 100%);pointer-events:none;}
+.series-header{text-align:center;border-bottom:2px solid var(--gold);padding-bottom:1.6rem;margin-bottom:2.2rem;position:relative;}
+.series-header::after{content:'✦';position:absolute;bottom:-0.65em;left:50%;transform:translateX(-50%);background:var(--parchment);padding:0 0.6em;color:var(--gold);font-size:0.9rem;}
+.series-title{font-family:'Cinzel',serif;font-size:1.1rem;letter-spacing:0.18em;color:var(--gold);text-transform:uppercase;margin-bottom:0.3rem;}
+.series-heb{font-family:'Frank Ruhl Libre',serif;font-size:1.25rem;color:var(--ink-mid);margin-bottom:0.3rem;}
+.series-subtitle{font-size:0.95rem;color:var(--ink-mid);font-style:italic;margin-bottom:0.2rem;}
+.series-byline{font-size:0.8rem;color:var(--ink-soft);}
+.letter-heading{text-align:center;margin-bottom:1.6rem;}
+.letter-number{font-family:'Cinzel',serif;font-size:2.4rem;font-weight:600;color:var(--gold);letter-spacing:0.1em;line-height:1;margin-bottom:0.3rem;}
+.letter-meta{font-size:0.9rem;color:var(--ink-soft);font-style:italic;line-height:1.65;}
+.addressee{border-left:3px solid var(--gold);padding:0.75rem 1rem;margin-bottom:1.7rem;font-size:0.95rem;color:var(--ink-mid);font-style:italic;line-height:1.75;background:rgba(200,170,80,0.06);}
+.addressee .label{font-family:'Cinzel',serif;font-size:0.7rem;letter-spacing:0.13em;color:var(--gold);font-style:normal;display:block;margin-bottom:0.3rem;text-transform:uppercase;}
+.letter-body{text-align:justify;line-height:1.90;font-size:1.06rem;}
+.letter-body p{margin-bottom:1.15rem;text-indent:1.6em;}
+.letter-body p.no-indent{text-indent:0;}
+mark.gold{background:var(--highlight-y);padding:0 2px;border-radius:2px;}
+mark.teal{background:var(--highlight-b);padding:0 2px;border-radius:2px;}
+.bracket{color:var(--ink-soft);font-size:0.9em;font-style:italic;}
+.verse-src{font-size:0.82em;color:var(--crimson);font-style:normal;font-weight:500;}
+.shabbas-block{margin:0.3rem 0 1.15rem;padding:1.2rem 1.6rem;border-left:4px solid var(--gold);border-top:2px solid var(--gold);background:rgba(220,195,80,0.09);line-height:2.05;font-size:1.04rem;color:var(--ink-mid);}
+.shabbas-block p{margin-bottom:0.9rem;text-indent:0;}
+.shabbas-block p:last-child{margin-bottom:0;}
+.tishrei-block{margin:0.3rem 0 1.15rem;padding:1.2rem 1.6rem;border-left:4px solid var(--teal);border-top:2px solid var(--teal);background:rgba(26,74,74,0.06);line-height:2.05;font-size:1.04rem;color:var(--ink-mid);}
+.tishrei-block p{margin-bottom:0.9rem;text-indent:0;}
+.tishrei-block p:last-child{margin-bottom:0;}
+.tears-block{margin:0.3rem 0 1.15rem;padding:1.2rem 1.6rem;border:1px solid var(--gold-pale);background:rgba(220,195,80,0.05);line-height:2.05;font-size:1.04rem;color:var(--ink-mid);}
+.tears-block p{margin-bottom:0.9rem;text-indent:0;}
+.tears-block p:last-child{margin-bottom:0;}
+.closing{margin-top:1.8rem;border-top:1px solid var(--gold-pale);padding-top:1.2rem;}
+.signature{text-align:right;font-style:italic;color:var(--ink-mid);font-size:1.0rem;margin-top:0.35rem;}
+.signature strong{font-style:normal;color:var(--ink);}
+.tears-sig{text-align:center;margin-top:1rem;font-style:italic;color:var(--crimson);font-size:0.95rem;padding:0.7rem;border-top:1px dashed var(--gold-pale);}
+.translator-section{margin-top:3rem;border-top:2px solid var(--gold);padding-top:1.6rem;position:relative;}
+.translator-section::before{content:"— From the Translator —";position:absolute;top:-0.75em;left:50%;transform:translateX(-50%);background:var(--parchment);padding:0 0.9em;font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:0.16em;color:var(--gold);text-transform:uppercase;white-space:nowrap;}
+.translator-section p{font-size:0.93rem;color:var(--ink-mid);line-height:1.78;margin-bottom:0.8rem;text-indent:0;}
+.translator-section h3{font-family:'Cinzel',serif;font-size:0.8rem;letter-spacing:0.12em;color:var(--gold);text-transform:uppercase;margin:1.2rem 0 0.5rem;}
+.themes-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:0.8rem;margin-top:0.6rem;}
+.theme-card{background:var(--parchment-dark);border-top:2px solid var(--gold);padding:0.75rem 0.9rem;font-size:0.85rem;color:var(--ink-mid);line-height:1.55;}
+.theme-card strong{display:block;font-family:'Cinzel',serif;font-size:0.71rem;letter-spacing:0.1em;color:var(--gold);text-transform:uppercase;margin-bottom:0.3rem;}
+.ms-footer{text-align:center;margin-top:2.5rem;padding-top:1rem;border-top:1px solid var(--gold-pale);font-size:0.78rem;color:var(--ink-soft);font-style:italic;}
+@media(max-width:600px){.manuscript{padding:2rem 1.4rem 2.5rem;}.letter-number{font-size:1.8rem;}}
+</style>
+</head>
+<body>
+<div class="manuscript">
+  <div class="series-header">
+    <div class="series-title">Ullim LeTroofah</div>
+    <div class="series-heb">עלים לתרופה</div>
+    <div class="series-subtitle">Leaves for Healing</div>
+    <div class="series-byline">The Sacred Letters of Rebbe Nachman of Breslov and Reb Nussun of Breslov, of blessed memory</div>
+  </div>
+  <div class="letter-heading">
+    <div class="letter-number">LETTER TWO HUNDRED AND FIFTY</div>
+    <div class="letter-meta">
+      Blessed be Hashem &nbsp;·&nbsp; Morning watch, Friday, <em>Erev Shabbas Kodesh</em> — Nemirov &nbsp;·&nbsp; Year 5598 (1837)
+    </div>
+  </div>
+  <div class="addressee">
+    <span class="label">To</span>
+    Peace — to my beloved son — <mark class="gold">friend of my soul and
+    my heart</mark> — the veteran remarkable scholar — our Teacher the
+    Rabbi Yitzchok — may he live.
+  </div>
+  <div class="letter-body">
+
+    <p>
+      I received your letter yesterday Thursday — close to <em>Mincha</em>
+      — via one of the <em>anshei sh'lomaynu</em> who was a special messenger
+      to me about our affairs.
+      <mark class="teal">Hashem will complete for good.</mark>
+      Just now we still need many prayers and supplications — that Hashem
+      Yisborach will complete in His wondrous mercies for good quickly —
+      and to Hashem the salvation. Until now His mercies helped us in ways
+      that were wondrous and awesome — very very much —
+      <mark class="gold">that were never heard and never seen.</mark>
+      <em>"Rabbot asita atah Hashem Elokai nifle'osecha"</em>
+      <span class="verse-src">[Tehillim 40:6]</span>
+      — and so forth. Also now may He not abandon us and not forsake us —
+      and for the sake of His great name — may He do and complete our desire
+      for good quickly — Amen.
+    </p>
+
+    <div class="shabbas-block">
+      <p>
+        And it did not come to my mind yesterday to reply to him today —
+        for the preoccupation of <em>Shabbas</em> is upon me as usual from
+        Thursday. And the essential —
+        <mark class="gold">how one merits at any rate to begin from this
+        <em>Shabbas</em> — for every day and day one must begin — all the
+        more so and all the more so on <em>Shabbas Kodesh</em> which is
+        all the life-force of all the days of the week.</mark>
+        And it is all <em>teshuvah</em> in love and in joy — from within
+        the <em>oneg Shabbas</em> — in the aspect of <em>"ahavah
+        bata'anugim"</em> and so forth. And the greatness of our distance
+        from <em>Shabbas</em> — every person knows in his own soul. But
+        even so —
+        <mark class="teal">every individual of Israel — according to the
+        good point that is still in him — so is the holiness of <em>Shabbas</em>
+        drawn upon him.</mark>
+        But even so — <em>Shabbas</em> and <em>Yom Tov</em> require
+        preparation — as our Sages said (Beitzah 2b) — and
+        <mark class="gold">the essential preparation is the will — to
+        remember <em>Shabbas</em> in simplicity every day and day — and
+        to fulfil <em>"mei'echad b'shabbas l'shabbat'cha"</em></mark>
+        <span class="bracket">[מֵאֶחָד בְּשַׁבָּת לְשַׁבָּתְךָ — from
+        the first day of the week — already thinking of the coming Shabbas.
+        As quoted from Beitzah 16b — the teaching of Shammai who would
+        dedicate each day of the week to the honor of the upcoming Shabbas]
+        </span>
+        — as it is written <em>"zachor es yom haShabbas l'kadsho — zachrehu
+        mei'echad b'shabbas"</em>
+        <span class="verse-src">[Beitzah 16b]</span>.
+        All the more so and all the more so when one arrives at
+        <em>"tik'dama yoma kamai shabbasa"</em> — the three days before
+        Shabbas — and especially from Thursday — when all of Israel prepare
+        themselves for <em>Shabbas</em> — and every one runs and toils to
+        buy flour and meat for the need of <em>Shabbas</em> —
+        <mark class="gold">who can assess the inner spark in his heart —
+        what awesome delights are made from this in all the worlds.</mark>
+        But this — all Israel fulfil with Hashem's help — and we too among
+        them — certainly
+        <mark class="gold"><em>ashreinu — ashrei kulanu</em> — that we
+        merited to such a good and precious gift — that was hidden in His
+        treasury — and <em>"Shabbas"</em> is its name.</mark>
+        And certainly we must fulfil this in simplicity without
+        sophistications — with great joy. But the essential is to prepare
+        oneself in his heart and soul — to think thoughts of how one merits
+        to draw upon oneself the holiness of <em>Shabbas Kodesh</em> — at
+        any rate now — and to ask greatly from Hashem Yisborach about this.
+      </p>
+      <p>
+        Even over all of these — it was far in his eyes to reply to him
+        immediately — especially the great pain from his affairs — he has
+        very great yearning of eyes that he merits that it be completed for
+        good — and also the pain from each and every one of the <em>anshei
+        sh'lomaynu</em> from fear of the troubles — may Hashem Yisborach
+        in His mercy protect each and every one — and in the shadow of Your
+        wings conceal us. But even so — when he was reading the <em>Parasha</em>
+        — twice in Scripture and once in <em>Targum</em> —
+        <mark class="teal">the immensity of his yearning for his letter
+        flashed through his mind — and he said in his heart — to fulfil
+        with this the great <em>mitzvah</em> of all — which is <em>"v'shinantam
+        l'vanecha"</em> and <em>"v'hoda'atam l'vanecha v'livnei vanecha"</em></mark>
+        — as he warned us explicitly — the light of our lives — of blessed
+        memory — (Sichos HaRan 209). And he strengthened himself in this
+        to reply to him immediately.
+        <mark class="gold">Blessed be Hashem Yisborach that he reminded
+        himself and you of the holiness of <em>Shabbas Kodesh</em> — which
+        is the totality and root of all holinesses.</mark>
+        And there is much to speak about this. And the essential is to
+        strengthen oneself and to ask from Hashem Yisborach — to receive
+        every <em>Shabbas</em> and <em>Shabbas</em> with great joy — in
+        love and in good will — and to drive away and distance at any rate
+        then all kinds of sadness and grief and sigh — especially the
+        preoccupation and worry of livelihood — to forget and to remove
+        all from one's mind —
+        <mark class="gold">until one merits to draw the joy of <em>Shabbas</em>
+        upon all the weekdays</mark>
+        — so that also on weekdays one strengthens himself in strong
+        <em>bitachon</em> always — and gladdens his soul in Hashem in his
+        good points —
+        <mark class="teal">in the aspect of <em>"azamra lelokai b'odi."</em>
+        And praised be G-d — we have nothing to be ashamed of to mention
+        the awesome Torah <em>"Azamra"</em> — thousands of times every day.
+        For it is our life.</mark>
+      </p>
+      <p>
+        And now my son — my beloved — delight of my heart — the glory of
+        my heart and soul — before he began to reply to him in his letter.
+        Praised be G-d in His wondrous <em>chesed</em> — he has already
+        replied to him greatly — for
+        <mark class="gold">all that he wrote to him until here — you can
+        give yourself life always — and receive counsels from them every day
+        — for <em>Shabbas Kodesh</em> is a wondrous counsel for everything</mark>
+        — in the aspect of <em>"Shabbas agin al adam harishon"</em> —
+        "Shabbas protected the first man"
+        <span class="verse-src">[Zohar II:138]</span>
+        — as he explained — the light of our eyes — in the awesome story
+        of the children who were exchanged (Sipurei Ma'asiyos 11) —
+        <mark class="teal">that when they drive a person from the holy garden
+        — which is the secret of the aspect of Gan Eden — he must stand
+        himself next to <em>Shabbas</em> — which is in the aspect of the
+        king whose peace is His.</mark>
+        And even though these matters are very exalted — even beyond his
+        mind — even so — he knows clearly that the essential intention is
+        in simplicity —
+        <mark class="gold">to stand oneself next to <em>Shabbas</em>
+        — as he wrote above.</mark>
+        And know my beloved son — that it also seems to him that never in
+        his life has he gone through what he went through after this
+        <em>Rosh Hashanah</em> — especially during <em>Sukkos.</em> And
+        the truth is so — but even so — he knows that also every time that
+        what passed over him passed —
+        <mark class="teal"><em>"kol mishbareicha v'galecha alai avaru"</em>
+        — every time there were new changes — waves and depths — that never
+        passed before.</mark>
+        And so over every person at every time — new things — both in good
+        and in difficulty. And even so —
+        <mark class="gold">the attribute of good is greater — and His
+        <em>chesed</em> has prevailed over me and over you as well.</mark>
+      </p>
+    </div>
+
+    <div class="tishrei-block">
+      <p>
+        And Hashem helped us in His wonders and goodnesses and miracles
+        that are in every day and every time — morning and evening and
+        afternoon — especially on holy <em>Yamim Tovim</em> — especially
+        in
+        <mark class="gold"><em>Yerach Ha'eisanim</em> — the month of
+        strength in <em>mitzvos</em> — which is the holy and awesome month
+        of Tishrei</mark>
+        <span class="bracket">[יֶרַח הָאֵיתָנִים — the month of the mighty
+        ones — the ancient name for Tishrei (Melachim Aleph 8:2) — those
+        who are mighty in <em>mitzvos</em>. And it is also: the month of
+        the <em>eisanim</em> — the patriarchs — for they were born in
+        Tishrei according to one tradition]</span>
+        — in which we merited to wondrous salvations — and to snatch also
+        some gladness and joy — and to dwell in the <em>Sukkah</em> every
+        day — and to hold in our hands
+        <mark class="gold"><em>"mana krava — mateh oz"</em> — the weapons
+        of war — the staff of strength</mark>
+        <span class="bracket">[מָאנָא קְרָבָא מַטֵּה עֹז — from the
+        Zohar — the four species (<em>arba minim</em>) are described as
+        spiritual weapons of war — the weapons with which Yisrael wages the
+        battle against impurity during <em>Sukkos</em>]</span>
+        — namely
+        <mark class="gold">the <em>esrog</em> and the <em>lulav</em> and
+        <em>hadasim</em> and <em>aravah</em> — holy and very awesome</mark>
+        — and to cry <em>Hoshana Hoshana</em> every day — and especially
+        on <em>Hoshana Rabbah</em> — and to rejoice on <em>Shemini Atzeres</em>
+        and <em>Simchas Torah.* And all of it through the power of the holy
+        and exalted and very awesome <em>Rosh Hashanah</em> — in which we
+        merited to gather together in the holy place of his holy burial.
+        <mark class="gold"><em>Ashreinu</em> that we merited to this —
+        <em>ashrei ha'azna'yim v'ha'einayim</em> — that hear and see the
+        holy and awesome letter-combinations that he revealed about the
+        secret of the month of Tishrei.</mark>
+        <span class="bracket">[In the teachings of the Rebbe — the word
+        תִּשְׁרֵי (Tishrei) contains deep letter-combination secrets that
+        he revealed at the Uman <em>Rosh Hashanah</em> gatherings — the
+        verse <em>"Atah porereta b'uzecha yam — shibarta roshei taninim"</em>
+        — and other combinations — connecting Tishrei to the great cosmic
+        battles and the redemption. <em>Mi yisvonen</em> — who can
+        contemplate — how those so distant were brought close to such
+        light]</span>
+        <em>Mi yisvonen</em> — who can contemplate — <em>mi yisvonen</em>
+        — for one who does contemplate — how were those so distant brought
+        close — and merited to draw close to such light — to know from
+        such letter-combinations — especially with the connection of all
+        the holy Torah that was revealed there.
+      </p>
+      <p>
+        And in truth he informs his beloved and precious son — that every
+        time he reminded himself with intention of the word <em>Tishrei</em>
+        with these awesome and exalted combinations —
+        <mark class="teal">he greatly strengthened himself over all that
+        had passed over him.</mark>
+        For every understanding heart can understand from afar — that in
+        Tishrei there is an immense battle for each and every one — as they
+        preface to cry out in every month of Elul:
+        <mark class="teal"><em>"im tachaneh alai machaneh lo yira libi —
+        im takum alai milchama"</em> — "though an army should encamp
+        against me — my heart will not fear — though war should rise against
+        me"</mark>
+        <span class="verse-src">[Tehillim 27:3]</span>
+        — and so forth — but
+        <mark class="gold"><em>"b'zos ani votei'ach"</em> — "in this I
+        trust"</mark>
+        — certainly in all that he wrote until now — about the holiness
+        of <em>Shabbas Kodesh</em> and the holiness of Tishrei. And all
+        of it is the power of the holiness of the true <em>tzaddik</em>
+        who revealed all this — and is engaged in all this still — for
+        <mark class="gold">the <em>tzaddikim</em> are greater in their
+        death than in their lifetime.</mark>
+        And as written in the holy Zohar (III:71a) that were it not for
+        the prayer of the <em>tzaddikim</em> who have died — who pray for
+        the living —
+        <mark class="gold">the world would not be sustained for even one
+        moment.</mark>
+        And an extra love is made known to us — that praised be G-d — we
+        know from the true <em>tzaddik</em> who is engaged in our repair
+        — together with all the righteous who sleep in the dust — whose
+        merit protects us always — Amen.
+      </p>
+      <p>
+        And as for what you wrote — that in the time when the vicissitudes
+        and confusions pass over one — it is impossible to feel the
+        <em>chasadim</em> of Hashem — only afterwards when it expands a
+        little — then one sees the wonders of the <em>chasadim</em> of
+        Hashem —
+        <mark class="teal">this he knows from long ago — from many days —
+        and he has already spoken about this with our Master our Teacher
+        and our Rebbe — of blessed memory — himself — and he said to him
+        that this is so.</mark>
+        But even so — his intention was that a person should specifically
+        strengthen himself at the time of the great distress —
+        <mark class="gold">to find some expansiveness — until one feels
+        then specifically the <em>chasadim</em> of Hashem and His wonders.</mark>
+        And at any rate believe in them with complete faith — that certainly
+        Hashem Yisborach is good to all at every time — and He has already
+        helped him greatly — and certainly will not abandon him even now.
+        And
+        <mark class="gold">this is the essential battle — to turn the grief
+        and sigh specifically into gladness and joy.</mark>
+        And he has already spoken greatly about this — and there is still
+        a vision for the appointed time — that Hashem will open our eyes
+        to speak about this. More than this there is no leisure to extend.
+      </p>
+    </div>
+
+    <div class="tears-block">
+      <p>
+        And now my son — fulfil the <em>mitzvah</em> of love of friends —
+        and
+        <mark class="teal">copy this letter word for word — and send it
+        immediately to the holy congregation of Kremintshak — to our friend
+        Rabbi Ephraim — may his light shine</mark>
+        — for he has no leisure to write him himself — and especially
+        because he too is lax in writing to him as he has already reproached
+        him greatly about this. And fulfil all this immediately — and write
+        me immediately via the post whether you received this letter and
+        whether you fulfilled to send to Rabbi Ephraim as above.
+      </p>
+      <p>
+        Also
+        <mark class="teal">inform me immediately of the nephew Rabbi Ayzik
+        — whether he is alive — for he heard from afar an unfavorable report
+        and does not know the truth.</mark>
+        And also this is a great hint and arousal to strengthen in all the
+        above — until we merit to the complete <em>teshuvah</em> of
+        <em>Shabbas</em> quickly.
+        <mark class="gold"><em>Tov l'hodos laHashem</em> — that he began
+        from <em>Shabbas</em> and ended with <em>Shabbas</em> — for all
+        the life-force from beginning to end is <em>Shabbas Kodesh.</em></mark>
+        And behold — praised be G-d — the holy <em>challah</em> of
+        <em>Shabbas Kodesh</em> has already been kneaded. And the light
+        of the day is approaching to come. And the Master of mercy and
+        <em>chesed</em> will satisfy us in the morning with His <em>chesed</em>
+        and His goodness —
+        <mark class="gold"><em>"chasdei Hashem ki lo samu... chadashim
+        labekarim rabbah emunasecha"</em> — that the <em>chasadim</em>
+        are renewed every morning — as Rashi explained there (Eichah 3).</mark>
+        And one must believe in this every day — and especially on the
+        sixth day — which is the preparation for <em>Shabbas</em> — which
+        is the very essence of <em>chesed</em> and mercy — <em>ra'ava
+        d'ra'avin</em>
+        <span class="bracket">[רַעֲוָא דְּרַעֲוִין — Aramaic: the will of
+        wills — from the Zohar — the deepest divine will — which is most
+        manifest on <em>Shabbas</em>]</span>
+        — His <em>chesed</em> has prevailed over us — and the truth of
+        Hashem is forever.
+      </p>
+    </div>
+
+    <div class="closing">
+      <p class="no-indent">The words of your father who gives himself life
+      at every time — through all the above-mentioned paths — and all that
+      is included in them — without end and without limit. Praised be He
+      Who does great things without investigation — miracles and wonders
+      without number — Whose mercies helped us until here and Whose
+      <em>chasadim</em> did not abandon us — in the name of His holiness
+      we trust that He will not forsake us forever.</p>
+      <div class="tears-sig">
+        <mark class="gold">Writes with tears — from the greatness of pain
+        and from the greatness of joy —<br>strengthening and overcoming at
+        every time — to turn the grief and sigh into gladness and joy</mark>
+      </div>
+      <p class="signature"><strong>Nussun</strong> of Breslov.</p>
+    </div>
+  </div>
+
+  <div class="translator-section">
+    <p>
+      <strong>Overview:</strong> Friday morning watch, <em>Erev Shabbas
+      Kodesh</em> — Nemirov — Year 5598. Addressed to Yitzchok as "friend
+      of my soul and my heart." Received his letter yesterday Thursday close
+      to <em>Mincha</em> via a special messenger. Hashem will complete for
+      good. Until now His mercies helped us in ways that were wondrous and
+      awesome — very very much — that were never heard and never seen.
+      <em>"Rabbot asita atah Hashem Elokai nifle'osecha."</em> Also now
+      may He not abandon us and not forsake us — may He complete our desire
+      for good quickly — Amen. Then: he did not come to his mind yesterday
+      to reply today — for the preoccupation of <em>Shabbas</em> is upon
+      him as usual from Thursday. And the essential — how one merits at
+      any rate to begin from this <em>Shabbas</em> — for every day one
+      must begin — all the more so on <em>Shabbas Kodesh</em> which is all
+      the life-force of all the days of the week. It is all <em>teshuvah</em>
+      in love and in joy from within the <em>oneg Shabbas.</em> Every
+      individual of Israel — according to the good point that is still in
+      him — so is the holiness of <em>Shabbas</em> drawn upon him. But
+      <em>Shabbas</em> and <em>Yom Tov</em> require preparation — the
+      essential preparation is the will — to remember <em>Shabbas</em> in
+      simplicity every day — to fulfil <em>"mei'echad b'shabbas
+      l'shabbat'cha"</em> — <em>"zachor es yom haShabbas — zachrehu
+      mei'echad b'shabbas."</em> When all of Israel prepare for <em>Shabbas</em>
+      on Thursday — running and toiling to buy flour and meat — who can
+      assess the inner spark in his heart — what awesome delights are made
+      in all the worlds. <em>Ashreinu — ashrei kulanu</em> — we merited
+      to such a good and precious gift — that was hidden in His treasury
+      — and "Shabbas" is its name. Fulfil this in simplicity without
+      sophistications — with great joy. But the essential is to prepare
+      oneself in his heart and soul — to think how one merits to draw the
+      holiness of <em>Shabbas Kodesh</em> upon himself — and to ask greatly
+      from Hashem about this. Even over all of these — it was far in his
+      eyes to reply immediately — especially the great pain from his affairs
+      — and the pain from each and every one of the <em>anshei sh'lomaynu</em>
+      — may Hashem protect each and every one. But even so — when he was
+      reading the <em>Parasha</em> twice Scripture once <em>Targum</em>
+      — the immensity of his yearning for his letter flashed through his
+      mind — and he said in his heart to fulfil the great <em>mitzvah</em>
+      of all — <em>"v'shinantam l'vanecha"</em> and <em>"v'hoda'atam
+      l'vanecha v'livnei vanecha"</em> (Sichos HaRan 209). Blessed be
+      Hashem that he reminded himself and you of the holiness of <em>Shabbas
+      Kodesh</em> — the totality and root of all holinesses. The essential
+      is to strengthen and to ask Hashem — to receive every <em>Shabbas</em>
+      with great joy — in love and in good will — and to drive away all
+      sadness and grief and sigh — especially the worry of livelihood — to
+      forget and remove all — until one merits to draw the joy of <em>Shabbas</em>
+      upon all the weekdays — and also on weekdays strengthen in strong
+      <em>bitachon</em> always — and gladden his soul in Hashem in his good
+      points — in the aspect of <em>"azamra lelokai b'odi."</em> Praised
+      be G-d — we have nothing to be ashamed of to mention the awesome Torah
+      <em>"Azamra"</em> thousands of times every day. For it is our life.
+      And now my son — my beloved — delight of my heart — before he began
+      to reply to him in his letter. Praised be G-d — he has already replied
+      to him greatly — for all that he wrote him until here — you can give
+      yourself life always — and receive counsels from them every day — for
+      <em>Shabbas Kodesh</em> is a wondrous counsel for everything — in
+      the aspect of <em>"Shabbas agin al adam harishon"</em> (Zohar II:138)
+      — as he explained in the awesome story of the children who were
+      exchanged (Sipurei Ma'asiyos 11) — that when they drive a person from
+      the holy garden — he must stand himself next to <em>Shabbas</em> —
+      which is in the aspect of the king whose peace is His. And know my
+      beloved son — that it also seems to him that never in his life has
+      he gone through what he went through after this <em>Rosh Hashanah</em>
+      — especially during <em>Sukkos.</em> And the truth is so — but even
+      so — also every time that what passed over him passed — <em>"kol
+      mishbareicha v'galecha alai avaru"</em> — every time there were new
+      changes — waves and depths — that never passed before. And so over
+      every person at every time — new things — both in good and in
+      difficulty. And even so — the attribute of good is greater — and His
+      <em>chesed</em> has prevailed over me and over you as well. Then:
+      Hashem helped us in His wonders and miracles in every day and every
+      time — especially in <em>Yerach Ha'eisanim</em> — the month of
+      Tishrei — in which we merited to wondrous salvations — and to snatch
+      some gladness and joy — and to dwell in the <em>Sukkah</em> every
+      day — and to hold in our hands <em>"mana krava — mateh oz"</em>
+      — the <em>esrog</em> and the <em>lulav</em> and <em>hadasim</em>
+      and <em>aravah</em> — holy and very awesome — and to cry
+      <em>Hoshana Hoshana</em> every day — and especially on <em>Hoshana
+      Rabbah</em> — and to rejoice on <em>Shemini Atzeres</em> and
+      <em>Simchas Torah.</em> And all of it through the power of the holy
+      and very awesome <em>Rosh Hashanah</em> — in which we merited to
+      gather together in the holy place of his holy burial. <em>Ashreinu</em>
+      — <em>ashrei ha'azna'yim v'ha'einayim</em> — that hear and see the
+      holy and awesome letter-combinations that he revealed about the secret
+      of the month of Tishrei. <em>Mi yisvonen</em> — how were those so
+      distant brought close — and merited to draw close to such light —
+      to know from such letter-combinations. Every time he reminded himself
+      with intention of the word <em>Tishrei</em> with these awesome
+      combinations — he greatly strengthened himself. For in Tishrei there
+      is an immense battle for each and every one — <em>"im tachaneh alai
+      machaneh lo yira libi — im takum alai milchama"</em> — but
+      <em>"b'zos ani votei'ach"</em> — in all that he wrote about the
+      holiness of <em>Shabbas Kodesh</em> and the holiness of Tishrei.
+      All of it is the power of the holiness of the true <em>tzaddik</em>
+      who revealed all this and is engaged in all this still — for the
+      <em>tzaddikim</em> are greater in their death than in their lifetime.
+      As written in the Zohar (III:71a) — were it not for the prayer of
+      the <em>tzaddikim</em> who have died — who pray for the living —
+      the world would not be sustained for even one moment. And as for what
+      you wrote — that in the time when vicissitudes and confusions pass
+      over one it is impossible to feel the <em>chasadim</em> of Hashem
+      — only afterwards when it expands a little — then one sees the wonders
+      of the <em>chasadim</em> — this he knows from long ago — and he has
+      already spoken about this with our Master our Teacher and our Rebbe
+      himself — and he said to him that this is so. But even so — his
+      intention was that a person should specifically strengthen himself at
+      the time of the great distress — to find some expansiveness — until
+      one feels then specifically the <em>chasadim</em> of Hashem. And
+      at any rate believe with complete faith — that certainly Hashem is
+      good to all at every time — and He has already helped him greatly —
+      and certainly will not abandon him even now. And this is the essential
+      battle — to turn the grief and sigh specifically into gladness and
+      joy. And there is still a vision for the appointed time — that Hashem
+      will open our eyes to speak about this. Then: copy this letter word
+      for word and send it immediately to Rabbi Ephraim of Kremintshak. And
+      write me immediately via the post. Also inform me immediately of the
+      nephew Rabbi Ayzik — whether he is alive — for he heard from afar
+      an unfavorable report. <em>Tov l'hodos laHashem</em> — that he began
+      from <em>Shabbas</em> and ended with <em>Shabbas</em> — for all
+      the life-force from beginning to end is <em>Shabbas Kodesh.</em>
+      The holy <em>challah</em> of <em>Shabbas</em> has already been kneaded.
+      The light of the day is approaching. <em>"Chasdei Hashem ki lo samu...
+      chadashim labekarim rabbah emunasecha"</em> — the <em>chasadim</em>
+      are renewed every morning — as Rashi explained there (Eichah 3).
+      And one must believe in this every day — and especially on the sixth
+      day — which is the very essence of <em>chesed</em> and mercy —
+      <em>ra'ava d'ra'avin</em> — His <em>chesed</em> has prevailed over
+      us — and the truth of Hashem is forever. Closing: the words of your
+      father who gives himself life at every time through all the
+      above-mentioned paths — without end and without limit. <em>Writes
+      with tears — from the greatness of pain and from the greatness of
+      joy — strengthening and overcoming at every time — to turn the grief
+      and sigh into gladness and joy.</em>
+    </p>
+    <h3>Key Themes</h3>
+    <div class="themes-grid">
+      <div class="theme-card">
+        <strong>Shabbas Kodesh — The Totality and Root of All Holinesses</strong>
+        How one merits to begin from this <em>Shabbas</em> — for every day
+        one must begin — all the more so on <em>Shabbas Kodesh</em> which
+        is all the life-force of all the days of the week. The essential
+        preparation is the will — to remember <em>Shabbas</em> in simplicity
+        every day. Drive away all sadness and grief and sigh on <em>Shabbas</em>
+        — until one merits to draw the joy of <em>Shabbas</em> upon all
+        the weekdays — in the aspect of <em>"azamra lelokai b'odi."</em>
+        Stand oneself next to <em>Shabbas</em> — which is in the aspect
+        of the king whose peace is His.
+      </div>
+      <div class="theme-card">
+        <strong>Tishrei — The Tzaddikim Are Greater in Their Death Than in Their Lifetime</strong>
+        <em>Yerach Ha'eisanim</em> — the holy and awesome month of Tishrei
+        — in which we merited to wondrous salvations — and to gather in the
+        holy place of his holy burial. <em>Ashreinu — ashrei ha'azna'yim
+        v'ha'einayim.</em> The <em>tzaddikim</em> are greater in their death
+        than in their lifetime. Were it not for the prayer of the
+        <em>tzaddikim</em> who have died — who pray for the living — the
+        world would not be sustained for even one moment.
+      </div>
+      <div class="theme-card">
+        <strong>This Is the Essential Battle — Turn the Grief and Sigh Into Gladness and Joy</strong>
+        In the time when vicissitudes and confusions pass — it is impossible
+        to feel the <em>chasadim</em> of Hashem — only afterwards when it
+        expands a little. But the intention is that a person should
+        specifically strengthen himself at the time of the great distress
+        — to find some expansiveness. At any rate believe with complete faith
+        — Hashem is good to all at every time. This is the essential battle
+        — to turn the grief and sigh specifically into gladness and joy.
+        <em>Writes with tears — from the greatness of pain and from the
+        greatness of joy.</em>
+      </div>
+    </div>
+  </div>
+
+  <div class="ms-footer">
+    Translated in the merit of Na Nach Nachma Nachman MayUman &nbsp;·&nbsp; May HY bless this work.
+  </div>
+</div>
+</body>
+</html>

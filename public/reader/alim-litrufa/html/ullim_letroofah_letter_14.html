@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ullim LeTroofah – Letter Fourteen | Reb Nussun, Simchas Torah and the Mastery of Thought</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Cinzel:wght@400;500;600&family=Frank+Ruhl+Libre:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --parchment:      #f5efe0;
+    --parchment-dark: #ede3cc;
+    --ink:            #1c1209;
+    --ink-mid:        #3b2a14;
+    --ink-soft:       #5c4530;
+    --gold:           #8b6914;
+    --gold-pale:      #e8d9a0;
+    --crimson:        #7a1c1c;
+    --teal:           #1a4a4a;
+    --highlight-y:    rgba(220,195,80,0.22);
+    --highlight-b:    rgba(26,74,74,0.12);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background-color: #2a1f0e;
+    background-image:
+      radial-gradient(ellipse at 20% 10%, rgba(90,60,20,0.4) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 90%, rgba(50,30,10,0.5) 0%, transparent 60%);
+    min-height: 100vh;
+    font-family: 'EB Garamond', Georgia, serif;
+    color: var(--ink);
+    padding: 2rem 1rem 4rem;
+  }
+  .manuscript {
+    max-width: 780px;
+    margin: 0 auto;
+    background-color: var(--parchment);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    border: 1px solid var(--parchment-dark);
+    box-shadow:
+      0 0 0 6px #1a1005,
+      0 0 0 8px #8b6914,
+      0 0 0 10px #1a1005,
+      0 30px 80px rgba(0,0,0,0.7),
+      inset 0 0 60px rgba(180,140,60,0.08);
+    padding: 3.5rem 4rem 4rem;
+    position: relative;
+  }
+  .manuscript::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(180deg, rgba(200,170,90,0.06) 0%, transparent 30%, transparent 70%, rgba(150,110,40,0.05) 100%);
+    pointer-events: none;
+  }
+
+  .series-header {
+    text-align: center; border-bottom: 2px solid var(--gold);
+    padding-bottom: 1.6rem; margin-bottom: 2.2rem; position: relative;
+  }
+  .series-header::after {
+    content: '✦'; position: absolute; bottom: -0.65em; left: 50%;
+    transform: translateX(-50%); background: var(--parchment); padding: 0 0.6em;
+    color: var(--gold); font-size: 0.9rem;
+  }
+  .series-title {
+    font-family: 'Cinzel', serif; font-size: 1.1rem; letter-spacing: 0.18em;
+    color: var(--gold); text-transform: uppercase; margin-bottom: 0.3rem;
+  }
+  .series-heb { font-family: 'Frank Ruhl Libre', serif; font-size: 1.25rem; color: var(--ink-mid); margin-bottom: 0.3rem; }
+  .series-subtitle { font-size: 0.95rem; color: var(--ink-mid); font-style: italic; margin-bottom: 0.2rem; }
+  .series-byline { font-size: 0.8rem; color: var(--ink-soft); letter-spacing: 0.04em; }
+
+  .letter-heading { text-align: center; margin-bottom: 1.6rem; }
+  .letter-number {
+    font-family: 'Cinzel', serif; font-size: 2.4rem; font-weight: 600;
+    color: var(--gold); letter-spacing: 0.1em; line-height: 1; margin-bottom: 0.3rem;
+  }
+  .letter-meta { font-size: 0.9rem; color: var(--ink-soft); font-style: italic; line-height: 1.65; }
+
+  .bezras-hashem {
+    text-align: center; font-style: italic; color: var(--gold);
+    font-size: 1.0rem; margin-bottom: 0.5rem; letter-spacing: 0.03em;
+  }
+
+  .addressee {
+    border-left: 3px solid var(--gold);
+    padding: 0.75rem 1rem; margin-bottom: 1.7rem;
+    font-size: 0.95rem; color: var(--ink-mid); font-style: italic; line-height: 1.75;
+    background: rgba(200,170,80,0.06);
+  }
+  .addressee .label {
+    font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 0.13em;
+    color: var(--gold); font-style: normal; display: block; margin-bottom: 0.3rem;
+    text-transform: uppercase;
+  }
+
+  .letter-body { text-align: justify; line-height: 1.90; font-size: 1.06rem; }
+  .letter-body p { margin-bottom: 1.15rem; text-indent: 1.6em; }
+  .letter-body p.no-indent { text-indent: 0; }
+
+  .translit  { font-style: italic; color: var(--teal); font-weight: 500; }
+  mark.gold  { background: var(--highlight-y); padding: 0 2px; border-radius: 2px; }
+  mark.teal  { background: var(--highlight-b); padding: 0 2px; border-radius: 2px; }
+  cite       { font-style: italic; color: var(--crimson); }
+  .verse-src { font-size: 0.82em; color: var(--crimson); font-style: normal; font-weight: 500; }
+
+  /* horse-and-bridle parable — set apart */
+  .parable-block {
+    margin: 0.2rem 0 1.15rem 2rem;
+    padding: 0.9rem 1.2rem;
+    border-left: 2px solid var(--gold-pale);
+    background: rgba(200,170,80,0.05);
+    font-style: italic;
+    color: var(--ink-mid);
+    line-height: 1.92;
+    text-indent: 0;
+  }
+
+  /* halachah study order — practical instruction block */
+  .study-block {
+    margin: 0.3rem 0 1.15rem 0;
+    padding: 1.1rem 1.4rem;
+    border: 1px solid var(--gold-pale);
+    border-left: 3px solid var(--gold);
+    background: rgba(200,170,80,0.06);
+    font-size: 1.02rem;
+    line-height: 1.88;
+    color: var(--ink-mid);
+  }
+  .study-block .study-label {
+    font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 0.13em;
+    color: var(--gold); display: block; margin-bottom: 0.5rem; text-transform: uppercase;
+  }
+  .study-block p { margin-bottom: 0.8rem; text-indent: 0; }
+  .study-block p:last-child { margin-bottom: 0; }
+
+  /* simchas yisroel closing — joyful register */
+  .simcha-block {
+    margin: 0.3rem 0 1.15rem 0;
+    padding: 1.1rem 1.4rem;
+    border-top: 1px solid var(--gold-pale);
+    border-bottom: 1px solid var(--gold-pale);
+    background: rgba(220,195,80,0.08);
+    text-align: center;
+    font-style: italic;
+    color: var(--ink-mid);
+    line-height: 2.0;
+    font-size: 1.03rem;
+  }
+
+  .ps-label {
+    font-family: 'Cinzel', serif; font-size: 0.74rem; letter-spacing: 0.12em;
+    color: var(--gold); text-transform: uppercase; display: block; margin: 1.5rem 0 0.25rem;
+  }
+
+  .closing {
+    margin-top: 1.8rem; border-top: 1px solid var(--gold-pale); padding-top: 1.2rem;
+  }
+  .signature {
+    text-align: right; font-style: italic; color: var(--ink-mid);
+    font-size: 1.0rem; margin-top: 0.4rem; text-indent: 0 !important;
+  }
+  .signature strong { font-style: normal; color: var(--ink); }
+
+  /* TRANSLATOR SECTION */
+  .translator-section {
+    margin-top: 3rem; border-top: 2px solid var(--gold);
+    padding-top: 1.6rem; position: relative;
+  }
+  .translator-section::before {
+    content: "— From the Translator —";
+    position: absolute; top: -0.75em; left: 50%;
+    transform: translateX(-50%);
+    background: var(--parchment); padding: 0 0.9em;
+    font-family: 'Cinzel', serif; font-size: 0.72rem;
+    letter-spacing: 0.16em; color: var(--gold); text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .translator-section p {
+    font-size: 0.93rem; color: var(--ink-mid); line-height: 1.78;
+    margin-bottom: 0.8rem; text-indent: 0;
+  }
+  .translator-section p:last-child { margin-bottom: 0; }
+  .translator-section h3 {
+    font-family: 'Cinzel', serif; font-size: 0.8rem; letter-spacing: 0.12em;
+    color: var(--gold); text-transform: uppercase; margin: 1.2rem 0 0.5rem;
+  }
+
+  .themes-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(175px,1fr));
+    gap: 0.8rem; margin-top: 0.6rem;
+  }
+  .theme-card {
+    background: var(--parchment-dark); border-top: 2px solid var(--gold);
+    padding: 0.75rem 0.9rem; font-size: 0.85rem; color: var(--ink-mid); line-height: 1.55;
+  }
+  .theme-card strong {
+    display: block; font-family: 'Cinzel', serif; font-size: 0.71rem;
+    letter-spacing: 0.1em; color: var(--gold); text-transform: uppercase; margin-bottom: 0.3rem;
+  }
+
+  .ms-footer {
+    text-align: center; margin-top: 2.5rem; padding-top: 1rem;
+    border-top: 1px solid var(--gold-pale);
+    font-size: 0.78rem; color: var(--ink-soft); font-style: italic; letter-spacing: 0.04em;
+  }
+
+  @media (max-width: 600px) {
+    .manuscript { padding: 2rem 1.4rem 2.5rem; }
+    .letter-number { font-size: 1.8rem; }
+  }
+</style>
+</head>
+<body>
+<div class="manuscript">
+
+  <div class="series-header">
+    <div class="series-title">Ullim LeTroofah</div>
+    <div class="series-heb">עלים לתרופה</div>
+    <div class="series-subtitle">Leaves for Healing</div>
+    <div class="series-byline">The Sacred Letters of Rebbe Nachman of Breslov and Reb Nussun of Breslov, of blessed memory</div>
+  </div>
+
+  <div class="letter-heading">
+    <div class="letter-number">LETTER FOURTEEN</div>
+    <div class="letter-meta">
+      Monday, 22nd of Cheshvan, Parshas Chayay Sarah &nbsp;·&nbsp;
+      Year 5584 (1823)<br>
+      Written from <strong>Breslov</strong>
+    </div>
+  </div>
+
+  <div class="bezras-hashem">With the help of G-d, may He be blessed</div>
+
+  <div class="addressee">
+    <span class="label">To</span>
+    Peace and blessing and life and all good to the honor of my son,
+    our Teacher the Rabbi <strong>Yitzchok</strong>, may he live.
+  </div>
+
+  <div class="letter-body">
+
+    <!-- LINE 157: Simchas Torah joy; delight in son's letters; charge on prayer concentration -->
+    <p class="no-indent">
+      Your pleasant words reached me twice. The first arrived on
+      <span class="translit">Simchas Torah</span> — at the time when
+      we were rejoicing with a joy that has no end — the joy of Israel,
+      that we merited to be the people of His treasure, and that He gave
+      us His precious instrument, and drew us close to His service, and
+      so forth. Then, in the midst of our rejoicing, your letter reached
+      me. I saw it and rejoiced. <mark class="gold">I exult in your
+      words</mark> — and especially in the second letter, which I received
+      last week, in which you informed me of what my soul had hoped for:
+      that, thank G-d, the perfect Torah of Hashem is in your hands.
+    </p>
+
+    <p>
+      Please, my son, my beloved as my own soul —
+      <mark class="gold"><strong>be strong and courageous with all your
+      strength to be constant and unwavering in your learning</strong></mark>
+      — for it is your portion in life. <cite>It is good for a man that
+      he bear the yoke in his youth</cite>
+      <span class="verse-src">[Eichah 3:27]</span>. And also exert
+      yourself greatly to pray with great
+      <span class="translit">kavanah</span> (devotion and intention).
+      That you pour all your thoughts into every single word of the
+      prayer. That you concentrate on the meaning of the words throughout
+      the entire prayer. And hold your thought constantly so that it
+      does not wander here and there as has been your way until now.
+      <mark class="teal">Now, my son — turn away from this path. Be
+      vigilant and vigilant — and strengthen and fortify yourself with
+      every manner of strength and strategies to turn away from this
+      path.</mark> Only seize your thoughts in your hand so as not
+      to think anything extraneous — for
+      <mark class="gold">the thought is in a person's hand to direct it
+      as he wishes</mark>. And it is impossible for two thoughts to exist
+      together at the same time in any manner — as all this is well
+      explained in the books of our Master, of blessed memory
+      <span class="verse-src">[Likutay Moharan 72, 233]</span> — for
+      one who entertains foreign thoughts is one of the things that
+      obstructs repentance
+      <span class="verse-src">(Rambam, Hilchos Teshuvah, chapter 4,
+      halacha 5)</span>.
+    </p>
+
+    <!-- LINE 158: continue and deepen the teaching -->
+    <p>
+      And beyond what is written here, my son —
+      <mark class="teal">be vigilant, most exceedingly vigilant</mark>
+      — and examine carefully in the books of our Master, of blessed
+      memory, and you will find counsel and strategies to be saved from
+      this. And the essential point is what I wrote above — that you
+      should know and believe in what our Master, of blessed memory, said
+      there: that <mark class="gold">the thought is in a person's hand
+      to direct it wherever he wishes</mark>.
+    </p>
+
+    <!-- LINE 159: the horse-and-bridle parable -->
+    <p>
+      And he said that even if the thought strays, G-d forbid, sometimes
+      to the side — it is within a person's power to seize it and return
+      it to its proper place:
+    </p>
+
+    <div class="parable-block">
+      Just as a horse that strays from the road — one can seize it by
+      the bridle and return it to the straight path — so too is it
+      exactly with thought, as explained in his holy books. And in
+      particular during prayer, when confusions of thought intensify
+      greatly — for all the confusions that a person experiences at
+      times in his thoughts, all of them come to a person specifically
+      during prayer, as is explained
+      <span class="verse-src">[Likutay Moharan 30]</span>, see there.
+      Therefore during prayer one must strengthen oneself more and more
+      against foreign thoughts — <mark class="gold">and the essential
+      strengthening is in passive sitting, not active doing</mark>: that
+      one should not pay attention to them nor look at them at all —
+      only think the words of the prayer that issue from your mouth, and
+      then they will depart of their own accord.
+    </div>
+
+    <!-- LINE 160: hisbodidus — daily personal prayer -->
+    <p>
+      Also urge yourself greatly to choose for yourself an hour each day
+      to pour out your speech before your Creator — as you know how much
+      we have spoken at length about this in the name of our Master, of
+      blessed memory <span class="verse-src">[see the book
+      <em>Hishtapchus HaNefesh</em>]</span> — and that it is a
+      general counsel for every single person to merit the holiness
+      of Israel.
+    </p>
+
+    <!-- LINE 161: the books are sufficient -->
+    <p>
+      And beyond this it is impossible to elaborate in writing — for
+      a multitude of sheets would fall short. Only
+      <mark class="teal">set your eyes and your heart in the books of
+      our Master, of blessed memory — and you will find rest for your
+      soul</mark>, which will be good for you forever and for eternity.
+    </p>
+
+    <!-- LINE 162–163: the detailed halachah study instruction -->
+    <span class="ps-label">On the Order of Halachic Study</span>
+    <div class="study-block">
+      <span class="study-label">A Precise Instruction</span>
+      <p>
+        Also, my beloved son — it is not good in my eyes that you wrote
+        to me that you have fixed for yourself two separate study sessions
+        in the <span class="translit">Poskim</span> (legal codes): in
+        <em>Orach Chayyim</em> — the laws of Shabbos — and in
+        <em>Yoreh De'ah</em> — the laws of salting. Surely you should
+        have understood that I did not want this approach — to scatter
+        one's mind across such distant and unrelated topics. What has the
+        law of salting to do with the laws of Shabbos? Surely you know
+        that <mark class="teal">my intention regarding the order of study
+        is to learn in sequence precisely</mark>
+        <span class="verse-src">(see Sichos HaRan, 76)</span> — that
+        is, to complete <em>Orach Chayyim</em> all the way through to
+        its end, and then afterward to begin, with the help of Hashem
+        Yisborach, to study <em>Yoreh De'ah</em> from the laws of
+        slaughter, from beginning to end in exact sequence — and likewise
+        <em>Choshen Mishpat</em> and <em>Even HaEzer</em>.
+      </p>
+      <p>
+        <mark class="gold">Not as young people customarily do — snatching
+        at all times some particular law</mark>: sometimes the laws of
+        meat and milk, sometimes the laws of claims and counter-claims,
+        and suddenly jumping to the laws of family purity and the like —
+        and remaining bald on this side and bald on that side, with
+        neither this nor that achieved. And they carry away nothing from
+        their toil — for when they grow up they do not know any law or
+        ruling even in a single area.
+      </p>
+      <p>
+        Therefore my wish is that you study only the laws of Shabbos and
+        also tractate Shabbos as you wrote — and set your eyes and heart
+        to understand the matters well, without pressuring yourself
+        excessively. And also do not be overly exacting for no reason,
+        as we have already spoken of this. But if it is impossible to
+        change your study-partner's view — do not separate from him on
+        account of this, and fulfill his wish to study also the laws of
+        salting. But if you are able to speak to his heart that he should
+        study in the correct sequence as above — how good — and he will
+        certainly be grateful to me with the help of Hashem Yisborach
+        if he fulfills my words as I have instructed you above.
+      </p>
+    </div>
+
+    <!-- LINE 164: the closing charge on joy — Simchas Torah -->
+    <p class="no-indent">
+      Also exert yourself greatly to always be in joy. And how greatly
+      I took pleasure in what you wrote to me — that you are in joy,
+      thank G-d. <mark class="gold">Would that this truly be so always —
+      that you should only be joyful always.</mark> And look at the
+      beginning of this letter, where I aroused you on the matter of
+      <span class="translit">Simchas Torah</span> — and I deliberately
+      elaborated my words there, in order to always remember
+      <span class="translit">Simchas Yisroel</span> (the joy of Israel).
+    </p>
+
+    <div class="simcha-block">
+      For we must rejoice in this joy always —<br>
+      a joy that has no end —<br>
+      that we merited to be of the seed of Israel<br>
+      and to receive His Torah and His holy commandments,<br>
+      and so forth and so forth.<br>
+      <mark class="gold">How fortunate are we — how good is our
+      portion</mark> — and so forth.
+    </div>
+
+    <!-- LINE 165–166: closing -->
+    <div class="closing">
+      <p class="no-indent">
+        The words of your father, who waits and hopes and yearns to see
+        your true and eternal wellbeing and success — that there be
+        fulfilled in us: <cite>My son is wise and gladdens my
+        heart</cite>, and so forth
+        <span class="verse-src">[Mishlei 27:11]</span>.
+      </p>
+      <p class="signature">
+        The lowly <strong>Nussun</strong>, son of our Teacher the Rabbi
+        <strong>Naftali Hirtz</strong> — may his light shine and radiate —
+        of Breslov.
+      </p>
+    </div>
+
+  </div>
+
+  <!-- TRANSLATOR SECTION -->
+  <div class="translator-section">
+
+    <p>
+      <strong>Overview:</strong> Written less than two months after Letter
+      13 — from Rosh Hashana to Parshas Chayay Sarah — this letter to
+      Yitzchok in Tcherkass is one of the most complete statements of
+      Reb Nussun's educational programme. It opens with a burst of joy
+      at the news of his son's Torah study arriving on Simchas Torah
+      itself, then moves through three major teachings: the mastery of
+      thought during prayer, the correct sequential approach to halachic
+      study, and the obligation of unending joy. Each section is precise,
+      practical, and rooted in specific sources.
+    </p>
+
+    <h3>Key Themes</h3>
+    <div class="themes-grid">
+      <div class="theme-card">
+        <strong>The Horse and the Bridle</strong>
+        The parable — attributed to Rebbe Nachman in
+        <em>Likutay Moharan</em> — is one of the most useful practical
+        teachings on prayer in Breslov literature. The thought is not
+        an unruly force beyond control: it is a horse. You are the
+        rider. When it strays, you seize the bridle. The key
+        word is <em>passive</em>: do not fight foreign thoughts directly
+        — simply return attention to the words of prayer, and they
+        depart on their own.
+      </div>
+      <div class="theme-card">
+        <strong>Bald on Both Sides</strong>
+        The colourful phrase — <em>bald on this side and bald on that
+        side</em> — is a Talmudic idiom (from Nazir) for someone who
+        tries two incompatible paths and succeeds at neither. Reb Nussun
+        applies it with precision to the scattered approach to halachic
+        study: jumping between unrelated topics produces a person who,
+        on growing up, knows no single area thoroughly.
+      </div>
+      <div class="theme-card">
+        <strong>Simchas Torah as Permanent State</strong>
+        The joy of Simchas Torah — receiving the Torah, being chosen as
+        G-d's people — is not a once-yearly feeling to be recalled on
+        the festival. Reb Nussun insists it is a permanent spiritual
+        state that we must consciously inhabit every day. The elaboration
+        at the letter's opening was deliberate: a liturgical reminder
+        to be re-read whenever joy is needed.
+      </div>
+      <div class="theme-card">
+        <strong>Chacham Bni — My Son Is Wise</strong>
+        The closing verse — <em>chacham bni v'samach libi</em> (my son
+        is wise and gladdens my heart) from Mishlei 27:11 — is the
+        deepest personal longing of the letter. Reb Nussun does not
+        sign off with a formula: he signs off with a prayer that his
+        son become wise in the fullest sense, and that this wisdom
+        gladden his father's heart.
+      </div>
+    </div>
+
+    <h3>Sources Cited in This Letter</h3>
+    <p>
+      Reb Nussun cites five specific sources in a single letter —
+      <em>Likutay Moharan</em> 72 and 233 (on thought), the Rambam's
+      <em>Hilchos Teshuvah</em> 4:5 (on foreign thought as an obstacle
+      to repentance), <em>Likutay Moharan</em> 30 (on confusions during
+      prayer), <em>Hishtapchus HaNefesh</em> (on daily personal prayer),
+      and <em>Sichos HaRan</em> 76 (on studying halacha in sequence).
+      This density of cross-referencing is characteristic of Reb Nussun
+      as teacher: he does not merely assert — he directs his student
+      to the primary sources so the student can deepen independently.
+    </p>
+
+  </div>
+
+  <div class="ms-footer">
+    Translated in the merit of Na Nach Nachma Nachman MayUman &nbsp;·&nbsp; May HY bless this work.
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ullim LeTroofah – Letter Twenty-Eight | Reb Nussun: Chanukah, Thanksgiving, Printing Resumes</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Cinzel:wght@400;500;600&family=Frank+Ruhl+Libre:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --parchment: #f5efe0; --parchment-dark: #ede3cc;
+    --ink: #1c1209; --ink-mid: #3b2a14; --ink-soft: #5c4530;
+    --gold: #8b6914; --gold-pale: #e8d9a0; --crimson: #7a1c1c; --teal: #1a4a4a;
+    --highlight-y: rgba(220,195,80,0.22); --highlight-b: rgba(26,74,74,0.12);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background-color: #2a1f0e; background-image: radial-gradient(ellipse at 20% 10%, rgba(90,60,20,0.4) 0%, transparent 60%), radial-gradient(ellipse at 80% 90%, rgba(50,30,10,0.5) 0%, transparent 60%); min-height: 100vh; font-family: 'EB Garamond', Georgia, serif; color: var(--ink); padding: 2rem 1rem 4rem; }
+  .manuscript { max-width: 780px; margin: 0 auto; background-color: var(--parchment); border: 1px solid var(--parchment-dark); box-shadow: 0 0 0 6px #1a1005, 0 0 0 8px #8b6914, 0 0 0 10px #1a1005, 0 30px 80px rgba(0,0,0,0.7), inset 0 0 60px rgba(180,140,60,0.08); padding: 3.5rem 4rem 4rem; position: relative; }
+  .manuscript::before { content: ''; position: absolute; top:0; left:0; right:0; bottom:0; background: linear-gradient(180deg, rgba(200,170,90,0.06) 0%, transparent 30%, transparent 70%, rgba(150,110,40,0.05) 100%); pointer-events: none; }
+  .series-header { text-align: center; border-bottom: 2px solid var(--gold); padding-bottom: 1.6rem; margin-bottom: 2.2rem; position: relative; }
+  .series-header::after { content: '✦'; position: absolute; bottom: -0.65em; left: 50%; transform: translateX(-50%); background: var(--parchment); padding: 0 0.6em; color: var(--gold); font-size: 0.9rem; }
+  .series-title { font-family: 'Cinzel', serif; font-size: 1.1rem; letter-spacing: 0.18em; color: var(--gold); text-transform: uppercase; margin-bottom: 0.3rem; }
+  .series-heb { font-family: 'Frank Ruhl Libre', serif; font-size: 1.25rem; color: var(--ink-mid); margin-bottom: 0.3rem; }
+  .series-subtitle { font-size: 0.95rem; color: var(--ink-mid); font-style: italic; margin-bottom: 0.2rem; }
+  .series-byline { font-size: 0.8rem; color: var(--ink-soft); letter-spacing: 0.04em; }
+  .letter-heading { text-align: center; margin-bottom: 1.6rem; }
+  .letter-number { font-family: 'Cinzel', serif; font-size: 2.4rem; font-weight: 600; color: var(--gold); letter-spacing: 0.1em; line-height: 1; margin-bottom: 0.3rem; }
+  .letter-meta { font-size: 0.9rem; color: var(--ink-soft); font-style: italic; line-height: 1.65; }
+  .bezras-hashem { text-align: center; font-style: italic; color: var(--gold); font-size: 1.0rem; margin-bottom: 0.5rem; letter-spacing: 0.03em; }
+  .addressee { border-left: 3px solid var(--gold); padding: 0.75rem 1rem; margin-bottom: 1.7rem; font-size: 0.95rem; color: var(--ink-mid); font-style: italic; line-height: 1.75; background: rgba(200,170,80,0.06); }
+  .addressee .label { font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 0.13em; color: var(--gold); font-style: normal; display: block; margin-bottom: 0.3rem; text-transform: uppercase; }
+  .letter-body { text-align: justify; line-height: 1.90; font-size: 1.06rem; }
+  .letter-body p { margin-bottom: 1.15rem; text-indent: 1.6em; }
+  .letter-body p.no-indent { text-indent: 0; }
+  .translit { font-style: italic; color: var(--teal); font-weight: 500; }
+  mark.gold { background: var(--highlight-y); padding: 0 2px; border-radius: 2px; }
+  mark.teal { background: var(--highlight-b); padding: 0 2px; border-radius: 2px; }
+  cite { font-style: italic; color: var(--crimson); }
+  .verse-src { font-size: 0.82em; color: var(--crimson); font-style: normal; font-weight: 500; }
+  .toda-block { margin: 0.3rem 0 1.15rem 0; padding: 1.3rem 1.6rem; border-left: 4px solid var(--gold); background: rgba(220,195,80,0.09); line-height: 1.98; font-size: 1.04rem; color: var(--ink-mid); }
+  .toda-block p { margin-bottom: 0.85rem; text-indent: 0; }
+  .toda-block p:last-child { margin-bottom: 0; }
+  .dayenu-block { margin: 0.3rem 0 1.15rem 0; padding: 1.1rem 1.4rem; border: 1px solid var(--gold-pale); border-top: 2px solid var(--gold); background: rgba(200,170,80,0.07); line-height: 2.0; font-size: 1.04rem; color: var(--ink-mid); text-align: center; font-style: italic; }
+  .printing-block { margin: 0.3rem 0 1.15rem 0; padding: 1.0rem 1.3rem; border: 1px solid var(--gold-pale); border-left: 3px solid var(--gold); background: rgba(200,170,80,0.06); font-size: 1.02rem; line-height: 1.88; color: var(--ink-mid); }
+  .printing-block .pl { font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 0.13em; color: var(--gold); display: block; margin-bottom: 0.4rem; text-transform: uppercase; }
+  .printing-block p { margin-bottom: 0.7rem; text-indent: 0; }
+  .printing-block p:last-child { margin-bottom: 0; }
+  .tziyun-call { margin: 0.3rem 0 1.15rem 0; padding: 1.0rem 1.3rem; border: 1px dashed var(--gold); background: rgba(220,195,80,0.07); font-size: 1.02rem; line-height: 1.88; color: var(--ink-mid); }
+  .tziyun-call .tl { font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 0.13em; color: var(--gold); display: block; margin-bottom: 0.4rem; text-transform: uppercase; }
+  .ps-label { font-family: 'Cinzel', serif; font-size: 0.74rem; letter-spacing: 0.12em; color: var(--gold); text-transform: uppercase; display: block; margin: 1.5rem 0 0.25rem; }
+  .closing { margin-top: 1.8rem; border-top: 1px solid var(--gold-pale); padding-top: 1.2rem; }
+  .signature { text-align: right; font-style: italic; color: var(--ink-mid); font-size: 1.0rem; margin-top: 0.35rem; text-indent: 0 !important; }
+  .signature strong { font-style: normal; color: var(--ink); }
+  .translator-section { margin-top: 3rem; border-top: 2px solid var(--gold); padding-top: 1.6rem; position: relative; }
+  .translator-section::before { content: "— From the Translator —"; position: absolute; top: -0.75em; left: 50%; transform: translateX(-50%); background: var(--parchment); padding: 0 0.9em; font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 0.16em; color: var(--gold); text-transform: uppercase; white-space: nowrap; }
+  .translator-section p { font-size: 0.93rem; color: var(--ink-mid); line-height: 1.78; margin-bottom: 0.8rem; text-indent: 0; }
+  .translator-section p:last-child { margin-bottom: 0; }
+  .translator-section h3 { font-family: 'Cinzel', serif; font-size: 0.8rem; letter-spacing: 0.12em; color: var(--gold); text-transform: uppercase; margin: 1.2rem 0 0.5rem; }
+  .themes-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(175px,1fr)); gap: 0.8rem; margin-top: 0.6rem; }
+  .theme-card { background: var(--parchment-dark); border-top: 2px solid var(--gold); padding: 0.75rem 0.9rem; font-size: 0.85rem; color: var(--ink-mid); line-height: 1.55; }
+  .theme-card strong { display: block; font-family: 'Cinzel', serif; font-size: 0.71rem; letter-spacing: 0.1em; color: var(--gold); text-transform: uppercase; margin-bottom: 0.3rem; }
+  .ms-footer { text-align: center; margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid var(--gold-pale); font-size: 0.78rem; color: var(--ink-soft); font-style: italic; letter-spacing: 0.04em; }
+  @media (max-width: 600px) { .manuscript { padding: 2rem 1.4rem 2.5rem; } .letter-number { font-size: 1.8rem; } }
+</style>
+</head>
+<body>
+<div class="manuscript">
+  <div class="series-header">
+    <div class="series-title">Ullim LeTroofah</div>
+    <div class="series-heb">עלים לתרופה</div>
+    <div class="series-subtitle">Leaves for Healing</div>
+    <div class="series-byline">The Sacred Letters of Rebbe Nachman of Breslov and Reb Nussun of Breslov, of blessed memory</div>
+  </div>
+
+  <div class="letter-heading">
+    <div class="letter-number">LETTER TWENTY-EIGHT</div>
+    <div class="letter-meta">
+      Monday, Parshas Vayeshev, 18th of Kislev &nbsp;·&nbsp; Year 5587 (1826)<br>
+      Written from <strong>Breslov</strong>
+    </div>
+  </div>
+
+  <div class="bezras-hashem">Blessed be Hashem</div>
+
+  <div class="addressee">
+    <span class="label">To</span>
+    <cite>May the mountains bear peace</cite>
+    <span class="verse-src">[Tehillim 72:3]</span> — to the honor of
+    my beloved, my brother and friend as my soul — the veteran, distinguished
+    and celebrated scholar, G-d-fearing above many — our Teacher the Rabbi
+    <strong>Naftali</strong> — may his light shine and radiate, for eternity.
+  </div>
+
+  <div class="letter-body">
+
+    <!-- LINE 295: the request for intercession at the tziyun; Chanukah and easy birth -->
+    <p class="no-indent">
+      He should receive a letter from my distinguished son our Teacher
+      the Rabbi <strong>Yitzchok</strong>, may he live — from the holy
+      community of <strong>Tultshin</strong>. And I am confident in his
+      love that he will fulfil his request — to mention him for good at
+      the holy <span class="translit">tziyun</span> (resting place) —
+      him and his wife, may she live — who needs great mercy now — that
+      she should give birth at her proper time and in her season easily,
+      without any difficulty of childbirth whatsoever — for length of days
+      and good years. Amen — so may it be His will.
+    </p>
+
+    <p>
+      And easy childbirth is an aspect of <span class="translit">Chanukah</span>
+      — which are days of thanksgiving — an aspect of the delight of the
+      World to Come — an aspect of <span class="translit">halachos</span>
+      (Torah laws). For through this comes easy childbirth, and so forth
+      — as explained in the Torah teaching of the days of Chanukah
+      <span class="verse-src">(Likutay Tinyana, section 2)</span> — as
+      known to you.
+    </p>
+
+    <!-- LINE 296: the great Chanukah toda teaching -->
+    <div class="toda-block">
+      <p>
+        And behold — we are obligated to walk with this Torah always —
+        <mark class="gold">to give thanks and to praise Hashem Yisborach
+        always — for the greatness of the kindness He has done with us
+        in general and in particular</mark> — for our having merited to
+        be in the portion of our Master, our Teacher and our Rebbe —
+        the holy and awesome and most exalted new light — and so forth
+        and so forth.
+      </p>
+      <p>
+        And if we accustom ourselves each day in this — to truly deepen
+        our thoughts on the immensity of this kindness and this wondrous
+        and awesome salvation that Hashem Yisborach has performed with
+        us and with our children and with all Israel for all generations
+        — and to give thanks and praise to Hashem Yisborach each day
+        for this — through this we will be able to broaden our hearts
+        <mark class="teal">to open our mouths to pour out before Him,
+        may He be blessed, all that is in our heart — like a son who
+        nestles before his father literally</mark>. For we see with
+        our own eyes at every time that we are truly children of Hashem
+        our G-d — for He bestows kindnesses upon us always, each day
+        and at every time and at every hour —
+        <cite>as a father has mercy on his children</cite>
+        <span class="verse-src">[Tehillim 103:13]</span> and so forth.
+      </p>
+      <p>
+        And behold I have long discourses regarding this matter — to
+        strengthen and urge walking with this Torah — to draw close to
+        Hashem Yisborach at every time through the aspect of
+        <span class="translit">todah</span> and thanksgiving — which
+        is the aspect of Chanukah — the aspect of halachos — through
+        which truth shines in the fourfold form of speech — namely the
+        three lines of truth in the four parts of speech, and so forth
+        and so forth. And through this one merits to draw down the joy
+        of Shabbos, and so forth — and through this there is revealed
+        the simple Unity from within the changing actions — which is
+        exceedingly precious before Hashem Yisborach — in the aspect
+        of <cite>You are One and Your Name is One — and who is like
+        Your people Israel, one nation on the earth</cite>
+        <span class="verse-src">[Shabbos Mincha liturgy]</span>
+        and so forth and so forth.
+      </p>
+      <p>
+        <mark class="gold">How fortunate are our ears that we merited
+        to hear such awesome things — if only our mouths were full of
+        song as the sea</mark>
+        <span class="verse-src">[cf. Nishmas prayer]</span>
+        and so forth.
+      </p>
+    </div>
+
+    <!-- LINE 297: the Dayenu meditation -->
+    <div class="dayenu-block">
+      And if we wished to bring thanksgiving for this Torah of
+      thanksgiving itself — all our days would not suffice to give
+      thanks, to praise, to extol, to glorify, to exalt, to adorn,
+      to cause to triumph, to bless, to raise, and to acclaim — Him
+      who performed all these miracles for our ancestors and for us
+      and for all Israel
+      <span class="verse-src">[cf. the Seder Haggadah]</span>.
+      <br><br>
+      <mark class="gold">Had we not come into the world except to
+      hear this — it would have sufficed us.</mark>
+      How much more so that we also merited to hear yet more and more
+      — so many and so many awesome Torah teachings, conversations,
+      and stories — such and such. How many goodly benefits has the
+      Omnipresent bestowed upon us —
+      <cite>if only we had not heard but a single word from this
+      Torah — it would have sufficed us</cite>
+      <span class="verse-src">[cf. Dayenu]</span>.
+      Our days would not suffice to thank Hashem Yisborach for one
+      in a thousand, thousand upon thousand, ten thousand upon ten
+      thousand times — the goodnesses He performed for our ancestors
+      and for us in our days, and so forth. What shall we say — He
+      spoke and He acted — according to His kindness, His goodness,
+      His mercy, His wonders — not according to our sins did He deal
+      with us. As a father has mercy on his children — so Hashem had
+      mercy on us. <mark class="gold">How fortunate are we, how good
+      is our portion, how pleasant is our lot, how beautiful is our
+      heritage</mark> and so forth and so forth.
+    </div>
+
+    <!-- LINE 298: printing resumes; paper from Berdichev by miracle; needs and requests -->
+    <div class="printing-block">
+      <span class="pl">The Printing of Likutay Teffilos — Resumed by a Miracle</span>
+      <p>
+        And behold — now it is good to give thanks to Hashem in
+        particular for the kindness He performed with us. For, thank G-d,
+        Hashem Yisborach was with us in His help and arranged in His wonders
+        — and strengthened us to return to begin to engage in completing
+        the printing of the <em>Teffilos</em>.
+      </p>
+      <p>
+        And my son Rabbi <strong>Shakhnah</strong>, may he live, already
+        brought nine <span class="translit">ryz</span> (reams) of paper
+        from <strong>Berdichev</strong> — along this ruined road. And in
+        truth it was in the manner of a miracle and wondrous Providence
+        from Him, may He be blessed — which it is impossible to explain
+        in writing.
+      </p>
+      <p>
+        And it is good to give thanks to Hashem for the past — and to
+        request for the future — that Hashem Yisborach be with us and
+        help us and save us with His wonders to complete the printing
+        of the <em>Teffilos</em> speedily — according to His will, may
+        He be blessed — and according to the will of our awesome Master,
+        of blessed memory. For we still need salvation and great mercy
+        to complete them. For I have nothing for the expenses of
+        completion — and also for the paper I borrowed on credit. And
+        I also do not know where to print them — for to travel to
+        Minkovitz the expense is great — and here I do not know the
+        way to go about it.
+      </p>
+      <p>
+        And it is for this that I have come in this letter — to inform
+        you and all our <span class="translit">anshay shlomaynu</span>
+        of all this.
+      </p>
+    </div>
+
+    <!-- LINE 299: the call to the tziyun -->
+    <div class="tziyun-call">
+      <span class="tl">Call to the Holy Tziyun in Uman</span>
+      And upon you, my brother — my soul and heart — and upon all
+      our <span class="translit">anshay shlomaynu</span> who are joined
+      with you — is this <span class="translit">mitzvah</span>: that
+      you go to the holy and awesome
+      <span class="translit">tziyun</span> and speak with your mouths
+      to our Master, of blessed memory — all this — as it is in your
+      hearts. And request and supplicate before Hashem Yisborach
+      that He have mercy on our poverty and our lowliness — and be
+      with us to complete our work speedily. <mark class="gold">For
+      we have no one to lean upon except our Father in Heaven —
+      through the power and merit of our Master, our Teacher and
+      Rebbe — the light of lights — may the memory of the righteous
+      and holy one be for a blessing.</mark> And may the Good One
+      do what is good.
+    </div>
+
+    <!-- LINE 300: further prayers printed; closing -->
+    <p class="no-indent">
+      Also know that in these times too — thank G-d — several
+      wondrous and awesome prayers have been completed that greatly
+      give life to souls. And all who look upon them in truth —
+      their soul yearns and thirsts for them to come out to the
+      light speedily. And may Hashem complete it for us — for He,
+      may He be blessed, has completed and will complete everything
+      for the good speedily. Amen — so may it be His will.
+    </p>
+
+    <div class="closing">
+      <p class="signature"><strong>Nussun</strong> of Breslov.</p>
+    </div>
+
+  </div>
+
+  <div class="translator-section">
+    <p>
+      <strong>Overview:</strong> This Chanukah letter — written just
+      days before the festival begins — is one of the most theologically
+      rich in the collection. It opens with a request for intercession
+      at Rebbe Nachman's resting place for a safe childbirth, woven
+      into the Chanukah teaching from <em>Likutay Tinyana</em> 2.
+      It then rises through the great <span class="translit">toda</span>
+      (thanksgiving) meditation — the unity of G-d revealed through the
+      fourfold form of speech — into a full <em>Dayenu</em>-style
+      meditation on the privilege of having heard even one word of
+      Rebbe Nachman's teaching. And it closes with an urgent practical
+      disclosure: the printing of <em>Likutay Teffilos</em> has resumed —
+      paper brought from Berdichev by miracle — but money and a printer
+      are still needed.
+    </p>
+    <h3>Key Themes</h3>
+    <div class="themes-grid">
+      <div class="theme-card">
+        <strong>Chanukah — Days of Thanksgiving</strong>
+        The connection Reb Nussun draws — Chanukah, thanksgiving
+        (<span class="translit">toda</span>), halachos, easy
+        childbirth, the joy of Shabbos, and simple Unity — all
+        from <em>Likutay Tinyana</em> 2 — reveals the
+        interconnectedness of Rebbe Nachman's Torah. Chanukah
+        is not an isolated festival; it is the paradigm of
+        gratitude that unlocks everything.
+      </div>
+      <div class="theme-card">
+        <strong>The Dayenu Meditation</strong>
+        Reb Nussun consciously adopts the structure of the Passover
+        <em>Dayenu</em> — had we received only this, it would have
+        been enough — and applies it to Rebbe Nachman's Torah.
+        Each teaching, each word, each moment of closeness is
+        sufficient by itself to justify a lifetime of gratitude.
+      </div>
+      <div class="theme-card">
+        <strong>Paper by Miracle</strong>
+        Nine reams of paper brought from Berdichev along a ruined
+        road — described as a miracle of Providence — continues
+        the extraordinary real-time chronicle of the production
+        of <em>Likutay Teffilos</em> across Letters 15–18 and
+        now 28. The physical details are theological: every ream
+        of paper is a gift from Heaven.
+      </div>
+      <div class="theme-card">
+        <strong>A Son Before His Father</strong>
+        The image of the son who nestles (<span class="translit">mitchate'a</span>)
+        before his father — used for the intimacy of prayer —
+        appears here in its fullest form. The word carries the
+        sense of a child making himself small and comfortable
+        in a parent's embrace. This is what thanksgiving makes
+        possible: the boldness of a child who knows he is loved.
+      </div>
+    </div>
+  </div>
+
+  <div class="ms-footer">
+    Translated in the merit of Na Nach Nachma Nachman MayUman &nbsp;·&nbsp; May HY bless this work.
+  </div>
+</div>
+</body>
+</html>

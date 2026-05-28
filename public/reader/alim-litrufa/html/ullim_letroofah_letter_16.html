@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ullim LeTroofah – Letter Sixteen | Reb Nussun: Five Signatures Printed</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Cinzel:wght@400;500;600&family=Frank+Ruhl+Libre:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --parchment:      #f5efe0;
+    --parchment-dark: #ede3cc;
+    --ink:            #1c1209;
+    --ink-mid:        #3b2a14;
+    --ink-soft:       #5c4530;
+    --gold:           #8b6914;
+    --gold-pale:      #e8d9a0;
+    --crimson:        #7a1c1c;
+    --teal:           #1a4a4a;
+    --highlight-y:    rgba(220,195,80,0.22);
+    --highlight-b:    rgba(26,74,74,0.12);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background-color: #2a1f0e;
+    background-image:
+      radial-gradient(ellipse at 20% 10%, rgba(90,60,20,0.4) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 90%, rgba(50,30,10,0.5) 0%, transparent 60%);
+    min-height: 100vh;
+    font-family: 'EB Garamond', Georgia, serif;
+    color: var(--ink);
+    padding: 2rem 1rem 4rem;
+  }
+  .manuscript {
+    max-width: 780px;
+    margin: 0 auto;
+    background-color: var(--parchment);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    border: 1px solid var(--parchment-dark);
+    box-shadow:
+      0 0 0 6px #1a1005,
+      0 0 0 8px #8b6914,
+      0 0 0 10px #1a1005,
+      0 30px 80px rgba(0,0,0,0.7),
+      inset 0 0 60px rgba(180,140,60,0.08);
+    padding: 3.5rem 4rem 4rem;
+    position: relative;
+  }
+  .manuscript::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(180deg, rgba(200,170,90,0.06) 0%, transparent 30%, transparent 70%, rgba(150,110,40,0.05) 100%);
+    pointer-events: none;
+  }
+
+  .series-header {
+    text-align: center; border-bottom: 2px solid var(--gold);
+    padding-bottom: 1.6rem; margin-bottom: 2.2rem; position: relative;
+  }
+  .series-header::after {
+    content: '✦'; position: absolute; bottom: -0.65em; left: 50%;
+    transform: translateX(-50%); background: var(--parchment); padding: 0 0.6em;
+    color: var(--gold); font-size: 0.9rem;
+  }
+  .series-title {
+    font-family: 'Cinzel', serif; font-size: 1.1rem; letter-spacing: 0.18em;
+    color: var(--gold); text-transform: uppercase; margin-bottom: 0.3rem;
+  }
+  .series-heb { font-family: 'Frank Ruhl Libre', serif; font-size: 1.25rem; color: var(--ink-mid); margin-bottom: 0.3rem; }
+  .series-subtitle { font-size: 0.95rem; color: var(--ink-mid); font-style: italic; margin-bottom: 0.2rem; }
+  .series-byline { font-size: 0.8rem; color: var(--ink-soft); letter-spacing: 0.04em; }
+
+  .letter-heading { text-align: center; margin-bottom: 1.6rem; }
+  .letter-number {
+    font-family: 'Cinzel', serif; font-size: 2.4rem; font-weight: 600;
+    color: var(--gold); letter-spacing: 0.1em; line-height: 1; margin-bottom: 0.3rem;
+  }
+  .letter-meta { font-size: 0.9rem; color: var(--ink-soft); font-style: italic; line-height: 1.65; }
+
+  .bezras-hashem {
+    text-align: center; font-style: italic; color: var(--gold);
+    font-size: 1.0rem; margin-bottom: 0.5rem; letter-spacing: 0.03em;
+  }
+
+  .addressee {
+    border-left: 3px solid var(--gold);
+    padding: 0.75rem 1rem; margin-bottom: 1.7rem;
+    font-size: 0.95rem; color: var(--ink-mid); font-style: italic; line-height: 1.78;
+    background: rgba(200,170,80,0.06);
+  }
+  .addressee .label {
+    font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 0.13em;
+    color: var(--gold); font-style: normal; display: block; margin-bottom: 0.3rem;
+    text-transform: uppercase;
+  }
+
+  .letter-body { text-align: justify; line-height: 1.90; font-size: 1.06rem; }
+  .letter-body p { margin-bottom: 1.15rem; text-indent: 1.6em; }
+  .letter-body p.no-indent { text-indent: 0; }
+
+  .translit  { font-style: italic; color: var(--teal); font-weight: 500; }
+  mark.gold  { background: var(--highlight-y); padding: 0 2px; border-radius: 2px; }
+  mark.teal  { background: var(--highlight-b); padding: 0 2px; border-radius: 2px; }
+  cite       { font-style: italic; color: var(--crimson); }
+  .verse-src { font-size: 0.82em; color: var(--crimson); font-style: normal; font-weight: 500; }
+
+  /* printing progress panel */
+  .printing-block {
+    margin: 0.3rem 0 1.15rem 0;
+    padding: 1.1rem 1.4rem;
+    border: 1px solid var(--gold-pale);
+    border-left: 3px solid var(--gold);
+    background: rgba(200,170,80,0.06);
+    font-size: 1.02rem;
+    line-height: 1.88;
+    color: var(--ink-mid);
+  }
+  .printing-block .pl {
+    font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 0.13em;
+    color: var(--gold); display: block; margin-bottom: 0.5rem; text-transform: uppercase;
+  }
+  .printing-block p { margin-bottom: 0.8rem; text-indent: 0; }
+  .printing-block p:last-child { margin-bottom: 0; }
+
+  /* urgent appeal */
+  .appeal-block {
+    margin: 0.3rem 0 1.15rem 0;
+    padding: 1rem 1.3rem;
+    border: 1px dashed var(--gold);
+    background: rgba(220,195,80,0.07);
+    font-size: 1.02rem;
+    line-height: 1.88;
+    color: var(--ink-mid);
+  }
+  .appeal-block .al {
+    font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 0.13em;
+    color: var(--gold); display: block; margin-bottom: 0.4rem; text-transform: uppercase;
+  }
+
+  .closing {
+    margin-top: 1.8rem; border-top: 1px solid var(--gold-pale); padding-top: 1.2rem;
+  }
+  .signature {
+    text-align: right; font-style: italic; color: var(--ink-mid);
+    font-size: 1.0rem; margin-top: 0.4rem; text-indent: 0 !important;
+  }
+  .signature strong { font-style: normal; color: var(--ink); }
+
+  /* TRANSLATOR SECTION */
+  .translator-section {
+    margin-top: 3rem; border-top: 2px solid var(--gold);
+    padding-top: 1.6rem; position: relative;
+  }
+  .translator-section::before {
+    content: "— From the Translator —";
+    position: absolute; top: -0.75em; left: 50%;
+    transform: translateX(-50%);
+    background: var(--parchment); padding: 0 0.9em;
+    font-family: 'Cinzel', serif; font-size: 0.72rem;
+    letter-spacing: 0.16em; color: var(--gold); text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .translator-section p {
+    font-size: 0.93rem; color: var(--ink-mid); line-height: 1.78;
+    margin-bottom: 0.8rem; text-indent: 0;
+  }
+  .translator-section p:last-child { margin-bottom: 0; }
+  .translator-section h3 {
+    font-family: 'Cinzel', serif; font-size: 0.8rem; letter-spacing: 0.12em;
+    color: var(--gold); text-transform: uppercase; margin: 1.2rem 0 0.5rem;
+  }
+
+  .themes-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(175px,1fr));
+    gap: 0.8rem; margin-top: 0.6rem;
+  }
+  .theme-card {
+    background: var(--parchment-dark); border-top: 2px solid var(--gold);
+    padding: 0.75rem 0.9rem; font-size: 0.85rem; color: var(--ink-mid); line-height: 1.55;
+  }
+  .theme-card strong {
+    display: block; font-family: 'Cinzel', serif; font-size: 0.71rem;
+    letter-spacing: 0.1em; color: var(--gold); text-transform: uppercase; margin-bottom: 0.3rem;
+  }
+
+  .ms-footer {
+    text-align: center; margin-top: 2.5rem; padding-top: 1rem;
+    border-top: 1px solid var(--gold-pale);
+    font-size: 0.78rem; color: var(--ink-soft); font-style: italic; letter-spacing: 0.04em;
+  }
+
+  @media (max-width: 600px) {
+    .manuscript { padding: 2rem 1.4rem 2.5rem; }
+    .letter-number { font-size: 1.8rem; }
+  }
+</style>
+</head>
+<body>
+<div class="manuscript">
+
+  <div class="series-header">
+    <div class="series-title">Ullim LeTroofah</div>
+    <div class="series-heb">עלים לתרופה</div>
+    <div class="series-subtitle">Leaves for Healing</div>
+    <div class="series-byline">The Sacred Letters of Rebbe Nachman of Breslov and Reb Nussun of Breslov, of blessed memory</div>
+  </div>
+
+  <div class="letter-heading">
+    <div class="letter-number">LETTER SIXTEEN</div>
+    <div class="letter-meta">
+      Tuesday, 7th of Teves, Parshas Vayigash &nbsp;·&nbsp;
+      Year 5584 (1823)<br>
+      Written from <strong>Breslov</strong>
+    </div>
+  </div>
+
+  <div class="bezras-hashem">Blessed be Hashem</div>
+
+  <div class="addressee">
+    <span class="label">To</span>
+    <cite>May the mountains bear peace</cite>
+    <span class="verse-src">[Tehillim 72:3]</span> — to the honor
+    of my beloved son, the friend of my soul — our Teacher the Rabbi
+    <strong>Yitzchok</strong> — may his light shine and radiate.
+  </div>
+
+  <div class="letter-body">
+
+    <!-- LINE 177: joy at son's letter; the one essential thing -->
+    <p class="no-indent">
+      Your letter I received twice — and
+      <mark class="gold">I exult over your utterance as one who finds
+      great spoil</mark>
+      <span class="verse-src">[Tehillim 119:162]</span>.
+      <cite>My innards rejoice at your lips speaking uprightly</cite>
+      <span class="verse-src">[Tehillim 23:16]</span>.
+      You gave me life with your words — in what you wrote that you are
+      engaging in Torah and prayer and in the books of our Master, of
+      blessed memory, and that you are in joy — for <mark class="gold">for
+      this my soul has yearned</mark>. Would that this heart of yours be
+      so — to fear Hashem all the days of your life — and to add each day
+      and each time in holiness and purity and in strengthening of the
+      service of Hashem more and more — for apart from this everything is
+      vanity, for our days are like a passing shadow, and the day is short
+      and the work is much, and if not now — when?
+    </p>
+
+    <p>
+      <mark class="teal"><strong>Be strong, my son, and courageous with
+      all your strength to go in the straight and true path that our great
+      and holy Master taught us</strong></mark> — may the memory of the
+      righteous and holy one be for a blessing — for it is your life and
+      the length of your days, for all eternity and for everlasting
+      eternities. And beyond this it is impossible to elaborate in writing
+      — go out and look and absorb yourself in the books of our Master,
+      of blessed memory — and you will find there everything your soul
+      asks of you: counsel and guidance and paths in the service of
+      Hashem. <mark class="gold">Turn them over and turn them over —
+      and from them do not stir — for you have no better quality than
+      them</mark>.
+    </p>
+
+    <!-- LINE 178: printing update and urgent financial appeal -->
+    <div class="printing-block">
+      <span class="pl">Update on the Printing of Likutay Teffilos</span>
+      <p>
+        Know, my beloved son, that <mark class="gold">thank G-d five
+        <span class="translit">forims</span> (signatures — gatherings
+        of printed pages) of the <em>Teffilos</em> are already
+        completed</mark>, and now we are working on the sixth. May
+        Hashem complete it for us. And all of them are greatly occupied
+        with the printing — for it is known that we are running the
+        press without hired workers: only Rabbi <strong>Mendil</strong>,
+        and Rabbi <strong>Chayyim Nachum</strong>, and the young man
+        <strong>Yitzchok Yehoshua</strong> — and also my veteran son,
+        our Teacher the Rabbi <strong>Shakhnah</strong> — may his light
+        shine and radiate — helps a great deal each time, but not on a
+        fixed basis. Therefore the work proceeds slowly and gradually.
+        May Hashem Yisborach be with us to complete it in perfection
+        speedily.
+      </p>
+      <p>
+        And there are many obstacles on account of lack of funds, as
+        you know of this.
+      </p>
+    </div>
+
+    <div class="appeal-block">
+      <span class="al">⚠ Urgent Appeal — Do Not Delay Even One Day</span>
+      Therefore <mark class="gold"><strong>see to it to urge greatly
+      the <span class="translit">anshay shlomaynu</span> in your
+      community that they should see to send me immediately and with
+      alacrity their generous gift — and let them not delay at all</strong></mark>
+      — for it is impossible to delay the printing, G-d forbid, even a
+      single day, as you know. And receive with love one sample leaf from
+      the <em>Teffilos</em> — let your eyes see it and let your heart
+      rejoice. And beyond this there is no time to elaborate.
+    </div>
+
+    <!-- LINE 179–180: closing -->
+    <div class="closing">
+      <p class="no-indent">
+        The words of your father, who always awaits hearing the good from
+        you — and the essential good is the true and eternal good.
+      </p>
+      <p class="signature">
+        The lowly <strong>Nussun</strong>, son of our Teacher the Rabbi
+        <strong>Naftali Hirtz</strong> — may his light shine and radiate.
+      </p>
+    </div>
+
+  </div>
+
+  <!-- TRANSLATOR SECTION -->
+  <div class="translator-section">
+
+    <p>
+      <strong>Overview:</strong> Written three weeks after Letter 15 —
+      the printing has advanced: five signatures of <em>Likutay Teffilos</em>
+      are complete, the sixth is under way. Reb Nussun opens with an
+      outpouring of joy at his son's spiritual progress, delivers a
+      concentrated charge on the path of Rebbe Nachman's books, and
+      then pivots with urgent practicality: the press cannot be delayed
+      even one day, funds are needed immediately, and a sample page is
+      enclosed. The letter embodies the complete unity of the spiritual
+      and the practical that marks all of Reb Nussun's writing.
+    </p>
+
+    <h3>Key Themes</h3>
+    <div class="themes-grid">
+      <div class="theme-card">
+        <strong>Spoil and Inner Organs</strong>
+        The two opening Biblical images — finding great spoil
+        <span class="verse-src">(Tehillim 119:162)</span> and
+        innards rejoicing <span class="verse-src">(Tehillim 23:16)</span>
+        — are not ornamental. Finding spoil is the sudden,
+        overwhelming enrichment of the soldier in victory. The
+        innards — the <span class="translit">kilyos</span>,
+        the kidneys — are in Biblical Hebrew the seat of the deepest
+        inner self. Reb Nussun's joy at his son's progress is felt
+        in his innermost being.
+      </div>
+      <div class="theme-card">
+        <strong>Without Hired Workers</strong>
+        The detail that the press is being run entirely by a small
+        group of unpaid volunteers — Rabbi Mendil, Rabbi Chayyim
+        Nachum, a young man, and Reb Nussun's own son helping when
+        he can — opens a window into the extraordinary
+        self-sacrifice behind the creation of <em>Likutay Teffilos</em>.
+        This book of 210 prayers was produced under conditions of
+        poverty and personal exhaustion.
+      </div>
+      <div class="theme-card">
+        <strong>The Sample Leaf</strong>
+        Reb Nussun encloses a single printed page from
+        <em>Likutay Teffilos</em> — the first the community in
+        Tcherkass has ever seen. The phrase —
+        <em>"let your eyes see it and let your heart rejoice"</em> —
+        is both practical and deeply tender. He knows what these
+        pages mean. He wants his son to hold one in his hands.
+      </div>
+      <div class="theme-card">
+        <strong>The True and Eternal Good</strong>
+        The closing formula — <em>"the essential good is the true
+        and eternal good"</em> — appears here for the first time
+        in the collection as a standalone closing thought. It will
+        recur. For Reb Nussun, all other goods — health, wealth,
+        success — are real but temporary. Only the good of Torah,
+        prayer, and closeness to G-d is true and does not pass away.
+      </div>
+    </div>
+
+    <h3>Note on Parshas Vayigash</h3>
+    <p>
+      The letter is written on Parshas Vayigash — the portion in
+      which Yosef reveals himself to his brothers after years of
+      separation, and Yaakov descends to Egypt to be reunited with
+      his son. The imagery of a father longing to hear good from his
+      son, and of reunion after distance, resonates quietly behind
+      every line of this letter.
+    </p>
+
+  </div>
+
+  <div class="ms-footer">
+    Translated in the merit of Na Nach Nachma Nachman MayUman &nbsp;·&nbsp; May HY bless this work.
+  </div>
+
+</div>
+</body>
+</html>

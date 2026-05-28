@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ullim LeTroofah – Letter Thirty-Six | Reb Nussun: Sprouting Salvation, The Azamra Teaching</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Cinzel:wght@400;500;600&family=Frank+Ruhl+Libre:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--parchment:#f5efe0;--parchment-dark:#ede3cc;--ink:#1c1209;--ink-mid:#3b2a14;--ink-soft:#5c4530;--gold:#8b6914;--gold-pale:#e8d9a0;--crimson:#7a1c1c;--teal:#1a4a4a;--highlight-y:rgba(220,195,80,0.22);--highlight-b:rgba(26,74,74,0.12);}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background-color:#2a1f0e;background-image:radial-gradient(ellipse at 20% 10%,rgba(90,60,20,0.4) 0%,transparent 60%),radial-gradient(ellipse at 80% 90%,rgba(50,30,10,0.5) 0%,transparent 60%);min-height:100vh;font-family:'EB Garamond',Georgia,serif;color:var(--ink);padding:2rem 1rem 4rem;}
+  .manuscript{max-width:780px;margin:0 auto;background-color:var(--parchment);border:1px solid var(--parchment-dark);box-shadow:0 0 0 6px #1a1005,0 0 0 8px #8b6914,0 0 0 10px #1a1005,0 30px 80px rgba(0,0,0,0.7),inset 0 0 60px rgba(180,140,60,0.08);padding:3.5rem 4rem 4rem;position:relative;}
+  .manuscript::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(180deg,rgba(200,170,90,0.06) 0%,transparent 30%,transparent 70%,rgba(150,110,40,0.05) 100%);pointer-events:none;}
+  .series-header{text-align:center;border-bottom:2px solid var(--gold);padding-bottom:1.6rem;margin-bottom:2.2rem;position:relative;}
+  .series-header::after{content:'✦';position:absolute;bottom:-0.65em;left:50%;transform:translateX(-50%);background:var(--parchment);padding:0 0.6em;color:var(--gold);font-size:0.9rem;}
+  .series-title{font-family:'Cinzel',serif;font-size:1.1rem;letter-spacing:0.18em;color:var(--gold);text-transform:uppercase;margin-bottom:0.3rem;}
+  .series-heb{font-family:'Frank Ruhl Libre',serif;font-size:1.25rem;color:var(--ink-mid);margin-bottom:0.3rem;}
+  .series-subtitle{font-size:0.95rem;color:var(--ink-mid);font-style:italic;margin-bottom:0.2rem;}
+  .series-byline{font-size:0.8rem;color:var(--ink-soft);letter-spacing:0.04em;}
+  .letter-heading{text-align:center;margin-bottom:1.6rem;}
+  .letter-number{font-family:'Cinzel',serif;font-size:2.4rem;font-weight:600;color:var(--gold);letter-spacing:0.1em;line-height:1;margin-bottom:0.3rem;}
+  .letter-meta{font-size:0.9rem;color:var(--ink-soft);font-style:italic;line-height:1.65;}
+  .bezras-hashem{text-align:center;font-style:italic;color:var(--gold);font-size:1.0rem;margin-bottom:0.5rem;letter-spacing:0.03em;}
+  .addressee{border-left:3px solid var(--gold);padding:0.75rem 1rem;margin-bottom:1.7rem;font-size:0.95rem;color:var(--ink-mid);font-style:italic;line-height:1.75;background:rgba(200,170,80,0.06);}
+  .addressee .label{font-family:'Cinzel',serif;font-size:0.7rem;letter-spacing:0.13em;color:var(--gold);font-style:normal;display:block;margin-bottom:0.3rem;text-transform:uppercase;}
+  .letter-body{text-align:justify;line-height:1.90;font-size:1.06rem;}
+  .letter-body p{margin-bottom:1.15rem;text-indent:1.6em;}
+  .letter-body p.no-indent{text-indent:0;}
+  .translit{font-style:italic;color:var(--teal);font-weight:500;}
+  mark.gold{background:var(--highlight-y);padding:0 2px;border-radius:2px;}
+  mark.teal{background:var(--highlight-b);padding:0 2px;border-radius:2px;}
+  cite{font-style:italic;color:var(--crimson);}
+  .verse-src{font-size:0.82em;color:var(--crimson);font-style:normal;font-weight:500;}
+  .sprouting-block{margin:0.3rem 0 1.15rem 0;padding:1.1rem 1.4rem;border-left:4px solid var(--gold);background:rgba(200,170,80,0.08);line-height:1.96;font-size:1.04rem;color:var(--ink-mid);}
+  .sprouting-block p{margin-bottom:0.8rem;text-indent:0;}
+  .sprouting-block p:last-child{margin-bottom:0;}
+  .adversary-block{margin:0.3rem 0 1.15rem 0;padding:1.1rem 1.4rem;border:1px solid var(--gold-pale);border-left:3px solid var(--crimson);background:rgba(122,28,28,0.05);line-height:1.92;font-size:1.02rem;color:var(--ink-mid);}
+  .adversary-block .al{font-family:'Cinzel',serif;font-size:0.7rem;letter-spacing:0.13em;color:var(--crimson);display:block;margin-bottom:0.4rem;text-transform:uppercase;}
+  .adversary-block p{margin-bottom:0.7rem;text-indent:0;}
+  .adversary-block p:last-child{margin-bottom:0;}
+  .azamra-block{margin:0.3rem 0 1.15rem 0;padding:1.3rem 1.6rem;border-left:4px solid var(--gold);border-right:1px solid var(--gold-pale);background:rgba(220,195,80,0.10);line-height:2.0;font-size:1.05rem;color:var(--ink-mid);}
+  .azamra-block p{margin-bottom:0.85rem;text-indent:0;}
+  .azamra-block p:last-child{margin-bottom:0;}
+  .ps-label{font-family:'Cinzel',serif;font-size:0.74rem;letter-spacing:0.12em;color:var(--gold);text-transform:uppercase;display:block;margin:1.5rem 0 0.25rem;}
+  .closing{margin-top:1.8rem;border-top:1px solid var(--gold-pale);padding-top:1.2rem;}
+  .signature{text-align:right;font-style:italic;color:var(--ink-mid);font-size:1.0rem;margin-top:0.35rem;text-indent:0!important;}
+  .signature strong{font-style:normal;color:var(--ink);}
+  .translator-section{margin-top:3rem;border-top:2px solid var(--gold);padding-top:1.6rem;position:relative;}
+  .translator-section::before{content:"— From the Translator —";position:absolute;top:-0.75em;left:50%;transform:translateX(-50%);background:var(--parchment);padding:0 0.9em;font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:0.16em;color:var(--gold);text-transform:uppercase;white-space:nowrap;}
+  .translator-section p{font-size:0.93rem;color:var(--ink-mid);line-height:1.78;margin-bottom:0.8rem;text-indent:0;}
+  .translator-section p:last-child{margin-bottom:0;}
+  .translator-section h3{font-family:'Cinzel',serif;font-size:0.8rem;letter-spacing:0.12em;color:var(--gold);text-transform:uppercase;margin:1.2rem 0 0.5rem;}
+  .themes-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:0.8rem;margin-top:0.6rem;}
+  .theme-card{background:var(--parchment-dark);border-top:2px solid var(--gold);padding:0.75rem 0.9rem;font-size:0.85rem;color:var(--ink-mid);line-height:1.55;}
+  .theme-card strong{display:block;font-family:'Cinzel',serif;font-size:0.71rem;letter-spacing:0.1em;color:var(--gold);text-transform:uppercase;margin-bottom:0.3rem;}
+  .ms-footer{text-align:center;margin-top:2.5rem;padding-top:1rem;border-top:1px solid var(--gold-pale);font-size:0.78rem;color:var(--ink-soft);font-style:italic;letter-spacing:0.04em;}
+  @media(max-width:600px){.manuscript{padding:2rem 1.4rem 2.5rem;}.letter-number{font-size:1.8rem;}}
+</style>
+</head>
+<body>
+<div class="manuscript">
+  <div class="series-header">
+    <div class="series-title">Ullim LeTroofah</div>
+    <div class="series-heb">עלים לתרופה</div>
+    <div class="series-subtitle">Leaves for Healing</div>
+    <div class="series-byline">The Sacred Letters of Rebbe Nachman of Breslov and Reb Nussun of Breslov, of blessed memory</div>
+  </div>
+
+  <div class="letter-heading">
+    <div class="letter-number">LETTER THIRTY-SIX</div>
+    <div class="letter-meta">
+      Monday, Parshas Va'eschanan, 6th of Av &nbsp;·&nbsp; Year 5590 (1830)<br>
+      Written from <strong>Odessa</strong>
+      <span style="font-size:0.83em;"> — Shabbos Nachamu</span>
+    </div>
+  </div>
+
+  <div class="bezras-hashem">With the help of G-d, may He be blessed</div>
+
+  <div class="addressee">
+    <span class="label">To</span>
+    My beloved son, my dear one — the veteran, outstanding scholar —
+    our Teacher the Rabbi <strong>Yitzchok</strong>, may he live. Life
+    and peace and all good in this world and the next — for eternity.
+    Amen — so may it be His will.
+  </div>
+
+  <div class="letter-body">
+
+    <!-- LINE 362: arrived in Odessa; Shabbos there; spoke words of truth -->
+    <p class="no-indent">
+      On Friday I wrote to you that I arrived here in peace. And thank
+      G-d I was here for the holy Shabbos just past — and everything
+      was in order with the help of Hashem Yisborach. And many men
+      were with me as guests and some local residents — and I spoke
+      some words of truth that we received from the spring that issues
+      from the house of Hashem. <mark class="gold">Would that they
+      enter the heart of Israel and do their work.</mark>
+    </p>
+
+    <!-- LINE 363: sprouting salvation in every liturgy; bitterness upon bitterness -->
+    <div class="sprouting-block">
+      <p>
+        And behold — when one looks truly and carefully one can see
+        each and every day a <mark class="gold">sprouting of a horn
+        of salvation</mark>. And just as we bless each day:
+        <cite>He who causes the horn of salvation to sprout</cite>
+        — and so at the beginning of prayer one says:
+        <cite>He who causes salvation to sprout</cite> — and so in
+        the blessing of the luminaries:
+        <cite>He who causes salvations to sprout</cite>. And surely
+        one must believe in this with a complete heart — that Hashem
+        Yisborach causes salvations to sprout each day and at every
+        time and at every hour. And a little one can see from a
+        distance — whoever sets his heart to this.
+      </p>
+      <p>
+        And although the full salvation in its completeness is still
+        very, very far from us — as it is written
+        <span class="verse-src">(Yeshayahu 59)</span>:
+        <cite>Salvation is far from us</cite> — even so, <mark class="teal">one
+        can greatly, greatly give oneself life and strengthen oneself</mark>
+        through this that we have spoken of — through believing that
+        Hashem Yisborach causes salvations to sprout.
+      </p>
+      <p>
+        Set your heart well, my son, to these matters — for I know
+        from a distance what bitterness upon bitterness passes over
+        you. May Hashem Yisborach in His mercy sweeten them and
+        nullify them from you speedily. But the measure of the good
+        is greater — for I know that greatly, greatly Hashem Yisborach
+        sends His salvation to you at every time. And I hope and long
+        to Hashem Yisborach that in the end your salvation will sprout
+        in completeness — and you will merit to draw close to Him, may
+        He be blessed, in truth — to merit to the repentance of Shabbos
+        — to fix yourself in Torah and prayer with the help of Hashem
+        Yisborach. Only <mark class="gold">be strong and very, very
+        courageous — beyond measure and beyond count</mark> — and
+        pay no attention to any weakening of resolve that enters your
+        heart. And do not listen to the words of mussar of the
+        Adversary and the Other Side.
+      </p>
+    </div>
+
+    <!-- The Adversary's mussar — sam chayyim and sam maves -->
+    <div class="adversary-block">
+      <span class="al">⚠ The Adversary's Mussar — Elixir of Life Turned to Poison</span>
+      <p>
+        Who deliver mussar to the heart in order to weaken the heart
+        and push away from the little good that one wishes to seize.
+        Do not desire and do not listen to them — for one listens to
+        words of rebuke and mussar only to draw close — and not to
+        push away, G-d forbid — as I have already spoken with you
+        greatly about this
+        <span class="verse-src">(see Likutay Halachos, Hilchos
+        Bechor Behemah Tehorah, halacha 4, paragraph 27)</span>:
+        that the entire intention of the <em>Reishis Chochmah</em>
+        and other mussar books that rebuke and demean a person greatly
+        — their intention is not to push away from Hashem Yisborach
+        — only to draw close.
+      </p>
+      <p>
+        And more than this — one must set one's heart at all times
+        to understand in oneself that no distancing or slackening
+        should result, G-d forbid, through rebuke and mussar that
+        enters the heart. For it can be that the arousal of rebuke
+        and mussar that comes upon the heart is from holiness — from
+        the daily proclamation — but <mark class="teal">the Adversary
+        always lies in wait for a person</mark> — and in every thought,
+        speech, and deed that passes over a person there are two
+        aspects: the elixir of life and the elixir of death — as our
+        Sages, of blessed memory, said
+        <span class="verse-src">(Yoma 72b)</span>:
+        <cite>V'samtem — if you are privileged</cite> — and so forth.
+        Therefore he mostly inverts the words of the living G-d — and
+        desires specifically through this to push away and slacken
+        the heart of a person, G-d forbid.
+      </p>
+    </div>
+
+    <!-- The Azamra teaching — LM 282 -->
+    <div class="azamra-block">
+      <p>
+        And already explained among us are several counsels on how to
+        be saved from him — and to give oneself life and gladden
+        oneself. And in particular through the wondrous, awesome, and
+        most exalted path that the light of lights revealed on the
+        verse <cite>I will sing to my G-d while I yet live</cite>
+        <span class="verse-src">[Tehillim 146:2]</span>
+        — <span class="verse-src">(Likutay Moharan, 282)</span>.
+        <mark class="gold">Turn it over and turn it over — age and
+        wear yourself out in it — and from it do not stir — for you
+        have no better quality than it.</mark>
+      </p>
+      <p>
+        And each and every day — let this path be in your eyes as new
+        — to see oneself each day as if one is at the furthest possible
+        distance from Hashem Yisborach. And through this very thing —
+        specifically — to give life to oneself and gladden oneself:
+        that despite such extreme distance — <mark class="teal">even
+        so there is still in me a little that I am not wicked — and
+        moreover there are in me many and many good points from so many
+        awesome commandments that we fulfil each day.</mark>
+      </p>
+      <p>
+        <mark class="gold">How fortunate are we — how good is our
+        portion! Had we not come into the world except to hear this
+        — it would have sufficed us.</mark> If only our mouths were
+        full of song as the sea — and so forth — we would not suffice
+        to give thanks and to say: it would have sufficed us —
+        for what we merited to hear: this most exalted novelty.
+        How much more so that we heard yet more and more — such and
+        such. Until here have my few words arrived — which contain
+        much strengthening. Beyond this it is impossible to elaborate
+        now.
+      </p>
+    </div>
+
+    <div class="closing">
+      <p class="no-indent">
+        The words of your father — who awaits a complete salvation
+        at every time.
+      </p>
+      <p class="signature"><strong>Nussun</strong> of Breslov.</p>
+    </div>
+
+    <!-- Postscript to the community; to nephew Yitzchok Ayzik -->
+    <span class="ps-label">Postscript — To the Fellowship; To Nephew Rabbi Yitzchok Ayzik</span>
+    <p class="no-indent">
+      Peace to all our <span class="translit">anshay shlomaynu</span>
+      with great love. And in particular to the son of my sister, my
+      dear friend — our Teacher the Rabbi <strong>Ayzik</strong> — may
+      his light shine:
+      <cite>Cast your burden upon Hashem and He will sustain you</cite>
+      <span class="verse-src">[Tehillim 55:23]</span> — and do not
+      be angry and do not sin — as our Sages, of blessed memory, said
+      <span class="verse-src">(Berachos 29b)</span>. Accustom yourself
+      greatly in the quality of <span class="translit">arichas
+      appayim</span> (long-suffering and patience). Remember well,
+      well all the kindnesses and wonders that Hashem Yisborach has
+      done with you — so may Hashem multiply it with you a thousandfold.
+      Only be strong and courageous greatly — to receive His goodnesses
+      and His kindnesses at every time. And believe that all that passes
+      over each and every one of you — all of it is for your good. Fill
+      your hands today for Hashem — to accustom yourselves in Torah and
+      prayer each day — even on a day when its preoccupation is great
+      — and how much more so on other days. For <mark class="gold">what
+      remains of a person is only what they snatch for themselves each
+      day</mark> — as you yourselves know in truth.
+    </p>
+
+    <!-- The enclosed letter for Shakhnah -->
+    <span class="ps-label">Postscript — The Enclosed Letter for Shakhnah</span>
+    <p class="no-indent">
+      My beloved son — the letter enclosed here — see to seal it and
+      send it immediately to the hand of your brother — he is my son
+      Rabbi <strong>Shakhnah</strong> — may his light shine. For I did
+      not seal it so that you could read it — for I knew the intensity
+      of your longing to hear many words of truth from me — and this
+      is beautiful for you. For many, many words are needed — with all
+      this effort — perhaps we will merit to arrive at what we need to
+      arrive at in this world — for which we were created.
+    </p>
+    <p class="signature"><strong>Nussun</strong>, as above.</p>
+
+  </div>
+
+  <div class="translator-section">
+    <p>
+      <strong>Overview:</strong> Written from Odessa on Parshas
+      Va'eschanan — Shabbos Nachamu, the Shabbos of consolation
+      after Tisha B'Av — this letter is one of the most densely
+      packed in the collection. The sprouting-salvation teaching
+      drawn from three daily liturgical phrases; the crucial
+      distinction between authentic mussar and the Adversary's
+      inversion of it; the extraordinary <em>Azamra</em> teaching
+      from <em>Likutay Moharan</em> 282 on finding life precisely
+      from one's distance; the <em>Dayenu</em> refrain for a single
+      point of goodness. The unopened letter for Shakhnah — left
+      unsealed so Yitzchok can read it — reveals Reb Nussun's
+      precise knowledge of each son's spiritual hunger.
+    </p>
+    <h3>Key Themes</h3>
+    <div class="themes-grid">
+      <div class="theme-card">
+        <strong>Sprouting in the Liturgy</strong>
+        Three daily prayer phrases — <em>matzmiyach keren
+        yeshuah</em>, <em>matzmiyach yeshuah</em>,
+        <em>matzmiyach yeshuos</em> — all speak of salvation
+        sprouting. Reb Nussun teaches that this is not metaphor:
+        salvation literally grows each day. The liturgy is a
+        daily training in perception.
+      </div>
+      <div class="theme-card">
+        <strong>Sam Chayyim / Sam Maves</strong>
+        The Talmudic teaching from Yoma 72b — that Torah is the
+        elixir of life for those who use it rightly and the
+        elixir of death for those who do not — is applied here
+        to the Adversary's tactic: he takes the authentic
+        stirring of conscience and mussar and uses it as a
+        tool of despair rather than return.
+      </div>
+      <div class="theme-card">
+        <strong>Azamra — I Will Sing</strong>
+        <em>Likutay Moharan</em> 282 — the teaching on
+        <em>Azamra l'Elokai b'odi</em> — is the foundation of
+        Rebbe Nachman's teaching on finding the good point.
+        Even at the furthest distance from G-d — there is still
+        one point of goodness. From that point — sing. The
+        singing itself draws the soul upward.
+      </div>
+      <div class="theme-card">
+        <strong>The Letter Left Unsealed</strong>
+        Reb Nussun deliberately leaves Shakhnah's letter unsealed
+        so that Yitzchok can read it — knowing his son's hunger
+        for truth. This practical act of pastoral love reveals
+        his deep knowledge of each of his children's spiritual
+        needs. Words of truth are not private property; they
+        are food.
+      </div>
+    </div>
+  </div>
+
+  <div class="ms-footer">
+    Translated in the merit of Na Nach Nachma Nachman MayUman &nbsp;·&nbsp; May HY bless this work.
+  </div>
+</div>
+</body>
+</html>

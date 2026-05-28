@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ullim LeTroofah – Letter Forty-Three | Reb Nussun: Emunah Renewed Each Day — Shma Yisroel</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Cinzel:wght@400;500;600&family=Frank+Ruhl+Libre:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--parchment:#f5efe0;--parchment-dark:#ede3cc;--ink:#1c1209;--ink-mid:#3b2a14;--ink-soft:#5c4530;--gold:#8b6914;--gold-pale:#e8d9a0;--crimson:#7a1c1c;--teal:#1a4a4a;--highlight-y:rgba(220,195,80,0.22);--highlight-b:rgba(26,74,74,0.12);}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background-color:#2a1f0e;background-image:radial-gradient(ellipse at 20% 10%,rgba(90,60,20,0.4) 0%,transparent 60%),radial-gradient(ellipse at 80% 90%,rgba(50,30,10,0.5) 0%,transparent 60%);min-height:100vh;font-family:'EB Garamond',Georgia,serif;color:var(--ink);padding:2rem 1rem 4rem;}
+  .manuscript{max-width:780px;margin:0 auto;background-color:var(--parchment);border:1px solid var(--parchment-dark);box-shadow:0 0 0 6px #1a1005,0 0 0 8px #8b6914,0 0 0 10px #1a1005,0 30px 80px rgba(0,0,0,0.7),inset 0 0 60px rgba(180,140,60,0.08);padding:3.5rem 4rem 4rem;position:relative;}
+  .manuscript::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(180deg,rgba(200,170,90,0.06) 0%,transparent 30%,transparent 70%,rgba(150,110,40,0.05) 100%);pointer-events:none;}
+  .series-header{text-align:center;border-bottom:2px solid var(--gold);padding-bottom:1.6rem;margin-bottom:2.2rem;position:relative;}
+  .series-header::after{content:'✦';position:absolute;bottom:-0.65em;left:50%;transform:translateX(-50%);background:var(--parchment);padding:0 0.6em;color:var(--gold);font-size:0.9rem;}
+  .series-title{font-family:'Cinzel',serif;font-size:1.1rem;letter-spacing:0.18em;color:var(--gold);text-transform:uppercase;margin-bottom:0.3rem;}
+  .series-heb{font-family:'Frank Ruhl Libre',serif;font-size:1.25rem;color:var(--ink-mid);margin-bottom:0.3rem;}
+  .series-subtitle{font-size:0.95rem;color:var(--ink-mid);font-style:italic;margin-bottom:0.2rem;}
+  .series-byline{font-size:0.8rem;color:var(--ink-soft);letter-spacing:0.04em;}
+  .letter-heading{text-align:center;margin-bottom:1.6rem;}
+  .letter-number{font-family:'Cinzel',serif;font-size:2.4rem;font-weight:600;color:var(--gold);letter-spacing:0.1em;line-height:1;margin-bottom:0.3rem;}
+  .letter-meta{font-size:0.9rem;color:var(--ink-soft);font-style:italic;line-height:1.65;}
+  .bezras-hashem{text-align:center;font-style:italic;color:var(--gold);font-size:1.0rem;margin-bottom:0.5rem;letter-spacing:0.03em;}
+  .addressee{border-left:3px solid var(--gold);padding:0.75rem 1rem;margin-bottom:1.7rem;font-size:0.95rem;color:var(--ink-mid);font-style:italic;line-height:1.75;background:rgba(200,170,80,0.06);}
+  .addressee .label{font-family:'Cinzel',serif;font-size:0.7rem;letter-spacing:0.13em;color:var(--gold);font-style:normal;display:block;margin-bottom:0.3rem;text-transform:uppercase;}
+  .letter-body{text-align:justify;line-height:1.90;font-size:1.06rem;}
+  .letter-body p{margin-bottom:1.15rem;text-indent:1.6em;}
+  .letter-body p.no-indent{text-indent:0;}
+  .translit{font-style:italic;color:var(--teal);font-weight:500;}
+  mark.gold{background:var(--highlight-y);padding:0 2px;border-radius:2px;}
+  mark.teal{background:var(--highlight-b);padding:0 2px;border-radius:2px;}
+  cite{font-style:italic;color:var(--crimson);}
+  .verse-src{font-size:0.82em;color:var(--crimson);font-style:normal;font-weight:500;}
+  .bracket{color:var(--ink-soft);font-size:0.9em;font-style:italic;}
+  .emunah-block{margin:0.3rem 0 1.15rem 0;padding:1.2rem 1.6rem;border-left:4px solid var(--gold);border-right:1px solid var(--gold-pale);background:rgba(220,195,80,0.09);line-height:2.05;font-size:1.04rem;color:var(--ink-mid);}
+  .emunah-block p{margin-bottom:0.9rem;text-indent:0;}
+  .emunah-block p:last-child{margin-bottom:0;}
+  .shma-block{margin:0.5rem 0 1.15rem 0;padding:1.3rem 1.6rem;border:2px solid var(--gold);background:rgba(200,170,80,0.06);line-height:2.1;font-size:1.06rem;color:var(--ink-mid);text-align:center;}
+  .shma-heb{font-family:'Frank Ruhl Libre',serif;font-size:1.4rem;color:var(--ink);display:block;margin-bottom:0.4rem;letter-spacing:0.08em;}
+  .shma-translat{font-style:italic;font-size:1.05rem;color:var(--teal);display:block;margin-bottom:0.2rem;}
+  .shma-note{font-size:0.82rem;color:var(--ink-soft);font-style:italic;display:block;margin-top:0.5rem;text-align:left;}
+  .shadow-block{margin:0.3rem 0 1.15rem 0;padding:1.1rem 1.4rem;border-left:4px solid var(--teal);background:rgba(26,74,74,0.06);line-height:1.96;font-size:1.04rem;color:var(--ink-mid);}
+  .shadow-block p{margin-bottom:0.8rem;text-indent:0;}
+  .shadow-block p:last-child{margin-bottom:0;}
+  .closing{margin-top:1.8rem;border-top:1px solid var(--gold-pale);padding-top:1.2rem;}
+  .signature{text-align:right;font-style:italic;color:var(--ink-mid);font-size:1.0rem;margin-top:0.35rem;text-indent:0!important;}
+  .signature strong{font-style:normal;color:var(--ink);}
+  .root-note{font-size:0.8rem;color:var(--teal);font-style:normal;}
+  .translator-section{margin-top:3rem;border-top:2px solid var(--gold);padding-top:1.6rem;position:relative;}
+  .translator-section::before{content:"— From the Translator —";position:absolute;top:-0.75em;left:50%;transform:translateX(-50%);background:var(--parchment);padding:0 0.9em;font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:0.16em;color:var(--gold);text-transform:uppercase;white-space:nowrap;}
+  .translator-section p{font-size:0.93rem;color:var(--ink-mid);line-height:1.78;margin-bottom:0.8rem;text-indent:0;}
+  .translator-section p:last-child{margin-bottom:0;}
+  .translator-section h3{font-family:'Cinzel',serif;font-size:0.8rem;letter-spacing:0.12em;color:var(--gold);text-transform:uppercase;margin:1.2rem 0 0.5rem;}
+  .themes-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:0.8rem;margin-top:0.6rem;}
+  .theme-card{background:var(--parchment-dark);border-top:2px solid var(--gold);padding:0.75rem 0.9rem;font-size:0.85rem;color:var(--ink-mid);line-height:1.55;}
+  .theme-card strong{display:block;font-family:'Cinzel',serif;font-size:0.71rem;letter-spacing:0.1em;color:var(--gold);text-transform:uppercase;margin-bottom:0.3rem;}
+  .ms-footer{text-align:center;margin-top:2.5rem;padding-top:1rem;border-top:1px solid var(--gold-pale);font-size:0.78rem;color:var(--ink-soft);font-style:italic;letter-spacing:0.04em;}
+  @media(max-width:600px){.manuscript{padding:2rem 1.4rem 2.5rem;}.letter-number{font-size:1.8rem;}}
+</style>
+</head>
+<body>
+<div class="manuscript">
+
+  <div class="series-header">
+    <div class="series-title">Ullim LeTroofah</div>
+    <div class="series-heb">עלים לתרופה</div>
+    <div class="series-subtitle">Leaves for Healing</div>
+    <div class="series-byline">The Sacred Letters of Rebbe Nachman of Breslov and Reb Nussun of Breslov, of blessed memory</div>
+  </div>
+
+  <div class="letter-heading">
+    <div class="letter-number">LETTER FORTY-THREE</div>
+    <div class="letter-meta">
+      Blessed be Hashem &nbsp;·&nbsp; Tuesday, Parshas Tzav, 8th of Nissan &nbsp;·&nbsp; Year 5591 (1831)<br>
+      Written from <strong>Breslov</strong>
+    </div>
+  </div>
+
+  <div class="addressee">
+    <span class="label">To</span>
+    Peace — to my beloved son, the delight of my soul —
+    the distinguished, veteran scholar, our Teacher the Rabbi
+    <strong>Yitzchok</strong> — may he live.
+  </div>
+
+  <div class="letter-body">
+
+    <!-- Line 3: letter received; arrived home safely; adventures on the road — thaw of snows;
+         was in Uman from Monday P'kudai until Monday Vayikra (eve Rosh Chodesh Nissan);
+         last Shabbos in Ladizhin -->
+    <p class="no-indent">
+      Your letter I received. And yesterday I arrived home safely — thanks be to G-d —
+      and I had several adventures
+      [<span class="translit">harpatkao's</span> — a Talmudic Aramaic word for mishaps
+      and unexpected ordeals on a journey] on the road — on account of the ruined state
+      of the roads and the thaw of the snows. And I was in Uman from Monday of
+      [Parshas] P'kudai until Monday of [Parshas] Vayikra — which was the eve of Rosh
+      Chodesh Nissan — and the past holy Shabbos I was in Ladizhin.
+    </p>
+
+    <!-- Line 4: heart stirs from Yitzchok's bitter crying about the flood of great waters;
+         yet joy is fixed in Reb Nussun's heart — from one side [Zoharic Aramaic: misitra chada];
+         seeing Yitzchok's strength in ratzon and kisufin — which are very precious;
+         would that this heart be with him all the days -->
+    <p class="no-indent">
+      And behold — although my heart stirs within me from your letter, in which you cry
+      out every time in a bitter voice about the flood of great waters that passes over
+      you at all times — may the Omnipresent have mercy upon you from now on —
+      nevertheless <mark class="gold">joy is fixed within my heart from one side</mark>
+      <span class="bracket">[<span class="translit">misitra chada</span> — מִסִּטְרָא חֲדָא:
+      Zoharic Aramaic, meaning "from one dimension" or "from one aspect." Reb Nussun holds
+      two truths simultaneously — anguish on one side, joy on the other — framed in the
+      kabbalistic language of the Zohar]</span> — from what I see of the strength of your
+      heart with the help of Hashem Yisborach: that you are strong in the great desire and
+      yearning for Hashem Yisborach and His Torah — which are very, very precious.
+      <mark class="teal">Would that this heart of yours be with you all the days —
+      to yearn and to long at all times for Hashem Yisborach with strong wills</mark> —
+      for desires and yearnings of holiness are very, very precious before Him, Yisborach.
+    </p>
+
+    <!-- Line 5: know my son — man came to this world only to believe in Hashem;
+         for this man was created and all the world and its fullness;
+         "and all His works in faithfulness";
+         one must renew oneself in the longing for emunah every day;
+         emunah is an inheritance — yet one must draw it fresh each day;
+         as in K'rias Shma — "which I command you today upon your heart";
+         the Sages: "each day let them be in your eyes as new — not as an old edict" -->
+    <div class="emunah-block">
+      <p>
+        <mark class="gold">Know, my son! And remember well</mark> — that man came to
+        this world for no other purpose than <mark class="gold">to believe in Hashem
+        Yisborach</mark> — and for this man was created, and all the world and its
+        fullness which depend upon Him — as it is written:
+        <cite>and all His works in faithfulness</cite>
+        <span class="verse-src">[Tehillim 33:4]</span>. And a person must renew himself
+        in the longing for <span class="translit">emunah</span> [faith] every day and
+        every time. For although <span class="translit">emunah</span> is an inheritance
+        to us from our forefathers — and this is the very foundation of faith: to rely
+        upon our holy forefathers and to walk in their ways — nevertheless one must draw
+        fresh <span class="translit">emunah</span> upon oneself every single day, and
+        enter one's entire heart and soul into it, and enlarge one's awareness of it
+        anew every day.
+      </p>
+      <p>
+        As it is written in the portion of <span class="translit">Sh'ma</span>:
+        <cite>which I command you today — upon your heart</cite>
+        <span class="verse-src">[D'vorim 6:6]</span> — and our Sages of blessed memory
+        expounded: <cite>each and every day let them be in your eyes as new — that it
+        should not be in your eyes like an old edict, which people do not read closely,
+        but as something new</cite> <span class="verse-src">[Sifri, cited by Rashi]</span>.
+        And this is said specifically in the portion of
+        <span class="translit">K'rias Sh'ma</span> — for the essential thrust of this
+        matter is spoken regarding the holy <span class="translit">emunah</span>, which
+        is the very foundation and principle of the entire Torah.
+      </p>
+    </div>
+
+    <!-- Line 6: Hashem sent into Reb Nussun's heart — this is what we say in Shma Yisroel:
+         seemingly it would have sufficed to say "Hashem Elokainu Hashem Echod" —
+         why begin with "Shma Yisroel"?
+         These two words come to arouse the heart to hear as entirely new each time;
+         just as when announcing a new matter one says "listen well to what I will tell you";
+         as the Sages said [Brochos 13] — "make your ears hear what your mouth speaks";
+         although the foundation of emunah is ancient — still you must hear it fresh each day;
+         this cannot be explained in writing or speech — it is for each person according
+         to what he weighs in his heart [Zoharic Aramaic: l'chol chad k'fum mah d'mishaer b'libay];
+         one can wonder, and recoil in awe [lizchol], and tremble [lir'od] from the sparkling
+         of the truth of holy emunah at every time anew;
+         that we merited to believe in the Living of Lives, the Eternal, the Single, the Ancient -->
+    <div class="emunah-block">
+      <p>
+        And behold — in these days Hashem sent into my heart that
+        <mark class="teal">this is what we are saying</mark> in the acceptance of the
+        faith of His unity, Yisborach: we begin first with those two words —
+        <em>Sh'ma Yisroel</em>. And it would seemingly have sufficed to say the
+        essential declaration of unity: <em>Hashem Elokainu Hashem Echod</em>. So
+        why do we need to begin beforehand with those two words —
+        <em>Sh'ma Yisroel</em>?
+      </p>
+      <p>
+        But <mark class="gold">those two words come to awaken the heart of the person
+        to incline his ear and his heart well</mark> to what he is saying — and that it
+        should be in his eyes entirely new each time. And therefore we say first
+        <em>Sh'ma</em> — Yisroel — for when one announces a new matter one first says:
+        <em>Hear well what I am about to tell you</em> — and this is the aspect of
+        those two words <em>Sh'ma Yisroel</em> which we say before the declaration of
+        unity — to awaken the heart of Israel to incline their ear and their heart well
+        to hear what they are saying, that it should be in their eyes as entirely new.
+        As our Sages of blessed memory said <span class="verse-src">[Brochos 13a]</span>
+        on this very verse: <cite>Sh'ma</cite> — <cite>make your ears hear what your
+        mouth speaks out</cite> — that is: incline your ear and hear well, well, what
+        you are bringing out of your mouth — and let it not be in your eyes as something
+        old, G-d forbid.
+      </p>
+      <p>
+        Although the foundation of <span class="translit">emunah</span> is ancient —
+        from our holy forefathers — and this is the very essence of faith — you must
+        nonetheless hear and receive the <span class="translit">emunah</span> into your
+        heart anew each day. And this matter cannot be explained either in writing or
+        by word of mouth — <span class="bracket">[<span class="translit">ki hu l'chol
+        chad k'fum mah d'mishear b'libay</span> — כִּי הוּא לְכָל חַד כְּפוּם מַה
+        דִּמְשַׁעֵר בְּלִבֵּהּ: Zoharic Aramaic — "for it is for each one according to
+        what he weighs in his heart." The language signals that what follows is a matter
+        of direct inner experience, beyond formulation]</span> — for it is for each
+        person according to what he weighs in his heart.
+        <mark class="gold">One can wonder, and recoil in awe, and tremble</mark>
+        <span class="bracket">[<span class="translit">yochol l'hispala, v'lizchol,
+        v'lir'od</span> — three distinct bodily responses to
+        <span class="translit">emunah</span>: <em>hispala</em> — wonder and astonishment;
+        <em>lizchol</em> — to recoil or shrink back, a creeping physical sensation of
+        awe; <em>lir'od</em> — to tremble. These are three ascending degrees of the
+        body's response to the sparkling of truth]</span>
+        from the sparkling of the truth of holy
+        <span class="translit">emunah</span> at every time anew — that we merited to
+        believe in the Living of Lives, the Eternal, the Single, the Ancient, the Creator
+        of all in His lovingkindness, Yisborach — and exalted be His Name forever.
+      </p>
+    </div>
+
+    <!-- Line 7: through this every person can give themselves life — "His kingdom rules over all";
+         in particular you my beloved son — as I know you and as you have told me;
+         however things may be — receive these words;
+         gladden your soul at all times in the holy emunah — that we are of the seed of Israel;
+         accustom yourself to rejoice in this each day anew;
+         remember well what we say: "Ashrainu mah tov chelkainu...";
+         many say this daily without knowing their life and great joy;
+         yet even so they live only from this — "ki haim chayainu";
+         how good is one who strives to know of his life;
+         no true vitality except the holy emunah — from small to great;
+         time and days pass like a passing shadow;
+         nothing remains but the vitality of emunah — "u'malchuso v'emunaso lo'ad kayemes";
+         in all that passes over a person — clothed there is the vitality of holy emunah;
+         receive upon yourself at all times the verse Shma Yisroel;
+         hear well in every matter in the world — clothed there is the unity of Hashem;
+         as explained further: "v'ohavto... b'shivt'cho uvlechtcho uvshochb'cho uvkumecho";
+         from all things one can cleave to Hashem — as our Master wrote in many places;
+         but Mincha time has arrived;
+         may Hashem strengthen your heart to seize Torah, prayer, charity and good deeds
+         from this passing shadow -->
+    <div class="shadow-block">
+      <p>
+        And through this — every person in the world can give themselves life, at whatever
+        level they stand — for <cite>His kingdom rules over all</cite>
+        <span class="verse-src">[Tehillim 103:19]</span>. And in particular — you, my
+        beloved son — whom I know — and as you have already told me much in your letter —
+        nonetheless — however things may be — <mark class="teal">be strong and resolute
+        to receive these words of mine, to strengthen yourself and to gladden your soul
+        at all times</mark> in the holy <span class="translit">emunah</span> — that we
+        merited to be of the seed of Israel and to believe in Him Yisborach and in His
+        holy Torah and in His true <span class="translit">tzadikim</span>. And accustom
+        yourself to rejoice in this every day anew — and enter this well into your heart
+        — and remember well what we say each and every day:
+      </p>
+    </div>
+
+    <div class="shma-block">
+      <span class="shma-heb">אַשְׁרֵינוּ מַה טּוֹב חֶלְקֵנוּ וּמַה נָּעִים גּוֹרָלֵנוּ וּמַה יָּפָה יְרוּשָּׁתֵנוּ אַשְׁרֵינוּ</span>
+      <span class="shma-translat">Happy are we — how good is our portion, and how pleasant our lot, and how beautiful our heritage — happy are we.</span>
+      <span class="shma-note">
+        For many people say this every day without knowing of their life and their great
+        joy — yet even so they live only from this — for this alone is our life and our
+        existence — as it is said: <cite>for they are our life and the length of our
+        days</cite> <span class="verse-src">[from the evening prayer]</span>.
+      </span>
+    </div>
+
+    <p>
+      But how good and beautiful is one who strives at least to know of his life — to
+      know that there is <mark class="gold">no true vitality and good other than the holy
+      <span class="translit">emunah</span></mark> — which all of us merited, from small
+      to great. And whether one has money or not — in the end, time and days pass
+      <mark class="teal">like a passing shadow</mark> — and nothing will remain except
+      the vitality of holy <span class="translit">emunah</span> which endures forever
+      — as it is said: <cite>and His kingdom and His faithfulness stand forever</cite>
+      <span class="verse-src">[from the morning prayer]</span> and so forth.
+    </p>
+
+    <p>
+      And in everything that passes over a person — in body and soul and money — whether
+      good or otherwise — one must know that <mark class="gold">clothed there is the
+      vitality of holy <span class="translit">emunah</span> which sustains everything
+      </mark> — and one must turn one's heart well to this. And one must receive upon
+      oneself at all times the verse <em>Sh'ma Yisroel</em> — whose meaning is: hear
+      well — in every matter in the world there is clothed the unity of Hashem Yisborach.
+      As is explained further in this very portion:
+      <cite>and you shall love… with all your heart… when you sit in your home and when
+      you walk on the road and when you lie down and when you rise up</cite>
+      <span class="verse-src">[D'vorim 6:5–7]</span> and so forth — meaning: in all
+      that passes over a person, one must hear well from there the
+      <span class="translit">emunah</span> of His unity — for from all things in the
+      world one can cleave to Hashem Yisborach — as our Master, of blessed memory,
+      wrote in many places. More than this it is impossible to extend — and also because
+      the time of <span class="translit">Mincha</span> has arrived.
+    </p>
+
+    <p>
+      And may Hashem Yisborach in His mercy strengthen your heart — that you merit to
+      seize much Torah and prayer and charity and good deeds from this passing shadow —
+      so that it will be good for you forever.
+    </p>
+
+    <div class="closing">
+      <p class="no-indent">
+        The words of your father — who awaits your salvation forever.
+      </p>
+      <p class="signature"><strong>Nussun</strong> of Breslov.</p>
+    </div>
+
+  </div>
+
+  <div class="translator-section">
+    <p>
+      <strong>Overview:</strong> The most theologically rich letter of this group —
+      and one of the deepest in the entire collection. Reb Nussun sets out a profound
+      teaching on <span class="translit">emunah</span> that he says Hashem "sent into
+      my heart in these days." The insight is about the two words <em>Sh'ma Yisroel</em>
+      which precede the declaration of G-d's unity: why not begin immediately with
+      <em>Hashem Elokainu Hashem Echod</em>? Because <em>Sh'ma</em> — Hear! — is itself
+      the essential command: receive the <span class="translit">emunah</span> as entirely
+      new, every single day. The Talmudic dictum (Brochos 13a) and the Midrashic
+      interpretation of "today — upon your heart" are woven into one doctrine: ancient
+      faith must be made fresh daily. Three bodily responses to this sparkling — wonder,
+      recoiling in awe (<span class="translit">lizchol</span>), and trembling — are
+      named in Zoharic Aramaic as distinct degrees of inner experience. The letter ends
+      with the image of time passing like a shadow — and the call to seize Torah, prayer,
+      charity and good deeds from this fleeting moment. Mincha interrupted — and Reb
+      Nussun stopped.
+    </p>
+    <h3>Key Themes</h3>
+    <div class="themes-grid">
+      <div class="theme-card">
+        <strong>Emunah — Ancient Yet Ever New</strong>
+        The paradox at the heart of this letter: <span class="translit">emunah</span>
+        is an inheritance from our forefathers — ancient, settled, foundational. Yet it
+        must be renewed personally and inwardly every single day. The inheritance gives
+        the foundation; the daily renewal gives the life. Without renewal, faith becomes
+        an old decree — unread and unfelt.
+      </div>
+      <div class="theme-card">
+        <strong>Shma — The Arousal Before the Declaration</strong>
+        Reb Nussun's original insight: the word <em>Sh'ma</em> — Hear! — precedes the
+        declaration of unity because it is itself the command to freshness. Just as you
+        announce "listen carefully!" before something new, every recitation of
+        <em>Sh'ma Yisroel</em> summons the person to receive what follows as if hearing
+        it for the very first time.
+      </div>
+      <div class="theme-card">
+        <strong>Three Degrees of Awe</strong>
+        The Zoharic Aramaic terms —
+        <span class="translit">l'hispala</span> (wonder),
+        <span class="translit">lizchol</span> (to recoil in awe — a creeping, physical
+        shrinking before the infinite), and <span class="translit">lir'od</span>
+        (to tremble) — describe three distinct and ascending bodily responses to the
+        sparkling of true <span class="translit">emunah</span>. These are not synonyms;
+        they are a progression.
+      </div>
+      <div class="theme-card">
+        <strong>Misitra Chada — From One Side</strong>
+        The Zoharic Aramaic phrase frames Reb Nussun's emotional situation: anguish on
+        one side, joy on the other. The kabbalistic register signals that these are not
+        merely human feelings but ontological dimensions — aspects of reality held
+        simultaneously.
+      </div>
+      <div class="theme-card">
+        <strong>Ashrainu — Happy Are We</strong>
+        The daily liturgical declaration is presented as a vehicle of
+        <span class="translit">emunah</span>. Many say it daily without knowing their
+        own joy. Yet even so, Reb Nussun notes with tenderness, they are sustained by
+        it — because these words, even uncomprehended, carry the vitality of faith.
+      </div>
+      <div class="theme-card">
+        <strong>The Passing Shadow — Seize the Moment</strong>
+        Time and days pass like a passing shadow — what remains is
+        <span class="translit">emunah</span>, which endures forever. Therefore: seize
+        Torah, prayer, charity and good deeds from this fleeting time. Reb Nussun
+        writes this and stops — Mincha has arrived. The teaching enacts itself: now is
+        the time to pray.
+      </div>
+    </div>
+  </div>
+
+  <div class="ms-footer">
+    Translated in the merit of Na Nach Nachma Nachman MayUman &nbsp;·&nbsp; May HY bless this work.
+  </div>
+
+</div>
+</body>
+</html>

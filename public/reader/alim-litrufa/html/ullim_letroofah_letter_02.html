@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ullim LeTroofah – Letter Two | Leaves for Healing</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Cinzel:wght@400;500;600&family=Frank+Ruhl+Libre:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --parchment:      #f5efe0;
+    --parchment-dark: #ede3cc;
+    --ink:            #1c1209;
+    --ink-mid:        #3b2a14;
+    --ink-soft:       #5c4530;
+    --gold:           #8b6914;
+    --gold-pale:      #e8d9a0;
+    --crimson:        #7a1c1c;
+    --teal:           #1a4a4a;
+    --highlight-y:    rgba(220,195,80,0.22);
+    --highlight-b:    rgba(26,74,74,0.12);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background-color: #2a1f0e;
+    background-image:
+      radial-gradient(ellipse at 20% 10%, rgba(90,60,20,0.4) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 90%, rgba(50,30,10,0.5) 0%, transparent 60%);
+    min-height: 100vh;
+    font-family: 'EB Garamond', Georgia, serif;
+    color: var(--ink);
+    padding: 2rem 1rem 4rem;
+  }
+  .manuscript {
+    max-width: 780px;
+    margin: 0 auto;
+    background-color: var(--parchment);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    border: 1px solid var(--parchment-dark);
+    box-shadow:
+      0 0 0 6px #1a1005,
+      0 0 0 8px #8b6914,
+      0 0 0 10px #1a1005,
+      0 30px 80px rgba(0,0,0,0.7),
+      inset 0 0 60px rgba(180,140,60,0.08);
+    padding: 3.5rem 4rem 4rem;
+    position: relative;
+  }
+  .manuscript::before {
+    content: '';
+    position: absolute; top:0; left:0; right:0; bottom:0;
+    background: linear-gradient(180deg, rgba(200,170,90,0.06) 0%, transparent 30%, transparent 70%, rgba(150,110,40,0.05) 100%);
+    pointer-events: none;
+  }
+
+  .series-header {
+    text-align: center;
+    border-bottom: 2px solid var(--gold);
+    padding-bottom: 1.6rem;
+    margin-bottom: 2.2rem;
+    position: relative;
+  }
+  .series-header::after {
+    content: '✦';
+    position: absolute; bottom: -0.65em; left: 50%;
+    transform: translateX(-50%);
+    background: var(--parchment); padding: 0 0.6em;
+    color: var(--gold); font-size: 0.9rem;
+  }
+  .series-title {
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem; letter-spacing: 0.18em;
+    color: var(--gold); text-transform: uppercase; margin-bottom: 0.3rem;
+  }
+  .series-heb {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 1.25rem; color: var(--ink-mid); margin-bottom: 0.3rem;
+  }
+  .series-subtitle { font-size: 0.95rem; color: var(--ink-mid); font-style: italic; margin-bottom: 0.2rem; }
+  .series-byline { font-size: 0.8rem; color: var(--ink-soft); letter-spacing: 0.04em; }
+
+  .letter-heading { text-align: center; margin-bottom: 1.6rem; }
+  .letter-number {
+    font-family: 'Cinzel', serif; font-size: 2.4rem; font-weight: 600;
+    color: var(--gold); letter-spacing: 0.1em; line-height: 1; margin-bottom: 0.3rem;
+  }
+  .letter-meta { font-size: 0.9rem; color: var(--ink-soft); font-style: italic; line-height: 1.65; }
+
+  .bezras-hashem {
+    text-align: center;
+    font-style: italic;
+    color: var(--gold);
+    font-size: 1.0rem;
+    margin-bottom: 0.4rem;
+    letter-spacing: 0.03em;
+  }
+
+  .addressee {
+    border-left: 3px solid var(--gold);
+    padding: 0.75rem 1rem 0.75rem 1rem;
+    margin-bottom: 1.7rem;
+    font-size: 0.95rem;
+    color: var(--ink-mid);
+    font-style: italic;
+    line-height: 1.75;
+    background: rgba(200,170,80,0.06);
+  }
+  .addressee .label {
+    font-family: 'Cinzel', serif; font-size: 0.7rem;
+    letter-spacing: 0.13em; color: var(--gold); font-style: normal;
+    display: block; margin-bottom: 0.3rem; text-transform: uppercase;
+  }
+
+  .letter-body { text-align: justify; line-height: 1.88; font-size: 1.06rem; }
+  .letter-body p { margin-bottom: 1.1rem; text-indent: 1.6em; }
+  .letter-body p.no-indent { text-indent: 0; }
+
+  .translit  { font-style: italic; color: var(--teal); font-weight: 500; }
+  mark.gold  { background: var(--highlight-y); padding: 0 2px; border-radius: 2px; }
+  mark.teal  { background: var(--highlight-b); padding: 0 2px; border-radius: 2px; }
+  cite       { font-style: italic; color: var(--crimson); }
+  .verse-src { font-size: 0.82em; color: var(--crimson); font-style: normal; font-weight: 500; }
+
+  .ps-label {
+    font-family: 'Cinzel', serif; font-size: 0.74rem;
+    letter-spacing: 0.12em; color: var(--gold); text-transform: uppercase;
+    display: block; margin: 1.5rem 0 0.25rem;
+  }
+
+  .closing { margin-top: 1.6rem; border-top: 1px solid var(--gold-pale); padding-top: 1.1rem; }
+  .signature {
+    text-align: right; font-style: italic; color: var(--ink-mid);
+    font-size: 1.0rem; margin-top: 0.35rem; text-indent: 0 !important;
+  }
+  .signature strong { font-style: normal; color: var(--ink); }
+
+  .standalone-greeting {
+    margin-top: 1.8rem;
+    padding-top: 1.0rem;
+    border-top: 1px dashed var(--gold-pale);
+    font-size: 0.95rem;
+    color: var(--ink-mid);
+    font-style: italic;
+    text-align: center;
+  }
+
+  .translator-summary {
+    margin-top: 2.8rem; border: 1px solid var(--gold-pale); border-radius: 4px;
+    padding: 1.5rem 1.7rem; background: rgba(200,170,80,0.07); position: relative;
+  }
+  .translator-summary::before {
+    content: "Translator's Summary";
+    position: absolute; top: -0.75em; left: 1.2rem;
+    background: var(--parchment); padding: 0 0.6em;
+    font-family: 'Cinzel', serif; font-size: 0.72rem;
+    letter-spacing: 0.14em; color: var(--gold); text-transform: uppercase;
+  }
+  .translator-summary p {
+    font-size: 0.93rem; color: var(--ink-mid); line-height: 1.75;
+    margin-bottom: 0.75rem; text-indent: 0;
+  }
+  .translator-summary p:last-child { margin-bottom: 0; }
+
+  .themes-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(175px,1fr));
+    gap: 0.8rem; margin-top: 1rem;
+  }
+  .theme-card {
+    background: var(--parchment-dark); border-top: 2px solid var(--gold);
+    padding: 0.75rem 0.9rem; font-size: 0.85rem; color: var(--ink-mid); line-height: 1.55;
+  }
+  .theme-card strong {
+    display: block; font-family: 'Cinzel', serif; font-size: 0.71rem;
+    letter-spacing: 0.1em; color: var(--gold); text-transform: uppercase; margin-bottom: 0.3rem;
+  }
+
+  .ms-footer {
+    text-align: center; margin-top: 2.5rem; padding-top: 1rem;
+    border-top: 1px solid var(--gold-pale);
+    font-size: 0.78rem; color: var(--ink-soft); font-style: italic; letter-spacing: 0.04em;
+  }
+
+  @media (max-width: 600px) {
+    .manuscript { padding: 2rem 1.4rem 2.5rem; }
+    .letter-number { font-size: 1.8rem; }
+  }
+</style>
+</head>
+<body>
+<div class="manuscript">
+
+  <div class="series-header">
+    <div class="series-title">Ullim LeTroofah</div>
+    <div class="series-heb">עלים לתרופה</div>
+    <div class="series-subtitle">Leaves for Healing</div>
+    <div class="series-byline">The Sacred Letters of Rebbe Nachman of Breslov and Reb Nussun of Breslov, of blessed memory</div>
+  </div>
+
+  <div class="letter-heading">
+    <div class="letter-number">LETTER TWO</div>
+    <div class="letter-meta">
+      Thursday, 6th of Iyar, Parshas Emor &nbsp;·&nbsp; Year 5567 (1807)<br>
+      Written from the holy community of <strong>Zaslav</strong>
+    </div>
+  </div>
+
+  <!-- OPENING INVOCATION -->
+  <div class="bezras-hashem">With the help of G-d, may He be blessed</div>
+
+  <!-- ADDRESSEE -->
+  <div class="addressee">
+    <span class="label">Delivered to</span>
+    My beloved son-in-law, the distinguished scholar and communal leader, our Teacher the
+    Rabbi <strong>Yoshua</strong> — may his light shine and radiate — together with the
+    welfare of his wife, she being my modest and wise daughter,
+    <strong>Marat Adil</strong>, may she live. Amen.
+  </div>
+
+  <div class="letter-body">
+
+    <p class="no-indent">
+      Your honored letter reached me on Sunday of Parshas Emor, and likewise the hundred
+      <span class="translit">rubl</span> (roubles) came to hand. I hereby inform you that
+      I am currently residing in the holy community of <strong>Zaslav</strong>, and that
+      your mother-in-law has undergone a great improvement. I also inform you that
+      <strong>I will not be coming to your holy camp for</strong>
+      <span class="translit">Shavuos</span>, for I shall remain here in the holy community
+      of Zaslav. Nothing further for now — only life and peace. From me, your father-in-law,
+      who loves your soul and always seeks your welfare.
+    </p>
+
+    <div class="closing">
+      <p class="signature">
+        <strong>Nachman</strong>, son of our Teacher the Rabbi <strong>Simcha</strong> —
+        may his Rock protect him and give him life.
+      </p>
+    </div>
+
+    <span class="ps-label">Postscript — On the Matter of Healing</span>
+    <p class="no-indent">
+      I hereby inform you that <mark class="gold"><strong>I am no longer engaged in
+      healing</strong></mark> — for Hashem has helped me, and has not withheld His
+      kindness and His truth from me.
+    </p>
+    <p class="signature"><strong>Nachman</strong>, as above.</p>
+
+    <span class="ps-label">Postscript — Greetings and a Question of Healing</span>
+    <p class="no-indent">
+      Extend greetings of peace to my dear friend our Teacher the Rabbi Mosheh son of the
+      Rabbi, and to their neighbor my dear friend our Teacher the Rabbi Yisroel, and to my
+      partner my dear friend our Teacher the Rabbi Mosheh son of Henyeh. Regarding what he
+      wrote to me — to advise him whether he should engage in healing —
+      <mark class="teal">my mind is not clear on this at present, and I do not know what
+      to answer</mark>.
+    </p>
+    <p class="signature"><strong>Nachman</strong>, as above.</p>
+
+    <span class="ps-label">Postscript — General Greetings</span>
+    <p class="no-indent">
+      Extend greetings of peace to all our <span class="translit">anshay shlomaynu</span>
+      (our fellowship of followers).
+    </p>
+    <p class="signature"><strong>Nachman</strong>, as above.</p>
+
+    <span class="ps-label">Postscript — Mailing Address</span>
+    <p class="no-indent">
+      When you send me a letter, send it to the holy community of Zaslav, to the house of
+      the Rabbi of the tailors — as recorded in the list that is enclosed within this letter.
+    </p>
+
+    <span class="ps-label">Postscript — From the Rebbetzin and Daughter; Charge to Son-in-Law</span>
+    <p class="no-indent">
+      My wife Marat Sasye, and likewise my daughter Marat Miriam, may she live, extend to
+      you their warm greetings of peace. My request of my beloved son-in-law is that he
+      study each day a <span class="translit">shiur</span> (set daily lesson) in
+      <span class="translit">Gemara</span> and in <span class="translit">Posek</span>
+      (halachic ruling) — <mark class="gold"><strong>so that he should not, G-d forbid,
+      make the secondary into the primary</strong></mark> — but rather:
+      <cite>Fear G-d</cite>, and so forth —
+      <cite>for this is the entire purpose of man</cite>
+      <span class="verse-src">[Koheles 12:13]</span>.
+    </p>
+    <p class="signature"><strong>Nachman</strong>, as above.</p>
+
+    <!-- STANDALONE FINAL LINE — stands alone in original -->
+    <div class="standalone-greeting">
+      My dear friend, the distinguished Rabbi <strong>Shmuël</strong>, extends greetings
+      of peace to all.
+    </div>
+
+  </div>
+
+  <div class="translator-summary">
+    <p>
+      <strong>Overview:</strong> Written from Zaslav shortly after Rebbe Nachman's recovery
+      from the illness of Letter 1, this brief letter confirms receipt of funds, updates on
+      his wife's improving health, and notifies his son-in-law that he will not return for
+      Shavuos. Its most striking features are the terse but weighty declaration that he has
+      ceased practicing healing — and the closing charge on Torah study, citing Koheles.
+    </p>
+    <p>
+      <strong>Note on "B'ezras Hashem Yisborach":</strong> Every letter in this collection
+      opens with this invocation — "With the help of G-d, may He be blessed." It is never
+      merely formal; in Breslov understanding it reflects the foundational awareness that
+      every act, including the writing of a letter, depends entirely on Divine assistance.
+    </p>
+    <p><strong>Key themes:</strong></p>
+    <div class="themes-grid">
+      <div class="theme-card">
+        <strong>Cessation of Healing</strong>
+        Rebbe Nachman declares with finality that he no longer engages in healing —
+        crediting Hashem's kindness and truth. The Tzaddik acts only as a conduit
+        for Divine will, never as an independent power.
+      </div>
+      <div class="theme-card">
+        <strong>Torah as Primary</strong>
+        The charge to his son-in-law — daily Gemara and halachah, lest the secondary
+        displace the primary — echoes a core Breslov warning: worldly involvement must
+        never overshadow one's foundational Torah obligations.
+      </div>
+      <div class="theme-card">
+        <strong>Zeh Kol Ha'adam</strong>
+        The citation from Koheles — <em>"fear G-d… for this is the entire purpose
+        of man"</em> — is the lens through which Rebbe Nachman evaluates all human
+        activity. Everything else is secondary to this one north star.
+      </div>
+      <div class="theme-card">
+        <strong>The Tzaddik in Daily Life</strong>
+        Even in a short practical letter — money, travel, addresses, illness — the
+        Tzaddik's every word carries instruction. The mundane and the sacred are
+        inseparable in Breslov.
+      </div>
+    </div>
+  </div>
+
+  <div class="ms-footer">
+    Translated in the merit of Na Nach Nachma Nachman MayUman &nbsp;·&nbsp; May HY bless this work.
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ullim LeTroofah – Letter Fifty | Reb Nussun: Why Have You Not Written? Snatch Each Day</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Cinzel:wght@400;500;600&family=Frank+Ruhl+Libre:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--parchment:#f5efe0;--parchment-dark:#ede3cc;--ink:#1c1209;--ink-mid:#3b2a14;--ink-soft:#5c4530;--gold:#8b6914;--gold-pale:#e8d9a0;--crimson:#7a1c1c;--teal:#1a4a4a;--highlight-y:rgba(220,195,80,0.22);--highlight-b:rgba(26,74,74,0.12);}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background-color:#2a1f0e;background-image:radial-gradient(ellipse at 20% 10%,rgba(90,60,20,0.4) 0%,transparent 60%),radial-gradient(ellipse at 80% 90%,rgba(50,30,10,0.5) 0%,transparent 60%);min-height:100vh;font-family:'EB Garamond',Georgia,serif;color:var(--ink);padding:2rem 1rem 4rem;}
+  .manuscript{max-width:780px;margin:0 auto;background-color:var(--parchment);border:1px solid var(--parchment-dark);box-shadow:0 0 0 6px #1a1005,0 0 0 8px #8b6914,0 0 0 10px #1a1005,0 30px 80px rgba(0,0,0,0.7),inset 0 0 60px rgba(180,140,60,0.08);padding:3.5rem 4rem 4rem;position:relative;}
+  .manuscript::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(180deg,rgba(200,170,90,0.06) 0%,transparent 30%,transparent 70%,rgba(150,110,40,0.05) 100%);pointer-events:none;}
+  .series-header{text-align:center;border-bottom:2px solid var(--gold);padding-bottom:1.6rem;margin-bottom:2.2rem;position:relative;}
+  .series-header::after{content:'✦';position:absolute;bottom:-0.65em;left:50%;transform:translateX(-50%);background:var(--parchment);padding:0 0.6em;color:var(--gold);font-size:0.9rem;}
+  .series-title{font-family:'Cinzel',serif;font-size:1.1rem;letter-spacing:0.18em;color:var(--gold);text-transform:uppercase;margin-bottom:0.3rem;}
+  .series-heb{font-family:'Frank Ruhl Libre',serif;font-size:1.25rem;color:var(--ink-mid);margin-bottom:0.3rem;}
+  .series-subtitle{font-size:0.95rem;color:var(--ink-mid);font-style:italic;margin-bottom:0.2rem;}
+  .series-byline{font-size:0.8rem;color:var(--ink-soft);letter-spacing:0.04em;}
+  .letter-heading{text-align:center;margin-bottom:1.6rem;}
+  .letter-number{font-family:'Cinzel',serif;font-size:2.4rem;font-weight:600;color:var(--gold);letter-spacing:0.1em;line-height:1;margin-bottom:0.3rem;}
+  .letter-meta{font-size:0.9rem;color:var(--ink-soft);font-style:italic;line-height:1.65;}
+  .addressee{border-left:3px solid var(--gold);padding:0.75rem 1rem;margin-bottom:1.7rem;font-size:0.95rem;color:var(--ink-mid);font-style:italic;line-height:1.75;background:rgba(200,170,80,0.06);}
+  .addressee .label{font-family:'Cinzel',serif;font-size:0.7rem;letter-spacing:0.13em;color:var(--gold);font-style:normal;display:block;margin-bottom:0.3rem;text-transform:uppercase;}
+  .letter-body{text-align:justify;line-height:1.90;font-size:1.06rem;}
+  .letter-body p{margin-bottom:1.15rem;text-indent:1.6em;}
+  .letter-body p.no-indent{text-indent:0;}
+  .translit{font-style:italic;color:var(--teal);font-weight:500;}
+  mark.gold{background:var(--highlight-y);padding:0 2px;border-radius:2px;}
+  mark.teal{background:var(--highlight-b);padding:0 2px;border-radius:2px;}
+  cite{font-style:italic;color:var(--crimson);}
+  .verse-src{font-size:0.82em;color:var(--crimson);font-style:normal;font-weight:500;}
+  .bracket{color:var(--ink-soft);font-size:0.9em;font-style:italic;}
+  .closing{margin-top:1.8rem;border-top:1px solid var(--gold-pale);padding-top:1.2rem;}
+  .signature{text-align:right;font-style:italic;color:var(--ink-mid);font-size:1.0rem;margin-top:0.35rem;text-indent:0!important;}
+  .signature strong{font-style:normal;color:var(--ink);}
+  .translator-section{margin-top:3rem;border-top:2px solid var(--gold);padding-top:1.6rem;position:relative;}
+  .translator-section::before{content:"— From the Translator —";position:absolute;top:-0.75em;left:50%;transform:translateX(-50%);background:var(--parchment);padding:0 0.9em;font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:0.16em;color:var(--gold);text-transform:uppercase;white-space:nowrap;}
+  .translator-section p{font-size:0.93rem;color:var(--ink-mid);line-height:1.78;margin-bottom:0.8rem;text-indent:0;}
+  .translator-section p:last-child{margin-bottom:0;}
+  .translator-section h3{font-family:'Cinzel',serif;font-size:0.8rem;letter-spacing:0.12em;color:var(--gold);text-transform:uppercase;margin:1.2rem 0 0.5rem;}
+  .themes-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:0.8rem;margin-top:0.6rem;}
+  .theme-card{background:var(--parchment-dark);border-top:2px solid var(--gold);padding:0.75rem 0.9rem;font-size:0.85rem;color:var(--ink-mid);line-height:1.55;}
+  .theme-card strong{display:block;font-family:'Cinzel',serif;font-size:0.71rem;letter-spacing:0.1em;color:var(--gold);text-transform:uppercase;margin-bottom:0.3rem;}
+  .ms-footer{text-align:center;margin-top:2.5rem;padding-top:1rem;border-top:1px solid var(--gold-pale);font-size:0.78rem;color:var(--ink-soft);font-style:italic;letter-spacing:0.04em;}
+  @media(max-width:600px){.manuscript{padding:2rem 1.4rem 2.5rem;}.letter-number{font-size:1.8rem;}}
+</style>
+</head>
+<body>
+<div class="manuscript">
+
+  <div class="series-header">
+    <div class="series-title">Ullim LeTroofah</div>
+    <div class="series-heb">עלים לתרופה</div>
+    <div class="series-subtitle">Leaves for Healing</div>
+    <div class="series-byline">The Sacred Letters of Rebbe Nachman of Breslov and Reb Nussun of Breslov, of blessed memory</div>
+  </div>
+
+  <div class="letter-heading">
+    <div class="letter-number">LETTER FIFTY</div>
+    <div class="letter-meta">
+      Blessed be Hashem &nbsp;·&nbsp; Sunday morning, Parshas Korach, 24th of Sivan &nbsp;·&nbsp; Year 5591 (1831)<br>
+      Written from <strong>Breslov</strong>
+    </div>
+  </div>
+
+  <div class="addressee">
+    <span class="label">To</span>
+    My beloved son. [<strong>Yitzchok</strong>]
+  </div>
+
+  <div class="letter-body">
+
+    <p class="no-indent">
+      <mark class="gold">I was very displeased with you</mark> — for all of last week I
+      did not see your handwriting at all, and even before that you did not write me a
+      proper reply as is your way. I did not know what this was or why — and how can
+      you draw so many distractions upon yourself, to the point that you have no time
+      all week even to write me a letter? And
+      <mark class="teal">my insides churned within me over this</mark>
+      <span class="bracket">[מֵעַי הָמוּ לִי — <em>me'ai hamu li</em>: a biblical
+      phrase of intense visceral anguish, drawn from Shir HaShirim 5:4 — "my insides
+      churned for him" — and from the prophetic books where it expresses the prophet's
+      overwhelming inward agitation. Reb Nussun reaches for this register to convey
+      that the silence is not merely inconvenient but genuinely alarming]</span>
+      — thinking thoughts of who knows what is happening there. And
+      <mark class="teal">the main source of my anguish is that I understand from this
+      that you are not persevering amid the distraction at the doors of Torah and prayer
+      as I have taught you.</mark>
+    </p>
+
+    <p>
+      And until when — until when — will your distraction be so very, very hard? And
+      I have already warned you greatly that it is, G-d forbid, forbidden to push off
+      to tomorrow — for <mark class="gold">the main thing is to snatch each and every
+      day what one can of good</mark> — and I have already spoken with you and written
+      to you very, very much about this. And how could you not snatch one hour to write
+      me a letter as is proper?
+    </p>
+
+    <p class="no-indent">
+      Now see to reply to me at once as is proper — and then I will see to write you
+      at greater length with the help of Hashem Yisborach. More than this there is no
+      need to extend — for the time of the <span class="translit">Shacharis</span>
+      prayer has arrived.
+    </p>
+
+    <div class="closing">
+      <p class="no-indent">
+        The words of your father — who awaits that you return to fixing yourself at
+        the doors of Torah and prayer in truth — and who intercedes on your behalf.
+      </p>
+      <p class="signature"><strong>Nussun</strong> of Breslov.</p>
+    </div>
+
+  </div>
+
+  <div class="translator-section">
+    <p>
+      <strong>Overview:</strong> One of the sharpest and most direct letters in the
+      collection — written in a single burst before Shacharis. A week of silence from
+      Yitzchok has alarmed Reb Nussun. The biblical phrase <em>me'ai hamu li</em> —
+      my insides churned — draws on the language of Shir HaShirim and the prophets to
+      convey that the alarm is not merely parental but existential. The rebuke is not
+      about the correspondence itself — the silence is read as a symptom: if he has no
+      time to write a letter, he has no time for Torah and prayer either. The closing
+      is notably changed from all other letters: not "who loves you" but "who awaits
+      that you return to fixing yourself at Torah and prayer in truth."
+    </p>
+    <h3>Key Themes</h3>
+    <div class="themes-grid">
+      <div class="theme-card">
+        <strong>Me'ai Hamu Li — My Insides Churned</strong>
+        The phrase from Shir HaShirim 5:4 and the prophetic books conveys visceral,
+        inward agitation — not mild worry but a churning that will not settle. Reb Nussun
+        reaches for this literary register to signal that the silence genuinely alarmed
+        him, triggering anxious thoughts about what might have happened.
+      </div>
+      <div class="theme-card">
+        <strong>Silence as Symptom</strong>
+        Reb Nussun does not rebuke Yitzchok merely for failing to write. The silence is
+        a signal: if he cannot find an hour for a letter, he cannot find an hour for
+        Torah and prayer. The outer neglect reveals the inner state.
+      </div>
+      <div class="theme-card">
+        <strong>Do Not Push Off to Tomorrow</strong>
+        The prohibition against deferral is stated as an absolute: it is G-d forbid,
+        forbidden. Today's portion belongs to today. The person who waits for a better
+        time will wait forever. Snatch what you can — now, with this hour.
+      </div>
+      <div class="theme-card">
+        <strong>The Changed Closing</strong>
+        Every other letter closes with love and longing. This one closes with
+        expectation: "who awaits that you return to fixing yourself at Torah and prayer
+        in truth." Love is not withdrawn, but the standard is stated plainly.
+        Reb Nussun is a teacher holding his student to account.
+      </div>
+    </div>
+  </div>
+
+  <div class="ms-footer">
+    Translated in the merit of Na Nach Nachma Nachman MayUman &nbsp;·&nbsp; May HY bless this work.
+  </div>
+
+</div>
+</body>
+</html>

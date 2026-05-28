@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ullim LeTroofah – Letter Ten | Reb Nussun from Odessa</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Cinzel:wght@400;500;600&family=Frank+Ruhl+Libre:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --parchment:      #f5efe0;
+    --parchment-dark: #ede3cc;
+    --ink:            #1c1209;
+    --ink-mid:        #3b2a14;
+    --ink-soft:       #5c4530;
+    --gold:           #8b6914;
+    --gold-pale:      #e8d9a0;
+    --crimson:        #7a1c1c;
+    --teal:           #1a4a4a;
+    --highlight-y:    rgba(220,195,80,0.22);
+    --highlight-b:    rgba(26,74,74,0.12);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background-color: #2a1f0e;
+    background-image:
+      radial-gradient(ellipse at 20% 10%, rgba(90,60,20,0.4) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 90%, rgba(50,30,10,0.5) 0%, transparent 60%);
+    min-height: 100vh;
+    font-family: 'EB Garamond', Georgia, serif;
+    color: var(--ink);
+    padding: 2rem 1rem 4rem;
+  }
+  .manuscript {
+    max-width: 780px;
+    margin: 0 auto;
+    background-color: var(--parchment);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    border: 1px solid var(--parchment-dark);
+    box-shadow:
+      0 0 0 6px #1a1005,
+      0 0 0 8px #8b6914,
+      0 0 0 10px #1a1005,
+      0 30px 80px rgba(0,0,0,0.7),
+      inset 0 0 60px rgba(180,140,60,0.08);
+    padding: 3.5rem 4rem 4rem;
+    position: relative;
+  }
+  .manuscript::before {
+    content: '';
+    position: absolute; top:0; left:0; right:0; bottom:0;
+    background: linear-gradient(180deg, rgba(200,170,90,0.06) 0%, transparent 30%, transparent 70%, rgba(150,110,40,0.05) 100%);
+    pointer-events: none;
+  }
+
+  .series-header {
+    text-align: center; border-bottom: 2px solid var(--gold);
+    padding-bottom: 1.6rem; margin-bottom: 2.2rem; position: relative;
+  }
+  .series-header::after {
+    content: '✦'; position: absolute; bottom: -0.65em; left: 50%;
+    transform: translateX(-50%); background: var(--parchment); padding: 0 0.6em;
+    color: var(--gold); font-size: 0.9rem;
+  }
+  .series-title {
+    font-family: 'Cinzel', serif; font-size: 1.1rem; letter-spacing: 0.18em;
+    color: var(--gold); text-transform: uppercase; margin-bottom: 0.3rem;
+  }
+  .series-heb { font-family: 'Frank Ruhl Libre', serif; font-size: 1.25rem; color: var(--ink-mid); margin-bottom: 0.3rem; }
+  .series-subtitle { font-size: 0.95rem; color: var(--ink-mid); font-style: italic; margin-bottom: 0.2rem; }
+  .series-byline { font-size: 0.8rem; color: var(--ink-soft); letter-spacing: 0.04em; }
+
+  .letter-heading { text-align: center; margin-bottom: 1.6rem; }
+  .letter-number {
+    font-family: 'Cinzel', serif; font-size: 2.4rem; font-weight: 600;
+    color: var(--gold); letter-spacing: 0.1em; line-height: 1; margin-bottom: 0.3rem;
+  }
+  .letter-meta { font-size: 0.9rem; color: var(--ink-soft); font-style: italic; line-height: 1.65; }
+
+  .year-banner {
+    text-align: center; background: var(--parchment-dark);
+    border-top: 1px solid var(--gold-pale); border-bottom: 1px solid var(--gold-pale);
+    padding: 0.55rem 1rem; margin-bottom: 1.8rem;
+    font-family: 'Cinzel', serif; font-size: 0.78rem;
+    letter-spacing: 0.14em; color: var(--gold); text-transform: uppercase;
+  }
+
+  .bezras-hashem {
+    text-align: center; font-style: italic; color: var(--gold);
+    font-size: 1.0rem; margin-bottom: 0.5rem; letter-spacing: 0.03em;
+  }
+
+  .addressee {
+    border-left: 3px solid var(--gold);
+    padding: 0.75rem 1rem; margin-bottom: 1.7rem;
+    font-size: 0.95rem; color: var(--ink-mid); font-style: italic; line-height: 1.75;
+    background: rgba(200,170,80,0.06);
+  }
+  .addressee .label {
+    font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 0.13em;
+    color: var(--gold); font-style: normal; display: block; margin-bottom: 0.3rem;
+    text-transform: uppercase;
+  }
+
+  .letter-body { text-align: justify; line-height: 1.88; font-size: 1.06rem; }
+  .letter-body p { margin-bottom: 1.15rem; text-indent: 1.6em; }
+  .letter-body p.no-indent { text-indent: 0; }
+
+  .translit  { font-style: italic; color: var(--teal); font-weight: 500; }
+  mark.gold  { background: var(--highlight-y); padding: 0 2px; border-radius: 2px; }
+  mark.teal  { background: var(--highlight-b); padding: 0 2px; border-radius: 2px; }
+  cite       { font-style: italic; color: var(--crimson); }
+  .verse-src { font-size: 0.82em; color: var(--crimson); font-style: normal; font-weight: 500; }
+
+  /* deep teaching block — Bais HaMelech */
+  .teaching-block {
+    margin: 0.3rem 0 1.2rem 0;
+    padding: 1.1rem 1.4rem;
+    border: 1px solid var(--gold-pale);
+    border-left: 3px solid var(--gold);
+    background: rgba(200,170,80,0.06);
+    line-height: 1.92;
+    font-size: 1.02rem;
+    color: var(--ink-mid);
+  }
+  .teaching-block .teach-label {
+    font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 0.13em;
+    color: var(--gold); display: block; margin-bottom: 0.5rem; text-transform: uppercase;
+  }
+  .teaching-block p { margin-bottom: 0.8rem; text-indent: 0; }
+  .teaching-block p:last-child { margin-bottom: 0; }
+
+  .ps-label {
+    font-family: 'Cinzel', serif; font-size: 0.74rem; letter-spacing: 0.12em;
+    color: var(--gold); text-transform: uppercase; display: block; margin: 1.5rem 0 0.25rem;
+  }
+
+  .closing { margin-top: 1.6rem; border-top: 1px solid var(--gold-pale); padding-top: 1.1rem; }
+  .signature {
+    text-align: right; font-style: italic; color: var(--ink-mid);
+    font-size: 1.0rem; margin-top: 0.35rem; text-indent: 0 !important;
+  }
+  .signature strong { font-style: normal; color: var(--ink); }
+
+  /* TRANSLATOR SECTION */
+  .translator-section {
+    margin-top: 3rem; border-top: 2px solid var(--gold);
+    padding-top: 1.6rem; position: relative;
+  }
+  .translator-section::before {
+    content: "— From the Translator —";
+    position: absolute; top: -0.75em; left: 50%;
+    transform: translateX(-50%);
+    background: var(--parchment); padding: 0 0.9em;
+    font-family: 'Cinzel', serif; font-size: 0.72rem;
+    letter-spacing: 0.16em; color: var(--gold); text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .translator-section p {
+    font-size: 0.93rem; color: var(--ink-mid); line-height: 1.78;
+    margin-bottom: 0.8rem; text-indent: 0;
+  }
+  .translator-section p:last-child { margin-bottom: 0; }
+  .translator-section h3 {
+    font-family: 'Cinzel', serif; font-size: 0.8rem; letter-spacing: 0.12em;
+    color: var(--gold); text-transform: uppercase; margin: 1.2rem 0 0.5rem;
+  }
+
+  .themes-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(175px,1fr));
+    gap: 0.8rem; margin-top: 0.6rem;
+  }
+  .theme-card {
+    background: var(--parchment-dark); border-top: 2px solid var(--gold);
+    padding: 0.75rem 0.9rem; font-size: 0.85rem; color: var(--ink-mid); line-height: 1.55;
+  }
+  .theme-card strong {
+    display: block; font-family: 'Cinzel', serif; font-size: 0.71rem;
+    letter-spacing: 0.1em; color: var(--gold); text-transform: uppercase; margin-bottom: 0.3rem;
+  }
+
+  .ms-footer {
+    text-align: center; margin-top: 2.5rem; padding-top: 1rem;
+    border-top: 1px solid var(--gold-pale);
+    font-size: 0.78rem; color: var(--ink-soft); font-style: italic; letter-spacing: 0.04em;
+  }
+
+  @media (max-width: 600px) {
+    .manuscript { padding: 2rem 1.4rem 2.5rem; }
+    .letter-number { font-size: 1.8rem; }
+  }
+</style>
+</head>
+<body>
+<div class="manuscript">
+
+  <div class="series-header">
+    <div class="series-title">Ullim LeTroofah</div>
+    <div class="series-heb">עלים לתרופה</div>
+    <div class="series-subtitle">Leaves for Healing</div>
+    <div class="series-byline">The Sacred Letters of Rebbe Nachman of Breslov and Reb Nussun of Breslov, of blessed memory</div>
+  </div>
+
+  <div class="year-banner">✦ &nbsp; Letters of Moharnat — Year 5582 &nbsp; ✦</div>
+
+  <div class="letter-heading">
+    <div class="letter-number">LETTER TEN</div>
+    <div class="letter-meta">
+      Wednesday, 26th of Nissan — the 8th day of the
+      <span class="translit">omer</span>, third count &nbsp;·&nbsp; Year 5582 (1822)<br>
+      Written from <strong>Odessa</strong>
+    </div>
+  </div>
+
+  <div class="bezras-hashem">With the help of G-d, may He be blessed</div>
+
+  <!-- ADDRESSEE — to his wife -->
+  <div class="addressee">
+    <span class="label">To</span>
+    My wife — she who is the modest one, and so forth.
+  </div>
+
+  <div class="letter-body">
+
+    <!-- LINE 119: the great news — he has chartered a ship to Eretz Yisroel -->
+    <p class="no-indent">
+      Know that today I have chartered a ship. And if G-d wills it, on the
+      coming Friday — the eve of the holy Shabbos — I will ascend for a
+      good <span class="translit">mazal</span> onto the ship to
+      <strong>Istanbul</strong>, and from there I will continue my journey
+      with the help of Hashem Yisborach, until Hashem Yisborach brings me
+      in peace to <strong>Eretz Yisroel</strong>. Therefore I beg of you
+      that you pray to G-d for me, and remind all our people —
+      <mark class="gold">and especially those in <strong>Uman</strong> —
+      that they should pray for me</mark>. Beyond this I have nothing
+      further to write — only life and peace.
+    </p>
+
+    <!-- LINE 120: instruction to son Shakhnah -->
+    <span class="ps-label">To His Son Shakhnah</span>
+    <p class="no-indent">
+      My beloved son <strong>Shakhnah</strong> — may his light shine and
+      radiate — take the enclosed letter that is wrapped here, and send it
+      immediately by the first postal service to the holy community of
+      <strong>Tcherin</strong>, to the hand of Rabbi Beer Atkaptchik. And
+      you yourself also write a separate letter, and add a request to them
+      that they fulfil and send immediately as I wrote to them. And inform
+      them of the great hardship you are under — that <mark class="teal">I
+      have left you no money except what is due from them</mark> — and
+      with the help of Hashem Yisborach they will certainly fulfil my words
+      as they promised me.
+    </p>
+
+    <!-- LINE 121: delight in son's Hebrew writing -->
+    <p>
+      Also know that I received your letter during <span class="translit">Chol
+      HaMoed</span> Pesach and it was a great comfort to me.
+      <mark class="gold">I also took great pleasure in your language</mark>
+      — for I had assumed that his tongue was not yet capable of writing in
+      the language of the learned in anything but simple matters. But now
+      I saw that, thank G-d, your language is developing nicely. See to it
+      that you accustom yourself to write a letter on your own from time to
+      time, so that you become fluent in pure language — for this will be
+      greatly needed by you in many ways.
+    </p>
+
+    <!-- LINE 122: the deep teaching on the Bais HaMelech — Princess story -->
+    <div class="teaching-block">
+      <span class="teach-label">A Teaching on the Story of the Lost Princess</span>
+
+      <p>I received the commentary on the <span class="translit">ma'aseh</span>
+      (story) and it was a great comfort to me — that such a person was
+      found who took it upon himself to write a commentary on the
+      <span class="translit">Sipuray Maasiyos</span> (the stories).
+      <mark class="teal">His commentary is beautiful and somewhat
+      acceptable, and a number of things come close to the truth.</mark>
+      But nonetheless his commentary is still far — very far — even from
+      what flickers in my mind regarding this story. How much more so,
+      thousands upon thousands of times by a <span class="translit">kal
+      vachomer</span> (all the more so argument), how far these things are
+      from the intentions of our holy and awesome Master — may the memory
+      of the righteous and holy one be for a blessing.</p>
+
+      <p>The main thing upon which I have reservations about his commentary
+      is this: <mark class="gold">I see that according to his words, the
+      story concludes with the matter of the Giving of the Torah — hinting
+      that it was then that Moshe Rabaynu, peace be upon him, merited to
+      find the Princess.</mark> But this is not my view — for in my
+      understanding, the story has not yet concluded, and the essential
+      conclusion of the story — namely, to find the Princess — will only
+      be in the future, when our righteous Mashiach comes. He is Moshe
+      Rabaynu himself, who reincarnates in every generation, as brought in
+      the Tikkuunim <span class="verse-src">[Tikkun 69, folio 113a]</span>.
+      And the whole purpose is to seek the Princess — until he merits to
+      find her in the days of our righteous Mashiach, who will come
+      speedily in our days.</p>
+
+      <p>And <mark class="gold">the Princess is the aspect of holy
+      <span class="translit">emunah</span> (faith)</mark> — to believe in
+      Hashem Yisborach, and in the true Tzaddikim, and in the totality of
+      the Torah, and so forth. This holy faith is in exile in every
+      generation. And the essential redemption depends on this — to the
+      degree that Israel in every generation merits to raise up the fallen
+      faith and to strengthen themselves in complete faith in truth. Through
+      this Mashiach will come, as it is written: <cite>Come, look from the
+      top of Amanah</cite> <span class="verse-src">[Shir HaShirim 4:8]</span>
+      — the word <em>Amanah</em> meaning faith. And then the faith will
+      be revealed in its fullness, and every created being will know that
+      You created it, and so forth. And then precisely will the Princess —
+      who is the faith — return to her place and her kingdom.</p>
+
+      <p>And although our Master, of blessed memory, told a story of
+      what once was and concluded it: <em>"and in the end he found her"</em>
+      — nonetheless it alludes to the future. For even when we merit to
+      truly understand the hints of the story, the essence of the story
+      itself cannot be understood — that is, who, and what, and when —
+      for all the stories took place in the place where they took place.
+      <mark class="teal">And one ought not to elaborate further in writing
+      about matters which the <span class="translit">Atik Yomin</span>
+      (Ancient of Days) has concealed</mark> — and especially in an open
+      field.</p>
+
+      <p>May Hashem Yisborach open our eyes so that we merit to understand
+      some of the hints in the stories he told. And nonetheless I have
+      great comfort from the commentary he sent — for this too is true.
+      For <mark class="gold">the words of our Master, of blessed memory,
+      are like a hammer that shatters the rock</mark> — and all his words
+      divide into countless meanings without measure. May Hashem Yisborach
+      grant us merit to spend our days always thinking about his Torah,
+      his conversations, and the stories he told — until we merit to find
+      in them some commentary and understanding that leads to action.
+      <mark class="teal">How fortunate are we that we merited to hear such
+      things. How fortunate are you that you merited to have your portion
+      with us.</mark> Be strong and courageous — and the essential thing
+      is to always be in joy, and to increase <span class="translit">hisbodidus</span>
+      (personal prayer and seclusion) — and do not be sad —
+      <cite>for the joy of Hashem is your strength</cite>
+      <span class="verse-src">[Nechemiah 8:10]</span>.</p>
+    </div>
+
+    <!-- LINE 123–124: closing to family -->
+    <div class="closing">
+      <p class="no-indent">
+        May there be peace, joy, and gladness — as their souls and the soul
+        of your father desires, who constantly seeks your welfare with
+        mighty love and who longs to see you in life and in peace.
+      </p>
+      <p class="signature">
+        The lowly <strong>Nussun</strong>, son of our Teacher the Rabbi
+        <strong>Naftali Hirtz</strong> — may his light shine and radiate.
+      </p>
+    </div>
+
+    <!-- LINE 125–127: to all the fellowship; prayer for sea-voyagers -->
+    <span class="ps-label">Postscript — To All the Fellowship; On Prayer for Sea-Voyagers</span>
+    <p class="no-indent">
+      Peace to all our <span class="translit">anshay shlomaynu</span> with
+      great and true love. My beloved brothers and friends, my teachers and
+      my students and my companions. <mark class="gold">I request greatly
+      that you pray for me always.</mark> And as for the request of Rabbi
+      Yitzchok Ayzik Yosef — may his light shine — to send them a prayer
+      to recite for those who travel by sea: in truth my mind is not clear
+      at all at present to compose a prayer. But there is already found in
+      the book <em>Sha'aray Tziyon</em> the prayer of the Ramban, of
+      blessed memory — a prayer for the sea. Only the language needs to be
+      slightly modified when praying on behalf of others, as you will
+      understand there yourselves. And whatever each person wishes to add
+      from his own heart — let him add as he wishes, in the vernacular
+      (<span class="translit">lashon la'az</span>). Beyond this it is
+      impossible to elaborate now.
+    </p>
+
+    <p class="no-indent">
+      Peace and life and all good — <cite>be strong and let your heart take
+      courage, all who hope in Hashem</cite>
+      <span class="verse-src">[Tehillim 31:25]</span>.
+    </p>
+    <p class="signature"><strong>Nussun</strong>, as above.</p>
+
+    <!-- LINE 128–131: to his son Yitzchok -->
+    <span class="ps-label">Postscript — To His Son Yitzchok</span>
+    <p class="no-indent">
+      My beloved outstanding son, Rabbi <strong>Yitzchok</strong>, may he
+      live. From your greeting I had great comfort. Would that this heart
+      of yours be so in truth every day. For the sake of Hashem, for the
+      sake of Hashem — <mark class="gold"><strong>be constant in your
+      learning, for it is your life</strong></mark>, and so forth. Also
+      write every day — for you are still completely unable to train your
+      hand in beautiful writing. Your handwriting resembles the writing of
+      a small child. Therefore make every effort to accustom yourself to
+      beautiful writing and pure language. For
+      <mark class="teal">writing and correspondence is a great foundation
+      for Torah, for service of G-d, and for proper conduct</mark> — and
+      in particular you and all our <span class="translit">anshay
+      shlomaynu</span> will need to make great use of writing in order to
+      bring merit to the many in various matters, as is known to you.
+      Beyond this there is no time to elaborate now.
+    </p>
+
+    <div class="closing">
+      <p class="no-indent">
+        The words of your father who desires your true and eternal
+        wellbeing and success.
+      </p>
+      <p class="signature"><strong>Nussun</strong>, as above.</p>
+    </div>
+
+  </div>
+
+  <!-- TRANSLATOR SECTION -->
+  <div class="translator-section">
+
+    <p>
+      <strong>Overview:</strong> Written in Odessa in 5582 (1822), on the
+      very day Reb Nussun chartered his ship for his first journey to Eretz
+      Yisroel, this extraordinary letter moves across three registers in a
+      single document: a farewell to his wife and household, a profound
+      Kabbalistic teaching on the central story of <em>Sipuray
+      Maasiyos</em>, and detailed personal instructions to both his sons
+      — on Torah study, on writing, and on joy. The combination is
+      characteristic of Reb Nussun at his finest: no boundary between the
+      cosmic and the domestic, between the mystical and the practical.
+    </p>
+
+    <h3>Key Themes</h3>
+    <div class="themes-grid">
+      <div class="theme-card">
+        <strong>The Princess Is Faith</strong>
+        Reb Nussun's interpretation of the Lost Princess story
+        (<em>Sipuray Maasiyos</em>, Story 1) is one of the most
+        significant teachings in Breslov literature. The Princess is not
+        found at Sinai — she is still in exile. She is holy
+        <span class="translit">emunah</span> itself, awaiting the
+        generation that raises faith sufficiently for Mashiach to come.
+        The story is not finished — it is still being lived.
+      </div>
+      <div class="theme-card">
+        <strong>Especially Those in Uman</strong>
+        The specific mention of those in Uman — Rebbe Nachman's resting
+        place — as the ones whose prayers he most desires, reveals the
+        centrality of Uman as a spiritual hub already in 5582, twelve
+        years after Rebbe Nachman's passing.
+      </div>
+      <div class="theme-card">
+        <strong>Writing as a Foundation</strong>
+        Reb Nussun's insistence to both sons that they practice beautiful
+        writing and pure language — calling it a foundation of Torah,
+        service, and proper conduct — reflects his own life's work. The
+        entire corpus of Breslov literature was transmitted through his
+        pen. He is teaching his sons to carry that mission forward.
+      </div>
+      <div class="theme-card">
+        <strong>A Hammer That Shatters Rock</strong>
+        The image — drawn from Yirmiyahu 23:29 — of Rebbe Nachman's words
+        as a hammer shattering rock, splitting into countless sparks of
+        meaning, is Reb Nussun's way of validating the commentary
+        he received while simultaneously showing its limitations.
+        Every interpretation is true; none is complete.
+      </div>
+    </div>
+
+    <h3>Note on the Dateline</h3>
+    <p>
+      The dateline records three simultaneous markers: the calendar date
+      (26th of Nissan), the <span class="translit">Sefiras Ha'Omer</span>
+      count (the 8th day), and an additional notation — "third count"
+      (<span class="translit">g' haTKPB</span>) — which refers to this
+      being Reb Nussun's third journey to Eretz Yisroel. He is counting
+      his own pilgrimages alongside the days of the <span class="translit">omer</span>.
+    </p>
+
+    <h3>Note on the Sea Prayer</h3>
+    <p>
+      Reb Nussun declines to compose an original prayer for sea-voyagers,
+      directing his followers instead to the existing prayer of the Ramban
+      in the siddur <em>Sha'aray Tziyon</em>. His honesty is
+      characteristic: <em>"my mind is not clear at present."</em> Even
+      the author of <em>Likutay Teffilos</em> — hundreds of original
+      prayers — will not produce something forced. The <span class="translit">lashon
+      la'az</span> (vernacular) addition he permits reflects his pastoral
+      sensitivity: pray in the language of your heart.
+    </p>
+
+  </div>
+
+  <div class="ms-footer">
+    Translated in the merit of Na Nach Nachma Nachman MayUman &nbsp;·&nbsp; May HY bless this work.
+  </div>
+
+</div>
+</body>
+</html>
