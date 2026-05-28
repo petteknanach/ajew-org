@@ -492,14 +492,6 @@
   // Bind event listeners (replaces inline onclick which doesn't work with Astro's module bundling)
   document.getElementById('yahrzeitCloseBtn')?.addEventListener('click', dismissYahrzeit);
   document.getElementById('yahrzeitToggleBtn')?.addEventListener('click', toggleYahrzeit);
-
-  // Auto-dismiss when any link is clicked
-  document.addEventListener('click', function(e) {
-    var link = e.target.closest('a');
-    if (link && link.href && !link.href.startsWith('javascript:')) {
-      dismissYahrzeit();
-    }
-  });
 </script>
 
 <style>
