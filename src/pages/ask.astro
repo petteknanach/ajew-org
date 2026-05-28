@@ -115,7 +115,7 @@ import Layout from '../layouts/Layout.astro';
       const isHebrewQuery = /[\u0590-\u05FF]/.test(searchTerms);
       let resultsData = [];
       for (const doc of searchIndex) {
-        const searchText = ((doc.t || '') + ' ' + (doc.h || '') + ' ' + (doc.s || '') + ' ' + (doc.x || '')).toLowerCase();
+        const searchText = ((doc.t || '') + ' ' + (doc.h || '') + ' ' + (doc.s || '') + ' ' + (doc.x || '') + ' ' + (doc.e || '')).toLowerCase();
         let matches = 0;
         for (const word of words) {
           if (searchText.includes(word)) matches++;

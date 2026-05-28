@@ -154,7 +154,7 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
           // Book filter
           if (books.length > 0 && !books.includes(doc.b)) continue;
           
-          const searchText = ((doc.t || '') + ' ' + (doc.h || '') + ' ' + (doc.s || '') + ' ' + (doc.x || '')).toLowerCase();
+          const searchText = ((doc.t || '') + ' ' + (doc.h || '') + ' ' + (doc.s || '') + ' ' + (doc.x || '') + ' ' + (doc.e || '')).toLowerCase();
           
           let matches = 0;
           if (searchType === 'exact') {
