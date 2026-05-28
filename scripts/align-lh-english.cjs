@@ -11,8 +11,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const TRANSLATIONS_BASE = 'C:/Users/Pettek/Documents/Translations/Likutay Halachos';
-const READER_BASE = 'C:/Users/Pettek/.openclaw/workspace/ajew-org/public/reader/likutay-halachos';
+const TRANSLATIONS_BASE = '/mnt/c/Users/Pettek/Documents/Translations/Likutay Halachos';
+const READER_BASE = '/root/ajew-org/public/reader/likutay-halachos';
 
 const VOLUME_MAP = [
   { folder: 'Likutay Halachos - Orach Chaim - 1', part: 1 },
@@ -20,9 +20,9 @@ const VOLUME_MAP = [
   { folder: 'Likutay Halachos - Orach Chaim - 3', part: 3 },
   { folder: 'Likutay Halachos - Yoreh Daya - 1', part: 4 },
   { folder: 'Likutay Halachos - Yoreh Daya - 2', part: 5 },
-  { folder: 'Likutay Halachos - Evven Hu-ezehr', part: 6 },
-  { folder: 'Likutay Halachos - Choshen Mishpat - 1', part: 7 },
-  { folder: 'Likutay Halachos - Choshen Mishpat - 2', part: 8 },
+  { folder: 'Likutay Halachos - Choshen Mishpat - 1', part: 6 },
+  { folder: 'Likutay Halachos - Choshen Mishpat - 2', part: 7 },
+  { folder: 'Likutay Halachos - Evven Hu-ezehr', part: 8 },
 ];
 
 // ============================================================
@@ -352,7 +352,11 @@ function main() {
     // Load halachas
     const halachaFiles = fs.readdirSync(partDir)
       .filter(f => f.startsWith('halacha-'))
-      .sort((a, b) => parseInt(a.match(/(\d+)/)[1]) - parseInt(b.match(/(\d+)/)[1]));
+      .sort((a, b) => {
+        const na = parseInt(a.match(/(\d+)/)?.[1] || '0');
+        const nb = parseInt(b.match(/(\d+)/)?.[1] || '0');
+        return na - nb;
+      });
 
     const halachas = halachaFiles.map(f => ({
       file: f,
