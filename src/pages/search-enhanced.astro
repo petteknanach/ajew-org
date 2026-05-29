@@ -132,8 +132,7 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         return searchIndexPromise;
       }
 
-      // Pre-load index immediately (don't wait for first search)
-      loadSearchIndex();
+      // Lazy load index ONLY on first search, not pre-load
 
       function clientSearch(query, advanced) {
         if (!searchIndex) return { results: [], total: 0 };
