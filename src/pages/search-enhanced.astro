@@ -132,8 +132,8 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         return searchIndexPromise;
       }
 
-      // Lazy load index ONLY on first search, not pre-load
-
+      // Pre-load index (desktop: works; mobile: API fallback on Coolify)
+      loadSearchIndex();
       function clientSearch(query, advanced) {
         if (!searchIndex) return { results: [], total: 0 };
         
