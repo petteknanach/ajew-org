@@ -82,78 +82,121 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
       const resultsSection = document.getElementById('resultsSection');
 
       // Listen for search events
-      // Client-side search index (lazy loaded, cached in memory)
-      let searchIndex = null;
-      let searchIndexLoading = false;
-      let searchIndexPromise = null;
-
-      function loadSearchIndex() {
-        if (searchIndex) return Promise.resolve(searchIndex);
-        if (searchIndexPromise) return searchIndexPromise;
+      // Split language indexes: Hebrew (~38MB) + English (~19MB)
+      // Load preferred language first; lazy-load the other if needed
+      let heIndex = null;
+      let enIndex = null;
+      let hePromise = null;
+      let enPromise = null;
+      let preferredLang = 'he'; // 'he' or 'en'
+      
+      function detectLang() {
+        // 1. Check stored preference
+        try {
+          const stored = localStorage.getItem('ajew-search-lang');
+          if (stored === 'he' || stored === 'en') return stored;
+        } catch(e) {}
+        // 2. Check navigator.language
+        const nav = (navigator.language || '').toLowerCase();
+        if (nav.startsWith('he') || nav.startsWith('iw')) return 'he';
+        // 3. Default to English for non-Hebrew browsers
+        return 'en';
+      }
+      
+      function loadIndex(lang) {
+        if (lang === 'he' && heIndex) return Promise.resolve(heIndex);
+        if (lang === 'en' && enIndex) return Promise.resolve(enIndex);
+        if (lang === 'he' && hePromise) return hePromise;
+        if (lang === 'en' && enPromise) return enPromise;
         
-        searchIndexLoading = true;
-        // Show subtle loading state in the results area
-        const idxLoading = document.createElement('div');
-        idxLoading.className = 'index-loading';
-        idxLoading.innerHTML = '<span class="idx-spinner"></span> טוען אינדקס חיפוש... Loading search index...';
-        idxLoading.id = 'indexLoading';
-        resultsSection.insertBefore(idxLoading, resultsSection.firstChild);
+        const file = lang === 'he' ? '/data/light-search-index-he.json.gz' : '/data/light-search-index-en.json.gz';
+        const label = lang === 'he' ? 'Hebrew' : 'English';
         
-        searchIndexPromise = fetch('/data/light-search-index.json.gz')
+        // Show loading indicator (only on first load)
+        if (!document.getElementById('indexLoading')) {
+          const el = document.createElement('div');
+          el.className = 'index-loading';
+          el.id = 'indexLoading';
+          el.innerHTML = '<span class="idx-spinner"></span> טוען אינדקס חיפוש... Loading search index...';
+          resultsSection.insertBefore(el, resultsSection.firstChild);
+        }
+        
+        const promise = fetch(file)
           .then(res => {
-            if (!res.ok) throw new Error('Failed to load index');
-            // Decompress gzip using native DecompressionStream
+            if (!res.ok) throw new Error('Failed to load ' + label + ' index');
             const ds = new DecompressionStream('gzip');
             const stream = res.body.pipeThrough(ds);
             return new Response(stream).json();
           })
           .then(data => {
-            searchIndex = data;
-            searchIndexLoading = false;
-            console.log('Search index loaded:', searchIndex.length, 'documents');
-            // Remove loading indicator
-            const el = document.getElementById('indexLoading');
-            if (el) el.remove();
-            return searchIndex;
+            if (lang === 'he') heIndex = data;
+            else enIndex = data;
+            console.log(label + ' search index loaded:', data.length, 'documents');
+            // Remove loading indicator if both loaded or this was the preferred one
+            if (lang === preferredLang || (heIndex && enIndex)) {
+              const el = document.getElementById('indexLoading');
+              if (el) el.remove();
+            }
+            return data;
           })
           .catch(err => {
-            console.error('Index load failed, trying uncompressed:', err);
-            // Fallback to uncompressed
-            return fetch('/data/light-search-index.json')
-              .then(res => res.json())
-              .then(data => {
-                searchIndex = data;
-                searchIndexLoading = false;
-                const el = document.getElementById('indexLoading');
-                if (el) el.remove();
-                return searchIndex;
-              });
+            console.error(label + ' index load failed:', err);
+            const el = document.getElementById('indexLoading');
+            if (el) el.innerHTML = '⚠️ Failed to load index. Check your connection and refresh.';
+            throw err;
           });
-        return searchIndexPromise;
+        
+        if (lang === 'he') hePromise = promise;
+        else enPromise = promise;
+        return promise;
       }
-
-      // Pre-load index (desktop: works; mobile: API fallback on Coolify)
-      loadSearchIndex();
+      
+      function getActiveIndex() {
+        // Returns the preferred index if loaded, otherwise whichever is loaded
+        if (preferredLang === 'he' && heIndex) return heIndex;
+        if (preferredLang === 'en' && enIndex) return enIndex;
+        return heIndex || enIndex;
+      }
+      
+      function isHebrewQuery(query) {
+        return /[\u0590-\u05FF]/.test(query);
+      }
+      
+      function needsLanguageSwitch(query) {
+        const qHebrew = isHebrewQuery(query);
+        if (qHebrew && !heIndex && preferredLang === 'en') return 'he';
+        if (!qHebrew && !enIndex && preferredLang === 'he') return 'en';
+        return null;
+      }
+      
+      // Pre-load preferred language index
+      preferredLang = detectLang();
+      loadIndex(preferredLang).then(() => {
+        // Auto-load the other language in background after 3 seconds
+        const other = preferredLang === 'he' ? 'en' : 'he';
+        setTimeout(() => loadIndex(other).catch(() => {}), 3000);
+      });
+      
       function clientSearch(query, advanced) {
-        if (!searchIndex) return { results: [], total: 0 };
+        const idx = getActiveIndex();
+        if (!idx) return { results: [], total: 0 };
         
         const q = query.toLowerCase().trim();
         const words = q.split(/\s+/).filter(w => w.length > 0);
         const searchType = advanced?.searchType || 'google';
         const minWords = advanced?.minWords || 1;
         const books = advanced?.books || [];
-        
-        // Detect if query is primarily Hebrew (contains Hebrew Unicode chars)
-        const isHebrewQuery = /[\u0590-\u05FF]/.test(query);
+        const qHebrew = isHebrewQuery(query);
         
         let results = [];
         const maxResults = 50;
         
-        for (const doc of searchIndex) {
-          // Book filter
+        for (const doc of idx) {
           if (books.length > 0 && !books.includes(doc.b)) continue;
           
-          const searchText = ((doc.t || '') + ' ' + (doc.h || '') + ' ' + (doc.s || '') + ' ' + (doc.x || '') + ' ' + (doc.e || '')).toLowerCase();
+          // Search in x field (contains the language-specific text)
+          // Also search titles for cross-language fallback
+          const searchText = ((doc.x || '') + ' ' + (doc.t || '') + ' ' + (doc.h || '') + ' ' + (doc.e || '')).toLowerCase();
           
           let matches = 0;
           if (searchType === 'exact') {
@@ -165,12 +208,10 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
           }
           
           if (matches >= minWords) {
-            // Hebrew query: show Hebrew titles and Hebrew snippets
-            // English query: show English titles and English snippets
             results.push({
-              title: (isHebrewQuery && doc.h) ? doc.h : (doc.t || 'Untitled'),
+              title: (qHebrew && doc.h) ? doc.h : (doc.t || 'Untitled'),
               hebrewTitle: doc.h || '',
-              snippet: (isHebrewQuery ? (doc.s || doc.x || '') : (doc.e || doc.t || doc.s || '')).substring(0, 300),
+              snippet: (qHebrew ? ((doc.x || '') + (doc.e || '')).substring(0, 300) : ((doc.e || '') + (doc.x || '')).substring(0, 300)),
               link: doc.l || '#',
               book: doc.b || '',
               subcategory: doc.sc || '',
@@ -182,9 +223,7 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
           if (results.length >= maxResults) break;
         }
         
-        // Sort by relevance
         results.sort((a, b) => b.relevance - a.relevance);
-        
         return { results, total: results.length };
       }
 
@@ -200,8 +239,18 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
 
         showLoading();
         saveSearchHistory(query);
+        
+        // Check if we need to load a different language index
+        const switchLang = needsLanguageSwitch(query);
+        const loadPromise = switchLang ? loadIndex(switchLang) : Promise.resolve();
 
-        loadSearchIndex().then(() => {
+        loadPromise.then(() => {
+          const langIdx = switchLang ? (switchLang === 'he' ? heIndex : enIndex) : getActiveIndex();
+          if (!langIdx) {
+            loading.classList.add('hidden');
+            showNoResults(query, 'Search index not yet loaded. Please wait a moment and try again.');
+            return;
+          }
           const { results, total } = clientSearch(query, advanced);
           loading.classList.add('hidden');
           

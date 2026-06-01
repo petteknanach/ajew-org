@@ -95,19 +95,23 @@ import Layout from '../layouts/Layout.astro';
 
     const searchTerms = extractSearchTerms(question);
     
-    // Client-side search using light index (cached in memory)
-    if (!window._askSearchIndex) {
+    // Client-side search using split language indexes (lighter ~19-38MB each)
+    const isHebrewQuery = /[\u0590-\u05FF]/.test(searchTerms);
+    const idxFile = isHebrewQuery ? '/data/light-search-index-he.json.gz' : '/data/light-search-index-en.json.gz';
+    const cacheKey = isHebrewQuery ? '_askHeIndex' : '_askEnIndex';
+    
+    if (!window[cacheKey]) {
       try {
-        const idxRes = await fetch('/data/light-search-index.json.gz');
+        const idxRes = await fetch(idxFile);
         const ds = new DecompressionStream('gzip');
         const stream = idxRes.body.pipeThrough(ds);
-        window._askSearchIndex = await new Response(stream).json();
+        window[cacheKey] = await new Response(stream).json();
       } catch(e) {
         console.error('Index load failed:', e);
-        window._askSearchIndex = [];
+        window[cacheKey] = [];
       }
     }
-    const searchIndex = window._askSearchIndex;
+    const searchIndex = window[cacheKey];
     
     try {
       const q = searchTerms.toLowerCase().trim();
@@ -115,7 +119,7 @@ import Layout from '../layouts/Layout.astro';
       const isHebrewQuery = /[\u0590-\u05FF]/.test(searchTerms);
       let resultsData = [];
       for (const doc of searchIndex) {
-        const searchText = ((doc.t || '') + ' ' + (doc.h || '') + ' ' + (doc.s || '') + ' ' + (doc.x || '') + ' ' + (doc.e || '')).toLowerCase();
+        const searchText = ((doc.x || '') + ' ' + (doc.t || '') + ' ' + (doc.h || '') + ' ' + (doc.e || '')).toLowerCase();
         let matches = 0;
         for (const word of words) {
           if (searchText.includes(word)) matches++;
@@ -124,7 +128,7 @@ import Layout from '../layouts/Layout.astro';
           resultsData.push({
             title: (isHebrewQuery && doc.h) ? doc.h : (doc.t || 'Untitled'),
             hebrewTitle: doc.h || '',
-            snippet: (isHebrewQuery ? (doc.s || doc.x || '') : (doc.e || doc.t || doc.s || '')).substring(0, 300),
+            snippet: (isHebrewQuery ? ((doc.x || '') + (doc.e || '')).substring(0, 300) : ((doc.e || '') + (doc.x || '')).substring(0, 300)),
             link: doc.l || '#',
             book: doc.b || ''
           });
