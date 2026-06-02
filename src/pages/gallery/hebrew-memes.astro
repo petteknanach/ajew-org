@@ -1,0 +1,223 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import fs from 'fs';
+import path from 'path';
+
+type Meme = {
+  number: number;
+  filename: string;
+  title: string;
+  text: string;
+};
+
+const metadataPath = path.join(process.cwd(), 'public/images/hebrew-memes/metadata.json');
+const memes: Meme[] = fs.existsSync(metadataPath)
+  ? JSON.parse(fs.readFileSync(metadataPath, 'utf-8'))
+  : [];
+
+const archiveUrl = 'https://archive.org/details/ajew-org-hebrew-memes';
+const imageUrl = (filename: string) => `/images/hebrew-memes/${encodeURIComponent(filename)}`;
+const shareUrl = (n: number) => `https://ajew.org/gallery/hebrew-memes/#meme-${String(n).padStart(3, '0')}`;
+---
+
+<Layout title="Hebrew Memes Gallery" description="Hebrew Na Nach Breslov meme and quote images with full text, downloads, and sharing.">
+  <section class="memes-hero">
+    <p class="nanach">נ נח נחמ נחמן מאומן</p>
+    <h1>Hebrew Memes</h1>
+    <p class="subtitle">Na Nach / Breslov Hebrew meme and quote images, preserved with selectable text for learning, searching, downloading, and sharing.</p>
+    <div class="hero-actions">
+      <a class="btn" href="/gallery/">← Back to Gallery</a>
+      <a class="btn secondary" href={archiveUrl} target="_blank" rel="noopener">📦 Archive.org Collection</a>
+    </div>
+  </section>
+
+  <main class="memes-wrap">
+    <div class="notice">
+      <strong>{memes.length} images</strong> in this folder. The Hebrew text below each image is included as page text so it can be searched, copied, downloaded, and shared. Some stylized/low-resolution images include OCR text and can be refined further.
+    </div>
+
+    <div class="searchbar">
+      <input id="filter" type="search" placeholder="Search Hebrew meme text… / חיפוש בטקסט התמונות" />
+    </div>
+
+    <section class="memes-grid">
+      {memes.map((m) => (
+        <article class="meme-card" id={`meme-${String(m.number).padStart(3, '0')}`} data-search={`${m.title || ''} ${m.text || ''}`.toLowerCase()}>
+          <a class="imagebox" href={imageUrl(m.filename)} target="_blank" rel="noopener">
+            <img src={imageUrl(m.filename)} alt={m.title || `Hebrew meme ${m.number}`} loading="lazy" />
+          </a>
+          <div class="meme-content">
+            <div class="num">#{String(m.number).padStart(3, '0')}</div>
+            <h2>{m.title || `Hebrew Meme ${m.number}`}</h2>
+            <div class="meme-text" dir="rtl">{m.text || m.title}</div>
+            <div class="meme-buttons">
+              <a class="btn small" href={imageUrl(m.filename)} download>⬇️ Download</a>
+              <button class="btn small secondary share-btn" data-url={shareUrl(m.number)} data-title={m.title || `Hebrew meme ${m.number}`}>🔗 Share</button>
+              <a class="btn small secondary" href={imageUrl(m.filename)} target="_blank" rel="noopener">🖼️ Full image</a>
+            </div>
+          </div>
+        </article>
+      ))}
+    </section>
+  </main>
+</Layout>
+
+<script>
+  const filter = document.getElementById('filter');
+  filter?.addEventListener('input', () => {
+    const q = (filter.value || '').toLowerCase().trim();
+    document.querySelectorAll('.meme-card').forEach((card) => {
+      const haystack = card.getAttribute('data-search') || '';
+      card.style.display = !q || haystack.includes(q) ? 'flex' : 'none';
+    });
+  });
+
+  document.querySelectorAll('.share-btn').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const url = button.getAttribute('data-url') || location.href;
+      const title = button.getAttribute('data-title') || 'Hebrew Meme';
+      if (navigator.share) {
+        try { await navigator.share({ title, url }); } catch (_) {}
+      } else if (navigator.clipboard) {
+        await navigator.clipboard.writeText(url);
+        alert('Share link copied');
+      }
+    });
+  });
+</script>
+
+<style>
+  .memes-hero {
+    background: linear-gradient(135deg, #13294b, #1a365d 55%, #7c4a10);
+    color: white;
+    text-align: center;
+    padding: 4.5rem 1rem 3rem;
+  }
+
+  .nanach {
+    font-family: var(--font-hebrew, serif);
+    font-size: clamp(1.4rem, 4vw, 3rem);
+    color: #ffe08a;
+    text-shadow: 0 0 12px #ed8936;
+    margin: 0 0 0.5rem;
+  }
+
+  .memes-hero h1 {
+    font-size: clamp(2rem, 5vw, 4rem);
+    margin: 0 0 0.4em;
+  }
+
+  .subtitle {
+    max-width: 900px;
+    margin: 0 auto;
+    line-height: 1.6;
+    font-size: 1.15rem;
+  }
+
+  .hero-actions, .meme-buttons {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 1.3rem;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border: 0;
+    border-radius: 999px;
+    background: #d69e2e;
+    color: #1a202c;
+    text-decoration: none;
+    font-weight: 800;
+    padding: 0.7rem 1.1rem;
+    cursor: pointer;
+  }
+
+  .btn.secondary { background: white; color: #1a365d; }
+  .btn.small { font-size: 0.86rem; padding: 0.5rem 0.75rem; }
+
+  .memes-wrap {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 2rem 1rem 4rem;
+  }
+
+  .notice {
+    background: #fff8e1;
+    border: 1px solid #edc469;
+    border-radius: 16px;
+    padding: 1rem 1.2rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+  }
+
+  .searchbar { width: min(760px, 100%); margin: 0 auto 1.5rem; }
+  .searchbar input {
+    width: 100%;
+    font-size: 1.05rem;
+    padding: 0.9rem 1.1rem;
+    border: 1px solid #e6d8b8;
+    border-radius: 999px;
+    box-shadow: 0 4px 18px #00000010;
+  }
+
+  .memes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 1.4rem;
+  }
+
+  .meme-card {
+    background: #fff;
+    border: 1px solid #e6d8b8;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px #00000014;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .imagebox {
+    background: #111;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+  }
+
+  .imagebox img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+
+  .meme-content { padding: 1rem; }
+  .num { color: #d69e2e; font-weight: 900; }
+
+  .meme-content h2 {
+    font-size: 1.05rem;
+    margin: 0.25rem 0 0.65rem;
+    line-height: 1.35;
+  }
+
+  .meme-text {
+    text-align: right;
+    font-family: var(--font-hebrew, "Frank Ruhl Libre", serif);
+    white-space: pre-wrap;
+    line-height: 1.65;
+    background: #fffaf0;
+    border-radius: 12px;
+    border: 1px solid #f1ddb5;
+    padding: 0.7rem;
+    max-height: 220px;
+    overflow: auto;
+  }
+
+  @media (max-width: 600px) {
+    .memes-grid { grid-template-columns: 1fr; }
+    .meme-buttons .btn { flex: 1; justify-content: center; }
+  }
+</style>
