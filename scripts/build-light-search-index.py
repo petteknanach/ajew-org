@@ -21,16 +21,54 @@ def strip_nikud(text):
 
 def extract_segments(data):
     segments = data.get('segments', [])
-    he_parts = []
-    en_parts = []
+    all_he = []
+    all_en = []
     for seg in segments:
-        he = (seg.get('he', '') or '').strip()
-        en = (seg.get('en', '') or '').strip()
+        seg_he = []
+        seg_en = []
+        he = ''
+        en = ''
+        
+        # Standard format: seg.he / seg.en
+        if 'he' in seg or 'en' in seg:
+            he = (seg.get('he', '') or '').strip()
+            en = (seg.get('en', '') or '').strip()
+        
+        # PNC 3-layer format: seg.layers.beginner.he / .en
+        layers = seg.get('layers') or {}
+        if not he and layers:
+            for level in ['beginner', 'intermediate', 'scholarly']:
+                l = layers.get(level) or {}
+                h = (l.get('he', '') or '').strip()
+                e = (l.get('en', '') or '').strip()
+                if h: seg_he.append(strip_nikud(h))
+                if e: seg_en.append(e)
+            all_he.extend(seg_he)
+            all_en.extend(seg_en)
+            continue
+        
+        # PNC flat format: seg.beginner.he / .en
+        for level in ['beginner', 'intermediate', 'scholarly']:
+            l = seg.get(level)
+            if isinstance(l, dict):
+                h = (l.get('he', '') or '').strip()
+                e = (l.get('en', '') or '').strip()
+                if h: seg_he.append(strip_nikud(h))
+                if e: seg_en.append(e)
+            elif isinstance(l, str) and l.strip():
+                seg_en.append(l.strip())
+        
+        if seg_he or seg_en:
+            all_he.extend(seg_he)
+            all_en.extend(seg_en)
+            continue
+        
         if he:
-            he_parts.append(strip_nikud(he))
+            all_he.append(strip_nikud(he))
         if en:
-            en_parts.append(en)
-    return '\n\n'.join(he_parts), '\n\n'.join(en_parts)
+            all_en.append(en)
+    
+    return '\n\n'.join(all_he), '\n\n'.join(all_en)
 
 # Collect all JSON files
 json_files = []

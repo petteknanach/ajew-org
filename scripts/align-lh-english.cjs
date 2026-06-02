@@ -20,9 +20,9 @@ const VOLUME_MAP = [
   { folder: 'Likutay Halachos - Orach Chaim - 3', part: 3 },
   { folder: 'Likutay Halachos - Yoreh Daya - 1', part: 4 },
   { folder: 'Likutay Halachos - Yoreh Daya - 2', part: 5 },
-  { folder: 'Likutay Halachos - Choshen Mishpat - 1', part: 6 },
-  { folder: 'Likutay Halachos - Choshen Mishpat - 2', part: 7 },
-  { folder: 'Likutay Halachos - Evven Hu-ezehr', part: 8 },
+  { folder: 'Likutay Halachos - Evven Hu-ezehr', part: 6 },
+  { folder: 'Likutay Halachos - Choshen Mishpat - 1', part: 7 },
+  { folder: 'Likutay Halachos - Choshen Mishpat - 2', part: 8 },
 ];
 
 // ============================================================
