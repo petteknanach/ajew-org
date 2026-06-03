@@ -275,6 +275,112 @@ def check_parsha():
     print(f"Parsha: {len(errors)} issues")
     return errors
 
+def check_sichos_haran():
+    """Verify Sichos HaRan alignment: 308 simanim, HE/EN matched, no spurious 309-310."""
+    sh_dir = os.path.join(ROOT, 'public', 'reader', 'sichos-haran')
+    errors = []
+    if not os.path.exists(sh_dir):
+        return ["MISSING: sichos-haran"]
+    
+    files = sorted([f for f in os.listdir(sh_dir) if f.startswith('sicha-') and f.endswith('.json')])
+    
+    # Check count: must be 308 (not 310 — 309/310 were spurious RAK notes)
+    if len(files) != 308:
+        errors.append(f"SICHOS HARAN COUNT: expected 308, found {len(files)}")
+    
+    # Check spurious files don't exist
+    for bad in [309, 310]:
+        if os.path.exists(os.path.join(sh_dir, f'sicha-{bad}.json')):
+            errors.append(f"SICHOS HARAN SPURIOUS: sicha-{bad}.json should not exist (RAK note)")
+    
+    # Verify alignment at key boundary points
+    alignment_checks = {
+        18: ('הדפסת ספרים', 'printing of books'),      # Was duplicate of 17, now fixed
+        50: ('דוקטורים', 'doctors'),                     # Was Kiddush Hashem, now fixed
+        100: ('בגדו', 'garment'),                        # Cross-reference check
+        150: ('מקבל ממון', 'receive money'),             # Topic check
+    }
+    
+    files_ok = 0
+    for f in files:
+        n = int(f.replace('sicha-','').replace('.json',''))
+        fp = os.path.join(sh_dir, f)
+        try:
+            data = json.load(open(fp))
+        except:
+            errors.append(f"CORRUPT JSON: sichos-haran/{f}")
+            continue
+        
+        segs = data.get('segments', [])
+        if not segs:
+            continue
+        
+        first_he = segs[0].get('he', '')
+        first_en = segs[0].get('en', '')
+        
+        # Check alignment anchors
+        if n in alignment_checks:
+            he_kw, en_kw = alignment_checks[n]
+            if he_kw not in first_he:
+                errors.append(f"SICHOS HARAN MISALIGNED: sicha-{n} HE missing '{he_kw}'")
+            if en_kw.lower() not in first_en.lower():
+                errors.append(f"SICHOS HARAN MISALIGNED: sicha-{n} EN missing '{en_kw}'")
+        
+        # All sichas should have both HE and EN (except historical edge cases)
+        if not first_he.strip():
+            errors.append(f"SICHOS HARAN EMPTY HE: sicha-{n}")
+        
+        files_ok += 1
+    
+    print(f"Sichos HaRan: {files_ok} files, {len(errors)} issues")
+    return errors
+
+def check_chayey_moharan():
+    """Verify Chayay Moharan: 556 simanim, hashmatos content present."""
+    cm_dir = os.path.join(ROOT, 'public', 'reader', 'chayey-moharan')
+    errors = []
+    if not os.path.exists(cm_dir):
+        return ["MISSING: chayey-moharan"]
+    
+    # Check simanim directory
+    siman_dir = os.path.join(cm_dir, 'simanim')
+    if not os.path.exists(siman_dir):
+        errors.append("MISSING: chayey-moharan/simanim")
+    else:
+        siman_files = [f for f in os.listdir(siman_dir) if f.startswith('siman-')]
+        if len(siman_files) < 550:
+            errors.append(f"CHAYAY MOHARAN SIMAN COUNT: expected 556, found {len(siman_files)}")
+        
+        # Verify siman 425 has section metadata and content
+        s425 = os.path.join(siman_dir, 'siman-425.json')
+        if os.path.exists(s425):
+            data = json.load(open(s425))
+            he = data['segments'][0].get('he', '')
+            en = data['segments'][0].get('en', '')
+            if not he.strip():
+                errors.append("CHAYAY MOHARAN: siman-425 empty Hebrew")
+            if not data.get('section'):
+                errors.append("CHAYAY MOHARAN: siman-425 missing section metadata")
+    
+    # Check hashmatos-toc has full content (was truncated)
+    htoc = os.path.join(cm_dir, 'hashmatos-toc.json')
+    if os.path.exists(htoc):
+        data = json.load(open(htoc))
+        segs = data.get('aligned_segments', data.get('segments', []))
+        # Find siman 425 entry
+        found_425 = False
+        for seg in segs:
+            if '425' in seg.get('he', '') or 'תכה' in seg.get('he', ''):
+                found_425 = True
+                if 'גלגלים' not in seg.get('he', '') and 'גַּלְגַּלִּים' not in seg.get('he', ''):
+                    errors.append("CHAYAY MOHARAN: hashmatos-toc siman 425 content still truncated")
+                break
+        if not found_425:
+            errors.append("CHAYAY MOHARAN: hashmatos-toc missing siman 425 entry")
+    
+    print(f"Chayay Moharan: {len(errors)} issues")
+    return errors
+
 if __name__ == '__main__':
     all_errors = []
     all_errors.extend(check_lh_english())
@@ -285,6 +391,8 @@ if __name__ == '__main__':
     all_errors.extend(check_book('kitzur-likutay-moharan', 'KLM'))
     all_errors.extend(check_book('likutay-moharan', 'LM'))
     all_errors.extend(check_parsha())
+    all_errors.extend(check_sichos_haran())
+    all_errors.extend(check_chayey_moharan())
     
     if all_errors:
         print(f"\n{'='*60}")
