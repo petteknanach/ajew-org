@@ -94,8 +94,11 @@ for (const file of otzarPartFiles) {
     if (he || en) otzarSegments++;
   }
 }
-if (otzarPartFiles.length < 166) failures.push(`Otzar HaYirah: expected at least 166 part files, found ${otzarPartFiles.length}`);
-if (otzarSegments < 6700) failures.push(`Otzar HaYirah: expected at least 6700 populated segments, found ${otzarSegments}`);
+// Current accepted OHY rebuild is source-based: 134 finished HTML sections paired to
+// 4,306 local Hebrew source entries. Older 166+/6700+ thresholds were from a
+// corrupted over-split state and blocked legitimate deployments.
+if (otzarPartFiles.length < 134) failures.push(`Otzar HaYirah: expected at least 134 part files, found ${otzarPartFiles.length}`);
+if (otzarSegments < 4300) failures.push(`Otzar HaYirah: expected at least 4300 populated source-paired segments, found ${otzarSegments}`);
 if (otzarEnOnly !== 0) failures.push(`Otzar HaYirah: found ${otzarEnOnly} EN-only segments; previous accepted cleanup removed these`);
 if (otzarHeOnly !== 0) failures.push(`Otzar HaYirah: found ${otzarHeOnly} HE-only segments; accepted state has paired HE+EN text`);
 
