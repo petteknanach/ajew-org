@@ -1,3 +1,214 @@
 ---
-return Astro.redirect('/chain-of-light', 301);
+import Layout from '../layouts/Layout.astro';
 ---
+
+<Layout title="Torah Map — Visual Explorer" description="Interactive visual map of Torah teachings. 30 topics connected to 54 books. Explore the web of Jewish wisdom.">
+  <div class="map-container">
+    <div class="map-header">
+      <h1>Torah Map</h1>
+      <p class="map-sub">30 topics · 54 books · 3,000 teachings</p>
+      <nav class="map-nav">
+        <a href="/mapjs" class="map-nav-link">📐 Classic Map (Hand-Curated)</a>
+        <a href="/torah-gps" class="map-nav-link">🧭 Torah GPS</a>
+      </nav>
+    </div>
+    <div id="graph"></div>
+    <div class="map-legend">
+      <span class="legend-item"><span class="legend-dot" style="background:#c8a84b"></span> Topics</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#1e3a5f"></span> Books</span>
+      <span class="legend-item">Drag nodes · Scroll to zoom · Click for Torah GPS</span>
+    </div>
+  </div>
+</Layout>
+
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script>
+  const width = document.getElementById('graph').clientWidth || 900;
+  const height = Math.min(window.innerHeight * 0.75, 700);
+
+  const svg = d3.select('#graph')
+    .append('svg')
+    .attr('width', width)
+    .attr('height', height);
+
+  const g = svg.append('g');
+
+  // Zoom
+  svg.call(d3.zoom()
+    .scaleExtent([0.3, 4])
+    .on('zoom', (event) => g.attr('transform', event.transform)));
+
+  // Load graph data
+  fetch('/data/torah-map-graph.json')
+    .then(r => r.json())
+    .then(graph => {
+      const nodes = graph.nodes;
+      const edges = graph.edges;
+
+      // Scale node sizes
+      const sizeScale = d3.scaleSqrt()
+        .domain([1, d3.max(nodes, d => d.size)])
+        .range([5, 40]);
+
+      // Force simulation
+      const simulation = d3.forceSimulation(nodes)
+        .force('link', d3.forceLink(edges).id(d => d.id).distance(d => 80 / Math.sqrt(d.weight || 1)))
+        .force('charge', d3.forceManyBody().strength(-200))
+        .force('center', d3.forceCenter(width / 2, height / 2))
+        .force('collision', d3.forceCollide().radius(d => sizeScale(d.size) + 4));
+
+      // Edges
+      const link = g.append('g')
+        .selectAll('line')
+        .data(edges)
+        .join('line')
+        .attr('stroke', '#e0d5b8')
+        .attr('stroke-width', d => Math.sqrt(d.weight) * 0.5)
+        .attr('opacity', 0.6);
+
+      // Nodes
+      const node = g.append('g')
+        .selectAll('g')
+        .data(nodes)
+        .join('g')
+        .call(d3.drag()
+          .on('start', (e, d) => { if (!e.active) simulation.alphaTarget(0.3).restart(); d.fx = d.x; d.fy = d.y; })
+          .on('drag', (e, d) => { d.fx = e.x; d.fy = e.y; })
+          .on('end', (e, d) => { if (!e.active) simulation.alphaTarget(0); d.fx = null; d.fy = null; }));
+
+      // Circles
+      node.append('circle')
+        .attr('r', d => sizeScale(d.size))
+        .attr('fill', d => d.color)
+        .attr('stroke', '#fff')
+        .attr('stroke-width', 1.5)
+        .attr('opacity', 0.9);
+
+      // Labels
+      node.append('text')
+        .text(d => d.label.length > 14 ? d.label.slice(0, 13) + '…' : d.label)
+        .attr('text-anchor', 'middle')
+        .attr('dy', d => sizeScale(d.size) + 13)
+        .attr('font-size', d => d.type === 'topic' ? '11px' : '8px')
+        .attr('fill', '#555')
+        .attr('font-family', 'Georgia, serif')
+        .style('pointer-events', 'none');
+
+      // Tooltip on hover
+      node.append('title')
+        .text(d => {
+          const count = d.type === 'topic'
+            ? graph.stats.topics
+            : d.size;
+          return `${d.label}\n${d.labelHe || ''}\n${d.type === 'topic' ? d.size + ' teachings' : count + ' connections'}`;
+        });
+
+      // Click: go to Torah GPS for topic
+      node.on('click', (e, d) => {
+        if (d.type === 'topic') {
+          window.open(`/torah-gps?topic=${d.id.replace('topic:', '')}`, '_self');
+        }
+      });
+
+      // Tick
+      simulation.on('tick', () => {
+        link
+          .attr('x1', d => d.source.x)
+          .attr('y1', d => d.source.y)
+          .attr('x2', d => d.target.x)
+          .attr('y2', d => d.target.y);
+
+        node.attr('transform', d => `translate(${d.x},${d.y})`);
+      });
+    });
+</script>
+
+<style>
+  .map-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px 20px 60px;
+  }
+
+  .map-header {
+    text-align: center;
+    margin-bottom: 16px;
+  }
+
+  .map-header h1 {
+    font-size: 1.8em;
+    color: #1e3a5f;
+    margin: 0 0 4px;
+    font-family: Georgia, serif;
+  }
+
+  .map-sub {
+    color: #8B6914;
+    font-size: 0.95em;
+    margin: 0 0 12px;
+  }
+
+  .map-nav {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+
+  .map-nav-link {
+    padding: 6px 14px;
+    background: #f5efe0;
+    color: #5a3e00;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 0.85em;
+    font-weight: 600;
+    border: 1px solid #c8a84b;
+    transition: all 0.15s;
+  }
+
+  .map-nav-link:hover {
+    background: #c8a84b;
+    color: #fff;
+  }
+
+  #graph {
+    background: #fdfaf5;
+    border-radius: 12px;
+    border: 1px solid #e0d5b8;
+    overflow: hidden;
+    cursor: grab;
+  }
+
+  #graph:active { cursor: grabbing; }
+
+  .map-legend {
+    text-align: center;
+    margin-top: 12px;
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    font-size: 0.8em;
+    color: #888;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .legend-dot {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+
+  @media (max-width: 600px) {
+    .map-container { padding: 10px 8px 40px; }
+    .map-header h1 { font-size: 1.3em; }
+  }
+</style>
