@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "node scripts/verify-regression-guards.cjs && node scripts/dl-pnc-data.cjs && node scripts/dl-reader-data.cjs && node scripts/create-app-aliases.cjs && node scripts/build-parsha-connections.cjs && node scripts/build-search-index-v2.cjs && astro build",
+    "build": "npm run verify && node scripts/dl-pnc-data.cjs && node scripts/create-app-aliases.cjs && node scripts/build-parsha-connections.cjs && node scripts/build-search-index-v2.cjs && npm run verify && astro build",
     "preview": "astro preview",
     "astro": "astro",
     "search": "node gen-search-index.js",
@@ -15,7 +15,8 @@
     "generate-index-complete": "node enhanced-search-index-generator-complete.cjs",
     "start-api": "node enhanced-search-api-simple.cjs",
     "search-dev": "concurrently \"npm run generate-index\" \"npm run start-api\"",
-    "import-ramchal": "node scripts/import-ramchal.mjs"
+    "import-ramchal": "node scripts/import-ramchal.mjs",
+    "verify": "python3 .hermes/safeguard-check.py && node scripts/verify-regression-guards.cjs"
   },
   "dependencies": {
     "@astrojs/node": "^9.5.5",

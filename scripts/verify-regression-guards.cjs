@@ -118,6 +118,104 @@ for (const topicFile of otzarTopicFiles) {
   }
 }
 
+
+
+function isSequential(values) {
+  return values.every((v, i) => Number(v) === i + 1);
+}
+
+function normText(value) {
+  return String(value || '').replace(/\s+/g, ' ').trim();
+}
+
+function stripNikud(value) {
+  return normText(value).replace(/[\u0591-\u05C7]/g, '');
+}
+
+// Otzar HaYirah strict integrity gates. These intentionally fail closed: the
+// current reader must not be deployable if OHY is partly duplicated, shifted, or
+// carrying stale aligned_segments from a previous source.
+const otzarRoot = 'public/reader/otzar-hayirah';
+const otzarIndex = loadJson(`${otzarRoot}/index.json`);
+const otzarParts = otzarIndex.parts || [];
+const otzarPartIndexes = walkJsonFiles(otzarRoot).filter(f => /\/part-\d+\/index\.json$/.test(f));
+if (otzarParts.length !== otzarPartIndexes.length) {
+  failures.push(`Otzar HaYirah root index: expected ${otzarPartIndexes.length} parts, found ${otzarParts.length}`);
+}
+
+for (const partIndexFile of otzarPartIndexes) {
+  const partMatch = partIndexFile.match(/part-(\d+)\/index\.json$/);
+  const part = Number(partMatch[1]);
+  const partIndex = loadJson(partIndexFile);
+  const torahs = partIndex.torahs || [];
+  const torahFiles = walkJsonFiles(`${otzarRoot}/part-${part}`).filter(f => /\/torah-\d+\.json$/.test(f));
+  if (torahs.length !== torahFiles.length) {
+    failures.push(`Otzar HaYirah part-${part}: index says ${torahs.length} torahs but ${torahFiles.length} torah files exist`);
+  }
+  const rootPart = otzarParts.find(p => Number(p.part) === part);
+  if (!rootPart) failures.push(`Otzar HaYirah root index: missing part-${part}`);
+  else if (Number(rootPart.totalTorahs) !== torahs.length) {
+    failures.push(`Otzar HaYirah root index: part-${part} says ${rootPart.totalTorahs} torahs but part index has ${torahs.length}`);
+  }
+}
+
+const otzarAllTorahFiles = walkJsonFiles(otzarRoot).filter(f => /\/part-\d+\/torah-\d+\.json$/.test(f));
+let otzarEmptySegments = 0;
+let otzarBadIndexes = 0;
+let otzarBadAlignedSegments = 0;
+let otzarBadTotalParagraphs = 0;
+let otzarFooterEnglish = 0;
+for (const file of otzarAllTorahFiles) {
+  const data = loadJson(file);
+  const segs = data.segments || [];
+  if (segs.some(s => !normText(s.he) && !normText(s.en))) otzarEmptySegments++;
+
+  const indexes = segs.map((s, i) => s.index ?? s.siman ?? (i + 1));
+  if (!isSequential(indexes)) otzarBadIndexes++;
+
+  if (typeof data.totalParagraphs === 'number' && data.totalParagraphs !== segs.length) {
+    otzarBadTotalParagraphs++;
+  }
+
+  if (Array.isArray(data.aligned_segments)) {
+    const sameLength = data.aligned_segments.length === segs.length;
+    const sameText = sameLength && segs.every((seg, i) => {
+      const a = data.aligned_segments[i] || {};
+      return normText(a.he) === normText(seg.he) && normText(a.en) === normText(seg.en);
+    });
+    if (!sameText) otzarBadAlignedSegments++;
+  }
+
+  for (const seg of segs) {
+    const en = normText(seg.en);
+    if (/Otzar HaYirah\s+—\s+Treasury of Awe|Na Nach Nachma Nachman May these words/i.test(en)) {
+      otzarFooterEnglish++;
+      break;
+    }
+  }
+}
+if (otzarEmptySegments) failures.push(`Otzar HaYirah: ${otzarEmptySegments} torah files contain empty HE+EN segments`);
+if (otzarBadIndexes) failures.push(`Otzar HaYirah: ${otzarBadIndexes} torah files have non-sequential/missing segment indexes`);
+if (otzarBadTotalParagraphs) failures.push(`Otzar HaYirah: ${otzarBadTotalParagraphs} torah files have totalParagraphs that disagree with segments.length`);
+if (otzarBadAlignedSegments) failures.push(`Otzar HaYirah: ${otzarBadAlignedSegments} torah files have stale aligned_segments differing from segments`);
+if (otzarFooterEnglish) failures.push(`Otzar HaYirah: ${otzarFooterEnglish} torah files contain footer/header text in English segment fields`);
+
+// Known-high-risk Pesach/Sefira/Shavuos pages must not share duplicated Hebrew
+// bodies with divergent English. This was found in part-1 torah-22..25.
+const pesachFiles = [22, 23, 24, 25].map(n => `${otzarRoot}/part-1/torah-${n}.json`);
+const pesachBodies = pesachFiles.map(file => loadJson(file).segments || []);
+for (let i = 0; i < pesachBodies.length; i++) {
+  for (let j = i + 1; j < pesachBodies.length; j++) {
+    const heA = pesachBodies[i].map(s => stripNikud(s.he)).join('\n');
+    const heB = pesachBodies[j].map(s => stripNikud(s.he)).join('\n');
+    const enA = pesachBodies[i].map(s => normText(s.en)).join('\n');
+    const enB = pesachBodies[j].map(s => normText(s.en)).join('\n');
+    if (heA && heA === heB && enA !== enB) {
+      failures.push(`Otzar HaYirah: duplicated Hebrew with divergent English between ${pesachFiles[i]} and ${pesachFiles[j]}`);
+    }
+  }
+}
+
 if (failures.length) {
   console.error('Regression guard failed:');
   for (const f of failures) console.error(` - ${f}`);

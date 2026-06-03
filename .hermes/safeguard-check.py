@@ -146,6 +146,114 @@ def check_saba():
     
     return errors
 
+
+def norm_text(x):
+    return re.sub(r'\s+', ' ', str(x or '')).strip()
+
+def strip_nikud(x):
+    return re.sub(r'[\u0591-\u05C7]', '', norm_text(x))
+
+def check_otzar_strict():
+    """Strict OHY deploy blocker: field presence is not enough; block known-corrupt structure."""
+    base = os.path.join(ROOT, 'public', 'reader', 'otzar-hayirah')
+    errors = []
+    if not os.path.exists(base):
+        return ["MISSING: otzar-hayirah"]
+    try:
+        idx = json.load(open(os.path.join(base, 'index.json'), encoding='utf-8'))
+    except Exception:
+        return ["CORRUPT: otzar-hayirah/index.json"]
+
+    part_indexes = []
+    for name in os.listdir(base):
+        if name.startswith('part-') and os.path.exists(os.path.join(base, name, 'index.json')):
+            part_indexes.append(os.path.join(base, name, 'index.json'))
+    parts = idx.get('parts', [])
+    if len(parts) != len(part_indexes):
+        errors.append(f"OHY ROOT INDEX PARTS: expected {len(part_indexes)}, found {len(parts)}")
+
+    topic_dir = os.path.join(base, 'topics')
+    if os.path.exists(topic_dir):
+        topic_files = [f for f in os.listdir(topic_dir) if f.endswith('.json')]
+        topic_entries = idx.get('topics', [])
+        if len(topic_entries) != len(topic_files):
+            errors.append(f"OHY TOPIC INDEX: {len(topic_entries)} entries but {len(topic_files)} files")
+        by_slug = {t.get('slug'): t for t in topic_entries}
+        for f in topic_files:
+            slug = f[:-5]
+            try:
+                d = json.load(open(os.path.join(topic_dir, f), encoding='utf-8'))
+            except Exception:
+                errors.append(f"OHY CORRUPT TOPIC: {f}")
+                continue
+            entry = by_slug.get(slug)
+            if not entry:
+                errors.append(f"OHY TOPIC INDEX missing {slug}")
+            elif entry.get('siman_count') != len(d.get('simanim', [])):
+                errors.append(f"OHY TOPIC INDEX {slug}: {entry.get('siman_count')} != {len(d.get('simanim', []))}")
+
+    files_ok = 0
+    empty_files = bad_idx = stale_aligned = bad_total = footer_text = 0
+    for root, dirs, fnames in os.walk(base):
+        for f in fnames:
+            if not re.match(r'torah-\d+\.json$', f):
+                continue
+            fp = os.path.join(root, f)
+            try:
+                data = json.load(open(fp, encoding='utf-8'))
+            except Exception:
+                errors.append(f"OHY CORRUPT JSON: {fp}")
+                continue
+            segs = data.get('segments', [])
+            files_ok += 1
+            if any(not norm_text(seg.get('he')) and not norm_text(seg.get('en')) for seg in segs):
+                empty_files += 1
+            indexes = [seg.get('index', seg.get('siman', i+1)) for i, seg in enumerate(segs)]
+            try:
+                if any(int(v or 0) != i + 1 for i, v in enumerate(indexes)):
+                    bad_idx += 1
+            except Exception:
+                bad_idx += 1
+            if isinstance(data.get('totalParagraphs'), int) and data.get('totalParagraphs') != len(segs):
+                bad_total += 1
+            aligned = data.get('aligned_segments')
+            if isinstance(aligned, list):
+                same = len(aligned) == len(segs) and all(norm_text((aligned[i] or {}).get('he')) == norm_text(segs[i].get('he')) and norm_text((aligned[i] or {}).get('en')) == norm_text(segs[i].get('en')) for i in range(len(segs)))
+                if not same:
+                    stale_aligned += 1
+            if any(re.search(r'Otzar HaYirah\s+—\s+Treasury of Awe|Na Nach Nachma Nachman May these words', norm_text(seg.get('en')), re.I) for seg in segs):
+                footer_text += 1
+
+    for label, count in [
+        ('empty HE+EN segments', empty_files),
+        ('non-sequential/missing indexes', bad_idx),
+        ('totalParagraphs mismatches', bad_total),
+        ('stale aligned_segments', stale_aligned),
+        ('footer/header EN text', footer_text),
+    ]:
+        if count:
+            errors.append(f"OHY {label}: {count} files")
+
+    try:
+        bodies = []
+        for n in [22,23,24,25]:
+            d = json.load(open(os.path.join(base, 'part-1', f'torah-{n}.json'), encoding='utf-8'))
+            bodies.append((n, d.get('segments', [])))
+        for i in range(len(bodies)):
+            for j in range(i+1, len(bodies)):
+                a_n, a = bodies[i]; b_n, b = bodies[j]
+                a_he = '\n'.join(strip_nikud(x.get('he')) for x in a)
+                b_he = '\n'.join(strip_nikud(x.get('he')) for x in b)
+                a_en = '\n'.join(norm_text(x.get('en')) for x in a)
+                b_en = '\n'.join(norm_text(x.get('en')) for x in b)
+                if a_he and a_he == b_he and a_en != b_en:
+                    errors.append(f"OHY DUPLICATED HE DIVERGENT EN: part-1 torah-{a_n} vs torah-{b_n}")
+    except Exception as e:
+        errors.append(f"OHY PESACH DUPLICATE CHECK ERROR: {e}")
+
+    print(f"OHY strict: {files_ok} files checked, {len(errors)} issues")
+    return errors
+
 def check_parsha():
     """Verify parsha files have source citations."""
     parsha_dir = os.path.join(ROOT, 'public', 'reader', 'parsha-lm')
@@ -173,7 +281,7 @@ if __name__ == '__main__':
     all_errors.extend(check_saba())
     all_errors.extend(check_book('sefer-hamidos', 'SH'))
     all_errors.extend(check_book('likutay-tefilos', 'LT'))
-    all_errors.extend(check_book('otzar-hayirah', 'OHY'))
+    all_errors.extend(check_otzar_strict())
     all_errors.extend(check_book('kitzur-likutay-moharan', 'KLM'))
     all_errors.extend(check_book('likutay-moharan', 'LM'))
     all_errors.extend(check_parsha())

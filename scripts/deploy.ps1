@@ -15,6 +15,15 @@ if (-not $gitPath) {
 
 Set-Location $repoPath
 
+# Run deployment safeguards before anything can be staged or pushed
+Write-Host ""
+Write-Host "Running deployment safeguards..." -ForegroundColor Yellow
+npm run verify
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "Safeguards failed. Deployment blocked." -ForegroundColor Red
+    exit 1
+}
+
 # Check git status
 Write-Host ""
 Write-Host "Checking git status..." -ForegroundColor Yellow

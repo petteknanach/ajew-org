@@ -42,8 +42,11 @@ cat volumes/vol-00/indices/works-cited.md >> volumes/vol-00/combined.md
 if command -v pandoc &>/dev/null; then
   pandoc volumes/vol-00/combined.md -o volumes/vol-00/combined.pdf --css=styles/kdp.css --metadata geometry:margin=0.5in --pdf-engine=xelatex 2>/dev/null || echo "PDF skipped for vol-00"
 fi
+echo "=== Running deployment safeguards ==="
+npm run verify
+
 echo "=== Pushing to origin/main ==="
 git add -A
-git commit -m "deploy: build all 40 volumes + collective index" --no-verify || echo "Nothing to commit"
+git commit -m "deploy: build all 40 volumes + collective index" || echo "Nothing to commit"
 git push origin main
 echo "=== Deploy complete ==="
