@@ -550,35 +550,33 @@ import Layout from '../layouts/Layout.astro';
   // ─── Load Data ───
   async function loadData() {
     try {
-      const resp = await fetch('/torah-gps-index.json');
+      const resp = await fetch('/data/torah-gps-index-v2.json');
       if (!resp.ok) throw new Error('Index not found');
       gpsData = await resp.json();
       renderTopicButtons();
     } catch (e) {
       console.error('Failed to load Torah GPS index:', e);
-      topicGrid.innerHTML = '<p style="color:#c00;text-align:center;">Index not yet built. Run: <code>node scripts/build-torah-gps-index.cjs</code></p>';
+      topicGrid.innerHTML = '<p style="color:#c00;text-align:center;">Index not yet built. Run: <code>python3 scripts/build-torah-gps-index.py</code></p>';
     }
   }
 
   // ─── Render Topic Buttons ───
   function renderTopicButtons() {
     if (!gpsData || !gpsData.topicMeta) return;
-    // Sort by result count descending, then filter to those with results
-    const sorted = [...gpsData.topicMeta]
-      .filter(t => t.resultCount > 0)
-      .sort((a, b) => b.resultCount - a.resultCount);
+    // topicMeta is now a dict: {topicId: {en, he, total, shown}}
+    const entries = Object.entries(gpsData.topicMeta)
+      .filter(([id, meta]) => meta.total > 0)
+      .sort((a, b) => b[1].total - a[1].total);
 
-    topicGrid.innerHTML = sorted.map(t =>
-      `<button class="topic-btn" data-topic="${t.id}" title="${t.resultCount} teachings found">
-        ${t.label} <span class="he">${t.hebrewLabel}</span>
+    topicGrid.innerHTML = entries.map(([id, meta]) =>
+      `<button class="topic-btn" data-topic="${id}" title="${meta.total} teachings found">
+        ${meta.en} <span class="he">${meta.he}</span>
       </button>`
     ).join('');
 
-    // Add click handlers
     topicGrid.querySelectorAll('.topic-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        const topicId = btn.dataset.topic;
-        selectTopic(topicId);
+        selectTopic(btn.dataset.topic);
       });
     });
   }
@@ -588,15 +586,13 @@ import Layout from '../layouts/Layout.astro';
     if (!gpsData) return;
     currentTopic = topicId;
 
-    // Update button states
     topicGrid.querySelectorAll('.topic-btn').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.topic === topicId);
     });
 
-    // Update input to show the topic name
-    const meta = gpsData.topicMeta.find(t => t.id === topicId);
+    const meta = gpsData.topicMeta[topicId];
     if (meta) {
-      input.value = meta.label;
+      input.value = meta.en;
     }
 
     showResults(topicId);
@@ -614,26 +610,26 @@ import Layout from '../layouts/Layout.astro';
 
     emptyState.style.display = 'none';
     resultsSection.style.display = 'block';
-    resultsTitle.textContent = `${meta ? meta.label : topicId} ${meta ? '/ ' + meta.hebrewLabel : ''}`;
+    resultsTitle.textContent = `${meta ? meta.en : topicId} ${meta ? '/ ' + meta.he : ''}`;
     resultsCount.textContent = `${results.length} teaching${results.length !== 1 ? 's' : ''} found`;
 
     resultsGrid.innerHTML = `
       <div class="results-share-bar">
-        <button class="share-results-btn" onclick="shareGpsResults('${escHtml(topicId)}', '${escHtml(meta ? meta.label : topicId)}')">📤 Share</button>
-        <a class="discuss-results-btn" href="/chat?topic=${encodeURIComponent('Torah GPS: ' + (meta ? meta.label : topicId))}" target="_blank">💬 Discuss in Chat</a>
+        <button class="share-results-btn" onclick="shareGpsResults('${escHtml(topicId)}', '${escHtml(meta ? meta.en : topicId)}')">📤 Share</button>
+        <a class="discuss-results-btn" href="/chat?topic=${encodeURIComponent('Torah GPS: ' + (meta ? meta.en : topicId))}" target="_blank">💬 Discuss in Chat</a>
       </div>
     ` + results.map((r, i) => {
-      const ref = buildRef(r);
+      const bookName = r.book || '';
       return `<article class="result-card" style="animation: fadeIn 0.3s ease ${i * 0.05}s both;">
         <div class="card-header">
-          <span class="card-book">${escHtml(r.bookTitle)}</span>
-          <span class="card-ref">${escHtml(ref)}</span>
+          <span class="card-book">${escHtml(bookName)}</span>
+          ${r.title ? `<span class="card-ref">${escHtml(r.title)}</span>` : ''}
         </div>
         ${r.he ? `<div class="card-he">${escHtml(r.he)}</div>` : ''}
         <div class="card-en">${escHtml(r.en)}</div>
         <div class="card-actions">
           <a class="card-link" href="${escHtml(r.url)}">Read More &rarr;</a>
-          <button class="card-share-btn" onclick="shareGpsCard('${escHtml(r.bookTitle)}', '${escHtml(r.url)}')" title="Share this teaching" aria-label="Share this teaching">&#x1F517;</button>
+          <button class="card-share-btn" onclick="shareGpsCard('${escHtml(bookName)}', '${escHtml(r.url)}')" title="Share this teaching" aria-label="Share this teaching">&#x1F517;</button>
         </div>
       </article>`;
     }).join('');
