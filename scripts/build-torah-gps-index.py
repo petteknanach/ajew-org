@@ -5,14 +5,17 @@ Matches teachings to 30 topics using Hebrew + English keyword matching.
 """
 
 import json, gzip, re, os
+from pathlib import Path
 from collections import defaultdict
 
-TOPICS = json.load(open('/root/ajew-org/public/data/torah-gps-topics.json'))
+ROOT = Path(__file__).resolve().parents[1]
+
+TOPICS = json.load(open(ROOT / 'public/data/torah-gps-topics.json'))
 
 # Load all documents from the light search index
 print("Loading search index...")
-he_idx = json.load(gzip.open('/root/ajew-org/public/data/light-search-index-he.json.gz', 'rt'))
-en_idx = json.load(gzip.open('/root/ajew-org/public/data/light-search-index-en.json.gz', 'rt'))
+he_idx = json.load(gzip.open(ROOT / 'public/data/light-search-index-he.json.gz', 'rt'))
+en_idx = json.load(gzip.open(ROOT / 'public/data/light-search-index-en.json.gz', 'rt'))
 print(f"Loaded {len(he_idx)} documents")
 
 # Build topic -> teachings mapping
@@ -90,7 +93,7 @@ output = {
 }
 
 # Save
-out_path = '/root/ajew-org/public/data/torah-gps-index-v2.json'
+out_path = ROOT / 'public/data/torah-gps-index-v2.json'
 with open(out_path, 'w', encoding='utf-8') as f:
     json.dump(output, f, ensure_ascii=False)
 

@@ -2,10 +2,13 @@
 """Build graph data for Torah Map visualization — topics ↔ books connections."""
 
 import json, gzip, os
+from pathlib import Path
 from collections import defaultdict
 
+ROOT = Path(__file__).resolve().parents[1]
+
 # Load the GPS index
-gps = json.load(open('/root/ajew-org/public/data/torah-gps-index-v2.json'))
+gps = json.load(open(ROOT / 'public/data/torah-gps-index-v2.json'))
 topics = gps.get('topics', {})
 topic_meta = gps.get('topicMeta', {})
 
@@ -71,7 +74,7 @@ graph = {
     }
 }
 
-out = '/root/ajew-org/public/data/torah-map-graph.json'
+out = ROOT / 'public/data/torah-map-graph.json'
 with open(out, 'w', encoding='utf-8') as f:
     json.dump(graph, f, ensure_ascii=False)
 
