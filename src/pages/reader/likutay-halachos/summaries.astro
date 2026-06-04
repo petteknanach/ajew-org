@@ -1,0 +1,230 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import fs from 'node:fs';
+import path from 'node:path';
+
+const dataPath = path.join(process.cwd(), 'public/reader/likutay-halachos/summaries/index.json');
+const summaryData = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+const items = summaryData.items || [];
+const pageTitle = 'Likutay Halachos Summaries';
+const pageDesc = 'Concise study summaries for Likutay Halachos by Rabbi Nosson of Breslov.';
+---
+
+<Layout title={pageTitle} description={pageDesc} breadcrumbs={[{name: 'Home', url: 'https://ajew.org'}, {name: 'Reader', url: 'https://ajew.org/reader'}, {name: 'Likutay Halachos Summaries', url: 'https://ajew.org/reader/likutay-halachos/summaries'}]}>
+  <style>
+    .summary-page {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 42px 20px 80px;
+      color: #1f2933;
+      font-family: 'Open Sans', system-ui, sans-serif;
+    }
+    .summary-hero {
+      text-align: center;
+      padding: 34px 18px 28px;
+      margin-bottom: 28px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #f8f5f0 0%, #fffaf0 55%, #eef4fb 100%);
+      border: 1px solid #e6dcc8;
+      box-shadow: 0 10px 32px rgba(30, 58, 95, 0.08);
+    }
+    .summary-hero .hebrew-title {
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: clamp(2rem, 6vw, 3.5rem);
+      line-height: 1.05;
+      color: #1a365d;
+      direction: rtl;
+      margin: 0 0 6px;
+      font-weight: 800;
+    }
+    .summary-hero h1 {
+      margin: 0;
+      color: #7a4f13;
+      font-family: 'Cinzel', serif;
+      font-size: clamp(1.35rem, 3.5vw, 2.1rem);
+    }
+    .summary-hero p {
+      max-width: 720px;
+      margin: 14px auto 0;
+      color: #596275;
+      line-height: 1.65;
+    }
+    .summary-actions {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .pill-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 8px 14px;
+      background: #ffffff;
+      border: 1px solid #d7c7a7;
+      color: #1a365d;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.9rem;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .pill-link:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(30, 58, 95, 0.12);
+    }
+    .summary-toc {
+      margin: 26px 0 34px;
+      padding: 18px;
+      border-radius: 14px;
+      background: #fff;
+      border: 1px solid #eadfc9;
+    }
+    .summary-toc h2 {
+      margin: 0 0 14px;
+      color: #1a365d;
+      font-size: 1.1rem;
+    }
+    .toc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 8px;
+    }
+    .toc-grid a {
+      display: block;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #f8f5f0;
+      border-right: 4px solid #a07830;
+      color: #1e3a5f;
+      text-decoration: none;
+      font-size: 0.92rem;
+      line-height: 1.35;
+    }
+    .toc-grid .heb {
+      display: block;
+      direction: rtl;
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: #7a4f13;
+    }
+    .summary-card {
+      margin: 30px 0;
+      padding: 26px;
+      border-radius: 18px;
+      background: #fffdf8;
+      border: 1px solid #e4d6bd;
+      box-shadow: 0 8px 28px rgba(30, 58, 95, 0.07);
+      scroll-margin-top: 90px;
+    }
+    .summary-card header {
+      border-bottom: 2px solid #efe4d1;
+      padding-bottom: 14px;
+      margin-bottom: 20px;
+    }
+    .summary-card .hebrew-name {
+      font-family: 'Frank Ruhl Libre', serif;
+      direction: rtl;
+      color: #7a4f13;
+      font-size: 1.45rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+    .summary-card h2 {
+      margin: 0;
+      color: #1a365d;
+      font-size: clamp(1.25rem, 3vw, 1.75rem);
+      line-height: 1.25;
+    }
+    .summary-card .intro-note {
+      margin: 10px 0 0;
+      color: #7d8596;
+      font-size: 0.95rem;
+      font-style: italic;
+    }
+    .summary-section {
+      margin: 22px 0;
+    }
+    .summary-section h3 {
+      margin: 0 0 10px;
+      color: #8a5a16;
+      font-size: 1.08rem;
+      line-height: 1.35;
+    }
+    .summary-section p {
+      margin: 9px 0;
+      line-height: 1.72;
+      color: #283548;
+    }
+    .summary-section p:first-child {
+      margin-top: 0;
+    }
+    .empty-section-heading {
+      color: #596275 !important;
+      font-style: italic;
+    }
+    .summary-card footer {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      border-top: 1px solid #efe4d1;
+      margin-top: 22px;
+      padding-top: 16px;
+    }
+    @media (max-width: 640px) {
+      .summary-page { padding: 24px 12px 60px; }
+      .summary-card { padding: 18px; border-radius: 14px; }
+    }
+  </style>
+
+  <main class="summary-page">
+    <section class="summary-hero">
+      <div class="hebrew-title">{summaryData.hebrewTitle}</div>
+      <h1>{summaryData.title}</h1>
+      <p>{summaryData.description}</p>
+      <p>{items.length} summaries are now available here for Likutay Halachos, Orach Chaim A.</p>
+      <div class="summary-actions">
+        <a class="pill-link" href="/reader/likutay-halachos/1">📖 Open Orach Chaim A Index</a>
+        <a class="pill-link" href="/reader">← All Reader Books</a>
+      </div>
+    </section>
+
+    <nav class="summary-toc" aria-label="Summary list">
+      <h2>Jump to a summary</h2>
+      <div class="toc-grid">
+        {items.map((item) => (
+          <a href={`#summary-${item.torah}`}>
+            <span class="heb">{item.hebrewTitle}</span>
+            <span>{item.title.replace(/^Summary of the\s*/, '')}</span>
+          </a>
+        ))}
+      </div>
+    </nav>
+
+    {items.map((item) => (
+      <article class="summary-card" id={`summary-${item.torah}`}>
+        <header>
+          <div class="hebrew-name">{item.hebrewTitle}</div>
+          <h2>{item.title}</h2>
+          {item.intro && item.intro.length > 0 && <p class="intro-note">{item.intro.join(' · ')}</p>}
+        </header>
+
+        {item.sections.map((section) => (
+          <section class="summary-section">
+            <h3 class={section.paragraphs.length === 0 ? 'empty-section-heading' : ''}>{section.heading}</h3>
+            {section.paragraphs.map((paragraph) => (
+              <p>{paragraph}</p>
+            ))}
+          </section>
+        ))}
+
+        <footer>
+          <a class="pill-link" href={item.readerUrl}>Read the full halacha</a>
+          <a class="pill-link" href="#top" onclick="window.scrollTo({top:0,behavior:'smooth'}); return false;">Back to top</a>
+        </footer>
+      </article>
+    ))}
+  </main>
+</Layout>

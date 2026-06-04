@@ -41,6 +41,7 @@ const torahNum = parseInt(torah);
 
 let torahData = null;
 let error = null;
+let summaryEntry = null;
 
 try {
   const filePath = path.join(process.cwd(), `public/reader/likutay-halachos/part-${partNum}/halacha-${torahNum}.json`);
@@ -54,6 +55,12 @@ if (!torahData && !error) error = 'Content not available';
 
 // Add navigation and segment indexes if missing
 if (torahData) {
+  try {
+    const summaryPath = path.join(process.cwd(), 'public/reader/likutay-halachos/summaries/index.json');
+    const summaryIndex = JSON.parse(fs.readFileSync(summaryPath, 'utf8'));
+    summaryEntry = (summaryIndex.items || []).find((item) => item.part === partNum && item.torah === torahNum) || null;
+  } catch (e) {}
+
   if (!torahData.navigation) {
     torahData.navigation = {
       prevUrl: torahNum > 1 ? `/reader/likutay-halachos/${partNum}/${torahNum - 1}` : null,
@@ -226,6 +233,7 @@ const structuredData = torahData ? JSON.stringify({
           <a href={torahData.navigation.prevUrl} data-dir="prev">&larr; Previous</a>
         ) : <span class="disabled">&larr; Previous</span>}
         <a href={`/reader/likutay-halachos/${partNum}`}>Book Index</a>
+        {summaryEntry && <a href={summaryEntry.summaryUrl}>Summary</a>}
         <a href="/reader">All Books</a>
         {torahData.navigation.nextUrl ? (
           <a href={torahData.navigation.nextUrl} data-dir="next">Next &rarr;</a>
@@ -270,6 +278,7 @@ const structuredData = torahData ? JSON.stringify({
           <a href={torahData.navigation.prevUrl} data-dir="prev">&larr; Previous</a>
         ) : <span class="disabled">&larr; Previous</span>}
         <a href={`/reader/likutay-halachos/${partNum}`}>Book Index</a>
+        {summaryEntry && <a href={summaryEntry.summaryUrl}>Summary</a>}
         <a href="/reader">All Books</a>
         {torahData.navigation.nextUrl ? (
           <a href={torahData.navigation.nextUrl} data-dir="next">Next &rarr;</a>
