@@ -381,6 +381,76 @@ def check_chayey_moharan():
     print(f"Chayay Moharan: {len(errors)} issues")
     return errors
 
+def check_lm_commentary():
+    """Verify Likutay Moharan commentary registry: LN, Parparos, PNC all wired."""
+    errors = []
+    reg_path = os.path.join(ROOT, 'src', 'data', 'lm-commentaries.json')
+    if not os.path.exists(reg_path):
+        return ["MISSING: src/data/lm-commentaries.json"]
+    
+    reg = json.load(open(reg_path))
+    
+    # Check LN coverage: every LN vol-4 chapter with a Torah marker should be in registry
+    vol4 = os.path.join(ROOT, 'public', 'reader', 'likutay-nanach', 'volume-4')
+    ln_registered = set()
+    for part_key in ['1', '2']:
+        for torah_key in reg.get(part_key, {}):
+            for rc in reg[part_key][torah_key].get('related_commentaries', []):
+                if rc.get('book') == 'likutay-nanach':
+                    url = rc.get('url', '')
+                    if url:
+                        path = 'public' + url
+                        if not os.path.exists(path):
+                            errors.append(f"LN BROKEN URL: {url}")
+    
+    # Check Parparos coverage
+    pp_dir = os.path.join(ROOT, 'public', 'reader', 'parparos-lechochma')
+    if os.path.exists(pp_dir):
+        for f in os.listdir(pp_dir):
+            if f.startswith('section-') and f.endswith('.json'):
+                num = f.replace('section-','').replace('.json','')
+                # Verify it's referenced in registry
+                found = False
+                for part_key in ['1', '2']:
+                    if num in reg.get(part_key, {}):
+                        for rc in reg[part_key][num].get('related_commentaries', []):
+                            if rc.get('book') == 'parparos-lechochma':
+                                found = True
+                                break
+                if not found and num.isdigit() and int(num) <= 286:
+                    errors.append(f"PARPAROS ORPHAN: section-{num}.json not in registry")
+    
+    # Check PNC coverage
+    pnc_dir = os.path.join(ROOT, 'public', 'reader', 'pettek-nanach-commentary')
+    if os.path.exists(pnc_dir):
+        for f in os.listdir(pnc_dir):
+            if (f.startswith('torah-') or f.startswith('tinyana-')) and f.endswith('.json'):
+                m = re.match(r'(torah|tinyana)-(\d+)\.json', f)
+                if m:
+                    prefix, num = m.group(1), m.group(2)
+                    part = '2' if prefix == 'tinyana' else '1'
+                    if num in reg.get(part, {}):
+                        rc = reg[part][num].get('running_commentary')
+                        if not rc or rc.get('status') != 'available':
+                            errors.append(f"PNC NOT WIRED: {f}")
+    
+    # Count stats
+    ln_count = 0
+    pp_count = 0
+    pnc_count = 0
+    for part_key in ['1', '2']:
+        for torah_key in reg.get(part_key, {}):
+            entry = reg[part_key][torah_key]
+            for rc in entry.get('related_commentaries', []):
+                if rc.get('book') == 'likutay-nanach': ln_count += 1
+                if rc.get('book') == 'parparos-lechochma': pp_count += 1
+            rc = entry.get('running_commentary')
+            if rc and isinstance(rc, dict) and rc.get('status') == 'available':
+                pnc_count += 1
+    
+    print(f"LM Commentary: LN={ln_count} Parparos={pp_count} PNC={pnc_count}, {len(errors)} issues")
+    return errors
+
 if __name__ == '__main__':
     all_errors = []
     all_errors.extend(check_lh_english())
@@ -393,6 +463,7 @@ if __name__ == '__main__':
     all_errors.extend(check_parsha())
     all_errors.extend(check_sichos_haran())
     all_errors.extend(check_chayey_moharan())
+    all_errors.extend(check_lm_commentary())
     
     if all_errors:
         print(f"\n{'='*60}")
