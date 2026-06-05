@@ -206,6 +206,28 @@ const structuredData = torahData ? JSON.stringify({
 </div>
 <script src="/unified-audio.js" defer></script>
 
+<!-- Letter 1 Media Resources -->
+{partNum === 1 && torahNum === 1 && (
+  <div class="letter-media-resources">
+    <h3>📚 Media Resources for Letter 1</h3>
+    <div class="media-grid">
+      <a href="https://archive.org/details/ebay-hanachal-letter-1/Blossoms%20of%20the%20Stream%20-%20Letter%201%20-%20The_Light_of_the_True_Tzadik.mp4" 
+         target="_blank" rel="noopener" class="media-card">
+        <span class="media-icon">🎬</span>
+        <span class="media-title">The Light of the True Tzadik</span>
+        <span class="media-type">Video (MP4) — 18MB</span>
+      </a>
+      <a href="https://archive.org/details/ebay-hanachal-letter-1/Blossoms%20of%20the%20Stream%20-%20Letter%201%20-%20Small_Wood_Kindles_a_Great_Fire.m4a" 
+         target="_blank" rel="noopener" class="media-card">
+        <span class="media-icon">🎧</span>
+        <span class="media-title">Small Wood Kindles a Great Fire</span>
+        <span class="media-type">Audio (M4A) — 34MB</span>
+      </a>
+    </div>
+    <p class="media-note">From the Blossoms of the Stream series on <a href="https://archive.org/details/ebay-hanachal-letter-1" target="_blank" rel="noopener">Archive.org</a></p>
+  </div>
+)}
+
       <div class="reader-toolbar">
         <div class="reader-toolbar-group">
           <button class="reader-btn" data-mode="hebrew">Hebrew</button>
@@ -343,3 +365,48 @@ const structuredData = torahData ? JSON.stringify({
     </div>
   )}
 </Layout>
+
+<style>
+  .letter-media-resources {
+    max-width: 700px;
+    margin: 16px auto;
+    padding: 20px 24px;
+    background: linear-gradient(135deg, #f8f5f0, #f0ead6);
+    border: 2px solid #c8a84b;
+    border-radius: 10px;
+  }
+  .letter-media-resources h3 {
+    font-size: 1.1em;
+    color: #1e3a5f;
+    margin: 0 0 16px;
+    font-family: Georgia, serif;
+  }
+  .media-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+  }
+  .media-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 16px 12px;
+    background: #fff;
+    border: 1px solid #e0d5b8;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.15s;
+  }
+  .media-card:hover {
+    background: #fdf8ed;
+    border-color: #8B6914;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(139,105,20,0.15);
+  }
+  .media-icon { font-size: 2em; margin-bottom: 8px; }
+  .media-title { font-size: 0.9em; color: #1e3a5f; font-weight: 600; margin-bottom: 4px; }
+  .media-type { font-size: 0.75em; color: #888; }
+  .media-note { text-align: center; font-size: 0.8em; color: #999; margin-top: 12px; }
+  .media-note a { color: #1e3a5f; }
+</style>
