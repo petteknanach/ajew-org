@@ -40,24 +40,24 @@ const categorized = new Set([...tzion, ...tomb, ...davening, ...masses, ...build
 const other = allImages.filter(img => !categorized.has(img));
 ---
 
-<Layout title="Tomb in Uman Gallery" description="Photos of the Holy Tomb of Rabbi Nachman in Uman">
+<Layout title="Tomb in Uman Gallery / גלריית הציון באומן" description="Photos of the Holy Tomb of Rabbi Nachman in Uman">
   <section class="page-header">
-    <h1>The Holy Tomb in Uman</h1>
+    <h1>The Holy Tomb in Uman <span class="hebrew">הציון הקדוש באומן</span></h1>
     <p>The Sacred Tzion of Rabbi Nachman of Breslov</p>
     <p class="hebrew">ציון רבינו נחמן באומן</p>
     <p class="stats">{allImages.length} photos</p>
-    <a href="/gallery" class="back-link">← Back to Gallery</a>
+    <a href="/gallery" class="back-link">← Back to Gallery / חזרה לגלריה</a>
   </section>
 
   <section class="intro">
     <div class="container">
       <div class="info-box">
-        <h2>Rosh Hashanah in Uman</h2>
+        <h2>Rosh Hashanah in Uman <span class="hebrew">ראש השנה באומן</span></h2>
         <p>Every year, tens of thousands of Jews from around the world gather at the Holy Tomb of Rabbi Nachman in Uman for Rosh Hashanah.</p>
         <p class="hebrew">אלפי יהודים מכל העולם מתאספים בציון הקדוש באומן לראש השנה</p>
       </div>
       <div class="quick-index">
-        <h3>Quick Index</h3>
+        <h3>Quick Index <span class="hebrew">מפתח מהיר</span></h3>
         <div class="index-links">
           {tzion.length > 0 && <a href="#tzion" class="index-link"><span class="icon">🪦</span><span class="name">The Tzion <span class="hebrew-name">הציון</span></span><span class="count">{tzion.length}</span></a>}
           {tomb.length > 0 && <a href="#tomb" class="index-link"><span class="icon">🏛️</span><span class="name">Tomb & Temple <span class="hebrew-name">קבר והיכל</span></span><span class="count">{tomb.length}</span></a>}
@@ -170,8 +170,8 @@ const other = allImages.filter(img => !categorized.has(img));
   <section class="navigation">
     <div class="container">
       <div class="nav-buttons">
-        <a href="/gallery/rabbainu" class="nav-btn">← Rabbi Nachman</a>
-        <a href="/gallery/nanach" class="nav-btn">Na Nach Life →</a>
+        <a href="/gallery/rabbainu" class="nav-btn">← Rabbi Nachman / רבינו נחמן</a>
+        <a href="/gallery/nanach" class="nav-btn">Na Nach Life / חיי נ נח →</a>
       </div>
     </div>
   </section>

@@ -44,25 +44,25 @@ const categorized = new Set([...beanies, ...music, ...friends, ...portraits]);
 const other = allImages.filter(img => !categorized.has(img));
 ---
 
-<Layout title="Events Gallery" description="Photos from Na Nach events, simchas, and gatherings">
+<Layout title="Events Gallery / גלריית אירועים" description="Photos from Na Nach events, simchas, and gatherings">
   <section class="page-header">
-    <h1>✡ Events & Gatherings ✡</h1>
+    <h1>✡ Events & Gatherings <span class="hebrew">אירועים והתכנסויות</span> ✡</h1>
     <p>Na Nach celebrations and gatherings</p>
     <p class="hebrew">אירועים והתכנסויות</p>
     <p class="stats">{allImages.length} photos</p>
-    <a href="/gallery" class="back-link">← Back to Gallery</a>
+    <a href="/gallery" class="back-link">← Back to Gallery / חזרה לגלריה</a>
   </section>
 
   <section class="intro">
     <div class="container">
       <div class="info-box">
-        <h2>🎉 Celebrating Together</h2>
+        <h2>🎉 Celebrating Together <span class="hebrew">שמחים יחד</span></h2>
         <p>Photos from Na Nach events, simchas, and gatherings from around the world.</p>
         <p class="hebrew">תמונות מאירועי נ נח, שמחות, והתכנסויות מכל העולם</p>
       </div>
       
       <div class="quick-index">
-        <h3>📂 Quick Index</h3>
+        <h3>📂 Quick Index <span class="hebrew">מפתח מהיר</span></h3>
         <div class="index-links">
           {friends.length > 0 && <a href="#friends" class="index-link"><span class="icon">👥</span><span class="name">Friends & People <span class="hebrew-name">חברים ואנשים</span></span><span class="count">{friends.length}</span></a>}
           {music.length > 0 && <a href="#music" class="index-link"><span class="icon">🎵</span><span class="name">Music & Singing <span class="hebrew-name">מוזיקה ושירה</span></span><span class="count">{music.length}</span></a>}
@@ -147,7 +147,7 @@ const other = allImages.filter(img => !categorized.has(img));
   <section class="navigation">
     <div class="container">
       <div class="nav-buttons">
-        <a href="/gallery/nanach" class="nav-btn">← Na Nach Life</a>
+        <a href="/gallery/nanach" class="nav-btn">← Na Nach Life / חיי נ נח</a>
         <a href="/teachings" class="nav-btn">Teachings →</a>
       </div>
     </div>

@@ -59,13 +59,13 @@ const categorized = new Set([
 const other = allImages.filter(img => !categorized.has(img));
 ---
 
-<Layout title="Saba Gallery" description="Photos of Rabbi Yisroel Ber Odesser">
+<Layout title="Saba Gallery / גלריית סבא" description="Photos of Rabbi Yisroel Ber Odesser">
   <section class="page-header">
-    <h1>Rabbi Yisroel Ber Odesser (Saba)</h1>
+    <h1>Rabbi Yisroel Ber Odesser (Saba) <span class="hebrew">רבי ישראל בר אודסר</span></h1>
     <p>1904-1994 • Recipient of the Holy Petek</p>
     <p class="hebrew">רבי ישראל בר אודסר ז"ל</p>
     <p class="stats">{allImages.length} photos</p>
-    <a href="/gallery" class="back-link">← Back to Gallery</a>
+    <a href="/gallery" class="back-link">← Back to Gallery / חזרה לגלריה</a>
   </section>
 
   <section class="intro">
@@ -76,7 +76,7 @@ const other = allImages.filter(img => !categorized.has(img));
         <cite>— From the Holy Petek (1922)</cite>
       </div>
       <div class="quick-index">
-        <h3>Quick Index</h3>
+        <h3>Quick Index <span class="hebrew">מפתח מהיר</span></h3>
         <div class="index-links">
           {handsUp.length > 0 && <a href="#handsup" class="index-link"><span class="icon">🙌</span><span class="name">Hands Up <span class="hebrew-name">ידיים למעלה</span></span><span class="count">{handsUp.length}</span></a>}
           {withPetek.length > 0 && <a href="#withpetek" class="index-link"><span class="icon">✡️</span><span class="name">With Petek <span class="hebrew-name">עם הפתק</span></span><span class="count">{withPetek.length}</span></a>}
@@ -245,8 +245,8 @@ const other = allImages.filter(img => !categorized.has(img));
   <section class="navigation">
     <div class="container">
       <div class="nav-buttons">
-        <a href="/gallery" class="nav-btn">← All Galleries</a>
-        <a href="/gallery/rabbainu" class="nav-btn">Rabbi Nachman →</a>
+        <a href="/gallery" class="nav-btn">← All Galleries / כל הגלריות</a>
+        <a href="/gallery/rabbainu" class="nav-btn">Rabbi Nachman / רבינו נחמן →</a>
       </div>
     </div>
   </section>
