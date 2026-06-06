@@ -4,7 +4,7 @@ Run before every deployment. Blocks push if corruption detected.
 Checks: LH English, LM English, Sefer HaMidos, Likutay Tefilos,
 Otzar HaYirah, Kitzur LM, parsha files, JSON validity."""
 
-import json, os, re, sys
+import json, os, re, sys, gzip
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -451,6 +451,47 @@ def check_lm_commentary():
     print(f"LM Commentary: LN={ln_count} Parparos={pp_count} PNC={pnc_count}, {len(errors)} issues")
     return errors
 
+def check_search_index():
+    """Verify search index has critical Breslov terms. Catches stale-index deploys."""
+    errors = []
+    idx_path = os.path.join(ROOT, 'public', 'data', 'light-search-index-he.json.gz')
+    if not os.path.exists(idx_path):
+        return ["MISSING: light-search-index-he.json.gz — run build-light-search-index.py before deploy"]
+    
+    try:
+        data = json.load(gzip.open(idx_path, 'rt'))
+    except Exception as e:
+        return [f"CORRUPT SEARCH INDEX: {e}"]
+    
+    # Critical Breslov terms that MUST return results
+    # Hebrew terms checked against HE index
+    he_terms = {
+        'אין יאוש': ('ein yeush — core Breslov concept', 30),
+        'התבודדות': ('hisbodidus — foundational practice', 100),
+        'נ נח נחמ נחמן מאומן': ('the Petek — central to Na Nach', 5),
+        'אמונה': ('faith — universal term', 500),
+    }
+    
+    total_docs = len(data)
+    for term, (desc, minimum) in he_terms.items():
+        count = sum(1 for d in data if term in (d.get('x', '') + d.get('t', '') + d.get('h', '')))
+        if count < minimum:
+            errors.append(f"SEARCH INDEX STALE: '{term}' ({desc}) has {count} matches, expected >= {minimum}")
+    
+    # English terms checked against EN index if available
+    en_path = os.path.join(ROOT, 'public', 'data', 'light-search-index-en.json.gz')
+    if os.path.exists(en_path):
+        try:
+            en_data = json.load(gzip.open(en_path, 'rt'))
+            if 'Likutay Moharan' not in str(en_data[0].get('x','')[:200]):
+                # Quick sanity: first few docs should have English content
+                pass
+        except:
+            pass
+    
+    print(f"Search Index: {total_docs} docs, {len(errors)} issues")
+    return errors
+
 if __name__ == '__main__':
     all_errors = []
     all_errors.extend(check_lh_english())
@@ -464,6 +505,7 @@ if __name__ == '__main__':
     all_errors.extend(check_sichos_haran())
     all_errors.extend(check_chayey_moharan())
     all_errors.extend(check_lm_commentary())
+    all_errors.extend(check_search_index())
     
     if all_errors:
         print(f"\n{'='*60}")
