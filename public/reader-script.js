@@ -1927,9 +1927,70 @@
     });
   }
 
+  // --- Add permalink buttons to segments with share IDs ---
+  function addShareAnchors() {
+    var pairs = document.querySelectorAll('.reader-segment-pair');
+    pairs.forEach(function(pair) {
+      var segNum = pair.querySelector('.segment-number');
+      if (!segNum) return;
+      var idx = segNum.textContent.trim();
+      if (!idx) return;
+        
+      // Check if there's embedded share data
+      var shareData = window.__readerShareData__;
+      if (shareData && shareData[idx]) {
+        var shareId = shareData[idx];
+        pair.setAttribute('data-share-id', shareId);
+          
+        // Add link button
+        var btn = document.createElement('button');
+        btn.className = 'seg-permalink-btn';
+        btn.title = 'Copy link to this siman';
+        btn.innerHTML = '🔗';
+        btn.style.cssText = 'position:absolute;right:4px;top:2px;background:none;border:none;cursor:pointer;font-size:0.8em;opacity:0;transition:opacity 0.2s;padding:2px 6px;';
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var url = window.location.href.split('#')[0] + '#' + shareId;
+          navigator.clipboard.writeText(url).then(function() {
+            btn.innerHTML = '✓';
+            setTimeout(function() { btn.innerHTML = '🔗'; }, 1500);
+          }).catch(function() {});
+        });
+        pair.style.position = 'relative';
+        pair.appendChild(btn);
+          
+        pair.addEventListener('mouseenter', function() { btn.style.opacity = '0.6'; });
+        pair.addEventListener('mouseleave', function() { btn.style.opacity = '0'; });
+      }
+    });
+      
+    // Handle hash navigation to share ID
+    var hash = window.location.hash.slice(1);
+    if (hash) {
+      var target = document.querySelector('[data-share-id=\"' + hash + '\"]');
+      if (target) {
+        setTimeout(function() {
+          target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          target.style.background = 'rgba(212, 165, 116, 0.2)';
+          setTimeout(function() { target.style.background = ''; }, 2000);
+        }, 500);
+      }
+    }
+  }
+
+  // Load share data from window.__readerShareData__ if set by template
+  window.addEventListener('DOMContentLoaded', function() {
+    setTimeout(addShareAnchors, 300);
+  });
+  // Also run when aligned view is toggled
+  var origToggleAligned = window.toggleAligned;
+  window.toggleAligned = function() {
+    if (origToggleAligned) origToggleAligned();
+    setTimeout(addShareAnchors, 100);
+  };
+
   // --- Add to My Sefer ---
   function setupMySefer() {
-    var SEFER_KEY = 'mySefer';
     var container = document.querySelector('.reader-container');
     if (!container) return;
 

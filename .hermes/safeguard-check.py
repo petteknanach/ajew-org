@@ -492,6 +492,111 @@ def check_search_index():
     print(f"Search Index: {total_docs} docs, {len(errors)} issues")
     return errors
 
+def check_likutay_eitzos():
+    """Verify Likutay Eitzos (and Basra) alignment: HE/EN match, no empty gaps, key terms present."""
+    errors = []
+    books = {
+        'likutay-eitzos': 'Likutay Eitzos',
+        'likutay-eitzos-basra': 'Likutay Eitzos Basra',
+    }
+    critical_he_terms = ['צדיק', 'אמונה', 'תפלה', 'שמחה', 'דעת', 'התבודדות']
+    
+    for book_dir, book_name in books.items():
+        path = os.path.join(ROOT, 'public', 'reader', book_dir)
+        if not os.path.exists(path):
+            errors.append(f"MISSING: {book_name} ({book_dir})")
+            continue
+        
+        json_files = sorted([f for f in os.listdir(path) if f.startswith('topic-') and f.endswith('.json')])
+        if not json_files:
+            errors.append(f"EMPTY: {book_name} — no topic files")
+            continue
+        
+        total_he = 0
+        total_en = 0
+        total_segs = 0
+        gap_files = []
+        
+        for f in json_files:
+            fp = os.path.join(path, f)
+            try:
+                data = json.load(open(fp))
+            except:
+                errors.append(f"CORRUPT JSON: {book_dir}/{f}")
+                continue
+            
+            segs = data.get('segments', [])
+            if not segs:
+                errors.append(f"EMPTY SEGMENTS: {book_dir}/{f}")
+                continue
+            
+            he_count = sum(1 for s in segs if (s.get('he','') or '').strip())
+            en_count = sum(1 for s in segs if (s.get('en','') or '').strip())
+            total_he += he_count
+            total_en += en_count
+            total_segs += len(segs)
+            
+            if len(segs) > 5 and en_count < len(segs) * 0.2:
+                gap_files.append(f)
+        
+        en_pct = round(100 * total_en / max(1, total_he))
+        print(f"{book_name}: {len(json_files)} topics, {total_en}/{total_he} EN ({en_pct}%)")
+        
+        if gap_files:
+            errors.append(f"{book_name} EN GAPS (>80% missing): {', '.join(gap_files[:5])}")
+        if en_pct < 85:
+            errors.append(f"{book_name} LOW EN COVERAGE: {en_pct}% (< 85% threshold)")
+    
+    return errors
+
+def check_en_coverage():
+    """Quick EN coverage check for all books in catalog."""
+    errors = []
+    reader = os.path.join(ROOT, 'public', 'reader')
+    
+    # Books to check with minimum EN thresholds
+    thresholds = {
+        'michtevay-shmuel': 85,
+        'yereach-haeitanim': 85,
+        'zimras-haaretz': 85,
+        'nachas-hashulchan': 85,
+        'kokhvei-or': 85,
+        'chayey-moharan': 80,
+        'likutay-tefilos': 85,
+        'likutay-eitzos-basra': 90,
+    }
+    
+    for book_id, minimum in thresholds.items():
+        book_dir = os.path.join(reader, book_id)
+        if not os.path.isdir(book_dir):
+            continue
+        
+        total_he = total_en = 0
+        files_checked = 0
+        for root, dirs, fnames in os.walk(book_dir):
+            for f in fnames:
+                if f == 'index.json' or not f.endswith('.json'):
+                    continue
+                try:
+                    data = json.load(open(os.path.join(root, f)))
+                except:
+                    continue
+                for s in data.get('segments', []):
+                    if (s.get('he','') or '').strip(): total_he += 1
+                    if (s.get('en','') or '').strip(): total_en += 1
+                files_checked += 1
+        
+        if total_he == 0:
+            continue
+        
+        pct = round(100 * total_en / total_he)
+        if pct < minimum:
+            errors.append(f"LOW EN: {book_id} = {pct}% (threshold {minimum}%)")
+        else:
+            print(f"  {book_id}: {total_en}/{total_he} EN ({pct}%) OK")
+    
+    return errors
+
 if __name__ == '__main__':
     all_errors = []
     all_errors.extend(check_lh_english())
@@ -505,6 +610,8 @@ if __name__ == '__main__':
     all_errors.extend(check_sichos_haran())
     all_errors.extend(check_chayey_moharan())
     all_errors.extend(check_lm_commentary())
+    all_errors.extend(check_likutay_eitzos())
+    all_errors.extend(check_en_coverage())
     all_errors.extend(check_search_index())
     
     if all_errors:

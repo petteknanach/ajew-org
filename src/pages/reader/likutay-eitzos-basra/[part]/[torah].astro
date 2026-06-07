@@ -231,6 +231,12 @@ const breadcrumbData = torahData ? JSON.stringify({
 
       <script src="/reader-script.js" defer></script>
       <script src="/reader-v2.js" defer></script>
+      <script>
+        // Share data for permalink anchors
+        window.__readerShareData__ = {
+          {torahData.segments.filter(s => s.shareId).map(s => `"${s.index}": "${s.shareId}"`).join(',\n          ')}
+        };
+      </script>
       <script src="/pwa-register.js" defer></script>
       <script src="/tts-fix.js" defer></script>
       <script src="/reader-notes.js" is:inline></script>
