@@ -133,7 +133,7 @@ import Layout from '../layouts/Layout.astro';
             book: doc.b || ''
           });
         }
-        if (resultsData.length >= 10) break;
+        if (resultsData.length >= 200) break;
       }
       resultsData.sort((a, b) => words.filter(k => (a.snippet||'').toLowerCase().includes(k)).length - words.filter(k => (b.snippet||'').toLowerCase().includes(k)).length);
       
