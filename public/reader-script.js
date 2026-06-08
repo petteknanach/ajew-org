@@ -2264,6 +2264,14 @@
           type: 'commentary'
         });
       }
+      // Blog commentary on Chayey Moharan (all chapters)
+      sources.push({
+        id: 'blog-chayey',
+        label: 'פתק',
+        labelHe: 'הקפדת רבינו',
+        url: '/reader/blog-commentary/chayey-moharan-travelers.json',
+        type: 'commentary'
+      });
     }
 
     // Shivchey HaRan gets Likutay Nanach
