@@ -2236,16 +2236,16 @@
       }
     }
 
-    // Sichos HaRan gets Likutay Nanach
+    // Sichos HaRan gets per-siman Likutay Nanach commentary
     if (bookId === 'sichos-haran') {
-      var lnSichos = { 3: 29, 8: 27, 10: 28 };
-      if (lnSichos[torah]) {
+      var lnSichosMap = {1:"\u05d0",2:"\u05d1",3:"\u05d2",4:"\u05d3",5:"\u05d4",6:"\u05d5",7:"\u05d6",8:"\u05d7",9:"\u05d8",10:"\u05d9",11:"11",16:"16",20:"\u05db",23:"23",24:"\u05db\u05d3",26:"26",30:"\u05dc",32:"\u05dc\u05d1",35:"\u05dc\u05d4",36:"\u05dc\u05d5",40:"\u05de",44:"\u05de\u05d3",47:"47",48:"48",49:"\u05de\u05d8",50:"\u05e0",51:"\u05e0\u05d0",54:"\u05e0\u05d3",56:"\u05e0\u05d5",58:"58",59:"\u05e0\u05d8",60:"60",62:"\u05e1\u05d1",64:"\u05e1\u05d3",73:"73",75:"75",76:"76",77:"\u05e2\u05d6",79:"\u05e2\u05d8",93:"\u05e6\u05d2",95:"95",96:"\u05e6\u05d5",101:"101",103:"103",104:"\u05e7\u05d3",109:"\u05e7\u05d8",112:"112",116:"116",118:"118",126:"126",137:"137",139:"139",140:"140",141:"\u05e7\u05de\u05d0",143:"143",145:"\u05e7\u05de\u05d4",146:"\u05e7\u05de\u05d5",152:"\u05e7\u05e0\u05d1",153:"153",154:"154",155:"\u05e7\u05e0\u05d4",158:"158",160:"160",161:"161",165:"165",166:"166",167:"167",172:"172",175:"175",176:"176",179:"179",181:"\u05e7\u05e4\u05d0",184:"184",185:"\u05e7\u05e4\u05d4",192:"\u05e7\u05e6\u05d1",198:"198",199:"199",219:"219",220:"220",228:"228",233:"233",235:"235",237:"237",241:"241",243:"243",247:"\u05e8\u05de\u05d6",248:"248",249:"249",255:"\u05e8\u05e0\u05d4",258:"258",259:"\u05e8\u05e0\u05d8",265:"265",268:"268",269:"269",273:"273",279:"279",280:"280",284:"\u05e8\u05e4\u05d3",293:"293",296:"\u05e8\u05e6\u05d5",301:"\u05e9\u05d0",308:"\u05e9\u05d7"};
+      var sichosFile = lnSichosMap[torah];
+      if (sichosFile) {
         sources.push({
-          id: 'likutay-nanach',
+          id: 'ln-sichos',
           label: 'Na Nach',
-          labelHe: 'ליקוטי נ נח',
-          url: '/reader/likutay-nanach/volume-4/chapter-' + lnSichos[torah] + '.json',
-          readerUrl: '/reader/likutay-nanach/4/' + lnSichos[torah],
+          labelHe: '\u05dc\u05d9\u05e7\u05d5\u05d8\u05d9 \u05e0 \u05e0\u05d7',
+          url: '/reader/likutay-nanach/volume-4/sichos-' + sichosFile + '.json',
           type: 'commentary'
         });
       }
