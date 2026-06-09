@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "npm run verify && node scripts/dl-pnc-data.cjs && node scripts/create-app-aliases.cjs && node scripts/build-parsha-connections.cjs && node scripts/build-search-index-v2.cjs && python3 scripts/build-light-search-index.py && npm run verify && astro build",
+    "build": "npm run verify && node scripts/dl-pnc-data.cjs && node scripts/create-app-aliases.cjs && node scripts/build-parsha-connections.cjs && node scripts/build-search-index-v2.cjs && (python3 scripts/build-light-search-index.py || echo 'WARN: python3 not available, skipping light-search-index') && npm run verify && astro build",
     "preview": "astro preview",
     "astro": "astro",
     "search": "node gen-search-index.js",
