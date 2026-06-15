@@ -554,16 +554,26 @@ def check_en_coverage():
     errors = []
     reader = os.path.join(ROOT, 'public', 'reader')
     
-    # Books to check with minimum EN thresholds
+    # Books to check with minimum EN thresholds.
+    # Likutay Halachos is intentionally segment-level strict: deployment must fail
+    # until the reader data has real per-segment English for nearly every Hebrew segment.
     thresholds = {
-        'michtevay-shmuel': 85,
-        'yereach-haeitanim': 85,
-        'zimras-haaretz': 85,
-        'nachas-hashulchan': 85,
-        'kokhvei-or': 85,
-        'chayey-moharan': 80,
-        'likutay-tefilos': 85,
-        'likutay-eitzos-basra': 90,
+        'michtevay-shmuel': 100,
+        'yereach-haeitanim': 100,
+        'zimras-haaretz': 100,
+        'nachas-hashulchan': 100,
+        'kokhvei-or': 100,
+        'chayey-moharan': 100,
+        'likutay-tefilos': 99,
+        'likutay-eitzos-basra': 99,
+        'likutay-eitzos': 99,
+        'likutay-moharan': 99,
+        'yikra-dshabbata': 99,
+        'yisroel-saba': 99,
+        'ebay-hanachal': 99,
+        'alim-litrufa': 99,
+        'otzar-hayirah': 99,
+        'likutay-halachos': 98,
     }
     
     for book_id, minimum in thresholds.items():
@@ -576,6 +586,8 @@ def check_en_coverage():
         for root, dirs, fnames in os.walk(book_dir):
             for f in fnames:
                 if f == 'index.json' or not f.endswith('.json'):
+                    continue
+                if book_id == 'likutay-halachos' and not f.startswith('halacha-'):
                     continue
                 try:
                     data = json.load(open(os.path.join(root, f)))
