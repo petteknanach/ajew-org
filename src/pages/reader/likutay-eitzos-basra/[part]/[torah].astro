@@ -64,6 +64,9 @@ const breadcrumbData = torahData ? JSON.stringify({
     { "@type": "ListItem", "position": 3, "name": torahData.hebrewTitle || torahData.title }
   ]
 }) : '';
+const readerShareDataScript = torahData ? `window.__readerShareData__ = ${JSON.stringify(
+  Object.fromEntries((torahData.segments || []).filter(s => s.shareId).map(s => [String(s.index), s.shareId]))
+)};` : '';
 ---
 
 <Layout title={pageTitle} description={pageDesc}>
@@ -231,12 +234,7 @@ const breadcrumbData = torahData ? JSON.stringify({
 
       <script src="/reader-script.js" defer></script>
       <script src="/reader-v2.js" defer></script>
-      <script>
-        // Share data for permalink anchors
-        window.__readerShareData__ = {
-          {torahData.segments.filter(s => s.shareId).map(s => `"${s.index}": "${s.shareId}"`).join(',\n          ')}
-        };
-      </script>
+      <script set:html={readerShareDataScript}></script>
       <script src="/pwa-register.js" defer></script>
       <script src="/tts-fix.js" defer></script>
       <script src="/reader-notes.js" is:inline></script>

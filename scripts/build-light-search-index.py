@@ -19,55 +19,59 @@ OUT_DIR.mkdir(parents=True, exist_ok=True)
 def strip_nikud(text):
     return re.sub(r'[\u0591-\u05C7]', '', text)
 
+HE_KEYS = ('he', 'he_nikud', 'verse', 'commentary_he', 'text_he', 'hebrew', 'hebrew_text')
+EN_KEYS = ('en', 'commentary_en', 'text_en', 'english', 'translation')
+LAYER_KEYS = ('beginner', 'intermediate', 'scholarly')
+
+
+def add_text(target, text, hebrew=False):
+    text = (text or '').strip() if isinstance(text, str) else ''
+    if not text:
+        return
+    target.append(strip_nikud(text) if hebrew else text)
+
+
 def extract_segments(data):
     segments = data.get('segments', [])
     all_he = []
     all_en = []
     for seg in segments:
+        if not isinstance(seg, dict):
+            continue
         seg_he = []
         seg_en = []
-        he = ''
-        en = ''
-        
-        # Standard format: seg.he / seg.en
-        if 'he' in seg or 'en' in seg:
-            he = (seg.get('he', '') or '').strip()
-            en = (seg.get('en', '') or '').strip()
-        
+
+        # Standard reader formats plus Tanach/Likutay-NaNach commentary fields.
+        for key in HE_KEYS:
+            add_text(seg_he, seg.get(key), hebrew=True)
+        for key in EN_KEYS:
+            add_text(seg_en, seg.get(key), hebrew=False)
+
         # PNC 3-layer format: seg.layers.beginner.he / .en
         layers = seg.get('layers') or {}
-        if not he and layers:
-            for level in ['beginner', 'intermediate', 'scholarly']:
+        if isinstance(layers, dict):
+            for level in LAYER_KEYS:
                 l = layers.get(level) or {}
-                h = (l.get('he', '') or '').strip()
-                e = (l.get('en', '') or '').strip()
-                if h: seg_he.append(strip_nikud(h))
-                if e: seg_en.append(e)
-            all_he.extend(seg_he)
-            all_en.extend(seg_en)
-            continue
-        
-        # PNC flat format: seg.beginner.he / .en
-        for level in ['beginner', 'intermediate', 'scholarly']:
+                if isinstance(l, dict):
+                    for key in HE_KEYS:
+                        add_text(seg_he, l.get(key), hebrew=True)
+                    for key in EN_KEYS:
+                        add_text(seg_en, l.get(key), hebrew=False)
+
+        # PNC flat format: seg.beginner.he / .en, or direct string values.
+        for level in LAYER_KEYS:
             l = seg.get(level)
             if isinstance(l, dict):
-                h = (l.get('he', '') or '').strip()
-                e = (l.get('en', '') or '').strip()
-                if h: seg_he.append(strip_nikud(h))
-                if e: seg_en.append(e)
-            elif isinstance(l, str) and l.strip():
-                seg_en.append(l.strip())
-        
-        if seg_he or seg_en:
-            all_he.extend(seg_he)
-            all_en.extend(seg_en)
-            continue
-        
-        if he:
-            all_he.append(strip_nikud(he))
-        if en:
-            all_en.append(en)
-    
+                for key in HE_KEYS:
+                    add_text(seg_he, l.get(key), hebrew=True)
+                for key in EN_KEYS:
+                    add_text(seg_en, l.get(key), hebrew=False)
+            elif isinstance(l, str):
+                add_text(seg_en, l, hebrew=False)
+
+        all_he.extend(seg_he)
+        all_en.extend(seg_en)
+
     return '\n\n'.join(all_he), '\n\n'.join(all_en)
 
 # Collect all JSON files
