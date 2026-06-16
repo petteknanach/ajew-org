@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const HTML_DIR = 'C:/Users/Pettek/Documents/Translations/Likutay Tefilos';
+const HTML_DIR = '/mnt/c/Users/Pettek/Documents/Translations/Likutay Tefilos';
 const READER_DIR = path.join(__dirname, '../public/reader/likutay-tefilos');
 
 /**

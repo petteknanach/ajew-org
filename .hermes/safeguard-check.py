@@ -573,7 +573,7 @@ def check_en_coverage():
         'ebay-hanachal': 99,
         'alim-litrufa': 99,
         'otzar-hayirah': 99,
-        'likutay-halachos': 98,
+        'likutay-halachos': 100,
     }
     
     for book_id, minimum in thresholds.items():

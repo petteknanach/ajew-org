@@ -11,7 +11,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const TRANS_BASE = 'C:/Users/Pettek/Documents/Translations/Likutay Halachos';
+const TRANS_BASE = '/mnt/c/Users/Pettek/Documents/Translations/Likutay Halachos';
 const READER_BASE = path.join(__dirname, '../public/reader/likutay-halachos');
 
 // Volume mapping: translation folder → reader part number

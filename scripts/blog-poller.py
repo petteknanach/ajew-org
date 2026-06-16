@@ -13,6 +13,7 @@ import json
 import os
 import re
 import time
+import html as html_escape
 from datetime import datetime
 from email.header import decode_header
 from pathlib import Path
@@ -73,6 +74,46 @@ def extract_body(msg):
             return payload.decode(charset, errors='replace')
     return ""
 
+def clean_title_for_display(title):
+    return title.replace(' — Na Nach Blog', '').strip()
+
+def split_paragraphs(text):
+    text = (text or '').replace('\r\n', '\n').replace('\r', '\n').strip()
+    return [p.strip() for p in re.split(r'\n\s*\n+', text) if p.strip()]
+
+def format_body_html(body, indent='      '):
+    """Convert plain text to safe, readable HTML paragraphs."""
+    parts = []
+    for p in split_paragraphs(body):
+        escaped = html_escape.escape(p)
+        escaped = escaped.replace('\n', '<br>')
+        direction = 'rtl' if re.search(r'[\u0590-\u05ff]', p) else 'ltr'
+        cls = 'hebrew-section' if direction == 'rtl' else 'english-section'
+        parts.append(f'{indent}<p class="{cls}" dir="{direction}">{escaped}</p>')
+    return '\n'.join(parts)
+
+def extract_article_body(content):
+    m = re.search(r'<article class="blog-post">(.*?)</article>', content, re.S)
+    return m.group(1).strip() if m else ''
+
+def plain_summary(article_html, limit=420):
+    text = re.sub(r'<br\s*/?>', ' ', article_html, flags=re.I)
+    text = re.sub(r'<[^>]+>', ' ', text)
+    text = html_escape.unescape(re.sub(r'\s+', ' ', text)).strip()
+    if len(text) > limit:
+        text = text[:limit].rsplit(' ', 1)[0].rstrip() + '…'
+    return text
+
+def share_block(url, title):
+    encoded_url = html_escape.escape(url, quote=True)
+    encoded_title = html_escape.escape(title, quote=True)
+    return f'''<div class="share-row" aria-label="Share post">
+        <span>Share:</span>
+        <a href="https://wa.me/?text={encoded_title}%20{encoded_url}" target="_blank" rel="noopener">WhatsApp</a>
+        <a href="https://t.me/share/url?url={encoded_url}&text={encoded_title}" target="_blank" rel="noopener">Telegram</a>
+        <button type="button" onclick="navigator.clipboard&&navigator.clipboard.writeText('{encoded_url}')">Copy link</button>
+      </div>'''
+
 def slugify(title):
     """Create URL-friendly slug from title."""
     slug = re.sub(r'[^\w\s-]', '', title.lower())
@@ -85,26 +126,29 @@ def create_blog_post(subject, body, date_str):
     timestamp = datetime.now().strftime('%Y%m%d-%H%M%S')
     filename = f"{timestamp}-{slug}.html"
     
-    # Format body: convert double newlines to paragraphs
-    paragraphs = [p.strip() for p in body.split('\n\n') if p.strip()]
-    body_html = '\n'.join(f'      <p>{p}</p>' for p in paragraphs)
+    # Format body: convert paragraphs safely and preserve line breaks
+    body_html = format_body_html(body)
+    subject_html = html_escape.escape(subject)
+    post_url = f"{BLOG_URL_BASE}/{filename}"
+    share_html = share_block(post_url, subject)
     
     html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{subject} — Na Nach Blog</title>
+<title>{subject_html} — Na Nach Blog</title>
 <link rel="stylesheet" href="/blog/style.css">
 </head>
 <body>
   <div class="blog-container">
-    <header class="blog-header">
+    <header class="blog-header post-page-header">
       <a href="/blog" class="back-link">← All Posts</a>
-      <h1>{subject}</h1>
+      <h1>{subject_html}</h1>
       <time datetime="{date_str}">{date_str}</time>
+      {share_html}
     </header>
-    <article class="blog-post">
+    <article class="blog-post post-card">
 {body_html}
     </article>
     <footer class="blog-footer">
@@ -121,42 +165,55 @@ def create_blog_post(subject, body, date_str):
     return filename
 
 def rebuild_index():
-    """Rebuild blog index page from all post files."""
+    """Rebuild blog index page from all post files, showing full posts with share links."""
     posts = []
     for f in sorted(os.listdir(BLOG_DIR), reverse=True):
-        if f.endswith('.html'):
-            # Extract title from file
+        if f.endswith('.html') and f != 'index.html':
             filepath = os.path.join(BLOG_DIR, f)
             with open(filepath, 'r', encoding='utf-8') as fh:
                 content = fh.read()
                 title_m = re.search(r'<title>(.*?)</title>', content)
                 date_m = re.search(r'<time datetime="(.*?)"', content)
-                title = title_m.group(1) if title_m else f.replace('.html', '')
+                title = clean_title_for_display(html_escape.unescape(title_m.group(1))) if title_m else f.replace('.html', '')
                 date_str = date_m.group(1) if date_m else ''
-            
-            # Format date nicely
+                article_html = extract_article_body(content)
+                if not article_html:
+                    body_m = re.search(r'<body[^>]*>(.*?)</body>', content, re.S | re.I)
+                    article_html = body_m.group(1).strip() if body_m else ''
             try:
-                date_obj = datetime.fromisoformat(date_str)
+                date_obj = email.utils.parsedate_to_datetime(date_str)
                 display_date = date_obj.strftime('%B %d, %Y')
-            except:
-                display_date = date_str
-            
+            except Exception:
+                try:
+                    date_obj = datetime.fromisoformat(date_str)
+                    display_date = date_obj.strftime('%B %d, %Y')
+                except Exception:
+                    display_date = date_str
+            url = f'{BLOG_URL_BASE}/{f}'
             posts.append({
                 'filename': f,
-                'title': title.replace(' — Na Nach Blog', ''),
+                'title': title,
+                'title_html': html_escape.escape(title),
                 'date': display_date,
-                'date_iso': date_str,
-                'url': f'{BLOG_URL_BASE}/{f}'
+                'date_iso': html_escape.escape(date_str, quote=True),
+                'url': url,
+                'article_html': article_html,
+                'summary': plain_summary(article_html)
             })
-    
-    # Generate index
+
     post_items = []
     for p in posts:
-        post_items.append(f"""    <article class="post-item">
-      <time datetime="{p['date_iso']}">{p['date']}</time>
-      <h2><a href="/blog/{p['filename']}">{p['title']}</a></h2>
+        post_items.append(f"""    <article class="post-item full-post-card">
+      <header class="post-list-header">
+        <time datetime="{p['date_iso']}">{p['date']}</time>
+        <h2><a href="/blog/{p['filename']}">{p['title_html']}</a></h2>
+      </header>
+      <div class="post-body-preview">
+{p['article_html']}
+      </div>
+      {share_block(p['url'], p['title'])}
     </article>""")
-    
+
     index_html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -167,7 +224,7 @@ def rebuild_index():
 <link rel="alternate" type="application/rss+xml" title="Na Nach Blog RSS" href="/blog/rss.xml">
 </head>
 <body>
-  <div class="blog-container">
+  <div class="blog-container blog-index-container">
     <header class="blog-header">
       <div class="blog-banner">
         <h1>Na Nach Blog</h1>
@@ -190,20 +247,20 @@ def rebuild_index():
   </div>
 </body>
 </html>"""
-    
+
     with open(INDEX_FILE, 'w', encoding='utf-8') as f:
         f.write(index_html)
-    
-    # Also generate RSS
+
     rss_items = []
     for p in posts[:20]:
         rss_items.append(f"""    <item>
-      <title>{p['title']}</title>
+      <title>{html_escape.escape(p['title'])}</title>
       <link>{p['url']}</link>
       <pubDate>{p['date_iso']}</pubDate>
       <guid>{p['url']}</guid>
+      <description>{html_escape.escape(p['summary'])}</description>
     </item>""")
-    
+
     rss = f"""<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
 <channel>
@@ -214,10 +271,10 @@ def rebuild_index():
 {chr(10).join(rss_items)}
 </channel>
 </rss>"""
-    
+
     with open(os.path.join(os.path.dirname(INDEX_FILE), 'rss.xml'), 'w', encoding='utf-8') as f:
         f.write(rss)
-    
+
     print(f"  Index rebuilt: {len(posts)} posts")
 
 def main():

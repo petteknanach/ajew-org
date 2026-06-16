@@ -2392,6 +2392,11 @@
         url:'/reader/blog-commentary/shelach-spies.json',
         type:'commentary'});
     }
+    if (bookId === 'talmud-bavli-chulin' || bookId === 'mishna-chulin' || bookId === 'mishna-chullin') {
+      sources.push({id:'blog-chulin',label:'פתק',labelHe:'חולין נ נח',
+        url:'/reader/blog-commentary/chulin-nanach.json',
+        type:'commentary'});
+    }
 
     // === Likutay Nanach Vol 1-3 — volume-level commentary for all books ===
     var lnVolSources = getLNVolumeCommentary(bookId);
