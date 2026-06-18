@@ -87,6 +87,18 @@
     { month: 'Tamuz', day: 2, type: 'yahrzeit', name: 'R\' Nachman of Horodenka', hebrew_name: 'רבי נחמן מהורדנקא', description: 'Grandfather of Rabbeinu; student of the Baal Shem Tov — תקכ"ה', priority: 2 },
     { month: 'Tamuz', day: 4, type: 'yahrzeit', name: 'Rabbeinu Tam (R\' Yaakov ben Meir)', hebrew_name: 'רבי יעקב מבעלי התוספות - רבינו תם', description: 'Buried in France — ד"א תתקל"א', priority: 2 },
     { month: 'Tamuz', day: 4, type: 'yahrzeit', name: "R' Pinchas HaLevi Horowitz of Nikolsburg", hebrew_name: 'רבי פנחס הלוי הורביץ מניקלשבורג', description: 'Author of Haflaah — תקס"ה', priority: 3 },
+    { month: 'Tamuz', day: 6, type: 'yahrzeit', name: "R' Chaim de la Rosa", hebrew_name: 'רבי חיים די לה רוזה', description: 'Author of Torat Chacham — מח"ס תורת חכם', priority: 3 },
+    { month: 'Tamuz', day: 6, type: 'yahrzeit', name: "R' Baruch Frankel-Teomim", hebrew_name: 'רבי ברוך פרענקל', description: 'Author of Baruch Taam — תקפ"א', priority: 3 },
+    { month: 'Tamuz', day: 7, type: 'yahrzeit', name: "R' Rafael Yitzchak Yisrael", hebrew_name: 'רבי רפאל יצחק ישראל', description: 'Author of Beit HaYayin — מח"ס בית היין', priority: 3 },
+    { month: 'Tamuz', day: 8, type: 'yahrzeit', name: "R' Shlomo ben Yehuda HaKohen", hebrew_name: 'רבי שלמה בן יהודה הכהן', description: 'Author of Yafeh Shaah — מח"ס יפה שעה', priority: 3 },
+    { month: 'Tamuz', day: 10, type: 'yahrzeit', name: "R' Yisrael Yaakov Algazi", hebrew_name: 'רבי ישראל יעקב אלגזי', description: 'Author of Ar’a DeRabbanan — תקט"ז', priority: 3 },
+    { month: 'Tamuz', day: 11, type: 'yahrzeit', name: "R' Tzvi Hirsch of Ziditchov", hebrew_name: 'רבי צבי הירש מזידיטשוב', description: 'Author of Tzvi LaTzaddik — תקצ"א', priority: 3 },
+    { month: 'Tamuz', day: 13, type: 'yahrzeit', name: "R' Chaim HaKohen Rappaport", hebrew_name: 'רבי חיים הכהן ראפפורט', description: 'Author of Shu”t Rabbeinu Chaim HaKohen — מח"ס שו"ת רבינו חיים הכהן', priority: 3 },
+    { month: 'Tamuz', day: 13, type: 'yahrzeit', name: "R' Yaakov Pitosi", hebrew_name: 'רבי יעקב פיתוסי', description: 'Author of Yerech Yaakov — תקע"ב', priority: 3 },
+    { month: 'Tamuz', day: 13, type: 'yahrzeit', name: "R' Aryeh Leib HaLevi Epstein", hebrew_name: 'רבי אריה לייב הלוי עפשטיין', description: 'Author of HaPardes — תקל"ה', priority: 3 },
+    { month: 'Tamuz', day: 14, type: 'yahrzeit', name: "Maharimat (R' Yosef b'R Moshe Mitrani)", hebrew_name: 'רבי יוסף ב"ר משה מטראני המהרימ"ט', description: 'שצ"ט', priority: 3 },
+    { month: 'Tamuz', day: 15, type: 'yahrzeit', name: "Ohr HaChaim HaKadosh (R' Chaim ben Attar)", hebrew_name: 'רבי חיים בן עטר בעל האור החיים הקדוש', description: 'תק"ג — buried in Jerusalem', priority: 1 },
+    { month: 'Tamuz', day: 16, type: 'yahrzeit', name: "Chur son of Kalev and Miriam HaNeviah", hebrew_name: 'חור בנו של כלב ומרים הנביאה', description: 'Son of Kalev and Miriam HaNeviah', priority: 3 },
     { month: 'Av', day: 5, type: 'yahrzeit', name: 'Arizal (R\' Yitzchak Luria)', hebrew_name: 'האריז"ל', description: 'Master of Kabbalah (1572)', priority: 2 },
     { month: 'Av', day: 1, type: 'yahrzeit', name: "R' Aharon HaRav of Breslov", hebrew_name: 'רבי אהרן הרב מברסלב', description: '5535-5605 / 1775-1845', priority: 3 },
     { month: 'Av', day: 19, type: 'yahrzeit', name: "R' Naftali of Nemirov", hebrew_name: 'רבי נפתלי מנעמירוב', description: '5540-5620 / 1780-1860', priority: 3 },
@@ -499,7 +511,7 @@
   function dismissYahrzeit() {
     const box = document.getElementById('compactYahrzeit');
     box.style.display = 'none';
-    const expiry = Date.now() + 24 * 60 * 60 * 1000;
+    const expiry = Date.now() + 60 * 60 * 1000;
     localStorage.setItem('ajew-yahrzeit-dismissed', String(expiry));
   }
 
