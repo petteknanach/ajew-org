@@ -169,13 +169,9 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         return null;
       }
       
-      // Pre-load preferred language index
+      // Pre-load lightweight reader-search metadata only. Do not load the huge browser indexes.
       preferredLang = detectLang();
-      loadIndex(preferredLang).then(() => {
-        // Auto-load the other language in background after 3 seconds
-        const other = preferredLang === 'he' ? 'en' : 'he';
-        setTimeout(() => loadIndex(other).catch(() => {}), 3000);
-      });
+      setTimeout(() => loadReaderMeta().catch(() => {}), 0);
       
       function normalizeForSearch(text) {
         return (text || '').toString().toLowerCase().normalize('NFD')
@@ -191,74 +187,83 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         return normalizeForSearch(text).split(' ').filter(Boolean);
       }
 
-      function acronym(text, last = false) {
-        return searchWords(text).map(w => last ? w[w.length - 1] : w[0]).join('');
-      }
+      const readerShardCache = new Map();
+      let readerMetaPromise = null;
+      let readerMeta = null;
 
-      function proximityHit(tokens, terms, distance) {
-        const positions = terms.map(term => tokens.map((w, i) => w === term ? i : -1).filter(i => i >= 0));
-        if (positions.some(p => p.length === 0)) return false;
-        for (const p of positions[0]) {
-          if (positions.every(list => list.some(i => Math.abs(i - p) <= distance))) return true;
+      async function loadReaderMeta() {
+        if (readerMeta) return readerMeta;
+        if (!readerMetaPromise) {
+          readerMetaPromise = fetch('/reader-search/meta.json', { headers: { Accept: 'application/json' } })
+            .then(r => { if (!r.ok) throw new Error('reader meta ' + r.status); return r.json(); })
+            .then(d => (readerMeta = d));
         }
-        return false;
+        return readerMetaPromise;
       }
 
-      function booleanHit(text, query) {
-        const q = normalizeForSearch(query);
-        const orGroups = q.split(/\bor\b/).map(s => s.trim()).filter(Boolean);
-        const checkAnd = (part) => part.split(/\band\b/).map(s => s.trim()).filter(Boolean).every(term => {
-          if (term.startsWith('not ')) return !text.includes(term.slice(4).trim());
-          return text.includes(term);
-        });
-        return orGroups.length ? orGroups.some(checkAnd) : checkAnd(q);
+      async function loadShard(key) {
+        if (readerShardCache.has(key)) return readerShardCache.get(key);
+        const shard = await fetch('/reader-search/shards/' + encodeURIComponent(key) + '.json', { headers: { Accept: 'application/json' } })
+          .then(r => r.ok ? r.json() : {});
+        readerShardCache.set(key, shard);
+        return shard;
       }
 
-      function clientSearch(query, advanced) {
-        const idx = getActiveIndex();
-        if (!idx) return { results: [], total: 0 };
+      function bookIdFromPath(path) {
+        return (path || '').replace(/^\/reader\//, '').split('/')[0] || '';
+      }
+
+      function idsForMode(shards, query, mode) {
+        const words = searchWords(query);
         const q = normalizeForSearch(query);
+        if (!words.length) return new Set();
+        if (mode === 'startsWith') {
+          const ids = new Set();
+          for (const shard of shards) for (const [term, list] of Object.entries(shard)) if (!term.startsWith('e:') && term.startsWith(q)) list.forEach(id => ids.add(id));
+          return ids;
+        }
+        if (mode === 'endsWith') {
+          const ids = new Set();
+          const rev = Array.from(q).reverse().join('');
+          for (const [term, list] of Object.entries(shards[0] || {})) if (term.startsWith('e:' + rev)) list.forEach(id => ids.add(id));
+          return ids;
+        }
+        const lists = words.map(w => (shards.find(sh => sh[w]) || {})[w] || []);
+        if (mode === 'any' || mode === 'google' || mode === 'boolean') {
+          const ids = new Set(); lists.forEach(list => list.forEach(id => ids.add(id))); return ids;
+        }
+        const [smallest, ...rest] = lists.sort((a,b)=>a.length-b.length);
+        const restSets = rest.map(l => new Set(l));
+        return new Set((smallest || []).filter(id => restSets.every(set => set.has(id))));
+      }
+
+      async function clientSearch(query, advanced) {
+        const meta = await loadReaderMeta();
         const words = searchWords(query);
         const searchType = advanced?.searchType || 'google';
-        const minWords = advanced?.minWords || 1;
-        const proximity = advanced?.proximity || 5;
         const books = advanced?.books || [];
-        const qHebrew = isHebrewQuery(query);
-        let results = [];
-        const maxResults = 50;
-        for (const doc of idx) {
-          if (books.length > 0 && !books.includes(doc.b)) continue;
-          const raw = ((doc.x || '') + ' ' + (doc.t || '') + ' ' + (doc.h || '') + ' ' + (doc.e || ''));
-          const searchText = normalizeForSearch(raw);
-          const tokens = searchWords(raw);
-          let matches = words.filter(word => searchText.includes(word)).length;
-          let ok = false;
-          let extra = (doc.b || '') + (doc.p ? ' ' + doc.p : '') + (doc.n ? ':' + doc.n : '');
-          if (searchType === 'exact') ok = q && searchText.includes(q);
-          else if (searchType === 'all') ok = words.length > 0 && matches === words.length;
-          else if (searchType === 'any' || searchType === 'google') ok = matches >= Math.max(1, minWords || 1);
-          else if (searchType === 'proximity') ok = words.length > 1 ? proximityHit(tokens, words, proximity) : matches > 0;
-          else if (searchType === 'boolean') ok = booleanHit(searchText, query);
-          else if (searchType === 'acronym') { ok = acronym(raw).includes(q); if (ok) extra = 'Found: ' + query; }
-          else if (searchType === 'endletters') { ok = acronym(raw, true).includes(q); if (ok) extra = 'Found: ' + query; }
-          else if (searchType === 'startsWith') ok = tokens.some(w => w.startsWith(q));
-          else if (searchType === 'endsWith') ok = tokens.some(w => w.endsWith(q));
-          if (ok) {
-            results.push({
-              title: (qHebrew && doc.h) ? doc.h : (doc.t || 'Untitled'),
-              hebrewTitle: doc.h || '',
-              snippet: (qHebrew ? ((doc.x || '') + (doc.e || '')).substring(0, 300) : ((doc.e || '') + (doc.x || '')).substring(0, 300)),
-              link: doc.l || '#',
-              book: doc.b || '',
-              subcategory: doc.sc || '',
-              relevance: Math.round(((searchType === 'exact' ? words.length : matches) / Math.max(1, words.length)) * 100),
-              extraInfo: extra
-            });
-          }
-          if (results.length >= maxResults) break;
-        }
-        results.sort((a, b) => b.relevance - a.relevance);
-        return { results, total: results.length };
+        const allowed = new Set(books || []);
+        let keys;
+        if (searchType === 'endsWith') keys = ['e'];
+        else if (searchType === 'startsWith') keys = [normalizeForSearch(query).slice(0,1) || '_'];
+        else keys = Array.from(new Set(words.map(w => w.slice(0,1) || '_')));
+        const shards = await Promise.all(keys.map(loadShard));
+        let ids = Array.from(idsForMode(shards, query, searchType));
+        if (allowed.size) ids = ids.filter(id => allowed.has(bookIdFromPath(meta.items[id]?.p || '')));
+        const results = ids.slice(0, 50).map(id => {
+          const item = meta.items[id] || {};
+          return {
+            title: item.t || item.h || 'Untitled',
+            hebrewTitle: item.h || item.t || '',
+            snippet: (item.c || '') + ' — full reader teaching / שיעור מלא בקורא',
+            link: item.p || '#',
+            book: item.c || '',
+            subcategory: item.c || '',
+            relevance: searchType === 'exact' || searchType === 'all' ? 100 : 75,
+            extraInfo: item.c || ''
+          };
+        });
+        return { results, total: ids.length };
       }
 
       document.addEventListener('enhanced-search', (e: any) => {
@@ -274,18 +279,10 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         showLoading();
         saveSearchHistory(query);
         
-        // Check if we need to load a different language index
-        const switchLang = needsLanguageSwitch(query);
-        const loadPromise = switchLang ? loadIndex(switchLang) : Promise.resolve();
+        const loadPromise = Promise.resolve();
 
-        loadPromise.then(() => {
-          const langIdx = switchLang ? (switchLang === 'he' ? heIndex : enIndex) : getActiveIndex();
-          if (!langIdx) {
-            loading.classList.add('hidden');
-            showNoResults(query, 'Search index not yet loaded. Please wait a moment and try again.');
-            return;
-          }
-          const { results, total } = clientSearch(query, advanced);
+        loadPromise.then(async () => {
+          const { results, total } = await clientSearch(query, advanced);
           loading.classList.add('hidden');
           
           if (results.length > 0) {
