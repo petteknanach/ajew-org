@@ -143,16 +143,9 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
     isLoading: false
   };
 
-  const allBookValues = [
-    'likutay-moharan', 'sefer-hamidos', 'stories',
-    'likutay-nanach-3', 'likutay-nanach-4', 'likutay-nanach-5', 'likutay-nanach-unknown',
-    '1_ספרי-רבי-נחמן', '2_ספרי-רבי-נתן', '3_ספרי-רבי-נתן-בר-יהודה',
-    '3_ספרי-הרב-מטשערין', '4_ספרי-רבי-אלתר-טפליקער', '5_ספרי-רבי-אברהם-בר-נחמן',
-    '6_ספרי-רבי-שמשון-בארסקי', '6_ספרים-של-תלמידים-ועוד',
-    'ביבליוגרפית-ברסלב', '91_סיפורים', '92_ספרים-מתורגמים'
-  ];
-
-  searchState.advancedOptions.books = [...allBookValues];
+  // Empty books filter means search all books.  Do not prefill this with legacy
+  // category ids; the light search index uses actual reader book ids.
+  searchState.advancedOptions.books = [];
 
   let searchInput: HTMLInputElement;
   let searchForm: HTMLFormElement;
@@ -300,8 +293,15 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
     
     // Read selected books from AdvancedSearchOptions checkboxes
     const selectedBookCheckboxes = document.querySelectorAll('input[name="searchBook"]:checked');
-    if (selectedBookCheckboxes.length > 0) {
-      searchState.advancedOptions.books = Array.from(selectedBookCheckboxes).map((cb: any) => cb.value);
+    const allBookCheckboxes = document.querySelectorAll('input[name="searchBook"]');
+    if (allBookCheckboxes.length > 0) {
+      // If every book is checked, leave the filter empty so new/index-only books
+      // are also searched. Only apply a filter when the user narrowed it.
+      searchState.advancedOptions.books = selectedBookCheckboxes.length === allBookCheckboxes.length
+        ? []
+        : Array.from(selectedBookCheckboxes).map((cb: any) => cb.value);
+    } else {
+      searchState.advancedOptions.books = [];
     }
     
     // Dispatch search event

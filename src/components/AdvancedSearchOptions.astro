@@ -2,22 +2,22 @@
 // Advanced Search Options — Clean, functional book filter
 import fs from 'fs';
 import path from 'path';
+import zlib from 'zlib';
 
-// Load browser search index for COMPLETE book list (236 books)
-const indexPath = path.join(process.cwd(), 'public/data/browser-search-index.json');
+// Build the book picker from the same canonical light index used by live search.
+const indexPath = path.join(process.cwd(), 'public/data/light-search-index-he.json.gz');
 let allBooks: { id: string; name: string; count: number }[] = [];
 
 try {
-  const indexData = JSON.parse(fs.readFileSync(indexPath, 'utf-8'));
-  const docs = indexData.documents || [];
+  const docs = JSON.parse(zlib.gunzipSync(fs.readFileSync(indexPath)).toString('utf-8'));
   const counts: Record<string, number> = {};
   for (const doc of docs) {
-    const book = doc.book || '';
+    const book = doc.b || '';
     if (book) counts[book] = (counts[book] || 0) + 1;
   }
   allBooks = Object.entries(counts)
     .map(([id, count]) => ({ id, name: id, count }))
-    .sort((a, b) => b.count - a.count);
+    .sort((a, b) => b.count - a.count || a.id.localeCompare(b.id));
 } catch (e) {}
 
 // Hebrew names
