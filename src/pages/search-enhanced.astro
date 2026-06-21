@@ -237,6 +237,39 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         return new Set((smallest || []).filter(id => restSets.every(set => set.has(id))));
       }
 
+      async function loadDoc(id) {
+        const r = await fetch('/reader-search/docs/' + id + '.json', { headers: { Accept: 'application/json' } });
+        if (!r.ok) return null;
+        return r.json();
+      }
+
+      function docMatches(doc, query, mode) {
+        const q = normalizeForSearch(query);
+        const words = searchWords(query);
+        const n = doc.n || normalizeForSearch([doc.t, doc.h, doc.c, doc.he, doc.en].join(' '));
+        const toks = n.split(' ').filter(Boolean);
+        if (mode === 'exact') return n.includes(q);
+        if (mode === 'all') return words.every(w => n.includes(w));
+        if (mode === 'any' || mode === 'google' || mode === 'boolean') return words.some(w => n.includes(w));
+        if (mode === 'startsWith') return toks.some(w => w.startsWith(q));
+        if (mode === 'endsWith') return toks.some(w => w.endsWith(q));
+        if (mode === 'proximity') return words.every(w => n.includes(w));
+        return words.some(w => n.includes(w));
+      }
+
+      function makeSnippet(doc, query) {
+        const raw = /[\u0590-\u05FF]/.test(query) ? (doc.he || doc.en || '') : (doc.en || doc.he || '');
+        const normRaw = normalizeForSearch(raw);
+        const q = normalizeForSearch(query);
+        const words = searchWords(query);
+        let ni = q ? normRaw.indexOf(q) : -1;
+        if (ni < 0) for (const w of words) { ni = normRaw.indexOf(w); if (ni >= 0) break; }
+        const approx = ni < 0 ? 0 : Math.min(raw.length, ni);
+        const start = Math.max(0, approx - 160);
+        const end = Math.min(raw.length, approx + 420);
+        return (start > 0 ? '…' : '') + raw.slice(start, end).replace(/\s+/g, ' ').trim() + (end < raw.length ? '…' : '');
+      }
+
       async function clientSearch(query, advanced) {
         const meta = await loadReaderMeta();
         const words = searchWords(query);
@@ -250,20 +283,26 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         const shards = await Promise.all(keys.map(loadShard));
         let ids = Array.from(idsForMode(shards, query, searchType));
         if (allowed.size) ids = ids.filter(id => allowed.has(bookIdFromPath(meta.items[id]?.p || '')));
-        const results = ids.slice(0, 50).map(id => {
-          const item = meta.items[id] || {};
-          return {
-            title: item.t || item.h || 'Untitled',
-            hebrewTitle: item.h || item.t || '',
-            snippet: (item.c || '') + ' — full reader teaching / שיעור מלא בקורא',
-            link: item.p || '#',
-            book: item.c || '',
-            subcategory: item.c || '',
-            relevance: searchType === 'exact' || searchType === 'all' ? 100 : 75,
-            extraInfo: item.c || ''
-          };
-        });
-        return { results, total: ids.length };
+        const verified = [];
+        const batchSize = 40;
+        for (let i = 0; i < ids.length && verified.length < 50 && i < 600; i += batchSize) {
+          const docs = await Promise.all(ids.slice(i, i + batchSize).map(loadDoc));
+          for (const doc of docs) {
+            if (!doc || !docMatches(doc, query, searchType)) continue;
+            verified.push({
+              title: doc.t || doc.h || 'Untitled',
+              hebrewTitle: doc.h || doc.t || '',
+              snippet: makeSnippet(doc, query),
+              link: doc.p || '#',
+              book: doc.c || '',
+              subcategory: doc.c || '',
+              relevance: searchType === 'exact' ? 100 : 75,
+              extraInfo: doc.c || ''
+            });
+            if (verified.length >= 50) break;
+          }
+        }
+        return { results: verified, total: verified.length };
       }
 
       document.addEventListener('enhanced-search', (e: any) => {
