@@ -177,37 +177,73 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         setTimeout(() => loadIndex(other).catch(() => {}), 3000);
       });
       
+      function normalizeForSearch(text) {
+        return (text || '').toString().toLowerCase().normalize('NFD')
+          .replace(/[\u0591-\u05C7]/g, '')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/[״"׳']/g, '')
+          .replace(/[^\p{L}\p{N}\s]+/gu, ' ')
+          .replace(/\s+/g, ' ')
+          .trim();
+      }
+
+      function searchWords(text) {
+        return normalizeForSearch(text).split(' ').filter(Boolean);
+      }
+
+      function acronym(text, last = false) {
+        return searchWords(text).map(w => last ? w[w.length - 1] : w[0]).join('');
+      }
+
+      function proximityHit(tokens, terms, distance) {
+        const positions = terms.map(term => tokens.map((w, i) => w === term ? i : -1).filter(i => i >= 0));
+        if (positions.some(p => p.length === 0)) return false;
+        for (const p of positions[0]) {
+          if (positions.every(list => list.some(i => Math.abs(i - p) <= distance))) return true;
+        }
+        return false;
+      }
+
+      function booleanHit(text, query) {
+        const q = normalizeForSearch(query);
+        const orGroups = q.split(/\bor\b/).map(s => s.trim()).filter(Boolean);
+        const checkAnd = (part) => part.split(/\band\b/).map(s => s.trim()).filter(Boolean).every(term => {
+          if (term.startsWith('not ')) return !text.includes(term.slice(4).trim());
+          return text.includes(term);
+        });
+        return orGroups.length ? orGroups.some(checkAnd) : checkAnd(q);
+      }
+
       function clientSearch(query, advanced) {
         const idx = getActiveIndex();
         if (!idx) return { results: [], total: 0 };
-        
-        const q = query.toLowerCase().trim();
-        const words = q.split(/\s+/).filter(w => w.length > 0);
+        const q = normalizeForSearch(query);
+        const words = searchWords(query);
         const searchType = advanced?.searchType || 'google';
         const minWords = advanced?.minWords || 1;
+        const proximity = advanced?.proximity || 5;
         const books = advanced?.books || [];
         const qHebrew = isHebrewQuery(query);
-        
         let results = [];
         const maxResults = 50;
-        
         for (const doc of idx) {
           if (books.length > 0 && !books.includes(doc.b)) continue;
-          
-          // Search in x field (contains the language-specific text)
-          // Also search titles for cross-language fallback
-          const searchText = ((doc.x || '') + ' ' + (doc.t || '') + ' ' + (doc.h || '') + ' ' + (doc.e || '')).toLowerCase();
-          
-          let matches = 0;
-          if (searchType === 'exact') {
-            if (searchText.includes(q)) matches = words.length;
-          } else {
-            for (const word of words) {
-              if (searchText.includes(word)) matches++;
-            }
-          }
-          
-          if (matches >= minWords) {
+          const raw = ((doc.x || '') + ' ' + (doc.t || '') + ' ' + (doc.h || '') + ' ' + (doc.e || ''));
+          const searchText = normalizeForSearch(raw);
+          const tokens = searchWords(raw);
+          let matches = words.filter(word => searchText.includes(word)).length;
+          let ok = false;
+          let extra = (doc.b || '') + (doc.p ? ' ' + doc.p : '') + (doc.n ? ':' + doc.n : '');
+          if (searchType === 'exact') ok = q && searchText.includes(q);
+          else if (searchType === 'all') ok = words.length > 0 && matches === words.length;
+          else if (searchType === 'any' || searchType === 'google') ok = matches >= Math.max(1, minWords || 1);
+          else if (searchType === 'proximity') ok = words.length > 1 ? proximityHit(tokens, words, proximity) : matches > 0;
+          else if (searchType === 'boolean') ok = booleanHit(searchText, query);
+          else if (searchType === 'acronym') { ok = acronym(raw).includes(q); if (ok) extra = 'Found: ' + query; }
+          else if (searchType === 'endletters') { ok = acronym(raw, true).includes(q); if (ok) extra = 'Found: ' + query; }
+          else if (searchType === 'startsWith') ok = tokens.some(w => w.startsWith(q));
+          else if (searchType === 'endsWith') ok = tokens.some(w => w.endsWith(q));
+          if (ok) {
             results.push({
               title: (qHebrew && doc.h) ? doc.h : (doc.t || 'Untitled'),
               hebrewTitle: doc.h || '',
@@ -215,14 +251,12 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
               link: doc.l || '#',
               book: doc.b || '',
               subcategory: doc.sc || '',
-              relevance: Math.round((matches / words.length) * 100),
-              extraInfo: (doc.b || '') + (doc.p ? ' ' + doc.p : '') + (doc.n ? ':' + doc.n : '')
+              relevance: Math.round(((searchType === 'exact' ? words.length : matches) / Math.max(1, words.length)) * 100),
+              extraInfo: extra
             });
           }
-          
           if (results.length >= maxResults) break;
         }
-        
         results.sort((a, b) => b.relevance - a.relevance);
         return { results, total: results.length };
       }
