@@ -158,6 +158,113 @@ def norm_text(x):
 def strip_nikud(x):
     return re.sub(r'[\u0591-\u05C7]', '', norm_text(x))
 
+
+def check_lh_orach_chaim1_docx_alignment():
+    """Deploy blocker for the DOCX-repaired Orach Chaim 1 opening through Tefillin.
+
+    This protects the user-corrected setup: halacha-1..24 must keep bilingual
+    directory labels, real per-segment Hebrew/English, and the exact Tefillin
+    placement. It catches the previous regression where Tefillin showed Tzitzis
+    and later pages said translation/content was not available.
+    """
+    base = os.path.join(ROOT, 'public', 'reader', 'likutay-halachos', 'part-1')
+    errors = []
+    expected = {
+        1: ('Introduction', 'הקדמה', 9, 1, 9),
+        2: ('Laws of Rising in the Morning — Halacha 1', 'השכמת הבוקר א', 22, 50, 71),
+        3: ('Laws of Rising in the Morning — Halacha 2', 'השכמת הבוקר ב', 7, 100, 106),
+        4: ('Laws of Rising in the Morning — Halacha 3', 'השכמת הבוקר ג', 12, 150, 161),
+        5: ('Laws of Rising in the Morning — Halacha 4', 'השכמת הבוקר ד', 42, 200, 243),
+        6: ('Laws of Rising in the Morning — Halacha 5', 'השכמת הבוקר ה', 22, 250, 271),
+        7: ('Laws of Washing the Hands in the Morning — Halacha 1', 'נטילת ידים שחרית א', 12, 300, 311),
+        8: ('Laws of Washing the Hands in the Morning — Halacha 2', 'נטילת ידים שחרית ב', 46, 350, 395),
+        9: ('Laws of Washing the Hands in the Morning — Halacha 3', 'נטילת ידים שחרית ג', 43, 401, 449),
+        10: ('Laws of Washing the Hands in the Morning — Halacha 4', 'נטילת ידים שחרית ד', 66, 450, 515),
+        11: ('Laws of Tzitzis — Halacha 1', 'ציצית א', 10, 500, 509),
+        12: ('Laws of Tzitzis — Halacha 2', 'ציצית ב', 27, 550, 576),
+        13: ('Laws of Tzitzis — Halacha 3', 'ציצית ג', 96, 600, 695),
+        14: ('Laws of Tzitzis — Halacha 4', 'ציצית ד', 1, 1, 1),
+        15: ('Laws of Tzitzis — Halacha 5', 'ציצית ה', 73, 700, 772),
+        16: ('Laws of Tzitzis — Halacha 6', 'ציצית ו', 1, 1, 1),
+        17: ('Laws of Tzitzis — Halacha 7', 'ציצית ז', 27, 800, 826),
+        18: ('Laws of Tefillin — Halacha 1', 'תפילין א', 9, 100, 116),
+        19: ('Laws of Tefillin — Halacha 2', 'תפילין ב', 33, 200, 264),
+        20: ('Laws of Tefillin — Halacha 3', 'תפילין ג', 4, 300, 306),
+        21: ('Laws of Tefillin — Halacha 4', 'תפילין ד', 34, 400, 466),
+        22: ('Laws of Tefillin — Halacha 5', 'תפילין ה', 235, 500, 734),
+        23: ('Laws of Tefillin — Halacha 6', 'תפילין ו', 104, 750, 853),
+        24: ('Laws of Tefillin — Halacha 7', 'תפילין ז', 34, 900, 966),
+    }
+    for n, (title, hebrew_title, count, first_idx, last_idx) in expected.items():
+        fp = os.path.join(base, f'halacha-{n}.json')
+        if not os.path.exists(fp):
+            errors.append(f"LH OC1 MISSING: halacha-{n}.json")
+            continue
+        try:
+            data = json.load(open(fp, encoding='utf-8'))
+        except Exception as e:
+            errors.append(f"LH OC1 CORRUPT: halacha-{n}.json ({e})")
+            continue
+        segs = data.get('segments', [])
+        if data.get('title') != title:
+            errors.append(f"LH OC1 TITLE: halacha-{n} title is {data.get('title')!r}, expected {title!r}")
+        if data.get('hebrewTitle') != hebrew_title:
+            errors.append(f"LH OC1 HEBREW TITLE: halacha-{n} is {data.get('hebrewTitle')!r}, expected {hebrew_title!r}")
+        if len(segs) != count:
+            errors.append(f"LH OC1 COUNT: halacha-{n} has {len(segs)} segments, expected {count}")
+        if segs:
+            if segs[0].get('index') != first_idx or segs[-1].get('index') != last_idx:
+                errors.append(f"LH OC1 INDEX RANGE: halacha-{n} is {segs[0].get('index')}-{segs[-1].get('index')}, expected {first_idx}-{last_idx}")
+        for seg in segs:
+            he = norm_text(seg.get('he'))
+            en = norm_text(seg.get('en'))
+            if not he or not en:
+                errors.append(f"LH OC1 EMPTY HE/EN: halacha-{n} seg {seg.get('index')}")
+                break
+            if 'Translation not yet available' in en or 'Content not available' in en:
+                errors.append(f"LH OC1 NOT AVAILABLE TEXT: halacha-{n} seg {seg.get('index')}")
+                break
+            if '@import url(' in en or en.startswith(':root') or 'font-family:' in en or 'box-sizing' in en:
+                errors.append(f"LH OC1 CSS IN EN: halacha-{n} seg {seg.get('index')}")
+                break
+        if 18 <= n <= 24:
+            joined = ' '.join(norm_text(s.get('en')) for s in segs[:3])
+            joined_he = ' '.join(strip_nikud(s.get('he')) for s in segs[:3])
+            if 'Tefillin' not in title:
+                errors.append(f"LH OC1 TEFILLIN MISPLACED: halacha-{n} title missing Tefillin")
+            if 'Tzitzis' in joined[:1000]:
+                errors.append(f"LH OC1 TEFILLIN SHOWS TZITZIS: halacha-{n}")
+            if n == 18 and ('parchment of Tefillin' not in joined or 'הקלף של תפלין' not in joined_he):
+                errors.append("LH OC1 TEFILLIN OPENING WRONG: halacha-18 does not start from Tefillin parchment")
+
+    idx_path = os.path.join(base, 'index.json')
+    try:
+        idx = json.load(open(idx_path, encoding='utf-8'))
+        torahs = {int(t.get('number')): t for t in idx.get('torahs', []) if str(t.get('number', '')).isdigit()}
+        for n, (title, hebrew_title, count, _, _) in expected.items():
+            entry = torahs.get(n)
+            if not entry:
+                errors.append(f"LH OC1 INDEX MISSING: entry {n}")
+                continue
+            if entry.get('title') != title or entry.get('hebrewTitle') != hebrew_title:
+                errors.append(f"LH OC1 INDEX LABEL: entry {n} not bilingual/correct")
+            if entry.get('paragraphs') != count:
+                errors.append(f"LH OC1 INDEX COUNT: entry {n} has {entry.get('paragraphs')}, expected {count}")
+    except Exception as e:
+        errors.append(f"LH OC1 INDEX CORRUPT: {e}")
+
+    ui_path = os.path.join(ROOT, 'src', 'pages', 'reader', 'likutay-halachos', '[part]', 'index.astro')
+    try:
+        ui = open(ui_path, encoding='utf-8').read()
+        if '{t.title' not in ui or 't.hebrewTitle' not in ui:
+            errors.append("LH OC1 DIRECTORY UI: index does not render both English and Hebrew labels")
+    except Exception as e:
+        errors.append(f"LH OC1 DIRECTORY UI READ ERROR: {e}")
+
+    print(f"LH OC1 DOCX alignment: {24 - len([e for e in errors if 'LH OC1 MISSING' in e])} files checked, {len(errors)} issues")
+    return errors
+
+
 def check_otzar_strict():
     """Strict OHY deploy blocker: field presence is not enough; block known-corrupt structure."""
     base = os.path.join(ROOT, 'public', 'reader', 'otzar-hayirah')
@@ -617,6 +724,7 @@ def check_en_coverage():
 if __name__ == '__main__':
     all_errors = []
     all_errors.extend(check_lh_english())
+    all_errors.extend(check_lh_orach_chaim1_docx_alignment())
     all_errors.extend(check_saba())
     all_errors.extend(check_book('sefer-hamidos', 'SH'))
     all_errors.extend(check_book('likutay-tefilos', 'LT'))
