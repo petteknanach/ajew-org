@@ -566,6 +566,7 @@ const lmVol1Groups = (() => {
         <button id="viewFull" class="active" onclick="setView('full')">Full View</button>
         <button id="viewCompact" onclick="setView('compact')">Quick Access</button>
         <button id="expandAll" onclick="expandAllCategories()">Show Everything</button>
+        <button id="copyLibraryLink" onclick="copyLibraryLink()">Share Library</button>
       </div>
     </div>
 
@@ -922,12 +923,16 @@ const lmVol1Groups = (() => {
         return;
       }
 
-      // Filter volume sections (individual books)
+      const norm = (s) => (s || '').toLowerCase().normalize('NFD').replace(/[\u0591-\u05C7\u0300-\u036f]/g, '');
+      const nq = norm(q);
+
+      // Filter volume sections by book title, Hebrew title, description, and visible section names.
       document.querySelectorAll('.volume-section').forEach(section => {
-        const title = (section.querySelector('.volume-title')?.textContent || '').toLowerCase();
-        const hebrew = (section.querySelector('.volume-hebrew')?.textContent || '').toLowerCase();
-        const match = title.includes(q) || hebrew.includes(q);
+        const haystack = norm(section.textContent || '');
+        const match = haystack.includes(nq);
         section.style.display = match ? '' : 'none';
+        const dropdown = section.querySelector('.book-dropdown');
+        if (match && dropdown) dropdown.open = true;
       });
 
       // Show/hide categories based on whether they have visible books
@@ -941,17 +946,30 @@ const lmVol1Groups = (() => {
         }
       });
 
-      // Also check LM section
+      // Also check LM section and its section labels
       const lmSection = document.getElementById('likutay-moharan');
       if (lmSection) {
-        const lmMatch = 'likutay moharan'.includes(q) || 'ליקוטי מוהר'.includes(q) || 'lm'.includes(q);
+        const lmMatch = norm(lmSection.textContent || '').includes(nq) || 'lm'.includes(nq);
         lmSection.style.display = lmMatch ? '' : 'none';
+        if (lmMatch) lmSection.open = true;
       }
+
+      const url = new URL(window.location.href);
+      url.searchParams.set('filter', q);
+      window.history.replaceState({}, '', url);
     });
 
-    // Restore view preference
+    // Restore view preference and URL filter
     const savedView = localStorage.getItem('ajew-library-view');
     if (savedView === 'compact') setView('compact');
+    const params = new URLSearchParams(window.location.search);
+    const filter = params.get('filter');
+    if (filter) { input.value = filter; input.dispatchEvent(new Event('input')); }
+    if (window.location.hash) {
+      const hashId = decodeURIComponent(window.location.hash.slice(1));
+      const target = hashId ? document.getElementById(hashId) : null;
+      if (target) { target.closest('.category-section')?.setAttribute('open', ''); target.closest('.book-dropdown')?.setAttribute('open', ''); }
+    }
   });
 
   function setView(mode) {
@@ -973,6 +991,20 @@ const lmVol1Groups = (() => {
   function expandAllCategories() {
     document.querySelectorAll('.category-section').forEach(cat => { cat.open = true; });
     document.querySelectorAll('.book-dropdown').forEach(book => { book.open = true; });
+  }
+
+  function copyLibraryLink() {
+    const input = document.getElementById('libraryFilter');
+    const url = new URL(window.location.href);
+    const q = input?.value?.trim();
+    if (q) url.searchParams.set('filter', q); else url.searchParams.delete('filter');
+    navigator.clipboard.writeText(url.toString()).then(() => {
+      const btn = document.getElementById('copyLibraryLink');
+      if (!btn) return;
+      const old = btn.textContent;
+      btn.textContent = '✓ Copied';
+      setTimeout(() => btn.textContent = old, 1800);
+    });
   }
   </script>
 

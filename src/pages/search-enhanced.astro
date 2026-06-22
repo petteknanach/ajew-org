@@ -41,6 +41,7 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
           <div class="results-header">
             <h3 id="resultsCount"></h3>
             <div class="results-actions">
+              <button id="copySearchLink" class="action-btn">🔗 Copy Link</button>
               <button id="clearResults" class="action-btn clear-btn">✕ Clear</button>
             </div>
           </div>
@@ -79,6 +80,7 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
       const noResults = document.getElementById('noResults');
       const noResultsMessage = document.getElementById('noResultsMessage');
       const clearResults = document.getElementById('clearResults');
+      const copySearchLink = document.getElementById('copySearchLink');
       const resultsSection = document.getElementById('resultsSection');
 
       // Listen for search events
@@ -342,7 +344,8 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
 
         const html = results.map(result => {
           const extraInfo = result.extraInfo || '';
-          const snippet = highlightQuery(result.snippet || '', query, extraInfo);
+          const rawSnippet = result.snippet || '';
+          const snippet = highlightQuery(rawSnippet, query, extraInfo);
           const link = result.link || '#';
           const linkWithQuery = link + (link.includes('?') ? '&' : '?') + 'q=' + encodeURIComponent(query);
           const rawTitle = result.title || 'Unknown';
@@ -368,13 +371,14 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
               <p class="result-snippet">${snippet}</p>
               <div class="result-footer">
                 <a href="${linkWithQuery}" class="view-link">קרא טקסט מלא / Read Full →</a>
-                <button class="share-btn" onclick="shareResult('${linkWithQuery.replace(/'/g, "\\'")}', '${rawTitle.replace(/'/g, "\\'")}')">📤 Share</button>
+                <button class="share-btn" data-share-link="${escapeAttr(linkWithQuery)}" data-share-title="${escapeAttr(rawTitle)}" data-share-snippet="${escapeAttr(rawSnippet)}">📤 Share</button>
               </div>
             </div>
           `;
         }).join('');
 
         resultsList.innerHTML = html;
+        bindShareButtons();
 
         // Add "Load More" if there are more results
         if (count > results.length) {
@@ -424,6 +428,16 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
 
       // Nikud (vowel marks) regex - these appear in Hebrew text but not in search queries
       const NIKUD_RANGE = '[\u0591-\u05BD\u05BF-\u05C7]';
+
+      function escapeAttr(value: string): string {
+        return (value || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+
+      function bindShareButtons() {
+        resultsList.querySelectorAll('.share-btn').forEach((btn: any) => {
+          btn.addEventListener('click', () => shareResult(btn.dataset.shareLink || '#', btn.dataset.shareTitle || 'ajew.org', btn.dataset.shareSnippet || '', btn));
+        });
+      }
 
       function highlightQuery(text: string, query: string, extraInfo?: string): string {
         if (!query || !text) return text || '';
@@ -489,17 +503,19 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
 
-      function shareResult(link: string, title: string) {
-        const fullUrl = window.location.origin + link;
+      function shareResult(link: string, title: string, snippet: string = '', btn?: HTMLElement) {
+        const fullUrl = new URL(link, window.location.origin).toString();
+        const text = [title + ' — ajew.org', snippet ? snippet.replace(/<[^>]*>/g, '').slice(0, 220) : '', fullUrl].filter(Boolean).join('\n\n');
         if (navigator.share) {
-          navigator.share({ title: title + ' — ajew.org', url: fullUrl }).catch(() => {});
+          navigator.share({ title: title + ' — ajew.org', text, url: fullUrl }).catch(() => {});
         } else {
-          navigator.clipboard.writeText(fullUrl).then(() => {
-            const btn = event?.target as HTMLElement;
+          navigator.clipboard.writeText(text).then(() => {
             if (btn) { const orig = btn.textContent; btn.textContent = '✓ Copied!'; setTimeout(() => btn.textContent = orig, 2000); }
           });
         }
       }
+
+      (window as any).shareResult = shareResult;
 
       function showWelcome() {
         welcomeMessage.classList.remove('hidden');
@@ -546,6 +562,17 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
             });
           });
         } catch(e) {}
+      }
+
+      if (copySearchLink) {
+        copySearchLink.addEventListener('click', () => {
+          const url = window.location.href;
+          navigator.clipboard.writeText(url).then(() => {
+            const orig = copySearchLink.textContent;
+            copySearchLink.textContent = '✓ Copied';
+            setTimeout(() => copySearchLink.textContent = orig, 1800);
+          });
+        });
       }
 
       clearResults.addEventListener('click', () => {
