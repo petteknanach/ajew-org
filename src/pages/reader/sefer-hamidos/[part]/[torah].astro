@@ -9,7 +9,10 @@ import path from 'node:path';
 
 export function getStaticPaths() {
   const paths = [];
-  for (let torah = 1; torah <= 108; torah++) {
+  const indexPath = path.join(process.cwd(), 'public/reader/sefer-hamidos/index.json');
+  const indexData = JSON.parse(fs.readFileSync(indexPath, 'utf8'));
+  const total = indexData.totalTorahs || indexData.torahs?.length || 0;
+  for (let torah = 1; torah <= total; torah++) {
     paths.push({ params: { part: '1', torah: String(torah) } });
   }
   return paths;
@@ -35,6 +38,8 @@ if (!torahData && !error) error = 'Content not available';
 const pageTitle = torahData
   ? `${torahData.hebrewTitle || torahData.title} - Sefer Hamidos`
   : 'Topic Not Found';
+const topicTotal = torahData?.segments?.length || 0;
+
 const pageDesc = torahData
   ? (() => {
     const snippet = (torahData.segments?.find(s => s.en)?.en || '').replace(/<[^>]+>/g, '').slice(0, 120);
@@ -101,7 +106,7 @@ const breadcrumbData = torahData ? JSON.stringify({
       <div class="reader-breadcrumb">
         <a href="/reader">Reader</a>
         <span>&rsaquo;</span>
-        <a href="/reader">Sefer Hamidos</a>
+        <a href="/reader#sefer-hamidos">Sefer Hamidos</a>
         <span>&rsaquo;</span>
         {torahData.hebrewTitle || torahData.title}
       </div>
@@ -201,10 +206,10 @@ const breadcrumbData = torahData ? JSON.stringify({
       <button class="reader-toc-toggle" title="Table of Contents">&#9776;</button>
       <div class="reader-toc">
         <button class="reader-toc-close">&times;</button>
-        <h3>Entries</h3>
+        <h3>Teachings</h3>
         <ul class="reader-toc-list">
           {torahData.segments.map((seg, i) => (
-            <li><a href={`#seg-${seg.index}`} data-index={String(seg.index)}>Entry {seg.index}</a></li>
+            <li><a href={`#seg-${seg.index}`} data-index={String(seg.index)}>Teaching {seg.displayLabel || seg.sourceNumber || seg.index}</a></li>
           ))}
         </ul>
       </div>
@@ -213,7 +218,7 @@ const breadcrumbData = torahData ? JSON.stringify({
         {torahData.hebrewTitle && <div class="hebrew-title">{torahData.hebrewTitle}</div>}
         <h1>{torahData.title}</h1>
         <p style="color: var(--reader-text-secondary); font-size: 0.9em; font-family: 'Open Sans', sans-serif;">
-          Sefer Hamidos - The Book of Traits
+          Sefer Hamidos - The Book of Traits · {topicTotal} individual teachings
         </p>
       </div>
 
@@ -221,7 +226,7 @@ const breadcrumbData = torahData ? JSON.stringify({
         {torahData.navigation.prevUrl ? (
           <a href={torahData.navigation.prevUrl} data-dir="prev">&larr; Previous Topic</a>
         ) : <span class="disabled">&larr; Previous Topic</span>}
-        <a href={`/reader/sefer-hamidos/${partNum}`}>Book Index</a>
+        <a href="/reader#sefer-hamidos">Book Index</a>
         <a href="/reader">All Books</a>
         {torahData.navigation.nextUrl ? (
           <a href={torahData.navigation.nextUrl} data-dir="next">Next Topic &rarr;</a>
@@ -233,11 +238,11 @@ const breadcrumbData = torahData ? JSON.stringify({
 {torahData.segments.map((seg) => (
           <div class="reader-segment-pair" id={`seg-${seg.index}`} data-share-id={seg.id || ''}>
             <div class="reader-segment segment-he" data-index={String(seg.index)}>
-              <span class="segment-number">{seg.index}</span>
+              <span class="segment-number">{seg.displayLabel || seg.sourceNumber || seg.index}</span>
               <p data-nikud={seg.he_nikud || seg.he}>{seg.he}</p>
             </div>
             <div class={`reader-segment segment-en ${!seg.en ? 'empty-translation' : ''}`} data-index={String(seg.index)}>
-              <span class="segment-number">{seg.index}</span>
+              <span class="segment-number">{seg.displayLabel || seg.sourceNumber || seg.index}</span>
               <p>{seg.en || 'Translation not yet available'}</p>
             </div>
           </div>
@@ -248,11 +253,11 @@ const breadcrumbData = torahData ? JSON.stringify({
             {torahData.aligned_segments.map((seg) => (
               <div class={`reader-segment-pair ${seg.type === 'note' ? 'segment-note' : ''}`} id={`aligned-${seg.index}`}>
                 <div class="reader-segment segment-he" data-index={String(seg.index)}>
-                  <span class="segment-number">{seg.index}</span>
+                  <span class="segment-number">{seg.displayLabel || seg.sourceNumber || seg.index}</span>
                   <p>{seg.he || '\u00A0'}</p>
                 </div>
                 <div class={`reader-segment segment-en ${!seg.en ? 'empty-translation' : ''}`} data-index={String(seg.index)}>
-                  <span class="segment-number">{seg.index}</span>
+                  <span class="segment-number">{seg.displayLabel || seg.sourceNumber || seg.index}</span>
                   <p>{seg.en || '\u00A0'}</p>
                 </div>
               </div>
@@ -265,7 +270,7 @@ const breadcrumbData = torahData ? JSON.stringify({
         {torahData.navigation.prevUrl ? (
           <a href={torahData.navigation.prevUrl} data-dir="prev">&larr; Previous Topic</a>
         ) : <span class="disabled">&larr; Previous Topic</span>}
-        <a href={`/reader/sefer-hamidos/${partNum}`}>Book Index</a>
+        <a href="/reader#sefer-hamidos">Book Index</a>
         <a href="/reader">All Books</a>
         {torahData.navigation.nextUrl ? (
           <a href={torahData.navigation.nextUrl} data-dir="next">Next Topic &rarr;</a>
