@@ -12,15 +12,17 @@
   'use strict';
 
   // Only mount on /reader/<bookId>/... pages (not /reader index)
-  var m = /^\/reader\/([^\/]+)(?:\/([^\/]+))?/.exec(window.location.pathname);
+  var m = /^\/reader\/([^\/]+)(?:\/([^\/]+))?(?:\/([^\/]+))?/.exec(window.location.pathname);
   if (!m) return;
   var bookId = decodeURIComponent(m[1]);
   var part = m[2] ? decodeURIComponent(m[2]) : null;
+  var torah = m[3] ? decodeURIComponent(m[3]) : null;
   if (bookId === 'index.html' || bookId === '') return;
 
   var AUDIO_SOURCES_URL = '/audio-sources.json';
   var IA_METADATA = 'https://archive.org/metadata/';
   var IA_DOWNLOAD = 'https://archive.org/download/';
+  var SUNO_SONGS_URL = '/reader/suno-songs/' + encodeURIComponent(bookId) + '.json';
 
   var state = {
     editions: [],        // filtered editions for this bookId/part
@@ -70,6 +72,14 @@
       '#ajew-audio-player .ajew-ap-controls button{background:#333;border:1px solid #555;color:#eee;padding:.3rem .6rem;border-radius:4px;cursor:pointer;}' +
       '#ajew-audio-player .ajew-ap-controls a{color:#9cf;text-decoration:none;font-size:.85em;}' +
       '#ajew-audio-player .ajew-ap-status{font-size:.85em;color:#999;}' +
+      '.ajew-suno-segment-player{margin:.75rem 0;padding:.75rem;border:1px solid rgba(180,140,60,.35);border-radius:10px;background:rgba(180,140,60,.08);font-family:system-ui,-apple-system,sans-serif;}' +
+      '.ajew-suno-segment-title{font-weight:700;margin-bottom:.45rem;color:#8a5a00;}' +
+      '.ajew-suno-track{margin:.5rem 0;padding:.5rem;border-radius:8px;background:rgba(255,255,255,.55);}' +
+      '.ajew-suno-track-label{font-size:.9em;font-weight:600;margin-bottom:.25rem;}' +
+      '.ajew-suno-track audio{width:100%;max-width:560px;display:block;}' +
+      '.ajew-suno-track a{font-size:.85em;color:#8a5a00;text-decoration:none;}' +
+      'body.dark-mode .ajew-suno-segment-player{background:rgba(180,140,60,.12);border-color:rgba(220,180,90,.35);}' +
+      'body.dark-mode .ajew-suno-track{background:rgba(255,255,255,.08);}' +
       '#ajew-audio-player .ajew-ap-launcher{position:fixed;bottom:72px;right:12px;background:#2a4a6a;color:#fff;border:none;border-radius:50%;width:48px;height:48px;font-size:1.3em;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.4);z-index:96;display:none;}' +
       '#ajew-audio-player-launcher.visible{display:block;}' +
       'body.dark-mode #ajew-audio-player{background:#0a0a0a;}' +
@@ -237,8 +247,45 @@
     if (state.currentIndex > 0) playIndex(state.currentIndex - 1);
   }
 
+  function loadSegmentSongs() {
+    return fetch(SUNO_SONGS_URL).then(function (r) {
+      if (!r.ok) return null;
+      return r.json();
+    });
+  }
+
+  function injectSegmentSongPlayers() {
+    loadSegmentSongs().then(function (data) {
+      if (!data || !Array.isArray(data.entries)) return;
+      var matches = data.entries.filter(function (entry) {
+        return (!entry.part || String(entry.part) === String(part)) &&
+          (!entry.torah || String(entry.torah) === String(torah)) &&
+          Array.isArray(entry.tracks) && entry.tracks.length;
+      });
+      matches.forEach(function (entry) {
+        var seg = document.getElementById('seg-' + entry.segment) || document.getElementById('segment-' + entry.segment);
+        if (!seg || seg.querySelector('.ajew-suno-segment-player')) return;
+        var wrap = el('div', { class: 'ajew-suno-segment-player' });
+        wrap.appendChild(el('div', { class: 'ajew-suno-segment-title' }, 'Songs for this teaching'));
+        entry.tracks.forEach(function (track) {
+          var row = el('div', { class: 'ajew-suno-track' });
+          var label = (track.title || 'Suno song') + (track.language ? ' — ' + track.language : '');
+          row.appendChild(el('div', { class: 'ajew-suno-track-label' }, label));
+          row.appendChild(el('audio', { controls: '', preload: 'none', src: track.url }));
+          row.appendChild(el('a', { href: track.url, target: '_blank', rel: 'noopener' }, 'Archive.org MP3 ↗'));
+          wrap.appendChild(row);
+        });
+        var en = seg.querySelector('.segment-en') || seg;
+        en.appendChild(wrap);
+      });
+    }).catch(function (err) {
+      if (window.console && console.warn) console.warn('[suno-segment-player]', err);
+    });
+  }
+
   function init() {
     injectStyles();
+    injectSegmentSongPlayers();
     loadSources().then(function (data) {
       var editions = editionsForBook(data, bookId, part);
       if (!editions.length) return; // nothing to mount
