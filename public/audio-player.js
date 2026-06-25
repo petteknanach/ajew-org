@@ -77,6 +77,10 @@
       '.ajew-suno-segment-player summary::-webkit-details-marker{display:none;}' +
       '.ajew-suno-segment-player summary:before{content:"▸";font-size:.8em;}' +
       '.ajew-suno-segment-player[open] summary:before{content:"▾";}' +
+      '.ajew-suno-playlist{margin:.5rem 0;padding:.45rem .6rem;border:1px solid rgba(42,74,106,.35);border-radius:10px;background:rgba(42,74,106,.08);font-family:system-ui,-apple-system,sans-serif;display:flex;gap:.45rem;align-items:center;flex-wrap:wrap;}' +
+      '.ajew-suno-playlist button{background:#2a4a6a;color:#fff;border:none;border-radius:999px;padding:.22rem .65rem;cursor:pointer;font-size:.85em;font-weight:700;}' +
+      '.ajew-suno-playlist select{max-width:180px;border:1px solid rgba(42,74,106,.35);border-radius:999px;padding:.18rem .45rem;background:rgba(255,255,255,.75);}' +
+      '.ajew-suno-playlist-status{font-size:.82em;color:#2a4a6a;}' +
       '.ajew-suno-track{margin:.4rem 0;padding:.45rem;border-radius:8px;background:rgba(255,255,255,.55);max-width:600px;}' +
       '.ajew-suno-track-label{font-size:.85em;font-weight:600;margin-bottom:.2rem;}' +
       '.ajew-suno-track audio{width:100%;max-width:560px;display:block;height:32px;}' +
@@ -265,20 +269,97 @@
           (!entry.torah || String(entry.torah) === String(torah)) &&
           Array.isArray(entry.tracks) && entry.tracks.length;
       });
+      function buildTrackLabel(track) {
+        return (track.title || 'Suno song') + (track.source ? ' — ' + track.source : '');
+      }
+
+      function makePlaylistLabel(track, i, total) {
+        return (i + 1) + '/' + total + ': ' + (track.title || 'Suno song');
+      }
+
+      function insertPlaylistControl(matches) {
+        if (document.querySelector('.ajew-suno-playlist')) return;
+        var playlist = [];
+        matches.forEach(function (entry) {
+          entry.tracks.forEach(function (track) {
+            playlist.push(Object.assign({ segment: entry.segment }, track));
+          });
+        });
+        if (!playlist.length) return;
+        var playlistIndex = 0;
+        var audio = el('audio', { controls: '', preload: 'none' });
+        var status = el('span', { class: 'ajew-suno-playlist-status' }, playlist.length + ' songs');
+        var langSelect = el('select', { 'aria-label': 'Playlist language' }, [
+          el('option', { value: 'all' }, 'All songs'),
+          el('option', { value: 'hebrew' }, 'Hebrew only'),
+          el('option', { value: 'english' }, 'English only')
+        ]);
+
+        function activeList() {
+          var lang = langSelect.value;
+          if (lang === 'all') return playlist;
+          return playlist.filter(function (track) { return String(track.language || '').toLowerCase() === lang; });
+        }
+
+        function updateStatus(trackList) {
+          var list = trackList || activeList();
+          if (!list.length) {
+            status.textContent = 'No songs in this selection';
+            return;
+          }
+          if (audio.src) status.textContent = makePlaylistLabel(list[playlistIndex] || list[0], playlistIndex, list.length);
+          else status.textContent = list.length + ' songs';
+        }
+
+        function playPlaylistIndex(i) {
+          var list = activeList();
+          if (!list.length) return;
+          playlistIndex = (i + list.length) % list.length;
+          var track = list[playlistIndex];
+          audio.src = track.url;
+          updateStatus(list);
+          audio.play().catch(function () { /* user can press Play All again */ });
+        }
+
+        function playNextPlaylist() {
+          var list = activeList();
+          if (!list.length) return;
+          playPlaylistIndex(playlistIndex + 1);
+        }
+
+        audio.addEventListener('ended', playNextPlaylist);
+        langSelect.onchange = function () {
+          playlistIndex = 0;
+          audio.removeAttribute('src');
+          updateStatus();
+        };
+
+        var wrap = el('div', { class: 'ajew-suno-playlist' }, [
+          el('button', { onclick: function () { playPlaylistIndex(playlistIndex); } }, '▶ Play all songs'),
+          el('button', { onclick: playNextPlaylist }, 'Next ⏭'),
+          langSelect,
+          status,
+          audio
+        ]);
+        var firstSeg = document.getElementById('seg-' + matches[0].segment) || document.getElementById('segment-' + matches[0].segment);
+        if (firstSeg && firstSeg.parentNode) firstSeg.parentNode.insertBefore(wrap, firstSeg);
+      }
+
       function appendTrackDropdown(target, tracks, label) {
         if (!target || !tracks.length) return;
         var wrap = el('details', { class: 'ajew-suno-segment-player' });
         wrap.appendChild(el('summary', null, label + ' (' + tracks.length + ')'));
         tracks.forEach(function (track) {
           var row = el('div', { class: 'ajew-suno-track' });
-          var trackLabel = (track.title || 'Suno song') + (track.source ? ' — ' + track.source : '');
-          row.appendChild(el('div', { class: 'ajew-suno-track-label' }, trackLabel));
+          row.appendChild(el('div', { class: 'ajew-suno-track-label' }, buildTrackLabel(track)));
           row.appendChild(el('audio', { controls: '', preload: 'none', src: track.url }));
           row.appendChild(el('a', { href: track.url, target: '_blank', rel: 'noopener' }, 'Archive.org MP3 ↗'));
           wrap.appendChild(row);
         });
         target.appendChild(wrap);
       }
+
+      insertPlaylistControl(matches);
 
       matches.forEach(function (entry) {
         var seg = document.getElementById('seg-' + entry.segment) || document.getElementById('segment-' + entry.segment);
