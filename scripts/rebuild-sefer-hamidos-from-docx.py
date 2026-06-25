@@ -28,7 +28,7 @@ EN_NUM_RE = re.compile(r'^(\d{1,3})\.\s*(.+)$')
 ROMAN_RE = re.compile(r'^[IVXLC]+\.?$', re.I)
 
 SPECIAL_HEADERS = {
-    'SECOND PART', 'SECOND PART:', 'PART II', 'PART TWO', 'PART TWO:',
+    'SECOND PART', 'SECOND PART:', 'SECOND PART :', 'PART II', 'PART TWO', 'PART TWO:',
     'APPENDIX', 'INTRODUCTION', 'SECOND INTRODUCTION'
 }
 
@@ -70,8 +70,11 @@ def is_en_header(s: str) -> bool:
         return False
     if ROMAN_RE.match(st):
         return False
-    # Real topic headers in this DOCX are all caps, sometimes with punctuation.
-    letters = re.sub(r'[^A-Za-z]', '', st)
+    # Real topic headers in this DOCX are uppercase, sometimes followed by
+    # lowercase explanatory parentheses, e.g. "TRUST (in G-d)". Judge the
+    # header label before the parenthetical note.
+    label = re.sub(r'\([^)]*\)', '', st)
+    letters = re.sub(r'[^A-Za-z]', '', label)
     if len(letters) < 2:
         return False
     return letters.upper() == letters
@@ -101,30 +104,47 @@ def extract_topics(paras: list[str]) -> list[dict]:
         if upper in SPECIAL_HEADERS and 'SECOND' in upper:
             if current:
                 part = 2
-                pending_he = None
             i += 1
             continue
 
-        # Hebrew title followed by English all-caps title starts a topic.
-        if is_en_header(p) and i > 0 and has_he(paras[i - 1]):
-            he_title = paras[i - 1].strip()
-            if clean_he_title(he_title) == 'חלקשני':
-                if current:
-                    part = 2
-                    pending_he = None
+        # Hebrew title followed by English title starts a topic. Usually the
+        # Hebrew title is the immediately preceding paragraph, but a few tiny
+        # topics (notably נֵר תָּמִיד) put a part marker and the lone Hebrew
+        # teaching before the English title. Look back a few short Hebrew lines
+        # and carry that pre-title teaching forward as pending_he.
+        if is_en_header(p) and i > 0:
+            he_title = None
+            he_title_idx = None
+            for j in range(i - 1, max(-1, i - 6), -1):
+                candidate = paras[j].strip()
+                if (
+                    has_he(candidate)
+                    and clean_he_title(candidate) != 'חלקשני'
+                    and len(candidate) <= 90
+                    and not re.search(r'[.,!?;:]', candidate)
+                ):
+                    he_title = candidate
+                    he_title_idx = j
+                    break
+            if he_title:
+                finish()
+                current = {
+                    'hebrewTitle': he_title,
+                    'englishTitle': p.title() if p.isupper() else p,
+                    'segments': [],
+                }
+                part = 1
+                pending_he = None
+                assert he_title_idx is not None
+                for between in paras[he_title_idx + 1:i]:
+                    if clean_he_title(between) == 'חלקשני':
+                        part = 2
+                        pending_he = None
+                    elif has_he(between):
+                        pending_he = between
+                seen_first_topic = True
                 i += 1
                 continue
-            finish()
-            current = {
-                'hebrewTitle': he_title,
-                'englishTitle': p.title() if p.isupper() else p,
-                'segments': [],
-            }
-            part = 1
-            pending_he = None
-            seen_first_topic = True
-            i += 1
-            continue
 
         if not current:
             i += 1
