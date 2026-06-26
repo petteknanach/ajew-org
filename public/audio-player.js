@@ -88,6 +88,14 @@
       '.ajew-suno-rating button.active{background:#f0b429;color:#fff;border-color:#d99900;}' +
       '.ajew-suno-rating .ajew-suno-star{font-size:1.05em;padding:.08rem .28rem;}' +
       '.ajew-suno-rating .ajew-suno-rating-status{color:#6c5a20;font-size:.9em;}' +
+      '.ajew-suno-charts{width:100%;margin:.15rem 0;padding:.35rem .45rem;border-top:1px solid rgba(42,74,106,.18);}' +
+      '.ajew-suno-chart-tabs{display:flex;gap:.25rem;flex-wrap:wrap;margin:.15rem 0 .35rem;}' +
+      '.ajew-suno-chart-tabs button{background:rgba(42,74,106,.12);color:#2a4a6a;border:1px solid rgba(42,74,106,.25);padding:.14rem .45rem;font-size:.78em;}' +
+      '.ajew-suno-chart-tabs button.active{background:#2a4a6a;color:#fff;}' +
+      '.ajew-suno-chart-list{display:grid;gap:.18rem;font-size:.82em;}' +
+      '.ajew-suno-chart-item{display:flex;justify-content:space-between;gap:.5rem;border-bottom:1px dashed rgba(42,74,106,.16);padding:.12rem 0;}' +
+      '.ajew-suno-chart-item a{color:#8a5a00;text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}' +
+      '.ajew-suno-chart-score{white-space:nowrap;color:#2a4a6a;font-weight:700;}' +
       '.ajew-suno-track audio{width:100%;max-width:560px;display:block;height:32px;}' +
       '.ajew-suno-track a{font-size:.78em;color:#8a5a00;text-decoration:none;}' +
       'body.dark-mode .ajew-suno-segment-player{background:rgba(180,140,60,.12);border-color:rgba(220,180,90,.35);}' +
@@ -301,6 +309,77 @@
         var key = trackKey(track);
         ratings[key] = Object.assign({ liked: false, rating: 0, title: track.title || '', url: track.url || '', updated: '' }, ratings[key] || {}, patch, { title: track.title || '', url: track.url || '', updated: new Date().toISOString() });
         saveRatings(ratings);
+        updateAllChartPanels();
+      }
+
+      function ratingTimestampMs(item) {
+        var t = Date.parse(item && item.updated || '');
+        return isNaN(t) ? 0 : t;
+      }
+
+      function chartCutoff(period) {
+        var now = Date.now();
+        if (period === 'day') return now - 24 * 60 * 60 * 1000;
+        if (period === 'week') return now - 7 * 24 * 60 * 60 * 1000;
+        if (period === 'month') return now - 30 * 24 * 60 * 60 * 1000;
+        return 0;
+      }
+
+      function topRatedSongs(period) {
+        var cutoff = chartCutoff(period);
+        return Object.keys(loadRatings()).map(function (key) {
+          var item = loadRatings()[key] || {};
+          item.key = key;
+          item.score = (Number(item.rating) || 0) + (item.liked ? 0.75 : 0);
+          item.time = ratingTimestampMs(item);
+          return item;
+        }).filter(function (item) {
+          return item.score > 0 && (!cutoff || item.time >= cutoff);
+        }).sort(function (a, b) {
+          return (b.score - a.score) || (b.time - a.time);
+        }).slice(0, 10);
+      }
+
+      function renderChartList(box, period) {
+        var songs = topRatedSongs(period);
+        box.innerHTML = '';
+        if (!songs.length) {
+          box.appendChild(el('div', { class: 'ajew-suno-chart-item' }, 'No rated songs yet.'));
+          return;
+        }
+        songs.forEach(function (song, i) {
+          var title = song.title || song.key || 'Suno song';
+          box.appendChild(el('div', { class: 'ajew-suno-chart-item' }, [
+            el('a', { href: song.url || song.key, target: '_blank', rel: 'noopener', title: title }, (i + 1) + '. ' + title),
+            el('span', { class: 'ajew-suno-chart-score' }, (song.liked ? '♥ ' : '') + (song.rating ? song.rating + '/5' : 'Like'))
+          ]));
+        });
+      }
+
+      function updateAllChartPanels() {
+        document.querySelectorAll('.ajew-suno-charts').forEach(function (panel) {
+          renderChartList(panel.querySelector('.ajew-suno-chart-list'), panel.getAttribute('data-period') || 'all');
+        });
+      }
+
+      function renderChartsPanel() {
+        var panel = el('div', { class: 'ajew-suno-charts', 'data-period': 'all' });
+        var list = el('div', { class: 'ajew-suno-chart-list' });
+        var periods = [['day', 'Day'], ['week', 'Week'], ['month', 'Month'], ['all', 'All-time']];
+        var tabs = el('div', { class: 'ajew-suno-chart-tabs' });
+        periods.forEach(function (p) {
+          tabs.appendChild(el('button', { class: p[0] === 'all' ? 'active' : '', onclick: function () {
+            panel.setAttribute('data-period', p[0]);
+            tabs.querySelectorAll('button').forEach(function (b) { b.classList.remove('active'); });
+            this.classList.add('active');
+            renderChartList(list, p[0]);
+          } }, p[1]));
+        });
+        panel.appendChild(el('strong', null, 'Best songs'));
+        panel.appendChild(tabs);
+        panel.appendChild(list);
+        renderChartList(list, 'all');
+        return panel;
       }
 
       function renderRatingControls(track) {
@@ -391,7 +470,8 @@
           langSelect,
           status,
           playlistRating,
-          audio
+          audio,
+          renderChartsPanel()
         ]);
         var firstSeg = document.getElementById('seg-' + matches[0].segment) || document.getElementById('segment-' + matches[0].segment);
         if (firstSeg && firstSeg.parentNode) firstSeg.parentNode.insertBefore(wrap, firstSeg);
