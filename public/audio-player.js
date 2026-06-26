@@ -83,6 +83,11 @@
       '.ajew-suno-playlist-status{font-size:.82em;color:#2a4a6a;}' +
       '.ajew-suno-track{margin:.4rem 0;padding:.45rem;border-radius:8px;background:rgba(255,255,255,.55);max-width:600px;}' +
       '.ajew-suno-track-label{font-size:.85em;font-weight:600;margin-bottom:.2rem;}' +
+      '.ajew-suno-rating{display:flex;align-items:center;gap:.25rem;margin:.25rem 0;flex-wrap:wrap;font-size:.85em;}' +
+      '.ajew-suno-rating button{border:1px solid rgba(180,140,60,.45);background:rgba(255,255,255,.7);color:#8a5a00;border-radius:999px;padding:.12rem .38rem;cursor:pointer;font-weight:700;}' +
+      '.ajew-suno-rating button.active{background:#f0b429;color:#fff;border-color:#d99900;}' +
+      '.ajew-suno-rating .ajew-suno-star{font-size:1.05em;padding:.08rem .28rem;}' +
+      '.ajew-suno-rating .ajew-suno-rating-status{color:#6c5a20;font-size:.9em;}' +
       '.ajew-suno-track audio{width:100%;max-width:560px;display:block;height:32px;}' +
       '.ajew-suno-track a{font-size:.78em;color:#8a5a00;text-decoration:none;}' +
       'body.dark-mode .ajew-suno-segment-player{background:rgba(180,140,60,.12);border-color:rgba(220,180,90,.35);}' +
@@ -273,6 +278,49 @@
         return (track.title || 'Suno song') + (track.source ? ' — ' + track.source : '');
       }
 
+      function trackKey(track) {
+        return String(track.url || track.archive_filename || track.title || '');
+      }
+
+      function loadRatings() {
+        try { return JSON.parse(localStorage.getItem('ajew:suno:ratings') || '{}') || {}; }
+        catch (e) { return {}; }
+      }
+
+      function saveRatings(ratings) {
+        try { localStorage.setItem('ajew:suno:ratings', JSON.stringify(ratings)); }
+        catch (e) { /* ignore */ }
+      }
+
+      function getTrackRating(track) {
+        return loadRatings()[trackKey(track)] || { liked: false, rating: 0 };
+      }
+
+      function setTrackRating(track, patch) {
+        var ratings = loadRatings();
+        var key = trackKey(track);
+        ratings[key] = Object.assign({ liked: false, rating: 0, title: track.title || '', url: track.url || '', updated: '' }, ratings[key] || {}, patch, { title: track.title || '', url: track.url || '', updated: new Date().toISOString() });
+        saveRatings(ratings);
+      }
+
+      function renderRatingControls(track) {
+        var wrap = el('div', { class: 'ajew-suno-rating', 'data-suno-rating': trackKey(track) });
+        function refresh() {
+          var pref = getTrackRating(track);
+          wrap.innerHTML = '';
+          var like = el('button', { class: pref.liked ? 'active' : '', title: 'Like this song', onclick: function () { setTrackRating(track, { liked: !getTrackRating(track).liked }); refresh(); } }, pref.liked ? '♥ Liked' : '♡ Like');
+          wrap.appendChild(like);
+          for (var n = 1; n <= 5; n++) {
+            (function (rating) {
+              wrap.appendChild(el('button', { class: 'ajew-suno-star' + (pref.rating >= rating ? ' active' : ''), title: 'Rate ' + rating + ' stars', onclick: function () { setTrackRating(track, { rating: rating }); refresh(); } }, '★'));
+            })(n);
+          }
+          wrap.appendChild(el('span', { class: 'ajew-suno-rating-status' }, pref.rating ? pref.rating + '/5' : 'Rate'));
+        }
+        refresh();
+        return wrap;
+      }
+
       function makePlaylistLabel(track, i, total) {
         return (i + 1) + '/' + total + ': ' + (track.title || 'Suno song');
       }
@@ -289,6 +337,7 @@
         var playlistIndex = 0;
         var audio = el('audio', { controls: '', preload: 'none' });
         var status = el('span', { class: 'ajew-suno-playlist-status' }, playlist.length + ' songs');
+        var playlistRating = el('span');
         var langSelect = el('select', { 'aria-label': 'Playlist language' }, [
           el('option', { value: 'all' }, 'All songs'),
           el('option', { value: 'hebrew' }, 'Hebrew only'),
@@ -317,6 +366,8 @@
           playlistIndex = (i + list.length) % list.length;
           var track = list[playlistIndex];
           audio.src = track.url;
+          playlistRating.innerHTML = '';
+          playlistRating.appendChild(renderRatingControls(track));
           updateStatus(list);
           audio.play().catch(function () { /* user can press Play All again */ });
         }
@@ -339,6 +390,7 @@
           el('button', { onclick: playNextPlaylist }, 'Next ⏭'),
           langSelect,
           status,
+          playlistRating,
           audio
         ]);
         var firstSeg = document.getElementById('seg-' + matches[0].segment) || document.getElementById('segment-' + matches[0].segment);
@@ -352,6 +404,7 @@
         tracks.forEach(function (track) {
           var row = el('div', { class: 'ajew-suno-track' });
           row.appendChild(el('div', { class: 'ajew-suno-track-label' }, buildTrackLabel(track)));
+          row.appendChild(renderRatingControls(track));
           row.appendChild(el('audio', { controls: '', preload: 'none', src: track.url }));
           row.appendChild(el('a', { href: track.url, target: '_blank', rel: 'noopener' }, 'Archive.org MP3 ↗'));
           wrap.appendChild(row);
