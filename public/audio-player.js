@@ -103,7 +103,23 @@
       '#ajew-audio-player .ajew-ap-launcher{position:fixed;bottom:72px;right:12px;background:#2a4a6a;color:#fff;border:none;border-radius:50%;width:48px;height:48px;font-size:1.3em;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.4);z-index:96;display:none;}' +
       '#ajew-audio-player-launcher.visible{display:block;}' +
       'body.dark-mode #ajew-audio-player{background:#0a0a0a;}' +
-      '@media(max-width:600px){#ajew-audio-player .ajew-ap-list{max-height:25vh;}}';
+      '@media(max-width:700px){' +
+        'body:has(#ajew-audio-player){padding-bottom:86px;}' +
+        '#ajew-audio-player{font-size:13px;}' +
+        '#ajew-audio-player .ajew-ap-header{padding:.45rem .55rem;}' +
+        '#ajew-audio-player .ajew-ap-body{padding:.45rem .55rem;max-height:58vh;}' +
+        '#ajew-audio-player .ajew-ap-list{max-height:22vh;}' +
+        '.ajew-suno-playlist{display:grid;grid-template-columns:1fr 1fr;align-items:stretch;gap:.35rem;padding:.4rem;margin:.45rem 0;}' +
+        '.ajew-suno-playlist button,.ajew-suno-playlist select{width:100%;min-height:38px;max-width:none;font-size:.84em;}' +
+        '.ajew-suno-playlist audio,.ajew-suno-playlist .ajew-suno-charts,.ajew-suno-playlist-status{grid-column:1/-1;width:100%;}' +
+        '.ajew-suno-segment-player{width:100%;max-width:100%;}' +
+        '.ajew-suno-segment-player summary{display:flex;width:100%;box-sizing:border-box;justify-content:space-between;border-radius:10px;padding:.38rem .55rem;}' +
+        '.ajew-suno-track{max-width:100%;box-sizing:border-box;padding:.4rem;margin:.35rem 0;}' +
+        '.ajew-suno-track audio{max-width:100%;height:36px;}' +
+        '.ajew-suno-rating{gap:.2rem;}' +
+        '.ajew-suno-rating button{min-height:34px;min-width:34px;padding:.1rem .32rem;}' +
+        '.ajew-suno-chart-item{display:grid;grid-template-columns:1fr auto;align-items:center;}' +
+      '}';
     var s = document.createElement('style');
     s.id = 'ajew-audio-player-styles';
     s.textContent = css;
