@@ -12,6 +12,49 @@
     if (!el.getAttribute('dir')) el.setAttribute('dir', 'rtl');
   });
 
+  // --- English-friendly numbering ---
+  // Some older reader JSON titles are only Hebrew siman letters (e.g. לו). Keep
+  // the Hebrew in .hebrew-title, but make the visible English title readable for
+  // English users by showing the regular URL number.
+  function isHebrewOnlyNumber(text) {
+    const t = (text || '').trim().replace(/[\s.\-–—:()\[\]״"׳'›‹>]+/g, '');
+    return !!t && /^[\u05D0-\u05EA]+$/.test(t) && t.length <= 6;
+  }
+
+  function getReaderUrlNumber() {
+    const parts = window.location.pathname.split('/').filter(Boolean);
+    const last = parts[parts.length - 1] || '';
+    return /^\d+$/.test(last) ? last : '';
+  }
+
+  function fixEnglishReaderNumbers() {
+    const n = getReaderUrlNumber();
+    if (!n) return;
+    const h1 = document.querySelector('.reader-header h1');
+    if (h1 && isHebrewOnlyNumber(h1.textContent)) h1.textContent = 'Section ' + n;
+
+    const container = document.querySelector('.reader-container');
+    if (container) {
+      const title = container.getAttribute('data-torah-title') || '';
+      if (isHebrewOnlyNumber(title.split(' - ')[0])) {
+        container.setAttribute('data-torah-title', title.replace(/^\s*[^-]+/, 'Section ' + n));
+      }
+    }
+
+    const crumb = document.querySelector('.reader-breadcrumb');
+    if (crumb) {
+      const walker = document.createTreeWalker(crumb, NodeFilter.SHOW_TEXT);
+      let node, lastText = null;
+      while ((node = walker.nextNode())) lastText = node;
+      if (lastText && isHebrewOnlyNumber(lastText.textContent)) lastText.textContent = ' Section ' + n;
+    }
+
+    if (document.title && isHebrewOnlyNumber(document.title.split(' - ')[0])) {
+      document.title = document.title.replace(/^\s*[^-]+/, 'Section ' + n);
+    }
+  }
+  fixEnglishReaderNumbers();
+
   // --- State ---
   const PREFS_KEY = 'ajew-reader-prefs';
   let state = {
