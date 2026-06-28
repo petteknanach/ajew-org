@@ -70,6 +70,12 @@ const pageDesc = torahData
   ? `Read ${torahData.title} from Shivchay HaRan by Rabbi Nosson of Breslov`
   : '';
 
+const parableVideo = torahNum === 64 ? {
+  title: 'Video: The King’s Secret Message',
+  archiveUrl: 'https://archive.org/details/ajew-shivchei-haran-63-final-sped',
+  fileUrl: 'https://archive.org/download/ajew-shivchei-haran-63-final-sped/shivchei-haran-63-final-sped.mp4'
+} : null;
+
 const structuredData = torahData ? JSON.stringify({
   "@context": "https://schema.org",
   "@type": "Article",
@@ -313,6 +319,51 @@ const structuredData = torahData ? JSON.stringify({
           </div>
         )}
       </div>
+
+      {parableVideo && (
+        <details class="reader-video-reveal">
+          <summary>▶ Video for this parable</summary>
+          <div class="reader-video-panel">
+            <video controls preload="metadata" playsinline src={parableVideo.fileUrl}></video>
+            <a href={parableVideo.archiveUrl} target="_blank" rel="noopener">View on Archive.org</a>
+          </div>
+        </details>
+      )}
+
+      <style>
+        .reader-video-reveal {
+          max-width: 720px;
+          margin: 18px auto;
+          border: 1px solid var(--reader-border, #d8cdb8);
+          border-radius: 10px;
+          background: var(--reader-bg-secondary, #f8f5ef);
+          overflow: hidden;
+        }
+        .reader-video-reveal summary {
+          cursor: pointer;
+          padding: 9px 14px;
+          font: 600 0.9rem 'Open Sans', sans-serif;
+          color: var(--reader-text, #1a365d);
+          list-style: none;
+        }
+        .reader-video-reveal summary::-webkit-details-marker { display: none; }
+        .reader-video-panel {
+          padding: 0 12px 12px;
+        }
+        .reader-video-panel video {
+          display: block;
+          width: 100%;
+          max-height: 70vh;
+          border-radius: 8px;
+          background: #000;
+        }
+        .reader-video-panel a {
+          display: inline-block;
+          margin-top: 8px;
+          font: 600 0.8rem 'Open Sans', sans-serif;
+          color: var(--reader-link, #1a365d);
+        }
+      </style>
 
       <div class="reader-nav">
         {torahData.navigation.prevUrl ? (
