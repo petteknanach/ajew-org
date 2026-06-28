@@ -26,7 +26,7 @@ function loadBookIndexes(book) {
 
 // Group books by category
 const categories = [
-  { title: 'Rabbi Nachman of Breslov / רבי נחמן מברסלב', ids: ['likutay-moharan', 'kitzur-likutay-moharan', 'sefer-hamidos', 'sipurey-maasiyos', 'sipurey-maasiyos-english', 'sichos-haran', 'shivchay-haran', 'chayey-moharan', 'praises-of-rabbi-nachman', 'pettek-nanach-commentary', 'likutay-nanach'] },
+  { title: 'Rabbi Nachman of Breslov / רבי נחמן מברסלב', ids: ['likutay-moharan', 'kitzur-likutay-moharan', 'sefer-hamidos', 'sipurey-maasiyos', 'sipurey-maasiyos-english', 'sichos-haran', 'shivchay-haran', 'praises-of-rabbi-nachman', 'chayey-moharan', 'pettek-nanach-commentary', 'likutay-nanach'] },
   { title: 'Rabbi Nosson of Breslov / רבי נתן מברסלב', ids: ['likutay-halachos', 'likutay-tefilos', 'likutay-eitzos', 'alim-litrufa', 'yemei-moharnat', 'shemos-hatzadikim', 'yemei-hatlaos'] },
   { title: 'Rabbi Yisroel Dov Odesser (Saba) / רבי ישראל דב אודסר זצ"ל', ids: ['ebay-hanachal', 'yisroel-saba', 'fires-of-israel', 'sichos-chayay-saba', 'saba-tape-transcripts', 'likutay-nanach', 'misc-אגרת-הפורים'] },
   { title: 'Rabbi Nosson bar Yehuda / רבי נתן בר יהודה', ids: ['nosson-by-מכתבי-ר--נתן-ב--ר-יה', 'nosson-by-קונטרס-הצירופים-עם-ה', 'nosson-by-קונטרס-הצרופים'] },
@@ -95,6 +95,84 @@ const lmVol1Groups = (() => {
     return { ...section, sectionTorahs, rangeLabel };
   }).filter((g) => g.sectionTorahs.length > 0);
 })();
+
+const storyTitleOverrides = {
+  0: 'Introduction',
+  1: 'The Lost Princess',
+  2: 'The King and the Emperor',
+  3: 'The Lame Man',
+  4: 'The King Who Decreed Apostasy',
+  5: 'The King’s Son Made of Precious Stones',
+  6: 'The Humble King',
+  7: 'The Fly and the Spider',
+  8: 'The Rabbi and His Only Son',
+  9: 'The Clever Man and the Simple Man',
+  10: 'The Burgher and the Pauper',
+  11: 'The King’s Son and the Maid’s Son Who Were Exchanged',
+  12: 'The Prayer Leader',
+  13: 'The Seven Beggars',
+  14: 'Discourses After the Stories',
+  15: 'A Story of Trust',
+};
+
+const chayeyChapterTitles = {
+  1: ['Conversations and Stories for Each Torah', 'שיחות וספורים וענינים שהיה אצל כל תורה ומעשה'],
+  2: ['Sichos HaRan', 'שיחות הר״ן'],
+  3: ['Conversations Related to the Stories', 'שיחות השיך לספורי מעשיות'],
+  4: ['Conversations Related to Sichos HaRan', 'שיחות השיכים לשיחות הר״ן'],
+  5: ['Conversations Related to Sefer HaMidos', 'שיחות השיכים לספר המדות'],
+  6: ['Related to the Torah Conversations', 'שייך להשיחות שהיה אצל כל תורה'],
+  7: ['New Stories', 'ספורים חדשים'],
+  8: ['Birthplace, Residence, Journeys and Wanderings', 'מקום לדתו וישיבתו ונסיעותיו וטלטוליו'],
+  9: ['Journey to the Land of Israel', 'נסיעתו לארץ ישראל'],
+  10: ['His Wit and Holy Expressions', 'דברי צחות שלו'],
+  11: ['Do Not Be Stubborn or Force the Hour', 'שלא להתעקש על שום דבר ואין לדחק את השעה'],
+  12: ['The Drawing Near of Rabbi Yudel', 'התקרבות הרב יודיל הנ״ל אצל רבנו זכרונו לברכה'],
+};
+
+function specialBookItems(bookId) {
+  if (bookId === 'chayey-moharan') {
+    return Object.entries(chayeyChapterTitles).map(([number, names]) => ({
+      number: Number(number),
+      displayNumber: number,
+      title: names[0],
+      hebrewTitle: names[1],
+      url: `/reader/chayey-moharan/1/${number}`,
+    }));
+  }
+  return [];
+}
+
+function getEntryNumber(t) {
+  return t.number ?? t.torah ?? t.displayNumber;
+}
+
+function looksHebrewOnly(text) {
+  return !!text && /[\u0590-\u05FF]/.test(text) && !/[A-Za-z]/.test(text);
+}
+
+function displayEntry(bookId, t) {
+  const number = getEntryNumber(t);
+  const rawTitle = String(t.title || '').trim();
+  const override = bookId === 'sipurey-maasiyos' ? storyTitleOverrides[number] : null;
+  const en = override || (looksHebrewOnly(rawTitle) ? '' : rawTitle) || `Section ${number || ''}`.trim();
+  const he = t.hebrewTitle || (looksHebrewOnly(rawTitle) ? rawTitle : '');
+  return { number, en, he, paragraphs: t.paragraphs, url: t.url };
+}
+
+function shouldUseEntryCards(bookId, totalPages) {
+  return totalPages <= 40 || ['sefer-hamidos', 'sipurey-maasiyos', 'praises-of-rabbi-nachman', 'chayey-moharan'].includes(bookId);
+}
+
+function itemClass(bookId, totalPages) {
+  if (bookId === 'sefer-hamidos') return 'topic-card-list';
+  return shouldUseEntryCards(bookId, totalPages) ? 'entry-card-list' : '';
+}
+
+function linkClass(bookId, totalPages) {
+  if (bookId === 'sefer-hamidos') return 'topic-card';
+  return shouldUseEntryCards(bookId, totalPages) ? 'entry-card' : '';
+}
 ---
 
 <Layout title="Jewish Torah Library - 226+ Books in Hebrew & English" description="Read 226+ sacred Jewish texts free online. Likutay Moharan, Likutay Halachos, Zohar, Talmud Bavli, Mishna, Rambam, full Tanach, and 47 Breslov classics. 25,000+ pages in Hebrew with English translations." breadcrumbs={[{name: "Home", url: "https://ajew.org"}, {name: "Library", url: "https://ajew.org/reader"}]}>
@@ -306,6 +384,50 @@ const lmVol1Groups = (() => {
       font-size: 0.72em;
       line-height: 1.2;
     }
+    .entry-card-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 10px;
+    }
+    .torah-list a.entry-card {
+      justify-content: flex-start;
+      min-height: 76px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background:
+        radial-gradient(circle at top right, rgba(196, 162, 101, 0.18), transparent 35%),
+        linear-gradient(135deg, #fffdf9 0%, #f7f0e6 100%);
+      border: 1px solid #dfcfb6;
+      box-shadow: 0 2px 8px rgba(26, 54, 93, 0.06);
+      text-align: left;
+      gap: 10px;
+    }
+    .entry-card:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(26, 54, 93, 0.12);
+    }
+    .entry-num {
+      min-width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #1a365d;
+      color: #f6ead0;
+      font-weight: 800;
+      font-size: 0.78em;
+    }
+    .entry-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .entry-en { color: #1a365d; font-weight: 700; font-size: 0.92em; line-height: 1.25; }
+    .entry-he {
+      direction: rtl;
+      font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif);
+      color: #6b5a42;
+      font-size: 1.05em;
+      line-height: 1.2;
+    }
+    .entry-count { color: #9a8460; font-size: 0.72em; margin-top: 2px; }
 
     /* Section dividers within a volume */
     .section-divider {
@@ -582,6 +704,11 @@ const lmVol1Groups = (() => {
     :global(body.dark-mode) .topic-card .topic-card-he { color: #e5edf9; }
     :global(body.dark-mode) .topic-card .topic-card-en { color: #b9c6d9; }
     :global(body.dark-mode) .topic-card .topic-card-count { color: #8f9cb0; }
+    :global(body.dark-mode) .torah-list a.entry-card { background: linear-gradient(135deg, #24243a 0%, #1e1e2e 100%); border-color: #3a3a5e; }
+    :global(body.dark-mode) .entry-num { background: #4a7ab5; color: white; }
+    :global(body.dark-mode) .entry-en { color: #e5edf9; }
+    :global(body.dark-mode) .entry-he { color: #c9b88a; }
+    :global(body.dark-mode) .entry-count { color: #8f9cb0; }
     :global(body.dark-mode) .section-divider { background: #2a2a3e; border-left-color: #5a4a2a; color: #aaa; }
     :global(body.dark-mode) .library-search input { background: #2a2a3e; border-color: #3a3a5e; color: #e0e0e0; }
     :global(body.dark-mode) .library-search input:focus { border-color: #4a7ab5; box-shadow: 0 0 0 3px rgba(74, 122, 181, 0.15); }
@@ -922,23 +1049,36 @@ const lmVol1Groups = (() => {
                             {partData.title || partData.hebrewTitle} ({partData.totalTorahs})
                           </h4>
                         )}
-                        <ul class={`torah-list ${book.id === 'sefer-hamidos' ? 'topic-card-list' : ''}`}>
-                          {(partData.index.torahs || partData.index.items || []).map(t => (
+                        <ul class={`torah-list ${itemClass(book.id, totalPages)}`}>
+                          {(partData.index.torahs || partData.index.items || specialBookItems(book.id)).map(t => {
+                            const entry = displayEntry(book.id, t);
+                            const href = entry.url || `/reader/${book.id}/${partData.part}/${entry.number}`;
+                            return (
                             <li>
-                              <a class={book.id === 'sefer-hamidos' ? 'topic-card' : ''} href={t.url || `/reader/${book.id}/${partData.part}/${t.number}`}>
+                              <a class={linkClass(book.id, totalPages)} href={href}>
                                 {book.id === 'sefer-hamidos' ? (
                                   <>
-                                    <span class="topic-card-num">{t.displayNumber || t.number}</span>
-                                    <span class="topic-card-he" lang="he" dir="rtl">{t.hebrewTitle || t.title}</span>
-                                    <span class="topic-card-en">{t.title || `[${t.number}]`}</span>
-                                    <span class="topic-card-count">{t.paragraphs || 0} teachings</span>
+                                    <span class="topic-card-num">{t.displayNumber || entry.number}</span>
+                                    <span class="topic-card-he" lang="he" dir="rtl">{entry.he || entry.en}</span>
+                                    <span class="topic-card-en">{entry.en || `[${entry.number}]`}</span>
+                                    <span class="topic-card-count">{entry.paragraphs || 0} teachings</span>
+                                  </>
+                                ) : shouldUseEntryCards(book.id, totalPages) ? (
+                                  <>
+                                    <span class="entry-num">{t.displayNumber || entry.number}</span>
+                                    <span class="entry-text">
+                                      <span class="entry-en">{entry.en || `Section ${entry.number}`}</span>
+                                      {entry.he && <span class="entry-he" lang="he" dir="rtl">{entry.he}</span>}
+                                      {entry.paragraphs && <span class="entry-count">{entry.paragraphs} teachings</span>}
+                                    </span>
                                   </>
                                 ) : (
-                                  <span class="torah-num">{t.title || `[${t.number}]`}{t.hebrewTitle ? <span class="torah-he" lang="he" dir="rtl"> — {t.hebrewTitle}</span> : ''}</span>
+                                  <span class="torah-num">{entry.en || `[${entry.number}]`}{entry.he ? <span class="torah-he" lang="he" dir="rtl"> — {entry.he}</span> : ''}</span>
                                 )}
                               </a>
                             </li>
-                          ))}
+                            );
+                          })}
                         </ul>
                       </div>
                     ))}
@@ -956,23 +1096,36 @@ const lmVol1Groups = (() => {
                             {partData.title || partData.hebrewTitle} ({partData.totalTorahs})
                           </h4>
                         )}
-                        <ul class={`torah-list ${book.id === 'sefer-hamidos' ? 'topic-card-list' : ''}`}>
-                          {(partData.index.torahs || partData.index.items || []).map(t => (
+                        <ul class={`torah-list ${itemClass(book.id, totalPages)}`}>
+                          {(partData.index.torahs || partData.index.items || specialBookItems(book.id)).map(t => {
+                            const entry = displayEntry(book.id, t);
+                            const href = entry.url || `/reader/${book.id}/${partData.part}/${entry.number}`;
+                            return (
                             <li>
-                              <a class={book.id === 'sefer-hamidos' ? 'topic-card' : ''} href={t.url || `/reader/${book.id}/${partData.part}/${t.number}`}>
+                              <a class={linkClass(book.id, totalPages)} href={href}>
                                 {book.id === 'sefer-hamidos' ? (
                                   <>
-                                    <span class="topic-card-num">{t.displayNumber || t.number}</span>
-                                    <span class="topic-card-he" lang="he" dir="rtl">{t.hebrewTitle || t.title}</span>
-                                    <span class="topic-card-en">{t.title || `[${t.number}]`}</span>
-                                    <span class="topic-card-count">{t.paragraphs || 0} teachings</span>
+                                    <span class="topic-card-num">{t.displayNumber || entry.number}</span>
+                                    <span class="topic-card-he" lang="he" dir="rtl">{entry.he || entry.en}</span>
+                                    <span class="topic-card-en">{entry.en || `[${entry.number}]`}</span>
+                                    <span class="topic-card-count">{entry.paragraphs || 0} teachings</span>
+                                  </>
+                                ) : shouldUseEntryCards(book.id, totalPages) ? (
+                                  <>
+                                    <span class="entry-num">{t.displayNumber || entry.number}</span>
+                                    <span class="entry-text">
+                                      <span class="entry-en">{entry.en || `Section ${entry.number}`}</span>
+                                      {entry.he && <span class="entry-he" lang="he" dir="rtl">{entry.he}</span>}
+                                      {entry.paragraphs && <span class="entry-count">{entry.paragraphs} teachings</span>}
+                                    </span>
                                   </>
                                 ) : (
-                                  <span class="torah-num">{t.title || `[${t.number}]`}{t.hebrewTitle ? <span class="torah-he" lang="he" dir="rtl"> — {t.hebrewTitle}</span> : ''}</span>
+                                  <span class="torah-num">{entry.en || `[${entry.number}]`}{entry.he ? <span class="torah-he" lang="he" dir="rtl"> — {entry.he}</span> : ''}</span>
                                 )}
                               </a>
                             </li>
-                          ))}
+                            );
+                          })}
                         </ul>
                       </div>
                     ))}
