@@ -53,6 +53,55 @@
     return e;
   }
 
+
+  function shareUrlFor(url) {
+    return url || window.location.href;
+  }
+
+  function shareMedia(title, url) {
+    var shareUrl = shareUrlFor(url);
+    var shareTitle = title || document.title || 'A Jew media';
+    var text = shareTitle + ' — ajew.org';
+    if (navigator.share) {
+      navigator.share({ title: shareTitle, text: text, url: shareUrl }).catch(function () {});
+      return;
+    }
+    var msg = text + '\n' + shareUrl;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(msg).catch(function () { window.prompt('Copy link:', msg); });
+    } else {
+      window.prompt('Copy link:', msg);
+    }
+  }
+
+  function shareButton(title, url, label) {
+    return el('button', { class: 'ajew-media-share-btn', title: 'Share this media', onclick: function (e) {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      shareMedia(typeof title === 'function' ? title() : title, typeof url === 'function' ? url() : url);
+    } }, label || '↗ Share');
+  }
+
+  function archiveDetailsUrl(identifier) {
+    return identifier ? 'https://archive.org/details/' + encodeURIComponent(identifier) : window.location.href;
+  }
+
+  function currentMediaSrc(media) {
+    return media.currentSrc || media.getAttribute('src') || media.src || '';
+  }
+
+  function addGenericMediaShareButtons(root) {
+    (root || document).querySelectorAll('audio, video').forEach(function (media) {
+      if (media.closest('#ajew-audio-player') || media.closest('.ajew-suno-track') || media.closest('.ajew-suno-playlist')) return;
+      if (media.getAttribute('data-ajew-share-ready') === '1') return;
+      media.setAttribute('data-ajew-share-ready', '1');
+      var title = media.getAttribute('title') || media.closest('details')?.querySelector('summary')?.textContent || document.title;
+      var btn = shareButton(title, function () { return currentMediaSrc(media) || window.location.href; }, '↗ Share media');
+      var row = el('div', { class: 'ajew-generic-media-share' }, [btn]);
+      if (media.nextSibling) media.parentNode.insertBefore(row, media.nextSibling);
+      else media.parentNode.appendChild(row);
+    });
+  }
+
   function injectStyles() {
     if (document.getElementById('ajew-audio-player-styles')) return;
     var css = '' +
@@ -71,6 +120,9 @@
       '#ajew-audio-player .ajew-ap-controls{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;}' +
       '#ajew-audio-player .ajew-ap-controls button{background:#333;border:1px solid #555;color:#eee;padding:.3rem .6rem;border-radius:4px;cursor:pointer;}' +
       '#ajew-audio-player .ajew-ap-controls a{color:#9cf;text-decoration:none;font-size:.85em;}' +
+      '.ajew-media-share-btn{background:#2a4a6a;color:#fff;border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:.22rem .62rem;cursor:pointer;font-size:.82em;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:.25rem;}' +
+      '.ajew-media-share-btn:hover{background:#386895;color:#fff;}' +
+      '#ajew-audio-player .ajew-media-share-btn{background:#333;border:1px solid #555;color:#eee;border-radius:4px;padding:.3rem .6rem;}' +
       '#ajew-audio-player .ajew-ap-status{font-size:.85em;color:#999;}' +
       '.ajew-suno-segment-player{margin:.35rem 0;font-family:system-ui,-apple-system,sans-serif;}' +
       '.ajew-suno-segment-player summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:.35rem;padding:.18rem .55rem;border:1px solid rgba(180,140,60,.45);border-radius:999px;background:rgba(180,140,60,.10);color:#8a5a00;font-size:.85em;font-weight:700;}' +
@@ -98,6 +150,8 @@
       '.ajew-suno-chart-score{white-space:nowrap;color:#2a4a6a;font-weight:700;}' +
       '.ajew-suno-track audio{width:100%;max-width:560px;display:block;height:32px;}' +
       '.ajew-suno-track a{font-size:.78em;color:#8a5a00;text-decoration:none;}' +
+      '.ajew-suno-track-links{display:flex;gap:.4rem;align-items:center;flex-wrap:wrap;margin-top:.25rem;}' +
+      '.ajew-generic-media-share{margin:.35rem 0;}' +
       'body.dark-mode .ajew-suno-segment-player{background:rgba(180,140,60,.12);border-color:rgba(220,180,90,.35);}' +
       'body.dark-mode .ajew-suno-track{background:rgba(255,255,255,.08);}' +
       '#ajew-audio-player .ajew-ap-launcher{position:fixed;bottom:72px;right:12px;background:#2a4a6a;color:#fff;border:none;border-radius:50%;width:48px;height:48px;font-size:1.3em;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.4);z-index:96;display:none;}' +
@@ -204,6 +258,13 @@
     var controls = el('div', { class: 'ajew-ap-controls' }, [
       el('button', { onclick: playPrev, 'aria-label': 'Previous track' }, '⏮ Prev'),
       el('button', { onclick: playNext, 'aria-label': 'Next track' }, 'Next ⏭'),
+      shareButton(function () {
+        var f = state.files[state.currentIndex];
+        return f ? f.title : (state.currentEdition ? state.currentEdition.name : 'Audio');
+      }, function () {
+        var f = state.files[state.currentIndex];
+        return f ? f.url : archiveDetailsUrl(state.currentEdition && state.currentEdition.identifier);
+      }),
       status,
     ]);
     body.appendChild(controls);
@@ -246,8 +307,9 @@
       if (!files.length) {
         statusEl.textContent = 'No audio files available.';
         listEl.appendChild(el('div', { style: { padding: '.5rem', color: '#999' } }, 'This Internet Archive item has no MP3 files.'));
-        var linkRow = el('div', { style: { padding: '.4rem' } }, [
+        var linkRow = el('div', { style: { padding: '.4rem', display: 'flex', gap: '.4rem', flexWrap: 'wrap', alignItems: 'center' } }, [
           el('a', { href: 'https://archive.org/details/' + encodeURIComponent(state.currentEdition.identifier), target: '_blank', rel: 'noopener' }, 'View on archive.org ↗'),
+          shareButton(state.currentEdition.name, archiveDetailsUrl(state.currentEdition.identifier), '↗ Share edition'),
         ]);
         listEl.appendChild(linkRow);
         return;
@@ -258,8 +320,9 @@
         listEl.appendChild(btn);
       });
       // add archive.org link
-      listEl.appendChild(el('div', { style: { padding: '.4rem .6rem', borderTop: '1px solid #333' } }, [
+      listEl.appendChild(el('div', { style: { padding: '.4rem .6rem', borderTop: '1px solid #333', display: 'flex', gap: '.4rem', flexWrap: 'wrap', alignItems: 'center' } }, [
         el('a', { href: 'https://archive.org/details/' + encodeURIComponent(state.currentEdition.identifier), target: '_blank', rel: 'noopener' }, 'View on archive.org ↗'),
+        shareButton(state.currentEdition.name, archiveDetailsUrl(state.currentEdition.identifier), '↗ Share edition'),
       ]));
     }).catch(function (err) {
       statusEl.textContent = 'Error loading tracks';
@@ -487,6 +550,15 @@
         var wrap = el('div', { class: 'ajew-suno-playlist' }, [
           el('button', { onclick: function () { playPlaylistIndex(playlistIndex); } }, '▶ Play all songs'),
           el('button', { onclick: playNextPlaylist }, 'Next ⏭'),
+          shareButton(function () {
+            var list = activeList();
+            var track = list[playlistIndex] || list[0];
+            return track ? (track.title || 'Suno song') : 'Suno songs';
+          }, function () {
+            var list = activeList();
+            var track = list[playlistIndex] || list[0];
+            return track ? track.url : window.location.href;
+          }, '↗ Share song'),
           langSelect,
           status,
           playlistRating,
@@ -505,8 +577,11 @@
           var row = el('div', { class: 'ajew-suno-track' });
           row.appendChild(el('div', { class: 'ajew-suno-track-label' }, buildTrackLabel(track)));
           row.appendChild(renderRatingControls(track));
-          row.appendChild(el('audio', { controls: '', preload: 'none', src: track.url }));
-          row.appendChild(el('a', { href: track.url, target: '_blank', rel: 'noopener' }, 'Archive.org MP3 ↗'));
+          row.appendChild(el('audio', { controls: '', preload: 'none', src: track.url, title: buildTrackLabel(track) }));
+          row.appendChild(el('div', { class: 'ajew-suno-track-links' }, [
+            el('a', { href: track.url, target: '_blank', rel: 'noopener' }, 'Archive.org MP3 ↗'),
+            shareButton(buildTrackLabel(track), track.url, '↗ Share song')
+          ]));
           wrap.appendChild(row);
         });
         target.appendChild(wrap);
@@ -536,6 +611,11 @@
 
   function init() {
     injectStyles();
+    addGenericMediaShareButtons(document);
+    var shareObserver = new MutationObserver(function (mutations) {
+      mutations.forEach(function (m) { m.addedNodes && m.addedNodes.forEach(function (n) { if (n.nodeType === 1) addGenericMediaShareButtons(n); }); });
+    });
+    shareObserver.observe(document.body, { childList: true, subtree: true });
     injectSegmentSongPlayers();
     loadSources().then(function (data) {
       var editions = editionsForBook(data, bookId, part);
