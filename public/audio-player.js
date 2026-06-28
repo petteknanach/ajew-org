@@ -151,6 +151,10 @@
       // Prefer original MP3s; if that's empty, fall back to any mp3 file.
       var originals = allFiles.filter(function (f) { return f.source === 'original' && /\.mp3$/i.test(f.name || ''); });
       var pool = originals.length ? originals : allFiles.filter(function (f) { return /\.mp3$/i.test(f.name || ''); });
+      if (identifier === 'ajew-suno-sefer-hamidos-001') {
+        // Only expose the corrected one-teaching-per-song variants; hide the retracted range/spliced batch even if IA metadata lags deletion.
+        pool = pool.filter(function (f) { return /-variant-[A-Z]\.mp3$/i.test(f.name || ''); });
+      }
       pool.sort(function (a, b) { return (a.name || '').localeCompare(b.name || '', undefined, { numeric: true, sensitivity: 'base' }); });
       return pool.map(function (f) {
         return {
