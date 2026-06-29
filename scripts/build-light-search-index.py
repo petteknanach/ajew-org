@@ -120,11 +120,15 @@ for fpath in json_files:
     
     title = data.get('title', '') or ''
     hebrew_title = data.get('hebrewTitle', '') or data.get('title', '') or ''
-    book = fpath.parent.parent.name if fpath.parent.name.startswith('part') else fpath.parent.name
-    
-    # Build URL
+    # The searchable book id must be the top-level reader directory, not an
+    # internal folder such as ``part-1`` or ``volume-4``.  The search UI filters
+    # by these same top-level book ids, so nested folders would make users see
+    # folders instead of real books and would break one-book filtering.
     rel = fpath.relative_to(READER_DIR)
     parts = rel.parts
+    book = parts[0] if parts else fpath.parent.name
+    
+    # Build URL
     if len(parts) == 2:
         url = f'/reader/{parts[0]}/{parts[1].replace(".json","")}'
     elif len(parts) == 3:

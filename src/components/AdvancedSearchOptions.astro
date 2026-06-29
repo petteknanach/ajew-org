@@ -161,7 +161,7 @@ for (const cat of categories) {
     <div class="book-list-container" id="bookListContainer">
       {categories.filter(cat => cat.books && cat.books.length > 0).map(cat => (
         <details class="book-category-details" open={false}>
-          <summary class="category-summary" onclick={`toggleCategory(this)`}>
+          <summary class="category-summary">
             <span class="category-icon">{cat.icon}</span>
             <span class="category-label">{cat.label}</span>
             <span class="category-count">({cat.books!.reduce((s, b) => s + b.count, 0)} docs)</span>
@@ -338,11 +338,6 @@ for (const cat of categories) {
     toggleIcon.classList.toggle('rotated', isOpen);
     toggleBtn.querySelector('.toggle-text').textContent = isOpen ? 'Hide' : 'Show';
   });
-
-  window.toggleCategory = function(summary) {
-    var details = summary.closest('details');
-    details.open = !details.open;
-  };
 
   window.toggleCategoryBooks = function(btn) {
     var details = btn.closest('details');

@@ -209,6 +209,13 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
       var seen = {};
       (entry.related_commentaries || []).forEach(function (c, idx) {
         var id = 'c-' + idx + '-' + (c.book || 'x');
+        var dataUrl = c.dataUrl || c.jsonUrl || c.sourceUrl || null;
+        if (!dataUrl && c.url && /\.json(?:$|[?#])/.test(c.url)) {
+          dataUrl = c.url;
+        }
+        if (!dataUrl && c.book && c.section) {
+          dataUrl = '/reader/' + c.book + '/' + c.section + '.json';
+        }
         tabDefs.push({
           id: id,
           label: c.label + (c.sectionTitle ? ' \u2014 ' + c.sectionTitle : ''),
@@ -217,7 +224,8 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
           book: c.book,
           section: c.section,
           sectionNumber: c.sectionNumber,
-          url: c.url,
+          url: dataUrl || c.url,
+          readerUrl: c.readerUrl || c.url || null,
           sectionTitle: c.sectionTitle || ''
         });
       });
@@ -543,7 +551,7 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
         sub.textContent = def.shortLabel + (def.sectionNumber ? ' \u00B7 \u00A7' + def.sectionNumber : '');
         var link = document.createElement('a');
         link.className = 'commentary-sidebar-open-full';
-        link.href = def.url;
+        link.href = def.readerUrl || def.url;
         link.textContent = 'Open full section \u2197';
         link.setAttribute('rel', 'noopener');
         head.appendChild(title);
