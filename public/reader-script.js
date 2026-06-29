@@ -642,6 +642,7 @@
       bottomNav.parentNode.insertBefore(reportLink, bottomNav.nextSibling);
     }
     setupSelectionPopup();
+    setupSegmentShareActions();
     setupSegmentHighlight();
     setupCopyButtons();
     setupFavorites();
@@ -1483,6 +1484,82 @@
 
     document.addEventListener('mousedown', (e) => {
       if (!popup.contains(e.target)) popup.style.display = 'none';
+    });
+  }
+
+  // --- Segment Share / My Sefer Actions ---
+  function absoluteShareUrl(hash, extra) {
+    var url = new URL(window.location.href);
+    url.searchParams.delete('t');
+    if (extra) Object.keys(extra).forEach(function (k) { if (extra[k] != null) url.searchParams.set(k, extra[k]); });
+    if (hash) url.hash = hash.charAt(0) === '#' ? hash : '#' + hash;
+    return url.toString();
+  }
+
+  function segmentTitle(seg) {
+    var title = document.title.replace(' | A Jew', '');
+    var n = (seg.id || '').replace(/^seg-/, '').replace(/^segment-/, '').replace(/^aligned-/, '');
+    return title + (n ? ' — Teaching ' + n : '');
+  }
+
+  function segmentPlainText(seg) {
+    var clone = seg.cloneNode(true);
+    clone.querySelectorAll('.ajew-segment-actions,.ajew-suno-segment-player,audio,button,select').forEach(function (el) { el.remove(); });
+    return clone.textContent.replace(/\s+/g, ' ').trim();
+  }
+
+  function saveSegmentToMySefer(seg) {
+    var text = segmentPlainText(seg);
+    var title = segmentTitle(seg);
+    var url = absoluteShareUrl(seg.id);
+    try {
+      var SEFER_KEY = 'ajew-my-sefer';
+      var saved = JSON.parse(localStorage.getItem(SEFER_KEY) || '{"sections":[]}');
+      if (!Array.isArray(saved.sections)) saved.sections = [];
+      saved.sections.push({ id: 'seg-' + Date.now(), title: title, content: text, source: url, addedAt: new Date().toISOString() });
+      localStorage.setItem(SEFER_KEY, JSON.stringify(saved));
+      return true;
+    } catch(e) { return false; }
+  }
+
+  function shareOrCopy(title, text, url, btn) {
+    var payload = (text ? text + '\n\n— ' : '') + title + '\n' + url;
+    if (navigator.share) {
+      navigator.share({ title: title, text: text || title, url: url }).catch(function () {});
+      return;
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(payload).then(function () {
+        if (btn) { var old = btn.textContent; btn.textContent = 'Copied!'; setTimeout(function () { btn.textContent = old; }, 1500); }
+      }).catch(function () { window.prompt('Copy link:', payload); });
+    } else {
+      window.prompt('Copy link:', payload);
+    }
+  }
+
+  function setupSegmentShareActions() {
+    document.querySelectorAll('.reader-segment-pair').forEach(function (seg) {
+      if (!seg.id || seg.querySelector(':scope > .ajew-segment-actions')) return;
+      var bar = document.createElement('div');
+      bar.className = 'ajew-segment-actions';
+      bar.style.cssText = 'display:flex;gap:.35rem;align-items:center;flex-wrap:wrap;margin:.35rem 0 .15rem;font-family:system-ui,-apple-system,sans-serif;';
+      function makeBtn(label, title) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'ajew-segment-action-btn';
+        b.textContent = label;
+        b.title = title || label;
+        b.style.cssText = 'background:#2a4a6a;color:#fff;border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:.18rem .55rem;cursor:pointer;font-size:.78em;font-weight:700;';
+        return b;
+      }
+      var share = makeBtn('↗ Share teaching', 'Share this teaching');
+      share.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); shareOrCopy(segmentTitle(seg), segmentPlainText(seg), absoluteShareUrl(seg.id), share); });
+      var add = makeBtn('+ My Sefer', 'Add this whole teaching to My Sefer');
+      add.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); if (saveSegmentToMySefer(seg)) { add.textContent = 'Added!'; setTimeout(function () { add.textContent = '+ My Sefer'; }, 1500); } });
+      var copy = makeBtn('Copy teaching', 'Copy this teaching');
+      copy.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); var text = segmentPlainText(seg); if (navigator.clipboard) navigator.clipboard.writeText(text + '\n\n— ' + segmentTitle(seg) + '\n' + absoluteShareUrl(seg.id)); copy.textContent = 'Copied!'; setTimeout(function () { copy.textContent = 'Copy teaching'; }, 1500); });
+      bar.appendChild(share); bar.appendChild(add); bar.appendChild(copy);
+      seg.insertBefore(bar, seg.firstChild);
     });
   }
 

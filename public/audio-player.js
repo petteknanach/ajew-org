@@ -595,6 +595,25 @@
         if (!seg || seg.querySelector('.ajew-suno-segment-player')) return;
         appendTrackDropdown(seg, entry.tracks, 'Songs for this teaching');
       });
+
+      (function autoOpenSharedSong() {
+        var wanted = '';
+        try { wanted = new URLSearchParams(window.location.search).get('song') || ''; } catch (e) {}
+        if (!wanted) return;
+        wanted = decodeURIComponent(wanted).toLowerCase();
+        var track = Array.prototype.find.call(document.querySelectorAll('.ajew-suno-track'), function (row) {
+          var href = row.querySelector('a[href*="archive.org/download"]');
+          return href && decodeURIComponent(href.href.split('/').pop()).toLowerCase() === wanted;
+        });
+        if (!track) return;
+        var details = track.closest('.ajew-suno-segment-player');
+        if (details) details.open = true;
+        setTimeout(function () {
+          track.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          track.style.outline = '2px solid #f0b429';
+          setTimeout(function () { track.style.outline = ''; }, 3500);
+        }, 250);
+      })();
     }).catch(function (err) {
       if (window.console && console.warn) console.warn('[suno-segment-player]', err);
     });
