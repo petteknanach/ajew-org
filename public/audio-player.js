@@ -593,7 +593,23 @@
       matches.forEach(function (entry) {
         var seg = document.getElementById('seg-' + entry.segment) || document.getElementById('segment-' + entry.segment);
         if (!seg || seg.querySelector('.ajew-suno-segment-player')) return;
-        appendTrackDropdown(seg, entry.tracks, 'Songs for this teaching');
+        var hebrewTracks = entry.tracks.filter(function (track) {
+          var lang = String(track.language || '').toLowerCase();
+          return lang === 'hebrew' || lang === 'bilingual';
+        });
+        var englishTracks = entry.tracks.filter(function (track) {
+          var lang = String(track.language || '').toLowerCase();
+          return lang === 'english' || lang === 'bilingual';
+        });
+        var otherTracks = entry.tracks.filter(function (track) {
+          var lang = String(track.language || '').toLowerCase();
+          return lang !== 'hebrew' && lang !== 'english' && lang !== 'bilingual';
+        });
+        var heTarget = seg.querySelector('.segment-he') || seg.querySelector('[dir="rtl"]') || seg;
+        var enTarget = seg.querySelector('.segment-en') || seg.querySelector('[dir="ltr"]') || seg;
+        appendTrackDropdown(heTarget, hebrewTracks, 'שירים ללימוד זה');
+        appendTrackDropdown(enTarget, englishTracks, 'Songs for this teaching');
+        appendTrackDropdown(enTarget, otherTracks, 'Songs for this teaching');
       });
 
       (function autoOpenSharedSong() {
