@@ -557,7 +557,7 @@
           }, function () {
             var list = activeList();
             var track = list[playlistIndex] || list[0];
-            return track ? track.url : window.location.href;
+            return track ? (track.share_url || track.url) : window.location.href;
           }, '↗ Share song'),
           langSelect,
           status,
@@ -580,7 +580,7 @@
           row.appendChild(el('audio', { controls: '', preload: 'none', src: track.url, title: buildTrackLabel(track) }));
           row.appendChild(el('div', { class: 'ajew-suno-track-links' }, [
             el('a', { href: track.url, target: '_blank', rel: 'noopener' }, 'Archive.org MP3 ↗'),
-            shareButton(buildTrackLabel(track), track.url, '↗ Share song')
+            shareButton(buildTrackLabel(track), track.share_url || track.url, '↗ Share song')
           ]));
           wrap.appendChild(row);
         });
