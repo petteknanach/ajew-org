@@ -126,6 +126,7 @@
       '#ajew-audio-player .ajew-ap-status{font-size:.85em;color:#999;}' +
       '.ajew-suno-segment-player{margin:.35rem 0;font-family:system-ui,-apple-system,sans-serif;}' +
       '.ajew-suno-segment-player summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:.35rem;padding:.18rem .55rem;border:1px solid rgba(180,140,60,.45);border-radius:999px;background:rgba(180,140,60,.10);color:#8a5a00;font-size:.85em;font-weight:700;}' +
+      '.ajew-suno-segment-player summary:after{content:"  ↗ share buttons inside";font-size:.78em;color:#2a4a6a;font-weight:600;}' +
       '.ajew-suno-segment-player summary::-webkit-details-marker{display:none;}' +
       '.ajew-suno-segment-player summary:before{content:"▸";font-size:.8em;}' +
       '.ajew-suno-segment-player[open] summary:before{content:"▾";}' +
@@ -592,17 +593,7 @@
       matches.forEach(function (entry) {
         var seg = document.getElementById('seg-' + entry.segment) || document.getElementById('segment-' + entry.segment);
         if (!seg || seg.querySelector('.ajew-suno-segment-player')) return;
-        var hebrewTracks = entry.tracks.filter(function (track) { return String(track.language || '').toLowerCase() === 'hebrew'; });
-        var englishTracks = entry.tracks.filter(function (track) { return String(track.language || '').toLowerCase() === 'english'; });
-        var otherTracks = entry.tracks.filter(function (track) {
-          var lang = String(track.language || '').toLowerCase();
-          return lang !== 'hebrew' && lang !== 'english';
-        });
-        var heTarget = seg.querySelector('.segment-he') || seg.querySelector('[dir="rtl"]') || seg;
-        var enTarget = seg.querySelector('.segment-en') || seg.querySelector('[dir="ltr"]') || seg;
-        appendTrackDropdown(heTarget, hebrewTracks, 'Hebrew songs for this teaching');
-        appendTrackDropdown(enTarget, englishTracks, 'English songs for this teaching');
-        appendTrackDropdown(enTarget, otherTracks, 'Songs for this teaching');
+        appendTrackDropdown(seg, entry.tracks, 'Songs for this teaching');
       });
     }).catch(function (err) {
       if (window.console && console.warn) console.warn('[suno-segment-player]', err);
