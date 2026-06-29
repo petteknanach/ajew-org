@@ -360,7 +360,7 @@
   }
 
   function shareHighlight(text, source) {
-    const shareText = `"${text}"\n\n— ${source}\njew.org`;
+    const shareText = `"${text}"\n\n— ${source}\najew.org`;
 
     if (navigator.share) {
       navigator.share({ title: 'Torah Quote', text: shareText }).catch(() => {});
@@ -369,6 +369,84 @@
         showToast('Copied to clipboard 📋');
       }).catch(() => {});
     }
+  }
+
+  // ─── Teaching Share / My Sefer Buttons ───
+  function absoluteSegmentUrl(id, extra) {
+    const url = new URL(window.location.href);
+    url.searchParams.delete('t');
+    if (extra) Object.keys(extra).forEach(k => { if (extra[k] != null) url.searchParams.set(k, extra[k]); });
+    if (id) url.hash = id.startsWith('#') ? id : '#' + id;
+    return url.toString();
+  }
+
+  function segmentTitle(seg) {
+    const source = getTorahSource();
+    const n = (seg.id || '').replace(/^seg-/, '').replace(/^segment-/, '').replace(/^aligned-/, '');
+    return source + (n ? ' — Teaching ' + n : '');
+  }
+
+  function segmentPlainText(seg) {
+    const clone = seg.cloneNode(true);
+    clone.querySelectorAll('.ajew-segment-actions,.ajew-suno-segment-player,audio,button,select').forEach(el => el.remove());
+    return clone.textContent.replace(/\s+/g, ' ').trim();
+  }
+
+  function shareOrCopy(title, text, url, btn) {
+    if (navigator.share) {
+      navigator.share({ title, text: text || title, url }).catch(() => {});
+      return;
+    }
+    const payload = (text ? text + '\n\n— ' : '') + title + '\n' + url;
+    navigator.clipboard.writeText(payload).then(() => {
+      showToast('Copied share link 📋');
+      if (btn) { const old = btn.textContent; btn.textContent = 'Copied!'; setTimeout(() => { btn.textContent = old; }, 1500); }
+    }).catch(() => window.prompt('Copy link:', payload));
+  }
+
+  function saveSegmentToMySefer(seg, btn) {
+    const entry = {
+      id: 'seg-' + Date.now(),
+      title: segmentTitle(seg),
+      content: segmentPlainText(seg),
+      source: absoluteSegmentUrl(seg.id),
+      addedAt: new Date().toISOString()
+    };
+    try {
+      const key = 'ajew-my-sefer';
+      const saved = JSON.parse(localStorage.getItem(key) || '{"sections":[]}');
+      if (!Array.isArray(saved.sections)) saved.sections = [];
+      saved.sections.push(entry);
+      localStorage.setItem(key, JSON.stringify(saved));
+      showToast('Added to My Sefer');
+      if (btn) { btn.textContent = 'Added!'; setTimeout(() => { btn.textContent = '+ My Sefer'; }, 1500); }
+    } catch(e) {}
+  }
+
+  function setupSegmentShareActions() {
+    document.querySelectorAll('.reader-segment-pair').forEach(seg => {
+      if (!seg.id || seg.querySelector(':scope > .ajew-segment-actions')) return;
+      const bar = document.createElement('div');
+      bar.className = 'ajew-segment-actions';
+      bar.style.cssText = 'display:flex;gap:.35rem;align-items:center;flex-wrap:wrap;margin:.35rem 0 .15rem;font-family:system-ui,-apple-system,sans-serif;';
+      function button(label, title) {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'ajew-segment-action-btn';
+        b.textContent = label;
+        b.title = title || label;
+        b.style.cssText = 'background:#2a4a6a;color:#fff;border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:.18rem .55rem;cursor:pointer;font-size:.78em;font-weight:700;';
+        return b;
+      }
+      const share = button('↗ Share teaching', 'Share this teaching');
+      share.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); shareOrCopy(segmentTitle(seg), segmentPlainText(seg), absoluteSegmentUrl(seg.id), share); });
+      const add = button('+ My Sefer', 'Add this whole teaching to My Sefer');
+      add.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); saveSegmentToMySefer(seg, add); });
+      const copy = button('Copy teaching', 'Copy this teaching');
+      copy.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); const text = segmentPlainText(seg) + '\n\n— ' + segmentTitle(seg) + '\n' + absoluteSegmentUrl(seg.id); navigator.clipboard.writeText(text).then(() => { copy.textContent = 'Copied!'; setTimeout(() => { copy.textContent = 'Copy teaching'; }, 1500); }); });
+      bar.append(share, add, copy);
+      seg.insertBefore(bar, seg.firstChild);
+    });
   }
 
   function getTorahSource() {
@@ -643,6 +721,7 @@
     applyTheme();
     applyFontSize();
     setupHighlighting();
+    setupSegmentShareActions();
     setupKeyboard();
     setupCopyAttribution();
     initTTS();
