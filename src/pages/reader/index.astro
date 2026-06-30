@@ -207,23 +207,31 @@ function linkClass(bookId, totalPages) {
   })} slot="head" />
   <style>
     .lm-index {
-      max-width: 800px;
+      max-width: 1180px;
       margin: 0 auto;
-      padding: 40px 24px 80px;
+      padding: clamp(28px, 4vw, 58px) 18px 90px;
       font-family: 'Open Sans', sans-serif;
       color: #222;
     }
 
     /* Header */
     .lm-header {
+      position: relative;
+      overflow: hidden;
       text-align: center;
-      margin-bottom: 40px;
-      padding-bottom: 24px;
-      border-bottom: 3px solid #1a365d;
+      margin-bottom: 34px;
+      padding: clamp(36px, 7vw, 78px) 24px;
+      border: 1px solid rgba(196, 162, 101, .42);
+      border-radius: 34px;
+      background:
+        radial-gradient(circle at 14% 16%, rgba(255, 235, 170, .76), transparent 25%),
+        radial-gradient(circle at 84% 10%, rgba(70, 126, 180, .22), transparent 28%),
+        linear-gradient(135deg, #fffaf0 0%, #f4ead6 48%, #e5cf9f 100%);
+      box-shadow: 0 24px 72px rgba(26, 54, 93, .16), inset 0 1px 0 rgba(255,255,255,.75);
     }
     .lm-header .hebrew-title {
       font-family: 'Frank Ruhl Libre', serif;
-      font-size: 2.8em;
+      font-size: clamp(2.5rem, 7vw, 5.4rem);
       color: #1a365d;
       direction: rtl;
       margin: 0 0 4px;
@@ -231,14 +239,16 @@ function linkClass(bookId, totalPages) {
     }
     .lm-header h1 {
       font-family: 'Frank Ruhl Libre', serif;
-      font-size: 1.8em;
+      font-size: clamp(1.85rem, 4.5vw, 3.4rem);
       color: #1a365d;
       margin: 0 0 8px;
     }
     .lm-header .subtitle {
-      color: #666;
-      font-size: 0.95em;
-      margin: 0;
+      color: #516173;
+      font-size: 1.05em;
+      line-height: 1.6;
+      max-width: 740px;
+      margin: 0 auto;
     }
     .lm-header .author {
       color: #888;
@@ -254,9 +264,11 @@ function linkClass(bookId, totalPages) {
       margin-top: 16px;
     }
     .lm-features span {
-      background: #f0ebe0;
-      padding: 4px 12px;
-      border-radius: 14px;
+      background: rgba(255,255,255,.62);
+      padding: 7px 13px;
+      border: 1px solid rgba(196, 162, 101, .28);
+      border-radius: 999px;
+      box-shadow: 0 6px 18px rgba(26,54,93,.06);
       font-size: 0.75em;
       color: #555;
     }
@@ -762,6 +774,37 @@ function linkClass(bookId, totalPages) {
     :global(body.dark-mode) .view-toggle button { background: #2a2a3e; border-color: #3a3a5e; color: #aaa; }
     :global(body.dark-mode) .view-toggle button.active { background: #4a7ab5; border-color: #4a7ab5; color: white; }
 
+
+    .library-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+      gap: 12px;
+      max-width: 760px;
+      margin: 22px auto 0;
+    }
+    .library-stat {
+      padding: 12px 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.68);
+      border: 1px solid rgba(196, 162, 101, .32);
+      box-shadow: 0 10px 26px rgba(26,54,93,.08);
+    }
+    .library-stat strong { display:block; color:#14345d; font-size:1.22rem; font-weight:900; }
+    .library-stat span { color:#7d6a4b; font-size:.76rem; font-weight:800; text-transform:uppercase; letter-spacing:.08em; }
+    .library-actions { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:18px; }
+    .library-actions a { text-decoration:none; color:#173b67; font-weight:900; background:#fff8e8; border:1px solid #dcc797; border-radius:999px; padding:9px 15px; }
+    .category-section { transition: transform .18s ease, box-shadow .18s ease; }
+    .category-section:hover { transform: translateY(-2px); box-shadow: 0 18px 44px rgba(26,54,93,.14); }
+    .book-dropdown { border-radius: 18px; padding: 4px 0 6px; }
+    .book-dropdown[open] { background: rgba(255,255,255,.42); box-shadow: inset 0 0 0 1px rgba(196,162,101,.12); }
+    .book-dropdown summary.volume-title { padding: 12px 14px !important; border-radius: 16px; background: linear-gradient(135deg, rgba(255,255,255,.68), rgba(255,248,232,.36)); }
+    .book-dropdown summary.volume-title:hover { background: linear-gradient(135deg, #fff8e8, #f0dfbe); }
+    .torah-list a { box-shadow: 0 2px 8px rgba(26,54,93,.045); }
+    :global(body.dark-mode) .library-stat, :global(body.dark-mode) .library-actions a { background: rgba(0,0,0,.22); border-color:#4a3d2a; }
+    :global(body.dark-mode) .library-stat strong { color:#9fc6ff; }
+    :global(body.dark-mode) .library-stat span, :global(body.dark-mode) .library-actions a { color:#e4c077; }
+    :global(body.dark-mode) .book-dropdown[open] { background: rgba(0,0,0,.14); }
+
     @media (max-width: 768px) {
       .lm-header .hebrew-title { font-size: 2.2em; }
       .lm-header h1 { font-size: 1.4em; }
@@ -772,8 +815,19 @@ function linkClass(bookId, totalPages) {
     <div class="lm-header">
       <div class="hebrew-title" lang="he" dir="rtl">ספריית התורה</div>
       <h1>Jewish Torah Library</h1>
-      <p class="subtitle">213 sacred texts online free — Breslov, Tanach, Talmud, Mishna, Rambam, Zohar & more</p>
+      <p class="subtitle">A luminous, searchable Torah beis midrash — Breslov classics, Tanach, Talmud, Mishna, Rambam, Zohar, prayers, letters, stories, and living Na Nach fire.</p>
       <p class="author">Na Nach Nachma Nachman MeUman</p>
+      <div class="library-stats" aria-label="Library statistics">
+        <div class="library-stat"><strong>{masterCatalog.books.length}+</strong><span>Books</span></div>
+        <div class="library-stat"><strong>30,000+</strong><span>Pages</span></div>
+        <div class="library-stat"><strong>Hebrew + English</strong><span>Reader modes</span></div>
+        <div class="library-stat"><strong>Searchable</strong><span>All teachings</span></div>
+      </div>
+      <div class="library-actions">
+        <a href="/search-enhanced">Search the Library</a>
+        <a href="/daily-study">Daily Study</a>
+        <a href="/reader/likutay-moharan/1/1">Begin Likutay Moharan</a>
+      </div>
       <div class="lm-features">
         <span>Hebrew / English / Both</span>
         <span>Day / Sepia / Night themes</span>

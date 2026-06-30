@@ -1,5 +1,6 @@
 ---
 import Layout from '../../../../layouts/Layout.astro';
+import ReaderDirectory from '../../../../components/ReaderDirectory.astro';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -24,24 +25,13 @@ try {
 
 const totalSections = indexData?.torahs?.length || 0;
 ---
-
-<Layout title=`סיח שרפי קודש — Part ${partNum} Index`>
-  <div style="max-width: 900px; margin: 0 auto; padding: 40px 20px;">
-    <div style="text-align: center; margin-bottom: 40px;">
-      <h1 style="font-family: 'Cinzel', serif; color: #1e3a5f;">סיח שרפי קודש</h1>
-      <p style="color: #888;">Part {partNum} &middot; {totalSections} sections</p>
-    </div>
-    {indexData && (
-      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px;">
-        {indexData.torahs.map(t => (
-          <a href={`/reader/siach-sarfei-kodesh/${partNum}/${t.number}`} style="display: block; padding: 10px 14px; background: #f8f5f0; border-radius: 6px; text-decoration: none; border-right: 3px solid #a07830;">
-            <span style="color: #1e3a5f; font-weight: 600; font-size: 0.9em;">{t.hebrewTitle || t.title || `Section ${t.number}`}</span>
-          </a>
-        ))}
-      </div>
-    )}
-    <div style="margin-top: 40px; text-align: center;">
-      <a href="/reader" style="color: #1e3a5f; font-weight: 600;">&larr; All Books</a>
-    </div>
-  </div>
+<Layout title={`${indexData?.title || "Siach Sarfei Kodesh"} — Part ${partNum} Index`} description={`Beautiful directory for Siach Sarfei Kodesh, part ${partNum}.`}>
+  <ReaderDirectory
+    title="Siach Sarfei Kodesh"
+    hebrewTitle="שיח שרפי קודש"
+    subtitle={`Collected Breslov conversations and holy memories · Part ${partNum}`}
+    countLabel={`${totalSections} sections`}
+    items={indexData?.torahs || []}
+    hrefBase={`/reader/siach-sarfei-kodesh/${partNum}/`}
+  />
 </Layout>

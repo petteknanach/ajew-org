@@ -1,5 +1,6 @@
 ---
 import Layout from '../../../../layouts/Layout.astro';
+import ReaderDirectory from '../../../../components/ReaderDirectory.astro';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -37,71 +38,48 @@ try {
   );
 } catch (e) {}
 ---
-
 <Layout title={`Likutay Tefilos — ${partTitle} Index`} description={`Complete index of Likutay Tefilos ${partTitle}. ${totalPrayers} prayers with Hebrew text and English translation.`}>
-  <div style="max-width: 900px; margin: 0 auto; padding: 40px 20px;">
-    <!-- Header -->
-    <div style="text-align: center; margin-bottom: 40px;">
-      <p style="font-family: 'Cinzel', serif; font-size: 0.75em; letter-spacing: 3px; color: #a07830; text-transform: uppercase; margin-bottom: 8px;">Likutay Tefilos</p>
-      <h1 style="font-family: 'Cinzel', serif; font-size: 2em; color: #1e3a5f; margin-bottom: 8px;">{partTitle}</h1>
-      <p style="font-family: 'Noto Serif Hebrew', serif; font-size: 1.2em; color: #6b5a42; direction: rtl;">{partHebrew}</p>
-      <p style="color: #888; font-size: 0.9em; margin-top: 8px;">{totalPrayers} prayers</p>
+  <ReaderDirectory
+    title="Likutay Tefilos"
+    hebrewTitle="ליקוטי תפילות"
+    subtitle={`Rabbi Nosson’s prayers from Rebbe Nachman’s teachings · ${partTitle}`}
+    countLabel={`${totalPrayers} prayers`}
+    items={indexData?.torahs || []}
+    hrefBase={`/reader/likutay-tefilos/${partNum}/`}
+    itemKind="prayers"
+  />
+  <div style="max-width:1180px; margin:-58px auto 70px; padding:0 18px;">
+    <div style="text-align:center; margin-bottom:26px;">
+      <a href="/reader/likutay-tefilos/special" style="display:inline-block; padding:12px 20px; background:linear-gradient(135deg,#173b67,#27598f); color:#ffe9b3; border-radius:999px; text-decoration:none; font-weight:900; box-shadow:0 14px 32px rgba(23,59,103,.20);">✨ Special Prayers for Every Need & Occasion →</a>
     </div>
-
-    <!-- Special Prayers Button -->
-    <div style="margin-bottom: 32px; padding: 16px 20px; background: linear-gradient(135deg, #1e3a5f 0%, #2e5580 100%); border-radius: 8px; text-align: center;">
-      <a href="/reader/likutay-tefilos/special" style="color: #c8bfa0; text-decoration: none; font-family: 'Cinzel', serif; font-size: 1em; letter-spacing: 1px;">
-        ✨ Special Prayers for Every Need & Occasion — Browse by Topic →
-      </a>
-    </div>
-
-    <!-- Prayer List -->
-    {indexData && (
-      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px;">
-        {indexData.torahs.map(t => (
-          <a href={`/reader/likutay-tefilos/${partNum}/${t.number}`} style="display: block; padding: 10px 14px; background: #f8f5f0; border-radius: 6px; text-decoration: none; border-right: 3px solid #a07830;">
-            <span style="color: #1e3a5f; font-weight: 600; font-size: 0.9em;">
-              {t.hebrewTitle || t.title || `Prayer ${t.number}`}
-            </span>
-            {t.hebrewTitle && t.title && t.title !== t.hebrewTitle && (
-              <span style="color: #888; font-size: 0.75em; display: block;">{t.title}</span>
-            )}
-          </a>
-        ))}
-      </div>
-    )}
-
-    <!-- Topic Index -->
     {tocTopics.length > 0 && (
-      <div style="margin-top: 48px;">
-        <h2 style="font-family: 'Cinzel', serif; font-size: 1.3em; color: #1e3a5f; border-bottom: 2px solid #a07830; padding-bottom: 8px; margin-bottom: 20px;">
-          Browse by Topic
-        </h2>
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px;">
+      <section class="tefila-topics">
+        <h2>Browse by Topic</h2>
+        <div class="topic-grid">
           {tocTopics.map(topic => {
             const prayers = partNum === 1 ? topic.part1_prayers : topic.part2_prayers;
             if (prayers.length === 0) return null;
             const firstPrayer = prayers[0];
             return (
-              <a href={`/reader/likutay-tefilos/${partNum}/${firstPrayer}`} style="display: block; padding: 10px 14px; background: #f0ebe0; border-radius: 6px; text-decoration: none;">
-                <span style="color: #1e3a5f; font-weight: 600; font-size: 0.9em; direction: rtl; display: block; text-align: right;">{topic.topic}</span>
-                {topic.english && <span style="color: #5a7a9a; font-size: 0.8em; display: block; text-align: right;">{topic.english}</span>}
-                <span style="color: #888; font-size: 0.75em;">Prayers: {prayers.slice(0, 8).join(', ')}{prayers.length > 8 ? '...' : ''}</span>
+              <a href={`/reader/likutay-tefilos/${partNum}/${firstPrayer}`}>
+                <strong dir="rtl" lang="he">{topic.topic}</strong>
+                {topic.english && <span>{topic.english}</span>}
+                <small>Prayers: {prayers.slice(0, 8).join(', ')}{prayers.length > 8 ? '…' : ''}</small>
               </a>
             );
           })}
         </div>
-      </div>
+      </section>
     )}
-
-    <!-- Navigation -->
-    <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; display: flex; justify-content: space-between;">
-      <a href="/reader" style="color: #1e3a5f; text-decoration: none; font-weight: 600;">← All Books</a>
-      {partNum === 1 ? (
-        <a href="/reader/likutay-tefilos/2" style="color: #1e3a5f; text-decoration: none; font-weight: 600;">Part 2 →</a>
-      ) : (
-        <a href="/reader/likutay-tefilos/1" style="color: #1e3a5f; text-decoration: none; font-weight: 600;">← Part 1</a>
-      )}
-    </div>
   </div>
 </Layout>
+
+<style>
+  .tefila-topics { padding:24px; border-radius:26px; border:1px solid rgba(196,162,101,.35); background:linear-gradient(145deg,#fffdf8,#f4ead6); box-shadow:0 18px 50px rgba(26,54,93,.10); }
+  .tefila-topics h2 { margin:0 0 18px; color:#14345d; font-family:'Cinzel', Georgia, serif; }
+  .topic-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:12px; }
+  .topic-grid a { display:block; padding:15px 16px; border-radius:17px; background:rgba(255,255,255,.72); border:1px solid rgba(196,162,101,.32); text-decoration:none; box-shadow:0 6px 18px rgba(26,54,93,.06); }
+  .topic-grid strong { display:block; color:#725426; font-family:'Frank Ruhl Libre', serif; font-size:1.15rem; }
+  .topic-grid span { display:block; color:#15375e; font-weight:800; margin-top:3px; }
+  .topic-grid small { display:block; color:#907b58; margin-top:7px; }
+</style>

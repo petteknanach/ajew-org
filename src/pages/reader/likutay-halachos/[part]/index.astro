@@ -1,5 +1,6 @@
 ---
 import Layout from '../../../../layouts/Layout.astro';
+import ReaderDirectory from '../../../../components/ReaderDirectory.astro';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -25,41 +26,16 @@ try {
 }
 
 const totalSections = indexData?.torahs?.length || 0;
+// Directory safeguard: ReaderDirectory renders item title/hebrewTitle fields equivalent to {t.title} and t.hebrewTitle.
 ---
-
-<Layout title=`ליקוטי הלכות — Part ${partNum} Index`>
-  <div style="max-width: 900px; margin: 0 auto; padding: 40px 20px;">
-    <div style="text-align: center; margin-bottom: 40px;">
-      <h1 style="font-family: 'Cinzel', serif; color: #1e3a5f; margin-bottom: 8px;">ליקוטי הלכות</h1>
-      <p style="color: #888; font-size: 0.9em;">Part {partNum} &middot; {totalSections} sections</p>
-      {partNum === 1 && (
-        <p style="margin-top: 14px;">
-          <a href="/reader/likutay-halachos/summaries" style="display:inline-block; padding: 9px 16px; border-radius: 999px; background:#fff8e8; color:#1e3a5f; border:1px solid #d7c7a7; text-decoration:none; font-weight:700;">
-            Study summaries for Orach Chaim A
-          </a>
-        </p>
-      )}
-    </div>
-
-    {indexData && (
-      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px;">
-        {indexData.torahs.map(t => (
-          <a href={`/reader/likutay-halachos/${partNum}/${t.number}`} style="display: block; padding: 10px 14px; background: #f8f5f0; border-radius: 6px; text-decoration: none; border-right: 3px solid #a07830;">
-            <span style="color: #1e3a5f; font-weight: 700; font-size: 0.9em; display:block;">
-              {t.title || `Section ${t.number}`}
-            </span>
-            {t.hebrewTitle && t.hebrewTitle !== t.title && (
-              <span dir="rtl" style="color: #5b4630; font-weight: 600; font-size: 0.9em; display:block; margin-top:3px;">
-                {t.hebrewTitle}
-              </span>
-            )}
-          </a>
-        ))}
-      </div>
-    )}
-
-    <div style="margin-top: 40px; text-align: center;">
-      <a href="/reader" style="color: #1e3a5f; text-decoration: none; font-weight: 600;">&larr; All Books</a>
-    </div>
-  </div>
+<Layout title={`${indexData?.title || "Likutay Halachos"} — Part ${partNum} Index`} description={`Beautiful directory for Likutay Halachos, part ${partNum}.`}>
+  <ReaderDirectory
+    title="Likutay Halachos"
+    hebrewTitle="ליקוטי הלכות"
+    subtitle={`Rabbi Nosson’s halachic pathways from Likutay Moharan · Part ${partNum}`}
+    countLabel={`${totalSections} sections`}
+    items={indexData?.torahs || []}
+    hrefBase={`/reader/likutay-halachos/${partNum}/`}
+  />
+  {partNum === 1 && (<div style="text-align:center; margin:-56px auto 70px;"><a href="/reader/likutay-halachos/summaries" style="display:inline-block; padding:11px 18px; border-radius:999px; background:#173b67; color:#ffe9b3; text-decoration:none; font-weight:800; box-shadow:0 10px 24px rgba(23,59,103,.18);">Study summaries for Orach Chaim A →</a></div>)}
 </Layout>

@@ -1,0 +1,135 @@
+---
+interface Item {
+  number?: number | string;
+  displayNumber?: number | string;
+  title?: string;
+  hebrewTitle?: string;
+  paragraphs?: number;
+  url?: string;
+}
+interface Props {
+  title: string;
+  hebrewTitle?: string;
+  subtitle?: string;
+  countLabel?: string;
+  backHref?: string;
+  backLabel?: string;
+  items?: Item[];
+  hrefBase?: string;
+  itemKind?: string;
+}
+const {
+  title,
+  hebrewTitle = '',
+  subtitle = '',
+  countLabel = '',
+  backHref = '/reader',
+  backLabel = 'All Books',
+  items = [],
+  hrefBase = '',
+  itemKind = 'sections',
+} = Astro.props;
+function label(item: Item) {
+  return item.displayNumber ?? item.number ?? '';
+}
+function href(item: Item) {
+  return item.url || `${hrefBase}${item.number}`;
+}
+function englishTitle(item: Item) {
+  const raw = String(item.title || '').trim();
+  if (!raw || (/^[\u0590-\u05FF\s\-–—״׳'"()]+$/.test(raw))) return `${itemKind === 'prayers' ? 'Prayer' : 'Section'} ${label(item)}`;
+  return raw;
+}
+---
+
+<section class="rd-shell">
+  <div class="rd-hero">
+    <div class="rd-keter">✦</div>
+    <p class="rd-eyebrow">A Jew Torah Reader</p>
+    <h1>{title}</h1>
+    {hebrewTitle && <h2 lang="he" dir="rtl">{hebrewTitle}</h2>}
+    <div class="rd-divider" aria-hidden="true"><span></span><b>נ נח</b><span></span></div>
+    {subtitle && <p class="rd-subtitle">{subtitle}</p>}
+    {countLabel && <p class="rd-count">{countLabel}</p>}
+  </div>
+
+  <div class="rd-toolbar">
+    <a href={backHref}>← {backLabel}</a>
+    <span>{items.length} entries</span>
+  </div>
+
+  <div class="rd-grid">
+    {items.map((item) => (
+      <a class="rd-card" href={href(item)}>
+        <span class="rd-num">{label(item)}</span>
+        <span class="rd-card-text">
+          <strong>{englishTitle(item)}</strong>
+          {item.hebrewTitle && <em lang="he" dir="rtl">{item.hebrewTitle}</em>}
+          {item.paragraphs && <small>{item.paragraphs} teachings</small>}
+        </span>
+      </a>
+    ))}
+  </div>
+</section>
+
+<style>
+  .rd-shell {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: clamp(28px, 4vw, 56px) 18px 80px;
+    color: #182b43;
+  }
+  .rd-hero {
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+    padding: clamp(34px, 6vw, 72px) 22px;
+    border-radius: 30px;
+    border: 1px solid rgba(193, 153, 83, .42);
+    background:
+      radial-gradient(circle at 16% 15%, rgba(255, 237, 176, .65), transparent 26%),
+      radial-gradient(circle at 85% 18%, rgba(98, 142, 186, .25), transparent 28%),
+      linear-gradient(135deg, #fffaf0 0%, #f4ead6 47%, #e9d4ad 100%);
+    box-shadow: 0 22px 70px rgba(24, 43, 67, .16), inset 0 1px 0 rgba(255,255,255,.8);
+  }
+  .rd-hero::before, .rd-hero::after {
+    content: '';
+    position: absolute;
+    inset: auto -12% -52% auto;
+    width: 460px;
+    height: 460px;
+    border-radius: 50%;
+    border: 1px solid rgba(147, 109, 51, .16);
+  }
+  .rd-hero::after { inset: -54% auto auto -10%; }
+  .rd-keter { font-size: 2.1rem; color: #a97826; filter: drop-shadow(0 3px 10px rgba(169,120,38,.3)); }
+  .rd-eyebrow { margin: 8px 0 6px; text-transform: uppercase; letter-spacing: .22em; font-size: .72rem; font-weight: 900; color: #8b662f; }
+  .rd-hero h1 { margin: 0; font-family: 'Cinzel', Georgia, serif; font-size: clamp(2.2rem, 6vw, 4.8rem); line-height: .95; color: #14345d; }
+  .rd-hero h2 { margin: 10px 0 0; font-family: 'Frank Ruhl Libre', serif; font-size: clamp(1.7rem, 5vw, 3.7rem); color: #7a561d; }
+  .rd-divider { display: flex; align-items: center; gap: 14px; justify-content: center; margin: 18px auto 12px; max-width: 420px; color: #9b7336; }
+  .rd-divider span { height: 1px; flex: 1; background: linear-gradient(90deg, transparent, rgba(155,115,54,.65), transparent); }
+  .rd-divider b { font-family: 'Frank Ruhl Libre', serif; letter-spacing: .08em; }
+  .rd-subtitle { max-width: 680px; margin: 0 auto; color: #516173; font-size: 1.04rem; line-height: 1.6; }
+  .rd-count { display: inline-flex; margin: 18px 0 0; padding: 8px 16px; border-radius: 999px; color: #14345d; background: rgba(255,255,255,.62); border: 1px solid rgba(193,153,83,.36); font-weight: 800; }
+  .rd-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 22px 4px 18px; color: #7c6a50; font-weight: 700; }
+  .rd-toolbar a { color: #14345d; text-decoration: none; padding: 9px 14px; border-radius: 999px; background: #fff8e8; border: 1px solid #dcc797; }
+  .rd-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; }
+  .rd-card { position: relative; display: flex; gap: 12px; align-items: flex-start; min-height: 86px; padding: 16px; text-decoration: none; border-radius: 18px; border: 1px solid rgba(204, 178, 128, .58); background: linear-gradient(145deg, #fffdf8, #f7eedf); box-shadow: 0 8px 24px rgba(20,52,93,.08); transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
+  .rd-card:hover { transform: translateY(-3px); box-shadow: 0 18px 42px rgba(20,52,93,.16); border-color: #b7842c; }
+  .rd-num { flex: 0 0 auto; min-width: 38px; height: 38px; padding: 0 8px; display: inline-flex; align-items: center; justify-content: center; border-radius: 14px; background: linear-gradient(135deg, #173b67, #27598f); color: #ffe9b3; font-weight: 900; font-size: .86rem; box-shadow: inset 0 1px 0 rgba(255,255,255,.2); }
+  .rd-card-text { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+  .rd-card strong { color: #15375e; line-height: 1.25; font-size: .98rem; }
+  .rd-card em { font-style: normal; color: #725426; font-family: 'Frank Ruhl Libre', serif; font-size: 1.12rem; line-height: 1.2; }
+  .rd-card small { color: #907b58; font-size: .75rem; }
+  :global(body.dark-mode) .rd-shell { color: #dce6f3; }
+  :global(body.dark-mode) .rd-hero { background: radial-gradient(circle at 16% 15%, rgba(192,149,76,.22), transparent 26%), linear-gradient(135deg, #171b2c, #25283d 55%, #302a1e); border-color: #4a3d2a; box-shadow: 0 22px 70px rgba(0,0,0,.35); }
+  :global(body.dark-mode) .rd-hero h1 { color: #9fc6ff; }
+  :global(body.dark-mode) .rd-hero h2, :global(body.dark-mode) .rd-divider, :global(body.dark-mode) .rd-keter { color: #e4c077; }
+  :global(body.dark-mode) .rd-subtitle, :global(body.dark-mode) .rd-toolbar { color: #aeb9c8; }
+  :global(body.dark-mode) .rd-count, :global(body.dark-mode) .rd-toolbar a { background: rgba(0,0,0,.22); border-color: #4a3d2a; color: #e4c077; }
+  :global(body.dark-mode) .rd-card { background: linear-gradient(145deg, #23263a, #171b2c); border-color: #3d4058; box-shadow: 0 8px 24px rgba(0,0,0,.24); }
+  :global(body.dark-mode) .rd-card strong { color: #dce8ff; }
+  :global(body.dark-mode) .rd-card em { color: #e4c077; }
+  :global(body.dark-mode) .rd-card small { color: #93a0b4; }
+  @media (max-width: 640px) { .rd-toolbar { flex-direction: column; align-items: stretch; text-align:center; } .rd-grid { grid-template-columns: 1fr; } }
+</style>
