@@ -806,8 +806,40 @@ function linkClass(bookId, totalPages) {
     :global(body.dark-mode) .book-dropdown[open] { background: rgba(0,0,0,.14); }
 
     @media (max-width: 768px) {
-      .lm-header .hebrew-title { font-size: 2.2em; }
-      .lm-header h1 { font-size: 1.4em; }
+      .lm-index { padding: 18px 10px 54px; max-width: 100%; overflow-x: hidden; }
+      .lm-header { padding: 28px 12px 24px; border-radius: 22px; margin-left: 0; margin-right: 0; }
+      .lm-header .hebrew-title { font-size: clamp(2rem, 14vw, 3.2rem); line-height: 1.05; }
+      .lm-header h1 { font-size: clamp(1.55rem, 8vw, 2.2rem); line-height: 1.1; }
+      .lm-header .subtitle { font-size: .94em; line-height: 1.45; }
+      .library-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 16px; }
+      .library-stat { padding: 10px 8px; border-radius: 14px; }
+      .library-stat strong { font-size: 1rem; line-height: 1.15; }
+      .library-stat span { font-size: .66rem; letter-spacing: .05em; }
+      .library-actions { display: grid; grid-template-columns: 1fr; gap: 8px; }
+      .library-actions a { padding: 11px 12px; text-align: center; }
+      .lm-features { gap: 6px; margin-top: 14px; }
+      .lm-features span { font-size: .74em; padding: 6px 9px; }
+      .random-torah-btn { width: 100%; max-width: 320px; min-height: 42px; }
+      .library-search input { width: 100%; box-sizing: border-box; }
+      .view-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+      .view-toggle button { min-height: 40px; margin: 0; padding: 8px 6px; }
+      .daily-learning { padding: 16px 12px; border-radius: 18px; }
+      .daily-cards { display: grid; grid-template-columns: 1fr; gap: 8px; }
+      .category-section { margin-top: 14px; border-radius: 18px; }
+      .category-title { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 8px; padding: 15px 12px; font-size: 1.02rem; line-height: 1.25; }
+      .cat-count { justify-self: end; font-size: .72rem; padding: 4px 8px; white-space: nowrap; }
+      .category-section .volume-section { padding: 12px 10px 0; }
+      .volume-title { font-size: 1.08rem; line-height: 1.25; }
+      .volume-hebrew { font-size: 1.08rem; line-height: 1.25; }
+      .topic-card-list, .entry-card-list { grid-template-columns: 1fr; gap: 8px; }
+      .torah-list { gap: 6px; }
+      .torah-list a { min-height: 34px; padding: 6px 9px; border-radius: 9px; }
+      .torah-list a.topic-card, .torah-list a.entry-card { min-height: 64px; padding: 11px 12px; border-radius: 14px; }
+      .entry-en, .topic-card .topic-card-en { overflow-wrap: anywhere; }
+    }
+    @media (max-width: 380px) {
+      .library-stats { grid-template-columns: 1fr; }
+      .view-toggle { grid-template-columns: 1fr; }
     }
   </style>
 

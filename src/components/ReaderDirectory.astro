@@ -131,5 +131,21 @@ function englishTitle(item: Item) {
   :global(body.dark-mode) .rd-card strong { color: #dce8ff; }
   :global(body.dark-mode) .rd-card em { color: #e4c077; }
   :global(body.dark-mode) .rd-card small { color: #93a0b4; }
-  @media (max-width: 640px) { .rd-toolbar { flex-direction: column; align-items: stretch; text-align:center; } .rd-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 640px) {
+    .rd-shell { padding: 20px 10px 60px; max-width: 100%; overflow-x: hidden; }
+    .rd-hero { padding: 28px 12px 26px; border-radius: 22px; }
+    .rd-keter { font-size: 1.6rem; }
+    .rd-eyebrow { letter-spacing: .14em; font-size: .62rem; }
+    .rd-hero h1 { font-size: clamp(1.85rem, 10vw, 2.7rem); line-height: 1.05; overflow-wrap: anywhere; }
+    .rd-hero h2 { font-size: clamp(1.55rem, 9vw, 2.35rem); line-height: 1.1; }
+    .rd-subtitle { font-size: .92rem; line-height: 1.45; }
+    .rd-count { padding: 7px 12px; font-size: .86rem; }
+    .rd-toolbar { flex-direction: column; align-items: stretch; text-align:center; margin: 16px 0 12px; }
+    .rd-toolbar a { min-height: 40px; display:flex; align-items:center; justify-content:center; }
+    .rd-grid { grid-template-columns: 1fr; gap: 10px; }
+    .rd-card { min-height: 72px; padding: 13px; border-radius: 16px; }
+    .rd-num { min-width: 34px; height: 34px; border-radius: 12px; font-size: .8rem; }
+    .rd-card strong { font-size: .94rem; overflow-wrap:anywhere; }
+    .rd-card em { font-size: 1.02rem; }
+  }
 </style>

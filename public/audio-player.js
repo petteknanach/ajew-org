@@ -126,7 +126,7 @@
       '#ajew-audio-player .ajew-ap-status{font-size:.85em;color:#999;}' +
       '.ajew-suno-segment-player{margin:.35rem 0;font-family:system-ui,-apple-system,sans-serif;}' +
       '.ajew-suno-segment-player summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:.35rem;padding:.18rem .55rem;border:1px solid rgba(180,140,60,.45);border-radius:999px;background:rgba(180,140,60,.10);color:#8a5a00;font-size:.85em;font-weight:700;}' +
-      '.ajew-suno-segment-player summary:after{content:"  ↗ share buttons inside";font-size:.78em;color:#2a4a6a;font-weight:600;}' +
+      '.ajew-suno-segment-player summary:after{content:"  Play / share / rate";font-size:.78em;color:#2a4a6a;font-weight:600;}' +
       '.ajew-suno-segment-player summary::-webkit-details-marker{display:none;}' +
       '.ajew-suno-segment-player summary:before{content:"▸";font-size:.8em;}' +
       '.ajew-suno-segment-player[open] summary:before{content:"▾";}' +
@@ -164,13 +164,17 @@
         '#ajew-audio-player .ajew-ap-header{padding:.45rem .55rem;}' +
         '#ajew-audio-player .ajew-ap-body{padding:.45rem .55rem;max-height:58vh;}' +
         '#ajew-audio-player .ajew-ap-list{max-height:22vh;}' +
-        '.ajew-suno-playlist{display:grid;grid-template-columns:1fr 1fr;align-items:stretch;gap:.35rem;padding:.4rem;margin:.45rem 0;}' +
-        '.ajew-suno-playlist button,.ajew-suno-playlist select{width:100%;min-height:38px;max-width:none;font-size:.84em;}' +
+        '.ajew-suno-playlist{display:grid;grid-template-columns:1fr 1fr;align-items:stretch;gap:.35rem;padding:.45rem;margin:.45rem 0;border-radius:14px;}' +
+        '.ajew-suno-playlist button,.ajew-suno-playlist select{width:100%;min-height:42px;max-width:none;font-size:.84em;}' +
         '.ajew-suno-playlist audio,.ajew-suno-playlist .ajew-suno-charts,.ajew-suno-playlist-status{grid-column:1/-1;width:100%;}' +
-        '.ajew-suno-segment-player{width:100%;max-width:100%;}' +
-        '.ajew-suno-segment-player summary{display:flex;width:100%;box-sizing:border-box;justify-content:space-between;border-radius:10px;padding:.38rem .55rem;}' +
-        '.ajew-suno-track{max-width:100%;box-sizing:border-box;padding:.4rem;margin:.35rem 0;}' +
-        '.ajew-suno-track audio{max-width:100%;height:36px;}' +
+        '.ajew-suno-segment-player{width:100%;max-width:100%;margin:.55rem 0;}' +
+        '.ajew-suno-segment-player summary{display:flex;width:100%;box-sizing:border-box;justify-content:space-between;align-items:center;border-radius:14px;padding:.58rem .68rem;font-size:.92em;line-height:1.25;box-shadow:0 4px 14px rgba(42,74,106,.10);}' +
+        '.ajew-suno-segment-player summary:after{content:"Tap to open";font-size:.74em;}' +
+        '.ajew-suno-track{max-width:100%;box-sizing:border-box;padding:.58rem;margin:.42rem 0;border-radius:12px;overflow:hidden;}' +
+        '.ajew-suno-track-label{font-size:.9em;line-height:1.3;overflow-wrap:anywhere;}' +
+        '.ajew-suno-track audio{max-width:100%;height:38px;}' +
+        '.ajew-suno-track-links{display:grid;grid-template-columns:1fr 1fr;gap:.35rem;}' +
+        '.ajew-suno-track-links a,.ajew-suno-track-links .ajew-media-share-btn{min-height:36px;justify-content:center;text-align:center;box-sizing:border-box;}' +
         '.ajew-suno-rating{gap:.2rem;}' +
         '.ajew-suno-rating button{min-height:34px;min-width:34px;padding:.1rem .32rem;}' +
         '.ajew-suno-chart-item{display:grid;grid-template-columns:1fr auto;align-items:center;}' +
@@ -593,23 +597,13 @@
       matches.forEach(function (entry) {
         var seg = document.getElementById('seg-' + entry.segment) || document.getElementById('segment-' + entry.segment);
         if (!seg || seg.querySelector('.ajew-suno-segment-player')) return;
-        var hebrewTracks = entry.tracks.filter(function (track) {
-          var lang = String(track.language || '').toLowerCase();
-          return lang === 'hebrew' || lang === 'bilingual';
+        var allTracks = entry.tracks.slice().sort(function (a, b) {
+          var order = { hebrew: 1, english: 2, bilingual: 3 };
+          return (order[String(a.language || '').toLowerCase()] || 9) - (order[String(b.language || '').toLowerCase()] || 9) ||
+            String(a.title || '').localeCompare(String(b.title || ''), undefined, { numeric: true, sensitivity: 'base' });
         });
-        var englishTracks = entry.tracks.filter(function (track) {
-          var lang = String(track.language || '').toLowerCase();
-          return lang === 'english' || lang === 'bilingual';
-        });
-        var otherTracks = entry.tracks.filter(function (track) {
-          var lang = String(track.language || '').toLowerCase();
-          return lang !== 'hebrew' && lang !== 'english' && lang !== 'bilingual';
-        });
-        var heTarget = seg.querySelector('.segment-he') || seg.querySelector('[dir="rtl"]') || seg;
-        var enTarget = seg.querySelector('.segment-en') || seg.querySelector('[dir="ltr"]') || seg;
-        appendTrackDropdown(heTarget, hebrewTracks, 'שירים ללימוד זה');
-        appendTrackDropdown(enTarget, englishTracks, 'Songs for this teaching');
-        appendTrackDropdown(enTarget, otherTracks, 'Songs for this teaching');
+        var target = seg.querySelector('.segment-en') || seg.querySelector('[dir="ltr"]') || seg.querySelector('.segment-he') || seg.querySelector('[dir="rtl"]') || seg;
+        appendTrackDropdown(target, allTracks, 'Songs for this teaching / שירים ללימוד זה');
       });
 
       (function autoOpenSharedSong() {
