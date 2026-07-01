@@ -1,0 +1,26 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import ReaderDirectory from '../../../../components/ReaderDirectory.astro';
+import fs from 'node:fs';
+import path from 'node:path';
+
+export function getStaticPaths() { return [{ params: { part: '1' } }]; }
+const { part } = Astro.params;
+const partNum = parseInt(part || '1');
+let indexData = null;
+try {
+  const idxPath = path.join(process.cwd(), 'public/reader/hashtatfchus-hanefesh/index.json');
+  indexData = JSON.parse(fs.readFileSync(idxPath, 'utf8'));
+} catch (e) { console.error('Error loading hashtatfchus-hanefesh index:', e); }
+const totalSections = indexData?.torahs?.length || 0;
+---
+<Layout title={`${indexData?.title || 'Hashtatfchus Hanefesh'} — Directory`} description={`Directory for ${indexData?.title || 'Hashtatfchus Hanefesh'}.`}>
+  <ReaderDirectory
+    title={indexData?.title || 'Hashtatfchus Hanefesh'}
+    hebrewTitle={indexData?.hebrewTitle || ''}
+    subtitle={indexData?.author || ''}
+    countLabel={`${totalSections} entries`}
+    items={indexData?.torahs || []}
+    hrefBase={`/reader/hashtatfchus-hanefesh/${partNum}/`}
+  />
+</Layout>

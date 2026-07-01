@@ -148,9 +148,9 @@ const pageDesc = torahData
       <div class="reader-breadcrumb">
         <a href="/reader">Reader</a>
         <span>&rsaquo;</span>
-        <a href="/reader">Likutay Moharan</a>
+        <a href={`/reader/likutay-moharan/${partNum}`}>Likutay Moharan</a>
         <span>&rsaquo;</span>
-        <a href="/reader">Part {partNum}</a>
+        <a href={`/reader/likutay-moharan/${partNum}`}>Part {partNum}</a>
         <span>&rsaquo;</span>
         Torah {torahNum}
       </div>
@@ -295,7 +295,7 @@ const pageDesc = torahData
         ) : (
           <span class="disabled">&larr; Previous</span>
         )}
-        <a href="/reader/likutay-moharan/1">Book Index</a>
+        <a href={`/reader/likutay-moharan/${partNum}`}>Book Index</a>
         <a href="/reader">All Books</a>
         {torahData.navigation.nextUrl ? (
           <a href={torahData.navigation.nextUrl} data-dir="next">Next &rarr;</a>
@@ -345,7 +345,7 @@ const pageDesc = torahData
         ) : (
           <span class="disabled">&larr; Previous</span>
         )}
-        <a href="/reader/likutay-moharan/1">Book Index</a>
+        <a href={`/reader/likutay-moharan/${partNum}`}>Book Index</a>
         <a href="/reader">All Books</a>
         {torahData.navigation.nextUrl ? (
           <a href={torahData.navigation.nextUrl} data-dir="next">Next &rarr;</a>

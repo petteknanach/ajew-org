@@ -162,6 +162,7 @@ const pageDesc = torahData
           <a href={`/reader/${bookSlug}/1/${torahNum - 1}`} data-dir="prev">&larr; Previous</a>
         ) : <span class="disabled">&larr; Previous</span>}
         <a href="/reader">Library</a>
+        <a href={`/reader/${bookSlug}/${partNum}`}>Book Index</a>
         {torahNum < totalSections ? (
           <a href={`/reader/${bookSlug}/1/${torahNum + 1}`} data-dir="next">Next &rarr;</a>
         ) : <span class="disabled">Next &rarr;</span>}
@@ -205,6 +206,7 @@ const pageDesc = torahData
           <a href={`/reader/${bookSlug}/1/${torahNum - 1}`} data-dir="prev">&larr; Previous</a>
         ) : <span class="disabled">&larr; Previous</span>}
         <a href="/reader">Library</a>
+        <a href={`/reader/${bookSlug}/${partNum}`}>Book Index</a>
         {torahNum < totalSections ? (
           <a href={`/reader/${bookSlug}/1/${torahNum + 1}`} data-dir="next">Next &rarr;</a>
         ) : <span class="disabled">Next &rarr;</span>}

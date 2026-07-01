@@ -14,40 +14,216 @@ export function getStaticPaths() {
 }
 
 const { part } = Astro.params;
-const partNum = parseInt(part);
+const partNum = parseInt(part || '1');
 
 let indexData = null;
 try {
-  const idxPath = path.join(process.cwd(), 'public/reader/likutay-moharan/part-' + partNum + '/index.json');
+  const idxPath = path.join(process.cwd(), `public/reader/likutay-moharan/part-${partNum}/index.json`);
   indexData = JSON.parse(fs.readFileSync(idxPath, 'utf8'));
 } catch (e) {
-  console.error('Error loading index:', e);
+  console.error('Error loading Likutay Moharan index:', e);
 }
 
-const totalSections = indexData?.torahs?.length || 0;
+const introSections = indexData?.introSections || [];
+const torahs = indexData?.torahs || [];
+const totalSections = torahs.length;
+
+function hrefFor(item) {
+  return item.url || `/reader/likutay-moharan/${partNum}/${item.slug || item.number}`;
+}
+function itemKey(item) {
+  return String(item.slug || item.displayNumber || item.number || item.title || item.hebrewTitle || '').replace(/[^a-zA-Z0-9_-]+/g, '-');
+}
+function labelFor(item) {
+  return item.displayNumber || item.number || '';
+}
+function torahTitle(item) {
+  const n = item.displayNumber || item.number;
+  const title = item.title && item.title !== `Torah ${item.number}` ? item.title : `Torah ${n}`;
+  return title;
+}
+function rangeItems(start, end) {
+  return torahs.filter(t => Number(t.number) >= start && Number(t.number) <= end);
+}
+const part1Groups = [
+  { id: 'opening', title: 'Opening poetic preface and Torahs 1–15', hebrew: 'פתיחה ותורות א–טו', prefaces: introSections.filter(x => x.slug === 'preface-section-1'), items: rangeItems(1,15) },
+  { id: 'hamishtuai', title: 'Torahs 16–18 — Hamishtu-ai', hebrew: 'תורות טז–יח', prefaces: introSections.filter(x => x.slug === 'preface-section-2'), items: rangeItems(16,18) },
+  { id: 'safra', title: 'Torahs 19–22 — Safra DiTzniusa', hebrew: 'תורות יט–כב', prefaces: introSections.filter(x => x.slug === 'preface-section-3'), items: rangeItems(19,22) },
+  { id: 'suvay', title: 'Torahs 23–31 — Suvay Divay Atuna', hebrew: 'תורות כג–לא', prefaces: introSections.filter(x => x.slug === 'preface-section-4'), items: rangeItems(23,31) },
+  { id: 'main', title: 'Torahs 32–286 — Main Likutay Moharan', hebrew: 'תורות לב–רפו', prefaces: introSections.filter(x => x.slug === 'preface-section-5'), items: rangeItems(32,286) },
+];
+const part2Extra = [
+  ...introSections,
+  { slug: 'intro', displayNumber: 'intro', title: 'Opening of Part 2', hebrewTitle: 'פתיחה לחלק ב', url: '/reader/likutay-moharan/2/intro' },
+  { slug: 'omission', displayNumber: 'omission', title: 'Omission / Hashmatah', hebrewTitle: 'השמטה', url: '/reader/likutay-moharan/2/omission' },
+  ...Array.from({ length: 6 }, (_, i) => ({ slug: `manuscript-${i + 1}`, displayNumber: `ms-${i + 1}`, title: `Handwritten Manuscript ${i + 1}`, hebrewTitle: `כתב יד ${i + 1}`, url: `/reader/likutay-moharan/2/manuscript-${i + 1}` }))
+].filter((item, i, arr) => item && item.url && arr.findIndex(x => x.url === item.url) === i);
+const overviewLinks = partNum === 1 ? [
+  { href: '#intro', text: 'Introductions & approbations' },
+  { href: '#opening', text: 'Torahs 1–15' },
+  { href: '#hamishtuai', text: 'Torahs 16–18' },
+  { href: '#safra', text: 'Torahs 19–22' },
+  { href: '#suvay', text: 'Torahs 23–31' },
+  { href: '#main', text: 'Torahs 32–286' },
+] : [
+  { href: '#intro', text: 'Part 2 introductions' },
+  { href: '#torahs', text: 'Tinyana Torahs 1–125' },
+  { href: '#manuscripts', text: 'Manuscripts' },
+];
 ---
 
-<Layout title=`ליקוטי מוהרן — Part ${partNum} Index`>
-  <div style="max-width: 900px; margin: 0 auto; padding: 40px 20px;">
-    <div style="text-align: center; margin-bottom: 40px;">
-      <h1 style="font-family: 'Cinzel', serif; color: #1e3a5f; margin-bottom: 8px;">ליקוטי מוהרן</h1>
-      <p style="color: #888; font-size: 0.9em;">Part {partNum} &middot; {totalSections} sections</p>
-    </div>
-
-    {indexData && (
-      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px;">
-        {indexData.torahs.map(t => (
-          <a href={`/reader/likutay-moharan/${partNum}/${t.number}`} style="display: block; padding: 10px 14px; background: #f8f5f0; border-radius: 6px; text-decoration: none; border-right: 3px solid #a07830;">
-            <span style="color: #1e3a5f; font-weight: 600; font-size: 0.9em;">
-              {t.hebrewTitle || t.title || `Section ${t.number}`}
-            </span>
-          </a>
-        ))}
+<Layout title={`${indexData?.title || 'Likutay Moharan'} — Complete Directory`} description={`Complete directory for Likutay Moharan part ${partNum}, including introductions, approbations, prefaces, sections, and teachings.`}>
+  <main class="lm-dir">
+    <section class="lm-hero">
+      <div class="lm-keter">כתר</div>
+      <p class="lm-eyebrow">Complete Likutay Moharan Directory</p>
+      <h1>Likutay Moharan</h1>
+      <h2 lang="he" dir="rtl">ליקוטי מוהר״ן</h2>
+      <p class="lm-subtitle">Part {partNum} · {totalSections} teachings · introductions, approbations, poetic prefaces, manuscripts, and section gates restored.</p>
+      <div class="lm-actions">
+        <a href="/reader">← All Books</a>
+        <a href={partNum === 1 ? '/reader/likutay-moharan/2' : '/reader/likutay-moharan/1'}>{partNum === 1 ? 'Open Part 2' : 'Open Part 1'}</a>
       </div>
-    )}
+    </section>
 
-    <div style="margin-top: 40px; text-align: center;">
-      <a href="/reader" style="color: #1e3a5f; text-decoration: none; font-weight: 600;">&larr; All Books</a>
-    </div>
-  </div>
+    <nav class="lm-overview" aria-label="Likutay Moharan directory sections">
+      {overviewLinks.map(link => <a href={link.href}>{link.text}</a>)}
+    </nav>
+
+    {partNum === 1 ? (
+      <>
+        <section id="intro" class="lm-panel lm-intro-panel">
+          <header>
+            <span class="lm-section-mark">א</span>
+            <div>
+              <h3>Introductions, Approbations, and Prefaces</h3>
+              <p lang="he" dir="rtl">הסכמות · שיר נעים · הקדמה · מבואות · פתיחות</p>
+            </div>
+          </header>
+          <div class="lm-card-grid lm-feature-grid">
+            {introSections.filter(x => x.type !== 'preface').map(item => (
+              <a class="lm-card lm-feature-card" href={hrefFor(item)}>
+                <span class="lm-num">{labelFor(item)}</span>
+                <strong>{item.title}</strong>
+                <em lang="he" dir="rtl">{item.hebrewTitle}</em>
+                <small>{item.paragraphs || 0} paragraphs</small>
+              </a>
+            ))}
+          </div>
+        </section>
+
+        {part1Groups.map(group => (
+          <section id={group.id} class="lm-panel">
+            <header>
+              <span class="lm-section-mark">✦</span>
+              <div>
+                <h3>{group.title}</h3>
+                <p lang="he" dir="rtl">{group.hebrew}</p>
+              </div>
+            </header>
+            {group.prefaces.length > 0 && (
+              <div class="lm-preface-row">
+                {group.prefaces.map(item => (
+                  <a class="lm-preface" href={hrefFor(item)}>
+                    <span>Poetic Preface</span>
+                    <strong>{item.title}</strong>
+                    <em lang="he" dir="rtl">{item.hebrewTitle}</em>
+                  </a>
+                ))}
+              </div>
+            )}
+            <div class="lm-card-grid">
+              {group.items.map(item => (
+                <a class="lm-card" href={hrefFor(item)}>
+                  <span class="lm-num">{labelFor(item)}</span>
+                  <strong>{torahTitle(item)}</strong>
+                  <em lang="he" dir="rtl">{item.hebrewTitle}</em>
+                  {item.themes?.length > 0 && <small>{item.themes.slice(0, 4).join(' · ')}</small>}
+                </a>
+              ))}
+            </div>
+          </section>
+        ))}
+      </>
+    ) : (
+      <>
+        <section id="intro" class="lm-panel lm-intro-panel">
+          <header>
+            <span class="lm-section-mark">ב</span>
+            <div>
+              <h3>Part 2 Introductions and Special Sections</h3>
+              <p lang="he" dir="rtl">מבוא · השמטה · כתבי יד</p>
+            </div>
+          </header>
+          <div class="lm-card-grid lm-feature-grid">
+            {part2Extra.map(item => (
+              <a class="lm-card lm-feature-card" href={hrefFor(item)}>
+                <span class="lm-num">{labelFor(item)}</span>
+                <strong>{item.title}</strong>
+                <em lang="he" dir="rtl">{item.hebrewTitle}</em>
+              </a>
+            ))}
+          </div>
+        </section>
+        <section id="torahs" class="lm-panel">
+          <header>
+            <span class="lm-section-mark">✦</span>
+            <div>
+              <h3>Likutay Moharan Tinyana — Torahs 1–125</h3>
+              <p lang="he" dir="rtl">ליקוטי מוהר״ן תנינא</p>
+            </div>
+          </header>
+          <div class="lm-card-grid">
+            {torahs.map(item => (
+              <a class="lm-card" href={hrefFor(item)}>
+                <span class="lm-num">{labelFor(item)}</span>
+                <strong>{torahTitle(item)}</strong>
+                <em lang="he" dir="rtl">{item.hebrewTitle}</em>
+                {item.themes?.length > 0 && <small>{item.themes.slice(0, 4).join(' · ')}</small>}
+              </a>
+            ))}
+          </div>
+        </section>
+      </>
+    )}
+  </main>
 </Layout>
+
+<style>
+  .lm-dir { max-width: 1220px; margin: 0 auto; padding: 28px 16px 86px; color: #182b43; }
+  .lm-hero { position: relative; overflow: hidden; text-align: center; padding: clamp(34px, 6vw, 78px) 18px; border-radius: 32px; border: 1px solid rgba(183,132,44,.45); background: radial-gradient(circle at 15% 15%, rgba(255,237,176,.8), transparent 26%), radial-gradient(circle at 86% 8%, rgba(60,95,145,.22), transparent 28%), linear-gradient(135deg, #fffaf0 0%, #f6ecd8 52%, #ead2a9 100%); box-shadow: 0 24px 80px rgba(20,52,93,.16); }
+  .lm-keter { margin: 0 auto 8px; width: 58px; height: 58px; display: grid; place-items: center; border-radius: 50%; background: #173b67; color: #ffe9b3; font-family: 'Frank Ruhl Libre', serif; font-weight: 900; box-shadow: 0 12px 32px rgba(20,52,93,.2); }
+  .lm-eyebrow { margin: 0 0 8px; text-transform: uppercase; letter-spacing: .22em; font-size: .72rem; color: #8b662f; font-weight: 900; }
+  .lm-hero h1 { margin: 0; font-family: Cinzel, Georgia, serif; color: #12365e; font-size: clamp(2.35rem, 7vw, 5.4rem); line-height: .95; }
+  .lm-hero h2 { margin: 9px 0 0; font-family: 'Frank Ruhl Libre', serif; color: #76531b; font-size: clamp(1.9rem, 5vw, 3.9rem); }
+  .lm-subtitle { max-width: 780px; margin: 16px auto 0; color: #516173; line-height: 1.6; font-size: 1.02rem; }
+  .lm-actions { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top: 22px; }
+  .lm-actions a, .lm-overview a { text-decoration:none; font-weight:800; border-radius: 999px; padding: 10px 15px; border: 1px solid #d6bd86; color:#12365e; background:#fff8e8; }
+  .lm-overview { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin: 20px 0 24px; }
+  .lm-overview a { background: #173b67; color: #ffe9b3; border-color: #173b67; }
+  .lm-panel { margin-top: 24px; padding: clamp(16px, 3vw, 28px); border-radius: 26px; border: 1px solid rgba(204,178,128,.6); background: linear-gradient(145deg,#fffdf8,#f8efe0); box-shadow: 0 12px 38px rgba(20,52,93,.08); }
+  .lm-panel header { display:flex; gap:14px; align-items:center; margin-bottom: 18px; }
+  .lm-section-mark { width: 48px; height: 48px; display:grid; place-items:center; border-radius:16px; background: linear-gradient(135deg,#173b67,#2c5f94); color:#ffe9b3; font-family:'Frank Ruhl Libre',serif; font-weight:900; }
+  .lm-panel h3 { margin:0; color:#15375e; font-size: clamp(1.35rem, 3vw, 2rem); }
+  .lm-panel header p { margin:3px 0 0; color:#795923; font-family:'Frank Ruhl Libre',serif; font-size:1.2rem; }
+  .lm-card-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+  .lm-feature-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+  .lm-card { display:flex; flex-direction:column; gap:5px; min-height:110px; padding:15px; border-radius:18px; border:1px solid rgba(204,178,128,.58); background:#fffaf0; text-decoration:none; box-shadow:0 8px 24px rgba(20,52,93,.06); transition: transform .16s ease, box-shadow .16s ease; }
+  .lm-card:hover, .lm-preface:hover { transform: translateY(-2px); box-shadow:0 18px 40px rgba(20,52,93,.14); }
+  .lm-num { align-self:flex-start; min-width: 36px; height: 32px; padding:0 8px; display:inline-flex; align-items:center; justify-content:center; border-radius:12px; background:#173b67; color:#ffe9b3; font-weight:900; font-size:.78rem; }
+  .lm-card strong { color:#15375e; line-height:1.25; }
+  .lm-card em { color:#75541e; font-style:normal; font-family:'Frank Ruhl Libre',serif; font-size:1.1rem; line-height:1.2; }
+  .lm-card small { color:#89744e; font-size:.76rem; line-height:1.35; }
+  .lm-preface-row { margin-bottom: 16px; display:grid; gap:12px; }
+  .lm-preface { display:flex; flex-direction:column; gap:4px; padding:16px 18px; border-radius:18px; border:1px solid rgba(183,132,44,.45); background: linear-gradient(135deg,#173b67,#2c5f94); color:#fff; text-decoration:none; box-shadow:0 10px 28px rgba(20,52,93,.13); transition: transform .16s ease, box-shadow .16s ease; }
+  .lm-preface span { color:#ffe9b3; font-size:.78rem; font-weight:900; text-transform:uppercase; letter-spacing:.12em; }
+  .lm-preface strong { color:#fff; }
+  .lm-preface em { color:#ffe9b3; font-style:normal; font-family:'Frank Ruhl Libre',serif; font-size:1.15rem; }
+  :global(body.dark-mode) .lm-dir { color:#dce6f3; }
+  :global(body.dark-mode) .lm-hero, :global(body.dark-mode) .lm-panel { background: linear-gradient(135deg,#171b2c,#25283d); border-color:#4a3d2a; box-shadow:0 22px 70px rgba(0,0,0,.35); }
+  :global(body.dark-mode) .lm-hero h1, :global(body.dark-mode) .lm-panel h3, :global(body.dark-mode) .lm-card strong { color:#dce8ff; }
+  :global(body.dark-mode) .lm-hero h2, :global(body.dark-mode) .lm-panel header p, :global(body.dark-mode) .lm-card em { color:#e4c077; }
+  :global(body.dark-mode) .lm-subtitle, :global(body.dark-mode) .lm-card small { color:#aeb9c8; }
+  :global(body.dark-mode) .lm-card { background:#1b2032; border-color:#3d4058; }
+  @media (max-width: 640px) { .lm-dir { padding:18px 10px 64px; } .lm-hero { border-radius:22px; } .lm-card-grid { grid-template-columns:1fr; } .lm-panel { border-radius:20px; } .lm-panel header { align-items:flex-start; } }
+</style>
