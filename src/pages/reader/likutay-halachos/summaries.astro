@@ -8,6 +8,7 @@ const summaryData = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
 const items = summaryData.items || [];
 const pageTitle = 'Likutay Halachos Summaries';
 const pageDesc = 'Concise study summaries for Likutay Halachos by Rabbi Nosson of Breslov.';
+const anchorFor = (item) => (item.summaryUrl?.split('#')[1] || `summary-${item.torah || item.id}`);
 ---
 
 <Layout title={pageTitle} description={pageDesc} breadcrumbs={[{name: 'Home', url: 'https://ajew.org'}, {name: 'Reader', url: 'https://ajew.org/reader'}, {name: 'Likutay Halachos Summaries', url: 'https://ajew.org/reader/likutay-halachos/summaries'}]}>
@@ -195,7 +196,7 @@ const pageDesc = 'Concise study summaries for Likutay Halachos by Rabbi Nosson o
       <h2>Jump to a summary</h2>
       <div class="toc-grid">
         {items.map((item) => (
-          <a href={`#summary-${item.torah}`}>
+          <a href={`#${anchorFor(item)}`}>
             <span class="heb">{item.hebrewTitle}</span>
             <span>{item.title.replace(/^Summary of the\s*/, '')}</span>
           </a>
@@ -204,7 +205,7 @@ const pageDesc = 'Concise study summaries for Likutay Halachos by Rabbi Nosson o
     </nav>
 
     {items.map((item) => (
-      <article class="summary-card" id={`summary-${item.torah}`}>
+      <article class="summary-card" id={anchorFor(item)}>
         <header>
           <div class="hebrew-name">{item.hebrewTitle}</div>
           <h2>{item.title}</h2>
