@@ -255,6 +255,14 @@
     return importantDates.filter(d => normalizeMonth(d.month) === normMonth && d.day === day);
   }
 
+  function dedupeImportantAgainstDatabase(important, databaseRows) {
+    const dbKeys = new Set(databaseRows.flatMap(tz => [tz.hebrew_name, tz.name].filter(Boolean).map(v => String(v).replace(/\s+/g, '').toLowerCase())));
+    return important.filter(d => {
+      const keys = [d.hebrew_name, d.name].filter(Boolean).map(v => String(v).replace(/\s+/g, '').toLowerCase());
+      return !keys.some(k => dbKeys.has(k));
+    });
+  }
+
   // Month order for calculating upcoming dates across month boundaries
   const monthOrder = ['Nisan', 'Iyyar', 'Sivan', 'Tamuz', 'Av', 'Elul',
     'Tishrei', 'Cheshvan', 'Kislev', 'Tevet', "Sh'vat", 'Adar', 'Adar II'];
@@ -405,8 +413,10 @@
       // Find yahrzeits for today and tomorrow
       const todayYahrzeits = findYahrzeits(todayHeb.month, todayHeb.day);
       const tomorrowYahrzeits = findYahrzeits(tomorrowHeb.month, tomorrowHeb.day);
-      const todayImportant = findImportantDates(todayHeb.month, todayHeb.day);
-      const tomorrowImportant = findImportantDates(tomorrowHeb.month, tomorrowHeb.day);
+      let todayImportant = findImportantDates(todayHeb.month, todayHeb.day);
+      let tomorrowImportant = findImportantDates(tomorrowHeb.month, tomorrowHeb.day);
+      todayImportant = dedupeImportantAgainstDatabase(todayImportant, todayYahrzeits);
+      tomorrowImportant = dedupeImportantAgainstDatabase(tomorrowImportant, tomorrowYahrzeits);
       const upcomingWithin7 = findUpcomingImportantDates(todayHeb.month, todayHeb.day, 7);
 
       // Determine what to show
