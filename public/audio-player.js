@@ -602,8 +602,9 @@
           return (order[String(a.language || '').toLowerCase()] || 9) - (order[String(b.language || '').toLowerCase()] || 9) ||
             String(a.title || '').localeCompare(String(b.title || ''), undefined, { numeric: true, sensitivity: 'base' });
         });
-        var target = seg.querySelector('.segment-en') || seg.querySelector('[dir="ltr"]') || seg.querySelector('.segment-he') || seg.querySelector('[dir="rtl"]') || seg;
-        appendTrackDropdown(target, allTracks, 'Songs for this teaching / שירים ללימוד זה');
+        // Keep the song dropdown outside language-specific text blocks.
+        // If inserted inside .segment-en, it disappears when the reader is switched to Hebrew-only mode.
+        appendTrackDropdown(seg, allTracks, 'Songs for this teaching / שירים ללימוד זה');
       });
 
       (function autoOpenSharedSong() {
