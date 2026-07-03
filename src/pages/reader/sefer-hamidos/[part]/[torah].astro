@@ -553,7 +553,38 @@ const truthVideos = [
         .sh-gallery-caption{grid-column:1/4;grid-row:2;text-align:center;color:#fff;font:700 1rem system-ui,-apple-system,sans-serif;}
         .sh-gallery-actions{grid-column:1/4;grid-row:3;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}
         .sh-gallery-actions a{border-radius:999px;background:#fff;color:#111;text-decoration:none;font-weight:800;padding:.45rem .85rem;}
-        @media(max-width:700px){.sh-gallery-panel{inset:1vh 1vw;grid-template-columns:1fr 1fr;grid-template-rows:1fr auto auto auto}.sh-gallery-stage{grid-column:1/3}.sh-gallery-prev{grid-column:1;grid-row:2;width:100%;height:44px;font-size:32px}.sh-gallery-next{grid-column:2;grid-row:2;width:100%;height:44px;font-size:32px}.sh-gallery-caption{grid-row:3}.sh-gallery-actions{grid-row:4}.sh-gallery-stage img,.sh-gallery-stage video{max-height:74vh}}
+        @media(max-width:700px){
+          .reader-toolbar{position:sticky;top:0;z-index:96;display:flex!important;flex-wrap:nowrap!important;gap:.45rem;overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;padding:.45rem .35rem;background:var(--reader-bg,#fff);box-shadow:0 2px 12px rgba(0,0,0,.08);scroll-snap-type:x proximity;}
+          .reader-toolbar-group{flex:0 0 auto;display:flex;gap:.35rem;scroll-snap-align:start;}
+          .reader-toolbar .reader-btn{min-height:42px;white-space:nowrap;padding:.45rem .65rem;font-size:.9rem;}
+          .reader-toolbar #btn-media-gallery,.reader-toolbar #btn-teachings-only,.reader-toolbar #btn-hide-media{font-weight:800;border-width:2px;}
+          .reader-toolbar .font-size-slider{width:92px;}
+          #audio-controls{padding:0 .35rem;box-sizing:border-box;}
+          .sefer-hamidos-media{margin:.65rem -.15rem 1rem;padding:.65rem .5rem;border-radius:14px;}
+          .sefer-hamidos-media summary{font-size:1rem;line-height:1.35;padding:.2rem 0;}
+          .sh-media-strip{gap:10px;padding:4px 2px 12px;scroll-padding-left:2px;}
+          .sh-media-card{flex:0 0 86vw;max-width:86vw;padding:7px;border-radius:14px;}
+          .sh-media-card figcaption{font-size:.88rem;}
+          .sh-media-share-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;width:100%;}
+          .sh-media-share-row .sh-media-share{display:flex;align-items:center;justify-content:center;min-height:34px;text-align:center;padding:.3rem .35rem;}
+          .sh-media-video-row video{max-height:68vh;object-fit:contain;}
+          .sh-media-actions a{min-height:34px;display:flex;align-items:center;justify-content:center;}
+          .sh-gallery-panel{inset:0;min-height:100dvh;padding:env(safe-area-inset-top) .45rem env(safe-area-inset-bottom);box-sizing:border-box;grid-template-columns:1fr 1fr;grid-template-rows:minmax(0,1fr) auto auto auto;gap:8px;}
+          .sh-gallery-stage{grid-column:1/3;grid-row:1;min-height:0;}
+          .sh-gallery-stage img,.sh-gallery-stage video{max-width:100%;max-height:70dvh;border-radius:10px;}
+          .sh-gallery-close{top:calc(env(safe-area-inset-top) + 6px);right:8px;width:42px;height:42px;font-size:28px;}
+          .sh-gallery-prev{grid-column:1;grid-row:2;width:100%;height:44px;font-size:32px;}
+          .sh-gallery-next{grid-column:2;grid-row:2;width:100%;height:44px;font-size:32px;}
+          .sh-gallery-caption{grid-column:1/3;grid-row:3;font-size:.92rem;line-height:1.25;padding:0 .25rem;}
+          .sh-gallery-actions{grid-column:1/3;grid-row:4;gap:6px;padding-bottom:4px;}
+          .sh-gallery-actions a{flex:1 1 42%;text-align:center;padding:.55rem .45rem;}
+          body.reader-teachings-only .reader-container{padding:.55rem .35rem;max-width:100%;}
+          body.reader-teachings-only .reader-content{display:block!important;}
+          body.reader-teachings-only .reader-segment-pair{display:block!important;margin:0 0 1.2rem;}
+          body.reader-teachings-only .reader-segment{margin:.35rem 0;padding:.75rem .65rem;border-radius:12px;}
+          body.reader-teachings-only .reader-segment p{font-size:1.12rem;line-height:1.75;}
+          body.reader-teachings-only .reader-focus-exit{top:calc(env(safe-area-inset-top) + .5rem);right:.5rem;min-height:42px;padding:.45rem .75rem;}
+        }
         .mode-hebrew .sh-media-lang-en{display:none!important;}
         .mode-english .sh-media-lang-he{display:none!important;}
       </style>
