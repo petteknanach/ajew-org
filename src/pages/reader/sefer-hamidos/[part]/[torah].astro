@@ -210,8 +210,10 @@ const truthVideos = [
           <button class="reader-btn reader-btn-icon" id="btn-bookmark">Bookmark</button>
           <button class="reader-btn reader-btn-icon" id="btn-notes">Notes</button>
           <button class="reader-btn reader-btn-icon" id="btn-fullscreen">Fullscreen</button>
+          <button class="reader-btn reader-btn-icon" id="btn-immse" title="Hide controls for distraction-free study" onclick="document.body.classList.toggle('reader-immersive');document.querySelector('.reader-container')?.classList.toggle('immerse-mode');this.textContent=document.body.classList.contains('reader-immersive')?'Show controls':'Focus';this.classList.toggle('active',document.body.classList.contains('reader-immersive'))">Focus</button>
         </div>
       </div>
+      <button class="reader-focus-exit" type="button" id="reader-focus-exit" title="Show reader controls again">Show controls</button>
 
       <div class="reader-search-bar">
         <input type="text" placeholder="Search in this topic..." dir="auto" />
@@ -266,26 +268,28 @@ const truthVideos = [
               <span class="segment-number">{seg.displayLabel || seg.sourceNumber || seg.index}</span>
               <p>{seg.en || 'Translation not yet available'}</p>
             </div>
-            {truthMediaBySegment.has(Number(seg.index)) && (
-              <details class="reader-media-dropdown sefer-hamidos-media" style="grid-column: 1 / -1; margin: 0.45rem 0 1rem; padding: 0.45rem 0.65rem; border: 1px solid var(--reader-border,#d8c8a8); border-radius: 12px; background: rgba(180,140,60,.08);">
-                <summary style="cursor: pointer; font-weight: 700; color: var(--reader-accent);">📷 Pictures / videos for this teaching</summary>
-                <div style="margin-top: 10px; display: grid; gap: 12px;">
-                  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px;">
+            {torahNum === 1 && truthMediaBySegment.has(Number(seg.index)) && (
+              <details class="reader-media-dropdown sefer-hamidos-media" data-segment={String(seg.index)}>
+                <summary>📷 Pictures / videos for this teaching</summary>
+                <div class="sh-media-body">
+                  <div class="sh-media-strip" aria-label={`Scrollable Sefer Hamidos Truth teaching ${seg.index} pictures`}>
                     {truthMediaBySegment.get(Number(seg.index)).images.map((img) => (
-                      <a href={img.path} target="_blank" rel="noopener" style="display:block; text-decoration:none; color:inherit;">
-                        <img src={img.path} alt={`Sefer Hamidos Truth ${seg.index} ${img.language} image ${img.variant}`} loading="lazy" style="width:100%; height:auto; border-radius:8px; border:1px solid var(--reader-border,#ddd); display:block;" />
-                        <span style="display:flex; gap:.35rem; align-items:center; justify-content:space-between; margin-top:4px; font-size:0.82em; color:var(--reader-text-secondary);">
+                      <figure class={`sh-media-card sh-media-lang-${img.language === 'hebrew' ? 'he' : 'en'}`} data-media-url={img.path}>
+                        <a href={img.path} target="_blank" rel="noopener">
+                          <img src={img.path} alt={`Sefer Hamidos Truth ${seg.index} ${img.language} image ${img.variant}`} loading="lazy" />
+                        </a>
+                        <figcaption>
                           <span>{img.language} · {img.variant}</span>
-                          <span>open ↗</span>
-                        </span>
-                      </a>
+                          <button type="button" class="sh-media-share" data-share-title={`Sefer Hamidos Truth ${seg.index} ${img.language} image ${img.variant}`} data-share-url={`${Astro.site ? new URL(img.path, Astro.site).toString() : img.path}`}>↗ Share</button>
+                        </figcaption>
+                      </figure>
                     ))}
                   </div>
-                  <div style="display: flex; gap: 8px; flex-wrap: wrap; font-size: 0.86em;">
+                  <div class="sh-media-actions">
                     {truthVideos.map((video) => (
-                      <a href={video.archive} target="_blank" rel="noopener" style="padding:.22rem .55rem; border-radius:999px; background:var(--reader-accent,#1a365d); color:#fff; text-decoration:none; font-weight:700;">▶ {video.language} video</a>
+                      <a class={`sh-media-video sh-media-lang-${video.language === 'Hebrew' ? 'he' : 'en'}`} href={video.archive} target="_blank" rel="noopener">▶ {video.language} video</a>
                     ))}
-                    <a href="https://archive.org/details/sefer-hamidos-truth-media-ajew-org" target="_blank" rel="noopener" style="padding:.22rem .55rem; border-radius:999px; border:1px solid var(--reader-accent,#1a365d); text-decoration:none; font-weight:700;">Archive collection ↗</a>
+                    <a class="sh-media-archive" href="https://archive.org/details/sefer-hamidos-truth-media-ajew-org" target="_blank" rel="noopener">Archive collection ↗</a>
                   </div>
                 </div>
               </details>
@@ -356,6 +360,72 @@ const truthVideos = [
       <script src="/pwa-register.js" defer></script>
       <script src="/tts-fix.js" defer></script>
       <script src="/reader-notes.js" is:inline></script>
+      <script is:inline>
+        (function () {
+          function setFocusMode(on) {
+            var body = document.body;
+            var container = document.querySelector('.reader-container');
+            body.classList.toggle('reader-immersive', !!on);
+            if (container) container.classList.toggle('immerse-mode', !!on);
+            var btn = document.getElementById('btn-immse');
+            if (btn) { btn.classList.toggle('active', !!on); btn.textContent = on ? 'Show controls' : 'Focus'; }
+          }
+          document.addEventListener('click', function (event) {
+          var focusBtn = event.target && event.target.closest && event.target.closest('#btn-immse');
+          if (focusBtn) {
+            event.preventDefault();
+            setFocusMode(!document.body.classList.contains('reader-immersive'));
+            return;
+          }
+          var share = event.target && event.target.closest && event.target.closest('.sh-media-share');
+          if (share) {
+            event.preventDefault();
+            event.stopPropagation();
+            var url = share.getAttribute('data-share-url') || window.location.href;
+            var title = share.getAttribute('data-share-title') || document.title;
+            var text = title + ' — ajew.org';
+            if (navigator.share) {
+              navigator.share({ title: title, text: text, url: url }).catch(function () {});
+            } else {
+              var msg = text + '\n' + url;
+              if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(msg).catch(function () { window.prompt('Copy link:', msg); });
+              else window.prompt('Copy link:', msg);
+            }
+          }
+          var exit = event.target && event.target.closest && event.target.closest('#reader-focus-exit');
+          if (exit) {
+            event.preventDefault();
+            setFocusMode(false);
+          }
+        });
+        })();
+      </script>
+      <style is:global>
+        .reader-focus-exit{display:none;position:fixed;top:.75rem;right:.75rem;z-index:9999;border:1px solid rgba(180,140,60,.7);border-radius:999px;background:rgba(25,25,25,.86);color:#fff;padding:.42rem .8rem;font:700 .85rem system-ui,-apple-system,sans-serif;box-shadow:0 4px 16px rgba(0,0,0,.25);cursor:pointer;}
+        body.reader-immersive .reader-focus-exit{display:block;}
+        body.reader-immersive .reader-breadcrumb,body.reader-immersive #audio-controls,body.reader-immersive .reader-toc-toggle,body.reader-immersive .reader-toc,body.reader-immersive .reader-media-actions,body.reader-immersive .sh-media-share,body.reader-immersive .ajew-suno-playlist,body.reader-immersive .ajew-segment-actions{display:none!important;}
+        body.reader-immersive .reader-container.immerse-mode .segment-en{display:inherit;}
+        body.reader-immersive .reader-container.immerse-mode.mode-hebrew .segment-en{display:none!important;}
+        body.reader-immersive .reader-container.immerse-mode.mode-english .segment-he{display:none!important;}
+        .sefer-hamidos-media{grid-column:1/-1;margin:.45rem 0 1rem;padding:.45rem .65rem;border:1px solid var(--reader-border,#d8c8a8);border-radius:12px;background:rgba(180,140,60,.08);}
+        .sefer-hamidos-media summary{cursor:pointer;font-weight:700;color:var(--reader-accent);list-style:none;}
+        .sefer-hamidos-media summary::-webkit-details-marker{display:none;}
+        .sefer-hamidos-media summary:before{content:'▸ ';font-size:.85em;}
+        .sefer-hamidos-media[open] summary:before{content:'▾ ';}
+        .sh-media-body{margin-top:10px;display:grid;gap:12px;}
+        .sh-media-strip{display:flex;gap:12px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;padding:2px 2px 10px;}
+        .sh-media-card{flex:0 0 min(78vw,260px);scroll-snap-align:start;margin:0;padding:8px;border:1px solid var(--reader-border,#ddd);border-radius:12px;background:rgba(255,255,255,.6);}
+        .sh-media-card a{display:block;text-decoration:none;color:inherit;}
+        .sh-media-card img{width:100%;height:auto;border-radius:8px;display:block;}
+        .sh-media-card figcaption{display:flex;gap:.45rem;align-items:center;justify-content:space-between;margin-top:6px;font-size:.82em;color:var(--reader-text-secondary);}
+        .sh-media-share,.sh-media-video,.sh-media-archive{border-radius:999px;padding:.24rem .58rem;font-weight:700;text-decoration:none;font-size:.86em;}
+        .sh-media-share{border:1px solid var(--reader-accent,#1a365d);background:rgba(255,255,255,.8);color:var(--reader-accent,#1a365d);cursor:pointer;}
+        .sh-media-actions{display:flex;gap:8px;flex-wrap:wrap;font-size:.86em;}
+        .sh-media-video{background:var(--reader-accent,#1a365d);color:#fff;}
+        .sh-media-archive{border:1px solid var(--reader-accent,#1a365d);color:var(--reader-accent,#1a365d);}
+        .mode-hebrew .sh-media-lang-en{display:none!important;}
+        .mode-english .sh-media-lang-he{display:none!important;}
+      </style>
     </div>
   )}
 </Layout>

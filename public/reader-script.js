@@ -3000,15 +3000,34 @@
     setTimeout(tryHighlight, 300); // slight delay for initial page render
   }
 
+  function setupReaderFocusMode() {
+    document.addEventListener('click', function(e) {
+      var btn = e.target && e.target.closest && e.target.closest('#btn-immse');
+      var exit = e.target && e.target.closest && e.target.closest('#reader-focus-exit');
+      if (!btn && !exit) return;
+      e.preventDefault();
+      var on = btn ? !document.body.classList.contains('reader-immersive') : false;
+      document.body.classList.toggle('reader-immersive', on);
+      var container = document.querySelector('.reader-container');
+      if (container) container.classList.toggle('immerse-mode', on);
+      var focusBtn = document.getElementById('btn-immse');
+      if (focusBtn) {
+        focusBtn.classList.toggle('active', on);
+        focusBtn.textContent = on ? 'Show controls' : 'Focus';
+      }
+    });
+  }
+
   // Run on DOM ready
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => { init(); setupMySefer(); setupCommentaryPanel(); setupAudioPlayer(); setupSegmentLinks(); showFontNotification(); setTimeout(addCrossReferenceLinks, 500); autoHighlightFromQuery(); });
+    document.addEventListener('DOMContentLoaded', () => { init(); setupMySefer(); setupCommentaryPanel(); setupAudioPlayer(); setupSegmentLinks(); setupReaderFocusMode(); showFontNotification(); setTimeout(addCrossReferenceLinks, 500); autoHighlightFromQuery(); });
   } else {
     init();
     setupMySefer();
     setupCommentaryPanel();
     setupAudioPlayer();
     setupSegmentLinks();
+    setupReaderFocusMode();
     showFontNotification();
     setTimeout(addCrossReferenceLinks, 500);
     autoHighlightFromQuery();

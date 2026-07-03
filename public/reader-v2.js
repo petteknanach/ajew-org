@@ -735,7 +735,7 @@
     const alignBtn = document.getElementById('btn-align');
     if (alignBtn) alignBtn.addEventListener('click', toggleAligned);
 
-    const immerseBtn = document.getElementById('btn-immserate');
+    const immerseBtn = document.getElementById('btn-immse') || document.getElementById('btn-immserate');
     if (immerseBtn) immerseBtn.addEventListener('click', toggleImmerse);
 
     const fontPlus = document.getElementById('font-plus');
@@ -757,7 +757,7 @@
     updateProgress();
 
     // Restore immerse if it was on
-    if (state.immerse) toggleImmerse();
+    if (state.immerse) { state.immerse = false; toggleImmerse(); }
 
     // Render any saved highlights for this page
     renderSavedHighlights();
