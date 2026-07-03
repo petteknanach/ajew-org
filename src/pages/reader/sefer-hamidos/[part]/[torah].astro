@@ -211,6 +211,7 @@ const truthVideos = [
           <button class="reader-btn reader-btn-icon" id="btn-notes">Notes</button>
           <button class="reader-btn reader-btn-icon" id="btn-fullscreen">Fullscreen</button>
           <button class="reader-btn reader-btn-icon" id="btn-immse" title="Hide controls for distraction-free study" onclick="event.preventDefault();event.stopImmediatePropagation();document.body.classList.toggle('reader-immersive');document.querySelector('.reader-container')?.classList.toggle('immerse-mode',document.body.classList.contains('reader-immersive'));this.textContent=document.body.classList.contains('reader-immersive')?'Show controls':'Focus';this.classList.toggle('active',document.body.classList.contains('reader-immersive'))">Focus</button>
+          <button class="reader-btn reader-btn-icon" id="btn-hide-media" title="Hide pictures, songs, videos, and media controls">Hide media</button>
         </div>
       </div>
       <button class="reader-focus-exit" type="button" id="reader-focus-exit" title="Show reader controls again" onclick="event.preventDefault();event.stopImmediatePropagation();document.body.classList.remove('reader-immersive');document.querySelector('.reader-container')?.classList.remove('immerse-mode');var b=document.getElementById('btn-immse');if(b){b.textContent='Focus';b.classList.remove('active');}">Show controls</button>
@@ -240,7 +241,7 @@ const truthVideos = [
         </p>
         {torahNum === 1 && truthMediaBySegment.size > 0 && (
           <div class="reader-media-note" style="margin-top: 12px; font-size: 0.9em; color: var(--reader-text-secondary);">
-            📷 New picture/video dropdowns appear inside teachings 1–10 below.
+            📷 Picture/video dropdowns appear inside teachings 1–30 below.
           </div>
         )}
       </div>
@@ -280,8 +281,19 @@ const truthVideos = [
                         </a>
                         <figcaption>
                           <span>{img.language} · {img.variant}</span>
-                          <button type="button" class="sh-media-share" data-share-title={`Sefer Hamidos Truth ${seg.index} ${img.language} image ${img.variant}`} data-share-url={`${Astro.site ? new URL(img.path, Astro.site).toString() : img.path}`}>↗ Share</button>
+                          <div class="sh-media-share-row">
+                            <button type="button" class="sh-media-share" data-share-title={`Sefer Hamidos Truth ${seg.index} ${img.language} image ${img.variant}`} data-share-url={`${Astro.site ? new URL(`/share/sefer-hamidos-truth/${path.basename(img.path).replace(/\.[^.]+$/, '')}`, Astro.site).toString() : `/share/sefer-hamidos-truth/${path.basename(img.path).replace(/\.[^.]+$/, '')}`}`} data-media-url={`${Astro.site ? new URL(img.path, Astro.site).toString() : img.path}`}>↗ Share image</button>
+                            <a class="sh-media-share" href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(Astro.site ? new URL(`/share/sefer-hamidos-truth/${path.basename(img.path).replace(/\.[^.]+$/, '')}`, Astro.site).toString() : `/share/sefer-hamidos-truth/${path.basename(img.path).replace(/\.[^.]+$/, '')}`)}&text=${encodeURIComponent(`Sefer Hamidos Truth ${seg.index} ${img.language} image`)}`} target="_blank" rel="noopener">X</a>
+                            <a class="sh-media-share" href={`https://t.me/share/url?url=${encodeURIComponent(Astro.site ? new URL(`/share/sefer-hamidos-truth/${path.basename(img.path).replace(/\.[^.]+$/, '')}`, Astro.site).toString() : `/share/sefer-hamidos-truth/${path.basename(img.path).replace(/\.[^.]+$/, '')}`)}&text=${encodeURIComponent(`Sefer Hamidos Truth ${seg.index} ${img.language} image`)}`} target="_blank" rel="noopener">Telegram</a>
+                            <a class="sh-media-share" href={img.path} download>Download</a>
+                          </div>
                         </figcaption>
+                        {img.video_path && (
+                          <div class="sh-media-video-row">
+                            <video src={img.video_path} controls preload="metadata" playsinline title={`Sefer Hamidos Truth ${seg.index} ${img.language} animation`}></video>
+                            <a class="sh-media-video" href={img.video_path} target="_blank" rel="noopener">Open video</a>
+                          </div>
+                        )}
                       </figure>
                     ))}
                   </div>
@@ -382,15 +394,32 @@ const truthVideos = [
             event.preventDefault();
             event.stopPropagation();
             var url = share.getAttribute('data-share-url') || window.location.href;
+            var mediaUrl = share.getAttribute('data-media-url') || '';
             var title = share.getAttribute('data-share-title') || document.title;
             var text = title + ' — ajew.org';
             if (navigator.share) {
-              navigator.share({ title: title, text: text, url: url }).catch(function () {});
+              if (mediaUrl && navigator.canShare && window.fetch) {
+                fetch(mediaUrl).then(function (r) { return r.blob(); }).then(function (blob) {
+                  var ext = (mediaUrl.split('.').pop() || 'png').split('?')[0];
+                  var file = new File([blob], (title.replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '') || 'ajew-image') + '.' + ext, { type: blob.type || 'image/png' });
+                  if (navigator.canShare({ files: [file] })) return navigator.share({ title: title, text: text, files: [file], url: url });
+                  return navigator.share({ title: title, text: text, url: url });
+                }).catch(function () { navigator.share({ title: title, text: text, url: url }).catch(function () {}); });
+              } else navigator.share({ title: title, text: text, url: url }).catch(function () {});
             } else {
               var msg = text + '\n' + url;
               if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(msg).catch(function () { window.prompt('Copy link:', msg); });
               else window.prompt('Copy link:', msg);
             }
+          }
+          var hideMedia = event.target && event.target.closest && event.target.closest('#btn-hide-media');
+          if (hideMedia) {
+            event.preventDefault();
+            var hidden = !document.body.classList.contains('reader-hide-media');
+            document.body.classList.toggle('reader-hide-media', hidden);
+            hideMedia.textContent = hidden ? 'Show media' : 'Hide media';
+            hideMedia.classList.toggle('active', hidden);
+            return;
           }
           var exit = event.target && event.target.closest && event.target.closest('#reader-focus-exit');
           if (exit) {
@@ -404,6 +433,7 @@ const truthVideos = [
         .reader-focus-exit{display:none;position:fixed;top:.75rem;right:.75rem;z-index:9999;border:1px solid rgba(180,140,60,.7);border-radius:999px;background:rgba(25,25,25,.86);color:#fff;padding:.42rem .8rem;font:700 .85rem system-ui,-apple-system,sans-serif;box-shadow:0 4px 16px rgba(0,0,0,.25);cursor:pointer;}
         body.reader-immersive .reader-focus-exit{display:block;}
         body.reader-immersive .reader-breadcrumb,body.reader-immersive #audio-controls,body.reader-immersive .reader-toc-toggle,body.reader-immersive .reader-toc,body.reader-immersive .reader-media-actions,body.reader-immersive .sh-media-share,body.reader-immersive .ajew-suno-playlist,body.reader-immersive .ajew-segment-actions{display:none!important;}
+        body.reader-hide-media #audio-controls,body.reader-hide-media .ajew-suno-playlist,body.reader-hide-media .ajew-generic-media-share,body.reader-hide-media .ajew-media-share-btn,body.reader-hide-media .sefer-hamidos-media,body.reader-hide-media .reader-media-actions{display:none!important;}
         body.reader-immersive .reader-container.immerse-mode .segment-en{display:inherit;}
         body.reader-immersive .reader-container.immerse-mode.mode-hebrew .segment-en{display:none!important;}
         body.reader-immersive .reader-container.immerse-mode.mode-english .segment-he{display:none!important;}
@@ -417,8 +447,11 @@ const truthVideos = [
         .sh-media-card{flex:0 0 min(78vw,260px);scroll-snap-align:start;margin:0;padding:8px;border:1px solid var(--reader-border,#ddd);border-radius:12px;background:rgba(255,255,255,.6);}
         .sh-media-card a{display:block;text-decoration:none;color:inherit;}
         .sh-media-card img{width:100%;height:auto;border-radius:8px;display:block;}
-        .sh-media-card figcaption{display:flex;gap:.45rem;align-items:center;justify-content:space-between;margin-top:6px;font-size:.82em;color:var(--reader-text-secondary);}
+        .sh-media-card figcaption{display:grid;gap:.45rem;margin-top:6px;font-size:.82em;color:var(--reader-text-secondary);}
         .sh-media-share,.sh-media-video,.sh-media-archive{border-radius:999px;padding:.24rem .58rem;font-weight:700;text-decoration:none;font-size:.86em;}
+        .sh-media-share-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+        .sh-media-video-row{margin-top:8px;display:grid;gap:6px;}
+        .sh-media-video-row video{width:100%;border-radius:8px;background:#000;}
         .sh-media-share{border:1px solid var(--reader-accent,#1a365d);background:rgba(255,255,255,.8);color:var(--reader-accent,#1a365d);cursor:pointer;}
         .sh-media-actions{display:flex;gap:8px;flex-wrap:wrap;font-size:.86em;}
         .sh-media-video{background:var(--reader-accent,#1a365d);color:#fff;}

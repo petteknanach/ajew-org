@@ -81,6 +81,20 @@
     } }, label || '↗ Share');
   }
 
+  function telegramButton(title, url, label) {
+    return el('a', { class: 'ajew-media-share-btn ajew-telegram-share-btn', title: 'Share to Telegram', target: '_blank', rel: 'noopener', href: '#' }, label || 'Telegram');
+  }
+
+  function makeTelegramButton(title, url, label) {
+    var a = telegramButton(title, url, label);
+    a.addEventListener('click', function (e) {
+      var t = typeof title === 'function' ? title() : title;
+      var u = shareUrlFor(typeof url === 'function' ? url() : url);
+      a.href = 'https://t.me/share/url?url=' + encodeURIComponent(u) + '&text=' + encodeURIComponent((t || document.title) + ' — ajew.org');
+    });
+    return a;
+  }
+
   function archiveDetailsUrl(identifier) {
     return identifier ? 'https://archive.org/details/' + encodeURIComponent(identifier) : window.location.href;
   }
@@ -96,7 +110,8 @@
       media.setAttribute('data-ajew-share-ready', '1');
       var title = media.getAttribute('title') || media.closest('details')?.querySelector('summary')?.textContent || document.title;
       var btn = shareButton(title, function () { return currentMediaSrc(media) || window.location.href; }, '↗ Share media');
-      var row = el('div', { class: 'ajew-generic-media-share' }, [btn]);
+      var tg = makeTelegramButton(title, function () { return currentMediaSrc(media) || window.location.href; }, 'Telegram');
+      var row = el('div', { class: 'ajew-generic-media-share' }, [btn, tg]);
       if (media.nextSibling) media.parentNode.insertBefore(row, media.nextSibling);
       else media.parentNode.appendChild(row);
     });
@@ -564,6 +579,15 @@
             var track = list[playlistIndex] || list[0];
             return track ? (track.share_url || track.url) : window.location.href;
           }, '↗ Share song'),
+          makeTelegramButton(function () {
+            var list = activeList();
+            var track = list[playlistIndex] || list[0];
+            return track ? (track.title || 'Suno song') : 'Suno songs';
+          }, function () {
+            var list = activeList();
+            var track = list[playlistIndex] || list[0];
+            return track ? (track.share_url || track.url) : window.location.href;
+          }, 'Telegram'),
           langSelect,
           status,
           playlistRating,
@@ -585,7 +609,8 @@
           row.appendChild(el('audio', { controls: '', preload: 'none', src: track.url, title: buildTrackLabel(track) }));
           row.appendChild(el('div', { class: 'ajew-suno-track-links' }, [
             el('a', { href: track.url, target: '_blank', rel: 'noopener' }, 'Archive.org MP3 ↗'),
-            shareButton(buildTrackLabel(track), track.share_url || track.url, '↗ Share song')
+            shareButton(buildTrackLabel(track), track.share_url || track.url, '↗ Share song'),
+            makeTelegramButton(buildTrackLabel(track), track.share_url || track.url, 'Telegram')
           ]));
           wrap.appendChild(row);
         });
