@@ -284,9 +284,10 @@ const truthVideos = [
                         <figcaption>
                           <span>{img.language} · {img.variant}</span>
                           <div class="sh-media-share-row">
-                            <button type="button" class="sh-media-share" data-share-title={`Sefer Hamidos Truth ${seg.index} ${img.language} image ${img.variant}`} data-share-url={`${Astro.site ? new URL(`/share/sefer-hamidos-truth/${path.basename(img.path).replace(/\.[^.]+$/, '')}`, Astro.site).toString() : `/share/sefer-hamidos-truth/${path.basename(img.path).replace(/\.[^.]+$/, '')}`}`} data-media-url={`${Astro.site ? new URL(img.path, Astro.site).toString() : img.path}`}>↗ Share image</button>
+                            <button type="button" class="sh-media-share sh-media-share-file" data-share-title={`Sefer Hamidos Truth ${seg.index} ${img.language} image ${img.variant}`} data-share-url={`${Astro.site ? new URL(`/share/sefer-hamidos-truth/${path.basename(img.path).replace(/\.[^.]+$/, '')}`, Astro.site).toString() : `/share/sefer-hamidos-truth/${path.basename(img.path).replace(/\.[^.]+$/, '')}`}`} data-media-url={`${Astro.site ? new URL(img.path, Astro.site).toString() : img.path}`}>Share actual image</button>
                             <a class="sh-media-share" href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(Astro.site ? new URL(`/share/sefer-hamidos-truth/${path.basename(img.path).replace(/\.[^.]+$/, '')}`, Astro.site).toString() : `/share/sefer-hamidos-truth/${path.basename(img.path).replace(/\.[^.]+$/, '')}`)}&text=${encodeURIComponent(`Sefer Hamidos Truth ${seg.index} ${img.language} image`)}`} target="_blank" rel="noopener">X</a>
                             <a class="sh-media-share" href={`https://t.me/share/url?url=${encodeURIComponent(Astro.site ? new URL(`/share/sefer-hamidos-truth/${path.basename(img.path).replace(/\.[^.]+$/, '')}`, Astro.site).toString() : `/share/sefer-hamidos-truth/${path.basename(img.path).replace(/\.[^.]+$/, '')}`)}&text=${encodeURIComponent(`Sefer Hamidos Truth ${seg.index} ${img.language} image`)}`} target="_blank" rel="noopener">Telegram</a>
+                            <button type="button" class="sh-media-share sh-media-copy-image" data-media-url={`${Astro.site ? new URL(img.path, Astro.site).toString() : img.path}`}>Copy image</button>
                             <a class="sh-media-share" href={img.path} download>Download</a>
                           </div>
                         </figcaption>
@@ -391,7 +392,20 @@ const truthVideos = [
             setFocusMode(!document.body.classList.contains('reader-immersive'));
             return;
           }
-          var share = event.target && event.target.closest && event.target.closest('.sh-media-share');
+          var copyImage = event.target && event.target.closest && event.target.closest('.sh-media-copy-image');
+          if (copyImage) {
+            event.preventDefault();
+            event.stopPropagation();
+            var copyUrl = copyImage.getAttribute('data-media-url') || '';
+            if (copyUrl && navigator.clipboard && window.ClipboardItem && window.fetch) {
+              fetch(copyUrl).then(function (r) { return r.blob(); }).then(function (blob) {
+                return navigator.clipboard.write([new ClipboardItem({ [blob.type || 'image/png']: blob })]);
+              }).then(function () { copyImage.textContent = 'Copied image'; setTimeout(function(){ copyImage.textContent = 'Copy image'; }, 1800); })
+              .catch(function () { window.open(copyUrl, '_blank', 'noopener'); });
+            } else if (copyUrl) window.open(copyUrl, '_blank', 'noopener');
+            return;
+          }
+          var share = event.target && event.target.closest && event.target.closest('.sh-media-share-file');
           if (share) {
             event.preventDefault();
             event.stopPropagation();
@@ -404,7 +418,9 @@ const truthVideos = [
                 fetch(mediaUrl).then(function (r) { return r.blob(); }).then(function (blob) {
                   var ext = (mediaUrl.split('.').pop() || 'png').split('?')[0];
                   var file = new File([blob], (title.replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '') || 'ajew-image') + '.' + ext, { type: blob.type || 'image/png' });
-                  if (navigator.canShare({ files: [file] })) return navigator.share({ title: title, text: text, files: [file], url: url });
+                  // Important: share the file by itself, not file+URL. Adding URL causes many apps
+                  // to treat it as link sharing and hides image-capable targets on mobile share sheets.
+                  if (navigator.canShare({ files: [file] })) return navigator.share({ title: title, text: text, files: [file] });
                   return navigator.share({ title: title, text: text, url: url });
                 }).catch(function () { navigator.share({ title: title, text: text, url: url }).catch(function () {}); });
               } else navigator.share({ title: title, text: text, url: url }).catch(function () {});
