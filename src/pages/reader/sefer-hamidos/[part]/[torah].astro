@@ -213,9 +213,10 @@ const truthVideos = [
           <button class="reader-btn reader-btn-icon" id="btn-immse" title="Hide controls for distraction-free study" onclick="event.preventDefault();event.stopImmediatePropagation();document.body.classList.toggle('reader-immersive');document.querySelector('.reader-container')?.classList.toggle('immerse-mode',document.body.classList.contains('reader-immersive'));this.textContent=document.body.classList.contains('reader-immersive')?'Show controls':'Focus';this.classList.toggle('active',document.body.classList.contains('reader-immersive'))">Focus</button>
           <button class="reader-btn reader-btn-icon" id="btn-hide-media" title="Hide pictures, songs, videos, and media controls">Hide media</button>
           <button class="reader-btn reader-btn-icon" id="btn-media-gallery" title="Scroll all pictures and videos one after another">Media gallery</button>
+          <button class="reader-btn reader-btn-icon" id="btn-teachings-only" title="Show only the teachings, without reader additions">Teachings only</button>
         </div>
       </div>
-      <button class="reader-focus-exit" type="button" id="reader-focus-exit" title="Show reader controls again" onclick="event.preventDefault();event.stopImmediatePropagation();document.body.classList.remove('reader-immersive');document.querySelector('.reader-container')?.classList.remove('immerse-mode');var b=document.getElementById('btn-immse');if(b){b.textContent='Focus';b.classList.remove('active');}">Show controls</button>
+      <button class="reader-focus-exit" type="button" id="reader-focus-exit" title="Show reader controls again" onclick="event.preventDefault();event.stopImmediatePropagation();document.body.classList.remove('reader-immersive');document.querySelector('.reader-container')?.classList.remove('immerse-mode');var b=document.getElementById('btn-immse');if(b){b.textContent='Focus';b.classList.remove('active');}document.body.classList.remove('reader-teachings-only');var tb=document.getElementById('btn-teachings-only');if(tb){tb.textContent='Teachings only';tb.classList.remove('active');}">Show controls</button>
 
       <div class="reader-search-bar">
         <input type="text" placeholder="Search in this topic..." dir="auto" />
@@ -465,6 +466,17 @@ const truthVideos = [
           }
           function stepMediaGallery(delta) { renderMediaGallery((window.__shGalleryIndex || 0) + delta); }
           function closeMediaGallery() { document.body.classList.remove('sh-gallery-open'); var v=document.querySelector('#sh-media-gallery-lightbox video'); if(v) v.pause(); }
+          var teachingsOnlyBtn = event.target && event.target.closest && event.target.closest('#btn-teachings-only');
+          if (teachingsOnlyBtn) {
+            event.preventDefault();
+            var only = !document.body.classList.contains('reader-teachings-only');
+            document.body.classList.toggle('reader-teachings-only', only);
+            var containerOnly = document.querySelector('.reader-container');
+            if (containerOnly) containerOnly.classList.toggle('immerse-mode', only);
+            teachingsOnlyBtn.textContent = only ? 'Full reader' : 'Teachings only';
+            teachingsOnlyBtn.classList.toggle('active', only);
+            return;
+          }
           var galleryBtn = event.target && event.target.closest && event.target.closest('#btn-media-gallery');
           if (galleryBtn) { event.preventDefault(); renderMediaGallery(0); return; }
           var mediaThumb = event.target && event.target.closest && event.target.closest('.sh-media-card a, .sh-media-video-row video, .sh-media-video-row .sh-media-video');
@@ -485,15 +497,24 @@ const truthVideos = [
           if (exit) {
             event.preventDefault();
             setFocusMode(false);
+            document.body.classList.remove('reader-teachings-only');
+            var toBtn = document.getElementById('btn-teachings-only');
+            if (toBtn) { toBtn.textContent = 'Teachings only'; toBtn.classList.remove('active'); }
           }
         });
         })();
       </script>
       <style is:global>
         .reader-focus-exit{display:none;position:fixed;top:.75rem;right:.75rem;z-index:9999;border:1px solid rgba(180,140,60,.7);border-radius:999px;background:rgba(25,25,25,.86);color:#fff;padding:.42rem .8rem;font:700 .85rem system-ui,-apple-system,sans-serif;box-shadow:0 4px 16px rgba(0,0,0,.25);cursor:pointer;}
-        body.reader-immersive .reader-focus-exit{display:block;}
+        body.reader-immersive .reader-focus-exit,body.reader-teachings-only .reader-focus-exit{display:block;}
         body.reader-immersive .reader-breadcrumb,body.reader-immersive #audio-controls,body.reader-immersive .reader-toc-toggle,body.reader-immersive .reader-toc,body.reader-immersive .reader-media-actions,body.reader-immersive .sh-media-share,body.reader-immersive .ajew-suno-playlist,body.reader-immersive .ajew-segment-actions{display:none!important;}
         body.reader-hide-media #audio-controls,body.reader-hide-media .ajew-suno-playlist,body.reader-hide-media .ajew-generic-media-share,body.reader-hide-media .ajew-media-share-btn,body.reader-hide-media .sefer-hamidos-media,body.reader-hide-media .reader-media-actions{display:none!important;}
+        body.reader-teachings-only .reader-breadcrumb,body.reader-teachings-only .reader-header,body.reader-teachings-only .reader-nav,body.reader-teachings-only .reader-toolbar,body.reader-teachings-only .reader-toc-toggle,body.reader-teachings-only .reader-toc,body.reader-teachings-only #audio-controls,body.reader-teachings-only .ajew-suno-playlist,body.reader-teachings-only .ajew-suno-segment-player,body.reader-teachings-only .ajew-generic-media-share,body.reader-teachings-only .sefer-hamidos-media,body.reader-teachings-only .reader-media-note,body.reader-teachings-only .reader-shortcuts-overlay,body.reader-teachings-only .comments-section,body.reader-teachings-only .commentary-sidebar,body.reader-teachings-only footer,body.reader-teachings-only nav[aria-label="Main navigation"],body.reader-teachings-only .compact-yahrzeit,body.reader-teachings-only .reader-segment-actions{display:none!important;}
+        body.reader-teachings-only .reader-container{max-width:980px;margin:0 auto;padding:1.2rem;}
+        body.reader-teachings-only .reader-content{margin-top:0;}
+        body.reader-teachings-only .reader-container.immerse-mode .segment-en{display:inherit;}
+        body.reader-teachings-only .reader-container.immerse-mode.mode-hebrew .segment-en{display:none!important;}
+        body.reader-teachings-only .reader-container.immerse-mode.mode-english .segment-he{display:none!important;}
         body.reader-immersive .reader-container.immerse-mode .segment-en{display:inherit;}
         body.reader-immersive .reader-container.immerse-mode.mode-hebrew .segment-en{display:none!important;}
         body.reader-immersive .reader-container.immerse-mode.mode-english .segment-he{display:none!important;}
