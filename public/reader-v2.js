@@ -735,7 +735,7 @@
     const alignBtn = document.getElementById('btn-align');
     if (alignBtn) alignBtn.addEventListener('click', toggleAligned);
 
-    const immerseBtn = document.getElementById('btn-immse') || document.getElementById('btn-immserate');
+    const immerseBtn = document.getElementById('btn-immserate');
     if (immerseBtn) immerseBtn.addEventListener('click', toggleImmerse);
 
     const fontPlus = document.getElementById('font-plus');
