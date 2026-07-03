@@ -212,6 +212,7 @@ const truthVideos = [
           <button class="reader-btn reader-btn-icon" id="btn-fullscreen">Fullscreen</button>
           <button class="reader-btn reader-btn-icon" id="btn-immse" title="Hide controls for distraction-free study" onclick="event.preventDefault();event.stopImmediatePropagation();document.body.classList.toggle('reader-immersive');document.querySelector('.reader-container')?.classList.toggle('immerse-mode',document.body.classList.contains('reader-immersive'));this.textContent=document.body.classList.contains('reader-immersive')?'Show controls':'Focus';this.classList.toggle('active',document.body.classList.contains('reader-immersive'))">Focus</button>
           <button class="reader-btn reader-btn-icon" id="btn-hide-media" title="Hide pictures, songs, videos, and media controls">Hide media</button>
+          <button class="reader-btn reader-btn-icon" id="btn-media-gallery" title="Scroll all pictures and videos one after another">Media gallery</button>
         </div>
       </div>
       <button class="reader-focus-exit" type="button" id="reader-focus-exit" title="Show reader controls again" onclick="event.preventDefault();event.stopImmediatePropagation();document.body.classList.remove('reader-immersive');document.querySelector('.reader-container')?.classList.remove('immerse-mode');var b=document.getElementById('btn-immse');if(b){b.textContent='Focus';b.classList.remove('active');}">Show controls</button>
@@ -412,6 +413,65 @@ const truthVideos = [
               else window.prompt('Copy link:', msg);
             }
           }
+          function mediaGalleryItems() {
+            return Array.prototype.slice.call(document.querySelectorAll('.sh-media-card')).flatMap(function (card) {
+              var title = (card.querySelector('figcaption span') && card.querySelector('figcaption span').textContent) || 'Sefer Hamidos media';
+              var img = card.querySelector('img');
+              var video = card.querySelector('video');
+              var out = [];
+              if (img) out.push({ type: 'image', src: img.currentSrc || img.src, title: title, share: (card.querySelector('.sh-media-share[data-share-url]') || {}).dataset?.shareUrl || img.src });
+              if (video) out.push({ type: 'video', src: video.currentSrc || video.src, title: title + ' video', share: video.currentSrc || video.src });
+              return out;
+            });
+          }
+          function ensureMediaGallery() {
+            var g = document.getElementById('sh-media-gallery-lightbox');
+            if (g) return g;
+            g = document.createElement('div');
+            g.id = 'sh-media-gallery-lightbox';
+            g.innerHTML = '<div class="sh-gallery-backdrop"></div><div class="sh-gallery-panel" role="dialog" aria-modal="true"><button class="sh-gallery-close" type="button">×</button><button class="sh-gallery-prev" type="button">‹</button><div class="sh-gallery-stage"></div><button class="sh-gallery-next" type="button">›</button><div class="sh-gallery-caption"></div><div class="sh-gallery-actions"><a class="sh-gallery-open" target="_blank" rel="noopener">Open</a><a class="sh-gallery-share-x" target="_blank" rel="noopener">X</a><a class="sh-gallery-share-tg" target="_blank" rel="noopener">Telegram</a><a class="sh-gallery-download" download>Download</a></div></div>';
+            document.body.appendChild(g);
+            g.addEventListener('click', function (e) {
+              if (e.target.closest('.sh-gallery-close') || e.target.classList.contains('sh-gallery-backdrop')) closeMediaGallery();
+              if (e.target.closest('.sh-gallery-prev')) stepMediaGallery(-1);
+              if (e.target.closest('.sh-gallery-next')) stepMediaGallery(1);
+            });
+            document.addEventListener('keydown', function (e) {
+              if (!document.body.classList.contains('sh-gallery-open')) return;
+              if (e.key === 'Escape') closeMediaGallery();
+              if (e.key === 'ArrowLeft') stepMediaGallery(-1);
+              if (e.key === 'ArrowRight') stepMediaGallery(1);
+            });
+            return g;
+          }
+          function renderMediaGallery(index) {
+            var items = mediaGalleryItems();
+            if (!items.length) return;
+            index = ((index % items.length) + items.length) % items.length;
+            window.__shGalleryIndex = index;
+            var item = items[index], g = ensureMediaGallery(), stage = g.querySelector('.sh-gallery-stage');
+            stage.innerHTML = item.type === 'video' ? '<video controls autoplay playsinline src="' + item.src.replace(/"/g,'&quot;') + '"></video>' : '<img src="' + item.src.replace(/"/g,'&quot;') + '" alt="">';
+            g.querySelector('.sh-gallery-caption').textContent = (index + 1) + ' / ' + items.length + ' · ' + item.title;
+            g.querySelector('.sh-gallery-open').href = item.src;
+            g.querySelector('.sh-gallery-download').href = item.src;
+            g.querySelector('.sh-gallery-share-x').href = 'https://twitter.com/intent/tweet?url=' + encodeURIComponent(item.share || item.src) + '&text=' + encodeURIComponent(item.title + ' — ajew.org');
+            g.querySelector('.sh-gallery-share-tg').href = 'https://t.me/share/url?url=' + encodeURIComponent(item.share || item.src) + '&text=' + encodeURIComponent(item.title + ' — ajew.org');
+            document.body.classList.add('sh-gallery-open');
+          }
+          function openMediaGalleryFor(src) {
+            var items = mediaGalleryItems();
+            var i = Math.max(0, items.findIndex(function (it) { return it.src === src || it.src.indexOf(src) >= 0 || src.indexOf(it.src) >= 0; }));
+            renderMediaGallery(i);
+          }
+          function stepMediaGallery(delta) { renderMediaGallery((window.__shGalleryIndex || 0) + delta); }
+          function closeMediaGallery() { document.body.classList.remove('sh-gallery-open'); var v=document.querySelector('#sh-media-gallery-lightbox video'); if(v) v.pause(); }
+          var galleryBtn = event.target && event.target.closest && event.target.closest('#btn-media-gallery');
+          if (galleryBtn) { event.preventDefault(); renderMediaGallery(0); return; }
+          var mediaThumb = event.target && event.target.closest && event.target.closest('.sh-media-card a, .sh-media-video-row video, .sh-media-video-row .sh-media-video');
+          if (mediaThumb) {
+            var src = (mediaThumb.tagName === 'A' ? mediaThumb.getAttribute('href') : (mediaThumb.currentSrc || mediaThumb.src)) || '';
+            if (src) { event.preventDefault(); openMediaGalleryFor(src); return; }
+          }
           var hideMedia = event.target && event.target.closest && event.target.closest('#btn-hide-media');
           if (hideMedia) {
             event.preventDefault();
@@ -456,6 +516,23 @@ const truthVideos = [
         .sh-media-actions{display:flex;gap:8px;flex-wrap:wrap;font-size:.86em;}
         .sh-media-video{background:var(--reader-accent,#1a365d);color:#fff;}
         .sh-media-archive{border:1px solid var(--reader-accent,#1a365d);color:var(--reader-accent,#1a365d);}
+
+        body.sh-gallery-open{overflow:hidden;}
+        #sh-media-gallery-lightbox{display:none;position:fixed;inset:0;z-index:10000;}
+        body.sh-gallery-open #sh-media-gallery-lightbox{display:block;}
+        .sh-gallery-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.86);}
+        .sh-gallery-panel{position:absolute;inset:2.5vh 2vw;display:grid;grid-template-columns:auto 1fr auto;grid-template-rows:1fr auto auto;gap:10px;align-items:center;}
+        .sh-gallery-stage{grid-column:2;grid-row:1;display:flex;align-items:center;justify-content:center;min-height:0;}
+        .sh-gallery-stage img,.sh-gallery-stage video{max-width:100%;max-height:82vh;border-radius:14px;box-shadow:0 16px 60px rgba(0,0,0,.55);background:#000;}
+        .sh-gallery-close,.sh-gallery-prev,.sh-gallery-next{border:0;border-radius:999px;background:rgba(255,255,255,.92);color:#111;font-weight:900;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,.3);}
+        .sh-gallery-close{position:absolute;top:0;right:0;width:44px;height:44px;font-size:30px;z-index:2;}
+        .sh-gallery-prev,.sh-gallery-next{width:48px;height:70px;font-size:48px;}
+        .sh-gallery-prev{grid-column:1;grid-row:1;}
+        .sh-gallery-next{grid-column:3;grid-row:1;}
+        .sh-gallery-caption{grid-column:1/4;grid-row:2;text-align:center;color:#fff;font:700 1rem system-ui,-apple-system,sans-serif;}
+        .sh-gallery-actions{grid-column:1/4;grid-row:3;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}
+        .sh-gallery-actions a{border-radius:999px;background:#fff;color:#111;text-decoration:none;font-weight:800;padding:.45rem .85rem;}
+        @media(max-width:700px){.sh-gallery-panel{inset:1vh 1vw;grid-template-columns:1fr 1fr;grid-template-rows:1fr auto auto auto}.sh-gallery-stage{grid-column:1/3}.sh-gallery-prev{grid-column:1;grid-row:2;width:100%;height:44px;font-size:32px}.sh-gallery-next{grid-column:2;grid-row:2;width:100%;height:44px;font-size:32px}.sh-gallery-caption{grid-row:3}.sh-gallery-actions{grid-row:4}.sh-gallery-stage img,.sh-gallery-stage video{max-height:74vh}}
         .mode-hebrew .sh-media-lang-en{display:none!important;}
         .mode-english .sh-media-lang-he{display:none!important;}
       </style>
