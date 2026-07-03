@@ -59,16 +59,18 @@ const structuredData = torahData ? JSON.stringify({
   "url": `https://ajew.org/reader/sefer-hamidos/${partNum}/${torahNum}`
 }) : '';
 
-// LN commentary entry — per-topic excerpt from Likutay Nanach
-const lnUrl = `/reader/likutay-nanach/volume-4/chapter-251-topic-${torahNum}.json`;
+// LN commentary entry — focused per-topic excerpt from Likutay Nanach when available.
+const lnSection = torahNum === 1 ? 'volume-4/sefer-hamidos-truth-focused' : `volume-4/chapter-251-topic-${torahNum}`;
+const lnUrl = `/reader/likutay-nanach/${lnSection}.json`;
 const commentaryEntry = torahData ? {
   related_commentaries: [
     {
       book: "likutay-nanach",
-      section: `chapter-251-topic-${torahNum}`,
+      section: lnSection,
       label: "Likutay Nanach",
-      sectionTitle: "ספר המדות",
-      url: lnUrl
+      sectionTitle: torahNum === 1 ? "ספר המדות — אמת" : "ספר המדות",
+      url: lnUrl,
+      readerUrl: torahNum === 1 ? '/reader/likutay-nanach/volume-4/33#seg-475' : lnUrl
     }
   ]
 } : null;
@@ -82,15 +84,18 @@ const breadcrumbData = torahData ? JSON.stringify({
   ]
 }) : '';
 
-const truthMediaImages = [
-  { src: '/images/sefer-hamidos-truth/img-he-1-1.png', label: 'Hebrew Truth image 1A' },
-  { src: '/images/sefer-hamidos-truth/img-he-1-2.png', label: 'Hebrew Truth image 1B' },
-  { src: '/images/sefer-hamidos-truth/img-en-1-1.png', label: 'English Truth image 1A' },
-  { src: '/images/sefer-hamidos-truth/img-en-1-2.png', label: 'English Truth image 1B' },
-  { src: '/images/sefer-hamidos-truth/img-he-2-1.png', label: 'Hebrew Truth image 2A' },
-  { src: '/images/sefer-hamidos-truth/img-he-2-2.png', label: 'Hebrew Truth image 2B' },
-  { src: '/images/sefer-hamidos-truth/img-en-2-1.png', label: 'English Truth image 2A' },
-  { src: '/images/sefer-hamidos-truth/img-en-2-2.png', label: 'English Truth image 2B' },
+let truthMediaBySegment = new Map();
+try {
+  const mediaPath = path.join(process.cwd(), 'public/images/sefer-hamidos-truth/manifest.json');
+  const mediaManifest = JSON.parse(fs.readFileSync(mediaPath, 'utf8'));
+  truthMediaBySegment = new Map((mediaManifest.entries || []).map((entry) => [Number(entry.segment), entry]));
+} catch (_e) {
+  truthMediaBySegment = new Map();
+}
+const truthArchiveBase = 'https://archive.org/download/sefer-hamidos-truth-media-ajew-org';
+const truthVideos = [
+  { language: 'Hebrew', src: '/images/sefer-hamidos-truth/sefer-hamidos-truth-he-clip.mp4', archive: `${truthArchiveBase}/sefer-hamidos-truth-he-clip.mp4` },
+  { language: 'English', src: '/images/sefer-hamidos-truth/sefer-hamidos-truth-en-clip.mp4', archive: `${truthArchiveBase}/sefer-hamidos-truth-en-clip.mp4` },
 ];
 ---
 
@@ -231,22 +236,10 @@ const truthMediaImages = [
         <p style="color: var(--reader-text-secondary); font-size: 0.9em; font-family: 'Open Sans', sans-serif;">
           Sefer Hamidos - The Book of Traits · {topicTotal} individual teachings
         </p>
-        {torahNum === 1 && (
-          <details class="reader-media-dropdown" style="margin-top: 12px; max-width: 760px;">
-            <summary style="cursor: pointer; font-weight: 600; color: var(--reader-accent);">📷 Media for these teachings (8 images + 2 videos)</summary>
-            <div style="margin-top: 8px; padding: 12px; background: var(--reader-bg-secondary); border-radius: 8px; font-size: 0.9em;">
-              <strong>Hebrew video clip:</strong> <a href="https://files-cdn.x.ai/7t-u-pB4TmOmf4VrmtMrXg/file_4c242fad-6ce6-4861-9a9b-546fcf87f272.mp4" target="_blank" rel="noopener">Watch</a> | <a href="https://archive.org/details/sefer-hamidos-truth-he" target="_blank" rel="noopener">Archive.org</a><br/>
-              <strong>English video clip:</strong> <a href="https://files-cdn.x.ai/6KzaWICJRM2QvbsyJjMXWw/file_7df0ab96-9dbf-4883-b819-7724347d92ca.mp4" target="_blank" rel="noopener">Watch</a> | <a href="https://archive.org/details/sefer-hamidos-truth-en" target="_blank" rel="noopener">Archive.org</a>
-              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 12px;">
-                {truthMediaImages.map((img) => (
-                  <a href={img.src} target="_blank" rel="noopener" style="display:block; text-decoration:none; color:inherit;">
-                    <img src={img.src} alt={img.label} loading="lazy" style="width:100%; height:auto; border-radius:8px; border:1px solid var(--reader-border,#ddd); display:block;" />
-                    <span style="display:block; margin-top:4px; font-size:0.82em; color:var(--reader-text-secondary);">{img.label}</span>
-                  </a>
-                ))}
-              </div>
-            </div>
-          </details>
+        {torahNum === 1 && truthMediaBySegment.size > 0 && (
+          <div class="reader-media-note" style="margin-top: 12px; font-size: 0.9em; color: var(--reader-text-secondary);">
+            📷 New picture/video dropdowns appear inside teachings 1–10 below.
+          </div>
         )}
       </div>
 
@@ -273,6 +266,30 @@ const truthMediaImages = [
               <span class="segment-number">{seg.displayLabel || seg.sourceNumber || seg.index}</span>
               <p>{seg.en || 'Translation not yet available'}</p>
             </div>
+            {truthMediaBySegment.has(Number(seg.index)) && (
+              <details class="reader-media-dropdown sefer-hamidos-media" style="grid-column: 1 / -1; margin: 0.45rem 0 1rem; padding: 0.45rem 0.65rem; border: 1px solid var(--reader-border,#d8c8a8); border-radius: 12px; background: rgba(180,140,60,.08);">
+                <summary style="cursor: pointer; font-weight: 700; color: var(--reader-accent);">📷 Pictures / videos for this teaching</summary>
+                <div style="margin-top: 10px; display: grid; gap: 12px;">
+                  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px;">
+                    {truthMediaBySegment.get(Number(seg.index)).images.map((img) => (
+                      <a href={img.path} target="_blank" rel="noopener" style="display:block; text-decoration:none; color:inherit;">
+                        <img src={img.path} alt={`Sefer Hamidos Truth ${seg.index} ${img.language} image ${img.variant}`} loading="lazy" style="width:100%; height:auto; border-radius:8px; border:1px solid var(--reader-border,#ddd); display:block;" />
+                        <span style="display:flex; gap:.35rem; align-items:center; justify-content:space-between; margin-top:4px; font-size:0.82em; color:var(--reader-text-secondary);">
+                          <span>{img.language} · {img.variant}</span>
+                          <span>open ↗</span>
+                        </span>
+                      </a>
+                    ))}
+                  </div>
+                  <div style="display: flex; gap: 8px; flex-wrap: wrap; font-size: 0.86em;">
+                    {truthVideos.map((video) => (
+                      <a href={video.archive} target="_blank" rel="noopener" style="padding:.22rem .55rem; border-radius:999px; background:var(--reader-accent,#1a365d); color:#fff; text-decoration:none; font-weight:700;">▶ {video.language} video</a>
+                    ))}
+                    <a href="https://archive.org/details/sefer-hamidos-truth-media-ajew-org" target="_blank" rel="noopener" style="padding:.22rem .55rem; border-radius:999px; border:1px solid var(--reader-accent,#1a365d); text-decoration:none; font-weight:700;">Archive collection ↗</a>
+                  </div>
+                </div>
+              </details>
+            )}
           </div>
         ))}
         </div>
