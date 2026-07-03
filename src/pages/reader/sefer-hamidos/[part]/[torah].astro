@@ -210,10 +210,10 @@ const truthVideos = [
           <button class="reader-btn reader-btn-icon" id="btn-bookmark">Bookmark</button>
           <button class="reader-btn reader-btn-icon" id="btn-notes">Notes</button>
           <button class="reader-btn reader-btn-icon" id="btn-fullscreen">Fullscreen</button>
-          <button class="reader-btn reader-btn-icon" id="btn-immse" title="Hide controls for distraction-free study" onclick="document.body.classList.toggle('reader-immersive');document.querySelector('.reader-container')?.classList.toggle('immerse-mode');this.textContent=document.body.classList.contains('reader-immersive')?'Show controls':'Focus';this.classList.toggle('active',document.body.classList.contains('reader-immersive'))">Focus</button>
+          <button class="reader-btn reader-btn-icon" id="btn-immse" title="Hide controls for distraction-free study" onclick="event.preventDefault();event.stopImmediatePropagation();document.body.classList.toggle('reader-immersive');document.querySelector('.reader-container')?.classList.toggle('immerse-mode',document.body.classList.contains('reader-immersive'));this.textContent=document.body.classList.contains('reader-immersive')?'Show controls':'Focus';this.classList.toggle('active',document.body.classList.contains('reader-immersive'))">Focus</button>
         </div>
       </div>
-      <button class="reader-focus-exit" type="button" id="reader-focus-exit" title="Show reader controls again">Show controls</button>
+      <button class="reader-focus-exit" type="button" id="reader-focus-exit" title="Show reader controls again" onclick="event.preventDefault();event.stopImmediatePropagation();document.body.classList.remove('reader-immersive');document.querySelector('.reader-container')?.classList.remove('immerse-mode');var b=document.getElementById('btn-immse');if(b){b.textContent='Focus';b.classList.remove('active');}">Show controls</button>
 
       <div class="reader-search-bar">
         <input type="text" placeholder="Search in this topic..." dir="auto" />
