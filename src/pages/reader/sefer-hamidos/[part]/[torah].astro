@@ -84,19 +84,20 @@ const breadcrumbData = torahData ? JSON.stringify({
   ]
 }) : '';
 
-let truthMediaBySegment = new Map();
-try {
-  const mediaPath = path.join(process.cwd(), 'public/images/sefer-hamidos-truth/manifest.json');
-  const mediaManifest = JSON.parse(fs.readFileSync(mediaPath, 'utf8'));
-  truthMediaBySegment = new Map((mediaManifest.entries || []).map((entry) => [Number(entry.segment), entry]));
-} catch (_e) {
-  truthMediaBySegment = new Map();
+function shSlugTitle(title = '') {
+  return String(title).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
-const truthArchiveBase = 'https://archive.org/download/sefer-hamidos-truth-media-ajew-org';
-const truthVideos = [
-  { language: 'Hebrew', src: '/images/sefer-hamidos-truth/sefer-hamidos-truth-he-clip.mp4', archive: `${truthArchiveBase}/sefer-hamidos-truth-he-clip.mp4` },
-  { language: 'English', src: '/images/sefer-hamidos-truth/sefer-hamidos-truth-en-clip.mp4', archive: `${truthArchiveBase}/sefer-hamidos-truth-en-clip.mp4` },
-];
+const mediaCollection = torahNum === 1 ? 'sefer-hamidos-truth' : `sefer-hamidos-${shSlugTitle(torahData?.title || '')}`;
+let mediaBySegment = new Map();
+try {
+  const mediaPath = path.join(process.cwd(), `public/images/${mediaCollection}/manifest.json`);
+  const mediaManifest = JSON.parse(fs.readFileSync(mediaPath, 'utf8'));
+  mediaBySegment = new Map((mediaManifest.entries || []).map((entry) => [Number(entry.segment), entry]));
+} catch (_e) {
+  mediaBySegment = new Map();
+}
+const mediaArchiveId = torahNum === 1 ? 'sefer-hamidos-truth-media-ajew-org' : `${mediaCollection}-media-ajew-org`;
+const mediaArchiveUrl = `https://archive.org/details/${mediaArchiveId}`;
 ---
 
 <Layout title={pageTitle} description={pageDesc}>
@@ -241,9 +242,9 @@ const truthVideos = [
         <p style="color: var(--reader-text-secondary); font-size: 0.9em; font-family: 'Open Sans', sans-serif;">
           Sefer Hamidos - The Book of Traits · {topicTotal} individual teachings
         </p>
-        {torahNum === 1 && truthMediaBySegment.size > 0 && (
+        {mediaBySegment.size > 0 && (
           <div class="reader-media-note" style="margin-top: 12px; font-size: 0.9em; color: var(--reader-text-secondary);">
-            📷 Picture/video dropdowns appear inside teachings 1–30 below.
+            📷 Picture/video dropdowns appear inside the teachings below.
           </div>
         )}
       </div>
@@ -271,12 +272,12 @@ const truthVideos = [
               <span class="segment-number">{seg.displayLabel || seg.sourceNumber || seg.index}</span>
               <p>{seg.en || 'Translation not yet available'}</p>
             </div>
-            {torahNum === 1 && truthMediaBySegment.has(Number(seg.index)) && (
+            {mediaBySegment.has(Number(seg.index)) && (
               <details class="reader-media-dropdown sefer-hamidos-media" data-segment={String(seg.index)}>
                 <summary>📷 Pictures / videos for this teaching</summary>
                 <div class="sh-media-body">
                   <div class="sh-media-strip" aria-label={`Scrollable Sefer Hamidos Truth teaching ${seg.index} pictures`}>
-                    {truthMediaBySegment.get(Number(seg.index)).images.map((img) => (
+                    {mediaBySegment.get(Number(seg.index)).images.map((img) => (
                       <figure class={`sh-media-card sh-media-lang-${img.language === 'hebrew' ? 'he' : 'en'}`} data-media-url={img.path}>
                         <a href={img.path} target="_blank" rel="noopener">
                           <img src={img.path} alt={`Sefer Hamidos Truth ${seg.index} ${img.language} image ${img.variant}`} loading="lazy" />
@@ -284,9 +285,9 @@ const truthVideos = [
                         <figcaption>
                           <span>{img.language} · {img.variant}</span>
                           <div class="sh-media-share-row">
-                            <button type="button" class="sh-media-share sh-media-share-file" data-share-title={`Sefer Hamidos Truth ${seg.index} ${img.language} image ${img.variant}`} data-share-url={`${Astro.site ? new URL(`/share/sefer-hamidos-truth/${path.basename(img.path).replace(/\.[^.]+$/, '')}`, Astro.site).toString() : `/share/sefer-hamidos-truth/${path.basename(img.path).replace(/\.[^.]+$/, '')}`}`} data-media-url={`${Astro.site ? new URL(img.path, Astro.site).toString() : img.path}`}>Share actual image</button>
-                            <a class="sh-media-share" href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(Astro.site ? new URL(`/share/sefer-hamidos-truth/${path.basename(img.path).replace(/\.[^.]+$/, '')}`, Astro.site).toString() : `/share/sefer-hamidos-truth/${path.basename(img.path).replace(/\.[^.]+$/, '')}`)}&text=${encodeURIComponent(`Sefer Hamidos Truth ${seg.index} ${img.language} image`)}`} target="_blank" rel="noopener">X</a>
-                            <a class="sh-media-share" href={`https://t.me/share/url?url=${encodeURIComponent(Astro.site ? new URL(`/share/sefer-hamidos-truth/${path.basename(img.path).replace(/\.[^.]+$/, '')}`, Astro.site).toString() : `/share/sefer-hamidos-truth/${path.basename(img.path).replace(/\.[^.]+$/, '')}`)}&text=${encodeURIComponent(`Sefer Hamidos Truth ${seg.index} ${img.language} image`)}`} target="_blank" rel="noopener">Telegram</a>
+                            <button type="button" class="sh-media-share sh-media-share-file" data-share-title={`Sefer Hamidos Truth ${seg.index} ${img.language} image ${img.variant}`} data-share-url={`${Astro.site ? new URL(`/share/${mediaCollection}/${path.basename(img.path).replace(/\.[^.]+$/, '')}`, Astro.site).toString() : `/share/${mediaCollection}/${path.basename(img.path).replace(/\.[^.]+$/, '')}`}`} data-media-url={`${Astro.site ? new URL(img.path, Astro.site).toString() : img.path}`}>Share actual image</button>
+                            <a class="sh-media-share" href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(Astro.site ? new URL(`/share/${mediaCollection}/${path.basename(img.path).replace(/\.[^.]+$/, '')}`, Astro.site).toString() : `/share/${mediaCollection}/${path.basename(img.path).replace(/\.[^.]+$/, '')}`)}&text=${encodeURIComponent(`Sefer Hamidos Truth ${seg.index} ${img.language} image`)}`} target="_blank" rel="noopener">X</a>
+                            <a class="sh-media-share" href={`https://t.me/share/url?url=${encodeURIComponent(Astro.site ? new URL(`/share/${mediaCollection}/${path.basename(img.path).replace(/\.[^.]+$/, '')}`, Astro.site).toString() : `/share/${mediaCollection}/${path.basename(img.path).replace(/\.[^.]+$/, '')}`)}&text=${encodeURIComponent(`Sefer Hamidos Truth ${seg.index} ${img.language} image`)}`} target="_blank" rel="noopener">Telegram</a>
                             <button type="button" class="sh-media-share sh-media-copy-image" data-media-url={`${Astro.site ? new URL(img.path, Astro.site).toString() : img.path}`}>Copy image</button>
                             <a class="sh-media-share" href={img.path} download>Download</a>
                           </div>
@@ -301,10 +302,7 @@ const truthVideos = [
                     ))}
                   </div>
                   <div class="sh-media-actions">
-                    {truthVideos.map((video) => (
-                      <a class={`sh-media-video sh-media-lang-${video.language === 'Hebrew' ? 'he' : 'en'}`} href={video.archive} target="_blank" rel="noopener">▶ {video.language} video</a>
-                    ))}
-                    <a class="sh-media-archive" href="https://archive.org/details/sefer-hamidos-truth-media-ajew-org" target="_blank" rel="noopener">Archive collection ↗</a>
+                    <a class="sh-media-archive" href={mediaArchiveUrl} target="_blank" rel="noopener">Archive collection ↗</a>
                   </div>
                 </div>
               </details>
