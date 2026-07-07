@@ -14,6 +14,7 @@ import os
 import re
 import time
 import html as html_escape
+import urllib.parse
 from datetime import datetime
 from email.header import decode_header
 from pathlib import Path
@@ -110,11 +111,17 @@ def plain_summary(article_html, limit=420):
 def share_block(url, title):
     encoded_url = html_escape.escape(url, quote=True)
     encoded_title = html_escape.escape(title, quote=True)
+    share_text = f'{title} {url}'
+    share_text_q = urllib.parse.quote(share_text)
+    title_q = urllib.parse.quote(title)
+    url_q = urllib.parse.quote(url, safe='')
+    copy_text = html_escape.escape(share_text, quote=True)
     return f'''<div class="share-row" aria-label="Share post">
         <span>Share:</span>
-        <a href="https://wa.me/?text={encoded_title}%20{encoded_url}" target="_blank" rel="noopener">WhatsApp</a>
-        <a href="https://t.me/share/url?url={encoded_url}&text={encoded_title}" target="_blank" rel="noopener">Telegram</a>
-        <button type="button" onclick="navigator.clipboard&&navigator.clipboard.writeText('{encoded_url}')">Copy link</button>
+        <a href="https://wa.me/?text={share_text_q}" target="_blank" rel="noopener">WhatsApp</a>
+        <a href="https://t.me/share/url?url={url_q}&text={title_q}" target="_blank" rel="noopener">Telegram</a>
+        <a href="https://twitter.com/intent/tweet?text={title_q}&url={url_q}" target="_blank" rel="noopener">X</a>
+        <button type="button" onclick="navigator.clipboard&&navigator.clipboard.writeText('{copy_text}')">Copy title + link</button>
       </div>'''
 
 def favicon_links():
@@ -125,6 +132,7 @@ def favicon_links():
 def comments_block(post_id):
     post_id_html = html_escape.escape(post_id, quote=True)
     return f'''    <section class="comments-card" data-blog-comments data-post-id="{post_id_html}">
+      <div class="blog-view-counter" data-blog-view-counter data-post-id="{post_id_html}" aria-label="Post views"></div>
       <h2>Comments</h2>
       <p class="comments-muted">Add a comment on this teaching. Comments appear publicly after posting.</p>
       <form class="comment-form">

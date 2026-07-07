@@ -114,6 +114,9 @@ body::before {
 .blog-post a { color: var(--blue-2); }
 
 .comments-card h2 { margin: 0 0 8px; color: var(--deep-blue); font: 900 1.55rem 'Frank Ruhl Libre', serif; }
+.blog-view-counter { display: inline-flex; align-items: center; gap: 6px; margin: 0 0 14px; padding: 6px 12px; border-radius: 999px; background: rgba(255,244,207,.9); border: 1px solid var(--border); color: var(--gold); font: 800 .86rem Heebo, Arial, sans-serif; }
+.blog-view-counter:empty { display: none; }
+.blog-view-counter::before { content: '👁'; }
 .comments-card p { margin: 0 0 14px; }
 .comment-form { display: grid; gap: 10px; margin: 18px 0 22px; }
 .comment-form input, .comment-form textarea { width: 100%; border: 1px solid var(--border); border-radius: 14px; padding: 11px 13px; font: 500 1rem Heebo, Arial, sans-serif; background: #fffefa; color: var(--ink); }
