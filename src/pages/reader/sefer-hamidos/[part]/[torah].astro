@@ -294,7 +294,8 @@ const mediaArchiveUrl = `https://archive.org/details/${mediaArchiveId}`;
                         </figcaption>
                         {img.video_path && (
                           <div class="sh-media-video-row">
-                            <video src={img.video_path} controls preload="metadata" playsinline title={`Sefer Hamidos Truth ${seg.index} ${img.language} animation`}></video>
+                            <video data-video-src={img.video_path} controls preload="none" playsinline title={`Sefer Hamidos Truth ${seg.index} ${img.language} animation`}></video>
+                            <button type="button" class="sh-media-load-video" data-video-src={img.video_path}>Load video</button>
                             <a class="sh-media-video" href={img.video_path} target="_blank" rel="noopener">Open video</a>
                           </div>
                         )}
@@ -428,6 +429,15 @@ const mediaArchiveUrl = `https://archive.org/details/${mediaArchiveId}`;
               else window.prompt('Copy link:', msg);
             }
           }
+          function hydrateMediaVideo(video) {
+            if (!video || video.src) return video && (video.currentSrc || video.src || video.getAttribute('data-video-src') || '');
+            var src = video.getAttribute('data-video-src') || '';
+            if (src) video.src = src;
+            return src;
+          }
+          function hydrateVideosIn(root) {
+            Array.prototype.forEach.call((root || document).querySelectorAll('video[data-video-src]'), hydrateMediaVideo);
+          }
           function mediaGalleryItems() {
             return Array.prototype.slice.call(document.querySelectorAll('.sh-media-card')).flatMap(function (card) {
               var title = (card.querySelector('figcaption span') && card.querySelector('figcaption span').textContent) || 'Sefer Hamidos media';
@@ -435,7 +445,7 @@ const mediaArchiveUrl = `https://archive.org/details/${mediaArchiveId}`;
               var video = card.querySelector('video');
               var out = [];
               if (img) out.push({ type: 'image', src: img.currentSrc || img.src, title: title, share: (card.querySelector('.sh-media-share[data-share-url]') || {}).dataset?.shareUrl || img.src });
-              if (video) out.push({ type: 'video', src: video.currentSrc || video.src, title: title + ' video', share: video.currentSrc || video.src });
+              if (video) { var vsrc = video.currentSrc || video.src || video.getAttribute('data-video-src') || ''; if (vsrc) out.push({ type: 'video', src: vsrc, title: title + ' video', share: vsrc }); }
               return out;
             });
           }
@@ -493,9 +503,20 @@ const mediaArchiveUrl = `https://archive.org/details/${mediaArchiveId}`;
           }
           var galleryBtn = event.target && event.target.closest && event.target.closest('#btn-media-gallery');
           if (galleryBtn) { event.preventDefault(); renderMediaGallery(0); return; }
+          var loadVideo = event.target && event.target.closest && event.target.closest('.sh-media-load-video');
+          if (loadVideo) {
+            event.preventDefault();
+            var row = loadVideo.closest('.sh-media-video-row');
+            var v = row && row.querySelector('video');
+            var vsrc = hydrateMediaVideo(v);
+            if (vsrc) { loadVideo.textContent = 'Video loaded'; if (v && v.play) v.play().catch(function(){}); }
+            return;
+          }
+          var mediaDetails = event.target && event.target.closest && event.target.closest('.sefer-hamidos-media summary');
+          if (mediaDetails) setTimeout(function(){ var d=mediaDetails.parentElement; if(d && d.open) hydrateVideosIn(d); }, 0);
           var mediaThumb = event.target && event.target.closest && event.target.closest('.sh-media-card a, .sh-media-video-row video, .sh-media-video-row .sh-media-video');
           if (mediaThumb) {
-            var src = (mediaThumb.tagName === 'A' ? mediaThumb.getAttribute('href') : (mediaThumb.currentSrc || mediaThumb.src)) || '';
+            var src = (mediaThumb.tagName === 'A' ? mediaThumb.getAttribute('href') : hydrateMediaVideo(mediaThumb)) || '';
             if (src) { event.preventDefault(); openMediaGalleryFor(src); return; }
           }
           var hideMedia = event.target && event.target.closest && event.target.closest('#btn-hide-media');
@@ -543,7 +564,7 @@ const mediaArchiveUrl = `https://archive.org/details/${mediaArchiveId}`;
         .sh-media-card a{display:block;text-decoration:none;color:inherit;}
         .sh-media-card img{width:100%;height:auto;border-radius:8px;display:block;}
         .sh-media-card figcaption{display:grid;gap:.45rem;margin-top:6px;font-size:.82em;color:var(--reader-text-secondary);}
-        .sh-media-share,.sh-media-video,.sh-media-archive{border-radius:999px;padding:.24rem .58rem;font-weight:700;text-decoration:none;font-size:.86em;}
+        .sh-media-share,.sh-media-video,.sh-media-archive,.sh-media-load-video{border-radius:999px;padding:.24rem .58rem;font-weight:700;text-decoration:none;font-size:.86em;}
         .sh-media-share-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
         .sh-media-video-row{margin-top:8px;display:grid;gap:6px;}
         .sh-media-video-row video{width:100%;border-radius:8px;background:#000;}
