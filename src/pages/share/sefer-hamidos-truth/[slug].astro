@@ -19,7 +19,7 @@ export function getStaticPaths() {
 
 const { entry, img, slug } = Astro.props;
 const absImage = new URL(img.path, Astro.site).toString();
-const readerUrl = new URL(`/reader/sefer-hamidos/1/1#seg-${entry.segment}`, Astro.site).toString();
+const readerUrl = new URL(`/reader/sefer-hamidos/1/1#media-${slug}`, Astro.site).toString();
 const title = `Sefer Hamidos Truth ${entry.segment} ${img.language} picture`;
 const desc = img.language === 'hebrew' ? entry.he : entry.en;
 ---

@@ -98,6 +98,18 @@ try {
 }
 const mediaArchiveId = torahNum === 1 ? 'sefer-hamidos-truth-media-ajew-org' : `${mediaCollection}-media-ajew-org`;
 const mediaArchiveUrl = `https://archive.org/details/${mediaArchiveId}`;
+function mediaSlug(img) {
+  return path.basename(img.path || img.archive_filename || '').replace(/\.[^.]+$/, '');
+}
+function mediaShareUrl(img) {
+  const slug = mediaSlug(img);
+  const base = Astro.site || 'https://ajew.org';
+  return new URL(`/share/${mediaCollection}/${slug}/?v=${slug}`, base).toString();
+}
+function mediaDirectUrl(img) {
+  const base = Astro.site || 'https://ajew.org';
+  return new URL(img.path, base).toString();
+}
 ---
 
 <Layout title={pageTitle} description={pageDesc}>
@@ -278,17 +290,17 @@ const mediaArchiveUrl = `https://archive.org/details/${mediaArchiveId}`;
                 <div class="sh-media-body">
                   <div class="sh-media-strip" aria-label={`Scrollable Sefer Hamidos Truth teaching ${seg.index} pictures`}>
                     {mediaBySegment.get(Number(seg.index)).images.map((img) => (
-                      <figure class={`sh-media-card sh-media-lang-${img.language === 'hebrew' ? 'he' : 'en'}`} data-media-url={img.path}>
+                      <figure id={`media-${mediaSlug(img)}`} class={`sh-media-card sh-media-lang-${img.language === 'hebrew' ? 'he' : 'en'}`} data-media-url={mediaDirectUrl(img)} data-share-url={mediaShareUrl(img)}>
                         <a href={img.path} target="_blank" rel="noopener">
                           <img src={img.path} alt={`Sefer Hamidos Truth ${seg.index} ${img.language} image ${img.variant}`} loading="lazy" />
                         </a>
                         <figcaption>
                           <span>{img.language} · {img.variant}</span>
                           <div class="sh-media-share-row">
-                            <button type="button" class="sh-media-share sh-media-share-file" data-share-title={`Sefer Hamidos Truth ${seg.index} ${img.language} image ${img.variant}`} data-share-url={`${Astro.site ? new URL(`/share/${mediaCollection}/${path.basename(img.path).replace(/\.[^.]+$/, '')}`, Astro.site).toString() : `/share/${mediaCollection}/${path.basename(img.path).replace(/\.[^.]+$/, '')}`}`} data-media-url={`${Astro.site ? new URL(img.path, Astro.site).toString() : img.path}`}>Share actual image</button>
-                            <a class="sh-media-share" href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(Astro.site ? new URL(`/share/${mediaCollection}/${path.basename(img.path).replace(/\.[^.]+$/, '')}`, Astro.site).toString() : `/share/${mediaCollection}/${path.basename(img.path).replace(/\.[^.]+$/, '')}`)}&text=${encodeURIComponent(`Sefer Hamidos Truth ${seg.index} ${img.language} image`)}`} target="_blank" rel="noopener">X</a>
-                            <a class="sh-media-share" href={`https://t.me/share/url?url=${encodeURIComponent(Astro.site ? new URL(`/share/${mediaCollection}/${path.basename(img.path).replace(/\.[^.]+$/, '')}`, Astro.site).toString() : `/share/${mediaCollection}/${path.basename(img.path).replace(/\.[^.]+$/, '')}`)}&text=${encodeURIComponent(`Sefer Hamidos Truth ${seg.index} ${img.language} image`)}`} target="_blank" rel="noopener">Telegram</a>
-                            <button type="button" class="sh-media-share sh-media-copy-image" data-media-url={`${Astro.site ? new URL(img.path, Astro.site).toString() : img.path}`}>Copy image</button>
+                            <button type="button" class="sh-media-share sh-media-share-file" data-share-title={`Sefer Hamidos Truth ${seg.index} ${img.language} image ${img.variant}`} data-share-url={mediaShareUrl(img)} data-media-url={mediaDirectUrl(img)}>Share actual image</button>
+                            <a class="sh-media-share" href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(mediaShareUrl(img))}&text=${encodeURIComponent(`Sefer Hamidos Truth ${seg.index} ${img.language} image ${img.variant}`)}`} target="_blank" rel="noopener">X</a>
+                            <a class="sh-media-share" href={`https://t.me/share/url?url=${encodeURIComponent(mediaShareUrl(img))}&text=${encodeURIComponent(`Sefer Hamidos Truth ${seg.index} ${img.language} image ${img.variant}`)}`} target="_blank" rel="noopener">Telegram</a>
+                            <button type="button" class="sh-media-share sh-media-copy-image" data-media-url={mediaDirectUrl(img)}>Copy image</button>
                             <a class="sh-media-share" href={img.path} download>Download</a>
                           </div>
                         </figcaption>
@@ -420,9 +432,9 @@ const mediaArchiveUrl = `https://archive.org/details/${mediaArchiveId}`;
                   // Important: share the file by itself, not file+URL. Adding URL causes many apps
                   // to treat it as link sharing and hides image-capable targets on mobile share sheets.
                   if (navigator.canShare({ files: [file] })) return navigator.share({ title: title, text: text, files: [file] });
-                  return navigator.share({ title: title, text: text, url: url });
-                }).catch(function () { navigator.share({ title: title, text: text, url: url }).catch(function () {}); });
-              } else navigator.share({ title: title, text: text, url: url }).catch(function () {});
+                  return navigator.share({ title: title, text: text, url: mediaUrl || url });
+                }).catch(function () { navigator.share({ title: title, text: text, url: mediaUrl || url }).catch(function () {}); });
+              } else navigator.share({ title: title, text: text, url: mediaUrl || url }).catch(function () {});
             } else {
               var msg = text + '\n' + url;
               if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(msg).catch(function () { window.prompt('Copy link:', msg); });
@@ -443,8 +455,10 @@ const mediaArchiveUrl = `https://archive.org/details/${mediaArchiveId}`;
               var title = (card.querySelector('figcaption span') && card.querySelector('figcaption span').textContent) || 'Sefer Hamidos media';
               var img = card.querySelector('img');
               var video = card.querySelector('video');
+              var dataUrl = card.getAttribute('data-media-url') || '';
+              var shareUrl = card.getAttribute('data-share-url') || '';
               var out = [];
-              if (img) out.push({ type: 'image', src: img.currentSrc || img.src, title: title, share: (card.querySelector('.sh-media-share[data-share-url]') || {}).dataset?.shareUrl || img.src });
+              if (img) out.push({ type: 'image', src: dataUrl || img.currentSrc || img.src, title: title, share: shareUrl || (card.querySelector('.sh-media-share[data-share-url]') || {}).dataset?.shareUrl || dataUrl || img.src });
               if (video) { var vsrc = video.currentSrc || video.src || video.getAttribute('data-video-src') || ''; if (vsrc) out.push({ type: 'video', src: vsrc, title: title + ' video', share: vsrc }); }
               return out;
             });
@@ -485,7 +499,8 @@ const mediaArchiveUrl = `https://archive.org/details/${mediaArchiveId}`;
           }
           function openMediaGalleryFor(src) {
             var items = mediaGalleryItems();
-            var i = Math.max(0, items.findIndex(function (it) { return it.src === src || it.src.indexOf(src) >= 0 || src.indexOf(it.src) >= 0; }));
+            var i = items.findIndex(function (it) { return it.src === src || it.src.indexOf(src) >= 0 || src.indexOf(it.src) >= 0; });
+            if (i < 0) return;
             renderMediaGallery(i);
           }
           function stepMediaGallery(delta) { renderMediaGallery((window.__shGalleryIndex || 0) + delta); }
@@ -537,6 +552,20 @@ const mediaArchiveUrl = `https://archive.org/details/${mediaArchiveId}`;
             if (toBtn) { toBtn.textContent = 'Teachings only'; toBtn.classList.remove('active'); }
           }
         });
+        function openHashMedia() {
+          var id = (window.location.hash || '').replace(/^#/, '');
+          if (!id || id.indexOf('media-') !== 0) return;
+          var card = document.getElementById(id);
+          if (!card) return;
+          var details = card.closest('.sefer-hamidos-media');
+          if (details) details.open = true;
+          [40, 350, 1200].forEach(function (delay) {
+            setTimeout(function(){ card.scrollIntoView({ block: 'center', inline: 'center' }); }, delay);
+          });
+        }
+        window.addEventListener('hashchange', openHashMedia);
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', openHashMedia);
+        else openHashMedia();
         })();
       </script>
       <style is:global>
