@@ -1,247 +1,140 @@
 /* Na Nach Blog Styles */
+@import url('https://fonts.googleapis.com/css2?family=Cardo:wght@400;700&family=Frank+Ruhl+Libre:wght@400;600;700;900&family=Heebo:wght@400;500;700&family=Noto+Serif+Hebrew:wght@400;600;700&display=swap');
+
 :root {
-  --gold: #8B6914;
-  --gold-light: #c8a84b;
-  --deep-blue: #1e3a5f;
-  --bg: #fdfaf5;
-  --card-bg: #fff;
-  --text: #1a1a1a;
-  --text-light: #666;
-  --border: #e0d5b8;
+  --gold: #9f741b;
+  --gold-light: #f2ce69;
+  --gold-soft: #fff4cf;
+  --deep-blue: #142f52;
+  --blue-2: #214c7d;
+  --ink: #172033;
+  --muted: #667085;
+  --bg: #fbf4e4;
+  --paper: #fffdf7;
+  --card-bg: rgba(255, 253, 247, 0.94);
+  --border: #e7d4a5;
+  --shadow: 0 18px 55px rgba(20, 47, 82, 0.13);
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
 body {
-  font-family: Georgia, 'Times New Roman', serif;
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.8;
-  font-size: 17px;
+  margin: 0;
+  font-family: Cardo, Georgia, 'Times New Roman', serif;
+  background:
+    radial-gradient(circle at 16% 0%, rgba(242,206,105,0.28), transparent 28rem),
+    radial-gradient(circle at 90% 7%, rgba(33,76,125,0.16), transparent 26rem),
+    linear-gradient(180deg, #fff8e8 0%, var(--bg) 46%, #f5ead4 100%);
+  color: var(--ink);
+  line-height: 1.82;
+  font-size: 18px;
+}
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: .28;
+  background-image: linear-gradient(90deg, rgba(159,116,27,.08) 1px, transparent 1px), linear-gradient(rgba(159,116,27,.05) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: linear-gradient(to bottom, black, transparent 78%);
 }
 
-.blog-container {
-  max-width: 820px;
-  margin: 0 auto;
-  padding: 40px 24px 80px;
-}
+.blog-container { max-width: 900px; margin: 0 auto; padding: 34px 18px 80px; position: relative; }
+.blog-index-container { max-width: 1080px; }
 
-.blog-index-container {
-  max-width: 940px;
-}
-
-/* Header */
-.blog-header {
-  margin-bottom: 48px;
-  text-align: center;
-}
-
+.blog-header { margin-bottom: 34px; text-align: center; }
 .blog-banner {
-  padding: 40px 20px;
-  margin-bottom: 24px;
-  background: linear-gradient(135deg, #f8f5f0 0%, #f0ead6 100%);
-  border-radius: 12px;
-  border: 2px solid var(--gold-light);
+  position: relative;
+  overflow: hidden;
+  padding: 48px 22px;
+  margin-bottom: 20px;
+  background: linear-gradient(135deg, rgba(255,255,255,.94), rgba(255,244,207,.92)), radial-gradient(circle at top, rgba(242,206,105,.7), transparent 40%);
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  box-shadow: var(--shadow);
 }
-
-.blog-banner h1 {
-  font-size: 2.2em;
-  color: var(--deep-blue);
-  margin-bottom: 8px;
-}
-
-.blog-subtitle {
-  font-size: 1.1em;
-  color: var(--text-light);
-  font-style: italic;
-  margin-bottom: 12px;
-}
-
-.nanach {
-  font-family: 'Frank Ruhl Libre', serif;
-  font-size: 1.3em;
-  color: var(--gold);
-  direction: rtl;
-  letter-spacing: 3px;
-}
-
-.blog-nav {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  flex-wrap: wrap;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--border);
-}
-
-.blog-nav a {
+.blog-banner::after { content: 'נ נח נחמ נחמן מאומן'; position: absolute; inset-inline: 0; bottom: -14px; color: rgba(159,116,27,.08); font: 900 4.5rem 'Frank Ruhl Libre', serif; direction: rtl; white-space: nowrap; }
+.blog-banner h1 { position: relative; font: 900 clamp(2rem, 7vw, 4.2rem) 'Frank Ruhl Libre', serif; color: var(--deep-blue); margin: 0 0 8px; letter-spacing: -.02em; }
+.blog-subtitle { position: relative; font: 500 1.05rem Heebo, Arial, sans-serif; color: var(--muted); margin: 0 0 10px; }
+.nanach { position: relative; font-family: 'Frank Ruhl Libre', 'Noto Serif Hebrew', serif; font-size: clamp(1.2rem, 4vw, 2rem); color: var(--gold); direction: rtl; letter-spacing: 3px; margin: 0; }
+.blog-nav { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+.blog-nav a, .back-link, .post-link-pill {
   color: var(--deep-blue);
   text-decoration: none;
-  font-weight: 600;
-  font-size: 0.95em;
-  padding: 4px 12px;
-  border-radius: 4px;
-  transition: all 0.15s;
+  font: 700 .93rem Heebo, Arial, sans-serif;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(159,116,27,.25);
+  background: rgba(255,255,255,.62);
+  transition: .18s ease;
 }
+.blog-nav a:hover, .back-link:hover, .post-link-pill:hover { transform: translateY(-1px); background: var(--deep-blue); color: #fff; }
+.rss-link { color: #b45d12 !important; }
+.back-link { display: inline-flex; margin-bottom: 16px; }
+.post-page-header h1 { font: 900 clamp(2.1rem, 7vw, 4.6rem) 'Frank Ruhl Libre', serif; color: var(--deep-blue); line-height: 1.03; margin: .2rem auto .75rem; max-width: 920px; }
+.post-page-header time, .post-item time { display: block; color: var(--gold); font: 700 .78rem Heebo, Arial, sans-serif; text-transform: uppercase; letter-spacing: .08em; }
+.post-subtitle { max-width: 760px; margin: 14px auto 0; color: var(--muted); font: 500 1.05rem Heebo, Arial, sans-serif; }
+.post-meta { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.meta-chip { border-radius: 999px; background: rgba(255,244,207,.9); border: 1px solid var(--border); color: #76530d; padding: 5px 11px; font: 700 .76rem Heebo, Arial, sans-serif; }
 
-.blog-nav a:hover {
-  background: #f0ead6;
-  color: var(--gold);
-}
-
-.rss-link {
-  background: #f5f0e0;
-  color: #c6620a !important;
-}
-
-/* Back link on post pages */
-.back-link {
-  display: block;
-  text-align: left;
-  color: var(--deep-blue);
-  text-decoration: none;
-  font-weight: 600;
-  margin-bottom: 16px;
-  font-size: 0.95em;
-}
-
-.back-link:hover { color: var(--gold); }
-
-/* Post list */
-.blog-posts {
-  margin-top: 32px;
-}
-
-.post-item {
-  padding: 26px 28px;
+.blog-posts { margin-top: 30px; }
+.post-item, .post-card, .comments-card {
+  padding: clamp(22px, 4vw, 42px);
   margin-bottom: 28px;
   border: 1px solid var(--border);
-  border-radius: 18px;
-  background: linear-gradient(180deg, #fff 0%, #fffdf8 100%);
-  box-shadow: 0 10px 30px rgba(30, 58, 95, 0.07);
-}
-
-.post-item:first-child {
-  border-top: 1px solid var(--border);
-}
-
-.post-item time {
-  display: block;
-  font-size: 0.8em;
-  color: var(--gold);
-  font-weight: bold;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 4px;
-}
-
-.post-item h2 {
-  font-size: 1.25em;
-  margin: 0;
-}
-
-.post-item h2 a {
-  color: var(--deep-blue);
-  text-decoration: none;
-  transition: color 0.15s;
-}
-
-.post-item h2 a:hover {
-  color: var(--gold);
-}
-
-/* Single post */
-.blog-post {
-  font-size: 1.05em;
-  line-height: 1.9;
-}
-
-.post-card {
-  padding: 30px;
-  border: 1px solid var(--border);
-  border-radius: 18px;
+  border-radius: 28px;
   background: var(--card-bg);
-  box-shadow: 0 10px 30px rgba(30, 58, 95, 0.08);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(4px);
 }
+.post-list-header h2 { font: 800 clamp(1.35rem, 4vw, 2.15rem) 'Frank Ruhl Libre', serif; line-height: 1.1; margin: 4px 0; }
+.post-list-header h2 a { color: var(--deep-blue); text-decoration: none; }
+.post-list-header h2 a:hover { color: var(--gold); }
+.blog-post { font-size: 1.08em; line-height: 1.92; }
+.blog-post p, .post-body-preview p { margin: 0 0 1.15em; }
+.blog-post h2, .blog-post h3 { font-family: 'Frank Ruhl Libre', serif; color: var(--deep-blue); line-height: 1.18; margin: 1.5em 0 .45em; }
+.hebrew-section { direction: rtl; text-align: right; font-family: 'Noto Serif Hebrew', 'Frank Ruhl Libre', serif; font-size: 1.11em; }
+.english-section { direction: ltr; text-align: left; }
+.lede { font-size: 1.17em; color: #273957; }
+.dropcap::first-letter { float: left; font: 900 4rem/0.8 'Frank Ruhl Libre', serif; color: var(--gold); padding: .12em .14em 0 0; }
+.pullquote { margin: 30px 0; padding: 24px; border-inline-start: 6px solid var(--gold); border-radius: 18px; background: linear-gradient(135deg, #fff8df, #fff); color: var(--deep-blue); font: 700 1.25rem/1.55 'Frank Ruhl Libre', serif; }
+.timeline { display: grid; gap: 12px; margin: 26px 0; }
+.timeline-item { display: grid; grid-template-columns: minmax(88px, auto) 1fr; gap: 16px; padding: 16px; border-radius: 18px; background: rgba(255,244,207,.65); border: 1px solid rgba(159,116,27,.22); }
+.timeline-date { color: var(--gold); font: 900 1rem Heebo, Arial, sans-serif; white-space: nowrap; }
+.timeline-item p { margin: 0; }
+.post-body-preview { margin-top: 18px; color: var(--ink); }
+.post-body-preview .blog-container, .post-body-preview .blog-footer, .post-body-preview .post-page-header { display: none; }
+.post-body-preview .post-card { box-shadow: none; border: 0; padding: 0; background: transparent; margin: 0; }
+.post-body-preview .comments-card { display: none; }
 
-.blog-post p, .post-body-preview p {
-  margin-bottom: 18px;
-}
+.share-row { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 20px; padding-top: 16px; border-top: 1px dashed var(--border); color: var(--muted); font: 600 .88rem Heebo, Arial, sans-serif; }
+.share-row a, .share-row button { border: 1px solid var(--border); background: #fff8e8; color: var(--deep-blue); border-radius: 999px; padding: 7px 13px; text-decoration: none; font: inherit; cursor: pointer; }
+.share-row a:hover, .share-row button:hover { background: var(--deep-blue); color: #fff; }
+.blog-post a { color: var(--blue-2); }
 
-.hebrew-section {
-  direction: rtl;
-  text-align: right;
-  font-size: 1.08em;
-}
+.comments-card h2 { margin: 0 0 8px; color: var(--deep-blue); font: 900 1.55rem 'Frank Ruhl Libre', serif; }
+.comments-card p { margin: 0 0 14px; }
+.comment-form { display: grid; gap: 10px; margin: 18px 0 22px; }
+.comment-form input, .comment-form textarea { width: 100%; border: 1px solid var(--border); border-radius: 14px; padding: 11px 13px; font: 500 1rem Heebo, Arial, sans-serif; background: #fffefa; color: var(--ink); }
+.comment-form textarea { min-height: 115px; resize: vertical; }
+.comment-form .hp { display:none; }
+.comment-form button { justify-self: start; border: 0; border-radius: 999px; padding: 10px 18px; background: var(--deep-blue); color: #fff; font: 800 .95rem Heebo, Arial, sans-serif; cursor: pointer; }
+.comments-status, .comments-muted { color: var(--muted); font: 500 .9rem Heebo, Arial, sans-serif; }
+.comment-item { border-top: 1px solid rgba(159,116,27,.22); padding: 14px 0; }
+.comment-meta { display:flex; gap:10px; flex-wrap:wrap; align-items:baseline; font-family: Heebo, Arial, sans-serif; }
+.comment-meta strong { color: var(--deep-blue); }
+.comment-meta time { color: var(--muted); font-size:.8rem; }
+.comment-item p { margin:.35rem 0 0; }
 
-.english-section {
-  direction: ltr;
-  text-align: left;
-}
-
-.post-body-preview {
-  margin-top: 18px;
-  color: var(--text);
-}
-
-.post-body-preview p:last-child,
-.blog-post p:last-child {
-  margin-bottom: 0;
-}
-
-.share-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-top: 18px;
-  padding-top: 14px;
-  border-top: 1px dashed var(--border);
-  color: var(--text-light);
-  font-size: 0.88em;
-}
-
-.share-row a,
-.share-row button {
-  border: 1px solid var(--border);
-  background: #f8f5f0;
-  color: var(--deep-blue);
-  border-radius: 999px;
-  padding: 5px 12px;
-  text-decoration: none;
-  font: inherit;
-  cursor: pointer;
-}
-
-.share-row a:hover,
-.share-row button:hover {
-  background: var(--deep-blue);
-  color: #fff;
-}
-
-.blog-post a {
-  color: var(--deep-blue);
-}
-
-/* Footer */
-.blog-footer {
-  text-align: center;
-  margin-top: 48px;
-  padding-top: 24px;
-  border-top: 1px solid var(--border);
-  color: var(--text-light);
-  font-size: 0.9em;
-}
-
-.blog-footer a {
-  color: var(--deep-blue);
-  text-decoration: none;
-}
-
+.blog-footer { text-align: center; margin-top: 44px; padding-top: 24px; border-top: 1px solid var(--border); color: var(--muted); font: 500 .92rem Heebo, Arial, sans-serif; }
+.blog-footer a { color: var(--deep-blue); text-decoration: none; font-weight: 700; }
 .blog-footer a:hover { color: var(--gold); }
 
-@media (max-width: 600px) {
-  .blog-container { padding: 20px 14px 60px; }
-  .blog-banner h1 { font-size: 1.6em; }
-  .blog-banner { padding: 28px 16px; }
+@media (max-width: 640px) {
+  body { font-size: 16.5px; }
+  .blog-container { padding: 20px 12px 60px; }
+  .post-item, .post-card, .comments-card { border-radius: 20px; }
+  .timeline-item { grid-template-columns: 1fr; gap: 4px; }
+  .share-row { justify-content: flex-start; }
 }

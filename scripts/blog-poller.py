@@ -93,7 +93,10 @@ def format_body_html(body, indent='      '):
     return '\n'.join(parts)
 
 def extract_article_body(content):
-    m = re.search(r'<article class="blog-post">(.*?)</article>', content, re.S)
+    # Match <article class="blog-post ...">, not only exactly class="blog-post".
+    # Older index builds accidentally embedded whole pages because post pages use
+    # class="blog-post post-card".
+    m = re.search(r'<article[^>]*class="[^"]*\bblog-post\b[^"]*"[^>]*>(.*?)</article>', content, re.S | re.I)
     return m.group(1).strip() if m else ''
 
 def plain_summary(article_html, limit=420):
@@ -113,6 +116,26 @@ def share_block(url, title):
         <a href="https://t.me/share/url?url={encoded_url}&text={encoded_title}" target="_blank" rel="noopener">Telegram</a>
         <button type="button" onclick="navigator.clipboard&&navigator.clipboard.writeText('{encoded_url}')">Copy link</button>
       </div>'''
+
+def favicon_links():
+    return '''<link rel="icon" type="image/png" sizes="512x512" href="/favicon.png?v=nanach-petek-20260707">
+<link rel="icon" type="image/x-icon" href="/favicon.ico?v=nanach-petek-20260707">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=nanach-petek-20260707">'''
+
+def comments_block(post_id):
+    post_id_html = html_escape.escape(post_id, quote=True)
+    return f'''    <section class="comments-card" data-blog-comments data-post-id="{post_id_html}">
+      <h2>Comments</h2>
+      <p class="comments-muted">Add a comment on this teaching. Comments appear publicly after posting.</p>
+      <form class="comment-form">
+        <input name="name" maxlength="60" placeholder="Your name" autocomplete="name">
+        <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <textarea name="comment" maxlength="1500" required placeholder="Write a comment…"></textarea>
+        <button type="submit">Post comment</button>
+        <div class="comments-status" role="status" aria-live="polite"></div>
+      </form>
+      <div class="comments-list"></div>
+    </section>'''
 
 def slugify(title):
     """Create URL-friendly slug from title."""
@@ -138,7 +161,9 @@ def create_blog_post(subject, body, date_str):
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{subject_html} — Na Nach Blog</title>
-<link rel="stylesheet" href="/blog/style.css">
+{favicon_links()}
+<link rel="stylesheet" href="/blog/style.css?v=20260707">
+<script defer src="/blog/comments.js?v=20260707b"></script>
 </head>
 <body>
   <div class="blog-container">
@@ -151,6 +176,7 @@ def create_blog_post(subject, body, date_str):
     <article class="blog-post post-card">
 {body_html}
     </article>
+{comments_block(filename.replace('.html',''))}
     <footer class="blog-footer">
       <p>נ נח נחמ נחמן מאומן</p>
       <p><a href="/blog">Na Nach Blog</a> · <a href="/">ajew.org</a></p>
@@ -162,6 +188,14 @@ def create_blog_post(subject, body, date_str):
     filepath = os.path.join(BLOG_DIR, filename)
     with open(filepath, 'w', encoding='utf-8') as f:
         f.write(html)
+
+    # nginx serves /blog/<filename> from /opt/ajew-blog/<filename>, while
+    # rebuild_index() scans BLOG_DIR (/opt/ajew-blog/posts). Keep both copies
+    # so new email-generated posts are reachable from the links the index emits.
+    public_path = os.path.join(os.path.dirname(BLOG_DIR), filename)
+    if public_path != filepath:
+        with open(public_path, 'w', encoding='utf-8') as f:
+            f.write(html)
     return filename
 
 def rebuild_index():
@@ -220,7 +254,8 @@ def rebuild_index():
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Na Nach Blog — Thoughts & Teachings</title>
-<link rel="stylesheet" href="/blog/style.css">
+{favicon_links()}
+<link rel="stylesheet" href="/blog/style.css?v=20260707">
 <link rel="alternate" type="application/rss+xml" title="Na Nach Blog RSS" href="/blog/rss.xml">
 </head>
 <body>

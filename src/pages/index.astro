@@ -97,6 +97,10 @@ const todayLM = lmTorahMap[dayIndex] || 1;
       <span class="btn-icon">📖</span>
       <span><span class="btn-label">Rebbe's Stories</span><span class="btn-sub">סיפורי מעשיות</span></span>
     </a>
+    <a href="/blog" class="btn-hero btn-hero-blog">
+      <span class="btn-icon">✍️</span>
+      <span><span class="btn-label">Latest Blog</span><span class="btn-sub">חידושים ועדכונים</span></span>
+    </a>
   </div>
 </section>
 
@@ -169,6 +173,15 @@ const todayLM = lmTorahMap[dayIndex] || 1;
         <span class="qs-title">Browse the Library</span>
         <span class="qs-desc">Rabbainu, Rabbi Nosson, Saba &amp; all Breslov classics</span>
         <span class="qs-he" lang="he" dir="rtl">הספריה המלאה</span>
+      </div>
+      <span class="qs-arrow">→</span>
+    </a>
+    <a href="/blog" class="qs-card qs-orange">
+      <span class="qs-icon">✍️</span>
+      <div class="qs-body">
+        <span class="qs-title">Na Nach Blog</span>
+        <span class="qs-desc">Fresh teachings, notes, and current insights</span>
+        <span class="qs-he" lang="he" dir="rtl">חידושים מהבלוג</span>
       </div>
       <span class="qs-arrow">→</span>
     </a>
@@ -483,6 +496,7 @@ const todayLM = lmTorahMap[dayIndex] || 1;
   .btn-hero-primary { background: var(--gold, #d4a017); color: var(--navy, #1a365d); }
   .btn-hero-secondary { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); backdrop-filter: blur(4px); }
   .btn-hero-accent { background: rgba(212,160,23,0.25); color: var(--gold-light, #f0cc5c); border: 1px solid rgba(212,160,23,0.5); backdrop-filter: blur(4px); }
+  .btn-hero-blog { background: linear-gradient(135deg, #fff3c4, #ffcf5a); color: var(--navy, #1a365d); border: 1px solid rgba(255,255,255,0.65); box-shadow: 0 0 20px rgba(240,204,92,0.35); }
   .btn-icon { font-size: 1.2rem; }
   .btn-label { display: block; line-height: 1.2; }
   .btn-sub { display: block; font-size: 0.75rem; font-weight: 400; opacity: 0.8; font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif); }
@@ -624,6 +638,7 @@ const todayLM = lmTorahMap[dayIndex] || 1;
   .qs-green { background: linear-gradient(135deg, #d8f3dc, #95d5b2); border-color: #74c69d; }
   .qs-blue { background: linear-gradient(135deg, #e0eef7, #b3d6f0); border-color: #8ab4d0; }
   .qs-purple { background: linear-gradient(135deg, #f0e8f7, #d6b3e8); border-color: #b88ad0; }
+  .qs-orange { background: linear-gradient(135deg, #fff1bd, #ffc968); border-color: #e4a93d; box-shadow: 0 8px 28px rgba(212,160,23,0.16); }
   .qs-icon { font-size: 1.6rem; flex-shrink: 0; }
   .qs-body { flex: 1; display: flex; flex-direction: column; }
   .qs-title { font-weight: 700; font-size: 1rem; }
