@@ -358,7 +358,7 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         const verified = [];
         const batchSize = 60;
         const maxCandidates = (searchType === 'google' || searchType === 'any' || searchType === 'boolean') ? 1600 : 900;
-        for (let i = 0; i < ids.length && i < maxCandidates; i += batchSize) {
+        for (let i = 0; i < ids.length && i < maxCandidates && verified.length < 50; i += batchSize) {
           const docs = await Promise.all(ids.slice(i, i + batchSize).map(loadDoc));
           for (const doc of docs) {
             if (!doc) continue;
