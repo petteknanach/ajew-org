@@ -322,7 +322,7 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
     } else {
       url.searchParams.delete('searchType');
     }
-    if (searchState.advancedOptions.proximity > 0) {
+    if (searchState.advancedOptions.searchType === 'proximity' && searchState.advancedOptions.proximity > 0) {
       url.searchParams.set('proximity', String(searchState.advancedOptions.proximity));
     } else {
       url.searchParams.delete('proximity');
@@ -338,10 +338,16 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
       searchState.query = query;
       
       const searchType = params.get('searchType');
-      if (searchType) searchState.advancedOptions.searchType = searchType;
-      
       const proximity = params.get('proximity');
+      if (searchType) searchState.advancedOptions.searchType = searchType;
+      else if (proximity) searchState.advancedOptions.searchType = 'proximity';
+      
       if (proximity) searchState.advancedOptions.proximity = parseInt(proximity);
+
+      document.querySelectorAll('.mode-btn[data-mode]').forEach(btn => {
+        const active = (btn as HTMLElement).dataset.mode === searchState.advancedOptions.searchType;
+        btn.classList.toggle('active', active);
+      });
       
       setTimeout(() => performSearch(), 200);
     }

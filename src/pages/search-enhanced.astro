@@ -185,8 +185,44 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
           .trim();
       }
 
-      function searchWords(text) {
-        return normalizeForSearch(text).split(' ').filter(Boolean);
+      const EN_STOP_WORDS = new Set([
+        'a','an','and','are','as','at','be','but','by','for','from','has','have','he','his','if','in','is','it','its','not','of','on','or','our','she','that','the','their','then','there','this','to','was','were','when','with','you','your','source','sources','details','comments','comment','bad','good'
+      ]);
+      const COMMON_TYPOS = new Map([
+        ['isgn', 'sign'],
+        ['sing', 'sign'],
+        ['childhod', 'childhood'],
+        ['chilhood', 'childhood']
+      ]);
+      const SYNONYM_GROUPS = new Map([
+        ['home', ['home', 'house', 'dwelling', 'residence', 'birthplace']],
+        ['house', ['house', 'home', 'dwelling', 'residence', 'birthplace']],
+        ['childhood', ['childhood', 'youth', 'young', 'boyhood']],
+        ['youth', ['youth', 'childhood', 'young', 'boyhood']],
+        ['sold', ['sold', 'sell', 'sale', 'selling']],
+        ['sell', ['sell', 'sold', 'sale', 'selling']],
+        ['sign', ['sign', 'omen', 'indication']]
+      ]);
+
+      function correctedWord(word) {
+        return COMMON_TYPOS.get(word) || word;
+      }
+
+      function searchWords(text, options = {}) {
+        const keepStopWords = options.keepStopWords === true;
+        return normalizeForSearch(text)
+          .split(' ')
+          .filter(Boolean)
+          .map(correctedWord)
+          .filter(w => keepStopWords || /[\u0590-\u05FF]/.test(w) || (w.length > 2 && !EN_STOP_WORDS.has(w)));
+      }
+
+      function queryTermGroups(query, options = {}) {
+        const expand = options.expand !== false;
+        return searchWords(query, options).map(w => {
+          const variants = expand ? (SYNONYM_GROUPS.get(w) || [w]) : [w];
+          return Array.from(new Set(variants.map(v => correctedWord(normalizeForSearch(v))).filter(Boolean)));
+        });
       }
 
       const readerShardCache = new Map();
@@ -215,28 +251,43 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         return (path || '').replace(/^\/reader\//, '').split('/')[0] || '';
       }
 
+      function postingsForGroup(shards, group) {
+        const merged = new Set();
+        for (const term of group) {
+          const shard = shards.find(sh => sh[term]);
+          if (shard && shard[term]) shard[term].forEach(id => merged.add(id));
+        }
+        return Array.from(merged);
+      }
+
       function idsForMode(shards, query, mode) {
-        const words = searchWords(query);
+        const groups = queryTermGroups(query, { expand: mode !== 'exact' });
         const q = normalizeForSearch(query);
-        if (!words.length) return new Set();
+        if (!groups.length) return [];
         if (mode === 'startsWith') {
           const ids = new Set();
           for (const shard of shards) for (const [term, list] of Object.entries(shard)) if (!term.startsWith('e:') && term.startsWith(q)) list.forEach(id => ids.add(id));
-          return ids;
+          return Array.from(ids);
         }
         if (mode === 'endsWith') {
           const ids = new Set();
           const rev = Array.from(q).reverse().join('');
           for (const [term, list] of Object.entries(shards[0] || {})) if (term.startsWith('e:' + rev)) list.forEach(id => ids.add(id));
-          return ids;
+          return Array.from(ids);
         }
-        const lists = words.map(w => (shards.find(sh => sh[w]) || {})[w] || []);
+        const lists = groups.map(group => postingsForGroup(shards, group)).filter(list => list.length);
+        if (!lists.length) return [];
         if (mode === 'any' || mode === 'google' || mode === 'boolean') {
-          const ids = new Set(); lists.forEach(list => list.forEach(id => ids.add(id))); return ids;
+          const score = new Map();
+          lists.forEach(list => {
+            const rarityWeight = Math.max(1, 120000 / Math.max(1, list.length));
+            list.forEach(id => score.set(id, (score.get(id) || 0) + rarityWeight));
+          });
+          return Array.from(score.keys()).sort((a, b) => (score.get(b) || 0) - (score.get(a) || 0));
         }
         const [smallest, ...rest] = lists.sort((a,b)=>a.length-b.length);
         const restSets = rest.map(l => new Set(l));
-        return new Set((smallest || []).filter(id => restSets.every(set => set.has(id))));
+        return (smallest || []).filter(id => restSets.every(set => set.has(id)));
       }
 
       async function loadDoc(id) {
@@ -245,18 +296,31 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         return r.json();
       }
 
-      function docMatches(doc, query, mode) {
+      function groupMatchesText(group, n) {
+        return group.some(w => n.includes(w));
+      }
+
+      function docMatchScore(doc, query, mode) {
         const q = normalizeForSearch(query);
-        const words = searchWords(query);
+        const groups = queryTermGroups(query, { expand: mode !== 'exact' });
         const n = doc.n || normalizeForSearch([doc.t, doc.h, doc.c, doc.he, doc.en].join(' '));
         const toks = n.split(' ').filter(Boolean);
-        if (mode === 'exact') return n.includes(q);
-        if (mode === 'all') return words.every(w => n.includes(w));
-        if (mode === 'any' || mode === 'google' || mode === 'boolean') return words.some(w => n.includes(w));
-        if (mode === 'startsWith') return toks.some(w => w.startsWith(q));
-        if (mode === 'endsWith') return toks.some(w => w.endsWith(q));
-        if (mode === 'proximity') return words.every(w => n.includes(w));
-        return words.some(w => n.includes(w));
+        if (!groups.length) return 0;
+        if (mode === 'exact') return n.includes(q) ? 1000 : 0;
+        if (mode === 'startsWith') return toks.some(w => w.startsWith(q)) ? 700 : 0;
+        if (mode === 'endsWith') return toks.some(w => w.endsWith(q)) ? 700 : 0;
+        const matched = groups.filter(group => groupMatchesText(group, n)).length;
+        if (mode === 'all' || mode === 'proximity') return matched === groups.length ? 800 + matched : 0;
+        if (mode === 'any') return matched ? (matched * 100 + (n.includes(q) ? 250 : 0)) : 0;
+        if (mode === 'google' || mode === 'boolean') {
+          const minimum = groups.length >= 2 ? Math.max(2, Math.ceil(groups.length * 0.4)) : 1;
+          return matched >= minimum ? (matched * 100 + (n.includes(q) ? 250 : 0)) : 0;
+        }
+        return matched ? matched * 100 : 0;
+      }
+
+      function docMatches(doc, query, mode) {
+        return docMatchScore(doc, query, mode) > 0;
       }
 
       function makeSnippet(doc, query) {
@@ -274,23 +338,28 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
 
       async function clientSearch(query, advanced) {
         const meta = await loadReaderMeta();
-        const words = searchWords(query);
         const searchType = advanced?.searchType || 'google';
         const books = advanced?.books || [];
         const allowed = new Set(books || []);
         let keys;
         if (searchType === 'endsWith') keys = ['e'];
         else if (searchType === 'startsWith') keys = [normalizeForSearch(query).slice(0,1) || '_'];
-        else keys = Array.from(new Set(words.map(w => w.slice(0,1) || '_')));
+        else {
+          const groups = queryTermGroups(query, { expand: searchType !== 'exact' });
+          keys = Array.from(new Set(groups.flat().map(w => w.slice(0,1) || '_')));
+        }
         const shards = await Promise.all(keys.map(loadShard));
-        let ids = Array.from(idsForMode(shards, query, searchType));
+        let ids = idsForMode(shards, query, searchType);
         if (allowed.size) ids = ids.filter(id => allowed.has(bookIdFromPath(meta.items[id]?.p || '')));
         const verified = [];
-        const batchSize = 40;
-        for (let i = 0; i < ids.length && verified.length < 50 && i < 600; i += batchSize) {
+        const batchSize = 60;
+        const maxCandidates = (searchType === 'google' || searchType === 'any' || searchType === 'boolean') ? 1600 : 900;
+        for (let i = 0; i < ids.length && i < maxCandidates; i += batchSize) {
           const docs = await Promise.all(ids.slice(i, i + batchSize).map(loadDoc));
           for (const doc of docs) {
-            if (!doc || !docMatches(doc, query, searchType)) continue;
+            if (!doc) continue;
+            const score = docMatchScore(doc, query, searchType);
+            if (!score) continue;
             verified.push({
               title: doc.t || doc.h || 'Untitled',
               hebrewTitle: doc.h || doc.t || '',
@@ -298,13 +367,15 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
               link: doc.p || '#',
               book: doc.c || '',
               subcategory: doc.c || '',
-              relevance: searchType === 'exact' ? 100 : 75,
-              extraInfo: doc.c || ''
+              relevance: Math.min(100, Math.max(10, Math.round(score / 10))),
+              extraInfo: doc.c || '',
+              _score: score
             });
-            if (verified.length >= 50) break;
           }
         }
-        return { results: verified, total: verified.length };
+        verified.sort((a, b) => (b._score || 0) - (a._score || 0));
+        const total = verified.length;
+        return { results: verified.slice(0, 50), total };
       }
 
       document.addEventListener('enhanced-search', (e: any) => {
