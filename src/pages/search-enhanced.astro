@@ -188,6 +188,7 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
       const EN_STOP_WORDS = new Set([
         'a','an','and','are','as','at','be','but','by','for','from','has','have','he','his','if','in','is','it','its','not','of','on','or','our','she','that','the','their','then','there','this','to','was','were','when','with','you','your','source','sources','details','comments','comment','bad','good'
       ]);
+      const HEBREW_STOP_WORDS = new Set(['את','על','של','עם','כל','בית']);
       const COMMON_TYPOS = new Map([
         ['isgn', 'sign'],
         ['sing', 'sign'],
@@ -201,7 +202,10 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         ['youth', ['youth', 'childhood', 'young', 'boyhood']],
         ['sold', ['sold', 'sell', 'sale', 'selling']],
         ['sell', ['sell', 'sold', 'sale', 'selling']],
-        ['sign', ['sign', 'omen', 'indication']]
+        ['sign', ['sign', 'omen', 'indication']],
+        ['ילדותו', ['ילדותו', 'נעוריו', 'נערותו']],
+        ['נעוריו', ['נעוריו', 'ילדותו', 'נערותו']],
+        ['נערותו', ['נערותו', 'ילדותו', 'נעוריו']]
       ]);
 
       function correctedWord(word) {
@@ -214,7 +218,7 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
           .split(' ')
           .filter(Boolean)
           .map(correctedWord)
-          .filter(w => keepStopWords || /[\u0590-\u05FF]/.test(w) || (w.length > 2 && !EN_STOP_WORDS.has(w)));
+          .filter(w => keepStopWords || (/[\u0590-\u05FF]/.test(w) ? !HEBREW_STOP_WORDS.has(w) : (w.length > 2 && !EN_STOP_WORDS.has(w))));
       }
 
       function queryTermGroups(query, options = {}) {
