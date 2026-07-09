@@ -27,7 +27,7 @@ function loadBookIndexes(book) {
 
 // Group books by category
 const categories = [
-  { title: 'Rabbi Nachman of Breslov / רבי נחמן מברסלב', ids: ['likutay-moharan', 'kitzur-likutay-moharan', 'sefer-hamidos', 'sipurey-maasiyos', 'sipurey-maasiyos-english', 'sichos-haran', 'shivchay-haran', 'chayey-moharan', 'pettek-nanach-commentary', 'likutay-nanach'] },
+  { title: 'Rabbi Nachman of Breslov / רבי נחמן מברסלב', ids: ['likutay-moharan', 'kitzur-likutay-moharan', 'sefer-hamidos', 'sipurey-maasiyos', 'sipurey-maasiyos-english', 'sichos-haran', 'shivchay-haran', 'praises-of-rabbi-nachman', 'chayey-moharan', 'toldos-adam', 'pettek-nanach-commentary', 'likutay-nanach'] },
   { title: 'Rabbi Nosson of Breslov / רבי נתן מברסלב', ids: ['likutay-halachos', 'likutay-tefilos', 'tefilos-haboker', 'likutay-eitzos', 'alim-litrufa', 'yemei-moharnat', 'shemos-hatzadikim', 'yemei-hatlaos'] },
   { title: 'Rabbi Yisroel Dov Odesser (Saba) / רבי ישראל דב אודסר זצ"ל', ids: ['ebay-hanachal', 'yisroel-saba', 'fires-of-israel', 'sichos-chayay-saba', 'saba-tape-transcripts', 'likutay-nanach', 'misc-אגרת-הפורים'] },
   { title: 'Rabbi Nosson bar Yehuda / רבי נתן בר יהודה', ids: ['nosson-by-מכתבי-ר--נתן-ב--ר-יה', 'nosson-by-קונטרס-הצירופים-עם-ה', 'nosson-by-קונטרס-הצרופים'] },
@@ -35,8 +35,9 @@ const categories = [
   { title: 'Rabbi Alter of Teplik / רבי אלתר טפליקער', ids: ['hashtatfchus-hanefesh', 'meshivas-nefesh'] },
   { title: 'Rabbi Nachman of Tcheryn / הרב מטשערין', ids: ['parparos-lechochma', 'rimzei-hamaasiyos', 'zimras-haaretz', 'yikra-dshabbata', 'yereach-haeitanim', 'nachas-hashulchan', 'likutay-eitzos-basra', 'otzar-hayirah'] },
   { title: "Rabbi Avraham bar Nachman / רבי אברהם בר' נחמן", ids: ['biur-halikutim', 'chochma-utvuna', 'kokhvei-or'] },
-  { title: "R' Shimshon Barsky / ר' שמשון בארסקי", ids: ['shimshon-גבורות-שמשון', 'shimshon-עצות-המבוארות', 'gevuros-shimshon', 'aitzoas-hamivooaroas'] },
+  { title: "R' Shimshon Barsky / ר' שמשון בארסקי", ids: ['shimshon-גבורות-שמשון', 'shimshon-עצות-המבוארות', 'gevuros-shimshon', 'aitzoas-hamivooaroas', 'aitzoas-yeshuroas'] },
   { title: 'Siach Sarfei Kodesh / שיח שרפי קודש', ids: ['siach-sarfei-kodesh'] },
+  { title: 'Rabbi Nachman Chazan / רבי נחמן חזן', ids: ['neimos-netzach'] },
   { title: 'Likutay Nanach / ליקוטי נ נח', ids: ['likutay-nanach'] },
   { title: "R' Yitzchak Breiter / ר' יצחק ברייטער", ids: ['breiter-seder-hayom', 'seven-pillars', 'hisbodidus-alone-time', 'misc-שיר-ידידות-מר-יחיאל-מענדל'] },
   { title: "R' Yisroel Karduner / ר' ישראל קרדונר", ids: ['kuntrass-hiskashrus'] },
@@ -48,8 +49,8 @@ const categories = [
   { title: 'Mishna / משנה — All Orders in One Folder', ids: ['mishna-brachot', 'mishna-peah', 'mishna-demai', 'mishna-kilayim', 'mishna-sheviit', 'mishna-terumot', 'mishna-maasrot', 'mishna-maaser-sheni', 'mishna-challah', 'mishna-orlah', 'mishna-bikkurim', 'mishna-shabbat', 'mishna-eruvin', 'mishna-pesachim', 'mishna-shekalim', 'mishna-yoma', 'mishna-sukkah', 'mishna-beitzah', 'mishna-rosh-hashana', 'mishna-taanit', 'mishna-megillah', 'mishna-moed-katan', 'mishna-chagigah', 'mishna-yevamot', 'mishna-ketubot', 'mishna-nedarim', 'mishna-nazir', 'mishna-sotah', 'mishna-gittin', 'mishna-kiddushin', 'mishna-bava-kamma', 'mishna-bava-metzia', 'mishna-bava-batra', 'mishna-sanhedrin', 'mishna-makkot', 'mishna-shevuot', 'mishna-eduyot', 'mishna-avodah-zarah', 'mishna-avot', 'mishna-horayot', 'mishna-zevachim', 'mishna-menachot', 'mishna-chulin', 'mishna-bechorot', 'mishna-arachin', 'mishna-temurah', 'mishna-keritot', 'mishna-meilah', 'mishna-tamid', 'mishna-middot', 'mishna-kelim', 'mishna-parah', 'mishna-taharot', 'mishna-mikvaot', 'mishna-niddah', 'mishna-machshirin', 'mishna-zavim'] },
   { title: 'Rambam - Mishneh Torah / רמב"ם - משנה תורה', ids: ['rambam-mada', 'rambam-ahava', 'rambam-zmanim', 'rambam-nashim', 'rambam-kedusha', 'rambam-haflaa', 'rambam-zeraim', 'rambam-avoda', 'rambam-korbanot', 'rambam-tahara', 'rambam-nezikin', 'rambam-kinyan', 'rambam-mishpatim', 'rambam-shoftim'] },
   { title: 'Zohar HaKadosh / זוהר הקדוש', ids: ['zohar-hakdama', 'zohar-bereishit', 'zohar-shemos', 'zohar-vayikra', 'zohar-bamidbar', 'zohar-devarim', 'zohar-tikunim', 'zohar-hadash'] },
-  { title: 'Ramchal / רמח"ל', ids: ['ramchal-mesillas-yesharim', 'ramchal-derech-hashem', 'ramchal-daas-tevunos', 'ramchal-klach-pitchei-chochma', 'ramchal-adir-bamuroam', 'ramchal-derech-etz-chaim', 'ramchal-maamar-haikkarim', 'ramchal-asara-perakim', 'ramchal-ruzin-gineezin', 'ramchal-tikunim-chadashim', 'ramchal-yichud-hayeeruh', 'ramchal-otzros-ramchal', 'ramchal-shaaray-ramchal'] },
-  { title: 'Halacha & More / הלכה ועוד', ids: [] },
+  { title: 'Ramchal / רמח"ל', ids: ['ramchal-mesillas-yesharim', 'ramchal-derech-hashem', 'ramchal-daas-tevunos', 'ramchal-klach-pitchei-chochma', 'ramchal-adir-bamuroam', 'ramchal-derech-etz-chaim', 'ramchal-maamar-haikkarim', 'ramchal-asara-perakim', 'ramchal-ruzin-gineezin', 'ramchal-tikunim-chadashim', 'ramchal-yichud-hayeeruh', 'ramchal-otzros-ramchal', 'ramchal-ginzay-ramchal', 'ramchal-shaaray-ramchal'] },
+  { title: 'Halacha & More / הלכה ועוד', ids: ['haggadah-shel-pesach'] },
   { title: 'Breslov Pamphlets & Letters / קונטרסים ומכתבים', ids: ['misc-קונטרס-קיום-התורה', 'misc-קונטרס-תורה-אור', 'misc-שיחת-הנפש', 'misc-ספר-שיר-ידידות', 'misc-ספר-ההשתטחות', 'misc-ליקוטי-אבן', 'misc-מכתב-רבי-געציל-לרב-קוק', 'misc-עצות-ישרות', 'azamra'] },
   { title: 'History & Stories / תולדות וסיפורים', ids: ['misc-תולדות-שמואל', 'misc-טובות-זכרונות', 'stories-סיפורי-ר--משה-גלידמא', 'stories-סיפורים-מר--שמואל-הו'] },
 ];
