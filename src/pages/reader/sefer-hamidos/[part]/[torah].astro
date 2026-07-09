@@ -110,6 +110,18 @@ function mediaDirectUrl(img) {
   const base = Astro.site || 'https://ajew.org';
   return new URL(img.path, base).toString();
 }
+function mediaShareTitle(seg, img) {
+  return `Sefer Hamidos ${torahData?.title || 'Media'} ${seg.index} ${img.language} image ${img.variant}`;
+}
+function xShareHref(url, text) {
+  return `https://x.com/intent/post?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
+}
+function telegramShareHref(url, text) {
+  return `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`;
+}
+function whatsappShareHref(url, text) {
+  return `https://wa.me/?text=${encodeURIComponent(`${text} ${url}`)}`;
+}
 ---
 
 <Layout title={pageTitle} description={pageDesc}>
@@ -297,9 +309,10 @@ function mediaDirectUrl(img) {
                         <figcaption>
                           <span>{img.language} · {img.variant}</span>
                           <div class="sh-media-share-row">
-                            <button type="button" class="sh-media-share sh-media-share-file" data-share-title={`Sefer Hamidos Truth ${seg.index} ${img.language} image ${img.variant}`} data-share-url={mediaShareUrl(img)} data-media-url={mediaDirectUrl(img)}>Share actual image</button>
-                            <a class="sh-media-share" href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(mediaShareUrl(img))}&text=${encodeURIComponent(`Sefer Hamidos Truth ${seg.index} ${img.language} image ${img.variant}`)}`} target="_blank" rel="noopener">X</a>
-                            <a class="sh-media-share" href={`https://t.me/share/url?url=${encodeURIComponent(mediaShareUrl(img))}&text=${encodeURIComponent(`Sefer Hamidos Truth ${seg.index} ${img.language} image ${img.variant}`)}`} target="_blank" rel="noopener">Telegram</a>
+                            <button type="button" class="sh-media-share sh-media-share-file" data-share-title={mediaShareTitle(seg, img)} data-share-url={mediaShareUrl(img)} data-media-url={mediaDirectUrl(img)}>Share actual image</button>
+                            <a class="sh-media-share" href={xShareHref(mediaShareUrl(img), mediaShareTitle(seg, img))} target="_blank" rel="noopener noreferrer">X</a>
+                            <a class="sh-media-share" href={telegramShareHref(mediaShareUrl(img), mediaShareTitle(seg, img))} target="_blank" rel="noopener noreferrer">Telegram</a>
+                            <a class="sh-media-share" href={whatsappShareHref(mediaShareUrl(img), mediaShareTitle(seg, img))} target="_blank" rel="noopener noreferrer">WhatsApp</a>
                             <button type="button" class="sh-media-share sh-media-copy-image" data-media-url={mediaDirectUrl(img)}>Copy image</button>
                             <a class="sh-media-share" href={img.path} download>Download</a>
                           </div>
@@ -468,7 +481,7 @@ function mediaDirectUrl(img) {
             if (g) return g;
             g = document.createElement('div');
             g.id = 'sh-media-gallery-lightbox';
-            g.innerHTML = '<div class="sh-gallery-backdrop"></div><div class="sh-gallery-panel" role="dialog" aria-modal="true"><button class="sh-gallery-close" type="button">×</button><button class="sh-gallery-prev" type="button">‹</button><div class="sh-gallery-stage"></div><button class="sh-gallery-next" type="button">›</button><div class="sh-gallery-caption"></div><div class="sh-gallery-actions"><a class="sh-gallery-open" target="_blank" rel="noopener">Open</a><a class="sh-gallery-share-x" target="_blank" rel="noopener">X</a><a class="sh-gallery-share-tg" target="_blank" rel="noopener">Telegram</a><a class="sh-gallery-download" download>Download</a></div></div>';
+            g.innerHTML = '<div class="sh-gallery-backdrop"></div><div class="sh-gallery-panel" role="dialog" aria-modal="true"><button class="sh-gallery-close" type="button">×</button><button class="sh-gallery-prev" type="button">‹</button><div class="sh-gallery-stage"></div><button class="sh-gallery-next" type="button">›</button><div class="sh-gallery-caption"></div><div class="sh-gallery-actions"><a class="sh-gallery-open" target="_blank" rel="noopener noreferrer">Open</a><a class="sh-gallery-share-x" target="_blank" rel="noopener noreferrer">X</a><a class="sh-gallery-share-tg" target="_blank" rel="noopener noreferrer">Telegram</a><a class="sh-gallery-share-wa" target="_blank" rel="noopener noreferrer">WhatsApp</a><a class="sh-gallery-download" download>Download</a></div></div>';
             document.body.appendChild(g);
             g.addEventListener('click', function (e) {
               if (e.target.closest('.sh-gallery-close') || e.target.classList.contains('sh-gallery-backdrop')) closeMediaGallery();
@@ -493,8 +506,11 @@ function mediaDirectUrl(img) {
             g.querySelector('.sh-gallery-caption').textContent = (index + 1) + ' / ' + items.length + ' · ' + item.title;
             g.querySelector('.sh-gallery-open').href = item.src;
             g.querySelector('.sh-gallery-download').href = item.src;
-            g.querySelector('.sh-gallery-share-x').href = 'https://twitter.com/intent/tweet?url=' + encodeURIComponent(item.share || item.src) + '&text=' + encodeURIComponent(item.title + ' — ajew.org');
-            g.querySelector('.sh-gallery-share-tg').href = 'https://t.me/share/url?url=' + encodeURIComponent(item.share || item.src) + '&text=' + encodeURIComponent(item.title + ' — ajew.org');
+            var shareText = item.title + ' — ajew.org';
+            var shareTarget = item.share || item.src;
+            g.querySelector('.sh-gallery-share-x').href = 'https://x.com/intent/post?url=' + encodeURIComponent(shareTarget) + '&text=' + encodeURIComponent(shareText);
+            g.querySelector('.sh-gallery-share-tg').href = 'https://t.me/share/url?url=' + encodeURIComponent(shareTarget) + '&text=' + encodeURIComponent(shareText);
+            g.querySelector('.sh-gallery-share-wa').href = 'https://wa.me/?text=' + encodeURIComponent(shareText + ' ' + shareTarget);
             document.body.classList.add('sh-gallery-open');
           }
           function openMediaGalleryFor(src) {

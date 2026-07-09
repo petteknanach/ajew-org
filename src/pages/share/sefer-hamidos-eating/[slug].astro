@@ -22,20 +22,26 @@ const absImage = new URL(img.path, Astro.site).toString();
 const readerUrl = new URL(`/reader/sefer-hamidos/1/${entry.topic || entry.topic_number || 5}#media-${slug}`, Astro.site).toString();
 const title = `Sefer Hamidos ${entry.topic_title || "Media"} ${entry.segment} ${img.language} picture`;
 const desc = img.language === 'hebrew' ? entry.he : entry.en;
+const pageUrl = new URL(Astro.url.pathname, Astro.site).toString();
+const shareText = `${title} — ajew.org`;
+const xHref = `https://x.com/intent/post?url=${encodeURIComponent(pageUrl)}&text=${encodeURIComponent(shareText)}`;
+const telegramHref = `https://t.me/share/url?url=${encodeURIComponent(pageUrl)}&text=${encodeURIComponent(shareText)}`;
+const whatsappHref = `https://wa.me/?text=${encodeURIComponent(`${shareText} ${pageUrl}`)}`;
 ---
 
 <Layout title={title} description={desc} image={img.path} type="article">
   <main style="max-width: 980px; margin: 0 auto; padding: 2rem 1rem; text-align: center;">
     <p><a href={readerUrl}>← Back to the teaching</a></p>
     <h1>{title}</h1>
-    <p style="color:#666;">X / Telegram buttons share this preview page. “Share actual image” sends the image file itself through the phone share sheet when the app supports image files.</p>
+    <p style="color:#666;">X, Telegram, and WhatsApp share this picture preview page. “Share actual image” sends the image file itself through the phone share sheet when supported.</p>
     <p style="color:#666;">Direct image: <a href={absImage}>{absImage}</a></p>
     <img id="actual-image" src={img.path} alt={title} style="max-width:100%;height:auto;border-radius:18px;box-shadow:0 16px 44px rgba(0,0,0,.18);" />
     <p class="share-actions" style="margin-top:1rem; display:flex; gap:.5rem; flex-wrap:wrap; justify-content:center;">
       <button type="button" id="share-file" data-image={absImage} data-title={title}>Share actual image</button>
       <button type="button" id="copy-image" data-image={absImage}>Copy image</button>
-      <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(Astro.url.toString())}&text=${encodeURIComponent(title)}`} target="_blank" rel="noopener">X preview link</a>
-      <a href={`https://t.me/share/url?url=${encodeURIComponent(Astro.url.toString())}&text=${encodeURIComponent(title)}`} target="_blank" rel="noopener">Telegram preview link</a>
+      <a href={xHref} target="_blank" rel="noopener noreferrer">X</a>
+      <a href={telegramHref} target="_blank" rel="noopener noreferrer">Telegram</a>
+      <a href={whatsappHref} target="_blank" rel="noopener noreferrer">WhatsApp</a>
       <a href={img.path} download>Download image</a>
     </p>
     <style>
