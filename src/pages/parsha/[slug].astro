@@ -180,22 +180,31 @@ if (CHUMASH_LH_READER[slug]) {
   }
 }
 
-// Special Mattos/Masei AJew packet from corrected OCR + English translation files.
+// Special AJew parsha packets from corrected OCR + English translation files.
 let specialParshaPacket = null;
 let specialParshaEntries = [];
-if (slug === 'matot' || slug === 'masei') {
-  const specialPath = path.join(process.cwd(), 'public', 'data', 'parsha-special', 'mattos-masei.json');
+const SPECIAL_PARSHA_PACKET_FILES: Record<string, string> = {
+  matot: 'mattos-masei.json',
+  masei: 'mattos-masei.json',
+  devarim: 'devarim.json',
+};
+const specialPacketFile = SPECIAL_PARSHA_PACKET_FILES[slug];
+if (specialPacketFile) {
+  const specialPath = path.join(process.cwd(), 'public', 'data', 'parsha-special', specialPacketFile);
   try {
     specialParshaPacket = JSON.parse(fs.readFileSync(specialPath, 'utf8'));
     specialParshaEntries = (specialParshaPacket.entries || []).filter((entry) => entry.parsha === slug);
   } catch (e) {
-    console.warn(`Mattos/Masei special packet not found: ${specialPath}`);
+    console.warn(`Special parsha packet not found: ${specialPath}`);
   }
 }
 const hasSpecialParshaPacket = !!specialParshaPacket && specialParshaEntries.length > 0;
 const specialPdfPath = hasSpecialParshaPacket
-  ? (slug === 'matot' ? specialParshaPacket.sourceFiles.pdfMatot : specialParshaPacket.sourceFiles.pdfMasei)
+  ? (specialParshaPacket.sourceFiles.pdf || (slug === 'matot' ? specialParshaPacket.sourceFiles.pdfMatot : specialParshaPacket.sourceFiles.pdfMasei))
   : null;
+const specialParshaDisplay = hasSpecialParshaPacket
+  ? (specialParshaPacket.hebrewTitle || parsha.he) + ' — ' + (slug === 'matot' ? 'Parashas Mattos' : slug === 'masei' ? 'Parashas Masei' : 'Parashas Devarim')
+  : '';
 
 // Chumash names
 const CHUMASH_NAMES = {
@@ -271,7 +280,7 @@ const breadcrumbData = JSON.stringify({
           <div class="packet-head">
             <div>
               <div class="packet-kicker">AJew study packet</div>
-              <h2>{slug === 'matot' ? 'מטות' : 'מסעי'} — {slug === 'matot' ? 'Parashas Mattos' : 'Parashas Masei'}</h2>
+              <h2>{specialParshaDisplay}</h2>
               <p>{specialParshaPacket.subtitle}</p>
             </div>
             <div class="packet-count">{specialParshaEntries.length} selections</div>
@@ -299,6 +308,15 @@ const breadcrumbData = JSON.stringify({
             <summary>Preview PDF on this page</summary>
             <iframe src={specialPdfPath} title={`${parsha.en} AJew PDF`}></iframe>
           </details>
+
+          {(specialParshaPacket.summary?.en || specialParshaPacket.map?.en) && (
+            <div class="packet-overview">
+              {specialParshaPacket.summary?.en && <p class="overview-en">{specialParshaPacket.summary.en}</p>}
+              {specialParshaPacket.summary?.he && <p class="overview-he" dir="rtl">{specialParshaPacket.summary.he}</p>}
+              {specialParshaPacket.map?.en && <p class="overview-map overview-en">{specialParshaPacket.map.en}</p>}
+              {specialParshaPacket.map?.he && <p class="overview-map overview-he" dir="rtl">{specialParshaPacket.map.he}</p>}
+            </div>
+          )}
 
           <div class="packet-tabs" role="tablist" aria-label="Study packet text view">
             <button type="button" class="packet-tab active" data-packet-lang="en">English</button>
@@ -895,6 +913,26 @@ const breadcrumbData = JSON.stringify({
       font-weight: 700;
     }
     .packet-pdf-preview iframe { width: 100%; height: 70vh; min-height: 420px; border: 0; display: block; }
+    .packet-overview {
+      margin: 14px 0 18px;
+      padding: 16px;
+      border-radius: 14px;
+      background: #fff;
+      border: 1px solid #eadfc9;
+      display: grid;
+      gap: 10px;
+    }
+    .overview-en, .overview-he { margin: 0; line-height: 1.65; color: #334155; }
+    .overview-he { font-family: 'Frank Ruhl Libre', 'Times New Roman', serif; font-size: 1.08em; text-align: right; }
+    .overview-map {
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #f8f5ef;
+      color: #1a365d;
+      font-weight: 700;
+    }
+    .special-parsha-packet[data-view="en"] .overview-he { display: none; }
+    .special-parsha-packet[data-view="he"] .overview-en { display: none; }
     .packet-tabs {
       display: flex;
       justify-content: center;
