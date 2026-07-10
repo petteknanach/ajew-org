@@ -32,6 +32,7 @@ def entries(path, lang):
             # Keep the public page clean: present these as study aids, not translator/editor notes.
             text = re.sub(r'^(?:Translator[’\']s Addition|Translator’s Addition|Translator\'s Addition)\s*[—-]\s*', '', text).strip()
             text = re.sub(r'^תוספת מאת המתרגם\s*[—-]\s*', '', text).strip()
+            text = re.sub(r'\s*[א-ת״׳"\s]+גרסאות לקריאת מכונה\s*/\s*AI agents:\s*$', '', text).strip()
             out.append({'number':n,'parsha':parsha,'heading':last_heading,'text':text,'type':typ})
             continue
         # skip cover/introduction lines; keep actual source headings after parsha begins
