@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 export function getStaticPaths() {
-  const manifestPath = path.join(process.cwd(), 'public/images/sefer-hamidos-eating/manifest.json');
+  const manifestPath = path.join(process.cwd(), 'public/images/sefer-hamidos-israel-land-of/manifest.json');
   const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
   const paths = [];
   for (const entry of manifest.entries || []) {
