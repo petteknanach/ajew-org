@@ -57,19 +57,31 @@ const structuredData = torahData ? JSON.stringify({
   "url": `https://ajew.org/reader/tanach-devarim/${partNum}/${torahNum}`
 }) : '';
 
-// LN verse-by-verse commentary
+// Commentary sidebar: Likutay Nanach plus AJew parsha packet for Devarim.
 const lnBookSlug = 'tanach-devarim';
-const commentaryEntry = torahData ? {
-  related_commentaries: [
-    {
-      book: "likutay-nanach",
-      section: lnBookSlug,
-      label: "Likutay Nanach",
-      sectionTitle: "Verse-by-Verse",
-      url: "/reader/likutay-nanach/tanach/tanach-devarim-${torahNum}.json"
-    }
-  ]
-} : null;
+const parshaPacket = torahNum >= 1 && torahNum <= 3
+  ? { slug: 'devarim', label: 'AJew Devarim', title: 'Parashas Devarim Study Packet', readerUrl: '/parsha/devarim/#study-packet' }
+  : null;
+const relatedCommentaries = torahData ? [
+  {
+    book: "likutay-nanach",
+    section: lnBookSlug,
+    label: "Likutay Nanach",
+    sectionTitle: "Verse-by-Verse",
+    url: `/reader/likutay-nanach/tanach/tanach-devarim-${torahNum}.json`,
+    readerUrl: `/reader/likutay-nanach/tanach/tanach-devarim-${torahNum}.json`
+  },
+  ...(parshaPacket ? [{
+    book: "parsha-packets",
+    section: parshaPacket.slug,
+    label: parshaPacket.label,
+    sectionTitle: parshaPacket.title,
+    url: `/reader/parsha-packets/${parshaPacket.slug}.json`,
+    readerUrl: parshaPacket.readerUrl,
+    openLabel: 'Open parsha page ↗'
+  }] : [])
+] : [];
+const commentaryEntry = torahData ? { related_commentaries: relatedCommentaries } : null;
 const breadcrumbData = torahData ? JSON.stringify({
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",

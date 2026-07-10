@@ -57,19 +57,33 @@ const structuredData = torahData ? JSON.stringify({
   "url": `https://ajew.org/reader/tanach-bamidbar/${partNum}/${torahNum}`
 }) : '';
 
-// LN verse-by-verse commentary
+// Commentary sidebar: Likutay Nanach plus AJew parsha packets for Mattos/Masei.
 const lnBookSlug = 'tanach-bamidbar';
-const commentaryEntry = torahData ? {
-  related_commentaries: [
-    {
-      book: "likutay-nanach",
-      section: lnBookSlug,
-      label: "Likutay Nanach",
-      sectionTitle: "Verse-by-Verse",
-      url: "/reader/likutay-nanach/tanach/tanach-bamidbar-${torahNum}.json"
-    }
-  ]
-} : null;
+const parshaPacket = torahNum >= 30 && torahNum <= 32
+  ? { slug: 'matot', label: 'AJew Mattos', title: 'Parashas Mattos Study Packet', readerUrl: '/parsha/matot/#study-packet' }
+  : (torahNum >= 33 && torahNum <= 36
+    ? { slug: 'masei', label: 'AJew Masei', title: 'Parashas Masei Study Packet', readerUrl: '/parsha/masei/#study-packet' }
+    : null);
+const relatedCommentaries = torahData ? [
+  {
+    book: "likutay-nanach",
+    section: lnBookSlug,
+    label: "Likutay Nanach",
+    sectionTitle: "Verse-by-Verse",
+    url: `/reader/likutay-nanach/tanach/tanach-bamidbar-${torahNum}.json`,
+    readerUrl: `/reader/likutay-nanach/tanach/tanach-bamidbar-${torahNum}.json`
+  },
+  ...(parshaPacket ? [{
+    book: "parsha-packets",
+    section: parshaPacket.slug,
+    label: parshaPacket.label,
+    sectionTitle: parshaPacket.title,
+    url: `/reader/parsha-packets/${parshaPacket.slug}.json`,
+    readerUrl: parshaPacket.readerUrl,
+    openLabel: 'Open parsha page ↗'
+  }] : [])
+] : [];
+const commentaryEntry = torahData ? { related_commentaries: relatedCommentaries } : null;
 const breadcrumbData = torahData ? JSON.stringify({
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",

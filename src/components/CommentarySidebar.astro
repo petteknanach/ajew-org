@@ -543,20 +543,23 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
         var head = document.createElement('div');
         head.className = 'commentary-sidebar-section-head';
         var title = document.createElement('h3');
-        title.lang = 'he';
-        title.dir = 'rtl';
-        title.textContent = def.sectionTitle || data.hebrewTitle || def.displayLabel;
+        var titleText = def.sectionTitle || data.hebrewTitle || data.title || def.displayLabel;
+        title.textContent = titleText;
+        if (/[\u0590-\u05ff]/.test(titleText)) {
+          title.lang = 'he';
+          title.dir = 'rtl';
+        }
         var sub = document.createElement('div');
         sub.className = 'commentary-sidebar-section-sub';
         sub.textContent = def.shortLabel + (def.sectionNumber ? ' \u00B7 \u00A7' + def.sectionNumber : '');
         var link = document.createElement('a');
         link.className = 'commentary-sidebar-open-full';
         link.href = def.readerUrl || def.url;
-        link.textContent = 'Open full section \u2197';
+        link.textContent = def.openLabel || 'Open full section \u2197';
         link.setAttribute('rel', 'noopener');
         head.appendChild(title);
         head.appendChild(sub);
-        head.appendChild(link);
+        if (link.href) head.appendChild(link);
         body.appendChild(head);
 
         var segs = Array.isArray(data && data.segments) ? data.segments : [];
@@ -580,50 +583,38 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
           idxSpan.textContent = String(seg.index || '');
           pair.appendChild(idxSpan);
 
-          if (seg.he && relShowHe) {
-            var pHe = document.createElement('p');
-            pHe.className = 'commentary-sidebar-he';
-            pHe.lang = 'he';
-            pHe.dir = 'rtl';
-            pHe.textContent = seg.he;
-            pair.appendChild(pHe);
+          var segHe = seg.he || seg.he_nikud || seg.commentary_he || seg.verse || '';
+          var segEn = seg.en || seg.commentary_en || '';
+          function appendParagraphs(text, className, lang, dir) {
+            String(text || '').split(/\n{2,}/).forEach(function (para) {
+              var trimmed = para.replace(/\s+$/g, '').replace(/^\s+/g, '');
+              if (!trimmed) return;
+              var p = document.createElement('p');
+              p.className = className;
+              if (lang) p.lang = lang;
+              if (dir) p.dir = dir;
+              p.textContent = trimmed;
+              pair.appendChild(p);
+            });
           }
-          if (seg.en && relShowEn) {
-            var pEn = document.createElement('p');
-            pEn.className = 'commentary-sidebar-en';
-            pEn.textContent = seg.en;
-            pair.appendChild(pEn);
-          }
+          if (segHe && relShowHe) appendParagraphs(segHe, 'commentary-sidebar-he', 'he', 'rtl');
+          if (segEn && relShowEn) appendParagraphs(segEn, 'commentary-sidebar-en', 'en', '');
           // Fallbacks when the user's language mode hides everything
           var nothingShownRel = (pair.children.length === 1);
           if (nothingShownRel) {
-            if (seg.he && !relShowHe && seg.en) {
-              var pE2r = document.createElement('p');
-              pE2r.className = 'commentary-sidebar-en';
-              pE2r.textContent = seg.en;
-              pair.appendChild(pE2r);
-            } else if (seg.en && !relShowEn && seg.he) {
-              var pH2r = document.createElement('p');
-              pH2r.className = 'commentary-sidebar-he';
-              pH2r.lang = 'he';
-              pH2r.dir = 'rtl';
-              pH2r.textContent = seg.he;
-              pair.appendChild(pH2r);
-            } else if (!seg.he && !seg.en) {
+            if (segHe && !relShowHe && segEn) {
+              appendParagraphs(segEn, 'commentary-sidebar-en', 'en', '');
+            } else if (segEn && !relShowEn && segHe) {
+              appendParagraphs(segHe, 'commentary-sidebar-he', 'he', 'rtl');
+            } else if (!segHe && !segEn) {
               var pEmpty = document.createElement('p');
               pEmpty.className = 'commentary-sidebar-en empty';
               pEmpty.textContent = 'Translation not yet available.';
               pair.appendChild(pEmpty);
-            } else if (seg.he && !relShowHe && !seg.en) {
-              var pEmptyH = document.createElement('p');
-              pEmptyH.className = 'commentary-sidebar-empty-layer';
-              pEmptyH.textContent = '— Hebrew-only source. Switch reader to Hebrew or Both to view. —';
-              pair.appendChild(pEmptyH);
-            } else if (seg.en && !relShowEn && !seg.he) {
-              var pEmptyE = document.createElement('p');
-              pEmptyE.className = 'commentary-sidebar-empty-layer';
-              pEmptyE.textContent = '— English-only source. Switch reader to English or Both to view. —';
-              pair.appendChild(pEmptyE);
+            } else if (segHe && !relShowHe && !segEn) {
+              appendParagraphs(segHe, 'commentary-sidebar-he', 'he', 'rtl');
+            } else if (segEn && !relShowEn && !segHe) {
+              appendParagraphs(segEn, 'commentary-sidebar-en', 'en', '');
             }
           }
           list.appendChild(pair);
