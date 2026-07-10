@@ -192,6 +192,7 @@ const SPECIAL_PARSHA_PACKET_FILES: Record<string, string> = {
   reeh: 'riay.json',
   shoftim: 'shoftim.json',
   'ki-teitzei': 'kee-saitzay.json',
+  'ki-tavo': 'kee-savoa.json',
 };
 const specialPacketFile = SPECIAL_PARSHA_PACKET_FILES[slug];
 if (specialPacketFile) {
@@ -216,7 +217,9 @@ const SPECIAL_PARSHA_DISPLAY_EN: Record<string, string> = {
   reeh: 'Parashas Ri’ay',
   shoftim: 'Parashas Shoftim',
   'ki-teitzei': 'Parashas Kee Saitzay',
+  'ki-tavo': 'Parashas Kee Savoa',
 };
+const specialParshaDisplayName = (SPECIAL_PARSHA_DISPLAY_EN[slug] || `Parashas ${parsha.en}`).replace(/^Parashas\s+/, '');
 const specialParshaDisplay = hasSpecialParshaPacket
   ? (specialParshaPacket.hebrewTitle || parsha.he) + ' — ' + (SPECIAL_PARSHA_DISPLAY_EN[slug] || `Parashas ${parsha.en}`)
   : '';
@@ -233,9 +236,9 @@ const CHUMASH_NAMES = {
 const structuredData = JSON.stringify({
   "@context": "https://schema.org",
   "@type": "Article",
-  "headline": `Parashat ${parsha.en} (${parsha.he}) - Breslov Teachings`,
+  "headline": `Parashat ${specialParshaDisplayName} (${parsha.he}) - Breslov Teachings`,
   "alternativeHeadline": parsha.he,
-  "description": `${parsha.totalConnections} Breslov Torah teachings on Parashat ${parsha.en}. ${parsha.ref}. Insights from Likutay Moharan, Likutay Halachos, Likutay Tefilos, and more.`,
+  "description": `${parsha.totalConnections} Breslov Torah teachings on Parashat ${specialParshaDisplayName}. ${parsha.ref}. Insights from Likutay Moharan, Likutay Halachos, Likutay Tefilos, and more.`,
   "author": { "@type": "Organization", "name": "ajew.org - Breslov Torah Library" },
   "publisher": { "@type": "Organization", "name": "ajew.org", "url": "https://ajew.org" },
   "inLanguage": ["he", "en"],
@@ -245,7 +248,7 @@ const structuredData = JSON.stringify({
     "name": `Torah - ${CHUMASH_NAMES[parsha.chumash] || parsha.chumash}`,
     "author": { "@type": "Organization", "name": "Breslov Tradition" }
   },
-  "keywords": `parsha, ${parsha.en}, ${parsha.he}, ${CHUMASH_NAMES[parsha.chumash] || ''}, Torah, Breslov, Rabbi Nachman, ${parsha.chumash || ''}`,
+  "keywords": `parsha, ${specialParshaDisplayName}, ${parsha.he}, ${CHUMASH_NAMES[parsha.chumash] || ''}, Torah, Breslov, Rabbi Nachman, ${parsha.chumash || ''}`,
   "url": `https://ajew.org/parsha/${slug}`,
   "datePublished": "2024-01-01",
   "wordCount": parsha.totalConnections * 50
@@ -257,12 +260,12 @@ const breadcrumbData = JSON.stringify({
   "itemListElement": [
     { "@type": "ListItem", "position": 1, "name": "Parsha", "item": "https://ajew.org/parsha" },
     { "@type": "ListItem", "position": 2, "name": CHUMASH_NAMES[parsha.chumash] || parsha.chumash, "item": `https://ajew.org/parsha` },
-    { "@type": "ListItem", "position": 3, "name": `${parsha.he} - ${parsha.en}` }
+    { "@type": "ListItem", "position": 3, "name": `${parsha.he} - ${specialParshaDisplayName}` }
   ]
 });
 ---
 
-<Layout title={`Parashat ${parsha.en} - Breslov Teachings`} description={`${parsha.totalConnections} Breslov teachings connected to Parashat ${parsha.en} (${parsha.he}). ${parsha.ref}.`}>
+<Layout title={`Parashat ${specialParshaDisplayName} - Breslov Teachings`} description={`${parsha.totalConnections} Breslov teachings connected to Parashat ${specialParshaDisplayName} (${parsha.he}). ${parsha.ref}.`}>
   <script type="application/ld+json" set:html={structuredData} slot="head" />
   <script type="application/ld+json" set:html={breadcrumbData} slot="head" />
   <section class="parsha-detail">
@@ -273,14 +276,14 @@ const breadcrumbData = JSON.stringify({
         <span>/</span>
         <span>{CHUMASH_NAMES[parsha.chumash]}</span>
         <span>/</span>
-        <span>{parsha.en}</span>
+        <span>{specialParshaDisplayName}</span>
       </nav>
 
       <!-- Header card -->
       <div class="parsha-hero">
         <div class="hero-name">
           <span class="hero-he">{parsha.he}</span>
-          <span class="hero-en">Parashat {parsha.en}</span>
+          <span class="hero-en">Parashat {specialParshaDisplayName}</span>
         </div>
         <div class="hero-ref">{parsha.ref}</div>
         <div class="hero-stats">{parsha.totalConnections} Breslov teachings found</div>
@@ -321,7 +324,7 @@ const breadcrumbData = JSON.stringify({
 
           <details class="packet-pdf-preview">
             <summary>Preview PDF on this page</summary>
-            <iframe src={specialPdfPath} title={`${parsha.en} AJew PDF`}></iframe>
+            <iframe src={specialPdfPath} title={`${specialParshaDisplayName} AJew PDF`}></iframe>
           </details>
 
           {(specialParshaPacket.summary?.en || specialParshaPacket.map?.en) && (
@@ -362,7 +365,7 @@ const breadcrumbData = JSON.stringify({
           <h2>חומש עם ליקוטי הלכות</h2>
           <p class="pdf-subtitle">Chumash with Likutay Halachos - curated selections for this parsha</p>
           <div class="pdf-embed">
-            <iframe src={pdfPath} title={`Likutay Halachos on Parashat ${parsha.en}`}></iframe>
+            <iframe src={pdfPath} title={`Likutay Halachos on Parashat ${specialParshaDisplayName}`}></iframe>
           </div>
           <div class="pdf-actions">
             {chumashLhReaderUrl && <a href={chumashLhReaderUrl} class="pdf-download" style="background: var(--accent, #2563eb); color: white;">Read as Text in Reader</a>}
@@ -403,7 +406,7 @@ const breadcrumbData = JSON.stringify({
       
       <!-- More Teachings from Text Search -->
       <div class="teachings-section">
-        <h2>{hasPdf ? 'More Breslov Teachings Mentioning This Parsha' : `Breslov Teachings on Parashat ${parsha.en}`}</h2>
+        <h2>{hasPdf ? 'More Breslov Teachings Mentioning This Parsha' : `Breslov Teachings on Parashat ${specialParshaDisplayName}`}</h2>
 
         {sortedAuthors.map(author => {
           const books = authorGroups[author];
