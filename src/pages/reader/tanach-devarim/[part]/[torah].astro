@@ -57,7 +57,7 @@ const structuredData = torahData ? JSON.stringify({
   "url": `https://ajew.org/reader/tanach-devarim/${partNum}/${torahNum}`
 }) : '';
 
-// Commentary sidebar: Likutay Nanach plus AJew parsha packets for Devarim/Vaeschanan/Aikev/Ri’ay.
+// Commentary sidebar: Likutay Nanach plus AJew parsha packets for Devarim/Vaeschanan/Aikev/Ri’ay/Shoftim.
 const lnBookSlug = 'tanach-devarim';
 const parshaPackets = [
   ...(torahNum >= 1 && torahNum <= 3
@@ -71,6 +71,9 @@ const parshaPackets = [
     : []),
   ...(torahNum >= 11 && torahNum <= 16
     ? [{ slug: 'riay', label: 'AJew Ri’ay', title: 'Parashas Ri’ay Study Packet', readerUrl: '/parsha/reeh/#study-packet' }]
+    : []),
+  ...(torahNum >= 16 && torahNum <= 21
+    ? [{ slug: 'shoftim', label: 'AJew Shoftim', title: 'Parashas Shoftim Study Packet', readerUrl: '/parsha/shoftim/#study-packet' }]
     : []),
 ];
 const relatedCommentaries = torahData ? [
