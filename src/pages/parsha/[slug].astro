@@ -180,6 +180,23 @@ if (CHUMASH_LH_READER[slug]) {
   }
 }
 
+// Special Mattos/Masei AJew packet from corrected OCR + English translation files.
+let specialParshaPacket = null;
+let specialParshaEntries = [];
+if (slug === 'matot' || slug === 'masei') {
+  const specialPath = path.join(process.cwd(), 'public', 'data', 'parsha-special', 'mattos-masei.json');
+  try {
+    specialParshaPacket = JSON.parse(fs.readFileSync(specialPath, 'utf8'));
+    specialParshaEntries = (specialParshaPacket.entries || []).filter((entry) => entry.parsha === slug);
+  } catch (e) {
+    console.warn(`Mattos/Masei special packet not found: ${specialPath}`);
+  }
+}
+const hasSpecialParshaPacket = !!specialParshaPacket && specialParshaEntries.length > 0;
+const specialPdfPath = hasSpecialParshaPacket
+  ? (slug === 'matot' ? specialParshaPacket.sourceFiles.pdfMatot : specialParshaPacket.sourceFiles.pdfMasei)
+  : null;
+
 // Chumash names
 const CHUMASH_NAMES = {
   'bereishit': 'Beraishis',
@@ -249,8 +266,65 @@ const breadcrumbData = JSON.stringify({
         </div>
       </div>
 
+      {hasSpecialParshaPacket && (
+        <section class="special-parsha-packet" id="study-packet">
+          <div class="packet-head">
+            <div>
+              <div class="packet-kicker">AJew study packet</div>
+              <h2>{slug === 'matot' ? 'מטות' : 'מסעי'} — {slug === 'matot' ? 'Parashas Mattos' : 'Parashas Masei'}</h2>
+              <p>{specialParshaPacket.subtitle}</p>
+            </div>
+            <div class="packet-count">{specialParshaEntries.length} selections</div>
+          </div>
+
+          <div class="packet-choice-grid" aria-label="Choose format">
+            <a href={specialPdfPath} class="packet-choice pdf" target="_blank" rel="noopener">
+              <span class="choice-icon">📄</span>
+              <strong>PDF</strong>
+              <small>Open the original printable parsha PDF</small>
+            </a>
+            <a href="#hebrew-text" class="packet-choice he">
+              <span class="choice-icon">א</span>
+              <strong>Hebrew Text</strong>
+              <small>Corrected OCR text from the parsha PDF</small>
+            </a>
+            <a href="#english-text" class="packet-choice en">
+              <span class="choice-icon">A</span>
+              <strong>English</strong>
+              <small>Formal-equivalence translation</small>
+            </a>
+          </div>
+
+          <details class="packet-pdf-preview">
+            <summary>Preview PDF on this page</summary>
+            <iframe src={specialPdfPath} title={`${parsha.en} AJew PDF`}></iframe>
+          </details>
+
+          <div class="packet-tabs" role="tablist" aria-label="Study packet text view">
+            <button type="button" class="packet-tab active" data-packet-lang="en">English</button>
+            <button type="button" class="packet-tab" data-packet-lang="he">עברית</button>
+            <button type="button" class="packet-tab" data-packet-lang="both">Both</button>
+          </div>
+
+          <div class="packet-content" id="english-text">
+            <span id="hebrew-text" class="packet-anchor"></span>
+            {specialParshaEntries.map((entry) => (
+              <article class={`packet-entry ${entry.type !== 'teaching' ? 'packet-aid' : ''}`} id={`packet-${entry.number}`}>
+                <div class="entry-number">{entry.number}</div>
+                <div class="entry-main">
+                  {entry.enHeading && <h3 class="entry-heading-en">{entry.enHeading}</h3>}
+                  {entry.heHeading && <h3 class="entry-heading-he" dir="rtl">{entry.heHeading}</h3>}
+                  <div class="entry-text entry-en" lang="en" set:html={entry.en.replace(/\n/g, '<br>')} />
+                  <div class="entry-text entry-he" lang="he" dir="rtl" set:html={entry.he.replace(/\n/g, '<br>')} />
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
+
       <!-- Chumash with Likutay Halachos PDF -->
-      {hasPdf && (
+      {hasPdf && !hasSpecialParshaPacket && (
         <div class="pdf-section">
           <h2>חומש עם ליקוטי הלכות</h2>
           <p class="pdf-subtitle">Chumash with Likutay Halachos - curated selections for this parsha</p>
@@ -265,7 +339,7 @@ const breadcrumbData = JSON.stringify({
       )}
 
       <!-- Chumash-LH Direct Text Display (English default) -->
-      {chumashLhData && (
+      {chumashLhData && !hasSpecialParshaPacket && (
         <div class="chumash-lh-text-section">
           <h3>English Text (from Chumash with Likutey Halachos)</h3>
           
@@ -734,6 +808,165 @@ const breadcrumbData = JSON.stringify({
     /* Language visibility */
     .seg-he.hidden { display: none; }
     .seg-en.hidden { display: none; }
+
+    /* Special Mattos/Masei packet */
+    .special-parsha-packet {
+      margin: 0 0 32px;
+      padding: 20px;
+      background: linear-gradient(180deg, #fffaf0 0%, #f8f5ef 100%);
+      border: 1px solid #e0d6c2;
+      border-radius: 18px;
+      box-shadow: 0 12px 30px rgba(26, 54, 93, 0.08);
+    }
+    .packet-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: flex-start;
+      margin-bottom: 18px;
+    }
+    .packet-kicker {
+      color: #a15c18;
+      font-size: 0.75em;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .packet-head h2 {
+      margin: 0 0 6px;
+      color: #1a365d;
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 1.7em;
+    }
+    .packet-head p { margin: 0; color: #596579; line-height: 1.5; }
+    .packet-count {
+      white-space: nowrap;
+      background: #1a365d;
+      color: white;
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: .85em;
+      font-weight: 700;
+    }
+    .packet-choice-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin: 16px 0;
+    }
+    .packet-choice {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-height: 118px;
+      padding: 16px;
+      border-radius: 14px;
+      text-decoration: none;
+      color: #1a365d;
+      background: white;
+      border: 1px solid #e7d9bd;
+      transition: transform .15s, box-shadow .15s, border-color .15s;
+    }
+    .packet-choice:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(26,54,93,.12); border-color: #d69e2e; }
+    .choice-icon {
+      width: 34px;
+      height: 34px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: #f0ebe0;
+      font-weight: 800;
+      font-size: 1.1em;
+    }
+    .packet-choice small { color: #6b7280; line-height: 1.35; }
+    .packet-pdf-preview {
+      margin: 14px 0;
+      border: 1px solid #e0d6c2;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .packet-pdf-preview summary {
+      cursor: pointer;
+      padding: 12px 16px;
+      color: #1a365d;
+      font-weight: 700;
+    }
+    .packet-pdf-preview iframe { width: 100%; height: 70vh; min-height: 420px; border: 0; display: block; }
+    .packet-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin: 18px 0;
+      position: sticky;
+      top: 8px;
+      z-index: 3;
+    }
+    .packet-tab {
+      border: 1px solid #1a365d;
+      background: white;
+      color: #1a365d;
+      border-radius: 999px;
+      padding: 9px 18px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .packet-tab.active { background: #1a365d; color: white; }
+    .packet-content { display: grid; gap: 14px; }
+    .packet-anchor { position: relative; top: -80px; }
+    .packet-entry {
+      display: grid;
+      grid-template-columns: 44px 1fr;
+      gap: 14px;
+      padding: 16px;
+      background: white;
+      border: 1px solid #eadfc9;
+      border-radius: 14px;
+    }
+    .packet-aid { background: #f5fbff; border-color: #cfe7ff; }
+    .entry-number {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #d69e2e;
+      color: #1a365d;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+    }
+    .entry-heading-en, .entry-heading-he {
+      margin: 0 0 8px;
+      color: #1a365d;
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 1.08em;
+    }
+    .entry-heading-he { text-align: right; }
+    .entry-text { line-height: 1.75; color: #2f3744; }
+    .entry-he {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px dashed #e0d6c2;
+      font-family: 'Frank Ruhl Libre', 'Times New Roman', serif;
+      font-size: 1.12em;
+      text-align: right;
+    }
+    .special-parsha-packet[data-view="en"] .entry-he,
+    .special-parsha-packet[data-view="en"] .entry-heading-he { display: none; }
+    .special-parsha-packet[data-view="he"] .entry-en,
+    .special-parsha-packet[data-view="he"] .entry-heading-en { display: none; }
+    .special-parsha-packet[data-view="he"] .entry-he { margin-top: 0; padding-top: 0; border-top: 0; }
+
+    @media (max-width: 700px) {
+      .packet-head { flex-direction: column; }
+      .packet-choice-grid { grid-template-columns: 1fr; }
+      .packet-tabs { position: static; flex-wrap: wrap; }
+      .packet-entry { grid-template-columns: 1fr; }
+      .entry-number { width: auto; border-radius: 999px; }
+    }
+
   </style>
 
   <script is:inline>
@@ -765,5 +998,18 @@ const breadcrumbData = JSON.stringify({
     
     // Set English as default on page load
     toggleLanguage('en');
+
+    function setPacketLanguage(lang) {
+      const packet = document.querySelector('.special-parsha-packet');
+      if (!packet) return;
+      packet.dataset.view = lang;
+      document.querySelectorAll('.packet-tab').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.packetLang === lang);
+      });
+    }
+    document.querySelectorAll('.packet-tab').forEach(btn => {
+      btn.addEventListener('click', () => setPacketLanguage(btn.dataset.packetLang));
+    });
+    setPacketLanguage('en');
   </script>
 </Layout>
