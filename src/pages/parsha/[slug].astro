@@ -193,6 +193,9 @@ const SPECIAL_PARSHA_PACKET_FILES: Record<string, string> = {
   shoftim: 'shoftim.json',
   'ki-teitzei': 'kee-saitzay.json',
   'ki-tavo': 'kee-savoa.json',
+  nitzavim: 'nitzavim.json',
+  vayeilech: 'vayeilech.json',
+  haazinu: 'haazinu.json',
 };
 const specialPacketFile = SPECIAL_PARSHA_PACKET_FILES[slug];
 if (specialPacketFile) {
@@ -218,6 +221,9 @@ const SPECIAL_PARSHA_DISPLAY_EN: Record<string, string> = {
   shoftim: 'Parashas Shoftim',
   'ki-teitzei': 'Parashas Kee Saitzay',
   'ki-tavo': 'Parashas Kee Savoa',
+  nitzavim: 'Parashas Nitzavim',
+  vayeilech: 'Parashas Vayailech',
+  haazinu: "Parashas Ha'azinu",
 };
 const specialParshaDisplayName = (SPECIAL_PARSHA_DISPLAY_EN[slug] || `Parashas ${parsha.en}`).replace(/^Parashas\s+/, '');
 const specialParshaDisplay = hasSpecialParshaPacket

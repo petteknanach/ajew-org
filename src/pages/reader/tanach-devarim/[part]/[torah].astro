@@ -57,7 +57,7 @@ const structuredData = torahData ? JSON.stringify({
   "url": `https://ajew.org/reader/tanach-devarim/${partNum}/${torahNum}`
 }) : '';
 
-// Commentary sidebar: Likutay Nanach plus AJew parsha packets for Devarim/Vaeschanan/Aikev/Ri’ay/Shoftim/Kee Saitzay/Kee Savoa.
+// Commentary sidebar: Likutay Nanach plus AJew parsha packets for Devarim/Vaeschanan/Aikev/Ri’ay/Shoftim/Kee Saitzay/Kee Savoa/Nitzavim/Vayailech/Haazinu.
 const lnBookSlug = 'tanach-devarim';
 const parshaPackets = [
   ...(torahNum >= 1 && torahNum <= 3
@@ -80,6 +80,15 @@ const parshaPackets = [
     : []),
   ...(torahNum >= 26 && torahNum <= 29
     ? [{ slug: 'kee-savoa', label: 'AJew Kee Savoa', title: 'Parashas Kee Savoa Study Packet', readerUrl: '/parsha/ki-tavo/#study-packet' }]
+    : []),
+  ...(torahNum >= 29 && torahNum <= 30
+    ? [{ slug: 'nitzavim', label: 'AJew Nitzavim', title: 'Parashas Nitzavim Study Packet', readerUrl: '/parsha/nitzavim/#study-packet' }]
+    : []),
+  ...(torahNum === 31
+    ? [{ slug: 'vayeilech', label: 'AJew Vayailech', title: 'Parashas Vayailech Study Packet', readerUrl: '/parsha/vayeilech/#study-packet' }]
+    : []),
+  ...(torahNum === 32
+    ? [{ slug: 'haazinu', label: "AJew Ha'azinu", title: "Parashas Ha'azinu Study Packet", readerUrl: '/parsha/haazinu/#study-packet' }]
     : []),
 ];
 const relatedCommentaries = torahData ? [
