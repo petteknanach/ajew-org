@@ -191,6 +191,7 @@ const SPECIAL_PARSHA_PACKET_FILES: Record<string, string> = {
   eikev: 'aikev.json',
   reeh: 'riay.json',
   shoftim: 'shoftim.json',
+  'ki-teitzei': 'kee-saitzay.json',
 };
 const specialPacketFile = SPECIAL_PARSHA_PACKET_FILES[slug];
 if (specialPacketFile) {
@@ -214,6 +215,7 @@ const SPECIAL_PARSHA_DISPLAY_EN: Record<string, string> = {
   eikev: 'Parashas Aikev',
   reeh: 'Parashas Ri’ay',
   shoftim: 'Parashas Shoftim',
+  'ki-teitzei': 'Parashas Kee Saitzay',
 };
 const specialParshaDisplay = hasSpecialParshaPacket
   ? (specialParshaPacket.hebrewTitle || parsha.he) + ' — ' + (SPECIAL_PARSHA_DISPLAY_EN[slug] || `Parashas ${parsha.en}`)
