@@ -57,11 +57,16 @@ const structuredData = torahData ? JSON.stringify({
   "url": `https://ajew.org/reader/tanach-devarim/${partNum}/${torahNum}`
 }) : '';
 
-// Commentary sidebar: Likutay Nanach plus AJew parsha packet for Devarim.
+// Commentary sidebar: Likutay Nanach plus AJew parsha packets for Devarim/Vaeschanan.
 const lnBookSlug = 'tanach-devarim';
-const parshaPacket = torahNum >= 1 && torahNum <= 3
-  ? { slug: 'devarim', label: 'AJew Devarim', title: 'Parashas Devarim Study Packet', readerUrl: '/parsha/devarim/#study-packet' }
-  : null;
+const parshaPackets = [
+  ...(torahNum >= 1 && torahNum <= 3
+    ? [{ slug: 'devarim', label: 'AJew Devarim', title: 'Parashas Devarim Study Packet', readerUrl: '/parsha/devarim/#study-packet' }]
+    : []),
+  ...(torahNum >= 3 && torahNum <= 7
+    ? [{ slug: 'vaetchanan', label: 'AJew Vaeschanan', title: 'Parashas Vaeschanan Study Packet', readerUrl: '/parsha/vaetchanan/#study-packet' }]
+    : []),
+];
 const relatedCommentaries = torahData ? [
   {
     book: "likutay-nanach",
@@ -71,15 +76,15 @@ const relatedCommentaries = torahData ? [
     url: `/reader/likutay-nanach/tanach/tanach-devarim-${torahNum}.json`,
     readerUrl: `/reader/likutay-nanach/tanach/tanach-devarim-${torahNum}.json`
   },
-  ...(parshaPacket ? [{
+  ...parshaPackets.map((packet) => ({
     book: "parsha-packets",
-    section: parshaPacket.slug,
-    label: parshaPacket.label,
-    sectionTitle: parshaPacket.title,
-    url: `/reader/parsha-packets/${parshaPacket.slug}.json`,
-    readerUrl: parshaPacket.readerUrl,
+    section: packet.slug,
+    label: packet.label,
+    sectionTitle: packet.title,
+    url: `/reader/parsha-packets/${packet.slug}.json`,
+    readerUrl: packet.readerUrl,
     openLabel: 'Open parsha page ↗'
-  }] : [])
+  }))
 ] : [];
 const commentaryEntry = torahData ? { related_commentaries: relatedCommentaries } : null;
 const breadcrumbData = torahData ? JSON.stringify({

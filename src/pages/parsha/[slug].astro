@@ -187,6 +187,7 @@ const SPECIAL_PARSHA_PACKET_FILES: Record<string, string> = {
   matot: 'mattos-masei.json',
   masei: 'mattos-masei.json',
   devarim: 'devarim.json',
+  vaetchanan: 'vaetchanan.json',
 };
 const specialPacketFile = SPECIAL_PARSHA_PACKET_FILES[slug];
 if (specialPacketFile) {
@@ -202,8 +203,14 @@ const hasSpecialParshaPacket = !!specialParshaPacket && specialParshaEntries.len
 const specialPdfPath = hasSpecialParshaPacket
   ? (specialParshaPacket.sourceFiles.pdf || (slug === 'matot' ? specialParshaPacket.sourceFiles.pdfMatot : specialParshaPacket.sourceFiles.pdfMasei))
   : null;
+const SPECIAL_PARSHA_DISPLAY_EN: Record<string, string> = {
+  matot: 'Parashas Mattos',
+  masei: 'Parashas Masei',
+  devarim: 'Parashas Devarim',
+  vaetchanan: 'Parashas Vaeschanan',
+};
 const specialParshaDisplay = hasSpecialParshaPacket
-  ? (specialParshaPacket.hebrewTitle || parsha.he) + ' — ' + (slug === 'matot' ? 'Parashas Mattos' : slug === 'masei' ? 'Parashas Masei' : 'Parashas Devarim')
+  ? (specialParshaPacket.hebrewTitle || parsha.he) + ' — ' + (SPECIAL_PARSHA_DISPLAY_EN[slug] || `Parashas ${parsha.en}`)
   : '';
 
 // Chumash names
