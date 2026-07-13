@@ -35,7 +35,21 @@ function itemKey(item) {
   return String(item.slug || item.displayNumber || item.number || item.title || item.hebrewTitle || '').replace(/[^a-zA-Z0-9_-]+/g, '-');
 }
 function labelFor(item) {
-  return item.displayNumber || item.number || '';
+  const type = item.type || item.slug || '';
+  const nice = {
+    haskamos: 'Approbations',
+    intro: 'Shir Na’im',
+    'intro-shimon': 'R’ Shimon',
+    hakdama: 'Hakdama',
+    'intro-lm': 'Introduction',
+    'intro-manuscripts': 'Manuscripts Intro',
+    'intro-volume-2': 'Part 2 Intro',
+    omission: 'Hashmatah'
+  };
+  if (nice[type]) return nice[type];
+  const dn = item.displayNumber;
+  if (typeof dn === 'string' && /^(preface|intro|manuscript)-/.test(dn)) return (item.title || dn).replace(/^Short\s+/, '');
+  return dn || item.number || '';
 }
 function torahTitle(item) {
   const n = item.displayNumber || item.number;
