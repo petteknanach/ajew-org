@@ -208,6 +208,52 @@ def write_teaching(path: Path, data: dict[str, Any], book: str, part: str, torah
     return {"bookId": book, "part": part, "torah": torah, "title": title, "hebrewTitle": hebrew_title, "url": f"/reader-plain/{book}/{part}/{torah}/", "sourceUrl": source_url, "segments": len(segments)}
 
 
+def write_known_quoted_passages() -> list[str]:
+    """Write stable locator pages for cited passages that live outside the book users name."""
+    out = OUT_DIR / "quoted-passages" / "adir-beracha"
+    out.mkdir(parents=True, exist_ok=True)
+    source_paths = [
+        READER_DIR / "likutay-nanach" / "tanach" / "tanach-shmuel.json",
+        READER_DIR / "likutay-nanach" / "volume-2" / "chapter-2.json",
+    ]
+    matches: list[tuple[str, int, str]] = []
+    for path in source_paths:
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        for i, seg in enumerate(data.get("segments", []), 1):
+            text = seg.get("commentary_he") or seg.get("he") or ""
+            if "ברוך" in text and "רכ" in text and "תוספת" in text and "אדיר" in text:
+                matches.append((str(path.relative_to(ROOT)), i, text))
+    lines = [
+        "Adir BaMurom beracha / tosafah quoted passage — AI-readable locator",
+        "",
+        "This exact paragraph is on ajew.org inside Likutay Nanach commentary pages that quote/cite Adir BaMurom.",
+        "Direct stable URL: https://ajew.org/reader-plain/quoted-passages/adir-beracha/index.txt",
+        "",
+    ]
+    for src, i, text in matches:
+        lines += [f"Source file: {src}", f"Segment: {i}", "", text, "", "---", ""]
+    content = "\n".join(lines).strip() + "\n"
+    (out / "index.txt").write_text(content, encoding="utf-8")
+    (out / "index.md").write_text("# " + content, encoding="utf-8")
+    (out / "index.html").write_text(
+        "<!doctype html><meta charset=utf-8><title>Adir beracha quoted passage</title>"
+        "<meta name='robots' content='index,follow,max-snippet:-1'>"
+        "<link rel='alternate' type='text/plain' href='index.txt'>"
+        "<link rel='alternate' type='text/markdown' href='index.md'>"
+        "<h1>Adir BaMurom beracha / tosafah quoted passage</h1>"
+        f"<pre dir='rtl' style='white-space:pre-wrap;font-size:18px;line-height:1.7'>{html.escape(content)}</pre>",
+        encoding="utf-8",
+    )
+    return [
+        "https://ajew.org/reader-plain/quoted-passages/adir-beracha/",
+        "https://ajew.org/reader-plain/quoted-passages/adir-beracha/index.txt",
+        "https://ajew.org/reader-plain/quoted-passages/adir-beracha/index.md",
+    ]
+
+
 def main() -> None:
     if OUT_DIR.exists():
         shutil.rmtree(OUT_DIR)
@@ -237,10 +283,17 @@ def main() -> None:
     for e in entries:
         by_book.setdefault(e["bookId"], []).append(e)
 
-    sitemap_urls = [f"https://ajew.org{e['url']}" for e in entries]
+    quoted_urls = write_known_quoted_passages()
+    sitemap_urls = ["https://ajew.org/reader-plain/", "https://ajew.org/plain-text/", "https://ajew.org/ai.txt"]
+    sitemap_urls += [f"https://ajew.org{e['url']}" for e in entries]
     sitemap_urls += [f"https://ajew.org/reader-plain/{book}/" for book in sorted(by_book)]
     sitemap_urls += [f"https://ajew.org/reader-plain/{book}/full.txt" for book in sorted(by_book)]
     sitemap_urls += [f"https://ajew.org/reader-plain/{book}/full.md" for book in sorted(by_book)]
+    sitemap_urls += [f"https://ajew.org/reader/{book}/full.txt" for book in sorted(by_book)]
+    sitemap_urls += [f"https://ajew.org/reader/{book}/full.md" for book in sorted(by_book)]
+    sitemap_urls += quoted_urls
+    # De-duplicate while preserving order.
+    sitemap_urls = list(dict.fromkeys(sitemap_urls))
     (OUT_DIR / "sitemap.txt").write_text("\n".join(sitemap_urls) + "\n", encoding="utf-8")
     today = date.today().isoformat()
     xml_urls = "\n".join(
