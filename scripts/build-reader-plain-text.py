@@ -10,6 +10,7 @@ import html
 import json
 import re
 import shutil
+from datetime import date
 from pathlib import Path
 from typing import Any
 
@@ -107,17 +108,38 @@ def html_page(title: str, hebrew_title: str, source_url: str, txt_url: str, md_u
   {f'<div class="en" dir="ltr" lang="en">{en}</div>' if en else ''}
 </section>""")
     toc = "\n".join(f'<li><a href="#segment-{html.escape(str(s["index"]))}">Segment {html.escape(str(s["index"]))}</a></li>' for s in segments)
+    plain_url = source_url.replace('/reader/', '/reader-plain/', 1) + '/'
+    desc_text = ' '.join((segments[0].get('en') or segments[0].get('he') or title).split())[:260]
+    json_ld = json.dumps({
+        "@context": "https://schema.org",
+        "@type": "DigitalDocument",
+        "name": title,
+        "headline": title,
+        "alternateName": hebrew_title or None,
+        "inLanguage": ["he", "en"],
+        "isPartOf": {"@type": "WebSite", "name": "A Jew - Breslov Torah Library", "url": "https://ajew.org"},
+        "url": "https://ajew.org" + plain_url,
+        "mainEntityOfPage": "https://ajew.org" + source_url,
+        "encoding": [
+            {"@type": "MediaObject", "encodingFormat": "text/plain", "contentUrl": "https://ajew.org" + plain_url + "index.txt"},
+            {"@type": "MediaObject", "encodingFormat": "text/markdown", "contentUrl": "https://ajew.org" + plain_url + "index.md"},
+            {"@type": "MediaObject", "encodingFormat": "application/json", "contentUrl": "https://ajew.org" + plain_url + "index.json"}
+        ]
+    }, ensure_ascii=False)
     return f"""<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{html.escape(title)}</title>
-<meta name="robots" content="index,follow">
-<link rel="canonical" href="{html.escape(source_url)}">
-<link rel="alternate" type="text/plain" href="{html.escape(txt_url)}">
-<link rel="alternate" type="text/markdown" href="{html.escape(md_url)}">
-<link rel="alternate" type="application/json" href="{html.escape(raw_url)}">
+<title>{html.escape(title)} — Plain Text | A Jew</title>
+<meta name="description" content="{html.escape(desc_text)}">
+<meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">
+<link rel="canonical" href="https://ajew.org{html.escape(source_url)}">
+<link rel="alternate" type="text/html" title="Plain text HTML" href="https://ajew.org{html.escape(plain_url)}">
+<link rel="alternate" type="text/plain" title="Plain text" href="https://ajew.org{html.escape(plain_url)}index.txt">
+<link rel="alternate" type="text/markdown" title="Markdown" href="https://ajew.org{html.escape(plain_url)}index.md">
+<link rel="alternate" type="application/json" title="Structured JSON" href="https://ajew.org{html.escape(plain_url)}index.json">
+<script type="application/ld+json">{json_ld}</script>
 <style>
 body{{font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;line-height:1.65;max-width:980px;margin:0 auto;padding:24px;color:#171717;background:#fff}}
 header{{border-bottom:1px solid #ddd;margin-bottom:24px;padding-bottom:16px}}
@@ -212,6 +234,18 @@ def main() -> None:
     entries.sort(key=lambda e: (e["bookId"], str(e["part"]), str(e["torah"])))
     (OUT_DIR / "index.json").write_text(json.dumps({"generatedFor": "ajew.org", "total": len(entries), "entries": entries}, ensure_ascii=False, indent=2), encoding="utf-8")
     (OUT_DIR / "sitemap.txt").write_text("\n".join(f"https://ajew.org{e['url']}" for e in entries) + "\n", encoding="utf-8")
+    today = date.today().isoformat()
+    xml_urls = "\n".join(
+        f"  <url><loc>https://ajew.org{html.escape(e['url'])}</loc><lastmod>{today}</lastmod><changefreq>monthly</changefreq><priority>0.45</priority></url>"
+        for e in entries
+    )
+    (OUT_DIR / "sitemap.xml").write_text(
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+        "<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n"
+        f"{xml_urls}\n"
+        "</urlset>\n",
+        encoding="utf-8",
+    )
 
     by_book: dict[str, list[dict[str, Any]]] = {}
     for e in entries:
@@ -223,7 +257,7 @@ def main() -> None:
         items = "\n".join(f'<li><a href="{html.escape(r["url"].split(f"/reader-plain/{book}/",1)[1])}">{html.escape(r["title"])}</a> <small>({r["segments"]} segments)</small></li>' for r in rows)
         (bdir / "index.html").write_text(f"<!doctype html><meta charset=utf-8><title>{html.escape(book)} plain text</title><h1>{html.escape(book)}</h1><p><a href='/reader-plain/'>All books</a></p><ol>{items}</ol>", encoding="utf-8")
         book_links.append(f'<li><a href="{html.escape(book)}/">{html.escape(book)}</a> <small>{len(rows)}</small></li>')
-    (OUT_DIR / "index.html").write_text(f"<!doctype html><meta charset=utf-8><title>ajew.org plain-text reader</title><h1>ajew.org plain-text reader</h1><p>Clean crawlable Hebrew/English text for AI tools, researchers, and students. Also available: <a href='index.json'>JSON catalog</a>, <a href='sitemap.txt'>plain sitemap</a>.</p><ol>{''.join(book_links)}</ol>", encoding="utf-8")
+    (OUT_DIR / "index.html").write_text(f"<!doctype html><meta charset=utf-8><title>ajew.org plain-text reader</title><meta name='description' content='Clean crawlable Hebrew and English Torah text from ajew.org for AI tools, search engines, researchers, and students.'><meta name='robots' content='index,follow'><link rel='sitemap' type='application/xml' href='/reader-plain/sitemap.xml'><h1>ajew.org plain-text reader</h1><p>Clean crawlable Hebrew/English text for AI tools, researchers, and students. Also available: <a href='index.json'>JSON catalog</a>, <a href='sitemap.xml'>XML sitemap</a>, <a href='sitemap.txt'>plain sitemap</a>.</p><ol>{''.join(book_links)}</ol>", encoding="utf-8")
     print(f"Built {len(entries)} plain reader teachings at {OUT_DIR}")
 
 
