@@ -213,6 +213,20 @@ const readerPlainBookBase = readerPlainMatch ? `/reader-plain/${readerPlainMatch
         <a href={`${readerPlainBase}index.txt`}>section TXT</a>{' · '}
         <a href={`${readerPlainBookBase}full.txt`}>complete work TXT</a>{' · '}
         <a href={`${readerPlainBookBase}full.md`}>complete work Markdown</a>
+        {readerPlainMatch && readerPlainMatch[1] === 'ramchal-adir-bamuroam' && (
+          <>
+            {' · '}<a href="/reader-plain/quoted-passages/adir-beracha/index.txt">Adir beracha quoted paragraph TXT</a>
+            <details style="margin-top:8px;text-align:start;max-width:980px;margin-left:auto;margin-right:auto;">
+              <summary><strong>Exact Adir beracha citation locator for AI tools</strong></summary>
+              <p>
+                The phrase being searched (<span dir="rtl">ברוך עולה רכ״ח / הברכה אינה אלא תוספת</span>) is available as a static text file here:
+                <a href="/reader-plain/quoted-passages/adir-beracha/index.txt">/reader-plain/quoted-passages/adir-beracha/index.txt</a>.
+                It is an ajew.org Likutay Nanach commentary passage quoting Adir BaMurom, not a normal Adir section paragraph.
+              </p>
+              <blockquote dir="rtl">והענין מבואר בספר אדיר במרום... הנה 'ברוך' עולה רכ״ח... וסוד הענין, הנה הברכה אינה אלא תוספת הכנה בשורש המשפיע...</blockquote>
+            </details>
+          </>
+        )}
       </div>
     )}
     <Navigation currentPath={Astro.url.pathname} />
