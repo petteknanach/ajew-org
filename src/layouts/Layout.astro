@@ -64,6 +64,23 @@ const readerPlainBookBase = readerPlainMatch ? `/reader-plain/${readerPlainMatch
     {readerPlainBase && <link rel="alternate" type="application/json" title="Plain text JSON" href={new URL(`${readerPlainBase}index.json`, Astro.site)} />}
     {readerPlainBookBase && <link rel="alternate" type="text/plain" title="Complete work plain text" href={new URL(`${readerPlainBookBase}full.txt`, Astro.site)} />}
     {readerPlainBookBase && <link rel="alternate" type="text/markdown" title="Complete work Markdown" href={new URL(`${readerPlainBookBase}full.md`, Astro.site)} />}
+
+    {readerPlainBase && readerPlainBookBase && (
+      <script is:inline define:vars={{ readerPlainBase, readerPlainBookBase }}>
+        (() => {
+          const params = new URLSearchParams(window.location.search);
+          const raw = (params.get('format') || params.get('view') || '').toLowerCase();
+          const wantsPlain = params.has('plain') || params.has('text') || params.has('raw') || raw === 'txt' || raw === 'text' || raw === 'plain' || raw === 'md' || raw === 'markdown' || raw === 'json' || raw === 'full';
+          if (!wantsPlain) return;
+          let target = readerPlainBase;
+          if (params.has('full') || raw === 'full') target = readerPlainBookBase + 'full.txt';
+          else if (raw === 'md' || raw === 'markdown') target = readerPlainBase + 'index.md';
+          else if (raw === 'json') target = readerPlainBase + 'index.json';
+          else if (raw === 'txt' || raw === 'text' || raw === 'plain' || params.has('text') || params.has('raw')) target = readerPlainBase + 'index.txt';
+          window.location.replace(target);
+        })();
+      </script>
+    )}
     <title>{title} | A Jew</title>
 
     <!-- Open Graph -->
