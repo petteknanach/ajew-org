@@ -206,6 +206,15 @@ const readerPlainBookBase = readerPlainMatch ? `/reader-plain/${readerPlainMatch
   </head>
   <body>
     <a href="#main-content" class="skip-link">Skip to content</a>
+    {readerPlainBase && readerPlainBookBase && (
+      <div class="ai-reader-access" style="padding:12px 16px;background:#fff8dc;border-bottom:1px solid #d6b85a;text-align:center;font-size:15px;line-height:1.5;">
+        <strong>AI / raw text access:</strong>{' '}
+        <a href={readerPlainBase}>Plain section HTML</a>{' · '}
+        <a href={`${readerPlainBase}index.txt`}>section TXT</a>{' · '}
+        <a href={`${readerPlainBookBase}full.txt`}>complete work TXT</a>{' · '}
+        <a href={`${readerPlainBookBase}full.md`}>complete work Markdown</a>
+      </div>
+    )}
     <Navigation currentPath={Astro.url.pathname} />
     <CompactYahrzeit />
     
