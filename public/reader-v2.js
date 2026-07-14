@@ -714,6 +714,37 @@
     });
   }
 
+  // ─── Plain-text / AI-readable links ───
+  function setupPlainTextLinks() {
+    const m = window.location.pathname.match(/^\/reader\/([^\/]+)\/(\d+)\/([^\/\?#]+)/);
+    if (!m) return;
+    const plainBase = `/reader-plain/${m[1]}/${m[2]}/${m[3]}/`;
+
+    [
+      ['alternate', 'text/html', plainBase],
+      ['alternate', 'text/plain', plainBase + 'index.txt'],
+      ['alternate', 'text/markdown', plainBase + 'index.md'],
+      ['alternate', 'application/json', plainBase + 'index.json']
+    ].forEach(([rel, type, href]) => {
+      if (document.querySelector(`link[href="${href}"]`)) return;
+      const link = document.createElement('link');
+      link.rel = rel;
+      link.type = type;
+      link.href = href;
+      document.head.appendChild(link);
+    });
+
+    const toolbar = document.querySelector('.reader-toolbar .reader-toolbar-group:last-child') || document.querySelector('.reader-toolbar');
+    if (!toolbar || document.getElementById('btn-plain-text')) return;
+    const a = document.createElement('a');
+    a.id = 'btn-plain-text';
+    a.className = 'reader-btn reader-btn-icon';
+    a.href = plainBase;
+    a.textContent = 'Plain Text';
+    a.title = 'Clean static Hebrew/English text for AI tools and researchers';
+    toolbar.appendChild(a);
+  }
+
   // ─── Initialize ───
   function init() {
     loadPrefs();
@@ -724,6 +755,7 @@
     setupSegmentShareActions();
     setupKeyboard();
     setupCopyAttribution();
+    setupPlainTextLinks();
     initTTS();
     recordVisit();
 
