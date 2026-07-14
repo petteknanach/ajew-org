@@ -233,11 +233,19 @@ def main() -> None:
 
     entries.sort(key=lambda e: (e["bookId"], str(e["part"]), str(e["torah"])))
     (OUT_DIR / "index.json").write_text(json.dumps({"generatedFor": "ajew.org", "total": len(entries), "entries": entries}, ensure_ascii=False, indent=2), encoding="utf-8")
-    (OUT_DIR / "sitemap.txt").write_text("\n".join(f"https://ajew.org{e['url']}" for e in entries) + "\n", encoding="utf-8")
+    by_book: dict[str, list[dict[str, Any]]] = {}
+    for e in entries:
+        by_book.setdefault(e["bookId"], []).append(e)
+
+    sitemap_urls = [f"https://ajew.org{e['url']}" for e in entries]
+    sitemap_urls += [f"https://ajew.org/reader-plain/{book}/" for book in sorted(by_book)]
+    sitemap_urls += [f"https://ajew.org/reader-plain/{book}/full.txt" for book in sorted(by_book)]
+    sitemap_urls += [f"https://ajew.org/reader-plain/{book}/full.md" for book in sorted(by_book)]
+    (OUT_DIR / "sitemap.txt").write_text("\n".join(sitemap_urls) + "\n", encoding="utf-8")
     today = date.today().isoformat()
     xml_urls = "\n".join(
-        f"  <url><loc>https://ajew.org{html.escape(e['url'])}</loc><lastmod>{today}</lastmod><changefreq>monthly</changefreq><priority>0.45</priority></url>"
-        for e in entries
+        f"  <url><loc>{html.escape(url)}</loc><lastmod>{today}</lastmod><changefreq>monthly</changefreq><priority>{'0.65' if url.endswith('/full.txt') or url.endswith('/full.md') else '0.45'}</priority></url>"
+        for url in sitemap_urls
     )
     (OUT_DIR / "sitemap.xml").write_text(
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
@@ -247,16 +255,30 @@ def main() -> None:
         encoding="utf-8",
     )
 
-    by_book: dict[str, list[dict[str, Any]]] = {}
-    for e in entries:
-        by_book.setdefault(e["bookId"], []).append(e)
     book_links = []
     for book, rows in sorted(by_book.items()):
         bdir = OUT_DIR / book
         bdir.mkdir(exist_ok=True)
+        full_txt: list[str] = [f"{book} — complete plain text", f"Source index: https://ajew.org/reader/{book}/", "", "Sections:"]
+        full_md: list[str] = [f"# {book} — complete plain text", f"\nSource index: https://ajew.org/reader/{book}/\n", "## Sections"]
+        for r in rows:
+            rel_url = r["url"].split(f"/reader-plain/{book}/", 1)[1]
+            full_txt.append(f"- {r['title']} — https://ajew.org{r['url']}index.txt")
+            full_md.append(f"- [{r['title']}]({r['url']}) — [TXT]({r['url']}index.txt)")
+        full_txt.append("\n\n====================\n")
+        full_md.append("\n---\n")
+        for r in rows:
+            sec_txt = (OUT_DIR / r["url"].strip("/") .replace("reader-plain/", "") / "index.txt")
+            sec_md = (OUT_DIR / r["url"].strip("/") .replace("reader-plain/", "") / "index.md")
+            if sec_txt.exists():
+                full_txt += [f"\n\n# {r['title']}", f"URL: https://ajew.org{r['url']}\n", sec_txt.read_text(encoding="utf-8")]
+            if sec_md.exists():
+                full_md += [f"\n\n# {r['title']}", f"\nURL: https://ajew.org{r['url']}\n", sec_md.read_text(encoding="utf-8")]
+        (bdir / "full.txt").write_text("\n".join(full_txt).strip() + "\n", encoding="utf-8")
+        (bdir / "full.md").write_text("\n".join(full_md).strip() + "\n", encoding="utf-8")
         items = "\n".join(f'<li><a href="{html.escape(r["url"].split(f"/reader-plain/{book}/",1)[1])}">{html.escape(r["title"])}</a> <small>({r["segments"]} segments)</small></li>' for r in rows)
-        (bdir / "index.html").write_text(f"<!doctype html><meta charset=utf-8><title>{html.escape(book)} plain text</title><h1>{html.escape(book)}</h1><p><a href='/reader-plain/'>All books</a></p><ol>{items}</ol>", encoding="utf-8")
-        book_links.append(f'<li><a href="{html.escape(book)}/">{html.escape(book)}</a> <small>{len(rows)}</small></li>')
+        (bdir / "index.html").write_text(f"<!doctype html><meta charset=utf-8><title>{html.escape(book)} complete plain text</title><meta name='description' content='Complete static plain text for {html.escape(book)} on ajew.org, with all sections in one crawlable file.'><meta name='robots' content='index,follow,max-snippet:-1'><link rel='alternate' type='text/plain' href='full.txt'><link rel='alternate' type='text/markdown' href='full.md'><h1>{html.escape(book)}</h1><p><a href='/reader-plain/'>All books</a> · <a href='full.txt'>Complete book TXT</a> · <a href='full.md'>Complete book Markdown</a></p><ol>{items}</ol>", encoding="utf-8")
+        book_links.append(f'<li><a href="{html.escape(book)}/">{html.escape(book)}</a> <small>{len(rows)}</small> <a href="{html.escape(book)}/full.txt">full TXT</a></li>')
     (OUT_DIR / "index.html").write_text(f"<!doctype html><meta charset=utf-8><title>ajew.org plain-text reader</title><meta name='description' content='Clean crawlable Hebrew and English Torah text from ajew.org for AI tools, search engines, researchers, and students.'><meta name='robots' content='index,follow'><link rel='sitemap' type='application/xml' href='/reader-plain/sitemap.xml'><h1>ajew.org plain-text reader</h1><p>Clean crawlable Hebrew/English text for AI tools, researchers, and students. Also available: <a href='index.json'>JSON catalog</a>, <a href='sitemap.xml'>XML sitemap</a>, <a href='sitemap.txt'>plain sitemap</a>.</p><ol>{''.join(book_links)}</ol>", encoding="utf-8")
     print(f"Built {len(entries)} plain reader teachings at {OUT_DIR}")
 

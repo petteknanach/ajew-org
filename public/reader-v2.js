@@ -719,12 +719,15 @@
     const m = window.location.pathname.match(/^\/reader\/([^\/]+)\/(\d+)\/([^\/\?#]+)/);
     if (!m) return;
     const plainBase = `/reader-plain/${m[1]}/${m[2]}/${m[3]}/`;
+    const bookBase = `/reader-plain/${m[1]}/`;
 
     [
       ['alternate', 'text/html', plainBase],
       ['alternate', 'text/plain', plainBase + 'index.txt'],
       ['alternate', 'text/markdown', plainBase + 'index.md'],
-      ['alternate', 'application/json', plainBase + 'index.json']
+      ['alternate', 'application/json', plainBase + 'index.json'],
+      ['alternate', 'text/plain', bookBase + 'full.txt'],
+      ['alternate', 'text/markdown', bookBase + 'full.md']
     ].forEach(([rel, type, href]) => {
       if (document.querySelector(`link[href="${href}"]`)) return;
       const link = document.createElement('link');
@@ -740,9 +743,17 @@
     a.id = 'btn-plain-text';
     a.className = 'reader-btn reader-btn-icon';
     a.href = plainBase;
-    a.textContent = 'Plain Text';
-    a.title = 'Clean static Hebrew/English text for AI tools and researchers';
+    a.textContent = 'Plain Section';
+    a.title = 'Clean static Hebrew/English text for this section';
     toolbar.appendChild(a);
+
+    const b = document.createElement('a');
+    b.id = 'btn-plain-full-work';
+    b.className = 'reader-btn reader-btn-icon';
+    b.href = bookBase + 'full.txt';
+    b.textContent = 'Full Plain Work';
+    b.title = 'One static TXT file containing every section of this work';
+    toolbar.appendChild(b);
   }
 
   // ─── Initialize ───

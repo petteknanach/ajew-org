@@ -37,6 +37,7 @@ const ogImage = new URL(image, Astro.site);
 const siteName = "A Jew - Breslov Torah Library";
 const readerPlainMatch = Astro.url.pathname.match(/^\/reader\/([^\/]+)\/(\d+)\/([^\/]+)\/?$/);
 const readerPlainBase = readerPlainMatch ? `/reader-plain/${readerPlainMatch[1]}/${readerPlainMatch[2]}/${readerPlainMatch[3]}/` : null;
+const readerPlainBookBase = readerPlainMatch ? `/reader-plain/${readerPlainMatch[1]}/` : null;
 ---
 
 <!doctype html>
@@ -61,6 +62,8 @@ const readerPlainBase = readerPlainMatch ? `/reader-plain/${readerPlainMatch[1]}
     {readerPlainBase && <link rel="alternate" type="text/plain" title="Plain text TXT" href={new URL(`${readerPlainBase}index.txt`, Astro.site)} />}
     {readerPlainBase && <link rel="alternate" type="text/markdown" title="Plain text Markdown" href={new URL(`${readerPlainBase}index.md`, Astro.site)} />}
     {readerPlainBase && <link rel="alternate" type="application/json" title="Plain text JSON" href={new URL(`${readerPlainBase}index.json`, Astro.site)} />}
+    {readerPlainBookBase && <link rel="alternate" type="text/plain" title="Complete work plain text" href={new URL(`${readerPlainBookBase}full.txt`, Astro.site)} />}
+    {readerPlainBookBase && <link rel="alternate" type="text/markdown" title="Complete work Markdown" href={new URL(`${readerPlainBookBase}full.md`, Astro.site)} />}
     <title>{title} | A Jew</title>
 
     <!-- Open Graph -->
