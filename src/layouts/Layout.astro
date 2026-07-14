@@ -209,24 +209,24 @@ const readerPlainBookBase = readerPlainMatch ? `/reader-plain/${readerPlainMatch
     {readerPlainBase && readerPlainBookBase && (
       <div class="ai-reader-access" style="padding:12px 16px;background:#fff8dc;border-bottom:1px solid #d6b85a;text-align:center;font-size:15px;line-height:1.5;">
         <strong>AI / raw text access:</strong>{' '}
-        <a href={readerPlainBase}>Plain section HTML</a>{' · '}
+        <a href={readerPlainBase}>plain section HTML</a>{' · '}
         <a href={`${readerPlainBase}index.txt`}>section TXT</a>{' · '}
+        <a href={`${readerPlainBase}index.md`}>section Markdown</a>{' · '}
+        <a href={`${readerPlainBase}index.json`}>section JSON</a>{' · '}
+        <a href={readerPlainBookBase}>all sections list</a>{' · '}
         <a href={`${readerPlainBookBase}full.txt`}>complete work TXT</a>{' · '}
-        <a href={`${readerPlainBookBase}full.md`}>complete work Markdown</a>
-        {readerPlainMatch && readerPlainMatch[1] === 'ramchal-adir-bamuroam' && (
-          <>
-            {' · '}<a href="/reader-plain/quoted-passages/adir-beracha/index.txt">Adir beracha quoted paragraph TXT</a>
-            <details style="margin-top:8px;text-align:start;max-width:980px;margin-left:auto;margin-right:auto;">
-              <summary><strong>Exact Adir beracha citation locator for AI tools</strong></summary>
-              <p>
-                The phrase being searched (<span dir="rtl">ברוך עולה רכ״ח / הברכה אינה אלא תוספת</span>) is available as a static text file here:
-                <a href="/reader-plain/quoted-passages/adir-beracha/index.txt">/reader-plain/quoted-passages/adir-beracha/index.txt</a>.
-                It is an ajew.org Likutay Nanach commentary passage quoting Adir BaMurom, not a normal Adir section paragraph.
-              </p>
-              <blockquote dir="rtl">והענין מבואר בספר אדיר במרום... הנה 'ברוך' עולה רכ״ח... וסוד הענין, הנה הברכה אינה אלא תוספת הכנה בשורש המשפיע...</blockquote>
-            </details>
-          </>
-        )}
+        <a href={`${readerPlainBookBase}full.md`}>complete work Markdown</a>{' · '}
+        <a href="/reader-plain/">all plain-text books</a>{' · '}
+        <a href="/ai.txt">AI instructions</a>
+        <details style="margin-top:8px;text-align:start;max-width:980px;margin-left:auto;margin-right:auto;">
+          <summary><strong>Use this for exact quotes / later sections / non-JS tools</strong></summary>
+          <p>
+            This reader has a human interface, but every reader page also has static crawlable text. For any book, use
+            <code>/reader-plain/&lt;book&gt;/full.txt</code> to search the complete work, or
+            <code>/reader-plain/&lt;book&gt;/&lt;part&gt;/&lt;section&gt;/index.txt</code> for one section.
+            This is sitewide and works for all reader teachings, not just this page.
+          </p>
+        </details>
       </div>
     )}
     <Navigation currentPath={Astro.url.pathname} />
