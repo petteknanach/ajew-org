@@ -124,6 +124,8 @@
       '#ajew-audio-player.collapsed .ajew-ap-body{display:none;}' +
       '#ajew-audio-player .ajew-ap-header{display:flex;align-items:center;gap:.5rem;padding:.5rem .75rem;cursor:pointer;background:#222;}' +
       '#ajew-audio-player .ajew-ap-title{flex:1;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}' +
+      '#ajew-audio-player .ajew-ap-close{background:#fff;color:#111;border:2px solid #fff;border-radius:6px;padding:.38rem .7rem;font-weight:800;cursor:pointer;white-space:nowrap;}' +
+      '#ajew-audio-player.collapsed .ajew-ap-close{background:#2a4a6a;color:#fff;border-color:#6da7da;}' +
       '#ajew-audio-player .ajew-ap-toggle{background:none;border:none;color:#eee;font-size:1.2em;cursor:pointer;padding:0 .25rem;}' +
       '#ajew-audio-player .ajew-ap-body{padding:.5rem .75rem;display:flex;flex-direction:column;gap:.5rem;max-height:60vh;overflow:hidden;}' +
       '#ajew-audio-player select{background:#333;color:#eee;border:1px solid #555;padding:.3rem;border-radius:4px;width:100%;max-width:100%;}' +
@@ -244,6 +246,12 @@
   function render(container) {
     container.innerHTML = '';
     var header = el('div', { class: 'ajew-ap-header', onclick: function () { toggleCollapsed(); } }, [
+      el('button', {
+        class: 'ajew-ap-close',
+        'aria-label': state.collapsed ? 'Open audio player' : 'Close audio player',
+        'aria-expanded': state.collapsed ? 'false' : 'true',
+        onclick: function (e) { e.stopPropagation(); toggleCollapsed(); }
+      }, state.collapsed ? 'Open audio ▲' : 'Close audio ▼'),
       el('span', { class: 'ajew-ap-title' }, 'Audio: ' + (state.currentEdition ? state.currentEdition.name : '(select edition)')),
       el('button', {
         class: 'ajew-ap-toggle',
@@ -305,6 +313,12 @@
     if (wrap) wrap.classList.toggle('collapsed', state.collapsed);
     var toggleBtn = wrap && wrap.querySelector('.ajew-ap-toggle');
     if (toggleBtn) toggleBtn.textContent = state.collapsed ? '▲' : '▼';
+    var closeBtn = wrap && wrap.querySelector('.ajew-ap-close');
+    if (closeBtn) {
+      closeBtn.textContent = state.collapsed ? 'Open audio ▲' : 'Close audio ▼';
+      closeBtn.setAttribute('aria-label', state.collapsed ? 'Open audio player' : 'Close audio player');
+      closeBtn.setAttribute('aria-expanded', state.collapsed ? 'false' : 'true');
+    }
   }
 
   function selectEdition(index) {
