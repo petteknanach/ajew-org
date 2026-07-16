@@ -840,23 +840,70 @@ const todayLM = lmTorahMap[dayIndex] || 1;
      RESPONSIVE
      ============================================ */
   @media (max-width: 600px) {
-    .hero { min-height: 70vh; }
-    .hero-content { padding: 1.5rem 1rem; }
-    .hero-nanach { font-size: 1.3rem; }
-    .hero-he { font-size: 2rem; }
-    .hero-en { font-size: 1.15rem; }
-    .hero-subtitle { font-size: 0.95rem; white-space: normal; }
-    .hero-saba-link { width: 72px; right: 6px; bottom: 0.5rem; opacity: 0.9; }
-    .hero-nosson-link { width: 82px; left: 6px; bottom: 0.5rem; opacity: 0.9; }
-    .hero-search form { max-width: 100%; }
-    .hero-actions { flex-direction: column; align-items: center; padding: 0 1rem 1.5rem; }
-    .btn-hero { width: 100%; max-width: 320px; justify-content: center; }
-    .quick-start-grid { grid-template-columns: 1fr; }
-    .featured-grid { grid-template-columns: 1fr; }
-    .tools-grid { grid-template-columns: repeat(2, 1fr); }
-    .app-inner { flex-direction: column; text-align: center; }
-    .quote-card { padding: 1.5rem; }
-    .quote-he { font-size: 1.1rem; }
+    .hero {
+      min-height: 0;
+      padding: 14px 14px 18px;
+      justify-content: flex-start;
+      background-position: center top;
+    }
+    .hero-content { width: 100%; padding: 8px 0 0; }
+    .hero-nanach { font-size: 1.12rem; margin-bottom: 5px; }
+    .hero-huaish-sheli { max-width: 78px; margin: 4px auto 12px; }
+    .hero-title { margin-bottom: 6px; }
+    .hero-he { font-size: 1.7rem; line-height: 1.12; }
+    .hero-en { font-size: 1rem; }
+    .hero-subtitle { max-width: 330px; margin: 0 auto 13px; font-size: .88rem; line-height: 1.35; white-space: normal; }
+    .hero-search form { width: 100%; max-width: 100%; min-height: 50px; }
+    .hero-search input { min-width: 0; padding: .75rem 1rem; font-size: 16px; }
+    .hero-search button { width: 54px; min-width: 54px; padding: 0; }
+    .hero > .hero-holy-figure { display: none; }
+    .hero-actions {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(2,minmax(0,1fr));
+      gap: 8px;
+      margin: 14px auto 0;
+      padding: 0;
+    }
+    .btn-hero {
+      width: auto;
+      max-width: none;
+      min-height: 58px;
+      justify-content: flex-start;
+      padding: 8px 10px;
+      border-radius: 12px;
+      font-size: .82rem;
+      line-height: 1.15;
+    }
+    .btn-icon { font-size: 1rem; }
+    .btn-sub { margin-top: 2px; font-size: .68rem; }
+    .daily-quote-section { padding: 18px 14px; }
+    .quote-card { margin: 0; padding: 1.25rem 1rem; border-radius: 14px; }
+    .quote-he { font-size: 1.08rem; }
+    .home-prayers-section { padding: 14px; }
+    .home-prayers-card { gap: 8px; padding: 1.15rem; border-radius: 18px; }
+    .home-prayers-icon { font-size: 2rem; }
+    .home-prayers-copy h2 { font-size: 1.35rem; }
+    .home-prayers-copy p { font-size: .9rem; line-height: 1.45; }
+    .quick-start,.featured,.tools { padding: 1.75rem 14px; }
+    .section-heading { margin-bottom: 1rem; font-size: 1.25rem; }
+    .quick-start-grid,.featured-grid { grid-template-columns: 1fr; gap: 10px; }
+    .qs-card { gap: 12px; padding: 1rem; }
+    .feat-card { padding: 1.1rem; }
+    .tools-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
+    .tool { min-width: 0; min-height: 64px; padding: .75rem; gap: 8px; }
+    .tool-label { font-size: .82rem; }
+    .app-banner { padding: 0 14px 1.5rem; }
+    .app-inner { flex-direction: column; gap: .7rem; padding: 1.1rem; text-align: center; }
+    .app-btn { width: 100%; min-height: 44px; display: flex; align-items: center; justify-content: center; }
+    .closing-quote { padding: 2rem 14px; }
+  }
+
+  @media (max-width: 360px) {
+    .hero { padding-inline: 10px; }
+    .hero-actions { grid-template-columns: 1fr; }
+    .btn-hero { justify-content: center; min-height: 52px; }
+    .tools-grid { grid-template-columns: 1fr; }
   }
 
 .home-prayers-section { padding: 0 1.25rem 2.5rem; }
@@ -868,5 +915,12 @@ const todayLM = lmTorahMap[dayIndex] || 1;
 .home-prayers-cta { justify-self: end; padding: 0.9rem 1.15rem; border-radius: 999px; background: #1a365d; color: white; text-decoration: none; font-weight: 800; white-space: nowrap; }
 [data-theme="night"] .home-prayers-card, body.dark-mode .home-prayers-card { background: linear-gradient(135deg, #2c2415 0%, #123021 100%); border-color: #6d5526; }
 [data-theme="night"] .home-prayers-copy h2, body.dark-mode .home-prayers-copy h2 { color: #e8d9b7; }
-@media (max-width: 760px) { .home-prayers-card { grid-template-columns: 1fr; text-align: center; } .home-prayers-cta { justify-self: center; } }
+@media (max-width: 760px) {
+  .home-prayers-section { padding: 14px; }
+  .home-prayers-card { grid-template-columns: 1fr; gap: 8px; padding: 1.15rem; border-radius: 18px; text-align: center; }
+  .home-prayers-icon { font-size: 2rem; }
+  .home-prayers-copy h2 { font-size: 1.35rem; }
+  .home-prayers-copy p { font-size: .9rem; line-height: 1.45; }
+  .home-prayers-cta { justify-self: stretch; min-height: 44px; display: flex; align-items: center; justify-content: center; }
+}
 </style>

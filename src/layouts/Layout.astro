@@ -766,10 +766,33 @@ const readerPlainBookBase = readerPlainMatch ? `/reader-plain/${readerPlainMatch
   }
 
   @media (max-width: 1023px) {
+    html { scroll-padding-top: 68px; }
+    body { min-width: 0; }
     main {
-      padding-top: 64px;
+      min-width: 0;
+      padding-top: 56px;
       padding-bottom: 76px;
     }
+    main img, main video, main canvas, main svg { max-width: 100%; height: auto; }
+    main table, main pre { max-width: 100%; overflow-x: auto; }
+    footer { padding: 1.5rem 1rem calc(80px + env(safe-area-inset-bottom)); }
+    .footer-links { gap: 10px 14px; }
+    .hitbodedut-fab,
+    #voice-input-btn,
+    #page-agent-toggle,
+    #page-agent-container,
+    #backToTop { display: none !important; }
+    .ai-reader-access {
+      padding: 7px 12px !important;
+      max-height: 42px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      white-space: nowrap;
+      text-align: start !important;
+      scrollbar-width: none;
+    }
+    .ai-reader-access::-webkit-scrollbar { display: none; }
+    .ai-reader-access details { display: none; }
   }
 
   .navbar {
