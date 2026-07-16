@@ -20,7 +20,7 @@ import Layout from '../layouts/Layout.astro';
       </div>
 
       <div id="explorePanel" class="panel active">
-        <label for="phraseInput">Hebrew or English phrase</label>
+        <label for="phraseInput">Hebrew or English phrase — or a gematria number</label>
         <div class="input-row">
           <textarea id="phraseInput" rows="2" dir="auto" placeholder="הכנס מילה או ביטוי…" spellcheck="false"></textarea>
           <button id="clearBtn" class="icon-btn" aria-label="Clear">×</button>
@@ -48,7 +48,17 @@ import Layout from '../layouts/Layout.astro';
       </div>
 
       <section id="results" class="results" aria-live="polite" hidden>
-        <div class="primary-result">
+        <section id="numberLookup" class="number-lookup" hidden>
+          <div class="number-hero">
+            <span>Likutay Nanach • לוח גמטריאות</span>
+            <strong id="lookupNumber"></strong>
+            <h2>Gematria results for this number</h2>
+          </div>
+          <div id="numberMatches" class="number-matches"></div>
+          <a class="source-link" href="/reader/likutay-nanach/1/24">Source: Likutay Nanach, Volume 1 — Gematria Table</a>
+        </section>
+
+        <div id="calculationPrimary" class="primary-result">
           <div>
             <span class="result-kicker">Standard • מספר הכרחי</span>
             <strong id="primaryValue">0</strong>
@@ -56,7 +66,7 @@ import Layout from '../layouts/Layout.astro';
           <div id="normalizedPhrase" class="normalized" dir="auto"></div>
         </div>
 
-        <div>
+        <div id="calculationMethods">
           <div class="section-heading">
             <div><span>12 calculations</span><h2>Numerical values</h2></div>
             <button id="copyValuesBtn" class="text-btn">Copy values</button>
@@ -64,7 +74,7 @@ import Layout from '../layouts/Layout.astro';
           <div id="methodsGrid" class="methods-grid"></div>
         </div>
 
-        <div class="two-column">
+        <div id="calculationDetails" class="two-column">
           <section class="card">
             <div class="section-heading compact"><div><span>Every letter</span><h2>Breakdown</h2></div></div>
             <div id="lettersGrid" class="letters-grid"></div>
@@ -76,7 +86,7 @@ import Layout from '../layouts/Layout.astro';
           </section>
         </div>
 
-        <div class="action-row">
+        <div id="calculationActions" class="action-row">
           <a id="searchAjew" class="primary-btn link-btn" href="/search-enhanced/">Search this phrase across Ajew Torah</a>
           <button id="useAsBridge" class="secondary-btn">Bridge this phrase</button>
         </div>
@@ -97,7 +107,7 @@ import Layout from '../layouts/Layout.astro';
       </details>
       <div class="quick-terms" aria-label="Example words">
         <span>Try:</span>
-        {['נ נח נחמ נחמן מאומן','נחמן','אמת','אהבה','משיח','תורה','תפילה','שמחה'].map(word => (
+        {['491','108','נ נח נחמ נחמן מאומן','נחמן','אמת','אהבה','משיח','תורה','תפילה','שמחה'].map(word => (
           <button class="quick-term" data-word={word}>{word}</button>
         ))}
       </div>
@@ -106,6 +116,8 @@ import Layout from '../layouts/Layout.astro';
 </Layout>
 
 <script>
+  import LN_GEMATRIA from '../data/likutay-nanach-gematria.json';
+
   type Cipher = {
     id: string;
     name: string;
@@ -213,11 +225,31 @@ import Layout from '../layouts/Layout.astro';
     document.querySelectorAll<HTMLButtonElement>('.resonance').forEach(b=>b.onclick=()=>{phraseInput.value=b.dataset.word||'';updateExplore();});
   }
 
+  function renderNumberLookup(number:number) {
+    const matches = LN_GEMATRIA.filter(entry=>entry.number===number);
+    $('lookupNumber').textContent=number.toLocaleString();
+    $('numberMatches').innerHTML=matches.length
+      ? matches.map(entry=>`<article class="number-match"><b dir="rtl">${entry.text}</b><small>Volume 1 • Gematria Table • entry ${entry.segment}</small></article>`).join('')
+      : '<p class="number-none">This number is not in the Likutay Nanach Volume 1 gematria table.</p>';
+    $('numberLookup').hidden=false;
+    ['calculationPrimary','calculationMethods','calculationDetails','calculationActions'].forEach(id=>$(id).hidden=true);
+    $('languageBadge').textContent=matches.length?'Likutay Nanach match':'Number lookup';
+    $('letterCount').textContent=matches.length?`${matches.length} result${matches.length===1?'':'s'}`:'No listed result';
+  }
+
   function updateExplore(push=false) {
     const text = phraseInput.value.trim();
     if (!text) { results.hidden=true; $('languageBadge').textContent='Ready'; $('letterCount').textContent='0 letters'; return; }
-    const lang=languageOf(text); const chars=letters(text,lang);
+    const numeric=/^\d+$/.test(text);
     results.hidden=false;
+    if(numeric){
+      renderNumberLookup(Number(text));
+      if(push){const u=new URL(location.href);u.searchParams.set('q',text);history.replaceState({},'',u);}
+      return;
+    }
+    $('numberLookup').hidden=true;
+    ['calculationPrimary','calculationMethods','calculationDetails','calculationActions'].forEach(id=>$(id).hidden=false);
+    const lang=languageOf(text); const chars=letters(text,lang);
     $('languageBadge').textContent=lang==='he'?'Hebrew detected':'English detected';
     $('letterCount').textContent=`${chars.length} letter${chars.length===1?'':'s'} • ${wordsCount(text)} word${wordsCount(text)===1?'':'s'}`;
     $('primaryValue').textContent=CIPHERS[0].calculate(text,lang).toLocaleString();
@@ -275,7 +307,7 @@ import Layout from '../layouts/Layout.astro';
   .mode-tabs{display:flex;gap:8px;padding:5px;background:#ece6d9;border-radius:12px;width:max-content;max-width:100%;margin-bottom:25px}.mode-tab{border:0;background:transparent;padding:10px 16px;border-radius:9px;font-weight:750;color:#55606d;cursor:pointer}.mode-tab.active{background:#18344d;color:white;box-shadow:0 3px 10px #18344d33}
   label{font-size:.82rem;text-transform:uppercase;letter-spacing:.08em;font-weight:800;color:#6c5a38;display:block;margin-bottom:8px}.input-row{display:flex;position:relative}.input-row textarea,.bridge-inputs textarea{width:100%;resize:vertical;border:1.5px solid #cdbd9d;background:white;border-radius:14px;padding:16px 50px 16px 16px;font:700 clamp(1.35rem,4vw,2.2rem)/1.35 var(--font-hebrew);color:#142c43;min-height:88px}.input-row textarea:focus,.bridge-inputs textarea:focus{outline:3px solid #d9b45c55;border-color:#ad7d22}.icon-btn{position:absolute;right:12px;top:12px;width:34px;height:34px;border:0;border-radius:50%;background:#eee8dc;font-size:1.35rem;cursor:pointer}.input-meta{display:flex;gap:12px;align-items:center;margin:9px 2px 22px;color:#67717a;font-size:.82rem}.input-meta span+span:before{content:'•';margin-right:12px}.text-btn{border:0;background:transparent;color:#8a5a08;text-decoration:underline;font-weight:750;cursor:pointer;margin-left:auto}
   .bridge-inputs{display:grid;grid-template-columns:1fr auto 1fr;gap:15px;align-items:end}.bridge-mark{font-size:2rem;color:#b17a1f;padding-bottom:24px}.primary-btn,.secondary-btn{border:0;border-radius:11px;padding:12px 18px;font-weight:800;cursor:pointer}.primary-btn{background:#a86913;color:#fff;box-shadow:0 5px 14px #a8691333;margin-top:16px}.secondary-btn{background:#e8e0d1;color:#20384c}.link-btn{text-decoration:none;display:inline-block}
-  .results{border-top:1px solid #e2d7c2;padding-top:28px;margin-top:10px}.primary-result{display:flex;justify-content:space-between;gap:20px;align-items:center;background:linear-gradient(130deg,#18344d,#0d2237);color:white;border-radius:16px;padding:23px 28px;margin-bottom:28px}.result-kicker{display:block;color:#dfc48d;text-transform:uppercase;letter-spacing:.1em;font-size:.7rem;font-weight:800}.primary-result strong{font-size:clamp(3rem,7vw,5rem);line-height:1;color:#fff}.normalized{font:700 clamp(1.5rem,5vw,3rem) var(--font-hebrew);text-align:right;max-width:60%;overflow-wrap:anywhere}
+  .results{border-top:1px solid #e2d7c2;padding-top:28px;margin-top:10px}.number-lookup{padding-bottom:8px}.number-hero{text-align:center;background:linear-gradient(130deg,#18344d,#0d2237);color:#fff;border-radius:16px;padding:22px;margin-bottom:16px}.number-hero span{display:block;color:#dfc48d;font-size:.78rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}.number-hero strong{display:block;font-size:clamp(3.2rem,8vw,5.5rem);line-height:1.05}.number-hero h2{font:700 1.35rem Georgia,serif;margin:5px 0 0}.number-matches{display:grid;gap:10px}.source-link{display:inline-block;margin-top:16px;color:#8a5a08;font-weight:750}.primary-result{display:flex;justify-content:space-between;gap:20px;align-items:center;background:linear-gradient(130deg,#18344d,#0d2237);color:white;border-radius:16px;padding:23px 28px;margin-bottom:28px}.result-kicker{display:block;color:#dfc48d;text-transform:uppercase;letter-spacing:.1em;font-size:.7rem;font-weight:800}.primary-result strong{font-size:clamp(3rem,7vw,5rem);line-height:1;color:#fff}.normalized{font:700 clamp(1.5rem,5vw,3rem) var(--font-hebrew);text-align:right;max-width:60%;overflow-wrap:anywhere}
   .section-heading{display:flex;align-items:end;justify-content:space-between;margin:24px 0 12px}.section-heading span{color:#9a6a17;text-transform:uppercase;letter-spacing:.1em;font-size:.68rem;font-weight:850}.section-heading h2{margin:2px 0 0;font:700 1.45rem Georgia,serif;color:#18344d}.section-heading.compact{margin-top:0}
   .methods-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.method-card{border:1px solid #ded1b8;background:#faf7f0;text-align:left;padding:13px;border-radius:11px;cursor:help;color:#19354b}.method-card span{font:700 1rem var(--font-hebrew);float:right;color:#a3650c}.method-card small{display:block;color:#6a7279}.method-card strong{display:block;font-size:1.55rem;margin-top:8px}.method-card.featured{background:#fff3d5;border-color:#c89332}
   .two-column{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;margin-top:20px}.card{border:1px solid #ded1b8;border-radius:15px;padding:18px;background:#fff}.letters-grid{display:flex;flex-wrap:wrap;gap:7px}.letter-chip{min-width:62px;text-align:center;background:#f3ede1;border-radius:9px;padding:8px}.letter-chip strong{display:block;font:700 1.5rem var(--font-hebrew)}.letter-chip span{color:#9d5d08;font-weight:800}.letter-chip small{display:block;color:#7f8790;font-size:.67rem}.method-filter{display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;color:#67717a}.method-filter select{border:1px solid #d5c6a8;border-radius:7px;padding:6px;background:white}
@@ -299,6 +331,10 @@ import Layout from '../layouts/Layout.astro';
   .gematria-page .letter-chip span{display:block;color:#9d5d08;font-weight:800}
   .gematria-page .letter-chip small{display:block;color:#7f8790;font-size:.67rem}
   .gematria-page .match-note,.gematria-page .empty{color:#727b84;font-size:.82rem;margin:0 0 7px}
+  .gematria-page .number-match{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;background:#fff6dc;border:1px solid #d6b56c;border-radius:12px;padding:14px 16px}
+  .gematria-page .number-match b{font:700 1.35rem/1.45 var(--font-hebrew);color:#17354a;text-align:right}
+  .gematria-page .number-match small{color:#7b663d;font-size:.72rem;white-space:nowrap}
+  .gematria-page .number-none{background:#f3ede1;border-radius:12px;padding:18px;color:#67717a;text-align:center}
   .gematria-page .resonance{appearance:none;display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:center;text-align:left;border:1px solid #e0d5c0;background:#faf7f1;border-radius:9px;padding:9px 11px;color:#18344d;width:100%;font:inherit}
   .gematria-page .resonance b{font:700 1.1rem var(--font-hebrew)}
   .gematria-page .resonance span{font-size:.8rem;color:#69727b}
