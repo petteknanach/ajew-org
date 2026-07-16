@@ -1,0 +1,26 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import ReaderDirectory from '../../../../components/ReaderDirectory.astro';
+import fs from 'node:fs';
+import path from 'node:path';
+
+export function getStaticPaths() { return [{ params: { part: '1' } }]; }
+const { part } = Astro.params;
+const partNum = parseInt(part || '1');
+let indexData = null;
+try {
+  const idxPath = path.join(process.cwd(), 'public/reader/geedoolay-hanachal/index.json');
+  indexData = JSON.parse(fs.readFileSync(idxPath, 'utf8'));
+} catch (e) { console.error('Error loading geedoolay-hanachal index:', e); }
+const totalSections = indexData?.torahs?.length || 0;
+---
+<Layout title={`${indexData?.title || 'Geedoolay HaNachal'} — Directory`} description={`Directory for ${indexData?.title || 'Geedoolay HaNachal'}.`}>
+  <ReaderDirectory
+    title={indexData?.title || 'Geedoolay HaNachal'}
+    hebrewTitle={indexData?.hebrewTitle || ''}
+    subtitle={indexData?.description || indexData?.author || ''}
+    countLabel={`${totalSections} sections`}
+    items={indexData?.torahs || []}
+    hrefBase={`/reader/geedoolay-hanachal/${partNum}/`}
+  />
+</Layout>
