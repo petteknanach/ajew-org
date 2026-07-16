@@ -1,0 +1,125 @@
+---
+const {
+  placeholder = 'Search picture names and labels… / חיפוש בשמות ותוויות התמונות',
+  label = 'Search Gallery / חיפוש בגלריה'
+} = Astro.props;
+---
+
+<section class="gallery-search-panel" aria-label={label}>
+  <div class="gallery-search-inner">
+    <label class="gallery-search-label" for="gallerySearchInput">🔎 {label}</label>
+    <input id="gallerySearchInput" class="gallery-search-input" type="search" placeholder={placeholder} autocomplete="off" />
+    <div id="gallerySearchStatus" class="gallery-search-status" aria-live="polite"></div>
+  </div>
+</section>
+
+<script is:inline>
+  (function () {
+    function initGallerySearch() {
+      const input = document.getElementById('gallerySearchInput');
+      const status = document.getElementById('gallerySearchStatus');
+      if (!input || input.dataset.bound === '1') return;
+      input.dataset.bound = '1';
+
+      const normalize = (value) => String(value || '')
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0591-\u05C7\u0300-\u036f]/g, '')
+        .replace(/[-_]+/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+      const itemSelector = '[data-gallery-search-item], .gallery-item, .main-gallery-card, .meme-card';
+      const items = Array.from(document.querySelectorAll(itemSelector));
+
+      for (const item of items) {
+        const img = item.querySelector('img');
+        const bits = [
+          item.getAttribute('data-search'),
+          item.textContent,
+          img?.getAttribute('alt'),
+          img?.getAttribute('src'),
+          item.getAttribute('href'),
+          item.id
+        ];
+        item.dataset.gallerySearchText = normalize(bits.filter(Boolean).join(' '));
+      }
+
+      function applySearch() {
+        const q = normalize(input.value);
+        document.documentElement.classList.toggle('gallery-searching', !!q);
+        let visible = 0;
+        for (const item of items) {
+          const match = !q || (item.dataset.gallerySearchText || '').includes(q);
+          item.hidden = !match;
+          if (match) visible++;
+        }
+
+        for (const section of document.querySelectorAll('.category-section')) {
+          const sectionItems = Array.from(section.querySelectorAll(itemSelector));
+          if (!sectionItems.length) continue;
+          const hasVisible = sectionItems.some((item) => !item.hidden);
+          section.hidden = !!q && !hasVisible;
+        }
+
+        if (status) {
+          status.textContent = q ? `${visible} matching picture${visible === 1 ? '' : 's'}` : `${items.length} searchable picture${items.length === 1 ? '' : 's'}`;
+        }
+      }
+
+      input.addEventListener('input', applySearch);
+      applySearch();
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initGallerySearch, { once: true });
+    } else {
+      initGallerySearch();
+    }
+  })();
+</script>
+
+<style>
+  .gallery-search-panel {
+    background: linear-gradient(135deg, #fff8e1 0%, #f7f5f0 100%);
+    border-top: 1px solid #ead9aa;
+    border-bottom: 1px solid #ead9aa;
+    padding: 1.5rem 1rem;
+  }
+
+  .gallery-search-inner {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .gallery-search-label {
+    display: block;
+    color: #1a365d;
+    font-weight: 800;
+    font-size: 1.05rem;
+    margin-bottom: 0.55rem;
+  }
+
+  .gallery-search-input {
+    width: 100%;
+    border: 2px solid #d69e2e;
+    border-radius: 999px;
+    padding: 0.85rem 1.15rem;
+    font-size: 1.05rem;
+    background: #fff;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  }
+
+  .gallery-search-input:focus {
+    outline: 3px solid rgba(214, 158, 46, 0.25);
+  }
+
+  .gallery-search-status {
+    margin-top: 0.5rem;
+    color: #5f4b1a;
+    font-weight: 700;
+    min-height: 1.4em;
+  }
+
+  [hidden] { display: none !important; }
+</style>

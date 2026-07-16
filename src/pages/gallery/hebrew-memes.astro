@@ -37,12 +37,13 @@ const shareUrl = (n: number) => `https://ajew.org/gallery/hebrew-memes/#meme-${S
     </div>
 
     <div class="searchbar">
-      <input id="filter" type="search" placeholder="Search Hebrew meme text… / חיפוש בטקסט התמונות" />
+      <input id="filter" type="search" placeholder="Search Hebrew meme names, file names, and text… / חיפוש בשמות ובטקסט התמונות" />
+      <div id="filterStatus" class="filter-status" aria-live="polite"></div>
     </div>
 
     <section class="memes-grid">
       {memes.map((m) => (
-        <article class="meme-card" id={`meme-${String(m.number).padStart(3, '0')}`} data-search={`${m.title || ''} ${m.text || ''}`.toLowerCase()}>
+        <article class="meme-card" id={`meme-${String(m.number).padStart(3, '0')}`} data-search={`${m.title || ''} ${m.text || ''} ${m.filename || ''}`.toLowerCase()}>
           <a class="imagebox" href={imageUrl(m.filename)} target="_blank" rel="noopener">
             <img src={imageUrl(m.filename)} alt={m.title || `Hebrew meme ${m.number}`} loading="lazy" />
           </a>
@@ -64,13 +65,28 @@ const shareUrl = (n: number) => `https://ajew.org/gallery/hebrew-memes/#meme-${S
 
 <script>
   const filter = document.getElementById('filter');
-  filter?.addEventListener('input', () => {
-    const q = (filter.value || '').toLowerCase().trim();
-    document.querySelectorAll('.meme-card').forEach((card) => {
-      const haystack = card.getAttribute('data-search') || '';
-      card.style.display = !q || haystack.includes(q) ? 'flex' : 'none';
+  const filterStatus = document.getElementById('filterStatus');
+  const normalizeGalleryQuery = (value) => String(value || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0591-\u05C7\u0300-\u036f]/g, '')
+    .replace(/[-_]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  function applyMemeFilter() {
+    const q = normalizeGalleryQuery(filter?.value || '');
+    let visible = 0;
+    const cards = document.querySelectorAll('.meme-card');
+    cards.forEach((card) => {
+      const haystack = normalizeGalleryQuery(card.getAttribute('data-search') || card.textContent || '');
+      const match = !q || haystack.includes(q);
+      card.style.display = match ? 'flex' : 'none';
+      if (match) visible++;
     });
-  });
+    if (filterStatus) filterStatus.textContent = q ? `${visible} matching pictures` : `${cards.length} searchable pictures`;
+  }
+  filter?.addEventListener('input', applyMemeFilter);
+  applyMemeFilter();
 
   document.querySelectorAll('.share-btn').forEach((button) => {
     button.addEventListener('click', async () => {
@@ -155,6 +171,7 @@ const shareUrl = (n: number) => `https://ajew.org/gallery/hebrew-memes/#meme-${S
   }
 
   .searchbar { width: min(760px, 100%); margin: 0 auto 1.5rem; }
+  .filter-status { margin-top: 0.5rem; color: #5f4b1a; font-weight: 700; min-height: 1.4em; }
   .searchbar input {
     width: 100%;
     font-size: 1.05rem;

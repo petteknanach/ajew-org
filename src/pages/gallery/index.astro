@@ -1,5 +1,45 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import GallerySearch from '../../components/GallerySearch.astro';
+import fs from 'node:fs';
+import path from 'node:path';
+
+function formatFilename(filename) {
+  let formatted = decodeURIComponent(filename);
+  formatted = formatted.replace(/\.(jpg|jpeg|png|gif|webp|svg|tiff)$/i, '');
+  formatted = formatted.replace(/[-_]/g, ' ');
+  formatted = formatted.replace(/\b\w/g, l => l.toUpperCase());
+  return formatted;
+}
+
+function imageFiles(dir) {
+  const full = path.join(process.cwd(), 'public/images', dir);
+  try {
+    return fs.readdirSync(full).filter((file) => /\.(jpg|jpeg|png|gif|webp|svg|tiff)$/i.test(file) && !file.startsWith('.')).sort();
+  } catch (_) {
+    return [];
+  }
+}
+
+const galleryPictures = [
+  ...imageFiles('saba').map((filename) => ({ gallery: 'Saba / סבא', label: formatFilename(filename), url: `/images/saba/${encodeURIComponent(filename)}`, page: '/gallery/saba' })),
+  ...imageFiles('rabbi-nachman').map((filename) => ({ gallery: 'Rabbi Nachman / רבינו נחמן', label: formatFilename(filename), url: `/images/rabbi-nachman/${encodeURIComponent(filename)}`, page: '/gallery/rabbainu' })),
+  ...imageFiles('tomb-uman').map((filename) => ({ gallery: 'Uman / אומן', label: formatFilename(filename), url: `/images/tomb-uman/${encodeURIComponent(filename)}`, page: '/gallery/uman' })),
+  ...imageFiles('nanach').map((filename) => ({ gallery: 'Na Nach / נ נח', label: formatFilename(filename), url: `/images/nanach/${encodeURIComponent(filename)}`, page: '/gallery/nanach' })),
+  ...imageFiles('events').map((filename) => ({ gallery: 'Events / אירועים', label: formatFilename(filename), url: `/images/events/${encodeURIComponent(filename)}`, page: '/gallery/events' })),
+];
+
+try {
+  const metadataPath = path.join(process.cwd(), 'public/images/hebrew-memes/metadata.json');
+  const memes = JSON.parse(fs.readFileSync(metadataPath, 'utf-8'));
+  galleryPictures.push(...memes.map((m) => ({
+    gallery: 'Hebrew Memes / ממים בעברית',
+    label: m.title || `Hebrew Meme ${m.number}`,
+    text: m.text || '',
+    url: `/images/hebrew-memes/${encodeURIComponent(m.filename)}`,
+    page: `/gallery/hebrew-memes/#meme-${String(m.number).padStart(3, '0')}`
+  })));
+} catch (_) {}
 ---
 
 <Layout title="Gallery / גלריה" description="Photo galleries of Na Nach Breslov - Rabbi Nachman, Saba, Uman, and the movement">
@@ -15,6 +55,24 @@ import Layout from '../../layouts/Layout.astro';
         Welcome to our comprehensive photo gallery featuring the holy tzaddikim, sacred places, 
         and the vibrant Na Nach Breslov movement from around the world.
       </p>
+    </div>
+  </section>
+
+  <GallerySearch placeholder="Search gallery names, categories, and labels… / חיפוש בשמות ותוויות הגלריה" />
+
+  <section class="gallery-global-results" aria-label="Picture search results">
+    <div class="container">
+      <h2>Picture Search Results <span class="hebrew">תוצאות חיפוש תמונות</span></h2>
+      <div class="picture-search-grid">
+        {galleryPictures.map((picture) => (
+          <a class="picture-search-card" data-gallery-search-item data-search={`${picture.label} ${picture.gallery} ${picture.text || ''}`} href={picture.url} target="_blank" rel="noopener">
+            <img src={picture.url} alt={picture.label} loading="lazy" />
+            <span class="picture-label">{picture.label}</span>
+            <small>{picture.gallery}</small>
+            <em>Open image / פתח תמונה</em>
+          </a>
+        ))}
+      </div>
     </div>
   </section>
 
@@ -458,4 +516,51 @@ import Layout from '../../layouts/Layout.astro';
       font-size: 0.8rem;
     }
   }
+  .gallery-global-results {
+    display: none;
+    background: #fff;
+    padding: 2rem 0 3rem;
+    border-bottom: 1px solid #eee;
+  }
+
+  :global(html.gallery-searching) .gallery-global-results { display: block; }
+
+  .gallery-global-results h2 {
+    text-align: center;
+    color: var(--color-primary);
+    font-family: var(--font-hebrew);
+    margin-bottom: 1.25rem;
+  }
+
+  .picture-search-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 1rem;
+  }
+
+  .picture-search-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    background: #fffdf7;
+    border: 1px solid #ead9aa;
+    border-radius: 14px;
+    padding: 0.75rem;
+    text-decoration: none;
+    color: #1a365d;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  }
+
+  .picture-search-card img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 10px;
+    background: #eee;
+  }
+
+  .picture-label { font-weight: 800; line-height: 1.25; }
+  .picture-search-card small { color: #6b5a2b; font-weight: 700; }
+  .picture-search-card em { color: #9c5a00; font-style: normal; font-size: 0.85rem; }
+
 </style>

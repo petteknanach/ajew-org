@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import GallerySearch from '../../components/GallerySearch.astro';
 import fs from 'node:fs';
 
 const imageDir = './public/images/rabbi-nachman/';
@@ -61,6 +62,8 @@ const other = allImages.filter(img => !categorized.has(img));
       </div>
     </div>
   </section>
+
+  <GallerySearch />
 
   <section class="gallery">
     <div class="container">
