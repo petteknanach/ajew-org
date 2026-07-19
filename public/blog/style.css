@@ -141,3 +141,37 @@ body::before {
   .timeline-item { grid-template-columns: 1fr; gap: 4px; }
   .share-row { justify-content: flex-start; }
 }
+
+/* Semantic formatting for teaching posts; presentation only, prose remains unchanged. */
+.post-section-heading {
+  padding-bottom: .28em;
+  border-bottom: 2px solid rgba(159, 116, 27, .28);
+}
+.source-note {
+  margin-top: 2rem !important;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(237, 244, 252, .78);
+  color: #42536f;
+  font-size: .94em;
+}
+.post-note {
+  margin: 24px 0;
+  padding: 18px 20px;
+  border: 1px dashed var(--border);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, .72);
+  color: var(--muted);
+}
+.closing-blessing {
+  margin-top: 2rem !important;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  color: var(--deep-blue);
+}
+.pullquote.hebrew-section,
+[dir="rtl"].pullquote {
+  border-inline-start: 0;
+  border-inline-end: 6px solid var(--gold);
+  text-align: right;
+}

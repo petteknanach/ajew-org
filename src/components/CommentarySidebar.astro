@@ -578,6 +578,9 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
         segs.forEach(function (seg) {
           var pair = document.createElement('div');
           pair.className = 'commentary-sidebar-segment';
+          if (seg.format && /^[a-z-]+$/.test(String(seg.format))) {
+            pair.classList.add('commentary-format-' + String(seg.format));
+          }
           var idxSpan = document.createElement('span');
           idxSpan.className = 'commentary-sidebar-seg-num';
           idxSpan.textContent = String(seg.index || '');
@@ -1026,6 +1029,62 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
       border-bottom: 1px solid rgba(0, 0, 0, 0.06);
     }
     .commentary-sidebar-segment:last-child { border-bottom: none; }
+    .commentary-format-heading {
+      margin-top: 18px;
+      padding: 18px 0 10px;
+      border-top: 3px solid var(--reader-accent, #1a365d);
+      border-bottom: 1px solid var(--reader-border, #e0d6c2);
+    }
+    .commentary-format-heading .commentary-sidebar-seg-num,
+    .commentary-format-subheading .commentary-sidebar-seg-num,
+    .commentary-format-quote .commentary-sidebar-seg-num,
+    .commentary-format-source .commentary-sidebar-seg-num,
+    .commentary-format-note .commentary-sidebar-seg-num,
+    .commentary-format-closing .commentary-sidebar-seg-num { display: none; }
+    .commentary-format-heading .commentary-sidebar-he,
+    .commentary-format-heading .commentary-sidebar-en {
+      margin: 0;
+      color: var(--reader-accent, #1a365d);
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 1.28em;
+      font-weight: 800;
+      line-height: 1.3;
+    }
+    .commentary-format-subheading {
+      padding: 12px 0 2px;
+      border-bottom: 0;
+    }
+    .commentary-format-subheading .commentary-sidebar-he,
+    .commentary-format-subheading .commentary-sidebar-en {
+      margin: 0;
+      color: var(--reader-accent, #1a365d);
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 1.1em;
+      font-weight: 700;
+    }
+    .commentary-format-quote {
+      margin: 4px 0;
+      padding: 16px 18px;
+      border-inline-start: 5px solid #a5791d;
+      border-bottom: 0;
+      border-radius: 12px;
+      background: rgba(255, 244, 207, 0.62);
+    }
+    .commentary-format-source,
+    .commentary-format-note {
+      padding: 12px 14px;
+      border: 1px dashed var(--reader-border, #e0d6c2);
+      border-radius: 10px;
+      background: var(--reader-control-bg, #f0ebe0);
+      font-size: 0.9em;
+    }
+    .commentary-format-closing {
+      padding: 14px 0 4px;
+      border-top: 1px solid var(--reader-border, #e0d6c2);
+      border-bottom: 0;
+      color: var(--reader-accent, #1a365d);
+      font-weight: 700;
+    }
     .commentary-sidebar-seg-num {
       position: absolute;
       left: 0;

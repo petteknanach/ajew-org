@@ -83,14 +83,19 @@ def split_paragraphs(text):
     return [p.strip() for p in re.split(r'\n\s*\n+', text) if p.strip()]
 
 def format_body_html(body, indent='      '):
-    """Convert plain text to safe, readable HTML paragraphs."""
+    """Convert plain text to safe, readable HTML paragraphs without changing prose."""
+    paragraphs = split_paragraphs(body)
     parts = []
-    for p in split_paragraphs(body):
+    for i, p in enumerate(paragraphs):
         escaped = html_escape.escape(p)
         escaped = escaped.replace('\n', '<br>')
         direction = 'rtl' if re.search(r'[\u0590-\u05ff]', p) else 'ltr'
-        cls = 'hebrew-section' if direction == 'rtl' else 'english-section'
-        parts.append(f'{indent}<p class="{cls}" dir="{direction}">{escaped}</p>')
+        classes = ['hebrew-section' if direction == 'rtl' else 'english-section']
+        if i == 0:
+            classes.append('lede')
+        if p.strip() == 'Great blessings of Na Nach Nachmu Nachman Meuman!':
+            classes.append('closing-blessing')
+        parts.append(f'{indent}<p class="{" ".join(classes)}" dir="{direction}">{escaped}</p>')
     return '\n'.join(parts)
 
 def extract_article_body(content):
@@ -170,7 +175,7 @@ def create_blog_post(subject, body, date_str):
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{subject_html} — Na Nach Blog</title>
 {favicon_links()}
-<link rel="stylesheet" href="/blog/style.css?v=20260707">
+<link rel="stylesheet" href="/blog/style.css?v=20260719b">
 <script defer src="/blog/comments.js?v=20260707b"></script>
 </head>
 <body>
@@ -263,7 +268,7 @@ def rebuild_index():
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Na Nach Blog — Thoughts & Teachings</title>
 {favicon_links()}
-<link rel="stylesheet" href="/blog/style.css?v=20260707">
+<link rel="stylesheet" href="/blog/style.css?v=20260719b">
 <link rel="alternate" type="application/rss+xml" title="Na Nach Blog RSS" href="/blog/rss.xml">
 </head>
 <body>
