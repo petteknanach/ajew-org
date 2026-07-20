@@ -1,0 +1,84 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import fs from 'node:fs';
+import path from 'node:path';
+
+export function getStaticPaths() {
+  const manifestPath = path.join(process.cwd(), 'public/images/sefer-hamidos-blessing-part-ii/manifest.json');
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  const paths = [];
+  for (const entry of manifest.entries || []) {
+    for (const img of entry.images || []) {
+      const slug = path.basename(img.path || img.archive_filename || '').replace(/\.[^.]+$/, '');
+      if (!slug) continue;
+      paths.push({ params: { slug }, props: { entry, img, slug } });
+    }
+  }
+  return paths;
+}
+
+const { entry, img, slug } = Astro.props;
+const absImage = new URL(img.path, Astro.site).toString();
+const readerUrl = new URL(`/reader/sefer-hamidos/1/${entry.topic || entry.topic_number || 1}#media-${slug}`, Astro.site).toString();
+const title = `Sefer Hamidos ${entry.topic_title || "Media"} ${entry.segment} ${img.language} picture`;
+const desc = img.language === 'hebrew' ? entry.he : entry.en;
+const pageUrl = new URL(Astro.url.pathname, Astro.site).toString();
+const shareText = `${title} — ajew.org`;
+const xHref = `https://x.com/intent/post?url=${encodeURIComponent(pageUrl)}&text=${encodeURIComponent(shareText)}`;
+const telegramHref = `https://t.me/share/url?url=${encodeURIComponent(pageUrl)}&text=${encodeURIComponent(shareText)}`;
+const whatsappHref = `https://wa.me/?text=${encodeURIComponent(`${shareText} ${pageUrl}`)}`;
+---
+
+<Layout title={title} description={desc} image={img.path} type="article">
+  <main style="max-width: 980px; margin: 0 auto; padding: 2rem 1rem; text-align: center;">
+    <p><a href={readerUrl}>← Back to the teaching</a></p>
+    <h1>{title}</h1>
+    <p style="color:#666;">X, Telegram, and WhatsApp share this picture preview page. “Share actual image” sends the image file itself through the phone share sheet when supported.</p>
+    <p style="color:#666;">Direct image: <a href={absImage}>{absImage}</a></p>
+    <img id="actual-image" src={img.path} alt={title} style="max-width:100%;height:auto;border-radius:18px;box-shadow:0 16px 44px rgba(0,0,0,.18);" />
+    <p class="share-actions" style="margin-top:1rem; display:flex; gap:.5rem; flex-wrap:wrap; justify-content:center;">
+      <button type="button" id="share-file" data-image={absImage} data-title={title}>Share actual image</button>
+      <button type="button" id="copy-image" data-image={absImage}>Copy image</button>
+      <a href={xHref} target="_blank" rel="noopener noreferrer">X</a>
+      <a href={telegramHref} target="_blank" rel="noopener noreferrer">Telegram</a>
+      <a href={whatsappHref} target="_blank" rel="noopener noreferrer">WhatsApp</a>
+      <a href={img.path} download>Download image</a>
+    </p>
+    <style>
+      .share-actions > *{border:1px solid #1a365d;border-radius:999px;background:#fff;color:#1a365d;text-decoration:none;font-weight:800;padding:.55rem .85rem;cursor:pointer;font:inherit;}
+      @media(max-width:700px){.share-actions > *{flex:1 1 42%;min-height:42px;display:flex;align-items:center;justify-content:center;text-align:center;}}
+    </style>
+    <script is:inline>
+      (function(){
+        function filename(title, url) {
+          var ext = (url.split('.').pop() || 'png').split('?')[0];
+          return (title.replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '') || 'ajew-image') + '.' + ext;
+        }
+        async function imageFile(url, title) {
+          var r = await fetch(url);
+          var blob = await r.blob();
+          return new File([blob], filename(title || document.title, url), { type: blob.type || 'image/png' });
+        }
+        var share = document.getElementById('share-file');
+        if (share) share.addEventListener('click', async function(){
+          var url = share.dataset.image, title = share.dataset.title || document.title;
+          try {
+            var file = await imageFile(url, title);
+            if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+              await navigator.share({ title: title, text: title + ' — ajew.org', files: [file] });
+            } else window.location.href = url;
+          } catch(e) { window.location.href = url; }
+        });
+        var copy = document.getElementById('copy-image');
+        if (copy) copy.addEventListener('click', async function(){
+          var url = copy.dataset.image;
+          try {
+            var r = await fetch(url); var blob = await r.blob();
+            await navigator.clipboard.write([new ClipboardItem({ [blob.type || 'image/png']: blob })]);
+            copy.textContent = 'Copied image'; setTimeout(function(){ copy.textContent = 'Copy image'; }, 1800);
+          } catch(e) { window.location.href = url; }
+        });
+      })();
+    </script>
+  </main>
+</Layout>
