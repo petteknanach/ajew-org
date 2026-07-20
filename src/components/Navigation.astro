@@ -15,6 +15,7 @@ const { currentPath = Astro.url.pathname } = Astro.props;
 
 const navItems = [
   { label: 'Reader', labelHe: 'קורא', icon: '📖', href: '/reader', key: 'reader' },
+  { label: 'All Resources', labelHe: 'כל האוצרות', icon: '✨', href: '/resources', key: 'resources' },
   { label: 'Search', labelHe: 'חיפוש', icon: '🔍', href: '/search-enhanced', key: 'search' },
   { label: 'Prayers', labelHe: 'תפילות', icon: '🙏', href: '/prayers', key: 'prayers', featured: true },
   { label: 'My Fire', labelHe: 'האש שלי', icon: '🔥', href: '/my-flame', key: 'flame', fire: true },
@@ -33,6 +34,7 @@ const importantLinkGroups = [
   {
     title: 'Learning',
     links: [
+      { label: 'All Resources', href: '/resources' },
       { label: 'Library', href: '/reader' },
       { label: 'Likutay Moharan', href: '/reader/likutay-moharan/1/1' },
       { label: 'Likutay Tefilos', href: '/reader/likutay-tefilos/1/1' },
@@ -202,7 +204,7 @@ function isActive(path: string) {
       <button class="more-sheet-close" id="more-sheet-close" aria-label="Close">✕</button>
     </div>
     <ul class="more-sheet-list">
-      {navItems.slice(3).map(item => (
+      {navItems.filter(item => !['reader', 'search', 'prayers'].includes(item.key)).map(item => (
         <li>
           <a href={item.href} class="more-sheet-link">
             <span class="more-sheet-icon">{item.icon}</span>

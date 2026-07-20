@@ -1,0 +1,37 @@
+# Truth 7–12 — Exact Bilingual Source Sheet
+
+## Truth 7
+
+עַל־יְדֵי אֱמֶת לֹא יָמוּת קֹדֶם זְמַנּוֹ הַקָּצוּב.
+
+7. Through truth, one will not die before his allotted time.
+
+## Truth 8
+
+מֵרוּחַ פִּיו שֶׁל הַשַּׁקְּרָן נַעֲשָׂה הַיֵּצֶר הָרָע, וּכְשֶׁיָּבוֹא מָשִׁיחַ אָז לֹא יִהְיֶה שֶּׁקֶר, וּבִשְׁבִיל זֶה לֹא יִהְיֶה יֵצֶר הָרָע בָּעוֹלָם.
+
+8. From the breath (of the mouth) of a liar, the evil inclination is created, and when the Messiah comes, (then) there will be no falsehood, and consequently, there will be no evil inclination in the world.
+
+## Truth 9
+
+מִי שֶׁהוּא אִישׁ אֱמֶת, אֲזַי הוּא מַכִּיר בְּאַחֵר, אִם אַחֵר דּוֹבֵר שֶׁקֶר אִם לָאו.
+
+9. Someone who is a person of truth (then he) can discern in another, whether the other lies or not.
+
+## Truth 10
+
+הַסִּימָן שֶׁל הַשֶּׁקֶר - כְּשֶׁלֹּא יַסְכִּימוּ עָלָיו רַבִּים, וְהוּא מִשְּׁלֹשָׁה שֶׁהַקָּדוֹשׁ־בָּרוּךְ־הוּא שׂוֹנְאָן.
+
+10. The indication of falsehood - when the many do not agree with it, and it is one of the three things that the Holy One Blessed be He hates.
+
+## Truth 11
+
+עָשִׁיר מְכַחֵשׁ - אֵין הַדַּעַת סוֹבְלוֹ וְהוּא נִבְזֶה בְּעֵינֵי עַצְמוֹ.
+
+11. A rich man who denies (having the possessions of others) - the conscience cannot bear it, and he is despicable in his own eyes.
+
+## Truth 12
+
+תִּקּוּן לַפֶּה - שֶׁיִּתֵּן צְדָקָה.
+
+12. A rectification for the mouth – that he should give charity (see also articles 12, 13, and Charity 31).
