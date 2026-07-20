@@ -126,8 +126,8 @@ def ensure_share_page(collection):
     src=ROOT/'src/pages/share/sefer-hamidos-truth/[slug].astro'; dst=page_dir/'[slug].astro'
     text=src.read_text(encoding='utf8').replace('public/images/sefer-hamidos-truth/manifest.json',f'public/images/{collection}/manifest.json')
     text=text.replace('/reader/sefer-hamidos/1/1#media-${slug}','/reader/sefer-hamidos/1/${entry.topic || entry.topic_number || 1}#media-${slug}')
-    text=text.replace('Sefer Hamidos Truth ${entry.segment}','Sefer Hamidos ${entry.topic_title || "Media"} ${entry.segment}')
-    text=text.replace('Sefer Hamidos Truth ${entry.segment} ${img.language} picture','Sefer Hamidos ${entry.topic_title || "Media"} ${entry.segment} ${img.language} picture')
+    text=text.replace('Sefer Hamidos Truth ${entry.segment}','Sefer Hamidos ${entry.topic_title || "Media"} ${entry.displayLabel || entry.segment}')
+    text=text.replace('Sefer Hamidos Truth ${entry.segment} ${img.language} picture','Sefer Hamidos ${entry.topic_title || "Media"} ${entry.displayLabel || entry.segment} ${img.language} picture')
     dst.write_text(text,encoding='utf8')
 
 
