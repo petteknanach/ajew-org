@@ -87,7 +87,12 @@ const breadcrumbData = torahData ? JSON.stringify({
 function shSlugTitle(title = '') {
   return String(title).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
-const mediaCollection = torahNum === 1 ? 'sefer-hamidos-truth' : `sefer-hamidos-${shSlugTitle(torahData?.title || '')}`;
+const mediaCollectionOverrides = {
+  18: 'sefer-hamidos-theft',
+};
+const mediaCollection = torahNum === 1
+  ? 'sefer-hamidos-truth'
+  : mediaCollectionOverrides[torahNum] || `sefer-hamidos-${shSlugTitle(torahData?.title || '')}`;
 let mediaBySegment = new Map();
 try {
   const mediaPath = path.join(process.cwd(), `public/images/${mediaCollection}/manifest.json`);
