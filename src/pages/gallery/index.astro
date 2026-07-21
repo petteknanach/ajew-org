@@ -21,6 +21,9 @@ function imageFiles(dir) {
   }
 }
 
+const nanachImageCount = imageFiles('nanach').length;
+const nanachCategoryCount = 15;
+
 const galleryPictures = [
   ...imageFiles('saba').map((filename) => ({ gallery: 'Saba / סבא', label: formatFilename(filename), url: `/images/saba/${encodeURIComponent(filename)}`, page: '/gallery/saba' })),
   ...imageFiles('rabbi-nachman').map((filename) => ({ gallery: 'Rabbi Nachman / רבינו נחמן', label: formatFilename(filename), url: `/images/rabbi-nachman/${encodeURIComponent(filename)}`, page: '/gallery/rabbainu' })),
@@ -28,6 +31,19 @@ const galleryPictures = [
   ...imageFiles('nanach').map((filename) => ({ gallery: 'Na Nach / נ נח', label: formatFilename(filename), url: `/images/nanach/${encodeURIComponent(filename)}`, page: '/gallery/nanach' })),
   ...imageFiles('events').map((filename) => ({ gallery: 'Events / אירועים', label: formatFilename(filename), url: `/images/events/${encodeURIComponent(filename)}`, page: '/gallery/events' })),
 ];
+
+try {
+  const metadataPath = path.join(process.cwd(), 'public/images/nanach/metadata.json');
+  const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf-8'));
+  galleryPictures.forEach((picture) => {
+    if (!picture.url.startsWith('/images/nanach/')) return;
+    const filename = decodeURIComponent(picture.url.split('/').pop());
+    const item = metadata[filename];
+    if (!item) return;
+    picture.label = item.title || picture.label;
+    picture.text = [item.alt, item.credit, ...(item.categories || [])].filter(Boolean).join(' ');
+  });
+} catch (_) {}
 
 try {
   const metadataPath = path.join(process.cwd(), 'public/images/hebrew-memes/metadata.json');
@@ -104,6 +120,9 @@ try {
         <a href="/gallery/nanach#category-sacred-locations" class="cat-btn nanach">📍 Sacred Locations <span class="hebrew-inline">מקומות קדושים</span></a>
         <a href="/gallery/nanach#category-portraits" class="cat-btn nanach">😊 Portraits <span class="hebrew-inline">דיוקנאות</span></a>
         <a href="/gallery/nanach#category-signs-banners" class="cat-btn nanach">🪧 Signs & Banners <span class="hebrew-inline">שלטים ובאנרים</span></a>
+        <a href="/gallery/nanach#category-food" class="cat-btn nanach">🥨 Food & Drink <span class="hebrew-inline">אוכל ושתייה</span></a>
+        <a href="/gallery/nanach#category-humor" class="cat-btn nanach">😂 Humor <span class="hebrew-inline">הומור</span></a>
+        <a href="/gallery/nanach#category-cartoons" class="cat-btn nanach">✏️ Cartoons <span class="hebrew-inline">קריקטורות</span></a>
         <!-- Events Categories -->
         <a href="/gallery/events#music" class="cat-btn events">🎵 Simchas & Singing <span class="hebrew-inline">שמחות ושירה</span></a>
         <a href="/gallery/events#friends" class="cat-btn events">👥 Friends <span class="hebrew-inline">חברים</span></a>
@@ -133,8 +152,8 @@ try {
           <span class="card-icon">🌟</span>
           <h2>Na Nach Breslov Movement <span class="hebrew">תנועת נ נח מברסלב</span></h2>
           <p class="hebrew">תנועת נ נח מברסלב</p>
-          <p class="description">Spreading the light of Rebbe Nachman worldwide - 485 photos in 12 categories</p>
-          <p class="categories">🎨 Graffiti / גרפיטי 🚐 Vans / ואנים 🕍 Bais / בית 📍 Locations / מקומות 😊 Portraits / דיוקנאות 👥 Friends / חברים 🪧 Signs / שלטים 🖼️ Art / אמנות 🌤️ Nature / טבע 🎉 Events / אירועים 🏷️ Stickers / מדבקות 📚 Books / ספרים</p>
+          <p class="description">Spreading the light of Rebbe Nachman worldwide - {nanachImageCount} photos in {nanachCategoryCount} categories</p>
+          <p class="categories">🎨 Graffiti / גרפיטי 🚐 Vans / ואנים 🕍 Bais / בית 📍 Locations / מקומות 😊 Portraits / דיוקנאות 👥 Friends / חברים 🪧 Signs / שלטים 🖼️ Art / אמנות 🌤️ Nature / טבע 🎉 Events / אירועים 🏷️ Stickers / מדבקות 📚 Books / ספרים 🥨 Food / אוכל 😂 Humor / הומור ✏️ Cartoons / קריקטורות</p>
           <span class="view-btn">View Gallery / כניסה לגלריה →</span>
         </div>
       </a>

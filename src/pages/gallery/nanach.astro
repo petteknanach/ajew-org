@@ -27,6 +27,23 @@ function formatFilename(filename) {
   return formatted;
 }
 
+let imageMetadata = {};
+try {
+  imageMetadata = JSON.parse(fs.readFileSync(`${imageDir}metadata.json`, 'utf-8'));
+} catch (_) {}
+
+function imageLabel(filename) {
+  return imageMetadata[filename]?.title || formatFilename(filename);
+}
+
+function imageAlt(filename) {
+  return imageMetadata[filename]?.alt || imageLabel(filename);
+}
+
+function hasCategory(filename, category) {
+  return imageMetadata[filename]?.categories?.includes(category) || false;
+}
+
 const categories = {
   'graffiti': {
     name: 'Graffiti & Street Art',
@@ -151,7 +168,8 @@ const categories = {
        img.includes('ladder') || img.includes('tower') || img.includes('type') ||
        img.includes('net') || img.includes('king david')) &&
       !img.includes('portrait') && !img.includes('face') && !img.includes('graffiti') &&
-      !img.includes('simcha') && !img.includes('youth') && !img.includes('mosque')
+      !img.includes('simcha') && !img.includes('youth') && !img.includes('mosque') &&
+      !hasCategory(img, 'food') && !hasCategory(img, 'humor') && !hasCategory(img, 'cartoons')
     )
   },
   'nature': {
@@ -194,6 +212,24 @@ const categories = {
        img.includes('wallet') || img.includes('holland') || img.includes('glove') ||
        img.includes('disc') || img.includes('disk') || img.includes('album'))
     )
+  },
+  'food': {
+    name: 'Food & Drink',
+    hebrew: 'אוכל ושתייה',
+    icon: '🥨',
+    images: allImages.filter(img => hasCategory(img, 'food'))
+  },
+  'humor': {
+    name: 'Humor',
+    hebrew: 'הומור',
+    icon: '😂',
+    images: allImages.filter(img => hasCategory(img, 'humor'))
+  },
+  'cartoons': {
+    name: 'Cartoons',
+    hebrew: 'קריקטורות',
+    icon: '✏️',
+    images: allImages.filter(img => hasCategory(img, 'cartoons'))
   },
   'booksbreslov': {
     name: 'Breslov Books & Likutay',
@@ -253,9 +289,9 @@ const categories = {
             <div class="gallery-grid">
               {cat.images.map((img, index) => (
                 <div class="gallery-item">
-                  <img src={`/images/nanach/${img}`} alt={formatFilename(img)} loading="lazy" />
+                  <img src={`/images/nanach/${img}`} alt={imageAlt(img)} loading="lazy" />
                   <div class="overlay"><span>{cat.name} #{index + 1}</span></div>
-                  <div class="caption">{formatFilename(img)}</div>
+                  <div class="caption">{imageLabel(img)}</div>
                 </div>
               ))}
             </div>
