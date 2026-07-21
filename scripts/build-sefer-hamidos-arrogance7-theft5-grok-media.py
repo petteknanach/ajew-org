@@ -86,8 +86,6 @@ def make_still(base,text,lang,topic_title,segment,source_label):
                   fill=(255,253,239,255) if dark else (12,30,62,255),direction=direction,
                   anchor='ra' if direction=='rtl' else 'la',stroke_width=1,stroke_fill=(0,0,0,140) if dark else (255,255,255,160)); y+=lh
     draw_seal(draw)
-    credit=ImageFont.truetype(FONT,13)
-    draw.text((40,704),source_label,font=credit,fill=(255,255,255,220),stroke_width=1,stroke_fill=(0,0,0,190))
     return im.convert('RGB')
 
 
