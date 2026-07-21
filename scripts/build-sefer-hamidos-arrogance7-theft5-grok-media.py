@@ -175,7 +175,7 @@ def main():
             kind='local-photo' if is_local else 'grok-h'
             fname=f'sh-{slug}-{seg:03d}-{kind}-{lang}.png'
             make_still(base.copy(),text,lang,target['topic_title'],display,source_label).save(out/fname,optimize=True)
-            item={'language':label,'variant':variant,'path':f'/images/{collection}/{fname}','archive_filename':fname,
+            item={'language':label,'variant':variant,'path':f'/images/{collection}/{fname}?v=f5cb3041e','archive_filename':fname,
                   'source':'Local Pictures still (Saba/Na Nach)' if is_local else 'Grok/xAI realistic cinematic generated base',
                   'quality':'Exact Sefer Hamidos teaching overlaid in post',
                   'video_path':f'/images/{collection}/{final_video.name}','video_filename':final_video.name,
@@ -206,7 +206,7 @@ def main():
     for e in new:
         for im in e['images']:
             for key in ('path','video_path'):
-                p=PUB/im[key].lstrip('/')
+                p=PUB/im[key].split('?',1)[0].lstrip('/')
                 if not p.exists() or p.stat().st_size<10000:missing.append(str(p))
     print('AUDIT entries',len(new),'images',sum(len(e['images']) for e in new),'videos',len(uniq_vid),'local',len(local),'saba',len(saba),'generated',len(new)-len(local),'forbidden',len(forbidden),'missing',len(missing))
     if PARTIAL:
