@@ -3,9 +3,9 @@
  * Provides offline support for reader pages and core assets
  */
 
-// Bumped 2026-05-05 (after Vercel rollback) to invalidate stale catalog/index
-// caches and let users see the new tinyana §60-§71 commentary.
-const CACHE_NAME = 'ajew-v3';
+// Bumped 2026-07-23 so stale reader/commentary responses cannot leave the
+// Pettek Nanach sidebar stuck loading after a deployment.
+const CACHE_NAME = 'ajew-v4';
 const CORE_ASSETS = [
   '/',
   '/reader',

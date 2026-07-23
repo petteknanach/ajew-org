@@ -517,6 +517,19 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
         renderLayerSegments();
       }
 
+      // Commentary JSON is long-lived content and older service workers may still
+      // hold a stale response for the unversioned URL. Version every sidebar
+      // request so the current registry and JSON always arrive together.
+      var COMMENTARY_DATA_VERSION = '2026-07-23-1';
+      function fetchCommentaryJson(url) {
+        var separator = url.indexOf('?') === -1 ? '?' : '&';
+        var versionedUrl = url + separator + 'commentary_v=' + encodeURIComponent(COMMENTARY_DATA_VERSION);
+        return fetch(versionedUrl, { credentials: 'same-origin', cache: 'reload' }).then(function (r) {
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          return r.json();
+        });
+      }
+
       function renderRunning(def) {
         if (def.status !== 'available' || !def.url) {
           renderRunningPlaceholder(def);
@@ -527,10 +540,7 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
           return;
         }
         renderLoading();
-        fetch(def.url, { credentials: 'same-origin' }).then(function (r) {
-          if (!r.ok) throw new Error('HTTP ' + r.status);
-          return r.json();
-        }).then(function (json) {
+        fetchCommentaryJson(def.url).then(function (json) {
           cache[def.url] = json;
           renderRunningData(def, json);
         }).catch(function (err) {
@@ -631,10 +641,7 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
           return Promise.reject(new Error('Missing commentary source info.'));
         }
         if (cache[url]) return Promise.resolve(cache[url]);
-        return fetch(url, { credentials: 'same-origin' }).then(function (r) {
-          if (!r.ok) throw new Error('HTTP ' + r.status);
-          return r.json();
-        }).then(function (json) {
+        return fetchCommentaryJson(url).then(function (json) {
           cache[url] = json;
           return json;
         });
@@ -1146,6 +1153,10 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
 
     /* Mobile: drawer from the right, covers most of the screen, has backdrop */
     @media (max-width: 900px) {
+      .commentary-sidebar-toggle {
+        right: 12px;
+        bottom: calc(76px + env(safe-area-inset-bottom));
+      }
       .commentary-sidebar {
         width: 92%;
         min-width: 0;
