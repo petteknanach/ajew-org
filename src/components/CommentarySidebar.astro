@@ -420,11 +420,13 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
             idxSpan.textContent = String(seg.index || '');
             pair.appendChild(idxSpan);
 
-            // Support three formats:
+            // Support four formats:
             // 1. seg.layers[current] = {he, en, he_nikud} (structured)
-            // 2. seg[current] = string (PNC direct layer content)
-            // 3. seg.he / seg.en (legacy flat)
+            // 2. seg[current] = {he, en, he_nikud} (legacy PNC structured)
+            // 3. seg[current] = string (PNC direct layer content)
+            // 4. seg.he / seg.en (legacy flat)
             var layer = seg.layers && seg.layers[current] ? seg.layers[current] : null;
+            var directLayer = (seg[current] && typeof seg[current] === 'object') ? seg[current] : null;
             var directText = (seg[current] && typeof seg[current] === 'string') ? seg[current] : '';
             var heText, enText, isDirect = false;
 
@@ -432,15 +434,18 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
               // Format 1: structured layer object
               heText = layer.he_nikud || layer.he || '';
               enText = layer.en || '';
+            } else if (directLayer) {
+              // Format 2: older PNC files store layers directly on each segment.
+              heText = directLayer.he_nikud || directLayer.he || '';
+              enText = directLayer.en || '';
             } else if (directText) {
-              // Format 2: direct string content (PNC format)
+              // Format 3: direct string content (PNC format)
               // PNC layers are pre-filtered: beginner=EN, intermediate=mixed, scholarly=HE
-              // Show content regardless of reader language mode
               heText = directText;
               enText = directText;
               isDirect = true;
             } else {
-              // Format 3: legacy flat
+              // Format 4: legacy flat
               heText = seg.he_nikud || seg.he || '';
               enText = seg.en || '';
             }
