@@ -55,7 +55,9 @@
 
 
   function shareUrlFor(url) {
-    return url || window.location.href;
+    var raw = url || window.location.href;
+    try { return new URL(raw, window.location.href).href; }
+    catch (e) { return window.location.href; }
   }
 
   function shareMedia(title, url) {
