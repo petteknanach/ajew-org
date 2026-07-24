@@ -3,7 +3,8 @@ import Layout from '../../layouts/Layout.astro';
 
 // Profile data for Rebbe Nachman of Breslov
 const tzaddik = {
-  name: "Rebbe Nachman of Breslov",
+  name: "Rabbi Nachman of Breslov",
+  alternate_name: "Rebbe Nachman of Breslov",
   hebrew_name: "רבי נחמן מברסלב",
   yahrzeit_hebrew: "י״ח בְּתִשְׁרֵי",
   yahrzeit_english: "18 Tishrei",
@@ -44,18 +45,22 @@ const tzaddik = {
   works: [
     {
       title: "Likutey Moharan",
+      path: "/reader/likutay-moharan/1/1/",
       description: "Collected teachings arranged by his disciple Reb Noson. The primary text of Breslov Chassidus, containing deep Torah insights arranged by topic."
     },
     {
       title: "Sippurei Ma'asiyot",
+      path: "/reader/sipurey-maasiyos/1/intro/",
       description: "Thirteen mystical stories containing profound secrets of Torah. Rebbe Nachman said, 'I am telling you a story, and in it is everything.'"
     },
     {
       title: "Sichos HaRan",
+      path: "/reader/sichos-haran/1/1/",
       description: "Informal conversations and teachings recorded by his disciples, offering practical spiritual guidance."
     },
     {
       title: "Sefer HaMidot",
+      path: "/reader/sefer-hamidos/1/1/",
       description: "A dictionary of character traits arranged alphabetically, offering insights into personal growth and ethical development."
     }
   ],
@@ -110,19 +115,41 @@ const tzaddik = {
     }
   ]
 };
+
+const personSchema = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "@id": "https://ajew.org/tzaddikim/rebbe-nachman/#person",
+  name: "Rabbi Nachman of Breslov",
+  alternateName: ["Rebbe Nachman of Breslov", "Nachman of Breslov", "Rabbi Nachman", "רבי נחמן מברסלב"],
+  url: "https://ajew.org/tzaddikim/rebbe-nachman/",
+  mainEntityOfPage: "https://ajew.org/tzaddikim/rebbe-nachman/",
+  birthDate: "1772",
+  deathDate: "1810-10-16",
+  birthPlace: { "@type": "Place", name: "Medzhybizh, Ukraine" },
+  deathPlace: { "@type": "Place", name: "Uman, Ukraine" },
+  description: tzaddik.significance,
+  knowsAbout: ["Breslov Hasidism", "Hitbodedut", "Jewish prayer", "Jewish mysticism", "Torah"],
+  subjectOf: tzaddik.works.map((work) => ({
+    "@type": "Book",
+    name: work.title,
+    url: `https://ajew.org${work.path}`
+  }))
+};
 ---
 
 <Layout 
-  title={`Rebbe Nachman of Breslov | Tzaddikim Profiles`}
-  description={`Learn about Rebbe Nachman of Breslov, founder of Breslov Chassidus with yahrzeit on 18 Tishrei. Revolutionary teacher emphasizing joy, personal prayer, and storytelling.`}
+  title={`Rabbi Nachman of Breslov — Biography, Teachings & Books`}
+  description={`Learn about Rabbi Nachman of Breslov and read his teachings and books free in English and Hebrew: Likutay Moharan, Sichos HaRan, Sefer HaMidos, and more.`}
 >
-  <script type="application/ld+json" set:html={} />
+  <script type="application/ld+json" set:html={JSON.stringify(personSchema)} />
 
   <div class="tzaddik-profile">
     <!-- Header with basic info -->
     <div class="profile-header">
       <div class="profile-info">
         <h1 class="profile-name">{tzaddik.name}</h1>
+        <p class="profile-alternate">Also known as {tzaddik.alternate_name}</p>
         <h2 class="profile-hebrew" dir="rtl">{tzaddik.hebrew_name}</h2>
         
         <div class="profile-meta">
@@ -182,10 +209,10 @@ const tzaddik = {
       <h2>Major Works</h2>
       <div class="works-grid">
         {tzaddik.works.map((work, index) => (
-          <div class="work-card" key={index}>
+          <a class="work-card" href={work.path} key={index}>
             <div class="work-title">{work.title}</div>
             <div class="work-description">{work.description}</div>
-          </div>
+          </a>
         ))}
       </div>
     </div>
