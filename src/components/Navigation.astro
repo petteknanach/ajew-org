@@ -15,6 +15,7 @@ const { currentPath = Astro.url.pathname } = Astro.props;
 
 const navItems = [
   { label: 'Reader', labelHe: 'קורא', icon: '📖', href: '/reader', key: 'reader' },
+  { label: 'Rabbi Nachman', labelHe: 'רבי נחמן', icon: '🔥', href: '/tzaddikim/rebbe-nachman', key: 'rabbi-nachman' },
   { label: 'All Resources', labelHe: 'כל האוצרות', icon: '✨', href: '/resources', key: 'resources' },
   { label: 'Search', labelHe: 'חיפוש', icon: '🔍', href: '/search-enhanced', key: 'search' },
   { label: 'Prayers', labelHe: 'תפילות', icon: '🙏', href: '/prayers', key: 'prayers', featured: true },
@@ -34,6 +35,7 @@ const importantLinkGroups = [
   {
     title: 'Learning',
     links: [
+      { label: 'Rabbi Nachman of Breslov', href: '/tzaddikim/rebbe-nachman' },
       { label: 'All Resources', href: '/resources' },
       { label: 'Library', href: '/reader' },
       { label: 'Likutay Moharan', href: '/reader/likutay-moharan/1/1' },
