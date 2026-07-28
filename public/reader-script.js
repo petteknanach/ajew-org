@@ -2365,7 +2365,7 @@
           id: 'ln-sichos',
           label: 'Na Nach',
           labelHe: '\u05dc\u05d9\u05e7\u05d5\u05d8\u05d9 \u05e0 \u05e0\u05d7',
-          url: '/reader/likutay-nanach/volume-4/sichos-' + sichosFile + '.json',
+          url: '/reader/likutay-nanach/volume-4/sichos-' + sichosFile + '.json?v=20260728-debt',
           type: 'commentary'
         });
       }
@@ -2503,7 +2503,7 @@
         type:'commentary'});
       if (bookId === 'talmud-bavli-chulin' && torah === 166) {
         sources.push({id:'blog-chulin-debt',label:'Na Nach',labelHe:'מתי יש ללוות',
-          url:'/reader/blog-commentary/chulin-debt.json',
+          url:'/reader/blog-commentary/chulin-debt.json?v=20260728-debt',
           type:'commentary'});
       }
     }
