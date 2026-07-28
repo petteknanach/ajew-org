@@ -1,0 +1,124 @@
+---
+interface Props {
+  title: string;
+  hebrewTitle?: string;
+  src: string;
+  poster?: string;
+  description?: string;
+  citation?: string;
+  sourceName: string;
+  sourceHandle: string;
+  sourceUrl: string;
+}
+
+const {
+  title,
+  hebrewTitle,
+  src,
+  poster,
+  description,
+  citation,
+  sourceName,
+  sourceHandle,
+  sourceUrl,
+} = Astro.props;
+---
+
+<section class="teaching-video" aria-label={`Video: ${title}`}>
+  <div class="teaching-video-heading">
+    <span class="teaching-video-icon" aria-hidden="true">🎬</span>
+    <div>
+      <h2>{title}</h2>
+      {hebrewTitle && <p class="teaching-video-he" lang="he" dir="rtl">{hebrewTitle}</p>}
+    </div>
+  </div>
+
+  <div class="teaching-video-player">
+    <video controls preload="metadata" playsinline poster={poster}>
+      <source src={src} type="video/mp4" />
+      Your browser does not support HTML video. <a href={src}>Download the video</a>.
+    </video>
+  </div>
+
+  {description && <p class="teaching-video-description">{description}</p>}
+  {citation && <p class="teaching-video-citation"><strong>Source teaching:</strong> {citation}</p>}
+  <p class="teaching-video-credit">
+    <strong>Original Hebrew video:</strong>{' '}
+    <a href={sourceUrl} target="_blank" rel="noopener noreferrer">{sourceName} ({sourceHandle}) on Instagram</a>.
+    English subtitles added by ajew.org.
+  </p>
+  <a class="teaching-video-download" href={src} download>Download subtitled video</a>
+</section>
+
+<style>
+  .teaching-video {
+    max-width: 760px;
+    margin: 30px auto;
+    padding: 22px;
+    border: 1px solid var(--reader-border, #d8cfbf);
+    border-radius: 16px;
+    background: var(--reader-bg-secondary, #f8f5f0);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    font-family: 'Open Sans', sans-serif;
+  }
+
+  .teaching-video-heading {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .teaching-video-icon { font-size: 1.6rem; line-height: 1.2; }
+  .teaching-video h2 { margin: 0; color: var(--reader-text, #1a365d); font-size: 1.25rem; }
+  .teaching-video-he { margin: 4px 0 0; color: var(--reader-text-secondary, #665); font-family: 'Frank Ruhl Libre', serif; font-size: 1.15rem; }
+
+  .teaching-video-player {
+    width: min(100%, 430px);
+    margin: 0 auto 16px;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #000;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+  }
+
+  .teaching-video-player video {
+    display: block;
+    width: 100%;
+    aspect-ratio: 9 / 16;
+    object-fit: contain;
+    background: #000;
+  }
+
+  .teaching-video-description,
+  .teaching-video-citation,
+  .teaching-video-credit {
+    margin: 9px 0;
+    color: var(--reader-text, #333);
+    line-height: 1.55;
+    font-size: 0.92rem;
+  }
+
+  .teaching-video-credit {
+    padding-top: 10px;
+    border-top: 1px solid var(--reader-border, #d8cfbf);
+  }
+
+  .teaching-video-credit a { color: #1a5f8a; font-weight: 700; }
+  .teaching-video-download {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 9px 14px;
+    border-radius: 8px;
+    background: #1a365d;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.88rem;
+  }
+
+  @media (max-width: 520px) {
+    .teaching-video { margin: 22px 10px; padding: 15px; }
+    .teaching-video-player { width: min(100%, 360px); }
+  }
+</style>

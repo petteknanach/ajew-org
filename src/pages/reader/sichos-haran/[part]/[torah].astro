@@ -2,6 +2,7 @@
 import Layout from '../../../../layouts/Layout.astro';
 import Comments from '../../../../components/Comments.astro';
 import CommentarySidebar from '../../../../components/CommentarySidebar.astro';
+import TeachingVideo from '../../../../components/TeachingVideo.astro';
 import '../../../../styles/reader.css';
 import '../../../../styles/reader-v2.css';
 import fs from 'node:fs';
@@ -315,6 +316,20 @@ const structuredData = torahData ? JSON.stringify({
           </div>
         )}
       </div>
+
+      {torahNum === 78 && (
+        <TeachingVideo
+          title="In Every Place There Is Righteousness"
+          hebrewTitle="בכל מקום יש יושר"
+          src="/videos/sichos-haran-78-every-place-has-righteousness-english-subtitles.mp4"
+          poster="/images/videos/sichos-haran-78-every-place-has-righteousness-poster.jpg"
+          description="A cinematic Hebrew presentation of Rabbi Nachman's example explaining that some measure of righteousness can be found everywhere—the difference is when it begins. Includes burned-in English subtitles."
+          citation="Sichos HaRan (Rabbi Nachman's Wisdom), §78"
+          sourceName="רבי נחמן מברסלב"
+          sourceHandle="@rabbi_nachman30"
+          sourceUrl="https://www.instagram.com/rabbi_nachman30/"
+        />
+      )}
 
       <div class="reader-nav">
         {torahData.navigation.prevUrl ? (

@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import TeachingVideo from '../components/TeachingVideo.astro';
 ---
 
 <Layout title="Videos - Na Nach Breslov" description="Watch Na Nach Breslov videos, shiurim, and music on Rumble and YouTube.">
@@ -9,6 +10,22 @@ import Layout from '../layouts/Layout.astro';
     <h1>Videos</h1>
     <p class="subtitle">Na Nach Breslov shiurim, music, and more</p>
   </header>
+
+  <section class="featured-teaching-videos" aria-labelledby="featured-teaching-videos-title">
+    <h2 id="featured-teaching-videos-title">Featured Teaching Videos <span lang="he" dir="rtl">סרטוני תורה נבחרים</span></h2>
+    <TeachingVideo
+      title="In Every Place There Is Righteousness"
+      hebrewTitle="בכל מקום יש יושר"
+      src="/videos/sichos-haran-78-every-place-has-righteousness-english-subtitles.mp4"
+      poster="/images/videos/sichos-haran-78-every-place-has-righteousness-poster.jpg"
+      description="Rabbi Nachman's parable about the point of righteousness that can be found even after wrongdoing. Hebrew narration with burned-in English subtitles."
+      citation="Sichos HaRan (Rabbi Nachman's Wisdom), §78"
+      sourceName="רבי נחמן מברסלב"
+      sourceHandle="@rabbi_nachman30"
+      sourceUrl="https://www.instagram.com/rabbi_nachman30/"
+    />
+    <p class="teaching-link"><a href="/reader/sichos-haran/1/78">Read Sichos HaRan §78 in Hebrew and English →</a></p>
+  </section>
 
   <section class="video-section">
     <h2>Rumble Channel</h2>
@@ -86,6 +103,26 @@ import Layout from '../layouts/Layout.astro';
   }
 
   .subtitle { color: #666; font-size: 0.95em; }
+
+  .featured-teaching-videos {
+    margin-bottom: 48px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid #e0d6c2;
+  }
+
+  .featured-teaching-videos > h2 {
+    text-align: center;
+    color: #1a365d;
+    font-family: 'Frank Ruhl Libre', serif;
+  }
+
+  .featured-teaching-videos > h2 span {
+    display: inline-block;
+    margin-inline-start: 8px;
+  }
+
+  .teaching-link { text-align: center; margin: 10px 0 0; }
+  .teaching-link a { color: #1a365d; font-weight: 700; }
 
   .video-section {
     margin-bottom: 48px;
