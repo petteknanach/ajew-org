@@ -525,7 +525,7 @@ const entryJson = hasAny ? JSON.stringify(entry) : 'null';
       // Commentary JSON is long-lived content and older service workers may still
       // hold a stale response for the unversioned URL. Version every sidebar
       // request so the current registry and JSON always arrive together.
-      var COMMENTARY_DATA_VERSION = '2026-07-23-1';
+      var COMMENTARY_DATA_VERSION = '2026-07-28-2';
       function fetchCommentaryJson(url) {
         var separator = url.indexOf('?') === -1 ? '?' : '&';
         var versionedUrl = url + separator + 'commentary_v=' + encodeURIComponent(COMMENTARY_DATA_VERSION);

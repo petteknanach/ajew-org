@@ -62,10 +62,12 @@ const commentaryEntry = torahData ? {
   related_commentaries: [
     {
       book: "likutay-nanach",
-      section: "mishna-chulin",
+      section: torahNum === 166 ? "chulin-debt" : "mishna-chulin",
       label: "Likutay Nanach",
-      sectionTitle: "talmud-bavli-chulin",
-      url: "/reader/likutay-nanach/oral-torah/mishna-chulin.json"
+      sectionTitle: torahNum === 166 ? "מתי יש ללוות" : "talmud-bavli-chulin",
+      url: torahNum === 166
+        ? "/reader/blog-commentary/chulin-debt.json"
+        : "/reader/likutay-nanach/oral-torah/mishna-chulin.json"
     }
   ]
 } : null;
