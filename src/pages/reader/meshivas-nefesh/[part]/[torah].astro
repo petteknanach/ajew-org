@@ -223,6 +223,20 @@ const breadcrumbData = torahData ? JSON.stringify({
               <span class="segment-number">{seg.index}</span>
               <p>{seg.en || 'Translation not yet available'}</p>
             </div>
+            {seg.index === 1 && [58, 66, 88].includes(torahNum) && (
+              <details class="notebooklm-study-panel" style="grid-column:1/-1; margin:12px 0 4px; padding:12px 14px; border:1px solid var(--reader-border,#d8d0c4); border-radius:10px; background:var(--reader-bg-secondary,#f8f5f0); font-family:'Open Sans',sans-serif;">
+                <summary style="cursor:pointer; font-weight:700;">🌱 Begin Here: Spiritual Distance Is Your Starting Line</summary>
+                <div style="padding-top:10px;">
+                  <p style="margin:0 0 8px; font-size:.9rem;"><strong>AI-assisted interpretation.</strong> Analogies and explanations are illustrative and are not verified Torah text. Consult sections 58, 66, and 88.</p>
+                  <audio controls preload="none" style="width:100%;" src="https://archive.org/download/ajew-nlm-beginner-meshivas-nefesh-58-66-88-v1/beginner-audio-20260728-original.m4a"></audio>
+                  <p style="margin:8px 0 0; font-size:.85rem; display:flex; gap:12px; flex-wrap:wrap;">
+                    <a href="https://archive.org/download/ajew-nlm-beginner-meshivas-nefesh-58-66-88-v1/transcript.txt">Transcript</a>
+                    <a href="https://archive.org/details/ajew-nlm-beginner-meshivas-nefesh-58-66-88-v1">Archive and sources</a>
+                    <a href="https://archive.org/download/ajew-nlm-beginner-meshivas-nefesh-58-66-88-v1/beginner-audio-20260728-original.m4a" download>Download audio</a>
+                  </p>
+                </div>
+              </details>
+            )}
           </div>
         ))}
         </div>
