@@ -104,6 +104,27 @@ const todayLM = lmTorahMap[dayIndex] || 1;
   </div>
 </section>
 
+<!-- One Library, Many Doorways campaign -->
+<section class="home-campaign" aria-label="One Library, Many Doorways campaign">
+  <a href="/one-library-many-doorways" class="home-campaign-link">
+    <picture>
+      <source media="(max-width: 620px)" srcset="/images/campaigns/one-library-many-doorways/03_vertical_story_1080x1920.png" />
+      <img src="/images/campaigns/one-library-many-doorways/01_banner_16x9_1920x1080.png" alt="One Library, Many Doorways — explore books, bilingual texts, prayer, search, media, and open Torah tools" loading="eager" />
+    </picture>
+  </a>
+</section>
+
+<style>
+  .home-campaign { max-width: 1240px; margin: clamp(1.5rem, 4vw, 3rem) auto 0; padding: 0 1rem; }
+  .home-campaign-link { display: block; overflow: hidden; border-radius: 18px; box-shadow: 0 12px 34px rgba(16,44,80,.2); }
+  .home-campaign-link:focus-visible { outline: 4px solid #d4a017; outline-offset: 4px; }
+  .home-campaign img { display: block; width: 100%; height: auto; }
+  @media (max-width: 620px) {
+    .home-campaign { max-width: 410px; padding: 0 .75rem; }
+    .home-campaign-link { border-radius: 14px; }
+  }
+</style>
+
 <!-- ═══════════════════════════════════════
      DAILY QUOTE — Centerpiece of the page
      ═══════════════════════════════════════ -->

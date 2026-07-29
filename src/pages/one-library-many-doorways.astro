@@ -1,0 +1,165 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const doorways = [
+  {
+    label: 'Read',
+    title: 'Hebrew and English texts',
+    description: 'Study primary texts, translations, commentaries, and a broad Jewish reference library.',
+    href: '/reader',
+    cta: 'Browse the Library',
+  },
+  {
+    label: 'Find',
+    title: 'Search and discovery',
+    description: 'Follow words, topics, sources, relationships, Torah GPS, Torah Lens, and Torah Map.',
+    href: '/search-enhanced',
+    cta: 'Search Torah',
+  },
+  {
+    label: 'Pray',
+    title: 'Prayer and strengthening',
+    description: 'Find prayers and Torah pathways connected to what you are actually facing.',
+    href: '/prayers',
+    cta: 'Find a Prayer',
+  },
+  {
+    label: 'Explore',
+    title: 'History and media',
+    description: 'Explore attributed pictures, stories, videos, songs, galleries, and historical materials.',
+    href: '/videos',
+    cta: 'Watch and Listen',
+  },
+  {
+    label: 'Study',
+    title: 'Breslov and wider Torah',
+    description: 'Rabbi Nachman, Rabbi Nosson, Saba Yisroel, Ramchal, Tanach, Talmud, Mishna, Rambam, and more.',
+    href: '/resources#featured',
+    cta: 'See Every Resource',
+  },
+  {
+    label: 'Open',
+    title: 'Torah for people and tools',
+    description: 'Mobile access, bookmarks, notes, plain text, Markdown, JSON, and AI-readable guidance.',
+    href: '/ai.txt',
+    cta: 'Use AI-Friendly Texts',
+  },
+];
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'One Library, Many Doorways',
+  description: 'Books, exact bilingual texts, prayer, search, diagrams, stories, pictures, videos, songs, and open Torah tools—all connected at ajew.org.',
+  url: 'https://ajew.org/one-library-many-doorways',
+  mainEntity: {
+    '@type': 'ItemList',
+    numberOfItems: doorways.length,
+    itemListElement: doorways.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.title,
+      url: `https://ajew.org${item.href}`,
+    })),
+  },
+};
+---
+
+<Layout
+  title="One Library, Many Doorways"
+  description="Read, search, pray, discover, watch, listen, and study across ajew.org’s connected free Torah library."
+  image="/images/campaigns/one-library-many-doorways/og-1200x630.png"
+  jsonLd={jsonLd}
+  breadcrumbs={[{ name: 'Home', url: '/' }, { name: 'One Library, Many Doorways', url: '/one-library-many-doorways' }]}
+>
+  <section class="campaign-hero">
+    <div class="hero-copy">
+      <p class="eyebrow">A free digital Torah library</p>
+      <h1>One Library,<br />Many Doorways.</h1>
+      <p class="hero-description">Books, exact bilingual texts, prayer, search, diagrams, stories, pictures, videos, songs, and open Torah tools—all connected.</p>
+      <a class="primary-cta" href="/resources">Explore All Resources</a>
+    </div>
+  </section>
+
+  <main class="campaign-main">
+    <header class="intro">
+      <p class="eyebrow gold">Enter through what you need</p>
+      <h2>Torah for study, strengthening, discovery, and life.</h2>
+      <p>Whether you come for a primary text, an English translation, practical prayer, connected search, history, music, or machine-readable Torah, ajew.org gives you a faithful place to begin.</p>
+    </header>
+
+    <section class="doorway-grid" aria-label="Ways to explore ajew.org">
+      {doorways.map(item => (
+        <article class="doorway-card">
+          <p class="card-label">{item.label}</p>
+          <h3>{item.title}</h3>
+          <p>{item.description}</p>
+          <a href={item.href}>{item.cta} <span aria-hidden="true">→</span></a>
+        </article>
+      ))}
+    </section>
+
+    <section class="connected-message">
+      <div>
+        <p class="eyebrow">One connected ecosystem</p>
+        <h2>Many faithful paths into Torah.</h2>
+        <p>Start with the doorway you need today—and follow the connections deeper.</p>
+      </div>
+      <a class="primary-cta" href="/resources">Open the Resource Directory</a>
+    </section>
+  </main>
+</Layout>
+
+<style>
+  :global(body) { background: #f8f5ef; }
+  .campaign-hero {
+    min-height: min(78vh, 800px);
+    display: grid;
+    align-items: center;
+    padding: clamp(3rem, 8vw, 8rem);
+    color: #fffdfa;
+    background:
+      linear-gradient(90deg, rgba(16,44,80,.98) 0%, rgba(16,44,80,.94) 58%, rgba(16,44,80,.48) 100%),
+      url('/images/tomb-uman/uman-wide-tzion.jpg') center / cover no-repeat;
+  }
+  .hero-copy { max-width: 900px; }
+  .eyebrow { margin: 0; color: #f4d77a; font: 800 .82rem/1.4 'Open Sans', sans-serif; letter-spacing: .18em; text-transform: uppercase; }
+  h1, h2, h3 { font-family: Georgia, 'Times New Roman', serif; }
+  h1 { max-width: 980px; margin: .22em 0; color: #fffdfa; font-size: clamp(3.3rem, 8.2vw, 7.6rem); line-height: .98; }
+  .hero-description { max-width: 790px; margin: 1.3rem 0; color: #f8f5ef; font: 1.25rem/1.65 Georgia, serif; }
+  .primary-cta { display: inline-block; margin-top: 1rem; padding: 1rem 1.35rem; border-radius: .6rem; color: #102c50; background: #d4a017; font-weight: 800; text-decoration: none; box-shadow: 0 8px 20px rgba(4,18,34,.2); }
+  .primary-cta:hover, .primary-cta:focus-visible { background: #f4d77a; transform: translateY(-1px); }
+  .campaign-main { max-width: 1220px; margin: auto; padding: clamp(4rem, 8vw, 7rem) 1.25rem; color: #17202a; }
+  .intro { max-width: 900px; margin-bottom: 3rem; }
+  .eyebrow.gold { color: #a87809; }
+  .intro h2, .connected-message h2 { margin: .25em 0; color: #102c50; font-size: clamp(2.3rem, 5vw, 4.3rem); line-height: 1.08; }
+  .intro > p:last-child { max-width: 830px; color: #475467; font-size: 1.08rem; line-height: 1.65; }
+  .doorway-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.1rem; }
+  .doorway-card { display: flex; flex-direction: column; min-height: 245px; padding: 1.65rem; border: 1px solid #e0d6c2; border-top: 5px solid #d4a017; border-radius: .7rem; background: #fffdfa; box-shadow: 0 3px 12px rgba(16,44,80,.06); }
+  .card-label { margin: 0; color: #a87809; font: 800 .8rem/1.2 'Open Sans', sans-serif; letter-spacing: .16em; text-transform: uppercase; }
+  .doorway-card h3 { margin: .45rem 0; color: #173a61; font-size: 1.55rem; }
+  .doorway-card > p:not(.card-label) { margin: 0 0 1rem; color: #5d6873; line-height: 1.55; }
+  .doorway-card a { margin-top: auto; color: #102c50; font-weight: 800; }
+  .connected-message { display: flex; align-items: center; justify-content: space-between; gap: 2rem; margin-top: clamp(4rem, 8vw, 7rem); padding: clamp(2rem, 5vw, 4.5rem); border-radius: 1rem; color: #fffdfa; background: #102c50; }
+  .connected-message h2 { color: #f4d77a; }
+  .connected-message p:last-child { margin-bottom: 0; color: #f8f5ef; }
+  .connected-message .primary-cta { flex: 0 0 auto; margin: 0; }
+  :global(body.dark-mode) .campaign-main { color: #eef0f4; }
+  :global(body.dark-mode) .campaign-main .intro h2 { color: #f4d77a; }
+  :global(body.dark-mode) .intro > p:last-child { color: #c6cad2; }
+  :global(body.dark-mode) .doorway-card { background: #202434; border-color: #3b4052; border-top-color: #d4a017; }
+  :global(body.dark-mode) .doorway-card h3 { color: #f4d77a; }
+  :global(body.dark-mode) .doorway-card > p:not(.card-label) { color: #c6cad2; }
+  :global(body.dark-mode) .doorway-card a { color: #f4d77a; }
+  @media (max-width: 900px) { .doorway-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 640px) {
+    .campaign-hero { min-height: 74vh; padding: 4.5rem 1.4rem; background-position: 58% center; }
+    h1 { font-size: clamp(3rem, 15vw, 4.4rem); }
+    .hero-description { font-size: 1.08rem; }
+    .campaign-main { padding: 4rem .85rem 5.5rem; }
+    .doorway-grid { grid-template-columns: 1fr; }
+    .doorway-card { min-height: 220px; }
+    .connected-message { align-items: flex-start; flex-direction: column; }
+  }
+  @media (prefers-reduced-motion: reduce) { .primary-cta { transition: none; } }
+</style>
