@@ -1,6 +1,7 @@
 ---
 import Layout from '../../../../layouts/Layout.astro';
 import Comments from '../../../../components/Comments.astro';
+import TeachingVideo from '../../../../components/TeachingVideo.astro';
 import '../../../../styles/reader.css';
 import '../../../../styles/reader-v2.css';
 import fs from 'node:fs';
@@ -272,6 +273,20 @@ const structuredData = torahData ? JSON.stringify({
           </div>
         )}
       </div>
+
+      {partNum === 2 && torahNum === 37 && (
+        <TeachingVideo
+          title="Hope in Every Generation Through the True Tzaddikim"
+          hebrewTitle="יש לנו תקוה בכל דור על ידי הצדיקי אמת"
+          src="/videos/likutay-halachos-specific-blessings-5-3-hope-through-true-tzaddikim-english-subtitles.mp4"
+          poster="/images/videos/likutay-halachos-specific-blessings-5-3-hope-through-true-tzaddikim-poster.jpg"
+          description="Rabbi Noson teaches that even after the destruction of the Holy Temple, we retain hope in every generation through the true tzaddikim, who illuminate our remembrance of the World to Come. Hebrew narration with burned-in English subtitles."
+          citation="Likutay Halachos, Hilchos Birchos HaRe'iyah v'Sha'ar Brachos Pratiyos 5:3"
+          sourceName="רבי נחמן מברסלב"
+          sourceHandle="@rabbi_nachman30"
+          sourceUrl="https://www.instagram.com/rabbi_nachman30/"
+        />
+      )}
 
       <div class="reader-nav">
         {torahData.navigation.prevUrl ? (
