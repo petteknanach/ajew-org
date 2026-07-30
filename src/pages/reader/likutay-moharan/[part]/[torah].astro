@@ -2,6 +2,7 @@
 import Layout from '../../../../layouts/Layout.astro';
 import CommentarySidebar from '../../../../components/CommentarySidebar.astro';
 import Comments from '../../../../components/Comments.astro';
+import TeachingVideo from '../../../../components/TeachingVideo.astro';
 import '../../../../styles/reader.css';
 import '../../../../styles/reader-v2.css';
 import commentaryRegistry from '../../../../data/lm-commentaries.json';
@@ -337,6 +338,20 @@ const pageDesc = torahData
           </div>
         )}
       </div>
+
+      {partNum === 2 && torahNum === 46 && (
+        <TeachingVideo
+          title="The Walls Are Only an Illusion"
+          hebrewTitle="אין שום חומה"
+          src="/videos/likutay-moharan-tinyana-46-walls-are-an-illusion-english-subtitles.mp4"
+          poster="/images/videos/likutay-moharan-tinyana-46-walls-are-an-illusion-poster.jpg"
+          description="An animated Hebrew adaptation of the Baal Shem Tov's parable cited by Rabbi Nachman: the walls surrounding the king's treasure are only an illusion, and the essential thing is a strong and courageous heart. Burned-in English subtitles."
+          citation="Likutay Moharan II, Torah 46 (Baal Shem Tov parable; adapted presentation)"
+          sourceName="רבי נחמן מברסלב"
+          sourceHandle="@rabbi_nachman30"
+          sourceUrl="https://www.instagram.com/reel/DbDWPzBNMEF/?igsh=MWoyZXcxeGhydW5idg=="
+        />
+      )}
 
       <!-- Bottom Navigation -->
       <div class="reader-nav">
