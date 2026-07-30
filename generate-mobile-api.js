@@ -58,10 +58,10 @@ const CONFIG = {
     },
     {
       id: 'sichos-haran',
-      title: 'Sichos Haran',
+      title: 'Words of Rabbi Nachman',
       hebrewTitle: 'שיחות הר"ן',
       author: 'Rabbi Nachman of Breslov',
-      description: 'Conversations and teachings of Rabbi Nachman.',
+      description: 'The words and teachings of Rabbi Nachman.',
       color: '#1abc9c',
       parts: 1,
       totalChapters: 30

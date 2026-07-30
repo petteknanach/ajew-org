@@ -47,7 +47,7 @@ if (torahData) {
   });
 }
 
-const bookName = 'Sichos HaRan';
+const bookName = 'Words of Rabbi Nachman';
 const bookHebrew = 'שיחות הר"ן';
 const itemName = 'Sicha';
 
@@ -67,21 +67,21 @@ const commentaryEntry = torahData ? {
   ]
 } : null;
 const pageTitle = torahData
-  ? `${torahData.hebrewTitle || torahData.title} - Sichos HaRan`
+  ? `${torahData.hebrewTitle || torahData.title} - Words of Rabbi Nachman`
   : 'Sicha Not Found';
 const pageDesc = torahData
-  ? `Read ${torahData.title} from Sichos HaRan by Rabbi Nachman of Breslov`
+  ? `Read ${torahData.title} from Words of Rabbi Nachman by Rabbi Nachman of Breslov`
   : '';
 
 const structuredData = torahData ? JSON.stringify({
   "@context": "https://schema.org",
   "@type": "Article",
-  "headline": `${torahData.title} - Sichos HaRan`,
+  "headline": `${torahData.title} - Words of Rabbi Nachman`,
   "alternativeHeadline": torahData.hebrewTitle || '',
   "author": { "@type": "Person", "name": "Rabbi Nachman of Breslov" },
   "publisher": { "@type": "Organization", "name": "ajew.org" },
   "inLanguage": ["he", "en"],
-  "isPartOf": { "@type": "Book", "name": "Sichos HaRan" },
+  "isPartOf": { "@type": "Book", "name": "Words of Rabbi Nachman" },
   "url": `https://ajew.org/reader/sichos-haran/${partNum}/${torahNum}`
 }) : '';
 ---
@@ -99,14 +99,14 @@ const structuredData = torahData ? JSON.stringify({
     <div
       class="reader-container"
       data-torah-id={torahData.id}
-      data-torah-title={`${torahData.title} - Sichos HaRan`}
+      data-torah-title={`${torahData.title} - Words of Rabbi Nachman`}
     >
       <div class="reader-progress"></div>
 
       <div class="reader-breadcrumb">
         <a href="/reader">Reader</a>
         <span>&rsaquo;</span>
-        <a href="/reader">Sichos HaRan</a>
+        <a href="/reader">Words of Rabbi Nachman</a>
         <span>&rsaquo;</span>
         {torahData.hebrewTitle || torahData.title}
       </div>
@@ -269,7 +269,7 @@ const structuredData = torahData ? JSON.stringify({
         {torahData.hebrewTitle && <div class="hebrew-title">{torahData.hebrewTitle}</div>}
         <h1>{torahData.title}</h1>
         <p style="color: var(--reader-text-secondary); font-size: 0.9em; font-family: 'Open Sans', sans-serif;">
-          שיחות הר"ן - Sichos HaRan
+          שיחות הר"ן — Words of Rabbi Nachman
         </p>
       </div>
 
@@ -324,7 +324,7 @@ const structuredData = torahData ? JSON.stringify({
           src="/videos/sichos-haran-78-every-place-has-righteousness-english-subtitles.mp4"
           poster="/images/videos/sichos-haran-78-every-place-has-righteousness-poster.jpg"
           description="A cinematic Hebrew presentation of Rabbi Nachman's example explaining that some measure of righteousness can be found everywhere—the difference is when it begins. Includes burned-in English subtitles."
-          citation="Sichos HaRan (Rabbi Nachman's Wisdom), §78"
+          citation="Words of Rabbi Nachman, §78"
           sourceName="רבי נחמן מברסלב"
           sourceHandle="@rabbi_nachman30"
           sourceUrl="https://www.instagram.com/rabbi_nachman30/"
