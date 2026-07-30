@@ -18,7 +18,7 @@ import CompactYahrzeit from '../components/CompactYahrzeit.astro';
 const {
   title,
   description = "The largest online Breslov Torah library. 226+ sacred Jewish texts — Likutay Moharan, Zohar, Talmud, Mishna, Rambam, Tanach — in Hebrew with English translations. Free.",
-  image = "/og-image.png",
+  image = "/og-image-20260730.png",
   noindex = false,
   type = "website",
   jsonLd,
@@ -92,6 +92,7 @@ const readerPlainBookBase = readerPlainMatch ? `/reader-plain/${readerPlainMatch
     <meta property="og:title" content={`${title} | ajew.org`} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={ogImage} />
+    <meta property="og:image:secure_url" content={ogImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content={title} />
@@ -127,7 +128,7 @@ const readerPlainBookBase = readerPlainMatch ? `/reader-plain/${readerPlainMatch
           "url": "https://ajew.org",
           "logo": {
             "@type": "ImageObject",
-            "url": "https://ajew.org/og-image.png"
+            "url": "https://ajew.org/og-image-20260730.png"
           }
         },
         "potentialAction": {
