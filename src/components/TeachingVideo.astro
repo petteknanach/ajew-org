@@ -47,6 +47,12 @@ const {
     <a href={sourceUrl} target="_blank" rel="noopener noreferrer">{sourceName} ({sourceHandle}) on Instagram</a>.
     English subtitles added by ajew.org.
   </p>
+  <p class="teaching-video-rights">
+    <strong>Rights and ownership:</strong>{' '}
+    All rights to the original Hebrew video—including its footage, audio, narration, editing, and artwork—belong exclusively to{' '}
+    <a href={sourceUrl} target="_blank" rel="noopener noreferrer">{sourceName} ({sourceHandle})</a>.
+    AJew.org claims no ownership of the original video; AJew.org added only the English subtitles and source context.
+  </p>
   <a class="teaching-video-download" href={src} download>Download subtitled video</a>
 </section>
 
@@ -92,7 +98,8 @@ const {
 
   .teaching-video-description,
   .teaching-video-citation,
-  .teaching-video-credit {
+  .teaching-video-credit,
+  .teaching-video-rights {
     margin: 9px 0;
     color: var(--reader-text, #333);
     line-height: 1.55;
@@ -104,7 +111,15 @@ const {
     border-top: 1px solid var(--reader-border, #d8cfbf);
   }
 
-  .teaching-video-credit a { color: #1a5f8a; font-weight: 700; }
+  .teaching-video-rights {
+    padding: 10px 12px;
+    border: 1px solid var(--reader-border, #d8cfbf);
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--reader-bg, #fff) 82%, #f2d27a 18%);
+  }
+
+  .teaching-video-credit a,
+  .teaching-video-rights a { color: #1a5f8a; font-weight: 700; }
   .teaching-video-download {
     display: inline-block;
     margin-top: 8px;
