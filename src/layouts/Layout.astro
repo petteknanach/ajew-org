@@ -18,7 +18,7 @@ import CompactYahrzeit from '../components/CompactYahrzeit.astro';
 const {
   title,
   description = "The largest online Breslov Torah library. 226+ sacred Jewish texts — Likutay Moharan, Zohar, Talmud, Mishna, Rambam, Tanach — in Hebrew with English translations. Free.",
-  image = "/og-image-20260730.png",
+  image = "/og-image-20260731-x.png",
   noindex = false,
   type = "website",
   jsonLd,
@@ -102,7 +102,9 @@ const readerPlainBookBase = readerPlainMatch ? `/reader-plain/${readerPlainMatch
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={`${title} | ajew.org`} />
     <meta name="twitter:description" content={description} />
+    <meta name="twitter:url" content={canonicalURL} />
     <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={title} />
     <meta name="twitter:site" content="@NanachSigned" />
     
     <!-- Additional Meta Tags -->
@@ -128,7 +130,7 @@ const readerPlainBookBase = readerPlainMatch ? `/reader-plain/${readerPlainMatch
           "url": "https://ajew.org",
           "logo": {
             "@type": "ImageObject",
-            "url": "https://ajew.org/og-image-20260730.png"
+            "url": "https://ajew.org/og-image-20260731-x.png"
           }
         },
         "potentialAction": {
@@ -171,7 +173,7 @@ const readerPlainBookBase = readerPlainMatch ? `/reader-plain/${readerPlainMatch
       "name": "ajew.org — A Jew",
       "alternateName": ["ajew", "AJew", "A Jew"],
       "url": "https://ajew.org",
-      "logo": "https://ajew.org/og-image.png",
+      "logo": "https://ajew.org/og-image-20260731-x.png",
       "description": "The largest online Breslov Torah library with 226+ sacred Jewish texts, 25,000+ pages in Hebrew with English translations.",
       "contactPoint": {
         "@type": "ContactPoint",
