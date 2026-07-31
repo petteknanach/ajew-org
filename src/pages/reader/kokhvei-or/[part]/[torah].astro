@@ -1,6 +1,7 @@
 ---
 import Layout from '../../../../layouts/Layout.astro';
 import Comments from '../../../../components/Comments.astro';
+import TeachingVideo from '../../../../components/TeachingVideo.astro';
 import '../../../../styles/reader.css';
 import '../../../../styles/reader-v2.css';
 import fs from 'node:fs';
@@ -162,6 +163,7 @@ const breadcrumbData = torahData ? JSON.stringify({
       <div class="reader-content mode-hebrew">
         <div class="reader-content-original">
 {torahData.segments.map((seg) => (
+          <>
           <div class="reader-segment-pair" id={`seg-${seg.index}`}>
             <div class="reader-segment segment-he" data-index={String(seg.index)}>
               <span class="segment-number">{seg.index}</span>
@@ -172,6 +174,20 @@ const breadcrumbData = torahData ? JSON.stringify({
               <p>{seg.en || 'Translation not yet available'}</p>
             </div>
           </div>
+          {torahNum === 11 && seg.index === 25 && (
+            <TeachingVideo
+              title="The Last Journey"
+              hebrewTitle="הנסיעה האחרונה"
+              src="/videos/kokhvei-or-sipurim-niflaim-last-journey-english-subtitles.mp4"
+              poster="/images/videos/kokhvei-or-sipurim-niflaim-last-journey-poster.jpg"
+              description="Rabbi Avraham bar Nachman's parable about life's unstoppable journey and the need to prepare spiritual provisions for the way, presented in Hebrew with burned-in English subtitles."
+              citation="Kokhvei Or, Sipurim Niflaim, Parables from Rabbi Avraham bar Nachman, §25 (כוכבי אור, סיפורים נפלאים, משלים מרבי אברהם ז״ל)"
+              sourceName="רבי נחמן מברסלב"
+              sourceHandle="@rabbi_nachman30"
+              sourceUrl="https://www.instagram.com/reel/DYaI8dXNhWB/?igsh=MWd5NXI3cnB1cm16YQ=="
+            />
+          )}
+          </>
         ))}
         </div>
         {torahData.aligned_segments && (
