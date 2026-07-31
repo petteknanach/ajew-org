@@ -1,5 +1,6 @@
 ---
 import Layout from '../../../../layouts/Layout.astro';
+import TeachingVideo from '../../../../components/TeachingVideo.astro';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -107,6 +108,20 @@ const pageDesc = simanData
             <p class="segment-empty">Content not yet available for this siman.</p>
           )}
         </div>
+
+        {simanNum === 447 && (
+          <TeachingVideo
+            title="The Great Wealthy Man"
+            hebrewTitle="הגביר הגדול"
+            src="/videos/chayey-moharan-447-great-wealthy-man-english-subtitles.mp4"
+            poster="/images/videos/chayey-moharan-447-great-wealthy-man-poster.jpg"
+            description="Rabbi Nachman's parable about speaking with others concerning fear of Heaven, presented in Hebrew with burned-in English subtitles."
+            citation="Chayey Moharan §447 (חיי מוהר״ן תמ״ז)"
+            sourceName="רבי נחמן מברסלב"
+            sourceHandle="@rabbi_nachman30"
+            sourceUrl="https://www.instagram.com/reel/DbByx3ItxlJ/?igsh=ZXBwbjU4dm8zdnk4"
+          />
+        )}
 
         <!-- Bottom nav -->
         <nav class="siman-nav bottom">
