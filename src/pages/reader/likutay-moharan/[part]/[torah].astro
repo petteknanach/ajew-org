@@ -159,8 +159,13 @@ const pageDesc = torahData
       
 
       <!-- Toolbar -->
-
-      
+      {partNum === 1 && torahNum === 1 && (
+        <a class="super-reader-launch" href="/reader/super/likutay-moharan/1/1">
+          <span class="super-reader-launch-badge">NEW</span>
+          <span><strong>Open Super Reader</strong><small>All commentaries · synchronized study desk · Pe’er HaLikutim</small></span>
+          <b aria-hidden="true">→</b>
+        </a>
+      )}
 
 <!-- Unified Audio Player -->
 <div id="audio-controls" style="margin:0 auto 12px auto; max-width:700px; font-family:'Open Sans',sans-serif;">
@@ -417,3 +422,27 @@ const pageDesc = torahData
     <CommentarySidebar part={partNum} torah={torahNum} entry={commentaryEntry} />
   )}
 </Layout>
+
+<style>
+  .super-reader-launch {
+    max-width: 700px;
+    margin: 0 auto 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 11px;
+    background: linear-gradient(115deg, #6f2f24, #a55c3e);
+    box-shadow: 0 8px 22px rgba(80, 35, 25, .2);
+    font-family: 'Open Sans', sans-serif;
+  }
+  .super-reader-launch-badge { font-size: 9px; font-weight: 800; letter-spacing: .1em; background: #fff2; border: 1px solid #fff5; border-radius: 999px; padding: 4px 7px; }
+  .super-reader-launch > span:nth-child(2) { display: flex; flex: 1; flex-direction: column; }
+  .super-reader-launch strong { font-size: 14px; }
+  .super-reader-launch small { opacity: .8; font-size: 10px; margin-top: 2px; }
+  .super-reader-launch b { font-size: 20px; transition: transform .15s ease; }
+  .super-reader-launch:hover b { transform: translateX(4px); }
+  @media (max-width: 500px) { .super-reader-launch { margin-inline: 8px; } .super-reader-launch small { line-height: 1.35; } }
+</style>

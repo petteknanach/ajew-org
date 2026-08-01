@@ -1,0 +1,350 @@
+---
+import Layout from '../../../../../layouts/Layout.astro';
+import fs from 'node:fs';
+import path from 'node:path';
+
+const load = (relativePath: string) => JSON.parse(fs.readFileSync(path.join(process.cwd(), relativePath), 'utf8'));
+const torah = load('public/reader/likutay-moharan/part-1/torah-1.json');
+const pettek = load('public/reader/pettek-nanach-commentary/torah-1.json');
+const biur = load('public/reader/biur-halikutim/section-6.json');
+const parparos = load('public/reader/parparos-lechochma/section-2.json');
+const likutayNanach = load('public/reader/likutay-nanach/volume-4/chapter-5.json');
+const peer = load('public/reader/super/likutay-moharan/1/1/peer-halikutim/manifest.json');
+const payload = JSON.stringify({ torah, pettek, biur, parparos, likutayNanach, peer }).replace(/</g, '\\u003c');
+const sectionLabels = [
+  ['הפסוק הפותח', 'The opening verse'],
+  ['התורה מעלה חן', 'Torah elevates grace'],
+  ['השכל שבכל דבר', 'The intellect in everything'],
+  ['החן חוקק בלב', 'Grace engraves the heart'],
+  ['אורו של יוסף', 'The light of Yosef'],
+  ['אש לבנה', 'The white-fire disguise'],
+  ['התורה מכניעה את היצר', 'Torah subdues the evil inclination'],
+  ['סגירת המעגל', 'The teaching completes its circle'],
+];
+---
+
+<Layout
+  title="Super Reader — Likutay Moharan Torah 1"
+  description="Study Likutay Moharan Torah 1 with synchronized Hebrew and English, layered commentary, classic commentaries, sources, notes, and the Pe’er HaLikutim facsimile."
+>
+  <div class="sr-shell" id="super-reader">
+    <div class="sr-progress" id="sr-progress"></div>
+
+    <header class="sr-topbar">
+      <div class="sr-brand">
+        <a href="/reader/likutay-moharan/1/1" class="sr-back" aria-label="Return to classic reader">←</a>
+        <div>
+          <span class="sr-eyebrow">AJEW SUPER READER · BETA</span>
+          <strong>ליקוטי מוהר״ן · תורה א</strong>
+        </div>
+      </div>
+      <div class="sr-title">אשרי תמימי דרך <span>·</span> Ashray Temeemay Durech</div>
+      <div class="sr-actions" aria-label="Reader controls">
+        <div class="sr-segmented" aria-label="Language">
+          <button data-lang="he">עב</button>
+          <button data-lang="both" class="is-active">עב · EN</button>
+          <button data-lang="en">EN</button>
+        </div>
+        <button id="sr-font-down" title="Smaller text" aria-label="Smaller text">A−</button>
+        <button id="sr-font-up" title="Larger text" aria-label="Larger text">A+</button>
+        <button id="sr-theme" title="Change theme" aria-label="Change theme">◐</button>
+        <button id="sr-command" class="sr-command-button" title="Power menu (Ctrl/⌘ K)">⌘K</button>
+      </div>
+    </header>
+
+    <nav class="sr-rail" aria-label="Torah sections">
+      <div class="sr-rail-head">
+        <span>מהלך התורה</span>
+        <small>8 sections</small>
+      </div>
+      <ol>
+        {torah.segments.map((segment: any, index: number) => (
+          <li>
+            <button class={index === 0 ? 'is-active' : ''} data-jump={segment.index}>
+              <span class="sr-step">{segment.index}</span>
+              <span class="sr-step-label">
+                <b>{sectionLabels[index][0]}</b>
+                <small>{sectionLabels[index][1]}</small>
+              </span>
+            </button>
+          </li>
+        ))}
+      </ol>
+      <div class="sr-map">
+        <b>Torah map</b>
+        <span>Torah → Intellect → ח + נ → חן → Prayer</span>
+      </div>
+    </nav>
+
+    <main class="sr-reading" id="sr-reading">
+      <section class="sr-hero">
+        <div class="sr-kicker">תורה א · 1</div>
+        <h1 lang="he" dir="rtl">{torah.hebrewTitle}</h1>
+        <p>{torah.keyVerseTranslation}</p>
+        <div class="sr-themes">
+          {torah.themes.map((theme: string) => <span>{theme}</span>)}
+        </div>
+        <div class="sr-source-counts">
+          <span><b>8</b> synchronized sections</span>
+          <span><b>6</b> study layers</span>
+          <span><b>20</b> Pe’er facsimile pages</span>
+        </div>
+      </section>
+
+      <div class="sr-text" id="sr-text">
+        {torah.segments.map((segment: any, index: number) => (
+          <article class={`sr-passage ${index === 0 ? 'is-current' : ''}`} id={`sr-seg-${segment.index}`} data-segment={segment.index} tabindex="0">
+            <button class="sr-anchor" data-anchor={segment.index} aria-label={`Copy link to section ${segment.index}`}>{segment.index}</button>
+            <div class="sr-passage-tools">
+              <button data-bookmark={segment.index} title="Bookmark this section" aria-label="Bookmark this section">♡</button>
+              <button data-comment={segment.index} title="Open commentary" aria-label="Open commentary">☰</button>
+            </div>
+            <div class="sr-columns">
+              <div class="sr-hebrew" lang="he" dir="rtl">
+                <p data-plain={segment.he} data-nikud={segment.he_nikud || segment.he}>{segment.he}</p>
+              </div>
+              <div class="sr-english" lang="en">
+                <p>{String(segment.en || '').replace(/\s+/g, ' ').trim()}</p>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+      <footer class="sr-reader-footer">
+        <a href="/reader/likutay-moharan/1/2">Continue to Torah 2 →</a>
+        <span>Classic reader remains available</span>
+      </footer>
+    </main>
+
+    <aside class="sr-dock" id="sr-dock" aria-label="Study sources">
+      <div class="sr-dock-head">
+        <div>
+          <span class="sr-eyebrow">LIVE STUDY DESK</span>
+          <strong id="sr-dock-title">Section 1</strong>
+        </div>
+        <button id="sr-dock-close" aria-label="Close study desk">×</button>
+      </div>
+      <div class="sr-tabs" role="tablist" aria-label="Sources">
+        <button class="is-active" data-source="guide">Guide</button>
+        <button data-source="pettek">Pettek</button>
+        <button data-source="biur">Biur</button>
+        <button data-source="parparos">Parparos</button>
+        <button data-source="nanach">L. Nanach</button>
+        <button data-source="peer">Pe’er</button>
+        <button data-source="notes">Notes</button>
+      </div>
+      <div class="sr-dock-toolbar">
+        <label class="sr-search-wrap">
+          <span>⌕</span>
+          <input id="sr-source-search" type="search" placeholder="Search this source…" autocomplete="off" />
+        </label>
+        <select id="sr-layer" aria-label="Commentary depth">
+          <option value="beginner">Beginner</option>
+          <option value="intermediate" selected>Intermediate</option>
+          <option value="scholarly">Scholarly</option>
+        </select>
+      </div>
+      <div class="sr-dock-body" id="sr-dock-body" tabindex="0"></div>
+    </aside>
+
+    <button class="sr-mobile-desk" id="sr-mobile-desk" aria-controls="sr-dock">Sources <span>6</span></button>
+
+    <div class="sr-command" id="sr-command-panel" hidden>
+      <button class="sr-command-scrim" data-command-close aria-label="Close power menu"></button>
+      <div class="sr-command-card" role="dialog" aria-modal="true" aria-label="Power menu">
+        <div class="sr-command-input">
+          <span>⌕</span><input id="sr-command-input" placeholder="Jump, search, or act…" autocomplete="off" /><kbd>ESC</kbd>
+        </div>
+        <div id="sr-command-results"></div>
+        <small class="sr-command-hint">↑↓ navigate · Enter run · Ctrl/⌘ K open anywhere</small>
+      </div>
+    </div>
+  </div>
+
+  <script type="application/json" id="sr-data" set:html={payload}></script>
+  <script is:inline>
+    (() => {
+      const data = JSON.parse(document.getElementById('sr-data').textContent);
+      const root = document.getElementById('super-reader');
+      const dock = document.getElementById('sr-dock');
+      const dockBody = document.getElementById('sr-dock-body');
+      const dockTitle = document.getElementById('sr-dock-title');
+      const sourceSearch = document.getElementById('sr-source-search');
+      const layerSelect = document.getElementById('sr-layer');
+      const state = { segment: 1, source: 'guide', lang: 'both', theme: localStorage.getItem('ajew-super-theme') || 'paper', font: Number(localStorage.getItem('ajew-super-font') || 20), page: 0, zoom: 1 };
+      const sourceNames = { guide: 'Quick guide', pettek: 'Pettek Nanach Commentary', biur: 'Biur HaLikutim', parparos: 'Parparos LeChochma', nanach: 'Likutay Nanach', peer: 'Pe’er HaLikutim', notes: 'My notes' };
+      const passages = [...document.querySelectorAll('.sr-passage')];
+
+      function clean(value) { return String(value || '').replace(/\n{3,}/g, '\n\n').trim(); }
+      function addParagraphs(container, value, lang) {
+        clean(value).split(/\n\s*\n/).filter(Boolean).forEach(text => {
+          const p = document.createElement('p'); p.textContent = text.replace(/\*\*/g, '');
+          if (lang === 'he') { p.lang = 'he'; p.dir = 'rtl'; p.className = 'sr-source-he'; }
+          container.appendChild(p);
+        });
+      }
+      function sourceHeader(title, subtitle) {
+        const h = document.createElement('div'); h.className = 'sr-source-header';
+        const strong = document.createElement('strong'); strong.textContent = title; h.appendChild(strong);
+        if (subtitle) { const small = document.createElement('small'); small.textContent = subtitle; h.appendChild(small); }
+        dockBody.appendChild(h);
+      }
+      function fullSource(source, title, subtitle) {
+        sourceHeader(title, subtitle);
+        (source.segments || []).forEach(seg => {
+          const card = document.createElement('section'); card.className = 'sr-source-card';
+          const badge = document.createElement('span'); badge.className = 'sr-source-index'; badge.textContent = seg.index; card.appendChild(badge);
+          if (seg.he) addParagraphs(card, seg.he, 'he');
+          if (seg.en) addParagraphs(card, seg.en, 'en');
+          dockBody.appendChild(card);
+        });
+      }
+      function renderPeer() {
+        const page = data.peer.pages[state.page];
+        sourceHeader(data.peer.hebrewTitle, `Source PDF page ${page.sourcePage} · ${state.page + 1} of ${data.peer.pages.length}`);
+        const controls = document.createElement('div'); controls.className = 'sr-facsimile-controls';
+        controls.innerHTML = '<button data-page="prev">←</button><span>Page '+page.sourcePage+'</span><button data-page="next">→</button><button data-zoom="out">−</button><button data-zoom="in">+</button><a target="_blank" rel="noopener" href="'+data.peer.pdf+'">PDF ↗</a>';
+        const viewport = document.createElement('div'); viewport.className = 'sr-facsimile';
+        const img = document.createElement('img'); img.src = page.image; img.alt = `${data.peer.title}, source page ${page.sourcePage}`; img.loading = 'eager'; img.style.width = `${state.zoom * 100}%`; viewport.appendChild(img);
+        dockBody.append(controls, viewport);
+        controls.addEventListener('click', e => {
+          const button = e.target.closest('button'); if (!button) return;
+          if (button.dataset.page === 'prev') state.page = Math.max(0, state.page - 1);
+          if (button.dataset.page === 'next') state.page = Math.min(data.peer.pages.length - 1, state.page + 1);
+          if (button.dataset.zoom === 'out') state.zoom = Math.max(.65, state.zoom - .15);
+          if (button.dataset.zoom === 'in') state.zoom = Math.min(2.2, state.zoom + .15);
+          renderDock();
+        });
+      }
+      function renderNotes() {
+        sourceHeader('My notes', `Private to this browser · Section ${state.segment}`);
+        const area = document.createElement('textarea'); area.className = 'sr-notes'; area.placeholder = 'Capture a question, insight, or practical application…';
+        const key = `ajew-super-note-lm-1-1-${state.segment}`; area.value = localStorage.getItem(key) || '';
+        const status = document.createElement('small'); status.className = 'sr-note-status'; status.textContent = area.value ? 'Saved locally' : 'Autosaves locally';
+        area.addEventListener('input', () => { localStorage.setItem(key, area.value); status.textContent = 'Saved'; });
+        dockBody.append(area, status);
+      }
+      function renderDock() {
+        dockBody.replaceChildren(); sourceSearch.value = '';
+        dockTitle.textContent = `Section ${state.segment} · ${sourceNames[state.source]}`;
+        layerSelect.hidden = state.source !== 'pettek';
+        sourceSearch.hidden = ['guide','pettek','notes'].includes(state.source);
+        if (state.source === 'guide') {
+          const seg = data.torah.segments.find(s => Number(s.index) === state.segment);
+          sourceHeader('Instant guide', `Synchronized to section ${state.segment}`);
+          const card = document.createElement('section'); card.className = 'sr-source-card sr-guide-card';
+          addParagraphs(card, seg.commentary?.he, 'he'); addParagraphs(card, seg.commentary?.en, 'en'); dockBody.appendChild(card);
+        } else if (state.source === 'pettek') {
+          const seg = data.pettek.segments.find(s => Number(s.relatedSegment || s.index) === state.segment) || data.pettek.segments[0];
+          const layer = seg?.layers?.[layerSelect.value] || {};
+          sourceHeader('Pettek Nanach Commentary', `${layerSelect.options[layerSelect.selectedIndex].text} · synchronized`);
+          const card = document.createElement('section'); card.className = 'sr-source-card';
+          addParagraphs(card, layer.he, 'he'); addParagraphs(card, layer.en, 'en'); dockBody.appendChild(card);
+        } else if (state.source === 'biur') fullSource(data.biur, 'ביאור הליקוטים', 'Hebrew · complete related section');
+        else if (state.source === 'parparos') fullSource(data.parparos, 'פרפראות לחכמה', 'Hebrew · complete related section');
+        else if (state.source === 'nanach') fullSource(data.likutayNanach, 'ליקוטי ננח', 'Related material in the Ajew corpus');
+        else if (state.source === 'peer') renderPeer();
+        else if (state.source === 'notes') renderNotes();
+      }
+      function selectSegment(number, options = {}) {
+        state.segment = Number(number);
+        passages.forEach(p => p.classList.toggle('is-current', Number(p.dataset.segment) === state.segment));
+        document.querySelectorAll('[data-jump]').forEach(b => b.classList.toggle('is-active', Number(b.dataset.jump) === state.segment));
+        renderDock();
+        if (options.scroll) document.getElementById(`sr-seg-${state.segment}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (options.openDock) dock.classList.add('is-open');
+      }
+      function setSource(source) {
+        state.source = source;
+        document.querySelectorAll('[data-source]').forEach(b => b.classList.toggle('is-active', b.dataset.source === source));
+        renderDock(); dockBody.scrollTop = 0;
+      }
+      function applyPrefs() {
+        root.dataset.lang = state.lang; root.dataset.theme = state.theme; root.style.setProperty('--sr-font', `${state.font}px`);
+        document.querySelectorAll('[data-lang]').forEach(b => b.classList.toggle('is-active', b.dataset.lang === state.lang));
+      }
+      document.querySelectorAll('[data-jump]').forEach(b => b.addEventListener('click', () => selectSegment(b.dataset.jump, { scroll: true })));
+      passages.forEach(p => p.addEventListener('click', e => { if (!e.target.closest('button')) selectSegment(p.dataset.segment); }));
+      document.querySelectorAll('[data-comment]').forEach(b => b.addEventListener('click', () => selectSegment(b.dataset.comment, { openDock: true })));
+      document.querySelectorAll('[data-anchor]').forEach(b => b.addEventListener('click', async () => {
+        const url = `${location.origin}${location.pathname}#sr-seg-${b.dataset.anchor}`;
+        history.replaceState(null, '', `#sr-seg-${b.dataset.anchor}`); try { await navigator.clipboard.writeText(url); b.textContent = '✓'; setTimeout(() => b.textContent = b.dataset.anchor, 900); } catch (_) {}
+      }));
+      document.querySelectorAll('[data-bookmark]').forEach(b => {
+        const key = `ajew-super-bookmark-lm-1-1-${b.dataset.bookmark}`; const sync = () => { const on = localStorage.getItem(key) === '1'; b.textContent = on ? '♥' : '♡'; b.classList.toggle('is-saved', on); }; sync();
+        b.addEventListener('click', () => { localStorage.setItem(key, localStorage.getItem(key) === '1' ? '0' : '1'); sync(); });
+      });
+      document.querySelectorAll('[data-source]').forEach(b => b.addEventListener('click', () => setSource(b.dataset.source)));
+      document.querySelectorAll('[data-lang]').forEach(b => b.addEventListener('click', () => { state.lang = b.dataset.lang; localStorage.setItem('ajew-super-lang', state.lang); applyPrefs(); }));
+      layerSelect.addEventListener('change', renderDock);
+      sourceSearch.addEventListener('input', () => {
+        const q = sourceSearch.value.trim().toLocaleLowerCase();
+        dockBody.querySelectorAll('.sr-source-card').forEach(card => card.hidden = q && !card.textContent.toLocaleLowerCase().includes(q));
+      });
+      document.getElementById('sr-font-down').addEventListener('click', () => { state.font = Math.max(16, state.font - 2); localStorage.setItem('ajew-super-font', state.font); applyPrefs(); });
+      document.getElementById('sr-font-up').addEventListener('click', () => { state.font = Math.min(34, state.font + 2); localStorage.setItem('ajew-super-font', state.font); applyPrefs(); });
+      document.getElementById('sr-theme').addEventListener('click', () => { state.theme = state.theme === 'paper' ? 'night' : state.theme === 'night' ? 'bright' : 'paper'; localStorage.setItem('ajew-super-theme', state.theme); applyPrefs(); });
+      document.getElementById('sr-mobile-desk').addEventListener('click', () => dock.classList.add('is-open'));
+      document.getElementById('sr-dock-close').addEventListener('click', () => dock.classList.remove('is-open'));
+
+      const commandPanel = document.getElementById('sr-command-panel'); const commandInput = document.getElementById('sr-command-input'); const commandResults = document.getElementById('sr-command-results');
+      const commands = [
+        ...data.torah.segments.map(s => ({ label: `Go to section ${s.index}`, hint: clean(s.he).slice(0, 55), run: () => selectSegment(s.index, { scroll: true }) })),
+        { label: 'Open Pe’er HaLikutim', hint: 'Facsimile · pages 45–64', run: () => { setSource('peer'); dock.classList.add('is-open'); } },
+        { label: 'Open Pettek commentary', hint: 'Synchronized · three depths', run: () => { setSource('pettek'); dock.classList.add('is-open'); } },
+        { label: 'Write a note', hint: `Private · current section`, run: () => { setSource('notes'); dock.classList.add('is-open'); } },
+        { label: 'Switch Hebrew / English', hint: 'Cycle reading language', run: () => { state.lang = state.lang === 'both' ? 'he' : state.lang === 'he' ? 'en' : 'both'; applyPrefs(); } },
+        { label: 'Return to classic reader', hint: '/reader/likutay-moharan/1/1', run: () => location.href = '/reader/likutay-moharan/1/1' }
+      ]; let activeCommand = 0;
+      function drawCommands() { const q = commandInput.value.toLowerCase(); const filtered = commands.filter(c => `${c.label} ${c.hint}`.toLowerCase().includes(q)); activeCommand = Math.min(activeCommand, Math.max(0, filtered.length - 1)); commandResults.replaceChildren(); filtered.forEach((c, i) => { const b = document.createElement('button'); b.className = i === activeCommand ? 'is-active' : ''; b.innerHTML = `<strong></strong><small></small>`; b.querySelector('strong').textContent = c.label; b.querySelector('small').textContent = c.hint; b.addEventListener('click', () => { c.run(); closeCommands(); }); commandResults.appendChild(b); }); commandResults._filtered = filtered; }
+      function openCommands() { commandPanel.hidden = false; commandInput.value = ''; activeCommand = 0; drawCommands(); requestAnimationFrame(() => commandInput.focus()); }
+      function closeCommands() { commandPanel.hidden = true; }
+      document.getElementById('sr-command').addEventListener('click', openCommands); document.querySelector('[data-command-close]').addEventListener('click', closeCommands); commandInput.addEventListener('input', drawCommands);
+      commandInput.addEventListener('keydown', e => { const list = commandResults._filtered || []; if (e.key === 'ArrowDown') { e.preventDefault(); activeCommand = Math.min(list.length - 1, activeCommand + 1); drawCommands(); } if (e.key === 'ArrowUp') { e.preventDefault(); activeCommand = Math.max(0, activeCommand - 1); drawCommands(); } if (e.key === 'Enter' && list[activeCommand]) { list[activeCommand].run(); closeCommands(); } });
+      document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); commandPanel.hidden ? openCommands() : closeCommands(); } if (e.key === 'Escape') { closeCommands(); dock.classList.remove('is-open'); } });
+
+      const observer = new IntersectionObserver(entries => { const visible = entries.filter(e => e.isIntersecting).sort((a,b) => b.intersectionRatio - a.intersectionRatio)[0]; if (visible && !dock.matches(':hover')) selectSegment(visible.target.dataset.segment); }, { rootMargin: '-35% 0px -45% 0px', threshold: [0,.2,.5] }); passages.forEach(p => observer.observe(p));
+      window.addEventListener('scroll', () => { const max = document.documentElement.scrollHeight - innerHeight; document.getElementById('sr-progress').style.width = `${max > 0 ? scrollY / max * 100 : 0}%`; }, { passive: true });
+      state.lang = localStorage.getItem('ajew-super-lang') || 'both'; applyPrefs(); renderDock();
+      if (location.hash.startsWith('#sr-seg-')) selectSegment(location.hash.replace('#sr-seg-', ''), { scroll: true });
+    })();
+  </script>
+</Layout>
+
+<style is:global>
+  :root { --sr-font: 20px; }
+  body:has(.sr-shell) > .desktop-sidebar,
+  body:has(.sr-shell) > .mobile-header,
+  body:has(.sr-shell) > .mobile-tabbar,
+  body:has(.sr-shell) > .mobile-more-sheet,
+  body:has(.sr-shell) > #compactYahrzeit,
+  body:has(.sr-shell) > #voice-overlay,
+  body:has(.sr-shell) > #page-agent-container,
+  body:has(.sr-shell) > footer,
+  body:has(.sr-shell) > .hitbodedut-fab,
+  body:has(.sr-shell) > #voice-input-btn,
+  body:has(.sr-shell) > #page-agent-toggle,
+  body:has(.sr-shell) > #backToTop { display:none !important; }
+  body:has(.sr-shell) > main#main-content { margin-left:0 !important; width:100% !important; max-width:none !important; padding:0 !important; }
+  body:has(.sr-shell) { overflow-x: hidden; }
+  .sr-shell { --ink:#24231f; --muted:#777368; --paper:#f4f0e7; --panel:#fffdf7; --line:#ddd5c7; --accent:#8a3d2d; --accent2:#c6974f; --shadow:0 16px 45px rgba(44,35,24,.09); min-height:100vh; color:var(--ink); background:var(--paper); font-family:Inter,"Open Sans",Arial,sans-serif; }
+  .sr-shell[data-theme="bright"] { --paper:#fff; --panel:#fff; --line:#e1e5e9; --ink:#151719; --muted:#687078; --accent:#7d2c22; }
+  .sr-shell[data-theme="night"] { --paper:#171713; --panel:#22221d; --line:#3d3b32; --ink:#eee9dc; --muted:#aaa598; --accent:#e18a6d; --accent2:#e3ba72; --shadow:none; }
+  .sr-progress { position:fixed; top:0; left:0; height:3px; width:0; background:linear-gradient(90deg,var(--accent),var(--accent2)); z-index:1002; }
+  .sr-topbar { position:fixed; z-index:1000; top:0; left:0; right:0; height:76px; display:grid; grid-template-columns:300px 1fr auto; align-items:center; gap:20px; padding:0 18px; border-bottom:1px solid var(--line); background:color-mix(in srgb,var(--panel) 94%,transparent); backdrop-filter:blur(18px); }
+  .sr-brand,.sr-actions,.sr-segmented { display:flex; align-items:center; gap:8px; }
+  .sr-brand { gap:12px; }.sr-brand>div { display:flex;flex-direction:column;line-height:1.15}.sr-brand strong{font-family:Georgia,"Times New Roman",serif;font-size:18px}.sr-eyebrow{font-size:9px;letter-spacing:.13em;color:var(--accent);font-weight:800}.sr-back{display:grid;place-items:center;width:36px;height:36px;border:1px solid var(--line);border-radius:50%;color:var(--ink);text-decoration:none;font-size:19px}.sr-title{text-align:center;font-family:Georgia,"Times New Roman",serif;font-size:16px;color:var(--muted)}.sr-title span{color:var(--accent2);margin:0 7px}
+  .sr-actions button,.sr-dock-head button { border:1px solid var(--line); color:var(--ink); background:var(--panel); border-radius:8px; min-height:34px; padding:0 10px; cursor:pointer;font-weight:700}.sr-actions button:hover,.sr-actions button.is-active{border-color:var(--accent2);color:var(--accent)}.sr-segmented{gap:0;border:1px solid var(--line);border-radius:9px;overflow:hidden}.sr-segmented button{border:0;border-radius:0;border-right:1px solid var(--line);font-size:11px}.sr-segmented button:last-child{border:0}.sr-segmented .is-active{background:var(--ink);color:var(--panel)}.sr-command-button{font-size:11px;letter-spacing:.04em}
+  .sr-rail { position:fixed; z-index:20; top:76px; bottom:0; left:0; width:272px; border-right:1px solid var(--line); background:var(--panel); padding:22px 14px; overflow:auto; }
+  .sr-rail-head{display:flex;justify-content:space-between;align-items:end;padding:0 10px 13px;border-bottom:1px solid var(--line)}.sr-rail-head span{font-weight:800}.sr-rail-head small{color:var(--muted)}.sr-rail ol{list-style:none;padding:12px 0;margin:0}.sr-rail li button{display:flex;width:100%;align-items:center;gap:10px;text-align:left;border:0;background:transparent;color:var(--ink);padding:9px;border-radius:10px;cursor:pointer}.sr-rail li button:hover,.sr-rail li button.is-active{background:color-mix(in srgb,var(--accent2) 14%,transparent)}.sr-step{width:28px;height:28px;border:1px solid var(--line);border-radius:50%;display:grid;place-items:center;flex:none;font-family:Georgia,serif}.is-active .sr-step{background:var(--accent);color:white;border-color:var(--accent)}.sr-step-label{display:flex;flex-direction:column;min-width:0}.sr-step-label b{font-family:Georgia,"Times New Roman",serif;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;direction:rtl}.sr-step-label small{color:var(--muted);font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sr-map{margin:12px 8px;padding:13px;border:1px solid var(--line);border-radius:10px;background:var(--paper)}.sr-map b{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px}.sr-map span{font:12px/1.5 Georgia,serif;color:var(--muted)}
+  .sr-reading { margin-left:272px; margin-right:400px; width:calc(100% - 672px); box-sizing:border-box; padding:110px clamp(24px,3vw,42px) 70px; max-width:none; }
+  .sr-hero{text-align:center;padding:26px 0 54px;border-bottom:1px solid var(--line);margin-bottom:22px}.sr-kicker{font-size:11px;letter-spacing:.16em;color:var(--accent);font-weight:800}.sr-hero h1{font:700 clamp(34px,4.5vw,58px)/1.2 Georgia,"Times New Roman",serif;margin:15px 0 10px}.sr-hero>p{font:italic 17px/1.5 Georgia,serif;color:var(--muted)}.sr-themes,.sr-source-counts{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin-top:18px}.sr-themes span{border:1px solid var(--line);border-radius:999px;padding:5px 10px;font-size:10px;text-transform:uppercase;letter-spacing:.08em}.sr-source-counts{margin-top:25px;gap:24px;color:var(--muted);font-size:11px}.sr-source-counts b{color:var(--accent);font:22px Georgia,serif;margin-right:4px}
+  .sr-passage{position:relative;margin:0 -18px;padding:30px 24px 34px;border:1px solid transparent;border-bottom-color:var(--line);border-radius:12px;transition:.18s}.sr-passage:hover,.sr-passage.is-current{background:var(--panel);border-color:var(--line);box-shadow:var(--shadow)}.sr-anchor{position:absolute;left:-13px;top:28px;width:27px;height:27px;border:1px solid var(--line);border-radius:50%;background:var(--paper);color:var(--muted);font:13px Georgia,serif;cursor:pointer}.sr-passage.is-current .sr-anchor{background:var(--accent);color:#fff;border-color:var(--accent)}.sr-passage-tools{position:absolute;right:10px;top:9px;opacity:0;transition:.15s}.sr-passage:hover .sr-passage-tools,.sr-passage:focus-within .sr-passage-tools{opacity:1}.sr-passage-tools button{border:0;background:transparent;color:var(--muted);cursor:pointer;font-size:16px}.sr-passage-tools .is-saved{color:var(--accent)}.sr-columns{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,4vw,54px);align-items:start}.sr-columns p{white-space:pre-line;margin:0}.sr-hebrew{font:var(--sr-font)/1.95 Georgia,"Noto Serif Hebrew","Times New Roman",serif}.sr-english{font:calc(var(--sr-font) * .86)/1.8 Georgia,"Times New Roman",serif;color:color-mix(in srgb,var(--ink) 84%,var(--muted))}.sr-shell[data-lang="he"] .sr-columns{grid-template-columns:1fr}.sr-shell[data-lang="he"] .sr-english{display:none}.sr-shell[data-lang="en"] .sr-columns{grid-template-columns:1fr}.sr-shell[data-lang="en"] .sr-hebrew{display:none}.sr-reader-footer{display:flex;justify-content:space-between;align-items:center;padding:32px 0!important;color:var(--muted);font-size:11px;background:transparent!important;border:0!important;width:auto!important;margin:0!important}.sr-reader-footer a{color:var(--accent);font-weight:800;text-decoration:none}
+  .sr-dock { position:fixed; z-index:900; top:76px; right:0; bottom:0; width:400px; display:flex;flex-direction:column;border-left:1px solid var(--line);background:var(--panel);box-shadow:-10px 0 35px rgba(40,30,20,.04); }
+  .sr-dock-head{height:66px;flex:none;padding:0 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line)}.sr-dock-head>div{display:flex;flex-direction:column}.sr-dock-head strong{font:15px Georgia,serif;margin-top:3px}.sr-dock-head button{font-size:20px;border:0;background:transparent;display:none}.sr-tabs{display:flex;gap:0;overflow-x:auto;border-bottom:1px solid var(--line);flex:none;scrollbar-width:none}.sr-tabs button{border:0;border-bottom:2px solid transparent;background:transparent;color:var(--muted);padding:12px 11px 10px;white-space:nowrap;cursor:pointer;font-size:10px;font-weight:800}.sr-tabs button.is-active{color:var(--accent);border-bottom-color:var(--accent)}.sr-dock-toolbar{display:flex;gap:8px;padding:10px 12px;border-bottom:1px solid var(--line);flex:none}.sr-search-wrap{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:8px;padding:0 8px;flex:1}.sr-search-wrap input{border:0;outline:0;background:transparent;color:var(--ink);min-width:0;width:100%;height:32px;font-size:11px}.sr-search-wrap:has(input[hidden]){display:none}.sr-dock-toolbar select{border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink);padding:0 7px;font-size:10px}.sr-dock-body{overflow:auto;padding:16px 18px 40px;flex:1;scrollbar-color:var(--line) transparent}.sr-source-header{display:flex;flex-direction:column;padding:2px 0 13px;border-bottom:2px solid var(--ink);margin-bottom:13px}.sr-source-header strong{font:700 19px Georgia,"Times New Roman",serif}.sr-source-header small{color:var(--muted);font-size:10px;margin-top:4px}.sr-source-card{position:relative;border-bottom:1px solid var(--line);padding:7px 0 18px;margin-bottom:12px}.sr-source-card p{white-space:pre-line;font:15px/1.7 Georgia,"Times New Roman",serif;margin:10px 0}.sr-source-card .sr-source-he{font-size:18px;line-height:1.85}.sr-source-index{position:absolute;right:0;top:7px;border:1px solid var(--line);border-radius:50%;width:22px;height:22px;display:grid;place-items:center;color:var(--muted);font:11px Georgia,serif}.sr-guide-card{border:1px solid var(--line);border-radius:11px;padding:10px 14px;background:var(--paper)}.sr-facsimile-controls{position:sticky;top:-16px;z-index:2;display:flex;align-items:center;gap:6px;background:var(--panel);padding:9px 0;border-bottom:1px solid var(--line)}.sr-facsimile-controls button,.sr-facsimile-controls a{border:1px solid var(--line);border-radius:6px;background:var(--paper);color:var(--ink);padding:6px 9px;text-decoration:none;cursor:pointer;font-size:11px}.sr-facsimile-controls span{margin-right:auto;font-size:11px;color:var(--muted)}.sr-facsimile{overflow:auto;background:#c9c5ba;padding:8px;min-height:500px}.sr-facsimile img{display:block;height:auto;max-width:none;box-shadow:0 2px 12px #0003;margin:auto}.sr-notes{box-sizing:border-box;width:100%;min-height:330px;border:1px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);padding:14px;resize:vertical;font:15px/1.6 Georgia,serif;outline:0}.sr-notes:focus{border-color:var(--accent2)}.sr-note-status{display:block;color:var(--muted);margin-top:7px}.sr-mobile-desk{display:none}
+  .sr-command[hidden]{display:none}.sr-command{position:fixed;inset:0;z-index:2000;display:grid;place-items:start center;padding-top:12vh}.sr-command-scrim{position:absolute;inset:0;border:0;background:#14120ea8;backdrop-filter:blur(5px)}.sr-command-card{position:relative;width:min(620px,calc(100vw - 28px));max-height:70vh;display:flex;flex-direction:column;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:14px;box-shadow:0 25px 80px #0007;overflow:hidden}.sr-command-input{display:flex;align-items:center;gap:10px;padding:15px;border-bottom:1px solid var(--line)}.sr-command-input input{flex:1;border:0;outline:0;background:transparent;color:var(--ink);font-size:16px}.sr-command-input kbd{font-size:9px;border:1px solid var(--line);padding:3px 5px;border-radius:4px}#sr-command-results{overflow:auto;padding:7px}#sr-command-results button{width:100%;display:flex;flex-direction:column;text-align:left;border:0;border-radius:8px;background:transparent;color:var(--ink);padding:10px 12px;cursor:pointer}#sr-command-results button.is-active{background:color-mix(in srgb,var(--accent2) 18%,transparent)}#sr-command-results small{color:var(--muted);margin-top:3px}.sr-command-hint{padding:9px 14px;color:var(--muted);border-top:1px solid var(--line)}
+  @media(max-width:1180px){.sr-topbar{grid-template-columns:260px 1fr}.sr-title{display:none}.sr-reading{margin-left:240px;margin-right:350px;width:calc(100% - 590px);padding-inline:26px}.sr-rail{width:240px}.sr-dock{width:350px}.sr-step-label b{font-size:12px}}
+  @media(max-width:900px){.sr-topbar{height:64px;grid-template-columns:1fr auto;padding:0 10px}.sr-brand strong{font-size:15px}.sr-eyebrow{font-size:8px}.sr-actions>button:not(.sr-command-button),.sr-actions .sr-segmented{display:none}.sr-rail{display:none}.sr-reading{margin:0;width:100%;padding:84px 18px 92px;max-width:none}.sr-hero{padding-top:15px}.sr-source-counts{gap:12px}.sr-columns{grid-template-columns:1fr;gap:18px}.sr-english{border-top:1px solid var(--line);padding-top:18px}.sr-shell[data-lang="both"] .sr-columns{grid-template-columns:1fr}.sr-passage{margin-inline:-4px;padding:30px 16px 24px}.sr-anchor{left:8px;top:-14px}.sr-dock{top:7vh;width:100%;transform:translateY(110%);transition:transform .25s;border-left:0;border-top:1px solid var(--line);border-radius:16px 16px 0 0;box-shadow:0 -20px 50px #0005}.sr-dock.is-open{transform:translateY(0)}.sr-dock-head button{display:block}.sr-tabs button{padding-inline:14px}.sr-mobile-desk{display:flex;position:fixed;z-index:850;right:14px;bottom:16px;align-items:center;gap:8px;border:0;border-radius:999px;padding:12px 16px;background:var(--accent);color:white;font-weight:800;box-shadow:0 8px 26px #0004}.sr-mobile-desk span{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#fff2;font-size:10px}.sr-reader-footer{align-items:flex-start;gap:10px}.sr-source-card .sr-source-he{font-size:20px}.sr-facsimile{min-height:65vh}}
+  @media(max-width:390px){.sr-brand .sr-eyebrow{display:none}.sr-brand strong{font-size:13px}.sr-back{width:32px;height:32px}.sr-hero h1{font-size:36px}.sr-source-counts span{font-size:9px}.sr-passage{padding-inline:12px}.sr-hebrew{font-size:calc(var(--sr-font) * .96)}.sr-dock-body{padding-inline:14px}}
+  @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+</style>

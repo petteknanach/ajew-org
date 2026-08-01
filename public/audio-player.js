@@ -17,7 +17,7 @@
   var bookId = decodeURIComponent(m[1]);
   var part = m[2] ? decodeURIComponent(m[2]) : null;
   var torah = m[3] ? decodeURIComponent(m[3]) : null;
-  if (bookId === 'index.html' || bookId === '') return;
+  if (bookId === 'index.html' || bookId === '' || bookId === 'super') return;
 
   var AUDIO_SOURCES_URL = '/audio-sources.json';
   var IA_METADATA = 'https://archive.org/metadata/';
