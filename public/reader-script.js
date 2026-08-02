@@ -236,6 +236,14 @@
 
   function performSearch(query) {
     clearSearchHighlights();
+    query = String(query || '').trim();
+    const quotePairs = [['"', '"'], ['“', '”'], ["'", "'"], ['‘', '’'], ['״', '״']];
+    for (const [open, close] of quotePairs) {
+      if (query.length > 2 && query.startsWith(open) && query.endsWith(close)) {
+        query = query.slice(open.length, -close.length).trim();
+        break;
+      }
+    }
     if (!query || query.length < 2) {
       updateSearchInfo('');
       return;
@@ -243,8 +251,12 @@
 
     let count = 0;
     const segments = document.querySelectorAll('.reader-segment p');
-    const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const regex = new RegExp(escapedQuery, 'gi');
+    const nikud = '[\\u0591-\\u05C7]*';
+    const pattern = [...query].map(char => {
+      if (/\s/.test(char)) return '\\s+';
+      return char.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + nikud;
+    }).join('');
+    const regex = new RegExp(pattern, 'gi');
 
     segments.forEach(p => {
       const walker = document.createTreeWalker(p, NodeFilter.SHOW_TEXT);
@@ -289,6 +301,7 @@
     const info = document.querySelector('.search-info');
     if (info) info.textContent = text;
   }
+
 
   // --- Bookmark ---
   function saveBookmark() {
@@ -2326,11 +2339,6 @@
         });
       }
 
-      // Likutay Nanach Vol 4 — automatic per-torah commentary lookup
-      var ln4sources = getLN4Commentary(bookId, torah);
-      for (var li = 0; li < ln4sources.length; li++) {
-        sources.push(ln4sources[li]);
-      }
     }
 
     // Sipurey Maasiyos gets Rimzei HaMaasiyos + Likutay Nanach
@@ -2454,6 +2462,11 @@
       return [{id:'ln',label:'Na Nach',labelHe:'ליקוטי נ נח',
         url:'/reader/likutay-nanach/volume-'+ch.v+'/chapter-'+ch.c+'.json',
         readerUrl:'/reader/likutay-nanach/'+ch.v+'/'+ch.c,type:'commentary'}];
+    }
+    // Run only after the lookup table above has been initialized.
+    if (bookId === 'likutay-moharan') {
+      var ln4sources = getLN4Commentary(bookId, torah);
+      for (var li = 0; li < ln4sources.length; li++) sources.push(ln4sources[li]);
     }
 
     // === Likutay Nanach Vol 1-3 — Chumash/Neviim/Mishna commentary lookup ===
@@ -2975,6 +2988,13 @@
     const params = new URLSearchParams(window.location.search);
     const q = params.get('q');
     if (!q || q.length < 2) return;
+    state.searchOpen = true;
+    state.mode = /[\u0590-\u05FF]/.test(q) ? 'hebrew' : 'english';
+    applyMode();
+    const bar = document.querySelector('.reader-search-bar');
+    const input = bar?.querySelector('input');
+    if (bar) bar.classList.add('open');
+    if (input) input.value = q;
     // Content loads asynchronously — poll for segments, then highlight
     let attempts = 0;
     const maxAttempts = 30; // ~3 seconds max
@@ -3010,9 +3030,10 @@
 
   // Run on DOM ready
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => { init(); setupMySefer(); setupCommentaryPanel(); setupAudioPlayer(); setupSegmentLinks(); setupReaderFocusMode(); showFontNotification(); setTimeout(addCrossReferenceLinks, 500); autoHighlightFromQuery(); });
+    document.addEventListener('DOMContentLoaded', () => { init(); autoHighlightFromQuery(); setupMySefer(); setupCommentaryPanel(); setupAudioPlayer(); setupSegmentLinks(); setupReaderFocusMode(); showFontNotification(); setTimeout(addCrossReferenceLinks, 500); });
   } else {
     init();
+    autoHighlightFromQuery();
     setupMySefer();
     setupCommentaryPanel();
     setupAudioPlayer();
@@ -3020,6 +3041,5 @@
     setupReaderFocusMode();
     showFontNotification();
     setTimeout(addCrossReferenceLinks, 500);
-    autoHighlightFromQuery();
   }
 })();

@@ -481,17 +481,85 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         return docMatchScore(doc, query, mode) > 0;
       }
 
-      function makeSnippet(doc, query) {
-        const raw = /[\u0590-\u05FF]/.test(query) ? (doc.he || doc.en || '') : (doc.en || doc.he || '');
-        const normRaw = normalizeForSearch(raw);
-        const q = normalizeForSearch(query);
-        const words = searchWords(query);
-        let ni = q ? normRaw.indexOf(q) : -1;
-        if (ni < 0) for (const w of words) { ni = normRaw.indexOf(w); if (ni >= 0) break; }
-        const approx = ni < 0 ? 0 : Math.min(raw.length, ni);
-        const start = Math.max(0, approx - 160);
-        const end = Math.min(raw.length, approx + 420);
-        return (start > 0 ? '…' : '') + raw.slice(start, end).replace(/\s+/g, ' ').trim() + (end < raw.length ? '…' : '');
+      function normalizedRange(raw, query) {
+        const target = normalizeForSearch(query);
+        if (!raw || !target) return null;
+        let normalized = '';
+        const rawOffsets = [];
+        let pendingSpace = false;
+        for (let offset = 0; offset < raw.length;) {
+          const point = raw.codePointAt(offset);
+          const char = String.fromCodePoint(point);
+          const width = char.length;
+          const folded = char.toLowerCase().normalize('NFD')
+            .replace(/[\u0591-\u05C7\u0300-\u036f״"׳']/g, '');
+          for (const foldedChar of folded) {
+            if (/^[\p{L}\p{N}]$/u.test(foldedChar)) {
+              if (pendingSpace && normalized) {
+                normalized += ' ';
+                rawOffsets.push(offset);
+              }
+              pendingSpace = false;
+              normalized += foldedChar;
+              rawOffsets.push(offset);
+            } else {
+              pendingSpace = true;
+            }
+          }
+          offset += width;
+        }
+        const at = normalized.indexOf(target);
+        if (at < 0) return null;
+        return { start: rawOffsets[at], end: (rawOffsets[at + target.length - 1] ?? raw.length - 1) + 1 };
+      }
+
+      function readerReference(path, section) {
+        const lm = String(path || '').match(/^\/reader\/likutay-moharan\/(\d+)\/(\d+)/);
+        if (lm) {
+          const roman = lm[1] === '2' ? 'II' : 'I';
+          return `Likutay Moharan ${roman}:${lm[2]}${section ? ':' + section : ''}`;
+        }
+        return section ? `Paragraph ${section}` : '';
+      }
+
+      function resultTitle(doc) {
+        const reference = readerReference(doc.p, null);
+        const title = doc.t || doc.h || 'Untitled';
+        return reference ? `${reference} — ${title}` : title;
+      }
+
+      function matchContext(doc, query) {
+        const useHebrew = /[\u0590-\u05FF]/.test(query);
+        const raw = useHebrew ? (doc.he || doc.en || '') : (doc.en || doc.he || '');
+        let range = normalizedRange(raw, query);
+        if (!range) {
+          for (const word of searchWords(query, { keepStopWords: true })) {
+            range = normalizedRange(raw, word);
+            if (range) break;
+          }
+        }
+        const map = Array.isArray(doc.m) ? doc.m : [];
+        const startColumn = useHebrew ? 2 : 4;
+        const endColumn = useHebrew ? 3 : 5;
+        const row = range ? map.find(entry => entry[startColumn] <= range.start && entry[endColumn] >= range.end) : null;
+        const segmentStart = row ? row[startColumn] : 0;
+        const segmentEnd = row ? row[endColumn] : raw.length;
+        const matchStart = range?.start ?? segmentStart;
+        const matchEnd = range?.end ?? matchStart;
+        const start = Math.max(segmentStart, matchStart - 150);
+        const end = Math.min(segmentEnd, Math.max(matchEnd + 300, matchStart + 420));
+        const snippet = (start > segmentStart ? '…' : '') + raw.slice(start, end).replace(/\s+/g, ' ').trim() + (end < segmentEnd ? '…' : '');
+        return {
+          snippet,
+          anchor: row ? `#seg-${row[0]}` : '',
+          location: readerReference(doc.p, row?.[1] || row?.[0] || null)
+        };
+      }
+
+      function resultLink(link, query) {
+        const url = new URL(link || '#', window.location.origin);
+        url.searchParams.set('q', effectiveSearch(query, 'google').query);
+        return url.pathname + url.search + url.hash;
       }
 
       let lastSearchResults = [];
@@ -547,15 +615,16 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
             if (!doc) continue;
             const score = docMatchScore(doc, query, searchType);
             if (!score) continue;
+            const context = matchContext(doc, query);
             verified.push({
-              title: doc.t || doc.h || 'Untitled',
+              title: resultTitle(doc),
               hebrewTitle: doc.h || doc.t || '',
-              snippet: makeSnippet(doc, query),
-              link: doc.p || '#',
+              snippet: context.snippet,
+              link: (doc.p || '#') + context.anchor,
               book: doc.c || '',
               subcategory: doc.c || '',
               relevance: Math.min(100, Math.max(10, Math.round(score / 18))),
-              extraInfo: doc.c || '',
+              extraInfo: context.location || doc.c || '',
               _score: score
             });
           }
@@ -618,7 +687,7 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
           const rawSnippet = result.snippet || '';
           const snippet = highlightQuery(rawSnippet, displayQuery, extraInfo);
           const link = result.link || '#';
-          const linkWithQuery = link + (link.includes('?') ? '&' : '?') + 'q=' + encodeURIComponent(query);
+          const linkWithQuery = resultLink(link, query);
           const rawTitle = result.title || 'Unknown';
           const title = highlightQuery(rawTitle, displayQuery);
           const hebrewTitle = result.hebrewTitle ? highlightQuery(result.hebrewTitle, displayQuery) : '';
@@ -663,10 +732,10 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
             const next = lastSearchResults.slice(totalShown, totalShown + 50);
             if (!next.length) { loadMore.remove(); return; }
             const moreHtml = next.map((r: any) => {
-              const s = highlightQuery(r.snippet || '', query, r.extraInfo || '');
-              const t = highlightQuery(r.title || '', query);
-              const ht = r.hebrewTitle ? highlightQuery(r.hebrewTitle, query) : '';
-              const linkWithQ = (r.link||'#') + ((r.link||'').includes('?') ? '&' : '?') + 'q=' + encodeURIComponent(query);
+              const s = highlightQuery(r.snippet || '', displayQuery, r.extraInfo || '');
+              const t = highlightQuery(r.title || '', displayQuery);
+              const ht = r.hebrewTitle ? highlightQuery(r.hebrewTitle, displayQuery) : '';
+              const linkWithQ = resultLink(r.link || '#', query);
               const rawSnippet = r.snippet || '';
               const rawTitle = r.title || 'Unknown';
               const relevance = r.relevance || 0;

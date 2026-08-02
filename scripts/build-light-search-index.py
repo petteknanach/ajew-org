@@ -22,6 +22,11 @@ def strip_nikud(text):
 HE_KEYS = ('he', 'he_nikud', 'verse', 'commentary_he', 'text_he', 'hebrew', 'hebrew_text')
 EN_KEYS = ('en', 'commentary_en', 'text_en', 'english', 'translation')
 LAYER_KEYS = ('beginner', 'intermediate', 'scholarly')
+HEBREW_NUMERALS = {
+    'א':1,'ב':2,'ג':3,'ד':4,'ה':5,'ו':6,'ז':7,'ח':8,'ט':9,'י':10,
+    'כ':20,'ך':20,'ל':30,'מ':40,'ם':40,'נ':50,'ן':50,'ס':60,'ע':70,
+    'פ':80,'ף':80,'צ':90,'ץ':90,'ק':100,'ר':200,'ש':300,'ת':400,
+}
 
 
 def add_text(target, text, hebrew=False):
@@ -35,7 +40,9 @@ def extract_segments(data):
     segments = data.get('segments', [])
     all_he = []
     all_en = []
-    for seg in segments:
+    segment_map = []
+    he_cursor = en_cursor = section = 0
+    for position, seg in enumerate(segments, 1):
         if not isinstance(seg, dict):
             continue
         seg_he = []
@@ -69,10 +76,23 @@ def extract_segments(data):
             elif isinstance(l, str):
                 add_text(seg_en, l, hebrew=False)
 
+        he_segment = ' '.join(seg_he)
+        en_segment = ' '.join(seg_en)
+        en_match = re.match(r'^\s*(\d{1,3})\s*[.\-:)]', en_segment)
+        token = (he_segment.strip().split(' ', 1)[0] if he_segment.strip() else '')
+        token = re.sub(r'[״׳"\']', '', token)
+        he_number = sum(HEBREW_NUMERALS.get(ch, 0) for ch in token) if token and len(token) <= 4 and all(ch in HEBREW_NUMERALS for ch in token) else 0
+        candidate = int(en_match.group(1)) if en_match else he_number
+        if candidate and ((section == 0 and candidate == 1) or candidate in (section, section + 1)):
+            section = candidate
+        dom_index = seg.get('index', position)
+        segment_map.append([dom_index, section or dom_index, he_cursor, he_cursor + len(he_segment), en_cursor, en_cursor + len(en_segment)])
         all_he.extend(seg_he)
         all_en.extend(seg_en)
+        if he_segment: he_cursor += len(he_segment) + 1
+        if en_segment: en_cursor += len(en_segment) + 1
 
-    return '\n\n'.join(all_he), '\n\n'.join(all_en)
+    return '\n\n'.join(all_he), '\n\n'.join(all_en), segment_map
 
 # Collect all JSON files
 json_files = []
@@ -112,7 +132,7 @@ for fpath in json_files:
         skipped += 1
         continue
     
-    he_text, en_text = extract_segments(data)
+    he_text, en_text, segment_map = extract_segments(data)
     
     # Skip completely empty docs
     if not he_text and not en_text:
@@ -148,6 +168,7 @@ for fpath in json_files:
     he_doc = dict(meta)
     he_doc['x'] = he_text
     he_doc['e'] = en_text[:500] if en_text else ''
+    he_doc['m'] = segment_map
     he_index.append(he_doc)
     total_he_bytes += len(he_text)
     

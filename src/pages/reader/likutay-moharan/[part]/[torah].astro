@@ -47,6 +47,8 @@ const { part, torah } = Astro.params;
 const partNum = parseInt(part);
 const torahNum = parseInt(torah);
 const isIntroPage = isNaN(torahNum);
+const partRoman = partNum === 2 ? 'II' : 'I';
+const torahReference = isIntroPage ? `Likutay Moharan Part ${partRoman}` : `Likutay Moharan ${partRoman}:${torahNum}`;
 
 // Load the torah data
 let torahData = null;
@@ -75,11 +77,32 @@ if (torahData) {
   }
 }
 
+const hebrewNumerals: Record<string, number> = {
+  'א':1,'ב':2,'ג':3,'ד':4,'ה':5,'ו':6,'ז':7,'ח':8,'ט':9,'י':10,
+  'כ':20,'ך':20,'ל':30,'מ':40,'ם':40,'נ':50,'ן':50,'ס':60,'ע':70,
+  'פ':80,'ף':80,'צ':90,'ץ':90,'ק':100,'ר':200,'ש':300,'ת':400
+};
+const sectionBySegment = new Map<any, number>();
+let currentSection = 0;
+for (const [position, seg] of (torahData?.segments || []).entries()) {
+  const enMatch = String(seg.en || '').match(/^\s*(\d{1,3})\s*[.\-:)]/);
+  const token = String(seg.he || '').trim().split(/\s+/, 1)[0]?.replace(/[״׳"']/g, '') || '';
+  const heNumber = token.length <= 4 && [...token].every(ch => hebrewNumerals[ch])
+    ? [...token].reduce((sum, ch) => sum + hebrewNumerals[ch], 0)
+    : 0;
+  const candidate = enMatch ? Number(enMatch[1]) : heNumber;
+  if (candidate && ((currentSection === 0 && candidate === 1) || candidate === currentSection || candidate === currentSection + 1)) {
+    currentSection = candidate;
+  }
+  sectionBySegment.set(seg.index ?? position + 1, currentSection || seg.index || position + 1);
+}
+const segmentCitation = (seg: any) => `${partRoman}:${torahNum}:${sectionBySegment.get(seg.index) || seg.index}`;
+
 // SEO structured data
 const structuredData = torahData ? JSON.stringify({
   "@context": "https://schema.org",
   "@type": "Article",
-  "headline": `${torahData.title} - Likutay Moharan ${partNum}:${torahData.displayNumber || torahNum}`,
+  "headline": `${torahReference} — ${torahData.title}`,
   "alternativeHeadline": torahData.hebrewTitle || '',
   "author": { "@type": "Person", "name": "Rabbi Nachman of Breslov" },
   "publisher": { "@type": "Organization", "name": "ajew.org" },
@@ -114,7 +137,7 @@ if (registry && registry[partKey] && registry[partKey][torahKey]) {
 }
 
 const pageTitle = torahData
-  ? `${torahData.hebrewTitle || torahData.title} - Likutay Moharan`
+  ? `${torahReference} — ${torahData.hebrewTitle || torahData.title}`
   : 'Torah Not Found';
 const pageDesc = torahData
   ? (() => {
@@ -140,7 +163,7 @@ const pageDesc = torahData
     <div
       class="reader-container"
       data-torah-id={torahData.id}
-      data-torah-title={`${torahData.title} - Likutay Moharan ${partNum}:${torahNum}`}
+      data-torah-title={`${torahReference} — ${torahData.title}`}
     >
       <!-- Progress Bar -->
       <div class="reader-progress"></div>
@@ -266,7 +289,7 @@ const pageDesc = torahData
           {torahData.segments.map((seg, i) => (
             <li>
               <a href={`#seg-${seg.index}`} data-index={String(seg.index)}>
-                Paragraph {seg.index}
+                {isIntroPage ? `Paragraph ${seg.index}` : segmentCitation(seg)}
               </a>
             </li>
           ))}
@@ -278,7 +301,7 @@ const pageDesc = torahData
         {torahData.hebrewTitle && (
           <div class="hebrew-title" lang="he" dir="rtl">{torahData.hebrewTitle}</div>
         )}
-        <h1>{torahData.title}</h1>
+        <h1>{torahReference} — {torahData.title}</h1>
         {torahData.keyVerse && (
           <div class="key-verse">{torahData.keyVerse}</div>
         )}
@@ -316,11 +339,11 @@ const pageDesc = torahData
 {torahData.segments.map((seg) => (
           <div class="reader-segment-pair" id={`seg-${seg.index}`}>
             <div class="reader-segment segment-he" lang="he" dir="rtl" data-index={String(seg.index)}>
-              <span class="segment-number">{seg.index}</span>
+              <span class="segment-number" title="Source location">{isIntroPage ? seg.index : segmentCitation(seg)}</span>
               <p data-nikud={seg.he_nikud || seg.he}>{seg.he}</p>
             </div>
             <div class={`reader-segment segment-en ${!seg.en ? 'empty-translation' : ''}`} data-index={String(seg.index)}>
-              <span class="segment-number">{seg.index}</span>
+              <span class="segment-number" title="Source location">{isIntroPage ? seg.index : segmentCitation(seg)}</span>
               <p>{seg.en || 'Translation not yet available'}</p>
             </div>
           </div>
@@ -331,11 +354,11 @@ const pageDesc = torahData
             {torahData.aligned_segments.map((seg) => (
               <div class={`reader-segment-pair ${seg.type === 'note' ? 'segment-note' : ''}`} id={`aligned-${seg.index}`}>
                 <div class="reader-segment segment-he" lang="he" dir="rtl" data-index={String(seg.index)}>
-                  <span class="segment-number">{seg.index}</span>
+                  <span class="segment-number" title="Source location">{isIntroPage ? seg.index : segmentCitation(seg)}</span>
                   <p>{seg.he || '\u00A0'}</p>
                 </div>
                 <div class={`reader-segment segment-en ${!seg.en ? 'empty-translation' : ''}`} data-index={String(seg.index)}>
-                  <span class="segment-number">{seg.index}</span>
+                  <span class="segment-number" title="Source location">{isIntroPage ? seg.index : segmentCitation(seg)}</span>
                   <p>{seg.en || '\u00A0'}</p>
                 </div>
               </div>
@@ -404,7 +427,7 @@ const pageDesc = torahData
       </div>
 
       <!-- Reader Script -->
-      <script src="/reader-script.js?v=4" defer></script>
+      <script src="/reader-script.js?v=6-search-deeplink" defer></script>
       <script src="/reader-v2.js?v=5" defer></script>
       <script src="/tts-fix.js" defer></script>
       <script src="/pwa-register.js" defer></script>

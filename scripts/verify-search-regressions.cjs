@@ -60,7 +60,14 @@ mustContain('src/pages/search-enhanced.astro', 'async function idsForExactPhrase
 mustContain('src/pages/search-enhanced.astro', "Exact means exact: normalized words must remain consecutive", 'strict exact semantics');
 mustContain('src/pages/search-enhanced.astro', "return { query: trimmed.slice(open.length, -close.length).trim(), mode: 'exact' }", 'quoted-query exact mode');
 mustContain('src/pages/search-enhanced.astro', "const maxCandidates = searchType === 'exact' ? ids.length", 'uncapped exact fallback correctness');
+mustContain('src/pages/search-enhanced.astro', 'function matchContext(doc, query)', 'segment-aware result preview');
+mustContain('src/pages/search-enhanced.astro', 'function resultLink(link, query)', 'query-preserving deep result links');
+mustContain('public/reader-script.js', 'function autoHighlightFromQuery()', 'reader deep-link highlighting');
+mustContain('public/reader-script.js', 'init(); autoHighlightFromQuery(); setupMySefer();', 'search highlighting before optional Reader integrations');
+mustContain('public/reader-script.js', 'Run only after the lookup table above has been initialized.', 'commentary lookup initialization order');
+mustContain('src/pages/reader/likutay-moharan/[part]/[torah].astro', 'Likutay Moharan ${partRoman}:${torahNum}', 'numbered Likutay Moharan teaching titles');
 mustContain('scripts/build-reader-search-shards.py', "algorithm': 'fnv1a32-utf8-bigram-le'", 'versioned phrase index builder');
+mustContain('scripts/build-light-search-index.py', "he_doc['m'] = segment_map", 'single-pass Reader location map generation');
 
 // Canonical corpus regression: the reported phrase and target must remain in the
 // source index, independent of generated reader-search artifacts.
@@ -93,6 +100,8 @@ if (!fs.existsSync(phraseMetaPath)) {
       const doc = JSON.parse(fs.readFileSync(docPath, 'utf8'));
       if (doc.id !== targetId || doc.p !== TARGET_PATH) fail('reader-search target document id/path disagrees with metadata');
       if (!normalize(doc.n).includes(normalize(QUERY))) fail(`reader-search target document lost exact phrase “${QUERY}”`);
+      const targetMap = (doc.m || []).find(row => row[1] === 11 && row[2] <= doc.he.indexOf(QUERY) && row[3] >= doc.he.indexOf(QUERY) + QUERY.length);
+      if (!targetMap) fail('reader-search target lacks a segment map locating the phrase at Likutay Moharan II:1:11');
     }
 
     const tokens = normalize(QUERY).split(' ');

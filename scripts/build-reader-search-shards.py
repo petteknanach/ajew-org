@@ -21,6 +21,15 @@ NIKUD_RE = re.compile(r'[\u0591-\u05C7]')
 COMBINING_RE = re.compile(r'[\u0300-\u036f]')
 PUNCT_RE = re.compile(r'[^\w\s\u0590-\u05ff]+', re.UNICODE)
 SPACE_RE = re.compile(r'\s+')
+HE_KEYS = ('he', 'he_nikud', 'verse', 'commentary_he', 'text_he', 'hebrew', 'hebrew_text')
+EN_KEYS = ('en', 'commentary_en', 'text_en', 'english', 'translation')
+LAYER_KEYS = ('beginner', 'intermediate', 'scholarly')
+HEBREW_NUMERALS = {
+    'א': 1, 'ב': 2, 'ג': 3, 'ד': 4, 'ה': 5, 'ו': 6, 'ז': 7, 'ח': 8, 'ט': 9,
+    'י': 10, 'כ': 20, 'ך': 20, 'ל': 30, 'מ': 40, 'ם': 40, 'נ': 50, 'ן': 50,
+    'ס': 60, 'ע': 70, 'פ': 80, 'ף': 80, 'צ': 90, 'ץ': 90, 'ק': 100,
+    'ר': 200, 'ש': 300, 'ת': 400,
+}
 
 
 def normalize(text: str) -> str:
@@ -63,6 +72,67 @@ def phrase_hash(text: str) -> int:
 
 def clean_text(*parts):
     return SPACE_RE.sub(' ', ' '.join(p or '' for p in parts)).strip()
+
+
+def segment_language_text(seg, keys, hebrew=False):
+    """Mirror build-light-search-index.py's per-segment extraction order."""
+    parts = []
+    def add(value):
+        if isinstance(value, str) and value.strip():
+            parts.append(NIKUD_RE.sub('', value.strip()) if hebrew else value.strip())
+    for key in keys:
+        add(seg.get(key))
+    layers = seg.get('layers') or {}
+    if isinstance(layers, dict):
+        for level in LAYER_KEYS:
+            layer = layers.get(level) or {}
+            if isinstance(layer, dict):
+                for key in keys:
+                    add(layer.get(key))
+    for level in LAYER_KEYS:
+        layer = seg.get(level)
+        if isinstance(layer, dict):
+            for key in keys:
+                add(layer.get(key))
+        elif isinstance(layer, str) and not hebrew:
+            add(layer)
+    return clean_text(*parts)
+
+
+def hebrew_section_number(text):
+    token = (text or '').strip().split(' ', 1)[0].replace('״', '').replace('׳', '').replace('"', '').replace("'", '')
+    if not token or len(token) > 4 or any(ch not in HEBREW_NUMERALS for ch in token):
+        return None
+    return sum(HEBREW_NUMERALS[ch] for ch in token)
+
+
+def segment_map(raw_link):
+    """Return compact [DOM index, logical section, HE start/end, EN start/end]."""
+    source = ROOT / 'public' / f"{raw_link.strip('/')}.json"
+    if not source.exists():
+        return []
+    try:
+        data = json.loads(source.read_text(encoding='utf-8'))
+    except (OSError, json.JSONDecodeError):
+        return []
+    segments = data.get('segments') or []
+    if not isinstance(segments, list):
+        return []
+    rows, he_cursor, en_cursor, section = [], 0, 0, 0
+    for position, seg in enumerate(segments, 1):
+        if not isinstance(seg, dict):
+            continue
+        he_seg = segment_language_text(seg, HE_KEYS, hebrew=True)
+        en_seg = segment_language_text(seg, EN_KEYS, hebrew=False)
+        en_match = re.match(r'^\s*(\d{1,3})\s*[.\-:)]', en_seg)
+        candidate = int(en_match.group(1)) if en_match else hebrew_section_number(he_seg)
+        if candidate and ((section == 0 and candidate == 1) or candidate in (section, section + 1)):
+            section = candidate
+        dom_index = seg.get('index', position)
+        rows.append([dom_index, section or dom_index, he_cursor, he_cursor + len(he_seg), en_cursor, en_cursor + len(en_seg)])
+        if he_seg: he_cursor += len(he_seg) + 1
+        if en_seg: en_cursor += len(en_seg) + 1
+    return rows
 
 
 def canonical_reader_link(link: str) -> str:
@@ -119,8 +189,9 @@ def main():
         item_id = len(items)
         items.append({'t': title, 'h': hebrew, 'c': book, 'p': link, 'a': normalize(f'{title} {hebrew} {book}')[:500]})
         normalized = normalize(text)
+        location_map = hd.get('m') if isinstance(hd.get('m'), list) else segment_map(raw_link)
         with open(DOCS / f'{item_id}.json', 'w', encoding='utf-8') as f:
-            json.dump({'id': item_id, 't': title, 'h': hebrew, 'c': book, 'p': link, 'he': he_text, 'en': en_text, 'n': normalized}, f, ensure_ascii=False, separators=(',', ':'))
+            json.dump({'id': item_id, 't': title, 'h': hebrew, 'c': book, 'p': link, 'he': he_text, 'en': en_text, 'n': normalized, 'm': location_map}, f, ensure_ascii=False, separators=(',', ':'))
         for term in set(words(text)):
             add(shard_terms, term, item_id)
             add(shard_terms, 'e:' + ''.join(reversed(term)), item_id)
