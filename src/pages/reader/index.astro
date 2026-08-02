@@ -447,14 +447,39 @@ function linkClass(bookId, totalPages) {
       if (catBooks.length === 0) return null;
       const totalCatPages = catBooks.reduce((s, b) => s + b.parts.reduce((s2, p) => s2 + p.totalTorahs, 0), 0);
       return (
-        <details class="category-section">
+        <details class="category-section" open={cat.ids.includes('likutay-moharan')}>
           <summary class="category-title">{cat.title} <span class="cat-count">({catBooks.length} books, {totalCatPages} pages)</span></summary>
           {catBooks.map(book => {
             const indexes = loadBookIndexes(book);
             const totalPages = book.parts.reduce((s, p) => s + p.totalTorahs, 0);
             return (
               <div class="volume-section" id={book.id} style="margin-bottom: 30px;">
-                {totalPages > 40 ? (
+                {book.id === 'likutay-moharan' ? (
+                  <section class="lm-reader-portal" aria-label="Complete Likutay Moharan directory">
+                    <div class="lm-reader-portal-head">
+                      <div>
+                        <span class="lm-reader-kicker">COMPLETE BILINGUAL DIRECTORY · הספרייה השלמה בשתי שפות</span>
+                        <h3>Likutay Moharan <span lang="he" dir="rtl">ליקוטי מוהר״ן</span></h3>
+                        <p>All 411 teachings and every introduction, approbation, poetic preface, omission, and manuscript.</p>
+                      </div>
+                      <a class="lm-reader-all" href="/reader/likutay-moharan/">Open the complete directory · פתח הכל →</a>
+                    </div>
+                    <div class="lm-reader-volume-grid">
+                      <a href="/reader/likutay-moharan/1/" class="lm-reader-volume-card">
+                        <span class="lm-reader-volume-no">I</span>
+                        <strong>Part 1 · חלק א</strong>
+                        <span>286 Torahs + all introductions and five poetic gates</span>
+                        <em lang="he" dir="rtl">רפ״ו תורות · כל ההקדמות וחמש הפתיחות</em>
+                      </a>
+                      <a href="/reader/likutay-moharan/2/" class="lm-reader-volume-card">
+                        <span class="lm-reader-volume-no">II</span>
+                        <strong>Part 2 · חלק ב · תנינא</strong>
+                        <span>125 Torahs + introduction, omission, and six manuscripts</span>
+                        <em lang="he" dir="rtl">קכ״ה תורות · מבוא, השמטה ושישה כתבי יד</em>
+                      </a>
+                    </div>
+                  </section>
+                ) : totalPages > 40 ? (
                   <details class="book-dropdown">
                     <summary class="volume-title" style="font-size: 1.2em; cursor: pointer;">
                       {book.title} <span class="volume-hebrew" lang="he" dir="rtl" style="display: inline; margin-left: 8px;">{book.hebrewTitle}</span>

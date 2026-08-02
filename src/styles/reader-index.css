@@ -597,6 +597,33 @@ body.dark-mode .library-stat strong { color:#9fc6ff; }
 body.dark-mode .library-stat span, body.dark-mode .library-actions a { color:#e4c077; }
 body.dark-mode .book-dropdown[open] { background: rgba(0,0,0,.14); }
 
+/* Protected Likutay Moharan portal inside the Rabbi Nachman directory. */
+.lm-reader-portal {
+  overflow: hidden;
+  padding: clamp(18px, 3vw, 30px);
+  border: 1px solid rgba(183,132,44,.48);
+  border-radius: 26px;
+  background: radial-gradient(circle at 88% 8%,rgba(49,95,146,.18),transparent 32%),linear-gradient(135deg,#fffaf0,#f2e1c1);
+  box-shadow: 0 18px 44px rgba(24,54,91,.14);
+}
+.lm-reader-portal-head { display:flex; align-items:center; justify-content:space-between; gap:22px; }
+.lm-reader-kicker { color:#95641d; font-size:.72rem; font-weight:900; letter-spacing:.12em; }
+.lm-reader-portal h3 { margin:7px 0 5px; color:#153b68; font-family:'Cinzel','Frank Ruhl Libre',serif; font-size:clamp(1.7rem,4vw,2.7rem); }
+.lm-reader-portal h3 span { color:#835719; font-family:'Frank Ruhl Libre',serif; margin-left:9px; }
+.lm-reader-portal-head p { margin:0; color:#5d6470; line-height:1.5; }
+.lm-reader-all { flex:none; max-width:240px; padding:11px 17px; border-radius:999px; background:#173f70; color:#fff4d6; text-decoration:none; text-align:center; font-weight:850; }
+.lm-reader-volume-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; margin-top:20px; }
+.lm-reader-volume-card { display:grid; grid-template-columns:auto 1fr; grid-template-areas:'no title' 'no en' 'no he'; gap:4px 13px; align-items:center; padding:18px; border:1px solid rgba(183,132,44,.38); border-radius:19px; background:rgba(255,253,247,.83); color:#17375f; text-decoration:none; transition:transform .16s ease,box-shadow .16s ease; }
+.lm-reader-volume-card:hover { transform:translateY(-3px); box-shadow:0 14px 30px rgba(24,54,91,.14); }
+.lm-reader-volume-no { grid-area:no; display:grid; place-items:center; width:48px; height:48px; border-radius:16px; background:#173f70; color:#ffe29a; font-family:'Cinzel',serif; font-weight:900; }
+.lm-reader-volume-card strong { grid-area:title; font-size:1.08rem; }
+.lm-reader-volume-card > span:not(.lm-reader-volume-no) { grid-area:en; color:#556274; font-size:.84rem; }
+.lm-reader-volume-card em { grid-area:he; color:#82571b; font-family:'Frank Ruhl Libre',serif; font-size:1rem; font-style:normal; }
+body.dark-mode .lm-reader-portal { background:radial-gradient(circle at 88% 8%,rgba(70,122,181,.2),transparent 32%),linear-gradient(135deg,#17283f,#203a58); border-color:rgba(224,179,91,.38); }
+body.dark-mode .lm-reader-portal h3, body.dark-mode .lm-reader-volume-card { color:#fff0cf; }
+body.dark-mode .lm-reader-portal-head p, body.dark-mode .lm-reader-volume-card > span:not(.lm-reader-volume-no) { color:#bec9d8; }
+body.dark-mode .lm-reader-volume-card { background:rgba(15,31,50,.72); border-color:rgba(224,179,91,.28); }
+
 @media (max-width: 768px) {
   .lm-index { padding: 18px 10px 54px; max-width: 100%; overflow-x: hidden; }
   .lm-header { padding: 28px 12px 24px; border-radius: 22px; margin-left: 0; margin-right: 0; }
@@ -621,6 +648,11 @@ body.dark-mode .book-dropdown[open] { background: rgba(0,0,0,.14); }
   .category-title { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 8px; padding: 15px 12px; font-size: 1.02rem; line-height: 1.25; }
   .cat-count { justify-self: end; font-size: .72rem; padding: 4px 8px; white-space: nowrap; }
   .category-section .volume-section { padding: 12px 10px 0; }
+  .lm-reader-portal { padding:16px 12px; border-radius:19px; }
+  .lm-reader-portal-head { display:block; }
+  .lm-reader-all { display:block; max-width:none; margin-top:14px; }
+  .lm-reader-volume-grid { grid-template-columns:1fr; gap:10px; }
+  .lm-reader-volume-card { padding:14px 12px; }
   .volume-title { font-size: 1.08rem; line-height: 1.25; }
   .volume-hebrew { font-size: 1.08rem; line-height: 1.25; }
   .topic-card-list, .entry-card-list { grid-template-columns: 1fr; gap: 8px; }

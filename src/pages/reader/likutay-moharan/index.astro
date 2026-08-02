@@ -1,0 +1,71 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+---
+
+<Layout
+  title="Likutay Moharan — Complete Bilingual Directory"
+  description="The complete Likutay Moharan directory: 286 teachings in Part 1 and 125 teachings in Tinyana, with introductions, approbations, poetic prefaces, omissions, and manuscripts in English and Hebrew."
+  breadcrumbs={[{ name: 'Reader', url: 'https://ajew.org/reader' }, { name: 'Likutay Moharan', url: 'https://ajew.org/reader/likutay-moharan' }]}
+>
+  <main class="lm-portal">
+    <header class="lm-portal-hero">
+      <span class="lm-crown" aria-hidden="true">כתר</span>
+      <p class="lm-eyebrow">COMPLETE BILINGUAL DIRECTORY · הספרייה השלמה בשתי שפות</p>
+      <h1>Likutay Moharan</h1>
+      <h2 lang="he" dir="rtl">ליקוטי מוהר״ן</h2>
+      <p class="lm-lead">Every teaching and every special section, clearly organized in English and Hebrew.</p>
+      <p class="lm-lead-he" lang="he" dir="rtl">כל תורה וכל מדור מיוחד, מסודרים בבירור באנגלית ובעברית.</p>
+      <a class="lm-all-books" href="/reader/">← All Books · כל הספרים</a>
+    </header>
+
+    <section class="lm-volume-grid" aria-label="Likutay Moharan volumes">
+      <a class="lm-volume-card" href="/reader/likutay-moharan/1/">
+        <span class="lm-volume-number">I</span>
+        <p class="lm-kicker">PART 1 · חלק א</p>
+        <h3>Complete Likutay Moharan</h3>
+        <h4 lang="he" dir="rtl">ליקוטי מוהר״ן קמא</h4>
+        <p>286 teachings, approbations, introductions, and all five poetic section gates.</p>
+        <p lang="he" dir="rtl">רפ״ו תורות, הסכמות, הקדמות וכל חמש הפתיחות המחורזות.</p>
+        <strong>Open the complete directory · פתח את הספרייה השלמה →</strong>
+      </a>
+
+      <a class="lm-volume-card" href="/reader/likutay-moharan/2/">
+        <span class="lm-volume-number">II</span>
+        <p class="lm-kicker">PART 2 · חלק ב</p>
+        <h3>Likutay Moharan Tinyana</h3>
+        <h4 lang="he" dir="rtl">ליקוטי מוהר״ן תנינא</h4>
+        <p>125 teachings, the Volume 2 introduction and opening, the omission, and six manuscripts.</p>
+        <p lang="he" dir="rtl">קכ״ה תורות, מבוא ופתיחה לחלק ב, ההשמטה ושישה כתבי יד.</p>
+        <strong>Open the complete directory · פתח את הספרייה השלמה →</strong>
+      </a>
+    </section>
+
+    <aside class="lm-search-note">
+      <span aria-hidden="true">⌕</span>
+      <div>
+        <h3>Search every teaching · חפש בכל תורה</h3>
+        <p>Search English or Hebrew—including singular and plural forms such as “medicine” and “medicines.”</p>
+      </div>
+      <a href="/search-enhanced/?books=likutay-moharan">Search · חיפוש →</a>
+    </aside>
+  </main>
+</Layout>
+
+<style>
+  .lm-portal{max-width:1120px;margin:0 auto;padding:30px 18px 90px;color:#17375f}
+  .lm-portal-hero{text-align:center;padding:clamp(38px,7vw,82px) 20px;border:1px solid rgba(184,132,44,.48);border-radius:34px;background:radial-gradient(circle at 15% 12%,rgba(255,239,186,.85),transparent 28%),radial-gradient(circle at 88% 8%,rgba(46,91,143,.2),transparent 30%),linear-gradient(135deg,#fffaf0,#f4e5c8 58%,#e9c98f);box-shadow:0 26px 65px rgba(24,54,91,.16)}
+  .lm-crown{display:grid;place-items:center;width:58px;height:58px;margin:0 auto 14px;border-radius:50%;background:#173f70;color:#ffe8a8;font-family:'Frank Ruhl Libre',serif;font-weight:900}
+  .lm-eyebrow{margin:0 0 12px;color:#926320;font-size:.78rem;font-weight:800;letter-spacing:.18em}
+  .lm-portal h1{margin:0;font-family:'Cinzel',Georgia,serif;font-size:clamp(2.8rem,8vw,6rem);line-height:1;color:#143a68}
+  .lm-portal-hero h2{margin:12px 0 20px;font-family:'Frank Ruhl Libre',serif;font-size:clamp(2rem,6vw,4rem);color:#7b531a}
+  .lm-lead,.lm-lead-he{margin:6px auto;max-width:760px;font-size:clamp(1rem,2vw,1.2rem);line-height:1.55}.lm-lead-he{font-family:'Frank Ruhl Libre',serif;color:#704d1d}
+  .lm-all-books{display:inline-flex;margin-top:24px;padding:10px 19px;border:1px solid rgba(152,102,28,.35);border-radius:999px;background:#fffaf0;color:#17375f;text-decoration:none;font-weight:750}
+  .lm-volume-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;margin-top:28px}
+  .lm-volume-card{position:relative;overflow:hidden;padding:30px;border:1px solid rgba(188,141,62,.45);border-radius:26px;background:linear-gradient(145deg,#fffdf8,#f8eedc);box-shadow:0 18px 42px rgba(24,54,91,.1);color:#17375f;text-decoration:none;transition:transform .18s ease,box-shadow .18s ease}
+  .lm-volume-card:hover{transform:translateY(-4px);box-shadow:0 24px 52px rgba(24,54,91,.17)}
+  .lm-volume-number{position:absolute;right:22px;top:18px;font-family:'Cinzel',serif;font-size:3.7rem;font-weight:900;color:rgba(184,132,44,.16)}
+  .lm-kicker{margin:0 0 12px;color:#a06c20;font-weight:900;letter-spacing:.13em}.lm-volume-card h3{margin:0 0 5px;font-size:clamp(1.45rem,3vw,2rem)}.lm-volume-card h4{margin:0 0 20px;color:#8a5b19;font-family:'Frank Ruhl Libre',serif;font-size:1.6rem}.lm-volume-card p{line-height:1.6}.lm-volume-card p[lang="he"]{font-family:'Frank Ruhl Libre',serif;color:#714e20}.lm-volume-card strong{display:block;margin-top:22px;color:#154b82}
+  .lm-search-note{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:18px;margin-top:24px;padding:22px 26px;border-radius:22px;background:#173f70;color:#fff8e9;box-shadow:0 15px 35px rgba(23,63,112,.18)}.lm-search-note>span{font-size:2rem;color:#ffd875}.lm-search-note h3,.lm-search-note p{margin:0}.lm-search-note p{margin-top:4px;opacity:.83}.lm-search-note a{padding:10px 16px;border-radius:999px;background:#ffd875;color:#17375f;text-decoration:none;font-weight:850}
+  @media(max-width:700px){.lm-portal{padding:16px 10px 68px}.lm-portal-hero{border-radius:24px;padding:34px 13px}.lm-volume-grid{grid-template-columns:1fr}.lm-volume-card{padding:23px}.lm-search-note{grid-template-columns:auto 1fr}.lm-search-note a{grid-column:1/-1;text-align:center}}
+  :global(html.dark) .lm-portal{color:#f4e4c4}:global(html.dark) .lm-portal-hero{background:radial-gradient(circle at 15% 12%,rgba(145,103,32,.22),transparent 28%),linear-gradient(135deg,#172a43,#203d5f);border-color:rgba(224,179,91,.35)}:global(html.dark) .lm-portal h1{color:#fff2d2}:global(html.dark) .lm-volume-card{background:linear-gradient(145deg,#182d47,#223e5e);color:#fff1d0}:global(html.dark) .lm-volume-card h3{color:#fff1d0}
+</style>
