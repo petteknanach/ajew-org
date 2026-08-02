@@ -304,7 +304,8 @@ for (const marker of ['.lm-reader-portal', '.lm-reader-volume-grid', 'grid-templ
   mustContain('src/styles/reader-index.css', marker, `main Reader Likutay Moharan styling marker ${marker}`);
 }
 
-// Super Reader pilot: protect the ArtScroll-inspired study workflow while Pe’er OCR stays paused.
+// Super Reader pilot: protect the ArtScroll-inspired synchronized study workflow.
+// Pe’er remains a facsimile; OCR may place conservative locators but never supplies prose.
 const superReaderPilot = 'src/pages/reader/super/likutay-moharan/1/1.astro';
 for (const marker of [
   'sr-section-pager',
@@ -312,11 +313,14 @@ for (const marker of [
   'data-source="saved"',
   'id="sr-nikud"',
   'id="sr-focus"',
-  "peerView: 'scan'",
-  'experimental OCR blocks are',
-  'blocks: _blocks',
+  "peerView: localStorage.getItem('ajew-super-peer-view') || 'pdf'",
+  'OCR is used only to place conservative',
+  'highlights: blocks.flatMap',
+  'data-english=',
+  'sr-source-phrase-key',
+  'sr-peer-pdf',
+  'conservative OCR-assisted locators',
   'Pe’er facsimile pages',
-  'text extraction is paused',
   'ajew-super-last-segment-lm-1-1',
 ]) mustContain(superReaderPilot, marker, `protected Super Reader marker ${marker}`);
 
