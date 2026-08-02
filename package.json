@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "npm run verify && node scripts/dl-pnc-data.cjs && node scripts/create-app-aliases.cjs && node scripts/build-parsha-connections.cjs && node scripts/build-search-index-v2.cjs && (python3 scripts/build-light-search-index.py && python3 scripts/build-reader-search-shards.py && python3 scripts/build-reader-plain-text.py || echo 'WARN: python3 not available, skipping light/reader search/plain indexes') && npm run verify && astro build && python3 scripts/postbuild-seo-sitemaps.py",
+    "build": "npm run verify:base && node scripts/dl-pnc-data.cjs && node scripts/create-app-aliases.cjs && node scripts/build-parsha-connections.cjs && node scripts/build-search-index-v2.cjs && python3 scripts/build-light-search-index.py && python3 scripts/build-reader-search-shards.py && python3 scripts/build-reader-plain-text.py && REQUIRE_SEARCH_ARTIFACTS=1 npm run verify && astro build && python3 scripts/postbuild-seo-sitemaps.py",
     "preview": "astro preview",
     "astro": "astro",
     "search": "node gen-search-index.js",
@@ -16,7 +16,9 @@
     "start-api": "node enhanced-search-api-simple.cjs",
     "search-dev": "concurrently \"npm run generate-index\" \"npm run start-api\"",
     "import-ramchal": "node scripts/import-ramchal.mjs",
-    "verify": "python3 .hermes/safeguard-check.py && node scripts/verify-regression-guards.cjs"
+    "verify:base": "python3 .hermes/safeguard-check.py && node scripts/verify-regression-guards.cjs",
+    "verify:search": "node scripts/verify-search-regressions.cjs",
+    "verify": "npm run verify:base && npm run verify:search"
   },
   "dependencies": {
     "@astrojs/node": "^9.5.5",

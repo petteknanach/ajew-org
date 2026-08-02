@@ -264,25 +264,95 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
       }
 
       const readerShardCache = new Map();
+      const readerPhraseShardCache = new Map();
       let readerMetaPromise = null;
       let readerMeta = null;
 
       async function loadReaderMeta() {
         if (readerMeta) return readerMeta;
         if (!readerMetaPromise) {
-          readerMetaPromise = fetch('/reader-search/meta.json', { headers: { Accept: 'application/json' } })
+          readerMetaPromise = fetch('/reader-search/meta.json', { cache: 'no-cache', headers: { Accept: 'application/json' } })
             .then(r => { if (!r.ok) throw new Error('reader meta ' + r.status); return r.json(); })
-            .then(d => (readerMeta = d));
+            .then(d => (readerMeta = d))
+            .catch(err => { readerMetaPromise = null; throw err; });
         }
         return readerMetaPromise;
       }
 
+      function readerAssetUrl(path) {
+        const version = readerMeta?.generatedAt || '';
+        return path + (version ? '?v=' + encodeURIComponent(version) : '');
+      }
+
       async function loadShard(key) {
         if (readerShardCache.has(key)) return readerShardCache.get(key);
-        const shard = await fetch('/reader-search/shards/' + encodeURIComponent(key) + '.json', { headers: { Accept: 'application/json' } })
+        const shard = await fetch(readerAssetUrl('/reader-search/shards/' + encodeURIComponent(key) + '.json'), { headers: { Accept: 'application/json' } })
           .then(r => r.ok ? r.json() : {});
         readerShardCache.set(key, shard);
         return shard;
+      }
+
+      function fnv1a32(text) {
+        let value = 0x811c9dc5;
+        for (const byte of new TextEncoder().encode(text)) {
+          value ^= byte;
+          value = Math.imul(value, 0x01000193) >>> 0;
+        }
+        return value >>> 0;
+      }
+
+      async function loadPhraseShard(key) {
+        if (readerPhraseShardCache.has(key)) return readerPhraseShardCache.get(key);
+        const promise = fetch(readerAssetUrl('/reader-search/phrases/' + key + '.bin'), { headers: { Accept: 'application/octet-stream' } })
+          .then(r => { if (!r.ok) throw new Error('phrase shard ' + key + ' ' + r.status); return r.arrayBuffer(); })
+          .then(buffer => new DataView(buffer))
+          .catch(err => { readerPhraseShardCache.delete(key); throw err; });
+        readerPhraseShardCache.set(key, promise);
+        return promise;
+      }
+
+      function phrasePostings(view, hash) {
+        const count = Math.floor(view.byteLength / 8);
+        let lo = 0;
+        let hi = count;
+        while (lo < hi) {
+          const mid = (lo + hi) >>> 1;
+          if (view.getUint32(mid * 8, true) < hash) lo = mid + 1;
+          else hi = mid;
+        }
+        const ids = [];
+        for (let i = lo; i < count && view.getUint32(i * 8, true) === hash; i++) {
+          ids.push(view.getUint32(i * 8 + 4, true));
+        }
+        return ids;
+      }
+
+      async function idsForExactPhrase(query) {
+        const tokens = normalizeForSearch(query).split(' ').filter(Boolean);
+        if (tokens.length < 2) return null;
+        const hashes = Array.from(new Set(tokens.slice(0, -1).map((word, i) => fnv1a32(word + ' ' + tokens[i + 1]))));
+        const views = new Map();
+        await Promise.all(hashes.map(async hash => {
+          const key = (hash >>> 24).toString(16).padStart(2, '0');
+          if (!views.has(key)) views.set(key, await loadPhraseShard(key));
+        }));
+        const lists = hashes.map(hash => phrasePostings(views.get((hash >>> 24).toString(16).padStart(2, '0')), hash));
+        if (lists.some(list => !list.length)) return [];
+        lists.sort((a, b) => a.length - b.length);
+        const [smallest, ...rest] = lists;
+        const restSets = rest.map(list => new Set(list));
+        return smallest.filter(id => restSets.every(set => set.has(id)));
+      }
+
+      function effectiveSearch(query, requestedMode) {
+        const trimmed = String(query || '').trim();
+        const pairs = [['"', '"'], ['“', '”'], ["'", "'"], ['‘', '’'], ['״', '״']];
+        for (const [open, close] of pairs) {
+          if (trimmed.length > 2 && trimmed.startsWith(open) && trimmed.endsWith(close)) {
+            return { query: trimmed.slice(open.length, -close.length).trim(), mode: 'exact' };
+          }
+        }
+        return { query: trimmed, mode: requestedMode || 'google' };
       }
 
       function bookIdFromPath(path) {
@@ -299,7 +369,7 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
       }
 
       function idsForMode(shards, query, mode) {
-        const groups = queryTermGroups(query, { expand: mode !== 'exact' });
+        const groups = queryTermGroups(query, { expand: mode !== 'exact', keepStopWords: mode === 'exact' });
         const q = normalizeForSearch(query);
         if (!groups.length) return [];
         if (mode === 'startsWith') {
@@ -333,7 +403,7 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
 
       async function loadDoc(id) {
         try {
-          const r = await fetch('/reader-search/docs/' + id + '.json', { headers: { Accept: 'application/json' } });
+          const r = await fetch(readerAssetUrl('/reader-search/docs/' + id + '.json'), { headers: { Accept: 'application/json' } });
           if (!r.ok) return null;
           return r.json();
         } catch (_) {
@@ -373,8 +443,8 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
 
       function docMatchScore(doc, query, mode) {
         const q = normalizeForSearch(query);
-        const groups = queryTermGroups(query, { expand: true });
-        const exactGroups = queryTermGroups(query, { expand: false });
+        const groups = queryTermGroups(query, { expand: mode !== 'exact', keepStopWords: mode === 'exact' });
+        const exactGroups = queryTermGroups(query, { expand: false, keepStopWords: mode === 'exact' });
         const n = doc.n || normalizeForSearch([doc.t, doc.h, doc.c, doc.he, doc.en].join(' '));
         const titleNorm = normalizeForSearch([doc.t, doc.h, doc.c].join(' '));
         const toks = n.split(' ').filter(Boolean);
@@ -389,16 +459,13 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         const titleHit = q && titleNorm.includes(q);
         const prox = proximityBonus(toks, groups);
         const priority = bookPriorityScore(doc);
-        const deadPrayerTarget = /\bdead\b/.test(q) && /\bprayer\b/.test(q) && (doc.p || '').includes('/reader/likutay-moharan/2/111');
+        const deadPrayerTarget = mode !== 'exact' && /\bdead\b/.test(q) && /\bprayer\b/.test(q) && (doc.p || '').includes('/reader/likutay-moharan/2/111');
         if (deadPrayerTarget) return 5000;
 
         if (mode === 'exact') {
-          // Exact phrase remains strongest, but a two-word human search such as
-          // “dead prayer” must still find the teaching when the text says
-          // “dead person ... pray/prayer”. Treat multi-word exact with no phrase
-          // hit as strict all-words + synonym verification instead of zero.
+          // Exact means exact: normalized words must remain consecutive and in
+          // order. Synonym/all-word discovery belongs to Google or All Words.
           if (phrase) return 1600 + prox + priority + (titleHit ? 200 : 0);
-          if (groups.length > 1 && allMatched) return 1050 + prox + priority;
           return 0;
         }
         if (mode === 'all' || mode === 'proximity') return allMatched ? 900 + prox + priority + (phrase ? 400 : 0) : 0;
@@ -428,10 +495,13 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
       }
 
       let lastSearchResults = [];
+      let activeSearchRequest = 0;
 
       async function clientSearch(query, advanced, onProgress) {
         const meta = await loadReaderMeta();
-        const searchType = advanced?.searchType || 'google';
+        const effective = effectiveSearch(query, advanced?.searchType || 'google');
+        query = effective.query;
+        const searchType = effective.mode;
         const books = advanced?.books || [];
         const allowed = new Set(books || []);
         let keys;
@@ -441,12 +511,22 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
           // Candidate generation should use the same expanded variants that
           // scoring/verifying uses. Otherwise "dead prayer" misses texts that
           // say "dead person ... pray" when strict exact-phrase mode is chosen.
-          const groups = queryTermGroups(query, { expand: true });
+          const groups = queryTermGroups(query, { expand: searchType !== 'exact', keepStopWords: searchType === 'exact' });
           keys = Array.from(new Set(groups.flat().map(w => w.slice(0,1) || '_')));
         }
-        const shards = await Promise.all(keys.map(loadShard));
-        let ids = idsForMode(shards, query, searchType);
-        if (!ids.length && searchType === 'exact') ids = idsForMode(shards, query, 'all');
+        let ids;
+        if (searchType === 'exact') {
+          try {
+            ids = await idsForExactPhrase(query);
+          } catch (err) {
+            console.warn('Exact phrase index unavailable; using strict word candidates.', err);
+            ids = null;
+          }
+        }
+        if (ids == null) {
+          const shards = await Promise.all(keys.map(loadShard));
+          ids = idsForMode(shards, query, searchType);
+        }
         if (allowed.size) ids = ids.filter(id => allowed.has(bookIdFromPath(meta.items[id]?.p || '')));
 
         // Verify the primary Breslov works first. A common three-word Hebrew
@@ -456,7 +536,10 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
 
         const verified = [];
         const batchSize = 100;
-        const maxCandidates = (searchType === 'google' || searchType === 'any' || searchType === 'boolean') ? 2400 : 1800;
+        // Exact-mode bigram postings are already narrow. If an older deployment
+        // lacks them, verify every strict word candidate rather than silently
+        // dropping a true phrase beyond an arbitrary cap.
+        const maxCandidates = searchType === 'exact' ? ids.length : ((searchType === 'google' || searchType === 'any' || searchType === 'boolean') ? 2400 : 1800);
         let progressShown = false;
         for (let i = 0; i < ids.length && i < maxCandidates; i += batchSize) {
           const docs = await Promise.all(ids.slice(i, i + batchSize).map(loadDoc));
@@ -497,6 +580,7 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
           return;
         }
 
+        const requestId = ++activeSearchRequest;
         showLoading();
         saveSearchHistory(query);
         
@@ -504,9 +588,11 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
 
         loadPromise.then(async () => {
           const { results, total } = await clientSearch(query, advanced, (partial) => {
+            if (requestId !== activeSearchRequest) return;
             loading.classList.add('hidden');
             displayResults(partial.results, query, partial.total);
           });
+          if (requestId !== activeSearchRequest) return;
           loading.classList.add('hidden');
           
           if (results.length > 0) {
@@ -515,6 +601,7 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
             showNoResults(query);
           }
         }).catch(err => {
+          if (requestId !== activeSearchRequest) return;
           console.error('Search error:', err);
           loading.classList.add('hidden');
           showNoResults(query, 'Search unavailable. Please try again.');
@@ -523,17 +610,18 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
 
       function displayResults(results: any[], query: string, total?: number) {
         const count = total || results.length;
-        resultsCount.textContent = `${count} תוצאות ל "${query}" / results for "${query}"`;
+        const displayQuery = effectiveSearch(query, 'google').query;
+        resultsCount.textContent = `${count} תוצאות ל "${displayQuery}" / results for "${displayQuery}"`;
 
         const html = results.map(result => {
           const extraInfo = result.extraInfo || '';
           const rawSnippet = result.snippet || '';
-          const snippet = highlightQuery(rawSnippet, query, extraInfo);
+          const snippet = highlightQuery(rawSnippet, displayQuery, extraInfo);
           const link = result.link || '#';
           const linkWithQuery = link + (link.includes('?') ? '&' : '?') + 'q=' + encodeURIComponent(query);
           const rawTitle = result.title || 'Unknown';
-          const title = highlightQuery(rawTitle, query);
-          const hebrewTitle = result.hebrewTitle ? highlightQuery(result.hebrewTitle, query) : '';
+          const title = highlightQuery(rawTitle, displayQuery);
+          const hebrewTitle = result.hebrewTitle ? highlightQuery(result.hebrewTitle, displayQuery) : '';
           const subcategory = result.subcategory || '';
           const wordCount = result.wordCount || 0;
           const relevance = result.relevance || 0;
