@@ -18,13 +18,13 @@ const sections = [
     ]
   },
   {
-    id: 'notebooklm', title: 'NotebookLM study productions', icon: '🧠', intro: 'Source-controlled study material kept in separate Beginner and Deep Study tracks.',
+    id: 'hosted-study', title: 'Hosted Truth study library', icon: '🧠', intro: 'Public study material hosted directly on ajew.org — no Google account or access request required.',
     links: [
       { title: 'Begin Here Audio: Spiritual Distance', he: 'התחל כאן — משיבת נפש', href: '/reader/meshivas-nefesh/1/58', icon: '🎧', desc: 'For Meshivas Nefesh §§58, 66, and 88. AI-assisted interpretation; analogies and explanations are illustrative and are not verified Torah text. Consult the cited primary sources.' },
-      { title: 'Beginner: Truth 1–6', he: 'מסלול מתחילים', href: '/notebooklm/truth-1-6-exact-source-sheet.md', icon: '🌱', desc: 'Approved exact bilingual source sheet — no unsupported additions.' },
-      { title: 'Deep Study: Truth 7–12', he: 'לימוד מעמיק', href: '/notebooklm/truth-7-12-exact-source-sheet.md', icon: '🔬', desc: 'Approved exact bilingual source sheet — separately sourced and verified.' },
-      { title: 'Open Beginner Notebook', he: 'מחברת מתחילים', href: 'https://notebooklm.google.com/notebook/7c33fce6-f5b0-46e1-b716-428424c2c49c', icon: '↗️', desc: 'Open the source-controlled Beginner notebook in NotebookLM. Google sign-in may be required.', external: true },
-      { title: 'Open Deep Study Notebook', he: 'מחברת עיון', href: 'https://notebooklm.google.com/notebook/75fd74bf-1489-484b-9511-bf2a4dd2ce05', icon: '↗️', desc: 'Open the separate Deep Study notebook in NotebookLM. Google sign-in may be required.', external: true },
+      { title: 'Begin Here: Truth 1–6', he: 'מסלול מתחילים', href: '/notebooklm/truth/#beginner', icon: '🌱', desc: 'Read the exact bilingual source sheet directly on ajew.org.' },
+      { title: 'Deep Study: Truth 7–12', he: 'לימוד מעמיק', href: '/notebooklm/truth/#deep', icon: '🔬', desc: 'Read the separate exact bilingual source sheet directly on ajew.org.' },
+      { title: 'Complete Truth Collection', he: 'כל ערך אמת', href: '/reader/sefer-hamidos/1/1', icon: '📖', desc: 'Read all Truth teachings in the complete bilingual Sefer HaMidos reader.' },
+      { title: 'Public Text Downloads', he: 'הורדות טקסט', href: '/notebooklm/truth/#downloads', icon: '↓', desc: 'View or download both publicly hosted plain-text source sheets.' },
     ]
   },
   {
@@ -92,7 +92,7 @@ const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'CollectionPage',
   name: 'Rabbi Nachman of Breslov Resources',
-  description: 'Complete guide to ajew.org’s Rabbi Nachman and Breslov books, summaries, multimedia, NotebookLM study material, diagrams, timelines, search tools, prayer, and reference resources.',
+  description: 'Complete guide to ajew.org’s Rabbi Nachman and Breslov books, summaries, multimedia, publicly hosted Truth study material, diagrams, timelines, search tools, prayer, and reference resources.',
   url: 'https://ajew.org/resources',
   mainEntity: {
     '@type': 'ItemList',
@@ -107,7 +107,7 @@ const jsonLd = {
 
 <Layout
   title="Rabbi Nachman of Breslov Resources — Books, Media & Study Tools"
-  description="One-page access to ajew.org’s complete Rabbi Nachman and Breslov resources: books, Likutay Halachos summaries, Ebay HaNachal, NotebookLM studies, Geedoolay HaNachal diagrams and timelines, Sefer HaMidos media, search, prayer, gallery, and more."
+  description="One-page access to ajew.org’s complete Rabbi Nachman and Breslov resources: books, Likutay Halachos summaries, Ebay HaNachal, publicly hosted Truth studies, Geedoolay HaNachal diagrams and timelines, Sefer HaMidos media, search, prayer, gallery, and more."
   jsonLd={jsonLd}
   breadcrumbs={[{ name: 'Home', url: '/' }, { name: 'Resources', url: '/resources' }]}
 >
@@ -122,7 +122,7 @@ const jsonLd = {
       <p class="eyebrow">ajew.org · One-page directory</p>
       <h1>Rabbi Nachman &amp; Breslov Resources</h1>
       <p class="hero-he" lang="he" dir="rtl">כל האוצרות במקום אחד</p>
-      <p class="lead">Books, exact bilingual texts, summaries, diagrams, timelines, NotebookLM study material, pictures, videos, songs, search tools, and practical help.</p>
+      <p class="lead">Books, exact bilingual texts, summaries, diagrams, timelines, publicly hosted study material, pictures, videos, songs, search tools, and practical help.</p>
       <nav class="jump-nav" aria-label="Jump to a resource section">
         {sections.map(section => <a href={`#${section.id}`}>{section.icon} {section.title}</a>)}
       </nav>

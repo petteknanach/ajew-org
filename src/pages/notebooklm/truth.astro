@@ -1,0 +1,89 @@
+---
+import fs from 'node:fs';
+import Layout from '../../layouts/Layout.astro';
+
+const truth = JSON.parse(fs.readFileSync(new URL('../../../public/reader/sefer-hamidos/topic-1.json', import.meta.url), 'utf8'));
+const tracks = [
+  {
+    id: 'beginner',
+    eyebrow: 'Begin Here',
+    title: 'Truth 1–6',
+    heTitle: 'אמת א–ו',
+    description: 'The first six teachings in a short, exact bilingual source sheet.',
+    segments: truth.segments.slice(0, 6),
+    download: '/notebooklm/downloads/truth-1-6-exact-source-sheet.txt',
+  },
+  {
+    id: 'deep',
+    eyebrow: 'Deep Study',
+    title: 'Truth 7–12',
+    heTitle: 'אמת ז–יב',
+    description: 'The next six teachings in a separate, exact bilingual source sheet.',
+    segments: truth.segments.slice(6, 12),
+    download: '/notebooklm/downloads/truth-7-12-exact-source-sheet.txt',
+  },
+];
+---
+
+<Layout
+  title="Truth — Public Bilingual Study Library | ajew.org"
+  description="Read Sefer HaMidos Truth 1–12 directly on ajew.org in exact Hebrew and English. No NotebookLM access request or Google sign-in is required."
+  breadcrumbs={[{ name: 'Home', url: '/' }, { name: 'Resources', url: '/resources' }, { name: 'Truth Study Library', url: '/notebooklm/truth' }]}
+>
+  <main class="truth-library">
+    <header class="hero">
+      <p class="eyebrow">Publicly hosted on ajew.org</p>
+      <h1>Truth — Direct Study Library</h1>
+      <p class="hero-he" lang="he" dir="rtl">אֱמֶת — ספר המידות</p>
+      <p class="lead">All source material is available here without NotebookLM access, a Google account, or a local file. Read it on this page, open each teaching in the full reader, or download a plain-text source sheet.</p>
+      <div class="hero-actions">
+        <a href="#beginner">Begin Here: 1–6</a>
+        <a href="#deep">Deep Study: 7–12</a>
+        <a href="/reader/sefer-hamidos/1/1">Complete Truth collection →</a>
+      </div>
+    </header>
+
+    {tracks.map(track => (
+      <section class="track" id={track.id} aria-labelledby={`${track.id}-title`}>
+        <div class="track-heading">
+          <div>
+            <p class="track-eyebrow">{track.eyebrow}</p>
+            <h2 id={`${track.id}-title`}>{track.title}</h2>
+            <p class="track-he" lang="he" dir="rtl">{track.heTitle}</p>
+            <p>{track.description}</p>
+          </div>
+          <a class="download" id={track.id === 'deep' ? 'downloads' : undefined} href={track.download}>View/download plain text ↓</a>
+        </div>
+
+        <div class="teachings">
+          {track.segments.map(segment => (
+            <article class="teaching" id={`truth-${segment.index}`}>
+              <div class="number" aria-hidden="true">{segment.index}</div>
+              <div class="text">
+                <p class="hebrew" lang="he" dir="rtl">{segment.he}</p>
+                <p class="english">{segment.en}</p>
+                <a class="reader-link" href={`/reader/sefer-hamidos/1/1#seg-${segment.index}`}>Open Truth {segment.index} in the full reader →</a>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+    ))}
+
+    <footer class="source-note">
+      <strong>Source:</strong> Sefer HaMidos, Truth, Part I, teachings 1–12. Hebrew and English are drawn directly from ajew.org’s canonical reader data. The two study tracks remain separate.
+    </footer>
+  </main>
+</Layout>
+
+<style>
+  .truth-library{max-width:980px;margin:0 auto;padding:1.25rem 1rem 5rem;color:var(--text-primary,#20242c)}
+  .hero{padding:clamp(1.5rem,5vw,3.5rem);border-radius:22px;background:linear-gradient(145deg,#102c50,#1d4f75 70%,#8b6514);color:#fff;text-align:center;box-shadow:0 12px 35px rgba(16,44,80,.23)}
+  .eyebrow,.track-eyebrow{margin:0 0 .55rem;color:#f4d77a;font-size:.76rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+  h1{margin:0;font:700 clamp(2.15rem,6vw,3.8rem)/1.05 Georgia,serif}.hero-he{margin:.55rem 0 0;color:#f4d77a;font:clamp(1.45rem,4vw,2.15rem)/1.3 Georgia,serif}.lead{max-width:730px;margin:1rem auto 1.3rem;color:#f1f5f9;line-height:1.65}
+  .hero-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:.6rem}.hero-actions a{padding:.62rem .85rem;border:1px solid #ffffff55;border-radius:999px;color:#fff;text-decoration:none;font-size:.86rem;font-weight:700}.hero-actions a:hover{background:#f4d77a;color:#102c50}
+  .track{scroll-margin-top:1rem;padding-top:3rem}.track-heading{display:flex;justify-content:space-between;align-items:end;gap:1rem;padding-bottom:1rem;border-bottom:2px solid #173a61}.track-heading h2{margin:0;color:#173a61;font:700 clamp(1.8rem,4vw,2.5rem)/1.1 Georgia,serif}.track-he{margin:.25rem 0 .5rem;color:#8b6514;font:1.25rem Georgia,serif}.track-heading>div>p:last-child{margin:0;color:#667085}.download{flex:none;padding:.65rem .8rem;border:1px solid #d4a017;border-radius:9px;color:#173a61;background:#fff8e8;text-decoration:none;font-size:.84rem;font-weight:800}
+  .teachings{display:grid;gap:.85rem;margin-top:1rem}.teaching{display:grid;grid-template-columns:2.6rem 1fr;gap:1rem;padding:1.15rem;border:1px solid #e1d8c7;border-radius:14px;background:#fffdfa;box-shadow:0 2px 10px rgba(25,42,62,.05)}.number{display:grid;place-items:center;width:2.5rem;height:2.5rem;border-radius:50%;background:#9b3d2b;color:#fff;font:700 1rem Georgia,serif}.hebrew{margin:0;color:#202020;font:1.45rem/1.85 Georgia,"Noto Serif Hebrew",serif}.english{margin:.85rem 0 0;color:#394150;font:1.02rem/1.7 Georgia,serif}.reader-link{display:inline-block;margin-top:.8rem;color:#8b3c27;text-decoration:none;font-size:.84rem;font-weight:800}.reader-link:hover{text-decoration:underline}.source-note{margin-top:2.5rem;padding:1rem;border-left:4px solid #d4a017;background:#fff8e8;color:#4e5663;line-height:1.6}
+  :global(body.dark-mode) .truth-library{color:#e7e8eb}:global(body.dark-mode) .track-heading h2{color:#f4d77a}:global(body.dark-mode) .teaching{background:#202434;border-color:#3b4052}:global(body.dark-mode) .hebrew,:global(body.dark-mode) .english{color:#e7e8eb}:global(body.dark-mode) .source-note,:global(body.dark-mode) .download{background:#2b2b25;color:#f4d77a}
+  @media(max-width:650px){.truth-library{padding:.75rem .75rem 5rem}.hero{padding:1.6rem .9rem;border-radius:16px}.track-heading{align-items:flex-start;flex-direction:column}.teaching{grid-template-columns:2rem 1fr;padding:.95rem;gap:.7rem}.number{width:2rem;height:2rem}.hebrew{font-size:1.25rem}.english{font-size:.96rem}}
+</style>
