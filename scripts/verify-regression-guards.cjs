@@ -275,6 +275,8 @@ for (const marker of [
   "preface-section-1",
   "preface-section-5",
   "manuscript-${i + 1}",
+  'part2Manuscripts',
+  'id="manuscripts"',
   'item.title',
   'item.hebrewTitle',
   'Torahs 32–286 — Main Likutay Moharan',

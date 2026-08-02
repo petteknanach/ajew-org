@@ -38,7 +38,7 @@ function labelFor(item) {
   const type = item.type || item.slug || '';
   const nice = {
     haskamos: 'Approbations',
-    intro: 'Shir Na’im',
+    intro: partNum === 1 ? 'Shir Na’im' : 'Opening',
     'intro-shimon': 'R’ Shimon',
     hakdama: 'Hakdama',
     'intro-lm': 'Introduction',
@@ -72,6 +72,8 @@ const part2Extra = [
   { slug: 'omission', displayNumber: 'omission', title: 'Omission / Hashmatah', hebrewTitle: 'השמטה', url: '/reader/likutay-moharan/2/omission' },
   ...Array.from({ length: 6 }, (_, i) => ({ slug: `manuscript-${i + 1}`, displayNumber: `ms-${i + 1}`, title: `Handwritten Manuscript ${i + 1}`, hebrewTitle: `כתב יד ${i + 1}`, url: `/reader/likutay-moharan/2/manuscript-${i + 1}` }))
 ].filter((item, i, arr) => item && item.url && arr.findIndex(x => x.url === item.url) === i);
+const part2Opening = part2Extra.filter(item => !String(item.slug || '').startsWith('manuscript-'));
+const part2Manuscripts = part2Extra.filter(item => String(item.slug || '').startsWith('manuscript-'));
 const overviewLinks = partNum === 1 ? [
   { href: '#intro', text: 'Introductions & approbations', he: 'הקדמות והסכמות' },
   { href: '#opening', text: 'Torahs 1–15', he: 'תורות א–טו' },
@@ -171,7 +173,20 @@ const overviewLinks = partNum === 1 ? [
             </div>
           </header>
           <div class="lm-card-grid lm-feature-grid">
-            {part2Extra.map(item => (
+            {part2Opening.map(item => (
+              <a class="lm-card lm-feature-card" href={hrefFor(item)}>
+                <span class="lm-num">{labelFor(item)}</span>
+                <strong>{item.title}</strong>
+                <em lang="he" dir="rtl">{item.hebrewTitle}</em>
+              </a>
+            ))}
+          </div>
+          <div id="manuscripts" class="lm-subsection-heading">
+            <span class="lm-section-mark">✦</span>
+            <div><h4>Handwritten Manuscripts</h4><p lang="he" dir="rtl">כתבי יד</p></div>
+          </div>
+          <div class="lm-card-grid lm-feature-grid">
+            {part2Manuscripts.map(item => (
               <a class="lm-card lm-feature-card" href={hrefFor(item)}>
                 <span class="lm-num">{labelFor(item)}</span>
                 <strong>{item.title}</strong>
@@ -223,6 +238,9 @@ const overviewLinks = partNum === 1 ? [
   .lm-section-mark { width: 48px; height: 48px; display:grid; place-items:center; border-radius:16px; background: linear-gradient(135deg,#173b67,#2c5f94); color:#ffe9b3; font-family:'Frank Ruhl Libre',serif; font-weight:900; }
   .lm-panel h3 { margin:0; color:#15375e; font-size: clamp(1.35rem, 3vw, 2rem); }
   .lm-panel header p { margin:3px 0 0; color:#795923; font-family:'Frank Ruhl Libre',serif; font-size:1.2rem; }
+  .lm-subsection-heading { scroll-margin-top:90px; display:flex; gap:12px; align-items:center; margin:26px 0 14px; padding-top:20px; border-top:1px solid rgba(204,178,128,.58); }
+  .lm-subsection-heading h4 { margin:0; color:#15375e; font-size:clamp(1.2rem,2.5vw,1.7rem); }
+  .lm-subsection-heading p { margin:2px 0 0; color:#795923; font-family:'Frank Ruhl Libre',serif; font-size:1.15rem; }
   .lm-card-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
   .lm-feature-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
   .lm-card { display:flex; flex-direction:column; gap:5px; min-height:110px; padding:15px; border-radius:18px; border:1px solid rgba(204,178,128,.58); background:#fffaf0; text-decoration:none; box-shadow:0 8px 24px rgba(20,52,93,.06); transition: transform .16s ease, box-shadow .16s ease; }
