@@ -304,6 +304,22 @@ for (const marker of ['.lm-reader-portal', '.lm-reader-volume-grid', 'grid-templ
   mustContain('src/styles/reader-index.css', marker, `main Reader Likutay Moharan styling marker ${marker}`);
 }
 
+// Super Reader pilot: protect the ArtScroll-inspired study workflow while Pe’er OCR stays paused.
+const superReaderPilot = 'src/pages/reader/super/likutay-moharan/1/1.astro';
+for (const marker of [
+  'sr-section-pager',
+  'sr-source-ribbon',
+  'data-source="saved"',
+  'id="sr-nikud"',
+  'id="sr-focus"',
+  "peerView: 'scan'",
+  'experimental OCR blocks are',
+  'blocks: _blocks',
+  'Pe’er facsimile pages',
+  'text extraction is paused',
+  'ajew-super-last-segment-lm-1-1',
+]) mustContain(superReaderPilot, marker, `protected Super Reader marker ${marker}`);
+
 // Search regression: a singular English query must be able to generate the
 // plural posting used by LM 1:268. The first `npm run verify` intentionally runs
 // before reader-search shards are regenerated, so verify the canonical light
