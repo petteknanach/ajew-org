@@ -2,6 +2,7 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const zlib = require('zlib');
 
 const root = path.resolve(__dirname, '..');
 const failures = [];
@@ -281,20 +282,16 @@ for (const marker of [
 ]) mustContain(lmDirectoryUi, marker, `protected complete/bilingual directory marker ${marker}`);
 
 // Search regression: a singular English query must be able to generate the
-// plural posting used by LM 1:268. Guard the UI expansion and the generated
-// reader-search data so either code drift or a stale index blocks deployment.
+// plural posting used by LM 1:268. The first `npm run verify` intentionally runs
+// before reader-search shards are regenerated, so verify the canonical light
+// index input here; the normal build then regenerates shards from this source.
 mustContain('src/pages/search-enhanced.astro', 'function englishMorphologyVariants', 'English singular/plural search expansion');
 mustContain('src/pages/search-enhanced.astro', '"medicine" finds a source containing "medicines" (LM 1:268)', 'medicine -> LM 1:268 regression note');
-const readerMeta = loadJson('public/reader-search/meta.json');
-const medicineTargetId = (readerMeta.items || []).findIndex(item => item.p === '/reader/likutay-moharan/1/268');
-if (medicineTargetId < 0) {
-  failures.push('Reader search: LM 1:268 is missing from meta.json');
-} else {
-  const medicineDoc = loadJson(`public/reader-search/docs/${medicineTargetId}.json`);
-  if (!/\bmedicines\b/i.test(`${medicineDoc.en || ''} ${medicineDoc.n || ''}`)) failures.push('Reader search: LM 1:268 no longer contains searchable “medicines”');
-  const mShard = loadJson('public/reader-search/shards/m.json');
-  if (!(mShard.medicines || []).includes(medicineTargetId)) failures.push('Reader search: “medicines” posting does not include LM 1:268');
-}
+const lightEnPath = path.join(root, 'public/data/light-search-index-en.json.gz');
+const lightEn = JSON.parse(zlib.gunzipSync(fs.readFileSync(lightEnPath)).toString('utf8'));
+const medicineTarget = lightEn.find(doc => /\/reader\/likutay-moharan\/(?:part-1\/torah-|1\/)268$/.test(doc.l || ''));
+if (!medicineTarget) failures.push('Search source index: LM 1:268 is missing');
+else if (!/\bmedicines\b/i.test(`${medicineTarget.x || ''} ${medicineTarget.e || ''}`)) failures.push('Search source index: LM 1:268 no longer contains searchable “medicines”');
 
 if (failures.length) {
   console.error('Regression guard failed:');
