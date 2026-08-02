@@ -236,9 +236,31 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
       function queryTermGroups(query, options = {}) {
         const expand = options.expand !== false;
         return searchWords(query, options).map(w => {
-          const variants = expand ? (SYNONYM_GROUPS.get(w) || [w]) : [w];
+          const semanticVariants = expand ? (SYNONYM_GROUPS.get(w) || [w]) : [w];
+          const variants = expand
+            ? semanticVariants.flatMap(v => englishMorphologyVariants(correctedWord(normalizeForSearch(v))))
+            : semanticVariants;
           return Array.from(new Set(variants.map(v => correctedWord(normalizeForSearch(v))).filter(Boolean)));
         });
+      }
+
+      // Search postings are whole normalized words. Expand ordinary English
+      // singular/plural forms before loading shards so a human query such as
+      // "medicine" finds a source containing "medicines" (LM 1:268), and a
+      // plural query finds a singular source. This is intentionally conservative:
+      // verification still checks the fetched document before it can be shown.
+      function englishMorphologyVariants(word) {
+        const out = new Set([word]);
+        if (!/^[a-z]+$/.test(word) || word.length < 3) return Array.from(out);
+
+        if (word.endsWith('ies') && word.length > 4) out.add(word.slice(0, -3) + 'y');
+        else if (word.endsWith('es') && /(?:s|x|z|ch|sh|o)es$/.test(word)) out.add(word.slice(0, -2));
+        else if (word.endsWith('s') && !word.endsWith('ss')) out.add(word.slice(0, -1));
+
+        if (word.endsWith('y') && !/[aeiou]y$/.test(word)) out.add(word.slice(0, -1) + 'ies');
+        else if (/(?:s|x|z|ch|sh|o)$/.test(word)) out.add(word + 'es');
+        else out.add(word + 's');
+        return Array.from(out);
       }
 
       const readerShardCache = new Map();

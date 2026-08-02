@@ -219,6 +219,83 @@ for (let i = 0; i < pesachBodies.length; i++) {
   }
 }
 
+// Likutay Moharan's directory has repeatedly regressed from the accepted rich,
+// bilingual structure to a partial/plain list. Fail every build unless both
+// volumes, every numbered Torah, and every special section remain reachable and
+// bilingually labelled.
+const lmRoot = 'public/reader/likutay-moharan';
+const lmExpected = [
+  {
+    part: 1,
+    total: 286,
+    specials: ['haskamos', 'intro', 'intro-shimon', 'hakdama', 'intro-lm', 'intro-manuscripts', 'preface-section-1', 'preface-section-2', 'preface-section-3', 'preface-section-4', 'preface-section-5'],
+  },
+  {
+    part: 2,
+    total: 125,
+    specials: ['intro-volume-2', 'intro', 'omission', 'manuscript-1', 'manuscript-2', 'manuscript-3', 'manuscript-4', 'manuscript-5', 'manuscript-6'],
+  },
+];
+
+for (const spec of lmExpected) {
+  const partRoot = `${lmRoot}/part-${spec.part}`;
+  const index = loadJson(`${partRoot}/index.json`);
+  const torahs = index.torahs || [];
+  if (Number(index.totalTorahs) !== spec.total) failures.push(`LM part ${spec.part}: totalTorahs must be ${spec.total}`);
+  if (torahs.length !== spec.total) failures.push(`LM part ${spec.part}: directory has ${torahs.length} Torahs, expected ${spec.total}`);
+  if (!isSequential(torahs.map(t => t.number))) failures.push(`LM part ${spec.part}: directory Torah numbers are not complete/sequential`);
+
+  for (let n = 1; n <= spec.total; n++) {
+    const entry = torahs[n - 1] || {};
+    const expectedUrl = `/reader/likutay-moharan/${spec.part}/${n}`;
+    if (!normText(entry.title) || !normText(entry.hebrewTitle)) failures.push(`LM part ${spec.part} Torah ${n}: directory label is not bilingual`);
+    if (entry.hasEnglish !== true) failures.push(`LM part ${spec.part} Torah ${n}: directory lost hasEnglish=true`);
+    if (entry.url !== expectedUrl) failures.push(`LM part ${spec.part} Torah ${n}: URL is ${entry.url || 'missing'}, expected ${expectedUrl}`);
+    const dataFile = `${partRoot}/torah-${n}.json`;
+    if (!fs.existsSync(path.join(root, dataFile))) {
+      failures.push(`LM part ${spec.part} Torah ${n}: missing ${dataFile}`);
+      continue;
+    }
+    const data = loadJson(dataFile);
+    if (!normText(data.title) || !normText(data.hebrewTitle)) failures.push(`LM part ${spec.part} Torah ${n}: source title is not bilingual`);
+    if (!(data.segments || []).length) failures.push(`LM part ${spec.part} Torah ${n}: source has no segments`);
+  }
+
+  for (const slug of spec.specials) {
+    const file = `${partRoot}/${slug}.json`;
+    if (!fs.existsSync(path.join(root, file))) failures.push(`LM part ${spec.part}: missing special section ${slug}`);
+  }
+}
+
+const lmDirectoryUi = 'src/pages/reader/likutay-moharan/[part]/index.astro';
+for (const marker of [
+  'Complete Likutay Moharan Directory',
+  'הספר השלם בשתי שפות',
+  "preface-section-1",
+  "preface-section-5",
+  "manuscript-${i + 1}",
+  'item.title',
+  'item.hebrewTitle',
+  'Torahs 32–286 — Main Likutay Moharan',
+  'Likutay Moharan Tinyana — Torahs 1–125',
+]) mustContain(lmDirectoryUi, marker, `protected complete/bilingual directory marker ${marker}`);
+
+// Search regression: a singular English query must be able to generate the
+// plural posting used by LM 1:268. Guard the UI expansion and the generated
+// reader-search data so either code drift or a stale index blocks deployment.
+mustContain('src/pages/search-enhanced.astro', 'function englishMorphologyVariants', 'English singular/plural search expansion');
+mustContain('src/pages/search-enhanced.astro', '"medicine" finds a source containing "medicines" (LM 1:268)', 'medicine -> LM 1:268 regression note');
+const readerMeta = loadJson('public/reader-search/meta.json');
+const medicineTargetId = (readerMeta.items || []).findIndex(item => item.p === '/reader/likutay-moharan/1/268');
+if (medicineTargetId < 0) {
+  failures.push('Reader search: LM 1:268 is missing from meta.json');
+} else {
+  const medicineDoc = loadJson(`public/reader-search/docs/${medicineTargetId}.json`);
+  if (!/\bmedicines\b/i.test(`${medicineDoc.en || ''} ${medicineDoc.n || ''}`)) failures.push('Reader search: LM 1:268 no longer contains searchable “medicines”');
+  const mShard = loadJson('public/reader-search/shards/m.json');
+  if (!(mShard.medicines || []).includes(medicineTargetId)) failures.push('Reader search: “medicines” posting does not include LM 1:268');
+}
+
 if (failures.length) {
   console.error('Regression guard failed:');
   for (const f of failures) console.error(` - ${f}`);

@@ -73,16 +73,16 @@ const part2Extra = [
   ...Array.from({ length: 6 }, (_, i) => ({ slug: `manuscript-${i + 1}`, displayNumber: `ms-${i + 1}`, title: `Handwritten Manuscript ${i + 1}`, hebrewTitle: `כתב יד ${i + 1}`, url: `/reader/likutay-moharan/2/manuscript-${i + 1}` }))
 ].filter((item, i, arr) => item && item.url && arr.findIndex(x => x.url === item.url) === i);
 const overviewLinks = partNum === 1 ? [
-  { href: '#intro', text: 'Introductions & approbations' },
-  { href: '#opening', text: 'Torahs 1–15' },
-  { href: '#hamishtuai', text: 'Torahs 16–18' },
-  { href: '#safra', text: 'Torahs 19–22' },
-  { href: '#suvay', text: 'Torahs 23–31' },
-  { href: '#main', text: 'Torahs 32–286' },
+  { href: '#intro', text: 'Introductions & approbations', he: 'הקדמות והסכמות' },
+  { href: '#opening', text: 'Torahs 1–15', he: 'תורות א–טו' },
+  { href: '#hamishtuai', text: 'Torahs 16–18', he: 'תורות טז–יח' },
+  { href: '#safra', text: 'Torahs 19–22', he: 'תורות יט–כב' },
+  { href: '#suvay', text: 'Torahs 23–31', he: 'תורות כג–לא' },
+  { href: '#main', text: 'Torahs 32–286', he: 'תורות לב–רפו' },
 ] : [
-  { href: '#intro', text: 'Part 2 introductions' },
-  { href: '#torahs', text: 'Tinyana Torahs 1–125' },
-  { href: '#manuscripts', text: 'Manuscripts' },
+  { href: '#intro', text: 'Part 2 introductions', he: 'מבואות לחלק ב' },
+  { href: '#torahs', text: 'Tinyana Torahs 1–125', he: 'תנינא א–קכה' },
+  { href: '#manuscripts', text: 'Manuscripts', he: 'כתבי יד' },
 ];
 ---
 
@@ -90,18 +90,19 @@ const overviewLinks = partNum === 1 ? [
   <main class="lm-dir">
     <section class="lm-hero">
       <div class="lm-keter">כתר</div>
-      <p class="lm-eyebrow">Complete Likutay Moharan Directory</p>
+      <p class="lm-eyebrow">Complete Likutay Moharan Directory · הספר השלם בשתי שפות</p>
       <h1>Likutay Moharan</h1>
       <h2 lang="he" dir="rtl">ליקוטי מוהר״ן</h2>
-      <p class="lm-subtitle">Part {partNum} · {totalSections} teachings · introductions, approbations, poetic prefaces, manuscripts, and section gates restored.</p>
+      <p class="lm-subtitle">Part {partNum} · {totalSections} teachings · every teaching and special section presented in English and Hebrew.</p>
+      <p class="lm-subtitle lm-subtitle-he" lang="he" dir="rtl">חלק {partNum === 1 ? 'א' : 'ב'} · {totalSections} תורות · כל תורה וכל מדור מיוחד מוצגים באנגלית ובעברית.</p>
       <div class="lm-actions">
-        <a href="/reader">← All Books</a>
-        <a href={partNum === 1 ? '/reader/likutay-moharan/2' : '/reader/likutay-moharan/1'}>{partNum === 1 ? 'Open Part 2' : 'Open Part 1'}</a>
+        <a href="/reader">← All Books · כל הספרים</a>
+        <a href={partNum === 1 ? '/reader/likutay-moharan/2' : '/reader/likutay-moharan/1'}>{partNum === 1 ? 'Open Part 2 · פתח חלק ב' : 'Open Part 1 · פתח חלק א'}</a>
       </div>
     </section>
 
     <nav class="lm-overview" aria-label="Likutay Moharan directory sections">
-      {overviewLinks.map(link => <a href={link.href}>{link.text}</a>)}
+      {overviewLinks.map(link => <a href={link.href}><span>{link.text}</span><span lang="he" dir="rtl">{link.he}</span></a>)}
     </nav>
 
     {partNum === 1 ? (
@@ -211,10 +212,12 @@ const overviewLinks = partNum === 1 ? [
   .lm-hero h1 { margin: 0; font-family: Cinzel, Georgia, serif; color: #12365e; font-size: clamp(2.35rem, 7vw, 5.4rem); line-height: .95; }
   .lm-hero h2 { margin: 9px 0 0; font-family: 'Frank Ruhl Libre', serif; color: #76531b; font-size: clamp(1.9rem, 5vw, 3.9rem); }
   .lm-subtitle { max-width: 780px; margin: 16px auto 0; color: #516173; line-height: 1.6; font-size: 1.02rem; }
+  .lm-subtitle-he { margin-top: 2px; font-family:'Frank Ruhl Libre',serif; font-size:1.08rem; }
   .lm-actions { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top: 22px; }
   .lm-actions a, .lm-overview a { text-decoration:none; font-weight:800; border-radius: 999px; padding: 10px 15px; border: 1px solid #d6bd86; color:#12365e; background:#fff8e8; }
   .lm-overview { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin: 20px 0 24px; }
-  .lm-overview a { background: #173b67; color: #ffe9b3; border-color: #173b67; }
+  .lm-overview a { display:flex; flex-direction:column; align-items:center; gap:2px; background: #173b67; color: #ffe9b3; border-color: #173b67; }
+  .lm-overview a span[lang="he"] { font-family:'Frank Ruhl Libre',serif; font-size:1.02rem; color:#fff5d7; }
   .lm-panel { margin-top: 24px; padding: clamp(16px, 3vw, 28px); border-radius: 26px; border: 1px solid rgba(204,178,128,.6); background: linear-gradient(145deg,#fffdf8,#f8efe0); box-shadow: 0 12px 38px rgba(20,52,93,.08); }
   .lm-panel header { display:flex; gap:14px; align-items:center; margin-bottom: 18px; }
   .lm-section-mark { width: 48px; height: 48px; display:grid; place-items:center; border-radius:16px; background: linear-gradient(135deg,#173b67,#2c5f94); color:#ffe9b3; font-family:'Frank Ruhl Libre',serif; font-weight:900; }
