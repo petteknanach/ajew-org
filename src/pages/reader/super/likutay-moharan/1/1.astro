@@ -8,7 +8,13 @@ const torah = load('public/reader/likutay-moharan/part-1/torah-1.json');
 const pettek = load('public/reader/pettek-nanach-commentary/torah-1.json');
 const biur = load('public/reader/biur-halikutim/section-6.json');
 const parparos = load('public/reader/parparos-lechochma/section-2.json');
-const likutayNanach = load('public/reader/likutay-nanach/volume-4/chapter-5.json');
+const likutayNanachOpening = load('public/reader/likutay-nanach/volume-4/chapter-4.json');
+const likutayNanachContinuation = load('public/reader/likutay-nanach/volume-4/chapter-5.json');
+const likutayNanach = {
+  ...likutayNanachContinuation,
+  segments: [...likutayNanachOpening.segments, ...likutayNanachContinuation.segments]
+    .map((segment, index) => ({ ...segment, index: index + 1 })),
+};
 const peer = load('public/reader/super/likutay-moharan/1/1/peer-halikutim/manifest.json');
 const payload = JSON.stringify({ torah, pettek, biur, parparos, likutayNanach, peer }).replace(/</g, '\\u003c');
 const sectionLabels = [
@@ -87,7 +93,7 @@ const sectionLabels = [
         <div class="sr-source-counts">
           <span><b>8</b> synchronized sections</span>
           <span><b>6</b> study layers</span>
-          <span><b>20</b> Pe’er facsimile pages</span>
+          <span><b>20</b> searchable Pe’er pages</span>
         </div>
       </section>
 
@@ -171,7 +177,7 @@ const sectionLabels = [
       const dockTitle = document.getElementById('sr-dock-title');
       const sourceSearch = document.getElementById('sr-source-search');
       const layerSelect = document.getElementById('sr-layer');
-      const state = { segment: 1, source: 'guide', lang: 'both', theme: localStorage.getItem('ajew-super-theme') || 'paper', font: Number(localStorage.getItem('ajew-super-font') || 20), page: 0, zoom: 1 };
+      const state = { segment: 1, source: 'guide', lang: 'both', theme: localStorage.getItem('ajew-super-theme') || 'paper', font: Number(localStorage.getItem('ajew-super-font') || 20), page: 0, zoom: 1, peerView: 'text', query: '' };
       const sourceNames = { guide: 'Quick guide', pettek: 'Pettek Nanach Commentary', biur: 'Biur HaLikutim', parparos: 'Parparos LeChochma', nanach: 'Likutay Nanach', peer: 'Pe’er HaLikutim', notes: 'My notes' };
       const passages = [...document.querySelectorAll('.sr-passage')];
 
@@ -199,20 +205,63 @@ const sectionLabels = [
           dockBody.appendChild(card);
         });
       }
-      function renderPeer() {
-        const page = data.peer.pages[state.page];
-        sourceHeader(data.peer.hebrewTitle, `Source PDF page ${page.sourcePage} · ${state.page + 1} of ${data.peer.pages.length}`);
-        const controls = document.createElement('div'); controls.className = 'sr-facsimile-controls';
-        controls.innerHTML = '<button data-page="prev">←</button><span>Page '+page.sourcePage+'</span><button data-page="next">→</button><button data-zoom="out">−</button><button data-zoom="in">+</button><a target="_blank" rel="noopener" href="'+data.peer.pdf+'">PDF ↗</a>';
+      const peerRegionNames = {
+        concepts: 'Concepts & terms',
+        'translated-sources-prayer': 'Translated sources & prayer',
+        'source-notes': 'Source notes',
+        'cross-references': 'Cross-references',
+        'main-commentary': 'Main commentary',
+      };
+      function peerText(page, blocks = page.blocks || []) {
+        const textPane = document.createElement('div'); textPane.className = 'sr-peer-text';
+        const notice = document.createElement('div'); notice.className = 'sr-peer-notice';
+        notice.innerHTML = '<strong>Searchable Pe’er text</strong><span>Automatically extracted for discovery. Verify quotations against the scan, which remains authoritative.</span>';
+        textPane.appendChild(notice);
+        blocks.forEach(block => {
+          const card = document.createElement('section'); card.className = 'sr-source-card sr-peer-block'; card.dataset.region = block.region;
+          const label = document.createElement('small'); label.className = 'sr-peer-region'; label.textContent = peerRegionNames[block.region] || 'Pe’er text';
+          const p = document.createElement('p'); p.lang = 'he'; p.dir = 'rtl'; p.className = 'sr-source-he'; p.textContent = block.text;
+          card.append(label, p); textPane.appendChild(card);
+        });
+        return textPane;
+      }
+      function peerScan(page) {
         const viewport = document.createElement('div'); viewport.className = 'sr-facsimile';
         const img = document.createElement('img'); img.src = page.image; img.alt = `${data.peer.title}, source page ${page.sourcePage}`; img.loading = 'eager'; img.style.width = `${state.zoom * 100}%`; viewport.appendChild(img);
-        dockBody.append(controls, viewport);
+        return viewport;
+      }
+      function renderPeer() {
+        const page = data.peer.pages[state.page];
+        sourceHeader(data.peer.hebrewTitle, `Searchable text + facsimile · PDF page ${page.sourcePage} · related to Torah sections ${page.relatedSections.join(', ')}`);
+        const controls = document.createElement('div'); controls.className = 'sr-facsimile-controls sr-peer-controls';
+        controls.innerHTML = '<button data-page="prev" aria-label="Previous page">←</button><span>Page '+page.sourcePage+'</span><button data-page="next" aria-label="Next page">→</button><button data-peer-view="text">Text</button><button data-peer-view="split">Split</button><button data-peer-view="scan">Scan</button><button data-zoom="out" aria-label="Zoom out">−</button><button data-zoom="in" aria-label="Zoom in">+</button><a target="_blank" rel="noopener" href="'+data.peer.pdf+'">PDF ↗</a>';
+        controls.querySelectorAll('[data-peer-view]').forEach(button => button.classList.toggle('is-active', button.dataset.peerView === state.peerView));
+        dockBody.appendChild(controls);
+
+        const query = state.query.trim().toLocaleLowerCase();
+        if (query) {
+          const hits = data.peer.pages.map((candidate, index) => ({ candidate, index, blocks: (candidate.blocks || []).filter(block => block.text.toLocaleLowerCase().includes(query)) })).filter(result => result.blocks.length);
+          const summary = document.createElement('div'); summary.className = 'sr-peer-results'; summary.textContent = `${hits.length} Pe’er pages match “${state.query.trim()}”`;
+          dockBody.appendChild(summary);
+          hits.forEach(result => {
+            const jump = document.createElement('button'); jump.className = 'sr-peer-hit'; jump.textContent = `PDF page ${result.candidate.sourcePage} · sections ${result.candidate.relatedSections.join(', ')}`;
+            jump.addEventListener('click', () => { state.page = result.index; state.query = ''; renderDock(); });
+            dockBody.append(jump, peerText(result.candidate, result.blocks));
+          });
+        } else {
+          const workspace = document.createElement('div'); workspace.className = `sr-peer-workspace is-${state.peerView}`;
+          if (state.peerView !== 'scan') workspace.appendChild(peerText(page));
+          if (state.peerView !== 'text') workspace.appendChild(peerScan(page));
+          dockBody.appendChild(workspace);
+        }
+
         controls.addEventListener('click', e => {
           const button = e.target.closest('button'); if (!button) return;
           if (button.dataset.page === 'prev') state.page = Math.max(0, state.page - 1);
           if (button.dataset.page === 'next') state.page = Math.min(data.peer.pages.length - 1, state.page + 1);
           if (button.dataset.zoom === 'out') state.zoom = Math.max(.65, state.zoom - .15);
           if (button.dataset.zoom === 'in') state.zoom = Math.min(2.2, state.zoom + .15);
+          if (button.dataset.peerView) state.peerView = button.dataset.peerView;
           renderDock();
         });
       }
@@ -225,7 +274,7 @@ const sectionLabels = [
         dockBody.append(area, status);
       }
       function renderDock() {
-        dockBody.replaceChildren(); sourceSearch.value = '';
+        dockBody.replaceChildren(); sourceSearch.value = state.query;
         dockTitle.textContent = `Section ${state.segment} · ${sourceNames[state.source]}`;
         layerSelect.hidden = state.source !== 'pettek';
         sourceSearch.hidden = ['guide','pettek','notes'].includes(state.source);
@@ -241,13 +290,17 @@ const sectionLabels = [
           const card = document.createElement('section'); card.className = 'sr-source-card';
           addParagraphs(card, layer.he, 'he'); addParagraphs(card, layer.en, 'en'); dockBody.appendChild(card);
         } else if (state.source === 'biur') fullSource(data.biur, 'ביאור הליקוטים', 'Hebrew · complete related section');
-        else if (state.source === 'parparos') fullSource(data.parparos, 'פרפראות לחכמה', 'Hebrew · complete related section');
-        else if (state.source === 'nanach') fullSource(data.likutayNanach, 'ליקוטי ננח', 'Related material in the Ajew corpus');
+        else if (state.source === 'parparos') fullSource(data.parparos, 'פרפראות לחכמה', 'Complete Hebrew and English · Letters א–יג');
+        else if (state.source === 'nanach') fullSource(data.likutayNanach, 'ליקוטי ננח', 'Related material · opening restored from אות א through אות ב');
         else if (state.source === 'peer') renderPeer();
         else if (state.source === 'notes') renderNotes();
       }
       function selectSegment(number, options = {}) {
         state.segment = Number(number);
+        if (state.source === 'peer') {
+          const relatedPage = data.peer.pages.findIndex(page => page.relatedSections.includes(state.segment));
+          if (relatedPage >= 0) state.page = relatedPage;
+        }
         passages.forEach(p => p.classList.toggle('is-current', Number(p.dataset.segment) === state.segment));
         document.querySelectorAll('[data-jump]').forEach(b => b.classList.toggle('is-active', Number(b.dataset.jump) === state.segment));
         renderDock();
@@ -255,7 +308,11 @@ const sectionLabels = [
         if (options.openDock) dock.classList.add('is-open');
       }
       function setSource(source) {
-        state.source = source;
+        state.source = source; state.query = '';
+        if (source === 'peer') {
+          const relatedPage = data.peer.pages.findIndex(page => page.relatedSections.includes(state.segment));
+          if (relatedPage >= 0) state.page = relatedPage;
+        }
         document.querySelectorAll('[data-source]').forEach(b => b.classList.toggle('is-active', b.dataset.source === source));
         renderDock(); dockBody.scrollTop = 0;
       }
@@ -278,7 +335,8 @@ const sectionLabels = [
       document.querySelectorAll('[data-lang]').forEach(b => b.addEventListener('click', () => { state.lang = b.dataset.lang; localStorage.setItem('ajew-super-lang', state.lang); applyPrefs(); }));
       layerSelect.addEventListener('change', renderDock);
       sourceSearch.addEventListener('input', () => {
-        const q = sourceSearch.value.trim().toLocaleLowerCase();
+        const q = sourceSearch.value.trim().toLocaleLowerCase(); state.query = sourceSearch.value;
+        if (state.source === 'peer') { renderDock(); sourceSearch.focus(); sourceSearch.setSelectionRange(state.query.length, state.query.length); return; }
         dockBody.querySelectorAll('.sr-source-card').forEach(card => card.hidden = q && !card.textContent.toLocaleLowerCase().includes(q));
       });
       document.getElementById('sr-font-down').addEventListener('click', () => { state.font = Math.max(16, state.font - 2); localStorage.setItem('ajew-super-font', state.font); applyPrefs(); });
@@ -342,9 +400,10 @@ const sectionLabels = [
   .sr-passage{position:relative;margin:0 -18px;padding:30px 24px 34px;border:1px solid transparent;border-bottom-color:var(--line);border-radius:12px;transition:.18s}.sr-passage:hover,.sr-passage.is-current{background:var(--panel);border-color:var(--line);box-shadow:var(--shadow)}.sr-anchor{position:absolute;left:-13px;top:28px;width:27px;height:27px;border:1px solid var(--line);border-radius:50%;background:var(--paper);color:var(--muted);font:13px Georgia,serif;cursor:pointer}.sr-passage.is-current .sr-anchor{background:var(--accent);color:#fff;border-color:var(--accent)}.sr-passage-tools{position:absolute;right:10px;top:9px;opacity:0;transition:.15s}.sr-passage:hover .sr-passage-tools,.sr-passage:focus-within .sr-passage-tools{opacity:1}.sr-passage-tools button{border:0;background:transparent;color:var(--muted);cursor:pointer;font-size:16px}.sr-passage-tools .is-saved{color:var(--accent)}.sr-columns{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,4vw,54px);align-items:start}.sr-columns p{white-space:pre-line;margin:0}.sr-hebrew{font:var(--sr-font)/1.95 Georgia,"Noto Serif Hebrew","Times New Roman",serif}.sr-english{font:calc(var(--sr-font) * .86)/1.8 Georgia,"Times New Roman",serif;color:color-mix(in srgb,var(--ink) 84%,var(--muted))}.sr-shell[data-lang="he"] .sr-columns{grid-template-columns:1fr}.sr-shell[data-lang="he"] .sr-english{display:none}.sr-shell[data-lang="en"] .sr-columns{grid-template-columns:1fr}.sr-shell[data-lang="en"] .sr-hebrew{display:none}.sr-reader-footer{display:flex;justify-content:space-between;align-items:center;padding:32px 0!important;color:var(--muted);font-size:11px;background:transparent!important;border:0!important;width:auto!important;margin:0!important}.sr-reader-footer a{color:var(--accent);font-weight:800;text-decoration:none}
   .sr-dock { position:fixed; z-index:900; top:76px; right:0; bottom:0; width:400px; display:flex;flex-direction:column;border-left:1px solid var(--line);background:var(--panel);box-shadow:-10px 0 35px rgba(40,30,20,.04); }
   .sr-dock-head{height:66px;flex:none;padding:0 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line)}.sr-dock-head>div{display:flex;flex-direction:column}.sr-dock-head strong{font:15px Georgia,serif;margin-top:3px}.sr-dock-head button{font-size:20px;border:0;background:transparent;display:none}.sr-tabs{display:flex;gap:0;overflow-x:auto;border-bottom:1px solid var(--line);flex:none;scrollbar-width:none}.sr-tabs button{border:0;border-bottom:2px solid transparent;background:transparent;color:var(--muted);padding:12px 11px 10px;white-space:nowrap;cursor:pointer;font-size:10px;font-weight:800}.sr-tabs button.is-active{color:var(--accent);border-bottom-color:var(--accent)}.sr-dock-toolbar{display:flex;gap:8px;padding:10px 12px;border-bottom:1px solid var(--line);flex:none}.sr-search-wrap{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:8px;padding:0 8px;flex:1}.sr-search-wrap input{border:0;outline:0;background:transparent;color:var(--ink);min-width:0;width:100%;height:32px;font-size:11px}.sr-search-wrap:has(input[hidden]){display:none}.sr-dock-toolbar select{border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink);padding:0 7px;font-size:10px}.sr-dock-body{overflow:auto;padding:16px 18px 40px;flex:1;scrollbar-color:var(--line) transparent}.sr-source-header{display:flex;flex-direction:column;padding:2px 0 13px;border-bottom:2px solid var(--ink);margin-bottom:13px}.sr-source-header strong{font:700 19px Georgia,"Times New Roman",serif}.sr-source-header small{color:var(--muted);font-size:10px;margin-top:4px}.sr-source-card{position:relative;border-bottom:1px solid var(--line);padding:7px 0 18px;margin-bottom:12px}.sr-source-card p{white-space:pre-line;font:15px/1.7 Georgia,"Times New Roman",serif;margin:10px 0}.sr-source-card .sr-source-he{font-size:18px;line-height:1.85}.sr-source-index{position:absolute;right:0;top:7px;border:1px solid var(--line);border-radius:50%;width:22px;height:22px;display:grid;place-items:center;color:var(--muted);font:11px Georgia,serif}.sr-guide-card{border:1px solid var(--line);border-radius:11px;padding:10px 14px;background:var(--paper)}.sr-facsimile-controls{position:sticky;top:-16px;z-index:2;display:flex;align-items:center;gap:6px;background:var(--panel);padding:9px 0;border-bottom:1px solid var(--line)}.sr-facsimile-controls button,.sr-facsimile-controls a{border:1px solid var(--line);border-radius:6px;background:var(--paper);color:var(--ink);padding:6px 9px;text-decoration:none;cursor:pointer;font-size:11px}.sr-facsimile-controls span{margin-right:auto;font-size:11px;color:var(--muted)}.sr-facsimile{overflow:auto;background:#c9c5ba;padding:8px;min-height:500px}.sr-facsimile img{display:block;height:auto;max-width:none;box-shadow:0 2px 12px #0003;margin:auto}.sr-notes{box-sizing:border-box;width:100%;min-height:330px;border:1px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);padding:14px;resize:vertical;font:15px/1.6 Georgia,serif;outline:0}.sr-notes:focus{border-color:var(--accent2)}.sr-note-status{display:block;color:var(--muted);margin-top:7px}.sr-mobile-desk{display:none}
+  .sr-peer-controls{position:sticky;top:-16px;z-index:4;flex-wrap:wrap;background:var(--panel);padding-block:8px}.sr-peer-controls button.is-active{background:var(--ink);color:var(--panel);border-color:var(--ink)}.sr-peer-workspace{display:grid;gap:14px}.sr-peer-workspace.is-split{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start}.sr-peer-notice{display:flex;flex-direction:column;gap:3px;margin-bottom:12px;padding:11px;border:1px solid color-mix(in srgb,var(--accent2) 55%,var(--line));border-radius:9px;background:color-mix(in srgb,var(--accent2) 10%,var(--panel));font-size:11px}.sr-peer-notice span{color:var(--muted);line-height:1.45}.sr-peer-block{padding-top:9px}.sr-peer-block .sr-source-he{font-size:16px;line-height:1.75}.sr-peer-region{display:inline-block;color:var(--accent);font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.07em}.sr-peer-results{padding:10px 0;color:var(--muted);font-size:11px}.sr-peer-hit{width:100%;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--accent);padding:9px 10px;text-align:left;font-weight:800;cursor:pointer}.sr-peer-hit:hover{border-color:var(--accent2)}
   .sr-command[hidden]{display:none}.sr-command{position:fixed;inset:0;z-index:2000;display:grid;place-items:start center;padding-top:12vh}.sr-command-scrim{position:absolute;inset:0;border:0;background:#14120ea8;backdrop-filter:blur(5px)}.sr-command-card{position:relative;width:min(620px,calc(100vw - 28px));max-height:70vh;display:flex;flex-direction:column;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:14px;box-shadow:0 25px 80px #0007;overflow:hidden}.sr-command-input{display:flex;align-items:center;gap:10px;padding:15px;border-bottom:1px solid var(--line)}.sr-command-input input{flex:1;border:0;outline:0;background:transparent;color:var(--ink);font-size:16px}.sr-command-input kbd{font-size:9px;border:1px solid var(--line);padding:3px 5px;border-radius:4px}#sr-command-results{overflow:auto;padding:7px}#sr-command-results button{width:100%;display:flex;flex-direction:column;text-align:left;border:0;border-radius:8px;background:transparent;color:var(--ink);padding:10px 12px;cursor:pointer}#sr-command-results button.is-active{background:color-mix(in srgb,var(--accent2) 18%,transparent)}#sr-command-results small{color:var(--muted);margin-top:3px}.sr-command-hint{padding:9px 14px;color:var(--muted);border-top:1px solid var(--line)}
   @media(max-width:1180px){.sr-topbar{grid-template-columns:260px 1fr}.sr-title{display:none}.sr-reading{margin-left:240px;margin-right:350px;width:calc(100% - 590px);padding-inline:26px}.sr-rail{width:240px}.sr-dock{width:350px}.sr-step-label b{font-size:12px}}
-  @media(max-width:900px){.sr-topbar{height:64px;grid-template-columns:1fr auto;padding:0 10px}.sr-brand strong{font-size:15px}.sr-eyebrow{font-size:8px}.sr-actions>button:not(.sr-command-button),.sr-actions .sr-segmented{display:none}.sr-rail{display:none}.sr-reading{margin:0;width:100%;padding:84px 18px 92px;max-width:none}.sr-hero{padding-top:15px}.sr-source-counts{gap:12px}.sr-columns{grid-template-columns:1fr;gap:18px}.sr-english{border-top:1px solid var(--line);padding-top:18px}.sr-shell[data-lang="both"] .sr-columns{grid-template-columns:1fr}.sr-passage{margin-inline:-4px;padding:30px 16px 24px}.sr-anchor{left:8px;top:-14px}.sr-dock{top:7vh;width:100%;transform:translateY(110%);transition:transform .25s;border-left:0;border-top:1px solid var(--line);border-radius:16px 16px 0 0;box-shadow:0 -20px 50px #0005}.sr-dock.is-open{transform:translateY(0)}.sr-dock-head button{display:block}.sr-tabs button{padding-inline:14px}.sr-mobile-desk{display:flex;position:fixed;z-index:850;right:14px;bottom:16px;align-items:center;gap:8px;border:0;border-radius:999px;padding:12px 16px;background:var(--accent);color:white;font-weight:800;box-shadow:0 8px 26px #0004}.sr-mobile-desk span{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#fff2;font-size:10px}.sr-reader-footer{align-items:flex-start;gap:10px}.sr-source-card .sr-source-he{font-size:20px}.sr-facsimile{min-height:65vh}}
+  @media(max-width:900px){.sr-topbar{height:64px;grid-template-columns:1fr auto;padding:0 10px}.sr-brand strong{font-size:15px}.sr-eyebrow{font-size:8px}.sr-actions>button:not(.sr-command-button),.sr-actions .sr-segmented{display:none}.sr-rail{display:none}.sr-reading{margin:0;width:100%;padding:84px 18px 92px;max-width:none}.sr-hero{padding-top:15px}.sr-source-counts{gap:12px}.sr-columns{grid-template-columns:1fr;gap:18px}.sr-english{border-top:1px solid var(--line);padding-top:18px}.sr-shell[data-lang="both"] .sr-columns{grid-template-columns:1fr}.sr-passage{margin-inline:-4px;padding:30px 16px 24px}.sr-anchor{left:8px;top:-14px}.sr-dock{top:7vh;width:100%;transform:translateY(110%);transition:transform .25s;border-left:0;border-top:1px solid var(--line);border-radius:16px 16px 0 0;box-shadow:0 -20px 50px #0005}.sr-dock.is-open{transform:translateY(0)}.sr-dock-head button{display:block}.sr-tabs button{padding-inline:14px}.sr-mobile-desk{display:flex;position:fixed;z-index:850;right:14px;bottom:16px;align-items:center;gap:8px;border:0;border-radius:999px;padding:12px 16px;background:var(--accent);color:white;font-weight:800;box-shadow:0 8px 26px #0004}.sr-mobile-desk span{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#fff2;font-size:10px}.sr-reader-footer{align-items:flex-start;gap:10px}.sr-source-card .sr-source-he{font-size:20px}.sr-peer-workspace.is-split{grid-template-columns:1fr}.sr-peer-controls{top:-16px}.sr-facsimile{min-height:65vh}}
   @media(max-width:390px){.sr-brand .sr-eyebrow{display:none}.sr-brand strong{font-size:13px}.sr-back{width:32px;height:32px}.sr-hero h1{font-size:36px}.sr-source-counts span{font-size:9px}.sr-passage{padding-inline:12px}.sr-hebrew{font-size:calc(var(--sr-font) * .96)}.sr-dock-body{padding-inline:14px}}
   @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
 </style>
