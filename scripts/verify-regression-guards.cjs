@@ -306,24 +306,28 @@ for (const marker of ['.lm-reader-portal', '.lm-reader-volume-grid', 'grid-templ
 
 // Super Reader pilot: protect the ArtScroll-inspired synchronized study workflow.
 // Pe’er exposes section-aware unreviewed extraction while the scan remains authoritative.
-const superReaderPilot = 'src/pages/reader/super/likutay-moharan/1/1.astro';
-for (const marker of [
-  'sr-section-pager',
-  'sr-source-ribbon',
-  'data-source="saved"',
-  'id="sr-nikud"',
-  'id="sr-focus"',
-  "peerView: localStorage.getItem('ajew-super-peer-view') || 'text'",
-  'sectionDefinitions',
-  'enrichedFragments.flatMap',
-  'data-english=',
-  'sr-source-phrase-key',
-  'sr-peer-pdf',
-  'data-peer-stage',
-  'UNREVIEWED EXTRACTION',
-  'The PDF remains the source of record.',
-  'ajew-super-last-segment-lm-1-1',
-]) mustContain(superReaderPilot, marker, `protected Super Reader marker ${marker}`);
+for (const [superReaderPilot, storageMarker] of [
+  ['src/pages/reader/super/likutay-moharan/1/1.astro', 'ajew-super-last-segment-lm-1-1'],
+  ['src/pages/reader/super/likutay-moharan/1/2.astro', 'ajew-super-last-segment-lm-1-2'],
+]) {
+  for (const marker of [
+    'sr-section-pager',
+    'sr-source-ribbon',
+    'data-source="saved"',
+    'id="sr-nikud"',
+    'id="sr-focus"',
+    "peerView: localStorage.getItem('ajew-super-peer-view') || 'text'",
+    'sectionDefinitions',
+    'enrichedFragments.flatMap',
+    'data-english=',
+    'sr-source-phrase-key',
+    'sr-peer-pdf',
+    'data-peer-stage',
+    'UNREVIEWED EXTRACTION',
+    'The PDF remains the source of record.',
+    storageMarker,
+  ]) mustContain(superReaderPilot, marker, `protected Super Reader marker ${marker}`);
+}
 
 // Search regression: a singular English query must be able to generate the
 // plural posting used by LM 1:268. The first `npm run verify` intentionally runs

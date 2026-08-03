@@ -182,10 +182,10 @@ const pageDesc = torahData
       
 
       <!-- Toolbar -->
-      {partNum === 1 && torahNum === 1 && (
-        <a class="super-reader-launch" href="/reader/super/likutay-moharan/1/1">
+      {partNum === 1 && (torahNum === 1 || torahNum === 2) && (
+        <a class="super-reader-launch" href={`/reader/super/likutay-moharan/1/${torahNum}`}>
           <span class="super-reader-launch-badge">NEW</span>
-          <span><strong>Open Super Reader</strong><small>All commentaries · synchronized study desk · Pe’er HaLikutim</small></span>
+          <span><strong>Open Super Reader</strong><small>Aligned Hebrew–English · phrase study · commentaries · Pe’er HaLikutim</small></span>
           <b aria-hidden="true">→</b>
         </a>
       )}
