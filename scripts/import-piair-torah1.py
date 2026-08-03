@@ -252,7 +252,10 @@ def extract_fragments(
     if landmarks['prayerY'] is not None:
         carry['translator'] = 'prayer'
 
-    counts = {section: sum(1 for fragment in fragments if fragment['section'] == section) for section in SECTION_IDS}
+    counts = {
+        definition['id']: sum(1 for fragment in fragments if fragment['section'] == definition['id'])
+        for definition in SECTION_DEFS
+    }
     return fragments, {'landmarks': landmarks, 'fragmentCounts': {key: value for key, value in counts.items() if value}}, carry
 
 
