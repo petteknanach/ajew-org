@@ -78,7 +78,12 @@ def overlay(base, idx, lang, variant):
         panel=(54,40,1226,236); fill=(255,249,232,226); outline=(42,74,135,220); body=(9,29,62,255); titlec=(92,53,12,255)
     d.rounded_rectangle(panel,radius=26,fill=fill,outline=outline,width=4)
     title_font=ImageFont.truetype(BOLD,25)
-    title = f"Sefer HaMidos · Truth {idx} · Variant {variant}" if lang=='en' else f"ספר המידות · אמת {idx} · תמונה {variant}"
+    if idx == 16:
+        # Truth 16's corrected base carries the authentic phrase directly on
+        # the white kippah. Keep the public card free of repair labels.
+        title = "Sefer HaMidos · Truth 16" if lang == 'en' else "ספר המידות · אמת ט״ז"
+    else:
+        title = f"Sefer HaMidos · Truth {idx} · Variant {variant}" if lang=='en' else f"ספר המידות · אמת {idx} · תמונה {variant}"
     direction='rtl' if lang=='he' else 'ltr'; anchor='ra' if lang=='he' else 'la'; tx=panel[2]-30 if lang=='he' else panel[0]+30
     d.text((tx,panel[1]+17), title, font=title_font, fill=titlec, direction=direction, anchor=anchor)
     f,lines,lh,dirn=choose(d,text,lang,panel[2]-panel[0]-60,panel[3]-panel[1]-76)
@@ -88,10 +93,13 @@ def overlay(base, idx, lang, variant):
         anc='ra' if dirn=='rtl' else 'la'
         d.text((x,y), line, font=f, fill=body, direction=dirn, anchor=anc, stroke_width=1, stroke_fill=(0,0,0,120) if variant=='A' else (255,255,255,160))
         y+=lh
-    # exact kippah text seal in the picture so no random letters issue
-    draw_exact_kippah_seal(d, (1016,260,1222,420) if variant=='A' else (1014,482,1222,642))
-    credit=ImageFont.truetype(FONT,16)
-    d.text((65,704),'Grok cinematic image · exact Sefer Hamidos text overlaid for ajew.org',font=credit,fill=(255,255,255,210),stroke_width=1,stroke_fill=(0,0,0,150))
+    # Most legacy bases need a deterministic seal because their generated
+    # lettering cannot be trusted. Truth 16 was surgically replaced with a
+    # clean base carrying the exact phrase on the kippah itself.
+    if idx != 16:
+        draw_exact_kippah_seal(d, (1016,260,1222,420) if variant=='A' else (1014,482,1222,642))
+        credit=ImageFont.truetype(FONT,16)
+        d.text((65,704),'Grok cinematic image · exact Sefer Hamidos text overlaid for ajew.org',font=credit,fill=(255,255,255,210),stroke_width=1,stroke_fill=(0,0,0,150))
     return im.convert('RGB')
 
 manifest_path=OUT/'manifest.json'
