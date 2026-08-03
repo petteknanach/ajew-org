@@ -305,7 +305,7 @@ for (const marker of ['.lm-reader-portal', '.lm-reader-volume-grid', 'grid-templ
 }
 
 // Super Reader pilot: protect the ArtScroll-inspired synchronized study workflow.
-// Pe’er remains a facsimile; OCR may place conservative locators but never supplies prose.
+// Pe’er exposes section-aware unreviewed extraction while the scan remains authoritative.
 const superReaderPilot = 'src/pages/reader/super/likutay-moharan/1/1.astro';
 for (const marker of [
   'sr-section-pager',
@@ -313,14 +313,15 @@ for (const marker of [
   'data-source="saved"',
   'id="sr-nikud"',
   'id="sr-focus"',
-  "peerView: localStorage.getItem('ajew-super-peer-view') || 'pdf'",
-  'OCR is used only to place conservative',
-  'highlights: blocks.flatMap',
+  "peerView: localStorage.getItem('ajew-super-peer-view') || 'text'",
+  'sectionDefinitions',
+  'enrichedFragments.flatMap',
   'data-english=',
   'sr-source-phrase-key',
   'sr-peer-pdf',
-  'conservative OCR-assisted locators',
-  'Pe’er facsimile pages',
+  'data-peer-stage',
+  'UNREVIEWED EXTRACTION',
+  'The PDF remains the source of record.',
   'ajew-super-last-segment-lm-1-1',
 ]) mustContain(superReaderPilot, marker, `protected Super Reader marker ${marker}`);
 
