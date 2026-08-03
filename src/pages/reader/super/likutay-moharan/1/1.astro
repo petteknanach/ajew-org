@@ -302,32 +302,31 @@ const sectionLabels = [
         shell.appendChild(intro);
 
         const definitions = data.peer.sectionDefinitions || [];
-        const selectedDefinition = definitions.find(definition => definition.id === state.peerSection);
-        if (!selectedDefinition || selectedDefinition.layer !== state.peerStage) {
-          const firstInStage = definitions.find(definition => definition.layer === state.peerStage && (page.fragments || []).some(fragment => fragment.section === definition.id));
-          if (firstInStage) state.peerSection = firstInStage.id;
-        }
         const stages = [
-          { id: 'primary', label: 'Read' },
-          { id: 'understand', label: 'Understand' },
-          { id: 'sources', label: 'Sources' },
-          { id: 'explore', label: 'Explore' },
-          { id: 'application', label: 'Live it' },
+          { id: 'primary', label: 'Read', sections: ['likutay-moharan'] },
+          { id: 'understand', label: 'Understand', sections: ['nahal-novea', 'concepts', 'translator'] },
+          { id: 'sources', label: 'Sources', sections: ['mekor-chokhma', 'miluei-chokhma'] },
+          { id: 'explore', label: 'Explore', sections: ['yalkut-hanahal', 'revelation-story'] },
+          { id: 'application', label: 'Live it', sections: ['advice', 'prayer'] },
         ];
+        const activeStage = stages.find(stage => stage.id === state.peerStage) || stages[1];
+        if (!activeStage.sections.includes(state.peerSection)) {
+          const firstInStage = activeStage.sections.find(section => (page.fragments || []).some(fragment => fragment.section === section));
+          if (firstInStage) state.peerSection = firstInStage;
+        }
         const stageNav = document.createElement('div'); stageNav.className = 'sr-peer-stages'; stageNav.setAttribute('aria-label', 'Pe’er study purposes');
         stages.forEach(stage => {
-          const ids = (data.peer.sectionDefinitions || []).filter(definition => definition.layer === stage.id).map(definition => definition.id);
-          const count = (page.fragments || []).filter(fragment => ids.includes(fragment.section)).length;
+          const count = (page.fragments || []).filter(fragment => stage.sections.includes(fragment.section)).length;
           const button = document.createElement('button'); button.type = 'button'; button.dataset.peerStage = stage.id; button.textContent = stage.label;
-          button.classList.toggle('is-active', stage.id === state.peerStage); button.disabled = count === 0; stageNav.appendChild(button);
+          button.classList.toggle('is-active', stage.id === state.peerStage); button.setAttribute('aria-pressed', String(stage.id === state.peerStage)); button.disabled = count === 0; stageNav.appendChild(button);
         });
         shell.appendChild(stageNav);
 
         const layers = document.createElement('div'); layers.className = 'sr-peer-layers'; layers.setAttribute('aria-label', 'Pe’er source sections');
-        (data.peer.sectionDefinitions || []).filter(definition => definition.layer === state.peerStage).forEach(definition => {
+        definitions.filter(definition => activeStage.sections.includes(definition.id)).forEach(definition => {
           const count = (page.fragments || []).filter(fragment => fragment.section === definition.id).length;
           const button = document.createElement('button'); button.type = 'button'; button.dataset.peerSection = definition.id;
-          button.classList.toggle('is-active', definition.id === state.peerSection); button.disabled = count === 0;
+          button.classList.toggle('is-active', definition.id === state.peerSection); button.setAttribute('aria-pressed', String(definition.id === state.peerSection)); button.disabled = count === 0;
           const label = document.createElement('b'); label.textContent = definition.he;
           const purpose = document.createElement('span'); purpose.textContent = definition.en;
           const total = document.createElement('small'); total.textContent = String(count);
@@ -364,8 +363,9 @@ const sectionLabels = [
         stageNav.addEventListener('click', event => {
           const button = event.target.closest('[data-peer-stage]'); if (!button || button.disabled) return;
           state.peerStage = button.dataset.peerStage; localStorage.setItem('ajew-super-peer-stage', state.peerStage);
-          const firstAvailable = (data.peer.sectionDefinitions || []).find(definition => definition.layer === state.peerStage && (page.fragments || []).some(fragment => fragment.section === definition.id));
-          if (firstAvailable) { state.peerSection = firstAvailable.id; localStorage.setItem('ajew-super-peer-section', state.peerSection); }
+          const selectedStage = stages.find(stage => stage.id === state.peerStage);
+          const firstAvailable = selectedStage?.sections.find(section => (page.fragments || []).some(fragment => fragment.section === section));
+          if (firstAvailable) { state.peerSection = firstAvailable; localStorage.setItem('ajew-super-peer-section', state.peerSection); }
           renderDock();
         });
         layers.addEventListener('click', event => {
