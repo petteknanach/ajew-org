@@ -106,6 +106,27 @@ Outputs:
 - `/mnt/c/Users/Pettek/Downloads/peer-page45-300dpi-abbyy16.docx`
 - `/mnt/c/Users/Pettek/Downloads/peer-halikutim-torah1-abbyy16.docx`
 
+### hebrewbooks.pages.dev
+
+Tested live on 2026-08-03 against the exact volume, file ID `54911`, book ID `48008`.
+
+The site does **not** provide a new OCR witness for this volume:
+
+- Its public viewer downloads `54911.pdf` and obtains selectable/region text through PDF.js `pdfPage.getTextContent()` or existing `.textLayer` spans.
+- The downloaded PDF has a different container hash and catalog metadata, but all 257 decoded page-content streams, extracted text strings, word coordinates, and page dimensions are identical to the local HebrewBooks PDF.
+- Torah 1 pages 45–64 are exact at the text, word-coordinate, and decoded-content-stream levels.
+- Raster comparisons of representative mirrored pages 45 and 46 are pixel-identical at 72 dpi.
+- The in-book index preserves the known bad mapping `כפיב נפהליס` on page 45 (two hits) and returns no hit for the corrected `כתיב בתהלים`.
+- `/api/text?id=54911&raw=true` refuses PDF entries and directs the caller to the PDF endpoint; there is no separate public OCR export for this book.
+
+Therefore, its “Text (OCR)”/region-copy interface is a useful geometric selection tool, but its words are the same embedded-PDF witness already preserved in the manifest. Do not add it as an independent witness or use it to outvote ABBYY. Its region-selection implementation may still inform the importer: select PDF text items by their centers inside semantic rectangles, while retaining exact source coordinates and reading-order warnings.
+
+Saved audit evidence:
+
+- `/root/ajew-org/analysis/peer-halikutim-ocr/hebrewbooks-pages-dev/54911.pdf`
+- `/root/ajew-org/analysis/peer-halikutim-ocr/hebrewbooks-pages-dev/comparison.json`
+- raw page-45/page-46 text and representative raster comparisons in the same directory.
+
 ## Reader-design principle
 
 Pe’er must empower the learner without turning each Torah into an information wall. Use progressive disclosure:
@@ -142,4 +163,4 @@ Pe’er must empower the learner without turning each Torah into an information 
 9. Keep each section’s own reading order across pages. Link commentary fragments to the nearest quoted/marked anchor in the central Torah; do not append all side columns into one page-wide reading stream.
 10. Retain the original page image beside the corrected structured text for audit and future correction.
 
-The next importer should replace the current five coordinate buckets with this ten-section model and parity-aware templates.
+The current importer now implements the ten-section model and parity-aware classification. Its fragments remain heuristic and unreviewed until region-level witness comparison and editorial correction are completed.
