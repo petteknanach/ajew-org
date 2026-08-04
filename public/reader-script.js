@@ -1907,7 +1907,7 @@
     html = html.replace(/\b(?:Sipure[iy]\s*Ma?asiy?os|Rabbi\s*Nachman'?s?\s*Stories?)\s*[,:;]?\s*(?:Story\s*)?(\d+)/gi, function(match, num) {
       var n = parseInt(num);
       if (!n || n < 1) return match;
-      return makeLink('/reader/sipurey-maasiyos/story-' + n, match);
+      return makeLink('/reader/sipurey-maasiyos/1/' + n, match);
     });
 
     // --- Likutay Eitzos ---
@@ -2031,7 +2031,7 @@
     html = html.replace(/סיפורי\s*מעשי?ות\s*(?:מעשה\s*)?([א-ת][א-ת""״׳']*)/g, function(match, numStr) {
       var n = _parseHebrewNum(numStr);
       if (!n || n < 1) return match;
-      return makeLink('/reader/sipurey-maasiyos/story-' + n, match);
+      return makeLink('/reader/sipurey-maasiyos/1/' + n, match);
     });
 
     return changed ? html : null;
@@ -2538,6 +2538,9 @@
   }
 
   function setupCommentaryPanel() {
+    // A server-rendered CommentarySidebar is authoritative. Do not create a
+    // second legacy panel or prefetch duplicate/stale source URLs.
+    if (document.getElementById('commentary-sidebar-data')) return;
     var ctx = getReaderContext();
     var sources = [];
     var partNum, torahNum;

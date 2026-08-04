@@ -1,0 +1,26 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import ReaderDirectory from '../../../../components/ReaderDirectory.astro';
+import fs from 'node:fs';
+import path from 'node:path';
+
+export function getStaticPaths() { return [{ params: { part: '1' } }]; }
+const { part } = Astro.params;
+const partNum = parseInt(part || '1');
+let indexData = null;
+try {
+  const idxPath = path.join(process.cwd(), 'public/reader/rimzei-hamaasiyos/index.json');
+  indexData = JSON.parse(fs.readFileSync(idxPath, 'utf8'));
+} catch (e) { console.error('Error loading Rimzay HaMaaseyos index:', e); }
+const totalSections = indexData?.torahs?.length || 0;
+---
+<Layout title={`${indexData?.title || 'Rimzay HaMaaseyos'} — Directory`} description="English and Hebrew allusions on Rebbe Nachman’s thirteen Stories of Ancient Times.">
+  <ReaderDirectory
+    title={indexData?.title || 'Rimzay HaMaaseyos — Allusions of the Stories'}
+    hebrewTitle={indexData?.hebrewTitle || 'רמזי המעשיות'}
+    subtitle="Rabbi Nachman of Tcheryn · English & Hebrew"
+    countLabel={`${totalSections} stories`}
+    items={indexData?.torahs || []}
+    hrefBase={`/reader/rimzei-hamaasiyos/${partNum}/`}
+  />
+</Layout>

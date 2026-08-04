@@ -1,6 +1,7 @@
 ---
 import Layout from '../../../../layouts/Layout.astro';
 import Comments from '../../../../components/Comments.astro';
+import CommentarySidebar from '../../../../components/CommentarySidebar.astro';
 import '../../../../styles/reader.css';
 import '../../../../styles/reader-v2.css';
 import fs from 'node:fs';
@@ -34,6 +35,54 @@ if (!torahData && !error) error = 'Content not available';
 
 const bookName = 'Sipurey Maasiyos';
 const bookHebrew = 'סיפורי מעשיות';
+
+const storyTitles: Record<number, string> = {
+  1: 'The Lost Princess',
+  2: 'The King and the Emperor',
+  3: 'The Lame Man',
+  4: 'The King Who Decreed Apostasy',
+  5: 'The King’s Son Made of Precious Stones',
+  6: 'The Humble King',
+  7: 'The Fly and the Spider',
+  8: 'The Rabbi and His Only Son',
+  9: 'The Clever Man and the Simple Man',
+  10: 'The Burgher and the Pauper',
+  11: 'The Exchanged Children',
+  12: 'The Prayer Leader',
+  13: 'The Seven Beggars',
+};
+const likutayNanachStoryRanges: Record<number, [number, number]> = {
+  1: [621, 631], 2: [632, 643], 3: [644, 675], 4: [676, 700],
+  5: [701, 718], 6: [719, 731], 7: [732, 746], 8: [747, 750],
+  9: [751, 790], 10: [791, 807], 11: [808, 835], 12: [836, 925],
+  13: [926, 1077],
+};
+const storyNum = Number(torah);
+const storyTitle = storyTitles[storyNum] || torahData?.title || `Story ${torah}`;
+const likutayNanachRange = likutayNanachStoryRanges[storyNum];
+const commentaryEntry = torahData && likutayNanachRange ? {
+  subjectLabel: `Story ${storyNum} — ${storyTitle}`,
+  related_commentaries: [
+    {
+      book: 'rimzei-hamaasiyos',
+      section: `section-${storyNum}`,
+      label: 'Rimzay HaMaaseyos',
+      sectionTitle: `${storyTitle} — English & Hebrew`,
+      dataUrl: `/reader/rimzei-hamaasiyos/section-${storyNum}.json`,
+      readerUrl: `/reader/rimzei-hamaasiyos/1/${storyNum}`,
+    },
+    {
+      book: 'likutay-nanach',
+      section: 'volume-4/chapter-34',
+      label: 'Likutay Nanach',
+      sectionTitle: `Likutay Nanach on ${storyTitle}`,
+      dataUrl: '/reader/likutay-nanach/volume-4/chapter-34.json',
+      readerUrl: `/reader/likutay-nanach/4/34#seg-${likutayNanachRange[0]}`,
+      startIndex: likutayNanachRange[0],
+      endIndex: likutayNanachRange[1],
+    },
+  ],
+} : null;
 
 const pageTitle = torahData
   ? `${torahData.hebrewTitle || torahData.title} - Sipurey Maasiyos`
@@ -85,6 +134,9 @@ const breadcrumbData = torahData ? JSON.stringify({
       data-torah-id={torahData.id}
       data-torah-title={`${torahData.title} - Sipurey Maasiyos`}
     >
+      {commentaryEntry && (
+        <CommentarySidebar part={partNum} torah={storyNum} entry={commentaryEntry} />
+      )}
       <div class="reader-progress"></div>
 
       <div class="reader-breadcrumb">
