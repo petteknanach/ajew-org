@@ -72,7 +72,7 @@ const pageTitle = torahData
         </div>
         <div id="segments-container">
           {torahData.segments.map(seg => (
-            <div class="segment" data-index={seg.index}>
+            <div class="segment" id={`seg-${seg.index}`} data-index={seg.index}>
               {(seg.he_nikud || seg.he) && <div class="he" dir="rtl">{seg.he_nikud || seg.he}</div>}
               {seg.en && <div class="en">{seg.en}</div>}
             </div>

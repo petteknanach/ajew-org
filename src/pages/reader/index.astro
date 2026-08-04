@@ -28,11 +28,11 @@ function loadBookIndexes(book) {
 // Group books by category
 const categories = [
   { title: '1. Rabbi Nachman of Breslov / רבי נחמן מברסלב', ids: ['likutay-moharan', 'kitzur-likutay-moharan', 'sefer-hamidos', 'sipurey-maasiyos', 'sipurey-maasiyos-english', 'sichos-haran', 'shivchay-haran', 'praises-of-rabbi-nachman', 'chayey-moharan', 'chayey-moharan-hosafos', 'toldos-adam'] },
-  { title: '2. Rabbi Nosson of Breslov / רבי נתן מברסלב', ids: ['likutay-halachos', 'likutay-tefilos', 'likutay-eitzos', 'alim-litrufa', 'yemei-moharnat', 'shemos-hatzadikim', 'yemei-hatlaos', 'meshivas-nefesh'] },
+  { title: '2. Rabbi Nosson of Breslov / רבי נתן מברסלב', ids: ['likutay-halachos', 'likutay-tefilos', 'likutay-eitzos', 'alim-litrufa', 'yemei-moharnat', 'shemos-hatzadikim', 'yemei-hatlaos'] },
   { title: '3. Saba — Rabbi Yisroel Dov Odesser / סבא רבי ישראל דב אודסר זצ"ל', ids: ['ebay-hanachal', 'yisroel-saba', 'fires-of-israel', 'sichos-chayay-saba', 'saba-tape-transcripts', 'pettek-nanach-commentary', 'misc-אגרת-הפורים'] },
   { title: "4. R' Shimshon Barsky / ר' שמשון בארסקי", ids: ['shimshon-גבורות-שמשון', 'shimshon-עצות-המבוארות', 'gevuros-shimshon', 'aitzoas-hamivooaroas', 'aitzoas-yeshuroas'] },
   { title: '5. Rabbi Nachman of Tcherin / רבי נחמן מטשערין', ids: ['parparos-lechochma', 'rimzei-hamaasiyos', 'zimras-haaretz', 'yikra-dshabbata', 'yereach-haeitanim', 'nachas-hashulchan', 'likutay-eitzos-basra', 'otzar-hayirah'] },
-  { title: '6. Rabbi Alter of Teplik / רבי אלתר טפליקער', ids: ['hashtatfchus-hanefesh'] },
+  { title: '6. Rabbi Alter of Teplik / רבי אלתר טפליקער', ids: ['hashtatfchus-hanefesh', 'meshivas-nefesh'] },
   { title: "7. R' Yisroel Karduner / ר' ישראל קרדונר", ids: ['kuntrass-hiskashrus'] },
   { title: "8. Rabbi Avraham bar Nachman / רבי אברהם בר' נחמן", ids: ['biur-halikutim', 'chochma-utvuna', 'kokhvei-or'] },
   { title: '9. Rabbi Shmuel Horowitz / רבי שמואל הורוויץ', ids: ['michtevay-shmuel'] },
@@ -130,6 +130,13 @@ const chayeyChapterTitles = {
   12: ['The Drawing Near of Rabbi Yudel', 'התקרבות הרב יודיל הנ״ל אצל רבנו זכרונו לברכה'],
 };
 
+const bookSearchAliases = {
+  'meshivas-nefesh': 'Meshivas Nefesh Restore My Soul Restoration of the Soul Revival of the Soul Restoring the Soul',
+  'hashtatfchus-hanefesh': 'Hishtapchus Hanefesh Hishtapchut HaNefesh Outpouring of the Soul',
+  'rimzei-hamaasiyos': 'Rimzay Maaseyos Rimzei HaMaasiyos Hints Allusions of the Stories',
+  'sipurey-maasiyos': 'Sipurey Maasiyos Stories of Ancient Times Rabbi Nachman Stories',
+};
+
 function specialBookItems(bookId) {
   if (bookId === 'shivchay-haran') {
     return [
@@ -224,7 +231,9 @@ function linkClass(bookId, totalPages) {
       <div class="hebrew-title" lang="he" dir="rtl">ספריית התורה</div>
       <h1>Reader Directory</h1>
       <div class="library-search">
-        <input type="text" id="libraryFilter" placeholder="Filter books... / סנן ספרים..." dir="auto" autocomplete="off" />
+        <label for="libraryFilter">Find a book</label>
+        <input type="search" id="libraryFilter" placeholder="Book title or author... / שם ספר או מחבר..." dir="auto" autocomplete="off" />
+        <div class="library-search-help"><span id="libraryFilterStatus" aria-live="polite">Type a title or author to filter the directory.</span> <a href="/search-enhanced">Search inside all books →</a></div>
       </div>
       <div class="view-toggle">
         <button id="viewFull" class="active" onclick="setView('full')">Full View</button>
@@ -453,7 +462,14 @@ function linkClass(bookId, totalPages) {
             const indexes = loadBookIndexes(book);
             const totalPages = book.parts.reduce((s, p) => s + p.totalTorahs, 0);
             return (
-              <div class="volume-section" id={book.id} style="margin-bottom: 30px;">
+              <div
+                class="volume-section"
+                id={book.id}
+                data-book-title={book.title}
+                data-book-url={book.id === 'likutay-moharan' ? '/reader/likutay-moharan/' : `/reader/${book.id}/${book.parts[0]?.part || 1}/`}
+                data-search={[book.title, book.hebrewTitle, book.author, book.hebrewAuthor, bookDescriptions[book.id], bookSearchAliases[book.id]].filter(Boolean).join(' ')}
+                style="margin-bottom: 30px;"
+              >
                 {book.id === 'likutay-moharan' ? (
                   <section class="lm-reader-portal" aria-label="Complete Likutay Moharan directory">
                     <div class="lm-reader-portal-head">
@@ -593,45 +609,48 @@ function linkClass(bookId, totalPages) {
   </div>
 
   <script is:inline>
-  // Library filter - search/filter books by name
+  // Find a book by title, alias, Hebrew title, or author.
   document.addEventListener('DOMContentLoaded', () => {
     const input = document.getElementById('libraryFilter');
+    const status = document.getElementById('libraryFilterStatus');
     if (!input) return;
 
     input.addEventListener('input', () => {
       const q = input.value.toLowerCase().trim();
+      input.dataset.onlyMatchUrl = '';
       if (!q) {
-        // Show all
         document.querySelectorAll('.category-section, .volume-section, #likutay-moharan').forEach(el => {
           el.style.display = '';
         });
+        if (status) status.textContent = 'Type a title or author to filter the directory.';
         return;
       }
 
-      const norm = (s) => (s || '').toLowerCase().normalize('NFD').replace(/[\u0591-\u05C7\u0300-\u036f]/g, '');
+      const norm = (s) => (s || '').toLowerCase().normalize('NFD').replace(/[\u0591-\u05C7\u0300-\u036f]/g, '').replace(/[^a-z0-9\u0590-\u05FF]+/g, ' ').replace(/\s+/g, ' ').trim();
       const nq = norm(q);
+      const queryTerms = nq.split(' ').filter(Boolean);
+      let matches = 0;
+      let onlyMatch = null;
 
-      // Filter volume sections by book title, Hebrew title, description, and visible section names.
       document.querySelectorAll('.volume-section').forEach(section => {
-        const haystack = norm(section.textContent || '');
-        const match = haystack.includes(nq);
+        const haystack = norm((section.dataset.search || '') + ' ' + (section.textContent || ''));
+        const match = queryTerms.every(term => haystack.includes(term));
         section.style.display = match ? '' : 'none';
+        if (match) { matches += 1; onlyMatch = section; }
         const dropdown = section.querySelector('.book-dropdown');
         if (match && dropdown) dropdown.open = true;
       });
 
-      // Show/hide categories based on whether they have visible books
       document.querySelectorAll('.category-section').forEach(cat => {
-        const visibleBooks = cat.querySelectorAll('.volume-section:not([style*="display: none"])');
+        const visibleBooks = Array.from(cat.querySelectorAll('.volume-section')).filter(section => section.style.display !== 'none');
         if (visibleBooks.length > 0) {
           cat.style.display = '';
-          cat.open = true; // Expand matching categories
+          cat.open = true;
         } else {
           cat.style.display = 'none';
         }
       });
 
-      // Also check LM section and its section labels
       const lmSection = document.getElementById('likutay-moharan');
       if (lmSection) {
         const lmMatch = norm(lmSection.textContent || '').includes(nq) || 'lm'.includes(nq);
@@ -639,9 +658,21 @@ function linkClass(bookId, totalPages) {
         if (lmMatch) lmSection.open = true;
       }
 
+      if (matches === 1 && onlyMatch) input.dataset.onlyMatchUrl = onlyMatch.dataset.bookUrl || '';
+      if (status) status.textContent = matches
+        ? `${matches} book${matches === 1 ? '' : 's'} found.${matches === 1 ? ' Press Enter to open it.' : ''}`
+        : 'No book title found. Try “Search inside all books.”';
+
       const url = new URL(window.location.href);
       url.searchParams.set('filter', q);
       window.history.replaceState({}, '', url);
+    });
+
+    input.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' && input.dataset.onlyMatchUrl) {
+        event.preventDefault();
+        window.location.href = input.dataset.onlyMatchUrl;
+      }
     });
 
     // Restore view preference and URL filter

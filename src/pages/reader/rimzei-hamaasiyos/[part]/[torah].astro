@@ -8,7 +8,7 @@ import path from 'node:path';
 
 export function getStaticPaths() {
   const paths = [];
-  for (let torah = 1; torah <= 18; torah++) {
+  for (let torah = 1; torah <= 13; torah++) {
     paths.push({ params: { part: '1', torah: String(torah) } });
   }
   return paths;
@@ -31,11 +31,11 @@ try {
 
 if (!torahData && !error) error = 'Content not available';
 
-const bookName = 'Rimzei HaMaasiyos';
+const bookName = 'Rimzay HaMaaseyos — Allusions of the Stories';
 const bookHebrew = 'רמזי המעשיות';
 
 const pageTitle = torahData
-  ? `${torahData.hebrewTitle || torahData.title} - Rimzei HaMaasiyos`
+  ? `${torahData.title} - Rimzay HaMaaseyos`
   : 'Not Found';
 const pageDesc = torahData
   ? (() => {
