@@ -75,6 +75,13 @@ if (torahData) {
   if (!Array.isArray(torahData.segments)) {
     torahData.segments = [];
   }
+  // Torahs with a Super Reader have a licensed sentence-level bilingual
+  // witness. Use it for Both/Align mode instead of the shifted legacy pairs.
+  if (partNum === 1 && (torahNum === 1 || torahNum === 2)) {
+    const alignedPath = path.join(process.cwd(), `public/reader/super/likutay-moharan/1/${torahNum}/torah-study.json`);
+    const alignedData = JSON.parse(fs.readFileSync(alignedPath, 'utf8'));
+    torahData.aligned_segments = alignedData.segments;
+  }
 }
 
 const hebrewNumerals: Record<string, number> = {
@@ -96,7 +103,9 @@ for (const [position, seg] of (torahData?.segments || []).entries()) {
   }
   sectionBySegment.set(seg.index ?? position + 1, currentSection || seg.index || position + 1);
 }
-const segmentCitation = (seg: any) => `${partRoman}:${torahNum}:${sectionBySegment.get(seg.index) || seg.index}`;
+const segmentCitation = (seg: any) => seg.sourceRef
+  ? String(seg.sourceRef).replace(/^Likutei Moharan\s+/, '')
+  : `${partRoman}:${torahNum}:${sectionBySegment.get(seg.index) || seg.index}`;
 
 // SEO structured data
 const structuredData = torahData ? JSON.stringify({
@@ -351,11 +360,12 @@ const pageDesc = torahData
         </div>
         {torahData.aligned_segments && (
           <div class="reader-content-aligned" style="display:none;">
+            <div id="aligned-segments-data" hidden></div>
             {torahData.aligned_segments.map((seg) => (
               <div class={`reader-segment-pair ${seg.type === 'note' ? 'segment-note' : ''}`} id={`aligned-${seg.index}`}>
                 <div class="reader-segment segment-he" lang="he" dir="rtl" data-index={String(seg.index)}>
                   <span class="segment-number" title="Source location">{isIntroPage ? seg.index : segmentCitation(seg)}</span>
-                  <p>{seg.he || '\u00A0'}</p>
+                  <p data-nikud={seg.he_nikud || seg.he}>{seg.he || '\u00A0'}</p>
                 </div>
                 <div class={`reader-segment segment-en ${!seg.en ? 'empty-translation' : ''}`} data-index={String(seg.index)}>
                   <span class="segment-number" title="Source location">{isIntroPage ? seg.index : segmentCitation(seg)}</span>

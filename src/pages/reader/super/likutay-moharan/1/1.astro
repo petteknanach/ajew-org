@@ -4,7 +4,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const load = (relativePath: string) => JSON.parse(fs.readFileSync(path.join(process.cwd(), relativePath), 'utf8'));
-const torah = load('public/reader/likutay-moharan/part-1/torah-1.json');
+const classicTorah = load('public/reader/likutay-moharan/part-1/torah-1.json');
+const torah = load('public/reader/super/likutay-moharan/1/1/torah-study.json');
 const pettek = load('public/reader/pettek-nanach-commentary/torah-1.json');
 const biur = load('public/reader/biur-halikutim/section-6.json');
 const parparos = load('public/reader/parparos-lechochma/section-2.json');
@@ -43,17 +44,12 @@ const peerScan = {
     };
   }),
 };
-const payload = JSON.stringify({ torah, pettek, biur, parparos, likutayNanach, peer: peerScan, phraseStudy }).replace(/</g, '\\u003c');
-const sectionLabels = [
-  ['הפסוק הפותח', 'The opening verse'],
-  ['התורה מעלה חן', 'Torah elevates grace'],
-  ['השכל שבכל דבר', 'The intellect in everything'],
-  ['החן חוקק בלב', 'Grace engraves the heart'],
-  ['אורו של יוסף', 'The light of Yosef'],
-  ['אש לבנה', 'The white-fire disguise'],
-  ['התורה מכניעה את היצר', 'Torah subdues the evil inclination'],
-  ['סגירת המעגל', 'The teaching completes its circle'],
-];
+const payload = JSON.stringify({ torah, classicTorah, pettek, biur, parparos, likutayNanach, peer: peerScan, phraseStudy }).replace(/</g, '\\u003c');
+const sectionLabels = torah.segments.map((segment: any) => {
+  const he = String(segment.he || '').trim().slice(0, 52);
+  const en = String(segment.en || '').replace(/^\s*\d+\.\s*/, '').slice(0, 58);
+  return [he, en];
+});
 ---
 
 <Layout
@@ -91,7 +87,7 @@ const sectionLabels = [
     <nav class="sr-rail" aria-label="Torah sections">
       <div class="sr-rail-head">
         <span>מהלך התורה</span>
-        <small>8 sections</small>
+        <small>{torah.segments.length} aligned passages</small>
       </div>
       <ol>
         {torah.segments.map((segment: any, index: number) => (
@@ -121,17 +117,18 @@ const sectionLabels = [
           {torah.themes.map((theme: string) => <span>{theme}</span>)}
         </div>
         <div class="sr-source-counts">
-          <span><b>8</b> synchronized sections</span>
+          <span><b>{torah.segments.length}</b> aligned passages</span>
           <span><b>{phraseStudy.phrases.length}</b> key phrases</span>
           <span><b>7</b> study layers</span>
           <span><b>20</b> Pe’er facsimile pages</span>
         </div>
+        <p class="sr-source-credit">Aligned source: Hebrew, rabenubook.com edition (Public Domain); English, Moshe Mykoff / Breslov Research Institute (CC BY-NC), delivered through Sefaria. The classic source data remains unchanged.</p>
       </section>
 
       <nav class="sr-section-pager" aria-label="Section navigation">
         <button id="sr-prev-section" aria-label="Previous section">← <span>Previous</span></button>
         <button id="sr-current-section" aria-label="Open section outline">
-          <small>SECTION</small><strong>1 of 8</strong><span>The opening verse</span>
+          <small>PASSAGE</small><strong>1 of {torah.segments.length}</strong><span>{sectionLabels[0][1]}</span>
         </button>
         <button id="sr-next-section" aria-label="Next section"><span>Next</span> →</button>
       </nav>
@@ -250,6 +247,8 @@ const sectionLabels = [
       const phrases = data.phraseStudy.phrases || [];
 
       function clean(value) { return String(value || '').replace(/\n{3,}/g, '\n\n').trim(); }
+      function currentPassage() { return data.torah.segments.find(item => Number(item.index) === state.segment); }
+      function currentClassicSegment() { return Number(currentPassage()?.classicSegment || state.segment); }
       function addParagraphs(container, value, lang) {
         clean(value).split(/\n\s*\n/).filter(Boolean).forEach(text => {
           const p = document.createElement('p'); p.textContent = text.replace(/\*\*/g, '');
@@ -456,12 +455,12 @@ const sectionLabels = [
         if (state.source === 'phrase') {
           renderPhrase();
         } else if (state.source === 'guide') {
-          const seg = data.torah.segments.find(s => Number(s.index) === state.segment);
-          sourceHeader('Instant guide', `Synchronized to section ${state.segment}`);
+          const seg = data.classicTorah.segments.find(s => Number(s.index) === currentClassicSegment());
+          sourceHeader('Instant guide', `Synchronized to classic section ${currentClassicSegment()}`);
           const card = document.createElement('section'); card.className = 'sr-source-card sr-guide-card';
           addParagraphs(card, seg.commentary?.he, 'he'); addParagraphs(card, seg.commentary?.en, 'en'); dockBody.appendChild(card);
         } else if (state.source === 'pettek') {
-          const seg = data.pettek.segments.find(s => Number(s.relatedSegment || s.index) === state.segment) || data.pettek.segments[0];
+          const seg = data.pettek.segments.find(s => Number(s.relatedSegment || s.index) === currentClassicSegment()) || data.pettek.segments[0];
           const layer = seg?.layers?.[layerSelect.value] || {};
           sourceHeader('Pettek Nanach Commentary', `${layerSelect.options[layerSelect.selectedIndex].text} · synchronized`);
           const card = document.createElement('section'); card.className = 'sr-source-card';
@@ -503,7 +502,7 @@ const sectionLabels = [
         if (options.scroll) state.ignoreObserverUntil = Date.now() + 1200;
         localStorage.setItem('ajew-super-last-segment-lm-1-1', state.segment);
         if (state.source === 'peer') {
-          const relatedPage = data.peer.pages.findIndex(page => page.relatedSections.includes(state.segment));
+          const relatedPage = data.peer.pages.findIndex(page => page.relatedSections.includes(currentClassicSegment()));
           if (relatedPage >= 0) state.page = relatedPage;
         }
         passages.forEach(p => p.classList.toggle('is-current', Number(p.dataset.segment) === state.segment));
@@ -527,7 +526,7 @@ const sectionLabels = [
       function setSource(source) {
         state.source = source; state.query = '';
         if (source === 'peer') {
-          const relatedPage = data.peer.pages.findIndex(page => page.relatedSections.includes(state.segment));
+          const relatedPage = data.peer.pages.findIndex(page => page.relatedSections.includes(currentClassicSegment()));
           if (relatedPage >= 0) state.page = relatedPage;
         }
         document.querySelectorAll('[data-source]').forEach(b => b.classList.toggle('is-active', b.dataset.source === source));
@@ -678,7 +677,7 @@ const sectionLabels = [
       commandInput.addEventListener('keydown', e => { const list = commandResults._filtered || []; if (e.key === 'ArrowDown') { e.preventDefault(); activeCommand = Math.min(list.length - 1, activeCommand + 1); drawCommands(); } if (e.key === 'ArrowUp') { e.preventDefault(); activeCommand = Math.max(0, activeCommand - 1); drawCommands(); } if (e.key === 'Enter' && list[activeCommand]) { list[activeCommand].run(); closeCommands(); } });
       document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); commandPanel.hidden ? openCommands() : closeCommands(); } if (e.altKey && e.key === 'ArrowLeft') { e.preventDefault(); stepPhrase(-1); } if (e.altKey && e.key === 'ArrowRight') { e.preventDefault(); stepPhrase(1); } if (e.key === 'Escape') { closeCommands(); dock.classList.remove('is-open'); } });
 
-      const observer = new IntersectionObserver(entries => { if (Date.now() < (state.ignoreObserverUntil || 0)) return; const visible = entries.filter(e => e.isIntersecting).sort((a,b) => b.intersectionRatio - a.intersectionRatio)[0]; if (visible && !dock.matches(':hover')) selectSegment(visible.target.dataset.segment); }, { rootMargin: '-35% 0px -45% 0px', threshold: [0,.2,.5] }); passages.forEach(p => observer.observe(p));
+      const observer = new IntersectionObserver(entries => { if (location.hash.startsWith('#sr-phrase-') || Date.now() < (state.ignoreObserverUntil || 0)) return; const visible = entries.filter(e => e.isIntersecting).sort((a,b) => b.intersectionRatio - a.intersectionRatio)[0]; if (visible && !dock.matches(':hover')) selectSegment(visible.target.dataset.segment); }, { rootMargin: '-35% 0px -45% 0px', threshold: [0,.2,.5] }); passages.forEach(p => observer.observe(p));
       window.addEventListener('scroll', () => { const max = document.documentElement.scrollHeight - innerHeight; document.getElementById('sr-progress').style.width = `${max > 0 ? scrollY / max * 100 : 0}%`; }, { passive: true });
       state.lang = localStorage.getItem('ajew-super-lang') || 'both'; applyPrefs();
       const phraseHash = location.hash.startsWith('#sr-phrase-') ? location.hash.replace('#sr-phrase-', '') : '';
