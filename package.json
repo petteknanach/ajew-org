@@ -18,7 +18,8 @@
     "import-ramchal": "node scripts/import-ramchal.mjs",
     "verify:base": "python3 .hermes/safeguard-check.py && node scripts/verify-regression-guards.cjs",
     "verify:search": "node scripts/verify-search-regressions.cjs",
-    "verify": "npm run verify:base && npm run verify:search"
+    "verify:sichos-saba": "python3 scripts/verify-sichos-saba-full.py",
+    "verify": "npm run verify:base && npm run verify:search && npm run verify:sichos-saba"
   },
   "dependencies": {
     "@astrojs/node": "^9.5.5",
