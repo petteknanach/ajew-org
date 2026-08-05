@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Repair Parparos LeChochma Torahs 3-5 from authoritative Finished HTML."""
+"""Repair Parparos LeChochma Torahs 3-6 from authoritative Finished HTML."""
 from __future__ import annotations
 
 import html
@@ -94,7 +94,14 @@ def main() -> None:
         ROOT / 'public/reader/parparos-lechochma/section-6.json',
         {2 * (position + 1): value for position, value in enumerate(torah5)},
     )
-    print('Repaired authoritative Parparos English: Torah 3 (6 segments), Torah 4 (32 segments), Torah 5 (15 segments).')
+    torah6 = paragraphs(FINISHED / '050 Parpara_os_Siman_6.html')
+    if len(torah6) != 20:
+        raise RuntimeError(f'Expected 20 Torah 6 sections, found {len(torah6)}')
+    update(
+        ROOT / 'public/reader/parparos-lechochma/section-7.json',
+        {2 * (position + 1): value for position, value in enumerate(torah6)},
+    )
+    print('Repaired authoritative Parparos English: Torahs 3–6.')
 
 
 if __name__ == '__main__':
