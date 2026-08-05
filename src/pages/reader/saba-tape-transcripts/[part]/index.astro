@@ -20,7 +20,7 @@ function sideLabel(side) { return side.side === 'a' ? 'Side A / צד א׳' : 'Si
 function statusLabel(side) {
   if (side.sourceStatus === 'missing') return 'Source missing';
   if (side.sourceStatus === 'partial') return 'Partial source';
-  if (side.translationStatus === 'verified') return 'English verified';
+  if (side.translationStatus === 'verified' || side.translationStatus === 'existing_verified') return 'English verified';
   if (side.translationStatus === 'existing_review_pending') return 'Existing English — review pending';
   if (side.translationStatus === 'in_progress') return 'Translation in progress';
   return 'Hebrew available';

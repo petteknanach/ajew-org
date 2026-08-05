@@ -28,6 +28,7 @@ def main() -> None:
     index = json.loads((BOOK / "index.json").read_text())
     manifest = json.loads((BOOK / "translation-manifest.json").read_text())
     front = json.loads((BOOK / "front-matter.json").read_text())
+    existing_review_ledger = json.loads((BOOK / "existing-english-reviews.json").read_text())
     source = SOURCE.read_text(encoding="utf-8").replace("\r\n", "\n").replace("\r", "\n")
     expected = [(n, side) for n in range(1, 118) for side in ("a", "b")]
     files = sorted(TAPES.glob("tape-*.json"))
@@ -43,6 +44,7 @@ def main() -> None:
     total_segments = 0
     verified_segments = 0
     existing_english_sides = 0
+    existing_english_verified_sides = 0
     actual_order = []
     for n, side in expected:
         p = TAPES / f"tape-{n:03d}-{side}.json"
@@ -74,6 +76,15 @@ def main() -> None:
                 fail(f"existing-English segment count mismatch in {p.name}")
             if sum(len(s) for s in legacy_en) != existing.get("characters"):
                 fail(f"existing-English character count mismatch in {p.name}")
+            if d.get("translationStatus") == "existing_verified":
+                existing_english_verified_sides += 1
+                side_id = f"{n}-{side}"
+                review = existing_review_ledger.get("reviews", {}).get(side_id)
+                required = ("complete", "noSkipping", "noTruncation", "noSummarization", "noAdditions", "uncertaintiesPreserved")
+                if not review or review.get("sourceSha256") != d.get("sourceSha256") or review.get("legacyChapter") != chapter:
+                    fail(f"verified existing-English review provenance mismatch in {p.name}")
+                if any(review.get("checks", {}).get(k) is not True for k in required):
+                    fail(f"verified existing-English checks are incomplete in {p.name}")
         for seg in segments:
             he, en = seg.get("he", "").strip(), seg.get("en", "").strip()
             if not he: fail(f"empty Hebrew segment {seg.get('id')} in {p.name}")
@@ -94,10 +105,13 @@ def main() -> None:
         fail(f"segment count differs: {total_segments} vs manifest {manifest.get('totalSegments')}")
     if existing_english_sides != manifest.get("existingEnglishSides"):
         fail(f"existing-English side count differs: {existing_english_sides} vs manifest {manifest.get('existingEnglishSides')}")
+    if existing_english_verified_sides != manifest.get("existingEnglishVerifiedSides"):
+        fail(f"verified existing-English side count differs: {existing_english_verified_sides} vs manifest {manifest.get('existingEnglishVerifiedSides')}")
     print(json.dumps({
         "status": "PASS", "tapes": 117, "sides": 234,
         "segments": total_segments, "verifiedEnglishSegments": verified_segments,
         "existingEnglishSides": existing_english_sides,
+        "existingEnglishVerifiedSides": existing_english_verified_sides,
         "sourceSha256": sha(source), "exactSourceReconstruction": True,
     }, indent=2))
 

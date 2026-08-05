@@ -90,6 +90,8 @@ const pageDesc = torahData
             <span>This tape side is explicitly marked missing in the supplied Hebrew source; no wording has been invented.</span>
           ) : torahData.sourceStatus === 'partial' ? (
             <span>The source states that much of this side is missing or inaudible. The available wording is reproduced without expansion.</span>
+          ) : torahData.translationStatus === 'existing_verified' && torahData.existingEnglish?.url ? (
+            <span>Complete available Hebrew source. <a href={torahData.existingEnglish.url}>Open the verified existing English tape-side translation</a>.</span>
           ) : torahData.translationStatus === 'existing_review_pending' && torahData.existingEnglish?.url ? (
             <span>Complete available Hebrew source. <a href={torahData.existingEnglish.url}>Open the existing English tape-side translation</a>; alignment and completeness review is pending.</span>
           ) : torahData.language === 'yi' ? (

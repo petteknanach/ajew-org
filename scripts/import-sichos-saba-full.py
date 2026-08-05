@@ -101,6 +101,13 @@ def main() -> None:
                 "characters": sum(len(s) for s in english_segments),
             }
 
+    review_ledger_path = BOOK / "existing-english-reviews.json"
+    if review_ledger_path.exists():
+        existing_review_ledger = json.loads(review_ledger_path.read_text(encoding="utf-8"))
+    else:
+        existing_review_ledger = {"schemaVersion": 1, "reviews": {}}
+    existing_reviews = existing_review_ledger.get("reviews", {})
+
     starts: dict[tuple[int, str], tuple[int, int, str]] = {}
     prior_translations: dict[str, dict] = {}
     for tape_path in TAPES.glob("tape-*.json"):
@@ -173,7 +180,16 @@ def main() -> None:
         language = "yi" if tape == 116 else "he"
         slug = f"{tape}-{SIDE_SLUG[side]}"
         existing = legacy_english.get(key)
-        side_translation_status = "existing_review_pending" if existing else ("source_missing" if status == "missing" else "not_started")
+        existing_review = existing_reviews.get(slug) if existing else None
+        existing_chapter = existing["chapter"] if existing else None
+        required_existing_checks = ("complete", "noSkipping", "noTruncation", "noSummarization", "noAdditions", "uncertaintiesPreserved")
+        existing_is_verified = bool(
+            existing_review
+            and existing_review.get("sourceSha256") == sha(source_slice)
+            and existing_review.get("legacyChapter") == existing_chapter
+            and all(existing_review.get("checks", {}).get(k) is True for k in required_existing_checks)
+        )
+        side_translation_status = "existing_verified" if existing_is_verified else ("existing_review_pending" if existing else ("source_missing" if status == "missing" else "not_started"))
         segments = []
         for i, text in enumerate(grouped, 1):
             seg_id = f"{slug}-{i:03d}"
@@ -267,6 +283,7 @@ def main() -> None:
             "displaySha256": sha(canonical_grouped_display),
             "translationStatus": item["translationStatus"],
             "existingEnglish": existing,
+            "existingEnglishVerified": existing_is_verified,
         })
 
     reconstructed = front_matter + "".join(concatenated_slices)
@@ -309,6 +326,7 @@ def main() -> None:
         "verifiedEnglishSides": sum(x["translationStatus"] == "verified" for x in manifest_sides),
         "inProgressSides": sum(x["translationStatus"] == "in_progress" for x in manifest_sides),
         "existingEnglishSides": len(legacy_english),
+        "existingEnglishVerifiedSides": sum(x["existingEnglishVerified"] for x in manifest_sides),
         "lossCheck": "PASS",
         "sides": manifest_sides,
     }
