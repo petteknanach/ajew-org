@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prepare authoritative Pe'er HaLikutim facsimiles for Torah 6."""
+"""Prepare authoritative Pe'er HaLikutim facsimiles for Torah 7."""
 from __future__ import annotations
 
 import json
@@ -9,10 +9,10 @@ import fitz
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = Path('/mnt/c/Users/Pettek/Downloads/Piair halikutim - likutay moharan 1 - 1-6 - Hebrewbooks_org_54911.pdf')
-OUT = ROOT / 'public/reader/super/likutay-moharan/1/6/peer-halikutim'
-START, END = 189, 231
-PASSAGES = 94
+SOURCE = Path('/mnt/c/Users/Pettek/Downloads/pi-air halikutim - likutay moharan - volume 2 - torahs - Hebrewbooks_org_54912.pdf')
+OUT = ROOT / 'public/reader/super/likutay-moharan/1/7/peer-halikutim'
+START, END = 19, 54
+PASSAGES = 54
 SECTIONS = [
     {'id':'likutay-moharan','he':'ליקוטי מוהר״ן','en':'Central Torah','purpose':"Rabbi Nachman's canonical teaching",'stage':'read'},
     {'id':'revelation-story','he':'סיפור התגלות המאמר','en':'How the Torah was revealed','purpose':'Background and transmission story','stage':'understand'},
@@ -32,7 +32,7 @@ def main() -> None:
     source = fitz.open(SOURCE)
     clipped = fitz.open()
     clipped.insert_pdf(source, from_page=START - 1, to_page=END - 1)
-    clipped.save(OUT / 'peer-halikutim-torah-6.pdf', garbage=4, deflate=True)
+    clipped.save(OUT / 'peer-halikutim-torah-7.pdf', garbage=4, deflate=True)
     page_count = END - START + 1
     pages = []
     for offset, source_page in enumerate(range(START, END + 1)):
@@ -44,23 +44,26 @@ def main() -> None:
         high = max(low, ((offset + 1) * PASSAGES) // page_count)
         pages.append({
             'sourcePage': source_page, 'printedFolio': None,
-            'image': f'/reader/super/likutay-moharan/1/6/peer-halikutim/page-{source_page}.webp',
+            'image': f'/reader/super/likutay-moharan/1/7/peer-halikutim/page-{source_page}.webp',
             'relatedSections': list(range(low, min(PASSAGES, high) + 1)),
             'relatedPassages': list(range(low, min(PASSAGES, high) + 1)),
             'pageBox': [round(page.rect.width, 1), round(page.rect.height, 1)],
             'extraction': {'status': 'not-rendered', 'fragmentCounts': {}}, 'fragments': [],
         })
     manifest = {
-        'schemaVersion': 2, 'title': "Pe’er HaLikutim — Torah 6", 'hebrewTitle': 'פאר הליקוטים — תורה ו',
+        'schemaVersion': 2, 'title': "Pe’er HaLikutim — Torah 7", 'hebrewTitle': 'פאר הליקוטים — תורה ז',
         'sourceFile': SOURCE.name, 'sourcePageRange': [START, END],
-        'pdf': '/reader/super/likutay-moharan/1/6/peer-halikutim/peer-halikutim-torah-6.pdf',
+        'hebrewBooksId': 54912, 'sourceUrl': 'https://hebrewbooks.org/54912',
+        'downloadUrl': 'https://download.hebrewbooks.org/downloadhandler.ashx?req=54912',
+        'sourceSha256': 'fa1ed1cfe0e39e0046805f93e227c0a84e90823fb7a472b103f73edf1862acfc',
+        'pdf': '/reader/super/likutay-moharan/1/7/peer-halikutim/peer-halikutim-torah-7.pdf',
         'textStatus': 'facsimile-only',
         'textNotice': 'The scan is authoritative. Page relationships are navigational and should be verified against the facsimile.',
         'sectionDefinitions': SECTIONS, 'pages': pages,
     }
     (OUT / 'manifest.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     source.close(); clipped.close()
-    print(f'Prepared {len(pages)} Torah 6 Pe’er pages ({START}-{END}).')
+    print(f'Prepared {len(pages)} Torah 7 Pe’er pages ({START}-{END}).')
 
 
 if __name__ == '__main__':

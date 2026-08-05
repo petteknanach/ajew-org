@@ -63,6 +63,9 @@ def main() -> None:
     actual_images = {page.name for page in (BASE / 'peer-halikutim').glob('page-*.webp')}
     if actual_images != expected_images:
         raise RuntimeError('Pe’er image directory contains missing or out-of-range pages')
+    covered = {int(n) for page in manifest['pages'] for n in page.get('relatedPassages', [])}
+    if covered != set(range(1, 95)):
+        raise RuntimeError('Pe’er navigation does not cover all 94 passages')
 
     print('Validated Torah 6: 94 passages, 19 classic segments, 30 phrases, repaired Parparos, 43 Pe’er pages.')
 
