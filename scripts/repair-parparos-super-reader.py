@@ -116,7 +116,12 @@ def main() -> None:
         ROOT / 'public/reader/parparos-lechochma/section-9.json',
         {2 * (position + 1): value for position, value in enumerate(torah8)},
     )
-    print('Repaired authoritative Parparos English: Torahs 3–8.')
+    torah9 = torahs8and9[4:]
+    update(
+        ROOT / 'public/reader/parparos-lechochma/section-10.json',
+        {2 * (position + 1): value for position, value in enumerate(torah9)},
+    )
+    print('Repaired authoritative Parparos English: Torahs 3–9.')
 
 
 if __name__ == '__main__':
