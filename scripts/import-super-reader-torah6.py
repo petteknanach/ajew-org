@@ -19,8 +19,7 @@ URL = 'https://www.sefaria.org/api/texts/Likutei_Moharan.6.{section}?lang=bi&con
 def classic_segment(section: int, comment: int) -> int:
     if section == 1: return 1 if comment == 1 else 2
     if section == 2:
-        if comment <= 4: return 3
-        if comment == 5: return 4
+        if comment <= 5: return 3
         return 5
     if section == 3: return 6
     if section == 4: return 7
@@ -81,10 +80,15 @@ def main() -> None:
         for comment, (he_raw, en_raw) in enumerate(zip(hebrew, english), start=1):
             if section == 1 and comment == 1:
                 # Sefaria combines Reb Nosson's marker and the opening verse.
-                segments.append(passage(len(segments) + 1, section, '1a', 1, 'לשון רבנו, זכרונו לברכה]', 'In the language of our Rebbe, his memory for blessing.', 'Likutei Moharan 6:1:1a'))
-                segments.append(passage(len(segments) + 1, section, '1b', 1, classic_by_index[1]['he_nikud'], "Then God said to Moshe: 'Call Yehoshua' (Deuteronomy 31:14).", 'Likutei Moharan 6:1:1b'))
+                segments.append(passage(len(segments) + 1, section, '1a', 1, 'לשון רבנו, זכרונו לברכה', 'In the language of our Rebbe, his memory for blessing.', 'Likutei Moharan 6:1:1a'))
+                segments.append(passage(len(segments) + 1, section, '1b', 1, classic_by_index[1]['he'], "Then God said to Moshe, 'The time is coming for you to die. Summon Yehoshua and present yourselves in the Tent of Meeting, where I will appoint him.' (Deuteronomy 31:14)", 'Likutei Moharan 6:1:1b'))
                 continue
             segments.append(passage(len(segments) + 1, section, comment, classic_segment(section, comment), he_raw, en_raw))
+            if section == 2 and comment == 5:
+                achoraim_en = ('Explanation: The achoraim of the Name Ehyeh has the numerical value of dam, as taught. '
+                    'When the Name is written in a receding form—aleph; aleph-heh; aleph-heh-yod; aleph-heh-yod-heh—returning backward each time, its numerical value is dam. '
+                    'This is the withdrawal and concealment of the face of Ehyeh, which amounts to dam.')
+                segments.append(passage(len(segments) + 1, section, 'classic note', 4, classic_by_index[4]['he'], achoraim_en, 'Classic Likutay Moharan 6:4 note'))
             if section == 6 and comment == 2:
                 rashbam_en = ('Rashbam: “Their wings had fallen off”—their feathers had fallen out from their great fatness. '
                     '“One lifted a wing toward me”—it raised a wing for me, hinting: this is your portion in the World to Come. '
@@ -95,8 +99,8 @@ def main() -> None:
                     'Specifically a fence is the aspect of Keter: a boundary that surrounds, crowns, and adorns wisdom. This Keter, the aspect of a fence, is formed through silence. Thus, “Silence is a fence for wisdom.”')
                 segments.append(passage(len(segments) + 1, section, 'classic note', 12, classic_by_index[12].get('he_nikud', classic_by_index[12]['he']), note_en, 'Classic Likutay Moharan 6:12 note'))
 
-    if len(segments) != 93 or not all(item['he'] and item['en'] for item in segments):
-        raise RuntimeError(f'Expected 93 nonempty aligned Torah 6 passages, found {len(segments)}')
+    if len(segments) != 94 or not all(item['he'] and item['en'] for item in segments):
+        raise RuntimeError(f'Expected 94 nonempty aligned Torah 6 passages, found {len(segments)}')
     if first is None:
         raise RuntimeError('No Sefaria source response was loaded')
     payload = {

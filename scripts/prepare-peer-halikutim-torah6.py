@@ -11,7 +11,7 @@ from PIL import Image
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = Path('/mnt/c/Users/Pettek/Downloads/Piair halikutim - likutay moharan 1 - 1-6 - Hebrewbooks_org_54911.pdf')
 OUT = ROOT / 'public/reader/super/likutay-moharan/1/6/peer-halikutim'
-START, END = 189, 257
+START, END = 189, 231
 PASSAGES = 93
 SECTIONS = [
     {'id':'likutay-moharan','he':'ליקוטי מוהר״ן','en':'Central Torah','purpose':"Rabbi Nachman's canonical teaching",'stage':'read'},

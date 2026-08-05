@@ -8,7 +8,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 BASE = ROOT / 'public/reader/super/likutay-moharan/1/6'
-SELECTED = [1, 2, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 37, 39, 42, 45, 48, 51, 54, 57, 60, 63, 66, 69, 72, 76, 84, 93]
+SELECTED = [1, 2, 3, 6, 9, 10, 13, 16, 19, 22, 25, 28, 31, 34, 37, 38, 40, 43, 46, 49, 52, 55, 58, 61, 64, 67, 70, 74, 85, 94]
 
 
 def words(value: str, count: int) -> str:
