@@ -19,7 +19,10 @@ const likutayNanach = {
     .map((segment: any, index: number) => ({ ...segment, index: index + 1 })),
 };
 const prayer = load('public/reader/likutay-tefilos/part-1/torah-3.json');
-const peer = load('public/reader/super/likutay-moharan/1/3/peer-halikutim/manifest.json');
+const peerManifest = load('public/reader/super/likutay-moharan/1/3/peer-halikutim/manifest.json');
+// Keep the full structured extraction in the manifest, but send only the
+// facsimile navigation fields to the browser; the unreviewed OCR is not rendered.
+const peer = { ...peerManifest, pages: peerManifest.pages.map(({ fragments: _fragments, extraction: _extraction, ...page }: any) => page) };
 const phraseStudy = load('public/reader/super/likutay-moharan/1/3/phrase-study.json');
 const payload = JSON.stringify({ torah, pettek, biur, parparos: parparosHebrew, likutayNanach, prayer, peer, phraseStudy }).replace(/</g, '\\u003c');
 const sectionLabels = torah.segments.map((segment: any) => {
