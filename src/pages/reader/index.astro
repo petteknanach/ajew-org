@@ -65,6 +65,39 @@ if (miscBooks.length > 0) {
   categories.push({ title: 'Students & Other Works / תלמידים ועוד', ids: miscBooks.map(b => b.id) });
 }
 
+const visibleBooks = masterCatalog.books.filter((book) => book.parts.some((part) => part.totalTorahs > 0));
+const alphabeticalBooks = [...visibleBooks].sort((a, b) =>
+  String(a.title || '').localeCompare(String(b.title || ''), 'en', { sensitivity: 'base' })
+);
+const categoryDirectory = categories.map((category, index) => {
+  const books = category.ids
+    .map((id) => visibleBooks.find((book) => book.id === id))
+    .filter(Boolean);
+  return {
+    ...category,
+    key: `category-${index + 1}`,
+    books,
+    bookIds: books.map((book) => book.id),
+  };
+}).filter((category) => category.books.length > 0);
+const bookCategoryKeys = new Map();
+categoryDirectory.forEach((category) => {
+  category.bookIds.forEach((id) => {
+    const keys = bookCategoryKeys.get(id) || [];
+    keys.push(category.key);
+    bookCategoryKeys.set(id, keys);
+  });
+});
+
+function cleanCategoryTitle(title) {
+  return String(title || '').replace(/^\d+\.\s*/, '');
+}
+
+function bookDirectoryUrl(book) {
+  if (book.id === 'likutay-moharan') return '/reader/likutay-moharan/';
+  return `/reader/${book.id}/${book.parts[0]?.part || 1}/`;
+}
+
 // Pre-load LM catalogs specifically (for backward compatibility with detailed listing)
 const catalog1 = loadJSON('public/reader/likutay-moharan/part-1/index.json');
 const catalog2 = loadJSON('public/reader/likutay-moharan/part-2/index.json');
@@ -236,9 +269,6 @@ function linkClass(bookId, totalPages) {
         <div class="library-search-help"><span id="libraryFilterStatus" aria-live="polite">Type a title or author to filter the directory.</span> <a href="/search-enhanced">Search inside all books →</a></div>
       </div>
       <div class="view-toggle">
-        <button id="viewFull" class="active" onclick="setView('full')">Full View</button>
-        <button id="viewCompact" onclick="setView('compact')">Quick Access</button>
-        <button id="expandAll" onclick="expandAllCategories()">Show Everything</button>
         <button id="copyLibraryLink" onclick="copyLibraryLink()">Share Library</button>
       </div>
     </div>
@@ -449,7 +479,65 @@ function linkClass(bookId, totalPages) {
     </details>
     )}
 
-    <!-- All Books by Category -->
+    <!-- Split directory: author/category navigation on the left, alphabetical books on the right. -->
+    <section class="split-library-directory" id="splitLibraryDirectory" aria-label="Library directory by author and book title">
+      <aside class="directory-authors" aria-labelledby="authorDirectoryHeading">
+        <div class="directory-pane-heading">
+          <span class="directory-pane-kicker">Browse by</span>
+          <h2 id="authorDirectoryHeading">Authors & Categories</h2>
+          <span lang="he" dir="rtl">מחברים וקטגוריות</span>
+        </div>
+        <nav class="author-category-list" aria-label="Filter books by author or category">
+          <button class="author-category-button active" type="button" data-directory-category="all" aria-pressed="true">
+            <span>All authors & categories</span>
+            <strong>{alphabeticalBooks.length}</strong>
+          </button>
+          {categoryDirectory.map((category) => (
+            <button class="author-category-button" type="button" data-directory-category={category.key} aria-pressed="false">
+              <span>{cleanCategoryTitle(category.title)}</span>
+              <strong>{category.books.length}</strong>
+            </button>
+          ))}
+        </nav>
+      </aside>
+
+      <div class="directory-books" aria-labelledby="bookDirectoryHeading">
+        <div class="directory-pane-heading directory-books-heading">
+          <div>
+            <span class="directory-pane-kicker">A–Z</span>
+            <h2 id="bookDirectoryHeading">Books in Alphabetical Order</h2>
+            <span lang="he" dir="rtl">הספרים לפי סדר אלפביתי</span>
+          </div>
+          <span class="directory-result-count" id="directoryResultCount">{alphabeticalBooks.length} books</span>
+        </div>
+        <ol class="alphabetical-book-list" id="alphabeticalBookList">
+          {alphabeticalBooks.map((book) => {
+            const totalPages = book.parts.reduce((sum, part) => sum + part.totalTorahs, 0);
+            const categoryKeys = bookCategoryKeys.get(book.id) || [];
+            const searchText = [book.title, book.hebrewTitle, book.author, book.hebrewAuthor, bookDescriptions[book.id], bookSearchAliases[book.id]].filter(Boolean).join(' ');
+            return (
+              <li class="alphabetical-book-item" data-book-id={book.id} data-categories={categoryKeys.join(' ')} data-search={searchText}>
+                <a href={bookDirectoryUrl(book)}>
+                  <span class="book-letter" aria-hidden="true">{String(book.title || '#').charAt(0).toUpperCase()}</span>
+                  <span class="book-directory-copy">
+                    <strong>{book.title}</strong>
+                    {book.hebrewTitle && <span class="book-directory-hebrew" lang="he" dir="rtl">{book.hebrewTitle}</span>}
+                    {(book.author || book.hebrewAuthor) && (
+                      <span class="book-directory-author">{book.author}{book.author && book.hebrewAuthor ? ' / ' : ''}<b lang="he" dir="rtl">{book.hebrewAuthor}</b></span>
+                    )}
+                  </span>
+                  <span class="book-directory-count">{totalPages}</span>
+                </a>
+              </li>
+            );
+          })}
+        </ol>
+        <p class="directory-empty" id="directoryEmpty" hidden>No matching books found. / לא נמצאו ספרים מתאימים.</p>
+      </div>
+    </section>
+
+    <!-- Previous detailed directory retained in source for reference; individual book directories remain unchanged. -->
+    {false && (<>
     {categories.map(cat => {
       const catBooks = cat.ids
         .map(id => masterCatalog.books.find(b => b.id === id)).filter(Boolean).filter(b => b.parts.some(p => p.totalTorahs > 0));
@@ -606,65 +694,75 @@ function linkClass(bookId, totalPages) {
         </details>
       );
     })}
+    </>)}
   </div>
 
   <script is:inline>
-  // Find a book by title, alias, Hebrew title, or author.
+  // Two-pane directory: author/category filters on the left, alphabetical books on the right.
   document.addEventListener('DOMContentLoaded', () => {
     const input = document.getElementById('libraryFilter');
     const status = document.getElementById('libraryFilterStatus');
-    if (!input) return;
+    const count = document.getElementById('directoryResultCount');
+    const empty = document.getElementById('directoryEmpty');
+    const books = Array.from(document.querySelectorAll('.alphabetical-book-item'));
+    const categoryButtons = Array.from(document.querySelectorAll('[data-directory-category]'));
+    if (!input || books.length === 0) return;
 
-    input.addEventListener('input', () => {
-      const q = input.value.toLowerCase().trim();
-      input.dataset.onlyMatchUrl = '';
-      if (!q) {
-        document.querySelectorAll('.category-section, .volume-section, #likutay-moharan').forEach(el => {
-          el.style.display = '';
-        });
-        if (status) status.textContent = 'Type a title or author to filter the directory.';
-        return;
-      }
+    const norm = (value) => String(value || '')
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0591-\u05C7\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9\u0590-\u05FF]+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+    let activeCategory = 'all';
 
-      const norm = (s) => (s || '').toLowerCase().normalize('NFD').replace(/[\u0591-\u05C7\u0300-\u036f]/g, '').replace(/[^a-z0-9\u0590-\u05FF]+/g, ' ').replace(/\s+/g, ' ').trim();
-      const nq = norm(q);
-      const queryTerms = nq.split(' ').filter(Boolean);
+    function applyDirectoryFilter() {
+      const query = norm(input.value);
+      const terms = query.split(' ').filter(Boolean);
       let matches = 0;
-      let onlyMatch = null;
+      let onlyMatchUrl = '';
 
-      document.querySelectorAll('.volume-section').forEach(section => {
-        const haystack = norm((section.dataset.search || '') + ' ' + (section.textContent || ''));
-        const match = queryTerms.every(term => haystack.includes(term));
-        section.style.display = match ? '' : 'none';
-        if (match) { matches += 1; onlyMatch = section; }
-        const dropdown = section.querySelector('.book-dropdown');
-        if (match && dropdown) dropdown.open = true;
-      });
-
-      document.querySelectorAll('.category-section').forEach(cat => {
-        const visibleBooks = Array.from(cat.querySelectorAll('.volume-section')).filter(section => section.style.display !== 'none');
-        if (visibleBooks.length > 0) {
-          cat.style.display = '';
-          cat.open = true;
-        } else {
-          cat.style.display = 'none';
+      books.forEach((book) => {
+        const categoryMatch = activeCategory === 'all' || String(book.dataset.categories || '').split(' ').includes(activeCategory);
+        const haystack = norm((book.dataset.search || '') + ' ' + (book.textContent || ''));
+        const searchMatch = terms.every((term) => haystack.includes(term));
+        const visible = categoryMatch && searchMatch;
+        book.hidden = !visible;
+        if (visible) {
+          matches += 1;
+          onlyMatchUrl = book.querySelector('a')?.getAttribute('href') || '';
         }
       });
 
-      const lmSection = document.getElementById('likutay-moharan');
-      if (lmSection) {
-        const lmMatch = norm(lmSection.textContent || '').includes(nq) || 'lm'.includes(nq);
-        lmSection.style.display = lmMatch ? '' : 'none';
-        if (lmMatch) lmSection.open = true;
+      input.dataset.onlyMatchUrl = matches === 1 ? onlyMatchUrl : '';
+      if (count) count.textContent = `${matches} book${matches === 1 ? '' : 's'}`;
+      if (empty) empty.hidden = matches !== 0;
+      if (status) {
+        status.textContent = matches
+          ? `${matches} book${matches === 1 ? '' : 's'} found.${matches === 1 ? ' Press Enter to open it.' : ''}`
+          : 'No book title found. Try “Search inside all books.”';
       }
+    }
 
-      if (matches === 1 && onlyMatch) input.dataset.onlyMatchUrl = onlyMatch.dataset.bookUrl || '';
-      if (status) status.textContent = matches
-        ? `${matches} book${matches === 1 ? '' : 's'} found.${matches === 1 ? ' Press Enter to open it.' : ''}`
-        : 'No book title found. Try “Search inside all books.”';
+    categoryButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        activeCategory = button.dataset.directoryCategory || 'all';
+        categoryButtons.forEach((candidate) => {
+          const active = candidate === button;
+          candidate.classList.toggle('active', active);
+          candidate.setAttribute('aria-pressed', String(active));
+        });
+        applyDirectoryFilter();
+        document.querySelector('.directory-books')?.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    });
 
+    input.addEventListener('input', () => {
+      applyDirectoryFilter();
       const url = new URL(window.location.href);
-      url.searchParams.set('filter', q);
+      const query = input.value.trim();
+      if (query) url.searchParams.set('filter', query); else url.searchParams.delete('filter');
       window.history.replaceState({}, '', url);
     });
 
@@ -675,39 +773,10 @@ function linkClass(bookId, totalPages) {
       }
     });
 
-    // Restore view preference and URL filter
-    const savedView = localStorage.getItem('ajew-library-view');
-    if (savedView === 'compact') setView('compact');
-    const params = new URLSearchParams(window.location.search);
-    const filter = params.get('filter');
-    if (filter) { input.value = filter; input.dispatchEvent(new Event('input')); }
-    if (window.location.hash) {
-      const hashId = decodeURIComponent(window.location.hash.slice(1));
-      const target = hashId ? document.getElementById(hashId) : null;
-      if (target) { target.closest('.category-section')?.setAttribute('open', ''); target.closest('.book-dropdown')?.setAttribute('open', ''); }
-    }
+    const filter = new URLSearchParams(window.location.search).get('filter');
+    if (filter) input.value = filter;
+    applyDirectoryFilter();
   });
-
-  function setView(mode) {
-    const container = document.querySelector('.lm-index');
-    const fullBtn = document.getElementById('viewFull');
-    const compactBtn = document.getElementById('viewCompact');
-    if (mode === 'compact') {
-      container.classList.add('compact-mode');
-      fullBtn.classList.remove('active');
-      compactBtn.classList.add('active');
-    } else {
-      container.classList.remove('compact-mode');
-      fullBtn.classList.add('active');
-      compactBtn.classList.remove('active');
-    }
-    localStorage.setItem('ajew-library-view', mode);
-  }
-
-  function expandAllCategories() {
-    document.querySelectorAll('.category-section').forEach(cat => { cat.open = true; });
-    document.querySelectorAll('.book-dropdown').forEach(book => { book.open = true; });
-  }
 
   function copyLibraryLink() {
     const input = document.getElementById('libraryFilter');
