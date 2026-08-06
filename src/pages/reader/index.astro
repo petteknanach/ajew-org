@@ -42,7 +42,7 @@ const categories = [
   { title: '13. Noach HaLevi Sternfeld / נח הלוי שטרנפלד', ids: ['geedoolay-hanachal'] },
   { title: 'Siach Sarfei Kodesh / שיח שרפי קודש', ids: ['siach-sarfei-kodesh'] },
   { title: 'Rabbi Nachman Chazan / רבי נחמן חזן', ids: ['neimos-netzach'] },
-  { title: "R' Yitzchak Breiter / ר' יצחק ברייטער", ids: ['breiter-seder-hayom', 'seven-pillars', 'hisbodidus-alone-time', 'misc-שיר-ידידות-מר-יחיאל-מענדל'] },
+  { title: "R' Yitzchak Breiter / ר' יצחק ברייטער", ids: ['breiter-seder-hayom', 'seven-pillars', 'misc-שיר-ידידות-מר-יחיאל-מענדל'] },
   { title: 'Simcha Nanach / שמחה נ נח — Five Volumes of Likutay Nanach', ids: ['likutay-nanach'] },
   { title: 'Chumash with Likutey Halachos / חומש עם ליקוטי הלכות', ids: ['chumash-lh'] },
   { title: 'Torah / תורה', ids: ['tanach-bereishit', 'tanach-shemos', 'tanach-vayikra', 'tanach-bamidbar', 'tanach-devarim'] },
@@ -95,7 +95,12 @@ function cleanCategoryTitle(title) {
 
 function bookDirectoryUrl(book) {
   if (book.id === 'likutay-moharan') return '/reader/likutay-moharan/';
-  return `/reader/${book.id}/${book.parts[0]?.part || 1}/`;
+  const firstPart = book.parts[0];
+  if (!firstPart) return '/reader/';
+  const index = loadJSON(firstPart.indexUrl.replace(/^\//, 'public/')) || {};
+  const firstEntry = (index.torahs || index.items || [])[0];
+  const firstNumber = firstEntry?.number ?? firstEntry?.torah ?? firstEntry?.displayNumber ?? 1;
+  return firstEntry?.url || `/reader/${book.id}/${firstPart.part || 1}/${firstNumber}`;
 }
 
 // Pre-load LM catalogs specifically (for backward compatibility with detailed listing)

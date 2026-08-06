@@ -725,26 +725,35 @@ body.dark-mode .lm-reader-volume-card { background:rgba(15,31,50,.72); border-co
 /* Split reader directory: authors/categories | alphabetical books */
 .split-library-directory {
   --directory-red: #a6262b;
+  position: relative;
   display: grid;
   grid-template-columns: minmax(255px, 34%) minmax(0, 66%);
   min-height: 620px;
-  max-height: 76vh;
   margin-top: 14px;
-  overflow: hidden;
+  overflow: visible;
   border: 1px solid #d9c9af;
   border-radius: 18px;
   background: #fffdf9;
   box-shadow: 0 14px 36px rgba(26, 54, 93, .1);
 }
+.split-library-directory::after {
+  content: '';
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  bottom: 0;
+  left: 34%;
+  width: 2px;
+  transform: translateX(-1px);
+  background: var(--directory-red);
+  pointer-events: none;
+}
 .directory-authors,
 .directory-books {
   min-width: 0;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  scrollbar-gutter: stable;
+  overflow: visible;
 }
 .directory-authors {
-  border-right: 2px solid var(--directory-red);
   background: linear-gradient(180deg, #f7efe2 0%, #f2e5d2 100%);
 }
 .directory-books { background: #fffdf9; }
@@ -916,10 +925,13 @@ body.dark-mode .book-directory-author { color: #a6a6b7; }
   .split-library-directory {
     grid-template-columns: minmax(0, 42%) minmax(0, 58%);
     min-height: 560px;
-    max-height: 72vh;
     border-radius: 12px;
   }
-  .directory-authors { border-right-width: 1.5px; }
+  .split-library-directory::after {
+    left: 42%;
+    width: 1px;
+    transform: none;
+  }
   .directory-pane-heading { padding: 11px 8px 9px; }
   .directory-pane-heading h2 { font-size: .86rem; }
   .directory-pane-heading > span:not(.directory-pane-kicker),
