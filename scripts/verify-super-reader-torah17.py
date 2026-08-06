@@ -47,6 +47,7 @@ def main():
   if not x.get('he') or not x.get('en') or 'Siman 16' in x['en'] or not x.get('translationRepair') or not x.get('sourceEnglish'): fail(f'Parparos semantic repair missing at {x.get("index")}')
  prayer=load(ROOT/'public/reader/likutay-tefilos/part-1/prayer-17.json'); ids=[f'p17{chr(97+i)}' for i in range(14)]
  if len(prayer.get('segments',[]))!=14 or [x.get('sourceId') for x in prayer['segments']]!=ids or prayer.get('excludedMetadata',{}).get('dateBars')!=5: fail('Prayer block/date boundary mismatch')
+ if prayer.get('navigation',{}).get('prevUrl')!='/reader/likutay-tefilos/1/16' or prayer.get('navigation',{}).get('nextUrl')!='/reader/likutay-tefilos/1/18': fail('Prayer navigation missing or shifted')
  if not prayer['segments'][0]['en'].startswith('Master of all worlds, Master of all souls') or not prayer['segments'][-1]['en'].startswith('Please, Hashem, Who hearkens to prayer, Who hearkens to the cry, Who hearkens to the sigh'): fail('Prayer first/final boundaries mismatch')
  nanach=load(BASE/'likutay-nanach.json'); nsegs=nanach.get('segments',[])
  if len(nsegs)!=58 or len({x.get('sourceIdentity') for x in nsegs})!=58 or any(not x.get('he') or x.get('en') for x in nsegs): fail('Nanach count/language/composite identity mismatch')
