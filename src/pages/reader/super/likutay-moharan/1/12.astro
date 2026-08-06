@@ -301,6 +301,7 @@ const sectionLabels = torah.segments.map((segment: any) => {
         const related = data.peer.pages.filter(page => (page.relatedPassages || []).map(Number).includes(state.segment));
         const pages = related.length ? related : data.peer.pages.slice(0, 1);
         sourceHeader('פאר הליקוטים', `Authoritative facsimile · ${pages.length} related page${pages.length === 1 ? '' : 's'}`);
+        const peerCredit = document.createElement('p'); peerCredit.className = 'sr-scan-note'; peerCredit.dir = 'rtl'; peerCredit.innerHTML = 'בביאורים המובאים נעזרנו בספר &quot;פאר הליקוטים&quot;, וכל הרוצה להכיר ספר זה יכול להיעזר בקישור המצורף: <a href="https://www.peer-halikutim.com/" target="_blank" rel="noopener">peer-halikutim.com</a>. התודה והברכה למכון &quot;פאר הליקוטים&quot;.'; dockBody.appendChild(peerCredit);
         const notice = document.createElement('p'); notice.className = 'sr-scan-note'; notice.textContent = data.peer.textNotice;
         const pdf = document.createElement('a'); pdf.className = 'sr-peer-pdf'; pdf.href = data.peer.pdf; pdf.target = '_blank'; pdf.rel = 'noopener'; pdf.textContent = 'Open Torah 12 facsimile PDF ↗';
         dockBody.append(notice, pdf);

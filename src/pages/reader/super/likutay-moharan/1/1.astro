@@ -380,6 +380,7 @@ const sectionLabels = torah.segments.map((segment: any) => {
       function renderPeer() {
         const page = data.peer.pages[state.page];
         sourceHeader(data.peer.hebrewTitle, `Source page ${page.sourcePage} · related to Torah sections ${page.relatedSections.join(', ')}`);
+        const peerCredit = document.createElement('p'); peerCredit.className = 'sr-scan-note'; peerCredit.dir = 'rtl'; peerCredit.innerHTML = 'בביאורים המובאים נעזרנו בספר &quot;פאר הליקוטים&quot;, וכל הרוצה להכיר ספר זה יכול להיעזר בקישור המצורף: <a href="https://www.peer-halikutim.com/" target="_blank" rel="noopener">peer-halikutim.com</a>. התודה והברכה למכון &quot;פאר הליקוטים&quot;.'; dockBody.appendChild(peerCredit);
         const controls = document.createElement('div'); controls.className = 'sr-facsimile-controls sr-peer-controls';
         controls.innerHTML = '<button data-peer-view="text">Guided text</button><button data-peer-view="scan">Scan</button><button data-peer-view="pdf">PDF</button><button data-page="prev" aria-label="Previous page">←</button><span>Page '+page.sourcePage+'</span><button data-page="next" aria-label="Next page">→</button><button data-zoom="out" aria-label="Zoom out">−</button><button data-zoom="in" aria-label="Zoom in">+</button><a target="_blank" rel="noopener" href="'+data.peer.pdf+'">Full PDF ↗</a>';
         controls.querySelectorAll('[data-peer-view]').forEach(button => button.classList.toggle('is-active', button.dataset.peerView === state.peerView));
