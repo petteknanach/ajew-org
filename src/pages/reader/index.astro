@@ -89,6 +89,17 @@ categoryDirectory.forEach((category) => {
   });
 });
 
+const directoryFolderDefinitions = [
+  { key: 'mishna-folder', title: 'Mishna', hebrewTitle: 'משנה', prefix: 'mishna-' },
+  { key: 'rambam-folder', title: 'Rambam — Mishneh Torah', hebrewTitle: 'רמב״ם — משנה תורה', prefix: 'rambam-' },
+  { key: 'talmud-folder', title: 'Talmud Bavli', hebrewTitle: 'תלמוד בבלי', prefix: 'talmud-bavli-' },
+];
+const directoryFolders = directoryFolderDefinitions.map((folder) => ({
+  ...folder,
+  books: alphabeticalBooks.filter((book) => book.id.startsWith(folder.prefix)),
+})).filter((folder) => folder.books.length > 0);
+const folderedBookIds = new Set(directoryFolders.flatMap((folder) => folder.books.map((book) => book.id)));
+
 function cleanCategoryTitle(title) {
   return String(title || '').replace(/^\d+\.\s*/, '');
 }
@@ -174,6 +185,17 @@ const bookSearchAliases = {
   'rimzei-hamaasiyos': 'Rimzay Maaseyos Rimzei HaMaasiyos Hints Allusions of the Stories',
   'sipurey-maasiyos': 'Sipurey Maasiyos Stories of Ancient Times Rabbi Nachman Stories',
 };
+
+const directoryBookRows = new Map(alphabeticalBooks.map((book) => {
+  const totalPages = book.parts.reduce((sum, part) => sum + part.totalTorahs, 0);
+  const categoryKeys = bookCategoryKeys.get(book.id) || [];
+  const searchText = [book.title, book.hebrewTitle, book.author, book.hebrewAuthor, bookDescriptions[book.id], bookSearchAliases[book.id]].filter(Boolean).join(' ');
+  return [book.id, { book, totalPages, categoryKeys, searchText, href: bookDirectoryUrl(book) }];
+}));
+const alphabeticalDirectoryEntries = [
+  ...alphabeticalBooks.filter((book) => !folderedBookIds.has(book.id)).map((book) => ({ type: 'book', title: book.title, row: directoryBookRows.get(book.id) })),
+  ...directoryFolders.map((folder) => ({ type: 'folder', title: folder.title, folder })),
+].sort((a, b) => String(a.title || '').localeCompare(String(b.title || ''), 'en', { sensitivity: 'base' }));
 
 function specialBookItems(bookId) {
   if (bookId === 'shivchay-haran') {
@@ -516,13 +538,47 @@ function linkClass(bookId, totalPages) {
           <span class="directory-result-count" id="directoryResultCount">{alphabeticalBooks.length} books</span>
         </div>
         <ol class="alphabetical-book-list" id="alphabeticalBookList">
-          {alphabeticalBooks.map((book) => {
-            const totalPages = book.parts.reduce((sum, part) => sum + part.totalTorahs, 0);
-            const categoryKeys = bookCategoryKeys.get(book.id) || [];
-            const searchText = [book.title, book.hebrewTitle, book.author, book.hebrewAuthor, bookDescriptions[book.id], bookSearchAliases[book.id]].filter(Boolean).join(' ');
+          {alphabeticalDirectoryEntries.map((entry) => {
+            if (entry.type === 'folder') {
+              const folder = entry.folder;
+              return (
+                <li class="directory-book-folder" data-directory-folder={folder.key}>
+                  <details class="directory-book-folder-details">
+                    <summary>
+                      <span class="book-letter folder-letter" aria-hidden="true">{folder.title.charAt(0)}</span>
+                      <span class="book-directory-copy">
+                        <strong>{folder.title}</strong>
+                        <span class="book-directory-hebrew" lang="he" dir="rtl">{folder.hebrewTitle}</span>
+                        <span class="book-directory-author">Open folder to choose a book</span>
+                      </span>
+                      <span class="book-directory-count">{folder.books.length} books</span>
+                    </summary>
+                    <ol class="directory-folder-book-list">
+                      {folder.books.map((book) => {
+                        const row = directoryBookRows.get(book.id);
+                        return (
+                          <li class="alphabetical-book-item folder-book-item" data-book-id={book.id} data-categories={row.categoryKeys.join(' ')} data-search={row.searchText}>
+                            <a href={row.href}>
+                              <span class="book-letter" aria-hidden="true">{String(book.title || '#').charAt(0).toUpperCase()}</span>
+                              <span class="book-directory-copy">
+                                <strong>{book.title}</strong>
+                                {book.hebrewTitle && <span class="book-directory-hebrew" lang="he" dir="rtl">{book.hebrewTitle}</span>}
+                              </span>
+                              <span class="book-directory-count">{row.totalPages}</span>
+                            </a>
+                          </li>
+                        );
+                      })}
+                    </ol>
+                  </details>
+                </li>
+              );
+            }
+            const row = entry.row;
+            const book = row.book;
             return (
-              <li class="alphabetical-book-item" data-book-id={book.id} data-categories={categoryKeys.join(' ')} data-search={searchText}>
-                <a href={bookDirectoryUrl(book)}>
+              <li class="alphabetical-book-item" data-book-id={book.id} data-categories={row.categoryKeys.join(' ')} data-search={row.searchText}>
+                <a href={row.href}>
                   <span class="book-letter" aria-hidden="true">{String(book.title || '#').charAt(0).toUpperCase()}</span>
                   <span class="book-directory-copy">
                     <strong>{book.title}</strong>
@@ -531,7 +587,7 @@ function linkClass(bookId, totalPages) {
                       <span class="book-directory-author">{book.author}{book.author && book.hebrewAuthor ? ' / ' : ''}<b lang="he" dir="rtl">{book.hebrewAuthor}</b></span>
                     )}
                   </span>
-                  <span class="book-directory-count">{totalPages}</span>
+                  <span class="book-directory-count">{row.totalPages}</span>
                 </a>
               </li>
             );
@@ -710,6 +766,7 @@ function linkClass(bookId, totalPages) {
     const count = document.getElementById('directoryResultCount');
     const empty = document.getElementById('directoryEmpty');
     const books = Array.from(document.querySelectorAll('.alphabetical-book-item'));
+    const folders = Array.from(document.querySelectorAll('.directory-book-folder'));
     const categoryButtons = Array.from(document.querySelectorAll('[data-directory-category]'));
     if (!input || books.length === 0) return;
 
@@ -738,6 +795,14 @@ function linkClass(bookId, totalPages) {
           matches += 1;
           onlyMatchUrl = book.querySelector('a')?.getAttribute('href') || '';
         }
+      });
+
+      folders.forEach((folder) => {
+        const folderBooks = Array.from(folder.querySelectorAll('.alphabetical-book-item'));
+        const hasVisibleBooks = folderBooks.some((book) => !book.hidden);
+        folder.hidden = !hasVisibleBooks;
+        const details = folder.querySelector('details');
+        if (details && (query || activeCategory !== 'all')) details.open = hasVisibleBooks;
       });
 
       input.dataset.onlyMatchUrl = matches === 1 ? onlyMatchUrl : '';

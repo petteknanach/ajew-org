@@ -849,6 +849,47 @@ body.dark-mode .lm-reader-volume-card { background:rgba(15,31,50,.72); border-co
   padding: 8px 10px 18px;
   list-style: none;
 }
+.directory-book-folder {
+  margin: 4px 0 8px;
+  list-style: none;
+  border: 1px solid #d8c19b;
+  border-radius: 12px;
+  background: #fbf4e8;
+  overflow: hidden;
+}
+.directory-book-folder[hidden] { display: none; }
+.directory-book-folder-details > summary {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  min-height: 68px;
+  padding: 10px 9px;
+  cursor: pointer;
+  list-style: none;
+}
+.directory-book-folder-details > summary::-webkit-details-marker { display: none; }
+.directory-book-folder-details > summary::after {
+  content: '▾';
+  grid-column: 3;
+  justify-self: center;
+  margin-top: 36px;
+  color: #9a272d;
+  font-size: .8rem;
+  transition: transform .2s ease;
+}
+.directory-book-folder-details[open] > summary::after { transform: rotate(180deg); }
+.directory-book-folder-details > summary:hover,
+.directory-book-folder-details > summary:focus-visible { background: #f3e4cd; outline: 2px solid rgba(166, 38, 43, .2); outline-offset: -2px; }
+.directory-book-folder-details[open] > summary { border-bottom: 1px solid #d8c19b; }
+.folder-letter { background: var(--directory-red); }
+.directory-folder-book-list {
+  margin: 0;
+  padding: 3px 8px 8px 18px;
+  list-style: none;
+  background: #fffdf9;
+}
+.folder-book-item .book-letter { background: #6d7f96; }
 .alphabetical-book-item { margin: 0; border-bottom: 1px solid #eee2d1; }
 .alphabetical-book-item[hidden] { display: none; }
 .alphabetical-book-item a {
@@ -919,6 +960,11 @@ body.dark-mode .author-category-button.active,
 body.dark-mode .author-category-button:hover { background: #303049; }
 body.dark-mode .alphabetical-book-item { border-bottom-color: #303047; }
 body.dark-mode .alphabetical-book-item a:hover { background: #29293d; }
+body.dark-mode .directory-book-folder { border-color: #4a4050; background: #242438; }
+body.dark-mode .directory-book-folder-details > summary:hover,
+body.dark-mode .directory-book-folder-details > summary:focus-visible { background: #303049; }
+body.dark-mode .directory-book-folder-details[open] > summary { border-bottom-color: #4a4050; }
+body.dark-mode .directory-folder-book-list { background: #191926; }
 body.dark-mode .book-directory-author { color: #a6a6b7; }
 
 @media (max-width: 768px) {
@@ -949,6 +995,15 @@ body.dark-mode .book-directory-author { color: #a6a6b7; }
   }
   .author-category-button strong { min-width: 23px; padding: 2px 4px; font-size: .58rem; }
   .alphabetical-book-list { padding: 4px 4px 12px; }
+  .directory-book-folder { margin: 3px 0 6px; border-radius: 9px; }
+  .directory-book-folder-details > summary {
+    grid-template-columns: 22px minmax(0, 1fr) 14px;
+    gap: 6px;
+    min-height: 60px;
+    padding: 7px 4px;
+  }
+  .directory-book-folder-details > summary::after { margin-top: 0; }
+  .directory-folder-book-list { padding: 2px 3px 6px 8px; }
   .alphabetical-book-item a {
     grid-template-columns: 22px minmax(0, 1fr);
     gap: 6px;
