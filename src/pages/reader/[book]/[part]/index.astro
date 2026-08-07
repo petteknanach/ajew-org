@@ -1,0 +1,67 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import ReaderDirectory from '../../../../components/ReaderDirectory.astro';
+import fs from 'node:fs';
+import path from 'node:path';
+
+export function getStaticPaths() {
+  const readJson = (filePath) => {
+    try {
+      return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    } catch (error) {
+      console.error(`Reader directory could not load ${filePath}:`, error);
+      return null;
+    }
+  };
+  const root = process.cwd();
+  const catalog = readJson(path.join(root, 'public/reader/catalog.json'));
+  if (!catalog?.books) return [];
+
+  const paths = [];
+  for (const book of catalog.books) {
+    const dedicatedRoute = path.join(root, 'src/pages/reader', book.id, '[part]', 'index.astro');
+    if (fs.existsSync(dedicatedRoute)) continue;
+
+    for (const partMeta of book.parts || []) {
+      const part = String(partMeta.part || 1);
+      const indexUrl = String(partMeta.indexUrl || `/reader/${book.id}/index.json`);
+      const indexPath = path.join(root, 'public', indexUrl.replace(/^\//, ''));
+      const indexData = readJson(indexPath);
+      if (!indexData) continue;
+      paths.push({ params: { book: book.id, part }, props: { book, partMeta, indexData } });
+    }
+  }
+  return paths;
+}
+
+const { book, partMeta, indexData } = Astro.props;
+const partNum = String(partMeta?.part || Astro.params.part || 1);
+const rawItems = indexData?.torahs || indexData?.items || indexData?.sections || indexData?.chapters || [];
+const items = rawItems.map((item, index) => {
+  const number = item.number ?? item.torah ?? item.chapter ?? item.section ?? item.displayNumber ?? index + 1;
+  return {
+    ...item,
+    number,
+    displayNumber: item.displayNumber ?? number,
+    title: item.title || item.englishTitle || item.name || '',
+    hebrewTitle: item.hebrewTitle || item.hebrew_name || item.hebrewName || '',
+    url: item.url || `/reader/${book.id}/${partNum}/${number}`,
+  };
+});
+const title = indexData?.title || book?.title || book?.id || 'Book';
+const hebrewTitle = indexData?.hebrewTitle || book?.hebrewTitle || '';
+const author = indexData?.author || book?.author || '';
+const hebrewAuthor = indexData?.hebrewAuthor || book?.hebrewAuthor || '';
+const subtitle = [author, hebrewAuthor].filter(Boolean).join(' · ');
+---
+
+<Layout title={`${title} — Directory`} description={`Complete directory for ${title}.`}>
+  <ReaderDirectory
+    title={title}
+    hebrewTitle={hebrewTitle}
+    subtitle={subtitle}
+    countLabel={`${items.length} entries`}
+    items={items}
+    hrefBase={`/reader/${book.id}/${partNum}/`}
+  />
+</Layout>

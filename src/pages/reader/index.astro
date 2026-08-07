@@ -105,18 +105,12 @@ function cleanCategoryTitle(title) {
 }
 
 function bookDirectoryUrl(book) {
-  if (book.id === 'likutay-moharan') return '/reader/likutay-moharan/1/';
   const firstPart = book.parts[0];
   if (!firstPart) return '/reader/';
   const partNumber = firstPart.part || 1;
-  const hasDedicatedPartDirectory = fs.existsSync(path.join(
-    process.cwd(), 'src/pages/reader', book.id, '[part]', 'index.astro'
-  ));
-  if (hasDedicatedPartDirectory) return `/reader/${book.id}/${partNumber}/`;
-  const index = loadJSON(firstPart.indexUrl.replace(/^\//, 'public/')) || {};
-  const firstEntry = (index.torahs || index.items || [])[0];
-  const firstNumber = firstEntry?.number ?? firstEntry?.torah ?? firstEntry?.displayNumber ?? 1;
-  return firstEntry?.url || `/reader/${book.id}/${partNumber}/${firstNumber}`;
+  // Every catalogued book has a part directory. Bespoke directory routes take
+  // precedence; src/pages/reader/[book]/[part]/index.astro covers the rest.
+  return `/reader/${book.id}/${partNumber}/`;
 }
 
 // Pre-load LM catalogs specifically (for backward compatibility with detailed listing)
