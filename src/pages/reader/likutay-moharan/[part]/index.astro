@@ -86,6 +86,14 @@ const overviewLinks = partNum === 1 ? [
   { href: '#torahs', text: 'Tinyana Torahs 1–125', he: 'תנינא א–קכה' },
   { href: '#manuscripts', text: 'Manuscripts', he: 'כתבי יד' },
 ];
+const superReaderTorahs = Array.from({ length: 18 }, (_, index) => {
+  const number = index + 1;
+  return {
+    number,
+    hebrew: ['א','ב','ג','ד','ה','ו','ז','ח','ט','י','יא','יב','יג','יד','טו','טז','יז','יח'][index],
+    href: `/reader/super/likutay-moharan/1/${number}`,
+  };
+});
 ---
 
 <Layout title={`${indexData?.title || 'Likutay Moharan'} — Complete Directory`} description={`Complete directory for Likutay Moharan part ${partNum}, including introductions, approbations, prefaces, sections, and teachings.`}>
@@ -111,24 +119,12 @@ const overviewLinks = partNum === 1 ? [
           <p>Aligned Hebrew–English, phrase study, layered commentaries, notes, and Pe’er HaLikutim facsimiles.</p>
         </div>
         <nav aria-label="Available Likutay Moharan Super Readers">
-          <a href="/reader/super/likutay-moharan/1/1">Torah 1 · תורה א →</a>
-          <a href="/reader/super/likutay-moharan/1/2">Torah 2 · תורה ב →</a>
-          <a href="/reader/super/likutay-moharan/1/3">Torah 3 · תורה ג →</a>
-          <a href="/reader/super/likutay-moharan/1/4">Torah 4 · תורה ד →</a>
-          <a href="/reader/super/likutay-moharan/1/5">Torah 5 · תורה ה →</a>
-          <a href="/reader/super/likutay-moharan/1/6">Torah 6 · תורה ו →</a>
-          <a href="/reader/super/likutay-moharan/1/7">Torah 7 · תורה ז →</a>
-          <a href="/reader/super/likutay-moharan/1/8">Torah 8 · תורה ח →</a>
-          <a href="/reader/super/likutay-moharan/1/9">Torah 9 · תורה ט →</a>
-          <a href="/reader/super/likutay-moharan/1/10">Torah 10 · תורה י →</a>
-          <a href="/reader/super/likutay-moharan/1/11">Torah 11 · תורה יא →</a>
-          <a href="/reader/super/likutay-moharan/1/12">Torah 12 · תורה יב →</a>
-          <a href="/reader/super/likutay-moharan/1/13">Torah 13 · תורה יג →</a>
-          <a href="/reader/super/likutay-moharan/1/14">Torah 14 · תורה יד →</a>
-          <a href="/reader/super/likutay-moharan/1/15">Torah 15 · תורה טו →</a>
-          <a href="/reader/super/likutay-moharan/1/16">Torah 16 · תורה טז →</a>
-          <a href="/reader/super/likutay-moharan/1/17">Torah 17 · תורה יז →</a>
-          <a href="/reader/super/likutay-moharan/1/18">Torah 18 · תורה יח →</a>
+          {superReaderTorahs.map((torah) => (
+            <a href={torah.href}>
+              <span>Torah {torah.number}</span>
+              <span lang="he" dir="rtl">תורה {torah.hebrew}</span>
+            </a>
+          ))}
         </nav>
       </section>
     )}
@@ -261,8 +257,14 @@ const overviewLinks = partNum === 1 ? [
   .lm-subtitle-he { margin-top: 2px; font-family:'Frank Ruhl Libre',serif; font-size:1.08rem; }
   .lm-actions { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top: 22px; }
   .lm-actions a, .lm-overview a { text-decoration:none; font-weight:800; border-radius: 999px; padding: 10px 15px; border: 1px solid #d6bd86; color:#12365e; background:#fff8e8; }
-  .lm-super-spotlight { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:20px; margin:20px 0 0; padding:20px 24px; border-radius:22px; background:linear-gradient(135deg,#173b67,#2c5f94); color:#fff; box-shadow:0 14px 34px rgba(20,52,93,.18); }
-  .lm-super-spotlight h3,.lm-super-spotlight p { margin:0; }.lm-super-spotlight h3 { margin-top:5px; font-size:clamp(1.25rem,2.7vw,1.75rem); }.lm-super-spotlight p { margin-top:5px; opacity:.82; line-height:1.45; }.lm-super-new { display:inline-flex; padding:4px 8px; border-radius:999px; background:#ffe08a; color:#173b67; font-size:.66rem; font-weight:950; letter-spacing:.12em; }.lm-super-spotlight nav { display:grid; gap:8px; }.lm-super-spotlight a { min-width:185px; padding:10px 14px; border-radius:13px; background:#fff8e8; color:#173b67; text-decoration:none; font-weight:900; text-align:center; }
+  .lm-super-spotlight { margin:20px 0 0; padding:20px 24px; border-radius:22px; background:linear-gradient(135deg,#173b67,#2c5f94); color:#fff; box-shadow:0 14px 34px rgba(20,52,93,.18); }
+  .lm-super-spotlight h3,.lm-super-spotlight p { margin:0; }
+  .lm-super-spotlight h3 { margin-top:5px; font-size:clamp(1.25rem,2.7vw,1.75rem); }
+  .lm-super-spotlight p { margin-top:5px; opacity:.82; line-height:1.45; }
+  .lm-super-new { display:inline-flex; padding:4px 8px; border-radius:999px; background:#ffe08a; color:#173b67; font-size:.66rem; font-weight:950; letter-spacing:.12em; }
+  .lm-super-spotlight nav { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:8px; margin-top:16px; }
+  .lm-super-spotlight a { min-width:0; padding:9px 8px; display:flex; flex-direction:column; gap:1px; border-radius:13px; background:#fff8e8; color:#173b67; text-decoration:none; font-weight:900; text-align:center; }
+  .lm-super-spotlight a span[lang="he"] { color:#76531b; font-family:'Frank Ruhl Libre',serif; font-size:1rem; }
   .lm-overview { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin: 20px 0 24px; }
   .lm-overview a { display:flex; flex-direction:column; align-items:center; gap:2px; background: #173b67; color: #ffe9b3; border-color: #173b67; }
   .lm-overview a span[lang="he"] { font-family:'Frank Ruhl Libre',serif; font-size:1.02rem; color:#fff5d7; }
@@ -294,5 +296,13 @@ const overviewLinks = partNum === 1 ? [
   :global(body.dark-mode) .lm-hero h2, :global(body.dark-mode) .lm-panel header p, :global(body.dark-mode) .lm-card em { color:#e4c077; }
   :global(body.dark-mode) .lm-subtitle, :global(body.dark-mode) .lm-card small { color:#aeb9c8; }
   :global(body.dark-mode) .lm-card { background:#1b2032; border-color:#3d4058; }
-  @media (max-width: 640px) { .lm-dir { padding:18px 10px 64px; } .lm-hero { border-radius:22px; } .lm-super-spotlight { grid-template-columns:1fr; padding:18px 16px; }.lm-super-spotlight a { min-width:0; }.lm-card-grid { grid-template-columns:1fr; } .lm-panel { border-radius:20px; } .lm-panel header { align-items:flex-start; } }
+  @media (max-width: 640px) {
+    .lm-dir { padding:18px 10px 64px; }
+    .lm-hero { border-radius:22px; }
+    .lm-super-spotlight { padding:18px 14px; }
+    .lm-super-spotlight nav { grid-template-columns:repeat(3,minmax(0,1fr)); }
+    .lm-card-grid { grid-template-columns:1fr; }
+    .lm-panel { border-radius:20px; }
+    .lm-panel header { align-items:flex-start; }
+  }
 </style>
