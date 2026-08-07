@@ -51,6 +51,12 @@ function walk(dir) {
 for (const file of walk(readerRoot).filter(file => file.endsWith('.astro'))) {
   const source = fs.readFileSync(file, 'utf8');
   if (source.includes('/reader#')) failures.push(`${path.relative(root, file)}: obsolete global Reader fragment link remains`);
+  for (const blockMatch of source.matchAll(/<div class="reader-breadcrumb">([\s\S]*?)<\/div>/g)) {
+    const links = [...blockMatch[1].matchAll(/<a\s+href=([^>]+)>/g)].map(match => match[1]);
+    if (links.length > 1 && /^["']\/reader\/?["']$/.test(links[1])) {
+      failures.push(`${path.relative(root, file)}: book breadcrumb still targets the global Reader`);
+    }
+  }
   if (/Book Index<\/a>/.test(source)) {
     const links = [...source.matchAll(/<a\s+href=([^>]+)>Book Index<\/a>/g)].map(match => match[1]);
     for (const href of links) {
