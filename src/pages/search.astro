@@ -5,14 +5,18 @@ import Layout from '../layouts/Layout.astro';
 ---
 
 <Layout title="Search" description="Search all Breslov books and teachings">
-  <meta http-equiv="refresh" content="0;url=/search-enhanced" />
   <div class="redirect-message">
     <h1>Redirecting to Enhanced Search...</h1>
-    <p>If you are not redirected automatically, <a href="/search-enhanced">click here</a>.</p>
+    <p>If you are not redirected automatically, <a id="enhancedSearchLink" href="/search-enhanced/">click here</a>.</p>
   </div>
-  
-  <script>
-    window.location.href = '/search-enhanced';
+
+  <script is:inline>
+    // Preserve the visitor's query and any language/filter parameters. Dropping
+    // `?q=` here made every old /search/ link silently become an empty search.
+    const target = `/search-enhanced/${window.location.search}${window.location.hash}`;
+    const fallbackLink = document.getElementById('enhancedSearchLink');
+    if (fallbackLink) fallbackLink.setAttribute('href', target);
+    window.location.replace(target);
   </script>
 </Layout>
 

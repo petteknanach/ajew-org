@@ -186,7 +186,7 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
       }
 
       const EN_STOP_WORDS = new Set([
-        'a','an','and','are','as','at','be','but','by','for','from','has','have','he','his','if','in','is','it','its','not','of','on','or','our','she','that','the','their','then','there','this','to','was','were','when','with','you','your','source','sources','details','comments','comment','bad','good'
+        'a','an','and','are','as','at','be','but','by','for','from','has','have','he','his','if','in','is','it','its','not','of','on','or','our','she','that','the','their','then','there','this','to','was','were','when','with','you','your','source','sources','details','comments','comment','good'
       ]);
       const HEBREW_STOP_WORDS = new Set(['את','על','של','עם','כל','בית']);
       const COMMON_TYPOS = new Map([
@@ -207,7 +207,36 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         ['youth', ['youth', 'childhood', 'young', 'boyhood']],
         ['sold', ['sold', 'sell', 'sale', 'selling']],
         ['sell', ['sell', 'sold', 'sale', 'selling']],
-        ['sign', ['sign', 'omen', 'indication']],
+        ['sign', ['sign', 'mark', 'marked', 'symbol', 'indication', 'omen']],
+        ['mark', ['mark', 'marked', 'sign', 'symbol', 'indication']],
+        ['marks', ['marks', 'mark', 'marked', 'sign', 'symbol']],
+        ['grain', ['grain', 'wheat', 'crop', 'produce']],
+        ['wheat', ['wheat', 'grain', 'crop', 'produce']],
+        ['tainted', ['tainted', 'spoiled', 'corrupted', 'poisoned', 'bad']],
+        ['spoiled', ['spoiled', 'tainted', 'corrupted', 'poisoned', 'bad']],
+        ['corrupted', ['corrupted', 'tainted', 'spoiled', 'poisoned', 'bad']],
+        ['poisoned', ['poisoned', 'tainted', 'spoiled', 'corrupted', 'bad']],
+        ['bad', ['bad', 'tainted', 'spoiled', 'corrupted', 'poisoned']],
+        ['madness', ['madness', 'mad', 'crazy', 'insane', 'insanity']],
+        ['mad', ['mad', 'madness', 'crazy', 'insane', 'insanity']],
+        ['crazy', ['crazy', 'mad', 'madness', 'insane', 'insanity']],
+        ['insane', ['insane', 'crazy', 'mad', 'madness', 'insanity']],
+        ['insanity', ['insanity', 'insane', 'crazy', 'mad', 'madness']],
+        ['forehead', ['forehead', 'brow']],
+        ['brow', ['brow', 'forehead']],
+        ['adviser', ['adviser', 'advisor', 'counselor', 'friend', 'second']],
+        ['advisor', ['advisor', 'adviser', 'counselor', 'friend', 'second']],
+        ['תבואה', ['תבואה', 'חטה', 'חיטה', 'חיטים', 'דגן']],
+        ['חטה', ['חטה', 'חיטה', 'חיטים', 'תבואה', 'דגן']],
+        ['חיטה', ['חיטה', 'חטה', 'חיטים', 'תבואה', 'דגן']],
+        ['חיטים', ['חיטים', 'חיטה', 'חטה', 'תבואה', 'דגן']],
+        ['סימן', ['סימן', 'רושם', 'אות']],
+        ['רושם', ['רושם', 'סימן', 'אות']],
+        ['משוגע', ['משוגע', 'משגע', 'משוגעים', 'משגעים', 'שגעון', 'מטורף']],
+        ['משגע', ['משגע', 'משוגע', 'משגעים', 'משוגעים', 'שגעון', 'מטורף']],
+        ['משוגעים', ['משוגעים', 'משגעים', 'משוגע', 'משגע', 'שגעון', 'מטורפים']],
+        ['משגעים', ['משגעים', 'משוגעים', 'משגע', 'משוגע', 'שגעון', 'מטורפים']],
+        ['מצח', ['מצח', 'מצחנו', 'מצחך', 'מצחי']],
         ['triangle', ['triangle', 'triangular', 'משולש']],
         ['triangular', ['triangular', 'triangle', 'משולש']],
         ['square', ['square', 'squared', 'quadrilateral', 'מרובע', 'רבוע']],

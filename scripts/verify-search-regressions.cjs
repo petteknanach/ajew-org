@@ -8,6 +8,26 @@ const failures = [];
 const requiredArtifacts = process.env.REQUIRE_SEARCH_ARTIFACTS === '1';
 const QUERY = 'הוא בבחינת דבר';
 const TARGET_PATH = '/reader/likutay-moharan/2/1';
+const KOKHVEI_PATH = '/reader/kokhvei-or/1/11';
+const KOKHVEI_SOURCE = 'public/reader/kokhvei-or/section-11.json';
+const KOKHVEI_QUERIES = [
+  { query: 'tainted grain', groups: [['tainted','spoiled','corrupted','poisoned','bad'], ['grain','wheat','crop','produce']] },
+  { query: 'spoiled grain', groups: [['spoiled','tainted','corrupted','poisoned','bad'], ['grain','wheat','crop','produce']] },
+  { query: 'corrupted grain', groups: [['corrupted','tainted','spoiled','poisoned','bad'], ['grain','wheat','crop','produce']] },
+  { query: 'poisoned grain', groups: [['poisoned','tainted','spoiled','corrupted','bad'], ['grain','wheat','crop','produce']] },
+  { query: 'bad wheat', groups: [['bad','tainted','spoiled','corrupted','poisoned'], ['wheat','grain','crop','produce']] },
+  { query: 'grain madness', groups: [['grain','wheat','crop','produce'], ['madness','mad','crazy','insane','insanity']] },
+  { query: 'wheat made everyone insane', groups: [['wheat','grain','crop','produce'], ['made'], ['everyone'], ['insane','crazy','mad','madness','insanity']], minimum: 2 },
+  { query: 'marks on their forehead', groups: [['marks','mark','marked','sign','symbol'], ['forehead','brow']] },
+  { query: 'sign on forehead', groups: [['sign','mark','marked','symbol','indication','omen'], ['forehead','brow']] },
+  { query: 'king adviser grain', groups: [['king'], ['adviser','advisor','counselor','friend','second'], ['grain','wheat','crop','produce']] },
+  { query: 'תבואה', groups: [['תבואה','חטה','חיטה','חיטים','דגן']] },
+  { query: 'חטה', groups: [['חטה','חיטה','חיטים','תבואה','דגן']] },
+  { query: 'מצח', groups: [['מצח','מצחנו','מצחך','מצחי']] },
+  { query: 'סימן', groups: [['סימן','רושם','אות']] },
+  { query: 'רושם', groups: [['רושם','סימן','אות']] },
+  { query: 'משוגע', groups: [['משוגע','משגע','משוגעים','משגעים','שגעון','מטורף']] }
+];
 
 function fail(message) { failures.push(message); }
 function normalize(value) {
@@ -68,6 +88,27 @@ mustContain('public/reader-script.js', 'Run only after the lookup table above ha
 mustContain('src/pages/reader/likutay-moharan/[part]/[torah].astro', 'Likutay Moharan ${partRoman}:${torahNum}', 'numbered Likutay Moharan teaching titles');
 mustContain('scripts/build-reader-search-shards.py', "algorithm': 'fnv1a32-utf8-bigram-le'", 'versioned phrase index builder');
 mustContain('scripts/build-light-search-index.py', "he_doc['m'] = segment_map", 'single-pass Reader location map generation');
+mustContain('src/pages/search.astro', 'window.location.replace(target)', 'classic search query-preserving redirect');
+mustContain('src/pages/search-enhanced.astro', "['tainted', ['tainted', 'spoiled', 'corrupted', 'poisoned', 'bad']]", 'tainted-grain conceptual expansion');
+mustContain('src/pages/search-enhanced.astro', "['forehead', ['forehead', 'brow']]", 'forehead conceptual expansion');
+mustContain('src/pages/search-enhanced.astro', "['תבואה', ['תבואה', 'חטה', 'חיטה', 'חיטים', 'דגן']]", 'Hebrew grain conceptual expansion');
+
+// Koachvay Or source alignment is itself a search prerequisite. The prior bad
+// alignment paired this Hebrew parable with an unrelated burial testament,
+// making correct English search impossible even when the index was healthy.
+const kokhveiSource = JSON.parse(fs.readFileSync(path.join(root, KOKHVEI_SOURCE), 'utf8'));
+const taintedSegment = (kokhveiSource.segments || []).find(segment => segment.index === 13);
+if (!taintedSegment) fail(`${KOKHVEI_SOURCE}: tainted-grain segment 13 is missing`);
+else {
+  const he = normalize(taintedSegment.he);
+  const en = normalize(taintedSegment.en);
+  for (const required of ['תבואה', 'משגע', 'סימן', 'מצח']) {
+    if (!he.includes(normalize(required))) fail(`${KOKHVEI_SOURCE}: Hebrew tainted-grain segment lost “${required}”`);
+  }
+  for (const required of ['tainted grain', 'king', 'crazy', 'forehead']) {
+    if (!en.includes(normalize(required))) fail(`${KOKHVEI_SOURCE}: English segment 13 is misaligned or lost “${required}”`);
+  }
+}
 
 // Canonical corpus regression: the reported phrase and target must remain in the
 // source index, independent of generated reader-search artifacts.
@@ -131,6 +172,56 @@ if (!fs.existsSync(phraseMetaPath)) {
       if (!normalize(doc.n).includes(normalize(QUERY))) { foundNonPhrase = true; break; }
     }
     if (!foundNonPhrase) fail('exact-vs-all regression fixture disappeared; choose a new known non-phrase all-word document');
+  }
+}
+
+// The generated Reader index must preserve both the Koachvay Or document and
+// the conceptual vocabulary a visitor is likely to use. This runs after index
+// generation in production builds and catches omissions, stale assets, and
+// query-expansion regressions before deployment.
+const readerMetaPath = path.join(root, 'public/reader-search/meta.json');
+if (!fs.existsSync(readerMetaPath)) {
+  if (requiredArtifacts) fail('generated Reader search metadata is missing');
+} else {
+  const meta = JSON.parse(fs.readFileSync(readerMetaPath, 'utf8'));
+  const targetId = meta.items.findIndex(item => item.p === KOKHVEI_PATH);
+  if (targetId < 0) fail(`reader-search metadata is missing ${KOKHVEI_PATH}`);
+  else {
+    const docPath = path.join(root, 'public/reader-search/docs', `${targetId}.json`);
+    if (!fs.existsSync(docPath)) {
+      if (requiredArtifacts) fail(`reader-search Koachvay Or document ${targetId}.json is missing`);
+    } else {
+      const doc = JSON.parse(fs.readFileSync(docPath, 'utf8'));
+      const normalizedDoc = normalize(doc.n || `${doc.he || ''} ${doc.en || ''}`);
+      const shardCache = new Map();
+      const postingsForTerm = term => {
+        const normalized = normalize(term);
+        const key = normalized[0];
+        if (!key) return [];
+        if (!shardCache.has(key)) {
+          const file = path.join(root, 'public/reader-search/shards', `${key}.json`);
+          shardCache.set(key, fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : {});
+        }
+        return shardCache.get(key)[normalized] || [];
+      };
+      for (const fixture of KOKHVEI_QUERIES) {
+        const matchedGroups = fixture.groups.filter(group => group.some(term => normalizedDoc.includes(normalize(term))));
+        const minimum = fixture.minimum || fixture.groups.length;
+        if (matchedGroups.length < minimum) {
+          fail(`Koachvay Or document does not semantically satisfy “${fixture.query}” (${matchedGroups.length}/${minimum} groups)`);
+          continue;
+        }
+        const groupLists = fixture.groups.map(group => {
+          const merged = new Set();
+          group.forEach(term => postingsForTerm(term).forEach(id => merged.add(id)));
+          return Array.from(merged);
+        }).filter(list => list.length);
+        const candidates = fixture.groups.length > 3
+          ? Array.from(new Set(groupLists.flat()))
+          : intersect(groupLists);
+        if (!candidates.includes(targetId)) fail(`generated postings do not retrieve Koachvay Or for “${fixture.query}”`);
+      }
+    }
   }
 }
 
