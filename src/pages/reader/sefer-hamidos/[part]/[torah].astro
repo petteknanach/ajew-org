@@ -407,6 +407,46 @@ function whatsappShareHref(url, text) {
       <script src="/reader-notes.js" is:inline></script>
       <script is:inline>
         (function () {
+          function shareActualImage(mediaUrl, shareUrl, title, button) {
+            if (!mediaUrl || !window.fetch) return;
+            var originalLabel = button && button.textContent;
+            var text = title + ' — ajew.org';
+            function label(message) {
+              if (!button) return;
+              button.textContent = message;
+              setTimeout(function () { button.textContent = originalLabel || 'Share actual image'; }, 2600);
+            }
+            fetch(mediaUrl).then(function (r) {
+              if (!r.ok) throw new Error('image fetch failed');
+              return r.blob();
+            }).then(function (blob) {
+              var ext = (mediaUrl.split('.').pop() || 'png').split('?')[0];
+              var filename = (title.replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '') || 'ajew-image') + '.' + ext;
+              var file = new File([blob], filename, { type: blob.type || 'image/png' });
+              // Mobile and supporting desktop browsers: send the image file itself.
+              if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                return navigator.share({ title: title, text: text, files: [file] });
+              }
+              // Desktop fallback: put the actual image pixels on the clipboard for pasting
+              // into Facebook, X, email, chat, etc. This is intentionally not a link copy.
+              if (navigator.clipboard && navigator.clipboard.write && window.ClipboardItem) {
+                return navigator.clipboard.write([new ClipboardItem({ [blob.type || 'image/png']: blob })]).then(function () {
+                  label('Image copied — paste to share');
+                });
+              }
+              // Last-resort desktop fallback keeps the actual file available for attachment.
+              var a = document.createElement('a');
+              a.href = mediaUrl;
+              a.download = filename;
+              document.body.appendChild(a);
+              a.click();
+              a.remove();
+              label('Image downloaded — attach to share');
+            }).catch(function () {
+              window.open(mediaUrl || shareUrl, '_blank', 'noopener');
+              label('Image opened — save or share');
+            });
+          }
           function setFocusMode(on) {
             var body = document.body;
             var container = document.querySelector('.reader-container');
@@ -442,23 +482,8 @@ function whatsappShareHref(url, text) {
             var url = share.getAttribute('data-share-url') || window.location.href;
             var mediaUrl = share.getAttribute('data-media-url') || '';
             var title = share.getAttribute('data-share-title') || document.title;
-            var text = title + ' — ajew.org';
-            if (navigator.share) {
-              if (mediaUrl && navigator.canShare && window.fetch) {
-                fetch(mediaUrl).then(function (r) { return r.blob(); }).then(function (blob) {
-                  var ext = (mediaUrl.split('.').pop() || 'png').split('?')[0];
-                  var file = new File([blob], (title.replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '') || 'ajew-image') + '.' + ext, { type: blob.type || 'image/png' });
-                  // Important: share the file by itself, not file+URL. Adding URL causes many apps
-                  // to treat it as link sharing and hides image-capable targets on mobile share sheets.
-                  if (navigator.canShare({ files: [file] })) return navigator.share({ title: title, text: text, files: [file] });
-                  return navigator.share({ title: title, text: text, url: mediaUrl || url });
-                }).catch(function () { navigator.share({ title: title, text: text, url: mediaUrl || url }).catch(function () {}); });
-              } else navigator.share({ title: title, text: text, url: mediaUrl || url }).catch(function () {});
-            } else {
-              var msg = text + '\n' + url;
-              if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(msg).catch(function () { window.prompt('Copy link:', msg); });
-              else window.prompt('Copy link:', msg);
-            }
+            shareActualImage(mediaUrl, url, title, share);
+            return;
           }
           function hydrateMediaVideo(video) {
             if (!video || video.src) return video && (video.currentSrc || video.src || video.getAttribute('data-video-src') || '');
@@ -487,12 +512,16 @@ function whatsappShareHref(url, text) {
             if (g) return g;
             g = document.createElement('div');
             g.id = 'sh-media-gallery-lightbox';
-            g.innerHTML = '<div class="sh-gallery-backdrop"></div><div class="sh-gallery-panel" role="dialog" aria-modal="true"><button class="sh-gallery-close" type="button">×</button><button class="sh-gallery-prev" type="button">‹</button><div class="sh-gallery-stage"></div><button class="sh-gallery-next" type="button">›</button><div class="sh-gallery-caption"></div><div class="sh-gallery-actions"><a class="sh-gallery-open" target="_blank" rel="noopener noreferrer">Open</a><a class="sh-gallery-share-x" target="_blank" rel="noopener noreferrer">X</a><a class="sh-gallery-share-tg" target="_blank" rel="noopener noreferrer">Telegram</a><a class="sh-gallery-share-wa" target="_blank" rel="noopener noreferrer">WhatsApp</a><a class="sh-gallery-download" download>Download</a></div></div>';
+            g.innerHTML = '<div class="sh-gallery-backdrop"></div><div class="sh-gallery-panel" role="dialog" aria-modal="true"><button class="sh-gallery-close" type="button">×</button><button class="sh-gallery-prev" type="button">‹</button><div class="sh-gallery-stage"></div><button class="sh-gallery-next" type="button">›</button><div class="sh-gallery-caption"></div><div class="sh-gallery-actions"><button class="sh-gallery-share-file" type="button">Share actual image</button><a class="sh-gallery-open" target="_blank" rel="noopener noreferrer">Open</a><a class="sh-gallery-share-x" target="_blank" rel="noopener noreferrer">X</a><a class="sh-gallery-share-tg" target="_blank" rel="noopener noreferrer">Telegram</a><a class="sh-gallery-share-wa" target="_blank" rel="noopener noreferrer">WhatsApp</a><a class="sh-gallery-download" download>Download</a></div></div>';
             document.body.appendChild(g);
             g.addEventListener('click', function (e) {
               if (e.target.closest('.sh-gallery-close') || e.target.classList.contains('sh-gallery-backdrop')) closeMediaGallery();
               if (e.target.closest('.sh-gallery-prev')) stepMediaGallery(-1);
               if (e.target.closest('.sh-gallery-next')) stepMediaGallery(1);
+              var fileShare = e.target.closest('.sh-gallery-share-file');
+              if (fileShare) {
+                shareActualImage(fileShare.getAttribute('data-media-url') || '', fileShare.getAttribute('data-share-url') || '', fileShare.getAttribute('data-share-title') || document.title, fileShare);
+              }
             });
             document.addEventListener('keydown', function (e) {
               if (!document.body.classList.contains('sh-gallery-open')) return;
@@ -514,6 +543,11 @@ function whatsappShareHref(url, text) {
             g.querySelector('.sh-gallery-download').href = item.src;
             var shareText = item.title + ' — ajew.org';
             var shareTarget = item.share || item.src;
+            var fileShare = g.querySelector('.sh-gallery-share-file');
+            fileShare.hidden = item.type !== 'image';
+            fileShare.setAttribute('data-media-url', item.src);
+            fileShare.setAttribute('data-share-url', shareTarget);
+            fileShare.setAttribute('data-share-title', item.title);
             g.querySelector('.sh-gallery-share-x').href = 'https://x.com/intent/post?url=' + encodeURIComponent(shareTarget) + '&text=' + encodeURIComponent(shareText);
             g.querySelector('.sh-gallery-share-tg').href = 'https://t.me/share/url?url=' + encodeURIComponent(shareTarget) + '&text=' + encodeURIComponent(shareText);
             g.querySelector('.sh-gallery-share-wa').href = 'https://wa.me/?text=' + encodeURIComponent(shareText + ' ' + shareTarget);
@@ -638,7 +672,7 @@ function whatsappShareHref(url, text) {
         .sh-gallery-next{grid-column:3;grid-row:1;}
         .sh-gallery-caption{grid-column:1/4;grid-row:2;text-align:center;color:#fff;font:700 1rem system-ui,-apple-system,sans-serif;}
         .sh-gallery-actions{grid-column:1/4;grid-row:3;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}
-        .sh-gallery-actions a{border-radius:999px;background:#fff;color:#111;text-decoration:none;font-weight:800;padding:.45rem .85rem;}
+        .sh-gallery-actions a,.sh-gallery-actions button{border:0;border-radius:999px;background:#fff;color:#111;text-decoration:none;font:800 .95rem system-ui,-apple-system,sans-serif;padding:.45rem .85rem;cursor:pointer;}
         @media(max-width:700px){
           .reader-toolbar{position:sticky;top:0;z-index:96;display:flex!important;flex-wrap:nowrap!important;gap:.45rem;overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;padding:.45rem .35rem;background:var(--reader-bg,#fff);box-shadow:0 2px 12px rgba(0,0,0,.08);scroll-snap-type:x proximity;}
           .reader-toolbar-group{flex:0 0 auto;display:flex;gap:.35rem;scroll-snap-align:start;}
@@ -663,7 +697,7 @@ function whatsappShareHref(url, text) {
           .sh-gallery-next{grid-column:2;grid-row:2;width:100%;height:44px;font-size:32px;}
           .sh-gallery-caption{grid-column:1/3;grid-row:3;font-size:.92rem;line-height:1.25;padding:0 .25rem;}
           .sh-gallery-actions{grid-column:1/3;grid-row:4;gap:6px;padding-bottom:4px;}
-          .sh-gallery-actions a{flex:1 1 42%;text-align:center;padding:.55rem .45rem;}
+          .sh-gallery-actions a,.sh-gallery-actions button{flex:1 1 42%;text-align:center;padding:.55rem .45rem;}
           body.reader-teachings-only .reader-container{padding:.55rem .35rem;max-width:100%;}
           body.reader-teachings-only .reader-content{display:block!important;}
           body.reader-teachings-only .reader-segment-pair{display:block!important;margin:0 0 1.2rem;}
