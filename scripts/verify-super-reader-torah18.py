@@ -107,6 +107,8 @@ def main():
     for path in discovery:
         text = path.read_text(encoding='utf-8-sig').replace('\x00', '')
         require('/reader/super/likutay-moharan/1/18' in text or '[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]' in text, f'Discovery missing in {path}')
+    part_directory = (ROOT / 'src/pages/reader/likutay-moharan/[part]/index.astro').read_text(encoding='utf-8-sig').replace('\x00', '')
+    require('Number(item.number) <= 18' in part_directory, 'Torah 18 directory availability badge missing')
 
     status = 'facsimiles ready' if actual_assets else 'facsimiles pending separately supervised conversion'
     print('Validated Torah 18: 54 Sefaria leaves + restored Rashbam (55 bilingual passages), separate Hebrew-only doxology, exact 28-segment in-scope crosswalk, 30 exact bilingual phrases, 9 study layers, Pettek 28 asymmetric, Biur 5, Parparos 12 Hebrew-only, Nanach 5, prayer 10, Pe’er pages 113–150; ' + status + '.')
