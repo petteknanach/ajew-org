@@ -212,11 +212,14 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         ['marks', ['marks', 'mark', 'marked', 'sign', 'symbol']],
         ['grain', ['grain', 'wheat', 'crop', 'produce']],
         ['wheat', ['wheat', 'grain', 'crop', 'produce']],
-        ['tainted', ['tainted', 'spoiled', 'corrupted', 'poisoned', 'bad']],
-        ['spoiled', ['spoiled', 'tainted', 'corrupted', 'poisoned', 'bad']],
-        ['corrupted', ['corrupted', 'tainted', 'spoiled', 'poisoned', 'bad']],
-        ['poisoned', ['poisoned', 'tainted', 'spoiled', 'corrupted', 'bad']],
-        ['bad', ['bad', 'tainted', 'spoiled', 'corrupted', 'poisoned']],
+        // Corrupted-food queries often describe the harmful effect rather than
+        // using an adjective in the source (for example, grain that makes its
+        // eaters crazy). Keep that normal visible vocabulary discoverable.
+        ['tainted', ['tainted', 'spoiled', 'corrupted', 'poisoned', 'bad', 'crazy', 'insane', 'madness']],
+        ['spoiled', ['spoiled', 'tainted', 'corrupted', 'poisoned', 'bad', 'crazy', 'insane', 'madness']],
+        ['corrupted', ['corrupted', 'tainted', 'spoiled', 'poisoned', 'bad', 'crazy', 'insane', 'madness']],
+        ['poisoned', ['poisoned', 'tainted', 'spoiled', 'corrupted', 'bad', 'crazy', 'insane', 'madness']],
+        ['bad', ['bad', 'tainted', 'spoiled', 'corrupted', 'poisoned', 'crazy', 'insane', 'madness']],
         ['madness', ['madness', 'mad', 'crazy', 'insane', 'insanity']],
         ['mad', ['mad', 'madness', 'crazy', 'insane', 'insanity']],
         ['crazy', ['crazy', 'mad', 'madness', 'insane', 'insanity']],
@@ -445,26 +448,30 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         return group.some(w => n.includes(w));
       }
 
-      function firstPosition(tokens, group) {
-        for (let i = 0; i < tokens.length; i++) {
-          if (group.some(w => tokens[i] === w || tokens[i].includes(w))) return i;
-        }
-        return -1;
-      }
-
       function proximityBonus(tokens, groups) {
         if (groups.length < 2) return 0;
-        const positions = groups.map(g => firstPosition(tokens, g));
-        if (positions.some(p => p < 0)) return 0;
-        const span = Math.max(...positions) - Math.min(...positions);
-        return Math.max(0, 260 - Math.min(260, span * 8));
+        // Use the tightest semantic window anywhere in the document. Looking
+        // only at each term's first occurrence penalized long Reader sections
+        // even when the actual matching concepts were adjacent later on.
+        const latest = new Array(groups.length).fill(-1);
+        let bestSpan = Infinity;
+        for (let i = 0; i < tokens.length; i++) {
+          groups.forEach((group, groupIndex) => {
+            if (group.some(w => tokens[i] === w || tokens[i].includes(w))) latest[groupIndex] = i;
+          });
+          if (latest.every(position => position >= 0)) {
+            bestSpan = Math.min(bestSpan, Math.max(...latest) - Math.min(...latest));
+          }
+        }
+        if (!Number.isFinite(bestSpan)) return 0;
+        return Math.max(0, 260 - Math.min(260, bestSpan * 8));
       }
 
       function bookPriorityScore(doc) {
         const p = doc.p || '';
         const c = doc.c || '';
         if (p.includes('/reader/likutay-moharan/')) return 220;
-        if (c === 'sefer-hamidos' || c === 'sichos-haran' || c === 'sipurey-maasiyos' || c === 'chayey-moharan') return 180;
+        if (c === 'sefer-hamidos' || c === 'sichos-haran' || c === 'sipurey-maasiyos' || c === 'chayey-moharan' || c === 'kokhvei-or') return 180;
         if (c === 'likutay-halachos' || c === 'likutay-tefilos' || c === 'likutay-eitzos') return 150;
         if (c === 'ebay-hanachal' || c === 'yisroel-saba' || c === 'sichos-chayay-saba' || c === 'saba-tape-transcripts') return 120;
         return 0;

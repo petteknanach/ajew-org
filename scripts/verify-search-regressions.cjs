@@ -11,11 +11,11 @@ const TARGET_PATH = '/reader/likutay-moharan/2/1';
 const KOKHVEI_PATH = '/reader/kokhvei-or/1/11';
 const KOKHVEI_SOURCE = 'public/reader/kokhvei-or/section-11.json';
 const KOKHVEI_QUERIES = [
-  { query: 'tainted grain', groups: [['tainted','spoiled','corrupted','poisoned','bad'], ['grain','wheat','crop','produce']] },
-  { query: 'spoiled grain', groups: [['spoiled','tainted','corrupted','poisoned','bad'], ['grain','wheat','crop','produce']] },
-  { query: 'corrupted grain', groups: [['corrupted','tainted','spoiled','poisoned','bad'], ['grain','wheat','crop','produce']] },
-  { query: 'poisoned grain', groups: [['poisoned','tainted','spoiled','corrupted','bad'], ['grain','wheat','crop','produce']] },
-  { query: 'bad wheat', groups: [['bad','tainted','spoiled','corrupted','poisoned'], ['wheat','grain','crop','produce']] },
+  { query: 'tainted grain', groups: [['tainted','spoiled','corrupted','poisoned','bad','crazy','insane','madness'], ['grain','wheat','crop','produce']] },
+  { query: 'spoiled grain', groups: [['spoiled','tainted','corrupted','poisoned','bad','crazy','insane','madness'], ['grain','wheat','crop','produce']] },
+  { query: 'corrupted grain', groups: [['corrupted','tainted','spoiled','poisoned','bad','crazy','insane','madness'], ['grain','wheat','crop','produce']] },
+  { query: 'poisoned grain', groups: [['poisoned','tainted','spoiled','corrupted','bad','crazy','insane','madness'], ['grain','wheat','crop','produce']] },
+  { query: 'bad wheat', groups: [['bad','tainted','spoiled','corrupted','poisoned','crazy','insane','madness'], ['wheat','grain','crop','produce']] },
   { query: 'grain madness', groups: [['grain','wheat','crop','produce'], ['madness','mad','crazy','insane','insanity']] },
   { query: 'wheat made everyone insane', groups: [['wheat','grain','crop','produce'], ['made'], ['everyone'], ['insane','crazy','mad','madness','insanity']], minimum: 2 },
   { query: 'marks on their forehead', groups: [['marks','mark','marked','sign','symbol'], ['forehead','brow']] },
@@ -89,7 +89,9 @@ mustContain('src/pages/reader/likutay-moharan/[part]/[torah].astro', 'Likutay Mo
 mustContain('scripts/build-reader-search-shards.py', "algorithm': 'fnv1a32-utf8-bigram-le'", 'versioned phrase index builder');
 mustContain('scripts/build-light-search-index.py', "he_doc['m'] = segment_map", 'single-pass Reader location map generation');
 mustContain('src/pages/search.astro', 'window.location.replace(target)', 'classic search query-preserving redirect');
-mustContain('src/pages/search-enhanced.astro', "['tainted', ['tainted', 'spoiled', 'corrupted', 'poisoned', 'bad']]", 'tainted-grain conceptual expansion');
+mustContain('src/pages/search-enhanced.astro', "['tainted', ['tainted', 'spoiled', 'corrupted', 'poisoned', 'bad', 'crazy', 'insane', 'madness']]", 'tainted-grain conceptual expansion');
+mustContain('src/pages/search-enhanced.astro', 'Use the tightest semantic window anywhere in the document', 'minimum-window proximity ranking');
+mustContain('src/pages/search-enhanced.astro', "c === 'kokhvei-or'", 'Kokhvei Or primary-work ranking');
 mustContain('src/pages/search-enhanced.astro', "['forehead', ['forehead', 'brow']]", 'forehead conceptual expansion');
 mustContain('src/pages/search-enhanced.astro', "['תבואה', ['תבואה', 'חטה', 'חיטה', 'חיטים', 'דגן']]", 'Hebrew grain conceptual expansion');
 
@@ -180,8 +182,9 @@ if (!fs.existsSync(phraseMetaPath)) {
 // generation in production builds and catches omissions, stale assets, and
 // query-expansion regressions before deployment.
 const readerMetaPath = path.join(root, 'public/reader-search/meta.json');
-if (!fs.existsSync(readerMetaPath)) {
-  if (requiredArtifacts) fail('generated Reader search metadata is missing');
+const completeReaderArtifacts = fs.existsSync(readerMetaPath) && fs.existsSync(phraseMetaPath);
+if (!completeReaderArtifacts) {
+  if (requiredArtifacts) fail('complete generated Reader search artifacts are missing');
 } else {
   const meta = JSON.parse(fs.readFileSync(readerMetaPath, 'utf8'));
   const targetId = meta.items.findIndex(item => item.p === KOKHVEI_PATH);
