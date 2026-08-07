@@ -705,6 +705,11 @@ def check_en_coverage():
                     data = json.load(open(os.path.join(root, f)))
                 except:
                     continue
+                # Explicitly reviewed Hebrew-only divisions are not missing translations.
+                # Kokhvei Or Section 15 (Biur HaLikutim) is locked as Hebrew-only by
+                # verify-kokhvei-or-alignment.cjs; counting it would reward unrelated EN.
+                if book_id == 'kokhvei-or' and data.get('hasEnglish') is False:
+                    continue
                 for s in data.get('segments', []):
                     if (s.get('he','') or '').strip(): total_he += 1
                     if (s.get('en','') or '').strip(): total_en += 1

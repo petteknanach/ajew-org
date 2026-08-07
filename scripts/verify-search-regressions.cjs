@@ -105,8 +105,8 @@ else {
   for (const required of ['תבואה', 'משגע', 'סימן', 'מצח']) {
     if (!he.includes(normalize(required))) fail(`${KOKHVEI_SOURCE}: Hebrew tainted-grain segment lost “${required}”`);
   }
-  for (const required of ['tainted grain', 'king', 'crazy', 'forehead']) {
-    if (!en.includes(normalize(required))) fail(`${KOKHVEI_SOURCE}: English segment 13 is misaligned or lost “${required}”`);
+  for (const required of ['grain', 'king', 'crazy', 'forehead']) {
+    if (!en.includes(required)) fail(`${KOKHVEI_SOURCE}: English segment 13 is misaligned or lost “${required}”`);
   }
 }
 

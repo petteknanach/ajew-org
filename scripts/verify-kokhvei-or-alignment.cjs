@@ -1,72 +1,81 @@
 #!/usr/bin/env node
-const crypto = require('crypto');
-const fs = require('fs');
-const path = require('path');
+/** Lock and validate the manually reviewed Kokhvei Or bilingual corpus. */
+const fs = require('node:fs');
+const path = require('node:path');
+const crypto = require('node:crypto');
 
 const root = path.resolve(__dirname, '..');
-const file = path.join(root, 'public/reader/kokhvei-or/section-11.json');
-const data = JSON.parse(fs.readFileSync(file, 'utf8'));
-const failures = [];
-const expectedHebrewHash = '3fe12160dd68ea954f5ae9a1456763356ce380cfbc476cfc69b42814f4c0aeb0';
-const expectedMarkers = new Map([
-  [1, 'The Conduct of Admoyr z"tl with the Aristocrats of Uman'],
-  [2, 'Further I found written in a volume'],
-  [3, 'I will seek him in whatever place he is'],
-  [4, 'Story 1 Mazal'],
-  [5, 'Story 3 A Man Stronger Than a Diamond'],
-  [6, 'Story 4 Kaptzin Pasha'],
-  [7, 'Story 5 The Flood'],
-  [8, 'Story 6 Ivan'],
-  [9, 'Story 7 Bitter Herbs'],
-  [10, 'Story 8 The Treasure Under the Bridge'],
-  [11, 'Story 9 The Turkey Prince'],
-  [12, 'The transcriber says'],
-  [13, 'Story 10 The Tainted Grain'],
-  [14, 'Story 11 The Deer'],
-  [15, 'Story 12 Appeasing the King'],
-  [16, 'The import is'],
-  [17, 'Story 13 The Book of Eylim'],
-  [18, 'five hundred students outstanding in Torah'],
-  [19, 'The Maharsha — Three Stories'],
-  [20, 'Story 14b — The Maharsha Sinks a Church'],
-  [21, "Story 14c — The Maharsha's Successor"],
-  [22, "Story 15 Guarding One's Eyes"],
-  [24, 'Story 16 The Rabbi Who Chose to Dress Like a Priest'],
-  [25, 'Parables from Rabbi Avraham'],
-  [26, 'this parable is very useful for the service of Hashem'],
-  [27, 'Said the transcriber'],
-  [28, 'the personal redemption of the person himself'],
-  [29, 'He keeps truth forever']
-]);
+const bookDir = path.join(root, 'public', 'reader', 'kokhvei-or');
+const manifestPath = path.join(bookDir, 'alignment-manifest.json');
+const sha = (value) => crypto.createHash('sha256').update(value, 'utf8').digest('hex');
+const fail = (message) => { throw new Error(`Kokhvei Or alignment regression: ${message}`); };
 
-if (!Array.isArray(data.segments) || data.segments.length !== expectedMarkers.size) {
-  failures.push(`expected ${expectedMarkers.size} canonical segments, found ${data.segments?.length ?? 'none'}`);
+if (!fs.existsSync(manifestPath)) fail('reviewed alignment-manifest.json is missing');
+const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+if (manifest.version !== 1 || !Array.isArray(manifest.sections) || manifest.sections.length !== 21) {
+  fail('manifest must lock exactly 21 sections at schema version 1');
 }
-const hebrewHash = crypto.createHash('sha256')
-  .update((data.segments || []).map(segment => segment.he || '').join(''), 'utf8')
-  .digest('hex');
-if (hebrewHash !== expectedHebrewHash) failures.push(`canonical Hebrew changed: ${hebrewHash}`);
 
-for (const [index, marker] of expectedMarkers) {
-  const segment = (data.segments || []).find(row => row.index === index);
-  if (!segment) {
-    failures.push(`segment ${index} is missing`);
-    continue;
+let total = 0;
+for (let number = 1; number <= 21; number += 1) {
+  const file = path.join(bookDir, `section-${number}.json`);
+  const data = JSON.parse(fs.readFileSync(file, 'utf8'));
+  const locked = manifest.sections.find((section) => section.number === number);
+  if (!locked) fail(`section ${number} is absent from the lock manifest`);
+  if (data.book !== 'kokhvei-or' || data.torah !== number) fail(`section ${number} metadata identity changed`);
+  if (!Array.isArray(data.segments) || data.segments.length !== locked.segmentCount) {
+    fail(`section ${number} segment count changed`);
   }
-  if (!String(segment.en || '').trim()) failures.push(`segment ${index} has no English`);
-  else if (!segment.en.includes(marker)) failures.push(`segment ${index} is misaligned; missing “${marker}”`);
-  if (segment.en === segment.he) failures.push(`segment ${index} repeats Hebrew as English`);
-  if (/^\s*Siman\s+\d+\./i.test(segment.en || '')) failures.push(`segment ${index} contains the known cross-book Siman misalignment`);
+  if (Boolean(data.hasEnglish) !== locked.hasEnglish) fail(`section ${number} hasEnglish changed`);
+  if (locked.pairs.length !== data.segments.length) fail(`section ${number} pair-lock count changed`);
+
+  const seenIndices = new Set();
+  data.segments.forEach((segment, offset) => {
+    const pair = locked.pairs[offset];
+    const index = segment.index;
+    const he = segment.he || '';
+    const en = segment.en || '';
+    if (index !== pair.index || seenIndices.has(index)) fail(`section ${number} stored index ${index} changed or is duplicated`);
+    seenIndices.add(index);
+    if (!he.trim()) fail(`section ${number} index ${index} has no canonical Hebrew`);
+    if (number === 15) {
+      if (en.trim()) fail(`Biur HaLikutim section 15 index ${index} must remain Hebrew-only`);
+    } else {
+      if (!en.trim()) fail(`section ${number} index ${index} has no English`);
+      if (en.trim() === he.trim()) fail(`section ${number} index ${index} copies Hebrew into English`);
+    }
+    if (sha(he) !== pair.heSha256 || sha(en) !== pair.enSha256 || sha(`${he}\x1f${en}`) !== pair.pairSha256) {
+      fail(`section ${number} index ${index} differs from the reviewed bilingual lock`);
+    }
+  });
+
+  const hebrewHash = sha(data.segments.map((segment) => segment.he || '').join('\x1e'));
+  const englishHash = sha(data.segments.map((segment) => segment.en || '').join('\x1e'));
+  if (hebrewHash !== locked.hebrewSha256 || englishHash !== locked.englishSha256) {
+    fail(`section ${number} aggregate language hash changed`);
+  }
+  total += data.segments.length;
 }
 
-const tainted = (data.segments || []).find(row => row.index === 13);
-for (const marker of ['king', 'grain', 'crazy', 'sign on our foreheads', 'look at your forehead']) {
-  if (!String(tainted?.en || '').toLowerCase().includes(marker)) failures.push(`tainted-grain segment lost “${marker}”`);
+const story = JSON.parse(fs.readFileSync(path.join(bookDir, 'section-11.json'), 'utf8')).segments.find((segment) => segment.index === 13);
+const plainHebrew = story.he.normalize('NFD').replace(/[\u0591-\u05C7]/g, '');
+for (const phrase of ['תבואה', 'משגע', 'מצח']) {
+  if (!plainHebrew.includes(phrase)) fail(`section 11 index 13 lost Hebrew tainted-grain anchor ${phrase}`);
+}
+for (const pattern of [/grain/i, /craz|insan|mad/i, /king/i, /forehead/i]) {
+  if (!pattern.test(story.en)) fail(`section 11 index 13 lost English tainted-grain concept ${pattern}`);
+}
+for (const forbidden of ['There is another version to this story', 'Siach Sarfey Kodesh 2:271']) {
+  if (story.en.includes(forbidden)) fail(`section 11 index 13 regained noncanonical alternate-version material: ${forbidden}`);
+}
+const section11English = JSON.parse(fs.readFileSync(path.join(bookDir, 'section-11.json'), 'utf8')).segments.map((segment) => segment.en || '');
+if (section11English.some((en) => /(^|\n)Stor(?:y|ies)\s+\d+[a-z]?(?:\b|\s*[,—-])/i.test(en))) {
+  fail('section 11 regained synthetic numbered-story wrappers');
 }
 
-if (failures.length) {
-  console.error('Kokhvei Or alignment verification failed:');
-  failures.forEach(message => console.error(` - ${message}`));
-  process.exit(1);
+const importer = fs.readFileSync(path.join(root, 'scripts', 'parse-koachvay-or-english.cjs'), 'utf8');
+if (!importer.includes('REFUSED: parse-koachvay-or-english.cjs used proportional block distribution')) {
+  fail('unsafe proportional importer is no longer hard-disabled');
 }
-console.log(`Kokhvei Or section 11 alignment verified: ${expectedMarkers.size} bilingual segments; Hebrew ${hebrewHash}.`);
+
+console.log(`Kokhvei Or alignment verified: ${total} canonical segments across 21 sections; Section 15 Hebrew-only; reviewed pair hashes locked.`);
