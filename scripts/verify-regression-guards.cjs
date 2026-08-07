@@ -283,22 +283,17 @@ for (const marker of [
   'Likutay Moharan Tinyana — Torahs 1–125',
 ]) mustContain(lmDirectoryUi, marker, `protected complete/bilingual directory marker ${marker}`);
 
-const lmPortalUi = 'src/pages/reader/likutay-moharan/index.astro';
+const lmRedirectUi = 'src/pages/reader/likutay-moharan/index.astro';
 for (const marker of [
-  'Complete Bilingual Directory',
-  'הספרייה השלמה בשתי שפות',
-  '286 teachings',
-  '125 teachings',
-  '/reader/likutay-moharan/1/',
-  '/reader/likutay-moharan/2/',
-]) mustContain(lmPortalUi, marker, `protected Likutay Moharan landing marker ${marker}`);
+  "Astro.redirect('/reader/likutay-moharan/1/', 301)",
+]) mustContain(lmRedirectUi, marker, `protected direct Likutay Moharan directory redirect ${marker}`);
 
 for (const marker of [
   'lm-reader-portal',
   'Open the complete directory',
   'All 411 teachings',
   'open={cat.ids.includes(\'likutay-moharan\')}',
-  'href="/reader/likutay-moharan/"',
+  'href="/reader/likutay-moharan/1/"',
 ]) mustContain('src/pages/reader/index.astro', marker, `main Reader Likutay Moharan portal marker ${marker}`);
 for (const marker of ['.lm-reader-portal', '.lm-reader-volume-grid', 'grid-template-columns:1fr']) {
   mustContain('src/styles/reader-index.css', marker, `main Reader Likutay Moharan styling marker ${marker}`);

@@ -620,7 +620,7 @@ function linkClass(bookId, totalPages) {
                 class="volume-section"
                 id={book.id}
                 data-book-title={book.title}
-                data-book-url={book.id === 'likutay-moharan' ? '/reader/likutay-moharan/' : `/reader/${book.id}/${book.parts[0]?.part || 1}/`}
+                data-book-url={book.id === 'likutay-moharan' ? '/reader/likutay-moharan/1/' : `/reader/${book.id}/${book.parts[0]?.part || 1}/`}
                 data-search={[book.title, book.hebrewTitle, book.author, book.hebrewAuthor, bookDescriptions[book.id], bookSearchAliases[book.id]].filter(Boolean).join(' ')}
                 style="margin-bottom: 30px;"
               >
@@ -632,7 +632,7 @@ function linkClass(bookId, totalPages) {
                         <h3>Likutay Moharan <span lang="he" dir="rtl">ליקוטי מוהר״ן</span></h3>
                         <p>All 411 teachings and every introduction, approbation, poetic preface, omission, and manuscript.</p>
                       </div>
-                      <a class="lm-reader-all" href="/reader/likutay-moharan/">Open the complete directory · פתח הכל →</a>
+                      <a class="lm-reader-all" href="/reader/likutay-moharan/1/">Open the complete directory · פתח הכל →</a>
                     </div>
                     <div class="lm-reader-volume-grid">
                       <a href="/reader/likutay-moharan/1/" class="lm-reader-volume-card">
