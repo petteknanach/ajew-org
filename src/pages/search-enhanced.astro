@@ -445,7 +445,8 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
       }
 
       function groupMatchesText(group, n) {
-        return group.some(w => n.includes(w));
+        const tokens = new Set(String(n || '').split(' ').filter(Boolean));
+        return group.some(w => tokens.has(w));
       }
 
       function proximityBonus(tokens, groups) {
@@ -457,7 +458,7 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         let bestSpan = Infinity;
         for (let i = 0; i < tokens.length; i++) {
           groups.forEach((group, groupIndex) => {
-            if (group.some(w => tokens[i] === w || tokens[i].includes(w))) latest[groupIndex] = i;
+            if (group.some(w => tokens[i] === w)) latest[groupIndex] = i;
           });
           if (latest.every(position => position >= 0)) {
             bestSpan = Math.min(bestSpan, Math.max(...latest) - Math.min(...latest));
@@ -568,16 +569,45 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         const useHebrew = /[\u0590-\u05FF]/.test(query);
         const raw = useHebrew ? (doc.he || doc.en || '') : (doc.en || doc.he || '');
         let range = normalizedRange(raw, query);
-        if (!range) {
-          for (const word of searchWords(query, { keepStopWords: true })) {
-            range = normalizedRange(raw, word);
-            if (range) break;
-          }
-        }
         const map = Array.isArray(doc.m) ? doc.m : [];
         const startColumn = useHebrew ? 2 : 4;
         const endColumn = useHebrew ? 3 : 5;
-        const row = range ? map.find(entry => entry[startColumn] <= range.start && entry[endColumn] >= range.end) : null;
+        let row = range ? map.find(entry => entry[startColumn] <= range.start && entry[endColumn] >= range.end) : null;
+        if (!range) {
+          // Pick the segment with the tightest complete semantic match before
+          // choosing a snippet. Falling back to the document's first typed
+          // word sent conceptual searches to unrelated early paragraphs.
+          const groups = queryTermGroups(query, { expand: true });
+          let best = null;
+          for (const entry of map) {
+            const segmentRaw = raw.slice(entry[startColumn], entry[endColumn]);
+            const normalized = normalizeForSearch(segmentRaw);
+            const tokens = normalized.split(' ').filter(Boolean);
+            const matched = groups.filter(group => groupMatchesText(group, normalized)).length;
+            const minimum = groups.length <= 3 ? groups.length : Math.max(2, Math.ceil(groups.length * 0.55));
+            if (matched < minimum) continue;
+            const score = matched * 1000 + proximityBonus(tokens, groups);
+            if (!best || score > best.score) best = { entry, segmentRaw, score };
+          }
+          if (best) {
+            row = best.entry;
+            const segmentOffset = row[startColumn];
+            for (const word of searchWords(query, { keepStopWords: true })) {
+              const localRange = normalizedRange(best.segmentRaw, word);
+              if (localRange) {
+                range = { start: segmentOffset + localRange.start, end: segmentOffset + localRange.end };
+                break;
+              }
+            }
+          }
+          if (!range) {
+            for (const word of searchWords(query, { keepStopWords: true })) {
+              range = normalizedRange(raw, word);
+              if (range) break;
+            }
+            if (!row && range) row = map.find(entry => entry[startColumn] <= range.start && entry[endColumn] >= range.end) || null;
+          }
+        }
         const segmentStart = row ? row[startColumn] : 0;
         const segmentEnd = row ? row[endColumn] : raw.length;
         const matchStart = range?.start ?? segmentStart;

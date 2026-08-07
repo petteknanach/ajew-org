@@ -92,6 +92,7 @@ mustContain('src/pages/search.astro', 'window.location.replace(target)', 'classi
 mustContain('src/pages/search-enhanced.astro', "['tainted', ['tainted', 'spoiled', 'corrupted', 'poisoned', 'bad', 'crazy', 'insane', 'madness']]", 'tainted-grain conceptual expansion');
 mustContain('src/pages/search-enhanced.astro', 'Use the tightest semantic window anywhere in the document', 'minimum-window proximity ranking');
 mustContain('src/pages/search-enhanced.astro', "c === 'kokhvei-or'", 'Kokhvei Or primary-work ranking');
+mustContain('src/pages/search-enhanced.astro', 'Pick the segment with the tightest complete semantic match', 'semantic result deep-link selection');
 mustContain('src/pages/search-enhanced.astro', "['forehead', ['forehead', 'brow']]", 'forehead conceptual expansion');
 mustContain('src/pages/search-enhanced.astro', "['תבואה', ['תבואה', 'חטה', 'חיטה', 'חיטים', 'דגן']]", 'Hebrew grain conceptual expansion');
 
