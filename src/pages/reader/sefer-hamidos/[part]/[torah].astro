@@ -308,14 +308,14 @@ function whatsappShareHref(url, text) {
                 <div class="sh-media-body">
                   <div class="sh-media-strip" aria-label={`Scrollable Sefer Hamidos Truth teaching ${seg.index} pictures`}>
                     {mediaBySegment.get(Number(seg.index)).images.map((img) => (
-                      <figure id={`media-${mediaSlug(img)}`} class={`sh-media-card sh-media-lang-${img.language === 'hebrew' ? 'he' : 'en'}`} data-media-url={mediaDirectUrl(img)} data-share-url={mediaShareUrl(img)}>
+                      <figure id={`media-${mediaSlug(img)}`} class={`sh-media-card sh-media-lang-${img.language === 'hebrew' ? 'he' : 'en'}`} data-media-url={mediaDirectUrl(img)} data-share-url={mediaShareUrl(img)} data-share-text={img.language === 'hebrew' ? (seg.he_nikud || seg.he || '') : (seg.en || seg.he || '')}>
                         <a href={img.path} target="_blank" rel="noopener">
                           <img src={img.path} alt={`Sefer Hamidos Truth ${seg.index} ${img.language} image ${img.variant}`} loading="lazy" />
                         </a>
                         <figcaption>
                           <span>{img.language} · {img.variant}</span>
                           <div class="sh-media-share-row">
-                            <button type="button" class="sh-media-share sh-media-share-file" data-share-title={mediaShareTitle(seg, img)} data-share-url={mediaShareUrl(img)} data-media-url={mediaDirectUrl(img)}>Share actual image</button>
+                            <button type="button" class="sh-media-share sh-media-share-file" data-share-title={mediaShareTitle(seg, img)} data-share-text={img.language === 'hebrew' ? (seg.he_nikud || seg.he || '') : (seg.en || seg.he || '')} data-share-url={mediaShareUrl(img)} data-media-url={mediaDirectUrl(img)}>Share actual image</button>
                             <a class="sh-media-share" href={xShareHref(mediaShareUrl(img), mediaShareTitle(seg, img))} target="_blank" rel="noopener noreferrer">X</a>
                             <a class="sh-media-share" href={telegramShareHref(mediaShareUrl(img), mediaShareTitle(seg, img))} target="_blank" rel="noopener noreferrer">Telegram</a>
                             <a class="sh-media-share" href={whatsappShareHref(mediaShareUrl(img), mediaShareTitle(seg, img))} target="_blank" rel="noopener noreferrer">WhatsApp</a>
@@ -407,10 +407,10 @@ function whatsappShareHref(url, text) {
       <script src="/reader-notes.js" is:inline></script>
       <script is:inline>
         (function () {
-          function shareActualImage(mediaUrl, shareUrl, title, button) {
+          function shareActualImage(mediaUrl, shareUrl, title, teaching, button) {
             if (!mediaUrl || !window.fetch) return;
             var originalLabel = button && button.textContent;
-            var text = title + ' — ajew.org';
+            var text = (teaching && teaching.trim() ? teaching.trim() + '\n\n' : '') + title + ' — ajew.org';
             function label(message) {
               if (!button) return;
               button.textContent = message;
@@ -430,8 +430,11 @@ function whatsappShareHref(url, text) {
               // Desktop fallback: put the actual image pixels on the clipboard for pasting
               // into Facebook, X, email, chat, etc. This is intentionally not a link copy.
               if (navigator.clipboard && navigator.clipboard.write && window.ClipboardItem) {
-                return navigator.clipboard.write([new ClipboardItem({ [blob.type || 'image/png']: blob })]).then(function () {
-                  label('Image copied — paste to share');
+                var clipboardPayload = {};
+                clipboardPayload[blob.type || 'image/png'] = blob;
+                clipboardPayload['text/plain'] = new Blob([text], { type: 'text/plain' });
+                return navigator.clipboard.write([new ClipboardItem(clipboardPayload)]).then(function () {
+                  label('Image + teaching copied — paste to share');
                 });
               }
               // Last-resort desktop fallback keeps the actual file available for attachment.
@@ -482,7 +485,8 @@ function whatsappShareHref(url, text) {
             var url = share.getAttribute('data-share-url') || window.location.href;
             var mediaUrl = share.getAttribute('data-media-url') || '';
             var title = share.getAttribute('data-share-title') || document.title;
-            shareActualImage(mediaUrl, url, title, share);
+            var teaching = share.getAttribute('data-share-text') || '';
+            shareActualImage(mediaUrl, url, title, teaching, share);
             return;
           }
           function hydrateMediaVideo(video) {
@@ -501,8 +505,9 @@ function whatsappShareHref(url, text) {
               var video = card.querySelector('video');
               var dataUrl = card.getAttribute('data-media-url') || '';
               var shareUrl = card.getAttribute('data-share-url') || '';
+              var teaching = card.getAttribute('data-share-text') || '';
               var out = [];
-              if (img) out.push({ type: 'image', src: dataUrl || img.currentSrc || img.src, title: title, share: shareUrl || (card.querySelector('.sh-media-share[data-share-url]') || {}).dataset?.shareUrl || dataUrl || img.src });
+              if (img) out.push({ type: 'image', src: dataUrl || img.currentSrc || img.src, title: title, teaching: teaching, share: shareUrl || (card.querySelector('.sh-media-share[data-share-url]') || {}).dataset?.shareUrl || dataUrl || img.src });
               if (video) { var vsrc = video.currentSrc || video.src || video.getAttribute('data-video-src') || ''; if (vsrc) out.push({ type: 'video', src: vsrc, title: title + ' video', share: vsrc }); }
               return out;
             });
@@ -520,7 +525,7 @@ function whatsappShareHref(url, text) {
               if (e.target.closest('.sh-gallery-next')) stepMediaGallery(1);
               var fileShare = e.target.closest('.sh-gallery-share-file');
               if (fileShare) {
-                shareActualImage(fileShare.getAttribute('data-media-url') || '', fileShare.getAttribute('data-share-url') || '', fileShare.getAttribute('data-share-title') || document.title, fileShare);
+                shareActualImage(fileShare.getAttribute('data-media-url') || '', fileShare.getAttribute('data-share-url') || '', fileShare.getAttribute('data-share-title') || document.title, fileShare.getAttribute('data-share-text') || '', fileShare);
               }
             });
             document.addEventListener('keydown', function (e) {
@@ -548,6 +553,7 @@ function whatsappShareHref(url, text) {
             fileShare.setAttribute('data-media-url', item.src);
             fileShare.setAttribute('data-share-url', shareTarget);
             fileShare.setAttribute('data-share-title', item.title);
+            fileShare.setAttribute('data-share-text', item.teaching || '');
             g.querySelector('.sh-gallery-share-x').href = 'https://x.com/intent/post?url=' + encodeURIComponent(shareTarget) + '&text=' + encodeURIComponent(shareText);
             g.querySelector('.sh-gallery-share-tg').href = 'https://t.me/share/url?url=' + encodeURIComponent(shareTarget) + '&text=' + encodeURIComponent(shareText);
             g.querySelector('.sh-gallery-share-wa').href = 'https://wa.me/?text=' + encodeURIComponent(shareText + ' ' + shareTarget);
