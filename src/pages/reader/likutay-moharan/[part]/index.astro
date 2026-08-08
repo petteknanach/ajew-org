@@ -86,7 +86,7 @@ const overviewLinks = partNum === 1 ? [
   { href: '#torahs', text: 'Tinyana Torahs 1–125', he: 'תנינא א–קכה' },
   { href: '#manuscripts', text: 'Manuscripts', he: 'כתבי יד' },
 ];
-const superReaderTorahs = Array.from({ length: 18 }, (_, index) => {
+const superReaderTorahs = Array.from({ length: 19 }, (_, index) => {
   const number = index + 1;
   return {
     number,
@@ -182,7 +182,7 @@ const superReaderTorahs = Array.from({ length: 18 }, (_, index) => {
                   <strong>{torahTitle(item)}</strong>
                   <em lang="he" dir="rtl">{item.hebrewTitle}</em>
                   {item.themes?.length > 0 && <small>{item.themes.slice(0, 4).join(' · ')}</small>}
-                  {Number(item.number) <= 18 && <span class="lm-super-available">NEW · Full Super Reader available</span>}
+                  {Number(item.number) <= 19 && <span class="lm-super-available">NEW · Full Super Reader available</span>}
                 </a>
               ))}
             </div>
