@@ -17,7 +17,7 @@ def page_rows():
  count=END-START+1; rows=[]
  for off,page in enumerate(range(START,END+1)):
   lo=1+(off*PASSAGES)//count; hi=max(lo,((off+1)*PASSAGES)//count); related=list(range(lo,min(PASSAGES,hi)+1))
-  rows.append({'sourcePage':page,'printedFolio':None,'image':f'/reader/super/likutay-moharan/1/19/peer-halikutim/page-{page}.webp','relatedSections':related,'relatedPassages':related,'extraction':{'status':'not-rendered','fragmentCounts':{}},'fragments':[]})
+  rows.append({'sourcePage':page,'printedFolio':None,'image':f'/reader/super/likutay-moharan/1/20/peer-halikutim/page-{page}.webp','relatedSections':related,'relatedPassages':related,'extraction':{'status':'not-rendered','fragmentCounts':{}},'fragments':[]})
  return rows
 def convert():
  import fitz
@@ -35,7 +35,7 @@ def main():
  if args.convert: convert()
  expected={f'page-{n}.webp' for n in range(START,END+1)}; present={p.name for p in OUT.glob('page-*.webp')}; complete=present==expected and (OUT/'peer-halikutim-torah-20.pdf').is_file()
  if present and present!=expected: raise RuntimeError('Partial Torah 20 Pe’er image set exists')
- manifest={'schemaVersion':2,'title':'Pe’er HaLikutim — Torah 20','hebrewTitle':'פאר הליקוטים — תורה כ','sourceFile':SOURCE.name,'sourcePageRange':[START,END],'hebrewBooksId':66038,'sourceUrl':'https://hebrewbooks.org/66038','downloadUrl':'https://download.hebrewbooks.org/downloadhandler.ashx?req=66038','sourceSha256':digest,'pdf':'/reader/super/likutay-moharan/1/19/peer-halikutim/peer-halikutim-torah-20.pdf','textStatus':'facsimile-only','facsimileStatus':'ready' if complete else 'pending-separately-supervised-conversion','textNotice':'The scan is authoritative. Torah 20 is PDF pages 151–231 inclusive (81 pages); page 232 begins Torah 20 and is excluded. Page relationships are navigational.','sectionDefinitions':SECTIONS,'pages':page_rows()}
+ manifest={'schemaVersion':2,'title':'Pe’er HaLikutim — Torah 20','hebrewTitle':'פאר הליקוטים — תורה כ','sourceFile':SOURCE.name,'sourcePageRange':[START,END],'hebrewBooksId':66038,'sourceUrl':'https://hebrewbooks.org/66038','downloadUrl':'https://download.hebrewbooks.org/downloadhandler.ashx?req=66038','sourceSha256':digest,'pdf':'/reader/super/likutay-moharan/1/20/peer-halikutim/peer-halikutim-torah-20.pdf','textStatus':'facsimile-only','facsimileStatus':'ready' if complete else 'pending-separately-supervised-conversion','textNotice':'The scan is authoritative. Torah 20 is PDF pages 232–300 inclusive (69 pages); page 301 begins Torah 21 and is excluded. Page relationships are navigational.','sectionDefinitions':SECTIONS,'pages':page_rows()}
  (OUT/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
  status='complete existing assets reused' if complete and not args.convert else 'converted' if complete else 'manifest only; facsimiles pending separately supervised conversion'
  print(f'Prepared Torah 20 Pe’er manifest: 69 pages (232–300), HebrewBooks 66038; {status}.')

@@ -63,6 +63,8 @@ def main():
  manifest=load(BASE/'peer-halikutim/manifest.json')
  require(manifest.get('hebrewBooksId')==66038 and manifest.get('sourceSha256')==SHA and manifest.get('sourcePageRange')==[232,300],'Pe’er constants mismatch')
  require(len(manifest.get('pages',[]))==69 and [x['sourcePage'] for x in manifest['pages']]==list(range(232,301)),'Pe’er exact page range mismatch')
+ require(manifest.get('pdf')=='/reader/super/likutay-moharan/1/20/peer-halikutim/peer-halikutim-torah-20.pdf' and all(x.get('image')==f'/reader/super/likutay-moharan/1/20/peer-halikutim/page-{x["sourcePage"]}.webp' for x in manifest['pages']),'Pe’er Torah 20 public paths mismatch')
+ require('Torah 20 is PDF pages 232–300 inclusive (69 pages); page 301 begins Torah 21' in manifest.get('textNotice',''),'Pe’er boundary notice mismatch')
  require(all('page-301.webp' not in x.get('image','') for x in manifest['pages']),'Pe’er page 301 leaked into manifest')
  expected_assets={f'page-{n}.webp' for n in range(232,301)}; actual_assets={p.name for p in (BASE/'peer-halikutim').glob('page-*.webp')}; pdf_ready=(BASE/'peer-halikutim/peer-halikutim-torah-20.pdf').is_file()
  require((not actual_assets and not pdf_ready) or (actual_assets==expected_assets and pdf_ready),'Pe’er asset readiness mismatch')
