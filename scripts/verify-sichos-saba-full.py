@@ -8,6 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 BOOK = ROOT / "public/reader/saba-tape-transcripts"
 TAPES = BOOK / "tapes"
 SOURCE = ROOT / "public/downloads/sichos-saba-complete-hebrew-ocr.txt"
+OCR_CORRECTIONS = ROOT / "scripts/data/saba-ocr-corrections.json"
 SIDE_HE = {"a": "א", "b": "ב"}
 
 
@@ -30,6 +31,27 @@ def main() -> None:
     front = json.loads((BOOK / "front-matter.json").read_text())
     existing_review_ledger = json.loads((BOOK / "existing-english-reviews.json").read_text())
     source = SOURCE.read_text(encoding="utf-8").replace("\r\n", "\n").replace("\r", "\n")
+    correction_ledger = json.loads(OCR_CORRECTIONS.read_text(encoding="utf-8")) if OCR_CORRECTIONS.exists() else {
+        "witness": {}, "corrections": []
+    }
+    corrections = {x.get("segmentId"): x for x in correction_ledger.get("corrections", [])}
+    if len(corrections) != len(correction_ledger.get("corrections", [])) or any(not re.fullmatch(r"\d+-[ab]-\d{3}", str(x)) for x in corrections):
+        fail("OCR correction ledger contains missing or duplicate segment IDs")
+    if correction_ledger.get("sourceOcrSha256") != sha(source):
+        fail("OCR correction ledger is bound to a different canonical OCR source")
+    correction_review = correction_ledger.get("review", {})
+    if correction_review.get("allCandidatesFirstPassReviewed") is not True or correction_review.get("allFirstPassApprovalsIndependentlyReviewed") is not True:
+        fail("OCR correction ledger lacks complete two-pass review provenance")
+    seen_corrections = set()
+    ledger_sha = sha(OCR_CORRECTIONS.read_text(encoding="utf-8")) if OCR_CORRECTIONS.exists() else None
+    if manifest.get("ocrCorrectionLedgerSha256") != ledger_sha:
+        fail("OCR correction ledger hash differs from manifest")
+    if manifest.get("ocrCorrectedSegments") != len(corrections):
+        fail("OCR corrected-segment count differs from manifest")
+    if manifest.get("ocrCorrections") != sum(len(x.get("changes", [])) for x in corrections.values()):
+        fail("OCR correction count differs from manifest")
+    if manifest.get("ocrCorrectionWitnessSha256") != correction_ledger.get("witness", {}).get("documentSha256"):
+        fail("OCR correction witness hash differs from manifest")
     expected = [(n, side) for n in range(1, 118) for side in ("a", "b")]
     files = sorted(TAPES.glob("tape-*.json"))
     if len(files) != 234: fail(f"expected 234 tape JSON files, got {len(files)}")
@@ -88,6 +110,22 @@ def main() -> None:
         for seg in segments:
             he, en = seg.get("he", "").strip(), seg.get("en", "").strip()
             if not he: fail(f"empty Hebrew segment {seg.get('id')} in {p.name}")
+            correction = corrections.get(seg.get("id"))
+            if correction:
+                seen_corrections.add(seg.get("id"))
+                if he != correction.get("correctedHe") or sha(he) != correction.get("correctedHeSha256"):
+                    fail(f"OCR correction output mismatch for {seg.get('id')}")
+                metadata = seg.get("ocrCorrection") or {}
+                if (
+                    metadata.get("sourceHeSha256") != correction.get("sourceHeSha256")
+                    or metadata.get("correctedHeSha256") != correction.get("correctedHeSha256")
+                    or metadata.get("changes") != len(correction.get("changes", []))
+                    or metadata.get("witnessSha256") != correction_ledger.get("witness", {}).get("documentSha256")
+                    or not correction.get("changes")
+                ):
+                    fail(f"OCR correction provenance mismatch for {seg.get('id')}")
+            elif seg.get("ocrCorrection"):
+                fail(f"unregistered OCR correction metadata on {seg.get('id')}")
             if len(he) > 1800: fail(f"oversized translation segment {seg.get('id')}: {len(he)} chars")
             status = seg.get("translationStatus")
             if status == "verified":
@@ -101,6 +139,8 @@ def main() -> None:
     if actual_order != expected: fail("tape JSON order or metadata is incomplete")
     reconstructed = front.get("sourceText", "") + "".join(slices)
     if reconstructed != source: fail("front matter plus 234 exact source slices does not reconstruct source")
+    if seen_corrections != set(corrections):
+        fail(f"OCR correction ledger entries not emitted: {sorted(set(corrections) - seen_corrections)}")
     if total_segments != manifest.get("totalSegments"):
         fail(f"segment count differs: {total_segments} vs manifest {manifest.get('totalSegments')}")
     if existing_english_sides != manifest.get("existingEnglishSides"):
