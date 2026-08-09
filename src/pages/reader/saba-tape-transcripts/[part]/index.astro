@@ -1,6 +1,5 @@
 ---
 import Layout from '../../../../layouts/Layout.astro';
-import ReaderDirectory from '../../../../components/ReaderDirectory.astro';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -8,8 +7,6 @@ export function getStaticPaths() {
   return [{ params: { part: '1' } }];
 }
 
-const { part } = Astro.params;
-const partNum = parseInt(part || '1');
 let indexData = null;
 try {
   const idxPath = path.join(process.cwd(), 'public/reader/saba-tape-transcripts/index.json');
@@ -17,17 +14,108 @@ try {
 } catch (e) {
   console.error('Error loading Saba Tape Transcripts index:', e);
 }
-const totalSections = indexData?.torahs?.length || 0;
+const tapes = indexData?.tapes || [];
+const completeTranslations = (indexData?.torahs || []).filter((x) => x.translationStatus === 'verified').length;
+function sideLabel(side) { return side.side === 'a' ? 'Side A / צד א׳' : 'Side B / צד ב׳'; }
+function statusLabel(side) {
+  if (side.sourceStatus === 'missing') return 'Source missing';
+  if (side.sourceStatus === 'partial') return 'Partial source';
+  if (side.translationStatus === 'verified') return 'English verified';
+  if (side.translationStatus === 'existing_review_pending') return 'Existing English — review pending';
+  if (side.translationStatus === 'in_progress') return 'Translation in progress';
+  return 'Hebrew available';
+}
 ---
 
-<Layout title="Saba Tape Transcripts — Directory" description="Individual directory for the Saba Tape Transcripts.">
-  <ReaderDirectory
-    title="Saba Tape Transcripts"
-    hebrewTitle="תמלולי קלטות סבא"
-    subtitle="Recordings and English transcripts of Saba Yisroel Dov Odesser"
-    countLabel={`${totalSections} tapes`}
-    items={indexData?.torahs || []}
-    hrefBase={`/reader/saba-tape-transcripts/${partNum}/`}
-    itemKind="tapes"
-  />
+<Layout title="Sichos Saba — Complete 117-Tape PDF and OCR Archive" description="Complete 2,072-page Sichos Saba PDF and Hebrew OCR, divided into all 234 tape sides from Tape 1A through Tape 117B.">
+  <main class="tape-directory">
+    <header class="tape-hero">
+      <p class="eyebrow">A Jew Torah Reader</p>
+      <h1>Sichos Saba — Complete Tape Archive</h1>
+      <h2 lang="he" dir="rtl">שיחות סבא — הקלטות והתמלול המלא</h2>
+      <p>The complete 2,072-page source PDF and its ABBYY OCR, divided into all 117 two-sided tapes. Open each side immediately as searchable Reader text, its original PDF pages, or an exact OCR download.</p>
+      <div class="stats" aria-label="Collection statistics">
+        <b>117 tapes</b><b>234 sides</b><b>{completeTranslations} verified English sides</b>
+      </div>
+      <div class="hero-links">
+        <a href="/reader">← All Books</a>
+        <a href={indexData?.completePdfUrl || '#'} target="_blank" rel="noopener">Original PDF · 2,072 pages</a>
+        <a href={indexData?.downloadUrl || '#'} download>Complete OCR · TXT</a>
+        <a href={indexData?.completeOcrDocxUrl || '#'} download>Complete OCR · DOCX</a>
+      </div>
+    </header>
+
+    <aside class="source-notice">
+      <strong>Source and completeness notice</strong>
+      <span>{indexData?.sourceNotice}</span>
+      <span>No missing wording is invented. Missing and partial tape sides are visibly marked, and every translated segment is checked for omissions, truncation, and summarization.</span>
+    </aside>
+
+    <section class="tape-grid" aria-label="Tapes and sides">
+      {tapes.map((tape) => (
+        <article class="tape-card">
+          <header><span>Tape</span><b>{tape.tapeNumber}</b><em lang="he" dir="rtl">קלטת {tape.tapeNumber}</em></header>
+          <div class="side-links">
+            {tape.sides.map((side) => (
+              <div class={`side-panel status-${side.sourceStatus}`}>
+                <a href={side.url} class="side-link">
+                  <span class="side-name">{sideLabel(side)}</span>
+                  <small>{side.paragraphs} OCR segments · pages {side.sourceResources?.pageStart}–{side.sourceResources?.pageEnd}</small>
+                  <mark>{statusLabel(side)}</mark>
+                </a>
+                <div class="side-downloads">
+                  <a href={side.sourceResources?.pdfUrl} target="_blank" rel="noopener">PDF section</a>
+                  <a href={side.sourceResources?.textUrl} download>OCR text</a>
+                </div>
+              </div>
+            ))}
+          </div>
+        </article>
+      ))}
+    </section>
+  </main>
 </Layout>
+
+<style>
+  .tape-directory { max-width:1180px; margin:0 auto; padding:clamp(24px,4vw,52px) 16px 80px; color:#182b43; }
+  .tape-hero { text-align:center; padding:clamp(32px,6vw,70px) 20px; border:1px solid rgba(193,153,83,.42); border-radius:28px; background:radial-gradient(circle at 18% 15%,rgba(255,237,176,.65),transparent 27%),linear-gradient(135deg,#fffaf0,#f2e4c8 55%,#e3c58f); box-shadow:0 20px 60px rgba(24,43,67,.14); }
+  .eyebrow { margin:0 0 8px; text-transform:uppercase; letter-spacing:.2em; font-size:.72rem; font-weight:900; color:#8b662f; }
+  .tape-hero h1 { margin:0; font-family:'Cinzel',Georgia,serif; font-size:clamp(2.1rem,6vw,4.6rem); line-height:1; color:#14345d; }
+  .tape-hero h2 { margin:10px 0; font-family:'Frank Ruhl Libre',serif; font-size:clamp(1.7rem,5vw,3.4rem); color:#7a561d; }
+  .tape-hero > p:not(.eyebrow) { max-width:760px; margin:12px auto; color:#4f6071; line-height:1.6; }
+  .stats,.hero-links { display:flex; flex-wrap:wrap; justify-content:center; gap:9px; margin-top:18px; }
+  .stats b,.hero-links a { padding:8px 14px; border-radius:999px; border:1px solid rgba(129,92,32,.3); background:rgba(255,255,255,.6); color:#14345d; text-decoration:none; }
+  .hero-links a { font-weight:800; }
+  .source-notice { margin:22px 0; padding:15px 18px; display:grid; gap:5px; border-left:5px solid #b7842c; border-radius:10px; background:#fff8e8; color:#5c4a2b; line-height:1.5; }
+  .source-notice strong { color:#173b67; }
+  .tape-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px; }
+  .tape-card { overflow:hidden; border:1px solid #ddc99e; border-radius:17px; background:#fffdf8; box-shadow:0 7px 22px rgba(20,52,93,.08); }
+  .tape-card > header { display:flex; align-items:baseline; gap:8px; padding:13px 15px; background:linear-gradient(135deg,#173b67,#27598f); color:white; }
+  .tape-card > header span { font-size:.75rem; text-transform:uppercase; letter-spacing:.12em; opacity:.8; }
+  .tape-card > header b { font-size:1.55rem; color:#ffe9b3; }
+  .tape-card > header em { margin-left:auto; font-style:normal; font-family:'Frank Ruhl Libre',serif; font-size:1.05rem; }
+  .side-links { display:grid; grid-template-columns:1fr 1fr; }
+  .side-panel { min-width:0; border-right:1px solid #eadcbc; }
+  .side-panel:last-child { border-right:0; }
+  .side-link { min-width:0; padding:13px 13px 8px; display:flex; flex-direction:column; gap:4px; color:#173b67; text-decoration:none; }
+  .side-link:hover { background:#fff4d8; }
+  .side-name { font-weight:900; }
+  .side-link small { color:#837258; }
+  .side-link mark { width:max-content; max-width:100%; padding:3px 7px; border-radius:999px; background:#e7f1df; color:#38632d; font-size:.68rem; font-weight:800; }
+  .status-missing mark { background:#f8d9d5; color:#87382f; }
+  .status-partial mark { background:#fae5b7; color:#79521a; }
+  .side-downloads { display:flex; gap:5px; padding:0 10px 10px; }
+  .side-downloads a { flex:1; padding:5px 4px; border:1px solid #d9c28e; border-radius:7px; color:#664b20; background:#fffaf0; text-align:center; text-decoration:none; font-size:.68rem; font-weight:800; }
+  .side-downloads a:hover { background:#fff0c9; }
+  :global(body.dark-mode) .tape-directory { color:#dce6f3; }
+  :global(body.dark-mode) .tape-hero { background:linear-gradient(135deg,#171b2c,#2b2a2a); border-color:#4a3d2a; }
+  :global(body.dark-mode) .tape-card { background:#202436; border-color:#3d4058; }
+  :global(body.dark-mode) .source-notice { background:#29251c; color:#d7cbb7; }
+  :global(body.dark-mode) .side-link { color:#dce8ff; border-color:#3d4058; }
+  :global(body.dark-mode) .side-panel { border-color:#3d4058; }
+  :global(body.dark-mode) .side-downloads a { color:#e6d5ae; background:#29271f; border-color:#5b4b2e; }
+  :global(body.dark-mode) .side-link:hover { background:#2c3045; }
+  @media(max-width:640px){
+    .tape-directory{padding:18px 9px 60px;overflow-x:hidden}.tape-hero{padding:28px 11px;border-radius:20px}.tape-hero h1{font-size:clamp(1.8rem,10vw,2.7rem);overflow-wrap:anywhere}.tape-grid{grid-template-columns:1fr;gap:10px}.side-link{padding:12px 9px}.side-name{font-size:.9rem}.stats b,.hero-links a{font-size:.8rem}.source-notice{margin:14px 0;padding:13px}
+  }
+</style>

@@ -7,16 +7,25 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 export function getStaticPaths() {
-  const paths = [];
-  for (let torah = 1; torah <= 28; torah++) {
-    paths.push({ params: { part: '1', torah: String(torah) } });
-  }
-  return paths;
+  const readerDir = path.join(process.cwd(), 'public/reader/saba-tape-transcripts');
+  const index = JSON.parse(fs.readFileSync(path.join(readerDir, 'index.json'), 'utf8'));
+  const canonical = (index.torahs || []).map((entry) => ({
+    params: { part: '1', torah: String(entry.number) },
+  }));
+  // Preserve the 28 historical numeric URLs while the complete tape/side
+  // collection uses stable slugs such as 37-b.
+  const legacy = Array.from({ length: 28 }, (_, i) => ({
+    params: { part: '1', torah: String(i + 1) },
+  }));
+  return [...canonical, ...legacy];
 }
 
 const { part, torah } = Astro.params;
 const partNum = parseInt(part);
-const torahNum = parseInt(torah);
+const torahSlug = String(torah || '');
+const torahNum = parseInt(torahSlug);
+const canonicalMatch = torahSlug.match(/^(\d+)-([ab])$/);
+const isCanonical = Boolean(canonicalMatch);
 const bookSlug = 'saba-tape-transcripts';
 const bookName = 'Saba Tape Transcripts';
 
@@ -28,13 +37,16 @@ let error = null;
 try {
   const readerDir = path.join(process.cwd(), `public/reader/${bookSlug}`);
   indexData = JSON.parse(fs.readFileSync(path.join(readerDir, 'index.json'), 'utf8'));
-  const filePath = path.join(readerDir, `chapter-${torahNum}.json`);
+  const filePath = canonicalMatch
+    ? path.join(readerDir, 'tapes', `tape-${String(canonicalMatch[1]).padStart(3, '0')}-${canonicalMatch[2]}.json`)
+    : path.join(readerDir, `chapter-${torahNum}.json`);
   const raw = fs.readFileSync(filePath, 'utf8');
   torahData = JSON.parse(raw);
 
-  const audioMapPath = path.join(readerDir, 'audio-map.json');
-  const audioMap = JSON.parse(fs.readFileSync(audioMapPath, 'utf8'));
-  const candidate = audioMap.entries?.find((entry) => entry.chapter === torahNum);
+  const audioMap = JSON.parse(fs.readFileSync(path.join(readerDir, 'audio-map.json'), 'utf8'));
+  const candidate = canonicalMatch
+    ? audioMap.entries?.find((entry) => entry.tape === Number(canonicalMatch[1]) && entry.side === canonicalMatch[2])
+    : audioMap.entries?.find((entry) => entry.chapter === torahNum);
   if (candidate?.verified === true && /^https:\/\//.test(candidate.url || '')) {
     audioMapping = candidate;
   }
@@ -44,13 +56,20 @@ try {
 
 if (!torahData && !error) error = 'Content not available';
 
-const totalSections = indexData?.torahs?.length || 28;
+const prevUrl = isCanonical
+  ? torahData?.navigation?.prevUrl
+  : (torahNum > 1 ? `/reader/${bookSlug}/1/${torahNum - 1}` : null);
+const nextUrl = isCanonical
+  ? torahData?.navigation?.nextUrl
+  : (torahNum < 28 ? `/reader/${bookSlug}/1/${torahNum + 1}` : null);
+const hasMatchedAudio = Boolean(audioMapping);
+const resources = isCanonical ? torahData?.sourceResources : null;
 
 const pageTitle = torahData
   ? `${torahData.title} - ${bookName} | AJEW.org`
   : 'Tape Not Found';
 const pageDesc = torahData
-  ? `Listen to and read the transcript of ${torahData.title} from Saba Yisroel (Rabbi Yisroel Dov Odesser). English transcript with original audio recording.`
+  ? `Read ${torahData.title} from Saba Yisroel (Rabbi Yisroel Dov Odesser), with the complete Hebrew transcript and verified English translation where available.`
   : '';
 ---
 
@@ -71,10 +90,27 @@ const pageDesc = torahData
         {torahData.title}
       </div>
 
+      {isCanonical && (
+        <aside class={`source-status source-${torahData.sourceStatus || 'available'}`}>
+          <strong>{torahData.hebrewTitle}</strong>
+          {torahData.sourceStatus === 'missing' ? (
+            <span>This tape side is explicitly marked missing in the supplied Hebrew source; no wording has been invented.</span>
+          ) : torahData.sourceStatus === 'partial' ? (
+            <span>The source states that much of this side is missing or inaudible. The available wording is reproduced without expansion.</span>
+          ) : torahData.translationStatus === 'existing_review_pending' && torahData.existingEnglish?.url ? (
+            <span>Complete available Hebrew source. <a href={torahData.existingEnglish.url}>Open the existing English tape-side translation</a>; alignment and completeness review is pending.</span>
+          ) : torahData.language === 'yi' ? (
+            <span>This side is primarily Yiddish. English translation will be verified against the Yiddish source.</span>
+          ) : (
+            <span>Complete available Hebrew source. English translation status: {torahData.translationStatus || 'not started'}.</span>
+          )}
+        </aside>
+      )}
 
 
-<!-- Unified Audio Player -->
-<div id="audio-controls" style="margin:0 auto 12px auto; max-width:700px; font-family:'Open Sans',sans-serif;">
+
+<!-- English TTS controls remain available on the 28 historical translated pages. -->
+{!isCanonical && (<div id="audio-controls" style="margin:0 auto 12px auto; max-width:700px; font-family:'Open Sans',sans-serif;">
   <div style="display:flex; gap:0; border-radius:8px; overflow:hidden; border:1px solid var(--reader-border,#ddd);">
     <button id="audio-btn-he" onclick="toggleAudio('he')" 
       style="flex:1; padding:8px 12px; border:none; cursor:pointer; font-size:0.85em; font-weight:600;
@@ -122,7 +158,7 @@ const pageDesc = torahData
       <div id="en-progress-bar" style="height:100%; width:0%; background:#7fff7f;"></div>
     </div>
   </div>
-</div>
+</div>)}
 <script src="/unified-audio.js" defer></script>
 
       <div class="reader-toolbar">
@@ -149,41 +185,46 @@ const pageDesc = torahData
         </div>
       </div>
 
-      <!-- Exact audio is rendered only after this transcript/tape mapping is verified. -->
-      {audioMapping ? (
-        <div class="saba-audio-player">
-          <div class="audio-header">
-            <span class="audio-icon">🎙️</span>
-            <span class="audio-title">Listen to Saba — Original Recording</span>
+      {isCanonical && resources && (
+        <section class="source-resources" aria-label="Source PDF and OCR downloads">
+          <div>
+            <span class="resource-kicker">Original source · pages {resources.pageStart}–{resources.pageEnd}</span>
+            <strong>{torahData.hebrewTitle}</strong>
+            <small>{resources.pageCount} PDF pages · exact ABBYY OCR section</small>
           </div>
-          <audio id="saba-audio" controls preload="metadata" class="audio-element">
-            <source src={audioMapping.url} type="audio/mpeg" />
-            Your browser does not support audio playback.
-          </audio>
-          <p class="audio-note">Verified original recording for {torahData.title}</p>
-        </div>
-      ) : (
-        <div class="saba-audio-player audio-pending" role="status">
-          <div class="audio-header">
-            <span class="audio-icon">🎙️</span>
-            <span class="audio-title">Original Recording</span>
-          </div>
-          <p class="audio-note">The exact tape-side recording is being identified and verified before it is linked here.</p>
-        </div>
+          <nav>
+            <a class="resource-primary" href={resources.pdfUrl} target="_blank" rel="noopener">Open this section PDF</a>
+            <a href={resources.textUrl} download>Download section OCR</a>
+            <a href={resources.completePdfUrl} target="_blank" rel="noopener">Complete 2,072-page PDF</a>
+          </nav>
+        </section>
       )}
 
+      <!-- Original audio appears only after exact tape-side identity is verified. -->
+      {hasMatchedAudio && (<div class="saba-audio-player">
+        <div class="audio-header">
+          <span class="audio-icon">🎙️</span>
+          <span class="audio-title">Listen to Saba — Original Recording</span>
+        </div>
+        <audio id="saba-audio" controls preload="none" class="audio-element">
+          <source src={audioMapping.url} type="audio/mpeg" />
+          Your browser does not support audio playback.
+        </audio>
+        <p class="audio-note">Verified original recording for {torahData.hebrewTitle || torahData.title}</p>
+      </div>)}
+
       <div class="reader-nav">
-        {torahNum > 1 ? (
-          <a href={`/reader/${bookSlug}/1/${torahNum - 1}`} data-dir="prev">&larr; Previous</a>
+        {prevUrl ? (
+          <a href={prevUrl} data-dir="prev">&larr; Previous</a>
         ) : <span class="disabled">&larr; Previous</span>}
         <a href="/reader">Library</a>
         <a href={`/reader/${bookSlug}/${partNum}`}>Book Index</a>
-        {torahNum < totalSections ? (
-          <a href={`/reader/${bookSlug}/1/${torahNum + 1}`} data-dir="next">Next &rarr;</a>
+        {nextUrl ? (
+          <a href={nextUrl} data-dir="next">Next &rarr;</a>
         ) : <span class="disabled">Next &rarr;</span>}
       </div>
 
-      <div class="reader-content mode-english">
+      <div class={`reader-content ${isCanonical ? 'mode-hebrew' : 'mode-english'}`}>
         <div class="reader-content-original">
         {torahData.segments.map((seg, i) => (
           <div class="reader-segment-pair" id={`seg-${i + 1}`}>
@@ -217,13 +258,13 @@ const pageDesc = torahData
       </div>
 
       <div class="reader-nav">
-        {torahNum > 1 ? (
-          <a href={`/reader/${bookSlug}/1/${torahNum - 1}`} data-dir="prev">&larr; Previous</a>
+        {prevUrl ? (
+          <a href={prevUrl} data-dir="prev">&larr; Previous</a>
         ) : <span class="disabled">&larr; Previous</span>}
         <a href="/reader">Library</a>
         <a href={`/reader/${bookSlug}/${partNum}`}>Book Index</a>
-        {torahNum < totalSections ? (
-          <a href={`/reader/${bookSlug}/1/${torahNum + 1}`} data-dir="next">Next &rarr;</a>
+        {nextUrl ? (
+          <a href={nextUrl} data-dir="next">Next &rarr;</a>
         ) : <span class="disabled">Next &rarr;</span>}
       </div>
     </div>
@@ -237,6 +278,44 @@ const pageDesc = torahData
 <script defer src="/reader-script.js?v=4"></script>
 
 <style>
+  .source-status {
+    max-width: 760px;
+    margin: 0 auto 1rem;
+    padding: .85rem 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: .45rem .8rem;
+    align-items: baseline;
+    border: 1px solid #d8c08f;
+    border-radius: 10px;
+    background: #fff9e9;
+    color: #59451f;
+    line-height: 1.45;
+  }
+  .source-status strong { color: #173b67; font-family: 'Frank Ruhl Libre', serif; }
+  .source-missing { border-color: #b75b52; background: #fff1ef; }
+  .source-partial { border-color: #c68a33; background: #fff6e3; }
+  .source-resources {
+    max-width: 760px;
+    margin: 0 auto 1rem;
+    padding: 1rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 1rem;
+    align-items: center;
+    border: 1px solid #d5bc83;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #fffdf7, #f7ead0);
+    box-shadow: 0 8px 24px rgba(30, 52, 80, .08);
+  }
+  .source-resources > div { display: grid; gap: .2rem; min-width: 0; }
+  .resource-kicker { color: #81602c; font-size: .72rem; font-weight: 900; letter-spacing: .04em; text-transform: uppercase; }
+  .source-resources strong { color: #173b67; font: 700 1.35rem 'Frank Ruhl Libre', serif; }
+  .source-resources small { color: #6d604b; }
+  .source-resources nav { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .45rem; }
+  .source-resources a { padding: .6rem .8rem; border: 1px solid #b89555; border-radius: 9px; color: #173b67; background: rgba(255,255,255,.72); font-size: .82rem; font-weight: 800; text-decoration: none; }
+  .source-resources a:hover { background: #fff; transform: translateY(-1px); }
+  .source-resources .resource-primary { color: #fff; background: #1c4b7c; border-color: #1c4b7c; }
   .saba-audio-player {
     max-width: 700px;
     margin: 1rem auto;
@@ -279,4 +358,12 @@ const pageDesc = torahData
   }
   [data-theme="night"] .audio-title { color: #d4b896; }
   [data-theme="night"] .audio-note { color: #8a7050; }
+  :global(body.dark-mode) .source-resources { background: linear-gradient(135deg,#1d2431,#28251e); border-color:#5b4b2e; }
+  :global(body.dark-mode) .source-resources strong { color:#e5edfb; }
+  :global(body.dark-mode) .source-resources small { color:#c6bda9; }
+  @media (max-width: 700px) {
+    .source-resources { grid-template-columns: 1fr; padding: .85rem; }
+    .source-resources nav { justify-content: stretch; }
+    .source-resources a { flex: 1 1 100%; text-align: center; }
+  }
 </style>
