@@ -24,6 +24,8 @@ The proportional importer is now hard-disabled. It must not be used to write Rea
 - `scripts/verify-search-regressions.cjs` validates generated-index retrieval for the tainted-grain story under realistic English and Hebrew variants.
 - `npm run verify:base` invokes the alignment verifier before every production build.
 
-## Special case
+## Special cases
 
 Section 15, **Biur HaLikutim**, is Hebrew-only. Imported English in that section was unrelated and was removed rather than falsely presented as a translation.
+
+Section 11 segment 13 preserves the printed Hebrew grain parable and its direct English translation, followed by a clearly labeled alternate tradition requested for publication. The alternate version is copied from NaNach's “Stories and Parables of Rabbi Nachman of Breslov,” identifies its source as *Siach Sarfey Kodesh* 2:271, and includes the source page's explanatory references to Sanhedrin 97a, Isaiah 59:15, and Sefer Hamidos, Truth 31. It is an explicitly labeled parallel tradition and commentary, not a translation of additional Hebrew in the canonical segment.

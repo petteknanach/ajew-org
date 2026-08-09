@@ -65,8 +65,18 @@ for (const phrase of ['תבואה', 'משגע', 'מצח']) {
 for (const pattern of [/grain/i, /craz|insan|mad/i, /king/i, /forehead/i]) {
   if (!pattern.test(story.en)) fail(`section 11 index 13 lost English tainted-grain concept ${pattern}`);
 }
-for (const forbidden of ['There is another version to this story', 'Siach Sarfey Kodesh 2:271']) {
-  if (story.en.includes(forbidden)) fail(`section 11 index 13 regained noncanonical alternate-version material: ${forbidden}`);
+for (const required of [
+  'Alternate Version — the King Refuses the Grain (Siach Sarfey Kodesh 2:271)',
+  'the king vehemently rejected this',
+  'That is no reason to eat the grain that makes people crazy',
+  'So they would prepare grain for themselves',
+  'Sanhedrin 97a',
+  'Isaiah (59:15)',
+  'Truth item #31',
+  'One who wants to turn away from evil, and sees that there is no truth in the world, makes himself as a fool',
+  'http://naanaach.blogspot.com/p/stories-and-parables-of-rabbi-nachman.html',
+]) {
+  if (!story.en.includes(required)) fail(`section 11 index 13 lost authorized alternate-version detail: ${required}`);
 }
 const section11English = JSON.parse(fs.readFileSync(path.join(bookDir, 'section-11.json'), 'utf8')).segments.map((segment) => segment.en || '');
 if (section11English.some((en) => /(^|\n)Stor(?:y|ies)\s+\d+[a-z]?(?:\b|\s*[,—-])/i.test(en))) {
