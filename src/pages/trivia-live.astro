@@ -1,0 +1,152 @@
+---
+import Layout from '../layouts/Layout.astro';
+const pageTitle = 'Live Na Nach Trivia — Play Together';
+const pageDesc = 'Create a live Breslov Torah trivia room and play the same questions in real time with friends anywhere.';
+---
+
+<Layout title={pageTitle} description={pageDesc}>
+  <main class="live-page" id="liveTrivia">
+    <header class="live-hero">
+      <div class="hero-fire" aria-hidden="true">🔥</div>
+      <div>
+        <a class="back-link" href="/trivia">← Solo & leaderboard trivia</a>
+        <p class="eyebrow">LIVE MULTIPLAYER · 2–50 PLAYERS</p>
+        <h1>Na Nach <span>Trivia Together</span></h1>
+        <p>One room. One clock. The same Torah questions for friends playing anywhere in the world.</p>
+        <p class="hebrew" lang="he" dir="rtl">נ נח נחמ נחמן מאומן</p>
+      </div>
+      <div class="live-van" aria-label="Na Nach trivia van">🚐<i>🔥</i><i>🔥</i><i>🔥</i></div>
+    </header>
+
+    <section class="setup-grid" id="setupView">
+      <article class="panel create-panel">
+        <span class="panel-number">1</span>
+        <h2>Create a room</h2>
+        <p>You host, choose the round, then share the six-character room code.</p>
+        <label>Host nickname<input id="hostName" maxlength="24" autocomplete="nickname" placeholder="Breslover613" /></label>
+        <fieldset><legend>Question categories</legend>
+          <div class="category-grid" id="hostCategories">
+            <label><input type="checkbox" value="teachings" checked /> 📜 Teachings</label>
+            <label><input type="checkbox" value="avodah" /> 🕯️ Avodah</label>
+            <label><input type="checkbox" value="history" /> 🗺️ History</label>
+            <label><input type="checkbox" value="personages" /> 🧔 Personages</label>
+            <label><input type="checkbox" value="nanach" checked /> 🔥 Na Nach & Saba</label>
+            <label><input type="checkbox" value="books" /> 📚 Books</label>
+          </div>
+        </fieldset>
+        <div class="option-row">
+          <label>Level<select id="hostLevel"><option value="mixed">Mixed Fire</option><option value="beginner">Beginner</option><option value="scholar">Scholar</option><option value="fire">Fire</option></select></label>
+          <label>Length<select id="hostLength"><option value="5">5 questions</option><option value="10" selected>10 questions</option><option value="15">15 questions</option><option value="20">20 questions</option></select></label>
+        </div>
+        <button class="primary" id="createRoom">Create live room →</button>
+      </article>
+
+      <article class="panel join-panel">
+        <span class="panel-number">2</span>
+        <h2>Join a room</h2>
+        <p>Enter the code from your host. No account or email is needed.</p>
+        <label>Room code<input class="room-input" id="joinCode" maxlength="6" autocomplete="off" inputmode="text" placeholder="FIRE26" /></label>
+        <label>Your nickname<input id="joinName" maxlength="24" autocomplete="nickname" placeholder="NaNachFriend" /></label>
+        <button class="secondary" id="joinRoom">Join the fire →</button>
+        <div class="how-it-works"><strong>How live play works</strong><ol><li>Everyone joins before the host starts.</li><li>Answer before the shared clock expires.</li><li>Correct speed and streaks build your score.</li></ol></div>
+      </article>
+    </section>
+
+    <section class="lobby panel" id="lobbyView" hidden>
+      <p class="eyebrow">ROOM READY</p>
+      <h2>Invite your crew</h2>
+      <div class="room-code" id="roomCode">------</div>
+      <p>Share this code or invite link. The match begins only when the host starts it.</p>
+      <div class="lobby-actions"><button id="shareRoom">📨 Share invite</button><button id="copyRoom">📋 Copy link</button></div>
+      <div class="lobby-grid"><div><h3>Players <span id="playerCount">1</span>/50</h3><ol class="player-list" id="lobbyPlayers"></ol></div><div class="start-box"><span>🚐</span><strong id="lobbyMessage">Waiting for another player…</strong><button class="primary" id="startMatch" hidden>Start the match 🔥</button></div></div>
+    </section>
+
+    <section class="game-view" id="gameView" hidden>
+      <div class="game-bar"><div><small>ROOM</small><b id="gameCode">------</b></div><div class="progress"><span id="questionNumber">Question 1 of 10</span><i><b id="progressFill"></b></i></div><div class="clock" id="clock">30</div></div>
+      <div class="game-grid">
+        <article class="question-panel panel">
+          <div class="question-meta"><span id="questionCategory">Teachings</span><span id="questionLevel">Mixed</span><span id="phaseLabel">ANSWER NOW</span></div>
+          <h2 id="liveQuestion">Preparing the first question…</h2>
+          <div class="live-answers" id="liveAnswers"></div>
+          <div class="live-feedback" id="liveFeedback" hidden><strong id="feedbackTitle">Answer revealed</strong><p id="feedbackExplanation"></p><a id="feedbackSource" target="_blank" rel="noopener">Open source ↗</a></div>
+        </article>
+        <aside class="score-panel panel"><p class="eyebrow">LIVE STANDINGS</p><h2>The Fire Board</h2><ol id="liveScores"></ol><p>Scores are calculated by the server. Fast correct answers and streaks earn more.</p></aside>
+      </div>
+    </section>
+
+    <section class="finish panel" id="finishView" hidden>
+      <div class="finish-fire">🔥</div><p class="eyebrow">MATCH COMPLETE</p><h2>The fire is dancing!</h2><div class="podium" id="podium"></div><h3>Final standings</h3><ol class="final-standings" id="finalStandings"></ol><button class="primary" id="newLiveRoom">Play another live match</button><a href="/trivia">Return to solo trivia</a>
+    </section>
+    <p class="global-status" id="globalStatus" role="alert" aria-live="polite"></p>
+  </main>
+
+  <script is:inline>
+  (()=>{
+    const API='/api/trivia/room';
+    const $=id=>document.getElementById(id);
+    const session={code:'',token:'',isHost:false,timer:null,polling:false,lastQuestion:''};
+    const categoryNames={teachings:'Teachings',avodah:'Avodah',history:'History',personages:'Personages',nanach:'Na Nach & Saba',books:'Books'};
+    const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const validName=s=>/^[A-Za-z0-9 _-]{2,24}$/.test(s);
+    function status(text,bad=false){$('globalStatus').textContent=text||'';$('globalStatus').classList.toggle('bad',bad)}
+    async function api(path,body){
+      const options=body===undefined?{headers:{Accept:'application/json'}}:{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)};
+      const r=await fetch(API+path,options);let d={};try{d=await r.json()}catch{}if(!r.ok)throw new Error(d.error||'The live trivia server did not respond.');return d;
+    }
+    function saveSession(){sessionStorage.setItem('ajewLiveTrivia',JSON.stringify({code:session.code,token:session.token,isHost:session.isHost}))}
+    function enterRoom(d){session.code=d.code;session.token=d.playerToken;session.isHost=!!d.isHost;saveSession();const u=new URL(location.href);u.searchParams.set('room',session.code);history.replaceState(null,'',u);$('setupView').hidden=true;$('lobbyView').hidden=false;$('roomCode').textContent=session.code;$('gameCode').textContent=session.code;status('');poll()}
+    $('createRoom').addEventListener('click',async()=>{
+      const nickname=$('hostName').value.trim(),categories=[...document.querySelectorAll('#hostCategories input:checked')].map(x=>x.value);
+      if(!validName(nickname))return status('Use a nickname with 2–24 letters, numbers, spaces, hyphens or underscores.',true);
+      if(!categories.length)return status('Choose at least one category.',true);
+      $('createRoom').disabled=true;status('Creating your live room…');
+      try{enterRoom(await api('/create',{nickname,categories,level:$('hostLevel').value,length:Number($('hostLength').value)}))}catch(e){status(e.message,true)}finally{$('createRoom').disabled=false}
+    });
+    $('joinCode').addEventListener('input',e=>e.target.value=e.target.value.toUpperCase().replace(/[^A-Z2-9]/g,'').slice(0,6));
+    $('joinRoom').addEventListener('click',async()=>{
+      const code=$('joinCode').value.trim().toUpperCase(),nickname=$('joinName').value.trim();
+      if(!/^[A-Z2-9]{6}$/.test(code))return status('Enter the six-character room code.',true);
+      if(!validName(nickname))return status('Use a nickname with 2–24 letters, numbers, spaces, hyphens or underscores.',true);
+      $('joinRoom').disabled=true;status('Joining the room…');
+      try{enterRoom(await api('/join',{code,nickname}))}catch(e){status(e.message,true)}finally{$('joinRoom').disabled=false}
+    });
+    function inviteLink(){return location.origin+'/trivia-live?room='+encodeURIComponent(session.code)}
+    $('copyRoom').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(inviteLink());status('Invite link copied.')}catch{status('Copy this link: '+inviteLink())}});
+    $('shareRoom').addEventListener('click',async()=>{const data={title:'Na Nach Trivia Together',text:'Join my live Na Nach Trivia room '+session.code,url:inviteLink()};try{if(navigator.share)await navigator.share(data);else{await navigator.clipboard.writeText(inviteLink());status('Invite link copied.')}}catch{}});
+    $('startMatch').addEventListener('click',async()=>{try{$('startMatch').disabled=true;render(await api('/start',{code:session.code,playerToken:session.token}))}catch(e){status(e.message,true);$('startMatch').disabled=false}});
+    $('newLiveRoom').addEventListener('click',()=>{sessionStorage.removeItem('ajewLiveTrivia');location.href='/trivia-live'});
+    async function answer(index){try{document.querySelectorAll('.answer-choice').forEach(b=>b.disabled=true);render(await api('/answer',{code:session.code,playerToken:session.token,selected:index}))}catch(e){status(e.message,true)}}
+    function renderPlayers(players,lobby=false){
+      const target=lobby?$('lobbyPlayers'):$('liveScores');target.innerHTML='';players.forEach((p,i)=>{const li=document.createElement('li');li.className=(p.isYou?'you ':'')+(p.answered?'answered':'');li.innerHTML=`<span>${i<3?['🥇','🥈','🥉'][i]:'#'+(i+1)}</span><b>${esc(p.nickname)}${p.isYou?' <small>YOU</small>':''}</b>${lobby?'<em>ready</em>':`<strong>${Number(p.score).toLocaleString()}</strong>`}`;target.appendChild(li)})
+    }
+    function renderQuestion(s){
+      const q=s.question;if(!q)return;$('questionNumber').textContent=`Question ${s.questionIndex+1} of ${s.totalQuestions}`;$('progressFill').style.width=`${(s.questionIndex/s.totalQuestions)*100}%`;$('questionCategory').textContent=categoryNames[q.category]||q.category;$('questionLevel').textContent=q.level.toUpperCase();$('liveQuestion').textContent=q.prompt;
+      const reveal=s.phase==='reveal';$('phaseLabel').textContent=reveal?'ANSWER REVEALED':'ANSWER NOW';$('phaseLabel').classList.toggle('revealed',reveal);$('liveAnswers').innerHTML='';q.options.forEach((text,i)=>{const b=document.createElement('button');b.className='answer-choice';b.innerHTML=`<span>${i+1}</span><b></b>`;b.querySelector('b').textContent=text;if(reveal){if(i===q.correctIndex)b.classList.add('correct');else if(i===s.yourAnswer)b.classList.add('wrong')}b.disabled=reveal||s.yourAnswer!==null;b.addEventListener('click',()=>answer(i));$('liveAnswers').appendChild(b)});
+      $('liveFeedback').hidden=!reveal;if(reveal){const right=s.yourAnswer===q.correctIndex;$('feedbackTitle').textContent=s.yourAnswer<0?'Time expired':right?`Correct! +${s.yourGain} points`:'Learn it and own it';$('feedbackExplanation').textContent=q.explanation;$('feedbackSource').href=q.sourceUrl;$('feedbackSource').textContent='Open '+q.sourceLabel+' source ↗'}
+      const left=Math.max(0,Math.ceil(s.phaseEnds-s.serverTime));$('clock').textContent=left;$('clock').classList.toggle('danger',left<7&&!reveal);
+    }
+    function render(s){
+      status('');renderPlayers(s.players,s.phase==='lobby');
+      if(s.phase==='lobby'){$('setupView').hidden=true;$('lobbyView').hidden=false;$('gameView').hidden=true;$('finishView').hidden=true;$('roomCode').textContent=s.code;$('playerCount').textContent=s.players.length;$('lobbyMessage').textContent=s.players.length<2?'Waiting for another player…':s.isHost?'Everyone is ready. Start when you are!':'Ready — waiting for the host.';$('startMatch').hidden=!s.isHost;$('startMatch').disabled=s.players.length<2;return}
+      $('lobbyView').hidden=true;
+      if(s.phase==='finished'){$('gameView').hidden=true;$('finishView').hidden=false;$('podium').innerHTML=s.players.slice(0,3).map((p,i)=>`<article class="place-${i+1}"><span>${i===0?'🏆':i===1?'🥈':'🥉'}</span><b>${esc(p.nickname)}</b><strong>${Number(p.score).toLocaleString()}</strong><small>${p.correct}/${s.totalQuestions} correct</small></article>`).join('');$('finalStandings').innerHTML=s.players.map((p,i)=>`<li class="${p.isYou?'you':''}"><span>#${i+1}</span><b>${esc(p.nickname)}${p.isYou?' <small>YOU</small>':''}</b><strong>${Number(p.score).toLocaleString()}</strong><em>${p.correct}/${s.totalQuestions}</em></li>`).join('');return}
+      $('gameView').hidden=false;$('finishView').hidden=true;renderPlayers(s.players,false);renderQuestion(s)
+    }
+    async function poll(){
+      clearTimeout(session.timer);if(!session.code||session.polling)return;session.polling=true;
+      try{const s=await api('/state',{code:session.code,playerToken:session.token});render(s);session.timer=setTimeout(poll,s.phase==='finished'?4000:700)}catch(e){status(e.message,true);if(/Room not found|Invalid player token/.test(e.message)){sessionStorage.removeItem('ajewLiveTrivia');session.code='';$('setupView').hidden=false;$('lobbyView').hidden=true;$('gameView').hidden=true;$('finishView').hidden=true}else session.timer=setTimeout(poll,2500)}finally{session.polling=false}
+    }
+    const requestedRaw=new URLSearchParams(location.search).get('room');const requested=requestedRaw?requestedRaw.toUpperCase().replace(/[^A-Z2-9]/g,'').slice(0,6):'';if(requested)$('joinCode').value=requested;
+    try{const old=JSON.parse(sessionStorage.getItem('ajewLiveTrivia')||'null');if(old&&old.code&&old.token&&(!requested||requested===old.code)){session.code=old.code;session.token=old.token;session.isHost=!!old.isHost;$('setupView').hidden=true;$('lobbyView').hidden=false;$('roomCode').textContent=old.code;$('gameCode').textContent=old.code;poll()}}catch{}
+  })();
+  </script>
+
+  <style is:global>
+    body{background:#071a2d}.live-page{--navy:#081a31;--teal:#12acba;--gold:#ffd63d;--red:#ef4c5d;--cream:#fff9e8;min-height:100vh;padding:24px 18px 90px;background:radial-gradient(circle at 15% 5%,#165773 0,transparent 27%),radial-gradient(circle at 90% 40%,#0a7a7c55 0,transparent 28%),#071a2d;color:#17223b;font-family:"Open Sans",system-ui,sans-serif}.live-page *{box-sizing:border-box}.live-hero{max-width:1240px;margin:auto auto 24px;min-height:350px;border:2px solid #ffffff33;border-radius:32px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:30px;padding:44px;background:linear-gradient(125deg,#0a1e39,#0d5972 65%,#13a5a8);color:white;box-shadow:0 24px 70px #0007;overflow:hidden}.hero-fire{font-size:6rem;filter:drop-shadow(0 10px 18px #ff5533aa)}.back-link{color:#a9f5ff;text-decoration:none;font-weight:800}.eyebrow{font-size:.72rem;letter-spacing:.16em;font-weight:900;color:#b77c00}.live-hero .eyebrow{color:#ffe06a;margin-top:30px}.live-hero h1{font:700 clamp(2.4rem,5vw,5rem)/.95 Georgia,serif;margin:10px 0}.live-hero h1 span{display:block;color:var(--gold);font-style:italic}.live-hero>div>p:not(.eyebrow):not(.hebrew){max-width:700px;line-height:1.55;color:#e6fbff}.hebrew{font-size:1.25rem;color:#90f5ff}.live-van{font-size:7rem;position:relative;filter:drop-shadow(0 12px 8px #0005)}.live-van i{position:absolute;font-style:normal;font-size:1.5rem;animation:jump .8s infinite alternate}.live-van i:nth-child(1){left:15px;top:-25px}.live-van i:nth-child(2){left:60px;top:-42px;animation-delay:-.3s}.live-van i:nth-child(3){right:2px;top:-19px;animation-delay:-.55s}@keyframes jump{to{transform:translateY(-10px) rotate(6deg)}}
+    .setup-grid,.game-grid{max-width:1240px;margin:auto;display:grid;grid-template-columns:1fr 1fr;gap:22px}.panel{background:linear-gradient(145deg,#fffef9,#fff6db);border:1px solid #d7c99f;border-radius:25px;box-shadow:0 18px 48px #0004}.setup-grid .panel{padding:34px;position:relative}.panel-number{position:absolute;right:25px;top:24px;width:43px;height:43px;border-radius:50%;display:grid;place-items:center;background:var(--navy);color:white;font-weight:900}.panel h2{font:700 1.75rem Georgia,serif;margin:0 0 7px}.panel>p{color:#6b685f;line-height:1.5}.panel label{display:grid;gap:6px;font-weight:800;margin:18px 0}.panel input,.panel select{width:100%;padding:13px 14px;border:2px solid #d7cfb8;border-radius:12px;background:white;font:inherit}.panel input:focus,.panel select:focus{outline:3px solid #38c8d344;border-color:var(--teal)}fieldset{border:0;padding:0;margin:18px 0}legend{font-weight:900}.category-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.category-grid label{display:flex;align-items:center;gap:8px;margin:0;background:white;border:1px solid #ded4b8;border-radius:10px;padding:10px;font-size:.82rem}.category-grid input{width:auto}.option-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.option-row label{margin:0 0 18px}.primary,.secondary,.lobby-actions button{border:0;border-radius:14px;padding:15px 20px;font-weight:900;font:inherit;cursor:pointer}.primary{background:linear-gradient(100deg,#ef485b,#ff983e);color:white;width:100%;box-shadow:0 8px 20px #ef485b44}.secondary{background:linear-gradient(100deg,#0a7786,#18bdc5);color:white;width:100%}.room-input{text-transform:uppercase;letter-spacing:.25em;font-size:1.5rem;text-align:center}.how-it-works{margin-top:30px;padding:18px;background:#e7fafa;border-radius:15px}.how-it-works ol{padding-left:20px;line-height:1.9;color:#556}
+    .lobby{max-width:1000px;margin:auto;padding:40px;text-align:center}.room-code{font:900 clamp(3rem,9vw,6rem)/1 monospace;letter-spacing:.16em;color:#087d89;margin:22px 0}.lobby-actions{display:flex;justify-content:center;gap:10px}.lobby-actions button{background:#e4d7b8;color:#282419}.lobby-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;text-align:left;margin-top:30px}.player-list,.score-panel ol{list-style:none;padding:0;margin:0}.player-list li,.score-panel li{display:flex;align-items:center;gap:10px;padding:11px;border-bottom:1px dashed #d2c6a7}.player-list li b,.score-panel li b{flex:1}.player-list em{color:#168473;font-style:normal}.you{background:#e3fbfb}.start-box{display:grid;place-items:center;text-align:center;background:#e8f9fa;border-radius:18px;padding:25px}.start-box>span{font-size:4rem}.start-box .primary{margin-top:18px}
+    .game-view{max-width:1240px;margin:auto}.game-bar{display:grid;grid-template-columns:auto 1fr auto;gap:20px;align-items:center;background:#061629;color:white;border-radius:18px;padding:13px 19px;margin-bottom:18px}.game-bar small{display:block;color:#7edee6}.game-bar b{color:var(--gold)}.progress span{font-weight:800}.progress i{display:block;height:8px;background:#ffffff22;border-radius:99px;margin-top:6px;overflow:hidden}.progress i b{display:block;height:100%;background:linear-gradient(90deg,#12b9c6,#ffe04c);transition:.4s}.clock{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;background:#14a8b7;font-weight:900;font-size:1.35rem}.clock.danger{background:var(--red);animation:pulse .5s infinite alternate}@keyframes pulse{to{transform:scale(1.08)}}.game-grid{grid-template-columns:minmax(0,1.7fr) minmax(280px,.55fr)}.question-panel,.score-panel{padding:30px}.question-meta{display:flex;gap:7px;flex-wrap:wrap}.question-meta span{padding:7px 10px;border-radius:99px;background:#dff8fa;color:#08717b;font-size:.7rem;font-weight:900;letter-spacing:.06em}.question-meta span:last-child{margin-left:auto;background:#ffec92;color:#6d5400}.question-meta span.revealed{background:#dff3dc;color:#237133}.question-panel h2{font:700 clamp(1.4rem,2.5vw,2.1rem)/1.38 Georgia,serif;min-height:100px}.live-answers{display:grid;grid-template-columns:1fr 1fr;gap:11px}.answer-choice{border:2px solid #d9cfb7;background:white;border-radius:14px;min-height:70px;padding:12px;display:flex;align-items:center;gap:11px;text-align:left;color:#17223b;cursor:pointer}.answer-choice span{width:32px;height:32px;border-radius:9px;background:#e7f6f7;display:grid;place-items:center;font-weight:900;flex:0 0 32px}.answer-choice.correct{border-color:#1ca35b;background:#e4f8e9}.answer-choice.wrong{border-color:#dd4355;background:#ffe6e9}.answer-choice:disabled{cursor:default;opacity:.83}.live-feedback{margin-top:18px;background:#e6f7f1;border-left:5px solid #29a46b;border-radius:12px;padding:15px}.live-feedback p{line-height:1.5}.live-feedback a{color:#087984;font-weight:800}.score-panel{align-self:start}.score-panel li>span{width:32px}.score-panel li strong{color:#9f6c00}.score-panel small{background:#0c8692;color:white;padding:2px 5px;border-radius:5px;font-size:.58rem}.score-panel>p:last-child{font-size:.74rem;color:#777;line-height:1.4}.answered{box-shadow:inset 4px 0 #1dae78}
+    .finish{max-width:1000px;margin:auto;padding:45px;text-align:center}.finish-fire{font-size:5rem}.finish h2{font:700 2.4rem Georgia,serif}.podium{display:flex;align-items:end;justify-content:center;gap:12px;margin:30px 0}.podium article{min-width:140px;padding:18px;background:#e9dfc5;border-radius:16px;display:grid;gap:4px}.podium article span{font-size:2rem}.podium article strong{font-size:1.4rem;color:#9b6800}.podium .place-1{order:2;min-height:190px;background:#fff0a6}.podium .place-2{order:1;min-height:160px}.podium .place-3{order:3;min-height:140px}.final-standings{max-width:680px;max-height:360px;overflow:auto;list-style:none;padding:0;margin:12px auto 28px;text-align:left;border:1px solid #d8cba7;border-radius:14px;background:#fff}.final-standings li{display:grid;grid-template-columns:42px 1fr auto 55px;gap:10px;align-items:center;padding:11px 14px;border-bottom:1px dashed #ddd0ad}.final-standings li:last-child{border-bottom:0}.final-standings span{font-weight:900;color:#8e6b00}.final-standings strong{color:#087985}.final-standings em{font-style:normal;color:#766f61;font-size:.82rem;text-align:right}.finish .primary{max-width:340px;display:block;margin:20px auto}.finish>a{color:#087984}.global-status{max-width:1000px;margin:18px auto;color:#9eeef4;text-align:center;font-weight:800}.global-status.bad{color:#ff9da8}
+    [hidden]{display:none!important}@media(max-width:800px){.live-hero{grid-template-columns:1fr;padding:30px}.hero-fire{display:none}.live-van{font-size:5rem}.setup-grid,.game-grid,.lobby-grid{grid-template-columns:1fr}.game-bar{grid-template-columns:auto 1fr auto}.live-answers{grid-template-columns:1fr}.podium{flex-direction:column;align-items:stretch}.podium article{order:initial!important;min-height:0!important}.room-code{letter-spacing:.08em}.category-grid{grid-template-columns:1fr 1fr}}@media(max-width:390px){.live-page{padding:12px 10px 70px}.live-hero{border-radius:22px;padding:24px}.setup-grid .panel,.question-panel,.score-panel,.lobby,.finish{padding:22px}.category-grid,.option-row{grid-template-columns:1fr}.room-code{font-size:2.7rem}.game-bar{gap:8px;padding:10px}.clock{width:46px;height:46px}.lobby-actions{flex-direction:column}}
+  </style>
+</Layout>

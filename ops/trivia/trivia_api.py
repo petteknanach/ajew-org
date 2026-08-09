@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Small verified-score API for ajew.org Na Nach Trivia Fire."""
+"""Verified scores and server-authoritative live rooms for ajew.org Trivia Fire."""
 from __future__ import annotations
 import base64, hashlib, hmac, json, os, re, secrets, sqlite3, threading, time
 from datetime import datetime, timezone
@@ -17,6 +17,12 @@ ALLOWED_LEVELS={'beginner','scholar','fire','mixed'}
 POINTS={'beginner':100,'scholar':180,'fire':300}
 NAME_RE=re.compile(r'^[A-Za-z0-9 _-]{2,24}$')
 LOCK=threading.Lock(); RATE={}
+ROOM_LOCK=threading.RLock(); ROOMS={}
+ROOM_ALPHABET='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+ROOM_LENGTHS={5,10,15,20}; MAX_ROOM_PLAYERS=50
+QUESTION_SECONDS={'beginner':30,'scholar':40,'fire':50}
+REVEAL_SECONDS=max(.05,float(os.environ.get('TRIVIA_REVEAL_SECONDS','4')))
+PLAYER_STALE_SECONDS=max(5,float(os.environ.get('TRIVIA_PLAYER_STALE_SECONDS','12')))
 
 def load_catalog():
     raw=json.loads(DATA.read_text(encoding='utf-8'))
@@ -94,8 +100,76 @@ def official_score(qids,answers):
         else:streak=0
     return score,correct
 
+def room_code():
+    for _ in range(100):
+        code=''.join(secrets.choice(ROOM_ALPHABET) for _ in range(6))
+        if code not in ROOMS:return code
+    raise ValueError('Could not create room')
+
+def clean_rooms(now=None):
+    now=now or time.time()
+    for code,room in list(ROOMS.items()):
+        max_age=3600 if room['phase']=='finished' else 10800
+        if now-room['created']>max_age:ROOMS.pop(code,None)
+
+def valid_room_options(d):
+    name=str(d.get('nickname','')).strip();cats=d.get('categories',[]);level=str(d.get('level','mixed'));length=int(d.get('length',10))
+    if not NAME_RE.fullmatch(name):raise ValueError('Invalid nickname')
+    if not isinstance(cats,list) or not cats or any(c not in ALLOWED_CATEGORIES for c in cats):raise ValueError('Invalid categories')
+    cats=list(dict.fromkeys(cats))
+    if level not in ALLOWED_LEVELS:raise ValueError('Invalid level')
+    if length not in ROOM_LENGTHS:raise ValueError('Live rounds must contain 5, 10, 15 or 20 questions')
+    pool=[q['id'] for q in CATALOG['questions'] if q['category'] in cats and (level=='mixed' or q['level']==level)]
+    if len(pool)<length:raise ValueError('Not enough questions for that selection')
+    return name,cats,level,length,pool
+
+def add_room_player(room,name):
+    if len(room['players'])>=MAX_ROOM_PLAYERS:raise ValueError('This room is full')
+    if any(p['nickname'].casefold()==name.casefold() for p in room['players'].values()):raise ValueError('That nickname is already in this room')
+    token=secrets.token_urlsafe(24)
+    room['players'][token]={'nickname':name,'score':0,'correct':0,'streak':0,'answered':False,'selected':None,'gained':0,'joined':time.time(),'last_seen':time.time()}
+    return token
+
+def start_room_question(room,index,now=None):
+    now=now or time.time();room['index']=index
+    if index>=len(room['qids']):room['phase']='finished';room['phase_ends']=0;return
+    room['phase']='question';q=BY_ID[room['qids'][index]];room['phase_ends']=now+QUESTION_SECONDS[q['level']]
+    for p in room['players'].values():p.update(answered=False,selected=None,gained=0)
+
+def reveal_room(room,now=None):
+    room['phase']='reveal';room['phase_ends']=(now or time.time())+REVEAL_SECONDS
+
+def tick_room(room,now=None):
+    now=now or time.time()
+    if room['phase']=='question':
+        timed_out=now>=room['phase_ends']
+        complete=all(p['answered'] or now-p['last_seen']>=PLAYER_STALE_SECONDS for p in room['players'].values())
+        if timed_out or complete:
+            for p in room['players'].values():
+                if not p['answered'] and (timed_out or now-p['last_seen']>=PLAYER_STALE_SECONDS):p['answered']=True;p['selected']=-1;p['streak']=0;p['gained']=0
+            reveal_room(room,now)
+    if room['phase']=='reveal' and now>=room['phase_ends']:
+        start_room_question(room,room['index']+1,now)
+
+def get_room(code,token=None):
+    code=str(code or '').strip().upper();room=ROOMS.get(code)
+    if not room:raise ValueError('Room not found or expired')
+    if token is not None and token not in room['players']:raise ValueError('Invalid player token')
+    return code,room
+
+def room_payload(code,room,token):
+    now=time.time();player=room['players'][token];player['last_seen']=now;tick_room(room,now)
+    ranked=sorted(room['players'].items(),key=lambda kv:(-kv[1]['score'],kv[1]['joined']))
+    players=[{'nickname':p['nickname'],'score':p['score'],'correct':p['correct'],'answered':bool(p['answered']),'isYou':t==token} for t,p in ranked]
+    out={'code':code,'phase':room['phase'],'isHost':token==room['host'],'players':players,'questionIndex':room['index'],'totalQuestions':room['length'],'phaseEnds':room['phase_ends'],'serverTime':now,'maxPlayers':MAX_ROOM_PLAYERS}
+    if room['phase'] in {'question','reveal'} and 0<=room['index']<room['length']:
+        q=BY_ID[room['qids'][room['index']]];question={'id':q['id'],'prompt':q['prompt'],'options':q['options'],'category':q['category'],'level':q['level']}
+        if room['phase']=='reveal':question.update(correctIndex=q['answer'],explanation=q['explanation'],sourceUrl=q['sourceUrl'],sourceLabel=q['sourceLabel'])
+        out['question']=question;out['yourAnswer']=player['selected'];out['yourGain']=player['gained']
+    return out
+
 class Handler(BaseHTTPRequestHandler):
-    server_version='AJewTrivia/1.0'
+    server_version='AJewTrivia/1.1'
     def log_message(self,format,*args):print('%s - %s' % (self.address_string(),format%args),flush=True)
     @property
     def ip(self):return self.headers.get('X-Real-IP') or self.client_address[0]
@@ -107,21 +181,30 @@ class Handler(BaseHTTPRequestHandler):
         if n<=0 or n>max_bytes:raise ValueError('Invalid request size')
         return json.loads(self.rfile.read(n))
     def do_GET(self):
-        u=urlparse(self.path)
-        if u.path.endswith('/health'):return self.send_json(200,{'ok':True,'questions':len(BY_ID)})
-        if not u.path.endswith('/scores'):return self.send_json(404,{'error':'Not found'})
-        qs=parse_qs(u.query);period=qs.get('period',['all'])[0];limit=max(1,min(50,int(qs.get('limit',['10'])[0])))
-        where='WHERE created_at >= ?' if period=='today' else ''
-        args=[datetime.now(timezone.utc).strftime('%Y-%m-%dT00:00:00Z')] if where else []
-        with sqlite3.connect(DB) as c:
-            c.row_factory=sqlite3.Row
-            rows=c.execute(f'SELECT nickname,score,correct,total,level,created_at FROM scores {where} ORDER BY score DESC, created_at ASC LIMIT ?',args+[limit]).fetchall()
-        return self.send_json(200,[dict(r) for r in rows])
+        u=urlparse(self.path);qs=parse_qs(u.query)
+        try:
+            if u.path.endswith('/health'):
+                with ROOM_LOCK:clean_rooms();rooms=len(ROOMS)
+                return self.send_json(200,{'ok':True,'questions':len(BY_ID),'liveRooms':rooms})
+            if not u.path.endswith('/scores'):return self.send_json(404,{'error':'Not found'})
+            period=qs.get('period',['all'])[0];limit=max(1,min(50,int(qs.get('limit',['10'])[0])))
+            where='WHERE created_at >= ?' if period=='today' else ''
+            args=[datetime.now(timezone.utc).strftime('%Y-%m-%dT00:00:00Z')] if where else []
+            with sqlite3.connect(DB) as c:
+                c.row_factory=sqlite3.Row
+                rows=c.execute(f'SELECT nickname,score,correct,total,level,created_at FROM scores {where} ORDER BY score DESC, created_at ASC LIMIT ?',args+[limit]).fetchall()
+            return self.send_json(200,[dict(r) for r in rows])
+        except (ValueError,KeyError,TypeError) as e:return self.send_json(400,{'error':str(e)[:160]})
     def do_POST(self):
         u=urlparse(self.path)
         try:
             if u.path.endswith('/session'):return self.new_session()
             if u.path.endswith('/score'):return self.submit_score()
+            if u.path.endswith('/room/create'):return self.create_room()
+            if u.path.endswith('/room/join'):return self.join_room()
+            if u.path.endswith('/room/state'):return self.state_room()
+            if u.path.endswith('/room/start'):return self.start_room()
+            if u.path.endswith('/room/answer'):return self.answer_room()
             return self.send_json(404,{'error':'Not found'})
         except (ValueError,KeyError,TypeError,json.JSONDecodeError) as e:return self.send_json(400,{'error':str(e)[:160]})
         except Exception as e:
@@ -157,7 +240,60 @@ class Handler(BaseHTTPRequestHandler):
                 rank=c.execute('SELECT COUNT(*)+1 FROM scores WHERE score>?',(score,)).fetchone()[0]
         except sqlite3.IntegrityError:raise ValueError('This session was already submitted')
         return self.send_json(201,{'score':score,'correct':correct,'total':len(qids),'rank':rank})
+    def create_room(self):
+        if not rate_ok(self.ip,'room-create',12,3600):return self.send_json(429,{'error':'Too many rooms; please try later.'})
+        d=self.body(8192);name,cats,level,length,pool=valid_room_options(d)
+        with ROOM_LOCK:
+            clean_rooms();code=room_code();now=time.time();qids=secrets.SystemRandom().sample(pool,length)
+            room={'created':now,'phase':'lobby','phase_ends':0,'categories':cats,'level':level,'length':length,'qids':qids,'index':-1,'players':{},'host':None}
+            token=add_room_player(room,name);room['host']=token;ROOMS[code]=room
+        return self.send_json(201,{'code':code,'playerToken':token,'isHost':True,'maxPlayers':MAX_ROOM_PLAYERS})
+    def join_room(self):
+        if not rate_ok(self.ip,'room-join',60,3600):return self.send_json(429,{'error':'Too many joins; please try later.'})
+        d=self.body(4096);name=str(d.get('nickname','')).strip()
+        if not NAME_RE.fullmatch(name):raise ValueError('Invalid nickname')
+        with ROOM_LOCK:
+            clean_rooms();code,room=get_room(d.get('code'))
+            if room['phase']!='lobby':raise ValueError('This match has already started')
+            token=add_room_player(room,name)
+        return self.send_json(201,{'code':code,'playerToken':token,'isHost':False,'maxPlayers':MAX_ROOM_PLAYERS})
+    def state_room(self):
+        d=self.body(4096);token=str(d.get('playerToken',''))
+        with ROOM_LOCK:
+            clean_rooms();code,room=get_room(d.get('code'),token);payload=room_payload(code,room,token)
+        return self.send_json(200,payload)
+    def start_room(self):
+        d=self.body(4096);token=str(d.get('playerToken',''))
+        with ROOM_LOCK:
+            code,room=get_room(d.get('code'),token)
+            if token!=room['host']:raise ValueError('Only the host can start this match')
+            if room['phase']!='lobby':raise ValueError('This match has already started')
+            if len(room['players'])<2:raise ValueError('At least two players are required')
+            start_room_question(room,0)
+            payload=room_payload(code,room,token)
+        return self.send_json(200,payload)
+    def answer_room(self):
+        d=self.body(4096);token=str(d.get('playerToken',''));selected=d.get('selected')
+        if isinstance(selected,bool) or not isinstance(selected,int) or selected<0 or selected>3:raise ValueError('Invalid answer')
+        with ROOM_LOCK:
+            code,room=get_room(d.get('code'),token);p=room['players'][token];p['last_seen']=time.time();tick_room(room)
+            if room['phase']!='question':raise ValueError('Answers are closed')
+            if p['answered']:raise ValueError('Answer already submitted')
+            q=BY_ID[room['qids'][room['index']]];right=selected==q['answer'];p['answered']=True;p['selected']=selected;p['last_seen']=time.time()
+            if right:
+                p['correct']+=1;p['streak']+=1;speed=max(0,min(100,int((room['phase_ends']-time.time())/QUESTION_SECONDS[q['level']]*100)))
+                p['gained']=POINTS[q['level']]+min(200,(p['streak']-1)*20)+speed;p['score']+=p['gained']
+            else:p['streak']=0;p['gained']=0
+            tick_room(room)
+            payload=room_payload(code,room,token)
+        return self.send_json(200,payload)
+
+class TriviaHTTPServer(ThreadingHTTPServer):
+    # A full room can legitimately create a burst of 50 polls or answers.
+    request_queue_size=128
+    daemon_threads=True
+    allow_reuse_address=True
 
 if __name__=='__main__':
     print(f'Na Nach Trivia API listening on {HOST}:{PORT} with {len(BY_ID)} questions',flush=True)
-    ThreadingHTTPServer((HOST,PORT),Handler).serve_forever()
+    TriviaHTTPServer((HOST,PORT),Handler).serve_forever()
