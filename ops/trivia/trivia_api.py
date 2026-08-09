@@ -133,7 +133,7 @@ class Handler(BaseHTTPRequestHandler):
         if not isinstance(cats,list) or not cats or any(c not in ALLOWED_CATEGORIES for c in cats):raise ValueError('Invalid categories')
         cats=list(dict.fromkeys(cats))
         if level not in ALLOWED_LEVELS:raise ValueError('Invalid level')
-        if length not in {10,20,30}:raise ValueError('Invalid round length')
+        if length!=20:raise ValueError('Competitive rounds must contain 20 questions')
         pool=[q['id'] for q in CATALOG['questions'] if q['category'] in cats and (level=='mixed' or q['level']==level)]
         if len(pool)<length:raise ValueError('Not enough questions for that selection')
         player_key=hashlib.sha256((self.ip+'|'+name.casefold()).encode()).hexdigest()

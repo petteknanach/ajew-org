@@ -15,6 +15,7 @@ for q in qs:
  if len(q['options'])!=4 or len(set(q['options']))!=4:errors.append('bad options '+q['id'])
  if not isinstance(q['answer'],int) or not 0<=q['answer']<4:errors.append('bad answer '+q['id'])
  if not q['sourceUrl'].startswith('/'):errors.append('external/bad source '+q['id'])
+ if q['category']=='personages' and re.search(r'\b(Saba Yisroel|Alter of Teplik|Avraham Chazan)\b',q['prompt'],re.I):errors.append('conflicted yahrzeit prompt '+q['id'])
  if q['category'] in {'personages','history','nanach'} and re.search(r'\b(Mrs\.?|woman|women|wife|mother|daughter|sister|girl|girls|bride)\b',q['prompt'],re.I):errors.append('female-centered prompt '+q['id'])
 if errors:raise SystemExit('\n'.join(errors[:30]))
 
@@ -34,18 +35,18 @@ try:
    if req('/api/trivia/health')[0]==200:break
   except Exception:time.sleep(.1)
  else:raise RuntimeError('API failed to start')
- status,s=req('/api/trivia/session',{'nickname':'Test_Breslover','categories':['teachings','nanach'],'level':'mixed','length':10})
- assert status==201 and len(s['questionIds'])==10
- status,s2=req('/api/trivia/session',{'nickname':'Test_Breslover','categories':['teachings','nanach'],'level':'mixed','length':10})
+ status,s=req('/api/trivia/session',{'nickname':'Test_Breslover','categories':['teachings','nanach'],'level':'mixed','length':20})
+ assert status==201 and len(s['questionIds'])==20
+ status,s2=req('/api/trivia/session',{'nickname':'Test_Breslover','categories':['teachings','nanach'],'level':'mixed','length':20})
  assert status==201 and set(s['questionIds']).isdisjoint(s2['questionIds'])
  mapq={q['id']:q for q in qs};answers=[{'id':qid,'selected':mapq[qid]['answer']} for qid in s['questionIds']]
  status,result=req('/api/trivia/score',{'token':s['token'],'answers':answers})
- assert status==201 and result['correct']==10 and result['score']>1000 and result['rank']==1
+ assert status==201 and result['correct']==20 and result['score']>2000 and result['rank']==1
  assert req('/api/trivia/score',{'token':s['token'],'answers':answers})[0]==400
  status,board=req('/api/trivia/scores?limit=10')
  assert status==200 and board[0]['nickname']=='Test_Breslover' and board[0]['score']==result['score']
  bad=dict(answers[0]);bad['id']='tampered';assert req('/api/trivia/score',{'token':s['token']+'x','answers':[bad]+answers[1:]})[0]==400
- print(json.dumps({'catalog_questions':len(qs),'categories':{k:sum(q['category']==k for q in qs) for k in data['categories']},'api_session_questions':10,'perfect_score':result['score'],'leaderboard_rows':len(board),'ok':True},indent=2))
+ print(json.dumps({'catalog_questions':len(qs),'categories':{k:sum(q['category']==k for q in qs) for k in data['categories']},'api_session_questions':20,'perfect_score':result['score'],'leaderboard_rows':len(board),'ok':True},indent=2))
 finally:
  p.terminate()
  try:p.wait(timeout=4)

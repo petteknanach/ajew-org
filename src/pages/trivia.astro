@@ -89,7 +89,7 @@ const pageDesc = `${catalog.count.toLocaleString()} source-linked questions on R
             <span class="mode-icon">🕯️</span><strong>Anonymous Practice</strong><small>No name, no score upload. Your recent questions stay on this device so repeats are avoided.</small>
           </button>
           <button class="mode-card" data-mode="compete" role="radio" aria-checked="false">
-            <span class="mode-icon">🏆</span><strong>Compete</strong><small>Choose a public nickname and climb the Na Nach leaderboard. No account required.</small>
+            <span class="mode-icon">🏆</span><strong>Compete</strong><small>Choose a public nickname and climb the Na Nach leaderboard. Official rounds are 20 questions.</small>
           </button>
         </div>
         <label class="nickname-field" id="nicknameField" hidden>Public nickname
@@ -212,7 +212,7 @@ const pageDesc = `${catalog.count.toLocaleString()} source-linked questions on R
     function addLocalScore(row){const all=[...localScores(),row].sort((a,b)=>b.score-a.score).slice(0,50);localStorage.setItem('nanachTriviaScores',JSON.stringify(all))}
 
     document.querySelectorAll('.mode-card').forEach(b=>b.addEventListener('click',()=>{
-      document.querySelectorAll('.mode-card').forEach(x=>{x.classList.toggle('active',x===b);x.setAttribute('aria-checked',x===b?'true':'false')});state.mode=b.dataset.mode;$('nicknameField').hidden=state.mode!=='compete';
+      document.querySelectorAll('.mode-card').forEach(x=>{x.classList.toggle('active',x===b);x.setAttribute('aria-checked',x===b?'true':'false')});state.mode=b.dataset.mode;$('nicknameField').hidden=state.mode!=='compete';$('roundLength').disabled=state.mode==='compete';if(state.mode==='compete'){$('roundLength').value='20';state.length=20}
     }));
     document.querySelectorAll('.category-card').forEach(b=>b.addEventListener('click',()=>{b.classList.toggle('selected');b.setAttribute('aria-pressed',b.classList.contains('selected')?'true':'false');state.categories=[...document.querySelectorAll('.category-card.selected')].map(x=>x.dataset.category)}));
     $('selectAllCategories').addEventListener('click',()=>{document.querySelectorAll('.category-card').forEach(b=>{b.classList.add('selected');b.setAttribute('aria-pressed','true')});state.categories=[...document.querySelectorAll('.category-card')].map(x=>x.dataset.category)});
@@ -221,7 +221,7 @@ const pageDesc = `${catalog.count.toLocaleString()} source-linked questions on R
     $('roundLength').addEventListener('change',e=>state.length=Number(e.target.value));
     $('soundToggle').addEventListener('change',e=>state.sound=e.target.checked);
     $('startButton').addEventListener('click',()=>startRound(false));
-    $('dailyButton').addEventListener('click',()=>startRound(true));
+    $('dailyButton').addEventListener('click',()=>{state.mode='practice';$('roundLength').disabled=false;document.querySelectorAll('.mode-card').forEach(x=>{const on=x.dataset.mode==='practice';x.classList.toggle('active',on);x.setAttribute('aria-checked',on?'true':'false')});$('nicknameField').hidden=true;startRound(true)});
     $('quitButton').addEventListener('click',()=>{if(confirm('Leave this round?'))showSetup()});
     $('nextButton').addEventListener('click',nextQuestion);
     $('newRoundButton').addEventListener('click',showSetup);

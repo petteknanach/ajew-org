@@ -98,16 +98,51 @@ for p,d,num,en in sichot:
     add(key,'avodah','fire',f'From which numbered Sicha in Sichos HaRan is this exact passage? “{clip(en,210)}”',correct,
         distract(sicha_labels,correct,key),f'The passage is from Sichos HaRan {num}.','Sichos HaRan',f'/reader/sichos-haran/1/{d.get("torah") or num}')
 
-# 4) Approved male Breslov personages only: exactly the same database used by the yahrzeit box.
-tz=load(ROOT/'public/data/tzaddikim-database-complete.json')
-people=[]
-for x in tz.get('all_tzaddikim',[]):
-    name=clean(x.get('name')); he=clean(x.get('hebrew_name'))
-    in_box_group=x.get('category')=='breslov' or name=='Rebbe Nachman of Breslov'
-    if not in_box_group:continue
-    if not name or FEMALE.search(name+' '+he):continue
-    if not x.get('yahrzeit_day') or not x.get('yahrzeit_month'):continue
-    people.append(x)
+# 4) Explicitly reviewed male allowlist from the live yahrzeit box union.
+# Authority: CompactYahrzeit.astro importantDates + tzaddikim-database-complete.json.
+# Conflicting live aliases/dates (Saba, Alter of Teplik, Avraham Chazan) are intentionally
+# omitted from date trivia until reconciled. Rebbe Nosson and Nachman Tulchiner retain only
+# their uncontested month/day; their conflicting civil/Hebrew year labels are suppressed.
+people=[
+ {'name':'Rabbi Nachman of Breslov','yahrzeit_day':18,'yahrzeit_month':'Tishrei','year_passed':'1810'},
+ {'name':'Rabbi Nachman of Horodenka','yahrzeit_day':2,'yahrzeit_month':'Tamuz','year_passed':'1765'},
+ {'name':"R' Ephraim son of Reb Naftali",'yahrzeit_day':14,'yahrzeit_month':'Tishrei','year_passed':'1882'},
+ {'name':"R' David Tzvi Dashivsky",'yahrzeit_day':19,'yahrzeit_month':'Tishrei','year_passed':'1912'},
+ {'name':"R' Sender son of Reb Tzvi of Tzfas",'yahrzeit_day':2,'yahrzeit_month':'Cheshvan','year_passed':'1891'},
+ {'name':"R' Yisrael Karduner",'yahrzeit_day':9,'yahrzeit_month':'Cheshvan','year_passed':'1919'},
+ {'name':"R' Nosson Trubitzer of Tzfas",'yahrzeit_day':9,'yahrzeit_month':'Kislev','year_passed':'1918'},
+ {'name':"R' Shmuel Heshel Friedman",'yahrzeit_day':14,'yahrzeit_month':'Kislev','year_passed':'1917'},
+ {'name':"R' Shmuel son of Reb Yaakov of Nemirov",'yahrzeit_day':20,'yahrzeit_month':'Kislev','year_passed':'1830'},
+ {'name':'Rebbe Nosson','yahrzeit_day':10,'yahrzeit_month':'Tevet','year_passed':''},
+ {'name':"R' Yitzchok Isaac Eisenstein",'yahrzeit_day':18,'yahrzeit_month':'Tevet','year_passed':'1923'},
+ {'name':"R' Yitzchok Isaac Yosef Sofer",'yahrzeit_day':11,'yahrzeit_month':'Adar','year_passed':'1828'},
+ {'name':"R' Tzvi Aryeh son of R' Aharon of Breslov",'yahrzeit_day':11,'yahrzeit_month':'Adar','year_passed':'1868'},
+ {'name':"R' Nosson son of Reb Yosef of Yerushalayim",'yahrzeit_day':7,'yahrzeit_month':'Adar II','year_passed':'1897'},
+ {'name':"R' Nachman of Tcherin",'yahrzeit_day':13,'yahrzeit_month':'Adar II','year_passed':'1894'},
+ {'name':"R' Mendl of Ladizhin",'yahrzeit_day':20,'yahrzeit_month':'Nisan','year_passed':'1831'},
+ {'name':"R' Getzel Libovne",'yahrzeit_day':21,'yahrzeit_month':'Nisan','year_passed':'1918'},
+ {'name':"R' Nachman of Tulchin",'yahrzeit_day':26,'yahrzeit_month':'Nisan','year_passed':''},
+ {'name':"R' Avraham Eliezer son of Reb Sender of Tzfas",'yahrzeit_day':23,'yahrzeit_month':'Iyyar','year_passed':'1906'},
+ {'name':"R' Shmuel of Teplik",'yahrzeit_day':24,'yahrzeit_month':'Iyyar','year_passed':'1831'},
+ {'name':"R' Nachman Hilman (the Silent)",'yahrzeit_day':2,'yahrzeit_month':'Iyyar','year_passed':''},
+ {'name':"R' Shimshon Barsky",'yahrzeit_day':1,'yahrzeit_month':'Sivan','year_passed':'1935'},
+ {'name':"R' Baruch Chavitman",'yahrzeit_day':17,'yahrzeit_month':'Sivan','year_passed':''},
+ {'name':"R' Yosef son of Reb Nosson of Yerushalayim",'yahrzeit_day':1,'yahrzeit_month':'Tamuz','year_passed':'1895'},
+ {'name':"R' Tuvia of Bobrinets",'yahrzeit_day':24,'yahrzeit_month':'Tamuz','year_passed':'1920'},
+ {'name':"R' Aharon of Breslov",'yahrzeit_day':1,'yahrzeit_month':'Av','year_passed':'1845'},
+ {'name':"R' Naftali of Nemirov",'yahrzeit_day':19,'yahrzeit_month':'Av','year_passed':'1860'},
+ {'name':"R' Tzvi Trubitzer of Tzfas",'yahrzeit_day':26,'yahrzeit_month':'Av','year_passed':'1890'},
+ {'name':"R' Shnia Yosef ben Shalom",'yahrzeit_day':12,'yahrzeit_month':'Elul','year_passed':''},
+ {'name':"R' Yitzchak Gershon Broski",'yahrzeit_day':14,'yahrzeit_month':'Elul','year_passed':''},
+ {'name':"R' Avraham Abutbul",'yahrzeit_day':21,'yahrzeit_month':'Tishrei','year_passed':''},
+ {'name':"R' Binyamin Ze'ev Cheshin",'yahrzeit_day':13,'yahrzeit_month':'Cheshvan','year_passed':''},
+ {'name':"R' Tzvi Aryeh Lupel",'yahrzeit_day':23,'yahrzeit_month':'Cheshvan','year_passed':''},
+ {'name':"R' Ephraim Tzvi Krakovsky",'yahrzeit_day':16,'yahrzeit_month':'Tevet','year_passed':'1946'},
+ {'name':"R' Aharon Glidman",'yahrzeit_day':14,'yahrzeit_month':'Adar','year_passed':''},
+ {'name':"R' Yitzchak ben Moharnat",'yahrzeit_day':14,'yahrzeit_month':'Adar II','year_passed':'1870'},
+ {'name':"R' Moshe Breslover",'yahrzeit_day':1,'yahrzeit_month':"Sh'vat",'year_passed':''},
+ {'name':'Rabbi Shmuel Horowitz','yahrzeit_day':24,'yahrzeit_month':'Kislev','year_passed':'1973'},
+]
 dates=[f"{x['yahrzeit_day']} {x['yahrzeit_month']}" for x in people]
 names=[clean(x['name']) for x in people]
 for x in people:
