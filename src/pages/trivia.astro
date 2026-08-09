@@ -1,1211 +1,323 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import fs from 'node:fs';
+import path from 'node:path';
+
+const catalogPath = path.join(process.cwd(), 'public/data/trivia/questions.json');
+const catalog = JSON.parse(fs.readFileSync(catalogPath, 'utf8'));
+const categoryCounts = Object.fromEntries(Object.keys(catalog.categories).map((key) => [key, catalog.questions.filter((q) => q.category === key).length]));
+const pageTitle = 'Na Nach Trivia Fire — Breslov Torah Game';
+const pageDesc = `${catalog.count.toLocaleString()} source-linked questions on Rabbi Nachman’s teachings, Breslov history, approved personages, Na Nach and Saba Yisroel. Multiple levels, fresh rounds and a competitive leaderboard.`;
 ---
 
-<Layout title="Torah Trivia" description="Test your Torah knowledge! Multiple levels, timed questions, and high scores. Play for fun or register to compete!">
-  <div class="trivia-page">
-    <!-- ========== SPLASH / MENU SCREEN ========== -->
-    <div id="menuScreen" class="screen active">
-      <header class="page-header">
-        <div class="lang-toggle">
-          <button id="langToggle" class="lang-btn" title="Switch language">
-            <span class="lang-en active">EN</span>
-            <span class="lang-divider">|</span>
-            <span class="lang-he">עב</span>
+<Layout title={pageTitle} description={pageDesc}>
+  <main class="trivia-page" id="triviaApp" data-catalog-count={catalog.count}>
+    <section class="game-hero" aria-labelledby="trivia-title">
+      <div class="hero-rays" aria-hidden="true"></div>
+      <div class="hero-copy">
+        <div class="hero-kicker">🔥 THE DELUXE BRESLOV TORAH CHALLENGE 🔥</div>
+        <h1 id="trivia-title"><span>Na Nach</span> Trivia Fire</h1>
+        <p class="hero-hebrew" lang="he" dir="rtl">נ נח נחמ נחמן מאומן</p>
+        <p class="hero-sub">Teachings first. History, holy personages, Na Nach, Saba, books and avodah. Every answer opens the source.</p>
+        <div class="hero-stats" aria-label="Game highlights">
+          <span><strong>{catalog.count.toLocaleString()}</strong> questions</span>
+          <span><strong>6</strong> categories</span>
+          <span><strong>3</strong> levels</span>
+          <span><strong>∞</strong> fresh rounds</span>
+        </div>
+      </div>
+      <div class="crew-stage" aria-label="Illustration of male Na Nach chassidim celebrating beside a Na Nach van">
+        <svg class="crew-art" viewBox="0 0 720 430" role="img" aria-labelledby="crew-title crew-desc">
+          <title id="crew-title">Na Nach trivia crew</title>
+          <desc id="crew-desc">Three bearded male Na Nach chassidim with peyos, tzitzis and Na Nach beanies dance beside a colorful Na Nach van.</desc>
+          <defs>
+            <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#80e7ff"/><stop offset="1" stop-color="#fff2a8"/></linearGradient>
+            <linearGradient id="van" x1="0" x2="1"><stop stop-color="#17b7c7"/><stop offset=".5" stop-color="#ffe13f"/><stop offset="1" stop-color="#ff5e67"/></linearGradient>
+            <filter id="shadow"><feDropShadow dx="0" dy="10" stdDeviation="8" flood-opacity=".25"/></filter>
+          </defs>
+          <path fill="url(#sky)" d="M0 0h720v430H0z"/>
+          <path fill="#e9c98b" d="M0 280l94-76 80 49 97-98 102 96 95-65 92 64 70-45 90 67v158H0z" opacity=".55"/>
+          <g filter="url(#shadow)" transform="translate(180 226)">
+            <path fill="url(#van)" stroke="#15213c" stroke-width="8" d="M8 48q0-42 42-42h292q35 0 54 30l43 69v94H8z"/>
+            <path fill="#dffbff" stroke="#15213c" stroke-width="7" d="M301 25h50q19 0 31 20l28 46H301zM62 25h99v66H62zm118 0h101v66H180z"/>
+            <circle cx="96" cy="199" r="38" fill="#17223a"/><circle cx="96" cy="199" r="18" fill="#faf1c8"/>
+            <circle cx="353" cy="199" r="38" fill="#17223a"/><circle cx="353" cy="199" r="18" fill="#faf1c8"/>
+            <text x="211" y="130" text-anchor="middle" font-size="31" font-weight="900" fill="#12213d" direction="rtl">נ נח נחמ נחמן מאומן</text>
+            <path d="M25 154q35-31 67 0t69 0 70 0 70 0 70 0" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" opacity=".8"/>
+          </g>
+          <g class="dancer dancer-a" transform="translate(78 120) rotate(-8)">
+            <circle cx="56" cy="50" r="30" fill="#e6aa72" stroke="#18223b" stroke-width="6"/>
+            <path d="M27 35q29-33 61 0l-6-24q-27-19-52 0z" fill="#19a5bd" stroke="#18223b" stroke-width="5"/>
+            <text x="57" y="22" text-anchor="middle" font-size="13" font-weight="900" fill="#fff">נ נח</text>
+            <path d="M42 66q14 27 29 0v27H42z" fill="#58331f"/>
+            <path d="M28 47q-15 14-10 38M86 47q15 14 8 38" fill="none" stroke="#55301f" stroke-width="5" stroke-linecap="round"/>
+            <path d="M22 91h69l16 112H6z" fill="#fff" stroke="#18223b" stroke-width="6"/>
+            <path d="M28 101L2 153m84-52 50-60" fill="none" stroke="#e6aa72" stroke-width="15" stroke-linecap="round"/>
+            <path d="M18 204l-22 79m91-79 31 73" fill="none" stroke="#18223b" stroke-width="22" stroke-linecap="round"/>
+            <path d="M18 191l-12 45M82 191l12 45" fill="none" stroke="#fff" stroke-width="5"/><path d="M8 183l-16 34m88-34 18 34" stroke="#1da8c0" stroke-width="4"/>
+          </g>
+          <g class="dancer dancer-b" transform="translate(488 92) rotate(8)">
+            <circle cx="56" cy="50" r="30" fill="#c98456" stroke="#18223b" stroke-width="6"/>
+            <path d="M27 35q29-33 61 0l-6-24q-27-19-52 0z" fill="#ff5260" stroke="#18223b" stroke-width="5"/>
+            <text x="57" y="22" text-anchor="middle" font-size="13" font-weight="900" fill="#fff">נ נחמ</text>
+            <path d="M39 64q17 37 34 0v35H39z" fill="#4b2a1e"/>
+            <path d="M27 46q-17 18-11 43M87 46q17 18 9 43" fill="none" stroke="#4b2a1e" stroke-width="5" stroke-linecap="round"/>
+            <path d="M20 94h74l15 111H4z" fill="#ffefad" stroke="#18223b" stroke-width="6"/>
+            <path d="M24 106L-8 51m98 56 42 42" fill="none" stroke="#c98456" stroke-width="15" stroke-linecap="round"/>
+            <path d="M17 205l-23 76m96-76 29 74" fill="none" stroke="#18223b" stroke-width="22" stroke-linecap="round"/>
+            <path d="M15 189l-11 47M86 189l12 47" fill="none" stroke="#fff" stroke-width="5"/><path d="M7 184l-16 33m93-33 18 33" stroke="#ff5260" stroke-width="4"/>
+          </g>
+          <g class="dancer dancer-c" transform="translate(327 52)">
+            <circle cx="50" cy="49" r="29" fill="#d99864" stroke="#18223b" stroke-width="6"/>
+            <path d="M22 34q28-33 58 0l-5-24q-27-18-49 0z" fill="#f1be27" stroke="#18223b" stroke-width="5"/>
+            <text x="51" y="21" text-anchor="middle" font-size="12" font-weight="900" fill="#14213c">נ נח</text>
+            <path d="M35 63q15 34 31 0v33H35z" fill="#56321e"/>
+            <path d="M21 92h65l12 103H8z" fill="#eef8ff" stroke="#18223b" stroke-width="6"/>
+            <path d="M20 101L-9 55m92 47 38-52" fill="none" stroke="#d99864" stroke-width="14" stroke-linecap="round"/>
+            <path d="M20 194L3 254m80-60 20 60" fill="none" stroke="#18223b" stroke-width="20" stroke-linecap="round"/>
+            <path d="M18 178L8 222m70-44 11 44" fill="none" stroke="#fff" stroke-width="5"/><path d="M10 176l-15 31m80-31 16 31" stroke="#e0ad20" stroke-width="4"/>
+          </g>
+        </svg>
+      </div>
+    </section>
+
+    <section class="setup-shell" id="setupScreen">
+      <div class="setup-main deluxe-card">
+        <div class="section-heading"><span>1</span><div><h2>Choose how to play</h2><p>Stay private, or put a nickname on the worldwide board.</p></div></div>
+        <div class="mode-grid" role="radiogroup" aria-label="Play mode">
+          <button class="mode-card active" data-mode="practice" role="radio" aria-checked="true">
+            <span class="mode-icon">🕯️</span><strong>Anonymous Practice</strong><small>No name, no score upload. Your recent questions stay on this device so repeats are avoided.</small>
+          </button>
+          <button class="mode-card" data-mode="compete" role="radio" aria-checked="false">
+            <span class="mode-icon">🏆</span><strong>Compete</strong><small>Choose a public nickname and climb the Na Nach leaderboard. No account required.</small>
           </button>
         </div>
-        <h1>🔥 <span data-en="Torah Trivia" data-he="טריוויה תורנית">Torah Trivia</span> 🔥</h1>
-        <p class="subtitle" data-en="Test your knowledge of Breslov teachings" data-he="בחנו את הידע שלכם בתורות ברסלב">Test your knowledge of Breslov teachings</p>
-        <p class="tagline" data-en="How well do you know Rebbe Nachman and his teachings?" data-he="כמה אתה מכיר את רבי נחמן ותורותיו?">How well do you know Rebbe Nachman and his teachings?</p>
-      </header>
+        <label class="nickname-field" id="nicknameField" hidden>Public nickname
+          <input id="nicknameInput" maxlength="24" autocomplete="nickname" placeholder="e.g. Breslover613" />
+          <small>Letters, numbers, spaces, hyphens and underscores only.</small>
+        </label>
 
-      <div class="menu-container">
-        <div class="level-select">
-          <h2 data-en="Choose Your Level" data-he="בחר את הרמה שלך">Choose Your Level</h2>
-          <div class="level-cards">
-            <button class="level-card" data-level="1">
-              <span class="level-icon">🌱</span>
-              <span class="level-name">Beginners</span>
-              <span class="level-desc">Rebbe Nachman basics & life story</span>
-              <span class="level-timer">30 sec per question</span>
+        <div class="section-heading"><span>2</span><div><h2>Pick your fire</h2><p>Mix everything or focus your round.</p></div></div>
+        <div class="category-grid">
+          {Object.entries(catalog.categories).map(([key,label]) => (
+            <button class={`category-card ${key === 'teachings' ? 'selected' : ''}`} data-category={key} aria-pressed={key === 'teachings' ? 'true':'false'}>
+              <span class="category-icon">{key === 'teachings' ? '📜' : key === 'avodah' ? '🕯️' : key === 'history' ? '🗺️' : key === 'personages' ? '🧔' : key === 'nanach' ? '🔥' : '📚'}</span>
+              <strong>{label}</strong><small>{categoryCounts[key].toLocaleString()} questions</small>
             </button>
-            <button class="level-card" data-level="2">
-              <span class="level-icon">📖</span>
-              <span class="level-name">Intermediate</span>
-              <span class="level-desc">The Stories, Talmidim & Breslov History</span>
-              <span class="level-timer">25 sec per question</span>
-            </button>
-            <button class="level-card" data-level="3">
-              <span class="level-icon">🧠</span>
-              <span class="level-name">Advanced</span>
-              <span class="level-desc">Likutay Moharan, Teachings & Concepts</span>
-              <span class="level-timer">20 sec per question</span>
-            </button>
-            <button class="level-card" data-level="4">
-              <span class="level-icon">👑</span>
-              <span class="level-name">Na Nach Master</span>
-              <span class="level-desc">The Petek, Saba, Deep Torahs & Gematrios</span>
-              <span class="level-timer">15 sec per question</span>
-            </button>
-          </div>
+          ))}
+        </div>
+        <button class="select-all" id="selectAllCategories">Select all categories</button>
+
+        <div class="section-heading"><span>3</span><div><h2>Choose a level</h2><p>Mixed Fire adapts across all three.</p></div></div>
+        <div class="difficulty-grid" role="radiogroup" aria-label="Difficulty">
+          <button class="difficulty-card" data-level="beginner" role="radio"><b>🌱 Beginner</b><small>Recognize core teachings and names</small></button>
+          <button class="difficulty-card active" data-level="mixed" role="radio" aria-checked="true"><b>🔥 Mixed Fire</b><small>Balanced climb through every level</small></button>
+          <button class="difficulty-card" data-level="scholar" role="radio"><b>📖 Scholar</b><small>Sources, dates and precise connections</small></button>
+          <button class="difficulty-card" data-level="fire" role="radio"><b>⚡ Fire</b><small>For serious Breslov learners</small></button>
         </div>
 
-        <div class="topic-select">
-          <h2 data-en="Choose Topics" data-he="בחר נושאים">Choose Topics</h2>
-          <div class="topic-chips">
-            <button class="topic-chip active" data-topic="all">🔥 Everything</button>
-            <button class="topic-chip" data-topic="life">📜 Life of Rabbeinu</button>
-            <button class="topic-chip" data-topic="lm">📖 Likutay Moharan</button>
-            <button class="topic-chip" data-topic="stories">🏰 Sipurey Maasiyos</button>
-            <button class="topic-chip" data-topic="nanach">🎵 Na Nach & The Petek</button>
-            <button class="topic-chip" data-topic="talmidim">👥 Talmidim & History</button>
-            <button class="topic-chip" data-topic="chm">📝 Chayay Moharan</button>
-            <button class="topic-chip" data-topic="sichos">💬 Sichos HaRan</button>
-            <button class="topic-chip" data-topic="shivchay">🌟 Shivchay HaRan</button>
-            <button class="topic-chip" data-topic="midos">📕 Sefer HaMiddos</button>
-            <button class="topic-chip" data-topic="sefarim">📚 Breslov Sefarim</button>
-            <button class="topic-chip" data-topic="gematria">🔢 Gematrios</button>
-          </div>
+        <div class="round-row">
+          <label>Round length <select id="roundLength"><option value="10">10 questions</option><option value="20" selected>20 questions</option><option value="30">30 questions</option></select></label>
+          <label class="sound-toggle"><input id="soundToggle" type="checkbox" checked /> Sound sparks</label>
         </div>
-
-        <div class="play-mode-select">
-          <button id="playForFun" class="play-btn fun-btn start-btn">
-            <span class="start-icon">🎮</span>
-            <span class="start-text">START — Play for Fun</span>
-          </button>
-          <button id="playCompetitive" class="play-btn compete-btn start-btn">
-            <span class="start-icon">🏆</span>
-            <span class="start-text">START — Play to Compete</span>
-            <small>Register to appear on the leaderboard</small>
-          </button>
+        <div class="start-actions">
+          <button class="daily-button" id="dailyButton">☀️ Daily 10</button>
+          <button class="start-button" id="startButton">Light the Fire <span>→</span></button>
         </div>
+        <p class="setup-error" id="setupError" role="alert"></p>
       </div>
 
-      <div class="leaderboard-preview" id="leaderboardPreview">
-        <h2>🏆 Top Scores</h2>
-        <div class="leaderboard-tabs">
-          <button class="lb-tab active" data-lb-level="all">All</button>
-          <button class="lb-tab" data-lb-level="1">🌱</button>
-          <button class="lb-tab" data-lb-level="2">📖</button>
-          <button class="lb-tab" data-lb-level="3">🧠</button>
-          <button class="lb-tab" data-lb-level="4">👑</button>
-        </div>
-        <div id="leaderboardList" class="leaderboard-list">
-          <p class="empty-lb">No scores yet — be the first!</p>
-        </div>
+      <aside class="leaderboard-card deluxe-card" aria-labelledby="leaderboard-title">
+        <div class="leader-head"><div><span class="tiny-label">HALL OF FIRE</span><h2 id="leaderboard-title">Highest Scores</h2></div><span class="trophy">🏆</span></div>
+        <div class="board-tabs"><button class="active" data-board="all">All</button><button data-board="today">Today</button></div>
+        <ol class="score-list" id="scoreList"><li class="board-loading">Loading the board…</li></ol>
+        <p class="board-note" id="boardNote">Competitive scores are calculated from verified question sessions.</p>
+        <div class="fair-play"><strong>🛡️ Fair-play board</strong><span>The server chooses the questions and calculates the official score.</span></div>
+      </aside>
+    </section>
+
+    <section class="game-shell" id="gameScreen" hidden aria-live="polite">
+      <div class="game-topbar">
+        <button class="quit-button" id="quitButton" aria-label="Leave round">×</button>
+        <div class="round-progress"><span id="questionCounter">Question 1 of 20</span><div class="progress-track"><i id="roundProgress"></i></div></div>
+        <div class="hud-stat"><small>SCORE</small><strong id="scoreValue">0</strong></div>
+        <div class="hud-stat streak-stat"><small>STREAK</small><strong><span id="streakValue">0</span> 🔥</strong></div>
       </div>
-    </div>
-
-    <!-- ========== REGISTRATION MODAL ========== -->
-    <div id="registerModal" class="modal hidden">
-      <div class="modal-content">
-        <button class="modal-close" id="closeRegister">✕</button>
-        <h2>Register to Compete</h2>
-        <p>Your scores will appear on the leaderboard!</p>
-        <form id="registerForm">
-          <div class="form-group">
-            <label for="playerName">Display Name</label>
-            <input type="text" id="playerName" placeholder="Your name..." maxlength="20" required />
+      <div class="question-stage">
+        <div class="question-card deluxe-card" id="questionCard">
+          <div class="question-meta"><span id="categoryBadge">Teachings</span><span id="levelBadge">Beginner</span></div>
+          <div class="timer-wrap"><div class="timer-bar" id="timerBar"></div><span id="timerText">30</span></div>
+          <h2 id="questionPrompt">Loading your question…</h2>
+          <div class="answer-grid" id="answerGrid"></div>
+          <div class="lifelines">
+            <button id="fiftyButton">✂️ 50 / 50 <small>one use</small></button>
+            <button id="studyButton">📖 Study source</button>
           </div>
-          <div class="form-group">
-            <label for="playerEmail">Email (optional, for score recovery)</label>
-            <input type="email" id="playerEmail" placeholder="email@example.com" />
+          <div class="feedback-panel" id="feedbackPanel" hidden>
+            <div class="feedback-mark" id="feedbackMark">✓</div>
+            <div><strong id="feedbackTitle">Correct!</strong><p id="feedbackText"></p><a id="sourceLink" target="_blank" rel="noopener">Open exact source ↗</a></div>
+            <button id="nextButton">Next fire →</button>
           </div>
-          <button type="submit" class="play-btn compete-btn">Start Game! 🚀</button>
-        </form>
+        </div>
+        <aside class="journey-card deluxe-card">
+          <div class="van-window"><span class="mini-van">🚐</span><i id="vanRoad"></i></div>
+          <h3>Your Journey</h3>
+          <div class="journey-stats"><span><b id="correctValue">0</b> correct</span><span><b id="accuracyValue">0%</b> accuracy</span></div>
+          <div class="flame-path" id="flamePath"></div>
+          <blockquote>“The whole world is a very narrow bridge — and the main thing is not to fear at all.”</blockquote>
+        </aside>
       </div>
-    </div>
+    </section>
 
-    <!-- ========== GAME SCREEN ========== -->
-    <div id="gameScreen" class="screen hidden">
-      <div class="game-hud">
-        <div class="hud-item">
-          <span class="hud-label" data-en="Score" data-he="ניקוד">Score</span>
-          <span class="hud-value" id="scoreDisplay">0</span>
-        </div>
-        <div class="hud-item timer-hud">
-          <div class="timer-ring" id="timerRing">
-            <svg viewBox="0 0 100 100">
-              <circle class="timer-bg" cx="50" cy="50" r="45"/>
-              <circle class="timer-progress" cx="50" cy="50" r="45" id="timerCircle"/>
-            </svg>
-            <span class="timer-text" id="timerText">30</span>
-          </div>
-        </div>
-        <div class="hud-item">
-          <span class="hud-label" data-en="Question" data-he="שאלה">Question</span>
-          <span class="hud-value"><span id="questionNum">1</span>/<span id="totalQuestions">10</span></span>
-        </div>
+    <section class="result-shell" id="resultScreen" hidden>
+      <div class="result-card deluxe-card">
+        <div class="result-burst" aria-hidden="true">🔥</div>
+        <p class="tiny-label">ROUND COMPLETE</p>
+        <h2 id="resultTitle">You kept the fire burning!</h2>
+        <p class="result-score"><span id="finalScore">0</span> points</p>
+        <div class="result-grid"><span><b id="finalCorrect">0/20</b> correct</span><span><b id="finalAccuracy">0%</b> accuracy</span><span><b id="finalStreak">0</b> best streak</span><span><b id="finalRank">—</b> board rank</span></div>
+        <div class="achievement-row" id="achievementRow"></div>
+        <p class="submit-status" id="submitStatus"></p>
+        <div class="result-actions"><button id="newRoundButton">Fresh questions</button><button id="reviewButton">Review sources</button></div>
+        <div class="review-list" id="reviewList" hidden></div>
       </div>
-
-      <div class="streak-bar" id="streakBar">
-        <span id="streakText">🔥 Streak: 0</span>
+      <div class="celebration-scene" aria-label="Na Nach men celebrating on a Na Nach van">
+        <img src="/images/nanach/friends-dancing-on-na-nach-van.jpg" alt="Na Nach men dancing in celebration on a decorated Na Nach van" />
+        <div class="celebration-caption"><strong>Na Nach victory dance!</strong><span lang="he" dir="rtl">נ נח נחמ נחמן מאומן</span></div>
       </div>
+    </section>
 
-      <div class="question-area">
-        <div class="question-category" id="questionCategory"></div>
-        <h2 class="question-text" id="questionText"></h2>
-        <div class="answers-grid" id="answersGrid"></div>
-      </div>
+    <div class="confetti" id="confetti" aria-hidden="true"></div>
+  </main>
 
-      <div class="question-feedback hidden" id="feedback">
-        <div class="feedback-icon" id="feedbackIcon"></div>
-        <div class="feedback-text" id="feedbackText"></div>
-        <div class="feedback-source" id="feedbackSource"></div>
-      </div>
-    </div>
+  <script is:inline>
+  (() => {
+    const API='/api/trivia';
+    const $=(id)=>document.getElementById(id);
+    const state={catalog:null,mode:'practice',level:'mixed',categories:['teachings'],length:20,questions:[],index:0,score:0,correct:0,streak:0,bestStreak:0,answers:[],sessionToken:null,timer:null,deadline:0,fiftyUsed:false,sound:true,daily:false};
+    const categoryLabels={teachings:'Teachings',avodah:'Avodah',history:'Breslov History',personages:'Personages',nanach:'Na Nach & Saba',books:'Books & Sources'};
+    const levelPoints={beginner:100,scholar:180,fire:300};
 
-    <!-- ========== RESULTS SCREEN ========== -->
-    <div id="resultsScreen" class="screen hidden">
-      <div class="results-container">
-        <div class="results-header">
-          <h1 id="resultsTitle">Great Job!</h1>
-          <div class="final-score-display">
-            <span class="final-score-label" data-en="Final Score" data-he="ניקוד סופי">Final Score</span>
-            <span class="final-score-value" id="finalScore">0</span>
-          </div>
-        </div>
-
-        <div class="results-stats">
-          <div class="stat-card">
-            <span class="stat-value" id="correctCount">0</span>
-            <span class="stat-label" data-en="Correct" data-he="נכון">Correct</span>
-          </div>
-          <div class="stat-card">
-            <span class="stat-value" id="wrongCount">0</span>
-            <span class="stat-label" data-en="Wrong" data-he="שגוי">Wrong</span>
-          </div>
-          <div class="stat-card">
-            <span class="stat-value" id="bestStreak">0</span>
-            <span class="stat-label" data-en="Best Streak" data-he="רצף הכי טוב">Best Streak</span>
-          </div>
-          <div class="stat-card">
-            <span class="stat-value" id="avgTime">0s</span>
-            <span class="stat-label" data-en="Avg. Time" data-he="זמן ממוצע">Avg. Time</span>
-          </div>
-        </div>
-
-        <div class="results-rank" id="resultsRank"></div>
-
-        <div class="results-actions">
-          <button id="playAgain" class="play-btn fun-btn" data-en="Play Again 🔄" data-he="🔄 שחק שוב">Play Again 🔄</button>
-          <button id="backToMenu" class="play-btn" data-en="Back to Menu" data-he="חזרה לתפריט">Back to Menu</button>
-          <button id="shareScore" class="play-btn compete-btn" data-en="Share Score 📤" data-he="📤 שתף ניקוד">Share Score 📤</button>
-        </div>
-
-        <div class="results-review" id="resultsReview">
-          <h3 data-en="Review Your Answers" data-he="סקירת התשובות שלך">Review Your Answers</h3>
-          <div id="reviewList"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script>
-  (function() {
-    // ==================== QUESTION DATABASE ====================
-    // Each question has: q, a, correct, cat, source, topics[]
-    // Topics: life, lm, stories, nanach, talmidim, chm, sichos, shivchay, midos, sefarim, gematria
-    const questions = {
-      1: [
-        { q: "Where was Rabbi Nachman of Breslov born?", a: ["Medzhibozh, Ukraine","Breslov, Ukraine","Jerusalem","Uman, Ukraine"], correct: 0, cat: "Life of Rabbeinu", source: "Born 1 Nissan 5532 (1772) in Medzhibozh, birthplace of the Baal Shem Tov", topics: ["life","chm"], qHe: "היכן נולד רבי נחמן מברסלב?", aHe: ["מעז׳יבוז׳, אוקראינה","ברסלב, אוקראינה","ירושלים","אומן, אוקראינה"] },
-        { q: "Who was Rabbi Nachman's famous great-grandfather?", a: ["The Baal Shem Tov","The Vilna Gaon","The Rambam","The Arizal"], correct: 0, cat: "Life of Rabbeinu", source: "Rabbi Nachman was the great-grandson of the Baal Shem Tov through his mother", topics: ["life","shivchay"], qHe: "מי היה סב-רבו המפורסם של רבי נחמן?", aHe: ["הבעל שם טוב","הגאון מוילנא","הרמב״ם","האריז״ל"] },
-        { q: "What is Rabbi Nachman's main teaching work called?", a: ["Likutay Moharan","Likutay Halachos","Sipurey Maasiyos","Sefer HaMiddos"], correct: 0, cat: "Sefarim", source: "The collected teachings of Rebbe Nachman of Breslov", topics: ["sefarim","lm"], qHe: "מהו ספר התורות העיקרי של רבי נחמן?", aHe: ["ליקוטי מוהר״ן","ליקוטי הלכות","סיפורי מעשיות","ספר המידות"] },
-        { q: "What city is Rabbi Nachman buried in?", a: ["Uman, Ukraine","Breslov, Ukraine","Jerusalem","Medzhibozh, Ukraine"], correct: 0, cat: "Life of Rabbeinu", source: "Passed away in Uman, 18 Tishrei 5571 (1810)", topics: ["life","chm"], qHe: "באיזו עיר קבור רבי נחמן?", aHe: ["אומן, אוקראינה","ברסלב, אוקראינה","ירושלים","מעז׳יבוז׳, אוקראינה"] },
-        { q: "What is 'Hisbodidus'?", a: ["Personal prayer and conversation with Hashem in seclusion","Group meditation","Silent Torah study","A type of fast"], correct: 0, cat: "Teachings", source: "Likutay Moharan II:25", topics: ["lm","sichos"], qHe: "מהי 'התבודדות'?", aHe: ["תפילה אישית ושיחה עם ה' בהתבודדות","מדיטציה קבוצתית","לימוד תורה בשקט","סוג של תענית"] },
-        { q: "How many stories did Rabbi Nachman tell?", a: ["13","7","10","18"], correct: 0, cat: "Stories", source: "The 13 stories of ancient times (Sipurey Maasiyos)", topics: ["stories"], qHe: "כמה סיפורים סיפר רבי נחמן?", aHe: ["13","7","10","18"] },
-        { q: "Who was Reb Noson?", a: ["Rabbi Nachman's primary student who recorded his teachings","Rabbi Nachman's father","A rival of Rabbi Nachman","The rabbi of Breslov"], correct: 0, cat: "Talmidim", source: "Reb Noson of Nemirov (1780-1844), chief disciple", topics: ["talmidim","sefarim"], qHe: "מי היה רבי נתן?", aHe: ["תלמידו העיקרי של רבי נחמן שרשם את תורותיו","אביו של רבי נחמן","מתנגד של רבי נחמן","רב העיר ברסלב"] },
-        { q: "What holiday did Rabbi Nachman say is most important to be with him?", a: ["Rosh Hashanah","Pesach","Shavuos","Yom Kippur"], correct: 0, cat: "Teachings", source: "The Rosh Hashanah kibbutz in Uman", topics: ["life","chm","sichos"], qHe: "באיזה חג אמר רבי נחמן שהכי חשוב להיות איתו?", aHe: ["ראש השנה","פסח","שבועות","יום כיפור"] },
-        { q: "What did Rabbi Nachman say is a great mitzvah?", a: ["To always be happy (b'simcha)","To learn Torah all day","To fast frequently","To live in Eretz Yisrael"], correct: 0, cat: "Teachings", source: "LM II:24 — mitzvah gedolah lihiyos b'simcha tamid", topics: ["lm","sichos"], qHe: "מה אמר רבי נחמן שזו מצווה גדולה?", aHe: ["להיות בשמחה תמיד","ללמוד תורה כל היום","להתענות הרבה","לגור בארץ ישראל"] },
-        { q: "What is the Tikkun HaKlali?", a: ["10 specific Psalms for general spiritual repair","A prayer said at midnight","A special fast","A mikveh immersion"], correct: 0, cat: "Teachings", source: "Psalms: 16, 32, 41, 42, 59, 77, 90, 105, 137, 150", topics: ["lm","sefarim"], qHe: "מהו התיקון הכללי?", aHe: ["10 פרקי תהילים לתיקון כללי","תפילה שאומרים בחצות","תענית מיוחדת","טבילה במקווה"] },
-        { q: "What does 'Breslov' refer to?", a: ["The city where Rabbi Nachman established his community","Rabbi Nachman's family name","A type of prayer","A book of teachings"], correct: 0, cat: "Life of Rabbeinu", source: "Settled in Breslov, Ukraine in 1802", topics: ["life"], qHe: "למה מתייחס השם 'ברסלב'?", aHe: ["העיר בה רבי נחמן ייסד את קהילתו","שם משפחתו של רבי נחמן","סוג של תפילה","ספר תורות"] },
-        { q: "What is Sefer HaMiddos?", a: ["Rabbi Nachman's book of character traits arranged alphabetically","A Talmudic tractate","A prayer book","A book of stories"], correct: 0, cat: "Sefarim", source: "The Book of Attributes — practical advice by topic", topics: ["midos","sefarim"], qHe: "מהו ספר המידות?", aHe: ["ספר מידות של רבי נחמן מסודר לפי א״ב","מסכת בתלמוד","סידור תפילה","ספר סיפורים"] },
-        { q: "At what age did Rabbi Nachman pass away?", a: ["38","45","52","70"], correct: 0, cat: "Life of Rabbeinu", source: "Born 1772, passed away 1810", topics: ["life","chm"], qHe: "בן כמה היה רבי נחמן כשנפטר?", aHe: ["38","45","52","70"] },
-        { q: "What is Likutay Tefilos?", a: ["Prayers by Reb Noson based on Likutay Moharan","Rabbi Nachman's diary","A collection of Psalms","A Talmud commentary"], correct: 0, cat: "Sefarim", source: "Reb Noson transformed each Torah teaching into a prayer", topics: ["sefarim","talmidim"], qHe: "מהו ליקוטי תפילות?", aHe: ["תפילות שחיבר רבי נתן על פי ליקוטי מוהר״ן","יומנו האישי של רבי נחמן","אוסף תהילים","פירוש על התלמוד"] },
-        { q: "What famous saying begins with 'The whole world...'?", a: ["The whole world is a very narrow bridge","The whole world is full of Torah","The whole world needs joy","The whole world is watching"], correct: 0, cat: "Teachings", source: "LM II:48 — and the main thing is not to fear at all", topics: ["lm"], qHe: "איזה פתגם מפורסם מתחיל ב'כל העולם כולו...'?", aHe: ["כל העולם כולו גשר צר מאוד","כל העולם כולו מלא תורה","כל העולם כולו צריך שמחה","כל העולם כולו צופה"] },
-        { q: "What is 'Azamra'?", a: ["Finding good points in every Jew","A Breslov niggun","A type of prayer","A city in Ukraine"], correct: 0, cat: "Teachings", source: "LM I:282 — 'I will sing to my G-d with what I have left'", topics: ["lm"], qHe: "מהי תורת 'אזמרה'?", aHe: ["למצוא נקודות טובות בכל יהודי","סוג של ניגון ברסלבי","שם של תפילה","עיר באוקראינה"] },
-        { q: "Where do thousands travel every Rosh Hashanah?", a: ["Uman, Ukraine","Meron, Israel","Breslov, Ukraine","Medzhibozh"], correct: 0, cat: "Breslov Today", source: "The annual kibbutz at Rabbi Nachman's tziyun", topics: ["life","nanach"], qHe: "לאן נוסעים אלפים כל ראש השנה?", aHe: ["אומן, אוקראינה","מירון, ישראל","ברסלב, אוקראינה","מעז׳יבוז׳"] },
-        { q: "Who wrote Likutay Halachos?", a: ["Reb Noson","Rabbi Nachman","Rabbi Naftali","Reb Shmuel Isaac"], correct: 0, cat: "Sefarim", source: "Connecting Shulchan Aruch to Likutay Moharan", topics: ["sefarim","talmidim"], qHe: "מי כתב את ליקוטי הלכות?", aHe: ["רבי נתן","רבי נחמן","רבי נפתלי","רבי שמואל יצחק"] },
-        { q: "In Sefer HaMiddos, under which letter is 'Emunah' (faith)?", a: ["Aleph (א)","Bet (ב)","Mem (מ)","Shin (ש)"], correct: 0, cat: "Sefer HaMiddos", source: "Arranged alphabetically — Emunah under Aleph", topics: ["midos"], qHe: "בספר המידות, תחת איזו אות נמצא 'אמונה'?", aHe: ["אל״ף (א)","בי״ת (ב)","מ״ם (מ)","שי״ן (ש)"] },
-        { q: "In Sichos HaRan, what does Rabbi Nachman say about simplicity?", a: ["Simplicity is the highest wisdom","It is only for beginners","It should be outgrown","It is less important than learning"], correct: 0, cat: "Sichos HaRan", source: "Sichos HaRan — temimus (simplicity) is extremely precious", topics: ["sichos"], qHe: "בשיחות הר״ן, מה אמר רבי נחמן על תמימות?", aHe: ["תמימות היא החכמה הגבוהה ביותר","זה רק למתחילים","צריך להתגבר על זה","זה פחות חשוב מלימוד"] },
-      ],
-      2: [
-        { q: "What is the first of Rabbi Nachman's 13 stories?", a: ["The Lost Princess","The Seven Beggars","The Master of Prayer","The Sophisticate and the Simpleton"], correct: 0, cat: "Stories", source: "Sipurey Maasiyos — the search for the lost princess", topics: ["stories"], qHe: "מהו הסיפור הראשון מ-13 הסיפורים של רבי נחמן?", aHe: ["מעשה מאבידת בת מלך","שבעת הקבצנים","בעל תפילה","החכם והתם"] },
-        { q: "In 'The Seven Beggars,' what does the first beggar claim?", a: ["He is blind","He is deaf","He cannot walk","He has no hands"], correct: 0, cat: "Stories", source: "Each beggar's 'defect' is actually a hidden perfection", topics: ["stories"], qHe: "ב'שבעת הקבצנים', מה טוען הקבצן הראשון?", aHe: ["שהוא עיוור","שהוא חירש","שהוא לא יכול ללכת","שאין לו ידיים"] },
-        { q: "Who was Rabbi Naftali of Nemirov?", a: ["Rabbi Nachman's shamash who recorded stories","Rabbi Nachman's son","A misnaged","The rabbi of Uman"], correct: 0, cat: "Talmidim", source: "He wrote down the Sipurey Maasiyos", topics: ["talmidim","stories"], qHe: "מי היה רבי נפתלי מנמירוב?", aHe: ["משמשו של רבי נחמן שרשם את הסיפורים","בנו של רבי נחמן","מתנגד","רב אומן"] },
-        { q: "What did Rabbi Nachman burn before passing away?", a: ["A manuscript of secret teachings","His tefillin","Letters from rebbes","His will"], correct: 0, cat: "Chayay Moharan", source: "The 'Sefer HaNisraf' — the burned book", topics: ["chm","life"], qHe: "מה שרף רבי נחמן לפני פטירתו?", aHe: ["כתב יד של תורות סודיות","את התפילין שלו","מכתבים מרבנים","את הצוואה שלו"] },
-        { q: "What is the 'Tale of the Master of Prayer' about?", a: ["A tzaddik who gathers lost souls back to Hashem","A man who prays for rain","A sage who builds the Temple","A king who loses his kingdom"], correct: 0, cat: "Stories", source: "One of the longest and deepest stories", topics: ["stories"], qHe: "על מה מספר 'מעשה מבעל תפילה'?", aHe: ["צדיק שמחזיר נשמות אבודות לה'","איש שמתפלל על גשם","חכם שבונה את בית המקדש","מלך שמאבד את מלכותו"] },
-        { q: "In Chayay Moharan, what does Rabbi Nachman say about his teachings?", a: ["Every Torah of his is a complete remedy (tikkun)","They are only for scholars","They should be kept secret","They are only for his students"], correct: 0, cat: "Chayay Moharan", source: "Chayay Moharan — each Torah is a healing", topics: ["chm"], qHe: "בחיי מוהר״ן, מה אמר רבי נחמן על תורותיו?", aHe: ["כל תורה שלו היא תיקון שלם","הם רק לתלמידי חכמים","צריך לשמור אותם בסוד","הם רק לתלמידיו"] },
-        { q: "What is the story 'The Sophisticate and the Simpleton' about?", a: ["Two friends — one trusts simply, the other overthinks","Two kings at war","A wise man and fool who swap","A merchant and a thief"], correct: 0, cat: "Stories", source: "Pure emunah vs. endless doubts", topics: ["stories"], qHe: "על מה מספר 'החכם והתם'?", aHe: ["שני חברים — אחד בוטח בפשטות, השני מסבך הכל","שני מלכים במלחמה","חכם וטיפש שמחליפים מקומות","סוחר וגנב"] },
-        { q: "In Sichos HaRan #51, what does Rabbi Nachman say about the tzaddik?", a: ["The tzaddik knows what each soul needs","The tzaddik only helps the righteous","Every generation has many equal tzaddikim","The tzaddik doesn't need followers"], correct: 0, cat: "Sichos HaRan", source: "Sichos HaRan 51 — the tzaddik understands every soul", topics: ["sichos"], qHe: "בשיחות הר״ן נ״א, מה אמר רבי נחמן על הצדיק?", aHe: ["הצדיק יודע מה כל נשמה צריכה","הצדיק עוזר רק לצדיקים","בכל דור יש הרבה צדיקים שווים","הצדיק לא צריך חסידים"] },
-        { q: "What is 'Chayay Moharan'?", a: ["A biographical record of Rabbi Nachman's life","A Torah commentary","A prayer book","A story collection"], correct: 0, cat: "Sefarim", source: "'The Life of Our Master' by Reb Noson", topics: ["chm","sefarim"], qHe: "מהו 'חיי מוהר״ן'?", aHe: ["רשימה ביוגרפית של חיי רבי נחמן","פירוש על התורה","סידור תפילה","אוסף סיפורים"] },
-        { q: "In Shivchay HaRan, what does it praise about Rabbi Nachman's youth?", a: ["His intense devotions and self-sacrifice from childhood","His Torah scholarship only","His travels","His family connections"], correct: 0, cat: "Shivchay HaRan", source: "Shivchay HaRan describes his avodah from a young age", topics: ["shivchay","life"], qHe: "בשבחי הר״ן, מה משבחים על ילדותו של רבי נחמן?", aHe: ["עבודתו העזה ומסירות נפשו מקטנותו","רק את למדנותו","את מסעותיו","את קשריו המשפחתיים"] },
-        { q: "How many volumes does Likutay Moharan have?", a: ["2 (Tinyana is the second)","1","3","5"], correct: 0, cat: "Sefarim", source: "Part 1 (282 Torahs) and Part 2 — Tinyana", topics: ["sefarim","lm"], qHe: "כמה חלקים יש בליקוטי מוהר״ן?", aHe: ["2 (תנינא הוא השני)","1","3","5"] },
-        { q: "In Sefer HaMiddos on 'Tefillah' (prayer), what does Rabbi Nachman teach?", a: ["Through prayer one can change nature itself","Prayer is less effective than Torah study","Only the righteous can pray","Prayer must be in Hebrew only"], correct: 0, cat: "Sefer HaMiddos", source: "Sefer HaMiddos, Tefillah section", topics: ["midos"], qHe: "בספר המידות על 'תפילה', מה מלמד רבי נחמן?", aHe: ["על ידי תפילה אפשר לשנות את הטבע","תפילה פחות יעילה מלימוד","רק צדיקים יכולים להתפלל","תפילה חייבת להיות בעברית"] },
-        { q: "Who printed the first Likutay Moharan?", a: ["Reb Noson","Rabbi Nachman himself","Rabbi Naftali","The Shpoler Zeide"], correct: 0, cat: "Breslov History", source: "Published in Rabbi Nachman's lifetime (1808)", topics: ["talmidim","sefarim"], qHe: "מי הדפיס את ליקוטי מוהר״ן הראשון?", aHe: ["רבי נתן","רבי נחמן בעצמו","רבי נפתלי","הסבא קדישא מהשפולי"] },
-        { q: "What does Rabbi Nachman say about falls in Sichos HaRan?", a: ["Even the descent is for the purpose of an ascent","One should despair and start fresh","Falls are punishments","Only sinners fall"], correct: 0, cat: "Sichos HaRan", source: "Sichos HaRan — yeridah l'tzorech aliyah", topics: ["sichos"], qHe: "מה אמר רבי נחמן על נפילות בשיחות הר״ן?", aHe: ["גם הירידה היא לצורך עלייה","צריך להתייאש ולהתחיל מחדש","נפילות הן עונש","רק חוטאים נופלים"] },
-        { q: "In Shivchay HaRan, what miracle is told about Rabbi Nachman's birth?", a: ["He was born on 1 Nissan, same day the Mishkan was erected","A star appeared","The Baal Shem Tov appeared in a dream","Thunder and lightning"], correct: 0, cat: "Shivchay HaRan", source: "Born on 1 Nissan 5532 — a holy date", topics: ["shivchay","life"], qHe: "בשבחי הר״ן, איזה דבר מיוחד מסופר על לידת רבי נחמן?", aHe: ["נולד בא' ניסן, יום הקמת המשכן","כוכב הופיע","הבעש״ט הופיע בחלום","רעם וברקים"] },
-        { q: "What did Rabbi Nachman say about music and song?", a: ["It is a vessel for prophecy and elevation","It should only be used on Shabbos","It distracts from learning","Only Leviim should sing"], correct: 0, cat: "Teachings", source: "LM I:3 and many other places", topics: ["lm","sichos"], qHe: "מה אמר רבי נחמן על מוזיקה ושירה?", aHe: ["זה כלי לנבואה והתעלות רוחנית","רק בשבת","זה מפריע ללימוד","רק לוויים צריכים לשיר"] },
-        { q: "In Sefer HaMiddos under 'Tzaddik', what does Rabbi Nachman say?", a: ["The tzaddik is the foundation of the world","Every person is a tzaddik","Tzaddikim no longer exist","Only Kohanim are tzaddikim"], correct: 0, cat: "Sefer HaMiddos", source: "Sefer HaMiddos, Tzaddik section", topics: ["midos"], qHe: "בספר המידות תחת 'צדיק', מה אמר רבי נחמן?", aHe: ["הצדיק הוא יסוד העולם","כל אדם הוא צדיק","צדיקים כבר לא קיימים","רק כהנים הם צדיקים"] },
-        { q: "What is the 'Nachal Novea' (Flowing Stream)?", a: ["A title for the Tzaddik — NaChMaN","A river near Breslov","A type of mikveh","A niggun"], correct: 0, cat: "Teachings", source: "Mishlei 18:4 — source of wisdom = flowing stream", topics: ["lm","gematria"], qHe: "מהו 'נחל נובע'?", aHe: ["כינוי לצדיק — נחמ״ן","נהר ליד ברסלב","סוג של מקווה","ניגון"] },
-        { q: "In Chayay Moharan, where did Rabbi Nachman say he wants to be buried?", a: ["In Uman, near the martyrs of the 1768 massacre","In Jerusalem","In Breslov","In Medzhibozh"], correct: 0, cat: "Chayay Moharan", source: "He chose Uman because of the kedoshim buried there", topics: ["chm","life"], qHe: "בחיי מוהר״ן, איפה אמר רבי נחמן שהוא רוצה להיקבר?", aHe: ["באומן, ליד קדושי הטבח של 1768","בירושלים","בברסלב","במעז׳יבוז׳"] },
-        { q: "What happened on 17 Tammuz to Saba Yisroel?", a: ["He found the Petek","He was born","He arrived in Israel","He met Reb Noson's grandson"], correct: 0, cat: "Na Nach", source: "Found the Petek in a copy of Likutay Tefilos", topics: ["nanach"], qHe: "מה קרה לסבא ישראל בי״ז בתמוז?", aHe: ["מצא את הפתק","נולד","הגיע לארץ ישראל","פגש את נכדו של רבי נתן"] },
-      ],
-      3: [
-        { q: "In LM I:282 (Azamra), what verse is the basis?", a: ["'I will sing to my G-d with what I have left' (Tehillim 146:2)","'Shema Yisrael'","'In the beginning'","'Hashem is my shepherd'"], correct: 0, cat: "Likutay Moharan", source: "Azamra l'Elokai b'odi — finding nekudos tovos", topics: ["lm"], qHe: "בליקוטי מוהר״ן א:רפ״ב (אזמרה), על איזה פסוק מבוססת התורה?", aHe: ["'אזמרה לאלוקי בעודי' (תהילים קמ״ו:ב)","'שמע ישראל'","'בראשית'","'ה׳ רועי'"] },
-        { q: "What concept does LM I:64 teach?", a: ["Clapping in prayer sweetens harsh judgments","Clapping is forbidden","Hands = 10 sefiros only","Clapping is only for Shabbos"], correct: 0, cat: "Likutay Moharan", source: "LM I:64 — the mystical power of clapping", topics: ["lm"], qHe: "מה מלמדת תורה ס״ד בליקוטי מוהר״ן?", aHe: ["מחיאת כפיים בתפילה ממתיקה דינים","מחיאת כפיים אסורה בתפילה","ידיים מייצגות י' ספירות בלבד","מחיאת כפיים רק לשבת"] },
-        { q: "What is the root of all sin according to Rabbi Nachman?", a: ["Lack of da'as (holy awareness)","Anger","Laziness","Bad friends"], correct: 0, cat: "Likutay Moharan", source: "LM I:21 — da'as connects everything", topics: ["lm"], qHe: "מהו שורש כל החטאים לפי רבי נחמן?", aHe: ["חוסר דעת (מודעות קדושה)","כעס","עצלות","חברים רעים"] },
-        { q: "In Sichos HaRan #2, what does Rabbi Nachman warn about?", a: ["Philosophical speculation that damages faith","Sleeping too much","Talking during prayer","Ignoring halacha"], correct: 0, cat: "Sichos HaRan", source: "Sichos HaRan 2 — the danger of chochmos (philosophies)", topics: ["sichos"], qHe: "בשיחות הר״ן ב', על מה מזהיר רבי נחמן?", aHe: ["חקירות פילוסופיות שפוגעות באמונה","שינה מרובה","דיבור בתפילה","התעלמות מהלכה"] },
-        { q: "In Chayay Moharan, what did Rabbi Nachman say before passing?", a: ["'What do you have to worry about? I go before you'","'Study my Torah'","'Build a yeshiva'","'Travel to Eretz Yisrael'"], correct: 0, cat: "Chayay Moharan", source: "His final reassurance to his followers", topics: ["chm","life"], qHe: "בחיי מוהר״ן, מה אמר רבי נחמן לפני פטירתו?", aHe: ["'מה יש לכם לדאוג, הרי אני הולך לפניכם'", "'למדו את התורות שלי'", "'בנו ישיבה'", "'נסעו לארץ ישראל'"] },
-        { q: "What does Shivchay HaRan describe about Rabbi Nachman's trip to Eretz Yisrael?", a: ["He faced mortal danger on the sea and from Napoleon's war","It was a peaceful journey","He went by land only","He stayed 10 years"], correct: 0, cat: "Shivchay HaRan", source: "Shivchay HaRan — the harrowing journey of 1798-1799", topics: ["shivchay","life"], qHe: "מה מתאר שבחי הר״ן על נסיעת רבי נחמן לארץ ישראל?", aHe: ["סכנת מוות בים ובמלחמת נפוליאון","נסיעה שקטה","הלך ביבשה בלבד","שהה 10 שנים"] },
-        { q: "In Sefer HaMiddos, what does 'Simcha' (joy) bring?", a: ["It opens the gates of wisdom and prayer","It causes forgetfulness","Only fools are always happy","Joy is dangerous"], correct: 0, cat: "Sefer HaMiddos", source: "Sefer HaMiddos, Simcha section", topics: ["midos"], qHe: "בספר המידות, מה מביאה 'שמחה'?", aHe: ["פותחת שערי חכמה ותפילה","גורמת לשכחה","רק טיפשים שמחים תמיד","שמחה מסוכנת"] },
-        { q: "What does LM I:2 say about Torah study?", a: ["Pray before studying so the Torah's light illuminates","Study is only valid at night","Only married men should study","Study in silence only"], correct: 0, cat: "Likutay Moharan", source: "LM I:2 — prayer before study", topics: ["lm"], qHe: "מה אומרת תורה ב' בליקוטי מוהר״ן על לימוד תורה?", aHe: ["צריך להתפלל לפני הלימוד כדי שאור התורה יאיר","לימוד רק בלילה","רק נשואים צריכים ללמוד","ללמוד בשקט בלבד"] },
-        { q: "In Sichos HaRan #77, what does Rabbi Nachman say about the stories?", a: ["The stories contain very deep and hidden secrets","They are just for children","They are meant literally","They replace Torah study"], correct: 0, cat: "Sichos HaRan", source: "Sichos HaRan 77 — the awesome depth of the stories", topics: ["sichos","stories"], qHe: "בשיחות הר\"ן ע\"ז, מה אמר רבי נחמן על הסיפורים?", aHe: ["הסיפורים מכילים סודות עמוקים מאוד","הם רק לילדים","הם פשוטים כמשמעם","הם מחליפים לימוד תורה"] },
-        { q: "What does 'Tikkun HaKlali' literally mean?", a: ["The General Remedy","The Complete Prayer","The Holy Repair","The Special Psalms"], correct: 0, cat: "Teachings", source: "A universal remedy for all spiritual damage", topics: ["lm","sefarim"], qHe: "מה המשמעות המילולית של 'תיקון הכללי'?", aHe: ["התרופה הכללית (תיקון)","התפילה השלמה","התיקון הקדוש","התהילים המיוחדים"] },
-        { q: "According to Shivchay HaRan, what was unique about Rabbi Nachman's hisbodidus?", a: ["He would scream and cry out to Hashem in the forests","He was always silent","He only did it indoors","He meditated on Divine Names"], correct: 0, cat: "Shivchay HaRan", source: "Shivchay HaRan on his intense personal prayer", topics: ["shivchay"], qHe: "לפי שבחי הר״ן, מה היה ייחודי בהתבודדות רבי נחמן?", aHe: ["היה צועק ובוכה לה' ביערות","היה תמיד בשקט","רק בבית","היה מתבונן בשמות קדושים"] },
-        { q: "What does Rabbi Nachman say about emunah in LM II:5?", a: ["The entire Torah depends on faith","Emunah is only for simple people","Faith is less important than study","Emunah replaces mitzvos"], correct: 0, cat: "Likutay Moharan", source: "LM II:5 — emunah is the foundation", topics: ["lm"], qHe: "מה אמר רבי נחמן על אמונה בליקוטי מוהר״ן ב:ה?", aHe: ["כל התורה תלויה באמונה","אמונה רק לפשוטים","אמונה היא תרגיל שכלי","אמונה היא שכר למעשים טובים"] },
-        { q: "In Sefer HaMiddos under 'Ga'avah' (pride), what warning is given?", a: ["Pride leads to forgetting Hashem","Pride helps leadership","A little pride is necessary","Only rabbis should be humble"], correct: 0, cat: "Sefer HaMiddos", source: "Sefer HaMiddos, Ga'avah section", topics: ["midos"], qHe: "בספר המידות תחת 'גאווה', מה האזהרה?", aHe: ["גאווה מביאה לשכחת ה'","גאווה עוזרת להנהגה","קצת גאווה נחוצה","רק רבנים צריכים ענווה"] },
-        { q: "What does Sichos HaRan say about the importance of Eretz Yisrael?", a: ["Kedusha of Eretz Yisrael surpasses everything","It's optional","Only for retirement","Only for kohanim"], correct: 0, cat: "Sichos HaRan", source: "Multiple places in Sichos HaRan on the Holy Land", topics: ["sichos","life"], qHe: "מה אומרות שיחות הר״ן על חשיבות ארץ ישראל?", aHe: ["קדושת ארץ ישראל עולה על הכל","זה לא הכרחי","רק לפרישה","רק לכהנים"] },
-        { q: "In the Tale of the Lost Princess, who must search for her?", a: ["The viceroy (second to the king)","A random soldier","The king himself","An angel"], correct: 0, cat: "Stories", source: "The viceroy = each Jew searching for the Shechina", topics: ["stories"], qHe: "במעשה מאבידת בת מלך, מי צריך לחפש אותה?", aHe: ["המשנה למלך","חייל אקראי","המלך בעצמו","מלאך"] },
-        { q: "What is the 'Broken Heart' (lev nishbar) in Breslov?", a: ["Not depression, but a heart broken open toward Hashem","A medical condition","A punishment","Something to avoid"], correct: 0, cat: "Teachings", source: "LM II:45 — broken heart vs. depression", topics: ["lm","sichos"], qHe: "מהו 'לב נשבר' בברסלב?", aHe: ["לא עצבות, אלא לב שנפתח כלפי ה'","מצב רפואי","עונש על חטא","משהו שצריך להימנע ממנו"] },
-        { q: "In Chayay Moharan, what did Rabbi Nachman say about his followers after him?", a: ["'My fire will burn until Mashiach comes'","'Find another rebbe'","'The movement will end'","'Only study Gemara'"], correct: 0, cat: "Chayay Moharan", source: "His promise that Breslov will endure forever", topics: ["chm"], qHe: "בחיי מוהר״ן, מה אמר רבי נחמן על חסידיו אחריו?", aHe: ["'האש שלי תוקד עד משיח'", "'מצאו רבי אחר'", "'התנועה תסתיים'", "'רק תלמדו גמרא'"] },
-        { q: "In LM I:21, what is the key concept?", a: ["Da'as — when you have da'as you have everything","Shabbos is everything","Only Torah matters","Chesed is the key"], correct: 0, cat: "Likutay Moharan", source: "When you lack da'as, you lack everything", topics: ["lm"], qHe: "בליקוטי מוהר״ן א:כ״א, מהו המושג המרכזי?", aHe: ["דעת — כשיש דעת יש הכל","שבת היא הכל","רק תורה חשובה","חסד הוא המפתח"] },
-        { q: "What does Sefer HaMiddos teach about 'Teshuvah' (repentance)?", a: ["One who does teshuvah is greater than a perfect tzaddik","Teshuvah is only for great sins","It must include fasting","Only on Yom Kippur"], correct: 0, cat: "Sefer HaMiddos", source: "Sefer HaMiddos, Teshuvah section", topics: ["midos"], qHe: "מה מלמד ספר המידות על 'תשובה'?", aHe: ["בעל תשובה גדול מצדיק גמור","תשובה רק לחטאים גדולים","חייב לכלול צום","רק ביום כיפור"] },
-        { q: "In the 'Burgher and the Pauper' story, what is the lesson?", a: ["True wealth comes from faith, not material possessions","Money is evil","Paupers are holier","Burghers should give everything away"], correct: 0, cat: "Stories", source: "Sipurey Maasiyos — emunah vs. materialism", topics: ["stories"], qHe: "במעשה 'הגביר והעני', מה הלקח?", aHe: ["עושר אמיתי בא מאמונה, לא מרכוש","כסף זה רע","עניים קדושים יותר","גבירים צריכים לתת הכל"] },
-      ],
-      4: [
-        { q: "What is the 'Petek' found by Saba Yisroel?", a: ["A miraculous letter signed by Rabbi Nachman","A contract","An ancient scroll","A letter from the Besht"], correct: 0, cat: "The Petek", source: "Found on 17 Tammuz in Likutay Tefilos", topics: ["nanach"], qHe: "מהו ה'פתק' שמצא סבא ישראל?", aHe: ["מכתב פלאי חתום בשם רבי נחמן","חוזה בין שני רבנים","מגילה עתיקה מבית המקדש","מכתב מהבעש״ט"] },
-        { q: "What book was the Petek found inside?", a: ["Likutay Tefilos","Likutay Moharan","A Chumash","Sefer HaMiddos"], correct: 0, cat: "The Petek", source: "An old copy of Reb Noson's Likutay Tefilos", topics: ["nanach"], qHe: "באיזה ספר נמצא הפתק?", aHe: ["ליקוטי תפילות (של רבי נתן)","ליקוטי מוהר״ן","חומש","ספר המידות"] },
-        { q: "What is the gematria of נחמן (Nachman)?", a: ["148","200","210","180"], correct: 0, cat: "Gematria", source: "Nun(50)+Ches(8)+Mem(40)+Nun(50)=148", topics: ["gematria","nanach"], qHe: "מה הגימטריה של נחמן?", aHe: ["148","200","210","180"] },
-        { q: "What is the gematria of נ נח נחמ נחמן?", a: ["354 = שמחה (Simcha)","200","613","420"], correct: 0, cat: "Gematria", source: "50+58+98+148=354=שמחה", topics: ["gematria","nanach"], qHe: "מה הגימטריה של נ נח נחמ נחמן?", aHe: ["354 = שמחה","200","613","420"] },
-        { q: "Who is 'Saba' in Na Nach tradition?", a: ["Rabbi Yisroel Ber Odesser","Rabbi Nachman","Reb Noson","The Baal Shem Tov"], correct: 0, cat: "Na Nach", source: "Saba Yisroel (1888-1994)", topics: ["nanach"], qHe: "מי הוא 'סבא' במסורת הננח?", aHe: ["רבי ישראל בר אודסר","רבי נחמן בעצמו","רבי נתן","הבעל שם טוב"] },
-        { q: "What is the gematria of נ נח (Na Nach)?", a: ["108","148","58","98"], correct: 0, cat: "Gematria", source: "Nun(50) + Nun(50)+Ches(8) = 108", topics: ["gematria","nanach"], qHe: "מה הגימטריה של נ נח?", aHe: ["108","148","58","98"] },
-        { q: "How old was Saba Yisroel when he passed away?", a: ["106","95","88","120"], correct: 0, cat: "Na Nach", source: "Born 1888, passed away 1994", topics: ["nanach"], qHe: "בן כמה היה סבא ישראל כשנפטר?", aHe: ["106","95","88","120"] },
-        { q: "What is the gematria of פתק (Petek)?", a: ["580","385","500","420"], correct: 0, cat: "Gematria", source: "Pei(80)+Tav(400)+Kuf(100)=580", topics: ["gematria","nanach"], qHe: "מה הגימטריה של פתק?", aHe: ["580","385","500","420"] },
-        { q: "What type of song does Na Nach Nachma Nachman represent according to Tikkuney Zohar?", a: ["Single, double, triple, quadruple — the song of Mashiach","A lullaby for the soul","A wedding song","A song of mourning turned to joy"], correct: 0, cat: "Na Nach", source: "Tikkuney Zohar — shir pashut, kaful, meshulash, meruba = the new song of redemption", topics: ["nanach","lm"], qHe: "איזה סוג שיר מייצג נ נח נחמ נחמן לפי תיקוני הזוהר?", aHe: ["פשוט, כפול, משולש, מרובע — שיר של משיח","שיר ערש לנשמה","שיר חתונה","שיר של אבל שהפך לשמחה"] },
-        { q: "What is 'Ebay HaNachal'?", a: ["Saba's letters to President Shazar","A river near Uman","A niggun","A commentary on Tehillim"], correct: 0, cat: "Na Nach", source: "Blossoms of the Brook (Song of Songs 6:11)", topics: ["nanach"], qHe: "מהו 'אבי הנחל'?", aHe: ["אוסף מכתבי סבא לנשיא שזר","נהר ליד אומן","ניגון ברסלבי","פירוש על תהילים"] },
-        { q: "What president of Israel was close to Saba?", a: ["Zalman Shazar","Chaim Weizmann","Ben-Zvi","Shimon Peres"], correct: 0, cat: "Na Nach", source: "Saba's letters form the book Ebay HaNachal", topics: ["nanach"], qHe: "איזה נשיא ישראל היה קרוב לסבא?", aHe: ["זלמן שזר","חיים ויצמן","יצחק בן-צבי","שמעון פרס"] },
-        { q: "In Chayay Moharan, what did Rabbi Nachman say about Uman's martyrs?", a: ["He can fix their souls — that's why he chose to be buried there","He didn't know about them","He wanted to avoid them","Only scholars are buried there"], correct: 0, cat: "Chayay Moharan", source: "The holy martyrs of the 1768 Haidamak massacre", topics: ["chm","life"], qHe: "בחיי מוהר״ן, מה אמר רבי נחמן על קדושי אומן?", aHe: ["הוא יכול לתקן את נשמותיהם — לכן בחר להיקבר שם","הוא לא ידע עליהם","הוא רצה להימנע מהם","רק תלמידי חכמים קבורים שם"] },
-        { q: "What is the gematria of 'Uman' (אומן)?", a: ["97","100","148","50"], correct: 0, cat: "Gematria", source: "Aleph(1)+Vav(6)+Mem(40)+Nun(50)=97", topics: ["gematria"], qHe: "מה הגימטריה של 'אומן'?", aHe: ["97","100","148","50"] },
-        { q: "In Sichos HaRan #234, what did Rabbi Nachman say about himself?", a: ["'I could make the whole world do teshuvah'","'I am just a simple Jew'","'My teachings are incomplete'","'I have no special powers'"], correct: 0, cat: "Sichos HaRan", source: "Sichos HaRan 234 — his extraordinary self-assessment", topics: ["sichos"], qHe: "בשיחות הר״ן רל״ד, מה אמר רבי נחמן על עצמו?", aHe: ["'אני יכול להחזיר את כל העולם בתשובה'", "'אני רק יהודי פשוט'", "'התורות שלי לא שלמות'", "'אין לי כוחות מיוחדים'"] },
-        { q: "According to Shivchay HaRan, what happened when Rabbi Nachman revealed Torah 64?", a: ["The world was not ready — great opposition arose","Everyone accepted it","Nothing special happened","He kept it secret"], correct: 0, cat: "Shivchay HaRan", source: "The machloikes intensified after deep revelations", topics: ["shivchay","lm"], qHe: "לפי שבחי הר״ן, מה קרה כשרבי נחמן גילה תורה ס״ד?", aHe: ["העולם לא היה מוכן — התנגדות גדולה עלתה","כולם קיבלו","לא קרה שום דבר מיוחד","הוא שמר את זה בסוד"] },
-        { q: "In Sefer HaMiddos on 'Emet' (truth), what is taught?", a: ["Truth is the seal of Hashem — the foundation of everything","Truth is relative","White lies are permitted","Only prophets know the truth"], correct: 0, cat: "Sefer HaMiddos", source: "Sefer HaMiddos, Emet section", topics: ["midos"], qHe: "בספר המידות על 'אמת', מה נלמד?", aHe: ["אמת היא חותמו של הקב״ה — יסוד הכל","אמת היא יחסית","שקר לבן מותר","רק נביאים יודעים את האמת"] },
-        { q: "Where was Saba Yisroel born?", a: ["Tiberias, Israel","Uman, Ukraine","Jerusalem","Medzhibozh"], correct: 0, cat: "Na Nach", source: "Born in Tiberias in 1888", topics: ["nanach"], qHe: "היכן נולד סבא ישראל?", aHe: ["טבריה, ישראל","אומן, אוקראינה","ירושלים","מעז׳יבוז׳"] },
-        { q: "What does 'MeUman' (מאומן) hint at beyond the city name?", a: ["Emunah (faith) — from the same root","A family name","An acronym","Nothing — just the city"], correct: 0, cat: "Na Nach", source: "The Tzaddik's resting place = faith", topics: ["nanach","gematria"], qHe: "על מה רומז 'מאומן' מעבר לשם העיר?", aHe: ["אמונה — מאותו שורש","שם משפחה","ראשי תיבות","כלום — רק שם העיר"] },
-        { q: "What did Saba say about the Petek?", a: ["The greatest revelation since Sinai","A nice letter","A reminder to visit Uman","Belongs in a museum"], correct: 0, cat: "Na Nach", source: "Saba considered it of supreme importance", topics: ["nanach"], qHe: "מה אמר סבא על הפתק?", aHe: ["הגילוי הגדול ביותר מאז מתן תורה","מכתב יפה","תזכורת לנסוע לאומן","שייך למוזיאון"] },
-        { q: "In Sichos HaRan, what does Rabbi Nachman say about sleep?", a: ["One should minimize sleep — it wastes precious life","Sleep 12 hours","Sleep is holy","Only tzaddikim need less sleep"], correct: 0, cat: "Sichos HaRan", source: "Sichos HaRan — sleep is one-sixtieth of death", topics: ["sichos"], qHe: "בשיחות הר״ן, מה אמר רבי נחמן על שינה?", aHe: ["צריך למעט בשינה — היא מבזבזת חיים יקרים","לישון 12 שעות","שינה קדושה","רק צדיקים צריכים פחות שינה"] },
-      ]
-    };
-
-    // ==================== GAME STATE ====================
-    let lang = 'en'; // 'en' or 'he'
-
-    let state = {
-      currentLevel: 1,
-      selectedTopics: ['all'],
-      isCompetitive: false,
-      playerName: '',
-      playerEmail: '',
-      score: 0,
-      currentQ: 0,
-      streak: 0,
-      bestStreak: 0,
-      correct: 0,
-      wrong: 0,
-      totalTime: 0,
-      questionTimes: [],
-      timer: null,
-      timeLeft: 30,
-      maxTime: 30,
-      questionSet: [],
-      answers: [],
-      timerRunning: false
-    };
-
-    const QUESTIONS_PER_GAME = 10;
-    const TIME_PER_LEVEL = { 1: 30, 2: 25, 3: 20, 4: 15 };
-    const POINTS_BASE = { 1: 100, 2: 150, 3: 200, 4: 300 };
-    const STREAK_BONUS = 50;
-    const LEADERBOARD_KEY = 'ajew_trivia_leaderboard';
-
-    // ==================== DOM REFS ====================
-    const $ = (s) => document.querySelector(s);
-    const $$ = (s) => document.querySelectorAll(s);
-
-    const menuScreen = $('#menuScreen');
-    const gameScreen = $('#gameScreen');
-    const resultsScreen = $('#resultsScreen');
-    const registerModal = $('#registerModal');
-
-    // ==================== SCREEN MANAGEMENT ====================
-    function showScreen(screen) {
-      $$('.screen').forEach(s => { s.classList.remove('active'); s.classList.add('hidden'); });
-      screen.classList.remove('hidden');
-      screen.classList.add('active');
+    function safeText(s){return String(s==null?'':s)}
+    function sound(kind){
+      if(!state.sound)return;
+      try{const ctx=new (window.AudioContext||window.webkitAudioContext)();const o=ctx.createOscillator();const g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.type=kind==='right'?'sine':'sawtooth';o.frequency.setValueAtTime(kind==='right'?520:170,ctx.currentTime);if(kind==='right')o.frequency.exponentialRampToValueAtTime(880,ctx.currentTime+.18);g.gain.setValueAtTime(.06,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.23);o.start();o.stop(ctx.currentTime+.24)}catch(e){}
     }
+    function hashSeed(text){let h=2166136261;for(let i=0;i<text.length;i++){h^=text.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
+    function mulberry32(a){return function(){let t=a+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
+    function shuffle(a,r=Math.random){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+    function historyIds(){try{return JSON.parse(localStorage.getItem('nanachTriviaHistory')||'[]')}catch{return[]}}
+    function remember(ids){const all=[...historyIds(),...ids];localStorage.setItem('nanachTriviaHistory',JSON.stringify([...new Set(all)].slice(-360)))}
+    function localScores(){try{return JSON.parse(localStorage.getItem('nanachTriviaScores')||'[]')}catch{return[]}}
+    function addLocalScore(row){const all=[...localScores(),row].sort((a,b)=>b.score-a.score).slice(0,50);localStorage.setItem('nanachTriviaScores',JSON.stringify(all))}
 
-    // ==================== LEVEL SELECTION ====================
-    $$('.level-card').forEach(card => {
-      card.addEventListener('click', () => {
-        $$('.level-card').forEach(c => c.classList.remove('selected'));
-        card.classList.add('selected');
-        state.currentLevel = parseInt(card.dataset.level);
-      });
-    });
+    document.querySelectorAll('.mode-card').forEach(b=>b.addEventListener('click',()=>{
+      document.querySelectorAll('.mode-card').forEach(x=>{x.classList.toggle('active',x===b);x.setAttribute('aria-checked',x===b?'true':'false')});state.mode=b.dataset.mode;$('nicknameField').hidden=state.mode!=='compete';
+    }));
+    document.querySelectorAll('.category-card').forEach(b=>b.addEventListener('click',()=>{b.classList.toggle('selected');b.setAttribute('aria-pressed',b.classList.contains('selected')?'true':'false');state.categories=[...document.querySelectorAll('.category-card.selected')].map(x=>x.dataset.category)}));
+    $('selectAllCategories').addEventListener('click',()=>{document.querySelectorAll('.category-card').forEach(b=>{b.classList.add('selected');b.setAttribute('aria-pressed','true')});state.categories=[...document.querySelectorAll('.category-card')].map(x=>x.dataset.category)});
+    document.querySelectorAll('.difficulty-card').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.difficulty-card').forEach(x=>{x.classList.toggle('active',x===b);x.setAttribute('aria-checked',x===b?'true':'false')});state.level=b.dataset.level}));
+    document.querySelectorAll('.board-tabs button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.board-tabs button').forEach(x=>x.classList.toggle('active',x===b));loadBoard(b.dataset.board)}));
+    $('roundLength').addEventListener('change',e=>state.length=Number(e.target.value));
+    $('soundToggle').addEventListener('change',e=>state.sound=e.target.checked);
+    $('startButton').addEventListener('click',()=>startRound(false));
+    $('dailyButton').addEventListener('click',()=>startRound(true));
+    $('quitButton').addEventListener('click',()=>{if(confirm('Leave this round?'))showSetup()});
+    $('nextButton').addEventListener('click',nextQuestion);
+    $('newRoundButton').addEventListener('click',showSetup);
+    $('reviewButton').addEventListener('click',()=>{$('reviewList').hidden=!$('reviewList').hidden});
+    $('fiftyButton').addEventListener('click',useFifty);
+    $('studyButton').addEventListener('click',()=>{const q=state.questions[state.index];if(q)window.open(q.sourceUrl,'_blank','noopener')});
+    document.addEventListener('keydown',e=>{if($('gameScreen').hidden)return;if(['1','2','3','4'].includes(e.key)){const b=document.querySelector(`.answer-button[data-index="${Number(e.key)-1}"]`);if(b&&!b.disabled)b.click()}if(e.key==='Enter'&&!$('feedbackPanel').hidden)$('nextButton').click()});
 
-    // Default select level 1
-    document.querySelector('.level-card[data-level="1"]').classList.add('selected');
-
-    // ==================== TOPIC SELECTION ====================
-    $$('.topic-chip').forEach(chip => {
-      chip.addEventListener('click', () => {
-        const topic = chip.dataset.topic;
-        if (topic === 'all') {
-          // Deselect all others, select "all"
-          $$('.topic-chip').forEach(c => c.classList.remove('active'));
-          chip.classList.add('active');
-          state.selectedTopics = ['all'];
-        } else {
-          // Toggle this topic, deselect "all"
-          document.querySelector('.topic-chip[data-topic="all"]').classList.remove('active');
-          chip.classList.toggle('active');
-          state.selectedTopics = [...$$('.topic-chip.active')].map(c => c.dataset.topic).filter(t => t !== 'all');
-          // If nothing selected, revert to all
-          if (state.selectedTopics.length === 0) {
-            document.querySelector('.topic-chip[data-topic="all"]').classList.add('active');
-            state.selectedTopics = ['all'];
-          }
+    async function loadCatalog(){
+      if(state.catalog)return state.catalog;
+      const r=await fetch('/data/trivia/questions.json?v=1');if(!r.ok)throw new Error('Question library unavailable');state.catalog=await r.json();return state.catalog;
+    }
+    function validateName(name){return /^[A-Za-z0-9 _-]{2,24}$/.test(name)}
+    function eligible(){return state.catalog.questions.filter(q=>state.categories.includes(q.category)&&(state.level==='mixed'||q.level===state.level))}
+    function chooseLocal(seed){
+      let pool=eligible(),seen=new Set(historyIds()),fresh=pool.filter(q=>!seen.has(q.id));if(fresh.length<state.length)fresh=pool;
+      const rand=mulberry32(seed);return shuffle(fresh,rand).slice(0,state.length);
+    }
+    async function startRound(daily){
+      $('setupError').textContent='';state.daily=daily;state.length=daily?10:Number($('roundLength').value);state.sound=$('soundToggle').checked;
+      if(daily){state.categories=['teachings','avodah','history','personages','nanach','books'];state.level='mixed';state.mode='practice'}
+      if(!state.categories.length){$('setupError').textContent='Choose at least one category.';return}
+      const nickname=$('nicknameInput').value.trim();if(state.mode==='compete'&&!validateName(nickname)){$('setupError').textContent='Choose a nickname with 2–24 letters, numbers, spaces, hyphens or underscores.';return}
+      $('startButton').disabled=true;$('startButton').firstChild.textContent='Gathering questions… ';
+      try{
+        await loadCatalog();let qs=null;state.sessionToken=null;
+        if(state.mode==='compete'){
+          try{const r=await fetch(API+'/session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nickname,categories:state.categories,level:state.level,length:state.length})});if(r.ok){const d=await r.json();state.sessionToken=d.token;const map=new Map(state.catalog.questions.map(q=>[q.id,q]));qs=d.questionIds.map(id=>map.get(id)).filter(Boolean)}}catch(e){}
+          if(!qs||qs.length!==state.length){$('setupError').textContent='Competition server is temporarily unavailable; starting a local practice round.';state.mode='practice'}
         }
-      });
-    });
-
-    // ==================== LANGUAGE TOGGLE ====================
-    $('#langToggle').addEventListener('click', () => {
-      lang = lang === 'en' ? 'he' : 'en';
-      document.querySelector('.lang-en').classList.toggle('active', lang === 'en');
-      document.querySelector('.lang-he').classList.toggle('active', lang === 'he');
-      // Update all data-en/data-he elements on menu screen
-      document.querySelectorAll('[data-en][data-he]').forEach(el => {
-        el.textContent = el.getAttribute('data-' + lang);
-      });
-      // Set page direction for Hebrew
-      document.querySelector('.trivia-page').style.direction = lang === 'he' ? 'rtl' : 'ltr';
-    });
-
-    // ==================== PLAY BUTTONS ====================
-    $('#playForFun').addEventListener('click', () => {
-      state.isCompetitive = false;
-      startGame();
-    });
-
-    $('#playCompetitive').addEventListener('click', () => {
-      state.isCompetitive = true;
-      // Check if already registered
-      const saved = localStorage.getItem('ajew_trivia_player');
-      if (saved) {
-        const player = JSON.parse(saved);
-        state.playerName = player.name;
-        state.playerEmail = player.email;
-        startGame();
-      } else {
-        registerModal.classList.remove('hidden');
-      }
-    });
-
-    $('#closeRegister').addEventListener('click', () => {
-      registerModal.classList.add('hidden');
-    });
-
-    $('#registerForm').addEventListener('submit', (e) => {
-      e.preventDefault();
-      state.playerName = $('#playerName').value.trim();
-      state.playerEmail = $('#playerEmail').value.trim();
-      localStorage.setItem('ajew_trivia_player', JSON.stringify({
-        name: state.playerName,
-        email: state.playerEmail
-      }));
-      registerModal.classList.add('hidden');
-      startGame();
-    });
-
-    // ==================== GAME LOGIC ====================
-    function shuffleArray(arr) {
-      const a = [...arr];
-      for (let i = a.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [a[i], a[j]] = [a[j], a[i]];
-      }
-      return a;
+        if(!qs){const seed=daily?hashSeed(new Date().toISOString().slice(0,10)+'daily'):crypto.getRandomValues(new Uint32Array(1))[0];qs=chooseLocal(seed)}
+        if(qs.length<state.length)throw new Error('Not enough questions for that combination. Add a category or use Mixed Fire.');
+        state.questions=qs;state.index=0;state.score=0;state.correct=0;state.streak=0;state.bestStreak=0;state.answers=[];state.fiftyUsed=false;
+        remember(qs.map(q=>q.id));showGame();renderQuestion();
+      }catch(e){$('setupError').textContent=e.message||'Could not start the round.'}
+      finally{$('startButton').disabled=false;$('startButton').firstChild.textContent='Light the Fire '}
     }
-
-    function startGame() {
-      state.score = 0;
-      state.currentQ = 0;
-      state.streak = 0;
-      state.bestStreak = 0;
-      state.correct = 0;
-      state.wrong = 0;
-      state.totalTime = 0;
-      state.questionTimes = [];
-      state.answers = [];
-      state.maxTime = TIME_PER_LEVEL[state.currentLevel];
-      // Filter by selected topics
-      let pool = questions[state.currentLevel];
-      if (!state.selectedTopics.includes('all')) {
-        pool = pool.filter(q => q.topics && q.topics.some(t => state.selectedTopics.includes(t)));
-      }
-      // If filtered pool is too small, pull from all levels with matching topics
-      if (pool.length < QUESTIONS_PER_GAME && !state.selectedTopics.includes('all')) {
-        const allLevels = [1,2,3,4].flatMap(l => questions[l]);
-        pool = allLevels.filter(q => q.topics && q.topics.some(t => state.selectedTopics.includes(t)));
-      }
-      state.questionSet = shuffleArray(pool).slice(0, QUESTIONS_PER_GAME);
-
-      $('#totalQuestions').textContent = QUESTIONS_PER_GAME;
-      $('#scoreDisplay').textContent = '0';
-      showScreen(gameScreen);
-      showQuestion();
+    function showGame(){document.getElementById('yahrzeitCloseBtn')?.click();$('setupScreen').hidden=true;$('resultScreen').hidden=true;$('gameScreen').hidden=false;window.scrollTo({top:$('gameScreen').offsetTop-20,behavior:'smooth'})}
+    function showSetup(){clearInterval(state.timer);$('gameScreen').hidden=true;$('resultScreen').hidden=true;$('setupScreen').hidden=false;loadBoard('all');window.scrollTo({top:0,behavior:'smooth'})}
+    function renderQuestion(){
+      clearInterval(state.timer);const q=state.questions[state.index];$('feedbackPanel').hidden=true;$('answerGrid').innerHTML='';$('questionCard').classList.remove('correct-flash','wrong-flash');
+      $('questionCounter').textContent=`Question ${state.index+1} of ${state.questions.length}`;$('roundProgress').style.width=`${state.index/state.questions.length*100}%`;$('scoreValue').textContent=state.score.toLocaleString();$('streakValue').textContent=state.streak;$('categoryBadge').textContent=categoryLabels[q.category]||q.category;$('levelBadge').textContent=q.level.toUpperCase();$('questionPrompt').textContent=q.prompt;
+      q.options.forEach((opt,i)=>{const b=document.createElement('button');b.className='answer-button';b.dataset.index=i;b.innerHTML=`<span>${i+1}</span><b></b>`;b.querySelector('b').textContent=opt;b.addEventListener('click',()=>answer(i));$('answerGrid').appendChild(b)});
+      $('fiftyButton').disabled=state.fiftyUsed;$('correctValue').textContent=state.correct;$('accuracyValue').textContent=state.index?Math.round(state.correct/state.index*100)+'%':'0%';renderFlames();
+      const seconds=q.level==='beginner'?30:q.level==='scholar'?40:50;state.deadline=Date.now()+seconds*1000;updateTimer(seconds);state.timer=setInterval(()=>{const left=Math.max(0,(state.deadline-Date.now())/1000);updateTimer(left);if(left<=0){clearInterval(state.timer);answer(-1)}},100);
     }
-
-    function showQuestion() {
-      if (state.currentQ >= state.questionSet.length) {
-        endGame();
-        return;
-      }
-
-      const q = state.questionSet[state.currentQ];
-      const isHe = lang === 'he';
-      const qText = isHe && q.qHe ? q.qHe : q.q;
-      const aTexts = isHe && q.aHe ? q.aHe : q.a;
-
-      // Update language-dependent labels
-      document.querySelectorAll('[data-en][data-he]').forEach(el => {
-        el.textContent = el.getAttribute('data-' + lang);
-      });
-
-      $('#questionNum').textContent = state.currentQ + 1;
-      $('#questionCategory').textContent = q.cat;
-      $('#questionText').textContent = qText;
-      if (isHe) { $('#questionText').style.direction = 'rtl'; } else { $('#questionText').style.direction = 'ltr'; }
-      $('#streakText').textContent = state.streak > 0 ? `🔥 Streak: ${state.streak}` : '';
-      $('#streakBar').className = 'streak-bar' + (state.streak >= 3 ? ' on-fire' : '');
-
-      const feedback = $('#feedback');
-      feedback.classList.add('hidden');
-
-      // Shuffle answers but track correct
-      const indices = [0, 1, 2, 3];
-      const shuffled = shuffleArray(indices);
-      const correctIdx = shuffled.indexOf(q.correct);
-
-      const grid = $('#answersGrid');
-      grid.innerHTML = '';
-      const labels = isHe ? ['א','ב','ג','ד'] : ['A','B','C','D'];
-      shuffled.forEach((origIdx, btnIdx) => {
-        const btn = document.createElement('button');
-        btn.className = 'answer-btn';
-        if (isHe) btn.style.direction = 'rtl';
-        const label = document.createElement('span');
-        label.className = 'answer-label';
-        label.textContent = labels[btnIdx];
-        const text = document.createElement('span');
-        text.className = 'answer-text';
-        text.textContent = aTexts[origIdx];
-        btn.appendChild(label);
-        btn.appendChild(text);
-        btn.dataset.idx = btnIdx;
-        btn.dataset.correct = btnIdx === correctIdx ? 'true' : 'false';
-        btn.addEventListener('click', () => handleAnswer(btn, btnIdx === correctIdx, q));
-        grid.appendChild(btn);
-      });
-
-      startTimer();
+    function updateTimer(left){const q=state.questions[state.index];const total=q.level==='beginner'?30:q.level==='scholar'?40:50;$('timerText').textContent=Math.ceil(left);$('timerBar').style.width=`${Math.max(0,left/total*100)}%`;$('timerBar').classList.toggle('danger',left<7)}
+    function answer(selected){
+      clearInterval(state.timer);const q=state.questions[state.index];const buttons=[...document.querySelectorAll('.answer-button')];buttons.forEach(b=>b.disabled=true);const right=selected===q.answer;
+      buttons.forEach((b,i)=>{if(i===q.answer)b.classList.add('correct');else if(i===selected)b.classList.add('wrong')});
+      if(right){state.correct++;state.streak++;state.bestStreak=Math.max(state.bestStreak,state.streak);const gained=levelPoints[q.level]+Math.min(200,(state.streak-1)*20);state.score+=gained;$('feedbackTitle').textContent=`Correct! +${gained}`;$('feedbackMark').textContent='✓';$('questionCard').classList.add('correct-flash');sound('right')}
+      else{state.streak=0;$('feedbackTitle').textContent=selected<0?'Time! The fire waits for no one.':'Not this time — learn it and own it.';$('feedbackMark').textContent='✦';$('questionCard').classList.add('wrong-flash');sound('wrong')}
+      state.answers.push({id:q.id,selected});$('feedbackText').textContent=q.explanation;$('sourceLink').href=q.sourceUrl;$('sourceLink').textContent=`Open ${q.sourceLabel} source ↗`;$('feedbackPanel').hidden=false;$('scoreValue').textContent=state.score.toLocaleString();$('streakValue').textContent=state.streak;$('correctValue').textContent=state.correct;$('accuracyValue').textContent=Math.round(state.correct/(state.index+1)*100)+'%';renderFlames();
     }
-
-    function startTimer() {
-      state.timeLeft = state.maxTime;
-      state.timerRunning = true;
-      updateTimerDisplay();
-
-      if (state.timer) clearInterval(state.timer);
-      state.timer = setInterval(() => {
-        state.timeLeft -= 0.1;
-        if (state.timeLeft <= 0) {
-          state.timeLeft = 0;
-          state.timerRunning = false;
-          clearInterval(state.timer);
-          handleTimeout();
-        }
-        updateTimerDisplay();
-      }, 100);
+    function nextQuestion(){state.index++;if(state.index>=state.questions.length)finishRound();else renderQuestion()}
+    function useFifty(){if(state.fiftyUsed)return;const q=state.questions[state.index];const wrong=shuffle([0,1,2,3].filter(i=>i!==q.answer)).slice(0,2);wrong.forEach(i=>{const b=document.querySelector(`.answer-button[data-index="${i}"]`);if(b){b.disabled=true;b.classList.add('removed')}});state.fiftyUsed=true;$('fiftyButton').disabled=true}
+    function renderFlames(){const n=state.questions.length;$('flamePath').innerHTML=Array.from({length:n},(_,i)=>`<i class="${i<state.index+(state.answers.length>state.index?1:0)?(state.answers[i]?.selected===state.questions[i]?.answer?'lit':'dim'):''}">◆</i>`).join('');$('vanRoad').style.width=`${Math.min(100,(state.index+1)/n*100)}%`}
+    async function finishRound(){
+      clearInterval(state.timer);$('gameScreen').hidden=true;$('resultScreen').hidden=false;$('roundProgress').style.width='100%';const total=state.questions.length,accuracy=Math.round(state.correct/total*100);$('finalScore').textContent=state.score.toLocaleString();$('finalCorrect').textContent=`${state.correct}/${total}`;$('finalAccuracy').textContent=accuracy+'%';$('finalStreak').textContent=state.bestStreak;$('finalRank').textContent='—';
+      $('resultTitle').textContent=accuracy===100?'Perfect fire! Torah champion!':accuracy>=80?'The van is dancing — tremendous!':accuracy>=60?'Strong fire — keep climbing!':'Every answer learned is a new beginning.';
+      const badges=[];if(accuracy===100)badges.push('💎 Perfect Round');if(state.bestStreak>=7)badges.push('🔥 Seven-Fire Streak');if(state.categories.length>=5)badges.push('🗺️ All-Around Breslover');if(state.level==='fire')badges.push('⚡ Fire Level');if(state.daily)badges.push('☀️ Daily Flame');$('achievementRow').innerHTML=badges.map(x=>`<span>${x}</span>`).join('')||'<span>🕯️ New Torah Learned</span>';
+      $('reviewList').innerHTML=state.questions.map((q,i)=>`<article class="${state.answers[i]?.selected===q.answer?'review-right':'review-wrong'}"><b>${i+1}. ${escapeHtml(q.prompt)}</b><span>Your answer: ${escapeHtml(state.answers[i]?.selected>=0?q.options[state.answers[i].selected]:'Time expired')}</span><span>Correct: ${escapeHtml(q.options[q.answer])}</span><a href="${q.sourceUrl}" target="_blank" rel="noopener">${escapeHtml(q.sourceLabel)} ↗</a></article>`).join('');$('reviewList').hidden=true;
+      burst();const row={nickname:state.mode==='compete'?$('nicknameInput').value.trim():'Anonymous',score:state.score,correct:state.correct,total,level:state.level,created_at:new Date().toISOString()};addLocalScore(row);
+      if(state.mode==='compete'&&state.sessionToken){$('submitStatus').textContent='Verifying official score…';try{const r=await fetch(API+'/score',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:state.sessionToken,answers:state.answers})});const d=await r.json();if(!r.ok)throw new Error(d.error||'Score rejected');state.score=d.score;$('finalScore').textContent=Number(d.score).toLocaleString();$('finalCorrect').textContent=`${d.correct}/${d.total}`;$('finalRank').textContent=d.rank?'#'+d.rank:'—';$('submitStatus').textContent='✓ Official score posted to the Hall of Fire.'}catch(e){$('submitStatus').textContent='Could not post officially; your score remains saved on this device.'}}
+      else $('submitStatus').textContent='Anonymous round — nothing was uploaded.';
+      window.scrollTo({top:$('resultScreen').offsetTop-20,behavior:'smooth'});
     }
+    function escapeHtml(s){return safeText(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+    function burst(){const c=$('confetti');c.innerHTML='';for(let i=0;i<70;i++){const s=document.createElement('i');s.style.setProperty('--x',Math.random()*100+'vw');s.style.setProperty('--d',1.5+Math.random()*2.5+'s');s.style.setProperty('--r',Math.random()*720+'deg');s.style.background=['#ffd633','#ff5260','#15b8c8','#fff','#5533cc'][i%5];c.appendChild(s)}setTimeout(()=>c.innerHTML='',4300)}
 
-    function updateTimerDisplay() {
-      const pct = state.timeLeft / state.maxTime;
-      const circle = $('#timerCircle');
-      const circumference = 2 * Math.PI * 45;
-      circle.style.strokeDasharray = circumference;
-      circle.style.strokeDashoffset = circumference * (1 - pct);
-
-      // Color changes
-      const ring = $('#timerRing');
-      if (pct > 0.5) ring.className = 'timer-ring';
-      else if (pct > 0.25) ring.className = 'timer-ring warning';
-      else ring.className = 'timer-ring danger';
-
-      $('#timerText').textContent = Math.ceil(state.timeLeft);
+    async function loadBoard(period='all'){
+      $('scoreList').innerHTML='<li class="board-loading">Loading the board…</li>';let rows=null;
+      try{const r=await fetch(`${API}/scores?period=${encodeURIComponent(period)}&limit=10`,{headers:{Accept:'application/json'}});if(r.ok)rows=await r.json()}catch(e){}
+      if(!Array.isArray(rows)){rows=localScores();if(period==='today'){const day=new Date().toISOString().slice(0,10);rows=rows.filter(x=>(x.created_at||'').startsWith(day))}$('boardNote').textContent=rows.length?'Showing this device’s scores while the public board connects.':'Competitive scores will appear here after the first verified round.'}else $('boardNote').textContent='Worldwide verified scores — nicknames only, no account required.';
+      $('scoreList').innerHTML=rows.length?rows.slice(0,10).map((r,i)=>`<li><span class="rank">${i<3?['🥇','🥈','🥉'][i]:'#'+(i+1)}</span><span class="player">${escapeHtml(r.nickname||'Anonymous')}<small>${escapeHtml(r.level||'mixed')} · ${Number(r.correct||0)}/${Number(r.total||0)}</small></span><strong>${Number(r.score||0).toLocaleString()}</strong></li>`).join(''):'<li class="board-loading">No scores yet. Be the first fire!</li>';
     }
-
-    function handleAnswer(btn, isCorrect, q) {
-      if (!state.timerRunning) return;
-      state.timerRunning = false;
-      clearInterval(state.timer);
-
-      const timeTaken = state.maxTime - state.timeLeft;
-      state.questionTimes.push(timeTaken);
-
-      // Highlight answers
-      $$('.answer-btn').forEach(b => {
-        b.disabled = true;
-        if (b.dataset.correct === 'true') b.classList.add('correct');
-        if (b === btn && !isCorrect) b.classList.add('wrong');
-      });
-
-      if (isCorrect) {
-        state.correct++;
-        state.streak++;
-        if (state.streak > state.bestStreak) state.bestStreak = state.streak;
-        // Points: base + time bonus + streak bonus
-        const timeBonus = Math.round((state.timeLeft / state.maxTime) * POINTS_BASE[state.currentLevel]);
-        const streakBonus = state.streak >= 3 ? STREAK_BONUS * (state.streak - 2) : 0;
-        const points = POINTS_BASE[state.currentLevel] + timeBonus + streakBonus;
-        state.score += points;
-        showFeedback(true, `+${points} points!${streakBonus > 0 ? ' (🔥 streak bonus!)' : ''}`, q.source);
-      } else {
-        state.wrong++;
-        state.streak = 0;
-        const correctText = (lang === 'he' && q.aHe) ? q.aHe[q.correct] : q.a[q.correct];
-        showFeedback(false, lang === 'he' ? `התשובה הנכונה: ${correctText}` : `The correct answer was: ${correctText}`, q.source);
-      }
-
-      state.answers.push({ q: q.q, qHe: q.qHe, correct: isCorrect, userAnswer: btn.textContent, correctAnswer: q.a[q.correct], correctAnswerHe: q.aHe ? q.aHe[q.correct] : '', source: q.source });
-      $('#scoreDisplay').textContent = state.score;
-
-      setTimeout(() => {
-        state.currentQ++;
-        showQuestion();
-      }, 2200);
-    }
-
-    function handleTimeout() {
-      const q = state.questionSet[state.currentQ];
-      state.wrong++;
-      state.streak = 0;
-      state.questionTimes.push(state.maxTime);
-
-      $$('.answer-btn').forEach(b => {
-        b.disabled = true;
-        if (b.dataset.correct === 'true') b.classList.add('correct');
-      });
-
-      const correctText = (lang === 'he' && q.aHe) ? q.aHe[q.correct] : q.a[q.correct];
-      showFeedback(false, lang === 'he' ? `⏰ נגמר הזמן! התשובה: ${correctText}` : `⏰ Time's up! The answer was: ${correctText}`, q.source);
-      state.answers.push({ q: q.q, qHe: q.qHe, correct: false, userAnswer: lang === 'he' ? '(נגמר הזמן)' : '(timed out)', correctAnswer: q.a[q.correct], correctAnswerHe: q.aHe ? q.aHe[q.correct] : '', source: q.source });
-
-      setTimeout(() => {
-        state.currentQ++;
-        showQuestion();
-      }, 2200);
-    }
-
-    function showFeedback(isCorrect, text, source) {
-      const feedback = $('#feedback');
-      feedback.classList.remove('hidden');
-      feedback.className = 'question-feedback ' + (isCorrect ? 'fb-correct' : 'fb-wrong');
-      $('#feedbackIcon').textContent = isCorrect ? '✓' : '✗';
-      $('#feedbackText').textContent = text;
-      $('#feedbackSource').textContent = source ? `📖 ${source}` : '';
-    }
-
-    // ==================== END GAME ====================
-    function endGame() {
-      clearInterval(state.timer);
-      showScreen(resultsScreen);
-      // Update language-dependent elements on results screen
-      document.querySelectorAll('[data-en][data-he]').forEach(el => {
-        el.textContent = el.getAttribute('data-' + lang);
-      });
-
-      const pct = state.correct / QUESTIONS_PER_GAME;
-      let title;
-      const isHe = lang === 'he';
-      if (pct === 1) title = isHe ? "🏆 !ציון מושלם 🏆" : "🏆 PERFECT SCORE! 🏆";
-      else if (pct >= 0.8) title = isHe ? "🌟 !מצוין" : "🌟 Excellent!";
-      else if (pct >= 0.6) title = isHe ? "👍 !כל הכבוד" : "👍 Good Job!";
-      else if (pct >= 0.4) title = isHe ? "📖 !המשך ללמוד" : "📖 Keep Learning!";
-      else title = isHe ? "💪 !אל תוותר" : "💪 Don't Give Up!";
-
-      $('#resultsTitle').textContent = title;
-      $('#finalScore').textContent = state.score;
-      $('#correctCount').textContent = state.correct;
-      $('#wrongCount').textContent = state.wrong;
-      $('#bestStreak').textContent = state.bestStreak;
-      const avgTime = state.questionTimes.length ? (state.questionTimes.reduce((a,b) => a + b, 0) / state.questionTimes.length).toFixed(1) : 0;
-      $('#avgTime').textContent = avgTime + 's';
-
-      // Save score
-      if (state.isCompetitive && state.playerName) {
-        saveScore();
-      }
-
-      // Show rank
-      const rank = getRank();
-      const rankEl = $('#resultsRank');
-      if (rank) {
-        rankEl.innerHTML = `<p>🏆 You ranked <strong>#${rank}</strong> on the leaderboard!</p>`;
-      } else {
-        rankEl.innerHTML = state.isCompetitive ? '' : '<p>Play in competitive mode to appear on the leaderboard!</p>';
-      }
-
-      // Build review
-      const reviewList = $('#reviewList');
-      reviewList.innerHTML = '';
-      state.answers.forEach((a, i) => {
-        const div = document.createElement('div');
-        div.className = 'review-item ' + (a.correct ? 'review-correct' : 'review-wrong');
-        const isHe = lang === 'he';
-        const reviewQ = isHe && a.qHe ? a.qHe : a.q;
-        const reviewCorrect = isHe && a.correctAnswerHe ? a.correctAnswerHe : a.correctAnswer;
-        div.innerHTML = `
-          <div class="review-q" ${isHe ? 'dir="rtl"' : ''}><strong>${i+1}.</strong> ${reviewQ}</div>
-          <div class="review-a">${a.correct ? '✓' : '✗'} ${isHe ? 'תשובתך:' : 'Your answer:'} ${a.userAnswer}</div>
-          ${!a.correct ? `<div class="review-correct-a">${isHe ? 'נכון:' : 'Correct:'} ${reviewCorrect}</div>` : ''}
-          <div class="review-source">📖 ${a.source}</div>
-        `;
-        reviewList.appendChild(div);
-      });
-    }
-
-    // ==================== LEADERBOARD ====================
-    function getLeaderboard() {
-      try {
-        return JSON.parse(localStorage.getItem(LEADERBOARD_KEY) || '[]');
-      } catch { return []; }
-    }
-
-    function saveScore() {
-      const lb = getLeaderboard();
-      lb.push({
-        name: state.playerName,
-        score: state.score,
-        level: state.currentLevel,
-        correct: state.correct,
-        total: QUESTIONS_PER_GAME,
-        streak: state.bestStreak,
-        date: new Date().toISOString()
-      });
-      lb.sort((a, b) => b.score - a.score);
-      // Keep top 100
-      localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(lb.slice(0, 100)));
-    }
-
-    function getRank() {
-      if (!state.isCompetitive) return null;
-      const lb = getLeaderboard();
-      const idx = lb.findIndex(e => e.score === state.score && e.name === state.playerName && e.date);
-      return idx >= 0 ? idx + 1 : null;
-    }
-
-    function renderLeaderboard(filterLevel) {
-      const lb = getLeaderboard();
-      const filtered = filterLevel === 'all' ? lb : lb.filter(e => e.level == filterLevel);
-      const list = $('#leaderboardList');
-
-      if (filtered.length === 0) {
-        list.innerHTML = '<p class="empty-lb">No scores yet — be the first!</p>';
-        return;
-      }
-
-      const levelIcons = { 1: '🌱', 2: '📖', 3: '🧠', 4: '👑' };
-      list.innerHTML = filtered.slice(0, 10).map((e, i) => `
-        <div class="lb-entry ${i < 3 ? 'lb-top' + (i+1) : ''}">
-          <span class="lb-rank">${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i+1)}</span>
-          <span class="lb-name">${e.name}</span>
-          <span class="lb-level">${levelIcons[e.level] || ''}</span>
-          <span class="lb-score">${e.score}</span>
-        </div>
-      `).join('');
-    }
-
-    // Leaderboard tabs
-    $$('.lb-tab').forEach(tab => {
-      tab.addEventListener('click', () => {
-        $$('.lb-tab').forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        renderLeaderboard(tab.dataset.lbLevel);
-      });
-    });
-
-    // Initial leaderboard render
-    renderLeaderboard('all');
-
-    // ==================== RESULTS ACTIONS ====================
-    $('#playAgain').addEventListener('click', startGame);
-    $('#backToMenu').addEventListener('click', () => showScreen(menuScreen));
-    $('#shareScore').addEventListener('click', () => {
-      const text = `🔥 I scored ${state.score} on Torah Trivia (Level ${state.currentLevel})! ${state.correct}/${QUESTIONS_PER_GAME} correct with a ${state.bestStreak} streak! Try it: ${window.location.href}`;
-      if (navigator.share) {
-        navigator.share({ title: 'Torah Trivia Score', text });
-      } else {
-        navigator.clipboard.writeText(text).then(() => {
-          alert('Score copied to clipboard!');
-        });
-      }
-    });
-
+    loadCatalog().catch(()=>{});loadBoard('all');
   })();
   </script>
 
-  <style>
-    /* ==================== GLOBAL ==================== */
-    .trivia-page {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 1rem;
-      font-family: 'Open Sans', sans-serif;
-      min-height: 100vh;
-    }
-
-    .screen { display: none; }
-    .screen.active { display: block; animation: fadeIn 0.3s ease; }
-    .hidden { display: none !important; }
-
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-    @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
-    @keyframes fireGlow { 0%,100% { text-shadow: 0 0 5px #f90; } 50% { text-shadow: 0 0 20px #f60, 0 0 40px #f30; } }
-
-    /* ==================== MENU SCREEN ==================== */
-    .lang-toggle { text-align: right; margin-bottom: -1rem; }
-    .lang-btn {
-      background: rgba(255,255,255,0.1);
-      border: 1px solid #c9a227;
-      border-radius: 20px;
-      padding: 0.3rem 0.8rem;
-      cursor: pointer;
-      font-size: 0.9rem;
-      color: #ccc;
-      transition: all 0.2s;
-    }
-    .lang-btn:hover { background: rgba(201,162,39,0.2); }
-    .lang-en.active, .lang-he.active { color: #c9a227; font-weight: bold; }
-    .lang-divider { color: #555; margin: 0 0.2rem; }
-    [dir="rtl"] .question-text, [dir="rtl"] .answer-btn { direction: rtl; text-align: right; }
-
-    .page-header {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-    .page-header h1 {
-      font-size: 2.5rem;
-      margin: 0;
-      background: linear-gradient(135deg, #c9a227, #e8d174, #c9a227);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .page-header .subtitle {
-      font-size: 1.4rem;
-      color: #c9a227;
-      margin: 0.3rem 0;
-      font-family: 'Frank Ruhl Libre', serif;
-    }
-    .tagline {
-      color: #999;
-      font-size: 1rem;
-    }
-
-    .menu-container { margin-bottom: 2rem; }
-
-    .level-select h2, .leaderboard-preview h2 {
-      text-align: center;
-      color: #e8d174;
-      font-size: 1.3rem;
-      margin-bottom: 1rem;
-    }
-
-    .level-cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-      gap: 0.8rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .level-card {
-      background: #1a1a2e;
-      border: 2px solid #333;
-      border-radius: 12px;
-      padding: 1rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.3rem;
-      color: #ccc;
-    }
-    .level-card:hover { border-color: #c9a227; transform: translateY(-2px); }
-    .level-card.selected { border-color: #c9a227; background: #1a1a3e; box-shadow: 0 0 15px rgba(201,162,39,0.3); }
-    .level-icon { font-size: 2rem; }
-    .level-name { font-weight: bold; font-size: 1.1rem; color: #fff; }
-    .level-desc { font-size: 0.8rem; text-align: center; color: #999; }
-    .level-timer { font-size: 0.75rem; color: #c9a227; margin-top: 0.3rem; }
-
-    .topic-select h2 { text-align: center; color: #e8d174; font-size: 1.3rem; margin-bottom: 0.8rem; }
-    .topic-chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      justify-content: center;
-      margin-bottom: 1.5rem;
-    }
-    .topic-chip {
-      padding: 0.4rem 0.9rem;
-      border: 1px solid #444;
-      border-radius: 20px;
-      background: transparent;
-      color: #ccc;
-      cursor: pointer;
-      font-size: 0.85rem;
-      transition: all 0.2s;
-    }
-    .topic-chip:hover { border-color: #c9a227; color: #fff; }
-    .topic-chip.active { background: #c9a227; color: #111; border-color: #c9a227; font-weight: 600; }
-
-    .play-mode-select {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin: 1.5rem 0;
-    }
-
-    .play-btn {
-      padding: 0.8rem 1.8rem;
-      border: 2px solid #555;
-      border-radius: 10px;
-      font-size: 1.1rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      background: #1a1a2e;
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .play-btn small { font-size: 0.7rem; color: #999; margin-top: 0.2rem; }
-    .play-btn:hover { transform: translateY(-2px); }
-
-    .start-btn {
-      padding: 1.2rem 2.5rem;
-      font-size: 1.4rem;
-      font-weight: 700;
-      border-width: 3px;
-      border-radius: 16px;
-      min-width: 300px;
-      animation: pulse 2s infinite;
-    }
-    .start-icon { font-size: 2rem; display: block; margin-bottom: 0.3rem; }
-    .start-text { font-size: 1.3rem; }
-
-    .fun-btn { border-color: #4a9eff; }
-    .fun-btn:hover { background: #1a2a4e; box-shadow: 0 0 20px rgba(74,158,255,0.4); }
-    .compete-btn { border-color: #c9a227; }
-    .compete-btn:hover { background: #2a2a1e; box-shadow: 0 0 20px rgba(201,162,39,0.4); }
-
-    /* ==================== LEADERBOARD ==================== */
-    .leaderboard-preview { margin-top: 2rem; }
-    .leaderboard-tabs {
-      display: flex;
-      justify-content: center;
-      gap: 0.5rem;
-      margin-bottom: 1rem;
-    }
-    .lb-tab {
-      padding: 0.4rem 0.8rem;
-      border: 1px solid #444;
-      border-radius: 6px;
-      background: transparent;
-      color: #ccc;
-      cursor: pointer;
-      font-size: 0.9rem;
-    }
-    .lb-tab.active { background: #c9a227; color: #111; border-color: #c9a227; }
-
-    .leaderboard-list { max-height: 300px; overflow-y: auto; }
-    .empty-lb { text-align: center; color: #666; font-style: italic; }
-
-    .lb-entry {
-      display: flex;
-      align-items: center;
-      gap: 0.8rem;
-      padding: 0.6rem 1rem;
-      border-bottom: 1px solid #222;
-    }
-    .lb-top1 { background: linear-gradient(90deg, rgba(255,215,0,0.1), transparent); }
-    .lb-top2 { background: linear-gradient(90deg, rgba(192,192,192,0.1), transparent); }
-    .lb-top3 { background: linear-gradient(90deg, rgba(205,127,50,0.1), transparent); }
-    .lb-rank { width: 30px; text-align: center; font-weight: bold; }
-    .lb-name { flex: 1; color: #fff; }
-    .lb-level { font-size: 1.1rem; }
-    .lb-score { font-weight: bold; color: #c9a227; font-size: 1.1rem; }
-
-    /* ==================== REGISTRATION MODAL ==================== */
-    .modal {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.8);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-    }
-    .modal.hidden { display: none; }
-    .modal-content {
-      background: #1a1a2e;
-      border: 2px solid #c9a227;
-      border-radius: 16px;
-      padding: 2rem;
-      max-width: 400px;
-      width: 90%;
-      position: relative;
-    }
-    .modal-content h2 { color: #c9a227; margin-top: 0; }
-    .modal-content p { color: #999; }
-    .modal-close {
-      position: absolute;
-      top: 0.5rem;
-      right: 0.8rem;
-      background: none;
-      border: none;
-      color: #999;
-      font-size: 1.3rem;
-      cursor: pointer;
-    }
-    .form-group { margin-bottom: 1rem; }
-    .form-group label { display: block; color: #ccc; margin-bottom: 0.3rem; font-size: 0.9rem; }
-    .form-group input {
-      width: 100%;
-      padding: 0.6rem;
-      border: 1px solid #444;
-      border-radius: 8px;
-      background: #111;
-      color: #fff;
-      font-size: 1rem;
-      box-sizing: border-box;
-    }
-
-    /* ==================== GAME SCREEN ==================== */
-    .game-hud {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.8rem 1rem;
-      background: #111;
-      border-radius: 12px;
-      margin-bottom: 1rem;
-    }
-    .hud-item { text-align: center; }
-    .hud-label { display: block; font-size: 0.75rem; color: #888; text-transform: uppercase; }
-    .hud-value { font-size: 1.5rem; font-weight: bold; color: #fff; }
-
-    .timer-ring { position: relative; width: 60px; height: 60px; }
-    .timer-ring svg { transform: rotate(-90deg); width: 100%; height: 100%; }
-    .timer-bg { fill: none; stroke: #333; stroke-width: 6; }
-    .timer-progress { fill: none; stroke: #4a9eff; stroke-width: 6; stroke-linecap: round; transition: stroke-dashoffset 0.1s linear, stroke 0.3s; }
-    .timer-ring.warning .timer-progress { stroke: #f0a030; }
-    .timer-ring.danger .timer-progress { stroke: #ff3333; }
-    .timer-text {
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 1.1rem;
-      font-weight: bold;
-      color: #fff;
-    }
-    .timer-ring.danger .timer-text { animation: pulse 0.5s infinite; color: #ff3333; }
-
-    .streak-bar {
-      text-align: center;
-      padding: 0.3rem;
-      font-size: 0.9rem;
-      color: #f90;
-      min-height: 1.5rem;
-    }
-    .streak-bar.on-fire #streakText { animation: fireGlow 1s infinite; font-size: 1.1rem; }
-
-    .question-area {
-      margin: 1rem 0;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(201,162,39,0.2);
-      border-radius: 16px;
-      padding: 1.5rem;
-    }
-    .question-category {
-      text-align: center;
-      color: #c9a227;
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      margin-bottom: 0.8rem;
-      display: inline-block;
-      padding: 0.25rem 0.8rem;
-      border: 1px solid rgba(201,162,39,0.3);
-      border-radius: 20px;
-      background: rgba(201,162,39,0.08);
-    }
-    .question-area { position: relative; text-align: center; }
-    .question-text {
-      text-align: center;
-      font-size: 1.5rem;
-      color: #fff;
-      margin-bottom: 1.8rem;
-      line-height: 1.6;
-      min-height: 3rem;
-      font-weight: 600;
-      padding: 0.5rem 0;
-    }
-
-    .answers-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.8rem;
-    }
-
-    .answer-btn {
-      padding: 1.1rem 1.2rem;
-      border: 2px solid #444;
-      border-radius: 12px;
-      background: #1a1a2e;
-      color: #eee;
-      font-size: 1.05rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      text-align: left;
-      line-height: 1.4;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 0.8rem;
-    }
-    [dir="rtl"] .answer-btn { text-align: right; }
-    .answer-label {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 2rem;
-      height: 2rem;
-      border-radius: 50%;
-      background: rgba(201,162,39,0.15);
-      color: #c9a227;
-      font-weight: 700;
-      font-size: 0.95rem;
-      flex-shrink: 0;
-    }
-    .answer-text { flex: 1; }
-    .answer-btn:hover:not(:disabled) { border-color: #4a9eff; background: #1a2a4e; transform: scale(1.02); }
-    .answer-btn:hover:not(:disabled) .answer-label { background: rgba(74,158,255,0.2); color: #4a9eff; }
-    .answer-btn:disabled { cursor: default; }
-    .answer-btn.correct { border-color: #4caf50; background: rgba(76,175,80,0.2); color: #4caf50; animation: pulse 0.3s; }
-    .answer-btn.correct .answer-label { background: rgba(76,175,80,0.3); color: #4caf50; }
-    .answer-btn.wrong { border-color: #f44336; background: rgba(244,67,54,0.2); color: #f44336; animation: shake 0.3s; }
-    .answer-btn.wrong .answer-label { background: rgba(244,67,54,0.3); color: #f44336; }
-
-    .question-feedback {
-      text-align: center;
-      padding: 0.8rem;
-      border-radius: 10px;
-      margin-top: 1rem;
-      animation: fadeIn 0.3s ease;
-    }
-    .fb-correct { background: rgba(76,175,80,0.15); border: 1px solid #4caf50; }
-    .fb-wrong { background: rgba(244,67,54,0.15); border: 1px solid #f44336; }
-    .feedback-icon { font-size: 1.5rem; margin-bottom: 0.3rem; }
-    .fb-correct .feedback-icon { color: #4caf50; }
-    .fb-wrong .feedback-icon { color: #f44336; }
-    .feedback-text { color: #fff; font-size: 0.95rem; }
-    .feedback-source { color: #999; font-size: 0.8rem; margin-top: 0.3rem; }
-
-    /* ==================== RESULTS SCREEN ==================== */
-    .results-container { max-width: 600px; margin: 0 auto; }
-    .results-header { text-align: center; margin-bottom: 1.5rem; }
-    .results-header h1 { font-size: 2rem; margin: 0; color: #fff; }
-    .final-score-display {
-      display: inline-block;
-      padding: 1rem 2rem;
-      margin-top: 1rem;
-      background: linear-gradient(135deg, #1a1a3e, #2a1a3e);
-      border: 2px solid #c9a227;
-      border-radius: 16px;
-    }
-    .final-score-label { display: block; font-size: 0.8rem; color: #999; text-transform: uppercase; }
-    .final-score-value { font-size: 3rem; font-weight: bold; color: #c9a227; }
-
-    .results-stats {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 0.8rem;
-      margin: 1.5rem 0;
-    }
-    .stat-card {
-      text-align: center;
-      padding: 0.8rem;
-      background: #1a1a2e;
-      border-radius: 10px;
-      border: 1px solid #333;
-    }
-    .stat-value { display: block; font-size: 1.5rem; font-weight: bold; color: #fff; }
-    .stat-label { font-size: 0.75rem; color: #888; text-transform: uppercase; }
-
-    .results-rank { text-align: center; color: #c9a227; font-size: 1.1rem; margin: 1rem 0; }
-    .results-actions {
-      display: flex;
-      gap: 0.8rem;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin: 1.5rem 0;
-    }
-
-    .results-review { margin-top: 2rem; }
-    .results-review h3 { color: #e8d174; }
-    .review-item {
-      padding: 0.8rem;
-      border-radius: 8px;
-      margin-bottom: 0.6rem;
-      border-left: 3px solid;
-    }
-    .review-correct { border-color: #4caf50; background: rgba(76,175,80,0.05); }
-    .review-wrong { border-color: #f44336; background: rgba(244,67,54,0.05); }
-    .review-q { color: #fff; margin-bottom: 0.3rem; }
-    .review-a { color: #ccc; font-size: 0.9rem; }
-    .review-correct-a { color: #4caf50; font-size: 0.85rem; margin-top: 0.2rem; }
-    .review-source { color: #888; font-size: 0.8rem; margin-top: 0.3rem; font-style: italic; }
-
-    /* ==================== RESPONSIVE ==================== */
-    @media (max-width: 600px) {
-      .page-header h1 { font-size: 1.8rem; }
-      .answers-grid { grid-template-columns: 1fr; }
-      .results-stats { grid-template-columns: repeat(2, 1fr); }
-      .level-cards { grid-template-columns: repeat(2, 1fr); }
-      .question-text { font-size: 1.2rem; }
-      .question-area { padding: 1rem; }
-      .play-mode-select { flex-direction: column; align-items: center; }
-      .play-btn { width: 100%; max-width: 350px; }
-      .start-btn { min-width: unset; width: 100%; }
-      .start-icon { font-size: 1.5rem; }
-      .start-text { font-size: 1.1rem; }
-      .answer-btn { padding: 0.9rem 1rem; font-size: 1rem; }
-      .answer-label { min-width: 1.6rem; height: 1.6rem; font-size: 0.85rem; }
-    }
+  <style is:global>
+    body{background:#071a2d;color:#14213d}
+    .trivia-page{--navy:#0b1e38;--ink:#14213d;--teal:#12a9b7;--gold:#f6c833;--red:#f34f5e;--cream:#fff9e9;--paper:#fffdf7;--purple:#6c4bd2;min-height:100vh;background:radial-gradient(circle at 18% 10%,#164d68 0,transparent 30%),linear-gradient(#0b223b 0 560px,#f8efd8 560px 100%);padding:22px 18px 90px;font-family:"Open Sans",system-ui,sans-serif;overflow:hidden}
+    .game-hero{max-width:1320px;min-height:460px;margin:0 auto 26px;border:3px solid rgba(255,255,255,.24);border-radius:34px;position:relative;display:grid;grid-template-columns:1fr 1.15fr;align-items:center;overflow:hidden;background:linear-gradient(125deg,#08172d 5%,#123958 55%,#087f8d);box-shadow:0 26px 70px #00101f88,inset 0 0 0 1px #ffd43d55}
+    .hero-rays{position:absolute;inset:-80%;background:repeating-conic-gradient(from 10deg,#fff0 0 8deg,#ffe36710 8deg 15deg);animation:turn 40s linear infinite}@keyframes turn{to{transform:rotate(360deg)}}
+    .hero-copy{position:relative;z-index:2;padding:52px 20px 52px 58px;color:white}.hero-kicker{font-size:.78rem;font-weight:900;letter-spacing:.18em;color:#ffe76d}.hero-copy h1{font-family:Georgia,serif;font-size:clamp(3rem,6vw,6rem);line-height:.86;margin:14px 0;text-shadow:0 5px 0 #071427,0 8px 25px #000}.hero-copy h1 span{display:block;color:var(--gold);font-style:italic}.hero-hebrew{font-size:1.45rem;font-weight:800;color:#8df5ff;margin:16px 0}.hero-sub{max-width:630px;font-size:1.08rem;line-height:1.6;color:#e8f9ff}.hero-stats{display:flex;gap:9px;flex-wrap:wrap;margin-top:26px}.hero-stats span{background:#fff1;border:1px solid #fff4;border-radius:999px;padding:9px 13px;font-size:.78rem}.hero-stats strong{color:#ffe461;font-size:1rem}
+    .crew-stage{height:100%;position:relative;z-index:1;align-self:stretch}.crew-art{width:100%;height:100%;object-fit:cover;display:block}.dancer{transform-box:fill-box;transform-origin:bottom center;animation:dance .8s ease-in-out infinite alternate}.dancer-b{animation-delay:-.3s}.dancer-c{animation-delay:-.55s}@keyframes dance{to{translate:0 -10px;rotate:3deg}}
+    .setup-shell,.question-stage,.result-shell{max-width:1320px;margin:auto;display:grid;grid-template-columns:minmax(0,1.75fr) minmax(300px,.75fr);gap:22px}.deluxe-card{background:linear-gradient(145deg,#fffef9,#fff8e7);border:1px solid #d9cda9;border-radius:25px;box-shadow:0 18px 50px #0b1e3830}.setup-main{padding:34px}.section-heading{display:flex;align-items:center;gap:14px;margin:6px 0 18px}.section-heading>span{width:36px;height:36px;display:grid;place-items:center;border-radius:50%;background:var(--navy);color:#fff;font-weight:900;box-shadow:0 0 0 5px #f3c82f55}.section-heading h2{font-family:Georgia,serif;margin:0;font-size:1.55rem}.section-heading p{margin:3px 0;color:#6d6d6d;font-size:.88rem}
+    button,input,select{font:inherit}.mode-grid,.difficulty-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:30px}.mode-card,.difficulty-card,.category-card{border:2px solid #dfd7c3;background:#fff;border-radius:17px;padding:18px;text-align:left;cursor:pointer;transition:.2s;color:var(--ink)}.mode-card:hover,.difficulty-card:hover,.category-card:hover{transform:translateY(-2px);border-color:#7bcbd1}.mode-card.active,.difficulty-card.active,.category-card.selected{border-color:var(--teal);background:#eaffff;box-shadow:inset 0 0 0 2px #14a9b733,0 8px 18px #14a9b71a}.mode-card{display:grid;grid-template-columns:auto 1fr;gap:5px 12px}.mode-icon{grid-row:1/3;font-size:2rem}.mode-card strong{font-size:1.03rem}.mode-card small,.difficulty-card small,.category-card small{color:#6a7080;line-height:1.35}.nickname-field{display:grid;gap:6px;font-weight:800;margin:-16px 0 30px}.nickname-field input{padding:13px 15px;border:2px solid #d5cdb8;border-radius:12px;max-width:420px}.nickname-field small{font-weight:400;color:#707070}.category-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.category-card{min-height:126px;display:flex;flex-direction:column;gap:7px}.category-icon{font-size:1.55rem}.select-all{border:0;background:none;color:#087f8d;text-decoration:underline;font-weight:800;margin:11px 0 30px;cursor:pointer}.difficulty-grid{grid-template-columns:repeat(2,1fr)}.difficulty-card b{display:block;margin-bottom:8px}.round-row{display:flex;align-items:center;justify-content:space-between;background:#f4eedf;border-radius:14px;padding:14px 17px}.round-row label{font-weight:800}.round-row select{margin-left:8px;padding:8px;border-radius:8px;border:1px solid #b9ad90}.sound-toggle{display:flex;gap:8px}.start-actions{display:flex;gap:12px;margin-top:18px}.start-button,.daily-button{border:0;border-radius:15px;padding:16px 24px;font-weight:900;cursor:pointer}.start-button{flex:1;background:linear-gradient(100deg,#ef4557,#ff983d);color:white;font-size:1.12rem;box-shadow:0 9px 0 #a52d38}.start-button:hover{transform:translateY(2px);box-shadow:0 7px 0 #a52d38}.daily-button{background:#fff0a6;color:#654b00;border:2px solid #e2b81b}.setup-error{min-height:1.2em;color:#b22534;font-weight:700}
+    .leaderboard-card{padding:25px;align-self:start;position:sticky;top:14px}.leader-head{display:flex;justify-content:space-between;align-items:center}.tiny-label{color:#ad7200;letter-spacing:.16em;font-weight:900;font-size:.72rem}.leader-head h2{font-family:Georgia,serif;margin:4px 0}.trophy{font-size:2.4rem}.board-tabs{display:flex;background:#eee5ce;border-radius:10px;padding:4px;margin:16px 0}.board-tabs button{flex:1;border:0;background:none;padding:8px;border-radius:8px;cursor:pointer}.board-tabs button.active{background:#fff;box-shadow:0 2px 8px #0001;font-weight:800}.score-list{list-style:none;padding:0;margin:0}.score-list li{display:flex;align-items:center;gap:10px;padding:12px 4px;border-bottom:1px dashed #d9ceb2}.score-list .rank{width:30px;font-weight:900}.score-list .player{display:flex;flex:1;min-width:0;flex-direction:column;font-weight:800;overflow:hidden;text-overflow:ellipsis}.score-list .player small{font-weight:400;color:#78736a;font-size:.7rem}.score-list strong{color:#b27300}.board-loading{color:#777}.board-note{font-size:.74rem;color:#777;line-height:1.4}.fair-play{display:flex;gap:8px;flex-direction:column;background:#eafafa;padding:12px;border-radius:12px;font-size:.78rem}.fair-play span{color:#667}
+    .game-shell{max-width:1320px;margin:auto}.game-topbar{display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:18px;background:#071a2d;color:white;padding:14px 20px;border-radius:18px;margin-bottom:18px}.quit-button{width:38px;height:38px;border:1px solid #fff4;border-radius:50%;color:white;background:#fff1;font-size:1.4rem;cursor:pointer}.round-progress span{font-weight:800;font-size:.82rem}.progress-track{height:8px;background:#fff2;border-radius:99px;margin-top:7px;overflow:hidden}.progress-track i{display:block;height:100%;background:linear-gradient(90deg,#16c6d6,#ffe044);border-radius:99px;transition:.4s}.hud-stat{text-align:center;border-left:1px solid #fff2;padding-left:18px}.hud-stat small{display:block;color:#82dbe3;font-size:.62rem;letter-spacing:.12em}.hud-stat strong{font-size:1.25rem}.question-stage{grid-template-columns:minmax(0,1.7fr) minmax(250px,.55fr)}.question-card{padding:34px;position:relative;overflow:hidden}.question-meta{display:flex;gap:8px}.question-meta span{font-size:.7rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase;padding:7px 10px;border-radius:99px;background:#dff8fa;color:#076c77}.question-meta span+span{background:#fff0b6;color:#806000}.timer-wrap{display:flex;align-items:center;gap:10px;margin:17px 0}.timer-wrap>div{height:7px;background:#1cb7c5;border-radius:99px;transition:width .1s linear;flex:1}.timer-wrap>div.danger{background:#ee4152}.timer-wrap span{font-weight:900;color:#516}.question-card h2{font-family:Georgia,serif;font-size:clamp(1.35rem,2.2vw,2rem);line-height:1.38;min-height:115px}.answer-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.answer-button{border:2px solid #ddd2b8;background:white;border-radius:15px;padding:14px;display:flex;align-items:center;gap:12px;text-align:left;cursor:pointer;color:var(--ink);min-height:68px;transition:.18s}.answer-button span{flex:0 0 32px;height:32px;display:grid;place-items:center;border-radius:9px;background:#edf6f6;font-weight:900;color:#087e89}.answer-button:hover:not(:disabled){border-color:#15aaba;transform:translateY(-2px)}.answer-button.correct{background:#e2fae8;border-color:#27a957}.answer-button.wrong{background:#ffe7e9;border-color:#eb5260}.answer-button.removed{opacity:.24}.answer-button b{font-weight:700}.lifelines{display:flex;gap:9px;margin-top:15px}.lifelines button{border:1px solid #d5cab0;background:#fff9e9;border-radius:10px;padding:9px 12px;cursor:pointer}.lifelines button small{opacity:.6}.feedback-panel{margin-top:18px;background:#edfafa;border-radius:16px;padding:16px;display:grid;grid-template-columns:auto 1fr auto;gap:13px;align-items:center}.feedback-panel[hidden]{display:none}.feedback-mark{width:43px;height:43px;display:grid;place-items:center;border-radius:50%;background:#16aaba;color:white;font-weight:900;font-size:1.4rem}.feedback-panel p{margin:4px 0;font-size:.88rem}.feedback-panel a{color:#087582;font-weight:800;font-size:.8rem}.feedback-panel button{border:0;background:var(--navy);color:white;padding:12px 15px;border-radius:11px;font-weight:800;cursor:pointer}.correct-flash{animation:correct .45s}.wrong-flash{animation:wrong .35s}@keyframes correct{50%{box-shadow:0 0 0 8px #2bc66755,0 18px 50px #0b1e3830}}@keyframes wrong{25%,75%{transform:translateX(-5px)}50%{transform:translateX(5px)}}
+    .journey-card{padding:22px;align-self:start}.van-window{height:92px;border-radius:16px;background:linear-gradient(#76dce9 0 58%,#d4b272 58%);position:relative;overflow:hidden}.mini-van{position:absolute;z-index:2;font-size:3rem;left:12px;bottom:9px;filter:drop-shadow(0 4px 2px #0003)}.van-window i{position:absolute;left:0;bottom:0;height:9px;background:#f6cb30;transition:.4s}.journey-card h3{font-family:Georgia,serif}.journey-stats{display:flex;justify-content:space-between;font-size:.78rem}.journey-stats b{display:block;font-size:1.2rem;color:#087e89}.flame-path{display:flex;flex-wrap:wrap;gap:4px;margin:18px 0}.flame-path i{font-style:normal;color:#ddd}.flame-path i.lit{color:#f0544f;text-shadow:0 0 8px #ffae22}.flame-path i.dim{color:#b7afa0}.journey-card blockquote{font-family:Georgia,serif;font-style:italic;line-height:1.5;color:#645b49;border-left:4px solid #efc832;padding-left:12px;margin:20px 0 0;font-size:.87rem}
+    .result-shell{grid-template-columns:1.15fr .85fr}.result-card{padding:45px;text-align:center;position:relative}.result-burst{font-size:4rem;filter:drop-shadow(0 6px 12px #e84b3d66);animation:pulse 1s infinite alternate}@keyframes pulse{to{transform:scale(1.12)}}.result-card h2{font-family:Georgia,serif;font-size:2.2rem}.result-score{font-weight:900;color:#a86e00}.result-score span{display:block;font-size:4.3rem;line-height:1;color:#0a7f8a}.result-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.result-grid span{background:#f3eddd;border-radius:12px;padding:12px;font-size:.75rem}.result-grid b{display:block;font-size:1.15rem}.achievement-row{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin:20px 0}.achievement-row span{background:#fff0ab;border:1px solid #e2b81b;border-radius:99px;padding:8px 12px;font-weight:800;font-size:.78rem}.submit-status{color:#42706e}.result-actions{display:flex;gap:10px}.result-actions button{flex:1;border:0;border-radius:13px;background:var(--navy);color:white;padding:14px;font-weight:900;cursor:pointer}.result-actions button+button{background:#e3d7ba;color:#342d20}.review-list{margin-top:18px;max-height:400px;overflow:auto;text-align:left}.review-list article{display:grid;gap:4px;padding:12px;border-left:4px solid #d84d58;background:#fff;margin-bottom:8px;font-size:.78rem}.review-list article.review-right{border-color:#26a45a}.review-list a{color:#087984}.celebration-scene{border-radius:25px;overflow:hidden;position:relative;box-shadow:0 18px 50px #0b1e3830;background:#08172d;min-height:430px}.celebration-scene img{width:100%;height:100%;object-fit:cover;filter:saturate(1.18) contrast(1.05)}.celebration-caption{position:absolute;inset:auto 16px 16px;background:#071a2ddd;color:white;border:1px solid #fff5;border-radius:16px;padding:14px;text-align:center;display:grid}.celebration-caption strong{color:#ffe044;font-size:1.2rem}.celebration-caption span{font-size:1.35rem}.confetti i{position:fixed;z-index:9999;top:-20px;left:var(--x);width:10px;height:18px;border-radius:2px;animation:fall var(--d) linear forwards;rotate:var(--r);pointer-events:none}@keyframes fall{to{translate:0 110vh;rotate:720deg}}
+    [hidden]{display:none!important}
+    @media(max-width:980px){.game-hero{grid-template-columns:1fr;min-height:0}.hero-copy{padding:38px}.crew-stage{height:360px}.setup-shell,.question-stage,.result-shell{grid-template-columns:1fr}.leaderboard-card{position:static}.category-grid{grid-template-columns:repeat(2,1fr)}.difficulty-grid{grid-template-columns:repeat(2,1fr)}.journey-card{display:none}}
+    @media(max-width:600px){.trivia-page{padding:10px 10px 60px;background:linear-gradient(#0b223b 0 650px,#f8efd8 650px)}.game-hero{border-radius:22px}.hero-copy{padding:27px 20px}.hero-copy h1{font-size:3.3rem}.hero-sub{font-size:.93rem}.hero-stats span{font-size:.68rem}.crew-stage{height:285px}.setup-main,.question-card,.result-card{padding:21px}.mode-grid,.category-grid,.difficulty-grid,.answer-grid{grid-template-columns:1fr}.category-card{min-height:0}.round-row{align-items:flex-start;gap:14px;flex-direction:column}.start-actions{flex-direction:column-reverse}.game-topbar{grid-template-columns:auto 1fr auto;padding:10px;gap:8px}.streak-stat{display:none}.question-card h2{min-height:0;font-size:1.25rem}.feedback-panel{grid-template-columns:auto 1fr}.feedback-panel button{grid-column:1/3}.result-grid{grid-template-columns:repeat(2,1fr)}.result-score span{font-size:3.5rem}}
+    @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.001ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important}.confetti{display:none}}
   </style>
 </Layout>

@@ -1,0 +1,24 @@
+[Unit]
+Description=ajew.org verified Na Nach trivia leaderboard API
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/ajew-trivia-api
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/usr/bin/python3 /opt/ajew-trivia-api/trivia_api.py
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/ajew-trivia
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+MemoryMax=160M
+TasksMax=80
+
+[Install]
+WantedBy=multi-user.target
