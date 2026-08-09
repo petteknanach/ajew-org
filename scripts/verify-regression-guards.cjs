@@ -13,6 +13,12 @@ function mustContain(file, needle, label = needle) {
   if (!text.includes(needle)) failures.push(`${file}: missing ${label}`);
 }
 
+function mustNotContain(file, needle, label = needle) {
+  const p = path.join(root, file);
+  const text = fs.readFileSync(p, 'utf8');
+  if (text.includes(needle)) failures.push(`${file}: contains visitor-inappropriate ${label}`);
+}
+
 function loadJson(file) {
   return JSON.parse(fs.readFileSync(path.join(root, file), 'utf8'));
 }
@@ -57,6 +63,9 @@ if (sabaHash !== acceptedSabaHash) {
 // Yahrzeit box: Shavuos must show King Dovid.
 mustContain('src/components/CompactYahrzeit.astro', 'King Dovid HaMelech', 'King Dovid in yahrzeit widget');
 mustContain('src/components/CompactYahrzeit.astro', "{ month: 'Sivan', day: 6, type: 'yahrzeit', name: 'King Dovid HaMelech'", 'King Dovid on 6 Sivan');
+mustContain('src/components/CompactYahrzeit.astro', 'visitorEventDescription', 'visitor-safe yahrzeit description filtering');
+mustNotContain('src/components/CompactYahrzeit.astro', 'uncertain/conflicting dates skipped', 'internal uncertainty note');
+mustNotContain('src/components/CompactYahrzeit.astro', "description: 'Geedoolay HaNachal", 'internal source attribution');
 
 for (const file of [
   'public/data/tzaddikim-database-complete.json',
@@ -64,6 +73,14 @@ for (const file of [
   'public/data/tzaddikim-database.json',
 ]) {
   const db = loadJson(file);
+  for (const entry of db.all_tzaddikim || []) {
+    if (/From Geedoolay HaNachal|uncertain\s*\/\s*conflicting dates skipped/i.test(entry.notes || '')) {
+      failures.push(`${file}: internal import/uncertainty note exposed for ${entry.name || 'unknown entry'}`);
+    }
+    if (entry.source === 'Geedoolay HaNachal') {
+      failures.push(`${file}: internal Geedoolay source field exposed for ${entry.name || 'unknown entry'}`);
+    }
+  }
   const entries = (db.all_tzaddikim || []).filter(t => t.hebrew_name === 'דוד המלך' || /King Dovid|King David|Dovid Hamelech/.test(t.name || ''));
   if (!entries.some(t => t.yahrzeit_month === 'Sivan' && String(t.yahrzeit_day) === '6')) {
     failures.push(`${file}: King Dovid is not recorded on 6 Sivan`);

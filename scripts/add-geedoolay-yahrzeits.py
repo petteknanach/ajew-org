@@ -41,6 +41,11 @@ for rel in ['public/data/tzaddikim-database-complete.json','public/data/tzaddiki
     p=ROOT/rel
     data=json.loads(p.read_text(encoding='utf-8'))
     arr=data.setdefault('all_tzaddikim',[])
+    # Provenance belongs in this importer, not in visitor-facing fields.
+    for item in arr:
+        if item.get('source') == 'Geedoolay HaNachal' or str(item.get('notes','')).startswith('From Geedoolay HaNachal'):
+            item.pop('source', None)
+            item.pop('notes', None)
     keys={(norm(x.get('name')), norm(x.get('hebrew_name')), str(x.get('yahrzeit_month')), str(x.get('yahrzeit_day'))) for x in arr}
     added=0
     for month,day,name,hebrew,year in rows:
@@ -53,24 +58,23 @@ for rel in ['public/data/tzaddikim-database-complete.json','public/data/tzaddiki
         arr.append({
           'name': name, 'hebrew_name': hebrew, 'yahrzeit_hebrew': f'{day} {month}',
           'yahrzeit_month': month, 'yahrzeit_day': day, 'is_adar_ii': month=='Adar II',
-          'year_passed': year, 'notes': 'From Geedoolay HaNachal known yahrzeit list; uncertain/conflicting dates skipped.',
-          'category':'breslov', 'source':'Geedoolay HaNachal'
+          'year_passed': year, 'category':'breslov'
         })
         keys.add(key); added+=1
     p.write_text(json.dumps(data,ensure_ascii=False,indent=2)+"\n",encoding='utf-8')
     print(rel,'added',added,'total',len(arr))
 
-# Append a clear source block to hardcoded importantDates for prominent/upcoming yahrzeit box visibility.
+# Append clean visitor-facing dates to the widget's hardcoded importantDates.
 comp=ROOT/'src/components/CompactYahrzeit.astro'
 s=comp.read_text(encoding='utf-8')
-if 'GEEDOOLAY HANACHAL YAHRZEITS' not in s:
-    block='''\n\n    // === GEEDOOLAY HANACHAL YAHRZEITS — exact known dates only; uncertain/conflicting dates skipped ===\n'''
+if 'VERIFIED BRESLOV YAHRZEITS' not in s:
+    block='''\n\n    // === VERIFIED BRESLOV YAHRZEITS ===\n'''
     for month,day,name,hebrew,year in rows:
         esc=lambda x:x.replace('\\','\\\\').replace("'","\\'")
-        block += f"    {{ month: '{month}', day: {day}, type: 'yahrzeit', name: '{esc(name)}', hebrew_name: '{esc(hebrew)}', description: 'Geedoolay HaNachal — {esc(year)}', priority: 4 }},\n"
+        block += f"    {{ month: '{month}', day: {day}, type: 'yahrzeit', name: '{esc(name)}', hebrew_name: '{esc(hebrew)}', description: '{esc(year)}', priority: 4 }},\n"
     marker='\n    // === PURIM TIBERIAS ==='
     s=s.replace(marker, block+marker)
     comp.write_text(s,encoding='utf-8')
-    print('importantDates block added',len(rows))
+    print('verified yahrzeit block added',len(rows))
 else:
-    print('importantDates block already present')
+    print('verified yahrzeit block already present')

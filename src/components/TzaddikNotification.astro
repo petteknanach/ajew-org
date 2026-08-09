@@ -5,7 +5,7 @@ interface Props {
     hebrew_name: string;
     yahrzeit_hebrew: string;
     year_passed?: string;
-    notes: string;
+    notes?: string;
     category: string;
   };
   isToday: boolean;
@@ -13,6 +13,9 @@ interface Props {
 }
 
 const { tzaddik, isToday, isYesterday = false } = Astro.props;
+const visitorNotes = /From Geedoolay HaNachal|uncertain\s*\/\s*conflicting dates skipped/i.test(tzaddik.notes || '')
+  ? ''
+  : (tzaddik.notes || '');
 
 // Generate a URL-friendly ID for the tzaddik
 const tzaddikId = tzaddik.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
@@ -116,9 +119,9 @@ function getCategoryLabel(category: string) {
             )}
           </div>
           
-          {tzaddik.notes && (
+          {visitorNotes && (
             <p class="mt-2 text-gray-600 text-sm">
-              {tzaddik.notes}
+              {visitorNotes}
             </p>
           )}
         </div>
