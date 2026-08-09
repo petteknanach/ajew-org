@@ -36,6 +36,8 @@ try:
  else:raise RuntimeError('API failed to start')
  status,s=req('/api/trivia/session',{'nickname':'Test_Breslover','categories':['teachings','nanach'],'level':'mixed','length':10})
  assert status==201 and len(s['questionIds'])==10
+ status,s2=req('/api/trivia/session',{'nickname':'Test_Breslover','categories':['teachings','nanach'],'level':'mixed','length':10})
+ assert status==201 and set(s['questionIds']).isdisjoint(s2['questionIds'])
  mapq={q['id']:q for q in qs};answers=[{'id':qid,'selected':mapq[qid]['answer']} for qid in s['questionIds']]
  status,result=req('/api/trivia/score',{'token':s['token'],'answers':answers})
  assert status==201 and result['correct']==10 and result['score']>1000 and result['rank']==1

@@ -41,6 +41,13 @@ def init_db():
         )''')
         c.execute('CREATE INDEX IF NOT EXISTS idx_scores_rank ON scores(score DESC, created_at ASC)')
         c.execute('CREATE INDEX IF NOT EXISTS idx_scores_created ON scores(created_at)')
+        c.execute('''CREATE TABLE IF NOT EXISTS question_history(
+          player_key TEXT NOT NULL,
+          question_id TEXT NOT NULL,
+          seen_at INTEGER NOT NULL,
+          PRIMARY KEY(player_key, question_id)
+        )''')
+        c.execute('CREATE INDEX IF NOT EXISTS idx_question_history_player ON question_history(player_key, seen_at DESC)')
 init_db()
 
 def secret_key():
@@ -129,7 +136,13 @@ class Handler(BaseHTTPRequestHandler):
         if length not in {10,20,30}:raise ValueError('Invalid round length')
         pool=[q['id'] for q in CATALOG['questions'] if q['category'] in cats and (level=='mixed' or q['level']==level)]
         if len(pool)<length:raise ValueError('Not enough questions for that selection')
-        qids=secrets.SystemRandom().sample(pool,length);now=int(time.time());sid=secrets.token_urlsafe(18)
+        player_key=hashlib.sha256((self.ip+'|'+name.casefold()).encode()).hexdigest()
+        with sqlite3.connect(DB) as c:
+            seen={r[0] for r in c.execute('SELECT question_id FROM question_history WHERE player_key=?',(player_key,))}
+        fresh=[qid for qid in pool if qid not in seen]
+        qids=secrets.SystemRandom().sample(fresh if len(fresh)>=length else pool,length);now=int(time.time());sid=secrets.token_urlsafe(18)
+        with sqlite3.connect(DB) as c:
+            c.executemany('INSERT INTO question_history(player_key,question_id,seen_at) VALUES(?,?,?) ON CONFLICT(player_key,question_id) DO UPDATE SET seen_at=excluded.seen_at',[(player_key,qid,now) for qid in qids])
         token=sign({'sid':sid,'name':name,'qids':qids,'cats':cats,'level':level,'iat':now,'exp':now+7200})
         return self.send_json(201,{'token':token,'questionIds':qids,'expiresIn':7200})
     def submit_score(self):
