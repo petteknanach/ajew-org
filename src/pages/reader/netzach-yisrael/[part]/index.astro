@@ -1,0 +1,208 @@
+---
+import fs from 'node:fs';
+import path from 'node:path';
+import Layout from '../../../../layouts/Layout.astro';
+
+export function getStaticPaths() {
+  return [{ params: { part: '1' } }];
+}
+
+const dataPath = path.join(process.cwd(), 'public/reader/netzach-yisrael/index.json');
+const collection = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+const tracksByTopic = collection.topics.map((topic) => ({
+  ...topic,
+  tracks: collection.tracks.filter((track) => track.title === topic.title),
+}));
+const totalHours = Math.floor(collection.totalDurationSeconds / 3600);
+const totalMinutes = Math.round((collection.totalDurationSeconds % 3600) / 60);
+function duration(seconds) {
+  const s = Math.max(0, Math.round(seconds || 0));
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  return h ? `${h}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}` : `${m}:${String(sec).padStart(2, '0')}`;
+}
+---
+
+<Layout title="נצח ישראל — 774 הקלטות הסבא לפי נושאים" description="Listen to 774 original recordings of Saba Yisroel, Rabbi Yisroel Dov Odesser, organized into 22 topics.">
+  <main class="netzach-page" dir="rtl">
+    <header class="hero">
+      <p class="eyebrow">Saba Yisroel Audio Archive</p>
+      <h1 lang="he">נצח ישראל</h1>
+      <h2 lang="he">הקלטות הסבא לפי נושאים</h2>
+      <p class="lead">774 הקלטות מקוריות של הסבא, רבי ישראל דב אודסר, מסודרות ב־22 נושאים להאזנה נוחה.</p>
+      <div class="stats" aria-label="Collection statistics">
+        <b>{collection.trackCount} הקלטות</b>
+        <b>{collection.topics.length} נושאים</b>
+        <b>{totalHours} שעות ו־{totalMinutes} דקות</b>
+      </div>
+      <div class="hero-links">
+        <a href="/reader/">← ספריית הסבא</a>
+        <a href={collection.archiveItemUrl} target="_blank" rel="noopener">Archive.org — הארכיון המלא ↗</a>
+      </div>
+    </header>
+
+    <section class="player-shell" aria-label="Audio player">
+      <div class="now-playing">
+        <span class="pulse" aria-hidden="true">●</span>
+        <div>
+          <small>עכשיו מנגן</small>
+          <strong id="now-playing-title">בחרו הקלטה להאזנה</strong>
+        </div>
+      </div>
+      <audio id="netzach-player" controls preload="none"></audio>
+      <a id="original-file" href={collection.archiveItemUrl} target="_blank" rel="noopener">קובץ המקור ב־Archive.org ↗</a>
+    </section>
+
+    <section class="finder" aria-label="Find a recording">
+      <label for="track-search">חיפוש במספר או בנושא</label>
+      <input id="track-search" type="search" inputmode="search" placeholder="לדוגמה: הפתק, ארץ ישראל, 711" autocomplete="off" />
+      <nav class="topic-nav" aria-label="Topics">
+        {collection.topics.map((topic) => <a href={`#topic-${topic.firstNumber}`}>{topic.title}<small>{topic.count}</small></a>)}
+      </nav>
+    </section>
+
+    <div class="topics" id="topic-list">
+      {tracksByTopic.map((topic, topicIndex) => (
+        <section class="topic" id={`topic-${topic.firstNumber}`} data-topic={topic.title}>
+          <header>
+            <div>
+              <p>הקלטות {topic.firstNumber}–{topic.lastNumber}</p>
+              <h3>{topic.title}</h3>
+            </div>
+            <span>{topic.count} הקלטות</span>
+          </header>
+          <div class="track-grid">
+            {topic.tracks.map((track) => (
+              <article class="track" data-search={`${track.number} ${track.title}`}>
+                <button
+                  class="play-track"
+                  type="button"
+                  data-audio={track.archiveUrl}
+                  data-number={track.number}
+                  data-title={track.title}
+                  aria-label={`נגן הקלטה ${track.number}: ${track.title}`}
+                >
+                  <span class="play-icon" aria-hidden="true">▶</span>
+                  <span class="track-number">{String(track.number).padStart(3, '0')}</span>
+                  <span class="track-name">{track.title}</span>
+                  <time>{duration(track.durationSeconds)}</time>
+                </button>
+              </article>
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+
+    <p id="no-results" hidden>לא נמצאו הקלטות מתאימות.</p>
+    <footer class="archive-note">
+      <strong>מקור יציב ושמור</strong>
+      <p>כל 774 קבצי ה־MP3 נשמרים ב־Internet Archive עם שמותיהם ומספריהם המקוריים. קובץ המניפסט כולל SHA-256 ונתונים טכניים לכל הקלטה.</p>
+      <a href={collection.archiveItemUrl} target="_blank" rel="noopener">פתחו את האוסף ב־Archive.org ↗</a>
+    </footer>
+  </main>
+</Layout>
+
+<script is:inline>
+(() => {
+  const player = document.getElementById('netzach-player');
+  const now = document.getElementById('now-playing-title');
+  const original = document.getElementById('original-file');
+  const buttons = [...document.querySelectorAll('.play-track')];
+  const search = document.getElementById('track-search');
+  const noResults = document.getElementById('no-results');
+
+  document.addEventListener('click', (event) => {
+    const button = event.target.closest('.play-track');
+    if (!button) return;
+    buttons.forEach((item) => item.classList.remove('active'));
+    button.classList.add('active');
+    const number = String(button.dataset.number).padStart(3, '0');
+    now.textContent = `${number} — ${button.dataset.title}`;
+    original.href = button.dataset.audio;
+    if (player.src !== button.dataset.audio) player.src = button.dataset.audio;
+    player.play().catch(() => {});
+    document.querySelector('.player-shell').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
+
+  search?.addEventListener('input', () => {
+    const query = search.value.trim().toLocaleLowerCase('he');
+    let visible = 0;
+    document.querySelectorAll('.topic').forEach((topic) => {
+      let topicVisible = 0;
+      topic.querySelectorAll('.track').forEach((track) => {
+        const show = !query || track.dataset.search.toLocaleLowerCase('he').includes(query);
+        track.hidden = !show;
+        if (show) { visible += 1; topicVisible += 1; }
+      });
+      topic.hidden = topicVisible === 0;
+    });
+    noResults.hidden = visible !== 0;
+  });
+})();
+</script>
+
+<style>
+  .netzach-page { max-width:1180px; margin:0 auto; padding:clamp(20px,4vw,48px) 16px 80px; color:#172b42; }
+  .hero { text-align:center; padding:clamp(34px,6vw,72px) 18px; border:1px solid #d7b46f; border-radius:28px; background:radial-gradient(circle at 15% 20%,#fff1b9,transparent 28%),linear-gradient(135deg,#fffaf0,#eed9ac 58%,#d5ac64); box-shadow:0 20px 60px rgba(28,48,72,.16); }
+  .eyebrow { margin:0 0 8px; direction:ltr; text-transform:uppercase; letter-spacing:.2em; font-size:.72rem; font-weight:900; color:#76521e; }
+  .hero h1 { margin:0; color:#123c63; font-size:clamp(2.7rem,8vw,5.7rem); line-height:.95; font-family:'Frank Ruhl Libre','David Libre',serif; }
+  .hero h2 { margin:12px 0 0; color:#6f4614; font-size:clamp(1.2rem,3vw,2rem); }
+  .lead { max-width:760px; margin:22px auto 0; font-size:clamp(1rem,2vw,1.2rem); line-height:1.8; }
+  .stats,.hero-links,.topic-nav { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; }
+  .stats { margin-top:22px; }
+  .stats b,.hero-links a { padding:9px 15px; border-radius:999px; background:rgba(255,255,255,.76); border:1px solid rgba(111,70,20,.24); }
+  .hero-links { margin-top:14px; }
+  .hero-links a { color:#123c63; text-decoration:none; font-weight:800; }
+  .player-shell { position:sticky; top:8px; z-index:20; margin:20px auto; display:grid; grid-template-columns:minmax(180px,1fr) minmax(260px,2fr) auto; gap:14px; align-items:center; padding:14px 18px; background:rgba(16,42,67,.97); color:white; border-radius:18px; box-shadow:0 12px 35px rgba(0,0,0,.24); backdrop-filter:blur(12px); }
+  .now-playing { display:flex; align-items:center; gap:10px; min-width:0; }
+  .now-playing div { display:grid; min-width:0; }
+  .now-playing small { color:#d9c18f; }
+  .now-playing strong { overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+  .pulse { color:#e6b951; }
+  .player-shell audio { width:100%; min-width:0; }
+  .player-shell > a { color:#ffe7a8; font-size:.82rem; font-weight:800; white-space:nowrap; }
+  .finder { margin:24px 0; padding:20px; border:1px solid #dcc79c; border-radius:20px; background:#fffaf0; }
+  .finder label { display:block; margin-bottom:8px; font-weight:900; }
+  .finder input { width:100%; padding:14px 16px; font:inherit; border:2px solid #ccb070; border-radius:14px; background:white; color:#172b42; }
+  .finder input:focus { outline:3px solid rgba(28,111,156,.2); border-color:#1c6f9c; }
+  .topic-nav { margin-top:14px; justify-content:flex-start; }
+  .topic-nav a { display:flex; gap:7px; padding:8px 12px; border-radius:999px; background:white; color:#174b70; border:1px solid #d9c49a; text-decoration:none; font-weight:800; }
+  .topic-nav small { min-width:22px; padding:0 5px; color:white; background:#a06c25; border-radius:999px; text-align:center; }
+  .topics { display:grid; gap:22px; }
+  .topic { scroll-margin-top:120px; border:1px solid #d7c49d; border-radius:22px; overflow:hidden; background:#fffdf8; box-shadow:0 8px 30px rgba(24,43,67,.08); }
+  .topic > header { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:20px 22px; background:linear-gradient(135deg,#f2e3bf,#fff9eb); border-bottom:1px solid #decca6; }
+  .topic header p { margin:0 0 3px; color:#876432; font-size:.78rem; font-weight:800; }
+  .topic h3 { margin:0; color:#153f61; font-size:clamp(1.35rem,3vw,2rem); }
+  .topic header > span { padding:7px 11px; border-radius:999px; background:#143f61; color:white; font-size:.78rem; font-weight:900; white-space:nowrap; }
+  .track-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(245px,1fr)); gap:1px; background:#e8dfce; }
+  .track { background:white; }
+  .play-track { width:100%; min-height:66px; display:grid; grid-template-columns:30px 48px 1fr auto; gap:8px; align-items:center; padding:11px 13px; border:0; background:white; color:#172b42; text-align:right; cursor:pointer; font:inherit; }
+  .play-track:hover,.play-track:focus-visible { background:#fff3d4; outline:none; }
+  .play-track.active { background:#e5f3f8; box-shadow:inset 4px 0 #17759b; }
+  .play-icon { display:grid; place-items:center; width:28px; height:28px; border-radius:50%; background:#b77a24; color:white; font-size:.75rem; }
+  .track-number { direction:ltr; font-weight:950; color:#174b70; }
+  .track-name { font-weight:800; }
+  .play-track time { direction:ltr; color:#7a6c55; font-size:.78rem; }
+  #no-results { text-align:center; padding:40px; border:2px dashed #c9ad71; border-radius:18px; font-weight:900; }
+  .archive-note { margin-top:26px; padding:24px; border-radius:20px; background:#153f61; color:#eef7fb; }
+  .archive-note strong { color:#ffd67e; font-size:1.2rem; }
+  .archive-note p { line-height:1.75; }
+  .archive-note a { color:#ffe3a1; font-weight:900; }
+  :global(body.dark-mode) .netzach-page { color:#e7edf3; }
+  :global(body.dark-mode) .finder,:global(body.dark-mode) .topic { background:#182331; border-color:#4b5360; }
+  :global(body.dark-mode) .topic > header { background:#202e3d; border-color:#4b5360; }
+  :global(body.dark-mode) .topic h3 { color:#f5d991; }
+  :global(body.dark-mode) .track-grid { background:#394655; }
+  :global(body.dark-mode) .track,:global(body.dark-mode) .play-track { background:#182331; color:#e7edf3; }
+  :global(body.dark-mode) .play-track:hover,:global(body.dark-mode) .play-track.active { background:#263d4e; }
+  @media (max-width:760px) {
+    .player-shell { position:relative; top:auto; grid-template-columns:1fr; padding:14px; }
+    .player-shell > a { white-space:normal; }
+    .track-grid { grid-template-columns:1fr; }
+    .topic > header { padding:16px; }
+    .topic-nav { flex-wrap:nowrap; overflow-x:auto; justify-content:flex-start; padding-bottom:6px; }
+    .topic-nav a { flex:0 0 auto; }
+  }
+</style>
