@@ -22,6 +22,7 @@ const bookName = 'Saba Tape Transcripts';
 
 let torahData = null;
 let indexData = null;
+let audioMapping = null;
 let error = null;
 
 try {
@@ -30,6 +31,13 @@ try {
   const filePath = path.join(readerDir, `chapter-${torahNum}.json`);
   const raw = fs.readFileSync(filePath, 'utf8');
   torahData = JSON.parse(raw);
+
+  const audioMapPath = path.join(readerDir, 'audio-map.json');
+  const audioMap = JSON.parse(fs.readFileSync(audioMapPath, 'utf8'));
+  const candidate = audioMap.entries?.find((entry) => entry.chapter === torahNum);
+  if (candidate?.verified === true && /^https:\/\//.test(candidate.url || '')) {
+    audioMapping = candidate;
+  }
 } catch (e) {
   error = `Tape ${torahNum} not found`;
 }
@@ -37,9 +45,6 @@ try {
 if (!torahData && !error) error = 'Content not available';
 
 const totalSections = indexData?.torahs?.length || 28;
-
-// R2 audio base URL
-const R2_BASE = 'https://pub-81b61511a43c43218e37bc24c20a7a22.r2.dev/saba-recordings';
 
 const pageTitle = torahData
   ? `${torahData.title} - ${bookName} | AJEW.org`
@@ -144,18 +149,28 @@ const pageDesc = torahData
         </div>
       </div>
 
-      <!-- Audio Player -->
-      <div class="saba-audio-player">
-        <div class="audio-header">
-          <span class="audio-icon">🎙️</span>
-          <span class="audio-title">Listen to Saba — Original Recording</span>
+      <!-- Exact audio is rendered only after this transcript/tape mapping is verified. -->
+      {audioMapping ? (
+        <div class="saba-audio-player">
+          <div class="audio-header">
+            <span class="audio-icon">🎙️</span>
+            <span class="audio-title">Listen to Saba — Original Recording</span>
+          </div>
+          <audio id="saba-audio" controls preload="metadata" class="audio-element">
+            <source src={audioMapping.url} type="audio/mpeg" />
+            Your browser does not support audio playback.
+          </audio>
+          <p class="audio-note">Verified original recording for {torahData.title}</p>
         </div>
-        <audio id="saba-audio" controls preload="none" class="audio-element">
-          <source src="" type="audio/mpeg" />
-          Your browser does not support audio playback.
-        </audio>
-        <p class="audio-note">Recordings of Saba Yisroel (Rabbi Yisroel Dov Odesser) z"l</p>
-      </div>
+      ) : (
+        <div class="saba-audio-player audio-pending" role="status">
+          <div class="audio-header">
+            <span class="audio-icon">🎙️</span>
+            <span class="audio-title">Original Recording</span>
+          </div>
+          <p class="audio-note">The exact tape-side recording is being identified and verified before it is linked here.</p>
+        </div>
+      )}
 
       <div class="reader-nav">
         {torahNum > 1 ? (
@@ -220,31 +235,6 @@ const pageDesc = torahData
 </Layout>
 
 <script defer src="/reader-script.js?v=4"></script>
-
-<script is:inline>
-// Map tape transcript chapters to R2 recording files
-// Tape transcripts are from a different set than the numbered sichot
-// For now, provide the full collection as a playlist
-(function() {
-  var audioEl = document.getElementById('saba-audio');
-  if (!audioEl) return;
-
-  var R2 = 'https://pub-81b61511a43c43218e37bc24c20a7a22.r2.dev/saba-recordings';
-
-  // Map tape numbers to recording files
-  // The tapes (1G-16G) correspond to different recordings than the numbered sichot
-  // For now, assign recordings sequentially - users can browse
-  var tapeNum = parseInt(window.location.pathname.split('/').pop()) || 1;
-
-  // Use the recording that corresponds to this tape number
-  var filename = 'saba-recording-00misc-' + tapeNum + '.mp3';
-  var source = audioEl.querySelector('source');
-  if (source) {
-    source.src = R2 + '/' + filename;
-    audioEl.load();
-  }
-})();
-</script>
 
 <style>
   .saba-audio-player {
