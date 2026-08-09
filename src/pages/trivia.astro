@@ -110,10 +110,10 @@ const pageDesc = `${catalog.count.toLocaleString()} source-linked questions on R
 
         <div class="section-heading"><span>3</span><div><h2>Choose a level</h2><p>Mixed Fire adapts across all three.</p></div></div>
         <div class="difficulty-grid" role="radiogroup" aria-label="Difficulty">
-          <button class="difficulty-card" data-level="beginner" role="radio"><b>🌱 Beginner</b><small>Recognize core teachings and names</small></button>
+          <button class="difficulty-card" data-level="beginner" role="radio" aria-checked="false"><b>🌱 Beginner</b><small>Recognize core teachings and names</small></button>
           <button class="difficulty-card active" data-level="mixed" role="radio" aria-checked="true"><b>🔥 Mixed Fire</b><small>Balanced climb through every level</small></button>
-          <button class="difficulty-card" data-level="scholar" role="radio"><b>📖 Scholar</b><small>Sources, dates and precise connections</small></button>
-          <button class="difficulty-card" data-level="fire" role="radio"><b>⚡ Fire</b><small>For serious Breslov learners</small></button>
+          <button class="difficulty-card" data-level="scholar" role="radio" aria-checked="false"><b>📖 Scholar</b><small>Sources, dates and precise connections</small></button>
+          <button class="difficulty-card" data-level="fire" role="radio" aria-checked="false"><b>⚡ Fire</b><small>For serious Breslov learners</small></button>
         </div>
 
         <div class="round-row">
@@ -136,7 +136,7 @@ const pageDesc = `${catalog.count.toLocaleString()} source-linked questions on R
       </aside>
     </section>
 
-    <section class="game-shell" id="gameScreen" hidden aria-live="polite">
+    <section class="game-shell" id="gameScreen" hidden>
       <div class="game-topbar">
         <button class="quit-button" id="quitButton" aria-label="Leave round">×</button>
         <div class="round-progress"><span id="questionCounter">Question 1 of 20</span><div class="progress-track"><i id="roundProgress"></i></div></div>
@@ -147,13 +147,13 @@ const pageDesc = `${catalog.count.toLocaleString()} source-linked questions on R
         <div class="question-card deluxe-card" id="questionCard">
           <div class="question-meta"><span id="categoryBadge">Teachings</span><span id="levelBadge">Beginner</span></div>
           <div class="timer-wrap"><div class="timer-bar" id="timerBar"></div><span id="timerText">30</span></div>
-          <h2 id="questionPrompt">Loading your question…</h2>
+          <h2 id="questionPrompt" aria-live="polite">Loading your question…</h2>
           <div class="answer-grid" id="answerGrid"></div>
           <div class="lifelines">
             <button id="fiftyButton">✂️ 50 / 50 <small>one use</small></button>
             <button id="studyButton">📖 Study source</button>
           </div>
-          <div class="feedback-panel" id="feedbackPanel" hidden>
+          <div class="feedback-panel" id="feedbackPanel" role="status" aria-live="polite" hidden>
             <div class="feedback-mark" id="feedbackMark">✓</div>
             <div><strong id="feedbackTitle">Correct!</strong><p id="feedbackText"></p><a id="sourceLink" target="_blank" rel="noopener">Open exact source ↗</a></div>
             <button id="nextButton">Next fire →</button>
