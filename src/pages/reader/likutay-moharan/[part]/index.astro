@@ -86,11 +86,11 @@ const overviewLinks = partNum === 1 ? [
   { href: '#torahs', text: 'Tinyana Torahs 1–125', he: 'תנינא א–קכה' },
   { href: '#manuscripts', text: 'Manuscripts', he: 'כתבי יד' },
 ];
-const superReaderTorahs = Array.from({ length: 26 }, (_, index) => {
+const superReaderTorahs = Array.from({ length: 27 }, (_, index) => {
   const number = index + 1;
   return {
     number,
-    hebrew: ['א','ב','ג','ד','ה','ו','ז','ח','ט','י','יא','יב','יג','יד','טו','טז','יז','יח','יט','כ','כא','כב','כג','כד','כה','כו'][index],
+    hebrew: ['א','ב','ג','ד','ה','ו','ז','ח','ט','י','יא','יב','יג','יד','טו','טז','יז','יח','יט','כ','כא','כב','כג','כד','כה','כו','כז'][index],
     href: `/reader/super/likutay-moharan/1/${number}`,
   };
 });
@@ -182,7 +182,7 @@ const superReaderTorahs = Array.from({ length: 26 }, (_, index) => {
                   <strong>{torahTitle(item)}</strong>
                   <em lang="he" dir="rtl">{item.hebrewTitle}</em>
                   {item.themes?.length > 0 && <small>{item.themes.slice(0, 4).join(' · ')}</small>}
-                  {Number(item.number) <= 26 && <span class="lm-super-available">NEW · Full Super Reader available</span>}
+                  {Number(item.number) <= 27 && <span class="lm-super-available">NEW · Full Super Reader available</span>}
                 </a>
               ))}
             </div>
