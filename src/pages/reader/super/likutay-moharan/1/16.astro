@@ -67,6 +67,7 @@ const sectionLabels = torah.segments.map((segment: any) => {
     <nav class="sr-rail" aria-label="Torah sections">
       <div class="sr-rail-head">
         <span>מהלך התורה</span>
+        <small>{torah.segments.length} aligned passages</small>
       </div>
       <ol>
         {torah.segments.map((segment: any, index: number) => (
@@ -95,6 +96,13 @@ const sectionLabels = torah.segments.map((segment: any) => {
         <div class="sr-themes">
           {torah.themes.map((theme: string) => <span>{theme}</span>)}
         </div>
+        <div class="sr-source-counts">
+          <span><b>{torah.segments.length}</b> aligned passages</span>
+          <span><b>{phraseStudy.phrases.length}</b> key phrases</span>
+          <span><b>8</b> study layers</span>
+          <span><b>5</b> commentary, prayer, and facsimile sources</span>
+        </div>
+        <p class="sr-source-credit">Aligned text licensed through Sefaria: ten Hebrew leaves from the rabenubook.com edition (Public Domain) and Moshe Mykoff / Breslov Research Institute English (CC BY-NC), plus the genuinely bilingual restored Rashbam gloss from Classic segment 2 / Rashbam on Bava Batra 74a. The Hebrew-only editorial transition before רבי יוחנן משתעי is retained in raw provenance but not falsely aligned. Display spacing alone corrects eyesresembled and no st rils while preserving the raw strings. Pe’er pages 21–32 are authoritative facsimiles; page 33 begins Torah 17 and is excluded; local images await a separately supervised conversion step.</p>
       </section>
 
       <nav class="sr-section-pager" aria-label="Section navigation">

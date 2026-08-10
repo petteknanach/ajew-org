@@ -92,6 +92,7 @@ const sectionLabels = torah.segments.map((segment: any) => {
     <nav class="sr-rail" aria-label="Torah sections">
       <div class="sr-rail-head">
         <span>מהלך התורה</span>
+        <small>{torah.segments.length} aligned passages</small>
       </div>
       <ol>
         {torah.segments.map((segment: any, index: number) => (
@@ -120,6 +121,13 @@ const sectionLabels = torah.segments.map((segment: any) => {
         <div class="sr-themes">
           {torah.themes.map((theme: string) => <span>{theme}</span>)}
         </div>
+        <div class="sr-source-counts">
+          <span><b>{torah.segments.length}</b> aligned passages</span>
+          <span><b>{phraseStudy.phrases.length}</b> key phrases</span>
+          <span><b>7</b> study layers</span>
+          <span><b>{peer.pages.length}</b> Pe’er facsimile pages</span>
+        </div>
+        <p class="sr-source-credit">Aligned source: Hebrew, rabenubook.com edition (Public Domain); English, Moshe Mykoff / Breslov Research Institute (CC BY-NC), delivered through Sefaria. The classic reader data is unchanged.</p>
       </section>
 
       <nav class="sr-section-pager" aria-label="Section navigation">

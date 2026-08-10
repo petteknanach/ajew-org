@@ -26,7 +26,7 @@ const sectionLabels = torah.segments.map((segment: any) => {
 
 <Layout
   title="Super Reader — Likutay Moharan Torah 31"
-  description="Study Likutay Moharan Torah 31 in a focused bilingual reader with project-owned commentaries, prayer, facsimiles, notes, and bookmarks."
+  description="Study Likutay Moharan Torah 31 with 108 source-audited bilingual Sefaria leaves plus one exact bilingual Classic Rashi supplement, 30 phrase studies across eighteen sections, truthful commentary languages, prayer, and Pe’er HaLikutim facsimiles."
 >
   <div class="sr-shell" id="super-reader">
     <div class="sr-progress" id="sr-progress"></div>
@@ -59,6 +59,7 @@ const sectionLabels = torah.segments.map((segment: any) => {
     <nav class="sr-rail" aria-label="Torah sections">
       <div class="sr-rail-head">
         <span>מהלך התורה</span>
+        <small>{torah.productionAlignedPassages} aligned passages · {torah.productionDisplayRecords} records</small>
       </div>
       <ol>
         {torah.segments.map((segment: any, index: number) => (
@@ -87,6 +88,13 @@ const sectionLabels = torah.segments.map((segment: any) => {
         <div class="sr-themes">
           {torah.themes.map((theme: string) => <span>{theme}</span>)}
         </div>
+        <div class="sr-source-counts">
+          <span><b>{torah.productionAlignedPassages}</b> aligned passages · {torah.productionDisplayRecords} records</span>
+          <span><b>{phraseStudy.phrases.length}</b> key phrases</span>
+          <span><b>9</b> study layers</span>
+          <span><b>6</b> commentary, prayer, and facsimile sources</span>
+        </div>
+        <p class="sr-source-credit">Aligned text licensed through Sefaria: exactly 108 bilingual leaves across sections 31:1–18 from the rabenubook.com edition (Public Domain) and Moshe Mykoff / Breslov Research Institute English (CC BY-NC). One exact bilingual local Classic Rashi supplement follows 31:1:1 and is separately attributed. Raw editorial forms and source spellings remain unchanged. Pettek exposes truthful asymmetric languages; Biur has 4 Hebrew-only records from the tail of section 30; Parparos has 13 Hebrew-only records because shifted, cross-Torah English is withheld; Nanach has 84 Hebrew-only records across two files; prayer has 18 paired bilingual blocks. Pe’er pages 238–351 are authoritative; preceding Torah 30 page 237 and Torah 32 page 352 are excluded.</p>
       </section>
 
 

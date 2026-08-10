@@ -59,6 +59,7 @@ const sectionLabels = torah.segments.map((segment: any) => {
     <nav class="sr-rail" aria-label="Torah sections">
       <div class="sr-rail-head">
         <span>מהלך התורה</span>
+        <small>{torah.segments.length} aligned passages</small>
       </div>
       <ol>
         {torah.segments.map((segment: any, index: number) => (
@@ -87,6 +88,13 @@ const sectionLabels = torah.segments.map((segment: any) => {
         <div class="sr-themes">
           {torah.themes.map((theme: string) => <span>{theme}</span>)}
         </div>
+        <div class="sr-source-counts">
+          <span><b>{torah.segments.length}</b> aligned passages</span>
+          <span><b>{phraseStudy.phrases.length}</b> key phrases</span>
+          <span><b>9</b> study layers</span>
+          <span><b>6</b> commentary, prayer, and facsimile sources</span>
+        </div>
+        <p class="sr-source-credit">Aligned text licensed through Sefaria: 103 Hebrew/English leaves across sections 23:1–13 from the rabenubook.com edition (Public Domain) and Moshe Mykoff / Breslov Research Institute English (CC BY-NC), plus one separately attributed exact Classic/Rashi bilingual supplement after 23:1:8. Raw braces, duplication, spaced source forms, and the edition-order merge remain explicit. The shifted Classic alignments are unused. Pettek exposes only its truthful asymmetric languages; no Biur source exists and that layer reports unavailable; Parparos section 24 and bounded Likutay Nanach chapter 25 records are Hebrew-only. Prayer has 12 authoritative paired blocks. Pe’er pages 21–112 are authoritative; page 20 and Torah 24 page 113 are excluded.</p>
       </section>
 
       <nav class="sr-section-pager" aria-label="Section navigation">
@@ -128,7 +136,7 @@ const sectionLabels = torah.segments.map((segment: any) => {
                 {segment.en ? (
                   <p data-english={sourcedText(segment.en).replace(/\s+/g, ' ').trim()}>{sourcedText(segment.en).replace(/\s+/g, ' ').trim()}</p>
                 ) : (
-                  <p class="sr-empty-state">English is not available for this passage in the project-owned source.</p>
+                  <p class="sr-empty-state">Classic source-only Hebrew addendum. It is absent from the canonical Sefaria/BRI bilingual witness, so shifted legacy English is not presented as its translation.</p>
                 )}
               </div>
             </div>

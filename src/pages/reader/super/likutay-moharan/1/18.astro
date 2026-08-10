@@ -59,6 +59,7 @@ const sectionLabels = torah.segments.map((segment: any) => {
     <nav class="sr-rail" aria-label="Torah sections">
       <div class="sr-rail-head">
         <span>מהלך התורה</span>
+        <small>{torah.segments.length} aligned passages</small>
       </div>
       <ol>
         {torah.segments.map((segment: any, index: number) => (
@@ -87,6 +88,13 @@ const sectionLabels = torah.segments.map((segment: any) => {
         <div class="sr-themes">
           {torah.themes.map((theme: string) => <span>{theme}</span>)}
         </div>
+        <div class="sr-source-counts">
+          <span><b>{torah.segments.length}</b> aligned passages</span>
+          <span><b>{phraseStudy.phrases.length}</b> key phrases</span>
+          <span><b>9</b> study layers</span>
+          <span><b>6</b> commentary, prayer, and facsimile sources</span>
+        </div>
+        <p class="sr-source-credit">Aligned text licensed through Sefaria: 54 Hebrew leaves from the rabenubook.com edition (Public Domain) and their Moshe Mykoff / Breslov Research Institute English (CC BY-NC), plus the exact bilingual Rashbam gloss restored from Classic segment 2 after 18:1:1 with no invented Sefaria reference. The visible 18:8:7 Hebrew is clipped to its translated note; its untranslated close, “עד הנה עזרונו רחמיך” through “בריך שמה לעלא מן כל ברכתא ושירתא,” is preserved separately as Hebrew-only edition material associated with Classic segment 28. Classic and Pettek 29 are the Torah 19 heading and are excluded. Pettek honestly exposes beginner English-only, intermediate bilingual, and scholarly Hebrew-only coverage. Parparos and Likutay Nanach are Hebrew-only; no missing translation was fabricated. Pe’er pages 113–150 are authoritative facsimiles; page 151 begins Torah 19 and is excluded.</p>
       </section>
 
       <nav class="sr-section-pager" aria-label="Section navigation">
@@ -128,7 +136,7 @@ const sectionLabels = torah.segments.map((segment: any) => {
                 {segment.en ? (
                   <p data-english={sourcedText(segment.en).replace(/\s+/g, ' ').trim()}>{sourcedText(segment.en).replace(/\s+/g, ' ').trim()}</p>
                 ) : (
-                  <p class="sr-empty-state">English is not available for this passage in the project-owned source.</p>
+                  <p class="sr-empty-state">Classic source-only Hebrew addendum. It is absent from the canonical Sefaria/BRI bilingual witness, so shifted legacy English is not presented as its translation.</p>
                 )}
               </div>
             </div>

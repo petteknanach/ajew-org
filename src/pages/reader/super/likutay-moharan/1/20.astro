@@ -59,6 +59,7 @@ const sectionLabels = torah.segments.map((segment: any) => {
     <nav class="sr-rail" aria-label="Torah sections">
       <div class="sr-rail-head">
         <span>מהלך התורה</span>
+        <small>{torah.segments.length} aligned passages</small>
       </div>
       <ol>
         {torah.segments.map((segment: any, index: number) => (
@@ -87,6 +88,13 @@ const sectionLabels = torah.segments.map((segment: any) => {
         <div class="sr-themes">
           {torah.themes.map((theme: string) => <span>{theme}</span>)}
         </div>
+        <div class="sr-source-counts">
+          <span><b>{torah.segments.length}</b> aligned passages</span>
+          <span><b>{phraseStudy.phrases.length}</b> key phrases</span>
+          <span><b>9</b> study layers</span>
+          <span><b>6</b> commentary, prayer, and facsimile sources</span>
+        </div>
+        <p class="sr-source-credit">Aligned text licensed through Sefaria: exactly 78 Hebrew leaves across sections 20:1–10 from the rabenubook.com edition (Public Domain) and their Moshe Mykoff / Breslov Research Institute English (CC BY-NC). No synthetic restoration is inserted. Sefaria 20:10:1 preserves raw Hebrew יא while the Classic witness has heading י, recorded as Classic segments 25 and 26. The tiny Hebrew “וְזֶהוּ:” at 20:10:2 remains paired with its expanded licensed English editorial bridge. The exact 29-Classic crosswalk merges standalone headings explicitly; the shifted 67 legacy Classic alignments are unused. Pettek honestly exposes beginner English-only, intermediate bilingual, and scholarly Hebrew-only coverage. Biur, Parparos, and Likutay Nanach are Hebrew-only; no missing translation was fabricated. Pe’er pages 232–300 are authoritative facsimiles; page 301 begins Torah 21 and is excluded.</p>
       </section>
 
       <nav class="sr-section-pager" aria-label="Section navigation">
@@ -128,7 +136,7 @@ const sectionLabels = torah.segments.map((segment: any) => {
                 {segment.en ? (
                   <p data-english={sourcedText(segment.en).replace(/\s+/g, ' ').trim()}>{sourcedText(segment.en).replace(/\s+/g, ' ').trim()}</p>
                 ) : (
-                  <p class="sr-empty-state">English is not available for this passage in the project-owned source.</p>
+                  <p class="sr-empty-state">Classic source-only Hebrew addendum. It is absent from the canonical Sefaria/BRI bilingual witness, so shifted legacy English is not presented as its translation.</p>
                 )}
               </div>
             </div>
