@@ -26,7 +26,7 @@ const sectionLabels = torah.segments.map((segment: any) => {
 
 <Layout
   title="Super Reader — Likutay Moharan Torah 17"
-  description="Study Likutay Moharan Torah 17 with 100 licensed bilingual passages, 30 exact bilingual phrases, Pettek, Biur HaLikutim, Parparos, Likutay Nanach, prayer, Pe’er HaLikutim facsimiles, notes, and bookmarks."
+  description="Read Likutay Moharan Torah 17 in Hebrew and English with integrated project study tools and Pe’er HaLikutim facsimiles."
 >
   <div class="sr-shell" id="super-reader">
     <div class="sr-progress" id="sr-progress"></div>
@@ -94,7 +94,6 @@ const sectionLabels = torah.segments.map((segment: any) => {
           <span><b>9</b> study layers</span>
           <span><b>6</b> commentary, prayer, and facsimile sources</span>
         </div>
-        <p class="sr-source-credit">Aligned text licensed through Sefaria: 99 Hebrew leaves from the rabenubook.com edition (Public Domain) and their Moshe Mykoff / Breslov Research Institute English (CC BY-NC), plus one natural bilingual Rashbam gloss restored from Classic segment 28 after 17:8:2 with no invented Sefaria reference. Heading-only Classic records are represented on their bilingual discourse leaves; the shifted 110-record legacy alignment is not used. Pettek honestly exposes beginner English-only, intermediate bilingual, and scholarly Hebrew-only coverage; no missing translation was fabricated. Pe’er pages 33–112 are authoritative facsimiles; page 113 begins Torah 18 and is excluded.</p>
       </section>
 
       <nav class="sr-section-pager" aria-label="Section navigation">
@@ -136,7 +135,7 @@ const sectionLabels = torah.segments.map((segment: any) => {
                 {segment.en ? (
                   <p data-english={sourcedText(segment.en).replace(/\s+/g, ' ').trim()}>{sourcedText(segment.en).replace(/\s+/g, ' ').trim()}</p>
                 ) : (
-                  <p class="sr-empty-state">Classic source-only Hebrew addendum. It is absent from the canonical Sefaria/BRI bilingual witness, so shifted legacy English is not presented as its translation.</p>
+                  <p class="sr-empty-state">English is not yet aligned for this local Hebrew addendum.</p>
                 )}
               </div>
             </div>

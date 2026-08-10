@@ -26,7 +26,7 @@ const sectionLabels = torah.segments.map((segment: any) => {
 
 <Layout
   title="Super Reader — Likutay Moharan Torah 24"
-  description="Study Likutay Moharan Torah 24 with 45 source-audited bilingual passages and one Hebrew edition note, 30 exact bilingual phrases, truthful commentary availability, prayer, and Pe’er HaLikutim facsimiles."
+  description="Read Likutay Moharan Torah 24 in Hebrew and English with integrated project study tools and Pe’er HaLikutim facsimiles."
 >
   <div class="sr-shell" id="super-reader">
     <div class="sr-progress" id="sr-progress"></div>
@@ -94,7 +94,6 @@ const sectionLabels = torah.segments.map((segment: any) => {
           <span><b>9</b> study layers</span>
           <span><b>6</b> commentary, prayer, and facsimile sources</span>
         </div>
-        <p class="sr-source-credit">Aligned text licensed through Sefaria: exactly 45 bilingual leaves across sections 24:1–10 from the rabenubook.com edition (Public Domain) and Moshe Mykoff / Breslov Research Institute English (CC BY-NC). One separately sourced Hebrew-only Classic structural note is displayed after passage 1 and is not misrepresented as bilingual. The section 9 brace-spanning block remains raw. Shifted Classic alignments are unused. Pettek exposes truthful asymmetric languages; Biur is unavailable; Parparos 15 and Nanach 8 are Hebrew-only; prayer has 4 paired blocks. Pe’er pages 113–173 are authoritative; pages 112 and 174 are excluded.</p>
       </section>
 
 
@@ -143,7 +142,7 @@ const sectionLabels = torah.segments.map((segment: any) => {
                 {segment.en ? (
                   <p data-english={sourcedText(segment.en).replace(/\s+/g, ' ').trim()}>{sourcedText(segment.en).replace(/\s+/g, ' ').trim()}</p>
                 ) : (
-                  <p class="sr-empty-state">Classic source-only Hebrew addendum. It is absent from the canonical Sefaria/BRI bilingual witness, so shifted legacy English is not presented as its translation.</p>
+                  <p class="sr-empty-state">English is not yet aligned for this local Hebrew addendum.</p>
                 )}
               </div>
             </div>

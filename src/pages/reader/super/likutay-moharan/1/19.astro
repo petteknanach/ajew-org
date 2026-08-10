@@ -26,7 +26,7 @@ const sectionLabels = torah.segments.map((segment: any) => {
 
 <Layout
   title="Super Reader — Likutay Moharan Torah 19"
-  description="Study Likutay Moharan Torah 19 with 90 licensed bilingual passages, 30 exact bilingual phrases, Pettek, Biur HaLikutim, Parparos, Likutay Nanach, prayer, Pe’er HaLikutim facsimiles, notes, and bookmarks."
+  description="Read Likutay Moharan Torah 19 in Hebrew and English with integrated project study tools and Pe’er HaLikutim facsimiles."
 >
   <div class="sr-shell" id="super-reader">
     <div class="sr-progress" id="sr-progress"></div>
@@ -94,7 +94,6 @@ const sectionLabels = torah.segments.map((segment: any) => {
           <span><b>9</b> study layers</span>
           <span><b>6</b> commentary, prayer, and facsimile sources</span>
         </div>
-        <p class="sr-source-credit">Aligned text licensed through Sefaria: exactly 90 Hebrew leaves across sections 19:1–9 from the rabenubook.com edition (Public Domain) and their Moshe Mykoff / Breslov Research Institute English (CC BY-NC). No synthetic restoration is inserted. The tiny Hebrew “וְזֶה:” at 19:9:11 remains paired with its expanded licensed English editorial bridge. The exact 34-Classic crosswalk merges standalone headings explicitly, including Classic segments 26 and 27 at 19:9:18; the shifted 70 legacy Classic alignments are unused. Pettek honestly exposes beginner English-only, intermediate bilingual, and scholarly Hebrew-only coverage. Biur, Parparos, and Likutay Nanach are Hebrew-only; no missing translation was fabricated. Pe’er pages 151–231 are authoritative facsimiles; page 232 begins Torah 20 and is excluded.</p>
       </section>
 
       <nav class="sr-section-pager" aria-label="Section navigation">
@@ -136,7 +135,7 @@ const sectionLabels = torah.segments.map((segment: any) => {
                 {segment.en ? (
                   <p data-english={sourcedText(segment.en).replace(/\s+/g, ' ').trim()}>{sourcedText(segment.en).replace(/\s+/g, ' ').trim()}</p>
                 ) : (
-                  <p class="sr-empty-state">Classic source-only Hebrew addendum. It is absent from the canonical Sefaria/BRI bilingual witness, so shifted legacy English is not presented as its translation.</p>
+                  <p class="sr-empty-state">English is not yet aligned for this local Hebrew addendum.</p>
                 )}
               </div>
             </div>

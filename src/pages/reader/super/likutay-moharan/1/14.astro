@@ -35,7 +35,7 @@ const sectionLabels = torah.segments.map((segment: any) => {
 
 <Layout
   title="Super Reader — Likutay Moharan Torah 14"
-  description="Study Likutay Moharan Torah 14, Tik'u BaChodesh Shofar, with 75 licensed bilingual passages and three labeled Classic source-only Hebrew addenda, phrase study, layered commentaries, prayer, Pe’er HaLikutim facsimiles, notes, and bookmarks."
+  description="Read Likutay Moharan Torah 14 in Hebrew and English with integrated project study tools and Pe’er HaLikutim facsimiles."
 >
   <div class="sr-shell" id="super-reader">
     <div class="sr-progress" id="sr-progress"></div>
@@ -103,7 +103,6 @@ const sectionLabels = torah.segments.map((segment: any) => {
           <span><b>9</b> study layers</span>
           <span><b>6</b> commentary, prayer, and facsimile sources</span>
         </div>
-        <p class="sr-source-credit">Aligned text licensed through Sefaria: 75 Hebrew passages from the rabenubook.com edition (Public Domain) and their Moshe Mykoff / Breslov Research Institute English (CC BY-NC). Two Classic Rashbam glosses and the final Classic foundation memorandum are preserved as three clearly labeled source-only Hebrew addenda because they are absent from that bilingual witness. Shifted legacy English is not used; licensed wording is unchanged. Pe’er pages 329–376 are authoritative facsimiles; local images await a separately supervised conversion step.</p>
       </section>
 
       <nav class="sr-section-pager" aria-label="Section navigation">
@@ -145,7 +144,7 @@ const sectionLabels = torah.segments.map((segment: any) => {
                 {segment.en ? (
                   <p data-english={sourcedText(segment.en).replace(/\s+/g, ' ').trim()}>{sourcedText(segment.en).replace(/\s+/g, ' ').trim()}</p>
                 ) : (
-                  <p class="sr-empty-state">Classic source-only Hebrew addendum. It is absent from the canonical Sefaria/BRI bilingual witness, so shifted legacy English is not presented as its translation.</p>
+                  <p class="sr-empty-state">English is not yet aligned for this local Hebrew addendum.</p>
                 )}
               </div>
             </div>

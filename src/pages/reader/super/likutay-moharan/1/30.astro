@@ -26,7 +26,7 @@ const sectionLabels = torah.segments.map((segment: any) => {
 
 <Layout
   title="Super Reader — Likutay Moharan Torah 30"
-  description="Study Likutay Moharan Torah 30 with 82 source-audited bilingual Sefaria leaves plus one Hebrew-only Classic Rashi structural restoration, 30 phrase studies across ten sections, truthful commentary languages, prayer, and Pe’er HaLikutim facsimiles."
+  description="Read Likutay Moharan Torah 30 in Hebrew and English with integrated project study tools and Pe’er HaLikutim facsimiles."
 >
   <div class="sr-shell" id="super-reader">
     <div class="sr-progress" id="sr-progress"></div>
@@ -94,7 +94,6 @@ const sectionLabels = torah.segments.map((segment: any) => {
           <span><b>9</b> study layers</span>
           <span><b>6</b> commentary, prayer, and facsimile sources</span>
         </div>
-        <p class="sr-source-credit">Aligned text licensed through Sefaria: exactly 82 bilingual leaves across sections 30:1–10 from the rabenubook.com edition (Public Domain) and Moshe Mykoff / Breslov Research Institute English (CC BY-NC). One Hebrew-only local Classic Rashi structural restoration follows 30:1:5; shifted local English is withheld. Raw editorial forms and source spellings remain unchanged. Pettek exposes truthful asymmetric languages; Biur has 85 Hebrew-only records; Parparos has 15 Hebrew-only records because shifted, cross-Torah English is withheld; Nanach has 37 Hebrew-only records; prayer has 17 paired bilingual blocks. Pe’er pages 135–237 are authoritative; preceding Torah 29 page 134 and Torah 31 page 238 are excluded.</p>
       </section>
 
 
@@ -138,7 +137,7 @@ const sectionLabels = torah.segments.map((segment: any) => {
                 {segment.en ? (
                   <p data-english={sourcedText(segment.en).replace(/\s+/g, ' ').trim()}>{sourcedText(segment.en).replace(/\s+/g, ' ').trim()}</p>
                 ) : (
-                  <p class="sr-empty-state">Classic source-only Hebrew addendum. It is absent from the canonical Sefaria/BRI bilingual witness, so shifted legacy English is not presented as its translation.</p>
+                  <p class="sr-empty-state">English is not yet aligned for this local Hebrew addendum.</p>
                 )}
               </div>
             </div>

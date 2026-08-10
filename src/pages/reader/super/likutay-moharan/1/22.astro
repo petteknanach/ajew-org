@@ -26,7 +26,7 @@ const sectionLabels = torah.segments.map((segment: any) => {
 
 <Layout
   title="Super Reader — Likutay Moharan Torah 22"
-  description="Study Likutay Moharan Torah 22 with 124 licensed bilingual passages, 30 exact bilingual phrases, Pettek, Biur HaLikutim, Parparos, Likutay Nanach, prayer, Pe’er HaLikutim facsimiles, notes, and bookmarks."
+  description="Read Likutay Moharan Torah 22 in Hebrew and English with integrated project study tools and Pe’er HaLikutim facsimiles."
 >
   <div class="sr-shell" id="super-reader">
     <div class="sr-progress" id="sr-progress"></div>
@@ -94,7 +94,6 @@ const sectionLabels = torah.segments.map((segment: any) => {
           <span><b>9</b> study layers</span>
           <span><b>6</b> commentary, prayer, and facsimile sources</span>
         </div>
-        <p class="sr-source-credit">Aligned text licensed through Sefaria: exactly 124 Hebrew leaves across sections 22:1–21 from the rabenubook.com edition (Public Domain) and their Moshe Mykoff / Breslov Research Institute English (CC BY-NC). No synthetic restoration is inserted. Brace-delimited editorial context and visible spaced-source typos remain in their licensed leaves; the extreme 22:13:1 leaf preserves its short Hebrew lead-in with its 985-character English context block and maps to Classic segment 17. The exact 27-Classic crosswalk is used; the shifted 27 legacy Classic alignments are unused. Pettek honestly exposes beginner English-only, intermediate bilingual, and scholarly Hebrew-only coverage. Biur section 26 physical indices 143–210, Parparos section 23, and the seven-file Likutay Nanach composite are Hebrew-only; no missing translation was fabricated. Pe’er pages 413–516 are authoritative facsimiles; page 412 is Torah 21 and page 517 begins appendices, so both are excluded.</p>
       </section>
 
       <nav class="sr-section-pager" aria-label="Section navigation">
@@ -136,7 +135,7 @@ const sectionLabels = torah.segments.map((segment: any) => {
                 {segment.en ? (
                   <p data-english={sourcedText(segment.en).replace(/\s+/g, ' ').trim()}>{sourcedText(segment.en).replace(/\s+/g, ' ').trim()}</p>
                 ) : (
-                  <p class="sr-empty-state">Classic source-only Hebrew addendum. It is absent from the canonical Sefaria/BRI bilingual witness, so shifted legacy English is not presented as its translation.</p>
+                  <p class="sr-empty-state">English is not yet aligned for this local Hebrew addendum.</p>
                 )}
               </div>
             </div>
