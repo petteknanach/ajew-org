@@ -59,7 +59,6 @@ const sectionLabels = torah.segments.map((segment: any) => {
     <nav class="sr-rail" aria-label="Torah sections">
       <div class="sr-rail-head">
         <span>מהלך התורה</span>
-        <small>{torah.segments.length} aligned passages</small>
       </div>
       <ol>
         {torah.segments.map((segment: any, index: number) => (
@@ -88,13 +87,6 @@ const sectionLabels = torah.segments.map((segment: any) => {
         <div class="sr-themes">
           {torah.themes.map((theme: string) => <span>{theme}</span>)}
         </div>
-        <div class="sr-source-counts">
-          <span><b>{torah.segments.length}</b> aligned passages</span>
-          <span><b>{phraseStudy.phrases.length}</b> key phrases</span>
-          <span><b>9</b> study layers</span>
-          <span><b>6</b> commentary, prayer, and facsimile sources</span>
-        </div>
-        <p class="sr-source-credit">Aligned text licensed through Sefaria: 99 Hebrew leaves from the rabenubook.com edition (Public Domain) and their Moshe Mykoff / Breslov Research Institute English (CC BY-NC), plus one natural bilingual Rashbam gloss restored from Classic segment 28 after 17:8:2 with no invented Sefaria reference. Heading-only Classic records are represented on their bilingual discourse leaves; the shifted 110-record legacy alignment is not used. Pettek honestly exposes beginner English-only, intermediate bilingual, and scholarly Hebrew-only coverage; no missing translation was fabricated. Pe’er pages 33–112 are authoritative facsimiles; page 113 begins Torah 18 and is excluded.</p>
       </section>
 
       <nav class="sr-section-pager" aria-label="Section navigation">
@@ -136,7 +128,7 @@ const sectionLabels = torah.segments.map((segment: any) => {
                 {segment.en ? (
                   <p data-english={sourcedText(segment.en).replace(/\s+/g, ' ').trim()}>{sourcedText(segment.en).replace(/\s+/g, ' ').trim()}</p>
                 ) : (
-                  <p class="sr-empty-state">Classic source-only Hebrew addendum. It is absent from the canonical Sefaria/BRI bilingual witness, so shifted legacy English is not presented as its translation.</p>
+                  <p class="sr-empty-state">English is not available for this passage in the project-owned source.</p>
                 )}
               </div>
             </div>

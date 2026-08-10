@@ -21,7 +21,8 @@
     "verify:kokhvei": "node scripts/verify-kokhvei-or-alignment.cjs",
     "verify:search": "node scripts/verify-search-regressions.cjs",
     "verify:sichos-saba": "python3 scripts/verify-sichos-saba-full.py",
-    "verify": "npm run verify:base && npm run verify:search && npm run verify:sichos-saba"
+    "verify:super-reader": "python3 scripts/verify-super-reader-local-sources.py",
+    "verify": "npm run verify:base && npm run verify:search && npm run verify:sichos-saba && npm run verify:super-reader"
   },
   "dependencies": {
     "@astrojs/node": "^9.5.5",

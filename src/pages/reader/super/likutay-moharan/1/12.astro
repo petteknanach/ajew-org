@@ -69,7 +69,6 @@ const sectionLabels = torah.segments.map((segment: any) => {
     <nav class="sr-rail" aria-label="Torah sections">
       <div class="sr-rail-head">
         <span>מהלך התורה</span>
-        <small>{torah.segments.length} aligned passages</small>
       </div>
       <ol>
         {torah.segments.map((segment: any, index: number) => (
@@ -98,13 +97,6 @@ const sectionLabels = torah.segments.map((segment: any) => {
         <div class="sr-themes">
           {torah.themes.map((theme: string) => <span>{theme}</span>)}
         </div>
-        <div class="sr-source-counts">
-          <span><b>{torah.segments.length}</b> aligned passages</span>
-          <span><b>{phraseStudy.phrases.length}</b> key phrases</span>
-          <span><b>9</b> study layers</span>
-          <span><b>6</b> commentary, prayer, and facsimile sources</span>
-        </div>
-        <p class="sr-source-credit">Aligned text licensed through Sefaria: 59 Hebrew passages from the rabenubook.com edition (Public Domain) and their Moshe Mykoff / Breslov Research Institute English (CC BY-NC). After 12:5:1, one clearly labeled Hebrew-only Rashbam gloss restores Classic aligned records 58–72; shifted Classic English was not used. No English has been invented and licensed wording is unchanged. Pe’er pages 242–281 are authoritative facsimiles; local images await a separately supervised conversion step.</p>
       </section>
 
       <nav class="sr-section-pager" aria-label="Section navigation">

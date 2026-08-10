@@ -26,7 +26,7 @@ const sectionLabels = torah.segments.map((segment: any) => {
 
 <Layout
   title="Super Reader — Likutay Moharan Torah 25"
-  description="Study Likutay Moharan Torah 25 with 50 source-audited Sefaria leaves, one exact bilingual Classic Rashi supplement, 30 phrase studies, truthful commentary availability, prayer, and Pe’er HaLikutim facsimiles."
+  description="Study Likutay Moharan Torah 25 in a focused bilingual reader with project-owned commentaries, prayer, facsimiles, notes, and bookmarks."
 >
   <div class="sr-shell" id="super-reader">
     <div class="sr-progress" id="sr-progress"></div>
@@ -59,7 +59,6 @@ const sectionLabels = torah.segments.map((segment: any) => {
     <nav class="sr-rail" aria-label="Torah sections">
       <div class="sr-rail-head">
         <span>מהלך התורה</span>
-        <small>{torah.segments.length} aligned passages</small>
       </div>
       <ol>
         {torah.segments.map((segment: any, index: number) => (
@@ -88,13 +87,6 @@ const sectionLabels = torah.segments.map((segment: any) => {
         <div class="sr-themes">
           {torah.themes.map((theme: string) => <span>{theme}</span>)}
         </div>
-        <div class="sr-source-counts">
-          <span><b>{torah.segments.length}</b> aligned passages</span>
-          <span><b>{phraseStudy.phrases.length}</b> key phrases</span>
-          <span><b>9</b> study layers</span>
-          <span><b>6</b> commentary, prayer, and facsimile sources</span>
-        </div>
-        <p class="sr-source-credit">Aligned text licensed through Sefaria: exactly 50 bilingual leaves across sections 25:1–9 from the rabenubook.com edition (Public Domain) and Moshe Mykoff / Breslov Research Institute English (CC BY-NC). One exact, separately attributed bilingual Classic printed-Rashi supplement follows passage 1, producing 51 passages; it is not attributed to Sefaria. Raw brace blocks and source spellings remain unchanged. Shifted coarse Classic English is otherwise unused. Pettek exposes truthful asymmetric languages; Biur is unavailable; Parparos 3 and Nanach 33 are Hebrew-only; prayer has 7 paired blocks. Pe’er pages 174–216 are authoritative; pages 173 and 217 are excluded.</p>
       </section>
 
 
@@ -138,7 +130,7 @@ const sectionLabels = torah.segments.map((segment: any) => {
                 {segment.en ? (
                   <p data-english={sourcedText(segment.en).replace(/\s+/g, ' ').trim()}>{sourcedText(segment.en).replace(/\s+/g, ' ').trim()}</p>
                 ) : (
-                  <p class="sr-empty-state">Classic source-only Hebrew addendum. It is absent from the canonical Sefaria/BRI bilingual witness, so shifted legacy English is not presented as its translation.</p>
+                  <p class="sr-empty-state">English is not available for this passage in the project-owned source.</p>
                 )}
               </div>
             </div>

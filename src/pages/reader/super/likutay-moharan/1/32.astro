@@ -26,7 +26,7 @@ const sectionLabels = torah.segments.map((segment: any) => {
 
 <Layout
   title="Super Reader — Likutay Moharan Torah 32"
-  description="Study Likutay Moharan Torah 32 with seven exact bilingual Sefaria leaves, 30 phrase studies, truthful commentary availability, authoritative prayer, bounded Likutay Nanach, and Pe’er HaLikutim facsimiles."
+  description="Study Likutay Moharan Torah 32 in a focused bilingual reader with project-owned commentaries, prayer, facsimiles, notes, and bookmarks."
 >
   <div class="sr-shell" id="super-reader">
     <div class="sr-progress" id="sr-progress"></div>
@@ -59,7 +59,6 @@ const sectionLabels = torah.segments.map((segment: any) => {
     <nav class="sr-rail" aria-label="Torah sections">
       <div class="sr-rail-head">
         <span>מהלך התורה</span>
-        <small>{torah.productionAlignedPassages} aligned passages · {torah.productionDisplayRecords} records</small>
       </div>
       <ol>
         {torah.segments.map((segment: any, index: number) => (
@@ -88,13 +87,6 @@ const sectionLabels = torah.segments.map((segment: any) => {
         <div class="sr-themes">
           {torah.themes.map((theme: string) => <span>{theme}</span>)}
         </div>
-        <div class="sr-source-counts">
-          <span><b>{torah.productionAlignedPassages}</b> aligned passages · {torah.productionDisplayRecords} records</span>
-          <span><b>{phraseStudy.phrases.length}</b> key phrases</span>
-          <span><b>9</b> study layers</span>
-          <span><b>6</b> commentary, prayer, and facsimile sources</span>
-        </div>
-        <p class="sr-source-credit">Aligned text licensed through Sefaria: exactly 7 bilingual leaves in section 32:1 from the rabenubook.com edition (Public Domain) and Moshe Mykoff / Breslov Research Institute English (CC BY-NC). Raw editorial forms and source spellings remain unchanged. Pettek exposes truthful asymmetric languages; Biur and Parparos are unavailable rather than misattributed; Nanach has 10 substantive Hebrew-only records; prayer has 1 authoritative paired bilingual block. Pe’er pages 352–362 are authoritative; Torah 31 page 351 and Torah 33 page 363 are excluded.</p>
       </section>
 
 
