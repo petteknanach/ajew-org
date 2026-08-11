@@ -8,13 +8,25 @@ export function getStaticPaths() {
 }
 
 let indexData = null;
+let audioData = null;
+const timedSides = new Set();
 try {
-  const idxPath = path.join(process.cwd(), 'public/reader/saba-tape-transcripts/index.json');
-  indexData = JSON.parse(fs.readFileSync(idxPath, 'utf8'));
+  const readerDir = path.join(process.cwd(), 'public/reader/saba-tape-transcripts');
+  indexData = JSON.parse(fs.readFileSync(path.join(readerDir, 'index.json'), 'utf8'));
+  audioData = JSON.parse(fs.readFileSync(path.join(readerDir, 'audio-map.json'), 'utf8'));
+  const timingsDir = path.join(readerDir, 'timings');
+  if (fs.existsSync(timingsDir)) {
+    for (const filename of fs.readdirSync(timingsDir).filter((name) => name.endsWith('.json'))) {
+      const timing = JSON.parse(fs.readFileSync(path.join(timingsDir, filename), 'utf8'));
+      if (timing.publishable === true) timedSides.add(filename.replace('.json', '').replace('_', '-').replace(/^0+/, ''));
+    }
+  }
 } catch (e) {
   console.error('Error loading Saba Tape Transcripts index:', e);
 }
 const tapes = indexData?.tapes || [];
+const audioBySide = new Map((audioData?.entries || []).filter((x) => x.verified).map((x) => [`${x.tape}-${x.side}`, x]));
+const availableAudioSides = audioBySide.size;
 const completeTranslations = (indexData?.torahs || []).filter((x) => x.translationStatus === 'verified').length;
 function sideLabel(side) { return side.side === 'a' ? 'Side A / צד א׳' : 'Side B / צד ב׳'; }
 function statusLabel(side) {
@@ -35,13 +47,14 @@ function statusLabel(side) {
       <h2 lang="he" dir="rtl">שיחות סבא — הקלטות והתמלול המלא</h2>
       <p>The complete 2,072-page source PDF and its ABBYY OCR, divided into all 117 two-sided tapes. Open each side immediately as searchable Reader text, its original PDF pages, or an exact OCR download.</p>
       <div class="stats" aria-label="Collection statistics">
-        <b>117 tapes</b><b>234 sides</b><b>{completeTranslations} verified English sides</b>
+        <b>117 tapes</b><b>234 sides</b><b>{availableAudioSides} original audio sides</b><b>{completeTranslations} verified English sides</b>
       </div>
       <div class="hero-links">
         <a href="/reader">← All Books</a>
         <a href={indexData?.completePdfUrl || '#'} target="_blank" rel="noopener">Original PDF · 2,072 pages</a>
         <a href={indexData?.downloadUrl || '#'} download>Complete OCR · TXT</a>
         <a href={indexData?.completeOcrDocxUrl || '#'} download>Complete OCR · DOCX</a>
+        <a href="https://archive.org/details/sichos-saba-117-tape-audio" target="_blank" rel="noopener">Original audio archive</a>
       </div>
     </header>
 
@@ -56,19 +69,23 @@ function statusLabel(side) {
         <article class="tape-card">
           <header><span>Tape</span><b>{tape.tapeNumber}</b><em lang="he" dir="rtl">קלטת {tape.tapeNumber}</em></header>
           <div class="side-links">
-            {tape.sides.map((side) => (
-              <div class={`side-panel status-${side.sourceStatus}`}>
+            {tape.sides.map((side) => {
+              const audio = audioBySide.get(`${tape.tapeNumber}-${side.side}`);
+              const hasTiming = Boolean(audio && timedSides.has(`${tape.tapeNumber}-${side.side}`));
+              return (
+              <div class={`side-panel status-${side.sourceStatus} ${audio ? 'has-audio' : ''}`}>
                 <a href={side.url} class="side-link">
                   <span class="side-name">{sideLabel(side)}</span>
                   <small>{side.paragraphs} OCR segments · pages {side.sourceResources?.pageStart}–{side.sourceResources?.pageEnd}</small>
-                  <mark>{statusLabel(side)}</mark>
+                  <mark>{hasTiming ? `⏱ Timestamped audio · ${Math.round(audio.durationSeconds / 60)} min` : audio ? `🎙 Original audio · ${Math.round(audio.durationSeconds / 60)} min` : statusLabel(side)}</mark>
                 </a>
                 <div class="side-downloads">
                   <a href={side.sourceResources?.pdfUrl} target="_blank" rel="noopener">PDF section</a>
-                  <a href={side.sourceResources?.textUrl} download>OCR text</a>
+                  <a href={side.url}>{hasTiming ? 'Timestamped transcript' : 'Read OCR text'}</a>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         </article>
       ))}

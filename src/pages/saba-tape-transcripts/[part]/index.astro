@@ -1,0 +1,8 @@
+---
+export function getStaticPaths() {
+  return [{ params: { part: '1' } }];
+}
+
+const { part } = Astro.params;
+return Astro.redirect(`/reader/saba-tape-transcripts/${part || '1'}`, 301);
+---

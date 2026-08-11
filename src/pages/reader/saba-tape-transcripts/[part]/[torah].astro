@@ -32,6 +32,7 @@ const bookName = 'Saba Tape Transcripts';
 let torahData = null;
 let indexData = null;
 let audioMapping = null;
+let wordTiming = null;
 let error = null;
 
 try {
@@ -50,6 +51,10 @@ try {
   if (candidate?.verified === true && /^https:\/\//.test(candidate.url || '')) {
     audioMapping = candidate;
   }
+  if (canonicalMatch) {
+    const timingPath = path.join(readerDir, 'timings', `${String(canonicalMatch[1]).padStart(3, '0')}_${canonicalMatch[2]}.json`);
+    if (fs.existsSync(timingPath)) wordTiming = JSON.parse(fs.readFileSync(timingPath, 'utf8'));
+  }
 } catch (e) {
   error = `Tape ${torahNum} not found`;
 }
@@ -64,6 +69,8 @@ const nextUrl = isCanonical
   : (torahNum < 28 ? `/reader/${bookSlug}/1/${torahNum + 1}` : null);
 const hasMatchedAudio = Boolean(audioMapping);
 const resources = isCanonical ? torahData?.sourceResources : null;
+const timedSegments = new Map((wordTiming?.publishable === true ? wordTiming.segments.filter((segment) => segment.publishable === true) : []).map((segment) => [segment.id, segment.words]));
+const hasWordTiming = hasMatchedAudio && wordTiming?.publishable === true && timedSegments.size > 0;
 
 const pageTitle = torahData
   ? `${torahData.title} - ${bookName} | AJEW.org`
@@ -194,7 +201,7 @@ const pageDesc = torahData
           </div>
           <nav>
             <a class="resource-primary" href={resources.pdfUrl} target="_blank" rel="noopener">Open this section PDF</a>
-            <a href={resources.textUrl} download>Download section OCR</a>
+            <a href="#transcript">Read section OCR below</a>
             <a href={resources.completePdfUrl} target="_blank" rel="noopener">Complete 2,072-page PDF</a>
           </nav>
         </section>
@@ -210,7 +217,9 @@ const pageDesc = torahData
           <source src={audioMapping.url} type="audio/mpeg" />
           Your browser does not support audio playback.
         </audio>
-        <p class="audio-note">Verified original recording for {torahData.hebrewTitle || torahData.title}</p>
+        <p class="audio-note">{hasWordTiming ? 'Click any highlighted Hebrew word below to hear the recording from that point.' : `Verified original recording for ${torahData.hebrewTitle || torahData.title}`}</p>
+        <a class="audio-source-link" href={audioMapping.url} target="_blank" rel="noopener">Open or download the original MP3</a>
+        <a class="audio-source-link" href="https://archive.org/details/sichos-saba-117-tape-audio" target="_blank" rel="noopener">Internet Archive collection</a>
       </div>)}
 
       <div class="reader-nav">
@@ -224,13 +233,32 @@ const pageDesc = torahData
         ) : <span class="disabled">Next &rarr;</span>}
       </div>
 
-      <div class={`reader-content ${isCanonical ? 'mode-hebrew' : 'mode-english'}`}>
+      <div id="transcript" class={`reader-content ${isCanonical ? 'mode-hebrew' : 'mode-english'}`}>
         <div class="reader-content-original">
         {torahData.segments.map((seg, i) => (
           <div class="reader-segment-pair" id={`seg-${i + 1}`}>
             <div class="reader-segment segment-he" data-index={String(i + 1)}>
               <span class="segment-number">{i + 1}</span>
-              <p>{seg.he || '\u00A0'}</p>
+              {timedSegments.has(seg.id) && (
+                <button
+                  type="button"
+                  class="segment-play"
+                  data-audio-start={String(timedSegments.get(seg.id).find((word) => word.alignment === 'exact').start)}
+                  title="Play this transcript section from the original recording"
+                >▶ Listen from here</button>
+              )}
+              <p>{timedSegments.has(seg.id)
+                ? timedSegments.get(seg.id).map((word) => (
+                    <span
+                      class={`timed-word ${word.alignment === 'exact' ? 'timed-exact timed-seekable' : 'timed-interpolated'}`}
+                      data-audio-start={word.alignment === 'exact' ? String(word.start) : undefined}
+                      data-audio-end={String(word.end)}
+                      role={word.alignment === 'exact' ? 'button' : undefined}
+                      tabindex={word.alignment === 'exact' ? '0' : undefined}
+                      title={word.alignment === 'exact' ? 'Play from this verified word position' : undefined}
+                    >{word.text}</span>
+                  ))
+                : (seg.he || '\u00A0')}</p>
             </div>
             <div class={`reader-segment segment-en ${!seg.en ? 'empty-translation' : ''}`} data-index={String(i + 1)}>
               <span class="segment-number">{i + 1}</span>
@@ -276,6 +304,38 @@ const pageDesc = torahData
 </Layout>
 
 <script defer src="/reader-script.js?v=4"></script>
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', () => {
+    const audio = document.getElementById('saba-audio');
+    const words = Array.from(document.querySelectorAll('.timed-word'));
+    const seekers = Array.from(document.querySelectorAll('.timed-seekable, .segment-play'));
+    if (!audio || !seekers.length) return;
+    let active = null;
+    seekers.forEach((target) => target.addEventListener('click', () => {
+      audio.currentTime = Number(target.dataset.audioStart || 0);
+      audio.play().catch(() => {});
+    }));
+    seekers.forEach((target) => target.addEventListener('keydown', (event) => {
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      event.preventDefault();
+      target.click();
+    }));
+    audio.addEventListener('timeupdate', () => {
+      const now = audio.currentTime;
+      let lo = 0, hi = words.length - 1, found = -1;
+      while (lo <= hi) {
+        const mid = (lo + hi) >> 1;
+        if (Number(words[mid].dataset.audioStart) <= now) { found = mid; lo = mid + 1; }
+        else hi = mid - 1;
+      }
+      const next = found >= 0 ? words[found] : null;
+      if (next === active) return;
+      active?.classList.remove('is-playing');
+      next?.classList.add('is-playing');
+      active = next;
+    });
+  });
+</script>
 
 <style>
   .source-status {
@@ -348,8 +408,47 @@ const pageDesc = torahData
     font-size: 0.8rem;
     color: #8a7050;
     font-style: italic;
-    margin-top: 0.5rem;
+    margin: 0.5rem 0;
   }
+  .audio-source-link {
+    display: inline-block;
+    margin: .2rem .3rem;
+    color: #173b67;
+    font-size: .78rem;
+    font-weight: 700;
+  }
+  .segment-play {
+    display: inline-flex;
+    align-items: center;
+    gap: .3rem;
+    margin: 0 0 .55rem .6rem;
+    padding: .35rem .65rem;
+    border: 1px solid #b89555;
+    border-radius: 999px;
+    background: #fff7df;
+    color: #173b67;
+    font-size: .72rem;
+    font-weight: 800;
+    cursor: pointer;
+  }
+  .segment-play:hover, .segment-play:focus-visible { background:#ffe6a6; outline:2px solid #b57a16; outline-offset:1px; }
+  .timed-word {
+    display: inline;
+    padding: 0;
+    border: 0;
+    border-radius: 3px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    line-height: inherit;
+    text-align: inherit;
+    white-space: pre-wrap;
+    cursor: default;
+  }
+  .timed-seekable { cursor: pointer; text-decoration: underline dotted rgba(125,91,38,.5); text-underline-offset: .18em; }
+  .timed-seekable:hover, .timed-seekable:focus-visible { background: #ffe6a6; outline: 2px solid #b57a16; outline-offset: 1px; }
+  .timed-word.is-playing { background: #ffd15c; box-shadow: 0 0 0 2px rgba(181,122,22,.25); }
+  .timed-interpolated { }
 
   /* Dark mode */
   [data-theme="night"] .saba-audio-player {
