@@ -315,7 +315,7 @@ function whatsappShareHref(url, text) {
                         <figcaption>
                           <span>{img.language} · {img.variant}</span>
                           <div class="sh-media-share-row">
-                            <button type="button" class="sh-media-share sh-media-share-file" data-share-title={mediaShareTitle(seg, img)} data-share-text={img.language === 'hebrew' ? (seg.he_nikud || seg.he || '') : (seg.en || seg.he || '')} data-share-url={mediaShareUrl(img)} data-media-url={mediaDirectUrl(img)}>Share actual image</button>
+                            <button type="button" class="sh-media-share sh-media-share-file" data-share-title={mediaShareTitle(seg, img)} data-share-url={mediaShareUrl(img)} data-media-url={mediaDirectUrl(img)} data-teaching={img.language === 'hebrew' ? seg.he : seg.en}>Share actual image</button>
                             <a class="sh-media-share" href={xShareHref(mediaShareUrl(img), mediaShareTitle(seg, img))} target="_blank" rel="noopener noreferrer">X</a>
                             <a class="sh-media-share" href={telegramShareHref(mediaShareUrl(img), mediaShareTitle(seg, img))} target="_blank" rel="noopener noreferrer">Telegram</a>
                             <a class="sh-media-share" href={whatsappShareHref(mediaShareUrl(img), mediaShareTitle(seg, img))} target="_blank" rel="noopener noreferrer">WhatsApp</a>
@@ -407,48 +407,74 @@ function whatsappShareHref(url, text) {
       <script src="/reader-notes.js" is:inline></script>
       <script is:inline>
         (function () {
-          function shareActualImage(mediaUrl, shareUrl, title, teaching, button) {
-            if (!mediaUrl || !window.fetch) return;
-            var originalLabel = button && button.textContent;
-            var text = (teaching && teaching.trim() ? teaching.trim() + '\n\n' : '') + title + ' — ajew.org';
-            function label(message) {
-              if (!button) return;
-              button.textContent = message;
-              setTimeout(function () { button.textContent = originalLabel || 'Share actual image'; }, 2600);
+          function actualImageFilename(mediaUrl, title, mime) {
+            var urlName = (mediaUrl.split('/').pop() || '').split('?')[0];
+            if (/\.(png|jpe?g|webp)$/i.test(urlName)) return urlName;
+            var ext = mime === 'image/jpeg' ? 'jpg' : mime === 'image/webp' ? 'webp' : 'png';
+            return (title.replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '') || 'ajew-image') + '.' + ext;
+          }
+          function downloadActualImage(blob, mediaUrl, filename) {
+            var href = blob ? URL.createObjectURL(blob) : mediaUrl;
+            var a = document.createElement('a');
+            a.href = href;
+            a.download = filename || 'ajew-image.png';
+            a.style.display = 'none';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            if (blob) setTimeout(function () { URL.revokeObjectURL(href); }, 1000);
+          }
+          function setActualImageStatus(button, message) {
+            if (!button) return;
+            var original = button.getAttribute('data-original-label') || button.textContent || 'Share actual image';
+            button.setAttribute('data-original-label', original);
+            button.textContent = message;
+            setTimeout(function () { button.textContent = original; }, 2800);
+          }
+          async function shareActualImage(button) {
+            var mediaUrl = button.getAttribute('data-media-url') || '';
+            var title = button.getAttribute('data-share-title') || document.title;
+            var teaching = button.getAttribute('data-teaching') || '';
+            var shareText = [teaching, title + ' — ajew.org'].filter(Boolean).join('\n\n');
+            if (!mediaUrl || !window.fetch) {
+              if (mediaUrl) window.open(mediaUrl, '_blank', 'noopener');
+              return;
             }
-            fetch(mediaUrl).then(function (r) {
-              if (!r.ok) throw new Error('image fetch failed');
-              return r.blob();
-            }).then(function (blob) {
-              var ext = (mediaUrl.split('.').pop() || 'png').split('?')[0];
-              var filename = (title.replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '') || 'ajew-image') + '.' + ext;
-              var file = new File([blob], filename, { type: blob.type || 'image/png' });
-              // Mobile and supporting desktop browsers: send the image file itself.
+            try {
+              var response = await fetch(mediaUrl);
+              if (!response.ok) throw new Error('Image fetch failed');
+              var blob = await response.blob();
+              var mime = blob.type || 'image/png';
+              var filename = actualImageFilename(mediaUrl, title, mime);
+              var file = new File([blob], filename, { type: mime });
+
               if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-                return navigator.share({ title: title, text: text, files: [file] });
+                try {
+                  await navigator.share({ title: title, text: shareText, files: [file] });
+                  setActualImageStatus(button, 'Image shared');
+                } catch (shareError) {
+                  if (!shareError || shareError.name !== 'AbortError') throw shareError;
+                }
+                return;
               }
-              // Desktop fallback: put the actual image pixels on the clipboard for pasting
-              // into Facebook, X, email, chat, etc. This is intentionally not a link copy.
+
               if (navigator.clipboard && navigator.clipboard.write && window.ClipboardItem) {
-                var clipboardPayload = {};
-                clipboardPayload[blob.type || 'image/png'] = blob;
-                clipboardPayload['text/plain'] = new Blob([text], { type: 'text/plain' });
-                return navigator.clipboard.write([new ClipboardItem(clipboardPayload)]).then(function () {
-                  label('Image + teaching copied — paste to share');
-                });
+                try {
+                  var clipboardPayload = {};
+                  clipboardPayload[mime] = blob;
+                  clipboardPayload['text/plain'] = new Blob([shareText], { type: 'text/plain' });
+                  await navigator.clipboard.write([new ClipboardItem(clipboardPayload)]);
+                  setActualImageStatus(button, 'Image + teaching copied — paste to share');
+                  return;
+                } catch (_clipboardError) {}
               }
-              // Last-resort desktop fallback keeps the actual file available for attachment.
-              var a = document.createElement('a');
-              a.href = mediaUrl;
-              a.download = filename;
-              document.body.appendChild(a);
-              a.click();
-              a.remove();
-              label('Image downloaded — attach to share');
-            }).catch(function () {
-              window.open(mediaUrl || shareUrl, '_blank', 'noopener');
-              label('Image opened — save or share');
-            });
+
+              downloadActualImage(blob, mediaUrl, filename);
+              setActualImageStatus(button, 'Image downloaded — attach to share');
+            } catch (_error) {
+              window.open(mediaUrl, '_blank', 'noopener');
+              setActualImageStatus(button, 'Image opened — save or share');
+            }
           }
           function setFocusMode(on) {
             var body = document.body;
@@ -482,11 +508,7 @@ function whatsappShareHref(url, text) {
           if (share) {
             event.preventDefault();
             event.stopPropagation();
-            var url = share.getAttribute('data-share-url') || window.location.href;
-            var mediaUrl = share.getAttribute('data-media-url') || '';
-            var title = share.getAttribute('data-share-title') || document.title;
-            var teaching = share.getAttribute('data-share-text') || '';
-            shareActualImage(mediaUrl, url, title, teaching, share);
+            shareActualImage(share);
             return;
           }
           function hydrateMediaVideo(video) {
@@ -507,7 +529,8 @@ function whatsappShareHref(url, text) {
               var shareUrl = card.getAttribute('data-share-url') || '';
               var teaching = card.getAttribute('data-share-text') || '';
               var out = [];
-              if (img) out.push({ type: 'image', src: dataUrl || img.currentSrc || img.src, title: title, teaching: teaching, share: shareUrl || (card.querySelector('.sh-media-share[data-share-url]') || {}).dataset?.shareUrl || dataUrl || img.src });
+              var fileShare = card.querySelector('.sh-media-share-file');
+              if (img) out.push({ type: 'image', src: dataUrl || img.currentSrc || img.src, title: (fileShare && fileShare.getAttribute('data-share-title')) || title, teaching: (fileShare && fileShare.getAttribute('data-teaching')) || '', share: shareUrl || (card.querySelector('.sh-media-share[data-share-url]') || {}).dataset?.shareUrl || dataUrl || img.src });
               if (video) { var vsrc = video.currentSrc || video.src || video.getAttribute('data-video-src') || ''; if (vsrc) out.push({ type: 'video', src: vsrc, title: title + ' video', share: vsrc }); }
               return out;
             });
@@ -517,7 +540,7 @@ function whatsappShareHref(url, text) {
             if (g) return g;
             g = document.createElement('div');
             g.id = 'sh-media-gallery-lightbox';
-            g.innerHTML = '<div class="sh-gallery-backdrop"></div><div class="sh-gallery-panel" role="dialog" aria-modal="true"><button class="sh-gallery-close" type="button">×</button><button class="sh-gallery-prev" type="button">‹</button><div class="sh-gallery-stage"></div><button class="sh-gallery-next" type="button">›</button><div class="sh-gallery-caption"></div><div class="sh-gallery-actions"><button class="sh-gallery-share-file" type="button">Share actual image</button><a class="sh-gallery-open" target="_blank" rel="noopener noreferrer">Open</a><a class="sh-gallery-share-x" target="_blank" rel="noopener noreferrer">X</a><a class="sh-gallery-share-tg" target="_blank" rel="noopener noreferrer">Telegram</a><a class="sh-gallery-share-wa" target="_blank" rel="noopener noreferrer">WhatsApp</a><a class="sh-gallery-download" download>Download</a></div></div>';
+            g.innerHTML = '<div class="sh-gallery-backdrop"></div><div class="sh-gallery-panel" role="dialog" aria-modal="true"><button class="sh-gallery-close" type="button">×</button><button class="sh-gallery-prev" type="button">‹</button><div class="sh-gallery-stage"></div><button class="sh-gallery-next" type="button">›</button><div class="sh-gallery-caption"></div><div class="sh-gallery-actions"><button type="button" class="sh-media-share sh-media-share-file sh-gallery-share-file">Share actual image</button><a class="sh-gallery-open" target="_blank" rel="noopener noreferrer">Open</a><a class="sh-gallery-share-x" target="_blank" rel="noopener noreferrer">X</a><a class="sh-gallery-share-tg" target="_blank" rel="noopener noreferrer">Telegram</a><a class="sh-gallery-share-wa" target="_blank" rel="noopener noreferrer">WhatsApp</a><a class="sh-gallery-download" download>Download</a></div></div>';
             document.body.appendChild(g);
             g.addEventListener('click', function (e) {
               if (e.target.closest('.sh-gallery-close') || e.target.classList.contains('sh-gallery-backdrop')) closeMediaGallery();
@@ -546,6 +569,13 @@ function whatsappShareHref(url, text) {
             g.querySelector('.sh-gallery-caption').textContent = (index + 1) + ' / ' + items.length + ' · ' + item.title;
             g.querySelector('.sh-gallery-open').href = item.src;
             g.querySelector('.sh-gallery-download').href = item.src;
+            var actualShare = g.querySelector('.sh-gallery-share-file');
+            actualShare.hidden = item.type !== 'image';
+            actualShare.textContent = 'Share actual image';
+            actualShare.setAttribute('data-original-label', 'Share actual image');
+            actualShare.setAttribute('data-media-url', item.src);
+            actualShare.setAttribute('data-share-title', item.title);
+            actualShare.setAttribute('data-teaching', item.teaching || '');
             var shareText = item.title + ' — ajew.org';
             var shareTarget = item.share || item.src;
             var fileShare = g.querySelector('.sh-gallery-share-file');
