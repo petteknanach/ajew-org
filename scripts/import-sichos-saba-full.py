@@ -238,7 +238,10 @@ def main() -> None:
         published_display = "\n\n".join(str(s["he"]) for s in segments)
         verified_here = sum(s["translationStatus"] == "verified" for s in segments)
         if segments and verified_here == len(segments):
-            side_translation_status = "verified"
+            # A side with a completed legacy-witness review retains the more
+            # specific provenance status even when all segment translations
+            # were already independently verified.
+            side_translation_status = "existing_verified" if existing_is_verified else "verified"
         elif verified_here:
             side_translation_status = "in_progress"
         total_segments += len(segments)
@@ -355,7 +358,7 @@ def main() -> None:
         "totalHebrewChars": total_hebrew_chars,
         "totalSegments": total_segments,
         "verifiedEnglishSegments": sum(x["verifiedEnglishSegments"] for x in manifest_sides),
-        "verifiedEnglishSides": sum(x["translationStatus"] == "verified" for x in manifest_sides),
+        "verifiedEnglishSides": sum(x["translationStatus"] in {"verified", "existing_verified"} for x in manifest_sides),
         "inProgressSides": sum(x["translationStatus"] == "in_progress" for x in manifest_sides),
         "existingEnglishSides": len(legacy_english),
         "existingEnglishVerifiedSides": sum(x["existingEnglishVerified"] for x in manifest_sides),
