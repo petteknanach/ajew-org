@@ -27,12 +27,12 @@ try {
 const tapes = indexData?.tapes || [];
 const audioBySide = new Map((audioData?.entries || []).filter((x) => x.verified).map((x) => [`${x.tape}-${x.side}`, x]));
 const availableAudioSides = audioBySide.size;
-const completeTranslations = (indexData?.torahs || []).filter((x) => x.translationStatus === 'verified').length;
+const completeTranslations = (indexData?.torahs || []).filter((x) => x.translationStatus === 'verified' || x.translationStatus === 'existing_verified').length;
 function sideLabel(side) { return side.side === 'a' ? 'Side A / צד א׳' : 'Side B / צד ב׳'; }
 function statusLabel(side) {
   if (side.sourceStatus === 'missing') return 'Source missing';
   if (side.sourceStatus === 'partial') return 'Partial source';
-  if (side.translationStatus === 'verified') return 'English verified';
+  if (side.translationStatus === 'verified' || side.translationStatus === 'existing_verified') return 'English verified';
   if (side.translationStatus === 'existing_review_pending') return 'Existing English — review pending';
   if (side.translationStatus === 'in_progress') return 'Translation in progress';
   return 'Hebrew available';
@@ -54,6 +54,7 @@ function statusLabel(side) {
         <a href={indexData?.completePdfUrl || '#'} target="_blank" rel="noopener">Original PDF · 2,072 pages</a>
         <a href={indexData?.downloadUrl || '#'} download>Complete OCR · TXT</a>
         <a href={indexData?.completeOcrDocxUrl || '#'} download>Complete OCR · DOCX</a>
+        <a href={indexData?.completeEnglishDocxUrl || '#'} download>Complete English · DOCX</a>
         <a href="https://archive.org/details/sichos-saba-117-tape-audio" target="_blank" rel="noopener">Original audio archive</a>
       </div>
     </header>

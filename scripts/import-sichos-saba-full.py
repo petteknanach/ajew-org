@@ -21,6 +21,7 @@ ROOT = Path(__file__).resolve().parents[1]
 BOOK = ROOT / "public/reader/saba-tape-transcripts"
 TAPES = BOOK / "tapes"
 DEFAULT_SOURCE = Path("/mnt/c/Users/Pettek/Downloads/Sichos_Saba_FULL_2072_pages_ABBYY16_OCR.txt")
+OCR_CORRECTIONS = ROOT / "scripts/data/saba-ocr-corrections.json"
 START_RE = re.compile(r"(?m)^קלטת\s+(\d+)([אב])(?:\s*\([^\n]*\))?\s*$")
 END_RE_TEMPLATE = r"(?m)^סוף קלטת\s+{n}{side}\s*$"
 KNOWN_MISSING = {(9, "ב"), (23, "ב"), (62, "ב"), (89, "ב"), (90, "ב"), (99, "ב")}
@@ -76,6 +77,15 @@ def main() -> None:
     args = ap.parse_args()
     source_path = args.source
     raw = source_path.read_text(encoding="utf-8").replace("\r\n", "\n").replace("\r", "\n")
+    correction_ledger = json.loads(OCR_CORRECTIONS.read_text(encoding="utf-8")) if OCR_CORRECTIONS.exists() else {
+        "schemaVersion": 1, "witness": {}, "corrections": []
+    }
+    corrections_by_segment = {}
+    for correction in correction_ledger.get("corrections", []):
+        seg_id = str(correction.get("segmentId") or "")
+        if not re.fullmatch(r"\d+-[ab]-\d{3}", seg_id) or seg_id in corrections_by_segment:
+            raise SystemExit(f"Invalid or duplicate OCR correction segment id: {seg_id!r}")
+        corrections_by_segment[seg_id] = correction
 
     # Preserve the already-published English tape-side translations. These 28
     # historical chapter files cover specific sides among tapes 1–16. They stay
@@ -101,13 +111,23 @@ def main() -> None:
                 "characters": sum(len(s) for s in english_segments),
             }
 
+    review_ledger_path = BOOK / "existing-english-reviews.json"
+    if review_ledger_path.exists():
+        existing_review_ledger = json.loads(review_ledger_path.read_text(encoding="utf-8"))
+    else:
+        existing_review_ledger = {"schemaVersion": 1, "reviews": {}}
+    existing_reviews = existing_review_ledger.get("reviews", {})
+
     starts: dict[tuple[int, str], tuple[int, int, str]] = {}
     prior_translations: dict[str, dict] = {}
+    prior_resources: dict[tuple[int, str], dict] = {}
     for tape_path in TAPES.glob("tape-*.json"):
         try:
             prior = json.loads(tape_path.read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError):
             continue
+        if prior.get("sourceResources"):
+            prior_resources[(int(prior.get("tapeNumber")), "א" if prior.get("side") == "a" else "ב")] = prior["sourceResources"]
         for seg in prior.get("segments", []):
             if seg.get("translationStatus") == "verified" and seg.get("en", "").strip():
                 prior_translations[str(seg.get("id"))] = seg
@@ -141,7 +161,8 @@ def main() -> None:
     TAPES.mkdir(parents=True, exist_ok=True)
     download = ROOT / "public/downloads/sichos-saba-complete-hebrew-ocr.txt"
     download.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copyfile(source_path, download)
+    if source_path.resolve() != download.resolve():
+        shutil.copyfile(source_path, download)
 
     first_start = starts[(1, "א")][0]
     front_matter = raw[:first_start]
@@ -168,39 +189,68 @@ def main() -> None:
         concatenated_slices.append(source_slice)
         display, had_end = clean_display(source_slice, marker, tape, side)
         grouped = group_paragraphs(display)
-        canonical_grouped_display = "\n\n".join(grouped)
         status = "missing" if key in KNOWN_MISSING else "partial" if key in KNOWN_PARTIAL else "available"
         language = "yi" if tape == 116 else "he"
         slug = f"{tape}-{SIDE_SLUG[side]}"
         existing = legacy_english.get(key)
-        side_translation_status = "existing_review_pending" if existing else ("source_missing" if status == "missing" else "not_started")
+        existing_review = existing_reviews.get(slug) if existing else None
+        existing_chapter = existing["chapter"] if existing else None
+        required_existing_checks = ("complete", "noSkipping", "noTruncation", "noSummarization", "noAdditions", "uncertaintiesPreserved")
+        existing_is_verified = bool(
+            existing_review
+            and existing_review.get("sourceSha256") == sha(source_slice)
+            and existing_review.get("legacyChapter") == existing_chapter
+            and all(existing_review.get("checks", {}).get(k) is True for k in required_existing_checks)
+        )
+        side_translation_status = "existing_verified" if existing_is_verified else ("existing_review_pending" if existing else ("source_missing" if status == "missing" else "not_started"))
         segments = []
-        for i, text in enumerate(grouped, 1):
+        for i, source_text in enumerate(grouped, 1):
             seg_id = f"{slug}-{i:03d}"
+            correction = corrections_by_segment.get(seg_id)
+            text = source_text
+            if correction:
+                if sha(source_text) != correction.get("sourceHeSha256"):
+                    raise SystemExit(f"OCR correction source hash is stale for {seg_id}")
+                text = str(correction.get("correctedHe") or "")
+                if not text or sha(text) != correction.get("correctedHeSha256"):
+                    raise SystemExit(f"OCR correction output hash is invalid for {seg_id}")
             prior = prior_translations.get(seg_id)
+            segment_payload: dict[str, object]
             if prior and prior.get("he") == text:
-                segments.append({
+                segment_payload = {
                     "id": seg_id,
                     "he": text,
                     "en": prior["en"],
                     "translationStatus": "verified",
                     "qa": prior.get("qa", {}),
-                })
+                }
             else:
-                segments.append({
+                segment_payload = {
                     "id": seg_id,
                     "he": text,
                     "en": "",
                     "translationStatus": side_translation_status,
-                })
+                }
+            if correction:
+                segment_payload["ocrCorrection"] = {
+                    "sourceHeSha256": correction["sourceHeSha256"],
+                    "correctedHeSha256": correction["correctedHeSha256"],
+                    "changes": len(correction.get("changes", [])),
+                    "witnessSha256": correction_ledger.get("witness", {}).get("documentSha256"),
+                }
+            segments.append(segment_payload)
+        published_display = "\n\n".join(str(s["he"]) for s in segments)
         verified_here = sum(s["translationStatus"] == "verified" for s in segments)
         if segments and verified_here == len(segments):
-            side_translation_status = "verified"
+            # A side with a completed legacy-witness review retains the more
+            # specific provenance status even when all segment translations
+            # were already independently verified.
+            side_translation_status = "existing_verified" if existing_is_verified else "verified"
         elif verified_here:
             side_translation_status = "in_progress"
         total_segments += len(segments)
-        total_display_chars += len(display)
-        total_hebrew_chars += sum("\u0590" <= ch <= "\u05ff" for ch in display)
+        total_display_chars += len(published_display)
+        total_hebrew_chars += sum("\u0590" <= ch <= "\u05ff" for ch in published_display)
         item = {
             "number": slug,
             "displayNumber": f"{tape}{side}",
@@ -214,6 +264,8 @@ def main() -> None:
             "translationStatus": side_translation_status,
             "existingEnglishUrl": existing["url"] if existing else None,
         }
+        if key in prior_resources:
+            item["sourceResources"] = prior_resources[key]
         flat_index.append(item)
         if side == "א":
             grouped_index.append({"tapeNumber": tape, "sides": []})
@@ -235,7 +287,7 @@ def main() -> None:
             "sourceMarker": marker,
             "sourceSlice": source_slice,
             "sourceSha256": sha(source_slice),
-            "displaySha256": sha(canonical_grouped_display),
+            "displaySha256": sha(published_display),
             "segments": segments,
             "navigation": {
                 "prevUrl": flat_index[idx - 1]["url"] if idx else None,
@@ -249,25 +301,31 @@ def main() -> None:
                 "notes": "Source explicitly marks this side as missing." if status == "missing" else "Source states that much of the wording is missing or inaudible." if status == "partial" else "",
             },
         }
+        if key in prior_resources:
+            payload["sourceResources"] = prior_resources[key]
         (TAPES / f"tape-{tape:03d}-{SIDE_SLUG[side]}.json").write_text(
             json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
         )
-        manifest_sides.append({
+        manifest_item = {
             "tape": tape,
             "side": SIDE_SLUG[side],
             "file": f"tapes/tape-{tape:03d}-{SIDE_SLUG[side]}.json",
             "sourceStatus": status,
             "language": language,
             "sourceChars": len(source_slice),
-            "displayChars": len(display),
-            "hebrewChars": sum("\u0590" <= ch <= "\u05ff" for ch in display),
+            "displayChars": len(published_display),
+            "hebrewChars": sum("\u0590" <= ch <= "\u05ff" for ch in published_display),
             "segments": len(segments),
             "verifiedEnglishSegments": verified_here,
             "sourceSha256": sha(source_slice),
-            "displaySha256": sha(canonical_grouped_display),
+            "displaySha256": sha(published_display),
             "translationStatus": item["translationStatus"],
             "existingEnglish": existing,
-        })
+            "existingEnglishVerified": existing_is_verified,
+        }
+        if key in prior_resources:
+            manifest_item["sourceResources"] = prior_resources[key]
+        manifest_sides.append(manifest_item)
 
     reconstructed = front_matter + "".join(concatenated_slices)
     if reconstructed != raw:
@@ -281,11 +339,22 @@ def main() -> None:
         "totalTapes": 117,
         "totalSides": 234,
         "description": "Complete Hebrew transcripts organized by tape and side, with verified English translation added segment by segment.",
-        "sourceNotice": "The supplied Hebrew transcript states that it contains errors and that unclear matters should be checked against the recordings. Missing and partial sides are marked explicitly.",
+        "sourceNotice": "The supplied Hebrew transcript states that it contains errors and that unclear matters should be checked against the recordings. The Reader display includes only independently reviewed, high-confidence corrections from a separate Word witness; the exact ABBYY OCR remains available for download and preserved in every source slice. Missing and partial sides are marked explicitly.",
         "downloadUrl": "/downloads/sichos-saba-complete-hebrew-ocr.txt",
+        "ocrCorrectionInfo": {
+            "correctedSegments": len(corrections_by_segment),
+            "corrections": sum(len(x.get("changes", [])) for x in corrections_by_segment.values()),
+            "witnessSha256": correction_ledger.get("witness", {}).get("documentSha256"),
+        },
         "torahs": flat_index,
         "tapes": grouped_index,
     }
+    prior_index_path = BOOK / "index.json"
+    if prior_index_path.exists():
+        prior_index = json.loads(prior_index_path.read_text(encoding="utf-8"))
+        for field in ("completePdfUrl", "completeOcrDocxUrl", "completeEnglishDocxUrl", "pdfPageCount", "sectionPdfCount"):
+            if field in prior_index:
+                index[field] = prior_index[field]
     (BOOK / "index.json").write_text(json.dumps(index, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
     manifest = {
@@ -306,12 +375,23 @@ def main() -> None:
         "totalHebrewChars": total_hebrew_chars,
         "totalSegments": total_segments,
         "verifiedEnglishSegments": sum(x["verifiedEnglishSegments"] for x in manifest_sides),
-        "verifiedEnglishSides": sum(x["translationStatus"] == "verified" for x in manifest_sides),
+        "verifiedEnglishSides": sum(x["translationStatus"] in {"verified", "existing_verified"} for x in manifest_sides),
         "inProgressSides": sum(x["translationStatus"] == "in_progress" for x in manifest_sides),
         "existingEnglishSides": len(legacy_english),
+        "existingEnglishVerifiedSides": sum(x["existingEnglishVerified"] for x in manifest_sides),
+        "ocrCorrectionLedgerSha256": sha(OCR_CORRECTIONS.read_text(encoding="utf-8")) if OCR_CORRECTIONS.exists() else None,
+        "ocrCorrectedSegments": len(corrections_by_segment),
+        "ocrCorrections": sum(len(x.get("changes", [])) for x in corrections_by_segment.values()),
+        "ocrCorrectionWitnessSha256": correction_ledger.get("witness", {}).get("documentSha256"),
         "lossCheck": "PASS",
         "sides": manifest_sides,
     }
+    prior_manifest_path = BOOK / "translation-manifest.json"
+    if prior_manifest_path.exists():
+        prior_manifest = json.loads(prior_manifest_path.read_text(encoding="utf-8"))
+        for field in ("pdfSource", "ocrDocx", "englishTranslationDocx"):
+            if field in prior_manifest:
+                manifest[field] = prior_manifest[field]
     (BOOK / "translation-manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps({k: manifest[k] for k in (
         "sourceSha256", "sourceChars", "expectedSides", "emittedSides", "availableSides",
