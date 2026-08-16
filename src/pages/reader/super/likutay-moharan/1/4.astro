@@ -15,7 +15,7 @@ const likutayNanach = {
     .filter((segment: any) => Number(segment.index) >= 157 && Number(segment.index) <= 179)
     .map((segment: any, index: number) => ({ ...segment, index: index + 1 })),
 };
-const prayer = load('public/reader/likutay-tefilos/part-1/torah-4.json');
+const prayer = load('public/reader/likutay-tefilos/part-1/prayer-4.json');
 const peerManifest = load('public/reader/super/likutay-moharan/1/4/peer-halikutim/manifest.json');
 // Keep the full structured extraction in the manifest, but send only the
 // facsimile navigation fields to the browser; the unreviewed OCR is not rendered.
