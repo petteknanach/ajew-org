@@ -143,7 +143,13 @@ def canonical_reader_link(link: str) -> str:
     def clean_part(s):
         return re.sub(r'^part-', '', s)
     def clean_torah(s):
-        return re.sub(r'^(torah|topic|section|sicha)-', '', s)
+        return re.sub(r'^(torah|topic|section|sicha|chapter)-', '', s)
+    # Complete Saba tape transcripts live under a storage-only ``tapes``
+    # directory, while their public Reader routes are /1/37-b, etc.
+    if book == 'saba-tape-transcripts' and len(parts) == 4 and parts[2] == 'tapes':
+        match = re.fullmatch(r'tape-0*(\d+)-([ab])', parts[3])
+        if match:
+            return f'/reader/{book}/1/{int(match.group(1))}-{match.group(2)}'
     if len(parts) == 4:
         return f'/reader/{book}/{clean_part(parts[2])}/{clean_torah(parts[3])}'
     if len(parts) == 3:

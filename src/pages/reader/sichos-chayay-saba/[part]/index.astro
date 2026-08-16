@@ -1,6 +1,7 @@
 ---
 import Layout from '../../../../layouts/Layout.astro';
 import ReaderDirectory from '../../../../components/ReaderDirectory.astro';
+import SabaTranscriptTopicIndex from '../../../../components/SabaTranscriptTopicIndex.astro';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -8,9 +9,11 @@ export function getStaticPaths() { return [{ params: { part: '1' } }]; }
 const { part } = Astro.params;
 const partNum = parseInt(part || '1');
 let indexData = null;
+let topicData = null;
 try {
   const idxPath = path.join(process.cwd(), 'public/reader/sichos-chayay-saba/index.json');
   indexData = JSON.parse(fs.readFileSync(idxPath, 'utf8'));
+  topicData = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'public/reader/saba-transcript-topics.json'), 'utf8'));
 } catch (e) { console.error('Error loading sichos-chayay-saba index:', e); }
 const totalSections = indexData?.torahs?.length || 0;
 ---
@@ -23,4 +26,5 @@ const totalSections = indexData?.torahs?.length || 0;
     items={indexData?.torahs || []}
     hrefBase={`/reader/sichos-chayay-saba/${partNum}/`}
   />
+  {topicData && <SabaTranscriptTopicIndex data={topicData} collection="sichos-chayay-saba" />}
 </Layout>

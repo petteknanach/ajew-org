@@ -1,5 +1,6 @@
 ---
 import Layout from '../../../../layouts/Layout.astro';
+import SabaTranscriptTopicIndex from '../../../../components/SabaTranscriptTopicIndex.astro';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -9,11 +10,13 @@ export function getStaticPaths() {
 
 let indexData = null;
 let audioData = null;
+let topicData = null;
 const timedSides = new Set();
 try {
   const readerDir = path.join(process.cwd(), 'public/reader/saba-tape-transcripts');
   indexData = JSON.parse(fs.readFileSync(path.join(readerDir, 'index.json'), 'utf8'));
   audioData = JSON.parse(fs.readFileSync(path.join(readerDir, 'audio-map.json'), 'utf8'));
+  topicData = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'public/reader/saba-transcript-topics.json'), 'utf8'));
   const timingsDir = path.join(readerDir, 'timings');
   if (fs.existsSync(timingsDir)) {
     for (const filename of fs.readdirSync(timingsDir).filter((name) => name.endsWith('.json'))) {
@@ -91,6 +94,7 @@ function statusLabel(side) {
         </article>
       ))}
     </section>
+    {topicData && <SabaTranscriptTopicIndex data={topicData} collection="saba-tape-transcripts" />}
   </main>
 </Layout>
 

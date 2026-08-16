@@ -87,6 +87,7 @@ mustContain('public/reader-script.js', 'init(); autoHighlightFromQuery(); setupM
 mustContain('public/reader-script.js', 'Run only after the lookup table above has been initialized.', 'commentary lookup initialization order');
 mustContain('src/pages/reader/likutay-moharan/[part]/[torah].astro', 'Likutay Moharan ${partRoman}:${torahNum}', 'numbered Likutay Moharan teaching titles');
 mustContain('scripts/build-reader-search-shards.py', "algorithm': 'fnv1a32-utf8-bigram-le'", 'versioned phrase index builder');
+mustContain('scripts/build-reader-search-shards.py', "parts[2] == 'tapes'", 'canonical Saba tape-side Reader links');
 mustContain('scripts/build-light-search-index.py', "he_doc['m'] = segment_map", 'single-pass Reader location map generation');
 mustContain('src/pages/search.astro', 'window.location.replace(target)', 'classic search query-preserving redirect');
 mustContain('src/pages/search-enhanced.astro', "['tainted', ['tainted', 'spoiled', 'corrupted', 'poisoned', 'bad', 'crazy', 'insane', 'madness']]", 'tainted-grain conceptual expansion');
