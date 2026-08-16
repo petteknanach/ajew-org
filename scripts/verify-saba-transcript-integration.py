@@ -73,7 +73,12 @@ for collection, folder, pattern, slug_pattern in SOURCES:
                     doc = json.loads(doc_path.read_text(encoding='utf-8'))
                     if normalize(doc.get('he')) != normalize(expected_he): fail(f'{source.name}: sharded Hebrew is incomplete')
                     if normalize(doc.get('en')) != normalize(expected_en): fail(f'{source.name}: sharded English is incomplete')
-                    if len(doc.get('m') or []) != len(segments): fail(f'{source.name}: segment-deep search map is incomplete')
+                    location_map = doc.get('m') or []
+                    if len(location_map) != len(segments): fail(f'{source.name}: segment-deep search map is incomplete')
+                    else:
+                        expected_anchors = [seg.get('index') or position for position, seg in enumerate(segments, 1)]
+                        actual_anchors = [row[0] for row in location_map]
+                        if actual_anchors != expected_anchors: fail(f'{source.name}: segment-deep anchors do not match Reader DOM ids')
 
         topic_doc = topic_docs.get((collection, slug))
         if not topic_doc: fail(f'{source.name}: absent from transcript topic directory')

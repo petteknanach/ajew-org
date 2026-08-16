@@ -128,7 +128,7 @@ def segment_map(raw_link):
         candidate = int(en_match.group(1)) if en_match else hebrew_section_number(he_seg)
         if candidate and ((section == 0 and candidate == 1) or candidate in (section, section + 1)):
             section = candidate
-        dom_index = seg.get('index', position)
+        dom_index = seg.get('index') or position
         rows.append([dom_index, section or dom_index, he_cursor, he_cursor + len(he_seg), en_cursor, en_cursor + len(en_seg)])
         if he_seg: he_cursor += len(he_seg) + 1
         if en_seg: en_cursor += len(en_seg) + 1
