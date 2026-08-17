@@ -1,0 +1,145 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import fs from 'node:fs';
+import path from 'node:path';
+
+export function getStaticPaths() {
+  return [{ params: { part: '1' } }];
+}
+
+const data = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'public/reader/saba-says/index.json'), 'utf8'));
+const formatDuration = (seconds) => {
+  const rounded = Math.round(Number(seconds) || 0);
+  return `${Math.floor(rounded / 60)}:${String(rounded % 60).padStart(2, '0')}`;
+};
+---
+
+<Layout title={`${data.title} | AJEW.org`} description={data.description}>
+  <main class="saba-says-page">
+    <header class="collection-hero">
+      <p class="eyebrow">The original voice of Saba Yisroel</p>
+      <h1>Saba Says</h1>
+      <h2 lang="he" dir="rtl">הסבא אומר</h2>
+      <p>{data.description}</p>
+      <div class="collection-stats"><b>{data.count} recordings</b><b>Original Hebrew audio</b><b>About 15 minutes total</b></div>
+      <a class="back-link" href="/reader/">← Reader directory</a>
+    </header>
+
+    <section class="player-shell" aria-label="Audio player">
+      <div>
+        <span>Now playing</span>
+        <strong id="now-playing" lang="he" dir="rtl">בחר הקלטה — Choose a recording</strong>
+      </div>
+      <audio id="shared-player" controls preload="none"></audio>
+    </section>
+
+    <label class="search-box">
+      <span>Search the Hebrew captions</span>
+      <input id="clip-search" type="search" placeholder="חיפוש..." autocomplete="off" />
+    </label>
+
+    <section class="clip-grid" aria-label="112 short Saba recordings">
+      {data.recordings.map((recording) => (
+        <article class="clip-card" data-search={recording.title}>
+          <button
+            type="button"
+            class="play-clip"
+            data-src={recording.url}
+            data-title={recording.title}
+            aria-label={`Play recording ${recording.id}`}
+          >
+            <span class="play-icon" aria-hidden="true">▶</span>
+            <span class="clip-copy">
+              <small>Recording {recording.id} · {formatDuration(recording.durationSeconds)}</small>
+              <strong lang="he" dir="rtl">{recording.title}</strong>
+            </span>
+          </button>
+          <a href={recording.url} download title="Download MP3">↓ MP3</a>
+        </article>
+      ))}
+    </section>
+    <p id="no-results" hidden>No matching recording captions.</p>
+  </main>
+</Layout>
+
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', () => {
+    const player = document.getElementById('shared-player');
+    const nowPlaying = document.getElementById('now-playing');
+    const buttons = Array.from(document.querySelectorAll('.play-clip'));
+    const cards = Array.from(document.querySelectorAll('.clip-card'));
+    const search = document.getElementById('clip-search');
+    const noResults = document.getElementById('no-results');
+
+    buttons.forEach((button) => button.addEventListener('click', () => {
+      const same = player.dataset.src === button.dataset.src;
+      buttons.forEach((item) => item.classList.remove('is-playing'));
+      if (same && !player.paused) {
+        player.pause();
+        return;
+      }
+      if (!same) {
+        player.src = button.dataset.src;
+        player.dataset.src = button.dataset.src;
+        player.load();
+      }
+      nowPlaying.textContent = button.dataset.title;
+      button.classList.add('is-playing');
+      player.play().catch(() => {});
+      document.querySelector('.player-shell')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }));
+
+    player.addEventListener('ended', () => buttons.forEach((item) => item.classList.remove('is-playing')));
+    search.addEventListener('input', () => {
+      const query = search.value.trim().toLocaleLowerCase();
+      let visible = 0;
+      cards.forEach((card) => {
+        const show = !query || card.dataset.search.toLocaleLowerCase().includes(query);
+        card.hidden = !show;
+        if (show) visible += 1;
+      });
+      noResults.hidden = visible !== 0;
+    });
+  });
+</script>
+
+<style>
+  .saba-says-page { max-width: 1080px; margin: 0 auto; padding: clamp(20px,4vw,48px) 14px 80px; color: #172d48; }
+  .collection-hero { padding: clamp(28px,6vw,64px) 18px; text-align: center; border: 1px solid #d6b56e; border-radius: 26px; background: radial-gradient(circle at 18% 12%,#fff1bd,transparent 30%),linear-gradient(135deg,#fffaf0,#ecd4a1); box-shadow: 0 18px 48px rgba(30,45,70,.12); }
+  .eyebrow { margin: 0 0 7px; color: #815d20; font-size: .75rem; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
+  .collection-hero h1 { margin: 0; color: #14345d; font: 800 clamp(2.2rem,7vw,4.6rem)/1 'Cinzel',Georgia,serif; }
+  .collection-hero h2 { margin: 8px 0; color: #805816; font: 700 clamp(1.7rem,5vw,3rem)/1.1 'Frank Ruhl Libre',serif; }
+  .collection-hero > p:not(.eyebrow) { max-width: 700px; margin: 14px auto; line-height: 1.6; }
+  .collection-stats { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 16px 0; }
+  .collection-stats b,.back-link { padding: 7px 12px; border: 1px solid #b99a5e; border-radius: 999px; background: rgba(255,255,255,.68); color: #173b67; text-decoration: none; font-size: .82rem; }
+  .player-shell { position: sticky; top: 8px; z-index: 5; display: grid; grid-template-columns: minmax(0,1fr) minmax(240px,440px); gap: 14px; align-items: center; margin: 20px 0; padding: 14px 16px; border: 1px solid #cfa95e; border-radius: 16px; background: rgba(255,252,242,.96); box-shadow: 0 10px 30px rgba(18,42,71,.14); backdrop-filter: blur(9px); }
+  .player-shell div { display: grid; gap: 3px; min-width: 0; }
+  .player-shell span { color: #84642f; font-size: .7rem; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
+  .player-shell strong { overflow: hidden; color: #173b67; font: 700 1.05rem 'Frank Ruhl Libre',serif; text-overflow: ellipsis; white-space: nowrap; }
+  .player-shell audio { width: 100%; }
+  .search-box { display: grid; gap: 6px; margin: 0 0 14px; color: #5d4c2e; font-weight: 800; }
+  .search-box input { width: 100%; padding: 12px 14px; border: 1px solid #cdb987; border-radius: 12px; background: #fffdf8; color: #172d48; font-size: 1rem; }
+  .clip-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(270px,1fr)); gap: 10px; }
+  .clip-card { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: stretch; overflow: hidden; border: 1px solid #dfcfaa; border-radius: 14px; background: #fffdf8; box-shadow: 0 5px 17px rgba(23,45,72,.07); }
+  .play-clip { display: grid; grid-template-columns: 38px minmax(0,1fr); gap: 9px; align-items: center; padding: 12px; border: 0; background: transparent; color: #173b67; text-align: left; cursor: pointer; }
+  .play-clip:hover,.play-clip:focus-visible,.play-clip.is-playing { background: #fff1c9; outline: none; }
+  .play-icon { display: grid; width: 34px; height: 34px; place-items: center; border-radius: 50%; background: #173b67; color: #fff; font-size: .8rem; }
+  .play-clip.is-playing .play-icon { background: #ad7113; }
+  .clip-copy { display: grid; gap: 4px; min-width: 0; }
+  .clip-copy small { color: #846d43; font-size: .68rem; font-weight: 800; }
+  .clip-copy strong { color: #193c68; font: 700 1.02rem/1.3 'Frank Ruhl Libre',serif; }
+  .clip-card > a { display: grid; min-width: 58px; padding: 8px; place-items: center; border-left: 1px solid #dfcfaa; color: #74551d; text-decoration: none; font-size: .72rem; font-weight: 900; }
+  .clip-card > a:hover { background: #fff3d5; }
+  #no-results { padding: 24px; text-align: center; }
+  :global(body.dark-mode) .saba-says-page { color: #dce8f5; }
+  :global(body.dark-mode) .collection-hero { background: linear-gradient(135deg,#1a2436,#342e21); border-color:#655334; }
+  :global(body.dark-mode) .player-shell,:global(body.dark-mode) .clip-card,:global(body.dark-mode) .search-box input { background: #1d2637; color:#e8edf5; border-color:#514a3a; }
+  :global(body.dark-mode) .clip-copy strong,:global(body.dark-mode) .player-shell strong { color:#e5edfa; }
+  @media (max-width: 620px) {
+    .saba-says-page { padding-inline: 9px; overflow-x: hidden; }
+    .collection-hero { padding-inline: 11px; border-radius: 20px; }
+    .player-shell { top: 4px; grid-template-columns: 1fr; padding: 10px; }
+    .clip-grid { grid-template-columns: 1fr; }
+    .clip-card { min-width: 0; }
+  }
+</style>
