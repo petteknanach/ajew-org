@@ -953,4 +953,32 @@ const todayLM = lmTorahMap[dayIndex] || 1;
   .home-prayers-copy p { font-size: .9rem; line-height: 1.45; }
   .home-prayers-cta { justify-self: stretch; min-height: 44px; display: flex; align-items: center; justify-content: center; }
 }
+
+/* Splash polish: preserve the scene while making its geometry deliberate. */
+@media (min-width: 1181px) {
+  .hero-content { width: min(700px, calc(100% - 3rem)); }
+  .hero-actions {
+    width: min(760px, calc(100% - 3rem));
+    max-width: 760px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .btn-hero { justify-content: center; min-height: 60px; padding: .65rem .8rem; }
+  .hero-saba-link,
+  .hero-nosson-link { bottom: 1.5rem; width: clamp(105px, 10vw, 145px); }
+  .hero-saba-link { right: clamp(24px, 5vw, 80px); }
+  .hero-nosson-link { left: clamp(24px, 5vw, 80px); }
+}
+@media (min-width: 601px) and (max-width: 1180px) {
+  .hero-actions {
+    width: min(520px, calc(100% - 3rem));
+    max-width: 520px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .btn-hero { justify-content: center; min-height: 58px; padding: .65rem .8rem; }
+  .hero > .hero-holy-figure { width: 96px; bottom: 1.25rem; }
+  .hero-saba-link { right: 24px; }
+  .hero-nosson-link { left: 24px; }
+}
 </style>

@@ -902,6 +902,159 @@ function isActive(path: string) {
   body.dark-mode .fire-text {
     filter: drop-shadow(0 0 10px rgba(255, 120, 0, 0.9));
   }
+
+  /* ============================================
+     SIDEBAR POLISH — restrained refinement
+     ============================================ */
+  .desktop-sidebar {
+    background:
+      radial-gradient(circle at 24px 28px, rgba(212,160,23,.08), transparent 92px),
+      linear-gradient(180deg, #fffdf8 0%, #f8f2e7 100%);
+    border-right-color: #ddcfb7;
+    box-shadow: 8px 0 28px rgba(20,43,69,.08);
+  }
+  .sidebar-logo {
+    gap: .7rem;
+    min-height: 88px;
+    padding: 1rem;
+    color: #17365d;
+  }
+  .logo-nanach {
+    width: 44px;
+    height: 38px;
+    padding: 2px;
+    border: 1px solid rgba(23,54,93,.12);
+    border-radius: 8px;
+    background: white;
+    box-shadow: 0 3px 10px rgba(20,43,69,.09);
+  }
+  .sidebar-logo .logo-text { min-width: 0; }
+  .sidebar-logo .logo-name { color: #17365d; line-height: 1.05; }
+  .sidebar-logo .logo-tagline { margin-top: 4px; color: #6f6251; font-size: .67rem; line-height: 1.25; }
+  .sidebar-nav { padding: .65rem 0 .45rem; }
+  .sidebar-link {
+    gap: .55rem;
+    min-height: 42px;
+    margin: 2px 10px;
+    padding: .55rem .65rem;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    transition: background-color 150ms ease, color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+  }
+  .sidebar-link:hover {
+    background: rgba(255,255,255,.72);
+    border-color: rgba(212,160,23,.18);
+    box-shadow: 0 3px 10px rgba(20,43,69,.06);
+    transform: translateX(2px);
+  }
+  .sidebar-link.active {
+    background: linear-gradient(90deg, rgba(212,160,23,.16), rgba(255,255,255,.82));
+    border-color: rgba(212,160,23,.32);
+    border-left-color: rgba(212,160,23,.32);
+    box-shadow: inset 3px 0 0 #d4a017, 0 3px 10px rgba(20,43,69,.05);
+  }
+  .sidebar-link-icon { width: 1.35rem; }
+
+  .sidebar-quick {
+    position: relative;
+    padding: .55rem 10px .45rem;
+    border-top: 1px solid rgba(221,207,183,.75);
+  }
+  .sidebar-prayer-card {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    min-height: 50px;
+    padding: .55rem .65rem;
+    color: #17365d;
+    text-decoration: none;
+    background: linear-gradient(135deg, #fff7dc, #f5df9f);
+    border: 1px solid rgba(212,160,23,.38);
+    border-radius: 11px;
+    box-shadow: 0 4px 12px rgba(114,79,14,.09);
+  }
+  .sidebar-prayer-card:hover { box-shadow: 0 6px 16px rgba(114,79,14,.15); }
+  .sidebar-prayer-card .quick-icon { font-size: 1.15rem; }
+  .sidebar-prayer-card strong,
+  .sidebar-prayer-card em { display: block; line-height: 1.2; }
+  .sidebar-prayer-card strong { font-size: .76rem; }
+  .sidebar-prayer-card em {
+    margin-top: 2px;
+    color: #75633e;
+    font-family: var(--ds-font-hebrew, 'Frank Ruhl Libre', serif);
+    font-size: .7rem;
+    font-style: normal;
+    direction: rtl;
+  }
+  .sidebar-all-links { margin-top: 4px; }
+  .sidebar-all-links > summary {
+    min-height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #655c50;
+    font-size: .72rem;
+    font-weight: 650;
+    cursor: pointer;
+    list-style: none;
+    border-radius: 8px;
+  }
+  .sidebar-all-links > summary::-webkit-details-marker { display: none; }
+  .sidebar-all-links > summary::after { content: '›'; margin-left: 5px; color: #b8860b; }
+  .sidebar-all-links[open] > summary::after { content: '×'; }
+  .all-links-groups {
+    position: absolute;
+    left: calc(100% + 12px);
+    bottom: 8px;
+    width: 520px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0,1fr));
+    gap: 14px;
+    padding: 18px;
+    background: rgba(255,253,248,.98);
+    border: 1px solid #ddcfb7;
+    border-radius: 14px;
+    box-shadow: 0 18px 50px rgba(12,33,56,.22);
+    backdrop-filter: blur(14px);
+    z-index: 70;
+  }
+  .all-links-group h4 { margin: 0 0 5px; color: #17365d; font-size: .78rem; }
+  .all-links-group a { display: block; padding: 3px 0; color: #655c50; text-decoration: none; font-size: .74rem; }
+  .all-links-group a:hover { color: #17365d; text-decoration: underline; }
+  .sidebar-footer {
+    flex-direction: row;
+    justify-content: center;
+    gap: .55rem;
+    padding: .55rem .75rem .7rem;
+  }
+  .sidebar-footer .theme-toggle { min-width: 56px; min-height: 34px; padding: .35rem .7rem; }
+  .sidebar-footer .sidebar-nanach { font-size: .7rem; }
+  [data-theme="night"] .sidebar-logo .logo-name,
+  body.dark-mode .sidebar-logo .logo-name { color: #e8d9b7; }
+  [data-theme="night"] .sidebar-logo .logo-tagline,
+  body.dark-mode .sidebar-logo .logo-tagline { color: #aaa291; }
+  [data-theme="night"] .sidebar-quick,
+  body.dark-mode .sidebar-quick { border-color: #3a3a5c; }
+  [data-theme="night"] .sidebar-prayer-card,
+  body.dark-mode .sidebar-prayer-card {
+    color: #f0dfb6;
+    background: linear-gradient(135deg, #3a2f1b, #2d2a31);
+    border-color: #6d5526;
+  }
+  [data-theme="night"] .sidebar-prayer-card em,
+  body.dark-mode .sidebar-prayer-card em,
+  [data-theme="night"] .sidebar-all-links > summary,
+  body.dark-mode .sidebar-all-links > summary { color: #c4b99f; }
+  [data-theme="night"] .all-links-groups,
+  body.dark-mode .all-links-groups { background: rgba(34,34,58,.98); border-color: #4a4a68; }
+  [data-theme="night"] .all-links-group h4,
+  body.dark-mode .all-links-group h4 { color: #e8d9b7; }
+  [data-theme="night"] .all-links-group a,
+  body.dark-mode .all-links-group a { color: #bbb5c9; }
+  @media (prefers-reduced-motion: reduce) {
+    .sidebar-link { transition: none; }
+    .sidebar-link:hover { transform: none; }
+  }
 </style>
 
 <!-- ═══════════════════════════════════════
