@@ -163,6 +163,15 @@ def main() -> None:
                     fail(f"OCR correction provenance mismatch for {seg.get('id')}")
             elif seg.get("ocrCorrection"):
                 fail(f"unregistered OCR correction metadata on {seg.get('id')}")
+            media = seg.get("media") or {}
+            if media:
+                anchor = str(media.get("anchorHe") or "")
+                image_url = str(media.get("path") or "")
+                image_path = ROOT / "public" / image_url.lstrip("/")
+                if media.get("type") != "image" or not anchor or anchor not in he:
+                    fail(f"invalid media excerpt anchor on {seg.get('id')}")
+                if not image_url.startswith("/images/") or not image_path.is_file():
+                    fail(f"missing segment media image on {seg.get('id')}: {image_url}")
             if len(he) > 1800: fail(f"oversized translation segment {seg.get('id')}: {len(he)} chars")
             status = seg.get("translationStatus")
             if status == "verified":

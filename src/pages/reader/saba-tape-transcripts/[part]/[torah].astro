@@ -260,12 +260,29 @@ const pageDesc = torahData
                       title={word.alignment === 'exact' ? 'Play from this verified word position' : undefined}
                     >{word.text}</span>
                   ))
-                : (seg.he || '\u00A0')}</p>
+                : (seg.media?.anchorHe && seg.he?.includes(seg.media.anchorHe) ? (
+                    <>
+                      {seg.he.slice(0, seg.he.indexOf(seg.media.anchorHe))}
+                      <mark class="segment-media-anchor">{seg.media.anchorHe}</mark>
+                      {seg.he.slice(seg.he.indexOf(seg.media.anchorHe) + seg.media.anchorHe.length)}
+                    </>
+                  ) : (seg.he || '\u00A0'))}</p>
             </div>
             <div class={`reader-segment segment-en ${!seg.en ? 'empty-translation' : ''}`} data-index={String(i + 1)}>
               <span class="segment-number">{i + 1}</span>
               <p>{seg.en || 'Translation not yet available'}</p>
             </div>
+            {seg.media?.type === 'image' && seg.media?.path && (
+              <details class="reader-media-dropdown saba-segment-media" data-segment={seg.id}>
+                <summary>📷 {seg.media.label || 'Picture for this excerpt'}</summary>
+                <figure>
+                  <a href={seg.media.path} target="_blank" rel="noopener">
+                    <img src={seg.media.path} alt={seg.media.alt || `Picture related to ${seg.id}`} loading="lazy" />
+                  </a>
+                  <figcaption>{seg.media.caption}</figcaption>
+                </figure>
+              </details>
+            )}
           </div>
         ))}
         </div>
@@ -451,6 +468,33 @@ const pageDesc = torahData
   .timed-seekable:hover, .timed-seekable:focus-visible { background: #ffe6a6; outline: 2px solid #b57a16; outline-offset: 1px; }
   .timed-word.is-playing { background: #ffd15c; box-shadow: 0 0 0 2px rgba(181,122,22,.25); }
   .timed-interpolated { }
+  .segment-media-anchor {
+    padding: .08em .18em;
+    border-radius: .25em;
+    background: #fff0a8;
+    color: inherit;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+  }
+  .saba-segment-media {
+    grid-column: 1 / -1;
+    margin: .2rem .8rem .9rem;
+    border: 1px solid #d4b879;
+    border-radius: 12px;
+    background: #fffaf0;
+    overflow: hidden;
+  }
+  .saba-segment-media summary {
+    padding: .65rem .85rem;
+    color: #173b67;
+    font-size: .8rem;
+    font-weight: 900;
+    cursor: pointer;
+  }
+  .saba-segment-media[open] summary { border-bottom: 1px solid #e2d2ad; background: #fff2cf; }
+  .saba-segment-media figure { max-width: 520px; margin: 1rem auto; padding: 0 .8rem; text-align: center; }
+  .saba-segment-media img { display: block; width: 100%; height: auto; border-radius: 10px; box-shadow: 0 8px 25px rgba(20,42,68,.18); }
+  .saba-segment-media figcaption { margin-top: .7rem; color: #6d604b; font-size: .76rem; line-height: 1.45; }
 
   /* Dark mode */
   [data-theme="night"] .saba-audio-player {
@@ -462,6 +506,9 @@ const pageDesc = torahData
   :global(body.dark-mode) .source-resources { background: linear-gradient(135deg,#1d2431,#28251e); border-color:#5b4b2e; }
   :global(body.dark-mode) .source-resources strong { color:#e5edfb; }
   :global(body.dark-mode) .source-resources small { color:#c6bda9; }
+  :global(body.dark-mode) .saba-segment-media { background:#1d2431; border-color:#5b4b2e; }
+  :global(body.dark-mode) .saba-segment-media summary { color:#e5edfb; }
+  :global(body.dark-mode) .segment-media-anchor { background:#665321; }
   @media (max-width: 700px) {
     .source-resources { grid-template-columns: 1fr; padding: .85rem; }
     .source-resources nav { justify-content: stretch; }

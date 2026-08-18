@@ -224,6 +224,10 @@ def main() -> None:
                     "translationStatus": "verified",
                     "qa": prior.get("qa", {}),
                 }
+                # Keep reviewed media annotations attached to their exact
+                # canonical transcript segment across deterministic rebuilds.
+                if prior.get("media"):
+                    segment_payload["media"] = prior["media"]
             else:
                 segment_payload = {
                     "id": seg_id,
