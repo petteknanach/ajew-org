@@ -228,8 +228,7 @@ def overlay_image(base, text, lang, topic_title, seg_idx, variant, source_path):
         y += lh
     draw_seal(d)
     credit=ImageFont.truetype(FONT,14)
-    safe_src=str(source_path).replace('/mnt/c/Users/Pettek/Pictures/','Pictures/')[:120]
-    d.text((44,704), f'Local Na Nach/Pictures source · exact teaching text overlaid · {safe_src}', font=credit, fill=(255,255,255,210), stroke_width=1, stroke_fill=(0,0,0,170))
+    d.text((44,704), 'Na Nach picture · exact teaching text overlaid · ajew.org', font=credit, fill=(255,255,255,210), stroke_width=1, stroke_fill=(0,0,0,170))
     return im.convert('RGB')
 
 
