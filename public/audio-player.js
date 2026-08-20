@@ -178,9 +178,13 @@
       '#ajew-audio-player .ajew-ap-launcher{position:fixed;bottom:72px;right:12px;background:#2a4a6a;color:#fff;border:none;border-radius:50%;width:48px;height:48px;font-size:1.3em;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.4);z-index:96;display:none;}' +
       '#ajew-audio-player-launcher.visible{display:block;}' +
       'body.dark-mode #ajew-audio-player{background:#0a0a0a;}' +
-      '@media(max-width:700px){' +
-        'body:has(#ajew-audio-player){padding-bottom:86px;}' +
-        '#ajew-audio-player{font-size:13px;}' +
+      '@media(min-width:1024px){' +
+        '#ajew-audio-player{left:280px;}' +
+        'body.has-commentary-sidebar-open #ajew-audio-player{right:clamp(340px,40vw,560px);}' +
+      '}' +
+      '@media(max-width:1023px){' +
+        'body:has(#ajew-audio-player){padding-bottom:132px;}' +
+        '#ajew-audio-player{bottom:calc(64px + env(safe-area-inset-bottom));font-size:13px;z-index:1001;}' +
         '#ajew-audio-player .ajew-ap-header{padding:.45rem .55rem;}' +
         '#ajew-audio-player .ajew-ap-body{padding:.45rem .55rem;max-height:58vh;}' +
         '#ajew-audio-player .ajew-ap-list{max-height:22vh;}' +

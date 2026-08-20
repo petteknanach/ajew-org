@@ -934,16 +934,20 @@
       });
     });
 
-    // Add Notes button to toolbar
+    // Bind the existing Notes button, or create one only on legacy pages that lack it.
     const toolbarGroups = document.querySelectorAll('.reader-toolbar-group');
     const lastGroup = toolbarGroups[toolbarGroups.length - 1];
-    if (lastGroup) {
-      const notesBtn = document.createElement('button');
+    let notesBtn = document.getElementById('btn-notes');
+    if (!notesBtn && lastGroup) {
+      notesBtn = document.createElement('button');
       notesBtn.className = 'reader-btn reader-btn-icon';
       notesBtn.id = 'btn-notes';
       notesBtn.textContent = 'Notes';
-      notesBtn.addEventListener('click', toggleNotesPanel);
       lastGroup.insertBefore(notesBtn, lastGroup.querySelector('#btn-fullscreen'));
+    }
+    if (notesBtn && notesBtn.dataset.readerNotesBound !== '1') {
+      notesBtn.dataset.readerNotesBound = '1';
+      notesBtn.addEventListener('click', toggleNotesPanel);
     }
 
     // Create notes panel

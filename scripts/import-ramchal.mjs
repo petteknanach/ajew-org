@@ -603,7 +603,7 @@ function generateAstroRoute(bookId, totalItems, bookTitle, bookHeTitle, authorNa
     '        ) : <span class="disabled">Next &rarr;</span>}',
     '      </div>',
     '',
-    '      <script src="/reader-script.js" is:inline></script>',
+    '      <script src="/reader-script.js?v=20260820-notes-fix" is:inline></script>',
     '    </div>',
     '  )}',
     '</Layout>',

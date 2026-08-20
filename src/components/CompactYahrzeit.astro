@@ -650,6 +650,8 @@
     border-radius: 8px;
     padding: 0.5rem;
     max-width: 240px;
+    max-height: 260px;
+    overflow-y: auto;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
     border: 2px solid #f59e0b;
     z-index: 60;
@@ -662,11 +664,11 @@
   .compact-yahrzeit .tzaddik-hebrew { color: #333; }
   .compact-yahrzeit .event-description { color: #065f46; }
 
-  /* On small mobile, shrink and move to bottom-left to avoid covering title */
+  /* On small mobile, shrink below the header and clear the bottom controls. */
   @media (max-width: 480px) {
     .compact-yahrzeit {
-      top: auto;
-      bottom: 0.5rem;
+      top: 64px;
+      bottom: auto;
       left: 0.5rem;
     }
 

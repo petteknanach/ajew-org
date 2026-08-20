@@ -1037,6 +1037,27 @@
   font-weight: 700;
 }
 
+/* Keep the reader and fixed reader controls outside the open commentary panel. */
+@media (min-width: 901px) {
+  body.has-commentary-sidebar-open .reader-container {
+    box-sizing: border-box;
+    width: calc(100% - clamp(340px, 40vw, 560px));
+    max-width: calc(100% - clamp(340px, 40vw, 560px));
+    margin-right: clamp(340px, 40vw, 560px);
+  }
+
+  body.has-commentary-sidebar-open .reader-toolbar-group {
+    max-width: 100%;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  body.has-commentary-sidebar-open .hitbodedut-fab,
+  body.has-commentary-sidebar-open .compact-yahrzeit {
+    right: calc(clamp(340px, 40vw, 560px) + 1rem) !important;
+  }
+}
+
 /* --- Text-to-Speech Highlight --- */
 .reader-segment-pair.tts-active {
   background: rgba(196, 162, 101, 0.15);
