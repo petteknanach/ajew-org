@@ -147,9 +147,32 @@ for fpath in json_files:
     rel = fpath.relative_to(READER_DIR)
     parts = rel.parts
     book = parts[0] if parts else fpath.parent.name
-    
-    # Build URL
-    if len(parts) == 2:
+
+    # Chayey Moharan has a canonical public structure that differs from its
+    # storage layout.  Keep the seven early section files, use one result per
+    # later siman, and exclude duplicate chapter/part bundles.
+    if book == 'chayey-moharan':
+        name = fpath.stem
+        if len(parts) == 3 and parts[1] == 'simanim':
+            match = re.fullmatch(r'siman-(\d+)', name)
+            if not match:
+                continue
+            url = f'/reader/chayey-moharan/siman/{int(match.group(1))}'
+        else:
+            chapter = re.fullmatch(r'chapter-(\d+)', name)
+            if chapter:
+                chapter_num = int(chapter.group(1))
+                if chapter_num > 7:
+                    continue
+                url = f'/reader/chayey-moharan/1/{chapter_num}'
+            elif re.fullmatch(r'part-\d+', name):
+                continue
+            elif name in ('intro', 'hashmatos-toc', 'hashmata-162', 'maftechos'):
+                url = f'/reader/chayey-moharan/1/{name}'
+            else:
+                continue
+    # Build URL for the standard reader layouts.
+    elif len(parts) == 2:
         url = f'/reader/{parts[0]}/{parts[1].replace(".json","")}'
     elif len(parts) == 3:
         url = f'/reader/{parts[0]}/{parts[1]}/{parts[2].replace(".json","")}'

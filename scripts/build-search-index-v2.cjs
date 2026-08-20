@@ -89,12 +89,70 @@ function main() {
     console.log(`  Likutay Moharan Part ${partNum}: ${catalog.torahs.length} torahs indexed`);
   }
 
+  // ── Chayey Moharan — canonical complete directory ────────────────────────
+  // The first 59 simanim are preserved in seven early section files; 60–615
+  // have one canonical JSON file and public route per siman. Other root files
+  // (chapter 8–12 and part-* bundles) duplicate those later simanim and must not
+  // create duplicate search results.
+  const chayeyDir = path.join(READER_BASE, 'chayey-moharan');
+  let chayeyCount = 0;
+  if (fs.existsSync(chayeyDir)) {
+    let chayeyIndex = {};
+    try { chayeyIndex = JSON.parse(fs.readFileSync(path.join(chayeyDir, 'index.json'), 'utf8')); } catch (e) {}
+    const earlySections = chayeyIndex.earlySections || [];
+
+    const addChayeyDocument = (data, url, fallbackTitle, fallbackHebrewTitle, displayNumber) => {
+      const segments = Array.isArray(data.segments) ? data.segments : [];
+      const heText = segments.map(s => s.he_nikud || s.he || '').filter(Boolean).join('\n\n');
+      const enText = segments.map(s => s.en || '').filter(Boolean).join('\n\n');
+      if (!heText && !enText) return;
+      const searchHe = stripNikud(heText);
+      documents.push({
+        id: `chayey-moharan-${String(data.id || displayNumber)}`,
+        book: 'chayey-moharan',
+        bookName: 'Chayay Moharan — The Life of Our Leader Rabbi Nachman',
+        part: 1,
+        torah: displayNumber,
+        displayNumber,
+        title: fallbackTitle || data.title || `Siman ${displayNumber}`,
+        hebrewTitle: fallbackHebrewTitle || data.hebrewTitle || '',
+        themes: data.themes || [],
+        citedBooks: [],
+        url,
+        wordCount: searchHe.split(/\s+/).filter(Boolean).length,
+        content: searchHe.substring(0, MAX_CONTENT),
+        enContent: enText.substring(0, MAX_CONTENT),
+        preview: heText.substring(0, MAX_PREVIEW).replace(/\n/g, ' '),
+        hasEnglish: enText.length > 0,
+        englishPreview: enText.substring(0, MAX_EN_PREVIEW),
+      });
+      chayeyCount++;
+    };
+
+    for (let chapter = 1; chapter <= 7; chapter++) {
+      const filePath = path.join(chayeyDir, `chapter-${chapter}.json`);
+      if (!fs.existsSync(filePath)) continue;
+      const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+      const section = earlySections[chapter - 1] || [];
+      addChayeyDocument(data, `/reader/chayey-moharan/1/${chapter}`, section[0], section[1], `Section ${chapter}`);
+    }
+
+    for (let siman = 60; siman <= 615; siman++) {
+      const filePath = path.join(chayeyDir, 'simanim', `siman-${siman}.json`);
+      if (!fs.existsSync(filePath)) continue;
+      const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+      const sectionTitle = data.section ? ` — ${data.section}` : '';
+      addChayeyDocument(data, `/reader/chayey-moharan/siman/${siman}`, `Siman ${siman}${sectionTitle}`, data.hebrewTitle, siman);
+    }
+    console.log(`  Chayay Moharan: ${chayeyCount} canonical sections/simanim indexed`);
+  }
+
   // ── All other books from catalog.json ─────────────────────────────────────
   const catalogPath = path.join(READER_BASE, 'catalog.json');
   if (fs.existsSync(catalogPath)) {
     const catalog = JSON.parse(fs.readFileSync(catalogPath, 'utf8'));
     for (const book of catalog.books) {
-      if (book.id === 'likutay-moharan') continue; // already done above
+      if (book.id === 'likutay-moharan' || book.id === 'chayey-moharan') continue; // already done above
       const bookDir = path.join(READER_BASE, book.id);
       if (!fs.existsSync(bookDir)) continue;
 

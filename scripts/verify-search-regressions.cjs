@@ -88,8 +88,11 @@ mustContain('public/reader-script.js', 'Run only after the lookup table above ha
 mustContain('src/pages/reader/likutay-moharan/[part]/[torah].astro', 'Likutay Moharan ${partRoman}:${torahNum}', 'numbered Likutay Moharan teaching titles');
 mustContain('scripts/build-reader-search-shards.py', "algorithm': 'fnv1a32-utf8-bigram-le'", 'versioned phrase index builder');
 mustContain('scripts/build-reader-search-shards.py', "parts[2] == 'tapes'", 'canonical Saba tape-side Reader links');
+mustContain('scripts/build-reader-search-shards.py', "book == 'chayey-moharan'", 'canonical Chayey Moharan siman links');
 mustContain('scripts/build-reader-search-shards.py', "seg.get('index') or position", 'fallback segment anchors for Saba tape transcripts');
 mustContain('scripts/build-light-search-index.py', "he_doc['m'] = segment_map", 'single-pass Reader location map generation');
+mustContain('scripts/build-light-search-index.py', "url = f'/reader/chayey-moharan/siman/{int(match.group(1))}'", 'Chayey Moharan public siman URLs');
+mustContain('scripts/build-search-index-v2.cjs', 'Chayay Moharan: ${chayeyCount} canonical sections/simanim indexed', 'complete Chayey Moharan metadata indexing');
 mustContain('src/pages/search.astro', 'window.location.replace(target)', 'classic search query-preserving redirect');
 mustContain('src/pages/search-enhanced.astro', "['tainted', ['tainted', 'spoiled', 'corrupted', 'poisoned', 'bad', 'crazy', 'insane', 'madness']]", 'tainted-grain conceptual expansion');
 mustContain('src/pages/search-enhanced.astro', 'Use the tightest semantic window anywhere in the document', 'minimum-window proximity ranking');
@@ -190,6 +193,30 @@ if (!completeReaderArtifacts) {
   if (requiredArtifacts) fail('complete generated Reader search artifacts are missing');
 } else {
   const meta = JSON.parse(fs.readFileSync(readerMetaPath, 'utf8'));
+  const chayeyItems = meta.items.filter(item => item.c === 'chayey-moharan');
+  const chayeyPaths = new Set(chayeyItems.map(item => item.p));
+  const missingChayey = [];
+  for (let siman = 60; siman <= 615; siman++) {
+    if (!chayeyPaths.has(`/reader/chayey-moharan/siman/${siman}`)) missingChayey.push(siman);
+  }
+  for (let section = 1; section <= 7; section++) {
+    if (!chayeyPaths.has(`/reader/chayey-moharan/1/${section}`)) fail(`reader-search metadata is missing Chayey Moharan early section ${section}`);
+  }
+  if (missingChayey.length) fail(`reader-search metadata is missing ${missingChayey.length} Chayey Moharan simanim (${missingChayey.slice(0, 12).join(', ')})`);
+  if (chayeyItems.some(item => /\/chayey-moharan\/simanim\//.test(item.p) || /\/chayey-moharan\/(?:1\/)?chapter-(?:8|9|10|11|12)$/.test(item.p))) {
+    fail('reader-search metadata contains duplicate or noncanonical Chayey Moharan routes');
+  }
+  const chayey198Id = meta.items.findIndex(item => item.p === '/reader/chayey-moharan/siman/198');
+  if (chayey198Id < 0) fail('reader-search metadata is missing Chayey Moharan Siman 198');
+  else {
+    const chayey198Path = path.join(root, 'public/reader-search/docs', `${chayey198Id}.json`);
+    if (!fs.existsSync(chayey198Path)) fail(`reader-search Chayey Moharan document ${chayey198Id}.json is missing`);
+    else {
+      const chayey198 = JSON.parse(fs.readFileSync(chayey198Path, 'utf8'));
+      const normalized = normalize(chayey198.n || `${chayey198.he || ''} ${chayey198.en || ''}`);
+      if (!normalized.includes('robber') || !normalized.includes(normalize('גזלן'))) fail('Chayey Moharan Siman 198 lost its bilingual robber parable search text');
+    }
+  }
   const targetId = meta.items.findIndex(item => item.p === KOKHVEI_PATH);
   if (targetId < 0) fail(`reader-search metadata is missing ${KOKHVEI_PATH}`);
   else {
@@ -229,6 +256,22 @@ if (!completeReaderArtifacts) {
       }
     }
   }
+}
+
+const v2Path = path.join(root, 'public/data/search-index-v2.json');
+if (!fs.existsSync(v2Path)) {
+  if (requiredArtifacts) fail('search-index-v2.json is missing');
+} else {
+  const v2 = JSON.parse(fs.readFileSync(v2Path, 'utf8'));
+  const chayeyDocs = (v2.documents || []).filter(doc => doc.book === 'chayey-moharan');
+  const paths = new Set(chayeyDocs.map(doc => doc.url));
+  if (chayeyDocs.length !== 563) fail(`search-index-v2 has ${chayeyDocs.length} Chayey Moharan documents; expected 563 canonical sections/simanim`);
+  for (let section = 1; section <= 7; section++) {
+    if (!paths.has(`/reader/chayey-moharan/1/${section}`)) fail(`search-index-v2 is missing Chayey Moharan early section ${section}`);
+  }
+  const missing = [];
+  for (let siman = 60; siman <= 615; siman++) if (!paths.has(`/reader/chayey-moharan/siman/${siman}`)) missing.push(siman);
+  if (missing.length) fail(`search-index-v2 is missing ${missing.length} Chayey Moharan simanim`);
 }
 
 if (failures.length) {

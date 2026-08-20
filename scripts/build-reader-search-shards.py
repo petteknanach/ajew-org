@@ -150,6 +150,12 @@ def canonical_reader_link(link: str) -> str:
         match = re.fullmatch(r'tape-0*(\d+)-([ab])', parts[3])
         if match:
             return f'/reader/{book}/1/{int(match.group(1))}-{match.group(2)}'
+    # Chayey Moharan simanim are stored under ``simanim/siman-N.json`` but
+    # their canonical public Reader route is singular: ``/siman/N``.
+    if book == 'chayey-moharan' and len(parts) == 4 and parts[2] == 'simanim':
+        match = re.fullmatch(r'siman-(\d+)', parts[3])
+        if match:
+            return f'/reader/{book}/siman/{int(match.group(1))}'
     if len(parts) == 4:
         return f'/reader/{book}/{clean_part(parts[2])}/{clean_torah(parts[3])}'
     if len(parts) == 3:

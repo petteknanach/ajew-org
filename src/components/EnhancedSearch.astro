@@ -327,12 +327,27 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
     } else {
       url.searchParams.delete('proximity');
     }
+    if (searchState.advancedOptions.books.length === 1) {
+      url.searchParams.set('book', searchState.advancedOptions.books[0]);
+    } else {
+      url.searchParams.delete('book');
+    }
     window.history.replaceState({}, '', url);
   }
 
   function checkUrlParameters() {
     const params = new URLSearchParams(window.location.search);
     const query = params.get('q');
+    const book = params.get('book');
+    if (book) {
+      const boxes = Array.from(document.querySelectorAll('input[name="searchBook"]')) as HTMLInputElement[];
+      let matched = false;
+      boxes.forEach((box) => {
+        box.checked = box.value === book;
+        if (box.checked) matched = true;
+      });
+      if (matched) searchState.advancedOptions.books = [book];
+    }
     if (query) {
       searchInput.value = query;
       searchState.query = query;

@@ -26,6 +26,18 @@ const pageDesc = 'The life, journeys, wisdom, and teachings of Rabbi Nachman of 
       <p class="dir-count">{indexData?.totalSimanim || 615} Simanim in {indexData?.totalSections || 20} Sections</p>
     </div>
 
+    <form class="chayey-search" action="/search-enhanced" method="get" role="search">
+      <input type="hidden" name="book" value="chayey-moharan" />
+      <label for="chayey-search-input">
+        <strong>Search the complete Chayay Moharan</strong>
+        <span>חיפוש בכל חיי מוהר״ן · Hebrew and English</span>
+      </label>
+      <div class="chayey-search-row">
+        <input id="chayey-search-input" name="q" type="search" placeholder="Search words, phrases, people, places…" required />
+        <button type="submit">Search all 615</button>
+      </div>
+    </form>
+
     <!-- Special Pages -->
     <div class="dir-section special-pages">
       <h3 class="dir-section-title">📄 Special Pages</h3>
@@ -134,6 +146,26 @@ const pageDesc = 'The life, journeys, wisdom, and teachings of Rabbi Nachman of 
     font-size: 1em;
     color: #8B6914;
     font-weight: bold;
+  }
+
+  .chayey-search {
+    margin: -20px 0 42px;
+    padding: 18px;
+    border-radius: 12px;
+    border: 1px solid #c8a84b;
+    background: #fffdf7;
+    box-shadow: 0 6px 20px rgba(30, 58, 95, .08);
+  }
+
+  .chayey-search label { display: grid; gap: 2px; margin-bottom: 10px; color: #1e3a5f; }
+  .chayey-search label span { color: #777; font-size: .88rem; font-weight: normal; }
+  .chayey-search-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+  .chayey-search input[type="search"] { min-width: 0; padding: 11px 12px; border: 1px solid #cfc3a4; border-radius: 8px; font: inherit; }
+  .chayey-search button { border: 0; border-radius: 8px; padding: 11px 18px; background: #1e3a5f; color: #fff; font-weight: 800; cursor: pointer; }
+
+  @media (max-width: 560px) {
+    .chayey-search-row { grid-template-columns: 1fr; }
+    .chayey-search button { min-height: 44px; }
   }
 
   .dir-section {
