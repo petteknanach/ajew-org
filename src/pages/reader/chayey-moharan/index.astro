@@ -23,7 +23,7 @@ const pageDesc = 'The life, journeys, wisdom, and teachings of Rabbi Nachman of 
       <h2 class="dir-title-he">חיי מוהר"ן</h2>
       <p class="dir-subtitle">The Life of Rabbi Nachman of Breslov</p>
       <p class="dir-author">by Rabbi Nosson of Breslov (Moharnat)</p>
-      <p class="dir-count">{indexData?.totalSimanim || 615} Simanim in {indexData?.totalSections || 20} Sections</p>
+      <p class="dir-count">{indexData?.totalSimanim || 615} Simanim in {(indexData?.totalSections || 20) + (indexData?.earlySections?.length || 7)} Sections</p>
     </div>
 
     <form class="chayey-search" action="/search-enhanced" method="get" role="search">

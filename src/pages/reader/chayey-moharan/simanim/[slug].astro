@@ -1,0 +1,10 @@
+---
+export function getStaticPaths() {
+  return Array.from({ length: 556 }, (_, index) => {
+    const siman = index + 60;
+    return { params: { slug: `siman-${siman}` }, props: { siman } };
+  });
+}
+const { siman } = Astro.props;
+return Astro.redirect(`/reader/chayey-moharan/siman/${siman}/`, 301);
+---

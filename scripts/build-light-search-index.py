@@ -21,6 +21,9 @@ def strip_nikud(text):
 
 HE_KEYS = ('he', 'he_nikud', 'verse', 'commentary_he', 'text_he', 'hebrew', 'hebrew_text')
 EN_KEYS = ('en', 'commentary_en', 'text_en', 'english', 'translation')
+BOOK_SEARCH_ALIASES = {
+    'chayey-moharan': 'Chayey Moharan Chayay Moharan Chayei Moharan The Life of Our Leader Rabbi Nachman Life of Rabbi Nachman חיי מוהרן חיי מוהר״ן',
+}
 LAYER_KEYS = ('beginner', 'intermediate', 'scholarly')
 HEBREW_NUMERALS = {
     'א':1,'ב':2,'ג':3,'ד':4,'ה':5,'ו':6,'ז':7,'ח':8,'ט':9,'י':10,
@@ -133,6 +136,9 @@ for fpath in json_files:
         continue
     
     he_text, en_text, segment_map = extract_segments(data)
+    if fpath.parent.name == 'chayey-moharan' and fpath.stem == 'hashmata-162':
+        he_text = str(data.get('hashmata_he', '') or '').strip()
+        en_text = '\n'.join(filter(None, [str(data.get('hashmata_en', '') or '').strip(), str(data.get('note', '') or '').strip()]))
     
     # Skip completely empty docs
     if not he_text and not en_text:
@@ -140,6 +146,9 @@ for fpath in json_files:
     
     title = data.get('title', '') or ''
     hebrew_title = data.get('hebrewTitle', '') or data.get('title', '') or ''
+    if fpath.parent.name == 'chayey-moharan' and fpath.stem == 'hashmata-162':
+        title = 'Hashmata 162 (Locked)'
+        hebrew_title = data.get('label', '') or 'השמטה קס״ב'
     # The searchable book id must be the top-level reader directory, not an
     # internal folder such as ``part-1`` or ``volume-4``.  The search UI filters
     # by these same top-level book ids, so nested folders would make users see
@@ -185,6 +194,7 @@ for fpath in json_files:
         'h': hebrew_title[:200] if hebrew_title else '',
         'b': book[:50],
         'l': url[:200],
+        'a': BOOK_SEARCH_ALIASES.get(book, ''),
     }
     
     # Hebrew index: x = Hebrew text, e = English snippet for display

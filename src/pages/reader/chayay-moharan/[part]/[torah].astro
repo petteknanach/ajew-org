@@ -1,0 +1,8 @@
+---
+export function getStaticPaths() {
+  const entries = [...Array.from({ length: 12 }, (_, index) => String(index + 1)), 'intro', 'hashmatos-toc', 'hashmata-162', 'maftechos'];
+  return entries.map((torah) => ({ params: { part: '1', torah } }));
+}
+const { part, torah } = Astro.params;
+return Astro.redirect(`/reader/chayey-moharan/${part}/${torah}/`, 301);
+---

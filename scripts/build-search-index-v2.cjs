@@ -103,8 +103,8 @@ function main() {
 
     const addChayeyDocument = (data, url, fallbackTitle, fallbackHebrewTitle, displayNumber) => {
       const segments = Array.isArray(data.segments) ? data.segments : [];
-      const heText = segments.map(s => s.he_nikud || s.he || '').filter(Boolean).join('\n\n');
-      const enText = segments.map(s => s.en || '').filter(Boolean).join('\n\n');
+      const heText = segments.map(s => s.he_nikud || s.he || '').filter(Boolean).join('\n\n') || String(data.hashmata_he || '');
+      const enText = segments.map(s => s.en || '').filter(Boolean).join('\n\n') || [data.hashmata_en, data.note].filter(Boolean).join('\n\n');
       if (!heText && !enText) return;
       const searchHe = stripNikud(heText);
       documents.push({
@@ -143,6 +143,18 @@ function main() {
       const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
       const sectionTitle = data.section ? ` — ${data.section}` : '';
       addChayeyDocument(data, `/reader/chayey-moharan/siman/${siman}`, `Siman ${siman}${sectionTitle}`, data.hebrewTitle, siman);
+    }
+    const specialPages = [
+      ['intro', 'Introduction', 'הקדמה'],
+      ['hashmatos-toc', 'Hashmatos — Omissions', 'השמטות'],
+      ['hashmata-162', 'Hashmata 162 (Locked)', 'השמטה קס״ב'],
+      ['maftechos', 'Maftechos — Index', 'מפתחות'],
+    ];
+    for (const [slug, title, hebrewTitle] of specialPages) {
+      const filePath = path.join(chayeyDir, `${slug}.json`);
+      if (!fs.existsSync(filePath)) continue;
+      const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+      addChayeyDocument(data, `/reader/chayey-moharan/1/${slug}`, title, data.hebrewTitle || data.label || hebrewTitle, slug);
     }
     console.log(`  Chayay Moharan: ${chayeyCount} canonical sections/simanim indexed`);
   }

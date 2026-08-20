@@ -1,0 +1,7 @@
+---
+export function getStaticPaths() {
+  return Array.from({ length: 556 }, (_, index) => ({ params: { siman: String(index + 60) } }));
+}
+const { siman } = Astro.params;
+return Astro.redirect(`/reader/chayey-moharan/siman/${siman}/`, 301);
+---

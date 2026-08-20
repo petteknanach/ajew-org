@@ -92,7 +92,11 @@ mustContain('scripts/build-reader-search-shards.py', "book == 'chayey-moharan'",
 mustContain('scripts/build-reader-search-shards.py', "seg.get('index') or position", 'fallback segment anchors for Saba tape transcripts');
 mustContain('scripts/build-light-search-index.py', "he_doc['m'] = segment_map", 'single-pass Reader location map generation');
 mustContain('scripts/build-light-search-index.py', "url = f'/reader/chayey-moharan/siman/{int(match.group(1))}'", 'Chayey Moharan public siman URLs');
+mustContain('scripts/build-light-search-index.py', 'Chayay Moharan Chayei Moharan The Life of Our Leader Rabbi Nachman', 'Chayey Moharan spelling/title aliases');
 mustContain('scripts/build-search-index-v2.cjs', 'Chayay Moharan: ${chayeyCount} canonical sections/simanim indexed', 'complete Chayey Moharan metadata indexing');
+mustContain('src/pages/reader/chayey-moharan/index.astro', "(indexData?.totalSections || 20) + (indexData?.earlySections?.length || 7)", 'complete 27-section Chayey Moharan directory count');
+mustContain('src/pages/reader/chayay-moharan/siman/[siman].astro', 'Astro.redirect(`/reader/chayey-moharan/siman/${siman}/`, 301)', 'misspelled Chayay siman redirects');
+mustContain('src/pages/reader/chayey-moharan/simanim/[slug].astro', 'Astro.redirect(`/reader/chayey-moharan/siman/${siman}/`, 301)', 'legacy Chayey storage-path redirects');
 mustContain('src/pages/search.astro', 'window.location.replace(target)', 'classic search query-preserving redirect');
 mustContain('src/pages/search-enhanced.astro', "['tainted', ['tainted', 'spoiled', 'corrupted', 'poisoned', 'bad', 'crazy', 'insane', 'madness']]", 'tainted-grain conceptual expansion');
 mustContain('src/pages/search-enhanced.astro', 'Use the tightest semantic window anywhere in the document', 'minimum-window proximity ranking');
@@ -100,6 +104,13 @@ mustContain('src/pages/search-enhanced.astro', "c === 'kokhvei-or'", 'Kokhvei Or
 mustContain('src/pages/search-enhanced.astro', 'Pick the segment with the tightest complete semantic match', 'semantic result deep-link selection');
 mustContain('src/pages/search-enhanced.astro', "['forehead', ['forehead', 'brow']]", 'forehead conceptual expansion');
 mustContain('src/pages/search-enhanced.astro', "['תבואה', ['תבואה', 'חטה', 'חיטה', 'חיטים', 'דגן']]", 'Hebrew grain conceptual expansion');
+
+const readerCatalog = JSON.parse(fs.readFileSync(path.join(root, 'public/reader/catalog.json'), 'utf8'));
+const chayeyCatalog = (readerCatalog.books || []).find(book => book.id === 'chayey-moharan');
+if (!chayeyCatalog) fail('reader catalog is missing Chayey Moharan');
+else if ((chayeyCatalog.parts || []).reduce((sum, part) => sum + Number(part.totalTorahs || 0), 0) !== 615) {
+  fail('reader catalog must expose all 615 Chayey Moharan simanim');
+}
 
 // Koachvay Or source alignment is itself a search prerequisite. The prior bad
 // alignment paired this Hebrew parable with an unrelated burial testament,
@@ -203,6 +214,14 @@ if (!completeReaderArtifacts) {
     if (!chayeyPaths.has(`/reader/chayey-moharan/1/${section}`)) fail(`reader-search metadata is missing Chayey Moharan early section ${section}`);
   }
   if (missingChayey.length) fail(`reader-search metadata is missing ${missingChayey.length} Chayey Moharan simanim (${missingChayey.slice(0, 12).join(', ')})`);
+  for (const special of ['intro', 'hashmatos-toc', 'hashmata-162', 'maftechos']) {
+    if (!chayeyPaths.has(`/reader/chayey-moharan/1/${special}`)) fail(`reader-search metadata is missing Chayey Moharan ${special}`);
+  }
+  const aliasFixture = chayeyItems.find(item => item.p === '/reader/chayey-moharan/siman/198');
+  const aliases = normalize(aliasFixture?.a || '');
+  for (const alias of ['chayay moharan', 'chayei moharan', 'life of our leader rabbi nachman', 'חיי מוהרן']) {
+    if (!aliases.includes(normalize(alias))) fail(`Chayey Moharan search aliases are missing “${alias}”`);
+  }
   if (chayeyItems.some(item => /\/chayey-moharan\/simanim\//.test(item.p) || /\/chayey-moharan\/(?:1\/)?chapter-(?:8|9|10|11|12)$/.test(item.p))) {
     fail('reader-search metadata contains duplicate or noncanonical Chayey Moharan routes');
   }
@@ -265,9 +284,12 @@ if (!fs.existsSync(v2Path)) {
   const v2 = JSON.parse(fs.readFileSync(v2Path, 'utf8'));
   const chayeyDocs = (v2.documents || []).filter(doc => doc.book === 'chayey-moharan');
   const paths = new Set(chayeyDocs.map(doc => doc.url));
-  if (chayeyDocs.length !== 563) fail(`search-index-v2 has ${chayeyDocs.length} Chayey Moharan documents; expected 563 canonical sections/simanim`);
+  if (chayeyDocs.length !== 567) fail(`search-index-v2 has ${chayeyDocs.length} Chayey Moharan documents; expected 567 canonical sections/simanim/special pages`);
   for (let section = 1; section <= 7; section++) {
     if (!paths.has(`/reader/chayey-moharan/1/${section}`)) fail(`search-index-v2 is missing Chayey Moharan early section ${section}`);
+  }
+  for (const special of ['intro', 'hashmatos-toc', 'hashmata-162', 'maftechos']) {
+    if (!paths.has(`/reader/chayey-moharan/1/${special}`)) fail(`search-index-v2 is missing Chayey Moharan ${special}`);
   }
   const missing = [];
   for (let siman = 60; siman <= 615; siman++) if (!paths.has(`/reader/chayey-moharan/siman/${siman}`)) missing.push(siman);
