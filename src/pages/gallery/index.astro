@@ -22,7 +22,7 @@ function imageFiles(dir) {
 }
 
 const nanachImageCount = imageFiles('nanach').length;
-const nanachCategoryCount = 15;
+const nanachCategoryCount = 16;
 
 const galleryPictures = [
   ...imageFiles('saba').map((filename) => ({ gallery: 'Saba / סבא', label: formatFilename(filename), url: `/images/saba/${encodeURIComponent(filename)}`, page: '/gallery/saba' })),
@@ -120,6 +120,7 @@ try {
         <a href="/gallery/nanach#category-sacred-locations" class="cat-btn nanach">📍 Sacred Locations <span class="hebrew-inline">מקומות קדושים</span></a>
         <a href="/gallery/nanach#category-portraits" class="cat-btn nanach">😊 Portraits <span class="hebrew-inline">דיוקנאות</span></a>
         <a href="/gallery/nanach#category-signs-banners" class="cat-btn nanach">🪧 Signs & Banners <span class="hebrew-inline">שלטים ובאנרים</span></a>
+        <a href="/gallery/nanach#category-politics" class="cat-btn nanach">🏛️ Politics <span class="hebrew-inline">פוליטיקה</span></a>
         <a href="/gallery/nanach#category-food" class="cat-btn nanach">🥨 Food & Drink <span class="hebrew-inline">אוכל ושתייה</span></a>
         <a href="/gallery/nanach#category-humor" class="cat-btn nanach">😂 Humor <span class="hebrew-inline">הומור</span></a>
         <a href="/gallery/nanach#category-cartoons" class="cat-btn nanach">✏️ Cartoons <span class="hebrew-inline">קריקטורות</span></a>
@@ -153,7 +154,7 @@ try {
           <h2>Na Nach Breslov Movement <span class="hebrew">תנועת נ נח מברסלב</span></h2>
           <p class="hebrew">תנועת נ נח מברסלב</p>
           <p class="description">Spreading the light of Rebbe Nachman worldwide - {nanachImageCount} photos in {nanachCategoryCount} categories</p>
-          <p class="categories">🎨 Graffiti / גרפיטי 🚐 Vans / ואנים 🕍 Bais / בית 📍 Locations / מקומות 😊 Portraits / דיוקנאות 👥 Friends / חברים 🪧 Signs / שלטים 🖼️ Art / אמנות 🌤️ Nature / טבע 🎉 Events / אירועים 🏷️ Stickers / מדבקות 📚 Books / ספרים 🥨 Food / אוכל 😂 Humor / הומור ✏️ Cartoons / קריקטורות</p>
+          <p class="categories">🎨 Graffiti / גרפיטי 🚐 Vans / ואנים 🕍 Bais / בית 📍 Locations / מקומות 😊 Portraits / דיוקנאות 👥 Friends / חברים 🪧 Signs / שלטים 🏛️ Politics / פוליטיקה 🖼️ Art / אמנות 🌤️ Nature / טבע 🎉 Events / אירועים 🏷️ Stickers / מדבקות 📚 Books / ספרים 🥨 Food / אוכל 😂 Humor / הומור ✏️ Cartoons / קריקטורות</p>
           <span class="view-btn">View Gallery / כניסה לגלריה →</span>
         </div>
       </a>
