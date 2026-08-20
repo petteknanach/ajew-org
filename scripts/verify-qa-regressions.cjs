@@ -16,5 +16,7 @@ assert(player.includes('window.openAjewAudioPlayer = function'), 'Archive.org pl
 assert(!comments.includes('/api/comments'), 'Static comments must not call a nonexistent API route');
 assert(!comments.includes('/src/lib/supabaseClient.ts'), 'Built comments must not import an unserved source module');
 assert(comments.includes(".from('messages')"), 'Comments must read from Supabase directly');
+assert(!comments.includes(".insert("), 'Read-only comments must not write through the public client');
+assert(comments.includes('Comments are currently read-only.'), 'Read-only state must be explicit to users');
 
 console.log('QA regressions verified: comments, audio, and Gematria landmark');

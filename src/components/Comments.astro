@@ -12,28 +12,7 @@ const { teachingId, teachingTitle } = Astro.props;
     <span class="comment-count" data-role="count">…</span>
   </div>
 
-  <div class="comment-gate" data-role="gate" hidden>
-    <p>
-      💬 <a href="/login">Log in</a> to post comments.
-      Not a subscriber yet? <a href="/subscribe">Join</a>.
-    </p>
-  </div>
-
-  <div class="comment-form" data-role="form" hidden>
-    <textarea
-      data-role="input"
-      placeholder="Share your thoughts on this teaching (Na Nach!)…"
-      maxlength="1000"
-    ></textarea>
-    <div class="comment-form-row">
-      <label class="share-toggle">
-        <input type="checkbox" data-role="share-toggle" />
-        Also share to <a href="/chat" target="_blank" rel="noopener">chat</a>
-      </label>
-      <button type="button" data-role="submit">Post Comment</button>
-    </div>
-    <div class="comment-status" data-role="status"></div>
-  </div>
+  <p class="comment-gate">Comments are currently read-only.</p>
 
   <div class="comment-list" data-role="list">
     <p class="comments-loading">Loading comments…</p>
@@ -46,12 +25,6 @@ const { teachingId, teachingTitle } = Astro.props;
     if (!root) return;
 
     const countEl = root.querySelector('[data-role="count"]');
-    const gateEl = root.querySelector('[data-role="gate"]');
-    const formEl = root.querySelector('[data-role="form"]');
-    const inputEl = root.querySelector('[data-role="input"]');
-    const shareEl = root.querySelector('[data-role="share-toggle"]');
-    const submitEl = root.querySelector('[data-role="submit"]');
-    const statusEl = root.querySelector('[data-role="status"]');
     const listEl = root.querySelector('[data-role="list"]');
 
     let supabase = null;
@@ -130,101 +103,6 @@ const { teachingId, teachingTitle } = Astro.props;
       }
     }
 
-    async function getSession() {
-      if (!supabase) return null;
-      try {
-        const { data } = await supabase.auth.getSession();
-        return data?.session || null;
-      } catch {
-        return null;
-      }
-    }
-
-    async function refreshAuthState() {
-      const session = await getSession();
-      if (session) {
-        gateEl.hidden = true;
-        formEl.hidden = false;
-      } else {
-        gateEl.hidden = false;
-        formEl.hidden = true;
-      }
-    }
-
-    async function submitComment() {
-      if (!inputEl || !statusEl) return;
-      const text = (inputEl.value || '').trim();
-      if (!text) {
-        statusEl.textContent = 'Please write something first.';
-        return;
-      }
-      statusEl.textContent = 'Posting…';
-      submitEl.disabled = true;
-
-      const session = await getSession();
-      if (!session) {
-        statusEl.innerHTML = '<a href="/login">Log in</a> to post.';
-        submitEl.disabled = false;
-        return;
-      }
-
-      try {
-        if (!supabase) throw new Error('Comments client unavailable');
-        const userEmail = (session.user?.email || '').toLowerCase();
-        const { data: sub, error: subError } = await supabase
-          .from('subscriptions')
-          .select('tier')
-          .eq('email', userEmail)
-          .maybeSingle();
-        if (subError || !sub || sub.tier === 'free') {
-          statusEl.textContent = 'Subscription required to comment.';
-          submitEl.disabled = false;
-          return;
-        }
-
-        const username = session.user?.user_metadata?.display_name || userEmail.split('@')[0] || 'User';
-        const trimmed = text.slice(0, 1000);
-        const shareRequested = !!(shareEl && shareEl.checked);
-        const { error: insertError } = await supabase.from('messages').insert({
-          room: `teaching:${teachingId}`,
-          username,
-          message: trimmed,
-          email: userEmail
-        });
-        if (insertError) throw insertError;
-
-        if (shareRequested) {
-          const refTitle = String(teachingTitle || teachingId).slice(0, 80);
-          const { error: shareError } = await supabase.from('messages').insert({
-            room: 'general',
-            username,
-            message: `💬 On "${refTitle}": ${trimmed}`.slice(0, 500),
-            email: userEmail
-          });
-          if (shareError) throw shareError;
-        }
-        inputEl.value = '';
-        if (shareEl) shareEl.checked = false;
-        statusEl.textContent = shareRequested ? 'Posted and shared to chat!' : 'Posted!';
-        submitEl.disabled = false;
-        setTimeout(() => { statusEl.textContent = ''; }, 3000);
-        loadComments();
-      } catch (e) {
-        statusEl.textContent = 'Network error. Try again.';
-        submitEl.disabled = false;
-      }
-    }
-
-    if (submitEl) {
-      submitEl.addEventListener('click', submitComment);
-    }
-
-    // React to auth changes (login/logout in another tab or this tab)
-    if (supabase?.auth?.onAuthStateChange) {
-      supabase.auth.onAuthStateChange(() => refreshAuthState());
-    }
-
-    refreshAuthState();
     loadComments();
   })();
 </script>
