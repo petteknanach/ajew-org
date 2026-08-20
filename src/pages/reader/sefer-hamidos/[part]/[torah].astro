@@ -102,8 +102,10 @@ try {
 } catch (_e) {
   mediaBySegment = new Map();
 }
-const mediaArchiveId = torahNum === 1 ? 'sefer-hamidos-truth-media-ajew-org' : `${mediaCollection}-media-ajew-org`;
-const mediaArchiveUrl = `https://archive.org/details/${mediaArchiveId}`;
+const segmentByIndex = new Map((torahData?.segments || []).map((segment) => [Number(segment.index), segment]));
+const mediaOverviewItems = Array.from(mediaBySegment.entries()).flatMap(([segmentIndex, entry]) =>
+  (entry.images || []).map((img) => ({ segmentIndex, segment: segmentByIndex.get(segmentIndex), img }))
+);
 function mediaSlug(img) {
   return path.basename(img.path || img.archive_filename || '').replace(/\.[^.]+$/, '');
 }
@@ -243,7 +245,7 @@ function whatsappShareHref(url, text) {
           <button class="reader-btn reader-btn-icon" id="btn-fullscreen">Fullscreen</button>
           <button class="reader-btn reader-btn-icon" id="btn-immse" title="Hide controls for distraction-free study" onclick="event.preventDefault();event.stopImmediatePropagation();document.body.classList.toggle('reader-immersive');document.querySelector('.reader-container')?.classList.toggle('immerse-mode',document.body.classList.contains('reader-immersive'));this.textContent=document.body.classList.contains('reader-immersive')?'Show controls':'Focus';this.classList.toggle('active',document.body.classList.contains('reader-immersive'))">Focus</button>
           <button class="reader-btn reader-btn-icon" id="btn-hide-media" title="Hide pictures, songs, videos, and media controls">Hide media</button>
-          <button class="reader-btn reader-btn-icon" id="btn-media-gallery" title="Scroll all pictures and videos one after another">Media gallery</button>
+          <button class="reader-btn reader-btn-icon" id="btn-media-gallery" title="Browse every picture for this topic in one gallery">All pictures</button>
           <button class="reader-btn reader-btn-icon" id="btn-teachings-only" title="Show only the teachings, without reader additions" onclick="event.preventDefault();event.stopImmediatePropagation();var only=!document.body.classList.contains('reader-teachings-only');document.body.classList.toggle('reader-teachings-only',only);document.querySelector('.reader-container')?.classList.toggle('immerse-mode',only);this.textContent=only?'Full reader':'Teachings only';this.classList.toggle('active',only);">Teachings only</button>
         </div>
       </div>
@@ -273,11 +275,43 @@ function whatsappShareHref(url, text) {
           Sefer Hamidos - The Book of Traits · {topicTotal} individual teachings
         </p>
         {mediaBySegment.size > 0 && (
-          <div class="reader-media-note" style="margin-top: 12px; font-size: 0.9em; color: var(--reader-text-secondary);">
-            📷 Picture/video dropdowns appear inside the teachings below.
+          <div class="reader-media-note sh-picture-browse-prompt">
+            <button type="button" class="sh-browse-all-media">📷 Browse all {mediaOverviewItems.length} pictures</button>
+            <span>See the complete visual collection together, or open pictures teaching by teaching below.</span>
           </div>
         )}
       </div>
+
+      {mediaOverviewItems.length > 0 && (
+        <section id="sh-all-pictures-overview" class="sh-all-pictures-overview" hidden aria-labelledby="sh-all-pictures-title">
+          <div class="sh-overview-heading">
+            <div>
+              <p class="sh-overview-kicker">Sefer HaMidos · {torahData.title}</p>
+              <h2 id="sh-all-pictures-title">All pictures</h2>
+              <p>{mediaOverviewItems.length} pictures from {mediaBySegment.size} teachings. Select any picture to view, share, or download it.</p>
+            </div>
+            <button type="button" class="sh-overview-close">Close</button>
+          </div>
+          <div class="sh-overview-filters" aria-label="Filter pictures by language">
+            <button type="button" class="active" data-gallery-language="all">All</button>
+            <button type="button" data-gallery-language="english">English</button>
+            <button type="button" data-gallery-language="hebrew">Hebrew</button>
+          </div>
+          <div class="sh-overview-grid">
+            {mediaOverviewItems.map(({ segmentIndex, segment, img }) => (
+              <article class="sh-overview-card" data-gallery-card-language={img.language || ''}>
+                <button type="button" class="sh-overview-open" data-media-src={mediaDirectUrl(img)} aria-label={`Open teaching ${segmentIndex} ${img.language} picture`}>
+                  <img src={img.path} alt={`Sefer Hamidos ${torahData.title} teaching ${segmentIndex} ${img.language} picture`} loading="lazy" />
+                </button>
+                <div class="sh-overview-card-meta">
+                  <a href={`#seg-${segmentIndex}`}>Teaching {segment?.displayLabel || segment?.sourceNumber || segmentIndex}</a>
+                  <span>{img.language} · {img.variant}</span>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
 
       <div class="reader-nav">
         {torahData.navigation.prevUrl ? (
@@ -334,7 +368,7 @@ function whatsappShareHref(url, text) {
                     ))}
                   </div>
                   <div class="sh-media-actions">
-                    <a class="sh-media-archive" href={mediaArchiveUrl} target="_blank" rel="noopener">Archive collection ↗</a>
+                    <button type="button" class="sh-media-share sh-browse-all-media">Browse all pictures</button>
                   </div>
                 </div>
               </details>
@@ -597,6 +631,31 @@ function whatsappShareHref(url, text) {
           }
           function stepMediaGallery(delta) { renderMediaGallery((window.__shGalleryIndex || 0) + delta); }
           function closeMediaGallery() { document.body.classList.remove('sh-gallery-open'); var v=document.querySelector('#sh-media-gallery-lightbox video'); if(v) v.pause(); }
+          function setOverviewLanguage(language) {
+            var overview = document.getElementById('sh-all-pictures-overview');
+            if (!overview) return;
+            Array.prototype.forEach.call(overview.querySelectorAll('[data-gallery-language]'), function (button) {
+              button.classList.toggle('active', button.getAttribute('data-gallery-language') === language);
+            });
+            Array.prototype.forEach.call(overview.querySelectorAll('[data-gallery-card-language]'), function (card) {
+              card.hidden = language !== 'all' && card.getAttribute('data-gallery-card-language') !== language;
+            });
+          }
+          function showPicturesOverview() {
+            var overview = document.getElementById('sh-all-pictures-overview');
+            if (!overview) return;
+            overview.hidden = false;
+            setOverviewLanguage('all');
+            overview.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            var heading = overview.querySelector('h2');
+            if (heading) { heading.setAttribute('tabindex', '-1'); setTimeout(function () { heading.focus({ preventScroll: true }); }, 350); }
+          }
+          function hidePicturesOverview() {
+            var overview = document.getElementById('sh-all-pictures-overview');
+            if (overview) overview.hidden = true;
+            var prompt = document.querySelector('.sh-picture-browse-prompt');
+            if (prompt) prompt.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
           var teachingsOnlyBtn = event.target && event.target.closest && event.target.closest('#btn-teachings-only');
           if (teachingsOnlyBtn) {
             event.preventDefault();
@@ -608,8 +667,14 @@ function whatsappShareHref(url, text) {
             teachingsOnlyBtn.classList.toggle('active', only);
             return;
           }
-          var galleryBtn = event.target && event.target.closest && event.target.closest('#btn-media-gallery');
-          if (galleryBtn) { event.preventDefault(); renderMediaGallery(0); return; }
+          var galleryBtn = event.target && event.target.closest && event.target.closest('#btn-media-gallery, .sh-browse-all-media');
+          if (galleryBtn) { event.preventDefault(); showPicturesOverview(); return; }
+          var overviewClose = event.target && event.target.closest && event.target.closest('.sh-overview-close');
+          if (overviewClose) { event.preventDefault(); hidePicturesOverview(); return; }
+          var overviewFilter = event.target && event.target.closest && event.target.closest('[data-gallery-language]');
+          if (overviewFilter) { event.preventDefault(); setOverviewLanguage(overviewFilter.getAttribute('data-gallery-language') || 'all'); return; }
+          var overviewOpen = event.target && event.target.closest && event.target.closest('.sh-overview-open');
+          if (overviewOpen) { event.preventDefault(); openMediaGalleryFor(overviewOpen.getAttribute('data-media-src') || ''); return; }
           var loadVideo = event.target && event.target.closest && event.target.closest('.sh-media-load-video');
           if (loadVideo) {
             event.preventDefault();
@@ -692,7 +757,27 @@ function whatsappShareHref(url, text) {
         .sh-media-share{border:1px solid var(--reader-accent,#1a365d);background:rgba(255,255,255,.8);color:var(--reader-accent,#1a365d);cursor:pointer;}
         .sh-media-actions{display:flex;gap:8px;flex-wrap:wrap;font-size:.86em;}
         .sh-media-video{background:var(--reader-accent,#1a365d);color:#fff;}
-        .sh-media-archive{border:1px solid var(--reader-accent,#1a365d);color:var(--reader-accent,#1a365d);}
+        .sh-picture-browse-prompt{margin-top:14px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;font:.92rem system-ui,-apple-system,sans-serif;color:var(--reader-text-secondary);}
+        .sh-browse-all-media{border:0;border-radius:999px;padding:.68rem 1rem;background:var(--reader-accent,#1a365d);color:#fff;font:800 .95rem system-ui,-apple-system,sans-serif;cursor:pointer;box-shadow:0 5px 18px rgba(10,35,75,.18);}
+        .sh-browse-all-media:hover,.sh-browse-all-media:focus-visible{filter:brightness(1.12);transform:translateY(-1px);}
+        .sh-all-pictures-overview{margin:1rem 0 1.5rem;padding:1rem;border:1px solid var(--reader-border,#d8c8a8);border-radius:18px;background:var(--reader-bg-secondary,#f8f5f0);scroll-margin-top:72px;}
+        .sh-all-pictures-overview[hidden]{display:none!important;}
+        .sh-overview-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:.8rem;}
+        .sh-overview-heading h2{margin:.1rem 0 .25rem;font-size:clamp(1.6rem,3vw,2.2rem);}
+        .sh-overview-heading p{margin:.1rem 0;color:var(--reader-text-secondary);font-family:system-ui,-apple-system,sans-serif;}
+        .sh-overview-kicker{font-weight:800;color:var(--reader-accent,#1a365d)!important;}
+        .sh-overview-close,.sh-overview-filters button{border:1px solid var(--reader-accent,#1a365d);border-radius:999px;background:transparent;color:var(--reader-accent,#1a365d);font:800 .9rem system-ui,-apple-system,sans-serif;padding:.45rem .8rem;cursor:pointer;}
+        .sh-overview-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem;}
+        .sh-overview-filters button.active{background:var(--reader-accent,#1a365d);color:#fff;}
+        .sh-overview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;}
+        .sh-overview-card{overflow:hidden;border:1px solid var(--reader-border,#ddd);border-radius:14px;background:var(--reader-bg,#fff);box-shadow:0 5px 18px rgba(0,0,0,.07);}
+        .sh-overview-card[hidden]{display:none!important;}
+        .sh-overview-open{display:block;width:100%;padding:0;border:0;background:#081f49;cursor:zoom-in;aspect-ratio:16/10;overflow:hidden;}
+        .sh-overview-open img{display:block;width:100%;height:100%;object-fit:contain;transition:transform .2s ease;}
+        .sh-overview-open:hover img,.sh-overview-open:focus-visible img{transform:scale(1.025);}
+        .sh-overview-card-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:.65rem .75rem;font:.84rem system-ui,-apple-system,sans-serif;}
+        .sh-overview-card-meta a{font-weight:850;color:var(--reader-accent,#1a365d);}
+        .sh-overview-card-meta span{color:var(--reader-text-secondary);text-transform:capitalize;}
 
         body.sh-gallery-open{overflow:hidden;}
         #sh-media-gallery-lightbox{display:none;position:fixed;inset:0;z-index:10000;}
@@ -725,6 +810,15 @@ function whatsappShareHref(url, text) {
           .sh-media-share-row .sh-media-share{display:flex;align-items:center;justify-content:center;min-height:34px;text-align:center;padding:.3rem .35rem;}
           .sh-media-video-row video{max-height:68vh;object-fit:contain;}
           .sh-media-actions a{min-height:34px;display:flex;align-items:center;justify-content:center;}
+          .sh-picture-browse-prompt{align-items:stretch;gap:8px;}
+          .sh-picture-browse-prompt .sh-browse-all-media{width:100%;min-height:48px;}
+          .sh-picture-browse-prompt span{text-align:center;line-height:1.4;}
+          .sh-all-pictures-overview{margin:.75rem -.15rem 1.25rem;padding:.7rem;border-radius:14px;scroll-margin-top:58px;}
+          .sh-overview-heading{align-items:center;}
+          .sh-overview-heading p:not(.sh-overview-kicker){font-size:.88rem;}
+          .sh-overview-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+          .sh-overview-card-meta{display:grid;gap:2px;padding:.5rem;font-size:.76rem;}
+          .sh-overview-open{aspect-ratio:1/1;}
           .sh-gallery-panel{inset:0;min-height:100dvh;padding:env(safe-area-inset-top) .45rem env(safe-area-inset-bottom);box-sizing:border-box;grid-template-columns:1fr 1fr;grid-template-rows:minmax(0,1fr) auto auto auto;gap:8px;}
           .sh-gallery-stage{grid-column:1/3;grid-row:1;min-height:0;}
           .sh-gallery-stage img,.sh-gallery-stage video{max-width:100%;max-height:70dvh;border-radius:10px;}
