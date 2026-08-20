@@ -121,6 +121,27 @@ for (const [first, last, en, he] of chayeySectionTitles) {
   }
 }
 
+// Siman 441 is a compact regression fixture for both corpus integrity and the
+// canonical individual-siman Reader.  It was previously reduced to one stray
+// Hebrew line and a truncated English sentence on a page with no Reader tools.
+const chayey441 = loadJson('public/reader/chayey-moharan/simanim/siman-441.json');
+const chayey441He = (chayey441.segments || []).map(segment => segment.he || '').join('\n');
+const chayey441En = (chayey441.segments || []).map(segment => segment.en || '').join('\n');
+if ((chayey441.segments || []).length !== 3 || chayey441He.length < 1900 || chayey441En.length < 3200) {
+  failures.push('Chayey Moharan Siman 441 is incomplete or improperly segmented');
+}
+for (const phrase of ['לאחד צוה רבנו', 'הפטיש הוא הדבור', 'העקר הוא האמירה בפה']) {
+  if (!chayey441He.includes(phrase)) failures.push(`Chayey Moharan Siman 441 lost Hebrew phrase “${phrase}”`);
+}
+for (const phrase of ['one period in the day', 'take a sledgehammer', 'The main thing is the speaking with the mouth']) {
+  if (!chayey441En.includes(phrase)) failures.push(`Chayey Moharan Siman 441 lost English phrase “${phrase}”`);
+}
+const chayeySimanReader = fs.readFileSync(path.join(root, 'src/pages/reader/chayey-moharan/siman/[siman].astro'), 'utf8');
+for (const marker of ['class="reader-toolbar"', 'data-mode="hebrew"', 'data-mode="english"', 'data-mode="both"', '/reader-script.js', '/reader-v2.js', 'Comments', 'CommentarySidebar']) {
+  if (!chayeySimanReader.includes(marker)) failures.push(`Chayey Moharan individual-siman Reader is missing ${marker}`);
+}
+if ((chayeySimanReader.match(/id="audio-controls"/g) || []).length !== 1) failures.push('Chayey Moharan individual-siman Reader must have exactly one audio control');
+
 const otzarPartFiles = walkJsonFiles('public/reader/otzar-hayirah')
   .filter(f => /\/part-\d+\/.+\.json$/.test(f));
 let otzarSegments = 0;

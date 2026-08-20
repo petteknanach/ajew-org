@@ -1,115 +1,297 @@
 ---
 import Layout from '../../../../layouts/Layout.astro';
 import TeachingVideo from '../../../../components/TeachingVideo.astro';
+import Comments from '../../../../components/Comments.astro';
+import CommentarySidebar from '../../../../components/CommentarySidebar.astro';
+import '../../../../styles/reader.css';
+import '../../../../styles/reader-v2.css';
 import fs from 'node:fs';
 import path from 'node:path';
 
 export function getStaticPaths() {
-  const paths = [];
   const simanDir = path.join(process.cwd(), 'public/reader/chayey-moharan/simanim');
-  
-  if (fs.existsSync(simanDir)) {
-    const files = fs.readdirSync(simanDir).filter(f => f.startsWith('siman-') && f.endsWith('.json'));
-    for (const f of files) {
-      const num = parseInt(f.replace('siman-', '').replace('.json', ''));
-      if (!isNaN(num)) {
-        paths.push({ params: { siman: String(num) } });
-      }
-    }
-  }
-  
-  return paths;
+  if (!fs.existsSync(simanDir)) return [];
+  return fs.readdirSync(simanDir)
+    .filter((file) => /^siman-\d+\.json$/.test(file))
+    .map((file) => ({ params: { siman: file.match(/\d+/)[0] } }));
 }
 
 const { siman } = Astro.params;
 const simanNum = parseInt(siman);
+const partNum = 1;
+const part = '1';
+const torahNum = simanNum;
+const torah = siman;
+const isNumeric = true;
+const fileName = `simanim/siman-${simanNum}.json`;
 
-let simanData = null;
+let torahData = null;
 let error = null;
 
 try {
-  const filePath = path.join(process.cwd(), `public/reader/chayey-moharan/simanim/siman-${simanNum}.json`);
-  if (fs.existsSync(filePath)) {
-    simanData = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-  } else {
-    error = `Siman ${simanNum} not found`;
-  }
+  const filePath = path.join(process.cwd(), `public/reader/chayey-moharan/${fileName}`);
+  const raw = fs.readFileSync(filePath, 'utf8');
+  torahData = JSON.parse(raw);
 } catch (e) {
-  error = 'Error loading content';
+  error = `Content not found`;
+}
+
+if (!torahData && !error) error = 'Content not available';
+
+// Add navigation and segment indexes if missing
+if (torahData) {
+  if (!torahData.navigation) {
+    torahData.navigation = {
+      prevUrl: simanNum > 60 ? `/reader/chayey-moharan/siman/${simanNum - 1}` : null,
+      nextUrl: simanNum < 615 ? `/reader/chayey-moharan/siman/${simanNum + 1}` : null,
+    };
+  }
+  // Guard: some special files (locked hashmatos) have no segments
+  if (!torahData.segments) torahData.segments = [];
+  // Add segment indexes if missing
+  torahData.segments.forEach((seg, i) => {
+    if (!seg.index) seg.index = i + 1;
+  });
 }
 
 const bookName = 'Chayey Moharan';
 const bookHebrew = 'חיי מוהר"ן';
+const itemName = 'Siman';
 
-const pageTitle = simanData
-  ? `Siman ${simanNum} — ${simanData.section || 'Chayey Moharan'}`
+
+// LN commentary entry
+const commentaryEntry = torahData ? {
+  related_commentaries: [
+    {
+      book: "likutay-nanach",
+      section: "chayey-combined",
+      label: "Likutay Nanach",
+      sectionTitle: `ספר חיי מוהר״ן`,
+      url: "/reader/likutay-nanach/volume-4/chayey.json"
+    }
+  ]
+} : null;
+const pageTitle = torahData
+  ? `Siman ${simanNum} — ${torahData.section || 'Chayey Moharan'}`
   : 'Siman Not Found';
-const pageDesc = simanData
-  ? `${simanData.section || 'Chayey Moharan'} — Siman ${simanNum}. ${simanData.hebrewTitle || ''}`
+const pageDesc = torahData
+  ? `${torahData.section || 'Chayey Moharan'} — Siman ${simanNum}. ${torahData.hebrewTitle || ''}`
   : '';
+
+const structuredData = torahData ? JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": `${torahData.title} - Chayey Moharan`,
+  "alternativeHeadline": torahData.hebrewTitle || '',
+  "author": { "@type": "Person", "name": "Rabbi Nosson of Breslov" },
+  "publisher": { "@type": "Organization", "name": "ajew.org" },
+  "inLanguage": ["he", "en"],
+  "isPartOf": { "@type": "Book", "name": "Chayey Moharan" },
+  "url": `https://ajew.org/reader/chayey-moharan/siman/${simanNum}`
+}) : '';
 ---
 
 <Layout title={pageTitle} description={pageDesc}>
-  <div class="siman-container">
-    {error ? (
-      <div class="siman-error">
-        <h1>Siman {simanNum} Not Found</h1>
-        <p>{error}</p>
-        <a href="/reader/chayey-moharan" class="back-link">← Back to Chayay Moharan Directory</a>
-      </div>
-    ) : (
-      <>
-        <!-- Navigation -->
-        <nav class="siman-nav">
-          <a href="/reader/chayey-moharan" class="nav-back">← Directory</a>
-          <div class="nav-siman">
-            <span class="nav-label">Siman</span>
-            <span class="nav-number">{simanNum}</span>
-          </div>
-          <div class="nav-arrows">
-            {simanNum > 60 && (
-              <a href={`/reader/chayey-moharan/siman/${simanNum - 1}`} class="nav-arrow">◂ Previous</a>
-            )}
-            {simanNum < 615 && (
-              <a href={`/reader/chayey-moharan/siman/${simanNum + 1}`} class="nav-arrow">Next ▸</a>
-            )}
-          </div>
-        </nav>
+  {torahData && structuredData && (
+    <script type="application/ld+json" set:html={structuredData} slot="head" />
+  )}
+  {error ? (
+    <div style="text-align: center; padding: 80px 20px;">
+      <h1>{error}</h1>
+      <p><a href="/reader">Back to Reader</a></p>
+    </div>
+  ) : (
+    <div
+      class="reader-container"
+      data-torah-id={torahData.id}
+      data-torah-title={`${torahData.title} - Chayey Moharan`}
+    >
+      <div class="reader-progress"></div>
 
-        <!-- Section context -->
-        {simanData.section && (
-          <div class="section-context">
-            <span class="section-he">{simanData.sectionHe}</span>
-            <span class="section-en">{simanData.section}</span>
+      <div class="reader-breadcrumb">
+        <a href="/reader">Reader</a>
+        <span>&rsaquo;</span>
+        <a href="/reader/chayey-moharan/">Chayey Moharan</a>
+        <span>&rsaquo;</span>
+        {torahData.hebrewTitle || torahData.title}
+      </div>
+
+
+
+
+<!-- Unified Audio Player -->
+<div id="audio-controls" style="margin:0 auto 12px auto; max-width:700px; font-family:'Open Sans',sans-serif;">
+  <div style="display:flex; gap:0; border-radius:8px; overflow:hidden; border:1px solid var(--reader-border,#ddd);">
+    <button id="audio-btn-he" onclick="toggleAudio('he')"
+      style="flex:1; padding:8px 12px; border:none; cursor:pointer; font-size:0.85em; font-weight:600;
+      background:var(--reader-bg-secondary,#f8f5f0); color:var(--reader-text,#333);">
+      🎧 Hebrew
+    </button>
+    <button id="audio-btn-en" onclick="toggleAudio('en')"
+      style="flex:1; padding:8px 12px; border:none; cursor:pointer; font-size:0.85em; font-weight:600;
+      background:var(--reader-bg-secondary,#f8f5f0); color:var(--reader-text,#333); border-left:1px solid var(--reader-border,#ddd);">
+      🔊 English
+    </button>
+  </div>
+
+  <!-- Hidden data element for book/part/torah -->
+  <div id="en-tts-player" data-book="chayey-moharan" data-part={partNum} data-torah={torahNum} style="display:none;"></div>
+
+  <div id="audio-panel-he" style="display:none; background:var(--reader-bg-secondary,#f8f5f0);
+    border:1px solid var(--reader-border,#ddd); border-top:none; border-radius:0 0 8px 8px; padding:12px 16px;">
+    <audio id="kol-hatzadik-audio" controls preload="none" style="width:100%; border-radius:4px;"></audio>
+    <div id="kol-hatzadik-note" style="font-size:0.8em; color:var(--reader-text-secondary,#888); margin-top:4px;"></div>
+  </div>
+
+  <div id="audio-panel-en" style="display:none; background:#1a3a1a;
+    border:1px solid #2d5a2d; border-top:none; border-radius:0 0 8px 8px; padding:12px 16px;">
+    <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+      <span style="font-size:1em;">🔊</span>
+      <strong style="color:#7fff7f; font-size:0.85em;">English Audio</strong>
+      <div style="margin-left:auto; display:flex; gap:4px;">
+        <button id="en-btn-ryan" onclick="enSetVoice('ryan')"
+          style="background:#7fff7f20; border:2px solid #7fff7f; color:#fff; border-radius:4px;
+          padding:2px 8px; cursor:pointer; font-size:0.8em;">🇬🇧</button>
+        <button id="en-btn-guy" onclick="enSetVoice('guy')"
+          style="background:#7fff7f10; border:1px solid #7fff7f40; color:#fff; border-radius:4px;
+          padding:2px 8px; cursor:pointer; font-size:0.8em;">🇺🇸</button>
+        <button id="en-btn-connor" onclick="enSetVoice('connor')"
+          style="background:#7fff7f10; border:1px solid #7fff7f40; color:#fff; border-radius:4px;
+          padding:2px 8px; cursor:pointer; font-size:0.8em;">🇮🇪</button>
+      </div>
+    </div>
+    <button id="en-btn-play" onclick="enTogglePlay()"
+      style="background:#2d8a2d; color:#fff; border:none; border-radius:4px; padding:6px 16px;
+      cursor:pointer; font-size:0.9em; font-weight:bold; width:100%;">▶ Play English</button>
+    <div id="en-progress" style="margin-top:4px; height:3px; background:#2d5a2d; border-radius:2px;
+      overflow:hidden; display:none;">
+      <div id="en-progress-bar" style="height:100%; width:0%; background:#7fff7f;"></div>
+    </div>
+  </div>
+</div>
+<script src="/unified-audio.js" defer></script>
+
+
+
+      <div class="reader-toolbar">
+        <div class="reader-toolbar-group">
+          <button class="reader-btn" data-mode="hebrew">Hebrew</button>
+          <button class="reader-btn" data-mode="english">English</button>
+          <button class="reader-btn" data-mode="both">Both</button>
+        </div>
+        <div class="reader-toolbar-group">
+          <button class="reader-btn" id="btn-nikud">Nikud</button>
+        </div>
+        <div class="reader-toolbar-group">
+          <span style="font-size:0.7em; font-family: 'Open Sans', sans-serif; color: var(--reader-text-secondary);">A</span>
+          <input type="range" id="font-size-slider" class="font-size-slider" min="12" max="32" value="18" />
+          <span style="font-size:0.9em; font-family: 'Open Sans', sans-serif; color: var(--reader-text-secondary);">A</span>
+        </div>
+        <div class="reader-toolbar-group">
+          <button class="reader-btn reader-btn-icon" data-theme-btn="day">Day</button>
+          <button class="reader-btn reader-btn-icon" data-theme-btn="sepia">Sepia</button>
+          <button class="reader-btn reader-btn-icon" data-theme-btn="night">Night</button>
+        </div>
+        <div class="reader-toolbar-group">
+          <button class="reader-btn reader-btn-icon" id="btn-listen" onclick="toggleSpeaking()">Listen</button>
+          <button class="reader-btn reader-btn-icon" id="btn-search">Search</button>
+          <button class="reader-btn reader-btn-icon" id="btn-bookmark">Bookmark</button>
+          <button class="reader-btn reader-btn-icon" id="btn-align" title="Sentence-by-sentence aligned view">Align</button>
+          <button class="reader-btn reader-btn-icon" id="btn-fullscreen">Fullscreen</button>
+        </div>
+      </div>
+
+      <div class="reader-search-bar">
+        <input type="text" placeholder={"Search in this siman..."} dir="auto" />
+        <span class="search-info"></span>
+        <button class="reader-btn search-close">Close</button>
+      </div>
+
+      <button class="reader-toc-toggle" title="Table of Contents">&#9776;</button>
+      <div class="reader-toc">
+        <button class="reader-toc-close">&times;</button>
+        <h3>Siman sections</h3>
+        <ul class="reader-toc-list">
+          {torahData.segments.map((seg, i) => (
+            <li><a href={`#seg-${seg.index}`} data-index={String(seg.index)}>{seg.index}</a></li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="reader-header">
+        {torahData.hebrewTitle && <div class="hebrew-title">{torahData.hebrewTitle}</div>}
+        <h1>{torahData.title}</h1>
+        <p style="color: var(--reader-text-secondary); font-size: 0.9em; font-family: 'Open Sans', sans-serif;">
+          The Life of Our Leader Rabbi Nachman · חיי מוהר"ן
+        </p>
+      </div>
+
+      {torahData.section && (
+        <div class="chayey-section-context">
+          <strong lang="he" dir="rtl">{torahData.sectionHe}</strong>
+          <span>{torahData.section}</span>
+        </div>
+      )}
+
+      <div class="reader-nav">
+        {torahData.navigation.prevUrl ? (
+          <a href={torahData.navigation.prevUrl} data-dir="prev">&larr; Previous</a>
+        ) : <span class="disabled">&larr; Previous</span>}
+        <a href="/reader/chayey-moharan/">Book Index</a>
+        <a href="/reader">All Books</a>
+        {torahData.navigation.nextUrl ? (
+          <a href={torahData.navigation.nextUrl} data-dir="next">Next &rarr;</a>
+        ) : <span class="disabled">Next &rarr;</span>}
+      </div>
+
+      {torahData.siman && (
+        <div class="reader-segment-pair" style="padding: 2rem; text-align: center;">
+          <div style="font-size: 1.1em; color: var(--reader-text-secondary); margin-bottom: 1rem;" dir="rtl">
+            {torahData.label || `סימן ${torahData.siman}`}
+          </div>
+          <div style="font-size: 0.95em; margin-bottom: 1rem;">{torahData.note}</div>
+          {torahData.hashmata_en && <div style="font-style: italic; color: var(--reader-text-secondary);">{torahData.hashmata_en}</div>}
+        </div>
+      )}
+
+      <div class="reader-content mode-hebrew">
+        <div class="reader-content-original">
+{torahData.segments.map((seg) => {
+            const label = seg.simanNumber ? `סימן ${seg.simanNumber}` : `${seg.index}`;
+            return (
+          <div class="reader-segment-pair" id={`seg-${seg.index}`}>
+            <div class="reader-segment segment-he" data-index={String(seg.index)}>
+              <span class="segment-number">{label}</span>
+              <p data-nikud={seg.he_nikud || seg.he}>{seg.he}</p>
+            </div>
+            <div class={`reader-segment segment-en ${!seg.en ? 'empty-translation' : ''}`} data-index={String(seg.index)}>
+              <span class="segment-number">{label}</span>
+              <p>{seg.en || 'Translation not yet available'}</p>
+            </div>
+          </div>
+        )})}
+        </div>
+        {torahData.aligned_segments && (
+          <div class="reader-content-aligned" style="display:none;">
+            {torahData.aligned_segments.map((seg) => {
+              const alabel = seg.simanNumber ? `סימן ${seg.simanNumber}` : `${seg.index}`;
+              return (
+              <div class={`reader-segment-pair ${seg.type === 'note' ? 'segment-note' : ''}`} id={`aligned-${seg.index}`}>
+                <div class="reader-segment segment-he" data-index={String(seg.index)}>
+                  <span class="segment-number">{alabel}</span>
+                  <p>{seg.he || '\u00A0'}</p>
+                </div>
+                <div class={`reader-segment segment-en ${!seg.en ? 'empty-translation' : ''}`} data-index={String(seg.index)}>
+                  <span class="segment-number">{alabel}</span>
+                  <p>{seg.en || '\u00A0'}</p>
+                </div>
+              </div>
+            )})}
           </div>
         )}
+      </div>
 
-        <!-- Content -->
-        <div class="siman-content">
-          {simanData.segments?.map((seg: any) => (
-            <div class="siman-segment">
-              {seg.he && (
-                <div class="segment-he">
-                  <p>{seg.he}</p>
-                </div>
-              )}
-              {seg.en && (
-                <div class="segment-en">
-                  <p>{seg.en}</p>
-                </div>
-              )}
-              {!seg.he && !seg.en && (
-                <p class="segment-empty">Content not yet available for this siman.</p>
-              )}
-            </div>
-          ))}
-
-          {(!simanData.segments || simanData.segments.length === 0) && (
-            <p class="segment-empty">Content not yet available for this siman.</p>
-          )}
-        </div>
-
-        {simanNum === 100 && (
+{simanNum === 100 && (
           <TeachingVideo
             title="The King and His Two Sons"
             hebrewTitle="מלך ושני בנים"
@@ -179,201 +361,51 @@ const pageDesc = simanData
           />
         )}
 
-        <!-- Bottom nav -->
-        <nav class="siman-nav bottom">
-          <a href="/reader/chayey-moharan" class="nav-back">← Directory</a>
-          <div class="nav-arrows">
-            {simanNum > 60 && (
-              <a href={`/reader/chayey-moharan/siman/${simanNum - 1}`} class="nav-arrow">◂ Previous</a>
-            )}
-            {simanNum < 615 && (
-              <a href={`/reader/chayey-moharan/siman/${simanNum + 1}`} class="nav-arrow">Next ▸</a>
-            )}
-          </div>
-        </nav>
-      </>
-    )}
-  </div>
+      <div class="reader-nav">
+        {torahData.navigation.prevUrl ? (
+          <a href={torahData.navigation.prevUrl} data-dir="prev">&larr; Previous</a>
+        ) : <span class="disabled">&larr; Previous</span>}
+        <a href="/reader/chayey-moharan/">Book Index</a>
+        <a href="/reader">All Books</a>
+        {torahData.navigation.nextUrl ? (
+          <a href={torahData.navigation.nextUrl} data-dir="next">Next &rarr;</a>
+        ) : <span class="disabled">Next &rarr;</span>}
+      </div>
+
+      <div class="reader-shortcuts-overlay">
+        <div class="reader-shortcuts-panel">
+          <h2>Keyboard Shortcuts</h2>
+          <div class="shortcut-row"><span>Hebrew mode</span><span class="shortcut-key">H</span></div>
+          <div class="shortcut-row"><span>English mode</span><span class="shortcut-key">E</span></div>
+          <div class="shortcut-row"><span>Both columns</span><span class="shortcut-key">B</span></div>
+          <div class="shortcut-row"><span>Toggle nikud</span><span class="shortcut-key">N</span></div>
+          <div class="shortcut-row"><span>Fullscreen</span><span class="shortcut-key">F</span></div>
+          <div class="shortcut-row"><span>Search in text</span><span class="shortcut-key">Ctrl+F</span></div>
+          <div class="shortcut-row"><span>Save bookmark</span><span class="shortcut-key">S</span></div>
+          <div class="shortcut-row"><span>Previous/Next</span><span class="shortcut-key">&larr; &rarr;</span></div>
+          <div class="shortcut-row"><span>Show shortcuts</span><span class="shortcut-key">?</span></div>
+          <br />
+          <button class="reader-btn" onclick="this.closest('.reader-shortcuts-overlay').classList.remove('open')">Close</button>
+        </div>
+      </div>
+      {torahData && (
+        <Comments teachingId={`chayey-moharan-${part}-${torah}`} teachingTitle={`chayey-moharan ${part}:${torah}${torahData?.title ? ' — ' + torahData.title : ''}`} />
+      )}
+      {torahData && commentaryEntry && (
+        <CommentarySidebar part={partNum} torah={torahNum} entry={commentaryEntry} />
+      )}
+
+
+      <script src="/reader-script.js" defer></script>
+      <script src="/reader-v2.js" defer></script>
+      <script src="/pwa-register.js" defer></script>
+      <script src="/tts-fix.js" defer></script>
+
+      <style>
+        .chayey-section-context{display:grid;gap:.2rem;margin:.75rem 0 1rem;padding:.75rem 1rem;border-inline-start:4px solid var(--reader-accent,#1a365d);background:var(--reader-bg-secondary,#f8f5f0);border-radius:8px;}
+        .chayey-section-context strong{font-size:1.1rem;}
+        .chayey-section-context span{color:var(--reader-text-secondary,#666);font:italic .9rem system-ui,sans-serif;}
+      </style>
+    </div>
+  )}
 </Layout>
-
-<style>
-  .siman-container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px 20px 80px;
-  }
-
-  .siman-nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 16px;
-    background: #f8f5f0;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    border: 1px solid #e0d5b8;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .siman-nav.bottom {
-    margin-top: 32px;
-  }
-
-  .nav-back {
-    color: #1e3a5f;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 0.95em;
-  }
-
-  .nav-back:hover {
-    color: #8B6914;
-  }
-
-  .nav-siman {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .nav-label {
-    font-size: 0.7em;
-    color: #999;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-  }
-
-  .nav-number {
-    font-size: 1.4em;
-    font-weight: bold;
-    color: #8B6914;
-  }
-
-  .nav-arrows {
-    display: flex;
-    gap: 12px;
-  }
-
-  .nav-arrow {
-    color: #5a3e00;
-    text-decoration: none;
-    font-size: 0.9em;
-    padding: 4px 12px;
-    background: #f0ead6;
-    border-radius: 4px;
-    transition: all 0.15s;
-  }
-
-  .nav-arrow:hover {
-    background: #c8a84b;
-    color: #fff;
-  }
-
-  .section-context {
-    text-align: right;
-    padding: 10px 16px;
-    margin-bottom: 20px;
-    background: #fafaf0;
-    border-right: 4px solid #c8a84b;
-    border-radius: 4px;
-  }
-
-  .section-he {
-    display: block;
-    font-size: 1.1em;
-    color: #333;
-    font-family: 'Frank Ruhl Libre', serif;
-    direction: rtl;
-  }
-
-  .section-en {
-    display: block;
-    font-size: 0.85em;
-    color: #777;
-    font-style: italic;
-    direction: ltr;
-    text-align: left;
-  }
-
-  .siman-content {
-    background: #fff;
-    border-radius: 8px;
-    padding: 24px;
-    border: 1px solid #e0d5b8;
-  }
-
-  .siman-segment {
-    margin-bottom: 20px;
-    padding-bottom: 20px;
-    border-bottom: 1px dashed #e0d5b8;
-  }
-
-  .siman-segment:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
-    padding-bottom: 0;
-  }
-
-  .segment-he {
-    direction: rtl;
-    text-align: right;
-    font-family: 'Frank Ruhl Libre', serif;
-    font-size: 1.1em;
-    line-height: 1.9;
-    color: #222;
-    margin-bottom: 12px;
-  }
-
-  .segment-he p {
-    margin: 0 0 12px;
-  }
-
-  .segment-en {
-    direction: ltr;
-    text-align: left;
-    font-family: Georgia, serif;
-    font-size: 1.05em;
-    line-height: 1.8;
-    color: #333;
-    padding: 12px 16px;
-    background: #fafaf7;
-    border-left: 3px solid #c8a84b;
-    border-radius: 4px;
-  }
-
-  .segment-en p {
-    margin: 0 0 10px;
-  }
-
-  .segment-empty {
-    color: #999;
-    font-style: italic;
-    text-align: center;
-    padding: 40px 20px;
-  }
-
-  .siman-error {
-    text-align: center;
-    padding: 60px 20px;
-  }
-
-  .siman-error h1 {
-    color: #8B6914;
-    font-size: 1.5em;
-  }
-
-  .back-link {
-    display: inline-block;
-    margin-top: 16px;
-    color: #1e3a5f;
-    font-weight: 600;
-  }
-
-  @media (max-width: 600px) {
-    .siman-container { padding: 12px 10px 60px; }
-    .siman-nav { flex-direction: column; align-items: flex-start; }
-    .segment-he { font-size: 1em; }
-    .segment-en { font-size: 0.95em; }
-  }
-</style>
