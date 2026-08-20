@@ -23,7 +23,7 @@ const pageDesc = 'The life, journeys, wisdom, and teachings of Rabbi Nachman of 
       <h2 class="dir-title-he">חיי מוהר"ן</h2>
       <p class="dir-subtitle">The Life of Rabbi Nachman of Breslov</p>
       <p class="dir-author">by Rabbi Nosson of Breslov (Moharnat)</p>
-      <p class="dir-count">615 Simanim in 27 Sections</p>
+      <p class="dir-count">{indexData?.totalSimanim || 615} Simanim in {indexData?.totalSections || 20} Sections</p>
     </div>
 
     <!-- Special Pages -->
@@ -45,8 +45,8 @@ const pageDesc = 'The life, journeys, wisdom, and teachings of Rabbi Nachman of 
       <p class="dir-section-range">Simanim 1–59</p>
       <div class="dir-grid">
         {indexData?.earlySections?.map((sec: any) => (
-          <a href={sec[3]} class="dir-card">
-            <span class="card-number">Simanim {sec[2]}–{sec[3] ? sec[2]+sec[3]-sec[2] : sec[2]}</span>
+          <a href={sec[4]} class="dir-card">
+            <span class="card-number">Simanim {sec[2]}–{sec[3]}</span>
             <span class="card-he">{sec[1]}</span>
             <span class="card-en">{sec[0]}</span>
           </a>
@@ -73,12 +73,11 @@ const pageDesc = 'The life, journeys, wisdom, and teachings of Rabbi Nachman of 
               <span class="sub-en">{sec.en}</span>
             </div>
             <div class="sub-links">
-              {sec.articles?.slice(0, 30).map((art: number) => (
+              {sec.articles?.map((art: number) => (
                 <a href={`/reader/chayey-moharan/siman/${art}`} class="siman-link">
                   {art}
                 </a>
               ))}
-              {sec.count > 30 && <span class="siman-more">+{sec.count - 30} more</span>}
             </div>
           </div>
         ))}
