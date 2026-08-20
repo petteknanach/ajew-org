@@ -31,6 +31,7 @@
     currentIndex: -1,
     audio: null,
     collapsed: true,
+    pendingOpen: false,
   };
 
   function el(tag, attrs, children) {
@@ -322,6 +323,16 @@
       closeBtn.setAttribute('aria-expanded', state.collapsed ? 'false' : 'true');
     }
   }
+
+  // The in-page Hebrew button opens this Archive.org-backed player.
+  window.openAjewAudioPlayer = function () {
+    var wrap = document.getElementById('ajew-audio-player');
+    if (!wrap) {
+      state.pendingOpen = true;
+      return;
+    }
+    if (state.collapsed) toggleCollapsed();
+  };
 
   function selectEdition(index) {
     var ed = state.editions[parseInt(index, 10)];
@@ -691,6 +702,8 @@
       var wrap = el('div', { id: 'ajew-audio-player', class: 'collapsed' });
       document.body.appendChild(wrap);
       render(wrap);
+      if (state.pendingOpen && state.collapsed) toggleCollapsed();
+      state.pendingOpen = false;
     }).catch(function (err) {
       // silent fail - don't break the reader page
       if (window.console && console.warn) console.warn('[audio-player]', err);

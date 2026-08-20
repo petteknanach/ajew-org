@@ -7,6 +7,10 @@
   // ── Panel toggle ──
   let activePanel = null;
   window.toggleAudio = function(lang) {
+    if (lang === 'he' && typeof window.openAjewAudioPlayer === 'function') {
+      window.openAjewAudioPlayer();
+      return;
+    }
     const panel = document.getElementById('audio-panel-' + lang);
     const btn = document.getElementById('audio-btn-' + lang);
     if (activePanel === panel) {
@@ -35,26 +39,8 @@
   var heAudio = document.getElementById('kol-hatzadik-audio');
   var heNote = document.getElementById('kol-hatzadik-note');
   if (hePanel && heAudio) {
-    var bookEl = document.getElementById('en-tts-player');
-    var book = bookEl ? bookEl.getAttribute('data-book') : 'likutay-moharan';
-    var part = bookEl ? bookEl.getAttribute('data-part') : '1';
-    var torah = bookEl ? bookEl.getAttribute('data-torah') : '1';
-    var fileStr = String(torah).padStart(3, '0');
-    var fileName = 'kol-hatzadik-' + book + '-' + part + '-' + fileStr + '.mp3';
-    var heUrl = 'https://pub-81b61511a43c43218e37bc24c20a7a22.r2.dev/kol-hatzadik/' + fileName;
-    fetch(heUrl, { method: 'HEAD' }).then(function(r) {
-      if (r.ok) {
-        heAudio.src = heUrl;
-        heNote.textContent = 'Kol HaTzadik recording available';
-        window.kolAudio = heAudio;
-      } else {
-        heNote.textContent = 'No recording for this teaching yet';
-        heAudio.style.display = 'none';
-      }
-    }).catch(function() {
-      heNote.textContent = 'Audio unavailable';
-      heAudio.style.display = 'none';
-    });
+    heAudio.style.display = 'none';
+    heNote.textContent = 'Use the complete Hebrew audio player at the bottom of the page.';
   }
 
   // ── English TTS ──

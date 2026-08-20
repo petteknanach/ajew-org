@@ -56,23 +56,13 @@ const { teachingId, teachingTitle } = Astro.props;
 
     let supabase = null;
     try {
-      const mod = await import('/src/lib/supabaseClient.ts').catch(() => null);
-      if (mod?.supabase) {
-        supabase = mod.supabase;
-      } else if (window.supabase) {
-        supabase = window.supabase;
-      }
+      // This is a static site: use the public Supabase client directly rather
+      // than importing a source file or calling a nonexistent /api route.
+      const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+      const url = 'https://ekggvujbuusvgmrertgp.supabase.co';
+      const key = 'sb_publishable_q6XD_TD8KOQuphI30Gmi5Q_3PBAXQHo';
+      supabase = createClient(url, key);
     } catch {}
-
-    if (!supabase) {
-      // Load supabase-js from CDN and create client
-      try {
-        const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
-        const url = 'https://ekggvujbuusvgmrertgp.supabase.co';
-        const key = 'sb_publishable_q6XD_TD8KOQuphI30Gmi5Q_3PBAXQHo';
-        supabase = createClient(url, key);
-      } catch {}
-    }
 
     function fmtTime(iso) {
       try {
@@ -103,8 +93,14 @@ const { teachingId, teachingTitle } = Astro.props;
 
     async function loadComments() {
       try {
-        const res = await fetch(`/api/comments?teaching=${encodeURIComponent(teachingId)}`);
-        const data = await res.json();
+        if (!supabase) throw new Error('Comments client unavailable');
+        const { data, error } = await supabase
+          .from('messages')
+          .select('id, username, email, message, created_at')
+          .eq('room', `teaching:${teachingId}`)
+          .order('created_at', { ascending: false })
+          .limit(100);
+        if (error) throw error;
         const comments = Array.isArray(data) ? data : [];
         if (countEl) {
           countEl.textContent = `${comments.length} comment${comments.length !== 1 ? 's' : ''}`;
@@ -173,30 +169,43 @@ const { teachingId, teachingTitle } = Astro.props;
       }
 
       try {
-        const res = await fetch('/api/comments', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${session.access_token}`
-          },
-          body: JSON.stringify({
-            teachingId,
-            teachingTitle,
-            message: text,
-            shareToChat: !!(shareEl && shareEl.checked)
-          })
-        });
-        const result = await res.json();
-        if (!res.ok) {
-          statusEl.textContent = result?.error || 'Could not post.';
+        if (!supabase) throw new Error('Comments client unavailable');
+        const userEmail = (session.user?.email || '').toLowerCase();
+        const { data: sub, error: subError } = await supabase
+          .from('subscriptions')
+          .select('tier')
+          .eq('email', userEmail)
+          .maybeSingle();
+        if (subError || !sub || sub.tier === 'free') {
+          statusEl.textContent = 'Subscription required to comment.';
           submitEl.disabled = false;
           return;
         }
+
+        const username = session.user?.user_metadata?.display_name || userEmail.split('@')[0] || 'User';
+        const trimmed = text.slice(0, 1000);
+        const shareRequested = !!(shareEl && shareEl.checked);
+        const { error: insertError } = await supabase.from('messages').insert({
+          room: `teaching:${teachingId}`,
+          username,
+          message: trimmed,
+          email: userEmail
+        });
+        if (insertError) throw insertError;
+
+        if (shareRequested) {
+          const refTitle = String(teachingTitle || teachingId).slice(0, 80);
+          const { error: shareError } = await supabase.from('messages').insert({
+            room: 'general',
+            username,
+            message: `💬 On "${refTitle}": ${trimmed}`.slice(0, 500),
+            email: userEmail
+          });
+          if (shareError) throw shareError;
+        }
         inputEl.value = '';
         if (shareEl) shareEl.checked = false;
-        statusEl.textContent = (shareEl && shareEl.checked === false)
-          ? 'Posted!'
-          : 'Posted and shared to chat!';
+        statusEl.textContent = shareRequested ? 'Posted and shared to chat!' : 'Posted!';
         submitEl.disabled = false;
         setTimeout(() => { statusEl.textContent = ''; }, 3000);
         loadComments();
