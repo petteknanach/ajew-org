@@ -105,6 +105,7 @@ function cleanCategoryTitle(title) {
 }
 
 function bookDirectoryUrl(book) {
+  if (book.id === 'chayey-moharan') return '/reader/chayey-moharan/';
   const firstPart = book.parts[0];
   if (!firstPart) return '/reader/';
   const partNumber = firstPart.part || 1;
@@ -186,7 +187,8 @@ const bookSearchAliases = {
 };
 
 const directoryBookRows = new Map(alphabeticalBooks.map((book) => {
-  const totalPages = book.parts.reduce((sum, part) => sum + part.totalTorahs, 0);
+  const catalogTotalPages = book.parts.reduce((sum, part) => sum + part.totalTorahs, 0);
+  const totalPages = book.id === 'chayey-moharan' ? 615 : catalogTotalPages;
   const categoryKeys = bookCategoryKeys.get(book.id) || [];
   const searchText = [book.title, book.hebrewTitle, book.author, book.hebrewAuthor, bookDescriptions[book.id], bookSearchAliases[book.id]].filter(Boolean).join(' ');
   return [book.id, { book, totalPages, categoryKeys, searchText, href: bookDirectoryUrl(book) }];
