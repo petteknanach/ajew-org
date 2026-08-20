@@ -97,6 +97,30 @@ const bechukosai = loadJson('public/data/bechukosai-teachings.json');
 if (bechukosai.length !== 16) failures.push(`public/data/bechukosai-teachings.json: expected 16 teachings, found ${bechukosai.length}`);
 if (bechukosai.filter(t => t.he && t.en).length !== 16) failures.push('public/data/bechukosai-teachings.json: every Bechukotai teaching must have HE+EN');
 
+// Chayey Moharan directory headings must stay genuinely bilingual.  A prior
+// import placed the English heading in both ``section`` and ``sectionHe`` for
+// the first four post-59 sections, making the directory repeat English twice.
+const chayeySectionTitles = [
+  [60, 73, 'Conversations Pertaining to the Legendary Tales', 'שיחות השיך לספורי מעשיות'],
+  [74, 80, 'Conversations Pertaining to the Book of Attributes', 'שיחות השיכים לספר המדות'],
+  [81, 103, 'New Stories', 'ספורים חדשים'],
+  [104, 128, 'His Birthplace, Residence, Journeys and Wanderings', 'מקום לדתו וישיבתו ונסיעותיו וטלטוליו'],
+];
+const chayeyIndex = loadJson('public/reader/chayey-moharan/index.json');
+const chayeySections = (chayeyIndex.parts || []).flatMap(part => part.sections || []);
+for (const [first, last, en, he] of chayeySectionTitles) {
+  const section = chayeySections.find(item => item.first === first && item.last === last);
+  if (!section || section.en !== en || section.he !== he) {
+    failures.push(`Chayey Moharan directory section ${first}–${last} lost its Hebrew/English titles`);
+  }
+  for (let siman = first; siman <= last; siman++) {
+    const data = loadJson(`public/reader/chayey-moharan/simanim/siman-${siman}.json`);
+    if (data.section !== en || data.sectionHe !== he || !/[\u0590-\u05FF]/.test(data.sectionHe || '')) {
+      failures.push(`Chayey Moharan Siman ${siman} has incorrect bilingual section metadata`);
+    }
+  }
+}
+
 const otzarPartFiles = walkJsonFiles('public/reader/otzar-hayirah')
   .filter(f => /\/part-\d+\/.+\.json$/.test(f));
 let otzarSegments = 0;
