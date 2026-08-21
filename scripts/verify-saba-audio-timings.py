@@ -38,6 +38,7 @@ for timing_path in sorted((base/'timings').glob('*.json')):
     audited_override=(
         override.get('approved') is True
         and exact >= int(override.get('minimumExactAnchors',150))
+        and float(t.get('anchoredSegmentPercent',0)) >= float(override.get('minimumAnchoredSegmentPercent',0))
         and (not override.get('requireAllSegmentsAnchored') or publishable_segments == len(t.get('segments',[])))
         and bool(exact_words)
         and float(exact_words[0]['start']) <= boundary
