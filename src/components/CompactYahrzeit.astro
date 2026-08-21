@@ -915,4 +915,24 @@
       display: flex;
     }
   }
+
+  @media (min-width: 769px) {
+    .compact-yahrzeit.collapsed {
+      max-width: 60px;
+      max-height: 60px;
+      overflow: hidden;
+    }
+    .compact-yahrzeit.collapsed .yahrzeit-section,
+    .compact-yahrzeit.collapsed .view-all,
+    .compact-yahrzeit.collapsed .yahrzeit-loading {
+      display: none !important;
+    }
+    .compact-yahrzeit.collapsed .toggle-btn {
+      display: flex;
+      top: auto;
+      right: auto;
+      bottom: 0.25rem;
+      left: 0.25rem;
+    }
+  }
 </style>

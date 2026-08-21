@@ -21,7 +21,9 @@ assert(audio.includes('window.openAjewAudioPlayer'), 'Hebrew audio button must o
 assert(player.includes('window.openAjewAudioPlayer = function'), 'Archive.org player must expose its opener');
 assert(player.includes('bottom:calc(64px + env(safe-area-inset-bottom))'), 'Mobile audio must clear the bottom tab bar');
 assert(player.includes('body.has-commentary-sidebar-open #ajew-audio-player'), 'Desktop audio must clear the commentary sidebar');
-assert(layout.includes('/audio-player.js?v=20260820-overlap-fix'), 'Audio player asset must use the overlap-fix cache version');
+assert(player.includes("bookId === 'sefer-hamidos'"), 'Suno manifest requests must be limited to books with a shipped manifest');
+assert(player.includes('if (!SUNO_SONGS_URL) return Promise.resolve(null)'), 'Missing Suno manifests must not be requested');
+assert(layout.includes('/audio-player.js?v=20260821-final-overlap'), 'Audio player asset must use the final overlap cache version');
 assert(readerCss.includes('width: calc(100% - clamp(340px, 40vw, 560px))'), 'Reader content must clear the open commentary sidebar');
 assert(readerScript.includes("let notesBtn = document.getElementById('btn-notes')"), 'Notes setup must reuse the existing button');
 assert(readerScript.includes("notesBtn.dataset.readerNotesBound !== '1'"), 'Notes setup must bind once');
@@ -29,6 +31,8 @@ assert(nginx404.includes('try_files $uri $uri.html $uri/ =404;'), 'Unknown stati
 assert(nginx404.includes('error_page 404 /404.html;'), 'Custom 404 page must preserve HTTP 404');
 assert(commentary.includes('bottom: calc(140px + env(safe-area-inset-bottom))'), 'Mobile commentary toggle must clear audio and navigation');
 assert(yahrzeit.includes('max-height: 260px'), 'Desktop yahrzeit box must not cover the reader toolbar');
+assert(yahrzeit.includes('@media (min-width: 769px)'), 'Desktop yahrzeit must support its compact state');
+assert(yahrzeit.includes('.compact-yahrzeit.collapsed'), 'Desktop yahrzeit must render collapsed by default');
 assert(yahrzeit.includes('top: 64px'), 'Mobile yahrzeit box must clear bottom controls');
 assert(!comments.includes('/api/comments'), 'Static comments must not call a nonexistent API route');
 assert(!comments.includes('/src/lib/supabaseClient.ts'), 'Built comments must not import an unserved source module');

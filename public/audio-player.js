@@ -22,7 +22,9 @@
   var AUDIO_SOURCES_URL = '/audio-sources.json';
   var IA_METADATA = 'https://archive.org/metadata/';
   var IA_DOWNLOAD = 'https://archive.org/download/';
-  var SUNO_SONGS_URL = '/reader/suno-songs/' + encodeURIComponent(bookId) + '.json';
+  var SUNO_SONGS_URL = bookId === 'sefer-hamidos'
+    ? '/reader/suno-songs/sefer-hamidos.json'
+    : null;
 
   var state = {
     editions: [],        // filtered editions for this bookId/part
@@ -402,6 +404,7 @@
   }
 
   function loadSegmentSongs() {
+    if (!SUNO_SONGS_URL) return Promise.resolve(null);
     return fetch(SUNO_SONGS_URL).then(function (r) {
       if (!r.ok) return null;
       return r.json();

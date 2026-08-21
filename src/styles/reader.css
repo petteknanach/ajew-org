@@ -1044,6 +1044,7 @@
     width: calc(100% - clamp(340px, 40vw, 560px));
     max-width: calc(100% - clamp(340px, 40vw, 560px));
     margin-right: clamp(340px, 40vw, 560px);
+    margin-left: 0 !important;
   }
 
   body.has-commentary-sidebar-open .reader-toolbar-group {
@@ -1052,9 +1053,41 @@
     justify-content: center;
   }
 
+  body.has-commentary-sidebar-open .kht-player-inner {
+    width: calc(100% - 100px);
+    max-width: calc(100% - 100px);
+    margin-left: 0;
+    margin-right: auto;
+    flex-wrap: wrap;
+  }
+
+  body.has-commentary-sidebar-open .kht-progress {
+    min-width: 120px;
+  }
+
   body.has-commentary-sidebar-open .hitbodedut-fab,
   body.has-commentary-sidebar-open .compact-yahrzeit {
     right: calc(clamp(340px, 40vw, 560px) + 1rem) !important;
+  }
+
+  body.has-commentary-sidebar-open .compact-yahrzeit {
+    max-width: 60px !important;
+    max-height: 60px !important;
+    overflow: hidden !important;
+  }
+
+  body.has-commentary-sidebar-open .compact-yahrzeit .yahrzeit-section,
+  body.has-commentary-sidebar-open .compact-yahrzeit .view-all,
+  body.has-commentary-sidebar-open .compact-yahrzeit .yahrzeit-loading {
+    display: none !important;
+  }
+
+  body.has-commentary-sidebar-open .compact-yahrzeit .toggle-btn {
+    display: flex !important;
+    top: auto;
+    right: auto;
+    bottom: 0.25rem;
+    left: 0.25rem;
   }
 }
 
