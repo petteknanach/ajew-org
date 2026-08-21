@@ -31,7 +31,19 @@ for timing_path in sorted((base/'timings').glob('*.json')):
                 errors.append(f'{timing_path.name}: out-of-range time in {sid}')
                 break
             previous=start; exact += w.get('alignment')=='exact'
-    expected_publish=(t.get('exactAnchorPercent',0)>=25 and t.get('anchoredSegmentPercent',0)>=70)
+    standard_publish=(t.get('exactAnchorPercent',0)>=25 and t.get('anchoredSegmentPercent',0)>=70)
+    exact_words=[w for segment in t.get('segments',[]) for w in segment.get('words',[]) if w.get('alignment')=='exact']
+    override=t.get('qualityOverride') or {}
+    boundary=float(override.get('maxBoundaryGapSeconds',30))
+    audited_override=(
+        override.get('approved') is True
+        and exact >= int(override.get('minimumExactAnchors',150))
+        and (not override.get('requireAllSegmentsAnchored') or publishable_segments == len(t.get('segments',[])))
+        and bool(exact_words)
+        and float(exact_words[0]['start']) <= boundary
+        and float(exact_words[-1]['start']) >= float(t['audioDurationSeconds'])-boundary
+    )
+    expected_publish=standard_publish or audited_override
     if t.get('publishable') is not expected_publish:
         errors.append(f'{timing_path.name}: file publication gate mismatch')
     if exact != t.get('exactAnchorCount'):

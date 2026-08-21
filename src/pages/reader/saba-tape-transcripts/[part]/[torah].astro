@@ -68,6 +68,7 @@ const nextUrl = isCanonical
   ? torahData?.navigation?.nextUrl
   : (torahNum < 28 ? `/reader/${bookSlug}/1/${torahNum + 1}` : null);
 const hasMatchedAudio = Boolean(audioMapping);
+const isRecoveredDerivative = /derivative/i.test(audioMapping?.sourceClassification || '');
 const resources = isCanonical ? torahData?.sourceResources : null;
 const timedSegments = new Map((wordTiming?.publishable === true ? wordTiming.segments.filter((segment) => segment.publishable === true) : []).map((segment) => [segment.id, segment.words]));
 const hasWordTiming = hasMatchedAudio && wordTiming?.publishable === true && timedSegments.size > 0;
@@ -213,14 +214,15 @@ const pageDesc = torahData
       {hasMatchedAudio && (<div class="saba-audio-player">
         <div class="audio-header">
           <span class="audio-icon">🎙️</span>
-          <span class="audio-title">Listen to Saba — Original Recording</span>
+          <span class="audio-title">Listen to Saba — {isRecoveredDerivative ? 'Recovered Recording' : 'Original Recording'}</span>
         </div>
         <audio id="saba-audio" controls preload="none" class="audio-element">
           <source src={audioMapping.url} type="audio/mpeg" />
           Your browser does not support audio playback.
         </audio>
         <p class="audio-note">{hasWordTiming ? 'Click any highlighted Hebrew word below to hear the recording from that point.' : `Verified original recording for ${torahData.hebrewTitle || torahData.title}`}</p>
-        <a class="audio-source-link" href={audioMapping.url} target="_blank" rel="noopener">Open or download the original MP3</a>
+        {isRecoveredDerivative && <p class="audio-note">Closest recovered web copy presently available; preserved separately from the unavailable archival original.</p>}
+        <a class="audio-source-link" href={audioMapping.url} target="_blank" rel="noopener">Open or download the archived MP3</a>
         <a class="audio-source-link" href="https://archive.org/details/sichos-saba-117-tape-audio" target="_blank" rel="noopener">Internet Archive collection</a>
       </div>)}
 
