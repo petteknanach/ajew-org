@@ -268,6 +268,17 @@ const structuredData = torahData ? JSON.stringify({
               <span class="segment-number">{label}</span>
               <p>{seg.en || 'Translation not yet available'}</p>
             </div>
+            {seg.media?.type === 'image' && seg.media?.path && (
+              <details class="reader-media-dropdown chayey-segment-media" data-segment={String(seg.index)}>
+                <summary>📷 {seg.media.label || 'Picture for this teaching'}</summary>
+                <figure>
+                  <a href={seg.media.path} target="_blank" rel="noopener">
+                    <img src={seg.media.path} alt={seg.media.alt || `Picture related to Chayay Moharan ${simanNum}`} loading="lazy" />
+                  </a>
+                  {seg.media.caption && <figcaption>{seg.media.caption}</figcaption>}
+                </figure>
+              </details>
+            )}
           </div>
         )})}
         </div>
@@ -285,6 +296,17 @@ const structuredData = torahData ? JSON.stringify({
                   <span class="segment-number">{alabel}</span>
                   <p>{seg.en || '\u00A0'}</p>
                 </div>
+                {seg.media?.type === 'image' && seg.media?.path && (
+                  <details class="reader-media-dropdown chayey-segment-media" data-segment={String(seg.index)}>
+                    <summary>📷 {seg.media.label || 'Picture for this teaching'}</summary>
+                    <figure>
+                      <a href={seg.media.path} target="_blank" rel="noopener">
+                        <img src={seg.media.path} alt={seg.media.alt || `Picture related to Chayay Moharan ${simanNum}`} loading="lazy" />
+                      </a>
+                      {seg.media.caption && <figcaption>{seg.media.caption}</figcaption>}
+                    </figure>
+                  </details>
+                )}
               </div>
             )})}
           </div>
@@ -405,6 +427,16 @@ const structuredData = torahData ? JSON.stringify({
         .chayey-section-context{display:grid;gap:.2rem;margin:.75rem 0 1rem;padding:.75rem 1rem;border-inline-start:4px solid var(--reader-accent,#1a365d);background:var(--reader-bg-secondary,#f8f5f0);border-radius:8px;}
         .chayey-section-context strong{font-size:1.1rem;}
         .chayey-section-context span{color:var(--reader-text-secondary,#666);font:italic .9rem system-ui,sans-serif;}
+        .chayey-segment-media{grid-column:1/-1;margin:.2rem .8rem .9rem;border:1px solid #d4b879;border-radius:12px;background:#fffaf0;overflow:hidden;}
+        .chayey-segment-media summary{padding:.65rem .85rem;color:#173b67;font-size:.8rem;font-weight:900;cursor:pointer;}
+        .chayey-segment-media[open] summary{border-bottom:1px solid #e2d2ad;background:#fff2cf;}
+        .chayey-segment-media figure{max-width:520px;margin:1rem auto;padding:0 .8rem;text-align:center;}
+        .chayey-segment-media img{display:block;width:100%;height:auto;border-radius:10px;box-shadow:0 8px 25px rgba(20,42,68,.18);}
+        .chayey-segment-media figcaption{margin-top:.7rem;color:#6d604b;font-size:.76rem;line-height:1.45;}
+        :global(body.dark-mode) .chayey-segment-media{border-color:#665634;background:#211d17;}
+        :global(body.dark-mode) .chayey-segment-media summary{color:#e5d4ad;}
+        :global(body.dark-mode) .chayey-segment-media[open] summary{border-color:#665634;background:#312919;}
+        :global(body.dark-mode) .chayey-segment-media figcaption{color:#c8baa0;}
       </style>
     </div>
   )}
