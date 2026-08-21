@@ -7,6 +7,7 @@ from PIL import Image
 ROOT = Path(__file__).resolve().parents[1]
 DOWNLOAD_ROOTS = [Path('/root/Downloads'), Path('/mnt/c/Users/Pettek/Downloads')]
 TOPICS = {
+    'israel-land-part-ii': (7, 'israel-land-of-part-ii'),
     'sweetening': (22, 'sweetening-of-judgments'),
     'seclusion': (23, 'seclusion-hisbodidus'),
     'thoughts': (24, 'thoughts'),
@@ -15,12 +16,13 @@ TOPICS = {
 
 def classify(name: str):
     low = name.lower()
-    if 'sweetening' in low and ('judgment' in low or 'judgement' in low): topic = 'sweetening'
+    if 'israel_land_of_part_ii' in low or 'israel-land-of-part-ii' in low: topic = 'israel-land-part-ii'
+    elif 'sweetening' in low and ('judgment' in low or 'judgement' in low): topic = 'sweetening'
     elif 'seclusion' in low or 'hisbodidus' in low: topic = 'seclusion'
     elif 'thoughts' in low or 'thought_' in low: topic = 'thoughts'
     elif 'superiority' in low: topic = 'superiority'
     else: return None
-    m = re.search(r'(?:sweetening(?:_of_judgments?)?|seclusion(?:_hisbodidus)?|thoughts?|superiority)[_-](\d{1,3})', low)
+    m = re.search(r'(?:israel[_-]land[_-]of[_-]part[_-]ii|sweetening(?:_of_judgments?)?|seclusion(?:_hisbodidus)?|thoughts?|superiority)[_-](\d{1,3})', low)
     if not m: return None
     segment = int(m.group(1))
     # The transition package uses global sequence 85 for Superiority teaching 1.
