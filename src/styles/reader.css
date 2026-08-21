@@ -1037,6 +1037,21 @@
   font-weight: 700;
 }
 
+/* Explicit reader chrome stacking: overlays must receive their own pointer events. */
+body:has(.reader-container) .ai-reader-access {
+  position: relative;
+  z-index: 1;
+}
+body:has(.reader-container) #compactYahrzeit {
+  z-index: 1200 !important;
+}
+body:has(.reader-container) #yahrzeitToggleBtn,
+body:has(.reader-container) #yahrzeitCloseBtn {
+  position: absolute;
+  z-index: 1201 !important;
+  pointer-events: auto;
+}
+
 /* Keep the reader and fixed reader controls outside the open commentary panel. */
 @media (min-width: 901px) {
   body.has-commentary-sidebar-open .reader-container {
@@ -1071,6 +1086,8 @@
   }
 
   body.has-commentary-sidebar-open .compact-yahrzeit {
+    min-width: 60px !important;
+    min-height: 60px !important;
     max-width: 60px !important;
     max-height: 60px !important;
     overflow: hidden !important;

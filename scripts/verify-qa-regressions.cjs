@@ -13,6 +13,11 @@ const readerScript = read('public/reader-script.js');
 const nginx404 = read('ops/nginx-static-404.conf');
 const commentary = read('src/components/CommentarySidebar.astro');
 const yahrzeit = read('src/components/CompactYahrzeit.astro');
+const dailyStudy = read('src/pages/daily-study.astro');
+const torahLens = read('src/pages/torah-lens.astro');
+const navigation = read('src/components/Navigation.astro');
+const mapHtml = read('public/mapjs/index.html');
+const mapCss = read('public/mapjs/css/styles.css');
 
 assert(!gematria.includes('id="main-content"'), 'Gematria must use Layout’s single #main-content landmark');
 assert(!audio.includes('r2.dev/kol-hatzadik'), 'Unified audio must not probe retired R2 per-teaching URLs');
@@ -34,6 +39,15 @@ assert(yahrzeit.includes('max-height: 260px'), 'Desktop yahrzeit box must not co
 assert(yahrzeit.includes('@media (min-width: 769px)'), 'Desktop yahrzeit must support its compact state');
 assert(yahrzeit.includes('.compact-yahrzeit.collapsed'), 'Desktop yahrzeit must render collapsed by default');
 assert(yahrzeit.includes('top: 64px'), 'Mobile yahrzeit box must clear bottom controls');
+assert(!dailyStudy.includes("fetch(url + '.json')"), 'Daily Study must not probe nonexistent reader JSON routes');
+assert(dailyStudy.includes('aria-pressed='), 'Daily Study completion controls need accessible state');
+assert(dailyStudy.includes('min-height: 44px'), 'Daily Study controls need 44px targets');
+assert(!torahLens.includes('loadHeadlines();'), 'Static Torah Lens must not call the disabled news endpoint');
+assert(navigation.includes(':global(body button)'), 'Mobile controls need a sitewide 44px target rule');
+assert(gematria.includes('.quick-terms>span{pointer-events:none}'), 'Gematria quick-term labels must not intercept taps');
+assert(mapHtml.includes('<meta name="description"'), 'Torah Map needs a meta description');
+assert(mapCss.includes('min-height: 44px'), 'Torah Map controls need 44px targets');
+assert(readerCss.includes('#yahrzeitToggleBtn'), 'Reader yahrzeit toggle needs an explicit stacking rule');
 assert(!comments.includes('/api/comments'), 'Static comments must not call a nonexistent API route');
 assert(!comments.includes('/src/lib/supabaseClient.ts'), 'Built comments must not import an unserved source module');
 assert(comments.includes(".from('messages')"), 'Comments must read from Supabase directly');

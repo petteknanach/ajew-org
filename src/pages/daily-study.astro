@@ -343,8 +343,8 @@ import Layout from '../layouts/Layout.astro';
       margin: 2px 0 0;
     }
     .book-card .check-btn {
-      width: 26px;
-      height: 26px;
+      width: 44px;
+      height: 44px;
       border: 2px solid #ccc;
       border-radius: 50%;
       background: #fff;
@@ -465,6 +465,25 @@ import Layout from '../layouts/Layout.astro';
       .chok-stats { gap: 8px; }
       .chok-stat { padding: 8px 14px; min-width: 70px; }
       .stat-num { font-size: 1.2em; }
+    }
+  </style>
+
+  <style is:global>
+    .chok-container .book-card .check-btn {
+      width: 44px;
+      height: 44px;
+      min-width: 44px;
+      min-height: 44px;
+      padding: 0;
+    }
+    .chok-container .read-link,
+    .chok-container .chok-nav-btn,
+    .chok-container .date-letter-card a {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
     }
   </style>
 
@@ -613,12 +632,11 @@ import Layout from '../layouts/Layout.astro';
             '<p class="book-name-he">' + book.hebrewTitle + '</p>' +
             '<p class="book-name-en">' + book.title + '</p>' +
           '</div>' +
-          '<button class="check-btn' + (isDone ? ' checked' : '') + '" data-book="' + book.id + '" data-day="' + day + '">' +
+          '<button class="check-btn' + (isDone ? ' checked' : '') + '" data-book="' + book.id + '" data-day="' + day + '" aria-label="Mark ' + book.title + ' day ' + day + (isDone ? ' incomplete' : ' complete') + '" aria-pressed="' + (isDone ? 'true' : 'false') + '" title="' + (isDone ? 'Mark incomplete' : 'Mark complete') + '">' +
             (isDone ? '\u2713' : '') +
           '</button>' +
         '</div>' +
         '<p class="section-ref">' + ref + '</p>' +
-        '<div class="section-preview" data-url="' + firstSection.url + '"></div>' +
         '<a href="' + firstSection.url + '" class="read-link">Read \u2192</a>' +
         '<div class="book-progress">' +
           bookPercent + '% of year completed' +
@@ -680,7 +698,7 @@ import Layout from '../layouts/Layout.astro';
               '<p class="book-name-he">' + bonus.hebrewTitle + '</p>' +
               '<p class="book-name-en">' + bonus.title + '</p>' +
             '</div>' +
-            '<button class="check-btn' + (isBookDoneForDay(bonus.id, day) ? ' checked' : '') + '" data-book="' + bonus.id + '" data-day="' + day + '">' +
+            '<button class="check-btn' + (isBookDoneForDay(bonus.id, day) ? ' checked' : '') + '" data-book="' + bonus.id + '" data-day="' + day + '" aria-label="Mark ' + bonus.title + ' day ' + day + (isBookDoneForDay(bonus.id, day) ? ' incomplete' : ' complete') + '" aria-pressed="' + (isBookDoneForDay(bonus.id, day) ? 'true' : 'false') + '" title="' + (isBookDoneForDay(bonus.id, day) ? 'Mark incomplete' : 'Mark complete') + '">' +
               (isBookDoneForDay(bonus.id, day) ? '\u2713' : '') +
             '</button>' +
           '</div>' +
@@ -720,29 +738,6 @@ import Layout from '../layouts/Layout.astro';
       // Bonus
       renderBonus(day);
 
-      // Load previews asynchronously
-      loadPreviews();
-    }
-
-    async function loadPreviews() {
-      const previewEls = document.querySelectorAll('.section-preview[data-url]');
-      for (const el of previewEls) {
-        const url = el.dataset.url;
-        if (!url || el.dataset.loaded) continue;
-        el.dataset.loaded = 'true';
-        try {
-          const resp = await fetch(url + '.json');
-          if (!resp.ok) continue;
-          const data = await resp.json();
-          if (data.segments && data.segments.length > 0) {
-            const text = data.segments[0].he || '';
-            // Show first ~100 chars
-            el.textContent = text.substring(0, 120) + (text.length > 120 ? '...' : '');
-          }
-        } catch(e) {
-          // silent
-        }
-      }
     }
 
     // === Event handlers ===

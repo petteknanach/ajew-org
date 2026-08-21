@@ -772,6 +772,29 @@ function isActive(path: string) {
   }
 
   @media (max-width: 1023px) {
+    /* Mobile accessibility: interactive controls need a reliable 44px target. */
+    :global(body button),
+    :global(body [role="button"]),
+    :global(body input[type="button"]),
+    :global(body input[type="submit"]),
+    :global(body input[type="reset"]) {
+      min-width: 44px !important;
+      min-height: 44px !important;
+      box-sizing: border-box;
+    }
+    :global(main a[class*="btn"]),
+    :global(main a[class*="button"]),
+    :global(main a[class*="share"]),
+    :global(main a[class*="download"]),
+    :global(main a[class*="quick"]) {
+      min-width: 44px !important;
+      min-height: 44px !important;
+      box-sizing: border-box;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
     /* Hide desktop elements on mobile */
     .desktop-sidebar { display: none !important; }
     .mobile-header {
