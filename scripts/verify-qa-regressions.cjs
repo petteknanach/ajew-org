@@ -23,6 +23,7 @@ const seferHamidos = read('src/pages/reader/sefer-hamidos/[part]/[torah].astro')
 const blogPoller = read('scripts/blog-poller.py');
 const blogCss = read('public/blog/style.css');
 const helpMe = read('src/pages/help-me.astro');
+const nginxBlog = read('ops/nginx-blog-location.conf');
 
 assert(!gematria.includes('id="main-content"'), 'Gematria must use Layout’s single #main-content landmark');
 assert(!audio.includes('r2.dev/kol-hatzadik'), 'Unified audio must not probe retired R2 per-teaching URLs');
@@ -63,6 +64,7 @@ assert(navigation.includes(':global(.footer-links a)'), 'Footer links need mobil
 assert(helpMe.includes('class="touch-link"'), 'Help Me inline action needs a mobile touch target');
 assert(blogPoller.includes('<meta name="description"'), 'Generated blog HTML needs server-rendered descriptions');
 assert(blogCss.includes('.blog-nav a, .back-link, .blog-footer a'), 'Blog navigation links need mobile touch targets');
+assert(nginxBlog.includes('location ^~ /blog'), 'Dedicated blog assets must outrank generic static regex locations');
 assert(!comments.includes('/api/comments'), 'Static comments must not call a nonexistent API route');
 assert(!comments.includes('/src/lib/supabaseClient.ts'), 'Built comments must not import an unserved source module');
 assert(comments.includes(".from('messages')"), 'Comments must read from Supabase directly');
