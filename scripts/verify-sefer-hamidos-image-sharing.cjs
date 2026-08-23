@@ -17,6 +17,7 @@ const assertions = [
   [source.includes("navigator.canShare({ files: [file] })"), 'Actual-image sharing must capability-check a File payload'],
   [source.includes("navigator.share({ title: title, text: shareText, files: [file] })"), 'Native share must include the actual image File'],
   [source.includes('var actualImageBlobCache = new Map()'), 'Image blobs must be primed before the click when possible'],
+  [source.includes('var actualImageFetches = new Map()'), 'In-flight fetch promises must not occupy the blob-only cache'],
   [source.includes("X: 'https://x.com/compose/post'"), 'Desktop X action must open the X composer'],
   [source.includes("Facebook: 'https://www.facebook.com/'"), 'Desktop Facebook action must open Facebook'],
   [source.includes("window.matchMedia('(hover: hover) and (pointer: fine)').matches"), 'Desktop platform routing must not replace mobile file sharing'],

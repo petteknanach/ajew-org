@@ -459,6 +459,7 @@ function mediaShareTitle(seg, img) {
             setTimeout(function () { button.textContent = original; }, 2800);
           }
           var actualImageBlobCache = new Map();
+          var actualImageFetches = new Map();
           var desktopAppTargets = {
             X: 'https://x.com/compose/post',
             Telegram: 'https://web.telegram.org/k/',
@@ -474,19 +475,21 @@ function mediaShareTitle(seg, img) {
             if (!mediaUrl || !window.fetch) return Promise.reject(new Error('Image unavailable'));
             var cached = actualImageBlobCache.get(mediaUrl);
             if (cached instanceof Blob) return Promise.resolve(cached);
-            if (cached && typeof cached.then === 'function') return cached;
+            var inFlight = actualImageFetches.get(mediaUrl);
+            if (inFlight) return inFlight;
             var pending = fetch(mediaUrl, { credentials: 'same-origin' }).then(function (response) {
               if (!response.ok) throw new Error('Image fetch failed');
               return response.blob();
             }).then(function (blob) {
               if (!blob || !/^image\//i.test(blob.type || '')) throw new Error('Not an image');
               actualImageBlobCache.set(mediaUrl, blob);
+              actualImageFetches.delete(mediaUrl);
               return blob;
             }).catch(function (error) {
-              actualImageBlobCache.delete(mediaUrl);
+              actualImageFetches.delete(mediaUrl);
               throw error;
             });
-            actualImageBlobCache.set(mediaUrl, pending);
+            actualImageFetches.set(mediaUrl, pending);
             return pending;
           }
           async function shareActualImage(button) {
