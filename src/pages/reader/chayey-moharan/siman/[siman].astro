@@ -59,15 +59,55 @@ const bookHebrew = 'חיי מוהר"ן';
 const itemName = 'Siman';
 
 
-// LN commentary entry
-const commentaryEntry = torahData ? {
+// Focus the Likutay Nanach sidebar on this siman only. Never load the entire
+// 1,700-segment Chayey commentary into a single siman page.
+function hebrewGematria(value = '') {
+  const values = { א:1, ב:2, ג:3, ד:4, ה:5, ו:6, ז:7, ח:8, ט:9, י:10, כ:20, ל:30, מ:40, נ:50, ס:60, ע:70, פ:80, צ:90, ק:100, ר:200, ש:300, ת:400 };
+  return Array.from(String(value).replace(/[^א-ת]/g, '')).reduce((sum, char) => sum + (values[char] || 0), 0);
+}
+function commentaryMarker(segment) {
+  const text = String(segment?.he || '');
+  const arabic = text.match(/<h3>\s*אות\s+(\d+)\s*<\/h3>/i);
+  if (arabic) return { number: Number(arabic[1]), heading: true };
+  const hebrew = text.match(/^\s*([א-ת״׳"']{1,4})\s*(?::|\.|בהשמטות\s*:)/);
+  return hebrew ? { number: hebrewGematria(hebrew[1]), heading: false } : null;
+}
+let commentaryRange = null;
+try {
+  const commentaryPath = path.join(process.cwd(), 'public/reader/likutay-nanach/volume-4/chayey.json');
+  const commentaryData = JSON.parse(fs.readFileSync(commentaryPath, 'utf8'));
+  const commentarySegments = Array.isArray(commentaryData.segments) ? commentaryData.segments : [];
+  const markerPosition = commentarySegments.findIndex((segment) => commentaryMarker(segment)?.number === simanNum);
+  if (markerPosition >= 0) {
+    const marker = commentaryMarker(commentarySegments[markerPosition]);
+    const startPosition = marker?.heading ? markerPosition + 1 : markerPosition;
+    let endPosition = commentarySegments.length;
+    for (let i = startPosition + 1; i < commentarySegments.length; i += 1) {
+      const next = commentaryMarker(commentarySegments[i]);
+      if (next && next.number !== simanNum) { endPosition = i; break; }
+    }
+    if (startPosition < endPosition) {
+      commentaryRange = {
+        startIndex: Number(commentarySegments[startPosition].index),
+        endIndex: Number(commentarySegments[endPosition - 1].index),
+      };
+    }
+  }
+} catch (_commentaryError) {
+  commentaryRange = null;
+}
+const commentaryEntry = commentaryRange ? {
+  subjectLabel: `Siman ${simanNum}`,
   related_commentaries: [
     {
       book: "likutay-nanach",
       section: "chayey-combined",
       label: "Likutay Nanach",
-      sectionTitle: `ספר חיי מוהר״ן`,
-      url: "/reader/likutay-nanach/volume-4/chayey.json"
+      sectionTitle: `ספר חיי מוהר״ן · סימן ${simanNum}`,
+      url: "/reader/likutay-nanach/volume-4/chayey.json",
+      readerUrl: "/reader/likutay-nanach/volume-4/chayey.json",
+      startIndex: commentaryRange.startIndex,
+      endIndex: commentaryRange.endIndex,
     }
   ]
 } : null;
@@ -244,12 +284,9 @@ const structuredData = torahData ? JSON.stringify({
         ) : <span class="disabled">Next &rarr;</span>}
       </div>
 
-      {torahData.siman && (
-        <div class="reader-segment-pair" style="padding: 2rem; text-align: center;">
-          <div style="font-size: 1.1em; color: var(--reader-text-secondary); margin-bottom: 1rem;" dir="rtl">
-            {torahData.label || `סימן ${torahData.siman}`}
-          </div>
-          <div style="font-size: 0.95em; margin-bottom: 1rem;">{torahData.note}</div>
+      {(torahData.note || torahData.hashmata_en) && (
+        <div class="reader-siman-note" style="padding: 1rem 1.25rem; text-align: center;">
+          {torahData.note && <div style="font-size: 0.95em; margin-bottom: .5rem;">{torahData.note}</div>}
           {torahData.hashmata_en && <div style="font-style: italic; color: var(--reader-text-secondary);">{torahData.hashmata_en}</div>}
         </div>
       )}

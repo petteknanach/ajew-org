@@ -526,7 +526,10 @@
   function addReadingTime() {
     const header = document.querySelector('.reader-header');
     if (!header) return;
-    const segments = document.querySelectorAll('.reader-segment-pair');
+    const originalContent = document.querySelector('.reader-content-original');
+    const segments = originalContent
+      ? originalContent.querySelectorAll(':scope > .reader-segment-pair')
+      : document.querySelectorAll('.reader-segment-pair');
     const totalChars = Array.from(segments).reduce((sum, seg) => {
       const he = seg.querySelector('.segment-he p')?.textContent?.length || 0;
       const en = seg.querySelector('.segment-en p')?.textContent?.length || 0;
