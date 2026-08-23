@@ -174,8 +174,9 @@ def create_blog_post(subject, body, date_str):
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{subject_html} — Na Nach Blog</title>
+<meta name="description" content="Na Nach and Breslov Torah teaching from the ajew.org blog.">
 {favicon_links()}
-<link rel="stylesheet" href="/blog/style.css?v=20260823a">
+<link rel="stylesheet" href="/blog/style.css?v=20260823b">
 <script defer src="/blog/comments.js?v=20260707b"></script>
 </head>
 <body>
@@ -267,8 +268,9 @@ def rebuild_index():
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Na Nach Blog — Thoughts & Teachings</title>
+<meta name="description" content="Na Nach and Breslov Torah teachings, reflections, and archived posts from ajew.org.">
 {favicon_links()}
-<link rel="stylesheet" href="/blog/style.css?v=20260823a">
+<link rel="stylesheet" href="/blog/style.css?v=20260823b">
 <link rel="alternate" type="application/rss+xml" title="Na Nach Blog RSS" href="/blog/rss.xml">
 </head>
 <body>

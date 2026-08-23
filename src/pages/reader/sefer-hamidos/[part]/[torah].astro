@@ -328,7 +328,7 @@ function mediaShareTitle(seg, img) {
               <p>{seg.en || 'Translation not yet available'}</p>
             </div>
             {mediaBySegment.has(Number(seg.index)) && (
-              <details class="reader-media-dropdown sefer-hamidos-media" data-segment={String(seg.index)}>
+              <details open class="reader-media-dropdown sefer-hamidos-media" data-segment={String(seg.index)}>
                 <summary>📷 Pictures / videos for this teaching</summary>
                 <div class="sh-media-body">
                   <div class="sh-media-strip" aria-label={`Scrollable Sefer Hamidos Truth teaching ${seg.index} pictures`}>
@@ -511,10 +511,14 @@ function mediaShareTitle(seg, img) {
             try {
               var blob = actualImageBlobCache.get(mediaUrl);
               var desktopPlatform = isDesktopPlatformButton(app);
+              var appWindow = null;
+              if (desktopPlatform) {
+                appWindow = window.open(desktopAppTargets[app], '_blank');
+                if (appWindow) try { appWindow.opener = null; } catch (_desktopOpenerError) {}
+              }
               if (desktopPlatform && !(blob instanceof Blob)) {
-                setActualImageStatus(button, 'Preparing picture — click ' + app + ' again');
-                primeActualImage(mediaUrl).catch(function () {});
-                return;
+                setActualImageStatus(button, 'Preparing picture for ' + app + '…');
+                blob = await primeActualImage(mediaUrl);
               }
               if (!(blob instanceof Blob)) {
                 setActualImageStatus(button, 'Preparing picture…');
@@ -538,8 +542,6 @@ function mediaShareTitle(seg, img) {
                     copyPromise = navigator.clipboard.write([new ClipboardItem(desktopClipboardPayload)]);
                   } catch (_desktopClipboardStartError) {}
                 }
-                var appWindow = window.open(desktopAppTargets[app], '_blank');
-                if (appWindow) try { appWindow.opener = null; } catch (_desktopOpenerError) {}
                 if (copyPromise) {
                   try { await copyPromise; copied = true; } catch (_desktopClipboardError) {}
                 }

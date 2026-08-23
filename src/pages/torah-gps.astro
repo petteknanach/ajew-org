@@ -601,7 +601,7 @@ import Layout from '../layouts/Layout.astro';
   // ─── Show Results ───
   function showResults(topicId) {
     const results = gpsData.topics[topicId];
-    const meta = gpsData.topicMeta.find(t => t.id === topicId);
+    const meta = gpsData.topicMeta[topicId];
     if (!results || !results.length) {
       resultsSection.style.display = 'none';
       emptyState.style.display = 'block';
@@ -705,11 +705,12 @@ import Layout from '../layouts/Layout.astro';
 
     // Also check topic labels and Hebrew labels directly
     if (gpsData.topicMeta) {
-      for (const meta of gpsData.topicMeta) {
-        if (meta.label.toLowerCase().includes(q) || q.includes(meta.label.toLowerCase())) {
-          const existing = scores.find(s => s.topicId === meta.id);
+      for (const [topicId, meta] of Object.entries(gpsData.topicMeta)) {
+        const labels = [meta.en || '', meta.he || ''].map(label => label.toLowerCase());
+        if (labels.some(label => label && (label.includes(q) || q.includes(label)))) {
+          const existing = scores.find(s => s.topicId === topicId);
           if (existing) existing.score += 8;
-          else scores.push({ topicId: meta.id, score: 8 });
+          else scores.push({ topicId, score: 8 });
         }
       }
     }

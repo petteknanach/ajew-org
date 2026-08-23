@@ -109,7 +109,7 @@ body::before {
 .post-body-preview .comments-card { display: none; }
 
 .share-row { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 20px; padding-top: 16px; border-top: 1px dashed var(--border); color: var(--muted); font: 600 .88rem Heebo, Arial, sans-serif; }
-.share-row a, .share-row button { border: 1px solid var(--border); background: #fff8e8; color: var(--deep-blue); border-radius: 999px; padding: 7px 13px; text-decoration: none; font: inherit; cursor: pointer; }
+.share-row a, .share-row button { border: 1px solid var(--border); background: #fff8e8; color: var(--deep-blue); border-radius: 999px; padding: 7px 13px; min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; text-decoration: none; font: inherit; cursor: pointer; }
 .share-row a:hover, .share-row button:hover { background: var(--deep-blue); color: #fff; }
 .blog-post a { color: var(--blue-2); }
 
@@ -140,6 +140,12 @@ body::before {
   .post-item, .post-card, .comments-card { border-radius: 20px; }
   .timeline-item { grid-template-columns: 1fr; gap: 4px; }
   .share-row { justify-content: flex-start; }
+  .blog-nav a, .back-link, .blog-footer a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
 /* Semantic formatting for teaching posts; presentation only, prose remains unchanged. */

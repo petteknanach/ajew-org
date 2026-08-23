@@ -939,4 +939,11 @@
       left: 0.25rem;
     }
   }
+  /* Only one yahrzeit action occupies the corner at a time. */
+  .compact-yahrzeit.collapsed .close-btn {
+    display: none !important;
+  }
+  .compact-yahrzeit:not(.collapsed) .toggle-btn {
+    display: none !important;
+  }
 </style>

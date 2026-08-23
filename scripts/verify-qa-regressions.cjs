@@ -18,6 +18,11 @@ const torahLens = read('src/pages/torah-lens.astro');
 const navigation = read('src/components/Navigation.astro');
 const mapHtml = read('public/mapjs/index.html');
 const mapCss = read('public/mapjs/css/styles.css');
+const torahGps = read('src/pages/torah-gps.astro');
+const seferHamidos = read('src/pages/reader/sefer-hamidos/[part]/[torah].astro');
+const blogPoller = read('scripts/blog-poller.py');
+const blogCss = read('public/blog/style.css');
+const helpMe = read('src/pages/help-me.astro');
 
 assert(!gematria.includes('id="main-content"'), 'Gematria must use Layout’s single #main-content landmark');
 assert(!audio.includes('r2.dev/kol-hatzadik'), 'Unified audio must not probe retired R2 per-teaching URLs');
@@ -48,6 +53,16 @@ assert(gematria.includes('.quick-terms>span{pointer-events:none}'), 'Gematria qu
 assert(mapHtml.includes('<meta name="description"'), 'Torah Map needs a meta description');
 assert(mapCss.includes('min-height: 44px'), 'Torah Map controls need 44px targets');
 assert(readerCss.includes('#yahrzeitToggleBtn'), 'Reader yahrzeit toggle needs an explicit stacking rule');
+assert(yahrzeit.includes('.compact-yahrzeit.collapsed .close-btn'), 'Collapsed yahrzeit must hide the overlapping close control');
+assert(yahrzeit.includes('.compact-yahrzeit:not(.collapsed) .toggle-btn'), 'Expanded yahrzeit must hide the overlapping toggle control');
+assert(seferHamidos.includes('<details open class="reader-media-dropdown sefer-hamidos-media"'), 'Picture share controls must live in an open interactive disclosure');
+assert(seferHamidos.includes("appWindow = window.open(desktopAppTargets[app], '_blank')"), 'Desktop picture shares must open their target synchronously');
+assert(!torahGps.includes('gpsData.topicMeta.find'), 'Torah GPS must treat topicMeta as an object');
+assert(torahGps.includes('Object.entries(gpsData.topicMeta)'), 'Torah GPS search must iterate object-shaped metadata');
+assert(navigation.includes(':global(.footer-links a)'), 'Footer links need mobile touch targets');
+assert(helpMe.includes('class="touch-link"'), 'Help Me inline action needs a mobile touch target');
+assert(blogPoller.includes('<meta name="description"'), 'Generated blog HTML needs server-rendered descriptions');
+assert(blogCss.includes('.blog-nav a, .back-link, .blog-footer a'), 'Blog navigation links need mobile touch targets');
 assert(!comments.includes('/api/comments'), 'Static comments must not call a nonexistent API route');
 assert(!comments.includes('/src/lib/supabaseClient.ts'), 'Built comments must not import an unserved source module');
 assert(comments.includes(".from('messages')"), 'Comments must read from Supabase directly');
