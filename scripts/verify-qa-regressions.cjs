@@ -24,6 +24,7 @@ const blogPoller = read('scripts/blog-poller.py');
 const blogCss = read('public/blog/style.css');
 const helpMe = read('src/pages/help-me.astro');
 const nginxBlog = read('ops/nginx-blog-location.conf');
+const readerIndexCss = read('src/styles/reader-index.css');
 
 assert(!gematria.includes('id="main-content"'), 'Gematria must use Layout’s single #main-content landmark');
 assert(!audio.includes('r2.dev/kol-hatzadik'), 'Unified audio must not probe retired R2 per-teaching URLs');
@@ -65,6 +66,11 @@ assert(helpMe.includes('class="touch-link"'), 'Help Me inline action needs a mob
 assert(blogPoller.includes('<meta name="description"'), 'Generated blog HTML needs server-rendered descriptions');
 assert(blogCss.includes('.blog-nav a, .back-link, .blog-footer a'), 'Blog navigation links need mobile touch targets');
 assert(nginxBlog.includes('location ^~ /blog'), 'Dedicated blog assets must outrank generic static regex locations');
+assert(layout.includes('margin-top: 56px'), 'Mobile AI reader links must clear the fixed header');
+assert(layout.includes('.ai-reader-access a'), 'Mobile AI reader links need explicit touch geometry');
+assert(layout.includes('bottom: 80px') && layout.includes('right: 80px'), 'Back-to-top must clear adjacent fixed controls');
+assert(readerCss.includes('body.has-commentary-sidebar-open #backToTop'), 'Back-to-top must clear the open commentary sidebar');
+assert(readerIndexCss.includes('min-height: 44px'), 'Reader directory deep-search link needs a 44px target');
 assert(!comments.includes('/api/comments'), 'Static comments must not call a nonexistent API route');
 assert(!comments.includes('/src/lib/supabaseClient.ts'), 'Built comments must not import an unserved source module');
 assert(comments.includes(".from('messages')"), 'Comments must read from Supabase directly');
