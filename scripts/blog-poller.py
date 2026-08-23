@@ -176,7 +176,7 @@ def create_blog_post(subject, body, date_str):
 <title>{subject_html} — Na Nach Blog</title>
 <meta name="description" content="Na Nach and Breslov Torah teaching from the ajew.org blog.">
 {favicon_links()}
-<link rel="stylesheet" href="/blog/style.css?v=20260823b">
+<link rel="stylesheet" href="/blog/style.css?v=20260823e">
 <script defer src="/blog/comments.js?v=20260707b"></script>
 </head>
 <body>
@@ -270,7 +270,7 @@ def rebuild_index():
 <title>Na Nach Blog — Thoughts & Teachings</title>
 <meta name="description" content="Na Nach and Breslov Torah teachings, reflections, and archived posts from ajew.org.">
 {favicon_links()}
-<link rel="stylesheet" href="/blog/style.css?v=20260823b">
+<link rel="stylesheet" href="/blog/style.css?v=20260823e">
 <link rel="alternate" type="application/rss+xml" title="Na Nach Blog RSS" href="/blog/rss.xml">
 </head>
 <body>
