@@ -175,7 +175,7 @@ def create_blog_post(subject, body, date_str):
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{subject_html} — Na Nach Blog</title>
 {favicon_links()}
-<link rel="stylesheet" href="/blog/style.css?v=20260719b">
+<link rel="stylesheet" href="/blog/style.css?v=20260823a">
 <script defer src="/blog/comments.js?v=20260707b"></script>
 </head>
 <body>
@@ -268,7 +268,7 @@ def rebuild_index():
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Na Nach Blog — Thoughts & Teachings</title>
 {favicon_links()}
-<link rel="stylesheet" href="/blog/style.css?v=20260719b">
+<link rel="stylesheet" href="/blog/style.css?v=20260823a">
 <link rel="alternate" type="application/rss+xml" title="Na Nach Blog RSS" href="/blog/rss.xml">
 </head>
 <body>
