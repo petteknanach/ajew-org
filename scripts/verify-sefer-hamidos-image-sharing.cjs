@@ -14,21 +14,19 @@ for (const platform of requiredPlatforms) {
 
 const assertions = [
   [source.includes('async function shareActualImage(button)'), 'Actual-image sharing must receive the clicked button'],
-  [source.includes("navigator.canShare({ files: [file] })"), 'Actual-image sharing must capability-check a File payload'],
+  [source.includes("navigator.canShare({ files: [file] })"), 'Native share must capability-check a File payload'],
   [source.includes("navigator.share({ title: title, text: shareText, files: [file] })"), 'Native share must include the actual image File'],
-  [source.includes('var actualImageBlobCache = new Map()'), 'Image blobs must be primed before the click when possible'],
-  [source.includes('var actualImageFetches = new Map()'), 'In-flight fetch promises must not occupy the blob-only cache'],
-  [source.includes("X: 'https://x.com/compose/post'"), 'Desktop X action must open the X composer'],
-  [source.includes("Facebook: 'https://www.facebook.com/'"), 'Desktop Facebook action must open Facebook'],
-  [source.includes("window.matchMedia('(hover: hover) and (pointer: fine)').matches"), 'Desktop platform routing must not replace mobile file sharing'],
-  [source.includes("desktopClipboardPayload[mime] = blob"), 'Desktop platform buttons must copy the actual picture blob'],
-  [source.includes("window.open(desktopAppTargets[app], '_blank')"), 'Desktop platform buttons must open the named platform'],
+  [source.includes('var actualImageBlobCache = new Map()'), 'Image blobs must be primed before native sharing'],
+  [source.includes('data-share-url={mediaShareUrl(img)}'), 'Platform buttons must carry the image-specific preview-page URL'],
+  [source.includes("twitter.com/intent/tweet?text="), 'Desktop X must receive the picture preview link'],
+  [source.includes("t.me/share/url?url="), 'Desktop Telegram must receive the picture preview link'],
+  [source.includes("wa.me/?text="), 'Desktop WhatsApp must receive the picture preview link'],
+  [source.includes("facebook.com/sharer/sharer.php?u="), 'Desktop Facebook must receive the picture preview link'],
+  [source.includes("navigator.clipboard.writeText(shareUrl)"), 'Instagram fallback must copy the picture preview link'],
+  [source.includes("desktopShareTarget(app, shareUrl, shareText)"), 'Desktop platform buttons must build a real share intent'],
   [source.includes('window.__shGalleryCurrentItem = item'), 'Gallery app buttons must retain the exact current picture'],
   [source.includes("setActualImageStatus(button, 'Ready — tap again'"), 'Lost user activation must have a second-tap recovery'],
   [!source.includes("shareActualImage(fileShare.getAttribute('data-media-url')"), 'Legacy five-argument gallery call must not return'],
-  [!source.includes('https://x.com/intent/post?url='), 'Reader picture buttons must not silently fall back to link-only X sharing'],
-  [!source.includes('https://t.me/share/url?url='), 'Reader picture buttons must not silently fall back to link-only Telegram sharing'],
-  [!source.includes('https://wa.me/?text='), 'Reader picture buttons must not silently fall back to link-only WhatsApp sharing'],
 ];
 for (const [ok, message] of assertions) {
   if (!ok) throw new Error(message);

@@ -341,11 +341,11 @@ function mediaShareTitle(seg, img) {
                           <span>{img.language} · {img.variant}</span>
                           <div class="sh-media-share-row">
                             <button type="button" class="sh-media-share sh-media-share-file" data-share-title={mediaShareTitle(seg, img)} data-share-url={mediaShareUrl(img)} data-media-url={mediaDirectUrl(img)} data-teaching={img.language === 'hebrew' ? seg.he : seg.en}>Share picture</button>
-                            <button type="button" class="sh-media-share sh-media-share-file" data-share-app="X" title="Copy the picture and open X; paste it with Ctrl+V" data-share-title={mediaShareTitle(seg, img)} data-media-url={mediaDirectUrl(img)} data-teaching={img.language === 'hebrew' ? seg.he : seg.en}>X</button>
-                            <button type="button" class="sh-media-share sh-media-share-file" data-share-app="Telegram" title="Copy the picture and open Telegram; paste it with Ctrl+V" data-share-title={mediaShareTitle(seg, img)} data-media-url={mediaDirectUrl(img)} data-teaching={img.language === 'hebrew' ? seg.he : seg.en}>Telegram</button>
-                            <button type="button" class="sh-media-share sh-media-share-file" data-share-app="WhatsApp" title="Copy the picture and open WhatsApp; paste it with Ctrl+V" data-share-title={mediaShareTitle(seg, img)} data-media-url={mediaDirectUrl(img)} data-teaching={img.language === 'hebrew' ? seg.he : seg.en}>WhatsApp</button>
-                            <button type="button" class="sh-media-share sh-media-share-file" data-share-app="Facebook" title="Copy the picture and open Facebook; paste it with Ctrl+V" data-share-title={mediaShareTitle(seg, img)} data-media-url={mediaDirectUrl(img)} data-teaching={img.language === 'hebrew' ? seg.he : seg.en}>Facebook</button>
-                            <button type="button" class="sh-media-share sh-media-share-file" data-share-app="Instagram" title="Copy the picture and open Instagram; upload or paste it there" data-share-title={mediaShareTitle(seg, img)} data-media-url={mediaDirectUrl(img)} data-teaching={img.language === 'hebrew' ? seg.he : seg.en}>Instagram</button>
+                            <button type="button" class="sh-media-share sh-media-share-file" data-share-app="X" title="Share this picture link on X" data-share-title={mediaShareTitle(seg, img)} data-share-url={mediaShareUrl(img)} data-media-url={mediaDirectUrl(img)} data-teaching={img.language === 'hebrew' ? seg.he : seg.en}>X</button>
+                            <button type="button" class="sh-media-share sh-media-share-file" data-share-app="Telegram" title="Share this picture link on Telegram" data-share-title={mediaShareTitle(seg, img)} data-share-url={mediaShareUrl(img)} data-media-url={mediaDirectUrl(img)} data-teaching={img.language === 'hebrew' ? seg.he : seg.en}>Telegram</button>
+                            <button type="button" class="sh-media-share sh-media-share-file" data-share-app="WhatsApp" title="Share this picture link on WhatsApp" data-share-title={mediaShareTitle(seg, img)} data-share-url={mediaShareUrl(img)} data-media-url={mediaDirectUrl(img)} data-teaching={img.language === 'hebrew' ? seg.he : seg.en}>WhatsApp</button>
+                            <button type="button" class="sh-media-share sh-media-share-file" data-share-app="Facebook" title="Share this picture link on Facebook" data-share-title={mediaShareTitle(seg, img)} data-share-url={mediaShareUrl(img)} data-media-url={mediaDirectUrl(img)} data-teaching={img.language === 'hebrew' ? seg.he : seg.en}>Facebook</button>
+                            <button type="button" class="sh-media-share sh-media-share-file" data-share-app="Instagram" title="Copy this picture link and open Instagram" data-share-title={mediaShareTitle(seg, img)} data-share-url={mediaShareUrl(img)} data-media-url={mediaDirectUrl(img)} data-teaching={img.language === 'hebrew' ? seg.he : seg.en}>Instagram</button>
                             <button type="button" class="sh-media-share sh-media-copy-image" data-media-url={mediaDirectUrl(img)}>Copy image</button>
                             <a class="sh-media-share" href={img.path} download>Download</a>
                           </div>
@@ -460,15 +460,20 @@ function mediaShareTitle(seg, img) {
           }
           var actualImageBlobCache = new Map();
           var actualImageFetches = new Map();
-          var desktopAppTargets = {
-            X: 'https://x.com/compose/post',
-            Telegram: 'https://web.telegram.org/k/',
-            WhatsApp: 'https://web.whatsapp.com/',
-            Facebook: 'https://www.facebook.com/',
-            Instagram: 'https://www.instagram.com/'
-          };
+          function desktopShareTarget(app, shareUrl, shareText) {
+            var url = encodeURIComponent(shareUrl);
+            var text = encodeURIComponent(shareText);
+            var targets = {
+              X: 'https://twitter.com/intent/tweet?text=' + text + '&url=' + url,
+              Telegram: 'https://t.me/share/url?url=' + url + '&text=' + text,
+              WhatsApp: 'https://wa.me/?text=' + encodeURIComponent(shareText + '\n' + shareUrl),
+              Facebook: 'https://www.facebook.com/sharer/sharer.php?u=' + url,
+              Instagram: 'https://www.instagram.com/'
+            };
+            return targets[app] || '';
+          }
           function isDesktopPlatformButton(app) {
-            if (!app || !desktopAppTargets[app]) return false;
+            if (!app || !desktopShareTarget(app, '', '')) return false;
             return !window.matchMedia || window.matchMedia('(hover: hover) and (pointer: fine)').matches;
           }
           function primeActualImage(mediaUrl) {
@@ -497,6 +502,7 @@ function mediaShareTitle(seg, img) {
             var title = button.getAttribute('data-share-title') || document.title;
             var teaching = button.getAttribute('data-teaching') || '';
             var app = button.getAttribute('data-share-app') || '';
+            var shareUrl = button.getAttribute('data-share-url') || window.location.href;
             var galleryItem = button.closest('#sh-media-gallery-lightbox') && window.__shGalleryCurrentItem;
             if (galleryItem) {
               mediaUrl = mediaUrl || galleryItem.src || '';
@@ -511,14 +517,17 @@ function mediaShareTitle(seg, img) {
             try {
               var blob = actualImageBlobCache.get(mediaUrl);
               var desktopPlatform = isDesktopPlatformButton(app);
-              var appWindow = null;
               if (desktopPlatform) {
-                appWindow = window.open(desktopAppTargets[app], '_blank');
+                var target = desktopShareTarget(app, shareUrl, shareText);
+                var appWindow = window.open(target, '_blank');
                 if (appWindow) try { appWindow.opener = null; } catch (_desktopOpenerError) {}
-              }
-              if (desktopPlatform && !(blob instanceof Blob)) {
-                setActualImageStatus(button, 'Preparing picture for ' + app + '…');
-                blob = await primeActualImage(mediaUrl);
+                if (app === 'Instagram' && navigator.clipboard && navigator.clipboard.writeText) {
+                  navigator.clipboard.writeText(shareUrl).catch(function () {});
+                  setActualImageStatus(button, 'Picture link copied — paste into Instagram');
+                } else {
+                  setActualImageStatus(button, appWindow ? 'Opening ' + app + ' with picture link' : 'Allow pop-ups to share on ' + app);
+                }
+                return;
               }
               if (!(blob instanceof Blob)) {
                 setActualImageStatus(button, 'Preparing picture…');
@@ -531,25 +540,6 @@ function mediaShareTitle(seg, img) {
               var mime = blob.type || 'image/png';
               var filename = actualImageFilename(mediaUrl, title, mime);
               var file = new File([blob], filename, { type: mime });
-
-              if (desktopPlatform) {
-                var copied = false;
-                var copyPromise = null;
-                if (navigator.clipboard && navigator.clipboard.write && window.ClipboardItem) {
-                  try {
-                    var desktopClipboardPayload = {};
-                    desktopClipboardPayload[mime] = blob;
-                    copyPromise = navigator.clipboard.write([new ClipboardItem(desktopClipboardPayload)]);
-                  } catch (_desktopClipboardStartError) {}
-                }
-                if (copyPromise) {
-                  try { await copyPromise; copied = true; } catch (_desktopClipboardError) {}
-                }
-                if (!copied) downloadActualImage(blob, mediaUrl, filename);
-                if (!appWindow) setActualImageStatus(button, (copied ? 'Picture copied' : 'Picture downloaded') + ' — allow pop-ups for ' + app);
-                else setActualImageStatus(button, (copied ? 'Picture copied — paste into ' : 'Picture downloaded — upload to ') + app);
-                return;
-              }
 
               if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
                 try {
