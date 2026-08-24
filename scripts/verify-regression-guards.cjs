@@ -142,6 +142,28 @@ for (const marker of ['class="reader-toolbar"', 'data-mode="hebrew"', 'data-mode
 }
 if ((chayeySimanReader.match(/id="audio-controls"/g) || []).length !== 1) failures.push('Chayey Moharan individual-siman Reader must have exactly one audio control');
 
+// Every Sefer Hamidos Hebrew teaching must visibly retain its original
+// Hebrew-letter source label.  The JSON stores sourcePart/sourceNumber for all
+// teachings; the Reader renders those as א׳, י״א, ט״ו, etc., with an explicit
+// Part II prefix where applicable, while English keeps the familiar numerals.
+const seferHamidosTopics = walkJsonFiles('public/reader/sefer-hamidos')
+  .filter(file => /\/topic-\d+\.json$/.test(file));
+let seferHamidosTeachingCount = 0;
+for (const file of seferHamidosTopics) {
+  const topic = loadJson(file);
+  for (const segment of topic.segments || []) {
+    seferHamidosTeachingCount++;
+    if (!Number.isInteger(Number(segment.sourcePart)) || !Number.isInteger(Number(segment.sourceNumber)) || !String(segment.displayLabel || '').trim()) {
+      failures.push(`${file}: teaching ${segment.index || '?'} lacks sourcePart/sourceNumber/displayLabel`);
+    }
+  }
+}
+if (seferHamidosTopics.length !== 108) failures.push(`Sefer Hamidos: expected 108 topic files, found ${seferHamidosTopics.length}`);
+if (seferHamidosTeachingCount !== 2689) failures.push(`Sefer Hamidos: expected 2689 labeled teachings, found ${seferHamidosTeachingCount}`);
+mustContain('src/pages/reader/sefer-hamidos/[part]/[torah].astro', 'function hebrewTeachingLabel(segment: any)', 'sitewide Hebrew teaching-label renderer');
+mustContain('src/pages/reader/sefer-hamidos/[part]/[torah].astro', '`חלק ב׳ · ${numeral}`', 'explicit Hebrew Part II teaching labels');
+mustContain('src/pages/reader/sefer-hamidos/[part]/[torah].astro', 'class="segment-number segment-number-he" lang="he" dir="rtl"', 'visible Hebrew teaching-number markup');
+
 const otzarPartFiles = walkJsonFiles('public/reader/otzar-hayirah')
   .filter(f => /\/part-\d+\/.+\.json$/.test(f));
 let otzarSegments = 0;

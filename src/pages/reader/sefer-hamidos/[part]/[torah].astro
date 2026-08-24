@@ -103,6 +103,41 @@ try {
   mediaBySegment = new Map();
 }
 const segmentByIndex = new Map((torahData?.segments || []).map((segment) => [Number(segment.index), segment]));
+
+function hebrewNumeral(value: unknown) {
+  let number = Number(value);
+  if (!Number.isInteger(number) || number < 1 || number > 999) return String(value || '');
+  const letters: string[] = [];
+  const values: Array<[number, string]> = [
+    [400, 'ת'], [300, 'ש'], [200, 'ר'], [100, 'ק'],
+    [90, 'צ'], [80, 'פ'], [70, 'ע'], [60, 'ס'], [50, 'נ'], [40, 'מ'], [30, 'ל'], [20, 'כ'],
+  ];
+  for (const [amount, letter] of values) {
+    while (number >= amount) {
+      letters.push(letter);
+      number -= amount;
+    }
+  }
+  if (number === 15) letters.push('ט', 'ו');
+  else if (number === 16) letters.push('ט', 'ז');
+  else {
+    if (number >= 10) {
+      letters.push('י');
+      number -= 10;
+    }
+    const ones = ['', 'א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט'];
+    if (number) letters.push(ones[number]);
+  }
+  return letters.length === 1
+    ? `${letters[0]}׳`
+    : `${letters.slice(0, -1).join('')}״${letters.at(-1)}`;
+}
+
+function hebrewTeachingLabel(segment: any) {
+  const numeral = hebrewNumeral(segment.sourceNumber || segment.index);
+  return Number(segment.sourcePart) === 2 ? `חלק ב׳ · ${numeral}` : numeral;
+}
+
 const mediaOverviewItems = Array.from(mediaBySegment.entries()).flatMap(([segmentIndex, entry]) =>
   (entry.images || []).map((img) => ({ segmentIndex, segment: segmentByIndex.get(segmentIndex), img }))
 );
@@ -254,7 +289,7 @@ function mediaShareTitle(seg, img) {
         <h3>Teachings</h3>
         <ul class="reader-toc-list">
           {torahData.segments.map((seg, i) => (
-            <li><a href={`#seg-${seg.index}`} data-index={String(seg.index)}>Teaching {seg.displayLabel || seg.sourceNumber || seg.index}</a></li>
+            <li><a href={`#seg-${seg.index}`} data-index={String(seg.index)}>Teaching {seg.displayLabel || seg.sourceNumber || seg.index} · {hebrewTeachingLabel(seg)}</a></li>
           ))}
         </ul>
       </div>
@@ -320,7 +355,7 @@ function mediaShareTitle(seg, img) {
 {torahData.segments.map((seg) => (
           <div class="reader-segment-pair" id={`seg-${seg.index}`} data-share-id={seg.id || ''}>
             <div class="reader-segment segment-he" data-index={String(seg.index)}>
-              <span class="segment-number">{seg.displayLabel || seg.sourceNumber || seg.index}</span>
+              <span class="segment-number segment-number-he" lang="he" dir="rtl">{hebrewTeachingLabel(seg)}</span>
               <p data-nikud={seg.he_nikud || seg.he}>{seg.he}</p>
             </div>
             <div class={`reader-segment segment-en ${!seg.en ? 'empty-translation' : ''}`} data-index={String(seg.index)}>
@@ -374,7 +409,7 @@ function mediaShareTitle(seg, img) {
             {torahData.aligned_segments.map((seg) => (
               <div class={`reader-segment-pair ${seg.type === 'note' ? 'segment-note' : ''}`} id={`aligned-${seg.index}`}>
                 <div class="reader-segment segment-he" data-index={String(seg.index)}>
-                  <span class="segment-number">{seg.displayLabel || seg.sourceNumber || seg.index}</span>
+                  <span class="segment-number segment-number-he" lang="he" dir="rtl">{hebrewTeachingLabel(seg)}</span>
                   <p>{seg.he || '\u00A0'}</p>
                 </div>
                 <div class={`reader-segment segment-en ${!seg.en ? 'empty-translation' : ''}`} data-index={String(seg.index)}>
@@ -925,6 +960,8 @@ function mediaShareTitle(seg, img) {
           body.reader-teachings-only .reader-segment p{font-size:1.12rem;line-height:1.75;}
           body.reader-teachings-only .reader-focus-exit{top:calc(env(safe-area-inset-top) + .5rem);right:.5rem;min-height:42px;padding:.45rem .75rem;}
         }
+        .reader-segment.segment-he .segment-number-he{display:block!important;position:static!important;float:none!important;width:max-content;min-width:2.2rem;margin:0 0 .65rem auto!important;padding:.22rem .55rem;border:1px solid #d6b56c;border-radius:999px;background:#fff6dc;direction:rtl;unicode-bidi:isolate;text-align:center;font-family:var(--font-hebrew,'Frank Ruhl Libre',serif);font-size:1.08rem!important;line-height:1.35!important;font-weight:900!important;opacity:1!important;color:#6b4b0d!important;white-space:nowrap;}
+        [data-theme="night"] .reader-segment.segment-he .segment-number-he{background:#302710;color:#f5d989!important;border-color:#8a7132;}
         .mode-hebrew .sh-media-lang-en{display:none!important;}
         .mode-english .sh-media-lang-he{display:none!important;}
       </style>
