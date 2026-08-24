@@ -683,10 +683,11 @@
 
     const nikudBtn = document.getElementById('btn-nikud');
     if (nikudBtn) {
-      // Check if data-nikud actually contains nikud marks (vowels in Unicode range)
-      const firstNikud = document.querySelector('.segment-he [data-nikud]');
-      const nikudText = firstNikud ? firstNikud.getAttribute('data-nikud') : '';
-      const hasRealNikud = /[\u05B0-\u05BD\u05BF-\u05C7]/.test(nikudText);
+      // Check every Hebrew segment: introductory headings often have no vowels
+      // even when later source text contains meaningful niqqud.
+      const hasRealNikud = Array.from(document.querySelectorAll('.segment-he [data-nikud]')).some(el =>
+        /[\u05B0-\u05BD\u05BF-\u05C7]/.test(el.getAttribute('data-nikud') || '')
+      );
       if (hasRealNikud) {
         nikudBtn.addEventListener('click', () => setState('nikud', !state.nikud));
       } else {
