@@ -78,6 +78,7 @@ const categoryDirectory = categories.map((category, index) => {
     key: `category-${index + 1}`,
     books,
     bookIds: books.map((book) => book.id),
+    displayCount: books.reduce((sum, book) => sum + (book.id === 'likutay-nanach' ? Math.max(1, book.parts.length) : 1), 0),
   };
 }).filter((category) => category.books.length > 0);
 const bookCategoryKeys = new Map();
@@ -89,16 +90,49 @@ categoryDirectory.forEach((category) => {
   });
 });
 
+const likutayNanachBook = visibleBooks.find((book) => book.id === 'likutay-nanach');
+const likutayNanachVolumeLabels = {
+  1: ['Likutay Nanach — Volume 1 — Na — Al HaTorah', 'ליקוטי נ נח — כרך א'],
+  2: ['Likutay Nanach — Volume 2 — NaCh — Neviim uKetuvim', 'ליקוטי נ נח — כרך ב'],
+  3: ['Likutay Nanach — Volume 3 — NaChMa — Torah Shebal Peh', 'ליקוטי נ נח — כרך ג'],
+  4: ['Likutay Nanach — Volume 4 — NaChMaN', 'ליקוטי נ נח — כרך ד'],
+  5: ['Likutay Nanach — Volume 5 — MayUman', 'ליקוטי נ נח — כרך ה'],
+};
+const likutayNanachVolumeBooks = (likutayNanachBook?.parts || []).map((part) => {
+  const partNumber = Number(part.part || 1);
+  const labels = likutayNanachVolumeLabels[partNumber] || [`Likutay Nanach — Volume ${partNumber}`, `ליקוטי נ נח — כרך ${partNumber}`];
+  return {
+    ...likutayNanachBook,
+    id: `likutay-nanach-volume-${partNumber}`,
+    title: labels[0],
+    hebrewTitle: labels[1],
+    parts: [part],
+    directoryHref: `/reader/likutay-nanach/${partNumber}/`,
+    categoryBookId: 'likutay-nanach',
+  };
+});
+
+const directoryDisplayedBookCount = alphabeticalBooks.length - (likutayNanachBook ? 1 : 0) + likutayNanachVolumeBooks.length;
+
 const directoryFolderDefinitions = [
   { key: 'mishna-folder', title: 'Mishna', hebrewTitle: 'משנה', prefix: 'mishna-' },
   { key: 'rambam-folder', title: 'Rambam — Mishneh Torah', hebrewTitle: 'רמב״ם — משנה תורה', prefix: 'rambam-' },
   { key: 'talmud-folder', title: 'Talmud Bavli', hebrewTitle: 'תלמוד בבלי', prefix: 'talmud-bavli-' },
 ];
-const directoryFolders = directoryFolderDefinitions.map((folder) => ({
-  ...folder,
-  books: alphabeticalBooks.filter((book) => book.id.startsWith(folder.prefix)),
-})).filter((folder) => folder.books.length > 0);
+const directoryFolders = [
+  ...directoryFolderDefinitions.map((folder) => ({
+    ...folder,
+    books: alphabeticalBooks.filter((book) => book.id.startsWith(folder.prefix)),
+  })),
+  ...(likutayNanachVolumeBooks.length ? [{
+    key: 'likutay-nanach-volumes',
+    title: 'Likutay Nanach — Five Volumes',
+    hebrewTitle: 'ליקוטי נ נח — חמישה כרכים',
+    books: likutayNanachVolumeBooks,
+  }] : []),
+].filter((folder) => folder.books.length > 0);
 const folderedBookIds = new Set(directoryFolders.flatMap((folder) => folder.books.map((book) => book.id)));
+if (likutayNanachVolumeBooks.length) folderedBookIds.add('likutay-nanach');
 
 function cleanCategoryTitle(title) {
   return String(title || '').replace(/^\d+\.\s*/, '');
@@ -106,6 +140,7 @@ function cleanCategoryTitle(title) {
 
 function bookDirectoryUrl(book) {
   if (book.id === 'chayey-moharan') return '/reader/chayey-moharan/';
+  if (book.id === 'likutay-nanach') return '/reader/likutay-nanach/';
   const firstPart = book.parts[0];
   if (!firstPart) return '/reader/';
   const partNumber = firstPart.part || 1;
@@ -186,12 +221,14 @@ const bookSearchAliases = {
   'sipurey-maasiyos': 'Sipurey Maasiyos Stories of Ancient Times Rabbi Nachman Stories',
 };
 
-const directoryBookRows = new Map(alphabeticalBooks.map((book) => {
+const directoryRowBooks = [...alphabeticalBooks, ...likutayNanachVolumeBooks];
+const directoryBookRows = new Map(directoryRowBooks.map((book) => {
   const catalogTotalPages = book.parts.reduce((sum, part) => sum + part.totalTorahs, 0);
   const totalPages = book.id === 'chayey-moharan' ? 615 : catalogTotalPages;
-  const categoryKeys = bookCategoryKeys.get(book.id) || [];
-  const searchText = [book.title, book.hebrewTitle, book.author, book.hebrewAuthor, bookDescriptions[book.id], bookSearchAliases[book.id]].filter(Boolean).join(' ');
-  return [book.id, { book, totalPages, categoryKeys, searchText, href: bookDirectoryUrl(book) }];
+  const categoryBookId = book.categoryBookId || book.id;
+  const categoryKeys = bookCategoryKeys.get(categoryBookId) || [];
+  const searchText = [book.title, book.hebrewTitle, book.author, book.hebrewAuthor, bookDescriptions[categoryBookId], bookSearchAliases[categoryBookId]].filter(Boolean).join(' ');
+  return [book.id, { book, totalPages, categoryKeys, searchText, href: book.directoryHref || bookDirectoryUrl(book) }];
 }));
 const alphabeticalDirectoryEntries = [
   ...alphabeticalBooks.filter((book) => !folderedBookIds.has(book.id)).map((book) => ({ type: 'book', title: book.title, row: directoryBookRows.get(book.id) })),
@@ -518,12 +555,12 @@ function linkClass(bookId, totalPages) {
         <nav class="author-category-list" aria-label="Filter books by author or category">
           <button class="author-category-button active" type="button" data-directory-category="all" aria-pressed="true">
             <span>All authors & categories</span>
-            <strong>{alphabeticalBooks.length}</strong>
+            <strong>{directoryDisplayedBookCount}</strong>
           </button>
           {categoryDirectory.map((category) => (
             <button class="author-category-button" type="button" data-directory-category={category.key} aria-pressed="false">
               <span>{cleanCategoryTitle(category.title)}</span>
-              <strong>{category.books.length}</strong>
+              <strong>{category.displayCount}</strong>
             </button>
           ))}
         </nav>
@@ -536,7 +573,7 @@ function linkClass(bookId, totalPages) {
             <h2 id="bookDirectoryHeading">Books in Alphabetical Order</h2>
             <span lang="he" dir="rtl">הספרים לפי סדר אלפביתי</span>
           </div>
-          <span class="directory-result-count" id="directoryResultCount">{alphabeticalBooks.length} books</span>
+          <span class="directory-result-count" id="directoryResultCount">{directoryDisplayedBookCount} books</span>
         </div>
         <ol class="alphabetical-book-list" id="alphabeticalBookList">
           {alphabeticalDirectoryEntries.map((entry) => {

@@ -72,6 +72,20 @@ if (!globalDirectory.includes('return `/reader/${book.id}/${partNumber}/`;')) {
   failures.push('global Reader does not route every catalog book to its part directory');
 }
 
+const likutayNanach = (catalog.books || []).find(book => book.id === 'likutay-nanach');
+if (!likutayNanach || likutayNanach.parts.length !== 5) {
+  failures.push('likutay-nanach: catalog must expose all five volumes');
+}
+const likutayNanachDirectory = path.join(readerRoot, 'likutay-nanach', 'index.astro');
+const likutayNanachPartDirectory = path.join(readerRoot, 'likutay-nanach', '[part]', 'index.astro');
+if (!fs.existsSync(likutayNanachDirectory)) failures.push('likutay-nanach: five-volume root directory route is missing');
+if (!fs.readFileSync(likutayNanachPartDirectory, 'utf8').includes("volume-' + partNum + '/index.json'")) {
+  failures.push('likutay-nanach: part directory does not load volume-N/index.json');
+}
+if (!globalDirectory.includes('likutayNanachVolumeBooks') || !globalDirectory.includes('Likutay Nanach — Five Volumes')) {
+  failures.push('global Reader does not render the five Likutay Nanach volumes');
+}
+
 if (failures.length) {
   console.error('Reader directory verification failed:');
   failures.forEach(failure => console.error(` - ${failure}`));

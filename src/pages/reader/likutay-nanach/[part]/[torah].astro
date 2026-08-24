@@ -27,6 +27,7 @@ export function getStaticPaths() {
 }
 
 const { part, torah } = Astro.params;
+const partNum = parseInt(part);
 const torahNum = parseInt(torah);
 
 let torahData = null;

@@ -1,0 +1,34 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+
+const volumes = [
+  { part: 1, title: 'Volume 1 — Na — Al HaTorah', he: 'כרך א', count: 24 },
+  { part: 2, title: 'Volume 2 — NaCh — Neviim uKetuvim', he: 'כרך ב', count: 11 },
+  { part: 3, title: 'Volume 3 — NaChMa — Torah Shebal Peh', he: 'כרך ג', count: 18 },
+  { part: 4, title: 'Volume 4 — NaChMaN', he: 'כרך ד', count: 40 },
+  { part: 5, title: 'Volume 5 — MayUman', he: 'כרך ה', count: 8 },
+];
+---
+
+<Layout title="Likutay Nanach — Five Volumes" description="Browse all five volumes of Likutay Nanach by Simcha Nanach.">
+  <div class="ln-directory">
+    <header>
+      <p class="eyebrow">Simcha Nanach / שמחה נ נח</p>
+      <h1>Likutay Nanach — Five Volumes</h1>
+      <p lang="he" dir="rtl">ליקוטי נ נח — חמישה כרכים</p>
+    </header>
+    <div class="ln-volume-grid">
+      {volumes.map((volume) => (
+        <a href={`/reader/likutay-nanach/${volume.part}/`}>
+          <strong>{volume.title}</strong>
+          <span lang="he" dir="rtl">{volume.he}</span>
+          <small>{volume.count} sections</small>
+        </a>
+      ))}
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .ln-directory{max-width:960px;margin:0 auto;padding:42px 20px 80px}.ln-directory header{text-align:center;margin-bottom:28px}.ln-directory h1{margin:.3rem 0;color:#18344d}.eyebrow{font-weight:800;color:#9b650e}.ln-volume-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}.ln-volume-grid a{display:flex;flex-direction:column;gap:8px;min-height:140px;padding:22px;border:1px solid #dbcba9;border-radius:16px;background:#fffaf0;color:#18344d;text-decoration:none;box-shadow:0 5px 18px rgba(34,50,70,.08)}.ln-volume-grid a:hover,.ln-volume-grid a:focus-visible{border-color:#9b650e;transform:translateY(-2px)}.ln-volume-grid strong{font-size:1.05rem}.ln-volume-grid span{font-size:1.2rem}.ln-volume-grid small{margin-top:auto;color:#68737b}@media(max-width:600px){.ln-directory{padding:26px 14px 90px}.ln-volume-grid a{min-height:120px}}
+</style>

@@ -11,7 +11,7 @@ export function getStaticPaths() {
     const idx = JSON.parse(fs.readFileSync(idxPath, 'utf8'));
     parts = idx.parts || [];
   } catch (e) {}
-  return parts.map(p => ({ params: { part: String(p.part) } }));
+  return parts.map((p, index) => ({ params: { part: String(index + 1) }, props: { partMeta: p } }));
 }
 
 const { part } = Astro.params;
@@ -19,7 +19,7 @@ const partNum = parseInt(part);
 
 let indexData = null;
 try {
-  const idxPath = path.join(process.cwd(), 'public/reader/likutay-nanach/part-' + partNum + '/index.json');
+  const idxPath = path.join(process.cwd(), 'public/reader/likutay-nanach/volume-' + partNum + '/index.json');
   indexData = JSON.parse(fs.readFileSync(idxPath, 'utf8'));
 } catch (e) {
   console.error('Error loading index:', e);
