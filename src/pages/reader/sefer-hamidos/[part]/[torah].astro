@@ -520,11 +520,36 @@ function mediaShareTitle(seg, img) {
               var desktopPlatform = isDesktopPlatformButton(app);
               if (desktopPlatform) {
                 var target = desktopShareTarget(app, shareUrl, shareText);
+                var desktopBlob = blob instanceof Blob ? blob : null;
+                var desktopCopyPromise = null;
+                if (app === 'X' && desktopBlob && navigator.clipboard && navigator.clipboard.write && window.ClipboardItem) {
+                  try {
+                    var desktopMime = desktopBlob.type || 'image/png';
+                    var desktopPayload = {};
+                    desktopPayload[desktopMime] = desktopBlob;
+                    desktopCopyPromise = navigator.clipboard.write([new ClipboardItem(desktopPayload)]);
+                  } catch (_desktopCopyStartError) {}
+                }
                 var appWindow = window.open(target, '_blank');
                 if (appWindow) try { appWindow.opener = null; } catch (_desktopOpenerError) {}
-                if (app === 'Instagram' && navigator.clipboard && navigator.clipboard.writeText) {
-                  navigator.clipboard.writeText(shareUrl).catch(function () {});
-                  setActualImageStatus(button, 'Picture link copied — paste into Instagram');
+
+                if (app === 'X' && desktopCopyPromise) {
+                  desktopCopyPromise.then(function () {
+                    setActualImageStatus(button, 'Picture copied — paste it into X');
+                  }).catch(function () {
+                    var mime = desktopBlob.type || 'image/png';
+                    downloadActualImage(desktopBlob, mediaUrl, actualImageFilename(mediaUrl, title, mime));
+                    setActualImageStatus(button, 'Picture downloaded — upload it to X');
+                  });
+                } else if (app === 'X' || app === 'Instagram') {
+                  setActualImageStatus(button, 'Preparing picture for ' + app + '…');
+                  (desktopBlob ? Promise.resolve(desktopBlob) : primeActualImage(mediaUrl)).then(function (preparedBlob) {
+                    var mime = preparedBlob.type || 'image/png';
+                    downloadActualImage(preparedBlob, mediaUrl, actualImageFilename(mediaUrl, title, mime));
+                    setActualImageStatus(button, 'Picture downloaded — upload it to ' + app);
+                  }).catch(function () {
+                    setActualImageStatus(button, 'Picture link opened — download the picture to attach it');
+                  });
                 } else {
                   setActualImageStatus(button, appWindow ? 'Opening ' + app + ' with picture link' : 'Allow pop-ups to share on ' + app);
                 }
