@@ -14,6 +14,7 @@ TOPICS = {
     'seclusion': (23, 'seclusion-hisbodidus'),
     'thoughts': (24, 'thoughts'),
     'superiority': (25, 'superiority'),
+    'success': (26, 'success'),
 }
 
 def classify(name: str):
@@ -25,8 +26,9 @@ def classify(name: str):
     elif 'seclusion' in low or 'hisbodidus' in low: topic = 'seclusion'
     elif 'thoughts' in low or 'thought_' in low: topic = 'thoughts'
     elif 'superiority' in low: topic = 'superiority'
+    elif low.startswith('success_') or low.startswith('success-'): topic = 'success'
     else: return None
-    m = re.search(r'(?:children|israel[_-]land[_-]of[_-]part[_-]ii|lost[_-]article[_-]part[_-]ii|sweetening(?:_of_judgments?)?|seclusion(?:_hisbodidus)?|thoughts?|superiority)[_-](\d{1,3})', low)
+    m = re.search(r'(?:children|israel[_-]land[_-]of[_-]part[_-]ii|lost[_-]article[_-]part[_-]ii|sweetening(?:_of_judgments?)?|seclusion(?:_hisbodidus)?|thoughts?|superiority|success)[_-](\d{1,3})', low)
     if not m: return None
     segment = int(m.group(1))
     # The transition package uses global sequence 85 for Superiority teaching 1.
@@ -61,6 +63,8 @@ def all_packages():
             found.extend(root.glob('*.zip'))
     # Previously verified Sweetening 52-75 packages were preserved here.
     found.extend(Path('/root/sefer-hamidos-chatgpt-packages-052-075').glob('*.zip'))
+    # Resumable production checkpoints are preserved in unique staging paths.
+    found.extend(Path('/root/sefer-hamidos-staging').glob('**/*.zip'))
     return sorted(set(found))
 
 # Best source per exact topic/segment/concept/language.
