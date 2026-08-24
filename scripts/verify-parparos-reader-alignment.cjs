@@ -4,7 +4,9 @@ const path = require('path');
 const ROOT = path.resolve(__dirname, '..');
 const DIR = path.join(ROOT, 'public/reader/parparos-lechochma');
 const report = JSON.parse(fs.readFileSync(path.join(DIR, 'english-alignment-report.json'), 'utf8'));
+const plainBuilder = fs.readFileSync(path.join(ROOT, 'scripts/build-reader-plain-text.py'), 'utf8');
 const failures = [];
+if (!plainBuilder.includes('"super"')) failures.push('plain reader builder must skip derived Super Reader commentary files');
 if (report.sections.length !== 135 || report.repaired !== 116 || report.withheld !== 18 || report.noSource !== 1) failures.push('unexpected repair classification counts');
 for (const row of report.sections) {
   const data = JSON.parse(fs.readFileSync(path.join(DIR, `section-${row.section}.json`), 'utf8'));

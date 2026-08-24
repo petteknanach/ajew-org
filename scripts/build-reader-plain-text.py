@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 READER_DIR = ROOT / "public" / "reader"
 OUT_DIR = ROOT / "public" / "reader-plain"
 
-SKIP_DIRS = {"blog-commentary", "parsha-packets", "suno-songs"}
+SKIP_DIRS = {"blog-commentary", "parsha-packets", "suno-songs", "super"}
 HE_KEYS = ("he", "he_nikud", "commentary_he", "verse", "text")
 EN_KEYS = ("en", "commentary_en", "translation", "english")
 
