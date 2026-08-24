@@ -58,7 +58,7 @@ assert(readerCss.includes('#yahrzeitToggleBtn'), 'Reader yahrzeit toggle needs a
 assert(yahrzeit.includes('.compact-yahrzeit.collapsed .close-btn'), 'Collapsed yahrzeit must hide the overlapping close control');
 assert(yahrzeit.includes('.compact-yahrzeit:not(.collapsed) .toggle-btn'), 'Expanded yahrzeit must hide the overlapping toggle control');
 assert(seferHamidos.includes('<details open class="reader-media-dropdown sefer-hamidos-media"'), 'Picture share controls must live in an open interactive disclosure');
-assert(seferHamidos.includes("appWindow = window.open(desktopAppTargets[app], '_blank')"), 'Desktop picture shares must open their target synchronously');
+assert(seferHamidos.includes("var target = desktopShareTarget(app, shareUrl, shareText)") && seferHamidos.includes("appWindow = window.open(target, '_blank')"), 'Desktop picture shares must build and open their target synchronously');
 assert(!torahGps.includes('gpsData.topicMeta.find'), 'Torah GPS must treat topicMeta as an object');
 assert(torahGps.includes('Object.entries(gpsData.topicMeta)'), 'Torah GPS search must iterate object-shaped metadata');
 assert(navigation.includes(':global(.footer-links a)'), 'Footer links need mobile touch targets');
