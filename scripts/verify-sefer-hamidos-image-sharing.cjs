@@ -18,6 +18,7 @@ const assertions = [
   [source.includes("navigator.share({ title: title, text: shareText, files: [file] })"), 'Native share must include the actual image File'],
   [source.includes('var actualImageBlobCache = new Map()'), 'Image blobs must be primed before native sharing'],
   [source.includes('data-share-url={mediaShareUrl(img)}'), 'Platform buttons must carry the image-specific preview-page URL'],
+  [source.includes("shareCard.getAttribute('data-share-url')"), 'Legacy rendered cards must supply the image-specific preview-page URL'],
   [source.includes("twitter.com/intent/tweet?text="), 'Desktop X must receive the picture preview link'],
   [source.includes("t.me/share/url?url="), 'Desktop Telegram must receive the picture preview link'],
   [source.includes("wa.me/?text="), 'Desktop WhatsApp must receive the picture preview link'],

@@ -502,7 +502,8 @@ function mediaShareTitle(seg, img) {
             var title = button.getAttribute('data-share-title') || document.title;
             var teaching = button.getAttribute('data-teaching') || '';
             var app = button.getAttribute('data-share-app') || '';
-            var shareUrl = button.getAttribute('data-share-url') || window.location.href;
+            var shareCard = button.closest('.sh-media-card');
+            var shareUrl = button.getAttribute('data-share-url') || (shareCard && shareCard.getAttribute('data-share-url')) || window.location.href;
             var galleryItem = button.closest('#sh-media-gallery-lightbox') && window.__shGalleryCurrentItem;
             if (galleryItem) {
               mediaUrl = mediaUrl || galleryItem.src || '';
