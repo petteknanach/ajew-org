@@ -409,7 +409,7 @@ function mediaShareTitle(seg, img) {
             {torahData.aligned_segments.map((seg) => (
               <div class={`reader-segment-pair ${seg.type === 'note' ? 'segment-note' : ''}`} id={`aligned-${seg.index}`}>
                 <div class="reader-segment segment-he" data-index={String(seg.index)}>
-                  <span class="segment-number segment-number-he" lang="he" dir="rtl">{hebrewTeachingLabel(seg)}</span>
+                  <span class="segment-number segment-number-he" lang="he" dir="rtl">{hebrewTeachingLabel(segmentByIndex.get(Number(seg.index)) || seg)}</span>
                   <p>{seg.he || '\u00A0'}</p>
                 </div>
                 <div class={`reader-segment segment-en ${!seg.en ? 'empty-translation' : ''}`} data-index={String(seg.index)}>
