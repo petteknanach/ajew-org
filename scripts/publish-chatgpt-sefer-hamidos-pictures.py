@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import io, json, re, shutil, zipfile
+import argparse, io, json, re, shutil, zipfile
 from collections import defaultdict
 from pathlib import Path
 from PIL import Image
@@ -56,7 +56,20 @@ def png_ok(data: bytes):
     except Exception:
         return False
 
+parser = argparse.ArgumentParser(description='Publish verified ChatGPT Sefer HaMidos picture packages.')
+parser.add_argument(
+    '--package', action='append', type=Path, default=[],
+    help='Only ingest this physically verified package ZIP (repeatable).',
+)
+args = parser.parse_args()
+
 def all_packages():
+    if args.package:
+        packages = [p.resolve() for p in args.package]
+        missing = [str(p) for p in packages if not p.is_file()]
+        if missing:
+            parser.error('package not found: ' + ', '.join(missing))
+        return sorted(set(packages))
     found = []
     for root in DOWNLOAD_ROOTS:
         if root.exists():
@@ -108,7 +121,14 @@ for p in canon.glob('sh-sweetening-of-judgments-*-concept-*-*.png'):
         sources[cls] = (0, data)
         provenance[cls] = str(p)
 
-report = {'topics': {}, 'incomplete_segments': {}, 'source_count': len(sources)}
+report_path = ROOT / 'production-manifests/sefer-hamidos/chatgpt-reader-publication-20260820.json'
+if report_path.exists():
+    report = json.loads(report_path.read_text(encoding='utf-8'))
+else:
+    report = {'topics': {}, 'incomplete_segments': {}, 'source_count': 0}
+report.setdefault('topics', {})
+report.setdefault('incomplete_segments', {})
+report['source_count'] = max(int(report.get('source_count', 0)), len(sources))
 for topic_name, (topic_num, slug) in TOPICS.items():
     topic_path = ROOT / f'public/reader/sefer-hamidos/topic-{topic_num}.json'
     topic = json.loads(topic_path.read_text(encoding='utf-8'))
@@ -160,15 +180,15 @@ for topic_name, (topic_num, slug) in TOPICS.items():
     manifest['entries'] = [existing[n] for n in sorted(existing)]
     manifest['generated'] = '2026-08-20'
     manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+    previous_published = report['topics'].get(topic_name, {}).get('chatgpt_segments_published', [])
     report['topics'][topic_name] = {
         'topic_number': topic_num, 'manifest_entries': len(manifest['entries']),
-        'chatgpt_segments_published': published,
+        'chatgpt_segments_published': sorted(set(previous_published) | set(published)),
         'image_count': sum(len(e.get('images', [])) for e in manifest['entries']),
     }
     if incomplete:
         report['incomplete_segments'][topic_name] = incomplete
 
-report_path = ROOT / 'production-manifests/sefer-hamidos/chatgpt-reader-publication-20260820.json'
 report_path.parent.mkdir(parents=True, exist_ok=True)
 report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
 print(json.dumps(report, ensure_ascii=False, indent=2))
