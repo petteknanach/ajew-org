@@ -642,7 +642,7 @@
           row.appendChild(renderRatingControls(track));
           row.appendChild(el('audio', { controls: '', preload: 'none', src: track.url, title: buildTrackLabel(track) }));
           row.appendChild(el('div', { class: 'ajew-suno-track-links' }, [
-            el('a', { href: track.url, target: '_blank', rel: 'noopener' }, 'Archive.org MP3 ↗'),
+            el('a', { href: track.url, target: '_blank', rel: 'noopener', download: '', title: 'Download this individual song' }, '⬇ Download song'),
             shareButton(buildTrackLabel(track), track.share_url || track.url, '↗ Share song'),
             makeTelegramButton(buildTrackLabel(track), track.share_url || track.url, 'Telegram')
           ]));
