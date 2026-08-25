@@ -60,7 +60,11 @@ def all_packages():
     found = []
     for root in DOWNLOAD_ROOTS:
         if root.exists():
-            found.extend(root.glob('*.zip'))
+            # Authenticated ChatGPT deliverables consistently use Package in
+            # the filename. Avoid opening unrelated (and sometimes very large)
+            # ZIP archives in Downloads on every resumable publication pass.
+            found.extend(root.glob('*Package*.zip'))
+            found.extend(root.glob('*package*.zip'))
     # Previously verified Sweetening 52-75 packages were preserved here.
     found.extend(Path('/root/sefer-hamidos-chatgpt-packages-052-075').glob('*.zip'))
     # Resumable production checkpoints are preserved in unique staging paths.
