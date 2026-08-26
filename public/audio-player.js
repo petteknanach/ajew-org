@@ -300,7 +300,9 @@
         return f ? f.title : (state.currentEdition ? state.currentEdition.name : 'Audio');
       }, function () {
         var f = state.files[state.currentIndex];
-        return f ? f.url : archiveDetailsUrl(state.currentEdition && state.currentEdition.identifier);
+        return f ? f.url : (bookId === 'sefer-hamidos'
+          ? window.location.href
+          : archiveDetailsUrl(state.currentEdition && state.currentEdition.identifier));
       }),
       status,
     ]);
@@ -360,11 +362,13 @@
       if (!files.length) {
         statusEl.textContent = 'No audio files available.';
         listEl.appendChild(el('div', { style: { padding: '.5rem', color: '#999' } }, 'This Internet Archive item has no MP3 files.'));
-        var linkRow = el('div', { style: { padding: '.4rem', display: 'flex', gap: '.4rem', flexWrap: 'wrap', alignItems: 'center' } }, [
-          el('a', { href: 'https://archive.org/details/' + encodeURIComponent(state.currentEdition.identifier), target: '_blank', rel: 'noopener' }, 'View on archive.org ↗'),
-          shareButton(state.currentEdition.name, archiveDetailsUrl(state.currentEdition.identifier), '↗ Share edition'),
-        ]);
-        listEl.appendChild(linkRow);
+        if (bookId !== 'sefer-hamidos') {
+          var linkRow = el('div', { style: { padding: '.4rem', display: 'flex', gap: '.4rem', flexWrap: 'wrap', alignItems: 'center' } }, [
+            el('a', { href: 'https://archive.org/details/' + encodeURIComponent(state.currentEdition.identifier), target: '_blank', rel: 'noopener' }, 'View on archive.org ↗'),
+            shareButton(state.currentEdition.name, archiveDetailsUrl(state.currentEdition.identifier), '↗ Share edition'),
+          ]);
+          listEl.appendChild(linkRow);
+        }
         return;
       }
       statusEl.textContent = files.length + ' track' + (files.length === 1 ? '' : 's');
@@ -372,11 +376,13 @@
         var btn = el('button', { onclick: function () { playIndex(i); }, title: f.title }, (i + 1) + '. ' + f.title);
         listEl.appendChild(btn);
       });
-      // add archive.org link
-      listEl.appendChild(el('div', { style: { padding: '.4rem .6rem', borderTop: '1px solid #333', display: 'flex', gap: '.4rem', flexWrap: 'wrap', alignItems: 'center' } }, [
-        el('a', { href: 'https://archive.org/details/' + encodeURIComponent(state.currentEdition.identifier), target: '_blank', rel: 'noopener' }, 'View on archive.org ↗'),
-        shareButton(state.currentEdition.name, archiveDetailsUrl(state.currentEdition.identifier), '↗ Share edition'),
-      ]));
+      // Sefer HaMidos visitors get individual song playback/downloads without whole-item archive links.
+      if (bookId !== 'sefer-hamidos') {
+        listEl.appendChild(el('div', { style: { padding: '.4rem .6rem', borderTop: '1px solid #333', display: 'flex', gap: '.4rem', flexWrap: 'wrap', alignItems: 'center' } }, [
+          el('a', { href: 'https://archive.org/details/' + encodeURIComponent(state.currentEdition.identifier), target: '_blank', rel: 'noopener' }, 'View on archive.org ↗'),
+          shareButton(state.currentEdition.name, archiveDetailsUrl(state.currentEdition.identifier), '↗ Share edition'),
+        ]));
+      }
     }).catch(function (err) {
       statusEl.textContent = 'Error loading tracks';
       listEl.appendChild(el('div', { style: { padding: '.5rem', color: '#c77' } }, String(err.message || err)));

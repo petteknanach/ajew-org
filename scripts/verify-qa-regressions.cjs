@@ -36,9 +36,11 @@ assert(player.includes('body.has-commentary-sidebar-open #ajew-audio-player'), '
 assert(player.includes("bookId === 'sefer-hamidos'"), 'Suno manifest requests must be limited to books with a shipped manifest');
 assert(player.includes('if (!SUNO_SONGS_URL) return Promise.resolve(null)'), 'Missing Suno manifests must not be requested');
 assert(!player.includes("'Archive.org MP3 ↗'"), 'Sefer HaMidos song controls must not advertise the archive host');
+assert(player.includes("bookId === 'sefer-hamidos'\n          ? window.location.href"), 'Sefer HaMidos edition fallback shares the Reader page, not archive details');
+assert((player.match(/if \(bookId !== 'sefer-hamidos'\)/g) || []).length >= 2, 'Sefer HaMidos must hide whole-item archive edition links');
 assert(player.includes("'⬇ Download song'"), 'Sefer HaMidos songs must retain an individual download control');
 assert(player.includes("download: ''"), 'Individual song download controls must request download behavior');
-assert(layout.includes('/audio-player.js?v=20260825-private-archive'), 'Audio player asset must use the private-archive cache version');
+assert(layout.includes('/audio-player.js?v=20260826-no-archive-details'), 'Audio player asset must use the no-archive-details cache version');
 assert(readerCss.includes('width: calc(100% - clamp(340px, 40vw, 560px))'), 'Reader content must clear the open commentary sidebar');
 assert(readerScript.includes("let notesBtn = document.getElementById('btn-notes')"), 'Notes setup must reuse the existing button');
 assert(readerScript.includes("notesBtn.dataset.readerNotesBound !== '1'"), 'Notes setup must bind once');
