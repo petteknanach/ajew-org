@@ -6,6 +6,12 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
 DOWNLOAD_ROOTS = [Path('/root/Downloads'), Path('/mnt/c/Users/Pettek/Downloads')]
+GOAL_FILES = [
+    Path('/root/sefer-hamidos-chatgpt-next-100-goal.json'),
+    Path('/root/sefer-hamidos-chatgpt-following-100-goal.json'),
+    Path('/root/sefer-hamidos-chatgpt-missing-picture-goal.json'),
+    Path('/root/sefer-hamidos-chatgpt-next-400-goal.json'),
+]
 TOPICS = {
     'children': (9, 'children'),
     'israel-land-part-ii': (7, 'israel-land-of-part-ii'),
@@ -63,6 +69,19 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
+# A ZIP existing in Downloads is not publication approval. Only rows explicitly
+# marked complete/published in the authoritative production checkpoints may be
+# ingested. This excludes rejected packages that remain on disk for provenance.
+approved_segments = set()
+for goal_path in GOAL_FILES:
+    if not goal_path.is_file():
+        continue
+    goal = json.loads(goal_path.read_text(encoding='utf-8'))
+    for row_key in ('rows', 'recovery_rows'):
+        for row in goal.get(row_key, []):
+            if row.get('status') in ('complete', 'published'):
+                approved_segments.add((int(row['topic']), int(row['index'])))
+
 def all_packages():
     if args.package:
         packages = [p.resolve() for p in args.package]
@@ -98,6 +117,9 @@ for zp in all_packages():
                     continue
                 cls = classify(Path(member).name)
                 if not cls:
+                    continue
+                topic_number = TOPICS[cls[0]][0]
+                if (topic_number, cls[1]) not in approved_segments:
                     continue
                 data = z.read(member)
                 if not png_ok(data):
