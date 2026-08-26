@@ -21,6 +21,7 @@ TOPICS = {
     'thoughts': (24, 'thoughts'),
     'superiority': (25, 'superiority'),
     'success': (26, 'success'),
+    'grace': (37, 'grace'),
 }
 
 def classify(name: str):
@@ -33,8 +34,9 @@ def classify(name: str):
     elif 'thoughts' in low or 'thought_' in low: topic = 'thoughts'
     elif 'superiority' in low: topic = 'superiority'
     elif low.startswith('success_') or low.startswith('success-'): topic = 'success'
+    elif low.startswith('grace_') or low.startswith('grace-'): topic = 'grace'
     else: return None
-    m = re.search(r'(?:children|israel[_-]land[_-]of[_-]part[_-]ii|lost[_-]article[_-]part[_-]ii|sweetening(?:_of_judgments?)?|seclusion(?:_hisbodidus)?|thoughts?|superiority|success)[_-](\d{1,3})', low)
+    m = re.search(r'(?:children|israel[_-]land[_-]of[_-]part[_-]ii|lost[_-]article[_-]part[_-]ii|sweetening(?:_of_judgments?)?|seclusion(?:_hisbodidus)?|thoughts?|superiority|success|grace)[_-](\d{1,3})', low)
     if not m: return None
     segment = int(m.group(1))
     # The transition package uses global sequence 85 for Superiority teaching 1.
