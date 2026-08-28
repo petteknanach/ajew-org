@@ -29,28 +29,28 @@ try {
 
 if (!torahData && !error) error = 'Content not available';
 
-const bookName = 'Uzi Meshulam — Prison Letter on Rabbi Nachman, the Hidden Light, and the Soul of Mashiach';
+const bookName = 'Letter of Uzi Meshulam — On Rabbi Nachman, the Hidden Light, and the Soul of Mashiach';
 const bookHebrew = 'עוזי משולם — מכתב מן הכלא על רבי נחמן, האור הגנוז ונשמת משיח';
 
 const pageTitle = torahData
-  ? `${torahData.hebrewTitle || torahData.title} - Uzi Meshulam — Prison Letter on Rabbi Nachman, the Hidden Light, and the Soul of Mashiach`
+  ? `${torahData.hebrewTitle || torahData.title} - Letter of Uzi Meshulam — On Rabbi Nachman, the Hidden Light, and the Soul of Mashiach`
   : 'Not Found';
 const pageDesc = torahData
   ? (() => {
     const snippet = (torahData.segments?.find(s => s.en)?.en || '').replace(/<[^>]+>/g, '').slice(0, 120);
-    return `Read ${torahData.title} from Uzi Meshulam — Prison Letter on Rabbi Nachman, the Hidden Light, and the Soul of Mashiach online free. ${snippet ? snippet + '...' : 'Hebrew text with English translation on ajew.org.'}`;
+    return `Read ${torahData.title} from Letter of Uzi Meshulam — On Rabbi Nachman, the Hidden Light, and the Soul of Mashiach online free. ${snippet ? snippet + '...' : 'Hebrew text with English translation on ajew.org.'}`;
   })()
   : '';
 
 const structuredData = torahData ? JSON.stringify({
   "@context": "https://schema.org",
   "@type": "Article",
-  "headline": `${torahData.title} - Uzi Meshulam — Prison Letter on Rabbi Nachman, the Hidden Light, and the Soul of Mashiach`,
+  "headline": `${torahData.title} - Letter of Uzi Meshulam — On Rabbi Nachman, the Hidden Light, and the Soul of Mashiach`,
   "alternativeHeadline": torahData.hebrewTitle || '',
   "author": { "@type": "Person", "name": "Uzi A. Meshulam" },
   "publisher": { "@type": "Organization", "name": "ajew.org" },
   "inLanguage": ["he", "en"],
-  "isPartOf": { "@type": "Book", "name": "Uzi Meshulam — Prison Letter on Rabbi Nachman, the Hidden Light, and the Soul of Mashiach" },
+  "isPartOf": { "@type": "Book", "name": "Letter of Uzi Meshulam — On Rabbi Nachman, the Hidden Light, and the Soul of Mashiach" },
   "url": `https://ajew.org/reader/uzi-meshulam-prison-letter/${partNum}/${torahNum}`
 }) : '';
 const breadcrumbData = torahData ? JSON.stringify({
@@ -58,7 +58,7 @@ const breadcrumbData = torahData ? JSON.stringify({
   "@type": "BreadcrumbList",
   "itemListElement": [
     { "@type": "ListItem", "position": 1, "name": "Library", "item": "https://ajew.org/reader" },
-    { "@type": "ListItem", "position": 2, "name": "Uzi Meshulam — Prison Letter on Rabbi Nachman, the Hidden Light, and the Soul of Mashiach", "item": `https://ajew.org/reader/uzi-meshulam-prison-letter/${partNum}/` },
+    { "@type": "ListItem", "position": 2, "name": "Letter of Uzi Meshulam — On Rabbi Nachman, the Hidden Light, and the Soul of Mashiach", "item": `https://ajew.org/reader/uzi-meshulam-prison-letter/${partNum}/` },
     { "@type": "ListItem", "position": 3, "name": torahData.hebrewTitle || torahData.title }
   ]
 }) : '';
@@ -80,7 +80,7 @@ const breadcrumbData = torahData ? JSON.stringify({
     <div
       class="reader-container"
       data-torah-id={torahData.id}
-      data-torah-title={`${torahData.title} - Uzi Meshulam — Prison Letter on Rabbi Nachman, the Hidden Light, and the Soul of Mashiach`}
+      data-torah-title={`${torahData.title} - Letter of Uzi Meshulam — On Rabbi Nachman, the Hidden Light, and the Soul of Mashiach`}
     >
       <div class="reader-progress"></div>
 

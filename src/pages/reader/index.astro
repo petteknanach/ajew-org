@@ -15,6 +15,10 @@ function loadJSON(filePath) {
 const masterCatalog = loadJSON('public/reader/catalog.json') || { books: [] };
 const bookDescriptions = loadJSON('src/data/book-descriptions.json') || {};
 
+const neviimBookIds = ['tanach-yehoshua', 'tanach-shoftim', 'tanach-shmuel-a', 'tanach-shmuel-b', 'tanach-melachim-a', 'tanach-melachim-b', 'tanach-yeshayahu', 'tanach-yirmiyahu', 'tanach-yechezkel', 'tanach-hoshea', 'tanach-yoel', 'tanach-amos', 'tanach-ovadya', 'tanach-yonah', 'tanach-michah', 'tanach-nachum', 'tanach-havakkuk', 'tanach-tzefanya', 'tanach-chaggai', 'tanach-zecharya', 'tanach-malachi'];
+const ketuvimBookIds = ['tanach-tehillim', 'tanach-mishlei', 'tanach-iyov', 'tanach-shir-hashirim', 'tanach-rus', 'tanach-eicha', 'tanach-koheles', 'tanach-esther', 'tanach-daniel', 'tanach-ezra', 'tanach-nechemia', 'tanach-divrei-hayamim-a', 'tanach-divrei-hayamim-b'];
+const zoharTorahBookIds = ['zohar-bereishit', 'zohar-shemos', 'zohar-vayikra', 'zohar-bamidbar', 'zohar-devarim'];
+
 // Load index for each book's parts
 function loadBookIndexes(book) {
   const indexes = [];
@@ -40,14 +44,15 @@ const categories = [
   { title: '11. Rabbi Efraim ben Rabbi Naftali / רבי אפרים בן רבי נפתלי', ids: ['tefilos-haboker'] },
   { title: '12. Rabbi Nachman Yisroel Burstein / רבי נחמן ישראל בורשטיין', ids: ['otzar-nachmani'] },
   { title: '13. Noach HaLevi Sternfeld / נח הלוי שטרנפלד', ids: ['geedoolay-hanachal'] },
+  { title: 'Uzi A. Meshulam / עוזי א. בר׳ דוד משולם', ids: ['uzi-meshulam-prison-letter'] },
   { title: 'Siach Sarfei Kodesh / שיח שרפי קודש', ids: ['siach-sarfei-kodesh'] },
   { title: 'Rabbi Nachman Chazan / רבי נחמן חזן', ids: ['neimos-netzach'] },
   { title: "R' Yitzchak Breiter / ר' יצחק ברייטער", ids: ['breiter-seder-hayom', 'seven-pillars', 'misc-שיר-ידידות-מר-יחיאל-מענדל'] },
   { title: 'Simcha Nanach / שמחה נ נח — Five Volumes of Likutay Nanach', ids: ['likutay-nanach'] },
   { title: 'Chumash with Likutey Halachos / חומש עם ליקוטי הלכות', ids: ['chumash-lh'] },
   { title: 'Torah / תורה', ids: ['tanach-bereishit', 'tanach-shemos', 'tanach-vayikra', 'tanach-bamidbar', 'tanach-devarim'] },
-  { title: "Nevi'im / נביאים", ids: ['tanach-yehoshua', 'tanach-shoftim', 'tanach-shmuel-a', 'tanach-shmuel-b', 'tanach-melachim-a', 'tanach-melachim-b', 'tanach-yeshayahu', 'tanach-yirmiyahu', 'tanach-yechezkel', 'tanach-hoshea', 'tanach-yoel', 'tanach-amos', 'tanach-ovadya', 'tanach-yonah', 'tanach-michah', 'tanach-nachum', 'tanach-havakkuk', 'tanach-tzefanya', 'tanach-chaggai', 'tanach-zecharya', 'tanach-malachi'] },
-  { title: 'Ketuvim / כתובים', ids: ['tanach-tehillim', 'tanach-mishlei', 'tanach-iyov', 'tanach-shir-hashirim', 'tanach-rus', 'tanach-eicha', 'tanach-koheles', 'tanach-esther', 'tanach-daniel', 'tanach-ezra', 'tanach-nechemia', 'tanach-divrei-hayamim-a', 'tanach-divrei-hayamim-b'] },
+  { title: "Nevi'im — Prophets / נביאים", ids: neviimBookIds },
+  { title: 'Kesuvim — Scriptures / כתובים', ids: ketuvimBookIds },
   { title: 'Talmud Bavli / תלמוד בבלי', ids: ['talmud-bavli-brachot', 'talmud-bavli-shabbat', 'talmud-bavli-eruvin', 'talmud-bavli-psachim', 'talmud-bavli-shkalim', 'talmud-bavli-rosh-hashana', 'talmud-bavli-yoma', 'talmud-bavli-sukkah', 'talmud-bavli-beitza', 'talmud-bavli-taanit', 'talmud-bavli-megillah', 'talmud-bavli-moed-katan', 'talmud-bavli-chagigah', 'talmud-bavli-yevamot', 'talmud-bavli-ketubot', 'talmud-bavli-nedarim', 'talmud-bavli-nazir', 'talmud-bavli-sotah', 'talmud-bavli-gittin', 'talmud-bavli-kiddushin', 'talmud-bavli-bava-kamma', 'talmud-bavli-bava-metzia', 'talmud-bavli-bava-batra', 'talmud-bavli-sanhedrin', 'talmud-bavli-makkot', 'talmud-bavli-shevuot', 'talmud-bavli-avodah-zarah', 'talmud-bavli-horayot', 'talmud-bavli-eduyot', 'talmud-bavli-zevachim', 'talmud-bavli-menachot', 'talmud-bavli-chulin', 'talmud-bavli-bechorot', 'talmud-bavli-arachin', 'talmud-bavli-temurah', 'talmud-bavli-keritot', 'talmud-bavli-meilah', 'talmud-bavli-tamid', 'talmud-bavli-niddah'] },
   { title: 'Mishna / משנה — All Orders in One Folder', ids: ['mishna-brachot', 'mishna-peah', 'mishna-demai', 'mishna-kilayim', 'mishna-sheviit', 'mishna-terumot', 'mishna-maasrot', 'mishna-maaser-sheni', 'mishna-challah', 'mishna-orlah', 'mishna-bikkurim', 'mishna-shabbat', 'mishna-eruvin', 'mishna-pesachim', 'mishna-shekalim', 'mishna-yoma', 'mishna-sukkah', 'mishna-beitzah', 'mishna-rosh-hashana', 'mishna-taanit', 'mishna-megillah', 'mishna-moed-katan', 'mishna-chagigah', 'mishna-yevamot', 'mishna-ketubot', 'mishna-nedarim', 'mishna-nazir', 'mishna-sotah', 'mishna-gittin', 'mishna-kiddushin', 'mishna-bava-kamma', 'mishna-bava-metzia', 'mishna-bava-batra', 'mishna-sanhedrin', 'mishna-makkot', 'mishna-shevuot', 'mishna-eduyot', 'mishna-avodah-zarah', 'mishna-avot', 'mishna-horayot', 'mishna-zevachim', 'mishna-menachot', 'mishna-chulin', 'mishna-bechorot', 'mishna-arachin', 'mishna-temurah', 'mishna-keritot', 'mishna-meilah', 'mishna-tamid', 'mishna-middot', 'mishna-kelim', 'mishna-parah', 'mishna-taharot', 'mishna-mikvaot', 'mishna-niddah', 'mishna-machshirin', 'mishna-zavim'] },
   { title: 'Rambam - Mishneh Torah / רמב"ם - משנה תורה', ids: ['rambam-mada', 'rambam-ahava', 'rambam-zmanim', 'rambam-nashim', 'rambam-kedusha', 'rambam-haflaa', 'rambam-zeraim', 'rambam-avoda', 'rambam-korbanot', 'rambam-tahara', 'rambam-nezikin', 'rambam-kinyan', 'rambam-mishpatim', 'rambam-shoftim'] },
@@ -118,11 +123,17 @@ const directoryFolderDefinitions = [
   { key: 'mishna-folder', title: 'Mishna', hebrewTitle: 'משנה', prefix: 'mishna-' },
   { key: 'rambam-folder', title: 'Rambam — Mishneh Torah', hebrewTitle: 'רמב״ם — משנה תורה', prefix: 'rambam-' },
   { key: 'talmud-folder', title: 'Talmud Bavli', hebrewTitle: 'תלמוד בבלי', prefix: 'talmud-bavli-' },
+  { key: 'neviim-folder', title: "Nevi'im — Prophets", hebrewTitle: 'נביאים', ids: neviimBookIds },
+  { key: 'kesuvim-folder', title: 'Kesuvim — Scriptures', hebrewTitle: 'כתובים', ids: ketuvimBookIds },
+  { key: 'zohar-hakdama-folder', title: 'Zohar Hakdama — Introduction', hebrewTitle: 'הקדמת הזוהר', ids: ['zohar-hakdama'] },
+  { key: 'zohar-torah-folder', title: 'Zohar on the Torah Parshiyos', hebrewTitle: 'זוהר על פרשיות התורה', ids: zoharTorahBookIds },
+  { key: 'tikunay-zohar-folder', title: 'Tikunay Zohar', hebrewTitle: 'תיקוני הזוהר', ids: ['zohar-tikunim'] },
+  { key: 'zohar-chadash-folder', title: 'Zohar Chadash', hebrewTitle: 'זוהר חדש', ids: ['zohar-hadash'] },
 ];
 const directoryFolders = [
   ...directoryFolderDefinitions.map((folder) => ({
     ...folder,
-    books: alphabeticalBooks.filter((book) => book.id.startsWith(folder.prefix)),
+    books: alphabeticalBooks.filter((book) => folder.ids ? folder.ids.includes(book.id) : book.id.startsWith(folder.prefix)),
   })),
   ...(likutayNanachVolumeBooks.length ? [{
     key: 'likutay-nanach-volumes',

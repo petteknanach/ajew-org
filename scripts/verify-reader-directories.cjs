@@ -86,6 +86,30 @@ if (!globalDirectory.includes('likutayNanachVolumeBooks') || !globalDirectory.in
   failures.push('global Reader does not render the five Likutay Nanach volumes');
 }
 
+const uziBook = (catalog.books || []).find(book => book.id === 'uzi-meshulam-prison-letter');
+if (!uziBook || !String(uziBook.title || '').startsWith('Letter of Uzi Meshulam')) {
+  failures.push('Uzi Meshulam letter must be alphabetized under L as “Letter of Uzi Meshulam”');
+}
+if (!globalDirectory.includes("title: 'Uzi A. Meshulam / עוזי א. בר׳ דוד משולם', ids: ['uzi-meshulam-prison-letter']")) {
+  failures.push('Uzi A. Meshulam is missing from the Authors & Categories column');
+}
+for (const [key, label] of [
+  ['neviim-folder', "Nevi'im — Prophets"],
+  ['kesuvim-folder', 'Kesuvim — Scriptures'],
+  ['zohar-hakdama-folder', 'Zohar Hakdama — Introduction'],
+  ['zohar-torah-folder', 'Zohar on the Torah Parshiyos'],
+  ['tikunay-zohar-folder', 'Tikunay Zohar'],
+  ['zohar-chadash-folder', 'Zohar Chadash'],
+]) {
+  if (!globalDirectory.includes(`key: '${key}'`) || !globalDirectory.includes(`title: '${label}'`) && !globalDirectory.includes(`title: "${label}"`)) {
+    failures.push(`global Reader expandable folder missing: ${label}`);
+  }
+}
+const navigation = fs.readFileSync(path.join(root, 'src/components/Navigation.astro'), 'utf8');
+if (!navigation.includes("label: 'Blog'") || !navigation.includes("href: '/blog'")) {
+  failures.push('sitewide primary navigation does not expose the Blog');
+}
+
 if (failures.length) {
   console.error('Reader directory verification failed:');
   failures.forEach(failure => console.error(` - ${failure}`));

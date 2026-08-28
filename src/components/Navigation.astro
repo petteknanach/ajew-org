@@ -17,6 +17,7 @@ const navItems = [
   { label: 'Reader', labelHe: 'קורא', icon: '📖', href: '/reader', key: 'reader' },
   { label: 'Rabbi Nachman', labelHe: 'רבי נחמן', icon: '🔥', href: '/tzaddikim/rebbe-nachman', key: 'rabbi-nachman' },
   { label: 'All Resources', labelHe: 'כל האוצרות', icon: '✨', href: '/resources', key: 'resources' },
+  { label: 'Blog', labelHe: 'בלוג נ נח', icon: '✍️', href: '/blog', key: 'blog' },
   { label: 'Search', labelHe: 'חיפוש', icon: '🔍', href: '/search-enhanced', key: 'search' },
   { label: 'Prayers', labelHe: 'תפילות', icon: '🙏', href: '/prayers', key: 'prayers', featured: true },
   { label: 'My Fire', labelHe: 'האש שלי', icon: '🔥', href: '/my-flame', key: 'flame', fire: true },
@@ -72,6 +73,7 @@ const importantLinkGroups = [
       { label: 'Torah GPS', href: '/torah-gps' },
       { label: 'Torah Map', href: '/mapjs' },
       { label: "What's New", href: '/whats-new' },
+      { label: 'Na Nach Blog', href: '/blog' },
       { label: 'About', href: '/about' },
       { label: 'Contact', href: '/contact' },
     ]
@@ -161,6 +163,7 @@ function isActive(path: string) {
     <span class="logo-name">ajew</span>
   </a>
   <div class="mobile-header-actions">
+    <a href="/blog" class="mobile-search-btn" aria-label="Blog">✍️</a>
     <a href="/prayers" class="mobile-search-btn mobile-prayers-btn" aria-label="Prayers">🙏</a>
     <a href="/search-enhanced" class="mobile-search-btn" aria-label="Search">🔍</a>
     <button
