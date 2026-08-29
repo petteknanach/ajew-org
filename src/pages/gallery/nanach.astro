@@ -253,7 +253,9 @@ const categories = {
 // while the legacy filename rules continue to classify the existing archive.
 for (const [key, category] of Object.entries(categories)) {
   const tagged = allImages.filter((img) => hasCategory(img, key));
-  category.images = [...new Set([...category.images, ...tagged])].sort();
+  category.images = [...new Set([...category.images, ...tagged])]
+    .filter((img) => !imageMetadata[img]?.exclude_categories?.includes(key))
+    .sort();
 }
 ---
 
