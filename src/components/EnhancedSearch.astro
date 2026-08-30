@@ -327,6 +327,16 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
     } else {
       url.searchParams.delete('proximity');
     }
+    if ((searchState.advancedOptions.searchType === 'acronym' || searchState.advancedOptions.searchType === 'endletters') && searchState.advancedOptions.acronymOrder !== 'consecutive') {
+      url.searchParams.set('acronymOrder', searchState.advancedOptions.acronymOrder);
+    } else {
+      url.searchParams.delete('acronymOrder');
+    }
+    if ((searchState.advancedOptions.searchType === 'google' || searchState.advancedOptions.searchType === 'any') && searchState.advancedOptions.minWords > 0) {
+      url.searchParams.set('minWords', String(searchState.advancedOptions.minWords));
+    } else {
+      url.searchParams.delete('minWords');
+    }
     if (searchState.advancedOptions.books.length === 1) {
       url.searchParams.set('book', searchState.advancedOptions.books[0]);
     } else {
@@ -354,15 +364,25 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
       
       const searchType = params.get('searchType');
       const proximity = params.get('proximity');
+      const acronymOrder = params.get('acronymOrder');
+      const minWords = params.get('minWords');
       if (searchType) searchState.advancedOptions.searchType = searchType;
       else if (proximity) searchState.advancedOptions.searchType = 'proximity';
       
       if (proximity) searchState.advancedOptions.proximity = parseInt(proximity);
+      if (acronymOrder === 'any' || acronymOrder === 'consecutive') searchState.advancedOptions.acronymOrder = acronymOrder;
+      if (minWords) searchState.advancedOptions.minWords = Math.max(0, parseInt(minWords, 10) || 0);
 
       document.querySelectorAll('.mode-btn[data-mode]').forEach(btn => {
         const active = (btn as HTMLElement).dataset.mode === searchState.advancedOptions.searchType;
         btn.classList.toggle('active', active);
       });
+      document.querySelectorAll('.order-btn[data-order]').forEach(btn => {
+        btn.classList.toggle('active', (btn as HTMLElement).dataset.order === searchState.advancedOptions.acronymOrder);
+      });
+      if (minWordsSelect) minWordsSelect.value = String(searchState.advancedOptions.minWords);
+      if (orderGroup) orderGroup.style.display = (searchState.advancedOptions.searchType === 'acronym' || searchState.advancedOptions.searchType === 'endletters') ? 'flex' : 'none';
+      if (minWordsGroup) minWordsGroup.style.display = (searchState.advancedOptions.searchType === 'google' || searchState.advancedOptions.searchType === 'any') ? 'flex' : 'none';
       
       setTimeout(() => performSearch(), 200);
     }

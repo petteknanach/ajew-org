@@ -16,10 +16,10 @@
     "start-api": "node enhanced-search-api-simple.cjs",
     "search-dev": "concurrently \"npm run generate-index\" \"npm run start-api\"",
     "import-ramchal": "node scripts/import-ramchal.mjs",
-    "verify:base": "python3 .hermes/safeguard-check.py && node scripts/verify-regression-guards.cjs && node scripts/verify-qa-regressions.cjs && node scripts/verify-sefer-hamidos-image-sharing.cjs && python3 scripts/verify-chayey-simanim.py && python3 scripts/verify-uzi-meshulam-letter.py && node scripts/verify-reader-directories.cjs && node scripts/verify-parparos-reader-alignment.cjs && node scripts/verify-kokhvei-or-alignment.cjs && python3 scripts/verify-super-reader-source-policy.py",
+    "verify:base": "python3 .hermes/safeguard-check.py && node scripts/verify-regression-guards.cjs && node scripts/verify-qa-regressions.cjs && node scripts/verify-sefer-hamidos-image-sharing.cjs && python3 scripts/verify-chayey-simanim.py && python3 scripts/verify-sichos-haran-alignment.py && python3 scripts/verify-uzi-meshulam-letter.py && node scripts/verify-reader-directories.cjs && node scripts/verify-parparos-reader-alignment.cjs && node scripts/verify-kokhvei-or-alignment.cjs && python3 scripts/verify-super-reader-source-policy.py",
     "verify:directories": "node scripts/verify-reader-directories.cjs",
     "verify:kokhvei": "node scripts/verify-kokhvei-or-alignment.cjs",
-    "verify:search": "node scripts/verify-search-regressions.cjs && python3 scripts/verify-saba-transcript-integration.py",
+    "verify:search": "node scripts/test-search-modes.mjs && node scripts/verify-search-regressions.cjs && python3 scripts/verify-saba-transcript-integration.py && python3 scripts/audit-reader-search-coverage.py",
     "verify:sichos-saba": "python3 scripts/verify-sichos-saba-full.py",
     "verify": "npm run verify:base && npm run verify:search && npm run verify:sichos-saba"
   },

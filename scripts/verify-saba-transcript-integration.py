@@ -57,7 +57,7 @@ for collection, folder, pattern, slug_pattern in SOURCES:
         # Empty, explicitly missing sides have no searchable text and are expected
         # to be omitted by the builders; every side with text must be fully present.
         if expected_he or expected_en:
-            he_doc = he_index.get(raw_path); en_doc = en_index.get(raw_path)
+            he_doc = he_index.get(canonical_path); en_doc = en_index.get(canonical_path)
             if not he_doc: fail(f'{source.name}: missing from Hebrew light index')
             elif normalize(he_doc.get('x')) != normalize(expected_he): fail(f'{source.name}: Hebrew light index is incomplete')
             if not en_doc: fail(f'{source.name}: missing from English light index')

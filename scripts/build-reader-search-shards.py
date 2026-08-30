@@ -17,11 +17,12 @@ OUT = ROOT / 'public' / 'reader-search'
 SHARDS = OUT / 'shards'
 DOCS = OUT / 'docs'
 PHRASES = OUT / 'phrases'
+LETTERS = OUT / 'letters'
 NIKUD_RE = re.compile(r'[\u0591-\u05C7]')
 COMBINING_RE = re.compile(r'[\u0300-\u036f]')
 PUNCT_RE = re.compile(r'[^\w\s\u0590-\u05ff]+', re.UNICODE)
 SPACE_RE = re.compile(r'\s+')
-HE_KEYS = ('he', 'he_nikud', 'verse', 'commentary_he', 'text_he', 'hebrew', 'hebrew_text')
+HE_KEYS = ('he', 'he_nikud', 'verse', 'verseText', 'commentary_he', 'text_he', 'hebrew', 'hebrew_text')
 EN_KEYS = ('en', 'commentary_en', 'text_en', 'english', 'translation')
 LAYER_KEYS = ('beginner', 'intermediate', 'scholarly')
 HEBREW_NUMERALS = {
@@ -80,20 +81,49 @@ def segment_language_text(seg, keys, hebrew=False):
     def add(value):
         if isinstance(value, str) and value.strip():
             parts.append(NIKUD_RE.sub('', value.strip()) if hebrew else value.strip())
+    if hebrew and 'he' in keys:
+        add(seg.get('he_nikud') or seg.get('he'))
+        keys = tuple(key for key in keys if key not in ('he', 'he_nikud'))
     for key in keys:
         add(seg.get(key))
+    commentary = seg.get('commentary')
+    if isinstance(commentary, dict):
+        if hebrew:
+            add(commentary.get('he_nikud') or commentary.get('he'))
+        else:
+            add(commentary.get('en'))
     layers = seg.get('layers') or {}
     if isinstance(layers, dict):
         for level in LAYER_KEYS:
             layer = layers.get(level) or {}
             if isinstance(layer, dict):
-                for key in keys:
+                layer_keys = keys
+                if hebrew:
+                    add(layer.get('he_nikud') or layer.get('he'))
+                    layer_keys = tuple(key for key in keys if key not in ('he', 'he_nikud'))
+                for key in layer_keys:
                     add(layer.get(key))
+                commentary = layer.get('commentary')
+                if isinstance(commentary, dict):
+                    if hebrew:
+                        add(commentary.get('he_nikud') or commentary.get('he'))
+                    else:
+                        add(commentary.get('en'))
     for level in LAYER_KEYS:
         layer = seg.get(level)
         if isinstance(layer, dict):
-            for key in keys:
+            layer_keys = keys
+            if hebrew:
+                add(layer.get('he_nikud') or layer.get('he'))
+                layer_keys = tuple(key for key in keys if key not in ('he', 'he_nikud'))
+            for key in layer_keys:
                 add(layer.get(key))
+            commentary = layer.get('commentary')
+            if isinstance(commentary, dict):
+                if hebrew:
+                    add(commentary.get('he_nikud') or commentary.get('he'))
+                else:
+                    add(commentary.get('en'))
         elif isinstance(layer, str) and not hebrew:
             add(layer)
     return clean_text(*parts)
@@ -135,48 +165,27 @@ def segment_map(raw_link):
     return rows
 
 
-def canonical_reader_link(link: str) -> str:
-    parts = (link or '').strip('/').split('/')
-    if len(parts) < 3 or parts[0] != 'reader':
-        return link
-    book = parts[1]
-    def clean_part(s):
-        return re.sub(r'^part-', '', s)
-    def clean_torah(s):
-        return re.sub(r'^(torah|topic|section|sicha|chapter)-', '', s)
-    # Complete Saba tape transcripts live under a storage-only ``tapes``
-    # directory, while their public Reader routes are /1/37-b, etc.
-    if book == 'saba-tape-transcripts' and len(parts) == 4 and parts[2] == 'tapes':
-        match = re.fullmatch(r'tape-0*(\d+)-([ab])', parts[3])
-        if match:
-            return f'/reader/{book}/1/{int(match.group(1))}-{match.group(2)}'
-    # Chayey Moharan simanim are stored under ``simanim/siman-N.json`` but
-    # their canonical public Reader route is singular: ``/siman/N``.
-    if book == 'chayey-moharan' and len(parts) == 4 and parts[2] == 'simanim':
-        match = re.fullmatch(r'siman-(\d+)', parts[3])
-        if match:
-            return f'/reader/{book}/siman/{int(match.group(1))}'
-    if len(parts) == 4:
-        return f'/reader/{book}/{clean_part(parts[2])}/{clean_torah(parts[3])}'
-    if len(parts) == 3:
-        return f'/reader/{book}/1/{clean_torah(parts[2])}'
-    return link
-
-
 def main():
     he = load_gz('light-search-index-he.json.gz')
     en = load_gz('light-search-index-en.json.gz')
+    # Light artifacts already contain canonical public links from the shared
+    # source resolver.  Never run a second, lossy path rewrite here.
     by_link = {}
-    for doc in he:
-        by_link[doc.get('l','')] = {'he': doc, 'en': None}
-    for doc in en:
-        link = doc.get('l','')
-        by_link.setdefault(link, {'he': None, 'en': None})['en'] = doc
+    for language, docs in (('he', he), ('en', en)):
+        for doc in docs:
+            link = doc.get('l', '')
+            if not link:
+                continue
+            entry = by_link.setdefault(link, {'he': None, 'en': None, 'raw': link})
+            if entry[language] is not None and entry[language] != doc:
+                raise RuntimeError(f'nonidentical {language} search documents share canonical route {link}')
+            entry[language] = doc
 
     if OUT.exists(): shutil.rmtree(OUT)
     SHARDS.mkdir(parents=True, exist_ok=True)
     DOCS.mkdir(parents=True, exist_ok=True)
     PHRASES.mkdir(parents=True, exist_ok=True)
+    LETTERS.mkdir(parents=True, exist_ok=True)
 
     # Exact phrase lookup uses compact binary bigram postings. Each record is
     # <uint32 hash, uint32 document id>, sharded by the high hash byte. This
@@ -185,13 +194,17 @@ def main():
     phrase_tmp = OUT / '.phrase-tmp'
     phrase_tmp.mkdir(parents=True, exist_ok=True)
     phrase_handles = {}
+    letter_presence = {'first': defaultdict(list), 'last': defaultdict(list)}
+    letter_bigrams = {'first': defaultdict(list), 'last': defaultdict(list)}
+    final_letters = {'ך': 'כ', 'ם': 'מ', 'ן': 'נ', 'ף': 'פ', 'ץ': 'צ'}
 
     items = []
     shard_terms = defaultdict(lambda: defaultdict(list))
-    for raw_link in sorted(k for k in by_link if k):
-        link = canonical_reader_link(raw_link)
-        hd = by_link[raw_link].get('he') or {}
-        ed = by_link[raw_link].get('en') or {}
+    for link in sorted(k for k in by_link if k):
+        entry = by_link[link]
+        raw_link = entry.get('raw') or link
+        hd = entry.get('he') or {}
+        ed = entry.get('en') or {}
         title = (hd.get('t') or ed.get('t') or '').strip()
         hebrew = (hd.get('h') or ed.get('h') or title).strip()
         book = (hd.get('b') or ed.get('b') or '').strip()
@@ -210,6 +223,12 @@ def main():
             add(shard_terms, 'e:' + ''.join(reversed(term)), item_id)
 
         tokens = normalized.split()
+        for mode in ('first', 'last'):
+            sequence = [(token[0] if mode == 'first' else final_letters.get(token[-1], token[-1])) for token in tokens if token]
+            for letter in set(sequence):
+                letter_presence[mode][letter].append(item_id)
+            for value in {phrase_hash(a + '\0' + b) for a, b in zip(sequence, sequence[1:])}:
+                letter_bigrams[mode][value >> 24].append((value, item_id))
         # A phrase repeated many times in one document still needs one posting.
         # Buffer each document by bucket to avoid millions of tiny writes.
         phrase_values = defaultdict(list)
@@ -257,9 +276,32 @@ def main():
             'shards': phrase_shards,
         }, f, separators=(',', ':'))
 
+    letter_stats = {}
+    for mode in ('first', 'last'):
+        mode_dir = LETTERS / mode
+        presence_dir = mode_dir / 'presence'
+        bigram_dir = mode_dir / 'bigrams'
+        presence_dir.mkdir(parents=True, exist_ok=True)
+        bigram_dir.mkdir(parents=True, exist_ok=True)
+        presence_bytes = bigram_bytes = records = 0
+        for letter, ids in sorted(letter_presence[mode].items()):
+            out_path = presence_dir / f'{ord(letter):x}.bin'
+            unique_ids = sorted(set(ids))
+            out_path.write_bytes(b''.join(struct.pack('<I', item_id) for item_id in unique_ids))
+            presence_bytes += out_path.stat().st_size
+        for bucket in range(256):
+            out_path = bigram_dir / f'{bucket:02x}.bin'
+            rows = sorted(set(letter_bigrams[mode].get(bucket, [])))
+            out_path.write_bytes(b''.join(struct.pack('<II', value, item_id) for value, item_id in rows))
+            records += len(rows)
+            bigram_bytes += out_path.stat().st_size
+        letter_stats[mode] = {'letters': len(letter_presence[mode]), 'bigramRecords': records, 'presenceBytes': presence_bytes, 'bigramBytes': bigram_bytes}
+    with open(LETTERS / 'meta.json', 'w', encoding='utf-8') as f:
+        json.dump({'version': 1, 'algorithm': 'fnv1a32-utf8-letter-bigram-le', 'recordBytes': 8, 'modes': letter_stats}, f, ensure_ascii=False, separators=(',', ':'))
+
     meta = {'generatedAt': datetime.now(timezone.utc).isoformat(), 'total': len(items), 'failures': 0, 'items': items}
     with open(OUT / 'meta.json', 'w', encoding='utf-8') as f:
         json.dump(meta, f, ensure_ascii=False, separators=(',', ':'))
-    print(json.dumps({'items': len(items), 'terms': term_count, 'shards': len(shard_terms), 'docs': len(items), 'phrase_records': phrase_records, 'max_phrase_shard_bytes': max_phrase_shard_bytes, 'meta_bytes': (OUT/'meta.json').stat().st_size, 'out': str(OUT)}, ensure_ascii=False, indent=2))
+    print(json.dumps({'items': len(items), 'terms': term_count, 'shards': len(shard_terms), 'docs': len(items), 'phrase_records': phrase_records, 'letter_index': letter_stats, 'max_phrase_shard_bytes': max_phrase_shard_bytes, 'meta_bytes': (OUT/'meta.json').stat().st_size, 'out': str(OUT)}, ensure_ascii=False, indent=2))
 
 if __name__ == '__main__': main()

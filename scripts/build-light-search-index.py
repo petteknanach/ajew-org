@@ -11,6 +11,7 @@ half only when user searches in the other language.
 """
 import json, os, re, gzip, sys
 from pathlib import Path
+from reader_search_routes import discover_routed_sources
 
 READER_DIR = Path('public/reader')
 OUT_DIR = Path('public/data')
@@ -19,7 +20,7 @@ OUT_DIR.mkdir(parents=True, exist_ok=True)
 def strip_nikud(text):
     return re.sub(r'[\u0591-\u05C7]', '', text)
 
-HE_KEYS = ('he', 'he_nikud', 'verse', 'commentary_he', 'text_he', 'hebrew', 'hebrew_text')
+HE_KEYS = ('he', 'he_nikud', 'verse', 'verseText', 'commentary_he', 'text_he', 'hebrew', 'hebrew_text')
 EN_KEYS = ('en', 'commentary_en', 'text_en', 'english', 'translation')
 BOOK_SEARCH_ALIASES = {
     'chayey-moharan': 'Chayey Moharan Chayay Moharan Chayei Moharan The Life of Our Leader Rabbi Nachman Life of Rabbi Nachman חיי מוהרן חיי מוהר״ן',
@@ -51,11 +52,19 @@ def extract_segments(data):
         seg_he = []
         seg_en = []
 
+        # ``he`` and ``he_nikud`` are alternate renderings of one body.
+        # Prefer the vocalized source so a Hebrew paragraph is not indexed twice.
+        primary_he_keys = tuple(key for key in HE_KEYS if key not in ('he', 'he_nikud'))
+        add_text(seg_he, seg.get('he_nikud') or seg.get('he'), hebrew=True)
         # Standard reader formats plus Tanach/Likutay-NaNach commentary fields.
-        for key in HE_KEYS:
+        for key in primary_he_keys:
             add_text(seg_he, seg.get(key), hebrew=True)
         for key in EN_KEYS:
             add_text(seg_en, seg.get(key), hebrew=False)
+        commentary = seg.get('commentary')
+        if isinstance(commentary, dict):
+            add_text(seg_he, commentary.get('he_nikud') or commentary.get('he'), hebrew=True)
+            add_text(seg_en, commentary.get('en'), hebrew=False)
 
         # PNC 3-layer format: seg.layers.beginner.he / .en
         layers = seg.get('layers') or {}
@@ -63,19 +72,29 @@ def extract_segments(data):
             for level in LAYER_KEYS:
                 l = layers.get(level) or {}
                 if isinstance(l, dict):
-                    for key in HE_KEYS:
+                    add_text(seg_he, l.get('he_nikud') or l.get('he'), hebrew=True)
+                    for key in primary_he_keys:
                         add_text(seg_he, l.get(key), hebrew=True)
                     for key in EN_KEYS:
                         add_text(seg_en, l.get(key), hebrew=False)
+                    commentary = l.get('commentary')
+                    if isinstance(commentary, dict):
+                        add_text(seg_he, commentary.get('he_nikud') or commentary.get('he'), hebrew=True)
+                        add_text(seg_en, commentary.get('en'), hebrew=False)
 
         # PNC flat format: seg.beginner.he / .en, or direct string values.
         for level in LAYER_KEYS:
             l = seg.get(level)
             if isinstance(l, dict):
-                for key in HE_KEYS:
+                add_text(seg_he, l.get('he_nikud') or l.get('he'), hebrew=True)
+                for key in primary_he_keys:
                     add_text(seg_he, l.get(key), hebrew=True)
                 for key in EN_KEYS:
                     add_text(seg_en, l.get(key), hebrew=False)
+                commentary = l.get('commentary')
+                if isinstance(commentary, dict):
+                    add_text(seg_he, commentary.get('he_nikud') or commentary.get('he'), hebrew=True)
+                    add_text(seg_en, commentary.get('en'), hebrew=False)
             elif isinstance(l, str):
                 add_text(seg_en, l, hebrew=False)
 
@@ -127,7 +146,13 @@ total_he_bytes = 0
 total_en_bytes = 0
 skipped = 0
 
-for fpath in json_files:
+for routed in discover_routed_sources(json_files, READER_DIR):
+    fpath = routed.source
+    url = routed.route
+    rel = fpath.relative_to(READER_DIR)
+    parts = rel.parts
+    book = parts[0] if parts else fpath.parent.name
+
     try:
         with open(fpath, 'r', encoding='utf-8') as f:
             data = json.load(f)
@@ -149,45 +174,8 @@ for fpath in json_files:
     if fpath.parent.name == 'chayey-moharan' and fpath.stem == 'hashmata-162':
         title = 'Hashmata 162 (Locked)'
         hebrew_title = data.get('label', '') or 'השמטה קס״ב'
-    # The searchable book id must be the top-level reader directory, not an
-    # internal folder such as ``part-1`` or ``volume-4``.  The search UI filters
-    # by these same top-level book ids, so nested folders would make users see
-    # folders instead of real books and would break one-book filtering.
-    rel = fpath.relative_to(READER_DIR)
-    parts = rel.parts
-    book = parts[0] if parts else fpath.parent.name
-
-    # Chayey Moharan has a canonical public structure that differs from its
-    # storage layout.  Keep the seven early section files, use one result per
-    # later siman, and exclude duplicate chapter/part bundles.
-    if book == 'chayey-moharan':
-        name = fpath.stem
-        if len(parts) == 3 and parts[1] == 'simanim':
-            match = re.fullmatch(r'siman-(\d+)', name)
-            if not match:
-                continue
-            url = f'/reader/chayey-moharan/siman/{int(match.group(1))}'
-        else:
-            chapter = re.fullmatch(r'chapter-(\d+)', name)
-            if chapter:
-                chapter_num = int(chapter.group(1))
-                if chapter_num > 7:
-                    continue
-                url = f'/reader/chayey-moharan/1/{chapter_num}'
-            elif re.fullmatch(r'part-\d+', name):
-                continue
-            elif name in ('intro', 'hashmatos-toc', 'hashmata-162', 'maftechos'):
-                url = f'/reader/chayey-moharan/1/{name}'
-            else:
-                continue
-    # Build URL for the standard reader layouts.
-    elif len(parts) == 2:
-        url = f'/reader/{parts[0]}/{parts[1].replace(".json","")}'
-    elif len(parts) == 3:
-        url = f'/reader/{parts[0]}/{parts[1]}/{parts[2].replace(".json","")}'
-    else:
-        url = f'/reader/{"/".join(parts).replace(".json","")}'
-    
+    # ``url`` comes from the shared public-route policy. Legacy storage copies
+    # have already been removed and all remaining collisions validated.
     # Shared metadata (included in both indexes)
     meta = {
         't': title[:200] if title else '',

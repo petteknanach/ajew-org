@@ -195,9 +195,12 @@ function main() {
 
         const partCatalog = JSON.parse(fs.readFileSync(indexPath, 'utf8'));
         const partDir = path.dirname(indexPath);
+        const sharedRootIndex = partDir === bookDir;
         const entries = (partCatalog.torahs || partCatalog.items || []).filter(t => {
-          // Filter by part for books with shared index (PNC, etc.)
-          if (book.parts.length > 1) {
+          // Filter only a shared root catalog. Per-part catalogs commonly omit
+          // an entry-level part field because the containing directory is the
+          // authoritative part identity.
+          if (book.parts.length > 1 && sharedRootIndex) {
             return t.part === part.part;
           }
           return true;
@@ -205,7 +208,9 @@ function main() {
 
         for (const entry of entries) {
           const num = entry.number || entry.torah;
-          let filePath = path.join(partDir, `torah-${num}.json`);
+          let filePath = book.id === 'likutay-halachos'
+            ? path.join(partDir, `halacha-${num}.json`)
+            : path.join(partDir, `torah-${num}.json`);
           if (!fs.existsSync(filePath)) {
             const jsonFiles = fs.readdirSync(partDir).filter(f => f.endsWith(`-${num}.json`) && f !== 'index.json');
             if (jsonFiles.length === 0) continue;
@@ -229,7 +234,9 @@ function main() {
             title: data.title,
             hebrewTitle: data.hebrewTitle || '',
             themes: data.themes || [],
-            url: entry.url || `/reader/${book.id}/${part.part}/${torahNum}`,
+            url: book.id === 'likutay-halachos'
+              ? `/reader/likutay-halachos/${part.part}/${torahNum}`
+              : (entry.url || `/reader/${book.id}/${part.part}/${torahNum}`),
             wordCount: searchHe.split(/\s+/).length,
             content: searchHe.substring(0, MAX_CONTENT),
             enContent: enText.substring(0, MAX_CONTENT),

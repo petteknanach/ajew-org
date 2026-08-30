@@ -71,6 +71,16 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
   </div>
 
   <script>
+    import {
+      acronymMatch,
+      booleanCandidateIds,
+      booleanCandidateClauses,
+      booleanMatch,
+      candidatePage,
+      minimumMatchCount,
+      proximityMatch,
+    } from '../lib/search-mode-core.mjs';
+
     document.addEventListener('DOMContentLoaded', function() {
       const welcomeMessage = document.getElementById('welcomeMessage');
       const loading = document.getElementById('loading');
@@ -83,96 +93,12 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
       const copySearchLink = document.getElementById('copySearchLink');
       const resultsSection = document.getElementById('resultsSection');
 
-      // Listen for search events
-      // Split language indexes: Hebrew (~38MB) + English (~19MB)
-      // Load preferred language first; lazy-load the other if needed
-      let heIndex = null;
-      let enIndex = null;
-      let hePromise = null;
-      let enPromise = null;
-      let preferredLang = 'he'; // 'he' or 'en'
-      
-      function detectLang() {
-        // 1. Check stored preference
-        try {
-          const stored = localStorage.getItem('ajew-search-lang');
-          if (stored === 'he' || stored === 'en') return stored;
-        } catch(e) {}
-        // 2. Check navigator.language
-        const nav = (navigator.language || '').toLowerCase();
-        if (nav.startsWith('he') || nav.startsWith('iw')) return 'he';
-        // 3. Default to English for non-Hebrew browsers
-        return 'en';
-      }
-      
-      function loadIndex(lang) {
-        if (lang === 'he' && heIndex) return Promise.resolve(heIndex);
-        if (lang === 'en' && enIndex) return Promise.resolve(enIndex);
-        if (lang === 'he' && hePromise) return hePromise;
-        if (lang === 'en' && enPromise) return enPromise;
-        
-        const file = lang === 'he' ? '/data/light-search-index-he.json.gz' : '/data/light-search-index-en.json.gz';
-        const label = lang === 'he' ? 'Hebrew' : 'English';
-        
-        // Show loading indicator (only on first load)
-        if (!document.getElementById('indexLoading')) {
-          const el = document.createElement('div');
-          el.className = 'index-loading';
-          el.id = 'indexLoading';
-          el.innerHTML = '<span class="idx-spinner"></span> טוען אינדקס חיפוש... Loading search index...';
-          resultsSection.insertBefore(el, resultsSection.firstChild);
-        }
-        
-        const promise = fetch(file)
-          .then(res => {
-            if (!res.ok) throw new Error('Failed to load ' + label + ' index');
-            const ds = new DecompressionStream('gzip');
-            const stream = res.body.pipeThrough(ds);
-            return new Response(stream).json();
-          })
-          .then(data => {
-            if (lang === 'he') heIndex = data;
-            else enIndex = data;
-            console.log(label + ' search index loaded:', data.length, 'documents');
-            // Remove loading indicator if both loaded or this was the preferred one
-            if (lang === preferredLang || (heIndex && enIndex)) {
-              const el = document.getElementById('indexLoading');
-              if (el) el.remove();
-            }
-            return data;
-          })
-          .catch(err => {
-            console.error(label + ' index load failed:', err);
-            const el = document.getElementById('indexLoading');
-            if (el) el.innerHTML = '⚠️ Failed to load index. Check your connection and refresh.';
-            throw err;
-          });
-        
-        if (lang === 'he') hePromise = promise;
-        else enPromise = promise;
-        return promise;
-      }
-      
-      function getActiveIndex() {
-        // Returns the preferred index if loaded, otherwise whichever is loaded
-        if (preferredLang === 'he' && heIndex) return heIndex;
-        if (preferredLang === 'en' && enIndex) return enIndex;
-        return heIndex || enIndex;
-      }
-      
+      // All modes use bounded static postings plus per-result documents. The
+      // browser never downloads/decompresses a whole-corpus text artifact.
       function isHebrewQuery(query) {
         return /[\u0590-\u05FF]/.test(query);
       }
-      
-      function needsLanguageSwitch(query) {
-        const qHebrew = isHebrewQuery(query);
-        if (qHebrew && !heIndex && preferredLang === 'en') return 'he';
-        if (!qHebrew && !enIndex && preferredLang === 'he') return 'en';
-        return null;
-      }
-      
-      // Pre-load lightweight reader-search metadata only. Do not load the huge browser indexes.
-      preferredLang = detectLang();
+
       setTimeout(() => loadReaderMeta().catch(() => {}), 0);
       
       function normalizeForSearch(text) {
@@ -297,6 +223,7 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
 
       const readerShardCache = new Map();
       const readerPhraseShardCache = new Map();
+      const readerLetterShardCache = new Map();
       let readerMetaPromise = null;
       let readerMeta = null;
 
@@ -359,6 +286,46 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         return ids;
       }
 
+      async function loadLetterBinary(path) {
+        if (readerLetterShardCache.has(path)) return readerLetterShardCache.get(path);
+        const promise = fetch(readerAssetUrl(path), { headers: { Accept: 'application/octet-stream' } })
+          .then(r => { if (!r.ok) throw new Error('letter shard ' + r.status); return r.arrayBuffer(); })
+          .then(buffer => new DataView(buffer))
+          .catch(err => { readerLetterShardCache.delete(path); throw err; });
+        readerLetterShardCache.set(path, promise);
+        return promise;
+      }
+
+      function uint32Ids(view) {
+        const ids = [];
+        for (let offset = 0; offset + 4 <= view.byteLength; offset += 4) ids.push(view.getUint32(offset, true));
+        return ids;
+      }
+
+      async function idsForLetterMode(query, mode, order) {
+        const useLast = mode === 'endletters';
+        const kind = useLast ? 'last' : 'first';
+        const finals = { ך:'כ', ם:'מ', ן:'נ', ף:'פ', ץ:'צ' };
+        const letters = Array.from(normalizeForSearch(query).replace(/\s/g, ''))
+          .map(letter => useLast ? (finals[letter] || letter) : letter);
+        if (!letters.length) return [];
+        let lists;
+        if (order === 'consecutive' && letters.length > 1) {
+          const hashes = Array.from(new Set(letters.slice(0, -1).map((letter, index) => fnv1a32(letter + '\0' + letters[index + 1]))));
+          const views = new Map();
+          await Promise.all(hashes.map(async hash => {
+            const key = (hash >>> 24).toString(16).padStart(2, '0');
+            if (!views.has(key)) views.set(key, await loadLetterBinary(`/reader-search/letters/${kind}/bigrams/${key}.bin`));
+          }));
+          lists = hashes.map(hash => phrasePostings(views.get((hash >>> 24).toString(16).padStart(2, '0')), hash));
+        } else {
+          lists = await Promise.all(Array.from(new Set(letters)).map(async letter =>
+            uint32Ids(await loadLetterBinary(`/reader-search/letters/${kind}/presence/${letter.codePointAt(0).toString(16)}.bin`))
+          ));
+        }
+        return intersectPostings(lists);
+      }
+
       async function idsForExactPhrase(query) {
         const tokens = normalizeForSearch(query).split(' ').filter(Boolean);
         if (tokens.length < 2) return null;
@@ -400,9 +367,28 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         return Array.from(merged);
       }
 
-      function idsForMode(shards, query, mode) {
+      function intersectPostings(lists) {
+        if (!lists.length || lists.some(list => !list.length)) return [];
+        const [smallest, ...rest] = [...lists].sort((a, b) => a.length - b.length);
+        const restSets = rest.map(list => new Set(list));
+        return smallest.filter(id => restSets.every(set => set.has(id)));
+      }
+
+      function idsForBoolean(shards, query, universeSize) {
+        const postings = new Map();
+        for (const clause of booleanCandidateClauses(query)) {
+          for (const term of [...clause.include, ...clause.exclude]) {
+            postings.set(term, postingsForGroup(shards, [term]));
+          }
+        }
+        const universe = Array.from({ length: universeSize }, (_, id) => id);
+        return booleanCandidateIds(postings, query, universe);
+      }
+
+      function idsForMode(shards, query, mode, minWords = 0, universeSize = 0) {
         const groups = queryTermGroups(query, { expand: mode !== 'exact', keepStopWords: mode === 'exact' });
         const q = normalizeForSearch(query);
+        if (mode === 'boolean') return idsForBoolean(shards, query, universeSize);
         if (!groups.length) return [];
         if (mode === 'startsWith') {
           const ids = new Set();
@@ -417,13 +403,23 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         }
         const lists = groups.map(group => postingsForGroup(shards, group)).filter(list => list.length);
         if (!lists.length) return [];
-        if (mode === 'any' || mode === 'boolean' || (mode === 'google' && groups.length > 3)) {
+        if ((mode === 'all' || mode === 'proximity' || mode === 'exact') && lists.length !== groups.length) return [];
+        if (mode === 'any' || mode === 'google') {
           const score = new Map();
+          const counts = new Map();
           lists.forEach(list => {
             const rarityWeight = Math.max(1, 120000 / Math.max(1, list.length));
-            list.forEach(id => score.set(id, (score.get(id) || 0) + rarityWeight));
+            list.forEach(id => {
+              score.set(id, (score.get(id) || 0) + rarityWeight);
+              counts.set(id, (counts.get(id) || 0) + 1);
+            });
           });
-          return Array.from(score.keys()).sort((a, b) => (score.get(b) || 0) - (score.get(a) || 0));
+          const required = minWords > 0
+            ? minimumMatchCount(minWords, groups.length)
+            : (mode === 'google' ? (groups.length <= 3 ? groups.length : Math.max(2, Math.ceil(groups.length * 0.55))) : 1);
+          return Array.from(score.keys())
+            .filter(id => (counts.get(id) || 0) >= required)
+            .sort((a, b) => (score.get(b) || 0) - (score.get(a) || 0));
         }
         // For short Google-style searches, users expect all typed words to be
         // present and ranked, not thousands of one-word candidates that hide
@@ -478,13 +474,14 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         return 0;
       }
 
-      function docMatchScore(doc, query, mode) {
+      function docMatchScore(doc, query, mode, options = {}) {
         const q = normalizeForSearch(query);
         const groups = queryTermGroups(query, { expand: mode !== 'exact', keepStopWords: mode === 'exact' });
         const exactGroups = queryTermGroups(query, { expand: false, keepStopWords: mode === 'exact' });
         const n = doc.n || normalizeForSearch([doc.t, doc.h, doc.c, doc.he, doc.en].join(' '));
         const titleNorm = normalizeForSearch([doc.t, doc.h, doc.c].join(' '));
         const toks = n.split(' ').filter(Boolean);
+        if (mode === 'boolean') return booleanMatch(n, query) ? 900 + bookPriorityScore(doc) : 0;
         if (!groups.length) return 0;
         if (mode === 'startsWith') return toks.some(w => w.startsWith(q)) ? 700 + bookPriorityScore(doc) : 0;
         if (mode === 'endsWith') return toks.some(w => w.endsWith(q)) ? 700 + bookPriorityScore(doc) : 0;
@@ -505,10 +502,19 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
           if (phrase) return 1600 + prox + priority + (titleHit ? 200 : 0);
           return 0;
         }
-        if (mode === 'all' || mode === 'proximity') return allMatched ? 900 + prox + priority + (phrase ? 400 : 0) : 0;
-        if (mode === 'any') return matched ? (matched * 140 + prox + priority + (phrase ? 350 : 0) + (titleHit ? 200 : 0)) : 0;
-        if (mode === 'google' || mode === 'boolean') {
-          const minimum = groups.length <= 3 ? groups.length : Math.max(2, Math.ceil(groups.length * 0.55));
+        if (mode === 'all') return allMatched ? 900 + prox + priority + (phrase ? 400 : 0) : 0;
+        if (mode === 'proximity') {
+          const distance = Math.max(0, Number(options.proximity) || 5);
+          return allMatched && proximityMatch(toks, groups, distance) ? 1100 + prox + priority + (phrase ? 400 : 0) : 0;
+        }
+        if (mode === 'any') {
+          const minimum = minimumMatchCount(options.minWords, groups.length);
+          return matched >= minimum ? (matched * 140 + prox + priority + (phrase ? 350 : 0) + (titleHit ? 200 : 0)) : 0;
+        }
+        if (mode === 'google') {
+          const minimum = options.minWords > 0
+            ? minimumMatchCount(options.minWords, groups.length)
+            : (groups.length <= 3 ? groups.length : Math.max(2, Math.ceil(groups.length * 0.55)));
           return matched >= minimum ? (matched * 180 + exactMatched * 40 + prox + priority + (phrase ? 450 : 0) + (titleHit ? 250 : 0)) : 0;
         }
         return matched ? matched * 100 + priority : 0;
@@ -630,79 +636,108 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
 
       let lastSearchResults = [];
       let activeSearchRequest = 0;
+      let activeContinuation = null;
+      const CANDIDATE_BUDGET = 192;
+      const DOC_BATCH_SIZE = 48;
 
-      async function clientSearch(query, advanced, onProgress) {
+      async function continueCandidateSearch(state) {
+        const page = candidatePage(state.ids, state.cursor, CANDIDATE_BUDGET);
+        state.cursor = page.cursor;
+        for (let offset = 0; offset < page.ids.length; offset += DOC_BATCH_SIZE) {
+          const docs = await Promise.all(page.ids.slice(offset, offset + DOC_BATCH_SIZE).map(loadDoc));
+          for (const doc of docs) {
+            if (!doc) continue;
+            const result = state.verify(doc);
+            if (result) state.results.push(result);
+          }
+        }
+        state.results.sort((a, b) => (b._score || 0) - (a._score || 0));
+        state.hasMore = page.hasMore;
+        lastSearchResults = state.results;
+        activeContinuation = state.hasMore ? state : null;
+        return {
+          results: state.results.slice(0, state.visibleLimit || 50),
+          total: state.hasMore ? null : state.results.length,
+          hasMore: state.hasMore,
+          checked: state.cursor,
+          candidateTotal: state.ids.length,
+        };
+      }
+
+      async function letterModeSearch(query, advanced, mode) {
         const meta = await loadReaderMeta();
+        const order = advanced?.acronymOrder || 'consecutive';
+        const useLastLetter = mode === 'endletters';
+        const allowed = new Set(advanced?.books || []);
+        let ids = await idsForLetterMode(query, mode, order);
+        if (allowed.size) ids = ids.filter(id => allowed.has(bookIdFromPath(meta.items[id]?.p || '')));
+        const state = {
+          ids, cursor: 0, results: [], visibleLimit: 50, hasMore: ids.length > 0,
+          verify(doc) {
+            const hit = acronymMatch(String(doc.n || '').split(' ').filter(Boolean), query, order, useLastLetter);
+            if (!hit.match) return null;
+            const raw = isHebrewQuery(query) ? (doc.he || doc.en || '') : (doc.en || doc.he || '');
+            return {
+              title: resultTitle(doc), hebrewTitle: doc.h || doc.t || '',
+              snippet: raw.slice(0, 420), link: doc.p || '#', book: doc.c || '', subcategory: doc.c || '',
+              relevance: order === 'consecutive' ? 95 : 85,
+              extraInfo: `Found: ${hit.matchedWords.join(order === 'any' ? ' ... ' : ' ')}`,
+              _score: (order === 'consecutive' ? 950 : 850) + bookPriorityScore(doc),
+            };
+          }
+        };
+        return continueCandidateSearch(state);
+      }
+
+      async function clientSearch(query, advanced) {
         const effective = effectiveSearch(query, advanced?.searchType || 'google');
         query = effective.query;
         const searchType = effective.mode;
-        const books = advanced?.books || [];
-        const allowed = new Set(books || []);
+        if (searchType === 'acronym' || searchType === 'endletters') return letterModeSearch(query, advanced, searchType);
+
+        const meta = await loadReaderMeta();
+        const allowed = new Set(advanced?.books || []);
         let keys;
         if (searchType === 'endsWith') keys = ['e'];
         else if (searchType === 'startsWith') keys = [normalizeForSearch(query).slice(0,1) || '_'];
-        else {
-          // Candidate generation should use the same expanded variants that
-          // scoring/verifying uses. Otherwise "dead prayer" misses texts that
-          // say "dead person ... pray" when strict exact-phrase mode is chosen.
+        else if (searchType === 'boolean') {
+          keys = Array.from(new Set(booleanCandidateClauses(query).flatMap(clause => [...clause.include, ...clause.exclude]).map(term => term.slice(0, 1) || '_')));
+        } else {
           const groups = queryTermGroups(query, { expand: searchType !== 'exact', keepStopWords: searchType === 'exact' });
           keys = Array.from(new Set(groups.flat().map(w => w.slice(0,1) || '_')));
         }
         let ids;
         if (searchType === 'exact') {
-          try {
-            ids = await idsForExactPhrase(query);
-          } catch (err) {
-            console.warn('Exact phrase index unavailable; using strict word candidates.', err);
+          try { ids = await idsForExactPhrase(query); }
+          catch (err) {
+            console.warn('Exact phrase index unavailable; using bounded strict-word continuation.', err);
             ids = null;
           }
         }
         if (ids == null) {
           const shards = await Promise.all(keys.map(loadShard));
-          ids = idsForMode(shards, query, searchType);
+          ids = idsForMode(shards, query, searchType, advanced?.minWords || 0, meta.items.length);
         }
         if (allowed.size) ids = ids.filter(id => allowed.has(bookIdFromPath(meta.items[id]?.p || '')));
 
-        // Verify the primary Breslov works first. A common three-word Hebrew
-        // phrase can produce 1,500+ candidates; without this ordering the exact
-        // Likutay Moharan hit may sit behind hundreds of remote document fetches.
-        ids.sort((a, b) => bookPriorityScore(meta.items[b] || {}) - bookPriorityScore(meta.items[a] || {}));
-
-        const verified = [];
-        const batchSize = 100;
-        // Exact-mode bigram postings are already narrow. If an older deployment
-        // lacks them, verify every strict word candidate rather than silently
-        // dropping a true phrase beyond an arbitrary cap.
-        const maxCandidates = searchType === 'exact' ? ids.length : ((searchType === 'google' || searchType === 'any' || searchType === 'boolean') ? 2400 : 1800);
-        let progressShown = false;
-        for (let i = 0; i < ids.length && i < maxCandidates; i += batchSize) {
-          const docs = await Promise.all(ids.slice(i, i + batchSize).map(loadDoc));
-          for (const doc of docs) {
-            if (!doc) continue;
-            const score = docMatchScore(doc, query, searchType);
-            if (!score) continue;
+        // Candidate ordering from postings is intentional relevance ordering.
+        // Book preference is a score boost after verification, never a rewrite
+        // that strands the rest of the corpus behind a favored-work prefix.
+        const state = {
+          ids, cursor: 0, results: [], visibleLimit: 50, hasMore: ids.length > 0,
+          verify(doc) {
+            const score = docMatchScore(doc, query, searchType, advanced);
+            if (!score) return null;
             const context = matchContext(doc, query);
-            verified.push({
-              title: resultTitle(doc),
-              hebrewTitle: doc.h || doc.t || '',
-              snippet: context.snippet,
-              link: (doc.p || '#') + context.anchor,
-              book: doc.c || '',
-              subcategory: doc.c || '',
+            return {
+              title: resultTitle(doc), hebrewTitle: doc.h || doc.t || '', snippet: context.snippet,
+              link: (doc.p || '#') + context.anchor, book: doc.c || '', subcategory: doc.c || '',
               relevance: Math.min(100, Math.max(10, Math.round(score / 18))),
-              extraInfo: context.location || doc.c || '',
-              _score: score
-            });
+              extraInfo: context.location || doc.c || '', _score: score,
+            };
           }
-          verified.sort((a, b) => (b._score || 0) - (a._score || 0));
-          if (!progressShown && verified.length && i + batchSize < Math.min(ids.length, maxCandidates)) {
-            progressShown = true;
-            onProgress?.({ results: verified.slice(0, 50), total: verified.length });
-          }
-        }
-        verified.sort((a, b) => (b._score || 0) - (a._score || 0));
-        lastSearchResults = verified;
-        return { results: verified.slice(0, 50), total: verified.length };
+        };
+        return continueCandidateSearch(state);
       }
 
       document.addEventListener('enhanced-search', (e: any) => {
@@ -722,16 +757,11 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         const loadPromise = Promise.resolve();
 
         loadPromise.then(async () => {
-          const { results, total } = await clientSearch(query, advanced, (partial) => {
-            if (requestId !== activeSearchRequest) return;
-            loading.classList.add('hidden');
-            displayResults(partial.results, query, partial.total);
-          });
+          const page = await clientSearch(query, advanced);
           if (requestId !== activeSearchRequest) return;
           loading.classList.add('hidden');
-          
-          if (results.length > 0) {
-            displayResults(results, query, total);
+          if (page.results.length > 0 || page.hasMore) {
+            displayResults(page.results, query, page.total, page.hasMore, page.checked, page.candidateTotal);
           } else {
             showNoResults(query);
           }
@@ -743,10 +773,11 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         });
       }
 
-      function displayResults(results: any[], query: string, total?: number) {
-        const count = total || results.length;
+      function displayResults(results: any[], query: string, total?: number | null, hasMore = false, checked = 0, candidateTotal = 0) {
         const displayQuery = effectiveSearch(query, 'google').query;
-        resultsCount.textContent = `${count} תוצאות ל "${displayQuery}" / results for "${displayQuery}"`;
+        resultsCount.textContent = total == null
+          ? `${results.length}+ results so far for "${displayQuery}" (${checked} of ${candidateTotal} candidates checked)`
+          : `${total} תוצאות ל "${displayQuery}" / results for "${displayQuery}"`;
 
         const html = results.map(result => {
           const extraInfo = result.extraInfo || '';
@@ -786,49 +817,26 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         resultsList.innerHTML = html;
         bindShareButtons();
 
-        // Add "Load More" for the already-verified client-side results.
-        // The static site has no reliable /api/search pagination route, so do
-        // not send users to a dead second page after saying there are more.
-        if (count > results.length) {
+        if (hasMore || (total != null && total > results.length)) {
           const loadMore = document.createElement('button');
           loadMore.className = 'load-more-btn';
-          loadMore.textContent = `Load more (showing ${results.length} of ${count})`;
-          loadMore.addEventListener('click', () => {
-            const totalShown = resultsList.querySelectorAll('.result-item').length;
-            const next = lastSearchResults.slice(totalShown, totalShown + 50);
-            if (!next.length) { loadMore.remove(); return; }
-            const moreHtml = next.map((r: any) => {
-              const s = highlightQuery(r.snippet || '', displayQuery, r.extraInfo || '');
-              const t = highlightQuery(r.title || '', displayQuery);
-              const ht = r.hebrewTitle ? highlightQuery(r.hebrewTitle, displayQuery) : '';
-              const linkWithQ = resultLink(r.link || '#', query);
-              const rawSnippet = r.snippet || '';
-              const rawTitle = r.title || 'Unknown';
-              const relevance = r.relevance || 0;
-              const extraInfo = r.extraInfo || '';
-              const subcategory = r.subcategory || '';
-              return `
-                <div class="result-item">
-                  <div class="result-top">
-                    <h4 class="result-title"><a href="${linkWithQ}">${t}${ht ? ` <span class="result-he-title">${ht}</span>` : ''}</a></h4>
-                    <div class="result-tags">
-                      ${extraInfo ? `<span class="result-match-info">${extraInfo}</span>` : ''}
-                      ${subcategory ? `<span class="result-subcategory">${subcategory}</span>` : ''}
-                      ${relevance ? `<span class="result-relevance">${relevance}%</span>` : ''}
-                    </div>
-                  </div>
-                  <p class="result-snippet">${s}</p>
-                  <div class="result-footer">
-                    <a href="${linkWithQ}" class="view-link">קרא טקסט מלא / Read Full →</a>
-                    <button class="share-btn" data-share-link="${escapeAttr(linkWithQ)}" data-share-title="${escapeAttr(rawTitle)}" data-share-snippet="${escapeAttr(rawSnippet)}">📤 Share</button>
-                  </div>
-                </div>`;
-            }).join('');
-            loadMore.insertAdjacentHTML('beforebegin', moreHtml);
-            bindShareButtons();
-            const newShown = resultsList.querySelectorAll('.result-item').length;
-            if (newShown >= count) loadMore.remove();
-            else loadMore.textContent = `Load more (showing ${newShown} of ${count})`;
+          loadMore.textContent = hasMore ? `Load more (checked ${checked} of ${candidateTotal} candidates)` : `Show more (${results.length} of ${total})`;
+          loadMore.addEventListener('click', async () => {
+            loadMore.disabled = true;
+            loadMore.textContent = 'Loading…';
+            try {
+              if (activeContinuation) {
+                activeContinuation.visibleLimit += 50;
+                const nextPage = await continueCandidateSearch(activeContinuation);
+                displayResults(nextPage.results, query, nextPage.total, nextPage.hasMore, nextPage.checked, nextPage.candidateTotal);
+              } else {
+                displayResults(lastSearchResults.slice(0, results.length + 50), query, total, false, checked, candidateTotal);
+              }
+            } catch (err) {
+              console.error('Search continuation failed:', err);
+              loadMore.disabled = false;
+              loadMore.textContent = 'Load more';
+            }
           });
           resultsList.appendChild(loadMore);
         }

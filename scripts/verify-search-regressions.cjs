@@ -38,6 +38,30 @@ function normalize(value) {
     .replace(/[^\p{L}\p{N}\s]+/gu, ' ')
     .replace(/\s+/g, ' ').trim();
 }
+function cleanSpace(value) {
+  return String(value || '').replace(/[\x00-\x1f\s]+/g, ' ').trim();
+}
+function canonicalReaderLink(link) {
+  if (String(link || '').endsWith('.json')) return link;
+  const parts = String(link || '').replace(/^\/+|\/+$/g, '').split('/');
+  if (parts.length < 3 || parts[0] !== 'reader') return link;
+  const book = parts[1];
+  const cleanPart = value => value.replace(/^part-/, '');
+  const cleanUnit = value => /^(?:torah|halacha|prayer|topic|section|sicha|chapter)-\d+$/.test(value)
+    ? value.replace(/^(?:torah|halacha|prayer|topic|section|sicha|chapter)-/, '')
+    : value;
+  if (book === 'saba-tape-transcripts' && parts.length === 4 && parts[2] === 'tapes') {
+    const match = parts[3].match(/^tape-0*(\d+)-([ab])$/);
+    if (match) return `/reader/${book}/1/${Number(match[1])}-${match[2]}`;
+  }
+  if (book === 'chayey-moharan' && parts.length === 4 && parts[2] === 'simanim') {
+    const match = parts[3].match(/^siman-(\d+)$/);
+    if (match) return `/reader/${book}/siman/${Number(match[1])}`;
+  }
+  if (parts.length === 4) return `/reader/${book}/${cleanPart(parts[2])}/${cleanUnit(parts[3])}`;
+  if (parts.length === 3) return `/reader/${book}/1/${cleanUnit(parts[2])}`;
+  return link;
+}
 function fnv1a32(text) {
   let value = 0x811c9dc5;
   for (const byte of Buffer.from(text, 'utf8')) {
@@ -79,7 +103,7 @@ function phrasePostings(file, hash) {
 mustContain('src/pages/search-enhanced.astro', 'async function idsForExactPhrase', 'binary exact-phrase candidate lookup');
 mustContain('src/pages/search-enhanced.astro', "Exact means exact: normalized words must remain consecutive", 'strict exact semantics');
 mustContain('src/pages/search-enhanced.astro', "return { query: trimmed.slice(open.length, -close.length).trim(), mode: 'exact' }", 'quoted-query exact mode');
-mustContain('src/pages/search-enhanced.astro', "const maxCandidates = searchType === 'exact' ? ids.length", 'uncapped exact fallback correctness');
+mustContain('src/pages/search-enhanced.astro', 'async function continueCandidateSearch(state)', 'bounded full-corpus candidate continuation');
 mustContain('src/pages/search-enhanced.astro', 'function matchContext(doc, query)', 'segment-aware result preview');
 mustContain('src/pages/search-enhanced.astro', 'function resultLink(link, query)', 'query-preserving deep result links');
 mustContain('public/reader-script.js', 'function autoHighlightFromQuery()', 'reader deep-link highlighting');
@@ -87,11 +111,11 @@ mustContain('public/reader-script.js', 'init(); autoHighlightFromQuery(); setupM
 mustContain('public/reader-script.js', 'Run only after the lookup table above has been initialized.', 'commentary lookup initialization order');
 mustContain('src/pages/reader/likutay-moharan/[part]/[torah].astro', 'Likutay Moharan ${partRoman}:${torahNum}', 'numbered Likutay Moharan teaching titles');
 mustContain('scripts/build-reader-search-shards.py', "algorithm': 'fnv1a32-utf8-bigram-le'", 'versioned phrase index builder');
-mustContain('scripts/build-reader-search-shards.py', "parts[2] == 'tapes'", 'canonical Saba tape-side Reader links');
-mustContain('scripts/build-reader-search-shards.py', "book == 'chayey-moharan'", 'canonical Chayey Moharan siman links');
+mustContain('scripts/reader_search_routes.py', 'book == "saba-tape-transcripts"', 'canonical Saba tape-side Reader links');
+mustContain('scripts/reader_search_routes.py', 'book == "chayey-moharan"', 'canonical Chayey Moharan siman links');
 mustContain('scripts/build-reader-search-shards.py', "seg.get('index') or position", 'fallback segment anchors for Saba tape transcripts');
 mustContain('scripts/build-light-search-index.py', "he_doc['m'] = segment_map", 'single-pass Reader location map generation');
-mustContain('scripts/build-light-search-index.py', "url = f'/reader/chayey-moharan/siman/{int(match.group(1))}'", 'Chayey Moharan public siman URLs');
+mustContain('scripts/reader_search_routes.py', 'f"/reader/{book}/siman/{int(match.group(1))}"', 'Chayey Moharan public siman URLs');
 mustContain('scripts/build-light-search-index.py', 'Chayay Moharan Chayei Moharan The Life of Our Leader Rabbi Nachman', 'Chayey Moharan spelling/title aliases');
 mustContain('scripts/build-search-index-v2.cjs', 'Chayay Moharan: ${chayeyCount} canonical sections/simanim indexed', 'complete Chayey Moharan metadata indexing');
 mustContain('src/pages/reader/chayey-moharan/index.astro', "(indexData?.totalSections || 20) + (indexData?.earlySections?.length || 7)", 'complete 27-section Chayey Moharan directory count');
@@ -104,6 +128,18 @@ mustContain('src/pages/search-enhanced.astro', "c === 'kokhvei-or'", 'Kokhvei Or
 mustContain('src/pages/search-enhanced.astro', 'Pick the segment with the tightest complete semantic match', 'semantic result deep-link selection');
 mustContain('src/pages/search-enhanced.astro', "['forehead', ['forehead', 'brow']]", 'forehead conceptual expansion');
 mustContain('src/pages/search-enhanced.astro', "['תבואה', ['תבואה', 'חטה', 'חיטה', 'חיטים', 'דגן']]", 'Hebrew grain conceptual expansion');
+mustContain('src/pages/search-enhanced.astro', "return booleanMatch(n, query)", 'Boolean AND/OR/NOT verification');
+mustContain('src/pages/search-enhanced.astro', 'proximityMatch(toks, groups, distance)', 'actual proximity-distance verification');
+mustContain('src/components/EnhancedSearch.astro', "minWordsSelect.addEventListener('change'", 'minimum-word selector change wiring');
+mustContain('src/components/EnhancedSearch.astro', "url.searchParams.set('minWords'", 'minimum-word URL persistence');
+mustContain('src/components/EnhancedSearch.astro', "const minWords = params.get('minWords')", 'minimum-word URL restoration');
+mustContain('src/pages/search-enhanced.astro', 'minimumMatchCount(options.minWords, groups.length)', 'minimum-word result verification');
+mustContain('src/pages/search-enhanced.astro', 'idsForMode(shards, query, searchType, advanced?.minWords || 0', 'minimum-word candidate filtering');
+mustContain('src/pages/search-enhanced.astro', "advanced?.acronymOrder || 'consecutive'", 'acronym order support');
+mustContain('src/pages/search-enhanced.astro', 'const CANDIDATE_BUDGET = 192', 'bounded initial document verification');
+mustContain('src/pages/search-enhanced.astro', 'activeContinuation = state.hasMore ? state : null', 'reachable non-exact continuation');
+mustContain('scripts/reader_search_routes.py', 'torah|halacha|prayer|topic|section|sicha|chapter', 'numbered Reader route canonicalization');
+mustContain('scripts/reader_search_routes.py', "book == 'likutay-halachos'", 'canonical Likutay Halachos source preference');
 
 const readerCatalog = JSON.parse(fs.readFileSync(path.join(root, 'public/reader/catalog.json'), 'utf8'));
 const chayeyCatalog = (readerCatalog.books || []).find(book => book.id === 'chayey-moharan');
@@ -132,6 +168,23 @@ else {
 // Canonical corpus regression: the reported phrase and target must remain in the
 // source index, independent of generated reader-search artifacts.
 const lightHe = JSON.parse(zlib.gunzipSync(fs.readFileSync(path.join(root, 'public/data/light-search-index-he.json.gz'))));
+const lightEn = JSON.parse(zlib.gunzipSync(fs.readFileSync(path.join(root, 'public/data/light-search-index-en.json.gz'))));
+const lightHalachos = lightHe.filter(doc => doc.b === 'likutay-halachos');
+const lightHalachosPaths = new Set(lightHalachos.map(doc => doc.l));
+if (lightHalachos.length !== 600 || lightHalachosPaths.size !== 600) {
+  fail(`canonical Hebrew index has ${lightHalachos.length} Likutay Halachos docs / ${lightHalachosPaths.size} unique paths; expected 600/600`);
+}
+if (lightHalachos.some(doc => !/^\/reader\/likutay-halachos\/[1-8]\/\d+$/.test(doc.l || ''))) {
+  fail('canonical Hebrew index contains a noncanonical Likutay Halachos route');
+}
+const lightTefilos = lightHe.filter(doc => doc.b === 'likutay-tefilos');
+const lightTefilosPaths = new Set(lightTefilos.map(doc => doc.l));
+if (lightTefilos.length !== 211 || lightTefilosPaths.size !== 211) {
+  fail(`canonical Hebrew index has ${lightTefilos.length} Likutay Tefilos docs / ${lightTefilosPaths.size} unique paths; expected 211/211`);
+}
+if (lightTefilos.some(doc => !/^\/reader\/likutay-tefilos\/(?:1\/(?:0|[1-9]\d{0,2})|2\/[1-9]\d?)$/.test(doc.l || ''))) {
+  fail('canonical Hebrew index contains a noncanonical Likutay Tefilos route');
+}
 const targetSource = lightHe.find(doc => /\/reader\/likutay-moharan\/(?:part-2\/torah-|2\/)1$/.test(doc.l || ''));
 if (!targetSource) fail('canonical Hebrew index: Likutay Moharan Tinyana 1 is missing');
 else if (!normalize(`${targetSource.t || ''} ${targetSource.h || ''} ${targetSource.x || ''}`).includes(normalize(QUERY))) {
@@ -160,8 +213,9 @@ if (!fs.existsSync(phraseMetaPath)) {
       const doc = JSON.parse(fs.readFileSync(docPath, 'utf8'));
       if (doc.id !== targetId || doc.p !== TARGET_PATH) fail('reader-search target document id/path disagrees with metadata');
       if (!normalize(doc.n).includes(normalize(QUERY))) fail(`reader-search target document lost exact phrase “${QUERY}”`);
-      const targetMap = (doc.m || []).find(row => row[1] === 11 && row[2] <= doc.he.indexOf(QUERY) && row[3] >= doc.he.indexOf(QUERY) + QUERY.length);
-      if (!targetMap) fail('reader-search target lacks a segment map locating the phrase at Likutay Moharan II:1:11');
+      const phraseOffset = doc.he.indexOf(QUERY);
+      const targetMap = (doc.m || []).find(row => row[2] <= phraseOffset && row[3] >= phraseOffset + QUERY.length);
+      if (!targetMap) fail('reader-search target lacks a segment map locating the known phrase in Likutay Moharan II:1');
     }
 
     const tokens = normalize(QUERY).split(' ');
@@ -204,7 +258,45 @@ if (!completeReaderArtifacts) {
   if (requiredArtifacts) fail('complete generated Reader search artifacts are missing');
 } else {
   const meta = JSON.parse(fs.readFileSync(readerMetaPath, 'utf8'));
+  // Every generated full document must match the current source-derived light
+  // indexes. This makes stale bodies after alignment/corpus edits build-fatal.
+  const sourcePriority = link => link.includes('/halacha-') || link.includes('/prayer-') ? 2 : link.includes('/torah-') ? 0 : 1;
+  const canonicalSources = new Map();
+  const recordSource = (doc, language) => {
+    const canonical = canonicalReaderLink(doc.l || '');
+    const existing = canonicalSources.get(canonical) || { priority: -1 };
+    const priority = sourcePriority(doc.l || '');
+    if (priority >= existing.priority) {
+      existing[language] = doc.x || '';
+      existing.priority = priority;
+    } else if (existing[language] == null) {
+      existing[language] = doc.x || '';
+    }
+    canonicalSources.set(canonical, existing);
+  };
+  lightHe.forEach(doc => recordSource(doc, 'he'));
+  lightEn.forEach(doc => recordSource(doc, 'en'));
+  let parityChecked = 0;
+  meta.items.forEach((item, id) => {
+    const source = canonicalSources.get(item.p);
+    if (!source) { fail(`reader-search metadata route has no canonical light-index source: ${item.p}`); return; }
+    const docPath = path.join(root, 'public/reader-search/docs', `${id}.json`);
+    if (!fs.existsSync(docPath)) { if (requiredArtifacts) fail(`reader-search document ${id}.json is missing`); return; }
+    const generated = JSON.parse(fs.readFileSync(docPath, 'utf8'));
+    if (cleanSpace(generated.he) !== cleanSpace(source.he)) fail(`reader-search Hebrew body is stale for ${item.p}`);
+    if (cleanSpace(generated.en) !== cleanSpace(source.en)) fail(`reader-search English body is stale for ${item.p}`);
+    parityChecked++;
+  });
+  if (requiredArtifacts && parityChecked !== meta.items.length) fail(`reader-search parity checked ${parityChecked}/${meta.items.length} documents`);
   const chayeyItems = meta.items.filter(item => item.c === 'chayey-moharan');
+  const halachosItems = meta.items.filter(item => item.c === 'likutay-halachos');
+  const halachosPaths = new Set(halachosItems.map(item => item.p));
+  if (halachosItems.length !== 600 || halachosPaths.size !== 600) {
+    fail(`reader-search metadata has ${halachosItems.length} Likutay Halachos docs / ${halachosPaths.size} unique paths; expected 600/600`);
+  }
+  if (halachosItems.some(item => !/^\/reader\/likutay-halachos\/[1-8]\/\d+$/.test(item.p || ''))) {
+    fail('reader-search metadata contains a noncanonical Likutay Halachos route');
+  }
   const chayeyPaths = new Set(chayeyItems.map(item => item.p));
   const missingChayey = [];
   for (let siman = 60; siman <= 615; siman++) {
@@ -283,6 +375,14 @@ if (!fs.existsSync(v2Path)) {
 } else {
   const v2 = JSON.parse(fs.readFileSync(v2Path, 'utf8'));
   const chayeyDocs = (v2.documents || []).filter(doc => doc.book === 'chayey-moharan');
+  const halachosDocs = (v2.documents || []).filter(doc => doc.book === 'likutay-halachos');
+  const halachosPaths = new Set(halachosDocs.map(doc => doc.url));
+  if (halachosDocs.length !== 600 || halachosPaths.size !== 600) {
+    fail(`search-index-v2 has ${halachosDocs.length} Likutay Halachos docs / ${halachosPaths.size} unique paths; expected 600/600`);
+  }
+  if (halachosDocs.some(doc => !/^\/reader\/likutay-halachos\/[1-8]\/\d+$/.test(doc.url || ''))) {
+    fail('search-index-v2 contains a noncanonical Likutay Halachos route');
+  }
   const paths = new Set(chayeyDocs.map(doc => doc.url));
   if (chayeyDocs.length !== 567) fail(`search-index-v2 has ${chayeyDocs.length} Chayey Moharan documents; expected 567 canonical sections/simanim/special pages`);
   for (let section = 1; section <= 7; section++) {
