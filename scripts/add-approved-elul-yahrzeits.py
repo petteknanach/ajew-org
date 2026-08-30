@@ -10,7 +10,7 @@ FILES = [
     ROOT / 'public/data/tzaddikim-database-filtered.json',
 ]
 
-def entry(name, he, day, year, notes, category='other'):
+def entry(name, he, day, year, notes, category='other', source='User-approved Elul yahrzeit candidates'):
     return {
         'name': name,
         'hebrew_name': he,
@@ -21,7 +21,7 @@ def entry(name, he, day, year, notes, category='other'):
         'year_passed': year,
         'notes': notes,
         'category': category,
-        'source': 'User-approved Elul yahrzeit candidates',
+        'source': source,
     }
 
 APPROVED = [
@@ -43,6 +43,9 @@ APPROVED = [
           'Sage of Meknes; author of Ohel Moshe.', 'sephardic'),
     entry('Rabbi Chaim Shmuel HaKohen Konorti', 'רבי חיים שמואל הכהן קונוורתי', 17, '',
           'Senior rabbinical judge and rabbi of Tiberias.', 'sephardic'),
+    entry('Rabbi Yosef Yoska HaLevi of Rovno', 'רבי יוסף יוסקא הלוי מרובנא', 17, '1800',
+          'Early disciple of the Maggid of Mezritch; author of Yesod Yosef and Likkutei Yosef.', 'chassidic',
+          'User-approved: https://x.com/Yahrtzeits/status/2093927975087484996'),
     entry('Maharal of Prague (Rabbi Yehuda Loew)', 'מהר״ל מפראג', 18, '1609',
           'The Maharal of Prague; author of foundational works of Torah thought.', 'acharonim'),
     entry('Rabbi Avraham Shlomo Zalman Tzoref', 'רבי אברהם שלמה זלמן צורף', 19, '1851',
