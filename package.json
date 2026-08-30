@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "npm run verify:base && node scripts/dl-pnc-data.cjs && node scripts/create-app-aliases.cjs && node scripts/build-parsha-connections.cjs && python3 scripts/build-saba-transcript-topics.py && node scripts/build-search-index-v2.cjs && python3 scripts/build-light-search-index.py && python3 scripts/build-reader-search-shards.py && python3 scripts/build-reader-plain-text.py && REQUIRE_SEARCH_ARTIFACTS=1 npm run verify && astro build && python3 scripts/postbuild-seo-sitemaps.py",
+    "build": "node scripts/dl-pnc-data.cjs && node scripts/create-app-aliases.cjs && node scripts/build-parsha-connections.cjs && python3 scripts/build-saba-transcript-topics.py && node scripts/build-search-index-v2.cjs && python3 scripts/build-light-search-index.py && python3 scripts/build-reader-search-shards.py && python3 scripts/build-reader-plain-text.py && REQUIRE_SEARCH_ARTIFACTS=1 npm run verify && astro build && python3 scripts/postbuild-seo-sitemaps.py",
     "preview": "astro preview",
     "astro": "astro",
     "search": "node gen-search-index.js",
