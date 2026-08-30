@@ -84,6 +84,14 @@ def main() -> None:
         source = cached[str(number)]
         nikud_parts = [clean_html(x) for x in source["he"]]
         english_parts = [clean_html(x) for x in source["text"]]
+        # Preserve the published translation while correcting two literal anchor
+        # phrases so the English explicitly mirrors the Hebrew wording.
+        if number == 18:
+            english_parts[0] = english_parts[0].replace("printing of sacred books", "printing of books")
+        elif number == 150:
+            english_parts[0] = english_parts[0].replace(
+                "When I take money or something else", "When I take or receive money or something else"
+            ).replace("For my taking is actually giving", "For my receiving is actually giving")
         if not nikud_parts or len(nikud_parts) != len(english_parts):
             raise SystemExit(f"Section {number}: source bilingual arrays differ or are empty")
         segments = []
