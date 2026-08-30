@@ -6,6 +6,8 @@ const zlib = require('zlib');
 const root = path.resolve(__dirname, '..');
 const failures = [];
 const requiredArtifacts = process.env.REQUIRE_SEARCH_ARTIFACTS === '1';
+const halachosIndex = JSON.parse(fs.readFileSync(path.join(root, 'public/reader/likutay-halachos/index.json'), 'utf8'));
+const expectedHalachos = (halachosIndex.parts || []).reduce((sum, part) => sum + Number(part.totalTorahs || 0), 0);
 const QUERY = 'הוא בבחינת דבר';
 const TARGET_PATH = '/reader/likutay-moharan/2/1';
 const KOKHVEI_PATH = '/reader/kokhvei-or/1/11';
@@ -171,8 +173,8 @@ const lightHe = JSON.parse(zlib.gunzipSync(fs.readFileSync(path.join(root, 'publ
 const lightEn = JSON.parse(zlib.gunzipSync(fs.readFileSync(path.join(root, 'public/data/light-search-index-en.json.gz'))));
 const lightHalachos = lightHe.filter(doc => doc.b === 'likutay-halachos');
 const lightHalachosPaths = new Set(lightHalachos.map(doc => doc.l));
-if (lightHalachos.length !== 600 || lightHalachosPaths.size !== 600) {
-  fail(`canonical Hebrew index has ${lightHalachos.length} Likutay Halachos docs / ${lightHalachosPaths.size} unique paths; expected 600/600`);
+if (lightHalachos.length !== expectedHalachos || lightHalachosPaths.size !== expectedHalachos) {
+  fail(`canonical Hebrew index has ${lightHalachos.length} Likutay Halachos docs / ${lightHalachosPaths.size} unique paths; expected ${expectedHalachos}/${expectedHalachos}`);
 }
 if (lightHalachos.some(doc => !/^\/reader\/likutay-halachos\/[1-8]\/\d+$/.test(doc.l || ''))) {
   fail('canonical Hebrew index contains a noncanonical Likutay Halachos route');
@@ -291,8 +293,8 @@ if (!completeReaderArtifacts) {
   const chayeyItems = meta.items.filter(item => item.c === 'chayey-moharan');
   const halachosItems = meta.items.filter(item => item.c === 'likutay-halachos');
   const halachosPaths = new Set(halachosItems.map(item => item.p));
-  if (halachosItems.length !== 600 || halachosPaths.size !== 600) {
-    fail(`reader-search metadata has ${halachosItems.length} Likutay Halachos docs / ${halachosPaths.size} unique paths; expected 600/600`);
+  if (halachosItems.length !== expectedHalachos || halachosPaths.size !== expectedHalachos) {
+    fail(`reader-search metadata has ${halachosItems.length} Likutay Halachos docs / ${halachosPaths.size} unique paths; expected ${expectedHalachos}/${expectedHalachos}`);
   }
   if (halachosItems.some(item => !/^\/reader\/likutay-halachos\/[1-8]\/\d+$/.test(item.p || ''))) {
     fail('reader-search metadata contains a noncanonical Likutay Halachos route');
@@ -377,8 +379,8 @@ if (!fs.existsSync(v2Path)) {
   const chayeyDocs = (v2.documents || []).filter(doc => doc.book === 'chayey-moharan');
   const halachosDocs = (v2.documents || []).filter(doc => doc.book === 'likutay-halachos');
   const halachosPaths = new Set(halachosDocs.map(doc => doc.url));
-  if (halachosDocs.length !== 600 || halachosPaths.size !== 600) {
-    fail(`search-index-v2 has ${halachosDocs.length} Likutay Halachos docs / ${halachosPaths.size} unique paths; expected 600/600`);
+  if (halachosDocs.length !== expectedHalachos || halachosPaths.size !== expectedHalachos) {
+    fail(`search-index-v2 has ${halachosDocs.length} Likutay Halachos docs / ${halachosPaths.size} unique paths; expected ${expectedHalachos}/${expectedHalachos}`);
   }
   if (halachosDocs.some(doc => !/^\/reader\/likutay-halachos\/[1-8]\/\d+$/.test(doc.url || ''))) {
     fail('search-index-v2 contains a noncanonical Likutay Halachos route');
