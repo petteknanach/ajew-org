@@ -133,6 +133,10 @@ mustContain('src/pages/search-enhanced.astro', "['forehead', ['forehead', 'brow'
 mustContain('src/pages/search-enhanced.astro', "['תבואה', ['תבואה', 'חטה', 'חיטה', 'חיטים', 'דגן']]", 'Hebrew grain conceptual expansion');
 mustContain('src/pages/search-enhanced.astro', "return booleanMatch(n, query)", 'Boolean AND/OR/NOT verification');
 mustContain('src/pages/search-enhanced.astro', 'proximityMatch(toks, groups, distance)', 'actual proximity-distance verification');
+mustContain('src/components/EnhancedSearch.astro', 'id="proximityDistance"', 'user-selectable proximity word distance');
+mustContain('src/components/EnhancedSearch.astro', "proximityDistance.addEventListener('change'", 'proximity word-distance change wiring');
+mustContain('src/components/EnhancedSearch.astro', "url.searchParams.set('proximity'", 'proximity word-distance URL persistence');
+mustContain('src/pages/search-enhanced.astro', 'initialUrlSearch', 'race-free initial URL search handoff');
 mustContain('src/components/EnhancedSearch.astro', "minWordsSelect.addEventListener('change'", 'minimum-word selector change wiring');
 mustContain('src/components/EnhancedSearch.astro', "url.searchParams.set('minWords'", 'minimum-word URL persistence');
 mustContain('src/components/EnhancedSearch.astro', "const minWords = params.get('minWords')", 'minimum-word URL restoration');

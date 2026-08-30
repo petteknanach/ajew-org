@@ -744,6 +744,21 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         performSearch(e.detail.query, e.detail.filters, e.detail.advancedOptions);
       });
 
+      // URL searches need a readiness handshake: both component scripts are
+      // deferred, and their DOMContentLoaded callbacks do not have a guaranteed
+      // order. A fixed timeout previously lost shared/search-link queries until
+      // the visitor pressed Search a second time.
+      let initialUrlSearchStarted = false;
+      function initialUrlSearch(event?: any) {
+        if (initialUrlSearchStarted) return;
+        const state = event?.detail || (window as any).enhancedSearch?.getState?.();
+        if (!state?.query) return;
+        initialUrlSearchStarted = true;
+        performSearch(state.query, state.filters || {}, state.advancedOptions || {});
+      }
+      document.addEventListener('enhanced-search-ready', initialUrlSearch);
+      queueMicrotask(() => initialUrlSearch());
+
       function performSearch(query: string, filters: any = {}, advanced: any = {}) {
         if (!query?.trim()) {
           showWelcome();

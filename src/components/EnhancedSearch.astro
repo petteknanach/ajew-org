@@ -101,6 +101,11 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
             <button type="button" class="order-btn active" data-order="consecutive" title="Letters must match consecutive words in order">Specific Order</button>
             <button type="button" class="order-btn" data-order="any" title="Letters can appear in any order across the text">Any Order</button>
           </div>
+          <div class="mode-group proximity-distance-group" id="proximityDistanceGroup" style="display:none;">
+            <label class="mode-label" for="proximityDistance">Within</label>
+            <input id="proximityDistance" class="proximity-distance-input" type="number" min="1" max="100" step="1" value="5" inputmode="numeric" aria-label="Maximum words between search terms" />
+            <span class="mode-label">words</span>
+          </div>
           <div class="mode-group min-words-group" id="minWordsGroup">
             <span class="mode-label">Min match:</span>
             <select id="minWordsSelect" class="min-words-select" title="Minimum number of words that must match">
@@ -149,6 +154,12 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
 
   let searchInput: HTMLInputElement;
   let searchForm: HTMLFormElement;
+  let orderGroup: HTMLElement | null;
+  let minWordsGroup: HTMLElement | null;
+  let minWordsSelect: HTMLSelectElement | null;
+  let proximityDistanceGroup: HTMLElement | null;
+  let proximityDistance: HTMLInputElement | null;
+  let totalWordsCount: HTMLElement | null;
 
   document.addEventListener('DOMContentLoaded', () => {
     searchInput = document.getElementById('searchInput') as HTMLInputElement;
@@ -215,10 +226,12 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
     });
 
     // Mode buttons
-    const orderGroup = document.getElementById('acronymOrderGroup');
-    const minWordsGroup = document.getElementById('minWordsGroup');
-    const minWordsSelect = document.getElementById('minWordsSelect') as HTMLSelectElement;
-    const totalWordsCount = document.getElementById('totalWordsCount');
+    orderGroup = document.getElementById('acronymOrderGroup');
+    minWordsGroup = document.getElementById('minWordsGroup');
+    minWordsSelect = document.getElementById('minWordsSelect') as HTMLSelectElement;
+    proximityDistanceGroup = document.getElementById('proximityDistanceGroup');
+    proximityDistance = document.getElementById('proximityDistance') as HTMLInputElement;
+    totalWordsCount = document.getElementById('totalWordsCount');
 
     document.querySelectorAll('.mode-btn[data-mode]').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -234,9 +247,19 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
         if (minWordsGroup) {
           minWordsGroup.style.display = (mode === 'google' || mode === 'any') ? 'flex' : 'none';
         }
+        if (proximityDistanceGroup) proximityDistanceGroup.style.display = mode === 'proximity' ? 'flex' : 'none';
         if (searchState.query) performSearch();
       });
     });
+
+    if (proximityDistance) {
+      proximityDistance.addEventListener('change', () => {
+        const distance = Math.max(1, Math.min(100, parseInt(proximityDistance.value, 10) || 5));
+        proximityDistance.value = String(distance);
+        searchState.advancedOptions.proximity = distance;
+        if (searchState.query && searchState.advancedOptions.searchType === 'proximity') performSearch();
+      });
+    }
 
     // Min words select
     if (minWordsSelect) {
@@ -255,18 +278,12 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
       });
     }
 
-    // Update word count hint when search input changes
+    // Update word count hint and permit any exact requested match count.
     if (searchInput) {
       searchInput.addEventListener('input', () => {
         const words = searchInput.value.trim().split(/\s+/).filter((w: string) => w.length > 0);
         if (totalWordsCount) totalWordsCount.textContent = String(words.length);
-        // Update select options to not exceed word count
-        if (minWordsSelect) {
-          for (const opt of minWordsSelect.options) {
-            const val = parseInt(opt.value, 10);
-            opt.disabled = val > words.length && val > 0;
-          }
-        }
+        syncMinWordsOptions(words.length);
       });
     }
 
@@ -283,6 +300,20 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
     // Check URL parameters on load
     checkUrlParameters();
   });
+
+  function syncMinWordsOptions(total: number) {
+    if (!minWordsSelect) return;
+    const selected = Math.min(Math.max(0, searchState.advancedOptions.minWords || 0), total);
+    minWordsSelect.innerHTML = '<option value="0">Any 1+</option>';
+    for (let amount = 2; amount <= total; amount++) {
+      const option = document.createElement('option');
+      option.value = String(amount);
+      option.textContent = amount === total ? `All ${amount}` : `At least ${amount}`;
+      minWordsSelect.appendChild(option);
+    }
+    minWordsSelect.value = String(selected);
+    searchState.advancedOptions.minWords = selected;
+  }
 
   function performSearch() {
     const query = searchInput.value.trim();
@@ -381,10 +412,14 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
         btn.classList.toggle('active', (btn as HTMLElement).dataset.order === searchState.advancedOptions.acronymOrder);
       });
       if (minWordsSelect) minWordsSelect.value = String(searchState.advancedOptions.minWords);
+      if (proximityDistance) proximityDistance.value = String(Math.max(1, Math.min(100, searchState.advancedOptions.proximity || 5)));
       if (orderGroup) orderGroup.style.display = (searchState.advancedOptions.searchType === 'acronym' || searchState.advancedOptions.searchType === 'endletters') ? 'flex' : 'none';
       if (minWordsGroup) minWordsGroup.style.display = (searchState.advancedOptions.searchType === 'google' || searchState.advancedOptions.searchType === 'any') ? 'flex' : 'none';
-      
-      setTimeout(() => performSearch(), 200);
+      if (proximityDistanceGroup) proximityDistanceGroup.style.display = searchState.advancedOptions.searchType === 'proximity' ? 'flex' : 'none';
+      const words = query.trim().split(/\s+/).filter(Boolean);
+      if (totalWordsCount) totalWordsCount.textContent = String(words.length);
+      syncMinWordsOptions(words.length);
+      document.dispatchEvent(new CustomEvent('enhanced-search-ready', { detail: { query, advancedOptions: { ...searchState.advancedOptions } } }));
     }
   }
 
@@ -600,18 +635,25 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
     margin-top: 4px;
   }
 
-  .min-words-select {
+  .min-words-select,
+  .proximity-distance-input {
     padding: 3px 8px;
     border: 1px solid #d1d5db;
     border-radius: 6px;
     font-size: 0.75rem;
     background: white;
     color: #4b5563;
+  }
+
+  .proximity-distance-input {
+    width: 4.5rem;
+    text-align: center;
     cursor: pointer;
     font-weight: 500;
   }
 
-  .min-words-select:focus {
+  .min-words-select:focus,
+  .proximity-distance-input:focus {
     outline: none;
     border-color: #6366f1;
   }
