@@ -22,6 +22,9 @@ TOPICS = {
     'superiority': (25, 'superiority'),
     'success': (26, 'success'),
     'grace': (37, 'grace'),
+    'adulation': (38, 'adulation'),
+    'philosophy': (39, 'philosophy'),
+    'novelties-of-torah-part-ii': (40, 'novelties-of-torah-part-ii'),
 }
 
 def classify(name: str):
@@ -35,8 +38,11 @@ def classify(name: str):
     elif 'superiority' in low: topic = 'superiority'
     elif low.startswith('success_') or low.startswith('success-'): topic = 'success'
     elif low.startswith('grace_') or low.startswith('grace-'): topic = 'grace'
+    elif low.startswith('adulation_') or low.startswith('adulation-'): topic = 'adulation'
+    elif low.startswith('philosophy_') or low.startswith('philosophy-'): topic = 'philosophy'
+    elif low.startswith('novelties_of_torah_') or low.startswith('novelties-of-torah-'): topic = 'novelties-of-torah-part-ii'
     else: return None
-    m = re.search(r'(?:children|israel[_-]land[_-]of[_-]part[_-]ii|lost[_-]article[_-]part[_-]ii|sweetening(?:_of_judgments?)?|seclusion(?:_hisbodidus)?|thoughts?|superiority|success|grace)[_-](\d{1,3})', low)
+    m = re.search(r'(?:children|israel[_-]land[_-]of[_-]part[_-]ii|lost[_-]article[_-]part[_-]ii|sweetening(?:_of_judgments?)?|seclusion(?:_hisbodidus)?|thoughts?|superiority|success|grace|adulation|philosophy|novelties[_-]of[_-]torah)[_-](\d{1,3})', low)
     if not m: return None
     segment = int(m.group(1))
     # The transition package uses global sequence 85 for Superiority teaching 1.
