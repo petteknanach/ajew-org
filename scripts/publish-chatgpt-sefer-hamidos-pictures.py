@@ -25,7 +25,17 @@ TOPICS = {
     'adulation': (38, 'adulation'),
     'philosophy': (39, 'philosophy'),
     'novelties-of-torah-part-ii': (40, 'novelties-of-torah-part-ii'),
+    'marriage-part-ii': (41, 'marriage-part-ii'),
+    'nature-part-ii': (42, 'nature-part-ii'),
+    'wandering-part-ii': (43, 'wandering-part-ii'),
+    'purity-part-ii': (44, 'purity-part-ii'),
+    'salvation': (45, 'salvation'),
+    'fear-of-g-d': (46, 'fear-of-g-d'),
+    'lineage-part-ii': (47, 'lineage-part-ii'),
     'honor': (48, 'honor'),
+    'anger': (49, 'anger'),
+    'sorcery': (50, 'sorcery-magic'),
+    'learning': (51, 'learning'),
 }
 
 def classify(name: str):
@@ -42,9 +52,19 @@ def classify(name: str):
     elif low.startswith('adulation_') or low.startswith('adulation-'): topic = 'adulation'
     elif low.startswith('philosophy_') or low.startswith('philosophy-'): topic = 'philosophy'
     elif low.startswith('novelties_of_torah_') or low.startswith('novelties-of-torah-'): topic = 'novelties-of-torah-part-ii'
+    elif low.startswith('marriage_part_ii_') or low.startswith('marriage-part-ii-'): topic = 'marriage-part-ii'
+    elif low.startswith('nature_part_ii_') or low.startswith('nature-part-ii-'): topic = 'nature-part-ii'
+    elif low.startswith('wandering_part_ii_') or low.startswith('wandering-part-ii-'): topic = 'wandering-part-ii'
+    elif low.startswith('purity_part_ii_') or low.startswith('purity-part-ii-'): topic = 'purity-part-ii'
+    elif low.startswith('salvation_') or low.startswith('salvation-'): topic = 'salvation'
+    elif low.startswith('fear_of_g_d_') or low.startswith('fear-of-g-d-'): topic = 'fear-of-g-d'
+    elif low.startswith('lineage_part_ii_') or low.startswith('lineage-part-ii-'): topic = 'lineage-part-ii'
     elif low.startswith('honor_') or low.startswith('honor-'): topic = 'honor'
+    elif low.startswith('anger_') or low.startswith('anger-'): topic = 'anger'
+    elif low.startswith('sorcery_') or low.startswith('sorcery-'): topic = 'sorcery'
+    elif low.startswith('learning_') or low.startswith('learning-'): topic = 'learning'
     else: return None
-    m = re.search(r'(?:children|israel[_-]land[_-]of[_-]part[_-]ii|lost[_-]article[_-]part[_-]ii|sweetening(?:_of_judgments?)?|seclusion(?:_hisbodidus)?|thoughts?|superiority|success|grace|adulation|philosophy|novelties[_-]of[_-]torah|honor)[_-](\d{1,3})', low)
+    m = re.search(r'(?:children|israel[_-]land[_-]of[_-]part[_-]ii|lost[_-]article[_-]part[_-]ii|sweetening(?:_of_judgments?)?|seclusion(?:_hisbodidus)?|thoughts?|superiority|success|grace|adulation|philosophy|novelties[_-]of[_-]torah|marriage[_-]part[_-]ii|nature[_-]part[_-]ii|wandering[_-]part[_-]ii|purity[_-]part[_-]ii|salvation|fear[_-]of[_-]g[_-]d|lineage[_-]part[_-]ii|honor|anger|sorcery|learning)[_-](\d{1,3})', low)
     if not m: return None
     segment = int(m.group(1))
     # The transition package uses global sequence 85 for Superiority teaching 1.
