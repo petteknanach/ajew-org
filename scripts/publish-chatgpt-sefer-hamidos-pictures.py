@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import argparse, io, json, re, shutil, zipfile
+import argparse, io, json, re, shutil, subprocess, zipfile
 from collections import defaultdict
 from pathlib import Path
 from PIL import Image
@@ -97,6 +97,10 @@ parser.add_argument(
     '--package', action='append', type=Path, default=[],
     help='Only ingest this physically verified package ZIP (repeatable).',
 )
+parser.add_argument(
+    '--replace-existing', action='store_true',
+    help='Replace files for segments already present in the canonical manifest; use only for an explicitly approved repair.',
+)
 args = parser.parse_args()
 
 # A ZIP existing in Downloads is not publication approval. Only rows explicitly
@@ -182,6 +186,9 @@ report.setdefault('topics', {})
 report.setdefault('incomplete_segments', {})
 report['source_count'] = max(int(report.get('source_count', 0)), len(sources))
 for topic_name, (topic_num, slug) in TOPICS.items():
+    topic_sources = {key: value for key, value in sources.items() if key[0] == topic_name}
+    if not topic_sources:
+        continue
     topic_path = ROOT / f'public/reader/sefer-hamidos/topic-{topic_num}.json'
     topic = json.loads(topic_path.read_text(encoding='utf-8'))
     segment_map = {int(s['index']): s for s in topic['segments']}
@@ -191,6 +198,16 @@ for topic_name, (topic_num, slug) in TOPICS.items():
     if manifest_path.exists():
         manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
     else:
+        relative_manifest = manifest_path.relative_to(ROOT)
+        tracked = subprocess.run(
+            ['git', '-C', str(ROOT), 'ls-files', '--error-unmatch', str(relative_manifest)],
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+        ).returncode == 0
+        if tracked:
+            raise RuntimeError(
+                f'Refusing to replace sparse-missing tracked manifest: {relative_manifest}. '
+                'Expand sparse checkout before publication.'
+            )
         manifest = {
             'book': 'sefer-hamidos', 'topic': topic_num,
             'topic_title': f"{topic['title']} / {topic.get('hebrewTitle','')}",
@@ -212,7 +229,8 @@ for topic_name, (topic_num, slug) in TOPICS.items():
                 key = (topic_name, seg_no, concept, lang)
                 filename = f'sh-{slug}-{seg_no:03d}-chatgpt-{concept}-{lang}.png'
                 dest = out / filename
-                dest.write_bytes(sources[key][1])
+                if args.replace_existing or seg_no not in existing or not dest.is_file():
+                    dest.write_bytes(sources[key][1])
                 images.append({
                     'language': 'hebrew' if lang == 'he' else 'english',
                     'variant': f'ChatGPT Concept {concept.upper()}',
