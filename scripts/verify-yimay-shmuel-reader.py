@@ -8,7 +8,14 @@ ROOT=Path(__file__).resolve().parents[1]
 BOOK=ROOT/'public/reader/yimay-shmuel'
 EXPECTED_CORPUS_SHA256={
  'he':'74b9b5e003ec3938305b17ae2e641f89fd3b6df1bf5add48f517ff8760009c3a',
- 'en':'07821edafbf49d1484dcd3a48ce3041775dfc838cb2e9a1c3f418f5873cb1b8c',
+ 'en':'556be6a3b737ccc97fcee113438d18ac1a5dcf357bc13d2ec6978d855170b6e5',
+}
+TRANSLATION_CORRECTIONS={
+ (19,6):[("For it is stated in the holy Zohar that Rachel our Mother accomplishes more good at her burial than the holy Patriarchs accomplish at their burial in the Cave of Machpelah. Through their merit the entire world endures","For the holy Zohar describes the great good accomplished by the holy Patriarchs at their burial place in the Cave of Machpelah: through their merit the entire world endures")],
+ (79,10):[("If, God forbid, his condition worsened, they would say that we were responsible and would refuse even to receive us.","If, God forbid, his condition worsened, they would say that we were responsible for it and would not even want to answer us.")],
+ (82,6):[("and this would not help preserve his life.","and it would not avail us—[the Hebrew here is textually uncertain: חייו, literally ‘his life,’ possibly a corrupt reading of ח״ו, ‘God forbid’].")],
+ (137,8):[("composed by Ezra the Scribe","instituted by Ezra the Scribe")],
+ (140,5):[("; the light would remain inside the house and would also illuminate the sukkah, without being visible above. In retrospect I was pleased with this arrangement, for the sukkah in the broad courtyard had always faced a troublesome area, whereas the place beside the house was clean.","; the light would remain inside the house and would also illuminate the sukkah. In retrospect I was pleased, because the sukkah in the broad courtyard always faced the idolatrous object [the cross mentioned above], whereas beside the house it was clean.")],
 }
 
 def docx_chapters(path, heading):
@@ -56,6 +63,13 @@ def main():
    assert compact(raw)==compact([s['he'] for s in segs]),f'Hebrew source coverage mismatch chapter {n}'
  if args.english_docx:
   src=docx_chapters(args.english_docx,r'Chapter \d+'); assert len(src)==140
+  assert sum(len(v) for v in TRANSLATION_CORRECTIONS.values())==5
+  for (chapter,segment),replacements in TRANSLATION_CORRECTIONS.items():
+   text=src[chapter-1][segment-1]
+   for old,new in replacements:
+    assert old in text,(chapter,segment,old)
+    text=text.replace(old,new)
+   src[chapter-1][segment-1]=text
   for n,(raw,segs) in enumerate(zip(src,chapters),1):
    assert raw==[s['en'] for s in segs],f'English source coverage mismatch chapter {n}'
  catalog=json.loads((ROOT/'public/reader/catalog.json').read_text(encoding='utf-8'))

@@ -1,28 +1,48 @@
 {
-  "title": "Yimay Shmuel, Volume 3 — full semantic alignment audit",
+  "title": "Yimay Shmuel, Volume 3 — full semantic alignment and fidelity audit",
   "audit_scope": {
     "chapters": 140,
     "segments": 1795,
     "method": "Every emitted Hebrew-English pair was independently inspected in ten contiguous chapter batches, including all many-to-one Hebrew groupings and all chapter boundaries."
   },
-  "alignment_verdict": "pass",
-  "alignment_failures": 0,
-  "omissions": 0,
+  "final_verdict": "pass after five documented translation corrections",
+  "structural_alignment_failures": 0,
+  "omissions_after_correction": 0,
   "truncations": 0,
   "empty_hebrew": 0,
   "empty_english": 0,
+  "corrections_applied": [
+    {
+      "chapter": 19,
+      "segment": 6,
+      "reason": "Removed a Rachel-versus-Patriarchs comparison absent from this Hebrew unit and retained it only in segment 19.7."
+    },
+    {
+      "chapter": 79,
+      "segment": 10,
+      "reason": "Corrected לענות from ‘receive us’ to ‘answer us’."
+    },
+    {
+      "chapter": 82,
+      "segment": 6,
+      "reason": "Preserved the anomalous source reading חייו visibly instead of silently resolving it as preserving the child’s life."
+    },
+    {
+      "chapter": 137,
+      "segment": 8,
+      "reason": "Corrected התקין from ‘composed’ to ‘instituted’."
+    },
+    {
+      "chapter": 140,
+      "segment": 5,
+      "reason": "Removed an added phrase absent from this unit and translated מול תפלה in its documented contextual sense."
+    }
+  ],
   "source_preservation": {
     "hebrew_docx_sha256": "07123791a3946275e292823971664cccc5a0273e86a2720857206172d7ad50f5",
     "english_docx_sha256": "9aec514489091806785ff27929c1e92489988a1d4a55009a5af825ef93959f0d",
     "hebrew_corpus_sha256": "74b9b5e003ec3938305b17ae2e641f89fd3b6df1bf5add48f517ff8760009c3a",
-    "english_corpus_sha256": "07821edafbf49d1484dcd3a48ce3041775dfc838cb2e9a1c3f418f5873cb1b8c"
+    "english_corpus_sha256": "556be6a3b737ccc97fcee113438d18ac1a5dcf357bc13d2ec6978d855170b6e5"
   },
-  "source_translation_notes": [
-    {"chapter": 19, "segment": 6, "note": "English anticipates the Rachel comparison that appears in the following source unit; preserved exactly from the supplied English DOCX."},
-    {"chapter": 79, "segment": 10, "note": "English renders לענות as receive rather than answer; preserved exactly from the supplied English DOCX."},
-    {"chapter": 82, "segment": 6, "note": "English resolves an anomalous Hebrew reading חייו; preserved exactly from the supplied source files."},
-    {"chapter": 137, "segment": 8, "note": "English says composed where Hebrew says instituted; preserved exactly from the supplied English DOCX."},
-    {"chapter": 140, "segment": 5, "note": "English includes a clarifying phrase not expressed in this Hebrew unit; preserved exactly from the supplied English DOCX."}
-  ],
-  "editorial_policy": "No source text was silently rewritten. The five notes concern the supplied translation itself, not Hebrew-English boundary alignment."
+  "editorial_policy": "Hebrew is preserved exactly. English differs from the supplied translation only at the five enumerated, executable, independently audited corrections."
 }
