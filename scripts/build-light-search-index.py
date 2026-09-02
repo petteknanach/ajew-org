@@ -24,6 +24,7 @@ HE_KEYS = ('he', 'he_nikud', 'verse', 'verseText', 'commentary_he', 'text_he', '
 EN_KEYS = ('en', 'commentary_en', 'text_en', 'english', 'translation')
 BOOK_SEARCH_ALIASES = {
     'chayey-moharan': 'Chayey Moharan Chayay Moharan Chayei Moharan The Life of Our Leader Rabbi Nachman Life of Rabbi Nachman חיי מוהרן חיי מוהר״ן',
+    'yimay-shmuel': 'Yimay Shmuel Yemei Shmuel Yimei Shmuel Yimay Shmuel Volume 3 Rabbi Shmuel Horowitz רבי שמואל הורוויץ ימי שמואל חלק ג',
 }
 LAYER_KEYS = ('beginner', 'intermediate', 'scholarly')
 HEBREW_NUMERALS = {

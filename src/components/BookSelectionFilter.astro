@@ -59,6 +59,8 @@ const hebrewNames: Record<string, string> = {
   'chumash-lh': 'חומש ליקוטי הלכות',
   'toldos-adam': 'תולדות אדם',
   'kuntrass-hiskashrus': 'קונטרס התקשרות',
+  'michtevay-shmuel': 'מכתבי שמואל',
+  'yimay-shmuel': 'ימי שמואל',
 
 };
 
@@ -103,6 +105,12 @@ const categories: Category[] = [
   {
     icon: '📕', label: "ספרי רבי אברהם — R' Avraham",
     books: ['biur-halikutim', 'chochma-utvuna', 'kokhvei-or']
+      .filter(id => bookCounts[id])
+      .map(id => ({ id, name: hebrewNames[id] || id, count: bookCounts[id] || 0 }))
+  },
+  {
+    icon: '📘', label: "ספרי רבי שמואל הורוויץ — R' Shmuel Horowitz",
+    books: ['michtevay-shmuel', 'yimay-shmuel']
       .filter(id => bookCounts[id])
       .map(id => ({ id, name: hebrewNames[id] || id, count: bookCounts[id] || 0 }))
   },
