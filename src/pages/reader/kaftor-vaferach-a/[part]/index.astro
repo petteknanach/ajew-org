@@ -1,0 +1,26 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import ReaderDirectory from '../../../../components/ReaderDirectory.astro';
+import fs from 'node:fs';
+import path from 'node:path';
+
+export function getStaticPaths() { return [{ params: { part: '1' } }]; }
+const { part } = Astro.params;
+const partNum = parseInt(part || '1');
+let indexData = null;
+try {
+  const idxPath = path.join(process.cwd(), 'public/reader/kaftor-vaferach-a/index.json');
+  indexData = JSON.parse(fs.readFileSync(idxPath, 'utf8'));
+} catch (e) { console.error('Error loading kaftor-vaferach-a index:', e); }
+const totalSections = indexData?.torahs?.length || 0;
+---
+<Layout title={`${indexData?.title || 'Kaftor VaFerach'} — Directory`} description={`Complete bilingual edition of ${indexData?.title || 'Kaftor VaFerach'}, with original facsimiles.`}>
+  <ReaderDirectory
+    title={indexData?.title || 'Kaftor VaFerach'}
+    hebrewTitle={indexData?.hebrewTitle || 'כפתור ופרח'}
+    subtitle={indexData?.author || ''}
+    countLabel={`${totalSections} source pages`}
+    items={indexData?.torahs || []}
+    hrefBase={`/reader/kaftor-vaferach-a/${partNum}/`}
+  />
+</Layout>
