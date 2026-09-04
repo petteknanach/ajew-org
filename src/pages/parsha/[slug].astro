@@ -356,6 +356,14 @@ const breadcrumbData = JSON.stringify({
                 <div class="entry-main">
                   {entry.enHeading && <h3 class="entry-heading-en">{entry.enHeading}</h3>}
                   {entry.heHeading && <h3 class="entry-heading-he" dir="rtl">{entry.heHeading}</h3>}
+                  {entry.image && (
+                    <figure class="packet-entry-image">
+                      <a href={entry.image} target="_blank" rel="noopener">
+                        <img src={entry.image} alt={entry.imageAlt || `${specialParshaDisplayName} teaching illustration`} loading="lazy" decoding="async" />
+                      </a>
+                      {entry.imageCaption && <figcaption>{entry.imageCaption}</figcaption>}
+                    </figure>
+                  )}
                   <div class="entry-text entry-en" lang="en" set:html={entry.en.replace(/\n/g, '<br>')} />
                   <div class="entry-text entry-he" lang="he" dir="rtl" set:html={entry.he.replace(/\n/g, '<br>')} />
                 </div>
@@ -1006,6 +1014,30 @@ const breadcrumbData = JSON.stringify({
       font-size: 1.08em;
     }
     .entry-heading-he { text-align: right; }
+    .packet-entry-image {
+      margin: 14px 0 18px;
+      padding: 8px;
+      border: 1px solid #e2cf9f;
+      border-radius: 14px;
+      background: #fffaf0;
+      text-align: center;
+    }
+    .packet-entry-image a { display: block; }
+    .packet-entry-image img {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: 82vh;
+      object-fit: contain;
+      border-radius: 10px;
+      box-shadow: 0 8px 22px rgba(26, 54, 93, 0.16);
+    }
+    .packet-entry-image figcaption {
+      margin-top: 8px;
+      color: #52606d;
+      font-size: 0.85rem;
+      line-height: 1.45;
+    }
     .entry-text { line-height: 1.75; color: #2f3744; }
     .entry-he {
       margin-top: 12px;
