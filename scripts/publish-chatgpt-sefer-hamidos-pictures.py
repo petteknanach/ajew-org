@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import argparse, io, json, re, shutil, zipfile
+import argparse, io, json, re, shutil, subprocess, zipfile
 from collections import defaultdict
 from pathlib import Path
 from PIL import Image
@@ -25,8 +25,17 @@ TOPICS = {
     'adulation': (38, 'adulation'),
     'philosophy': (39, 'philosophy'),
     'novelties-of-torah-part-ii': (40, 'novelties-of-torah-part-ii'),
+    'marriage-part-ii': (41, 'marriage-part-ii'),
+    'nature-part-ii': (42, 'nature-part-ii'),
+    'wandering-part-ii': (43, 'wandering-part-ii'),
+    'purity-part-ii': (44, 'purity-part-ii'),
+    'salvation': (45, 'salvation'),
+    'fear-of-g-d': (46, 'fear-of-g-d'),
+    'lineage-part-ii': (47, 'lineage-part-ii'),
     'honor': (48, 'honor'),
     'anger': (49, 'anger'),
+    'sorcery': (50, 'sorcery-magic'),
+    'learning': (51, 'learning'),
 }
 
 def classify(name: str):
@@ -43,10 +52,19 @@ def classify(name: str):
     elif low.startswith('adulation_') or low.startswith('adulation-'): topic = 'adulation'
     elif low.startswith('philosophy_') or low.startswith('philosophy-'): topic = 'philosophy'
     elif low.startswith('novelties_of_torah_') or low.startswith('novelties-of-torah-'): topic = 'novelties-of-torah-part-ii'
+    elif low.startswith('marriage_part_ii_') or low.startswith('marriage-part-ii-'): topic = 'marriage-part-ii'
+    elif low.startswith('nature_part_ii_') or low.startswith('nature-part-ii-'): topic = 'nature-part-ii'
+    elif low.startswith('wandering_part_ii_') or low.startswith('wandering-part-ii-'): topic = 'wandering-part-ii'
+    elif low.startswith('purity_part_ii_') or low.startswith('purity-part-ii-'): topic = 'purity-part-ii'
+    elif low.startswith('salvation_') or low.startswith('salvation-'): topic = 'salvation'
+    elif low.startswith('fear_of_g_d_') or low.startswith('fear-of-g-d-'): topic = 'fear-of-g-d'
+    elif low.startswith('lineage_part_ii_') or low.startswith('lineage-part-ii-'): topic = 'lineage-part-ii'
     elif low.startswith('honor_') or low.startswith('honor-'): topic = 'honor'
     elif low.startswith('anger_') or low.startswith('anger-'): topic = 'anger'
+    elif low.startswith('sorcery_') or low.startswith('sorcery-'): topic = 'sorcery'
+    elif low.startswith('learning_') or low.startswith('learning-'): topic = 'learning'
     else: return None
-    m = re.search(r'(?:children|israel[_-]land[_-]of[_-]part[_-]ii|lost[_-]article[_-]part[_-]ii|sweetening(?:_of_judgments?)?|seclusion(?:_hisbodidus)?|thoughts?|superiority|success|grace|adulation|philosophy|novelties[_-]of[_-]torah|honor|anger)[_-](\d{1,3})', low)
+    m = re.search(r'(?:children|israel[_-]land[_-]of[_-]part[_-]ii|lost[_-]article[_-]part[_-]ii|sweetening(?:_of_judgments?)?|seclusion(?:_hisbodidus)?|thoughts?|superiority|success|grace|adulation|philosophy|novelties[_-]of[_-]torah|marriage[_-]part[_-]ii|nature[_-]part[_-]ii|wandering[_-]part[_-]ii|purity[_-]part[_-]ii|salvation|fear[_-]of[_-]g[_-]d|lineage[_-]part[_-]ii|honor|anger|sorcery|learning)[_-](\d{1,3})', low)
     if not m: return None
     segment = int(m.group(1))
     # The transition package uses global sequence 85 for Superiority teaching 1.
@@ -78,6 +96,10 @@ parser = argparse.ArgumentParser(description='Publish verified ChatGPT Sefer HaM
 parser.add_argument(
     '--package', action='append', type=Path, default=[],
     help='Only ingest this physically verified package ZIP (repeatable).',
+)
+parser.add_argument(
+    '--replace-existing', action='store_true',
+    help='Replace files for segments already present in the canonical manifest; use only for an explicitly approved repair.',
 )
 args = parser.parse_args()
 
@@ -164,6 +186,9 @@ report.setdefault('topics', {})
 report.setdefault('incomplete_segments', {})
 report['source_count'] = max(int(report.get('source_count', 0)), len(sources))
 for topic_name, (topic_num, slug) in TOPICS.items():
+    topic_sources = {key: value for key, value in sources.items() if key[0] == topic_name}
+    if not topic_sources:
+        continue
     topic_path = ROOT / f'public/reader/sefer-hamidos/topic-{topic_num}.json'
     topic = json.loads(topic_path.read_text(encoding='utf-8'))
     segment_map = {int(s['index']): s for s in topic['segments']}
@@ -173,6 +198,16 @@ for topic_name, (topic_num, slug) in TOPICS.items():
     if manifest_path.exists():
         manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
     else:
+        relative_manifest = manifest_path.relative_to(ROOT)
+        tracked = subprocess.run(
+            ['git', '-C', str(ROOT), 'ls-files', '--error-unmatch', str(relative_manifest)],
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+        ).returncode == 0
+        if tracked:
+            raise RuntimeError(
+                f'Refusing to replace sparse-missing tracked manifest: {relative_manifest}. '
+                'Expand sparse checkout before publication.'
+            )
         manifest = {
             'book': 'sefer-hamidos', 'topic': topic_num,
             'topic_title': f"{topic['title']} / {topic.get('hebrewTitle','')}",
@@ -194,7 +229,8 @@ for topic_name, (topic_num, slug) in TOPICS.items():
                 key = (topic_name, seg_no, concept, lang)
                 filename = f'sh-{slug}-{seg_no:03d}-chatgpt-{concept}-{lang}.png'
                 dest = out / filename
-                dest.write_bytes(sources[key][1])
+                if args.replace_existing or seg_no not in existing or not dest.is_file():
+                    dest.write_bytes(sources[key][1])
                 images.append({
                     'language': 'hebrew' if lang == 'he' else 'english',
                     'variant': f'ChatGPT Concept {concept.upper()}',

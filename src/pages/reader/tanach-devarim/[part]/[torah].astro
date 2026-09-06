@@ -224,6 +224,14 @@ const breadcrumbData = torahData ? JSON.stringify({
               <span class="segment-number">{seg.index}</span>
               <p>{seg.en || 'Translation not yet available'}</p>
             </div>
+            {seg.image && (
+              <figure class="reader-verse-image">
+                <a href={seg.image} target="_blank" rel="noopener">
+                  <img src={seg.image} alt={seg.imageAlt || `Illustration for Deuteronomy chapter ${torahNum}, verse ${seg.index}`} loading="lazy" decoding="async" />
+                </a>
+                {seg.imageCaption && <figcaption>{seg.imageCaption}</figcaption>}
+              </figure>
+            )}
           </div>
         ))}
       </div>
@@ -274,4 +282,36 @@ const breadcrumbData = torahData ? JSON.stringify({
       <script src="/tts-fix.js" defer></script>
     </div>
   )}
+  <style>
+    .reader-verse-image {
+      grid-column: 1 / -1;
+      margin: 0.8rem 0 0;
+      padding: 0.75rem;
+      border: 1px solid rgba(176, 133, 44, 0.35);
+      border-radius: 16px;
+      background: rgba(255, 250, 235, 0.72);
+      text-align: center;
+    }
+    .reader-verse-image a { display: block; }
+    .reader-verse-image img {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: 82vh;
+      object-fit: contain;
+      border-radius: 11px;
+      box-shadow: 0 8px 24px rgba(20, 30, 50, 0.18);
+    }
+    .reader-verse-image figcaption {
+      margin-top: 0.65rem;
+      color: var(--reader-text-secondary, #52606d);
+      font-family: 'Open Sans', sans-serif;
+      font-size: 0.9rem;
+      line-height: 1.45;
+    }
+    @media (max-width: 700px) {
+      .reader-verse-image { padding: 0.45rem; margin-top: 0.5rem; }
+      .reader-verse-image figcaption { font-size: 0.8rem; }
+    }
+  </style>
 </Layout>

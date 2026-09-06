@@ -8,7 +8,7 @@ import path from 'node:path';
 
 export function getStaticPaths() {
   const paths = [];
-  for (let torah = 1; torah <= 82; torah++) {
+  for (let torah = 1; torah <= 26; torah++) {
     paths.push({ params: { part: '1', torah: String(torah) } });
   }
   return paths;
@@ -22,7 +22,7 @@ let torahData = null;
 let error = null;
 
 try {
-  const filePath = path.join(process.cwd(), `public/reader/biur-halikutim/section-${torahNum}.json`);
+  const filePath = path.join(process.cwd(), `public/reader/aitzoas-hamivooaroas/section-${torahNum}.json`);
   const raw = fs.readFileSync(filePath, 'utf8');
   torahData = JSON.parse(raw);
 } catch (e) {
@@ -31,29 +31,29 @@ try {
 
 if (!torahData && !error) error = 'Content not available';
 
-const bookName = 'Biur HaLikutim';
-const bookHebrew = 'ביאור הליקוטים';
+const bookName = 'Aitzoas HaMivooaroas';
+const bookHebrew = 'עצות המבוארות';
 
 const pageTitle = torahData
-  ? `${torahData.hebrewTitle || torahData.title} - Biur HaLikutim`
+  ? `${torahData.hebrewTitle || torahData.title} - Aitzoas HaMivooaroas`
   : 'Not Found';
 const pageDesc = torahData
   ? (() => {
     const snippet = (torahData.segments?.find(s => s.en)?.en || '').replace(/<[^>]+>/g, '').slice(0, 120);
-    return `Read ${torahData.title} from Biur HaLikutim online free. ${snippet ? snippet + '...' : 'Hebrew text with English translation on ajew.org.'}`;
+    return `Read ${torahData.title} from Aitzoas HaMivooaroas online free. ${snippet ? snippet + '...' : 'Hebrew text with English translation on ajew.org.'}`;
   })()
   : '';
 
 const structuredData = torahData ? JSON.stringify({
   "@context": "https://schema.org",
   "@type": "Article",
-  "headline": `${torahData.title} - Biur HaLikutim`,
+  "headline": `${torahData.title} - Aitzoas HaMivooaroas`,
   "alternativeHeadline": torahData.hebrewTitle || '',
-  "author": { "@type": "Person", "name": "Rabbi Avraham bar Nachman" },
+  "author": { "@type": "Person", "name": "Rabbi Shimshon Barsky" },
   "publisher": { "@type": "Organization", "name": "ajew.org" },
   "inLanguage": ["he", "en"],
-  "isPartOf": { "@type": "Book", "name": "Biur HaLikutim" },
-  "url": `https://ajew.org/reader/biur-halikutim/${partNum}/${torahNum}`
+  "isPartOf": { "@type": "Book", "name": "Aitzoas HaMivooaroas" },
+  "url": `https://ajew.org/reader/aitzoas-hamivooaroas/${partNum}/${torahNum}`
 }) : '';
 const breadcrumbData = torahData ? JSON.stringify({
   "@context": "https://schema.org",
@@ -82,7 +82,7 @@ const breadcrumbData = torahData ? JSON.stringify({
     <div
       class="reader-container"
       data-torah-id={torahData.id}
-      data-torah-title={`${torahData.title} - Biur HaLikutim`}
+      data-torah-title={`${torahData.title} - Aitzoas HaMivooaroas`}
     >
       <div class="reader-progress"></div>
 
