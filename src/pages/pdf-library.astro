@@ -9,10 +9,48 @@ try {
   catalog = JSON.parse(raw);
 } catch (e) {}
 
+// R2 download URLs (synced to actual bucket contents), keyed by normalized file name
+let libEntries = [];
+try {
+  const libRaw = fs.readFileSync(path.join(process.cwd(), 'public/library-catalog.json'), 'utf8');
+  libEntries = JSON.parse(libRaw);
+} catch (e) {}
+
+function normLibName(s) {
+  let n = String(s || '').normalize('NFC')
+    .replace(/''/g, "'").replace(/״/g, '"').replace(/׳/g, "'").replace(/_/g, ' ')
+    .replace(/\.(pdf|PDF)$/, '');
+  for (const tok of ['ajew', 'condense', 'condensed', 'סריקה מקורית', 'large scan', 'מקור', 'copy', 'עותק']) {
+    n = n.replace(new RegExp(tok, 'gi'), '');
+  }
+  return n.replace(/\s+/g, ' ').trim().replace(/^[-\s]+|[-\s]+$/g, '');
+}
+
+function humanMB(mb) {
+  if (mb == null) return '';
+  return (mb >= 100 ? Math.round(mb) : Math.round(mb * 10) / 10) + ' MB';
+}
+
+const libByName = new Map();
+for (const e of libEntries) {
+  if (!e.url) continue;
+  const k = normLibName(e.name);
+  if (k && !libByName.has(k)) libByName.set(k, e);
+}
+
 // Only show PDFs that should be kept (action = keep or compress)
 const displayEntries = catalog
   ? catalog.entries
       .filter(e => e.type === 'pdf' && (e.action === 'keep' || e.action === 'compress'))
+      .map(e => {
+        const hit = libByName.get(normLibName(e.name)) || null;
+        return {
+          ...e,
+          dl: hit ? hit.url : null,
+          dlSize: hit && hit.sizeMB != null ? humanMB(hit.sizeMB) : null,
+          condensed: !!(hit && hit.condensed),
+        };
+      })
       .sort((a, b) => a.name.localeCompare(b.name, 'he'))
   : [];
 
@@ -146,6 +184,7 @@ for (const cat of Object.keys(byCategory)) {
     }
     .book-size { font-size: 0.7em; color: #888; margin-left: 12px; white-space: nowrap; }
     .book-note { font-size: 0.65em; color: #92400e; margin-left: 8px; background: #fef3c7; padding: 2px 6px; border-radius: 4px; }
+    .book-dl { display: flex; flex: 1; align-items: center; justify-content: space-between; text-decoration: none; color: inherit; }
 
     .coming-soon { text-align: center; color: #888; font-style: italic; padding: 20px; font-size: 0.9em; }
 
@@ -169,7 +208,7 @@ for (const cat of Object.keys(byCategory)) {
     </div>
 
     <p class="coming-soon">
-      Downloads coming soon. For now, browse the catalog below.
+      Tap a book to download its scan. More scans are being added.
       <br />Na Nach Nachma Nachman MeUman
     </p>
 
@@ -181,9 +220,19 @@ for (const cat of Object.keys(byCategory)) {
         <ul class="book-list">
           {cat.books.map(book => (
             <li class="book-item">
-              <span class="book-name">{book.name.replace('.pdf', '')}</span>
-              <span class="book-size">{book.sizeHuman}</span>
-              {book.action === 'compress' && <span class="book-note">Large scan</span>}
+              {book.dl ? (
+                <a class="book-dl" href={book.dl} target="_blank" rel="noopener">
+                  <span class="book-name">{book.name.replace('.pdf', '')}</span>
+                  <span class="book-size">⬇ {book.dlSize}</span>
+                  {book.condensed && <span class="book-note">Condensed scan</span>}
+                </a>
+              ) : (
+                <>
+                  <span class="book-name">{book.name.replace('.pdf', '')}</span>
+                  <span class="book-size">{book.sizeHuman}</span>
+                  {book.action === 'compress' && <span class="book-note">Large scan</span>}
+                </>
+              )}
             </li>
           ))}
         </ul>
