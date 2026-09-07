@@ -372,8 +372,24 @@
         return;
       }
       statusEl.textContent = files.length + ' track' + (files.length === 1 ? '' : 's');
+      // If this edition maps Torah numbers to track positions, jump to the current Torah's track.
+      var tm = state.currentEdition && state.currentEdition.trackMap;
+      if (tm && torah !== null && !state.torahJumped) {
+        state.torahJumped = true;
+        var tNum = parseInt(torah, 10);
+        if (!isNaN(tNum) && (!tm.maxTorah || tNum <= tm.maxTorah)) {
+          var pos = tm.hakdamaTrack ? (tNum + 1) : tNum; // track index (1-based) for this Torah
+          var idx = pos - 1;
+          if (idx >= 0 && idx < files.length) {
+            state.currentIndex = idx;
+            if (state.audio) state.audio.src = files[idx].url;
+            statusEl.textContent = 'Torah ' + tNum + ' — track ' + pos + ' of ' + files.length;
+          }
+        }
+      }
       files.forEach(function (f, i) {
         var btn = el('button', { onclick: function () { playIndex(i); }, title: f.title }, (i + 1) + '. ' + f.title);
+        if (i === state.currentIndex) btn.classList.add('active');
         listEl.appendChild(btn);
       });
       // Sefer HaMidos visitors get individual song playback/downloads without whole-item archive links.

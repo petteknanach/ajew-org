@@ -51,15 +51,16 @@
   var enCurrentVoice = 'ryan';
   var enVoices = { ryan: { lang: 'en-GB' }, guy: { lang: 'en-US' }, connor: { lang: 'en-IE' } };
 
-  window.enGetText = function() {
+  window.enGetTexts = function() {
     var segs = document.querySelectorAll('.segment-en p');
     var texts = [];
     for (var i = 0; i < segs.length; i++) {
       var t = segs[i].textContent;
-      if (t && t !== 'Translation not yet available') texts.push(t);
+      if (t && t.trim() && t !== 'Translation not yet available') texts.push(t.trim());
     }
-    return texts.join('. ');
+    return texts;
   };
+  window.enGetText = function() { return window.enGetTexts().join('. '); };
 
   window.enTogglePlay = function() {
     if (enIsPlaying) {
