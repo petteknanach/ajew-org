@@ -209,6 +209,7 @@ const resolvedGroups = authorGroups.map(group => {
                   .trim();
                 const ext = file.ext;
                 const extClass = ext === 'PDF' ? 'badge-pdf' : ext === 'DOCX' || ext === 'DOC' ? 'badge-doc' : 'badge-txt';
+                const condensed = file.condensed === true;
                 return (
                   <a href={file.url} class="file-card" target="_blank" rel="noopener" data-name={cleanName.toLowerCase() + ' ' + file.name.toLowerCase()}>
                     <div class="file-card-top">
@@ -221,6 +222,14 @@ const resolvedGroups = authorGroups.map(group => {
                       <span class="file-size">{file.sizeMB < 1 ? '<1' : file.sizeMB} MB</span>
                     </div>
                     <div class="file-name">{cleanName}</div>
+                    {condensed && (
+                      <div class="file-condensed-note" title="הקובץ המקורי גדול יותר - זו גרסה מכווצת / The original scan was larger; this is a condensed copy">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="condensed-icon">
+                          <polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/>
+                        </svg>
+                        <span>גרסה מכווצת — המקור גדול יותר · Condensed copy — original scan was larger</span>
+                      </div>
+                    )}
                     <div class="file-download">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="download-icon">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
@@ -693,6 +702,32 @@ const resolvedGroups = authorGroups.map(group => {
     -webkit-box-orient: vertical;
     overflow: hidden;
     flex: 1;
+  }
+
+  .file-condensed-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    margin-top: 6px;
+    padding: 5px 8px;
+    background: #fff7e6;
+    border: 1px solid #e8c98a;
+    border-radius: 8px;
+    font-size: 0.72em;
+    line-height: 1.45;
+    color: #7a5b16;
+    direction: rtl;
+  }
+  .condensed-icon {
+    width: 13px;
+    height: 13px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  :global(.dark-mode) .file-condensed-note {
+    background: #2e2716;
+    border-color: #5c4d22;
+    color: #d9b96a;
   }
 
   .file-download {
