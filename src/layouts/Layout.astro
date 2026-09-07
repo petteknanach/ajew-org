@@ -52,6 +52,7 @@ const readerPlainBookBase = readerPlainMatch ? `/reader-plain/${readerPlainMatch
     <meta name="robots" content={noindex ? "noindex, nofollow" : "index, follow"} />
     <meta name="googlebot" content={noindex ? "noindex, nofollow" : "index, follow"} />
     <link rel="canonical" href={canonicalURL} />
+    {readerPlainBase && <link rel="stylesheet" href="/reader-mobile.css?v=1" />}
     <link rel="icon" type="image/png" sizes="512x512" href="/favicon.png?v=nanach-petek-20260707" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=nanach-petek-20260707" sizes="32x32" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=nanach-petek-20260707" />
@@ -230,7 +231,8 @@ const readerPlainBookBase = readerPlainMatch ? `/reader-plain/${readerPlainMatch
   <body>
     <a href="#main-content" class="skip-link">Skip to content</a>
     {readerPlainBase && readerPlainBookBase && (
-      <div class="ai-reader-access" style="padding:12px 16px;background:#fff8dc;border-bottom:1px solid #d6b85a;text-align:center;font-size:15px;line-height:1.5;">
+      <details class="ai-reader-access" style="padding:12px 16px;background:#fff8dc;border-bottom:1px solid #d6b85a;text-align:center;font-size:15px;line-height:1.5;">
+        <summary>Text downloads &amp; AI access</summary>
         <strong>AI / raw text access:</strong>{' '}
         <a href={readerPlainBase}>plain section HTML</a>{' · '}
         <a href={`${readerPlainBase}index.txt`}>section TXT</a>{' · '}
@@ -250,7 +252,7 @@ const readerPlainBookBase = readerPlainMatch ? `/reader-plain/${readerPlainMatch
             This is sitewide and works for all reader teachings, not just this page.
           </p>
         </details>
-      </div>
+      </details>
     )}
     <Navigation currentPath={Astro.url.pathname} />
     <CompactYahrzeit />
@@ -264,6 +266,7 @@ const readerPlainBookBase = readerPlainMatch ? `/reader-plain/${readerPlainMatch
 
     <!-- Reader audio player (self-initializes only on /reader/<bookId>/... pages when a mapping exists) -->
     <script src="/audio-player.js?v=20260826-no-archive-details" defer></script>
+    {readerPlainBase && <script src="/reader-mobile.js?v=1" is:inline defer></script>}
 
     <footer role="contentinfo">
       <div class="footer-container">

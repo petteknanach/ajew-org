@@ -1,0 +1,74 @@
+/* Applied only after the original Reader controls have initialized. */
+.reader-mobile-ready .reader-toolbar > [hidden] { display: none !important; }
+.reader-audio-disclosure > summary { cursor: pointer; font: 600 14px/1.4 'Open Sans', sans-serif; }
+details.ai-reader-access > summary { cursor: pointer; }
+@media (min-width: 769px) {
+  .reader-audio-disclosure { display: contents; }
+  .reader-audio-disclosure > summary { display: none; }
+}
+@media (max-width: 768px) {
+  .reader-mobile-ready .reader-toolbar {
+    top: 56px;
+    padding: 6px;
+    gap: 6px;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    overflow: visible;
+    max-height: calc(100dvh - 180px);
+    overflow-y: auto;
+  }
+  .reader-mobile-ready .reader-toolbar-group {
+    min-width: 0;
+    max-width: 100%;
+    padding: 0;
+    border: 0;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .reader-mobile-ready .reader-mobile-language { flex: 1 1 auto; }
+  .reader-mobile-ready .reader-mobile-secondary { flex: 1 0 100%; padding-top: 6px; }
+  .reader-mobile-ready .reader-toolbar .reader-btn,
+  .reader-mobile-ready .reader-toolbar select,
+  .reader-mobile-ready #reader-tools-toggle {
+    min-height: 44px;
+    padding: 6px 9px;
+    font-size: 13px;
+    line-height: 1.2;
+  }
+  .reader-mobile-ready .reader-toolbar #btn-notes,
+  .reader-mobile-ready .reader-toolbar #btn-print,
+  .reader-mobile-ready .reader-toolbar #btn-share { display: inline-flex; align-items: center; }
+  .reader-mobile-ready .reader-toolbar input[type='range'] { min-height: 44px; }
+  .reader-mobile-ready .reader-toolbar select { max-width: 100%; margin-left: 0 !important; }
+  .reader-mobile-ready .reader-toolbar :focus-visible,
+  .reader-audio-disclosure > summary:focus-visible,
+  details.ai-reader-access > summary:focus-visible { outline: 3px solid #b47c18; outline-offset: 2px; }
+  .reader-mobile-ready .reader-header { padding: 16px 8px 8px; }
+  .reader-mobile-ready .reader-nav {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 12px;
+    padding: 12px 0;
+  }
+  .reader-mobile-ready .reader-nav a,
+  .reader-mobile-ready .reader-nav .disabled {
+    min-width: 0;
+    min-height: 44px;
+    padding: 8px;
+    text-align: center;
+    justify-content: center;
+  }
+  .reader-audio-disclosure {
+    margin: 0 0 8px;
+    border: 1px solid var(--reader-border, #e0d6c2);
+    border-radius: 8px;
+    background: var(--reader-control-bg, #fefdfb);
+    color: var(--reader-text, #1a365d);
+  }
+  .reader-audio-disclosure > summary { padding: 12px; min-height: 44px; box-sizing: border-box; }
+  details.ai-reader-access { overflow-wrap: anywhere; }
+}
+@media print {
+  .reader-audio-disclosure, #reader-tools-toggle { display: none !important; }
+}
