@@ -2,11 +2,10 @@
 import Layout from '../layouts/Layout.astro';
 import fs from 'node:fs';
 import path from 'node:path';
+import { prayerReferences, unverifiedPrayerReferences, firstPrayerUrl } from '../lib/source-entry-integrity.mjs';
 
 const topicsPath = path.join(process.cwd(), 'public/reader/likutay-tefilos/toc-topics.json');
-const specialPath = path.join(process.cwd(), 'public/reader/likutay-tefilos/special-prayers.json');
 const topicsData = JSON.parse(fs.readFileSync(topicsPath, 'utf8'));
-const specialData = JSON.parse(fs.readFileSync(specialPath, 'utf8'));
 const englishFallback = {
   'אֱמֶת': 'Truth',
   'אֱמוּנָה': 'Faith',
@@ -25,32 +24,13 @@ const commonTopicOrder = ['אֱמוּנָה', 'שִׂמְחָה', 'רְפוּא�
 const allTopics = (topicsData.topics || []).map((topic) => ({
   ...topic,
   english: topic.english || englishFallback[topic.topic] || topic.topic,
-  total: (topic.part1_prayers || []).length + (topic.part2_prayers || []).length,
+  references: prayerReferences(topic),
+  unverifiedReferences: unverifiedPrayerReferences(topic),
+  total: prayerReferences(topic).length,
 })).sort((a, b) => (a.english || '').localeCompare(b.english || ''));
 const featured = commonTopicOrder
   .map((topicName) => allTopics.find((t) => t.topic === topicName))
-  .filter(Boolean);
-const specialTopics = (specialData.topics || []).map((topic) => {
-  const match = allTopics.find((t) => t.topic === topic.topic) || {};
-  return {
-    ...topic,
-    english: match.english || topic.topic,
-    total: (topic.part1_prayers || []).length + (topic.part2_prayers || []).length,
-  };
-});
-function firstPrayerUrl(topic) {
-  const p1 = (topic.part1_prayers || []).filter(Boolean)[0];
-  if (p1) return `/reader/likutay-tefilos/1/${p1}`;
-  const p2 = (topic.part2_prayers || []).filter(Boolean)[0];
-  if (p2) return `/reader/likutay-tefilos/2/${p2}`;
-  return '/reader/likutay-tefilos/1/1';
-}
-function refs(topic) {
-  const a = [];
-  if ((topic.part1_prayers || []).length) a.push(`I: ${[...new Set(topic.part1_prayers)].slice(0, 8).join(', ')}`);
-  if ((topic.part2_prayers || []).length) a.push(`II: ${[...new Set(topic.part2_prayers)].slice(0, 8).join(', ')}`);
-  return a.join(' · ');
-}
+  .filter((topic) => topic && topic.total > 0);
 ---
 
 <Layout title="Prayers for All Occasions — Likutay Tefilos Topics" description="Find the right Likutay Tefilos prayer by need, occasion, and topic. Hebrew topic index with direct links into the reader.">
@@ -79,7 +59,7 @@ function refs(topic) {
         <a class="featured-prayer-card" href={firstPrayerUrl(topic)}>
           <span class="topic-he" lang="he" dir="rtl">{topic.topic}</span>
           <strong>{topic.english}</strong>
-          <em>{topic.total} prayer references</em>
+          <em>{topic.total} {topic.referenceNote ? 'selected ' : ''}prayer {topic.total === 1 ? 'reference' : 'references'}</em>
         </a>
       ))}
     </div>
@@ -88,7 +68,7 @@ function refs(topic) {
   <section class="all-prayer-topics">
     <div class="section-head">
       <h2>Full topic index</h2>
-      <p>{allTopics.length} topics from Likutay Tefilos. Each card opens the first prayer and lists more references.</p>
+      <p>{allTopics.length} topics from Likutay Tefilos. Open any listed prayer directly. Entries with missing references are marked for verification.</p>
     </div>
     <div class="topics-index-grid">
       {allTopics.map((topic) => (
@@ -96,9 +76,15 @@ function refs(topic) {
           <div>
             <h3>{topic.english}</h3>
             <p class="topic-index-he" lang="he" dir="rtl">{topic.topic}</p>
-            <p class="topic-refs">{refs(topic)}</p>
+            <p class="topic-refs">{topic.references.map((ref, index) => (
+              <>{index > 0 && ' · '}<a href={ref.href} aria-label={`${topic.english} — Likutay Tefilos ${ref.label}`}>{ref.label}</a></>
+            ))}</p>
+            {topic.referenceNote && <p class="topic-refs">{topic.referenceNote}</p>}
+            {topic.unverifiedReferences.length > 0 && <p class="topic-refs">Index references awaiting verification: {topic.unverifiedReferences.join(', ')}</p>}
           </div>
-          <a href={firstPrayerUrl(topic)}>Open prayer →</a>
+          {topic.total > 0
+            ? <a href={firstPrayerUrl(topic)}>Open prayer →</a>
+            : <p class="topic-refs">References awaiting verification</p>}
         </article>
       ))}
     </div>

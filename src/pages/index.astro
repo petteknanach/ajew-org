@@ -4,8 +4,7 @@
  * A calm, warm, and welcoming entry point to the Breslov Torah library.
  */
 import Layout from '../layouts/Layout.astro';
-import fs from 'node:fs';
-import path from 'node:path';
+import { quoteSourceUrl } from '../lib/source-entry-integrity.mjs';
 
 // Load daily quote data
 const quotes = [
@@ -22,8 +21,7 @@ const quotes = [
 ];
 const dayIndex = Math.floor(Date.now() / 86400000) % quotes.length;
 const todayQuote = quotes[dayIndex];
-const lmTorahMap = { 0: 48, 1: 112, 2: 24, 3: 78, 4: 25, 5: 24, 6: 4, 7: 2, 8: 282 };
-const todayLM = lmTorahMap[dayIndex] || 1;
+
 ---
 
 <Layout
@@ -136,7 +134,7 @@ const todayLM = lmTorahMap[dayIndex] || 1;
       <p class="quote-en">"{todayQuote.en}"</p>
       <cite>— Rebbe Nachman of Breslov · {todayQuote.src}</cite>
     </blockquote>
-    <a href={`/reader/likutay-moharan/1/${todayLM}`} class="quote-cta">Read the full teaching →</a>
+    <a href={quoteSourceUrl(todayQuote.src)} class="quote-cta">Read the full teaching →</a>
   </div>
 </section>
 
