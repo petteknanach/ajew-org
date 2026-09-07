@@ -34,7 +34,13 @@
         },
         {
           "name": "Readings of Rabbeinu's Torahs",
-          "identifier": "voice-readings-torahs-rabbeinu"
+          "identifier": "voice-readings-torahs-rabbeinu",
+          "trackMap": {
+            "mode": "filename",
+            "pattern": "תורה\\s*([א-ת\"׳״]{1,8})",
+            "group": 1,
+            "part2Markers": "תנינא|חלק\\s*ב"
+          }
         }
       ]
     },
@@ -166,11 +172,17 @@
       "editions": [
         {
           "name": "Kol HaTzadik (voice only)",
-          "identifier": "kol-hatzadik-likutay-tefilos"
+          "identifier": "kol-hatzadik-likutay-tefilos",
+          "trackMap": {
+            "maxTorah": 210
+          }
         },
         {
           "name": "Kol HaTzadik (with melody)",
-          "identifier": "kol-hatzadik-melody-likutay-tefilos"
+          "identifier": "kol-hatzadik-melody-likutay-tefilos",
+          "trackMap": {
+            "maxTorah": 210
+          }
         }
       ]
     },

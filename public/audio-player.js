@@ -211,7 +211,21 @@
     document.head.appendChild(s);
   }
 
-  function loadSources() {
+    function gematriaToInt(s) {
+    if (!s) return NaN;
+    s = String(s).replace(/[\u0591-\u05C7]/g, '');
+    if (/^[0-9]+$/.test(s)) return parseInt(s, 10);
+    var map = { 'א':1,'ב':2,'ג':3,'ד':4,'ה':5,'ו':6,'ז':7,'ח':8,'ט':9,'י':10,'כ':20,'ך':20,'ל':30,'מ':40,'ם':40,'נ':50,'ן':50,'ס':60,'ע':70,'פ':80,'ף':80,'צ':90,'ץ':90,'ק':100,'ר':200,'ש':300,'ת':400 };
+    var total = 0;
+    for (var i = 0; i < s.length; i++) {
+      var v = map[s[i]];
+      if (!v) return NaN;
+      total += v;
+    }
+    return total;
+  }
+
+function loadSources() {
     return fetch(AUDIO_SOURCES_URL).then(function (r) {
       if (!r.ok) throw new Error('Failed to load audio-sources.json');
       return r.json();
@@ -377,14 +391,34 @@
       if (tm && torah !== null && !state.torahJumped) {
         state.torahJumped = true;
         var tNum = parseInt(torah, 10);
-        if (!isNaN(tNum) && (!tm.maxTorah || tNum <= tm.maxTorah)) {
+        var label = 'Torah ' + torah;
+        var idx = -1;
+        if (tm.mode === 'filename' && tm.pattern) {
+          // Match the current Torah number inside decoded file names (supports Hebrew gematria).
+          var re = new RegExp(tm.pattern);
+          var p2re = tm.part2Markers ? new RegExp(tm.part2Markers) : null;
+          var wantPart2 = String(part) === '2';
+          files.forEach(function (f, i) {
+            if (idx >= 0) return;
+            var name;
+            try { name = decodeURIComponent(f.url.split('/').pop() || ''); } catch (e) { name = f.title || f.name || ''; }
+            if (!name) return;
+            if (p2re && p2re.test(name) !== wantPart2) return;
+            var m = name.match(re);
+            if (!m) return;
+            var val = gematriaToInt(m[tm.group || 1]);
+            if (val === tNum) idx = i;
+          });
+          if (idx >= 0) label = 'Torah ' + tNum + ' — matched reading';
+        } else if (!isNaN(tNum) && (!tm.maxTorah || tNum <= tm.maxTorah)) {
           var pos = tm.hakdamaTrack ? (tNum + 1) : tNum; // track index (1-based) for this Torah
-          var idx = pos - 1;
-          if (idx >= 0 && idx < files.length) {
-            state.currentIndex = idx;
-            if (state.audio) state.audio.src = files[idx].url;
-            statusEl.textContent = 'Torah ' + tNum + ' — track ' + pos + ' of ' + files.length;
-          }
+          idx = pos - 1;
+          if (idx >= 0) label = 'Torah ' + tNum + ' — track ' + pos + ' of ' + files.length;
+        }
+        if (idx >= 0 && idx < files.length) {
+          state.currentIndex = idx;
+          if (state.audio) state.audio.src = files[idx].url;
+          statusEl.textContent = label;
         }
       }
       files.forEach(function (f, i) {
