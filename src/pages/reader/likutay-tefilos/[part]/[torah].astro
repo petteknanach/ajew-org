@@ -234,8 +234,9 @@ const breadcrumbData = torahData ? JSON.stringify({
           </div>
         ))}
         </div>
+        <!-- Enable the reviewed I:1 paired view only; other prayers still require semantic QA. -->
         {torahData.aligned_segments && (
-          <div class="reader-content-aligned" style="display:none;">
+          <div class="reader-content-aligned" id={partNum === 1 && torahNum === 1 ? 'aligned-segments-data' : undefined} style="display:none;grid-column:1 / -1;">
             {torahData.aligned_segments.map((seg) => (
               <div class={`reader-segment-pair ${seg.type === 'note' ? 'segment-note' : ''}`} id={`aligned-${seg.index}`}>
                 <div class="reader-segment segment-he" data-index={String(seg.index)}>
