@@ -250,6 +250,14 @@ const structuredData = torahData ? JSON.stringify({
         </div>
       )}
 
+      {torahData.translationReview && (
+        <details class="translation-review-scope" style="margin:1rem 0;padding:0.75rem;border:1px solid var(--reader-border,#ddd);border-radius:8px;" dir="ltr">
+          <summary>English source and review scope</summary>
+          <div>{torahData.translationReview.scope}</div>
+          <div>{torahData.translationReview.provenance}</div>
+          <a href={`/reader/chayey-moharan/${fileName}`}>Download source wording and editorial record (JSON)</a>
+        </details>
+      )}
       <div class="reader-content mode-hebrew">
         <div class="reader-content-original">
 {torahData.segments.map((seg) => {
@@ -263,6 +271,12 @@ const structuredData = torahData ? JSON.stringify({
             <div class={`reader-segment segment-en ${!seg.en ? 'empty-translation' : ''}`} data-index={String(seg.index)}>
               <span class="segment-number">{label}</span>
               <p>{seg.en || 'Translation not yet available'}</p>
+              {seg.translationProvenance && (
+                <details class="translation-provenance" style="font-size:0.8em;line-height:1.5;margin-top:0.5rem;" dir="ltr">
+                  <summary>Source</summary>
+                  <div>{seg.translationProvenance}</div>
+                </details>
+              )}
             </div>
           </div>
         )})}
