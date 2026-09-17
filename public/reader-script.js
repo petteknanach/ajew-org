@@ -682,7 +682,7 @@
       const target = document.getElementById(window.location.hash.substring(1));
       if (target) {
         setTimeout(() => {
-          target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          scrollToReaderArrival(target);
           target.style.outline = '2px solid var(--reader-accent)';
           setTimeout(() => target.style.outline = '', 3000);
         }, 300);
@@ -2947,6 +2947,13 @@
     });
   }
 
+  // A search arrival must land on its match, not the center of a long segment.
+  function scrollToReaderArrival(target) {
+    const query = new URLSearchParams(window.location.search).get('q');
+    const match = query ? target.querySelector('.search-highlight') : null;
+    (match || target).scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
   // --- Segment Permalink Buttons ---
   function setupSegmentLinks() {
     document.querySelectorAll('.reader-segment-pair[id]').forEach(function(pair) {
@@ -2969,7 +2976,7 @@
     if (window.location.hash) {
       var target = document.querySelector(window.location.hash);
       if (target) {
-        setTimeout(function() { target.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 300);
+        setTimeout(function() { scrollToReaderArrival(target); }, 300);
         target.style.outline = '2px solid #ffd54f';
         setTimeout(function() { target.style.outline = ''; }, 3000);
       }
