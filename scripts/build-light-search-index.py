@@ -18,7 +18,7 @@ OUT_DIR = Path('public/data')
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 def strip_nikud(text):
-    return re.sub(r'[\u0591-\u05C7]', '', text)
+    return re.sub(r'[\u0591-\u05BD\u05BF\u05C1-\u05C2\u05C4-\u05C5\u05C7]', '', text)
 
 HE_KEYS = ('he', 'he_nikud', 'verse', 'verseText', 'commentary_he', 'text_he', 'hebrew', 'hebrew_text')
 EN_KEYS = ('en', 'commentary_en', 'text_en', 'english', 'translation')

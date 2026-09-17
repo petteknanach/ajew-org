@@ -103,7 +103,7 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
       
       function normalizeForSearch(text) {
         return (text || '').toString().toLowerCase().normalize('NFD')
-          .replace(/[\u0591-\u05C7]/g, '')
+          .replace(/[\u0591-\u05BD\u05BF\u05C1-\u05C2\u05C4-\u05C5\u05C7]/g, '')
           .replace(/[\u0300-\u036f]/g, '')
           .replace(/[״"׳']/g, '')
           .replace(/[^\p{L}\p{N}\s]+/gu, ' ')
@@ -535,7 +535,7 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
           const char = String.fromCodePoint(point);
           const width = char.length;
           const folded = char.toLowerCase().normalize('NFD')
-            .replace(/[\u0591-\u05C7\u0300-\u036f״"׳']/g, '');
+            .replace(/[\u0591-\u05BD\u05BF\u05C1-\u05C2\u05C4-\u05C5\u05C7\u0300-\u036f״"׳']/g, '');
           for (const foldedChar of folded) {
             if (/^[\p{L}\p{N}]$/u.test(foldedChar)) {
               if (pendingSpace && normalized) {
@@ -865,7 +865,7 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
       }
 
       // Nikud (vowel marks) regex - these appear in Hebrew text but not in search queries
-      const NIKUD_RANGE = '[\u0591-\u05BD\u05BF-\u05C7]';
+      const NIKUD_RANGE = '[\u0591-\u05BD\u05BF\u05C1-\u05C2\u05C4-\u05C5\u05C7]';
 
       function escapeAttr(value: string): string {
         return (value || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');

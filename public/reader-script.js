@@ -88,7 +88,7 @@
 
   // --- Nikud Toggle ---
   function stripNikud(text) {
-    return text.replace(/[\u0591-\u05BD\u05BF-\u05C7]/g, '');
+    return text.replace(/[\u0591-\u05BD\u05BF\u05C1-\u05C2\u05C4-\u05C5\u05C7]/g, '');
   }
 
   function applyNikud() {
@@ -234,6 +234,19 @@
     });
   }
 
+  // Build a phrase regex for Reader highlighting. Space in the query matches
+  // nikud or any Hebrew boundary punctuation (maqaf/paseq/sof pasuq/nun
+  // hafukha) or whitespace; each letter optionally carries nikud, but not
+  // boundary punctuation, so a fused query cannot span separate words.
+  function readerSearchPattern(query) {
+    const nikud = '[\\u0591-\\u05BD\\u05BF\\u05C1-\\u05C2\\u05C4-\\u05C5\\u05C7]*';
+    const boundary = '[^\\p{L}\\p{N}]*';
+    return [...query].map(char => {
+      if (!/[\p{L}\p{N}]/u.test(char)) return boundary;
+      return char.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + nikud;
+    }).join('');
+  }
+
   function performSearch(query) {
     clearSearchHighlights();
     query = String(query || '').trim();
@@ -251,12 +264,8 @@
 
     let count = 0;
     const segments = document.querySelectorAll('.reader-segment p');
-    const nikud = '[\\u0591-\\u05C7]*';
-    const pattern = [...query].map(char => {
-      if (/\s/.test(char)) return '\\s+';
-      return char.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + nikud;
-    }).join('');
-    const regex = new RegExp(pattern, 'gi');
+    const pattern = readerSearchPattern(query);
+    const regex = new RegExp(pattern, 'giu');
 
     segments.forEach(p => {
       const walker = document.createTreeWalker(p, NodeFilter.SHOW_TEXT);

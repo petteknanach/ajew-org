@@ -18,7 +18,7 @@ SHARDS = OUT / 'shards'
 DOCS = OUT / 'docs'
 PHRASES = OUT / 'phrases'
 LETTERS = OUT / 'letters'
-NIKUD_RE = re.compile(r'[\u0591-\u05C7]')
+NIKUD_RE = re.compile(r'[\u0591-\u05BD\u05BF\u05C1-\u05C2\u05C4-\u05C5\u05C7]')
 COMBINING_RE = re.compile(r'[\u0300-\u036f]')
 PUNCT_RE = re.compile(r'[^\w\s\u0590-\u05ff]+', re.UNICODE)
 SPACE_RE = re.compile(r'\s+')
@@ -38,6 +38,7 @@ def normalize(text: str) -> str:
     text = NIKUD_RE.sub('', text)
     text = COMBINING_RE.sub('', text)
     text = text.replace('״', '').replace('׳', '').replace('"', '').replace("'", '')
+    text = re.sub(r'[־׀׃׆]', ' ', text)
     text = PUNCT_RE.sub(' ', text)
     return SPACE_RE.sub(' ', text).strip()
 
