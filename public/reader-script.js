@@ -234,16 +234,19 @@
     });
   }
 
-  // Build a phrase regex for Reader highlighting. Space in the query matches
-  // nikud or any Hebrew boundary punctuation (maqaf/paseq/sof pasuq/nun
-  // hafukha) or whitespace; each letter optionally carries nikud, but not
-  // boundary punctuation, so a fused query cannot span separate words.
+  // Mirror search normalization: marks/abbreviation quotes are ignorable,
+  // but a word separator must consume at least one real boundary character.
   function readerSearchPattern(query) {
-    const nikud = '[\\u0591-\\u05BD\\u05BF\\u05C1-\\u05C2\\u05C4-\\u05C5\\u05C7]*';
-    const boundary = '[^\\p{L}\\p{N}]*';
-    return [...query].map(char => {
-      if (!/[\p{L}\p{N}]/u.test(char)) return boundary;
-      return char.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + nikud;
+    const normalized = String(query || '').normalize('NFD')
+      .replace(/[\u0591-\u05BD\u05BF\u05C1-\u05C2\u05C4-\u05C5\u05C7\u0300-\u036f״"׳']/g, '')
+      .replace(/[^\p{L}\p{N}\s]+/gu, ' ')
+      .replace(/\s+/g, ' ').trim();
+    if (!normalized) return '(?!)';
+    const ignored = '[\\u0591-\\u05BD\\u05BF\\u05C1-\\u05C2\\u05C4-\\u05C5\\u05C7\\u0300-\\u036f״"׳\']*';
+    const boundary = '[^\\p{L}\\p{N}\\u0591-\\u05BD\\u05BF\\u05C1-\\u05C2\\u05C4-\\u05C5\\u05C7\\u0300-\\u036f״"׳\']';
+    return [...normalized].map(char => {
+      if (char === ' ') return '(?:' + boundary + ignored + ')+';
+      return char.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ignored;
     }).join('');
   }
 
@@ -282,6 +285,8 @@
         let lastIdx = 0;
         let match;
         while ((match = regex.exec(text)) !== null) {
+          // Fail closed if a future pattern change admits an empty match.
+          if (!match[0].length) break;
           if (match.index > lastIdx) {
             frag.appendChild(document.createTextNode(text.slice(lastIdx, match.index)));
           }
