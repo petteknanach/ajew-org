@@ -310,14 +310,17 @@
   function findYahrzeits(month, day) {
     const normMonth = normalizeMonth(month);
     return tzaddikimDatabase.filter(tz => {
-      const tzMonth = normalizeMonth(tz.yahrzeit_month);
-      const tzDay = parseInt(tz.yahrzeit_day);
-      if (tzDay !== day) return false;
-      // Exact match (after normalization)
-      if (tzMonth === normMonth) return true;
-      // In Adar II: also show "Adar" entries (covers the opinion that yahrzeits are in Adar II)
-      if (normMonth === 'Adar II' && tzMonth === 'Adar') return true;
-      return false;
+      // One identity may have multiple sourced dates, with the same uncertainty
+      // note shown on each. Do not duplicate the person in the database.
+      const dates = [
+        { month: tz.yahrzeit_month, day: tz.yahrzeit_day },
+        ...(Array.isArray(tz.yahrzeit_alternate_dates) ? tz.yahrzeit_alternate_dates : [])
+      ];
+      return dates.some(date => {
+        const tzMonth = normalizeMonth(date.month);
+        if (parseInt(date.day, 10) !== day) return false;
+        return tzMonth === normMonth || (normMonth === 'Adar II' && tzMonth === 'Adar');
+      });
     });
   }
 
