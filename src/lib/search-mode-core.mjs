@@ -2,7 +2,7 @@ const FINAL_TO_REGULAR = Object.freeze({ ך: 'כ', ם: 'מ', ן: 'נ', ף: 'פ',
 
 export function normalizeSearchText(value) {
   return String(value || '').toLowerCase().normalize('NFD')
-    .replace(/[\u0591-\u05C7\u0300-\u036f]/g, '')
+    .replace(/[\u0591-\u05BD\u05BF\u05C1-\u05C2\u05C4-\u05C5\u05C7\u0300-\u036f]/g, '')
     .replace(/[״"׳']/g, '')
     .replace(/[^\p{L}\p{N}\s]+/gu, ' ')
     .replace(/\s+/g, ' ')
