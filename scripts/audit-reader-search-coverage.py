@@ -24,8 +24,11 @@ ROOT = Path(__file__).resolve().parents[1]
 READER = ROOT / "public" / "reader"
 DATA = ROOT / "public" / "data"
 SEARCH = ROOT / "public" / "reader-search"
-NIKUD_RE = re.compile(r"[\u0591-\u05C7]")
+NIKUD_RE = re.compile(r"[\u0591-\u05BD\u05BF\u05C1-\u05C2\u05C4-\u05C5\u05C7]")
 COMBINING_RE = re.compile(r"[\u0300-\u036f]")
+# Maqaf, paseq, sof pasuq, nun-hafukha are word boundaries, never nikud:
+# they map to spaces exactly like the shard builder's normalize() does.
+HEBREW_BOUNDARY_RE = re.compile(r"[־׀׃׆]")
 PUNCT_RE = re.compile(r"[^\w\s\u0590-\u05ff]+", re.UNICODE)
 SPACE_RE = re.compile(r"\s+")
 HE_KEYS = ("verse", "verseText", "commentary_he", "text_he", "hebrew", "hebrew_text")
@@ -37,6 +40,7 @@ def normalize(value: str) -> str:
     value = unicodedata.normalize("NFD", str(value or "").lower())
     value = NIKUD_RE.sub("", value)
     value = COMBINING_RE.sub("", value)
+    value = HEBREW_BOUNDARY_RE.sub(" ", value)
     value = value.replace("״", "").replace("׳", "").replace('"', "").replace("'", "")
     return SPACE_RE.sub(" ", PUNCT_RE.sub(" ", value)).strip()
 
@@ -274,7 +278,7 @@ def audit(output: Path) -> dict:
     report = {
         "schemaVersion": 1,
         "scope": "canonical routed public/reader JSON; Super Reader derivative overlays excluded",
-        "normalization": "NFD lowercase; remove Hebrew/Latin combining marks, quote marks, punctuation; collapse whitespace",
+        "normalization": "NFD lowercase; remove Hebrew/Latin combining marks, quote marks, punctuation; map maqaf/paseq/sof pasuq/nun-hafukha to word-boundary spaces; collapse whitespace",
         "summary": summary,
         "books": dict(sorted(per_book.items())),
         "details": details,
