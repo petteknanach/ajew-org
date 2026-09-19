@@ -214,7 +214,11 @@ def main():
         en_text = clean_text(ed.get('x','') or hd.get('e','') or ed.get('e',''))
         text = clean_text(title, hebrew, book, aliases, he_text, en_text)
         item_id = len(items)
-        items.append({'t': title, 'h': hebrew, 'c': book, 'p': link, 'a': normalize(f'{title} {hebrew} {book} {aliases}')[:500]})
+        # No consumer reads the per-item alias blob: the web client matches
+        # titles via t/h/c and letter binaries, the Android app reconstructs
+        # titles from t/h/c, and the audit uses p/c. Dropping it removes the
+        # largest meta.json field (~1.5 MB decoded for 27,282 docs).
+        items.append({'t': title, 'h': hebrew, 'c': book, 'p': link})
         normalized = normalize(text)
         location_map = hd.get('m') if isinstance(hd.get('m'), list) else segment_map(raw_link)
         with open(DOCS / f'{item_id}.json', 'w', encoding='utf-8') as f:

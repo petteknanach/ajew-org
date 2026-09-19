@@ -1,27 +1,26 @@
 ---
-// Book Selection Filter — generates individual book checkboxes from search index
+// Book Selection Filter — generates individual book checkboxes from the
+// canonical reader-search catalog (public/reader-search/meta.json), the same
+// catalog the search clients use, so counts always match what is searchable.
 // Groups books by author/category with per-category select/deselect
 
 import fs from 'fs';
 import path from 'path';
 
-// Load search index to get actual book IDs and counts
-const indexPath = path.join(process.cwd(), 'public/data/search-index-v2.json');
+const metaPath = path.join(process.cwd(), 'public/reader-search/meta.json');
 let bookCounts: Record<string, number> = {};
 
 try {
-  const indexData = JSON.parse(fs.readFileSync(indexPath, 'utf-8'));
-  const docs = indexData.documents || [];
-  for (const doc of docs) {
-    const url = doc.url || '';
-    const parts = url.split('/');
+  const meta = JSON.parse(fs.readFileSync(metaPath, 'utf-8'));
+  for (const item of meta.items || []) {
+    const parts = String(item.p || '').split('/');
     if (parts.length >= 3 && parts[1] === 'reader') {
       const bookId = parts[2];
       bookCounts[bookId] = (bookCounts[bookId] || 0) + 1;
     }
   }
 } catch (e) {
-  // Fallback if index not available at build time
+  // Fallback if catalog not available at build time
 }
 
 // Hebrew names for books

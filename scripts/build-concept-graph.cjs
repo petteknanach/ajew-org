@@ -18,12 +18,16 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..');
-const INDEX_PATH = path.join(ROOT, 'public/data/search-index-v2.json');
+// Canonical maintained Hebrew corpus: the light search index (gzipped JSON of
+// {l, b, x, ...} per routed document). Retired search-index-v2 was removed
+// from the repo and build chain.
+const INDEX_PATH = path.join(ROOT, 'public/data/light-search-index-he.json.gz');
 const OUTPUT_PATH = path.join(ROOT, 'public/data/concept-graph.json');
 
-// Strip nikud from text for matching
+// Strip Hebrew combining marks (nikud) for matching. Maqaf, paseq, sof pasuq
+// and nun-hafukha are word boundaries, not nikud, and must be preserved.
 function stripNikud(text) {
-  return text.replace(/[\u0591-\u05BD\u05BF-\u05C7]/g, '');
+  return text.replace(/[\u0591-\u05BD\u05BF\u05C1-\u05C2\u05C4-\u05C5\u05C7]/g, '');
 }
 
 // ~50 important Breslov/Torah concepts
@@ -104,9 +108,9 @@ function main() {
   }
 
   console.log('Loading search index...');
-  const raw = fs.readFileSync(INDEX_PATH, 'utf8');
+  const raw = require('zlib').gunzipSync(fs.readFileSync(INDEX_PATH));
   const index = JSON.parse(raw);
-  const docs = index.documents;
+  const docs = index;
   console.log(`  Loaded ${docs.length} documents\n`);
 
   // Strip nikud from concept terms (in case any snuck in)
@@ -124,7 +128,7 @@ function main() {
   const docConcepts = new Array(docs.length); // doc index -> array of concept indices
 
   for (let di = 0; di < docs.length; di++) {
-    const content = docs[di].content || '';
+    const content = docs[di].x || '';
     const found = [];
     for (let ci = 0; ci < n; ci++) {
       if (content.includes(concepts[ci].he)) {

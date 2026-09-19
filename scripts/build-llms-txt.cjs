@@ -101,7 +101,7 @@ function main() {
     `\n\n## Optional\n\n` +
     `- [llms-full.txt](https://ajew.org/llms-full.txt): Full bilingual content for AI ingestion\n` +
     `- [Sitemap](https://ajew.org/sitemap-index.xml): Full URL listing\n` +
-    `- [Search Index](https://ajew.org/data/search-index-v2.json): Bilingual search metadata\n`;
+    `- [Search Catalog](https://ajew.org/reader-search/meta.json): Bilingual reader search catalog\n`;
 
   fs.writeFileSync(LLMS_TXT, llmsTxt, 'utf8');
   const tocSize = (fs.statSync(LLMS_TXT).size / 1024).toFixed(0);
