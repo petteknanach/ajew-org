@@ -258,18 +258,25 @@
 
   let tzaddikimDatabase = [];
 
-  // Fetch Hebrew date from Hebcal API
+  // Fetch Hebrew date from Hebcal API (per-day sessionStorage cache)
   async function getHebrewDate(date = new Date()) {
     const dateStr = date.toISOString().split('T')[0];
+    const cacheKey = 'ajew-hebcal-g2h-' + dateStr;
+    try {
+      const cached = sessionStorage.getItem(cacheKey);
+      if (cached) return JSON.parse(cached);
+    } catch (_) { /* storage unavailable */ }
     const response = await fetch(`https://www.hebcal.com/converter?cfg=json&date=${dateStr}&g2h=1`);
     const data = await response.json();
-    return {
+    const payload = {
       hebrew: data.hebrew,
       month: data.hm,
       day: data.hd,
       year: data.hy,
       monthIndex: data.monthIndex
     };
+    try { sessionStorage.setItem(cacheKey, JSON.stringify(payload)); } catch (_) { /* quota */ }
+    return payload;
   }
 
   // Load tzaddikim database
@@ -492,9 +499,9 @@
       const tomorrow = new Date(today);
       tomorrow.setDate(tomorrow.getDate() + 1);
 
-      const todayHeb = await getHebrewDate(today);
-      const tomorrowHeb = await getHebrewDate(tomorrow);
-
+      // Both Hebrew-date lookups run in parallel; each is cached per day in
+      // sessionStorage so repeat navigations skip the third-party call.
+      const [todayHeb, tomorrowHeb] = await Promise.all([getHebrewDate(today), getHebrewDate(tomorrow)]);
       clearTimeout(timeout);
 
       // Find yahrzeits for today and tomorrow
@@ -624,11 +631,18 @@
     localStorage.setItem('ajew-yahrzeit-dismissed', String(expiry));
   }
 
-  // Initialize on load
+  // Initialize after load + idle: keep the third-party Hebrew-date lookup off
+  // the page's critical start; the widget already renders a Loading state.
+  const kickYahrzeit = () => { initYahrzeit(); };
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initYahrzeit);
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof requestIdleCallback === 'function') requestIdleCallback(kickYahrzeit, { timeout: 4000 });
+      else setTimeout(kickYahrzeit, 1200);
+    });
+  } else if (typeof requestIdleCallback === 'function') {
+    requestIdleCallback(kickYahrzeit, { timeout: 4000 });
   } else {
-    initYahrzeit();
+    setTimeout(kickYahrzeit, 1200);
   }
 
   // Bind event listeners (replaces inline onclick which doesn't work with Astro's module bundling)
