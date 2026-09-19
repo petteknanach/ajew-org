@@ -642,17 +642,21 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
 
       async function continueCandidateSearch(state) {
         const page = candidatePage(state.ids, state.cursor, CANDIDATE_BUDGET);
-        state.cursor = page.cursor;
         for (let offset = 0; offset < page.ids.length; offset += DOC_BATCH_SIZE) {
-          const docs = await Promise.all(page.ids.slice(offset, offset + DOC_BATCH_SIZE).map(loadDoc));
+          const batch = page.ids.slice(offset, offset + DOC_BATCH_SIZE);
+          const docs = await Promise.all(batch.map(loadDoc));
           for (const doc of docs) {
             if (!doc) continue;
             const result = state.verify(doc);
             if (result) state.results.push(result);
           }
+          // Advance only over documents actually checked. Remaining candidates
+          // stay reachable through Load more; early ordering is provisional.
+          state.cursor += batch.length;
+          if (state.results.length >= (state.visibleLimit || 50)) break;
         }
         state.results.sort((a, b) => (b._score || 0) - (a._score || 0));
-        state.hasMore = page.hasMore;
+        state.hasMore = state.cursor < state.ids.length;
         lastSearchResults = state.results;
         activeContinuation = state.hasMore ? state : null;
         return {
