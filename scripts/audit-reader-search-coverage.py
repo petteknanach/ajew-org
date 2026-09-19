@@ -144,8 +144,6 @@ def audit(output: Path) -> dict:
     light_en = {doc.get("l"): doc for doc in load_gzip("light-search-index-en.json.gz") if doc.get("l")}
     meta = json.loads((SEARCH / "meta.json").read_text(encoding="utf-8"))
     shard_ids = {item.get("p"): item_id for item_id, item in enumerate(meta.get("items") or []) if item.get("p")}
-    v2_data = json.loads((DATA / "search-index-v2.json").read_text(encoding="utf-8"))
-    v2 = {doc.get("url"): doc for doc in v2_data.get("documents") or [] if doc.get("url")}
 
     per_book = defaultdict(lambda: {
         "canonicalDocuments": 0,
@@ -160,9 +158,6 @@ def audit(output: Path) -> dict:
         "shardPostingMissingCount": 0,
         "shardPostingExtraCount": 0,
         "shardPostingExamples": [],
-        "v2MissingRoutes": [],
-        "v2IncompleteHebrewRoutes": [],
-        "v2IncompleteEnglishRoutes": [],
     })
     details = {"lightTextMismatches": {}, "shardTextMismatches": {}}
 
@@ -211,14 +206,6 @@ def audit(output: Path) -> dict:
                     db.executemany("INSERT OR IGNORE INTO expected VALUES (?,?,?,?,?)", rows)
                     rows.clear()
 
-            vdoc = v2.get(route)
-            if vdoc is None:
-                stats["v2MissingRoutes"].append(route)
-            else:
-                if expected["he"] and normalize(vdoc.get("content", "")) != expected["he"]:
-                    stats["v2IncompleteHebrewRoutes"].append(route)
-                if expected["en"] and normalize(vdoc.get("enContent", "")) != expected["en"]:
-                    stats["v2IncompleteEnglishRoutes"].append(route)
         if rows:
             db.executemany("INSERT OR IGNORE INTO expected VALUES (?,?,?,?,?)", rows)
         db.commit()
@@ -257,8 +244,6 @@ def audit(output: Path) -> dict:
         "lightBooks": len({doc.get("b") for doc in light_he.values()}),
         "shardDocuments": len(shard_ids),
         "shardBooks": len({item.get("c") for item in meta.get("items") or []}),
-        "v2Documents": len(v2),
-        "v2Books": len({doc.get("book") for doc in v2.values()}),
         "lightMissingDocuments": sum(len(x["lightMissingRoutes"]) for x in per_book.values()),
         "lightHebrewMismatches": sum(len(x["lightHebrewMismatches"]) for x in per_book.values()),
         "lightEnglishMismatches": sum(len(x["lightEnglishMismatches"]) for x in per_book.values()),
@@ -267,9 +252,6 @@ def audit(output: Path) -> dict:
         "shardEnglishMismatches": sum(len(x["shardEnglishMismatches"]) for x in per_book.values()),
         "shardMissingPostings": len(missing_rows),
         "shardExtraPostings": extra_count,
-        "v2MissingDocuments": sum(len(x["v2MissingRoutes"]) for x in per_book.values()),
-        "v2IncompleteHebrewDocuments": sum(len(x["v2IncompleteHebrewRoutes"]) for x in per_book.values()),
-        "v2IncompleteEnglishDocuments": sum(len(x["v2IncompleteEnglishRoutes"]) for x in per_book.values()),
     }
     summary["fullReaderSearchPass"] = all(summary[key] == 0 for key in (
         "lightMissingDocuments", "lightHebrewMismatches", "lightEnglishMismatches",
@@ -277,7 +259,7 @@ def audit(output: Path) -> dict:
     ))
     report = {
         "schemaVersion": 1,
-        "scope": "canonical routed public/reader JSON; Super Reader derivative overlays excluded",
+        "scope": "canonical routed public/reader JSON; Super Reader derivative overlays excluded; retired search-index-v2 representation no longer audited (dropped from repo and build chain)",
         "normalization": "NFD lowercase; remove Hebrew/Latin combining marks, quote marks, punctuation; map maqaf/paseq/sof pasuq/nun-hafukha to word-boundary spaces; collapse whitespace",
         "summary": summary,
         "books": dict(sorted(per_book.items())),

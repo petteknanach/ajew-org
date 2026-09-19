@@ -6,8 +6,6 @@ const zlib = require('zlib');
 const root = path.resolve(__dirname, '..');
 const failures = [];
 const requiredArtifacts = process.env.REQUIRE_SEARCH_ARTIFACTS === '1';
-const halachosIndex = JSON.parse(fs.readFileSync(path.join(root, 'public/reader/likutay-halachos/index.json'), 'utf8'));
-const expectedCatalogHalachos = (halachosIndex.parts || []).reduce((sum, part) => sum + Number(part.totalTorahs || 0), 0);
 const expectedCanonicalHalachos = 600;
 const QUERY = 'הוא בבחינת דבר';
 const TARGET_PATH = '/reader/likutay-moharan/2/1';
@@ -120,7 +118,6 @@ mustContain('scripts/build-reader-search-shards.py', "seg.get('index') or positi
 mustContain('scripts/build-light-search-index.py', "he_doc['m'] = segment_map", 'single-pass Reader location map generation');
 mustContain('scripts/reader_search_routes.py', 'f"/reader/{book}/siman/{int(match.group(1))}"', 'Chayey Moharan public siman URLs');
 mustContain('scripts/build-light-search-index.py', 'Chayay Moharan Chayei Moharan The Life of Our Leader Rabbi Nachman', 'Chayey Moharan spelling/title aliases');
-mustContain('scripts/build-search-index-v2.cjs', 'Chayay Moharan: ${chayeyCount} canonical sections/simanim indexed', 'complete Chayey Moharan metadata indexing');
 mustContain('src/pages/reader/chayey-moharan/index.astro', "(indexData?.totalSections || 20) + (indexData?.earlySections?.length || 7)", 'complete 27-section Chayey Moharan directory count');
 mustContain('src/pages/reader/chayay-moharan/siman/[siman].astro', 'Astro.redirect(`/reader/chayey-moharan/siman/${siman}/`, 301)', 'misspelled Chayay siman redirects');
 mustContain('src/pages/reader/chayey-moharan/simanim/[slug].astro', 'Astro.redirect(`/reader/chayey-moharan/siman/${siman}/`, 301)', 'legacy Chayey storage-path redirects');
@@ -316,7 +313,7 @@ if (!completeReaderArtifacts) {
   for (const special of ['intro', 'hashmatos-toc', 'hashmata-162', 'maftechos']) {
     if (!chayeyPaths.has(`/reader/chayey-moharan/1/${special}`)) fail(`reader-search metadata is missing Chayey Moharan ${special}`);
   }
-  const aliasFixture = chayeyItems.find(item => item.p === '/reader/chayey-moharan/siman/198');
+  const aliasFixture = lightHe.find(doc => doc.l === '/reader/chayey-moharan/siman/198');
   const aliases = normalize(aliasFixture?.a || '');
   for (const alias of ['chayay moharan', 'chayei moharan', 'life of our leader rabbi nachman', 'חיי מוהרן']) {
     if (!aliases.includes(normalize(alias))) fail(`Chayey Moharan search aliases are missing “${alias}”`);
@@ -376,32 +373,11 @@ if (!completeReaderArtifacts) {
   }
 }
 
-const v2Path = path.join(root, 'public/data/search-index-v2.json');
-if (!fs.existsSync(v2Path)) {
-  if (requiredArtifacts) fail('search-index-v2.json is missing');
-} else {
-  const v2 = JSON.parse(fs.readFileSync(v2Path, 'utf8'));
-  const chayeyDocs = (v2.documents || []).filter(doc => doc.book === 'chayey-moharan');
-  const halachosDocs = (v2.documents || []).filter(doc => doc.book === 'likutay-halachos');
-  const halachosPaths = new Set(halachosDocs.map(doc => doc.url));
-  if (halachosDocs.length !== expectedCatalogHalachos || halachosPaths.size !== expectedCatalogHalachos) {
-    fail(`search-index-v2 has ${halachosDocs.length} Likutay Halachos docs / ${halachosPaths.size} unique paths; expected ${expectedCatalogHalachos}/${expectedCatalogHalachos}`);
-  }
-  if (halachosDocs.some(doc => !/^\/reader\/likutay-halachos\/[1-8]\/\d+$/.test(doc.url || ''))) {
-    fail('search-index-v2 contains a noncanonical Likutay Halachos route');
-  }
-  const paths = new Set(chayeyDocs.map(doc => doc.url));
-  if (chayeyDocs.length !== 567) fail(`search-index-v2 has ${chayeyDocs.length} Chayey Moharan documents; expected 567 canonical sections/simanim/special pages`);
-  for (let section = 1; section <= 7; section++) {
-    if (!paths.has(`/reader/chayey-moharan/1/${section}`)) fail(`search-index-v2 is missing Chayey Moharan early section ${section}`);
-  }
-  for (const special of ['intro', 'hashmatos-toc', 'hashmata-162', 'maftechos']) {
-    if (!paths.has(`/reader/chayey-moharan/1/${special}`)) fail(`search-index-v2 is missing Chayey Moharan ${special}`);
-  }
-  const missing = [];
-  for (let siman = 60; siman <= 615; siman++) if (!paths.has(`/reader/chayey-moharan/siman/${siman}`)) missing.push(siman);
-  if (missing.length) fail(`search-index-v2 is missing ${missing.length} Chayey Moharan simanim`);
-}
+// Guard the canonical reader-search catalog (meta.json) directly: the retired
+// search-index-v2 representation was dropped from the repo and build chain.
+// The full per-item invariants (parity, Likutay Halachos routes, Chayey
+// simanim/sections/specials, alias spellings) are guarded against meta.json
+// and the light index in the reader-search metadata block above.
 
 if (failures.length) {
   console.error('Search regression verification failed:');
