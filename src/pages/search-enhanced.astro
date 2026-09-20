@@ -668,6 +668,26 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
       let lastSearchResults = [];
       let activeSearchRequest = 0;
       let activeContinuation = null;
+      // Jev re-rank persistence: verdicts are stored on the original result
+      // objects (same refs as state.results) so the first-30 Jev order survives
+      // Load more's accumulated re-render. Interplay decision 2026-09-20: Jev
+      // orders the first 30 once; Load more appends newly verified results in
+      // candidate order beneath that fixed order — no reshuffle of seen items,
+      // no extra Jev call per click.
+      const jevPStore = new WeakMap<object, number>();
+      let jevPCount = 0;
+      function applyJevOrder(results: any[]) {
+        if (!jevPCount) return results;
+        return results.slice().sort((a: any, b: any) => {
+          const pa = jevPStore.get(a);
+          const pb = jevPStore.get(b);
+          const ta = pa == null ? 1 : 0;
+          const tb = pb == null ? 1 : 0;
+          if (ta !== tb) return ta - tb;
+          if (ta === 0 && pa !== pb) return (pb as number) - (pa as number);
+          return 0;
+        });
+      }
       const CANDIDATE_BUDGET = 192;
       const DOC_BATCH_SIZE = 48;
 
@@ -820,7 +840,15 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
           if (finalResults.length > 1) {
             try {
               const noJev = new URLSearchParams(window.location.search).has('nojev');
-              const cfg = noJev ? null : await fetch('/jev-config.json', { cache: 'no-cache' })
+              // Bounded 1.5s cap: a hanging /jev proxy must never delay first
+              // result render — both fetches abort into the failure-safe path.
+              const jevFetch = (url: string, opts: any = {}) => {
+                const ctrl = new AbortController();
+                const timer = setTimeout(() => ctrl.abort(), 1500);
+                return fetch(url, { ...opts, signal: ctrl.signal })
+                  .finally(() => clearTimeout(timer));
+              };
+              const cfg = noJev ? null : await jevFetch('/jev-config.json', { cache: 'no-cache' })
                 .then((r: any) => (r.ok ? r.json() : null)).catch(() => null);
               if (cfg && cfg.jevRank) {
                 const top = finalResults.slice(0, 30).map((r: any, i: number) => ({ ...r, _i: i }));
@@ -830,7 +858,7 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
                   he: r.hebrewTitle || '',
                   text: `${r.snippet || ''} ${r.extraInfo || ''}`.trim()
                 }));
-                const resp = await fetch('/jev/rank', {
+                const resp = await jevFetch('/jev/rank', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({ query, candidates })
@@ -838,6 +866,12 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
                 if (resp.ok) {
                   const data = await resp.json();
                   const pById = new Map<number, number>((data.ranked || []).map((x: any) => [x.id, x.p]));
+                  // Persist verdicts on the ORIGINAL result objects so the
+                  // first-30 order survives Load more (applyJevOrder).
+                  top.forEach((t: any) => {
+                    const p = pById.get(t._i);
+                    if (p != null) { jevPStore.set(finalResults[t._i], p); jevPCount++; }
+                  });
                   finalResults = top
                     .slice()
                     .sort((a: any, b: any) => (pById.get(b._i) ?? 0) - (pById.get(a._i) ?? 0))
@@ -863,6 +897,7 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
       }
 
       function displayResults(results: any[], query: string, total?: number | null, hasMore = false, checked = 0, candidateTotal = 0) {
+        results = applyJevOrder(results);
         const displayQuery = effectiveSearch(query, 'google').query;
         resultsCount.textContent = total == null
           ? `${results.length}+ results so far for "${displayQuery}" (${checked} of ${candidateTotal} candidates checked)`
