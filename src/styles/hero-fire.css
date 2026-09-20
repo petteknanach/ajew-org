@@ -97,11 +97,12 @@ body.dark-mode .fire-text {
 }
 
 /* Respect prefers-reduced-motion: the fire stays fully present (same colors,
-   glow and elements) but holds at rest for users who opt out of motion. */
+   glow and elements) but holds at rest for users who opt out of motion.
+   !important is required to beat component-scoped animation rules. */
 @media (prefers-reduced-motion: reduce) {
   .fire-text,
   .fire-embers::before,
   .fire-embers::after {
-    animation: none;
+    animation: none !important;
   }
 }

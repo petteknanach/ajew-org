@@ -11,14 +11,14 @@ const index = readFileSync(new URL('../src/pages/index.astro', import.meta.url),
 test('hero-fire.css disables fire animations under prefers-reduced-motion', () => {
   assert.match(fire, /@media \(prefers-reduced-motion: reduce\)/, 'missing reduced-motion media query');
   const block = fire.slice(fire.indexOf('@media (prefers-reduced-motion: reduce)'));
-  assert.match(block, /\.fire-text[\s\S]*animation: none;/, '.fire-text must hold at rest');
+  assert.match(block, /\.fire-text[\s\S]*animation: none !important;/, '.fire-text must hold at rest (with !important to beat scoped rules)');
   assert.match(block, /\.fire-embers::before/, 'embers must be covered');
 });
 
 test('index.astro hero fire elements hold at rest under reduced motion', () => {
   const block = index.slice(index.indexOf('@media (prefers-reduced-motion: reduce)'));
   assert.ok(block.length > 0, 'missing reduced-motion block in index.astro');
-  assert.match(block, /\.hero-nanach[\s\S]*\.huaish-sheli-img[\s\S]*\{[\s\S]*animation: none;/,
+  assert.match(block, /\.hero-nanach[\s\S]*\.huaish-sheli-img[\s\S]*\{[\s\S]*animation: none !important;/,
     'hero fire elements must be covered');
 });
 
