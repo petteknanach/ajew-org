@@ -78,6 +78,7 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
       booleanMatch,
       candidatePage,
       minimumMatchCount,
+      orderByBookPriority,
       proximityMatch,
       acronymTargetLetters,
     } from '../lib/search-mode-core.mjs';
@@ -677,6 +678,11 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
         const allowed = new Set(advanced?.books || []);
         let ids = await idsForLetterMode(query, mode, order);
         if (allowed.size) ids = ids.filter(id => allowed.has(bookIdFromPath(meta.items[id]?.p || '')));
+        // Letter-mode postings have no relevance ordering — verify
+        // highest-priority works (Likutay Moharan first) before anything else
+        // so the first visible page is not left to raw postings order.
+        // Remaining candidates stay reachable through Load more in this order.
+        ids = orderByBookPriority(ids, id => bookPriorityScore(meta.items[id] || {}));
         const state = {
           ids, cursor: 0, results: [], visibleLimit: 50, hasMore: ids.length > 0,
           verify(doc) {
