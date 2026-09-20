@@ -7,6 +7,7 @@ import {
   booleanMatch,
   candidatePage,
   minimumMatchCount,
+  orderByBookPriority,
   proximityMatch,
 } from '../src/lib/search-mode-core.mjs';
 
@@ -59,5 +60,20 @@ assert.equal(acronymMatch(['שלום', 'מלך'], 'כמ', 'any', true).match, tr
 assert.equal(minimumMatchCount(0, 4), 1);
 assert.equal(minimumMatchCount(3, 4), 3);
 assert.equal(minimumMatchCount(9, 4), 4);
+
+// Letter-mode candidates are verified highest-book-priority first so Likutay
+// Moharan and core works surface in the first page; ties keep postings order.
+const priorityById = new Map([
+  [11, 220], [4, 220], [7, 150], [0, 150], [3, 0], [12, 0],
+]);
+const ordered = orderByBookPriority([3, 7, 11, 0, 4, 12], id => priorityById.get(id));
+assert.deepEqual(ordered, [11, 4, 7, 0, 3, 12], 'highest priority first, postings order within a tier');
+assert.deepEqual(orderByBookPriority([], () => 5), [], 'empty candidate list stays empty');
+assert.deepEqual(
+  orderByBookPriority([9, 2], () => 0),
+  [9, 2],
+  'all-equal priorities keep the original postings order'
+);
+assert.deepEqual(orderByBookPriority([1, 2], () => undefined), [1, 2], 'missing priority behaves as zero');
 
 console.log('Deterministic search mode regressions passed.');

@@ -162,3 +162,17 @@ export function acronymMatch(tokens, letters, order = 'consecutive', useLastLett
   }
   return { match: false, matchedWords: [] };
 }
+
+// Letter-mode (acronym/end-letters) postings carry no relevance signal —
+// candidate ids arrive in raw postings order, so with early-stop verification
+// the first visible page was whatever the intersection happened to list.
+// Ordering candidates by book priority before verification makes the first
+// page surface the highest-priority works (Likutay Moharan first); Load more
+// continues over the remaining candidates in the same order, so nothing is
+// stranded. Ties keep the original postings order (stable sort).
+export function orderByBookPriority(ids, priorityOf) {
+  return ids
+    .map((id, index) => ({ id, index, priority: priorityOf(id) || 0 }))
+    .sort((a, b) => (b.priority - a.priority) || (a.index - b.index))
+    .map(entry => entry.id);
+}
