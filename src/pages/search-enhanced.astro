@@ -79,6 +79,7 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
       candidatePage,
       minimumMatchCount,
       proximityMatch,
+      acronymTargetLetters,
     } from '../lib/search-mode-core.mjs';
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -305,9 +306,10 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
       async function idsForLetterMode(query, mode, order) {
         const useLast = mode === 'endletters';
         const kind = useLast ? 'last' : 'first';
-        const finals = { ך:'כ', ם:'מ', ן:'נ', ף:'פ', ץ:'צ' };
-        const letters = Array.from(normalizeForSearch(query).replace(/\s/g, ''))
-          .map(letter => useLast ? (finals[letter] || letter) : letter);
+        // Spaced acronyms contribute one letter per part; single-token
+        // acronyms contribute one letter per character. This must mirror
+        // acronymTargetLetters in the verifier or candidates never verify.
+        const letters = acronymTargetLetters(query, useLast);
         if (!letters.length) return [];
         let lists;
         if (order === 'consecutive' && letters.length > 1) {

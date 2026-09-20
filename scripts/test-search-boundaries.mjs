@@ -3,10 +3,21 @@ import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
 import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
-import {normalizeSearchText, booleanMatch} from '../src/lib/search-mode-core.mjs';
+import {normalizeSearchText, booleanMatch, acronymTargetLetters, acronymMatch} from '../src/lib/search-mode-core.mjs';
 const cases=[['כָּל־הָעוֹלָם','כל העולם'],['שלום׃אמת','שלום אמת'],['שלום׀אמת','שלום אמת'],['שלום׆אמת','שלום אמת'],['בְּרֵאשִׁ֖ית','בראשית'],['joy—prayer','joy prayer'],['רַבִּי נַחְמָן','רבי נחמן'],['רמב״ם','רמבם']];
 for(const [input,expected] of cases) test(`boundary normalization ${input}`,()=>assert.equal(normalizeSearchText(input),expected));
 test('word lookup through maqaf',()=>assert.equal(booleanMatch('כָּל־הָעוֹלָם','העולם'),true));
+test('spaced acronym contributes one letter per part',()=>assert.deepEqual(acronymTargetLetters('נ נח נחמ נחמן מאומן'),['נ','נ','נ','נ','מ']));
+test('single-token acronym keeps per-character letters',()=>assert.deepEqual(acronymTargetLetters('רמבם'),['ר','מ','ב','ם']));
+test('end-letters mode takes the regularized last letter per part',()=>assert.deepEqual(acronymTargetLetters('שלום אמת',true),['מ','ת']));
+test('sacred acronym verifies against matching word run',()=>{
+  const hit=acronymMatch(['נ','נח','נחמ','נחמן','מאומן'],'נ נח נחמ נחמן מאומן');
+  assert.equal(hit.match,true);
+  assert.deepEqual(hit.matchedWords,['נ','נח','נחמ','נחמן','מאומן']);
+});
+test('spaced acronym no longer demands the concatenated char sequence',()=>{
+  assert.equal(acronymMatch(['נ','נח','נחמ','נחמן','מאומן','התחלה'],'נ נח נחמ נחמן מאומן').match,true);
+});
 test('Python index and JavaScript query normalization agree',()=>{
  const code=`import importlib.util,json,sys\ns=importlib.util.spec_from_file_location('builder','scripts/build-reader-search-shards.py')\nm=importlib.util.module_from_spec(s);s.loader.exec_module(m)\nprint(json.dumps([m.normalize(x) for x in json.loads(sys.stdin.read())]))`;
  const actual=JSON.parse(execFileSync('python3',['-B','-c',code],{cwd:new URL('../',import.meta.url),input:JSON.stringify(cases.map(c=>c[0])),encoding:'utf8'}));
