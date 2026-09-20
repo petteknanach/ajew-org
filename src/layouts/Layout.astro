@@ -292,7 +292,7 @@ const readerPlainBookBase = readerPlainMatch ? `/reader-plain/${readerPlainMatch
         <p class="footer-nanach">&#1504; &#1504;&#1495; &#1504;&#1495;&#1502; &#1504;&#1495;&#1502;&#1503; &#1502;&#1488;&#1493;&#1502;&#1503;</p>
         <p>Na Nach Nachma Nachman Me'Uman</p>
         <div class="footer-contact">
-          <p>Contact: <a href="mailto:naanaach@gmail.com">naanaach@gmail.com</a></p>
+          <p>Contact: <a class="footer-email-link" href="mailto:naanaach@gmail.com">naanaach@gmail.com</a></p>
         </div>
         <p class="copyright">&copy; {new Date().getFullYear()} ajew.org</p>
       </div>
@@ -955,6 +955,13 @@ const readerPlainBookBase = readerPlainMatch ? `/reader-plain/${readerPlainMatch
     color: var(--color-accent);
     text-decoration: none;
     font-weight: 600;
+    /* Coarse-pointer target-size minimum (24px) without shifting the
+       surrounding footer layout: inline-block keeps line height, padding
+       extends only the hit area vertically. */
+    display: inline-block;
+    padding: 3px 0;
+    min-height: 24px;
+    line-height: 18px;
   }
 
   .footer-contact a:hover {
