@@ -815,8 +815,42 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
           const page = await clientSearch(query, advanced);
           if (requestId !== activeSearchRequest) return;
           loading.classList.add('hidden');
-          if (page.results.length > 0 || page.hasMore) {
-            displayResults(page.results, query, page.total, page.hasMore, page.checked, page.candidateTotal);
+
+          let finalResults = page.results;
+          if (finalResults.length > 1) {
+            try {
+              const noJev = new URLSearchParams(window.location.search).has('nojev');
+              const cfg = noJev ? null : await fetch('/jev-config.json', { cache: 'no-cache' })
+                .then((r: any) => (r.ok ? r.json() : null)).catch(() => null);
+              if (cfg && cfg.jevRank) {
+                const top = finalResults.slice(0, 30).map((r: any, i: number) => ({ ...r, _i: i }));
+                const candidates = top.map((r: any) => ({
+                  id: r._i,
+                  title: `${r.title || ''} ${r.hebrewTitle || ''}`.trim(),
+                  he: r.hebrewTitle || '',
+                  text: `${r.snippet || ''} ${r.extraInfo || ''}`.trim()
+                }));
+                const resp = await fetch('/jev/rank', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ query, candidates })
+                });
+                if (resp.ok) {
+                  const data = await resp.json();
+                  const pById = new Map<number, number>((data.ranked || []).map((x: any) => [x.id, x.p]));
+                  finalResults = top
+                    .slice()
+                    .sort((a: any, b: any) => (pById.get(b._i) ?? 0) - (pById.get(a._i) ?? 0))
+                    .concat(finalResults.slice(30));
+                }
+              }
+            } catch (e) {
+              console.warn('Jev re-rank skipped:', e);
+            }
+          }
+
+          if (finalResults.length > 0 || page.hasMore) {
+            displayResults(finalResults, query, page.total, page.hasMore, page.checked, page.candidateTotal);
           } else {
             showNoResults(query);
           }
