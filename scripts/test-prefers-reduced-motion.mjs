@@ -7,6 +7,20 @@ import {readFileSync} from 'node:fs';
 // get the fire at rest instead of an infinite animation (WCAG 2.3.3).
 const fire = readFileSync(new URL('../src/styles/hero-fire.css', import.meta.url), 'utf8');
 const index = readFileSync(new URL('../src/pages/index.astro', import.meta.url), 'utf8');
+const nav = readFileSync(new URL('../src/components/Navigation.astro', import.meta.url), 'utf8');
+const ds = readFileSync(new URL('../src/styles/design-system.css', import.meta.url), 'utf8');
+
+test('Navigation.astro scoped fire-text holds at rest under reduced motion', () => {
+  const block = nav.slice(nav.indexOf('@media (prefers-reduced-motion: reduce)'));
+  assert.match(block, /\.fire-text[\s\S]*animation: none !important;/,
+    'the scoped sidebar .fire-text rule must be overridden inside the same component');
+});
+
+test('design-system.css covers .fire-text globally under reduced motion', () => {
+  assert.match(ds, /@media \(prefers-reduced-motion: reduce\)/);
+  const block = ds.slice(ds.indexOf('@media (prefers-reduced-motion: reduce)'));
+  assert.match(block, /\.fire-text[\s\S]*animation: none !important;/);
+});
 
 test('hero-fire.css disables fire animations under prefers-reduced-motion', () => {
   assert.match(fire, /@media \(prefers-reduced-motion: reduce\)/, 'missing reduced-motion media query');
