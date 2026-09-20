@@ -6,6 +6,7 @@ import {
   booleanCandidateClauses,
   booleanMatch,
   candidatePage,
+  matchWindowAround,
   minimumMatchCount,
   orderByBookPriority,
   proximityMatch,
@@ -75,5 +76,28 @@ assert.deepEqual(
   'all-equal priorities keep the original postings order'
 );
 assert.deepEqual(orderByBookPriority([1, 2], () => undefined), [1, 2], 'missing priority behaves as zero');
+
+// Letter-mode snippets center on the matched words: the window covers the
+// tightest leading cluster of first occurrences, folds nikud/punctuation like
+// the rest of the search pipeline, and bounds any-order spread via the gap.
+const rawText = 'The king said: תּוּכַל מֶלֶךְ, and later grain madness spread. תוכל appears again far away.';
+const clusterRange = matchWindowAround(rawText, ['תוכל', 'מלך']);
+assert.equal(clusterRange.start, rawText.indexOf('תּ'), 'nikud folded, window starts at the first matched word');
+assert.ok(
+  clusterRange.end > rawText.indexOf('מֶלֶךְ') && clusterRange.end <= rawText.indexOf(','),
+  'window extends through the second matched word, stopping at the cluster'
+);
+// The far-away second occurrence must NOT widen the window past the cluster.
+assert.ok(matchWindowAround(rawText, ['תוכל', 'מלך']).end < rawText.indexOf('far'), 'window stays near the first cluster');
+assert.deepEqual(matchWindowAround(rawText, ['nonexistent']), null, 'no words found yields null');
+assert.deepEqual(matchWindowAround('', ['word']), null, 'empty raw yields null');
+assert.deepEqual(matchWindowAround(rawText, []), null, 'empty words yields null');
+const spread = 'alpha one beta two gamma three delta four';
+// 'alpha' and 'delta' are > 800 normalized chars apart? No — small text; use gap to prove the bound:
+assert.deepEqual(matchWindowAround(spread, ['alpha', 'delta'], 5), { start: 0, end: 5 }, 'gap stops window at the first cluster');
+const wide = matchWindowAround(spread, ['alpha', 'delta'], 800);
+assert.equal(wide.end, spread.indexOf('four') - 1, 'wide gap covers both occurrences, ending at the last matched word');
+assert.deepEqual(matchWindowAround('repeat repeat', ['repeat']), { start: 0, end: 6 }, 'duplicate words collapse to first occurrence');
+
 
 console.log('Deterministic search mode regressions passed.');

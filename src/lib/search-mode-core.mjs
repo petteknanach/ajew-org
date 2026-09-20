@@ -176,3 +176,61 @@ export function orderByBookPriority(ids, priorityOf) {
     .sort((a, b) => (b.priority - a.priority) || (a.index - b.index))
     .map(entry => entry.id);
 }
+
+// Raw-text {start, end} of `needle` inside `raw` under search normalization
+// (nikud/case/punctuation folded exactly like normalizeSearchText), so a
+// normalized match maps back to raw coordinates for match-centered snippets.
+function normalizedRangeCore(raw, needle) {
+  const target = normalizeSearchText(needle);
+  if (!raw || !target) return null;
+  let normalized = '';
+  const rawOffsets = [];
+  let pendingSpace = false;
+  for (let offset = 0; offset < raw.length;) {
+    const point = raw.codePointAt(offset);
+    const char = String.fromCodePoint(point);
+    const width = char.length;
+    const folded = char.toLowerCase().normalize('NFD')
+      .replace(/[\u0591-\u05BD\u05BF\u05C1-\u05C2\u05C4-\u05C5\u05C7\u0300-\u036f״"׳']/g, '');
+    for (const foldedChar of folded) {
+      if (/^[\p{L}\p{N}]$/u.test(foldedChar)) {
+        if (pendingSpace && normalized) {
+          normalized += ' ';
+          rawOffsets.push(offset);
+        }
+        pendingSpace = false;
+        normalized += foldedChar;
+        rawOffsets.push(offset);
+      } else {
+        pendingSpace = true;
+      }
+    }
+    offset += width;
+  }
+  const at = normalized.indexOf(target);
+  if (at < 0) return null;
+  return { start: rawOffsets[at], end: (rawOffsets[at + target.length - 1] ?? raw.length - 1) + 1 };
+}
+
+// Smallest raw-text window covering the tightest leading cluster of matched
+// words: every word's first occurrence is collected, sorted by position, and
+// the window extends in document order only while the next occurrence starts
+// within `gap` characters — so any-order matches scattered across the
+// document center the snippet instead of swallowing it. Returns {start, end}
+// or null when none of the words are found.
+export function matchWindowAround(raw, words, gap = 800) {
+  if (!raw || !Array.isArray(words) || !words.length) return null;
+  const found = [];
+  for (const word of new Set(words.map(word => String(word || '')).filter(Boolean))) {
+    const range = normalizedRangeCore(raw, word);
+    if (range) found.push(range);
+  }
+  if (!found.length) return null;
+  found.sort((a, b) => a.start - b.start);
+  const window = { start: found[0].start, end: found[0].end };
+  for (const range of found.slice(1)) {
+    if (range.start - window.end > gap) break;
+    window.end = Math.max(window.end, range.end);
+  }
+  return window;
+}
