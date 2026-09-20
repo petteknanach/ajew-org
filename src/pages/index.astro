@@ -982,12 +982,13 @@ const todayQuote = quotes[dayIndex];
 
 /* Respect prefers-reduced-motion: the tzion picture and hu-aish sheley fire
    stay fully present (same images, colors and glow) but hold at rest for
-   users who opt out of motion. No element is hidden or removed. */
+   users who opt out of motion. No element is hidden or removed.
+   !important is required to beat component-scoped animation rules. */
 @media (prefers-reduced-motion: reduce) {
   .hero-nanach,
   .hero-huaish-sheli,
   .huaish-sheli-img {
-    animation: none;
+    animation: none !important;
   }
   .hero-huaish-sheli {
     transition: none;
