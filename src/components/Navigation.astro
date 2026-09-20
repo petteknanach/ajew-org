@@ -932,6 +932,15 @@ function isActive(path: string) {
     filter: drop-shadow(0 0 10px rgba(255, 120, 0, 0.9));
   }
 
+  /* Respect prefers-reduced-motion: the fire links stay fully present (same
+     colors and glow) but hold at rest for users who opt out of motion.
+     Same-scoped, later in cascade + !important so it beats the rule above. */
+  @media (prefers-reduced-motion: reduce) {
+    .fire-text {
+      animation: none !important;
+    }
+  }
+
   /* ============================================
      SIDEBAR POLISH — restrained refinement
      ============================================ */

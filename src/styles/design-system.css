@@ -511,3 +511,12 @@ body.dark-mode .ds-badge-gold {
   -webkit-text-fill-color: transparent;
   filter: drop-shadow(0 0 8px rgba(255, 100, 0, 0.7));
 }
+
+/* Respect prefers-reduced-motion: fire-text stays fully present (same colors
+   and glow) but holds at rest for users who opt out of motion. !important
+   beats component-scoped animation rules (Navigation uses one). */
+@media (prefers-reduced-motion: reduce) {
+  .fire-text {
+    animation: none !important;
+  }
+}
