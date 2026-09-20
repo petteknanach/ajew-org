@@ -434,14 +434,25 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
       }
 
       async function loadDoc(id) {
-        try {
-          const r = await fetch(readerAssetUrl('/reader-search/docs/' + id + '.json'), { headers: { Accept: 'application/json' } });
-          if (!r.ok) return null;
-          return r.json();
-        } catch (_) {
-          // One transient document request must not abort the entire search.
-          return null;
+        // Bounded single retry for NETWORK ERRORS only. A transient request
+        // failure must not silently drop a genuinely matching result; a non-ok
+        // response (!r.ok, e.g. 404) stays single-shot because the document
+        // genuinely does not exist. Verification semantics unchanged.
+        for (let attempt = 0; attempt < 2; attempt++) {
+          try {
+            const r = await fetch(readerAssetUrl('/reader-search/docs/' + id + '.json'), { headers: { Accept: 'application/json' } });
+            if (!r.ok) return null;
+            return r.json();
+          } catch (_) {
+            if (attempt === 0) {
+              await new Promise(res => setTimeout(res, 300));
+              continue;
+            }
+            // One transient document request must not abort the entire search.
+            return null;
+          }
         }
+        return null;
       }
 
       function groupMatchesText(group, n) {
