@@ -78,6 +78,7 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
       booleanMatch,
       candidatePage,
       minimumMatchCount,
+      matchWindowAround,
       orderByBookPriority,
       proximityMatch,
       acronymTargetLetters,
@@ -617,10 +618,22 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
             if (!row && range) row = map.find(entry => entry[startColumn] <= range.start && entry[endColumn] >= range.end) || null;
           }
         }
+        return snippetForRange(doc, raw, range || { start: row ? row[startColumn] : 0, end: row ? row[startColumn] : 0 }, useHebrew);
+      }
+
+      // Segment-clipped, match-centered snippet shared by every mode: clip to
+      // the segment row containing the match (doc.m columns 0..5), then show
+      // 150 chars before and 300+ after the match with ellipses and the
+      // canonical segment anchor.
+      function snippetForRange(doc, raw, range, useHebrew) {
+        const map = Array.isArray(doc.m) ? doc.m : [];
+        const startColumn = useHebrew ? 2 : 4;
+        const endColumn = useHebrew ? 3 : 5;
+        const row = map.find(entry => entry[startColumn] <= range.start && entry[endColumn] >= range.end) || null;
         const segmentStart = row ? row[startColumn] : 0;
         const segmentEnd = row ? row[endColumn] : raw.length;
-        const matchStart = range?.start ?? segmentStart;
-        const matchEnd = range?.end ?? matchStart;
+        const matchStart = range.start;
+        const matchEnd = range.end;
         const start = Math.max(segmentStart, matchStart - 150);
         const end = Math.min(segmentEnd, Math.max(matchEnd + 300, matchStart + 420));
         const snippet = (start > segmentStart ? '…' : '') + raw.slice(start, end).replace(/\s+/g, ' ').trim() + (end < segmentEnd ? '…' : '');
@@ -629,6 +642,21 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
           anchor: row ? `#seg-${row[0]}` : '',
           location: readerReference(doc.p, row?.[1] || row?.[0] || null)
         };
+      }
+
+      // Letter modes (acronym/end-letters): the query tokens never appear in
+      // the document — the words whose letters spell the acronym do. Center
+      // the snippet on that matched word cluster instead of the document head
+      // so the highlighted words are actually visible in the snippet.
+      function letterMatchContext(doc, hit) {
+        const words = (hit && hit.matchedWords) || [];
+        const useHebrew = /[\u0590-\u05FF]/.test(words.join(' '));
+        const raw = useHebrew ? (doc.he || doc.en || '') : (doc.en || doc.he || '');
+        const range = matchWindowAround(raw, words);
+        if (!range) {
+          return { snippet: (raw || '').slice(0, 420), anchor: '', location: '' };
+        }
+        return snippetForRange(doc, raw, range, useHebrew);
       }
 
       function resultLink(link, query) {
@@ -688,10 +716,10 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
           verify(doc) {
             const hit = acronymMatch(String(doc.n || '').split(' ').filter(Boolean), query, order, useLastLetter);
             if (!hit.match) return null;
-            const raw = isHebrewQuery(query) ? (doc.he || doc.en || '') : (doc.en || doc.he || '');
+            const context = letterMatchContext(doc, hit);
             return {
               title: resultTitle(doc), hebrewTitle: doc.h || doc.t || '',
-              snippet: raw.slice(0, 420), link: doc.p || '#', book: doc.c || '', subcategory: doc.c || '',
+              snippet: context.snippet, link: (doc.p || '#') + context.anchor, book: doc.c || '', subcategory: doc.c || '',
               relevance: order === 'consecutive' ? 95 : 85,
               extraInfo: `Found: ${hit.matchedWords.join(order === 'any' ? ' ... ' : ' ')}`,
               _score: (order === 'consecutive' ? 950 : 850) + bookPriorityScore(doc),

@@ -33,3 +33,20 @@ test('priority ordering runs after the advanced-books filter', () => {
   assert.ok(filterAt > 0, 'book filter not found');
   assert.ok(orderAt > filterAt, 'ordering must run after the book filter');
 });
+
+// Letter-mode snippets must center on the matched word cluster (so the
+// "Found:" highlight marks are actually visible), not the document head.
+test('letterModeSearch centers snippets on the matched words', () => {
+  assert.match(body, /letterMatchContext\(doc, hit\)/, 'verify must use letterMatchContext');
+  assert.match(body, /link: \(doc\.p \|\| '#'\) \+ context\.anchor/, 'letter results must carry the segment anchor');
+  assert.doesNotMatch(body, /snippet: raw\.slice\(0, 420\)/, 'document-head snippets must not return');
+});
+
+test('matchContext shares the snippet builder and page imports matchWindowAround', () => {
+  const mcBegin = source.indexOf('      function matchContext');
+  const mcEnd = source.indexOf('      function snippetForRange', mcBegin);
+  assert.ok(mcBegin > 0 && mcEnd > mcBegin, 'matchContext must precede snippetForRange');
+  assert.match(source.slice(mcBegin, mcEnd), /return snippetForRange\(/, 'matchContext must reuse snippetForRange');
+  assert.match(source, /matchWindowAround,/, 'page must import matchWindowAround');
+  assert.match(source, /const range = matchWindowAround\(raw, words\)/, 'letterMatchContext must use the shared window helper');
+});
