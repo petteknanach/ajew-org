@@ -113,10 +113,28 @@ export function proximityMatch(tokens, groups, maxDistance) {
   return false;
 }
 
+// Target letters for acronym/end-letters matching.
+// Spaced acronym ("נ נח נחמ נחמן מאומן"): one letter per space-separated
+// part — the part count is the letter count, never the character count of
+// the concatenated string. Single-token acronym ("רמבם"): every character
+// is a letter. The candidate pre-filter and the verifier must agree on this.
+export function acronymTargetLetters(letters, useLastLetter = false) {
+  const clean = normalizeSearchText(letters);
+  const tokens = clean.split(/\s+/).filter(Boolean);
+  if (!tokens.length) return [];
+  const pick = word => {
+    const chars = Array.from(word);
+    if (!chars.length) return '';
+    const letter = useLastLetter ? chars[chars.length - 1] : chars[0];
+    return useLastLetter ? regularLetter(letter) : letter;
+  };
+  const raw = tokens.length > 1 ? tokens.map(pick) : Array.from(tokens[0]);
+  return raw.filter(Boolean);
+}
+
 export function acronymMatch(tokens, letters, order = 'consecutive', useLastLetter = false) {
   const cleanTokens = tokens.map(normalizeSearchText).filter(Boolean);
-  const target = Array.from(normalizeSearchText(letters).replace(/\s/g, ''))
-    .map(letter => useLastLetter ? regularLetter(letter) : letter);
+  const target = acronymTargetLetters(letters, useLastLetter);
   if (!target.length || cleanTokens.length < target.length) return { match: false, matchedWords: [] };
   const tokenLetters = cleanTokens.map(word => {
     const chars = Array.from(word);
