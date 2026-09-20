@@ -979,4 +979,18 @@ const todayQuote = quotes[dayIndex];
   .hero-saba-link { right: 24px; }
   .hero-nosson-link { left: 24px; }
 }
+
+/* Respect prefers-reduced-motion: the tzion picture and hu-aish sheley fire
+   stay fully present (same images, colors and glow) but hold at rest for
+   users who opt out of motion. No element is hidden or removed. */
+@media (prefers-reduced-motion: reduce) {
+  .hero-nanach,
+  .hero-huaish-sheli,
+  .huaish-sheli-img {
+    animation: none;
+  }
+  .hero-huaish-sheli {
+    transition: none;
+  }
+}
 </style>
