@@ -3,13 +3,13 @@ import Layout from '../../layouts/Layout.astro';
 ---
 <Layout
   title="Tikun Korim - Tanach with Medooyuk"
-  description="A reader's tikkun for the whole Tanach: letters with nikud and taamim, four display modes, the medooyuk sheva/qamats layer, and Shnayim Mikra v'Echad Targum."
+  description="A reader's tikkun for the whole Tanach: letters with nikud and taamim, four display modes, the medooyuk sheva/qamats layer, and Shnayim Mikra (each verse twice)."
 >
   <div class="tk-wrap" dir="rtl">
     <header class="tk-header">
       <h1>תיקון קורים <span class="tk-sub">Tikun Korim · medooyuk</span></h1>
       <p class="tk-tagline">
-        כל התנ"ך עם ניקוד וטעמים, שכבת המדויק (שוא נא / נח), ושנים מקרא ואחד תרגום
+        כל התנ"ך עם ניקוד וטעמים, שכבת המדויק (שוא נא / נח), ושנים מקרא
       </p>
     </header>
 
@@ -33,13 +33,11 @@ import Layout from '../../layouts/Layout.astro';
           </select>
         </label>
         <label class="tk-chk"><input type="checkbox" id="tk-medooyuk" checked /> Medooyuk layer</label>
-        <label class="tk-chk"><input type="checkbox" id="tk-shnayim" /> Shnayim Mikra v'Echad Targum</label>
-        <label>Targum <select id="tk-targum"><option value="">—</option></select></label>
+        <label class="tk-chk"><input type="checkbox" id="tk-shnayim" /> Shnayim Mikra (each verse twice)</label>
         <label>Layout
           <select id="tk-layout">
             <option value="stacked">Stacked (2×1)</option>
-            <option value="side">Side by side</option>
-            <option value="tap">Tap 3× per verse</option>
+            <option value="tap">Tap 2× per verse</option>
           </select>
         </label>
         <label class="tk-size">Size <input type="range" id="tk-size" min="16" max="44" value="26" /></label>
@@ -59,16 +57,12 @@ import Layout from '../../layouts/Layout.astro';
     <main id="tk-content" class="tk-content" dir="rtl" lang="he"></main>
 
     <footer class="tk-foot" dir="ltr">
-      <p>
-        Letters, nikud and taamim: UXLC (Unicode/XML Leningrad Codex, C.V. Kimball, CC-BY) with the
-        ajew.org medooyuk sheva layer. Targum texts via Sefaria.com (public domain).
-        Sheva/qamats rulings are v0 output — not an accuracy claim.
-      </p>
+      <p>Sheva/qamats rulings are v0 output — not an accuracy claim.</p>
     </footer>
   </div>
 </Layout>
 
-<script src="/tikkun.js?v=1" defer></script>
+<script src="/tikkun.js?v=2" defer></script>
 
 <style is:global>
   .tk-wrap { max-width: 1100px; margin: 0 auto; padding: 1rem; }
@@ -84,10 +78,6 @@ import Layout from '../../layouts/Layout.astro';
   .tk-content { font-size: var(--tk-size, 26px); line-height: 2.1; }
   .tk-verse { margin-bottom: 1.1rem; }
   .tk-verse .tk-vnum { color: var(--muted, #999); font-size: .55em; margin-left: .35rem; }
-  .tk-targum-line { font-size: .72em; line-height: 1.9; color: var(--muted-2, #667); background: var(--panel, rgba(127,127,127,.07)); border-radius: 8px; padding: .15rem .6rem; margin: .15rem 0; }
-  .tk-targum-line .tk-tname { font-size: .75em; opacity: .75; }
-  .tk-side { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-  @media (max-width: 720px) { .tk-side { grid-template-columns: 1fr; } }
   .tk-mikra-repeat { opacity: .82; }
   /* medooyuk marks */
   .m-na { text-decoration: underline; text-decoration-color: #1a9e8c; text-decoration-thickness: 2px; text-underline-offset: 5px; }

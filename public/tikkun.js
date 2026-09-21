@@ -1,8 +1,8 @@
 /* Tikun Korim - ajew.org
  * Whole-Tanach reader's tikkun: 4 display modes, medooyuk sheva layer,
- * Shnayim Mikra v'Echad Targum with three layouts. Data:
- *   /reader/medooyuk/<slug>.json          {book,slug,he,en,ch:{c:{v:{t,k,m}}}}
- *   /reader/medooyuk/targum/<slug>.json   {name,ch:{c:{v:text}}}
+ * Shnayim Mikra (each verse twice: stacked or tap 2x).
+ * All data is project-owned (ajew.org medooyuk build) - no external site
+ * dependencies: /reader/medooyuk/<slug>.json {book,slug,he,en,ch:{c:{v:{t,k,m}}}}
  */
 (function () {
   'use strict';
@@ -69,8 +69,8 @@
   var state = {
     slug: 'tanach-bereishit', chapter: 1,
     mode: 'full', medooyuk: true, shnayim: false,
-    layout: 'stacked', targum: '', size: 26, theme: 'day',
-    data: null, targumData: null, tapCount: {}
+    layout: 'stacked', size: 26, theme: 'day',
+    data: null, tapCount: {}
   };
 
   function $(id) { return document.getElementById(id); }
@@ -135,21 +135,12 @@
     return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 
-  function targumLine(c, v) {
-    if (!state.targumData) return '';
-    var t = (state.targumData.ch[c] || {})[v];
-    if (!t) return '';
-    var nm = state.targumData.name;
-    return '<div class="tk-targum-line"><span class="tk-tname">' + esc(nm) +
-           ':</span> ' + esc(applyMode(t)) + '</div>';
-  }
-
   function render() {
     var box = $('tk-content');
     if (!state.data) { box.innerHTML = '<p class="tk-loading">Loading…</p>'; return; }
     var ch = state.data.ch[state.chapter];
     if (!ch) { box.innerHTML = '<p class="tk-error">Chapter not found.</p>'; return; }
-    var shnayim = state.shnayim && state.targumData;
+    var shnayim = state.shnayim;
     var html = [];
     var tapLeft = null;
     Object.keys(ch).map(Number).sort(function (a, b) { return a - b; }).forEach(function (v) {
@@ -160,29 +151,20 @@
         html.push('<div class="tk-verse">' + mikra + num + '</div>');
         return;
       }
-      if (state.layout === 'side') {
-        html.push('<div class="tk-verse tk-side">' +
-          '<div class="tk-col-mikra">' + mikra + num + '</div>' +
-          '<div class="tk-col-targum">' + (targumLine(state.chapter, v) || '<i>targum not available</i>') + '</div></div>');
-      } else if (state.layout === 'tap') {
+      if (state.layout === 'tap') {
         var n = state.tapCount[state.chapter + ':' + v] || 0;
         var body = mikra;
         if (n >= 2) body += '<div class="tk-mikra-repeat">' + mikra + '</div>';
-        if (n >= 3) body += targumLine(state.chapter, v);
-        if (n >= 3) body = '<span class="tk-tap-done">' + body + '</span>';
+        if (n >= 2) body = '<span class="tk-tap-done">' + body + '</span>';
         html.push('<div class="tk-verse tk-tapverse" data-cv="' + state.chapter + ':' + v +
                   '" style="cursor:pointer" title="tap for shnayim mikra">' + body +
-                  ' <span class="tk-vnum">[' + n + '/3]</span>' + num + '</div>');
+                  ' <span class="tk-vnum">[' + n + '/2]</span>' + num + '</div>');
       } else { /* stacked */
         html.push('<div class="tk-verse">' + mikra + num +
           '<div class="tk-mikra-repeat">' + mikra + '</div>' +
-          (targumLine(state.chapter, v) || '<div class="tk-targum-line"><i>targum not available</i></div>') +
           '</div>');
       }
     });
-    if (!shnayim && !state.targumData && state.shnayim) {
-      html.unshift('<p class="tk-error">Targum not available for this book.</p>');
-    }
     box.innerHTML = html.join('');
     if (state.layout === 'tap') {
       Array.prototype.forEach.call(document.querySelectorAll('.tk-tapverse'), function (el) {
@@ -207,20 +189,6 @@
     sel.value = state.chapter;
   }
 
-  function fillTargumSelect() {
-    var sel = $('tk-targum');
-    sel.innerHTML = '<option value="">—</option>';
-    if (state.targumData) {
-      var o = document.createElement('option');
-      o.value = state.targumData.name; o.textContent = state.targumData.name;
-      sel.appendChild(o);
-      sel.value = state.targumData.name;
-      sel.disabled = false;
-    } else {
-      sel.disabled = true;
-    }
-  }
-
   function loadBook(slug, chapter, cb) {
     fetch('/reader/medooyuk/' + slug + '.json')
       .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
@@ -228,17 +196,6 @@
         state.data = d;
         state.chapter = Math.min(chapter || 1, Math.max.apply(null, Object.keys(d.ch).map(Number)));
         fillChapters();
-        var tsel = $('tk-targum');
-        tsel.innerHTML = '<option value="">—</option>';
-        tsel.disabled = true;
-        state.targumData = null;
-        fetch('/reader/medooyuk/targum/' + slug + '.json')
-          .then(function (r) { return r.ok ? r.json() : null; })
-          .then(function (t) {
-            if (t) { state.targumData = t; }
-            fillTargumSelect();
-            render();
-          }).catch(function () { fillTargumSelect(); render(); });
         render();
         if (cb) cb();
       })
@@ -252,7 +209,7 @@
       localStorage.setItem('tk-settings', JSON.stringify({
         slug: state.slug, chapter: state.chapter, mode: state.mode,
         medooyuk: state.medooyuk, shnayim: state.shnayim, layout: state.layout,
-        targum: state.targum, size: state.size, theme: state.theme
+        size: state.size, theme: state.theme
       }));
     } catch (e) {}
   }
@@ -293,7 +250,7 @@
 
   function init() {
     var st = load();
-    ['slug','chapter','mode','medooyuk','shnayim','layout','targum','size','theme'].forEach(function (k) {
+    ['slug','chapter','mode','medooyuk','shnayim','layout','size','theme'].forEach(function (k) {
       if (st[k] !== undefined) state[k] = st[k];
     });
     /* deep link: /reader/tikkun?b=<slug>&c=<chapter> */
@@ -347,7 +304,6 @@
     });
     $('tk-shnayim').addEventListener('change', function () { state.shnayim = this.checked; save(); render(); });
     $('tk-layout').addEventListener('change', function () { state.layout = this.value; save(); render(); });
-    $('tk-targum').addEventListener('change', function () { state.targum = this.value; save(); });
     $('tk-size').addEventListener('input', function () {
       state.size = parseInt(this.value, 10);
       document.documentElement.style.setProperty('--tk-size', state.size + 'px'); save();
