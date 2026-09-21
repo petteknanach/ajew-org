@@ -230,6 +230,7 @@
     var p = PARSHIYOS[i];
     var slugChanged = state.slug !== p[1];
     state.slug = p[1];
+    if (slugChanged) $('tk-book').value = p[1];
     if (slugChanged) {
       loadBook(p[1], p[2], function () { gotoVerse(p[3]); });
     } else {
