@@ -43,8 +43,13 @@ SLUGS = {
 EXTRA_CANDIDATES = {
  'Chronicles_1': ['Targum of I Chronicles'],
  'Chronicles_2': ['Targum of II Chronicles'],
- 'Esther': ['Targum Sheni on Esther', 'Targum Esther'],
+ # Rishon (the standard tikkun targum) first; Sheni kept only as fallback
+ 'Esther': ['Aramaic Targum to Esther', 'Targum Sheni on Esther'],
 }
+
+# Books whose targum lives in the "Aramaic Targum to X" series (special targumim)
+ARAMAIC_SERIES = {'Job', 'Proverbs', 'Ruth', 'Song_of_Songs', 'Ecclesiastes',
+                  'Lamentations'}
 
 def candidates(book):
     n = SEFARIA_NAMES[book]
@@ -52,7 +57,11 @@ def candidates(book):
         return EXTRA_CANDIDATES[book]
     if book in ('Genesis','Exodus','Leviticus','Numbers','Deuteronomy'):
         return [f'Targum Onkelos {n}']
-    return [f'Targum Jonathan on {n}', f'Targum {n}']
+    cands = []
+    if book in ARAMAIC_SERIES:
+        cands.append(f'Aramaic Targum to {n}')
+    cands += [f'Targum Jonathan on {n}', f'Targum {n}']
+    return cands
 
 def fetch_json(name, tries=3):
     url = ('https://www.sefaria.org/api/texts/' + urllib.parse.quote(name, safe='')
