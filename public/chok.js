@@ -302,6 +302,37 @@
       return '<details class="ck-comm ck-super"><summary>על רש״י — ' + esc(names.join(' · ')) + '</summary>' + body + '</details>';
     });
   }
+  function kavanosHTML() {
+    return fetchJSON('/reader/kavanos/index.json').catch(function () { return null; }).then(function (idx) {
+      if (!idx || !idx.gates || !idx.gates.length) return '';
+      var items = idx.gates.map(function (g) {
+        return '<details class="ck-kav-gate" data-gate="' + g.n + '"><summary>' + esc(g.heName) +
+          ' <span class="ck-ref">' + esc(g.name) + (g.chapters ? ' — ' + g.chapters + ' פרקים' : '') + '</span></summary>' +
+          '<div class="ck-kav-body"></div></details>';
+      }).join('');
+      return '<section class="ck-section" id="ck-kavanos">' + secHead('כוונות — האריז״ל (פרי עץ חיים)') +
+        '<p class="ck-kav-note">כוונות התפילה והמצות. פתח שער, ופרק לעיון.</p>' + items + '</section>';
+    });
+  }
+  function wireKavanos(root) {
+    root.querySelectorAll('.ck-kav-gate:not([data-wired])').forEach(function (d) {
+      d.setAttribute('data-wired', '1');
+      d.addEventListener('toggle', function () {
+        if (!d.open || d.getAttribute('data-loaded')) return;
+        d.setAttribute('data-loaded', '1');
+        var body = d.querySelector('.ck-kav-body');
+        fetchJSON('/reader/kavanos/pec-gate-' + ('0' + d.getAttribute('data-gate')).slice(-2) + '.json')
+          .then(function (gd) {
+            var chs = Object.keys((gd || {}).ch || {}).map(Number).sort(function (a, b) { return a - b; });
+            body.innerHTML = chs.map(function (cn) {
+              var paras = gd.ch[cn];
+              return '<details class="ck-kav-ch"><summary>פרק ' + heNum(cn) + '</summary>' +
+                paras.map(function (p) { return '<div class="ck-kav-para">' + richText(p) + '</div>'; }).join('') + '</details>';
+            }).join('') || '<p class="ck-kav-note">עוד לא נטען</p>';
+          }).catch(function () { body.innerHTML = '<p class="ck-kav-note">עוד לא נטען</p>'; });
+      });
+    });
+  }
   function verseCommHTML(kind, slug, c, v) {
     // Ramban only on Torah - no Ibn Ezra (Chayei Moharan 410)
     if (kind === 'navi') {
@@ -639,6 +670,11 @@
           if (html) out.push(html);
         });
       });
+      p = p.then(function () {
+        return kavanosHTML().then(function (html) {
+          if (html) out.push(html);
+        });
+      });
       return p.then(function () { return out.join(''); });
     });
     box.innerHTML = '<p class="ck-loading">Loading…</p>';
@@ -661,6 +697,7 @@
         parts.push(weekParts.join(''));
         if (commentHTML) parts.push(commentHTML);
         box.innerHTML = parts.join('') || '<p class="ck-error">Nothing to show.</p>';
+        wireKavanos(box);
         box.scrollTop = 0; window.scrollTo(0, 0);
       });
     }).catch(function (e) {
