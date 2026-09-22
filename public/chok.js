@@ -325,7 +325,7 @@
   }
   function voiceBox(v) {
     if (!v) return '';
-    return '<div class="ck-voice">' + voiceLine(v) + '</div>';
+    return '<div class="ck-voice"><div class="ck-voice-k">הסבר פשוט</div>' + voiceLine(v) + '</div>';
   }
   function voiceTop(dc) {
     if (!dc) return '';
@@ -333,7 +333,7 @@
     if (dc.carry) h += '<div class="ck-voice-part"><div class="ck-voice-k">מה משך אתמול</div>' + voiceLine(dc.carry) + '</div>';
     if (dc.intro) h += '<div class="ck-voice-part"><div class="ck-voice-k">היום</div>' + voiceLine(dc.intro) + '</div>';
     if (!h) return '';
-    return '<section class="ck-section ck-voice-top"><div class="ck-sec-head">הסבר פשוט שלנו <span class="ck-ref">נ נח</span></div>' +
+    return '<section class="ck-section ck-voice-top"><div class="ck-sec-head">הסבר פשוט — חומש, רש״י, נ״ך, משנה, גמרא, זוהר, הלכה, מוסר</div>' +
       '<div class="ck-voice">' + h + '</div></section>';
   }
   function secHead(title, ref) {
@@ -538,9 +538,10 @@
           if (!sec || !sec.book) return;
           var slug = SLUGS[sec.book];
           if (!slug) { out.push(card(pair[1], sec.book)); return; }
+          var vkey = pair[1] === 'כתובים' ? 'kesuvim' : 'navi';
           return versesHTML(slug, {c: sec.from.c, v: sec.from.v || 1}, null, 'navi', null).then(function (vh) {
             out.push('<section class="ck-section">' +
-              secHead(pair[1] + ' — ' + sec.book, refStr(sec)) + vh + '</section>');
+              secHead(pair[1] + ' — ' + sec.book, refStr(sec)) + voiceBox(dc && dc[vkey]) + vh + '</section>');
           });
         });
       });
