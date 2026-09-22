@@ -226,20 +226,17 @@
     return '<details class="ck-layer ck-comm"><summary>' + label + '</summary>' + body + '</details>';
   }
   function verseCommHTML(kind, slug, c, v) {
-    var src = kind === 'navi' ? 'navi-metzudas' : 'torah-ramban';
-    var src2 = kind === 'navi' ? null : 'torah-ibnezra';
-    return Promise.all([comm(src, slug), src2 ? comm(src2, slug) : Promise.resolve(null)])
-      .then(function (cs) {
-        if (!cs[0] && !cs[1]) return '';
-        var out = '';
-        var metz = cs[0] && (cs[0].ch || {})[String(c)] && cs[0].ch[String(c)][v - 1];
-        if (metz) out += commDetails('מצודת דוד', '<div class="ck-comm-body">' + richText(metz) + '</div>');
-        var rb = cs[1] && (cs[1].ch || {})[String(c)] && cs[1].ch[String(c)][v - 1];
-        if (rb) out += commDetails('רמב״ן', '<div class="ck-comm-body">' + richText(rb) + '</div>');
-        var ie = (!kind || kind === 'torah') && cs[1] && (cs[1].ch || {})[String(c)] && cs[1].ch[String(c)][v - 1];
-        if (ie) out += commDetails('אבן עזרא', '<div class="ck-comm-body">' + richText(ie) + '</div>');
-        return out;
+    // Ramban only on Torah - no Ibn Ezra (Chayei Moharan 410)
+    if (kind === 'navi') {
+      return comm('navi-metzudas', slug).then(function (d) {
+        var metz = d && (d.ch || {})[String(c)] && d.ch[String(c)][v - 1];
+        return metz ? commDetails('מצודת דוד', '<div class="ck-comm-body">' + richText(metz) + '</div>') : '';
       });
+    }
+    return comm('torah-ramban', slug).then(function (d) {
+      var rb = d && (d.ch || {})[String(c)] && d.ch[String(c)][v - 1];
+      return rb ? commDetails('רמב״ן', '<div class="ck-comm-body">' + richText(rb) + '</div>') : '';
+    });
   }
   function versesHTML(slug, from, to, kind) {
     return book(slug).then(function (d) {

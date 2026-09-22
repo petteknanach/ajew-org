@@ -26,43 +26,55 @@ UA = {'User-Agent': 'ajew.org-commentaries/1.0 (ajew.org)'}
 def v3(title):
     q = urllib.parse.quote(title, safe='')
     url = 'https://www.sefaria.org/api/v3/texts/%s?version=hebrew' % q
-    for attempt in range(6):
+    last = None
+    for attempt in range(8):
         try:
             req = urllib.request.Request(url, headers=UA)
             with urllib.request.urlopen(req, timeout=45) as r:
                 d = json.loads(r.read().decode())
+            time.sleep(1.0 + (attempt % 3) * 0.4)
             return d['versions'][0]['text']
         except Exception as e:
             msg = str(e)
-            if '429' in msg:
-                time.sleep(8 * (attempt + 1))
-            elif '404' in msg:
+            last = e
+            if '404' in msg:
                 return None
-            else:
-                time.sleep(2)
-    return None
+            time.sleep(min(90, 5 * (attempt + 1)))
+    raise RuntimeError('v3 failed %s: %s' % (title, str(last)[:60]))
 
-TORAH = {'בראשית': 'tanach-bereishit', 'שמות': 'tanach-shemos',
-         'ויקרא': 'tanach-vayikra', 'במדבר': 'tanach-bamidbar',
-         'דברים': 'tanach-devarim'}
-NAVI = {'שמואל א': 'tanach-shmuel-a', 'שמואל ב': 'tanach-shmuel-b',
-        'מלכים א': 'tanach-melachim-a', 'מלכים ב': 'tanach-melachim-b',
-        'ישעיהו': 'tanach-yeshayahu', 'ישעיה': 'tanach-yeshayahu',
-        'ירמיהו': 'tanach-yirmiyahu', 'ירמיה': 'tanach-yirmiyahu',
-        'יחזקאל': 'tanach-yechezkel', 'הושע': 'tanach-hoshea',
-        'יואל': 'tanach-yoel', 'עמוס': 'tanach-amos', 'עובדיה': 'tanach-ovadya',
-        'יונה': 'tanach-yonah', 'מיכה': 'tanach-michah', 'נחום': 'tanach-nachum',
-        'חבקוק': 'tanach-havakkuk', 'צפניה': 'tanach-tzefanya',
-        'חגי': 'tanach-chaggai', 'זכריה': 'tanach-zecharya',
-        'מלאכי': 'tanach-malachi', 'תהילים': 'tanach-tehillim',
-        'משלי': 'tanach-mishlei', 'איוב': 'tanach-iyov',
-        'שיר השירים': 'tanach-shir-hashirim', 'רות': 'tanach-rus',
-        'איכה': 'tanach-eicha', 'קהלת': 'tanach-koheles',
-        'אסתר': 'tanach-esther', 'דניאל': 'tanach-daniel',
-        'עזרא': 'tanach-ezra', 'נחמיה': 'tanach-nechemia',
-        'יהושע': 'tanach-yehoshua', 'שופטים': 'tanach-shoftim',
-        'דברי הימים א': 'tanach-divrei-hayamim-a',
-        'דברי הימים ב': 'tanach-divrei-hayamim-b'}
+TORAH = {'בראשית': ('Genesis', 'tanach-bereishit'),
+         'שמות': ('Exodus', 'tanach-shemos'),
+         'ויקרא': ('Leviticus', 'tanach-vayikra'),
+         'במדבר': ('Numbers', 'tanach-bamidbar'),
+         'דברים': ('Deuteronomy', 'tanach-devarim')}
+NAVI = {'שמואל א': ('I Samuel', 'tanach-shmuel-a'),
+        'שמואל ב': ('II Samuel', 'tanach-shmuel-b'),
+        'מלכים א': ('I Kings', 'tanach-melachim-a'),
+        'מלכים ב': ('II Kings', 'tanach-melachim-b'),
+        'ישעיהו': ('Isaiah', 'tanach-yeshayahu'),
+        'ישעיה': ('Isaiah', 'tanach-yeshayahu'),
+        'ירמיהו': ('Jeremiah', 'tanach-yirmiyahu'),
+        'ירמיה': ('Jeremiah', 'tanach-yirmiyahu'),
+        'יחזקאל': ('Ezekiel', 'tanach-yechezkel'),
+        'הושע': ('Hosea', 'tanach-hoshea'), 'יואל': ('Joel', 'tanach-yoel'),
+        'עמוס': ('Amos', 'tanach-amos'), 'עובדיה': ('Obadiah', 'tanach-ovadya'),
+        'יונה': ('Jonah', 'tanach-yonah'), 'מיכה': ('Micah', 'tanach-michah'),
+        'נחום': ('Nahum', 'tanach-nachum'), 'חבקוק': ('Habakkuk', 'tanach-havakkuk'),
+        'צפניה': ('Zephaniah', 'tanach-tzefanya'),
+        'חגי': ('Haggai', 'tanach-chaggai'),
+        'זכריה': ('Zechariah', 'tanach-zecharya'),
+        'מלאכי': ('Malachi', 'tanach-malachi'),
+        'תהילים': ('Psalms', 'tanach-tehillim'),
+        'משלי': ('Proverbs', 'tanach-mishlei'), 'איוב': ('Job', 'tanach-iyov'),
+        'שיר השירים': ('Song of Songs', 'tanach-shir-hashirim'),
+        'רות': ('Ruth', 'tanach-rus'), 'איכה': ('Lamentations', 'tanach-eicha'),
+        'קהלת': ('Ecclesiastes', 'tanach-koheles'),
+        'אסתר': ('Esther', 'tanach-esther'), 'דניאל': ('Daniel', 'tanach-daniel'),
+        'עזרא': ('Ezra', 'tanach-ezra'), 'נחמיה': ('Nehemiah', 'tanach-nechemia'),
+        'יהושע': ('Joshua', 'tanach-yehoshua'),
+        'שופטים': ('Judges', 'tanach-shoftim'),
+        'דברי הימים א': ('I Chronicles', 'tanach-divrei-hayamim-a'),
+        'דברי הימים ב': ('II Chronicles', 'tanach-divrei-hayamim-b')}
 # our gemara maseches label -> (Sefaria name, our file slug)
 GEMARA = {'ברכות': ('Berakhot', 'gemara-berakhot'), "ב''ק": ('Bava Kamma', 'gemara-bava-kamma'),
           "ב''מ": ('Bava Metzia', 'gemara-bava-metzia'),
@@ -101,7 +113,9 @@ GEMARA = {'ברכות': ('Berakhot', 'gemara-berakhot'), "ב''ק": ('Bava Kamma'
           'תרומות': ('Terumot', 'gemara-terumot'), 'מעשרות': ('Maasrot', 'gemara-maasrot'),
           'חלה': ('Challah', 'gemara-challah'), 'ערלה': ('Orlah', 'gemara-orlah'),
           'ביכורים': ('Bikkurim', 'gemara-bikkurim')}
-MISHNA = dict(GEMARA)
+MISHNA = {}
+for _k, _v in GEMARA.items():
+    MISHNA[_k] = (_v[0], _v[1].replace('gemara-', 'mishna-'))
 MISHNA.update({'אבות': ('Avot', 'mishna-avot'), 'קינים': ('Kinnim', 'mishna-kinnim'),
                'עוקצים': ('Uktzin', 'mishna-uktzin'), 'עוקצין': ('Uktzin', 'mishna-uktzin'),
                'טבול יום': ('Tevul Yom', 'mishna-tevul-yom'),
@@ -235,10 +249,10 @@ def main():
             txt = v3('Bartenura on Mishnah %s %s' % (sef, perek))
             if txt:
                 if isinstance(txt, list):
-                    ch[pn] = [re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', '', s)).strip()
-                              if isinstance(s, str) else '' for s in txt]
+                    ch[pn] = [re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', '', flatten(x))).strip()
+                              for x in txt]
                 else:
-                    ch[pn] = [txt]
+                    ch[pn] = [flatten(txt)]
                 n_fetched += 1
             time.sleep(0.7)
         if ch:
@@ -246,11 +260,11 @@ def main():
             print('bartenura', mas, len(ch), 'perakim')
     # 3) Metzudat David on Navi/Kesuvim (per chapter)
     for book, chapters in sorted(n.items()):
-        sef = NAVI.get(book)
-        if not sef:
+        entry = NAVI.get(book)
+        if not entry:
             print('navi: no sefaria map for', book)
             continue
-        slug = sef
+        sef, slug = entry
         data = {}
         try:
             p = os.path.join(OUT, 'navi-metzudas', slug + '.json')
@@ -265,20 +279,23 @@ def main():
                 continue
             txt = v3('Metzudat David on %s %s' % (sef, cnum))
             if txt:
-                ch[cn] = [re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', '', s)).strip()
-                          if isinstance(s, str) else '' for s in txt]
-                n_fetched += 1
+                arr = [re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', '', flatten(x))).strip()
+                       for x in txt]
+                if any(arr):
+                    ch[cn] = arr
+                    n_fetched += 1
             time.sleep(0.7)
         if ch:
             save('navi-metzudas', slug, {'ch': ch})
             print('metzudas', book, len(ch), 'chapters')
     # 4) Ramban + Ibn Ezra on Torah (per chapter)
-    for src, title in (('torah-ramban', 'Ramban'), ('torah-ibnezra', 'Ibn Ezra')):
+    # Ramban only - NO Ibn Ezra (Chayei Moharan 410, user's directive)
+    for src, title in (('torah-ramban', 'Ramban'),):
         for book, chapters in sorted(t.items()):
-            sef = TORAH.get(book)
-            if not sef:
+            entry = TORAH.get(book)
+            if not entry:
                 continue
-            slug = 'chumash-' + slug_he(book)
+            sef, slug = entry
             data = {}
             try:
                 p = os.path.join(OUT, src, slug + '.json')
@@ -293,9 +310,11 @@ def main():
                     continue
                 txt = v3('%s on %s %s' % (title, sef, cnum))
                 if txt:
-                    ch[cn] = [re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', '', s)).strip()
-                              if isinstance(s, str) else '' for s in txt]
-                    n_fetched += 1
+                    arr = [re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', '', flatten(x))).strip()
+                           for x in txt]
+                    if any(arr):
+                        ch[cn] = arr
+                        n_fetched += 1
                 time.sleep(0.7)
             if ch:
                 save(src, slug, {'ch': ch})
