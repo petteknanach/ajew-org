@@ -13,7 +13,7 @@ import Layout from '../layouts/Layout.astro';
   <div class="chok-container" id="chokApp">
     <!-- Header -->
     <header class="chok-header">
-      <h1 class="chok-hebrew-title">חוק ברסלב</h1>
+      <h1 class="chok-hebrew-title">חק ברסלב</h1>
       <h2 class="chok-english-title">Daily Torah Study</h2>
       <p class="chok-subtitle">Complete the entire Breslov library in one year<br><span style="font-family: var(--font-hebrew); font-size: 0.85em; opacity: 0.8;" dir="rtl">השלם את כל ספריית ברסלב בשנה אחת</span></p>
       <div class="chok-date-info" id="dateInfo">
@@ -24,6 +24,7 @@ import Layout from '../layouts/Layout.astro';
         <div class="chok-progress-fill" id="progressFill"></div>
       </div>
       <p class="chok-progress-text" id="progressText"></p>
+      <p class="chok-sibling"><a href="/reader/chok">חק לישראל</a> <span>— the classic daily chok: Tanach, Mishna, Gemara, halacha &amp; Zohar</span></p>
     </header>
 
     <!-- Navigation -->
@@ -74,418 +75,116 @@ import Layout from '../layouts/Layout.astro';
     </section>
   </div>
 
-  <style>
-    .chok-container {
-      max-width: 860px;
-      margin: 0 auto;
-      padding: 32px 20px 80px;
-      font-family: 'Open Sans', sans-serif;
-      color: #222;
-    }
-
-    /* Header */
-    .chok-header {
-      text-align: center;
-      margin-bottom: 28px;
-      padding-bottom: 20px;
-      border-bottom: 3px solid #1a365d;
-    }
-    .chok-hebrew-title {
-      font-family: 'Frank Ruhl Libre', serif;
-      font-size: 3em;
-      color: #1a365d;
-      direction: rtl;
-      margin: 0 0 4px;
-      font-weight: 700;
-    }
-    .chok-english-title {
-      font-family: 'Frank Ruhl Libre', serif;
-      font-size: 1.6em;
-      color: #1a365d;
-      margin: 0 0 6px;
-      font-weight: 400;
-    }
-    .chok-subtitle {
-      color: #777;
-      font-size: 0.9em;
-      margin: 0 0 16px;
-    }
-    .chok-date-info {
-      display: flex;
-      gap: 16px;
-      justify-content: center;
-      align-items: center;
-      flex-wrap: wrap;
-      margin-bottom: 12px;
-    }
-    .hebrew-date {
-      font-family: 'Frank Ruhl Libre', serif;
-      font-size: 1.3em;
-      color: #2d3748;
-      direction: rtl;
-    }
-    .day-number {
-      background: #1a365d;
-      color: #fff;
-      padding: 3px 14px;
-      border-radius: 14px;
-      font-size: 0.85em;
-      font-weight: 600;
-    }
-    .chok-progress-bar {
-      width: 100%;
-      max-width: 400px;
-      height: 8px;
-      background: #e8e0d0;
-      border-radius: 4px;
-      margin: 0 auto 6px;
-      overflow: hidden;
-    }
-    .chok-progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, #1a365d, #2b6cb0);
-      border-radius: 4px;
-      transition: width 0.5s ease;
-      width: 0%;
-    }
-    .chok-progress-text {
-      color: #888;
-      font-size: 0.8em;
-      margin: 0;
-    }
-
-    /* Navigation */
-    .chok-nav {
-      display: flex;
-      gap: 8px;
-      justify-content: center;
-      margin-bottom: 8px;
-    }
-    .chok-nav-btn {
-      background: #f7f0e5;
-      border: 1px solid #d4c9b5;
-      color: #1a365d;
-      padding: 8px 18px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 0.9em;
-      font-family: 'Open Sans', sans-serif;
-      transition: all 0.2s;
-    }
-    .chok-nav-btn:hover {
-      background: #1a365d;
-      color: #fff;
-    }
-    .chok-nav-today {
-      background: #1a365d;
-      color: #fff;
-      font-weight: 600;
-    }
-    .chok-nav-today:hover {
-      background: #2b6cb0;
-    }
-    .chok-nav-extra {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-      align-items: center;
-      margin-bottom: 24px;
-      flex-wrap: wrap;
-    }
-    .chok-nav-extra label {
-      font-size: 0.85em;
-      color: #666;
-    }
-    .chok-day-input {
-      width: 60px;
-      padding: 4px 8px;
-      border: 1px solid #d4c9b5;
-      border-radius: 6px;
-      font-size: 0.9em;
-      text-align: center;
-    }
-    .chok-small-btn {
-      font-size: 0.8em;
-      padding: 5px 12px;
-    }
-
-    /* Stats */
-    .chok-stats {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-      margin-bottom: 28px;
-      flex-wrap: wrap;
-    }
-    .chok-stat {
-      background: #faf6ef;
-      border: 1px solid #e8dcc8;
-      border-radius: 10px;
-      padding: 10px 20px;
-      text-align: center;
-      min-width: 90px;
-    }
-    .stat-num {
-      display: block;
-      font-size: 1.5em;
-      font-weight: 700;
-      color: #1a365d;
-    }
-    .stat-label {
-      font-size: 0.75em;
-      color: #888;
-    }
-
-    /* Section titles */
-    .section-title {
-      font-family: 'Frank Ruhl Libre', serif;
-      font-size: 1.3em;
-      color: #1a365d;
-      margin: 0 0 14px;
-      padding-bottom: 8px;
-      border-bottom: 2px solid #e8dcc8;
-    }
-    .bonus-title {
-      color: #7b6d32;
-      border-color: #e8dca0;
-    }
-
-    /* Date Letters */
-    .chok-date-letters {
-      background: linear-gradient(135deg, #fff9e8, #fef5db);
-      border: 2px solid #d4b34a;
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 24px;
-    }
-    .chok-date-letters .section-title {
-      color: #8b6914;
-      border-color: #d4b34a;
-    }
-    .date-letter-card {
-      background: #fff;
-      border-radius: 8px;
-      padding: 14px;
-      margin-bottom: 8px;
-    }
-    .date-letter-card .letter-info {
-      font-family: 'Frank Ruhl Libre', serif;
-      font-size: 1.05em;
-      color: #333;
-      margin-bottom: 6px;
-    }
-    .date-letter-card .letter-sub {
-      font-size: 0.85em;
-      color: #888;
-      margin-bottom: 8px;
-    }
-    .date-letter-card a {
-      display: inline-block;
-      background: #8b6914;
-      color: #fff;
-      padding: 5px 14px;
-      border-radius: 6px;
-      text-decoration: none;
-      font-size: 0.85em;
-    }
-    .date-letter-card a:hover {
-      background: #a07c1c;
-    }
-
-    /* Portions Grid */
-    .chok-portions {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 14px;
-      margin-bottom: 28px;
-    }
-    .loading-msg {
-      grid-column: 1 / -1;
-      text-align: center;
-      color: #888;
-      padding: 40px;
-    }
-
-    /* Book card */
-    .book-card {
-      background: #fdfaf5;
-      border: 1px solid #e0d6c2;
-      border-radius: 10px;
-      padding: 16px;
-      position: relative;
-      transition: box-shadow 0.2s, border-color 0.2s;
-    }
-    .book-card:hover {
-      box-shadow: 0 2px 12px rgba(26, 54, 93, 0.1);
-      border-color: #b8a88a;
-    }
-    .book-card.completed {
-      border-color: #48bb78;
-      background: #f0fff4;
-    }
-    .book-card .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 8px;
-    }
-    .book-card .book-name-he {
-      font-family: 'Frank Ruhl Libre', serif;
-      font-size: 1.15em;
-      color: #1a365d;
-      direction: rtl;
-      margin: 0;
-      font-weight: 700;
-    }
-    .book-card .book-name-en {
-      font-size: 0.8em;
-      color: #777;
-      margin: 2px 0 0;
-    }
-    .book-card .check-btn {
-      width: 44px;
-      height: 44px;
-      border: 2px solid #ccc;
-      border-radius: 50%;
-      background: #fff;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      transition: all 0.2s;
-      flex-shrink: 0;
-      margin-left: 8px;
-    }
-    .book-card .check-btn:hover {
-      border-color: #48bb78;
-    }
-    .book-card .check-btn.checked {
-      background: #48bb78;
-      border-color: #48bb78;
-      color: #fff;
-    }
-    .book-card .section-ref {
-      font-size: 0.9em;
-      color: #444;
-      margin: 0 0 6px;
-      font-weight: 600;
-    }
-    .book-card .section-preview {
-      font-family: 'Frank Ruhl Libre', serif;
-      font-size: 0.85em;
-      color: #666;
-      direction: rtl;
-      line-height: 1.5;
-      max-height: 3em;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      margin: 0 0 10px;
-    }
-    .book-card .read-link {
-      display: inline-block;
-      background: #1a365d;
-      color: #fff;
-      padding: 5px 16px;
-      border-radius: 6px;
-      text-decoration: none;
-      font-size: 0.85em;
-      transition: background 0.2s;
-    }
-    .book-card .read-link:hover {
-      background: #2b6cb0;
-    }
-    .book-card .book-progress {
-      margin-top: 8px;
-      font-size: 0.75em;
-      color: #999;
-    }
-    .book-card .book-progress-bar {
-      height: 3px;
-      background: #e8e0d0;
-      border-radius: 2px;
-      margin-top: 4px;
-      overflow: hidden;
-    }
-    .book-card .book-progress-fill {
-      height: 100%;
-      background: #48bb78;
-      border-radius: 2px;
-      transition: width 0.3s;
-    }
-
-    /* Bonus section */
-    .chok-bonus-section {
-      background: #fefce8;
-      border: 1px solid #e8dca0;
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 28px;
-    }
-
-    /* Dark mode */
-    :global(html.dark-mode) .chok-container { color: #e2e8f0; }
-    :global(html.dark-mode) .chok-header { border-color: #4a5568; }
-    :global(html.dark-mode) .chok-hebrew-title { color: #90cdf4; }
-    :global(html.dark-mode) .chok-english-title { color: #90cdf4; }
-    :global(html.dark-mode) .chok-subtitle { color: #a0aec0; }
-    :global(html.dark-mode) .hebrew-date { color: #e2e8f0; }
-    :global(html.dark-mode) .day-number { background: #2b6cb0; }
-    :global(html.dark-mode) .chok-progress-bar { background: #4a5568; }
-    :global(html.dark-mode) .chok-nav-btn { background: #2d3748; border-color: #4a5568; color: #e2e8f0; }
-    :global(html.dark-mode) .chok-nav-btn:hover { background: #4a5568; }
-    :global(html.dark-mode) .chok-nav-today { background: #2b6cb0; color: #fff; }
-    :global(html.dark-mode) .chok-day-input { background: #2d3748; border-color: #4a5568; color: #e2e8f0; }
-    :global(html.dark-mode) .chok-stat { background: #2d3748; border-color: #4a5568; }
-    :global(html.dark-mode) .stat-num { color: #90cdf4; }
-    :global(html.dark-mode) .stat-label { color: #a0aec0; }
-    :global(html.dark-mode) .section-title { color: #90cdf4; border-color: #4a5568; }
-    :global(html.dark-mode) .chok-date-letters { background: #2d2d1a; border-color: #8b6914; }
-    :global(html.dark-mode) .date-letter-card { background: #1a1a2e; }
-    :global(html.dark-mode) .date-letter-card .letter-info { color: #e2e8f0; }
-    :global(html.dark-mode) .book-card { background: #1e2433; border-color: #4a5568; }
-    :global(html.dark-mode) .book-card:hover { border-color: #718096; box-shadow: 0 2px 12px rgba(0,0,0,0.3); }
-    :global(html.dark-mode) .book-card.completed { background: #1a2e1a; border-color: #38a169; }
-    :global(html.dark-mode) .book-card .book-name-he { color: #90cdf4; }
-    :global(html.dark-mode) .book-card .book-name-en { color: #a0aec0; }
-    :global(html.dark-mode) .book-card .section-ref { color: #e2e8f0; }
-    :global(html.dark-mode) .book-card .section-preview { color: #a0aec0; }
-    :global(html.dark-mode) .book-card .check-btn { background: #2d3748; border-color: #4a5568; }
-    :global(html.dark-mode) .book-card .book-progress { color: #718096; }
-    :global(html.dark-mode) .book-card .book-progress-bar { background: #4a5568; }
-    :global(html.dark-mode) .chok-bonus-section { background: #2d2d1a; border-color: #8b6914; }
-    :global(html.dark-mode) .loading-msg { color: #718096; }
-
-    /* Mobile */
-    @media (max-width: 600px) {
-      .chok-hebrew-title { font-size: 2.2em; }
-      .chok-english-title { font-size: 1.2em; }
-      .chok-portions { grid-template-columns: 1fr; }
-      .chok-nav { flex-wrap: wrap; }
-      .chok-stats { gap: 8px; }
-      .chok-stat { padding: 8px 14px; min-width: 70px; }
-      .stat-num { font-size: 1.2em; }
-    }
-  </style>
-
-  <style is:global>
-    .chok-container .book-card .check-btn {
-      width: 44px;
-      height: 44px;
-      min-width: 44px;
-      min-height: 44px;
-      padding: 0;
-    }
-    .chok-container .read-link,
-    .chok-container .chok-nav-btn,
-    .chok-container .date-letter-card a {
-      min-height: 44px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      box-sizing: border-box;
-    }
-  </style>
+<style is:global>
+  /* ═════════════════════════════════════════════════════════════
+     חק ברסלב — deluxe presentation, sharing the Chok LiYisroel
+     sefer token system (same palette/typography as /reader/chok).
+     All hooks (ids/classes) preserved; JS-generated markup styled
+     globally under .chok-container.
+     ═════════════════════════════════════════════════════════════ */
+  .chok-container {
+    --font-he: 'Noto Serif Hebrew', 'David Libre', 'Frank Ruhl Libre', serif;
+    --font-en: 'EB Garamond', Georgia, 'Times New Roman', serif;
+    --font-ui: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --ink: #2f2519;
+    --paper: #fbf7ee;
+    --panel: #f4eddc;
+    --panel2: #fffdf6;
+    --border: #e3d8bf;
+    --border-strong: #cfc09a;
+    --gold: #a8842e;
+    --gold-bright: #c9a227;
+    --gold-soft: #e7d9ae;
+    --gold-wash: rgba(168, 132, 46, 0.08);
+    --teal: #177f70;
+    --teal-deep: #106154;
+    --muted: #8d7f66;
+    --muted2: #6f6350;
+    --ok: #2d6a4f;
+    --shadow1: 0 1px 2px rgba(63, 48, 26, 0.06), 0 6px 18px -6px rgba(63, 48, 26, 0.12);
+    --shadow2: 0 2px 4px rgba(63, 48, 26, 0.08), 0 14px 34px -10px rgba(63, 48, 26, 0.2);
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 1.6rem 1rem 4rem;
+    color: var(--ink);
+    font-family: var(--font-ui);
+  }
+  body.dark-mode .chok-container {
+    --ink: #efe6d2;
+    --paper: #171310;
+    --panel: #221c15;
+    --panel2: #2a2219;
+    --border: #3c3226;
+    --border-strong: #5a4a2f;
+    --gold: #c9a227;
+    --gold-bright: #e2c04c;
+    --gold-soft: #6b5524;
+    --gold-wash: rgba(201, 162, 39, 0.1);
+    --teal: #2aa392;
+    --teal-deep: #1d7c6f;
+    --muted: #a3937a;
+    --muted2: #857455;
+    --shadow1: 0 1px 2px rgba(0, 0, 0, 0.4), 0 6px 18px -6px rgba(0, 0, 0, 0.5);
+    --shadow2: 0 2px 4px rgba(0, 0, 0, 0.45), 0 14px 34px -10px rgba(0, 0, 0, 0.6);
+  }
+  .chok-header { text-align: center; padding: 1.4rem 1rem 1.2rem; background: linear-gradient(180deg, var(--gold-wash), transparent 70%); border: 1px solid var(--border); border-radius: 18px; box-shadow: var(--shadow1); }
+  .chok-hebrew-title { font-family: var(--font-he); font-size: clamp(2.2rem, 6vw, 3.2rem); font-weight: 700; color: var(--ink); letter-spacing: 0.02em; margin: 0; }
+  .chok-hebrew-title::after { content: ''; display: block; width: 84px; height: 2px; margin: 0.55rem auto 0.3rem; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+  .chok-english-title { font-family: var(--font-en); font-size: 1.35rem; font-weight: 600; color: var(--gold); margin: 0.2rem 0 0.4rem; letter-spacing: 0.04em; }
+  .chok-subtitle { color: var(--muted2); font-size: 0.98rem; margin: 0; line-height: 1.6; }
+  .chok-date-info { display: flex; justify-content: center; gap: 0.8rem; align-items: baseline; margin: 0.8rem 0 0.6rem; flex-wrap: wrap; }
+  .hebrew-date { font-family: var(--font-he); font-size: 1.08rem; color: var(--ink); }
+  .day-number { color: var(--muted2); font-size: 0.85rem; letter-spacing: 0.06em; text-transform: uppercase; }
+  .chok-progress-bar { height: 10px; border-radius: 999px; background: var(--panel); border: 1px solid var(--border); overflow: hidden; max-width: 560px; margin: 0.5rem auto 0.35rem; }
+  .chok-progress-fill { height: 100%; width: 0%; border-radius: 999px; background: linear-gradient(90deg, var(--gold), var(--gold-bright)); transition: width 0.5s ease; }
+  .chok-progress-text { color: var(--muted2); font-size: 0.82rem; margin: 0.3rem 0 0; }
+  .chok-sibling { margin: 0.9rem 0 0; font-size: 0.88rem; color: var(--muted2); }
+  .chok-sibling a { color: var(--teal-deep); font-family: var(--font-he); font-weight: 700; text-decoration: none; border-bottom: 1px solid var(--gold-soft); padding-bottom: 1px; }
+  .chok-sibling a:hover { color: var(--gold); }
+  .chok-nav { display: flex; justify-content: center; gap: 0.55rem; margin: 1.2rem 0 0.5rem; flex-wrap: wrap; }
+  .chok-nav-btn { min-height: 44px; padding: 0.55rem 1.15rem; border-radius: 12px; border: 1px solid var(--border-strong); background: var(--panel2); color: var(--ink); font-family: var(--font-ui); font-size: 0.92rem; cursor: pointer; box-shadow: var(--shadow1); transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease; display: inline-flex; align-items: center; }
+  .chok-nav-btn:hover { transform: translateY(-1px); border-color: var(--gold); box-shadow: var(--shadow2); }
+  .chok-nav-btn:active { transform: translateY(0); }
+  .chok-nav-today { background: linear-gradient(180deg, var(--gold), #8f6f22); border-color: var(--gold); color: #fffdf6; font-weight: 700; }
+  body.dark-mode .chok-nav-today { background: linear-gradient(180deg, var(--gold-bright), var(--gold)); color: #171310; }
+  .chok-small-btn { min-height: 34px; padding: 0.3rem 0.8rem; font-size: 0.8rem; }
+  .chok-nav-extra { display: flex; justify-content: center; align-items: center; gap: 0.9rem; margin: 0 0 1rem; color: var(--muted2); font-size: 0.88rem; flex-wrap: wrap; }
+  .chok-day-input { width: 84px; min-height: 38px; text-align: center; border: 1px solid var(--border-strong); border-radius: 10px; background: var(--panel2); color: var(--ink); font-size: 0.95rem; }
+  .chok-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.7rem; max-width: 640px; margin: 0 auto 1.4rem; }
+  .chok-stat { text-align: center; padding: 0.7rem 0.5rem; background: var(--panel2); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow1); }
+  .stat-num { display: block; font-family: var(--font-en); font-size: 1.45rem; font-weight: 700; color: var(--gold); line-height: 1.15; }
+  .stat-label { font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted2); }
+  .section-title { font-family: var(--font-en); font-size: 1.05rem; font-weight: 600; letter-spacing: 0.05em; color: var(--gold); margin: 1.6rem 0 0.7rem; text-align: center; }
+  .section-title::before, .section-title::after { content: ' · '; color: var(--gold-soft); }
+  .bonus-title { color: #2d6a4f; }
+  body.dark-mode .bonus-title { color: #7ecfa8; }
+  .date-letter-card { display: flex; gap: 0.9rem; align-items: center; background: var(--panel2); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow1); padding: 0.85rem 1rem; margin-bottom: 0.6rem; }
+  .letter-info { flex: 1; }
+  .letter-sub { color: var(--muted2); font-size: 0.85rem; margin-top: 0.15rem; }
+  .date-letter-card a { color: var(--teal-deep); text-decoration: none; border-bottom: 1px solid var(--gold-soft); }
+  .chok-portions { display: grid; gap: 0.75rem; }
+  .book-card { background: var(--panel2); border: 1px solid var(--border); border-left: 3px solid var(--gold-soft); border-radius: 14px; box-shadow: var(--shadow1); padding: 0.95rem 1.05rem; transition: box-shadow 0.15s ease, border-color 0.15s ease; }
+  .book-card:hover { border-color: var(--gold); box-shadow: var(--shadow2); }
+  .book-card.completed { border-left-color: #2d6a4f; background: linear-gradient(0deg, rgba(45, 106, 79, 0.05), var(--panel2)); }
+  .card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.8rem; }
+  .book-name-he { font-family: var(--font-he); font-size: 1.18rem; font-weight: 700; color: var(--ink); margin: 0; }
+  .book-name-en { color: var(--muted2); font-size: 0.86rem; margin: 0.1rem 0 0.45rem; }
+  .section-ref { color: var(--muted2); font-size: 0.85rem; margin: 0.45rem 0 0.5rem; line-height: 1.55; }
+  .book-progress { height: 5px; border-radius: 999px; background: var(--panel); border: 1px solid var(--border); overflow: hidden; margin-top: 0.55rem; }
+  .book-progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--gold), var(--gold-bright)); }
+  .check-btn { width: 44px; height: 44px; min-width: 44px; min-height: 44px; padding: 0; border-radius: 12px; border: 1px solid var(--border-strong); background: var(--panel); color: var(--muted2); font-size: 1.15rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all 0.15s ease; }
+  .check-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .check-btn.checked { background: #2d6a4f; border-color: #2d6a4f; color: #fffdf6; }
+  .read-link { min-height: 44px; display: inline-flex; align-items: center; padding: 0.4rem 0.95rem; border-radius: 10px; border: 1px solid var(--border-strong); color: var(--teal-deep); text-decoration: none; font-size: 0.88rem; background: var(--panel2); transition: all 0.12s ease; }
+  .read-link:hover { border-color: var(--teal); box-shadow: var(--shadow1); }
+  .loading-msg { text-align: center; color: var(--muted2); padding: 2rem 0; }
+  @media (max-width: 640px) {
+    .chok-stats { grid-template-columns: repeat(3, 1fr); gap: 0.4rem; }
+    .stat-num { font-size: 1.15rem; }
+    .card-header { flex-direction: column; }
+    .check-btn { align-self: flex-end; margin-top: -1.6rem; }
+  }
+</style>
 
   <script is:inline>
   (function() {
