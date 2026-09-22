@@ -65,9 +65,11 @@ def clean_text_field(x):
 
 def fetch_book(name, expect_chapters, slug):
     """Per-chapter range fetch: '<name> c:1-c:N' (bare chapter refs collapse to
-    c:1 on the API). Verse counts come from our own medooyuk data."""
+    c:1 on the API). Verse counts come from our own medooyuk data.
+    Returns {'he': ch, 'en': ch} - the English 'text' field is the PD
+    Rosenbaum/Silbermann 1929-1934 translation."""
     med = json.load(open(f'/root/ajew-org/public/reader/medooyuk/{slug}.json', encoding='utf-8'))
-    ch = {}
+    he_ch, en_ch = {}, {}
     for c in range(1, expect_chapters + 1):
         verses = med['ch'].get(str(c)) or med['ch'].get(c) or {}
         nverses = max(int(k) for k in verses.keys()) if verses else 0
@@ -80,6 +82,7 @@ def fetch_book(name, expect_chapters, slug):
             print(f'  ch {c}: error {e}')
             continue
         he = data.get('he')
+        en = data.get('text')
         if not isinstance(he, list):
             continue
         got = 0
@@ -90,12 +93,21 @@ def fetch_book(name, expect_chapters, slug):
                 one = clean_comment(node)
                 comments = [one] if one else []
             if comments:
-                ch.setdefault(str(c), {})[str(v)] = comments
+                he_ch.setdefault(str(c), {})[str(v)] = comments
                 got += 1
+        if isinstance(en, list):
+            for v, node in enumerate(en, 1):
+                if isinstance(node, list):
+                    comments = [clean_comment(x) for x in node if clean_comment(x)]
+                else:
+                    one = clean_comment(node)
+                    comments = [one] if one else []
+                if comments:
+                    en_ch.setdefault(str(c), {})[str(v)] = comments
         time.sleep(0.3)
-    if len(ch) < expect_chapters * 0.8:
+    if len(he_ch) < expect_chapters * 0.8:
         return None
-    return {'name': name, 'ch': ch}
+    return {'he': {'name': name, 'ch': he_ch}, 'en': {'name': name, 'ch': en_ch}}
 
 
 def main():
@@ -104,7 +116,10 @@ def main():
     results = []
     for name, slug, chapters in BOOKS:
         dst = os.path.join(OUT, slug + '.json')
-        if os.path.exists(dst):
+        en_dst = os.path.join(OUT, 'en', slug + '.json')
+        need_he = not os.path.exists(dst)
+        need_en = not os.path.exists(en_dst)
+        if not need_he and not need_en:
             print(f'skip (exists): {slug}')
             continue
         data = fetch_book(name, chapters, slug)
@@ -112,11 +127,17 @@ def main():
             print(f'FAIL whole-book: {name}')
             results.append((name, 0))
             continue
-        got = len(data['ch'])
-        total = sum(len(v) for v in data['ch'].values())
-        with open(dst, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, separators=(',', ':'))
-        print(f'{name}: {got}/{chapters} chapters, {total} comments -> {slug}')
+        if need_he:
+            with open(dst, 'w', encoding='utf-8') as f:
+                json.dump(data['he'], f, ensure_ascii=False, separators=(',', ':'))
+        if need_en:
+            os.makedirs(os.path.join(OUT, 'en'), exist_ok=True)
+            with open(en_dst, 'w', encoding='utf-8') as f:
+                json.dump(data['en'], f, ensure_ascii=False, separators=(',', ':'))
+        got = len(data['he']['ch'])
+        total = sum(len(v) for v in data['he']['ch'].values())
+        entotal = sum(len(v) for v in data['en']['ch'].values())
+        print(f'{name}: {got}/{chapters} chapters, he {total} / en {entotal} comments -> {slug}')
         results.append((name, got))
         time.sleep(1)
     print('done:', sum(1 for _, n in results if n), 'fetched,', sum(1 for _, n in results if not n), 'missing')
