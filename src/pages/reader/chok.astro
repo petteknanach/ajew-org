@@ -26,6 +26,7 @@ import Layout from '../../layouts/Layout.astro';
         </label>
         <label class="ck-chk"><input type="checkbox" id="ck-medooyuk" checked /> Medooyuk</label>
         <label class="ck-chk"><input type="checkbox" id="ck-targum" /> Targum</label>
+        <label class="ck-chk"><input type="checkbox" id="ck-commentary" checked /> Commentary</label>
         <label class="ck-size">Size <input type="range" id="ck-size" min="16" max="44" value="26" /></label>
         <span class="ck-themes">
           <button class="ck-btn ck-theme" data-t="day">Day</button>
@@ -81,4 +82,14 @@ import Layout from '../../layouts/Layout.astro';
   .ck-foot { margin-top: 2rem; font-size: .78rem; color: var(--muted, #999); }
   .ck-loading { color: var(--muted, #999); }
   .ck-error { color: #b33; }
+  .ck-layer { border: 1px solid var(--border, #ddd); border-radius: 10px; padding: .4rem .8rem; margin: .6rem 0; background: var(--panel, #fafafa); }
+  .ck-layer summary { cursor: pointer; font-size: .62em; font-weight: bold; color: #1a9e8c; padding: .2rem 0; }
+  .ck-layer .ck-he { font-size: .8em; line-height: 1.95; margin: .25rem 0; }
+  .ck-layer .ck-en { font-size: .55em; line-height: 1.6; color: var(--muted-2, #556); margin: .25rem 0; }
+  .ck-carry { border-right: 4px solid #1a9e8c; }
+  .ck-sup { margin: .4rem 0 .1rem 0; }
+  .ck-sup summary { color: #7a5ea8; }
+  .ck-citem { padding: .25rem 0; border-top: 1px dotted var(--border, #ddd); }
+  .ck-citem:first-child { border-top: 0; }
+  .ck-citem .ck-ref { font-size: .6em; color: var(--muted, #888); }
 </style>

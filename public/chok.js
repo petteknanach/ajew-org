@@ -33,16 +33,18 @@
   var NIKUD  = /[\u05B0-\u05BC\u05C1\u05C2\u05C7]/g;
 
   var state = {
-    mode: 'full', medooyuk: true, targum: true,
+    mode: 'full', medooyuk: true, targum: true, commentary: true,
     day: null, weeks: null, size: 26, theme: 'day',
     sched: null, map: null, bookCache: {}, targCache: {}
   };
+  var DAY_SLUGS = {'יום ראשון':'yom-rishon','יום שני':'yom-sheni','יום שלישי':'yom-shlishi',
+    'יום רביעי':'yom-revii','יום חמישי':'yom-chamishi','ליל שישי':'leil-shishi','יום שישי':'yom-shishi'};
 
   function $(id) { return document.getElementById(id); }
   function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
   function save() { try { localStorage.setItem('chok-settings', JSON.stringify({
       mode: state.mode, medooyuk: state.medooyuk, targum: state.targum,
-      size: state.size, theme: state.theme })); } catch (e) {} }
+      commentary: state.commentary, size: state.size, theme: state.theme })); } catch (e) {} }
   function load() { try { return JSON.parse(localStorage.getItem('chok-settings') || '{}'); } catch (e) { return {}; } }
 
   function applyMode(txt) {
@@ -153,6 +155,54 @@
              day: DAYS[DAY_DEFAULT[today.getDay()]] || DAYS[0], today: today };
   }
 
+  function commentaryHTML(c) {
+    if (!c) return null;
+    var carry = null;
+    if (c.carry && (c.carry.he || c.carry.en)) {
+      carry = '<details class="ck-layer ck-carry" open><summary>המשך מאתמול · Carry from yesterday</summary>' +
+        '<div dir="rtl" class="ck-he">' + esc(c.carry.he || '') + '</div>' +
+        '<div dir="ltr" class="ck-en">' + esc(c.carry.en || '') + '</div></details>';
+    }
+    var out = [];
+    var items = [];
+    (c.verses || []).forEach(function (v) {
+      if (!v.he && !v.en) return;
+      items.push('<div class="ck-citem"><b class="ck-ref">' + esc(v.ref || '') + '</b>' +
+        (v.he ? '<div dir="rtl" class="ck-he">' + esc(v.he) + '</div>' : '') +
+        (v.en ? '<div dir="ltr" class="ck-en">' + esc(v.en) + '</div>' : '') + '</div>');
+    });
+    if (items.length) {
+      out.push('<details class="ck-layer" open><summary>ביאורנו · Our commentary</summary>' + items.join('') + '</details>');
+    }
+    var ritems = [];
+    (c.rashi || []).forEach(function (r) {
+      if (!r.he && !r.en) return;
+      var sup = '';
+      if (r.super) {
+        sup = Object.keys(r.super).map(function (k) {
+          var s = r.super[k] || {};
+          if (!s.he && !s.en) return '';
+          return '<details class="ck-layer ck-sup"><summary>' + esc(k) + '</summary>' +
+            (s.he ? '<div dir="rtl" class="ck-he">' + esc(s.he) + '</div>' : '') +
+            (s.en ? '<div dir="ltr" class="ck-en">' + esc(s.en) + '</div>' : '') + '</details>';
+        }).join('');
+      }
+      ritems.push('<div class="ck-citem"><b class="ck-ref">' + esc(r.ref || '') + '</b>' +
+        (r.he ? '<div dir="rtl" class="ck-he">' + esc(r.he) + '</div>' : '') +
+        (r.en ? '<div dir="ltr" class="ck-en">' + esc(r.en) + '</div>' : '') + sup + '</div>');
+    });
+    if (ritems.length) {
+      out.push('<details class="ck-layer"><summary>על הרש״י · On Rashi</summary>' + ritems.join('') + '</details>');
+    }
+    if (!carry && !out.length) return null;
+    return { carry: carry, layers: out.length ? out.join('') : null };
+  }
+  function fetchCommentary(week, day) {
+    var slug = DAY_SLUGS[day] || 'yom-rishon';
+    return fetchJSON('/reader/chok/commentary/' + encodeURIComponent(week) + '-' + slug + '.json')
+      .catch(function () { return null; });
+  }
+
   function renderDay() {
     var box = $('ck-content');
     var day = state.day;
@@ -197,9 +247,27 @@
       return p;
     });
     box.innerHTML = '<p class="ck-loading">Loading…</p>';
+    var comm = state.commentary ? Promise.all(weeks.map(function (wk) {
+      return fetchCommentary(wk, day);
+    })) : Promise.resolve([]);
     Promise.all(jobs).then(function () {
-      box.innerHTML = out.join('') || '<p class="ck-error">Nothing to show.</p>';
-      box.scrollTop = 0; window.scrollTo(0, 0);
+      return comm.then(function (cs) {
+        var carryHTML = '', commentHTML = '';
+        cs.forEach(function (c, i) {
+          if (!c) return;
+          var h = commentaryHTML(c);
+          if (!h) return;
+          if (h.carry) carryHTML += h.carry;
+          if (h.layers) commentHTML += '<section class="ck-section" dir="rtl">' +
+            secHead('ביאור — ' + weeks[i]) + h.layers + '</section>';
+        });
+        var parts = [];
+        if (carryHTML) parts.push(carryHTML);
+        parts.push(out.join(''));
+        if (commentHTML) parts.push(commentHTML);
+        box.innerHTML = parts.join('') || '<p class="ck-error">Nothing to show.</p>';
+        box.scrollTop = 0; window.scrollTo(0, 0);
+      });
     }).catch(function (e) {
       box.innerHTML = '<p class="ck-error">Could not load: ' + esc('' + e) + '</p>';
     });
@@ -255,6 +323,7 @@
       $('ck-mode').value = state.mode;
       $('ck-medooyuk').checked = state.medooyuk;
       $('ck-targum').checked = state.targum;
+      $('ck-commentary').checked = state.commentary;
       $('ck-size').value = state.size;
       document.documentElement.style.setProperty('--ck-size', state.size + 'px');
       setTheme(state.theme);
@@ -267,6 +336,7 @@
       $('ck-medooyuk').addEventListener('change', function () {
         state.medooyuk = this.checked; $('ck-legend').hidden = !state.medooyuk; save(); renderDay(); });
       $('ck-targum').addEventListener('change', function () { state.targum = this.checked; save(); renderDay(); });
+      $('ck-commentary').addEventListener('change', function () { state.commentary = this.checked; save(); renderDay(); });
       $('ck-size').addEventListener('input', function () {
         state.size = parseInt(this.value, 10);
         document.documentElement.style.setProperty('--ck-size', state.size + 'px'); save();
