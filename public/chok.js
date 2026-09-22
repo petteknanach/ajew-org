@@ -34,8 +34,10 @@
 
   var state = {
     mode: 'full', medooyuk: true, targum: true, commentary: true, rashi: true,
+    tanachen: true,
     day: null, weeks: null, size: 26, theme: 'day',
-    sched: null, map: null, bonus: null, bookCache: {}, targCache: {}, rashiCache: {}
+    sched: null, map: null, bonus: null, mussar: null,
+    bookCache: {}, targCache: {}, rashiCache: {}, enCache: {}
   };
   var DAY_SLUGS = {'יום ראשון':'yom-rishon','יום שני':'yom-sheni','יום שלישי':'yom-shlishi',
     'יום רביעי':'yom-revii','יום חמישי':'yom-chamishi','ליל שישי':'leil-shishi','יום שישי':'yom-shishi'};
@@ -106,7 +108,7 @@
   function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
   function save() { try { localStorage.setItem('chok-settings', JSON.stringify({
       mode: state.mode, medooyuk: state.medooyuk, targum: state.targum,
-      commentary: state.commentary, rashi: state.rashi,
+      commentary: state.commentary, rashi: state.rashi, tanachen: state.tanachen,
       size: state.size, theme: state.theme })); } catch (e) {} }
   function load() { try { return JSON.parse(localStorage.getItem('chok-settings') || '{}'); } catch (e) { return {}; } }
 
@@ -164,6 +166,10 @@
   function targ(slug) {
     state.targCache[slug] = state.targCache[slug] || fetchJSON('/reader/medooyuk/targum/' + slug + '.json').catch(function(){ return null; });
     return state.targCache[slug];
+  }
+  function en(slug) {
+    state.enCache[slug] = state.enCache[slug] || fetchJSON('/reader/tanachen/' + slug + '.json').catch(function(){ return null; });
+    return state.enCache[slug];
   }
   function rashi(slug) {
     state.rashiCache[slug] = state.rashiCache[slug] || fetchJSON('/reader/rashi/' + slug + '.json').catch(function(){ return null; });
@@ -237,7 +243,8 @@
   }
   function versesHTML(slug, from, to, kind) {
     return book(slug).then(function (d) {
-      return targ(slug).then(function (tg) {
+      return Promise.all([targ(slug), state.tanachen ? en(slug) : Promise.resolve(null)]).then(function (ts) {
+        var tg = ts[0], en = ts[1];
         var items = [];
         var c = from.c, v = from.v;
         var guard = 0;
@@ -252,6 +259,9 @@
             var row = coloredVerse(verse) + ' <span class="tk-vnum">(' + heNum(c) + ',' + heNum(x) + ')</span>';
             if (state.targum && tg && (tg.ch || {})[c] && tg.ch[c][x]) {
               row += '<div class="ck-targum-line">' + richText(applyMode(tg.ch[c][x])) + '</div>';
+            }
+            if (state.tanachen && en && (en.ch || {})[String(c)] && en.ch[String(c)][x - 1]) {
+              row += '<div class="ck-en-line">' + en.ch[String(c)][x - 1] + '</div>';
             }
             items.push({ c: c, x: x, row: row });
           });
@@ -583,7 +593,7 @@
 
   function init() {
     var st = load();
-    ['mode','medooyuk','targum','commentary','rashi','size','theme'].forEach(function (k) {
+    ['mode','medooyuk','targum','commentary','rashi','tanachen','size','theme'].forEach(function (k) {
       if (st[k] !== undefined) state[k] = st[k];
     });
     state.day = DAYS[DAY_DEFAULT[new Date().getDay()]] || DAYS[0];
@@ -610,6 +620,7 @@
       $('ck-targum').checked = state.targum;
       $('ck-rashi').checked = state.rashi;
       $('ck-commentary').checked = state.commentary;
+      $('ck-tanachen').checked = state.tanachen;
       $('ck-size').value = state.size;
       document.documentElement.style.setProperty('--ck-size', state.size + 'px');
       setTheme(state.theme);
@@ -624,6 +635,7 @@
       $('ck-targum').addEventListener('change', function () { state.targum = this.checked; save(); renderDay(); });
       $('ck-rashi').addEventListener('change', function () { state.rashi = this.checked; save(); renderDay(); });
       $('ck-commentary').addEventListener('change', function () { state.commentary = this.checked; save(); renderDay(); });
+      $('ck-tanachen').addEventListener('change', function () { state.tanachen = this.checked; save(); renderDay(); });
       $('ck-size').addEventListener('input', function () {
         state.size = parseInt(this.value, 10);
         document.documentElement.style.setProperty('--ck-size', state.size + 'px'); save();

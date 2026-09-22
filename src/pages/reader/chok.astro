@@ -29,6 +29,7 @@ import Layout from '../../layouts/Layout.astro';
         <label class="ck-chk"><input type="checkbox" id="ck-targum" /> Targum</label>
         <label class="ck-chk"><input type="checkbox" id="ck-rashi" checked /> Rashi</label>
         <label class="ck-chk"><input type="checkbox" id="ck-commentary" checked /> Commentary</label>
+        <label class="ck-chk"><input type="checkbox" id="ck-tanachen" checked /> English</label>
         <label class="ck-size">Size <input type="range" id="ck-size" min="16" max="44" value="26" /></label>
         <span class="ck-themes">
           <button class="ck-btn ck-theme" data-t="day">Day</button>
@@ -507,6 +508,7 @@ import Layout from '../../layouts/Layout.astro';
   .ck-comm-body { line-height: 1.95; margin: 0.25rem 0; padding-right: 0.6rem; border-right: 2px solid var(--ck-gold-soft, #e7d9ae); }
   .ck-mussar summary { color: var(--ck-c-sup); }
   .ck-mussar-text { line-height: 1.95; margin: 0.3rem 0; padding-right: 0.6rem; border-right: 2px solid var(--ck-gold-soft, #e7d9ae); }
+  .ck-en-line { direction: ltr; text-align: left; font-family: var(--font-en, Georgia, serif); font-style: italic; color: var(--ck-muted2, #6f6350); line-height: 1.6; margin: 0.2rem 0; font-size: 0.82em; }
 
   /* ── States ───────────────────────────────────────────────────── */
   .ck-loading {
