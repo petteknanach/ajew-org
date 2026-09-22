@@ -107,19 +107,40 @@
     state.rashiCache[slug] = state.rashiCache[slug] || fetchJSON('/reader/rashi/' + slug + '.json').catch(function(){ return null; });
     return state.rashiCache[slug];
   }
+  function rashiEn(slug) {
+    state.rashiCache['en:' + slug] = state.rashiCache['en:' + slug] || fetchJSON('/reader/rashi/en/' + slug + '.json').catch(function(){ return null; });
+    return state.rashiCache['en:' + slug];
+  }
   function richText(s) {
     // escape everything, then re-enable the minimal tags Rashi text uses
     return esc(s || '').replace(/&lt;(\/?)(b|i)&gt;/g, '<$1$2>');
   }
   function rashiHTML(slug, c, v) {
     if (!state.rashi) return Promise.resolve('');
-    return rashi(slug).then(function (rd) {
-      var comments = rd && (rd.ch || {})[c] && rd.ch[c][v];
-      if (!comments || !comments.length) return '';
-      var body = comments.map(function (cm) {
-        return '<div class="ck-rbody">' + richText(applyModeStrip(cm)) + '</div>';
-      }).join('');
-      return '<details class="ck-layer ck-rashi"><summary>רש״י</summary>' + body + '</details>';
+    return Promise.all([rashi(slug), rashiEn(slug)]).then(function (rs) {
+      var rd = rs[0], re = rs[1];
+      var he = rd && (rd.ch || {})[c] && rd.ch[c][v];
+      var en = re && (re.ch || {})[c] && re.ch[c][v];
+      if ((!he || !he.length) && (!en || !en.length)) return '';
+      var body = '';
+      if (he && he.length) {
+        body = he.map(function (cm, i) {
+          var e = (en && en.length === he.length && en[i]) ? en[i] : null;
+          var out = '<div class="ck-rbody">' + richText(applyModeStrip(cm)) + '</div>';
+          if (e) out += '<div class="ck-rbody ck-ren">' + richText(e) + '</div>';
+          return out;
+        }).join('');
+        if (en && en.length !== he.length) {
+          body += '<div class="ck-ren-div"></div>' + en.map(function (e) {
+            return '<div class="ck-rbody ck-ren">' + richText(e) + '</div>';
+          }).join('');
+        }
+      } else if (en && en.length) {
+        body = en.map(function (e) {
+          return '<div class="ck-rbody ck-ren">' + richText(e) + '</div>';
+        }).join('');
+      }
+      return '<details class="ck-layer ck-rashi"><summary>רש״י · Rashi</summary>' + body + '</details>';
     });
   }
   function applyModeStrip(s) { return s; }
