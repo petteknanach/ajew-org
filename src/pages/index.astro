@@ -357,10 +357,10 @@ const todayQuote = quotes[dayIndex];
      hours show alef-first sets, night hours alef-second.
      ═══════════════════════════════════════ -->
 <style is:inline>
-#pair-cycle{position:fixed;bottom:10px;left:14px;z-index:6;font-family:var(--font-hebrew,'Frank Ruhl Libre',serif);font-size:1.05rem;line-height:1;color:#7d6f52;opacity:.55;direction:rtl;unicode-bidi:isolate;user-select:none;pointer-events:auto;cursor:default;text-shadow:0 1px 2px rgba(255,255,255,.35)}
+#pair-cycle{position:fixed;bottom:12px;left:14px;z-index:6;font-family:var(--font-hebrew,'Frank Ruhl Libre',serif);font-size:1.15rem;line-height:1;color:#6f6146;opacity:.8;direction:rtl;unicode-bidi:isolate;user-select:none;pointer-events:auto;cursor:default;text-shadow:0 1px 2px rgba(255,255,255,.35)}
 @media (prefers-color-scheme:dark){#pair-cycle{color:#b9a87f;text-shadow:0 1px 2px rgba(0,0,0,.5)}}
 </style>
-<div id="pair-cycle" aria-hidden="true" lang="he" title="סדר הזוגות — אותיות הוי״ה עם האל״ף לפי שעון ירושלים (הרקח, ספר השם): בכל שעה ל״ו זוגות בי״א חלקים, ואחריהם ו׳ חלקים לזוג עד קפ״ה"></div>
+<div id="pair-cycle" aria-hidden="true" lang="he" title="סדר הזוגות — אותיות הוי״ה עם האל״ף לפי שעון ירושלים (הרקח, ספר השם), מצאת הכוכבים עד צאת הכוכבים: בכל שעה ל״ו זוגות בי״א חלקים, ואחריהם ו׳ חלקים לזוג עד קפ״ה"></div>
 <script is:inline>
 (function(){
   try{
@@ -376,7 +376,8 @@ const todayQuote = quotes[dayIndex];
       }
       return out;
     }
-    // compact suncalc core (NOAA solar position) for Jerusalem sunrise/sunset
+    // compact suncalc core (NOAA solar position) for Jerusalem sunrise/sunset,
+    // and tzais ha-kochavim (three stars) at 8.5° solar depression.
     var rad=Math.PI/180, DAY=86400000, J1970=2440588, J2000=2451545, OBL=23.4397*rad;
     function toDays(dt){ return dt.valueOf()/DAY-0.5+J1970-J2000; }
     function mAnom(d){ return rad*(357.5291+0.98560028*d); }
@@ -392,8 +393,11 @@ const todayQuote = quotes[dayIndex];
           Jnoon=transit(ds,M,L),
           w=hourAngle(-0.833*rad,phi,dec),
           a=0.0009+(w+lw)/(2*Math.PI)+n,
-          Jset=transit(a,M,L), Jrise=Jnoon-(Jset-Jnoon);
-      return { rise:new Date((Jrise+0.5-J1970)*DAY), set:new Date((Jset+0.5-J1970)*DAY) };
+          Jset=transit(a,M,L), Jrise=Jnoon-(Jset-Jnoon),
+          wt=hourAngle(-8.5*rad,phi,dec),
+          at=0.0009+(wt+lw)/(2*Math.PI)+n,
+          Jtz=transit(at,M,L);
+      return { rise:new Date((Jrise+0.5-J1970)*DAY), set:new Date((Jset+0.5-J1970)*DAY), tzais:new Date((Jtz+0.5-J1970)*DAY) };
     }
     var LAT=31.7683, LNG=35.2137;
     var fmt=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Jerusalem',hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'});
@@ -407,16 +411,16 @@ const todayQuote = quotes[dayIndex];
     function update(){
       var now=new Date();
       var t=sunTimes(now,LAT,LNG);
-      var isDay = now>=t.rise && now<t.set;
+      // halachic day: sunrise to tzais ha-kochavim (three stars, 8.5°);
+      // night: tzais to sunrise — never sunset (צאת הכוכבים לא שקיעת החמה).
+      var isDay = now>=t.rise && now<t.tzais;
       var halfStart;
       if(isDay){ halfStart=t.rise; }
-      else{
-        halfStart=t.set;
-        if(now<t.rise){ // after midnight: night began at yesterday's sunset
-          var y=new Date(now.getTime()-12*3600000);
-          halfStart=sunTimes(y,LAT,LNG).set;
-          if(halfStart>now) halfStart=t.set;
-        }
+      else if(now>=t.tzais){ halfStart=t.tzais; } // this evening's night began at tzais
+      else{ // after midnight: night began at yesterday evening's tzais
+        var y=new Date(now.getTime()-12*3600000);
+        halfStart=sunTimes(y,LAT,LNG).tzais;
+        if(halfStart>now) halfStart=t.tzais;
       }
       var letterIdx=Math.floor((now-halfStart)/3600000)%4;
       var jp=jerusalemParts(now);
