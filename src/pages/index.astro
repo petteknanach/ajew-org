@@ -349,6 +349,90 @@ const todayQuote = quotes[dayIndex];
   </blockquote>
 </section>
 
+<!-- ═══════════════════════════════════════
+     SILENT PAIR CYCLE — Sefer HaShaim (Harokeach):
+     the letters of YHVH with alef, per the Jerusalem clock.
+     Each hour: 36 pairs at 11 chalakim, then 6 chalakim per
+     pair for the remaining 684 chalakim (1080 total). Day
+     hours show alef-first sets, night hours alef-second.
+     ═══════════════════════════════════════ -->
+<style is:inline>
+#pair-cycle{position:fixed;bottom:10px;left:14px;z-index:6;font-family:var(--font-hebrew,'Frank Ruhl Libre',serif);font-size:1.05rem;line-height:1;color:#7d6f52;opacity:.55;direction:rtl;unicode-bidi:isolate;user-select:none;pointer-events:auto;cursor:default;text-shadow:0 1px 2px rgba(255,255,255,.35)}
+@media (prefers-color-scheme:dark){#pair-cycle{color:#b9a87f;text-shadow:0 1px 2px rgba(0,0,0,.5)}}
+</style>
+<div id="pair-cycle" aria-hidden="true" lang="he" title="סדר הזוגות — אותיות הוי״ה עם האל״ף לפי שעון ירושלים (הרקח, ספר השם): בכל שעה ל״ו זוגות בי״א חלקים, ואחריהם ו׳ חלקים לזוג עד קפ״ה"></div>
+<script is:inline>
+(function(){
+  try{
+    var ALEF='א', LETTERS=['י','ה','ו','ה'];
+    var SH='\u05BB', PA='\u05B7', CH='\u05B4', TZ='\u05B5', HK='\u05B3', SHV='\u05B0', DG='\u05BC';
+    var V=[SH,PA,CH,TZ,HK,SHV];
+    function mk(L,v){ return (L==='ו' && v===SH) ? L+DG : L+v; }
+    function buildSet(letter,day){
+      var out=[];
+      for(var r=0;r<6;r++)for(var c=0;c<6;c++){
+        out.push(day ? (mk(ALEF,V[c])+mk(letter,V[r]))
+                     : (mk(letter,V[r])+mk(ALEF,V[c])));
+      }
+      return out;
+    }
+    // compact suncalc core (NOAA solar position) for Jerusalem sunrise/sunset
+    var rad=Math.PI/180, DAY=86400000, J1970=2440588, J2000=2451545, OBL=23.4397*rad;
+    function toDays(dt){ return dt.valueOf()/DAY-0.5+J1970-J2000; }
+    function mAnom(d){ return rad*(357.5291+0.98560028*d); }
+    function eclLon(M){ var C=rad*(1.9148*Math.sin(M)+0.02*Math.sin(2*M)+0.0003*Math.sin(3*M)), P=rad*102.9372; return M+C+P+Math.PI; }
+    function decl(l){ return Math.asin(Math.sin(OBL)*Math.sin(l)); }
+    function transit(ds,M,L){ return J2000+0.0053*Math.sin(M)-0.0069*Math.sin(2*L)+ds; }
+    function hourAngle(h,phi,d){ return Math.acos((Math.sin(h)-Math.sin(phi)*Math.sin(d))/(Math.cos(phi)*Math.cos(d))); }
+    function sunTimes(date,lat,lng){
+      var lw=rad*-lng, phi=rad*lat, d=toDays(date),
+          n=Math.round(d-0.0009-lw/(2*Math.PI)),
+          ds=0.0009+lw/(2*Math.PI)+n,
+          M=mAnom(ds), L=eclLon(M), dec=decl(L),
+          Jnoon=transit(ds,M,L),
+          w=hourAngle(-0.833*rad,phi,dec),
+          a=0.0009+(w+lw)/(2*Math.PI)+n,
+          Jset=transit(a,M,L), Jrise=Jnoon-(Jset-Jnoon);
+      return { rise:new Date((Jrise+0.5-J1970)*DAY), set:new Date((Jset+0.5-J1970)*DAY) };
+    }
+    var LAT=31.7683, LNG=35.2137;
+    var fmt=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Jerusalem',hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    var dayFmt=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Jerusalem',year:'numeric',month:'2-digit',day:'2-digit'});
+    function jerusalemParts(dt){
+      var p={}, parts=fmt.formatToParts(dt), dp=dayFmt.formatToParts(dt);
+      parts.forEach(function(x){ if(x.type!=='literal') p[x.type]=parseInt(x.value,10); });
+      dp.forEach(function(x){ if(x.type!=='literal') p[x.type.toLowerCase()]=parseInt(x.value,10); });
+      return p;
+    }
+    function update(){
+      var now=new Date();
+      var t=sunTimes(now,LAT,LNG);
+      var isDay = now>=t.rise && now<t.set;
+      var halfStart;
+      if(isDay){ halfStart=t.rise; }
+      else{
+        halfStart=t.set;
+        if(now<t.rise){ // after midnight: night began at yesterday's sunset
+          var y=new Date(now.getTime()-12*3600000);
+          halfStart=sunTimes(y,LAT,LNG).set;
+          if(halfStart>now) halfStart=t.set;
+        }
+      }
+      var letterIdx=Math.floor((now-halfStart)/3600000)%4;
+      var jp=jerusalemParts(now);
+      var msIntoHour=((jp.minute*60+jp.second)*1000);
+      var chalak=Math.floor(msIntoHour/3333.3333);
+      if(chalak>1079) chalak=1079;
+      var pair = chalak<396 ? Math.floor(chalak/11) : (Math.floor((chalak-396)/6))%36;
+      var set=buildSet(LETTERS[letterIdx],isDay);
+      document.getElementById('pair-cycle').textContent=set[pair];
+    }
+    update();
+    setInterval(update,3000);
+  }catch(e){}
+})();
+</script>
+
 </Layout>
 
 <script is:inline>
