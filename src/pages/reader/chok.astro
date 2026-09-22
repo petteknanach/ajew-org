@@ -26,6 +26,7 @@ import Layout from '../../layouts/Layout.astro';
         </label>
         <label class="ck-chk"><input type="checkbox" id="ck-medooyuk" checked /> Medooyuk</label>
         <label class="ck-chk"><input type="checkbox" id="ck-targum" /> Targum</label>
+        <label class="ck-chk"><input type="checkbox" id="ck-rashi" checked /> Rashi</label>
         <label class="ck-chk"><input type="checkbox" id="ck-commentary" checked /> Commentary</label>
         <label class="ck-size">Size <input type="range" id="ck-size" min="16" max="44" value="26" /></label>
         <span class="ck-themes">
@@ -92,4 +93,8 @@ import Layout from '../../layouts/Layout.astro';
   .ck-citem { padding: .25rem 0; border-top: 1px dotted var(--border, #ddd); }
   .ck-citem:first-child { border-top: 0; }
   .ck-citem .ck-ref { font-size: .6em; color: var(--muted, #888); }
+  .ck-rashi summary { color: #a05a2c; }
+  .ck-rashi { font-size: .72em; }
+  .ck-rashi .ck-rbody { line-height: 1.9; margin: .2rem 0; }
+  .ck-rashi .ck-rbody b { font-weight: bold; }
 </style>

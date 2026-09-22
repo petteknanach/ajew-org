@@ -33,9 +33,9 @@
   var NIKUD  = /[\u05B0-\u05BC\u05C1\u05C2\u05C7]/g;
 
   var state = {
-    mode: 'full', medooyuk: true, targum: true, commentary: true,
+    mode: 'full', medooyuk: true, targum: true, commentary: true, rashi: true,
     day: null, weeks: null, size: 26, theme: 'day',
-    sched: null, map: null, bookCache: {}, targCache: {}
+    sched: null, map: null, bookCache: {}, targCache: {}, rashiCache: {}
   };
   var DAY_SLUGS = {'יום ראשון':'yom-rishon','יום שני':'yom-sheni','יום שלישי':'yom-shlishi',
     'יום רביעי':'yom-revii','יום חמישי':'yom-chamishi','ליל שישי':'leil-shishi','יום שישי':'yom-shishi'};
@@ -44,7 +44,8 @@
   function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
   function save() { try { localStorage.setItem('chok-settings', JSON.stringify({
       mode: state.mode, medooyuk: state.medooyuk, targum: state.targum,
-      commentary: state.commentary, size: state.size, theme: state.theme })); } catch (e) {} }
+      commentary: state.commentary, rashi: state.rashi,
+      size: state.size, theme: state.theme })); } catch (e) {} }
   function load() { try { return JSON.parse(localStorage.getItem('chok-settings') || '{}'); } catch (e) { return {}; } }
 
   function applyMode(txt) {
@@ -102,10 +103,30 @@
     state.targCache[slug] = state.targCache[slug] || fetchJSON('/reader/medooyuk/targum/' + slug + '.json').catch(function(){ return null; });
     return state.targCache[slug];
   }
+  function rashi(slug) {
+    state.rashiCache[slug] = state.rashiCache[slug] || fetchJSON('/reader/rashi/' + slug + '.json').catch(function(){ return null; });
+    return state.rashiCache[slug];
+  }
+  function richText(s) {
+    // escape everything, then re-enable the minimal tags Rashi text uses
+    return esc(s || '').replace(/&lt;(\/?)(b|i)&gt;/g, '<$1$2>');
+  }
+  function rashiHTML(slug, c, v) {
+    if (!state.rashi) return Promise.resolve('');
+    return rashi(slug).then(function (rd) {
+      var comments = rd && (rd.ch || {})[c] && rd.ch[c][v];
+      if (!comments || !comments.length) return '';
+      var body = comments.map(function (cm) {
+        return '<div class="ck-rbody">' + richText(applyModeStrip(cm)) + '</div>';
+      }).join('');
+      return '<details class="ck-layer ck-rashi"><summary>רש״י</summary>' + body + '</details>';
+    });
+  }
+  function applyModeStrip(s) { return s; }
   function versesHTML(slug, from, to) {
     return book(slug).then(function (d) {
       return targ(slug).then(function (tg) {
-        var html = [];
+        var items = [];
         var c = from.c, v = from.v;
         var guard = 0;
         while (guard++ < 400) {
@@ -120,12 +141,16 @@
             if (state.targ && tg && (tg.ch || {})[c] && tg.ch[c][x]) {
               row += '<div class="ck-targum-line">' + esc(applyMode(tg.ch[c][x])) + '</div>';
             }
-            html.push('<div class="ck-verse">' + row + '</div>');
+            items.push({ c: c, x: x, row: row });
           });
           if (to && c >= to.c) break;
           c++; v = 1;
         }
-        return html.join('');
+        return Promise.all(items.map(function (it) {
+          return rashiHTML(slug, it.c, it.x).then(function (rh) {
+            return '<div class="ck-verse">' + it.row + rh + '</div>';
+          });
+        })).then(function (rows) { return rows.join(''); });
       });
     });
   }
@@ -323,6 +348,7 @@
       $('ck-mode').value = state.mode;
       $('ck-medooyuk').checked = state.medooyuk;
       $('ck-targum').checked = state.targum;
+      $('ck-rashi').checked = state.rashi;
       $('ck-commentary').checked = state.commentary;
       $('ck-size').value = state.size;
       document.documentElement.style.setProperty('--ck-size', state.size + 'px');
@@ -336,6 +362,7 @@
       $('ck-medooyuk').addEventListener('change', function () {
         state.medooyuk = this.checked; $('ck-legend').hidden = !state.medooyuk; save(); renderDay(); });
       $('ck-targum').addEventListener('change', function () { state.targum = this.checked; save(); renderDay(); });
+      $('ck-rashi').addEventListener('change', function () { state.rashi = this.checked; save(); renderDay(); });
       $('ck-commentary').addEventListener('change', function () { state.commentary = this.checked; save(); renderDay(); });
       $('ck-size').addEventListener('input', function () {
         state.size = parseInt(this.value, 10);
