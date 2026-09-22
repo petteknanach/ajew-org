@@ -161,6 +161,11 @@ for routed in discover_routed_sources(json_files, READER_DIR):
     except (json.JSONDecodeError, Exception):
         skipped += 1
         continue
+    if not isinstance(data, dict):
+        # Non-document JSON (schedules, maps, calendars, commentary files...)
+        # carries no segments to index.
+        skipped += 1
+        continue
     
     he_text, en_text, segment_map = extract_segments(data)
     if fpath.parent.name == 'chayey-moharan' and fpath.stem == 'hashmata-162':
