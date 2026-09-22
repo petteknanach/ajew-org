@@ -22,11 +22,48 @@ import urllib.request
 BASE = 'https://www.sefaria.org/api'
 OUT = '/root/ajew-org/public/reader/rashi'
 BOOKS = [
-    ('Rashi on Genesis', 'tanach-bereishit', 50),
-    ('Rashi on Exodus', 'tanach-shemos', 40),
-    ('Rashi on Leviticus', 'tanach-vayikra', 27),
-    ('Rashi on Numbers', 'tanach-bamidbar', 36),
-    ('Rashi on Deuteronomy', 'tanach-devarim', 34),
+    # (Sefaria index title, our slug) - chapter counts derive from medooyuk data
+    ('Rashi on Genesis', 'tanach-bereishit'),
+    ('Rashi on Exodus', 'tanach-shemos'),
+    ('Rashi on Leviticus', 'tanach-vayikra'),
+    ('Rashi on Numbers', 'tanach-bamidbar'),
+    ('Rashi on Deuteronomy', 'tanach-devarim'),
+    # Nevi'im
+    ('Rashi on Yehoshua', 'tanach-yehoshua'),
+    ('Rashi on Shoftim', 'tanach-shoftim'),
+    ('Rashi on Samuel I', 'tanach-shmuel-a'),
+    ('Rashi on Samuel II', 'tanach-shmuel-b'),
+    ('Rashi on Kings I', 'tanach-melachim-a'),
+    ('Rashi on Kings II', 'tanach-melachim-b'),
+    ('Rashi on Isaiah', 'tanach-yeshayahu'),
+    ('Rashi on Yirmiyahu', 'tanach-yirmiyahu'),
+    ('Rashi on Yechezkel', 'tanach-yechezkel'),
+    ('Rashi on Hoshea', 'tanach-hoshea'),
+    ('Rashi on Yoel', 'tanach-yoel'),
+    ('Rashi on Amos', 'tanach-amos'),
+    ('Rashi on Obadiah', 'tanach-ovadya'),
+    ('Rashi on Yonah', 'tanach-yonah'),
+    ('Rashi on Michah', 'tanach-michah'),
+    ('Rashi on Nahum', 'tanach-nachum'),
+    ('Rashi on Habakkuk', 'tanach-havakkuk'),
+    ('Rashi on Zephaniah', 'tanach-tzefanya'),
+    ('Rashi on Chaggai', 'tanach-chaggai'),
+    ('Rashi on Zechariah', 'tanach-zecharya'),
+    ('Rashi on Malachi', 'tanach-malachi'),
+    # Ketuvim
+    ('Rashi on Tehillim', 'tanach-tehillim'),
+    ('Rashi on Mishlei', 'tanach-mishlei'),
+    ('Rashi on Iyov', 'tanach-iyov'),
+    ('Rashi on Shir HaShirim', 'tanach-shir-hashirim'),
+    ('Rashi on Ruth', 'tanach-rus'),
+    ('Rashi on Eichah', 'tanach-eicha'),
+    ('Rashi on Kohelet', 'tanach-koheles'),
+    ('Rashi on Esther', 'tanach-esther'),
+    ('Rashi on Daniel', 'tanach-daniel'),
+    ('Rashi on Ezra', 'tanach-ezra'),
+    ('Rashi on Nehemiah', 'tanach-nechemia'),
+    ('Rashi on Chronicles I', 'tanach-divrei-hayamim-a'),
+    ('Rashi on Chronicles II', 'tanach-divrei-hayamim-b'),
 ]
 ALLOWED_TAGS = re.compile(r'</?(b|i|em|strong)>')
 ANY_TAG = re.compile(r'<[^>]+>')
@@ -114,7 +151,9 @@ def main():
     import os
     os.makedirs(OUT, exist_ok=True)
     results = []
-    for name, slug, chapters in BOOKS:
+    for name, slug in BOOKS:
+        med = json.load(open(f'/root/ajew-org/public/reader/medooyuk/{slug}.json', encoding='utf-8'))
+        chapters = len(med['ch'])
         dst = os.path.join(OUT, slug + '.json')
         en_dst = os.path.join(OUT, 'en', slug + '.json')
         need_he = not os.path.exists(dst)
