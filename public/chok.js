@@ -396,6 +396,15 @@
     }).catch(function () { return null; });
   }
 
+  function mussarHTML(wk, day) {
+    var m = state.mussar && state.mussar.days[wk + '|' + day];
+    if (!m) return Promise.resolve(null);
+    var head = 'מוסר — ' + esc(m.sefer);
+    if (m.daf) head += ' דף ' + heNum(m.daf) + (m.amud ? ' ע׳ ' + (m.amud === 2 ? 'ב״' : 'א״') : '');
+    var body = m.text ? '<div class="ck-mussar-text">' + richText(applyMode(m.text)) + '</div>' : '';
+    return Promise.resolve('<details class="ck-layer ck-mussar"><summary>' + head + '</summary>' + body + '</details>');
+  }
+
   function gemaraHTML(g) {
     var lbl = normGem(g.masechet);
     var sl = GEMARA_SLUG[lbl];
@@ -473,7 +482,6 @@
         if (d.zohar) extras.push(card('זוהר', (d.zohar.work ? d.zohar.work + ' ' : (d.zohar.vol ? d.zohar.vol + ' ' : '')) + (d.zohar.daf ? heNum(d.zohar.daf) : '') + (d.zohar.amud ? (d.zohar.amud===2?' ב':' א') : '')));
         if (d.halacha && d.halacha.work === 'rambam' && d.halacha.hilchot) extras.push(card('הלכה — רמב״ם', 'הלכות ' + d.halacha.hilchot + (d.halacha.from_perek ? ' פרק ' + heNum(d.halacha.from_perek) : '')));
         if (d.halacha && d.halacha.work === 'SA' && d.halacha.from) extras.push(card('הלכה — שולחן ערוך', TUR_HE[d.halacha.tur] + ' סימן ' + heNum(d.halacha.from)));
-        if (d.mussar) extras.push(card('מוסר', d.mussar.label || ''));
         if (d.haftara) extras.push(card('הפטרה', (d.haftara.label || '').replace(/B/g,' ')));
         if (extras.length) out.push('<section class="ck-section">' + secHead('שאר חלקי היום') + extras.join('') + '</section>');
       });
@@ -513,6 +521,11 @@
           });
         });
       }
+      p = p.then(function () {
+        return mussarHTML(wk, day).then(function (html) {
+          if (html) out.push(html);
+        });
+      });
       return p.then(function () { return out.join(''); });
     });
     box.innerHTML = '<p class="ck-loading">Loading…</p>';
@@ -577,11 +590,13 @@
     Promise.all([
       fetchJSON('/reader/chok/schedule.json'),
       fetchJSON('/reader/chok/shabbos-map.json'),
-      fetchJSON('/reader/chok/mishna-bonus.json').catch(function () { return null; })
+      fetchJSON('/reader/chok/mishna-bonus.json').catch(function () { return null; }),
+      fetchJSON('/reader/chok/mussar.json').catch(function () { return null; })
     ]).then(function (res) {
       state.sched = res[0];
       state.map = res[1];
       state.bonus = res[2] || null;
+      state.mussar = res[3] || null;
       var rr = resolveWeek();
       state.weeks = rr.weeks || ['בראשית'];
       state.day = rr.day;
