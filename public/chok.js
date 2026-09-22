@@ -39,6 +39,31 @@
   };
   var DAY_SLUGS = {'יום ראשון':'yom-rishon','יום שני':'yom-sheni','יום שלישי':'yom-shlishi',
     'יום רביעי':'yom-revii','יום חמישי':'yom-chamishi','ליל שישי':'leil-shishi','יום שישי':'yom-shishi'};
+  var TUR_HE = {OC:'אור״ח', YD:'יו״ד', EH:'אה״ע', CM:'חו״מ'};
+  var RAMBAT_SLUG = {'תפילה':'tefilah-and-birkat-kohanim','שבת':'shabbos','ברכות':'berachot','מעשה הקרבנות':'maaseh-hakorbonos','תשובה':'teshuvah','קריאת שמע':'kriat-shema','תלמוד תורה':'talmud-torah','איסורי ביאה':'issurei-biah','יסודי התורה':'yesodey-hatorah','עבודה זרה':'avodah-kochavim','פרה אדומה':'parah-adummah','אישות':'ishut','דעות':'deot','שמיטה ויובל':'shemita'};
+  function halachaHTML(d) {
+    var h = d.halacha || {};
+    if (h.work === 'rambam' && h.hilchot && h.from_perek) {
+      var sl = RAMBAT_SLUG[h.hilchot];
+      if (!sl) return Promise.resolve(null);
+      return fetchJSON('/reader/rambam/rambam-' + sl + '.json').then(function (r) {
+        var hal = (r.ch || {})[String(h.from_perek)];
+        if (!hal || !hal.length) return null;
+        var body = hal.map(function (x, k) { return '<div class="ck-halacha-item"><span class="ck-hnum">' + (k + 1) + '. </span>' + richText(x) + '</div>'; }).join('');
+        return '<details class="ck-layer ck-halacha" open><summary>רמב״ם — הלכות ' + h.hilchot + ' פרק ' + heNum(h.from_perek) + '</summary>' + body + '</details>';
+      }).catch(function () { return null; });
+    }
+    if (h.work === 'SA' && h.tur && h.from) {
+      return fetchJSON('/reader/shulchan/' + h.tur + '.json').then(function (r) {
+        var seifim = (r.sim || {})[String(h.from)];
+        if (!seifim || !seifim.length) return null;
+        var body = seifim.map(function (x, k) { return '<div class="ck-halacha-item"><span class="ck-hnum">' + (k === 0 ? 'סעיף א' : heNum(k + 1)) + '. </span>' + richText(x) + '</div>'; }).join('');
+        return '<details class="ck-layer ck-halacha" open><summary>שולחן ערוך ' + (TUR_HE[h.tur] || h.tur) + ' סימן ' + heNum(h.from) + '</summary>' + body + '</details>';
+      }).catch(function () { return null; });
+    }
+    return Promise.resolve(null);
+  }
+
   var MISHNA_SLUGS = {'ברכות':'mishna-berakhot','פאה':'mishna-peah','דמאי':'mishna-demai',
     'כלאים':'mishna-kilayim','שביעית':'mishna-sheviit','תרומות':'mishna-terumot',
     'מעשרות':'mishna-maasrot','מעשר שני':'mishna-maaser-sheni','חלה':'mishna-challah',
@@ -326,7 +351,8 @@
         if (d.mishna) extras.push(card('משנה', (d.mishna.masechet||'') + (d.mishna.perek ? ' פרק ' + heNum(d.mishna.perek) : '')));
         if (d.gemara) extras.push(card('גמרא', (d.gemara.masechet||'') + ' ' + heNum(d.gemara.daf||0) + (d.gemara.amud ? (d.gemara.amud===2?' עמוד ב':' עמוד א') : '')));
         if (d.zohar) extras.push(card('זוהר', (d.zohar.work ? d.zohar.work + ' ' : (d.zohar.vol ? d.zohar.vol + ' ' : '')) + (d.zohar.daf ? heNum(d.zohar.daf) : '') + (d.zohar.amud ? (d.zohar.amud===2?' ב':' א') : '')));
-        if (d.rambam) extras.push(card('הלכה — רמב״ם', (d.rambam.hilchot ? 'הלכות ' + d.rambam.hilchot : '') + (d.rambam.from_perek ? ' פרק ' + heNum(d.rambam.from_perek) : '')));
+        if (d.halacha && d.halacha.work === 'rambam' && d.halacha.hilchot) extras.push(card('הלכה — רמב״ם', 'הלכות ' + d.halacha.hilchot + (d.halacha.from_perek ? ' פרק ' + heNum(d.halacha.from_perek) : '')));
+        if (d.halacha && d.halacha.work === 'SA' && d.halacha.from) extras.push(card('הלכה — שולחן ערוך', TUR_HE[d.halacha.tur] + ' סימן ' + heNum(d.halacha.from)));
         if (d.mussar) extras.push(card('מוסר', d.mussar.label || ''));
         if (d.haftara) extras.push(card('הפטרה', (d.haftara.label || '').replace(/B/g,' ')));
         if (extras.length) out.push('<section class="ck-section">' + secHead('שאר חלקי היום') + extras.join('') + '</section>');
@@ -334,6 +360,13 @@
       if (d.mishna && d.mishna.masechet) {
         p = p.then(function () {
           return mishnaHTML(d.mishna.masechet, d.mishna.perek).then(function (html) {
+            if (html) out.push(html);
+          });
+        });
+      }
+      if (d.halacha && d.halacha.work) {
+        p = p.then(function () {
+          return halachaHTML(d).then(function (html) {
             if (html) out.push(html);
           });
         });
