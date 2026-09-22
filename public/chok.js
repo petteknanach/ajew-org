@@ -328,6 +328,22 @@
       'מק':'מכות','מציעא':'בבא מציעא','קדושין':'קידושין'};
     return exp[x] || x;
   }
+  function zoharHTML(z) {
+    var vol = z.vol || z.work;
+    if (!vol || !z.daf) return Promise.resolve(null);
+    var slug = 'zohar-' + vol.replace(/[\u05f4'\u0022\u05f3]/g, '').trim().replace(/ /g, '-');
+    var letter = z.amud === 2 ? 'b' : 'a';
+    return fetchJSON('/reader/zohar/' + encodeURIComponent(slug) + '.json').then(function (md) {
+      var lines = ((md.ch || {})[String(z.daf)] || {})[letter];
+      if (!lines || !lines.length) return null;
+      var body = lines.map(function (ln) {
+        return '<div class="ck-zohar-line">' + richText(applyMode(ln)) + '</div>';
+      }).join('');
+      return '<details class="ck-layer ck-zohar"><summary>זוהר — ' + esc(vol) +
+        ' דף ' + heNum(z.daf) + ' ע׳ ' + (letter === 'a' ? 'א״' : 'ב״') + '</summary>' + body + '</details>';
+    }).catch(function () { return null; });
+  }
+
   function gemaraHTML(g) {
     var lbl = normGem(g.masechet);
     var sl = GEMARA_SLUG[lbl];
@@ -424,6 +440,13 @@
       if (d.gemara && d.gemara.masechet) {
         p = p.then(function () {
           return gemaraHTML(d.gemara).then(function (html) {
+            if (html) out.push(html);
+          });
+        });
+      }
+      if (d.zohar && (d.zohar.vol || d.zohar.work)) {
+        p = p.then(function () {
+          return zoharHTML(d.zohar).then(function (html) {
             if (html) out.push(html);
           });
         });
