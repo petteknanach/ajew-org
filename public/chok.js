@@ -36,7 +36,7 @@
     mode: 'full', medooyuk: true, targum: true, commentary: true, rashi: true,
     tanachen: true,
     day: null, weeks: null, size: 26, theme: 'day',
-    sched: null, map: null, bonus: null, mussar: null, dcomm: null,
+    sched: null, map: null, bonus: null, mussar: null, dcomm: null, kav: null,
     bookCache: {}, targCache: {}, rashiCache: {}, enCache: {}, superCache: {}
   };
   var DAY_SLUGS = {'יום ראשון':'yom-rishon','יום שני':'yom-sheni','יום שלישי':'yom-shlishi',
@@ -301,6 +301,13 @@
       if (!body) return '';
       return '<details class="ck-comm ck-super"><summary>על רש״י — ' + esc(names.join(' · ')) + '</summary>' + body + '</details>';
     });
+  }
+  function kavanaHTML(secKey, d) {
+    var k = state.kav;
+    if (!k || !k.tefillos || !k.tefillos[secKey]) return '';
+    var body = k.tefillos[secKey];
+    return '<details class="ck-kavana"><summary>כוונה לפני הלימוד</summary><div class="ck-kavana-body">' +
+      richText(body) + '</div></details>';
   }
   function kavanosHTML() {
     return fetchJSON('/reader/kavanos/index.json').catch(function () { return null; }).then(function (idx) {
@@ -602,7 +609,7 @@
         p = p.then(function () {
           return versesHTML(w.slug, d.torah.from, d.torah.to, 'torah', dc).then(function (vh) {
             out.push('<section class="ck-section">' +
-              secHead('תורה — ' + wk, refStr(d.torah)) + vh + '</section>');
+              secHead('תורה — ' + wk, refStr(d.torah)) + kavanaHTML('torah', d) + vh + '</section>');
           });
         });
       }
@@ -615,7 +622,7 @@
           var vkey = pair[1] === 'כתובים' ? 'kesuvim' : 'navi';
           return versesHTML(slug, {c: sec.from.c, v: sec.from.v || 1}, null, 'navi', null).then(function (vh) {
             out.push('<section class="ck-section">' +
-              secHead(pair[1] + ' — ' + sec.book, refStr(sec)) + voiceBox(dc && dc[vkey]) + vh + '</section>');
+              secHead(pair[1] + ' — ' + sec.book, refStr(sec)) + kavanaHTML(vkey, d) + voiceBox(dc && dc[vkey]) + vh + '</section>');
           });
         });
       });
@@ -631,7 +638,7 @@
       });
       if (d.mishna && d.mishna.masechet) {
         p = p.then(function () {
-          return mishnaHTML(d.mishna.masechet, d.mishna.perek).then(function (html) { html = voiceBox(dc && dc.mishna) + html;
+          return mishnaHTML(d.mishna.masechet, d.mishna.perek).then(function (html) { html = kavanaHTML('mishna', d) + html; html = voiceBox(dc && dc.mishna) + html;
             if (html) out.push(html);
           });
         });
@@ -646,21 +653,21 @@
       }
       if (d.halacha && d.halacha.work) {
         p = p.then(function () {
-          return halachaHTML(d).then(function (html) { html = voiceBox(dc && dc.halacha) + html;
+          return halachaHTML(d).then(function (html) { html = kavanaHTML('halacha', d) + html; html = voiceBox(dc && dc.halacha) + html;
             if (html) out.push(html);
           });
         });
       }
       if (d.gemara && d.gemara.masechet) {
         p = p.then(function () {
-          return gemaraHTML(d.gemara).then(function (html) { html = voiceBox(dc && dc.gemara) + html;
+          return gemaraHTML(d.gemara).then(function (html) { html = kavanaHTML('talmud', d) + html; html = voiceBox(dc && dc.gemara) + html;
             if (html) out.push(html);
           });
         });
       }
       if (d.zohar && (d.zohar.vol || d.zohar.work)) {
         p = p.then(function () {
-          return zoharHTML(d.zohar).then(function (html) { html = voiceBox(dc && dc.zohar) + html;
+          return zoharHTML(d.zohar).then(function (html) { html = kavanaHTML('kabbala', d) + html; html = voiceBox(dc && dc.zohar) + html;
             if (html) out.push(html);
           });
         });
@@ -742,13 +749,15 @@
       fetchJSON('/reader/chok/shabbos-map.json'),
       fetchJSON('/reader/chok/mishna-bonus.json').catch(function () { return null; }),
       fetchJSON('/reader/chok/mussar.json').catch(function(){return null;}),
-      fetchJSON('/reader/chok/day-comm.json').catch(function () { return null; })
+      fetchJSON('/reader/chok/day-comm.json').catch(function () { return null; }),
+      fetchJSON('/reader/chok/kavanos-chok.json').catch(function () { return null; })
     ]).then(function (res) {
       state.sched = res[0];
       state.map = res[1];
       state.bonus = res[2] || null;
       state.mussar = res[3] || null;
       state.dcomm = res[4] || {};
+      state.kav = res[5] || null;
       var rr = resolveWeek();
       state.weeks = rr.weeks || ['בראשית'];
       state.day = rr.day;
