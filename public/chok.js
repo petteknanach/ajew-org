@@ -37,7 +37,7 @@
     tanachen: true,
     day: null, weeks: null, size: 26, theme: 'day',
     sched: null, map: null, bonus: null, mussar: null, dcomm: null,
-    bookCache: {}, targCache: {}, rashiCache: {}, enCache: {}
+    bookCache: {}, targCache: {}, rashiCache: {}, enCache: {}, superCache: {}
   };
   var DAY_SLUGS = {'יום ראשון':'yom-rishon','יום שני':'yom-sheni','יום שלישי':'yom-shlishi',
     'יום רביעי':'yom-revii','יום חמישי':'yom-chamishi','ליל שישי':'leil-shishi','יום שישי':'yom-shishi'};
@@ -287,6 +287,21 @@
     if (!body) return '';
     return '<details class="ck-layer ck-comm"><summary>' + label + '</summary>' + body + '</details>';
   }
+  function rashiSuper(slug, c, v) {
+    state.superCache[slug] = state.superCache[slug] || fetchJSON('/reader/commentary/rashi-super/' + slug + '.json').catch(function () { return null; });
+    return state.superCache[slug].then(function (d) {
+      var row = d && (d.ch || {})[c] && d.ch[c][c + ':' + v];
+      if (!row) return '';
+      var names = Object.keys(row).filter(function (n) { return (row[n] || []).length; });
+      if (!names.length) return '';
+      var body = names.map(function (n) {
+        return '<div class="ck-sup-name">' + esc(n) + '</div>' +
+          (row[n] || []).map(function (p) { return '<div class="ck-sup-body">' + richText(p) + '</div>'; }).join('');
+      }).join('');
+      if (!body) return '';
+      return '<details class="ck-comm ck-super"><summary>על רש״י — ' + esc(names.join(' · ')) + '</summary>' + body + '</details>';
+    });
+  }
   function verseCommHTML(kind, slug, c, v) {
     // Ramban only on Torah - no Ibn Ezra (Chayei Moharan 410)
     if (kind === 'navi') {
@@ -332,7 +347,10 @@
         }
         return Promise.all(items.map(function (it) {
           return Promise.all([rashiHTML(slug, it.c, it.x),
-            verseCommHTML(kind || 'torah', slug, it.c, it.x)])
+            verseCommHTML(kind || 'torah', slug, it.c, it.x),
+            (kind || 'torah') === 'torah' ? rashiSuper(slug, it.c, it.x) : Promise.resolve(''),
+            Promise.resolve(vcomm && vcomm.rashi && vcomm.rashi[it.c + ':' + it.x] ?
+              voiceLine(vcomm.rashi[it.c + ':' + it.x]) : '')])
             .then(function (parts) {
               return '<div class="ck-verse">' + it.row + parts.join('') + '</div>';
             });
@@ -582,7 +600,7 @@
       });
       if (d.mishna && d.mishna.masechet) {
         p = p.then(function () {
-          return mishnaHTML(d.mishna.masechet, d.mishna.perek).then(function (html) {
+          return mishnaHTML(d.mishna.masechet, d.mishna.perek).then(function (html) { html = voiceBox(dc && dc.mishna) + html;
             if (html) out.push(html);
           });
         });
@@ -597,27 +615,27 @@
       }
       if (d.halacha && d.halacha.work) {
         p = p.then(function () {
-          return halachaHTML(d).then(function (html) {
+          return halachaHTML(d).then(function (html) { html = voiceBox(dc && dc.halacha) + html;
             if (html) out.push(html);
           });
         });
       }
       if (d.gemara && d.gemara.masechet) {
         p = p.then(function () {
-          return gemaraHTML(d.gemara).then(function (html) {
+          return gemaraHTML(d.gemara).then(function (html) { html = voiceBox(dc && dc.gemara) + html;
             if (html) out.push(html);
           });
         });
       }
       if (d.zohar && (d.zohar.vol || d.zohar.work)) {
         p = p.then(function () {
-          return zoharHTML(d.zohar).then(function (html) {
+          return zoharHTML(d.zohar).then(function (html) { html = voiceBox(dc && dc.zohar) + html;
             if (html) out.push(html);
           });
         });
       }
       p = p.then(function () {
-        return mussarHTML(wk, day).then(function (html) {
+        return mussarHTML(wk, day).then(function (html) { html = voiceBox(dc && dc.mussar) + html;
           if (html) out.push(html);
         });
       });
