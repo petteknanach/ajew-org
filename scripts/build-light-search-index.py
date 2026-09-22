@@ -124,22 +124,27 @@ for book_dir in sorted(READER_DIR.iterdir()):
     if not book_dir.is_dir():
         continue
     
+    # likutay-halachos: halacha-*.json are the canonical documents the reader
+    # serves; torah-*.json are legacy/alternate copies and must never be
+    # indexed (they duplicate content and break the 600-halacha search guard).
+    skip_legacy = book_dir.name == 'likutay-halachos'
+
     # Root-level JSONs
     for f in sorted(book_dir.glob('*.json')):
-        if f.name != 'index.json':
+        if f.name != 'index.json' and not (skip_legacy and f.name.startswith('torah-')):
             json_files.append(f)
-    
+
     # Nested part directories (up to 2 levels deep)
     for sub_dir in sorted(book_dir.iterdir()):
         if sub_dir.is_dir() and not sub_dir.name.startswith('.'):
             for f in sorted(sub_dir.glob('*.json')):
-                if f.name != 'index.json':
+                if f.name != 'index.json' and not (skip_legacy and f.name.startswith('torah-')):
                     json_files.append(f)
             # Deeper nesting
             for inner_dir in sorted(sub_dir.iterdir()):
                 if inner_dir.is_dir() and not inner_dir.name.startswith('.'):
                     for f in sorted(inner_dir.glob('*.json')):
-                        if f.name != 'index.json':
+                        if f.name != 'index.json' and not (skip_legacy and f.name.startswith('torah-')):
                             json_files.append(f)
 
 he_index = []

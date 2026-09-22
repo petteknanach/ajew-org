@@ -3,7 +3,7 @@ import rss from '@astrojs/rss';
 // Main content pages with curated metadata
 const mainPages = [
   {
-    title: "Breslov Torah Library - 226+ Sacred Texts Online",
+    title: "Breslov Torah Library - 248 Sacred Texts Online",
     link: "/reader",
     description: "Access the complete Breslov Torah library with over 226 sacred Jewish texts including Likutay Moharan, Zohar, Talmud, Mishna, Rambam, and Tanach in Hebrew with English translations.",
     pubDate: new Date("2025-01-01"),
@@ -15,7 +15,7 @@ const mainPages = [
     pubDate: new Date("2025-01-01"),
   },
   {
-    title: "Torah Search - Search 25,000+ Pages of Sacred Texts",
+    title: "Torah Search - Search 38,000+ Pages of Sacred Texts",
     link: "/search-enhanced",
     description: "Full-text search across the complete Breslov Torah library. Search Likutay Moharan, Likutay Halachos, Zohar, Talmud, and more in Hebrew and English.",
     pubDate: new Date("2025-01-01"),
@@ -95,7 +95,7 @@ const mainPages = [
   {
     title: "About A Jew - The Breslov Torah Library",
     link: "/about",
-    description: "Learn about ajew.org, the largest online Breslov Torah library with 226+ sacred texts and 25,000+ pages in Hebrew with English translations.",
+    description: "Learn about ajew.org, the largest online Breslov Torah library with 248 sacred texts and 38,000+ pages in Hebrew with English translations.",
     pubDate: new Date("2025-01-01"),
   },
   {
@@ -167,7 +167,7 @@ export function GET(context) {
 
   return rss({
     title: "A Jew - The Largest Online Breslov Torah Library",
-    description: "The largest online Breslov Torah library with 226+ sacred Jewish texts and 25,000+ pages. Likutay Moharan, Zohar, Talmud, Mishna, Rambam, Tanach in Hebrew with English translations.",
+    description: "The largest online Breslov Torah library with 248 sacred Jewish texts and 38,000+ pages. Likutay Moharan, Zohar, Talmud, Mishna, Rambam, Tanach with Rashi and Targum in Hebrew with English translations.",
     site: context.site,
     items,
     customData: `<language>en-us</language>`,
