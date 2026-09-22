@@ -194,7 +194,7 @@
     var today = new Date();
     var todayIso = today.toISOString().slice(0,10);
     var best = null;
-    state.map.forEach(function (e) { if (e.date <= todayIso && e.weeks) best = e; });
+    (state.map || []).forEach(function (e) { if (e.date <= todayIso && e.weeks) best = e; });
     var days = ['יום ראשון','יום שני','יום שלישי','יום רביעי','יום חמישי','ליל שישי','יום שישי'];
     var hebDays = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
     return { weeks: best ? best.weeks : null, sat: best ? best.date : null,
@@ -290,13 +290,13 @@
         if (d.haftara) extras.push(card('הפטרה', (d.haftara.label || '').replace(/B/g,' ')));
         if (extras.length) out.push('<section class="ck-section">' + secHead('שאר חלקי היום') + extras.join('') + '</section>');
       });
-      return p;
+      return p.then(function () { return out.join(''); });
     });
     box.innerHTML = '<p class="ck-loading">Loading…</p>';
     var comm = state.commentary ? Promise.all(weeks.map(function (wk) {
       return fetchCommentary(wk, day);
     })) : Promise.resolve([]);
-    Promise.all(jobs).then(function () {
+    Promise.all(jobs).then(function (weekParts) {
       return comm.then(function (cs) {
         var carryHTML = '', commentHTML = '';
         cs.forEach(function (c, i) {
@@ -309,7 +309,7 @@
         });
         var parts = [];
         if (carryHTML) parts.push(carryHTML);
-        parts.push(out.join(''));
+        parts.push(weekParts.join(''));
         if (commentHTML) parts.push(commentHTML);
         box.innerHTML = parts.join('') || '<p class="ck-error">Nothing to show.</p>';
         box.scrollTop = 0; window.scrollTo(0, 0);
@@ -347,11 +347,10 @@
 
   function init() {
     var st = load();
-    ['mode','medooyuk','targum','size','theme'].forEach(function (k) {
+    ['mode','medooyuk','targum','commentary','rashi','size','theme'].forEach(function (k) {
       if (st[k] !== undefined) state[k] = st[k];
     });
-    var r = resolveWeek();
-    state.day = r.day;
+    state.day = DAYS[DAY_DEFAULT[new Date().getDay()]] || DAYS[0];
     Promise.all([
       fetchJSON('/reader/chok/schedule.json'),
       fetchJSON('/reader/chok/shabbos-map.json')
@@ -362,7 +361,7 @@
       state.weeks = rr.weeks || ['בראשית'];
       state.day = rr.day;
       var heb = (state.map.filter(function (e) { return e.date === rr.sat; })[0] || {}).heb;
-      $('ck-date').textContent = rr.today.toDateString() + (heb ? ' · ' + heb.replace(/-/g,' / ') : '');
+      $('ck-date').textContent = rr.today.toDateString() + (heb ? ' · Shabbos: ' + heb.replace(/-/g,' / ') : '');
       $('ck-week').textContent = 'פרשת ' + state.weeks.join(' · ');
       buildWeekSelect();
       buildDayTabs();
