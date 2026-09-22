@@ -342,9 +342,11 @@ def main():
                 continue
             txt = v3('Magen Avraham on Shulchan Aruch, %s %s' % (sef_tur, sim))
             if txt:
-                ch[sn] = [re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', '', x)).strip()
-                          if isinstance(x, str) else '' for x in txt]
-                n_fetched += 1
+                arr = [re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', '', flatten(x))).strip()
+                       for x in txt]
+                if any(arr):
+                    ch[sn] = arr
+                    n_fetched += 1
             time.sleep(0.7)
         if ch:
             save('sa-magen-avraham', slug, {'ch': ch})
