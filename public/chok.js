@@ -39,6 +39,33 @@
   };
   var DAY_SLUGS = {'יום ראשון':'yom-rishon','יום שני':'yom-sheni','יום שלישי':'yom-shlishi',
     'יום רביעי':'yom-revii','יום חמישי':'yom-chamishi','ליל שישי':'leil-shishi','יום שישי':'yom-shishi'};
+  var MISHNA_SLUGS = {'ברכות':'mishna-berakhot','פאה':'mishna-peah','דמאי':'mishna-demai',
+    'כלאים':'mishna-kilayim','שביעית':'mishna-sheviit','תרומות':'mishna-terumot',
+    'מעשרות':'mishna-maasrot','מעשר שני':'mishna-maaser-sheni','חלה':'mishna-challah',
+    'ערלה':'mishna-orlah','ביכורים':'mishna-bikkurim','שבת':'mishna-shabbat',
+    'עירובין':'mishna-eruvin','פסחים':'mishna-pesachim','שקלים':'mishna-shekalim',
+    'יומא':'mishna-yoma','סוכה':'mishna-sukkah','ביצה':'mishna-beitzah','יום טוב':'mishna-beitzah',
+    'ראש השנה':'mishna-rosh-hashanah','תענית':'mishna-taanit','מגילה':'mishna-megillah',
+    'מועד קטן':'mishna-moed-katan','חגיגה':'mishna-chagigah','יבמות':'mishna-yevamot',
+    'כתובות':'mishna-ketubot','נדרים':'mishna-nedarim','נזיר':'mishna-nazir',
+    'סוטה':'mishna-sotah','גיטין':'mishna-gittin','קידושין':'mishna-kiddushin',
+    'בבא קמא':'mishna-bava-kamma','בבא מציעא':'mishna-bava-metzia','בבא בתרא':'mishna-bava-batra',
+    'סנהדרין':'mishna-sanhedrin','מכות':'mishna-makkot','שבועות':'mishna-shevuot',
+    'עדיות':'mishna-eduyot','אבות':'mishna-avot','עבודה זרה':'mishna-avodah-zarah',
+    'הוריות':'mishna-horayot','זבחים':'mishna-zevachim','מנחות':'mishna-menachot',
+    'חולין':'mishna-chullin','בכורות':'mishna-bekhorot','ערכין':'mishna-arakhin',
+    'תמורה':'mishna-temurah','כריתות':'mishna-kritot','מעילה':'mishna-meilah',
+    'תמיד':'mishna-tamid','מידות':'mishna-middot','קינים':'mishna-kinnim',
+    'כלים':'mishna-kelim','אהלות':'mishna-oholot','נגעים':'mishna-negaim',
+    'פרה':'mishna-parah','טהרות':'mishna-teharot','מקואות':'mishna-mikvaot',
+    'נדה':'mishna-niddah','מכשירין':'mishna-makhshirin','זבים':'mishna-zavim',
+    'טבול יום':'mishna-tevul-yom','ידים':'mishna-yadayim','עוקצין':'mishna-uktzin'};
+  function normLabel(s) {
+    var t = (s || '').replace(/[״'"׳.]/g, '').trim();
+    var expand = {'בק':'בבא קמא','במ':'בבא מציעא','בב':'בבא בתרא','רה':'ראש השנה','עז':'עבודה זרה',
+      'מק':'מכות','שבועות':'שבועות','קידושין':'קידושין'};
+    return expand[t] || t;
+  }
 
   function $(id) { return document.getElementById(id); }
   function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
@@ -159,8 +186,8 @@
             if (to && (c > to.c || (c === to.c && x > to.v))) return;
             var verse = ch[x];
             var row = coloredVerse(verse) + ' <span class="tk-vnum">(' + heNum(c) + ',' + heNum(x) + ')</span>';
-            if (state.targ && tg && (tg.ch || {})[c] && tg.ch[c][x]) {
-              row += '<div class="ck-targum-line">' + esc(applyMode(tg.ch[c][x])) + '</div>';
+            if (state.targum && tg && (tg.ch || {})[c] && tg.ch[c][x]) {
+              row += '<div class="ck-targum-line">' + richText(applyMode(tg.ch[c][x])) + '</div>';
             }
             items.push({ c: c, x: x, row: row });
           });
@@ -248,6 +275,20 @@
     return fetchJSON('/reader/chok/commentary/' + encodeURIComponent(week) + '-' + slug + '.json')
       .catch(function () { return null; });
   }
+  function mishnaHTML(masechet, perek) {
+    var slug = MISHNA_SLUGS[normLabel(masechet)];
+    if (!slug) return Promise.resolve(null);
+    return fetchJSON('/reader/mishna/' + slug + '.json').then(function (md) {
+      var mishnayos = (md.ch || {})[String(perek)];
+      if (!mishnayos || !mishnayos.length) return null;
+      var body = mishnayos.map(function (m, i) {
+        return '<div class="ck-mishna"><b class="ck-mnum">' + heNum(i + 1) + '</b> ' +
+          esc(applyMode(m)) + '</div>';
+      }).join('');
+      return '<details class="ck-layer ck-mishna" open><summary>משנה — ' + esc(masechet) +
+        ' פרק ' + heNum(perek) + '</summary>' + body + '</details>';
+    }).catch(function () { return null; });
+  }
 
   function renderDay() {
     var box = $('ck-content');
@@ -290,6 +331,13 @@
         if (d.haftara) extras.push(card('הפטרה', (d.haftara.label || '').replace(/B/g,' ')));
         if (extras.length) out.push('<section class="ck-section">' + secHead('שאר חלקי היום') + extras.join('') + '</section>');
       });
+      if (d.mishna && d.mishna.masechet) {
+        p = p.then(function () {
+          return mishnaHTML(d.mishna.masechet, d.mishna.perek).then(function (html) {
+            if (html) out.push(html);
+          });
+        });
+      }
       return p.then(function () { return out.join(''); });
     });
     box.innerHTML = '<p class="ck-loading">Loading…</p>';
