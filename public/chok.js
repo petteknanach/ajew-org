@@ -190,10 +190,35 @@
     if (s === 'יה') s = 'טו'; if (s === 'יו') s = 'טז';
     return s.replace(/([א-ת])$/, '$1\u05f4');
   }
-  function fetchJSON(url) {
+  var __fq = [], __frunning = 0;
+  function __fnext() {
+    if (__frunning >= 6 || !__fq.length) return;
+    __frunning++;
+    var job = __fq.shift();
+    job.run().then(function (v) { job.done(v); }, function (e) { job.fail(e); })
+      .then(function () { __frunning--; __fnext(); });
+  }
+  function rawJSON(url) {
     return fetch(url).then(function (r) {
       if (!r.ok) throw new Error(r.status);
       return r.json();
+    });
+  }
+  function fetchJSON(url) {
+    // concurrency-limited + one retry: bursts of data fetches were
+    // resetting connections and silently dropping whole day sections
+    return new Promise(function (resolve, reject) {
+      var attempt = 0;
+      var run = function () { return rawJSON(url); };
+      var go = function () {
+        __fq.push({ run: run, done: resolve, fail: function (e) {
+          attempt++;
+          if (attempt <= 2) { setTimeout(go, 350 * attempt); }
+          else reject(e);
+        } });
+        __fnext();
+      };
+      go();
     });
   }
   function book(slug) {
