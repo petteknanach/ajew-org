@@ -58,7 +58,17 @@
         var seifim = (r.sim || {})[String(h.from)];
         if (!seifim || !seifim.length) return null;
         var body = seifim.map(function (x, k) { return '<div class="ck-halacha-item"><span class="ck-hnum">' + (k === 0 ? 'סעיף א' : heNum(k + 1)) + '. </span>' + richText(x) + '</div>'; }).join('');
-        return '<details class="ck-layer ck-halacha" open><summary>שולחן ערוך ' + (TUR_HE[h.tur] || h.tur) + ' סימן ' + heNum(h.from) + '</summary>' + body + '</details>';
+        return comm('sa-magen-avraham', 'sa-' + String(h.tur || '').toLowerCase()).then(function (md) {
+          var ma = md && (md.ch || {})[String(h.from)];
+          var maBody = '';
+          if (ma && ma.length) {
+            maBody = ma.map(function (x) {
+              return x ? '<div class="ck-comm-body">' + richText(x) + '</div>' : '';
+            }).join('');
+          }
+          var extra = maBody ? commDetails('מגן אברהם', maBody) : '';
+          return '<details class="ck-layer ck-halacha" open><summary>שולחן ערוך ' + (TUR_HE[h.tur] || h.tur) + ' סימן ' + heNum(h.from) + '</summary>' + body + extra + '</details>';
+        });
       }).catch(function () { return null; });
     }
     return Promise.resolve(null);
@@ -196,7 +206,36 @@
     });
   }
   function applyModeStrip(s) { return s; }
-  function versesHTML(slug, from, to) {
+  function comm(source, slug) {
+    if (!state.commCache) state.commCache = {};
+    var key = source + ':' + slug;
+    if (!state.commCache[key]) {
+      state.commCache[key] = fetchJSON('/reader/commentary/' + source + '/' +
+        encodeURIComponent(slug) + '.json').catch(function () { return null; });
+    }
+    return state.commCache[key];
+  }
+  function commDetails(label, body) {
+    if (!body) return '';
+    return '<details class="ck-layer ck-comm"><summary>' + label + '</summary>' + body + '</details>';
+  }
+  function verseCommHTML(kind, slug, c, v) {
+    var src = kind === 'navi' ? 'navi-metzudas' : 'torah-ramban';
+    var src2 = kind === 'navi' ? null : 'torah-ibnezra';
+    return Promise.all([comm(src, slug), src2 ? comm(src2, slug) : Promise.resolve(null)])
+      .then(function (cs) {
+        if (!cs[0] && !cs[1]) return '';
+        var out = '';
+        var metz = cs[0] && (cs[0].ch || {})[String(c)] && cs[0].ch[String(c)][v - 1];
+        if (metz) out += commDetails('מצודת דוד', '<div class="ck-comm-body">' + richText(metz) + '</div>');
+        var rb = cs[1] && (cs[1].ch || {})[String(c)] && cs[1].ch[String(c)][v - 1];
+        if (rb) out += commDetails('רמב״ן', '<div class="ck-comm-body">' + richText(rb) + '</div>');
+        var ie = (!kind || kind === 'torah') && cs[1] && (cs[1].ch || {})[String(c)] && cs[1].ch[String(c)][v - 1];
+        if (ie) out += commDetails('אבן עזרא', '<div class="ck-comm-body">' + richText(ie) + '</div>');
+        return out;
+      });
+  }
+  function versesHTML(slug, from, to, kind) {
     return book(slug).then(function (d) {
       return targ(slug).then(function (tg) {
         var items = [];
@@ -220,9 +259,11 @@
           c++; v = 1;
         }
         return Promise.all(items.map(function (it) {
-          return rashiHTML(slug, it.c, it.x).then(function (rh) {
-            return '<div class="ck-verse">' + it.row + rh + '</div>';
-          });
+          return Promise.all([rashiHTML(slug, it.c, it.x),
+            verseCommHTML(kind || 'torah', slug, it.c, it.x)])
+            .then(function (parts) {
+              return '<div class="ck-verse">' + it.row + parts.join('') + '</div>';
+            });
         })).then(function (rows) { return rows.join(''); });
       });
     });
@@ -310,8 +351,19 @@
         return '<div class="ck-mishna"><b class="ck-mnum">' + heNum(i + 1) + '</b> ' +
           esc(applyMode(m)) + '</div>';
       }).join('');
-      return '<details class="ck-layer ck-mishna" open><summary>משנה — ' + esc(masechet) +
-        ' פרק ' + heNum(perek) + '</summary>' + body + '</details>';
+      return comm('mishna-bartenura', slug).then(function (bd) {
+        var bar = bd && (bd.ch || {})[String(perek)];
+        var barBody = '';
+        if (bar && bar.length) {
+          barBody = bar.map(function (b, i) {
+            if (!b) return '';
+            return '<div class="ck-comm-body"><b class="ck-mnum">' + heNum(i + 1) + '</b> ' + richText(b) + '</div>';
+          }).join('');
+        }
+        var extra = barBody ? commDetails('ברטנורא', barBody) : '';
+        return '<details class="ck-layer ck-mishna" open><summary>משנה — ' + esc(masechet) +
+          ' פרק ' + heNum(perek) + '</summary>' + body + extra + '</details>';
+      });
     }).catch(function () { return null; });
   }
 
@@ -355,8 +407,18 @@
       var body = lines.map(function (ln) {
         return '<div class="ck-gemara-line">' + richText(applyMode(ln)) + '</div>';
       }).join('');
-      return '<details class="ck-layer ck-gemara"><summary>גמרא — ' + esc(lbl) +
-        ' דף ' + heNum(g.daf) + ' ע׳ ' + (letter === 'a' ? 'א״' : 'ב״') + '</summary>' + body + '</details>';
+      return comm('gemara-rashi', 'gemara-' + sl).then(function (rd) {
+        var rashiSegs = rd && (rd.ch || {})[String(g.daf)] && rd.ch[String(g.daf)][letter];
+        var rashiBody = '';
+        if (rashiSegs && rashiSegs.length) {
+          rashiBody = rashiSegs.map(function (x) {
+            return x ? '<div class="ck-comm-body">' + richText(x) + '</div>' : '';
+          }).join('');
+        }
+        var extra = rashiBody ? commDetails('רש״י על הגמרא', rashiBody) : '';
+        return '<details class="ck-layer ck-gemara"><summary>גמרא — ' + esc(lbl) +
+          ' דף ' + heNum(g.daf) + ' ע׳ ' + (letter === 'a' ? 'א״' : 'ב״') + '</summary>' + body + extra + '</details>';
+      });
     }).catch(function () { return null; });
   }
 
@@ -398,7 +460,7 @@
           if (!sec || !sec.book) return;
           var slug = SLUGS[sec.book];
           if (!slug) { out.push(card(pair[1], sec.book)); return; }
-          return versesHTML(slug, {c: sec.from.c, v: sec.from.v || 1}, null).then(function (vh) {
+          return versesHTML(slug, {c: sec.from.c, v: sec.from.v || 1}, null, 'navi').then(function (vh) {
             out.push('<section class="ck-section">' +
               secHead(pair[1] + ' — ' + sec.book, refStr(sec)) + vh + '</section>');
           });
