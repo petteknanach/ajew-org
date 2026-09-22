@@ -1,0 +1,288 @@
+/* Chok LiYisroel daily app - ajew.org
+ * Data (all project-owned, ingested once):
+ *   /reader/chok/schedule.json   {weeks:{<parsha>:{slug,days:{<day>:{torah,navi,...}}}}}
+ *   /reader/chok/shabbos-map.json [{date,heb,weeks:[parsha]|null(festival)}]
+ *   /reader/medooyuk/<slug>.json        pointed text + medooyuk marks
+ *   /reader/medooyuk/targum/<slug>.json Aramaic targum (Onkelos etc.)
+ */
+(function () {
+  'use strict';
+
+  var SLUGS = {
+    'בראשית':'tanach-bereishit','שמות':'tanach-shemos','ויקרא':'tanach-vayikra',
+    'במדבר':'tanach-bamidbar','דברים':'tanach-devarim','יהושע':'tanach-yehoshua',
+    'שופטים':'tanach-shoftim','שמואל א':'tanach-shmuel-a','שמואל ב':'tanach-shmuel-b',
+    'מלכים א':'tanach-melachim-a','מלכים ב':'tanach-melachim-b','ישעיה':'tanach-yeshayahu',
+    'ישעיהו':'tanach-yeshayahu','ירמיה':'tanach-yirmiyahu','ירמיהו':'tanach-yirmiyahu',
+    'יחזקאל':'tanach-yechezkel','הושע':'tanach-hoshea','יואל':'tanach-yoel',
+    'עמוס':'tanach-amos','עובדיה':'tanach-ovadya','יונה':'tanach-yonah',
+    'מיכה':'tanach-michah','נחום':'tanach-nachum','חבקוק':'tanach-havakkuk',
+    'צפניה':'tanach-tzefanya','חגי':'tanach-chaggai','זכריה':'tanach-zecharya',
+    'מלאכי':'tanach-malachi','תהלים':'tanach-tehillim','משלי':'tanach-mishlei',
+    'איוב':'tanach-iyov','שיר השירים':'tanach-shir-hashirim','רות':'tanach-rus',
+    'איכה':'tanach-eicha','קהלת':'tanach-koheles','אסתר':'tanach-esther',
+    'דניאל':'tanach-daniel','עזרא':'tanach-ezra','נחמיה':'tanach-nechemia',
+    'דברי הימים א':'tanach-divrei-hayamim-a','דברי הימים ב':'tanach-divrei-hayamim-b'
+  };
+  var DAYS = ['יום ראשון','יום שני','יום שלישי','יום רביעי','יום חמישי','ליל שישי','יום שישי'];
+  // JS getDay(): 0=Sun..6=Sat -> default tab index into DAYS
+  var DAY_DEFAULT = {0:0, 1:1, 2:2, 3:3, 4:4, 5:6, 6:6};
+  var ORDER = ['יום ראשון','יום שני','יום שלישי','יום רביעי','יום חמישי','ליל שישי','יום שישי'];
+
+  var TAAMIM = /[\u0591-\u05AF\u05BD\u05C0]/g;
+  var NIKUD  = /[\u05B0-\u05BC\u05C1\u05C2\u05C7]/g;
+
+  var state = {
+    mode: 'full', medooyuk: true, targum: true,
+    day: null, weeks: null, size: 26, theme: 'day',
+    sched: null, map: null, bookCache: {}, targCache: {}
+  };
+
+  function $(id) { return document.getElementById(id); }
+  function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function save() { try { localStorage.setItem('chok-settings', JSON.stringify({
+      mode: state.mode, medooyuk: state.medooyuk, targum: state.targum,
+      size: state.size, theme: state.theme })); } catch (e) {} }
+  function load() { try { return JSON.parse(localStorage.getItem('chok-settings') || '{}'); } catch (e) { return {}; } }
+
+  function applyMode(txt) {
+    if (state.mode === 'full') return txt;
+    var t = txt;
+    if (state.mode === 'nikud') return t.replace(TAAMIM, '');
+    if (state.mode === 'taamim') return t.replace(NIKUD, '');
+    return t.replace(TAAMIM, '').replace(NIKUD, '');
+  }
+  function joinTokens(arr) {
+    var out = '';
+    for (var i = 0; i < arr.length; i++) {
+      if (out && !/[\u05BE\u05C0\u200F]$/.test(out) && out.slice(-1) !== ' ') out += ' ';
+      out += arr[i];
+    }
+    return out;
+  }
+  function coloredVerse(verse) {
+    var byTok = {};
+    (verse.m || []).forEach(function (mk) {
+      (byTok[mk[0]] = byTok[mk[0]] || []).push(mk);
+    });
+    return joinTokens(verse.t.map(function (tok, i) {
+      var mks = byTok[i];
+      if (!mks || !state.medooyuk) return esc(applyMode(tok));
+      var cls = [], qb = false;
+      mks.forEach(function (mk) {
+        if (mk[3]) qb = true;
+        if (mk[2] === 'na') cls.push('m-na');
+        else if (mk[2] === 'nach') cls.push('m-nach');
+      });
+      var c = cls.join(' ') + (qb ? ' m-qb' : '');
+      var txt = applyMode(tok);
+      return c ? '<span class="' + c.trim() + '">' + esc(txt) + '</span>' : esc(txt);
+    }));
+  }
+  function heNum(n) {
+    var G = ['','א','ב','ג','ד','ה','ו','ז','ח','ט'], T = ['','י','כ','ל','מ','נ','ס','ע','פ','צ'], H = ['','ק','ר','ש','ת'];
+    function u(x) { return x < 10 ? G[x] : x < 100 ? T[Math.floor(x/10)] + G[x%10] : H[Math.floor(x/100)] + u(x%100); }
+    var s = u(n);
+    if (s === 'יה') s = 'טו'; if (s === 'יו') s = 'טז';
+    return s.replace(/([א-ת])$/, '$1\u05f4');
+  }
+  function fetchJSON(url) {
+    return fetch(url).then(function (r) {
+      if (!r.ok) throw new Error(r.status);
+      return r.json();
+    });
+  }
+  function book(slug) {
+    if (!state.bookCache[slug]) state.bookCache[slug] = fetchJSON('/reader/medooyuk/' + slug + '.json');
+    return state.bookCache[slug];
+  }
+  function targ(slug) {
+    state.targCache[slug] = state.targCache[slug] || fetchJSON('/reader/medooyuk/targum/' + slug + '.json').catch(function(){ return null; });
+    return state.targCache[slug];
+  }
+  function versesHTML(slug, from, to) {
+    return book(slug).then(function (d) {
+      return targ(slug).then(function (tg) {
+        var html = [];
+        var c = from.c, v = from.v;
+        var guard = 0;
+        while (guard++ < 400) {
+          var ch = (d.ch || {})[c] || {};
+          var keys = Object.keys(ch).map(Number).sort(function (a,b){return a-b;});
+          var vv = keys.filter(function (x) { return x >= v; });
+          if (!vv.length) break;
+          vv.forEach(function (x) {
+            if (to && (c > to.c || (c === to.c && x > to.v))) return;
+            var verse = ch[x];
+            var row = coloredVerse(verse) + ' <span class="tk-vnum">(' + heNum(c) + ',' + heNum(x) + ')</span>';
+            if (state.targ && tg && (tg.ch || {})[c] && tg.ch[c][x]) {
+              row += '<div class="ck-targum-line">' + esc(applyMode(tg.ch[c][x])) + '</div>';
+            }
+            html.push('<div class="ck-verse">' + row + '</div>');
+          });
+          if (to && c >= to.c) break;
+          c++; v = 1;
+        }
+        return html.join('');
+      });
+    });
+  }
+  function secHead(title, ref) {
+    return '<div class="ck-sec-head">' + title + (ref ? ' <span class="ck-ref">' + esc(ref) + '</span>' : '') + '</div>';
+  }
+  function refStr(r) {
+    if (!r) return '';
+    var f = r.from ? heNum(r.from.c) + (r.from.v ? ',' + heNum(r.from.v) : '') : '';
+    var t = r.to ? heNum(r.to.c) + (r.to.v ? ',' + heNum(r.to.v) : '') : '';
+    return f && t && f !== t ? f + '–' + t : (f || t);
+  }
+  function card(title, ref, note) {
+    return '<div class="ck-card"><span class="ck-card-title">' + esc(title) + '</span> ' +
+           (ref ? '<span class="ck-card-ref">' + esc(ref) + '</span>' : '') +
+           (note ? '<div class="ck-soon">' + esc(note) + '</div>' : '') + '</div>';
+  }
+
+  function resolveWeek() {
+    var today = new Date();
+    var todayIso = today.toISOString().slice(0,10);
+    var best = null;
+    state.map.forEach(function (e) { if (e.date <= todayIso && e.weeks) best = e; });
+    var days = ['יום ראשון','יום שני','יום שלישי','יום רביעי','יום חמישי','ליל שישי','יום שישי'];
+    var hebDays = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+    return { weeks: best ? best.weeks : null, sat: best ? best.date : null,
+             day: DAYS[DAY_DEFAULT[today.getDay()]] || DAYS[0], today: today };
+  }
+
+  function renderDay() {
+    var box = $('ck-content');
+    var day = state.day;
+    var weeks = state.weeks || [];
+    if (!weeks.length) { box.innerHTML = '<p class="ck-error">No week selected.</p>'; return; }
+    var jobs = weeks.map(function (wk) {
+      var w = state.sched.weeks[wk];
+      if (!w) return Promise.resolve('<p class="ck-error">No schedule for ' + esc(wk) + '</p>');
+      var d = w.days[day] || {};
+      var out = [];
+      var p = Promise.resolve();
+      if (d.torah && d.torah.from) {
+        p = p.then(function () {
+          return versesHTML(w.slug, d.torah.from, d.torah.to).then(function (vh) {
+            out.push('<section class="ck-section">' +
+              secHead('תורה — ' + wk, refStr(d.torah)) + vh + '</section>');
+          });
+        });
+      }
+      [['navi','נביא'],['kesuvim','כתובים']].forEach(function (pair) {
+        p = p.then(function () {
+          var sec = d[pair[0]];
+          if (!sec || !sec.book) return;
+          var slug = SLUGS[sec.book];
+          if (!slug) { out.push(card(pair[1], sec.book)); return; }
+          return versesHTML(slug, {c: sec.from.c, v: sec.from.v || 1}, null).then(function (vh) {
+            out.push('<section class="ck-section">' +
+              secHead(pair[1] + ' — ' + sec.book, refStr(sec)) + vh + '</section>');
+          });
+        });
+      });
+      p = p.then(function () {
+        var extras = [];
+        if (d.mishna) extras.push(card('משנה', (d.mishna.masechet||'') + (d.mishna.perek ? ' פרק ' + heNum(d.mishna.perek) : '')));
+        if (d.gemara) extras.push(card('גמרא', (d.gemara.masechet||'') + ' ' + heNum(d.gemara.daf||0) + (d.gemara.amud ? (d.gemara.amud===2?' עמוד ב':' עמוד א') : '')));
+        if (d.zohar) extras.push(card('זוהר', (d.zohar.work ? d.zohar.work + ' ' : (d.zohar.vol ? d.zohar.vol + ' ' : '')) + (d.zohar.daf ? heNum(d.zohar.daf) : '') + (d.zohar.amud ? (d.zohar.amud===2?' ב':' א') : '')));
+        if (d.rambam) extras.push(card('הלכה — רמב״ם', (d.rambam.hilchot ? 'הלכות ' + d.rambam.hilchot : '') + (d.rambam.from_perek ? ' פרק ' + heNum(d.rambam.from_perek) : '')));
+        if (d.mussar) extras.push(card('מוסר', d.mussar.label || ''));
+        if (d.haftara) extras.push(card('הפטרה', (d.haftara.label || '').replace(/B/g,' ')));
+        if (extras.length) out.push('<section class="ck-section">' + secHead('שאר חלקי היום') + extras.join('') + '</section>');
+      });
+      return p;
+    });
+    box.innerHTML = '<p class="ck-loading">Loading…</p>';
+    Promise.all(jobs).then(function () {
+      box.innerHTML = out.join('') || '<p class="ck-error">Nothing to show.</p>';
+      box.scrollTop = 0; window.scrollTo(0, 0);
+    }).catch(function (e) {
+      box.innerHTML = '<p class="ck-error">Could not load: ' + esc('' + e) + '</p>';
+    });
+  }
+
+  function buildDayTabs() {
+    var wrap = $('ck-days');
+    wrap.innerHTML = '';
+    DAYS.forEach(function (d) {
+      var b = document.createElement('button');
+      b.className = 'ck-btn' + (d === state.day ? ' ck-day-on' : '');
+      b.textContent = d;
+      b.addEventListener('click', function () {
+        state.day = d; buildDayTabs(); save(); renderDay();
+      });
+      wrap.appendChild(b);
+    });
+  }
+  function buildWeekSelect() {
+    var sel = $('ck-parsha');
+    sel.innerHTML = '';
+    Object.keys(state.sched.weeks).forEach(function (k) {
+      var o = document.createElement('option');
+      o.value = k; o.textContent = k;
+      sel.appendChild(o);
+    });
+    sel.value = state.weeks[0];
+  }
+
+  function setTheme(t) { state.theme = t; document.documentElement.setAttribute('data-theme', t); }
+
+  function init() {
+    var st = load();
+    ['mode','medooyuk','targum','size','theme'].forEach(function (k) {
+      if (st[k] !== undefined) state[k] = st[k];
+    });
+    var r = resolveWeek();
+    state.day = r.day;
+    Promise.all([
+      fetchJSON('/reader/chok/schedule.json'),
+      fetchJSON('/reader/chok/shabbos-map.json')
+    ]).then(function (res) {
+      state.sched = res[0];
+      state.map = res[1];
+      var rr = resolveWeek();
+      state.weeks = rr.weeks || ['בראשית'];
+      state.day = rr.day;
+      var heb = (state.map.filter(function (e) { return e.date === rr.sat; })[0] || {}).heb;
+      $('ck-date').textContent = rr.today.toDateString() + (heb ? ' · ' + heb.replace(/-/g,' / ') : '');
+      $('ck-week').textContent = 'פרשת ' + state.weeks.join(' · ');
+      buildWeekSelect();
+      buildDayTabs();
+      $('ck-mode').value = state.mode;
+      $('ck-medooyuk').checked = state.medooyuk;
+      $('ck-targum').checked = state.targum;
+      $('ck-size').value = state.size;
+      document.documentElement.style.setProperty('--ck-size', state.size + 'px');
+      setTheme(state.theme);
+      $('ck-legend').hidden = !state.medooyuk;
+
+      $('ck-parsha').addEventListener('change', function () {
+        state.weeks = [this.value]; renderDay();
+      });
+      $('ck-mode').addEventListener('change', function () { state.mode = this.value; save(); renderDay(); });
+      $('ck-medooyuk').addEventListener('change', function () {
+        state.medooyuk = this.checked; $('ck-legend').hidden = !state.medooyuk; save(); renderDay(); });
+      $('ck-targum').addEventListener('change', function () { state.targum = this.checked; save(); renderDay(); });
+      $('ck-size').addEventListener('input', function () {
+        state.size = parseInt(this.value, 10);
+        document.documentElement.style.setProperty('--ck-size', state.size + 'px'); save();
+      });
+      Array.prototype.forEach.call(document.querySelectorAll('.ck-theme'), function (b) {
+        b.addEventListener('click', function () { setTheme(this.getAttribute('data-t')); save(); });
+      });
+      renderDay();
+    }).catch(function (e) {
+      $('ck-content').innerHTML = '<p class="ck-error">Could not load schedule: ' + esc('' + e) + '</p>';
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
