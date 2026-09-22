@@ -72,12 +72,21 @@ def book_path(xml_dir, stem):
     raise FileNotFoundError(stem)
 
 def verses_of(path):
-    """Yield (chapter, verse, display_tokens, kflags, engine_words).
+    """Yield (chapter, verse, display_tokens, kflags, engine_words, flags, L).
 
     engine_words mirrors render_tanach.py verses_of exactly:
         [w.text for w in v.iter() if w.tag.endswith('w') and w.text]
-    display tokens: one per <w> (full text: .text + tails of inline <x>
-    children, dropping the <x> marker content) and one per <q> (qere).
+    display tokens: one per <w> (full text: .text + inline <s> letter content
+    + tails of inline <x> children, dropping the <x> marker content) and one
+    per <q> (qere).
+
+    flags: breaks are POSITIONAL: b = [[ti, 'p'|'s'|'n8']] where ti = number of
+    tokens before the break and kind is petucha <pe/>, setuma <samekh/>, or
+    reversed nun <reversednun/>; ti may equal len(toks) (verse-final break) or
+    be smaller (the rare mid-verse parsha break, e.g. Deut 2:8, 5:21).
+    L: [[tok_index, letter_index, 'lg'|'sm'|'sus']] from <s t="..."> wrapped
+    letters; letter_index counts base consonants (U+05D0-05EA) in the display
+    token, same indexing as the sheva marks' li.
     """
     root = ET.parse(path).getroot()
     for c in root.iter():
@@ -87,12 +96,25 @@ def verses_of(path):
         for v in c:
             if not v.tag.endswith('v') or v.get('n') is None:
                 continue
-            toks, kflags, engine_words = [], [], []
-            for el in v.iter():
+            toks, kflags, engine_words, L, b = [], [], [], [], []
+            for el in v:  # direct children: w, q, pe, samekh, reversednun, x, note
+                if not isinstance(el.tag, str):
+                    continue
                 if el.tag.endswith('w'):
                     txt = el.text or ''
-                    for x in el.findall('x'):
-                        txt += x.tail or ''
+                    li = sum(1 for ch in txt if 0x5D0 <= ord(ch) <= 0x5EA)
+                    for ch in el:
+                        if not isinstance(ch.tag, str):
+                            continue
+                        if ch.tag.endswith('s'):
+                            kind = {'large': 'lg', 'small': 'sm',
+                                    'suspended': 'sus'}.get(ch.get('t') or '')
+                            if kind and ch.text:
+                                L.append([len(toks), li, kind])
+                            txt += (ch.text or '') + (ch.tail or '')
+                        elif ch.tag.endswith('x'):
+                            txt += ch.tail or ''
+                        li = sum(1 for ch2 in txt if 0x5D0 <= ord(ch2) <= 0x5EA)
                     if el.text:                       # engine counts only these
                         engine_words.append(el.text)
                     if txt:
@@ -100,7 +122,13 @@ def verses_of(path):
                 elif el.tag.endswith('q'):
                     if el.text:
                         toks.append(el.text); kflags.append(1)
-            yield cn, int(v.get('n')), toks, kflags, engine_words
+                elif el.tag.endswith('pe'):
+                    b.append([len(toks), 'p'])
+                elif el.tag.endswith('samekh'):
+                    b.append([len(toks), 's'])
+                elif el.tag.endswith('reversednun'):
+                    b.append([len(toks), 'n8'])
+            yield cn, int(v.get('n')), toks, kflags, engine_words, b, L
 
 def build_book(book, xml_dir, jsonl_dir, out_dir):
     path = book_path(xml_dir, book)
@@ -114,7 +142,7 @@ def build_book(book, xml_dir, jsonl_dir, out_dir):
     out_ch = {}
     mismatch = 0
     examples = []
-    for c, v, toks, kflags, engine_words in verses_of(path):
+    for c, v, toks, kflags, engine_words, b, L in verses_of(path):
         m = []
         for rec in marks.get((c, v), []):
             wi = rec['wi']
@@ -139,7 +167,12 @@ def build_book(book, xml_dir, jsonl_dir, out_dir):
             else:
                 mismatch += 1; examples.append((c, v, wi, rec['w'], None, 'range'))
         out_ch[c] = out_ch.get(c, {})
-        out_ch[c][v] = {'t': toks, 'k': kflags, 'm': m}
+        vd = {'t': toks, 'k': kflags, 'm': m}
+        if b:
+            vd['b'] = b
+        if L:
+            vd['L'] = L
+        out_ch[c][v] = vd
         n_marks += len(m)
     data = {'book': book, 'slug': SLUGS[book], 'he': HE_NAMES[book],
             'en': book.replace('_1', ' 1').replace('_2', ' 2').replace('_', ' '),

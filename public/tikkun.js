@@ -119,14 +119,14 @@
   }
 
   /* One token's HTML with medooyuk marks on the actual letter.
-     marks: [[ti, li, lb, qb]] for THIS token. */
-  function tokenHTML(tok, mks) {
+     marks: [[ti, li, lb, qb]] for THIS token; ls: [[ti, li, 'lg'|'sm'|'sus']]
+     letter-presentation entries (large/small/suspended letters). */
+  function tokenHTML(tok, mks, ls) {
     var txt = applyMode(tok, state.mode);
-    if (!mks || !state.medooyuk) return esc(txt);
     var segs = letterSegments(tok);
     var cls = [], fallback = false;
     for (var i = 0; i < segs.length; i++) cls.push([]);
-    mks.forEach(function (mk) {
+    (state.medooyuk && mks ? mks : []).forEach(function (mk) {
       var li = mk[1];
       if (li >= 0 && li < segs.length) {
         if (mk[2] === 'na') cls[li].push('m-na');
@@ -134,13 +134,22 @@
         if (mk[3]) cls[li].push('m-qb');
       } else fallback = true;
     });
+    (ls || []).forEach(function (l) {
+      var li = l[1];
+      if (li >= 0 && li < segs.length) cls[li].push('tk-l-' + l[2]);
+      else fallback = true;
+    });
+    var any = false;
+    for (var k = 0; k < cls.length; k++) if (cls[k].length) { any = true; break; }
+    if (!any) return esc(txt);
     if (fallback) { /* mark the whole token rather than misplacing a letter */
       var all = [];
-      mks.forEach(function (mk) {
+      (state.medooyuk && mks ? mks : []).forEach(function (mk) {
         if (mk[2] === 'na') all.push('m-na');
         else if (mk[2] === 'nach') all.push('m-nach');
         if (mk[3]) all.push('m-qb');
       });
+      (ls || []).forEach(function (l) { all.push('tk-l-' + l[2]); });
       var c0 = all.join(' ').trim();
       return c0 ? '<span class="' + c0 + '">' + esc(txt) + '</span>' : esc(txt);
     }
@@ -164,20 +173,67 @@
 
   /* Render one verse's mikra text with medooyuk spans on the marked letters. */
   function mikraHTML(verse) {
-    var byTok = {};
+    var byTok = {}, byL = {};
     (verse.m || []).forEach(function (mk) {
       (byTok[mk[0]] = byTok[mk[0]] || []).push(mk);
     });
-    return joinTokens(verse.t.map(function (tok, i) {
-      return tokenHTML(tok, byTok[i]);
-    }));
+    (verse.L || []).forEach(function (l) {
+      (byL[l[0]] = byL[l[0]] || []).push(l);
+    });
+    var parts = verse.t.map(function (tok, i) {
+      return tokenHTML(tok, byTok[i], byL[i]);
+    });
+    return joinTokens(withBreaks(verse, parts));
   }
 
-  /* The verse exactly as it appears in the sefer Torah: bare letters. */
+  /* The verse exactly as it appears in the sefer Torah: bare letters, with
+     large/small/suspended letters at their true size (UXLC <s t=...>). */
   function scrollHTML(verse) {
-    return joinTokens(verse.t.map(function (tok) {
-      return esc(applyMode(tok, 'letters'));
-    }));
+    var byL = {};
+    (verse.L || []).forEach(function (l) {
+      (byL[l[0]] = byL[l[0]] || []).push(l);
+    });
+    var parts = verse.t.map(function (tok, i) {
+      var bare = applyMode(tok, 'letters');
+      var ls = byL[i];
+      if (!ls) return esc(bare);
+      var segs = letterSegments(tok); /* letter count identical in bare form */
+      var out = '';
+      for (var li = 0; li < segs.length; li++) {
+        var kind = null;
+        ls.forEach(function (l) { if (l[1] === li) kind = l[2]; });
+        var seg = esc(applyMode(segs[li], 'letters'));
+        out += kind ? '<span class="tk-l-' + kind + '">' + seg + '</span>' : seg;
+      }
+      return out;
+    });
+    return joinTokens(withBreaks(verse, parts));
+  }
+
+  /* Sefer-Torah parsha breaks, POSITIONAL: verse.b = [[ti, kind]] with ti =
+     tokens before the break ('p' petucha, 's' setuma, 'n8' inverted nun).
+     Verse-final breaks (ti = len) render after the last word; the rare
+     mid-verse breaks (Deut 2:8, 5:21, ...) render between words. */
+  function brkSpan(kind) {
+    if (kind === 'p') return '<span class="tk-brk tk-brk-pe" title="petucha · פתוחה">פ</span>';
+    if (kind === 's') return '<span class="tk-brk tk-brk-se" title="setuma · סתומה">ס</span>';
+    return '<span class="tk-nun8" title="inverted nun · נ הפוכה">נ</span>';
+  }
+  function withBreaks(verse, parts) {
+    var bs = verse.b || [];
+    if (!bs.length) return parts;
+    var out = parts.slice();
+    for (var i = bs.length - 1; i >= 0; i--) {
+      out.splice(Math.min(bs[i][0], out.length), 0, brkSpan(bs[i][1]));
+    }
+    return out;
+  }
+  function endsPetucha(verse) {
+    var bs = verse.b || [];
+    for (var i = 0; i < bs.length; i++) {
+      if (bs[i][1] === 'p' && bs[i][0] >= verse.t.length) return true;
+    }
+    return false;
   }
 
   function esc(s) {
@@ -213,14 +269,15 @@
       var mikra = mikraHTML(verse);
       var scroll = scrollHTML(verse);
       var num = '<span class="tk-vnum">(' + heNum(v) + ')</span>';
+      var peCls = endsPetucha(verse) ? ' tk-petucha' : '';
       if (!state.shnayim) {
-        html.push('<div class="tk-verse">' + mikra + num + '</div>');
+        html.push('<div class="tk-verse' + peCls + '">' + mikra + num + '</div>');
         return;
       }
       if (state.layout === 'side') {
-        html.push('<div class="tk-verse tk-side">' +
+        html.push('<div class="tk-verse tk-side' + peCls + '">' +
           '<div class="tk-col-scroll"><div class="tk-line-scroll">' + scroll + num + '</div></div>' +
-          '<div class="tk-col-read">' + mikra +
+          '<div class="tk-col-read">' + mikra + num +
           (targumLine(state.chapter, v) || '<i class="tk-tmissing">targum not available</i>') + '</div></div>');
       } else if (state.layout === 'tap') {
         var n = state.tapCount[state.chapter + ':' + v] || 0;
@@ -228,11 +285,11 @@
         if (n >= 2) body += '<div class="tk-line-read">' + mikra + '</div>';
         if (n >= 3) body += targumLine(state.chapter, v);
         if (n >= 3) body = '<span class="tk-tap-done">' + body + '</span>';
-        html.push('<div class="tk-verse tk-tapverse" data-cv="' + state.chapter + ':' + v +
+        html.push('<div class="tk-verse tk-tapverse' + peCls + '" data-cv="' + state.chapter + ':' + v +
                   '" style="cursor:pointer" title="tap: 1 scroll · 2 reading · 3 targum">' + body +
                   ' <span class="tk-vnum">[' + Math.min(n, 3) + '/3]</span></div>');
       } else { /* stacked: scroll line, reading line, targum */
-        html.push('<div class="tk-verse">' +
+        html.push('<div class="tk-verse' + peCls + '">' +
           '<div class="tk-line-scroll">' + scroll + num + '</div>' +
           '<div class="tk-line-read">' + mikra + '</div>' +
           (targumLine(state.chapter, v) || '<div class="tk-targum-line"><i>targum not available</i></div>') +
