@@ -112,7 +112,7 @@ const mainPages = [
   },
   {
     title: "Chok Breslov - Daily Learning Program",
-    link: "/chok-breslov",
+    link: "/daily-study",
     description: "The Chok Breslov daily learning program. A structured daily study of the essential Breslov texts.",
     pubDate: new Date("2025-01-01"),
   },
