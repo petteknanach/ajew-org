@@ -315,6 +315,35 @@
     }).catch(function () { return null; });
   }
 
+  var GEMARA_SLUG = {'ברכות':'berakhot','שבת':'shabbat','עירובין':'eruvin','פסחים':'pesachim',
+    'ביצה':'beitzah','ראש השנה':'rosh-hashanah','מועד קטן':'moed-katan','חגיגה':'chagigah',
+    'יבמות':'yevamot','כתובות':'ketubot','נדרים':'nedarim','נזיר':'nazir','סוטה':'sotah',
+    'גיטין':'gittin','קידושין':'kiddushin','בבא קמא':'bava-kamma','בבא מציעא':'bava-metzia',
+    'בבא בתרא':'bava-batra','סנהדרין':'sanhedrin','מכות':'makkot','שבועות':'shevuot',
+    'עבודה זרה':'avodah-zarah','זבחים':'zevachim','מנחות':'menachot','חולין':'chullin',
+    'בכורות':'bekhorot','ערכין':'arakhin','קריתות':'keritut','נדה':'niddah'};
+  function normGem(t) {
+    var x = (t || '').replace(/[״'"׳.]/g, '').trim();
+    var exp = {'בק':'בבא קמא','במ':'בבא מציעא','בב':'בבא בתרא','רה':'ראש השנה','עז':'עבודה זרה',
+      'מק':'מכות','מציעא':'בבא מציעא','קדושין':'קידושין'};
+    return exp[x] || x;
+  }
+  function gemaraHTML(g) {
+    var lbl = normGem(g.masechet);
+    var sl = GEMARA_SLUG[lbl];
+    if (!sl || !g.daf) return Promise.resolve(null);
+    var letter = g.amud === 2 ? 'b' : 'a';
+    return fetchJSON('/reader/gemara/gemara-' + sl + '.json').then(function (md) {
+      var lines = ((md.ch || {})[String(g.daf)] || {})[letter];
+      if (!lines || !lines.length) return null;
+      var body = lines.map(function (ln) {
+        return '<div class="ck-gemara-line">' + richText(applyMode(ln)) + '</div>';
+      }).join('');
+      return '<details class="ck-layer ck-gemara"><summary>גמרא — ' + esc(lbl) +
+        ' דף ' + heNum(g.daf) + ' ע׳ ' + (letter === 'a' ? 'א״' : 'ב״') + '</summary>' + body + '</details>';
+    }).catch(function () { return null; });
+  }
+
   function bonusHTML(item) {
     return fetchJSON('/reader/mishna/' + item.slug + '.json').then(function (md) {
       var mishnayos = (md.ch || {})[String(item.perek)];
@@ -388,6 +417,13 @@
       if (d.halacha && d.halacha.work) {
         p = p.then(function () {
           return halachaHTML(d).then(function (html) {
+            if (html) out.push(html);
+          });
+        });
+      }
+      if (d.gemara && d.gemara.masechet) {
+        p = p.then(function () {
+          return gemaraHTML(d.gemara).then(function (html) {
             if (html) out.push(html);
           });
         });
