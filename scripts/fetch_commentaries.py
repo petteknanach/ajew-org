@@ -327,30 +327,20 @@ def main():
         if not sef_tur:
             print('SA: unknown tur', tur)
             continue
-        slug = 'sa-' + tur
-        data = {}
-        try:
+        for sim in sorted(simanim):
+            slug = 'sa-%s-%s' % (tur, sim)
             p = os.path.join(OUT, 'sa-magen-avraham', slug + '.json')
             if os.path.exists(p):
-                data = json.load(open(p, encoding='utf-8'))
-        except Exception:
-            data = {}
-        ch = data.setdefault('ch', {})
-        for sim in sorted(simanim):
-            sn = str(sim)
-            if ch.get(sn):
                 continue
             txt = v3('Magen Avraham on Shulchan Aruch, %s %s' % (sef_tur, sim))
             if txt:
                 arr = [re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', '', flatten(x))).strip()
                        for x in txt]
                 if any(arr):
-                    ch[sn] = arr
+                    save('sa-magen-avraham', slug, {'ch': {str(sim): arr}})
                     n_fetched += 1
             time.sleep(0.7)
-        if ch:
-            save('sa-magen-avraham', slug, {'ch': ch})
-            print('magen-avraham', tur, len(ch), 'simanim')
+        print('magen-avraham', tur, 'done')
     print('done: %d units fetched' % n_fetched)
 
 if __name__ == '__main__':

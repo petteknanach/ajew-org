@@ -60,7 +60,7 @@
         var seifim = (r.sim || {})[String(h.from)];
         if (!seifim || !seifim.length) return null;
         var body = seifim.map(function (x, k) { return '<div class="ck-halacha-item"><span class="ck-hnum">' + (k === 0 ? 'סעיף א' : heNum(k + 1)) + '. </span>' + richText(x) + '</div>'; }).join('');
-        return comm('sa-magen-avraham', 'sa-' + String(h.tur || '').toLowerCase()).then(function (md) {
+        return comm('sa-magen-avraham', 'sa-' + String(h.tur || '').toLowerCase() + '-' + h.from).then(function (md) {
           var ma = md && (md.ch || {})[String(h.from)];
           var maBody = '';
           if (ma && ma.length) {
