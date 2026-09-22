@@ -307,9 +307,7 @@
         }
         return Promise.all(items.map(function (it) {
           return Promise.all([rashiHTML(slug, it.c, it.x),
-            verseCommHTML(kind || 'torah', slug, it.c, it.x),
-            Promise.resolve(vcomm && vcomm.rashi && vcomm.rashi[it.c + ':' + it.x] ?
-              voiceLine(vcomm.rashi[it.c + ':' + it.x]) : '')])
+            verseCommHTML(kind || 'torah', slug, it.c, it.x)])
             .then(function (parts) {
               return '<div class="ck-verse">' + it.row + parts.join('') + '</div>';
             });
@@ -558,7 +556,7 @@
       });
       if (d.mishna && d.mishna.masechet) {
         p = p.then(function () {
-          return mishnaHTML(d.mishna.masechet, d.mishna.perek).then(function (html) { html = voiceBox(dc && dc.mishna) + html;
+          return mishnaHTML(d.mishna.masechet, d.mishna.perek).then(function (html) {
             if (html) out.push(html);
           });
         });
@@ -573,27 +571,27 @@
       }
       if (d.halacha && d.halacha.work) {
         p = p.then(function () {
-          return halachaHTML(d).then(function (html) { html = voiceBox(dc && dc.halacha) + html;
+          return halachaHTML(d).then(function (html) {
             if (html) out.push(html);
           });
         });
       }
       if (d.gemara && d.gemara.masechet) {
         p = p.then(function () {
-          return gemaraHTML(d.gemara).then(function (html) { html = voiceBox(dc && dc.gemara) + html;
+          return gemaraHTML(d.gemara).then(function (html) {
             if (html) out.push(html);
           });
         });
       }
       if (d.zohar && (d.zohar.vol || d.zohar.work)) {
         p = p.then(function () {
-          return zoharHTML(d.zohar).then(function (html) { html = voiceBox(dc && dc.zohar) + html;
+          return zoharHTML(d.zohar).then(function (html) {
             if (html) out.push(html);
           });
         });
       }
       p = p.then(function () {
-        return mussarHTML(wk, day).then(function (html) { html = voiceBox(dc && dc.mussar) + html;
+        return mussarHTML(wk, day).then(function (html) {
           if (html) out.push(html);
         });
       });
