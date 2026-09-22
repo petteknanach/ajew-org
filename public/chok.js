@@ -35,7 +35,7 @@
   var state = {
     mode: 'full', medooyuk: true, targum: true, commentary: true, rashi: true,
     day: null, weeks: null, size: 26, theme: 'day',
-    sched: null, map: null, bookCache: {}, targCache: {}, rashiCache: {}
+    sched: null, map: null, bonus: null, bookCache: {}, targCache: {}, rashiCache: {}
   };
   var DAY_SLUGS = {'יום ראשון':'yom-rishon','יום שני':'yom-sheni','יום שלישי':'yom-shlishi',
     'יום רביעי':'yom-revii','יום חמישי':'yom-chamishi','ליל שישי':'leil-shishi','יום שישי':'yom-shishi'};
@@ -86,7 +86,7 @@
     'נדה':'mishna-niddah','מכשירין':'mishna-makhshirin','זבים':'mishna-zavim',
     'טבול יום':'mishna-tevul-yom','ידים':'mishna-yadayim','עוקצין':'mishna-uktzin'};
   function normLabel(s) {
-    var t = (s || '').replace(/[״'"׳.]/g, '').trim();
+    var t = (s || '').replace(/[״'"׳.]/g, '').replace(/^\u05de\u05e1\u05db\u05ea\s+/, '').trim();
     var expand = {'בק':'בבא קמא','במ':'בבא מציעא','בב':'בבא בתרא','רה':'ראש השנה','עז':'עבודה זרה',
       'מק':'מכות','שבועות':'שבועות','קידושין':'קידושין'};
     return expand[t] || t;
@@ -315,6 +315,19 @@
     }).catch(function () { return null; });
   }
 
+  function bonusHTML(item) {
+    return fetchJSON('/reader/mishna/' + item.slug + '.json').then(function (md) {
+      var mishnayos = (md.ch || {})[String(item.perek)];
+      if (!mishnayos || !mishnayos.length) return null;
+      var body = mishnayos.map(function (m, i) {
+        return '<div class="ck-mishna"><b class="ck-mnum">' + heNum(i + 1) + '</b> ' +
+          esc(applyMode(m)) + '</div>';
+      }).join('');
+      return '<details class="ck-layer ck-mishna ck-bonus"><summary>בונוס לסיום כל המשנה — ' +
+        esc(item.he) + ' פרק ' + heNum(item.perek) + '</summary>' + body + '</details>';
+    }).catch(function () { return null; });
+  }
+
   function renderDay() {
     var box = $('ck-content');
     var day = state.day;
@@ -361,6 +374,14 @@
         p = p.then(function () {
           return mishnaHTML(d.mishna.masechet, d.mishna.perek).then(function (html) {
             if (html) out.push(html);
+          });
+        });
+      }
+      var bonusItems = (state.bonus && state.bonus.weeks[wk] && state.bonus.weeks[wk][day]) || null;
+      if (bonusItems) {
+        p = p.then(function () {
+          return Promise.all(bonusItems.map(bonusHTML)).then(function (parts) {
+            parts.forEach(function (html) { if (html) out.push(html); });
           });
         });
       }
@@ -434,10 +455,12 @@
     state.day = DAYS[DAY_DEFAULT[new Date().getDay()]] || DAYS[0];
     Promise.all([
       fetchJSON('/reader/chok/schedule.json'),
-      fetchJSON('/reader/chok/shabbos-map.json')
+      fetchJSON('/reader/chok/shabbos-map.json'),
+      fetchJSON('/reader/chok/mishna-bonus.json').catch(function () { return null; })
     ]).then(function (res) {
       state.sched = res[0];
       state.map = res[1];
+      state.bonus = res[2] || null;
       var rr = resolveWeek();
       state.weeks = rr.weeks || ['בראשית'];
       state.day = rr.day;
