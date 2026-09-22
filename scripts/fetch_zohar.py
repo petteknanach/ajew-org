@@ -81,7 +81,8 @@ def parse_daf_page(html):
     html = re.sub(r'<sup[\s\S]*?</sup>', '', html)
     paras = re.findall(r'<p[^>]*>([\s\S]*?)</p>', html)
     texts = [re.sub(r'\s+', ' ', re.sub(r'<[^>]+>', '', p)).strip() for p in paras]
-    return [t for t in texts if len(t) > 25 and not t.startswith('<<')]
+    nav = re.compile(r'^(?:&lt;|<){2}\s*\u00b7?\s*\u05d6\u05d4\u05e8\s+\u05d7\u05dc\u05e7')
+    return [t for t in texts if len(t) > 25 and not nav.match(t)]
 
 def main():
     sched = json.load(open(SCHED, encoding='utf-8'))
