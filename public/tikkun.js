@@ -92,11 +92,65 @@
     return out;
   }
 
-  function applyMode(text) {
-    if (state.mode === 'nikud') return text.replace(TAAMIM, '');
-    if (state.mode === 'taamim') return text.replace(NIKUD, '');
-    if (state.mode === 'letters') return text.replace(TAAMIM, '').replace(NIKUD, '');
+  function applyMode(text, mode) {
+    var m = mode || state.mode;
+    if (m === 'nikud') return text.replace(TAAMIM, '');
+    if (m === 'taamim') return text.replace(NIKUD, '');
+    if (m === 'letters') return text.replace(TAAMIM, '').replace(NIKUD, '');
     return text;
+  }
+
+  /* Split a token into per-letter segments: each base consonant (U+05D0-U+05EA)
+     plus the combining marks that follow it. medooyuk letter indexes (li) count
+     base consonants exactly this way. */
+  function letterSegments(tok) {
+    var segs = [], cur = '';
+    for (var i = 0; i < tok.length; i++) {
+      var cp = tok.charCodeAt(i);
+      if (cp >= 0x5D0 && cp <= 0x5EA) {
+        if (cur) segs.push(cur);
+        cur = tok[i];
+      } else {
+        cur += tok[i];
+      }
+    }
+    if (cur) segs.push(cur);
+    return segs;
+  }
+
+  /* One token's HTML with medooyuk marks on the actual letter.
+     marks: [[ti, li, lb, qb]] for THIS token. */
+  function tokenHTML(tok, mks) {
+    var txt = applyMode(tok, state.mode);
+    if (!mks || !state.medooyuk) return esc(txt);
+    var segs = letterSegments(tok);
+    var cls = [], fallback = false;
+    for (var i = 0; i < segs.length; i++) cls.push([]);
+    mks.forEach(function (mk) {
+      var li = mk[1];
+      if (li >= 0 && li < segs.length) {
+        if (mk[2] === 'na') cls[li].push('m-na');
+        else if (mk[2] === 'nach') cls[li].push('m-nach');
+        if (mk[3]) cls[li].push('m-qb');
+      } else fallback = true;
+    });
+    if (fallback) { /* mark the whole token rather than misplacing a letter */
+      var all = [];
+      mks.forEach(function (mk) {
+        if (mk[2] === 'na') all.push('m-na');
+        else if (mk[2] === 'nach') all.push('m-nach');
+        if (mk[3]) all.push('m-qb');
+      });
+      var c0 = all.join(' ').trim();
+      return c0 ? '<span class="' + c0 + '">' + esc(txt) + '</span>' : esc(txt);
+    }
+    var out = '';
+    for (var j = 0; j < segs.length; j++) {
+      var st = applyMode(segs[j], state.mode);
+      var cl = cls[j].join(' ').trim();
+      out += cl ? '<span class="' + cl + '">' + esc(st) + '</span>' : esc(st);
+    }
+    return out;
   }
 
   function joinTokens(arr) {
@@ -108,26 +162,21 @@
     return out;
   }
 
-  /* Render one verse's mikra text with medooyuk spans. marks: [[ti,li,lb,qb]] */
+  /* Render one verse's mikra text with medooyuk spans on the marked letters. */
   function mikraHTML(verse) {
     var byTok = {};
     (verse.m || []).forEach(function (mk) {
       (byTok[mk[0]] = byTok[mk[0]] || []).push(mk);
     });
     return joinTokens(verse.t.map(function (tok, i) {
-      var txt = applyMode(tok);
-      var mks = byTok[i];
-      if (!mks || !state.medooyuk) return esc(txt);
-      /* sheva marks are letter-indexed inside the token; simple + robust:
-         color the whole token when it carries a sheva decision. */
-      var cls = [], qb = false;
-      mks.forEach(function (mk) {
-        if (mk[3]) qb = true;
-        if (mk[2] === 'na') cls.push('m-na');
-        else if (mk[2] === 'nach') cls.push('m-nach');
-      });
-      var c = cls.join(' ') + (qb ? ' m-qb' : '');
-      return c ? '<span class="' + c.trim() + '">' + esc(txt) + '</span>' : esc(txt);
+      return tokenHTML(tok, byTok[i]);
+    }));
+  }
+
+  /* The verse exactly as it appears in the sefer Torah: bare letters. */
+  function scrollHTML(verse) {
+    return joinTokens(verse.t.map(function (tok) {
+      return esc(applyMode(tok, 'letters'));
     }));
   }
 
@@ -141,7 +190,7 @@
     if (!t) return '';
     var nm = state.targumData.name;
     return '<div class="tk-targum-line"><span class="tk-tname">' + esc(nm) +
-           ':</span> ' + esc(applyMode(t)) + '</div>';
+           ':</span> ' + esc(applyMode(t, state.mode)) + '</div>';
   }
 
   function render() {
@@ -151,44 +200,54 @@
     if (!ch) { box.innerHTML = '<p class="tk-error">Chapter not found.</p>'; return; }
     var shnayim = state.shnayim && state.targumData;
     var html = [];
-    var tapLeft = null;
+    var heads = '';
+    if (state.shnayim) {
+      heads = '<div class="tk-shnayim-note">' +
+        '<span class="tk-colhead-scroll">כתב התורה · sefer-Torah line (bare letters)</span>' +
+        '<span class="tk-colhead-read">קריאה · reading line (nikud + taamim)</span>' +
+        '</div>';
+      html.push(heads);
+    }
     Object.keys(ch).map(Number).sort(function (a, b) { return a - b; }).forEach(function (v) {
       var verse = ch[v];
       var mikra = mikraHTML(verse);
+      var scroll = scrollHTML(verse);
       var num = '<span class="tk-vnum">(' + heNum(v) + ')</span>';
-      if (!shnayim) {
+      if (!state.shnayim) {
         html.push('<div class="tk-verse">' + mikra + num + '</div>');
         return;
       }
       if (state.layout === 'side') {
         html.push('<div class="tk-verse tk-side">' +
-          '<div class="tk-col-mikra">' + mikra + num + '</div>' +
-          '<div class="tk-col-targum">' + (targumLine(state.chapter, v) || '<i>targum not available</i>') + '</div></div>');
+          '<div class="tk-col-scroll"><div class="tk-line-scroll">' + scroll + num + '</div></div>' +
+          '<div class="tk-col-read">' + mikra +
+          (targumLine(state.chapter, v) || '<i class="tk-tmissing">targum not available</i>') + '</div></div>');
       } else if (state.layout === 'tap') {
         var n = state.tapCount[state.chapter + ':' + v] || 0;
-        var body = mikra;
-        if (n >= 2) body += '<div class="tk-mikra-repeat">' + mikra + '</div>';
+        var body = '<div class="tk-line-scroll">' + scroll + num + '</div>';
+        if (n >= 2) body += '<div class="tk-line-read">' + mikra + '</div>';
         if (n >= 3) body += targumLine(state.chapter, v);
         if (n >= 3) body = '<span class="tk-tap-done">' + body + '</span>';
         html.push('<div class="tk-verse tk-tapverse" data-cv="' + state.chapter + ':' + v +
-                  '" style="cursor:pointer" title="tap for shnayim mikra">' + body +
-                  ' <span class="tk-vnum">[' + n + '/3]</span>' + num + '</div>');
-      } else { /* stacked */
-        html.push('<div class="tk-verse">' + mikra + num +
-          '<div class="tk-mikra-repeat">' + mikra + '</div>' +
+                  '" style="cursor:pointer" title="tap: 1 scroll · 2 reading · 3 targum">' + body +
+                  ' <span class="tk-vnum">[' + Math.min(n, 3) + '/3]</span></div>');
+      } else { /* stacked: scroll line, reading line, targum */
+        html.push('<div class="tk-verse">' +
+          '<div class="tk-line-scroll">' + scroll + num + '</div>' +
+          '<div class="tk-line-read">' + mikra + '</div>' +
           (targumLine(state.chapter, v) || '<div class="tk-targum-line"><i>targum not available</i></div>') +
           '</div>');
       }
     });
-    if (!shnayim && !state.targumData && state.shnayim) {
-      html.unshift('<p class="tk-error">Targum not available for this book.</p>');
+    if (state.shnayim && !state.targumData) {
+      html.unshift('<p class="tk-error">Targum not available for this book — showing mikra lines only.</p>');
     }
     box.innerHTML = html.join('');
     if (state.layout === 'tap') {
       Array.prototype.forEach.call(document.querySelectorAll('.tk-tapverse'), function (el) {
         el.addEventListener('click', function () {
           var cv = el.getAttribute('data-cv');
-          state.tapCount[cv] = (state.tapCount[cv] || 0) + 1;
+          state.tapCount[cv] = Math.min((state.tapCount[cv] || 0) + 1, 3);
           render();
         });
       });

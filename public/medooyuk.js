@@ -11,9 +11,9 @@
   var slug = m[1], chapter = m[3];
   var data = null, active = false, snapshots = [];
 
-  var CSS = '.m-na{text-decoration:underline;text-decoration-color:#1a9e8c;text-decoration-thickness:2px;text-underline-offset:5px}' +
-    '.m-nach{text-decoration:underline;text-decoration-color:#d07a2a;text-decoration-thickness:2px;text-decoration-style:double;text-underline-offset:5px}' +
-    '.m-qb{outline:1px dotted rgba(200,60,60,.55);outline-offset:2px;border-radius:4px}';
+  var CSS = '.m-na{color:#0e7a6d;font-weight:600;text-decoration:underline;text-decoration-color:#1a9e8c;text-decoration-thickness:2px;text-underline-offset:4px}' +
+    '.m-nach{color:#b45309;font-weight:600;text-decoration:underline;text-decoration-color:#d07a2a;text-decoration-thickness:2px;text-decoration-style:double;text-underline-offset:4px}' +
+    '.m-qb{outline:1.5px dotted rgba(200,60,60,.65);outline-offset:2px;border-radius:4px}';
 
   function joinTokens(arr) {
     var out = '';
@@ -28,6 +28,21 @@
     return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 
+  function letterSegments(tok) {
+    var segs = [], cur = '';
+    for (var i = 0; i < tok.length; i++) {
+      var cp = tok.charCodeAt(i);
+      if (cp >= 0x5D0 && cp <= 0x5EA) {
+        if (cur) segs.push(cur);
+        cur = tok[i];
+      } else {
+        cur += tok[i];
+      }
+    }
+    if (cur) segs.push(cur);
+    return segs;
+  }
+
   function coloredVerse(verse) {
     var byTok = {};
     (verse.m || []).forEach(function (mk) {
@@ -36,14 +51,33 @@
     return joinTokens(verse.t.map(function (tok, i) {
       var mks = byTok[i];
       if (!mks) return esc(tok);
-      var cls = [], qb = false;
+      var segs = letterSegments(tok);
+      var cls = [], fallback = false;
+      for (var s = 0; s < segs.length; s++) cls.push([]);
       mks.forEach(function (mk) {
-        if (mk[3]) qb = true;
-        if (mk[2] === 'na') cls.push('m-na');
-        else if (mk[2] === 'nach') cls.push('m-nach');
+        var li = mk[1];
+        if (li >= 0 && li < segs.length) {
+          if (mk[2] === 'na') cls[li].push('m-na');
+          else if (mk[2] === 'nach') cls[li].push('m-nach');
+          if (mk[3]) cls[li].push('m-qb');
+        } else fallback = true;
       });
-      var c = cls.join(' ') + (qb ? ' m-qb' : '');
-      return c ? '<span class="' + c.trim() + '">' + esc(tok) + '</span>' : esc(tok);
+      if (fallback) { /* mark the whole token rather than misplacing a letter */
+        var all = [];
+        mks.forEach(function (mk) {
+          if (mk[2] === 'na') all.push('m-na');
+          else if (mk[2] === 'nach') all.push('m-nach');
+          if (mk[3]) all.push('m-qb');
+        });
+        var c0 = all.join(' ').trim();
+        return c0 ? '<span class="' + c0 + '">' + esc(tok) + '</span>' : esc(tok);
+      }
+      var out = '';
+      for (var j = 0; j < segs.length; j++) {
+        var cl = cls[j].join(' ').trim();
+        out += cl ? '<span class="' + cl + '">' + esc(segs[j]) + '</span>' : esc(segs[j]);
+      }
+      return out;
     }));
   }
 

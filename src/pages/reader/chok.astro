@@ -37,10 +37,11 @@ import Layout from '../../layouts/Layout.astro';
           <button class="ck-btn ck-theme" data-t="night">Night</button>
         </span>
       </div>
-      <div class="ck-legend" id="ck-legend" dir="rtl" hidden>
-        <span><span class="m-demo"><span class="m-na">שְׁבָא</span></span> = שוא נא</span>
-        <span><span class="m-demo"><span class="m-nach">שְׁבָא</span></span> = שוא נח</span>
-        <span><span class="m-demo"><span class="m-qb">שְׁבָא</span></span> = טעון בירור</span>
+      <div class="ck-legend" id="ck-legend" dir="rtl">
+        <span><span class="m-demo"><span class="m-na">שְׁ</span></span> = שוא נא (נשמע)</span>
+        <span><span class="m-demo"><span class="m-nach">שְׁ</span></span> = שוא נח (שקט)</span>
+        <span><span class="m-demo"><span class="m-qb">קָ</span></span> = קמץ — קטן או גדול? טעון בירור</span>
+        <span class="ck-legend-note">הסימון על האות עצמה</span>
       </div>
     </div>
 
@@ -52,7 +53,7 @@ import Layout from '../../layouts/Layout.astro';
   </div>
 </Layout>
 
-<script src="/chok.js?v=1" defer></script>
+<script src="/chok.js?v=2" defer></script>
 
 <style is:global>
   /* ═══════════════════════════════════════════════════════════════
@@ -329,6 +330,7 @@ import Layout from '../../layouts/Layout.astro';
     background: var(--ck-panel-2);
   }
   .m-demo { display: inline-block; }
+  .ck-legend-note { align-self: center; color: var(--ck-muted); font-size: 0.72rem; }
 
   /* ── The sheet: main reading surface ──────────────────────────── */
   .ck-content {
@@ -396,22 +398,26 @@ import Layout from '../../layouts/Layout.astro';
   }
   .ck-mikra-repeat { display: none; }
 
-  /* Sheva/qamats marks */
+  /* Sheva/qamats marks — on the actual letter */
   .m-na {
+    color: var(--ck-m-na);
+    font-weight: 600;
     text-decoration: underline;
     text-decoration-color: var(--ck-m-na);
     text-decoration-thickness: 2px;
-    text-underline-offset: 5px;
+    text-underline-offset: 4px;
   }
   .m-nach {
+    color: var(--ck-m-nach);
+    font-weight: 600;
     text-decoration: underline;
     text-decoration-color: var(--ck-m-nach);
     text-decoration-thickness: 2px;
     text-decoration-style: double;
-    text-underline-offset: 5px;
+    text-underline-offset: 4px;
   }
   .m-qb {
-    outline: 1px dotted var(--ck-m-qb);
+    outline: 1.5px dotted var(--ck-m-qb);
     outline-offset: 2px;
     border-radius: 4px;
   }

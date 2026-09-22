@@ -728,6 +728,29 @@ body.dark-mode .lm-reader-volume-card { background:rgba(15,31,50,.72); border-co
   .compact-reader-header .library-search { margin-top: 10px; }
 }
 
+/* Tanach study tools promotion (Tikun Korim / Shnayim Mikra) */
+.tanach-tools-banner { margin-top: 14px; }
+.tanach-tools-card {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 14px 18px;
+  border: 1px solid rgba(196,162,101,.45);
+  border-radius: 18px;
+  background: linear-gradient(145deg, #fffdf8, #f4ead6);
+  box-shadow: 0 12px 32px rgba(26,54,93,.09);
+  text-decoration: none;
+  color: inherit;
+}
+.tanach-tools-card:hover { background: linear-gradient(145deg, #fff8e6, #f0e2c4); }
+.tanach-tools-icon { font-size: 1.9rem; line-height: 1; }
+.tanach-tools-text strong { display: block; color: #725426; font-size: 1.02rem; margin-bottom: 3px; }
+.tanach-tools-text span { display: block; color: #5d5138; font-size: .85rem; line-height: 1.55; }
+body.dark-mode .tanach-tools-card { border-color: #4a4433; background: linear-gradient(145deg, #201d13, #191610); }
+body.dark-mode .tanach-tools-card:hover { background: linear-gradient(145deg, #2a2517, #1f1b12); }
+body.dark-mode .tanach-tools-text strong { color: #d9b878; }
+body.dark-mode .tanach-tools-text span { color: #b3a684; }
+
 /* Split reader directory: authors/categories | alphabetical books */
 .split-library-directory {
   --directory-red: #a6262b;

@@ -127,6 +127,23 @@
     }
     return out;
   }
+  /* Split a token into per-letter segments: each base consonant (U+05D0-U+05EA)
+     plus the combining marks that follow it. medooyuk letter indexes (li) count
+     base consonants exactly this way. */
+  function letterSegments(tok) {
+    var segs = [], cur = '';
+    for (var i = 0; i < tok.length; i++) {
+      var cp = tok.charCodeAt(i);
+      if (cp >= 0x5D0 && cp <= 0x5EA) {
+        if (cur) segs.push(cur);
+        cur = tok[i];
+      } else {
+        cur += tok[i];
+      }
+    }
+    if (cur) segs.push(cur);
+    return segs;
+  }
   function coloredVerse(verse) {
     var byTok = {};
     (verse.m || []).forEach(function (mk) {
@@ -135,15 +152,35 @@
     return joinTokens(verse.t.map(function (tok, i) {
       var mks = byTok[i];
       if (!mks || !state.medooyuk) return esc(applyMode(tok));
-      var cls = [], qb = false;
+      var segs = letterSegments(tok);
+      var cls = [], fallback = false;
+      for (var s = 0; s < segs.length; s++) cls.push([]);
       mks.forEach(function (mk) {
-        if (mk[3]) qb = true;
-        if (mk[2] === 'na') cls.push('m-na');
-        else if (mk[2] === 'nach') cls.push('m-nach');
+        var li = mk[1];
+        if (li >= 0 && li < segs.length) {
+          if (mk[2] === 'na') cls[li].push('m-na');
+          else if (mk[2] === 'nach') cls[li].push('m-nach');
+          if (mk[3]) cls[li].push('m-qb');
+        } else fallback = true;
       });
-      var c = cls.join(' ') + (qb ? ' m-qb' : '');
       var txt = applyMode(tok);
-      return c ? '<span class="' + c.trim() + '">' + esc(txt) + '</span>' : esc(txt);
+      if (fallback) { /* mark the whole token rather than misplacing a letter */
+        var all = [];
+        mks.forEach(function (mk) {
+          if (mk[2] === 'na') all.push('m-na');
+          else if (mk[2] === 'nach') all.push('m-nach');
+          if (mk[3]) all.push('m-qb');
+        });
+        var c0 = all.join(' ').trim();
+        return c0 ? '<span class="' + c0 + '">' + esc(txt) + '</span>' : esc(txt);
+      }
+      var out = '';
+      for (var j = 0; j < segs.length; j++) {
+        var st = applyMode(segs[j]);
+        var cl = cls[j].join(' ').trim();
+        out += cl ? '<span class="' + cl + '">' + esc(st) + '</span>' : esc(st);
+      }
+      return out;
     }));
   }
   function heNum(n) {

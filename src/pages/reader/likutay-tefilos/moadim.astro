@@ -1,0 +1,112 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import fs from 'node:fs';
+import path from 'node:path';
+
+// לוח תפילות למועדים — Likutay Tefilos holiday index.
+// Data is the evidence-quoted port of the Na Nach app's likutayTefilosIndex
+// (built from each prayer's own opening line, verified 2026 against all 210
+// prayers on ajew.org). Provenance lives here in code, not on the page.
+let data = null;
+try {
+  data = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'public/reader/likutay-tefilos/moadim.json'), 'utf8'));
+} catch (e) {
+  console.error('Error loading moadim data:', e);
+}
+
+// Prayer titles from the part indexes (Hebrew opening line + display number).
+const titles: Record<string, { title: string; hebrew: string }> = {};
+for (const partNum of [1, 2]) {
+  try {
+    const idx = JSON.parse(fs.readFileSync(path.join(process.cwd(), `public/reader/likutay-tefilos/part-${partNum}/index.json`), 'utf8'));
+    for (const t of (idx.torahs || [])) {
+      titles[`${partNum}-${t.number}`] = { title: t.title || `Prayer ${t.number}`, hebrew: t.hebrewTitle || '' };
+    }
+  } catch (e) {}
+}
+
+const moaddim = data?.moaddim || [];
+const totalRefs = moaddim.reduce((n: number, m: any) => n + m.prayers.length, 0);
+---
+
+<Layout
+  title="Likutay Tefilos — Holiday Index (Mo'adim) | Prayers for Every Yom Tov"
+  description="The classic לוח תפילות למועדים: which Likutay Tefilos prayer Reb Nosson said on Rosh Hashanah, Yom Kippur, Sukkos, Chanukah, Purim, Pesach, Rosh Chodesh and more — every entry quoted from the prayer's own opening, in Hebrew and English."
+  breadcrumbs={[{ name: 'Library', url: 'https://ajew.org/reader' }, { name: 'Likutay Tefilos', url: 'https://ajew.org/reader/likutay-tefilos/1' }, { name: 'Holiday Index', url: 'https://ajew.org/reader/likutay-tefilos/moadim' }]}
+>
+  <div class="moadim-wrap" dir="ltr">
+    <header class="moadim-header">
+      <h1 dir="rtl" lang="he">לוח תפילות למועדים</h1>
+      <p class="moadim-sub">Likutay Tefilos · Prayer Index for the Mo'adim</p>
+      {data?.hebrewIntro && <p class="moadim-intro" dir="rtl" lang="he">{data.hebrewIntro}</p>}
+      {data?.intro && <p class="moadim-intro-en">{data.intro}</p>}
+      <p class="moadim-count">{moaddim.length} occasions · {totalRefs} prayer entries</p>
+    </header>
+
+    <nav class="moadim-jump" aria-label="Jump to a moed">
+      {moaddim.map((m: any) => (
+        <a href={`#${m.id}`}>{m.label}</a>
+      ))}
+    </nav>
+
+    <main class="moadim-list" dir="rtl" lang="he">
+      {moaddim.map((m: any) => (
+        <section class="moad-card" id={m.id}>
+          <div class="moad-head">
+            <h2 lang="he">{m.hebrewLabel}</h2>
+            <span class="moad-en" dir="ltr">{m.label}</span>
+            <span class="moad-n">{m.prayers.length}</span>
+          </div>
+          <ul class="moad-prayers">
+            {m.prayers.map((p: any) => {
+              const key = `${p.part}-${p.torah}`;
+              const t = titles[key];
+              return (
+                <li>
+                  <a class="moad-link" href={`/reader/likutay-tefilos/${p.part}/${p.torah}`}>
+                    <span class="moad-pt" dir="ltr">Part {p.part} · Prayer {p.torah}</span>
+                    <span class="moad-note" lang="he">{p.note}</span>
+                    {t?.hebrew && <span class="moad-he" lang="he">{t.hebrew}</span>}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      ))}
+    </main>
+
+    <div class="moadim-back" dir="ltr">
+      <a href="/reader/likutay-tefilos/1">← Likutay Tefilos Part 1</a>
+      <a href="/reader/likutay-tefilos/2">← Likutay Tefilos Part 2</a>
+      <a href="/reader/likutay-tefilos/special">✨ Prayers for Every Need</a>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .moadim-wrap { max-width: 980px; margin: 0 auto; padding: 1.2rem 1rem 3rem; }
+  .moadim-header { text-align: center; padding: 1.6rem 1rem 1.2rem; border-radius: 26px; border: 1px solid rgba(196,162,101,.35); background: linear-gradient(145deg,#fffdf8,#f4ead6); box-shadow: 0 18px 50px rgba(26,54,93,.10); }
+  .moadim-header h1 { margin: 0; color: #725426; font-family: 'Frank Ruhl Libre', serif; font-size: 2.1rem; }
+  .moadim-sub { margin: .35rem 0 .8rem; color: #15375e; font-weight: 800; font-family: 'Cinzel', Georgia, serif; letter-spacing: .04em; }
+  .moadim-intro { color: #3d3527; line-height: 1.9; margin: .4rem auto; max-width: 760px; font-size: .98rem; }
+  .moadim-intro-en { color: #6d5f46; line-height: 1.7; margin: .5rem auto; max-width: 760px; font-size: .88rem; font-style: italic; }
+  .moadim-count { color: #907b58; font-size: .8rem; margin: .6rem 0 0; }
+  .moadim-jump { display: flex; flex-wrap: wrap; gap: .45rem; justify-content: center; margin: 1.1rem 0 1.5rem; }
+  .moadim-jump a { display: inline-block; padding: .38rem .8rem; border-radius: 999px; background: rgba(255,255,255,.75); border: 1px solid rgba(196,162,101,.35); color: #15375e; font-weight: 700; font-size: .82rem; text-decoration: none; box-shadow: 0 4px 14px rgba(26,54,93,.06); }
+  .moadim-jump a:hover { background: #fdf3dd; }
+  .moad-card { padding: 1.1rem 1.2rem; border-radius: 22px; border: 1px solid rgba(196,162,101,.35); background: linear-gradient(145deg,#fffdf8,#f7efdd); box-shadow: 0 12px 36px rgba(26,54,93,.08); margin-bottom: 1.1rem; scroll-margin-top: 70px; }
+  .moad-head { display: flex; align-items: baseline; gap: .7rem; flex-wrap: wrap; border-bottom: 1px dashed rgba(196,162,101,.45); padding-bottom: .55rem; margin-bottom: .7rem; }
+  .moad-head h2 { margin: 0; color: #725426; font-family: 'Frank Ruhl Libre', serif; font-size: 1.45rem; }
+  .moad-en { color: #15375e; font-weight: 800; font-size: .95rem; }
+  .moad-n { margin-inline-start: auto; color: #907b58; font-size: .78rem; border: 1px solid rgba(196,162,101,.4); border-radius: 999px; padding: .05rem .55rem; }
+  .moad-prayers { list-style: none; margin: 0; padding: 0; display: grid; gap: .5rem; }
+  .moad-prayers a.moad-link { display: block; padding: .6rem .8rem; border-radius: 15px; background: rgba(255,255,255,.72); border: 1px solid rgba(196,162,101,.32); text-decoration: none; box-shadow: 0 5px 16px rgba(26,54,93,.05); }
+  .moad-prayers a.moad-link:hover { background: #fff8e8; }
+  .moad-pt { display: inline-block; color: #15375e; font-weight: 900; font-size: .86rem; margin-inline-end: .6rem; }
+  .moad-note { display: block; color: #725426; font-size: .95rem; line-height: 1.8; margin-top: .15rem; }
+  .moad-he { display: block; color: #907b58; font-size: .8rem; margin-top: .1rem; }
+  .moadim-back { display: flex; flex-wrap: wrap; gap: .6rem; justify-content: center; margin-top: 1.4rem; }
+  .moadim-back a { display: inline-block; padding: .5rem 1rem; border-radius: 999px; background: linear-gradient(135deg,#173b67,#27598f); color: #ffe9b3; font-weight: 800; text-decoration: none; box-shadow: 0 10px 26px rgba(23,59,103,.18); }
+  @media (max-width: 640px) { .moadim-header { padding: 1.1rem .8rem; } .moad-card { padding: .9rem .8rem; } .moad-head h2 { font-size: 1.25rem; } }
+</style>
