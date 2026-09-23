@@ -36,7 +36,8 @@
     mode: 'full', medooyuk: true, targum: true, commentary: true, rashi: true,
     tanachen: true,
     day: null, weeks: null, size: 26, theme: 'day',
-    sched: null, map: null, bonus: null, mussar: null, dcomm: null, kav: null,
+    sched: null, map: null, bonus: null, mussar: null, dcomm: null, kav: null, kavA: null,
+    carryMode: 'daily', focus: null, focusWeek: null,
     bookCache: {}, targCache: {}, rashiCache: {}, enCache: {}, superCache: {}
   };
   var DAY_SLUGS = {'יום ראשון':'yom-rishon','יום שני':'yom-sheni','יום שלישי':'yom-shlishi',
@@ -109,8 +110,12 @@
   function save() { try { localStorage.setItem('chok-settings', JSON.stringify({
       mode: state.mode, medooyuk: state.medooyuk, targum: state.targum,
       commentary: state.commentary, rashi: state.rashi, tanachen: state.tanachen,
-      size: state.size, theme: state.theme })); } catch (e) {} }
+      size: state.size, theme: state.theme, carryMode: state.carryMode })); } catch (e) {} }
   function load() { try { return JSON.parse(localStorage.getItem('chok-settings') || '{}'); } catch (e) { return {}; } }
+  function lsGet(k, d) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return d; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  function localIso(t) { var p = function (n) { return (n < 10 ? '0' : '') + n; };
+    return t.getFullYear() + '-' + p(t.getMonth() + 1) + '-' + p(t.getDate()); }
 
   function applyMode(txt) {
     if (state.mode === 'full') return txt;
@@ -299,11 +304,18 @@
     });
   }
   function kavanaHTML(secKey, d) {
-    var k = state.kav;
-    if (!k || !k.tefillos || !k.tefillos[secKey]) return '';
-    var body = k.tefillos[secKey];
-    return '<details class="ck-kavana"><summary>כוונה לפני הלימוד</summary><div class="ck-kavana-body">' +
-      richText(body) + '</div></details>';
+    var kA = state.kavA && state.kavA.kavanos && state.kavA.kavanos[secKey];
+    var kT = state.kav && state.kav.tefillos && state.kav.tefillos[secKey];
+    var h = '';
+    if (kA && kA.length) {
+      h += '<details class="ck-kavana"><summary>כוונת הלימוד — האריז״ל</summary><div class="ck-kavana-body">' +
+        kA.map(function (t) { return richText(t); }).join('') + '</div></details>';
+    }
+    if (kT) {
+      h += '<details class="ck-kavana"><summary>תפלה לפני הלימוד</summary><div class="ck-kavana-body">' +
+        richText(kT) + '</div></details>';
+    }
+    return h;
   }
   function kavanosHTML() {
     return fetchJSON('/reader/kavanos/index.json').catch(function () { return null; }).then(function (idx) {
@@ -395,6 +407,20 @@
   function dcommFor(wk, day) {
     return (state.dcomm || {})[wk + '|' + day] || null;
   }
+  function want(key) { return !state.focus || state.focus === key; }
+  function popBtn() {
+    if (state.focus) return '';
+    return '<button class="ck-popout" title="לימוד החלק הזה בחלון נפרד">↗</button>';
+  }
+  function focusBar() {
+    var back = location.pathname;
+    var f = state.focus === 'torah' ? 'חומש' : state.focus === 'navi' ? 'נביא' :
+            state.focus === 'kesuvim' ? 'כתובים' : state.focus === 'mishna' ? 'משנה' :
+            state.focus === 'talmud' ? 'גמרא' : state.focus === 'zohar' || state.focus === 'kabbala' ? 'זוהר' :
+            state.focus === 'halacha' ? 'הלכה' : state.focus === 'mussar' ? 'מוסר' : state.focus;
+    return '<div class="ck-focusbar" dir="rtl">לימוד ממוקד — ' + esc(f) +
+      ' · <a href="' + back + '">חזרה ליום המלא</a></div>';
+  }
   function voiceLine(v) {
     if (!v) return '';
     return '<div class="ck-voice-row"><div class="ck-voice-he">' + richText(v.he || '') +
@@ -410,8 +436,19 @@
     if (dc.carry) h += '<div class="ck-voice-part"><div class="ck-voice-k">מה משך אתמול</div>' + voiceLine(dc.carry) + '</div>';
     if (dc.intro) h += '<div class="ck-voice-part"><div class="ck-voice-k">היום</div>' + voiceLine(dc.intro) + '</div>';
     if (!h) return '';
-    return '<section class="ck-section ck-voice-top"><div class="ck-sec-head">הסבר פשוט — חומש, רש״י, נ״ך, משנה, גמרא, זוהר, הלכה, מוסר</div>' +
-      '<div class="ck-voice">' + h + '</div></section>';
+    var open = carryShouldOpen() ? ' open' : '';
+    return '<section class="ck-section ck-voice-top"><details class="ck-layer ck-carry-top"' + open + '>' +
+      '<summary>הסבר פשוט — מה משך אתמול ומה היום</summary>' +
+      '<div class="ck-voice">' + h + '</div></details></section>';
+  }
+  function carryShouldOpen() {
+    if (state.carryMode === 'always') return true;
+    if (state.carryMode === 'never') return false;
+    var key = localIso(new Date()) + '|' + ((state.weeks && state.weeks[0]) || '') + '|' + state.day;
+    var seen = lsGet('chok-carry-last', null);
+    if (seen === key) return false;
+    lsSet('chok-carry-last', key);
+    return true;
   }
   function secHead(title, ref) {
     return '<div class="ck-sec-head">' + title + (ref ? ' <span class="ck-ref">' + esc(ref) + '</span>' : '') + '</div>';
@@ -430,12 +467,17 @@
 
   function resolveWeek() {
     var today = new Date();
-    var todayIso = today.toISOString().slice(0,10);
-    var best = null;
-    (state.map || []).forEach(function (e) { if (e.date <= todayIso && e.weeks) best = e; });
-    var days = ['יום ראשון','יום שני','יום שלישי','יום רביעי','יום חמישי','ליל שישי','יום שישי'];
-    var hebDays = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
-    return { weeks: best ? best.weeks : null, sat: best ? best.date : null,
+    var todayIso = localIso(today);
+    // The chok regimen week runs Sun-Fri LEADING INTO its shabbos: resolve to
+    // the UPCOMING shabbos entry (finish the parsha before it is read).
+    var up = null;
+    (state.map || []).forEach(function (e) {
+      if (e.date >= todayIso && e.weeks && (!up || e.date < up.date)) up = e;
+    });
+    if (!up) {
+      (state.map || []).forEach(function (e) { if (e.date <= todayIso && e.weeks) up = e; });
+    }
+    return { weeks: up ? up.weeks : null, sat: up ? up.date : null,
              day: DAYS[DAY_DEFAULT[today.getDay()]] || DAYS[0], today: today };
   }
 
@@ -599,13 +641,14 @@
       if (!w) return Promise.resolve('<p class="ck-error">No schedule for ' + esc(wk) + '</p>');
       var d = w.days[day] || {};
       var dc = dcommFor(wk, day);
-      var out = [voiceTop(dc)];
+      var out = [];
+      if (state.focus) out.push(focusBar()); else out.push(voiceTop(dc));
       var p = Promise.resolve();
-      if (d.torah && d.torah.from) {
+      if (d.torah && d.torah.from && want('torah')) {
         p = p.then(function () {
           return versesHTML(w.slug, d.torah.from, d.torah.to, 'torah', dc).then(function (vh) {
-            out.push('<section class="ck-section">' +
-              secHead('תורה — ' + wk, refStr(d.torah)) + kavanaHTML('torah', d) + vh + '</section>');
+            out.push('<section class="ck-section" data-sec="torah">' +
+              secHead('תורה — ' + wk, refStr(d.torah)) + popBtn() + kavanaHTML('torah', d) + vh + '</section>');
           });
         });
       }
@@ -613,16 +656,18 @@
         p = p.then(function () {
           var sec = d[pair[0]];
           if (!sec || !sec.book) return;
+          var vkey = pair[1] === 'כתובים' ? 'kesuvim' : 'navi';
+          if (!want(vkey)) return;
           var slug = SLUGS[sec.book];
           if (!slug) { out.push(card(pair[1], sec.book)); return; }
-          var vkey = pair[1] === 'כתובים' ? 'kesuvim' : 'navi';
           return versesHTML(slug, {c: sec.from.c, v: sec.from.v || 1}, null, 'navi', null).then(function (vh) {
-            out.push('<section class="ck-section">' +
-              secHead(pair[1] + ' — ' + sec.book, refStr(sec)) + kavanaHTML(vkey, d) + voiceBox(dc && dc[vkey]) + vh + '</section>');
+            out.push('<section class="ck-section" data-sec="' + vkey + '">' +
+              secHead(pair[1] + ' — ' + sec.book, refStr(sec)) + popBtn() + kavanaHTML(vkey, d) + voiceBox(dc && dc[vkey]) + vh + '</section>');
           });
         });
       });
       p = p.then(function () {
+        if (!want('extras')) return;
         var extras = [];
         if (d.mishna) extras.push(card('משנה', (d.mishna.masechet||'') + (d.mishna.perek ? ' פרק ' + heNum(d.mishna.perek) : '')));
         if (d.gemara) extras.push(card('גמרא', (d.gemara.masechet||'') + ' ' + heNum(d.gemara.daf||0) + (d.gemara.amud ? (d.gemara.amud===2?' עמוד ב':' עמוד א') : '')));
@@ -632,48 +677,51 @@
         if (d.haftara) extras.push(card('הפטרה', (d.haftara.label || '').replace(/B/g,' ')));
         if (extras.length) out.push('<section class="ck-section">' + secHead('שאר חלקי היום') + extras.join('') + '</section>');
       });
-      if (d.mishna && d.mishna.masechet) {
+      if (d.mishna && d.mishna.masechet && want('mishna')) {
         p = p.then(function () {
           return mishnaHTML(d.mishna.masechet, d.mishna.perek).then(function (html) { html = kavanaHTML('mishna', d) + html; html = voiceBox(dc && dc.mishna) + html;
-            if (html) out.push(html);
+            if (html) out.push('<section class="ck-section" data-sec="mishna">' + html + '</section>');
           });
         });
       }
       var bonusItems = (state.bonus && state.bonus.weeks[wk] && state.bonus.weeks[wk][day]) || null;
-      if (bonusItems) {
+      if (bonusItems && want('bonus')) {
         p = p.then(function () {
           return Promise.all(bonusItems.map(bonusHTML)).then(function (parts) {
-            parts.forEach(function (html) { if (html) out.push(html); });
+            var h = parts.filter(Boolean).join('');
+            if (h) out.push('<section class="ck-section" data-sec="bonus">' + h + '</section>');
           });
         });
       }
-      if (d.halacha && d.halacha.work) {
+      if (d.halacha && d.halacha.work && want('halacha')) {
         p = p.then(function () {
           return halachaHTML(d).then(function (html) { html = kavanaHTML('halacha', d) + html; html = voiceBox(dc && dc.halacha) + html;
-            if (html) out.push(html);
+            if (html) out.push('<section class="ck-section" data-sec="halacha">' + html + '</section>');
           });
         });
       }
-      if (d.gemara && d.gemara.masechet) {
+      if (d.gemara && d.gemara.masechet && want('talmud')) {
         p = p.then(function () {
           return gemaraHTML(d.gemara).then(function (html) { html = kavanaHTML('talmud', d) + html; html = voiceBox(dc && dc.gemara) + html;
-            if (html) out.push(html);
+            if (html) out.push('<section class="ck-section" data-sec="talmud">' + html + '</section>');
           });
         });
       }
-      if (d.zohar && (d.zohar.vol || d.zohar.work)) {
+      if (d.zohar && (d.zohar.vol || d.zohar.work) && want('kabbala')) {
         p = p.then(function () {
           return zoharHTML(d.zohar).then(function (html) { html = kavanaHTML('kabbala', d) + html; html = voiceBox(dc && dc.zohar) + html;
-            if (html) out.push(html);
+            if (html) out.push('<section class="ck-section" data-sec="kabbala">' + html + '</section>');
           });
         });
       }
       p = p.then(function () {
+        if (!want('mussar')) return;
         return mussarHTML(wk, day).then(function (html) { html = voiceBox(dc && dc.mussar) + html;
-          if (html) out.push(html);
+          if (html) out.push('<section class="ck-section" data-sec="mussar">' + html + '</section>');
         });
       });
       p = p.then(function () {
+        if (!want('kavanos')) return;
         return kavanosHTML().then(function (html) {
           if (html) out.push(html);
         });
@@ -701,7 +749,13 @@
         if (commentHTML) parts.push(commentHTML);
         box.innerHTML = parts.join('') || '<p class="ck-error">Nothing to show.</p>';
         wireKavanos(box);
-        box.scrollTop = 0; window.scrollTo(0, 0);
+        if (state.focus) {
+          Array.prototype.forEach.call(box.querySelectorAll('.ck-section[data-sec] details'), function (dtl) { dtl.open = true; });
+          var el = box.querySelector('.ck-section[data-sec="' + state.focus + '"]');
+          if (el && el.scrollIntoView) el.scrollIntoView(); else { box.scrollTop = 0; window.scrollTo(0, 0); }
+        } else {
+          box.scrollTop = 0; window.scrollTo(0, 0);
+        }
       });
     }).catch(function (e) {
       box.innerHTML = '<p class="ck-error">Could not load: ' + esc('' + e) + '</p>';
@@ -736,17 +790,27 @@
 
   function init() {
     var st = load();
-    ['mode','medooyuk','targum','commentary','rashi','tanachen','size','theme'].forEach(function (k) {
+    ['mode','medooyuk','targum','commentary','rashi','tanachen','size','theme','carryMode'].forEach(function (k) {
       if (st[k] !== undefined) state[k] = st[k];
     });
     state.day = DAYS[DAY_DEFAULT[new Date().getDay()]] || DAYS[0];
+    if (location.search) {
+      try {
+        var qp = new URLSearchParams(location.search);
+        if (qp.get('sec')) state.focus = qp.get('sec');
+        if (qp.get('day')) state.day = qp.get('day');
+        if (qp.get('week')) state.focusWeek = qp.get('week');
+        if (qp.get('day') || qp.get('sec')) state.dayFromUrl = true;
+      } catch (e) {}
+    }
     Promise.all([
       fetchJSON('/reader/chok/schedule.json'),
       fetchJSON('/reader/chok/shabbos-map.json'),
       fetchJSON('/reader/chok/mishna-bonus.json').catch(function () { return null; }),
       fetchJSON('/reader/chok/mussar.json').catch(function(){return null;}),
       fetchJSON('/reader/chok/day-comm.json').catch(function () { return null; }),
-      fetchJSON('/reader/chok/kavanos-chok.json').catch(function () { return null; })
+      fetchJSON('/reader/chok/kavanos-chok.json').catch(function () { return null; }),
+      fetchJSON('/reader/chok/kavanos-actual.json').catch(function () { return null; })
     ]).then(function (res) {
       state.sched = res[0];
       state.map = res[1];
@@ -754,9 +818,14 @@
       state.mussar = res[3] || null;
       state.dcomm = res[4] || {};
       state.kav = res[5] || null;
+      state.kavA = res[6] || null;
       var rr = resolveWeek();
       state.weeks = rr.weeks || ['בראשית'];
-      state.day = rr.day;
+      if (state.focusWeek) {
+        var fw = state.focusWeek.split(',');
+        state.weeks = fw.filter(function (x) { return state.sched.weeks[x]; });
+      }
+      if (!state.dayFromUrl) state.day = rr.day;
       var heb = (state.map.filter(function (e) { return e.date === rr.sat; })[0] || {}).heb;
       $('ck-date').textContent = rr.today.toDateString() + (heb ? ' · Shabbos: ' + heb.replace(/-/g,' / ') : '');
       $('ck-week').textContent = 'פרשת ' + state.weeks.join(' · ');
@@ -783,6 +852,19 @@
       $('ck-rashi').addEventListener('change', function () { state.rashi = this.checked; save(); renderDay(); });
       $('ck-commentary').addEventListener('change', function () { state.commentary = this.checked; save(); renderDay(); });
       $('ck-tanachen').addEventListener('change', function () { state.tanachen = this.checked; save(); renderDay(); });
+      $('ck-carrymode').value = state.carryMode;
+      $('ck-carrymode').addEventListener('change', function () {
+        state.carryMode = this.value; save(); renderDay(); });
+      $('ck-content').addEventListener('click', function (ev) {
+        var t = ev.target;
+        if (!t || !t.classList || !t.classList.contains('ck-popout')) return;
+        var sec = t.closest('.ck-section');
+        var key = sec ? (sec.getAttribute('data-sec') || '') : '';
+        if (!key) return;
+        window.open(location.pathname + '?sec=' + encodeURIComponent(key) +
+          '&week=' + encodeURIComponent(state.weeks.join(',')) +
+          '&day=' + encodeURIComponent(state.day), '_blank');
+      });
       $('ck-size').addEventListener('input', function () {
         state.size = parseInt(this.value, 10);
         document.documentElement.style.setProperty('--ck-size', state.size + 'px'); save();

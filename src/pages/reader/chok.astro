@@ -30,6 +30,13 @@ import Layout from '../../layouts/Layout.astro';
         <label class="ck-chk"><input type="checkbox" id="ck-rashi" checked /> Rashi</label>
         <label class="ck-chk"><input type="checkbox" id="ck-commentary" checked /> Commentary</label>
         <label class="ck-chk"><input type="checkbox" id="ck-tanachen" checked /> English</label>
+        <label>Carry
+          <select id="ck-carrymode" title="הסבר פשוט — מה משך אתמול ומה היום: פתיחה פעם ביום, תמיד, או אף פעם">
+            <option value="daily">Daily</option>
+            <option value="always">Always</option>
+            <option value="never">Never</option>
+          </select>
+        </label>
         <label class="ck-size">Size <input type="range" id="ck-size" min="16" max="44" value="26" /></label>
         <span class="ck-themes">
           <button class="ck-btn ck-theme" data-t="day">Day</button>
@@ -504,6 +511,18 @@ import Layout from '../../layouts/Layout.astro';
   .ck-mussar summary { color: var(--ck-c-sup); }
   
                 .ck-kavana { margin: .35rem 0 .55rem; }
+                .ck-popout {
+                  float: left; margin-inline-start: .5rem; border: 1px solid var(--gold, #d4a017);
+                  background: transparent; color: var(--gold, #d4a017); border-radius: 6px;
+                  cursor: pointer; font-size: .85rem; line-height: 1; padding: 2px 8px;
+                }
+                .ck-popout:hover { background: var(--gold, #d4a017); color: #fff; }
+                .ck-focusbar {
+                  background: color-mix(in srgb, var(--gold, #d4a017) 12%, transparent);
+                  border: 1px solid var(--gold, #d4a017); border-radius: 8px;
+                  padding: .5rem .9rem; margin-bottom: .8rem; font-weight: 600;
+                }
+                .ck-focusbar a { color: var(--gold, #d4a017); }
     .ck-kavana > summary { cursor: pointer; color: var(--ck-gold, #8a6d1d); font-size: .9em; }
     .ck-kavana-body { line-height: 1.95; padding: .35rem .2rem; }
 
