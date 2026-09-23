@@ -448,9 +448,10 @@
     return '<div class="ck-voice-row"><div class="ck-voice-he">' + richText(v.he || '') +
       '</div><div class="ck-voice-en" dir="ltr">' + esc(v.en || '') + '</div></div>';
   }
-  function voiceBox(v) {
+  function voiceBox(v, label) {
     if (!v) return '';
-    return '<div class="ck-voice"><div class="ck-voice-k">הסבר פשוט</div>' + voiceLine(v) + '</div>';
+    return '<details class="ck-layer ck-voice-layer"><summary>הסבר פשוט' + (label ? ' — ' + label : '') + '</summary>' +
+      '<div class="ck-voice">' + voiceLine(v) + '</div></details>';
   }
   function voiceTop(dc) {
     if (!dc) return '';
@@ -704,7 +705,7 @@
             (mk.path ? ' — ' + mk.path : '') + '</div>' : '';
           return versesHTML(slug, segFrom, segTo, 'navi', null).then(function (vh) {
             out.push('<section class="ck-section" data-sec="' + vkey + '">' +
-              secHead(pair[1] + ' — ' + sec.book, headRef) + popBtn() + miluyTag + kavanaHTML(vkey, d) + voiceBox(dc && dc[vkey]) + vh + '</section>');
+              secHead(pair[1] + ' — ' + sec.book, headRef) + popBtn() + miluyTag + kavanaHTML(vkey, d) + voiceBox(dc && dc[vkey], pair[1]) + vh + '</section>');
           });
         });
       });
@@ -721,7 +722,7 @@
       });
       if (d.mishna && d.mishna.masechet && want('mishna')) {
         p = p.then(function () {
-          return mishnaHTML(d.mishna.masechet, d.mishna.perek).then(function (html) { html = kavanaHTML('mishna', d) + html; html = voiceBox(dc && dc.mishna) + html;
+          return mishnaHTML(d.mishna.masechet, d.mishna.perek).then(function (html) { html = kavanaHTML('mishna', d) + html; html = voiceBox(dc && dc.mishna, 'משנה') + html;
             if (html) out.push('<section class="ck-section" data-sec="mishna">' + html + '</section>');
           });
         });
@@ -737,28 +738,28 @@
       }
       if (d.halacha && d.halacha.work && want('halacha')) {
         p = p.then(function () {
-          return halachaHTML(d).then(function (html) { html = kavanaHTML('halacha', d) + html; html = voiceBox(dc && dc.halacha) + html;
+          return halachaHTML(d).then(function (html) { html = kavanaHTML('halacha', d) + html; html = voiceBox(dc && dc.halacha, 'הלכה') + html;
             if (html) out.push('<section class="ck-section" data-sec="halacha">' + html + '</section>');
           });
         });
       }
       if (d.gemara && d.gemara.masechet && want('talmud')) {
         p = p.then(function () {
-          return gemaraHTML(d.gemara).then(function (html) { html = kavanaHTML('talmud', d) + html; html = voiceBox(dc && dc.gemara) + html;
+          return gemaraHTML(d.gemara).then(function (html) { html = kavanaHTML('talmud', d) + html; html = voiceBox(dc && dc.talmud, 'גמרא') + html;
             if (html) out.push('<section class="ck-section" data-sec="talmud">' + html + '</section>');
           });
         });
       }
       if (d.zohar && (d.zohar.vol || d.zohar.work) && want('kabbala')) {
         p = p.then(function () {
-          return zoharHTML(d.zohar).then(function (html) { html = kavanaHTML('kabbala', d) + html; html = voiceBox(dc && dc.zohar) + html;
+          return zoharHTML(d.zohar).then(function (html) { html = kavanaHTML('kabbala', d) + html; html = voiceBox(dc && dc.kabbala, 'זוהר') + html;
             if (html) out.push('<section class="ck-section" data-sec="kabbala">' + html + '</section>');
           });
         });
       }
       p = p.then(function () {
         if (!want('mussar')) return;
-        return mussarHTML(wk, day).then(function (html) { html = voiceBox(dc && dc.mussar) + html;
+        return mussarHTML(wk, day).then(function (html) { html = voiceBox(dc && dc.mussar, 'מוסר') + html;
           if (html) out.push('<section class="ck-section" data-sec="mussar">' + html + '</section>');
         });
       });

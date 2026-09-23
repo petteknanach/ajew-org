@@ -113,6 +113,10 @@ runCase('', (html, els) => {
     // Breslov sources layer (Halechta Knechmani facts): WZ habracha = Devarim ch33 (safe)
     check('breslov sources line renders', (h1b || '').includes('ck-hk-src'));
     check('breslov sources name the index', (h1b || '').includes('הלכתא כנחמני'));
+    // day-comm collapsible layers (HH): per-section explanations are details
+    check('voice layer is collapsible', (h1b || '').includes('ck-voice-layer'));
+    check('talmud explanation renders', (h1b || '').includes('הסבר פשוט — גמרא'));
+    check('kabbala explanation renders', (h1b || '').includes('הסבר פשוט — זוהר'));
     // Case 1c: today's own week now has a full-scope entry
     runCase('?week=' + encodeURIComponent('בראשית') + '&day=' + encodeURIComponent('יום רביעי'), (h1c) => {
       check('breishis carry renders', (h1c || '').includes('ck-carry-top'));
