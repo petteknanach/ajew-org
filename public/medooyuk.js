@@ -11,9 +11,9 @@
   var slug = m[1], chapter = m[3];
   var data = null, active = false, snapshots = [];
 
-  var CSS = '.m-na{color:#0e7a6d;font-weight:600;text-decoration:underline;text-decoration-color:#1a9e8c;text-decoration-thickness:2px;text-underline-offset:4px}' +
-    '.m-nach{color:#b45309;font-weight:600;text-decoration:underline;text-decoration-color:#d07a2a;text-decoration-thickness:2px;text-decoration-style:double;text-underline-offset:4px}' +
-    '.m-qb{outline:1.5px dotted rgba(200,60,60,.65);outline-offset:2px;border-radius:4px}';
+  var CSS = '.m-na{color:#0e9d8a;font-weight:700}' +
+    '.m-qb{text-decoration:underline dotted rgba(200,60,60,.8);text-underline-offset:3px}' +
+    '.m-meteg{color:#8a6fd8}';
 
   function joinTokens(arr) {
     var out = '';
@@ -43,39 +43,34 @@
     return segs;
   }
 
+  /* medooyuk marks on the NIKUD CHARACTERS themselves — letters stay regular:
+     sheva na colored (m-na), meteg colored (m-meteg), qamats feeding an
+     unresolved sheva dotted on the qamats itself (m-qb; mk.li is the sheva
+     letter, the qamats sits on li-1). */
   function coloredVerse(verse) {
     var byTok = {};
     (verse.m || []).forEach(function (mk) {
       (byTok[mk[0]] = byTok[mk[0]] || []).push(mk);
     });
     return joinTokens(verse.t.map(function (tok, i) {
-      var mks = byTok[i];
-      if (!mks) return esc(tok);
       var segs = letterSegments(tok);
-      var cls = [], fallback = false;
-      for (var s = 0; s < segs.length; s++) cls.push([]);
-      mks.forEach(function (mk) {
-        var li = mk[1];
-        if (li >= 0 && li < segs.length) {
-          if (mk[2] === 'na') cls[li].push('m-na');
-          else if (mk[2] === 'nach') cls[li].push('m-nach');
-          if (mk[3]) cls[li].push('m-qb');
-        } else fallback = true;
+      var na = {}, qbPrev = {};
+      (byTok[i] || []).forEach(function (mk) {
+        if (mk[1] >= 0 && mk[1] < segs.length) {
+          if (mk[2] === 'na') na[mk[1]] = 1;
+          if (mk[3]) { if (mk[1] > 0) qbPrev[mk[1] - 1] = 1; }
+        }
       });
-      if (fallback) { /* mark the whole token rather than misplacing a letter */
-        var all = [];
-        mks.forEach(function (mk) {
-          if (mk[2] === 'na') all.push('m-na');
-          else if (mk[2] === 'nach') all.push('m-nach');
-          if (mk[3]) all.push('m-qb');
-        });
-        var c0 = all.join(' ').trim();
-        return c0 ? '<span class="' + c0 + '">' + esc(tok) + '</span>' : esc(tok);
-      }
       var out = '';
       for (var j = 0; j < segs.length; j++) {
-        var cl = cls[j].join(' ').trim();
-        out += cl ? '<span class="' + cl + '">' + esc(segs[j]) + '</span>' : esc(segs[j]);
+        var seg = segs[j];
+        for (var k = 0; k < seg.length; k++) {
+          var cp = seg.charCodeAt(k), cls = null;
+          if (cp === 0x5BD) cls = 'm-meteg';
+          else if (cp === 0x5B0 && na[j]) cls = 'm-na';
+          else if ((cp === 0x5B8 || cp === 0x5C7) && qbPrev[j]) cls = 'm-qb';
+          out += cls ? '<span class="' + cls + '">' + esc(seg[k]) + '</span>' : esc(seg[k]);
+        }
       }
       return out;
     }));
@@ -115,7 +110,7 @@
     if (!anchor || document.getElementById('btn-medooyuk')) return;
     var mk = document.createElement('button');
     mk.className = 'reader-btn'; mk.id = 'btn-medooyuk'; mk.textContent = 'Medooyuk';
-    mk.title = 'Sheva na/nach layer (UXLC text with taamim)';
+    mk.title = 'Medooyuk layer: shva na + meteg marked on the nikud itself';
     mk.addEventListener('click', function () { active ? deactivate() : activate(); });
     anchor.insertAdjacentElement('afterend', mk);
     var tk = document.createElement('a');

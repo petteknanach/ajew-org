@@ -144,41 +144,37 @@
     if (cur) segs.push(cur);
     return segs;
   }
+  /* medooyuk marks on the NIKUD CHARACTERS themselves — letters stay regular:
+     sheva na colored (m-na), meteg colored (m-meteg), qamats feeding an
+     unresolved sheva dotted on the qamats itself (m-qb; mk.li is the sheva
+     letter, the qamats sits on li-1). */
   function coloredVerse(verse) {
     var byTok = {};
     (verse.m || []).forEach(function (mk) {
       (byTok[mk[0]] = byTok[mk[0]] || []).push(mk);
     });
     return joinTokens(verse.t.map(function (tok, i) {
-      var mks = byTok[i];
-      if (!mks || !state.medooyuk) return esc(applyMode(tok));
+      if (!state.medooyuk) return esc(applyMode(tok));
       var segs = letterSegments(tok);
-      var cls = [], fallback = false;
-      for (var s = 0; s < segs.length; s++) cls.push([]);
-      mks.forEach(function (mk) {
-        var li = mk[1];
-        if (li >= 0 && li < segs.length) {
-          if (mk[2] === 'na') cls[li].push('m-na');
-          else if (mk[2] === 'nach') cls[li].push('m-nach');
-          if (mk[3]) cls[li].push('m-qb');
-        } else fallback = true;
+      var na = {}, qbPrev = {};
+      (byTok[i] || []).forEach(function (mk) {
+        if (mk[1] >= 0 && mk[1] < segs.length) {
+          if (mk[2] === 'na') na[mk[1]] = 1;
+          if (mk[3]) { if (mk[1] > 0) qbPrev[mk[1] - 1] = 1; }
+        }
       });
-      var txt = applyMode(tok);
-      if (fallback) { /* mark the whole token rather than misplacing a letter */
-        var all = [];
-        mks.forEach(function (mk) {
-          if (mk[2] === 'na') all.push('m-na');
-          else if (mk[2] === 'nach') all.push('m-nach');
-          if (mk[3]) all.push('m-qb');
-        });
-        var c0 = all.join(' ').trim();
-        return c0 ? '<span class="' + c0 + '">' + esc(txt) + '</span>' : esc(txt);
-      }
       var out = '';
       for (var j = 0; j < segs.length; j++) {
-        var st = applyMode(segs[j]);
-        var cl = cls[j].join(' ').trim();
-        out += cl ? '<span class="' + cl + '">' + esc(st) + '</span>' : esc(st);
+        var seg = segs[j];
+        for (var k = 0; k < seg.length; k++) {
+          var vis = applyMode(seg[k]);
+          if (!vis) continue;
+          var cp = seg.charCodeAt(k), cls = null;
+          if (cp === 0x5BD) cls = 'm-meteg';
+          else if (cp === 0x5B0 && na[j]) cls = 'm-na';
+          else if ((cp === 0x5B8 || cp === 0x5C7) && qbPrev[j]) cls = 'm-qb';
+          out += cls ? '<span class="' + cls + '">' + esc(vis) + '</span>' : esc(vis);
+        }
       }
       return out;
     }));

@@ -118,46 +118,42 @@
     return segs;
   }
 
-  /* One token's HTML with medooyuk marks on the actual letter.
-     marks: [[ti, li, lb, qb]] for THIS token; ls: [[ti, li, 'lg'|'sm'|'sus']]
-     letter-presentation entries (large/small/suspended letters). */
+  /* One token's HTML. medooyuk marks sit on the NIKUD CHARACTERS THEMSELVES —
+     the letters stay regular (Simanim style: shva na is the emphasized one).
+     m marks: [[ti, li, lb, qb]] where li is the SHEVA letter; qb=1 means the
+     qamats feeding that sheva needs beur, so the qamats on li-1 is dotted.
+     ls: [[ti, li, 'lg'|'sm'|'sus']] letter-presentation entries (scroll-true). */
   function tokenHTML(tok, mks, ls) {
-    var txt = applyMode(tok, state.mode);
     var segs = letterSegments(tok);
-    var cls = [], fallback = false;
-    for (var i = 0; i < segs.length; i++) cls.push([]);
+    var na = {}, qbNext = {}, lsByLi = {};
     (state.medooyuk && mks ? mks : []).forEach(function (mk) {
-      var li = mk[1];
-      if (li >= 0 && li < segs.length) {
-        if (mk[2] === 'na') cls[li].push('m-na');
-        else if (mk[2] === 'nach') cls[li].push('m-nach');
-        if (mk[3]) cls[li].push('m-qb');
-      } else fallback = true;
+      if (mk[1] >= 0 && mk[1] < segs.length) {
+        if (mk[2] === 'na') na[mk[1]] = 1;
+        if (mk[3]) { if (mk[1] > 0) qbNext[mk[1] - 1] = 1; }
+      }
     });
     (ls || []).forEach(function (l) {
-      var li = l[1];
-      if (li >= 0 && li < segs.length) cls[li].push('tk-l-' + l[2]);
-      else fallback = true;
+      if (l[1] >= 0 && l[1] < segs.length) lsByLi[l[1]] = l[2];
     });
-    var any = false;
-    for (var k = 0; k < cls.length; k++) if (cls[k].length) { any = true; break; }
-    if (!any) return esc(txt);
-    if (fallback) { /* mark the whole token rather than misplacing a letter */
-      var all = [];
-      (state.medooyuk && mks ? mks : []).forEach(function (mk) {
-        if (mk[2] === 'na') all.push('m-na');
-        else if (mk[2] === 'nach') all.push('m-nach');
-        if (mk[3]) all.push('m-qb');
-      });
-      (ls || []).forEach(function (l) { all.push('tk-l-' + l[2]); });
-      var c0 = all.join(' ').trim();
-      return c0 ? '<span class="' + c0 + '">' + esc(txt) + '</span>' : esc(txt);
-    }
     var out = '';
-    for (var j = 0; j < segs.length; j++) {
-      var st = applyMode(segs[j], state.mode);
-      var cl = cls[j].join(' ').trim();
-      out += cl ? '<span class="' + cl + '">' + esc(st) + '</span>' : esc(st);
+    for (var j = 0; j < segs.length; j++) out += segHTML(segs[j], na[j], qbNext[j], lsByLi[j]);
+    return out;
+  }
+
+  /* One letter segment (base consonant + its marks), mark-level styled. */
+  function segHTML(seg, na, qb, lsKind) {
+    var out = '';
+    for (var i = 0; i < seg.length; i++) {
+      var vis = applyMode(seg[i], state.mode);
+      if (!vis) continue;
+      var cp = seg.charCodeAt(i), cls = null;
+      if (state.medooyuk) {
+        if (cp === 0x5BD) cls = 'm-meteg';
+        else if (cp === 0x5B0 && na) cls = 'm-na';
+        else if ((cp === 0x5B8 || cp === 0x5C7) && qb) cls = 'm-qb';
+      }
+      if (i === 0 && lsKind) cls = cls ? cls + ' tk-l-' + lsKind : 'tk-l-' + lsKind;
+      out += cls ? '<span class="' + cls + '">' + esc(vis) + '</span>' : esc(vis);
     }
     return out;
   }

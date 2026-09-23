@@ -3,13 +3,13 @@ import Layout from '../../layouts/Layout.astro';
 ---
 <Layout
   title="Tikun Korim - Tanach with Medooyuk"
-  description="A reader's tikkun for the whole Tanach: letters with nikud and taamim, four display modes, the medooyuk layer marking every shva na and shva nach and kamatz katan vs gadol, and Shnayim Mikra v'Echad Targum in stacked, side-by-side, and tap layouts."
+  description="A reader's tikkun for the whole Tanach: letters with nikud and taamim, four display modes, the medooyuk layer marking shva na, meteg ga'ya, and qamats needing beur on the nikud itself, and Shnayim Mikra v'Echad Targum in stacked, side-by-side, and tap layouts."
 >
   <div class="tk-wrap" dir="rtl">
     <header class="tk-header">
       <h1>תיקון קורים <span class="tk-sub">Tikun Korim · medooyuk</span></h1>
       <p class="tk-tagline">
-        כל התנ"ך עם ניקוד וטעמים, שכבת המדויק (שוא נא / נח), ושנים מקרא ואחד תרגום
+        כל התנ"ך עם ניקוד וטעמים, שכבת המדויק על הניקוד עצמו (שוא נא, מטג), ושנים מקרא ואחד תרגום
       </p>
     </header>
 
@@ -50,10 +50,10 @@ import Layout from '../../layouts/Layout.astro';
         </span>
       </div>
       <div class="tk-legend" id="tk-legend" dir="rtl">
-        <span class="m-demo"><span class="m-na">שְׁ</span> = שוא נא (נשמע)</span>
-        <span class="m-demo"><span class="m-nach">שְׁ</span> = שוא נח (שקט)</span>
-        <span class="m-demo"><span class="m-qb">קָ</span> = קמץ — קטן או גדול? טעון בירור</span>
-        <span class="m-demo-note">הסימון על האות עצמה</span>
+        <span class="m-demo">ש<span class="m-na">ְ</span> = שוא נא (נשמע)</span>
+        <span class="m-demo">ק<span class="m-qb">ָ</span> = קמץ טעון בירור</span>
+        <span class="m-demo">א<span class="m-meteg">ֽ</span> = מטג (געיה)</span>
+        <span class="m-demo-note">הסימון על הניקוד עצמו — האותיות רגילות; שוא נח וקמץ ברור אינם מסומנים</span>
       </div>
     </div>
 
@@ -65,7 +65,7 @@ import Layout from '../../layouts/Layout.astro';
   </div>
 </Layout>
 
-<script src="/tikkun.js?v=6" defer></script>
+<script src="/tikkun.js?v=7" defer></script>
 
 <style is:global>
   .tk-wrap { max-width: 1100px; margin: 0 auto; padding: 1rem; }
@@ -103,10 +103,10 @@ import Layout from '../../layouts/Layout.astro';
   .tk-targum-line { font-size: .72em; line-height: 1.9; color: var(--muted-2, #667); background: var(--panel, rgba(127,127,127,.07)); border-radius: 8px; padding: .15rem .6rem; margin: .15rem 0; }
   .tk-targum-line .tk-tname { font-size: .75em; opacity: .75; }
   .tk-mikra-repeat { opacity: .82; }
-  /* medooyuk marks — on the actual letter */
-  .m-na { color: #0e7a6d; text-decoration: underline; text-decoration-color: #1a9e8c; text-decoration-thickness: 2px; text-underline-offset: 4px; font-weight: 600; }
-  .m-nach { color: #b45309; text-decoration: underline; text-decoration-color: #d07a2a; text-decoration-thickness: 2px; text-decoration-style: double; text-underline-offset: 4px; font-weight: 600; }
-  .m-qb { outline: 1.5px dotted rgba(200,60,60,.65); outline-offset: 2px; border-radius: 4px; }
+  /* medooyuk marks — on the nikud characters themselves; letters stay regular */
+  .m-na { color: #0e9d8a; font-weight: 700; }
+  .m-qb { text-decoration: underline dotted rgba(200,60,60,.8); text-underline-offset: 3px; }
+  .m-meteg { color: #8a6fd8; }
   .m-demo { margin-left: .9rem; font-size: 1.15rem; }
   .m-demo-note { color: var(--muted, #999); font-size: .78rem; }
   .tk-tap-done { opacity: .45; }

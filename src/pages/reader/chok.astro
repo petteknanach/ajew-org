@@ -38,10 +38,10 @@ import Layout from '../../layouts/Layout.astro';
         </span>
       </div>
       <div class="ck-legend" id="ck-legend" dir="rtl">
-        <span><span class="m-demo"><span class="m-na">שְׁ</span></span> = שוא נא (נשמע)</span>
-        <span><span class="m-demo"><span class="m-nach">שְׁ</span></span> = שוא נח (שקט)</span>
-        <span><span class="m-demo"><span class="m-qb">קָ</span></span> = קמץ — קטן או גדול? טעון בירור</span>
-        <span class="ck-legend-note">הסימון על האות עצמה</span>
+        <span><span class="m-demo">ש<span class="m-na">ְ</span></span> = שוא נא (נשמע)</span>
+        <span><span class="m-demo">ק<span class="m-qb">ָ</span></span> = קמץ טעון בירור</span>
+        <span><span class="m-demo">א<span class="m-meteg">ֽ</span></span> = מטג (געיה)</span>
+        <span class="ck-legend-note">הסימון על הניקוד עצמו — האותיות רגילות</span>
       </div>
     </div>
 
@@ -53,7 +53,7 @@ import Layout from '../../layouts/Layout.astro';
   </div>
 </Layout>
 
-<script src="/chok.js?v=2" defer></script>
+<script src="/chok.js?v=3" defer></script>
 
 <style is:global>
   /* ═══════════════════════════════════════════════════════════════
@@ -85,8 +85,8 @@ import Layout from '../../layouts/Layout.astro';
     --ck-ok: #2d6a4f;
     --ck-danger: #a33a2e;
     --ck-m-na: #177f70;
-    --ck-m-nach: #b3661f;
     --ck-m-qb: #b04a3a;
+    --ck-m-meteg: #6f55c9;
     --ck-c-commentary: var(--ck-teal-deep);
     --ck-c-rashi: #9c5224;
     --ck-c-mishna: #27648c;
@@ -126,8 +126,8 @@ import Layout from '../../layouts/Layout.astro';
     --ck-ok: #7fd1a5;
     --ck-danger: #e08a7a;
     --ck-m-na: #45c2b0;
-    --ck-m-nach: #e0995a;
     --ck-m-qb: #e08a7a;
+    --ck-m-meteg: #a98fe6;
     --ck-c-commentary: #45c2b0;
     --ck-c-rashi: #d99a5f;
     --ck-c-mishna: #6fb1dd;
@@ -398,28 +398,17 @@ import Layout from '../../layouts/Layout.astro';
   }
   .ck-mikra-repeat { display: none; }
 
-  /* Sheva/qamats marks — on the actual letter */
+  /* medooyuk marks — on the nikud characters themselves; letters stay regular */
   .m-na {
     color: var(--ck-m-na);
-    font-weight: 600;
-    text-decoration: underline;
-    text-decoration-color: var(--ck-m-na);
-    text-decoration-thickness: 2px;
-    text-underline-offset: 4px;
-  }
-  .m-nach {
-    color: var(--ck-m-nach);
-    font-weight: 600;
-    text-decoration: underline;
-    text-decoration-color: var(--ck-m-nach);
-    text-decoration-thickness: 2px;
-    text-decoration-style: double;
-    text-underline-offset: 4px;
+    font-weight: 700;
   }
   .m-qb {
-    outline: 1.5px dotted var(--ck-m-qb);
-    outline-offset: 2px;
-    border-radius: 4px;
+    text-decoration: underline dotted var(--ck-m-qb);
+    text-underline-offset: 3px;
+  }
+  .m-meteg {
+    color: var(--ck-m-meteg);
   }
 
   /* ── Cards & layers (Rashi, Mishna, Gemara, halacha, commentary) ── */
