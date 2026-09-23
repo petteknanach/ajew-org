@@ -160,6 +160,10 @@ def build_book(book, xml_dir, jsonl_dir, out_dir):
                     if di >= 0:
                         for s in rec['recs']:
                             m.append([di, s['li'], s['lb'], 1 if s.get('qb') else 0])
+                            if s.get('q') == 'katan':
+                                # kumutz katan mark sits on the qamats letter
+                                # itself (the letter feeding this sheva)
+                                m.append([di, s['li'] - 1, 'qk', 0])
                     else:
                         mismatch += 1; examples.append((c, v, wi, rec['w'], None, 'no-di'))
                 else:

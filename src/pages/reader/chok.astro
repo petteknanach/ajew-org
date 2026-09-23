@@ -46,6 +46,7 @@ import Layout from '../../layouts/Layout.astro';
       </div>
       <div class="ck-legend" id="ck-legend" dir="rtl">
         <span><span class="m-demo">ש<span class="m-na">ְ</span></span> = שוא נא (נשמע)</span>
+        <span><span class="m-demo">ק<span class="m-qk">ָ</span></span> = קומוץ קטן</span>
         <span><span class="m-demo">ק<span class="m-qb">ָ</span></span> = קמץ טעון בירור</span>
         <span><span class="m-demo">א<span class="m-meteg">ֽ</span></span> = מטג (געיה)</span>
         <span class="ck-legend-note">הסימון על הניקוד עצמו — האותיות רגילות</span>
@@ -93,6 +94,7 @@ import Layout from '../../layouts/Layout.astro';
     --ck-danger: #a33a2e;
     --ck-m-na: #177f70;
     --ck-m-qb: #b04a3a;
+    --ck-m-qk: #c34a3a;
     --ck-m-meteg: #6f55c9;
     --ck-c-commentary: var(--ck-teal-deep);
     --ck-c-rashi: #9c5224;
@@ -134,6 +136,7 @@ import Layout from '../../layouts/Layout.astro';
     --ck-danger: #e08a7a;
     --ck-m-na: #45c2b0;
     --ck-m-qb: #e08a7a;
+    --ck-m-qk: #ef8f7c;
     --ck-m-meteg: #a98fe6;
     --ck-c-commentary: #45c2b0;
     --ck-c-rashi: #d99a5f;
@@ -455,6 +458,11 @@ import Layout from '../../layouts/Layout.astro';
     height: 0.44em;
     background: var(--ck-m-qb);
     border-radius: 1px;
+  }
+  .m-qk {
+    color: var(--ck-m-qk);
+    font-weight: 900;
+    text-shadow: 0 0 .6px currentColor;
   }
   .m-meteg {
     color: var(--ck-m-meteg);

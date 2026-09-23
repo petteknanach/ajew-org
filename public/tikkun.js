@@ -125,10 +125,11 @@
      ls: [[ti, li, 'lg'|'sm'|'sus']] letter-presentation entries (scroll-true). */
   function tokenHTML(tok, mks, ls) {
     var segs = letterSegments(tok);
-    var na = {}, qbNext = {}, lsByLi = {};
+    var na = {}, qbNext = {}, qk = {}, lsByLi = {};
     (state.medooyuk && mks ? mks : []).forEach(function (mk) {
       if (mk[1] >= 0 && mk[1] < segs.length) {
         if (mk[2] === 'na') na[mk[1]] = 1;
+        if (mk[2] === 'qk') qk[mk[1]] = 1;           /* qamats katan: mark li IS the qamats letter */
         if (mk[3]) { if (mk[1] > 0) qbNext[mk[1] - 1] = 1; }
       }
     });
@@ -136,12 +137,12 @@
       if (l[1] >= 0 && l[1] < segs.length) lsByLi[l[1]] = l[2];
     });
     var out = '';
-    for (var j = 0; j < segs.length; j++) out += segHTML(segs[j], na[j], qbNext[j], lsByLi[j]);
+    for (var j = 0; j < segs.length; j++) out += segHTML(segs[j], na[j], qbNext[j], qk[j], lsByLi[j]);
     return out;
   }
 
   /* One letter segment (base consonant + its marks), mark-level styled. */
-  function segHTML(seg, na, qb, lsKind) {
+  function segHTML(seg, na, qb, qk, lsKind) {
     var out = '';
     for (var i = 0; i < seg.length; i++) {
       var vis = applyMode(seg[i], state.mode);
@@ -151,6 +152,7 @@
         if (cp === 0x5BD) cls = 'm-meteg';
         else if (cp === 0x5B0 && na) cls = 'm-na';
         else if ((cp === 0x5B8 || cp === 0x5C7) && qb) cls = 'm-qb';
+        else if ((cp === 0x5B8 || cp === 0x5C7) && qk) cls = 'm-qk';
       }
       if (i === 0 && lsKind) cls = cls ? cls + ' tk-l-' + lsKind : 'tk-l-' + lsKind;
       out += cls ? '<span class="' + cls + '">' + esc(vis) + '</span>' : esc(vis);

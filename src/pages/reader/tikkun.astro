@@ -51,9 +51,10 @@ import Layout from '../../layouts/Layout.astro';
       </div>
       <div class="tk-legend" id="tk-legend" dir="rtl">
         <span class="m-demo">ש<span class="m-na">ְ</span> = שוא נא (נשמע)</span>
+        <span class="m-demo">ק<span class="m-qk">ָ</span> = קומוץ קטן</span>
         <span class="m-demo">ק<span class="m-qb">ָ</span> = קמץ טעון בירור</span>
         <span class="m-demo">א<span class="m-meteg">ֽ</span> = מטג (געיה)</span>
-        <span class="m-demo-note">הסימון על הניקוד עצמו — האותיות רגילות; שוא נח וקמץ ברור אינם מסומנים</span>
+        <span class="m-demo-note">הסימון על הניקוד עצמו — האותיות רגילות; שוא נח וקמץ גדול אינם מסומנים</span>
       </div>
     </div>
 
@@ -65,7 +66,7 @@ import Layout from '../../layouts/Layout.astro';
   </div>
 </Layout>
 
-<script src="/tikkun.js?v=7" defer></script>
+<script src="/tikkun.js?v=8" defer></script>
 
 <style is:global>
   .tk-wrap { max-width: 1100px; margin: 0 auto; padding: 1rem; }
@@ -109,6 +110,7 @@ import Layout from '../../layouts/Layout.astro';
   .m-qb { position: relative; text-decoration: none; }
   .m-qb::before { content: ''; position: absolute; top: -0.3em; inset-inline-start: -0.3em; width: 0.66em; height: 0.15em; background: rgba(200,60,60,.9); border-radius: 1px; }
   .m-qb::after { content: ''; position: absolute; top: -0.15em; inset-inline-start: -0.015em; width: 0.14em; height: 0.44em; background: rgba(200,60,60,.9); border-radius: 1px; }
+  .m-qk { color: #c34a3a; font-weight: 900; text-shadow: 0 0 .6px currentColor; }
   .m-meteg { color: #8a6fd8; }
   .m-demo { margin-left: .9rem; font-size: 1.15rem; }
   .m-demo-note { color: var(--muted, #999); font-size: .78rem; }

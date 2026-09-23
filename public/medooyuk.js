@@ -16,6 +16,7 @@
     '.m-qb{position:relative;text-decoration:none}' +
     '.m-qb::before{content:"";position:absolute;top:-0.3em;inset-inline-start:-0.3em;width:0.66em;height:0.15em;background:rgba(200,60,60,.9);border-radius:1px}' +
     '.m-qb::after{content:"";position:absolute;top:-0.15em;inset-inline-start:-0.015em;width:0.14em;height:0.44em;background:rgba(200,60,60,.9);border-radius:1px}' +
+    '.m-qk{color:#c34a3a;font-weight:900;text-shadow:0 0 .6px currentColor}' +
     '.m-meteg{color:#8a6fd8}';
 
   function joinTokens(arr) {
@@ -47,9 +48,10 @@
   }
 
   /* medooyuk marks on the NIKUD CHARACTERS themselves — letters stay regular:
-     sheva na colored (m-na), meteg colored (m-meteg), qamats feeding an
-     unresolved sheva dotted on the qamats itself (m-qb; mk.li is the sheva
-     letter, the qamats sits on li-1). */
+     sheva na colored (m-na), meteg colored (m-meteg), qamats katan colored
+     (m-qk; mk.li IS the qamats letter), qamats feeding an unresolved sheva
+     dotted on the qamats itself (m-qb; mk.li is the sheva letter, the qamats
+     sits on li-1). */
   function coloredVerse(verse) {
     var byTok = {};
     (verse.m || []).forEach(function (mk) {
@@ -57,10 +59,11 @@
     });
     return joinTokens(verse.t.map(function (tok, i) {
       var segs = letterSegments(tok);
-      var na = {}, qbPrev = {};
+      var na = {}, qbPrev = {}, qk = {};
       (byTok[i] || []).forEach(function (mk) {
         if (mk[1] >= 0 && mk[1] < segs.length) {
           if (mk[2] === 'na') na[mk[1]] = 1;
+          if (mk[2] === 'qk') qk[mk[1]] = 1;
           if (mk[3]) { if (mk[1] > 0) qbPrev[mk[1] - 1] = 1; }
         }
       });
@@ -72,6 +75,7 @@
           if (cp === 0x5BD) cls = 'm-meteg';
           else if (cp === 0x5B0 && na[j]) cls = 'm-na';
           else if ((cp === 0x5B8 || cp === 0x5C7) && qbPrev[j]) cls = 'm-qb';
+          else if ((cp === 0x5B8 || cp === 0x5C7) && qk[j]) cls = 'm-qk';
           out += cls ? '<span class="' + cls + '">' + esc(seg[k]) + '</span>' : esc(seg[k]);
         }
       }
