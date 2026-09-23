@@ -314,6 +314,10 @@ const todayQuote = quotes[dayIndex];
         <span class="tool-icon">📜</span>
         <div><span class="tool-label">Parsha</span><span class="tool-he" lang="he" dir="rtl">פרשת שבוע</span></div>
       </a>
+      <a href="/reader/tikkun" class="tool">
+        <span class="tool-icon">📖</span>
+        <div><span class="tool-label">Tikun Korim · Shnayim Mikra</span><span class="tool-he" lang="he" dir="rtl">תיקון קריאה · שניים מקרא ואחד תרגום</span></div>
+      </a>
       <a href="/shavuos" class="tool">
         <span class="tool-icon">🌾</span>
         <div><span class="tool-label">Shavuos / שבועות</span><span class="tool-he" lang="he" dir="rtl">זמן מתן תורתנו</span></div>
@@ -357,10 +361,10 @@ const todayQuote = quotes[dayIndex];
      hours show alef-first sets, night hours alef-second.
      ═══════════════════════════════════════ -->
 <style is:inline>
-#pair-cycle{position:fixed;bottom:12px;left:14px;z-index:6;font-family:var(--font-hebrew,'Frank Ruhl Libre',serif);font-size:1.15rem;line-height:1;color:#6f6146;opacity:.8;direction:rtl;unicode-bidi:isolate;user-select:none;pointer-events:auto;cursor:default;text-shadow:0 1px 2px rgba(255,255,255,.35)}
-@media (prefers-color-scheme:dark){#pair-cycle{color:#b9a87f;text-shadow:0 1px 2px rgba(0,0,0,.5)}}
+#pair-cycle{position:fixed;bottom:12px;left:14px;z-index:40;font-family:var(--font-hebrew,'Frank Ruhl Libre',serif);font-size:1.7rem;line-height:1.15;color:#3f3115;background:rgba(255,250,238,.82);border:1px solid rgba(111,97,70,.35);border-radius:10px;padding:5px 12px 7px;direction:rtl;unicode-bidi:isolate;user-select:none;pointer-events:auto;cursor:default;box-shadow:0 1px 4px rgba(0,0,0,.12)}
+@media (prefers-color-scheme:dark){#pair-cycle{color:#ecd9a8;background:rgba(24,19,10,.72);border-color:rgba(185,168,127,.4);box-shadow:0 1px 4px rgba(0,0,0,.4)}}
 </style>
-<div id="pair-cycle" aria-hidden="true" lang="he" title="סדר הזוגות — אותיות הוי״ה עם האל״ף לפי שעון ירושלים (הרקח, ספר השם), מצאת הכוכבים עד צאת הכוכבים: בכל שעה ל״ו זוגות בי״א חלקים, ואחריהם ו׳ חלקים לזוג עד קפ״ה"></div>
+<div id="pair-cycle" lang="he" title="סדר הזוגות — אותיות הוי״ה עם האל״ף לפי שעון ירושלים (הרקח, ספר השם), מצאת הכוכבים עד צאת הכוכבים: בכל שעה ל״ו זוגות בי״א חלקים, ואחריהם ו׳ חלקים לזוג עד קפ״ה"></div>
 <script is:inline>
 (function(){
   try{
@@ -700,7 +704,7 @@ const todayQuote = quotes[dayIndex];
   }
   .quote-card cite {
     font-size: 0.85rem;
-    color: #888;
+    color: #6a6a6a;
     font-style: normal;
     font-weight: 600;
   }
@@ -759,7 +763,7 @@ const todayQuote = quotes[dayIndex];
   .qs-body { flex: 1; display: flex; flex-direction: column; }
   .qs-title { font-weight: 700; font-size: 1rem; }
   .qs-desc { font-size: 0.85rem; color: #666; }
-  .qs-he { font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif); font-size: 0.85rem; color: #888; direction: rtl; }
+  .qs-he { font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif); font-size: 0.85rem; color: #6a6a6a; direction: rtl; }
   .qs-arrow { font-size: 1.2rem; color: var(--gold, #d4a017); }
 
   /* ============================================
@@ -787,7 +791,7 @@ const todayQuote = quotes[dayIndex];
   .continue-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-color: var(--gold, #d4a017); }
   .continue-info { flex: 1; }
   .continue-title { display: block; font-weight: 600; font-size: 1rem; margin-bottom: 2px; }
-  .continue-book { display: block; font-size: 0.85rem; color: #888; }
+  .continue-book { display: block; font-size: 0.85rem; color: #6a6a6a; }
   .continue-progress { height: 4px; background: #e8e0d0; border-radius: 2px; margin: 6px 0 4px; overflow: hidden; }
   .continue-fill { height: 100%; background: var(--gold, #d4a017); border-radius: 2px; transition: width 0.3s; }
   .continue-ago { font-size: 0.75rem; color: #aaa; }
@@ -803,7 +807,7 @@ const todayQuote = quotes[dayIndex];
   .section-sub {
     max-width: 500px;
     margin: 0 auto 2rem;
-    color: #777;
+    color: #646464;
     font-size: 0.95rem;
     text-align: center;
   }
@@ -831,7 +835,7 @@ const todayQuote = quotes[dayIndex];
   .feat-gold:hover { box-shadow: 0 4px 16px rgba(212,160,23,0.2); }
   .feat-icon { font-size: 1.8rem; margin-bottom: 0.5rem; }
   .feat-card h3 { margin: 0 0 2px; font-size: 1.05rem; }
-  .feat-he { font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif); font-size: 0.85rem; color: #888; direction: rtl; margin: 0 0 0.5rem; }
+  .feat-he { font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif); font-size: 0.85rem; color: #6a6a6a; direction: rtl; margin: 0 0 0.5rem; }
   .feat-desc { font-size: 0.85rem; color: #666; line-height: 1.4; margin: 0; flex: 1; }
   .feat-cta { display: inline-block; margin-top: 0.75rem; color: var(--gold, #d4a017); font-weight: 700; font-size: 0.9rem; }
 
@@ -865,7 +869,7 @@ const todayQuote = quotes[dayIndex];
   .tool-green { background: #e8f5e9; border-color: #a5d6a7; }
   .tool-icon { font-size: 1.3rem; }
   .tool-label { display: block; font-weight: 600; font-size: 0.9rem; }
-  .tool-he { display: block; font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif); font-size: 0.75rem; color: #888; direction: rtl; }
+  .tool-he { display: block; font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif); font-size: 0.75rem; color: #6a6a6a; direction: rtl; }
 
   /* ============================================
      APP BANNER
@@ -924,7 +928,7 @@ const todayQuote = quotes[dayIndex];
     font-style: italic;
     margin: 0 0 0.5rem;
   }
-  .closing-quote cite { font-size: 0.85rem; color: #888; font-style: normal; font-weight: 600; }
+  .closing-quote cite { font-size: 0.85rem; color: #6a6a6a; font-style: normal; font-weight: 600; }
 
   /* ============================================
      DARK MODE
