@@ -671,13 +671,19 @@
             var prev = (w.days[dy] || {})[pair[0]];
             if (prev && prev.book === sec.book && prev.from && prev.from.c === sec.from.c) offset++;
           });
-          var startV = (sec.from.v || 1) + 6 * offset;
+          var dayIdx = DAYS.indexOf(day);
+          var mk = (state.miluy && state.miluy.days && state.miluy.days[dayIdx]) || null;
+          var per = mk ? mk.count : 6;
+          var startV = (sec.from.v || 1) + per * offset;
           var segFrom = { c: sec.from.c, v: startV };
-          var segTo = { c: sec.from.c, v: startV + 5 };
-          var headRef = heNum(segFrom.c) + ':' + heNum(segFrom.v) + '-' + heNum(segTo.v);
+          var segTo = { c: sec.from.c, v: startV + per - 1 };
+          var headRef = heNum(segFrom.c) + ':' + heNum(segFrom.v) + '\u2013' + heNum(segTo.c) + ':' + heNum(segTo.v);
+          var miluyTag = mk ? '<div class="ck-miluy"><span class="ck-miluy-t">כוונת המילוי — האריז״ל</span> ' +
+            heNum(mk.count) + ' פסוקים כנגד האות ' + mk.letter + ' של המילוי' +
+            (mk.path ? ' — ' + mk.path : '') + '</div>' : '';
           return versesHTML(slug, segFrom, segTo, 'navi', null).then(function (vh) {
             out.push('<section class="ck-section" data-sec="' + vkey + '">' +
-              secHead(pair[1] + ' — ' + sec.book, headRef) + popBtn() + kavanaHTML(vkey, d) + voiceBox(dc && dc[vkey]) + vh + '</section>');
+              secHead(pair[1] + ' — ' + sec.book, headRef) + popBtn() + miluyTag + kavanaHTML(vkey, d) + voiceBox(dc && dc[vkey]) + vh + '</section>');
           });
         });
       });
@@ -825,7 +831,8 @@
       fetchJSON('/reader/chok/mussar.json').catch(function(){return null;}),
       fetchJSON('/reader/chok/day-comm.json').catch(function () { return null; }),
       fetchJSON('/reader/chok/kavanos-chok.json').catch(function () { return null; }),
-      fetchJSON('/reader/chok/kavanos-actual.json').catch(function () { return null; })
+      fetchJSON('/reader/chok/kavanos-actual.json').catch(function () { return null; }),
+      fetchJSON('/reader/chok/miluy-kavana.json').catch(function () { return null; })
     ]).then(function (res) {
       state.sched = res[0];
       state.map = res[1];
@@ -834,6 +841,7 @@
       state.dcomm = res[4] || {};
       state.kav = res[5] || null;
       state.kavA = res[6] || null;
+      state.miluy = res[7] || null;
       var rr = resolveWeek();
       state.weeks = rr.weeks || ['בראשית'];
       if (state.focusWeek) {
