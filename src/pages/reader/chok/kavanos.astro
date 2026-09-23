@@ -1,0 +1,78 @@
+---
+// Kavanos of Torah lishmah: Arizal (PEC Shaar HaNehagas HaLimud, PD),
+// two short tefillos from Likutay Nanach MayUman vol 5 (our publication),
+// Kamarna attribution. Data: public/reader/chok/kavanos-torah.json.
+import Layout from '../../../layouts/Layout.astro';
+import fs from 'node:fs';
+
+const data = JSON.parse(fs.readFileSync(
+  new URL('../../../../public/reader/chok/kavanos-torah.json', import.meta.url), 'utf-8'));
+
+const { arizal, tefillos, tefillaLong, kamarna } = data;
+---
+<Layout
+  title="Kavanos of Torah Lishmah - Chok LiYisroel"
+  description="The kavanos of learning Torah lishmah: the Arizal's kavana (Pri Etz Chaim, Shaar HaNehagas HaLimud), the Kamarna Rebbe's kavana of Torah lishmah, and short prayers before learning from Likutay Nanach vol 5."
+>
+  <div class="ck-wrap" dir="rtl">
+    <header class="ck-header">
+      <h1>כוונות לימוד תורה לשמה <span class="ck-sub">Kavanos of Torah Lishmah</span></h1>
+      <p class="ck-date" dir="rtl">הכוונות והתפלות לפני קיום חק לישראל — ולכל לימוד תורה.</p>
+    </header>
+
+    <section class="ck-section">
+      <h2>{arizal.title}</h2>
+      <p class="ck-kav-src">{arizal.sub}</p>
+      {arizal.items.map((t, i) => (
+        <div class="ck-voice">
+          <div class="ck-voice-k">{i === 0 ? 'הכוונה הכללית' : 'המשך'}</div>
+          <p class="ck-he">{t}</p>
+        </div>
+      ))}
+    </section>
+
+    <section class="ck-section">
+      <h2>{kamarna.title}</h2>
+      <p class="ck-kav-src">{kamarna.attribution}</p>
+      <div class="ck-voice">
+        <p class="ck-he">{kamarna.summary}</p>
+        <p class="ck-kav-note">{kamarna.note}</p>
+      </div>
+    </section>
+
+    <section class="ck-section">
+      <h2>תפלות קצרות לפני הלימוד</h2>
+      <p class="ck-kav-src">מליקוטי ננח מיומן — חלק ה׳</p>
+      {tefillos.map((t) => (
+        <details class="ck-kavana" open>
+          <summary>{t.title}</summary>
+          <div class="ck-kavana-body ck-he">{t.he}</div>
+        </details>
+      ))}
+      <details class="ck-kavana">
+        <summary>{tefillaLong.title} — למעוניין</summary>
+        <div class="ck-kavana-body ck-he">{tefillaLong.he}</div>
+      </details>
+    </section>
+
+    <p class="ck-back"><a href="/reader/chok/">← חק לישראל — היום</a></p>
+  </div>
+</Layout>
+
+<style>
+  .ck-wrap { max-width: 46rem; margin: 0 auto; padding: 1.2rem 1rem 3rem; }
+  .ck-header h1 { margin: .2rem 0; }
+  .ck-sub { font-size: .55em; opacity: .7; font-weight: 400; }
+  .ck-date { opacity: .75; margin: .1rem 0 .6rem; }
+  .ck-section { margin-bottom: 2.2rem; }
+  .ck-section h2 { margin: .2rem 0 .3rem; font-size: 1.25em; }
+  .ck-kav-src { opacity: .65; font-size: .85em; margin: 0 0 .5rem; }
+  .ck-voice { border-inline-start: 3px solid var(--ck-gold, #b8860b); background: rgba(184,134,11,.06); padding: .7rem 1rem; border-radius: .5rem; margin: .5rem 0; }
+  .ck-voice-k { font-weight: 700; font-size: .85em; opacity: .75; margin-bottom: .15rem; }
+  .ck-he { line-height: 2.05; margin: .2rem 0; }
+  .ck-kavana { margin: .5rem 0; }
+  .ck-kavana > summary { cursor: pointer; color: var(--ck-gold, #8a6d1d); font-size: .95em; }
+  .ck-kavana-body { line-height: 2.0; padding: .4rem .2rem; }
+  .ck-kav-note { opacity: .7; font-size: .85em; }
+  .ck-back { margin-top: 2rem; }
+</style>

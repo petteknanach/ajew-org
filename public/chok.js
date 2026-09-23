@@ -326,6 +326,7 @@
           '<div class="ck-kav-body"></div></details>';
       }).join('');
       return '<section class="ck-section" id="ck-kavanos">' + secHead('כוונות — האריז״ל (פרי עץ חיים)') +
+        '<p class="ck-kav-link"><a href="/reader/chok/kavanos/">כוונות לימוד תורה לשמה ותפלות לפני הלימוד ←</a></p>' +
         '<p class="ck-kav-note">כוונות התפילה והמצות. פתח שער, ופרק לעיון.</p>' + items + '</section>';
     });
   }
