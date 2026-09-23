@@ -11,6 +11,7 @@ const files = {
   '/reader/chok/kavanos-chok.json': '/reader/chok/kavanos-chok.json',
   '/reader/chok/kavanos-actual.json': '/reader/chok/kavanos-actual.json',
   '/reader/chok/miluy-kavana.json': '/reader/chok/miluy-kavana.json',
+  '/reader/chok/hk-verses.json': '/reader/chok/hk-verses.json',
 };
 
 function makeEl(id) {
@@ -109,6 +110,9 @@ runCase('', (html, els) => {
     // Miluy kavana: WZ habracha Wed = 6/day -> navi seg = 6 verses, chip shows the letter vav
     check('miluy chip renders', (h1b || '').includes('ck-miluy'));
     check('miluy chip names the letter', (h1b || '').includes('כנגד האות ו׳ של המילוי'));
+    // Breslov sources layer (Halechta Knechmani facts): WZ habracha = Devarim ch33 (safe)
+    check('breslov sources line renders', (h1b || '').includes('ck-hk-src'));
+    check('breslov sources name the index', (h1b || '').includes('הלכתא כנחמני'));
     // Case 1c: today's own week now has a full-scope entry
     runCase('?week=' + encodeURIComponent('בראשית') + '&day=' + encodeURIComponent('יום רביעי'), (h1c) => {
       check('breishis carry renders', (h1c || '').includes('ck-carry-top'));
