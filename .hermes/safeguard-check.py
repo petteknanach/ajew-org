@@ -711,8 +711,15 @@ def check_en_coverage():
                 if book_id == 'kokhvei-or' and data.get('hasEnglish') is False:
                     continue
                 for s in data.get('segments', []):
-                    if (s.get('he','') or '').strip(): total_he += 1
-                    if (s.get('en','') or '').strip(): total_en += 1
+                    he_txt = (s.get('he', '') or '').strip()
+                    # Apparatus segs (short HE headings like 'סימן א') need no
+                    # translation; counting them inflates both sides and lets
+                    # misaligned fill hide. Matches the repair engines' body
+                    # threshold (len(he) >= 45).
+                    if len(he_txt) < 45:
+                        continue
+                    if he_txt: total_he += 1
+                    if (s.get('en', '') or '').strip(): total_en += 1
                 files_checked += 1
         
         if total_he == 0:
