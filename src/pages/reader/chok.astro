@@ -60,7 +60,7 @@ import Layout from '../../layouts/Layout.astro';
   </div>
 </Layout>
 
-<script src="/chok.js?v=4" defer></script>
+<script src="/chok.js?v=5" defer></script>
 
 <style is:global>
   /* ═══════════════════════════════════════════════════════════════
@@ -408,11 +408,39 @@ import Layout from '../../layouts/Layout.astro';
   /* medooyuk marks — on the nikud characters themselves; letters stay regular */
   .m-na {
     color: var(--ck-m-na);
-    font-weight: 700;
+    font-weight: 900;
+    text-shadow: 0 0 .6px currentColor;
+  }
+  .m-na::after {
+    content: '•';
+    font-weight: 900;
+    font-size: 1.3em;
+    line-height: 0;
+    vertical-align: -0.1em;
   }
   .m-qb {
-    text-decoration: underline dotted var(--ck-m-qb);
-    text-underline-offset: 3px;
+    position: relative;
+    text-decoration: none;
+  }
+  .m-qb::before {
+    content: '';
+    position: absolute;
+    top: -0.3em;
+    inset-inline-start: -0.3em;
+    width: 0.66em;
+    height: 0.15em;
+    background: var(--ck-m-qb);
+    border-radius: 1px;
+  }
+  .m-qb::after {
+    content: '';
+    position: absolute;
+    top: -0.15em;
+    inset-inline-start: -0.015em;
+    width: 0.14em;
+    height: 0.44em;
+    background: var(--ck-m-qb);
+    border-radius: 1px;
   }
   .m-meteg {
     color: var(--ck-m-meteg);

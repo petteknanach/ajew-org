@@ -11,8 +11,11 @@
   var slug = m[1], chapter = m[3];
   var data = null, active = false, snapshots = [];
 
-  var CSS = '.m-na{color:#0e9d8a;font-weight:700}' +
-    '.m-qb{text-decoration:underline dotted rgba(200,60,60,.8);text-underline-offset:3px}' +
+  var CSS = '.m-na{color:#0e9d8a;font-weight:900;text-shadow:0 0 .6px currentColor}' +
+    '.m-na::after{content:"\\2022";font-weight:900;font-size:1.3em;line-height:0;vertical-align:-0.1em}' +
+    '.m-qb{position:relative;text-decoration:none}' +
+    '.m-qb::before{content:"";position:absolute;top:-0.3em;inset-inline-start:-0.3em;width:0.66em;height:0.15em;background:rgba(200,60,60,.9);border-radius:1px}' +
+    '.m-qb::after{content:"";position:absolute;top:-0.15em;inset-inline-start:-0.015em;width:0.14em;height:0.44em;background:rgba(200,60,60,.9);border-radius:1px}' +
     '.m-meteg{color:#8a6fd8}';
 
   function joinTokens(arr) {

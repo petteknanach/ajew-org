@@ -382,7 +382,7 @@
               row += '<div class="ck-targum-line">' + richText(applyMode(tg.ch[c][x])) + '</div>';
             }
             if (state.tanachen && en && (en.ch || {})[String(c)] && en.ch[String(c)][x - 1]) {
-              row += '<div class="ck-en-line">' + en.ch[String(c)][x - 1] + '</div>';
+              row += '<div class="ck-en-line" dir="ltr">' + en.ch[String(c)][x - 1] + '</div>';
             }
             if (vcomm && vcomm.verses && vcomm.verses[c + ':' + x]) {
               row += voiceLine(vcomm.verses[c + ':' + x]);
@@ -425,7 +425,7 @@
   function voiceLine(v) {
     if (!v) return '';
     return '<div class="ck-voice-row"><div class="ck-voice-he">' + richText(v.he || '') +
-      '</div><div class="ck-voice-en">' + esc(v.en || '') + '</div></div>';
+      '</div><div class="ck-voice-en" dir="ltr">' + esc(v.en || '') + '</div></div>';
   }
   function voiceBox(v) {
     if (!v) return '';
@@ -661,9 +661,23 @@
           if (!want(vkey)) return;
           var slug = SLUGS[sec.book];
           if (!slug) { out.push(card(pair[1], sec.book)); return; }
-          return versesHTML(slug, {c: sec.from.c, v: sec.from.v || 1}, null, 'navi', null).then(function (vh) {
+          /* chok regimen: 6 verses of navi + 6 of kesuvim per day. The
+             schedule stores the chapter only, so the day's start = 1 +
+             6 x (how many earlier DAYS of this week sit on the same chapter). */
+          var dayIdx = DAYS.indexOf(day);
+          var offset = 0;
+          DAYS.forEach(function (dy, di) {
+            if (di >= dayIdx) return;
+            var prev = (w.days[dy] || {})[pair[0]];
+            if (prev && prev.book === sec.book && prev.from && prev.from.c === sec.from.c) offset++;
+          });
+          var startV = (sec.from.v || 1) + 6 * offset;
+          var segFrom = { c: sec.from.c, v: startV };
+          var segTo = { c: sec.from.c, v: startV + 5 };
+          var headRef = heNum(segFrom.c) + ':' + heNum(segFrom.v) + '-' + heNum(segTo.v);
+          return versesHTML(slug, segFrom, segTo, 'navi', null).then(function (vh) {
             out.push('<section class="ck-section" data-sec="' + vkey + '">' +
-              secHead(pair[1] + ' — ' + sec.book, refStr(sec)) + popBtn() + kavanaHTML(vkey, d) + voiceBox(dc && dc[vkey]) + vh + '</section>');
+              secHead(pair[1] + ' — ' + sec.book, headRef) + popBtn() + kavanaHTML(vkey, d) + voiceBox(dc && dc[vkey]) + vh + '</section>');
           });
         });
       });
