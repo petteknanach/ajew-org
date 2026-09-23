@@ -244,6 +244,23 @@ const structuredData = torahData ? JSON.stringify({
               <span class="segment-number">{seg.index}</span>
               <p>{seg.en || 'Translation not yet available'}</p>
             </div>
+            {seg.index === 1 && [41, 43, 117, 162, 232, 234, 275].includes(torahNum) && (
+              <details class="notebooklm-study-panel" style="grid-column:1/-1; margin:12px 0 4px; padding:12px 14px; border:1px solid var(--reader-border,#d8d0c4); border-radius:10px; background:var(--reader-bg-secondary,#f8f5f0); font-family:'Open Sans',sans-serif;">
+                <summary style="cursor:pointer; font-weight:700;">🌊 Depth of the Teaching: Hisbodedus in Practice</summary>
+                <div style="padding-top:10px;">
+                  <p style="margin:0 0 8px; font-size:.9rem;"><strong>AI-assisted interpretation.</strong> Analogies and explanations are illustrative and are not verified Torah text. Consult Sichos HaRan 41, 43, 117, 162, 232, 234, and 275, and Likutay Moharan I:52.</p>
+                  <video controls preload="none" style="width:100%; border-radius:6px;" src="https://archive.org/download/ajew-nlm-deep-sichos-haran-hishbodedus-practice-v1/deep-video-20260923.mp4"></video>
+                  <audio controls preload="none" style="width:100%; margin-top:8px;" src="https://archive.org/download/ajew-nlm-deep-sichos-haran-hishbodedus-practice-v1/deep-audio-20260923.m4a"></audio>
+                  <p style="margin:8px 0 0; font-size:.85rem; display:flex; gap:12px; flex-wrap:wrap;">
+                    <a href="https://archive.org/download/ajew-nlm-deep-sichos-haran-hishbodedus-practice-v1/transcript-video.txt">Video transcript</a>
+                    <a href="https://archive.org/download/ajew-nlm-deep-sichos-haran-hishbodedus-practice-v1/transcript-audio.txt">Audio transcript</a>
+                    <a href="https://archive.org/details/ajew-nlm-deep-sichos-haran-hishbodedus-practice-v1">Archive and sources</a>
+                    <a href="https://archive.org/download/ajew-nlm-deep-sichos-haran-hishbodedus-practice-v1/deep-video-20260923.mp4" download>Download video</a>
+                    <a href="https://archive.org/download/ajew-nlm-deep-sichos-haran-hishbodedus-practice-v1/deep-audio-20260923.m4a" download>Download audio</a>
+                  </p>
+                </div>
+              </details>
+            )}
           </div>
         ))}
         </div>

@@ -355,6 +355,23 @@ const pageDesc = torahData
               <span class="segment-number" title="Source location">{isIntroPage ? seg.index : segmentCitation(seg)}</span>
               <p>{seg.en || 'Translation not yet available'}</p>
             </div>
+            {seg.index === 1 && partNum === 2 && torahNum === 25 && (
+              <details class="notebooklm-study-panel" style="grid-column:1/-1; margin:12px 0 4px; padding:12px 14px; border:1px solid var(--reader-border,#d8d0c4); border-radius:10px; background:var(--reader-bg-secondary,#f8f5f0); font-family:'Open Sans',sans-serif;">
+                <summary style="cursor:pointer; font-weight:700;">🌱 Begin Here: Hisbodidus — Speak to God in Your Own Words</summary>
+                <div style="padding-top:10px;">
+                  <p style="margin:0 0 8px; font-size:.9rem;"><strong>AI-assisted interpretation.</strong> Analogies and explanations are illustrative and are not verified Torah text. Consult Likutay Moharan II:25 above.</p>
+                  <video controls preload="none" style="width:100%; border-radius:6px;" src="https://archive.org/download/ajew-nlm-beginner-likutay-moharan-2-25-v1/beginner-video-20260923.mp4"></video>
+                  <audio controls preload="none" style="width:100%; margin-top:8px;" src="https://archive.org/download/ajew-nlm-beginner-likutay-moharan-2-25-v1/beginner-audio-20260923.m4a"></audio>
+                  <p style="margin:8px 0 0; font-size:.85rem; display:flex; gap:12px; flex-wrap:wrap;">
+                    <a href="https://archive.org/download/ajew-nlm-beginner-likutay-moharan-2-25-v1/transcript-video.txt">Video transcript</a>
+                    <a href="https://archive.org/download/ajew-nlm-beginner-likutay-moharan-2-25-v1/transcript-audio.txt">Audio transcript</a>
+                    <a href="https://archive.org/details/ajew-nlm-beginner-likutay-moharan-2-25-v1">Archive and sources</a>
+                    <a href="https://archive.org/download/ajew-nlm-beginner-likutay-moharan-2-25-v1/beginner-video-20260923.mp4" download>Download video</a>
+                    <a href="https://archive.org/download/ajew-nlm-beginner-likutay-moharan-2-25-v1/beginner-audio-20260923.m4a" download>Download audio</a>
+                  </p>
+                </div>
+              </details>
+            )}
           </div>
         ))}
         </div>
