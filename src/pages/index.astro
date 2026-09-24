@@ -361,8 +361,11 @@ const todayQuote = quotes[dayIndex];
      hours show alef-first sets, night hours alef-second.
      ═══════════════════════════════════════ -->
 <style is:inline>
-#pair-cycle{position:fixed;bottom:12px;left:14px;z-index:40;font-family:var(--font-hebrew,'Frank Ruhl Libre',serif);font-size:1.7rem;line-height:1.15;color:#3f3115;background:rgba(255,250,238,.82);border:1px solid rgba(111,97,70,.35);border-radius:10px;padding:5px 12px 7px;direction:rtl;unicode-bidi:isolate;user-select:none;pointer-events:auto;cursor:default;box-shadow:0 1px 4px rgba(0,0,0,.12)}
+#pair-cycle{position:fixed;bottom:12px;left:14px;z-index:1100;font-family:var(--font-hebrew,'Frank Ruhl Libre',serif);font-size:1.7rem;line-height:1.15;color:#3f3115;background:rgba(255,250,238,.82);border:1px solid rgba(111,97,70,.35);border-radius:10px;padding:5px 12px 7px;direction:rtl;unicode-bidi:isolate;user-select:none;pointer-events:auto;cursor:default;box-shadow:0 1px 4px rgba(0,0,0,.12)}
 @media (prefers-color-scheme:dark){#pair-cycle{color:#ecd9a8;background:rgba(24,19,10,.72);border-color:rgba(185,168,127,.4);box-shadow:0 1px 4px rgba(0,0,0,.4)}}
+/* clear the fixed chrome: desktop sidebar (>=1024px, z50) and mobile tab bar (<1024px, z1000) */
+@media (min-width:1024px){#pair-cycle{left:calc(var(--ds-sidebar-width,230px) + 14px)}}
+@media (max-width:1023px){#pair-cycle{bottom:calc(var(--ds-mobile-tab-height,64px) + 12px)}}
 </style>
 <div id="pair-cycle" lang="he" title="סדר הזוגות — אותיות הוי״ה עם האל״ף לפי שעון ירושלים (הרקח, ספר השם), מצאת הכוכבים עד צאת הכוכבים: בכל שעה ל״ו זוגות בי״א חלקים, ואחריהם ו׳ חלקים לזוג עד קפ״ה"></div>
 <script is:inline>
