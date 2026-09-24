@@ -1,0 +1,82 @@
+---
+// Tefillos before learning Torah — independent page (HH: the prayers are
+// NOT part of the kavanos; they are presented here, on their own).
+// Data: kavanos-torah.json (short prayers, Likutay Nanach MayUman vol 5, our
+// publication) and kavanos-chok.json (Mahar"ch seder — הקדמות חק לישראל,
+// מהדורת תורה אמת).
+import Layout from '../../../layouts/Layout.astro';
+import fs from 'node:fs';
+
+const torah = JSON.parse(fs.readFileSync(
+  new URL('../../../../public/reader/chok/kavanos-torah.json', import.meta.url), 'utf-8'));
+const chok = JSON.parse(fs.readFileSync(
+  new URL('../../../../public/reader/chok/kavanos-chok.json', import.meta.url), 'utf-8'));
+
+const { tefillos, tefillaLong } = torah;
+const SEDER_ORDER = [
+  ['torah', 'קודם קריאת התורה'],
+  ['navi', 'קודם קריאת הנביאים'],
+  ['kesuvim', 'קודם קריאת הכתובים'],
+  ['mishna', 'קודם לימוד המשנה'],
+  ['halacha', 'קודם לימוד ההלכה'],
+  ['kabbala', 'קודם לימוד הקבלה'],
+  ['talmud', 'על סדר לימוד הגמרא'],
+  ['shishi', 'ליל שישי — כ״ו פסוקים'],
+];
+const sederTefillos = chok.tefillos || {};
+const seder = SEDER_ORDER.filter((row) => sederTefillos[row[0]]);
+---
+<Layout
+  title="Tefillos Before Learning Torah - Chok LiYisroel"
+  description="The prayers said before learning Torah: short tefillos from Likutay Nanach MayUman vol 5 and the seder of tefillos from the Hakdamos Chok LiYisroel (מהרח״ו) — presented independently of the kavanos."
+>
+  <div class="ck-wrap" dir="rtl">
+    <header class="ck-header">
+      <h1>תפלות שלפני לימוד התורה <span class="ck-sub">Tefillos Before Learning Torah</span></h1>
+      <p class="ck-date" dir="rtl">תפלות קצרות וסדר התפלות שלפני הלימוד — בעמוד בפני עצמו, נפרד מן הכוונות.</p>
+    </header>
+
+    <section class="ck-section">
+      <h2>תפלות קצרות לפני הלימוד</h2>
+      <p class="ck-kav-src">מליקוטי ננח מאומן — חלק ה׳</p>
+      {tefillos.map((t) => (
+        <details class="ck-kavana" open>
+          <summary>{t.title}</summary>
+          <div class="ck-kavana-body ck-he">{t.he}</div>
+        </details>
+      ))}
+      <details class="ck-kavana">
+        <summary>{tefillaLong.title} — למעוניין</summary>
+        <div class="ck-kavana-body ck-he">{tefillaLong.he}</div>
+      </details>
+    </section>
+
+    <section class="ck-section">
+      <h2>סדר התפלות — חק לישראל</h2>
+      <p class="ck-kav-src">סדר מהרח״ו זצ״ל — מהקדמות חק לישראל (מהדורת תורה אמת)</p>
+      {seder.map((row) => (
+        <details class="ck-kavana">
+          <summary>{row[1]}</summary>
+          <div class="ck-kavana-body ck-he">{sederTefillos[row[0]]}</div>
+        </details>
+      ))}
+    </section>
+
+    <p class="ck-back"><a href="/reader/chok/kavanos/">כוונות לימוד תורה לשמה ←</a> · <a href="/reader/chok/">← חק לישראל — היום</a></p>
+  </div>
+</Layout>
+
+<style>
+  .ck-wrap { max-width: 46rem; margin: 0 auto; padding: 1.2rem 1rem 3rem; }
+  .ck-header h1 { margin: .2rem 0; }
+  .ck-sub { font-size: .55em; opacity: .7; font-weight: 400; }
+  .ck-date { opacity: .75; margin: .1rem 0 .6rem; }
+  .ck-section { margin-bottom: 2.2rem; }
+  .ck-section h2 { margin: .2rem 0 .3rem; font-size: 1.25em; }
+  .ck-kav-src { opacity: .65; font-size: .85em; margin: 0 0 .5rem; }
+  .ck-he { line-height: 2.05; margin: .2rem 0; }
+  .ck-kavana { margin: .5rem 0; }
+  .ck-kavana > summary { cursor: pointer; color: var(--ck-gold, #8a6d1d); font-size: .95em; }
+  .ck-kavana-body { line-height: 2.0; padding: .4rem .2rem; }
+  .ck-back { margin-top: 2rem; }
+</style>

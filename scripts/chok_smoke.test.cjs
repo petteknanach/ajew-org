@@ -28,7 +28,7 @@ function makeEl(id) {
   };
 }
 
-function runCase(search, cb) {
+function runCase(search, cb, mockIso) {
   const els = {};
   ['ck-date','ck-week','ck-content','ck-parsha','ck-mode','ck-medooyuk','ck-targum',
    'ck-rashi','ck-commentary','ck-tanachen','ck-carrymode','ck-size','ck-legend','ck-days']
@@ -42,6 +42,14 @@ function runCase(search, cb) {
     querySelectorAll: () => [],
     querySelector: () => null,
   };
+  let D = Date;
+  if (mockIso) {
+    const fixed = new Date(mockIso).getTime();
+    D = class extends Date {
+      constructor(...a) { if (a.length === 0) super(fixed); else super(...a); }
+      static now() { return fixed; }
+    };
+  }
   const sandbox = {
     console, setTimeout, clearTimeout, URLSearchParams,
     document: documentStub,
@@ -64,7 +72,7 @@ function runCase(search, cb) {
         }, 1);
       };
     },
-    Array, Promise, JSON, Math, Date, Object, encodeURIComponent, decodeURIComponent, parseInt, RegExp, String, Number, Error,
+    Array, Promise, JSON, Math, Date: D, Object, encodeURIComponent, decodeURIComponent, parseInt, RegExp, String, Number, Error,
   };
   sandbox.window.location = sandbox.location;
   sandbox.globalThis = sandbox;
@@ -85,6 +93,30 @@ function check(name, cond, extra) {
   if (!cond) failures++;
 }
 
+let pending = 1;
+function finishOnce() {
+  if (--pending > 0) return;
+  console.log(failures ? 'SMOKE: ' + failures + ' FAILURES' : 'SMOKE: ALL PASS');
+  process.exit(failures ? 1 : 0);
+}
+
+// Case 0: week resolution by date. The chok week = the LATEST anchor shabbos
+// on/before today (HH correction 2026-09-24: vezos habracha, though the next
+// shabbos 09-26 opens breishis).
+pending += 3;
+runCase('', (html, els) => {
+  check('resolve 2026-09-24 -> vezos habracha', (els['ck-week'].textContent || '').includes('וזאת הברכה'), els['ck-week'].textContent);
+  finishOnce();
+}, '2026-09-24T09:00:00');
+runCase('', (html, els) => {
+  check('resolve 2026-09-27 -> breishis (new year)', (els['ck-week'].textContent || '').includes('בראשית'), els['ck-week'].textContent);
+  finishOnce();
+}, '2026-09-27T09:00:00');
+runCase('', (html, els) => {
+  check('resolve 2026-09-18 -> haazinu', (els['ck-week'].textContent || '').includes('האזינו'), els['ck-week'].textContent);
+  finishOnce();
+}, '2026-09-18T09:00:00');
+
 // Case 1: normal day view, 2026-09-23 (system date in test env is faked below via Date override)
 // We override Date inside sandbox only for the resolve test: run with real date first.
 runCase('', (html, els) => {
@@ -97,7 +129,8 @@ runCase('', (html, els) => {
   check('navi section present', /data-sec="navi"/.test(html || ''));
   check('talmud section present', /data-sec="talmud"/.test(html || ''));
   check('kavana actual chip present', (html || '').includes('כוונת הלימוד — האריז״ל'));
-  check('tefilla chip present', (html || '').includes('תפלה לפני הלימוד'));
+  check('prayer chip removed from kavanos stack', !(html || '').includes('תפלה לפני הלימוד'));
+  check('tefillos page link present', (html || '').includes('/reader/chok/tefillos/'));
   check('popout buttons present', (html || '').includes('ck-popout'));
 
   // Case 1b: a week WITH day-comm data renders the carry top layer
@@ -131,8 +164,8 @@ runCase('', (html, els) => {
         runCase('?sec=torah&week=' + encodeURIComponent('בראשית'), (h3) => {
           check('focus torah: torah present', /data-sec="torah"/.test(h3 || ''));
           check('focus torah: no mussar', !/data-sec="mussar"/.test(h3 || ''));
-          console.log(failures ? 'SMOKE: ' + failures + ' FAILURES' : 'SMOKE: ALL PASS');
-          process.exit(failures ? 1 : 0);
+          check('focus: no tefillos link', !(h3 || '').includes('tefillos/'));
+          finishOnce();
         });
       });
     });

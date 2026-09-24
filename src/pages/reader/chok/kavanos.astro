@@ -1,23 +1,23 @@
 ---
 // Kavanos of Torah lishmah: Arizal (PEC Shaar HaNehagas HaLimud, PD),
-// two short tefillos from Likutay Nanach MayUman vol 5 (our publication),
 // Kamarna attribution. Data: public/reader/chok/kavanos-torah.json.
+// The prayers before learning are NOT kavanos (HH) — independent page: tefillos.astro.
 import Layout from '../../../layouts/Layout.astro';
 import fs from 'node:fs';
 
 const data = JSON.parse(fs.readFileSync(
   new URL('../../../../public/reader/chok/kavanos-torah.json', import.meta.url), 'utf-8'));
 
-const { arizal, tefillos, tefillaLong, kamarna } = data;
+const { arizal, kamarna } = data;
 ---
 <Layout
   title="Kavanos of Torah Lishmah - Chok LiYisroel"
-  description="The kavanos of learning Torah lishmah: the Arizal's kavana (Pri Etz Chaim, Shaar HaNehagas HaLimud), the Kamarna Rebbe's kavana of Torah lishmah, and short prayers before learning from Likutay Nanach vol 5."
+  description="The kavanos of learning Torah lishmah: the Arizal's kavana (Pri Etz Chaim, Shaar HaNehagas HaLimud), and the Kamarna Rebbe's kavana of Torah lishmah."
 >
   <div class="ck-wrap" dir="rtl">
     <header class="ck-header">
       <h1>כוונות לימוד תורה לשמה <span class="ck-sub">Kavanos of Torah Lishmah</span></h1>
-      <p class="ck-date" dir="rtl">הכוונות והתפלות לפני קיום חק לישראל — ולכל לימוד תורה.</p>
+      <p class="ck-date" dir="rtl">הכוונות לקיום חק לישראל — ולכל לימוד תורה.</p>
     </header>
 
     <section class="ck-section">
@@ -40,22 +40,7 @@ const { arizal, tefillos, tefillaLong, kamarna } = data;
       </div>
     </section>
 
-    <section class="ck-section">
-      <h2>תפלות קצרות לפני הלימוד</h2>
-      <p class="ck-kav-src">מליקוטי ננח מאומן — חלק ה׳</p>
-      {tefillos.map((t) => (
-        <details class="ck-kavana" open>
-          <summary>{t.title}</summary>
-          <div class="ck-kavana-body ck-he">{t.he}</div>
-        </details>
-      ))}
-      <details class="ck-kavana">
-        <summary>{tefillaLong.title} — למעוניין</summary>
-        <div class="ck-kavana-body ck-he">{tefillaLong.he}</div>
-      </details>
-    </section>
-
-    <p class="ck-back"><a href="/reader/chok/">← חק לישראל — היום</a></p>
+    <p class="ck-back"><a href="/reader/chok/tefillos/">תפלות שלפני לימוד התורה ←</a> · <a href="/reader/chok/">← חק לישראל — היום</a></p>
   </div>
 </Layout>
 

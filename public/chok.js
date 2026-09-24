@@ -307,16 +307,13 @@
     });
   }
   function kavanaHTML(secKey, d) {
+    // Kavanos only. The prayers before learning are NOT part of the kavanos
+    // (HH) — they live independently on /reader/chok/tefillos/.
     var kA = state.kavA && state.kavA.kavanos && state.kavA.kavanos[secKey];
-    var kT = state.kav && state.kav.tefillos && state.kav.tefillos[secKey];
     var h = '';
     if (kA && kA.length) {
       h += '<details class="ck-kavana"><summary>כוונת הלימוד — האריז״ל</summary><div class="ck-kavana-body">' +
         kA.map(function (t) { return richText(t); }).join('') + '</div></details>';
-    }
-    if (kT) {
-      h += '<details class="ck-kavana"><summary>תפלה לפני הלימוד</summary><div class="ck-kavana-body">' +
-        richText(kT) + '</div></details>';
     }
     return h;
   }
@@ -329,7 +326,7 @@
           '<div class="ck-kav-body"></div></details>';
       }).join('');
       return '<section class="ck-section" id="ck-kavanos">' + secHead('כוונות — האריז״ל (פרי עץ חיים)') +
-        '<p class="ck-kav-link"><a href="/reader/chok/kavanos/">כוונות לימוד תורה לשמה ותפלות לפני הלימוד ←</a></p>' +
+        '<p class="ck-kav-link"><a href="/reader/chok/kavanos/">כוונות לימוד תורה לשמה ←</a></p>' +
         '<p class="ck-kav-note">כוונות התפילה והמצות. פתח שער, ופרק לעיון.</p>' + items + '</section>';
     });
   }
@@ -491,16 +488,23 @@
   function resolveWeek() {
     var today = new Date();
     var todayIso = localIso(today);
-    // The chok regimen week runs Sun-Fri LEADING INTO its shabbos: resolve to
-    // the UPCOMING shabbos entry (finish the parsha before it is read).
-    var up = null;
+    // The chok week is anchored by a Shabbos entry and runs through the
+    // following Friday (learning days = the Sun-Fri after its anchor Shabbos).
+    // Resolve to the LATEST anchor on or before today — HH correction: Thu
+    // 2026-09-24 is vezos habracha, though the next shabbos (09-26) opens
+    // breishis. Fallback: earliest anchor if none before today.
+    var cur = null;
     (state.map || []).forEach(function (e) {
-      if (e.date >= todayIso && e.weeks && (!up || e.date < up.date)) up = e;
+      if (!e.weeks || !e.weeks.length) return;
+      if (e.date <= todayIso && (!cur || e.date > cur.date)) cur = e;
     });
-    if (!up) {
-      (state.map || []).forEach(function (e) { if (e.date <= todayIso && e.weeks) up = e; });
+    if (!cur) {
+      (state.map || []).forEach(function (e) {
+        if (!e.weeks || !e.weeks.length) return;
+        if (!cur || e.date < cur.date) cur = e;
+      });
     }
-    return { weeks: up ? up.weeks : null, sat: up ? up.date : null,
+    return { weeks: cur ? cur.weeks : null, sat: cur ? cur.date : null,
              day: DAYS[DAY_DEFAULT[today.getDay()]] || DAYS[0], today: today };
   }
 
@@ -788,6 +792,7 @@
         });
         var parts = [];
         if (carryHTML) parts.push(carryHTML);
+        if (!state.focus) parts.push('<p class="ck-tef-link"><a href="/reader/chok/tefillos/">תפלות שלפני לימוד התורה ←</a></p>');
         parts.push(weekParts.join(''));
         if (commentHTML) parts.push(commentHTML);
         box.innerHTML = parts.join('') || '<p class="ck-error">Nothing to show.</p>';
