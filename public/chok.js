@@ -547,6 +547,18 @@
     if (ritems.length) {
       out.push('<details class="ck-layer"><summary>על הרש״י · On Rashi</summary>' + ritems.join('') + '</details>');
     }
+    // Breslov on the Parsha layer
+    var bitems = [];
+    (c.breslov || []).forEach(function (b) {
+      if (!b.he && !b.en) return;
+      bitems.push('<div class="ck-citem"><b class="ck-ref">' + esc(b.ref || '') + '</b>' +
+        (b.summ ? '<div dir="rtl" class="ck-he"><b>' + esc(b.summ) + '</b></div>' : '') +
+        (b.he ? '<div dir="rtl" class="ck-he">' + esc(b.he) + '</div>' : '') +
+        (b.en ? '<div dir="ltr" class="ck-en">' + esc(b.en) + '</div>' : '') + '</div>');
+    });
+    if (bitems.length) {
+      out.push('<details class="ck-layer"><summary>ברסלב על הפרשה · Breslov on the Parsha</summary>' + bitems.join('') + '</details>');
+    }
     if (!carry && !out.length) return null;
     return { carry: carry, layers: out.length ? out.join('') : null };
   }

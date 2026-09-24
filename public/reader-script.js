@@ -2543,6 +2543,17 @@
       }
     }
 
+    // === Breslov on the Parsha — all Breslov teachings on each Torah verse ===
+    var bpChapters = { bereishit: [1] };
+    if (bookId.indexOf('tanach-') === 0) {
+      var bpBook = bookId.substring(7);
+      if (bpChapters[bpBook] && bpChapters[bpBook].indexOf(torah) >= 0) {
+        sources.push({ id: 'breslov-parsha', label: 'Breslov', labelHe: 'ברסלב על הפרשה',
+          url: '/reader/breslov-parsha/' + bpBook + '-' + torah + '.json',
+          type: 'commentary' });
+      }
+    }
+
     // === Likutay Nanach Vol 1-3 — volume-level commentary for all books ===
     var lnVolSources = getLNVolumeCommentary(bookId);
     for (var vi = 0; vi < lnVolSources.length; vi++) {
