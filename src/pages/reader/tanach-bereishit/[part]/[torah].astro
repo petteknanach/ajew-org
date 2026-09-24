@@ -72,9 +72,20 @@ const hkEntry = torahData && hkData && Array.isArray(hkData.chapters) && hkData.
   openLabel: 'למפתח הספר ↗'
 } : null;
 
+// Breslov on the Parsha — all Breslov teachings on each Torah verse
+const bpChapters = [1]; // chapters with dataset files (extend as scans are processed)
+const breslovEntry = torahData && bpChapters.includes(torahNum) ? {
+  book: "breslov-parsha",
+  section: "bereishit-" + torahNum,
+  label: "ברסלב על הפרשה",
+  sectionTitle: "Breslov on the Parsha",
+  url: "/reader/breslov-parsha/bereishit-" + torahNum + ".json"
+} : null;
+
 const commentaryEntry = torahData ? {
   related_commentaries: [
     ...(hkEntry ? [hkEntry] : []),
+    ...(breslovEntry ? [breslovEntry] : []),
     {
       book: "likutay-nanach",
       section: lnBookSlug,
