@@ -362,20 +362,20 @@
       return rb ? commDetails('רמב״ן', '<div class="ck-comm-body">' + richText(rb) + '</div>') : '';
     });
   }
-  var HK_NAMES = { LM: 'ליקוטי מוהר״ן', LM2: 'ליקוטי מוהר״ן ב׳', KLM: 'קיצור ליקוטי מוהר״ן', KLM2: 'קיצור ליקוטי מוהר״ן ב׳', HaMidos: 'ספר המדות', LikHalachos: 'ליקוטי הלכות', LikTefilos: 'ליקוטי תפלות', ChayeyMoharan: 'חיי מוהר״ן', Sichos: 'שיחות הר״ן' };
-  function hkLine(parsha, verse) {
+  var HK_NAMES = { LM: 'ליקוטי מוהר״ן', LM2: 'ליקוטי מוהר״ן ב׳', KLM: 'קיצור ליקוטי מוהר״ן', KLM2: 'קיצור ליקוטי מוהר״ן ב׳', HaMidos: 'ספר המדות', LikHalachos: 'ליקוטי הלכות', LikTefilos: 'ליקוטי תפלות', ChayeyMoharan: 'חיי מוהר״ן', SichosHaRan: 'שיחות הר״ן', ShivchayMoharan: 'שבחי מוהרן', Pirpuros: 'פרפראות לחכמה', BabiHaNachal: 'באבי הנחל', BiurHaLikutim: 'ביאור הליקוטים', OnegShabbos: 'עונג שבת', LikutayEitzos: 'ליקוטי עצות', MeiHaNachal: 'מי הנחל' };
+  function hkLine(parsha, c, verse) {
     var hk = state.hk && state.hk.parshiyos && state.hk.parshiyos[parsha];
-    var refs = hk && hk[String(verse)];
+    var ch = hk && hk[String(c)];
+    var refs = ch && ch[String(verse)];
     if (!refs || !refs.length) return '';
     var names = refs.map(function (r) {
+      if (!r || r.src === 'EXT') return r ? r.ref : '';
       var nm = HK_NAMES[r.src] || r.src;
       return nm + (r.ref ? ' ' + r.ref : '');
-    });
+    }).filter(Boolean);
+    if (!names.length) return '';
     return '<div class="ck-hk-src">מקורות ברסלב <span class="ck-hk-t">(הלכתא כנחמני)</span>: ' +
       names.join('; ') + '</div>';
-  }
-  function hkSafe(parsha, chapter) {
-    return !!(state.hk && state.hk.safeChapters && state.hk.safeChapters[parsha] === chapter);
   }
   function versesHTML(slug, from, to, kind, vcomm, parsha) {
     return book(slug).then(function (d) {
@@ -402,8 +402,8 @@
             if (vcomm && vcomm.verses && vcomm.verses[c + ':' + x]) {
               row += voiceLine(vcomm.verses[c + ':' + x]);
             }
-            if (kind === 'torah' && parsha && hkSafe(parsha, c)) {
-              row += hkLine(parsha, x);
+            if (kind === 'torah' && parsha) {
+              row += hkLine(parsha, c, x);
             }
             items.push({ c: c, x: x, row: row });
           });
@@ -860,7 +860,7 @@
       fetchJSON('/reader/chok/kavanos-chok.json').catch(function () { return null; }),
       fetchJSON('/reader/chok/kavanos-actual.json').catch(function () { return null; }),
       fetchJSON('/reader/chok/miluy-kavana.json').catch(function () { return null; }),
-      fetchJSON('/reader/chok/hk-verses.json').catch(function () { return null; })
+      fetchJSON('/reader/chok/hk-verses.json?v=2').catch(function () { return null; })
     ]).then(function (res) {
       state.sched = res[0];
       state.map = res[1];

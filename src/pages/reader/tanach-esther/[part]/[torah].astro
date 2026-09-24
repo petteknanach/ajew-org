@@ -2,6 +2,7 @@
 import Layout from '../../../../layouts/Layout.astro';
 import Comments from '../../../../components/Comments.astro';
 import CommentarySidebar from '../../../../components/CommentarySidebar.astro';
+import hkIndex from '../../../../data/hk-citations-index.json';
 import '../../../../styles/reader.css';
 import '../../../../styles/reader-v2.css';
 import fs from 'node:fs';
@@ -59,8 +60,21 @@ const structuredData = torahData ? JSON.stringify({
 
 // LN verse-by-verse commentary
 const lnBookSlug = 'tanach-esther';
+// Hilchasa Kinachamani citation tab (facts: verse -> Breslov sources)
+const hkData = (hkIndex as any)?.tanach?.['tanach-esther'];
+const hkEntry = torahData && hkData && Array.isArray(hkData.chapters) && hkData.chapters.includes(torahNum) ? {
+  book: 'hilchasa-kinachamani',
+  section: `tanach-esther-${torahNum}`,
+  label: 'הלכתא כנחמני',
+  sectionTitle: 'ציטוטים בברסלב',
+  url: `/hk-citations/tanach-esther-${torahNum}.json`,
+  readerUrl: hkData.bookPage || '/reader/hilchasa-kinachamani/1/1',
+  openLabel: 'למפתח הספר ↗'
+} : null;
+
 const commentaryEntry = torahData ? {
   related_commentaries: [
+    ...(hkEntry ? [hkEntry] : []),
     {
       book: "likutay-nanach",
       section: lnBookSlug,

@@ -2,6 +2,7 @@
 import Layout from '../../../../layouts/Layout.astro';
 import Comments from '../../../../components/Comments.astro';
 import CommentarySidebar from '../../../../components/CommentarySidebar.astro';
+import hkIndex from '../../../../data/hk-citations-index.json';
 import '../../../../styles/reader.css';
 import '../../../../styles/reader-v2.css';
 import fs from 'node:fs';
@@ -64,7 +65,20 @@ const parshaPacket = torahNum >= 30 && torahNum <= 32
   : (torahNum >= 33 && torahNum <= 36
     ? { slug: 'masei', label: 'AJew Masei', title: 'Parashas Masei Study Packet', readerUrl: '/parsha/masei/#study-packet' }
     : null);
+// Hilchasa Kinachamani citation tab (facts: verse -> Breslov sources)
+const hkData = (hkIndex as any)?.tanach?.['tanach-bamidbar'];
+const hkEntry = torahData && hkData && Array.isArray(hkData.chapters) && hkData.chapters.includes(torahNum) ? {
+  book: 'hilchasa-kinachamani',
+  section: `tanach-bamidbar-${torahNum}`,
+  label: 'הלכתא כנחמני',
+  sectionTitle: 'ציטוטים בברסלב',
+  url: `/hk-citations/tanach-bamidbar-${torahNum}.json`,
+  readerUrl: hkData.bookPage || '/reader/hilchasa-kinachamani/1/1',
+  openLabel: 'למפתח הספר ↗'
+} : null;
+
 const relatedCommentaries = torahData ? [
+    ...(hkEntry ? [hkEntry] : []),
   {
     book: "likutay-nanach",
     section: lnBookSlug,

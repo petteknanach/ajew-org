@@ -1,6 +1,7 @@
 ---
 import Layout from '../../../../layouts/Layout.astro';
 import CommentarySidebar from '../../../../components/CommentarySidebar.astro';
+import hkIndex from '../../../../data/hk-citations-index.json';
 import Comments from '../../../../components/Comments.astro';
 import '../../../../styles/reader.css';
 import '../../../../styles/reader-v2.css';
@@ -56,8 +57,22 @@ const structuredData = torahData ? JSON.stringify({
   "isPartOf": { "@type": "Book", "name": "Talmud Bavli - Shkalim" },
   "url": `https://ajew.org/reader/talmud-bavli-shkalim/${partNum}/${torahNum}`
 }) : '';
+// Hilchasa Kinachamani citation tab (facts: daf -> Breslov sources)
+const hkData = (hkIndex as any)?.talmud?.['talmud-bavli-shkalim'];
+const hkPageData = hkData && hkData.pages ? hkData.pages[String(torahNum)] : null;
+const hkEntry = torahData && hkPageData ? {
+  book: 'hilchasa-kinachamani',
+  section: `talmud-bavli-shkalim-${torahNum}`,
+  label: 'הלכתא כנחמני',
+  sectionTitle: 'ציטוטים בברסלב',
+  url: `/hk-citations/talmud-bavli-shkalim-${torahNum}.json`,
+  readerUrl: hkData.bookPage || '/reader/hilchasa-kinachamani/1/1',
+  openLabel: 'למפתח הספר ↗'
+} : null;
+
 const commentaryEntry = torahData ? {
   related_commentaries: [
+    ...(hkEntry ? [hkEntry] : []),
     {
       book: "likutay-nanach",
       section: "mishna-shekalim",

@@ -2,6 +2,7 @@
 import Layout from '../../../../layouts/Layout.astro';
 import Comments from '../../../../components/Comments.astro';
 import CommentarySidebar from '../../../../components/CommentarySidebar.astro';
+import hkIndex from '../../../../data/hk-citations-index.json';
 import '../../../../styles/reader.css';
 import '../../../../styles/reader-v2.css';
 import fs from 'node:fs';
@@ -58,8 +59,22 @@ const structuredData = torahData ? JSON.stringify({
 }) : '';
 
 // LN Oral Torah commentary
+// Hilchasa Kinachamani citation tab (facts: daf -> Breslov sources)
+const hkData = (hkIndex as any)?.talmud?.['talmud-bavli-ketubot'];
+const hkPageData = hkData && hkData.pages ? hkData.pages[String(torahNum)] : null;
+const hkEntry = torahData && hkPageData ? {
+  book: 'hilchasa-kinachamani',
+  section: `talmud-bavli-ketubot-${torahNum}`,
+  label: 'הלכתא כנחמני',
+  sectionTitle: 'ציטוטים בברסלב',
+  url: `/hk-citations/talmud-bavli-ketubot-${torahNum}.json`,
+  readerUrl: hkData.bookPage || '/reader/hilchasa-kinachamani/1/1',
+  openLabel: 'למפתח הספר ↗'
+} : null;
+
 const commentaryEntry = torahData ? {
   related_commentaries: [
+    ...(hkEntry ? [hkEntry] : []),
     {
       book: "likutay-nanach",
       section: "mishna-ketubot",

@@ -57,14 +57,14 @@ function runCase(search, cb, mockIso) {
     location: { pathname: '/reader/chok/', search },
     window: { open: (u) => { sandbox.__opened = u; }, scrollTo() {} },
     fetch: (url) => new Promise((res, rej) => {
-      const p = path.join(ROOT, url);
+      const p = path.join(ROOT, String(url).split('?')[0]);
       if (fs.existsSync(p)) res({ ok: true, json: () => Promise.resolve(JSON.parse(fs.readFileSync(p, 'utf8'))) });
       else rej(new Error('404 ' + url));
     }),
     XMLHttpRequest: function () {
       this.open = (m, u) => { this.__u = u; };
       this.send = () => {
-        const p = path.join(ROOT, this.__u);
+        const p = path.join(ROOT, String(this.__u).split('?')[0]);
         setTimeout(() => {
           if (fs.existsSync(p)) { this.status = 200; this.responseText = fs.readFileSync(p, 'utf8'); }
           else { this.status = 404; this.responseText = ''; }

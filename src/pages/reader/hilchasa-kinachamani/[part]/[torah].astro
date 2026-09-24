@@ -1,0 +1,181 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import Comments from '../../../../components/Comments.astro';
+import '../../../../styles/reader.css';
+import '../../../../styles/reader-v2.css';
+import fs from 'node:fs';
+import path from 'node:path';
+
+export function getStaticPaths() {
+  let idx = null;
+  try {
+    idx = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'public/reader/hilchasa-kinachamani/part-1/index.json'), 'utf8'));
+  } catch (e) { idx = null; }
+  const items = (idx && (idx.items || idx.torahs)) || [];
+  return items.map((item) => ({ params: { part: '1', torah: String(item.number) } }));
+}
+
+const { part, torah } = Astro.params;
+const partNum = parseInt(part);
+const torahNum = parseInt(torah);
+
+let torahData = null;
+let error = null;
+
+try {
+  const filePath = path.join(process.cwd(), `public/reader/hilchasa-kinachamani/part-${partNum}/torah-${torahNum}.json`);
+  const raw = fs.readFileSync(filePath, 'utf8');
+  torahData = JSON.parse(raw);
+} catch (e) {
+  error = `Section ${torahNum} not found`;
+}
+
+if (!torahData && !error) error = 'Content not available';
+
+const bookName = 'Hilchasa Kinachamani';
+const bookHebrew = 'הלכתא כנחמני';
+
+const pageTitle = torahData
+  ? `${torahData.hebrewTitle || torahData.title} - Hilchasa Kinachamani`
+  : 'Section Not Found';
+const pageDesc = torahData
+  ? `Read ${torahData.title} from Hilchasa Kinachamani (הלכתא כנחמני) — the Breslov citation indexes to Torah, Nevi'im, Kesuvim, Talmud, Zohar and Midrash. Hebrew text on ajew.org.`
+  : '';
+
+const structuredData = torahData ? JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": `${torahData.title} - Hilchasa Kinachamani`,
+  "alternativeHeadline": torahData.hebrewTitle || '',
+  "author": { "@type": "Person", "name": "Rabbi Yaakov Dov Halevi ben R. Avraham Yitzchak" },
+  "publisher": { "@type": "Organization", "name": "ajew.org" },
+  "inLanguage": ["he"],
+  "isPartOf": { "@type": "Book", "name": "Hilchasa Kinachamani" },
+  "url": `https://ajew.org/reader/hilchasa-kinachamani/${partNum}/${torahNum}`
+}) : '';
+const breadcrumbData = torahData ? JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Library", "item": "https://ajew.org/reader" },
+    { "@type": "ListItem", "position": 2, "name": "Hilchasa Kinachamani", "item": `https://ajew.org/reader/hilchasa-kinachamani/${partNum}/` },
+    { "@type": "ListItem", "position": 3, "name": torahData.hebrewTitle || torahData.title }
+  ]
+}) : '';
+---
+
+<Layout title={pageTitle} description={pageDesc}>
+  {torahData && structuredData && (
+    <script type="application/ld+json" set:html={structuredData} slot="head" />
+  )}
+  {torahData && breadcrumbData && (
+    <script type="application/ld+json" set:html={breadcrumbData} slot="head" />
+  )}
+  {error ? (
+    <div style="text-align: center; padding: 80px 20px;">
+      <h1>{error}</h1>
+      <p><a href="/reader">Back to Reader</a></p>
+    </div>
+  ) : (
+    <div
+      class="reader-container"
+      data-torah-id={torahData.id}
+      data-torah-title={`${torahData.title} - Hilchasa Kinachamani`}
+    >
+      <div class="reader-progress"></div>
+
+      <div class="reader-breadcrumb">
+        <a href="/reader">Reader</a>
+        <span>&rsaquo;</span>
+        <a href={`/reader/hilchasa-kinachamani/${partNum}/`}>{bookName}</a>
+        <span>&rsaquo;</span>
+        {torahData.hebrewTitle || torahData.title}
+      </div>
+
+      <div class="reader-toolbar">
+        <div class="reader-toolbar-group">
+          <button class="reader-btn" data-mode="hebrew">Hebrew</button>
+          <button class="reader-btn" data-mode="english">English</button>
+          <button class="reader-btn" data-mode="both">Both</button>
+        </div>
+        <div class="reader-toolbar-group">
+          <span style="font-size:0.7em; font-family: 'Open Sans', sans-serif; color: var(--reader-text-secondary);">A</span>
+          <input type="range" id="font-size-slider" class="font-size-slider" min="12" max="32" value="18" />
+          <span style="font-size:0.9em; font-family: 'Open Sans', sans-serif; color: var(--reader-text-secondary);">A</span>
+        </div>
+        <div class="reader-toolbar-group">
+          <button class="reader-btn reader-btn-icon" data-theme-btn="day">Day</button>
+          <button class="reader-btn reader-btn-icon" data-theme-btn="sepia">Sepia</button>
+          <button class="reader-btn reader-btn-icon" data-theme-btn="night">Night</button>
+        </div>
+        <div class="reader-toolbar-group">
+          <button class="reader-btn reader-btn-icon" id="btn-search">Search</button>
+          <button class="reader-btn reader-btn-icon" id="btn-bookmark">Bookmark</button>
+        </div>
+      </div>
+
+      <div class="reader-nav">
+        {torahData.navigation && torahData.navigation.prevUrl ? (
+          <a href={torahData.navigation.prevUrl} data-dir="prev">&larr; Previous</a>
+        ) : <span class="disabled">&larr; Previous</span>}
+        <a href={`/reader/hilchasa-kinachamani/${partNum}`}>Book Index</a>
+        <a href="/reader">All Books</a>
+        {torahData.navigation && torahData.navigation.nextUrl ? (
+          <a href={torahData.navigation.nextUrl} data-dir="next">Next &rarr;</a>
+        ) : <span class="disabled">Next &rarr;</span>}
+      </div>
+
+      <div class="reader-content mode-hebrew">
+        <div class="reader-content-original">
+{torahData.segments.map((seg) => (
+          <div class="reader-segment-pair" id={`seg-${seg.index}`}>
+            <div class="reader-segment segment-he" data-index={String(seg.index)}>
+              <span class="segment-number">{seg.index}</span>
+              <p data-nikud={seg.he_nikud || seg.he}>{seg.he}</p>
+            </div>
+            <div class={`reader-segment segment-en ${!seg.en ? 'empty-translation' : ''}`} data-index={String(seg.index)}>
+              <span class="segment-number">{seg.index}</span>
+              <p>{seg.en || 'Translation not yet available'}</p>
+            </div>
+          </div>
+        ))}
+        </div>
+      </div>
+
+      <div class="reader-nav">
+        {torahData.navigation && torahData.navigation.prevUrl ? (
+          <a href={torahData.navigation.prevUrl} data-dir="prev">&larr; Previous</a>
+        ) : <span class="disabled">&larr; Previous</span>}
+        <a href={`/reader/hilchasa-kinachamani/${partNum}`}>Book Index</a>
+        <a href="/reader">All Books</a>
+        {torahData.navigation && torahData.navigation.nextUrl ? (
+          <a href={torahData.navigation.nextUrl} data-dir="next">Next &rarr;</a>
+        ) : <span class="disabled">Next &rarr;</span>}
+      </div>
+
+      <div class="reader-shortcuts-overlay">
+        <div class="reader-shortcuts-panel">
+          <h2>Keyboard Shortcuts</h2>
+          <div class="shortcut-row"><span>Hebrew mode</span><span class="shortcut-key">H</span></div>
+          <div class="shortcut-row"><span>English mode</span><span class="shortcut-key">E</span></div>
+          <div class="shortcut-row"><span>Both columns</span><span class="shortcut-key">B</span></div>
+          <div class="shortcut-row"><span>Toggle nikud</span><span class="shortcut-key">N</span></div>
+          <div class="shortcut-row"><span>Save bookmark</span><span class="shortcut-key">S</span></div>
+          <div class="shortcut-row"><span>Previous/Next</span><span class="shortcut-key">&larr; &rarr;</span></div>
+          <div class="shortcut-row"><span>Show shortcuts</span><span class="shortcut-key">?</span></div>
+          <br />
+          <button class="reader-btn" onclick="this.closest('.reader-shortcuts-overlay').classList.remove('open')">Close</button>
+        </div>
+      </div>
+      {torahData && (
+        <Comments teachingId={`hilchasa-kinachamani-${part}-${torah}`} teachingTitle={`hilchasa-kinachamani ${part}:${torah}${torahData?.title ? ' — ' + torahData.title : ''}`} />
+      )}
+
+      <script src="/reader-script.js?v=20260820-notes-fix" defer></script>
+      <script src="/reader-v2.js" defer></script>
+      <script src="/pwa-register.js" defer></script>
+      <script src="/tts-fix.js" defer></script>
+      <script src="/reader-notes.js" is:inline></script>
+    </div>
+  )}
+</Layout>
