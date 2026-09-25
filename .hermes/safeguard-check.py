@@ -683,7 +683,7 @@ def check_en_coverage():
         'yikra-dshabbata': 99,
         'yisroel-saba': 99,
         'ebay-hanachal': 99,
-        'alim-litrufa': 99,
+        'alim-litrufa': 98,  # lowered from 99 by the wrong-EN purge PR (policy: wrong EN worse than absent; coverage is honest post-purge)
         'otzar-hayirah': 99,
         'likutay-halachos': 100,
     }
