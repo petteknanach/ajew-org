@@ -11,7 +11,7 @@
   var slug = m[1], chapter = m[3];
   var data = null, active = false, snapshots = [];
 
-  var CSS = '.m-na{color:#0e9d8a;-webkit-text-stroke:.034em currentColor;text-shadow:.013em 0 0 currentColor,-.013em 0 0 currentColor,0 .013em 0 currentColor,0 -.013em 0 currentColor}' +
+  var CSS = '.m-na{color:#0e9d8a;font-size:calc(1em + .02px);-webkit-text-stroke:.034em currentColor;text-shadow:.013em 0 0 currentColor,-.013em 0 0 currentColor,0 .013em 0 currentColor,0 -.013em 0 currentColor}' +
     '.m-qb{position:relative;text-decoration:none}' +
     '.m-qb::before{content:"";position:absolute;top:-0.3em;inset-inline-start:-0.3em;width:0.66em;height:0.15em;background:rgba(200,60,60,.9);border-radius:1px}' +
     '.m-qb::after{content:"";position:absolute;top:-0.15em;inset-inline-start:-0.015em;width:0.14em;height:0.44em;background:rgba(200,60,60,.9);border-radius:1px}' +

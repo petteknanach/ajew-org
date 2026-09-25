@@ -434,6 +434,11 @@ import Layout from '../../layouts/Layout.astro';
      regular shva — no added bullet). */
   .m-na {
     color: var(--ck-m-na);
+    /* the mark must stay inside its own shaping run; with identical font
+       metrics Chrome merges it into the base letter's cluster and paints it
+       with the base style (teal lost). A hair of font-size keeps it split —
+       and the mark's own ink position is exactly the plain shva's. */
+    font-size: calc(1em + 0.02px);
     -webkit-text-stroke: .034em currentColor;
     text-shadow: .013em 0 0 currentColor, -.013em 0 0 currentColor,
                  0 .013em 0 currentColor, 0 -.013em 0 currentColor;
