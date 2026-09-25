@@ -28,6 +28,17 @@
   // JS getDay(): 0=Sun..6=Sat -> default tab index into DAYS
   var DAY_DEFAULT = {0:0, 1:1, 2:2, 3:3, 4:4, 5:6, 6:6};
   var ORDER = ['יום ראשון','יום שני','יום שלישי','יום רביעי','יום חמישי','ליל שישי','יום שישי'];
+  /* The four year-end weeks (נצבים, וילך, האזינו, וזאת הברכה) have no
+     'יום שישי' entry — a Friday must not render an empty page. Fall back to
+     the closest earlier day that exists in the week. */
+  function availDay(w, day) {
+    if (!w || !w.days || w.days[day]) return day;
+    var i = DAYS.indexOf(day);
+    if (i < 0) return day;
+    for (var j = i - 1; j >= 0; j--) { if (w.days[DAYS[j]]) return DAYS[j]; }
+    for (var k = i + 1; k < DAYS.length; k++) { if (w.days[DAYS[k]]) return DAYS[k]; }
+    return day;
+  }
 
   var TAAMIM = /[\u0591-\u05AF\u05BD\u05C0]/g;
   var NIKUD  = /[\u05B0-\u05BC\u05C1\u05C2\u05C7]/g;
@@ -624,7 +635,7 @@
 
   function mussarHTML(wk, day) {
     var m = state.mussar && state.mussar.days[wk + '|' + day];
-    if (!m) return Promise.resolve(null);
+    if (!m) return Promise.resolve('');
     var head = 'מוסר — ' + esc(m.sefer);
     if (m.daf) head += ' דף ' + heNum(m.daf) + (m.amud ? ' ע׳ ' + (m.amud === 2 ? 'ב״' : 'א״') : '');
     var body = m.text ? '<div class="ck-mussar-text">' + richText(applyMode(m.text)) + '</div>' : '';
@@ -678,16 +689,21 @@
     var jobs = weeks.map(function (wk) {
       var w = state.sched.weeks[wk];
       if (!w) return Promise.resolve('<p class="ck-error">No schedule for ' + esc(wk) + '</p>');
-      var d = w.days[day] || {};
-      var dc = dcommFor(wk, day);
+      var dayE = availDay(w, day);
+      var d = w.days[dayE] || {};
+      var dc = dcommFor(wk, dayE);
       var out = [];
-      if (state.focus) out.push(focusBar()); else out.push(voiceTop(dc));
+      if (state.focus) out.push(focusBar());
+      else {
+        if (dayE !== day) out.push('<p class="ck-fb-note">אין סדר ל' + esc(day) + ' בשבוע זה — מוצג: ' + esc(dayE) + ' (סוף המחזור)</p>');
+        out.push(voiceTop(dc));
+      }
       var p = Promise.resolve();
       if (d.torah && d.torah.from && want('torah')) {
         p = p.then(function () {
           return versesHTML(w.slug, d.torah.from, d.torah.to, 'torah', dc, wk).then(function (vh) {
             out.push('<section class="ck-section" data-sec="torah">' +
-              secHead('תורה — ' + wk, refStr(d.torah)) + popBtn() + kavanaHTML('torah', d) + vh + '</section>');
+              secHead('תורה — ' + wk, refStr(d.torah)) + popBtn() + kavanaHTML('torah', d) + (vh || '') + '</section>');
           });
         });
       }
@@ -702,14 +718,14 @@
           /* chok regimen: 6 verses of navi + 6 of kesuvim per day. The
              schedule stores the chapter only, so the day's start = 1 +
              6 x (how many earlier DAYS of this week sit on the same chapter). */
-          var dayIdx = DAYS.indexOf(day);
+          var dayIdx = DAYS.indexOf(dayE);
           var offset = 0;
           DAYS.forEach(function (dy, di) {
             if (di >= dayIdx) return;
             var prev = (w.days[dy] || {})[pair[0]];
             if (prev && prev.book === sec.book && prev.from && prev.from.c === sec.from.c) offset++;
           });
-          var dayIdx = DAYS.indexOf(day);
+          var dayIdx = DAYS.indexOf(dayE);
           var mk = (state.miluy && state.miluy.days && state.miluy.days[dayIdx]) || null;
           var per = mk ? mk.count : 6;
           var startV = (sec.from.v || 1) + per * offset;
@@ -738,12 +754,12 @@
       });
       if (d.mishna && d.mishna.masechet && want('mishna')) {
         p = p.then(function () {
-          return mishnaHTML(d.mishna.masechet, d.mishna.perek).then(function (html) { html = kavanaHTML('mishna', d) + html; html = voiceBox(dc && dc.mishna, 'משנה') + html;
+          return mishnaHTML(d.mishna.masechet, d.mishna.perek).then(function (html) { html = html || ''; html = kavanaHTML('mishna', d) + html; html = voiceBox(dc && dc.mishna, 'משנה') + html;
             if (html) out.push('<section class="ck-section" data-sec="mishna">' + html + '</section>');
           });
         });
       }
-      var bonusItems = (state.bonus && state.bonus.weeks[wk] && state.bonus.weeks[wk][day]) || null;
+      var bonusItems = (state.bonus && state.bonus.weeks[wk] && state.bonus.weeks[wk][dayE]) || null;
       if (bonusItems && want('bonus')) {
         p = p.then(function () {
           return Promise.all(bonusItems.map(bonusHTML)).then(function (parts) {
@@ -754,28 +770,28 @@
       }
       if (d.halacha && d.halacha.work && want('halacha')) {
         p = p.then(function () {
-          return halachaHTML(d).then(function (html) { html = kavanaHTML('halacha', d) + html; html = voiceBox(dc && dc.halacha, 'הלכה') + html;
+          return halachaHTML(d).then(function (html) { html = html || ''; html = kavanaHTML('halacha', d) + html; html = voiceBox(dc && dc.halacha, 'הלכה') + html;
             if (html) out.push('<section class="ck-section" data-sec="halacha">' + html + '</section>');
           });
         });
       }
       if (d.gemara && d.gemara.masechet && want('talmud')) {
         p = p.then(function () {
-          return gemaraHTML(d.gemara).then(function (html) { html = kavanaHTML('talmud', d) + html; html = voiceBox(dc && dc.talmud, 'גמרא') + html;
+          return gemaraHTML(d.gemara).then(function (html) { html = html || ''; html = kavanaHTML('talmud', d) + html; html = voiceBox(dc && dc.talmud, 'גמרא') + html;
             if (html) out.push('<section class="ck-section" data-sec="talmud">' + html + '</section>');
           });
         });
       }
       if (d.zohar && (d.zohar.vol || d.zohar.work) && want('kabbala')) {
         p = p.then(function () {
-          return zoharHTML(d.zohar).then(function (html) { html = kavanaHTML('kabbala', d) + html; html = voiceBox(dc && dc.kabbala, 'זוהר') + html;
+          return zoharHTML(d.zohar).then(function (html) { html = html || ''; html = kavanaHTML('kabbala', d) + html; html = voiceBox(dc && dc.kabbala, 'זוהר') + html;
             if (html) out.push('<section class="ck-section" data-sec="kabbala">' + html + '</section>');
           });
         });
       }
       p = p.then(function () {
         if (!want('mussar')) return;
-        return mussarHTML(wk, day).then(function (html) { html = voiceBox(dc && dc.mussar, 'מוסר') + html;
+        return mussarHTML(wk, dayE).then(function (html) { html = html || ''; html = voiceBox(dc && dc.mussar, 'מוסר') + html;
           if (html) out.push('<section class="ck-section" data-sec="mussar">' + html + '</section>');
         });
       });
@@ -789,7 +805,7 @@
     });
     box.innerHTML = '<p class="ck-loading">Loading…</p>';
     var comm = state.commentary ? Promise.all(weeks.map(function (wk) {
-      return fetchCommentary(wk, day);
+      return fetchCommentary(wk, availDay(state.sched && state.sched.weeks[wk], day));
     })) : Promise.resolve([]);
     Promise.all(jobs).then(function (weekParts) {
       return comm.then(function (cs) {

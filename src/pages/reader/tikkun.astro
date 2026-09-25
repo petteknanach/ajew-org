@@ -9,7 +9,7 @@ import Layout from '../../layouts/Layout.astro';
     <header class="tk-header">
       <h1>תיקון קורים <span class="tk-sub">Tikun Korim · medooyuk</span></h1>
       <p class="tk-tagline">
-        כל התנ"ך עם ניקוד וטעמים, שכבת המדויק על הניקוד עצמו (שוא נא, מטג), ושנים מקרא ואחד תרגום
+        כל התנ"ך בכתב סת"ם עם תגין — תצוגת ספר תורה (אותיות) ותצוגת התיקון (ניקוד וטעמים מלאים), שכבת המדויק על הניקוד עצמו (שוא נא, מטג), ושנים מקרא ואחד תרגום
       </p>
     </header>
 
@@ -26,10 +26,10 @@ import Layout from '../../layouts/Layout.astro';
       <div class="tk-row">
         <label>Display
           <select id="tk-mode">
-            <option value="full">Nikud + Taamim</option>
+            <option value="full">Tikkun view — nikud + taamim</option>
             <option value="nikud">Nikud only</option>
             <option value="taamim">Taamim only</option>
-            <option value="letters">Letters only</option>
+            <option value="letters">Torah view — bare letters</option>
           </select>
         </label>
         <label class="tk-chk"><input type="checkbox" id="tk-medooyuk" checked /> Medooyuk layer</label>
@@ -69,6 +69,7 @@ import Layout from '../../layouts/Layout.astro';
 <script src="/tikkun.js?v=8" defer></script>
 
 <style is:global>
+  @font-face { font-family: 'Shlomo Stam'; src: url('/fonts/ShlomoStam.ttf') format('truetype'); font-weight: 400; font-display: swap; }
   .tk-wrap { max-width: 1100px; margin: 0 auto; padding: 1rem; }
   .tk-header h1 { font-size: 1.7rem; margin: 0; }
   .tk-sub { font-size: 1rem; color: var(--muted, #888); font-weight: normal; }
@@ -79,7 +80,7 @@ import Layout from '../../layouts/Layout.astro';
   .tk-row select { padding: .25rem .35rem; border-radius: 6px; border: 1px solid var(--border, #ccc); background: var(--panel2, #fff); color: inherit; max-width: 180px; }
   .tk-btn { padding: .25rem .6rem; border-radius: 6px; border: 1px solid var(--border, #ccc); background: var(--panel2, #fff); color: inherit; cursor: pointer; }
   .tk-btn:hover { filter: brightness(.96); }
-  .tk-content { font-size: var(--tk-size, 26px); line-height: 2.1; }
+  .tk-content { font-family: 'Shlomo Stam', 'Taamey Frank CLM', 'Frank Ruhl Libre', serif; font-size: var(--tk-size, 26px); line-height: 2.15; }
   .tk-verse { margin-bottom: 1.1rem; }
   /* Sefer-Torah presentation: petucha/setuma breaks, inverted nun, large/small letters */
   .tk-verse.tk-petucha { margin-bottom: 3.2rem; }
@@ -95,17 +96,17 @@ import Layout from '../../layouts/Layout.astro';
   .tk-shnayim-note { display: flex; flex-wrap: wrap; gap: .4rem 1.4rem; font-size: .78rem; color: var(--muted, #888); margin-bottom: .8rem; border-bottom: 1px dashed var(--border, #ccc); padding-bottom: .45rem; }
   .tk-colhead-scroll::before { content: '▪ '; color: #6b6b6b; }
   .tk-colhead-read::before { content: '▫ '; color: #177f70; }
-  .tk-line-scroll { font-family: 'Frank Ruhl Libre', 'Noto Serif Hebrew', serif; letter-spacing: .02em; opacity: .92; }
+  .tk-line-scroll { font-family: 'Shlomo Stam', serif; letter-spacing: .02em; opacity: .92; }
   .tk-line-read { margin-top: .25rem; }
   .tk-side { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: start; }
   .tk-col-scroll { border-left: 2px solid var(--border, #ddd); padding-left: 1rem; }
   @media (max-width: 720px) { .tk-side { grid-template-columns: 1fr; } .tk-col-scroll { border-left: none; padding-left: 0; border-bottom: 1px dashed var(--border, #ccc); padding-bottom: .4rem; } }
   .tk-tmissing { font-size: .72em; color: var(--muted, #999); }
-  .tk-targum-line { font-size: .72em; line-height: 1.9; color: var(--muted-2, #667); background: var(--panel, rgba(127,127,127,.07)); border-radius: 8px; padding: .15rem .6rem; margin: .15rem 0; }
+  .tk-targum-line { font-family: 'Frank Ruhl Libre', 'Noto Serif Hebrew', serif; font-size: .72em; line-height: 1.9; color: var(--muted-2, #667); background: var(--panel, rgba(127,127,127,.07)); border-radius: 8px; padding: .15rem .6rem; margin: .15rem 0; }
   .tk-targum-line .tk-tname { font-size: .75em; opacity: .75; }
   .tk-mikra-repeat { opacity: .82; }
   /* medooyuk marks — on the nikud characters themselves; letters stay regular */
-  .m-na { color: #0e9d8a; font-weight: 900; font-size: 1.12em; -webkit-text-stroke: .02em currentColor; text-shadow: .011em 0 0 currentColor, -.011em 0 0 currentColor, 0 .011em 0 currentColor, 0 -.011em 0 currentColor; }
+  .m-na { color: #0e9d8a; -webkit-text-stroke: .034em currentColor; text-shadow: .013em 0 0 currentColor, -.013em 0 0 currentColor, 0 .013em 0 currentColor, 0 -.013em 0 currentColor; }
   .m-qb { position: relative; text-decoration: none; }
   .m-qb::before { content: ''; position: absolute; top: -0.3em; inset-inline-start: -0.3em; width: 0.66em; height: 0.15em; background: rgba(200,60,60,.9); border-radius: 1px; }
   .m-qb::after { content: ''; position: absolute; top: -0.15em; inset-inline-start: -0.015em; width: 0.14em; height: 0.44em; background: rgba(200,60,60,.9); border-radius: 1px; }

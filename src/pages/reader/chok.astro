@@ -61,7 +61,7 @@ import Layout from '../../layouts/Layout.astro';
   </div>
 </Layout>
 
-<script src="/chok.js?v=11" defer></script>
+<script src="/chok.js?v=12" defer></script>
 
 <style is:global>
   /* ═══════════════════════════════════════════════════════════════
@@ -434,11 +434,15 @@ import Layout from '../../layouts/Layout.astro';
      regular shva — no added bullet). */
   .m-na {
     color: var(--ck-m-na);
-    font-weight: 900;
-    font-size: 1.12em;
-    -webkit-text-stroke: .02em currentColor;
-    text-shadow: .011em 0 0 currentColor, -.011em 0 0 currentColor,
-                 0 .011em 0 currentColor, 0 -.011em 0 currentColor;
+    -webkit-text-stroke: .034em currentColor;
+    text-shadow: .013em 0 0 currentColor, -.013em 0 0 currentColor,
+                 0 .013em 0 currentColor, 0 -.013em 0 currentColor;
+  }
+  /* note when the week has no entry for the requested day (year-end weeks) */
+  .ck-fb-note {
+    margin: .3rem 0 .8rem;
+    color: var(--muted, #888);
+    font-size: .92em;
   }
   .ck-tef-link {
     margin: .25rem 0 .6rem;

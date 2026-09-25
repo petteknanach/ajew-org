@@ -117,8 +117,8 @@ runCase('', (html, els) => {
   finishOnce();
 }, '2026-09-18T09:00:00');
 
-// Case 1: normal day view, 2026-09-23 (system date in test env is faked below via Date override)
-// We override Date inside sandbox only for the resolve test: run with real date first.
+// Case 1: full-day structure checks, pinned to Wed 2026-09-23 (זאת הברכה week,
+// a full 7-slot day) so the expected sections are deterministic on any run day.
 runCase('', (html, els) => {
   if (!html || html.includes('Loading') || html.length <= 500) {
     console.log('DEBUG content:', JSON.stringify(html));
@@ -170,4 +170,25 @@ runCase('', (html, els) => {
       });
     });
   });
+}, '2026-09-23T09:00:00');
+
+// Case 1f: year-end Friday (2026-09-25 — וזאת הברכה has no יום שישי slot):
+// the day must fall back to the closest earlier day and still render.
+pending += 1;
+runCase('', (html, els) => {
+  const h = html || '';
+  check('yearend friday: torah section via fallback', /data-sec="torah"/.test(h));
+  check('yearend friday: fallback note shown', h.includes('ck-fb-note'));
+  check('yearend friday: no null leak', !h.includes('>null<'));
+  finishOnce();
+}, '2026-09-25T09:00:00');
+
+// Case 1r: whatever day the suite runs on, today must render a usable page.
+pending += 1;
+runCase('', (html, els) => {
+  const h = html || '';
+  check('today renders non-empty', !!h && !h.includes('Loading') && h.length > 500, h.length + ' chars');
+  check('today no null leak', !h.includes('>null<'));
+  check('today has torah section', /data-sec="torah"/.test(h));
+  finishOnce();
 });
