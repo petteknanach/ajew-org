@@ -673,7 +673,7 @@
     font-size: 1.4em;
   }
   .reader-toc-toggle {
-    left: 8px;
+    left: 0;
     width: 32px;
     height: 32px;
     font-size: 0.85em;
@@ -686,11 +686,37 @@
     margin-left: 4px;
   }
   .reader-content {
-    padding: 0 12px 40px;
+    padding: 0 12px 40px 24px;
   }
   .reader-breadcrumb {
     padding: 8px 12px;
     font-size: 0.7em;
+  }
+}
+
+/* Reserve the right edge for the commentary handle where it exists. */
+@media (max-width: 900px) {
+  body:has(.commentary-sidebar-handle) .reader-content {
+    padding-right: 48px;
+  }
+}
+
+/* Keep the collapsed yahrzeit candle inside the Reader's left control gutter. */
+@media (max-width: 768px) {
+  body:has(.reader-content) #compactYahrzeit.collapsed {
+    top: 64px !important;
+    left: 0 !important;
+    right: auto !important;
+    min-width: 44px !important;
+    max-width: 44px !important;
+    min-height: 44px !important;
+    max-height: 44px !important;
+    padding: 0 !important;
+    border-radius: 0 50% 50% 0 !important;
+  }
+  body:has(.reader-content) #compactYahrzeit.collapsed .toggle-btn {
+    left: 2px !important;
+    bottom: 2px !important;
   }
 }
 

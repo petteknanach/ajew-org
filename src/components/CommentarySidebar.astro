@@ -10,7 +10,7 @@
  *
  * Behaviour:
  *   - Desktop: fixed right-side panel (~40% width), user-toggleable, state persists in localStorage.
- *   - Mobile (<=900px): collapsible drawer with bottom-right FAB toggle.
+ *   - Mobile (<=900px): collapsible drawer with a narrow edge handle; reading text has a gutter.
  *   - Tabs per source; body fetches section JSON on demand.
  *   - Accessibility: aria-expanded on toggle, role="complementary" on panel, aria-modal on mobile drawer.
  *
@@ -85,6 +85,7 @@ const subjectLabel = entry?.subjectLabel || `Torah ${torah}`;
     class="commentary-sidebar-handle"
     id="commentary-sidebar-handle"
     aria-controls="commentary-sidebar"
+    aria-expanded="false"
     aria-label="Open commentary sidebar"
     title="Open commentary sidebar"
   >
@@ -105,6 +106,7 @@ const subjectLabel = entry?.subjectLabel || `Torah ${torah}`;
 
       var sidebar = document.getElementById('commentary-sidebar');
       var toggle = document.getElementById('commentary-sidebar-toggle');
+      var handleBtn = document.getElementById('commentary-sidebar-handle');
       var closeBtn = document.getElementById('commentary-sidebar-close');
       var tabs = document.getElementById('commentary-sidebar-tabs');
       var body = document.getElementById('commentary-sidebar-body');
@@ -167,6 +169,7 @@ const subjectLabel = entry?.subjectLabel || `Torah ${torah}`;
         sidebar.classList.toggle('is-open', open);
         document.body.classList.toggle('has-commentary-sidebar-open', open);
         toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        if (handleBtn) handleBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
         if (isMobile()) {
           sidebar.setAttribute('aria-modal', open ? 'true' : 'false');
           sidebar.setAttribute('role', open ? 'dialog' : 'complementary');
@@ -698,7 +701,6 @@ const subjectLabel = entry?.subjectLabel || `Torah ${torah}`;
       });
       closeBtn.addEventListener('click', function () { setOpen(false); });
 
-      var handleBtn = document.getElementById('commentary-sidebar-handle');
       if (handleBtn) {
         handleBtn.addEventListener('click', function () { setOpen(true); });
       }
@@ -706,7 +708,8 @@ const subjectLabel = entry?.subjectLabel || `Torah ${torah}`;
       document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && sidebar.classList.contains('is-open') && isMobile()) {
           setOpen(false);
-          toggle.focus();
+          if (handleBtn) handleBtn.focus();
+          else toggle.focus();
         }
       });
 
@@ -760,7 +763,7 @@ const subjectLabel = entry?.subjectLabel || `Torah ${torah}`;
   </script>
 
   <style>
-    /* Toggle button — prominent FAB, bottom-right, animated pulse when closed */
+    /* Desktop toggle button — prominent FAB, animated pulse when closed */
     .commentary-sidebar-toggle {
       position: fixed;
       right: 20px;
@@ -801,7 +804,7 @@ const subjectLabel = entry?.subjectLabel || `Torah ${torah}`;
       display: none;
     }
 
-    /* Right-edge vertical handle — always visible when sidebar is closed */
+    /* Right-edge vertical handle — available on mobile without covering the text */
     .commentary-sidebar-handle {
       position: fixed;
       right: 0;
@@ -847,8 +850,14 @@ const subjectLabel = entry?.subjectLabel || `Torah ${torah}`;
       display: none;
     }
     @media (max-width: 900px) {
+      .commentary-sidebar-toggle {
+        display: none;
+      }
       .commentary-sidebar-handle {
-        display: none; /* mobile uses the FAB */
+        display: flex;
+        width: 44px;
+        box-sizing: border-box;
+        padding: 10px 5px 10px 8px;
       }
     }
 
@@ -1168,10 +1177,6 @@ const subjectLabel = entry?.subjectLabel || `Torah ${torah}`;
 
     /* Mobile: drawer from the right, covers most of the screen, has backdrop */
     @media (max-width: 900px) {
-      .commentary-sidebar-toggle {
-        right: 12px;
-        bottom: calc(140px + env(safe-area-inset-bottom));
-      }
       .commentary-sidebar {
         width: 92%;
         min-width: 0;

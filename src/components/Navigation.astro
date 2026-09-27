@@ -197,6 +197,12 @@ function isActive(path: string) {
     <span class="mobile-tab-icon">🙏</span>
     <span class="mobile-tab-label">Pray</span>
   </a>
+  <!-- Revealed only when this Reader page has a mapped audio edition. -->
+  <button class="mobile-tab mobile-tab-audio" type="button" id="mobile-audio-btn"
+    aria-label="Open audio player" aria-expanded="false" aria-controls="ajew-audio-player" hidden>
+    <span class="mobile-tab-icon" aria-hidden="true">🎧</span>
+    <span class="mobile-tab-label">Audio</span>
+  </button>
   <!-- "More" tab opens bottom sheet with remaining items -->
   <button class="mobile-tab mobile-tab-more" type="button" id="mobile-more-btn" aria-label="More options">
     <span class="mobile-tab-icon">☰</span>
@@ -592,10 +598,13 @@ function isActive(path: string) {
     line-height: 1;
   }
 
+  .mobile-tab-audio[hidden] { display: none; }
+  .mobile-tab-audio,
   .mobile-tab-more {
     background: none;
     border: none;
     cursor: pointer;
+    min-width: 0;
   }
 
   /* ============================================
