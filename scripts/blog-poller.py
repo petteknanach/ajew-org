@@ -9,10 +9,12 @@ Runs on VPS via cron every 10 minutes.
 import imaplib
 import email
 import email.utils
+import fcntl
 import json
 import os
 import re
 import time
+import tempfile
 import html as html_escape
 import urllib.parse
 from datetime import datetime
@@ -26,6 +28,7 @@ CRED_FILE = "/opt/ajew-blog/.gmail_app_password"
 BLOG_DIR = "/opt/ajew-blog/posts"
 INDEX_FILE = "/opt/ajew-blog/index.html"
 STATE_FILE = "/opt/ajew-blog/.last_uid"
+LOCK_FILE = "/opt/ajew-blog/.poller.lock"
 BLOG_URL_BASE = "https://ajew.org/blog"
 
 os.makedirs(BLOG_DIR, exist_ok=True)
@@ -156,10 +159,42 @@ def slugify(title):
     slug = re.sub(r'[-\s]+', '-', slug)
     return slug[:80].strip('-')
 
+def existing_post_keys():
+    """Published subject/date pairs, including posts from before this poller version."""
+    keys = set()
+    for path in Path(BLOG_DIR).glob('*.html'):
+        content = path.read_text(encoding='utf-8', errors='replace')
+        title = re.search(r'<h1\b[^>]*>(.*?)</h1>', content, re.S | re.I)
+        date = re.search(r'<time\b[^>]*datetime="([^"]*)"', content, re.S | re.I)
+        if title and date:
+            clean = html_escape.unescape(re.sub(r'<[^>]*>', '', title.group(1))).strip()
+            keys.add((clean, html_escape.unescape(date.group(1)).strip()))
+    return keys
+
+def write_public_file(path, content):
+    """Publish a complete UTF-8 file, never a truncated file after a crash."""
+    path = Path(path)
+    fd, temporary = tempfile.mkstemp(prefix='.blog-pending-', dir=path.parent)
+    try:
+        with os.fdopen(fd, 'w', encoding='utf-8') as out:
+            out.write(content)
+            out.flush()
+            os.fsync(out.fileno())
+        os.chmod(temporary, 0o644)
+        os.replace(temporary, path)
+    finally:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
+
 def create_blog_post(subject, body, date_str):
     """Create a static HTML blog post file."""
     slug = slugify(subject)
-    timestamp = datetime.now().strftime('%Y%m%d-%H%M%S')
+    # An email's date is immutable; processing time is not. Retries must
+    # resolve to the same filename rather than making a second public post.
+    try:
+        timestamp = email.utils.parsedate_to_datetime(date_str).strftime('%Y%m%d-%H%M%S')
+    except (TypeError, ValueError, OverflowError):
+        timestamp = datetime.now().strftime('%Y%m%d-%H%M%S')
     filename = f"{timestamp}-{slug}.html"
     
     # Format body: convert paragraphs safely and preserve line breaks
@@ -168,6 +203,7 @@ def create_blog_post(subject, body, date_str):
     post_url = f"{BLOG_URL_BASE}/{filename}"
     share_html = share_block(post_url, subject)
     
+    date_html = html_escape.escape(date_str, quote=True)
     html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -184,7 +220,7 @@ def create_blog_post(subject, body, date_str):
     <header class="blog-header post-page-header">
       <a href="/blog" class="back-link">← All Posts</a>
       <h1>{subject_html}</h1>
-      <time datetime="{date_str}">{date_str}</time>
+      <time datetime="{date_html}">{html_escape.escape(date_str)}</time>
       {share_html}
     </header>
     <article class="blog-post post-card">
@@ -200,16 +236,21 @@ def create_blog_post(subject, body, date_str):
 </html>"""
     
     filepath = os.path.join(BLOG_DIR, filename)
-    with open(filepath, 'w', encoding='utf-8') as f:
-        f.write(html)
+    if os.path.exists(filepath):
+        # In particular, never replace a hand-beautified post during a retry.
+        public_path = os.path.join(os.path.dirname(BLOG_DIR), filename)
+        if public_path != filepath and not os.path.exists(public_path):
+            with open(filepath, 'rb') as src, open(public_path, 'xb') as dst:
+                dst.write(src.read())
+        return filename
+    write_public_file(filepath, html)
 
     # nginx serves /blog/<filename> from /opt/ajew-blog/<filename>, while
     # rebuild_index() scans BLOG_DIR (/opt/ajew-blog/posts). Keep both copies
     # so new email-generated posts are reachable from the links the index emits.
     public_path = os.path.join(os.path.dirname(BLOG_DIR), filename)
     if public_path != filepath:
-        with open(public_path, 'w', encoding='utf-8') as f:
-            f.write(html)
+        write_public_file(public_path, html)
     return filename
 
 def rebuild_index():
@@ -220,6 +261,8 @@ def rebuild_index():
             filepath = os.path.join(BLOG_DIR, f)
             with open(filepath, 'r', encoding='utf-8') as fh:
                 content = fh.read()
+                if not content.strip():
+                    continue  # a historical zero-byte file is not a post
                 title_m = re.search(r'<title>(.*?)</title>', content)
                 date_m = re.search(r'<time datetime="(.*?)"', content)
                 title = clean_title_for_display(html_escape.unescape(title_m.group(1))) if title_m else f.replace('.html', '')
@@ -298,8 +341,7 @@ def rebuild_index():
 </body>
 </html>"""
 
-    with open(INDEX_FILE, 'w', encoding='utf-8') as f:
-        f.write(index_html)
+    write_public_file(INDEX_FILE, index_html)
 
     rss_items = []
     for p in posts[:20]:
@@ -322,23 +364,37 @@ def rebuild_index():
 </channel>
 </rss>"""
 
-    with open(os.path.join(os.path.dirname(INDEX_FILE), 'rss.xml'), 'w', encoding='utf-8') as f:
-        f.write(rss)
+    write_public_file(os.path.join(os.path.dirname(INDEX_FILE), 'rss.xml'), rss)
 
     print(f"  Index rebuilt: {len(posts)} posts")
 
 def main():
+    # Cron and an operator's catch-up run must not publish the same email at
+    # once. Keep the handle open until the index and RSS have been rebuilt.
+    lock = open(LOCK_FILE, 'a+')
+    try:
+        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError:
+        print('Blog poller already running; skipping overlap')
+        return
     password = get_password()
     
     # Connect to Gmail IMAP
     mail = imaplib.IMAP4_SSL("imap.gmail.com")
-    mail.login(GMAIL_USER, password)
-    mail.select("INBOX")
+    try:
+        mail.login(GMAIL_USER, password)
+    except imaplib.IMAP4.error as exc:
+        raise RuntimeError('BLOG_AUTH_FAILED: renew the naanaach Gmail app password; no posts fetched') from exc
+    # Only unread, self-addressed INBOX messages are the standing blog route.
+    # Do not turn old, read/archived private notes into public posts on a retry.
+    selected, _ = mail.select('INBOX')
+    if selected != 'OK':
+        raise RuntimeError('Could not select Gmail Inbox')
     
-    # Search for unread emails FROM naanaach@gmail.com
-    # User sends blog posts TO themselves
+    # The sender's self-addressed unread messages are an intentional posting
+    # action. Recovery of already-read mail requires a separate exact review.
     status, messages = mail.search(None, 
-        '(UNSEEN FROM "naanaach@gmail.com" TO "naanaach@gmail.com")')
+        f'(UNSEEN FROM "{GMAIL_USER}" TO "{GMAIL_USER}")')
     
     if status != "OK":
         print("No matching emails found")
@@ -351,11 +407,15 @@ def main():
         mail.logout()
         return
     
-    print(f"Found {len(msg_ids)} new blog email(s)")
+    print(f"Found {len(msg_ids)} unread self-addressed blog email(s) to reconcile")
     
     new_posts = 0
+    known = existing_post_keys()
+    to_mark_seen = []
+    had_duplicate = False
     for msg_id in msg_ids:
-        status, msg_data = mail.fetch(msg_id, "(RFC822)")
+        # PEEK leaves the person's unread/read choice untouched.
+        status, msg_data = mail.fetch(msg_id, '(BODY.PEEK[])')
         if status != "OK":
             continue
         
@@ -368,6 +428,12 @@ def main():
         # Skip if no subject
         if not subject.strip():
             continue
+
+        key = (subject.strip(), date_str.strip())
+        if key in known:
+            had_duplicate = True
+            to_mark_seen.append(msg_id)
+            continue
         
         body = extract_body(msg)
         
@@ -379,14 +445,17 @@ def main():
         
         filename = create_blog_post(subject, body, date_str)
         new_posts += 1
+        known.add(key)
+        to_mark_seen.append(msg_id)
         print(f"  Created: {filename}")
         print(f"    Title: {subject[:80]}")
-        
-        # Mark as read
-        mail.store(msg_id, '+FLAGS', '\\Seen')
     
-    if new_posts > 0:
+    # A crash after writing the post but before the index leaves the email
+    # unread; a duplicate retry must rebuild before marking it seen.
+    if new_posts > 0 or had_duplicate:
         rebuild_index()
+        for msg_id in to_mark_seen:
+            mail.store(msg_id, '+FLAGS', '\\Seen')
     
     mail.logout()
     print(f"Done: {new_posts} new posts")
