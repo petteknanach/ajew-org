@@ -70,6 +70,7 @@
     slug: 'tanach-bereishit', chapter: 1,
     mode: 'full', medooyuk: true, shnayim: false,
     layout: 'stacked', targum: '', size: 26, theme: 'day',
+    view: 'verses',   /* 'verses' = numbered verses | 'sefer' = continuous scroll */
     data: null, targumData: null, tapCount: {}
   };
 
@@ -255,6 +256,28 @@
     var shnayim = state.shnayim && state.targumData;
     var html = [];
     var heads = '';
+
+    /* SEPER TORAH VIEW: one continuous scroll, no verse numbers, no per-verse
+       blocks. A real Sefer Torah is not verse-by-verse - it is unbroken text
+       running between petuchot and setumot, read as columns. The tikkun adds the
+       ta'amim layer underneath (a tikkun, not the Torah itself). */
+    if (state.view === 'sefer') {
+      html.push('<div class="tk-sefer-scroll">' +
+        '<p class="tk-sefer-note">ספר תורה — טקסט רציף, ללא מספרי פסוקים. המילים המוטעמות מתחת (תיקון).</p>');
+      var flow = [];
+      Object.keys(ch).map(Number).sort(function (a, b) { return a - b; }).forEach(function (v) {
+        flow.push('<span class="tk-mikra">' + mikraHTML(ch[v]) + '</span>');
+      });
+      html.push('<div class="tk-sefer-cols">' + flow.join('') + '</div>');
+      html.push('<div class="tk-sefer-taamim">' +
+        Object.keys(ch).map(Number).sort(function (a, b) { return a - b; })
+          .map(function (v) { return '<span class="tk-taam-line">' + scrollHTML(ch[v]) + '</span>'; }).join('') +
+        '</div>');
+      html.push('</div>');
+      box.innerHTML = html.join('');
+      return;
+    }
+
     if (state.shnayim) {
       heads = '<div class="tk-shnayim-note">' +
         '<span class="tk-colhead-scroll">כתב התורה · sefer-Torah line (bare letters)</span>' +
@@ -366,7 +389,8 @@
       localStorage.setItem('tk-settings', JSON.stringify({
         slug: state.slug, chapter: state.chapter, mode: state.mode,
         medooyuk: state.medooyuk, shnayim: state.shnayim, layout: state.layout,
-        targum: state.targum, size: state.size, theme: state.theme
+        targum: state.targum, size: state.size, theme: state.theme,
+        view: state.view
       }));
     } catch (e) {}
   }
@@ -408,7 +432,7 @@
 
   function init() {
     var st = load();
-    ['slug','chapter','mode','medooyuk','shnayim','layout','targum','size','theme'].forEach(function (k) {
+    ['slug','chapter','mode','medooyuk','shnayim','layout','targum','size','theme','view'].forEach(function (k) {
       if (st[k] !== undefined) state[k] = st[k];
     });
     /* deep link: /reader/tikkun?b=<slug>&c=<chapter> */
@@ -438,6 +462,7 @@
     $('tk-medooyuk').checked = state.medooyuk;
     $('tk-shnayim').checked = state.shnayim;
     $('tk-layout').value = state.layout;
+    $('tk-view').value = state.view;
     $('tk-size').value = state.size;
     document.documentElement.style.setProperty('--tk-size', state.size + 'px');
     setTheme(state.theme);
@@ -460,7 +485,17 @@
     $('tk-medooyuk').addEventListener('change', function () {
       state.medooyuk = this.checked; $('tk-legend').hidden = !state.medooyuk; save(); render();
     });
-    $('tk-shnayim').addEventListener('change', function () { state.shnayim = this.checked; save(); render(); });
+    $('tk-shnayim').addEventListener('change', function () {
+      /* Shnayim and Sefer view are both full-page presentations; turning on
+         Sefer turns off the per-verse shnayim layouts so the two never fight. */
+      if (this.checked && state.view === 'sefer') { state.view = 'verses'; $('tk-view').value = 'verses'; }
+      state.shnayim = this.checked; save(); render();
+    });
+    $('tk-view').addEventListener('change', function () {
+      state.view = this.value;
+      if (state.view === 'sefer') { state.shnayim = false; $('tk-shnayim').checked = false; }
+      save(); render();
+    });
     $('tk-layout').addEventListener('change', function () { state.layout = this.value; save(); render(); });
     $('tk-targum').addEventListener('change', function () { state.targum = this.value; save(); });
     $('tk-size').addEventListener('input', function () {
