@@ -1,0 +1,36 @@
+[Unit]
+Description=Ajew private blog writer
+After=network.target
+
+[Service]
+Type=simple
+User=ajew-blog-writer
+Group=ajew-blog-writer
+WorkingDirectory=/opt/ajew-blog-writer
+Environment=WRITER_STATE=/var/lib/ajew-blog-writer
+Environment=WRITER_LEGACY=/opt/ajew-blog
+Environment=WRITER_ORIGIN=https://ajew.org
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStartPre=/opt/ajew-blog-writer/venv/bin/python writer.py init
+ExecStart=/opt/ajew-blog-writer/venv/bin/gunicorn --bind 127.0.0.1:8790 --workers 2 --threads 2 --timeout 30 --error-logfile - writer:application
+Restart=on-failure
+RestartSec=3
+UMask=0077
+StateDirectory=ajew-blog-writer
+StateDirectoryMode=0700
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/ajew-blog-writer
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+CapabilityBoundingSet=
+MemoryMax=192M
+TasksMax=24
+
+[Install]
+WantedBy=multi-user.target
