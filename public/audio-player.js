@@ -186,7 +186,9 @@
       '}' +
       '@media(max-width:1023px){' +
         'body:has(#ajew-audio-player){padding-bottom:132px;}' +
+        'body:has(#ajew-audio-player.collapsed){padding-bottom:64px;}' +
         '#ajew-audio-player{bottom:calc(64px + env(safe-area-inset-bottom));font-size:13px;z-index:1001;}' +
+        '#ajew-audio-player.collapsed{display:none;}' +
         '#ajew-audio-player .ajew-ap-header{padding:.45rem .55rem;}' +
         '#ajew-audio-player .ajew-ap-body{padding:.45rem .55rem;max-height:58vh;}' +
         '#ajew-audio-player .ajew-ap-list{max-height:22vh;}' +
@@ -343,6 +345,16 @@ function loadSources() {
       closeBtn.textContent = state.collapsed ? 'Open audio ▲' : 'Close audio ▼';
       closeBtn.setAttribute('aria-label', state.collapsed ? 'Open audio player' : 'Close audio player');
       closeBtn.setAttribute('aria-expanded', state.collapsed ? 'false' : 'true');
+    }
+    var mobileAudioBtn = document.getElementById('mobile-audio-btn');
+    if (mobileAudioBtn) {
+      mobileAudioBtn.setAttribute('aria-expanded', state.collapsed ? 'false' : 'true');
+      mobileAudioBtn.setAttribute('aria-label', state.collapsed ? 'Open audio player' : 'Close audio player');
+      mobileAudioBtn.classList.toggle('active', !state.collapsed);
+      if (window.matchMedia('(max-width: 1023px)').matches) {
+        if (state.collapsed) mobileAudioBtn.focus();
+        else if (closeBtn) closeBtn.focus();
+      }
     }
   }
 
@@ -765,6 +777,11 @@ function loadSources() {
       var wrap = el('div', { id: 'ajew-audio-player', class: 'collapsed' });
       document.body.appendChild(wrap);
       render(wrap);
+      var mobileAudioBtn = document.getElementById('mobile-audio-btn');
+      if (mobileAudioBtn) {
+        mobileAudioBtn.hidden = false;
+        mobileAudioBtn.addEventListener('click', function () { toggleCollapsed(); });
+      }
       if (state.pendingOpen && state.collapsed) toggleCollapsed();
       state.pendingOpen = false;
     }).catch(function (err) {
