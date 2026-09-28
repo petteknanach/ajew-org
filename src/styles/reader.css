@@ -1118,6 +1118,11 @@ body:has(.reader-container) #yahrzeitCloseBtn {
 
 /* Keep the reader and fixed reader controls outside the open commentary panel. */
 @media (min-width: 901px) {
+  /* Preserve voice/assistant access without placing their fixed buttons on text. */
+  body:has(.reader-container) #commentary-sidebar-body {
+    padding-right: 80px;
+  }
+
   body.has-commentary-sidebar-open .reader-container {
     box-sizing: border-box;
     width: calc(100% - clamp(340px, 40vw, 560px));
