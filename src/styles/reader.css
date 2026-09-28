@@ -694,9 +694,24 @@
   }
 }
 
-/* Desktop idle actions share a narrow right rail, not the reading column. */
+/* Keep the collapsed candle clear of the source breadcrumb on every width. */
+body:has(.reader-container) .reader-breadcrumb { padding-left: 48px; }
+@media (max-width: 900px) {
+  .reader-container .reader-nav { padding-left: 40px; padding-right: 48px; flex-wrap: wrap; gap: 8px; }
+}
+
+/* Desktop idle actions share rails outside text AND navigation targets. */
 @media (min-width: 901px) {
+  .reader-container .reader-nav { padding-right: 88px; padding-left: 72px; flex-wrap: wrap; gap: 12px; }
+  .reader-container .reader-toolbar { padding-right: 80px; }
+  .reader-content { padding-left: 64px; }
   body:has(.commentary-sidebar-handle) .reader-content { padding-right: 80px; }
+  .reader-toc-toggle { left: 8px; }
+}
+@media (min-width: 1024px) {
+  .reader-toc-toggle { left: calc(var(--ds-sidebar-width, 230px) + 8px); }
+}
+@media (min-width: 901px) {
   body:has(.reader-container) #backToTop { right: 16px !important; bottom: 152px !important; }
   body.has-commentary-sidebar-open:has(.reader-container) #backToTop { right: calc(clamp(340px, 40vw, 560px) + 16px) !important; }
 }
