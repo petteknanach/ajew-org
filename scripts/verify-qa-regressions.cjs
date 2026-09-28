@@ -40,13 +40,13 @@ assert(player.includes("bookId === 'sefer-hamidos'\n          ? window.location.
 assert((player.match(/if \(bookId !== 'sefer-hamidos'\)/g) || []).length >= 2, 'Sefer HaMidos must hide whole-item archive edition links');
 assert(player.includes("'⬇ Download song'"), 'Sefer HaMidos songs must retain an individual download control');
 assert(player.includes("download: ''"), 'Individual song download controls must request download behavior');
-assert(layout.includes('/audio-player.js?v=20260826-no-archive-details'), 'Audio player asset must use the no-archive-details cache version');
+assert(layout.includes('/audio-player.js?v=20260927-mobile-audio-tab'), 'Audio player asset must use the verified mobile-tab cache version (archive-detail guards remain above)');
 assert(readerCss.includes('width: calc(100% - clamp(340px, 40vw, 560px))'), 'Reader content must clear the open commentary sidebar');
 assert(readerScript.includes("let notesBtn = document.getElementById('btn-notes')"), 'Notes setup must reuse the existing button');
 assert(readerScript.includes("notesBtn.dataset.readerNotesBound !== '1'"), 'Notes setup must bind once');
 assert(nginx404.includes('try_files $uri $uri.html $uri/ =404;'), 'Unknown static routes must return 404');
 assert(nginx404.includes('error_page 404 /404.html;'), 'Custom 404 page must preserve HTTP 404');
-assert(commentary.includes('bottom: calc(140px + env(safe-area-inset-bottom))'), 'Mobile commentary toggle must clear audio and navigation');
+assert(commentary.includes('.commentary-sidebar-toggle { display: none; }') && commentary.includes('id="commentary-sidebar-handle"') && readerCss.includes('padding-right: 48px'), 'Single commentary edge handle must replace the duplicate FAB and retain a reserved mobile text rail');
 assert(yahrzeit.includes('max-height: 260px'), 'Desktop yahrzeit box must not cover the reader toolbar');
 assert(yahrzeit.includes('@media (min-width: 769px)'), 'Desktop yahrzeit must support its compact state');
 assert(yahrzeit.includes('.compact-yahrzeit.collapsed'), 'Desktop yahrzeit must render collapsed by default');

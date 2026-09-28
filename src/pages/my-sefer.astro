@@ -77,7 +77,14 @@ import Layout from '../layouts/Layout.astro';
     <div class="sefer-print-layout" id="print-layout"></div>
   </div>
 
-  <style>
+  <!-- Passage cards are created by the client and do not have Astro scope attributes. -->
+  <style is:global>
+    .passage-print-text { display: none; }
+    .passage-saved-text { white-space: pre-wrap; unicode-bidi: plaintext; overflow-wrap: anywhere; }
+    @media print {
+      .passage-snippet { display: none !important; }
+      .passage-print-text { display: block !important; white-space: pre-wrap; overflow-wrap: anywhere; }
+    }
     /* ===== Sefer Page Styles ===== */
     .sefer-page {
       max-width: 900px;
@@ -690,19 +697,16 @@ import Layout from '../layouts/Layout.astro';
     }
   </style>
 
+  <script is:inline src="/my-sefer-storage.js"></script>
   <script is:inline>
-  (function() {
+  (async function() {
     'use strict';
 
     const SEFER_KEY = 'mySefer';
 
     // --- Data ---
     function loadSefer() {
-      try {
-        const raw = localStorage.getItem(SEFER_KEY);
-        if (raw) return JSON.parse(raw);
-      } catch (e) {}
-      return { name: '', passages: [], createdAt: Date.now(), updatedAt: Date.now() };
+      return window.AjewSeferStorage.loadAndMigrate(localStorage, window.location.origin);
     }
 
     function saveSefer(sefer) {
@@ -714,7 +718,18 @@ import Layout from '../layouts/Layout.astro';
       }
     }
 
-    let sefer = loadSefer();
+    let sefer;
+    try { sefer = await loadSefer(); }
+    catch (error) {
+      const warning = document.createElement('p');
+      warning.setAttribute('role', 'alert');
+      warning.textContent = 'Your saved collection could not be loaded safely. Nothing was replaced. Reload to retry; keep this browser’s saved data for recovery.';
+      document.querySelector('.sefer-page').prepend(warning);
+      document.querySelectorAll('.sefer-page button, .sefer-page input').forEach(el => el.disabled = true);
+      document.getElementById('empty-state').style.display = 'none';
+      document.getElementById('passage-count').textContent = 'Saved data retained — loading blocked';
+      return;
+    }
 
     // --- Render ---
     const nameInput = document.getElementById('sefer-name-input');
@@ -788,6 +803,7 @@ import Layout from '../layouts/Layout.astro';
         const refHe = p.refHe || '';
         const refEn = p.ref || p.readerUrl || '';
         const dateStr = p.addedAt ? new Date(p.addedAt).toLocaleDateString() : '';
+        const readerUrl = window.AjewSeferStorage.safeReaderUrl(p.readerUrl, window.location.origin);
 
         card.innerHTML = `
           <span class="passage-number">${realIdx + 1}</span>
@@ -803,15 +819,19 @@ import Layout from '../layouts/Layout.astro';
               <button class="passage-action-btn danger" data-action="remove" title="Remove">&#10005;</button>
             </div>
           </div>
-          ${heSnippet ? '<div class="passage-text-he">' + escHtml(heSnippet) + (p.he && p.he.length > 150 ? '...' : '') + '</div>' : ''}
-          ${enSnippet ? '<div class="passage-text-en">' + escHtml(enSnippet) + (p.en && p.en.length > 200 ? '...' : '') + '</div>' : ''}
+          ${heSnippet ? '<div class="passage-text-he passage-snippet">' + escHtml(heSnippet) + (p.he && p.he.length > 150 ? '...' : '') + '</div>' : ''}
+          ${enSnippet ? '<div class="passage-text-en passage-snippet">' + escHtml(enSnippet) + (p.en && p.en.length > 200 ? '...' : '') + '</div>' : ''}
+          ${p.savedText ? '<div class="passage-saved-text passage-snippet" dir="auto">' + escHtml(p.savedText.slice(0, 220)) + (p.savedText.length > 220 ? '...' : '') + '</div>' : ''}
+          ${p.he ? '<div class="passage-print-text passage-text-he" dir="rtl">' + escHtml(p.he) + '</div>' : ''}
+          ${p.en ? '<div class="passage-print-text passage-text-en" dir="ltr">' + escHtml(p.en) + '</div>' : ''}
+          ${p.savedText ? '<div class="passage-print-text passage-saved-text" dir="auto">' + escHtml(p.savedText) + '</div>' : ''}
           <div class="passage-note">
             <textarea placeholder="Add a personal note..." rows="1">${escHtml(p.note || '')}</textarea>
           </div>
           ${p.tag ? '<span class="passage-tag">' + escHtml(p.tag) + '</span>' : ''}
           <div class="passage-meta">
             <span>${dateStr}</span>
-            ${p.readerUrl ? '<a href="' + escHtml(p.readerUrl) + '" class="passage-read-link">Read Full &rarr;</a>' : ''}
+            ${readerUrl ? '<a href="' + escHtml(readerUrl) + '" class="passage-read-link">Read Full &rarr;</a>' : ''}
           </div>
         `;
 
