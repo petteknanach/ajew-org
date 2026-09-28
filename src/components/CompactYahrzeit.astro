@@ -7,7 +7,7 @@
   <!-- Close button - dismisses the box entirely (stored in localStorage) -->
   <button class="close-btn" id="yahrzeitCloseBtn" aria-label="Close yahrzeit box" title="Dismiss">×</button>
   <!-- Toggle button for mobile - shows icon when collapsed -->
-  <button class="toggle-btn mobile-only" id="yahrzeitToggleBtn" aria-label="Toggle yahrzeit box">
+  <button class="toggle-btn mobile-only" id="yahrzeitToggleBtn" aria-label="Toggle yahrzeit box" aria-expanded="false" aria-controls="compactYahrzeit">
     <span class="collapsed-icon">🕯️</span>
     <span class="expanded-icon">×</span>
   </button>
@@ -489,7 +489,7 @@
       upList.innerHTML = '<div class="tzaddik-link upcoming-event"><span class="tzaddik-name">Loading...</span></div>';
       upSection.style.display = 'block';
       box.style.display = 'block';
-      if (window.innerWidth > 768) box.classList.remove('collapsed');
+      if (window.innerWidth > 768 && !document.querySelector('.reader-container')) box.classList.remove('collapsed');
     }, 8000);
 
     try {
@@ -526,7 +526,7 @@
 
       // ALWAYS show the box
       box.style.display = 'block';
-      if (window.innerWidth > 768) {
+      if (window.innerWidth > 768 && !document.querySelector('.reader-container')) {
         box.classList.remove('collapsed');
       }
 
@@ -609,7 +609,7 @@
       // On error, still show box with a simple message
       document.getElementById('yahrzeitLoading').style.display = 'none';
       box.style.display = 'block';
-      if (window.innerWidth > 768) box.classList.remove('collapsed');
+      if (window.innerWidth > 768 && !document.querySelector('.reader-container')) box.classList.remove('collapsed');
       const upSection = document.getElementById('upcomingSection');
       const upList = document.getElementById('upcomingList');
       upList.innerHTML = '<div class="tzaddik-link upcoming-event"><span class="event-description">Check back soon</span></div>';
@@ -620,13 +620,21 @@
   // Mobile toggle
   function toggleYahrzeit() {
     const box = document.getElementById('compactYahrzeit');
-    box.classList.toggle('collapsed');
+    const collapsed = box.classList.toggle('collapsed');
+    const toggle = document.getElementById('yahrzeitToggleBtn');
+    toggle.setAttribute('aria-expanded', String(!collapsed));
+    (collapsed ? toggle : document.getElementById('yahrzeitCloseBtn')).focus({ preventScroll: true });
   }
 
   // Dismiss the yahrzeit box entirely — stores in localStorage
   function dismissYahrzeit() {
     const box = document.getElementById('compactYahrzeit');
+    const hadFocus = box.contains(document.activeElement);
     box.style.display = 'none';
+    if (hadFocus) {
+      const next = Array.from(document.querySelectorAll('#mobile-more-btn, #theme-toggle-sidebar')).find(el => el.getBoundingClientRect().width);
+      next?.focus({ preventScroll: true });
+    }
     const expiry = Date.now() + 60 * 60 * 1000;
     localStorage.setItem('ajew-yahrzeit-dismissed', String(expiry));
   }
@@ -648,6 +656,9 @@
   // Bind event listeners (replaces inline onclick which doesn't work with Astro's module bundling)
   document.getElementById('yahrzeitCloseBtn')?.addEventListener('click', dismissYahrzeit);
   document.getElementById('yahrzeitToggleBtn')?.addEventListener('click', toggleYahrzeit);
+  document.getElementById('compactYahrzeit')?.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && !document.getElementById('compactYahrzeit').classList.contains('collapsed')) toggleYahrzeit();
+  });
 
   // Auto-dismiss yahrzeit box when any link is clicked
   document.addEventListener('click', function(e) {

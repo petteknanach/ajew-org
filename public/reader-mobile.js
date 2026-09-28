@@ -39,6 +39,31 @@
         toggle.focus();
       }
     });
+    // Existing Reader listeners own state; synchronize focus and ARIA afterwards.
+    const toc = container.querySelector('.reader-toc');
+    const tocToggle = container.querySelector('.reader-toc-toggle');
+    const tocClose = container.querySelector('.reader-toc-close');
+    if (toc && tocToggle && tocClose) {
+      if (!toc.id) toc.id = 'reader-toc-panel';
+      tocToggle.setAttribute('aria-controls', toc.id);
+      tocToggle.setAttribute('aria-expanded', String(toc.classList.contains('open')));
+      function syncTocFocus() {
+        const open = toc.classList.contains('open');
+        tocToggle.setAttribute('aria-expanded', String(open));
+        (open ? tocClose : tocToggle).focus({ preventScroll: true });
+      }
+      tocToggle.addEventListener('click', syncTocFocus);
+      tocClose.addEventListener('click', syncTocFocus);
+      document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && toc.contains(document.activeElement)) {
+          if (toc.classList.contains('open')) tocClose.click();
+          else syncTocFocus();
+        }
+      });
+    }
+    const searchClose = container.querySelector('.search-close');
+    const searchToggle = container.querySelector('#btn-search');
+    if (searchClose && searchToggle) searchClose.addEventListener('click', () => searchToggle.focus({ preventScroll: true }));
     const audio = container.querySelector('#audio-controls');
     let audioDetails = null;
     if (audio) {

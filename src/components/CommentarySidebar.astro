@@ -178,7 +178,9 @@ const subjectLabel = entry?.subjectLabel || `Torah ${torah}`;
           sidebar.setAttribute('role', 'complementary');
         }
         if (persist !== false) {
-          try { localStorage.setItem(STORAGE_KEY, open ? '1' : '0'); } catch (_e) {}
+              if (open) closeBtn.focus({ preventScroll: true });
+              else if (handleBtn) handleBtn.focus({ preventScroll: true });
+              try { localStorage.setItem(STORAGE_KEY, open ? '1' : '0'); } catch (_e) {}
         }
       }
 
@@ -1175,10 +1177,14 @@ const subjectLabel = entry?.subjectLabel || `Torah ${torah}`;
       opacity: 0.8;
     }
 
+    /* One edge handle is sufficient at every width; no duplicate text-covering FAB. */
+    .commentary-sidebar-toggle { display: none; }
+
     /* Mobile: drawer from the right, covers most of the screen, has backdrop */
     @media (max-width: 900px) {
       .commentary-sidebar {
         width: 92%;
+        height: calc(100dvh - 64px - env(safe-area-inset-bottom));
         min-width: 0;
         max-width: none;
         box-shadow: -6px 0 28px rgba(0, 0, 0, 0.35);
@@ -1190,7 +1196,7 @@ const subjectLabel = entry?.subjectLabel || `Torah ${torah}`;
         left: auto;
         right: 92%;
         width: 100vw;
-        height: 100vh;
+        height: calc(100dvh - 64px - env(safe-area-inset-bottom));
         background: rgba(0, 0, 0, 0.45);
         z-index: -1;
       }

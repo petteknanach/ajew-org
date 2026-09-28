@@ -686,13 +686,36 @@
     margin-left: 4px;
   }
   .reader-content {
-    padding: 0 12px 40px 24px;
+    padding: 0 12px 40px 40px;
   }
   .reader-breadcrumb {
     padding: 8px 12px;
     font-size: 0.7em;
   }
 }
+
+/* Desktop idle actions share a narrow right rail, not the reading column. */
+@media (min-width: 901px) {
+  body:has(.commentary-sidebar-handle) .reader-content { padding-right: 80px; }
+  body:has(.reader-container) #backToTop { right: 16px !important; bottom: 152px !important; }
+  body.has-commentary-sidebar-open:has(.reader-container) #backToTop { right: calc(clamp(340px, 40vw, 560px) + 16px) !important; }
+}
+
+/* Keep Reader themes authoritative over site-wide paragraph/card colors. */
+.reader-container[data-theme] { background: var(--reader-bg) !important; }
+.reader-container .reader-segment,
+.reader-container .reader-segment p { color: var(--reader-text) !important; }
+
+/* Expanded tools and search are deliberate panels, above idle edge handles. */
+@media (max-width: 768px) {
+  .reader-mobile-ready .reader-toolbar:has(#reader-tools-toggle[aria-expanded="true"]),
+  .reader-search-bar.open { z-index: 1110; }
+  .reader-search-bar { padding-inline: 8px; }
+  .reader-search-bar input { min-width: 0; }
+}
+/* Reader candles stay opt-in on desktop as well as mobile. */
+body:has(.reader-container) #compactYahrzeit.collapsed .expanded-icon { display: none; }
+body:has(.reader-container) #compactYahrzeit.collapsed .collapsed-icon { display: inline; }
 
 /* Reserve the right edge for the commentary handle where it exists. */
 @media (max-width: 900px) {
