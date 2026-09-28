@@ -82,6 +82,10 @@ import Layout from '../layouts/Layout.astro';
     .passage-print-text { display: none; }
     .passage-saved-text { white-space: pre-wrap; unicode-bidi: plaintext; overflow-wrap: anywhere; }
     @media print {
+      body:has(.sefer-page) * { visibility: hidden !important; }
+      body:has(.sefer-page) .sefer-page,
+      body:has(.sefer-page) .sefer-page * { visibility: visible !important; }
+      body:has(.sefer-page) #main-content { margin: 0 !important; padding: 0 !important; width: 100% !important; }
       .passage-snippet { display: none !important; }
       .passage-print-text { display: block !important; white-space: pre-wrap; overflow-wrap: anywhere; }
     }
