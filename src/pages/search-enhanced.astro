@@ -1,6 +1,14 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import EnhancedSearch from '../components/EnhancedSearch.astro';
+import fs from 'node:fs';
+import path from 'node:path';
+// Reuse approved catalog titles verbatim; never display internal book slugs.
+const searchBookLabels = Object.fromEntries(
+  JSON.parse(fs.readFileSync(path.join(process.cwd(), 'public/reader/catalog.json'), 'utf8')).books
+    .map(book => [book.id, [book.title, book.hebrewTitle].filter(Boolean).join(' · ')])
+);
+const searchBookLabelsJSON = JSON.stringify(searchBookLabels).replace(/</g, '\\u003c');
 ---
 
 <Layout
@@ -11,6 +19,10 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
   <div class="search-page">
     <header class="page-header">
       <h1><span lang="he">חיפוש מתקדם</span> <span class="sr-only">-</span> Advanced Search Across All Works</h1>
+      <details class="search-dates" id="search-dates">
+        <summary>🕯️ Dates &amp; yahrzeits</summary>
+        <div id="search-dates-slot"></div>
+      </details>
     </header>
 
     <div class="container">
@@ -70,7 +82,9 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
     </div>
   </div>
 
+  <script type="application/json" id="search-book-labels" set:html={searchBookLabelsJSON} />
   <script>
+    import { displayBookLabel } from '../lib/search-book-labels.mjs';
     import {
       acronymMatch,
       booleanCandidateIds,
@@ -85,6 +99,24 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
     } from '../lib/search-mode-core.mjs';
 
     document.addEventListener('DOMContentLoaded', function() {
+      const bookLabels = JSON.parse(document.getElementById('search-book-labels')?.textContent || '{}');
+      // Preserve the original dates widget/listeners, but keep it in normal
+      // document flow so it cannot cover search counts, snippets or controls.
+      const dates = document.getElementById('search-dates') as HTMLDetailsElement;
+      const datesBox = document.getElementById('compactYahrzeit');
+      const datesSlot = document.getElementById('search-dates-slot');
+      if (dates && datesBox && datesSlot) {
+        datesSlot.appendChild(datesBox);
+        datesBox.classList.remove('collapsed');
+        dates.addEventListener('toggle', () => datesBox.classList.remove('collapsed'));
+        dates.addEventListener('keydown', event => {
+          if (event.key === 'Escape') {
+            dates.open = false;
+            dates.querySelector('summary')?.focus();
+          }
+        });
+        document.getElementById('yahrzeitCloseBtn')?.addEventListener('click', () => { dates.hidden = true; });
+      }
       const welcomeMessage = document.getElementById('welcomeMessage');
       const loading = document.getElementById('loading');
       const resultsContainer = document.getElementById('resultsContainer');
@@ -923,7 +955,7 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
           const rawTitle = result.title || 'Unknown';
           const title = highlightQuery(rawTitle, displayQuery);
           const hebrewTitle = result.hebrewTitle ? highlightQuery(result.hebrewTitle, displayQuery) : '';
-          const subcategory = result.subcategory || '';
+          const subcategory = escapeAttr(displayBookLabel(result.subcategory || result.book || '', bookLabels));
           const wordCount = result.wordCount || 0;
           const relevance = result.relevance || 0;
 
@@ -1147,6 +1179,10 @@ import EnhancedSearch from '../components/EnhancedSearch.astro';
   </script>
 
   <style>
+    .search-dates { max-width: 300px; margin: 12px auto; text-align: start; }
+    .search-dates summary { cursor: pointer; min-height: 44px; padding: 10px 12px; border-radius: 8px; background: #fffaf0; color: #4b371a; }
+    .search-dates :global(#compactYahrzeit) { position: relative !important; inset: auto !important; transform: none !important; margin: 8px 0 0; min-width: 0 !important; max-width: 100% !important; max-height: none !important; z-index: 1 !important; }
+    .search-dates :global(#yahrzeitToggleBtn) { display: none !important; }
     .search-page {
       min-height: 100vh;
       background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #a855f7 100%);
