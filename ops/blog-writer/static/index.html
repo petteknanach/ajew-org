@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <title>Ajew Blog Writer</title>
+  <script src="/blog/write/writer.js" defer></script>
+  <link rel="stylesheet" href="/blog/write/writer.css">
+</head>
+<body>
+  <a class="skip-link" href="#editor-heading">Skip to editor</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand"><span class="brand-name">ajew<span class="brand-dot">.</span></span><span class="brand-detail">Blog Writer</span></div>
+      <nav aria-label="Writer navigation">
+        <a href="/blog/" data-leave>View blog</a>
+        <button id="logout" class="button button-quiet" type="button" hidden>Sign out</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page">
+    <section id="auth-panel" class="auth-panel" aria-labelledby="auth-heading">
+      <p class="eyebrow">Private workspace</p>
+      <h1 id="auth-heading">Ajew Blog Writer</h1>
+      <p id="auth-message" role="status">Checking your session…</p>
+      <button id="retry-session" class="button button-secondary" type="button" hidden>Check session again</button>
+      <noscript><p>JavaScript is needed to sign in, save drafts, and publish. Enable it, then reopen your private shortcut.</p></noscript>
+    </section>
+
+    <p id="feedback" class="notice notice-success" role="status" aria-live="polite" hidden></p>
+    <p id="error" class="notice notice-error" role="alert" hidden></p>
+
+    <div id="workspace" class="workspace" hidden>
+      <section class="editor-panel" aria-labelledby="editor-heading">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">A place for your words</p>
+            <h1 id="editor-heading" tabindex="-1">New post</h1>
+          </div>
+          <button id="new-post" class="button button-secondary" type="button">New Post</button>
+        </div>
+        <div class="post-meta"><span id="post-state" class="badge">Private draft</span><span id="save-state">Not saved yet</span></div>
+        <p id="publication-note" class="help">Your draft is private. Only Publish makes it public.</p>
+        <a id="public-link" class="public-link" href="/blog/" target="_blank" rel="noopener noreferrer" hidden>View published post ↗</a>
+
+        <div id="conflict-panel" class="notice notice-warning" hidden>
+          <p>This post changed elsewhere. Your text is still here. Save a separate draft to keep these words, or reopen the original from Your posts after copying anything you need.</p>
+          <button id="save-copy" class="button button-secondary" type="button">Save a separate draft</button>
+        </div>
+
+        <form id="post-form">
+          <div class="field">
+            <div class="label-row"><label for="post-title">Title</label><span id="title-count" class="count">0 / 300</span></div>
+            <input id="post-title" name="title" type="text" dir="auto" maxlength="300" required autocomplete="off" aria-describedby="title-count" placeholder="Give your post a title">
+          </div>
+          <div class="field">
+            <div class="label-row"><label for="post-body">Content</label><span id="body-count" class="count">0 / 200,000</span></div>
+            <p id="content-help" class="help field-help">Write or paste plain text, in English or Hebrew. Keep your paragraphs and line breaks; formatting code is not needed.</p>
+            <textarea id="post-body" name="body" dir="auto" maxlength="200000" required rows="16" aria-describedby="content-help body-count" placeholder="Write your post here…"></textarea>
+          </div>
+          <div class="editor-actions">
+            <button id="save-draft" class="button button-secondary" type="submit">Save Draft</button>
+            <button id="publish" class="button button-primary" type="button">Publish</button>
+          </div>
+          <p class="help save-help">Choose Save Draft to keep your work. Publishing always asks for confirmation. Nothing publishes automatically.</p>
+        </form>
+      </section>
+
+      <aside class="posts-panel" aria-labelledby="posts-heading">
+        <div class="list-heading"><h2 id="posts-heading">Your posts</h2><button id="refresh-posts" class="button button-quiet" type="button">Refresh</button></div>
+        <p class="help">Private drafts and published posts. Select one to edit.</p>
+        <p id="list-message" class="empty-state" role="status">Loading your posts…</p>
+        <ul id="post-list" class="post-list" aria-label="Saved drafts and posts"></ul>
+        <p class="list-footnote">Saving edits to a published post does not change the live version. Publish again when you are ready.</p>
+      </aside>
+    </div>
+  </main>
+  <footer class="site-footer"><span>Ajew Blog Writer · A private place to write</span><span lang="he" dir="rtl">נ נח נחמ נחמן מאומן</span></footer>
+</body>
+</html>
