@@ -63,14 +63,15 @@
     ['Vezos Haberacha','tanach-devarim',33,1,34,12]
   ];
 
-  var TAAMIM = /[\u0591-\u05AF\u05BD\u05C0]/g;   // teamim incl. meteg + pasek
-  var NIKUD  = /[\u05B0-\u05BC\u05C1\u05C2\u05C7]/g;
+  var R = window.TikkunRenderer;
+  var requestId = 0, presentation = null, fixed = null, presentationError = '';
 
   var state = {
     slug: 'tanach-bereishit', chapter: 1,
     mode: 'full', medooyuk: true, shnayim: false,
     layout: 'stacked', targum: '', size: 26, theme: 'day',
-    view: 'verses',   /* 'verses' = numbered verses | 'sefer' = continuous scroll */
+    view: 'sefer',   /* fixed edition columns; study/verses keep the UXLC reading */
+    fixedPage: null,
     data: null, targumData: null, tapCount: {}
   };
 
@@ -94,139 +95,19 @@
   }
 
   function applyMode(text, mode) {
-    var m = mode || state.mode;
-    if (m === 'nikud') return text.replace(TAAMIM, '');
-    if (m === 'taamim') return text.replace(NIKUD, '');
-    if (m === 'letters') return text.replace(TAAMIM, '').replace(NIKUD, '');
-    return text;
+    return R.mode(text, mode || state.mode);
   }
 
-  /* Split a token into per-letter segments: each base consonant (U+05D0-U+05EA)
-     plus the combining marks that follow it. medooyuk letter indexes (li) count
-     base consonants exactly this way. */
-  function letterSegments(tok) {
-    var segs = [], cur = '';
-    for (var i = 0; i < tok.length; i++) {
-      var cp = tok.charCodeAt(i);
-      if (cp >= 0x5D0 && cp <= 0x5EA) {
-        if (cur) segs.push(cur);
-        cur = tok[i];
-      } else {
-        cur += tok[i];
-      }
-    }
-    if (cur) segs.push(cur);
-    return segs;
+  function overlay() { return presentation && presentation.books[state.slug]; }
+  function mikraHTML(verse, v) {
+    return R.readingVerse(R.repaired(verse, overlay(), state.chapter + ':' + v), {mode:state.mode, marked:state.medooyuk});
+  }
+  function scrollHTML(verse, v) {
+    var o = overlay();
+    if (!o) return '<span class="tk-tmissing">Written text unavailable — reload to retry.</span>';
+    return R.writtenVerse(verse, o.verses[state.chapter + ':' + v]);
   }
 
-  /* One token's HTML. medooyuk marks sit on the NIKUD CHARACTERS THEMSELVES —
-     the letters stay regular (Simanim style: shva na is the emphasized one).
-     m marks: [[ti, li, lb, qb]] where li is the SHEVA letter; qb=1 means the
-     qamats feeding that sheva needs beur, so the qamats on li-1 is dotted.
-     ls: [[ti, li, 'lg'|'sm'|'sus']] letter-presentation entries (scroll-true). */
-  function tokenHTML(tok, mks, ls) {
-    var segs = letterSegments(tok);
-    var na = {}, qbNext = {}, qk = {}, lsByLi = {};
-    (state.medooyuk && mks ? mks : []).forEach(function (mk) {
-      if (mk[1] >= 0 && mk[1] < segs.length) {
-        if (mk[2] === 'na') na[mk[1]] = 1;
-        if (mk[2] === 'qk') qk[mk[1]] = 1;           /* qamats katan: mark li IS the qamats letter */
-        if (mk[3]) { if (mk[1] > 0) qbNext[mk[1] - 1] = 1; }
-      }
-    });
-    (ls || []).forEach(function (l) {
-      if (l[1] >= 0 && l[1] < segs.length) lsByLi[l[1]] = l[2];
-    });
-    var out = '';
-    for (var j = 0; j < segs.length; j++) out += segHTML(segs[j], na[j], qbNext[j], qk[j], lsByLi[j]);
-    return out;
-  }
-
-  /* One letter segment (base consonant + its marks), mark-level styled. */
-  function segHTML(seg, na, qb, qk, lsKind) {
-    var out = '';
-    for (var i = 0; i < seg.length; i++) {
-      var vis = applyMode(seg[i], state.mode);
-      if (!vis) continue;
-      var cp = seg.charCodeAt(i), cls = null;
-      if (state.medooyuk) {
-        if (cp === 0x5BD) cls = 'm-meteg';
-        else if (cp === 0x5B0 && na) cls = 'm-na';
-        else if ((cp === 0x5B8 || cp === 0x5C7) && qb) cls = 'm-qb';
-        else if ((cp === 0x5B8 || cp === 0x5C7) && qk) cls = 'm-qk';
-      }
-      if (i === 0 && lsKind) cls = cls ? cls + ' tk-l-' + lsKind : 'tk-l-' + lsKind;
-      out += cls ? '<span class="' + cls + '">' + esc(vis) + '</span>' : esc(vis);
-    }
-    return out;
-  }
-
-  function joinTokens(arr) {
-    var out = '';
-    for (var i = 0; i < arr.length; i++) {
-      if (out && !/[\u05BE\u05C0\u200F]$/.test(out) && out.slice(-1) !== ' ') out += ' ';
-      out += arr[i];
-    }
-    return out;
-  }
-
-  /* Render one verse's mikra text with medooyuk spans on the marked letters. */
-  function mikraHTML(verse) {
-    var byTok = {}, byL = {};
-    (verse.m || []).forEach(function (mk) {
-      (byTok[mk[0]] = byTok[mk[0]] || []).push(mk);
-    });
-    (verse.L || []).forEach(function (l) {
-      (byL[l[0]] = byL[l[0]] || []).push(l);
-    });
-    var parts = verse.t.map(function (tok, i) {
-      return tokenHTML(tok, byTok[i], byL[i]);
-    });
-    return joinTokens(withBreaks(verse, parts));
-  }
-
-  /* The verse exactly as it appears in the sefer Torah: bare letters, with
-     large/small/suspended letters at their true size (UXLC <s t=...>). */
-  function scrollHTML(verse) {
-    var byL = {};
-    (verse.L || []).forEach(function (l) {
-      (byL[l[0]] = byL[l[0]] || []).push(l);
-    });
-    var parts = verse.t.map(function (tok, i) {
-      var bare = applyMode(tok, 'letters');
-      var ls = byL[i];
-      if (!ls) return esc(bare);
-      var segs = letterSegments(tok); /* letter count identical in bare form */
-      var out = '';
-      for (var li = 0; li < segs.length; li++) {
-        var kind = null;
-        ls.forEach(function (l) { if (l[1] === li) kind = l[2]; });
-        var seg = esc(applyMode(segs[li], 'letters'));
-        out += kind ? '<span class="tk-l-' + kind + '">' + seg + '</span>' : seg;
-      }
-      return out;
-    });
-    return joinTokens(withBreaks(verse, parts));
-  }
-
-  /* Sefer-Torah parsha breaks, POSITIONAL: verse.b = [[ti, kind]] with ti =
-     tokens before the break ('p' petucha, 's' setuma, 'n8' inverted nun).
-     Verse-final breaks (ti = len) render after the last word; the rare
-     mid-verse breaks (Deut 2:8, 5:21, ...) render between words. */
-  function brkSpan(kind) {
-    if (kind === 'p') return '<span class="tk-brk tk-brk-pe" title="petucha · פתוחה">פ</span>';
-    if (kind === 's') return '<span class="tk-brk tk-brk-se" title="setuma · סתומה">ס</span>';
-    return '<span class="tk-nun8" title="inverted nun · נ הפוכה">נ</span>';
-  }
-  function withBreaks(verse, parts) {
-    var bs = verse.b || [];
-    if (!bs.length) return parts;
-    var out = parts.slice();
-    for (var i = bs.length - 1; i >= 0; i--) {
-      out.splice(Math.min(bs[i][0], out.length), 0, brkSpan(bs[i][1]));
-    }
-    return out;
-  }
   function endsPetucha(verse) {
     var bs = verse.b || [];
     for (var i = 0; i < bs.length; i++) {
@@ -257,52 +138,61 @@
     var html = [];
     var heads = '';
 
-    /* SEPER TORAH VIEW: one continuous scroll, no verse numbers, no per-verse
-       blocks. A real Sefer Torah is not verse-by-verse - it is unbroken text
-       running between petuchot and setumot, read as columns. The tikkun adds the
-       ta'amim layer underneath (a tikkun, not the Torah itself). */
-    if (state.view === 'sefer') {
-      html.push('<div class="tk-sefer-scroll">' +
-        '<p class="tk-sefer-note">ספר תורה — טקסט רציף, ללא מספרי פסוקים. המילים המוטעמות מתחת (תיקון).</p>');
-      var flow = [];
-      Object.keys(ch).map(Number).sort(function (a, b) { return a - b; }).forEach(function (v) {
-        flow.push('<span class="tk-mikra">' + mikraHTML(ch[v]) + '</span>');
-      });
-      html.push('<div class="tk-sefer-cols">' + flow.join('') + '</div>');
-      html.push('<div class="tk-sefer-taamim">' +
-        Object.keys(ch).map(Number).sort(function (a, b) { return a - b; })
-          .map(function (v) { return '<span class="tk-taam-line">' + scrollHTML(ch[v]) + '</span>'; }).join('') +
-        '</div>');
-      html.push('</div>');
-      box.innerHTML = html.join('');
+    var isFixed = state.view === 'sefer';
+    $('tk-mode').disabled = isFixed;
+    $('tk-medooyuk').disabled = isFixed;
+    $('tk-legend').hidden = isFixed || !state.medooyuk;
+    $('tk-layout').disabled = !state.shnayim;
+    $('tk-column-controls').hidden = !isFixed;
+    if (isFixed) {
+      if (!fixed) { box.innerHTML = '<p class="tk-error">' + esc(presentationError || 'Loading column layout…') + '</p>'; return; }
+      var pages = fixed.chapters[state.slug + ':' + state.chapter];
+      $('tk-column').disabled = !pages;
+      $('tk-column-prev').disabled = !pages; $('tk-column-next').disabled = !pages;
+      if (!pages) {
+        box.innerHTML = '<p class="tk-sefer-note">Fixed Torah columns are available for the five books only. Choose Continuous study or Numbered verses for this book.</p>';
+        return;
+      }
+      var n = state.fixedPage || pages[0];
+      $('tk-column').value = n;
+      var ids = [n];
+      if (n < 245) ids.push(n + 1);
+      box.innerHTML = '<p class="tk-sefer-note" dir="ltr">Written text · fixed column and line membership of the 245-column edition. Includes surrounding text. Pan sideways to follow the columns; Size changes magnification, not line breaks. A typeset reconstruction, not a photographed scroll. Reading annotations are in the study views.</p>' +
+        '<div class="tk-scroll-viewport" tabindex="0" role="region" aria-label="Torah columns, scroll horizontally"><div class="tk-fixed-strip">' +
+        ids.map(function (p) { return R.fixedColumn(fixed.pages[p], p); }).join('') + '</div></div>';
+      return;
+    }
+    if (state.view === 'study') {
+      box.innerHTML = '<p class="tk-sefer-note" dir="ltr">Continuous reading study · the lines adapt to your screen. This is not the fixed scroll layout.</p>' +
+        '<div class="tk-study-flow">' + R.continuous(state.data.ch, state.chapter, overlay(), {mode:state.mode, marked:state.medooyuk}) + '</div>';
       return;
     }
 
     if (state.shnayim) {
       heads = '<div class="tk-shnayim-note">' +
-        '<span class="tk-colhead-scroll">כתב התורה · sefer-Torah line (bare letters)</span>' +
+        '<span class="tk-colhead-scroll">Unpointed written edition · per-verse study, not fixed scroll layout</span>' +
         '<span class="tk-colhead-read">קריאה · reading line (nikud + taamim)</span>' +
         '</div>';
       html.push(heads);
     }
     Object.keys(ch).map(Number).sort(function (a, b) { return a - b; }).forEach(function (v) {
       var verse = ch[v];
-      var mikra = mikraHTML(verse);
-      var scroll = scrollHTML(verse);
+      var mikra = mikraHTML(verse, v);
+      var scroll = state.shnayim ? scrollHTML(verse, v) : "";
       var num = '<span class="tk-vnum">(' + heNum(v) + ')</span>';
       var peCls = endsPetucha(verse) ? ' tk-petucha' : '';
       if (!state.shnayim) {
-        html.push('<div class="tk-verse' + peCls + '">' + mikra + num + '</div>');
+        html.push('<div class="tk-verse' + peCls + '" data-verse="' + state.chapter + ':' + v + '">' + mikra + num + '</div>');
         return;
       }
       if (state.layout === 'side') {
         html.push('<div class="tk-verse tk-side' + peCls + '">' +
-          '<div class="tk-col-scroll"><div class="tk-line-scroll">' + scroll + num + '</div></div>' +
+          '<div class="tk-col-scroll"><div class="tk-line-scroll">' + scroll + '</div></div>' +
           '<div class="tk-col-read">' + mikra + num +
           (targumLine(state.chapter, v) || '<i class="tk-tmissing">targum not available</i>') + '</div></div>');
       } else if (state.layout === 'tap') {
         var n = state.tapCount[state.chapter + ':' + v] || 0;
-        var body = '<div class="tk-line-scroll">' + scroll + num + '</div>';
+        var body = '<div class="tk-line-scroll">' + scroll + '</div>';
         if (n >= 2) body += '<div class="tk-line-read">' + mikra + '</div>';
         if (n >= 3) body += targumLine(state.chapter, v);
         if (n >= 3) body = '<span class="tk-tap-done">' + body + '</span>';
@@ -311,7 +201,7 @@
                   ' <span class="tk-vnum">[' + Math.min(n, 3) + '/3]</span></div>');
       } else { /* stacked: scroll line, reading line, targum */
         html.push('<div class="tk-verse' + peCls + '">' +
-          '<div class="tk-line-scroll">' + scroll + num + '</div>' +
+          '<div class="tk-line-scroll">' + scroll + '</div>' +
           '<div class="tk-line-read">' + mikra + '</div>' +
           (targumLine(state.chapter, v) || '<div class="tk-targum-line"><i>targum not available</i></div>') +
           '</div>');
@@ -358,30 +248,43 @@
     }
   }
 
+  function fetchJSON(url) {
+    return fetch(url).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
+  }
   function loadBook(slug, chapter, cb) {
-    fetch('/reader/medooyuk/' + slug + '.json')
-      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
-      .then(function (d) {
-        state.data = d;
-        state.chapter = Math.min(chapter || 1, Math.max.apply(null, Object.keys(d.ch).map(Number)));
-        fillChapters();
-        var tsel = $('tk-targum');
-        tsel.innerHTML = '<option value="">—</option>';
-        tsel.disabled = true;
-        state.targumData = null;
-        fetch('/reader/medooyuk/targum/' + slug + '.json')
-          .then(function (r) { return r.ok ? r.json() : null; })
-          .then(function (t) {
-            if (t) { state.targumData = t; }
-            fillTargumSelect();
-            render();
-          }).catch(function () { fillTargumSelect(); render(); });
-        render();
-        if (cb) cb();
-      })
-      .catch(function (e) {
-        $('tk-content').innerHTML = '<p class="tk-error">Could not load ' + slug + ': ' + e + '</p>';
+    var id = ++requestId;
+    state.data = null; state.targumData = null; state.fixedPage = null;
+    render();
+    fetchJSON('/reader/medooyuk/' + slug + '.json').then(function (d) {
+      if (id !== requestId) return;
+      state.data = d;
+      state.chapter = Math.max(1, Math.min(chapter || 1, Math.max.apply(null, Object.keys(d.ch).map(Number))));
+      fillChapters(); fillTargumSelect(); $('tk-parsha').value = parshaFor(state.slug, state.chapter); save(); render();
+      if (cb) cb();
+      return fetch('/reader/medooyuk/targum/' + slug + '.json').then(function (r) { return r.ok ? r.json() : null; }).then(function (t) {
+        if (id !== requestId) return;
+        state.targumData = t; fillTargumSelect(); if (state.shnayim) render();
       });
+    }).catch(function () {
+      if (id !== requestId) return;
+      if (state.data) { fillTargumSelect(); render(); return; }
+      $('tk-content').innerHTML = '<p class="tk-error">Could not load this book. Please reload to retry.</p>';
+    });
+  }
+  function moveColumn(delta) {
+    if (!fixed) return;
+    var ps = fixed.chapters[state.slug + ':' + state.chapter];
+    if (!ps) return;
+    selectColumn(Math.max(1, Math.min(245, (state.fixedPage || ps[0]) + delta)));
+  }
+
+  function selectColumn(n) {
+    if (!fixed || !fixed.pages[n]) return;
+    var refs = fixed.pages[n].reduce(function (a,l) { return a.concat(l.v); }, []);
+    var ref = refs[0], slug = BOOKS[ref.book - 1][0];
+    var show = function () { state.fixedPage = n; render(); save(); };
+    if (slug !== state.slug) { state.slug = slug; $('tk-book').value = slug; loadBook(slug, ref.chapter, show); }
+    else { state.chapter = ref.chapter; fillChapters(); $('tk-parsha').value = parshaFor(slug, ref.chapter); show(); }
   }
 
   function save() {
@@ -409,6 +312,7 @@
 
   function jumpParsha(i) {
     var p = PARSHIYOS[i];
+    if (!p) return;
     var slugChanged = state.slug !== p[1];
     state.slug = p[1];
     if (slugChanged) $('tk-book').value = p[1];
@@ -417,17 +321,18 @@
     } else {
       state.chapter = p[2];
       $('tk-chapter').value = p[2];
-      gotoVerse(p[3]);
+      state.fixedPage = null; render(); gotoVerse(p[3]);
     }
   }
 
   function gotoVerse(v) {
-    var el = document.querySelector('.tk-verse');
-    /* scroll to the verse element containing v: rebuild with anchor */
-    var verses = document.querySelectorAll('.tk-verse');
-    var keys = Object.keys(state.data.ch[state.chapter]).map(Number).sort(function (a, b) { return a - b; });
-    var idx = keys.indexOf(v);
-    if (verses[idx]) verses[idx].scrollIntoView({ block: 'start' });
+    if (state.view === 'sefer' && fixed) {
+      var book = BOOKS.findIndex(function (b) { return b[0] === state.slug; }) + 1;
+      var p = Object.keys(fixed.pages).find(function (n) { return fixed.pages[n].some(function (l) { return l.v.some(function (r) { return r.book === book && r.chapter === state.chapter && r.verse === v; }); }); });
+      if (p) { state.fixedPage = +p; render(); }
+    }
+    var el = document.querySelector('[data-verse="' + state.chapter + ':' + v + '"]');
+    if (el) el.scrollIntoView({block:'start'});
   }
 
   function init() {
@@ -440,6 +345,17 @@
       var q = new URLSearchParams(location.search);
       if (q.get('b')) { state.slug = q.get('b'); state.chapter = parseInt(q.get('c') || '1', 10); }
     } catch (e) {}
+
+    if (!BOOKS.some(function (b) { return b[0] === state.slug; })) state.slug = BOOKS[0][0];
+    if (!Number.isFinite(+state.chapter) || +state.chapter < 1) state.chapter = 1;
+    if (['full','nikud','taamim','letters'].indexOf(state.mode) < 0) state.mode = 'full';
+    if (['day','sepia','night'].indexOf(state.theme) < 0) state.theme = 'day';
+    if (['sefer','study','verses'].indexOf(state.view) < 0) state.view = 'sefer';
+    if (['stacked','side','tap'].indexOf(state.layout) < 0) state.layout = 'stacked';
+    state.size = Math.max(16, Math.min(44, +state.size || 26));
+    var viewParam = new URLSearchParams(location.search).get('view');
+    if (['sefer','study','verses'].indexOf(viewParam) >= 0) state.view = viewParam;
+    if (state.shnayim) state.view = 'verses';
 
     var bsel = $('tk-book');
     BOOKS.forEach(function (b) {
@@ -464,7 +380,7 @@
     $('tk-layout').value = state.layout;
     $('tk-view').value = state.view;
     $('tk-size').value = state.size;
-    document.documentElement.style.setProperty('--tk-size', state.size + 'px');
+    $('tk-app').style.setProperty('--tk-size', state.size + 'px');
     setTheme(state.theme);
 
     bsel.addEventListener('change', function () {
@@ -474,7 +390,7 @@
       save(); loadBook(state.slug, 1);
     });
     $('tk-chapter').addEventListener('change', function () {
-      state.chapter = parseInt(this.value, 10); state.tapCount = {};
+      state.chapter = parseInt(this.value, 10); state.tapCount = {}; state.fixedPage = null;
       psel.value = parshaFor(state.slug, state.chapter);
       save(); render(); window.scrollTo(0, 0);
     });
@@ -488,24 +404,28 @@
     $('tk-shnayim').addEventListener('change', function () {
       /* Shnayim and Sefer view are both full-page presentations; turning on
          Sefer turns off the per-verse shnayim layouts so the two never fight. */
-      if (this.checked && state.view === 'sefer') { state.view = 'verses'; $('tk-view').value = 'verses'; }
+      if (this.checked && state.view !== 'verses') { state.view = 'verses'; $('tk-view').value = 'verses'; }
       state.shnayim = this.checked; save(); render();
     });
     $('tk-view').addEventListener('change', function () {
       state.view = this.value;
-      if (state.view === 'sefer') { state.shnayim = false; $('tk-shnayim').checked = false; }
+      if (state.view !== 'verses') { state.shnayim = false; $('tk-shnayim').checked = false; }
       save(); render();
     });
     $('tk-layout').addEventListener('change', function () { state.layout = this.value; save(); render(); });
     $('tk-targum').addEventListener('change', function () { state.targum = this.value; save(); });
     $('tk-size').addEventListener('input', function () {
       state.size = parseInt(this.value, 10);
-      document.documentElement.style.setProperty('--tk-size', state.size + 'px'); save();
+      $('tk-app').style.setProperty('--tk-size', state.size + 'px'); save();
     });
     $('tk-prev').addEventListener('click', function () {
+      if (!state.data) return;
+      state.fixedPage = null;
       if (state.chapter > 1) { state.chapter--; fillChapters(); save(); render(); window.scrollTo(0, 0); }
     });
     $('tk-next').addEventListener('click', function () {
+      if (!state.data) return;
+      state.fixedPage = null;
       var max = Math.max.apply(null, Object.keys(state.data.ch).map(Number));
       if (state.chapter < max) { state.chapter++; fillChapters(); save(); render(); window.scrollTo(0, 0); }
     });
@@ -514,12 +434,32 @@
     });
 
     $('tk-legend').hidden = !state.medooyuk;
+    for (var n = 1; n <= 245; n++) {
+      var option = document.createElement('option'); option.value = n; option.textContent = n;
+      $('tk-column').appendChild(option);
+    }
+    $('tk-column').addEventListener('change', function () { selectColumn(+this.value); });
+    $('tk-column-prev').addEventListener('click', function () { moveColumn(-1); });
+    $('tk-column-next').addEventListener('click', function () { moveColumn(1); });
+    fetchJSON('/tikkun/written-overrides.json?v=1').then(function (d) { presentation = d; render(); }).catch(function () {
+      presentationError = 'Written spelling data could not load. Reload to retry.'; render();
+    });
+    fetchJSON('/tikkun/fixed-columns.json?v=1').then(function (d) { fixed = d; render(); }).catch(function () {
+      presentationError = 'Column layout could not load. Choose a study view or reload to retry.'; render();
+    });
+    document.querySelectorAll('[data-tk-demo]').forEach(function (el) {
+      var type = el.getAttribute('data-tk-demo'), t = type === 'na' ? 'ש\u05B0' : type === 'meteg' ? 'א\u05BD' : 'ק\u05B8';
+      el.innerHTML = type === 'qb' ? R.token('ק\u05B8ב\u05B0', [[0,1,'',true]], [], {mode:'full',marked:true}) : R.token(t, [[0,0,type]], [], {mode:'full',marked:true});
+    });
     loadBook(state.slug, state.chapter);
   }
 
   function setTheme(t) {
     state.theme = t;
-    document.documentElement.setAttribute('data-theme', t);
+    $('tk-app').setAttribute('data-tk-theme', t);
+    Array.prototype.forEach.call(document.querySelectorAll('.tk-theme'), function (b) {
+      b.setAttribute('aria-pressed', String(b.getAttribute('data-t') === t));
+    });
   }
 
   if (document.readyState === 'loading') {

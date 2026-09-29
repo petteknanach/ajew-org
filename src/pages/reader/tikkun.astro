@@ -3,39 +3,38 @@ import Layout from '../../layouts/Layout.astro';
 ---
 <Layout
   title="Tikun Korim - Tanach with Medooyuk"
-  description="A reader's tikkun for the whole Tanach: letters with nikud and taamim, four display modes, the medooyuk layer marking shva na, meteg ga'ya, and qamats needing beur on the nikud itself, and Shnayim Mikra v'Echad Targum in stacked, side-by-side, and tap layouts."
+  description="Torah scroll study with fixed columns, a separate continuous reading view, nikud and taamim, vowel-only medooyuk markings, and Shnayim Mikra v'Echad Targum."
 >
-  <div class="tk-wrap" dir="rtl">
+  <link rel="stylesheet" href="/tikkun.css?v=1" />
+  <div id="tk-app" class="tk-wrap" data-tk-theme="day" dir="rtl">
     <header class="tk-header">
       <h1>תיקון קורים <span class="tk-sub">Tikun Korim · medooyuk</span></h1>
-      <p class="tk-tagline">
-        כל התנ"ך בכתב סת"ם עם תגין — תצוגת ספר תורה (אותיות) ותצוגת התיקון (ניקוד וטעמים מלאים), שכבת המדויק על הניקוד עצמו (שוא נא, מטג), ושנים מקרא ואחד תרגום
-      </p>
+      <p class="tk-tagline">כתב התורה בטורים קבועים · קריאה בניקוד וטעמים · סימני המדויק על הניקוד בלבד</p>
     </header>
-
     <div class="tk-controls" dir="ltr">
       <div class="tk-row">
         <label>Book <select id="tk-book"></select></label>
         <label>Parsha <select id="tk-parsha"><option value="">—</option></select></label>
         <label>Chapter <select id="tk-chapter"></select></label>
         <span class="tk-nav">
-          <button id="tk-prev" class="tk-btn" title="Previous chapter">◀</button>
-          <button id="tk-next" class="tk-btn" title="Next chapter">▶</button>
+          <button id="tk-prev" class="tk-btn" title="Previous chapter" aria-label="Previous chapter">◀</button>
+          <button id="tk-next" class="tk-btn" title="Next chapter" aria-label="Next chapter">▶</button>
         </span>
       </div>
       <div class="tk-row">
-        <label>Display
-          <select id="tk-mode">
-            <option value="full">Tikkun view — nikud + taamim</option>
-            <option value="nikud">Nikud only</option>
-            <option value="taamim">Taamim only</option>
-            <option value="letters">Torah view — bare letters</option>
-          </select>
-        </label>
         <label>View
           <select id="tk-view">
-            <option value="verses">Verses — numbered</option>
-            <option value="sefer">Sefer Torah — continuous scroll</option>
+            <option value="sefer">Torah scroll — fixed columns</option>
+            <option value="study">Continuous study — adaptive</option>
+            <option value="verses">Reading — numbered verses</option>
+          </select>
+        </label>
+        <label>Reading marks
+          <select id="tk-mode">
+            <option value="full">Nikud + taamim</option>
+            <option value="nikud">Nikud only</option>
+            <option value="taamim">Taamim only</option>
+            <option value="letters">Unpointed reading — not scroll</option>
           </select>
         </label>
         <label class="tk-chk"><input type="checkbox" id="tk-medooyuk" checked /> Medooyuk layer</label>
@@ -43,8 +42,8 @@ import Layout from '../../layouts/Layout.astro';
         <label>Targum <select id="tk-targum"><option value="">—</option></select></label>
         <label>Layout
           <select id="tk-layout">
-            <option value="stacked">Stacked — scroll line above reading</option>
-            <option value="side">Side by side — tikkun columns</option>
+            <option value="stacked">Stacked — written above reading</option>
+            <option value="side">Side by side — per-verse study</option>
             <option value="tap">Tap 3× per verse</option>
           </select>
         </label>
@@ -56,89 +55,24 @@ import Layout from '../../layouts/Layout.astro';
         </span>
       </div>
       <div class="tk-legend" id="tk-legend" dir="rtl">
-        <span class="m-demo">ש<span class="m-na">ְ</span> = שוא נא (נשמע)</span>
-        <span class="m-demo">ק<span class="m-qk">ָ</span> = קומוץ קטן</span>
-        <span class="m-demo">ק<span class="m-qb">ָ</span> = קמץ טעון בירור</span>
-        <span class="m-demo">א<span class="m-meteg">ֽ</span> = מטג (געיה)</span>
+        <span class="m-demo"><span data-tk-demo="na"></span> = שוא נא (נשמע)</span>
+        <span class="m-demo"><span data-tk-demo="qk"></span> = קומוץ קטן</span>
+        <span class="m-demo"><span data-tk-demo="qb"></span> = קמץ טעון בירור</span>
+        <span class="m-demo"><span data-tk-demo="meteg"></span> = מטג (געיה)</span>
         <span class="m-demo-note">הסימון על הניקוד עצמו — האותיות רגילות; שוא נח וקמץ גדול אינם מסומנים</span>
       </div>
     </div>
-
-    <main id="tk-content" class="tk-content" dir="rtl" lang="he"></main>
-
+    <div id="tk-column-controls" class="tk-row" dir="ltr">
+      <button id="tk-column-prev" class="tk-btn">Previous column</button>
+      <label>Column <select id="tk-column" aria-label="Fixed Torah column"></select></label>
+      <button id="tk-column-next" class="tk-btn">Next column</button>
+    </div>
+    <!-- Not a nested main: Layout's global main sizing applies to the OUTER main. -->
+    <div id="tk-content" class="tk-content" dir="rtl" lang="he" role="region" aria-label="Tikun text"></div>
     <footer class="tk-foot" dir="ltr">
-      <p>Sheva/qamats rulings are v0 output — not an accuracy claim.</p>
+      <p>Study views retain the reading edition and its rulings. Fixed columns use a separate written-text layout; spelling and paragraph traditions can differ. This study aid is not a certified scribal master.</p>
     </footer>
   </div>
 </Layout>
-
-<script src="/tikkun.js?v=9" defer></script>
-
-<style is:global>
-  /* ?v= is REQUIRED, not cosmetic: the service worker treats .ttf as a
-     cache-first static asset, so an unversioned font URL is cached forever and
-     a corrected font can never reach an already-visited phone. */
-  @font-face { font-family: 'Shlomo Stam'; src: url('/fonts/ShlomoStam.ttf?v=2') format('truetype'); font-weight: 400; font-display: swap; }
-  .tk-wrap { max-width: 1100px; margin: 0 auto; padding: 1rem; }
-  .tk-header h1 { font-size: 1.7rem; margin: 0; }
-  .tk-sub { font-size: 1rem; color: var(--muted, #888); font-weight: normal; }
-  .tk-tagline { color: var(--muted, #888); margin: .2rem 0 .8rem; font-size: .95rem; }
-  .tk-controls { border: 1px solid var(--border, #ddd); border-radius: 10px; padding: .6rem .8rem; margin-bottom: 1rem; background: var(--panel, #fafafa); }
-  .tk-row { display: flex; flex-wrap: wrap; gap: .7rem; align-items: center; margin: .3rem 0; }
-  .tk-row label { display: flex; gap: .35rem; align-items: center; font-size: .88rem; }
-  .tk-row select { padding: .25rem .35rem; border-radius: 6px; border: 1px solid var(--border, #ccc); background: var(--panel2, #fff); color: inherit; max-width: 180px; }
-  .tk-btn { padding: .25rem .6rem; border-radius: 6px; border: 1px solid var(--border, #ccc); background: var(--panel2, #fff); color: inherit; cursor: pointer; }
-  .tk-btn:hover { filter: brightness(.96); }
-  .tk-content { font-family: 'Shlomo Stam', 'Taamey Frank CLM', 'Frank Ruhl Libre', serif; font-size: var(--tk-size, 26px); line-height: 2.15; }
-  .tk-verse { margin-bottom: 1.1rem; }
-  /* Sefer-Torah presentation: petucha/setuma breaks, inverted nun, large/small letters */
-  .tk-verse.tk-petucha { margin-bottom: 3.2rem; }
-  .tk-brk { color: var(--muted, #999); font-size: .62em; opacity: .85; }
-  .tk-brk-se { margin-inline-start: 1.6em; margin-inline-end: 1.6em; }
-  .tk-brk-pe { margin-inline-start: .9em; }
-  .tk-nun8 { display: inline-block; transform: rotate(180deg); color: var(--muted, #999); font-size: .8em; margin-inline-start: .9em; }
-  .tk-l-lg { font-size: 1.7em; }
-  .tk-l-sm { font-size: .62em; }
-  .tk-l-sus { font-size: .62em; vertical-align: super; }
-  .tk-verse .tk-vnum { color: var(--muted, #999); font-size: .55em; margin-left: .35rem; }
-  /* shnayim mikra layouts */
-  .tk-shnayim-note { display: flex; flex-wrap: wrap; gap: .4rem 1.4rem; font-size: .78rem; color: var(--muted, #888); margin-bottom: .8rem; border-bottom: 1px dashed var(--border, #ccc); padding-bottom: .45rem; }
-  .tk-colhead-scroll::before { content: '▪ '; color: #6b6b6b; }
-  .tk-colhead-read::before { content: '▫ '; color: #177f70; }
-  .tk-line-scroll { font-family: 'Shlomo Stam', serif; letter-spacing: .02em; opacity: .92; }
-  .tk-line-read { margin-top: .25rem; }
-  .tk-side { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: start; }
-  .tk-col-scroll { border-left: 2px solid var(--border, #ddd); padding-left: 1rem; }
-  @media (max-width: 720px) { .tk-side { grid-template-columns: 1fr; } .tk-col-scroll { border-left: none; padding-left: 0; border-bottom: 1px dashed var(--border, #ccc); padding-bottom: .4rem; } }
-  .tk-tmissing { font-size: .72em; color: var(--muted, #999); }
-  /* Sefer Torah view: one continuous scroll, no verse numbers, no per-verse
-     blocks — the way an actual Sefer Torah is laid out, broken only by
-     petuchot (open) and setumot (closed). */
-  .tk-sefer-scroll { background: var(--panel, #fffdf7); border: 1px solid var(--border, #ddd); border-radius: 10px; padding: 1.2rem 1.4rem; }
-  .tk-sefer-note { font-family: system-ui, sans-serif; font-size: .74rem; color: var(--muted, #999); margin: 0 0 .9rem; direction: ltr; text-align: left; }
-  .tk-sefer-cols { column-count: 2; column-gap: 2.2rem; column-rule: 1px solid var(--border, #e6e0d2); text-align: justify; }
-  .tk-sefer-cols .tk-mikra { display: inline; }
-  .tk-sefer-cols .tk-brk-pe { break-after: column; }
-  .tk-sefer-taamim { margin-top: 1.1rem; padding-top: .8rem; border-top: 1px dashed var(--border, #ddd); }
-  .tk-taam-line { display: block; }
-  @media (max-width: 720px) { .tk-sefer-cols { column-count: 1; } .tk-sefer-scroll { padding: .9rem 1rem; } }
-  .tk-targum-line { font-family: 'Frank Ruhl Libre', 'Noto Serif Hebrew', serif; font-size: .72em; line-height: 1.9; color: var(--muted-2, #667); background: var(--panel, rgba(127,127,127,.07)); border-radius: 8px; padding: .15rem .6rem; margin: .15rem 0; }
-  .tk-targum-line .tk-tname { font-size: .75em; opacity: .75; }
-  .tk-mikra-repeat { opacity: .82; }
-  /* medooyuk marks — on the nikud characters themselves; letters stay regular */
-  .m-na { color: #0e9d8a; font-size: calc(1em + 0.02px); -webkit-text-stroke: .034em currentColor; text-shadow: .013em 0 0 currentColor, -.013em 0 0 currentColor, 0 .013em 0 currentColor, 0 -.013em 0 currentColor; }
-  .m-qb { position: relative; text-decoration: none; }
-  .m-qb::before { content: ''; position: absolute; top: -0.3em; inset-inline-start: -0.3em; width: 0.66em; height: 0.15em; background: rgba(200,60,60,.9); border-radius: 1px; }
-  .m-qb::after { content: ''; position: absolute; top: -0.15em; inset-inline-start: -0.015em; width: 0.14em; height: 0.44em; background: rgba(200,60,60,.9); border-radius: 1px; }
-  .m-qk { color: #c34a3a; font-weight: 900; text-shadow: 0 0 .6px currentColor; }
-  .m-meteg { color: #8a6fd8; }
-  /* The legend demos are Hebrew, so they MUST use the same Hebrew font as the
-     text they explain — Open Sans has entirely different mark metrics and the
-     demo reads as mispositioned next to correctly-rendered text. */
-  .m-demo { margin-left: .9rem; font-size: 1.15rem; font-family: 'Shlomo Stam', 'Taamey Frank CLM', 'Frank Ruhl Libre', serif; }
-  .m-demo-note { color: var(--muted, #999); font-size: .78rem; }
-  .tk-tap-done { opacity: .45; }
-  .tk-foot { margin-top: 2rem; font-size: .78rem; color: var(--muted, #999); }
-  .tk-loading { color: var(--muted, #999); }
-  .tk-error { color: #b33; }
-</style>
+<script is:inline src="/tikkun-renderer.js?v=1" defer></script>
+<script is:inline src="/tikkun.js?v=10" defer></script>

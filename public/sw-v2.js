@@ -10,7 +10,7 @@
  * - API calls: network only
  */
 
-const CACHE_NAME = 'ajew-v2-renovation-r2';
+const CACHE_NAME = 'ajew-v2-tikkun-columns-r1';
 const ICON_CACHE = 'ajew-icons-v1';
 
 // Core assets to pre-cache on install

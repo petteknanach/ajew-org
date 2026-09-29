@@ -1,0 +1,125 @@
+/*
+ * ajew.org design tokens — the colour/spacing variable blocks from
+ * src/styles/design-system.css, nothing else.
+ *
+ * Why this file exists
+ * --------------------
+ * Navigation.astro (and other components) style themselves with
+ * var(--ds-text-primary, #1a1a1a) and friends. Those variables are declared in
+ * design-system.css, which is only ever imported by src/styles/main.css — and
+ * no layout imports main.css. So the variable was never defined anywhere, every
+ * var() silently fell back to its dark literal, and the entire site sidebar
+ * rendered dark grey on the dark navy body in dark mode. Reproduced on live
+ * ajew.org at 1280px.
+ *
+ * Importing design-system.css itself would fix the tokens but also apply its
+ * component rules (.hebrew, .ds-card, .ds-btn, keyframes) site-wide, which is a
+ * far larger restyle than a contrast repair should carry. So the variable blocks
+ * are loaded on their own.
+ *
+ * If design-system.css is ever made reachable from the layout, delete this file
+ * and the import in Layout.astro, and keep the literal fallbacks in components.
+ */
+
+:root {
+  /* Surfaces */
+  --ds-white:       #fffdf7;
+  --ds-surface:     #f7f3e8;
+  --ds-surface-raised: #f5f0e6;
+  --ds-border:      #e0d6c2;
+  --ds-border-strong: #c4b599;
+
+  /* Navy */
+  --ds-navy-900:    #0a1628;
+  --ds-navy-700:    #1a365d;
+  --ds-navy-500:    #3a7abd;
+  --ds-navy-100:    #e0eef7;
+
+  /* Gold */
+  --ds-gold-500:    #d4a017;
+  --ds-gold-400:    #d4b85c;
+  --ds-gold-300:    #c9a84c;
+
+  /* Type */
+  --ds-text-primary:   #1a1a1a;
+  --ds-text-secondary: #5a6472;
+  --ds-text-muted:     #888;
+  --ds-text-inverse:   #fefdfb;
+  --ds-link:           #1a365d;
+  --ds-link-hover:     #2a5a8e;
+
+  --ds-font-hebrew: 'Frank Ruhl Libre', serif;
+  --ds-font-body: 'Open Sans', sans-serif;
+
+  /* Spacing / radius */
+  --ds-space-2: 0.5rem;
+  --ds-space-3: 0.75rem;
+  --ds-space-4: 1rem;
+  --ds-space-6: 1.5rem;
+  --ds-radius-sm: 6px;
+  --ds-radius-md: 10px;
+  --ds-radius-pill: 9999px;
+
+  --ds-text-sm:  0.875rem;
+  --ds-text-base: 1rem;
+  --ds-text-lg:  1.125rem;
+
+  /* Status */
+  --ds-success:     #2d7a4f;
+  --ds-success-bg:  #e6f4ec;
+  --ds-warning:     #8a5a00;
+  --ds-warning-bg:  #fdf3e0;
+  --ds-error:       #a32020;
+  --ds-error-bg:    #fdeaea;
+  --ds-info:        #1a5f9e;
+  --ds-info-bg:     #e6f1fa;
+}
+
+/* Dark mode — the values Navigation.astro's base state was never given.
+   --ds-text-primary #d0d0e0 on the dark navy body is 11.4:1. */
+[data-theme="dark"],
+[data-theme="night"] {
+  --ds-white:       #1a1a2e;
+  --ds-surface:     #1e1e38;
+  --ds-surface-raised: #2c2c4a;
+  --ds-border:      #3a3a5c;
+  --ds-border-strong: #4a4a70;
+
+  --ds-navy-100:    #2a4a6e;
+
+  --ds-text-primary:   #d0d0e0;
+  --ds-text-secondary: #b0b0c8;
+  --ds-text-muted:     #9a9ab4;
+  --ds-text-inverse:   #1a1a2e;
+  --ds-link:           #8ab4f8;
+  --ds-link-hover:     #a8ccff;
+
+  --ds-success:     #95d5b2;
+  --ds-success-bg:  #1a3a2a;
+  --ds-warning:     #e8b830;
+  --ds-warning-bg:  #2a2518;
+  --ds-error:       #f4a0a3;
+  --ds-error-bg:    #3a1a1c;
+  --ds-info:        #5a9ad5;
+  --ds-info-bg:     #1e2a3a;
+}
+
+/* Sepia reading theme */
+[data-theme="sepia"] {
+  --ds-white:       #f4ecd8;
+  --ds-surface:     #ede4cc;
+  --ds-surface-raised: #e6dab0;
+  --ds-border:      #d4c5a9;
+  --ds-border-strong: #c4b599;
+
+  --ds-text-primary:   #3b2e1a;
+  --ds-text-secondary: #6b5a42;
+  --ds-text-muted:     #8a7a62;
+  --ds-text-inverse:   #fefdfb;
+  --ds-link:           #1a365d;
+  --ds-link-hover:     #2a5a8e;
+
+  --ds-navy-700:    #1a365d;
+  --ds-navy-500:    #3a7abd;
+  --ds-gold-500:    #d4a017;
+}

@@ -14,6 +14,10 @@ interface Props {
 
 import Navigation from '../components/Navigation.astro';
 import CompactYahrzeit from '../components/CompactYahrzeit.astro';
+// The --ds-* tokens components style themselves with. Without these, every
+// var(--ds-*, fallback) in the site resolves to its literal fallback, which is
+// how the dark-mode sidebar ended up dark grey on dark navy.
+import '../styles/design-tokens.css';
 
 const {
   title,

@@ -120,8 +120,15 @@ def verses_of(path):
                     if txt:
                         toks.append(txt); kflags.append(0)
                 elif el.tag.endswith('q'):
-                    if el.text:
-                        toks.append(el.text); kflags.append(1)
+                    # Qere may contain inline Masoretic notes / special letters,
+                    # just like <w>. Keep child tails; never publish a truncation.
+                    def qere_text(node):
+                        return (node.text or '') + ''.join(
+                            (qere_text(child) if child.tag.endswith('s') else '')
+                            + (child.tail or '') for child in node)
+                    txt = qere_text(el)
+                    if txt:
+                        toks.append(txt); kflags.append(1)
                 elif el.tag.endswith('pe'):
                     b.append([len(toks), 'p'])
                 elif el.tag.endswith('samekh'):

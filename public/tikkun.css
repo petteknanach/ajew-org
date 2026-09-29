@@ -1,0 +1,87 @@
+/* Tikun-only theme boundary: global day/dark selectors must not choose ink on
+   a differently colored local panel. New, versioned faces avoid stale SW fonts. */
+@font-face{font-family:'Tikkun Scroll';src:url('/fonts/tikkun/StamAshkenazCLM.ttf?v=1') format('truetype');font-weight:400;font-display:swap}
+@font-face{font-family:'Tikkun Reading';src:url('/fonts/TaameyFrankCLM-Medium.ttf?tk=1') format('truetype');font-weight:400;font-display:swap}
+@font-face{font-family:'Tikkun Vowels Day';src:url('/fonts/tikkun/TikunVowels-day.ttf?v=1') format('truetype');font-weight:400;font-display:swap}
+@font-face{font-family:'Tikkun Vowels Sepia';src:url('/fonts/tikkun/TikunVowels-sepia.ttf?v=1') format('truetype');font-weight:400;font-display:swap}
+@font-face{font-family:'Tikkun Vowels Night';src:url('/fonts/tikkun/TikunVowels-night.ttf?v=1') format('truetype');font-weight:400;font-display:swap}
+#tk-app{--tk-reading:'Tikkun Vowels Day';--tk-bg:#fffdf7;--tk-panel:#f5f3ec;--tk-input:#fff;--tk-ink:#191b1d;--tk-muted:#4d5359;--tk-border:#9b9b94;--tk-na:#00665b;--tk-qk:#a12e25;--tk-meteg:#6944aa;max-width:1200px;width:100%;min-width:0;margin:0 auto;padding:1rem;background:var(--tk-bg);color:var(--tk-ink);color-scheme:light;font-family:system-ui,sans-serif;font-synthesis:none}
+#tk-app[data-tk-theme="sepia"]{--tk-reading:'Tikkun Vowels Sepia';--tk-bg:#f6ecd5;--tk-panel:#eadfc5;--tk-input:#fff8e8;--tk-ink:#2d241a;--tk-muted:#584a36;--tk-border:#978365;--tk-na:#006054;--tk-qk:#9b241f;--tk-meteg:#613995}
+#tk-app[data-tk-theme="night"]{--tk-reading:'Tikkun Vowels Night';--tk-bg:#14181d;--tk-panel:#222830;--tk-input:#303844;--tk-ink:#f3f0e7;--tk-muted:#c1c9d2;--tk-border:#7c8a99;--tk-na:#65ded0;--tk-qk:#ffaba2;--tk-meteg:#c7afff;color-scheme:dark}
+#tk-app [hidden]{display:none!important}
+#tk-app h1,#tk-app h2,#tk-app label{color:var(--tk-ink)}
+#tk-app .tk-header h1{font-size:1.7rem;margin:0}
+#tk-app .tk-sub,#tk-app .tk-tagline{color:var(--tk-muted);font-size:.95rem;font-weight:400}
+#tk-app .tk-tagline{margin:.3rem 0 1rem}
+#tk-app .tk-controls{border:1px solid var(--tk-border);border-radius:10px;padding:.7rem;margin-bottom:1rem;background:var(--tk-panel);color:var(--tk-ink)}
+#tk-app .tk-row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.4rem 0}
+#tk-app .tk-row label{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center;font-size:.88rem;min-width:0}
+#tk-app select,#tk-app option,#tk-app button{background:var(--tk-input);color:var(--tk-ink);border:1px solid var(--tk-border);font:inherit}
+#tk-app select{padding:.4rem;border-radius:6px;max-width:100%;min-height:40px}
+#tk-app .tk-row select{max-width:250px}
+#tk-app .tk-btn{padding:.45rem .7rem;border-radius:6px;min-height:40px;cursor:pointer}
+#tk-app .tk-btn[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--tk-na)}
+#tk-app :focus-visible{outline:3px solid var(--tk-na);outline-offset:3px}
+#tk-app :disabled{opacity:1;color:var(--tk-muted);cursor:default}
+#tk-app input{accent-color:var(--tk-na)}
+#tk-app .tk-content{width:100%;min-width:0;margin:0;padding:0;color:var(--tk-ink);background:var(--tk-bg);font-family:var(--tk-reading),'Tikkun Reading',serif;font-weight:400;font-size:var(--tk-size,26px);line-height:2.15;overflow-wrap:normal}
+#tk-app .tk-verse{margin-bottom:1.1rem}
+#tk-app .tk-petucha{margin-bottom:2rem}
+#tk-app .tk-brk,#tk-app .tk-vnum{color:var(--tk-muted);font-size:.62em}
+#tk-app .tk-brk-se{margin-inline:1.2em}
+#tk-app .tk-brk-pe{margin-inline-start:.7em}
+/* The Stam face maps U+05C6 to an EMPTY glyph; use the real inverted-nun
+   glyph in the reading face, without substituting a consonant in copy text. */
+#tk-app .tk-nun8{font-family:var(--tk-reading),'Tikkun Reading',serif;margin-inline:.35em;color:inherit}
+#tk-app .tk-l-lg{font-size:1.4em}
+#tk-app .tk-l-sm{font-size:.65em}
+#tk-app .tk-l-split{display:inline-block;line-height:1;mask-image:linear-gradient(to bottom,#000 45%,transparent 45%,transparent 52%,#000 52%)}
+#tk-app .tk-l-sus{font-size:.7em;vertical-align:super}
+#tk-app .tk-gap-s{display:inline-block;width:4.5em}
+#tk-app .tk-line-scroll{font-family:'Tikkun Scroll',serif;line-height:1.8}
+#tk-app .tk-line-read{margin-top:.25rem}
+#tk-app .tk-side{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1rem;align-items:start}
+#tk-app .tk-col-scroll{border-inline-end:1px solid var(--tk-border);padding-inline-end:1rem}
+#tk-app .tk-shnayim-note,#tk-app .tk-sefer-note,#tk-app .tk-tmissing,#tk-app .tk-foot{font-family:system-ui,sans-serif;font-size:.88rem;line-height:1.6;color:var(--tk-muted)}
+#tk-app .tk-shnayim-note{display:flex;flex-wrap:wrap;gap:1rem}
+#tk-app .tk-sefer-note{margin:0 0 1rem;text-align:start}
+#tk-app .tk-study-flow{columns:2 22rem;column-gap:2rem;text-align:justify}
+/* Fixed source rows NEVER reflow. Narrow displays pan; sizes scale both ink
+   and column geometry. This preserves line membership, not facsimile metrics. */
+#tk-app .tk-scroll-viewport{overflow:auto;max-width:100%;border:1px solid var(--tk-border);background:var(--tk-bg);padding:1rem;direction:rtl}
+#tk-app .tk-fixed-strip{display:flex;gap:2em;width:max-content;align-items:flex-start}
+#tk-app .tk-fixed-page{flex:none;width:21em}
+/* The source's Sea-song page carries significantly longer physical rows. */
+#tk-app .tk-fixed-page[data-column="78"]{width:28em}
+#tk-app .tk-fixed-page[data-column="242"],#tk-app .tk-fixed-page[data-column="243"]{width:22em}
+#tk-app .tk-column-label{font:400 .85rem/1.5 system-ui,sans-serif;text-align:center;margin:0 0 1rem;color:var(--tk-muted)}
+#tk-app .tk-fixed-ink{font-family:'Tikkun Scroll',serif;line-height:1.65}
+#tk-app .tk-fixed-line{display:flex;align-items:baseline;height:1.65em;white-space:nowrap}
+#tk-app .tk-fixed-ink .tk-l-lg,#tk-app .tk-fixed-ink .tk-l-sm{line-height:0}
+#tk-app .tk-fixed-group{display:flex;flex:1;min-width:0;justify-content:space-between}
+#tk-app .tk-fixed-fragment{flex:1;text-align:justify;text-align-last:justify;white-space:pre}
+#tk-app .tk-fixed-open .tk-fixed-fragment{text-align-last:start}
+#tk-app .tk-fixed-gapped{gap:2em}
+#tk-app .tk-fixed-gapped .tk-fixed-fragment{flex:initial}
+#tk-app .tk-fixed-song{gap:3em}
+#tk-app .tk-fixed-song .tk-fixed-group{flex:1}
+#tk-app .tk-fixed-song .tk-fixed-fragment{text-align-last:justify}
+#tk-app .tk-targum-line{font-family:var(--tk-reading),'Tikkun Reading',serif;font-size:.85em;line-height:1.9;color:var(--tk-ink);background:var(--tk-panel);border-radius:6px;padding:.25rem .6rem}
+#tk-app .tk-tname{color:var(--tk-muted);font-size:.8em}
+/* Legacy isolated-mark rules are retained for compatibility. They are NOT
+   used by the COLR renderer: real-font tests found this run split can move
+   Taamey Frank anchors. Do not apply these classes to intact clusters. */
+#tk-app .m-na,#tk-app .m-qk,#tk-app .m-meteg,#tk-app .m-qb{font-size:calc(1em + 0.02px);font-weight:400}
+#tk-app .m-na{color:var(--tk-na);-webkit-text-stroke:.034em currentColor;text-shadow:.013em 0 0 currentColor,-.013em 0 0 currentColor,0 .013em 0 currentColor,0 -.013em 0 currentColor}
+#tk-app .m-qk{color:var(--tk-qk);-webkit-text-stroke:.018em currentColor}
+#tk-app .m-meteg{color:var(--tk-meteg)}
+#tk-app .m-qb{color:var(--tk-qk);text-decoration:underline dotted;text-underline-offset:.15em}
+#tk-app .m-demo{display:inline-block;margin-inline-end:.9rem;font-size:1.2rem;font-family:var(--tk-reading),'Tikkun Reading',serif}
+#tk-app .m-demo-note{display:block;color:var(--tk-muted);font-size:.82rem}
+#tk-app .tk-tap-done{border-inline-start:3px solid var(--tk-na);padding-inline-start:.4rem}
+#tk-app .tk-foot{background:var(--tk-bg);padding:1rem 0;margin-top:1rem}
+#tk-app .tk-error{font:400 1rem/1.6 system-ui,sans-serif;color:var(--tk-qk)}
+/* Keep complete clusters intact; color lives INSIDE COLR vowel outlines.
+   Do not apply the legacy .02px splitter, color, weight or stroke to clusters. */
+#tk-app .tk-cluster{font-weight:400;color:inherit}
+@media(max-width:720px){#tk-app{padding:.75rem}#tk-app .tk-side{grid-template-columns:minmax(0,1fr)}#tk-app .tk-col-scroll{border-inline-end:0;border-bottom:1px solid var(--tk-border);padding:0 0 .4rem}#tk-app .tk-row select{max-width:100%}#tk-app .tk-btn,#tk-app select{min-height:44px}#tk-app .tk-scroll-viewport{padding:.6rem}}
