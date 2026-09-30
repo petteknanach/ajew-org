@@ -95,4 +95,20 @@
 #tk-app .column-qere{font:12px/1.6 system-ui,sans-serif;overflow-wrap:anywhere}
 #tk-app .pointing-unavailable{font:14px/1.6 system-ui,sans-serif;color:var(--tk-muted)}
 
+/* Source-backed additional study representation. Four faces contain the SAME
+   consonants, original shaping tables/anchors, and natural advances. Marks are
+   hidden in derivative outlines, never moved by CSS or borrowed onto qere. */
+@font-face{font-family:'StudyStam-full';src:url('/fonts/tikkun/study-stam/AjewStudyStam-full.ttf?v=study-1') format('truetype');font-display:block}
+@font-face{font-family:'StudyStam-nikud';src:url('/fonts/tikkun/study-stam/AjewStudyStam-nikud.ttf?v=study-1') format('truetype');font-display:block}
+@font-face{font-family:'StudyStam-taamim';src:url('/fonts/tikkun/study-stam/AjewStudyStam-taamim.ttf?v=study-1') format('truetype');font-display:block}
+@font-face{font-family:'StudyStam-bare';src:url('/fonts/tikkun/study-stam/AjewStudyStam-bare.ttf?v=study-1') format('truetype');font-display:block}
+#tk-app .study-ink{line-height:2.2;font-synthesis:none}
+#tk-app .study-page .tk-fixed-line{height:2.2em}
+#tk-app .study-ink[data-study-mode="full"]{font-family:'StudyStam-full',serif}
+#tk-app .study-ink[data-study-mode="nikud"]{font-family:'StudyStam-nikud',serif}
+#tk-app .study-ink[data-study-mode="taamim"]{font-family:'StudyStam-taamim',serif}
+#tk-app .study-ink[data-study-mode="bare"]{font-family:'StudyStam-bare',serif}
+#tk-app .study-unpointed{text-decoration:underline dotted;text-underline-offset:.35em}
+#tk-app .tk-scroll-viewport:has(.study-page){padding-block:.9em}
+
 @media(max-width:720px){#tk-app{padding:.75rem}#tk-app .tk-side{grid-template-columns:minmax(0,1fr)}#tk-app .tk-col-scroll{border-inline-end:0;border-bottom:1px solid var(--tk-border);padding:0 0 .4rem}#tk-app .tk-row select{max-width:100%}#tk-app .tk-btn,#tk-app select{min-height:44px}#tk-app .tk-scroll-viewport{padding:.5em}}

@@ -69,9 +69,10 @@ import Layout from '../../layouts/Layout.astro';
       <button id="tk-column-less" class="tk-btn" aria-label="Reduce column magnification">−</button>
       <button id="tk-column-fit" class="tk-btn" aria-label="Fit whole column to screen">Fit · 100%</button>
       <button id="tk-column-more" class="tk-btn" aria-label="Enlarge column">+</button>
-      <label class="tk-column-chk"><input type="checkbox" id="tk-column-nikud" /> Nikud companion</label>
-      <label class="tk-column-chk"><input type="checkbox" id="tk-column-taamim" /> Taamim companion</label>
-      <p class="tk-sefer-note" dir="ltr">Same-ink pointing is unavailable in the source Stam font. These independent switches show authentic pointing outside the unchanged column; edition differences and qere remain separate.</p>
+      <label>Column ink <select id="tk-column-representation"><option value="source">Original ink · unchanged</option><option value="study">Pointable study · Shlomo Stam</option></select></label>
+      <label class="tk-column-chk"><input type="checkbox" id="tk-column-nikud" /> Column nikud</label>
+      <label class="tk-column-chk"><input type="checkbox" id="tk-column-taamim" /> Column taamim</label>
+      <p class="tk-sefer-note" dir="ltr">Original ink stays unchanged. Pointable study uses Shlomo Stam, not original ink. In Original ink, marks appear only in the outside companion.</p>
     </div>
     <!-- Not a nested main: Layout's global main sizing applies to the OUTER main. -->
     <div id="tk-content" class="tk-content" dir="rtl" lang="he" role="region" aria-label="Tikun text"></div>
