@@ -18,7 +18,7 @@
     'עמוס':'tanach-amos','עובדיה':'tanach-ovadya','יונה':'tanach-yonah',
     'מיכה':'tanach-michah','נחום':'tanach-nachum','חבקוק':'tanach-havakkuk',
     'צפניה':'tanach-tzefanya','חגי':'tanach-chaggai','זכריה':'tanach-zecharya',
-    'מלאכי':'tanach-malachi','תהלים':'tanach-tehillim','משלי':'tanach-mishlei',
+    'מלאכי':'tanach-malachi','תהלים':'tanach-tehillim','תהילים':'tanach-tehillim','משלי':'tanach-mishlei',
     'איוב':'tanach-iyov','שיר השירים':'tanach-shir-hashirim','רות':'tanach-rus',
     'איכה':'tanach-eicha','קהלת':'tanach-koheles','אסתר':'tanach-esther',
     'דניאל':'tanach-daniel','עזרא':'tanach-ezra','נחמיה':'tanach-nechemia',
@@ -683,34 +683,55 @@
       [['navi','נביא'],['kesuvim','כתובים']].forEach(function (pair) {
         p = p.then(function () {
           var sec = d[pair[0]];
-          if (!sec || !sec.book) return;
+          if (!sec || !sec.book) {
+            if (want(pair[0]) && dayE !== 'ליל שישי') out.push('<p class="ck-nach-boundary" data-nach-unavailable="' + pair[0] + '" role="status">' +
+              pair[1] + ': לא נקבע פרק בסדר המקור ליום זה; אין טווח של שישה פסוקים להצגה. ' +
+              '<span dir="ltr">No chapter scheduled for this section today; the six-verse study window is unavailable. No other chapter is introduced.</span></p>');
+            return;
+          }
           var vkey = pair[1] === 'כתובים' ? 'kesuvim' : 'navi';
           if (!want(vkey)) return;
           var slug = SLUGS[sec.book];
           if (!slug) { out.push(card(pair[1], sec.book)); return; }
-          /* chok regimen: 6 verses of navi + 6 of kesuvim per day. The
-             schedule stores the chapter only, so the day's start = 1 +
-             6 x (how many earlier DAYS of this week sit on the same chapter). */
+          /* Independent study policy, NOT the historical miluy verse counts:
+             six verses per scheduled Nach slot, offset by earlier slots on
+             this same book/chapter. Do not invent a chapter for absent slots. */
           var dayIdx = DAYS.indexOf(dayE);
           var offset = 0;
           DAYS.forEach(function (dy, di) {
             if (di >= dayIdx) return;
             var prev = (w.days[dy] || {})[pair[0]];
-            if (prev && prev.book === sec.book && prev.from && prev.from.c === sec.from.c) offset++;
+            if (prev && SLUGS[prev.book] === slug && prev.from && prev.from.c === sec.from.c) offset++;
           });
-          var dayIdx = DAYS.indexOf(dayE);
           var mk = (state.miluy && state.miluy.days && state.miluy.days[dayIdx]) || null;
-          var per = mk ? mk.count : 6;
-          var startV = (sec.from.v || 1) + per * offset;
-          var segFrom = { c: sec.from.c, v: startV };
-          var segTo = { c: sec.from.c, v: startV + per - 1 };
-          var headRef = heNum(segFrom.c) + ':' + heNum(segFrom.v) + '\u2013' + heNum(segTo.c) + ':' + heNum(segTo.v);
           var miluyTag = mk ? '<div class="ck-miluy"><span class="ck-miluy-t">כוונת המילוי — האריז״ל</span> ' +
-            heNum(mk.count) + ' פסוקים כנגד האות ' + mk.letter + ' של המילוי' +
+            'מסורת קדומה · historical tradition: ' + heNum(mk.count) + ' פסוקים כנגד האות ' + mk.letter + ' של המילוי' +
             (mk.path ? ' — ' + mk.path : '') + '</div>' : '';
-          return versesHTML(slug, segFrom, segTo, 'navi', null).then(function (vh) {
-            out.push('<section class="ck-section" data-sec="' + vkey + '">' +
-              secHead(pair[1] + ' — ' + sec.book, headRef) + popBtn() + miluyTag + kavanaHTML(vkey, d) + voiceBox(dc && dc[vkey], pair[1]) + vh + '</section>');
+          var policyTag = '<div class="ck-nach-policy">סדר הלימוד כאן: שישה פסוקים, בנפרד ממניין המילוי. ' +
+            '<span dir="ltr">Independent six-verse study policy; not an equivalence to the historical miluy count.</span></div>';
+          return book(slug).then(function (bd) {
+            var chapter = (bd.ch || {})[sec.from.c] || {};
+            var keys = Object.keys(chapter).map(Number).filter(function (v) { return v > 0; });
+            var lastV = keys.length ? Math.max.apply(null, keys) : 0;
+            var startV = (sec.from.v || 1) + 6 * offset;
+            var endV = Math.min(startV + 5, lastV);
+            var count = keys.filter(function (v) { return v >= startV && v <= endV; }).length;
+            var headRef = heNum(sec.from.c);
+            if (count) headRef += ':' + heNum(startV) + '\u2013' + heNum(sec.from.c) + ':' + heNum(endV);
+            var boundary = '';
+            if (count < 6) {
+              var he = !lastV ? 'טקסט הפרק אינו זמין.' : !count ? 'אין פסוקים בטווח היומי: הפרק הסתיים בפסוק ' + lastV + '.' :
+                'נותרו רק ' + count + ' מתוך שישה פסוקים עד סוף הפרק (פסוק ' + lastV + ').';
+              var en = !lastV ? 'Chapter text unavailable.' : !count ? 'No verses in this daily window; the chapter ends at verse ' + lastV + '.' :
+                'Only ' + count + ' of 6 verses remain before the chapter ends at verse ' + lastV + '.';
+              boundary = '<p class="ck-nach-boundary" role="status">' + he + ' לא עוברים לפרק אחר. ' +
+                '<span dir="ltr">' + en + ' No other chapter is introduced.</span></p>';
+            }
+            var body = count ? versesHTML(slug, { c: sec.from.c, v: startV }, { c: sec.from.c, v: endV }, 'navi', null) : Promise.resolve('');
+            return body.then(function (vh) {
+              out.push('<section class="ck-section" data-sec="' + vkey + '">' +
+                secHead(pair[1] + ' — ' + sec.book, headRef) + popBtn() + policyTag + miluyTag + boundary + kavanaHTML(vkey, d) + voiceBox(dc && dc[vkey], pair[1]) + vh + '</section>');
+            });
           });
         });
       });
