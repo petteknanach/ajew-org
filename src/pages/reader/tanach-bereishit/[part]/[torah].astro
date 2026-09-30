@@ -73,7 +73,7 @@ const hkEntry = torahData && hkData && Array.isArray(hkData.chapters) && hkData.
 } : null;
 
 // Breslov on the Parsha — all Breslov teachings on each Torah verse
-const bpChapters = [1]; // chapters with dataset files (extend as scans are processed)
+const bpChapters = [1, 2, 8]; // reviewed selections only, not whole chapters
 const breslovEntry = torahData && bpChapters.includes(torahNum) ? {
   book: "breslov-parsha",
   section: "bereishit-" + torahNum,

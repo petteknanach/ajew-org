@@ -1,5 +1,6 @@
 ---
 import Layout from '../../../../layouts/Layout.astro';
+import ReviewedParsha from '../../../../components/ReviewedParsha.astro';
 import Comments from '../../../../components/Comments.astro';
 import '../../../../styles/reader.css';
 import '../../../../styles/reader-v2.css';
@@ -38,6 +39,7 @@ export function getStaticPaths() {
 const { part, torah } = Astro.params;
 const partNum = parseInt(part);
 const torahNum = parseInt(torah);
+const reviewedSlug = partNum === 1 && torahNum === 1 ? 'bereishit' : partNum === 1 && torahNum === 2 ? 'noach' : null;
 
 let torahData = null;
 let error = null;
@@ -94,6 +96,8 @@ const structuredData = torahData ? JSON.stringify({
       <h1>{error}</h1>
       <p><a href="/reader">Back to Reader</a></p>
     </div>
+  ) : reviewedSlug ? (
+    <ReviewedParsha slug={reviewedSlug} />
   ) : (
     <div
       class="reader-container"

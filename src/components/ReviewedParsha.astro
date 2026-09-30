@@ -1,0 +1,55 @@
+---
+import fs from 'node:fs';
+import path from 'node:path';
+const { slug } = Astro.props;
+const root = path.join(process.cwd(), 'public/data/breslov-parsha');
+const master = JSON.parse(fs.readFileSync(path.join(root, 'reviewed-v1.json'), 'utf8'));
+const manifest = JSON.parse(fs.readFileSync(path.join(root, 'manifest.json'), 'utf8'));
+const coverage = manifest.parshas[slug];
+const units = master.units.filter(unit => unit.parsha === slug);
+---
+{coverage && <section class="reviewed-parsha" dir="ltr" data-reviewed-parsha data-language="he" data-revision={master.revision}>
+  <h2>ברסלב על הפרשה · Breslov on the Parsha</h2>
+  <p class="coverage" role="status">{coverage.notice}</p>
+  <p class="coverage" lang="he" dir="rtl">ליקוטים בדוקים בלבד — לא כל הפרשה. שאר הטווחים: PDF. תרגום אנגלי אינו זמין.</p>
+  <nav aria-label="Reviewed parsha resources">
+    <a href={coverage.pdf} target="_blank" rel="noopener">Original Hebrew PDF · סריקה בעברית</a>
+    <a href={coverage.pdf} download>Download PDF · הורדה</a>
+    <a href="/parsha/">All parshas</a>
+  </nav>
+  <div class="languages" aria-label="Reading language">
+    <button type="button" data-reviewed-lang="he" aria-pressed="true">עברית</button>
+    <button type="button" data-reviewed-lang="en" aria-pressed="false">English</button>
+    <button type="button" data-reviewed-lang="both" aria-pressed="false">Both</button>
+  </div>
+  <p class="translation-absent" lang="en">English translation is not yet available for these reviewed selections.</p>
+  <div class="reviewed-hebrew" lang="he" dir="rtl">
+    {units.map(unit => <article class="reviewed-unit" id={`reviewed-${unit.id}`} data-unit-id={unit.id}>
+      <p class="locator" dir="ltr">{unit.verse} · {unit.id}</p>
+      {unit.summ_he && <h3>{unit.summ_he}</h3>}
+      <p class="verse">{unit.verse_quote_he}</p>
+      {unit.verseIntro_he && <p>{unit.verseIntro_he}</p>}
+      {unit.parts.map(part => <p class="teaching">{part.text}</p>)}
+      {unit.sources_printed.map(cite => <p class="citation">{cite}</p>)}
+      {unit.citationNote && <p class="source-note" dir="ltr" lang="en">{unit.citationNote}</p>}
+      {unit.notes.map(note => <details class="printed-notes">
+        <summary dir="ltr">Printed notes · ציונים · page {note.page} (facsimile; transcription not reviewed)</summary>
+        <a href={note.url} target="_blank" rel="noopener"><img src={note.url} alt={`Original printed notes, page ${note.page}`} loading="lazy" /></a>
+      </details>)}
+    </article>)}
+  </div>
+  <p class="source-note">Edition basis: supplied scans, with content-matched Hebrew excerpts from the established ajew.org corpus. Printed source citations are retained separately from corpus locators. These selections do not certify all intervening verses or the complete printed apparatus.</p>
+</section>}
+<style>
+.reviewed-parsha{margin:24px auto;padding:22px;max-width:900px;background:var(--reader-bg-secondary,var(--ds-bg-card,#f8f5ef));color:var(--reader-text,var(--ds-text-primary,#202838));border:1px solid var(--reader-border,#c7c0b0);border-radius:14px;overflow-wrap:anywhere}.reviewed-parsha h2{font-size:1.5rem}.coverage,.source-note{font-size:.95rem;line-height:1.65}.reviewed-parsha nav,.languages{display:flex;flex-wrap:wrap;gap:12px;margin:18px 0}.reviewed-parsha a{color:var(--reader-link,#2563eb)}.languages button{min-height:44px;padding:8px 18px;border:1px solid #777;border-radius:8px;background:transparent;color:inherit;cursor:pointer}.languages button[aria-pressed=true]{background:#1a365d;color:white}.reviewed-unit{border-top:1px solid #a9a18d;padding:24px 0;font-size:1.3rem;line-height:1.85}.reviewed-unit h3{font-size:1.2rem}.locator,.citation{font-size:1rem}.verse{font-weight:700}.teaching{white-space:pre-wrap}.printed-notes summary{cursor:pointer;font-size:.95rem;padding:12px 0}.printed-notes img{display:block;width:100%;height:auto}.translation-absent{display:none}.reviewed-parsha[data-language=en] .reviewed-hebrew{display:none}.reviewed-parsha[data-language=en] .translation-absent,.reviewed-parsha[data-language=both] .translation-absent{display:block}@media(max-width:500px){.reviewed-parsha{padding:16px;margin:16px 0}.reviewed-unit{font-size:1.2rem}}
+</style>
+<script>
+for (const root of document.querySelectorAll<HTMLElement>('[data-reviewed-parsha]')) {
+  for (const button of root.querySelectorAll<HTMLButtonElement>('[data-reviewed-lang]')) {
+    button.addEventListener('click', () => {
+      root.dataset.language = button.dataset.reviewedLang;
+      for (const other of root.querySelectorAll<HTMLButtonElement>('[data-reviewed-lang]')) other.setAttribute('aria-pressed', String(other === button));
+    });
+  }
+}
+</script>

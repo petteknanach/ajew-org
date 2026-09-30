@@ -2544,7 +2544,7 @@
     }
 
     // === Breslov on the Parsha — all Breslov teachings on each Torah verse ===
-    var bpChapters = { bereishit: [1] };
+    var bpChapters = { bereishit: [1, 2, 8] }; // reviewed selections, not full chapters
     if (bookId.indexOf('tanach-') === 0) {
       var bpBook = bookId.substring(7);
       if (bpChapters[bpBook] && bpChapters[bpBook].indexOf(torah) >= 0) {

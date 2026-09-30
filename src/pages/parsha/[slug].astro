@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import ReviewedParsha from '../../components/ReviewedParsha.astro';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -21,7 +22,13 @@ const { slug } = Astro.params;
 
 const dataPath = path.join(process.cwd(), 'public', 'data', 'parsha-connections.json');
 const parshaData = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
-const parsha = parshaData.parshas[slug];
+const rawParsha = parshaData.parshas[slug];
+// Old text-search snippets from Chumash-LH are not authenticated excerpts.
+// Reviewed selections are rendered from the hash-identified edition below.
+const parsha = rawParsha ? { ...rawParsha,
+  connections: rawParsha.connections.filter(conn => conn.bookId !== 'chumash-lh'),
+  totalConnections: rawParsha.connections.filter(conn => conn.bookId !== 'chumash-lh').length,
+} : null;
 
 if (!parsha) {
   return Astro.redirect('/parsha');
@@ -61,7 +68,8 @@ const PARSHA_PDF: Record<string, string> = {
 const pdfRaw = PARSHA_PDF[slug] || '';
 const pdfPath = pdfRaw ? `/pdfs/parsha/${pdfRaw.split('/').map(p => encodeURIComponent(p)).join('/')}` : null;
 // Check if PDF file actually exists
-const hasPdf = pdfPath && fs.existsSync(path.join(process.cwd(), 'public', 'pdfs', 'parsha', pdfRaw));
+const verifiedParshaPdfs = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'public/data/breslov-parsha/pdfs.json'), 'utf8'));
+const hasPdf = !!pdfPath && verifiedParshaPdfs.some(pdf => pdf.verified && pdf.path === pdfRaw);
 
 // Get prev/next parshas
 const allSlugs = Object.keys(parshaData.parshas);
@@ -167,6 +175,8 @@ const CHUMASH_LH_READER: Record<string, string> = {
 };
 const chumashLhReaderUrl = CHUMASH_LH_READER[slug] ? `/reader/chumash-lh/${CHUMASH_LH_READER[slug]}` : null;
 
+const hasReviewedParsha = slug === 'bereishit' || slug === 'noach';
+// Legacy OCR is not a fallback edition. Special corrected packets remain below.
 // NEW: Read Chumash-LH JSON for direct display
 let chumashLhData = null;
 if (CHUMASH_LH_READER[slug]) {
@@ -373,8 +383,10 @@ const breadcrumbData = JSON.stringify({
         </section>
       )}
 
+      {hasReviewedParsha && <ReviewedParsha slug={slug} />}
+
       <!-- Chumash with Likutay Halachos PDF -->
-      {hasPdf && !hasSpecialParshaPacket && (
+      {hasPdf && !hasSpecialParshaPacket && !hasReviewedParsha && (
         <div class="pdf-section">
           <h2>חומש עם ליקוטי הלכות</h2>
           <p class="pdf-subtitle">Chumash with Likutay Halachos - curated selections for this parsha</p>
@@ -382,14 +394,14 @@ const breadcrumbData = JSON.stringify({
             <iframe src={pdfPath} title={`Likutay Halachos on Parashat ${specialParshaDisplayName}`}></iframe>
           </div>
           <div class="pdf-actions">
-            {chumashLhReaderUrl && <a href={chumashLhReaderUrl} class="pdf-download" style="background: var(--accent, #2563eb); color: white;">Read as Text in Reader</a>}
+            {chumashLhReaderUrl && chumashLhData?.reviewStatus === 'reviewed' && <a href={chumashLhReaderUrl} class="pdf-download" style="background: var(--accent, #2563eb); color: white;">Read as Text in Reader</a>}
             <a href={pdfPath} class="pdf-download" download>Download PDF</a>
           </div>
         </div>
       )}
 
       <!-- Chumash-LH Direct Text Display (English default) -->
-      {chumashLhData && !hasSpecialParshaPacket && (
+      {chumashLhData?.reviewStatus === 'reviewed' && !hasSpecialParshaPacket && !hasReviewedParsha && (
         <div class="chumash-lh-text-section">
           <h3>English Text (from Chumash with Likutey Halachos)</h3>
           
