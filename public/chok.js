@@ -160,43 +160,16 @@
     if (cur) segs.push(cur);
     return segs;
   }
-  /* medooyuk marks on the NIKUD CHARACTERS themselves — letters stay regular:
-     sheva na colored (m-na), meteg colored (m-meteg), qamats katan colored
-     (m-qk; mk.li IS the qamats letter), qamats feeding an unresolved sheva
-     dotted on the qamats itself (m-qb; mk.li is the sheva letter, the qamats
-     sits on li-1). */
+  /* Shared COLR paint: preserve the raw consonants, metadata and display mode.
+     Only isolated vowel contours are enlarged/colored; no CSS run splitting. */
   function coloredVerse(verse) {
-    var byTok = {};
-    (verse.m || []).forEach(function (mk) {
-      (byTok[mk[0]] = byTok[mk[0]] || []).push(mk);
-    });
-    return joinTokens(verse.t.map(function (tok, i) {
-      if (!state.medooyuk) return esc(applyMode(tok));
-      var segs = letterSegments(tok);
-      var na = {}, qbPrev = {}, qk = {};
-      (byTok[i] || []).forEach(function (mk) {
-        if (mk[1] >= 0 && mk[1] < segs.length) {
-          if (mk[2] === 'na') na[mk[1]] = 1;
-          if (mk[2] === 'qk') qk[mk[1]] = 1;
-          if (mk[3]) { if (mk[1] > 0) qbPrev[mk[1] - 1] = 1; }
-        }
-      });
-      var out = '';
-      for (var j = 0; j < segs.length; j++) {
-        var seg = segs[j];
-        for (var k = 0; k < seg.length; k++) {
-          var vis = applyMode(seg[k]);
-          if (!vis) continue;
-          var cp = seg.charCodeAt(k), cls = null;
-          if (cp === 0x5BD) cls = 'm-meteg';
-          else if (cp === 0x5B0 && na[j]) cls = 'm-na';
-          else if ((cp === 0x5B8 || cp === 0x5C7) && qbPrev[j]) cls = 'm-qb';
-          else if ((cp === 0x5B8 || cp === 0x5C7) && qk[j]) cls = 'm-qk';
-          out += cls ? '<span class="' + cls + '">' + esc(vis) + '</span>' : esc(vis);
-        }
-      }
-      return out;
-    }));
+    var visible = { t: verse.t.map(applyMode), m: verse.m || [], k: verse.k || [] };
+    if (window.AjewMarkedHebrew) {
+      return window.AjewMarkedHebrew.renderVerse(visible, { specialNikud: state.medooyuk });
+    }
+    // A failed shared-script load must not masquerade as special-nikud output.
+    return (state.medooyuk ? '<span class="ck-marked-unavailable" role="status">הניקוד המיוחד אינו זמין · </span>' : '') +
+      joinTokens(visible.t.map(esc));
   }
   function heNum(n) {
     var G = ['','א','ב','ג','ד','ה','ו','ז','ח','ט'], T = ['','י','כ','ל','מ','נ','ס','ע','פ','צ'], H = ['','ק','ר','ש','ת'];

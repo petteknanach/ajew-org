@@ -5,7 +5,7 @@
 
 // Bumped 2026-07-23 so stale reader/commentary responses cannot leave the
 // Pettek Nanach sidebar stuck loading after a deployment.
-const CACHE_NAME = 'ajew-v4';
+const CACHE_NAME = 'ajew-v5-readable-nikud-20260930';
 const CORE_ASSETS = [
   '/',
   '/reader',
