@@ -1,139 +1,103 @@
-/* ajew.org medooyuk layer for Tanach reader pages.
- * On /reader/tanach-<slug>/<part>/<chapter> pages this adds:
- *   - a "Medooyuk" button: overlays the UXLC pointed text (nikud + taamim)
- *     with sheva na/nach coloring from /reader/medooyuk/<slug>.json
- *   - a "Tikun Korim" button linking to the full tikkun app for this chapter
- */
+/* Shared vowel-only paint for annotated Tanach/readers. No sheva inference.
+ * COLR fonts retain Unicode/GPOS; only requested vowel contours are colored.
+ * Public API: window.AjewMarkedHebrew.renderVerse({t,m,k}, {teamim,specialNikud})
+ * plus .css (installed once), usable by Chok and any annotated reader. */
 (function () {
   'use strict';
-  var m = location.pathname.match(/^\/reader\/(tanach-[a-z0-9-]+)\/(\d+)\/(\d+)\/?$/);
-  if (!m) return;
-  var slug = m[1], chapter = m[3];
-  var data = null, active = false, snapshots = [];
-
-  var CSS = '.m-na{color:#0e9d8a;font-size:calc(1em + .02px);-webkit-text-stroke:.034em currentColor;text-shadow:.013em 0 0 currentColor,-.013em 0 0 currentColor,0 .013em 0 currentColor,0 -.013em 0 currentColor}' +
-    '.m-qb{position:relative;text-decoration:none}' +
-    '.m-qb::before{content:"";position:absolute;top:-0.3em;inset-inline-start:-0.3em;width:0.66em;height:0.15em;background:rgba(200,60,60,.9);border-radius:1px}' +
-    '.m-qb::after{content:"";position:absolute;top:-0.15em;inset-inline-start:-0.015em;width:0.14em;height:0.44em;background:rgba(200,60,60,.9);border-radius:1px}' +
-    '.m-qk{color:#c34a3a;font-weight:900;text-shadow:0 0 .6px currentColor}' +
-    '.m-meteg{color:#8a6fd8}';
-
-  function joinTokens(arr) {
-    var out = '';
-    for (var i = 0; i < arr.length; i++) {
-      if (out && !/[\u05BE\u05C0\u200F]$/.test(out) && out.slice(-1) !== ' ') out += ' ';
-      out += arr[i];
+  var VERSION = 'fat-nikud-20260930-1';
+  var CSS = ['day', 'sepia', 'night'].map(function (theme) {
+    return '@font-face{font-family:AjewMarked-' + theme + ';src:url("/fonts/tikkun/TikunVowels-' + theme + '.ttf?v=' + VERSION + '") format("truetype");font-weight:400;font-style:normal;font-display:block}';
+  }).join('') +
+    '[data-theme="day"]{--ajew-marked-font:AjewMarked-day}' +
+    '[data-theme="sepia"]{--ajew-marked-font:AjewMarked-sepia}' +
+    '[data-theme="night"]{--ajew-marked-font:AjewMarked-night}' +
+    '.marked-hebrew{font-family:var(--ajew-marked-font,AjewMarked-day),serif!important;font-weight:400!important;font-synthesis:none}' +
+    '.marked-hebrew .marked-qere{text-decoration:underline;text-underline-offset:.12em}';
+  function esc(s) { return s.replace(/[&<>"']/g, function (ch) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]; }); }
+  function renderToken(tok, marks, teamim, specialNikud) {
+    var text = teamim === false ? tok.replace(/[\u0591-\u05AF\u05C0]/g, '') : tok;
+    if (specialNikud === false) return esc(text);
+    var li = -1, html = '', cluster = '', features = {};
+    function flush() {
+      var setting = Object.keys(features).map(function (tag) { return "'" + tag + "' 1"; }).join(', ');
+      html += setting ? '<span class="vowel-cluster" style="font-feature-settings:' + setting + '">' + cluster + '</span>' : cluster;
+      cluster = ''; features = {};
     }
-    return out;
-  }
-
-  function esc(s) {
-    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  }
-
-  function letterSegments(tok) {
-    var segs = [], cur = '';
-    for (var i = 0; i < tok.length; i++) {
-      var cp = tok.charCodeAt(i);
-      if (cp >= 0x5D0 && cp <= 0x5EA) {
-        if (cur) segs.push(cur);
-        cur = tok[i];
-      } else {
-        cur += tok[i];
-      }
-    }
-    if (cur) segs.push(cur);
-    return segs;
-  }
-
-  /* medooyuk marks on the NIKUD CHARACTERS themselves — letters stay regular:
-     sheva na colored (m-na), meteg colored (m-meteg), qamats katan colored
-     (m-qk; mk.li IS the qamats letter), qamats feeding an unresolved sheva
-     dotted on the qamats itself (m-qb; mk.li is the sheva letter, the qamats
-     sits on li-1). */
-  function coloredVerse(verse) {
-    var byTok = {};
-    (verse.m || []).forEach(function (mk) {
-      (byTok[mk[0]] = byTok[mk[0]] || []).push(mk);
+    Array.from(text).forEach(function (ch) {
+      if (/[\u05D0-\u05EA]/.test(ch)) { flush(); li++; }
+      var kind;
+      if (ch === '\u05B0' && marks.some(function (m) { return m[2] === 'na' && m[1] === li; })) kind = 'na';
+      else if (ch === '\u05B8' || ch === '\u05C7') {
+        // Explicit katan/positive qk outrank uncertainty; qb is NOT katan.
+        if (ch === '\u05C7' || marks.some(function (m) { return m[2] === 'qk' && m[1] === li; })) kind = 'qk';
+        else if (marks.some(function (m) { return m[3] && m[1] - 1 === li; })) kind = 'qb';
+      } else if (ch === '\u05BD') kind = 'meteg';
+      if (kind) features[{ na: 'ss01', qk: 'ss02', qb: 'ss03', meteg: 'ss04' }[kind]] = true;
+      cluster += kind ? '<span class="mark ' + kind + '">' + ch + '</span>' : esc(ch);
     });
-    return joinTokens(verse.t.map(function (tok, i) {
-      var segs = letterSegments(tok);
-      var na = {}, qbPrev = {}, qk = {};
-      (byTok[i] || []).forEach(function (mk) {
-        if (mk[1] >= 0 && mk[1] < segs.length) {
-          if (mk[2] === 'na') na[mk[1]] = 1;
-          if (mk[2] === 'qk') qk[mk[1]] = 1;
-          if (mk[3]) { if (mk[1] > 0) qbPrev[mk[1] - 1] = 1; }
-        }
-      });
-      var out = '';
-      for (var j = 0; j < segs.length; j++) {
-        var seg = segs[j];
-        for (var k = 0; k < seg.length; k++) {
-          var cp = seg.charCodeAt(k), cls = null;
-          if (cp === 0x5BD) cls = 'm-meteg';
-          else if (cp === 0x5B0 && na[j]) cls = 'm-na';
-          else if ((cp === 0x5B8 || cp === 0x5C7) && qbPrev[j]) cls = 'm-qb';
-          else if ((cp === 0x5B8 || cp === 0x5C7) && qk[j]) cls = 'm-qk';
-          out += cls ? '<span class="' + cls + '">' + esc(seg[k]) + '</span>' : esc(seg[k]);
-        }
-      }
-      return out;
-    }));
+    flush(); return html;
+  }
+  function renderVerse(verse, options) {
+    options = options || {};
+    var byTok = {};
+    (verse.m || []).forEach(function (m) { (byTok[m[0]] = byTok[m[0]] || []).push(m); });
+    var html = (verse.t || []).map(function (tok, i, tokens) {
+      var result = renderToken(tok, byTok[i] || [], options.teamim, options.specialNikud);
+      if (verse.k && verse.k[i] === 1) result = '<span class="marked-qere">' + result + '</span>';
+      return result + (i < tokens.length - 1 && !/\u05BE[\u200e\u200f]*$/.test(tok) ? ' ' : '');
+    }).join('');
+    return '<span class="marked-hebrew">' + html + '</span>';
+  }
+  window.AjewMarkedHebrew = { renderVerse: renderVerse, renderToken: renderToken, css: CSS, version: VERSION };
+  if (!document.getElementById('ajew-marked-hebrew-css')) {
+    var style = document.createElement('style'); style.id = 'ajew-marked-hebrew-css'; style.textContent = CSS; document.head.appendChild(style);
   }
 
+  var match = location.pathname.match(/^\/reader\/(tanach-[a-z0-9-]+)\/(\d+)\/(\d+)\/?$/);
+  if (!match) return;
+  var slug = match[1], chapter = match[3], data = null, active = false, wanted = false, pending = null, snapshots = [];
+  var PREF = 'ajew-special-nikud';
+  function save(value) { try { localStorage.setItem(PREF, value ? '1' : '0'); } catch (_) {} }
+  function btn() { return document.getElementById('btn-medooyuk'); }
+  function updateButton() { var el = btn(); if (el) { el.classList.toggle('reader-btn-active', active); el.setAttribute('aria-pressed', String(wanted)); } }
   function activate() {
+    if (!wanted || active) return;
     if (!data) {
-      fetch('/reader/medooyuk/' + slug + '.json')
-        .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
-        .then(function (d) { data = d; activate(); })
-        .catch(function () { alert('Medooyuk data not available for this book.'); });
+      if (!pending) pending = fetch('/reader/medooyuk/' + slug + '.json').then(function (r) {
+        if (!r.ok) throw new Error(r.status); return r.json();
+      }).then(function (d) { data = d; pending = null; activate(); }).catch(function () {
+        pending = null; wanted = false; save(false); updateButton(); alert('Medooyuk data not available for this book.');
+      });
       return;
     }
-    var chData = data.ch[chapter] || {};
+    var ch = data.ch[chapter] || {};
     document.querySelectorAll('.reader-segment').forEach(function (seg) {
-      var vi = parseInt(seg.getAttribute('data-index'), 10);
-      var p = seg.querySelector('p[data-nikud]');
-      if (!p || !chData[vi]) return;
-      snapshots.push({ el: p, html: p.innerHTML });
-      p.innerHTML = coloredVerse(chData[vi]);
+      var vi = parseInt(seg.getAttribute('data-index'), 10), p = seg.querySelector('p[data-nikud]');
+      if (!p || !ch[vi]) return;
+      snapshots.push({ el: p, html: p.innerHTML }); p.innerHTML = renderVerse(ch[vi]);
     });
-    active = true;
-    btn().classList.add('reader-btn-active');
+    active = true; updateButton();
   }
-
   function deactivate() {
-    snapshots.forEach(function (s) { s.el.innerHTML = s.html; });
-    snapshots = [];
-    active = false;
-    btn().classList.remove('reader-btn-active');
+    snapshots.forEach(function (s) { s.el.innerHTML = s.html; }); snapshots = []; active = false; updateButton();
   }
-
-  function btn() { return document.getElementById('btn-medooyuk'); }
-
   function injectButtons() {
     var anchor = document.getElementById('btn-nikud');
-    if (!anchor || document.getElementById('btn-medooyuk')) return;
+    if (!anchor || btn()) return;
     var mk = document.createElement('button');
     mk.className = 'reader-btn'; mk.id = 'btn-medooyuk'; mk.textContent = 'Medooyuk';
-    mk.title = 'Medooyuk layer: shva na + meteg marked on the nikud itself';
-    mk.addEventListener('click', function () { active ? deactivate() : activate(); });
+    mk.title = 'סימון ניקוד בלבד: שווא נע מודגש, קמץ קטן, מתג וקמץ לבירור';
+    mk.setAttribute('aria-pressed', 'false');
+    mk.addEventListener('click', function () { wanted = !wanted; save(wanted); wanted ? activate() : deactivate(); updateButton(); });
     anchor.insertAdjacentElement('afterend', mk);
-    var tk = document.createElement('a');
-    tk.className = 'reader-btn'; tk.textContent = 'Tikun Korim';
-    tk.href = '/reader/tikkun?b=' + slug + '&c=' + chapter;
-    tk.title = 'Open this chapter in the Tikun Korim';
+    var tk = document.createElement('a'); tk.className = 'reader-btn'; tk.textContent = 'Tikun Korim';
+    tk.href = '/reader/tikkun?b=' + slug + '&c=' + chapter; tk.title = 'Open this chapter in the Tikun Korim';
     mk.insertAdjacentElement('afterend', tk);
     var style = document.createElement('style');
-    style.textContent = CSS +
-      '.reader-btn-active{outline:2px solid #1a9e8c;outline-offset:1px}' +
-      'a.reader-btn{text-decoration:none;display:inline-flex;align-items:center}';
+    style.textContent = '.reader-btn-active{outline:2px solid #1a9e8c;outline-offset:1px}a.reader-btn{text-decoration:none;display:inline-flex;align-items:center}';
     document.head.appendChild(style);
+    try { wanted = localStorage.getItem(PREF) === '1'; } catch (_) {}
+    if (wanted) { updateButton(); activate(); }
   }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', injectButtons);
-  } else {
-    injectButtons();
-  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', injectButtons); else injectButtons();
 })();

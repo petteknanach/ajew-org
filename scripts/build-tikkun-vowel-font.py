@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Generate COLR-v0 vowel glyph alternates, retaining original OpenType anchors.
-No Unicode/PUA substitution, no glyph size/run split. ss01=na, ss02=qk,
+No Unicode/PUA substitution or text run split. ss01=na, ss02=qk,
 ss03=qb, ss04=meteg. A feature applies to the intact base+marks cluster;
 ONLY the substituted vowel outline has color, consonants keep currentColor.
 Derived Taamey Frank CLM: GPL-2 + document embedding exception is retained.
@@ -52,9 +52,32 @@ def make_font(theme):
         for coords,flags in parts:
             count += len(coords); glyph.endPtsOfContours.append(count-1)
         glyph.program = Program(); glyph.program.fromBytecode([])
-        f['glyf'][name] = glyph; f['hmtx'].metrics[name] = f['hmtx'].metrics[old]
+        f['glyf'][name] = glyph
+        glyph.recalcBounds(f['glyf'])
+        advance, bearing = f['hmtx'].metrics[old]
+        # Paint-layer bearings must follow their own outline bounds. Keeping
+        # the source LSB on wider ink makes Blink translate it horizontally by
+        # (old.xMin-new.xMin), despite identical HarfBuzz shaping offsets.
+        # Preserve the source bearing-to-outline relation; only non-shaping
+        # COLR layers get this derived bearing. Original/alternate metrics stay.
+        f['hmtx'].metrics[name] = (advance, glyph.xMin + bearing - f['glyf'][old].xMin)
         extra_layers.append(name)
         return name
+    def enlarged(parts, tag):
+        # Paint expansion ONLY: keep shaping glyphs, advances and GPOS anchors.
+        # Sheva is TWO fat dots: enlarge about each original dot's center,
+        # retaining both dot centers and their original separation.
+        # Qatan expands about the original mark's center as one outline.
+        if tag not in ('ss01', 'ss02'): return parts
+        sx, sy = (1.8, 1.4) if tag == 'ss01' else (1.5, 1.5)
+        all_coords = [xy for coords, flags in parts for xy in coords]
+        result = []
+        for coords, flags in parts:
+            reference = coords if tag == 'ss01' else all_coords
+            cx = (min(x for x,y in reference) + max(x for x,y in reference))/2
+            cy = (min(y for x,y in reference) + max(y for x,y in reference))/2
+            result.append(([(round(cx+(x-cx)*sx), round(cy+(y-cy)*sy)) for x,y in coords], flags))
+        return result
     for tag, originals, color in definitions:
         substitutions[tag] = {}
         for old in originals:
@@ -64,7 +87,8 @@ def make_font(theme):
             copies.setdefault(old, []).append(new)
             substitutions[tag][old] = new
             if old in ['sheva','qamats','qamatsqatan','meteg']:
-                colors[new] = [(old, color)]
+                ink = layer(new+'.ink', enlarged(contours(old), tag), old) if tag in ('ss01','ss02') else old
+                colors[new] = [(ink, color)]
             else:
                 # ccmp ligatures may contain BOTH a consonant/vowel and a
                 # target mark. Split existing contours, not text, by exact
@@ -75,15 +99,7 @@ def make_font(theme):
                 for c in contours(old):
                     (marked if signature(c) in targets else unmarked).append(c)
                 assert len(marked) == len(targets) and unmarked, (old, 'cannot isolate vowel contours')
-                colors[new] = [(layer(new+'.base',unmarked,old),0xffff), (layer(new+'.ink',marked,old),color)]
-    # Website: embolden ONLY the sheva contours, never the base consonant.
-    for new, layers in list(colors.items()):
-        if not new.endswith('.ss01'): continue
-        ink = next(g for g,c in layers if c == 0)
-        for j,(dx,dy) in enumerate([(34,0),(-34,0),(0,34),(0,-34)]):
-            parts=[([(x+dx,y+dy) for x,y in coords],flags) for coords,flags in contours(ink)]
-            shifted=layer(new+'.bold'+str(j),parts,ink)
-            layers.append((shifted,0))
+                colors[new] = [(layer(new+'.base',unmarked,old),0xffff), (layer(new+'.ink',enlarged(marked,tag),old),color)]
     f.setGlyphOrder(original_order + list(colors) + extra_layers)
     f['maxp'].numGlyphs = len(f.getGlyphOrder())
     # All new mark glyphs inherit every attachment/class/position of their
