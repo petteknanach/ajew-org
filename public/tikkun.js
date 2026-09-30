@@ -479,7 +479,7 @@
     $('tk-column-taamim').addEventListener('change', function(){state.columnTaamim=this.checked;save();render();});
     new ResizeObserver(fitColumn).observe($('tk-content'));
     Promise.all(['full','nikud','taamim','bare'].map(function(mode){return document.fonts.load('28px StudyStam-'+mode).then(function(faces){if(!faces.length||!faces.every(function(f){return f.status==='loaded';}))throw Error('Study font unavailable');});})).then(function(){studyFontsReady=true;render();}).catch(function(){studyFontsReady=false;render();});
-    fetchJSON('/tikkun/study-geometry.json?v=study-1').then(function(d){if(Object.keys(d).length!==245 || !Object.values(d).every(function(v){return Number.isFinite(v)&&v>=21&&v<100;}))throw Error('Study geometry invalid');studyGeometry=d;render();}).catch(function(){studyGeometry=null;render();});
+    fetchJSON('/tikkun/study-geometry.json?v=readable-stam-20260930-r3').then(function(d){if(Object.keys(d).length!==245 || !Object.values(d).every(function(v){return Number.isFinite(v)&&v>=21&&v<100;}))throw Error('Study geometry invalid');studyGeometry=d;render();}).catch(function(){studyGeometry=null;render();});
     fetchJSON('/tikkun/written-overrides.json?v=1').then(function (d) { presentation = d; render(); }).catch(function () {
       presentationError = 'Written spelling data could not load. Reload to retry.'; render();
     });

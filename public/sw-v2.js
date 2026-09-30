@@ -10,7 +10,7 @@
  * - API calls: network only
  */
 
-const CACHE_NAME = 'ajew-v2-readable-nikud-20260930-r2';
+const CACHE_NAME = 'ajew-v2-readable-stam-20260930-r3';
 const ICON_CACHE = 'ajew-icons-v1';
 
 // Core assets to pre-cache on install
@@ -24,10 +24,15 @@ const CORE_ASSETS = [
   '/favicon.ico',
   '/og-image.png',
   '/reader/catalog.json',
+  "/tikkun/study-geometry.json?v=readable-stam-20260930-r3",
+  "/fonts/tikkun/study-stam/AjewStudyStam-bare.ttf?v=study-1",
+  "/fonts/tikkun/study-stam/AjewStudyStam-nikud.ttf?v=study-1",
+  "/fonts/tikkun/study-stam/AjewStudyStam-taamim.ttf?v=study-1",
+  "/fonts/tikkun/study-stam/AjewStudyStam-full.ttf?v=study-1",
 ];
 
 // Reader JSON patterns to cache aggressively
-const READER_JSON_REGEX = /\/reader\/.*\.json$/;
+const READER_JSON_REGEX = /\/(?:reader|tikkun)\/.*\.json$/;
 
 // Static asset patterns (cache-first)
 const STATIC_REGEX = /\.(css|js|woff2?|ttf|otf|svg|png|jpe?g|gif|ico)$/;
@@ -132,7 +137,7 @@ async function networkFirstWithCache(request) {
 
     // Return offline page for HTML requests
     if (request.headers.get('accept')?.includes('text/html')) {
-      return caches.match('/offline.html') || new Response('Offline — check your connection', {
+      return await caches.match('/offline.html') || new Response('Offline — check your connection', {
         status: 503,
         headers: { 'Content-Type': 'text/html' }
       });
@@ -158,7 +163,7 @@ async function staleWhileRevalidate(request) {
   }).catch(() => null);
 
   // Return cached version if available, otherwise wait for network
-  return cached || fetchPromise || new Response(JSON.stringify({ error: 'Offline' }), {
+  return cached || await fetchPromise || new Response(JSON.stringify({ error: 'Offline' }), {
     status: 503,
     headers: { 'Content-Type': 'application/json' }
   });

@@ -5,12 +5,17 @@
 
 // Bumped 2026-07-23 so stale reader/commentary responses cannot leave the
 // Pettek Nanach sidebar stuck loading after a deployment.
-const CACHE_NAME = 'ajew-v5-readable-nikud-20260930';
+const CACHE_NAME = 'ajew-v6-readable-stam-20260930';
 const CORE_ASSETS = [
   '/',
   '/reader',
   '/search-enhanced',
   '/reader/catalog.json',
+  "/tikkun/study-geometry.json?v=readable-stam-20260930-r3",
+  "/fonts/tikkun/study-stam/AjewStudyStam-bare.ttf?v=study-1",
+  "/fonts/tikkun/study-stam/AjewStudyStam-nikud.ttf?v=study-1",
+  "/fonts/tikkun/study-stam/AjewStudyStam-taamim.ttf?v=study-1",
+  "/fonts/tikkun/study-stam/AjewStudyStam-full.ttf?v=study-1",
   '/reader-script.js',
 ];
 
@@ -51,7 +56,7 @@ self.addEventListener('fetch', (event) => {
   // Reader JSON files - stale-while-revalidate.
   // Returns cached copy instantly, refreshes in background so commentary edits
   // propagate without needing another CACHE_NAME bump.
-  if (url.pathname.match(/\/reader\/.*\.json$/)) {
+  if (url.pathname.match(/\/(?:reader|tikkun)\/.*\.json$/)) {
     event.respondWith(
       caches.open(CACHE_NAME).then((cache) => {
         return cache.match(event.request).then((cached) => {
@@ -60,7 +65,7 @@ self.addEventListener('fetch', (event) => {
               cache.put(event.request, response.clone());
             }
             return response;
-          }).catch(() => cached);
+          }).catch(() => cached || new Response(JSON.stringify({error:'Offline'}), { status:503, headers:{'Content-Type':'application/json'} }));
           return cached || networkFetch;
         });
       })
