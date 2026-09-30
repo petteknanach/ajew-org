@@ -9,6 +9,8 @@
 #tk-app[data-tk-theme="sepia"]{--tk-reading:'Tikkun Vowels Sepia';--tk-bg:#f6ecd5;--tk-panel:#eadfc5;--tk-input:#fff8e8;--tk-ink:#2d241a;--tk-muted:#584a36;--tk-border:#978365;--tk-na:#006054;--tk-qk:#9b241f;--tk-meteg:#613995}
 #tk-app[data-tk-theme="night"]{--tk-reading:'Tikkun Vowels Night';--tk-bg:#14181d;--tk-panel:#222830;--tk-input:#303844;--tk-ink:#f3f0e7;--tk-muted:#c1c9d2;--tk-border:#7c8a99;--tk-na:#65ded0;--tk-qk:#ffaba2;--tk-meteg:#c7afff;color-scheme:dark}
 #tk-app [hidden]{display:none!important}
+#tk-app[data-tk-view="sefer"] .tk-reading-only{display:none}
+#tk-app .tk-size input{min-height:44px}
 #tk-app h1,#tk-app h2,#tk-app label{color:var(--tk-ink)}
 #tk-app .tk-header h1{font-size:1.7rem;margin:0}
 #tk-app .tk-sub,#tk-app .tk-tagline{color:var(--tk-muted);font-size:.95rem;font-weight:400}
@@ -17,9 +19,9 @@
 #tk-app .tk-row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin:.4rem 0}
 #tk-app .tk-row label{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center;font-size:.88rem;min-width:0}
 #tk-app select,#tk-app option,#tk-app button{background:var(--tk-input);color:var(--tk-ink);border:1px solid var(--tk-border);font:inherit}
-#tk-app select{padding:.4rem;border-radius:6px;max-width:100%;min-height:40px}
+#tk-app select{padding:.4rem;border-radius:6px;max-width:100%;min-height:44px}
 #tk-app .tk-row select{max-width:250px}
-#tk-app .tk-btn{padding:.45rem .7rem;border-radius:6px;min-height:40px;cursor:pointer}
+#tk-app .tk-btn{padding:.45rem .7rem;border-radius:6px;min-height:44px;min-width:44px;cursor:pointer}
 #tk-app .tk-btn[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--tk-na)}
 #tk-app :focus-visible{outline:3px solid var(--tk-na);outline-offset:3px}
 #tk-app :disabled{opacity:1;color:var(--tk-muted);cursor:default}
@@ -46,17 +48,17 @@
 #tk-app .tk-shnayim-note{display:flex;flex-wrap:wrap;gap:1rem}
 #tk-app .tk-sefer-note{margin:0 0 1rem;text-align:start}
 #tk-app .tk-study-flow{columns:2 22rem;column-gap:2rem;text-align:justify}
-/* Fixed source rows NEVER reflow. Narrow displays pan; sizes scale both ink
-   and column geometry. This preserves line membership, not facsimile metrics. */
-#tk-app .tk-scroll-viewport{overflow:auto;max-width:100%;border:1px solid var(--tk-border);background:var(--tk-bg);padding:1rem;direction:rtl}
-#tk-app .tk-fixed-strip{display:flex;gap:2em;width:max-content;align-items:flex-start}
-#tk-app .tk-fixed-page{flex:none;width:21em}
+/* Fit/zoom scales the entire fixed em geometry, not reading-font reflow.
+   A single source column fits at 100%; only deliberate enlargement pans. */
+#tk-app .tk-scroll-viewport{overflow-x:auto;max-width:100%;border:1px solid var(--tk-border);background:var(--tk-bg);padding:.5em;direction:rtl}
+#tk-app .tk-fixed-strip{display:flex;width:max-content;align-items:flex-start}
+#tk-app .tk-fixed-page{box-sizing:content-box;flex:none;width:21em;padding-inline:.4em}
 /* The source's Sea-song page carries significantly longer physical rows. */
 #tk-app .tk-fixed-page[data-column="78"]{width:28em}
 #tk-app .tk-fixed-page[data-column="242"],#tk-app .tk-fixed-page[data-column="243"]{width:22em}
 #tk-app .tk-column-label{font:400 .85rem/1.5 system-ui,sans-serif;text-align:center;margin:0 0 1rem;color:var(--tk-muted)}
 #tk-app .tk-fixed-ink{font-family:'Tikkun Scroll',serif;line-height:1.65}
-#tk-app .tk-fixed-line{display:flex;align-items:baseline;height:1.65em;white-space:nowrap}
+#tk-app .tk-fixed-line{position:relative;display:flex;align-items:baseline;height:1.65em;white-space:nowrap}
 #tk-app .tk-fixed-ink .tk-l-lg,#tk-app .tk-fixed-ink .tk-l-sm{line-height:0}
 #tk-app .tk-fixed-group{display:flex;flex:1;min-width:0;justify-content:space-between}
 #tk-app .tk-fixed-fragment{flex:1;text-align:justify;text-align-last:justify;white-space:pre}
@@ -84,4 +86,13 @@
 /* Keep complete clusters intact; color lives INSIDE COLR vowel outlines.
    Do not apply the legacy .02px splitter, color, weight or stroke to clusters. */
 #tk-app .tk-cluster{font-weight:400;color:inherit}
-@media(max-width:720px){#tk-app{padding:.75rem}#tk-app .tk-side{grid-template-columns:minmax(0,1fr)}#tk-app .tk-col-scroll{border-inline-end:0;border-bottom:1px solid var(--tk-border);padding:0 0 .4rem}#tk-app .tk-row select{max-width:100%}#tk-app .tk-btn,#tk-app select{min-height:44px}#tk-app .tk-scroll-viewport{padding:.6rem}}
+/* Dedicated column controls/companion stay outside scroll ink. */
+#tk-app .tk-column-chk{min-height:44px;padding:8px;border:1px solid var(--tk-border);border-radius:6px;background:var(--tk-input)}
+#tk-app .column-pointing-advice{font:14px/1.6 system-ui,sans-serif;color:var(--tk-ink);margin-top:12px}
+#tk-app .column-pointing-advice summary{min-height:44px;padding:10px;cursor:pointer}
+#tk-app .column-companion,#tk-app .column-qere span{font-family:var(--tk-reading),serif;font-size:var(--tk-size,26px);line-height:2}
+#tk-app .column-source-difference{font:12px/1.6 system-ui,sans-serif;color:var(--tk-muted)}
+#tk-app .column-qere{font:12px/1.6 system-ui,sans-serif;overflow-wrap:anywhere}
+#tk-app .pointing-unavailable{font:14px/1.6 system-ui,sans-serif;color:var(--tk-muted)}
+
+@media(max-width:720px){#tk-app{padding:.75rem}#tk-app .tk-side{grid-template-columns:minmax(0,1fr)}#tk-app .tk-col-scroll{border-inline-end:0;border-bottom:1px solid var(--tk-border);padding:0 0 .4rem}#tk-app .tk-row select{max-width:100%}#tk-app .tk-btn,#tk-app select{min-height:44px}#tk-app .tk-scroll-viewport{padding:.5em}}

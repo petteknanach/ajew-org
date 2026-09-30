@@ -64,14 +64,15 @@
   ];
 
   var R = window.TikkunRenderer;
-  var requestId = 0, presentation = null, fixed = null, presentationError = '';
+  var D = window.TikkunColumnDisplay;
+  var requestId = 0, presentation = null, fixed = null, navigation = null, pointingReady = false, presentationError = '', readingError = '';
 
   var state = {
     slug: 'tanach-bereishit', chapter: 1,
     mode: 'full', medooyuk: true, shnayim: false,
     layout: 'stacked', targum: '', size: 26, theme: 'day',
     view: 'sefer',   /* fixed edition columns; study/verses keep the UXLC reading */
-    fixedPage: null,
+    fixedPage: null, columnZoom: 1, columnNikud: false, columnTaamim: false,
     data: null, targumData: null, tapCount: {}
   };
 
@@ -131,37 +132,44 @@
 
   function render() {
     var box = $('tk-content');
-    if (!state.data) { box.innerHTML = '<p class="tk-loading">Loading…</p>'; return; }
-    var ch = state.data.ch[state.chapter];
-    if (!ch) { box.innerHTML = '<p class="tk-error">Chapter not found.</p>'; return; }
+
     var shnayim = state.shnayim && state.targumData;
     var html = [];
     var heads = '';
 
     var isFixed = state.view === 'sefer';
-    $('tk-mode').disabled = isFixed;
+    $('tk-app').setAttribute('data-tk-view',state.view);
+    $('tk-mode').disabled = isFixed; // independent column switches below
     $('tk-medooyuk').disabled = isFixed;
     $('tk-legend').hidden = isFixed || !state.medooyuk;
     $('tk-layout').disabled = !state.shnayim;
     $('tk-column-controls').hidden = !isFixed;
     if (isFixed) {
-      if (!fixed) { box.innerHTML = '<p class="tk-error">' + esc(presentationError || 'Loading column layout…') + '</p>'; return; }
-      var pages = fixed.chapters[state.slug + ':' + state.chapter];
-      $('tk-column').disabled = !pages;
-      $('tk-column-prev').disabled = !pages; $('tk-column-next').disabled = !pages;
-      if (!pages) {
+      if (!fixed || !navigation) { box.innerHTML = '<p class="tk-error">' + esc(presentationError || 'Loading column layout…') + '</p>'; return; }
+      var pages = chapterPages(state.slug, state.chapter);
+      $('tk-column').disabled = !pages.length;
+      $('tk-column-prev').disabled = !pages.length; $('tk-column-next').disabled = !pages.length;
+      if (!pages.length) {
         box.innerHTML = '<p class="tk-sefer-note">Fixed Torah columns are available for the five books only. Choose Continuous study or Numbered verses for this book.</p>';
         return;
       }
       var n = state.fixedPage || pages[0];
       $('tk-column').value = n;
-      var ids = [n];
-      if (n < 245) ids.push(n + 1);
-      box.innerHTML = '<p class="tk-sefer-note" dir="ltr">Written text · fixed column and line membership of the 245-column edition. Includes surrounding text. Pan sideways to follow the columns; Size changes magnification, not line breaks. A typeset reconstruction, not a photographed scroll. Reading annotations are in the study views.</p>' +
-        '<div class="tk-scroll-viewport" tabindex="0" role="region" aria-label="Torah columns, scroll horizontally"><div class="tk-fixed-strip">' +
-        ids.map(function (p) { return R.fixedColumn(fixed.pages[p], p); }).join('') + '</div></div>';
+      $('tk-column-prev').disabled = n <= 1; $('tk-column-next').disabled = n >= 245;
+      $('tk-column-nikud').checked = state.columnNikud; $('tk-column-taamim').checked = state.columnTaamim;
+      $('tk-column-fit').textContent = 'Fit · ' + Math.round(state.columnZoom * 100) + '%';
+      $('tk-column-less').disabled = state.columnZoom <= .5; $('tk-column-more').disabled = state.columnZoom >= 3;
+      box.innerHTML = '<p class="tk-sefer-note" dir="ltr">Fixed written edition · all 42 source rows and their groups stay intact. Fit scales the entire column, including song spacing; zoom allows local panning. Reading Size is separate. A typeset reconstruction, not a photographed scroll.</p>' +
+        '<div class="tk-scroll-viewport" tabindex="0" role="region" aria-label="Torah column; fits screen at 100%, local panning when enlarged"><div class="tk-fixed-strip">' +
+        R.fixedColumn(fixed.pages[n], n) + '</div></div>' +
+        ((state.columnNikud || state.columnTaamim) ? pointingReady ? D.renderColumnPointingAdvice(n, state.columnNikud, state.columnTaamim) : '<p class="tk-error pointing-unavailable">Column pointing data unavailable. Fixed ink remains unchanged. Reload to retry.</p>' : '') +
+        (readingError ? '<p class="tk-sefer-note">Fixed column remains available; the independent reading book could not load.</p>' : '');
+      fitColumn();
       return;
     }
+    if (!state.data) { box.innerHTML = '<p class="tk-error">' + (readingError || 'Loading reading…') + '</p>'; return; }
+    var ch = state.data.ch[state.chapter];
+    if (!ch) { box.innerHTML = '<p class="tk-error">Chapter not found.</p>'; return; }
     if (state.view === 'study') {
       box.innerHTML = '<p class="tk-sefer-note" dir="ltr">Continuous reading study · the lines adapt to your screen. This is not the fixed scroll layout.</p>' +
         '<div class="tk-study-flow">' + R.continuous(state.data.ch, state.chapter, overlay(), {mode:state.mode, marked:state.medooyuk}) + '</div>';
@@ -222,11 +230,26 @@
     }
   }
 
+  function chapterPages(slug, chapter) {
+    if (!navigation) return [];
+    var prefix=slug+'/'+chapter+'/';
+    return [...new Set(Object.keys(navigation.verses).filter(function(k){return k.indexOf(prefix) === 0;}).flatMap(function(k){return navigation.verses[k].rows.map(function(r){return r[0];});}))].sort(function(a,b){return a-b;});
+  }
+  function fitColumn() {
+    var viewport=document.querySelector('.tk-scroll-viewport'), column=document.querySelector('.tk-fixed-page');
+    if (!viewport || !column) return;
+    // Em geometry includes the outside gutter; labels never scale into ink.
+    var width=viewport.getBoundingClientRect().width;
+    var size=D.fixedDisplaySize(width+36,+column.dataset.column,state.columnZoom);
+    viewport.style.fontSize=size+'px';
+  }
+
   function fillChapters() {
     var book = state.data;
+    if (!book && !navigation) return;
     var sel = $('tk-chapter');
     sel.innerHTML = '';
-    Object.keys(book.ch).map(Number).sort(function (a, b) { return a - b; }).forEach(function (c) {
+    (book ? Object.keys(book.ch) : [...new Set(Object.keys(navigation.verses).filter(function(k){return k.indexOf(state.slug + '/') === 0;}).map(function(k){return k.split('/')[1];}))]).map(Number).sort(function (a, b) { return a - b; }).forEach(function (c) {
       var o = document.createElement('option');
       o.value = c; o.textContent = c + '  (' + heNum(c) + ')';
       sel.appendChild(o);
@@ -253,7 +276,7 @@
   }
   function loadBook(slug, chapter, cb) {
     var id = ++requestId;
-    state.data = null; state.targumData = null; state.fixedPage = null;
+    state.data = null; state.targumData = null; state.fixedPage = null; readingError = '';
     render();
     fetchJSON('/reader/medooyuk/' + slug + '.json').then(function (d) {
       if (id !== requestId) return;
@@ -268,22 +291,23 @@
     }).catch(function () {
       if (id !== requestId) return;
       if (state.data) { fillTargumSelect(); render(); return; }
-      $('tk-content').innerHTML = '<p class="tk-error">Could not load this book. Please reload to retry.</p>';
+      readingError = 'Could not load this book. Please reload to retry.'; fillChapters(); render();
     });
   }
   function moveColumn(delta) {
     if (!fixed) return;
-    var ps = fixed.chapters[state.slug + ':' + state.chapter];
-    if (!ps) return;
+    var ps = chapterPages(state.slug, state.chapter);
+    if (!ps.length) return;
     selectColumn(Math.max(1, Math.min(245, (state.fixedPage || ps[0]) + delta)));
   }
 
   function selectColumn(n) {
-    if (!fixed || !fixed.pages[n]) return;
-    var refs = fixed.pages[n].reduce(function (a,l) { return a.concat(l.v); }, []);
-    var ref = refs[0], slug = BOOKS[ref.book - 1][0];
+    if (!fixed || !navigation || !fixed.pages[n]) return;
+    var owner = Object.keys(navigation.verses).find(function(k){return navigation.verses[k].rows.some(function(r){return r[0] === n;});});
+    if (!owner) return;
+    var parts = owner.split('/'), slug = parts[0], ref = {chapter:+parts[1]};
     var show = function () { state.fixedPage = n; render(); save(); };
-    if (slug !== state.slug) { state.slug = slug; $('tk-book').value = slug; loadBook(slug, ref.chapter, show); }
+    if (slug !== state.slug) { state.slug = slug; state.chapter = ref.chapter; $('tk-book').value = slug; loadBook(slug, ref.chapter, show); fillChapters(); show(); }
     else { state.chapter = ref.chapter; fillChapters(); $('tk-parsha').value = parshaFor(slug, ref.chapter); show(); }
   }
 
@@ -293,7 +317,7 @@
         slug: state.slug, chapter: state.chapter, mode: state.mode,
         medooyuk: state.medooyuk, shnayim: state.shnayim, layout: state.layout,
         targum: state.targum, size: state.size, theme: state.theme,
-        view: state.view
+        view: state.view, columnZoom: state.columnZoom, columnNikud: state.columnNikud, columnTaamim: state.columnTaamim
       }));
     } catch (e) {}
   }
@@ -327,8 +351,8 @@
 
   function gotoVerse(v) {
     if (state.view === 'sefer' && fixed) {
-      var book = BOOKS.findIndex(function (b) { return b[0] === state.slug; }) + 1;
-      var p = Object.keys(fixed.pages).find(function (n) { return fixed.pages[n].some(function (l) { return l.v.some(function (r) { return r.book === book && r.chapter === state.chapter && r.verse === v; }); }); });
+      var entry = navigation && navigation.verses[state.slug + '/' + state.chapter + '/' + v];
+      var p = entry && entry.rows[0][0];
       if (p) { state.fixedPage = +p; render(); }
     }
     var el = document.querySelector('[data-verse="' + state.chapter + ':' + v + '"]');
@@ -337,7 +361,7 @@
 
   function init() {
     var st = load();
-    ['slug','chapter','mode','medooyuk','shnayim','layout','targum','size','theme','view'].forEach(function (k) {
+    ['slug','chapter','mode','medooyuk','shnayim','layout','targum','size','theme','view','columnZoom','columnNikud','columnTaamim'].forEach(function (k) {
       if (st[k] !== undefined) state[k] = st[k];
     });
     /* deep link: /reader/tikkun?b=<slug>&c=<chapter> */
@@ -353,6 +377,8 @@
     if (['sefer','study','verses'].indexOf(state.view) < 0) state.view = 'sefer';
     if (['stacked','side','tap'].indexOf(state.layout) < 0) state.layout = 'stacked';
     state.size = Math.max(16, Math.min(44, +state.size || 26));
+    state.columnZoom = D.clampColumnZoom(Number(state.columnZoom));
+    state.columnNikud = state.columnNikud === true; state.columnTaamim = state.columnTaamim === true;
     var viewParam = new URLSearchParams(location.search).get('view');
     if (['sefer','study','verses'].indexOf(viewParam) >= 0) state.view = viewParam;
     if (state.shnayim) state.view = 'verses';
@@ -441,9 +467,23 @@
     $('tk-column').addEventListener('change', function () { selectColumn(+this.value); });
     $('tk-column-prev').addEventListener('click', function () { moveColumn(-1); });
     $('tk-column-next').addEventListener('click', function () { moveColumn(1); });
+    $('tk-column-fit').addEventListener('click', function(){state.columnZoom=1;save();render();});
+    $('tk-column-less').addEventListener('click', function(){state.columnZoom=D.clampColumnZoom(state.columnZoom-.25);save();render();});
+    $('tk-column-more').addEventListener('click', function(){state.columnZoom=D.clampColumnZoom(state.columnZoom+.25);save();render();});
+    $('tk-column-nikud').addEventListener('change', function(){state.columnNikud=this.checked;save();render();});
+    $('tk-column-taamim').addEventListener('change', function(){state.columnTaamim=this.checked;save();render();});
+    new ResizeObserver(fitColumn).observe($('tk-content'));
     fetchJSON('/tikkun/written-overrides.json?v=1').then(function (d) { presentation = d; render(); }).catch(function () {
       presentationError = 'Written spelling data could not load. Reload to retry.'; render();
     });
+    fetchJSON('/tikkun/selection-index.json?v=column-fit-1').then(function (d) {
+      if (!d || d.version !== 1 || d.fixedSha256 !== 'd0f4ca04162fc22299a492221cc67b9b3a054cdd77d9441821ea8b217fe69a85' || !d.verses || Object.keys(d.verses).length !== 5853 || !Object.values(d.verses).every(function(v){return v && Array.isArray(v.rows) && v.rows.length && v.rows.every(function(r){return Array.isArray(r) && r.length === 3 && r.every(Number.isInteger) && r[0]>=1 && r[0]<=245 && r[1]>=1 && r[2]<=42 && r[1]<=r[2];});})) throw new Error('Navigation source mismatch');
+      navigation = d; Object.assign(window.TikkunColumnNavigation,d); if (!state.data) fillChapters(); render();
+    }).catch(function () { navigation=null; presentationError = 'Column navigation data unavailable. Reload to retry.'; render(); });
+    fetchJSON('/tikkun/column-pointing.json?v=column-fit-1').then(function(d){
+      if (!d || d.version !== 2 || !d.columns || Object.keys(d.columns).length !== 245 || !Array.isArray(d.refs) || !d.sources || d.sources.fixedSha256 !== 'd0f4ca04162fc22299a492221cc67b9b3a054cdd77d9441821ea8b217fe69a85') throw new Error('Pointing source mismatch');
+      Object.assign(window.TikkunColumnPointing,d);pointingReady=true;render();
+    }).catch(function(){pointingReady=false;render();});
     fetchJSON('/tikkun/fixed-columns.json?v=1').then(function (d) { fixed = d; render(); }).catch(function () {
       presentationError = 'Column layout could not load. Choose a study view or reload to retry.'; render();
     });

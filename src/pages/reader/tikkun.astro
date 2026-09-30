@@ -5,7 +5,7 @@ import Layout from '../../layouts/Layout.astro';
   title="Tikun Korim - Tanach with Medooyuk"
   description="Torah scroll study with fixed columns, a separate continuous reading view, nikud and taamim, vowel-only medooyuk markings, and Shnayim Mikra v'Echad Targum."
 >
-  <link rel="stylesheet" href="/tikkun.css?v=1" />
+  <link rel="stylesheet" href="/tikkun.css?v=column-fit-1" />
   <div id="tk-app" class="tk-wrap" data-tk-theme="day" dir="rtl">
     <header class="tk-header">
       <h1>תיקון קורים <span class="tk-sub">Tikun Korim · medooyuk</span></h1>
@@ -29,7 +29,7 @@ import Layout from '../../layouts/Layout.astro';
             <option value="verses">Reading — numbered verses</option>
           </select>
         </label>
-        <label>Reading marks
+        <label class="tk-reading-only">Reading marks
           <select id="tk-mode">
             <option value="full">Nikud + taamim</option>
             <option value="nikud">Nikud only</option>
@@ -37,17 +37,17 @@ import Layout from '../../layouts/Layout.astro';
             <option value="letters">Unpointed reading — not scroll</option>
           </select>
         </label>
-        <label class="tk-chk"><input type="checkbox" id="tk-medooyuk" checked /> Medooyuk layer</label>
-        <label class="tk-chk"><input type="checkbox" id="tk-shnayim" /> Shnayim Mikra v'Echad Targum</label>
-        <label>Targum <select id="tk-targum"><option value="">—</option></select></label>
-        <label>Layout
+        <label class="tk-chk tk-reading-only"><input type="checkbox" id="tk-medooyuk" checked /> Medooyuk layer</label>
+        <label class="tk-chk tk-reading-only"><input type="checkbox" id="tk-shnayim" /> Shnayim Mikra v'Echad Targum</label>
+        <label class="tk-reading-only">Targum <select id="tk-targum"><option value="">—</option></select></label>
+        <label class="tk-reading-only">Layout
           <select id="tk-layout">
             <option value="stacked">Stacked — written above reading</option>
             <option value="side">Side by side — per-verse study</option>
             <option value="tap">Tap 3× per verse</option>
           </select>
         </label>
-        <label class="tk-size">Size <input type="range" id="tk-size" min="16" max="44" value="26" /></label>
+        <label class="tk-size tk-reading-only">Reading size <input type="range" id="tk-size" min="16" max="44" value="26" /></label>
         <span class="tk-themes">
           <button class="tk-btn tk-theme" data-t="day">Day</button>
           <button class="tk-btn tk-theme" data-t="sepia">Sepia</button>
@@ -66,6 +66,12 @@ import Layout from '../../layouts/Layout.astro';
       <button id="tk-column-prev" class="tk-btn">Previous column</button>
       <label>Column <select id="tk-column" aria-label="Fixed Torah column"></select></label>
       <button id="tk-column-next" class="tk-btn">Next column</button>
+      <button id="tk-column-less" class="tk-btn" aria-label="Reduce column magnification">−</button>
+      <button id="tk-column-fit" class="tk-btn" aria-label="Fit whole column to screen">Fit · 100%</button>
+      <button id="tk-column-more" class="tk-btn" aria-label="Enlarge column">+</button>
+      <label class="tk-column-chk"><input type="checkbox" id="tk-column-nikud" /> Nikud companion</label>
+      <label class="tk-column-chk"><input type="checkbox" id="tk-column-taamim" /> Taamim companion</label>
+      <p class="tk-sefer-note" dir="ltr">Same-ink pointing is unavailable in the source Stam font. These independent switches show authentic pointing outside the unchanged column; edition differences and qere remain separate.</p>
     </div>
     <!-- Not a nested main: Layout's global main sizing applies to the OUTER main. -->
     <div id="tk-content" class="tk-content" dir="rtl" lang="he" role="region" aria-label="Tikun text"></div>
@@ -75,4 +81,5 @@ import Layout from '../../layouts/Layout.astro';
   </div>
 </Layout>
 <script is:inline src="/tikkun-renderer.js?v=1" defer></script>
-<script is:inline src="/tikkun.js?v=10" defer></script>
+<script is:inline src="/tikkun-column-display.js?v=column-fit-1" defer></script>
+<script is:inline src="/tikkun.js?v=column-fit-1" defer></script>
