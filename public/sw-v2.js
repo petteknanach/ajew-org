@@ -10,7 +10,7 @@
  * - API calls: network only
  */
 
-const CACHE_NAME = 'ajew-v2-readable-stam-20260930-r3';
+const CACHE_NAME = 'ajew-v2-capital-t-20261002-r1';
 const ICON_CACHE = 'ajew-icons-v1';
 
 // Core assets to pre-cache on install
@@ -29,6 +29,13 @@ const CORE_ASSETS = [
   "/fonts/tikkun/study-stam/AjewStudyStam-nikud.ttf?v=study-1",
   "/fonts/tikkun/study-stam/AjewStudyStam-taamim.ttf?v=study-1",
   "/fonts/tikkun/study-stam/AjewStudyStam-full.ttf?v=study-1",
+  "/tikkun/column-marks.json?v=capital-t-20261002",
+  "/fonts/tikkun/study-stam/AjewStudyMarked-full-day.ttf?v=capital-t-20261002",
+  "/fonts/tikkun/study-stam/AjewStudyMarked-full-sepia.ttf?v=capital-t-20261002",
+  "/fonts/tikkun/study-stam/AjewStudyMarked-full-night.ttf?v=capital-t-20261002",
+  "/fonts/tikkun/study-stam/AjewStudyMarked-nikud-day.ttf?v=capital-t-20261002",
+  "/fonts/tikkun/study-stam/AjewStudyMarked-nikud-sepia.ttf?v=capital-t-20261002",
+  "/fonts/tikkun/study-stam/AjewStudyMarked-nikud-night.ttf?v=capital-t-20261002",
 ];
 
 // Reader JSON patterns to cache aggressively

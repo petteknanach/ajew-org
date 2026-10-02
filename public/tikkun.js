@@ -65,7 +65,7 @@
 
   var R = window.TikkunRenderer;
   var D = window.TikkunColumnDisplay;
-  var requestId = 0, presentation = null, fixed = null, navigation = null, pointingReady = false, studyGeometry = null, studyFontsReady = false, presentationError = '', readingError = '';
+  var requestId = 0, presentation = null, fixed = null, navigation = null, pointingReady = false, studyMarksReady = false, studyGeometry = null, studyFontsReady = false, presentationError = '', readingError = '';
 
   var state = {
     slug: 'tanach-bereishit', chapter: 1,
@@ -140,8 +140,8 @@
     var isFixed = state.view === 'sefer';
     $('tk-app').setAttribute('data-tk-view',state.view);
     $('tk-mode').disabled = isFixed; // independent column switches below
-    $('tk-medooyuk').disabled = isFixed;
-    $('tk-legend').hidden = isFixed || !state.medooyuk;
+    $('tk-medooyuk').disabled = isFixed && state.columnRepresentation !== 'study';
+    $('tk-legend').hidden = (isFixed && state.columnRepresentation !== 'study') || !state.medooyuk;
     $('tk-layout').disabled = !state.shnayim;
     $('tk-column-controls').hidden = !isFixed;
     if (isFixed) {
@@ -161,10 +161,10 @@
       $('tk-column-less').disabled = state.columnZoom <= .5; $('tk-column-more').disabled = state.columnZoom >= 3;
       $('tk-column-representation').value = state.columnRepresentation;
       var study = state.columnRepresentation === 'study';
-      if (study && (!pointingReady || !studyGeometry || !studyFontsReady)) { box.innerHTML = '<p class="pointing-unavailable tk-error">Study font or pointing data unavailable / still loading. Switch to Original ink; its source column is unchanged.</p>'; return; }
+      if (study && (!pointingReady || !studyMarksReady || !studyGeometry || !studyFontsReady)) { box.innerHTML = '<p class="pointing-unavailable tk-error">Study font or pointing data unavailable / still loading. Switch to Original ink; its source column is unchanged.</p>'; return; }
       box.innerHTML = (study ? '<p class="tk-sefer-note" dir="ltr">Pointable Shlomo Stam study · NOT original ink. Source rows and special letters retained; differing words stay bare. Copy retains associated Unicode. Meteg follows Taamim.</p>' : '') + '<p class="tk-sefer-note" dir="ltr">Fixed written edition · all 42 source rows and their groups stay intact. Fit scales the entire column, including song spacing; zoom allows local panning. Reading Size is separate. A typeset reconstruction, not a photographed scroll.</p>' +
         '<div class="tk-scroll-viewport" tabindex="0" role="region" aria-label="Torah column; fits screen at 100%, local panning when enlarged"><div class="tk-fixed-strip">' +
-        (study ? D.renderStudyColumn(n, fixed.pages[n], studyGeometry[n], state.columnNikud, state.columnTaamim, [], true) : R.fixedColumn(fixed.pages[n], n)) + '</div></div>' +
+        (study ? D.renderStudyColumn(n, fixed.pages[n], studyGeometry[n], state.columnNikud, state.columnTaamim, [], true, state.medooyuk) : R.fixedColumn(fixed.pages[n], n)) + '</div></div>' +
         ((state.columnNikud || state.columnTaamim) ? pointingReady ? D.renderColumnPointingAdvice(n, state.columnNikud, state.columnTaamim, study) : '<p class="tk-error pointing-unavailable">Column pointing data unavailable. Fixed ink remains unchanged. Reload to retry.</p>' : '') +
         (readingError ? '<p class="tk-sefer-note">Fixed column remains available; the independent reading book could not load.</p>' : '');
       fitColumn();
@@ -509,7 +509,11 @@
       viewport=document.querySelector('.tk-scroll-viewport');if(viewport)viewport.scrollLeft=left;
     },{passive:true});
     new ResizeObserver(fitColumn).observe($('tk-content'));
-    Promise.all(['full','nikud','taamim','bare'].map(function(mode){return document.fonts.load('28px StudyStam-'+mode).then(function(faces){if(!faces.length||!faces.every(function(f){return f.status==='loaded';}))throw Error('Study font unavailable');});})).then(function(){studyFontsReady=true;render();}).catch(function(){studyFontsReady=false;render();});
+    Promise.all(['StudyStam-full','StudyStam-nikud','StudyStam-taamim','StudyStam-bare'].concat(['day','sepia','night'].flatMap(function(t){return ['StudyMarked-full-'+t,'StudyMarked-nikud-'+t];})).map(function(family){return document.fonts.load('28px '+family).then(function(faces){if(!faces.length||!faces.every(function(f){return f.status==='loaded';}))throw Error('Study font unavailable');});})).then(function(){studyFontsReady=true;render();}).catch(function(){studyFontsReady=false;render();});
+    fetchJSON('/tikkun/column-marks.json?v=capital-t-20261002').then(function(d){
+      if(!d || d.schema!==1 || !d.rows || Object.keys(d.rows).length!==18760)throw Error('Study annotations unavailable');
+      Object.assign(window.TikkunColumnMarks,d);studyMarksReady=true;render();
+    }).catch(function(){studyMarksReady=false;render();});
     fetchJSON('/tikkun/study-geometry.json?v=readable-stam-20260930-r3').then(function(d){if(Object.keys(d).length!==245 || !Object.values(d).every(function(v){return Number.isFinite(v)&&v>=21&&v<100;}))throw Error('Study geometry invalid');studyGeometry=d;render();}).catch(function(){studyGeometry=null;render();});
     fetchJSON('/tikkun/written-overrides.json?v=1').then(function (d) { presentation = d; render(); }).catch(function () {
       presentationError = 'Written spelling data could not load. Reload to retry.'; render();

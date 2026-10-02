@@ -2,9 +2,9 @@
    a differently colored local panel. New, versioned faces avoid stale SW fonts. */
 @font-face{font-family:'Tikkun Scroll';src:url('/fonts/tikkun/StamAshkenazCLM.ttf?v=1') format('truetype');font-weight:400;font-display:swap}
 @font-face{font-family:'Tikkun Reading';src:url('/fonts/TaameyFrankCLM-Medium.ttf?tk=1') format('truetype');font-weight:400;font-display:swap}
-@font-face{font-family:'Tikkun Vowels Day';src:url('/fonts/tikkun/TikunVowels-day.ttf?v=1') format('truetype');font-weight:400;font-display:swap}
-@font-face{font-family:'Tikkun Vowels Sepia';src:url('/fonts/tikkun/TikunVowels-sepia.ttf?v=1') format('truetype');font-weight:400;font-display:swap}
-@font-face{font-family:'Tikkun Vowels Night';src:url('/fonts/tikkun/TikunVowels-night.ttf?v=1') format('truetype');font-weight:400;font-display:swap}
+@font-face{font-family:'Tikkun Vowels Day';src:url('/fonts/tikkun/TikunVowels-day.ttf?v=capital-t-20261002-1') format('truetype');font-weight:400;font-display:swap}
+@font-face{font-family:'Tikkun Vowels Sepia';src:url('/fonts/tikkun/TikunVowels-sepia.ttf?v=capital-t-20261002-1') format('truetype');font-weight:400;font-display:swap}
+@font-face{font-family:'Tikkun Vowels Night';src:url('/fonts/tikkun/TikunVowels-night.ttf?v=capital-t-20261002-1') format('truetype');font-weight:400;font-display:swap}
 #tk-app{--tk-reading:'Tikkun Vowels Day';--tk-bg:#fffdf7;--tk-panel:#f5f3ec;--tk-input:#fff;--tk-ink:#191b1d;--tk-muted:#4d5359;--tk-border:#9b9b94;--tk-na:#00665b;--tk-qk:#a12e25;--tk-meteg:#6944aa;max-width:1200px;width:100%;min-width:0;margin:0 auto;padding:1rem;background:var(--tk-bg);color:var(--tk-ink);color-scheme:light;font-family:system-ui,sans-serif;font-synthesis:none}
 #tk-app[data-tk-theme="sepia"]{--tk-reading:'Tikkun Vowels Sepia';--tk-bg:#f6ecd5;--tk-panel:#eadfc5;--tk-input:#fff8e8;--tk-ink:#2d241a;--tk-muted:#584a36;--tk-border:#978365;--tk-na:#006054;--tk-qk:#9b241f;--tk-meteg:#613995}
 #tk-app[data-tk-theme="night"]{--tk-reading:'Tikkun Vowels Night';--tk-bg:#14181d;--tk-panel:#222830;--tk-input:#303844;--tk-ink:#f3f0e7;--tk-muted:#c1c9d2;--tk-border:#7c8a99;--tk-na:#65ded0;--tk-qk:#ffaba2;--tk-meteg:#c7afff;color-scheme:dark}
@@ -110,5 +110,19 @@
 #tk-app .study-ink[data-study-mode="bare"]{font-family:'StudyStam-bare',serif}
 #tk-app .study-unpointed{text-decoration:underline dotted;text-underline-offset:.35em}
 #tk-app .tk-scroll-viewport:has(.study-page){padding-block:.9em}
+/* Source-exact special marks, same study consonants/anchors in every palette. */
+@font-face{font-family:'StudyMarked-full-day';src:url('/fonts/tikkun/study-stam/AjewStudyMarked-full-day.ttf?v=capital-t-20261002') format('truetype');font-weight:400;font-display:block}
+#tk-app[data-tk-theme=day] .study-ink[data-study-mode=full]{font-family:'StudyMarked-full-day',serif}
+@font-face{font-family:'StudyMarked-nikud-day';src:url('/fonts/tikkun/study-stam/AjewStudyMarked-nikud-day.ttf?v=capital-t-20261002') format('truetype');font-weight:400;font-display:block}
+#tk-app[data-tk-theme=day] .study-ink[data-study-mode=nikud]{font-family:'StudyMarked-nikud-day',serif}
+@font-face{font-family:'StudyMarked-full-sepia';src:url('/fonts/tikkun/study-stam/AjewStudyMarked-full-sepia.ttf?v=capital-t-20261002') format('truetype');font-weight:400;font-display:block}
+#tk-app[data-tk-theme=sepia] .study-ink[data-study-mode=full]{font-family:'StudyMarked-full-sepia',serif}
+@font-face{font-family:'StudyMarked-nikud-sepia';src:url('/fonts/tikkun/study-stam/AjewStudyMarked-nikud-sepia.ttf?v=capital-t-20261002') format('truetype');font-weight:400;font-display:block}
+#tk-app[data-tk-theme=sepia] .study-ink[data-study-mode=nikud]{font-family:'StudyMarked-nikud-sepia',serif}
+@font-face{font-family:'StudyMarked-full-night';src:url('/fonts/tikkun/study-stam/AjewStudyMarked-full-night.ttf?v=capital-t-20261002') format('truetype');font-weight:400;font-display:block}
+#tk-app[data-tk-theme=night] .study-ink[data-study-mode=full]{font-family:'StudyMarked-full-night',serif}
+@font-face{font-family:'StudyMarked-nikud-night';src:url('/fonts/tikkun/study-stam/AjewStudyMarked-nikud-night.ttf?v=capital-t-20261002') format('truetype');font-weight:400;font-display:block}
+#tk-app[data-tk-theme=night] .study-ink[data-study-mode=nikud]{font-family:'StudyMarked-nikud-night',serif}
+
 
 @media(max-width:720px){#tk-app{padding:.75rem}#tk-app .tk-side{grid-template-columns:minmax(0,1fr)}#tk-app .tk-col-scroll{border-inline-end:0;border-bottom:1px solid var(--tk-border);padding:0 0 .4rem}#tk-app .tk-row select{max-width:100%}#tk-app .tk-btn,#tk-app select{min-height:44px}#tk-app .tk-scroll-viewport{padding:.5em}}

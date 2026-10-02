@@ -1,5 +1,5 @@
 /* Generated from services/tikunColumnDisplay.ts; do not hand-edit. */
-(function(root){const exports={};const data=root.TikkunColumnPointing={columns:{},refs:[]};const nav=root.TikkunColumnNavigation={verses:{}};const require=id=>id.includes("selection-index")?nav:data;
+(function(root){const exports={};const data=root.TikkunColumnPointing={columns:{},refs:[]};const nav=root.TikkunColumnNavigation={verses:{}};const marks=root.TikkunColumnMarks={rows:{}};const require=id=>id.includes("selection-index")?nav:id.includes("column-marks")?marks:data;
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.STUDY_COLUMN_POINTING_AVAILABLE = exports.COLUMN_POINTING_AVAILABLE = void 0;
@@ -15,6 +15,7 @@ exports.associateStudyWord = associateStudyWord;
 exports.renderStudyColumn = renderStudyColumn;
 exports.renderColumnPointingAdvice = renderColumnPointingAdvice;
 const pointing = require('../assets/data/tikun-fixed/column-pointing.json');
+const studyMarks = require('../assets/data/tikun-fixed/column-marks.json');
 const navigation = require('../assets/data/tikun-fixed/selection-index.json');
 /** Fixed Stam has blank vowel/accent glyphs. Do not swap its consonant face,
  * invent anchors or claim that a different reading font is an ink overlay. */
@@ -96,7 +97,7 @@ function associateStudyWord(source, record) {
  * tables, advances, anchors and consonants. Fully associated Unicode remains
  * in the shaping run even when mark INK is hidden. aria-label reflects switches;
  * copying preserves associated Unicode (disclosed in the representation note). */
-function renderStudyColumn(column, lines, units, nikud = false, taamim = false, selectedRows = [], site = false) {
+function renderStudyColumn(column, lines, units, nikud = false, taamim = false, selectedRows = [], site = false, specialNikud = true) {
     const prefix = site ? 'tk-' : '', mode = studyPointingMode(nikud, taamim);
     let failed = 0;
     const rows = lines.map((line, ri) => {
@@ -109,12 +110,30 @@ function renderStudyColumn(column, lines, units, nikud = false, taamim = false, 
                 if (record.status === 'invalid')
                     failed++;
                 const text = associateStudyWord(word, record);
+                const annotation = studyMarks.rows[`${column}/${loc}/${ti - 1}`];
+                // Sidecar is bound to the exact associated source word. A stale or
+                // unavailable annotation leaves sheva plain, never guessed.
+                const marks = record.status === 'exact' && annotation?.[0] === record.t && annotation[2] === record.ref ? annotation[1] : [];
+                let wordLetter = -1;
                 const rendered = (text.match(/[א-ת][^א-ת]*|[^א-ת]+/g) ?? []).map(cluster => {
                     if (!/[א-ת]/.test(cluster[0]))
                         return esc(cluster);
                     const currentLetter = letter++;
+                    wordLetter++;
                     const special = line.L?.[`${gi}:${si}`]?.find(x => x[0] === currentLetter);
-                    return special ? `<span class="${prefix}${site ? 'l' : 'fixed-letter'}-${esc(special[1])}">${esc(cluster)}</span>` : esc(cluster);
+                    const tags = [];
+                    if (specialNikud) {
+                        if (cluster.includes('\u05B0') && marks.some(m => m[0] === wordLetter && m[1] === 'na'))
+                            tags.push('ss01');
+                        if (cluster.includes('\u05C7') || cluster.includes('\u05B8') && marks.some(m => m[0] === wordLetter && m[1] === 'qk'))
+                            tags.push('ss02');
+                        else if (cluster.includes('\u05B8') && marks.some(m => m[0] - 1 === wordLetter && m[1] === 'qb'))
+                            tags.push('ss03');
+                        if (cluster.includes('\u05BD'))
+                            tags.push('ss04');
+                    }
+                    const ink = tags.length ? `<span class="study-mark-cluster" style="font-feature-settings:${tags.map(t => `'${t}' 1`).join(',')}">${esc(cluster)}</span>` : esc(cluster);
+                    return special ? `<span class="${prefix}${site ? 'l' : 'fixed-letter'}-${esc(special[1])}">${ink}</span>` : ink;
                 }).join('');
                 const unavailable = hasLetters && record.status !== 'exact';
                 return `<span class="study-word${unavailable ? ' study-unpointed' : ''}" data-source="${esc(word)}" data-pointing-status="${record.status}"${'ref' in record && record.ref ? ` data-pointing-ref="${esc(record.ref)}"` : ''} aria-label="${esc(filterColumnMarks(text, nikud, taamim))}"${unavailable ? ' title="אין ניקוד מועתק · הבדל נוסח או כתיב/קרי"' : ''}>${rendered}</span>`;

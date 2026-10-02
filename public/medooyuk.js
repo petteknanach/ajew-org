@@ -4,7 +4,7 @@
  * plus .css (installed once), usable by Chok and any annotated reader. */
 (function () {
   'use strict';
-  var VERSION = 'fat-nikud-20260930-1';
+  var VERSION = 'capital-t-20261002-1';
   var CSS = ['day', 'sepia', 'night'].map(function (theme) {
     return '@font-face{font-family:AjewMarked-' + theme + ';src:url("/fonts/tikkun/TikunVowels-' + theme + '.ttf?v=' + VERSION + '") format("truetype");font-weight:400;font-style:normal;font-display:block}';
   }).join('') +

@@ -45,7 +45,7 @@
       return segs.map(function (seg,li) {
         var vis = mode(seg,opts.mode), tags = [], records = [];
         if (opts.marked) Array.from(vis).forEach(function (ch) {
-          var type = ch === '\u05B0' && na[li] ? 'na' : ch === '\u05BD' ? 'meteg' : /[\u05B8\u05C7]/.test(ch) && qk[li] ? 'qk' : /[\u05B8\u05C7]/.test(ch) && qb[li] ? 'qb' : '';
+          var type = ch === '\u05B0' && na[li] ? 'na' : ch === '\u05BD' ? 'meteg' : (ch === '\u05C7' || ch === '\u05B8' && qk[li]) ? 'qk' : /[\u05B8\u05C7]/.test(ch) && qb[li] ? 'qb' : '';
           if (type) { tags.push("'"+feature[type]+"' 1"); records.push(type+':'+ch); }
         });
         return tags.length ? '<span class="tk-cluster" data-tk-marks="' + records.join(' ') + '" style="font-feature-settings:' + Array.from(new Set(tags)).join(',') + '">' + esc(vis) + '</span>' : esc(vis);
