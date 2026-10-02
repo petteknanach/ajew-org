@@ -1,7 +1,12 @@
 'use strict';
 // Explicit source-reviewed repairs, not a Hebrew normalizer. Applied only to
 // Original Psalms imports; UXLC/MAM are separate editions and remain untouched.
-const { repairs } = require('../../audit/psalms-text/holam-repairs.json');
+// Historical API name retained by both importers. The explicit overlays cover
+// holam and one source-reviewed furtive patah; this is never a normalizer.
+const repairs = [
+  ...require('../../audit/psalms-text/holam-repairs.json').repairs,
+  ...require('../../audit/psalms-text/patah-repair.json').repairs,
+];
 const byRef = new Map(repairs.map(r => [`${r.chapter}:${r.verse}`, r]));
 function repairPsalmsHolam(book, chapter, verse, text) {
   if (book !== 'tanach-tehillim' && book !== 'psalms') return text;

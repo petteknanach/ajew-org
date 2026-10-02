@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),cp=require('node:child_process'),vm=require('node:vm');
-const root=path.resolve(__dirname,'..'),ev=path.join(root,'audit/psalms-text'),ledger=require(path.join(ev,'holam-repairs.json'));
+const root=path.resolve(__dirname,'..'),ev=path.join(root,'audit/psalms-text'),holam=require(path.join(ev,'holam-repairs.json')),patah=require(path.join(ev,'patah-repair.json'));
+const ledger={sources:{...holam.sources,...patah.sources},repairs:[...holam.repairs,...patah.repairs],files:[...holam.files,...patah.files]};
 const {repairPsalmsHolam:repair}=require('./lib/psalms-holam-repairs.cjs');
 const sha=b=>crypto.createHash('sha256').update(b).digest('hex');let checks=0,mutations=0;const eq=(a,b,m)=>{checks++;assert.deepEqual(a,b,m)};
 for(const [name,expected] of Object.entries(ledger.sources))eq(sha(fs.readFileSync(path.join(ev,name))),expected,`source lock ${name}`);
