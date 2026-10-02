@@ -65,6 +65,11 @@
 
   var R = window.TikkunRenderer;
   var D = window.TikkunColumnDisplay;
+  var B = window.TikkunBoundaries, boundaries = B.unavailableBoundaries(), boundaryPayload, boundaryPointing;
+  function refreshBoundaries() {
+    if (fixed && boundaryPointing && boundaryPayload !== undefined) boundaries = B.validateBoundaries(boundaryPayload, window.TikkunBoundaryPins, fixed, boundaryPointing);
+    render();
+  }
   var requestId = 0, presentation = null, fixed = null, navigation = null, pointingReady = false, studyMarksReady = false, studyGeometry = null, studyFontsReady = false, presentationError = '', readingError = '';
 
   var state = {
@@ -72,7 +77,7 @@
     mode: 'full', medooyuk: true, shnayim: false,
     layout: 'stacked', targum: '', size: 26, theme: 'day',
     view: 'sefer',   /* fixed edition columns; study/verses keep the UXLC reading */
-    fixedPage: null, columnRepresentation: 'study', columnPreferenceVersion: 1, columnZoom: 1, columnNikud: false, columnTaamim: false,
+    fixedPage: null, columnVerseLabels: false, columnRepresentation: 'study', columnPreferenceVersion: 1, columnZoom: 1, columnNikud: false, columnTaamim: false,
     data: null, targumData: null, tapCount: {}
   };
 
@@ -132,6 +137,7 @@
 
   function render() {
     var box = $('tk-content');
+    $('tk-current-visible').textContent = 'Current visible location unavailable';
 
     var shnayim = state.shnayim && state.targumData;
     var html = [];
@@ -156,6 +162,8 @@
       var n = state.fixedPage || pages[0];
       $('tk-column').value = n;
       $('tk-column-prev').disabled = n <= 1; $('tk-column-next').disabled = n >= 245;
+      $('tk-column-verse-labels').checked = state.columnVerseLabels;
+      $('tk-column-verse-labels').disabled = state.columnRepresentation !== 'study';
       $('tk-column-nikud').checked = state.columnNikud; $('tk-column-taamim').checked = state.columnTaamim;
       $('tk-column-fit').textContent = 'Fit · ' + Math.round(state.columnZoom * 100) + '%';
       $('tk-column-less').disabled = state.columnZoom <= .5; $('tk-column-more').disabled = state.columnZoom >= 3;
@@ -164,9 +172,10 @@
       if (study && (!pointingReady || !studyMarksReady || !studyGeometry || !studyFontsReady)) { box.innerHTML = '<p class="pointing-unavailable tk-error">Study font or pointing data unavailable / still loading. Switch to Original ink; its source column is unchanged.</p>'; return; }
       box.innerHTML = (study ? '<p class="tk-sefer-note" dir="ltr">Pointable Shlomo Stam study · NOT original ink. Source rows and special letters retained; differing words stay bare. Copy retains associated Unicode. Meteg follows Taamim.</p>' : '') + '<p class="tk-sefer-note" dir="ltr">Fixed written edition · all 42 source rows and their groups stay intact. Fit scales the entire column, including song spacing; zoom allows local panning. Reading Size is separate. A typeset reconstruction, not a photographed scroll.</p>' +
         '<div class="tk-scroll-viewport" tabindex="0" role="region" aria-label="Torah column; fits screen at 100%, local panning when enlarged"><div class="tk-fixed-strip">' +
-        (study ? D.renderStudyColumn(n, fixed.pages[n], studyGeometry[n], state.columnNikud, state.columnTaamim, [], true, state.medooyuk) : R.fixedColumn(fixed.pages[n], n)) + '</div></div>' +
+        (study ? B.decorateBoundaries(D.renderStudyColumn(n, fixed.pages[n], studyGeometry[n], state.columnNikud, state.columnTaamim, [], true, state.medooyuk), boundaries, state.columnVerseLabels, state.columnNikud || state.columnTaamim) : B.decorateSourceBoundaries(R.fixedColumn(fixed.pages[n], n), fixed.pages[n], n, boundaries)) + '</div></div>' +
         ((state.columnNikud || state.columnTaamim) ? pointingReady ? D.renderColumnPointingAdvice(n, state.columnNikud, state.columnTaamim, study) : '<p class="tk-error pointing-unavailable">Column pointing data unavailable. Fixed ink remains unchanged. Reload to retry.</p>' : '') +
         (readingError ? '<p class="tk-sefer-note">Fixed column remains available; the independent reading book could not load.</p>' : '');
+      var boundaryNotice = document.createElement('p'); boundaryNotice.className = 'boundary-status tk-sefer-note'; boundaryNotice.textContent = boundaries.reason + (study ? ' · Verse ends above terminal words; labels independent.' : ' · Original ink has no verse punctuation or labels.'); box.prepend(boundaryNotice);
       fitColumn();
       return;
     }
@@ -330,7 +339,7 @@
         slug: state.slug, chapter: state.chapter, mode: state.mode,
         medooyuk: state.medooyuk, shnayim: state.shnayim, layout: state.layout,
         targum: state.targum, size: state.size, theme: state.theme,
-        view: state.view, columnRepresentation: state.columnRepresentation, columnPreferenceVersion: 1, columnZoom: state.columnZoom, columnNikud: state.columnNikud, columnTaamim: state.columnTaamim
+        view: state.view, columnRepresentation: state.columnRepresentation, columnPreferenceVersion: 1, columnZoom: state.columnZoom, columnNikud: state.columnNikud, columnTaamim: state.columnTaamim, columnVerseLabels: state.columnVerseLabels
       }));
     } catch (e) {}
   }
@@ -374,7 +383,7 @@
 
   function init() {
     var st = load();
-    ['slug','chapter','mode','medooyuk','shnayim','layout','targum','size','theme','view','columnZoom','columnNikud','columnTaamim','columnRepresentation'].forEach(function (k) {
+    ['slug','chapter','mode','medooyuk','shnayim','layout','targum','size','theme','view','columnZoom','columnNikud','columnTaamim','columnVerseLabels','columnRepresentation'].forEach(function (k) {
       if (st[k] !== undefined) state[k] = st[k];
     });
     /* deep link: /reader/tikkun?b=<slug>&c=<chapter> */
@@ -394,6 +403,7 @@
     // choice saved by this version remains intact on every subsequent visit.
     state.columnRepresentation = st.columnPreferenceVersion === 1 && st.columnRepresentation === 'source' ? 'source' : 'study';
     state.columnZoom = D.clampColumnZoom(Number(state.columnZoom));
+    state.columnVerseLabels = state.columnVerseLabels === true;
     state.columnNikud = state.columnNikud === true; state.columnTaamim = state.columnTaamim === true;
     var viewParam = new URLSearchParams(location.search).get('view');
     if (['sefer','study','verses'].indexOf(viewParam) >= 0) state.view = viewParam;
@@ -488,6 +498,7 @@
     $('tk-column-more').addEventListener('click', function(){state.columnZoom=D.clampColumnZoom(state.columnZoom+.25);save();render();});
     $('tk-column-representation').addEventListener('change', function(){state.columnRepresentation=this.value;save();render();});
     $('tk-column-nikud').addEventListener('change', function(){state.columnNikud=this.checked;save();render();});
+    $('tk-column-verse-labels').addEventListener('change', function(){state.columnVerseLabels=this.checked;save();render();});
     $('tk-column-taamim').addEventListener('change', function(){state.columnTaamim=this.checked;save();render();});
     // Observe, never preventDefault/capture: vertical swipes on either side,
     // deliberate horizontal panning, pinch, selection and long press stay native.
@@ -509,6 +520,14 @@
       viewport=document.querySelector('.tk-scroll-viewport');if(viewport)viewport.scrollLeft=left;
     },{passive:true});
     new ResizeObserver(fitColumn).observe($('tk-content'));
+    var boundaryStyle=document.createElement('style');boundaryStyle.textContent=B.BOUNDARY_CSS;document.head.appendChild(boundaryStyle);
+    B.observeBoundaries(document,function(value){
+      var r=value.key && boundaries.records[value.key];
+      var label=$('tk-current-visible');
+      var text=r ? r.parsha+' · '+r.chapter+':'+r.verse : 'Current visible location unavailable';
+      if(label.textContent!==text)label.textContent=text;
+    }, B.visibleBoundary);
+    fetchJSON('/tikkun/verse-boundaries.json?v=boundaries-complete-7341d364').then(function(d){boundaryPayload=d;refreshBoundaries();}).catch(function(){boundaries=B.unavailableBoundaries('Boundary map unavailable — reload to retry');render();});
     Promise.all(['StudyStam-full','StudyStam-nikud','StudyStam-taamim','StudyStam-bare'].concat(['day','sepia','night'].flatMap(function(t){return ['StudyMarked-full-'+t,'StudyMarked-nikud-'+t];})).map(function(family){return document.fonts.load('28px '+family).then(function(faces){if(!faces.length||!faces.every(function(f){return f.status==='loaded';}))throw Error('Study font unavailable');});})).then(function(){studyFontsReady=true;render();}).catch(function(){studyFontsReady=false;render();});
     fetchJSON('/tikkun/column-marks.json?v=capital-t-20261002').then(function(d){
       if(!d || d.schema!==1 || !d.rows || Object.keys(d.rows).length!==18760)throw Error('Study annotations unavailable');
@@ -524,9 +543,9 @@
     }).catch(function () { navigation=null; presentationError = 'Column navigation data unavailable. Reload to retry.'; render(); });
     fetchJSON('/tikkun/column-pointing.json?v=column-fit-1').then(function(d){
       if (!d || d.version !== 2 || !d.columns || Object.keys(d.columns).length !== 245 || !Array.isArray(d.refs) || !d.sources || d.sources.fixedSha256 !== 'd0f4ca04162fc22299a492221cc67b9b3a054cdd77d9441821ea8b217fe69a85') throw new Error('Pointing source mismatch');
-      Object.assign(window.TikkunColumnPointing,d);pointingReady=true;render();
+      Object.assign(window.TikkunColumnPointing,d);boundaryPointing=d;pointingReady=true;refreshBoundaries();
     }).catch(function(){pointingReady=false;render();});
-    fetchJSON('/tikkun/fixed-columns.json?v=1').then(function (d) { fixed = d; render(); }).catch(function () {
+    fetchJSON('/tikkun/fixed-columns.json?v=1').then(function (d) { fixed = d; refreshBoundaries(); }).catch(function () {
       presentationError = 'Column layout could not load. Choose a study view or reload to retry.'; render();
     });
     document.querySelectorAll('[data-tk-demo]').forEach(function (el) {

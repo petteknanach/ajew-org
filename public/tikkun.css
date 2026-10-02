@@ -1,3 +1,8 @@
+/* Layout's body overflow-x:hidden creates a non-scrolling sticky ancestor.
+   Clip only this route without creating a second scroll container. */
+body:has(#tk-app){overflow-x:clip}
+#tk-app #tk-current-visible{position:sticky;top:0;z-index:45;background:var(--tk-bg);color:var(--tk-ink);border-block:1px solid var(--tk-border);padding:8px 68px;font:14px/20px system-ui,sans-serif;min-height:36px;text-align:center}
+@media(max-width:1023px){#tk-app #tk-current-visible{top:56px}}
 /* Tikun-only theme boundary: global day/dark selectors must not choose ink on
    a differently colored local panel. New, versioned faces avoid stale SW fonts. */
 @font-face{font-family:'Tikkun Scroll';src:url('/fonts/tikkun/StamAshkenazCLM.ttf?v=1') format('truetype');font-weight:400;font-display:swap}
