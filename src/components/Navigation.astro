@@ -781,6 +781,14 @@ function isActive(path: string) {
     }
   }
 
+  /* Chok reserves an 88px utility rail; keep prayer out of its source. */
+  @media (min-width: 1024px) {
+    :global(body:has(.ck-wrap)) .hitbodedut-fab {
+      right: 20px;
+      bottom: 144px;
+    }
+  }
+
   /* ============================================
      CONTENT WRAPPER
      Desktop: sits beside sidebar

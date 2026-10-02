@@ -649,6 +649,11 @@ import Layout from '../../layouts/Layout.astro';
   }
   .ck-foot p { margin: 0; }
 
+  /* Desktop utility rail: reserve source space rather than covering glyphs. */
+  @media (min-width: 1024px) {
+    .ck-wrap { width: calc(100% - 88px); margin-right: 88px; }
+  }
+
   /* ── Responsive ───────────────────────────────────────────────── */
   @media (min-width: 720px) {
     .ck-wrap { padding: 1.6rem 2rem 2.2rem; }
