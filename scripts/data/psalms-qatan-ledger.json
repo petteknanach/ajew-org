@@ -1,0 +1,4607 @@
+{
+  "schema": 1,
+  "scope": "29 pre-existing form-scoped user-gold qamats decisions; 24 paired sheva reconciliations only. Not a new rule or fixture.",
+  "hash_encoding": "sha256 UTF-8 JSON ensure_ascii=false sort_keys=true separators=comma/colon; no Unicode normalization",
+  "source_file_sha256": "68ad34da86ed387ae24c0364fbaa224346b7ee6b75e8e34c618450e13b5e094a",
+  "authority_inputs": {
+    "tanach_Psalms.jsonl": {
+      "sha256": "409ad38ecc2db242212e721c2de03993ed663b68827b062474b0ee3a837836fc",
+      "bytes": 1676586
+    },
+    "sheva_tagger_v0.py": {
+      "sha256": "f1fefb512ebe44cc8ea900414e8c0f29b3b75974fa3a1326beb8644eecb8b92f",
+      "bytes": 32596
+    },
+    "track2_overlay.py": {
+      "sha256": "85c083b97a78e70bb7cc23548d6a0c7d8cee3f9068a72644d8465f84a9399d24",
+      "bytes": 23708
+    },
+    "form_fixtures_katan.json": {
+      "sha256": "d7e9426f40e5a683b101bcbe7d12382749c9cbf70f9bdc62dd13373312c2548b",
+      "bytes": 4880
+    },
+    "form_fixtures_qamats_walk.json": {
+      "sha256": "2d94c7a3a5a3ac3a8ecbc47c3a5a02e3ea6379e7bf5b927d0b05f0bec68e5a0c",
+      "bytes": 92065
+    },
+    "form_fixtures_sheva.json": {
+      "sha256": "500c76130c77dfe3fd96c4338d55382a15ff652e1575faac2dda5596a71b7529",
+      "bytes": 1555
+    },
+    "SPEC_v0.md": {
+      "sha256": "4577d89ae2dc84e733e95e7c3835cad0c9b7d7b1967937a1871cd749e3a8cbef",
+      "bytes": 9835
+    },
+    "render_tanach.py": {
+      "sha256": "14c67557e61666e691cffdc475822e1b244d0586127973b9d2031d281a386e3f",
+      "bytes": 8355
+    }
+  },
+  "audit_inputs": {
+    "existing-gold-qatan-candidates.json": "3371b27208ab30136476480b19fa67a8c59beac87e5fa4f98c0a9a04a95d2a73",
+    "existing-gold-independent-witness.json": "ecb0961b1ecc8d6e765aa6be68baf8e5e2b0a60a17f0cd7e1ab50a945315f57f",
+    "existing-classifier-probes.json": "f42f34387653b02219cb26c6aee98745d7d10f3a445e05600a1cbab9c466f166"
+  },
+  "witness_notice": {
+    "edition": "Miqra according to the Masorah, Hebrew Wikisource",
+    "authors": "Seth (Avi) Kadish, Erel Segal-Halevi, Benjamin Denckla",
+    "license": "CC BY-SA 4.0",
+    "url": "https://en.wikisource.org/wiki/User:Dovi/Miqra_according_to_the_Masorah#beginning",
+    "use": "Corroboration only; decisions derive from unchanged user gold; excerpted HTML preserved unchanged."
+  },
+  "fixtures": {
+    "p1_026": {
+      "file": "form_fixtures_katan.json",
+      "file_sha256": "d7e9426f40e5a683b101bcbe7d12382749c9cbf70f9bdc62dd13373312c2548b",
+      "record": {
+        "id": "p1_026",
+        "forms": [
+          "קָדְשִׁי"
+        ],
+        "refs": [
+          "Amos 2:7"
+        ],
+        "qgold": {
+          "0": "katan"
+        },
+        "shevagold": {
+          "1": "nach"
+        }
+      },
+      "record_sha256": "0b188a697ba44e70784521c42ebf4ef67fb63cb2dac796500f94df3bb5e38aca"
+    },
+    "qwalk_089": {
+      "file": "form_fixtures_qamats_walk.json",
+      "file_sha256": "2d94c7a3a5a3ac3a8ecbc47c3a5a02e3ea6379e7bf5b927d0b05f0bec68e5a0c",
+      "record": {
+        "id": "qwalk_089",
+        "forms": [
+          "בְּבָרְח֖וֹ"
+        ],
+        "qgold": {
+          "1": "katan"
+        },
+        "shevagold": {
+          "2": "nach"
+        },
+        "refs": [
+          "Genesis 35:7"
+        ],
+        "source": "annotation"
+      },
+      "record_sha256": "d2bb5960eed952ec114818f4f6e048efb94f610c030d071c29c480640e13d6a8"
+    },
+    "qwalk_084": {
+      "file": "form_fixtures_qamats_walk.json",
+      "file_sha256": "2d94c7a3a5a3ac3a8ecbc47c3a5a02e3ea6379e7bf5b927d0b05f0bec68e5a0c",
+      "record": {
+        "id": "qwalk_084",
+        "forms": [
+          "עָנְיִ֞י"
+        ],
+        "qgold": {
+          "0": "katan"
+        },
+        "shevagold": {
+          "1": "nach"
+        },
+        "refs": [
+          "Genesis 31:42",
+          "Genesis 41:52"
+        ],
+        "source": "annotation"
+      },
+      "record_sha256": "d2d9073cd4e701a2d2562b74c0004fad48fec0ab632e02293e0063c3d0eabdd9"
+    },
+    "qwalk_158": {
+      "file": "form_fixtures_qamats_walk.json",
+      "file_sha256": "2d94c7a3a5a3ac3a8ecbc47c3a5a02e3ea6379e7bf5b927d0b05f0bec68e5a0c",
+      "record": {
+        "id": "qwalk_158",
+        "forms": [
+          "קָדְשֶֽׁךָ׃"
+        ],
+        "qgold": {
+          "0": "katan"
+        },
+        "shevagold": {
+          "1": "nach"
+        },
+        "refs": [
+          "Exodus 15:13"
+        ],
+        "source": "annotation"
+      },
+      "record_sha256": "e3c67ef24e858067b64ea7b93d6d8c9ded57a1b87c38962b2ead047db6adf284"
+    },
+    "qwalk_339": {
+      "file": "form_fixtures_qamats_walk.json",
+      "file_sha256": "2d94c7a3a5a3ac3a8ecbc47c3a5a02e3ea6379e7bf5b927d0b05f0bec68e5a0c",
+      "record": {
+        "id": "qwalk_339",
+        "forms": [
+          "קָרְאֵ֖נוּ"
+        ],
+        "qgold": {
+          "0": "katan"
+        },
+        "shevagold": {
+          "1": "nach"
+        },
+        "refs": [
+          "Deuteronomy 4:7"
+        ],
+        "source": "annotation"
+      },
+      "record_sha256": "1586ffc4ab250c1698133b9441e39f0a77259cd7e9a918f98e8de9e4e917b93d"
+    },
+    "chokhmah_formscoped": {
+      "file": "track2_overlay.py",
+      "file_sha256": "85c083b97a78e70bb7cc23548d6a0c7d8cee3f9068a72644d8465f84a9399d24",
+      "record": {
+        "id": "chokhmah_formscoped",
+        "forms": [
+          "חָכְמָה"
+        ],
+        "qgold": {
+          "0": "katan"
+        },
+        "shevagold": {
+          "1": "nach"
+        }
+      },
+      "record_sha256": "e4d117a5e208bdd28cf219b0513e8d2a932380774ede9d03699c02a719032623"
+    },
+    "qwalk_396": {
+      "file": "form_fixtures_qamats_walk.json",
+      "file_sha256": "2d94c7a3a5a3ac3a8ecbc47c3a5a02e3ea6379e7bf5b927d0b05f0bec68e5a0c",
+      "record": {
+        "id": "qwalk_396",
+        "forms": [
+          "עָנְיֵ֛נוּ"
+        ],
+        "qgold": {
+          "0": "katan"
+        },
+        "shevagold": {
+          "1": "nach"
+        },
+        "refs": [
+          "Deuteronomy 26:7"
+        ],
+        "source": "annotation"
+      },
+      "record_sha256": "0aac8bc0ee1809b644ea105ebade056fd586a1747b86f823c13283dddfb0c240"
+    },
+    "qwalk_173": {
+      "file": "form_fixtures_qamats_walk.json",
+      "file_sha256": "2d94c7a3a5a3ac3a8ecbc47c3a5a02e3ea6379e7bf5b927d0b05f0bec68e5a0c",
+      "record": {
+        "id": "qwalk_173",
+        "forms": [
+          "אָזְנוֹ֙"
+        ],
+        "qgold": {
+          "0": "katan"
+        },
+        "shevagold": {
+          "1": "nach"
+        },
+        "refs": [
+          "Exodus 21:6"
+        ],
+        "source": "annotation"
+      },
+      "record_sha256": "302f2844752aa90c64053b2436bb30fb4c7a7fc1512952f066f93d6737734bc3"
+    },
+    "qwalk_423": {
+      "file": "form_fixtures_qamats_walk.json",
+      "file_sha256": "2d94c7a3a5a3ac3a8ecbc47c3a5a02e3ea6379e7bf5b927d0b05f0bec68e5a0c",
+      "record": {
+        "id": "qwalk_423",
+        "forms": [
+          "קָדְקֹֽד׃"
+        ],
+        "qgold": {
+          "0": "katan"
+        },
+        "shevagold": {
+          "1": "nach"
+        },
+        "refs": [
+          "Deuteronomy 33:20"
+        ],
+        "source": "annotation"
+      },
+      "record_sha256": "2d7f15584b1a28fc214de5c3557d5bfaa7b9b8e5b260e75563ef70ab740b23ce"
+    },
+    "qwalk_040": {
+      "file": "form_fixtures_qamats_walk.json",
+      "file_sha256": "2d94c7a3a5a3ac3a8ecbc47c3a5a02e3ea6379e7bf5b927d0b05f0bec68e5a0c",
+      "record": {
+        "id": "qwalk_040",
+        "forms": [
+          "אָכְלָ֖ם"
+        ],
+        "qgold": {
+          "0": "katan"
+        },
+        "shevagold": {
+          "1": "nach"
+        },
+        "refs": [
+          "Genesis 14:11"
+        ],
+        "source": "annotation"
+      },
+      "record_sha256": "fc0090ed42b698d0a8279cf76ee44e9c49a0968049edb47de9a5b059a529dc97"
+    },
+    "qwalk_172": {
+      "file": "form_fixtures_qamats_walk.json",
+      "file_sha256": "2d94c7a3a5a3ac3a8ecbc47c3a5a02e3ea6379e7bf5b927d0b05f0bec68e5a0c",
+      "record": {
+        "id": "qwalk_172",
+        "forms": [
+          "חָפְשִֽׁי׃"
+        ],
+        "qgold": {
+          "0": "katan"
+        },
+        "shevagold": {
+          "1": "nach"
+        },
+        "refs": [
+          "Exodus 21:5",
+          "Deuteronomy 15:12",
+          "Deuteronomy 15:13"
+        ],
+        "source": "annotation"
+      },
+      "record_sha256": "84b4cbc0f1f42944dd47a75e3cc0c3a219ea4d391b92b83722e5b988dbefca33"
+    },
+    "qwalk_184": {
+      "file": "form_fixtures_qamats_walk.json",
+      "file_sha256": "2d94c7a3a5a3ac3a8ecbc47c3a5a02e3ea6379e7bf5b927d0b05f0bec68e5a0c",
+      "record": {
+        "id": "qwalk_184",
+        "forms": [
+          "לִשְׁמָרְךָ֖"
+        ],
+        "qgold": {
+          "2": "katan"
+        },
+        "shevagold": {
+          "3": "nach"
+        },
+        "refs": [
+          "Exodus 23:20"
+        ],
+        "source": "annotation"
+      },
+      "record_sha256": "631edf7329de4c66030bf2a66adde162cf436f3228cfc28eeeaa573f13930c38"
+    },
+    "qwalk_207": {
+      "file": "form_fixtures_qamats_walk.json",
+      "file_sha256": "2d94c7a3a5a3ac3a8ecbc47c3a5a02e3ea6379e7bf5b927d0b05f0bec68e5a0c",
+      "record": {
+        "id": "qwalk_207",
+        "forms": [
+          "בְּחָכְמָ֑ה"
+        ],
+        "qgold": {
+          "1": "katan"
+        },
+        "shevagold": {
+          "2": "nach"
+        },
+        "refs": [
+          "Exodus 35:26"
+        ],
+        "source": "annotation"
+      },
+      "record_sha256": "10d2407753c8df61fc6d66f3e38bc774ef0807b0d4087d10799e2b472fa72edb"
+    },
+    "qwalk_161": {
+      "file": "form_fixtures_qamats_walk.json",
+      "file_sha256": "2d94c7a3a5a3ac3a8ecbc47c3a5a02e3ea6379e7bf5b927d0b05f0bec68e5a0c",
+      "record": {
+        "id": "qwalk_161",
+        "forms": [
+          "בְּשָׁמְע֥וֹ"
+        ],
+        "qgold": {
+          "1": "katan"
+        },
+        "shevagold": {
+          "2": "nach"
+        },
+        "refs": [
+          "Exodus 16:7",
+          "Deuteronomy 29:18"
+        ],
+        "source": "annotation"
+      },
+      "record_sha256": "5e37a99f4e640cf428a702ded94702e4bae91a054417ce72ed3ce93cacea500d"
+    }
+  },
+  "entries": [
+    {
+      "book": "Psalms",
+      "ref": "2:6",
+      "chapter": 2,
+      "verse": 6,
+      "token_index": 6,
+      "letter_index": 0,
+      "qamats_codepoint_offset": 1,
+      "source_token": "קָדְשִֽׁי׃",
+      "source_fields": {
+        "t": [
+          "וַ֭אֲנִי",
+          "נָסַ֣כְתִּי",
+          "מַלְכִּ֑י",
+          "עַל־",
+          "צִ֝יּ֗וֹן",
+          "הַר־",
+          "קָדְשִֽׁי׃"
+        ],
+        "k": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "source_sha256": "3d5138cfd21eeb30b91baa8b60d3561755f6ccc5df06531d51512cd55614aa53",
+      "before_verse_sha256": "034fed7d0d4993cab458d1c646e665251edc5bd155439f3b7f100dec78937eba",
+      "after_verse_sha256": "548ee0867e71bf5554f91a47acef662520162c2a13ab33cdaf56ed7d7016e46c",
+      "before_m": [
+        [
+          1,
+          2,
+          "nach",
+          0
+        ],
+        [
+          2,
+          1,
+          "nach",
+          0
+        ],
+        [
+          6,
+          1,
+          "nach",
+          0
+        ]
+      ],
+      "after_m": [
+        [
+          1,
+          2,
+          "nach",
+          0
+        ],
+        [
+          2,
+          1,
+          "nach",
+          0
+        ],
+        [
+          6,
+          1,
+          "nach",
+          0
+        ],
+        [
+          6,
+          0,
+          "qk",
+          0
+        ]
+      ],
+      "paired_mark_index": 2,
+      "paired_before": [
+        6,
+        1,
+        "nach",
+        0
+      ],
+      "paired_after": [
+        6,
+        1,
+        "nach",
+        0
+      ],
+      "qk": [
+        6,
+        0,
+        "qk",
+        0
+      ],
+      "fixture_id": "p1_026",
+      "fixture_record_sha256": "0b188a697ba44e70784521c42ebf4ef67fb63cb2dac796500f94df3bb5e38aca",
+      "provenance": {
+        "type": "user_tikkun_ruling",
+        "session": "20260919 sheva render session",
+        "date": "2026-09-19/20",
+        "scope": "form-scoped, all occurrences",
+        "edition": "user own tikkun (Torah/Megillot/Haftarot)"
+      },
+      "witness": {
+        "ref": "2:6",
+        "source_token": "קָדְשִֽׁי׃",
+        "letter_index": 0,
+        "fixture_id": "p1_026",
+        "mam_word": "קׇדְשִֽׁי",
+        "mam_verse_sha256": "95a983cde2e18248c6203baf523e28963b73afe83a8a264b69004ef0e1d91cd4",
+        "owned_qb": false,
+        "mam_html": "וַ֭אֲנִי נָסַ֣כְתִּי מַלְכִּ֑י עַל־צִ֝יּ֗וֹן הַר־קׇדְשִֽׁי׃",
+        "file_sha256": "2ffee5b28290e45cbee863da89a273b6d2753d908430571a873b200cc7c04fc8"
+      }
+    },
+    {
+      "book": "Psalms",
+      "ref": "3:1",
+      "chapter": 3,
+      "verse": 1,
+      "token_index": 2,
+      "letter_index": 1,
+      "qamats_codepoint_offset": 5,
+      "source_token": "בְּ֝בָרְח֗וֹ",
+      "source_fields": {
+        "t": [
+          "מִזְמ֥וֹר",
+          "לְדָוִ֑ד",
+          "בְּ֝בָרְח֗וֹ",
+          "מִפְּנֵ֤י ׀",
+          "אַבְשָׁל֬וֹם",
+          "בְּנֽוֹ׃"
+        ],
+        "k": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "source_sha256": "2fedd4f8fa6ad96741ea7432555c1c8495b4eb952577896530d4b70e727409f2",
+      "before_verse_sha256": "9ba7ee70f277af6db2de7748a88b03faf7072c4766d9405898315b958861d574",
+      "after_verse_sha256": "69cd4481bf3d0ee5a0b22de4771f371561684e77fae86720ce6cf8d42dad4fdd",
+      "before_m": [
+        [
+          0,
+          1,
+          "nach",
+          0
+        ],
+        [
+          1,
+          0,
+          "na",
+          0
+        ],
+        [
+          2,
+          0,
+          "na",
+          0
+        ],
+        [
+          2,
+          2,
+          "uncertain",
+          1
+        ],
+        [
+          3,
+          1,
+          "na",
+          0
+        ],
+        [
+          4,
+          1,
+          "nach",
+          0
+        ],
+        [
+          5,
+          0,
+          "na",
+          0
+        ]
+      ],
+      "after_m": [
+        [
+          0,
+          1,
+          "nach",
+          0
+        ],
+        [
+          1,
+          0,
+          "na",
+          0
+        ],
+        [
+          2,
+          0,
+          "na",
+          0
+        ],
+        [
+          2,
+          2,
+          "nach",
+          0
+        ],
+        [
+          2,
+          1,
+          "qk",
+          0
+        ],
+        [
+          3,
+          1,
+          "na",
+          0
+        ],
+        [
+          4,
+          1,
+          "nach",
+          0
+        ],
+        [
+          5,
+          0,
+          "na",
+          0
+        ]
+      ],
+      "paired_mark_index": 3,
+      "paired_before": [
+        2,
+        2,
+        "uncertain",
+        1
+      ],
+      "paired_after": [
+        2,
+        2,
+        "nach",
+        0
+      ],
+      "qk": [
+        2,
+        1,
+        "qk",
+        0
+      ],
+      "fixture_id": "qwalk_089",
+      "fixture_record_sha256": "d2bb5960eed952ec114818f4f6e048efb94f610c030d071c29c480640e13d6a8",
+      "provenance": {
+        "type": "user_tikkun_ruling",
+        "session": "20260919 sheva render session",
+        "date": "2026-09-19/20",
+        "scope": "form-scoped, all occurrences",
+        "edition": "user own tikkun (Torah/Megillot/Haftarot)"
+      },
+      "witness": {
+        "ref": "3:1",
+        "source_token": "בְּ֝בָרְח֗וֹ",
+        "letter_index": 1,
+        "fixture_id": "qwalk_089",
+        "mam_word": "בְּ֝בׇרְח֗וֹ",
+        "mam_verse_sha256": "f4828adf533939478f543b176f687a83093548d41137f15707b1a9d8a15dcb69",
+        "owned_qb": true,
+        "mam_html": "מִזְמ֥וֹר לְדָוִ֑ד בְּ֝בׇרְח֗וֹ מִפְּנֵ֤י&thinsp;<b>׀</b> אַבְשָׁל֬וֹם בְּנֽוֹ׃",
+        "file_sha256": "2ffee5b28290e45cbee863da89a273b6d2753d908430571a873b200cc7c04fc8"
+      }
+    },
+    {
+      "book": "Psalms",
+      "ref": "9:14",
+      "chapter": 9,
+      "verse": 14,
+      "token_index": 3,
+      "letter_index": 0,
+      "qamats_codepoint_offset": 1,
+      "source_token": "עָ֭נְיִי",
+      "source_fields": {
+        "t": [
+          "חָֽנְנֵ֬נִי",
+          "יְהוָ֗ה",
+          "רְאֵ֣ה",
+          "עָ֭נְיִי",
+          "מִשֹּׂנְאָ֑י",
+          "מְ֝רוֹמְמִ֗י",
+          "מִשַּׁ֥עֲרֵי",
+          "מָֽוֶת׃"
+        ],
+        "k": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "source_sha256": "5761a5db9e08182e99efb846ddaf46c85ae768609a5c8087dc3f51ab824297b5",
+      "before_verse_sha256": "4ae00a562e7a74026a7f4d6ab01039eda325e8866c67b0a9b05c1a427490e822",
+      "after_verse_sha256": "c01e5d700070ad55d08c0ddb84bb0fdce7c75ebacaf3a397421ab3526c3e557b",
+      "before_m": [
+        [
+          0,
+          1,
+          "na",
+          0
+        ],
+        [
+          1,
+          0,
+          "nach",
+          0
+        ],
+        [
+          2,
+          0,
+          "na",
+          0
+        ],
+        [
+          3,
+          1,
+          "uncertain",
+          1
+        ],
+        [
+          4,
+          2,
+          "na",
+          0
+        ],
+        [
+          5,
+          0,
+          "na",
+          0
+        ],
+        [
+          5,
+          3,
+          "na",
+          0
+        ]
+      ],
+      "after_m": [
+        [
+          0,
+          1,
+          "na",
+          0
+        ],
+        [
+          1,
+          0,
+          "nach",
+          0
+        ],
+        [
+          2,
+          0,
+          "na",
+          0
+        ],
+        [
+          3,
+          1,
+          "nach",
+          0
+        ],
+        [
+          3,
+          0,
+          "qk",
+          0
+        ],
+        [
+          4,
+          2,
+          "na",
+          0
+        ],
+        [
+          5,
+          0,
+          "na",
+          0
+        ],
+        [
+          5,
+          3,
+          "na",
+          0
+        ]
+      ],
+      "paired_mark_index": 3,
+      "paired_before": [
+        3,
+        1,
+        "uncertain",
+        1
+      ],
+      "paired_after": [
+        3,
+        1,
+        "nach",
+        0
+      ],
+      "qk": [
+        3,
+        0,
+        "qk",
+        0
+      ],
+      "fixture_id": "qwalk_084",
+      "fixture_record_sha256": "d2d9073cd4e701a2d2562b74c0004fad48fec0ab632e02293e0063c3d0eabdd9",
+      "provenance": {
+        "type": "user_tikkun_ruling",
+        "session": "20260919 sheva render session",
+        "date": "2026-09-19/20",
+        "scope": "form-scoped, all occurrences",
+        "edition": "user own tikkun (Torah/Megillot/Haftarot)"
+      },
+      "witness": {
+        "ref": "9:14",
+        "source_token": "עָ֭נְיִי",
+        "letter_index": 0,
+        "fixture_id": "qwalk_084",
+        "mam_word": "עׇ֭נְיִי",
+        "mam_verse_sha256": "0820a6ace6dc430cf190b1afd903487144ccc19a5e81464f996554c403b73db4",
+        "owned_qb": true,
+        "mam_html": "חָֽנְנֵ֬נִי יְהֹוָ֗ה רְאֵ֣ה עׇ֭נְיִי מִשֹּׂנְאָ֑י מְ֝רוֹמְמִ֗י מִשַּׁ֥עֲרֵי מָֽוֶת׃",
+        "file_sha256": "2ffee5b28290e45cbee863da89a273b6d2753d908430571a873b200cc7c04fc8"
+      }
+    },
+    {
+      "book": "Psalms",
+      "ref": "15:1",
+      "chapter": 15,
+      "verse": 1,
+      "token_index": 9,
+      "letter_index": 0,
+      "qamats_codepoint_offset": 1,
+      "source_token": "קָדְשֶֽׁךָ׃",
+      "source_fields": {
+        "t": [
+          "מִזְמ֗וֹר",
+          "לְדָ֫וִ֥ד",
+          "י֭הֹוָה",
+          "מִי־",
+          "יָג֣וּר",
+          "בְּאָהֳלֶ֑ךָ",
+          "מִֽי־",
+          "יִ֝שְׁכֹּ֗ן",
+          "בְּהַ֣ר",
+          "קָדְשֶֽׁךָ׃"
+        ],
+        "k": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "source_sha256": "114d50b209f11b0e35432817fcff810b85e4153659d8684a902b9d43255cc697",
+      "before_verse_sha256": "0b3ff2b5bc8d1e74f50a8204e228222180c272273ff1decdd30cdefd30f4c323",
+      "after_verse_sha256": "fe731c41f8a02cd9fa11703f35baa62de05eaba38e7bb611886f34852cebdd1a",
+      "before_m": [
+        [
+          0,
+          1,
+          "nach",
+          0
+        ],
+        [
+          1,
+          0,
+          "na",
+          0
+        ],
+        [
+          5,
+          0,
+          "na",
+          0
+        ],
+        [
+          7,
+          1,
+          "nach",
+          0
+        ],
+        [
+          8,
+          0,
+          "na",
+          0
+        ],
+        [
+          9,
+          1,
+          "uncertain",
+          1
+        ]
+      ],
+      "after_m": [
+        [
+          0,
+          1,
+          "nach",
+          0
+        ],
+        [
+          1,
+          0,
+          "na",
+          0
+        ],
+        [
+          5,
+          0,
+          "na",
+          0
+        ],
+        [
+          7,
+          1,
+          "nach",
+          0
+        ],
+        [
+          8,
+          0,
+          "na",
+          0
+        ],
+        [
+          9,
+          1,
+          "nach",
+          0
+        ],
+        [
+          9,
+          0,
+          "qk",
+          0
+        ]
+      ],
+      "paired_mark_index": 5,
+      "paired_before": [
+        9,
+        1,
+        "uncertain",
+        1
+      ],
+      "paired_after": [
+        9,
+        1,
+        "nach",
+        0
+      ],
+      "qk": [
+        9,
+        0,
+        "qk",
+        0
+      ],
+      "fixture_id": "qwalk_158",
+      "fixture_record_sha256": "e3c67ef24e858067b64ea7b93d6d8c9ded57a1b87c38962b2ead047db6adf284",
+      "provenance": {
+        "type": "user_tikkun_ruling",
+        "session": "20260919 sheva render session",
+        "date": "2026-09-19/20",
+        "scope": "form-scoped, all occurrences",
+        "edition": "user own tikkun (Torah/Megillot/Haftarot)"
+      },
+      "witness": {
+        "ref": "15:1",
+        "source_token": "קָדְשֶֽׁךָ׃",
+        "letter_index": 0,
+        "fixture_id": "qwalk_158",
+        "mam_word": "קׇדְשֶֽׁךָ",
+        "mam_verse_sha256": "59600465aa42707081110c66957015dc7a0440dc0c9b86c57f9f3874e070cd81",
+        "owned_qb": true,
+        "mam_html": "מִזְמ֗וֹר לְדָ֫וִ֥ד יְ֭הֹוָה מִי־יָג֣וּר בְּאׇהֳלֶ֑ךָ מִֽי־יִ֝שְׁכֹּ֗ן בְּהַ֣ר קׇדְשֶֽׁךָ׃",
+        "file_sha256": "2ffee5b28290e45cbee863da89a273b6d2753d908430571a873b200cc7c04fc8"
+      }
+    },
+    {
+      "book": "Psalms",
+      "ref": "20:10",
+      "chapter": 20,
+      "verse": 10,
+      "token_index": 5,
+      "letter_index": 0,
+      "qamats_codepoint_offset": 1,
+      "source_token": "קָרְאֵֽנוּ׃",
+      "source_fields": {
+        "t": [
+          "יְהוָ֥ה",
+          "הוֹשִׁ֑יעָה",
+          "הַ֝מֶּ֗לֶךְ",
+          "יַעֲנֵ֥נוּ",
+          "בְיוֹם־",
+          "קָרְאֵֽנוּ׃"
+        ],
+        "k": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "source_sha256": "cdcd71d4bab3dca3754f8c420d27697ad622c6247a9d54470d4ef464557efb8d",
+      "before_verse_sha256": "a6a651bf24d405694660cf81b7a8412abce94a74c781ec4aa2accca874ededf6",
+      "after_verse_sha256": "5e22ba1c7825441907cdf7699656097e687e582b576ffe3a4225bdb719b19e83",
+      "before_m": [
+        [
+          0,
+          0,
+          "nach",
+          0
+        ],
+        [
+          2,
+          3,
+          "nach",
+          0
+        ],
+        [
+          4,
+          0,
+          "na",
+          0
+        ],
+        [
+          5,
+          1,
+          "uncertain",
+          1
+        ]
+      ],
+      "after_m": [
+        [
+          0,
+          0,
+          "nach",
+          0
+        ],
+        [
+          2,
+          3,
+          "nach",
+          0
+        ],
+        [
+          4,
+          0,
+          "na",
+          0
+        ],
+        [
+          5,
+          1,
+          "nach",
+          0
+        ],
+        [
+          5,
+          0,
+          "qk",
+          0
+        ]
+      ],
+      "paired_mark_index": 3,
+      "paired_before": [
+        5,
+        1,
+        "uncertain",
+        1
+      ],
+      "paired_after": [
+        5,
+        1,
+        "nach",
+        0
+      ],
+      "qk": [
+        5,
+        0,
+        "qk",
+        0
+      ],
+      "fixture_id": "qwalk_339",
+      "fixture_record_sha256": "1586ffc4ab250c1698133b9441e39f0a77259cd7e9a918f98e8de9e4e917b93d",
+      "provenance": {
+        "type": "user_tikkun_ruling",
+        "session": "20260919 sheva render session",
+        "date": "2026-09-19/20",
+        "scope": "form-scoped, all occurrences",
+        "edition": "user own tikkun (Torah/Megillot/Haftarot)"
+      },
+      "witness": {
+        "ref": "20:10",
+        "source_token": "קָרְאֵֽנוּ׃",
+        "letter_index": 0,
+        "fixture_id": "qwalk_339",
+        "mam_word": "קׇרְאֵֽנוּ",
+        "mam_verse_sha256": "9dd278e67319891ceb165e2a296ac777b4b329dd7e55432f0eccaedc387a349c",
+        "owned_qb": true,
+        "mam_html": "יְהֹוָ֥ה הוֹשִׁ֑יעָה הַ֝מֶּ֗לֶךְ יַעֲנֵ֥נוּ בְיוֹם־קׇרְאֵֽנוּ׃&nbsp;<span class=\"mam-spi-pe\">{פ}</span><br>",
+        "file_sha256": "2ffee5b28290e45cbee863da89a273b6d2753d908430571a873b200cc7c04fc8"
+      }
+    },
+    {
+      "book": "Psalms",
+      "ref": "25:18",
+      "chapter": 25,
+      "verse": 18,
+      "token_index": 1,
+      "letter_index": 0,
+      "qamats_codepoint_offset": 1,
+      "source_token": "עָ֭נְיִי",
+      "source_fields": {
+        "t": [
+          "רְאֵ֣ה",
+          "עָ֭נְיִי",
+          "וַעֲמָלִ֑י",
+          "וְ֝שָׂ֗א",
+          "לְכָל־",
+          "חַטֹּאותָֽי׃"
+        ],
+        "k": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "source_sha256": "dbc26fc73c68a250dcfbdc0c2b26a529b686999d89e4e2fe3ff5a479bd53785a",
+      "before_verse_sha256": "370997ba0d842499182a0d1179b3d49c71af88a31ead753a95cbfa8b39f746b0",
+      "after_verse_sha256": "de841ef2a7500a7ee4f629f7f74f8a5978a8470b7dd54fe128b1365f67c92e70",
+      "before_m": [
+        [
+          0,
+          0,
+          "na",
+          0
+        ],
+        [
+          1,
+          1,
+          "uncertain",
+          1
+        ],
+        [
+          3,
+          0,
+          "na",
+          0
+        ],
+        [
+          4,
+          0,
+          "na",
+          0
+        ]
+      ],
+      "after_m": [
+        [
+          0,
+          0,
+          "na",
+          0
+        ],
+        [
+          1,
+          1,
+          "nach",
+          0
+        ],
+        [
+          1,
+          0,
+          "qk",
+          0
+        ],
+        [
+          3,
+          0,
+          "na",
+          0
+        ],
+        [
+          4,
+          0,
+          "na",
+          0
+        ]
+      ],
+      "paired_mark_index": 1,
+      "paired_before": [
+        1,
+        1,
+        "uncertain",
+        1
+      ],
+      "paired_after": [
+        1,
+        1,
+        "nach",
+        0
+      ],
+      "qk": [
+        1,
+        0,
+        "qk",
+        0
+      ],
+      "fixture_id": "qwalk_084",
+      "fixture_record_sha256": "d2d9073cd4e701a2d2562b74c0004fad48fec0ab632e02293e0063c3d0eabdd9",
+      "provenance": {
+        "type": "user_tikkun_ruling",
+        "session": "20260919 sheva render session",
+        "date": "2026-09-19/20",
+        "scope": "form-scoped, all occurrences",
+        "edition": "user own tikkun (Torah/Megillot/Haftarot)"
+      },
+      "witness": {
+        "ref": "25:18",
+        "source_token": "עָ֭נְיִי",
+        "letter_index": 0,
+        "fixture_id": "qwalk_084",
+        "mam_word": "עׇ֭נְיִי",
+        "mam_verse_sha256": "7ad653d2a780be7551a5141e0d877127b706e8d4be19ce8fd8321562202020d0",
+        "owned_qb": true,
+        "mam_html": "רְאֵ֣ה עׇ֭נְיִי וַעֲמָלִ֑י וְ֝שָׂ֗א לְכׇל־חַטֹּאותָֽי׃",
+        "file_sha256": "2ffee5b28290e45cbee863da89a273b6d2753d908430571a873b200cc7c04fc8"
+      }
+    },
+    {
+      "book": "Psalms",
+      "ref": "28:2",
+      "chapter": 28,
+      "verse": 2,
+      "token_index": 9,
+      "letter_index": 0,
+      "qamats_codepoint_offset": 1,
+      "source_token": "קָדְשֶֽׁךָ׃",
+      "source_fields": {
+        "t": [
+          "שְׁמַ֤ע",
+          "ק֣וֹל",
+          "תַּ֭חֲנוּנַי",
+          "בְּשַׁוְּעִ֣י",
+          "אֵלֶ֑יךָ",
+          "בְּנָשְׂאִ֥י",
+          "יָ֝דַ֗י",
+          "אֶל־",
+          "דְּבִ֥יר",
+          "קָדְשֶֽׁךָ׃"
+        ],
+        "k": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "source_sha256": "6f8249f49fbf2ae3af9a543433de6aebc96c19d2ef4c2d1b22e6c5d399cb8ff5",
+      "before_verse_sha256": "a43cfcc2db21bb380ed632de36f22ac4dc8a6cdfda3af594fd495ad75718a9bb",
+      "after_verse_sha256": "35aa2f2d896531123d65ffe7703b7dfd75080132ef0acac3b27a76bd18274d7e",
+      "before_m": [
+        [
+          0,
+          0,
+          "na",
+          0
+        ],
+        [
+          3,
+          0,
+          "na",
+          0
+        ],
+        [
+          3,
+          2,
+          "na",
+          0
+        ],
+        [
+          5,
+          0,
+          "na",
+          0
+        ],
+        [
+          5,
+          2,
+          "uncertain",
+          1
+        ],
+        [
+          8,
+          0,
+          "na",
+          0
+        ],
+        [
+          9,
+          1,
+          "uncertain",
+          1
+        ]
+      ],
+      "after_m": [
+        [
+          0,
+          0,
+          "na",
+          0
+        ],
+        [
+          3,
+          0,
+          "na",
+          0
+        ],
+        [
+          3,
+          2,
+          "na",
+          0
+        ],
+        [
+          5,
+          0,
+          "na",
+          0
+        ],
+        [
+          5,
+          2,
+          "uncertain",
+          1
+        ],
+        [
+          8,
+          0,
+          "na",
+          0
+        ],
+        [
+          9,
+          1,
+          "nach",
+          0
+        ],
+        [
+          9,
+          0,
+          "qk",
+          0
+        ]
+      ],
+      "paired_mark_index": 6,
+      "paired_before": [
+        9,
+        1,
+        "uncertain",
+        1
+      ],
+      "paired_after": [
+        9,
+        1,
+        "nach",
+        0
+      ],
+      "qk": [
+        9,
+        0,
+        "qk",
+        0
+      ],
+      "fixture_id": "qwalk_158",
+      "fixture_record_sha256": "e3c67ef24e858067b64ea7b93d6d8c9ded57a1b87c38962b2ead047db6adf284",
+      "provenance": {
+        "type": "user_tikkun_ruling",
+        "session": "20260919 sheva render session",
+        "date": "2026-09-19/20",
+        "scope": "form-scoped, all occurrences",
+        "edition": "user own tikkun (Torah/Megillot/Haftarot)"
+      },
+      "witness": {
+        "ref": "28:2",
+        "source_token": "קָדְשֶֽׁךָ׃",
+        "letter_index": 0,
+        "fixture_id": "qwalk_158",
+        "mam_word": "קׇדְשֶֽׁךָ",
+        "mam_verse_sha256": "f295a65b064a1e56c92f9870c84db94a75cd8b2e2c8eff8422c4963181bdd34c",
+        "owned_qb": true,
+        "mam_html": "שְׁמַ֤ע ק֣וֹל תַּ֭חֲנוּנַי בְּשַׁוְּעִ֣י אֵלֶ֑יךָ בְּנׇשְׂאִ֥י יָ֝דַ֗י אֶל־דְּבִ֥יר קׇדְשֶֽׁךָ׃",
+        "file_sha256": "2ffee5b28290e45cbee863da89a273b6d2753d908430571a873b200cc7c04fc8"
+      }
+    },
+    {
+      "book": "Psalms",
+      "ref": "31:8",
+      "chapter": 31,
+      "verse": 8,
+      "token_index": 6,
+      "letter_index": 0,
+      "qamats_codepoint_offset": 1,
+      "source_token": "עָנְיִ֑י",
+      "source_fields": {
+        "t": [
+          "אָגִ֥ילָה",
+          "וְאֶשְׂמְחָ֗ה",
+          "בְּחַ֫סְדֶּ֥ךָ",
+          "אֲשֶׁ֣ר",
+          "רָ֭אִיתָ",
+          "אֶת־",
+          "עָנְיִ֑י",
+          "יָ֝דַ֗עְתָּ",
+          "בְּצָר֥וֹת",
+          "נַפְשִֽׁי׃"
+        ],
+        "k": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "source_sha256": "548d90c11972ba0273ec4f51a08970968cd2dc1710f237411fdb1bf77569dd79",
+      "before_verse_sha256": "19b8ad72e6fdf870544d36be6aeb532f80cbdb4f8f41ac82cc4f6fce08452c46",
+      "after_verse_sha256": "25309f34524b6ee92886219706df48eb4ef585527d43437a83dcdc948d381bb1",
+      "before_m": [
+        [
+          1,
+          0,
+          "na",
+          0
+        ],
+        [
+          1,
+          2,
+          "nach",
+          0
+        ],
+        [
+          1,
+          3,
+          "na",
+          0
+        ],
+        [
+          2,
+          0,
+          "na",
+          0
+        ],
+        [
+          2,
+          2,
+          "nach",
+          0
+        ],
+        [
+          6,
+          1,
+          "uncertain",
+          1
+        ],
+        [
+          7,
+          2,
+          "nach",
+          0
+        ],
+        [
+          8,
+          0,
+          "na",
+          0
+        ],
+        [
+          9,
+          1,
+          "nach",
+          0
+        ]
+      ],
+      "after_m": [
+        [
+          1,
+          0,
+          "na",
+          0
+        ],
+        [
+          1,
+          2,
+          "nach",
+          0
+        ],
+        [
+          1,
+          3,
+          "na",
+          0
+        ],
+        [
+          2,
+          0,
+          "na",
+          0
+        ],
+        [
+          2,
+          2,
+          "nach",
+          0
+        ],
+        [
+          6,
+          1,
+          "nach",
+          0
+        ],
+        [
+          6,
+          0,
+          "qk",
+          0
+        ],
+        [
+          7,
+          2,
+          "nach",
+          0
+        ],
+        [
+          8,
+          0,
+          "na",
+          0
+        ],
+        [
+          9,
+          1,
+          "nach",
+          0
+        ]
+      ],
+      "paired_mark_index": 5,
+      "paired_before": [
+        6,
+        1,
+        "uncertain",
+        1
+      ],
+      "paired_after": [
+        6,
+        1,
+        "nach",
+        0
+      ],
+      "qk": [
+        6,
+        0,
+        "qk",
+        0
+      ],
+      "fixture_id": "qwalk_084",
+      "fixture_record_sha256": "d2d9073cd4e701a2d2562b74c0004fad48fec0ab632e02293e0063c3d0eabdd9",
+      "provenance": {
+        "type": "user_tikkun_ruling",
+        "session": "20260919 sheva render session",
+        "date": "2026-09-19/20",
+        "scope": "form-scoped, all occurrences",
+        "edition": "user own tikkun (Torah/Megillot/Haftarot)"
+      },
+      "witness": {
+        "ref": "31:8",
+        "source_token": "עָנְיִ֑י",
+        "letter_index": 0,
+        "fixture_id": "qwalk_084",
+        "mam_word": "עׇנְיִ֑י",
+        "mam_verse_sha256": "ef79934f4c302dcdf57b220a5da2de8c1355b49b3a7415c2bd413b735c59c859",
+        "owned_qb": true,
+        "mam_html": "אָגִ֥ילָה וְאֶשְׂמְחָ֗ה בְּחַ֫סְדֶּ֥ךָ אֲשֶׁ֣ר רָ֭אִיתָ אֶת־עׇנְיִ֑י יָ֝דַ֗עְתָּ בְּצָר֥וֹת נַפְשִֽׁי׃",
+        "file_sha256": "2ffee5b28290e45cbee863da89a273b6d2753d908430571a873b200cc7c04fc8"
+      }
+    },
+    {
+      "book": "Psalms",
+      "ref": "37:30",
+      "chapter": 37,
+      "verse": 30,
+      "token_index": 3,
+      "letter_index": 0,
+      "qamats_codepoint_offset": 1,
+      "source_token": "חָכְמָ֑ה",
+      "source_fields": {
+        "t": [
+          "פִּֽי־",
+          "צַ֭דִּיק",
+          "יֶהְגֶּ֣ה",
+          "חָכְמָ֑ה",
+          "וּ֝לְשׁוֹנ֗וֹ",
+          "תְּדַבֵּ֥ר",
+          "מִשְׁפָּֽט׃"
+        ],
+        "k": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "source_sha256": "0f9306c47aef72f6c74749d094ad8726dd343eaf94a004d9029dd323ccaef3a8",
+      "before_verse_sha256": "5834ae28954392dad77f38badf6bae25c4ef6271294a8842f7651fd793389de6",
+      "after_verse_sha256": "4bbc90fc58a936e323b564344bee1ca9ba31a0b9713620466e6f4cdadd3ed3fa",
+      "before_m": [
+        [
+          2,
+          1,
+          "nach",
+          0
+        ],
+        [
+          3,
+          1,
+          "nach",
+          0
+        ],
+        [
+          4,
+          1,
+          "nach",
+          0
+        ],
+        [
+          5,
+          0,
+          "na",
+          0
+        ],
+        [
+          6,
+          1,
+          "nach",
+          0
+        ]
+      ],
+      "after_m": [
+        [
+          2,
+          1,
+          "nach",
+          0
+        ],
+        [
+          3,
+          1,
+          "nach",
+          0
+        ],
+        [
+          3,
+          0,
+          "qk",
+          0
+        ],
+        [
+          4,
+          1,
+          "nach",
+          0
+        ],
+        [
+          5,
+          0,
+          "na",
+          0
+        ],
+        [
+          6,
+          1,
+          "nach",
+          0
+        ]
+      ],
+      "paired_mark_index": 1,
+      "paired_before": [
+        3,
+        1,
+        "nach",
+        0
+      ],
+      "paired_after": [
+        3,
+        1,
+        "nach",
+        0
+      ],
+      "qk": [
+        3,
+        0,
+        "qk",
+        0
+      ],
+      "fixture_id": "chokhmah_formscoped",
+      "fixture_record_sha256": "e4d117a5e208bdd28cf219b0513e8d2a932380774ede9d03699c02a719032623",
+      "provenance": {
+        "type": "user_tikkun_ruling",
+        "session": "20260919 sheva render session",
+        "date": "2026-09-19/20",
+        "scope": "form-scoped, all occurrences",
+        "edition": "user own tikkun (Torah/Megillot/Haftarot)"
+      },
+      "witness": {
+        "ref": "37:30",
+        "source_token": "חָכְמָ֑ה",
+        "letter_index": 0,
+        "fixture_id": "chokhmah_formscoped",
+        "mam_word": "חׇכְמָ֑ה",
+        "mam_verse_sha256": "db7406d8a20d56c9c4ff921e2542f41437f103813dc6c001d3d8cd14c76aaa2e",
+        "owned_qb": false,
+        "mam_html": "פִּֽי־צַ֭דִּיק יֶהְגֶּ֣ה חׇכְמָ֑ה וּ֝לְשׁוֹנ֗וֹ תְּדַבֵּ֥ר מִשְׁפָּֽט׃",
+        "file_sha256": "2ffee5b28290e45cbee863da89a273b6d2753d908430571a873b200cc7c04fc8"
+      }
+    },
+    {
+      "book": "Psalms",
+      "ref": "44:25",
+      "chapter": 44,
+      "verse": 25,
+      "token_index": 4,
+      "letter_index": 0,
+      "qamats_codepoint_offset": 1,
+      "source_token": "עָנְיֵ֣נוּ",
+      "source_fields": {
+        "t": [
+          "לָֽמָּה־",
+          "פָנֶ֥יךָ",
+          "תַסְתִּ֑יר",
+          "תִּשְׁכַּ֖ח",
+          "עָנְיֵ֣נוּ",
+          "וְֽלַחֲצֵֽנוּ׃"
+        ],
+        "k": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "source_sha256": "356f685af84f40495dade2eb6b1a4519ac5e37a7d7784312f55f2a81f483cb66",
+      "before_verse_sha256": "512e2b161e139d09c44f35649f0fc7db7c8ff10f6d8120b0c9f1d862765cfc6f",
+      "after_verse_sha256": "9ff5a1324e2a5af5661b132fb4651eb3191cac61c32a4d361b1730188a01f28c",
+      "before_m": [
+        [
+          2,
+          1,
+          "nach",
+          0
+        ],
+        [
+          3,
+          1,
+          "nach",
+          0
+        ],
+        [
+          4,
+          1,
+          "uncertain",
+          1
+        ],
+        [
+          5,
+          0,
+          "na",
+          0
+        ]
+      ],
+      "after_m": [
+        [
+          2,
+          1,
+          "nach",
+          0
+        ],
+        [
+          3,
+          1,
+          "nach",
+          0
+        ],
+        [
+          4,
+          1,
+          "nach",
+          0
+        ],
+        [
+          4,
+          0,
+          "qk",
+          0
+        ],
+        [
+          5,
+          0,
+          "na",
+          0
+        ]
+      ],
+      "paired_mark_index": 2,
+      "paired_before": [
+        4,
+        1,
+        "uncertain",
+        1
+      ],
+      "paired_after": [
+        4,
+        1,
+        "nach",
+        0
+      ],
+      "qk": [
+        4,
+        0,
+        "qk",
+        0
+      ],
+      "fixture_id": "qwalk_396",
+      "fixture_record_sha256": "0aac8bc0ee1809b644ea105ebade056fd586a1747b86f823c13283dddfb0c240",
+      "provenance": {
+        "type": "user_tikkun_ruling",
+        "session": "20260919 sheva render session",
+        "date": "2026-09-19/20",
+        "scope": "form-scoped, all occurrences",
+        "edition": "user own tikkun (Torah/Megillot/Haftarot)"
+      },
+      "witness": {
+        "ref": "44:25",
+        "source_token": "עָנְיֵ֣נוּ",
+        "letter_index": 0,
+        "fixture_id": "qwalk_396",
+        "mam_word": "עׇנְיֵ֣נוּ",
+        "mam_verse_sha256": "572d0462b9685df2b7b34588bdd145c8ea34b71c0d3b4a0e09b0f5064337c49b",
+        "owned_qb": true,
+        "mam_html": "לָֽמָּה־פָנֶ֥יךָ תַסְתִּ֑יר תִּשְׁכַּ֖ח עׇנְיֵ֣נוּ וְֽלַחֲצֵֽנוּ׃",
+        "file_sha256": "2ffee5b28290e45cbee863da89a273b6d2753d908430571a873b200cc7c04fc8"
+      }
+    },
+    {
+      "book": "Psalms",
+      "ref": "51:8",
+      "chapter": 51,
+      "verse": 8,
+      "token_index": 5,
+      "letter_index": 0,
+      "qamats_codepoint_offset": 1,
+      "source_token": "חָכְמָ֥ה",
+      "source_fields": {
+        "t": [
+          "הֵן־",
+          "אֱ֭מֶת",
+          "חָפַ֣צְתָּ",
+          "בַטֻּח֑וֹת",
+          "וּ֝בְסָתֻ֗ם",
+          "חָכְמָ֥ה",
+          "תוֹדִיעֵֽנִי׃"
+        ],
+        "k": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "source_sha256": "24c1400957346eb24f8c371b7e3194b461da9cac28deecf1d1002e87ab051f3b",
+      "before_verse_sha256": "34f26cefe646b46a43c05ed2e6354bac094caa11098c558076524fd4da97e9f5",
+      "after_verse_sha256": "a208f04229bbcfc79694e60efab82cf5f09efa8f5c404a45251da3fa37553561",
+      "before_m": [
+        [
+          2,
+          2,
+          "nach",
+          0
+        ],
+        [
+          4,
+          1,
+          "nach",
+          0
+        ],
+        [
+          5,
+          1,
+          "nach",
+          0
+        ]
+      ],
+      "after_m": [
+        [
+          2,
+          2,
+          "nach",
+          0
+        ],
+        [
+          4,
+          1,
+          "nach",
+          0
+        ],
+        [
+          5,
+          1,
+          "nach",
+          0
+        ],
+        [
+          5,
+          0,
+          "qk",
+          0
+        ]
+      ],
+      "paired_mark_index": 2,
+      "paired_before": [
+        5,
+        1,
+        "nach",
+        0
+      ],
+      "paired_after": [
+        5,
+        1,
+        "nach",
+        0
+      ],
+      "qk": [
+        5,
+        0,
+        "qk",
+        0
+      ],
+      "fixture_id": "chokhmah_formscoped",
+      "fixture_record_sha256": "e4d117a5e208bdd28cf219b0513e8d2a932380774ede9d03699c02a719032623",
+      "provenance": {
+        "type": "user_tikkun_ruling",
+        "session": "20260919 sheva render session",
+        "date": "2026-09-19/20",
+        "scope": "form-scoped, all occurrences",
+        "edition": "user own tikkun (Torah/Megillot/Haftarot)"
+      },
+      "witness": {
+        "ref": "51:8",
+        "source_token": "חָכְמָ֥ה",
+        "letter_index": 0,
+        "fixture_id": "chokhmah_formscoped",
+        "mam_word": "חׇכְמָ֥ה",
+        "mam_verse_sha256": "d70c555508d05465d1131f5ee49d2c749f5e399a34858017d72a6401388786b5",
+        "owned_qb": false,
+        "mam_html": "הֵן־אֱ֭מֶת חָפַ֣צְתָּ בַטֻּח֑וֹת וּ֝בְסָתֻ֗ם חׇכְמָ֥ה תוֹדִיעֵֽנִי׃",
+        "file_sha256": "2ffee5b28290e45cbee863da89a273b6d2753d908430571a873b200cc7c04fc8"
+      }
+    },
+    {
+      "book": "Psalms",
+      "ref": "57:1",
+      "chapter": 57,
+      "verse": 1,
+      "token_index": 5,
+      "letter_index": 1,
+      "qamats_codepoint_offset": 4,
+      "source_token": "בְּבָרְח֥וֹ",
+      "source_fields": {
+        "t": [
+          "לַמְנַצֵּ֣חַ",
+          "אַל־",
+          "תַּ֭שְׁחֵת",
+          "לְדָוִ֣ד",
+          "מִכְתָּ֑ם",
+          "בְּבָרְח֥וֹ",
+          "מִפְּנֵי־",
+          "שָׁ֝א֗וּל",
+          "בַּמְּעָרֽ͏ָה׃"
+        ],
+        "k": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "source_sha256": "cbd8c85f086ed49d9774f01d65fd2e9cf7ed3f3e35c9b15ce1c41e33ddddad1e",
+      "before_verse_sha256": "bddf269a75dcf67addd306ff6006a8afae47c06e6e91c0225b79ed5867842d52",
+      "after_verse_sha256": "bdb1f0f6c673e90efc6c800af225b9e401d33c816d092b4365b7c61dd68dacf5",
+      "before_m": [
+        [
+          0,
+          1,
+          "nach",
+          0
+        ],
+        [
+          2,
+          1,
+          "nach",
+          0
+        ],
+        [
+          3,
+          0,
+          "na",
+          0
+        ],
+        [
+          4,
+          1,
+          "nach",
+          0
+        ],
+        [
+          5,
+          0,
+          "na",
+          0
+        ],
+        [
+          5,
+          2,
+          "uncertain",
+          1
+        ],
+        [
+          6,
+          1,
+          "na",
+          0
+        ],
+        [
+          8,
+          1,
+          "na",
+          0
+        ]
+      ],
+      "after_m": [
+        [
+          0,
+          1,
+          "nach",
+          0
+        ],
+        [
+          2,
+          1,
+          "nach",
+          0
+        ],
+        [
+          3,
+          0,
+          "na",
+          0
+        ],
+        [
+          4,
+          1,
+          "nach",
+          0
+        ],
+        [
+          5,
+          0,
+          "na",
+          0
+        ],
+        [
+          5,
+          2,
+          "nach",
+          0
+        ],
+        [
+          5,
+          1,
+          "qk",
+          0
+        ],
+        [
+          6,
+          1,
+          "na",
+          0
+        ],
+        [
+          8,
+          1,
+          "na",
+          0
+        ]
+      ],
+      "paired_mark_index": 5,
+      "paired_before": [
+        5,
+        2,
+        "uncertain",
+        1
+      ],
+      "paired_after": [
+        5,
+        2,
+        "nach",
+        0
+      ],
+      "qk": [
+        5,
+        1,
+        "qk",
+        0
+      ],
+      "fixture_id": "qwalk_089",
+      "fixture_record_sha256": "d2bb5960eed952ec114818f4f6e048efb94f610c030d071c29c480640e13d6a8",
+      "provenance": {
+        "type": "user_tikkun_ruling",
+        "session": "20260919 sheva render session",
+        "date": "2026-09-19/20",
+        "scope": "form-scoped, all occurrences",
+        "edition": "user own tikkun (Torah/Megillot/Haftarot)"
+      },
+      "witness": {
+        "ref": "57:1",
+        "source_token": "בְּבָרְח֥וֹ",
+        "letter_index": 1,
+        "fixture_id": "qwalk_089",
+        "mam_word": "בְּבׇרְח֥וֹ",
+        "mam_verse_sha256": "f64b1f015f8ffb6256ae48e365a2e05023d1330efa11abd4be47c7e2f368b85b",
+        "owned_qb": true,
+        "mam_html": "לַמְנַצֵּ֣חַ אַל־תַּ֭שְׁחֵת לְדָוִ֣ד מִכְתָּ֑ם בְּבׇרְח֥וֹ מִפְּנֵי־שָׁ֝א֗וּל בַּמְּעָרָֽה׃",
+        "file_sha256": "2ffee5b28290e45cbee863da89a273b6d2753d908430571a873b200cc7c04fc8"
+      }
+    },
+    {
+      "book": "Psalms",
+      "ref": "58:5",
+      "chapter": 58,
+      "verse": 5,
+      "token_index": 9,
+      "letter_index": 0,
+      "qamats_codepoint_offset": 1,
+      "source_token": "אָזְנֽוֹ׃",
+      "source_fields": {
+        "t": [
+          "חֲמַת־",
+          "לָ֗מוֹ",
+          "כִּדְמ֥וּת",
+          "חֲמַת־",
+          "נָחָ֑שׁ",
+          "כְּמוֹ־",
+          "פֶ֥תֶן",
+          "חֵ֝רֵ֗שׁ",
+          "יַאְטֵ֥ם",
+          "אָזְנֽוֹ׃"
+        ],
+        "k": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "source_sha256": "fec7064d70b8b27ce22d7778888d8e62b094228313e7ff8f5fada5826dccb13f",
+      "before_verse_sha256": "a7e729edade3a622d895dedd9ddda45fcea01ebab091e617c6b7cd506c9134e7",
+      "after_verse_sha256": "6ea9bcf4591afec50d09727233b3a3d5413793470137facdd162c0252a1ed5ca",
+      "before_m": [
+        [
+          2,
+          1,
+          "nach",
+          0
+        ],
+        [
+          5,
+          0,
+          "na",
+          0
+        ],
+        [
+          8,
+          1,
+          "nach",
+          0
+        ],
+        [
+          9,
+          1,
+          "uncertain",
+          1
+        ]
+      ],
+      "after_m": [
+        [
+          2,
+          1,
+          "nach",
+          0
+        ],
+        [
+          5,
+          0,
+          "na",
+          0
+        ],
+        [
+          8,
+          1,
+          "nach",
+          0
+        ],
+        [
+          9,
+          1,
+          "nach",
+          0
+        ],
+        [
+          9,
+          0,
+          "qk",
+          0
+        ]
+      ],
+      "paired_mark_index": 3,
+      "paired_before": [
+        9,
+        1,
+        "uncertain",
+        1
+      ],
+      "paired_after": [
+        9,
+        1,
+        "nach",
+        0
+      ],
+      "qk": [
+        9,
+        0,
+        "qk",
+        0
+      ],
+      "fixture_id": "qwalk_173",
+      "fixture_record_sha256": "302f2844752aa90c64053b2436bb30fb4c7a7fc1512952f066f93d6737734bc3",
+      "provenance": {
+        "type": "user_tikkun_ruling",
+        "session": "20260919 sheva render session",
+        "date": "2026-09-19/20",
+        "scope": "form-scoped, all occurrences",
+        "edition": "user own tikkun (Torah/Megillot/Haftarot)"
+      },
+      "witness": {
+        "ref": "58:5",
+        "source_token": "אָזְנֽוֹ׃",
+        "letter_index": 0,
+        "fixture_id": "qwalk_173",
+        "mam_word": "אׇזְנֽוֹ",
+        "mam_verse_sha256": "67676a287b6a2d069f53838f48a8c22bdf4d8d9e42ca223ee2d3018bcc39c183",
+        "owned_qb": true,
+        "mam_html": "חֲמַת־לָ֗מוֹ כִּדְמ֥וּת חֲמַת־נָחָ֑שׁ כְּמוֹ־פֶ֥תֶן חֵ֝רֵ֗שׁ יַאְטֵ֥ם אׇזְנֽוֹ׃",
+        "file_sha256": "2ffee5b28290e45cbee863da89a273b6d2753d908430571a873b200cc7c04fc8"
+      }
+    },
+    {
+      "book": "Psalms",
+      "ref": "68:22",
+      "chapter": 68,
+      "verse": 22,
+      "token_index": 5,
+      "letter_index": 0,
+      "qamats_codepoint_offset": 1,
+      "source_token": "קָדְקֹ֥ד",
+      "source_fields": {
+        "t": [
+          "אַךְ־",
+          "אֱלֹהִ֗ים",
+          "יִמְחַץ֮",
+          "רֹ֤אשׁ",
+          "אֹ֫יְבָ֥יו",
+          "קָדְקֹ֥ד",
+          "שֵׂעָ֑ר",
+          "מִ֝תְהַלֵּ֗ךְ",
+          "בַּאֲשָׁמָֽיו׃"
+        ],
+        "k": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "source_sha256": "b243b697a35be9543659ce5016dfe34e3a3a2f9b4a3a0978b21fdf04429bede6",
+      "before_verse_sha256": "dbe350c2eed0a6202ea43e411b9f59119611855d8d7e69ffcc0f456ef827985a",
+      "after_verse_sha256": "44a0e451f278891a107a09dd4e4216312be9800c690680d5efe13e32805887ce",
+      "before_m": [
+        [
+          0,
+          1,
+          "nach",
+          0
+        ],
+        [
+          2,
+          1,
+          "nach",
+          0
+        ],
+        [
+          4,
+          1,
+          "nach",
+          0
+        ],
+        [
+          5,
+          1,
+          "uncertain",
+          1
+        ],
+        [
+          7,
+          1,
+          "nach",
+          0
+        ],
+        [
+          7,
+          4,
+          "nach",
+          0
+        ]
+      ],
+      "after_m": [
+        [
+          0,
+          1,
+          "nach",
+          0
+        ],
+        [
+          2,
+          1,
+          "nach",
+          0
+        ],
+        [
+          4,
+          1,
+          "nach",
+          0
+        ],
+        [
+          5,
+          1,
+          "nach",
+          0
+        ],
+        [
+          5,
+          0,
+          "qk",
+          0
+        ],
+        [
+          7,
+          1,
+          "nach",
+          0
+        ],
+        [
+          7,
+          4,
+          "nach",
+          0
+        ]
+      ],
+      "paired_mark_index": 3,
+      "paired_before": [
+        5,
+        1,
+        "uncertain",
+        1
+      ],
+      "paired_after": [
+        5,
+        1,
+        "nach",
+        0
+      ],
+      "qk": [
+        5,
+        0,
+        "qk",
+        0
+      ],
+      "fixture_id": "qwalk_423",
+      "fixture_record_sha256": "2d7f15584b1a28fc214de5c3557d5bfaa7b9b8e5b260e75563ef70ab740b23ce",
+      "provenance": {
+        "type": "user_tikkun_ruling",
+        "session": "20260919 sheva render session",
+        "date": "2026-09-19/20",
+        "scope": "form-scoped, all occurrences",
+        "edition": "user own tikkun (Torah/Megillot/Haftarot)"
+      },
+      "witness": {
+        "ref": "68:22",
+        "source_token": "קָדְקֹ֥ד",
+        "letter_index": 0,
+        "fixture_id": "qwalk_423",
+        "mam_word": "קׇדְקֹ֥ד",
+        "mam_verse_sha256": "f6dbb757deca31bedf487fccbc7b9ba7e6e26d78a31b1152bb500bfe8bbf1815",
+        "owned_qb": true,
+        "mam_html": "אַךְ־אֱלֹהִ֗ים יִמְחַץ֮ רֹ֤אשׁ אֹ֫יְבָ֥יו קׇדְקֹ֥ד שֵׂעָ֑ר מִ֝תְהַלֵּ֗ךְ בַּאֲשָׁמָֽיו׃",
+        "file_sha256": "2ffee5b28290e45cbee863da89a273b6d2753d908430571a873b200cc7c04fc8"
+      }
+    },
+    {
+      "book": "Psalms",
+      "ref": "78:30",
+      "chapter": 78,
+      "verse": 30,
+      "token_index": 4,
+      "letter_index": 0,
+      "qamats_codepoint_offset": 1,
+      "source_token": "אָכְלָ֥ם",
+      "source_fields": {
+        "t": [
+          "לֹא־",
+          "זָ֥רוּ",
+          "מִתַּאֲוָתָ֑ם",
+          "ע֝֗וֹד",
+          "אָכְלָ֥ם",
+          "בְּפִיהֶֽם׃"
+        ],
+        "k": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "source_sha256": "4d2513e53e31d3f58bac7ed022780829e7c1e6ae64b7d24e19190c2022e8cdc7",
+      "before_verse_sha256": "fdb2e71ecd018f2278073276df52643007a76fe5d357b6cf7e0a712a4d61d80b",
+      "after_verse_sha256": "9538484dc5229f1e771f1d062554ef01b1ca4d22af1228307519d55bef48f4e1",
+      "before_m": [
+        [
+          4,
+          1,
+          "uncertain",
+          1
+        ],
+        [
+          5,
+          0,
+          "na",
+          0
+        ]
+      ],
+      "after_m": [
+        [
+          4,
+          1,
+          "nach",
+          0
+        ],
+        [
+          4,
+          0,
+          "qk",
+          0
+        ],
+        [
+          5,
+          0,
+          "na",
+          0
+        ]
+      ],
+      "paired_mark_index": 0,
+      "paired_before": [
+        4,
+        1,
+        "uncertain",
+        1
+      ],
+      "paired_after": [
+        4,
+        1,
+        "nach",
+        0
+      ],
+      "qk": [
+        4,
+        0,
+        "qk",
+        0
+      ],
+      "fixture_id": "qwalk_040",
+      "fixture_record_sha256": "fc0090ed42b698d0a8279cf76ee44e9c49a0968049edb47de9a5b059a529dc97",
+      "provenance": {
+        "type": "user_tikkun_ruling",
+        "session": "20260919 sheva render session",
+        "date": "2026-09-19/20",
+        "scope": "form-scoped, all occurrences",
+        "edition": "user own tikkun (Torah/Megillot/Haftarot)"
+      },
+      "witness": {
+        "ref": "78:30",
+        "source_token": "אָכְלָ֥ם",
+        "letter_index": 0,
+        "fixture_id": "qwalk_040",
+        "mam_word": "אׇכְלָ֥ם",
+        "mam_verse_sha256": "3dff085ad966fd5e20d7a3e2c5bfc45b9756934883e0eaa6e6e50e1b5160c0ab",
+        "owned_qb": true,
+        "mam_html": "לֹא־זָ֥רוּ מִתַּאֲוָתָ֑ם ע֝֗וֹד אׇכְלָ֥ם בְּפִיהֶֽם׃",
+        "file_sha256": "2ffee5b28290e45cbee863da89a273b6d2753d908430571a873b200cc7c04fc8"
+      }
+    },
+    {
+      "book": "Psalms",
+      "ref": "79:1",
+      "chapter": 79,
+      "verse": 1,
+      "token_index": 9,
+      "letter_index": 0,
+      "qamats_codepoint_offset": 1,
+      "source_token": "קָדְשֶׁ֑ךָ",
+      "source_fields": {
+        "t": [
+          "מִזְמ֗וֹר",
+          "לְאָ֫סָ֥ף",
+          "אֱ‍ֽלֹהִ֡ים",
+          "בָּ֤אוּ",
+          "גוֹיִ֨ם ׀",
+          "בְּֽנַחֲלָתֶ֗ךָ",
+          "טִ֭מְּאוּ",
+          "אֶת־",
+          "הֵיכַ֣ל",
+          "קָדְשֶׁ֑ךָ",
+          "שָׂ֖מוּ",
+          "אֶת־",
+          "יְרוּשָׁלַ֣͏ִם",
+          "לְעִיִּֽים׃"
+        ],
+        "k": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "source_sha256": "9a89dfaa3d8671cf220c9f3eabd0224bbd38e0fc2af4e2e31210d7196fe1eba1",
+      "before_verse_sha256": "e799901045358248e831dac431650678c4fd46cc209ceef1324ce73cd2b9413b",
+      "after_verse_sha256": "0dd7726fa8d027b5ad2a7c38b0924eff7a63c18c928599b1d2319548496086b8",
+      "before_m": [
+        [
+          0,
+          1,
+          "nach",
+          0
+        ],
+        [
+          1,
+          0,
+          "na",
+          0
+        ],
+        [
+          5,
+          0,
+          "na",
+          0
+        ],
+        [
+          6,
+          1,
+          "na",
+          0
+        ],
+        [
+          9,
+          1,
+          "uncertain",
+          1
+        ],
+        [
+          12,
+          0,
+          "na",
+          0
+        ],
+        [
+          13,
+          0,
+          "na",
+          0
+        ]
+      ],
+      "after_m": [
+        [
+          0,
+          1,
+          "nach",
+          0
+        ],
+        [
+          1,
+          0,
+          "na",
+          0
+        ],
+        [
+          5,
+          0,
+          "na",
+          0
+        ],
+        [
+          6,
+          1,
+          "na",
+          0
+        ],
+        [
+          9,
+          1,
+          "nach",
+          0
+        ],
+        [
+          9,
+          0,
+          "qk",
+          0
+        ],
+        [
+          12,
+          0,
+          "na",
+          0
+        ],
+        [
+          13,
+          0,
+          "na",
+          0
+        ]
+      ],
+      "paired_mark_index": 4,
+      "paired_before": [
+        9,
+        1,
+        "uncertain",
+        1
+      ],
+      "paired_after": [
+        9,
+        1,
+        "nach",
+        0
+      ],
+      "qk": [
+        9,
+        0,
+        "qk",
+        0
+      ],
+      "fixture_id": "qwalk_158",
+      "fixture_record_sha256": "e3c67ef24e858067b64ea7b93d6d8c9ded57a1b87c38962b2ead047db6adf284",
+      "provenance": {
+        "type": "user_tikkun_ruling",
+        "session": "20260919 sheva render session",
+        "date": "2026-09-19/20",
+        "scope": "form-scoped, all occurrences",
+        "edition": "user own tikkun (Torah/Megillot/Haftarot)"
+      },
+      "witness": {
+        "ref": "79:1",
+        "source_token": "קָדְשֶׁ֑ךָ",
+        "letter_index": 0,
+        "fixture_id": "qwalk_158",
+        "mam_word": "קׇדְשֶׁ֑ךָ",
+        "mam_verse_sha256": "1e206d11119c937e896f26f2280343625a052526635ecc4d92f7bd9575e6f68b",
+        "owned_qb": true,
+        "mam_html": "מִזְמ֗וֹר לְאָ֫סָ֥ף אֱֽלֹהִ֡ים בָּ֤אוּ גוֹיִ֨ם&thinsp;<b>׀</b> בְּֽנַחֲלָתֶ֗ךָ טִ֭מְּאוּ אֶת־הֵיכַ֣ל קׇדְשֶׁ֑ךָ שָׂ֖מוּ אֶת־יְרוּשָׁלַ֣͏ִם לְעִיִּֽים׃",
+        "file_sha256": "2ffee5b28290e45cbee863da89a273b6d2753d908430571a873b200cc7c04fc8"
+      }
+    },
+    {
+      "book": "Psalms",
+      "ref": "88:6",
+      "chapter": 88,
+      "verse": 6,
+      "token_index": 1,
+      "letter_index": 0,
+      "qamats_codepoint_offset": 1,
+      "source_token": "חָ֫פְשִׁ֥י",
+      "source_fields": {
+        "t": [
+          "בַּמֵּתִ֗ים",
+          "חָ֫פְשִׁ֥י",
+          "כְּמ֤וֹ",
+          "חֲלָלִ֨ים ׀",
+          "שֹׁ֥כְבֵי",
+          "קֶ֗בֶר",
+          "אֲשֶׁ֤ר",
+          "לֹ֣א",
+          "זְכַרְתָּ֣ם",
+          "ע֑וֹד",
+          "וְ֝הֵ֗מָּה",
+          "מִיָּדְךָ֥",
+          "נִגְזָֽרוּ׃"
+        ],
+        "k": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "source_sha256": "4d0515efc1c1cd32b2faa63e2cca455772a79ffd0349bb8db21ab20116cf5e1f",
+      "before_verse_sha256": "a315cb11c58e6fa93c8d8696c0aa5f96b7f85cebaaf43aecd112e413b83eb903",
+      "after_verse_sha256": "c8a47da4ffa6ca5ccf188e3bb618880b2ecde537fdfdeca52bbadd895f214b66",
+      "before_m": [
+        [
+          1,
+          1,
+          "uncertain",
+          1
+        ],
+        [
+          2,
+          0,
+          "na",
+          0
+        ],
+        [
+          4,
+          1,
+          "nach",
+          0
+        ],
+        [
+          8,
+          0,
+          "na",
+          0
+        ],
+        [
+          8,
+          2,
+          "nach",
+          0
+        ],
+        [
+          10,
+          0,
+          "na",
+          0
+        ],
+        [
+          11,
+          2,
+          "uncertain",
+          1
+        ],
+        [
+          12,
+          1,
+          "nach",
+          0
+        ]
+      ],
+      "after_m": [
+        [
+          1,
+          1,
+          "nach",
+          0
+        ],
+        [
+          1,
+          0,
+          "qk",
+          0
+        ],
+        [
+          2,
+          0,
+          "na",
+          0
+        ],
+        [
+          4,
+          1,
+          "nach",
+          0
+        ],
+        [
+          8,
+          0,
+          "na",
+          0
+        ],
+        [
+          8,
+          2,
+          "nach",
+          0
+        ],
+        [
+          10,
+          0,
+          "na",
+          0
+        ],
+        [
+          11,
+          2,
+          "uncertain",
+          1
+        ],
+        [
+          12,
+          1,
+          "nach",
+          0
+        ]
+      ],
+      "paired_mark_index": 0,
+      "paired_before": [
+        1,
+        1,
+        "uncertain",
+        1
+      ],
+      "paired_after": [
+        1,
+        1,
+        "nach",
+        0
+      ],
+      "qk": [
+        1,
+        0,
+        "qk",
+        0
+      ],
+      "fixture_id": "qwalk_172",
+      "fixture_record_sha256": "84b4cbc0f1f42944dd47a75e3cc0c3a219ea4d391b92b83722e5b988dbefca33",
+      "provenance": {
+        "type": "user_tikkun_ruling",
+        "session": "20260919 sheva render session",
+        "date": "2026-09-19/20",
+        "scope": "form-scoped, all occurrences",
+        "edition": "user own tikkun (Torah/Megillot/Haftarot)"
+      },
+      "witness": {
+        "ref": "88:6",
+        "source_token": "חָ֫פְשִׁ֥י",
+        "letter_index": 0,
+        "fixture_id": "qwalk_172",
+        "mam_word": "חׇ֫פְשִׁ֥י",
+        "mam_verse_sha256": "8259972e9e96b67316beea8069408e750b8b031bb8984aad0519d4da435552ef",
+        "owned_qb": true,
+        "mam_html": "בַּמֵּתִ֗ים חׇ֫פְשִׁ֥י כְּמ֤וֹ חֲלָלִ֨ים&thinsp;<b>׀</b> שֹׁ֥כְבֵי קֶ֗בֶר אֲשֶׁ֤ר לֹ֣א זְכַרְתָּ֣ם ע֑וֹד וְ֝הֵ֗מָּה מִיָּדְךָ֥ נִגְזָֽרוּ׃",
+        "file_sha256": "2ffee5b28290e45cbee863da89a273b6d2753d908430571a873b200cc7c04fc8"
+      }
+    },
+    {
+      "book": "Psalms",
+      "ref": "89:21",
+      "chapter": 89,
+      "verse": 21,
+      "token_index": 4,
+      "letter_index": 0,
+      "qamats_codepoint_offset": 1,
+      "source_token": "קָדְשִׁ֣י",
+      "source_fields": {
+        "t": [
+          "מָ֭צָאתִי",
+          "דָּוִ֣ד",
+          "עַבְדִּ֑י",
+          "בְּשֶׁ֖מֶן",
+          "קָדְשִׁ֣י",
+          "מְשַׁחְתִּֽיו׃"
+        ],
+        "k": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "source_sha256": "bd3e6cfeb6ad2431335401b96900bbebd21572c138282fc64cbab5341b885da4",
+      "before_verse_sha256": "734e36cd2bbcd100ad633544197215be6e34c6c1a1efa592428239729194d416",
+      "after_verse_sha256": "b7bbd575929b46a0c1da860389c27f7b1bc85e22e3da944f339b05a038bb7c5a",
+      "before_m": [
+        [
+          2,
+          1,
+          "nach",
+          0
+        ],
+        [
+          3,
+          0,
+          "na",
+          0
+        ],
+        [
+          4,
+          1,
+          "nach",
+          0
+        ],
+        [
+          5,
+          0,
+          "na",
+          0
+        ],
+        [
+          5,
+          2,
+          "nach",
+          0
+        ]
+      ],
+      "after_m": [
+        [
+          2,
+          1,
+          "nach",
+          0
+        ],
+        [
+          3,
+          0,
+          "na",
+          0
+        ],
+        [
+          4,
+          1,
+          "nach",
+          0
+        ],
+        [
+          4,
+          0,
+          "qk",
+          0
+        ],
+        [
+          5,
+          0,
+          "na",
+          0
+        ],
+        [
+          5,
+          2,
+          "nach",
+          0
+        ]
+      ],
+      "paired_mark_index": 2,
+      "paired_before": [
+        4,
+        1,
+        "nach",
+        0
+      ],
+      "paired_after": [
+        4,
+        1,
+        "nach",
+        0
+      ],
+      "qk": [
+        4,
+        0,
+        "qk",
+        0
+      ],
+      "fixture_id": "p1_026",
+      "fixture_record_sha256": "0b188a697ba44e70784521c42ebf4ef67fb63cb2dac796500f94df3bb5e38aca",
+      "provenance": {
+        "type": "user_tikkun_ruling",
+        "session": "20260919 sheva render session",
+        "date": "2026-09-19/20",
+        "scope": "form-scoped, all occurrences",
+        "edition": "user own tikkun (Torah/Megillot/Haftarot)"
+      },
+      "witness": {
+        "ref": "89:21",
+        "source_token": "קָדְשִׁ֣י",
+        "letter_index": 0,
+        "fixture_id": "p1_026",
+        "mam_word": "קׇדְשִׁ֣י",
+        "mam_verse_sha256": "b7038bac5847c1ac62d3493a7f285be57e9fa49a4ae316d91a52d7528659322d",
+        "owned_qb": false,
+        "mam_html": "מָ֭צָאתִי דָּוִ֣ד עַבְדִּ֑י בְּשֶׁ֖מֶן קׇדְשִׁ֣י מְשַׁחְתִּֽיו׃",
+        "file_sha256": "2ffee5b28290e45cbee863da89a273b6d2753d908430571a873b200cc7c04fc8"
+      }
+    },
+    {
+      "book": "Psalms",
+      "ref": "90:12",
+      "chapter": 90,
+      "verse": 12,
+      "token_index": 6,
+      "letter_index": 0,
+      "qamats_codepoint_offset": 1,
+      "source_token": "חָכְמָֽה׃",
+      "source_fields": {
+        "t": [
+          "לִמְנ֣וֹת",
+          "יָ֭מֵינוּ",
+          "כֵּ֣ן",
+          "הוֹדַ֑ע",
+          "וְ֝נָבִ֗א",
+          "לְבַ֣ב",
+          "חָכְמָֽה׃"
+        ],
+        "k": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "source_sha256": "ea34a1477e8b233bee361c05a27ee2fb462a958fb14c5c1ac17a2217874d897a",
+      "before_verse_sha256": "7fedde3d7dc48e395209bf1ffda168ef8f785a29bbd132ee78d1bcb7a35ce2cb",
+      "after_verse_sha256": "f4f3563e9fb85c1d58d36832046fe2ebb73b12287d1174363462fb8b4111c847",
+      "before_m": [
+        [
+          0,
+          1,
+          "nach",
+          0
+        ],
+        [
+          4,
+          0,
+          "na",
+          0
+        ],
+        [
+          5,
+          0,
+          "na",
+          0
+        ],
+        [
+          6,
+          1,
+          "nach",
+          0
+        ]
+      ],
+      "after_m": [
+        [
+          0,
+          1,
+          "nach",
+          0
+        ],
+        [
+          4,
+          0,
+          "na",
+          0
+        ],
+        [
+          5,
+          0,
+          "na",
+          0
+        ],
+        [
+          6,
+          1,
+          "nach",
+          0
+        ],
+        [
+          6,
+          0,
+          "qk",
+          0
+        ]
+      ],
+      "paired_mark_index": 3,
+      "paired_before": [
+        6,
+        1,
+        "nach",
+        0
+      ],
+      "paired_after": [
+        6,
+        1,
+        "nach",
+        0
+      ],
+      "qk": [
+        6,
+        0,
+        "qk",
+        0
+      ],
+      "fixture_id": "chokhmah_formscoped",
+      "fixture_record_sha256": "e4d117a5e208bdd28cf219b0513e8d2a932380774ede9d03699c02a719032623",
+      "provenance": {
+        "type": "user_tikkun_ruling",
+        "session": "20260919 sheva render session",
+        "date": "2026-09-19/20",
+        "scope": "form-scoped, all occurrences",
+        "edition": "user own tikkun (Torah/Megillot/Haftarot)"
+      },
+      "witness": {
+        "ref": "90:12",
+        "source_token": "חָכְמָֽה׃",
+        "letter_index": 0,
+        "fixture_id": "chokhmah_formscoped",
+        "mam_word": "חׇכְמָֽה",
+        "mam_verse_sha256": "d0c847a640bfaf26f9c3ffbc7379c17304d13d8e06ef8628ae8bd91f5847f26a",
+        "owned_qb": false,
+        "mam_html": "לִמְנ֣וֹת יָ֭מֵינוּ כֵּ֣ן הוֹדַ֑ע וְ֝נָבִ֗א לְבַ֣ב חׇכְמָֽה׃",
+        "file_sha256": "2ffee5b28290e45cbee863da89a273b6d2753d908430571a873b200cc7c04fc8"
+      }
+    },
+    {
+      "book": "Psalms",
+      "ref": "91:11",
+      "chapter": 91,
+      "verse": 11,
+      "token_index": 4,
+      "letter_index": 2,
+      "qamats_codepoint_offset": 7,
+      "source_token": "לִ֝שְׁמָרְךָ֗",
+      "source_fields": {
+        "t": [
+          "כִּ֣י",
+          "מַ֭לְאָכָיו",
+          "יְצַוֶּה־",
+          "לָּ֑ךְ",
+          "לִ֝שְׁמָרְךָ֗",
+          "בְּכָל־",
+          "דְּרָכֶֽיךָ׃"
+        ],
+        "k": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "source_sha256": "2dfa7a979565574148262e98fea23b47709339e7279d7115cf8a094b0f987ec9",
+      "before_verse_sha256": "5c8c9ea9b8e7289565bd8bd3956d5929a0bd07e85a1afc183a3cf08c028d16ee",
+      "after_verse_sha256": "6925180525d99b70f1ff81556f9196b9b8cc98ec766236cd47535be65de6b15e",
+      "before_m": [
+        [
+          1,
+          1,
+          "nach",
+          0
+        ],
+        [
+          2,
+          0,
+          "na",
+          0
+        ],
+        [
+          3,
+          1,
+          "nach",
+          0
+        ],
+        [
+          4,
+          1,
+          "nach",
+          0
+        ],
+        [
+          4,
+          3,
+          "uncertain",
+          1
+        ],
+        [
+          5,
+          0,
+          "na",
+          0
+        ],
+        [
+          6,
+          0,
+          "na",
+          0
+        ]
+      ],
+      "after_m": [
+        [
+          1,
+          1,
+          "nach",
+          0
+        ],
+        [
+          2,
+          0,
+          "na",
+          0
+        ],
+        [
+          3,
+          1,
+          "nach",
+          0
+        ],
+        [
+          4,
+          1,
+          "nach",
+          0
+        ],
+        [
+          4,
+          3,
+          "nach",
+          0
+        ],
+        [
+          4,
+          2,
+          "qk",
+          0
+        ],
+        [
+          5,
+          0,
+          "na",
+          0
+        ],
+        [
+          6,
+          0,
+          "na",
+          0
+        ]
+      ],
+      "paired_mark_index": 4,
+      "paired_before": [
+        4,
+        3,
+        "uncertain",
+        1
+      ],
+      "paired_after": [
+        4,
+        3,
+        "nach",
+        0
+      ],
+      "qk": [
+        4,
+        2,
+        "qk",
+        0
+      ],
+      "fixture_id": "qwalk_184",
+      "fixture_record_sha256": "631edf7329de4c66030bf2a66adde162cf436f3228cfc28eeeaa573f13930c38",
+      "provenance": {
+        "type": "user_tikkun_ruling",
+        "session": "20260919 sheva render session",
+        "date": "2026-09-19/20",
+        "scope": "form-scoped, all occurrences",
+        "edition": "user own tikkun (Torah/Megillot/Haftarot)"
+      },
+      "witness": {
+        "ref": "91:11",
+        "source_token": "לִ֝שְׁמָרְךָ֗",
+        "letter_index": 2,
+        "fixture_id": "qwalk_184",
+        "mam_word": "לִ֝שְׁמׇרְךָ֗",
+        "mam_verse_sha256": "6cbb0e7fc7db81eaff584541be28739707d9c82019572940c63ebf2b2fcdfc1e",
+        "owned_qb": true,
+        "mam_html": "כִּ֣י מַ֭לְאָכָיו יְצַוֶּה־לָּ֑ךְ לִ֝שְׁמׇרְךָ֗ בְּכׇל־דְּרָכֶֽיךָ׃",
+        "file_sha256": "2ffee5b28290e45cbee863da89a273b6d2753d908430571a873b200cc7c04fc8"
+      }
+    },
+    {
+      "book": "Psalms",
+      "ref": "104:21",
+      "chapter": 104,
+      "verse": 21,
+      "token_index": 5,
+      "letter_index": 0,
+      "qamats_codepoint_offset": 1,
+      "source_token": "אָכְלָֽם׃",
+      "source_fields": {
+        "t": [
+          "הַ֭כְּפִירִים",
+          "שֹׁאֲגִ֣ים",
+          "לַטָּ֑רֶף",
+          "וּלְבַקֵּ֖שׁ",
+          "מֵאֵ֣ל",
+          "אָכְלָֽם׃"
+        ],
+        "k": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "source_sha256": "420a73c2799d25777d3edb0a6992908caa864fd47da870f2a124254823d4d13f",
+      "before_verse_sha256": "28d34f01da7094451bd73d7d4642da069327a201908a47fac267867af18196f1",
+      "after_verse_sha256": "1d6c0ff8980f4380dafc59c731710ea28d2e6b19f4c1ff66104f959b99b71892",
+      "before_m": [
+        [
+          0,
+          1,
+          "na",
+          0
+        ],
+        [
+          3,
+          1,
+          "nach",
+          0
+        ],
+        [
+          5,
+          1,
+          "uncertain",
+          1
+        ]
+      ],
+      "after_m": [
+        [
+          0,
+          1,
+          "na",
+          0
+        ],
+        [
+          3,
+          1,
+          "nach",
+          0
+        ],
+        [
+          5,
+          1,
+          "nach",
+          0
+        ],
+        [
+          5,
+          0,
+          "qk",
+          0
+        ]
+      ],
+      "paired_mark_index": 2,
+      "paired_before": [
+        5,
+        1,
+        "uncertain",
+        1
+      ],
+      "paired_after": [
+        5,
+        1,
+        "nach",
+        0
+      ],
+      "qk": [
+        5,
+        0,
+        "qk",
+        0
+      ],
+      "fixture_id": "qwalk_040",
+      "fixture_record_sha256": "fc0090ed42b698d0a8279cf76ee44e9c49a0968049edb47de9a5b059a529dc97",
+      "provenance": {
+        "type": "user_tikkun_ruling",
+        "session": "20260919 sheva render session",
+        "date": "2026-09-19/20",
+        "scope": "form-scoped, all occurrences",
+        "edition": "user own tikkun (Torah/Megillot/Haftarot)"
+      },
+      "witness": {
+        "ref": "104:21",
+        "source_token": "אָכְלָֽם׃",
+        "letter_index": 0,
+        "fixture_id": "qwalk_040",
+        "mam_word": "אׇכְלָֽם",
+        "mam_verse_sha256": "93711603b5c923212260e9d443cf025180ee0dda722de06a561fc64787d77ff4",
+        "owned_qb": true,
+        "mam_html": "הַ֭כְּפִירִים שֹׁאֲגִ֣ים לַטָּ֑רֶף וּלְבַקֵּ֖שׁ מֵאֵ֣ל אׇכְלָֽם׃",
+        "file_sha256": "2ffee5b28290e45cbee863da89a273b6d2753d908430571a873b200cc7c04fc8"
+      }
+    },
+    {
+      "book": "Psalms",
+      "ref": "104:24",
+      "chapter": 104,
+      "verse": 24,
+      "token_index": 5,
+      "letter_index": 1,
+      "qamats_codepoint_offset": 4,
+      "source_token": "בְּחָכְמָ֣ה",
+      "source_fields": {
+        "t": [
+          "מָֽה־",
+          "רַבּ֬וּ",
+          "מַעֲשֶׂ֨יךָ ׀",
+          "יְֽהוָ֗ה",
+          "כֻּ֭לָּם",
+          "בְּחָכְמָ֣ה",
+          "עָשִׂ֑יתָ",
+          "מָלְאָ֥ה",
+          "הָ֝אָ֗רֶץ",
+          "קִנְיָנֶֽךָ׃"
+        ],
+        "k": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "source_sha256": "2748acab89b1d8857a38239b69574f8e9b9704771bf327c0ebb517c2a554a122",
+      "before_verse_sha256": "60cac041191deac7f606019398bd411f413d224a411b01dc195884f417d0b3b2",
+      "after_verse_sha256": "972bae428e8f559e93ab1d373195d9d12794c8313fccf198244ca6d876941136",
+      "before_m": [
+        [
+          3,
+          0,
+          "nach",
+          0
+        ],
+        [
+          5,
+          0,
+          "na",
+          0
+        ],
+        [
+          5,
+          2,
+          "uncertain",
+          1
+        ],
+        [
+          7,
+          1,
+          "uncertain",
+          1
+        ],
+        [
+          9,
+          1,
+          "nach",
+          0
+        ]
+      ],
+      "after_m": [
+        [
+          3,
+          0,
+          "nach",
+          0
+        ],
+        [
+          5,
+          0,
+          "na",
+          0
+        ],
+        [
+          5,
+          2,
+          "nach",
+          0
+        ],
+        [
+          5,
+          1,
+          "qk",
+          0
+        ],
+        [
+          7,
+          1,
+          "uncertain",
+          1
+        ],
+        [
+          9,
+          1,
+          "nach",
+          0
+        ]
+      ],
+      "paired_mark_index": 2,
+      "paired_before": [
+        5,
+        2,
+        "uncertain",
+        1
+      ],
+      "paired_after": [
+        5,
+        2,
+        "nach",
+        0
+      ],
+      "qk": [
+        5,
+        1,
+        "qk",
+        0
+      ],
+      "fixture_id": "qwalk_207",
+      "fixture_record_sha256": "10d2407753c8df61fc6d66f3e38bc774ef0807b0d4087d10799e2b472fa72edb",
+      "provenance": {
+        "type": "user_tikkun_ruling",
+        "session": "20260919 sheva render session",
+        "date": "2026-09-19/20",
+        "scope": "form-scoped, all occurrences",
+        "edition": "user own tikkun (Torah/Megillot/Haftarot)"
+      },
+      "witness": {
+        "ref": "104:24",
+        "source_token": "בְּחָכְמָ֣ה",
+        "letter_index": 1,
+        "fixture_id": "qwalk_207",
+        "mam_word": "בְּחׇכְמָ֣ה",
+        "mam_verse_sha256": "d311598ee83b757d9d2c4d6f2fdb8501d87be03d0544b3273af0e5f5393c56cd",
+        "owned_qb": true,
+        "mam_html": "מָה־רַבּ֬וּ מַעֲשֶׂ֨יךָ&thinsp;<b>׀</b> יְֽהֹוָ֗ה כֻּ֭לָּם בְּחׇכְמָ֣ה עָשִׂ֑יתָ מָלְאָ֥ה הָ֝אָ֗רֶץ קִנְיָנֶֽךָ׃",
+        "file_sha256": "2ffee5b28290e45cbee863da89a273b6d2753d908430571a873b200cc7c04fc8"
+      }
+    },
+    {
+      "book": "Psalms",
+      "ref": "104:27",
+      "chapter": 104,
+      "verse": 27,
+      "token_index": 4,
+      "letter_index": 0,
+      "qamats_codepoint_offset": 1,
+      "source_token": "אָכְלָ֣ם",
+      "source_fields": {
+        "t": [
+          "כֻּ֭לָּם",
+          "אֵלֶ֣יךָ",
+          "יְשַׂבֵּר֑וּן",
+          "לָתֵ֖ת",
+          "אָכְלָ֣ם",
+          "בְּעִתּֽוֹ׃"
+        ],
+        "k": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "source_sha256": "795030e7a9e8761fe7efa5cafcc51703230e7d63fef5fb484125ad339fd12974",
+      "before_verse_sha256": "f902109409a7e82127b6f4174ee1ee58c14aef98dc35afc082436ab7c9f47044",
+      "after_verse_sha256": "45a2e7c6d355b9243676cd0b2fc47a8ee29031ebbb4595ee0327ba02db374de0",
+      "before_m": [
+        [
+          2,
+          0,
+          "na",
+          0
+        ],
+        [
+          4,
+          1,
+          "uncertain",
+          1
+        ],
+        [
+          5,
+          0,
+          "na",
+          0
+        ]
+      ],
+      "after_m": [
+        [
+          2,
+          0,
+          "na",
+          0
+        ],
+        [
+          4,
+          1,
+          "nach",
+          0
+        ],
+        [
+          4,
+          0,
+          "qk",
+          0
+        ],
+        [
+          5,
+          0,
+          "na",
+          0
+        ]
+      ],
+      "paired_mark_index": 1,
+      "paired_before": [
+        4,
+        1,
+        "uncertain",
+        1
+      ],
+      "paired_after": [
+        4,
+        1,
+        "nach",
+        0
+      ],
+      "qk": [
+        4,
+        0,
+        "qk",
+        0
+      ],
+      "fixture_id": "qwalk_040",
+      "fixture_record_sha256": "fc0090ed42b698d0a8279cf76ee44e9c49a0968049edb47de9a5b059a529dc97",
+      "provenance": {
+        "type": "user_tikkun_ruling",
+        "session": "20260919 sheva render session",
+        "date": "2026-09-19/20",
+        "scope": "form-scoped, all occurrences",
+        "edition": "user own tikkun (Torah/Megillot/Haftarot)"
+      },
+      "witness": {
+        "ref": "104:27",
+        "source_token": "אָכְלָ֣ם",
+        "letter_index": 0,
+        "fixture_id": "qwalk_040",
+        "mam_word": "אׇכְלָ֣ם",
+        "mam_verse_sha256": "8b799a00102977b7adc20c39df44c9d9cf6c52effe2c09fd660641be68f5e4d2",
+        "owned_qb": true,
+        "mam_html": "כֻּ֭לָּם אֵלֶ֣יךָ יְשַׂבֵּר֑וּן לָתֵ֖ת אׇכְלָ֣ם בְּעִתּֽוֹ׃",
+        "file_sha256": "2ffee5b28290e45cbee863da89a273b6d2753d908430571a873b200cc7c04fc8"
+      }
+    },
+    {
+      "book": "Psalms",
+      "ref": "106:44",
+      "chapter": 106,
+      "verse": 44,
+      "token_index": 3,
+      "letter_index": 1,
+      "qamats_codepoint_offset": 6,
+      "source_token": "בְּ֝שָׁמְע֗וֹ",
+      "source_fields": {
+        "t": [
+          "וַ֭יַּרְא",
+          "בַּצַּ֣ר",
+          "לָהֶ֑ם",
+          "בְּ֝שָׁמְע֗וֹ",
+          "אֶת־",
+          "רִנָּתָֽם׃"
+        ],
+        "k": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "source_sha256": "79364c4dceeb7a732a294deca98bf676fe835f0afe586fa501a7e61a42a601c3",
+      "before_verse_sha256": "4f58a84dce7e51ddec3c31bddc3cabbcdb839fbd310aaad6bbd52ca8c9fb0383",
+      "after_verse_sha256": "46b55be80140e49b644903bedd580b38835b156a67386df8ec7bd24573d51ec2",
+      "before_m": [
+        [
+          0,
+          2,
+          "nach",
+          0
+        ],
+        [
+          3,
+          0,
+          "na",
+          0
+        ],
+        [
+          3,
+          2,
+          "uncertain",
+          1
+        ]
+      ],
+      "after_m": [
+        [
+          0,
+          2,
+          "nach",
+          0
+        ],
+        [
+          3,
+          0,
+          "na",
+          0
+        ],
+        [
+          3,
+          2,
+          "nach",
+          0
+        ],
+        [
+          3,
+          1,
+          "qk",
+          0
+        ]
+      ],
+      "paired_mark_index": 2,
+      "paired_before": [
+        3,
+        2,
+        "uncertain",
+        1
+      ],
+      "paired_after": [
+        3,
+        2,
+        "nach",
+        0
+      ],
+      "qk": [
+        3,
+        1,
+        "qk",
+        0
+      ],
+      "fixture_id": "qwalk_161",
+      "fixture_record_sha256": "5e37a99f4e640cf428a702ded94702e4bae91a054417ce72ed3ce93cacea500d",
+      "provenance": {
+        "type": "user_tikkun_ruling",
+        "session": "20260919 sheva render session",
+        "date": "2026-09-19/20",
+        "scope": "form-scoped, all occurrences",
+        "edition": "user own tikkun (Torah/Megillot/Haftarot)"
+      },
+      "witness": {
+        "ref": "106:44",
+        "source_token": "בְּ֝שָׁמְע֗וֹ",
+        "letter_index": 1,
+        "fixture_id": "qwalk_161",
+        "mam_word": "בְּ֝שׇׁמְע֗וֹ",
+        "mam_verse_sha256": "e37ce4598c70f5bdf17db71d689fbd3993c5b25c945d8bad7251332701980bf0",
+        "owned_qb": true,
+        "mam_html": "וַ֭יַּרְא בַּצַּ֣ר לָהֶ֑ם בְּ֝שׇׁמְע֗וֹ אֶת־רִנָּתָֽם׃",
+        "file_sha256": "2ffee5b28290e45cbee863da89a273b6d2753d908430571a873b200cc7c04fc8"
+      }
+    },
+    {
+      "book": "Psalms",
+      "ref": "106:47",
+      "chapter": 106,
+      "verse": 47,
+      "token_index": 8,
+      "letter_index": 0,
+      "qamats_codepoint_offset": 1,
+      "source_token": "קָדְשֶׁ֑ךָ",
+      "source_fields": {
+        "t": [
+          "הוֹשִׁיעֵ֨נוּ ׀",
+          "יְה֘וָ֤ה",
+          "אֱלֹהֵ֗ינוּ",
+          "וְקַבְּצֵנוּ֮",
+          "מִֽן־",
+          "הַגּ֫וֹיִ֥ם",
+          "לְ֭הֹדוֹת",
+          "לְשֵׁ֣ם",
+          "קָדְשֶׁ֑ךָ",
+          "לְ֝הִשְׁתַּבֵּ֗חַ",
+          "בִּתְהִלָּתֶֽךָ׃"
+        ],
+        "k": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "source_sha256": "4c1f7b7567b9193ceaf0d1ad8f60d852ae6fb770a2b4ebeae2848ff026988df7",
+      "before_verse_sha256": "82f7dec75bacddcb7c2e4c261fe7b8bbcbd7820c7f2d3dd3b02711abbb17f22f",
+      "after_verse_sha256": "479266ebf39c1025e0ff74977a9776c7d03485adc2bc5fb245a6c05b548be92a",
+      "before_m": [
+        [
+          1,
+          0,
+          "nach",
+          0
+        ],
+        [
+          3,
+          0,
+          "na",
+          0
+        ],
+        [
+          3,
+          2,
+          "na",
+          0
+        ],
+        [
+          6,
+          0,
+          "na",
+          0
+        ],
+        [
+          7,
+          0,
+          "na",
+          0
+        ],
+        [
+          8,
+          1,
+          "uncertain",
+          1
+        ],
+        [
+          9,
+          0,
+          "na",
+          0
+        ],
+        [
+          9,
+          2,
+          "nach",
+          0
+        ],
+        [
+          10,
+          1,
+          "nach",
+          0
+        ]
+      ],
+      "after_m": [
+        [
+          1,
+          0,
+          "nach",
+          0
+        ],
+        [
+          3,
+          0,
+          "na",
+          0
+        ],
+        [
+          3,
+          2,
+          "na",
+          0
+        ],
+        [
+          6,
+          0,
+          "na",
+          0
+        ],
+        [
+          7,
+          0,
+          "na",
+          0
+        ],
+        [
+          8,
+          1,
+          "nach",
+          0
+        ],
+        [
+          8,
+          0,
+          "qk",
+          0
+        ],
+        [
+          9,
+          0,
+          "na",
+          0
+        ],
+        [
+          9,
+          2,
+          "nach",
+          0
+        ],
+        [
+          10,
+          1,
+          "nach",
+          0
+        ]
+      ],
+      "paired_mark_index": 5,
+      "paired_before": [
+        8,
+        1,
+        "uncertain",
+        1
+      ],
+      "paired_after": [
+        8,
+        1,
+        "nach",
+        0
+      ],
+      "qk": [
+        8,
+        0,
+        "qk",
+        0
+      ],
+      "fixture_id": "qwalk_158",
+      "fixture_record_sha256": "e3c67ef24e858067b64ea7b93d6d8c9ded57a1b87c38962b2ead047db6adf284",
+      "provenance": {
+        "type": "user_tikkun_ruling",
+        "session": "20260919 sheva render session",
+        "date": "2026-09-19/20",
+        "scope": "form-scoped, all occurrences",
+        "edition": "user own tikkun (Torah/Megillot/Haftarot)"
+      },
+      "witness": {
+        "ref": "106:47",
+        "source_token": "קָדְשֶׁ֑ךָ",
+        "letter_index": 0,
+        "fixture_id": "qwalk_158",
+        "mam_word": "קׇדְשֶׁ֑ךָ",
+        "mam_verse_sha256": "762fe327f444b8c05026fe1580164fa4dcb87a9aac7ec3452d914ec9ee0f1b03",
+        "owned_qb": true,
+        "mam_html": "הֽוֹשִׁיעֵ֨נוּ&thinsp;<b>׀</b> יְ֘הֹוָ֤ה אֱלֹהֵ֗ינוּ וְקַבְּצֵנוּ֮ מִֽן־הַגּ֫וֹיִ֥ם לְ֭הֹדוֹת לְשֵׁ֣ם קׇדְשֶׁ֑ךָ לְ֝הִשְׁתַּבֵּ֗חַ בִּתְהִלָּתֶֽךָ׃",
+        "file_sha256": "2ffee5b28290e45cbee863da89a273b6d2753d908430571a873b200cc7c04fc8"
+      }
+    },
+    {
+      "book": "Psalms",
+      "ref": "111:10",
+      "chapter": 111,
+      "verse": 10,
+      "token_index": 1,
+      "letter_index": 0,
+      "qamats_codepoint_offset": 1,
+      "source_token": "חָכְמָ֨ה ׀",
+      "source_fields": {
+        "t": [
+          "רֵ֘אשִׁ֤ית",
+          "חָכְמָ֨ה ׀",
+          "יִרְאַ֬ת",
+          "יְהוָ֗ה",
+          "שֵׂ֣כֶל",
+          "ט֭וֹב",
+          "לְכָל־",
+          "עֹשֵׂיהֶ֑ם",
+          "תְּ֝הִלָּת֗וֹ",
+          "עֹמֶ֥דֶת",
+          "לָעַֽד׃"
+        ],
+        "k": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "source_sha256": "7addb0bfb48e4effba6553fb84ec0163b1d3188a7a35e41fd42d80ade06cdbf7",
+      "before_verse_sha256": "6c8e8a4d2b209bb62d25a7dcdce7fe9bc1134a70dc83c6e371baa53e43a3cf55",
+      "after_verse_sha256": "b0184b49cda4f493f6c01d3099c66af48446c661b54cbe87f1de520a3684f82d",
+      "before_m": [
+        [
+          1,
+          1,
+          "uncertain",
+          1
+        ],
+        [
+          2,
+          1,
+          "nach",
+          0
+        ],
+        [
+          3,
+          0,
+          "nach",
+          0
+        ],
+        [
+          6,
+          0,
+          "na",
+          0
+        ],
+        [
+          8,
+          0,
+          "na",
+          0
+        ]
+      ],
+      "after_m": [
+        [
+          1,
+          1,
+          "nach",
+          0
+        ],
+        [
+          1,
+          0,
+          "qk",
+          0
+        ],
+        [
+          2,
+          1,
+          "nach",
+          0
+        ],
+        [
+          3,
+          0,
+          "nach",
+          0
+        ],
+        [
+          6,
+          0,
+          "na",
+          0
+        ],
+        [
+          8,
+          0,
+          "na",
+          0
+        ]
+      ],
+      "paired_mark_index": 0,
+      "paired_before": [
+        1,
+        1,
+        "uncertain",
+        1
+      ],
+      "paired_after": [
+        1,
+        1,
+        "nach",
+        0
+      ],
+      "qk": [
+        1,
+        0,
+        "qk",
+        0
+      ],
+      "fixture_id": "chokhmah_formscoped",
+      "fixture_record_sha256": "e4d117a5e208bdd28cf219b0513e8d2a932380774ede9d03699c02a719032623",
+      "provenance": {
+        "type": "user_tikkun_ruling",
+        "session": "20260919 sheva render session",
+        "date": "2026-09-19/20",
+        "scope": "form-scoped, all occurrences",
+        "edition": "user own tikkun (Torah/Megillot/Haftarot)"
+      },
+      "witness": {
+        "ref": "111:10",
+        "source_token": "חָכְמָ֨ה ׀",
+        "letter_index": 0,
+        "fixture_id": "chokhmah_formscoped",
+        "mam_word": "חׇכְמָ֨ה",
+        "mam_verse_sha256": "26ddc8e8f518146a65833f235835096ceb8174c6a878731a16ac831d6f2ef926",
+        "owned_qb": true,
+        "mam_html": "רֵ֘אשִׁ֤ית חׇכְמָ֨ה&thinsp;<b>׀</b> יִרְאַ֬ת יְהֹוָ֗ה שֵׂ֣כֶל ט֭וֹב לְכׇל־עֹֽשֵׂיהֶ֑ם תְּ֝הִלָּת֗וֹ עֹמֶ֥דֶת לָעַֽד׃&nbsp;<span class=\"mam-spi-pe\">{פ}</span><br>",
+        "file_sha256": "2ffee5b28290e45cbee863da89a273b6d2753d908430571a873b200cc7c04fc8"
+      }
+    },
+    {
+      "book": "Psalms",
+      "ref": "116:2",
+      "chapter": 116,
+      "verse": 2,
+      "token_index": 2,
+      "letter_index": 0,
+      "qamats_codepoint_offset": 1,
+      "source_token": "אָזְנ֣וֹ",
+      "source_fields": {
+        "t": [
+          "כִּֽי־",
+          "הִטָּ֣ה",
+          "אָזְנ֣וֹ",
+          "לִ֑י",
+          "וּבְיָמַ֥י",
+          "אֶקְרָֽא׃"
+        ],
+        "k": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "source_sha256": "bb32b2a3b96769a4bcfd01e66392985b02bde47a89c1b18626d8c84af85dfc52",
+      "before_verse_sha256": "03541cb93f34c7f59cb1927eef7bb1973ab40b98733738e5eea49c5ad9356f6f",
+      "after_verse_sha256": "6e45d82d1aad78c0c22f226631fac46e556c845a1c54a4dd81c0fd2aff17f2db",
+      "before_m": [
+        [
+          2,
+          1,
+          "uncertain",
+          1
+        ],
+        [
+          4,
+          1,
+          "nach",
+          0
+        ],
+        [
+          5,
+          1,
+          "nach",
+          0
+        ]
+      ],
+      "after_m": [
+        [
+          2,
+          1,
+          "nach",
+          0
+        ],
+        [
+          2,
+          0,
+          "qk",
+          0
+        ],
+        [
+          4,
+          1,
+          "nach",
+          0
+        ],
+        [
+          5,
+          1,
+          "nach",
+          0
+        ]
+      ],
+      "paired_mark_index": 0,
+      "paired_before": [
+        2,
+        1,
+        "uncertain",
+        1
+      ],
+      "paired_after": [
+        2,
+        1,
+        "nach",
+        0
+      ],
+      "qk": [
+        2,
+        0,
+        "qk",
+        0
+      ],
+      "fixture_id": "qwalk_173",
+      "fixture_record_sha256": "302f2844752aa90c64053b2436bb30fb4c7a7fc1512952f066f93d6737734bc3",
+      "provenance": {
+        "type": "user_tikkun_ruling",
+        "session": "20260919 sheva render session",
+        "date": "2026-09-19/20",
+        "scope": "form-scoped, all occurrences",
+        "edition": "user own tikkun (Torah/Megillot/Haftarot)"
+      },
+      "witness": {
+        "ref": "116:2",
+        "source_token": "אָזְנ֣וֹ",
+        "letter_index": 0,
+        "fixture_id": "qwalk_173",
+        "mam_word": "אׇזְנ֣וֹ",
+        "mam_verse_sha256": "796defac1853f261b2e208e51b9d3072f56c3082de8e3b643819e053da844784",
+        "owned_qb": true,
+        "mam_html": "כִּֽי־הִטָּ֣ה אׇזְנ֣וֹ לִ֑י וּבְיָמַ֥י אֶקְרָֽא׃",
+        "file_sha256": "2ffee5b28290e45cbee863da89a273b6d2753d908430571a873b200cc7c04fc8"
+      }
+    },
+    {
+      "book": "Psalms",
+      "ref": "119:153",
+      "chapter": 119,
+      "verse": 153,
+      "token_index": 1,
+      "letter_index": 0,
+      "qamats_codepoint_offset": 1,
+      "source_token": "עָנְיִ֥י",
+      "source_fields": {
+        "t": [
+          "רְאֵֽה־",
+          "עָנְיִ֥י",
+          "וְחַלְּצֵ֑נִי",
+          "כִּי־",
+          "תֽ֝וֹרָתְךָ֗",
+          "לֹ֣א",
+          "שָׁכָֽחְתִּי׃"
+        ],
+        "k": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "source_sha256": "85752ab1ccc2a18aa0e90f2ba26346d3a9fcbd65de9f300a7b6f789147f03d3c",
+      "before_verse_sha256": "642549e243d7855c11dda2c601e0debf26b6141f45ab106ff8918983705b3ce5",
+      "after_verse_sha256": "d28f48a004944515d0e447432cf298ec19e55895417c5d419b82919bdf77e544",
+      "before_m": [
+        [
+          0,
+          0,
+          "na",
+          0
+        ],
+        [
+          1,
+          1,
+          "uncertain",
+          1
+        ],
+        [
+          2,
+          0,
+          "na",
+          0
+        ],
+        [
+          2,
+          2,
+          "na",
+          0
+        ],
+        [
+          4,
+          3,
+          "uncertain",
+          1
+        ],
+        [
+          6,
+          2,
+          "na",
+          0
+        ]
+      ],
+      "after_m": [
+        [
+          0,
+          0,
+          "na",
+          0
+        ],
+        [
+          1,
+          1,
+          "nach",
+          0
+        ],
+        [
+          1,
+          0,
+          "qk",
+          0
+        ],
+        [
+          2,
+          0,
+          "na",
+          0
+        ],
+        [
+          2,
+          2,
+          "na",
+          0
+        ],
+        [
+          4,
+          3,
+          "uncertain",
+          1
+        ],
+        [
+          6,
+          2,
+          "na",
+          0
+        ]
+      ],
+      "paired_mark_index": 1,
+      "paired_before": [
+        1,
+        1,
+        "uncertain",
+        1
+      ],
+      "paired_after": [
+        1,
+        1,
+        "nach",
+        0
+      ],
+      "qk": [
+        1,
+        0,
+        "qk",
+        0
+      ],
+      "fixture_id": "qwalk_084",
+      "fixture_record_sha256": "d2d9073cd4e701a2d2562b74c0004fad48fec0ab632e02293e0063c3d0eabdd9",
+      "provenance": {
+        "type": "user_tikkun_ruling",
+        "session": "20260919 sheva render session",
+        "date": "2026-09-19/20",
+        "scope": "form-scoped, all occurrences",
+        "edition": "user own tikkun (Torah/Megillot/Haftarot)"
+      },
+      "witness": {
+        "ref": "119:153",
+        "source_token": "עָנְיִ֥י",
+        "letter_index": 0,
+        "fixture_id": "qwalk_084",
+        "mam_word": "עׇנְיִ֥י",
+        "mam_verse_sha256": "88cc2ee0d04cde819ec2ec27c6d91dc2eeaaff7b146d28bf548fefa3435e8a9c",
+        "owned_qb": true,
+        "mam_html": "רְאֵה־עׇנְיִ֥י וְחַלְּצֵ֑נִי כִּי־ת֥֝וֹרָתְךָ֗ לֹ֣א שָׁכָֽחְתִּי׃",
+        "file_sha256": "2ffee5b28290e45cbee863da89a273b6d2753d908430571a873b200cc7c04fc8"
+      }
+    },
+    {
+      "book": "Psalms",
+      "ref": "145:15",
+      "chapter": 145,
+      "verse": 15,
+      "token_index": 8,
+      "letter_index": 0,
+      "qamats_codepoint_offset": 1,
+      "source_token": "אָכְלָ֣ם",
+      "source_fields": {
+        "t": [
+          "עֵֽינֵי־",
+          "כֹ֭ל",
+          "אֵלֶ֣יךָ",
+          "יְשַׂבֵּ֑רוּ",
+          "וְאַתָּ֤ה",
+          "נֽוֹתֵן־",
+          "לָהֶ֖ם",
+          "אֶת־",
+          "אָכְלָ֣ם",
+          "בְּעִתּֽוֹ׃"
+        ],
+        "k": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "source_sha256": "674d33b9af703f493dfef98e91680d5428986f423cb8addcbafe88981d4ba139",
+      "before_verse_sha256": "5cf32050f90f044f301e478ef2dc27aecfce1ed25ef2bbbefdd9d007cf34b4e0",
+      "after_verse_sha256": "ff739a61cc3524f7717dad071142bc25bf00746eb83420c68beb6a63e1f3226d",
+      "before_m": [
+        [
+          3,
+          0,
+          "na",
+          0
+        ],
+        [
+          4,
+          0,
+          "na",
+          0
+        ],
+        [
+          8,
+          1,
+          "uncertain",
+          1
+        ],
+        [
+          9,
+          0,
+          "na",
+          0
+        ]
+      ],
+      "after_m": [
+        [
+          3,
+          0,
+          "na",
+          0
+        ],
+        [
+          4,
+          0,
+          "na",
+          0
+        ],
+        [
+          8,
+          1,
+          "nach",
+          0
+        ],
+        [
+          8,
+          0,
+          "qk",
+          0
+        ],
+        [
+          9,
+          0,
+          "na",
+          0
+        ]
+      ],
+      "paired_mark_index": 2,
+      "paired_before": [
+        8,
+        1,
+        "uncertain",
+        1
+      ],
+      "paired_after": [
+        8,
+        1,
+        "nach",
+        0
+      ],
+      "qk": [
+        8,
+        0,
+        "qk",
+        0
+      ],
+      "fixture_id": "qwalk_040",
+      "fixture_record_sha256": "fc0090ed42b698d0a8279cf76ee44e9c49a0968049edb47de9a5b059a529dc97",
+      "provenance": {
+        "type": "user_tikkun_ruling",
+        "session": "20260919 sheva render session",
+        "date": "2026-09-19/20",
+        "scope": "form-scoped, all occurrences",
+        "edition": "user own tikkun (Torah/Megillot/Haftarot)"
+      },
+      "witness": {
+        "ref": "145:15",
+        "source_token": "אָכְלָ֣ם",
+        "letter_index": 0,
+        "fixture_id": "qwalk_040",
+        "mam_word": "אׇכְלָ֣ם",
+        "mam_verse_sha256": "b88efa9f2b8ba3013599353908831f5a5e5b6ba7464e959e65f285beb4612891",
+        "owned_qb": true,
+        "mam_html": "עֵֽינֵי־כֹ֭ל אֵלֶ֣יךָ יְשַׂבֵּ֑רוּ וְאַתָּ֤ה נֽוֹתֵן־לָהֶ֖ם אֶת־אׇכְלָ֣ם בְּעִתּֽוֹ׃",
+        "file_sha256": "2ffee5b28290e45cbee863da89a273b6d2753d908430571a873b200cc7c04fc8"
+      }
+    }
+  ]
+}

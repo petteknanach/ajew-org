@@ -22,6 +22,7 @@ verified (form_key equality) against that engine word before shipping.
 """
 import argparse, json, os, sys, unicodedata
 import xml.etree.ElementTree as ET
+from psalms_qatan_overlay import apply_book as apply_psalms_qatan
 
 SLUGS = {
  'Genesis':'tanach-bereishit','Exodus':'tanach-shemos','Leviticus':'tanach-vayikra',
@@ -188,6 +189,13 @@ def build_book(book, xml_dir, jsonl_dir, out_dir):
     data = {'book': book, 'slug': SLUGS[book], 'he': HE_NAMES[book],
             'en': book.replace('_1', ' 1').replace('_2', ' 2').replace('_', ' '),
             'ch': out_ch}
+    if book == 'Psalms':
+        # The saved JSONL lacks q fields. Never let it erase approved metadata.
+        # Exact whole-verse before/after guards reject drift before opening output.
+        if mismatch:
+            raise ValueError('Psalms mark/word mismatch; refusing output')
+        data = apply_psalms_qatan(data)
+        n_marks = sum(len(v['m']) for ch in data['ch'].values() for v in ch.values())
     op = os.path.join(out_dir, SLUGS[book] + '.json')
     with open(op, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, separators=(',', ':'))
@@ -198,10 +206,11 @@ def main():
     ap.add_argument('--xml-dir', default='/root/sheva_v0/books')
     ap.add_argument('--jsonl-dir', default='/root/sheva_render')
     ap.add_argument('--out-dir', default='/root/ajew-org/public/reader/medooyuk')
+    ap.add_argument('--book', choices=sorted(SLUGS), help='Build only this book')
     args = ap.parse_args()
     os.makedirs(args.out_dir, exist_ok=True)
     total_m = 0; total_mm = 0
-    for book in sorted(SLUGS):
+    for book in ([args.book] if args.book else sorted(SLUGS)):
         op, chs, ms, mm, ex = build_book(book, args.xml_dir, args.jsonl_dir, args.out_dir)
         total_m += ms; total_mm += mm
         print(f'{book:16} {chs:3} ch  marks={ms:6} mm={mm:4}  {os.path.getsize(op)//1024} KB')
