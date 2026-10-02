@@ -31,34 +31,34 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
           </svg>
         </button>
-        <button type="button" class="heb-kb-toggle" id="hebKbToggle" title="Hebrew keyboard">א</button>
+        <button type="button" class="heb-kb-toggle" id="hebKbToggle" title="Hebrew keyboard" aria-label="Hebrew keyboard" aria-controls="hebKeyboard" aria-expanded="false">א</button>
       </div>
 
       <!-- Hebrew Keyboard -->
       <div class="heb-keyboard" id="hebKeyboard" style="display:none;">
         <div class="heb-kb-row">
-          <button class="heb-key" data-char="ק">ק</button><button class="heb-key" data-char="ר">ר</button>
-          <button class="heb-key" data-char="א">א</button><button class="heb-key" data-char="ט">ט</button>
-          <button class="heb-key" data-char="ו">ו</button><button class="heb-key" data-char="ן">ן</button>
-          <button class="heb-key" data-char="ם">ם</button><button class="heb-key" data-char="פ">פ</button>
+          <button type="button" class="heb-key" data-char="ק">ק</button><button type="button" class="heb-key" data-char="ר">ר</button>
+          <button type="button" class="heb-key" data-char="א">א</button><button type="button" class="heb-key" data-char="ט">ט</button>
+          <button type="button" class="heb-key" data-char="ו">ו</button><button type="button" class="heb-key" data-char="ן">ן</button>
+          <button type="button" class="heb-key" data-char="ם">ם</button><button type="button" class="heb-key" data-char="פ">פ</button>
         </div>
         <div class="heb-kb-row">
-          <button class="heb-key" data-char="ש">ש</button><button class="heb-key" data-char="ד">ד</button>
-          <button class="heb-key" data-char="ג">ג</button><button class="heb-key" data-char="כ">כ</button>
-          <button class="heb-key" data-char="ע">ע</button><button class="heb-key" data-char="י">י</button>
-          <button class="heb-key" data-char="ח">ח</button><button class="heb-key" data-char="ל">ל</button>
-          <button class="heb-key" data-char="ך">ך</button><button class="heb-key" data-char="ף">ף</button>
+          <button type="button" class="heb-key" data-char="ש">ש</button><button type="button" class="heb-key" data-char="ד">ד</button>
+          <button type="button" class="heb-key" data-char="ג">ג</button><button type="button" class="heb-key" data-char="כ">כ</button>
+          <button type="button" class="heb-key" data-char="ע">ע</button><button type="button" class="heb-key" data-char="י">י</button>
+          <button type="button" class="heb-key" data-char="ח">ח</button><button type="button" class="heb-key" data-char="ל">ל</button>
+          <button type="button" class="heb-key" data-char="ך">ך</button><button type="button" class="heb-key" data-char="ף">ף</button>
         </div>
         <div class="heb-kb-row">
-          <button class="heb-key" data-char="ז">ז</button><button class="heb-key" data-char="ס">ס</button>
-          <button class="heb-key" data-char="ב">ב</button><button class="heb-key" data-char="ה">ה</button>
-          <button class="heb-key" data-char="נ">נ</button><button class="heb-key" data-char="מ">מ</button>
-          <button class="heb-key" data-char="צ">צ</button><button class="heb-key" data-char="ת">ת</button>
-          <button class="heb-key" data-char="ץ">ץ</button>
+          <button type="button" class="heb-key" data-char="ז">ז</button><button type="button" class="heb-key" data-char="ס">ס</button>
+          <button type="button" class="heb-key" data-char="ב">ב</button><button type="button" class="heb-key" data-char="ה">ה</button>
+          <button type="button" class="heb-key" data-char="נ">נ</button><button type="button" class="heb-key" data-char="מ">מ</button>
+          <button type="button" class="heb-key" data-char="צ">צ</button><button type="button" class="heb-key" data-char="ת">ת</button>
+          <button type="button" class="heb-key" data-char="ץ">ץ</button>
         </div>
         <div class="heb-kb-row">
-          <button class="heb-key heb-space" data-char=" ">Space</button>
-          <button class="heb-key heb-del" id="hebDel">⌫</button>
+          <button type="button" class="heb-key heb-space" data-char=" ">Space</button>
+          <button type="button" class="heb-key heb-del" id="hebDel" aria-label="Delete previous character">⌫</button>
         </div>
       </div>
 
@@ -173,7 +173,8 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
 
     // Enter key
     searchInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
+      // Enter can confirm an IME candidate, not a request to search.
+      if (e.key === 'Enter' && !e.isComposing && e.keyCode !== 229) {
         e.preventDefault();
         performSearch();
       }
@@ -184,24 +185,45 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
     const hebKeyboard = document.getElementById('hebKeyboard');
     if (hebKbToggle && hebKeyboard) {
       hebKbToggle.addEventListener('click', () => {
-        hebKeyboard.style.display = hebKeyboard.style.display === 'none' ? 'block' : 'none';
-        hebKbToggle.classList.toggle('active');
+        const open = hebKeyboard.style.display === 'none';
+        hebKeyboard.style.display = open ? 'block' : 'none';
+        hebKbToggle.classList.toggle('active', open);
+        hebKbToggle.setAttribute('aria-expanded', String(open));
       });
-      hebKeyboard.querySelectorAll('.heb-key[data-char]').forEach(key => {
+      hebKeyboard.querySelectorAll<HTMLButtonElement>('.heb-key').forEach(key => {
+        // Pointer editing keeps an already-focused input/selection in place.
+        // Tab/Enter/Space remain native button interactions; never steal focus
+        // back from a keyboard or assistive-technology user after activation.
+        key.addEventListener('pointerdown', (event) => {
+          if (event.button === 0 && document.activeElement === searchInput) event.preventDefault();
+        });
         key.addEventListener('click', () => {
-          if (!searchInput) return;
-          searchInput.value += (key as HTMLElement).dataset.char;
-          searchInput.focus();
+          const deleting = key.id === 'hebDel';
+          const text = deleting ? '' : key.dataset.char;
+          if (text === undefined) return;
+          let start = searchInput.selectionStart ?? searchInput.value.length;
+          const end = searchInput.selectionEnd ?? start;
+          if (deleting && start === end) {
+            if (start === 0) return;
+            // Delete a whole grapheme (including Hebrew marks/surrogate pairs),
+            // not the final UTF-16 code unit of an unrelated word.
+            const before = searchInput.value.slice(0, start);
+            if (typeof Intl.Segmenter === 'function') {
+              const segments = Array.from(new Intl.Segmenter(undefined, { granularity: 'grapheme' }).segment(before));
+              start = segments[segments.length - 1].index;
+            } else {
+              start -= Array.from(before).pop()!.length;
+            }
+          }
+          const inputType = deleting ? 'deleteContentBackward' : 'insertText';
+          const data = deleting ? null : text;
+          if (!searchInput.dispatchEvent(new InputEvent('beforeinput', {
+            bubbles: true, cancelable: true, inputType, data
+          }))) return;
+          searchInput.setRangeText(text, start, end, 'end');
+          searchInput.dispatchEvent(new InputEvent('input', { bubbles: true, inputType, data }));
         });
       });
-      const hebDel = document.getElementById('hebDel');
-      if (hebDel) {
-        hebDel.addEventListener('click', () => {
-          if (!searchInput) return;
-          searchInput.value = searchInput.value.slice(0, -1);
-          searchInput.focus();
-        });
-      }
     }
 
     // Popular search tags
@@ -479,7 +501,7 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
     margin-bottom: 8px;
     direction: rtl;
   }
-  .heb-kb-row { display: flex; justify-content: center; gap: 4px; margin-bottom: 4px; }
+  .heb-kb-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; margin-bottom: 4px; }
   .heb-key {
     min-width: 32px;
     height: 36px;
@@ -517,6 +539,7 @@ const { compact = false, showFilters = true, autoFocus = true, showAdvancedOptio
 
   .search-input {
     flex: 1;
+    min-width: 0;
     padding: 0.85rem 1.2rem;
     font-size: 1.05rem;
     border: 2px solid #d1d5db;
