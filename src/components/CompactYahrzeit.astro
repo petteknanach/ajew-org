@@ -480,6 +480,14 @@
       chokHeader.prepend(box);
     }
 
+    // Lens also lacks a fixed-control gutter; keep its theme button and
+    // quotations clear instead of moving the candle onto a different line.
+    const lensHeader = document.querySelector('.lens-header');
+    if (lensHeader) {
+      box.classList.add('lens-yahrzeit');
+      lensHeader.prepend(box);
+    }
+
     // Check if user dismissed the box
     const dismissed = localStorage.getItem('ajew-yahrzeit-dismissed');
     if (dismissed && Date.now() < parseInt(dismissed)) {
@@ -497,7 +505,7 @@
       upList.innerHTML = '<div class="tzaddik-link upcoming-event"><span class="tzaddik-name">Loading...</span></div>';
       upSection.style.display = 'block';
       box.style.display = 'block';
-      if (window.innerWidth > 768 && !document.querySelector('.reader-container') && !box.classList.contains('chok-yahrzeit')) box.classList.remove('collapsed');
+      if (window.innerWidth > 768 && !document.querySelector('.reader-container') && !box.classList.contains('chok-yahrzeit') && !box.classList.contains('lens-yahrzeit')) box.classList.remove('collapsed');
     }, 8000);
 
     try {
@@ -534,7 +542,7 @@
 
       // ALWAYS show the box
       box.style.display = 'block';
-      if (window.innerWidth > 768 && !document.querySelector('.reader-container') && !box.classList.contains('chok-yahrzeit')) {
+      if (window.innerWidth > 768 && !document.querySelector('.reader-container') && !box.classList.contains('chok-yahrzeit') && !box.classList.contains('lens-yahrzeit')) {
         box.classList.remove('collapsed');
       }
 
@@ -617,7 +625,7 @@
       // On error, still show box with a simple message
       document.getElementById('yahrzeitLoading').style.display = 'none';
       box.style.display = 'block';
-      if (window.innerWidth > 768 && !document.querySelector('.reader-container') && !box.classList.contains('chok-yahrzeit')) box.classList.remove('collapsed');
+      if (window.innerWidth > 768 && !document.querySelector('.reader-container') && !box.classList.contains('chok-yahrzeit') && !box.classList.contains('lens-yahrzeit')) box.classList.remove('collapsed');
       const upSection = document.getElementById('upcomingSection');
       const upList = document.getElementById('upcomingList');
       upList.innerHTML = '<div class="tzaddik-link upcoming-event"><span class="event-description">Check back soon</span></div>';
@@ -983,8 +991,9 @@
   .compact-yahrzeit:not(.collapsed) .toggle-btn {
     display: none !important;
   }
-  /* Chok dates scroll with the header, outside every source/reference line. */
-  .compact-yahrzeit.chok-yahrzeit {
+  /* Header dates scroll in normal flow, outside source/reference lines. */
+  .compact-yahrzeit.chok-yahrzeit,
+  .compact-yahrzeit.lens-yahrzeit {
     position: relative;
     inset: auto;
     margin: 0 auto 1rem;
@@ -993,7 +1002,8 @@
     opacity: 1;
     transition: none;
   }
-  .compact-yahrzeit.chok-yahrzeit.collapsed {
+  .compact-yahrzeit.chok-yahrzeit.collapsed,
+  .compact-yahrzeit.lens-yahrzeit.collapsed {
     /* 44px action plus the existing 2px border on each side. */
     width: 48px;
     height: 48px;
@@ -1004,22 +1014,45 @@
     padding: 0;
     border-radius: 8px;
   }
-  .chok-yahrzeit.collapsed .toggle-btn {
+  .chok-yahrzeit.collapsed .toggle-btn,
+  .lens-yahrzeit.collapsed .toggle-btn {
     inset: 0;
     width: 100%;
     height: 100%;
     align-items: center;
     justify-content: center;
   }
-  .chok-yahrzeit .close-btn {
+  .chok-yahrzeit .close-btn,
+  .lens-yahrzeit .close-btn {
     width: 44px;
     height: 44px;
     border-radius: 8px;
   }
-  .compact-yahrzeit.chok-yahrzeit:not(.collapsed) {
+  .compact-yahrzeit.chok-yahrzeit:not(.collapsed),
+  .compact-yahrzeit.lens-yahrzeit:not(.collapsed) {
     max-width: min(100%, 320px);
     max-height: 260px;
     overflow-y: auto;
     padding-top: 3.25rem;
+  }
+  /* Reader's 44px button needs 48px including the two borders. Its old
+     round 44px wrapper clipped the button's right corners and top edge.
+     Keep the overlay within the Reader's existing 48px source gutter. */
+  @media (max-width: 768px) {
+    :global(body:has(.reader-content)) #compactYahrzeit.collapsed {
+      min-width: 48px !important;
+      max-width: 48px !important;
+      min-height: 48px !important;
+      max-height: 48px !important;
+      border-radius: 0 8px 8px 0 !important;
+    }
+    :global(body:has(.reader-content)) #compactYahrzeit.collapsed .toggle-btn {
+      inset: 0 !important;
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      align-items: center;
+      justify-content: center;
+    }
   }
 </style>

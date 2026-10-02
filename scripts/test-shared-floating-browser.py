@@ -3,8 +3,8 @@
 Requires playwright and a Linux Chrome executable. --base https://ajew.org
 reads production; --dist serves a bounded real Astro build with --public assets.
 All observations, failures, exact fetched frontend hashes and screenshots persist.
-Exit status gates the scoped candidate checks; existing shared-control failures
-remain explicitly reported and are NOT a whole-site acceptance.
+Exit status gates candidate checks AND repaired shared-control cases;
+other existing failures remain explicit and are NOT a whole-site acceptance.
 """
 import argparse, hashlib, json, mimetypes, threading
 from pathlib import Path
@@ -99,6 +99,23 @@ try:
      loc=page.locator(sel).first;loc.evaluate('(e)=>e.scrollIntoView({block:"center",behavior:"instant"})');page.wait_for_timeout(150);r=loc.evaluate(HIT);assert r['ok'],r
      if click:loc.click();page.wait_for_timeout(350)
      return r
+    def candle_corners():
+     """Five real pointer activations, focus/Escape, and the close hit surface."""
+     source=page.locator('.reader-content-original' if kind=='reader' else '.header-verse').all_text_contents()
+     journeys=[]
+     for index in range(5):
+      target=hit('#yahrzeitToggleBtn');point=target['points'][index]
+      page.mouse.click(point['x'],point['y']);page.wait_for_timeout(350)
+      assert page.locator('#yahrzeitToggleBtn').get_attribute('aria-expanded')=='true'
+      assert page.locator('#yahrzeitCloseBtn').evaluate('e=>e===document.activeElement')
+      close=hit('#yahrzeitCloseBtn')
+      if index==0:shot('followup-candle-expanded')
+      page.keyboard.press('Escape');page.wait_for_timeout(350)
+      assert page.locator('#yahrzeitToggleBtn').get_attribute('aria-expanded')=='false'
+      assert page.locator('#yahrzeitToggleBtn').evaluate('e=>e===document.activeElement')
+      journeys.append({'toggle':target,'activatedPoint':index,'close':close})
+     assert source==page.locator('.reader-content-original' if kind=='reader' else '.header-verse').all_text_contents()
+     return {'journeys':journeys,'screenshot':shot('followup-candle-collapsed')}
     path={'chok':'/reader/chok/?'+urlencode({'sec':'navi','week':'תולדות','day':'יום שלישי'}),'lens':'/torah-lens/','reader':'/reader/chayey-moharan/siman/241/'}[kind]
     page.goto(args.base+path,wait_until='domcontentloaded')
     page.wait_for_function("getComputedStyle(document.querySelector('#compactYahrzeit')).display!=='none'",timeout=22000)
@@ -112,6 +129,15 @@ try:
       assert r['visibleCharacters']>0 and not r['hits'],r
       return r
      check('deep-link-source-uncovered',lambda:scan('deep-link'))
+     def other_fixed_controls():
+      # Preserve the separate unresolved Chok utility-rail failure. The
+      # desktop has no bottom tab bar: scan through the viewport's bottom.
+      probe=OCCLUSION.replace('innerHeight-64','innerHeight') if width>=1024 else OCCLUSION
+      v=page.evaluate(probe,{'root':'#ck-content','selectors':['#backToTop','.hitbodedut-fab','#voice-input-btn','#page-agent-toggle']})
+      v['screenshot']=shot('other-fixed-controls')
+      assert v['visibleCharacters']>0 and not v['hits'],v
+      return v
+     check('other-fixed-source-uncovered',other_fixed_controls,scope='existing')
      for sel,name in [('.ck-sec-head','reference'),('.ck-nach-boundary','boundary'),('.ck-nach-policy','policy')]:
       if page.locator(sel).count():
        page.locator(sel).first.evaluate('(e)=>e.scrollIntoView({block:"start",behavior:"instant"})');page.wait_for_timeout(200)
@@ -153,12 +179,34 @@ try:
       return True
      check('dismiss-persists',dismiss)
     elif kind=='lens':
+     def lens_flow():
+      v=page.locator('#compactYahrzeit').evaluate("e=>({position:getComputedStyle(e).position,header:e.parentElement.classList.contains('lens-header'),collapsed:e.classList.contains('collapsed')})")
+      assert v=={'position':'relative','header':True,'collapsed':True},v
+      return v
+     check('lens-normal-flow-opt-in',lens_flow)
+     check('candle-five-point-journeys',candle_corners)
+     def lens_source():
+      hit('#yahrzeitToggleBtn',True)
+      v=page.evaluate(OCCLUSION,{'root':'.lens-header','selectors':['#compactYahrzeit']})
+      widget=page.locator('#compactYahrzeit').bounding_box();title=page.locator('.header-ornament').bounding_box()
+      assert widget['y']+widget['height']<=title['y'] and not v['hits'],v
+      page.keyboard.press('Escape');page.wait_for_timeout(350)
+      return v
+     check('lens-expanded-source-uncovered',lens_source)
      for theme in ['light','dark']:
       if theme=='dark':
        toggle='#theme-toggle-sidebar' if width>=1024 else '#theme-toggle-mobile'
        check('theme-pointer-reachable',lambda:hit(toggle),scope='existing')
-       # Keyboard activation also permits contrast QA when the existing fixed
-       # candle obstructs the tablet pointer target; that failure remains above.
+       # Retain the original keyboard contrast journey, plus real pointer use.
+       def pointer_theme():
+        states=[]
+        for expected in ['sepia','night','day']:
+         target=hit(toggle,True)
+         state=page.evaluate("({saved:localStorage.getItem('ajew-theme'),rendered:document.documentElement.getAttribute('data-theme')||'day',dark:document.body.classList.contains('dark-mode')})")
+         assert state=={'saved':expected,'rendered':expected,'dark':expected=='night'},state
+         states.append({'state':state,'hit':target})
+        return states
+       check('theme-pointer-cycle',pointer_theme)
        page.locator(toggle).focus();page.keyboard.press('Space');page.keyboard.press('Space');page.wait_for_timeout(350)
        check('dark-theme-active',lambda:require(page.locator('body').evaluate('e=>e.classList.contains("dark-mode")')))
       page.locator('#lensInput').evaluate('(e)=>e.scrollIntoView({block:"center",behavior:"instant"})');page.wait_for_timeout(200)
@@ -178,6 +226,13 @@ try:
       page.locator('#lensInput').fill('earthquake');hit('#lensSearchBtn',True);page.wait_for_selector('#lensResults',state='visible')
       text=page.locator('#lensResults').inner_text();assert len(text)>50;return {'length':len(text),'screenshot':shot('search-results')}
      check('search-still-works',search)
+     def lens_dismiss():
+      hit('#yahrzeitToggleBtn',True);close=hit('#yahrzeitCloseBtn',True)
+      assert not page.locator('#compactYahrzeit').is_visible()
+      page.reload(wait_until='domcontentloaded');page.wait_for_timeout(1500)
+      assert not page.locator('#compactYahrzeit').is_visible()
+      return close
+     check('lens-candle-dismiss-persists',lens_dismiss)
     else:
      page.wait_for_selector('#ajew-audio-player',state='attached')
      if page.locator('#commentary-sidebar').evaluate('e=>e.classList.contains("is-open")'):
@@ -201,6 +256,7 @@ try:
      def commentary():
       hit('#commentary-sidebar-handle',True);assert page.locator('#commentary-sidebar').evaluate('e=>e.classList.contains("is-open")');return hit('#commentary-sidebar-close',True)
      check('commentary-open-close',commentary)
+     check('candle-five-point-journeys',candle_corners,scope='candidate')
      def candle():
       hit('#yahrzeitToggleBtn',True);assert not page.locator('#compactYahrzeit').evaluate('e=>e.classList.contains("collapsed")');shot('candle-expanded');return hit('#yahrzeitCloseBtn',True)
      check('candle-open-dismiss',candle)
@@ -213,4 +269,6 @@ finally:
 print(json.dumps(report['counts']))
 assert len({(r['width'],r['page']) for r in rows})==12, 'incomplete width/page matrix'
 assert not errors, errors
-raise SystemExit(any(not r['pass'] and r['scope']=='candidate' for r in rows))
+repaired=lambda r: r['name'] in ['candle-open-dismiss','theme-pointer-reachable']
+assert len([r for r in rows if repaired(r)])==8, 'incomplete repaired-control matrix'
+raise SystemExit(any(not r['pass'] and (r['scope']=='candidate' or repaired(r)) for r in rows))
