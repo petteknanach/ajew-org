@@ -130,7 +130,7 @@ try:
       return r
      check('deep-link-source-uncovered',lambda:scan('deep-link'))
      def other_fixed_controls():
-      # Preserve the separate unresolved Chok utility-rail failure. The
+      # Gate the Chok utility rail against actual source ink. The
       # desktop has no bottom tab bar: scan through the viewport's bottom.
       probe=OCCLUSION.replace('innerHeight-64','innerHeight') if width>=1024 else OCCLUSION
       v=page.evaluate(probe,{'root':'#ck-content','selectors':['#backToTop','.hitbodedut-fab','#voice-input-btn','#page-agent-toggle']})
@@ -271,4 +271,4 @@ assert len({(r['width'],r['page']) for r in rows})==12, 'incomplete width/page m
 assert not errors, errors
 repaired=lambda r: r['name'] in ['candle-open-dismiss','theme-pointer-reachable']
 assert len([r for r in rows if repaired(r)])==8, 'incomplete repaired-control matrix'
-raise SystemExit(any(not r['pass'] and (r['scope']=='candidate' or repaired(r)) for r in rows))
+raise SystemExit(any(not r['pass'] for r in rows))

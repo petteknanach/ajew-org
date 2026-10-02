@@ -1009,6 +1009,10 @@ const readerPlainBookBase = readerPlainMatch ? `/reader-plain/${readerPlainMatch
     z-index: 1201;
     box-shadow: 0 2px 8px rgba(0,0,0,0.3);
   }
+  /* Chok reserves an 88px utility rail above voice and Page Agent. */
+  @media (min-width: 1024px) {
+    body:has(.ck-wrap) #backToTop { right: 26px; bottom: 216px; }
+  }
   .back-to-top.visible {
     opacity: 0.8;
     pointer-events: auto;
