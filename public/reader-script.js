@@ -222,6 +222,7 @@
         if (input) input.focus();
       } else {
         clearSearchHighlights();
+        if (window.AjewReaderEdition) window.AjewReaderEdition.paint(state, '');
       }
     }
   }
@@ -252,6 +253,7 @@
 
   function performSearch(query) {
     clearSearchHighlights();
+    if (window.AjewReaderEdition) window.AjewReaderEdition.paint(state, query);
     query = String(query || '').trim();
     const quotePairs = [['"', '"'], ['“', '”'], ["'", "'"], ['‘', '’'], ['״', '״']];
     for (const [open, close] of quotePairs) {
@@ -357,7 +359,7 @@
       const container = document.querySelector('.reader-container');
       if (!container || !container.contains(selection.anchorNode)) return;
 
-      const torahTitle = container.dataset.torahTitle || '';
+      const torahTitle = (container.dataset.torahTitle || '') + (window.AjewReaderEdition ? ' — ' + window.AjewReaderEdition.label() : '');
       const torahId = container.dataset.torahId || '';
       const attribution = `\n\n--- ${torahTitle} (${torahId}) - ajew.org/reader ---`;
 
@@ -478,6 +480,7 @@
 
   // --- State Management ---
   function setState(key, value) {
+    if (key === 'mode' && window.AjewReaderEdition?.edition() === 'uxlc') return;
     state[key] = value;
     savePrefs();
     applyAll();
@@ -489,6 +492,7 @@
     applyFontSize();
     applyFontFamily();
     applyTheme();
+    if (window.AjewReaderEdition) performSearch(state.searchOpen ? document.querySelector('.reader-search-bar input')?.value : '');
   }
 
   // --- Scroll Spy for TOC ---
@@ -847,6 +851,9 @@
     updateProgress();
 
     // Shortcuts overlay close on click outside
+    window.AjewReader = { setState: setState, getState: function () { return state; }, refresh: applyAll, setupSegmentShareActions: setupSegmentShareActions };
+    document.dispatchEvent(new Event('ajew-reader-ready'));
+
     const shortcutsOverlay = document.querySelector('.reader-shortcuts-overlay');
     if (shortcutsOverlay) {
       shortcutsOverlay.addEventListener('click', (e) => {
@@ -1526,6 +1533,7 @@
   function absoluteShareUrl(hash, extra) {
     var url = new URL(window.location.href);
     url.searchParams.delete('t');
+    if (window.AjewReaderEdition) url.searchParams.set('edition', window.AjewReaderEdition.edition());
     if (extra) Object.keys(extra).forEach(function (k) { if (extra[k] != null) url.searchParams.set(k, extra[k]); });
     if (hash) url.hash = hash.charAt(0) === '#' ? hash : '#' + hash;
     return url.toString();
@@ -1534,10 +1542,11 @@
   function segmentTitle(seg) {
     var title = document.title.replace(' | A Jew', '');
     var n = (seg.id || '').replace(/^seg-/, '').replace(/^segment-/, '').replace(/^aligned-/, '');
-    return title + (n ? ' — Teaching ' + n : '');
+    return title + (n ? ' — Teaching ' + n : '') + (window.AjewReaderEdition ? ' — ' + window.AjewReaderEdition.label() : '');
   }
 
   function segmentPlainText(seg) {
+    if (window.AjewReaderEdition) return window.AjewReaderEdition.segmentText(seg);
     var clone = seg.cloneNode(true);
     clone.querySelectorAll('.ajew-segment-actions,.ajew-suno-segment-player,audio,button,select').forEach(function (el) { el.remove(); });
     return clone.textContent.replace(/\s+/g, ' ').trim();
@@ -1600,8 +1609,8 @@
 
   // --- Share ---
   function shareCurrentPage() {
-    var title = document.title.replace(' | A Jew', '');
-    var url = window.location.href;
+    var title = document.title.replace(' | A Jew', '') + (window.AjewReaderEdition ? ' — ' + window.AjewReaderEdition.label() : '');
+    var url = window.AjewReaderEdition ? absoluteShareUrl() : window.location.href;
     var text = title + ' - ' + url;
 
     // Check if share dropdown already exists
