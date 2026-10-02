@@ -26,6 +26,7 @@
 
   // ─── Load/Save ───
   function loadPrefs() {
+    if (window.AjewReaderEdition) { state = window.AjewReader.getState(); return; }
     try {
       const saved = localStorage.getItem(PREFS_KEY);
       if (saved) state = { ...state, ...JSON.parse(saved) };
@@ -87,6 +88,7 @@
   }
 
   function setTheme(theme) {
+    if (window.AjewReaderEdition) { window.AjewReader.setState('theme', theme); applyTheme(); return; }
     state.theme = theme;
     savePrefs();
     applyTheme();
@@ -94,6 +96,7 @@
 
   // ─── Language Mode ───
   function applyMode() {
+    if (window.AjewReaderEdition) { window.AjewReader.refresh(); return; }
     const content = document.querySelector('.reader-content');
     if (!content) return;
 
@@ -113,9 +116,14 @@
   }
 
   function setMode(mode) {
-    state.mode = mode;
-    savePrefs();
-    applyMode();
+    if (window.AjewReaderEdition) {
+      window.AjewReader.setState('mode', mode);
+      if (window.AjewReaderEdition.edition() === 'uxlc') return;
+    } else {
+      state.mode = mode;
+      savePrefs();
+      applyMode();
+    }
 
     // Auto-close commentary sidebar in 'both' mode for full-width bilingual view
     if (mode === 'both') {
@@ -145,6 +153,7 @@
   }
 
   function setFontSize(size) {
+    if (window.AjewReaderEdition) { window.AjewReader.setState('fontSize', Math.max(12, Math.min(32, size))); return; }
     state.fontSize = Math.max(12, Math.min(32, size));
     savePrefs();
     applyFontSize();
@@ -643,6 +652,8 @@
 
   // ─── Keyboard Shortcuts ───
   function setupKeyboard() {
+    // The general Reader owns shortcuts on edition-enabled routes; do not double-toggle.
+    if (window.AjewReaderEdition) return;
     document.addEventListener('keydown', (e) => {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
 
@@ -699,6 +710,7 @@
 
   // ─── Copy with Attribution ───
   function setupCopyAttribution() {
+    if (window.AjewReaderEdition) return;
     document.addEventListener('copy', (e) => {
       const selection = window.getSelection();
       if (!selection || selection.isCollapsed) return;
@@ -743,7 +755,7 @@
     a.id = 'btn-plain-text';
     a.className = 'reader-btn reader-btn-icon';
     a.href = plainBase;
-    a.textContent = 'Plain Section';
+    a.textContent = window.AjewReaderEdition ? 'Original — Plain Section' : 'Plain Section';
     a.title = 'Clean static Hebrew/English text for this section';
     toolbar.appendChild(a);
 
@@ -751,7 +763,7 @@
     b.id = 'btn-plain-full-work';
     b.className = 'reader-btn reader-btn-icon';
     b.href = bookBase + 'full.txt';
-    b.textContent = 'Full Plain Work';
+    b.textContent = window.AjewReaderEdition ? 'Original — Full Plain Work' : 'Full Plain Work';
     b.title = 'One static TXT file containing every section of this work';
     toolbar.appendChild(b);
   }

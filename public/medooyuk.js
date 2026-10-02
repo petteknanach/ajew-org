@@ -4,7 +4,7 @@
  * plus .css (installed once), usable by Chok and any annotated reader. */
 (function () {
   'use strict';
-  var VERSION = 'fat-nikud-20260930-1';
+  var VERSION = 'capital-t-20261002-1';
   var CSS = ['day', 'sepia', 'night'].map(function (theme) {
     return '@font-face{font-family:AjewMarked-' + theme + ';src:url("/fonts/tikkun/TikunVowels-' + theme + '.ttf?v=' + VERSION + '") format("truetype");font-weight:400;font-style:normal;font-display:block}';
   }).join('') +
@@ -12,7 +12,7 @@
     '[data-theme="sepia"]{--ajew-marked-font:AjewMarked-sepia}' +
     '[data-theme="night"]{--ajew-marked-font:AjewMarked-night}' +
     '.marked-hebrew{font-family:var(--ajew-marked-font,AjewMarked-day),serif!important;font-weight:400!important;font-synthesis:none}' +
-    '.marked-hebrew .marked-qere{text-decoration:underline;text-underline-offset:.12em}';
+    '.marked-qere{text-decoration:underline;text-underline-offset:.12em}';
   function esc(s) { return s.replace(/[&<>"']/g, function (ch) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]; }); }
   function renderToken(tok, marks, teamim, specialNikud) {
     var text = teamim === false ? tok.replace(/[\u0591-\u05AF\u05C0]/g, '') : tok;
@@ -53,51 +53,4 @@
     var style = document.createElement('style'); style.id = 'ajew-marked-hebrew-css'; style.textContent = CSS; document.head.appendChild(style);
   }
 
-  var match = location.pathname.match(/^\/reader\/(tanach-[a-z0-9-]+)\/(\d+)\/(\d+)\/?$/);
-  if (!match) return;
-  var slug = match[1], chapter = match[3], data = null, active = false, wanted = false, pending = null, snapshots = [];
-  var PREF = 'ajew-special-nikud';
-  function save(value) { try { localStorage.setItem(PREF, value ? '1' : '0'); } catch (_) {} }
-  function btn() { return document.getElementById('btn-medooyuk'); }
-  function updateButton() { var el = btn(); if (el) { el.classList.toggle('reader-btn-active', active); el.setAttribute('aria-pressed', String(wanted)); } }
-  function activate() {
-    if (!wanted || active) return;
-    if (!data) {
-      if (!pending) pending = fetch('/reader/medooyuk/' + slug + '.json').then(function (r) {
-        if (!r.ok) throw new Error(r.status); return r.json();
-      }).then(function (d) { data = d; pending = null; activate(); }).catch(function () {
-        pending = null; wanted = false; save(false); updateButton(); alert('Medooyuk data not available for this book.');
-      });
-      return;
-    }
-    var ch = data.ch[chapter] || {};
-    document.querySelectorAll('.reader-segment').forEach(function (seg) {
-      var vi = parseInt(seg.getAttribute('data-index'), 10), p = seg.querySelector('p[data-nikud]');
-      if (!p || !ch[vi]) return;
-      snapshots.push({ el: p, html: p.innerHTML }); p.innerHTML = renderVerse(ch[vi]);
-    });
-    active = true; updateButton();
-  }
-  function deactivate() {
-    snapshots.forEach(function (s) { s.el.innerHTML = s.html; }); snapshots = []; active = false; updateButton();
-  }
-  function injectButtons() {
-    var anchor = document.getElementById('btn-nikud');
-    if (!anchor || btn()) return;
-    var mk = document.createElement('button');
-    mk.className = 'reader-btn'; mk.id = 'btn-medooyuk'; mk.textContent = 'Medooyuk';
-    mk.title = 'סימון ניקוד בלבד: שווא נע מודגש, קמץ קטן, מתג וקמץ לבירור';
-    mk.setAttribute('aria-pressed', 'false');
-    mk.addEventListener('click', function () { wanted = !wanted; save(wanted); wanted ? activate() : deactivate(); updateButton(); });
-    anchor.insertAdjacentElement('afterend', mk);
-    var tk = document.createElement('a'); tk.className = 'reader-btn'; tk.textContent = 'Tikun Korim';
-    tk.href = '/reader/tikkun?b=' + slug + '&c=' + chapter; tk.title = 'Open this chapter in the Tikun Korim';
-    mk.insertAdjacentElement('afterend', tk);
-    var style = document.createElement('style');
-    style.textContent = '.reader-btn-active{outline:2px solid #1a9e8c;outline-offset:1px}a.reader-btn{text-decoration:none;display:inline-flex;align-items:center}';
-    document.head.appendChild(style);
-    try { wanted = localStorage.getItem(PREF) === '1'; } catch (_) {}
-    if (wanted) { updateButton(); activate(); }
-  }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', injectButtons); else injectButtons();
 })();

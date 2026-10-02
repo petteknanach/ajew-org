@@ -23,7 +23,8 @@ The output directory public/fonts/tikkun is already in this archive.
 Compare the three outputs to expectedOutputs in SOURCE-MANIFEST.json.
 
 Only COLR paint layers enlarge audible sheva (two separate dots: 1.8x width,
-1.4x height) and positive qamats katan (1.5x). Original contours, character
+1.4x height) and positive qamats katan (bold capital T: source topbar top,
+1.5x width/height, long thick stem only downward). Original contours, character
 mappings, shaping advances and GPOS anchors remain intact. Non-shaping paint
 layer bearings follow their outline bounds to preserve the source origin.
 Uncertain qb and meteg do not acquire katan enlargement. No linguistic

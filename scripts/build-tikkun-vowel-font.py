@@ -26,11 +26,18 @@ PALETTES = {
 }
 
 
-def make_font(theme):
-    f = TTFont(ROOT/'public/fonts/TaameyFrankCLM-Medium.ttf', recalcTimestamp=False)
+def make_font(theme, study_source=None):
+    f = TTFont(study_source or ROOT/'public/fonts/TaameyFrankCLM-Medium.ttf', recalcTimestamp=False)
+    study = study_source is not None
     f['head'].modified = f['head'].created
     original_order = list(f.getGlyphOrder())
     definitions = [('ss01', ['sheva','finalkafsheva'], 0), ('ss02', ['qamats','qamatsqatan','finalkafqamats'], 1), ('ss03', ['qamats','qamatsqatan','finalkafqamats'], 2), ('ss04', ['meteg','hatafsegol_meteg','hatafpatah_meteg','hatafqamats_meteg'], 3)]
+    if study:
+        definitions = [('ss01', ['sheva','finalkafsheva'], 0),
+                       ('ss02', ['qamats','qamatsqatan','finalkafqamats','alefqamats'], 1),
+                       ('ss03', ['qamats','qamatsqatan','finalkafqamats','alefqamats'], 2)]
+        if f['glyf']['meteg'].numberOfContours:
+            definitions.append(('ss04', ['meteg','metegleft','metegright','hatafsegolmeteg','hatafpatahmeteg','hatafqamatsmeteg'], 3))
     copies, colors, substitutions = {}, {}, {}
     extra_layers = []
     def contours(name):
@@ -67,16 +74,35 @@ def make_font(theme):
         # Paint expansion ONLY: keep shaping glyphs, advances and GPOS anchors.
         # Sheva is TWO fat dots: enlarge about each original dot's center,
         # retaining both dot centers and their original separation.
-        # Qatan expands about the original mark's center as one outline.
+        # Qatan is an explicit capital-T paint silhouette, not uniform scaling
+        # of the author's thin-necked/rounded-bottom qamats. Keep its source
+        # topbar TOP and horizontal center: all extra height grows DOWNWARD.
+        # This changes only the isolated COLR ink, not the shaping glyph.
         if tag not in ('ss01', 'ss02'): return parts
-        sx, sy = (1.8, 1.4) if tag == 'ss01' else (1.5, 1.5)
-        all_coords = [xy for coords, flags in parts for xy in coords]
+        if tag == 'ss02':
+            assert len(parts) == 1, 'qamats must have one isolated contour'
+            coords, _ = parts[0]
+            xmin, xmax = min(x for x,y in coords), max(x for x,y in coords)
+            top, bottom = max(y for x,y in coords), min(y for x,y in coords)
+            cx = (xmin+xmax)/2
+            width = xmax-xmin
+            # Source topbar's horizontal edges identify its thickness. This
+            # also works on the translated contour inside final-kaf ligatures.
+            bar_bottom = max(y for x,y in coords if y < top and x in (xmin,xmax))
+            half = round(width*.75) + (cx % 1)
+            stem = round(width*.21) + (cx % 1)
+            shoulder = top-round((top-bar_bottom)*1.5)
+            foot = top-round((top-bottom)*1.5)
+            pts = [(round(cx-half),top),(round(cx+half),top),
+                   (round(cx+half),shoulder),(round(cx+stem),shoulder),
+                   (round(cx+stem),foot),(round(cx-stem),foot),
+                   (round(cx-stem),shoulder),(round(cx-half),shoulder)]
+            return [(pts, [1]*8)]
         result = []
         for coords, flags in parts:
-            reference = coords if tag == 'ss01' else all_coords
-            cx = (min(x for x,y in reference) + max(x for x,y in reference))/2
-            cy = (min(y for x,y in reference) + max(y for x,y in reference))/2
-            result.append(([(round(cx+(x-cx)*sx), round(cy+(y-cy)*sy)) for x,y in coords], flags))
+            cx = (min(x for x,y in coords) + max(x for x,y in coords))/2
+            cy = (min(y for x,y in coords) + max(y for x,y in coords))/2
+            result.append(([(round(cx+(x-cx)*(1.45 if study else 1.8)), round(cy+(y-cy)*(1.15 if study else 1.4))) for x,y in coords], flags))
         return result
     for tag, originals, color in definitions:
         substitutions[tag] = {}
@@ -86,7 +112,7 @@ def make_font(theme):
             f['hmtx'].metrics[new] = f['hmtx'].metrics[old]
             copies.setdefault(old, []).append(new)
             substitutions[tag][old] = new
-            if old in ['sheva','qamats','qamatsqatan','meteg']:
+            if old in ['sheva','qamats','qamatsqatan','meteg','metegleft','metegright']:
                 ink = layer(new+'.ink', enlarged(contours(old), tag), old) if tag in ('ss01','ss02') else old
                 colors[new] = [(ink, color)]
             else:
@@ -97,7 +123,14 @@ def make_font(theme):
                 targets = [signature(c) for c in contours(target)]
                 marked, unmarked = [], []
                 for c in contours(old):
-                    (marked if signature(c) in targets else unmarked).append(c)
+                    coords, flags = c
+                    # Shlomo authored a thinner meteg in these simple ligatures.
+                    # Identify its unique original rectangle, never a donor mark.
+                    mixed_study_meteg = study and tag == 'ss04' and old.startswith('hataf')
+                    match = (len(coords) == 4 and flags == [1]*4 and
+                             sorted(set(y for x,y in coords)) == [-649,-154] and
+                             max(x for x,y in coords)-min(x for x,y in coords) == 117) if mixed_study_meteg else signature(c) in targets
+                    (marked if match else unmarked).append(c)
                 assert len(marked) == len(targets) and unmarked, (old, 'cannot isolate vowel contours')
                 colors[new] = [(layer(new+'.base',unmarked,old),0xffff), (layer(new+'.ink',enlarged(marked,tag),old),color)]
     f.setGlyphOrder(original_order + list(colors) + extra_layers)
@@ -124,6 +157,8 @@ def make_font(theme):
                         for new in news: obj.classDefs[new] = obj.classDefs[old]
                 return
             for cv, arr, rec, count in [
+                ('BaseCoverage','BaseArray','BaseRecord','BaseCount'),
+                ('LigatureCoverage','LigatureArray','LigatureAttach','LigatureCount'),
                 ('MarkCoverage','MarkArray','MarkRecord','MarkCount'),
                 ('Mark1Coverage','Mark1Array','MarkRecord','MarkCount'),
                 ('Mark2Coverage','Mark2Array','Mark2Record','Mark2Count'),
@@ -161,9 +196,10 @@ def make_font(theme):
     rgba = [tuple(int(h[i:i+2],16)/255 for i in (0,2,4)) + (1.,) for h in PALETTES[theme]]
     f['CPAL'] = buildCPAL([rgba])
     # Separate family prevents collisions with unmodified app fonts.
+    family = ('Ajew Study Marked '+Path(study_source).stem+' '+theme) if study else ('Tikun Vowels '+theme)
     for n in f['name'].names:
         if n.nameID in [1,3,4,6,16]:
-            n.string = (('TikunVowels-'+theme) if n.nameID == 6 else ('Tikun Vowels '+theme)).encode(n.getEncoding())
+            n.string = ((family.replace(' ', '') if study else 'TikunVowels-'+theme) if n.nameID == 6 else family).encode(n.getEncoding())
     b = io.BytesIO(); f.save(b); return b.getvalue()
 
 

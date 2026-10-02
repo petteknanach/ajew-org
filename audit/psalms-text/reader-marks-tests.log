@@ -1,0 +1,70 @@
+TAP version 13
+# Subtest: exact original Unicode is rendered, original segment index kept
+ok 1 - exact original Unicode is rendered, original segment index kept
+  ---
+  duration_ms: 3.086036
+  type: 'test'
+  ...
+# Subtest: different pointing/order/consonant/meteg/missing tails fail closed
+ok 2 - different pointing/order/consonant/meteg/missing tails fail closed
+  ---
+  duration_ms: 0.766637
+  type: 'test'
+  ...
+# Subtest: format comparison retains whitespace, punctuation and parsha labels in actual display
+ok 3 - format comparison retains whitespace, punctuation and parsha labels in actual display
+  ---
+  duration_ms: 0.427946
+  type: 'test'
+  ...
+# Subtest: maqaf boundary remaps marks to original token without altering source
+ok 4 - maqaf boundary remaps marks to original token without altering source
+  ---
+  duration_ms: 0.253617
+  type: 'test'
+  ...
+# Subtest: qere, missing index, duplicates and absent metadata never borrow
+ok 5 - qere, missing index, duplicates and absent metadata never borrow
+  ---
+  duration_ms: 0.548193
+  type: 'test'
+  ...
+# Subtest: sparse source indices use identity, not array ordinal; both he and he_nikud gated independently
+ok 6 - sparse source indices use identity, not array ordinal; both he and he_nikud gated independently
+  ---
+  duration_ms: 0.403919
+  type: 'test'
+  ...
+# Subtest: qk and independent qb flags retain source-letter positions; nach stays plain
+ok 7 - qk and independent qb flags retain source-letter positions; nach stays plain
+  ---
+  duration_ms: 1.474465
+  type: 'test'
+  ...
+# Subtest: source with exact full accents can attach, but one changed accent rejects all marks
+ok 8 - source with exact full accents can attach, but one changed accent rejects all marks
+  ---
+  duration_ms: 0.260601
+  type: 'test'
+  ...
+# Subtest: unsupported source maqaf-spacing is retained plain, never silently compressed
+ok 9 - unsupported source maqaf-spacing is retained plain, never silently compressed
+  ---
+  duration_ms: 0.626246
+  type: 'test'
+  ...
+# Subtest: supported inventory is limited to declared Tanach part 1; render window is bounded
+ok 10 - supported inventory is limited to declared Tanach part 1; render window is bounded
+  ---
+  duration_ms: 0.67486
+  type: 'test'
+  ...
+1..10
+# tests 10
+# suites 0
+# pass 10
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 36.680588

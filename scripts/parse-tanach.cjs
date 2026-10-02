@@ -9,6 +9,7 @@
 const fs = require('fs');
 const path = require('path');
 const iconv = require('iconv-lite');
+const { repairPsalmsHolam } = require('./lib/psalms-holam-repairs.cjs');
 
 const WORKSPACE = path.join(__dirname, '..');
 const BOOKS_BASE = 'C:/Users/Pettek/Documents/Claude Desktop projects/Books';
@@ -540,7 +541,7 @@ function generateJson(bookDef, chapters) {
     const segments = chapter.verses.map(v => ({
       index: v.num,
       he: stripNikud(v.text),
-      he_nikud: v.text,
+      he_nikud: repairPsalmsHolam(bookDef.slug, chapterNum, v.num, v.text),
       en: '',
     }));
 

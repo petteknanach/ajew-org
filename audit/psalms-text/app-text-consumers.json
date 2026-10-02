@@ -1,0 +1,940 @@
+[
+  {
+    "file": "app/tikkun-klali/index.tsx",
+    "hits": [
+      [
+        9,
+        "import { TIKKUN_KLALI_PSALMS, RIBONO_SHEL_OLAM } from '@/constants/tikkunKlali';"
+      ],
+      [
+        11,
+        "// Load psalms data"
+      ],
+      [
+        12,
+        "const tikkunData = require('@/assets/tikkun-klali-raw.json');"
+      ],
+      [
+        73,
+        "        {/* === BEFORE PSALMS — Collapsible Sections === */}"
+      ],
+      [
+        92,
+        "        <CollapsibleSection title=\"תְּהִלִּים צ״ה — Tehillim 95\" theme={theme}>"
+      ],
+      [
+        98,
+        "        {/* Psalms */}"
+      ],
+      [
+        99,
+        "        {TIKKUN_KLALI_PSALMS.map((num) => {"
+      ],
+      [
+        102,
+        "            <View key={num} style={[styles.psalmSection, { borderColor: theme.border }]}>"
+      ],
+      [
+        144,
+        "        {/* === AFTER PSALMS — Collapsible Section === */}"
+      ],
+      [
+        206,
+        "  psalmSection: {"
+      ]
+    ]
+  },
+  {
+    "file": "assets/data/succos/chapters.ts",
+    "hits": [
+      [
+        4,
+        "  1: () => require('./psalms/1.json'),"
+      ],
+      [
+        5,
+        "  2: () => require('./psalms/2.json'),"
+      ],
+      [
+        6,
+        "  3: () => require('./psalms/3.json'),"
+      ],
+      [
+        7,
+        "  4: () => require('./psalms/4.json'),"
+      ],
+      [
+        8,
+        "  5: () => require('./psalms/5.json'),"
+      ],
+      [
+        9,
+        "  6: () => require('./psalms/6.json'),"
+      ],
+      [
+        10,
+        "  7: () => require('./psalms/7.json'),"
+      ],
+      [
+        11,
+        "  8: () => require('./psalms/8.json'),"
+      ],
+      [
+        12,
+        "  9: () => require('./psalms/9.json'),"
+      ],
+      [
+        13,
+        "  10: () => require('./psalms/10.json'),"
+      ],
+      [
+        14,
+        "  11: () => require('./psalms/11.json'),"
+      ],
+      [
+        15,
+        "  12: () => require('./psalms/12.json'),"
+      ],
+      [
+        16,
+        "  13: () => require('./psalms/13.json'),"
+      ],
+      [
+        17,
+        "  14: () => require('./psalms/14.json'),"
+      ],
+      [
+        18,
+        "  15: () => require('./psalms/15.json'),"
+      ],
+      [
+        19,
+        "  16: () => require('./psalms/16.json'),"
+      ],
+      [
+        20,
+        "  17: () => require('./psalms/17.json'),"
+      ],
+      [
+        21,
+        "  18: () => require('./psalms/18.json'),"
+      ],
+      [
+        22,
+        "  19: () => require('./psalms/19.json'),"
+      ],
+      [
+        23,
+        "  20: () => require('./psalms/20.json'),"
+      ],
+      [
+        24,
+        "  21: () => require('./psalms/21.json'),"
+      ],
+      [
+        25,
+        "  22: () => require('./psalms/22.json'),"
+      ],
+      [
+        26,
+        "  23: () => require('./psalms/23.json'),"
+      ],
+      [
+        27,
+        "  24: () => require('./psalms/24.json'),"
+      ],
+      [
+        28,
+        "  25: () => require('./psalms/25.json'),"
+      ],
+      [
+        29,
+        "  26: () => require('./psalms/26.json'),"
+      ],
+      [
+        30,
+        "  27: () => require('./psalms/27.json'),"
+      ],
+      [
+        31,
+        "  28: () => require('./psalms/28.json'),"
+      ],
+      [
+        32,
+        "  29: () => require('./psalms/29.json'),"
+      ],
+      [
+        33,
+        "  30: () => require('./psalms/30.json'),"
+      ],
+      [
+        34,
+        "  31: () => require('./psalms/31.json'),"
+      ],
+      [
+        35,
+        "  32: () => require('./psalms/32.json'),"
+      ],
+      [
+        36,
+        "  33: () => require('./psalms/33.json'),"
+      ],
+      [
+        37,
+        "  34: () => require('./psalms/34.json'),"
+      ],
+      [
+        38,
+        "  35: () => require('./psalms/35.json'),"
+      ],
+      [
+        39,
+        "  36: () => require('./psalms/36.json'),"
+      ],
+      [
+        40,
+        "  37: () => require('./psalms/37.json'),"
+      ],
+      [
+        41,
+        "  38: () => require('./psalms/38.json'),"
+      ],
+      [
+        42,
+        "  39: () => require('./psalms/39.json'),"
+      ],
+      [
+        43,
+        "  40: () => require('./psalms/40.json'),"
+      ],
+      [
+        44,
+        "  41: () => require('./psalms/41.json'),"
+      ],
+      [
+        45,
+        "  42: () => require('./psalms/42.json'),"
+      ],
+      [
+        46,
+        "  43: () => require('./psalms/43.json'),"
+      ],
+      [
+        47,
+        "  44: () => require('./psalms/44.json'),"
+      ],
+      [
+        48,
+        "  45: () => require('./psalms/45.json'),"
+      ],
+      [
+        49,
+        "  46: () => require('./psalms/46.json'),"
+      ],
+      [
+        50,
+        "  47: () => require('./psalms/47.json'),"
+      ],
+      [
+        51,
+        "  48: () => require('./psalms/48.json'),"
+      ],
+      [
+        52,
+        "  49: () => require('./psalms/49.json'),"
+      ],
+      [
+        53,
+        "  50: () => require('./psalms/50.json'),"
+      ],
+      [
+        54,
+        "  51: () => require('./psalms/51.json'),"
+      ],
+      [
+        55,
+        "  52: () => require('./psalms/52.json'),"
+      ],
+      [
+        56,
+        "  53: () => require('./psalms/53.json'),"
+      ],
+      [
+        57,
+        "  54: () => require('./psalms/54.json'),"
+      ],
+      [
+        58,
+        "  55: () => require('./psalms/55.json'),"
+      ],
+      [
+        59,
+        "  56: () => require('./psalms/56.json'),"
+      ],
+      [
+        60,
+        "  57: () => require('./psalms/57.json'),"
+      ],
+      [
+        61,
+        "  58: () => require('./psalms/58.json'),"
+      ],
+      [
+        62,
+        "  59: () => require('./psalms/59.json'),"
+      ],
+      [
+        63,
+        "  60: () => require('./psalms/60.json'),"
+      ],
+      [
+        64,
+        "  61: () => require('./psalms/61.json'),"
+      ],
+      [
+        65,
+        "  62: () => require('./psalms/62.json'),"
+      ],
+      [
+        66,
+        "  63: () => require('./psalms/63.json'),"
+      ],
+      [
+        67,
+        "  64: () => require('./psalms/64.json'),"
+      ],
+      [
+        68,
+        "  65: () => require('./psalms/65.json'),"
+      ],
+      [
+        69,
+        "  66: () => require('./psalms/66.json'),"
+      ],
+      [
+        70,
+        "  67: () => require('./psalms/67.json'),"
+      ],
+      [
+        71,
+        "  68: () => require('./psalms/68.json'),"
+      ],
+      [
+        72,
+        "  69: () => require('./psalms/69.json'),"
+      ],
+      [
+        73,
+        "  70: () => require('./psalms/70.json'),"
+      ],
+      [
+        74,
+        "  71: () => require('./psalms/71.json'),"
+      ],
+      [
+        75,
+        "  72: () => require('./psalms/72.json'),"
+      ],
+      [
+        76,
+        "  73: () => require('./psalms/73.json'),"
+      ],
+      [
+        77,
+        "  74: () => require('./psalms/74.json'),"
+      ],
+      [
+        78,
+        "  75: () => require('./psalms/75.json'),"
+      ],
+      [
+        79,
+        "  76: () => require('./psalms/76.json'),"
+      ],
+      [
+        80,
+        "  77: () => require('./psalms/77.json'),"
+      ],
+      [
+        81,
+        "  78: () => require('./psalms/78.json'),"
+      ],
+      [
+        82,
+        "  79: () => require('./psalms/79.json'),"
+      ],
+      [
+        83,
+        "  80: () => require('./psalms/80.json'),"
+      ],
+      [
+        84,
+        "  81: () => require('./psalms/81.json'),"
+      ],
+      [
+        85,
+        "  82: () => require('./psalms/82.json'),"
+      ],
+      [
+        86,
+        "  83: () => require('./psalms/83.json'),"
+      ],
+      [
+        87,
+        "  84: () => require('./psalms/84.json'),"
+      ],
+      [
+        88,
+        "  85: () => require('./psalms/85.json'),"
+      ],
+      [
+        89,
+        "  86: () => require('./psalms/86.json'),"
+      ],
+      [
+        90,
+        "  87: () => require('./psalms/87.json'),"
+      ],
+      [
+        91,
+        "  88: () => require('./psalms/88.json'),"
+      ],
+      [
+        92,
+        "  89: () => require('./psalms/89.json'),"
+      ],
+      [
+        93,
+        "  90: () => require('./psalms/90.json'),"
+      ],
+      [
+        94,
+        "  91: () => require('./psalms/91.json'),"
+      ],
+      [
+        95,
+        "  92: () => require('./psalms/92.json'),"
+      ],
+      [
+        96,
+        "  93: () => require('./psalms/93.json'),"
+      ],
+      [
+        97,
+        "  94: () => require('./psalms/94.json'),"
+      ],
+      [
+        98,
+        "  95: () => require('./psalms/95.json'),"
+      ],
+      [
+        99,
+        "  96: () => require('./psalms/96.json'),"
+      ],
+      [
+        100,
+        "  97: () => require('./psalms/97.json'),"
+      ],
+      [
+        101,
+        "  98: () => require('./psalms/98.json'),"
+      ],
+      [
+        102,
+        "  99: () => require('./psalms/99.json'),"
+      ],
+      [
+        103,
+        "  100: () => require('./psalms/100.json'),"
+      ],
+      [
+        104,
+        "  101: () => require('./psalms/101.json'),"
+      ],
+      [
+        105,
+        "  102: () => require('./psalms/102.json'),"
+      ],
+      [
+        106,
+        "  103: () => require('./psalms/103.json'),"
+      ],
+      [
+        107,
+        "  104: () => require('./psalms/104.json'),"
+      ],
+      [
+        108,
+        "  105: () => require('./psalms/105.json'),"
+      ],
+      [
+        109,
+        "  106: () => require('./psalms/106.json'),"
+      ],
+      [
+        110,
+        "  107: () => require('./psalms/107.json'),"
+      ],
+      [
+        111,
+        "  108: () => require('./psalms/108.json'),"
+      ],
+      [
+        112,
+        "  109: () => require('./psalms/109.json'),"
+      ],
+      [
+        113,
+        "  110: () => require('./psalms/110.json'),"
+      ],
+      [
+        114,
+        "  111: () => require('./psalms/111.json'),"
+      ],
+      [
+        115,
+        "  112: () => require('./psalms/112.json'),"
+      ],
+      [
+        116,
+        "  113: () => require('./psalms/113.json'),"
+      ],
+      [
+        117,
+        "  114: () => require('./psalms/114.json'),"
+      ],
+      [
+        118,
+        "  115: () => require('./psalms/115.json'),"
+      ],
+      [
+        119,
+        "  116: () => require('./psalms/116.json'),"
+      ],
+      [
+        120,
+        "  117: () => require('./psalms/117.json'),"
+      ],
+      [
+        121,
+        "  118: () => require('./psalms/118.json'),"
+      ],
+      [
+        122,
+        "  119: () => require('./psalms/119.json'),"
+      ],
+      [
+        123,
+        "  120: () => require('./psalms/120.json'),"
+      ],
+      [
+        124,
+        "  121: () => require('./psalms/121.json'),"
+      ],
+      [
+        125,
+        "  122: () => require('./psalms/122.json'),"
+      ],
+      [
+        126,
+        "  123: () => require('./psalms/123.json'),"
+      ],
+      [
+        127,
+        "  124: () => require('./psalms/124.json'),"
+      ],
+      [
+        128,
+        "  125: () => require('./psalms/125.json'),"
+      ],
+      [
+        129,
+        "  126: () => require('./psalms/126.json'),"
+      ],
+      [
+        130,
+        "  127: () => require('./psalms/127.json'),"
+      ],
+      [
+        131,
+        "  128: () => require('./psalms/128.json'),"
+      ],
+      [
+        132,
+        "  129: () => require('./psalms/129.json'),"
+      ],
+      [
+        133,
+        "  130: () => require('./psalms/130.json'),"
+      ],
+      [
+        134,
+        "  131: () => require('./psalms/131.json'),"
+      ],
+      [
+        135,
+        "  132: () => require('./psalms/132.json'),"
+      ],
+      [
+        136,
+        "  133: () => require('./psalms/133.json'),"
+      ],
+      [
+        137,
+        "  134: () => require('./psalms/134.json'),"
+      ],
+      [
+        138,
+        "  135: () => require('./psalms/135.json'),"
+      ],
+      [
+        139,
+        "  136: () => require('./psalms/136.json'),"
+      ],
+      [
+        140,
+        "  137: () => require('./psalms/137.json'),"
+      ],
+      [
+        141,
+        "  138: () => require('./psalms/138.json'),"
+      ],
+      [
+        142,
+        "  139: () => require('./psalms/139.json'),"
+      ],
+      [
+        143,
+        "  140: () => require('./psalms/140.json'),"
+      ],
+      [
+        144,
+        "  141: () => require('./psalms/141.json'),"
+      ],
+      [
+        145,
+        "  142: () => require('./psalms/142.json'),"
+      ],
+      [
+        146,
+        "  143: () => require('./psalms/143.json'),"
+      ],
+      [
+        147,
+        "  144: () => require('./psalms/144.json'),"
+      ],
+      [
+        148,
+        "  145: () => require('./psalms/145.json'),"
+      ],
+      [
+        149,
+        "  146: () => require('./psalms/146.json'),"
+      ],
+      [
+        150,
+        "  147: () => require('./psalms/147.json'),"
+      ],
+      [
+        151,
+        "  148: () => require('./psalms/148.json'),"
+      ],
+      [
+        152,
+        "  149: () => require('./psalms/149.json'),"
+      ],
+      [
+        153,
+        "  150: () => require('./psalms/150.json'),"
+      ]
+    ]
+  },
+  {
+    "file": "components/SuccosStudyReader.tsx",
+    "hits": [
+      [
+        46,
+        "  // Annotated Psalms share up to 24 verses in one offline document. Keep the"
+      ],
+      [
+        111,
+        "        {selection.id === 'all-psalms' && button('succos-psalm-100', 'Psalm 100 · מזמור לתודה', false, () => chooseChapter(100))}"
+      ],
+      [
+        164,
+        "          <Text selectable style={[styles.caption, { color: theme.secondaryText }]}>Hebrew: the existing pointed ajew texts. Psalms English: JPS 1917 (public domain). Chapter and verse numbers follow the Hebrew text.</Text>"
+      ]
+    ]
+  },
+  {
+    "file": "constants/books.ts",
+    "hits": [
+      [
+        689,
+        "  { id: 'tanach-tehillim', title: 'Tanach - Psalms', hebrewTitle: 'תנ\"ך - תהלים', author: 'Tanach (Ketuvim)', hebrewAuthor: 'תנ\"ך (כתובים)', authorGroup: 'tanach-ketuvim', parts: [{ part: 1, title: 'Chapters', hebrewTitle: 'פרקים', totalTorahs: 150 }] },"
+      ]
+    ]
+  },
+  {
+    "file": "constants/tikkunKlali.ts",
+    "hits": [
+      [
+        1,
+        "// Tikkun HaKlali - The 10 Psalms of Rebbe Nachman"
+      ],
+      [
+        2,
+        "// Psalms: 16, 32, 41, 42, 59, 77, 90, 105, 137, 150"
+      ],
+      [
+        5,
+        "export const TIKKUN_KLALI_PSALMS = [16, 32, 41, 42, 59, 77, 90, 105, 137, 150];"
+      ]
+    ]
+  },
+  {
+    "file": "scripts/build-tikun-chatzos.cjs",
+    "hits": [
+      [
+        51,
+        "      text: readVerses('tehillim', 137),"
+      ],
+      [
+        59,
+        "      text: readVerses('tehillim', 79),"
+      ],
+      [
+        119,
+        "      text: readVerses('tehillim', 24),"
+      ],
+      [
+        127,
+        "      text: readVerses('tehillim', 42),"
+      ],
+      [
+        135,
+        "      text: readVerses('tehillim', 43),"
+      ],
+      [
+        145,
+        "      text: readVerses('tehillim', 20),"
+      ],
+      [
+        153,
+        "      text: readVerses('tehillim', 67),"
+      ],
+      [
+        161,
+        "      text: readVerses('tehillim', 111),"
+      ],
+      [
+        171,
+        "      text: readVerses('tehillim', 51),"
+      ],
+      [
+        190,
+        "      text: readVerses('tehillim', 126),"
+      ]
+    ]
+  },
+  {
+    "file": "scripts/ingest-succos-study.py",
+    "hits": [
+      [
+        92,
+        "        'psalms-he': 'medooyuk/tanach-tehillim.json',"
+      ],
+      [
+        93,
+        "        'psalms-en-old': 'tanachen/tanach-tehillim.json',"
+      ],
+      [
+        103,
+        "    he = json.loads((frozen / 'psalms-he.json').read_text())['ch']"
+      ],
+      [
+        104,
+        "    old_en = json.loads((frozen / 'psalms-en-old.json').read_text())['ch']"
+      ],
+      [
+        107,
+        "        'action': 'parse', 'page': 'Bible (Jewish Publication Society 1917)/Psalms',"
+      ],
+      [
+        109,
+        "    jps_path = frozen / 'jps-1917-psalms.json'"
+      ],
+      [
+        123,
+        "    sources.append({'id': 'psalms-en', 'url': jps_url, 'edition': 'JPS 1917',"
+      ],
+      [
+        142,
+        "        data = {'kind': 'psalms', 'chapter': c, 'segments': verses}"
+      ],
+      [
+        143,
+        "        dest = output / 'psalms' / f'{c}.json'"
+      ],
+      [
+        145,
+        "        chapters.append({'kind': 'psalms', 'chapter': c, 'units': len(verses),"
+      ],
+      [
+        177,
+        "            anchor = '(Psalms 118:.'"
+      ],
+      [
+        180,
+        "            row['en'] = before.replace(anchor, '(Psalms 118:25).')"
+      ],
+      [
+        181,
+        "            row['note'] = 'Editorial note: the incomplete citation in the English source has been repaired to Psalms 118:25.'"
+      ],
+      [
+        184,
+        "                'anchor': anchor, 'replacement': '(Psalms 118:25).', 'note': row['note']})"
+      ],
+      [
+        199,
+        "        'changes': 'HTML tags removed. In Succah 4:5 an incomplete English citation was repaired to Psalms 118:25 and marked with an editorial note. Translation wording is otherwise unchanged.',"
+      ],
+      [
+        207,
+        "        'psalmsHebrewEdition': 'Existing ajew Medooyuk text built from Unicode/XML Leningrad Codex (UXLC) 2.5, Tanach.us; display/qere tokens, not a ketiv critical edition.',"
+      ],
+      [
+        208,
+        "        'psalmsHebrewLicense': 'https://tanach.us/License.html',"
+      ],
+      [
+        209,
+        "        'alignment': 'Psalms by explicit chapter:verse IDs; Mishnah by verified chapter range and exact unit count.',"
+      ],
+      [
+        212,
+        "        'psalmsChanges': 'Token spacing only in Hebrew. English JPS 1917 re-extracted by verse IDs; HTML, page numbers, book/acrostic headers, and footnote markers excluded. No generated translation.',"
+      ],
+      [
+        219,
+        "    registry += [f\"  {c}: () => require('./psalms/{c}.json'),\" for c in range(1, 151)]"
+      ]
+    ]
+  },
+  {
+    "file": "scripts/rebuild-tikun-chatzos.cjs",
+    "hits": [
+      [
+        4,
+        " * Reads Psalms/scripture from ajew-org reader JSON, kinos from hardcoded liturgical text,"
+      ],
+      [
+        73,
+        "  text: readReaderJson('tanach-tehillim', 137)"
+      ],
+      [
+        85,
+        "  text: readReaderJson('tanach-tehillim', 79)"
+      ],
+      [
+        440,
+        "  text: readReaderJson('tanach-tehillim', 24)"
+      ],
+      [
+        452,
+        "  text: readReaderJson('tanach-tehillim', 42)"
+      ],
+      [
+        464,
+        "  text: readReaderJson('tanach-tehillim', 43)"
+      ],
+      [
+        478,
+        "  text: readReaderJson('tanach-tehillim', 20)"
+      ],
+      [
+        490,
+        "  text: readReaderJson('tanach-tehillim', 67)"
+      ],
+      [
+        502,
+        "  text: readReaderJson('tanach-tehillim', 111)"
+      ],
+      [
+        516,
+        "  text: readReaderJson('tanach-tehillim', 51)"
+      ],
+      [
+        528,
+        "  text: readReaderJson('tanach-tehillim', 126)"
+      ]
+    ]
+  },
+  {
+    "file": "services/chok.ts",
+    "hits": [
+      [
+        167,
+        "  תהלים: 'tanach-tehillim',"
+      ],
+      [
+        168,
+        "  תהילים: 'tanach-tehillim', // exact alternate name present in the owned schedule"
+      ]
+    ]
+  },
+  {
+    "file": "services/succosStudy.ts",
+    "hits": [
+      [
+        5,
+        "export type StudyKind = 'mishnah' | 'psalms';"
+      ],
+      [
+        6,
+        "export type StudyCollectionId = 'mishnah-succah' | 'ascents' | 'hallel' | 'all-psalms';"
+      ],
+      [
+        29,
+        " * Aruch HaShulchan OC 664:11 (night study including Tehillim)."
+      ],
+      [
+        43,
+        "    id: 'ascents', kind: 'psalms',"
+      ],
+      [
+        46,
+        "    description: 'The fifteen Songs of Ascents. Mishnah Succah 5:4 connects the fifteen Temple steps with these fifteen psalms and describes the Levites singing there. Offered for reading and study, not as an authenticated compulsory nightly order.',"
+      ],
+      [
+        51,
+        "    id: 'hallel', kind: 'psalms',"
+      ],
+      [
+        54,
+        "    description: 'The six complete psalms of Hallel, distinct from the Songs of Ascents. Hallel belongs to the festival morning service. This is the biblical text, not a complete prayer-service edition: blessings, responses and customary repetitions are not included.',"
+      ],
+      [
+        59,
+        "    id: 'all-psalms', kind: 'psalms',"
+      ],
+      [
+        60,
+        "    label: 'All Tehillim · 1–150', hebrewLabel: 'כל התהלים · א–קנ',"
+      ],
+      [
+        62,
+        "    description: 'All 150 psalms are available here, including for Hoshana Rabbah night. Aruch HaShulchan describes night study of Devarim and Tehillim. This supplies the complete Psalter, not the whole night’s Tikun or its additional prayers. Follow your community’s order.',"
+      ],
+      [
+        76,
+        "  return kind === 'psalms' ? { ...result, segments: result.segments.map(segment => ({"
+      ],
+      [
+        77,
+        "    ...segment, pasuk: segment.medooyuk ? parseMedooyukVerse(segment.medooyuk, segment.index, 'tanach-tehillim', chapter) : undefined,"
+      ]
+    ]
+  }
+]

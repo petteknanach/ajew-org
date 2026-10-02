@@ -8,6 +8,7 @@
 const fs = require('fs');
 const path = require('path');
 const iconv = require('iconv-lite');
+const { repairPsalmsHolam } = require('./lib/psalms-holam-repairs.cjs');
 
 const BOOKS_DIR = 'C:/Users/Pettek/Documents/Claude Desktop projects/Books';
 const OUTPUT_DIR = path.join(__dirname, '../public/texts/tanach');
@@ -153,7 +154,9 @@ function main() {
     let bookVerses = 0;
 
     for (const chNum of chapterNums) {
-      const verses = chapters[chNum];
+      const verses = chapters[chNum].map(v => ({
+        ...v, he: repairPsalmsHolam(book.slug, chNum, v.num, v.he),
+      }));
       if (verses.length === 0) continue;
 
       const chapterData = {

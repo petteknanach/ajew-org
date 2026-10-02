@@ -5,7 +5,7 @@ import Layout from '../../layouts/Layout.astro';
   title="Tikun Korim - Tanach with Medooyuk"
   description="Torah scroll study with fixed columns, a separate continuous reading view, nikud and taamim, vowel-only medooyuk markings, and Shnayim Mikra v'Echad Targum."
 >
-  <link rel="stylesheet" href="/tikkun.css?v=readable-stam-20260930-r3" />
+  <link rel="stylesheet" href="/tikkun.css?v=capital-t-navigation-20261002-r1" />
   <div id="tk-app" class="tk-wrap" data-tk-theme="day" dir="rtl">
     <header class="tk-header">
       <h1>תיקון קורים <span class="tk-sub">Tikun Korim · medooyuk</span></h1>
@@ -37,7 +37,7 @@ import Layout from '../../layouts/Layout.astro';
             <option value="letters">Unpointed reading — not scroll</option>
           </select>
         </label>
-        <label class="tk-chk tk-reading-only"><input type="checkbox" id="tk-medooyuk" checked /> Medooyuk layer</label>
+        <label class="tk-chk"><input type="checkbox" id="tk-medooyuk" checked /> Medooyuk layer</label>
         <label class="tk-chk tk-reading-only"><input type="checkbox" id="tk-shnayim" /> Shnayim Mikra v'Echad Targum</label>
         <label class="tk-reading-only">Targum <select id="tk-targum"><option value="">—</option></select></label>
         <label class="tk-reading-only">Layout
@@ -69,10 +69,10 @@ import Layout from '../../layouts/Layout.astro';
       <button id="tk-column-less" class="tk-btn" aria-label="Reduce column magnification">−</button>
       <button id="tk-column-fit" class="tk-btn" aria-label="Fit whole column to screen">Fit · 100%</button>
       <button id="tk-column-more" class="tk-btn" aria-label="Enlarge column">+</button>
-      <label>Column ink <select id="tk-column-representation"><option value="source">Original ink · unchanged</option><option value="study">Pointable study · Shlomo Stam</option></select></label>
+      <label>Column ink <select id="tk-column-representation"><option value="study">Pointable study · Shlomo Stam</option><option value="source">Original ink · unchanged</option></select></label>
       <label class="tk-column-chk"><input type="checkbox" id="tk-column-nikud" /> Column nikud</label>
       <label class="tk-column-chk"><input type="checkbox" id="tk-column-taamim" /> Column taamim</label>
-      <p class="tk-sefer-note" dir="ltr">Original ink stays unchanged. Pointable study uses Shlomo Stam, not original ink. In Original ink, marks appear only in the outside companion.</p>
+      <p class="tk-sefer-note" dir="ltr">Original ink stays unchanged. Pointable study uses Shlomo Stam, not original ink. In Original ink, marks appear only in the outside companion. Short tap on the column: show/hide both marks; switches remain independent. Swipe either side to scroll.</p>
     </div>
     <!-- Not a nested main: Layout's global main sizing applies to the OUTER main. -->
     <div id="tk-content" class="tk-content" dir="rtl" lang="he" role="region" aria-label="Tikun text"></div>
@@ -81,6 +81,6 @@ import Layout from '../../layouts/Layout.astro';
     </footer>
   </div>
 </Layout>
-<script is:inline src="/tikkun-renderer.js?v=1" defer></script>
-<script is:inline src="/tikkun-column-display.js?v=readable-stam-20260930-r3" defer></script>
-<script is:inline src="/tikkun.js?v=readable-stam-20260930-r3" defer></script>
+<script is:inline src="/tikkun-renderer.js?v=capital-t-20261002-r1" defer></script>
+<script is:inline src="/tikkun-column-display.js?v=capital-t-20261002-r1" defer></script>
+<script is:inline src="/tikkun.js?v=capital-t-navigation-20261002-r1" defer></script>
