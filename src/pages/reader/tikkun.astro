@@ -5,7 +5,7 @@ import Layout from '../../layouts/Layout.astro';
   title="Tikun Korim - Tanach with Medooyuk"
   description="Torah scroll study with fixed columns, a separate continuous reading view, nikud and taamim, vowel-only medooyuk markings, and Shnayim Mikra v'Echad Targum."
 >
-  <link rel="stylesheet" href="/tikkun.css?v=capital-t-navigation-20261002-r1" />
+  <link rel="stylesheet" href="/tikkun.css?v=boundaries-complete-7341d364" />
   <div id="tk-app" class="tk-wrap" data-tk-theme="day" dir="rtl">
     <header class="tk-header">
       <h1>תיקון קורים <span class="tk-sub">Tikun Korim · medooyuk</span></h1>
@@ -72,8 +72,10 @@ import Layout from '../../layouts/Layout.astro';
       <label>Column ink <select id="tk-column-representation"><option value="study">Pointable study · Shlomo Stam</option><option value="source">Original ink · unchanged</option></select></label>
       <label class="tk-column-chk"><input type="checkbox" id="tk-column-nikud" /> Column nikud</label>
       <label class="tk-column-chk"><input type="checkbox" id="tk-column-taamim" /> Column taamim</label>
+      <label class="tk-column-chk"><input type="checkbox" id="tk-column-verse-labels" /> Chapter:verse labels · study side</label>
       <p class="tk-sefer-note" dir="ltr">Original ink stays unchanged. Pointable study uses Shlomo Stam, not original ink. In Original ink, marks appear only in the outside companion. Short tap on the column: show/hide both marks; switches remain independent. Swipe either side to scroll.</p>
     </div>
+    <div id="tk-current-visible" role="status" aria-live="polite" dir="ltr">Current visible location unavailable</div>
     <!-- Not a nested main: Layout's global main sizing applies to the OUTER main. -->
     <div id="tk-content" class="tk-content" dir="rtl" lang="he" role="region" aria-label="Tikun text"></div>
     <footer class="tk-foot" dir="ltr">
@@ -82,5 +84,6 @@ import Layout from '../../layouts/Layout.astro';
   </div>
 </Layout>
 <script is:inline src="/tikkun-renderer.js?v=capital-t-20261002-r1" defer></script>
-<script is:inline src="/tikkun-column-display.js?v=capital-t-20261002-r1" defer></script>
-<script is:inline src="/tikkun.js?v=capital-t-navigation-20261002-r1" defer></script>
+<script is:inline src="/tikkun-column-display.js?v=boundaries-complete-7341d364" defer></script>
+<script is:inline src="/tikkun-boundaries.js?v=boundaries-complete-7341d364" defer></script>
+<script is:inline src="/tikkun.js?v=boundaries-complete-7341d364" defer></script>

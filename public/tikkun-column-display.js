@@ -101,8 +101,10 @@ function renderStudyColumn(column, lines, units, nikud = false, taamim = false, 
     const prefix = site ? 'tk-' : '', mode = studyPointingMode(nikud, taamim);
     let failed = 0;
     const rows = lines.map((line, ri) => {
+        let physicalGroup = -1;
         const row = ri + 1;
         return `<div${!site && row === selectedRows[0] ? ' id="tikun-selection"' : ''} class="${prefix}fixed-line${line.p ? ` ${prefix}fixed-open` : ''}${line.g.length > 1 ? ` ${prefix}fixed-song` : ''}${selectedRows.includes(row) ? ' fixed-selected' : ''}" data-line="${row}" data-source-line="${line.sourceLine ?? ''}">` + line.g.map((group, gi) => `<div class="${prefix}fixed-group${group.length > 1 ? ` ${prefix}fixed-gapped` : ''}">` + group.map((s, si) => {
+            physicalGroup++;
             const loc = `${row}:${gi}:${si}`, tuples = pointing.columns[column]?.[loc] ?? [];
             let ti = 0, letter = 0;
             const html = s.replace(/[^\s\u05BE]+/g, word => {
@@ -136,7 +138,7 @@ function renderStudyColumn(column, lines, units, nikud = false, taamim = false, 
                     return special ? `<span class="${prefix}${site ? 'l' : 'fixed-letter'}-${esc(special[1])}">${ink}</span>` : ink;
                 }).join('');
                 const unavailable = hasLetters && record.status !== 'exact';
-                return `<span class="study-word${unavailable ? ' study-unpointed' : ''}" data-source="${esc(word)}" data-pointing-status="${record.status}"${'ref' in record && record.ref ? ` data-pointing-ref="${esc(record.ref)}"` : ''} aria-label="${esc(filterColumnMarks(text, nikud, taamim))}"${unavailable ? ' title="אין ניקוד מועתק · הבדל נוסח או כתיב/קרי"' : ''}>${rendered}</span>`;
+                return `<span class="study-word${unavailable ? ' study-unpointed' : ''}" ${hasLetters ? `data-boundary-key="${column}/${row}/${physicalGroup}/${ti - 1}" ` : ''}data-source="${esc(word)}" data-pointing-status="${record.status}"${'ref' in record && record.ref ? ` data-pointing-ref="${esc(record.ref)}"` : ''} aria-label="${esc(filterColumnMarks(text, nikud, taamim))}"${unavailable ? ' title="אין ניקוד מועתק · הבדל נוסח או כתיב/קרי"' : ''}>${rendered}</span>`;
             });
             if (ti !== tuples.length)
                 failed++;
