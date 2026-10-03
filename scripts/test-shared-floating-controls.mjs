@@ -9,8 +9,8 @@ const baseline = execFileSync('git', ['show', 'abac4560d:' + path], { encoding: 
 test('Chok owns a normal-flow date widget rather than a source-covering fixed overlay', () => {
   assert.match(source, /chokHeader\.prepend\(box\)/);
   assert.match(source, /box\.classList\.add\('chok-yahrzeit'\)/);
-  assert.match(source, /\.compact-yahrzeit\.chok-yahrzeit,\s*\.compact-yahrzeit\.lens-yahrzeit\s*\{[^}]*position:\s*relative/s);
-  assert.match(source, /\.compact-yahrzeit\.chok-yahrzeit,\s*\.compact-yahrzeit\.lens-yahrzeit\s*\{[^}]*inset:\s*auto/s);
+  assert.match(source, /\.compact-yahrzeit\.chok-yahrzeit,\s*\.compact-yahrzeit\.lens-yahrzeit,\s*\.compact-yahrzeit\.tikkun-yahrzeit\s*\{[^}]*position:\s*relative/s);
+  assert.match(source, /\.compact-yahrzeit\.chok-yahrzeit,\s*\.compact-yahrzeit\.lens-yahrzeit,\s*\.compact-yahrzeit\.tikkun-yahrzeit\s*\{[^}]*inset:\s*auto/s);
   assert.equal((source.match(/!box\.classList\.contains\('chok-yahrzeit'\)/g) || []).length, 3,
     'success, timeout and error paths all retain opt-in disclosure');
 });
@@ -32,7 +32,21 @@ test('Lens dates use opt-in header flow on success, timeout and error', () => {
   assert.match(source, /lensHeader\.prepend\(box\)/);
   assert.match(source, /box\.classList\.add\('lens-yahrzeit'\)/);
   assert.equal((source.match(/!box\.classList\.contains\('lens-yahrzeit'\)/g) || []).length, 3);
-  assert.match(source, /\.compact-yahrzeit\.lens-yahrzeit:not\(\.collapsed\)\s*\{[^}]*overflow-y:\s*auto/s);
+  assert.match(source, /\.compact-yahrzeit\.lens-yahrzeit:not\(\.collapsed\),\s*\.compact-yahrzeit\.tikkun-yahrzeit:not\(\.collapsed\)\s*\{[^}]*overflow-y:\s*auto/s);
+});
+
+test('Tikun dates remain normal-flow opt-in on all initialization outcomes', () => {
+  assert.match(source, /tikunHeader\.prepend\(box\)/);
+  assert.match(source, /box\.classList\.add\('tikkun-yahrzeit'\)/);
+  assert.equal((source.match(/!box\.classList\.contains\('tikkun-yahrzeit'\)/g) || []).length, 3,
+    'success, timeout and error never auto-expand over Torah ink');
+  assert.match(source, /\.compact-yahrzeit\.tikkun-yahrzeit\s*\{[^}]*position:\s*relative/s);
+  assert.match(source, /\.compact-yahrzeit\.tikkun-yahrzeit:not\(\.collapsed\)\s*\{[^}]*padding-top:\s*3\.25rem/s);
+});
+
+test('Edition controls reserve space outside the TOC hit surface', () => {
+  const css = readFileSync(new URL('../src/styles/reader.css', import.meta.url), 'utf8');
+  assert.match(css, /\.reader-edition-controls\s*\{[^}]*padding:\s*12px 48px/s);
 });
 
 test('Reader candle has a 44px target fully inside its bordered 48px gutter wrapper', () => {
