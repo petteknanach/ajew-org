@@ -291,7 +291,7 @@
     state.chapter = chapter || 1;
     state.data = null; state.targumData = null; state.fixedPage = null; readingError = '';
     render();
-    fetchJSON('/reader/medooyuk/' + slug + '.json').then(function (d) {
+    (slug === 'tanach-tehillim' ? window.AjewPsalmsData.load() : fetchJSON('/reader/medooyuk/' + slug + '.json')).then(function (d) {
       if (id !== requestId) return;
       state.data = d;
       // A pending reading fetch must not rewind a later physical-column move.

@@ -20,9 +20,10 @@ truncated at any inline <x> child. wi is 1-based into that list; the k-th such
 word maps to the k-th <w>-with-text display token. Each mark's rec['w'] is
 verified (form_key equality) against that engine word before shipping.
 """
-import argparse, json, os, sys, unicodedata
+import argparse, json, os, stat, sys, unicodedata, uuid
 import xml.etree.ElementTree as ET
-from psalms_qatan_overlay import apply_book as apply_psalms_qatan
+from psalms_annotation_overlay import apply_book as apply_psalms_annotations
+from psalms_qatan_overlay import unique_object
 
 SLUGS = {
  'Genesis':'tanach-bereishit','Exodus':'tanach-shemos','Leviticus':'tanach-vayikra',
@@ -138,19 +139,51 @@ def verses_of(path):
                     b.append([len(toks), 'n8'])
             yield cn, int(v.get('n')), toks, kflags, engine_words, b, L
 
+def atomic_json_output(op, data):
+    """Same-directory temporary file; preserve old bytes/mode on I/O failure.
+
+    One file replacement, not an all-books transaction. File fsync precedes
+    replace; no claim of directory/power-loss durability or inode preservation.
+    """
+    if os.path.islink(op):
+        raise ValueError('refusing symlink output')
+    mode = stat.S_IMODE(os.stat(op).st_mode) if os.path.exists(op) else None
+    temp = os.path.join(os.path.dirname(op), f'.{os.path.basename(op)}.tmp-{uuid.uuid4().hex}')
+    fd = os.open(temp, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o666)
+    try:
+        with os.fdopen(fd, 'w', encoding='utf-8') as stream:
+            if mode is not None:
+                os.fchmod(stream.fileno(), mode)
+            json.dump(data, stream, ensure_ascii=False, separators=(',', ':'))
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temp, op)
+    finally:
+        if os.path.exists(temp):
+            os.unlink(temp)
+
+
 def build_book(book, xml_dir, jsonl_dir, out_dir):
     path = book_path(xml_dir, book)
     marks = {}
     jl = os.path.join(jsonl_dir, f'tanach_{book}.jsonl')
     n_marks = 0
+    identities = set()
     if os.path.exists(jl):
         for line in open(jl, encoding='utf-8'):
-            rec = json.loads(line)
+            rec = json.loads(line, object_pairs_hook=unique_object) if book == 'Psalms' else json.loads(line)
+            if book == 'Psalms':
+                identity = (rec['c'], rec['v'], rec['wi'])
+                if rec.get('b') != book or identity in identities or rec['wi'] < 1:
+                    raise ValueError('Psalms duplicate/wrong-book intermediate record')
+                identities.add(identity)
             marks.setdefault((rec['c'], rec['v']), []).append(rec)
     out_ch = {}
     mismatch = 0
     examples = []
     for c, v, toks, kflags, engine_words, b, L in verses_of(path):
+        if book == 'Psalms' and v in out_ch.get(c, {}):
+            raise ValueError('Psalms duplicate XML verse identity')
         m = []
         for rec in marks.get((c, v), []):
             wi = rec['wi']
@@ -190,15 +223,17 @@ def build_book(book, xml_dir, jsonl_dir, out_dir):
             'en': book.replace('_1', ' 1').replace('_2', ' 2').replace('_', ' '),
             'ch': out_ch}
     if book == 'Psalms':
-        # The saved JSONL lacks q fields. Never let it erase approved metadata.
-        # Exact whole-verse before/after guards reject drift before opening output.
+        if any(c not in out_ch or v not in out_ch[c] for c, v in marks):
+            raise ValueError('Psalms intermediate references nonexistent verse')
+        # The saved JSONL lacks approved marks. Require one exact original,
+        # qatan-only or final corpus; never compose arbitrary partial states.
+        # Validation precedes opening output, preserving it on any failure.
         if mismatch:
             raise ValueError('Psalms mark/word mismatch; refusing output')
-        data = apply_psalms_qatan(data)
+        data = apply_psalms_annotations(data)
         n_marks = sum(len(v['m']) for ch in data['ch'].values() for v in ch.values())
     op = os.path.join(out_dir, SLUGS[book] + '.json')
-    with open(op, 'w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False, separators=(',', ':'))
+    atomic_json_output(op, data)
     return op, len(out_ch), n_marks, mismatch, examples
 
 def main():

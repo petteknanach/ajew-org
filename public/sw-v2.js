@@ -12,6 +12,8 @@
 
 const CACHE_NAME = 'ajew-v2-capital-t-20261002-r1';
 const ICON_CACHE = 'ajew-icons-v1';
+// Data-only revision: no global cache/font/UI eviction.
+importScripts('/psalms-data.js?v=psalms-annotations-20261002-r1&integrity=sha256-20261003');
 
 // Core assets to pre-cache on install
 const CORE_ASSETS = [
@@ -88,7 +90,9 @@ self.addEventListener('fetch', (event) => {
   if (url.hostname !== 'ajew.org' && url.hostname !== 'localhost' && url.hostname !== '127.0.0.1') return;
 
   // Route by pattern
-  if (READER_JSON_REGEX.test(url.pathname)) {
+  if (url.pathname === '/reader/medooyuk/tanach-tehillim.json') {
+    event.respondWith(psalmsNetworkFirst(request));
+  } else if (READER_JSON_REGEX.test(url.pathname)) {
     event.respondWith(staleWhileRevalidate(request));
   } else if (url.pathname.startsWith('/reader/')) {
     event.respondWith(networkFirstWithCache(request));
@@ -130,6 +134,32 @@ async function cacheFirst(request) {
 /**
  * Network-first with cache fallback: HTML pages
  */
+function isPsalmsUrl(url) {
+  return new URL(url, self.location.origin).pathname === '/reader/medooyuk/tanach-tehillim.json';
+}
+
+async function psalmsNetworkFirst(request) {
+  const cache = await caches.open(CACHE_NAME);
+  const current = new URL(self.AjewPsalmsData.url, self.location.origin).href;
+  try {
+    const response = await fetch(current, {cache: 'no-cache'});
+    if (!response.ok || !self.AjewPsalmsData.valid(await response.clone().json(), true)) throw Error('Invalid Psalms replacement');
+    await cache.put(current, response.clone());
+    return response;
+  } catch (_) {
+    // Preserve old offline copies; prefer the validated current copy.
+    const keys = [current, request.url, new URL('/reader/medooyuk/tanach-tehillim.json', self.location.origin).href,
+      new URL('/reader/medooyuk/tanach-tehillim.json?v=uxlc25-gold-qk-ketiv-20260928-v2', self.location.origin).href];
+    for (const key of keys) {
+      const saved = await cache.match(key);
+      if (saved) {
+        try { if (self.AjewPsalmsData.valid(await saved.clone().json(), key === current)) return saved; } catch (_) {}
+      }
+    }
+    return new Response(JSON.stringify({error: 'Offline; no valid Psalms copy'}), {status: 503, headers: {'Content-Type':'application/json'}});
+  }
+}
+
 async function networkFirstWithCache(request) {
   try {
     const response = await fetch(request);
@@ -189,8 +219,12 @@ async function networkOnly(request) {
 self.addEventListener('message', (event) => {
   if (event.data?.type === 'CACHE_SPECIFIC_URLS') {
     event.waitUntil(
-      caches.open(CACHE_NAME).then((cache) => {
-        return cache.addAll(event.data.urls || []).catch(() => {});
+      caches.open(CACHE_NAME).then(async (cache) => {
+        // Explicit download messages must not bypass Psalms authentication.
+        const urls = event.data.urls || [];
+        const psalms = urls.filter(isPsalmsUrl);
+        await Promise.all(psalms.map(url => psalmsNetworkFirst(new Request(new URL(url, self.location.origin)))));
+        return cache.addAll(urls.filter(url => !isPsalmsUrl(url))).catch(() => {});
       })
     );
   }
@@ -210,6 +244,7 @@ self.addEventListener('message', (event) => {
 
           const cache = await caches.open(CACHE_NAME);
           await Promise.all(urls.map(url => {
+            if (isPsalmsUrl(url)) return psalmsNetworkFirst(new Request(url));
             return cache.match(url).then(cached => {
               if (!cached) {
                 return fetch(url).then(r => {

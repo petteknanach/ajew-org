@@ -8,6 +8,8 @@ import subprocess
 import unittest
 from psalms_qatan_overlay import (apply_book, canonical, digest, load_ledger,
                                  repair_verse, unique_object)
+from psalms_annotation_overlay import apply_book as combined_book, load_ledger as combined_ledger
+ANNOTATIONS = combined_ledger()
 
 ROOT = Path(__file__).resolve().parents[1]
 LEDGER = load_ledger()
@@ -139,6 +141,13 @@ class QatanTests(unittest.TestCase):
                 before = json.loads(before_bytes)
                 current = json.loads((ROOT / rel).read_text())
                 expected = copy.deepcopy(before)
+                # Combined suite gates final bytes. Project exact final states
+                # to qatan-only for these historical qatan-specific assertions.
+                for e in ANNOTATIONS['entries']:
+                    if e['chapter'] == c:
+                        row = next(s['medooyuk'] for s in current['segments'] if s['index'] == e['verse'])
+                        self.assertEqual(row['m'], e['states']['final']['m'])
+                        row['m'] = copy.deepcopy(e['states']['qatan']['m'])
                 for s in expected['segments']:
                     s['medooyuk'] = repair_verse('Psalms', c, s['index'], s['medooyuk'])
                 self.assertEqual(current, expected, f'whole chapter {c}')
@@ -158,6 +167,7 @@ class QatanTests(unittest.TestCase):
             before_bytes = baseline(rel)
             before = json.loads(before_bytes)
             current = json.loads((ROOT / rel).read_text())
+            current = combined_book(current, target='qatan')
             self.assertEqual(current, apply_book(before))
             self.assertEqual(json.dumps(apply_book(current, reverse=True), ensure_ascii=False,
                                        separators=(',', ':')).encode(), before_bytes)

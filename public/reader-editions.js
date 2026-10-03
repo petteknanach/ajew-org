@@ -41,7 +41,7 @@
     function fetchJson(url) { return fetch(url).then(function (r) { if (!r.ok) throw Error('HTTP ' + r.status); return r.json(); }); }
     function load() {
       if (loaded || pending || failed || (edition === 'original' && !special)) return;
-      pending = Promise.all([fetchJson('/reader/medooyuk/' + route[1] + '.json'), fetchJson('/reader-source-tails.json?v=1')]).then(function (all) {
+      pending = Promise.all([route[1] === 'tanach-tehillim' ? window.AjewPsalmsData.load() : fetchJson('/reader/medooyuk/' + route[1] + '.json'), fetchJson('/reader-source-tails.json?v=1')]).then(function (all) {
         loaded = adapter.prepare(all[0].ch[route[2]], route[1], route[2], all[1]);
         pending = null; refresh(); // Read CURRENT intent; never resurrect a stale edition.
       }).catch(function () { pending = null; failed = true; refresh(); });
@@ -111,7 +111,12 @@
         return parts.join('\n\n');
       }
     };
-    window.addEventListener('pageshow', function (e) { if (e.persisted) refresh(); });
+    window.addEventListener('pageshow', function (e) {
+      if (e.persisted) {
+        if (route[1] === 'tanach-tehillim' && !pending) { loaded = null; failed = false; mounted = ''; }
+        refresh();
+      }
+    });
     setEdition(edition);
   }, {once: true});
 })();

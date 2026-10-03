@@ -210,6 +210,8 @@
     });
   }
   function book(slug) {
+    // Psalms coalesces in-flight requests, not an obsolete session-long copy.
+    if (slug === 'tanach-tehillim') return window.AjewPsalmsData.load();
     if (!state.bookCache[slug]) state.bookCache[slug] = fetchJSON('/reader/medooyuk/' + slug + '.json');
     return state.bookCache[slug];
   }
