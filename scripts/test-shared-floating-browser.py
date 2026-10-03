@@ -227,6 +227,9 @@ try:
       text=page.locator('#lensResults').inner_text();assert len(text)>50;return {'length':len(text),'screenshot':shot('search-results')}
      check('search-still-works',search)
      def lens_dismiss():
+      # Search completion can anchor the viewport below the normal-flow
+      # header. Return to the actual header before exercising its disclosure.
+      page.evaluate('scrollTo({top:0,behavior:"instant"})');page.wait_for_timeout(200)
       hit('#yahrzeitToggleBtn',True);close=hit('#yahrzeitCloseBtn',True)
       assert not page.locator('#compactYahrzeit').is_visible()
       page.reload(wait_until='domcontentloaded');page.wait_for_timeout(1500)
