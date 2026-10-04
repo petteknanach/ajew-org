@@ -362,6 +362,21 @@ function mediaShareTitle(seg, img) {
               <span class="segment-number">{seg.displayLabel || seg.sourceNumber || seg.index}</span>
               <p>{seg.en || 'Translation not yet available'}</p>
             </div>
+            {mediaBySegment.get(Number(seg.index))?.movies?.length > 0 && (
+              <>
+                <details id={`segment-${seg.index}`} class="reader-media-dropdown sh-full-movies" data-segment={String(seg.index)} style="grid-column:1/-1;width:100%;min-width:0;box-sizing:border-box;scroll-margin-top:120px">
+                  <summary>🎬 Full music movies for this teaching</summary>
+                  {mediaBySegment.get(Number(seg.index)).movies.map((movie) => (
+                    <div class="sh-full-movie" style="padding:12px">
+                      <p lang={movie.language === 'hebrew' ? 'he' : 'en'} dir={movie.language === 'hebrew' ? 'rtl' : 'ltr'}>{movie.title}</p>
+                      <video src={movie.url} poster={movie.poster} controls preload="none" playsinline title={movie.title} style="width:100%;max-width:960px;height:auto"></video>
+                      <p><a href={movie.url} target="_blank" rel="noopener">Open or download full movie</a></p>
+                      <p class="sh-movie-disclosure">{movie.disclosure}</p>
+                    </div>
+                  ))}
+                </details>
+              </>
+            )}
             {mediaBySegment.has(Number(seg.index)) && (
               <details open class="reader-media-dropdown sefer-hamidos-media" data-segment={String(seg.index)}>
                 <summary>📷 Pictures / videos for this teaching</summary>
