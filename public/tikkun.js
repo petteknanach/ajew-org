@@ -175,7 +175,7 @@
         (study ? B.decorateBoundaries(D.renderStudyColumn(n, fixed.pages[n], studyGeometry[n], state.columnNikud, state.columnTaamim, [], true, state.medooyuk), boundaries, state.columnVerseLabels, state.columnNikud || state.columnTaamim) : B.decorateSourceBoundaries(R.fixedColumn(fixed.pages[n], n), fixed.pages[n], n, boundaries)) + '</div></div>' +
         ((state.columnNikud || state.columnTaamim) ? pointingReady ? D.renderColumnPointingAdvice(n, state.columnNikud, state.columnTaamim, study) : '<p class="tk-error pointing-unavailable">Column pointing data unavailable. Fixed ink remains unchanged. Reload to retry.</p>' : '') +
         (readingError ? '<p class="tk-sefer-note">Fixed column remains available; the independent reading book could not load.</p>' : '');
-      var boundaryNotice = document.createElement('p'); boundaryNotice.className = 'boundary-status tk-sefer-note'; boundaryNotice.textContent = boundaries.reason + (study ? ' · Verse ends above terminal words; labels independent.' : ' · Original ink has no verse punctuation or labels.'); box.prepend(boundaryNotice);
+      var boundaryNotice = document.createElement('p'); boundaryNotice.className = 'boundary-status tk-sefer-note'; boundaryNotice.textContent = boundaries.reason + (study ? ' · Verse ends follow terminal words with pointing; labels independent.' : ' · Original ink has no verse punctuation or labels.'); box.prepend(boundaryNotice);
       fitColumn();
       return;
     }
@@ -293,7 +293,7 @@
     render();
     (slug === 'tanach-tehillim' ? window.AjewPsalmsData.load() : fetchJSON('/reader/medooyuk/' + slug + '.json')).then(function (d) {
       if (id !== requestId) return;
-      state.data = d;
+      state.data = window.TikkunQatanOccurrences.applyBook(d, slug);
       // A pending reading fetch must not rewind a later physical-column move.
       if (state.fixedPage === null) state.chapter = Math.max(1, Math.min(state.chapter || 1, Math.max.apply(null, Object.keys(d.ch).map(Number))));
       fillChapters(); fillTargumSelect(); $('tk-parsha').value = parshaFor(state.slug, state.chapter); save(); render();
@@ -530,7 +530,8 @@
     fetchJSON('/tikkun/verse-boundaries.json?v=boundaries-complete-7341d364').then(function(d){boundaryPayload=d;refreshBoundaries();}).catch(function(){boundaries=B.unavailableBoundaries('Boundary map unavailable — reload to retry');render();});
     Promise.all(['StudyStam-full','StudyStam-nikud','StudyStam-taamim','StudyStam-bare'].concat(['day','sepia','night'].flatMap(function(t){return ['StudyMarked-full-'+t,'StudyMarked-nikud-'+t];})).map(function(family){return document.fonts.load('28px '+family).then(function(faces){if(!faces.length||!faces.every(function(f){return f.status==='loaded';}))throw Error('Study font unavailable');});})).then(function(){studyFontsReady=true;render();}).catch(function(){studyFontsReady=false;render();});
     fetchJSON('/tikkun/column-marks.json?v=capital-t-20261002').then(function(d){
-      if(!d || d.schema!==1 || !d.rows || Object.keys(d.rows).length!==18760)throw Error('Study annotations unavailable');
+      d=window.TikkunQatanOccurrences.applyColumnMarks(d);
+      if(!d || d.schema!==1 || !d.rows || Object.keys(d.rows).length!==window.TikkunQatanOccurrences.afterRows)throw Error('Study annotations unavailable');
       Object.assign(window.TikkunColumnMarks,d);studyMarksReady=true;render();
     }).catch(function(){studyMarksReady=false;render();});
     fetchJSON('/tikkun/study-geometry.json?v=readable-stam-20260930-r3').then(function(d){if(Object.keys(d).length!==245 || !Object.values(d).every(function(v){return Number.isFinite(v)&&v>=21&&v<100;}))throw Error('Study geometry invalid');studyGeometry=d;render();}).catch(function(){studyGeometry=null;render();});
