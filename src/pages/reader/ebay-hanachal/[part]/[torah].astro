@@ -165,12 +165,17 @@ const structuredData = torahData ? JSON.stringify({
         <span class="media-title">The Light of the True Tzadik</span>
         <span class="media-type">Video (MP4) — 18MB</span>
       </a>
-      <a href="https://archive.org/details/ebay-hanachal-letter-1/Blossoms%20of%20the%20Stream%20-%20Letter%201%20-%20Small_Wood_Kindles_a_Great_Fire.m4a" 
-         target="_blank" rel="noopener" class="media-card">
+      <div class="media-card media-card-audio">
         <span class="media-icon">🎧</span>
         <span class="media-title">Small Wood Kindles a Great Fire</span>
-        <span class="media-type">Audio (M4A) — 34MB</span>
-      </a>
+        <span class="media-type">Audio (M4A) — 18:08</span>
+        <audio id="letter1-original-audio" controls preload="none"
+               aria-label="Play Small Wood Kindles a Great Fire — Letter 1, 18 minutes"
+               src="https://archive.org/download/ebay-hanachal-letter-1/Blossoms%20of%20the%20Stream%20-%20Letter%201%20-%20Small_Wood_Kindles_a_Great_Fire.m4a"></audio>
+        <a class="media-audio-link"
+           href="https://archive.org/download/ebay-hanachal-letter-1/Blossoms%20of%20the%20Stream%20-%20Letter%201%20-%20Small_Wood_Kindles_a_Great_Fire.m4a"
+           target="_blank" rel="noopener">Open original audio file ↗</a>
+      </div>
     </div>
     <p class="media-note">From the Blossoms of the Stream series on <a href="https://archive.org/details/ebay-hanachal-letter-1" target="_blank" rel="noopener">Archive.org</a></p>
   </div>
@@ -352,6 +357,9 @@ const structuredData = torahData ? JSON.stringify({
     transform: translateY(-1px);
     box-shadow: 0 2px 8px rgba(139,105,20,0.15);
   }
+  .media-card-audio { min-width: 0; }
+  .media-card-audio audio { width: 100%; max-width: 100%; margin-top: 12px; }
+  .media-audio-link { margin-top: 10px; color: #1e3a5f; font-size: 0.85em; }
   .media-icon { font-size: 2em; margin-bottom: 8px; }
   .media-title { font-size: 0.9em; color: #1e3a5f; font-weight: 600; margin-bottom: 4px; }
   .media-type { font-size: 0.75em; color: #888; }
