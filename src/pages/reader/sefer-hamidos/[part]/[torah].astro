@@ -154,7 +154,7 @@ function mediaDirectUrl(img) {
   return new URL(img.path, base).toString();
 }
 function mediaShareTitle(seg, img) {
-  return `Sefer Hamidos ${torahData?.title || 'Media'} ${seg.index} ${img.language} image ${img.variant}`;
+  return `Sefer Hamidos ${torahData?.title || 'Media'} ${seg.displayLabel || seg.index} ${img.language} image ${img.variant}`;
 }
 ---
 
