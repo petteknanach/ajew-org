@@ -20,7 +20,7 @@ export function getStaticPaths() {
 const { entry, img, slug } = Astro.props;
 const absImage = new URL(img.path, Astro.site).toString();
 const readerUrl = new URL(`/reader/sefer-hamidos/1/87#media-${slug}`, Astro.site).toString();
-const title = `Sefer HaMidos Tzaddik ${entry.segment} ${img.language} picture`;
+const title = `Sefer HaMidos Tzaddik ${entry.displayLabel || entry.segment} ${img.language} picture`;
 const desc = img.language === 'hebrew' ? entry.he : entry.en;
 const pageUrl = new URL(Astro.url.pathname, Astro.site).toString();
 const shareText = `${title} — ajew.org`;
