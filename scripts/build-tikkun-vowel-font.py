@@ -26,8 +26,12 @@ PALETTES = {
 }
 
 
-def make_font(theme, study_source=None):
+def make_font(theme, study_source=None, *, active_features=None):
     f = TTFont(study_source or ROOT/'public/fonts/TaameyFrankCLM-Medium.ttf', recalcTimestamp=False)
+    if active_features == ('ss04',):
+        # Exact-outline-only build: retain even the source's conservative
+        # global bounds/maxima. No new contour can exceed its original glyph.
+        f.recalcBBoxes = False
     study = study_source is not None
     f['head'].modified = f['head'].created
     original_order = list(f.getGlyphOrder())
@@ -38,6 +42,9 @@ def make_font(theme, study_source=None):
                        ('ss03', ['qamats','qamatsqatan','finalkafqamats','alefqamats'], 2)]
         if f['glyf']['meteg'].numberOfContours:
             definitions.append(('ss04', ['meteg','metegleft','metegright','hatafsegolmeteg','hatafpatahmeteg','hatafqamatsmeteg'], 3))
+    if active_features is not None:
+        assert active_features and set(active_features) <= {d[0] for d in definitions}, 'unsupported active features'
+        definitions = [d for d in definitions if d[0] in active_features]
     copies, colors, substitutions = {}, {}, {}
     extra_layers = []
     def contours(name):
@@ -131,8 +138,15 @@ def make_font(theme, study_source=None):
                              sorted(set(y for x,y in coords)) == [-649,-154] and
                              max(x for x,y in coords)-min(x for x,y in coords) == 117) if mixed_study_meteg else signature(c) in targets
                     (marked if match else unmarked).append(c)
-                assert len(marked) == len(targets) and unmarked, (old, 'cannot isolate vowel contours')
-                colors[new] = [(layer(new+'.base',unmarked,old),0xffff), (layer(new+'.ink',enlarged(marked,tag),old),color)]
+                # A Taamim-only source has already hidden the hataf vowel:
+                # its entire mixed glyph is ONE original thin meteg rectangle.
+                # Permit that exact partition only for an explicit meteg-only
+                # build. Never restore a hidden vowel from another font.
+                hidden_hataf = (mixed_study_meteg and active_features == ('ss04',)
+                                and len(marked) == 1 and not unmarked)
+                assert len(marked) == len(targets) and (unmarked or hidden_hataf), (old, 'cannot isolate vowel contours')
+                colors[new] = ([(layer(new+'.base',unmarked,old),0xffff), (layer(new+'.ink',enlarged(marked,tag),old),color)]
+                               if unmarked else [(old,color)])
     f.setGlyphOrder(original_order + list(colors) + extra_layers)
     f['maxp'].numGlyphs = len(f.getGlyphOrder())
     # All new mark glyphs inherit every attachment/class/position of their

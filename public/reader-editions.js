@@ -42,7 +42,8 @@
     function load() {
       if (loaded || pending || failed || (edition === 'original' && !special)) return;
       pending = Promise.all([route[1] === 'tanach-tehillim' ? window.AjewPsalmsData.load() : fetchJson('/reader/medooyuk/' + route[1] + '.json'), fetchJson('/reader-source-tails.json?v=1')]).then(function (all) {
-        loaded = adapter.prepare(all[0].ch[route[2]], route[1], route[2], all[1]);
+        var authenticated = renderer.applyBook(all[0], route[1]);
+        loaded = adapter.prepare(authenticated.ch[route[2]], route[1], route[2], all[1]);
         pending = null; refresh(); // Read CURRENT intent; never resurrect a stale edition.
       }).catch(function () { pending = null; failed = true; refresh(); });
     }

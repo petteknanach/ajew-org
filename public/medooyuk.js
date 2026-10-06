@@ -48,7 +48,21 @@
     }).join('');
     return '<span class="marked-hebrew">' + html + '</span>';
   }
-  window.AjewMarkedHebrew = { renderVerse: renderVerse, renderToken: renderToken, css: CSS, version: VERSION };
+  // Authenticate the complete response BEFORE chapter/day/range selection.
+  // The requested identifier is independently derived by the caller.
+  var BOOK_SLUGS = ["tanach-amos", "tanach-bamidbar", "tanach-bereishit", "tanach-chaggai", "tanach-daniel", "tanach-devarim", "tanach-divrei-hayamim-a", "tanach-divrei-hayamim-b", "tanach-eicha", "tanach-esther", "tanach-ezra", "tanach-havakkuk", "tanach-hoshea", "tanach-iyov", "tanach-koheles", "tanach-malachi", "tanach-melachim-a", "tanach-melachim-b", "tanach-michah", "tanach-mishlei", "tanach-nachum", "tanach-nechemia", "tanach-ovadya", "tanach-rus", "tanach-shemos", "tanach-shir-hashirim", "tanach-shmuel-a", "tanach-shmuel-b", "tanach-shoftim", "tanach-tehillim", "tanach-tzefanya", "tanach-vayikra", "tanach-yechezkel", "tanach-yehoshua", "tanach-yeshayahu", "tanach-yirmiyahu", "tanach-yoel", "tanach-yonah", "tanach-zecharya"];
+  function applyBook(book, requestedSlug) {
+    if (BOOK_SLUGS.indexOf(requestedSlug) < 0 || !book || book.slug !== requestedSlug ||
+        !book.ch || typeof book.ch !== 'object' || Array.isArray(book.ch)) {
+      throw Error('Annotated book identity unavailable or mismatched');
+    }
+    if (!window.TikkunBoundaries || typeof window.TikkunBoundaries.boundaryHash !== 'function' ||
+        !window.TikkunQatanOccurrences || typeof window.TikkunQatanOccurrences.applyBook !== 'function') {
+      throw Error('Authenticated qatan helper unavailable');
+    }
+    return window.TikkunQatanOccurrences.applyBook(book, requestedSlug);
+  }
+  window.AjewMarkedHebrew = { applyBook: applyBook, renderVerse: renderVerse, renderToken: renderToken, css: CSS, version: VERSION };
   if (!document.getElementById('ajew-marked-hebrew-css')) {
     var style = document.createElement('style'); style.id = 'ajew-marked-hebrew-css'; style.textContent = CSS; document.head.appendChild(style);
   }

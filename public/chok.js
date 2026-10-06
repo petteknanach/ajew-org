@@ -211,8 +211,17 @@
   }
   function book(slug) {
     // Psalms coalesces in-flight requests, not an obsolete session-long copy.
-    if (slug === 'tanach-tehillim') return window.AjewPsalmsData.load();
-    if (!state.bookCache[slug]) state.bookCache[slug] = fetchJSON('/reader/medooyuk/' + slug + '.json');
+    function authenticate(d) {
+      if (!window.AjewMarkedHebrew || typeof window.AjewMarkedHebrew.applyBook !== 'function')
+        throw Error('Authenticated annotations unavailable');
+      return window.AjewMarkedHebrew.applyBook(d, slug);
+    }
+    if (slug === 'tanach-tehillim') return window.AjewPsalmsData.load().then(authenticate);
+    if (!state.bookCache[slug]) state.bookCache[slug] = fetchJSON('/reader/medooyuk/' + slug + '.json')
+      .then(authenticate).catch(function (error) {
+        delete state.bookCache[slug]; // Allow explicit day/control retry; never cache unauthenticated data.
+        throw error;
+      });
     return state.bookCache[slug];
   }
   function targ(slug) {

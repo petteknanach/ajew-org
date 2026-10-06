@@ -137,6 +137,8 @@
 
   function render() {
     var box = $('tk-content');
+    var focusedTap = document.activeElement;
+    var focusedCV = focusedTap && box.contains(focusedTap) && focusedTap.matches('.tk-tap-advance') ? focusedTap.getAttribute('data-cv') : null;
     $('tk-current-visible').textContent = 'Current visible location unavailable';
 
     var shnayim = state.shnayim && state.targumData;
@@ -217,8 +219,13 @@
         if (n >= 3) body += targumLine(state.chapter, v);
         if (n >= 3) body = '<span class="tk-tap-done">' + body + '</span>';
         html.push('<div class="tk-verse tk-tapverse' + peCls + '" data-cv="' + state.chapter + ':' + v +
+                  '" id="tk-tap-verse-' + state.chapter + '-' + v +
                   '" style="cursor:pointer" title="tap: 1 scroll · 2 reading · 3 targum">' + body +
-                  ' <span class="tk-vnum">[' + Math.min(n, 3) + '/3]</span></div>');
+                  ' <span class="tk-vnum">[' + Math.min(n, 3) + '/3]</span>' +
+                  '<button type="button" class="tk-btn tk-tap-advance" data-cv="' + state.chapter + ':' + v +
+                  '" aria-controls="tk-tap-verse-' + state.chapter + '-' + v + '" aria-label="Shnayim ' + state.chapter + ':' + v +
+                  ' · ' + Math.min(n, 3) + '/3 · 1 scroll, 2 reading, 3 targum. Enter or Space to advance" aria-disabled="' + (n >= 3 ? 'true' : 'false') +
+                  '" dir="ltr">' + (n >= 3 ? 'All three readings shown' : 'Advance reading') + '</button></div>');
       } else { /* stacked: scroll line, reading line, targum */
         html.push('<div class="tk-verse' + peCls + '">' +
           '<div class="tk-line-scroll">' + scroll + '</div>' +
@@ -233,12 +240,28 @@
     box.innerHTML = html.join('');
     if (state.layout === 'tap') {
       Array.prototype.forEach.call(document.querySelectorAll('.tk-tapverse'), function (el) {
-        el.addEventListener('click', function () {
+        function advanceTap() {
           var cv = el.getAttribute('data-cv');
+          if ((state.tapCount[cv] || 0) >= 3) return;
           state.tapCount[cv] = Math.min((state.tapCount[cv] || 0) + 1, 3);
           render();
+        }
+        el.addEventListener('click', advanceTap);
+        var advanceButton = el.querySelector('.tk-tap-advance');
+        advanceButton.addEventListener('click', function (e) {
+          e.stopPropagation(); // one button activation, not another parent tap
+          advanceTap();
+        });
+        advanceButton.addEventListener('keydown', function (e) {
+          if (e.key !== 'Enter' && e.key !== ' ') return;
+          e.preventDefault(); // includes held Space: never scroll the page
+          if (!e.repeat) advanceTap();
         });
       });
+      if (focusedCV) {
+        var replacement = box.querySelector('.tk-tap-advance[data-cv="' + focusedCV + '"]');
+        if (replacement) replacement.focus({preventScroll:true});
+      }
     }
   }
 
@@ -528,7 +551,7 @@
       if(label.textContent!==text)label.textContent=text;
     }, B.visibleBoundary);
     fetchJSON('/tikkun/verse-boundaries.json?v=boundaries-complete-7341d364').then(function(d){boundaryPayload=d;refreshBoundaries();}).catch(function(){boundaries=B.unavailableBoundaries('Boundary map unavailable — reload to retry');render();});
-    Promise.all(['StudyStam-full','StudyStam-nikud','StudyStam-taamim','StudyStam-bare'].concat(['day','sepia','night'].flatMap(function(t){return ['StudyMarked-full-'+t,'StudyMarked-nikud-'+t];})).map(function(family){return document.fonts.load('28px '+family).then(function(faces){if(!faces.length||!faces.every(function(f){return f.status==='loaded';}))throw Error('Study font unavailable');});})).then(function(){studyFontsReady=true;render();}).catch(function(){studyFontsReady=false;render();});
+    Promise.all(['StudyStam-full','StudyStam-nikud','StudyStam-taamim','StudyStam-bare'].concat(['day','sepia','night'].flatMap(function(t){return ['StudyMarked-full-'+t,'StudyMarked-nikud-'+t,'StudyMarked-taamim-'+t];})).map(function(family){return document.fonts.load('28px '+family).then(function(faces){if(!faces.length||!faces.every(function(f){return f.status==='loaded';}))throw Error('Study font unavailable');});})).then(function(){studyFontsReady=true;render();}).catch(function(){studyFontsReady=false;render();});
     fetchJSON('/tikkun/column-marks.json?v=capital-t-20261002').then(function(d){
       d=window.TikkunQatanOccurrences.applyColumnMarks(d);
       if(!d || d.schema!==1 || !d.rows || Object.keys(d.rows).length!==window.TikkunQatanOccurrences.afterRows)throw Error('Study annotations unavailable');

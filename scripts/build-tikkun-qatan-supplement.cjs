@@ -2,6 +2,8 @@
 // Separate, exact occurrence supplement: never regenerate the frozen tagger/corpus.
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const root=path.resolve(__dirname,'..'),read=p=>JSON.parse(fs.readFileSync(path.join(root,p))),hash=x=>crypto.createHash('sha256').update(JSON.stringify(x)).digest('hex'),clone=x=>JSON.parse(JSON.stringify(x));
+// The historical four-only generator must never overwrite a reviewed expansion.
+if(fs.existsSync(path.join(root,'scripts/data/tikkun-qatan-expansion-20261006.json')))throw Error('Four-only builder superseded: use scripts/build-tikkun-qatan-expansion.cjs (with --check for verification)');
 const ledger=read('scripts/data/tikkun-qatan-occurrences-20261004.json'),sidecar=read('public/tikkun/column-marks.json'),pointing=read('public/tikkun/column-pointing.json');
 if(ledger.schema!==1||ledger.records.length!==4)throw Error('Occurrence authority changed');
 const packet={schema:1,authoritySha256:hash(ledger),books:{},column:{beforeHash:hash(sidecar),beforeRows:Object.keys(sidecar.rows).length,rows:{}}};

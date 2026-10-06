@@ -128,6 +128,13 @@ body:has(#tk-app){overflow-x:clip}
 #tk-app[data-tk-theme=night] .study-ink[data-study-mode=full]{font-family:'StudyMarked-full-night',serif}
 @font-face{font-family:'StudyMarked-nikud-night';src:url('/fonts/tikkun/study-stam/AjewStudyMarked-nikud-night.ttf?v=capital-t-20261002') format('truetype');font-weight:400;font-display:block}
 #tk-app[data-tk-theme=night] .study-ink[data-study-mode=nikud]{font-family:'StudyMarked-nikud-night',serif}
+/* Taamim-only derivatives retain hidden nikud; only ss04 paints meteg. */
+@font-face{font-family:'StudyMarked-taamim-day';src:url('/fonts/tikkun/study-stam/AjewStudyMarked-taamim-day.ttf?v=meteg-only-20261006-1') format('truetype');font-weight:400;font-display:block}
+#tk-app[data-tk-theme=day] .study-ink[data-study-mode=taamim]{font-family:'StudyMarked-taamim-day',serif}
+@font-face{font-family:'StudyMarked-taamim-sepia';src:url('/fonts/tikkun/study-stam/AjewStudyMarked-taamim-sepia.ttf?v=meteg-only-20261006-1') format('truetype');font-weight:400;font-display:block}
+#tk-app[data-tk-theme=sepia] .study-ink[data-study-mode=taamim]{font-family:'StudyMarked-taamim-sepia',serif}
+@font-face{font-family:'StudyMarked-taamim-night';src:url('/fonts/tikkun/study-stam/AjewStudyMarked-taamim-night.ttf?v=meteg-only-20261006-1') format('truetype');font-weight:400;font-display:block}
+#tk-app[data-tk-theme=night] .study-ink[data-study-mode=taamim]{font-family:'StudyMarked-taamim-night',serif}
 
 
 @media(max-width:720px){#tk-app{padding:.75rem}#tk-app .tk-side{grid-template-columns:minmax(0,1fr)}#tk-app .tk-col-scroll{border-inline-end:0;border-bottom:1px solid var(--tk-border);padding:0 0 .4rem}#tk-app .tk-row select{max-width:100%}#tk-app .tk-btn,#tk-app select{min-height:44px}#tk-app .tk-scroll-viewport{padding:.5em}}
