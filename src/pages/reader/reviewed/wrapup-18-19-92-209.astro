@@ -1,0 +1,62 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import {loadEdition,PIN,escape} from '../../../lib/qualified-wrapup.mjs';
+const edition=loadEdition();
+---
+<Layout noindex={true} title={edition.title} description={edition.notice}>
+<main class="qualified-wrapup" data-qualified-wrapup data-projection-sha={PIN} data-print-safe="false" data-mode="both" data-witness="he">
+<script is:inline>
+(function(){
+ const scope=document.querySelector('[data-qualified-wrapup]');
+ const authenticated=()=>typeof window.QualifiedWrapupIntegrityReady==='function'&&window.QualifiedWrapupIntegrityReady();
+ const notify=()=>scope.querySelector('[data-integrity-status]').textContent='Qualified outward action blocked: exact source authentication or qualification ownership unavailable.';
+ document.addEventListener('click',e=>{const b=e.target.closest('button');if(b&&b.matches('#btn-share,#btn-add-sefer,#btn-print,.seg-copy-btn,.seg-add-sefer-btn,.ajew-segment-action-btn,.selection-popup .sel-btn,#highlight-context-menu .hl-action[data-action="share"],#highlight-context-menu .hl-action[data-action="save"],.notes-panel-btn,[data-q-action]')&&!authenticated()){e.preventDefault();e.stopImmediatePropagation();notify();}},true);
+ document.addEventListener('copy',e=>{const sel=getSelection();if(authenticated()||!sel||sel.isCollapsed)return;let intersects=false;try{for(let i=0;i<sel.rangeCount;i++)if(sel.getRangeAt(i).intersectsNode(scope))intersects=true;intersects=intersects||scope.contains(sel.anchorNode)||scope.contains(sel.focusNode);}catch(_){intersects=true;}if(intersects){e.preventDefault();e.stopImmediatePropagation();notify();}},true);
+})();
+</script>
+<p class="qualified-print-warning" role="alert">Qualified print withheld: exact source or required qualification paint checks unavailable. Return to the unchanged canonical edition.</p>
+<nav><a href="/reader/">Reader</a> › <a href="/reader/reviewed/">Qualified reviewed editions</a></nav>
+<h1>{edition.title}</h1><p>{edition.notice}</p>
+<p>41 complete original owners · 33 current required qualifications. The two independently supplied Hebrew fields remain separate; no points are generated or stripped. Copy, Save and Share export complete selected source owners with both Hebrew fields, selected English and all their current required qualifications, even when only one language is displayed. Ambiguous or stale captured highlights cannot export. Personal Note/Prayer remain separate. Earlier English and comparison witnesses are archival retention, not selected translation.</p>
+<p data-integrity-status role="status" aria-live="polite">Exact source authentication pending; outward actions disabled.</p>
+<div class="qualified-toolbar">
+ <button type="button" data-q-mode="hebrew" aria-pressed="false">Source only</button><button type="button" data-q-mode="english" aria-pressed="false">English</button><button type="button" data-q-mode="both" aria-pressed="true">Bilingual</button>
+ <button type="button" data-q-witness="he" aria-pressed="true">Primary supplied he</button><button type="button" data-q-witness="he_nikud" aria-pressed="false">Independent he_nikud</button>
+ <button type="button" data-q-action="copy">Copy complete qualified bodies</button><button type="button" data-q-action="save">Save to My Sefer</button><button type="button" data-q-action="share">Share qualified bodies</button><button type="button" id="btn-print">Print qualified bodies</button>
+ <label>Search current source / selected English <input data-reader-query type="search" /></label><span data-search-status role="status"></span>
+</div>
+<div class="qualified-selection-actions selection-popup" aria-label="Qualified source selection actions">
+<button type="button" class="sel-btn" data-action="copy" disabled>Copy selected owners with qualifications</button><button type="button" class="sel-btn" data-action="mysefer" disabled>Save selected owners</button><button type="button" class="sel-btn" data-action="share" disabled>Share selected owners</button><p data-qualified-selection-status role="status">Select visible source text. Exports include complete intersected owners, both supplied Hebrew fields and all required qualifications, not raw English alone.</p>
+</div>
+<nav>{edition.groups.map(g=><a href={'#group-'+g.id}>{g.title}</a>)}</nav>
+{edition.groups.map(g=><section class="qualified-group" data-group={g.id} id={'group-'+g.id}>
+ <h2>{g.title}</h2><p><a href={g.canonical_url}>Separate unchanged canonical edition</a></p>
+ {edition.units.filter(u=>u.group===g.id).map(u=><section class="qualified-unit" data-unit={u.owner} data-index={u.owner} data-source-index={String(u.source_index)} data-position={String(u.array_position)} id={u.anchor}>
+  <h3>Original owner {u.owner} · source index {u.source_index} · array position {u.array_position}</h3>
+  <div class="qualified-pair"><div class="qualified-he" lang="he" dir="rtl"><p class="witness-label primary">Primary supplied he</p><p data-source-field="he" set:html={escape(u.he)} /><p class="witness-label secondary">Independently supplied he_nikud — not generated or harmonized</p><p data-source-field="he_nikud" set:html={escape(u.he_nikud)} /></div><div class="qualified-en" lang="en" dir="ltr"><p class="witness-label">Selected qualified English</p><p data-source-field="en" set:html={escape(u.en)} /></div></div>
+  <div class="required-qualifications">{u.qualifications.map((q,i)=><p data-qualification={q.id} data-owner={u.owner} data-ordinal={String(i)} set:html={escape(q.text)} />)}</div>
+  <div class="qualified-unit-actions"><button type="button" data-q-action="copy">Copy this qualified owner</button><button type="button" data-q-action="save">Save this qualified owner</button><button type="button" data-q-action="share">Share this qualified owner</button></div>
+  <details class="archive"><summary>Earlier English — archival retention, NOT asserted to align</summary><pre set:html={escape(u.displacedEnglish)} /></details>
+ </section>)}
+ <details class="archive"><summary>Complete original metadata — unchanged context</summary><pre set:html={escape(JSON.stringify(g.original_metadata,null,2))} /></details>
+ <details class="archive"><summary>Archival apparatus — actual declared owners, not selected translation</summary>{g.apparatus.map((a,i)=><section data-archive-owner={a.owner}><h4>Actual owner {a.owner} · occurrence {i}</h4><pre set:html={escape(a.text??a.literal??'')} /><pre set:html={escape(JSON.stringify(a,null,2))} /></section>)}</details>
+</section>)}
+<section class="archive"><h2>Archival comparison witnesses and exact complete history</h2><p>Witness/node ownership is separate from original paragraph ownership. Historical approval flags are not upgraded by display. Current required qualifications appear above their actual owners. Exact wrapper/history files are separately preserved; they are not duplicate Reader body paragraphs.</p>
+{edition.archival_witnesses.map((w,i)=><details><summary>Archive occurrence {i} · actual witness owner {w.owner} · {w.role}</summary><pre set:html={escape(w.text)} /></details>)}
+<ul>{edition.assets.map(a=><li><a href={a.url}>{a.name}</a> — {a.role} — SHA256 {a.sha256}</li>)}</ul>
+<p><a href="/reader/reviewed/wrapup-18-19-92-209.json">Current exact qualified projection</a> · <a href="/reader-plain/reviewed/wrapup-18-19-92-209/">Source-exact plain formats</a></p></section>
+</main>
+<script is:inline type="module" src="/qualified-wrapup-reader.js?v=145d70dba302"></script>
+<style is:global>
+.qualified-wrapup { max-width:1100px; margin:auto; padding:1rem; background:#fff; color:#111; font:18px/1.65 system-ui; }
+.qualified-wrapup h1 { font-size:1.6rem; }.qualified-wrapup nav,.qualified-toolbar { display:flex; flex-wrap:wrap; gap:.6rem; margin:1rem 0; }.qualified-toolbar button,.qualified-unit-actions button { padding:.65rem; min-height:44px; }.qualified-toolbar label { display:block; max-width:100%; }.qualified-toolbar input { max-width:100%; }
+.qualified-unit { margin:2rem 0; padding:1rem; border:1px solid #bbb; scroll-margin-top:4rem; }.qualified-pair { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:1rem; }.qualified-wrapup [data-source-field],.qualified-wrapup [data-qualification],.qualified-wrapup pre { white-space:pre-wrap; overflow-wrap:anywhere; }.qualified-wrapup pre { max-width:100%; font:inherit; }.required-qualifications { border-top:1px solid #777; padding-top:1rem; }.witness-label { font-size:.85rem; }.qualified-print-warning { display:none; }
+.qualified-wrapup .qualified-selection-actions { position:sticky; bottom:0; background:#fff; border:1px solid #888; padding:.6rem; display:block; z-index:2; font-size:.85rem; }.qualified-selection-actions button { min-height:44px; padding:.5rem; }.qualified-wrapup .qualified-selection-actions p { margin:.5rem 0; }
+@media screen { .qualified-wrapup[data-mode=hebrew] .qualified-en,.qualified-wrapup[data-mode=english] .qualified-he { display:none; }.qualified-wrapup[data-mode=hebrew] .qualified-pair,.qualified-wrapup[data-mode=english] .qualified-pair { grid-template-columns:minmax(0,1fr); }.qualified-wrapup[data-witness=he] [data-source-field=he_nikud],.qualified-wrapup[data-witness=he] .witness-label.secondary,.qualified-wrapup[data-witness=he_nikud] [data-source-field=he],.qualified-wrapup[data-witness=he_nikud] .witness-label.primary { display:none; } }
+@media screen and (max-width:700px) { .qualified-pair { grid-template-columns:minmax(0,1fr); }.qualified-unit { padding:.6rem; }.qualified-wrapup { padding:.6rem; } }
+@media print { body,.qualified-wrapup { background:white!important; color:black!important; }.qualified-wrapup nav,.qualified-toolbar,.qualified-selection-actions,.qualified-unit-actions,.qualified-wrapup .archive,[data-integrity-status] { display:none!important; }.qualified-pair { display:block!important; }.qualified-wrapup [data-source-field] { display:block!important; }.qualified-wrapup [data-qualification] { display:block!important; color:rgb(0,0,0)!important; -webkit-text-fill-color:rgb(0,0,0)!important; font-size:16px!important; text-indent:0; letter-spacing:normal; word-spacing:0; }.qualified-unit { break-inside:auto; }.qualified-wrapup[data-print-safe=false] > * { display:none!important; }.qualified-wrapup[data-print-safe=false] > .qualified-print-warning { display:block!important; } }
+
+/* Parent print-only successor: keep exact source main; suppress fixed site UI. */
+@media print { body > :not(main):not(script):not(style) { display: none !important; } }
+</style>
+</Layout>

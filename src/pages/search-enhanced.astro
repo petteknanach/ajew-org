@@ -85,6 +85,7 @@ const searchBookLabelsJSON = JSON.stringify(searchBookLabels).replace(/</g, '\\u
   <script type="application/json" id="search-book-labels" set:html={searchBookLabelsJSON} />
   <script>
     import { displayBookLabel } from '../lib/search-book-labels.mjs';
+    import { qualifiedSearchAnchor } from '../lib/qualified-search-arrival.mjs';
     import {
       acronymMatch,
       booleanCandidateIds,
@@ -682,7 +683,7 @@ const searchBookLabelsJSON = JSON.stringify(searchBookLabels).replace(/</g, '\\u
         const snippet = (start > segmentStart ? '…' : '') + raw.slice(start, end).replace(/\s+/g, ' ').trim() + (end < segmentEnd ? '…' : '');
         return {
           snippet,
-          anchor: row ? `#seg-${row[0]}` : '',
+          anchor: qualifiedSearchAnchor(doc.p, row),
           location: readerReference(doc.p, row?.[1] || row?.[0] || null)
         };
       }

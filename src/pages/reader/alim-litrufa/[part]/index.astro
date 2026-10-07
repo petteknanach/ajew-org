@@ -28,6 +28,7 @@ try {
 const totalSections = indexData?.torahs?.length || 0;
 ---
 <Layout title={`${indexData?.title || "Alim LiTrufa"} — Part ${partNum} Index`} description={`Beautiful directory for Alim LiTrufa, part ${partNum}.`}>
+  {partNum === 2 && <aside data-qualified-additive="alim-2-17-62-63"><a href="/reader/alim-litrufa/reviewed/">Additive AI-reviewed / editorially qualified Part 2 letters 17, 62, 63</a><p>Three complete letters only; canonical edition unchanged. Not whole-book, human/source-owner approval or publication permission.</p></aside>}
   <ReaderDirectory
     title="Alim LiTrufa"
     hebrewTitle="עלים לתרופה"

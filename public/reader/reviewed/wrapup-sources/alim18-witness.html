@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ullim LeTroofah – Letter Twenty-Six | Reb Nussun: Joy Is Medicine, Every Step Precious</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Cinzel:wght@400;500;600&family=Frank+Ruhl+Libre:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --parchment: #f5efe0; --parchment-dark: #ede3cc;
+    --ink: #1c1209; --ink-mid: #3b2a14; --ink-soft: #5c4530;
+    --gold: #8b6914; --gold-pale: #e8d9a0; --crimson: #7a1c1c; --teal: #1a4a4a;
+    --highlight-y: rgba(220,195,80,0.22); --highlight-b: rgba(26,74,74,0.12);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background-color: #2a1f0e;
+    background-image: radial-gradient(ellipse at 20% 10%, rgba(90,60,20,0.4) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 90%, rgba(50,30,10,0.5) 0%, transparent 60%);
+    min-height: 100vh; font-family: 'EB Garamond', Georgia, serif;
+    color: var(--ink); padding: 2rem 1rem 4rem;
+  }
+  .manuscript {
+    max-width: 780px; margin: 0 auto; background-color: var(--parchment);
+    border: 1px solid var(--parchment-dark);
+    box-shadow: 0 0 0 6px #1a1005, 0 0 0 8px #8b6914, 0 0 0 10px #1a1005,
+      0 30px 80px rgba(0,0,0,0.7), inset 0 0 60px rgba(180,140,60,0.08);
+    padding: 3.5rem 4rem 4rem; position: relative;
+  }
+  .manuscript::before {
+    content: ''; position: absolute; top:0; left:0; right:0; bottom:0;
+    background: linear-gradient(180deg, rgba(200,170,90,0.06) 0%, transparent 30%, transparent 70%, rgba(150,110,40,0.05) 100%);
+    pointer-events: none;
+  }
+  .series-header { text-align: center; border-bottom: 2px solid var(--gold); padding-bottom: 1.6rem; margin-bottom: 2.2rem; position: relative; }
+  .series-header::after { content: '✦'; position: absolute; bottom: -0.65em; left: 50%; transform: translateX(-50%); background: var(--parchment); padding: 0 0.6em; color: var(--gold); font-size: 0.9rem; }
+  .series-title { font-family: 'Cinzel', serif; font-size: 1.1rem; letter-spacing: 0.18em; color: var(--gold); text-transform: uppercase; margin-bottom: 0.3rem; }
+  .series-heb { font-family: 'Frank Ruhl Libre', serif; font-size: 1.25rem; color: var(--ink-mid); margin-bottom: 0.3rem; }
+  .series-subtitle { font-size: 0.95rem; color: var(--ink-mid); font-style: italic; margin-bottom: 0.2rem; }
+  .series-byline { font-size: 0.8rem; color: var(--ink-soft); letter-spacing: 0.04em; }
+  .letter-heading { text-align: center; margin-bottom: 1.6rem; }
+  .letter-number { font-family: 'Cinzel', serif; font-size: 2.4rem; font-weight: 600; color: var(--gold); letter-spacing: 0.1em; line-height: 1; margin-bottom: 0.3rem; }
+  .letter-meta { font-size: 0.9rem; color: var(--ink-soft); font-style: italic; line-height: 1.65; }
+  .bezras-hashem { text-align: center; font-style: italic; color: var(--gold); font-size: 1.0rem; margin-bottom: 0.5rem; letter-spacing: 0.03em; }
+  .addressee { border-left: 3px solid var(--gold); padding: 0.75rem 1rem; margin-bottom: 1.7rem; font-size: 0.95rem; color: var(--ink-mid); font-style: italic; line-height: 1.75; background: rgba(200,170,80,0.06); }
+  .addressee .label { font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 0.13em; color: var(--gold); font-style: normal; display: block; margin-bottom: 0.3rem; text-transform: uppercase; }
+  .letter-body { text-align: justify; line-height: 1.90; font-size: 1.06rem; }
+  .letter-body p { margin-bottom: 1.15rem; text-indent: 1.6em; }
+  .letter-body p.no-indent { text-indent: 0; }
+  .translit { font-style: italic; color: var(--teal); font-weight: 500; }
+  mark.gold { background: var(--highlight-y); padding: 0 2px; border-radius: 2px; }
+  mark.teal { background: var(--highlight-b); padding: 0 2px; border-radius: 2px; }
+  cite { font-style: italic; color: var(--crimson); }
+  .verse-src { font-size: 0.82em; color: var(--crimson); font-style: normal; font-weight: 500; }
+  .prayer-block { margin: 0.3rem 0 1.15rem 0; padding: 1.2rem 1.5rem; border: 1px solid var(--gold-pale); border-top: 3px solid var(--gold); background: rgba(220,195,80,0.09); line-height: 2.0; font-size: 1.05rem; color: var(--ink-mid); font-style: italic; text-align: center; }
+  .joy-block { margin: 0.3rem 0 1.15rem 0; padding: 1.1rem 1.4rem; border-left: 4px solid var(--gold); background: rgba(200,170,80,0.08); line-height: 1.96; font-size: 1.04rem; color: var(--ink-mid); }
+  .joy-block p { margin-bottom: 0.8rem; text-indent: 0; }
+  .joy-block p:last-child { margin-bottom: 0; }
+  .ps-label { font-family: 'Cinzel', serif; font-size: 0.74rem; letter-spacing: 0.12em; color: var(--gold); text-transform: uppercase; display: block; margin: 1.5rem 0 0.25rem; }
+  .closing { margin-top: 1.8rem; border-top: 1px solid var(--gold-pale); padding-top: 1.2rem; }
+  .signature { text-align: right; font-style: italic; color: var(--ink-mid); font-size: 1.0rem; margin-top: 0.35rem; text-indent: 0 !important; }
+  .signature strong { font-style: normal; color: var(--ink); }
+  .translator-section { margin-top: 3rem; border-top: 2px solid var(--gold); padding-top: 1.6rem; position: relative; }
+  .translator-section::before { content: "— From the Translator —"; position: absolute; top: -0.75em; left: 50%; transform: translateX(-50%); background: var(--parchment); padding: 0 0.9em; font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 0.16em; color: var(--gold); text-transform: uppercase; white-space: nowrap; }
+  .translator-section p { font-size: 0.93rem; color: var(--ink-mid); line-height: 1.78; margin-bottom: 0.8rem; text-indent: 0; }
+  .translator-section p:last-child { margin-bottom: 0; }
+  .translator-section h3 { font-family: 'Cinzel', serif; font-size: 0.8rem; letter-spacing: 0.12em; color: var(--gold); text-transform: uppercase; margin: 1.2rem 0 0.5rem; }
+  .themes-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(175px,1fr)); gap: 0.8rem; margin-top: 0.6rem; }
+  .theme-card { background: var(--parchment-dark); border-top: 2px solid var(--gold); padding: 0.75rem 0.9rem; font-size: 0.85rem; color: var(--ink-mid); line-height: 1.55; }
+  .theme-card strong { display: block; font-family: 'Cinzel', serif; font-size: 0.71rem; letter-spacing: 0.1em; color: var(--gold); text-transform: uppercase; margin-bottom: 0.3rem; }
+  .ms-footer { text-align: center; margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid var(--gold-pale); font-size: 0.78rem; color: var(--ink-soft); font-style: italic; letter-spacing: 0.04em; }
+  @media (max-width: 600px) { .manuscript { padding: 2rem 1.4rem 2.5rem; } .letter-number { font-size: 1.8rem; } }
+</style>
+</head>
+<body>
+<div class="manuscript">
+  <div class="series-header">
+    <div class="series-title">Ullim LeTroofah</div>
+    <div class="series-heb">עלים לתרופה</div>
+    <div class="series-subtitle">Leaves for Healing</div>
+    <div class="series-byline">The Sacred Letters of Rebbe Nachman of Breslov and Reb Nussun of Breslov, of blessed memory</div>
+  </div>
+
+  <div class="letter-heading">
+    <div class="letter-number">LETTER TWENTY-SIX</div>
+    <div class="letter-meta">
+      Tuesday, Parshas Kedoshim, 25th of Nissan &nbsp;·&nbsp; Year 5586 (1826)<br>
+      Written from <strong>Breslov</strong>
+    </div>
+  </div>
+
+  <div class="bezras-hashem">With the help of G-d, may He be blessed</div>
+
+  <div class="addressee">
+    <span class="label">To</span>
+    Life and blessing and healing and peace and all good — to my dear
+    friend, my soul — the outstanding scholar — our Teacher the Rabbi
+    <strong>Naftali</strong> — may his light shine and radiate. May
+    Hashem add to you years of life and peace — and may everything turn
+    to the good — and may his horn be raised on high in Torah and
+    greatness, until Shiloh comes. Amen — so may it be His will.
+  </div>
+
+  <div class="letter-body">
+
+    <p class="no-indent">
+      Your letter I received this very hour — and I hastened and did
+      not delay to respond to you, for
+      <mark class="gold">your love to me is wondrous</mark>, as you
+      know. And how greatly my heart yearns for you — I am grieved
+      over you, my brother, my beloved. Alas, my brother — you have
+      bowed me down, for you have mixed my joy — with which I had
+      rejoiced as over all riches — upon hearing the report that he
+      had already begun to return to his former strength. And now you
+      inform me of your pains that have returned and been aroused
+      again — ailments and so forth. May Hashem Yisborach heal you
+      speedily.
+    </p>
+
+    <!-- The great prayer for Rabbi Naftali -->
+    <div class="prayer-block">
+      And now — <cite>what have I hoped for, O Hashem — my hope is
+      in Him</cite>
+      <span class="verse-src">[Tehillim 39:8]</span> — that He
+      return to him and have mercy on him, and like a father with a
+      son, heal him and appease him — and send His help from the
+      holy place, and from Zion support him
+      <span class="verse-src">[cf. Tehillim 20:3]</span>. With
+      swift swiftness — speedily return him to his full former
+      strength and heal him and give him life and cause him to
+      succeed in all that he turns to — in wealth and honor and
+      life and all good — <mark class="gold">in such a manner that
+      he merits true and eternal success for ever and ever</mark>
+      — for apart from this everything is vanity — and man has no
+      advantage in all his toil except when from it there grows
+      the good of eternal success.
+    </div>
+
+    <!-- The great teaching for the sick: from cedar to hyssop, longing, broken heart -->
+    <div class="joy-block">
+      <p>
+        Please, my brother, my beloved and dear friend — remember,
+        do not forget, all that we merited to hear and to see from
+        the mouth of the <span class="translit">Sava d'Savin</span>
+        (the Elder of Elders). For there is in them enough to give
+        yourself life at every time — <mark class="gold">whether in
+        good or in difficulty, whether in ascent or in descent — at
+        every time and at every level — whoever one may be</mark>.
+        From the cedar of Lebanon to the hyssop growing from the
+        wall
+        <span class="verse-src">[cf. Melachim I 5:13]</span> —
+        meaning even the very lowest in spiritual standing — all as
+        one can give themselves life through the holy words if they
+        truly set their heart and eyes upon them.
+      </p>
+      <p>
+        And even if now your strength is weak for engaging in Torah
+        and prayer — nonetheless there are counsels in his holy words
+        for how to give life to oneself even at this time — namely
+        through <mark class="teal">will and yearning and longing for
+        Hashem Yisborach and for His Torah</mark> — as explained in
+        his holy books. And to pour out one's speech before Hashem
+        Yisborach like a son before his father. And in particular
+        one who is not on the line of health — whose heart is broken
+        within him — it is natural for him to pour out his speech
+        even before people with a broken heart — <mark class="gold">how
+        much more so before Hashem Yisborach, who has struck and who
+        will heal</mark>.
+      </p>
+      <p>
+        And accustom yourself and strengthen yourself with all your
+        might to gladden your soul with everything possible. For
+        <mark class="gold">all illnesses come through sadness — and
+        joy is a great medicine for every kind of illness</mark> —
+        as explained in <em>Likutay Tinyana</em>, section 24 —
+        see there. And how can every person gladden his soul? Through
+        what he has merited — that G-d has not made him a gentile —
+        and has separated us from those who go astray, and so forth.
+      </p>
+      <p>
+        <mark class="teal">Hope to Hashem and He will save you</mark>
+        — for surely not lost, G-d forbid, is every single step and
+        every single movement and every single <span class="translit">perutah</span>
+        (coin) that you toiled with your body and your means in order
+        to draw close to such a true, awesome, and most exalted
+        Tzaddik, of blessed memory. And all is remembered for your
+        good. And his merit will shield you — to rescue you from all
+        evil and return you to your full former strength — and straighten
+        your heart toward him in truth — and cause you to succeed in
+        all that you turn to — to do you good in your end.
+        <mark class="gold">May your end grow greater than your
+        beginning</mark>
+        <span class="verse-src">[cf. Iyov 8:7]</span>.
+      </p>
+    </div>
+
+    <div class="closing">
+      <p class="no-indent">
+        The words of one who loves you in truth for eternity — who
+        awaits your salvation speedily.
+      </p>
+      <p class="signature"><strong>Nussun</strong> of Breslov.</p>
+    </div>
+
+    <!-- Postscript — greetings; Shavuos joy; love of friends -->
+    <span class="ps-label">Postscript — To the Community; Shavuos Joy; Love of Friends</span>
+    <p class="no-indent">
+      I also extend greetings of peace to all of you with great love.
+      For the sake of Hashem — strengthen yourselves to rejoice in
+      the coming holy festival that is upon us for good — to fulfil
+      completely <cite>and you shall rejoice in your festival</cite>
+      <span class="verse-src">[Devarim 16:14]</span>. And already
+      known to you is that, thank G-d, we have wherewith to rejoice —
+      and this is the truth, in truth. And take care to gather together
+      with love and brotherhood and peace and friendship — without any
+      grudge between one and his fellow — for our Master, of blessed
+      memory, warned us with many warnings regarding the love of
+      friends. And from the greatness of the urgency it is impossible
+      to elaborate.
+    </p>
+    <p class="no-indent">
+      The words of one who loves you in truth for ever and ever.
+    </p>
+    <p class="signature"><strong>Nussun</strong>, as above.</p>
+
+  </div>
+
+  <div class="translator-section">
+    <p>
+      <strong>Overview:</strong> Written just eight days after Letter
+      25 — still in the weeks of the <span class="translit">omer</span>,
+      approaching Shavuos — this tender letter to the gravely ill
+      Rabbi Naftali is one of the most compassionate in the collection.
+      Reb Nussun had just heard a hopeful report of improvement —
+      and then within hours receives a letter revealing the illness
+      has worsened. He pours out a full prayer, a teaching on giving
+      life to oneself even when too weak for Torah and prayer, and the
+      great declaration that joy is the medicine for all illness, cited
+      to <em>Likutay Tinyana</em> 24.
+    </p>
+    <h3>Key Themes</h3>
+    <div class="themes-grid">
+      <div class="theme-card">
+        <strong>Joy Is Medicine</strong>
+        The explicit citation of <em>Likutay Tinyana</em> 24 —
+        that all illness comes from sadness, and joy is a great
+        medicine for every kind of illness — is the clearest
+        statement in the collection of Rebbe Nachman's medical
+        theology. Reb Nussun applies it directly to his ill friend.
+      </div>
+      <div class="theme-card">
+        <strong>From Cedar to Hyssop</strong>
+        The image of spiritual inclusivity — from the towering
+        cedar to the hyssop growing from the crack in the wall —
+        is drawn from Melachim I 5:13 and Rebbe Nachman's universal
+        teaching. The weakest, lowest person can also find
+        life-giving counsel in the holy words. No one is excluded.
+      </div>
+      <div class="theme-card">
+        <strong>Not One Step Is Lost</strong>
+        Every step, every coin, every physical exertion invested
+        in drawing close to the Tzaddik is stored and remembered
+        before Heaven. This is Reb Nussun's comfort to a man who
+        has given everything and is now lying ill — not one
+        moment of your effort was wasted.
+      </div>
+      <div class="theme-card">
+        <strong>Love of Friends — Shavuos</strong>
+        The postscript charge to gather with love and brotherhood —
+        without any grudge between one person and another — before
+        Shavuos echoes the tradition that the Torah was given when
+        Israel encamped <em>as one person with one heart.</em>
+        Unity is the precondition of receiving Torah.
+      </div>
+    </div>
+  </div>
+
+  <div class="ms-footer">
+    Translated in the merit of Na Nach Nachma Nachman MayUman &nbsp;·&nbsp; May HY bless this work.
+  </div>
+</div>
+</body>
+</html>

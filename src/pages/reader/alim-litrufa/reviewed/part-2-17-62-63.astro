@@ -1,0 +1,145 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import '../../../../styles/reader.css';
+import '../../../../styles/reader-v2.css';
+import fs from 'node:fs';
+import path from 'node:path';
+import {validate,PIN,ROUTE,sha} from '../../../../lib/alim-qualified.mjs';
+const base=path.join(process.cwd(),'public/reader/alim-litrufa/reviewed');
+const raw=fs.readFileSync(path.join(base,'part-2-17-62-63.json'));
+const oracle=JSON.parse(raw.toString('utf8'));
+const wrappers=Object.fromEntries(oracle.letters.map(l=>{
+ const b=fs.readFileSync(path.join(base,`letter-${l.letter}-provenance.json`));
+ if(sha(b)!==l.successor_sha256)throw Error('Wrapper drift');return [l.letter,JSON.parse(b.toString('utf8'))];
+}));
+const {data:edition,counts}=validate(raw,wrappers,oracle);
+const title='Alim LiTrufa — qualified saved-text candidate: Part 2 letters 17, 62, 63 only';
+const esc=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/\r/g,'&#13;');
+const record=v=>esc(JSON.stringify(v,null,2));
+---
+<Layout noindex={true} title={title} description="Private additive qualified reading candidate; three complete letters, not whole-book completion or publication approval.">
+<div class="reader-container" data-qualified-alim="part-2-17-62-63" data-book="alim-litrufa" data-torah-id="alim-qualified-part-2-17-62-63" data-torah-title={title} data-projection-sha={PIN}>
+<p class="qualified-print-warning" role="alert">Qualified print withheld: source authentication, ownership or required qualification paint checks failed. Return to the unchanged source edition.</p>
+<script is:inline>
+(function(){const scope=document.querySelector('[data-qualified-alim]'),authenticated=()=>typeof window.AlimQualifiedIntegrityReady==='function'&&window.AlimQualifiedIntegrityReady();document.addEventListener('click',function(e){const b=e.target.closest('button');if(b&&b.matches('#btn-share,#btn-add-sefer,#btn-print,.seg-copy-btn,.seg-add-sefer-btn,.ajew-segment-action-btn,.selection-popup .sel-btn,#highlight-context-menu .hl-action[data-action="share"]')&&!authenticated()){e.preventDefault();e.stopImmediatePropagation();b.title='Qualified export disabled until exact source authentication succeeds';let status=scope.querySelector('.qualified-integrity-status');if(!status){status=document.createElement('p');status.className='qualified-integrity-status';status.setAttribute('role','status');scope.prepend(status);}status.textContent='Qualified outward action blocked: exact source authentication or ownership checks unavailable. Personal Save / Note / Prayer remain available.';}},true);document.addEventListener('copy',function(e){if(!authenticated()&&(()=>{const s=getSelection();if(!s||s.isCollapsed)return false;try{for(let i=0;i<s.rangeCount;i++)if(s.getRangeAt(i).intersectsNode(scope))return true;return scope.contains(s.anchorNode)||scope.contains(s.focusNode);}catch(_){return true;}})()){e.preventDefault();e.stopImmediatePropagation();}},true);})();
+</script>
+<div class="reader-progress"></div>
+<div class="reader-breadcrumb"><a href="/reader">Reader</a> › <a href="/reader/alim-litrufa/2/">Canonical Part 2 (unchanged)</a> › Qualified candidate</div>
+      <div class="reader-toolbar">
+        <div class="reader-toolbar-group">
+          <button class="reader-btn" data-mode="hebrew">Hebrew</button>
+          <button class="reader-btn" data-mode="english">English</button>
+          <button class="reader-btn" data-mode="both">Both</button>
+        </div>
+        <div class="reader-toolbar-group">
+          <button class="reader-btn" id="qualified-original" aria-pressed="true">Original — primary he</button><button class="reader-btn" id="btn-nikud">Nikud — independent witness</button>
+        </div>
+        <div class="reader-toolbar-group">
+          <span style="font-size:0.7em; font-family: 'Open Sans', sans-serif; color: var(--reader-text-secondary);">A</span>
+          <input type="range" id="font-size-slider" class="font-size-slider" min="12" max="32" value="18" />
+          <span style="font-size:0.9em; font-family: 'Open Sans', sans-serif; color: var(--reader-text-secondary);">A</span>
+        </div>
+        <div class="reader-toolbar-group">
+          <button class="reader-btn reader-btn-icon" data-theme-btn="day">Day</button>
+          <button class="reader-btn reader-btn-icon" data-theme-btn="sepia">Sepia</button>
+          <button class="reader-btn reader-btn-icon" data-theme-btn="night">Night</button>
+        </div>
+        <div class="reader-toolbar-group">
+          <button class="reader-btn reader-btn-icon" id="btn-listen" onclick="toggleSpeaking()">Listen</button>
+          <button class="reader-btn reader-btn-icon" id="btn-search">Search</button>
+          <button class="reader-btn reader-btn-icon" id="btn-bookmark">Bookmark</button>
+          
+          <button class="reader-btn reader-btn-icon" id="btn-fullscreen">Fullscreen</button>
+        </div>
+      </div>
+
+      <div class="reader-search-bar">
+        <input type="text" placeholder={"Search these three complete letters..."} dir="auto" />
+        <span class="search-info"></span>
+        <button class="reader-btn search-close">Close</button>
+      </div>
+
+
+<div class="reader-header"><h1>{title}</h1><p class="hebrew-title">עלים לתרופה</p></div>
+<aside class="reviewed-scope"><h2>Three complete letters only — bounded private candidate</h2>
+<p>27 original owned paragraphs; 65 source-aligned spans; 98 current qualifications. Selected English follows the supplied primary <code>he</code> explicitly. Nikud selects the independently supplied <code>he_nikud</code> where present; it is not generated, corrected or harmonized. An absent secondary witness leaves primary Hebrew visible with an explicit notice.</p>
+<p>Qualified AI saved-text acceptance is bounded to these letters. Not native-print authentication, every-mark certification, human/source-owner approval, paid Jev review, whole-book completion or publication permission. All source/HOLD gates remain. No translation was made for this Reader. The original projection's pending-status wording and earlier approval history remain conserved, not silently upgraded.</p>
+<p>Original paragraphs own the notes below; the 65 aligned spans are readable inside each body, not 65 note owners. Archive text is not the selected translation. Ordinary text selection is available; ambiguous source endpoints fail closed for qualified outward actions. Personal v2 Save / Note / Prayer remain available. Captured-range outward Share alone is visibly blocked; use ordinary qualified source selection.</p>
+<p><a href="/reader/alim-litrufa/reviewed/">Partial-scope discovery</a> · <a href="/reader/alim-litrufa/reviewed/part-2-17-62-63.json">Exact raw projection</a> · <a href="#source-apparatus">Full archival English, unapproved apparatus and history</a></p>
+<nav class="reviewed-siman-links">{edition.letters.map(l=><a href={`#letter-${l.letter}`}>Part 2 / Letter {l.letter}</a>)}</nav>
+</aside>
+<button class="reader-toc-toggle" title="Contents">☰</button><div class="reader-toc"><button class="reader-toc-close">×</button><h3>These letters only</h3><ul class="reader-toc-list">{edition.letters.map(l=><li><a href={`#letter-${l.letter}`}>Part 2 / Letter {l.letter}</a></li>)}</ul></div>
+<div class="reader-content mode-hebrew"><div class="reader-content-original">
+{edition.letters.map(l=><section class="reviewed-letter" id={`letter-${l.letter}`} data-letter={String(l.letter)}><h2>Part 2 / Letter {l.letter}</h2>
+{l.segments.map(s=>{
+ const primary=s.source_fields.find(f=>f.field==='he'),secondary=s.source_fields.find(f=>f.field==='he_nikud');
+ const pairs=wrappers[l.letter].candidate.pairs.filter(p=>p.position===s.position);
+ return <div class="reader-segment-pair" id={`letter-${l.letter}-segment-${s.position}`} data-unit={`al-2-${l.letter}-p${s.position}`} data-owner-letter={String(l.letter)} data-position={String(s.position)}>
+ <div class="reader-segment segment-he" data-index={`${l.letter}-${s.index}`} lang="he" dir="rtl"><span class="segment-number">Letter {l.letter}; original index {s.index}; position {s.position}</span><Fragment set:html={`<p data-field="he" data-xref-done="1" data-bare="${esc(primary.text)}" data-nikud="${esc(secondary.present?secondary.text:primary.text)}" data-secondary-present="${secondary.present}">${pairs.map(p=>`<span data-span="${esc(p.id)}">${esc(p.he)}</span>`).join('')}</p>`} /></div>
+ <div class="reader-segment segment-en" data-index={`${l.letter}-${s.index}`} lang="en" dir="ltr"><span class="segment-number">Letter {l.letter}; original index {s.index}</span><p data-field="en" data-xref-done="1" set:html={pairs.map(p=>`<span data-span="${esc(p.id)}">${esc(p.en)}</span>`).join(' ')} /></div>
+ <div class="reviewed-witnesses"><p class="secondary-absence" hidden={secondary.present}>No independently supplied he_nikud for this paragraph. Primary he remains visible; no points are generated.</p>
+ <details open class="reviewed-provenance"><summary>Required current qualifications — owned by this original paragraph</summary><div data-field="qualifications">{s.qualification_occurrences.map(q=><p data-qualification={q.qualification.id} data-owner={`al-2-${l.letter}-p${s.position}`} data-pointer={q.pointer} data-ordinal={String(q.ordinal)} set:html={esc(q.qualification.text)} />)}</div></details>
+ <details><summary>Independent supplied Hebrew witnesses — primary is the selected basis</summary><div data-field="secondary" lang="he" dir="rtl" set:html={esc(secondary.present?secondary.text:'ABSENT — no witness generated')} /></details>
+ <details><summary>Exact source fields, ownership and qualification descriptors</summary><pre data-field="bindings" set:html={record(s)} /></details>
+ </div></div>;
+})}</section>)}
+</div></div>
+<section id="source-apparatus" class="reviewed-scope"><h2>Archival witnesses, unapproved commentary and complete history</h2><p>These are not additional translation paragraphs. Original English nodes retain witness/node ownership only: no unsupported mapping to selected paragraph owners. Apparatus retains its actual declared owner. Repeated text is distinct by occurrence, not deduplicated by wording.</p>
+{edition.letters.map(l=><section data-archive-letter={String(l.letter)}><h3>Archive — Part 2 / Letter {l.letter}</h3>
+{l.complete_archival_english_witness_nodes.map(n=><details class="archive-node" data-node={String(n.ordinal)}><summary>History-only original English witness node {n.ordinal} — not selected translation or approved commentary</summary><div data-field="archive-text" set:html={esc(n.text)} /><pre data-field="archive-record" set:html={record(n)} /></details>)}
+{l.archival_apparatus.map((a,i)=><details class="archive-apparatus" data-occurrence={String(i)} data-owner={a.owner}><summary>History-only / unapproved apparatus — actual owner {a.owner}; {a.kind}</summary><div data-field="archive-text" set:html={esc(a.text)} /><pre data-field="archive-record" set:html={record(a)} /></details>)}
+<details class="source-wrapper"><summary>Complete retained source apparatus/provenance/history wrapper — Letter {l.letter}</summary><pre data-field="wrapper-record" set:html={record(wrappers[l.letter])} /><a href={`/reader/alim-litrufa/reviewed/letter-${l.letter}-provenance.json`}>Exact wrapper JSON</a></details>
+</section>)}
+</section>
+<aside class="reviewed-scope"><h2>Commentary scope</h2><p>Any canonical whole-book commentary collection is a separate unapproved comparison context, not an authenticated alignment to these 27 original paragraphs. This private candidate does not claim paragraph-linked commentary or invent a Torah number.</p><a href="/reader/alim-litrufa/2/">Canonical whole-book context (unchanged; outside private fixture)</a></aside>
+
+<script src="/alim-qualified-reader.js?v=3" defer></script><script src="/reader-script.js?v=20260820-notes-fix" defer></script><script src="/reader-v2.js" defer></script>
+</div></Layout>
+<style is:global>
+[data-qualified-alim] .reviewed-scope {margin:1rem 0;padding:1rem;border:1px solid var(--reader-border);border-radius:8px;font-family:'Open Sans',sans-serif;line-height:1.6;}
+[data-qualified-alim] .reader-content, [data-qualified-alim] .reader-content-original {display:block!important;}
+[data-qualified-alim] .reader-segment-pair {display:grid!important;grid-template-columns:minmax(0,1fr);gap:1rem;}
+[data-qualified-alim] .reader-segment-pair > .ajew-segment-actions {grid-column:1/-1;}
+[data-qualified-alim] .reader-segment-pair > .seg-copy-btn {position:static!important;grid-column:1/-1;justify-self:start;opacity:1!important;min-height:36px;margin:0!important;}
+[data-qualified-alim] .reader-segment-pair .reader-segment {grid-column:auto!important;}
+[data-qualified-alim] .reader-segment-pair .segment-en {text-align:start;}
+@media (min-width:901px) {
+  [data-qualified-alim] .reader-content.mode-both .reader-segment-pair {grid-template-columns:minmax(0,1fr) minmax(0,1fr);}
+  [data-qualified-alim] .reader-content {padding-inline:24px 76px;}
+}
+/* Shared audio URL heuristics cannot identify this additive edition. Do not
+   display a canonical chapter recording as if it matched the reviewed rows. */
+[data-qualified-alim] .kht-audio-player,
+body:has([data-qualified-alim]) #ajew-audio-player,
+body:has([data-qualified-alim]) #ajew-audio-player-launcher {display:none!important;}
+[data-qualified-alim] .reviewed-letter {scroll-margin-top:110px;}
+[data-qualified-alim] .reviewed-letter h2 {font-size:1.3rem;padding-block:1rem;}
+[data-qualified-alim] .reviewed-letter-links {display:flex;flex-wrap:wrap;gap:.5rem;}
+[data-qualified-alim] .reviewed-letter-links a {padding:.3rem .7rem;border:1px solid var(--reader-border);border-radius:5px;}
+[data-qualified-alim] .reviewed-letter-navigation {display:flex;flex-wrap:wrap;justify-content:space-between;gap:.8rem;font-size:.85rem;}
+[data-qualified-alim] .reviewed-witnesses {grid-column:1/-1;min-width:0;font: .85rem/1.65 'Open Sans',sans-serif;padding:.7rem;border-top:1px solid var(--reader-border);}
+[data-qualified-alim] details {margin-block:.6rem;}
+[data-qualified-alim] summary {cursor:pointer;font-weight:600;}
+[data-qualified-alim] [data-field], [data-qualified-alim] pre {white-space:pre-wrap;overflow-wrap:anywhere;word-break:normal;}
+[data-qualified-alim] .reader-segment .segment-number {position:static!important;display:block;float:none!important;font-size:.7em;line-height:1.8;opacity:.7;}
+[data-qualified-alim] .reader-segment {min-width:0;}
+[data-qualified-alim] .reader-toolbar {max-width:100%;}
+[data-qualified-alim] .reader-toolbar-group {flex-wrap:wrap;}
+[data-qualified-alim] .reader-toc {overflow-y:auto;max-height:85vh;}
+@media (min-width:1024px) {
+  body:has([data-qualified-alim]) .hitbodedut-fab {left:calc(var(--ds-sidebar-width,230px) + 8px);right:auto;transform:none;width:36px;height:36px;font-size:1.2rem;}
+}
+
+/* Parent print-only successor: keep exact source main; suppress fixed site UI. */
+@media print { body > :not(main):not(script):not(style) { display: none !important; } }
+@media print { .ajew-segment-actions, #commentary-sidebar, #commentary-resize-handle { display: none !important; } }
+</style>
+
+<style is:global>
+[data-qualified-alim] .reviewed-letter {scroll-margin-top:100px}
+[data-qualified-alim] .reviewed-letter h2 {padding:1rem}
+[data-qualified-alim] .reviewed-scope pre {font-size:.8rem}
+body:has([data-qualified-alim]) #highlight-context-menu .hl-action[data-action="share"] {opacity:.45}
+[data-qualified-alim] .qualified-print-warning {display:none;color:#000!important;-webkit-text-fill-color:#000!important;background:#fff!important;text-shadow:none!important}
+@media print { body:has([data-qualified-alim]) .hitbodedut-fab, body:has([data-qualified-alim]) #compactYahrzeit {display:none!important} .reader-container[data-qualified-alim] {background:#fff!important;transition:none!important} [data-qualified-alim] .reviewed-provenance {display:block!important} [data-qualified-alim] .reviewed-provenance>* {display:block!important} [data-qualified-alim]:not([data-print-safe="true"]) > * {display:none!important} body [data-qualified-alim]:not([data-print-safe="true"]) > .reader-content {display:none!important} [data-qualified-alim]:not([data-print-safe="true"]) > .qualified-print-warning {display:block!important} }
+</style>

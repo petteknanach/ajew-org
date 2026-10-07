@@ -15,6 +15,10 @@ try {
 const totalSections = indexData?.torahs?.length || 0;
 ---
 <Layout title={`${indexData?.title || 'Sichos Haran'} — Directory`} description={`Directory for ${indexData?.title || 'Sichos Haran'}.`}>
+  <aside data-reviewed-sichos-entry style="max-width:72rem;margin:1rem auto;padding:1rem;border:1px solid currentColor;border-radius:8px">
+    <p>Qualified bilingual alignment is available for Sichos 92 and 209. These are bounded editorial repairs, not a complete-book approval; the older edition remains unchanged.</p>
+    <a href="/reader/reviewed/wrapup-18-19-92-209/#group-sichos92">Read qualified Sicha 92</a> · <a href="/reader/reviewed/wrapup-18-19-92-209/#group-sichos209">Read qualified Sicha 209</a>
+  </aside>
   <ReaderDirectory
     title={indexData?.title || 'Sichos Haran'}
     hebrewTitle={indexData?.hebrewTitle || ''}

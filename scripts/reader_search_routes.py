@@ -36,10 +36,19 @@ def route_for_source(source: Path, reader_dir: Path) -> str | None:
     parts = rel.parts
     if not parts or source.name == "index.json":
         return None
+    if parts == ('reviewed', 'wrapup-18-19-92-209.json'):
+        return '/reader/reviewed/wrapup-18-19-92-209'
+    if parts[0] == 'reviewed':
+        return None  # exact archival assets are retention, never selected search
     book = parts[0]
     stem = source.stem
 
+    if book == "alim-litrufa" and len(parts) == 3 and parts[1] == "reviewed":
+        return "/reader/alim-litrufa/reviewed/part-2-17-62-63" if parts[2] == "part-2-17-62-63.json" else None
+
     if book == "chayey-moharan":
+        if parts == ("chayey-moharan", "reviewed", "14-58.json"):
+            return "/reader/chayey-moharan/reviewed/14-58"
         if len(parts) == 3 and parts[1] == "simanim":
             match = re.fullmatch(r"siman-(\d+)", stem)
             return f"/reader/{book}/siman/{int(match.group(1))}" if match else None

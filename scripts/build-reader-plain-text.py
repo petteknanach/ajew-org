@@ -13,6 +13,9 @@ import shutil
 from datetime import date
 from pathlib import Path
 from typing import Any
+from reviewed_chayay_exports import is_reviewed_source, write_plain
+from reviewed_alim_exports import is_reviewed_source as is_alim_source, write_plain as alim_write_plain
+from reviewed_wrapup_exports import is_reviewed_source as is_wrapup_source, write_plain as wrapup_write_plain, is_archival_source as is_wrapup_archive
 
 ROOT = Path(__file__).resolve().parents[1]
 READER_DIR = ROOT / "public" / "reader"
@@ -262,6 +265,8 @@ def main() -> None:
     entries: list[dict[str, Any]] = []
     for path in sorted(READER_DIR.rglob("*.json")):
         rel = path.relative_to(READER_DIR)
+        if is_wrapup_archive(path, READER_DIR):
+            continue  # retained originals/wrappers are not plain selected editions
         if rel.parts and rel.parts[0] in SKIP_DIRS:
             continue
         if path.name in {"index.json", "catalog.json"}:
@@ -269,6 +274,17 @@ def main() -> None:
         try:
             data = json.loads(path.read_text(encoding="utf-8"))
         except Exception:
+            if is_wrapup_source(path, READER_DIR):
+                raise  # exact current qualification projection cannot be skipped
+            continue
+        if is_reviewed_source(path, READER_DIR):
+            entries.append(write_plain(path, data, OUT_DIR))
+            continue
+        if is_alim_source(path, READER_DIR):
+            entries.append(alim_write_plain(path, data, OUT_DIR))
+            continue
+        if is_wrapup_source(path, READER_DIR):
+            entries.append(wrapup_write_plain(path, data, OUT_DIR))
             continue
         if not isinstance(data, dict) or not isinstance(data.get("segments"), list):
             continue
@@ -324,9 +340,9 @@ def main() -> None:
             sec_txt = (OUT_DIR / r["url"].strip("/") .replace("reader-plain/", "") / "index.txt")
             sec_md = (OUT_DIR / r["url"].strip("/") .replace("reader-plain/", "") / "index.md")
             if sec_txt.exists():
-                full_txt += [f"\n\n# {r['title']}", f"URL: https://ajew.org{r['url']}\n", sec_txt.read_text(encoding="utf-8")]
+                full_txt += [f"\n\n# {r['title']}", f"URL: https://ajew.org{r['url']}\n", sec_txt.read_bytes().decode("utf-8") if r["url"] in {"/reader-plain/chayey-moharan/reviewed/14-58/", "/reader-plain/alim-litrufa/reviewed/part-2-17-62-63/", "/reader-plain/reviewed/wrapup-18-19-92-209/"} else sec_txt.read_text(encoding="utf-8")]
             if sec_md.exists():
-                full_md += [f"\n\n# {r['title']}", f"\nURL: https://ajew.org{r['url']}\n", sec_md.read_text(encoding="utf-8")]
+                full_md += [f"\n\n# {r['title']}", f"\nURL: https://ajew.org{r['url']}\n", sec_md.read_bytes().decode("utf-8") if r["url"] in {"/reader-plain/chayey-moharan/reviewed/14-58/", "/reader-plain/alim-litrufa/reviewed/part-2-17-62-63/", "/reader-plain/reviewed/wrapup-18-19-92-209/"} else sec_md.read_text(encoding="utf-8")]
         (bdir / "full.txt").write_text("\n".join(full_txt).strip() + "\n", encoding="utf-8")
         (bdir / "full.md").write_text("\n".join(full_md).strip() + "\n", encoding="utf-8")
         items = "\n".join(f'<li><a href="{html.escape(r["url"].split(f"/reader-plain/{book}/",1)[1])}">{html.escape(r["title"])}</a> <small>({r["segments"]} segments)</small></li>' for r in rows)

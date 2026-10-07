@@ -12,6 +12,9 @@ half only when user searches in the other language.
 import json, os, re, gzip, sys
 from pathlib import Path
 from reader_search_routes import discover_routed_sources
+from reviewed_chayay_exports import is_reviewed_source, search_document
+from reviewed_alim_exports import is_reviewed_source as is_alim_source, search_document as alim_search_document
+from reviewed_wrapup_exports import is_reviewed_source as is_wrapup_source, search_document as wrapup_search_document
 
 READER_DIR = Path('public/reader')
 OUT_DIR = Path('public/data')
@@ -109,6 +112,8 @@ def extract_segments(data):
         candidate = int(en_match.group(1)) if en_match else he_number
         if candidate and ((section == 0 and candidate == 1) or candidate in (section, section + 1)):
             section = candidate
+        if data.get('qualifiedReviewedProjection') is True:
+            section = seg['siman']
         dom_index = seg.get('index', position)
         segment_map.append([dom_index, section or dom_index, he_cursor, he_cursor + len(he_segment), en_cursor, en_cursor + len(en_segment)])
         all_he.extend(seg_he)
@@ -164,14 +169,24 @@ for routed in discover_routed_sources(json_files, READER_DIR):
         with open(fpath, 'r', encoding='utf-8') as f:
             data = json.load(f)
     except (json.JSONDecodeError, Exception):
+        if is_wrapup_source(fpath, READER_DIR):
+            raise  # current qualified source is never silently skipped
         skipped += 1
         continue
     if not isinstance(data, dict):
+        if is_wrapup_source(fpath, READER_DIR):
+            raise ValueError("Malformed current qualified projection")
         # Non-document JSON (schedules, maps, calendars, commentary files...)
         # carries no segments to index.
         skipped += 1
         continue
     
+    if is_reviewed_source(fpath, READER_DIR):
+        data = search_document(fpath, data)
+    if is_alim_source(fpath, READER_DIR):
+        data = alim_search_document(fpath, data)
+    if is_wrapup_source(fpath, READER_DIR):
+        data = wrapup_search_document(fpath, data)
     he_text, en_text, segment_map = extract_segments(data)
     if fpath.parent.name == 'chayey-moharan' and fpath.stem == 'hashmata-162':
         he_text = str(data.get('hashmata_he', '') or '').strip()

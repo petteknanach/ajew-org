@@ -722,6 +722,138 @@ import Layout from '../layouts/Layout.astro';
       }
     }
 
+    // Personal-note commits only. Other anthology actions retain their existing
+    // persistence behavior; this is not a generic transactional storage layer.
+    const NOTE_PROTECTED_FIELDS = [
+      'id', '_legacyKey', 'ref', 'refHe', 'he', 'en', 'savedText',
+      'readerUrl', 'legacySource', 'addedAt', 'tag'
+    ];
+    const noteOwn = (object, key) => Object.prototype.hasOwnProperty.call(object, key);
+    function noteField(object, key) {
+      return [noteOwn(object, key), noteOwn(object, key) ? object[key] : null];
+    }
+    function noteProtected(passage) {
+      return JSON.stringify(NOTE_PROTECTED_FIELDS.map(key => noteField(passage, key)));
+    }
+    function noteIdentity(passage) {
+      // Do not manufacture IDs for legacy data or accept malformed identities.
+      for (const key of ['id', '_legacyKey']) {
+        if (noteOwn(passage, key) &&
+            (typeof passage[key] !== 'string' || !passage[key])) {
+          throw new Error('Unsupported passage identity');
+        }
+      }
+      if (noteOwn(passage, 'id')) return ['id', passage.id];
+      if (noteOwn(passage, '_legacyKey')) return ['_legacyKey', passage._legacyKey];
+      return null;
+    }
+    function noteCandidates(passages, binding) {
+      return passages.filter(p => binding.identity
+        ? noteOwn(p, binding.identity[0]) && p[binding.identity[0]] === binding.identity[1]
+        : !noteOwn(p, 'id') && !noteOwn(p, '_legacyKey') && noteProtected(p) === binding.protected);
+    }
+    function noteUniqueIdentities(passage, passages) {
+      for (const key of ['id', '_legacyKey']) {
+        if (noteOwn(passage, key) && passages.filter(p =>
+            noteOwn(p, key) && p[key] === passage[key]).length !== 1) {
+          throw new Error('Ambiguous passage identity');
+        }
+      }
+    }
+    function bindPersonalNote(passage, passages) {
+      try {
+        const binding = {
+          identity: noteIdentity(passage), protected: noteProtected(passage),
+          expectedNote: JSON.stringify(noteField(passage, 'note'))
+        };
+        if (!binding.identity && !['ref','refHe','he','en','savedText','readerUrl','legacySource']
+            .some(key => typeof passage[key] === 'string' && passage[key].length)) {
+          throw new Error('Legacy passage has no protected identity fields');
+        }
+        noteUniqueIdentities(passage, passages);
+        if (noteCandidates(passages, binding).length !== 1) throw new Error('Ambiguous passage');
+        return binding;
+      } catch (error) { return {error}; }
+    }
+    function noteNumberValue(token) {
+      const match = token.match(/^(-?)(\d+)(?:\.(\d+))?(?:e([+-]?\d+))?$/i);
+      let digits = (match[2] + (match[3] || '')).replace(/^0+/, '');
+      if (!digits) return match[1] + '0';
+      let exponent = BigInt(match[4] || '0') - BigInt((match[3] || '').length);
+      const trailing = digits.match(/0+$/);
+      if (trailing) {
+        digits = digits.slice(0, -trailing[0].length);
+        exponent += BigInt(trailing[0].length);
+      }
+      return match[1] + digits + 'e' + exponent;
+    }
+    function validateNoteJSON(raw) {
+      // JSON.parse alone can silently lose duplicate keys or out-of-range /
+      // over-precision custom numbers. Refuse those bytes instead of replacing
+      // them with a lossy stringify. Syntax was already checked by JSON.parse.
+      const tokens = raw.match(/"(?:\\.|[^"\\])*"|-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?|[{}\[\]:,]|true|false|null/g);
+      const objects = [];
+      tokens.forEach((token, i) => {
+        if (token === '{') objects.push(new Set());
+        else if (token === '[') objects.push(null);
+        else if (token === '}' || token === ']') objects.pop();
+        else if (token[0] === '"' && tokens[i + 1] === ':') {
+          const key = JSON.parse(token), keys = objects[objects.length - 1];
+          if (keys.has(key)) throw new Error('Duplicate saved JSON key');
+          keys.add(key);
+        } else if (/^-?\d/.test(token)) {
+          const number = Number(token);
+          if (!Number.isFinite(number) || noteNumberValue(token) !== noteNumberValue(JSON.stringify(number))) {
+            throw new Error('Unsupported saved JSON number');
+          }
+        }
+      });
+    }
+    function commitPersonalNote(binding, value) {
+      if (binding.error) throw binding.error;
+      // This final fresh read / validation / write / exact read-back is entirely
+      // synchronous, including under the cooperating Reader's existing lock.
+      // Foreign writers which ignore that lock are not transactionally covered.
+      const raw = localStorage.getItem(SEFER_KEY);
+      if (raw === null) throw new Error('Saved collection was removed');
+      const current = JSON.parse(raw);
+      validateNoteJSON(raw);
+      if (!current || typeof current !== 'object' || Array.isArray(current) ||
+          !Array.isArray(current.passages) || !current.passages.every(p =>
+            p && typeof p === 'object' && !Array.isArray(p) &&
+            ['ref','refHe','he','en','savedText','note','tag','readerUrl'].every(k =>
+              p[k] == null || typeof p[k] === 'string'))) {
+        throw new Error('Unsupported saved collection');
+      }
+      if (current.legacyImportedKeys !== undefined &&
+          (!Array.isArray(current.legacyImportedKeys) || !current.legacyImportedKeys.every(k => typeof k === 'string'))) {
+        throw new Error('Unsupported migration receipt');
+      }
+      current.passages.forEach(noteIdentity);
+      const matches = noteCandidates(current.passages, binding);
+      if (matches.length !== 1) throw new Error('Target removed or ambiguous');
+      const target = matches[0];
+      noteUniqueIdentities(target, current.passages);
+      if (noteProtected(target) !== binding.protected) throw new Error('Protected passage changed');
+      if (JSON.stringify(noteField(target, 'note')) !== binding.expectedNote) {
+        throw new Error('Personal note changed elsewhere');
+      }
+      // Preserve every other freshly read passage, top-level/passage custom
+      // field, and protected source value. Even updatedAt is left untouched.
+      target.note = value;
+      const next = JSON.stringify(current);
+      localStorage.setItem(SEFER_KEY, next);
+      if (localStorage.getItem(SEFER_KEY) !== next) throw new Error('Save verification failed');
+      binding.expectedNote = JSON.stringify(noteField(target, 'note'));
+      return current;
+    }
+    function savePersonalNote(binding, value) {
+      const commit = () => commitPersonalNote(binding, value);
+      return navigator.locks && typeof navigator.locks.request === 'function'
+        ? navigator.locks.request('ajew-my-sefer', {mode: 'exclusive'}, commit)
+        : Promise.resolve().then(commit);
+    }
+
     let sefer;
     try { sefer = await loadSefer(); }
     catch (error) {
@@ -849,9 +981,36 @@ import Layout from '../layouts/Layout.astro';
             render();
           }
         });
-        card.querySelector('textarea').addEventListener('input', (e) => {
-          sefer.passages[realIdx].note = e.target.value;
-          saveSefer(sefer);
+        const noteInput = card.querySelector('textarea');
+        const noteBinding = bindPersonalNote(p, sefer.passages);
+        const noteStatus = document.createElement('p');
+        noteStatus.setAttribute('data-note-status', '');
+        noteStatus.setAttribute('role', 'status');
+        noteStatus.setAttribute('aria-live', 'polite');
+        noteStatus.style.fontSize = '0.875rem';
+        noteStatus.style.margin = '4px 0 0';
+        noteInput.parentElement.appendChild(noteStatus);
+        // Capture every intent before waiting for a lock. Serialize per editor
+        // so a later input never races an older expected-note baseline.
+        let noteQueue = Promise.resolve(), noteIntent = 0, noteConflict = false;
+        noteInput.addEventListener('input', () => {
+          const value = noteInput.value, intent = ++noteIntent;
+          noteStatus.dataset.state = 'pending';
+          noteStatus.textContent = 'Saving personal note…';
+          noteQueue = noteQueue.then(async () => {
+            if (noteConflict) throw new Error('Reload required after note conflict');
+            sefer = await savePersonalNote(noteBinding, value);
+            if (intent === noteIntent) {
+              noteStatus.dataset.state = 'saved';
+              noteStatus.textContent = 'Personal note saved.';
+            }
+          }).catch(() => {
+            noteConflict = true;
+            noteStatus.dataset.state = 'conflict';
+            noteStatus.setAttribute('role', 'alert');
+            noteStatus.setAttribute('aria-live', 'assertive');
+            noteStatus.textContent = 'Personal note not saved: saved data changed, is ambiguous, or could not be safely written and verified. Your draft remains here. Copy your draft and reload before retrying; keep this browser’s saved data for recovery.';
+          });
         });
 
         // Drag and drop

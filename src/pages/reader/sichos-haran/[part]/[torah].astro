@@ -102,6 +102,12 @@ const structuredData = torahData ? JSON.stringify({
       data-torah-title={`${torahData.title} - Words of Rabbi Nachman`}
     >
       <div class="reader-progress"></div>
+      {[92, 209].includes(torahNum) && (
+        <aside data-reviewed-sichos-entry style="margin:1rem 0;padding:1rem;border:1px solid currentColor;border-radius:8px">
+          <p>This older edition is retained unchanged. The current qualified Hebrew–English alignment for this Sicha is available in a separate reading edition, with its required translation qualifications.</p>
+          <a href={`/reader/reviewed/wrapup-18-19-92-209/#group-sichos${torahNum}`}>Read the current qualified alignment for Sicha {torahNum}</a>
+        </aside>
+      )}
 
       <div class="reader-breadcrumb">
         <a href="/reader">Reader</a>

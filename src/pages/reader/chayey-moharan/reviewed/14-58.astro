@@ -1,0 +1,349 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import Comments from '../../../../components/Comments.astro';
+import CommentarySidebar from '../../../../components/CommentarySidebar.astro';
+import '../../../../styles/reader.css';
+import '../../../../styles/reader-v2.css';
+import fs from 'node:fs';
+import path from 'node:path';
+const edition = JSON.parse(fs.readFileSync(path.join(process.cwd(),'public/reader/chayey-moharan/reviewed/14-58.json'),'utf8'));
+const error = null;
+const part = 'reviewed', torah = '14-58', partNum = 1, torahNum = 1;
+const fileName = 'reviewed/14-58.json';
+const torahData = {id:'chayey-moharan-reviewed-14-58',title:'Chayay Moharan — AI-reviewed, editorially qualified Simanim 14–58',hebrewTitle:'חיי מוהר״ן',segments:edition.nodes.map(n=>n.selected),navigation:{prevUrl:'/reader/chayey-moharan/1/1/#seg-54',nextUrl:null}};
+const pageTitle = torahData.title;
+const pageDesc = '45 Simanim, 142 source pairs. AI-reviewed and editorially qualified additive edition; not human approval or an authenticated complete original translation.';
+const structuredData = '';
+const commentaryEntry = {subjectLabel:"Chayay Moharan — whole-book commentary context (not an alignment to Simanim 14–58)",related_commentaries:[{book:'likutay-nanach',section:'chayey-combined',label:'Likutay Nanach',sectionTitle:'ספר חיי מוהר״ן',url:'/reader/likutay-nanach/volume-4/chayey.json'}]};
+const esc = (s) => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/\r/g,'&#13;');
+const record = (v) => esc(JSON.stringify(v,null,2));
+function provenance(n) {
+  const text = n.selected.translationProvenance || '';
+  const spans = edition.required_qualification_occurrences.filter(q=>q.owner_unit_id===n.unit_id).map(q=>{
+    const start=text.indexOf(q.text);
+    if(start<0 || text.indexOf(q.text,start+q.text.length)>=0) throw Error('Nonunique qualification '+q.source_pointer);
+    return {q,start,end:start+q.text.length};
+  }).sort((a,b)=>a.start-b.start);
+  let at=0,html='';
+  for(const {q,start,end} of spans) {
+    if(start<at) throw Error('Overlapping qualification');
+    html+=esc(text.slice(at,start))+`<span data-qualification="${esc(q.source_pointer)}" data-owner="${n.unit_id}" data-ordinal="${q.ordinal_0}">${esc(q.text)}</span>`;
+    at=end;
+  }
+  return html+esc(text.slice(at));
+}
+---
+
+
+<Layout title={pageTitle} description={pageDesc}>
+  {torahData && structuredData && (
+    <script type="application/ld+json" set:html={structuredData} slot="head" />
+  )}
+  {error ? (
+    <div style="text-align: center; padding: 80px 20px;">
+      <h1>{error}</h1>
+      <p><a href="/reader">Back to Reader</a></p>
+    </div>
+  ) : (
+    <div
+      class="reader-container"
+      data-torah-id={torahData.id}
+      data-book="chayey-moharan" data-reviewed-chayay="14-58"
+      data-torah-title={`${torahData.title} - Chayey Moharan`}
+    >
+      <div class="reader-progress"></div>
+
+      <div class="reader-breadcrumb">
+        <a href="/reader">Reader</a>
+        <span>&rsaquo;</span>
+        <a href="/reader/chayey-moharan/">Chayey Moharan</a>
+        <span>&rsaquo;</span>
+        {torahData.hebrewTitle || torahData.title}
+      </div>
+
+
+
+
+<p class="reviewed-audio-note">Listen uses the Reader’s browser speech. No recorded audio is claimed for this reviewed edition.</p>
+      <div class="reader-toolbar">
+        <div class="reader-toolbar-group">
+          <button class="reader-btn" data-mode="hebrew">Hebrew</button>
+          <button class="reader-btn" data-mode="english">English</button>
+          <button class="reader-btn" data-mode="both">Both</button>
+        </div>
+        <div class="reader-toolbar-group">
+          <button class="reader-btn" id="btn-nikud">Nikud</button>
+        </div>
+        <div class="reader-toolbar-group">
+          <span style="font-size:0.7em; font-family: 'Open Sans', sans-serif; color: var(--reader-text-secondary);">A</span>
+          <input type="range" id="font-size-slider" class="font-size-slider" min="12" max="32" value="18" />
+          <span style="font-size:0.9em; font-family: 'Open Sans', sans-serif; color: var(--reader-text-secondary);">A</span>
+        </div>
+        <div class="reader-toolbar-group">
+          <button class="reader-btn reader-btn-icon" data-theme-btn="day">Day</button>
+          <button class="reader-btn reader-btn-icon" data-theme-btn="sepia">Sepia</button>
+          <button class="reader-btn reader-btn-icon" data-theme-btn="night">Night</button>
+        </div>
+        <div class="reader-toolbar-group">
+          <button class="reader-btn reader-btn-icon" id="btn-listen" onclick="toggleSpeaking()">Listen</button>
+          <button class="reader-btn reader-btn-icon" id="btn-search">Search</button>
+          <button class="reader-btn reader-btn-icon" id="btn-bookmark">Bookmark</button>
+          
+          <button class="reader-btn reader-btn-icon" id="btn-fullscreen">Fullscreen</button>
+        </div>
+      </div>
+
+      <div class="reader-search-bar">
+        <input type="text" placeholder={"Search reviewed Simanim 14–58..."} dir="auto" />
+        <span class="search-info"></span>
+        <button class="reader-btn search-close">Close</button>
+      </div>
+
+      <button class="reader-toc-toggle" title="Table of Contents">&#9776;</button>
+      <div class="reader-toc">
+        <button class="reader-toc-close">&times;</button>
+        <h3>Sections</h3>
+        <ul class="reader-toc-list">
+          {edition.simanim.map(s => {
+            const first=edition.nodes.find(n=>n.siman===s);
+            return <li><a href={`#siman-${s}`} data-index={String(first.actual_index)}>Siman {s}</a></li>;
+          })}
+        </ul>
+      </div>
+
+      <div class="reader-header">
+        {torahData.hebrewTitle && <div class="hebrew-title">{torahData.hebrewTitle}</div>}
+        <h1>{torahData.title}</h1>
+        <p style="color: var(--reader-text-secondary); font-size: 0.9em; font-family: 'Open Sans', sans-serif;">
+          חיי מוהר"ן - Chayey Moharan
+        </p>
+      </div>
+
+      <div class="reader-nav">
+        {torahData.navigation.prevUrl ? (
+          <a href={torahData.navigation.prevUrl} data-dir="prev">&larr; Previous</a>
+        ) : <span class="disabled">&larr; Previous</span>}
+        <a href="/reader/chayey-moharan/">Book Index</a>
+        <a href="/reader">All Books</a>
+        {torahData.navigation.nextUrl ? (
+          <a href={torahData.navigation.nextUrl} data-dir="next">Next &rarr;</a>
+        ) : <span class="disabled">Next &rarr;</span>}
+      </div>
+
+      <aside class="reviewed-scope" aria-label="Review scope and source conservation">
+        <h2>AI-reviewed / editorially qualified — Simanim 14–58 only</h2>
+        <p><strong>45 Simanim · 142 source pairs.</strong> This additive edition preserves both supplied Hebrew fields and the complete accepted English, with its occurrence-specific qualifications and inline glosses. It is not human-approved, an authenticated complete original translation, or a whole-book review. No new translation was made for this edition.</p>
+        <p>The canonical chapter and its unreviewed English suffix are unchanged. Earlier imports below are conserved at their original chapter/index owners; they are not claimed to align with this Hebrew. Source-apparatus witnesses are separate from the 142 source pairs.</p>
+        <p><a href="/reader/chayey-moharan/1/1/#seg-55">Canonical chapter 1 context</a> · <a href="/reader/chayey-moharan/reviewed/14-58.json">Complete edition and provenance JSON</a> · <a href="#reviewed-source-apparatus">23 source-apparatus witnesses</a></p>
+        <p>Source-exact display retains the independently supplied unpointed and pointed witnesses, not a vowel-stripped approximation. Automatic reference decoration is disabled for these fields to avoid reparsing their source code points.</p>
+        <nav class="reviewed-siman-links" aria-label="Reviewed Simanim">{edition.simanim.map(s=><a href={`#siman-${s}`}>{s}</a>)}</nav>
+      </aside>
+      <div class="reader-content mode-hebrew">
+        <div class="reader-content-original">
+          {edition.simanim.map((s,si)=>(
+            <section class="reviewed-siman" id={`siman-${s}`} data-siman={String(s)} aria-labelledby={`siman-heading-${s}`}>
+              <h2 id={`siman-heading-${s}`}>Siman {s} <a href={`#siman-${s}`} aria-label={`Permalink to Siman ${s}`}>#</a></h2>
+              <nav class="reviewed-siman-navigation" aria-label={`Navigation for Siman ${s}`}>
+                {si>0 && <a href={`#siman-${edition.simanim[si-1]}`}>← Siman {edition.simanim[si-1]}</a>}
+                <a href="#main-content">Reader controls ↑</a>
+                {(si < edition.simanim.length - 1) && <a href={`#siman-${edition.simanim[si+1]}`}>Siman {edition.simanim[si+1]} →</a>}
+              </nav>
+              {edition.nodes.filter(n=>n.siman===s).map(n=>(
+                <div class="reader-segment-pair" id={`seg-${n.actual_index}`} data-unit={n.unit_id}>
+                  <div class="reader-segment segment-he" data-index={String(n.actual_index)} lang="he" dir="rtl">
+                    <span class="segment-number">{s}.{n.actual_index}</span>
+                    <Fragment set:html={`<p data-field="he" data-xref-done="1" data-nikud="${esc(n.selected.he_nikud)}" data-bare="${esc(n.selected.he)}">${esc(n.selected.he)}</p>`} />
+                  </div>
+                  <div class="reader-segment segment-en" data-index={String(n.actual_index)} lang="en" dir="ltr">
+                    <span class="segment-number">{s}.{n.actual_index}</span>
+                    <p data-field="en" data-xref-done="1" set:html={esc(n.selected.en)} />
+                  </div>
+                  <div class="reviewed-witnesses" dir="ltr">
+                    <details class="reviewed-provenance" open>
+                      <summary>AI review qualifications / provenance — chapter 1, index {n.actual_index}</summary>
+                      <div data-field="translationProvenance" set:html={provenance(n)} />
+                    </details>
+                    <details class="reviewed-comparison">
+                      <summary>Previous comparison English — not the selected translation</summary>
+                      {'translationSourceEnglish' in n.selected ? <div data-field="translationSourceEnglish" set:html={esc(n.selected.translationSourceEnglish)} /> : <div>No previous comparison English field is recorded for this row.</div>}
+                    </details>
+                    <details class="reviewed-legacy">
+                      <summary>Earlier unaligned import — original chapter 1, index {n.actual_index}</summary>
+                      <div data-field="displaced_en" data-owner={n.displaced_english.owner_unit_id} set:html={esc(n.displaced_english.text)} />
+                      <small>Original owner: {n.unit_id} · {n.displaced_english.pointer}. Conserved verbatim; not a corresponding translation and not reassigned to another Siman.</small>
+                    </details>
+                    <details class="reviewed-binding"><summary>Exact source ownership and field bindings</summary><pre data-field="bindings" set:html={record({selected:n.selected_binding,baseline:n.baseline_binding,displaced:n.displaced_english.pointer,displaced_sha256:n.displaced_english.sha256,original_array_position_0:n.array_position_0,actual_index:n.actual_index,source_chapter_id:n.source_chapter_id})} /></details>
+                  </div>
+                </div>
+              ))}
+            </section>
+          ))}
+        </div>
+      </div>
+      <section id="reviewed-source-apparatus" class="reviewed-scope" aria-label="Source apparatus">
+        <h2>23 conserved source-apparatus witnesses</h2>
+        <p>These historical comparison/disposition witnesses are not additional numbered source pairs and do not authenticate a complete original translation. The 142 complete earlier imports also remain at each row’s original ownership above.</p>
+        {edition.source_apparatus_verbatim.map(a=>(
+          <details class="source-witness" data-apparatus-id={a.id}>
+            <summary>{a.id} — {a.witness_kind || a.status}</summary>
+            <div data-field="apparatus-text" set:html={esc(a.source.text)} />
+            <div data-field="apparatus-reason" set:html={esc(a.reason)} />
+            <pre data-field="apparatus-record" set:html={record({...a,source:{...a.source,text:undefined},reason:undefined})} />
+          </details>
+        ))}
+      </section>
+      <details class="reviewed-scope"><summary>Historical canonical chapter metadata — not this edition’s scope or counters</summary><pre id="historical-metadata" set:html={record(edition.source_chapter_metadata_verbatim)} /></details>
+      <div class="reader-nav">
+        {torahData.navigation.prevUrl ? (
+          <a href={torahData.navigation.prevUrl} data-dir="prev">&larr; Previous</a>
+        ) : <span class="disabled">&larr; Previous</span>}
+        <a href="/reader/chayey-moharan/">Book Index</a>
+        <a href="/reader">All Books</a>
+        {torahData.navigation.nextUrl ? (
+          <a href={torahData.navigation.nextUrl} data-dir="next">Next &rarr;</a>
+        ) : <span class="disabled">Next &rarr;</span>}
+      </div>
+
+      <div class="reader-shortcuts-overlay">
+        <div class="reader-shortcuts-panel">
+          <h2>Keyboard Shortcuts</h2>
+          <div class="shortcut-row"><span>Hebrew mode</span><span class="shortcut-key">H</span></div>
+          <div class="shortcut-row"><span>English mode</span><span class="shortcut-key">E</span></div>
+          <div class="shortcut-row"><span>Both columns</span><span class="shortcut-key">B</span></div>
+          <div class="shortcut-row"><span>Toggle nikud</span><span class="shortcut-key">N</span></div>
+          <div class="shortcut-row"><span>Fullscreen</span><span class="shortcut-key">F</span></div>
+          <div class="shortcut-row"><span>Search in text</span><span class="shortcut-key">Ctrl+F</span></div>
+          <div class="shortcut-row"><span>Save bookmark</span><span class="shortcut-key">S</span></div>
+          <div class="shortcut-row"><span>Previous/Next</span><span class="shortcut-key">&larr; &rarr;</span></div>
+          <div class="shortcut-row"><span>Show shortcuts</span><span class="shortcut-key">?</span></div>
+          <br />
+          <button class="reader-btn" onclick="this.closest('.reader-shortcuts-overlay').classList.remove('open')">Close</button>
+        </div>
+      </div>
+      {torahData && (
+        <Comments teachingId={`chayey-moharan-${part}-${torah}`} teachingTitle={`chayey-moharan ${part}:${torah}${torahData?.title ? ' — ' + torahData.title : ''}`} />
+      )}
+      <p class="reviewed-scope">Secondary commentary below is a whole-book collection, including records outside Simanim 14–58. It is not an authenticated row alignment to this selected edition.</p>
+      {torahData && commentaryEntry && (
+        <CommentarySidebar part={partNum} torah={torahNum} entry={commentaryEntry} />
+      )}
+
+
+      <p id="chayay-integrity-warning" role="status">Qualified outward actions require authenticated source ownership; reading and local highlights remain available.</p>
+      <p id="chayay-print-warning" role="alert">Qualified Reader print withheld: source authentication or required qualification visibility unavailable. Reload the complete qualified edition before printing.</p>
+      <script is:inline>
+        // Route-local pre-auth fallback precedes every deferred Reader script.
+        (function () {
+          const root=document.querySelector('.reader-container');
+          if(!root)return;
+          const valid=()=>{try{return window.ChayayReviewedIntegrity?.valid()===true;}catch{return false;}};
+          const unavailable=()=>{const warning=document.getElementById('chayay-integrity-warning');const text='Qualified export unavailable: source authentication or ownership changed. Reading and local highlights remain available.';if(warning&&warning.textContent!==text)warning.textContent=text;};
+          const outwardSelector='.seg-copy-btn,.seg-add-sefer-btn,.ajew-segment-action-btn,#btn-share,#btn-add-sefer,.selection-popup .sel-btn,#highlight-context-menu .hl-action[data-action="share"]';
+          const preauthState=()=>{if(valid())return;unavailable();document.querySelectorAll(outwardSelector).forEach(b=>{if(!b.disabled)b.disabled=true;b.title='Qualified export unavailable until source ownership is authenticated.';});};
+          new MutationObserver(preauthState).observe(document.body,{childList:true,subtree:true});
+          preauthState();
+          document.addEventListener('click',function(e){
+            const b=e.target.closest('button');if(!b)return;
+            const outward=b.matches('.seg-copy-btn,.seg-add-sefer-btn,.ajew-segment-action-btn,#btn-share,#btn-add-sefer,.selection-popup .sel-btn,#highlight-context-menu .hl-action[data-action="share"]');
+            if(outward&&!valid()){e.preventDefault();e.stopImmediatePropagation();unavailable();}
+          },true);
+          document.addEventListener('copy',function(e){
+            // Leave the inherited exact-selection + edition-attribution policy intact
+            // when authenticated. Block unsafe source copies without touching OS data.
+            const s=getSelection();if(valid()||!s?.rangeCount)return;
+            for(let i=0;i<s.rangeCount;i++)if(s.getRangeAt(i).intersectsNode(root)){e.preventDefault();e.stopImmediatePropagation();unavailable();return;}
+          },true);
+          const printMedia=matchMedia('print');
+          let paintWarning=null;
+          const restorePaintWarning=()=>{
+            if(!paintWarning)return;
+            const {warning,parent,next,styles}=paintWarning;
+            if(parent.isConnected)parent.insertBefore(warning,next?.parentNode===parent?next:null);
+            styles.forEach(([e,value])=>{if(value===null)e.removeAttribute('style');else e.setAttribute('style',value);});
+            paintWarning=null;
+          };
+          const showPaintWarning=()=>{
+            const warning=document.getElementById('chayay-print-warning');if(!warning)return;
+            const styles=[document.documentElement,document.body,warning].map(e=>[e,e.getAttribute('style')]);
+            paintWarning={warning,parent:warning.parentNode,next:warning.nextSibling,styles};
+            warning.textContent='Qualified Reader print withheld: source authentication or required qualification visibility unavailable. Reload the complete qualified edition before printing.';
+            document.body.appendChild(warning);
+            // The trusted warning must not inherit a source ancestor's invisible ink/effects.
+            for(const [e] of styles)for(const [key,value] of Object.entries({color:'#000','-webkit-text-fill-color':'#000','background-color':'#fff',opacity:'1',visibility:'visible',filter:'none','backdrop-filter':'none','mix-blend-mode':'normal','mask-image':'none','clip-path':'none',transform:'none',overflow:'visible'}))e.style.setProperty(key,value,'important');
+            for(const [key,value] of Object.entries({position:'fixed',top:'12mm',left:'12mm',right:'12mm',margin:'0','z-index':'2147483647',display:'block',font:'16px/1.5 sans-serif'}))warning.style.setProperty(key,value,'important');
+          };
+          const printGate=()=>{
+            restorePaintWarning();
+            const body=document.body;
+            body.classList.remove('chayay-print-safe');root.dataset.printSafe='false';
+            if(!printMedia.matches)return;
+            if(!valid()){showPaintWarning();return;}
+            // Measure the real current print cascade, not screen styles or text presence.
+            body.classList.add('chayay-print-safe');
+            let safe=false;try{safe=window.ChayayReviewedIntegrity.print()===true;}catch{}
+            if(!safe){body.classList.remove('chayay-print-safe');showPaintWarning();}
+            root.dataset.printSafe=String(safe);
+          };
+          window.addEventListener('beforeprint',printGate);
+          window.addEventListener('afterprint',()=>{restorePaintWarning();document.body.classList.remove('chayay-print-safe');root.dataset.printSafe='false';});
+          printMedia.addEventListener('change',printGate);
+          document.addEventListener('chayay-integrity-ready',printGate);
+        })();
+      </script>
+      <script src="/chayay-reviewed-reader.js?v=semantic-five-2f03be4727a8" defer></script>
+      <script src="/reader-script.js?v=20260820-notes-fix" defer></script>
+      <script src="/reader-v2.js" defer></script>
+      <script src="/pwa-register.js" defer></script>
+      <script src="/tts-fix.js" defer></script>
+    </div>
+  )}
+</Layout>
+
+<style is:global>
+#chayay-print-warning {display:none;}
+@media print {
+  /* An unsafe print contains only the warning, not fixed chrome or partial source. */
+  body:not(.chayay-print-safe) * {visibility:hidden!important;}
+  body:not(.chayay-print-safe) .reader-content,
+  body:not(.chayay-print-safe) #reviewed-source-apparatus,
+  body:not(.chayay-print-safe) #commentary-sidebar {display:none!important;}
+  body:not(.chayay-print-safe) #chayay-print-warning {display:block!important;visibility:visible!important;color:#000!important;-webkit-text-fill-color:#000!important;background:#fff!important;font:16px/1.5 sans-serif!important;}
+}
+[data-reviewed-chayay] .reviewed-scope {margin:1rem 0;padding:1rem;border:1px solid var(--reader-border);border-radius:8px;font-family:'Open Sans',sans-serif;line-height:1.6;}
+[data-reviewed-chayay] .reader-content, [data-reviewed-chayay] .reader-content-original {display:block!important;}
+[data-reviewed-chayay] .reader-segment-pair {display:grid!important;grid-template-columns:minmax(0,1fr);gap:1rem;}
+[data-reviewed-chayay] .reader-segment-pair > .ajew-segment-actions {grid-column:1/-1;}
+[data-reviewed-chayay] .reader-segment-pair > .seg-copy-btn {position:static!important;grid-column:1/-1;justify-self:start;opacity:1!important;min-height:36px;margin:0!important;}
+[data-reviewed-chayay] .reader-segment-pair .reader-segment {grid-column:auto!important;}
+[data-reviewed-chayay] .reader-segment-pair .segment-en {text-align:start;}
+@media (min-width:901px) {
+  [data-reviewed-chayay] .reader-content.mode-both .reader-segment-pair {grid-template-columns:minmax(0,1fr) minmax(0,1fr);}
+  [data-reviewed-chayay] .reader-content {padding-inline:24px 76px;}
+}
+/* Shared audio URL heuristics cannot identify this additive edition. Do not
+   display a canonical chapter recording as if it matched the reviewed rows. */
+[data-reviewed-chayay] .kht-audio-player,
+body:has([data-reviewed-chayay]) #ajew-audio-player,
+body:has([data-reviewed-chayay]) #ajew-audio-player-launcher {display:none!important;}
+[data-reviewed-chayay] .reviewed-siman {scroll-margin-top:110px;}
+[data-reviewed-chayay] .reviewed-siman h2 {font-size:1.3rem;padding-block:1rem;}
+[data-reviewed-chayay] .reviewed-siman-links {display:flex;flex-wrap:wrap;gap:.5rem;}
+[data-reviewed-chayay] .reviewed-siman-links a {padding:.3rem .7rem;border:1px solid var(--reader-border);border-radius:5px;}
+[data-reviewed-chayay] .reviewed-siman-navigation {display:flex;flex-wrap:wrap;justify-content:space-between;gap:.8rem;font-size:.85rem;}
+[data-reviewed-chayay] .reviewed-witnesses {grid-column:1/-1;min-width:0;font: .85rem/1.65 'Open Sans',sans-serif;padding:.7rem;border-top:1px solid var(--reader-border);}
+[data-reviewed-chayay] details {margin-block:.6rem;}
+[data-reviewed-chayay] summary {cursor:pointer;font-weight:600;}
+[data-reviewed-chayay] [data-field], [data-reviewed-chayay] pre {white-space:pre-wrap;overflow-wrap:anywhere;word-break:normal;}
+[data-reviewed-chayay] .reader-segment .segment-number {position:static!important;display:block;float:none!important;font-size:.7em;line-height:1.8;opacity:.7;}
+[data-reviewed-chayay] .reader-segment {min-width:0;}
+[data-reviewed-chayay] .reader-toolbar {max-width:100%;}
+[data-reviewed-chayay] .reader-toolbar-group {flex-wrap:wrap;}
+[data-reviewed-chayay] .reader-toc {overflow-y:auto;max-height:85vh;}
+@media (min-width:1024px) {
+  body:has([data-reviewed-chayay]) .hitbodedut-fab {left:calc(var(--ds-sidebar-width,230px) + 8px);right:auto;transform:none;width:36px;height:36px;font-size:1.2rem;}
+}
+
+/* Parent print-only successor: keep exact source main; suppress fixed site UI. */
+@media print { body > :not(main):not(script):not(style) { display: none !important; } }
+@media print { .ajew-segment-actions, #commentary-sidebar, #commentary-resize-handle, #commentary-sidebar-toggle, #commentary-sidebar-handle { display: none !important; } }
+</style>

@@ -10,6 +10,16 @@ import gzip, json, re, shutil, struct, unicodedata
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
+import sys
+
+# File-based callers (including the search boundary gate) do not add scripts/.
+# Resolve the same checked sibling modules as direct script execution.
+_SCRIPT_DIR = str(Path(__file__).resolve().parent)
+if _SCRIPT_DIR not in sys.path:
+    sys.path.insert(0, _SCRIPT_DIR)
+from reviewed_chayay_exports import is_reviewed_source, search_document
+from reviewed_alim_exports import is_reviewed_source as is_alim_source, search_document as alim_search_document
+from reviewed_wrapup_exports import is_reviewed_source as is_wrapup_source, search_document as wrapup_search_document
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / 'public' / 'data'
@@ -141,11 +151,21 @@ def segment_map(raw_link):
     """Return compact [DOM index, logical section, HE start/end, EN start/end]."""
     source = ROOT / 'public' / f"{raw_link.strip('/')}.json"
     if not source.exists():
+        if is_wrapup_source(source, ROOT / "public" / "reader"):
+            raise FileNotFoundError(source)
         return []
     try:
         data = json.loads(source.read_text(encoding='utf-8'))
     except (OSError, json.JSONDecodeError):
+        if is_wrapup_source(source, ROOT / "public" / "reader"):
+            raise
         return []
+    if is_reviewed_source(source, ROOT / 'public' / 'reader'):
+        data = search_document(source, data)
+    if is_alim_source(source, ROOT / 'public' / 'reader'):
+        data = alim_search_document(source, data)
+    if is_wrapup_source(source, ROOT / 'public' / 'reader'):
+        data = wrapup_search_document(source, data)
     segments = data.get('segments') or []
     if not isinstance(segments, list):
         return []
@@ -159,6 +179,8 @@ def segment_map(raw_link):
         candidate = int(en_match.group(1)) if en_match else hebrew_section_number(he_seg)
         if candidate and ((section == 0 and candidate == 1) or candidate in (section, section + 1)):
             section = candidate
+        if data.get('qualifiedReviewedProjection') is True:
+            section = seg['siman']
         dom_index = seg.get('index') or position
         rows.append([dom_index, section or dom_index, he_cursor, he_cursor + len(he_seg), en_cursor, en_cursor + len(en_seg)])
         if he_seg: he_cursor += len(he_seg) + 1
