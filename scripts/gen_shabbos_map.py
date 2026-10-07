@@ -1,53 +1,86 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Generate OUR chok year's Shabbos map (shabbos-map.json).
+"""Generate calendar-aligned Chok study-week anchors for Israel.
 
-Independence law: the chok runs its OWN yearly cycle, not the calendar
-parshiyos. Anchor (user, 2026-09-22): the cycle's final week,
-וזאת הברכה, falls on Shabbos 2026-09-19 - i.e. the chok year began
-בראשית on Shabbos 2025-09-13 and the new year starts Shabbos 2026-09-26.
+The current user correction supersedes the former fixed 54-week repetition:
+2026-10-06 studies Biraishis, read on 2026-10-10, not Noach.
+`date` remains the preceding Saturday anchor expected by chok.js; `heb`
+belongs to that anchor. `readingDate`/`readingHeb` identify the actual reading.
+Combined portions retain the project's exact separate schedule keys.
+After Haazinu, the cycle-conclusion study is Vezos Habracha until Biraishis;
+its actual Israel reading is Simchas Torah (22 Tishrei), not an invented
+regular Saturday portion. Other festival Saturdays have no invented portion.
 
-The 54 week keys and their order are ours (schedule.json).
-Hebrew dates via pyluach (Tishrei=1 ordering, as the old map used).
+One-time generation only: pyluach 2.3.0 calendar calculations; no runtime or
+build-time external requests. Source study ranges and texts are not changed.
 """
-import json, os, datetime
-from pyluach import dates
+import argparse
+import datetime
+import json
+from pathlib import Path
 
-BASE = os.path.join(os.path.dirname(__file__), '..', 'public', 'reader', 'chok')
-SCHED = os.path.join(BASE, 'schedule.json')
-OUT = os.path.join(BASE, 'shabbos-map.json')
+from pyluach import dates, parshios
 
-ANCHOR_LAST_SHABBOS = datetime.date(2026, 9, 19)   # Shabbos of וזאת הברכה
-CYCLES_FORWARD = 3                                  # new years from 2026-09-26
+BASE = Path(__file__).resolve().parent.parent / 'public' / 'reader' / 'chok'
+ALIASES = {'קרח': 'קורח', 'חקת': 'חוקת', 'כי תבא': 'כי תבוא'}
 
-def heb_str(d):
-    h = dates.GregorianDate(d.year, d.month, d.day).to_heb()
-    return '%d-%d-%d' % (h.year, h.month, h.day)
+
+def heb_str(day):
+    heb = dates.GregorianDate.from_pydate(day).to_heb()
+    return f'{heb.year}-{heb.month}-{heb.day}'
+
+
+def generate(schedule, start_year=2024, end_year=2031):
+    if start_year > end_year:
+        raise ValueError('Invalid calendar year range')
+    names = [ALIASES.get(name, name) for name in parshios.PARSHIOS_HEBREW]
+    # Verify literal name associations, not just a matching list length.
+    if names != list(schedule['weeks']):
+        raise ValueError('Calendar names do not match the exact project schedule')
+    day = datetime.date(start_year, 1, 1)
+    day += datetime.timedelta(days=(5 - day.weekday()) % 7)
+    last = datetime.date(end_year, 12, 31)
+    entries = {}
+    conclusions = []
+    while day <= last:
+        anchor = day - datetime.timedelta(days=7)
+        heb = dates.GregorianDate.from_pydate(day).to_heb()
+        indices = parshios.getparsha(heb, israel=True)
+        entry = {'date': anchor.isoformat(), 'heb': heb_str(anchor),
+                 'readingDate': day.isoformat(), 'readingHeb': heb_str(day),
+                 'weeks': [names[index] for index in indices] if indices else None,
+                 'israel': True, 'festival': indices is None}
+        entries[entry['date']] = entry
+        if indices == [52]:
+            simchas = dates.HebrewDate(heb.year, 7, 22).to_pydate()
+            if simchas <= day:
+                raise ValueError('Cycle conclusion does not follow Haazinu')
+            conclusions.append({'date': day.isoformat(), 'heb': heb_str(day),
+                                'readingDate': simchas.isoformat(),
+                                'readingHeb': heb_str(simchas),
+                                'weeks': [names[53]], 'israel': True,
+                                'festival': True, 'cycleConclusion': True})
+        day += datetime.timedelta(days=7)
+    for entry in conclusions:
+        entries[entry['date']] = entry
+    return [entries[key] for key in sorted(entries)]
+
 
 def main():
-    sched = json.load(open(SCHED, encoding='utf-8'))
-    weeks = list(sched['weeks'].keys())
-    n = len(weeks)
-    assert weeks[-1] == 'וזאת הברכה', weeks[-1]
-    entries = []
-    # the cycle now ending: anchored so its last week = 2026-09-19
-    for i, wk in enumerate(weeks):
-        d = ANCHOR_LAST_SHABBOS - datetime.timedelta(days=7 * (n - 1 - i))
-        entries.append({'date': d.isoformat(), 'heb': heb_str(d), 'weeks': [wk]})
-    # fresh cycles forward, repeating our seder
-    start = ANCHOR_LAST_SHABBOS + datetime.timedelta(days=7)  # 2026-09-26 = בראשית
-    for c in range(CYCLES_FORWARD):
-        base = start + datetime.timedelta(days=7 * n * c)
-        for i, wk in enumerate(weeks):
-            d = base + datetime.timedelta(days=7 * i)
-            entries.append({'date': d.isoformat(), 'heb': heb_str(d), 'weeks': [wk]})
-    entries.sort(key=lambda e: e['date'])
-    json.dump(entries, open(OUT, 'w', encoding='utf-8'), ensure_ascii=False)
-    print('weeks:', n, '| entries:', len(entries))
-    print('first:', entries[0])
-    print('anchor:', [e for e in entries if e['date'] == '2026-09-19'])
-    print('next year start:', [e for e in entries if e['date'] == '2026-09-26'])
-    print('last:', entries[-1])
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--schedule', type=Path, default=BASE / 'schedule.json')
+    parser.add_argument('--output', type=Path, default=BASE / 'shabbos-map.json')
+    parser.add_argument('--start-year', type=int, default=2024)
+    parser.add_argument('--end-year', type=int, default=2031)
+    args = parser.parse_args()
+    schedule = json.loads(args.schedule.read_text(encoding='utf-8'))
+    entries = generate(schedule, args.start_year, args.end_year)
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    args.output.write_text(json.dumps(entries, ensure_ascii=False) + '\n', encoding='utf-8')
+    print(json.dumps({'entries': len(entries), 'first': entries[0], 'last': entries[-1],
+                      'israel': True, 'source': 'pyluach 2.3.0; project schedule keys'},
+                     ensure_ascii=True))
+
 
 if __name__ == '__main__':
     main()
