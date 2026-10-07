@@ -1,0 +1,49 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+const base = '/reader/precious-stones';
+const pdf = `${base}/Avanim_Tovos_Hebrew_High_Resolution_Book_Only.pdf`;
+---
+<Layout title="Precious Stones — Hebrew PDF Reader" description="Read the original 126-page Hebrew Precious Stones (אבנים טובות) facsimile, with page navigation, zoom, and the unchanged high-resolution PDF.">
+  <main class="stones-reader">
+    <a href="/reader/">← Reader library</a>
+    <header>
+      <h1>Precious Stones <span lang="he" dir="rtl">אבנים טובות</span></h1>
+      <p>Original Hebrew edition · 126 pages</p>
+      <p class="source-note">The supplied artwork is preserved in the original PDF. Page images below are reading previews, not searchable Hebrew text.</p>
+    </header>
+    <nav class="pdf-links" aria-label="Original PDF">
+      <a id="stones-original" href={pdf} target="_blank" rel="noopener">Open original PDF ↗</a>
+      <a href={pdf} download>Download original PDF · 36.8 MB</a>
+    </nav>
+    <div id="stones-controls" class="page-controls" aria-label="Page controls">
+      <button id="stones-prev" type="button">← Previous</button>
+      <form id="stones-jump"><label for="stones-page">Page</label> <input id="stones-page" type="number" min="1" max="126" value="1" inputmode="numeric" /> <span>of 126</span> <button type="submit">Go</button></form>
+      <button id="stones-next" type="button">Next →</button>
+      <button id="stones-zoom-out" type="button" aria-label="Zoom out">−</button>
+      <button id="stones-zoom-in" type="button" aria-label="Zoom in">+</button>
+      <button id="stones-fit" type="button">Fit page</button>
+    </div>
+    <p id="stones-status" role="status" aria-live="polite">Page 1 of 126</p>
+    <div id="stones-viewport" class="page-viewport" tabindex="0" aria-label="Hebrew page image; scroll to read when zoomed">
+      <img id="stones-image" src={`${base}/pages/page-001.webp`} alt="Precious Stones — original Hebrew page 1" width="945" height="1358" />
+    </div>
+    <noscript><p>Page navigation needs JavaScript. <a href={pdf}>Read all 126 pages in the original PDF instead.</a></p></noscript>
+  </main>
+  <script is:inline src="/precious-stones-reader.js?v=20261007-1"></script>
+</Layout>
+<style>
+  .stones-reader { max-width: 1040px; margin: 0 auto; padding: 28px 18px 100px; }
+  h1 { font-size: clamp(1.7rem, 5vw, 2.6rem); line-height: 1.3; margin-bottom: 10px; }
+  h1 span { display: inline-block; margin-inline-start: 16px; }
+  .source-note { max-width: 720px; opacity: .8; line-height: 1.6; }
+  .pdf-links, .page-controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin: 18px 0; }
+  .pdf-links a, button { border: 1px solid #8b764f; border-radius: 8px; padding: 10px 14px; background: var(--bg-card, #faf6ec); color: var(--text-primary, #30281f); font: inherit; cursor: pointer; min-height: 44px; }
+  button:disabled { opacity: .45; cursor: default; }
+  button:focus-visible, input:focus-visible, a:focus-visible { outline: 3px solid #a07932; outline-offset: 3px; }
+  #stones-jump { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  input { width: 66px; padding: 8px; font: inherit; }
+  .page-viewport { overflow: auto; width: 100%; max-height: 80vh; background: #e9e3d5; border: 1px solid #8b764f; border-radius: 10px; }
+  .page-viewport img { display: block; width: 100%; max-width: none; height: auto; margin: 0 auto; }
+  #stones-status { font-size: .9rem; }
+  @media (max-width: 480px) { .stones-reader { padding: 20px 10px 90px; } .page-controls { gap: 6px; } button { padding: 8px 10px; } h1 span { display: block; margin: 6px 0; } }
+</style>
