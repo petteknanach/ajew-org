@@ -736,10 +736,14 @@ const searchBookLabelsJSON = JSON.stringify(searchBookLabels).replace(/</g, '\\u
       const DOC_BATCH_SIZE = 48;
 
       async function continueCandidateSearch(state) {
+        if (state.requestId !== activeSearchRequest) return null;
         const page = candidatePage(state.ids, state.cursor, CANDIDATE_BUDGET);
         for (let offset = 0; offset < page.ids.length; offset += DOC_BATCH_SIZE) {
           const batch = page.ids.slice(offset, offset + DOC_BATCH_SIZE);
           const docs = await Promise.all(batch.map(loadDoc));
+          // Cancellation must not consume candidates or publish another
+          // query's continuation when an in-flight document batch completes.
+          if (state.requestId !== activeSearchRequest) return null;
           for (const doc of docs) {
             if (!doc) continue;
             const result = state.verify(doc);
@@ -763,12 +767,14 @@ const searchBookLabelsJSON = JSON.stringify(searchBookLabels).replace(/</g, '\\u
         };
       }
 
-      async function letterModeSearch(query, advanced, mode) {
+      async function letterModeSearch(query, advanced, mode, requestId = activeSearchRequest) {
         const meta = await loadReaderMeta();
+        if (requestId !== activeSearchRequest) return null;
         const order = advanced?.acronymOrder || 'consecutive';
         const useLastLetter = mode === 'endletters';
         const allowed = new Set(advanced?.books || []);
         let ids = await idsForLetterMode(query, mode, order);
+        if (requestId !== activeSearchRequest) return null;
         if (allowed.size) ids = ids.filter(id => allowed.has(bookIdFromPath(meta.items[id]?.p || '')));
         // Letter-mode postings have no relevance ordering — verify
         // highest-priority works (Likutay Moharan first) before anything else
@@ -776,7 +782,7 @@ const searchBookLabelsJSON = JSON.stringify(searchBookLabels).replace(/</g, '\\u
         // Remaining candidates stay reachable through Load more in this order.
         ids = orderByBookPriority(ids, id => bookPriorityScore(meta.items[id] || {}));
         const state = {
-          ids, cursor: 0, results: [], visibleLimit: 50, hasMore: ids.length > 0,
+          requestId, ids, cursor: 0, results: [], visibleLimit: 50, hasMore: ids.length > 0,
           verify(doc) {
             const hit = acronymMatch(String(doc.n || '').split(' ').filter(Boolean), query, order, useLastLetter);
             if (!hit.match) return null;
@@ -793,13 +799,14 @@ const searchBookLabelsJSON = JSON.stringify(searchBookLabels).replace(/</g, '\\u
         return continueCandidateSearch(state);
       }
 
-      async function clientSearch(query, advanced) {
+      async function clientSearch(query, advanced, requestId = activeSearchRequest) {
         const effective = effectiveSearch(query, advanced?.searchType || 'google');
         query = effective.query;
         const searchType = effective.mode;
-        if (searchType === 'acronym' || searchType === 'endletters') return letterModeSearch(query, advanced, searchType);
+        if (searchType === 'acronym' || searchType === 'endletters') return letterModeSearch(query, advanced, searchType, requestId);
 
         const meta = await loadReaderMeta();
+        if (requestId !== activeSearchRequest) return null;
         const allowed = new Set(advanced?.books || []);
         let keys;
         if (searchType === 'endsWith') keys = ['e'];
@@ -817,9 +824,11 @@ const searchBookLabelsJSON = JSON.stringify(searchBookLabels).replace(/</g, '\\u
             console.warn('Exact phrase index unavailable; using bounded strict-word continuation.', err);
             ids = null;
           }
+          if (requestId !== activeSearchRequest) return null;
         }
         if (ids == null) {
           const shards = await Promise.all(keys.map(loadShard));
+          if (requestId !== activeSearchRequest) return null;
           ids = idsForMode(shards, query, searchType, advanced?.minWords || 0, meta.items.length);
         }
         if (allowed.size) ids = ids.filter(id => allowed.has(bookIdFromPath(meta.items[id]?.p || '')));
@@ -828,7 +837,7 @@ const searchBookLabelsJSON = JSON.stringify(searchBookLabels).replace(/</g, '\\u
         // Book preference is a score boost after verification, never a rewrite
         // that strands the rest of the corpus behind a favored-work prefix.
         const state = {
-          ids, cursor: 0, results: [], visibleLimit: 50, hasMore: ids.length > 0,
+          requestId, ids, cursor: 0, results: [], visibleLimit: 50, hasMore: ids.length > 0,
           verify(doc) {
             const score = docMatchScore(doc, query, searchType, advanced);
             if (!score) return null;
@@ -870,13 +879,20 @@ const searchBookLabelsJSON = JSON.stringify(searchBookLabels).replace(/</g, '\\u
         }
 
         const requestId = ++activeSearchRequest;
+        activeContinuation = null;
+        lastSearchResults = [];
+        jevPCount = 0;
+        // Controls reuse their options object/books array. Each dispatched
+        // query and its verifier must keep the settings it started with.
+        advanced = { ...advanced, books: [...(advanced?.books || [])] };
         showLoading();
         saveSearchHistory(query);
         
         const loadPromise = Promise.resolve();
 
         loadPromise.then(async () => {
-          const page = await clientSearch(query, advanced);
+          if (requestId !== activeSearchRequest) return;
+          const page = await clientSearch(query, advanced, requestId);
           if (requestId !== activeSearchRequest) return;
           loading.classList.add('hidden');
 
@@ -894,6 +910,7 @@ const searchBookLabelsJSON = JSON.stringify(searchBookLabels).replace(/</g, '\\u
               };
               const cfg = noJev ? null : await jevFetch('/jev-config.json', { cache: 'no-cache' })
                 .then((r: any) => (r.ok ? r.json() : null)).catch(() => null);
+              if (requestId !== activeSearchRequest) return;
               if (cfg && cfg.jevRank) {
                 const top = finalResults.slice(0, 30).map((r: any, i: number) => ({ ...r, _i: i }));
                 const candidates = top.map((r: any) => ({
@@ -907,8 +924,10 @@ const searchBookLabelsJSON = JSON.stringify(searchBookLabels).replace(/</g, '\\u
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({ query, candidates })
                 });
+                if (requestId !== activeSearchRequest) return;
                 if (resp.ok) {
                   const data = await resp.json();
+                  if (requestId !== activeSearchRequest) return;
                   const pById = new Map<number, number>((data.ranked || []).map((x: any) => [x.id, x.p]));
                   // Persist verdicts on the ORIGINAL result objects so the
                   // first-30 order survives Load more (applyJevOrder).
@@ -927,6 +946,7 @@ const searchBookLabelsJSON = JSON.stringify(searchBookLabels).replace(/</g, '\\u
             }
           }
 
+          if (requestId !== activeSearchRequest) return;
           if (finalResults.length > 0 || page.hasMore) {
             displayResults(finalResults, query, page.total, page.hasMore, page.checked, page.candidateTotal);
           } else {
@@ -986,21 +1006,27 @@ const searchBookLabelsJSON = JSON.stringify(searchBookLabels).replace(/</g, '\\u
         bindShareButtons();
 
         if (hasMore || (total != null && total > results.length)) {
+          const requestId = activeSearchRequest;
+          const continuation = activeContinuation;
+          const cachedResults = lastSearchResults;
           const loadMore = document.createElement('button');
           loadMore.className = 'load-more-btn';
           loadMore.textContent = hasMore ? `Load more (checked ${checked} of ${candidateTotal} candidates)` : `Show more (${results.length} of ${total})`;
           loadMore.addEventListener('click', async () => {
+            if (requestId !== activeSearchRequest || loadMore.disabled) return;
             loadMore.disabled = true;
             loadMore.textContent = 'Loading…';
             try {
-              if (activeContinuation) {
-                activeContinuation.visibleLimit += 50;
-                const nextPage = await continueCandidateSearch(activeContinuation);
+              if (continuation) {
+                continuation.visibleLimit += 50;
+                const nextPage = await continueCandidateSearch(continuation);
+                if (requestId !== activeSearchRequest) return;
                 displayResults(nextPage.results, query, nextPage.total, nextPage.hasMore, nextPage.checked, nextPage.candidateTotal);
               } else {
-                displayResults(lastSearchResults.slice(0, results.length + 50), query, total, false, checked, candidateTotal);
+                displayResults(cachedResults.slice(0, results.length + 50), query, total, false, checked, candidateTotal);
               }
             } catch (err) {
+              if (requestId !== activeSearchRequest) return;
               console.error('Search continuation failed:', err);
               loadMore.disabled = false;
               loadMore.textContent = 'Load more';
@@ -1109,6 +1135,10 @@ const searchBookLabelsJSON = JSON.stringify(searchBookLabels).replace(/</g, '\\u
       (window as any).shareResult = shareResult;
 
       function showWelcome() {
+        ++activeSearchRequest;
+        activeContinuation = null;
+        lastSearchResults = [];
+        jevPCount = 0;
         welcomeMessage.classList.remove('hidden');
         loading.classList.add('hidden');
         resultsContainer.classList.add('hidden');
