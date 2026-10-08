@@ -38,6 +38,12 @@ import Layout from '../../layouts/Layout.astro';
           </select>
         </label>
         <label class="ck-size">Size <input type="range" id="ck-size" min="16" max="44" value="26" /></label>
+        <label>Kavanos
+          <select id="ck-kavanamode" title="כוונות כלליות, סדר השבוע וכוונות לכל חלק — סגור בתחילה או פתוח תמיד">
+            <option value="closed">Closed initially</option>
+            <option value="always">Always open</option>
+          </select>
+        </label>
         <span class="ck-themes">
           <button class="ck-btn ck-theme" data-t="day">Day</button>
           <button class="ck-btn ck-theme" data-t="sepia">Sepia</button>
@@ -66,9 +72,12 @@ import Layout from '../../layouts/Layout.astro';
 <script src="/tikkun-qatan.js?v=qatan-expansion-20261006-parent-final-r1" defer></script>
 <script src="/medooyuk.js?v=four-surfaces-20261006-r1" defer></script>
 <script src="/psalms-data.js?v=psalms-annotations-20261002-r1&amp;integrity=sha256-20261003" defer></script>
-<script src="/chok.js?v=four-surfaces-20261006-r1" defer></script>
+<script src="/chok.js?v=public-kavana-miluy-20261008-r2" defer></script>
 
 <style is:global>
+  .ck-generated-ref { unicode-bidi: isolate; white-space: nowrap; }
+  .ck-kavana-para { margin-block: 0.65rem; white-space: pre-wrap; }
+  .ck-kavana-note { font-size: 0.85rem; line-height: 1.6; color: var(--ck-muted-2); }
   /* ═══════════════════════════════════════════════════════════════
      Chok LiYisroel — deluxe sefer presentation
      One warm token system, shared with /daily-study.

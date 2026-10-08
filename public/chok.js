@@ -48,7 +48,7 @@
     tanachen: true,
     day: null, weeks: null, size: 26, theme: 'day',
     sched: null, map: null, bonus: null, mussar: null, dcomm: null, kav: null, kavA: null,
-    carryMode: 'daily', focus: null, focusWeek: null,
+    carryMode: 'daily', kavanaMode: 'closed', kavGeneral: null, focus: null, focusWeek: null,
     bookCache: {}, targCache: {}, rashiCache: {}, enCache: {}, superCache: {}
   };
   var DAY_SLUGS = {'יום ראשון':'yom-rishon','יום שני':'yom-sheni','יום שלישי':'yom-shlishi',
@@ -121,7 +121,7 @@
   function save() { try { localStorage.setItem('chok-settings', JSON.stringify({
       mode: state.mode, medooyuk: state.medooyuk, targum: state.targum,
       commentary: state.commentary, rashi: state.rashi, tanachen: state.tanachen,
-      size: state.size, theme: state.theme, carryMode: state.carryMode })); } catch (e) {} }
+      size: state.size, theme: state.theme, carryMode: state.carryMode, kavanaMode: state.kavanaMode })); } catch (e) {} }
   function load() { try { return JSON.parse(localStorage.getItem('chok-settings') || '{}'); } catch (e) { return {}; } }
   function lsGet(k, d) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return d; } }
   function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
@@ -178,6 +178,14 @@
     if (s === 'יה') s = 'טו'; if (s === 'יו') s = 'טז';
     return s.replace(/([א-ת])$/, '$1\u05f4');
   }
+  // Generated references only: never normalize source paragraphs or Names.
+  function plainHeNum(n) { return heNum(n).replace(/\u05f4/g, ''); }
+  function refLabelHTML(ref) {
+    // Keep chapter before verse visually, with each Hebrew numeral isolated.
+    return '<bdi class="ck-generated-ref" dir="ltr">' + esc(ref).replace(/[א-ת]+/g, function (n) {
+      return '<bdi dir="rtl">' + n + '</bdi>';
+    }) + '</bdi>';
+  }
   var __fq = [], __frunning = 0;
   function __fnext() {
     if (__frunning >= 6 || !__fq.length) return;
@@ -186,18 +194,18 @@
     job.run().then(function (v) { job.done(v); }, function (e) { job.fail(e); })
       .then(function () { __frunning--; __fnext(); });
   }
-  function rawJSON(url) {
+  function rawJSON(url, raw) {
     return fetch(url).then(function (r) {
       if (!r.ok) throw new Error(r.status);
-      return r.json();
+      return raw ? r.text() : r.json();
     });
   }
-  function fetchJSON(url) {
+  function fetchJSON(url, raw) {
     // concurrency-limited + one retry: bursts of data fetches were
     // resetting connections and silently dropping whole day sections
     return new Promise(function (resolve, reject) {
       var attempt = 0;
-      var run = function () { return rawJSON(url); };
+      var run = function () { return rawJSON(url, raw); };
       var go = function () {
         __fq.push({ run: run, done: resolve, fail: function (e) {
           attempt++;
@@ -301,16 +309,146 @@
       return '<details class="ck-comm ck-super"><summary>על רש״י — ' + esc(names.join(' · ')) + '</summary>' + body + '</details>';
     });
   }
-  function kavanaHTML(secKey, d) {
-    // Kavanos only. The prayers before learning are NOT part of the kavanos
-    // (HH) — they live independently on /reader/chok/tefillos/.
-    var kA = state.kavA && state.kavA.kavanos && state.kavA.kavanos[secKey];
-    var h = '';
-    if (kA && kA.length) {
-      h += '<details class="ck-kavana"><summary>כוונת הלימוד — האריז״ל</summary><div class="ck-kavana-body">' +
-        kA.map(function (t) { return richText(t); }).join('') + '</div></details>';
+  function kavanaRows(key, indexes) {
+    var rows = state.kavA && state.kavA.kavanos && state.kavA.kavanos[key] || [];
+    return (indexes || rows.map(function (_, i) { return i; })).filter(function (i) {
+      return typeof rows[i] === 'string';
+    }).map(function (i) { return { text: rows[i], pointer: 'kavanos-actual.json#/kavanos/' + key + '/' + i }; });
+  }
+  function kavanaParagraphs(rows) {
+    return rows.map(function (row) {
+      // Literal escaped text conserves complete public paragraphs, including Names.
+      // This is an engineering JSON pointer, not an original-print certification.
+      return '<div class="ck-kavana-para" data-source-pointer="' + row.pointer + '">' + esc(row.text) + '</div>';
+    }).join('');
+  }
+  function kavanaDetails(category, title, body, section) {
+    return '<details class="ck-kavana" data-kavana-category="' + category + '"' + (section ? ' id="ck-kavana-' + section + '"' : '') +
+      (state.kavanaMode === 'always' ? ' open' : '') + '><summary>' + esc(title) +
+      '</summary><div class="ck-kavana-body">' + body + '</div></details>';
+  }
+  function studyOverviewHTML() {
+    var general = kavanaRows('torah', [0]);
+    var items = state.kavGeneral && state.kavGeneral.arizal && state.kavGeneral.arizal.items || [];
+    items.forEach(function (text, i) {
+      // Only the known overlapping first paragraph is deduplicated; no text normalization.
+      if (typeof text === 'string' && !(i === 0 && general.length && text === general[0].text))
+        general.push({ text: text, pointer: 'kavanos-torah.json#/arizal/items/' + i });
+    });
+    var unavailable = '<p class="ck-kavana-note" role="status">המקור הציבורי אינו זמין כעת; אין השלמת נוסח ממקור אחר.</p>';
+    var missing = '<p class="ck-kavana-note" role="status">שער המצוות ורבי מקמארנא — נוסח המקור המלא המאושר לפרסום אינו זמין כאן. ' +
+      'אין הצגת סיכום כתחליף למקור. <a href="/reader/chok/kavanos/">עמוד כוונות הלימוד — מידע קיים</a></p>';
+    var weekly = kavanaRows('torah', [1, 3, 4]);
+    return '<section class="ck-section ck-kavana-overview" data-kavana-group="general">' +
+      kavanaDetails('general', 'כוונות כלליות ללימוד התורה — תורה לשמה', (general.length ? kavanaParagraphs(general) : unavailable) + missing) +
+      '</section><section class="ck-section ck-kavana-overview" data-kavana-group="weekly">' +
+      kavanaDetails('weekly', 'כוונות חק לישראל — סדר השבוע כולו', weekly.length ? kavanaParagraphs(weekly) : unavailable) + '</section>';
+  }
+  function kavanaHTML(secKey, d, repeated) {
+    // Prayers stay independent on /reader/chok/tefillos/. Public PEC allocation only.
+    // Torah rows retain embedded weekly instructions: do not split their clauses.
+    var rows = kavanaRows(secKey, secKey === 'torah' ? [2, 5] : null);
+    return rows.length ? kavanaDetails('section', 'כוונת הלימוד — האריז״ל', repeated ?
+      '<a href="#ck-kavana-' + secKey + '">הכוונות המלאות — בחלק הראשון של היום ↑</a>' : kavanaParagraphs(rows), repeated ? null : secKey) : '';
+  }
+  // Parent-qualified numeric schedule facts only. No prayer/Name publication authority.
+  var NACH_COUNTS = [6,4,5,6,5];
+  var NACH_RANGE_SHA256 = '796618d27c862a96e194e4c2faf635717f5702e0e4e9f6d501aab6706e2cc30f';
+  var NACH_RANGE_POLICY = 'Explicit numeric source boundaries; source-qualified cross-chapter readings retained. Weekday counts 6/4/5/6/5; no prayer/name authority or corpus edits.';
+  // Additional source-coordinate pins reject logically plausible wrong same-book units.
+  // Order in each week: Sun Navi/Kesuvim, Mon Navi/Kesuvim, ... Thu Navi/Kesuvim.
+  var NACH_BOUNDARIES = {"בראשית":[[42,5,42,10],[1,1,1,6],[42,11,42,14],[1,7,1,10],[42,15,42,19],[1,11,1,15],[42,20,42,25],[1,16,1,21],[43,1,43,5],[1,22,1,26]],"נח":[[52,13,53,3],[1,27,1,32],[53,4,53,7],[1,33,2,3],[53,8,53,12],[2,4,2,8],[54,1,54,6],[2,9,2,14],[54,7,54,11],[2,15,2,19]],"לך לך":[[40,27,41,1],[2,20,3,3],[41,2,41,5],[3,4,3,7],[41,6,41,10],[3,8,3,12],[41,11,41,16],[3,13,3,18],[41,17,41,21],[3,19,3,23]],"וירא":[[4,1,4,6],[3,24,3,29],[4,7,4,10],[3,30,3,33],[4,11,4,15],[3,34,4,3],[4,16,4,21],[4,4,4,9],[4,22,4,26],[4,10,4,14]],"חיי שרה":[[1,1,1,6],[4,15,4,20],[1,7,1,10],[4,21,4,24],[1,11,1,15],[4,25,5,2],[1,16,1,21],[5,3,5,8],[1,22,1,26],[5,9,5,13]],"תולדות":[[1,1,1,6],[5,14,5,19],[1,7,1,10],[5,20,5,23],[1,11,2,1],[6,1,6,5],[2,2,2,7],[6,6,6,11],[2,8,2,12],[6,12,6,16]],"ויצא":[[11,7,12,1],[6,17,6,22],[12,2,12,5],[6,23,6,26],[12,6,12,10],[6,27,6,31],[12,11,13,1],[6,32,7,2],[13,2,13,6],[7,3,7,7]],"וישלח":[[1,1,1,6],[7,8,7,13],[1,7,1,10],[7,14,7,17],[1,11,1,15],[7,18,7,22],[1,16,1,21],[7,23,8,1],[1,1,1,5],[8,2,8,6]],"וישב":[[2,6,2,11],[8,7,8,12],[2,12,2,15],[8,13,8,16],[2,16,3,4],[8,17,8,21],[3,5,3,10],[8,22,8,27],[3,11,3,15],[8,28,8,32]],"מקץ":[[3,15,3,20],[8,33,9,2],[3,21,3,24],[9,3,9,6],[3,25,4,1],[9,7,9,11],[4,2,4,7],[9,12,9,17],[4,8,4,12],[9,18,10,4]],"ויגש":[[37,15,37,20],[10,5,10,10],[37,21,37,24],[10,11,10,14],[37,25,38,1],[10,15,10,19],[38,2,38,7],[10,20,10,25],[38,8,38,12],[10,26,10,30]],"ויחי":[[2,1,2,6],[10,31,11,4],[2,7,2,10],[11,5,11,8],[2,11,2,15],[11,9,11,13],[2,16,2,21],[11,14,11,19],[2,22,2,26],[11,20,11,24]],"שמות":[[27,6,27,11],[11,25,11,30],[27,12,28,2],[11,31,12,3],[28,3,28,7],[12,4,12,8],[28,8,28,13],[12,9,12,14],[28,14,28,18],[12,15,12,19]],"וארא":[[28,25,29,4],[12,20,12,25],[29,5,29,8],[12,26,13,1],[29,9,29,13],[13,2,13,6],[29,14,29,19],[13,7,13,12],[29,20,30,3],[13,13,13,17]],"בא":[[46,13,46,18],[13,18,13,23],[46,19,46,22],[13,24,14,2],[46,23,46,27],[14,3,14,7],[46,28,47,5],[14,8,14,13],[47,6,48,3],[14,14,14,18]],"בשלח":[[3,30,4,4],[14,19,14,24],[4,5,4,8],[14,25,14,28],[4,9,4,13],[14,29,14,33],[4,14,4,19],[14,34,15,4],[4,20,4,24],[15,5,15,9]],"יתרו":[[6,1,6,6],[15,10,15,15],[6,7,6,10],[15,16,15,19],[6,11,7,2],[15,20,15,24],[7,3,7,8],[15,25,15,30],[7,9,7,13],[15,31,16,2]],"משפטים":[[34,8,34,13],[16,3,16,8],[34,14,34,17],[16,9,16,12],[34,18,34,22],[16,13,16,17],[35,1,35,6],[16,18,16,23],[35,7,35,11],[16,24,16,28]],"תרומה":[[5,26,5,31],[16,29,17,1],[5,32,6,3],[17,2,17,5],[6,4,6,8],[17,6,17,10],[6,9,6,14],[17,11,17,16],[6,15,6,19],[17,17,17,21]],"תצוה":[[43,10,43,15],[17,22,17,27],[43,16,43,19],[17,28,18,3],[43,20,43,24],[18,4,18,8],[43,25,44,3],[18,9,18,14],[44,4,44,8],[18,15,18,19]],"כי תשא":[[18,20,18,25],[18,20,19,1],[18,26,18,29],[19,2,19,5],[18,30,18,34],[19,6,19,10],[18,35,18,40],[19,11,19,16],[18,41,18,45],[19,17,19,21]],"ויקהל":[[7,13,7,18],[19,22,19,27],[7,19,7,22],[19,28,20,2],[7,23,7,27],[20,3,20,7],[7,28,7,33],[20,8,20,13],[7,34,7,38],[20,14,20,18]],"פקודי":[[7,40,7,45],[20,19,20,24],[7,46,7,49],[20,25,20,28],[7,50,8,3],[20,29,21,3],[8,4,8,9],[21,4,21,9],[8,10,8,14],[21,10,21,14]],"ויקרא":[[43,21,43,26],[21,15,21,20],[43,27,44,2],[21,21,21,24],[44,3,44,7],[21,25,21,29],[44,8,44,13],[21,30,22,4],[44,14,44,18],[22,5,22,9]],"צו":[[7,21,7,26],[22,10,22,15],[7,27,7,30],[22,16,22,19],[7,31,8,1],[22,20,22,24],[8,2,8,7],[22,25,23,1],[8,8,8,12],[23,2,23,6]],"שמיני":[[6,1,6,6],[23,7,23,12],[6,7,6,10],[23,13,23,16],[6,11,6,15],[23,17,23,21],[6,16,6,21],[23,22,23,27],[6,22,7,3],[23,28,23,32]],"תזריע":[[4,42,5,3],[23,33,24,3],[5,4,5,7],[24,4,24,7],[5,8,5,12],[24,8,24,12],[5,13,5,18],[24,13,24,18],[5,19,5,23],[24,19,24,23]],"מצורע":[[7,3,7,8],[24,24,24,29],[7,9,7,12],[24,30,24,33],[7,13,7,17],[24,34,25,4],[7,18,8,3],[25,5,25,10],[8,4,8,8],[25,11,25,15]],"אחרי מות":[[22,1,22,6],[25,16,25,21],[22,7,22,10],[25,22,25,25],[22,11,22,15],[25,26,26,2],[22,16,22,21],[26,3,26,8],[22,22,22,26],[26,9,26,13]],"קדושים":[[20,2,20,7],[26,14,26,19],[20,8,20,11],[26,20,26,23],[20,12,20,16],[26,24,26,28],[20,17,20,22],[27,1,27,6],[20,23,20,27],[27,7,27,11]],"אמור":[[44,15,44,20],[27,12,27,17],[44,21,44,24],[27,18,27,21],[44,25,44,29],[27,22,27,26],[44,30,45,4],[27,27,28,5],[45,5,45,9],[28,6,28,10]],"בהר":[[32,6,32,11],[28,11,28,16],[32,12,32,15],[28,17,28,20],[32,16,32,20],[28,21,28,25],[32,21,32,26],[28,26,29,3],[32,27,32,31],[29,4,29,8]],"בחוקותי":[[16,19,17,3],[29,9,29,14],[17,4,17,7],[29,15,29,18],[17,8,17,12],[29,19,29,23],[17,13,17,18],[29,24,30,2],[17,19,17,23],[30,3,30,7]],"במדבר":[[2,1,2,6],[30,8,30,13],[2,7,2,10],[30,14,30,17],[2,11,2,15],[30,18,30,22],[2,16,2,21],[30,23,30,28],[2,22,3,1],[30,29,30,33]],"נשא":[[13,2,13,7],[31,1,31,6],[13,8,13,11],[31,7,31,10],[13,12,13,16],[31,11,31,15],[13,17,13,22],[31,16,31,21],[13,23,14,2],[31,22,31,26]],"בהעלותך":[[2,14,3,2],[1,1,1,6],[3,3,3,6],[42,1,42,4],[3,7,4,1],[73,1,73,5],[4,2,4,7],[90,1,90,6],[4,8,4,12],[107,1,107,5]],"שלח":[[2,1,2,6],[2,1,2,6],[2,7,2,10],[42,5,42,8],[2,11,2,15],[73,6,73,10],[2,16,2,21],[90,7,90,12],[2,22,3,2],[107,6,107,10]],"קורח":[[11,14,12,4],[2,7,2,12],[12,5,12,8],[42,9,42,12],[12,9,12,13],[73,11,73,15],[12,14,12,19],[90,13,91,1],[12,20,12,24],[107,11,107,15]],"חוקת":[[11,1,11,6],[3,1,3,6],[11,7,11,10],[43,1,43,4],[11,11,11,15],[73,16,73,20],[11,16,11,21],[91,2,91,7],[11,22,11,26],[107,16,107,20]],"בלק":[[5,6,5,11],[3,7,4,3],[5,12,6,1],[43,5,44,3],[6,2,6,6],[73,21,73,25],[6,7,6,12],[91,8,91,13],[6,13,7,1],[107,21,107,25]],"פינחס":[[18,46,19,5],[4,4,4,9],[19,6,19,9],[44,4,44,7],[19,10,19,14],[73,26,74,2],[19,15,19,20],[91,14,92,3],[19,21,20,4],[107,26,107,30]],"מטות":[[13,15,13,20],[5,1,5,6],[13,21,13,24],[44,8,44,11],[13,25,13,29],[74,3,74,7],[13,30,14,2],[92,4,92,9],[14,3,14,7],[107,31,107,35]],"מסעי":[[2,4,2,9],[5,7,5,12],[2,10,2,13],[44,12,44,15],[2,14,2,18],[74,8,74,12],[2,19,2,24],[92,10,92,15],[2,25,2,29],[107,36,107,40]],"דברים":[[1,1,1,6],[5,13,6,5],[1,7,1,10],[44,16,44,19],[1,11,1,15],[74,13,74,17],[1,16,1,21],[92,16,93,5],[1,22,1,26],[107,41,108,2]],"ואתחנן":[[40,1,40,6],[6,6,6,11],[40,7,40,10],[44,20,44,23],[40,11,40,15],[74,18,74,22],[40,16,40,21],[94,1,94,6],[40,22,40,26],[108,3,108,7]],"עקב":[[49,14,49,19],[7,1,7,6],[49,20,49,23],[44,24,44,27],[49,24,50,2],[74,23,75,4],[50,3,50,8],[94,7,94,12],[50,9,51,2],[108,8,108,12]],"ראה":[[54,11,54,16],[7,7,7,12],[54,17,55,3],[45,1,45,4],[55,4,55,8],[75,5,75,9],[55,9,56,1],[94,13,94,18],[56,2,56,6],[108,13,109,3]],"שופטים":[[51,12,51,17],[7,13,7,18],[51,18,51,21],[45,5,45,8],[51,22,52,3],[75,10,76,3],[52,4,52,9],[94,19,95,1],[52,10,52,14],[109,4,109,8]],"כי תצא":[[17,1,17,6],[8,1,8,6],[17,7,17,10],[45,9,45,12],[17,11,17,15],[76,4,76,8],[17,16,17,21],[95,2,95,7],[17,22,17,26],[109,9,109,13]],"כי תבוא":[[60,1,60,6],[8,7,9,2],[60,7,60,10],[45,13,45,16],[60,11,60,15],[76,9,76,13],[60,16,60,21],[95,8,96,2],[60,22,61,4],[109,14,109,18]],"נצבים":[[61,10,62,4],[9,3,9,8],[62,5,62,8],[45,17,46,2],[62,9,63,1],[77,1,77,5],[63,2,63,7],[96,3,96,8],[63,8,63,12],[109,19,109,23]],"וילך":[[14,1,14,6],[9,9,9,14],[14,7,14,10],[46,3,46,6],[55,6,55,10],[77,6,77,10],[55,11,56,3],[96,9,97,1],[56,4,56,8],[109,24,109,28]],"האזינו":[[22,1,22,6],[9,15,9,20],[22,7,22,10],[46,7,46,10],[22,11,22,15],[77,11,77,15],[22,16,22,21],[97,2,97,7],[22,22,22,26],[109,29,110,2]],"וזאת הברכה":[[8,54,8,59],[10,1,10,6],[8,60,8,63],[46,11,47,2],[8,64,9,2],[77,16,77,20],[1,1,1,6],[97,8,98,1],[1,7,1,11],[110,3,110,7]]};
+  // Full effective owned-book bodies, after the unchanged source/qatan helper.
+  // Occurrence-only qatan packets do not themselves authenticate books with zero rows.
+  var NACH_BOOK_HASHES = {"tanach-amos":"066f840cbc9d0e72a57ec70e9ce22067bc987c85e768b014e3e9f0cd7f22f487","tanach-hoshea":"694c820dd623170570ceb742a07d54687b2b855da7b4b7cadeb4d1051d0e1c86","tanach-malachi":"002fe83ae3b50a7cd777418041d9a8bc31c404695b87ed831fac2ea466ded2bc","tanach-melachim-a":"3563e5711cd9fd4c8033cb47c207c7fadd9a7e5b576e507a5fd395c02c9b0abc","tanach-melachim-b":"b9e271a5b92277ad1b3585f1693647f0468947e3a707b082c509080f531d681f","tanach-michah":"4b26112c298efa52a2a4e1441d9855afd020513f3289b25f6e52aa0aab7c0cb9","tanach-mishlei":"12104a7a343fdf75a0bee0bb502f5c818c9a04cf53b8c32b62eb98e5df9fb2b6","tanach-ovadya":"ca34eb4ad0728ae5306d1244c4e20cc735854ea03e4d5179800a86b7c2f8768c","tanach-shmuel-a":"1d03495230445bf7d1043d12823eb1aae966ffa9a6db7b6cb706d447e66af97a","tanach-shmuel-b":"c124fe1df7c3d6affced9b34922a91962511c4b9ac7fcf18dfb2ad58d7e15f90","tanach-shoftim":"21e3956f8a3cc94d32c6ae7b9d62c9a4b1056e3ec8920d8f8f0ec94e4e194bf4","tanach-tehillim":"2720255084dc1c822d31c126cbbff9da71fa96d75e03bfed989c6defd927f881","tanach-yechezkel":"ed1f5590688be6f16d91886dd8254da3c90515464799d355713b044c002a504c","tanach-yehoshua":"e3a99ede0324323a95083fd4e82a18d8d9e8e4b5634e067bee196e532b394ff1","tanach-yeshayahu":"55af3c185febf9001de261cc93e5ed92ab1290513fbd04f3df65976d1b6e1695","tanach-yirmiyahu":"64b026c2358fae2bbbb8fa69aea40b8b21c595c525239bf55fd52e1b52c5b034","tanach-yonah":"6f7631b320020bc2c14474df652ce9bfa9f9febaca37bf6a9825c0505c93d5b6","tanach-zecharya":"84eb0dc093875cd517c8d585f2c253df75a05d1e0f35261295344e8430a38eaa"};
+  var nachFactsPromise;
+  function exactFields(value, fields) {
+    return value && typeof value === 'object' && !Array.isArray(value) &&
+      Object.keys(value).length === fields.length && fields.every(function (k) { return Object.prototype.hasOwnProperty.call(value, k); });
+  }
+  function validNachRef(ref) {
+    return exactFields(ref, ['c','v']) && Number.isSafeInteger(ref.c) && ref.c > 0 && Number.isSafeInteger(ref.v) && ref.v > 0;
+  }
+  function sameNachRef(a, b) { return a.c === b.c && a.v === b.v; }
+  function validateNachFacts(facts) {
+    if (!exactFields(facts, ['schemaVersion','policy','weeks']) || facts.schemaVersion !== 1 || facts.policy !== NACH_RANGE_POLICY ||
+        !exactFields(facts.weeks, Object.keys(NACH_BOUNDARIES)) || !state.sched || !exactFields(state.sched.weeks, Object.keys(NACH_BOUNDARIES)))
+      throw Error('Nach facts: missing or unqualified 54-week coverage');
+    var records = 0;
+    Object.keys(NACH_BOUNDARIES).forEach(function (wk) {
+      var week = facts.weeks[wk], schedule = state.sched.weeks[wk];
+      if (!exactFields(week, ['days']) || !exactFields(week.days, DAYS.slice(0,5))) throw Error('Nach facts: incomplete weekday coverage');
+      DAYS.slice(0,5).forEach(function (day, i) {
+        if (!exactFields(week.days[day], ['navi','kesuvim'])) throw Error('Nach facts: missing section');
+        ['navi','kesuvim'].forEach(function (key, j) {
+          var r = week.days[day][key], source = (schedule.days[day] || {})[key], pin = NACH_BOUNDARIES[wk][i * 2 + j];
+          if (!exactFields(r, ['book','slug','from','to','count','refs']) || !source || !source.from ||
+              typeof r.book !== 'string' || r.book !== source.book || !Object.prototype.hasOwnProperty.call(SLUGS, r.book) || r.slug !== SLUGS[r.book] ||
+              !validNachRef(r.from) || !validNachRef(r.to) || r.from.c !== source.from.c ||
+              r.from.c !== pin[0] || r.from.v !== pin[1] || r.to.c !== pin[2] || r.to.v !== pin[3] ||
+              r.count !== NACH_COUNTS[i] || !Array.isArray(r.refs) || r.refs.length !== r.count || !r.refs.every(validNachRef) ||
+              !sameNachRef(r.from,r.refs[0]) || !sameNachRef(r.to,r.refs[r.count - 1])) throw Error('Nach facts: rejected source binding or range');
+          r.refs.forEach(function (ref, n) {
+            if (!n) return;
+            var prev = r.refs[n - 1];
+            if (!((ref.c === prev.c && ref.v === prev.v + 1) || (ref.c === prev.c + 1 && ref.v === 1)))
+              throw Error('Nach facts: rejected ref gap or order');
+          });
+          records++;
+        });
+      });
+    });
+    if (records !== 540) throw Error('Nach facts: rejected slot coverage');
+    return facts;
+  }
+  function loadNachFacts() {
+    // One coalesced attempt per page, one bounded transport retry via the six-fetch queue.
+    // Missing, corrupt or unqualified data stays failed; never use the old prefix/clamp fallback.
+    if (!nachFactsPromise) nachFactsPromise = fetchJSON('/reader/chok/nach-ranges.json?v=explicit-nach-ranges-20261006-r1', true).then(function (raw) {
+      if (typeof raw !== 'string' || !window.crypto || !window.crypto.subtle) throw Error('Nach facts: raw hash authentication unavailable');
+      return window.crypto.subtle.digest('SHA-256', new TextEncoder().encode(raw)).then(function (digest) {
+        var hash = Array.from(new Uint8Array(digest)).map(function (b) { return ('0' + b.toString(16)).slice(-2); }).join('');
+        if (hash !== NACH_RANGE_SHA256) throw Error('Nach facts: rejected raw UTF-8 payload hash');
+        return validateNachFacts(JSON.parse(raw));
+      });
+    });
+    return nachFactsPromise;
+  }
+  function nachRange(wk, day, key) {
+    var i = DAYS.indexOf(day);
+    if (i < 0 || i > 4) return Promise.resolve(null);
+    return loadNachFacts().then(function (facts) {
+      var week = facts.weeks[wk], record = week && week.days[day] && week.days[day][key];
+      if (!record) throw Error('Nach facts: exact week/day/section not qualified');
+      return record;
+    });
+  }
+  function validateNachSpan(bd, r) {
+    // Authenticate the entire owned book in book() BEFORE any cutting. Then prove
+    // every selected unit, chapter ending and crossover, not merely a matching count.
+    if (!bd || bd.slug !== r.slug || !Object.prototype.hasOwnProperty.call(NACH_BOOK_HASHES, r.slug) ||
+        !window.TikkunBoundaries || window.TikkunBoundaries.boundaryHash(bd) !== NACH_BOOK_HASHES[r.slug])
+      throw Error('Nach book data: entire owned-book authentication mismatch');
+    var refs = [];
+    for (var c = r.from.c; c <= r.to.c; c++) {
+      var ch = (bd.ch || {})[c];
+      if (!ch || typeof ch !== 'object') throw Error('Nach book data: missing source chapter');
+      var keys = Object.keys(ch).map(Number).sort(function (a,b) { return a-b; });
+      if (!keys.length || keys.some(function (v,i) { return !Number.isSafeInteger(v) || v !== i + 1; })) throw Error('Nach book data: chapter corpus gap');
+      var start = c === r.from.c ? r.from.v : 1, end = c === r.to.c ? r.to.v : keys[keys.length - 1];
+      if (start > end || end > keys[keys.length - 1]) throw Error('Nach book data: missing range boundary');
+      for (var v = start; v <= end; v++) {
+        if (!ch[v] || !Array.isArray(ch[v].t) || !ch[v].t.length) throw Error('Nach book data: missing verse corpus');
+        refs.push({c:c,v:v});
+      }
     }
-    return h;
+    if (refs.length !== r.count || refs.some(function (ref,i) { return !sameNachRef(ref,r.refs[i]); })) throw Error('Nach book data: qualified refs disagree with owned units');
+    return r;
+  }
+  function nachDataError(label, bookLabel, error) {
+    return '<p class="ck-error ck-nach-boundary" data-nach-error="book-data" role="status">' + esc(label + ' — ' + (bookLabel || '')) +
+      ': נתוני הספר או טווח המקור אינם מאומתים; לא מוצגים פסוקים חלופיים. <span dir="ltr">Nach book data error: ' +
+      esc(String(error)) + '. No fallback verses are displayed.</span></p>';
   }
   function kavanosHTML() {
     return fetchJSON('/reader/kavanos/index.json').catch(function () { return null; }).then(function (idx) {
@@ -387,7 +525,7 @@
           vv.forEach(function (x) {
             if (to && (c > to.c || (c === to.c && x > to.v))) return;
             var verse = ch[x];
-            var row = coloredVerse(verse) + ' <span class="tk-vnum">(' + heNum(c) + ',' + heNum(x) + ')</span>';
+            var row = coloredVerse(verse) + ' <span class="tk-vnum">' + refLabelHTML(plainHeNum(c) + ':' + plainHeNum(x)) + '</span>';
             if (state.targum && tg && (tg.ch || {})[c] && tg.ch[c][x]) {
               row += '<div class="ck-targum-line">' + richText(applyMode(tg.ch[c][x])) + '</div>';
             }
@@ -465,13 +603,13 @@
     lsSet('chok-carry-last', key);
     return true;
   }
-  function secHead(title, ref) {
-    return '<div class="ck-sec-head">' + title + (ref ? ' <span class="ck-ref">' + esc(ref) + '</span>' : '') + '</div>';
+  function secHead(title, ref, generatedRef) {
+    return '<div class="ck-sec-head">' + title + (ref ? ' <span class="ck-ref">' + (generatedRef ? refLabelHTML(ref) : esc(ref)) + '</span>' : '') + '</div>';
   }
   function refStr(r) {
     if (!r) return '';
-    var f = r.from ? heNum(r.from.c) + (r.from.v ? ',' + heNum(r.from.v) : '') : '';
-    var t = r.to ? heNum(r.to.c) + (r.to.v ? ',' + heNum(r.to.v) : '') : '';
+    var f = r.from ? plainHeNum(r.from.c) + (r.from.v ? ':' + plainHeNum(r.from.v) : '') : '';
+    var t = r.to ? plainHeNum(r.to.c) + (r.to.v ? ':' + plainHeNum(r.to.v) : '') : '';
     return f && t && f !== t ? f + '–' + t : (f || t);
   }
   function card(title, ref, note) {
@@ -670,11 +808,20 @@
     var day = state.day;
     var weeks = state.weeks || [];
     if (!weeks.length) { box.innerHTML = '<p class="ck-error">No week selected.</p>'; return; }
-    var jobs = weeks.map(function (wk) {
+    var jobs = weeks.map(function (wk, weekIndex) {
       var w = state.sched.weeks[wk];
       if (!w) return Promise.resolve('<p class="ck-error">No schedule for ' + esc(wk) + '</p>');
       var dayE = availDay(w, day);
       var d = w.days[dayE] || {};
+      function dayKavana(key, sectionDay) {
+        var field = key === 'talmud' ? 'gemara' : key === 'kabbala' ? 'zohar' : key;
+        // Display ownership follows week order, never asynchronous fetch timing.
+        var repeated = weeks.slice(0, weekIndex).some(function (prior) {
+          var previous = state.sched.weeks[prior];
+          return previous && (previous.days[availDay(previous, day)] || {})[field];
+        });
+        return kavanaHTML(key, sectionDay, repeated);
+      }
       var dc = dcommFor(wk, dayE);
       var out = [];
       if (state.focus) out.push(focusBar());
@@ -687,7 +834,7 @@
         p = p.then(function () {
           return versesHTML(w.slug, d.torah.from, d.torah.to, 'torah', dc, wk).then(function (vh) {
             out.push('<section class="ck-section" data-sec="torah">' +
-              secHead('תורה — ' + wk, refStr(d.torah)) + popBtn() + kavanaHTML('torah', d) + (vh || '') + '</section>');
+              secHead('תורה — ' + wk, refStr(d.torah), true) + popBtn() + dayKavana('torah', d) + (vh || '') + '</section>');
           });
         });
       }
@@ -695,55 +842,30 @@
         p = p.then(function () {
           var sec = d[pair[0]];
           if (!sec || !sec.book) {
+            if (want(pair[0]) && DAYS.indexOf(dayE) >= 0 && DAYS.indexOf(dayE) < 5) {
+              out.push(nachDataError(pair[1], '', Error('Nach facts: missing original schedule qualifier')));
+              return;
+            }
             if (want(pair[0]) && dayE !== 'ליל שישי') out.push('<p class="ck-nach-boundary" data-nach-unavailable="' + pair[0] + '" role="status">' +
-              pair[1] + ': לא נקבע פרק בסדר המקור ליום זה; אין טווח של שישה פסוקים להצגה. ' +
-              '<span dir="ltr">No chapter scheduled for this section today; the six-verse study window is unavailable. No other chapter is introduced.</span></p>');
+              pair[1] + ': לא נקבע פרק בסדר המקור ליום זה; אין טווח יומי להצגה. ' +
+              '<span dir="ltr">No chapter scheduled for this section today; the daily study window is unavailable. No other chapter is introduced.</span></p>');
             return;
           }
           var vkey = pair[1] === 'כתובים' ? 'kesuvim' : 'navi';
           if (!want(vkey)) return;
-          var slug = SLUGS[sec.book];
-          if (!slug) { out.push(card(pair[1], sec.book)); return; }
-          /* Independent study policy, NOT the historical miluy verse counts:
-             six verses per scheduled Nach slot, offset by earlier slots on
-             this same book/chapter. Do not invent a chapter for absent slots. */
-          var dayIdx = DAYS.indexOf(dayE);
-          var offset = 0;
-          DAYS.forEach(function (dy, di) {
-            if (di >= dayIdx) return;
-            var prev = (w.days[dy] || {})[pair[0]];
-            if (prev && SLUGS[prev.book] === slug && prev.from && prev.from.c === sec.from.c) offset++;
-          });
-          var mk = (state.miluy && state.miluy.days && state.miluy.days[dayIdx]) || null;
-          var miluyTag = mk ? '<div class="ck-miluy"><span class="ck-miluy-t">כוונת המילוי — האריז״ל</span> ' +
-            'מסורת קדומה · historical tradition: ' + heNum(mk.count) + ' פסוקים כנגד האות ' + mk.letter + ' של המילוי' +
-            (mk.path ? ' — ' + mk.path : '') + '</div>' : '';
-          var policyTag = '<div class="ck-nach-policy">סדר הלימוד כאן: שישה פסוקים, בנפרד ממניין המילוי. ' +
-            '<span dir="ltr">Independent six-verse study policy; not an equivalence to the historical miluy count.</span></div>';
-          return book(slug).then(function (bd) {
-            var chapter = (bd.ch || {})[sec.from.c] || {};
-            var keys = Object.keys(chapter).map(Number).filter(function (v) { return v > 0; });
-            var lastV = keys.length ? Math.max.apply(null, keys) : 0;
-            var startV = (sec.from.v || 1) + 6 * offset;
-            var endV = Math.min(startV + 5, lastV);
-            var count = keys.filter(function (v) { return v >= startV && v <= endV; }).length;
-            var headRef = heNum(sec.from.c);
-            if (count) headRef += ':' + heNum(startV) + '\u2013' + heNum(sec.from.c) + ':' + heNum(endV);
-            var boundary = '';
-            if (count < 6) {
-              var he = !lastV ? 'טקסט הפרק אינו זמין.' : !count ? 'אין פסוקים בטווח היומי: הפרק הסתיים בפסוק ' + lastV + '.' :
-                'נותרו רק ' + count + ' מתוך שישה פסוקים עד סוף הפרק (פסוק ' + lastV + ').';
-              var en = !lastV ? 'Chapter text unavailable.' : !count ? 'No verses in this daily window; the chapter ends at verse ' + lastV + '.' :
-                'Only ' + count + ' of 6 verses remain before the chapter ends at verse ' + lastV + '.';
-              boundary = '<p class="ck-nach-boundary" role="status">' + he + ' לא עוברים לפרק אחר. ' +
-                '<span dir="ltr">' + en + ' No other chapter is introduced.</span></p>';
-            }
-            var body = count ? versesHTML(slug, { c: sec.from.c, v: startV }, { c: sec.from.c, v: endV }, 'navi', null) : Promise.resolve('');
-            return body.then(function (vh) {
-              out.push('<section class="ck-section" data-sec="' + vkey + '">' +
-                secHead(pair[1] + ' — ' + sec.book, headRef) + popBtn() + policyTag + miluyTag + boundary + kavanaHTML(vkey, d) + voiceBox(dc && dc[vkey], pair[1]) + vh + '</section>');
+          return nachRange(wk, dayE, vkey).then(function (plan) {
+            if (!plan) return;
+            var requestedCount = plan.count;
+            var policyTag = '<div class="ck-nach-policy">סדר הלימוד היומי: ' + heNum(requestedCount) + ' פסוקים לפי מניין המילוי. ' +
+              '<span dir="ltr">Weekday miluy counts: 6 / 4 / 5 / 6 / 5. This source-qualified slot contains ' + requestedCount + ' verses.</span></div>';
+            return book(plan.slug).then(function (bd) {
+              validateNachSpan(bd, plan);
+              return versesHTML(plan.slug, plan.from, plan.to, 'navi', null).then(function (vh) {
+                out.push('<section class="ck-section" data-sec="' + vkey + '">' +
+                  secHead(pair[1] + ' — ' + sec.book, refStr(plan), true) + popBtn() + policyTag + dayKavana(vkey, d) + voiceBox(dc && dc[vkey], pair[1]) + vh + '</section>');
+              });
             });
-          });
+          }).catch(function (error) { out.push(nachDataError(pair[1], sec.book, error)); });
         });
       });
       p = p.then(function () {
@@ -759,7 +881,7 @@
       });
       if (d.mishna && d.mishna.masechet && want('mishna')) {
         p = p.then(function () {
-          return mishnaHTML(d.mishna.masechet, d.mishna.perek).then(function (html) { html = html || ''; html = kavanaHTML('mishna', d) + html; html = voiceBox(dc && dc.mishna, 'משנה') + html;
+          return mishnaHTML(d.mishna.masechet, d.mishna.perek).then(function (html) { html = html || ''; html = dayKavana('mishna', d) + html; html = voiceBox(dc && dc.mishna, 'משנה') + html;
             if (html) out.push('<section class="ck-section" data-sec="mishna">' + html + '</section>');
           });
         });
@@ -775,21 +897,21 @@
       }
       if (d.halacha && d.halacha.work && want('halacha')) {
         p = p.then(function () {
-          return halachaHTML(d).then(function (html) { html = html || ''; html = kavanaHTML('halacha', d) + html; html = voiceBox(dc && dc.halacha, 'הלכה') + html;
+          return halachaHTML(d).then(function (html) { html = html || ''; html = dayKavana('halacha', d) + html; html = voiceBox(dc && dc.halacha, 'הלכה') + html;
             if (html) out.push('<section class="ck-section" data-sec="halacha">' + html + '</section>');
           });
         });
       }
       if (d.gemara && d.gemara.masechet && want('talmud')) {
         p = p.then(function () {
-          return gemaraHTML(d.gemara).then(function (html) { html = html || ''; html = kavanaHTML('talmud', d) + html; html = voiceBox(dc && dc.talmud, 'גמרא') + html;
+          return gemaraHTML(d.gemara).then(function (html) { html = html || ''; html = dayKavana('talmud', d) + html; html = voiceBox(dc && dc.talmud, 'גמרא') + html;
             if (html) out.push('<section class="ck-section" data-sec="talmud">' + html + '</section>');
           });
         });
       }
       if (d.zohar && (d.zohar.vol || d.zohar.work) && want('kabbala')) {
         p = p.then(function () {
-          return zoharHTML(d.zohar).then(function (html) { html = html || ''; html = kavanaHTML('kabbala', d) + html; html = voiceBox(dc && dc.kabbala, 'זוהר') + html;
+          return zoharHTML(d.zohar).then(function (html) { html = html || ''; html = dayKavana('kabbala', d) + html; html = voiceBox(dc && dc.kabbala, 'זוהר') + html;
             if (html) out.push('<section class="ck-section" data-sec="kabbala">' + html + '</section>');
           });
         });
@@ -824,6 +946,7 @@
             secHead('ביאור — ' + weeks[i]) + h.layers + '</section>';
         });
         var parts = [];
+        if (!state.focus) parts.push(studyOverviewHTML());
         if (carryHTML) parts.push(carryHTML);
         if (!state.focus) parts.push('<p class="ck-tef-link"><a href="/reader/chok/tefillos/">תפלות שלפני לימוד התורה ←</a></p>');
         parts.push(weekParts.join(''));
@@ -831,7 +954,7 @@
         box.innerHTML = parts.join('') || '<p class="ck-error">Nothing to show.</p>';
         wireKavanos(box);
         if (state.focus) {
-          Array.prototype.forEach.call(box.querySelectorAll('.ck-section[data-sec] details'), function (dtl) { dtl.open = true; });
+          Array.prototype.forEach.call(box.querySelectorAll('.ck-section[data-sec] details:not(.ck-kavana)'), function (dtl) { dtl.open = true; });
           var el = box.querySelector('.ck-section[data-sec="' + state.focus + '"]');
           if (el && el.scrollIntoView) el.scrollIntoView(); else { box.scrollTop = 0; window.scrollTo(0, 0); }
         } else {
@@ -871,9 +994,10 @@
 
   function init() {
     var st = load();
-    ['mode','medooyuk','targum','commentary','rashi','tanachen','size','theme','carryMode'].forEach(function (k) {
+    ['mode','medooyuk','targum','commentary','rashi','tanachen','size','theme','carryMode','kavanaMode'].forEach(function (k) {
       if (st[k] !== undefined) state[k] = st[k];
     });
+    if (state.kavanaMode !== 'always') state.kavanaMode = 'closed';
     state.day = DAYS[DAY_DEFAULT[new Date().getDay()]] || DAYS[0];
     if (location.search) {
       try {
@@ -893,7 +1017,8 @@
       fetchJSON('/reader/chok/kavanos-chok.json').catch(function () { return null; }),
       fetchJSON('/reader/chok/kavanos-actual.json').catch(function () { return null; }),
       fetchJSON('/reader/chok/miluy-kavana.json').catch(function () { return null; }),
-      fetchJSON('/reader/chok/hk-verses.json?v=2').catch(function () { return null; })
+      fetchJSON('/reader/chok/hk-verses.json?v=2').catch(function () { return null; }),
+      fetchJSON('/reader/chok/kavanos-torah.json').catch(function () { return null; })
     ]).then(function (res) {
       state.sched = res[0];
       state.map = res[1];
@@ -904,6 +1029,7 @@
       state.kavA = res[6] || null;
       state.miluy = res[7] || null;
       state.hk = res[8] || null;
+      state.kavGeneral = res[9] || null;
       var rr = resolveWeek();
       state.weeks = rr.weeks || ['בראשית'];
       if (state.focusWeek) {
@@ -940,6 +1066,9 @@
       $('ck-carrymode').value = state.carryMode;
       $('ck-carrymode').addEventListener('change', function () {
         state.carryMode = this.value; save(); renderDay(); });
+      $('ck-kavanamode').value = state.kavanaMode;
+      $('ck-kavanamode').addEventListener('change', function () {
+        state.kavanaMode = this.value === 'always' ? 'always' : 'closed'; save(); renderDay(); });
       $('ck-content').addEventListener('click', function (ev) {
         var t = ev.target;
         if (!t || !t.classList || !t.classList.contains('ck-popout')) return;
