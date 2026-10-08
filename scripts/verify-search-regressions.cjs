@@ -51,8 +51,6 @@ function canonicalReaderLink(link) {
   if (book === 'parsha-packets' && parts.length === 3 && parts[2] === 'noach') return '/reader/parsha-packets/noach';
   // This registered additive edition has no numeric part component.
   if (book === 'reviewed' && parts.length === 3 && parts[2] === 'wrapup-18-19-92-209') return '/reader/reviewed/wrapup-18-19-92-209';
-  // Match the existing shared source-route policy; retain exact-body parity.
-  if (book === 'parsha-packets' && parts.length === 3 && parts[2] === 'noach') return '/reader/parsha-packets/noach';
   const cleanPart = value => value.replace(/^part-/, '');
   const cleanUnit = value => /^(?:torah|halacha|prayer|topic|section|sicha|chapter)-\d+$/.test(value)
     ? value.replace(/^(?:torah|halacha|prayer|topic|section|sicha|chapter)-/, '')
