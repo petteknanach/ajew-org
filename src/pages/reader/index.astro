@@ -77,6 +77,10 @@ const facsimileBooks = [{
   id: 'precious-stones', title: 'Precious Stones — Hebrew PDF', hebrewTitle: 'אבנים טובות',
   author: 'Original Hebrew facsimile · 126 pages', parts: [], pageCount: 126,
   directoryHref: '/reader/precious-stones/',
+}, {
+  id: 'precious-stones-english', title: 'Precious Stones — English PDF', hebrewTitle: 'אבנים טובות — אנגלית',
+  author: 'Original English facsimile · 166 pages', parts: [], pageCount: 166,
+  directoryHref: '/reader/precious-stones/english/',
 }];
 categories.push({ title: 'Original PDF Books / ספרי PDF מקוריים', ids: facsimileBooks.map((book) => book.id) });
 const visibleBooks = [...masterCatalog.books.filter((book) => book.parts.some((part) => part.totalTorahs > 0)), ...facsimileBooks];
