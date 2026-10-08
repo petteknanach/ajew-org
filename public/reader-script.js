@@ -685,6 +685,7 @@
     if (window.location.hash) {
       const target = document.getElementById(window.location.hash.substring(1));
       if (target) {
+        scrollToReaderArrival(target, true);
         setTimeout(() => {
           scrollToReaderArrival(target);
           target.style.outline = '2px solid var(--reader-accent)';
@@ -2968,10 +2969,49 @@
   }
 
   // A search arrival must land on its match, not the center of a long segment.
-  function scrollToReaderArrival(target) {
+  function scrollToReaderArrival(target, prepareOnly = false) {
+    // Arm before the startup timers, not only after their 300ms delay.
+    let guard = scrollToReaderArrival.startupGuard;
+    if (!guard && typeof document !== 'undefined' &&
+        typeof window.addEventListener === 'function') {
+      const events = ['wheel', 'touchstart', 'pointerdown', 'keydown'];
+      guard = { cancelled: false, onLoad: null };
+      const cancel = () => { guard.cancelled = true; guard.cleanup(); };
+      guard.cleanup = () => {
+        events.forEach(type => window.removeEventListener(type, cancel, true));
+        window.removeEventListener('pagehide', cancel);
+        if (guard.onLoad) window.removeEventListener('load', guard.onLoad);
+      };
+      events.forEach(type => window.addEventListener(type, cancel, { capture: true, passive: true }));
+      window.addEventListener('pagehide', cancel, { once: true });
+      scrollToReaderArrival.startupGuard = guard;
+    }
+    if (prepareOnly || (guard && guard.cancelled)) return;
     const query = new URLSearchParams(window.location.search).get('q');
     const match = query ? target.querySelector('.search-highlight') : null;
     (match || target).scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    // Native fragment restoration and font layout can overwrite startup scroll.
+    // Settle once after load/fonts; never pull back a reader who has interacted.
+    if (!guard || scrollToReaderArrival.startupSettled) return;
+    scrollToReaderArrival.startupSettled = true;
+    const settle = () => {
+      if (guard.cancelled) return;
+      const fontsReady = document.fonts ? document.fonts.ready : Promise.resolve();
+      Promise.resolve(fontsReady).then(() => {
+        if (guard.cancelled) return;
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          if (!guard.cancelled && window.location.hash === '#' + target.id) {
+            const finalMatch = query ? target.querySelector('.search-highlight') : null;
+            (finalMatch || target).scrollIntoView({ behavior: 'instant', block: 'center' });
+          }
+          guard.cleanup();
+        }));
+      }, guard.cleanup);
+    };
+    guard.onLoad = settle;
+    if (document.readyState === 'complete') settle();
+    else window.addEventListener('load', settle, { once: true });
   }
 
   // --- Segment Permalink Buttons ---
@@ -2996,6 +3036,7 @@
     if (window.location.hash) {
       var target = document.querySelector(window.location.hash);
       if (target) {
+        scrollToReaderArrival(target, true);
         setTimeout(function() { scrollToReaderArrival(target); }, 300);
         target.style.outline = '2px solid #ffd54f';
         setTimeout(function() { target.style.outline = ''; }, 3000);
