@@ -324,8 +324,8 @@ if (fs.existsSync(noachSupplementPath)) {
     if (!seg.sourceUrl || !seg.sourceRef || !seg.he || !seg.en) throw new Error('Incomplete Noach source addition');
     if (!result.noach.connections.some(conn => conn.url === seg.sourceUrl)) {
       result.noach.connections.push({
-        bookId: 'chayey-moharan', bookTitle: 'Chayay Moharan',
-        bookHebrewTitle: 'חיי מוהר״ן', author: 'Rabbi Nachman of Breslov',
+        bookId: seg.sourceBook || 'chayey-moharan', bookTitle: seg.sourceBookTitle || 'Chayay Moharan',
+                bookHebrewTitle: seg.sourceBookHebrewTitle || 'חיי מוהר״ן', author: 'Rabbi Nachman of Breslov',
         title: seg.sourceRef, url: seg.sourceUrl,
         snippet: seg.he, snippetEn: seg.en, matchedParsha: 'נח',
       });

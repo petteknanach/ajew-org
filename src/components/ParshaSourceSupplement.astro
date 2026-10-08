@@ -18,7 +18,13 @@ const { packet, segmentPrefix = "noach-source" } = Astro.props;
           <div class="supplement-en" lang="en"><p>{seg.en}</p></div>
           <div class="supplement-he" lang="he" dir="rtl"><p>{seg.he}</p></div>
         </div>
-        <p class="supplement-citation"><a href={seg.sourceUrl}>{seg.sourceRef}</a> · <a href="/reader/tanach-bereishit/1/6/#seg-8">Genesis 6:8</a></p>
+        {seg.commentary && (
+          <div class="supplement-pair supplement-note" aria-label="Gematria">
+            <div class="supplement-en" lang="en"><p>{seg.commentary.en}</p></div>
+            <div class="supplement-he" lang="he" dir="rtl"><p>{seg.commentary.he}</p></div>
+          </div>
+        )}
+        <p class="supplement-citation"><a href={seg.sourceUrl}>{seg.sourceRef}</a>{seg.verse === 'Genesis 6:8' && <> · <a href="/reader/tanach-bereishit/1/6/#seg-8">Genesis 6:8</a></>}</p>
       </article>
     ))}
   </section>

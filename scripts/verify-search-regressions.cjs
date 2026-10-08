@@ -47,6 +47,8 @@ function canonicalReaderLink(link) {
   const parts = String(link || '').replace(/^\/+|\/+$/g, '').split('/');
   if (parts.length < 3 || parts[0] !== 'reader') return link;
   const book = parts[1];
+  // Source-bound parsha supplements have dedicated nonnumeric routes.
+  if (book === 'parsha-packets' && parts.length === 3 && parts[2] === 'noach') return '/reader/parsha-packets/noach';
   // This registered additive edition has no numeric part component.
   if (book === 'reviewed' && parts.length === 3 && parts[2] === 'wrapup-18-19-92-209') return '/reader/reviewed/wrapup-18-19-92-209';
   const cleanPart = value => value.replace(/^part-/, '');
