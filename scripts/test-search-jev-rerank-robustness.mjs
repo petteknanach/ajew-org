@@ -10,7 +10,9 @@ const source = readFileSync(new URL('../src/pages/search-enhanced.astro', import
 
 test('jev re-rank fetches are bounded by an AbortController timeout', () => {
   assert.match(source, /new AbortController\(\)/, 'missing AbortController');
-  assert.match(source, /setTimeout\(\(\) => ctrl\.abort\(\), 1500\)/, 'missing 1500ms abort timer');
+  assert.match(source, /setTimeout\(\(\) => \{\s*ctrl\.abort\(\);\s*reject\(new Error\('Jev response deadline exceeded'\)\);\s*\}, 1500\)/, 'missing 1500ms transport abort and deadline rejection');
+  assert.match(source, /const response = fetch\(url, \{ \.\.\.opts, signal: ctrl\.signal \}\)\s*\.then\(\(r: any\) => \(r\.ok \? r\.json\(\) : null\)\);/, 'JSON body completion must be inside the bounded response promise');
+  assert.match(source, /Promise\.race\(\[response, deadline\]\)\s*\.finally\(\(\) => clearTimeout\(timer\)\)/, 'whole-response deadline must be raced and cleaned up');
   assert.match(source, /jevFetch\('\/jev\/rank'/, '/jev/rank must go through the bounded jevFetch helper');
   assert.match(source, /jevFetch\('\/jev-config\.json'/, '/jev-config.json must go through the bounded jevFetch helper');
 });

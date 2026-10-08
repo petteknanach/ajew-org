@@ -900,16 +900,24 @@ const searchBookLabelsJSON = JSON.stringify(searchBookLabels).replace(/</g, '\\u
           if (finalResults.length > 1) {
             try {
               const noJev = new URLSearchParams(window.location.search).has('nojev');
-              // Bounded 1.5s cap: a hanging /jev proxy must never delay first
-              // result render — both fetches abort into the failure-safe path.
+              // Each 1.5s deadline covers headers AND JSON body completion.
+              // Race explicitly: a stalled body/mock may ignore transport abort.
               const jevFetch = (url: string, opts: any = {}) => {
                 const ctrl = new AbortController();
-                const timer = setTimeout(() => ctrl.abort(), 1500);
-                return fetch(url, { ...opts, signal: ctrl.signal })
+                let timer: ReturnType<typeof setTimeout>;
+                const deadline = new Promise<never>((_, reject) => {
+                  timer = setTimeout(() => {
+                    ctrl.abort();
+                    reject(new Error('Jev response deadline exceeded'));
+                  }, 1500);
+                });
+                const response = fetch(url, { ...opts, signal: ctrl.signal })
+                  .then((r: any) => (r.ok ? r.json() : null));
+                return Promise.race([response, deadline])
                   .finally(() => clearTimeout(timer));
               };
               const cfg = noJev ? null : await jevFetch('/jev-config.json', { cache: 'no-cache' })
-                .then((r: any) => (r.ok ? r.json() : null)).catch(() => null);
+                .catch(() => null);
               if (requestId !== activeSearchRequest) return;
               if (cfg && cfg.jevRank) {
                 const top = finalResults.slice(0, 30).map((r: any, i: number) => ({ ...r, _i: i }));
@@ -919,14 +927,13 @@ const searchBookLabelsJSON = JSON.stringify(searchBookLabels).replace(/</g, '\\u
                   he: r.hebrewTitle || '',
                   text: `${r.snippet || ''} ${r.extraInfo || ''}`.trim()
                 }));
-                const resp = await jevFetch('/jev/rank', {
+                const data = await jevFetch('/jev/rank', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({ query, candidates })
                 });
                 if (requestId !== activeSearchRequest) return;
-                if (resp.ok) {
-                  const data = await resp.json();
+                if (data) {
                   if (requestId !== activeSearchRequest) return;
                   const pById = new Map<number, number>((data.ranked || []).map((x: any) => [x.id, x.p]));
                   // Persist verdicts on the ORIGINAL result objects so the
