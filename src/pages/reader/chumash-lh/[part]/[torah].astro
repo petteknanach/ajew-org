@@ -2,6 +2,7 @@
 import Layout from '../../../../layouts/Layout.astro';
 import ReviewedParsha from '../../../../components/ReviewedParsha.astro';
 import Comments from '../../../../components/Comments.astro';
+import ParshaSourceSupplement from '../../../../components/ParshaSourceSupplement.astro';
 import '../../../../styles/reader.css';
 import '../../../../styles/reader-v2.css';
 import fs from 'node:fs';
@@ -53,6 +54,9 @@ try {
 }
 
 if (!torahData && !error) error = 'Content not available';
+const supplementPath = path.join(process.cwd(), 'public/reader/parsha-packets/noach.json');
+const sourceSupplement = partNum === 1 && torahNum === 2 && fs.existsSync(supplementPath)
+  ? JSON.parse(fs.readFileSync(supplementPath, 'utf8')) : null;
 
 const PART_NAMES: Record<number, {en: string, he: string}> = {
   1: { en: 'Bereishis', he: 'בראשית' },
@@ -97,6 +101,9 @@ const structuredData = torahData ? JSON.stringify({
       <p><a href="/reader">Back to Reader</a></p>
     </div>
   ) : reviewedSlug ? (
+    <div style="max-width: 960px; margin: 0 auto; padding: 1rem;">
+      <ParshaSourceSupplement packet={sourceSupplement} />
+    </div>
     <ReviewedParsha slug={reviewedSlug} />
   ) : (
     <div
@@ -249,6 +256,8 @@ const structuredData = torahData ? JSON.stringify({
           <a href={torahData.navigation.nextUrl} data-dir="next">Next &rarr;</a>
         ) : <span class="disabled">Next &rarr;</span>}
       </div>
+
+      <ParshaSourceSupplement packet={sourceSupplement} />
 
       <div class="reader-content mode-hebrew">
         <div class="reader-content-original">

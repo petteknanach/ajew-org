@@ -1,0 +1,13 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import ParshaSourceSupplement from '../../../components/ParshaSourceSupplement.astro';
+import fs from 'node:fs';
+import path from 'node:path';
+const packet = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'public/reader/parsha-packets/noach.json'), 'utf8'));
+---
+<Layout title={packet.title} description="Rabbainu’s source teachings on Genesis 6:8: Rabbi Yonasan’s amulets and the acronym in Chayay Moharan 463.">
+  <main style="max-width: 960px; margin: 0 auto; padding: 1rem;">
+    <nav aria-label="Noach sources"><a href="/parsha/noach/">Noach parsha page</a> · <a href="/reader/chumash-lh/1/2/">Noach Reader</a> · <a href="/reader/tanach-bereishit/1/6/#seg-8">Genesis 6:8</a></nav>
+    <ParshaSourceSupplement packet={packet} segmentPrefix="seg" />
+  </main>
+</Layout>

@@ -58,6 +58,14 @@ const structuredData = torahData ? JSON.stringify({
   "url": `https://ajew.org/reader/tanach-bereishit/${partNum}/${torahNum}`
 }) : '';
 
+// Genesis 6:8 closes Beraishis; the source supplement is also studied on Noach.
+const noachEntry = torahData && torahNum === 6 ? {
+  book: "parsha-packets", section: "noach", label: "Noach — Rabbainu",
+  sectionTitle: "Finding favor · Genesis 6:8",
+  url: "/reader/parsha-packets/noach.json",
+  readerUrl: "/parsha/noach/#noach-source-supplement",
+} : null;
+
 // LN verse-by-verse commentary
 const lnBookSlug = 'tanach-bereishit';
 // Hilchasa Kinachamani citation tab (facts: verse -> Breslov sources)
@@ -85,6 +93,7 @@ const breslovEntry = torahData && bpChapters.includes(torahNum) ? {
 const commentaryEntry = torahData ? {
   related_commentaries: [
     ...(hkEntry ? [hkEntry] : []),
+    ...(noachEntry ? [noachEntry] : []),
     ...(breslovEntry ? [breslovEntry] : []),
     {
       book: "likutay-nanach",

@@ -46,6 +46,9 @@ def route_for_source(source: Path, reader_dir: Path) -> str | None:
     if book == "alim-litrufa" and len(parts) == 3 and parts[1] == "reviewed":
         return "/reader/alim-litrufa/reviewed/part-2-17-62-63" if parts[2] == "part-2-17-62-63.json" else None
 
+    if parts == ("parsha-packets", "noach.json"):
+        return "/reader/parsha-packets/noach"
+
     if book == "chayey-moharan":
         if parts == ("chayey-moharan", "reviewed", "14-58.json"):
             return "/reader/chayey-moharan/reviewed/14-58"

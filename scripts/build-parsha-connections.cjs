@@ -314,6 +314,26 @@ function extractSnippet(text, idx, len) {
   return snippet;
 }
 
+// Explicit source-bound additions are not discoverable by a "פרשת נח" regex.
+// Keep the original verse boundary (Genesis 6:8 closes Beraishis), but expose
+// the user-requested teaching in Noach discovery as well.
+const noachSupplementPath = path.join(readerDir, 'parsha-packets', 'noach.json');
+if (fs.existsSync(noachSupplementPath)) {
+  const supplement = JSON.parse(fs.readFileSync(noachSupplementPath, 'utf8'));
+  for (const seg of supplement.segments || []) {
+    if (!seg.sourceUrl || !seg.sourceRef || !seg.he || !seg.en) throw new Error('Incomplete Noach source addition');
+    if (!result.noach.connections.some(conn => conn.url === seg.sourceUrl)) {
+      result.noach.connections.push({
+        bookId: 'chayey-moharan', bookTitle: 'Chayay Moharan',
+        bookHebrewTitle: 'חיי מוהר״ן', author: 'Rabbi Nachman of Breslov',
+        title: seg.sourceRef, url: seg.sourceUrl,
+        snippet: seg.he, snippetEn: seg.en, matchedParsha: 'נח',
+      });
+      totalConnections++;
+    }
+  }
+}
+
 // Sort connections by author order, then by book
 for (const slug in result) {
   result[slug].connections.sort((a, b) => {

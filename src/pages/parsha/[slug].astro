@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import ParshaSourceSupplement from '../../components/ParshaSourceSupplement.astro';
 import ReviewedParsha from '../../components/ReviewedParsha.astro';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -190,6 +191,11 @@ if (CHUMASH_LH_READER[slug]) {
   }
 }
 
+// Source-authenticated additions do not replace the original PDF or packet.
+const sourceSupplementPath = path.join(process.cwd(), 'public/reader/parsha-packets', `${slug}.json`);
+const sourceSupplement = slug === 'noach' && fs.existsSync(sourceSupplementPath)
+  ? JSON.parse(fs.readFileSync(sourceSupplementPath, 'utf8')) : null;
+
 // Special AJew parsha packets from corrected OCR + English translation files.
 let specialParshaPacket = null;
 let specialParshaEntries = [];
@@ -308,6 +314,8 @@ const breadcrumbData = JSON.stringify({
           <a href={`/search-enhanced?q=${encodeURIComponent(parsha.he)}`} class="hero-btn hero-btn-alt">Search Teachings</a>
         </div>
       </div>
+
+      <ParshaSourceSupplement packet={sourceSupplement} />
 
       {hasSpecialParshaPacket && (
         <section class="special-parsha-packet" id="study-packet">

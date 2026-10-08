@@ -1,0 +1,52 @@
+---
+interface Props { packet: any; segmentPrefix?: string; }
+const { packet, segmentPrefix = "noach-source" } = Astro.props;
+---
+{packet && (
+  <section class="parsha-source-supplement" id="noach-source-supplement" data-view="en" aria-label={packet.title}>
+    <h2>{packet.title}</h2>
+    <p class="supplement-context">{packet.description}</p>
+    <div class="supplement-views" aria-label="Supplement language">
+      <button type="button" data-supplement-view="en" aria-pressed="true">English</button>
+      <button type="button" data-supplement-view="he" aria-pressed="false">עברית</button>
+      <button type="button" data-supplement-view="both" aria-pressed="false">Both</button>
+    </div>
+    {packet.segments.map((seg: any) => (
+      <article class="supplement-teaching" id={`${segmentPrefix}-${seg.index}`}>
+        <h3>{seg.title}</h3>
+        <div class="supplement-pair">
+          <div class="supplement-en" lang="en"><p>{seg.en}</p></div>
+          <div class="supplement-he" lang="he" dir="rtl"><p>{seg.he}</p></div>
+        </div>
+        <p class="supplement-citation"><a href={seg.sourceUrl}>{seg.sourceRef}</a> · <a href="/reader/tanach-bereishit/1/6/#seg-8">Genesis 6:8</a></p>
+      </article>
+    ))}
+  </section>
+)}
+<script>
+  document.querySelectorAll<HTMLElement>('.parsha-source-supplement').forEach((section) => {
+    section.querySelectorAll<HTMLButtonElement>('[data-supplement-view]').forEach((button) => {
+      button.addEventListener('click', () => {
+        section.dataset.view = button.dataset.supplementView;
+        section.querySelectorAll<HTMLButtonElement>('[data-supplement-view]').forEach((choice) => {
+          choice.setAttribute('aria-pressed', String(choice === button));
+        });
+      });
+    });
+  });
+</script>
+<style>
+  .parsha-source-supplement { margin: 1.5rem 0; padding: clamp(1rem, 3vw, 2rem); border: 1px solid var(--reader-border, #72828d); border-radius: 12px; color: var(--reader-text, inherit); background: var(--reader-bg, transparent); overflow-wrap: anywhere; }
+  h2 { font-size: 1.4rem; margin: 0 0 .6rem; }
+  h3 { font-size: 1.1rem; margin: 1.5rem 0 .8rem; }
+  .supplement-context, .supplement-citation { font-size: .9rem; line-height: 1.6; }
+  .supplement-views { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1rem 0; }
+  button { min-height: 44px; padding: .45rem .9rem; border: 1px solid currentColor; border-radius: 6px; color: inherit; background: transparent; cursor: pointer; }
+  button[aria-pressed="true"] { background: var(--reader-link, #265e71); color: white; }
+  .supplement-pair { display: grid; gap: 1.2rem; }
+  .supplement-pair p { margin: 0; white-space: pre-line; line-height: 1.85; }
+  .supplement-he { font-size: 1.15em; }
+  [data-view="en"] .supplement-he, [data-view="he"] .supplement-en { display: none; }
+  a { color: var(--reader-link, #387d94); text-decoration: underline; }
+  @media (min-width: 900px) { [data-view="both"] .supplement-pair { grid-template-columns: 1fr 1fr; } }
+</style>
