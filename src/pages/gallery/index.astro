@@ -22,6 +22,7 @@ function imageFiles(dir) {
   }
 }
 
+const sabaImageCount = imageFiles('saba').length;
 const nanachImageCount = imageFiles('nanach').length;
 
 
@@ -58,15 +59,39 @@ try {
   })));
 } catch (_) {}
 
-// Preserve the legacy inventory and text, then overlay only hash-bound reviews.
+try {
+  const metadataPath = path.join(process.cwd(), 'public/images/saba/metadata.json');
+  const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf-8'));
+  if (metadata && typeof metadata === 'object' && !Array.isArray(metadata)) {
+    const text = value => typeof value === 'string' && value.trim() ? value : '';
+    const list = value => Array.isArray(value) && value.every(item => text(item)) ? value : [];
+    galleryPictures.forEach(picture => {
+      if (!picture.url.startsWith('/images/saba/')) return;
+      const filename = decodeURIComponent(picture.url.split('/').pop());
+      const item = Object.prototype.hasOwnProperty.call(metadata, filename) ? metadata[filename] : null;
+      if (!item || typeof item !== 'object' || Array.isArray(item)) return;
+      picture.label = text(item.title) || picture.label;
+      picture.localTitle = text(item.title);
+      picture.alt = text(item.alt) || picture.label;
+      picture.text = [picture.alt, text(item.source), text(item.credit),
+        ...list(item.categories), ...list(item.tags), ...list(item.aliases),
+        ...list(item.archivedAliases), filename].filter(Boolean).join(' ');
+    });
+  }
+} catch (_) {}
+
+// Preserve rich local Saba descriptions; fallback to hash-bound shared reviews.
+// Search unions both positive field sets, never review caveats.
 galleryPictures.forEach((picture) => {
   const [, , folder, ...parts] = picture.url.split('/');
   const filename = decodeURIComponent(parts.join('/'));
   const reviewed = getGalleryMetadata(folder, filename);
-  picture.label = reviewed.title || picture.label;
-  picture.alt = reviewed.alt || picture.label;
+  picture.label = (folder === 'saba' && picture.localTitle ? picture.localTitle : reviewed.title || picture.label);
+  picture.alt = picture.alt || reviewed.alt || picture.label;
   picture.kind = reviewed.mediaKind || 'unreviewed';
-  picture.search = gallerySearchText(folder, filename, { title: picture.label, alt: picture.alt, text: picture.text });
+  picture.search = [gallerySearchText(folder, filename, { title: picture.label, alt: picture.alt, text: picture.text }), picture.label, picture.alt].filter(Boolean).join(' ');
+  picture.kindLabel = picture.kind === 'unreviewed' && folder === 'saba' && picture.text
+    ? 'Image type not classified (description reviewed)' : mediaLabels[picture.kind];
 });
 ---
 
@@ -96,7 +121,7 @@ galleryPictures.forEach((picture) => {
           <a class="picture-search-card" data-gallery-search-item data-media-kind={picture.kind} data-search={`${picture.search} ${picture.gallery}`} href={picture.url} target="_blank" rel="noopener">
             <img src={picture.url} alt={picture.alt} loading="lazy" />
             <span class="picture-label">{picture.label}</span>
-            <small>{mediaLabels[picture.kind]}</small>
+            <small>{picture.kindLabel}</small>
             <small>{picture.gallery}</small>
             <em>Open image / פתח תמונה</em>
           </a>
@@ -179,7 +204,7 @@ galleryPictures.forEach((picture) => {
           <span class="card-icon">👤</span>
           <h2>Rabbi Yisroel Ber Odesser (Saba) <span class="hebrew">רבי ישראל בר אודסר</span></h2>
           <p class="hebrew">רבי ישראל בר אודסר ז"ל</p>
-          <p class="description">The recipient of the Holy Petek (1922) - 90 photos in 10 categories</p>
+          <p class="description">The recipient of the Holy Petek (1922) — {sabaImageCount} images, organized by subject</p>
           <p class="categories">🙌 Hands Up / ידיים למעלה ✡️ With Petek / עם הפתק 🦽 Wheelchair / כיסא גלגלים 🪦 Grave / קבר 📸 Portraits / דיוקנאות 👥 Friends / חברים ✡️ With Rebbe / עם רבינו 👔 Clothing / לבוש 🎵 Music / מוזיקה 🧱 Western Wall / הכותל המערבי</p>
           <span class="view-btn">View Gallery / כניסה לגלריה →</span>
         </div>
@@ -232,7 +257,7 @@ galleryPictures.forEach((picture) => {
       <h2>📊 Gallery Statistics <span class="hebrew">סטטיסטיקות הגלריה</span></h2>
       <div class="stats-grid">
         <div class="stat-card">
-          <span class="number">{galleryPictures.length}</span>
+          <span class="number">{new Set(galleryPictures.map(picture => picture.url)).size}</span>
           <span class="label">Searchable image files</span>
         </div>
         <div class="stat-card">

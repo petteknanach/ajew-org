@@ -19,8 +19,6 @@ function getAllImages() {
 const allImages = [...new Set([...getAllImages(), ...galleryExtraFiles('saba')])].sort();
 
 function formatFilename(filename) {
-  const reviewed = getGalleryMetadata('saba', filename);
-  if (reviewed.title) return reviewed.title;
   let formatted = decodeURIComponent(filename);
   formatted = formatted.replace(/\.(jpg|jpeg|png|gif|webp|svg)$/i, '');
   formatted = formatted.replace(/[-_]/g, ' ');
@@ -28,39 +26,99 @@ function formatFilename(filename) {
   return formatted;
 }
 
-const handsUp = allImages.filter(img => 
+// Optional, reviewed labels keyed by the exact image filename. Bad/missing
+// metadata must not change the legacy filename-based gallery.
+let metadata = {};
+try {
+  const parsed = JSON.parse(fs.readFileSync(`${imageDir}metadata.json`, 'utf-8'));
+  if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) metadata = parsed;
+} catch (_) {}
+
+function imageMetadata(filename) {
+  const item = Object.prototype.hasOwnProperty.call(metadata, filename) ? metadata[filename] : null;
+  return item && typeof item === 'object' && !Array.isArray(item) ? item : {};
+}
+function metadataString(value) {
+  return typeof value === 'string' && value.trim() ? value : '';
+}
+function metadataList(value) {
+  return Array.isArray(value) && value.every(item => metadataString(item)) ? value : undefined;
+}
+function imageTitle(filename) {
+  return metadataString(imageMetadata(filename).title) || getGalleryMetadata('saba', filename).title || formatFilename(filename);
+}
+function imageAlt(filename) {
+  return metadataString(imageMetadata(filename).alt) || getGalleryMetadata('saba', filename).alt || imageTitle(filename);
+}
+function imageSearch(filename) {
+  const item = imageMetadata(filename);
+  return [gallerySearchText('saba', filename, item), imageTitle(filename), imageAlt(filename), filename,
+    ...(metadataList(item.categories) || []), ...(metadataList(item.tags) || []),
+    ...(metadataList(item.aliases) || []), ...(metadataList(item.archivedAliases) || []),
+    metadataString(item.source), metadataString(item.credit)].filter(Boolean).join(' ');
+}
+function imageAttribution(filename) {
+  const item = imageMetadata(filename);
+  return [metadataString(item.source), metadataString(item.credit)].filter(Boolean).join(' · ');
+}
+function categoryImages(id, legacyMatch = () => false) {
+  return allImages.filter(img => {
+    const item = imageMetadata(img);
+    if ([...(metadataList(item.excludeCategories) || []), ...(getGalleryMetadata('saba', img).exclude_categories || [])].includes(id)) return false;
+    const categories = metadataList(item.categories);
+    // Explicit subjects (including []) are authoritative. Wearing a hat in
+    // a portrait is not a clothing-product photo just because of its filename.
+    return categories !== undefined ? categories.includes(id) :
+      (getGalleryMetadata('saba', img).categories || []).includes(id) || legacyMatch(img);
+  });
+}
+
+const handsUp = categoryImages('handsup', img =>
   img.includes('hands up') || img.includes('hands-up'));
-const withPetek = allImages.filter(img => 
+const withPetek = categoryImages('withpetek', img =>
   img.includes('petek') || img.includes('Petek'));
-const wheelchair = allImages.filter(img => img.includes('wheelchair'));
-const grave = allImages.filter(img => 
+const wheelchair = categoryImages('wheelchair', img => img.includes('wheelchair'));
+const grave = categoryImages('grave', img =>
   img.includes('grave') || img.includes('tomb'));
-const portraits = allImages.filter(img =>
+const portraits = categoryImages('portraits', img =>
   (img.includes('portrait') || img.includes('face') || img.includes('closeup') ||
    img.includes('smile') || img.includes('passport') || img.includes('black-hat-face') ||
    img.includes('white-staring') || img.includes('looking-up') || img.includes('fuzzy')) &&
   !img.includes('hands') && !img.includes('wheelchair'));
-const withFriends = allImages.filter(img =>
+const withFriends = categoryImages('withfriends', img =>
   img.includes('friends') || img.includes('group') || img.includes('wife') ||
   img.includes('daughter') || img.includes('child') || img.includes('baby') ||
   img.includes('aziz') || img.includes('Moshe'));
-const withrebbe = allImages.filter(img =>
+const withrebbe = categoryImages('withrebbe', img =>
   img.includes('rabbainu') || img.includes('rebbe') || img.includes('hasidim'));
-const clothing = allImages.filter(img =>
+const clothing = categoryImages('clothing', img =>
   img.includes('hat') || img.includes('kippa') || img.includes('streimel') ||
   img.includes('bathrobe') || img.includes('sweater') || img.includes('jacket') ||
   img.includes('scarf') || img.includes('watch') || img.includes('keychain') ||
   img.includes('pillow') || img.includes('flannel') || img.includes('zebra') ||
   img.includes('blue-white') || img.includes('black') || img.includes('white'));
-const music = allImages.filter(img =>
+const music = categoryImages('music', img =>
   img.includes('guitar') || img.includes('karlibach'));
-const kotel = allImages.filter(img => img.includes('kotel'));
+const kotel = categoryImages('kotel', img => img.includes('kotel'));
+
+// New subjects appear only when explicitly populated by reviewed metadata.
+const albumSections = [
+  { id: 'events', title: 'Events & Gatherings', icon: '🎉' },
+  { id: 'reading', title: 'Reading & Study', icon: '📖' },
+  { id: 'documents', title: 'Documents & Letters', icon: '📜' },
+  { id: 'prayer', title: 'Prayer', icon: '🙏' },
+  { id: 'travel', title: 'Travel & Visits', icon: '📍' },
+].map(section => ({ ...section, images: categoryImages(section.id) }))
+  .filter(section => section.images.length > 0);
 
 const categorized = new Set([
   ...handsUp, ...withPetek, ...wheelchair, ...grave, ...portraits,
-  ...withFriends, ...withrebbe, ...clothing, ...music, ...kotel
+  ...withFriends, ...withrebbe, ...clothing, ...music, ...kotel,
+  ...albumSections.flatMap(section => section.images)
 ]);
-const other = allImages.filter(img => !categorized.has(img));
+const other = allImages.filter(img => (!categorized.has(img) ||
+  (metadataList(imageMetadata(img).categories) || []).includes('other')) &&
+  !(metadataList(imageMetadata(img).excludeCategories) || []).includes('other'));
 ---
 
 <Layout title="Saba Gallery / גלריית סבא" description="Photos of Rabbi Yisroel Ber Odesser">
@@ -68,7 +126,7 @@ const other = allImages.filter(img => !categorized.has(img));
     <h1>Rabbi Yisroel Ber Odesser (Saba) <span class="hebrew">רבי ישראל בר אודסר</span></h1>
     <p>1904-1994 • Recipient of the Holy Petek</p>
     <p class="hebrew">רבי ישראל בר אודסר ז"ל</p>
-    <p class="stats">{allImages.length} photos</p>
+    <p class="stats">{allImages.length} images (image-type review is partial)</p>
     <a href="/gallery" class="back-link">← Back to Gallery / חזרה לגלריה</a>
   </section>
 
@@ -92,6 +150,7 @@ const other = allImages.filter(img => !categorized.has(img));
           {clothing.length > 0 && <a href="#clothing" class="index-link"><span class="icon">👔</span><span class="name">Clothing <span class="hebrew-name">לבוש</span></span><span class="count">{clothing.length}</span></a>}
           {music.length > 0 && <a href="#music" class="index-link"><span class="icon">🎵</span><span class="name">Music <span class="hebrew-name">מוזיקה</span></span><span class="count">{music.length}</span></a>}
           {kotel.length > 0 && <a href="#kotel" class="index-link"><span class="icon">🧱</span><span class="name">Western Wall <span class="hebrew-name">הכותל המערבי</span></span><span class="count">{kotel.length}</span></a>}
+          {albumSections.map(section => <a href={`#${section.id}`} class="index-link"><span class="icon">{section.icon}</span><span class="name">{section.title}</span><span class="count">{section.images.length}</span></a>)}
           {other.length > 0 && <a href="#other" class="index-link"><span class="icon">📷</span><span class="name">Other <span class="hebrew-name">אחר</span></span><span class="count">{other.length}</span></a>}
         </div>
       </div>
@@ -107,10 +166,10 @@ const other = allImages.filter(img => !categorized.has(img));
           <h2><span class="icon">🙌</span> Hands Up <span class="hebrew">(ידיים למעלה)</span></h2>
           <div class="gallery-grid">
             {handsUp.map((img, i) => (
-              <div class="gallery-item" data-gallery-search-item data-media-kind={galleryMediaKind('saba', img)} data-search={gallerySearchText('saba', img, { title: formatFilename(img) })}>
-                <img src={`/images/saba/${img}`} alt={getGalleryMetadata('saba', img).alt || formatFilename(img)} loading="lazy" />
-                <div class="caption">{formatFilename(img)}</div>
-                <div class="caption">{galleryMediaLabel('saba', img)}</div>
+              <div class="gallery-item" data-gallery-search-item data-media-kind={galleryMediaKind('saba', img)} data-search={imageSearch(img)}>
+                <img src={`/images/saba/${encodeURIComponent(img)}`} alt={imageAlt(img)} loading="lazy" />
+                <div class="caption">{imageTitle(img)}{imageAttribution(img) && <small class="image-credit">{imageAttribution(img)}</small>}</div>
+                <div class="caption">{galleryMediaKind('saba', img) === 'unreviewed' && metadataString(imageMetadata(img).title) ? 'Image type not classified (description reviewed)' : galleryMediaLabel('saba', img)}</div>
               </div>
             ))}
           </div>
@@ -121,10 +180,10 @@ const other = allImages.filter(img => !categorized.has(img));
           <h2><span class="icon">✡️</span> With Petek <span class="hebrew">(עם הפתק)</span></h2>
           <div class="gallery-grid">
             {withPetek.map((img, i) => (
-              <div class="gallery-item" data-gallery-search-item data-media-kind={galleryMediaKind('saba', img)} data-search={gallerySearchText('saba', img, { title: formatFilename(img) })}>
-                <img src={`/images/saba/${img}`} alt={getGalleryMetadata('saba', img).alt || formatFilename(img)} loading="lazy" />
-                <div class="caption">{formatFilename(img)}</div>
-                <div class="caption">{galleryMediaLabel('saba', img)}</div>
+              <div class="gallery-item" data-gallery-search-item data-media-kind={galleryMediaKind('saba', img)} data-search={imageSearch(img)}>
+                <img src={`/images/saba/${encodeURIComponent(img)}`} alt={imageAlt(img)} loading="lazy" />
+                <div class="caption">{imageTitle(img)}{imageAttribution(img) && <small class="image-credit">{imageAttribution(img)}</small>}</div>
+                <div class="caption">{galleryMediaKind('saba', img) === 'unreviewed' && metadataString(imageMetadata(img).title) ? 'Image type not classified (description reviewed)' : galleryMediaLabel('saba', img)}</div>
               </div>
             ))}
           </div>
@@ -135,10 +194,10 @@ const other = allImages.filter(img => !categorized.has(img));
           <h2><span class="icon">🦽</span> Wheelchair <span class="hebrew">(כיסא גלגלים)</span></h2>
           <div class="gallery-grid">
             {wheelchair.map((img, i) => (
-              <div class="gallery-item" data-gallery-search-item data-media-kind={galleryMediaKind('saba', img)} data-search={gallerySearchText('saba', img, { title: formatFilename(img) })}>
-                <img src={`/images/saba/${img}`} alt={getGalleryMetadata('saba', img).alt || formatFilename(img)} loading="lazy" />
-                <div class="caption">{formatFilename(img)}</div>
-                <div class="caption">{galleryMediaLabel('saba', img)}</div>
+              <div class="gallery-item" data-gallery-search-item data-media-kind={galleryMediaKind('saba', img)} data-search={imageSearch(img)}>
+                <img src={`/images/saba/${encodeURIComponent(img)}`} alt={imageAlt(img)} loading="lazy" />
+                <div class="caption">{imageTitle(img)}{imageAttribution(img) && <small class="image-credit">{imageAttribution(img)}</small>}</div>
+                <div class="caption">{galleryMediaKind('saba', img) === 'unreviewed' && metadataString(imageMetadata(img).title) ? 'Image type not classified (description reviewed)' : galleryMediaLabel('saba', img)}</div>
               </div>
             ))}
           </div>
@@ -149,10 +208,10 @@ const other = allImages.filter(img => !categorized.has(img));
           <h2><span class="icon">🪦</span> Grave & Tomb <span class="hebrew">(קבר וציון)</span></h2>
           <div class="gallery-grid">
             {grave.map((img, i) => (
-              <div class="gallery-item" data-gallery-search-item data-media-kind={galleryMediaKind('saba', img)} data-search={gallerySearchText('saba', img, { title: formatFilename(img) })}>
-                <img src={`/images/saba/${img}`} alt={getGalleryMetadata('saba', img).alt || formatFilename(img)} loading="lazy" />
-                <div class="caption">{formatFilename(img)}</div>
-                <div class="caption">{galleryMediaLabel('saba', img)}</div>
+              <div class="gallery-item" data-gallery-search-item data-media-kind={galleryMediaKind('saba', img)} data-search={imageSearch(img)}>
+                <img src={`/images/saba/${encodeURIComponent(img)}`} alt={imageAlt(img)} loading="lazy" />
+                <div class="caption">{imageTitle(img)}{imageAttribution(img) && <small class="image-credit">{imageAttribution(img)}</small>}</div>
+                <div class="caption">{galleryMediaKind('saba', img) === 'unreviewed' && metadataString(imageMetadata(img).title) ? 'Image type not classified (description reviewed)' : galleryMediaLabel('saba', img)}</div>
               </div>
             ))}
           </div>
@@ -163,10 +222,10 @@ const other = allImages.filter(img => !categorized.has(img));
           <h2><span class="icon">📸</span> Portraits <span class="hebrew">(דיוקנות)</span></h2>
           <div class="gallery-grid">
             {portraits.map((img, i) => (
-              <div class="gallery-item" data-gallery-search-item data-media-kind={galleryMediaKind('saba', img)} data-search={gallerySearchText('saba', img, { title: formatFilename(img) })}>
-                <img src={`/images/saba/${img}`} alt={getGalleryMetadata('saba', img).alt || formatFilename(img)} loading="lazy" />
-                <div class="caption">{formatFilename(img)}</div>
-                <div class="caption">{galleryMediaLabel('saba', img)}</div>
+              <div class="gallery-item" data-gallery-search-item data-media-kind={galleryMediaKind('saba', img)} data-search={imageSearch(img)}>
+                <img src={`/images/saba/${encodeURIComponent(img)}`} alt={imageAlt(img)} loading="lazy" />
+                <div class="caption">{imageTitle(img)}{imageAttribution(img) && <small class="image-credit">{imageAttribution(img)}</small>}</div>
+                <div class="caption">{galleryMediaKind('saba', img) === 'unreviewed' && metadataString(imageMetadata(img).title) ? 'Image type not classified (description reviewed)' : galleryMediaLabel('saba', img)}</div>
               </div>
             ))}
           </div>
@@ -177,10 +236,10 @@ const other = allImages.filter(img => !categorized.has(img));
           <h2><span class="icon">👥</span> With Friends <span class="hebrew">(עם חברים)</span></h2>
           <div class="gallery-grid">
             {withFriends.map((img, i) => (
-              <div class="gallery-item" data-gallery-search-item data-media-kind={galleryMediaKind('saba', img)} data-search={gallerySearchText('saba', img, { title: formatFilename(img) })}>
-                <img src={`/images/saba/${img}`} alt={getGalleryMetadata('saba', img).alt || formatFilename(img)} loading="lazy" />
-                <div class="caption">{formatFilename(img)}</div>
-                <div class="caption">{galleryMediaLabel('saba', img)}</div>
+              <div class="gallery-item" data-gallery-search-item data-media-kind={galleryMediaKind('saba', img)} data-search={imageSearch(img)}>
+                <img src={`/images/saba/${encodeURIComponent(img)}`} alt={imageAlt(img)} loading="lazy" />
+                <div class="caption">{imageTitle(img)}{imageAttribution(img) && <small class="image-credit">{imageAttribution(img)}</small>}</div>
+                <div class="caption">{galleryMediaKind('saba', img) === 'unreviewed' && metadataString(imageMetadata(img).title) ? 'Image type not classified (description reviewed)' : galleryMediaLabel('saba', img)}</div>
               </div>
             ))}
           </div>
@@ -191,10 +250,10 @@ const other = allImages.filter(img => !categorized.has(img));
           <h2><span class="icon">✡️</span> With Rebbe Nachman <span class="hebrew">(עם רבינו)</span></h2>
           <div class="gallery-grid">
             {withrebbe.map((img, i) => (
-              <div class="gallery-item" data-gallery-search-item data-media-kind={galleryMediaKind('saba', img)} data-search={gallerySearchText('saba', img, { title: formatFilename(img) })}>
-                <img src={`/images/saba/${img}`} alt={getGalleryMetadata('saba', img).alt || formatFilename(img)} loading="lazy" />
-                <div class="caption">{formatFilename(img)}</div>
-                <div class="caption">{galleryMediaLabel('saba', img)}</div>
+              <div class="gallery-item" data-gallery-search-item data-media-kind={galleryMediaKind('saba', img)} data-search={imageSearch(img)}>
+                <img src={`/images/saba/${encodeURIComponent(img)}`} alt={imageAlt(img)} loading="lazy" />
+                <div class="caption">{imageTitle(img)}{imageAttribution(img) && <small class="image-credit">{imageAttribution(img)}</small>}</div>
+                <div class="caption">{galleryMediaKind('saba', img) === 'unreviewed' && metadataString(imageMetadata(img).title) ? 'Image type not classified (description reviewed)' : galleryMediaLabel('saba', img)}</div>
               </div>
             ))}
           </div>
@@ -205,10 +264,10 @@ const other = allImages.filter(img => !categorized.has(img));
           <h2><span class="icon">👔</span> Clothing & Items <span class="hebrew">(ביגוד וחפצים)</span></h2>
           <div class="gallery-grid">
             {clothing.map((img, i) => (
-              <div class="gallery-item" data-gallery-search-item data-media-kind={galleryMediaKind('saba', img)} data-search={gallerySearchText('saba', img, { title: formatFilename(img) })}>
-                <img src={`/images/saba/${img}`} alt={getGalleryMetadata('saba', img).alt || formatFilename(img)} loading="lazy" />
-                <div class="caption">{formatFilename(img)}</div>
-                <div class="caption">{galleryMediaLabel('saba', img)}</div>
+              <div class="gallery-item" data-gallery-search-item data-media-kind={galleryMediaKind('saba', img)} data-search={imageSearch(img)}>
+                <img src={`/images/saba/${encodeURIComponent(img)}`} alt={imageAlt(img)} loading="lazy" />
+                <div class="caption">{imageTitle(img)}{imageAttribution(img) && <small class="image-credit">{imageAttribution(img)}</small>}</div>
+                <div class="caption">{galleryMediaKind('saba', img) === 'unreviewed' && metadataString(imageMetadata(img).title) ? 'Image type not classified (description reviewed)' : galleryMediaLabel('saba', img)}</div>
               </div>
             ))}
           </div>
@@ -219,10 +278,10 @@ const other = allImages.filter(img => !categorized.has(img));
           <h2><span class="icon">🎵</span> Music & Instruments <span class="hebrew">(מוזיקה)</span></h2>
           <div class="gallery-grid">
             {music.map((img, i) => (
-              <div class="gallery-item" data-gallery-search-item data-media-kind={galleryMediaKind('saba', img)} data-search={gallerySearchText('saba', img, { title: formatFilename(img) })}>
-                <img src={`/images/saba/${img}`} alt={getGalleryMetadata('saba', img).alt || formatFilename(img)} loading="lazy" />
-                <div class="caption">{formatFilename(img)}</div>
-                <div class="caption">{galleryMediaLabel('saba', img)}</div>
+              <div class="gallery-item" data-gallery-search-item data-media-kind={galleryMediaKind('saba', img)} data-search={imageSearch(img)}>
+                <img src={`/images/saba/${encodeURIComponent(img)}`} alt={imageAlt(img)} loading="lazy" />
+                <div class="caption">{imageTitle(img)}{imageAttribution(img) && <small class="image-credit">{imageAttribution(img)}</small>}</div>
+                <div class="caption">{galleryMediaKind('saba', img) === 'unreviewed' && metadataString(imageMetadata(img).title) ? 'Image type not classified (description reviewed)' : galleryMediaLabel('saba', img)}</div>
               </div>
             ))}
           </div>
@@ -233,24 +292,38 @@ const other = allImages.filter(img => !categorized.has(img));
           <h2><span class="icon">🧱</span> Western Wall <span class="hebrew">(כותל מערבי)</span></h2>
           <div class="gallery-grid">
             {kotel.map((img, i) => (
-              <div class="gallery-item" data-gallery-search-item data-media-kind={galleryMediaKind('saba', img)} data-search={gallerySearchText('saba', img, { title: formatFilename(img) })}>
-                <img src={`/images/saba/${img}`} alt={getGalleryMetadata('saba', img).alt || formatFilename(img)} loading="lazy" />
-                <div class="caption">{formatFilename(img)}</div>
-                <div class="caption">{galleryMediaLabel('saba', img)}</div>
+              <div class="gallery-item" data-gallery-search-item data-media-kind={galleryMediaKind('saba', img)} data-search={imageSearch(img)}>
+                <img src={`/images/saba/${encodeURIComponent(img)}`} alt={imageAlt(img)} loading="lazy" />
+                <div class="caption">{imageTitle(img)}{imageAttribution(img) && <small class="image-credit">{imageAttribution(img)}</small>}</div>
+                <div class="caption">{galleryMediaKind('saba', img) === 'unreviewed' && metadataString(imageMetadata(img).title) ? 'Image type not classified (description reviewed)' : galleryMediaLabel('saba', img)}</div>
               </div>
             ))}
           </div>
         </div>
       )}
+      {albumSections.map(section => (
+        <div id={section.id} class="category-section">
+          <h2><span class="icon">{section.icon}</span> {section.title}</h2>
+          <div class="gallery-grid">
+            {section.images.map(img => (
+              <div class="gallery-item" data-gallery-search-item data-media-kind={galleryMediaKind('saba', img)} data-search={imageSearch(img)}>
+                <img src={`/images/saba/${encodeURIComponent(img)}`} alt={imageAlt(img)} loading="lazy" />
+                <div class="caption">{imageTitle(img)}{imageAttribution(img) && <small class="image-credit">{imageAttribution(img)}</small>}</div>
+                <div class="caption">{galleryMediaKind('saba', img) === 'unreviewed' && metadataString(imageMetadata(img).title) ? 'Image type not classified (description reviewed)' : galleryMediaLabel('saba', img)}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
       {other.length > 0 && (
         <div id="other" class="category-section">
           <h2><span class="icon">📷</span> Other Photos <span class="hebrew">(תמונות אחרות)</span></h2>
           <div class="gallery-grid">
             {other.map((img, i) => (
-              <div class="gallery-item" data-gallery-search-item data-media-kind={galleryMediaKind('saba', img)} data-search={gallerySearchText('saba', img, { title: formatFilename(img) })}>
-                <img src={`/images/saba/${img}`} alt={getGalleryMetadata('saba', img).alt || formatFilename(img)} loading="lazy" />
-                <div class="caption">{formatFilename(img)}</div>
-                <div class="caption">{galleryMediaLabel('saba', img)}</div>
+              <div class="gallery-item" data-gallery-search-item data-media-kind={galleryMediaKind('saba', img)} data-search={imageSearch(img)}>
+                <img src={`/images/saba/${encodeURIComponent(img)}`} alt={imageAlt(img)} loading="lazy" />
+                <div class="caption">{imageTitle(img)}{imageAttribution(img) && <small class="image-credit">{imageAttribution(img)}</small>}</div>
+                <div class="caption">{galleryMediaKind('saba', img) === 'unreviewed' && metadataString(imageMetadata(img).title) ? 'Image type not classified (description reviewed)' : galleryMediaLabel('saba', img)}</div>
               </div>
             ))}
           </div>
@@ -290,6 +363,7 @@ const other = allImages.filter(img => !categorized.has(img));
   .index-link:hover { background: #edf2f7; }
   .index-link .count { background: #2c5282; color: white; padding: 0.2rem 0.5rem; border-radius: 12px; font-size: 0.75rem; }
   .gallery { padding: 3rem 0; }
+  .gallery-item[hidden], .category-section[hidden] { display: none !important; }
   .category-section { padding: 3rem 0; border-bottom: 1px solid #eee; }
   .category-section:last-child { border-bottom: none; }
   .category-section h2 { font-family: var(--font-hebrew); font-size: 1.6rem; text-align: center; margin-bottom: 1.5rem; color: var(--color-primary); }
@@ -300,6 +374,7 @@ const other = allImages.filter(img => !categorized.has(img));
   .gallery-item img { width: 100%; height: auto; border-radius: 8px 8px 0 0; display: block; transition: transform 0.3s; }
   .gallery-item:hover img { transform: scale(1.02); }
   .gallery-item .caption { padding: 0.75rem; font-size: 0.85rem; color: #555; text-align: center; }
+  .image-credit { display: block; margin-top: 0.35rem; font-size: 0.75rem; }
   .navigation { background: #1a365d; padding: 2rem 0; }
   .nav-buttons { display: flex; justify-content: center; gap: 2rem; }
   .nav-btn { color: white; text-decoration: none; padding: 0.75rem 1.5rem; background: rgba(255,255,255,0.1); border-radius: 8px; }
