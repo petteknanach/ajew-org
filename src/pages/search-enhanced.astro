@@ -475,13 +475,13 @@ const searchBookLabelsJSON = JSON.stringify(searchBookLabels).replace(/</g, '\\u
       }
 
       async function loadDoc(id) {
-        // Bounded single retry for NETWORK ERRORS only. A transient request
-        // failure must not silently drop a genuinely matching result; a non-ok
-        // response (!r.ok, e.g. 404) stays single-shot because the document
-        // genuinely does not exist. Verification semantics unchanged.
+        // Bounded single retry for network errors and transient HTTP 429/5xx.
+        // Other non-ok responses stay single-shot; exhausted request failures
+        // fail open per document. Verification and JSON rejection unchanged.
         for (let attempt = 0; attempt < 2; attempt++) {
           try {
             const r = await fetch(readerAssetUrl('/reader-search/docs/' + id + '.json'), { headers: { Accept: 'application/json' } });
+            if (r.status === 429 || (r.status >= 500 && r.status <= 599)) throw new Error('Transient document HTTP ' + r.status);
             if (!r.ok) return null;
             return r.json();
           } catch (_) {
