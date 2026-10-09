@@ -116,6 +116,17 @@ body.has-commentary-sidebar-open .reader-container {
   margin-right: 40% !important;
 }
 
+/* Media fragments must never pan the page underneath fixed site navigation.
+   Hidden overflow is still programmatically scrollable; clip is not.
+   Inner picture galleries and commentary retain their own scrolling. */
+html:has(.reader-container),
+body:has(.reader-container) {
+  overflow-x: clip;
+}
+body:has(.reader-container) #main-content {
+  min-width: 0;
+}
+
 /* ─── Immerse Mode ─── */
 .reader-container.immerse-mode {
   max-width: var(--ds-max-content, 720px);

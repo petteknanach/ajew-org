@@ -9,8 +9,8 @@ export function getStaticPaths() {
   const paths = [];
   for (const entry of manifest.entries || []) {
     for (const img of entry.images || []) {
-      if (img.variant !== "Talis with Pettek") continue;
-      const slug = path.basename(img.path || img.archive_filename || '').replace(/\.[^.]+$/, '');
+      if (!/\/sh-novelties-of-torah-part-ii-012-talis-pettek-(en|he)-20261009\.png$/.test((img.path || '').split('?')[0])) continue;
+      const slug = path.basename((img.path || img.archive_filename || '').split('?')[0]).replace(/\.[^.]+$/, '');
       if (!slug) continue;
       paths.push({ params: { slug }, props: { entry, img, slug } });
     }

@@ -385,7 +385,7 @@ function mediaShareTitle(seg, img) {
                     {mediaBySegment.get(Number(seg.index)).images.map((img) => (
                       <figure id={`media-${mediaSlug(img)}`} class={`sh-media-card sh-media-lang-${img.language === 'hebrew' ? 'he' : 'en'}`} data-media-url={mediaDirectUrl(img)} data-share-url={mediaShareUrl(img)} data-share-text={img.language === 'hebrew' ? (seg.he_nikud || seg.he || '') : (seg.en || seg.he || '')}>
                         <a href={img.path} target="_blank" rel="noopener">
-                          <img src={img.path} alt={`Sefer Hamidos Truth ${seg.index} ${img.language} image ${img.variant}`} loading="lazy" />
+                          <img src={img.path} alt={img.description || `Sefer HaMidos ${torahData.title} ${seg.index} ${img.language} image ${img.variant}`} loading="lazy" />
                         </a>
                         <figcaption>
                           <span>{img.language} · {img.variant}</span>
