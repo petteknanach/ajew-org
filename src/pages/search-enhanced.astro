@@ -1072,50 +1072,60 @@ const searchBookLabelsJSON = JSON.stringify(searchBookLabels).replace(/</g, '\\u
       }
 
       function highlightQuery(text: string, query: string, extraInfo?: string): string {
-        if (!query || !text) return text || '';
-
-        let result = text;
-
-        // For acronym/endletters: highlight the matched words from extraInfo
+        // Match only original plaintext; emitted tags/entities are never searched.
+        const original = text || '';
+        const escapeText = (value: string) => value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        if (!query || !original) return escapeText(original);
+        const spans: [number, number][] = [];
+        const hebrewMark = new RegExp(`^${NIKUD_RANGE}$`);
+        const collect = (regex: RegExp) => {
+          let match: RegExpExecArray | null;
+          while ((match = regex.exec(original))) {
+            if (!match[0].length) { regex.lastIndex++; continue; }
+            let start = match.index;
+            let end = start + match[0].length;
+            // Keep Hebrew bases and their following points on the same side
+            // of each boundary, without changing ink or combining order.
+            if (hebrewMark.test(original[start])) {
+              while (start > 0 && hebrewMark.test(original[start])) start--;
+            }
+            while (end < original.length && hebrewMark.test(original[end])) end++;
+            spans.push([start, end]);
+          }
+        };
+        let foundWords: string[] | null = null;
         if (extraInfo && extraInfo.startsWith('Found:')) {
           const matchedWords = extraInfo.replace('Found:', '').trim();
-          if (matchedWords) {
-            // Highlight each matched word (may contain nikud in text)
-            const mWords = matchedWords.split(/\s*\.\.\.\s*|\s+/).filter(Boolean);
-            for (const mw of mWords) {
-              const escaped = mw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-              // Insert optional nikud between each character for Hebrew matching
-              const nikudAware = [...escaped].join(NIKUD_RANGE + '*');
-              try {
-                const regex = new RegExp(`(${nikudAware})`, 'g');
-                result = result.replace(regex, '<mark>$1</mark>');
-              } catch(e) { /* skip bad regex */ }
-            }
-            return result;
-          }
+          if (matchedWords) foundWords = matchedWords.split(/\s*\.\.\.\s*|\s+/).filter(Boolean);
         }
-
-        // Standard word highlighting - nikud-aware
-        const words = query.split(/\s+/).filter(w =>
+        const words = foundWords || query.split(/\s+/).filter(w =>
           w.length > 0 && !['and', 'or', 'not'].includes(w.toLowerCase())
         );
-
         for (const word of words) {
           const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-          // Insert optional nikud marks between each Hebrew character
-          // This lets "תשובה" match "תְּשׁוּבָה" in the text
-          const chars = [...escaped];
-          const nikudAware = chars.join(NIKUD_RANGE + '*');
+          // Preserve the existing construction and malformed-regex policy:
+          // standard literal fallback, Found skip; do not change matching.
+          const nikudAware = [...escaped].join(NIKUD_RANGE + '*');
           try {
-            const regex = new RegExp(`(${nikudAware})`, 'gi');
-            result = result.replace(regex, '<mark>$1</mark>');
+            collect(new RegExp(`(${nikudAware})`, foundWords ? 'g' : 'gi'));
           } catch(e) {
-            // Fallback: plain match without nikud awareness
-            const simpleRegex = new RegExp(`(${escaped})`, 'gi');
-            result = result.replace(simpleRegex, '<mark>$1</mark>');
+            if (!foundWords) collect(new RegExp(`(${escaped})`, 'gi'));
           }
         }
-        return result;
+        spans.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+        const merged: [number, number][] = [];
+        for (const span of spans) {
+          const previous = merged[merged.length - 1];
+          if (previous && span[0] < previous[1]) previous[1] = Math.max(previous[1], span[1]);
+          else merged.push([...span]);
+        }
+        let result = '';
+        let cursor = 0;
+        for (const [start, end] of merged) {
+          result += escapeText(original.slice(cursor, start)) + '<mark>' + escapeText(original.slice(start, end)) + '</mark>';
+          cursor = end;
+        }
+        return result + escapeText(original.slice(cursor));
       }
 
       function showLoading() {
