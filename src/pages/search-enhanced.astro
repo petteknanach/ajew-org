@@ -282,7 +282,12 @@ const searchBookLabelsJSON = JSON.stringify(searchBookLabels).replace(/</g, '\\u
       async function loadShard(key) {
         if (readerShardCache.has(key)) return readerShardCache.get(key);
         const shard = await fetch(readerAssetUrl('/reader-search/shards/' + encodeURIComponent(key) + '.json'), { headers: { Accept: 'application/json' } })
-          .then(r => r.ok ? r.json() : {});
+          .then(r => {
+            if (r.ok) return r.json();
+            // The builder emits only populated prefixes; absent shards are empty.
+            if (r.status === 404) return {};
+            throw new Error('Search shard unavailable: HTTP ' + r.status);
+          });
         readerShardCache.set(key, shard);
         return shard;
       }
