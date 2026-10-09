@@ -1,5 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import GallerySearch from '../../components/GallerySearch.astro';
+import { getGalleryMetadata, gallerySearchText, galleryMediaKind, galleryMediaLabel } from '../../lib/gallery-metadata.mjs';
 import fs from 'fs';
 import path from 'path';
 
@@ -8,11 +10,15 @@ type Meme = {
   filename: string;
   title: string;
   text: string;
+  alt?: string;
 };
 
 const metadataPath = path.join(process.cwd(), 'public/images/hebrew-memes/metadata.json');
 const memes: Meme[] = fs.existsSync(metadataPath)
-  ? JSON.parse(fs.readFileSync(metadataPath, 'utf-8'))
+  ? JSON.parse(fs.readFileSync(metadataPath, 'utf-8')).map((m: Meme) => {
+      const reviewed = getGalleryMetadata('hebrew-memes', m.filename);
+      return { ...m, title: reviewed.title || m.title, alt: reviewed.alt || m.title };
+    })
   : [];
 
 const archiveUrl = 'https://archive.org/details/ajew-org-hebrew-memes';
@@ -36,20 +42,18 @@ const shareUrl = (n: number) => `https://ajew.org/gallery/hebrew-memes/#meme-${S
       <strong>{memes.length} images</strong> in this folder. The Hebrew text below each image is included as page text so it can be searched, copied, downloaded, and shared. Some stylized/low-resolution images include OCR text and can be refined further.
     </div>
 
-    <div class="searchbar">
-      <input id="filter" type="search" placeholder="Search Hebrew meme names, file names, and text… / חיפוש בשמות ובטקסט התמונות" />
-      <div id="filterStatus" class="filter-status" aria-live="polite"></div>
-    </div>
+    <GallerySearch placeholder="Search Hebrew meme names, file names, text and reviewed subjects… / חיפוש בשמות ובטקסט התמונות" />
 
     <section class="memes-grid">
       {memes.map((m) => (
-        <article class="meme-card" id={`meme-${String(m.number).padStart(3, '0')}`} data-search={`${m.title || ''} ${m.text || ''} ${m.filename || ''}`.toLowerCase()}>
+        <article class="meme-card" data-gallery-search-item data-media-kind={galleryMediaKind('hebrew-memes', m.filename)} id={`meme-${String(m.number).padStart(3, '0')}`} data-search={gallerySearchText('hebrew-memes', m.filename, m)}>
           <a class="imagebox" href={imageUrl(m.filename)} target="_blank" rel="noopener">
-            <img src={imageUrl(m.filename)} alt={m.title || `Hebrew meme ${m.number}`} loading="lazy" />
+            <img src={imageUrl(m.filename)} alt={m.alt || m.title || `Hebrew meme ${m.number}`} loading="lazy" />
           </a>
           <div class="meme-content">
             <div class="num">#{String(m.number).padStart(3, '0')}</div>
             <h2>{m.title || `Hebrew Meme ${m.number}`}</h2>
+            <div class="num">{galleryMediaLabel('hebrew-memes', m.filename)}</div>
             <div class="meme-text" dir="rtl">{m.text || m.title}</div>
             <div class="meme-buttons">
               <a class="btn small" href={imageUrl(m.filename)} download>⬇️ Download</a>
@@ -64,30 +68,6 @@ const shareUrl = (n: number) => `https://ajew.org/gallery/hebrew-memes/#meme-${S
 </Layout>
 
 <script>
-  const filter = document.getElementById('filter');
-  const filterStatus = document.getElementById('filterStatus');
-  const normalizeGalleryQuery = (value) => String(value || '')
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0591-\u05C7\u0300-\u036f]/g, '')
-    .replace(/[-_]+/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-  function applyMemeFilter() {
-    const q = normalizeGalleryQuery(filter?.value || '');
-    let visible = 0;
-    const cards = document.querySelectorAll('.meme-card');
-    cards.forEach((card) => {
-      const haystack = normalizeGalleryQuery(card.getAttribute('data-search') || card.textContent || '');
-      const match = !q || haystack.includes(q);
-      card.style.display = match ? 'flex' : 'none';
-      if (match) visible++;
-    });
-    if (filterStatus) filterStatus.textContent = q ? `${visible} matching pictures` : `${cards.length} searchable pictures`;
-  }
-  filter?.addEventListener('input', applyMemeFilter);
-  applyMemeFilter();
-
   document.querySelectorAll('.share-btn').forEach((button) => {
     button.addEventListener('click', async () => {
       const url = button.getAttribute('data-url') || location.href;

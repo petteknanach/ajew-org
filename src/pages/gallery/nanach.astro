@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import GallerySearch from '../../components/GallerySearch.astro';
+import { getGalleryMetadata, gallerySearchText, galleryMediaKind, galleryMediaLabel } from '../../lib/gallery-metadata.mjs';
 import fs from 'node:fs';
 
 const imageDir = './public/images/nanach/';
@@ -32,6 +33,14 @@ try {
   imageMetadata = JSON.parse(fs.readFileSync(`${imageDir}metadata.json`, 'utf-8'));
 } catch (_) {}
 
+for (const img of allImages) {
+  const legacy = imageMetadata[img] || {};
+  const reviewed = getGalleryMetadata('nanach', img);
+  imageMetadata[img] = { ...legacy, ...reviewed,
+    categories: [...new Set([...(legacy.categories || []), ...(reviewed.categories || [])])],
+    exclude_categories: [...new Set([...(legacy.exclude_categories || []), ...(reviewed.exclude_categories || [])])] };
+}
+
 function imageLabel(filename) {
   return imageMetadata[filename]?.title || formatFilename(filename);
 }
@@ -45,6 +54,9 @@ function hasCategory(filename, category) {
 }
 
 const categories = {
+  'prayer-shawls': { name: 'Reviewed Tallis Photographs', hebrew: 'צילומי טלית שנבדקו', icon: '📷', images: [] },
+  'flat-textures': { name: 'Flat Textures — Not Photographs', hebrew: 'טקסטורות שטוחות', icon: '▦', images: [] },
+  'reference-documents': { name: 'Pettek Reference Collages', hebrew: 'קולאז׳ים של הפתק', icon: '📄', images: [] },
   'graffiti': {
     name: 'Graffiti & Street Art',
     hebrew: 'גרפיטי ואמנות רחוב',
@@ -257,6 +269,9 @@ for (const [key, category] of Object.entries(categories)) {
     .filter((img) => !imageMetadata[img]?.exclude_categories?.includes(key))
     .sort();
 }
+// Keep every archive entry reachable, including files missed by filename rules.
+const categorizedFiles = new Set(Object.values(categories).flatMap(category => category.images));
+categories['other'] = { name: 'Other Archive Images', hebrew: 'תמונות נוספות מהארכיון', icon: '🗂', images: allImages.filter(img => !categorizedFiles.has(img)) };
 ---
 
 <Layout title="Na Nach Life Gallery / גלריית חיי נ נח" description="Photos of the Na Nach Breslov movement">
@@ -303,10 +318,11 @@ for (const [key, category] of Object.entries(categories)) {
             <h2><span class="icon">{cat.icon}</span> {cat.name} <span class="hebrew">({cat.hebrew})</span></h2>
             <div class="gallery-grid">
               {cat.images.map((img, index) => (
-                <div class="gallery-item">
+                <div class="gallery-item" data-gallery-search-item data-media-kind={galleryMediaKind('nanach', img)} data-search={gallerySearchText('nanach', img, imageMetadata[img])}>
                   <img src={`/images/nanach/${img}`} alt={imageAlt(img)} loading="lazy" />
                   <div class="overlay"><span>{cat.name} #{index + 1}</span></div>
                   <div class="caption">{imageLabel(img)}</div>
+                  <div class="caption">{galleryMediaLabel('nanach', img)}</div>
                 </div>
               ))}
             </div>

@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import GallerySearch from '../../components/GallerySearch.astro';
+import { getGalleryMetadata, gallerySearchText, galleryExtraFiles, mediaLabels } from '../../lib/gallery-metadata.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -15,14 +16,14 @@ function formatFilename(filename) {
 function imageFiles(dir) {
   const full = path.join(process.cwd(), 'public/images', dir);
   try {
-    return fs.readdirSync(full).filter((file) => /\.(jpg|jpeg|png|gif|webp|svg|tiff)$/i.test(file) && !file.startsWith('.')).sort();
+    return [...new Set([...fs.readdirSync(full).filter((file) => /\.(jpg|jpeg|png|gif|webp|svg|tiff)$/i.test(file) && !file.startsWith('.')), ...galleryExtraFiles(dir)])].sort();
   } catch (_) {
     return [];
   }
 }
 
 const nanachImageCount = imageFiles('nanach').length;
-const nanachCategoryCount = 16;
+
 
 const galleryPictures = [
   ...imageFiles('saba').map((filename) => ({ gallery: 'Saba / סבא', label: formatFilename(filename), url: `/images/saba/${encodeURIComponent(filename)}`, page: '/gallery/saba' })),
@@ -56,6 +57,17 @@ try {
     page: `/gallery/hebrew-memes/#meme-${String(m.number).padStart(3, '0')}`
   })));
 } catch (_) {}
+
+// Preserve the legacy inventory and text, then overlay only hash-bound reviews.
+galleryPictures.forEach((picture) => {
+  const [, , folder, ...parts] = picture.url.split('/');
+  const filename = decodeURIComponent(parts.join('/'));
+  const reviewed = getGalleryMetadata(folder, filename);
+  picture.label = reviewed.title || picture.label;
+  picture.alt = reviewed.alt || picture.label;
+  picture.kind = reviewed.mediaKind || 'unreviewed';
+  picture.search = gallerySearchText(folder, filename, { title: picture.label, alt: picture.alt, text: picture.text });
+});
 ---
 
 <Layout title="Gallery / גלריה" description="Photo galleries of Na Nach Breslov - Rabbi Nachman, Saba, Uman, and the movement">
@@ -81,9 +93,10 @@ try {
       <h2>Picture Search Results <span class="hebrew">תוצאות חיפוש תמונות</span></h2>
       <div class="picture-search-grid">
         {galleryPictures.map((picture) => (
-          <a class="picture-search-card" data-gallery-search-item data-search={`${picture.label} ${picture.gallery} ${picture.text || ''}`} href={picture.url} target="_blank" rel="noopener">
-            <img src={picture.url} alt={picture.label} loading="lazy" />
+          <a class="picture-search-card" data-gallery-search-item data-media-kind={picture.kind} data-search={`${picture.search} ${picture.gallery}`} href={picture.url} target="_blank" rel="noopener">
+            <img src={picture.url} alt={picture.alt} loading="lazy" />
             <span class="picture-label">{picture.label}</span>
+            <small>{mediaLabels[picture.kind]}</small>
             <small>{picture.gallery}</small>
             <em>Open image / פתח תמונה</em>
           </a>
@@ -141,7 +154,7 @@ try {
           <span class="card-icon">😂</span>
           <h2>Hebrew Memes <span class="hebrew">ממים בעברית</span></h2>
           <p class="hebrew">ממים בעברית</p>
-          <p class="description">Na Nach and Breslov Hebrew meme images with full searchable text, download buttons, and sharing links - 1496 images</p>
+          <p class="description">Na Nach and Breslov Hebrew meme images with searchable text, download buttons, and sharing links — {galleryPictures.filter(picture => picture.url.startsWith('/images/hebrew-memes/')).length} images</p>
           <p class="categories">😂 Memes / ממים ✍️ Hebrew Text / טקסט עברי 📦 Archive / ארכיון 🖼️ Share & Download / שיתוף והורדה</p>
           <span class="view-btn">View Gallery / כניסה לגלריה →</span>
         </div>
@@ -153,7 +166,7 @@ try {
           <span class="card-icon">🌟</span>
           <h2>Na Nach Breslov Movement <span class="hebrew">תנועת נ נח מברסלב</span></h2>
           <p class="hebrew">תנועת נ נח מברסלב</p>
-          <p class="description">Spreading the light of Rebbe Nachman worldwide - {nanachImageCount} photos in {nanachCategoryCount} categories</p>
+          <p class="description">Spreading the light of Rebbe Nachman worldwide — {nanachImageCount} images; browse by category</p>
           <p class="categories">🎨 Graffiti / גרפיטי 🚐 Vans / ואנים 🕍 Bais / בית 📍 Locations / מקומות 😊 Portraits / דיוקנאות 👥 Friends / חברים 🪧 Signs / שלטים 🏛️ Politics / פוליטיקה 🖼️ Art / אמנות 🌤️ Nature / טבע 🎉 Events / אירועים 🏷️ Stickers / מדבקות 📚 Books / ספרים 🥨 Food / אוכל 😂 Humor / הומור ✏️ Cartoons / קריקטורות</p>
           <span class="view-btn">View Gallery / כניסה לגלריה →</span>
         </div>
@@ -219,8 +232,8 @@ try {
       <h2>📊 Gallery Statistics <span class="hebrew">סטטיסטיקות הגלריה</span></h2>
       <div class="stats-grid">
         <div class="stat-card">
-          <span class="number">758</span>
-          <span class="label">Total Photos</span>
+          <span class="number">{galleryPictures.length}</span>
+          <span class="label">Searchable image files</span>
         </div>
         <div class="stat-card">
           <span class="number">6</span>
@@ -237,6 +250,7 @@ try {
       </div>
     </div>
   </section>
+  <p class="container"><a href="/data/gallery-inventory.json">Download the additive gallery inventory / הורדת מפתח התמונות</a> — file identities and partial visual-review status; existing archive names are preserved.</p>
 </Layout>
 
 <style>

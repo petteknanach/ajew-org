@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import GallerySearch from '../../components/GallerySearch.astro';
+import { getGalleryMetadata, gallerySearchText, galleryMediaKind, galleryMediaLabel, galleryExtraFiles } from '../../lib/gallery-metadata.mjs';
 import fs from 'node:fs';
 
 const imageDir = './public/images/events/';
@@ -15,9 +16,11 @@ function getAllImages() {
   } catch (e) { return []; }
 }
 
-const allImages = getAllImages();
+const allImages = [...new Set([...getAllImages(), ...galleryExtraFiles('events')])].sort();
 
 function formatFilename(filename) {
+  const reviewed = getGalleryMetadata('events', filename);
+  if (reviewed.title) return reviewed.title;
   let formatted = decodeURIComponent(filename);
   formatted = formatted.replace(/\.(jpg|jpeg|png|gif|webp|svg)$/i, '');
   formatted = formatted.replace(/[-_]/g, ' ');
@@ -84,9 +87,10 @@ const other = allImages.filter(img => !categorized.has(img));
           <h2><span class="icon">👥</span> Friends & People <span class="hebrew">(חברים ואנשים)</span></h2>
           <div class="gallery-grid">
             {friends.map((img, i) => (
-              <div class="gallery-item">
-                <img src={`/images/events/${img}`} alt={formatFilename(img)} loading="lazy" />
+              <div class="gallery-item" data-gallery-search-item data-media-kind={galleryMediaKind('events', img)} data-search={gallerySearchText('events', img, { title: formatFilename(img) })}>
+                <img src={`/images/events/${img}`} alt={getGalleryMetadata('events', img).alt || formatFilename(img)} loading="lazy" />
                 <div class="caption">{formatFilename(img)}</div>
+                <div class="caption">{galleryMediaLabel('events', img)}</div>
               </div>
             ))}
           </div>
@@ -97,9 +101,10 @@ const other = allImages.filter(img => !categorized.has(img));
           <h2><span class="icon">🎵</span> Music & Singing <span class="hebrew">(מוזיקה ושירה)</span></h2>
           <div class="gallery-grid">
             {music.map((img, i) => (
-              <div class="gallery-item">
-                <img src={`/images/events/${img}`} alt={formatFilename(img)} loading="lazy" />
+              <div class="gallery-item" data-gallery-search-item data-media-kind={galleryMediaKind('events', img)} data-search={gallerySearchText('events', img, { title: formatFilename(img) })}>
+                <img src={`/images/events/${img}`} alt={getGalleryMetadata('events', img).alt || formatFilename(img)} loading="lazy" />
                 <div class="caption">{formatFilename(img)}</div>
+                <div class="caption">{galleryMediaLabel('events', img)}</div>
               </div>
             ))}
           </div>
@@ -110,9 +115,10 @@ const other = allImages.filter(img => !categorized.has(img));
           <h2><span class="icon">😊</span> Portraits <span class="hebrew">(דיוקנאות)</span></h2>
           <div class="gallery-grid">
             {portraits.map((img, i) => (
-              <div class="gallery-item">
-                <img src={`/images/events/${img}`} alt={formatFilename(img)} loading="lazy" />
+              <div class="gallery-item" data-gallery-search-item data-media-kind={galleryMediaKind('events', img)} data-search={gallerySearchText('events', img, { title: formatFilename(img) })}>
+                <img src={`/images/events/${img}`} alt={getGalleryMetadata('events', img).alt || formatFilename(img)} loading="lazy" />
                 <div class="caption">{formatFilename(img)}</div>
+                <div class="caption">{galleryMediaLabel('events', img)}</div>
               </div>
             ))}
           </div>
@@ -123,9 +129,10 @@ const other = allImages.filter(img => !categorized.has(img));
           <h2><span class="icon">🧢</span> Na Nach Beanies <span class="hebrew">(סניקיות נ נח)</span></h2>
           <div class="gallery-grid">
             {beanies.map((img, i) => (
-              <div class="gallery-item">
-                <img src={`/images/events/${img}`} alt={formatFilename(img)} loading="lazy" />
+              <div class="gallery-item" data-gallery-search-item data-media-kind={galleryMediaKind('events', img)} data-search={gallerySearchText('events', img, { title: formatFilename(img) })}>
+                <img src={`/images/events/${img}`} alt={getGalleryMetadata('events', img).alt || formatFilename(img)} loading="lazy" />
                 <div class="caption">{formatFilename(img)}</div>
+                <div class="caption">{galleryMediaLabel('events', img)}</div>
               </div>
             ))}
           </div>
@@ -136,9 +143,10 @@ const other = allImages.filter(img => !categorized.has(img));
           <h2><span class="icon">📷</span> Other Photos <span class="hebrew">(תמונות אחרות)</span></h2>
           <div class="gallery-grid">
             {other.map((img, i) => (
-              <div class="gallery-item">
-                <img src={`/images/events/${img}`} alt={formatFilename(img)} loading="lazy" />
+              <div class="gallery-item" data-gallery-search-item data-media-kind={galleryMediaKind('events', img)} data-search={gallerySearchText('events', img, { title: formatFilename(img) })}>
+                <img src={`/images/events/${img}`} alt={getGalleryMetadata('events', img).alt || formatFilename(img)} loading="lazy" />
                 <div class="caption">{formatFilename(img)}</div>
+                <div class="caption">{galleryMediaLabel('events', img)}</div>
               </div>
             ))}
           </div>

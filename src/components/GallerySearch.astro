@@ -1,6 +1,6 @@
 ---
 const {
-  placeholder = 'Search picture names and labels… / חיפוש בשמות ותוויות התמונות',
+  placeholder = 'Search names, subjects and labels… / חיפוש בשמות ובתוויות',
   label = 'Search Gallery / חיפוש בגלריה'
 } = Astro.props;
 ---
@@ -9,6 +9,21 @@ const {
   <div class="gallery-search-inner">
     <label class="gallery-search-label" for="gallerySearchInput">🔎 {label}</label>
     <input id="gallerySearchInput" class="gallery-search-input" type="search" placeholder={placeholder} autocomplete="off" />
+    <div class="gallery-search-controls">
+      <label for="galleryMediaKind">Image type / סוג תמונה</label>
+      <select id="galleryMediaKind">
+        <option value="">All images / כל התמונות</option>
+        <option value="photograph">Reviewed photographs / צילומים שנבדקו</option>
+        <option value="document-facsimile">Document facsimiles / צילומי מסמכים</option>
+        <option value="flat-texture">Flat textures / טקסטורות שטוחות</option>
+        <option value="composite">Collages and text overlays / קולאז׳ים</option>
+        <option value="illustration">Illustrations / איורים</option>
+        <option value="generated-artwork">Generated artwork / אמנות שנוצרה</option>
+        <option value="unreviewed">Not visually reviewed / טרם נבדקו חזותית</option>
+      </select>
+      <button id="gallerySearchClear" type="button">Clear / ניקוי</button>
+    </div>
+    <p class="gallery-search-help">Pettek / Petek / פתק · tallis / tallit / talis / טלית. Only a reviewed subset has subject and image-type labels; unknown images remain searchable.</p>
     <div id="gallerySearchStatus" class="gallery-search-status" aria-live="polite"></div>
   </div>
 </section>
@@ -17,109 +32,85 @@ const {
   (function () {
     function initGallerySearch() {
       const input = document.getElementById('gallerySearchInput');
+      const kind = document.getElementById('galleryMediaKind');
       const status = document.getElementById('gallerySearchStatus');
+      const clear = document.getElementById('gallerySearchClear');
       if (!input || input.dataset.bound === '1') return;
       input.dataset.bound = '1';
 
       const normalize = (value) => String(value || '')
-        .toLowerCase()
-        .normalize('NFD')
+        .toLowerCase().normalize('NFD')
         .replace(/[\u0591-\u05C7\u0300-\u036f]/g, '')
-        .replace(/[-_]+/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim();
+        .replace(/[-_]+/g, ' ').replace(/\s+/g, ' ').trim()
+        .split(' ').map(token => {
+          if (['pettek', 'petek', 'פתק', 'הפתק'].includes(token)) return 'pettek';
+          if (['tallis', 'tallit', 'talis', 'טלית', 'הטלית'].includes(token)) return 'tallis';
+          return token;
+        }).join(' ');
 
       const itemSelector = '[data-gallery-search-item], .gallery-item, .main-gallery-card, .meme-card';
       const items = Array.from(document.querySelectorAll(itemSelector));
-
+      const pictures = items.filter(item => !!item.querySelector('img'));
       for (const item of items) {
         const img = item.querySelector('img');
-        const bits = [
-          item.getAttribute('data-search'),
-          item.textContent,
-          img?.getAttribute('alt'),
-          img?.getAttribute('src'),
-          item.getAttribute('href'),
-          item.id
-        ];
+        let filename = img?.getAttribute('src') || '';
+        try { filename = decodeURIComponent(filename); } catch (_) {}
+        // Explicit data-search is authoritative. Negative review caveats and
+        // surrounding category text must not become false depicted-object tags.
+        const bits = [item.getAttribute('data-search') ?? item.textContent,
+          img?.getAttribute('alt'), filename];
         item.dataset.gallerySearchText = normalize(bits.filter(Boolean).join(' '));
       }
 
       function applySearch() {
         const q = normalize(input.value);
-        document.documentElement.classList.toggle('gallery-searching', !!q);
-        let visible = 0;
+        const selectedKind = kind?.value || '';
+        const active = !!q || !!selectedKind;
+        const tokens = q.split(' ').filter(Boolean);
+        document.documentElement.classList.toggle('gallery-searching', active);
+        const visibleSources = new Set();
         for (const item of items) {
-          const match = !q || (item.dataset.gallerySearchText || '').includes(q);
+          const img = item.querySelector('img');
+          const typeMatches = !selectedKind || (!!img && (item.dataset.mediaKind || 'unreviewed') === selectedKind);
+          const match = typeMatches && tokens.every(token => (item.dataset.gallerySearchText || '').includes(token));
           item.hidden = !match;
-          if (match) visible++;
+          if (match && img) visibleSources.add(img.getAttribute('src'));
         }
-
         for (const section of document.querySelectorAll('.category-section')) {
           const sectionItems = Array.from(section.querySelectorAll(itemSelector));
-          if (!sectionItems.length) continue;
-          const hasVisible = sectionItems.some((item) => !item.hidden);
-          section.hidden = !!q && !hasVisible;
+          if (sectionItems.length) section.hidden = active && !sectionItems.some(item => !item.hidden);
         }
-
-        if (status) {
-          status.textContent = q ? `${visible} matching picture${visible === 1 ? '' : 's'}` : `${items.length} searchable picture${items.length === 1 ? '' : 's'}`;
-        }
+        const total = new Set(pictures.map(item => item.querySelector('img').getAttribute('src'))).size;
+        if (status) status.textContent = active
+          ? `${visibleSources.size} matching picture${visibleSources.size === 1 ? '' : 's'}${visibleSources.size ? '' : ' — try All images or a shorter query'}`
+          : `${total} searchable pictures (image-type review is partial)`;
       }
-
       input.addEventListener('input', applySearch);
+      kind?.addEventListener('change', applySearch);
+      clear?.addEventListener('click', () => {
+        input.value = ''; if (kind) kind.value = ''; applySearch(); input.focus();
+      });
       applySearch();
     }
-
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initGallerySearch, { once: true });
-    } else {
-      initGallerySearch();
-    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initGallerySearch, { once: true });
+    else initGallerySearch();
   })();
 </script>
 
 <style>
-  .gallery-search-panel {
-    background: linear-gradient(135deg, #fff8e1 0%, #f7f5f0 100%);
-    border-top: 1px solid #ead9aa;
-    border-bottom: 1px solid #ead9aa;
-    padding: 1.5rem 1rem;
-  }
-
-  .gallery-search-inner {
-    max-width: 900px;
-    margin: 0 auto;
-  }
-
-  .gallery-search-label {
-    display: block;
-    color: #1a365d;
-    font-weight: 800;
-    font-size: 1.05rem;
-    margin-bottom: 0.55rem;
-  }
-
-  .gallery-search-input {
-    width: 100%;
-    border: 2px solid #d69e2e;
-    border-radius: 999px;
-    padding: 0.85rem 1.15rem;
-    font-size: 1.05rem;
-    background: #fff;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-  }
-
-  .gallery-search-input:focus {
-    outline: 3px solid rgba(214, 158, 46, 0.25);
-  }
-
-  .gallery-search-status {
-    margin-top: 0.5rem;
-    color: #5f4b1a;
-    font-weight: 700;
-    min-height: 1.4em;
-  }
-
-  [hidden] { display: none !important; }
+  .gallery-search-panel { background: linear-gradient(135deg,#fff8e1,#f7f5f0); border-block:1px solid #ead9aa; padding:1.5rem 1rem; }
+  .gallery-search-inner { max-width:900px; margin:0 auto; }
+  .gallery-search-label { display:block; color:#1a365d; font-weight:800; font-size:1.05rem; margin-bottom:.55rem; }
+  .gallery-search-input { width:100%; box-sizing:border-box; border:2px solid #d69e2e; border-radius:999px; padding:.85rem 1.15rem; font-size:1.05rem; background:#fff; }
+  .gallery-search-input:focus, select:focus, button:focus-visible { outline:3px solid rgba(214,158,46,.5); outline-offset:2px; }
+  .gallery-search-controls { display:flex; align-items:center; flex-wrap:wrap; gap:.6rem; margin-top:.8rem; color:#1a365d; }
+  select, button { max-width:100%; padding:.55rem .75rem; border:1px solid #b99540; border-radius:.5rem; background:white; color:#1a365d; font:inherit; }
+  button { cursor:pointer; }
+  .gallery-search-help { font-size:.85rem; color:#5f4b1a; line-height:1.5; }
+  .gallery-search-status { margin-top:.5rem; color:#5f4b1a; font-weight:700; min-height:1.4em; }
+  /* The items are outside this component: a scoped [hidden] rule cannot reach
+     them, and card display:flex can override the browser's default hidden rule. */
+  :global([data-gallery-search-item][hidden]), :global(.gallery-item[hidden]),
+  :global(.main-gallery-card[hidden]), :global(.meme-card[hidden]),
+  :global(.category-section[hidden]) { display:none !important; }
 </style>

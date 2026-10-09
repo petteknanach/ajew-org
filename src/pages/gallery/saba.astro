@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import GallerySearch from '../../components/GallerySearch.astro';
+import { getGalleryMetadata, gallerySearchText, galleryMediaKind, galleryMediaLabel, galleryExtraFiles } from '../../lib/gallery-metadata.mjs';
 import fs from 'node:fs';
 
 const imageDir = './public/images/saba/';
@@ -15,9 +16,11 @@ function getAllImages() {
   } catch (e) { return []; }
 }
 
-const allImages = getAllImages();
+const allImages = [...new Set([...getAllImages(), ...galleryExtraFiles('saba')])].sort();
 
 function formatFilename(filename) {
+  const reviewed = getGalleryMetadata('saba', filename);
+  if (reviewed.title) return reviewed.title;
   let formatted = decodeURIComponent(filename);
   formatted = formatted.replace(/\.(jpg|jpeg|png|gif|webp|svg)$/i, '');
   formatted = formatted.replace(/[-_]/g, ' ');
@@ -104,9 +107,10 @@ const other = allImages.filter(img => !categorized.has(img));
           <h2><span class="icon">🙌</span> Hands Up <span class="hebrew">(ידיים למעלה)</span></h2>
           <div class="gallery-grid">
             {handsUp.map((img, i) => (
-              <div class="gallery-item">
-                <img src={`/images/saba/${img}`} alt={formatFilename(img)} loading="lazy" />
+              <div class="gallery-item" data-gallery-search-item data-media-kind={galleryMediaKind('saba', img)} data-search={gallerySearchText('saba', img, { title: formatFilename(img) })}>
+                <img src={`/images/saba/${img}`} alt={getGalleryMetadata('saba', img).alt || formatFilename(img)} loading="lazy" />
                 <div class="caption">{formatFilename(img)}</div>
+                <div class="caption">{galleryMediaLabel('saba', img)}</div>
               </div>
             ))}
           </div>
@@ -117,9 +121,10 @@ const other = allImages.filter(img => !categorized.has(img));
           <h2><span class="icon">✡️</span> With Petek <span class="hebrew">(עם הפתק)</span></h2>
           <div class="gallery-grid">
             {withPetek.map((img, i) => (
-              <div class="gallery-item">
-                <img src={`/images/saba/${img}`} alt={formatFilename(img)} loading="lazy" />
+              <div class="gallery-item" data-gallery-search-item data-media-kind={galleryMediaKind('saba', img)} data-search={gallerySearchText('saba', img, { title: formatFilename(img) })}>
+                <img src={`/images/saba/${img}`} alt={getGalleryMetadata('saba', img).alt || formatFilename(img)} loading="lazy" />
                 <div class="caption">{formatFilename(img)}</div>
+                <div class="caption">{galleryMediaLabel('saba', img)}</div>
               </div>
             ))}
           </div>
@@ -130,9 +135,10 @@ const other = allImages.filter(img => !categorized.has(img));
           <h2><span class="icon">🦽</span> Wheelchair <span class="hebrew">(כיסא גלגלים)</span></h2>
           <div class="gallery-grid">
             {wheelchair.map((img, i) => (
-              <div class="gallery-item">
-                <img src={`/images/saba/${img}`} alt={formatFilename(img)} loading="lazy" />
+              <div class="gallery-item" data-gallery-search-item data-media-kind={galleryMediaKind('saba', img)} data-search={gallerySearchText('saba', img, { title: formatFilename(img) })}>
+                <img src={`/images/saba/${img}`} alt={getGalleryMetadata('saba', img).alt || formatFilename(img)} loading="lazy" />
                 <div class="caption">{formatFilename(img)}</div>
+                <div class="caption">{galleryMediaLabel('saba', img)}</div>
               </div>
             ))}
           </div>
@@ -143,9 +149,10 @@ const other = allImages.filter(img => !categorized.has(img));
           <h2><span class="icon">🪦</span> Grave & Tomb <span class="hebrew">(קבר וציון)</span></h2>
           <div class="gallery-grid">
             {grave.map((img, i) => (
-              <div class="gallery-item">
-                <img src={`/images/saba/${img}`} alt={formatFilename(img)} loading="lazy" />
+              <div class="gallery-item" data-gallery-search-item data-media-kind={galleryMediaKind('saba', img)} data-search={gallerySearchText('saba', img, { title: formatFilename(img) })}>
+                <img src={`/images/saba/${img}`} alt={getGalleryMetadata('saba', img).alt || formatFilename(img)} loading="lazy" />
                 <div class="caption">{formatFilename(img)}</div>
+                <div class="caption">{galleryMediaLabel('saba', img)}</div>
               </div>
             ))}
           </div>
@@ -156,9 +163,10 @@ const other = allImages.filter(img => !categorized.has(img));
           <h2><span class="icon">📸</span> Portraits <span class="hebrew">(דיוקנות)</span></h2>
           <div class="gallery-grid">
             {portraits.map((img, i) => (
-              <div class="gallery-item">
-                <img src={`/images/saba/${img}`} alt={formatFilename(img)} loading="lazy" />
+              <div class="gallery-item" data-gallery-search-item data-media-kind={galleryMediaKind('saba', img)} data-search={gallerySearchText('saba', img, { title: formatFilename(img) })}>
+                <img src={`/images/saba/${img}`} alt={getGalleryMetadata('saba', img).alt || formatFilename(img)} loading="lazy" />
                 <div class="caption">{formatFilename(img)}</div>
+                <div class="caption">{galleryMediaLabel('saba', img)}</div>
               </div>
             ))}
           </div>
@@ -169,9 +177,10 @@ const other = allImages.filter(img => !categorized.has(img));
           <h2><span class="icon">👥</span> With Friends <span class="hebrew">(עם חברים)</span></h2>
           <div class="gallery-grid">
             {withFriends.map((img, i) => (
-              <div class="gallery-item">
-                <img src={`/images/saba/${img}`} alt={formatFilename(img)} loading="lazy" />
+              <div class="gallery-item" data-gallery-search-item data-media-kind={galleryMediaKind('saba', img)} data-search={gallerySearchText('saba', img, { title: formatFilename(img) })}>
+                <img src={`/images/saba/${img}`} alt={getGalleryMetadata('saba', img).alt || formatFilename(img)} loading="lazy" />
                 <div class="caption">{formatFilename(img)}</div>
+                <div class="caption">{galleryMediaLabel('saba', img)}</div>
               </div>
             ))}
           </div>
@@ -182,9 +191,10 @@ const other = allImages.filter(img => !categorized.has(img));
           <h2><span class="icon">✡️</span> With Rebbe Nachman <span class="hebrew">(עם רבינו)</span></h2>
           <div class="gallery-grid">
             {withrebbe.map((img, i) => (
-              <div class="gallery-item">
-                <img src={`/images/saba/${img}`} alt={formatFilename(img)} loading="lazy" />
+              <div class="gallery-item" data-gallery-search-item data-media-kind={galleryMediaKind('saba', img)} data-search={gallerySearchText('saba', img, { title: formatFilename(img) })}>
+                <img src={`/images/saba/${img}`} alt={getGalleryMetadata('saba', img).alt || formatFilename(img)} loading="lazy" />
                 <div class="caption">{formatFilename(img)}</div>
+                <div class="caption">{galleryMediaLabel('saba', img)}</div>
               </div>
             ))}
           </div>
@@ -195,9 +205,10 @@ const other = allImages.filter(img => !categorized.has(img));
           <h2><span class="icon">👔</span> Clothing & Items <span class="hebrew">(ביגוד וחפצים)</span></h2>
           <div class="gallery-grid">
             {clothing.map((img, i) => (
-              <div class="gallery-item">
-                <img src={`/images/saba/${img}`} alt={formatFilename(img)} loading="lazy" />
+              <div class="gallery-item" data-gallery-search-item data-media-kind={galleryMediaKind('saba', img)} data-search={gallerySearchText('saba', img, { title: formatFilename(img) })}>
+                <img src={`/images/saba/${img}`} alt={getGalleryMetadata('saba', img).alt || formatFilename(img)} loading="lazy" />
                 <div class="caption">{formatFilename(img)}</div>
+                <div class="caption">{galleryMediaLabel('saba', img)}</div>
               </div>
             ))}
           </div>
@@ -208,9 +219,10 @@ const other = allImages.filter(img => !categorized.has(img));
           <h2><span class="icon">🎵</span> Music & Instruments <span class="hebrew">(מוזיקה)</span></h2>
           <div class="gallery-grid">
             {music.map((img, i) => (
-              <div class="gallery-item">
-                <img src={`/images/saba/${img}`} alt={formatFilename(img)} loading="lazy" />
+              <div class="gallery-item" data-gallery-search-item data-media-kind={galleryMediaKind('saba', img)} data-search={gallerySearchText('saba', img, { title: formatFilename(img) })}>
+                <img src={`/images/saba/${img}`} alt={getGalleryMetadata('saba', img).alt || formatFilename(img)} loading="lazy" />
                 <div class="caption">{formatFilename(img)}</div>
+                <div class="caption">{galleryMediaLabel('saba', img)}</div>
               </div>
             ))}
           </div>
@@ -221,9 +233,10 @@ const other = allImages.filter(img => !categorized.has(img));
           <h2><span class="icon">🧱</span> Western Wall <span class="hebrew">(כותל מערבי)</span></h2>
           <div class="gallery-grid">
             {kotel.map((img, i) => (
-              <div class="gallery-item">
-                <img src={`/images/saba/${img}`} alt={formatFilename(img)} loading="lazy" />
+              <div class="gallery-item" data-gallery-search-item data-media-kind={galleryMediaKind('saba', img)} data-search={gallerySearchText('saba', img, { title: formatFilename(img) })}>
+                <img src={`/images/saba/${img}`} alt={getGalleryMetadata('saba', img).alt || formatFilename(img)} loading="lazy" />
                 <div class="caption">{formatFilename(img)}</div>
+                <div class="caption">{galleryMediaLabel('saba', img)}</div>
               </div>
             ))}
           </div>
@@ -234,9 +247,10 @@ const other = allImages.filter(img => !categorized.has(img));
           <h2><span class="icon">📷</span> Other Photos <span class="hebrew">(תמונות אחרות)</span></h2>
           <div class="gallery-grid">
             {other.map((img, i) => (
-              <div class="gallery-item">
-                <img src={`/images/saba/${img}`} alt={formatFilename(img)} loading="lazy" />
+              <div class="gallery-item" data-gallery-search-item data-media-kind={galleryMediaKind('saba', img)} data-search={gallerySearchText('saba', img, { title: formatFilename(img) })}>
+                <img src={`/images/saba/${img}`} alt={getGalleryMetadata('saba', img).alt || formatFilename(img)} loading="lazy" />
                 <div class="caption">{formatFilename(img)}</div>
+                <div class="caption">{galleryMediaLabel('saba', img)}</div>
               </div>
             ))}
           </div>
