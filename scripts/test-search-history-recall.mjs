@@ -174,6 +174,6 @@ test('ASTRO/ESBUILD MODULE full-init preserves narrowed options and filters',asy
 test('ISOLATED full-init recalled held document settles after Clear without redraw',async()=>{
   const h=harness({initial:['obstacles'],held:true});await recall(h,'obstacles','held-before-clear');assert.equal(h.els.loading.classList.contains('hidden'),false);assert.ok(h.calls.some(c=>c.path.includes('/docs/')));h.clear();const request=h.state().activeSearchRequest;h.release();await settle();assert.equal(h.state().activeSearchRequest,request);assert.equal(h.state().activeContinuation,null);assert.equal(h.state().lastSearchResults.length,0);assert.equal(h.visible(),false);assert.equal(h.els.loading.classList.contains('hidden'),true);saveReceipt(h,'held-after-clear');
 });
-test('KNOWN serialization limits unchanged: entities decode; raw JSON exact; no universal acceptance',async()=>{
-  const query='&amp; "obstacles"',h=harness({initial:[query]});await settle();const btn=h.els.searchHistoryBox.querySelectorAll('.sh-tag')[0];assert.equal(h.history()[0],query);assert.equal(btn.dataset.q,'& "obstacles"');assert.equal(btn.textContent,'& "obstacles"');saveReceipt(h,'known-serialization-limit',{notSerializationAcceptance:true});
+test('Literal history preserves entity spelling and raw JSON: bounded initialized fixture',async()=>{
+  const query='&amp; "obstacles"',h=harness({initial:[query]});await settle();const btn=h.els.searchHistoryBox.querySelectorAll('.sh-tag')[0];assert.equal(h.history()[0],query);assert.equal(btn.dataset.q,query);assert.equal(btn.textContent,query);saveReceipt(h,'literal-serialization-conservation',{boundedSerializationAcceptance:true});
 });

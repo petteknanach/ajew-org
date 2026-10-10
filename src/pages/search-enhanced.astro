@@ -1197,7 +1197,7 @@ const searchBookLabelsJSON = JSON.stringify(searchBookLabels).replace(/</g, '\\u
           container.style.display = 'block';
           container.innerHTML = '<h4>Recent Searches</h4><div class="sh-tags">' +
             history.slice(0, 10).map(h =>
-              '<button class="sh-tag" data-q="' + h.replace(/"/g, '&quot;') + '">' + h + '</button>'
+              '<button class="sh-tag" data-q="' + escapeAttr(h) + '">' + escapeAttr(h) + '</button>'
             ).join('') +
             '</div>';
           container.querySelectorAll('.sh-tag').forEach((btn: any) => {
