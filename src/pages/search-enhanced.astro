@@ -1204,7 +1204,7 @@ const searchBookLabelsJSON = JSON.stringify(searchBookLabels).replace(/</g, '\\u
             btn.addEventListener('click', () => {
               const input = document.getElementById('searchInput') as HTMLInputElement;
               input.value = btn.dataset.q;
-              performSearch(btn.dataset.q, {}, searchState?.advancedOptions || {});
+              (window as any).enhancedSearch.search();
             });
           });
         } catch(e) {}
