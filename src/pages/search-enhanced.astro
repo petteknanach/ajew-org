@@ -1002,7 +1002,7 @@ const searchBookLabelsJSON = JSON.stringify(searchBookLabels).replace(/</g, '\\u
                   <a href="${linkWithQuery}">${title}${hebrewTitle ? ` <span class="result-he-title">${hebrewTitle}</span>` : ''}</a>
                 </h4>
                 <div class="result-tags">
-                  ${extraInfo ? `<span class="result-match-info">${extraInfo}</span>` : ''}
+                  ${extraInfo ? `<span class="result-match-info">${escapeAttr(extraInfo)}</span>` : ''}
                   ${subcategory ? `<span class="result-subcategory">${subcategory}</span>` : ''}
                   ${wordCount ? `<span class="result-stat">${wordCount} words</span>` : ''}
                   ${relevance ? `<span class="result-relevance">${relevance}%</span>` : ''}
