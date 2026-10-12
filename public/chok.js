@@ -819,7 +819,7 @@
      Classical whole owners, every ordered native span and raw body authenticated
      offline against REVIEW.json; source approval is not expert/release approval.
      No fallback to legacy amud text and no external source requests. */
-  var ZOHAR_DAILY_SHA256 = 'cc987221e0c37a8300d54c9087f33f64b908eff773ed2a49d22a3f63459f661c';
+  var ZOHAR_DAILY_SHA256 = '2bb410d428ad16e96b95ef59e150367589a174db56312b6b698243514fb3bf2a';
   var zoharDailyPromise = null;
   function zoharDigest(bytes) {
     if (!window.crypto || !window.crypto.subtle) return Promise.reject(Error('Zohar authentication unavailable'));
@@ -834,7 +834,7 @@
       var data = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes));
       if (data.schema !== 'chok-zohar-day-passages-v1' || data.wholeCycleComplete !== false ||
           !data.days || Object.keys(data.days).length !== 374 ||
-          data.counts.SOURCE_RANGE_APPROVED !== 131 || data.counts.SOURCE_VERIFICATION_PENDING !== 193 ||
+          data.counts.SOURCE_RANGE_APPROVED !== 133 || data.counts.SOURCE_VERIFICATION_PENDING !== 191 ||
           data.counts.NO_ZOHAR_SOURCE_VERIFIED !== 50) throw Error('Zohar daily inventory mismatch');
       return data;
     });
@@ -957,8 +957,12 @@
       return '<div class="ck-zohar-line" data-field-role="original-source" data-stream="' + zoharEscape(s.stream) +
         '" lang="he" dir="rtl" style="white-space:pre-wrap">' + zoharEscape(t) + '</div>';
     }).join('');
+    // Documentary/glyph qualifications are never part of the recited source text.
+    var q = row.sourceQualification;
+    var qualification = q ? '<div class="ck-zohar-qualification" data-field-role="source-qualification">' +
+      '<p lang="he" dir="rtl">' + zoharEscape(q.he) + '</p><p lang="en" dir="ltr">' + zoharEscape(q.en) + '</p></div>' : '';
     return '<details class="ck-layer ck-zohar" data-field-role="original-source"><summary>זוהר — נוסח המקור · Original source — ' +
-      zoharEscape(identities.join(' ← ')) + '</summary>' + body + '</details>';
+      zoharEscape(identities.join(' ← ')) + '</summary>' + body + '</details>' + qualification;
   }
   function zoharHTML(z, wk, day) {
     return zoharDailyData().then(function (data) { return zoharQualifiedRow(data, z, wk, day); }).then(function (row) {
