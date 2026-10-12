@@ -237,6 +237,18 @@ const categories = {
     icon: '🥨',
     images: allImages.filter(img => hasCategory(img, 'food'))
   },
+  'food-art': {
+    name: 'Food Art',
+    hebrew: 'אמנות באוכל',
+    icon: '🍽️',
+    images: []
+  },
+  'nanach-lettering': {
+    name: 'Na Nach Lettering',
+    hebrew: 'אותיות נ נח',
+    icon: '🔤',
+    images: []
+  },
   'humor': {
     name: 'Humor',
     hebrew: 'הומור',
@@ -319,7 +331,7 @@ categories['other'] = { name: 'Other Archive Images', hebrew: 'תמונות נו
             <div class="gallery-grid">
               {cat.images.map((img, index) => (
                 <div class="gallery-item" data-gallery-search-item data-media-kind={galleryMediaKind('nanach', img)} data-search={gallerySearchText('nanach', img, imageMetadata[img])}>
-                  <img src={`/images/nanach/${img}`} alt={imageAlt(img)} loading="lazy" />
+                  <img src={`/images/nanach/${encodeURIComponent(img)}`} alt={imageAlt(img)} loading="lazy" />
                   <div class="overlay"><span>{cat.name} #{index + 1}</span></div>
                   <div class="caption">{imageLabel(img)}</div>
                   <div class="caption">{galleryMediaLabel('nanach', img)}</div>
