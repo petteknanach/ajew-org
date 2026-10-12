@@ -89,20 +89,20 @@ const authorGroups = [
 
 // Reader cross-links: category ID -> reader URL
 const readerLinks: Record<string, string> = {
-  'likutay-moharan': '/reader/likutay-moharan/part-1/1',
-  'sefer-hamidos': '/reader/sefer-hamidos/part-1/1',
-  'sipurey-maasiyos': '/reader/sipurey-maasiyos/part-1/1',
-  'likutay-halachos': '/reader/likutay-halachos/vol-1/1',
-  'likutay-tefilos': '/reader/likutay-tefilos/part-1/1',
-  'likutay-eitzos': '/reader/likutay-eitzos/part-1/1',
-  'chayey-moharan': '/reader/chayey-moharan/part-1/1',
-  'shivchay-sichos': '/reader/shivchay-haran/part-1/1',
-  'yemei-moharnat': '/reader/yemei-moharnat/part-1/1',
-  'alim-litrufa': '/reader/alim-litrufa/part-1/1',
-  'hashtatfchus-meshivas': '/reader/hashtatfchus-hanefesh/part-1/1',
-  'parparos-commentary': '/reader/parparos-lechochma/part-1/1',
-  'kokhvei-or': '/reader/kokhvei-or/part-1/1',
-  'siach-sarfei-kodesh': '/reader/siach-sarfei-kodesh/vol-1/1',
+  'likutay-moharan': '/reader/likutay-moharan/1/1',
+  'sefer-hamidos': '/reader/sefer-hamidos/1/1',
+  'sipurey-maasiyos': '/reader/sipurey-maasiyos/1/1',
+  'likutay-halachos': '/reader/likutay-halachos/1/1',
+  'likutay-tefilos': '/reader/likutay-tefilos/1/1',
+  'likutay-eitzos': '/reader/likutay-eitzos/1/1',
+  'chayey-moharan': '/reader/chayey-moharan/1/1',
+  'shivchay-sichos': '/reader/shivchay-haran/1/1',
+  'yemei-moharnat': '/reader/yemei-moharnat/1/1',
+  'alim-litrufa': '/reader/alim-litrufa/1/1',
+  'hashtatfchus-meshivas': '/reader/hashtatfchus-hanefesh/1/1',
+  'parparos-commentary': '/reader/parparos-lechochma/1/1',
+  'kokhvei-or': '/reader/kokhvei-or/1/1',
+  'siach-sarfei-kodesh': '/reader/siach-sarfei-kodesh/1/1',
 };
 
 // Build category lookup
@@ -166,7 +166,7 @@ const resolvedGroups = authorGroups.map(group => {
   </nav>
 
   <!-- Main content -->
-  <main class="main-content">
+  <div class="main-content">
     {resolvedGroups.map(group => (
       <section class="author-section" id={group.id} data-author={group.id} style={`--section-accent: ${group.accent}`}>
         <div class="author-header">
@@ -243,7 +243,7 @@ const resolvedGroups = authorGroups.map(group => {
         ))}
       </section>
     ))}
-  </main>
+  </div>
 
   <!-- Footer links -->
   <footer class="library-footer">
