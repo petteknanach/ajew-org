@@ -1,41 +1,79 @@
-/* Standalone Psalms edition control. Never annotate or rewrite Original Hebrew.
- * All annotation objects are owned build-time imports; no runtime text fetch. */
+/* One TikunHaklaliReader per document; sources are build-time imports.
+ * Original Hebrew and frozen published pronunciation are never rewritten. */
 (function () {
   'use strict';
   function init() {
+    var root = document.getElementById('tikun-haklali');
     var source = document.getElementById('klali-source');
-    if (!source || source.dataset.initialized) return;
+    if (!root || !source || source.dataset.initialized) return;
     source.dataset.initialized = 'true';
-    var key = 'ajew-klali-edition-v1', prefs = { annotated: false, specialNikud: true, teamim: false };
+    var key = 'ajew-klali-reader-v2';
+    var prefs = { language: 'both', englishMode: 'translation', annotated: true, specialNikud: true, teamim: false };
     try {
       var saved = JSON.parse(localStorage.getItem(key));
-      if (saved) prefs = { annotated: saved.annotated === true, specialNikud: saved.specialNikud !== false, teamim: saved.teamim === true };
+      if (saved && typeof saved === 'object') {
+        if (['he', 'en', 'both'].indexOf(saved.language) >= 0) prefs.language = saved.language;
+        if (['translation', 'transliteration', 'both'].indexOf(saved.englishMode) >= 0) prefs.englishMode = saved.englishMode;
+        prefs.annotated = saved.annotated !== false;
+        prefs.specialNikud = saved.specialNikud !== false;
+        prefs.teamim = saved.teamim === true;
+      }
     } catch (_) {}
     var corpus;
     try { corpus = JSON.parse(source.textContent); } catch (_) { corpus = null; }
     var status = document.getElementById('klali-status');
     var original = document.getElementById('klali-original'), annotated = document.getElementById('klali-annotated');
     var special = document.getElementById('klali-special'), accents = document.getElementById('klali-accents');
-    var epoch = 0;
-    function show(selector, visible) { document.querySelectorAll(selector).forEach(function (el) { el.hidden = !visible; }); }
+    var language = document.getElementById('klali-language'), englishMode = document.getElementById('klali-english-mode');
+    var hebrewControls = document.getElementById('klali-hebrew-controls');
+    var epoch = 0, fontPromise;
+    function show(selector, visible) { root.querySelectorAll(selector).forEach(function (el) { el.hidden = !visible; }); }
     function save() { try { localStorage.setItem(key, JSON.stringify(prefs)); } catch (_) {} }
+    function englishView() {
+      var english = prefs.language !== 'he';
+      var pronunciation = english && prefs.englishMode !== 'translation';
+      language.value = prefs.language;
+      englishMode.value = prefs.englishMode;
+      englishMode.disabled = !english;
+      hebrewControls.hidden = prefs.language === 'en';
+      show('[data-klali-text="translation"]', english && prefs.englishMode !== 'transliteration');
+      show('[data-klali-text="transliteration"], .klali-published-variant', pronunciation);
+    }
+    function loadFonts() {
+      if (!fontPromise) {
+        fontPromise = new Promise(function (resolve, reject) {
+          var timer = setTimeout(function () { reject(Error('Marked font deadline')); }, 12000);
+          Promise.all(['day', 'sepia', 'night'].map(function (theme) {
+            return document.fonts.load('24px AjewMarked-' + theme).then(function (fonts) {
+              if (!fonts.length) throw Error('Marked font unavailable');
+            });
+          })).then(function () { clearTimeout(timer); resolve(); }, function (err) { clearTimeout(timer); reject(err); });
+        }).catch(function (err) { fontPromise = null; throw err; });
+      }
+      return fontPromise;
+    }
     async function render() {
-      var own = ++epoch;
+      var own = ++epoch, hebrew = prefs.language !== 'en';
+      englishView();
       original.setAttribute('aria-pressed', String(!prefs.annotated));
       annotated.setAttribute('aria-pressed', String(prefs.annotated));
       special.hidden = accents.hidden = !prefs.annotated;
       special.setAttribute('aria-pressed', String(prefs.specialNikud));
       accents.setAttribute('aria-pressed', String(prefs.teamim));
-      show('.klali-original, .klali-original-support', !prefs.annotated);
       show('.klali-annotated, .klali-companion', false);
-      if (!prefs.annotated) {
-        status.textContent = 'Original Hebrew · 164 complete verses. Special annotations unavailable for this edition and for unannotated prayers. The alternative has independent pointing; no classifications are borrowed.';
+      show('.klali-original, .klali-prelude-original', hebrew);
+      if (!hebrew) {
+        status.textContent = 'Complete published English · 164 verses. Translation and frozen pronunciation follow the book, not the independent Hebrew editions.';
         return;
       }
-      status.textContent = 'Loading the fully annotated alternative and its font…';
+      if (!prefs.annotated) {
+        status.textContent = 'Original app Hebrew · 164 verses, unchanged. Special annotations are unavailable for this edition. English remains a separately sourced book companion.';
+        return;
+      }
+      status.textContent = 'Loading Medooyuk and its marked font; Original app Hebrew remains visible until ready.';
       try {
         if (!corpus || !window.AjewMarkedHebrew) throw Error('Source or renderer unavailable');
-        var rows = document.querySelectorAll('[data-annotated-ref]');
+        var rows = root.querySelectorAll('[data-annotated-ref]');
         var seen = new Set();
         rows.forEach(function (el) {
           var ref = el.dataset.annotatedRef, verse = corpus[ref];
@@ -44,25 +82,24 @@
           el.innerHTML = window.AjewMarkedHebrew.renderVerse(verse, prefs);
         });
         if (seen.size !== 167 || Object.keys(corpus).length !== 167) throw Error('Incomplete source corpus');
-        // Fail honestly on font delivery errors; do not label fallback serif as marked.
-        await Promise.all(['day', 'sepia', 'night'].map(function (theme) {
-          return document.fonts.load('24px AjewMarked-' + theme).then(function (fonts) {
-            if (!fonts.length) throw Error('Font unavailable');
-          });
-        }));
+        await loadFonts();
         if (own !== epoch) return;
+        show('.klali-original, .klali-prelude-original', false);
         show('.klali-annotated, .klali-companion', true);
-        status.textContent = 'Fully annotated alternative · owned UXLC Psalms. Pointing, divine names, punctuation and qere can differ from Original. Hebrew only: English and legacy pronunciation are available in Original, not silently transferred to this edition. The Psalm 95 prayer variant remains below its biblical companion.';
+        annotated.textContent = 'Medooyuk · independent Hebrew edition';
+        status.textContent = 'Medooyuk · independent UXLC Hebrew with approved annotations. English translation and frozen pronunciation follow the published book by verse identity, not a Medooyuk pronunciation overlay. The Psalm 95 companion is independent of the prayer variant.';
       } catch (_) {
         if (own !== epoch) return;
-        status.textContent = 'Fully annotated source or font unavailable. Choose Original Hebrew to read the complete original text, or Retry alternative. No substitute is shown.';
-        annotated.textContent = 'Retry alternative · fully annotated Hebrew';
+        status.textContent = 'Medooyuk source or marked font unavailable. Original app Hebrew remains visible, unchanged and unannotated. Retry Medooyuk or choose Original app Hebrew; published English remains available.';
+        annotated.textContent = 'Retry Medooyuk';
       }
     }
     original.onclick = function () { prefs.annotated = false; save(); void render(); };
     annotated.onclick = function () { prefs.annotated = true; save(); void render(); };
     special.onclick = function () { prefs.specialNikud = !prefs.specialNikud; save(); void render(); };
     accents.onclick = function () { prefs.teamim = !prefs.teamim; save(); void render(); };
+    language.onchange = function () { if (['he', 'en', 'both'].indexOf(language.value) < 0) return; prefs.language = language.value; save(); void render(); };
+    englishMode.onchange = function () { if (['translation', 'transliteration', 'both'].indexOf(englishMode.value) < 0) return; prefs.englishMode = englishMode.value; save(); void render(); };
     void render();
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });

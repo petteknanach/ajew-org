@@ -5,6 +5,7 @@
  */
 import Layout from '../layouts/Layout.astro';
 import { quoteSourceUrl } from '../lib/source-entry-integrity.mjs';
+import TikunHaklaliReader from '../components/TikunHaklaliReader.astro';
 
 // Load daily quote data
 const quotes = [
@@ -74,6 +75,10 @@ const todayQuote = quotes[dayIndex];
         <button type="submit" aria-label="Search">🔍</button>
       </form>
     </div>
+    <a href="#tikun-haklali" class="hero-tikun-link">
+      <span class="hero-tikun-title">📖 Read Tikun Haklali <span lang="he" dir="rtl">תיקון הכללי</span></span>
+      <span class="hero-tikun-options">Hebrew · English · Both <span aria-hidden="true">→</span></span>
+    </a>
   </div>
 
   <a href="/reader/sichos-chayay-saba/1/1" class="hero-holy-figure hero-saba-link" aria-label="Open the teachings of Saba Yisroel">
@@ -342,6 +347,16 @@ const todayQuote = quotes[dayIndex];
   </div>
 </section>
 
+<!-- Tikun Haklali — after the offerings, before the closing quote -->
+<section class="home-tikun" aria-labelledby="home-tikun-heading">
+  <header class="home-tikun-heading">
+    <h2 id="home-tikun-heading">Tikun Haklali <span lang="he" dir="rtl">תיקון הכללי</span></h2>
+    <p>The ten Psalms — read here in Hebrew, English, or both.</p>
+    <a href="/tikkun-klali">Open the dedicated Tikun Haklali page →</a>
+  </header>
+  <TikunHaklaliReader />
+</section>
+
 <!-- ═══════════════════════════════════════
      BOTTOM QUOTE
      ═══════════════════════════════════════ -->
@@ -567,6 +582,33 @@ const todayQuote = quotes[dayIndex];
     text-shadow: 0 1px 4px rgba(0,0,0,0.3);
   }
   .no-break { white-space: nowrap; }
+  .home-tikun { max-width: 900px; margin: 3rem auto; padding: 1.5rem 1rem; scroll-margin-top: 90px; }
+  .home-tikun-heading { text-align: center; margin-bottom: 1.5rem; }
+  .home-tikun-heading h2 { font-size: clamp(1.7rem, 4vw, 2.4rem); line-height: 1.5; }
+  .home-tikun-heading h2 [lang="he"] { display: inline-block; font-family: var(--ds-font-hebrew, 'Frank Ruhl Libre', serif); }
+  .home-tikun-heading p { margin: .5rem 0; }
+  .home-tikun-heading a { display: inline-block; padding: .6rem .3rem; text-decoration: underline; }
+  .hero-tikun-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .35rem;
+    margin: 1rem auto 0;
+    padding: .9rem 1rem;
+    width: 100%;
+    box-sizing: border-box;
+    border: 2px solid #f5cf65;
+    border-radius: 14px;
+    background: #ffdfa0;
+    color: #172c43;
+    text-decoration: none;
+    box-shadow: 0 5px 20px rgba(0,0,0,.22);
+  }
+  .hero-tikun-link:hover { background: #ffecbd; }
+  .hero-tikun-link:focus-visible { outline: 3px solid #fff; outline-offset: 4px; }
+  .hero-tikun-title { font-size: clamp(1.1rem, 2.6vw, 1.5rem); font-weight: 800; line-height: 1.5; }
+  .hero-tikun-title [lang="he"] { display: inline-block; margin-inline-start: .5rem; font-family: var(--ds-font-hebrew, 'Frank Ruhl Libre', serif); }
+  .hero-tikun-options { font-size: .95rem; font-weight: 600; line-height: 1.4; }
   .hero-search form {
     display: flex;
     border-radius: 50px;

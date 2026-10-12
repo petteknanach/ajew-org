@@ -1,0 +1,113 @@
+---
+import klali from '../data/tikkun-klali.json';
+---
+<section id="tikun-haklali" class="klali-reader" aria-labelledby="klali-heading">
+  <header>
+    <h2 id="klali-heading">Tikun Haklali · <span lang="he" dir="rtl">תיקון הכללי</span></h2>
+    <p>All ten Psalms · 164 verses · complete published English translation and frozen pronunciation.</p>
+    <p class="klali-charity"><strong>It is good to first set aside charity, even one penny.</strong></p>
+  </header>
+  <div class="klali-controls" aria-label="Tikun reading controls">
+    <label for="klali-language">Language / שפה</label>
+    <select id="klali-language">
+      <option value="both" selected>Hebrew + English / עברית ואנגלית</option>
+      <option value="he">Hebrew / עברית</option>
+      <option value="en">English</option>
+    </select>
+    <label for="klali-english-mode">English text</label>
+    <select id="klali-english-mode">
+      <option value="translation" selected>Translation</option>
+      <option value="transliteration">Transliteration · published pronunciation</option>
+      <option value="both">Translation + transliteration</option>
+    </select>
+    <fieldset id="klali-hebrew-controls">
+      <legend>Hebrew edition</legend>
+      <div class="klali-buttons">
+        <button type="button" id="klali-annotated" aria-pressed="true">Medooyuk · independent Hebrew edition</button>
+        <button type="button" id="klali-original" aria-pressed="false">Original app Hebrew</button>
+        <button type="button" id="klali-special" aria-pressed="true">Special nikud</button>
+        <button type="button" id="klali-accents" aria-pressed="false">Accents</button>
+      </div>
+    </fieldset>
+    <p id="klali-status" role="status" aria-live="polite">Original app Hebrew is available below. Medooyuk loads with JavaScript and its marked font.</p>
+  </div>
+  <nav class="klali-chapters" aria-label="Jump to a Psalm">
+    {klali.chapters.map(c => <a href={`#klali-psalm-${c.chapter}`}>{c.chapter}</a>)}
+  </nav>
+  <details class="klali-source-note">
+    <summary>Sources and pronunciation convention</summary>
+    <p>English translation and transliteration are copied from the published Tikun back matter in <cite>Revival of the Soul (Misheevas Nefesh)</cite>, the user-saved final author edits, corroborated by its pagination-repaired edition. The printed spellings are frozen, not corrected to another convention.</p>
+    <p>The English accompanies the Psalm and verse identity. It is not a new translation or a pronunciation overlay for Medooyuk. Original app Hebrew, published prayer Hebrew, and the independent Medooyuk edition can differ in pointing, divine-name spelling and qere. Each verse’s disclosure retains the exact published Hebrew underlying its pronunciation.</p>
+    <p>Medooyuk uses the current approved annotations and renderer with the independent <a href="https://tanach.us/">UXLC 2.5 Hebrew text (CC BY)</a>; no classifications are borrowed for Original app Hebrew or unannotated prayers. This transports approved marks, not a new claim of universal linguistic completeness. <a href="/tikkun/qatan-sources.html">Annotation source notes · MAM qatan supplement, Hebrew Wikisource (CC BY-SA 4.0)</a>.</p>
+    <p>Transliterator's note: The method used here is not the sophisticated conventional way, rather it is extremely simple and straightforward.</p>
+    <ul>
+      <li>ch = kh</li>
+      <li>ALL vowels are soft (like: bed, sit, luck, including eh, also at the end of the word) unless they are doubled, like ai, ay, ee, ey, oo, oa, ue, uy</li>
+      <li>iy = eye</li>
+    </ul>
+  </details>
+  <section class="klali-binding">
+    <h3>Before the Psalms · Binding Declaration</h3>
+    <p data-klali-text="transliteration" lang="en" hidden>Haraynee mekashehr es atzmee bi-ameeras hu-asara mizmuray tihilim ailoo lichul hatzadikim hu-ameeteem shebidoarainoo, oolichul hatzadikim hu-ameeteem shoachney ufur kidoasheem ashehr bu-uretz haimu, oobifrat li-rabainoo hakudoash tzadik yisoad oalum nachal noavaiya mikur chuchmu ra-bainoo Na Nach Nachmu Nachmun Me-Oomon zichoosoa yugain ulainoo vi-al kul yisru-el umain.</p>
+    <p data-klali-text="translation" lang="en">Hereby I bind myself, through the recitation of these ten Psalms, to all the true tzaddikim in our generation, and to all the true tzaddikim who have passed on, the holy ones who rest in the dust, and in particular to our holy Rabbi, the foundation of the world, the flowing stream, the source of wisdom, our Rabbi Na Nach Nachma Nachman of Uman; may his merit protect us and all of Israel, Amen.</p>
+    <p class="klali-note">The published declaration is provided in English; no new Hebrew wording or special annotations are supplied for it.</p>
+  </section>
+  <section class="klali-prelude">
+    <h3>Prelude · Psalm 95:1–3</h3>
+    <div class="klali-companion" hidden>
+      <p class="klali-note">Independent biblical companion, Hebrew only; not a replacement for the preserved prayer variant.</p>
+      {[1,2,3].map(v => <p class="klali-hebrew" dir="rtl" lang="he" data-annotated-ref={`95:${v}`}></p>)}
+    </div>
+    <p class="klali-hebrew klali-prelude-original" dir="rtl" lang="he">לְכוּ נְרַנְּנָה לַיהוָה נָרִיעָה לְצוּר יִשְׁעֵנוּ׃ נְקַדְּמָה פָנָיו בְּתוֹדָה בְּזִמְרוֹת נָרִיעַ לוֹ׃ כִּי אֵל גָּדוֹל יְהוָה וּמֶלֶךְ גָּדוֹל עַל כָּל אֱלֹהִים׃</p>
+    <p data-klali-text="transliteration" lang="en" hidden>Lichoo niraninuh laHshem nuhreya litzoor yeeshainoo. Nikadmuh punuv bisoadah bizmeeroas nuhreeya loa. Kee Ai-l gadoal Adoa-neye oomelech gadoal al kul eloaheem.</p>
+    <p data-klali-text="translation" lang="en">Go, let us give praise to Hashem, let us holler to the Rock of our salvation. Let us greet His countenance with thanksgiving, with songs we will holler to Him. For Hashem is a great G-d, and a great King over all gods.</p>
+    <p class="klali-note">This inherited prayer variant and its English are retained separately from the recovered ten-Psalm back matter; they are not annotated.</p>
+  </section>
+  {klali.chapters.map(({chapter,title,verses}) => (
+    <section id={`klali-psalm-${chapter}`} class="klali-psalm" data-psalm={chapter} aria-labelledby={`klali-title-${chapter}`}>
+      <h3 id={`klali-title-${chapter}`}>{title}</h3>
+      {verses.map(verse => <div class="klali-verse" data-verse-ref={`${chapter}:${verse.index}`}>
+        <small>Psalm {chapter}:{verse.index}</small>
+        <p class="klali-hebrew klali-original" dir="rtl" lang="he">{verse.he}</p>
+        <p class="klali-hebrew klali-annotated" dir="rtl" lang="he" hidden data-annotated-ref={`${chapter}:${verse.index}`}></p>
+        <p data-klali-text="translation" lang="en">{verse.en}</p>
+        <p data-klali-text="transliteration" lang="en" hidden>{verse.transliteration}</p>
+        <details class="klali-published-variant" hidden>
+          <summary>Published Hebrew underlying this pronunciation</summary>
+          <p class="klali-note">Frozen book prayer text; not the independent Medooyuk edition.</p>
+          <p class="klali-hebrew" dir="rtl" lang="he">{verse.publishedHebrew}</p>
+        </details>
+      </div>)}
+      <a class="klali-back" href="#tikun-haklali">Back to reading controls ↑</a>
+    </section>
+  ))}
+  <script is:inline type="application/json" id="klali-source" set:html={JSON.stringify(klali.annotated).replace(/</g, '\\u003c')} />
+  <script is:inline src="/medooyuk.js?v=capital-t-20261002-1"></script>
+  <script is:inline src="/tikkun-klali.js?v=20261012-published-1"></script>
+</section>
+<style is:global>
+  .klali-reader { max-width: 820px; margin: 3rem auto; padding: 1.25rem; color: var(--ds-text-primary, #1a1a1a); background: var(--ds-surface, #fff); border: 1px solid var(--ds-border, #bbb); border-radius: 14px; line-height: 1.8; text-align: start; }
+  .klali-reader [hidden] { display: none !important; }
+  .klali-reader h2 { font-size: clamp(1.6rem, 5vw, 2.4rem); text-align: center; margin: 0 0 .75rem; }
+  .klali-reader h3 { font-size: 1.35rem; margin: 1rem 0; }
+  .klali-reader p { margin: .5rem 0; overflow-wrap: anywhere; white-space: pre-line; }
+  .klali-controls { display: grid; gap: .5rem; padding: 1rem; background: var(--ds-surface-raised, #f5f0e6); border-radius: 10px; }
+  .klali-controls label, .klali-controls legend { font-weight: 700; }
+  .klali-controls select { width: 100%; min-height: 44px; padding: .5rem; font: inherit; color: inherit; background: var(--ds-surface, #fff); border: 1px solid var(--ds-border, #888); border-radius: 6px; }
+  .klali-controls fieldset { min-width: 0; margin: .5rem 0; padding: .5rem; border: 1px solid var(--ds-border, #888); border-radius: 6px; }
+  .klali-buttons, .klali-chapters { display: flex; flex-wrap: wrap; gap: .5rem; }
+  .klali-buttons button { min-height: 44px; padding: .5rem .75rem; font: inherit; color: inherit; background: var(--ds-surface, #fff); border: 2px solid var(--ds-border, #888); border-radius: 8px; cursor: pointer; }
+  .klali-buttons button[aria-pressed="true"] { border-color: var(--ds-gold-600, #966b00); background: var(--ds-surface-raised, #f5f0e6); font-weight: 700; }
+  .klali-chapters { margin: 1rem 0; }
+  .klali-chapters a, .klali-back { display: inline-flex; align-items: center; min-height: 44px; padding: .25rem .75rem; color: var(--ds-link, #3b67ad); text-decoration: underline; }
+  .klali-chapters a { border: 1px solid var(--ds-border, #888); border-radius: 8px; }
+  .klali-reader summary { cursor: pointer; min-height: 44px; padding: .25rem 0; }
+  .klali-source-note, .klali-binding, .klali-prelude, .klali-psalm { margin-top: 1.5rem; border-top: 1px solid var(--ds-border, #bbb); padding-top: 1rem; }
+  .klali-verse { padding: .75rem 0; border-bottom: 1px solid var(--ds-border, #bbb); }
+  .klali-hebrew { font-family: var(--ds-font-hebrew, 'Frank Ruhl Libre', serif); font-size: 1.55rem; line-height: 2.2; direction: rtl; text-align: right; }
+  .klali-reader [data-klali-text="transliteration"] { font-size: 1.05rem; font-style: italic; }
+  .klali-note, #klali-status { font-size: .92rem; }
+  #tikun-haklali, .klali-psalm { scroll-margin-top: 90px; }
+  .klali-reader :focus-visible { outline: 3px solid var(--ds-link, #3b67ad); outline-offset: 3px; }
+  @media (max-width: 600px) { .klali-reader { margin: 2rem .5rem; padding: .75rem; } .klali-controls { padding: .75rem; } .klali-hebrew { font-size: 1.4rem; } }
+</style>

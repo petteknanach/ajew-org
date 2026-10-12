@@ -1,13 +1,13 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import klali from '../data/tikkun-klali.json';
+import TikunHaklaliReader from '../components/TikunHaklaliReader.astro';
 
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebPage",
   "name": "Tikun HaKlali - The Complete Rectification | ajew.org",
   "url": "https://ajew.org/tikkun-klali",
-  "description": "The Ten Psalms of Tikun HaKlali revealed by Rebbe Nachman of Breslov. Read all 164 Hebrew verses with an explicitly labelled annotated alternative and retained English where available.",
+  "description": "The Ten Psalms of Tikun HaKlali revealed by Rebbe Nachman of Breslov. Read all 164 verses in Hebrew, English or both, with complete published translation and frozen transliteration, and an independent Medooyuk Hebrew edition.",
   "mainEntity": {
     "@type": "CreativeWork",
     "name": "Tikun HaKlali",
@@ -21,15 +21,17 @@ const jsonLd = {
 
 <Layout
   title="Tikun HaKlali - The Complete Rectification | ajew.org"
-  description="The Ten Psalms of Tikun HaKlali revealed by Rebbe Nachman of Breslov. All 164 Hebrew verses, an annotated alternative, and retained English where available. Recite the Complete Rectification online."
+  description="The Ten Psalms of Tikun HaKlali revealed by Rebbe Nachman of Breslov. All 164 verses, complete published English translation and frozen transliteration, and independent Medooyuk Hebrew. Recite the Complete Rectification online."
 >
-  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
 <section class="intro-section">
   <h1 class="page-title">Tikun HaKlali</h1>
   <p class="hebrew-title">תִּקּוּן הַכְּלָלִי</p>
   <p class="subtitle">The Complete Rectification &mdash; Ten Psalms Revealed by Rebbe Nachman of Breslov</p>
 </section>
+
+<TikunHaklaliReader />
 
 <section class="content-section">
   <h2>The Rebbe's Promise</h2>
@@ -42,68 +44,6 @@ const jsonLd = {
   <p>These are the ten chapters of Psalms: <strong>16, 32, 41, 42, 59, 77, 90, 105, 137, 150</strong> &mdash; as they have already been printed several times. And one should say them in the order in which they are written in the Book of Psalms. And he said that this is the General Rectification (<em>tikun ha-klali</em>). For every transgression has its own specific rectification, but the rectification mentioned above is the general one.</p>
   <p>He also said at that time that the matter mentioned above&mdash;concerning these ten chapters of Psalms&mdash;should be revealed and made known in public to everyone. And he said: Although it is an easy thing to say ten chapters of Psalms, nevertheless, even this will be very difficult to fulfill. And so it has been fulfilled now, in our great sins, that because of the great increase of disputes and divisiveness, most of the multitude are very far from fulfilling this. And he&mdash;of blessed memory&mdash;informed of all this in advance.</p>
 </section>
-
-<section class="content-section binding-section">
-  <h2>Binding Declaration</h2>
-  <p>Before reciting the ten Psalms, bind yourself to Rabbi Nachman by reciting:</p>
-  <div class="binding-text">
-    <p class="transliteration"><em>Haraynee mekashehr es atzmee bi-ameeras hu-asara mizmuray tihilim ailoo lichul hatzadikim hu-ameeteem shebidoarainoo, oolichul hatzadikim hu-ameeteem shoachney ufur kidoasheem ashehr bu-uretz haimu, oobifrat li-rabainoo hakudoash tzadik yisoad oalum nachal noavaiya mikur chuchmu ra-bainoo Na Nach Nachmu Nachmun Me-Oomon zichoosoa yugain ulainoo vi-al kul yisru-el umain.</em></p>
-    <p>Hereby I bind myself, through the recitation of these ten Psalms, to all the true tzaddikim in our generation, and to all the true tzaddikim who have passed on, the holy ones who rest in the dust, and in particular to our holy Rabbi, the foundation of the world, the flowing stream, the source of wisdom, our Rabbi Na Nach Nachma Nachman of Uman; may his merit protect us and all of Israel, Amen.</p>
-  </div>
-</section>
-
-<section class="content-section klali-controls" aria-label="Psalm text edition">
-  <h2>Psalm text edition</h2>
-  <div class="klali-buttons">
-    <button id="klali-original" aria-pressed="true">Original Hebrew</button>
-    <button id="klali-annotated" aria-pressed="false">Fully annotated Hebrew · alternative</button>
-    <button id="klali-special" aria-pressed="true" hidden>Special nikud</button>
-    <button id="klali-accents" aria-pressed="false" hidden>Accents</button>
-  </div>
-  <p id="klali-status" role="status">Complete Original Hebrew: 164 verses from the owned app corpus. Special annotations are unavailable for this edition and for unannotated prayers. The alternative is a separately labelled Hebrew source, not an overlay.</p>
-  <p>The former standalone Hebrew omitted 15 verses. The complete Original corpus is now used, including its divine-name spelling and pointing. Existing English is retained by verse identity (15 entries unavailable); it is not a new or independently verified translation. Legacy transliteration and its former Hebrew variant remain in each verse’s disclosure.</p>
-</section>
-<script is:inline type="application/json" id="klali-source" set:html={JSON.stringify(klali.annotated).replace(/</g, '\\u003c')} />
-<script is:inline src="/medooyuk.js"></script>
-<script is:inline src="/tikkun-klali.js"></script>
-
-<section class="content-section prelude-section">
-  <h2>Prelude &mdash; Psalm 95:1&ndash;3</h2>
-  <p>The prayer variant below is preserved, without borrowed classifications.</p>
-  <div class="klali-companion" hidden>
-    <p>Biblical companion — fully annotated Psalm 95:1–3. Not a replacement for the prayer variant; Hebrew only.</p>
-    {[1,2,3].map(v => <p class="verse-hebrew" dir="rtl" lang="he" data-annotated-ref={`95:${v}`}></p>)}
-  </div>
-  <div class="psalm-block">
-    <p class="verse-hebrew" dir="rtl">לְכוּ נְרַנְּנָה לַיהוָה נָרִיעָה לְצוּר יִשְׁעֵנוּ׃ נְקַדְּמָה פָנָיו בְּתוֹדָה בְּזִמְרוֹת נָרִיעַ לוֹ׃ כִּי אֵל גָּדוֹל יְהוָה וּמֶלֶךְ גָּדוֹל עַל כָּל אֱלֹהִים׃</p>
-    <p class="verse-transliteration"><em>Lichoo niraninuh laHshem nuhreya litzoor yeeshainoo. Nikadmuh punuv bisoadah bizmeeroas nuhreeya loa. Kee Ai-l gadoal Adoa-neye oomelech gadoal al kul eloaheem.</em></p>
-    <p class="verse-english">Go, let us give praise to Hashem, let us holler to the Rock of our salvation. Let us greet His countenance with thanksgiving, with songs we will holler to Him. For Hashem is a great G-d, and a great King over all gods.</p>
-  </div>
-</section>
-{klali.chapters.map(({ chapter, title, ritualHeading, verses }) => (
-<section class="content-section psalm-section" data-psalm={chapter}>
-  <h2>{title}</h2>
-  <p>{verses.length} verses · Complete chapter</p>
-  {ritualHeading && <p class="psalm-subtitle" lang="he" dir="rtl"><em>{ritualHeading}</em></p>}
-  <div class="psalm-verses">
-    {verses.map(verse => <div class="verse" data-verse-ref={`${chapter}:${verse.index}`}>
-      <small>Psalm {chapter}:{verse.index}</small>
-      <p class="verse-hebrew klali-original" dir="rtl" lang="he">{verse.he}</p>
-      <p class="verse-hebrew klali-annotated" dir="rtl" lang="he" hidden data-annotated-ref={`${chapter}:${verse.index}`}></p>
-      <div class="klali-original-support">
-        <p class="verse-english">{verse.en || 'Existing English unavailable for this verse.'}</p>
-        {verse.legacyTransliteration && <details class="legacy-pronunciation">
-          <summary>Retained legacy pronunciation / source variant</summary>
-          <p>This inherited transliteration follows the former standalone text, not necessarily the complete Original Hebrew above. It has not been retranslated or silently aligned to the alternative edition.</p>
-          <p class="verse-transliteration">{verse.legacyTransliteration}</p>
-          <p class="verse-hebrew" dir="rtl" lang="he">{verse.legacyHebrew}</p>
-        </details>}
-      </div>
-    </div>)}
-  </div>
-</section>
-))}
-
 
 <section class="content-section closing-section">
   <h2>The Power of These Ten Psalms</h2>
@@ -154,13 +94,6 @@ const jsonLd = {
 
 <style is:global>
   /* Tikun HaKlali page styles */
-  .klali-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
-  .klali-buttons button { min-height: 44px; padding: 10px; color: var(--ds-text-primary, #1a1a1a); background: var(--ds-surface, #fff); border: 1px solid var(--ds-border, #777); border-radius: 8px; }
-  .klali-buttons button[aria-pressed="true"] { border-width: 3px; }
-  .klali-controls [hidden], .psalm-section [hidden], .prelude-section [hidden] { display: none !important; }
-  .legacy-pronunciation { font-size: .9rem; }
-  .legacy-pronunciation summary { min-height: 44px; cursor: pointer; }
-  .klali-annotated { min-height: 2em; }
   .page-title {
     font-size: 2.5rem;
     font-weight: 700;
