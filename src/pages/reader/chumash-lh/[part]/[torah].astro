@@ -1,6 +1,7 @@
 ---
 import Layout from '../../../../layouts/Layout.astro';
 import ReviewedParsha from '../../../../components/ReviewedParsha.astro';
+import QualifiedParsha from '../../../../components/QualifiedParsha.astro';
 import Comments from '../../../../components/Comments.astro';
 import ParshaSourceSupplement from '../../../../components/ParshaSourceSupplement.astro';
 import '../../../../styles/reader.css';
@@ -41,6 +42,7 @@ const { part, torah } = Astro.params;
 const partNum = parseInt(part);
 const torahNum = parseInt(torah);
 const reviewedSlug = partNum === 1 && torahNum === 1 ? 'bereishit' : partNum === 1 && torahNum === 2 ? 'noach' : null;
+const qualifiedSlug = partNum === 1 ? ({4: 'vayeira', 5: 'chayei-sarah', 6: 'toldot', 7: 'vayeitzei'})[torahNum] || null : null;
 
 let torahData = null;
 let error = null;
@@ -105,6 +107,16 @@ const structuredData = torahData ? JSON.stringify({
       <ParshaSourceSupplement packet={sourceSupplement} />
     </div>
     <ReviewedParsha slug={reviewedSlug} />
+  ) : qualifiedSlug ? (
+    <div style="max-width: 960px; margin: 0 auto; padding: 1rem;">
+      <nav aria-label="Qualified parsha navigation">
+        {torahData.navigation?.prevUrl && <a href={torahData.navigation.prevUrl}>← Previous</a>}
+        {' · '}<a href="/reader/chumash-lh/1">Book index</a>{' · '}
+        <a href={`/parsha/${qualifiedSlug}`}>Independent parsha page</a>
+        {torahData.navigation?.nextUrl && <a href={torahData.navigation.nextUrl}> · Next →</a>}
+      </nav>
+      <QualifiedParsha slug={qualifiedSlug} />
+    </div>
   ) : (
     <div
       class="reader-container"
@@ -330,7 +342,7 @@ const structuredData = torahData ? JSON.stringify({
       )}
 
 
-      <script src="/reader-script.js?v=reader-arrival-20261008-r1" defer></script>
+      <script src="/reader-script.js?v=qualified-parsha-20261012-r1" defer></script>
       <script src="/reader-v2.js" defer></script>
       <script src="/pwa-register.js" defer></script>
       <script src="/tts-fix.js" defer></script>

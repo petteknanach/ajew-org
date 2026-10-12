@@ -2,6 +2,7 @@
 import Layout from '../../../../layouts/Layout.astro';
 import Comments from '../../../../components/Comments.astro';
 import CommentarySidebar from '../../../../components/CommentarySidebar.astro';
+import QualifiedParsha from '../../../../components/QualifiedParsha.astro';
 import hkIndex from '../../../../data/hk-citations-index.json';
 import '../../../../styles/reader.css';
 import '../../../../styles/reader-v2.css';
@@ -90,11 +91,25 @@ const breslovEntry = torahData && bpChapters.includes(torahNum) ? {
   url: "/reader/breslov-parsha/bereishit-" + torahNum + ".json"
 } : null;
 
+// A distinct source-qualified edition, selected only by the actual exported index.
+const qualifiedIndex = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'public/data/breslov-parsha/qualified-110-171/index.json'), 'utf8'));
+const qualifiedChapter = torahData && partNum === 1 ? qualifiedIndex.chapters[String(torahNum)] : null;
+const qualifiedBreslovEntry = qualifiedChapter ? {
+  book: 'breslov-parsha-qualified-110-171',
+  section: `bereishit-${torahNum}`,
+  label: 'ברסלב — ליקוטים מסויגים',
+  sectionTitle: 'Qualified supplied source selections',
+  url: qualifiedChapter.url,
+} : null;
+const qualifiedChapterData = qualifiedChapter
+  ? JSON.parse(fs.readFileSync(path.join(process.cwd(), 'public', qualifiedChapter.url), 'utf8')) : null;
+
 const commentaryEntry = torahData ? {
   related_commentaries: [
     ...(hkEntry ? [hkEntry] : []),
     ...(noachEntry ? [noachEntry] : []),
     ...(breslovEntry ? [breslovEntry] : []),
+    ...(qualifiedBreslovEntry ? [qualifiedBreslovEntry] : []),
     {
       book: "likutay-nanach",
       section: lnBookSlug,
@@ -104,6 +119,8 @@ const commentaryEntry = torahData ? {
     }
   ]
 } : null;
+const qualifiedTabIndex = commentaryEntry?.related_commentaries.findIndex(c => c === qualifiedBreslovEntry);
+const qualifiedTabId = qualifiedBreslovEntry ? `c-${qualifiedTabIndex}-${qualifiedBreslovEntry.book}` : null;
 const breadcrumbData = torahData ? JSON.stringify({
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
@@ -259,6 +276,34 @@ const breadcrumbData = torahData ? JSON.stringify({
       {torahData && commentaryEntry && (
         <CommentarySidebar part={partNum} torah={torahNum} entry={commentaryEntry} />
       )}
+      {qualifiedChapterData && <template id="qualified-chapter-template" data-tab-id={qualifiedTabId}>
+        <QualifiedParsha dataset={qualifiedChapterData} />
+      </template>}
+
+      <script is:inline>
+        // Route-local bridge: preserve the shared sidebar and all older sources.
+        // Its generic segment renderer cannot display this edition's pair notes.
+        (function () {
+          var template = document.getElementById('qualified-chapter-template');
+          var body = document.getElementById('commentary-sidebar-body');
+          var tabs = document.getElementById('commentary-sidebar-tabs');
+          if (!template || !body || !tabs) return;
+          function showQualifiedChapter() {
+            var active = tabs.querySelector('[aria-selected="true"]');
+            if (!active || active.getAttribute('data-tab-id') !== template.getAttribute('data-tab-id')) return;
+            if (body.querySelector('[data-qualified-parsha]')) return;
+            // Wait for this tab's actual fetch/render, not an earlier tab or Loading.
+            var title = body.querySelector('.commentary-sidebar-section-head h3');
+            if (!title || title.textContent !== 'Qualified supplied source selections') return;
+            body.replaceChildren(template.content.cloneNode(true));
+          }
+          var observer = new MutationObserver(showQualifiedChapter);
+          observer.observe(body, {childList: true, subtree: true});
+          observer.observe(tabs, {attributes: true, attributeFilter: ['aria-selected'], subtree: true});
+          window.addEventListener('pagehide', function () { observer.disconnect(); }, {once: true});
+          showQualifiedChapter();
+        })();
+      </script>
 
 
       <footer class="reader-medooyuk-source-notice" dir="ltr" aria-label="Medooyuk source attribution"><p><a href="/tikkun/qatan-sources.html">MAM qatan supplement — Hebrew Wikisource · CC BY-SA 4.0 · sources and changes</a></p></footer>
@@ -267,7 +312,7 @@ const breadcrumbData = torahData ? JSON.stringify({
       <script src="/medooyuk.js?v=four-surfaces-20261006-r1" defer></script>
       <script src="/reader-source-exact.js?v=1" defer></script>
       <script src="/reader-editions.js?v=four-surfaces-20261006-r1" defer></script>
-      <script src="/reader-script.js?v=reader-arrival-20261008-r1" defer></script>
+      <script src="/reader-script.js?v=qualified-parsha-20261012-r1" defer></script>
       <script src="/reader-v2.js?v=reader-editions-20261002" defer></script>
       <script src="/pwa-register.js" defer></script>
       <script src="/tts-fix.js" defer></script>

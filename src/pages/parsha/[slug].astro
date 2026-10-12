@@ -2,6 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import ParshaSourceSupplement from '../../components/ParshaSourceSupplement.astro';
 import ReviewedParsha from '../../components/ReviewedParsha.astro';
+import QualifiedParsha from '../../components/QualifiedParsha.astro';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -177,10 +178,11 @@ const CHUMASH_LH_READER: Record<string, string> = {
 const chumashLhReaderUrl = CHUMASH_LH_READER[slug] ? `/reader/chumash-lh/${CHUMASH_LH_READER[slug]}` : null;
 
 const hasReviewedParsha = slug === 'bereishit' || slug === 'noach';
+const hasQualifiedParsha = ['vayeira', 'chayei-sarah', 'toldot', 'vayeitzei'].includes(slug);
 // Legacy OCR is not a fallback edition. Special corrected packets remain below.
 // NEW: Read Chumash-LH JSON for direct display
 let chumashLhData = null;
-if (CHUMASH_LH_READER[slug]) {
+if (CHUMASH_LH_READER[slug] && !hasQualifiedParsha) {
   const [part, torah] = CHUMASH_LH_READER[slug].split('/');
   const chumashLhPath = path.join(process.cwd(), 'public', 'reader', 'chumash-lh', `part-${part}`, `torah-${torah}.json`);
   try {
@@ -392,6 +394,7 @@ const breadcrumbData = JSON.stringify({
       )}
 
       {hasReviewedParsha && <ReviewedParsha slug={slug} />}
+      {hasQualifiedParsha && <QualifiedParsha slug={slug} />}
 
       <!-- Chumash with Likutay Halachos PDF -->
       {hasPdf && !hasSpecialParshaPacket && !hasReviewedParsha && (
@@ -409,7 +412,7 @@ const breadcrumbData = JSON.stringify({
       )}
 
       <!-- Chumash-LH Direct Text Display (English default) -->
-      {chumashLhData?.reviewStatus === 'reviewed' && !hasSpecialParshaPacket && !hasReviewedParsha && (
+      {chumashLhData?.reviewStatus === 'reviewed' && !hasSpecialParshaPacket && !hasReviewedParsha && !hasQualifiedParsha && (
         <div class="chumash-lh-text-section">
           <h3>English Text (from Chumash with Likutey Halachos)</h3>
           

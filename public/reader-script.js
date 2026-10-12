@@ -2564,6 +2564,14 @@
       }
     }
 
+    // A distinct qualified edition; chapter coverage comes only from its index.
+    var qualifiedChapter = bookId === 'tanach-bereishit' && part === 1 && qualifiedParshaIndex &&
+      qualifiedParshaIndex.chapters && qualifiedParshaIndex.chapters[String(torah)];
+    if (qualifiedChapter) {
+      sources.push({id: 'breslov-parsha-qualified-110-171', label: 'Qualified Breslov', labelHe: 'ברסלב — ליקוטים מסויגים',
+        url: qualifiedChapter.url, type: 'commentary'});
+    }
+
     // === Likutay Nanach Vol 1-3 — volume-level commentary for all books ===
     var lnVolSources = getLNVolumeCommentary(bookId);
     for (var vi = 0; vi < lnVolSources.length; vi++) {
@@ -2580,11 +2588,23 @@
     return sources;
   }
 
+  var qualifiedParshaIndex = null;
+  var qualifiedParshaIndexAttempted = false;
   function setupCommentaryPanel() {
     // A server-rendered CommentarySidebar is authoritative. Do not create a
     // second legacy panel or prefetch duplicate/stale source URLs.
     if (document.getElementById('commentary-sidebar-data')) return;
     var ctx = getReaderContext();
+    if (ctx && ctx.bookId === 'tanach-bereishit' && !qualifiedParshaIndexAttempted) {
+      qualifiedParshaIndexAttempted = true;
+      fetch('/data/breslov-parsha/qualified-110-171/index.json?v=qualified-parsha-20261012-r1')
+        .then(function (r) { if (!r.ok) throw new Error('Qualified index unavailable'); return r.json(); })
+        .then(function (index) {
+          if (index.schema === 'qualified-parsha-three-consumer-index/v1') qualifiedParshaIndex = index;
+        }).catch(function () { /* Preserve older unrelated commentary if this edition is unavailable. */ })
+        .then(setupCommentaryPanel);
+      return;
+    }
     var sources = [];
     var partNum, torahNum;
 
@@ -2797,7 +2817,47 @@
       });
   }
 
+  function qualifiedSourceHTML(data) {
+    function safe(value) {
+      return String(value == null ? '' : value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+    function notesHTML(notes) {
+      return (notes || []).map(function (note) {
+        var aliases = (note.aliases || []).map(function (a) { return a.id || a.origin || ''; }).join(' · ');
+        return '<aside class="qualified-source-qualification" dir="ltr" lang="en" data-note-id="' + safe(note.id) + '">' +
+          '<p style="white-space:pre-wrap">' + safe(note.text) + '</p><small>' + safe(note.id) + (aliases ? ' · Aliases: ' + safe(aliases) : '') + '</small></aside>';
+      }).join('');
+    }
+    var html = '<div class="commentary-content qualified-source-content"><p dir="ltr" style="white-space:pre-wrap">' + safe(data.scopeNotice) + '</p>';
+    var allQualifiedUnits = (data.units || []).concat(data.apparatus || []);
+    ['main', 'apparatus'].forEach(function (kind) {
+      var units = allQualifiedUnits.filter(function (unit) { return unit.kind === kind; });
+      if (!units.length) return;
+      html += '<section data-qualified-group="' + kind + '"><h3 dir="ltr">' + (kind === 'main' ? 'Main teachings' : 'Independent printed apparatus — main ownership unassigned') + '</h3>';
+      if (kind === 'apparatus' && data.apparatusScopeNotice) html += '<p dir="ltr" style="white-space:pre-wrap">' + safe(data.apparatusScopeNotice) + '</p>';
+      units.forEach(function (unit) {
+        var pairs = unit.pairs || [], notes = unit.qualifications || [];
+        html += '<article data-source-id="' + safe(unit.id) + '" data-owner-main-id="' + safe(unit.owner_main_id == null ? 'null' : unit.owner_main_id) + '"><p dir="ltr">' + safe(unit.id) +
+          (unit.verseRef ? ' · ' + safe(unit.verseRef.book + ' ' + unit.verseRef.chapter + ':' + unit.verseRef.verse) : '') + '</p>';
+        pairs.forEach(function (pair) {
+          html += '<div data-pair-id="' + safe(pair.id) + '"><p class="commentary-he" dir="rtl" lang="he" style="white-space:pre-wrap">' + safe(pair.he) + '</p>' +
+            '<p class="commentary-en" dir="ltr" lang="en" style="white-space:pre-wrap">' + safe(pair.en) + '</p>' +
+            notesHTML(notes.filter(function (note) { return note.placement === 'after_pair' && note.pair_id === pair.id; })) + '</div>';
+        });
+        html += notesHTML(notes.filter(function (note) {
+          return note.placement !== 'after_pair' || !pairs.some(function (pair) { return pair.id === note.pair_id; });
+        })) + '</article>';
+      });
+      html += '</section>';
+    });
+    return html + '<section dir="ltr"><h3>Global source qualifications</h3>' + notesHTML(data.globalQualifications) + '</section></div>';
+  }
+
   function renderCommentaryContent(body, data, source) {
+    if (data && data.schema === 'qualified-parsha-chapter-commentary/v1') {
+      body.innerHTML = qualifiedSourceHTML(data);
+      return;
+    }
     if (!data || !data.segments || data.segments.length === 0) {
       body.innerHTML = '<div class="commentary-placeholder">No content available</div>';
       return;

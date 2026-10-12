@@ -680,17 +680,53 @@
     if (ritems.length) {
       out.push('<details class="ck-layer"><summary>על הרש״י · On Rashi</summary>' + ritems.join('') + '</details>');
     }
-    // Breslov on the Parsha layer
+    // Exact qualified pairs; disclosure is deliberately outside ck-he/ck-en.
+    function sourceAttr(value) { return esc(String(value == null ? '' : value)).replace(/"/g, '&quot;'); }
+    function qualificationHTML(notes) {
+      return (notes || []).map(function (note) {
+        var aliases = (note.aliases || []).map(function (a) { return a.id || a.origin || ''; }).join(' · ');
+        return '<aside class="ck-source-qualification" dir="ltr" lang="en" data-note-id="' + sourceAttr(note.id) + '"><p>' +
+          esc(note.text || '') + '</p><small>' + esc(note.id || '') + (aliases ? ' · Aliases: ' + esc(aliases) : '') + '</small></aside>';
+      }).join('');
+    }
+    function qualifiedUnitHTML(b, independent) {
+      var pairs = b.pairs || [];
+      var notes = b.qualifications || [];
+      var html = '<article class="ck-citem ck-qualified-unit" data-source-id="' + sourceAttr(b.sourceId || b.id) + '"' +
+        (independent ? ' data-owner-main-id="null"' : '') + '><b class="ck-ref" dir="ltr">' + esc(b.ref || b.sourceId || b.id || '') + '</b>';
+      pairs.forEach(function (pair) {
+        html += '<div class="ck-source-pair" data-pair-id="' + sourceAttr(pair.id) + '">' +
+          '<div dir="rtl" lang="he" class="ck-he">' + esc(pair.he || '') + '</div>' +
+          '<div dir="ltr" lang="en" class="ck-en">' + esc(pair.en || '') + '</div>' +
+          qualificationHTML(notes.filter(function (note) { return note.placement === 'after_pair' && note.pair_id === pair.id; })) + '</div>';
+      });
+      html += qualificationHTML(notes.filter(function (note) {
+        return note.placement !== 'after_pair' || !pairs.some(function (pair) { return pair.id === note.pair_id; });
+      }));
+      return html + '</article>';
+    }
+    // Breslov on the Parsha layer (retain legacy he/en on unrelated days).
     var bitems = [];
     (c.breslov || []).forEach(function (b) {
+      if (Array.isArray(b.pairs)) {
+        bitems.push(qualifiedUnitHTML(b, false));
+        return;
+      }
       if (!b.he && !b.en) return;
       bitems.push('<div class="ck-citem"><b class="ck-ref">' + esc(b.ref || '') + '</b>' +
         (b.summ ? '<div dir="rtl" class="ck-he"><b>' + esc(b.summ) + '</b></div>' : '') +
         (b.he ? '<div dir="rtl" class="ck-he">' + esc(b.he) + '</div>' : '') +
         (b.en ? '<div dir="ltr" class="ck-en">' + esc(b.en) + '</div>' : '') + '</div>');
     });
-    if (bitems.length) {
-      out.push('<details class="ck-layer"><summary>ברסלב על הפרשה · Breslov on the Parsha</summary>' + bitems.join('') + '</details>');
+    var apparatus = (c.breslovApparatus || []).map(function (b) { return qualifiedUnitHTML(b, true); }).join('');
+    var globalNotes = qualificationHTML(c.breslovGlobalQualifications);
+    if (bitems.length || apparatus || globalNotes || c.breslovScopeNotice) {
+      var notice = c.breslovScopeNotice ? '<p class="ck-source-notice" dir="ltr">' + esc(c.breslovScopeNotice) + '</p>' : '';
+      var independent = apparatus ? '<details class="ck-layer ck-independent-apparatus"><summary>ציונים עצמאיים · Independent weekly apparatus</summary>' +
+        '<p class="ck-source-notice" dir="ltr">Standalone source bodies; main ownership remains unassigned.</p>' + apparatus + '</details>' : '';
+      var qualified = (c.breslov || []).some(function (b) { return Array.isArray(b.pairs); }) || apparatus || globalNotes || c.breslovScopeNotice;
+      out.push('<details class="ck-layer' + (qualified ? ' ck-breslov' : '') + '"><summary>ברסלב על הפרשה · Breslov on the Parsha</summary>' + notice + bitems.join('') + independent +
+        (globalNotes ? '<section class="ck-global-qualifications" dir="ltr"><h4>Global source qualifications</h4>' + globalNotes + '</section>' : '') + '</details>');
     }
     if (!carry && !out.length) return null;
     return { carry: carry, layers: out.length ? out.join('') : null };
