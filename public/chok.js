@@ -815,62 +815,157 @@
       'מק':'מכות','מציעא':'בבא מציעא','קדושין':'קידושין'};
     return exp[x] || x;
   }
-  function sha256Text(text) {
-    return window.crypto.subtle.digest('SHA-256', new TextEncoder().encode(text)).then(function (digest) {
+  /* Private daily source derivative: complete payload bytes are bound below.
+     Classical whole owners, every ordered native span and raw body authenticated
+     offline against REVIEW.json; source approval is not expert/release approval.
+     No fallback to legacy amud text and no external source requests. */
+  var ZOHAR_DAILY_SHA256 = 'cc987221e0c37a8300d54c9087f33f64b908eff773ed2a49d22a3f63459f661c';
+  var zoharDailyPromise = null;
+  function zoharDigest(bytes) {
+    if (!window.crypto || !window.crypto.subtle) return Promise.reject(Error('Zohar authentication unavailable'));
+    return window.crypto.subtle.digest('SHA-256', bytes).then(function (digest) {
       return Array.prototype.map.call(new Uint8Array(digest), function (b) { return b.toString(16).padStart(2, '0'); }).join('');
     });
   }
-  function zoharDayLines(z, wk, day, slug, letter) {
-    /* A daf identifies a location, not the daily excerpt. Only this independently
-       qualified day's bounds are enabled; other days retain their prior source. */
-    if (wk !== 'נח' || day !== 'יום שני') {
-      return fetchJSON('/reader/zohar/' + encodeURIComponent(slug) + '.json').then(function (md) {
-        return ((md.ch || {})[String(z.daf)] || {})[letter];
-      });
-    }
-    return Promise.all([
-      fetchJSON('/reader/chok/zohar-ranges.json?v=sequence-zohar-20261012-r1'),
-      fetchJSON('/reader/zohar/' + encodeURIComponent(slug) + '.json', true)
-    ]).then(function (res) {
-      var bounds = res[0].days && res[0].days[wk + '|' + day], raw = res[1];
-      if (!bounds || bounds.ref.vol !== z.vol || bounds.ref.daf !== z.daf || bounds.ref.amud !== z.amud)
-        throw Error('Zohar daily reference mismatch');
-      return sha256Text(raw).then(function (hash) {
-        if (hash !== bounds.sourceSha256) throw Error('Zohar source changed');
-        var md = JSON.parse(raw), source = ((md.ch || {})[String(z.daf)] || {})[letter];
-        var lines = bounds.segments.map(function (span) {
-          var line = source && source[span.paragraphIndex];
-          if (typeof line !== 'string' || !Number.isInteger(span.startOffset) || !Number.isInteger(span.endOffsetExclusive) ||
-              span.startOffset < 0 || span.endOffsetExclusive <= span.startOffset || span.endOffsetExclusive > line.length)
-            throw Error('Zohar daily span unavailable');
-          return line.slice(span.startOffset, span.endOffsetExclusive);
-        });
-        return sha256Text(lines.join('\n')).then(function (hash) {
-          if (hash !== bounds.excerptSha256) throw Error('Zohar daily excerpt mismatch');
-          return lines;
-        });
-      });
+  function zoharTextDigest(text) { return zoharDigest(new TextEncoder().encode(text)); }
+  function zoharAuthenticatedData(bytes) {
+    return zoharDigest(bytes).then(function (hash) {
+      if (hash !== ZOHAR_DAILY_SHA256) throw Error('Complete Zohar daily data changed');
+      var data = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes));
+      if (data.schema !== 'chok-zohar-day-passages-v1' || data.wholeCycleComplete !== false ||
+          !data.days || Object.keys(data.days).length !== 374 ||
+          data.counts.SOURCE_RANGE_APPROVED !== 131 || data.counts.SOURCE_VERIFICATION_PENDING !== 193 ||
+          data.counts.NO_ZOHAR_SOURCE_VERIFIED !== 50) throw Error('Zohar daily inventory mismatch');
+      return data;
     });
   }
-  function zoharHTML(z, wk, day) {
-    var vol = z.vol || z.work;
-    if (!vol || !z.daf) return Promise.resolve(null);
-    var slug = 'zohar-' + vol.replace(/[\u05f4'\u0022\u05f3]/g, '').trim().replace(/ /g, '-');
-    var letter = z.amud === 2 ? 'b' : 'a';
-    return zoharDayLines(z, wk, day, slug, letter).then(function (lines) {
-      if (!lines || !lines.length) return null;
-      var body = lines.map(function (ln) {
-        /* Decode the owned excerpt's quotation entity only for presentation;
-           verification above remains against the unchanged raw source. */
-        if (wk === 'נח' && day === 'יום שני') ln = ln.replace(/&quot;/g, '"');
-        return '<div class="ck-zohar-line">' + richText(applyMode(ln)) + '</div>';
-      }).join('');
-      return '<details class="ck-layer ck-zohar"><summary>זוהר — ' + esc(vol) +
-        ' דף ' + heNum(z.daf) + ' ע׳ ' + (letter === 'a' ? 'א״' : 'ב״') + '</summary>' + body + '</details>';
-    }).catch(function () {
-      if (wk === 'נח' && day === 'יום שני') return '<p class="ck-error">לא ניתן לאמת את גבולות קטע הזוהר היומי — נא לרענן. / Daily Zohar verification failed; please refresh.</p>';
-      return null;
+  function zoharDailyData() {
+    if (!zoharDailyPromise) zoharDailyPromise = fetch('/reader/chok/zohar-day-passages.json?v=' + ZOHAR_DAILY_SHA256)
+      .then(function (r) { if (!r.ok) throw Error('Zohar daily data unavailable'); return r.arrayBuffer(); })
+      .then(zoharAuthenticatedData).catch(function (error) {
+        zoharDailyPromise = null; // Explicit subsequent selection can retry; never cache unauthenticated data.
+        throw error;
+      });
+    return zoharDailyPromise;
+  }
+  function zoharRefEqual(a, b) {
+    if (a == null || b == null) return a == null && b == null;
+    var ak = Object.keys(a).sort(), bk = Object.keys(b).sort();
+    return ak.length === bk.length && ak.every(function (k, i) { return k === bk[i] && a[k] === b[k]; });
+  }
+  function zoharQualifiedRow(data, z, wk, day) {
+    var key = wk + '|' + day, row = data.days[key];
+    if (!row || row.key !== key || row.week !== wk || row.day !== day || !zoharRefEqual(row.originalRef, z))
+      return Promise.reject(Error('Zohar daily key/reference mismatch'));
+    if (row.disposition === 'NO_ZOHAR_SOURCE_VERIFIED') {
+      if (row.originalRef != null || row.spans) return Promise.reject(Error('Zohar absence mismatch'));
+      return Promise.resolve(row);
+    }
+    if (row.disposition === 'SOURCE_VERIFICATION_PENDING') {
+      if (row.spans || row.rawBodySha256Utf8) return Promise.reject(Error('Held Zohar text is not qualified'));
+      return Promise.resolve(row);
+    }
+    if (row.disposition !== 'SOURCE_RANGE_APPROVED' || row.fieldRole !== 'original-source' ||
+        !Array.isArray(row.spans) || !row.spans.length || !/^[a-f0-9]{64}$/.test(row.rawBodySha256Utf8 || ''))
+      return Promise.reject(Error('Zohar daily bounds missing'));
+    return Promise.all(row.spans.map(function (s, i) {
+      var validWork = (s.work === 'Zohar' && [1, 2, 3].indexOf(s.volume) !== -1) ||
+        (s.work === 'ZoharChadash' && s.volume === null);
+      if (!validWork || s.ordinal !== i || !Number.isInteger(s.daf) || s.daf < 1 ||
+          [1, 2].indexOf(s.amud) === -1 || typeof s.stream !== 'string' || !s.stream ||
+          !((s.sourceUnitType === undefined && s.nativeElementName === undefined && s.nativeBlockIndex === undefined &&
+              Number.isInteger(s.nativeParagraphIndex) && s.nativeParagraphIndex >= 0) ||
+            (s.sourceUnitType === 'LiteralNativeParagraphSlice' && s.nativeElementName === 'p' &&
+              Number.isInteger(s.nativeParagraphIndex) && s.nativeParagraphIndex >= 0 && Number.isInteger(s.nativeBlockIndex) && s.nativeBlockIndex >= 0) ||
+            (s.sourceUnitType === 'LiteralNativeListItemSlice' && s.nativeElementName === 'li' && s.nativeParagraphIndex === null &&
+              Number.isInteger(s.nativeBlockIndex) && s.nativeBlockIndex >= 0)) || s.offsetUnit !== 'Unicode-codepoint' ||
+          !Number.isInteger(s.startOffset) || !Number.isInteger(s.endOffsetExclusive) ||
+          s.startOffset < 0 || s.endOffsetExclusive <= s.startOffset || typeof s.rawText !== 'string' ||
+          Array.from(s.rawText).length !== s.endOffsetExclusive - s.startOffset ||
+          !/^[a-f0-9]{64}$/.test(s.sourceSha256 || '') || !/^[a-f0-9]{64}$/.test(s.paragraphSha256Utf8 || '') ||
+          !/^[a-f0-9]{64}$/.test(s.selectedSha256Utf8 || '') ||
+          ['decode', 'preserve entity spellings'].indexOf(s.entityPolicy) === -1)
+        throw Error('Zohar daily span identity/bounds mismatch');
+      return zoharTextDigest(s.rawText).then(function (hash) {
+        if (hash !== s.selectedSha256Utf8) throw Error('Zohar daily span changed');
+      });
+    })).then(function () {
+      return zoharTextDigest(row.spans.map(function (s) { return s.rawText; }).join('\n'));
+    }).then(function (hash) {
+      if (hash !== row.rawBodySha256Utf8) throw Error('Zohar daily body changed');
+      return row;
     });
+  }
+  function zoharEscape(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function zoharPresentation(s) {
+    // Decode one layer of safe text entities only, NEVER HTML or source markup.
+    var named = { quot: '"', apos: "'", amp: '&', lt: '<', gt: '>', nbsp: '\u00a0' };
+    return s.replace(/&(#x[0-9a-fA-F]+|#[0-9]+|quot|apos|amp|lt|gt|nbsp);/g, function (match, token) {
+      if (token[0] !== '#') return named[token];
+      var n = token[1] === 'x' ? parseInt(token.slice(2), 16) : parseInt(token.slice(1), 10);
+      return n > 0 && n <= 0x10ffff && !(n >= 0xd800 && n <= 0xdfff) ? String.fromCodePoint(n) : match;
+    });
+  }
+  function zoharOriginalReference(z) {
+    if (z == null) return 'מראה מקום חסר · Original reference missing' + (z === null ? ' (null)' : '');
+    if (typeof z !== 'object' || Array.isArray(z)) return 'מראה מקום לא תקין: ' + JSON.stringify(z);
+    // A schedule's vol is a SOURCE LABEL, never an inferred classical volume.
+    // Convert only genuine numeric references; preserve malformed/missing values.
+    var labels = { vol: 'סימון המקור', work: 'חיבור', daf: 'דף', amud: 'עמוד' };
+    function value(k) {
+      if (!Object.prototype.hasOwnProperty.call(z, k)) return 'חסר · missing';
+      var v = z[k];
+      if (v === null) return 'חסר (null)';
+      if (v === '') return 'ריק ("")';
+      if (k === 'daf' && Number.isInteger(v) && v > 0 && v < 1000) return plainHeNum(v);
+      if (k === 'amud' && (v === 1 || v === 2)) return v === 1 ? 'א' : 'ב';
+      var literal = typeof v === 'string' ? v : JSON.stringify(v);
+      if ((k === 'daf' && (!Number.isInteger(v) || v < 1)) ||
+          (k === 'amud' && v !== 1 && v !== 2)) literal += ' (ערך לא תקין)';
+      return literal;
+    }
+    var keys = Object.keys(z), parts = keys.map(function (k) {
+      return (labels[k] || 'פרט נוסף (' + k + ')') + ': ' + value(k);
+    });
+    if (!keys.includes('vol') && !keys.includes('work')) parts.unshift('סימון המקור: חסר · missing');
+    ['daf', 'amud'].forEach(function (k) { if (!keys.includes(k)) parts.push(labels[k] + ': ' + value(k)); });
+    return parts.join(' · ');
+  }
+  function zoharPendingHTML(z, failed) {
+    return '<div class="ck-zohar-pending" role="status" data-field-role="source-verification-pending">' +
+      '<p lang="he" dir="rtl">' + (failed ? 'אימות נתוני הזוהר נכשל. ' : '') +
+      'קטע הזוהר היומי ממתין לאימות מקור וגבולות. הנוסח אינו מוצג עד לאימות.</p>' +
+      '<p lang="en" dir="ltr">' + (failed ? 'Zohar data authentication failed. ' : '') +
+      'Source verification pending. Daily text is withheld until verified.</p>' +
+      '<p data-field-role="original-reference">מראה המקום המקורי · Original reference: <bdi>' +
+      zoharEscape(zoharOriginalReference(z)) + '</bdi></p></div>';
+  }
+  function zoharReadingHTML(row) {
+    var identities = [];
+    row.spans.forEach(function (s) {
+      var label = s.work === 'ZoharChadash' ? 'זוהר חדש' : 'זוהר חלק ' + plainHeNum(s.volume);
+      label += ' דף ' + plainHeNum(s.daf) + ' עמוד ' + (s.amud === 2 ? 'ב' : 'א');
+      if (identities.indexOf(label) === -1) identities.push(label);
+    });
+    var body = row.spans.map(function (s) {
+      var t = s.entityPolicy === 'preserve entity spellings' ? zoharPresentation(s.rawText) : s.rawText;
+      // Source characters/Names/marks are not transformed by Torah display modes.
+      return '<div class="ck-zohar-line" data-field-role="original-source" data-stream="' + zoharEscape(s.stream) +
+        '" lang="he" dir="rtl" style="white-space:pre-wrap">' + zoharEscape(t) + '</div>';
+    }).join('');
+    return '<details class="ck-layer ck-zohar" data-field-role="original-source"><summary>זוהר — נוסח המקור · Original source — ' +
+      zoharEscape(identities.join(' ← ')) + '</summary>' + body + '</details>';
+  }
+  function zoharHTML(z, wk, day) {
+    return zoharDailyData().then(function (data) { return zoharQualifiedRow(data, z, wk, day); }).then(function (row) {
+      if (row.disposition === 'NO_ZOHAR_SOURCE_VERIFIED') return '';
+      if (row.disposition !== 'SOURCE_RANGE_APPROVED') return zoharPendingHTML(row.originalRef, false);
+      return zoharReadingHTML(row);
+    }).catch(function () { return zoharPendingHTML(z, true); });
   }
 
   function mussarHTML(wk, day) {
@@ -1016,9 +1111,9 @@
           });
         });
       }
-      if (d.zohar && (d.zohar.vol || d.zohar.work) && want('kabbala')) {
+      if (want('kabbala')) {
         p = p.then(function () {
-          return zoharHTML(d.zohar, wk, dayE).then(function (html) { html = html || ''; html = dayKavana('kabbala', d) + html; html = voiceBox(dc && dc.kabbala, 'זוהר') + html;
+          return zoharHTML(d.zohar, wk, dayE).then(function (html) { html = html || ''; if (!html) return; html = dayKavana('kabbala', d) + html; html = voiceBox(dc && dc.kabbala, 'זוהר') + html;
             if (html) out.push('<section class="ck-section" data-sec="kabbala">' + html + '</section>');
           });
         });
