@@ -807,6 +807,19 @@ const resolvedGroups = authorGroups.map(group => {
     color: #fff;
   }
 
+  /* ===== Desktop utility clearance ===== */
+  @media (min-width: 1024px) {
+    .library-page .main-content { padding-right: 88px; }
+    :global(body:has(.library-page) .hitbodedut-fab) {
+      right: 20px;
+      bottom: 144px;
+    }
+    :global(body:has(.library-page) #backToTop) {
+      right: 26px;
+      bottom: 216px;
+    }
+  }
+
   /* ===== Responsive ===== */
   @media (max-width: 1024px) {
     .file-grid { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
