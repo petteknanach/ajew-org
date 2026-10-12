@@ -2557,7 +2557,7 @@
     var bpChapters = { bereishit: [1, 2, 8] }; // reviewed selections, not full chapters
     if (bookId.indexOf('tanach-') === 0) {
       var bpBook = bookId.substring(7);
-      if (bpChapters[bpBook] && bpChapters[bpBook].indexOf(torah) >= 0) {
+      if (bpChapters[bpBook] && bpChapters[bpBook].indexOf(torah) >= 0 && !(bpBook === 'bereishit' && part === 1 && torah >= 1 && torah <= 17)) {
         sources.push({ id: 'breslov-parsha', label: 'Breslov', labelHe: 'ברסלב על הפרשה',
           url: '/reader/breslov-parsha/' + bpBook + '-' + torah + '.json',
           type: 'commentary' });
@@ -2565,10 +2565,12 @@
     }
 
     // A distinct qualified edition; chapter coverage comes only from its index.
-    var qualifiedChapter = bookId === 'tanach-bereishit' && part === 1 && qualifiedParshaIndex &&
-      qualifiedParshaIndex.chapters && qualifiedParshaIndex.chapters[String(torah)];
+    var qualifiedNamespace = torah >= 1 && torah <= 17 ? 'qualified-1-109' : 'qualified-110-171';
+    var selectedIndex = qualifiedNamespace === 'qualified-1-109' ? earlierQualifiedParshaIndex : qualifiedParshaIndex;
+    var qualifiedChapter = bookId === 'tanach-bereishit' && part === 1 && selectedIndex &&
+      selectedIndex.chapters && selectedIndex.chapters[String(torah)];
     if (qualifiedChapter) {
-      sources.push({id: 'breslov-parsha-qualified-110-171', label: 'Qualified Breslov', labelHe: 'ברסלב — ליקוטים מסויגים',
+      sources.push({id: 'breslov-parsha-' + qualifiedNamespace, label: 'Qualified Breslov', labelHe: 'ברסלב — ליקוטים מסויגים',
         url: qualifiedChapter.url, type: 'commentary'});
     }
 
@@ -2589,6 +2591,7 @@
   }
 
   var qualifiedParshaIndex = null;
+  var earlierQualifiedParshaIndex = null;
   var qualifiedParshaIndexAttempted = false;
   function setupCommentaryPanel() {
     // A server-rendered CommentarySidebar is authoritative. Do not create a
@@ -2597,12 +2600,15 @@
     var ctx = getReaderContext();
     if (ctx && ctx.bookId === 'tanach-bereishit' && !qualifiedParshaIndexAttempted) {
       qualifiedParshaIndexAttempted = true;
-      fetch('/data/breslov-parsha/qualified-110-171/index.json?v=qualified-parsha-20261012-r1')
-        .then(function (r) { if (!r.ok) throw new Error('Qualified index unavailable'); return r.json(); })
-        .then(function (index) {
-          if (index.schema === 'qualified-parsha-three-consumer-index/v1') qualifiedParshaIndex = index;
-        }).catch(function () { /* Preserve older unrelated commentary if this edition is unavailable. */ })
-        .then(setupCommentaryPanel);
+      Promise.all(['qualified-1-109', 'qualified-110-171'].map(function (namespace) {
+        return fetch('/data/breslov-parsha/' + namespace + '/index.json?v=parsha-all-processed-20261012-r1')
+          .then(function (r) { if (!r.ok) throw new Error('Qualified index unavailable'); return r.json(); })
+          .then(function (index) {
+            if (index.schema !== 'qualified-parsha-three-consumer-index/v1') return;
+            if (namespace === 'qualified-1-109') earlierQualifiedParshaIndex = index;
+            else qualifiedParshaIndex = index;
+          }).catch(function () { /* Other editions and unrelated commentary remain independent. */ });
+      })).then(setupCommentaryPanel);
       return;
     }
     var sources = [];
@@ -2817,6 +2823,20 @@
       });
   }
 
+  // Fallback panels have no QualifiedParsha component script; delegate locally.
+  document.addEventListener('click', function (event) {
+    var button = event.target && event.target.closest('[data-qualified-lang]');
+    var root = button && button.closest('.qualified-source-content');
+    if (!root) return;
+    var language = button.getAttribute('data-qualified-lang');
+    if (['he', 'en', 'both'].indexOf(language) < 0) return;
+    root.setAttribute('data-language', language);
+    Array.prototype.forEach.call(root.querySelectorAll('[data-qualified-text]'), function (text) {
+      text.hidden = language !== 'both' && text.getAttribute('data-qualified-text') !== language;
+    });
+    Array.prototype.forEach.call(root.querySelectorAll('[data-qualified-lang]'), function (other) { other.setAttribute('aria-pressed', String(other === button)); });
+  });
+
   function qualifiedSourceHTML(data) {
     function safe(value) {
       return String(value == null ? '' : value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
@@ -2824,24 +2844,35 @@
     function notesHTML(notes) {
       return (notes || []).map(function (note) {
         var aliases = (note.aliases || []).map(function (a) { return a.id || a.origin || ''; }).join(' · ');
-        return '<aside class="qualified-source-qualification" dir="ltr" lang="en" data-note-id="' + safe(note.id) + '">' +
+        return '<aside class="qualified-source-qualification" dir="ltr" lang="en" data-note-id="' + safe(note.id) + '" data-note-placement="' + safe(note.placement) + '">' +
           '<p style="white-space:pre-wrap">' + safe(note.text) + '</p><small>' + safe(note.id) + (aliases ? ' · Aliases: ' + safe(aliases) : '') + '</small></aside>';
       }).join('');
     }
-    var html = '<div class="commentary-content qualified-source-content"><p dir="ltr" style="white-space:pre-wrap">' + safe(data.scopeNotice) + '</p>';
-    var allQualifiedUnits = (data.units || []).concat(data.apparatus || []);
+    var html = '<div class="commentary-content qualified-source-content" data-qualified-parsha data-language="both"><p dir="ltr" style="white-space:pre-wrap">' + safe(data.scopeNotice) + '</p>' +
+      '<nav aria-label="Qualified source reading language"><button type="button" data-qualified-lang="he" aria-pressed="false">עברית</button><button type="button" data-qualified-lang="en" aria-pressed="false">English</button><button type="button" data-qualified-lang="both" aria-pressed="true">Both</button></nav>';
+    var identities = new Map();
+    (data.units || []).concat(data.apparatus || []).forEach(function (unit) {
+      if (identities.has(unit.id) && JSON.stringify(identities.get(unit.id)) !== JSON.stringify(unit)) throw new Error('Conflicting qualified source owner ' + unit.id);
+      identities.set(unit.id, unit);
+    });
+    var allQualifiedUnits = Array.from(identities.values());
+    function role(unit) { return unit.sourceKind || unit.source_kind || (unit.kind === 'apparatus' ? 'note' : unit.kind); }
+    function owner(unit) { return unit.owner_main_id == null ? unit.ownerMainId : unit.owner_main_id; }
+    var earlier = data.namespace === 'qualified-1-109' || (data.qualifiedMasterUrl || '').includes('/qualified-1-109/') || allQualifiedUnits.some(function (unit) { return owner(unit) != null || unit.allocationScope || ['title', 'title-metadata', 'aside', 'compiler-aside', 'compiler_aside'].includes(role(unit)); });
     ['main', 'apparatus'].forEach(function (kind) {
-      var units = allQualifiedUnits.filter(function (unit) { return unit.kind === kind; });
+      var units = allQualifiedUnits.filter(function (unit) { return (role(unit) === 'main' ? 'main' : 'apparatus') === kind; });
       if (!units.length) return;
-      html += '<section data-qualified-group="' + kind + '"><h3 dir="ltr">' + (kind === 'main' ? 'Main teachings' : 'Independent printed apparatus — main ownership unassigned') + '</h3>';
+      html += '<section data-qualified-group="' + kind + '"><h3 dir="ltr">' + (kind === 'main' ? 'Main teachings' : earlier ? 'Printed notes, source title and compiler aside — actual source owners retained' : 'Independent printed apparatus — main ownership unassigned') + '</h3>';
       if (kind === 'apparatus' && data.apparatusScopeNotice) html += '<p dir="ltr" style="white-space:pre-wrap">' + safe(data.apparatusScopeNotice) + '</p>';
       units.forEach(function (unit) {
         var pairs = unit.pairs || [], notes = unit.qualifications || [];
-        html += '<article data-source-id="' + safe(unit.id) + '" data-owner-main-id="' + safe(unit.owner_main_id == null ? 'null' : unit.owner_main_id) + '"><p dir="ltr">' + safe(unit.id) +
+        html += '<article data-source-id="' + safe(unit.id) + '" data-source-kind="' + safe(role(unit)) + '" data-owner-main-id="' + safe(owner(unit) == null ? 'null' : owner(unit)) + '"><p dir="ltr">' + safe(unit.id) +
           (unit.verseRef ? ' · ' + safe(unit.verseRef.book + ' ' + unit.verseRef.chapter + ':' + unit.verseRef.verse) : '') + '</p>';
+        if (earlier) html += '<p dir="ltr">' + safe(['title', 'title-metadata'].includes(role(unit)) ? 'Source title' : role(unit) === 'main' ? 'Main teaching' : role(unit) === 'note' ? 'Printed note' : ['aside', 'compiler-aside', 'compiler_aside'].includes(role(unit)) ? 'Compiler aside' : 'Printed apparatus') + (owner(unit) != null ? ' · Source owner: ' + safe(owner(unit)) : role(unit) !== 'main' ? ' · Source owner unassigned' : '') + '</p>';
+        if (earlier && role(unit) === 'main' && !unit.verseRef) html += '<p dir="ltr">Independent weekly source context — no verse or daily assignment (not Genesis 3:1).</p>';
         pairs.forEach(function (pair) {
-          html += '<div data-pair-id="' + safe(pair.id) + '"><p class="commentary-he" dir="rtl" lang="he" style="white-space:pre-wrap">' + safe(pair.he) + '</p>' +
-            '<p class="commentary-en" dir="ltr" lang="en" style="white-space:pre-wrap">' + safe(pair.en) + '</p>' +
+          html += '<div data-pair-id="' + safe(pair.id) + '"><p class="commentary-he" data-qualified-text="he" dir="rtl" lang="he" style="white-space:pre-wrap">' + safe(pair.he) + '</p>' +
+            '<p class="commentary-en" data-qualified-text="en" dir="ltr" lang="en" style="white-space:pre-wrap">' + safe(pair.en) + '</p>' +
             notesHTML(notes.filter(function (note) { return note.placement === 'after_pair' && note.pair_id === pair.id; })) + '</div>';
         });
         html += notesHTML(notes.filter(function (note) {

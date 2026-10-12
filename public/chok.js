@@ -641,6 +641,19 @@
              day: DAYS[DAY_DEFAULT[today.getDay()]] || DAYS[0], today: today };
   }
 
+  document.addEventListener('click', function (event) {
+    var button = event.target && event.target.closest('[data-ck-source-lang]');
+    var root = button && button.closest('.ck-breslov');
+    if (!root) return;
+    var language = button.getAttribute('data-ck-source-lang');
+    if (['he', 'en', 'both'].indexOf(language) < 0) return;
+    root.setAttribute('data-language', language);
+    Array.prototype.forEach.call(root.querySelectorAll('.ck-he, .ck-en'), function (text) {
+      text.hidden = language !== 'both' && !text.classList.contains(language === 'he' ? 'ck-he' : 'ck-en');
+    });
+    Array.prototype.forEach.call(root.querySelectorAll('[data-ck-source-lang]'), function (other) { other.setAttribute('aria-pressed', String(other === button)); });
+  });
+
   function commentaryHTML(c) {
     if (!c) return null;
     var carry = null;
@@ -685,15 +698,21 @@
     function qualificationHTML(notes) {
       return (notes || []).map(function (note) {
         var aliases = (note.aliases || []).map(function (a) { return a.id || a.origin || ''; }).join(' · ');
-        return '<aside class="ck-source-qualification" dir="ltr" lang="en" data-note-id="' + sourceAttr(note.id) + '"><p>' +
+        return '<aside class="ck-source-qualification" dir="ltr" lang="en" data-note-id="' + sourceAttr(note.id) + '" data-note-placement="' + sourceAttr(note.placement) + '"><p>' +
           esc(note.text || '') + '</p><small>' + esc(note.id || '') + (aliases ? ' · Aliases: ' + esc(aliases) : '') + '</small></aside>';
       }).join('');
     }
+    function sourceRole(b) { return b.sourceKind || b.source_kind || (['main', 'note', 'title', 'aside', 'compiler-aside', 'compiler_aside'].indexOf(b.kind) >= 0 ? b.kind : null); }
     function qualifiedUnitHTML(b, independent) {
+      var sourceKind = sourceRole(b);
       var pairs = b.pairs || [];
       var notes = b.qualifications || [];
       var html = '<article class="ck-citem ck-qualified-unit" data-source-id="' + sourceAttr(b.sourceId || b.id) + '"' +
-        (independent ? ' data-owner-main-id="null"' : '') + '><b class="ck-ref" dir="ltr">' + esc(b.ref || b.sourceId || b.id || '') + '</b>';
+        (independent ? ' data-owner-main-id="' + sourceAttr(b.owner_main_id == null ? b.ownerMainId == null ? 'null' : b.ownerMainId : b.owner_main_id) + '"' : '') +
+        (sourceKind ? ' data-source-kind="' + sourceAttr(sourceKind) + '"' : '') +
+        (b.allocationScope ? ' data-allocation-scope="' + sourceAttr(b.allocationScope) + '"' : '') + '><b class="ck-ref" dir="ltr">' + esc(b.ref || b.sourceId || b.id || '') + '</b>';
+      if (sourceKind) html += '<p class="ck-source-notice" dir="ltr">' + esc(sourceKind === 'main' ? 'Main teaching' : sourceKind === 'note' ? 'Printed note' : ['title', 'title-metadata'].includes(sourceKind) ? 'Source title' : ['aside', 'compiler-aside', 'compiler_aside'].includes(sourceKind) ? 'Compiler aside' : 'Printed apparatus') +
+        (independent ? b.owner_main_id != null || b.ownerMainId != null ? ' · Source owner: ' + esc(b.owner_main_id == null ? b.ownerMainId : b.owner_main_id) : ' · Source owner unassigned' : '') + '</p>';
       pairs.forEach(function (pair) {
         html += '<div class="ck-source-pair" data-pair-id="' + sourceAttr(pair.id) + '">' +
           '<div dir="rtl" lang="he" class="ck-he">' + esc(pair.he || '') + '</div>' +
@@ -703,7 +722,12 @@
       html += qualificationHTML(notes.filter(function (note) {
         return note.placement !== 'after_pair' || !pairs.some(function (pair) { return pair.id === note.pair_id; });
       }));
-      return html + '</article>';
+      html += '</article>';
+      if (sourceKind) {
+        var label = sourceKind === 'main' ? 'Main teaching' : sourceKind === 'note' ? 'Printed note' : ['title', 'title-metadata'].includes(sourceKind) ? 'Source title' : ['aside', 'compiler-aside', 'compiler_aside'].includes(sourceKind) ? 'Compiler aside' : 'Printed apparatus';
+        return '<details class="ck-layer ck-qualified-disclosure"><summary>' + esc(label + ' · ' + (b.ref || b.sourceId || b.id || '')) + '</summary>' + html + '</details>';
+      }
+      return html;
     }
     // Breslov on the Parsha layer (retain legacy he/en on unrelated days).
     var bitems = [];
@@ -719,13 +743,29 @@
         (b.en ? '<div dir="ltr" class="ck-en">' + esc(b.en) + '</div>' : '') + '</div>');
     });
     var apparatus = (c.breslovApparatus || []).map(function (b) { return qualifiedUnitHTML(b, true); }).join('');
+    var context = (c.breslovContext || []).map(function (b) { return qualifiedUnitHTML(b, false); }).join('');
+    var actualOwnerRoles = (c.breslovApparatus || []).some(function (b) { return b.sourceKind || b.source_kind || ['note', 'title', 'aside', 'compiler-aside', 'compiler_aside'].indexOf(b.kind) >= 0 || b.owner_main_id != null || b.ownerMainId != null; });
     var globalNotes = qualificationHTML(c.breslovGlobalQualifications);
-    if (bitems.length || apparatus || globalNotes || c.breslovScopeNotice) {
+    if (bitems.length || apparatus || context || c.breslovWeeklySources || globalNotes || c.breslovScopeNotice) {
       var notice = c.breslovScopeNotice ? '<p class="ck-source-notice" dir="ltr">' + esc(c.breslovScopeNotice) + '</p>' : '';
       var independent = apparatus ? '<details class="ck-layer ck-independent-apparatus"><summary>ציונים עצמאיים · Independent weekly apparatus</summary>' +
-        '<p class="ck-source-notice" dir="ltr">Standalone source bodies; main ownership remains unassigned.</p>' + apparatus + '</details>' : '';
-      var qualified = (c.breslov || []).some(function (b) { return Array.isArray(b.pairs); }) || apparatus || globalNotes || c.breslovScopeNotice;
-      out.push('<details class="ck-layer' + (qualified ? ' ck-breslov' : '') + '"><summary>ברסלב על הפרשה · Breslov on the Parsha</summary>' + notice + bitems.join('') + independent +
+        '<p class="ck-source-notice" dir="ltr">' + (actualOwnerRoles ? 'Printed notes retain supplied source owners; source title and compiler aside remain distinct. Unassigned owners remain null.' : 'Standalone source bodies; main ownership remains unassigned.') + '</p>' + apparatus + '</details>' : '';
+      var weeklyContext = context ? '<details class="ck-layer ck-breslov-context"><summary>הקשר שבועי עצמאי · Independent weekly source context</summary><p class="ck-source-notice" dir="ltr">Main teachings with no verse or daily assignment; not Genesis 3:1.</p>' + context + '</details>' : '';
+      var packet = c.breslovWeeklySources;
+      var weeklySources = '';
+      if (packet && Array.isArray(packet.segments)) {
+        weeklySources = '<details class="ck-layer ck-breslov-weekly-sources"><summary>מקורות ללימוד השבועי · Noach weekly source studies</summary><p class="ck-source-notice" dir="ltr">' + esc(packet.description || '') + '</p><p class="ck-source-notice" dir="ltr">Independent Noach-week studies; no daily verse ownership. The recitation concerns the whole Noach portion; Genesis 6:8 closes Biraishis.</p>';
+        packet.segments.forEach(function (segment) {
+          weeklySources += '<details class="ck-layer ck-weekly-source" data-source-id="' + sourceAttr(segment.sourceBook + ':' + segment.index) + '" data-daily-verse-owner="null"><summary>' + esc(segment.title || segment.sourceRef || '') + '</summary><a href="' + sourceAttr(segment.sourceUrl) + '">' + esc(segment.sourceRef || '') + '</a>' +
+            (segment.verse ? '<p class="ck-source-notice" dir="ltr">' + esc(segment.verse) + ' · Closing verse of Biraishis</p>' : '') +
+            '<div class="ck-source-pair"><div class="ck-he" lang="he" dir="rtl">' + esc(segment.he || '') + '</div><div class="ck-en" lang="en" dir="ltr">' + esc(segment.en || '') + '</div></div>';
+          if (segment.commentary) weeklySources += '<aside class="ck-weekly-source-commentary"><p class="ck-source-notice" dir="ltr">Attached user gematria note · separate from the primary source body</p><div class="ck-he" lang="he" dir="rtl">' + esc(segment.commentary.he || '') + '</div><div class="ck-en" lang="en" dir="ltr">' + esc(segment.commentary.en || '') + '</div></aside>';
+          weeklySources += '</details>';
+        });
+        weeklySources += '</details>';
+      }
+      var qualified = (c.breslov || []).some(function (b) { return Array.isArray(b.pairs); }) || apparatus || context || weeklySources || globalNotes || c.breslovScopeNotice;
+      out.push('<details class="ck-layer' + (qualified ? ' ck-breslov' : '') + '"><summary>ברסלב על הפרשה · Breslov on the Parsha</summary>' + notice + (qualified ? '<nav class="ck-source-languages" aria-label="Source reading language"><button type="button" data-ck-source-lang="he" aria-pressed="false">עברית</button><button type="button" data-ck-source-lang="en" aria-pressed="false">English</button><button type="button" data-ck-source-lang="both" aria-pressed="true">Both</button></nav>' : '') + bitems.join('') + independent + weeklyContext + weeklySources +
         (globalNotes ? '<section class="ck-global-qualifications" dir="ltr"><h4>Global source qualifications</h4>' + globalNotes + '</section>' : '') + '</details>');
     }
     if (!carry && !out.length) return null;

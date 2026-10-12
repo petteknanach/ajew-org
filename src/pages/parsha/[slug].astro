@@ -177,8 +177,8 @@ const CHUMASH_LH_READER: Record<string, string> = {
 };
 const chumashLhReaderUrl = CHUMASH_LH_READER[slug] ? `/reader/chumash-lh/${CHUMASH_LH_READER[slug]}` : null;
 
-const hasReviewedParsha = slug === 'bereishit' || slug === 'noach';
-const hasQualifiedParsha = ['vayeira', 'chayei-sarah', 'toldot', 'vayeitzei'].includes(slug);
+const hasQualifiedParsha = ['bereishit', 'noach', 'lech-lecha', 'vayeira', 'chayei-sarah', 'toldot', 'vayeitzei'].includes(slug);
+const hasReviewedParsha = !hasQualifiedParsha && (slug === 'bereishit' || slug === 'noach');
 // Legacy OCR is not a fallback edition. Special corrected packets remain below.
 // NEW: Read Chumash-LH JSON for direct display
 let chumashLhData = null;
@@ -394,6 +394,7 @@ const breadcrumbData = JSON.stringify({
       )}
 
       {hasReviewedParsha && <ReviewedParsha slug={slug} />}
+      {['bereishit', 'noach'].includes(slug) && <details class="legacy-reviewed-edition"><summary>Earlier reviewed-v1 edition · distinct legacy selections</summary><ReviewedParsha slug={slug} /></details>}
       {hasQualifiedParsha && <QualifiedParsha slug={slug} />}
 
       <!-- Chumash with Likutay Halachos PDF -->

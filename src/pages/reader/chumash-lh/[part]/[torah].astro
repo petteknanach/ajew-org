@@ -41,8 +41,9 @@ export function getStaticPaths() {
 const { part, torah } = Astro.params;
 const partNum = parseInt(part);
 const torahNum = parseInt(torah);
-const reviewedSlug = partNum === 1 && torahNum === 1 ? 'bereishit' : partNum === 1 && torahNum === 2 ? 'noach' : null;
-const qualifiedSlug = partNum === 1 ? ({4: 'vayeira', 5: 'chayei-sarah', 6: 'toldot', 7: 'vayeitzei'})[torahNum] || null : null;
+const qualifiedSlug = partNum === 1 ? ({1: 'bereishit', 2: 'noach', 3: 'lech-lecha', 4: 'vayeira', 5: 'chayei-sarah', 6: 'toldot', 7: 'vayeitzei'})[torahNum] || null : null;
+const earlierQualified = partNum === 1 && torahNum >= 1 && torahNum <= 3;
+const reviewedSlug = !qualifiedSlug && partNum === 1 ? ({1: 'bereishit', 2: 'noach'})[torahNum] || null : null;
 
 let torahData = null;
 let error = null;
@@ -56,6 +57,7 @@ try {
 }
 
 if (!torahData && !error) error = 'Content not available';
+if (earlierQualified && torahData && (torahData.schema !== 'qualified-parsha-runtime-selection/v1' || torahData.qualifiedMasterUrl !== '/data/breslov-parsha/qualified-1-109/master.json' || !Array.isArray(torahData.units))) error = 'Current qualified source selection unavailable';
 const supplementPath = path.join(process.cwd(), 'public/reader/parsha-packets/noach.json');
 const sourceSupplement = partNum === 1 && torahNum === 2 && fs.existsSync(supplementPath)
   ? JSON.parse(fs.readFileSync(supplementPath, 'utf8')) : null;
@@ -115,7 +117,10 @@ const structuredData = torahData ? JSON.stringify({
         <a href={`/parsha/${qualifiedSlug}`}>Independent parsha page</a>
         {torahData.navigation?.nextUrl && <a href={torahData.navigation.nextUrl}> · Next →</a>}
       </nav>
-      <QualifiedParsha slug={qualifiedSlug} />
+      <ParshaSourceSupplement packet={sourceSupplement} />
+      {torahData.pdfSource && <a href={torahData.pdfSource} target="_blank" rel="noopener">View Original PDF</a>}
+      <QualifiedParsha slug={qualifiedSlug} dataset={earlierQualified ? torahData : null} />
+      {earlierQualified && ['bereishit', 'noach'].includes(qualifiedSlug) && <details class="legacy-reviewed-edition"><summary>Earlier reviewed-v1 edition · distinct legacy selections</summary><ReviewedParsha slug={qualifiedSlug} /></details>}
     </div>
   ) : (
     <div
@@ -342,7 +347,7 @@ const structuredData = torahData ? JSON.stringify({
       )}
 
 
-      <script src="/reader-script.js?v=qualified-parsha-20261012-r1" defer></script>
+      <script src="/reader-script.js?v=parsha-all-processed-20261012-r1" defer></script>
       <script src="/reader-v2.js" defer></script>
       <script src="/pwa-register.js" defer></script>
       <script src="/tts-fix.js" defer></script>

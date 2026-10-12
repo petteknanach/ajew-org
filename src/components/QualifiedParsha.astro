@@ -6,26 +6,35 @@ const { slug, dataset = null } = Astro.props;
 let selection = dataset;
 let coverage = null;
 if (!selection) {
-  const root = path.join(process.cwd(), 'public/data/breslov-parsha/qualified-110-171');
+  const namespace = ['bereishit', 'noach', 'lech-lecha'].includes(slug) ? 'qualified-1-109' : 'qualified-110-171';
+  const root = path.join(process.cwd(), 'public/data/breslov-parsha', namespace);
   const index = JSON.parse(fs.readFileSync(path.join(root, 'index.json'), 'utf8'));
   const master = JSON.parse(fs.readFileSync(path.join(root, 'master.json'), 'utf8'));
   coverage = index.parshas[slug];
   if (!coverage) throw new Error(`No qualified source selection for ${slug}`);
   const ids = [...coverage.mainIds, ...coverage.apparatusIds];
-  const byId = new Map(master.units.map(unit => [unit.id, unit]));
+  const byId = new Map([...(master.units || []), ...(master.apparatus || [])].map(unit => [unit.id, unit]));
   const units = ids.map(id => {
     const unit = byId.get(id);
     if (!unit || unit.parsha !== slug) throw new Error(`Missing qualified source owner ${id}`);
     return unit;
   });
-  selection = { ...master, units };
+  selection = { ...master, units, apparatus: [] };
 }
 // Chapter exports keep null-owned weekly apparatus separate from verse mains.
-const units = [...(selection.units || []), ...(selection.apparatus || [])];
-const mains = units.filter(unit => unit.kind === 'main');
-const apparatus = units.filter(unit => unit.kind === 'apparatus');
+const byIdentity = new Map();
+for (const unit of [...(selection.units || []), ...(selection.apparatus || [])]) {
+  if (byIdentity.has(unit.id) && JSON.stringify(byIdentity.get(unit.id)) !== JSON.stringify(unit)) throw new Error(`Conflicting qualified source owner ${unit.id}`);
+  byIdentity.set(unit.id, unit);
+}
+const units = [...byIdentity.values()];
+const sourceRole = unit => unit.sourceKind || unit.source_kind || (unit.kind === 'apparatus' ? 'note' : unit.kind);
+const earlier = ['bereishit', 'noach', 'lech-lecha'].includes(slug) || selection.qualifiedMasterUrl?.includes('/qualified-1-109/') || selection.namespace === 'qualified-1-109' || units.some(unit => unit.allocationScope || ['title', 'title-metadata', 'aside', 'compiler-aside', 'compiler_aside'].includes(sourceRole(unit)) || unit.owner_main_id != null || unit.ownerMainId != null);
+const ownerId = unit => unit.owner_main_id ?? unit.ownerMainId ?? null;
+const mains = units.filter(unit => sourceRole(unit) === 'main');
+const apparatus = units.filter(unit => sourceRole(unit) !== 'main');
 const globals = selection.globalQualifications || [];
-const readerPath = slug && ({'vayeira': '1/4', 'chayei-sarah': '1/5', 'toldot': '1/6', 'vayeitzei': '1/7'})[slug];
+const readerPath = slug && ({'bereishit': '1/1', 'noach': '1/2', 'lech-lecha': '1/3', 'vayeira': '1/4', 'chayei-sarah': '1/5', 'toldot': '1/6', 'vayeitzei': '1/7'})[slug];
 const aliasLabel = note => (note.aliases || []).map(alias => alias.id || alias.origin || '').join(' · ');
 const afterPair = (unit, pair) => (unit.qualifications || []).filter(note => note.placement === 'after_pair' && note.pair_id === pair.id);
 // Unknown/missing pair locators remain visible after the owner, not silently lost.
@@ -36,7 +45,7 @@ const afterOwner = unit => (unit.qualifications || []).filter(note => note.place
   {coverage && <h3><span lang="he" dir="rtl">{coverage.titleHe}</span> · {coverage.titleEn}</h3>}
   <p class="qp-notice" role="status">{selection.scopeNotice}</p>
   {coverage?.notice && <p class="qp-notice">{coverage.notice}</p>}
-  <p class="qp-notice">Selected supplied source only; not complete parsha or chapter coverage. Source qualifications remain visible in every reading language. Independent apparatus is not assigned to a main teaching.</p>
+  <p class="qp-notice">Selected supplied source only; not complete parsha or chapter coverage. Source qualifications remain visible in every reading language. {earlier ? 'Printed notes retain their actual source owner where supplied; titles and compiler asides remain distinct apparatus. Unassigned source owners remain null.' : 'Independent apparatus is not assigned to a main teaching.'}</p>
   <nav class="qp-resources" aria-label="Qualified source resources">
     {slug && <a href={`/parsha/${slug}`}>Independent parsha page</a>}
     {readerPath && <a href={`/reader/chumash-lh/${readerPath}`}>Chumash Reader</a>}
@@ -48,13 +57,15 @@ const afterOwner = unit => (unit.qualifications || []).filter(note => note.place
     <button type="button" data-qualified-lang="en" aria-pressed="false">English</button>
     <button type="button" data-qualified-lang="both" aria-pressed="true">Both</button>
   </div>
-  {[{kind: 'main', title: 'Main teachings · ליקוטים', items: mains}, {kind: 'apparatus', title: 'Independent printed apparatus · ציונים עצמאיים', items: apparatus}].map(group => group.items.length > 0 &&
+  {[{kind: 'main', title: 'Main teachings · ליקוטים', items: mains}, {kind: 'apparatus', title: earlier ? 'Printed notes, title and compiler aside · ציוני המקור' : 'Independent printed apparatus · ציונים עצמאיים', items: apparatus}].map(group => group.items.length > 0 &&
     <section class="qp-group" data-qualified-group={group.kind}>
       <h3>{group.title}</h3>
-      {group.kind === 'apparatus' && <p class="qp-notice">Standalone source bodies; main ownership remains unassigned.</p>}
+      {group.kind === 'apparatus' && !earlier && <p class="qp-notice">Standalone source bodies; main ownership remains unassigned.</p>}
       {group.kind === 'apparatus' && selection.apparatusScopeNotice && <p class="qp-notice">{selection.apparatusScopeNotice}</p>}
-      {group.items.map(unit => <article class="qp-unit" data-source-id={unit.id} data-owner-main-id={unit.owner_main_id == null ? 'null' : unit.owner_main_id}>
+      {group.items.map(unit => <article class="qp-unit" data-source-id={unit.id} data-source-kind={sourceRole(unit)} data-owner-main-id={ownerId(unit) == null ? 'null' : ownerId(unit)} data-allocation-scope={unit.allocationScope}>
         <p class="qp-locator">{unit.id}{unit.verseRef ? ` · ${unit.verseRef.book} ${unit.verseRef.chapter}:${unit.verseRef.verse}` : ''}</p>
+        {earlier && <p class="qp-notice">{sourceRole(unit) === 'main' ? 'Main teaching' : sourceRole(unit) === 'note' ? 'Printed note' : ['title', 'title-metadata'].includes(sourceRole(unit)) ? 'Source title' : ['aside', 'compiler-aside', 'compiler_aside'].includes(sourceRole(unit)) ? 'Compiler aside' : 'Printed apparatus'}{ownerId(unit) != null ? ` · Source owner: ${ownerId(unit)}` : sourceRole(unit) !== 'main' ? ' · Source owner unassigned' : ''}</p>}
+        {earlier && sourceRole(unit) === 'main' && !unit.verseRef && <p class="qp-notice">Independent weekly source context — no verse or daily assignment (not Genesis 3:1).</p>}
         {unit.pairs.map(pair => <div class="qp-pair" data-pair-id={pair.id}>
           <p class="qp-he" data-qualified-text="he" lang="he" dir="rtl">{pair.he}</p>
           <p class="qp-en" data-qualified-text="en" lang="en" dir="ltr">{pair.en}</p>

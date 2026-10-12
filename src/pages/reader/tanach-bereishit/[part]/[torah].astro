@@ -92,10 +92,11 @@ const breslovEntry = torahData && bpChapters.includes(torahNum) ? {
 } : null;
 
 // A distinct source-qualified edition, selected only by the actual exported index.
-const qualifiedIndex = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'public/data/breslov-parsha/qualified-110-171/index.json'), 'utf8'));
+const qualifiedNamespace = torahNum >= 1 && torahNum <= 17 ? 'qualified-1-109' : 'qualified-110-171';
+const qualifiedIndex = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'public/data/breslov-parsha', qualifiedNamespace, 'index.json'), 'utf8'));
 const qualifiedChapter = torahData && partNum === 1 ? qualifiedIndex.chapters[String(torahNum)] : null;
 const qualifiedBreslovEntry = qualifiedChapter ? {
-  book: 'breslov-parsha-qualified-110-171',
+  book: `breslov-parsha-${qualifiedNamespace}`,
   section: `bereishit-${torahNum}`,
   label: 'ברסלב — ליקוטים מסויגים',
   sectionTitle: 'Qualified supplied source selections',
@@ -108,7 +109,7 @@ const commentaryEntry = torahData ? {
   related_commentaries: [
     ...(hkEntry ? [hkEntry] : []),
     ...(noachEntry ? [noachEntry] : []),
-    ...(breslovEntry ? [breslovEntry] : []),
+    ...(breslovEntry && !qualifiedBreslovEntry ? [breslovEntry] : []),
     ...(qualifiedBreslovEntry ? [qualifiedBreslovEntry] : []),
     {
       book: "likutay-nanach",
@@ -312,7 +313,7 @@ const breadcrumbData = torahData ? JSON.stringify({
       <script src="/medooyuk.js?v=four-surfaces-20261006-r1" defer></script>
       <script src="/reader-source-exact.js?v=1" defer></script>
       <script src="/reader-editions.js?v=four-surfaces-20261006-r1" defer></script>
-      <script src="/reader-script.js?v=qualified-parsha-20261012-r1" defer></script>
+      <script src="/reader-script.js?v=parsha-all-processed-20261012-r1" defer></script>
       <script src="/reader-v2.js?v=reader-editions-20261002" defer></script>
       <script src="/pwa-register.js" defer></script>
       <script src="/tts-fix.js" defer></script>
