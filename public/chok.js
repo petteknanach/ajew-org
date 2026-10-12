@@ -775,20 +775,62 @@
       'מק':'מכות','מציעא':'בבא מציעא','קדושין':'קידושין'};
     return exp[x] || x;
   }
-  function zoharHTML(z) {
+  function sha256Text(text) {
+    return window.crypto.subtle.digest('SHA-256', new TextEncoder().encode(text)).then(function (digest) {
+      return Array.prototype.map.call(new Uint8Array(digest), function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+    });
+  }
+  function zoharDayLines(z, wk, day, slug, letter) {
+    /* A daf identifies a location, not the daily excerpt. Only this independently
+       qualified day's bounds are enabled; other days retain their prior source. */
+    if (wk !== 'נח' || day !== 'יום שני') {
+      return fetchJSON('/reader/zohar/' + encodeURIComponent(slug) + '.json').then(function (md) {
+        return ((md.ch || {})[String(z.daf)] || {})[letter];
+      });
+    }
+    return Promise.all([
+      fetchJSON('/reader/chok/zohar-ranges.json?v=sequence-zohar-20261012-r1'),
+      fetchJSON('/reader/zohar/' + encodeURIComponent(slug) + '.json', true)
+    ]).then(function (res) {
+      var bounds = res[0].days && res[0].days[wk + '|' + day], raw = res[1];
+      if (!bounds || bounds.ref.vol !== z.vol || bounds.ref.daf !== z.daf || bounds.ref.amud !== z.amud)
+        throw Error('Zohar daily reference mismatch');
+      return sha256Text(raw).then(function (hash) {
+        if (hash !== bounds.sourceSha256) throw Error('Zohar source changed');
+        var md = JSON.parse(raw), source = ((md.ch || {})[String(z.daf)] || {})[letter];
+        var lines = bounds.segments.map(function (span) {
+          var line = source && source[span.paragraphIndex];
+          if (typeof line !== 'string' || !Number.isInteger(span.startOffset) || !Number.isInteger(span.endOffsetExclusive) ||
+              span.startOffset < 0 || span.endOffsetExclusive <= span.startOffset || span.endOffsetExclusive > line.length)
+            throw Error('Zohar daily span unavailable');
+          return line.slice(span.startOffset, span.endOffsetExclusive);
+        });
+        return sha256Text(lines.join('\n')).then(function (hash) {
+          if (hash !== bounds.excerptSha256) throw Error('Zohar daily excerpt mismatch');
+          return lines;
+        });
+      });
+    });
+  }
+  function zoharHTML(z, wk, day) {
     var vol = z.vol || z.work;
     if (!vol || !z.daf) return Promise.resolve(null);
     var slug = 'zohar-' + vol.replace(/[\u05f4'\u0022\u05f3]/g, '').trim().replace(/ /g, '-');
     var letter = z.amud === 2 ? 'b' : 'a';
-    return fetchJSON('/reader/zohar/' + encodeURIComponent(slug) + '.json').then(function (md) {
-      var lines = ((md.ch || {})[String(z.daf)] || {})[letter];
+    return zoharDayLines(z, wk, day, slug, letter).then(function (lines) {
       if (!lines || !lines.length) return null;
       var body = lines.map(function (ln) {
+        /* Decode the owned excerpt's quotation entity only for presentation;
+           verification above remains against the unchanged raw source. */
+        if (wk === 'נח' && day === 'יום שני') ln = ln.replace(/&quot;/g, '"');
         return '<div class="ck-zohar-line">' + richText(applyMode(ln)) + '</div>';
       }).join('');
       return '<details class="ck-layer ck-zohar"><summary>זוהר — ' + esc(vol) +
         ' דף ' + heNum(z.daf) + ' ע׳ ' + (letter === 'a' ? 'א״' : 'ב״') + '</summary>' + body + '</details>';
-    }).catch(function () { return null; });
+    }).catch(function () {
+      if (wk === 'נח' && day === 'יום שני') return '<p class="ck-error">לא ניתן לאמת את גבולות קטע הזוהר היומי — נא לרענן. / Daily Zohar verification failed; please refresh.</p>';
+      return null;
+    });
   }
 
   function mussarHTML(wk, day) {
@@ -904,17 +946,6 @@
           }).catch(function (error) { out.push(nachDataError(pair[1], sec.book, error)); });
         });
       });
-      p = p.then(function () {
-        if (!want('extras')) return;
-        var extras = [];
-        if (d.mishna) extras.push(card('משנה', (d.mishna.masechet||'') + (d.mishna.perek ? ' פרק ' + heNum(d.mishna.perek) : '')));
-        if (d.gemara) extras.push(card('גמרא', (d.gemara.masechet||'') + ' ' + heNum(d.gemara.daf||0) + (d.gemara.amud ? (d.gemara.amud===2?' עמוד ב':' עמוד א') : '')));
-        if (d.zohar) extras.push(card('זוהר', (d.zohar.work ? d.zohar.work + ' ' : (d.zohar.vol ? d.zohar.vol + ' ' : '')) + (d.zohar.daf ? heNum(d.zohar.daf) : '') + (d.zohar.amud ? (d.zohar.amud===2?' ב':' א') : '')));
-        if (d.halacha && d.halacha.work === 'rambam' && d.halacha.hilchot) extras.push(card('הלכה — רמב״ם', 'הלכות ' + d.halacha.hilchot + (d.halacha.from_perek ? ' פרק ' + heNum(d.halacha.from_perek) : '')));
-        if (d.halacha && d.halacha.work === 'SA' && d.halacha.from) extras.push(card('הלכה — שולחן ערוך', TUR_HE[d.halacha.tur] + ' סימן ' + heNum(d.halacha.from)));
-        if (d.haftara) extras.push(card('הפטרה', (d.haftara.label || '').replace(/B/g,' ')));
-        if (extras.length) out.push('<section class="ck-section">' + secHead('שאר חלקי היום') + extras.join('') + '</section>');
-      });
       if (d.mishna && d.mishna.masechet && want('mishna')) {
         p = p.then(function () {
           return mishnaHTML(d.mishna.masechet, d.mishna.perek).then(function (html) { html = html || ''; html = dayKavana('mishna', d) + html; html = voiceBox(dc && dc.mishna, 'משנה') + html;
@@ -947,7 +978,7 @@
       }
       if (d.zohar && (d.zohar.vol || d.zohar.work) && want('kabbala')) {
         p = p.then(function () {
-          return zoharHTML(d.zohar).then(function (html) { html = html || ''; html = dayKavana('kabbala', d) + html; html = voiceBox(dc && dc.kabbala, 'זוהר') + html;
+          return zoharHTML(d.zohar, wk, dayE).then(function (html) { html = html || ''; html = dayKavana('kabbala', d) + html; html = voiceBox(dc && dc.kabbala, 'זוהר') + html;
             if (html) out.push('<section class="ck-section" data-sec="kabbala">' + html + '</section>');
           });
         });
@@ -957,6 +988,11 @@
         return mussarHTML(wk, dayE).then(function (html) { html = html || ''; html = voiceBox(dc && dc.mussar, 'מוסר') + html;
           if (html) out.push('<section class="ck-section" data-sec="mussar">' + html + '</section>');
         });
+      });
+      /* Keep the separate haftara reference without a redundant preview of
+         sections that are presented in full above. */
+      p = p.then(function () {
+        if (d.haftara && want('extras')) out.push('<section class="ck-section" data-sec="haftara">' + card('הפטרה', (d.haftara.label || '').replace(/B/g,' ')) + '</section>');
       });
       p = p.then(function () {
         if (!want('kavanos')) return;
