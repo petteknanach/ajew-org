@@ -33,7 +33,7 @@ import healingData from '../../public/healing-words.json';
     <!-- Journey Cards Grid -->
     <section class="hw-grid" id="journeyGrid">
       {healingData.journeys.map((journey: any) => (
-        <button class="hw-card" data-journey={journey.id} type="button" aria-expanded="false">
+        <button class="hw-card" data-journey={journey.id} type="button" aria-expanded="false" aria-controls="journeyDetail">
           <span class="hw-card-icon">{journey.icon}</span>
           <h3 class="hw-card-title-he">{journey.hebrewTitle}</h3>
           <h4 class="hw-card-title-en">{journey.title}</h4>
@@ -97,10 +97,13 @@ import healingData from '../../public/healing-words.json';
     const grid = document.getElementById('journeyGrid');
     const detail = document.getElementById('journeyDetail');
     const backBtn = document.getElementById('backToGrid');
+    let selectedCard = null;
 
     function showGrid() {
       detail.hidden = true;
       grid.hidden = false;
+      document.querySelectorAll('.hw-card').forEach(card => card.setAttribute('aria-expanded', 'false'));
+      if (selectedCard) selectedCard.focus({ preventScroll: true });
       updateCardProgress();
       window.scrollTo({ top: 0, behavior: 'smooth' });
       history.replaceState(null, '', '/healing-words');
@@ -111,6 +114,9 @@ import healingData from '../../public/healing-words.json';
 
       grid.hidden = true;
       detail.hidden = false;
+      selectedCard = document.querySelector('.hw-card[data-journey="' + journeyId + '"]');
+      document.querySelectorAll('.hw-card').forEach(card => card.setAttribute('aria-expanded', card === selectedCard ? 'true' : 'false'));
+      backBtn.focus({ preventScroll: true });
 
       // Header
       const header = document.getElementById('journeyHeader');
@@ -250,6 +256,8 @@ import healingData from '../../public/healing-words.json';
       line-height: 1.6;
     }
 
+    :global(body:not(.dark-mode)) .hw-page .hw-subtitle span { color: #5b3a1a; }
+
     /* Card Grid */
     .hw-grid {
       display: grid;
@@ -257,6 +265,7 @@ import healingData from '../../public/healing-words.json';
       gap: 1.5rem;
       margin-top: 2rem;
     }
+    .hw-grid[hidden] { display: none; }
     .hw-card {
       background: linear-gradient(145deg, #fdf8f0 0%, #f9f0e3 100%);
       border: 1px solid #e8d5bd;
@@ -301,7 +310,7 @@ import healingData from '../../public/healing-words.json';
       font-family: 'Frank Ruhl Libre', serif;
       font-size: 1rem;
       font-weight: 400;
-      color: #8b6d48;
+      color: #6b5a48;
       margin: 0 0 0.75rem;
     }
     .hw-card-desc {
@@ -313,7 +322,7 @@ import healingData from '../../public/healing-words.json';
     }
     .hw-card-steps {
       font-size: 0.8rem;
-      color: #9c8569;
+      color: #6b5a48;
       margin-top: 0.75rem;
       display: inline-block;
       background: rgba(201, 168, 124, 0.15);
@@ -364,12 +373,12 @@ import healingData from '../../public/healing-words.json';
       text-align: center;
       margin-bottom: 1.5rem;
     }
-    .hw-detail-icon {
+    .hw-page :global(.hw-detail-icon) {
       font-size: 3rem;
       display: block;
       margin-bottom: 0.5rem;
     }
-    .hw-detail-title-he {
+    .hw-page :global(.hw-detail-title-he) {
       font-family: 'Frank Ruhl Libre', 'David', serif;
       font-size: 2.2rem;
       font-weight: 700;
@@ -377,14 +386,14 @@ import healingData from '../../public/healing-words.json';
       margin: 0 0 0.15rem;
       direction: rtl;
     }
-    .hw-detail-title-en {
+    .hw-page :global(.hw-detail-title-en) {
       font-family: 'Frank Ruhl Libre', serif;
       font-size: 1.3rem;
       font-weight: 400;
       color: #8b6d48;
       margin: 0 0 0.75rem;
     }
-    .hw-detail-desc {
+    .hw-page :global(.hw-detail-desc) {
       font-size: 1rem;
       color: #6b5a48;
       max-width: 650px;
@@ -400,7 +409,7 @@ import healingData from '../../public/healing-words.json';
       border-radius: 6px;
       margin: 0 0 2rem;
       position: relative;
-      overflow: hidden;
+      overflow: visible;
     }
     .hw-journey-progress-fill {
       height: 100%;
@@ -414,7 +423,7 @@ import healingData from '../../public/healing-words.json';
       right: 0;
       top: -1.5rem;
       font-size: 0.85rem;
-      color: #8b6d48;
+      color: #6b5a48;
     }
 
     /* Steps */
@@ -426,24 +435,24 @@ import healingData from '../../public/healing-words.json';
       flex-direction: column;
       gap: 1.25rem;
     }
-    .hw-step {
+    .hw-page :global(.hw-step) {
       background: linear-gradient(145deg, #fdf8f0 0%, #f9f0e3 100%);
       border: 1px solid #e8d5bd;
       border-radius: 14px;
       padding: 1.5rem;
       transition: all 0.25s ease;
     }
-    .hw-step--done {
+    .hw-page :global(.hw-step--done) {
       background: linear-gradient(145deg, #f0f7e9 0%, #e8f0dd 100%);
       border-color: #c4d9b0;
     }
-    .hw-step-header {
+    .hw-page :global(.hw-step-header) {
       display: flex;
       align-items: flex-start;
       gap: 0.75rem;
       margin-bottom: 1rem;
     }
-    .hw-step-check {
+    .hw-page :global(.hw-step-check) {
       background: none;
       border: none;
       cursor: pointer;
@@ -453,12 +462,12 @@ import healingData from '../../public/healing-words.json';
       flex-shrink: 0;
       margin-top: 0.1rem;
     }
-    .hw-step-num {
+    .hw-page :global(.hw-step-num) {
       width: 32px;
       height: 32px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #c9a87c, #8b6d48);
-      color: white;
+      background: #c9a87c;
+      color: #1a1a2e;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -466,49 +475,49 @@ import healingData from '../../public/healing-words.json';
       font-weight: 700;
       flex-shrink: 0;
     }
-    .hw-step--done .hw-step-num {
+    .hw-page :global(.hw-step--done) :global(.hw-step-num) {
       background: linear-gradient(135deg, #8bb86a, #6b8f4a);
     }
-    .hw-step-info {
+    .hw-page :global(.hw-step-info) {
       flex: 1;
       min-width: 0;
     }
-    .hw-step-title {
+    .hw-page :global(.hw-step-title) {
       font-family: 'Frank Ruhl Libre', serif;
       font-size: 1.15rem;
       font-weight: 700;
       color: #5b3a1a;
       margin: 0 0 0.3rem;
     }
-    .hw-step-desc {
+    .hw-page :global(.hw-step-desc) {
       font-size: 0.9rem;
       color: #6b5a48;
       line-height: 1.5;
       margin: 0;
     }
-    .hw-step-snippet {
+    .hw-page :global(.hw-step-snippet) {
       background: rgba(255, 255, 255, 0.6);
       border-radius: 10px;
       padding: 1rem 1.25rem;
       margin-bottom: 0.75rem;
       border-left: 3px solid #c9a87c;
     }
-    .hw-snippet-he {
+    .hw-page :global(.hw-snippet-he) {
       font-family: 'Frank Ruhl Libre', 'David', serif;
       font-size: 1.1rem;
       color: #3d2a10;
       line-height: 1.8;
       margin-bottom: 0.6rem;
     }
-    .hw-snippet-en {
+    .hw-page :global(.hw-snippet-en) {
       font-size: 0.95rem;
       color: #5b4a34;
       line-height: 1.6;
       font-style: italic;
     }
-    .hw-step-link {
+    .hw-page :global(.hw-step-link) {
       display: inline-block;
-      color: #8b6d48;
+      color: #6b5a48;
       font-size: 0.9rem;
       font-weight: 600;
       text-decoration: none;
@@ -516,11 +525,11 @@ import healingData from '../../public/healing-words.json';
       border-bottom: 1px dashed #c9a87c;
       transition: all 0.2s;
     }
-    .hw-step-link:hover {
+    .hw-page :global(.hw-step-link):hover {
       color: #5b3a1a;
       border-bottom-color: #5b3a1a;
     }
-    .hw-share-btn {
+    .hw-page :global(.hw-share-btn) {
       display: inline-block;
       margin-top: 0.75rem;
       padding: 0.4rem 1rem;
@@ -533,7 +542,7 @@ import healingData from '../../public/healing-words.json';
       cursor: pointer;
       transition: all 0.2s;
     }
-    .hw-share-btn:hover {
+    .hw-page :global(.hw-share-btn):hover {
       background: #fdf8f0;
       color: #5b3a1a;
     }
@@ -541,14 +550,14 @@ import healingData from '../../public/healing-words.json';
     /* Dark mode */
     :global(body.dark-mode) .hw-hero { }
     :global(body.dark-mode) .hw-title-he,
-    :global(body.dark-mode) .hw-detail-title-he { color: #e8d5bd; }
+    :global(body.dark-mode) .hw-page :global(.hw-detail-title-he) { color: #e8d5bd; }
     :global(body.dark-mode) .hw-title-en,
-    :global(body.dark-mode) .hw-detail-title-en,
+    :global(body.dark-mode) .hw-page :global(.hw-detail-title-en),
     :global(body.dark-mode) .hw-card-title-en { color: #c9a87c; }
     :global(body.dark-mode) .hw-subtitle,
     :global(body.dark-mode) .hw-card-desc,
-    :global(body.dark-mode) .hw-step-desc,
-    :global(body.dark-mode) .hw-detail-desc { color: #b8a890; }
+    :global(body.dark-mode) .hw-page :global(.hw-step-desc),
+    :global(body.dark-mode) .hw-page :global(.hw-detail-desc) { color: #b8a890; }
     :global(body.dark-mode) .hw-card {
       background: linear-gradient(145deg, #2a2240 0%, #1e1a30 100%);
       border-color: #3d3560;
@@ -558,29 +567,29 @@ import healingData from '../../public/healing-words.json';
       box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
     }
     :global(body.dark-mode) .hw-card-title-he,
-    :global(body.dark-mode) .hw-step-title { color: #e8d5bd; }
+    :global(body.dark-mode) .hw-page :global(.hw-step-title) { color: #e8d5bd; }
     :global(body.dark-mode) .hw-card-steps { background: rgba(201, 168, 124, 0.1); color: #c9a87c; }
     :global(body.dark-mode) .hw-card-progress { background: rgba(201, 168, 124, 0.1); }
-    :global(body.dark-mode) .hw-step {
+    :global(body.dark-mode) .hw-page :global(.hw-step) {
       background: linear-gradient(145deg, #2a2240 0%, #1e1a30 100%);
       border-color: #3d3560;
     }
-    :global(body.dark-mode) .hw-step--done {
+    :global(body.dark-mode) .hw-page :global(.hw-step--done) {
       background: linear-gradient(145deg, #1e2a1e 0%, #1a251a 100%);
       border-color: #3d5030;
     }
-    :global(body.dark-mode) .hw-step-snippet {
+    :global(body.dark-mode) .hw-page :global(.hw-step-snippet) {
       background: rgba(0, 0, 0, 0.2);
       border-left-color: #8b6d48;
     }
-    :global(body.dark-mode) .hw-snippet-he { color: #e8d5bd; }
-    :global(body.dark-mode) .hw-snippet-en { color: #b8a890; }
-    :global(body.dark-mode) .hw-step-link { color: #c9a87c; border-bottom-color: #8b6d48; }
-    :global(body.dark-mode) .hw-step-link:hover { color: #e8d5bd; }
+    :global(body.dark-mode) .hw-page :global(.hw-snippet-he) { color: #e8d5bd; }
+    :global(body.dark-mode) .hw-page :global(.hw-snippet-en) { color: #b8a890; }
+    :global(body.dark-mode) .hw-page :global(.hw-step-link) { color: #c9a87c; border-bottom-color: #8b6d48; }
+    :global(body.dark-mode) .hw-page :global(.hw-step-link):hover { color: #e8d5bd; }
     :global(body.dark-mode) .hw-back-btn { color: #c9a87c; border-color: #5b3a1a; }
     :global(body.dark-mode) .hw-back-btn:hover { background: #2a2240; color: #e8d5bd; }
-    :global(body.dark-mode) .hw-share-btn { color: #c9a87c; border-color: #5b3a1a; }
-    :global(body.dark-mode) .hw-share-btn:hover { background: #2a2240; color: #e8d5bd; }
+    :global(body.dark-mode) .hw-page :global(.hw-share-btn) { color: #c9a87c; border-color: #5b3a1a; }
+    :global(body.dark-mode) .hw-page :global(.hw-share-btn):hover { background: #2a2240; color: #e8d5bd; }
     :global(body.dark-mode) .hw-journey-progress-bar { background: rgba(201, 168, 124, 0.1); }
     :global(body.dark-mode) .hw-journey-progress-text { color: #c9a87c; }
 
@@ -590,10 +599,10 @@ import healingData from '../../public/healing-words.json';
       .hw-title-en { font-size: 1.2rem; }
       .hw-grid { grid-template-columns: 1fr; gap: 1rem; }
       .hw-card { padding: 1.25rem 1rem; }
-      .hw-step { padding: 1rem; }
-      .hw-step-header { flex-wrap: wrap; }
-      .hw-detail-title-he { font-size: 1.8rem; }
-      .hw-snippet-he { font-size: 1rem; }
+      .hw-page :global(.hw-step) { padding: 1rem; }
+      .hw-page :global(.hw-step-header) { flex-wrap: wrap; }
+      .hw-page :global(.hw-detail-title-he) { font-size: 1.8rem; }
+      .hw-page :global(.hw-snippet-he) { font-size: 1rem; }
     }
   </style>
 </Layout>
