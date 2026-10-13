@@ -44,6 +44,35 @@ const whatsappHref = `https://wa.me/?text=${encodeURIComponent(`${shareText} ${p
       <a href={whatsappHref} target="_blank" rel="noopener noreferrer">WhatsApp</a>
       <a href={img.path} download>Download image</a>
     </p>
+    <div id="husks-share-yahrzeit-slot" aria-label="Yahrzeit information"></div>
+    <style is:global>
+      #husks-share-yahrzeit-slot { display:flex; justify-content:center; margin-top:1rem; }
+      #husks-share-yahrzeit-slot #compactYahrzeit {
+        position:relative !important; top:auto !important; right:auto !important;
+        bottom:auto !important; left:auto !important; transform:none !important;
+        max-width:100%; z-index:auto !important;
+      }
+    </style>
+    <script is:inline>
+      (function () {
+        function dockYahrzeit() {
+          var slot = document.getElementById('husks-share-yahrzeit-slot');
+          var notice = document.getElementById('compactYahrzeit');
+          if (!slot || !notice) return false;
+          if (notice.parentNode !== slot) slot.appendChild(notice);
+          return true;
+        }
+        if (!dockYahrzeit()) {
+          var observer = new MutationObserver(function () {
+            if (dockYahrzeit()) observer.disconnect();
+          });
+          observer.observe(document.documentElement, { childList:true, subtree:true });
+          document.addEventListener('DOMContentLoaded', function () {
+            if (dockYahrzeit()) observer.disconnect();
+          }, { once:true });
+        }
+      })();
+    </script>
     <style>
       .share-actions > *{border:1px solid #1a365d;border-radius:999px;background:#fff;color:#1a365d;text-decoration:none;font-weight:800;padding:.55rem .85rem;cursor:pointer;font:inherit;}
       @media(max-width:700px){.share-actions > *{flex:1 1 42%;min-height:42px;display:flex;align-items:center;justify-content:center;text-align:center;}}
