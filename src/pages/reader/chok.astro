@@ -14,10 +14,14 @@ import Layout from '../../layouts/Layout.astro';
     </header>
 
     <div class="ck-controls" dir="ltr">
-      <div class="ck-row ck-days" id="ck-days"></div>
-      <div class="ck-row">
-        <label>Week <select id="ck-parsha"></select></label>
-        <label>Display
+      <div class="ck-quick-rail">
+        <label class="ck-option-box">Week · פרשה <select id="ck-parsha"></select></label>
+        <label class="ck-option-box">Day · יום <select id="ck-day" aria-label="Study day"></select></label>
+        <label class="ck-option-box">Language · שפה <select id="ck-language"><option value="both">HE + EN</option><option value="he">Hebrew</option><option value="en">English + original</option><option value="original">Untouched original</option></select></label>
+      </div>
+      <div class="ck-option-grid" aria-label="Study offerings">
+        <details class="ck-option-box ck-reading-options"><summary>Reading options<br/>אפשרויות קריאה</summary><div class="ck-option-panel ck-row">
+        <label>Display · תצוגה
           <select id="ck-mode">
             <option value="full">Nikud + Taamim</option>
             <option value="nikud">Nikud only</option>
@@ -25,11 +29,12 @@ import Layout from '../../layouts/Layout.astro';
             <option value="letters">Letters only</option>
           </select>
         </label>
+        <label>Theme · רקע <select id="ck-theme"><option value="day">Day</option><option value="sepia">Sepia</option><option value="night">Night</option></select></label>
         <label class="ck-chk"><input type="checkbox" id="ck-medooyuk" checked /> Medooyuk</label>
         <label class="ck-chk"><input type="checkbox" id="ck-targum" /> Targum</label>
         <label class="ck-chk"><input type="checkbox" id="ck-rashi" checked /> Rashi</label>
         <label class="ck-chk"><input type="checkbox" id="ck-commentary" checked /> Commentary</label>
-        <label class="ck-chk"><input type="checkbox" id="ck-tanachen" checked /> English</label>
+        <label class="ck-chk" hidden><input type="checkbox" id="ck-tanachen" checked /> English</label>
         <label>Carry
           <select id="ck-carrymode" title="הסבר פשוט — מה משך אתמול ומה היום: פתיחה פעם ביום, תמיד, או אף פעם">
             <option value="daily">Daily</option>
@@ -44,25 +49,29 @@ import Layout from '../../layouts/Layout.astro';
             <option value="always">Always open</option>
           </select>
         </label>
-        <span class="ck-themes">
-          <button class="ck-btn ck-theme" data-t="day">Day</button>
-          <button class="ck-btn ck-theme" data-t="sepia">Sepia</button>
-          <button class="ck-btn ck-theme" data-t="night">Night</button>
-        </span>
+        <details class="ck-mark-key"><summary>Medooyuk marks · סימני הניקוד</summary><div class="ck-legend" id="ck-legend" dir="rtl">
+          <span><span class="m-demo marked-hebrew" style="font-feature-settings:'ss01' 1">שְ</span> = שוא נא (נשמע) · שתי נקודות עבות</span>
+          <span><span class="m-demo marked-hebrew" style="font-feature-settings:'ss02' 1">קָ</span> = קומוץ קטן · מוגדל</span>
+          <span><span class="m-demo marked-hebrew" style="font-feature-settings:'ss03' 1">קָ</span> = קמץ טעון בירור</span>
+          <span><span class="m-demo marked-hebrew" style="font-feature-settings:'ss04' 1">אֽ</span> = מטג (געיה)</span>
+          <span class="ck-legend-note">הסימון על הניקוד עצמו — האותיות רגילות</span>
+        </div></details>
+        </div></details>
+        <details class="ck-option-box" id="ck-study-overview"><summary>Study overview<br/>סדר הלימוד</summary><div class="ck-option-panel ck-offering-body" id="ck-study-overview-body" dir="rtl"></div></details>
+        <a class="ck-option-box ck-offering-link" href="/reader/chok/tefillos/">Prayers<br/>תפלות</a>
+        <a class="ck-option-box ck-offering-link" href="/reader/chok/kavanos/">Kavanos<br/>כוונות</a>
+        <a class="ck-option-box ck-offering-link" id="ck-full-parsha" href="/parsha/noach/">Full parsha<br/>הפרשה בשלמותה</a>
+        <details class="ck-option-box" id="ck-breslov-offering"><summary>Breslov<br/>ברסלב</summary><div class="ck-option-panel ck-offering-body" id="ck-breslov-offering-body" dir="rtl"></div></details>
       </div>
-      <div class="ck-legend" id="ck-legend" dir="rtl">
-        <span><span class="m-demo marked-hebrew" style="font-feature-settings:'ss01' 1">שְ</span> = שוא נא (נשמע) · שתי נקודות עבות</span>
-        <span><span class="m-demo marked-hebrew" style="font-feature-settings:'ss02' 1">קָ</span> = קומוץ קטן · מוגדל</span>
-        <span><span class="m-demo marked-hebrew" style="font-feature-settings:'ss03' 1">קָ</span> = קמץ טעון בירור</span>
-        <span><span class="m-demo marked-hebrew" style="font-feature-settings:'ss04' 1">אֽ</span> = מטג (געיה)</span>
-        <span class="ck-legend-note">הסימון על הניקוד עצמו — האותיות רגילות</span>
-      </div>
+      <div id="ck-days" hidden></div>
     </div>
+
+    <nav id="ck-jumps" class="ck-jumps" aria-label="Jump to study section" dir="rtl"></nav>
 
     <main id="ck-content" class="ck-content" dir="rtl" lang="he"></main>
 
     <footer class="ck-foot" dir="ltr">
-      <p>Sheva/qamats rulings are v0 output — not an accuracy claim.</p>
+      <p><a href="/reader/tikkun/">שנים מקרא ואחד תרגום · Shnayim Mikra</a></p>
       <p><a href="/tikkun/qatan-sources.html">MAM qatan supplement — Hebrew Wikisource · CC BY-SA 4.0 · sources and changes</a></p>
     </footer>
   </div>
@@ -72,9 +81,39 @@ import Layout from '../../layouts/Layout.astro';
 <script src="/tikkun-qatan.js?v=qatan-expansion-20261006-parent-final-r1" defer></script>
 <script src="/medooyuk.js?v=four-surfaces-20261006-r1" defer></script>
 <script src="/psalms-data.js?v=psalms-annotations-20261002-r1&amp;integrity=sha256-20261003" defer></script>
-<script src="/chok.js?v=parsha-all-processed-20261012-r8-zohar-reviewed133" defer></script>
+<script src="/chok-source-reader.js?v=live-week-20261013-mussar-final-r4" defer></script>
+<script src="/chok.js?v=live-week-20261013-r3" defer></script>
 
 <style is:global>
+  /* Actual study offerings: three columns/two rows, selectors separate. */
+  .ck-quick-rail { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.4rem; margin-bottom:.4rem; }
+  .ck-option-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); grid-template-rows:repeat(2,auto); gap:.4rem; position:relative; }
+  .ck-option-box { min-width:0; padding:.35rem .45rem; border:1px solid var(--ck-border-strong); border-radius:8px; background:var(--ck-panel-2); font-size:.75rem; }
+  .ck-option-box select { display:block; width:100%; min-width:0; max-width:100%; padding:.25rem .1rem; min-height:32px; border:0; background:transparent; color:var(--ck-ink); font-size:.82rem; }
+  .ck-option-box > summary, .ck-offering-link { cursor:pointer; min-height:44px; display:block; box-sizing:border-box; line-height:1.35; text-decoration:none; color:var(--ck-ink); }
+  .ck-option-panel { position:absolute; inset-inline:0; top:100%; z-index:5; margin:.3rem 0 0; padding:1rem; border:1px solid var(--ck-border-strong); border-radius:10px; background:var(--ck-panel-2); box-shadow:var(--ck-shadow-2); }
+  .ck-wrap [hidden] { display:none !important; }
+  .ck-offering-body { max-height:70vh; overflow:auto; font-size:1rem; }
+  .ck-mark-key { margin-top:.5rem; font-size:.75rem; }
+  .ck-reading-options .ck-mark-key { flex-basis:100%; }
+  .ck-mark-key > summary { min-height:44px; }
+  .ck-jumps { display:flex; flex-wrap:wrap; gap:.4rem .8rem; border-block:1px solid var(--ck-border); padding:.6rem 0; margin-bottom:.8rem; font-size:.83rem; }
+  .ck-jumps a { color:var(--ck-teal-deep); text-decoration:none; }
+  .ck-section { scroll-margin-top:5rem; }
+  .ck-source-languages { display:flex; gap:.4rem; margin:.6rem 0; }
+  .ck-source-languages button { padding:.4rem .6rem; min-height:44px; border:1px solid var(--ck-border-strong); border-radius:7px; background:var(--ck-panel-2); color:var(--ck-ink); }
+  .ck-source-languages button[aria-pressed='true'] { border-color:var(--ck-teal); outline:1px solid var(--ck-teal); }
+  .ck-source-pair, .ck-native-pair, .ck-complete-pair { margin:.7rem 0; }
+  .ck-source-pair .ck-he, .ck-native-pair .ck-he, .ck-original { white-space:pre-wrap; font-size:var(--ck-size,26px); line-height:1.9; font-family:var(--ck-font-he); font-synthesis:none; }
+  .ck-untouched-original { white-space:pre-wrap; font-size:var(--ck-size,26px); line-height:1.9; font-family:var(--ck-font-he); font-synthesis:none; }
+  .ck-source-pair .ck-en, .ck-native-pair .ck-en { white-space:pre-wrap; font-family:var(--ck-font-en); font-size:1.12rem; line-height:1.8; }
+  .ck-source-qualification { padding:.5rem .75rem; margin:.65rem 0; border-inline-start:2px solid var(--ck-gold); font-size:.9rem; line-height:1.7; font-family:var(--ck-font-en); }
+  .ck-targum-reading { border-inline-start:2px solid var(--ck-gold-soft); padding-inline-start:.7rem; margin-top:.5rem; }
+  .ck-targum-reading h4, .ck-reading-ref { font-size:.84rem; margin:.35rem 0; font-family:var(--ck-font-ui); font-weight:400; }
+  .ck-verse-access { font-size:.8rem; margin:.5rem 0; }
+  .ck-classical-gloss { display:block; border-inline-start:2px solid var(--ck-border); padding-inline-start:.6rem; font-size:.85em; margin:.5rem 0; }
+  .ck-content[data-language='original'] .ck-voice-layer, .ck-content[data-language='original'] .ck-explanation, .ck-content[data-language='original'] .ck-voice-row, .ck-content[data-language='original'] .ck-comm, .ck-content[data-language='original'] .ck-mishna-explanation, .ck-content[data-language='original'] .ck-mishna-questions, .ck-content[data-language='original'] .ck-mishna-terms { display:none; }
+  .ck-source-island[data-language='he'] .ck-en, .ck-source-island[data-language='en'] .ck-he { display:none; }
   .ck-generated-ref { unicode-bidi: isolate; white-space: nowrap; }
   .ck-kavana-para { margin-block: 0.65rem; white-space: pre-wrap; }
   .ck-kavana-note { font-size: 0.85rem; line-height: 1.6; color: var(--ck-muted-2); }
@@ -182,10 +221,10 @@ import Layout from '../../layouts/Layout.astro';
   /* ── Header: sefer title page ─────────────────────────────────── */
   .ck-header {
     text-align: center;
-    padding: 1.4rem 0.5rem 0;
+    padding: .25rem 0.5rem 0;
     border-bottom: 1px solid var(--ck-gold-soft);
     position: relative;
-    margin-bottom: 1.1rem;
+    margin-bottom: .65rem;
   }
   .ck-header::after {
     content: '✦';
@@ -201,7 +240,7 @@ import Layout from '../../layouts/Layout.astro';
   }
   .ck-header h1 {
     font-family: var(--ck-font-he);
-    font-size: clamp(1.9rem, 5vw, 2.7rem);
+    font-size: clamp(1.5rem, 4vw, 2.2rem);
     font-weight: 700;
     margin: 0 0 0.2rem;
     color: var(--ck-ink);
@@ -222,7 +261,7 @@ import Layout from '../../layouts/Layout.astro';
     letter-spacing: 0.02em;
   }
   .ck-sibling {
-    margin: 0.7rem 0 1rem;
+    margin: .25rem 0 .4rem;
     font-size: 0.85rem;
     color: var(--ck-muted);
   }
@@ -245,7 +284,7 @@ import Layout from '../../layouts/Layout.astro';
     border: 1px solid var(--ck-border);
     border-radius: var(--ck-radius);
     padding: 0.7rem 0.9rem;
-    margin-bottom: 1.2rem;
+    margin-bottom: .5rem;
     background: var(--ck-panel);
     box-shadow: var(--ck-shadow-1);
   }
@@ -681,6 +720,31 @@ import Layout from '../../layouts/Layout.astro';
     .ck-wrap { padding: 1.6rem 2rem 2.2rem; }
     .ck-controls { padding: 0.85rem 1.1rem; }
     .ck-content { padding: 2.2rem 2.6rem 2.6rem; }
+  }
+
+  /* Mobile reading-first spacing: no source font/line-height or global chrome changes. */
+  @media (max-width: 719px) {
+    .ck-wrap { padding: .5rem .75rem 1rem; }
+    .ck-header { padding: 0; margin-bottom: .4rem; }
+    .ck-header h1 { font-size: 1.35rem; line-height: 1.25; margin-bottom: .1rem; }
+    .ck-sub { font-size: .85rem; letter-spacing: .02em; }
+    .ck-date, .ck-week { font-size: .85rem; line-height: 1.35; margin: .1rem 0; }
+    .ck-sibling { font-size: .8rem; line-height: 1.35; margin: .15rem 0 .3rem; }
+    .ck-sibling a { padding: .1rem .5rem; }
+    .ck-controls { padding: .4rem; margin-bottom: .35rem; }
+    .ck-quick-rail { gap: .25rem; margin-bottom: .25rem; }
+    .ck-option-grid { gap: .25rem; }
+    .ck-option-box { padding: .25rem .3rem; line-height: 1.35; }
+    .ck-jumps { gap: .2rem .65rem; line-height: 1.4; padding: .4rem 0; margin-bottom: .4rem; }
+    .ck-content { padding: .6rem .7rem 1.2rem; }
+    .ck-sec-head { font-size: 1.2rem; line-height: 1.4; padding-bottom: .2rem; margin-bottom: .4rem; }
+    .ck-sec-head .ck-ref { font-size: .7em; }
+    /* Closed contextual controls need control leading, not the source's sefer leading. */
+    .ck-content .ck-section > .ck-native-group:not([open]) { padding: 0; margin: .35rem 0 .5rem; }
+    .ck-content .ck-section > .ck-native-group:not([open]) > summary {
+      margin: 0; padding: .3rem .55rem; min-height: 44px; box-sizing: border-box;
+      font-size: .85rem; line-height: 1.4;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
