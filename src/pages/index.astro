@@ -323,13 +323,19 @@ const todayQuote = quotes[dayIndex];
         <span class="tool-icon">📖</span>
         <div><span class="tool-label">Tikun Korim · Shnayim Mikra</span><span class="tool-he" lang="he" dir="rtl">תיקון קריאה · שניים מקרא ואחד תרגום</span></div>
       </a>
-      <a href="/shavuos" class="tool">
-        <span class="tool-icon">🌾</span>
-        <div><span class="tool-label">Shavuos / שבועות</span><span class="tool-he" lang="he" dir="rtl">זמן מתן תורתנו</span></div>
+      <a href="/resources" class="tool" id="home-seasonal-shortcut">
+        <span class="tool-icon">✨</span>
+        <div><span class="tool-label">All Resources</span><span class="tool-he" lang="he" dir="rtl">כל האוצרות</span></div>
       </a>
     </div>
+    <p class="section-sub"><a class="home-yearround-shavuos" href="/shavuos">Shavuos / שבועות</a></p>
   </div>
 </section>
+
+<script>
+  import { startSeasonalShortcut } from '../lib/home-seasonal-shortcut.mjs';
+  startSeasonalShortcut();
+</script>
 
 <!-- ═══════════════════════════════════════
      APP BANNER
@@ -915,6 +921,10 @@ const todayQuote = quotes[dayIndex];
   .tool-icon { font-size: 1.3rem; }
   .tool-label { display: block; font-weight: 600; font-size: 0.9rem; }
   .tool-he { display: block; font-family: var(--font-hebrew, 'Frank Ruhl Libre', serif); font-size: 0.75rem; color: #6a6a6a; direction: rtl; }
+
+  .home-yearround-shavuos { color: #1a365d; }
+  [data-theme="night"] #home-seasonal-shortcut .tool-he, body.dark-mode #home-seasonal-shortcut .tool-he { color: #b8a890; }
+  [data-theme="night"] .home-yearround-shavuos, body.dark-mode .home-yearround-shavuos { color: #d0d0e0; }
 
   /* ============================================
      APP BANNER
