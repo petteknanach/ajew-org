@@ -40,7 +40,7 @@ assert(player.includes("bookId === 'sefer-hamidos'\n          ? window.location.
 assert((player.match(/if \(bookId !== 'sefer-hamidos'\)/g) || []).length >= 2, 'Sefer HaMidos must hide whole-item archive edition links');
 assert(player.includes("'⬇ Download song'"), 'Sefer HaMidos songs must retain an individual download control');
 assert(player.includes("download: ''"), 'Individual song download controls must request download behavior');
-assert(layout.includes('/audio-player.js?v=20260927-mobile-audio-tab'), 'Audio player asset must use the verified mobile-tab cache version (archive-detail guards remain above)');
+assert(layout.includes('/audio-player.js?v=20261013-chayay-ace-r3'), 'Audio player asset must use the verified mobile-tab cache version (archive-detail guards remain above)');
 assert(readerCss.includes('width: calc(100% - clamp(340px, 40vw, 560px))'), 'Reader content must clear the open commentary sidebar');
 assert(/body:has\(\.reader-container\) #commentary-sidebar-body\s*\{\s*padding-right: 80px;/.test(readerCss), 'Commentary text must reserve the verified desktop voice/assistant control gutter');
 assert(readerScript.includes("let notesBtn = document.getElementById('btn-notes')"), 'Notes setup must reuse the existing button');
