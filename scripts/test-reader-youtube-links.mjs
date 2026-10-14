@@ -139,7 +139,7 @@ function harness({ entries = [entry()], pathname = route, loading = false, manif
       observe(root, options) { this.targets.push([root, options]); }
     },
     fetch: async url => {
-      assert.equal(url, '/reader/youtube-links.json?v=1'); fetchCount++;
+      assert.equal(url, '/reader/youtube-links.json?v=20261014-3'); fetchCount++;
       if (failure === 'network') throw new Error('TEST FIXTURE network failure');
       return { ok: failure !== 'http', json: async () => {
         if (failure === 'json') throw new Error('TEST FIXTURE invalid JSON');
@@ -363,8 +363,8 @@ test('dedupe preserves distinct source owners/languages but collapses conflictin
 
 test('Layout injects only versioned feature assets under the qualified Reader flag and does not inline an embed', () => {
   const layout = readFileSync(new URL('../src/layouts/Layout.astro', import.meta.url), 'utf8');
-  assert.ok(layout.includes('{hasYouTubeReader && <link rel="stylesheet" href="/reader-youtube-links.css?v=20261014-2" />}'));
-  assert.ok(layout.includes('{hasYouTubeReader && <script src="/reader-youtube-links.js?v=20261014-2" is:inline defer></script>}'));
+  assert.ok(layout.includes('{hasYouTubeReader && <link rel="stylesheet" href="/reader-youtube-links.css?v=20261014-3" />}'));
+  assert.ok(layout.includes('{hasYouTubeReader && <script src="/reader-youtube-links.js?v=20261014-3" is:inline defer></script>}'));
   assert.equal((layout.match(/src="\/reader-youtube-links\.js/g) || []).length, 1);
   assert.equal((layout.match(/hasYouTubeReader/g) || []).length, 3, 'new flag only defines and guards the two feature assets');
   const start = layout.indexOf('const readerPlainMatch =');
@@ -481,4 +481,112 @@ test('optional annotation is bounded literal text, rejected when malformed and e
   }
   const fresh = harness({ entries: [entry({ annotation: 'x'.repeat(800) })] }); await fresh.settle();
   assert.equal(fresh.rows()[0].querySelector('.reader-youtube-annotation').textContent.length, 800);
+});
+
+test('teaching videos attach to exact generic section and Original source with native language/media rules', async () => {
+  const pathname = '/reader/likutay-moharan/1/25';
+  const entries = [entry({ book: 'likutay-moharan', torah: '25', kind: 'teaching' }),
+    entry({ book: 'likutay-moharan', torah: '25', kind: 'teaching', language: 'en', videoId: 'FIXTURE0002' }),
+    entry({ book: 'likutay-moharan', torah: '25', kind: 'teaching', segment: null, videoId: 'FIXTURE0003' })];
+  const h = harness({ pathname, entries }); await h.settle();
+  assert.equal(h.details().length, 2); assert.equal(h.watches().length, 3);
+  const d = h.pairs.get(7).querySelector('.reader-youtube-links'); assert.ok(d); assert.equal(d.open, false);
+  assert.equal(h.pairs.get(2).querySelector('.reader-youtube-links'), null);
+  assert.equal(h.body.querySelector('.reader-youtube-page').nextSibling, h.content);
+  assert.deepEqual(h.rows().map(r => r.querySelectorAll('a')[1].href), [entries[2], entries[0], entries[1]].map(e => e.sourceUrl));
+  for (const row of h.rows()) {
+    assert.match(row.querySelector('.reader-youtube-meta').textContent, / · Teaching video · /);
+    assert.match(row.textContent, /Lecture\/commentary on the linked source, not a literal reading\./);
+    assert.doesNotMatch(row.textContent, /Story adaptation|Video-song/);
+  }
+  assert.deepEqual(h.rows().filter(r => !r.hidden).map(r => r.lang), ['he', 'he']);
+  h.nativeMode('english'); await h.settle();
+  assert.deepEqual(h.rows().filter(r => !r.hidden).map(r => r.lang), ['en']);
+  h.nativeMode('both'); await h.settle(); assert.equal(h.rows().filter(r => !r.hidden).length, 3);
+  assert.equal(d.parentElement.className, 'reader-youtube-page');
+  assert.match(d.textContent, /No aligned-paragraph mapping/);
+  assert.equal(h.aligned.querySelectorAll('.reader-youtube-links').length, 0);
+  for (const root of [h.body, h.container, h.content, h.document.documentElement]) {
+    for (const flag of ['reader-hide-media', 'reader-teachings-only', 'reader-immersive', 'media-hidden']) {
+      root.classList.add(flag); await h.settle(); assert.ok(h.details().every(el => el.hidden));
+      root.classList.remove(flag); await h.settle(); assert.ok(h.details().every(el => !el.hidden));
+    }
+  }
+  h.nativeMode('hebrew'); await h.settle(); assert.equal(d.parentElement, h.pairs.get(7));
+  assert.deepEqual(h.rows().filter(r => !r.hidden).map(r => r.lang), ['he', 'he']);
+  assert.equal(h.body.querySelectorAll('iframe').length, 0); assert.equal(h.body.querySelectorAll('video').length, 0);
+  assert.equal(h.body.querySelectorAll('audio')[0], h.audio);
+});
+
+test('teaching videos support exact siman section/Original URLs without chapter or aligned aliases', async () => {
+  const pathname = '/reader/chayey-moharan/siman/260';
+  const entries = [simanEntry('260', { kind: 'teaching', sourceUrl: pathname + '/' }),
+    simanEntry('260', { kind: 'teaching', language: 'en', segment: 31, videoId: 'FIXTURE0002', sourceUrl: pathname + '#seg-31' })];
+  const h = harness({ pathname: pathname + '/', entries }); await h.settle();
+  assert.equal(h.watches().length, 2); assert.equal(h.details().length, 2);
+  assert.deepEqual(h.rows().map(r => r.querySelectorAll('a')[1].href), entries.map(e => e.sourceUrl));
+  const d = h.pairs.get(31).querySelector('.reader-youtube-links'); assert.ok(d); assert.equal(d.hidden, true);
+  h.nativeMode('english'); await h.settle(); assert.equal(d.hidden, false);
+  assert.deepEqual(h.rows().filter(r => !r.hidden).map(r => r.lang), ['en']);
+  h.nativeMode('both'); await h.settle(); assert.equal(h.rows().filter(r => !r.hidden).length, 2);
+  assert.equal(d.parentElement.className, 'reader-youtube-page');
+  assert.match(d.textContent, /Original source paragraph 31/);
+  assert.equal(d.querySelectorAll('a')[1].href, pathname + '#seg-31');
+  assert.equal(h.aligned.querySelectorAll('.reader-youtube-links').length, 0);
+  for (const row of h.rows()) assert.match(row.querySelector('.reader-youtube-meta').textContent, /Teaching video/);
+  h.body.classList.add('reader-hide-media'); await h.settle(); assert.ok(h.details().every(el => el.hidden));
+  h.body.classList.remove('reader-hide-media'); await h.settle(); assert.ok(h.details().every(el => !el.hidden));
+  h.nativeMode('hebrew'); await h.settle(); assert.equal(d.parentElement, h.pairs.get(31)); assert.equal(d.hidden, true);
+  h.window.location.pathname = '/reader/chayey-moharan/1/260'; h.fire('pageshow'); await h.settle();
+  assert.equal(h.details().length, 0);
+});
+
+test('teaching lecture labels/annotations stay literal and are excluded from native copy/share/My Sefer text', async () => {
+  const annotation = 'TEST FIXTURE lecture commentary; <img src=x onerror=alert(1)> is not source text.';
+  const h = harness({ entries: [entry({ kind: 'teaching', annotation })] }); await h.settle();
+  assert.equal(h.rows().length, 1);
+  assert.equal(h.rows()[0].querySelectorAll('.reader-youtube-annotation').at(-1).textContent, annotation);
+  assert.match(h.rows()[0].textContent, /Teaching video/);
+  assert.match(h.rows()[0].textContent, /not a literal reading/);
+  assert.equal(h.body.querySelectorAll('img').length, 0);
+  const pair = h.pairs.get(7), start = v2.indexOf('  function segmentPlainText(seg) {');
+  const end = v2.indexOf('\n  function shareOrCopy', start); assert.ok(start >= 0 && end > start);
+  h.context.testPair = pair;
+  assert.equal(vm.runInContext(v2.slice(start, end) + '\nsegmentPlainText(testPair);', h.context), 'CANONICAL TEST FIXTURE 7');
+  assert.ok(pair.children.every(child => !child.classList.contains('ajew-segment-actions')));
+  const clone = pair.cloneNode(true);
+  clone.querySelectorAll('.ajew-segment-actions').forEach(el => el.remove());
+  assert.equal(clone.textContent, 'CANONICAL TEST FIXTURE 7');
+  assert.equal(pair.children[0].textContent, 'CANONICAL TEST FIXTURE 7');
+});
+
+test('kind enumeration accepts only exact song/story/teaching tokens and keeps existing labels', async () => {
+  for (const kind of ['Teaching', 'TEACHING', ' teaching', 'teaching ', 'lecture', 'video', '', null, undefined, 1, true, {}, ['teaching']]) {
+    const h = harness({ entries: [entry({ kind })] }); await h.settle();
+    assert.equal(h.details().length, 0, JSON.stringify(kind)); assert.equal(h.watches().length, 0);
+  }
+  const h = harness({ entries: [entry(), entry({ kind: 'story', videoId: 'FIXTURE0002' }),
+    entry({ kind: 'teaching', videoId: 'FIXTURE0003' })] }); await h.settle();
+  assert.deepEqual(h.rows().map(r => r.querySelector('.reader-youtube-meta').textContent),
+    ['Hebrew · Video-song · TEST FIXTURE channel', 'Hebrew · Story adaptation · TEST FIXTURE channel',
+      'Hebrew · Teaching video · TEST FIXTURE channel']);
+  assert.doesNotMatch(h.rows()[0].textContent, /Lecture\/commentary/);
+  assert.doesNotMatch(h.rows()[1].textContent, /Lecture\/commentary/);
+});
+
+test('teaching kind does not relax exact source identity, language or Original owner validation', async () => {
+  for (const change of [{ book: 'sichos-haran' }, { part: 2 }, { torah: 'faith' }, { segment: 8 },
+    { sourceUrl: route + '#seg-31' }, { sourceUrl: route + '#aligned-7' }, { sourceUrl: route + '?view=both#seg-7' },
+    { sourceUrl: 'https://evil.example' + route + '#seg-7' }, { sourceUrl: route + '#seg-%37' },
+    { language: 'both' }, { language: 'HE' }, { routeType: 'siman' }]) {
+    const h = harness({ entries: [entry({ kind: 'teaching', ...change })] }); await h.settle();
+    assert.equal(h.details().length, 0, JSON.stringify(change));
+  }
+  const pathname = '/reader/chayey-moharan/siman/260';
+  for (const change of [{ routeType: undefined }, { routeType: 'section' }, { torah: '198' },
+    { sourceUrl: '/reader/chayey-moharan/1/260' }, { sourceUrl: pathname + '#aligned-31' }]) {
+    const h = harness({ pathname, entries: [simanEntry('260', { kind: 'teaching', ...change })] }); await h.settle();
+    assert.equal(h.details().length, 0, JSON.stringify(change));
+  }
+  const fresh = harness({ entries: [entry({ kind: 'teaching' })] }); await fresh.settle(); assert.equal(fresh.watches().length, 1);
 });

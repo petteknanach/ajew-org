@@ -107,7 +107,7 @@
         !(e.annotation === undefined || (typeof e.annotation === 'string' && e.annotation.length <= 800)) ||
         !positive(e.part) || !section(e.torah) ||
         !(e.segment === null || positive(e.segment)) ||
-        !['he', 'en'].includes(e.language) || !['song', 'story'].includes(e.kind) ||
+        !['he', 'en'].includes(e.language) || !['song', 'story', 'teaching'].includes(e.kind) ||
         typeof e.videoId !== 'string' || !/^[A-Za-z0-9_-]{11}$/.test(e.videoId) ||
         !['title', 'channel'].every(k => typeof e[k] === 'string' && e[k].trim() && e[k].length <= 500) ||
         typeof e.sourceUrl !== 'string' || e.sourceUrl.length > 600) return false;
@@ -155,7 +155,9 @@
       row.append(link('https://www.youtube.com/watch?v=' + e.videoId, e.title));
       row.append(node('span', 'reader-youtube-meta',
         (e.language === 'he' ? 'Hebrew' : 'English') + ' · ' +
-        (e.kind === 'story' ? 'Story adaptation' : 'Video-song') + ' · ' + e.channel));
+        (e.kind === 'teaching' ? 'Teaching video' : e.kind === 'story' ? 'Story adaptation' : 'Video-song') + ' · ' + e.channel));
+      if (e.kind === 'teaching') row.append(node('span', 'reader-youtube-annotation',
+        'Lecture/commentary on the linked source, not a literal reading.'));
       row.append(link(e.sourceUrl, 'Reader source' + (segment === null ? '' : ' · paragraph ' + segment)));
       if (e.annotation) row.append(node('span', 'reader-youtube-annotation', e.annotation));
       list.append(row);
@@ -243,7 +245,7 @@
     if (!route || !content) return;
     pending = (async () => {
       try {
-        const response = await fetch('/reader/youtube-links.json?v=1');
+        const response = await fetch('/reader/youtube-links.json?v=20261014-3');
         if (!response.ok) return;
         const manifest = await response.json();
         if (!manifest || manifest.version !== 1 || !Array.isArray(manifest.entries)) return;

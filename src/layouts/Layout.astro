@@ -65,7 +65,7 @@ const hasYouTubeReader = Boolean(readerPlainBase) || /^\/reader\/chayey-moharan\
     <link rel="manifest" href="/manifest.json?v=nanach-petek-20260707" />
     <link rel="alternate" type="application/rss+xml" title="A Jew RSS Feed" href="/rss.xml" />
     <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap-index.xml" />
-    {hasYouTubeReader && <link rel="stylesheet" href="/reader-youtube-links.css?v=20261014-2" />}
+    {hasYouTubeReader && <link rel="stylesheet" href="/reader-youtube-links.css?v=20261014-3" />}
     {readerPlainBase && <link rel="alternate" type="text/html" title="Plain text reader page" href={new URL(readerPlainBase, Astro.site)} />}
     {readerPlainBase && <link rel="alternate" type="text/plain" title="Plain text TXT" href={new URL(`${readerPlainBase}index.txt`, Astro.site)} />}
     {readerPlainBase && <link rel="alternate" type="text/markdown" title="Plain text Markdown" href={new URL(`${readerPlainBase}index.md`, Astro.site)} />}
@@ -274,7 +274,7 @@ const hasYouTubeReader = Boolean(readerPlainBase) || /^\/reader\/chayey-moharan\
     <!-- Reader audio player (self-initializes only on /reader/<bookId>/... pages when a mapping exists) -->
     <script src="/audio-player.js?v=20261013-chayay-ace-r3" defer></script>
     {isReaderPage && <script src="/reader-mobile.js?v=20260928-focus" is:inline defer></script>}
-    {hasYouTubeReader && <script src="/reader-youtube-links.js?v=20261014-2" is:inline defer></script>}
+    {hasYouTubeReader && <script src="/reader-youtube-links.js?v=20261014-3" is:inline defer></script>}
 
     <footer role="contentinfo">
       <div class="footer-container">
