@@ -28,6 +28,10 @@
     var source=String(x).replace(/<i\b(?=[^>]*\bdata-commentator\s*=)[^>]*>\s*<\/i\s*>/gi,'');
     return esc(source).replace(/&lt;(\/?)(b|i)&gt;/g, '<$1$2>').replace(/&lt;small&gt;/g, '<span class="ck-classical-gloss" data-source-role="classical-context">').replace(/&lt;\/small&gt;/g, '</span>');
   }
+  function targumText(x) {
+    // Imported bold emphasis is not part of the recited Aramaic.
+    return rich(String(x == null ? '' : x).replace(/<\/?(?:b|strong)\b[^<>]*>/gi, ''));
+  }
   function digest(raw) { return window.crypto.subtle.digest('SHA-256', new TextEncoder().encode(raw)).then(function (b) { return Array.from(new Uint8Array(b)).map(function (x) { return x.toString(16).padStart(2,'0'); }).join(''); }); }
   function read(url, rawLoader) { return rawLoader(url + '?v=' + PINS[url]).then(function (raw) { return digest(raw).then(function (hash) { if (hash !== PINS[url]) throw Error('Source changed'); return JSON.parse(raw); }); }); }
   function validateMeaningNote(row, q) {
@@ -151,7 +155,7 @@
   function bound(section, ref, original) {
     var row=unit(section,ref); if (row && row.he !== original) throw Error('Daily source binding changed'); return row;
   }
-  function english(text, enabled, label) { return enabled && text ? '<div class="ck-en-line" dir="ltr" lang="en">' + (label ? '<small>'+esc(label)+'</small> ' : '') + esc(text) + '</div>' : ''; }
+  function english(text, enabled, label) { return enabled && text ? '<div class="ck-en-line" dir="ltr" lang="en">' + (label ? '<small>'+esc(label)+'</small> ' : '') + rich(text) + '</div>' : ''; }
   function pair(row, enabled, cls) { return '<article class="ck-complete-pair '+(cls||'')+'" data-source-unit="'+esc(row.id)+'" data-source-sha256="'+esc(row.sourceTextSHA256)+'"><div class="ck-original" lang="he" dir="rtl">'+rich(row.he)+'</div>'+english(row.en,enabled,'English translation')+'</article>'; }
   function rashi(ref, originals, enabled) {
     var rows=packet.sections.rashi.sourceUnits.filter(function (u) { return u.ref===ref; });
@@ -161,7 +165,7 @@
   }
   function targum(row, enabled, torah) {
     if (!row) return '';
-    return '<div class="ck-targum-reading" data-source-unit="'+esc(row.id)+'"><h4>'+ (torah ? 'אונקלוס — המקור הארמי · Onkelos' : 'תרגום — המקור הארמי · Targum')+'</h4><div class="ck-targum-line" lang="he" dir="rtl">'+esc(row.he)+'</div>'+ (row.heTranslation ? '<details class="ck-layer"><summary>אונקלוס — תרגום לעברית</summary><div class="ck-he-translation" dir="rtl">'+esc(row.heTranslation)+'</div></details>' : '') + english(row.en,enabled,'Targum English translation')+'</div>'+meaningNotes(row)+(row.displayNotes||[]).map(function (q) { return '<aside class="ck-source-qualification" data-note-id="'+esc(q.id)+'" dir="ltr" lang="en">'+esc(q.displayText)+'</aside>'; }).join('');
+    return '<div class="ck-targum-reading" data-source-unit="'+esc(row.id)+'"><h4>'+ (torah ? 'אונקלוס — המקור הארמי · Onkelos' : 'תרגום — המקור הארמי · Targum')+'</h4><div class="ck-targum-line" lang="he" dir="rtl">'+targumText(row.he)+'</div>'+ (row.heTranslation ? '<details class="ck-layer"><summary>אונקלוס — תרגום לעברית</summary><div class="ck-he-translation" dir="rtl">'+esc(row.heTranslation)+'</div></details>' : '') + english(row.en,enabled,'Targum English translation')+'</div>'+meaningNotes(row)+(row.displayNotes||[]).map(function (q) { return '<aside class="ck-source-qualification" data-note-id="'+esc(q.id)+'" dir="ltr" lang="en">'+esc(q.displayText)+'</aside>'; }).join('');
   }
   function nachTargum(section, ref) { return packet.nachTargum.find(function (u) { return u.sectionId===section && u.ref===ref; }); }
   function mishnaHelp(s, u, enabled) {
@@ -256,5 +260,5 @@
     if (!target) return;
     for (var el=target;el;el=el.parentElement) if (el.tagName==='DETAILS') el.open=true;
   });
-  window.ChokSources={load:load,isTuesday:isTuesday,unit:unit,bound:bound,english:english,rashi:rashi,targum:targum,nachTargum:nachTargum,reading:reading,native:native,overview:overview,weekly:weekly,verseAccess:verseAccess,applyLanguages:applyLanguages,weekUnit:weekUnit,weekSection:weekSection,weekReading:weekReading,sundayZohar:sundayZohar,meaningNotes:meaningNotes,unavailable:unavailable,globalQualification:globalQualification};
+  window.ChokSources={load:load,richText:rich,targumText:targumText,isTuesday:isTuesday,unit:unit,bound:bound,english:english,rashi:rashi,targum:targum,nachTargum:nachTargum,reading:reading,native:native,overview:overview,weekly:weekly,verseAccess:verseAccess,applyLanguages:applyLanguages,weekUnit:weekUnit,weekSection:weekSection,weekReading:weekReading,sundayZohar:sundayZohar,meaningNotes:meaningNotes,unavailable:unavailable,globalQualification:globalQualification};
 })();

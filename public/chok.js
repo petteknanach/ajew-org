@@ -176,10 +176,10 @@
     function u(x) { return x < 10 ? G[x] : x < 100 ? T[Math.floor(x/10)] + G[x%10] : H[Math.floor(x/100)] + u(x%100); }
     var s = u(n);
     if (s === 'יה') s = 'טו'; if (s === 'יו') s = 'טז';
-    return s.replace(/([א-ת])$/, '$1\u05f4');
+    return s + "'";
   }
   // Generated references only: never normalize source paragraphs or Names.
-  function plainHeNum(n) { return heNum(n).replace(/\u05f4/g, ''); }
+  function plainHeNum(n) { return heNum(n).replace(/['\u05f3\u05f4]/g, ''); }
   function refLabelHTML(ref) {
     // Keep chapter before verse visually, with each Hebrew numeral isolated.
     return '<bdi class="ck-generated-ref" dir="ltr">' + esc(ref).replace(/[א-ת]+/g, function (n) {
@@ -249,9 +249,7 @@
     return state.rashiCache['en:' + slug];
   }
   function richText(s) {
-    // escape everything, then re-enable the minimal tags Rashi text uses
-    var source = (s || '').replace(/<i\s+data-commentator="[^"]*"(?:\s+data-label="[^"]*")?\s+data-order="\d+"\s*><\/i>/g, '');
-    return esc(source).replace(/&lt;(\/?)(b|i)&gt;/g, '<$1$2>');
+    return window.ChokSources.richText(s || '');
   }
   function rashiHTML(slug, c, v, qualifiedDay) {
     if (!state.rashi) return Promise.resolve('');
@@ -538,7 +536,7 @@
               var tgOriginal = tg && (tg.ch || {})[c] && tg.ch[c][x];
               var targumRow = qualifiedDay ? kind === 'torah' ? window.ChokSources.bound('targum', sourceRef, tgOriginal) : window.ChokSources.nachTargum(kind, sourceRef) : window.ChokSources.weekUnit(parsha, day, kind==='torah'?'torahTargum':kind+'Targum', sourceRef, tgOriginal);
               if (targumRow) row += window.ChokSources.targum(targumRow, state.tanachen, kind === 'torah');
-              else if (tgOriginal) row += '<div class="ck-targum-reading"><h4>' + (kind === 'torah' ? 'אונקלוס · Onkelos' : 'תרגום · Targum') + '</h4><div class="ck-targum-line">' + richText(applyMode(tgOriginal)) + '</div></div>';
+              else if (tgOriginal) row += '<div class="ck-targum-reading"><h4>' + (kind === 'torah' ? 'אונקלוס · Onkelos' : 'תרגום · Targum') + '</h4><div class="ck-targum-line">' + window.ChokSources.targumText(applyMode(tgOriginal)) + '</div></div>';
             }
 
             items.push({ c: c, x: x, row: row });
@@ -1001,7 +999,7 @@
     var m = state.mussar && state.mussar.days[wk + '|' + day];
     if (!m) return Promise.resolve('');
     var head = 'מוסר — ' + esc(m.sefer);
-    if (m.daf) head += ' דף ' + heNum(m.daf) + (m.amud ? ' ע׳ ' + (m.amud === 2 ? 'ב״' : 'א״') : '');
+    if (m.daf) head += ' דף ' + heNum(m.daf) + (m.amud ? ' ע׳ ' + heNum(m.amud === 2 ? 2 : 1) : '');
     var body = m.text ? '<div class="ck-mussar-text">' + richText(applyMode(m.text)) + '</div>' : '';
     return Promise.resolve('<details class="ck-layer ck-mussar"><summary>' + head + '</summary>' + body + '</details>');
   }
@@ -1027,7 +1025,7 @@
         }
         var extra = rashiBody ? commDetails('רש״י על הגמרא', rashiBody) : '';
         return '<details class="ck-layer ck-gemara"><summary>גמרא — ' + esc(lbl) +
-          ' דף ' + heNum(g.daf) + ' ע׳ ' + (letter === 'a' ? 'א״' : 'ב״') + '</summary>' + body + extra + '</details>';
+          ' דף ' + heNum(g.daf) + ' ע׳ ' + heNum(letter === 'a' ? 1 : 2) + '</summary>' + body + extra + '</details>';
       });
     }).catch(function () { return null; });
   }
