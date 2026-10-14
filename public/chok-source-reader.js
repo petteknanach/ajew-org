@@ -8,7 +8,7 @@
     '/reader/chok/noach-tuesday.json': 'cc1a3f8ae3dc25215bc655cad65ba90374a106e3a5780983f562dd00c5f04cd2',
     '/reader/chok/noach-source-notes.json': 'ad4e08beded1c460a9185377328969ee78371a0b8e78b46eb1533ba5fdfce2c5',
     '/reader/chumash-lh/part-1/torah-2.json': '829f0365b0e69674399da81b7bdc62bc53d91694d66e761b72510a6c08147ff5',
-    '/reader/chok/noach-week.json': '9eff7e09efa1a24b69da770d269d776a5252949a55b71c6cd12577e81db2978b'
+    '/reader/chok/noach-week.json': '736b386986536586f0a79af1080d95a73467e5824cf3bfad5fefd03d5d0559d6'
   };
   var packet, noach, notes, pending, weekPacket;
   var languagePreferences = {};
@@ -30,26 +30,70 @@
   }
   function digest(raw) { return window.crypto.subtle.digest('SHA-256', new TextEncoder().encode(raw)).then(function (b) { return Array.from(new Uint8Array(b)).map(function (x) { return x.toString(16).padStart(2,'0'); }).join(''); }); }
   function read(url, rawLoader) { return rawLoader(url + '?v=' + PINS[url]).then(function (raw) { return digest(raw).then(function (hash) { if (hash !== PINS[url]) throw Error('Source changed'); return JSON.parse(raw); }); }); }
+  function validateMeaningNote(row, q) {
+    var span=q && q.sourceSpanCodepoints;
+    if (!q || typeof q.id!=='string' || !q.id || typeof q.he!=='string' || !q.he || typeof q.en!=='string' || !q.en ||
+        (q.owner!==undefined && q.owner!==row.id) || q.sourceBodySHA256!==row.sourceTextSHA256 || !Array.isArray(span) || span.length!==2 ||
+        !Number.isInteger(span[0]) || !Number.isInteger(span[1]) || span[0]<0 || span[1]<=span[0] ||
+        span[1]>Array.from(row.he).length || Array.from(row.he).slice(span[0],span[1]).join('')!==q.anchor) throw Error('Meaning note source binding changed');
+  }
+  function validatePair(u, newlyQualified) {
+    if (!u || typeof u.id!=='string' || !u.id || typeof u.ref!=='string' || !u.ref || typeof u.he!=='string' || !u.he || typeof u.en!=='string' || !u.en || !Array.isArray(u.displayMeaningNotes)) throw Error('Incomplete daily translation or qualification');
+    if (newlyQualified) {
+      var originalNotes=u.notes || u.meaningNotes;
+      if (!Array.isArray(originalNotes) || originalNotes.length!==u.displayMeaningNotes.length || originalNotes.some(function (n,i) {
+        var q=u.displayMeaningNotes[i];return !n || !q || n.id!==q.id || n.anchor!==q.anchor || n.he!==q.he || n.en!==q.en ||
+          (n.owner!==undefined && n.owner!==q.owner) || (n.sourceSHA256!==undefined && n.sourceSHA256!==q.sourceBodySHA256) ||
+          (n.startCodepoint!==undefined && n.startCodepoint!==q.sourceSpanCodepoints[0]) || (n.endCodepoint!==undefined && n.endCodepoint!==q.sourceSpanCodepoints[1]);
+      }) || (u.source && u.source.currentOriginalSHA256!==u.sourceTextSHA256)) throw Error('Source qualification alias changed');
+    }
+    return Promise.all([digest(u.he),digest(u.en)].concat(u.displayMeaningNotes.map(function (q) {
+      if (typeof q==='string') { if (newlyQualified) throw Error('Missing bilingual meaning note'); return; }
+      validateMeaningNote(u,q);
+      if (newlyQualified && (q.owner!==u.id || !q.heSHA256 || !q.enSHA256)) throw Error('Missing meaning note owner or digest');
+      return Promise.all([digest(q.he),digest(q.en)]).then(function (hashes) {
+        if ((q.heSHA256 && hashes[0]!==q.heSHA256) || (q.enSHA256 && hashes[1]!==q.enSHA256)) throw Error('Meaning note body changed');
+      });
+    }))).then(function (hashes) {
+      if (hashes[0]!==u.sourceTextSHA256 || hashes[1]!==u.englishTextSHA256) throw Error('Daily pair binding changed');
+      if (newlyQualified && ((u.original!==undefined && (u.original!==u.he || u.originalSHA256!==hashes[0])) ||
+          (u.english!==undefined && (u.english!==u.en || u.englishSHA256!==hashes[1])))) throw Error('Source alias binding changed');
+    });
+  }
+  function sundaySuccessor(week,day) {
+    var s=weekSection(week,day,'zohar');
+    if (!s || !s.readingBasis) return null;
+    if (week!=='נח' || day!=='יום ראשון' || s.readingBasis!=='complete-classical-daily-successor' || s.completeOriginal!==true ||
+        s.reference!=='Zohar I 59b; I 60a' || s.sourceJoinSeparator!==' ' || !Array.isArray(s.units) || s.units.length!==3 ||
+        !s.parentPublicQualification || s.parentPublicQualification.sourceAndFullEnglishRatified!==true ||
+        s.units.some(function (u,i) { return u.id!=='noach-sunday-zohar-'+(i+1) || u.folio!==(i===0?'59b':'60a'); })) throw Error('Unqualified Sunday source');
+    return s;
+  }
   function load(rawLoader) {
     if (typeof rawLoader!=='function') return Promise.reject(Error('Shared source loader unavailable'));
     if (!pending) pending = Promise.all(Object.keys(PINS).map(function (url) { return read(url,rawLoader); })).then(function (rows) {
       packet=rows[0];notes=rows[1];noach=rows[2];weekPacket=rows[3];
       if (packet.schema !== 'chok-source-bound-tuesday/v1' || packet.key !== 'נח|יום שלישי' || packet.masters.length !== 51 ||
           noach.units.length !== 18 || notes.notes.length !== 49 || notes.sourceSHA256 !== PINS['/reader/chumash-lh/part-1/torah-2.json'] || weekPacket.schema!=='chok-noach-week/v1' || Object.keys(weekPacket.days).length!==7) throw Error('Source identity mismatch');
+      if (!sundaySuccessor('נח','יום ראשון')) throw Error('Missing complete Sunday source');
+      var rashiCounts={'נח|יום שני':8,'נח|יום רביעי':9,'נח|יום שישי':6};
       return Promise.all(Object.keys(weekPacket.days).map(function (key) {
         var sections=weekPacket.days[key].sections;
-        return Promise.all(['talmud','halacha','mussar'].map(function (section) {
-          var s=sections[section];if (!s) return;
-          if (s.completeOriginal!==true || !s.units.length) throw Error('Incomplete daily source');
-          return Promise.all(s.units.map(function (u) {
-            if (!u.he || !u.en || !Array.isArray(u.displayMeaningNotes)) throw Error('Incomplete daily translation or qualification');
-            return Promise.all([digest(u.he),digest(u.en)]).then(function (hashes) {
-              if (hashes[0]!==u.sourceTextSHA256 || hashes[1]!==u.englishTextSHA256) throw Error('Daily pair binding changed');
-            });
-          }));
+        return Promise.all(['talmud','halacha','mussar','zohar'].map(function (section) {
+          var s=sections[section];if (!s || (section==='zohar' && !s.readingBasis)) return;
+          if (s.completeOriginal!==true || !Array.isArray(s.units) || !s.units.length) throw Error('Incomplete daily source');
+          var newlyQualified=!!s.parentPublicQualification;
+          if (newlyQualified && s.parentPublicQualification.sourceAndFullEnglishRatified!==true) throw Error('Unqualified complete source');
+          if (section==='talmud' && rashiCounts[key] && (!newlyQualified || s.trailingRashiAvailable!==true || s.units.filter(function (u) { return u.role==='rashi'; }).length!==rashiCounts[key])) throw Error('Incomplete trailing Rashi');
+          if (s.rashiReadingQualification && (typeof s.rashiReadingQualification.he!=='string' || !s.rashiReadingQualification.he || typeof s.rashiReadingQualification.en!=='string' || !s.rashiReadingQualification.en)) throw Error('Incomplete Rashi reading qualification');
+          var extra=s.rashiFullSupplement;
+          if (extra && (key!=='נח|יום שני' || section!=='talmud' || extra.completeOriginal!==true || extra.optional!==true || extra.initiallyClosed!==true ||
+              extra.title!=='רש״י — פירוש מלא · Complete Rashi commentary' || !Array.isArray(extra.units) || extra.units.length!==9 || extra.units.some(function (u) { return u.role!=='rashi'; }))) throw Error('Incomplete supplementary Rashi');
+          if (key==='נח|יום שני' && section==='talmud' && !extra) throw Error('Missing supplementary Rashi');
+          return Promise.all(s.units.concat(extra?extra.units:[]).map(function (u) { return validatePair(u,newlyQualified && (section==='zohar' || u.role==='rashi')); }));
         }));
       })).then(function () { return true; });
-    }).catch(function (e) { pending=null; throw e; });
+    }).catch(function (e) { pending=null;packet=noach=notes=weekPacket=null;throw e; });
     return pending;
   }
   function isTuesday(week, day) { return packet && week + '|' + day === packet.key; }
@@ -64,11 +108,7 @@
       var attributes=' data-note-owner="'+esc(row.id)+'" data-meaning-note="'+i+'"';
       // Existing string projections keep their exact historical markup.
       if (typeof q==='string') return '<aside class="ck-source-qualification"'+attributes+' lang="en" dir="ltr">'+esc(q)+'</aside>';
-      var span=q && q.sourceSpanCodepoints;
-      if (!q || typeof q.id!=='string' || !q.id || typeof q.he!=='string' || !q.he || typeof q.en!=='string' || !q.en ||
-          q.sourceBodySHA256!==row.sourceTextSHA256 || !Array.isArray(span) || span.length!==2 ||
-          !Number.isInteger(span[0]) || !Number.isInteger(span[1]) || span[0]<0 || span[1]<=span[0] ||
-          span[1]>Array.from(row.he).length || Array.from(row.he).slice(span[0],span[1]).join('')!==q.anchor) throw Error('Meaning note source binding changed');
+      validateMeaningNote(row,q);var span=q.sourceSpanCodepoints;
       return '<aside class="ck-source-qualification"'+attributes+' data-note-id="'+esc(q.id)+'" data-source-sha256="'+esc(q.sourceBodySHA256)+'" data-source-span="'+esc(JSON.stringify(span))+'"><p lang="he" dir="rtl">'+esc(q.he)+'</p><p lang="en" dir="ltr">'+esc(q.en)+'</p></aside>';
     }).join('');
   }
@@ -80,13 +120,28 @@
     if (classical && (s.completeOriginal!==true || !s.units.length || s.units.some(function (u) { return !u.he || !u.en || !u.sourceTextSHA256 || !u.englishTextSHA256 || !Array.isArray(u.displayMeaningNotes); }))) throw Error('Incomplete bilingual source reading');
     function body(rows,kind,label) { return '<details class="ck-layer ck-'+kind+'"'+(kind==='mishna'||kind==='halacha'?' open':'')+'><summary>'+label+'</summary>'+rows.map(function (u) { return '<div class="ck-reading-unit" data-reading-unit="'+esc(u.id)+'"><h4 dir="ltr">'+esc(u.ref)+'</h4>'+(u.sourceExtent==='full-classical-seif-with-gloss'?'<p class="ck-reading-ref" data-source-role="classical-context" dir="ltr">Complete classical paragraph with gloss</p>':'')+pair(u,enabled)+(classical?'':meaningNotes(u))+'</div>'; }).join('')+'</details>'; }
     var base=s.units.filter(function (u) { return u.role!=='rashi'; }), commentary=s.units.filter(function (u) { return u.role==='rashi'; });
-    var q=classical?s.units.map(meaningNotes).join(''):'';
+    var extra=s.rashiFullSupplement;
+    var q=classical?s.units.filter(function (u) { return !s.parentPublicQualification || u.role!=='rashi'; }).map(meaningNotes).join(''):'';
+    if (s.rashiReadingQualification) q+='<aside class="ck-source-qualification" data-rashi-reading-qualification><p lang="he" dir="rtl">'+esc(s.rashiReadingQualification.he)+'</p><p lang="en" dir="ltr">'+esc(s.rashiReadingQualification.en)+'</p></aside>';
     if (s.displaySelectionQualification) q+='<aside class="ck-source-qualification" dir="ltr">'+esc(s.displaySelectionQualification)+'</aside>';
     var reference=typeof s.reference==='string'?s.reference:Array.isArray(s.reference)?s.reference.join('; '):'';
     var h=q+body(base,section,labels[section]+(classical&&reference?' — '+esc(reference):''));
-    if (commentary.length) h+=body(commentary,'gemara-rashi','רש״י על הגמרא · Rashi on Gemara');
+    if (commentary.length) h+=body(commentary,'gemara-rashi','רש״י על הגמרא · Rashi on Gemara')+(s.parentPublicQualification?commentary.map(meaningNotes).join(''):'');
+    if (extra) h+='<details class="ck-layer ck-rashi-full-supplement" data-reading-role="optional-complete-rashi"><summary>'+esc(extra.title)+'</summary><p class="ck-reading-ref" lang="he" dir="rtl">לימוד רשות</p><p class="ck-reading-ref" lang="en" dir="ltr">Optional study</p>'+extra.units.map(function (u) { return '<div class="ck-reading-unit" data-reading-unit="'+esc(u.id)+'"><h4 dir="rtl">'+esc(u.ref)+'</h4>'+pair(u,enabled)+'</div>'; }).join('')+'</details>'+extra.units.map(meaningNotes).join('');
     if (section==='talmud' && s.trailingRashiAvailable===false) h+=unavailable('gemara-rashi');
     return h;
+  }
+  function sundayZohar(week,day,enabled) {
+    var s=sundaySuccessor(week,day);if (!s) return null;
+    var lastFolio='';
+    var source=s.units.map(function (u) {
+      var marker=u.folio!==lastFolio?'<small class="ck-reading-ref" data-zohar-folio="'+esc(u.folio)+'" dir="ltr">I '+esc(u.folio)+'</small> ':'';
+      lastFolio=u.folio;
+      return marker+'<span data-zohar-source-fragment data-source-unit="'+esc(u.id)+'" data-source-sha256="'+esc(u.sourceTextSHA256)+'">'+esc(u.he)+'</span>';
+    }).join(s.sourceJoinSeparator);
+    // One daily reading, not numbered extraction parts. Notes cannot collapse
+    // with its original or disappear when the reader changes languages.
+    return s.units.map(meaningNotes).join('')+'<details class="ck-layer ck-zohar ck-ratified-zohar" data-field-role="original-source"><summary>זוהר — נוסח המקור · Original source — '+esc(s.reference)+'</summary><div class="ck-zohar-line ck-original" lang="he" dir="rtl" style="white-space:pre-wrap">'+source+'</div></details>'+english(s.units.map(function (u) { return u.en; }).join(' '),enabled,'Zohar English translation');
   }
   function unavailable(section) {
     var labels={talmud:'גמרא · Gemara',halacha:'הלכה · Halacha',mussar:'מוסר · Mussar','gemara-rashi':'רש״י על הגמרא · Rashi on Gemara'};
@@ -201,5 +256,5 @@
     if (!target) return;
     for (var el=target;el;el=el.parentElement) if (el.tagName==='DETAILS') el.open=true;
   });
-  window.ChokSources={load:load,isTuesday:isTuesday,unit:unit,bound:bound,english:english,rashi:rashi,targum:targum,nachTargum:nachTargum,reading:reading,native:native,overview:overview,weekly:weekly,verseAccess:verseAccess,applyLanguages:applyLanguages,weekUnit:weekUnit,weekSection:weekSection,weekReading:weekReading,meaningNotes:meaningNotes,unavailable:unavailable,globalQualification:globalQualification};
+  window.ChokSources={load:load,isTuesday:isTuesday,unit:unit,bound:bound,english:english,rashi:rashi,targum:targum,nachTargum:nachTargum,reading:reading,native:native,overview:overview,weekly:weekly,verseAccess:verseAccess,applyLanguages:applyLanguages,weekUnit:weekUnit,weekSection:weekSection,weekReading:weekReading,sundayZohar:sundayZohar,meaningNotes:meaningNotes,unavailable:unavailable,globalQualification:globalQualification};
 })();

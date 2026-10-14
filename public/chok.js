@@ -975,6 +975,12 @@
       zoharEscape(identities.join(' ← ')) + '</summary>' + body + '</details>' + qualification;
   }
   function zoharHTML(z, wk, day) {
+    // Only the separately ratified exact Sunday successor bypasses the old
+    // public inventory. Every other key follows the unchanged authenticated path.
+    try {
+      var successor=window.ChokSources.sundayZohar(wk,day,state.tanachen);
+      if (successor!==null) return Promise.resolve(successor);
+    } catch (_) { return Promise.resolve(zoharPendingHTML(z,true)); }
     return zoharDailyData().then(function (data) { return zoharQualifiedRow(data, z, wk, day); }).then(function (row) {
       if (row.disposition === 'NO_ZOHAR_SOURCE_VERIFIED') return '';
       if (row.disposition !== 'SOURCE_RANGE_APPROVED') return zoharPendingHTML(row.originalRef, false);
