@@ -51,6 +51,7 @@ const hasYouTubeReader = Boolean(readerPlainBase) || /^\/reader\/chayey-moharan\
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/name-overlay.css?v=20261014-3" />
     <meta http-equiv="Content-Language" content={lang} />
     <meta name="description" content={description} />
     <meta name="keywords" content="Rabbi Nachman, Rebbe Nachman, Reb Nachman, Rabbeinu Nachman, Rabbi Nachman of Breslov, Nachman of Breslov, Rabbi Nachman of Bratslav, Breslov, Breslev, Bratslav, Braslav, Braclav, Breslov Chassidus, Breslov Hasidism, Breslover, רבי נחמן, רבינו נחמן, רבי נחמן מברסלב, רבי נחמן מאומן, נחמן מאומן, ברסלב, ברסלוב, ברסלבר, חסידות ברסלב, חסידי ברסלב, Na Nach, Nanach, Na Nach Nachma Nachman Meuman, נ נח נחמ נחמן מאומן, Judaism, Torah, Likutay Moharan, Likutey Moharan, Likutei Moharan, ליקוטי מוהרן, Likutay Halachos, Likutay Tefilos, Sichos HaRan, שיחות הרן, Sefer HaMidos, ספר המידות, Sippurei Maasiyos, סיפורי מעשיות, Tikkun HaKlali, Tikun Haklali, תיקון הכללי, Hitbodedut, Hisbodedus, התבודדות, Uman Rosh Hashanah, Rosh Hashanah Uman, ראש השנה באומן, Zohar, Talmud, Mishna, Rambam, Tanach, Jewish texts, Hebrew books online, Torah study, Kabbalah, Jewish mysticism" />
@@ -273,6 +274,7 @@ const hasYouTubeReader = Boolean(readerPlainBase) || /^\/reader\/chayey-moharan\
 
     <!-- Reader audio player (self-initializes only on /reader/<bookId>/... pages when a mapping exists) -->
     <script src="/audio-player.js?v=20261013-chayay-ace-r3" defer></script>
+    <script src="/name-overlay.js?v=20261014-3" is:inline defer></script>
     {isReaderPage && <script src="/reader-mobile.js?v=20260928-focus" is:inline defer></script>}
     {hasYouTubeReader && <script src="/reader-youtube-links.js?v=20261014-3" is:inline defer></script>}
 
@@ -280,6 +282,7 @@ const hasYouTubeReader = Boolean(readerPlainBase) || /^\/reader\/chayey-moharan\
       <div class="footer-container">
         <div class="footer-links">
           <a href="/resources">All Resources</a>
+          <a href="/name-overlay/">Divine Name Overlay</a>
           <a href="/reader">Library</a>
           <a href="/daily-study">Daily Study</a>
           <a href="/search-enhanced">Search</a>

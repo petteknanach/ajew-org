@@ -1,0 +1,65 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+<Layout title="Optional Divine Name overlay" description="A private, optional STAM-outline overlay for ajew.org, with independent colors, placement, opacity and gentle effects.">
+  <div class="name-overlay-page">
+    <header class="no-intro">
+      <p class="no-eyebrow">An optional aid · off by default</p>
+      <h1>Divine Name overlay</h1>
+      <p>Choose an unobtrusive visual reminder while reading on ajew.org. The Name uses exact STAM outlines, with a much smaller, source-exact pointed outline footer below it; your reading stays unchanged and clicks pass through the artwork.</p>
+      <p>This <strong>website overlay stays inside ajew.org in your browser</strong>. It cannot appear over other apps. For that, use the separate Windows download below.</p>
+    </header>
+    <div class="no-workspace">
+      <form class="no-panel" id="name-overlay-settings" data-name-overlay-panel>
+        <h2>Website settings</h2>
+        <noscript><p>JavaScript is required for the optional website overlay. It is currently off.</p></noscript>
+        <label class="no-check"><input type="checkbox" data-no-field="enabled" /><span>Enable the website overlay</span></label>
+        <label class="no-check"><input type="checkbox" data-no-field="remember" /><span>Remember on this browser across ajew.org pages</span></label>
+        <p class="no-hint">Remembering is opt-in. Without it, changes apply only on this page. Hide also saves the off state when remembering is enabled.</p>
+        <div class="no-actions"><button type="button" data-no-action="hide">Hide / disable now</button><button type="button" data-no-action="clear">Clear saved settings</button></div>
+        <p class="no-status" role="status" aria-live="polite" data-no-status>Overlay off. Remembering is off.</p>
+        <fieldset>
+          <legend>Letter arrangement</legend>
+          <label for="no-method">Visualization method</label>
+          <select id="no-method" data-no-field="method"><option value="interleaved">Interleaved — alternating primary and secondary letters</option><option value="nested">Nested — secondary Name inside the final, leftmost primary letter</option></select>
+          <div data-no-preview aria-hidden="true"></div>
+          <p class="no-hint">Exact footer below the Name: <bdi class="no-footer-source" dir="rtl" lang="he">נַ נַחְ נַחְמָ נַחְמָן מאומן</bdi>. The final word remains unpointed, exactly as supplied. The footer’s complete height, including vowel marks, is only 20% of the primary Name’s ink height in both arrangements.</p>
+          <p class="no-hint">Static outline preview. The two arrangements are user-specified visualization methods, not a quotation from the passage below.</p>
+        </fieldset>
+        <fieldset>
+          <legend>Independent colors</legend>
+          <div class="no-color-row"><div><label for="no-primary-picker">Primary</label><input id="no-primary-picker" type="color" value="#87CEEB" data-no-field="primary" /></div><div><label for="no-primary-hex">Primary hex</label><input id="no-primary-hex" type="text" value="#87CEEB" data-no-field="primary" pattern="#[0-9A-Fa-f]{6}" maxlength="7" spellcheck="false" aria-describedby="no-color-hint" /></div></div>
+          <div class="no-color-row"><div><label for="no-secondary-picker">Secondary</label><input id="no-secondary-picker" type="color" value="#000000" data-no-field="secondary" /></div><div><label for="no-secondary-hex">Secondary hex</label><input id="no-secondary-hex" type="text" value="#000000" data-no-field="secondary" pattern="#[0-9A-Fa-f]{6}" maxlength="7" spellcheck="false" aria-describedby="no-color-hint" /></div></div>
+          <div class="no-color-row"><div><label for="no-footer-picker">Footer</label><input id="no-footer-picker" type="color" value="#000000" data-no-field="footer" /></div><div><label for="no-footer-hex">Footer hex</label><input id="no-footer-hex" type="text" value="#000000" data-no-field="footer" pattern="#[0-9A-Fa-f]{6}" maxlength="7" spellcheck="false" aria-describedby="no-color-hint" /></div></div>
+          <p id="no-color-hint" class="no-hint">Use a six-digit hex color. Effects apply only to primary letters; secondary letters and the footer keep their own independent colors. Presets change only the two Name colors.</p>
+          <div class="no-presets" aria-label="Color presets"><button type="button" data-no-preset="sky">Sky + black</button><button type="button" data-no-preset="ink">Ink + black</button><button type="button" data-no-preset="pearl">Pearl + sky</button><button type="button" data-no-preset="gold">Gold + ink</button></div>
+        </fieldset>
+        <fieldset>
+          <legend>Opacity</legend>
+          <div class="no-range-row"><div><label for="no-opacity-range">Opacity slider</label><input id="no-opacity-range" type="range" min="0" max="100" step="1" value="55" data-no-field="opacity" /></div><div><label for="no-opacity-number">Opacity %</label><input id="no-opacity-number" type="number" min="0" max="100" step="1" value="55" data-no-field="opacity" /></div></div>
+          <p class="no-hint">0% is fully transparent; 100% is fully opaque. Hide remains available at either setting.</p>
+        </fieldset>
+        <fieldset>
+          <legend>Screen size &amp; placement</legend>
+          <div class="no-two"><div><label for="no-width">Maximum width %</label><input id="no-width" type="number" min="1" max="100" step="1" value="48" data-no-field="width" /></div><div><label for="no-height">Maximum height %</label><input id="no-height" type="number" min="1" max="100" step="1" value="24" data-no-field="height" /></div></div>
+          <p class="no-hint">Percentages of the browser viewport. The complete artwork fits inside both limits, with its proportions preserved — never stretched or cropped.</p>
+          <label for="no-anchor">Anchor</label><select id="no-anchor" data-no-field="anchor"><option value="top-left">Top left</option><option value="top">Top center</option><option value="top-right">Top right</option><option value="left">Middle left</option><option value="center" selected>Center</option><option value="right">Middle right</option><option value="bottom-left">Bottom left</option><option value="bottom">Bottom center</option><option value="bottom-right">Bottom right</option><option value="custom">Custom X / Y</option></select>
+          <div class="no-two"><div><label for="no-x">Horizontal X %</label><input id="no-x" type="number" min="0" max="100" step="1" value="50" data-no-field="x" /></div><div><label for="no-y">Vertical Y %</label><input id="no-y" type="number" min="0" max="100" step="1" value="50" data-no-field="y" /></div></div>
+          <p class="no-hint">X / Y moves the fitted artwork through the available space: 0% aligns its left / top edge; 100% aligns its right / bottom edge. Editing either selects Custom.</p>
+        </fieldset>
+        <fieldset>
+          <legend>Optional effects</legend>
+          <label for="no-effect">Primary-letter effect</label><select id="no-effect" data-no-field="effect"><option value="none">None — plain outlines</option><option value="fire">Fire — moving flame fill</option><option value="glow">Glow — soft, steady halo</option><option value="shimmer">Shimmer — gentle luminous sweep</option></select>
+          <div class="no-range-row"><div><label for="no-intensity-range">Effect intensity</label><input id="no-intensity-range" type="range" min="0" max="100" step="1" value="40" data-no-field="intensity" /></div><div><label for="no-intensity-number">Intensity %</label><input id="no-intensity-number" type="number" min="0" max="100" step="1" value="40" data-no-field="intensity" /></div></div>
+          <label class="no-check"><input type="checkbox" data-no-field="motion" checked /><span>Allow gentle effect motion</span></label>
+          <p class="no-hint" data-no-motion-status>Reduced-motion preferences are respected. Motion stops when this page is hidden.</p>
+        </fieldset>
+      </form>
+      <aside class="no-companion" aria-label="Scope, privacy and Windows download">
+        <section><h2>For other Windows apps</h2><p>The separate desktop utility can show a click-through overlay above ordinary Windows apps. The website settings do not control it.</p><a class="no-download" href="/downloads/name-overlay/Ajew-Name-Overlay-Windows.zip" download>Download Windows ZIP</a><p class="no-hint">Unzip and follow the included instructions. No administrator access or startup registration is needed. Secure desktop and exclusive full-screen apps may not show the overlay.</p></section>
+        <section><h2>Your choice, your browser</h2><p>No analytics, account or uploads are used by this feature. It requests only ajew.org’s own glyph asset. Saved preferences stay in this browser’s local storage; Clear removes them and turns the overlay off.</p><p>The Name is sacred. Use the display thoughtfully, and hide it whenever appropriate.</p></section>
+        <section><h2>Reading &amp; letter source</h2><p><a href="/reader/shivchay-haran/1/2/">Shivchay HaRan, section 2</a> describes Rabbi Nachman’s effort to keep the Divine Name before his eyes. This link is background for the reminder, not a source claim for either combined arrangement or the user-supplied footer.</p><p class="no-hint">The primary Name outlines use Stam Ashkenaz CLM; the pointed footer uses shaped Keter YG outlines for complete vowel marks. Both fonts have a GPLv2 license with a font embedding exception. <a href="/name-overlay/copyright">Font copyright &amp; exception</a> · <a href="/name-overlay/GNU-GPL">License</a> · <a href="/name-overlay/FONT-PROVENANCE.json">Asset provenance</a>.</p></section>
+      </aside>
+    </div>
+  </div>
+</Layout>
