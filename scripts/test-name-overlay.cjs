@@ -13,7 +13,7 @@ const page = fs.readFileSync(path.join(root, 'src/pages/name-overlay.astro'), 'u
 const crypto = require('node:crypto');
 const assetBytes = fs.readFileSync(path.join(root, 'public/name-overlay/glyphs-footer-small-v3.json'));
 const glyphs = JSON.parse(assetBytes.toString('utf8'));
-const originalGlyphs = JSON.parse(fs.readFileSync(path.join(root, 'public/name-overlay/glyphs.json'), 'utf8'));
+const originalGlyphs = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures/name-overlay-baseline.json'), 'utf8'));
 // Literal user codepoints, not a normalized/repointed projection or a self-derived oracle.
 const EXACT_FOOTER = '\u05e0\u05b7 \u05e0\u05b7\u05d7\u05b0 \u05e0\u05b7\u05d7\u05b0\u05de\u05b8 \u05e0\u05b7\u05d7\u05b0\u05de\u05b8\u05df \u05de\u05d0\u05d5\u05de\u05df';
 const EXPECTED_SHAPE = [[172,50],[171,48],[162,46],[157,44],[171,42],[172,39],[141,35],[171,35],[133,31],[164,31],[140,27],[173,27],[141,22],[171,22],[133,18],[164,18],[140,14],[173,14],[133,9],[164,9],[140,5],[173,5],[140,0],[173,0]];
@@ -258,7 +258,7 @@ test('footer fits centered below the entire Name, including all marks, within bo
   } close(e);
 });
 test('much-smaller footer including all niqqud is exactly 20% of primary Name ink height without width stretch', async () => {
-  const oldFooter = JSON.parse(fs.readFileSync(path.join(root, 'public/name-overlay/glyphs-footer-pointed-v2.json'), 'utf8'));
+  const oldFooter = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures/name-overlay-footer-pre-small.json'), 'utf8'));
   assert.deepEqual(glyphs.footer, oldFooter.footer, 'all source paths, marks and exact text conserved');
   const e=await enabled();
   for (const method of ['interleaved','nested']) {
@@ -320,7 +320,7 @@ test('old saved settings acquire black footer without losing prior preferences',
   const e=setup({storage:storage(JSON.stringify(s))}); await e.controller.ready(); assert.equal(e.controller.getSettings().footer,'#000000'); assert.equal(e.controller.getSettings().secondary,'#123456'); assert.equal(e.controller.getSettings().effect,'fire'); checkLayout(e,'interleaved'); close(e);
 });
 test('source validation rejects altered/repointed footer, missing ink, unsafe paths and malformed metadata', async () => {
-  const mutations=[d=>{d.footer.text+=' ';},d=>{d.footer.text=d.footer.text.replace('\u05de\u05d0\u05d5\u05de\u05df','\u05de\u05b5\u05d0\u05d5\u05de\u05df');},d=>{delete d.footer;},d=>{d.footer.glyphs.pop();},d=>{d.footer.glyphs[6].path='';},d=>{d.footer.glyphs[6].path='<script>';},d=>{d.footer.glyphs[0].glyphId=0;},d=>{d.footer.glyphs[0].clusterUtf8=51;},d=>{d.footer.glyphs[0].bounds=[0,0,0,0];},d=>{d.layouts.nested.footerGlyphs.reverse();},d=>{d.layouts.nested.footerGlyphs.pop();},d=>{d.layouts.interleaved.footerGlyphs[6].path='';},d=>{d.layouts.nested.footerGlyphs[0].scale=-1;},d=>{d.layouts.nested.footerGlyphs[0].x=Infinity;},d=>{d.layouts.nested.footerGlyphs[0].y=5000;},d=>{d.layouts.interleaved.viewBox[3]=1740;},d=>{d.layouts.interleaved.footerSizeRatio=.30;},d=>{d.layouts.nested=structuredClone(JSON.parse(fs.readFileSync(path.join(root,'public/name-overlay/glyphs-footer-pointed-v2.json'),'utf8')).layouts.nested); d.layouts.nested.footerSizeRatio=.20;}];
+  const mutations=[d=>{d.footer.text+=' ';},d=>{d.footer.text=d.footer.text.replace('\u05de\u05d0\u05d5\u05de\u05df','\u05de\u05b5\u05d0\u05d5\u05de\u05df');},d=>{delete d.footer;},d=>{d.footer.glyphs.pop();},d=>{d.footer.glyphs[6].path='';},d=>{d.footer.glyphs[6].path='<script>';},d=>{d.footer.glyphs[0].glyphId=0;},d=>{d.footer.glyphs[0].clusterUtf8=51;},d=>{d.footer.glyphs[0].bounds=[0,0,0,0];},d=>{d.layouts.nested.footerGlyphs.reverse();},d=>{d.layouts.nested.footerGlyphs.pop();},d=>{d.layouts.interleaved.footerGlyphs[6].path='';},d=>{d.layouts.nested.footerGlyphs[0].scale=-1;},d=>{d.layouts.nested.footerGlyphs[0].x=Infinity;},d=>{d.layouts.nested.footerGlyphs[0].y=5000;},d=>{d.layouts.interleaved.viewBox[3]=1740;},d=>{d.layouts.interleaved.footerSizeRatio=.30;},d=>{d.layouts.nested=structuredClone(JSON.parse(fs.readFileSync(path.join(__dirname,'fixtures/name-overlay-footer-pre-small.json'),'utf8')).layouts.nested); d.layouts.nested.footerSizeRatio=.20;}];
   for (const mutate of mutations) {
     const bad=structuredClone(glyphs); mutate(bad); assert.throws(()=>api.validGlyphs(bad));
     const e=await enabled({fetch:async()=>({ok:true,json:async()=>bad})}); assert.ok(live(e).hidden); assert.equal(live(e).children.length,0); assert.equal(e.doc.querySelector('[data-no-preview]').children.length,0); assert.match(e.doc.querySelector('[data-no-status]').textContent,/could not load/); close(e);
