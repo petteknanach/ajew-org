@@ -16,11 +16,11 @@ const totalSections = indexData?.torahs?.length || 0;
 ---
 <Layout title={`${indexData?.title || 'Aitzoas Yeshuroas'} — Directory`} description={`Directory for ${indexData?.title || 'Aitzoas Yeshuroas'}.`}>
   <ReaderDirectory
-    title={indexData?.title || 'Aitzoas Yeshuroas'}
-    hebrewTitle={indexData?.hebrewTitle || ''}
+    title={indexData?.bookTitle || 'Aitzoas Yeshuroas'}
+    hebrewTitle={indexData?.bookHebrew || ''}
     subtitle={indexData?.author || ''}
     countLabel={`${totalSections} entries`}
-    items={indexData?.torahs || []}
+    items={(indexData?.torahs || []).map((entry) => ({ ...entry, number: entry.torah, url: `/reader/aitzoas-yeshuroas/${partNum}/${entry.torah}` }))}
     hrefBase={`/reader/aitzoas-yeshuroas/${partNum}/`}
   />
 </Layout>

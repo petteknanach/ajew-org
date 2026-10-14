@@ -6,54 +6,61 @@ import '../../../../styles/reader-v2.css';
 import fs from 'node:fs';
 import path from 'node:path';
 
+// Storage sections come from this book's actual index, not printed topic numbers.
 export function getStaticPaths() {
-  const paths = [];
-  for (let torah = 1; torah <= 82; torah++) {
-    paths.push({ params: { part: '1', torah: String(torah) } });
-  }
-  return paths;
+  const index = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'public/reader/aitzoas-yeshuroas/index.json'), 'utf8'));
+  const seen = new Set();
+  return index.torahs.map(({ torah }) => {
+    if (!Number.isSafeInteger(torah) || torah < 1 || seen.has(torah)) throw new Error('Invalid Aitzoas Yesharoas section index');
+    seen.add(torah);
+    return { params: { part: '1', torah: String(torah) } };
+  });
 }
 
 const { part, torah } = Astro.params;
-const partNum = parseInt(part);
-const torahNum = parseInt(torah);
-
+const partNum = Number(part);
+const torahNum = Number(torah);
+const bookIndex = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'public/reader/aitzoas-yeshuroas/index.json'), 'utf8'));
+const sectionPosition = bookIndex.torahs.findIndex((entry) => String(entry.torah) === torah);
 let torahData = null;
 let error = null;
 
-try {
-  const filePath = path.join(process.cwd(), `public/reader/biur-halikutim/section-${torahNum}.json`);
-  const raw = fs.readFileSync(filePath, 'utf8');
-  torahData = JSON.parse(raw);
-} catch (e) {
-  error = `Section ${torahNum} not found`;
+if (part !== '1' || sectionPosition < 0) {
+  error = 'Section not found';
+} else {
+  const filePath = path.join(process.cwd(), `public/reader/aitzoas-yeshuroas/section-${torahNum}.json`);
+  torahData = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  if (torahData.bookId !== 'aitzoas-yeshuroas' || torahData.part !== partNum || torahData.torah !== torahNum) throw new Error('Aitzoas Yesharoas source identity mismatch');
+  const indices = torahData.segments.map((seg) => seg.index);
+  if (indices.some((index) => !Number.isSafeInteger(index) || index < 1) || new Set(indices).size !== indices.length) throw new Error('Invalid persisted Aitzoas Yesharoas paragraph anchors');
 }
 
-if (!torahData && !error) error = 'Content not available';
-
-const bookName = 'Biur HaLikutim';
-const bookHebrew = 'ביאור הליקוטים';
+const bookName = bookIndex.bookTitle;
+const bookHebrew = bookIndex.bookHebrew;
+const sectionUrl = (entry) => entry ? `/reader/aitzoas-yeshuroas/1/${entry.torah}` : null;
+const navigation = {
+  prevUrl: sectionUrl(bookIndex.torahs[sectionPosition - 1]),
+  nextUrl: sectionUrl(bookIndex.torahs[sectionPosition + 1]),
+};
 
 const pageTitle = torahData
-  ? `${torahData.hebrewTitle || torahData.title} - Biur HaLikutim`
+  ? `${torahData.hebrewTitle || torahData.title} - ${bookName}`
   : 'Not Found';
 const pageDesc = torahData
-  ? (() => {
-    const snippet = (torahData.segments?.find(s => s.en)?.en || '').replace(/<[^>]+>/g, '').slice(0, 120);
-    return `Read ${torahData.title} from Biur HaLikutim online free. ${snippet ? snippet + '...' : 'Hebrew text with English translation on ajew.org.'}`;
-  })()
+  ? `Read ${torahData.title} from ${bookName}. Original Hebrew text; paired English has known mismatches and is not approved. Translation review pending.`
   : '';
 
 const structuredData = torahData ? JSON.stringify({
   "@context": "https://schema.org",
   "@type": "Article",
-  "headline": `${torahData.title} - Biur HaLikutim`,
+  "headline": `${torahData.title} - ${bookName}`,
   "alternativeHeadline": torahData.hebrewTitle || '',
-  "author": { "@type": "Person", "name": "Rabbi Avraham bar Nachman" },
+  "author": { "@type": "Person", "name": bookIndex.author },
   "publisher": { "@type": "Organization", "name": "ajew.org" },
   "inLanguage": ["he", "en"],
-  "isPartOf": { "@type": "Book", "name": "Biur HaLikutim" },
-  "url": `https://ajew.org/reader/biur-halikutim/${partNum}/${torahNum}`
+  "description": pageDesc,
+  "isPartOf": { "@type": "Book", "name": bookName },
+  "url": `https://ajew.org/reader/aitzoas-yeshuroas/${partNum}/${torahNum}`
 }) : '';
 const breadcrumbData = torahData ? JSON.stringify({
   "@context": "https://schema.org",
@@ -66,13 +73,7 @@ const breadcrumbData = torahData ? JSON.stringify({
 }) : '';
 ---
 
-<Layout title={pageTitle} description={pageDesc}>
-  {torahData && structuredData && (
-    <script type="application/ld+json" set:html={structuredData} slot="head" />
-  )}
-  {torahData && breadcrumbData && (
-    <script type="application/ld+json" set:html={breadcrumbData} slot="head" />
-  )}
+<Layout title={pageTitle} description={pageDesc} jsonLd={torahData ? JSON.parse(structuredData) : undefined} breadcrumbs={torahData ? JSON.parse(breadcrumbData).itemListElement.map((crumb) => ({ name: crumb.name, url: crumb.item || `https://ajew.org/reader/aitzoas-yeshuroas/${partNum}/${torahNum}` })) : undefined}>
   {error ? (
     <div style="text-align: center; padding: 80px 20px;">
       <h1>{error}</h1>
@@ -81,8 +82,8 @@ const breadcrumbData = torahData ? JSON.stringify({
   ) : (
     <div
       class="reader-container"
-      data-torah-id={torahData.id}
-      data-torah-title={`${torahData.title} - Biur HaLikutim`}
+      data-torah-id={`aitzoas-yeshuroas-${partNum}-${torahNum}`}
+      data-torah-title={`${torahData.title} - ${bookName}`}
     >
       <div class="reader-progress"></div>
 
@@ -186,10 +187,10 @@ const breadcrumbData = torahData ? JSON.stringify({
       <button class="reader-toc-toggle" title="Table of Contents">&#9776;</button>
       <div class="reader-toc">
         <button class="reader-toc-close">&times;</button>
-        <h3>Sections</h3>
+        <h3>Original paragraphs / פסקאות מקור</h3>
         <ul class="reader-toc-list">
-          {torahData.segments.map((seg, i) => (
-            <li><a href={`#seg-${seg.index}`} data-index={String(seg.index)}>{seg.index}</a></li>
+          {torahData.segments.map((seg) => (
+            <li><a href={`#seg-${seg.index}`} data-index={String(seg.index)}>¶ {seg.index}</a></li>
           ))}
         </ul>
       </div>
@@ -202,14 +203,21 @@ const breadcrumbData = torahData ? JSON.stringify({
         </p>
       </div>
 
+      <aside id="translation-review-warning" role="note" aria-label="Translation review warning" class="ajew-segment-actions" style="margin: 16px 0; padding: 14px 16px; border: 2px solid var(--reader-border, #a67c45); border-radius: 8px; background: var(--reader-bg-secondary, #f8f5f0); color: var(--reader-text, #333);">
+        <p lang="en"><strong>Translation review warning:</strong> The paired English is known to be mismatched with the Hebrew and is not approved. It is retained unchanged pending review; paragraph links do not certify it.</p>
+        <p lang="he" dir="rtl"><strong>אזהרה — התרגום בבדיקה:</strong> ידוע שהטקסט באנגלית אינו תואם לטקסט העברי ואינו מאושר. הוא נשמר ללא שינוי עד לבדיקתו; קישורים לפסקאות אינם אישור לתרגום.</p>
+        <p lang="en">¶ labels are newly assigned stable Reader paragraph anchors, not printed teaching numbers. Manuscript headings and printed numbering remain in the Original text.</p>
+        <p lang="he" dir="rtl">סימוני ¶ הם מזהי פסקאות קבועים חדשים של הקורא, ולא מספרי הסעיפים בדפוס. כותרות המקור ומספורו נשמרים בטקסט המקורי.</p>
+      </aside>
+
       <div class="reader-nav">
-        {torahData.navigation.prevUrl ? (
-          <a href={torahData.navigation.prevUrl} data-dir="prev">&larr; Previous</a>
+        {navigation.prevUrl ? (
+          <a href={navigation.prevUrl} data-dir="prev">&larr; Previous</a>
         ) : <span class="disabled">&larr; Previous</span>}
         <a href={`/reader/aitzoas-yeshuroas/${partNum}`}>Book Index</a>
         <a href="/reader">All Books</a>
-        {torahData.navigation.nextUrl ? (
-          <a href={torahData.navigation.nextUrl} data-dir="next">Next &rarr;</a>
+        {navigation.nextUrl ? (
+          <a href={navigation.nextUrl} data-dir="next">Next &rarr;</a>
         ) : <span class="disabled">Next &rarr;</span>}
       </div>
 
@@ -218,11 +226,11 @@ const breadcrumbData = torahData ? JSON.stringify({
 {torahData.segments.map((seg) => (
           <div class="reader-segment-pair" id={`seg-${seg.index}`}>
             <div class="reader-segment segment-he" data-index={String(seg.index)}>
-              <span class="segment-number">{seg.index}</span>
+              <span class="segment-number" title="Reader paragraph anchor — not a printed teaching number">{seg.index}</span>
               <p data-nikud={seg.he_nikud || seg.he}>{seg.he}</p>
             </div>
             <div class={`reader-segment segment-en ${!seg.en ? 'empty-translation' : ''}`} data-index={String(seg.index)}>
-              <span class="segment-number">{seg.index}</span>
+              <span class="segment-number" title="Reader paragraph anchor — not a printed teaching number">{seg.index}</span>
               <p>{seg.en || 'Translation not yet available'}</p>
             </div>
           </div>
@@ -233,11 +241,11 @@ const breadcrumbData = torahData ? JSON.stringify({
             {torahData.aligned_segments.map((seg) => (
               <div class={`reader-segment-pair ${seg.type === 'note' ? 'segment-note' : ''}`} id={`aligned-${seg.index}`}>
                 <div class="reader-segment segment-he" data-index={String(seg.index)}>
-                  <span class="segment-number">{seg.index}</span>
+                  <span class="segment-number" title="Reader paragraph anchor — not a printed teaching number">{seg.index}</span>
                   <p>{seg.he || '\u00A0'}</p>
                 </div>
                 <div class={`reader-segment segment-en ${!seg.en ? 'empty-translation' : ''}`} data-index={String(seg.index)}>
-                  <span class="segment-number">{seg.index}</span>
+                  <span class="segment-number" title="Reader paragraph anchor — not a printed teaching number">{seg.index}</span>
                   <p>{seg.en || '\u00A0'}</p>
                 </div>
               </div>
@@ -247,13 +255,13 @@ const breadcrumbData = torahData ? JSON.stringify({
       </div>
 
       <div class="reader-nav">
-        {torahData.navigation.prevUrl ? (
-          <a href={torahData.navigation.prevUrl} data-dir="prev">&larr; Previous</a>
+        {navigation.prevUrl ? (
+          <a href={navigation.prevUrl} data-dir="prev">&larr; Previous</a>
         ) : <span class="disabled">&larr; Previous</span>}
         <a href={`/reader/aitzoas-yeshuroas/${partNum}`}>Book Index</a>
         <a href="/reader">All Books</a>
-        {torahData.navigation.nextUrl ? (
-          <a href={torahData.navigation.nextUrl} data-dir="next">Next &rarr;</a>
+        {navigation.nextUrl ? (
+          <a href={navigation.nextUrl} data-dir="next">Next &rarr;</a>
         ) : <span class="disabled">Next &rarr;</span>}
       </div>
 
@@ -283,6 +291,7 @@ const breadcrumbData = torahData ? JSON.stringify({
       )}
 
 
+      <script src="/reader-aitzoas-qualifications.js?v=20261014-r11" is:inline defer></script>
       <script src="/reader-script.js?v=parsha-all-processed-20261012-r1" defer></script>
       <script src="/reader-v2.js" defer></script>
       <script src="/pwa-register.js" defer></script>
