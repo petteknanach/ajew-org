@@ -107,11 +107,14 @@
     if (u && original!==undefined && u.he!==original) throw Error('Week source binding changed');
     return u;
   }
-  function meaningNotes(row) {
+  function meaningNotes(row, projectString) {
     return (row && row.displayMeaningNotes || []).map(function (q,i) {
       var attributes=' data-note-owner="'+esc(row.id)+'" data-meaning-note="'+i+'"';
       // Existing string projections keep their exact historical markup.
-      if (typeof q==='string') return '<aside class="ck-source-qualification"'+attributes+' lang="en" dir="ltr">'+esc(q)+'</aside>';
+      if (typeof q==='string') {
+        var text=typeof projectString==='function'?projectString(q):q;
+        return text?'<aside class="ck-source-qualification"'+attributes+' lang="en" dir="ltr">'+esc(text)+'</aside>':'';
+      }
       validateMeaningNote(row,q);var span=q.sourceSpanCodepoints;
       return '<aside class="ck-source-qualification"'+attributes+' data-note-id="'+esc(q.id)+'" data-source-sha256="'+esc(q.sourceBodySHA256)+'" data-source-span="'+esc(JSON.stringify(span))+'"><p lang="he" dir="rtl">'+esc(q.he)+'</p><p lang="en" dir="ltr">'+esc(q.en)+'</p></aside>';
     }).join('');
@@ -125,7 +128,16 @@
     function body(rows,kind,label) { return '<details class="ck-layer ck-'+kind+'"'+(kind==='mishna'||kind==='halacha'?' open':'')+'><summary>'+label+'</summary>'+rows.map(function (u) { return '<div class="ck-reading-unit" data-reading-unit="'+esc(u.id)+'"><h4 dir="ltr">'+esc(u.ref)+'</h4>'+(u.sourceExtent==='full-classical-seif-with-gloss'?'<p class="ck-reading-ref" data-source-role="classical-context" dir="ltr">Complete classical paragraph with gloss</p>':'')+pair(u,enabled)+(classical?'':meaningNotes(u))+'</div>'; }).join('')+'</details>'; }
     var base=s.units.filter(function (u) { return u.role!=='rashi'; }), commentary=s.units.filter(function (u) { return u.role==='rashi'; });
     var extra=s.rashiFullSupplement;
-    var q=classical?s.units.filter(function (u) { return !s.parentPublicQualification || u.role!=='rashi'; }).map(meaningNotes).join(''):'';
+    var legalNotice='This daily excerpt is not the complete legal subsection or all Rema glosses, and is not a personal practical ruling.';
+    var legalNoticeSeen=false;
+    function sectionNotes(u) {
+      return meaningNotes(u,section==='halacha'?function (text) {
+        if (text.indexOf(legalNotice)!==0) return text;
+        var display=legalNoticeSeen?text.slice(legalNotice.length).replace(/^ /,''):text;
+        legalNoticeSeen=true;return display;
+      }:null);
+    }
+    var q=classical?s.units.filter(function (u) { return !s.parentPublicQualification || u.role!=='rashi'; }).map(sectionNotes).join(''):'';
     if (s.rashiReadingQualification) q+='<aside class="ck-source-qualification" data-rashi-reading-qualification><p lang="he" dir="rtl">'+esc(s.rashiReadingQualification.he)+'</p><p lang="en" dir="ltr">'+esc(s.rashiReadingQualification.en)+'</p></aside>';
     if (s.displaySelectionQualification) q+='<aside class="ck-source-qualification" dir="ltr">'+esc(s.displaySelectionQualification)+'</aside>';
     var reference=typeof s.reference==='string'?s.reference:Array.isArray(s.reference)?s.reference.join('; '):'';

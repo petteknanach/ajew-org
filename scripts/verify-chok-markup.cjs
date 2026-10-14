@@ -44,4 +44,11 @@ vm.runInContext(main.slice(main.indexOf('  function heNum(n)'), main.indexOf('  
 assert.equal(numeralContext.heNum(1), "א'");
 assert.equal(numeralContext.heNum(28), "כח'");
 assert.equal(numeralContext.refLabelHTML(numeralContext.plainHeNum(28) + ':' + numeralContext.plainHeNum(15)).replace(/<[^>]+>/g, ''), 'כח:טו');
+const dayRenderer=main.slice(main.indexOf('  function renderDay()'),main.indexOf('  function renderDay()')+18000);
+assert(dayRenderer.indexOf("if (d.gemara &&")<dayRenderer.indexOf("if (d.halacha &&"));
+assert(dayRenderer.indexOf("if (want('kabbala'))")<dayRenderer.indexOf("if (d.halacha &&"));
+assert(main.includes("en:'One sign in the printed text is unclear.'"));
+const template=fs.readFileSync('src/pages/reader/chok.astro','utf8');
+assert(template.includes('#ck-content > .ck-section > .ck-talmud > summary'));
+assert(template.includes('font-size:clamp(1.2rem,2.2vw,1.65rem)'));
 console.log('Chok markup and Hebrew numeral regression PASS: Targum, safe classical markup, English, metadata anchors, injection negatives, fallback wiring and immutable originals');

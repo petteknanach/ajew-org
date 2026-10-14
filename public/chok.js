@@ -967,6 +967,13 @@
     }).join('');
     // Documentary/glyph qualifications are never part of the recited source text.
     var q = row.sourceQualification;
+    // Keep documentary processing correspondence private; expose the actual
+    // source uncertainty in ordinary reading language, without changing data.
+    if (row.key==='נח|יום רביעי' && q &&
+        q.en==='Native digital wording is preserved unchanged. Complete clause review qualifies this selection; printed glyph W04 remains unassigned. This is not a complete diplomatic transcription of the print or approved interpretation.' &&
+        q.he==='נוסח המקור הדיגיטלי נשמר ללא שינוי. בחינת מלוא הסעיפים תומכת בבחירת הקטע; סימן הדפוס W04 לא הוקצה לתו. אין כאן תעתיק דיפלומטי מלא של הדפוס או פירוש מאושר.') {
+      q={he:'סימן אחד בנוסח המודפס אינו ברור.',en:'One sign in the printed text is unclear.'};
+    }
     var qualification = q ? '<div class="ck-zohar-qualification" data-field-role="source-qualification">' +
       '<p lang="he" dir="rtl">' + zoharEscape(q.he) + '</p><p lang="en" dir="ltr">' + zoharEscape(q.en) + '</p></div>' : '';
     return '<details class="ck-layer ck-zohar" data-field-role="original-source"><summary>זוהר — נוסח המקור · Original source — ' +
@@ -1128,13 +1135,6 @@
           });
         });
       }
-      if (d.halacha && d.halacha.work && want('halacha')) {
-        p = p.then(function () {
-          return (qualifiedDay ? Promise.resolve(window.ChokSources.reading('halacha', state.tanachen)) : wk==='נח' ? Promise.resolve(window.ChokSources.weekReading(wk,dayE,'halacha',state.tanachen)||window.ChokSources.unavailable('halacha')) : halachaHTML(d)).then(function (html) { html = html || ''; html = dayKavana('halacha', d) + html; html = voiceBox(wk!=='נח' && dc && dc.halacha, 'הלכה') + html;
-            if (html) out.push('<section class="ck-section" data-sec="halacha">' + html + '</section>');
-          });
-        });
-      }
       if (d.gemara && d.gemara.masechet && want('talmud')) {
         p = p.then(function () {
           return (qualifiedDay ? Promise.resolve(window.ChokSources.reading('talmud', state.tanachen)) : wk==='נח' ? Promise.resolve(window.ChokSources.weekReading(wk,dayE,'talmud',state.tanachen)||window.ChokSources.unavailable('talmud')) : gemaraHTML(d.gemara)).then(function (html) { html = html || ''; html = dayKavana('talmud', d) + html; html = voiceBox(wk!=='נח' && dc && dc.talmud, 'גמרא') + html;
@@ -1146,6 +1146,13 @@
         p = p.then(function () {
           return zoharHTML(d.zohar, wk, dayE).then(function (html) { html = html || ''; if (!html) return; html = dayKavana('kabbala', d) + html + voiceBox(dc && dc.kabbala, 'זוהר');
             if (html) out.push('<section class="ck-section" data-sec="kabbala">' + html + '</section>');
+          });
+        });
+      }
+      if (d.halacha && d.halacha.work && want('halacha')) {
+        p = p.then(function () {
+          return (qualifiedDay ? Promise.resolve(window.ChokSources.reading('halacha', state.tanachen)) : wk==='נח' ? Promise.resolve(window.ChokSources.weekReading(wk,dayE,'halacha',state.tanachen)||window.ChokSources.unavailable('halacha')) : halachaHTML(d)).then(function (html) { html = html || ''; html = dayKavana('halacha', d) + html; html = voiceBox(wk!=='נח' && dc && dc.halacha, 'הלכה') + html;
+            if (html) out.push('<section class="ck-section" data-sec="halacha">' + html + '</section>');
           });
         });
       }
