@@ -1,0 +1,37 @@
+/* Only this feature; preserve native text panels and their grid behavior. */
+.reader-youtube-links {
+  box-sizing: border-box;
+  grid-column: 1 / -1;
+  width: 100%;
+  min-width: 0;
+  margin: .4rem 0 .8rem;
+  padding: .4rem .65rem;
+  border: 1px solid var(--reader-border, #d8cba9);
+  border-radius: .6rem;
+  background: var(--reader-sidebar-bg, #f7f3e8);
+  color: var(--reader-text, #24354a);
+  font: .9rem/1.5 system-ui, sans-serif;
+  text-align: start;
+}
+.reader-youtube-page { width: 100%; min-width: 0; }
+.reader-youtube-links > summary { cursor: pointer; min-height: 2rem; overflow-wrap: anywhere; }
+.reader-youtube-links > summary:focus-visible,
+.reader-youtube-links a:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+.reader-youtube-list { list-style: none; margin: .5rem 0 0; padding: 0; }
+.reader-youtube-row { padding: .5rem 0; overflow-wrap: anywhere; }
+.reader-youtube-row + .reader-youtube-row { border-top: 1px solid var(--reader-border, #d8cba9); }
+.reader-youtube-row > a { display: block; color: inherit; text-decoration: underline; padding: .2rem 0; }
+.reader-youtube-meta { display: block; font-size: .8rem; }
+.reader-youtube-annotation { display: block; margin-top: .2rem; font-size: .85rem; }
+.reader-youtube-qualification { margin: .4rem 0; font-size: .85rem; }
+.reader-youtube-links[hidden], .reader-youtube-page[hidden],
+.reader-youtube-links [hidden],
+.reader-hide-media .reader-youtube-links, .reader-hide-media .reader-youtube-page,
+.reader-teachings-only .reader-youtube-links, .reader-teachings-only .reader-youtube-page,
+.reader-immersive .reader-youtube-links, .reader-immersive .reader-youtube-page,
+.media-hidden .reader-youtube-links, .media-hidden .reader-youtube-page { display: none !important; }
+@media (max-width: 600px) {
+  .reader-youtube-links { width: 100%; margin-inline: 0; }
+  .reader-youtube-row > a { min-height: 2rem; }
+}
+@media print { .reader-youtube-links, .reader-youtube-page { display: none !important; } }
