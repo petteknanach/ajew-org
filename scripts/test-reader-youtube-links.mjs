@@ -4,6 +4,10 @@ import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 
 const source = readFileSync(new URL('../public/reader-youtube-links.js', import.meta.url), 'utf8');
+// Bind fixture fetch/assets to the actual runtime key. Version advancement is
+// checked separately, so identical behavior tests also exercise the old bytes.
+const cacheKey = source.match(/fetch\('\/reader\/youtube-links\.json\?v=([0-9]{8}-[0-9]+)'\)/)?.[1];
+assert.ok(cacheKey, 'runtime has one explicit versioned manifest fetch');
 const native = readFileSync(new URL('../public/reader-script.js', import.meta.url), 'utf8');
 const v2 = readFileSync(new URL('../public/reader-v2.js', import.meta.url), 'utf8');
 const route = '/reader/sefer-hamidos/1/children';
@@ -139,7 +143,7 @@ function harness({ entries = [entry()], pathname = route, loading = false, manif
       observe(root, options) { this.targets.push([root, options]); }
     },
     fetch: async url => {
-      assert.equal(url, '/reader/youtube-links.json?v=20261014-3'); fetchCount++;
+      assert.equal(url, '/reader/youtube-links.json?v=' + cacheKey); fetchCount++;
       if (failure === 'network') throw new Error('TEST FIXTURE network failure');
       return { ok: failure !== 'http', json: async () => {
         if (failure === 'json') throw new Error('TEST FIXTURE invalid JSON');
@@ -363,13 +367,14 @@ test('dedupe preserves distinct source owners/languages but collapses conflictin
 
 test('Layout injects only versioned feature assets under the qualified Reader flag and does not inline an embed', () => {
   const layout = readFileSync(new URL('../src/layouts/Layout.astro', import.meta.url), 'utf8');
-  assert.ok(layout.includes('{hasYouTubeReader && <link rel="stylesheet" href="/reader-youtube-links.css?v=20261014-3" />}'));
-  assert.ok(layout.includes('{hasYouTubeReader && <script src="/reader-youtube-links.js?v=20261014-3" is:inline defer></script>}'));
+  assert.ok(layout.includes(`{hasYouTubeReader && <link rel="stylesheet" href="/reader-youtube-links.css?v=${cacheKey}" />}`));
+  assert.ok(layout.includes(`{hasYouTubeReader && <script src="/reader-youtube-links.js?v=${cacheKey}" is:inline defer></script>}`));
   assert.equal((layout.match(/src="\/reader-youtube-links\.js/g) || []).length, 1);
   assert.equal((layout.match(/hasYouTubeReader/g) || []).length, 3, 'new flag only defines and guards the two feature assets');
   const start = layout.indexOf('const readerPlainMatch =');
   const end = layout.indexOf('\n---', start);
-  for (const [pathname, expected] of [[route, true], ['/reader/chayey-moharan/siman/260', true],
+  for (const [pathname, expected] of [[route, true], ['/reader/likutay-moharan/2/omission', true],
+    ['/reader/chayey-moharan/siman/260', true],
     ['/reader/chayey-moharan/siman/198/', true], ['/reader/chayay-moharan/siman/260', false],
     ['/reader/unknown-book/siman/260', false], ['/reader/chayey-moharan/siman/0', false],
     ['/reader/chayey-moharan/siman/0260', false], ['/reader/chayey-moharan/siman/story', false],
@@ -589,4 +594,50 @@ test('teaching kind does not relax exact source identity, language or Original o
     assert.equal(h.details().length, 0, JSON.stringify(change));
   }
   const fresh = harness({ entries: [entry({ kind: 'teaching' })] }); await fresh.settle(); assert.equal(fresh.watches().length, 1);
+});
+
+test('existing alphabetic section contract admits omission with exact Original URLs and fallback', async () => {
+  const pathname = '/reader/likutay-moharan/2/omission';
+  const entries = [entry({ book: 'likutay-moharan', part: 2, torah: 'omission', segment: 2,
+    language: 'en', routeType: 'section', sourceUrl: 'https://ajew.org' + pathname + '#seg-2' }),
+    entry({ book: 'likutay-moharan', part: 2, torah: 'omission', segment: null,
+      language: 'he', videoId: 'FIXTURE0002', sourceUrl: pathname + '/' })];
+  const h = harness({ pathname: pathname + '/', entries }); await h.settle();
+  assert.equal(h.fetchCount(), 1); assert.equal(h.watches().length, 2);
+  const d = h.pairs.get(2).querySelector('.reader-youtube-links'); assert.ok(d);
+  assert.equal(d.open, false); assert.equal(d.hidden, true);
+  assert.equal(d.querySelectorAll('a')[1].href, entries[0].sourceUrl);
+  assert.equal(h.pairs.get(7).querySelector('.reader-youtube-links'), null);
+  h.nativeMode('english'); await h.settle(); assert.equal(d.hidden, false);
+  assert.deepEqual(h.rows().filter(r => !r.hidden).map(r => r.lang), ['en']);
+  h.nativeMode('both'); await h.settle();
+  assert.equal(d.parentElement.className, 'reader-youtube-page');
+  assert.match(d.textContent, /Original source paragraph 2/);
+  assert.equal(d.querySelectorAll('a')[1].href, entries[0].sourceUrl);
+  assert.equal(h.aligned.querySelectorAll('.reader-youtube-links').length, 0);
+  h.nativeMode('hebrew'); await h.settle(); assert.equal(d.parentElement, h.pairs.get(2));
+  assert.equal(d.hidden, true);
+});
+
+test('omission keeps exact source identity and section discriminator without encoded or siman aliases', async () => {
+  const pathname = '/reader/likutay-moharan/2/omission';
+  const e = entry({ book: 'likutay-moharan', part: 2, torah: 'omission', segment: 2 });
+  for (const change of [{ routeType: 'siman' }, { routeType: 'SECTION' }, { routeType: null },
+    { part: 1 }, { torah: 'Omission' }, { torah: 'omission ' }, { book: 'sichos-haran' },
+    { sourceUrl: pathname + '#seg-7' }, { sourceUrl: pathname + '#aligned-2' },
+    { sourceUrl: pathname + '?view=both#seg-2' }, { sourceUrl: pathname.replace('omission', '%6fmission') + '#seg-2' },
+    { sourceUrl: '/reader/likutay-moharan/1/omission#seg-2' },
+    { sourceUrl: '/reader/likutay-moharan/2/112#seg-2' },
+    { sourceUrl: 'https://evil.example' + pathname + '#seg-2' }]) {
+    const h = harness({ pathname, entries: [{ ...e, ...change }] }); await h.settle();
+    assert.equal(h.watches().length, 0, JSON.stringify(change));
+  }
+  for (const badPath of [pathname.replace('omission', '%6fmission'), pathname.replace('omission', 'Omission'),
+    pathname.replace('/2/', '/02/'), pathname + '/extra', '/reader/likutay-moharan/siman/omission']) {
+    const h = harness({ pathname: badPath, entries: [e] }); await h.settle(); assert.equal(h.fetchCount(), 0, badPath);
+  }
+  for (const routeType of [undefined, 'section']) {
+    const h = harness({ pathname, entries: [{ ...e, routeType }] }); await h.settle();
+    assert.equal(h.watches().length, 1); assert.equal(h.rows()[0].querySelectorAll('a')[1].href, e.sourceUrl);
+  }
 });

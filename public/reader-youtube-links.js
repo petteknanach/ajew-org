@@ -245,7 +245,7 @@
     if (!route || !content) return;
     pending = (async () => {
       try {
-        const response = await fetch('/reader/youtube-links.json?v=20261014-3');
+        const response = await fetch('/reader/youtube-links.json?v=20261014-4');
         if (!response.ok) return;
         const manifest = await response.json();
         if (!manifest || manifest.version !== 1 || !Array.isArray(manifest.entries)) return;
