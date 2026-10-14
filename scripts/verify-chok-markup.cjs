@@ -15,6 +15,10 @@ const output = s.targum(row, true, true);
 assert(output.includes('דְּכַר ' + word + ':'), 'Onkelos must render its actual characters without imported bold wrappers');
 assert(!output.includes('&lt;b&gt;'), 'Formatting code must not become reading text');
 assert(!output.includes('<b>'), 'Onkelos must not inherit editorial bold emphasis');
+assert(output.includes('<details class="ck-layer ck-onkelos-translation">'));
+assert(!output.includes('<details class="ck-layer ck-onkelos-translation" open'));
+assert(!s.targum(row, true, false).includes('ck-onkelos-translation'), 'Nach Targum behavior stays unchanged');
+assert(!s.targum(row, false, true).includes('ck-onkelos-translation'), 'English-off mode stays unchanged');
 for (const input of ['<b/>' + word, '<b />' + word, '<B>' + word + '</B>', '<strong>' + word + '</strong>', '<b onclick="evil()">' + word + '</b>']) {
   assert.equal(s.targumText(input), word);
 }

@@ -177,7 +177,9 @@
   }
   function targum(row, enabled, torah) {
     if (!row) return '';
-    return '<div class="ck-targum-reading" data-source-unit="'+esc(row.id)+'"><h4>'+ (torah ? 'אונקלוס — המקור הארמי · Onkelos' : 'תרגום — המקור הארמי · Targum')+'</h4><div class="ck-targum-line" lang="he" dir="rtl">'+targumText(row.he)+'</div>'+ (row.heTranslation ? '<details class="ck-layer"><summary>אונקלוס — תרגום לעברית</summary><div class="ck-he-translation" dir="rtl">'+esc(row.heTranslation)+'</div></details>' : '') + english(row.en,enabled,'Targum English translation')+'</div>'+meaningNotes(row)+(row.displayNotes||[]).map(function (q) { return '<aside class="ck-source-qualification" data-note-id="'+esc(q.id)+'" dir="ltr" lang="en">'+esc(q.displayText)+'</aside>'; }).join('');
+    var translation=english(row.en,enabled,'Targum English translation');
+    if (torah && translation) translation='<details class="ck-layer ck-onkelos-translation"><summary>אונקלוס — תרגום לאנגלית · English translation</summary>'+translation+'</details>';
+    return '<div class="ck-targum-reading" data-source-unit="'+esc(row.id)+'"><h4>'+ (torah ? 'אונקלוס — המקור הארמי · Onkelos' : 'תרגום — המקור הארמי · Targum')+'</h4><div class="ck-targum-line" lang="he" dir="rtl">'+targumText(row.he)+'</div>'+ (row.heTranslation ? '<details class="ck-layer ck-onkelos-translation"><summary>אונקלוס — תרגום לעברית</summary><div class="ck-he-translation" dir="rtl">'+esc(row.heTranslation)+'</div></details>' : '') + translation+'</div>'+meaningNotes(row)+(row.displayNotes||[]).map(function (q) { return '<aside class="ck-source-qualification" data-note-id="'+esc(q.id)+'" dir="ltr" lang="en">'+esc(q.displayText)+'</aside>'; }).join('');
   }
   function nachTargum(section, ref) { return packet.nachTargum.find(function (u) { return u.sectionId===section && u.ref===ref; }); }
   function mishnaHelp(s, u, enabled) {

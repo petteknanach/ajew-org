@@ -1207,7 +1207,7 @@
         buildSectionJumps(root);
         wireKavanos(root);
         if (state.focus) {
-          Array.prototype.forEach.call(box.querySelectorAll('.ck-section[data-sec] details:not(.ck-kavana)'), function (dtl) { if (!dtl.closest('.ck-verse-breslov')) dtl.open = true; });
+          Array.prototype.forEach.call(box.querySelectorAll('.ck-section[data-sec] details:not(.ck-kavana)'), function (dtl) { if (!dtl.closest('.ck-verse-breslov') && !dtl.classList.contains('ck-onkelos-translation')) dtl.open = true; });
           var el = box.querySelector('.ck-section[data-sec="' + state.focus + '"]');
           if (el && el.scrollIntoView) el.scrollIntoView(); else { box.scrollTop = 0; window.scrollTo(0, 0); }
         } else {
