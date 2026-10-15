@@ -81,8 +81,9 @@ import Layout from '../../layouts/Layout.astro';
 <script src="/tikkun-qatan.js?v=qatan-expansion-20261006-parent-final-r1" defer></script>
 <script src="/medooyuk.js?v=four-surfaces-20261006-r1" defer></script>
 <script src="/psalms-data.js?v=psalms-annotations-20261002-r1&amp;integrity=sha256-20261003" defer></script>
-<script src="/chok-source-reader.js?v=reader-corrections-20261014-r8" defer></script>
-<script src="/chok.js?v=reader-corrections-20261014-r8" defer></script>
+<script src="/chok-verse-breslov.js?v=verse-local-20261015-r1" defer></script>
+<script src="/chok-source-reader.js?v=verse-local-20261015-r1" defer></script>
+<script src="/chok.js?v=verse-local-20261015-r1" defer></script>
 
 <style is:global>
   /* Actual study offerings: three columns/two rows, selectors separate. */
@@ -111,6 +112,12 @@ import Layout from '../../layouts/Layout.astro';
   .ck-targum-reading { border-inline-start:2px solid var(--ck-gold-soft); padding-inline-start:.7rem; margin-top:.5rem; }
   .ck-targum-reading h4, .ck-reading-ref { font-size:.84rem; margin:.35rem 0; font-family:var(--ck-font-ui); font-weight:400; }
   .ck-verse-access { font-size:.8rem; margin:.5rem 0; }
+  .ck-verse > .ck-verse-breslov { display:block; width:100%; box-sizing:border-box; font-size:1rem; }
+  .ck-breslov-owner { margin:1rem 0; }
+  .ck-breslov-owner > .ck-source-qualification { font-size:.9rem; }
+  .ck-verse-breslov .ck-source-pair .ck-he, .ck-breslov .ck-source-pair .ck-he { font-size:var(--ck-size,26px); }
+  .ck-verse-breslov .ck-source-pair .ck-en, .ck-breslov .ck-source-pair .ck-en { font-size:1.12rem; }
+  .ck-verse-breslov [hidden] { display:none !important; }
   .ck-classical-gloss { display:block; border-inline-start:2px solid var(--ck-border); padding-inline-start:.6rem; font-size:.85em; margin:.5rem 0; }
   .ck-content[data-language='original'] .ck-voice-layer, .ck-content[data-language='original'] .ck-explanation, .ck-content[data-language='original'] .ck-voice-row, .ck-content[data-language='original'] .ck-comm, .ck-content[data-language='original'] .ck-mishna-explanation, .ck-content[data-language='original'] .ck-mishna-questions, .ck-content[data-language='original'] .ck-mishna-terms { display:none; }
   .ck-source-island[data-language='he'] .ck-en, .ck-source-island[data-language='en'] .ck-he { display:none; }

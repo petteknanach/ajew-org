@@ -96,7 +96,7 @@
           if (key==='נח|יום שני' && section==='talmud' && !extra) throw Error('Missing supplementary Rashi');
           return Promise.all(s.units.concat(extra?extra.units:[]).map(function (u) { return validatePair(u,newlyQualified && (section==='zohar' || u.role==='rashi')); }));
         }));
-      })).then(function () { return true; });
+      })).then(function () { return window.ChokVerseBreslov.load(rawLoader,noach,notes); });
     }).catch(function (e) { pending=null;packet=noach=notes=weekPacket=null;throw e; });
     return pending;
   }
@@ -228,35 +228,13 @@
   }
   function globalQualification() { var q=packet.globalQualificationProjection; return '<aside class="ck-source-qualification" data-note-id="'+esc(q.id)+'" data-note-owner="'+esc(q.owner)+'" data-note-placement="'+esc(q.placement)+'" data-source-sha256="'+esc(q.sourceTextSHA256)+'" dir="ltr">'+esc(q.displayText)+'</aside>'; }
   function overview(always) { return '<section class="ck-section ck-native-overview" data-sec="learning">'+globalQualification()+native('general','general',always)+native('weekly','weekly',always)+'<p><a href="/reader/chok/tefillos/">תפלות לפני הלימוד · Prayers</a> · <a href="/reader/chok/kavanos/">כוונות הלימוד · Learning intentions</a></p></section>'; }
-  function sourceNoteHTML(q) { var row=notes.notes.find(function (x) { return x.id===q.id; }); if (!row || row.sourceText!==q.text || row.pair_id!==q.pair_id || row.placement!==q.placement) throw Error('Breslov qualification binding changed'); return '<aside class="ck-source-qualification" data-note-id="'+esc(q.id)+'" data-note-pair="'+esc(q.pair_id)+'" dir="ltr" lang="en">'+esc(row.displayText)+'</aside>'; }
-  function ownerHTML(u, namespace) {
-    var ref=u.verseRef, label=u.sourceKind==='main'?'Teaching':u.sourceKind==='note'?'Printed note':u.sourceKind==='title-metadata'?'Source title':'Compiler aside';
-    if (u.printedNoteNumber!=null) label+=' '+u.printedNoteNumber;
-    if (ref) label+=' — Genesis '+ref.chapter+':'+ref.verse;
-    var done={};
-    var content=u.pairs.map(function (p,i) {
-      return '<div class="ck-source-pair" data-pair-id="'+esc(p.id)+'" data-pair-ordinal="'+i+'"><div class="ck-he" lang="he" dir="rtl">'+esc(p.he)+'</div><div class="ck-en" lang="en" dir="ltr">'+esc(p.en)+'</div></div>'+u.qualifications.filter(function (q) { return q.pair_id===p.id && q.placement==='after_pair'; }).map(function (q) { done[q.id]=true;return sourceNoteHTML(q); }).join('');
-    }).join('')+u.qualifications.filter(function (q) { return !done[q.id]; }).map(sourceNoteHTML).join('');
-    return '<details class="ck-layer ck-qualified-disclosure" id="ck-bop-'+esc(namespace)+'-'+esc(u.id)+'" data-bop-unit="'+esc(u.id)+'" data-source-kind="'+esc(u.sourceKind)+'" data-owner-main-id="'+esc(u.owner_main_id==null?'null':u.owner_main_id)+'" data-verse-ref="'+esc(JSON.stringify(ref))+'"><summary>'+esc(label)+'</summary>'+content+'</details>';
-  }
-  function weekly() {
-    function hasVerse(u) { return u.sourceKind==='main' ? !!u.verseRef : !!noach.units.find(function (m) { return m.id===u.owner_main_id && m.sourceKind==='main' && m.verseRef; }); }
-    var mapped=noach.units.filter(hasVerse);
-    var unowned=noach.units.filter(function (u) { return !hasVerse(u); });
-    var supplement=noach.sourceSupplement;
-    var sup=supplement?'<details class="ck-layer ck-breslov-supplement"><summary>מקורות נוספים לשבוע נח · Separate weekly readings</summary><p dir="ltr">These readings are separate from the compiler’s anthology. Genesis 6:8 is the closing verse of Biraishis.</p>'+supplement.segments.map(function (s,i) { return '<article data-supplement-segment="'+i+'"><h4>'+esc(s.title)+'</h4><a href="'+esc(s.sourceUrl)+'">'+esc(s.sourceRef)+'</a><div class="ck-he" dir="rtl" lang="he">'+esc(s.he)+'</div><div class="ck-en" dir="ltr" lang="en">'+esc(s.en)+'</div>'+(s.commentary?'<aside class="ck-supplement-gematria"><h4>גימטריא · Supplemental gematria</h4><div class="ck-he" dir="rtl">'+esc(s.commentary.he)+'</div><div class="ck-en" dir="ltr">'+esc(s.commentary.en)+'</div></aside>':'')+'</article>'; }).join('')+'</details>':'';
-    return '<section class="ck-section" data-sec="breslov" id="ck-breslov-week"><details class="ck-layer ck-breslov ck-source-island" data-language="both" data-language-key="breslov-noach"><summary>ברסלב על הפרשה — נח · Breslov on the Parsha</summary><p class="ck-source-qualification" dir="ltr">Optional weekly teachings and printed notes. Some small letters and vowel points are uncertain; the alternatives appear beside their passages.</p>'+languages()+mapped.map(function (u) { return ownerHTML(u,'weekly'); }).join('')+(unowned.length?'<details class="ck-layer ck-weekly-unowned"><summary>לימוד שבועי ללא פסוק מסוים · Weekly context without a verse assignment</summary>'+unowned.map(function (u) { return ownerHTML(u,'weekly'); }).join('')+'</details>':'')+sup+'<details class="ck-layer ck-facsimile"><summary>תצלום המקור · Source PDF</summary><a href="'+esc(noach.pdfSource)+'" target="_blank" rel="noopener">Read / open PDF</a> · <a href="'+esc(noach.pdfSource)+'" download>Download PDF</a></details></details></section>';
-  }
+  function weekly(week) { return window.ChokVerseBreslov.weekly(week); }
   function verseAccess(slug, chapter, verse, week) {
     var h='<nav class="ck-verse-access" aria-label="Verse and Parsha"><a href="/reader/'+esc(slug)+'/1/'+chapter+'/#seg-'+verse+'">הפסוק בפרק · Verse in chapter</a>';
-    if (week==='נח') h+=' · <a href="/parsha/noach/">הפרשה · Full Parsha</a>';
+    if (week==='נח' || week==='לך לך') h+=' · <a href="/parsha/'+(week==='נח'?'noach':'lech-lecha')+'/">הפרשה · Full Parsha</a>';
     h+=' · <a href="/reader/tikkun/?b='+esc(slug)+'&amp;c='+chapter+'&amp;view=verses">שנים מקרא · Shnayim Mikra</a>';
-    // Links follow actual printed main references; notes follow their explicit owner.
-    if (week==='נח' && noach) {
-      var owners=noach.units.filter(function (u) { return u.sourceKind==='main' && u.verseRef && u.verseRef.book===slug.replace(/^tanach-/,'') && u.verseRef.chapter===chapter && u.verseRef.verse===verse; });
-      if (owners.length) h+='<details class="ck-layer ck-verse-breslov ck-source-island" data-language-key="breslov-noach-'+esc(slug)+'-'+chapter+'-'+verse+'"><summary>ברסלב לפסוק זה · Breslov on this verse</summary>'+languages()+owners.map(function (u) { return ownerHTML(u,'inline-'+chapter+'-'+verse)+noach.units.filter(function (n) { return n.owner_main_id===u.id; }).map(function (n) { return ownerHTML(n,'inline-'+chapter+'-'+verse); }).join(''); }).join('')+'</details>';
-    }
-    return h+'</nav>';
+    // Source bodies are full-width siblings of this compact navigation rail.
+    return h+'</nav>'+window.ChokVerseBreslov.verse(week,slug,chapter,verse);
   }
   document.addEventListener('click', function (event) {
     var b=event.target && event.target.closest('[data-ck-source-lang]'), island=b && b.closest('.ck-source-island');
