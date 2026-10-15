@@ -381,6 +381,7 @@ function mediaShareTitle(seg, img) {
               <details open class="reader-media-dropdown sefer-hamidos-media" data-segment={String(seg.index)}>
                 <summary>📷 Pictures / videos for this teaching</summary>
                 <div class="sh-media-body">
+                  {mediaBySegment.get(Number(seg.index))?.source_note && <p class="sh-source-care-note" role="note" style="padding:.75rem;line-height:1.6;">{mediaBySegment.get(Number(seg.index)).source_note}</p>}
                   <div class="sh-media-strip" aria-label={`Scrollable Sefer Hamidos Truth teaching ${seg.index} pictures`}>
                     {mediaBySegment.get(Number(seg.index)).images.map((img) => (
                       <figure id={`media-${mediaSlug(img)}`} class={`sh-media-card sh-media-lang-${img.language === 'hebrew' ? 'he' : 'en'}`} data-media-url={mediaDirectUrl(img)} data-share-url={mediaShareUrl(img)} data-share-text={img.language === 'hebrew' ? (seg.he_nikud || seg.he || '') : (seg.en || seg.he || '')}>
