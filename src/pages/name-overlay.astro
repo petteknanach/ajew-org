@@ -14,17 +14,19 @@ import Layout from '../layouts/Layout.astro';
         <h2>Website settings</h2>
         <noscript><p>JavaScript is required for the optional website overlay. It is currently off.</p></noscript>
         <label class="no-check"><input type="checkbox" data-no-field="enabled" /><span>Enable the website overlay</span></label>
-        <label class="no-check"><input type="checkbox" data-no-field="remember" /><span>Remember on this browser across ajew.org pages</span></label>
-        <p class="no-hint">Remembering is opt-in. Without it, changes apply only on this page. Hide also saves the off state when remembering is enabled.</p>
+        <label class="no-check"><input type="checkbox" data-no-field="remember" checked /><span>Keep my choice across ajew.org pages on this browser</span></label>
+        <p class="no-hint">The overlay starts off. Once you enable it, your choice and settings automatically follow you across ajew.org pages and reloads. Uncheck this box for this page only. Hide saves the off state when remembering is enabled.</p>
         <div class="no-actions"><button type="button" data-no-action="hide">Hide / disable now</button><button type="button" data-no-action="clear">Clear saved settings</button></div>
-        <p class="no-status" role="status" aria-live="polite" data-no-status>Overlay off. Remembering is off.</p>
+        <p class="no-status" role="status" aria-live="polite" data-no-status>Overlay off. Enable it to keep your choice across ajew.org pages.</p>
         <fieldset>
           <legend>Letter arrangement</legend>
           <label for="no-method">Visualization method</label>
           <select id="no-method" data-no-field="method"><option value="interleaved">Interleaved — alternating primary and secondary letters</option><option value="nested">Nested — secondary Name inside the final, leftmost primary letter</option></select>
+          <div class="no-range-row"><div><label for="no-secondary-size-range">Secondary letter size</label><input id="no-secondary-size-range" type="range" min="10" max="50" step="1" value="25" data-no-field="secondarySize" aria-describedby="no-secondary-size-hint" /></div><div><label for="no-secondary-size-number">Size %</label><input id="no-secondary-size-number" type="number" min="10" max="50" step="1" value="25" data-no-field="secondarySize" aria-describedby="no-secondary-size-hint" /></div></div>
+          <p id="no-secondary-size-hint" class="no-hint">Percentage of primary ink height, independent of overall screen size. Interleaved secondary letters stay centered in their original slots. The nested group is centered and capped at its original inset size (about 14% of primary ink height), so larger values cannot enlarge it beyond the final letter’s inset.</p>
           <div data-no-preview aria-hidden="true"></div>
-          <p class="no-hint">Exact footer below the Name: <bdi class="no-footer-source" dir="rtl" lang="he">נַ נַחְ נַחְמָ נַחְמָן מאומן</bdi>. The final word remains unpointed, exactly as supplied. The footer’s complete height, including vowel marks, is only 20% of the primary Name’s ink height in both arrangements.</p>
-          <p class="no-hint">Static outline preview. The two arrangements are user-specified visualization methods, not a quotation from the passage below.</p>
+          <p class="no-hint">Exact footer below the Name: <bdi class="no-footer-source" dir="rtl" lang="he">נַ נַחְ נַחְמָ נַחְמָן מאומן</bdi>. The final word remains unpointed, exactly as supplied. The footer’s complete height, including vowel marks, is only 25% of the primary Name’s ink height in both arrangements.</p>
+          <p class="no-hint">The still preview shows your chosen colors, size, effect and intensity; motion appears only on the live overlay. The two arrangements are user-specified visualization methods, not a quotation from the passage below.</p>
         </fieldset>
         <fieldset>
           <legend>Independent colors</legend>
@@ -49,8 +51,9 @@ import Layout from '../layouts/Layout.astro';
         </fieldset>
         <fieldset>
           <legend>Optional effects</legend>
-          <label for="no-effect">Primary-letter effect</label><select id="no-effect" data-no-field="effect"><option value="none">None — plain outlines</option><option value="fire">Fire — moving flame fill</option><option value="glow">Glow — soft, steady halo</option><option value="shimmer">Shimmer — gentle luminous sweep</option></select>
+          <label for="no-effect">Primary-letter effect</label><select id="no-effect" data-no-field="effect"><option value="none">None — plain outlines</option><option value="fire">Fire — golden-orange moving fill</option><option value="glow">Glow — warm, steady halo</option><option value="shimmer">Shimmer — bright luminous bands</option></select>
           <div class="no-range-row"><div><label for="no-intensity-range">Effect intensity</label><input id="no-intensity-range" type="range" min="0" max="100" step="1" value="40" data-no-field="intensity" /></div><div><label for="no-intensity-number">Intensity %</label><input id="no-intensity-number" type="number" min="0" max="100" step="1" value="40" data-no-field="intensity" /></div></div>
+          <p class="no-hint">0% removes all effect paint; 100% gives the strongest tint, halo or luminous band. Overall opacity still applies. With motion off or reduced motion active, the tint, halo and bands remain visible and still.</p>
           <label class="no-check"><input type="checkbox" data-no-field="motion" checked /><span>Allow gentle effect motion</span></label>
           <p class="no-hint" data-no-motion-status>Reduced-motion preferences are respected. Motion stops when this page is hidden.</p>
         </fieldset>

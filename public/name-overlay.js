@@ -17,7 +17,7 @@
 })(typeof window !== 'undefined' ? window : globalThis, function () {
   'use strict';
   const STORAGE_KEY = 'ajew.name-overlay.v1';
-  const ASSET_URL = '/name-overlay/glyphs-footer-small-v3.json?v=20261014-3';
+  const ASSET_URL = '/name-overlay/glyphs-footer-v4.json?v=20261015-2';
   // Exact supplied codepoints. In particular, the final word stays UNPOINTED.
   const FOOTER_TEXT = '\u05e0\u05b7 \u05e0\u05b7\u05d7\u05b0 \u05e0\u05b7\u05d7\u05b0\u05de\u05b8 \u05e0\u05b7\u05d7\u05b0\u05de\u05b8\u05df \u05de\u05d0\u05d5\u05de\u05df';
   // Admitted HarfBuzz RTL ink sequence: 15 letters and 9 separate vowel marks.
@@ -25,8 +25,8 @@
   // Preserve the predecessor's Name-only effect stage, not the taller footer box.
   const NAME_EFFECT_HEIGHT = 1740;
   const NS = 'http://www.w3.org/2000/svg';
-  const DEFAULTS = Object.freeze({ version: 1, enabled: false, remember: false, method: 'interleaved',
-    primary: '#87CEEB', secondary: '#000000', footer: '#000000', opacity: 55, width: 48, height: 24,
+  const DEFAULTS = Object.freeze({ version: 1, enabled: false, remember: true, method: 'interleaved',
+    primary: '#87CEEB', secondary: '#000000', footer: '#000000', opacity: 55, width: 48, height: 24, secondarySize: 25,
     anchor: 'center', x: 50, y: 50, effect: 'none', intensity: 40, motion: true });
   const ANCHORS = Object.freeze({ 'top-left': [0, 0], top: [50, 0], 'top-right': [100, 0],
     left: [0, 50], center: [50, 50], right: [100, 50],
@@ -53,6 +53,7 @@
     s.primary = color(a.primary, s.primary); s.secondary = color(a.secondary, s.secondary); s.footer = color(a.footer, s.footer);
     ['opacity', 'intensity', 'x', 'y'].forEach(k => { s[k] = number(a[k], s[k]); });
     ['width', 'height'].forEach(k => { s[k] = number(a[k], s[k], 1, 100); });
+    s.secondarySize = number(a.secondarySize, s.secondarySize, 10, 50);
     if (s.anchor !== 'custom') [s.x, s.y] = ANCHORS[s.anchor];
     return s;
   }
@@ -106,22 +107,42 @@
       const primaryInk = union(l.glyphs.filter(g=>g.role==='primary').map(g=>placedBounds(g,data.glyphs[g.letter].bounds)));
       const [x,y,w,h] = l.viewBox;
       // Size the complete footer ink INCLUDING niqqud, never just letter tops.
-      if (l.footerSizeRatio !== .20 || !same(ink[3]-ink[1],(primaryInk[3]-primaryInk[1])*.20) || ink[2]-ink[0]>w*.90) throw new Error('Footer must remain much smaller than the Name');
+      if (l.footerSizeRatio !== .25 || !same(ink[3]-ink[1],(primaryInk[3]-primaryInk[1])*.25) || ink[2]-ink[0]>w*.90) throw new Error('Footer must remain much smaller than the Name');
       if (ink.some((v,i)=>!same(v,l.footerInkBounds[i])) || ink[1] <= union(nameBounds)[3] || !same((ink[0]+ink[2])/2,x+w/2) || nameBounds.concat(footerBounds).some(b => b[0]<x || b[1]<y || b[2]>x+w || b[3]>y+h)) throw new Error('Incomplete artwork geometry');
     }
     return data;
   }
+  // Transform source ink only; never alter admitted outlines, slots or primary positions.
+  function sizedLetters(data, layout, percentage, method) {
+    const bounds = g => {
+      const b = data.glyphs[g.letter].bounds;
+      return [g.x + g.scale*b[0], -g.y - g.scale*b[3], g.x + g.scale*b[2], -g.y - g.scale*b[1]];
+    };
+    const union = bs => [Math.min(...bs.map(b=>b[0])), Math.min(...bs.map(b=>b[1])), Math.max(...bs.map(b=>b[2])), Math.max(...bs.map(b=>b[3]))];
+    const primary = union(layout.glyphs.filter(g=>g.role==='primary').map(bounds));
+    const inset = union(layout.glyphs.filter(g=>g.role==='secondary').map(bounds));
+    const height = (primary[3]-primary[1]) * percentage / 100;
+    return layout.glyphs.map(g => {
+      if (g.role !== 'secondary') return g;
+      // Nested letters remain one uniformly scaled group within their original inset.
+      const slot = method === 'nested' ? inset : bounds(g);
+      const scale = Math.min(1, height / (slot[3]-slot[1]));
+      if (scale === 1) return g;
+      const cx = (slot[0]+slot[2])/2, cy = (slot[1]+slot[3])/2;
+      return { ...g, x: cx + (g.x-cx)*scale, y: -cy + (g.y+cy)*scale, scale: g.scale*scale };
+    });
+  }
   function initialize(options = {}) {
     const win = options.window, doc = options.document;
     if (!doc || !win) throw new Error('A window and document are required');
-    if (instances.has(doc)) { instances.get(doc).bindPanel(); return instances.get(doc).controller; }
+    if (instances.has(doc)) { instances.get(doc).resume(); return instances.get(doc).controller; }
     let storage = options.storage;
     if (!storage) { try { storage = win.localStorage; } catch (_) { /* private mode */ } }
     const request = options.fetch || win.fetch.bind(win);
     let state = readSettings(storage), data = null, pending = null, destroyed = false, error = '', storageError = false;
     let pageActive = true, geometry = null;
     const reduced = win.matchMedia ? win.matchMedia('(prefers-reduced-motion: reduce)') : { matches: true };
-    const listeners = [];
+    const listeners = [], panelListeners = [];
     let panel = null, boundPanel = null;
     const el = (name, attrs = {}, parent, svg = false) => {
       const node = svg ? doc.createElementNS(NS, name) : doc.createElement(name);
@@ -129,7 +150,8 @@
       if (parent) parent.appendChild(node);
       return node;
     };
-    const on = (target, event, handler) => { target.addEventListener(event, handler); listeners.push(() => target.removeEventListener(event, handler)); };
+    const on = (target, event, handler, disposers = listeners) => { target.addEventListener(event, handler); disposers.push(() => target.removeEventListener(event, handler)); };
+    const onPanel = (target, event, handler) => on(target, event, handler, panelListeners);
     const overlay = el('div', { id: 'ajew-name-overlay', 'aria-hidden': 'true', hidden: '' }, doc.body);
     overlay.hidden = true; overlay.style.pointerEvents = 'none';
     const tools = el('div', { id: 'ajew-name-overlay-tools', 'aria-label': 'Name overlay controls', hidden: '' }, doc.body);
@@ -165,9 +187,11 @@
     function render(target = overlay) {
       target.replaceChildren();
       target.setAttribute('data-effect', state.effect);
+      target.setAttribute('data-animate', 'false');
       target.style.setProperty('--no-intensity', String(state.intensity / 100));
       target.style.setProperty('--no-primary', state.primary);
       const layout = data.layouts[state.method], [x, y, w] = layout.viewBox, h = NAME_EFFECT_HEIGHT;
+      const letters = sizedLetters(data, layout, state.secondarySize, state.method);
       const prefix = `ajew-name-${++serial}`;
       const svg = el('svg', { viewBox: layout.viewBox.join(' '), preserveAspectRatio: 'xMidYMid meet', 'aria-hidden': 'true', focusable: 'false', class: 'no-art' }, target, true);
       el('metadata', { 'data-source': 'user-supplied-exact-footer' }, svg, true).textContent = FOOTER_TEXT;
@@ -178,14 +202,15 @@
         const gr = el('linearGradient', { id: `${prefix}-${id}`, ...attrs }, defs, true);
         stops.forEach(([offset, c, opacity]) => el('stop', { offset, 'stop-color': c, 'stop-opacity': opacity }, gr, true));
       };
-      gradient('fire', [['0%', '#FFF0A6', 1], ['38%', '#FFB52E', .95], ['72%', '#DB481A', .8], ['100%', state.primary, .3]], { x1: '0%', y1: '100%', x2: '0%', y2: '0%' });
-      gradient('shimmer', [['0%', '#FFFFFF', 0], ['42%', '#FFFFFF', 0], ['50%', '#FFFFFF', .55], ['58%', '#FFFFFF', 0], ['100%', '#FFFFFF', 0]], { x1: '0%', x2: '100%' });
+      gradient('fire', [['0%', '#FFF0A6', 1], ['38%', '#FFB52E', 1], ['72%', '#EB651B', 1], ['100%', '#B82E0C', .9]], { x1: '0%', y1: '100%', x2: '0%', y2: '0%' });
+      // Repeated bands cross each primary immediately, even when motion is disabled.
+      gradient('shimmer', [['0%', '#FFC34D', .12], ['32%', '#FFE6A0', .35], ['50%', '#FFFFFF', 1], ['68%', '#FFE6A0', .35], ['100%', '#FFC34D', .12]], { gradientUnits: 'userSpaceOnUse', x1: x, x2: x + w / 8, y1: y, y2: y + h * .3, spreadMethod: 'reflect' });
       const base = el('g', { class: 'no-base' }, svg, true);
-      layout.glyphs.forEach(g => path(base, g, { fill: g.role === 'primary' ? state.primary : state.secondary, 'data-letter': g.letter, 'data-role': g.role, class: `no-glyph no-${g.role}` }));
+      letters.forEach(g => path(base, g, { fill: g.role === 'primary' ? state.primary : state.secondary, 'data-letter': g.letter, 'data-role': g.role, class: `no-glyph no-${g.role}` }));
       // Effect paint is clipped to exact primary outlines; secondary paths are never recolored.
-      const effect = el('g', { 'clip-path': `url(#${prefix}-primary)`, class: 'no-effect' }, svg, true);
+      const effect = el('g', { 'clip-path': `url(#${prefix}-primary)`, class: 'no-effect', opacity: state.intensity / 100 }, svg, true);
       if (state.effect === 'fire') {
-        el('rect', { x, y, width: w, height: h, fill: `url(#${prefix}-fire)`, opacity: .5 }, effect, true);
+        el('rect', { x, y, width: w, height: h, fill: `url(#${prefix}-fire)`, opacity: 1 }, effect, true);
         for (let i = 0; i < 16; i++) {
           const cx = x + w * (i + .5) / 16, b = y + h * 1.2, fh = h * (.68 + (i % 4) * .1), r = w / 22;
           const d = `M${cx-r},${b} Q${cx-r*1.1},${b-fh*.5} ${cx+r*.2},${b-fh} Q${cx+r*.15},${b-fh*.45} ${cx+r},${b} Z`;
@@ -198,9 +223,11 @@
       } else if (state.effect === 'glow') {
         effect.removeAttribute('clip-path');
         const halo = el('filter', { id: `${prefix}-glow`, filterUnits: 'userSpaceOnUse', x: x - w * .03, y: y - h * .12, width: w * 1.06, height: h * 1.24 }, defs, true);
-        el('feGaussianBlur', { stdDeviation: w * .005 }, halo, true);
+        el('feGaussianBlur', { stdDeviation: w * .008 }, halo, true);
         effect.setAttribute('filter', `url(#${prefix}-glow)`);
-        layout.glyphs.filter(g => g.role === 'primary').forEach(g => path(effect, g, { fill: state.primary, class: 'no-halo' }));
+        layout.glyphs.filter(g => g.role === 'primary').forEach(g => path(effect, g, { fill: '#FFE6A0', stroke: '#FFD36A', 'stroke-width': w * .012, class: 'no-halo' }));
+        // Draw halo behind exact base ink, including secondary letters.
+        svg.appendChild(base);
       }
       // Independent shaped ink, after effect paint. Never a STAM text fallback:
       // STAM's vowel entries have empty outlines and would silently lose marks.
@@ -255,20 +282,29 @@
     }
     function clear() {
       if (destroyed) return;
-      state = { ...DEFAULTS }; error = ''; persist(); overlay.replaceChildren(); geometry = null;
+      state = { ...DEFAULTS }; error = ''; storageError = false;
+      try { storage.removeItem(STORAGE_KEY); } catch (_) { storageError = true; }
+      overlay.replaceChildren(); geometry = null;
       const preview = panel && panel.querySelector('[data-no-preview]');
       if (data && preview) render(preview);
       visibility();
     }
+    function unbindPanel() {
+      panelListeners.splice(0).forEach(remove => remove());
+      panel = null; boundPanel = null;
+    }
     function bindPanel() {
       const next = doc.querySelector('[data-name-overlay-panel]');
-      if (!next || next === boundPanel) return;
+      if (next === boundPanel) return;
+      // A replaced form/preview must not survive through document-lifetime disposers.
+      unbindPanel();
+      if (!next) return;
       panel = next; boundPanel = next;
-      on(panel, 'submit', event => event.preventDefault());
+      onPanel(panel, 'submit', event => event.preventDefault());
       panel.querySelectorAll('[data-no-field]').forEach(control => {
         const key = control.getAttribute('data-no-field');
         const event = control.type === 'range' || control.type === 'number' || control.type === 'color' ? 'input' : 'change';
-        on(control, event, () => {
+        onPanel(control, event, () => {
           const value = control.type === 'checkbox' ? control.checked : control.value;
           if (['primary', 'secondary', 'footer'].includes(key) && !/^#[0-9a-f]{6}$/i.test(value)) {
             control.setAttribute('aria-invalid', 'true');
@@ -279,12 +315,12 @@
           control.removeAttribute('aria-invalid'); update({ [key]: value });
         });
       });
-      panel.querySelectorAll('[data-no-action]').forEach(button => on(button, 'click', () => {
+      panel.querySelectorAll('[data-no-action]').forEach(button => onPanel(button, 'click', () => {
         const action = button.getAttribute('data-no-action');
         if (action === 'hide') update({ enabled: false });
         else if (action === 'clear') clear();
       }));
-      panel.querySelectorAll('[data-no-preset]').forEach(button => on(button, 'click', () => {
+      panel.querySelectorAll('[data-no-preset]').forEach(button => onPanel(button, 'click', () => {
         const colors = PRESETS[button.getAttribute('data-no-preset')];
         if (colors) update({ primary: colors[0], secondary: colors[1] });
       }));
@@ -310,8 +346,17 @@
     const controller = Object.freeze({ update, hide: () => update({ enabled: false }), clear,
       getSettings: () => ({ ...state }), getGeometry: () => geometry ? { ...geometry } : null,
       ready: () => pending || Promise.resolve(),
-      destroy: () => { destroyed = true; listeners.splice(0).forEach(remove => remove()); overlay.remove(); tools.remove(); instances.delete(doc); } });
-    instances.set(doc, { controller, bindPanel });
+      destroy: () => { destroyed = true; unbindPanel(); listeners.splice(0).forEach(remove => remove()); overlay.remove(); tools.remove(); instances.delete(doc); } });
+    function resume() {
+      // Astro may replace the body without creating a new document/window.
+      if (overlay.parentNode !== doc.body) {
+        doc.body.appendChild(overlay); doc.body.appendChild(tools);
+        if (!state.remember) state = { ...DEFAULTS };
+      }
+      pageActive = true; bindPanel(); visibility();
+      if (state.enabled && !data) ensureGlyphs();
+    }
+    instances.set(doc, { controller, resume });
     bindPanel(); visibility(); if (state.enabled) ensureGlyphs();
     return controller;
   }

@@ -3,9 +3,9 @@
 #ajew-name-overlay[hidden], #ajew-name-overlay-tools[hidden] { display: none !important; }
 #ajew-name-overlay *, [data-no-preview] * { pointer-events: none !important; }
 .no-art { display: block; width: 100%; height: 100%; overflow: hidden; }
-.no-effect { opacity: calc(var(--no-intensity, .4) * .75); pointer-events: none; }
+.no-effect { pointer-events: none; }
 .no-flame { transform-box: fill-box; transform-origin: 50% 100%; animation: no-burn 4s ease-in-out infinite; animation-play-state: paused; }
-.no-sweep { transform-box: fill-box; animation: no-shimmer 9s ease-in-out infinite; animation-play-state: paused; }
+.no-sweep { transform-box: fill-box; animation: no-shimmer 3.2s ease-in-out infinite; animation-play-state: paused; }
 #ajew-name-overlay[data-animate="true"] .no-flame,
 #ajew-name-overlay[data-animate="true"] .no-sweep { animation-play-state: running; }
 .no-halo { pointer-events: none; }
@@ -16,7 +16,7 @@
   45% { transform: translateY(-30%) scaleY(1.18) scaleX(1.04); }
   70% { transform: translateY(-12%) scaleY(1.02) scaleX(.97); }
 }
-@keyframes no-shimmer { 0%, 18% { transform: translateX(-34%); } 82%, 100% { transform: translateX(34%); } }
+@keyframes no-shimmer { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(8%); } }
 #ajew-name-overlay-tools { position: fixed; z-index: 1300; top: max(10px, env(safe-area-inset-top)); right: max(10px, env(safe-area-inset-right)); display: flex; align-items: center; gap: 4px; padding: 3px; border: 1px solid #738397; border-radius: 9px; background: #f5f1e8; box-shadow: 0 2px 8px #0002; color: #172033; font: 13px/1.2 system-ui, sans-serif; }
 #ajew-name-overlay-tools button, #ajew-name-overlay-tools a { color: #172033; background: transparent; border: 0; text-decoration: none; padding: 8px; min-height: 32px; border-radius: 5px; font: inherit; cursor: pointer; }
 #ajew-name-overlay-tools button:hover, #ajew-name-overlay-tools a:hover { background: #e0e8ed; }
