@@ -25,10 +25,12 @@ const projection=fs.existsSync(path.join(root,'public/reader/chok/lech-lichuh-br
 const noachNotes=json('public/reader/chok/noach-source-notes.json');
 const displays=new Map(noachNotes.notes.map(q=>[q.id,q.displayText]));
 if(projection)for(const q of projection.rows)displays.set(q.id,q.after);
+const readingNotes=json('public/reader/chok/breslov-reading-notes.json');
+for(const q of readingNotes.notes)displays.set(q.id,q.readerText);
 function save(name,value){if(evidence){fs.mkdirSync(evidence,{recursive:true});fs.writeFileSync(path.join(evidence,name),typeof value==='string'?value:JSON.stringify(value,null,2)+'\n');}}
 function refsFor(w,day){const t=schedule.weeks[w].days[day].torah;const out=[];for(let c=t.from.c;c<=t.to.c;c++)for(const v of Object.keys(book.ch[c]).map(Number).sort((a,b)=>a-b))if((c!==t.from.c||v>=t.from.v)&&(c!==t.to.c||v<=t.to.v))out.push(c+':'+v);return out;}
 function ownersFor(source,ref){const [c,v]=ref.split(':').map(Number);const mains=source.units.filter(u=>u.sourceKind==='main'&&u.verseRef?.book==='bereishit'&&u.verseRef.chapter===c&&u.verseRef.verse===v);return mains.flatMap(m=>[m,...source.units.filter(u=>u.sourceKind!=='main'&&u.owner_main_id===m.id)]);}
-function unitInventory(u){return {id:u.id,sourceKind:u.sourceKind,owner_main_id:u.owner_main_id,verseRef:u.verseRef,pairs:u.pairs.map((p,i)=>({id:p.id,ordinal:i,heSHA256:sha(p.he),enSHA256:sha(p.en)})),qualifications:u.qualifications.map(q=>({...q,displayText:displays.get(q.id)||null,displaySHA256:displays.has(q.id)?sha(displays.get(q.id)):null}))};}
+function unitInventory(u){return {id:u.id,sourceKind:u.sourceKind,owner_main_id:u.owner_main_id,verseRef:u.verseRef,pairs:u.pairs.map((p,i)=>({id:p.id,ordinal:i,heSHA256:sha(p.he),enSHA256:sha(p.en)})),qualifications:u.qualifications.map(q=>({...q,displayDisposition:displays.get(q.id)===null?'private-production-note':'reader-note',displayText:displays.get(q.id)||null,displaySHA256:typeof displays.get(q.id)==='string'?sha(displays.get(q.id)):null}))};}
 const inventory=sources.map((s,i)=>({week:weeks[i],sourceSHA256:sha(read('public/reader/chumash-lh/part-1/torah-'+(i+2)+'.json')),units:s.units.map(unitInventory)}));
 const days=weeks.flatMap((w,i)=>Object.keys(schedule.weeks[w].days).map(day=>({week:w,day,refs:refsFor(w,day),verses:refsFor(w,day).map(ref=>({ref,owners:ownersFor(sources[i],ref).map(unitInventory)}))})));
 assert.equal(days.length,14);
@@ -51,8 +53,9 @@ function checkOwner(node,u){
  assert(!node.querySelector('.ck-qualified-disclosure').open,'Owner body initially closed '+u.id);
  const ps=node.querySelectorAll('[data-pair-id]');assert.equal(ps.length,u.pairs.length,u.id+' pair count');
  u.pairs.forEach((p,i)=>{assert.equal(ps[i].getAttribute('data-pair-id'),p.id);assert.equal(ps[i].querySelector('.ck-he').textContent,p.he);assert.equal(ps[i].querySelector('.ck-en').textContent,p.en);});
- const qs=node.querySelectorAll('[data-note-id]');assert.equal(qs.length,u.qualifications.length,u.id+' qualification count');
- u.qualifications.forEach((q,i)=>{const n=qs[i];assert.equal(n.getAttribute('data-note-id'),q.id);assert.equal(n.getAttribute('data-note-owner'),u.id);assert.equal(n.getAttribute('data-note-pair'),q.pair_id===null?'null':q.pair_id);assert.equal(n.getAttribute('data-note-placement'),q.placement);assert.equal(n.querySelector('[data-note-text]').textContent,displays.get(q.id));assert(!n.closest('.ck-qualified-disclosure'),'Owner note hidden by own body '+q.id);assert(!n.closest('.ck-he')&&!n.closest('.ck-en'));assert(visible(n),'Owner note unreachable '+q.id);});
+ const kept=u.qualifications.filter(q=>displays.get(q.id)!==null);
+ const qs=node.querySelectorAll('[data-note-id]');assert.equal(qs.length,kept.length,u.id+' reader-note count');
+ kept.forEach((q,i)=>{const n=qs[i];assert.equal(n.getAttribute('data-note-id'),q.id);assert.equal(n.getAttribute('data-note-owner'),u.id);assert.equal(n.getAttribute('data-note-pair'),q.pair_id===null?'null':q.pair_id);assert.equal(n.getAttribute('data-note-placement'),q.placement);assert.equal(n.querySelector('[data-note-text]').textContent,displays.get(q.id));if(q.placement==='after_pair')assert.equal(n.querySelector('small').textContent,'Paragraph '+(u.pairs.findIndex(p=>p.id===q.pair_id)+1)+':');assert(!n.closest('.ck-qualified-disclosure'),'Owner note hidden by own body '+q.id);assert(!n.closest('.ck-he')&&!n.closest('.ck-en'));assert(visible(n),'Owner note unreachable '+q.id);});
 }
 function contract(run,record,focus){const {d}=run,s=sources[weeks.indexOf(record.week)];
  const torah=d.querySelector('[data-sec="torah"]');assert(torah,'Torah section');
@@ -64,7 +67,7 @@ function contract(run,record,focus){const {d}=run,s=sources[weeks.indexOf(record
  const access=v.querySelector('.ck-verse-access');assert(access);assert(v.children.indexOf(access)<v.children.indexOf(panel));
  for(const prev of v.querySelectorAll('.ck-rashi,.ck-super,.ck-comm'))assert(v.innerHTML.indexOf(prev.innerHTML)<v.innerHTML.indexOf(panel.innerHTML),'After Rashi/supercommentary');
  panel.open=true;
- const scope=panel.querySelector('[data-breslov-scope]');assert(scope&&visible(scope),'Selection scope before sources');assert.equal(scope.textContent,record.week==='לך לך'?projection.scopeAfter:'Optional weekly teachings and printed notes. Some small letters and vowel points are uncertain; the alternatives appear beside their passages.');assert(panel.children.indexOf(scope)<panel.children.indexOf(panel.querySelector('[data-bop-unit]')));
+ const scope=panel.querySelector('[data-breslov-scope]');assert(scope&&visible(scope),'Selection scope before sources');assert.equal(scope.textContent,readingNotes.scopes[record.week==='לך לך'?'Lech':'Noach']);assert(panel.children.indexOf(scope)<panel.children.indexOf(panel.querySelector('[data-bop-unit]')));
  const nodes=panel.querySelectorAll('[data-bop-unit]');assert.deepEqual(nodes.map(n=>n.getAttribute('data-bop-unit')),expected.map(u=>u.id));
  expected.forEach((u,i)=>checkOwner(nodes[i],u));
  for(const lang of ['he','en','both']){const b=panel.querySelector('[data-ck-source-lang="'+lang+'"]');assert(visible(b));b.click();assert.equal(panel.getAttribute('data-language'),lang);for(const n of panel.querySelectorAll('.ck-he,.ck-en'))assert.equal(n.hidden,lang!=='both'&&!n.classList.contains(lang==='he'?'ck-he':'ck-en'));expected.forEach((u,i)=>checkOwner(nodes[i],u));}

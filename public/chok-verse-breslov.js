@@ -9,6 +9,8 @@
   var PINS={};
   PINS[LECH]='23045e573d6c66d971cc4c0e444b5a2526ad2abf540456225f48431a53812eaa';
   PINS[PROJECTIONS]='bc538f1cb338b813eb9a4f97e27bedf714ca3fbc55d851f5a483ad7da41af5c3';
+  var READING_NOTES='/reader/chok/breslov-reading-notes.json';
+  PINS[READING_NOTES]='225902cfe308cb529a9c01d1aa98de972d336b4285fc83e47650b99932706080';
   var selections={}, pending;
   function esc(x) { return String(x==null?'':x).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
   function digest(raw) { return window.crypto.subtle.digest('SHA-256',new TextEncoder().encode(raw)).then(function(b){return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0');}).join('');}); }
@@ -46,8 +48,27 @@
     }
     return Promise.all(checks).then(function(){return {source:source,notes:byId,scope:lech?projection.scopeAfter:'Optional weekly teachings and printed notes. Some small letters and vowel points are uncertain; the alternatives appear beside their passages.',key:lech?'lech-lichuh':'noach'};});
   }
+  // Reader-facing projections are separate from immutable source/provenance.
+  // Every note has an explicit, source-bound disposition; no keyword filtering.
+  function present(s, policy) {
+    var portion=s.key==='noach'?'Noach':'Lech', rows=policy.notes.filter(function(q){return q.portion===portion;}), projected={}, checks=[];
+    if(policy.schema!=='chok-breslov-reading-notes/v1' || !policy.scopes[portion] ||
+       policy.sources.Noach!=='ad4e08beded1c460a9185377328969ee78371a0b8e78b46eb1533ba5fdfce2c5' || policy.sources.Lech!==PINS[PROJECTIONS] ||
+       policy.notes.length!==117 || rows.length!==Object.keys(s.notes).length)throw Error('Incomplete Breslov reading-note policy');
+    rows.forEach(function(q){
+      var original=s.notes[q.id], text=original && (original.after===undefined?original.displayText:original.after);
+      if(!original || Object.prototype.hasOwnProperty.call(projected,q.id) || q.owner!==original.owner || q.pair_id!==original.pair_id || q.placement!==original.placement ||
+         q.sourceTextSHA256!==(original.beforeSHA256===undefined?original.sourceTextSHA256:original.beforeSHA256) ||
+         q.projectionSHA256!==(original.afterSHA256===undefined?original.displayTextSHA256:original.afterSHA256) ||
+         (q.readerText!==null && (typeof q.readerText!=='string'||!q.readerText)) || (q.readerText===null && q.readerTextSHA256!==null))throw Error('Breslov reading-note binding changed');
+      projected[q.id]=q.readerText;
+      checks.push(digest(text).then(function(h){if(h!==q.projectionSHA256)throw Error('Breslov original projection changed');}));
+      if(q.readerText!==null)checks.push(digest(q.readerText).then(function(h){if(h!==q.readerTextSHA256)throw Error('Breslov reader note changed');}));
+    });
+    return Promise.all(checks).then(function(){s.readerNotes=projected;s.scope=policy.scopes[portion];return s;});
+  }
   function load(loader,noach,notes) {
-    if(!pending)pending=Promise.all([validate(noach,notes,false),Promise.all([read(LECH,loader),read(PROJECTIONS,loader)]).then(function(r){return validate(r[0],r[1],true);})]).then(function(r){selections={'נח':r[0],'לך לך':r[1]};return true;}).catch(function(e){pending=null;selections={};throw e;});
+    if(!pending)pending=Promise.all([validate(noach,notes,false),Promise.all([read(LECH,loader),read(PROJECTIONS,loader)]).then(function(r){return validate(r[0],r[1],true);}),read(READING_NOTES,loader)]).then(function(r){return Promise.all([present(r[0],r[2]),present(r[1],r[2])]);}).then(function(r){selections={'נח':r[0],'לך לך':r[1]};return true;}).catch(function(e){pending=null;selections={};throw e;});
     return pending;
   }
   function languages() { return '<nav class="ck-source-languages" aria-label="Source language">'+[['he','עברית'],['en','English'],['both','Both']].map(function(x){return '<button type="button" data-ck-source-lang="'+x[0]+'" aria-pressed="'+(x[0]==='both')+'">'+x[1]+'</button>';}).join('')+'</nav>'; }
@@ -57,8 +78,9 @@
     if(u.printedNoteNumber!=null)label+=' '+u.printedNoteNumber;
     if(u.verseRef)label+=' — Genesis '+u.verseRef.chapter+':'+u.verseRef.verse;
     var body=u.pairs.map(function(p,i){return '<div class="ck-source-pair" data-pair-id="'+esc(p.id)+'" data-pair-ordinal="'+i+'"><small class="ck-reading-ref" dir="ltr">'+(i+1)+'</small><div class="ck-he" lang="he" dir="rtl">'+esc(p.he)+'</div><div class="ck-en" lang="en" dir="ltr">'+esc(p.en)+'</div></div>';}).join('');
-    var q=u.qualifications.map(function(q){var row=s.notes[q.id],ordinal=u.pairs.findIndex(function(p){return p.id===q.pair_id;});
-      return '<aside class="ck-source-qualification" data-note-id="'+esc(q.id)+'" data-note-owner="'+esc(u.id)+'" data-note-pair="'+esc(q.pair_id===null?'null':q.pair_id)+'" data-note-placement="'+esc(q.placement)+'" data-note-display-placement="owner-local" lang="en" dir="ltr">'+(q.placement==='after_pair'?'<small>Passage '+(ordinal+1)+'</small> ':'')+'<span data-note-text>'+esc(row.after===undefined?row.displayText:row.after)+'</span></aside>';
+    var q=u.qualifications.map(function(q){var text=s.readerNotes[q.id];if(text===null)return '';
+      var ordinal=u.pairs.findIndex(function(p){return p.id===q.pair_id;});
+      return '<aside class="ck-source-qualification" data-note-id="'+esc(q.id)+'" data-note-owner="'+esc(u.id)+'" data-note-pair="'+esc(q.pair_id===null?'null':q.pair_id)+'" data-note-placement="'+esc(q.placement)+'" data-note-display-placement="owner-local" lang="en" dir="ltr">'+(q.placement==='after_pair'?'<small>Paragraph '+(ordinal+1)+':</small> ':'')+'<span data-note-text>'+esc(text)+'</span></aside>';
     }).join('');
     return '<article class="ck-breslov-owner" data-bop-unit="'+esc(u.id)+'" data-source-kind="'+esc(u.sourceKind)+'" data-owner-main-id="'+esc(u.owner_main_id===null?'null':u.owner_main_id)+'" data-verse-ref="'+esc(JSON.stringify(u.verseRef))+'"><details class="ck-layer ck-qualified-disclosure" id="ck-bop-'+esc(s.key+'-'+namespace+'-'+u.id)+'"><summary>'+esc(label)+'</summary>'+body+'</details>'+q+'</article>';
   }
@@ -87,5 +109,5 @@
     var pdf=s.source.pdfSource?'<details class="ck-layer ck-facsimile"><summary>תצלום המקור · Source PDF</summary><a href="'+esc(s.source.pdfSource)+'" target="_blank" rel="noopener">Read / open PDF</a> · <a href="'+esc(s.source.pdfSource)+'" download>Download PDF</a></details>':'';
     return '<section class="ck-section" data-sec="breslov" id="ck-breslov-week-'+s.key+'"><details class="ck-layer ck-breslov ck-source-island" data-language="both" data-language-key="breslov-'+s.key+'-weekly"><summary>ברסלב על הפרשה — '+esc(week||'נח')+' · Breslov on the Parsha</summary>'+scope(s)+languages()+bodies+supplement(s)+pdf+'</details></section>';
   }
-  window.ChokVerseBreslov={load:load,verse:verse,weekly:weekly,validate:validate,mapped:mapped};
+  window.ChokVerseBreslov={load:load,verse:verse,weekly:weekly,validate:validate,present:present,mapped:mapped};
 })();

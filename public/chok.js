@@ -1045,7 +1045,7 @@
         return '<div class="ck-mishna"><b class="ck-mnum">' + heNum(i + 1) + '</b> ' +
           esc(applyMode(m)) + '</div>';
       }).join('');
-      return '<details class="ck-layer ck-mishna ck-bonus"><summary>בונוס לסיום כל המשנה — ' +
+      return '<details class="ck-layer ck-mishna ck-bonus"><summary>משנה נוספת לסיום כל המשנה · To finish the entire Mishna — ' +
         esc(item.he) + ' פרק ' + heNum(item.perek) + '</summary>' + body + '</details>';
     }).catch(function () { return null; });
   }

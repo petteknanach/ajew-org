@@ -121,7 +121,7 @@
   }
   function weekReading(week,day,section,enabled) {
     var s=weekSection(week,day,section);if (!s) return '';
-    var labels={bonus:'משנה נוספת — לימוד רשות · Optional bonus Mishna',mishna:'משנה · Mishna',talmud:'גמרא · Gemara',halacha:'הלכה · Halacha',mussar:'מוסר · Mussar',zohar:'זוהר · Zohar'};
+    var labels={bonus:'משנה נוספת לסיום כל המשנה — לימוד רשות · To finish the entire Mishna — optional study',mishna:'משנה · Mishna',talmud:'גמרא · Gemara',halacha:'הלכה · Halacha',mussar:'מוסר · Mussar',zohar:'זוהר · Zohar'};
     if (!labels[section]) throw Error('Unknown reading section');
     var classical=['talmud','halacha','mussar','zohar'].indexOf(section)!==-1;
     if (classical && (s.completeOriginal!==true || !s.units.length || s.units.some(function (u) { return !u.he || !u.en || !u.sourceTextSHA256 || !u.englishTextSHA256 || !Array.isArray(u.displayMeaningNotes); }))) throw Error('Incomplete bilingual source reading');
