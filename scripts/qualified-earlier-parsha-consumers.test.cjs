@@ -153,7 +153,7 @@ test('actual standalone/full Chumash branches RED: prefer169, use runtime JSON/m
 });
 test('owned Astro asset pins use exact new version; JS syntax, portable tests carry no private source prerequisites',()=>{
  for(const f of ['src/pages/reader/chumash-lh/[part]/[torah].astro','src/pages/reader/tanach-bereishit/[part]/[torah].astro'])assert(source(f).includes('?v=parsha-all-processed-20261012-r1'));
- assert(source('src/pages/reader/chok.astro').includes('/chok.js?v=reader-notes-20261015-r3'));
+ assert(source('src/pages/reader/chok.astro').includes('/chok.js?v=onkelos-all-days-20261016-r2'));
  for(const f of ['public/chok.js','public/reader-script.js'])new vm.Script(source(f),{filename:f});
 });
 

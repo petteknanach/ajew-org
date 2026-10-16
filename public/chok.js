@@ -232,8 +232,51 @@
       });
     return state.bookCache[slug];
   }
+  var ONKELOS_ALIGNMENT_SHA256 = '95672e463af94118b093bb1f91bcfb8986b931ddd02a7b59199e72fc916f69aa';
+  var onkelosAlignmentPromise;
+  function onkelosHash(text) {
+    return window.crypto.subtle.digest('SHA-256', new TextEncoder().encode(text)).then(function (digest) {
+      return Array.from(new Uint8Array(digest)).map(function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+    });
+  }
+  function onkelosAlignment() {
+    if (!onkelosAlignmentPromise) onkelosAlignmentPromise = fetchJSON('/reader/chok/onkelos-verse-alignment.json?v=' + ONKELOS_ALIGNMENT_SHA256, true).then(function (raw) {
+      return onkelosHash(raw).then(function (hash) {
+        if (hash !== ONKELOS_ALIGNMENT_SHA256) throw Error('Onkelos verse alignment changed');
+        var data = JSON.parse(raw);
+        if (data.schema !== 'chok-onkelos-verse-alignment/v1') throw Error('Unknown Onkelos verse alignment');
+        return data;
+      });
+    }).catch(function (error) {
+      onkelosAlignmentPromise = null;
+      throw error;
+    });
+    return onkelosAlignmentPromise;
+  }
+  // The owned Targum groups four short commandments and Numbers26:1;
+  // Medooyuk numbers these separately. Select exact source spans, never pad,
+  // duplicate a whole grouped reading, or alter the original corpus files.
+  function alignedOnkelos(raw, slug, alignment) {
+    var spec = alignment.books[slug];
+    if (!spec) throw Error('Missing Onkelos alignment');
+    return onkelosHash(raw).then(function (hash) {
+      if (hash !== spec.sourceSHA256) throw Error('Onkelos source binding changed');
+      var source = JSON.parse(raw), result = Object.assign({}, source, { ch: Object.assign({}, source.ch) }), copied = {}, seen = {};
+      spec.overrides.forEach(function (row) {
+        var target = row.target.split(':'), ref = row.source.split(':'), text = source.ch[ref[0]][ref[1]], chars = Array.from(text), span = row.span;
+        if (seen[row.target] || !Array.isArray(span) || span.length !== 2 || !span.every(Number.isSafeInteger) || span[0] < 0 || span[1] <= span[0] || span[1] > chars.length) throw Error('Invalid Onkelos source span');
+        seen[row.target] = true;
+        if (!copied[target[0]]) { result.ch[target[0]] = Object.assign({}, source.ch[target[0]]); copied[target[0]] = true; }
+        result.ch[target[0]][target[1]] = chars.slice(span[0], span[1]).join('');
+      });
+      return result;
+    });
+  }
   function targ(slug) {
-    state.targCache[slug] = state.targCache[slug] || fetchJSON('/reader/medooyuk/targum/' + slug + '.json').catch(function(){ return null; });
+    if (!state.targCache[slug]) {
+      var mapped = ['tanach-shemos', 'tanach-devarim', 'tanach-bamidbar'].indexOf(slug) >= 0;
+      state.targCache[slug] = mapped ? Promise.all([fetchJSON('/reader/medooyuk/targum/' + slug + '.json', true), onkelosAlignment()]).then(function (rows) { return alignedOnkelos(rows[0], slug, rows[1]); }).catch(function (error) { delete state.targCache[slug]; throw error; }) : fetchJSON('/reader/medooyuk/targum/' + slug + '.json').catch(function(){ return null; });
+    }
     return state.targCache[slug];
   }
   function en(slug) {
@@ -532,7 +575,7 @@
             var englishText = source ? source.en : en && (en.ch || {})[String(c)] && en.ch[String(c)][x - 1];
             row += window.ChokSources.english(englishText, state.tanachen);
             row += window.ChokSources.meaningNotes(source);
-            if (state.targum && !(parsha==='נח' && day==='ליל שישי' && kind==='torah')) {
+            if (state.targum) {
               var tgOriginal = tg && (tg.ch || {})[c] && tg.ch[c][x];
               var targumRow = qualifiedDay ? kind === 'torah' ? window.ChokSources.bound('targum', sourceRef, tgOriginal) : window.ChokSources.nachTargum(kind, sourceRef) : window.ChokSources.weekUnit(parsha, day, kind==='torah'?'torahTargum':kind+'Targum', sourceRef, tgOriginal);
               if (targumRow) row += window.ChokSources.targum(targumRow, state.tanachen, kind === 'torah');
