@@ -1227,7 +1227,7 @@
         var carryHTML = '', commentHTML = '';
         cs.forEach(function (c, i) {
           if (!c) return;
-          if (weeks[i] === 'נח' || weeks[i] === 'לך לך') c = Object.assign({}, c, { breslov: [], breslovApparatus: [], breslovContext: [], breslovWeeklySources: null, breslovGlobalQualifications: [], breslovScopeNotice: null });
+          if (window.ChokVerseBreslov.has(weeks[i])) c = Object.assign({}, c, { breslov: [], breslovApparatus: [], breslovContext: [], breslovWeeklySources: null, breslovGlobalQualifications: [], breslovScopeNotice: null });
           var h = commentaryHTML(c);
           if (!h) return;
           if (h.carry) carryHTML += h.carry;
@@ -1243,8 +1243,9 @@
         box.setAttribute('data-language', state.language);
         var root=box.closest('.ck-wrap');root.setAttribute('data-language',state.language);
         $('ck-study-overview-body').innerHTML=state.focus?'':window.ChokSources.isTuesday(weeks[0],availDay(state.sched.weeks[weeks[0]],day))?window.ChokSources.overview(state.kavanaMode==='always'):studyOverviewHTML();
-        $('ck-breslov-offering-body').innerHTML=state.focus?'':weeks.some(function(w){return w==='נח'||w==='לך לך';})?weeks.map(function(w){return window.ChokSources.weekly(w);}).join(''):'<p><a href="/daily-study">חק ברסלב · Daily Breslov study</a></p>';
-        $('ck-full-parsha').href=weeks[0]==='נח'?'/parsha/noach/':weeks[0]==='לך לך'?'/parsha/lech-lecha/':'/parsha/';
+        $('ck-breslov-offering-body').innerHTML=state.focus?'':weeks.some(function(w){return window.ChokVerseBreslov.has(w);})?weeks.map(function(w){return window.ChokSources.weekly(w);}).join(''):'<p><a href="/daily-study">חק ברסלב · Daily Breslov study</a></p>';
+        $('ck-breslov-availability').innerHTML=state.focus?'':weeks.map(function(w){return window.ChokVerseBreslov.availability(w);}).join('');
+        $('ck-full-parsha').href=window.ChokVerseBreslov.parsha(weeks[0])?'/parsha/'+window.ChokVerseBreslov.parsha(weeks[0])+'/':'/parsha/';
         if (!state.focus && state.kavanaMode==='always') $('ck-study-overview').open=true;
         window.ChokSources.applyLanguages(root);
         buildSectionJumps(root);

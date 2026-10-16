@@ -3,6 +3,7 @@ import Layout from '../../layouts/Layout.astro';
 import ParshaSourceSupplement from '../../components/ParshaSourceSupplement.astro';
 import ReviewedParsha from '../../components/ReviewedParsha.astro';
 import QualifiedParsha from '../../components/QualifiedParsha.astro';
+import {qualifiedIndexes} from '../../lib/qualified-parsha.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -177,7 +178,7 @@ const CHUMASH_LH_READER: Record<string, string> = {
 };
 const chumashLhReaderUrl = CHUMASH_LH_READER[slug] ? `/reader/chumash-lh/${CHUMASH_LH_READER[slug]}` : null;
 
-const hasQualifiedParsha = ['bereishit', 'noach', 'lech-lecha', 'vayeira', 'chayei-sarah', 'toldot', 'vayeitzei'].includes(slug);
+const hasQualifiedParsha = qualifiedIndexes().some(({index}) => !!index.parshas?.[slug]);
 const hasReviewedParsha = !hasQualifiedParsha && (slug === 'bereishit' || slug === 'noach');
 // Legacy OCR is not a fallback edition. Special corrected packets remain below.
 // NEW: Read Chumash-LH JSON for direct display

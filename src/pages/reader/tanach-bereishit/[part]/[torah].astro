@@ -3,6 +3,7 @@ import Layout from '../../../../layouts/Layout.astro';
 import Comments from '../../../../components/Comments.astro';
 import CommentarySidebar from '../../../../components/CommentarySidebar.astro';
 import QualifiedParsha from '../../../../components/QualifiedParsha.astro';
+import {qualifiedChapter} from '../../../../lib/qualified-parsha.mjs';
 import hkIndex from '../../../../data/hk-citations-index.json';
 import '../../../../styles/reader.css';
 import '../../../../styles/reader-v2.css';
@@ -92,18 +93,15 @@ const breslovEntry = torahData && bpChapters.includes(torahNum) ? {
 } : null;
 
 // A distinct source-qualified edition, selected only by the actual exported index.
-const qualifiedNamespace = torahNum >= 1 && torahNum <= 17 ? 'qualified-1-109' : 'qualified-110-171';
-const qualifiedIndex = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'public/data/breslov-parsha', qualifiedNamespace, 'index.json'), 'utf8'));
-const qualifiedChapter = torahData && partNum === 1 ? qualifiedIndex.chapters[String(torahNum)] : null;
-const qualifiedBreslovEntry = qualifiedChapter ? {
-  book: `breslov-parsha-${qualifiedNamespace}`,
+const qualified = torahData && partNum === 1 ? qualifiedChapter(torahNum) : {matches: [], selection: null};
+const qualifiedBreslovEntry = qualified.matches.length ? {
+  book: `breslov-parsha-${qualified.matches[0].namespace}`,
   section: `bereishit-${torahNum}`,
   label: 'ברסלב — ליקוטים מסויגים',
   sectionTitle: 'Qualified supplied source selections',
-  url: qualifiedChapter.url,
+  url: qualified.matches[0].index.chapters[String(torahNum)].url,
 } : null;
-const qualifiedChapterData = qualifiedChapter
-  ? JSON.parse(fs.readFileSync(path.join(process.cwd(), 'public', qualifiedChapter.url), 'utf8')) : null;
+const qualifiedChapterData = qualified.selection;
 
 const commentaryEntry = torahData ? {
   related_commentaries: [
@@ -313,7 +311,7 @@ const breadcrumbData = torahData ? JSON.stringify({
       <script src="/medooyuk.js?v=four-surfaces-20261006-r1" defer></script>
       <script src="/reader-source-exact.js?v=1" defer></script>
       <script src="/reader-editions.js?v=four-surfaces-20261006-r1" defer></script>
-      <script src="/reader-script.js?v=parsha-all-processed-20261012-r1" defer></script>
+      <script src="/reader-script.js?v=parsha-author-20261016-r2" defer></script>
       <script src="/reader-v2.js?v=reader-editions-20261002" defer></script>
       <script src="/pwa-register.js" defer></script>
       <script src="/tts-fix.js" defer></script>

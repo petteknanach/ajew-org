@@ -1,0 +1,776 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+<Layout
+  title="Chok LiYisroel - Daily Study"
+  description="The daily Chok LiYisroel: Torah with nikud, taamim and Onkelos, Navi, Kesuvim, Mishna, Gemara, Zohar, halacha and mussar - each day's full spread."
+>
+  <div class="ck-wrap" dir="rtl">
+    <header class="ck-header">
+      <h1>חק לישראל <span class="ck-sub">Chok LiYisroel · daily</span></h1>
+      <p class="ck-date" id="ck-date" dir="ltr"></p>
+      <p class="ck-week" id="ck-week"></p>
+      <p class="ck-sibling"><a href="/daily-study">חק ברסלב</a> <span>— finish the Breslov books every year · /daily-study</span></p>
+    </header>
+
+    <div class="ck-controls" dir="ltr">
+      <div class="ck-quick-rail">
+        <label class="ck-option-box">Week · פרשה <select id="ck-parsha"></select></label>
+        <label class="ck-option-box">Day · יום <select id="ck-day" aria-label="Study day"></select></label>
+        <label class="ck-option-box">Language · שפה <select id="ck-language"><option value="both">HE + EN</option><option value="he">Hebrew</option><option value="en">English + original</option><option value="original">Untouched original</option></select></label>
+      </div>
+      <div class="ck-option-grid" aria-label="Study offerings">
+        <details class="ck-option-box ck-reading-options"><summary>Reading options<br/>אפשרויות קריאה</summary><div class="ck-option-panel ck-row">
+        <label>Display · תצוגה
+          <select id="ck-mode">
+            <option value="full">Nikud + Taamim</option>
+            <option value="nikud">Nikud only</option>
+            <option value="taamim">Taamim only</option>
+            <option value="letters">Letters only</option>
+          </select>
+        </label>
+        <label>Theme · רקע <select id="ck-theme"><option value="day">Day</option><option value="sepia">Sepia</option><option value="night">Night</option></select></label>
+        <label class="ck-chk"><input type="checkbox" id="ck-medooyuk" checked /> Medooyuk</label>
+        <label class="ck-chk"><input type="checkbox" id="ck-targum" /> Targum</label>
+        <label class="ck-chk"><input type="checkbox" id="ck-rashi" checked /> Rashi</label>
+        <label class="ck-chk"><input type="checkbox" id="ck-commentary" checked /> Commentary</label>
+        <label class="ck-chk" hidden><input type="checkbox" id="ck-tanachen" checked /> English</label>
+        <label>Carry
+          <select id="ck-carrymode" title="הסבר פשוט — מה משך אתמול ומה היום: פתיחה פעם ביום, תמיד, או אף פעם">
+            <option value="daily">Daily</option>
+            <option value="always">Always</option>
+            <option value="never">Never</option>
+          </select>
+        </label>
+        <label class="ck-size">Size <input type="range" id="ck-size" min="16" max="44" value="26" /></label>
+        <label>Kavanos
+          <select id="ck-kavanamode" title="כוונות כלליות, סדר השבוע וכוונות לכל חלק — סגור בתחילה או פתוח תמיד">
+            <option value="closed">Closed initially</option>
+            <option value="always">Always open</option>
+          </select>
+        </label>
+        <details class="ck-mark-key"><summary>Medooyuk marks · סימני הניקוד</summary><div class="ck-legend" id="ck-legend" dir="rtl">
+          <span><span class="m-demo marked-hebrew" style="font-feature-settings:'ss01' 1">שְ</span> = שוא נא (נשמע) · שתי נקודות עבות</span>
+          <span><span class="m-demo marked-hebrew" style="font-feature-settings:'ss02' 1">קָ</span> = קומוץ קטן · מוגדל</span>
+          <span><span class="m-demo marked-hebrew" style="font-feature-settings:'ss03' 1">קָ</span> = קמץ טעון בירור</span>
+          <span><span class="m-demo marked-hebrew" style="font-feature-settings:'ss04' 1">אֽ</span> = מטג (געיה)</span>
+          <span class="ck-legend-note">הסימון על הניקוד עצמו — האותיות רגילות</span>
+        </div></details>
+        </div></details>
+        <details class="ck-option-box" id="ck-study-overview"><summary>Study overview<br/>סדר הלימוד</summary><div class="ck-option-panel ck-offering-body" id="ck-study-overview-body" dir="rtl"></div></details>
+        <a class="ck-option-box ck-offering-link" href="/reader/chok/tefillos/">Prayers<br/>תפלות</a>
+        <a class="ck-option-box ck-offering-link" href="/reader/chok/kavanos/">Kavanos<br/>כוונות</a>
+        <a class="ck-option-box ck-offering-link" id="ck-full-parsha" href="/parsha/noach/">Full parsha<br/>הפרשה בשלמותה</a>
+        <details class="ck-option-box" id="ck-breslov-offering"><summary>Breslov<br/>ברסלב</summary><div class="ck-option-panel ck-offering-body" id="ck-breslov-offering-body" dir="rtl"></div></details>
+      </div>
+      <div id="ck-days" hidden></div>
+    </div>
+
+    <nav id="ck-jumps" class="ck-jumps" aria-label="Jump to study section" dir="rtl"></nav>
+
+    <main id="ck-content" class="ck-content" dir="rtl" lang="he"></main>
+
+    <footer class="ck-foot" dir="ltr">
+      <p><a href="/reader/tikkun/">שנים מקרא ואחד תרגום · Shnayim Mikra</a></p>
+      <p><a href="/tikkun/qatan-sources.html">MAM qatan supplement — Hebrew Wikisource · CC BY-SA 4.0 · sources and changes</a></p>
+    </footer>
+  </div>
+</Layout>
+
+<script src="/tikkun-boundaries.js?v=visible-nikud-20261004-r2" defer></script>
+<script src="/tikkun-qatan.js?v=qatan-expansion-20261006-parent-final-r1" defer></script>
+<script src="/medooyuk.js?v=four-surfaces-20261006-r1" defer></script>
+<script src="/psalms-data.js?v=psalms-annotations-20261002-r1&amp;integrity=sha256-20261003" defer></script>
+<script src="/chok-verse-breslov.js?v=parsha-completion-20261016-r1" defer></script>
+<script src="/chok-source-reader.js?v=parsha-completion-20261016-r1" defer></script>
+<script src="/chok.js?v=parsha-completion-20261016-r1" defer></script>
+
+<style is:global>
+  /* Actual study offerings: three columns/two rows, selectors separate. */
+  .ck-quick-rail { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.4rem; margin-bottom:.4rem; }
+  .ck-option-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); grid-template-rows:repeat(2,auto); gap:.4rem; position:relative; }
+  .ck-option-box { min-width:0; padding:.35rem .45rem; border:1px solid var(--ck-border-strong); border-radius:8px; background:var(--ck-panel-2); font-size:.75rem; }
+  .ck-option-box select { display:block; width:100%; min-width:0; max-width:100%; padding:.25rem .1rem; min-height:32px; border:0; background:transparent; color:var(--ck-ink); font-size:.82rem; }
+  .ck-option-box > summary, .ck-offering-link { cursor:pointer; min-height:44px; display:block; box-sizing:border-box; line-height:1.35; text-decoration:none; color:var(--ck-ink); }
+  .ck-option-panel { position:absolute; inset-inline:0; top:100%; z-index:5; margin:.3rem 0 0; padding:1rem; border:1px solid var(--ck-border-strong); border-radius:10px; background:var(--ck-panel-2); box-shadow:var(--ck-shadow-2); }
+  .ck-wrap [hidden] { display:none !important; }
+  .ck-offering-body { max-height:70vh; overflow:auto; font-size:1rem; }
+  .ck-mark-key { margin-top:.5rem; font-size:.75rem; }
+  .ck-reading-options .ck-mark-key { flex-basis:100%; }
+  .ck-mark-key > summary { min-height:44px; }
+  .ck-jumps { display:flex; flex-wrap:wrap; gap:.4rem .8rem; border-block:1px solid var(--ck-border); padding:.6rem 0; margin-bottom:.8rem; font-size:.83rem; }
+  .ck-jumps a { color:var(--ck-teal-deep); text-decoration:none; }
+  .ck-section { scroll-margin-top:5rem; }
+  .ck-source-languages { display:flex; gap:.4rem; margin:.6rem 0; }
+  .ck-source-languages button { padding:.4rem .6rem; min-height:44px; border:1px solid var(--ck-border-strong); border-radius:7px; background:var(--ck-panel-2); color:var(--ck-ink); }
+  .ck-source-languages button[aria-pressed='true'] { border-color:var(--ck-teal); outline:1px solid var(--ck-teal); }
+  .ck-source-pair, .ck-native-pair, .ck-complete-pair { margin:.7rem 0; }
+  .ck-source-pair .ck-he, .ck-native-pair .ck-he, .ck-original { white-space:pre-wrap; font-size:var(--ck-size,26px); line-height:1.9; font-family:var(--ck-font-he); font-synthesis:none; }
+  .ck-untouched-original { white-space:pre-wrap; font-size:var(--ck-size,26px); line-height:1.9; font-family:var(--ck-font-he); font-synthesis:none; }
+  .ck-source-pair .ck-en, .ck-native-pair .ck-en { white-space:pre-wrap; font-family:var(--ck-font-en); font-size:1.12rem; line-height:1.8; }
+  .ck-source-qualification { padding:.5rem .75rem; margin:.65rem 0; border-inline-start:2px solid var(--ck-gold); font-size:.9rem; line-height:1.7; font-family:var(--ck-font-en); }
+  .ck-targum-reading { border-inline-start:2px solid var(--ck-gold-soft); padding-inline-start:.7rem; margin-top:.5rem; }
+  .ck-targum-reading h4, .ck-reading-ref { font-size:.84rem; margin:.35rem 0; font-family:var(--ck-font-ui); font-weight:400; }
+  .ck-verse-access { font-size:.8rem; margin:.5rem 0; }
+  .ck-verse > .ck-verse-breslov { display:block; width:100%; box-sizing:border-box; font-size:1rem; }
+  .ck-breslov-owner { margin:1rem 0; }
+  .ck-breslov-owner > .ck-source-qualification { font-size:.9rem; }
+  .ck-verse-breslov .ck-source-pair .ck-he, .ck-breslov .ck-source-pair .ck-he { font-size:var(--ck-size,26px); }
+  .ck-verse-breslov .ck-source-pair .ck-en, .ck-breslov .ck-source-pair .ck-en { font-size:1.12rem; }
+  .ck-verse-breslov [hidden] { display:none !important; }
+  .ck-classical-gloss { display:block; border-inline-start:2px solid var(--ck-border); padding-inline-start:.6rem; font-size:.85em; margin:.5rem 0; }
+  .ck-content[data-language='original'] .ck-voice-layer, .ck-content[data-language='original'] .ck-explanation, .ck-content[data-language='original'] .ck-voice-row, .ck-content[data-language='original'] .ck-comm, .ck-content[data-language='original'] .ck-mishna-explanation, .ck-content[data-language='original'] .ck-mishna-questions, .ck-content[data-language='original'] .ck-mishna-terms { display:none; }
+  .ck-source-island[data-language='he'] .ck-en, .ck-source-island[data-language='en'] .ck-he { display:none; }
+  .ck-generated-ref { unicode-bidi: isolate; white-space: nowrap; }
+  .ck-kavana-para { margin-block: 0.65rem; white-space: pre-wrap; }
+  .ck-kavana-note { font-size: 0.85rem; line-height: 1.6; color: var(--ck-muted-2); }
+  /* ═══════════════════════════════════════════════════════════════
+     Chok LiYisroel — deluxe sefer presentation
+     One warm token system, shared with /daily-study.
+     Day theme rides the site; Sepia/Night come from chok.js via
+     html[data-theme]; site dark mode is body.dark-mode.
+     ═══════════════════════════════════════════════════════════════ */
+  .ck-wrap {
+    --ck-font-he: 'Noto Serif Hebrew', 'David Libre', 'Frank Ruhl Libre', serif;
+    --ck-font-en: 'EB Garamond', Georgia, 'Times New Roman', serif;
+    --ck-font-ui: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+    --ck-ink: #2f2519;
+    --ck-paper: #fbf7ee;
+    --ck-panel: #f4eddc;
+    --ck-panel-2: #fffdf6;
+    --ck-border: #e3d8bf;
+    --ck-border-strong: #cfc09a;
+    --ck-gold: #a8842e;
+    --ck-gold-bright: #c9a227;
+    --ck-gold-soft: #e7d9ae;
+    --ck-gold-wash: rgba(168, 132, 46, 0.08);
+    --ck-teal: #177f70;
+    --ck-teal-deep: #106154;
+    --ck-on-teal: #ffffff;
+    --ck-muted: #8d7f66;
+    --ck-muted-2: #6f6350;
+    --ck-ok: #2d6a4f;
+    --ck-danger: #a33a2e;
+    --ck-m-na: #177f70;
+    --ck-m-qb: #b04a3a;
+    --ck-m-qk: #c34a3a;
+    --ck-m-meteg: #6f55c9;
+    --ck-c-commentary: var(--ck-teal-deep);
+    --ck-c-rashi: #9c5224;
+    --ck-c-mishna: #27648c;
+    --ck-c-gemara: #7d5226;
+    --ck-c-bonus: #256b44;
+    --ck-c-sup: #6c5496;
+    --ck-shadow-1: 0 1px 2px rgba(63, 48, 26, 0.06), 0 6px 18px -6px rgba(63, 48, 26, 0.12);
+    --ck-shadow-2: 0 2px 4px rgba(63, 48, 26, 0.08), 0 14px 34px -12px rgba(63, 48, 26, 0.24);
+    --ck-radius: 14px;
+
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 1rem;
+    color: var(--ck-ink);
+    font-family: var(--ck-font-ui);
+  }
+
+  /* Site-wide dark mode (body.dark-mode) and the page's Night theme
+     share one dignified ink-and-brass palette. */
+  body.dark-mode .ck-wrap,
+  html[data-theme='night'] .ck-wrap {
+    --ck-ink: #ede4cf;
+    --ck-paper: #171d26;
+    --ck-panel: #1d2530;
+    --ck-panel-2: #232c39;
+    --ck-border: #35404f;
+    --ck-border-strong: #4c5a6c;
+    --ck-gold: #d2b264;
+    --ck-gold-bright: #e3c877;
+    --ck-gold-soft: #4a3f22;
+    --ck-gold-wash: rgba(210, 178, 100, 0.09);
+    --ck-teal: #3fbfae;
+    --ck-teal-deep: #2f9d8f;
+    --ck-on-teal: #0d1517;
+    --ck-muted: #a4977e;
+    --ck-muted-2: #b5aa93;
+    --ck-ok: #7fd1a5;
+    --ck-danger: #e08a7a;
+    --ck-m-na: #45c2b0;
+    --ck-m-qb: #e08a7a;
+    --ck-m-qk: #ef8f7c;
+    --ck-m-meteg: #a98fe6;
+    --ck-c-commentary: #45c2b0;
+    --ck-c-rashi: #d99a5f;
+    --ck-c-mishna: #6fb1dd;
+    --ck-c-gemara: #cf9c60;
+    --ck-c-bonus: #6cc294;
+    --ck-c-sup: #b39ae0;
+    --ck-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.35), 0 8px 24px -8px rgba(0, 0, 0, 0.5);
+    --ck-shadow-2: 0 2px 6px rgba(0, 0, 0, 0.4), 0 18px 44px -12px rgba(0, 0, 0, 0.62);
+  }
+
+  /* Sepia: a dedicated parchment reading theme; wins over site dark mode. */
+  html[data-theme='sepia'] .ck-wrap {
+    --ck-ink: #3b2e1a;
+    --ck-paper: #f6eed9;
+    --ck-panel: #efe5c9;
+    --ck-panel-2: #fbf5e4;
+    --ck-border: #dccfa9;
+    --ck-border-strong: #c2b184;
+    --ck-teal: #17685c;
+    --ck-teal-deep: #115349;
+    --ck-muted: #8a7a62;
+    --ck-muted-2: #6b5a42;
+  }
+
+  .ck-wrap ::selection { background: var(--ck-gold-soft); color: var(--ck-ink); }
+  .ck-wrap :focus-visible { outline: 2px solid var(--ck-teal); outline-offset: 2px; border-radius: 4px; }
+
+  /* ── Header: sefer title page ─────────────────────────────────── */
+  .ck-header {
+    text-align: center;
+    padding: .25rem 0.5rem 0;
+    border-bottom: 1px solid var(--ck-gold-soft);
+    position: relative;
+    margin-bottom: .65rem;
+  }
+  .ck-header::after {
+    content: '✦';
+    position: absolute;
+    inset-inline-start: 50%;
+    bottom: -0.62em;
+    transform: translateX(50%);
+    color: var(--ck-gold);
+    font-size: 0.85rem;
+    line-height: 1;
+    background: transparent;
+    padding: 0 0.5rem;
+  }
+  .ck-header h1 {
+    font-family: var(--ck-font-he);
+    font-size: clamp(1.5rem, 4vw, 2.2rem);
+    font-weight: 700;
+    margin: 0 0 0.2rem;
+    color: var(--ck-ink);
+    line-height: 1.35;
+  }
+  .ck-sub {
+    font-family: var(--ck-font-en);
+    font-size: 1rem;
+    color: var(--ck-muted);
+    font-weight: 400;
+    letter-spacing: 0.08em;
+  }
+  .ck-date, .ck-week {
+    color: var(--ck-muted);
+    margin: 0.15rem 0;
+    font-size: 0.95rem;
+    font-family: var(--ck-font-en);
+    letter-spacing: 0.02em;
+  }
+  .ck-sibling {
+    margin: .25rem 0 .4rem;
+    font-size: 0.85rem;
+    color: var(--ck-muted);
+  }
+  .ck-sibling a {
+    display: inline-block;
+    padding: 0.2rem 0.85rem;
+    border: 1px solid var(--ck-gold-soft);
+    border-radius: 999px;
+    background: var(--ck-gold-wash);
+    color: var(--ck-gold);
+    font-family: var(--ck-font-he);
+    font-weight: 600;
+    text-decoration: none;
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+  }
+  .ck-sibling a:hover { border-color: var(--ck-gold); color: var(--ck-gold-bright); background: var(--ck-panel-2); }
+
+  /* ── Controls: reading desk ───────────────────────────────────── */
+  .ck-controls {
+    border: 1px solid var(--ck-border);
+    border-radius: var(--ck-radius);
+    padding: 0.7rem 0.9rem;
+    margin-bottom: .5rem;
+    background: var(--ck-panel);
+    box-shadow: var(--ck-shadow-1);
+  }
+  .ck-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    align-items: center;
+    margin: 0.35rem 0;
+  }
+  .ck-row label {
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+    font-size: 0.8rem;
+    color: var(--ck-muted-2);
+    letter-spacing: 0.03em;
+  }
+  .ck-row select {
+    padding: 0.32rem 0.45rem;
+    border-radius: 9px;
+    border: 1px solid var(--ck-border-strong);
+    background: var(--ck-panel-2);
+    color: var(--ck-ink);
+    font-family: inherit;
+    font-size: 0.85rem;
+    max-width: 200px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .ck-row select:hover { border-color: var(--ck-gold); }
+  .ck-row input[type='checkbox'] { accent-color: var(--ck-teal); width: 15px; height: 15px; }
+  .ck-size input[type='range'] { accent-color: var(--ck-gold); width: 90px; }
+
+  .ck-btn {
+    padding: 0.32rem 0.7rem;
+    border-radius: 999px;
+    border: 1px solid var(--ck-border-strong);
+    background: var(--ck-panel-2);
+    color: var(--ck-ink);
+    font-family: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s, color 0.2s, transform 0.15s;
+  }
+  .ck-btn:hover {
+    border-color: var(--ck-gold);
+    box-shadow: var(--ck-shadow-1);
+  }
+  .ck-btn:active { transform: translateY(1px); }
+
+  .ck-days { gap: 0.45rem; }
+  .ck-days .ck-btn {
+    min-width: 5.2rem;
+    font-family: var(--ck-font-he);
+    font-size: 0.95rem;
+    padding: 0.34rem 0.8rem;
+  }
+  .ck-days button.ck-day-on {
+    background: var(--ck-teal);
+    border-color: var(--ck-teal);
+    color: var(--ck-on-teal);
+    font-weight: 700;
+    box-shadow: var(--ck-shadow-1);
+  }
+
+  .ck-themes {
+    display: inline-flex;
+    border: 1px solid var(--ck-border-strong);
+    border-radius: 999px;
+    overflow: hidden;
+    background: var(--ck-panel-2);
+  }
+  .ck-themes .ck-btn {
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    font-size: 0.78rem;
+    padding: 0.3rem 0.75rem;
+  }
+  .ck-themes .ck-btn + .ck-btn { border-inline-start: 1px solid var(--ck-border); }
+  .ck-themes .ck-btn:hover { background: var(--ck-gold-wash); box-shadow: none; }
+  html[data-theme='day'] .ck-theme[data-t='day'],
+  html[data-theme='sepia'] .ck-theme[data-t='sepia'],
+  html[data-theme='night'] .ck-theme[data-t='night'] {
+    background: var(--ck-teal);
+    color: var(--ck-on-teal);
+    font-weight: 600;
+  }
+
+  .ck-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.55rem;
+    font-size: 0.78rem;
+    color: var(--ck-muted-2);
+  }
+  .ck-legend > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.14rem 0.6rem;
+    border: 1px dashed var(--ck-gold-soft);
+    border-radius: 999px;
+    background: var(--ck-panel-2);
+  }
+  .m-demo { display: inline-block; }
+  .ck-legend-note { align-self: center; color: var(--ck-muted); font-size: 0.72rem; }
+
+  /* ── The sheet: main reading surface ──────────────────────────── */
+  .ck-content {
+    font-family: var(--ck-font-he);
+    font-size: var(--ck-size, 26px);
+    line-height: 2.15;
+    background: var(--ck-paper);
+    border: 1px solid var(--ck-border);
+    border-top: 3px solid var(--ck-gold-soft);
+    border-radius: var(--ck-radius);
+    box-shadow: var(--ck-shadow-1);
+    padding: 1.2rem 1.1rem 1.6rem;
+  }
+
+  .ck-section { margin-bottom: 2.4rem; }
+  .ck-section:last-child { margin-bottom: 0.5rem; }
+
+  .ck-sec-head {
+    font-size: 1.28em;
+    font-weight: 700;
+    color: var(--ck-ink);
+    border-bottom: 1px solid var(--ck-border);
+    padding-bottom: 0.35rem;
+    margin-bottom: 0.9rem;
+    position: relative;
+    line-height: 1.6;
+  }
+  .ck-sec-head::after {
+    content: '';
+    position: absolute;
+    inset-inline-start: 0;
+    bottom: -1px;
+    width: 3.5rem;
+    height: 3px;
+    background: var(--ck-gold);
+    border-radius: 2px;
+  }
+  .ck-sec-head .ck-ref {
+    font-family: var(--ck-font-en);
+    font-size: 0.5em;
+    font-weight: 400;
+    color: var(--ck-muted);
+    letter-spacing: 0.06em;
+  }
+
+  /* ── Mikra verses ─────────────────────────────────────────────── */
+  .ck-verse { margin-bottom: 0.9rem; }
+  .ck-verse .tk-vnum {
+    font-family: var(--ck-font-en);
+    color: var(--ck-gold);
+    font-size: 0.5em;
+    font-weight: 600;
+    margin-inline-end: 0.4rem;
+    letter-spacing: 0.04em;
+  }
+  .ck-targum-line {
+    font-size: 0.68em;
+    line-height: 2;
+    color: var(--ck-muted-2);
+    background: var(--ck-panel);
+    border-inline-start: 3px solid var(--ck-gold-soft);
+    border-radius: 10px;
+    padding: 0.25rem 0.75rem;
+    margin: 0.3rem 0;
+  }
+  .ck-mikra-repeat { display: none; }
+
+  /* medooyuk marks — on the nikud characters themselves; letters stay regular */
+  .ck-hk-src {
+    margin: 2px 0 6px;
+    font-size: .85em;
+    color: var(--ck-fg-muted, inherit);
+    opacity: .9;
+  }
+  .ck-hk-t { opacity: .75; }
+  .ck-miluy {
+    margin: 0 0 8px;
+    padding: 5px 10px;
+    background: var(--ck-bg-soft);
+    border-inline-start: 3px solid var(--ck-accent);
+    border-radius: 4px;
+    font-size: .92em;
+    color: var(--ck-fg);
+  }
+  .ck-miluy-t {
+    font-weight: 700;
+    color: var(--ck-accent-strong, var(--ck-accent));
+    margin-inline-end: 6px;
+  }
+  /* shva-na: the mark's own two dots, fattened (HH: two thick dots of the
+     regular shva — no added bullet). */
+  .m-na {
+    color: var(--ck-m-na);
+    /* the mark must stay inside its own shaping run; with identical font
+       metrics Chrome merges it into the base letter's cluster and paints it
+       with the base style (teal lost). A hair of font-size keeps it split —
+       and the mark's own ink position is exactly the plain shva's. */
+    font-size: calc(1em + 0.02px);
+    -webkit-text-stroke: .034em currentColor;
+    text-shadow: .013em 0 0 currentColor, -.013em 0 0 currentColor,
+                 0 .013em 0 currentColor, 0 -.013em 0 currentColor;
+  }
+  /* note when the week has no entry for the requested day (year-end weeks) */
+  .ck-fb-note {
+    margin: .3rem 0 .8rem;
+    color: var(--muted, #888);
+    font-size: .92em;
+  }
+  .ck-tef-link {
+    margin: .25rem 0 .6rem;
+    font-size: .95em;
+  }
+  .ck-tef-link a { color: var(--ck-m-na); }
+  .m-qb {
+    position: relative;
+    text-decoration: none;
+  }
+  .m-qb::before {
+    content: '';
+    position: absolute;
+    top: -0.3em;
+    inset-inline-start: -0.3em;
+    width: 0.66em;
+    height: 0.15em;
+    background: var(--ck-m-qb);
+    border-radius: 1px;
+  }
+  .m-qb::after {
+    content: '';
+    position: absolute;
+    top: -0.15em;
+    inset-inline-start: -0.015em;
+    width: 0.14em;
+    height: 0.44em;
+    background: var(--ck-m-qb);
+    border-radius: 1px;
+  }
+  .m-qk {
+    color: var(--ck-m-qk);
+    font-weight: 900;
+    text-shadow: 0 0 .6px currentColor;
+  }
+  .m-meteg {
+    color: var(--ck-m-meteg);
+  }
+
+  /* ── Cards & layers (Rashi, Mishna, Gemara, halacha, commentary) ── */
+  .ck-card {
+    border: 1px solid var(--ck-border);
+    border-radius: 12px;
+    padding: 0.8rem 1rem;
+    margin-bottom: 0.9rem;
+    background: var(--ck-panel);
+    box-shadow: var(--ck-shadow-1);
+  }
+  .ck-card .ck-card-title { font-weight: 700; }
+  .ck-card .ck-card-ref { color: var(--ck-muted); font-size: 0.9em; }
+  .ck-soon { color: var(--ck-muted); font-size: 0.85em; font-style: italic; }
+
+  .ck-layer {
+    border: 1px solid var(--ck-border);
+    border-radius: 12px;
+    margin: 0.7rem 0;
+    background: var(--ck-panel);
+    box-shadow: var(--ck-shadow-1);
+    padding: 0.55rem 0.9rem 0.7rem;
+    overflow: hidden;
+  }
+  .ck-layer summary {
+    cursor: pointer;
+    margin: -0.55rem -0.9rem 0.5rem;
+    padding: 0.5rem 0.9rem;
+    background: var(--ck-gold-wash);
+    border-bottom: 1px solid var(--ck-border);
+    font-size: 0.62em;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--ck-c-commentary);
+    list-style-position: inside;
+    transition: background 0.2s;
+  }
+  .ck-layer summary:hover { background: var(--ck-gold-soft); }
+  .ck-layer summary::marker { color: var(--ck-gold); }
+  .ck-layer[open] summary { border-bottom: 1px solid var(--ck-border); }
+  .ck-source-pair .ck-he, .ck-source-pair .ck-en, .ck-source-qualification p, .ck-source-notice { white-space: pre-wrap; }
+  .ck-source-qualification { direction: ltr; text-align: left; margin: .6rem 0; padding: .6rem; border-inline-start: 3px solid var(--ck-gold); font-family: var(--ck-font-ui); font-size: .8em; line-height: 1.65; overflow-wrap: anywhere; }
+  .ck-source-qualification p { margin: 0 0 .3rem; }
+  .ck-breslov [hidden] { display: none !important; }
+  .ck-source-languages { display:flex; flex-wrap:wrap; gap:.5rem; margin:.6rem 0; }
+  .ck-source-languages button { min-height:44px; padding:.4rem .8rem; color:var(--ck-ink); background:var(--ck-paper); border:1px solid var(--ck-border); border-radius:8px; cursor:pointer; }
+  .ck-weekly-source-commentary { margin: .6rem 0; padding: .6rem; border-inline-start: 3px solid var(--ck-gold); overflow-wrap: anywhere; }
+  .ck-qualified-unit, .ck-weekly-source { overflow-wrap: anywhere; }
+  .ck-source-notice { font-family: var(--ck-font-ui); font-size: .8em; line-height: 1.65; }
+  .ck-layer .ck-he { font-size: 0.8em; line-height: 1.95; margin: 0.3rem 0; }
+  .ck-layer .ck-en {
+    font-family: var(--ck-font-ui);
+    font-size: 0.55em;
+    line-height: 1.65;
+    color: var(--ck-muted-2);
+    margin: 0.3rem 0;
+  }
+
+  .ck-carry { border-inline-start: 4px solid var(--ck-teal); }
+
+  .ck-sup summary { color: var(--ck-c-sup); }
+
+  .ck-citem { padding: 0.3rem 0; border-top: 1px dotted var(--ck-border); }
+  .ck-citem:first-child { border-top: 0; }
+  .ck-citem .ck-ref { font-size: 0.6em; color: var(--ck-muted); }
+
+  .ck-rashi summary { color: var(--ck-c-rashi); }
+  .ck-rashi { font-size: 0.72em; }
+  .ck-rashi .ck-rbody { line-height: 1.95; margin: 0.25rem 0; }
+  .ck-rashi .ck-rbody b { font-weight: 700; color: var(--ck-c-rashi); }
+  .ck-rashi .ck-ren {
+    font-family: var(--ck-font-ui);
+    font-size: 0.82em;
+    color: var(--ck-muted-2);
+    direction: ltr;
+    text-align: left;
+    line-height: 1.6;
+  }
+  .ck-ren-div { border-top: 1px dotted var(--ck-border); margin: 0.35rem 0; }
+
+  .ck-mishna summary { color: var(--ck-c-mishna); }
+  .ck-mishna { font-size: 0.78em; }
+  .ck-mishna .ck-mishna-item { line-height: 2.05; margin: 0.3rem 0; }
+  .ck-mishna .ck-mnum { color: var(--ck-gold); font-size: 0.8em; font-weight: 600; }
+
+  .ck-halacha summary { color: var(--ck-c-mishna); }
+  .ck-halacha { font-size: 0.78em; }
+  .ck-halacha .ck-halacha-item { line-height: 2.05; margin: 0.3rem 0; }
+  .ck-halacha .ck-hnum { color: var(--ck-gold); font-size: 0.8em; font-weight: 600; }
+
+  .ck-bonus summary { color: var(--ck-c-bonus); }
+
+  .ck-gemara summary { color: var(--ck-c-gemara); }
+  .ck-gemara { font-size: 0.75em; }
+  .ck-gemara .ck-gemara-line { line-height: 1.95; margin: 0.25rem 0; }
+  .ck-zohar summary { color: var(--ck-c-sup); }
+  .ck-zohar { font-size: 0.78em; }
+  .ck-zohar .ck-zohar-line { line-height: 1.95; margin: 0.25rem 0; }
+  .ck-comm { margin: 0.35rem 0 0 0; font-size: 0.95em; }
+  .ck-comm summary { color: var(--ck-c-comm, #7a6a3a); cursor: pointer; }
+  .ck-comm-body { line-height: 1.95; margin: 0.25rem 0; padding-right: 0.6rem; border-right: 2px solid var(--ck-gold-soft, #e7d9ae); }
+  .ck-mussar summary { color: var(--ck-c-sup); }
+  
+                .ck-kavana { margin: .35rem 0 .55rem; }
+                .ck-popout {
+                  float: left; margin-inline-start: .5rem; border: 1px solid var(--gold, #d4a017);
+                  background: transparent; color: var(--gold, #d4a017); border-radius: 6px;
+                  cursor: pointer; font-size: .85rem; line-height: 1; padding: 2px 8px;
+                }
+                .ck-popout:hover { background: var(--gold, #d4a017); color: #fff; }
+                .ck-focusbar {
+                  background: color-mix(in srgb, var(--gold, #d4a017) 12%, transparent);
+                  border: 1px solid var(--gold, #d4a017); border-radius: 8px;
+                  padding: .5rem .9rem; margin-bottom: .8rem; font-weight: 600;
+                }
+                .ck-focusbar a { color: var(--gold, #d4a017); }
+    .ck-kavana > summary { cursor: pointer; color: var(--ck-gold, #8a6d1d); font-size: .9em; }
+    .ck-kavana-body { line-height: 1.95; padding: .35rem .2rem; }
+
+    .ck-kav-gate { margin: .4rem 0; }
+    .ck-kav-gate > summary, .ck-kav-ch > summary { cursor: pointer; color: var(--ck-gold, #8a6d1d); font-size: .95em; }
+    .ck-kav-body { padding: .3rem .6rem; }
+    .ck-kav-ch { margin: .4rem 0; }
+    .ck-kav-para { margin: .2rem 0; line-height: 1.9; }
+    .ck-kav-note { opacity: .7; font-size: .9em; margin: .3rem 0; }
+
+    .ck-super { margin: .4rem 0; }
+    .ck-super > summary { cursor: pointer; color: var(--ck-gold, #8a6d1d); font-size: .92em; }
+    .ck-sup-name { font-weight: 700; margin-top: .55rem; }
+    .ck-sup-body { margin: .15rem 0; line-height: 1.85; }
+
+    .ck-voice { border-inline-start: 3px solid var(--ck-gold, #b8860b); background: rgba(184,134,11,.06); padding: .7rem 1rem; border-radius: .5rem; margin: .5rem 0; }
+    .ck-voice-part { margin: .4rem 0; }
+    .ck-voice-k { font-weight: 700; font-size: .85em; opacity: .75; margin-bottom: .15rem; }
+    .ck-voice-row { border-inline-start: 2px solid rgba(184,134,11,.45); padding-inline-start: .7rem; margin: .45rem 0; }
+    .ck-voice-he { font-size: 1.05em; line-height: 1.9; }
+    .ck-voice-en { direction: ltr; text-align: left; font-style: italic; opacity: .8; margin-top: .2rem; }
+    .ck-voice-top .ck-voice { background: rgba(184,134,11,.09); }
+
+    .ck-mussar-text { line-height: 1.95; margin: 0.3rem 0; padding-right: 0.6rem; border-right: 2px solid var(--ck-gold-soft, #e7d9ae); }
+  .ck-en-line { direction: ltr; text-align: left; font-family: var(--font-en, Georgia, serif); font-style: italic; color: var(--ck-muted2, #6f6350); line-height: 1.6; margin: 0.2rem 0; font-size: 0.82em; }
+
+  /* ── States ───────────────────────────────────────────────────── */
+  .ck-loading {
+    color: var(--ck-muted);
+    text-align: center;
+    padding: 3.5rem 1rem;
+    font-size: 0.85em;
+    animation: ck-breathe 1.8s ease-in-out infinite;
+  }
+  @keyframes ck-breathe {
+    0%, 100% { opacity: 0.55; }
+    50% { opacity: 1; }
+  }
+  .ck-error {
+    color: var(--ck-danger);
+    text-align: center;
+    padding: 2.5rem 1rem;
+    font-size: 0.85em;
+  }
+
+  .ck-foot {
+    margin-top: 1.6rem;
+    padding-top: 0.8rem;
+    border-top: 1px solid var(--ck-border);
+    font-size: 0.78rem;
+    color: var(--ck-muted);
+    font-family: var(--ck-font-en);
+    text-align: center;
+  }
+  .ck-foot p { margin: 0; }
+
+  /* Desktop utility rail: reserve source space rather than covering glyphs. */
+  @media (min-width: 1024px) {
+    .ck-wrap { width: calc(100% - 88px); margin-right: 88px; }
+  }
+
+  /* ── Responsive ───────────────────────────────────────────────── */
+  @media (min-width: 720px) {
+    .ck-wrap { padding: 1.6rem 2rem 2.2rem; }
+    .ck-controls { padding: 0.85rem 1.1rem; }
+    .ck-content { padding: 2.2rem 2.6rem 2.6rem; }
+  }
+
+  /* Mobile reading-first spacing: no source font/line-height or global chrome changes. */
+  @media (max-width: 719px) {
+    .ck-wrap { padding: .5rem .75rem 1rem; }
+    .ck-header { padding: 0; margin-bottom: .4rem; }
+    .ck-header h1 { font-size: 1.35rem; line-height: 1.25; margin-bottom: .1rem; }
+    .ck-sub { font-size: .85rem; letter-spacing: .02em; }
+    .ck-date, .ck-week { font-size: .85rem; line-height: 1.35; margin: .1rem 0; }
+    .ck-sibling { font-size: .8rem; line-height: 1.35; margin: .15rem 0 .3rem; }
+    .ck-sibling a { padding: .1rem .5rem; }
+    .ck-controls { padding: .4rem; margin-bottom: .35rem; }
+    .ck-quick-rail { gap: .25rem; margin-bottom: .25rem; }
+    .ck-option-grid { gap: .25rem; }
+    .ck-option-box { padding: .25rem .3rem; line-height: 1.35; }
+    .ck-jumps { gap: .2rem .65rem; line-height: 1.4; padding: .4rem 0; margin-bottom: .4rem; }
+    .ck-content { padding: .6rem .7rem 1.2rem; }
+    .ck-sec-head { font-size: 1.2rem; line-height: 1.4; padding-bottom: .2rem; margin-bottom: .4rem; }
+    .ck-sec-head .ck-ref { font-size: .7em; }
+    /* Closed contextual controls need control leading, not the source's sefer leading. */
+    .ck-content .ck-section > .ck-native-group:not([open]) { padding: 0; margin: .35rem 0 .5rem; }
+    .ck-content .ck-section > .ck-native-group:not([open]) > summary {
+      margin: 0; padding: .3rem .55rem; min-height: 44px; box-sizing: border-box;
+      font-size: .85rem; line-height: 1.4;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ck-wrap *, .ck-wrap *::before, .ck-wrap *::after {
+      transition: none !important;
+      animation: none !important;
+    }
+  }
+  /* Reading hierarchy: primary section titles outrank subordinate controls. */
+  #ck-content .ck-section summary { font-size:1rem; }
+  #ck-content .ck-sec-head,
+  #ck-content > .ck-section > .ck-mishna > summary,
+  #ck-content > .ck-section > .ck-bonus > summary,
+  #ck-content > .ck-section > .ck-halacha > summary,
+  #ck-content > .ck-section > .ck-talmud > summary,
+  #ck-content > .ck-section > .ck-gemara > summary,
+  #ck-content > .ck-section > .ck-zohar > summary,
+  #ck-content > .ck-section > .ck-mussar > summary {
+    font-size:clamp(1.2rem,2.2vw,1.65rem);
+    font-weight:700;
+  }
+</style>

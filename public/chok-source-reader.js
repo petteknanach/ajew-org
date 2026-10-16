@@ -6,8 +6,8 @@
   'use strict';
   var PINS = {
     '/reader/chok/noach-tuesday.json': 'cc1a3f8ae3dc25215bc655cad65ba90374a106e3a5780983f562dd00c5f04cd2',
-    '/reader/chok/noach-source-notes.json': 'ad4e08beded1c460a9185377328969ee78371a0b8e78b46eb1533ba5fdfce2c5',
-    '/reader/chumash-lh/part-1/torah-2.json': '829f0365b0e69674399da81b7bdc62bc53d91694d66e761b72510a6c08147ff5',
+    '/reader/chok/noach-source-notes.json': '3c55e03dbdbbb935786debe80d6b3e17af27be56fb154381a1d515fd5514f56b',
+    '/reader/chumash-lh/part-1/torah-2.json': '948c86e763be5c270d46206a36d0d4d7ab459264ac7b930bd36499c85a92894b',
     '/reader/chok/noach-week.json': '736b386986536586f0a79af1080d95a73467e5824cf3bfad5fefd03d5d0559d6'
   };
   var packet, noach, notes, pending, weekPacket;
@@ -75,10 +75,18 @@
   }
   function load(rawLoader) {
     if (typeof rawLoader!=='function') return Promise.reject(Error('Shared source loader unavailable'));
-    if (!pending) pending = Promise.all(Object.keys(PINS).map(function (url) { return read(url,rawLoader); })).then(function (rows) {
-      packet=rows[0];notes=rows[1];noach=rows[2];weekPacket=rows[3];
+    if (!pending) pending = Promise.all(Object.keys(PINS).map(function (url) {
+      var optional=url==='/reader/chok/noach-source-notes.json'||url==='/reader/chumash-lh/part-1/torah-2.json';
+      // Only the supplementary anthology is optional. Daily source validation
+      // below remains mandatory and is not converted to an empty valid reading.
+      var request=Promise.resolve().then(function(){return read(url,rawLoader);});
+      return optional?request.then(function(value){return {value:value};},function(error){return {error:error};}):request;
+    })).then(function (rows) {
+      packet=rows[0];notes=rows[1].value;noach=rows[2].value;weekPacket=rows[3];
+      var noachError=rows[1].error||rows[2].error;
+      if (!noachError && (!noach || !Array.isArray(noach.units) || noach.units.length!==18 || !notes || !Array.isArray(notes.notes) || notes.notes.length!==49 || notes.sourceSHA256!==PINS['/reader/chumash-lh/part-1/torah-2.json'])) noachError=Error('Supplementary Noach source identity mismatch');
       if (packet.schema !== 'chok-source-bound-tuesday/v1' || packet.key !== 'נח|יום שלישי' || packet.masters.length !== 51 ||
-          noach.units.length !== 18 || notes.notes.length !== 49 || notes.sourceSHA256 !== PINS['/reader/chumash-lh/part-1/torah-2.json'] || weekPacket.schema!=='chok-noach-week/v1' || Object.keys(weekPacket.days).length!==7) throw Error('Source identity mismatch');
+          weekPacket.schema!=='chok-noach-week/v1' || Object.keys(weekPacket.days).length!==7) throw Error('Source identity mismatch');
       if (!sundaySuccessor('נח','יום ראשון')) throw Error('Missing complete Sunday source');
       var rashiCounts={'נח|יום שני':8,'נח|יום רביעי':9,'נח|יום שישי':6};
       return Promise.all(Object.keys(weekPacket.days).map(function (key) {
@@ -96,7 +104,7 @@
           if (key==='נח|יום שני' && section==='talmud' && !extra) throw Error('Missing supplementary Rashi');
           return Promise.all(s.units.concat(extra?extra.units:[]).map(function (u) { return validatePair(u,newlyQualified && (section==='zohar' || u.role==='rashi')); }));
         }));
-      })).then(function () { return window.ChokVerseBreslov.load(rawLoader,noach,notes); });
+      })).then(function () { return window.ChokVerseBreslov.load(rawLoader,noach,notes,noachError); });
     }).catch(function (e) { pending=null;packet=noach=notes=weekPacket=null;throw e; });
     return pending;
   }
@@ -231,7 +239,8 @@
   function weekly(week) { return window.ChokVerseBreslov.weekly(week); }
   function verseAccess(slug, chapter, verse, week) {
     var h='<nav class="ck-verse-access" aria-label="Verse and Parsha"><a href="/reader/'+esc(slug)+'/1/'+chapter+'/#seg-'+verse+'">הפסוק בפרק · Verse in chapter</a>';
-    if (week==='נח' || week==='לך לך') h+=' · <a href="/parsha/'+(week==='נח'?'noach':'lech-lecha')+'/">הפרשה · Full Parsha</a>';
+    var parsha=window.ChokVerseBreslov.parsha(week);
+    if (parsha) h+=' · <a href="/parsha/'+esc(parsha)+'/">הפרשה · Full Parsha</a>';
     h+=' · <a href="/reader/tikkun/?b='+esc(slug)+'&amp;c='+chapter+'&amp;view=verses">שנים מקרא · Shnayim Mikra</a>';
     // Source bodies are full-width siblings of this compact navigation rail.
     return h+'</nav>'+window.ChokVerseBreslov.verse(week,slug,chapter,verse);

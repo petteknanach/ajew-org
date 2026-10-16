@@ -1,25 +1,12 @@
 ---
-import fs from 'node:fs';
-import path from 'node:path';
+import {qualifiedParsha, PARSHA_READER, fieldStatus, fieldStatusLabel} from '../lib/qualified-parsha.mjs';
 // A separate edition: never borrow the older reviewed or legacy OCR bodies.
 const { slug, dataset = null } = Astro.props;
 let selection = dataset;
 let coverage = null;
 if (!selection) {
-  const namespace = ['bereishit', 'noach', 'lech-lecha'].includes(slug) ? 'qualified-1-109' : 'qualified-110-171';
-  const root = path.join(process.cwd(), 'public/data/breslov-parsha', namespace);
-  const index = JSON.parse(fs.readFileSync(path.join(root, 'index.json'), 'utf8'));
-  const master = JSON.parse(fs.readFileSync(path.join(root, 'master.json'), 'utf8'));
-  coverage = index.parshas[slug];
-  if (!coverage) throw new Error(`No qualified source selection for ${slug}`);
-  const ids = [...coverage.mainIds, ...coverage.apparatusIds];
-  const byId = new Map([...(master.units || []), ...(master.apparatus || [])].map(unit => [unit.id, unit]));
-  const units = ids.map(id => {
-    const unit = byId.get(id);
-    if (!unit || unit.parsha !== slug) throw new Error(`Missing qualified source owner ${id}`);
-    return unit;
-  });
-  selection = { ...master, units, apparatus: [] };
+  ({selection, coverage} = qualifiedParsha(slug));
+  if (!selection) throw new Error(`No qualified source selection for ${slug}`);
 }
 // Chapter exports keep null-owned weekly apparatus separate from verse mains.
 const byIdentity = new Map();
@@ -34,7 +21,7 @@ const ownerId = unit => unit.owner_main_id ?? unit.ownerMainId ?? null;
 const mains = units.filter(unit => sourceRole(unit) === 'main');
 const apparatus = units.filter(unit => sourceRole(unit) !== 'main');
 const globals = selection.globalQualifications || [];
-const readerPath = slug && ({'bereishit': '1/1', 'noach': '1/2', 'lech-lecha': '1/3', 'vayeira': '1/4', 'chayei-sarah': '1/5', 'toldot': '1/6', 'vayeitzei': '1/7'})[slug];
+const readerPath = slug && PARSHA_READER[slug];
 const aliasLabel = note => (note.aliases || []).map(alias => alias.id || alias.origin || '').join(' · ');
 const afterPair = (unit, pair) => (unit.qualifications || []).filter(note => note.placement === 'after_pair' && note.pair_id === pair.id);
 // Unknown/missing pair locators remain visible after the owner, not silently lost.
@@ -67,6 +54,7 @@ const afterOwner = unit => (unit.qualifications || []).filter(note => note.place
         {earlier && <p class="qp-notice">{sourceRole(unit) === 'main' ? 'Main teaching' : sourceRole(unit) === 'note' ? 'Printed note' : ['title', 'title-metadata'].includes(sourceRole(unit)) ? 'Source title' : ['aside', 'compiler-aside', 'compiler_aside'].includes(sourceRole(unit)) ? 'Compiler aside' : 'Printed apparatus'}{ownerId(unit) != null ? ` · Source owner: ${ownerId(unit)}` : sourceRole(unit) !== 'main' ? ' · Source owner unassigned' : ''}</p>}
         {earlier && sourceRole(unit) === 'main' && !unit.verseRef && <p class="qp-notice">Independent weekly source context — no verse or daily assignment (not Genesis 3:1).</p>}
         {unit.pairs.map(pair => <div class="qp-pair" data-pair-id={pair.id}>
+          {['he', 'en'].map(language => fieldStatus(pair, language) && <aside class="qp-qualification" data-field-language={language} data-source-status={fieldStatus(pair, language)}>{fieldStatusLabel(pair, language)}</aside>)}
           <p class="qp-he" data-qualified-text="he" lang="he" dir="rtl">{pair.he}</p>
           <p class="qp-en" data-qualified-text="en" lang="en" dir="ltr">{pair.en}</p>
           {afterPair(unit, pair).map(note => <aside class="qp-qualification" data-note-id={note.id} data-note-placement={note.placement} lang="en" dir="ltr">

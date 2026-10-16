@@ -2565,13 +2565,13 @@
     }
 
     // A distinct qualified edition; chapter coverage comes only from its index.
-    var qualifiedNamespace = torah >= 1 && torah <= 17 ? 'qualified-1-109' : 'qualified-110-171';
-    var selectedIndex = qualifiedNamespace === 'qualified-1-109' ? earlierQualifiedParshaIndex : qualifiedParshaIndex;
-    var qualifiedChapter = bookId === 'tanach-bereishit' && part === 1 && selectedIndex &&
-      selectedIndex.chapters && selectedIndex.chapters[String(torah)];
-    if (qualifiedChapter) {
-      sources.push({id: 'breslov-parsha-' + qualifiedNamespace, label: 'Qualified Breslov', labelHe: 'ברסלב — ליקוטים מסויגים',
-        url: qualifiedChapter.url, type: 'commentary'});
+    var matches = bookId === 'tanach-bereishit' && part === 1 ? qualifiedNamespaces.filter(function (namespace) {
+      return qualifiedParshaIndexes[namespace] && qualifiedParshaIndexes[namespace].chapters[String(torah)];
+    }) : [];
+    if (matches.length) {
+      var urls = matches.map(function (namespace) { return qualifiedParshaIndexes[namespace].chapters[String(torah)].url; });
+      sources.push({id: 'breslov-parsha-' + matches[0], label: 'Qualified Breslov', labelHe: 'ברסלב — ליקוטים מסויגים',
+        url: urls[0], qualifiedUrls: urls, type: 'commentary'});
     }
 
     // === Likutay Nanach Vol 1-3 — volume-level commentary for all books ===
@@ -2590,8 +2590,8 @@
     return sources;
   }
 
-  var qualifiedParshaIndex = null;
-  var earlierQualifiedParshaIndex = null;
+  var qualifiedNamespaces = ['qualified-1-109', 'qualified-110-171', 'qualified-172-269'];
+  var qualifiedParshaIndexes = {};
   var qualifiedParshaIndexAttempted = false;
   function setupCommentaryPanel() {
     // A server-rendered CommentarySidebar is authoritative. Do not create a
@@ -2600,13 +2600,12 @@
     var ctx = getReaderContext();
     if (ctx && ctx.bookId === 'tanach-bereishit' && !qualifiedParshaIndexAttempted) {
       qualifiedParshaIndexAttempted = true;
-      Promise.all(['qualified-1-109', 'qualified-110-171'].map(function (namespace) {
-        return fetch('/data/breslov-parsha/' + namespace + '/index.json?v=parsha-all-processed-20261012-r1')
+      Promise.all(qualifiedNamespaces.map(function (namespace) {
+        return fetch('/data/breslov-parsha/' + namespace + '/index.json?v=parsha-author-20261016-r2')
           .then(function (r) { if (!r.ok) throw new Error('Qualified index unavailable'); return r.json(); })
           .then(function (index) {
             if (index.schema !== 'qualified-parsha-three-consumer-index/v1') return;
-            if (namespace === 'qualified-1-109') earlierQualifiedParshaIndex = index;
-            else qualifiedParshaIndex = index;
+            qualifiedParshaIndexes[namespace] = index;
           }).catch(function () { /* Other editions and unrelated commentary remain independent. */ });
       })).then(setupCommentaryPanel);
       return;
@@ -2691,14 +2690,14 @@
 
     // Check each source exists by attempting fetch (HEAD or small fetch)
     pendingSources.forEach(function(source) {
-      fetch(source.url, { method: 'GET' })
+      fetchCommentarySource(source)
         .then(function(r) {
           if (r.ok) {
             return r.json().then(function(data) {
               // Cache the data
               commentaryState.loaded[source.id] = data;
               // Check if it has actual content (segments with text)
-              if (data && data.segments && data.segments.length > 0) {
+              if (data && ((data.segments && data.segments.length > 0) || (data.schema === 'qualified-parsha-chapter-commentary/v1' && data.units && data.units.length))) {
                 validSources.push(source);
               }
               checked++;
@@ -2779,6 +2778,34 @@
     }
   }
 
+  function fetchCommentarySource(source) {
+    if (!source.qualifiedUrls) return fetch(source.url);
+    return Promise.all(source.qualifiedUrls.map(function (url) {
+      return fetch(url).then(function (r) {
+        if (!r.ok) throw Error('Qualified source unavailable');
+        return r.json();
+      });
+    })).then(function (rows) {
+      var units = new Map(), notes = new Map();
+      rows.forEach(function (row) {
+        if (row.schema !== 'qualified-parsha-chapter-commentary/v1') throw Error('Invalid qualified source');
+        (row.units || []).concat(row.apparatus || []).forEach(function (unit) {
+          if (units.has(unit.id) && JSON.stringify(units.get(unit.id)) !== JSON.stringify(unit)) throw Error('Conflicting qualified owner');
+          units.set(unit.id, unit);
+        });
+        (row.globalQualifications || []).forEach(function (note) {
+          if (notes.has(note.id) && JSON.stringify(notes.get(note.id)) !== JSON.stringify(note)) throw Error('Conflicting qualified note');
+          notes.set(note.id, note);
+        });
+      });
+      var data = Object.assign({}, rows[0], {units: Array.from(units.values()), apparatus: [],
+        globalQualifications: Array.from(notes.values()),
+        scopeNotice: Array.from(new Set(rows.map(function (r) { return r.scopeNotice; }).filter(Boolean))).join('\n\n'),
+        apparatusScopeNotice: Array.from(new Set(rows.map(function (r) { return r.apparatusScopeNotice; }).filter(Boolean))).join('\n\n')});
+      return {ok: true, json: function () { return Promise.resolve(data); }};
+    });
+  }
+
   function loadCommentary(source) {
     var body = document.getElementById('commentary-body');
     if (!body) return;
@@ -2808,7 +2835,7 @@
 
     body.innerHTML = '<div class="commentary-loading">Loading...</div>';
 
-    fetch(source.url)
+    fetchCommentarySource(source)
       .then(function(r) { return r.json(); })
       .then(function(data) {
         commentaryState.loaded[source.id] = data;
@@ -2871,7 +2898,12 @@
         if (earlier) html += '<p dir="ltr">' + safe(['title', 'title-metadata'].includes(role(unit)) ? 'Source title' : role(unit) === 'main' ? 'Main teaching' : role(unit) === 'note' ? 'Printed note' : ['aside', 'compiler-aside', 'compiler_aside'].includes(role(unit)) ? 'Compiler aside' : 'Printed apparatus') + (owner(unit) != null ? ' · Source owner: ' + safe(owner(unit)) : role(unit) !== 'main' ? ' · Source owner unassigned' : '') + '</p>';
         if (earlier && role(unit) === 'main' && !unit.verseRef) html += '<p dir="ltr">Independent weekly source context — no verse or daily assignment (not Genesis 3:1).</p>';
         pairs.forEach(function (pair) {
-          html += '<div data-pair-id="' + safe(pair.id) + '"><p class="commentary-he" data-qualified-text="he" dir="rtl" lang="he" style="white-space:pre-wrap">' + safe(pair.he) + '</p>' +
+          var statuses = ['he', 'en'].map(function (language) {
+            var value = pair.sourceStatus && pair.sourceStatus[language], status = typeof value === 'string' ? value : value && value.status;
+            if (!status) return '';
+            return '<aside class="qualified-source-qualification" data-field-language="'+language+'" data-source-status="'+safe(status)+'">'+(language==='he'?'Hebrew':'English')+' — '+safe(status==='held'||status.indexOf('held-')===0?'unresolved source reading; see qualifications':status.replace(/-/g,' '))+'</aside>';
+          }).join('');
+          html += '<div data-pair-id="' + safe(pair.id) + '">' + statuses + '<p class="commentary-he" data-qualified-text="he" dir="rtl" lang="he" style="white-space:pre-wrap">' + safe(pair.he) + '</p>' +
             '<p class="commentary-en" data-qualified-text="en" dir="ltr" lang="en" style="white-space:pre-wrap">' + safe(pair.en) + '</p>' +
             notesHTML(notes.filter(function (note) { return note.placement === 'after_pair' && note.pair_id === pair.id; })) + '</div>';
         });
