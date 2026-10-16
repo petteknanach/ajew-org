@@ -24,6 +24,22 @@ function code(p,predecessor=false){
  }
  return !predecessor&&fs.existsSync(path.join(REPAIR,p))?fs.readFileSync(path.join(REPAIR,p),'utf8'):original(p);
 }
+// Historical code requires its actual authenticated predecessor policy inputs.
+// Feeding today's author-revised policy to old fixed-pin code fails too early
+// and cannot reproduce the newest-edition503 defect this fixture preserves.
+const predecessorSourcePins={
+ 'public/reader/chumash-lh/part-1/torah-2.json':'829f0365b0e69674399da81b7bdc62bc53d91694d66e761b72510a6c08147ff5',
+ 'public/reader/chumash-lh/part-1/torah-3.json':'23045e573d6c66d971cc4c0e444b5a2526ad2abf540456225f48431a53812eaa',
+ 'public/reader/chok/noach-source-notes.json':'ad4e08beded1c460a9185377328969ee78371a0b8e78b46eb1533ba5fdfce2c5',
+ 'public/reader/chok/lech-lichuh-breslov-projections.json':'bc538f1cb338b813eb9a4f97e27bedf714ca3fbc55d851f5a483ad7da41af5c3',
+ 'public/reader/chok/breslov-reading-notes.json':'225902cfe308cb529a9c01d1aa98de972d336b4285fc83e47650b99932706080'
+};
+function transport(p,predecessor){
+ if(!predecessor||!Object.hasOwn(predecessorSourcePins,p))return original(p);
+ const raw=cp.execFileSync('git',['show','513ab13d86abb63ae9f49ffbb2676f5715856463:'+p],{cwd:FIXTURE,maxBuffer:32*1024*1024});
+ const hash=require('node:crypto').createHash('sha256');for(let i=0;i<raw.length;i+=4096)hash.update(raw.subarray(i,i+4096));
+ assert.equal(hash.digest('hex'),predecessorSourcePins[p],'historical source '+p);return raw.toString('utf8');
+}
 const ns=['qualified-1-109','qualified-110-171','qualified-172-269'];
 const indexes=ns.map(n=>JSON.parse(original('public/data/breslov-parsha/'+n+'/index.json')));
 const masters=indexes.map(i=>JSON.parse(original('public'+i.masterUrl)));
@@ -35,7 +51,7 @@ function inject(url,raw,fault){if(!fault||url!==fault.url)return raw;
 }
 function helper(predecessor=false,fault){const h=sandbox(documentFor('<html><body></body></html>'),'/reader/chok/',()=>{});
  vm.runInContext(code('public/chok-verse-breslov.js',predecessor),h.box);
- const loader=async url=>{const u=url.split('?')[0],raw=original('public'+u);if(raw===null)throw Error('404');return inject(u,raw,fault);};
+ const loader=async url=>{const u=url.split('?')[0],raw=transport('public'+u,predecessor);if(raw===null)throw Error('404');return inject(u,raw,fault);};
  return {h,api:h.box.window.ChokVerseBreslov,loader};
 }
 async function loaded(predecessor=false,fault){const run=helper(predecessor,fault);try{await run.api.load(run.loader,JSON.parse(original('public/reader/chumash-lh/part-1/torah-2.json')),JSON.parse(original('public/reader/chok/noach-source-notes.json')));return run;}catch(e){run.h.close();throw e;}}
@@ -43,7 +59,7 @@ async function boot(week,fault,predecessor=false,focused=false){
  const template=code('src/pages/reader/chok.astro',predecessor),inner=template.slice(template.indexOf('  <div class="ck-wrap"'),template.indexOf('</Layout>'));
  const d=documentFor('<html><body>'+inner+'</body></html>');let active=0,peak=0,failed=0;const requests=[];
  const h=sandbox(d,'/reader/chok/',async url=>{const u=String(url).split('?')[0];requests.push(u);active++;peak=Math.max(peak,active);
-  try{await new Promise(r=>setTimeout(r,1));let raw=original('public'+u);try{raw=inject(u,raw,fault);}catch(e){failed++;return {ok:false,status:Number(e.message),text:async()=>'',json:async()=>null};}
+  try{await new Promise(r=>setTimeout(r,1));let raw=transport('public'+u,predecessor);try{raw=inject(u,raw,fault);}catch(e){failed++;return {ok:false,status:Number(e.message),text:async()=>'',json:async()=>null};}
    return {ok:raw!==null,status:raw===null?404:200,text:async()=>raw,json:async()=>JSON.parse(raw)};
   }finally{active--;}
  });
@@ -70,17 +86,26 @@ function assertOwners(doc,units){const owners=doc.querySelectorAll('[data-bop-un
 test('preserve reviewer observation: predecessor newest master503 aborts actual Noach init',async()=>{
  const r=await boot('נח',{url:newest+'master.json',status:503},true);try{assert(!r.d.querySelector('[data-sec="torah"]'));assert(r.d.querySelector('.ck-error').textContent.includes('Could not load schedule'));assert.equal(r.failed,3);console.log('PRESERVED_DEFECT_OBSERVATION '+JSON.stringify({failedRequests:r.failed,torahRendered:false,error:r.d.querySelector('.ck-error').textContent}));}finally{r.h.close();}
 });
-test('healthy exact earlier239 selection and unchanged Noach/Lech117-policy rendering',async()=>{
- const a=await loaded(),b=await loaded(true);try{
+test('healthy exact parent-selected earlier239 and author-rebound Noach/Lech116 policy',async()=>{
+ const a=await loaded();try{
   const selected=await a.api.loadQualified(a.loader),old=masters.slice(0,2).flatMap(m=>m.units);assert.equal(old.length,239);
   let selectedCount=0;for(const index of indexes.slice(0,2))for(const [slug,c] of Object.entries(index.parshas)){
    if(['noach','lech-lecha'].includes(slug))continue;
    const expected=[...c.mainIds,...c.apparatusIds].map(id=>old.find(u=>u.id===id));assert.deepEqual(JSON.parse(JSON.stringify(selected[c.titleHe].source.units)),expected);selectedCount+=expected.length;
   }
-  for(const week of ['בראשית','נח','לך לך','וירא','חיי שרה','תולדות','ויצא']){assert.equal(a.api.weekly(week),b.api.weekly(week),'healthy unchanged '+week);assert.equal(a.api.availability(week),'');}
-  const policy=JSON.parse(original('public/reader/chok/breslov-reading-notes.json'));assert.equal(policy.notes.length,117);
-  console.log('EARLIER239_AND_117 '+JSON.stringify({sourceOwners:old.length,chokQualifiedOwnersExcludingPolicyIslands:selectedCount,unchangedPolicyDispositions:policy.notes.length}));
- }finally{a.h.close();b.h.close();}
+  const policy=JSON.parse(original('public/reader/chok/breslov-reading-notes.json'));assert.equal(policy.notes.length,116);
+  assert(!policy.notes.some(n=>n.id==='C-P087-01::qualification::/qualifications/0'));
+  assert.equal(policy.notes.find(n=>n.id==='C-P099-02::qualification::/currentQualifications/0').readerText,'The Yiddish designation אָן זֶעצִירְס is retained literally; no English expansion is supplied.');
+  for(const week of ['בראשית','נח','לך לך','וירא','חיי שרה','תולדות','ויצא'])assert.equal(a.api.availability(week),'');
+  // Earlier policy evidence predates the author's two decisions. Test exact current
+  // selected sources and all current projected notes, not equality to stale prose.
+  for(const [week,num,portion] of [['נח',2,'Noach'],['לך לך',3,'Lech']]){
+   const src=JSON.parse(original('public/reader/chumash-lh/part-1/torah-'+num+'.json'));
+   const expected=src.units.map(u=>({...u,qualifications:u.qualifications.map(q=>{const note=policy.notes.find(n=>n.portion===portion&&n.id===q.id&&n.owner===u.id);assert(note);assert(note.readerText===null||typeof note.readerText==='string');return {...q,text:note.readerText};}).filter(q=>q.text!==null)}));
+   assertOwners(documentFor(a.api.weekly(week)),expected);
+  }
+  console.log('EARLIER239_AND_AUTHOR_POLICY116 '+JSON.stringify({sourceOwners:old.length,chokQualifiedOwnersExcludingPolicyIslands:selectedCount,selectedPolicyDispositions:policy.notes.length}));
+ }finally{a.h.close();}
 });
 test('healthy complete118 in narrow real-template full init of each of five weeks',async()=>{
  let owners=0,pairs=0,notes=0,statuses=0,held=0;
@@ -89,7 +114,7 @@ test('healthy complete118 in narrow real-template full init of each of five week
   const ss=weekly.querySelectorAll('[data-source-status]');statuses+=ss.length;held+=ss.filter(n=>n.getAttribute('data-source-status').startsWith('held')).length;
   for(const u of selected)for(const p of u.pairs)for(const lang of ['he','en']){const n=weekly.querySelectorAll('[data-source-status]').find(n=>n.getAttribute('data-note-owner')===u.id&&n.getAttribute('data-note-pair')===p.id&&n.getAttribute('data-field-language')===lang);assert(n);assert.equal(n.getAttribute('data-source-status'),p.sourceStatus[lang]);}
  }finally{r.h.close();}}
- assert.deepEqual({owners,pairs,notes,statuses,held},{owners:118,pairs:732,notes:1738,statuses:1464,held:435});console.log('ACTUAL_TEMPLATE_HEALTHY118 '+JSON.stringify({owners,pairs,notes,statuses,held}));
+ assert.deepEqual({owners,pairs,notes,statuses,held},{owners:118,pairs:732,notes:1738,statuses:1464,held:413});console.log('ACTUAL_TEMPLATE_HEALTHY118 '+JSON.stringify({owners,pairs,notes,statuses,held}));
 });
 const faults=[
  {name:'newest index503',url:newest+'index.json',status:503},
@@ -150,6 +175,6 @@ test('synchronous acquisition and validation errors are observed per edition',as
 });
 test('changed template compiles without ABI transformation; three script pins only',async()=>{
  const raw=code('src/pages/reader/chok.astro'),compiler=dependencies('@astrojs/compiler');const compiled=await compiler.transform(raw,{filename:'src/pages/reader/chok.astro'});assert(!compiled.diagnostics.some(x=>x.severity===1));
- for(const p of ['chok.js','chok-verse-breslov.js','chok-source-reader.js']){new vm.Script(code('public/'+p));assert(raw.includes('/'+p+'?v=parsha-completion-20261016-c1-r1'));}
- assert.equal((raw.match(/parsha-completion-20261016-c1-r1/g)||[]).length,3);
+ for(const p of ['chok.js','chok-verse-breslov.js','chok-source-reader.js']){new vm.Script(code('public/'+p));assert(raw.includes('/'+p+'?v=parsha-author-20261016-r2'));}
+ assert.equal((raw.match(/parsha-author-20261016-r2/g)||[]).length,3);
 });

@@ -1,10 +1,28 @@
-// Ordinary portable consumer regressions. ALL bodies below are plainly synthetic.
-// No private source authority, source paths, or source acceptance is required/claimed.
+// Portable consumer regressions: synthetic fixtures remain explicitly labeled.
+// Real public exports are exercised separately; no private source authority or
+// whole-book/source acceptance is required or claimed. Native DOM is modeled.
 const test = require('node:test'), assert = require('node:assert/strict');
 const fs = require('node:fs'), path = require('node:path'), vm = require('node:vm');
 const {documentFor, sandbox, until, tick, visible, dependencies} = require('./qualified-earlier-parsha-test-dom.cjs');
 const ROOT = process.env.EARLIER_CONSUMER_ROOT || path.resolve(__dirname, '..');
 const source = f => fs.readFileSync(path.join(ROOT, f), 'utf8');
+// Import the real module, including its fs-backed discovery/selection logic.
+const qualifiedAPI = require(path.join(ROOT, 'src/lib/qualified-parsha.mjs'));
+const json = f => JSON.parse(source(f));
+const indexes = () => qualifiedAPI.qualifiedIndexes(ROOT);
+const plain = value => JSON.parse(JSON.stringify(value));
+const declaredQualified = {
+ ...qualifiedAPI,
+ qualifiedIndexes: () => indexes(),
+ qualifiedParsha: slug => qualifiedAPI.qualifiedParsha(slug, indexes(), ROOT),
+ qualifiedChapter: ch => qualifiedAPI.qualifiedChapter(ch, indexes(), ROOT),
+};
+const ROUTES = {bereishit:'1/1',noach:'1/2','lech-lecha':'1/3',vayeira:'1/4','chayei-sarah':'1/5',toldot:'1/6',vayeitzei:'1/7',vayishlach:'1/8',vayeishev:'1/9',mikeitz:'1/10',vayigash:'1/11',vayechi:'1/12'};
+function emittedChokScripts() {
+ const scripts=[...source('src/pages/reader/chok.astro').matchAll(/<script src="([^"?]+)[^"]*" defer><\/script>/g)].map(m=>'public'+m[1]);
+ assert.deepEqual(scripts.slice(-3),['public/chok-verse-breslov.js','public/chok-source-reader.js','public/chok.js']);
+ return scripts;
+}
 /** @typedef {{id:string, he:string, en:string}} Pair */
 /** @typedef {{id:string,text:string,placement:string,pair_id:string|null,aliases:Array<{id:string}>}} Qualification */
 /** @typedef {{id:string,kind:string,sourceKind?:string,parsha:string,owner_main_id:string|null,verseRef:object|null,pairs:Pair[],qualifications:Qualification[]}} Unit */
@@ -40,21 +58,45 @@ function verify(html, scope=all, chok=false) {
     const matches=nodes.filter(n=>n.getAttribute('data-source-id')===u.id);assert.equal(matches.length,1,u.id);const n=matches[0];
     const pairs=n.querySelectorAll('[data-pair-id]');assert.equal(pairs.length,u.pairs.length);
     u.pairs.forEach((pair,i)=>{assert.equal(pairs[i].getAttribute('data-pair-id'),pair.id);assert.equal(pairs[i].querySelector(chok?'.ck-he':'.commentary-he').textContent,pair.he);assert.equal(pairs[i].querySelector(chok?'.ck-en':'.commentary-en').textContent,pair.en);});
-    for(const q of u.qualifications) {const ns=n.querySelectorAll('[data-note-id]').filter(e=>e.getAttribute('data-note-id')===q.id);assert.equal(ns.length,1);const found=ns[0];assert.equal(found.querySelector('p').textContent,q.text);assert.equal(found.getAttribute('data-note-placement'),q.placement);assert.equal(found.closest('[data-pair-id]')?.getAttribute('data-pair-id') || null,q.placement==='after_pair'?q.pair_id:null);for(const alias of q.aliases)assert(found.textContent.includes(alias.id));assert(!found.closest(chok?'.ck-he':'.commentary-he'));assert(!found.closest(chok?'.ck-en':'.commentary-en'));}
+    const notes=n.querySelectorAll('[data-note-id]');assert.equal(notes.length,u.qualifications.length,'No lost or extra qualification occurrences');
+    // A documentary ID can have multiple distinct notices even at one pair.
+    // Preserve their exact scoped multiplicity and source order, not ID uniqueness.
+    for(const [index,q] of u.qualifications.entries()) {
+      const pair=q.placement==='after_pair'&&u.pairs.some(p=>p.id===q.pair_id)?q.pair_id:null;
+      const same=other=>other.id===q.id&&other.placement===q.placement&&(other.placement==='after_pair'&&u.pairs.some(p=>p.id===other.pair_id)?other.pair_id:null)===pair;
+      const ns=notes.filter(e=>e.getAttribute('data-note-id')===q.id&&e.getAttribute('data-note-placement')===q.placement&&(e.closest('[data-pair-id]')?.getAttribute('data-pair-id')||null)===pair);
+      assert.equal(ns.length,u.qualifications.filter(same).length,'Exact ID/placement/pair multiplicity '+u.id+' '+q.id);
+      const found=ns[u.qualifications.slice(0,index).filter(same).length];assert(found);assert.equal(found.querySelector('p').textContent,q.text);
+      assert.equal(found.closest('[data-source-id]').getAttribute('data-source-id'),u.id,'Qualification occurrence owner');assert(!found.closest(chok?'.ck-he':'.commentary-he'));assert(!found.closest(chok?'.ck-en':'.commentary-en'));
+    }
   }
   return d;
 }
 function select(slug='bereishit', data=null, override={}) {
- const reads=[], units=all.map(u=>({...u,parsha:slug}));
- const index={parshas:{[slug]:{mainIds:units.filter(u=>u.kind==='main').map(u=>u.id),apparatusIds:units.filter(u=>u.kind==='apparatus').map(u=>u.id)}}};
- Object.assign(index.parshas[slug],override);
- const box={Astro:{props:{slug,dataset:data}},process:{cwd:()=>'/synthetic-project'},path,fs:{readFileSync(f){reads.push(f);if(f.endsWith('index.json'))return JSON.stringify(index);if(f.endsWith('master.json'))return JSON.stringify({...chapter,apparatus:[],units});throw Error('Unexpected file');}}};
+ const reads=[], realRead=fs.readFileSync;
+ const box={Astro:{props:{slug,dataset:data}},...declaredQualified,
+  qualifiedParsha(value) {
+   const current=indexes().map(row=>({...row,index:{...row.index,parshas:{...row.index.parshas}}}));
+   for(const row of current)if(row.index.parshas[value])row.index.parshas[value]={...row.index.parshas[value],...override};
+   return qualifiedAPI.qualifiedParsha(value,current,ROOT);
+  }};
  const code=source('src/components/QualifiedParsha.astro').split('---')[1].replace(/^import .*;\r?\n/gm,'');
- vm.createContext(box);vm.runInContext(code+'\nglobalThis.value={selection,units,mains,apparatus,readerPath,afterPair,afterOwner};',box);return {value:box.value,reads};
+ vm.createContext(box);
+ // Transparent I/O witness only: no synthetic success values or fs mutation on disk.
+ fs.readFileSync=function(f,...args){reads.push(String(f));return realRead.call(this,f,...args);};
+ try{vm.runInContext(code+'\nglobalThis.value={selection,units,mains,apparatus,readerPath,afterPair,afterOwner};',box);}finally{fs.readFileSync=realRead;}
+ return {value:box.value,reads};
 }
 test('component original namespace RED: earlier three loaders and actual Reader paths; later namespace compatible',()=>{
- for(const [slug,url] of [['bereishit','1/1'],['noach','1/2'],['lech-lecha','1/3'],['vayeira','1/4']]) {const s=select(slug);assert(s.reads.every(p=>p.includes(slug==='vayeira'?'/qualified-110-171/':'/qualified-1-109/')));assert.equal(s.value.readerPath,url);assert.equal(s.value.units.length,all.length);}
- assert.throws(()=>select('bereishit',null,{mainIds:['missing']}),/Missing qualified source owner/);assert.equal(select().value.units.length,all.length);
+ assert.deepEqual(plain(qualifiedAPI.PARSHA_READER),ROUTES);
+ for(const [slug,url] of Object.entries(ROUTES)) {
+  const selected=select(slug), rows=indexes().filter(r=>r.index.parshas[slug]);
+  const expected=rows.flatMap(r=>{const c=r.index.parshas[slug],m=json('public'+r.index.masterUrl);return [...c.mainIds,...c.apparatusIds].map(id=>[...(m.units||[]),...(m.apparatus||[])].find(u=>u.id===id));});
+  assert.equal(selected.value.readerPath,url);assert.deepEqual(plain(selected.value.units),expected);
+  for(const row of rows)assert(selected.reads.includes(path.join(ROOT,'public',row.index.masterUrl)),'Actual namespaced master read');
+ }
+ assert.throws(()=>select('bereishit',null,{mainIds:['missing']}),/Missing qualified source owner/);
+ assert.deepEqual(plain(select().value.units),plain(declaredQualified.qualifiedParsha('bereishit').selection.units));
 });
 test('component roles RED: normalized sourceKind and raw kind; all source arrays; context intact',()=>{
  const v=select('bereishit',chapter).value;assert.equal(v.mains.length,5);assert.equal(v.apparatus.length,4);const normalized=structuredClone(chapter);normalized.units.find(u=>u.id===title.id).kind='main';normalized.apparatus[0].kind='main';assert.equal(select('bereishit',normalized).value.mains.length,5);
@@ -72,7 +114,7 @@ test('Reader original roles/context RED: complete separate arrays and exact qual
  const raw=structuredClone(chapter);raw.units.forEach(u=>{u.kind=u.sourceKind;delete u.sourceKind;});verify(readerHTML(raw));
 });
 test('Chok original context gate RED: all four null-ref mains conserved, closed weekly group',()=>{
- const r=chokHTML();try{const d=verify(r.html,all,true);const ctx=d.querySelector('.ck-breslov-context');assert(ctx && !ctx.open);assert(ctx.textContent.includes('no verse or daily assignment'));assert.equal(ctx.querySelectorAll('.ck-qualified-unit').length,4);for(const u of context){assert.equal(u.ref,undefined);assert.equal(u.verseRef,null);assert.equal(d.querySelector('[data-source-id="'+u.id+'"]').getAttribute('data-source-kind'),'main');}}finally{r.env.close();}
+ const r=chokHTML();try{const d=verify(r.html,all,true);const ctx=d.querySelector('.ck-breslov-context');assert(ctx && !ctx.open);assert.equal(ctx.querySelectorAll('[data-pair-id]').length,context.reduce((n,u)=>n+u.pairs.length,0));assert(!ctx.closest('.ck-verse'));for(const n of ctx.querySelectorAll('[data-source-id]'))assert.equal(n.getAttribute('data-allocation-scope'),'weekly-context');assert.equal(ctx.querySelectorAll('.ck-qualified-unit').length,4);for(const u of context){assert.equal(u.ref,undefined);assert.equal(u.verseRef,null);assert.equal(d.querySelector('[data-source-id="'+u.id+'"]').getAttribute('data-source-kind'),'main');}}finally{r.env.close();}
 });
 test('Chok original note-owner/role gate RED: note owner retained, null stays null, title/aside not mains',()=>{
  const raw=structuredClone(carrier);for(const u of [...raw.breslov,...raw.breslovApparatus,...raw.breslovContext]){u.kind=u.sourceKind;delete u.sourceKind;}const rawRun=chokHTML(raw);try{assert(documentFor(rawRun.html).querySelector('[data-source-kind="title"]'));}finally{rawRun.env.close();}
@@ -100,30 +142,80 @@ test('Reader FULL init namespace gate RED: Genesis1..17 current, 18..31 old, ser
  }finally{r.env.close();}
  const s=await readerRun(3,true);try{assert(!s.d.getElementById('commentary-panel'));assert(!s.f.requests.some(x=>x.includes('qualified-')));}finally{s.env.close();}
 });
+function projectedWeekly(slug) {
+ const runtime=json('public/reader/chumash-lh/part-1/torah-'+(slug==='noach'?2:3)+'.json');
+ const policy=json('public/reader/chok/breslov-reading-notes.json'), portion=slug==='noach'?'Noach':'Lech';
+ const rows=policy.notes.filter(q=>q.portion===portion);
+ const units=runtime.units.map(u=>({...u,qualifications:u.qualifications.flatMap(q=>{
+  const matches=rows.filter(r=>r.id===q.id&&r.owner===u.id&&r.pair_id===q.pair_id&&r.placement===q.placement);
+  assert.equal(matches.length,1,'Exact declared projection disposition '+q.id);
+  return matches[0].readerText===null?[]:[{...q,text:matches[0].readerText}];
+ })}));
+ assert.equal(rows.length,runtime.units.reduce((n,u)=>n+u.qualifications.length,0));
+ return {runtime,units,scope:policy.scopes[portion]};
+}
+function verifyWeekly(html, expected) {
+ const d=documentFor(html),nodes=d.querySelectorAll('[data-bop-unit]');assert.equal(nodes.length,expected.units.length,'Every current weekly owner once');
+ for(const u of expected.units) {
+  const matches=nodes.filter(n=>n.getAttribute('data-bop-unit')===u.id);assert.equal(matches.length,1,u.id);const n=matches[0];
+  assert.equal(n.getAttribute('data-source-kind'),u.sourceKind||u.source_kind||(u.kind==='apparatus'?'note':u.kind));
+  assert.equal(n.getAttribute('data-owner-main-id'),String(u.owner_main_id??u.ownerMainId??'null'));
+  assert.equal(n.getAttribute('data-verse-ref'),JSON.stringify(u.verseRef));
+  const ps=n.querySelectorAll('[data-pair-id]');assert.equal(ps.length,u.pairs.length);
+  u.pairs.forEach((p,i)=>{assert.equal(ps[i].getAttribute('data-pair-id'),p.id);for(const lang of ['he','en'])assert.equal(ps[i].querySelector('.ck-'+lang).textContent,p[lang]);});
+  const qs=n.querySelectorAll('[data-note-id]');assert.equal(qs.length,u.qualifications.length);
+  u.qualifications.forEach((q,i)=>{const el=qs[i];assert.equal(el.getAttribute('data-note-id'),q.id);assert.equal(el.querySelector('[data-note-text]').textContent,q.text);assert.equal(el.getAttribute('data-note-owner'),u.id);assert.equal(el.getAttribute('data-note-pair'),q.pair_id===null?'null':q.pair_id);assert.equal(el.getAttribute('data-note-placement'),q.placement);assert.equal(el.getAttribute('data-note-display-placement'),'owner-local');assert(!el.closest('.ck-qualified-disclosure'));assert(!el.closest('.ck-he'));assert(!el.closest('.ck-en'));});
+ }
+ const scope=d.querySelector('[data-breslov-scope]');assert(scope);assert.equal(scope.textContent,expected.scope);
+ return d;
+}
 async function fullChok() {
- const schedule={weeks:Object.fromEntries(WEEKS.map(w=>[w,{slug:'tanach-bereishit',days:Object.fromEntries(DAY_NAMES.map(d=>[d,{torah:{from:{c:1,v:1},to:{c:1,v:1}}}]))}]))};
- const responses={'/reader/chok/schedule.json':schedule,'/reader/chok/shabbos-map.json':[], '/reader/medooyuk/tanach-bereishit.json':{ch:{1:{1:{t:['סינתטי','פסוק'],m:[],k:[]}}}},'/reader/tanachen/tanach-bereishit.json':{ch:{1:['SYNTHETIC verse English']}}};
- for(const w of WEEKS)for(const slug of DAY_SLUGS)responses['/reader/chok/commentary/'+encodeURIComponent(w)+'-'+slug+'.json']=w==='נח'?carrier:{...carrier,breslovWeeklySources:null};
- for(const url of ['/reader/chok/mishna-bonus.json','/reader/chok/mussar.json','/reader/chok/day-comm.json','/reader/chok/kavanos-chok.json','/reader/chok/kavanos-actual.json','/reader/chok/miluy-kavana.json','/reader/chok/hk-verses.json','/reader/chok/kavanos-torah.json','/reader/medooyuk/targum/tanach-bereishit.json','/reader/rashi/tanach-bereishit.json','/reader/rashi/en/tanach-bereishit.json'])responses[url]={weeks:{},days:{},ch:{}};
- const f=fixtureFetcher(responses);const ids=['ck-date','ck-week','ck-content','ck-parsha','ck-mode','ck-medooyuk','ck-targum','ck-rashi','ck-commentary','ck-tanachen','ck-carrymode','ck-kavanamode','ck-size','ck-legend','ck-days'];
- const d=documentFor('<html><body>'+ids.map(id=>'<'+(id==='ck-parsha'?'select':id==='ck-content'||id==='ck-days'?'div':'input')+' id="'+id+'"></'+(id==='ck-parsha'?'select':id==='ck-content'||id==='ck-days'?'div':'input')+'>').join('')+'</body></html>');
- const env=sandbox(d,'/reader/chok/',f);env.box.location.search='?week='+encodeURIComponent('נח')+'&day='+encodeURIComponent(DAY_NAMES[0]);
- // Synthetic annotation dependency only; actual annotation acceptance remains a parent gate.
- env.box.window.AjewMarkedHebrew={applyBook:d=>d,renderVerse:v=>v.t.join(' ')};
- vm.runInContext(source('public/chok.js'),env.box);try{await until(()=>d.querySelector('.ck-breslov') && !d.querySelector('.ck-loading'));}catch(e){env.close();throw e;}return {d,env,f};
+ const template=source('src/pages/reader/chok.astro'),inner=template.slice(template.indexOf('  <div class="ck-wrap"'),template.indexOf('</Layout>'));
+ const requests=[], f=async url=>{const key=String(url).split('?')[0];requests.push(key);const file=path.join(ROOT,'public',key);const ok=fs.existsSync(file);const raw=ok?fs.readFileSync(file,'utf8'):'';return {ok,status:ok?200:404,text:async()=>raw,json:async()=>JSON.parse(raw)};};f.requests=requests;
+ const d=documentFor('<html><body>'+inner+'</body></html>'),env=sandbox(d,'/reader/chok/',f);
+ env.box.location.search='?week='+encodeURIComponent('נח')+'&day='+encodeURIComponent(DAY_NAMES[0]);
+ try{for(const file of emittedChokScripts())vm.runInContext(file==='public/chok.js'?withExport(source(file),'state'):source(file),env.box,{filename:file});await until(()=>d.querySelector('#ck-breslov-offering-body .ck-breslov')&&!d.querySelector('.ck-loading'),30000);assert(!d.querySelector('.ck-error'));return {d,env,f,state:env.box.__qa.state};}catch(e){env.close();throw e;}
 }
 test('Chok FULL init/lifecycle gate RED: weekly sources on7Noach days, native-model closed/visible, HE/EN qualifiers, week change',async()=>{
- const r=await fullChok();try{const body=r.d.getElementById('ck-content');verify(body.innerHTML,all,true);let root=body.querySelector('.ck-breslov');for(const det of root.querySelectorAll('details'))assert(!det.open);assert(!root.open);
- const en=root.querySelector('[data-ck-source-lang="en"]');assert(en && !visible(en));root.querySelector('summary').click();assert(visible(en));const mainDisclosure=root.querySelector('.ck-qualified-disclosure');assert(mainDisclosure && !mainDisclosure.open);assert(!visible(mainDisclosure.querySelector('.ck-he')));mainDisclosure.querySelector('summary').click();assert(visible(mainDisclosure.querySelector('.ck-he')));en.click();assert(root.querySelectorAll('.ck-he').every(p=>p.hidden));assert(root.querySelectorAll('.ck-en').every(p=>!p.hidden));for(const q of root.querySelectorAll('.ck-source-qualification'))assert(!q.hidden);root.querySelector('[data-ck-source-lang="he"]').click();assert(root.querySelectorAll('.ck-en').every(p=>p.hidden));root.querySelector('[data-ck-source-lang="both"]').click();assert(root.querySelectorAll('.ck-he,.ck-en').every(p=>!p.hidden));
- const weekly=root.querySelector('.ck-breslov-weekly-sources');assert(weekly);weekly.querySelector('summary').click();assert(visible(weekly.querySelector('.ck-weekly-source summary')));const detail=weekly.querySelector('.ck-weekly-source');assert(!visible(detail.querySelector('.ck-he')));detail.querySelector('summary').click();assert(visible(detail.querySelector('.ck-he')));detail.querySelector('summary').click();assert(!visible(detail.querySelector('.ck-he')));
- for(let i=0;i<7;i++){r.d.getElementById('ck-days').children[i].click();await until(()=>!body.querySelector('.ck-loading'));assert(body.querySelector('.ck-breslov-weekly-sources'),'Noach day '+i);assert(!body.querySelector('.ck-breslov').open);verify(body.innerHTML,all,true);}
- const toggle=r.d.getElementById('ck-commentary');assert(visible(toggle));toggle.checked=false;toggle.dispatchEvent({type:'change'});await until(()=>!body.querySelector('.ck-loading'));assert(!body.querySelector('.ck-breslov'));toggle.checked=true;toggle.dispatchEvent({type:'change'});await until(()=>body.querySelector('.ck-breslov'));assert(!body.querySelector('.ck-breslov').open);
- const week=r.d.getElementById('ck-parsha');week.value='לך לך';week.dispatchEvent({type:'change'});await until(()=>!body.querySelector('.ck-loading'));assert(!body.querySelector('.ck-breslov-weekly-sources'));assert(body.querySelector('.ck-breslov-context'));assert(!body.textContent.includes(packet.description));
+ const r=await fullChok();try{
+ const body=r.d.getElementById('ck-content'),offering=r.d.getElementById('ck-breslov-offering'),weeklyBody=r.d.getElementById('ck-breslov-offering-body'),expected=projectedWeekly('noach');
+ verifyWeekly(weeklyBody.innerHTML,expected);
+ const positive=weeklyBody.innerHTML,mutations=[
+  ['lost owner',d=>d.querySelector('[data-bop-unit]').remove()],
+  ['lost pair',d=>d.querySelector('[data-pair-id]').remove()],
+  ['lost qualification',d=>d.querySelector('[data-note-id]').remove()],
+  ['changed Hebrew',d=>{d.querySelector('.ck-he').textContent+=' changed';}],
+  ['changed English',d=>{d.querySelector('.ck-en').textContent+=' changed';}],
+  ['changed qualifier',d=>{d.querySelector('[data-note-text]').textContent+=' changed';}],
+  ['wrong owner',d=>d.querySelector('[data-bop-unit]').setAttribute('data-owner-main-id','wrong')],
+  ['wrong qualifier pair',d=>d.querySelector('[data-note-id]').setAttribute('data-note-pair','wrong')],
+  ['wrong qualifier placement',d=>d.querySelector('[data-note-id]').setAttribute('data-note-placement','wrong')],
+ ];
+ for(const [name,mutate] of mutations){const d=documentFor(positive);mutate(d);assert.throws(()=>verifyWeekly(d.innerHTML,expected),name);verifyWeekly(positive,expected);}
+ console.log('REAL_WEEKLY_MUTATIONS '+JSON.stringify({rejected:mutations.map(([name])=>name),freshPositives:mutations.length}));
+ assert(!offering.open);let root=weeklyBody.querySelector('.ck-breslov');for(const det of root.querySelectorAll('details'))assert(!det.open);assert(!root.open);
+ const en=root.querySelector('[data-ck-source-lang="en"]');assert(en&&!visible(en));offering.querySelector('summary').click();root.querySelector('summary').click();assert(visible(en));
+ const mainDisclosure=root.querySelector('.ck-qualified-disclosure');assert(mainDisclosure&&!mainDisclosure.open);assert(!visible(mainDisclosure.querySelector('.ck-he')));mainDisclosure.querySelector('summary').click();assert(visible(mainDisclosure.querySelector('.ck-he')));
+ const prescribedBefore=body.innerHTML;
+ for(const lang of ['en','he','both']){root.querySelector('[data-ck-source-lang="'+lang+'"]').click();assert.equal(root.dataset.language,lang);for(const text of root.querySelectorAll('.ck-he,.ck-en'))assert.equal(text.hidden,lang!=='both'&&!text.classList.contains('ck-'+lang));for(const q of root.querySelectorAll('.ck-source-qualification'))assert(!q.hidden);assert.equal(body.innerHTML,prescribedBefore,'Weekly language cannot alter prescribed study');}
+ const supplement=root.querySelector('.ck-breslov-supplement');assert(supplement&&!supplement.open);assert(!visible(supplement.querySelector('.ck-he')));supplement.querySelector('summary').click();assert(visible(supplement.querySelector('.ck-he')));supplement.querySelector('summary').click();assert(!visible(supplement.querySelector('.ck-he')));
+ const segs=expected.runtime.sourceSupplement.segments, rendered=supplement.querySelectorAll('[data-supplement-segment]');assert.equal(rendered.length,segs.length);
+ segs.forEach((seg,i)=>{const n=rendered[i];assert.equal(n.querySelector('a').href,seg.sourceUrl);for(const lang of ['he','en'])assert.equal(n.querySelector('.ck-'+lang).textContent,seg[lang]);if(seg.commentary)for(const lang of ['he','en'])assert.equal(n.querySelector('.ck-supplement-gematria .ck-'+lang).textContent,seg.commentary[lang]);});
+ for(let i=0;i<7;i++){r.d.getElementById('ck-days').children[i].click();try{await until(()=>!body.querySelector('.ck-loading'),30000);}catch(e){throw Error('Noach day '+DAY_NAMES[i]+': '+e.message+'; error='+(body.querySelector('.ck-error')?.textContent||'none')+'; recent requests='+JSON.stringify(r.f.requests.slice(-12)));}assert(weeklyBody.querySelector('.ck-breslov-supplement'),'Noach day '+i);assert(!weeklyBody.querySelector('.ck-breslov').open);verifyWeekly(weeklyBody.innerHTML,expected);}
+ // Commentary now governs daily commentary, not the independently offered weekly edition.
+ const options=r.d.getElementById('ck-commentary').closest('details');assert(options&&!options.open);options.querySelector('summary').click();const toggle=r.d.getElementById('ck-commentary');assert(visible(toggle));assert.equal(r.state.commentary,true);const beforeToggle=r.f.requests.filter(u=>u.includes('/chok/commentary/')).length;toggle.checked=false;toggle.dispatchEvent({type:'change'});assert.equal(r.state.commentary,false);await until(()=>!body.querySelector('.ck-loading'),30000);assert.equal(r.f.requests.filter(u=>u.includes('/chok/commentary/')).length,beforeToggle,'Commentary off must not acquire day commentary');verifyWeekly(weeklyBody.innerHTML,expected);toggle.checked=true;toggle.dispatchEvent({type:'change'});assert.equal(r.state.commentary,true);await until(()=>!body.querySelector('.ck-loading'),30000);verifyWeekly(weeklyBody.innerHTML,expected);assert(!weeklyBody.querySelector('.ck-breslov').open);
+ const actualEarlier=declaredQualified.qualifiedParsha('bereishit').selection,api=r.env.box.window.ChokVerseBreslov;
+ const earlierDoc=verifyWeekly(api.weekly('בראשית'),{units:actualEarlier.units,scope:actualEarlier.scopeNotice});
+ const earlierContext=actualEarlier.units.filter(u=>(u.sourceKind||u.source_kind||u.kind)==='main'&&!u.verseRef);assert.equal(earlierContext.length,4,'All original four real null-ref mains');
+ const verseDoc=documentFor(api.verse('בראשית','tanach-bereishit',3,1));
+ for(const u of earlierContext){const n=earlierDoc.querySelector('[data-bop-unit="'+u.id+'"]'),group=n.closest('.ck-weekly-unowned');assert(group&&!group.open);assert(group.querySelector('summary').textContent.includes('without a verse assignment'));assert.equal(n.getAttribute('data-verse-ref'),'null');assert(!verseDoc.querySelector('[data-bop-unit="'+u.id+'"]'),'Weekly context cannot become Genesis 3:1');}
+ console.log('REAL_EARLIER_CONTEXT '+JSON.stringify({owners:actualEarlier.units.length,nullRefMains:earlierContext.length,assignedToGenesis3v1:0}));
+ const week=r.d.getElementById('ck-parsha');week.value='לך לך';week.dispatchEvent({type:'change'});await until(()=>!body.querySelector('.ck-loading'),30000);assert(!weeklyBody.querySelector('.ck-breslov-supplement'));assert(weeklyBody.querySelector('.ck-weekly-unowned'));verifyWeekly(weeklyBody.innerHTML,projectedWeekly('lech-lecha'));
  }finally{r.env.close();}
 });
 test('later110171 source arrays and unchanged legacy nonqualified Chok retained; notices verbatim',()=>{
  verify(readerHTML(older),[...older.units,...older.apparatus]);const r=chokHTML({breslov:[{ref:'SYNTHETIC legacy',he:'סינתטי ישן',en:'SYNTHETIC old English'}],verses:[{he:'סינתטי ביאור',en:'SYNTHETIC other commentary'}]});try{assert(r.html.includes('SYNTHETIC old English'));assert(r.html.includes('SYNTHETIC other commentary'));assert(!r.html.includes('ck-breslov-context'));assert(!r.html.includes('ck-breslov-weekly-sources'));}finally{r.env.close();}
- const oldCarrier={breslov:older.units.map(u=>({...u,sourceId:u.id})),breslovApparatus:older.apparatus.map(u=>({...u,sourceId:u.id}))};const q=chokHTML(oldCarrier);try{assert(q.html.includes('Standalone source bodies; main ownership remains unassigned.'));}finally{q.env.close();}
+ const oldCarrier={breslov:older.units.map(u=>({...u,sourceId:u.id})),breslovApparatus:older.apparatus.map(u=>({...u,sourceId:u.id}))};const q=chokHTML(oldCarrier);try{const d=verify(q.html,[...older.units,...older.apparatus],true),group=d.querySelector('.ck-independent-apparatus');assert(group&&!group.open);for(const u of older.apparatus){const n=group.querySelector('[data-source-id="'+u.id+'"]');assert(n);assert.equal(n.getAttribute('data-owner-main-id'),'null');assert(!n.closest('.ck-verse'));}assert(!d.textContent.includes('main ownership remains unassigned'),'No obsolete workflow sentence in public prose');}finally{q.env.close();}
  assert(source('src/components/QualifiedParsha.astro').includes('Independent apparatus is not assigned to a main teaching.'));
 });
 test('qualified later Chok language controls RED: actual absent role hints do not disable HE/EN/Both',()=>{
@@ -144,12 +236,18 @@ test('qualified later Chok language controls RED: actual absent role hints do no
  } finally {r.env.close();}
 });
 
-test('actual standalone/full Chumash branches RED: prefer169, use runtime JSON/masterURL, preserve supplements/PDF/legacy edition',()=>{
+test('actual standalone/full Chumash branches RED: prefer169, use runtime JSON/masterURL, preserve supplements/PDF/legacy edition',async()=>{
  const parsha=source('src/pages/parsha/[slug].astro'),chumash=source('src/pages/reader/chumash-lh/[part]/[torah].astro'),genesis=source('src/pages/reader/tanach-bereishit/[part]/[torah].astro');
- for(const slug of ['bereishit','noach','lech-lecha'])assert(parsha.match(/const hasQualifiedParsha = [^;]+/)[0].includes("'"+slug+"'"));
+ assert.deepEqual(plain(qualifiedAPI.PARSHA_READER),ROUTES);
+ for(const [slug,route] of Object.entries(ROUTES)) {
+  const r=await routeFrontmatter('src/pages/parsha/[slug].astro',{slug},{},'hasQualifiedParsha,hasReviewedParsha,chumashLhData,chumashLhReaderUrl,hasPdf,sourceSupplement');
+  assert.equal(r.value.hasQualifiedParsha,true);assert.equal(r.value.hasReviewedParsha,false);assert.equal(r.value.chumashLhData,null,'No displaced OCR fallback');assert.equal(r.value.chumashLhReaderUrl,'/reader/chumash-lh/'+route);assert.equal(r.value.hasPdf,true);
+  assert.equal(!!r.value.sourceSupplement,slug==='noach');
+  const [part,torah]=route.split('/'),full=await routeFrontmatter('src/pages/reader/chumash-lh/[part]/[torah].astro',{part,torah},{},'qualifiedSlug,error');assert.equal(full.value.qualifiedSlug,slug);assert.equal(full.value.error,null);
+ }
  assert(parsha.includes('!hasQualifiedParsha &&'));assert(parsha.includes('distinct legacy selections'));assert(parsha.includes('<ParshaSourceSupplement packet={sourceSupplement} />'));assert(parsha.includes('Download PDF'));
- assert(chumash.includes("1: 'bereishit', 2: 'noach', 3: 'lech-lecha'"));assert(chumash.includes('dataset={earlierQualified ? torahData : null}'));assert(chumash.includes("qualifiedMasterUrl !== '/data/breslov-parsha/qualified-1-109/master.json'"));assert(chumash.indexOf(': qualifiedSlug ? (')<chumash.indexOf('class="reader-container"'));assert(chumash.includes('<ParshaSourceSupplement packet={sourceSupplement} />'));assert(chumash.includes('View Original PDF'));
- assert(genesis.includes("? 'qualified-1-109' : 'qualified-110-171'"));assert(genesis.includes('<CommentarySidebar part={partNum} torah={torahNum} entry={commentaryEntry} />'));assert(genesis.includes('<QualifiedParsha dataset={qualifiedChapterData} />'));
+ assert(chumash.includes('<QualifiedParsha slug={qualifiedSlug}'));assert(chumash.includes('dataset={earlierQualified ? torahData : null}'));assert(chumash.includes("qualifiedMasterUrl !== '/data/breslov-parsha/qualified-1-109/master.json'"));assert(chumash.indexOf(': qualifiedSlug ? (')<chumash.indexOf('class="reader-container"'));assert(chumash.includes('<ParshaSourceSupplement packet={sourceSupplement} />'));assert(chumash.includes('View Original PDF'));
+ assert(genesis.includes('qualifiedChapter(torahNum)'));assert(genesis.includes('<CommentarySidebar part={partNum} torah={torahNum} entry={commentaryEntry} />'));assert(genesis.includes('<QualifiedParsha dataset={qualifiedChapterData} />'));
 });
 test('owned Astro asset pins use exact new version; JS syntax, portable tests carry no private source prerequisites',()=>{
  for(const f of ['src/pages/reader/chumash-lh/[part]/[torah].astro','src/pages/reader/tanach-bereishit/[part]/[torah].astro'])assert(source(f).includes('?v=parsha-author-20261016-r2'));
@@ -158,23 +256,26 @@ test('owned Astro asset pins use exact new version; JS syntax, portable tests ca
 });
 
 async function routeFrontmatter(file, params, fixtures, names) {
- const reads=[], box={Astro:{params,props:{},redirect:x=>x},process:{cwd:()=>'/synthetic-project'},path,hkIndex:{},console,
-   fs:{existsSync:()=>false,readFileSync(f){reads.push(f);const key=f.replace('/synthetic-project/','');assert(Object.hasOwn(fixtures,key),'Undeclared synthetic read '+key);return JSON.stringify(fixtures[key]);}}};
+ const reads=[], box={Astro:{params,props:{},redirect:x=>x},process:{cwd:()=>ROOT},path,hkIndex:json('src/data/hk-citations-index.json'),console,...declaredQualified,
+   fs:{existsSync:f=>fs.existsSync(f),readFileSync(f){reads.push(f);const key=path.relative(ROOT,f);return Object.hasOwn(fixtures,key)?JSON.stringify(fixtures[key]):fs.readFileSync(f,'utf8');}}};
  let code=source(file).split('---')[1].replace(/^import .*;\r?\n/gm,'').replace(/export function /g,'function ');
  code=(await dependencies('esbuild').transform(code,{loader:'ts',format:'cjs'})).code;
- vm.createContext(box);vm.runInContext(code+'\nglobalThis.route={'+names+'};',box);return {value:box.route,reads};
+ const realRead=fs.readFileSync;vm.createContext(box);
+ fs.readFileSync=function(f,...args){reads.push(String(f));return realRead.call(this,f,...args);};
+ try{vm.runInContext('(function(){\n'+code+'\nglobalThis.route={'+names+'};\n})();',box);}finally{fs.readFileSync=realRead;}
+ return {value:box.route,reads};
 }
 test('actual Genesis SSR frontmatter discovers all31 exported chapter URLs, preserves unrelated sidebar entries',async()=>{
- const earlierIndex={chapters:Object.fromEntries(Array.from({length:17},(_,i)=>[i+1,{url:'/reader/breslov-parsha/qualified-1-109/bereishit-'+(i+1)+'.json'}]))};
- const laterIndex={chapters:Object.fromEntries(Array.from({length:14},(_,i)=>[i+18,{url:'/reader/breslov-parsha/qualified-110-171/bereishit-'+(i+18)+'.json'}]))};
+ const earlierIndexes=indexes().slice(0,2);assert.equal(new Set(earlierIndexes.flatMap(r=>Object.keys(r.index.chapters))).size,31);
  for(let ch=1;ch<=31;ch++) {
   const namespace=ch<=17?'qualified-1-109':'qualified-110-171',url='/reader/breslov-parsha/'+namespace+'/bereishit-'+ch+'.json';
   const r=await routeFrontmatter('src/pages/reader/tanach-bereishit/[part]/[torah].astro',{part:'1',torah:String(ch)},{
    ['public/reader/tanach-bereishit/part-1/torah-'+ch+'.json']:{id:'synthetic-chapter',title:'SYNTHETIC chapter',segments:[]},
-   'public/data/breslov-parsha/qualified-1-109/index.json':earlierIndex,'public/data/breslov-parsha/qualified-110-171/index.json':laterIndex,
-   ['public'+url]:chapter},'qualifiedChapterData,qualifiedBreslovEntry,commentaryEntry');
-  assert.equal(r.value.qualifiedBreslovEntry.url,url);assert.deepEqual(JSON.parse(JSON.stringify(r.value.qualifiedChapterData)),chapter);
-  assert(r.value.commentaryEntry.related_commentaries.some(c=>c.book==='likutay-nanach'));assert(r.reads.includes('/synthetic-project/public'+url));
+   },'qualifiedChapterData,qualifiedBreslovEntry,commentaryEntry');
+  assert.equal(r.value.qualifiedBreslovEntry.url,url);const exported=json('public'+url);
+  const expected={...exported,revision:[exported.revision].join('+'),scopeNotice:exported.scopeNotice||'',apparatusScopeNotice:exported.apparatusScopeNotice||'',units:[...new Map([...(exported.units||[]),...(exported.apparatus||[])].map(u=>[u.id,u])).values()],apparatus:[],globalQualifications:exported.globalQualifications||[],sourceComplete:false};
+  assert.deepEqual(plain(r.value.qualifiedChapterData),expected,'Complete merged chapter data, not only body presence');assert(r.reads.includes(path.join(ROOT,'public',url)),'Actual exported chapter read');
+  assert(r.value.commentaryEntry.related_commentaries.some(c=>c.book==='likutay-nanach'));assert.equal(r.value.qualifiedBreslovEntry.book,'breslov-parsha-'+namespace);
   if(ch<=17)assert(!r.value.commentaryEntry.related_commentaries.some(c=>c.book==='breslov-parsha'));
  }
 });
@@ -212,3 +313,26 @@ test('actual unchanged Sidebar FULL init and route bridge; synthetic template, r
 });
 
 module.exports.payloadFixtures={chapter,older,carrier,packet};
+
+test('earlier239 source owners and all31 chapter exports remain separate from new118; complete HEEN, qualifiers and witness roles',()=>{
+ const rows=indexes();assert.deepEqual(rows.map(r=>r.namespace),['qualified-1-109','qualified-110-171','qualified-172-269']);
+ const counts=[],chapterOwners=new Map();
+ for(const row of rows.slice(0,2)) {
+  const master=json('public'+row.index.masterUrl),units=[...(master.units||[]),...(master.apparatus||[])];
+  counts.push({namespace:row.namespace,owners:units.length,pairs:units.reduce((n,u)=>n+u.pairs.length,0),qualifications:units.reduce((n,u)=>n+u.qualifications.length,0),chapters:Object.keys(row.index.chapters).length});
+  const selected=[];
+  for(const slug of Object.keys(row.index.parshas)) {
+   const component=select(slug).value;selected.push(...plain(component.units));
+   const d=verify(readerHTML(component.selection),plain(component.units));
+   for(const u of component.units){const n=d.querySelector('[data-source-id="'+u.id+'"]'),role=u.sourceKind||u.source_kind||u.kind;assert.equal(n.getAttribute('data-source-kind'),role);assert.equal(n.getAttribute('data-owner-main-id'),String(u.owner_main_id??u.ownerMainId??'null'));assert.equal(component.mains.some(m=>m.id===u.id),role==='main');if(['apparatus','compiler-aside','title-metadata'].includes(role))assert(n.closest('[data-qualified-group="apparatus"]'));}
+  }
+  assert.deepEqual(new Map(selected.map(u=>[u.id,u])),new Map(units.map(u=>[u.id,u])),'All old owners unchanged, no new118 masquerading as earlier coverage');
+  for(const [ch,entry] of Object.entries(row.index.chapters)) {
+   const data=json('public'+entry.url),exported=[...(data.units||[]),...(data.apparatus||[])];verify(readerHTML(data),exported);
+   for(const u of exported){assert.deepEqual(u,units.find(v=>v.id===u.id),'Complete chapter owner equality '+ch+' '+u.id);if(chapterOwners.has(u.id))assert.deepEqual(u,chapterOwners.get(u.id));chapterOwners.set(u.id,u);}
+  }
+ }
+ assert.deepEqual(counts,[{namespace:'qualified-1-109',owners:169,pairs:833,qualifications:283,chapters:17},{namespace:'qualified-110-171',owners:70,pairs:505,qualifications:191,chapters:14}]);assert.equal(chapterOwners.size,239);
+ const newest=json('public'+rows[2].index.masterUrl);assert.equal(newest.units.length,118);for(const u of newest.units)assert(!chapterOwners.has(u.id));
+ console.log('EARLIER_FINITE_COUNTS '+JSON.stringify({cohorts:counts,uniqueEarlierOwners:chapterOwners.size,earlierChapters:31,newOwnersSeparate:newest.units.length}));
+});

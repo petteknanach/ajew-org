@@ -6,7 +6,7 @@ const {execFileSync}=require('node:child_process');
 const {pathToFileURL}=require('node:url');
 const {dependencies,documentFor,sandbox,until}=require('./qualified-earlier-parsha-test-dom.cjs');
 const ROOT=path.resolve(__dirname,'..'),EXTRA=process.env.QUALIFIED_EXPORT_ROOT;
-const VERSION='parsha-completion-20261016-r1';
+const VERSION='parsha-author-20261016-r2';
 const read=p=>fs.readFileSync(path.join(ROOT,p),'utf8'),json=p=>JSON.parse(read(p));
 const lib=import(pathToFileURL(path.join(ROOT,'src/lib/qualified-parsha.mjs')).href);
 const namespaces=['qualified-1-109','qualified-110-171'];
@@ -48,15 +48,15 @@ test('route IDs are the real standalone map AND full Reader directory, not trans
  assert.deepEqual(Object.keys(PARSHA_READER).slice(7),['vayishlach','vayeishev','mikeitz','vayigash','vayechi']);
 });
 test('authentic 169+70 server selection, exact units/pairs/qualifications and chapter membership',async()=>{
- const {qualifiedIndexes,qualifiedParsha,qualifiedChapter}=await lib,indexes=qualifiedIndexes(ROOT);assert.equal(oldUnits.length,239);
+ const {qualifiedIndexes,qualifiedParsha,qualifiedChapter}=await lib,indexes=qualifiedIndexes(ROOT).filter(i=>namespaces.includes(i.namespace));assert.equal(oldUnits.length,239);
  let count=0;for(const {index} of indexes)for(const slug of Object.keys(index.parshas)){const {selection}=qualifiedParsha(slug,indexes,ROOT);const c=index.parshas[slug],byId=new Map(oldUnits.map(u=>[u.id,u])),expected=[...c.mainIds,...c.apparatusIds].map(id=>byId.get(id));assert.deepEqual(selection.units,expected);count+=selection.units.length;}
  assert.equal(count,239);
  for(let c=1;c<=50;c++){const result=qualifiedChapter(c,indexes,ROOT),expected=indexes.filter(x=>x.index.chapters[String(c)]);assert.equal(result.matches.length,expected.length);if(result.selection){const originals=expected.flatMap(x=>{const d=json('public'+x.index.chapters[String(c)].url);return [...d.units,...(d.apparatus||[])];});assert.deepEqual(result.selection.units,originals);}}
 });
-test('real Chok namespace discovery conserves older source units; Noach/Lech keep their independent 117-note policy',async()=>{
+test('real Chok namespace discovery conserves older source units; Noach/Lech use their author-selected 116-note policy',async()=>{
  const found=await selections();
- for(const {index} of (await lib).qualifiedIndexes(ROOT))for(const [slug,c] of Object.entries(index.parshas)){if(['noach','lech-lecha'].includes(slug))continue;assert.deepEqual(JSON.parse(JSON.stringify(found[c.titleHe].source.units)),[...c.mainIds,...c.apparatusIds].map(id=>oldUnits.find(u=>u.id===id)));}
- assert.equal(json('public/reader/chok/breslov-reading-notes.json').notes.length,117);
+ for(const {index} of (await lib).qualifiedIndexes(ROOT).filter(i=>namespaces.includes(i.namespace)))for(const [slug,c] of Object.entries(index.parshas)){if(['noach','lech-lecha'].includes(slug))continue;assert.deepEqual(JSON.parse(JSON.stringify(found[c.titleHe].source.units)),[...c.mainIds,...c.apparatusIds].map(id=>oldUnits.find(u=>u.id===id)));}
+ assert.equal(json('public/reader/chok/breslov-reading-notes.json').notes.length,116);
 });
 test('actual component SSR bridge and language script conserve every authentic older pair/qualification',async()=>{
  const comp=await compileComponent();
@@ -74,7 +74,14 @@ test('prospective new namespace reaches all five real routes; overlap deduplicat
  fs.readFileSync=(p,...args)=>{if(String(p).startsWith(fake)){if(String(p).endsWith('/index.json'))return JSON.stringify(index);if(String(p).endsWith('/master.json'))return JSON.stringify(master);return JSON.stringify({...master,schema:'qualified-parsha-chapter-commentary/v1',units:base.filter(u=>String(p).endsWith('-'+u.verseRef.chapter+'.json'))});}return oldRead(p,...args);};
  try{const indexes=api.qualifiedIndexes(fake);for(const u of base){assert.deepEqual(api.qualifiedParsha(u.parsha,indexes,fake).selection.units,[u]);assert.equal(api.qualifiedChapter(u.verseRef.chapter,indexes,fake).selection.units[0].id,u.id);}}finally{fs.readFileSync=oldRead;fs.readdirSync=oldDirs;}
  assert.equal(api.mergeQualified([master,master]).units.length,5);const conflict=structuredClone(master);conflict.units[0].pairs[0].en+=' conflict';assert.throws(()=>api.mergeQualified([master,conflict]),/Conflicting/);
- const h=helper();try{const result=await h.api.loadQualified(async u=>u.includes('qualified-172-269')?JSON.stringify(u.includes('index.json')?index:master):Promise.reject(Error('404')));assert.equal(Object.keys(result).length,5);}finally{h.env.close();}
+ const h=helper();try{const result=await h.api.loadQualified(async u=>u.includes('qualified-172-269')?JSON.stringify(u.includes('index.json')?index:master):Promise.reject(Error('404')));
+  const good=['וישלח','וישב','מקץ','ויגש','ויחי'],reserved=['בראשית','וירא','חיי שרה','תולדות','ויצא'];
+  assert.deepEqual(Object.keys(result).sort(),[...good,...reserved].sort());
+  good.forEach((week,i)=>assert.deepEqual(JSON.parse(JSON.stringify(result[week].source.units)),[base[i]]));
+  // Failed older editions retain their real week reservations to forbid legacy
+  // fallback, but must neither contribute bodies nor displace healthy sources.
+  reserved.forEach(week=>{assert.equal(result[week].source.units.length,0);assert.equal(result[week].unavailable.length,1);assert.equal(result[week].unavailable[0].reason,'404');});
+ }finally{h.env.close();}
 });
 test('held field status and exact lexical note remain outside both language controls and native owner disclosure',async()=>{
  const master={units:synthetic(),globalQualifications:[],scopeNotice:'Synthetic source scope'},comp=await compileComponent(),html=await comp.render({dataset:master}),d=documentFor(html);assert.equal(d.querySelectorAll('[data-source-status="held"]').length,5);
@@ -99,7 +106,7 @@ test('changed Astro templates compile with installed read-only compiler; every l
  const compiler=dependencies('@astrojs/compiler'),esbuild=dependencies('esbuild');
  for(const p of ['src/components/QualifiedParsha.astro','src/pages/parsha/[slug].astro','src/pages/reader/chumash-lh/[part]/[torah].astro','src/pages/reader/tanach-bereishit/[part]/[torah].astro','src/pages/reader/chok.astro']){const result=await compiler.transform(read(p),{filename:p});assert(!result.diagnostics.some(d=>d.severity===1));await esbuild.transform(result.code,{loader:'ts'});for(const s of result.scripts||[])await esbuild.transform(s.code,{loader:'ts'});}
  const refs=execFileSync('git',['grep','-l','-z','-F','reader-script.js?v=','HEAD','--','src'],{cwd:ROOT}).toString().split('\0').filter(Boolean).map(p=>p.slice(5)).filter(p=>p.endsWith('.astro'));assert.equal(refs.length,248);for(const p of refs)assert(read(p).includes('/reader-script.js?v='+VERSION),p);
- for(const asset of ['chok.js','chok-source-reader.js','chok-verse-breslov.js']){new vm.Script(read('public/'+asset));assert(read('src/pages/reader/chok.astro').includes('/'+asset+'?v=parsha-completion-20261016-c1-r1'));}
+ for(const asset of ['chok.js','chok-source-reader.js','chok-verse-breslov.js']){new vm.Script(read('public/'+asset));assert(read('src/pages/reader/chok.astro').includes('/'+asset+'?v=parsha-author-20261016-r2'));}
 });
 test('actual server Sidebar init and route bridge retain complete chapter pairs, notes, language controls and tab lifecycle',async()=>{
  const {qualifiedChapter}=await lib,data=qualifiedChapter(18,undefined,ROOT).selection,comp=await compileComponent(),rendered=await comp.render({dataset:data});
@@ -114,7 +121,15 @@ test('actual full Chok init: every day of remaining five older portions, ordinar
  const weeks=process.env.QUALIFIED_CHOK_COHORT==='new'?['וישלח','וישב','מקץ','ויגש','ויחי']:['בראשית','וירא','חיי שרה','תולדות','ויצא'];
  for(const week of weeks)for(const day of Object.keys(schedule.weeks[week].days))for(const focus of [false,true]){
   const key=[week,day,String(focus)].join('|');if(single&&single!==key)continue;
-  if(!single){const childEnv={...process.env,QUALIFIED_CHOK_SINGLE_KEY:key};delete childEnv.NODE_TEST_CONTEXT;const output=execFileSync(process.execPath,['--max-old-space-size=256','--test','--test-name-pattern=actual full Chok init',__filename],{env:childEnv,encoding:'utf8',maxBuffer:1024*1024,timeout:90000});assert(output.includes('# fail 0'),output);console.log('CHOK-CASE PASS '+key);cases++;continue;}
+  if(!single){
+   const childEnv={...process.env,QUALIFIED_CHOK_SINGLE_KEY:key};delete childEnv.NODE_TEST_CONTEXT;
+   console.log('CHOK-CASE START '+key);
+   const evidence=process.env.QUALIFIED_CHOK_EVIDENCE_DIR,tag=require('node:crypto').createHash('sha256').update(key).digest('hex');
+   function capture(suffix,body){if(!evidence)return;fs.mkdirSync(evidence,{recursive:true});const dest=path.join(evidence,tag+suffix);assert(!fs.existsSync(dest),'refuse overwrite of completed case evidence');fs.writeFileSync(dest,body||'');}
+   let output;try{output=execFileSync(process.execPath,['--max-old-space-size=256','--test','--test-force-exit','--test-name-pattern=actual full Chok init',__filename],{env:childEnv,encoding:'utf8',maxBuffer:1024*1024,timeout:90000});capture('.pass.tap',output);}
+   catch(e){capture('.failed.stdout',e.stdout);capture('.failed.stderr',e.stderr);e.message=key+': '+e.message+'; child stdout: '+String(e.stdout||'').slice(-5000)+'; child stderr: '+String(e.stderr||'').slice(-3000);throw e;}
+   assert(output.includes('# fail 0'),output);console.log('CHOK-CASE PASS '+key);cases++;continue;
+  }
   const run=await bootActual(week,day,focus);try{const source=selected[week].source;assert(run.d.querySelector('[data-sec="torah"]'),week+' '+day);for(const verse of run.d.querySelector('[data-sec="torah"]').querySelectorAll('.ck-verse')){const [c,v]=verse.getAttribute('data-verse-ref').split(':').map(Number),expected=run.env.box.window.ChokVerseBreslov.mapped(source,'tanach-bereishit',c,v),panel=verse.querySelector('.ck-verse-breslov');if(!expected.length){assert(!panel);continue;}assert(panel);assert(!panel.open);assert(!panel.closest('.ck-verse-access'));const access=verse.querySelector('.ck-verse-access');assert(access);assert(verse.children.indexOf(access)<verse.children.indexOf(panel));for(const prev of verse.querySelectorAll('.ck-rashi,.ck-super,.ck-comm'))assert(verse.innerHTML.indexOf(prev.innerHTML)<verse.innerHTML.indexOf(panel.innerHTML));exactPairs(panel,expected,'data-bop-unit','.ck-source-pair','.ck-he','.ck-en');for(const owner of panel.querySelectorAll('.ck-breslov-owner')){assert(!owner.querySelector('.ck-qualified-disclosure').open);for(const q of owner.querySelectorAll('[data-note-id]'))assert(!q.closest('.ck-qualified-disclosure'));}}
   if(!focus){const weekly=run.d.getElementById('ck-breslov-offering-body').querySelector('.ck-breslov');assert(weekly);assert(!weekly.open);exactPairs(weekly,source.units,'data-bop-unit','.ck-source-pair','.ck-he','.ck-en');for(const u of source.units){const owner=weekly.querySelectorAll('[data-bop-unit]').find(n=>n.getAttribute('data-bop-unit')===u.id),notes=owner.querySelectorAll('[data-note-id]');assert.equal(notes.length,u.qualifications.length);u.qualifications.forEach((q,i)=>{assert.equal(notes[i].getAttribute('data-note-id'),q.id);assert.equal(notes[i].querySelector('[data-note-text]').textContent,q.text);});}}
   const ids=run.d.querySelectorAll('[id]').map(n=>n.id);assert.equal(new Set(ids).size,ids.length);assert(run.peak()<=6);cases++;console.log('CHOK-CASE PASS '+week+'|'+day+'|'+(focus?'focused':'ordinary'));
@@ -125,7 +140,7 @@ test('actual full Chok init: every day of remaining five older portions, ordinar
 test('optional authentic final118 exported source: exact five-parsha selection, pair/field counts, statuses and actual chapter joins',{skip:!EXTRA},async()=>{
  const api=await lib,indexes=api.qualifiedIndexes(EXTRA),i=indexes.find(i=>i.namespace==='qualified-172-269');assert(i,'new source-export namespace');const master=api.publicJSON(i.index.masterUrl,EXTRA);assert.equal(master.units.length,118);assert.equal(master.units.reduce((n,u)=>n+u.pairs.length,0),732);let fields=0,held=0,qualified=0;
  for(const u of master.units)for(const p of u.pairs)for(const lang of ['he','en']){const s=api.fieldStatus(p,lang);assert(s,u.id+' '+p.id+' '+lang);fields++;if(s==='held'||s.startsWith('held-'))held++;else qualified++;}
- assert.equal(fields,1464);assert.equal(held,435);assert.equal(qualified,1029);
+ assert.equal(fields,1464);assert.equal(held,413);assert.equal(qualified,1051);
  assert.deepEqual(Object.keys(i.index.parshas).sort(),['vayishlach','vayeishev','mikeitz','vayigash','vayechi'].sort());
  for(const slug of Object.keys(i.index.parshas)){const s=api.qualifiedParsha(slug,[i],EXTRA).selection;assert(s.units.length);const merged=api.mergeQualified([api.qualifiedParsha(slug,api.qualifiedIndexes(ROOT),ROOT).selection,s].filter(Boolean));assert.equal(new Set(merged.units.map(u=>u.id)).size,merged.units.length);}
  for(const c of Object.keys(i.index.chapters)){const s=api.qualifiedChapter(c,[i],EXTRA).selection;assert(s.units.length);}

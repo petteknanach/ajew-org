@@ -10,7 +10,7 @@
   PINS[LECH]='5c9878ffbc5d8afaf7794569b0772710c82d5e4846b3b8e9734f72b08ed6c765';
   PINS[PROJECTIONS]='884a4b47c50f3db030f36733c04b10ade7ffe190f30b708a81906f8df867e8ee';
   var READING_NOTES='/reader/chok/breslov-reading-notes.json';
-  PINS[READING_NOTES]='e46b9ea85b8971c37746895b747cbf1a0d70c31f2bdd014b9f06928bb3ecaade';
+  PINS[READING_NOTES]='37022dd53e4d005478850ee0b928ba1b1e84d0664982932453f740b2019eb8ef';
   var selections={}, pending;
   function esc(x) { return String(x==null?'':x).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
   function digest(raw) { return window.crypto.subtle.digest('SHA-256',new TextEncoder().encode(raw)).then(function(b){return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0');}).join('');}); }
