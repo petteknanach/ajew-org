@@ -1,0 +1,5 @@
+---
+import {loadEdition,plainExport} from '../../../../lib/qualified-sichos-221230.mjs';
+const edition=await loadEdition();
+---
+<Fragment set:html={plainExport(edition,'html')} />

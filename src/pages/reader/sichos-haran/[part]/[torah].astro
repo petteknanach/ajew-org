@@ -115,6 +115,12 @@ const structuredData = torahData ? JSON.stringify({
           <a href={`/reader/reviewed/sichos-224-225-229-230/#group-sichos${torahNum}`}>Read the corrected {torahNum === 230 ? 'paragraphs' : 'paragraph'}</a>
         </aside>
       )}
+      {torahNum >= 221 && torahNum <= 230 && (
+        <aside data-sichos-221230-entry style="margin:1rem 0;padding:1rem;border:1px solid currentColor;border-radius:8px">
+          <p>A separate bilingual edition contains the reviewed paragraphs of this teaching with complete source notes.{torahNum === 221 ? ' Paragraph 3 is not included.' : ''} This earlier edition remains unchanged.</p>
+          <a href={`/reader/reviewed/sichos-221-230/#group-sichos${torahNum}`}>Read the reviewed paragraphs of teaching {torahNum}</a>
+        </aside>
+      )}
       <div class="reader-breadcrumb">
         <a href="/reader">Reader</a>
         <span>&rsaquo;</span>
