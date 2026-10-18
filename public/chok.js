@@ -181,8 +181,10 @@
   // Generated references only: never normalize source paragraphs or Names.
   function plainHeNum(n) { return heNum(n).replace(/['\u05f3\u05f4]/g, ''); }
   function refLabelHTML(ref) {
-    // Keep chapter before verse visually, with each Hebrew numeral isolated.
-    return '<bdi class="ck-generated-ref" dir="ltr">' + esc(ref).replace(/[א-ת]+/g, function (n) {
+    // Hebrew citations read chapter:verse from right to left; Latin/digit-only
+    // citations remain left to right. Keep source chapter/verse values unchanged.
+    var direction = /[א-ת]/.test(ref) ? 'rtl' : 'ltr';
+    return '<bdi class="ck-generated-ref" dir="' + direction + '">' + esc(ref).replace(/[א-ת]+/g, function (n) {
       return '<bdi dir="rtl">' + n + '</bdi>';
     }) + '</bdi>';
   }
