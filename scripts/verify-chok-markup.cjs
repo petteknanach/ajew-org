@@ -48,6 +48,24 @@ vm.runInContext(main.slice(main.indexOf('  function heNum(n)'), main.indexOf('  
 assert.equal(numeralContext.heNum(1), "א'");
 assert.equal(numeralContext.heNum(28), "כח'");
 assert.equal(numeralContext.refLabelHTML(numeralContext.plainHeNum(28) + ':' + numeralContext.plainHeNum(15)).replace(/<[^>]+>/g, ''), 'כח:טו');
+// Logical chapter:verse values do not change; Hebrew reads from the right.
+let referenceCases = 0;
+for (let chapter = 1; chapter <= 150; chapter++) {
+  for (let verse = 1; verse <= 176; verse++) {
+    const label = numeralContext.plainHeNum(chapter) + ':' + numeralContext.plainHeNum(verse);
+    const html = numeralContext.refLabelHTML(label);
+    assert(html.startsWith('<bdi class="ck-generated-ref" dir="rtl">'));
+    assert.equal(html.replace(/<[^>]+>/g, ''), label);
+    referenceCases++;
+  }
+}
+assert(numeralContext.refLabelHTML('יב:א–יג:ד').startsWith('<bdi class="ck-generated-ref" dir="rtl">'));
+for (const label of ['12:1', '28:15', 'Genesis 12:1', '12:1–13:4']) {
+  const html = numeralContext.refLabelHTML(label);
+  assert(html.startsWith('<bdi class="ck-generated-ref" dir="ltr">'));
+  assert.equal(html.replace(/<[^>]+>/g, ''), label);
+}
+console.log('Chapter:verse direction regression PASS:', referenceCases, 'Hebrew labels, range and English/numeric controls');
 const dayRenderer=main.slice(main.indexOf('  function renderDay()'),main.indexOf('  function renderDay()')+18000);
 assert(dayRenderer.indexOf("if (d.gemara &&")<dayRenderer.indexOf("if (d.halacha &&"));
 assert(dayRenderer.indexOf("if (want('kabbala'))")<dayRenderer.indexOf("if (d.halacha &&"));

@@ -181,8 +181,10 @@
   // Generated references only: never normalize source paragraphs or Names.
   function plainHeNum(n) { return heNum(n).replace(/['\u05f3\u05f4]/g, ''); }
   function refLabelHTML(ref) {
-    // Keep chapter before verse visually, with each Hebrew numeral isolated.
-    return '<bdi class="ck-generated-ref" dir="ltr">' + esc(ref).replace(/[א-ת]+/g, function (n) {
+    // Hebrew citations read chapter:verse from right to left; Latin/digit-only
+    // citations remain left to right. Keep source chapter/verse values unchanged.
+    var direction = /[א-ת]/.test(ref) ? 'rtl' : 'ltr';
+    return '<bdi class="ck-generated-ref" dir="' + direction + '">' + esc(ref).replace(/[א-ת]+/g, function (n) {
       return '<bdi dir="rtl">' + n + '</bdi>';
     }) + '</bdi>';
   }
@@ -1022,7 +1024,20 @@
     return '<details class="ck-layer ck-zohar" data-field-role="original-source"><summary>זוהר — נוסח המקור · Original source — ' +
       zoharEscape(identities.join(' ← ')) + '</summary>' + body + '</details>' + qualification;
   }
+  function isLechSunday(wk, day) { return wk === 'לך לך' && day === 'יום ראשון'; }
+  function lechSundayReading(wk, day, section, originalRef) {
+    function unavailable() {
+      return section === 'zohar' ? zoharPendingHTML(originalRef, true) : window.ChokSources.unavailable(section);
+    }
+    if (!window.ChokLechSunday || typeof window.ChokLechSunday.reading !== 'function') return Promise.resolve(unavailable());
+    var english = state.tanachen;
+    return Promise.resolve().then(function () {
+      return window.ChokLechSunday.reading(wk, day, section, english, function (url) { return fetchJSON(url, true); });
+    }).catch(unavailable);
+  }
   function zoharHTML(z, wk, day) {
+    // Admit only the exact separately ratified daily key before the old inventory.
+    if (isLechSunday(wk, day)) return lechSundayReading(wk, day, 'zohar', z);
     // Only the separately ratified exact Sunday successor bypasses the old
     // public inventory. Every other key follows the unchanged authenticated path.
     try {
@@ -1180,7 +1195,7 @@
       }
       if (d.gemara && d.gemara.masechet && want('talmud')) {
         p = p.then(function () {
-          return (qualifiedDay ? Promise.resolve(window.ChokSources.reading('talmud', state.tanachen)) : wk==='נח' ? Promise.resolve(window.ChokSources.weekReading(wk,dayE,'talmud',state.tanachen)||window.ChokSources.unavailable('talmud')) : gemaraHTML(d.gemara)).then(function (html) { html = html || ''; html = dayKavana('talmud', d) + html; html = voiceBox(wk!=='נח' && dc && dc.talmud, 'גמרא') + html;
+          return (isLechSunday(wk,dayE) ? lechSundayReading(wk,dayE,'talmud') : qualifiedDay ? Promise.resolve(window.ChokSources.reading('talmud', state.tanachen)) : wk==='נח' ? Promise.resolve(window.ChokSources.weekReading(wk,dayE,'talmud',state.tanachen)||window.ChokSources.unavailable('talmud')) : gemaraHTML(d.gemara)).then(function (html) { html = html || ''; html = dayKavana('talmud', d) + html; html = voiceBox(wk!=='נח' && dc && dc.talmud, 'גמרא') + html;
             if (html) out.push('<section class="ck-section" data-sec="talmud">' + html + '</section>');
           });
         });
