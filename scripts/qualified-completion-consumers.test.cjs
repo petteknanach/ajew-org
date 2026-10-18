@@ -6,7 +6,7 @@ const {execFileSync}=require('node:child_process');
 const {pathToFileURL}=require('node:url');
 const {dependencies,documentFor,sandbox,until}=require('./qualified-earlier-parsha-test-dom.cjs');
 const ROOT=path.resolve(__dirname,'..'),EXTRA=process.env.QUALIFIED_EXPORT_ROOT;
-const VERSION='parsha-author-20261016-r2';
+const VERSION='parsha-author-20261018-r1';
 const read=p=>fs.readFileSync(path.join(ROOT,p),'utf8'),json=p=>JSON.parse(read(p));
 const lib=import(pathToFileURL(path.join(ROOT,'src/lib/qualified-parsha.mjs')).href);
 const namespaces=['qualified-1-109','qualified-110-171'];
@@ -24,9 +24,31 @@ async function bootActual(w,day,focused){
 function expose(code,expr){const i=code.lastIndexOf('})();');assert(i>0);return code.slice(0,i)+'\nglobalThis.qa={'+expr+'};\n'+code.slice(i);}
 function helper(){const d=documentFor('<html><body></body></html>'),env=sandbox(d,'/reader/chok/',()=>{});vm.runInContext(read('public/chok-verse-breslov.js'),env.box);return {env,api:env.box.window.ChokVerseBreslov};}
 async function selections(){const h=helper();try{return await h.api.loadQualified(async u=>{const raw=blob('public'+decodeURIComponent(u.split('?')[0]));if(raw===null)throw Error('404');return raw;});}finally{h.env.close();}}
+const qualifiedAPI=require(path.join(ROOT,'src/lib/qualified-parsha.mjs'));
+function exactField(field,p,lang,annotated,target){
+ assert(field);const spans=field.querySelectorAll('[data-source-field]'),refs=field.querySelectorAll('[data-note89-ref]');
+ assert.equal(spans.length,annotated?1:0);assert.equal(refs.length,annotated?1:0);
+ assert.equal((spans[0]||field).textContent,p[lang],'Complete untouched source '+p.id+' '+lang);
+ if(!annotated)return;
+ const span=spans[0],ref=refs[0],sup=ref.parentNode;
+ assert.equal(span.getAttribute('data-source-field'),lang);assert.equal(span.parentNode,field);
+ assert.equal(sup.tagName.toLowerCase(),'sup');assert(sup.hasAttribute('data-note89-marker'));
+ assert.equal(span.nextSibling,sup,'Reference follows the COMPLETE paragraph');
+ assert.equal(sup.parentNode,field);assert.equal(field.children.length,2);
+ assert.equal(ref.textContent,'89');assert.equal(ref.getAttribute('role'),'doc-noteref');
+ assert.equal(ref.getAttribute('href'),'#'+target.id);assert.equal(field.textContent,p[lang]+'89','No unbound text outside source span');
+}
+function noteText(q){
+ const text=qualifiedAPI.note89QualificationText(q);
+ if(text!==q.text){assert.equal(q.owner,'b-p146-n01');assert(['note89-current-qualification','note89-source-locator'].includes(q.id));assert.equal(text,'Printed note 89 follows the paragraph ending “He would not need you, etc.” Its citation is Chayay Moharan, item 330.');}
+ return text;
+}
 function exactPairs(doc,units,ownerAttr,pairSel,heSel,enSel){
  const owners=doc.querySelectorAll('['+ownerAttr+']');assert.equal(owners.length,units.length);
- for(const u of units){const el=owners.find(n=>n.getAttribute(ownerAttr)===u.id);assert(el,u.id);const ps=el.querySelectorAll(pairSel);assert.equal(ps.length,u.pairs.length,u.id);u.pairs.forEach((p,i)=>{assert.equal(ps[i].getAttribute('data-pair-id'),p.id);assert.equal(ps[i].querySelector(heSel).textContent,p.he);assert.equal(ps[i].querySelector(enSel).textContent,p.en);});}
+ const binding=qualifiedAPI.note89Binding(units),targets=doc.querySelectorAll('[data-note89-target]');
+ assert.equal(targets.length,binding?1:0);assert.equal(doc.querySelectorAll('[data-note89-ref]').length,binding?2:0);
+ if(binding){assert.equal(binding.mainId,'b-p146-m01');assert.equal(binding.noteId,'b-p146-n01');assert.equal(binding.pairId,'146-body');assert.equal(binding.number,'89');assert.equal(targets[0].getAttribute(ownerAttr),binding.noteId);}
+ for(const u of units){const el=owners.find(n=>n.getAttribute(ownerAttr)===u.id);assert(el,u.id);const ps=el.querySelectorAll(pairSel);assert.equal(ps.length,u.pairs.length,u.id);u.pairs.forEach((p,i)=>{assert.equal(ps[i].getAttribute('data-pair-id'),p.id);const annotated=!!binding&&u.id===binding.mainId&&p.id===binding.pairId;exactField(ps[i].querySelector(heSel),p,'he',annotated,targets[0]);exactField(ps[i].querySelector(enSel),p,'en',annotated,targets[0]);});}
 }
 let component;
 async function compileComponent(){
@@ -61,7 +83,7 @@ test('real Chok namespace discovery conserves older source units; Noach/Lech use
 test('actual component SSR bridge and language script conserve every authentic older pair/qualification',async()=>{
  const comp=await compileComponent();
  for(const master of masters){const html=await comp.render({dataset:master}),d=documentFor(html);exactPairs(d,master.units,'data-source-id','.qp-pair','.qp-he','.qp-en');
- const notes=master.units.flatMap(u=>u.qualifications).concat(master.globalQualifications||[]),actual=d.querySelectorAll('[data-note-id]');assert.equal(actual.length,notes.length);for(const q of notes)assert(actual.some(n=>n.getAttribute('data-note-id')===q.id&&n.querySelector('p').textContent===q.text));
+ const notes=master.units.flatMap(u=>u.qualifications).concat(master.globalQualifications||[]),actual=d.querySelectorAll('[data-note-id]');assert.equal(actual.length,notes.length);for(const q of notes)assert(actual.some(n=>n.getAttribute('data-note-id')===q.id&&n.querySelector('p').textContent===noteText(q)));
  const env=sandbox(d,'/parsha/vayeira/',()=>{});try{vm.runInContext(comp.script,env.box);for(const lang of ['he','en','both']){d.querySelector('[data-qualified-lang="'+lang+'"]').click();for(const p of d.querySelectorAll('[data-qualified-text]'))assert.equal(p.hidden,lang!=='both'&&p.dataset.qualifiedText!==lang);for(const n of actual)assert(!n.hidden&&!n.closest('[data-qualified-text]'));}}finally{env.close();}}
 });
 // Explicit synthetic contract only; not a source export or new textual authority.
@@ -106,7 +128,7 @@ test('changed Astro templates compile with installed read-only compiler; every l
  const compiler=dependencies('@astrojs/compiler'),esbuild=dependencies('esbuild');
  for(const p of ['src/components/QualifiedParsha.astro','src/pages/parsha/[slug].astro','src/pages/reader/chumash-lh/[part]/[torah].astro','src/pages/reader/tanach-bereishit/[part]/[torah].astro','src/pages/reader/chok.astro']){const result=await compiler.transform(read(p),{filename:p});assert(!result.diagnostics.some(d=>d.severity===1));await esbuild.transform(result.code,{loader:'ts'});for(const s of result.scripts||[])await esbuild.transform(s.code,{loader:'ts'});}
  const refs=execFileSync('git',['grep','-l','-z','-F','reader-script.js?v=','HEAD','--','src'],{cwd:ROOT}).toString().split('\0').filter(Boolean).map(p=>p.slice(5)).filter(p=>p.endsWith('.astro'));assert.equal(refs.length,248);for(const p of refs)assert(read(p).includes('/reader-script.js?v='+VERSION),p);
- for(const asset of ['chok.js','chok-source-reader.js','chok-verse-breslov.js']){new vm.Script(read('public/'+asset));assert(read('src/pages/reader/chok.astro').includes('/'+asset+'?v=parsha-author-20261016-r2'));}
+ for(const asset of ['chok.js','chok-source-reader.js','chok-verse-breslov.js']){new vm.Script(read('public/'+asset));assert(read('src/pages/reader/chok.astro').includes('/'+asset+'?v=parsha-author-20261018-r1'));}
 });
 test('actual server Sidebar init and route bridge retain complete chapter pairs, notes, language controls and tab lifecycle',async()=>{
  const {qualifiedChapter}=await lib,data=qualifiedChapter(18,undefined,ROOT).selection,comp=await compileComponent(),rendered=await comp.render({dataset:data});
@@ -126,12 +148,12 @@ test('actual full Chok init: every day of remaining five older portions, ordinar
    console.log('CHOK-CASE START '+key);
    const evidence=process.env.QUALIFIED_CHOK_EVIDENCE_DIR,tag=require('node:crypto').createHash('sha256').update(key).digest('hex');
    function capture(suffix,body){if(!evidence)return;fs.mkdirSync(evidence,{recursive:true});const dest=path.join(evidence,tag+suffix);assert(!fs.existsSync(dest),'refuse overwrite of completed case evidence');fs.writeFileSync(dest,body||'');}
-   let output;try{output=execFileSync(process.execPath,['--max-old-space-size=256','--test','--test-force-exit','--test-name-pattern=actual full Chok init',__filename],{env:childEnv,encoding:'utf8',maxBuffer:1024*1024,timeout:90000});capture('.pass.tap',output);}
+   let output;try{output=execFileSync(process.execPath,['--max-old-space-size=256','--test','--test-concurrency=1','--test-force-exit','--test-name-pattern=actual full Chok init',__filename],{env:childEnv,encoding:'utf8',maxBuffer:1024*1024,timeout:90000});capture('.pass.tap',output);}
    catch(e){capture('.failed.stdout',e.stdout);capture('.failed.stderr',e.stderr);e.message=key+': '+e.message+'; child stdout: '+String(e.stdout||'').slice(-5000)+'; child stderr: '+String(e.stderr||'').slice(-3000);throw e;}
    assert(output.includes('# fail 0'),output);console.log('CHOK-CASE PASS '+key);cases++;continue;
   }
   const run=await bootActual(week,day,focus);try{const source=selected[week].source;assert(run.d.querySelector('[data-sec="torah"]'),week+' '+day);for(const verse of run.d.querySelector('[data-sec="torah"]').querySelectorAll('.ck-verse')){const [c,v]=verse.getAttribute('data-verse-ref').split(':').map(Number),expected=run.env.box.window.ChokVerseBreslov.mapped(source,'tanach-bereishit',c,v),panel=verse.querySelector('.ck-verse-breslov');if(!expected.length){assert(!panel);continue;}assert(panel);assert(!panel.open);assert(!panel.closest('.ck-verse-access'));const access=verse.querySelector('.ck-verse-access');assert(access);assert(verse.children.indexOf(access)<verse.children.indexOf(panel));for(const prev of verse.querySelectorAll('.ck-rashi,.ck-super,.ck-comm'))assert(verse.innerHTML.indexOf(prev.innerHTML)<verse.innerHTML.indexOf(panel.innerHTML));exactPairs(panel,expected,'data-bop-unit','.ck-source-pair','.ck-he','.ck-en');for(const owner of panel.querySelectorAll('.ck-breslov-owner')){assert(!owner.querySelector('.ck-qualified-disclosure').open);for(const q of owner.querySelectorAll('[data-note-id]'))assert(!q.closest('.ck-qualified-disclosure'));}}
-  if(!focus){const weekly=run.d.getElementById('ck-breslov-offering-body').querySelector('.ck-breslov');assert(weekly);assert(!weekly.open);exactPairs(weekly,source.units,'data-bop-unit','.ck-source-pair','.ck-he','.ck-en');for(const u of source.units){const owner=weekly.querySelectorAll('[data-bop-unit]').find(n=>n.getAttribute('data-bop-unit')===u.id),notes=owner.querySelectorAll('[data-note-id]');assert.equal(notes.length,u.qualifications.length);u.qualifications.forEach((q,i)=>{assert.equal(notes[i].getAttribute('data-note-id'),q.id);assert.equal(notes[i].querySelector('[data-note-text]').textContent,q.text);});}}
+  if(!focus){const weekly=run.d.getElementById('ck-breslov-offering-body').querySelector('.ck-breslov');assert(weekly);assert(!weekly.open);exactPairs(weekly,source.units,'data-bop-unit','.ck-source-pair','.ck-he','.ck-en');for(const u of source.units){const owner=weekly.querySelectorAll('[data-bop-unit]').find(n=>n.getAttribute('data-bop-unit')===u.id),notes=owner.querySelectorAll('[data-note-id]');assert.equal(notes.length,u.qualifications.length);u.qualifications.forEach((q,i)=>{assert.equal(notes[i].getAttribute('data-note-id'),q.id);assert.equal(notes[i].querySelector('[data-note-text]').textContent,noteText(q));});}}
   const ids=run.d.querySelectorAll('[id]').map(n=>n.id);assert.equal(new Set(ids).size,ids.length);assert(run.peak()<=6);cases++;console.log('CHOK-CASE PASS '+week+'|'+day+'|'+(focus?'focused':'ordinary'));
   }finally{run.env.close();}
  }
@@ -140,11 +162,11 @@ test('actual full Chok init: every day of remaining five older portions, ordinar
 test('optional authentic final118 exported source: exact five-parsha selection, pair/field counts, statuses and actual chapter joins',{skip:!EXTRA},async()=>{
  const api=await lib,indexes=api.qualifiedIndexes(EXTRA),i=indexes.find(i=>i.namespace==='qualified-172-269');assert(i,'new source-export namespace');const master=api.publicJSON(i.index.masterUrl,EXTRA);assert.equal(master.units.length,118);assert.equal(master.units.reduce((n,u)=>n+u.pairs.length,0),732);let fields=0,held=0,qualified=0;
  for(const u of master.units)for(const p of u.pairs)for(const lang of ['he','en']){const s=api.fieldStatus(p,lang);assert(s,u.id+' '+p.id+' '+lang);fields++;if(s==='held'||s.startsWith('held-'))held++;else qualified++;}
- assert.equal(fields,1464);assert.equal(held,413);assert.equal(qualified,1051);
+ assert.equal(fields,1464);assert.equal(held,410);assert.equal(qualified,1054);
  assert.deepEqual(Object.keys(i.index.parshas).sort(),['vayishlach','vayeishev','mikeitz','vayigash','vayechi'].sort());
  for(const slug of Object.keys(i.index.parshas)){const s=api.qualifiedParsha(slug,[i],EXTRA).selection;assert(s.units.length);const merged=api.mergeQualified([api.qualifiedParsha(slug,api.qualifiedIndexes(ROOT),ROOT).selection,s].filter(Boolean));assert.equal(new Set(merged.units.map(u=>u.id)).size,merged.units.length);}
  for(const c of Object.keys(i.index.chapters)){const s=api.qualifiedChapter(c,[i],EXTRA).selection;assert(s.units.length);}
  const found=await selections();for(const [slug,c] of Object.entries(i.index.parshas)){const expected=api.mergeQualified([api.qualifiedParsha(slug,api.qualifiedIndexes(ROOT),ROOT).selection,api.qualifiedParsha(slug,[i],EXTRA).selection].filter(Boolean));assert.deepEqual(JSON.parse(JSON.stringify(found[c.titleHe].source.units)),expected.units);}
- const comp=await compileComponent(),d=documentFor(await comp.render({dataset:master}));exactPairs(d,master.units,'data-source-id','.qp-pair','.qp-he','.qp-en');const notes=master.units.flatMap(u=>u.qualifications).concat(master.globalQualifications||[]);assert.equal(d.querySelectorAll('[data-note-id]').length,notes.length);for(const q of notes)assert(d.querySelectorAll('[data-note-id]').some(n=>n.getAttribute('data-note-id')===q.id&&n.querySelector('p').textContent===q.text));
- const childEnv={...process.env,QUALIFIED_CHOK_COHORT:'new'};delete childEnv.NODE_TEST_CONTEXT;delete childEnv.QUALIFIED_CHOK_SINGLE_KEY;const output=execFileSync(process.execPath,['--max-old-space-size=256','--test','--test-name-pattern=actual full Chok init',__filename],{env:childEnv,encoding:'utf8',maxBuffer:1024*1024,timeout:550000});assert(output.includes('# fail 0'),output);console.log(output);
+ const comp=await compileComponent(),d=documentFor(await comp.render({dataset:master}));exactPairs(d,master.units,'data-source-id','.qp-pair','.qp-he','.qp-en');const notes=master.units.flatMap(u=>u.qualifications).concat(master.globalQualifications||[]);assert.equal(d.querySelectorAll('[data-note-id]').length,notes.length);for(const q of notes)assert(d.querySelectorAll('[data-note-id]').some(n=>n.getAttribute('data-note-id')===q.id&&n.querySelector('p').textContent===noteText(q)));
+ const childEnv={...process.env,QUALIFIED_CHOK_COHORT:'new'};delete childEnv.NODE_TEST_CONTEXT;delete childEnv.QUALIFIED_CHOK_SINGLE_KEY;const output=execFileSync(process.execPath,['--max-old-space-size=256','--test','--test-concurrency=1','--test-name-pattern=actual full Chok init',__filename],{env:childEnv,encoding:'utf8',maxBuffer:1024*1024,timeout:550000});assert(output.includes('# fail 0'),output);console.log(output);
 });

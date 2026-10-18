@@ -48,16 +48,44 @@ const DAY_NAMES=['יום ראשון','יום שני','יום שלישי','יום
 const DAY_SLUGS=['yom-rishon','yom-sheni','yom-shlishi','yom-revii','yom-chamishi','leil-shishi','yom-shishi'];
 const WEEKS=['בראשית','נח','לך לך'];
 function withExport(code, names) {const end=code.lastIndexOf('})();');assert(end>0);return code.slice(0,end)+'\nglobalThis.__qa={'+names+'};\n'+code.slice(end);}
-function oneFunction(code,name) {const start=code.indexOf('  function '+name+'(');assert(start>=0);const end=code.indexOf('\n  }',start)+4;assert(end>start);return code.slice(start,end);}
-function readerHTML(data=chapter) {const box={document:{addEventListener(){}}};vm.createContext(box);vm.runInContext(oneFunction(source('public/reader-script.js'),'qualifiedSourceHTML')+';globalThis.render=qualifiedSourceHTML;',box);return box.render(data);}
+function oneFunction(code,name) {const match=code.match(new RegExp('^( *)function '+name+'\\(', 'm'));assert(match,name);const start=match.index,close='\n'+match[1]+'}',at=code.indexOf(close,start);assert(at>start);return code.slice(start,at+close.length);}
+function readerHTML(data=chapter) {
+ const code=source('public/reader-script.js'),box={document:{addEventListener(){}}};
+ // Execute the real dependency closure, never a synthetic null-binding stub.
+ const start=code.indexOf('// BEGIN source-bound note89/v1'),end=code.indexOf('// END source-bound note89/v1',start);
+ assert(start>=0&&end>start);vm.createContext(box);
+ vm.runInContext(code.slice(start,end)+oneFunction(code,'note89QualificationText')+'\n'+oneFunction(code,'qualifiedSourceHTML')+';globalThis.render=qualifiedSourceHTML;',box);
+ return box.render(data);
+}
 function chokHTML(data=carrier) {const d=documentFor('<html><body></body></html>');d.readyState='loading';const env=sandbox(d,'/reader/chok/',async()=>{throw Error('No helper fetch');});vm.runInContext(withExport(source('public/chok.js'),'commentaryHTML'),env.box);return {env,d,html:env.box.__qa.commentaryHTML(data)?.layers || ''};}
+function exactField(field,p,lang,annotated,target){
+ assert(field);const spans=field.querySelectorAll('[data-source-field]'),refs=field.querySelectorAll('[data-note89-ref]');
+ assert.equal(spans.length,annotated?1:0);assert.equal(refs.length,annotated?1:0);
+ assert.equal((spans[0]||field).textContent,p[lang],'Complete untouched source '+p.id+' '+lang);
+ if(!annotated)return;
+ const span=spans[0],ref=refs[0],sup=ref.parentNode;
+ assert.equal(span.getAttribute('data-source-field'),lang);assert.equal(span.parentNode,field);
+ assert.equal(sup.tagName.toLowerCase(),'sup');assert(sup.hasAttribute('data-note89-marker'));
+ assert.equal(span.nextSibling,sup,'Reference follows the COMPLETE paragraph');
+ assert.equal(sup.parentNode,field);assert.equal(field.children.length,2);
+ assert.equal(ref.textContent,'89');assert.equal(ref.getAttribute('role'),'doc-noteref');
+ assert.equal(ref.getAttribute('href'),'#'+target.id);assert.equal(field.textContent,p[lang]+'89','No unbound text outside source span');
+}
+function noteText(q){
+ const text=qualifiedAPI.note89QualificationText(q);
+ if(text!==q.text){assert.equal(q.owner,'b-p146-n01');assert(['note89-current-qualification','note89-source-locator'].includes(q.id));assert.equal(text,'Printed note 89 follows the paragraph ending “He would not need you, etc.” Its citation is Chayay Moharan, item 330.');}
+ return text;
+}
 function verify(html, scope=all, chok=false) {
   const d=documentFor(html), nodes=d.querySelectorAll(chok?'.ck-qualified-unit':'article[data-source-id]');
   assert.equal(nodes.length,scope.length,'Each source owner exactly once');
+  const binding=qualifiedAPI.note89Binding(scope),targets=d.querySelectorAll('[data-note89-target]');
+  assert.equal(targets.length,binding?1:0);assert.equal(d.querySelectorAll('[data-note89-ref]').length,binding?2:0);
+  if(binding){assert.equal(binding.mainId,'b-p146-m01');assert.equal(binding.noteId,'b-p146-n01');assert.equal(binding.pairId,'146-body');assert.equal(binding.number,'89');assert.equal(targets[0].getAttribute('data-source-id'),binding.noteId);}
   for(const u of scope) {
     const matches=nodes.filter(n=>n.getAttribute('data-source-id')===u.id);assert.equal(matches.length,1,u.id);const n=matches[0];
     const pairs=n.querySelectorAll('[data-pair-id]');assert.equal(pairs.length,u.pairs.length);
-    u.pairs.forEach((pair,i)=>{assert.equal(pairs[i].getAttribute('data-pair-id'),pair.id);assert.equal(pairs[i].querySelector(chok?'.ck-he':'.commentary-he').textContent,pair.he);assert.equal(pairs[i].querySelector(chok?'.ck-en':'.commentary-en').textContent,pair.en);});
+    u.pairs.forEach((pair,i)=>{assert.equal(pairs[i].getAttribute('data-pair-id'),pair.id);const annotated=!!binding&&u.id===binding.mainId&&pair.id===binding.pairId;exactField(pairs[i].querySelector(chok?'.ck-he':'.commentary-he'),pair,'he',annotated,targets[0]);exactField(pairs[i].querySelector(chok?'.ck-en':'.commentary-en'),pair,'en',annotated,targets[0]);});
     const notes=n.querySelectorAll('[data-note-id]');assert.equal(notes.length,u.qualifications.length,'No lost or extra qualification occurrences');
     // A documentary ID can have multiple distinct notices even at one pair.
     // Preserve their exact scoped multiplicity and source order, not ID uniqueness.
@@ -66,7 +94,7 @@ function verify(html, scope=all, chok=false) {
       const same=other=>other.id===q.id&&other.placement===q.placement&&(other.placement==='after_pair'&&u.pairs.some(p=>p.id===other.pair_id)?other.pair_id:null)===pair;
       const ns=notes.filter(e=>e.getAttribute('data-note-id')===q.id&&e.getAttribute('data-note-placement')===q.placement&&(e.closest('[data-pair-id]')?.getAttribute('data-pair-id')||null)===pair);
       assert.equal(ns.length,u.qualifications.filter(same).length,'Exact ID/placement/pair multiplicity '+u.id+' '+q.id);
-      const found=ns[u.qualifications.slice(0,index).filter(same).length];assert(found);assert.equal(found.querySelector('p').textContent,q.text);
+      const found=ns[u.qualifications.slice(0,index).filter(same).length];assert(found);assert.equal(found.querySelector('p').textContent,noteText(q));
       assert.equal(found.closest('[data-source-id]').getAttribute('data-source-id'),u.id,'Qualification occurrence owner');assert(!found.closest(chok?'.ck-he':'.commentary-he'));assert(!found.closest(chok?'.ck-en':'.commentary-en'));
     }
   }
@@ -126,6 +154,18 @@ test('Chok original full Noach packet gate RED: description, complete HEEN, URLs
 test('portable exact detector rejects lost pair/qualifier/owner and changed language bytes; fresh positives',()=>{
  const html=readerHTML();verify(html);for(const selector of ['[data-note-id]','[data-pair-id]','article']){const d=documentFor(html);d.querySelector(selector).remove();assert.throws(()=>verify(d.innerHTML));}const d=documentFor(html);d.querySelector('.commentary-en').textContent+=' changed';assert.throws(()=>verify(d.innerHTML));verify(html);
  const r=chokHTML();try{verify(r.html,all,true);const d=documentFor(r.html);d.querySelector('.ck-source-qualification').remove();assert.throws(()=>verify(d.innerHTML,all,true));verify(r.html,all,true);}finally{r.env.close();}
+ // The real bound paragraph must remain complete; annotations are not source text.
+ const selected=declaredQualified.qualifiedParsha('vayeitzei').selection,positive=readerHTML(selected);verify(positive,selected.units);
+ const mutations=[
+  ['changed source span',d=>{d.querySelector('[data-source-field]').textContent+=' changed';}],
+  ['missing reference',d=>d.querySelector('[data-note89-marker]').remove()],
+  ['wrong reference number',d=>{d.querySelector('[data-note89-ref]').textContent='90';}],
+  ['wrong target',d=>d.querySelector('[data-note89-ref]').setAttribute('href','#wrong')],
+  ['reference before source',d=>{const s=d.querySelector('[data-source-field]');s.parentNode.insertBefore(s.nextSibling,s);}],
+  ['unbound suffix',d=>{d.querySelector('[data-source-field]').parentNode.appendChild(d.createTextNode(' extra'));}],
+ ];
+ for(const [name,mutate]of mutations){const d=documentFor(positive);mutate(d);assert.throws(()=>verify(d.innerHTML,selected.units),name);verify(positive,selected.units);}
+ console.log('NOTE89_HARNESS_MUTATIONS '+JSON.stringify({rejected:mutations.map(([name])=>name),freshPositives:mutations.length}));
 });
 function fixtureFetcher(overrides={}) {const requests=[];const fn=async url=>{const key=String(url).split('?')[0];requests.push(key);if(Object.hasOwn(overrides,key))return {ok:true,status:200,json:async()=>structuredClone(overrides[key]),text:async()=>JSON.stringify(overrides[key])};return {ok:false,status:404,json:async()=>{throw Error('Synthetic fixture unavailable '+key);}};};fn.requests=requests;return fn;}
 async function readerRun(ch, sidebar=false) {
@@ -250,8 +290,8 @@ test('actual standalone/full Chumash branches RED: prefer169, use runtime JSON/m
  assert(genesis.includes('qualifiedChapter(torahNum)'));assert(genesis.includes('<CommentarySidebar part={partNum} torah={torahNum} entry={commentaryEntry} />'));assert(genesis.includes('<QualifiedParsha dataset={qualifiedChapterData} />'));
 });
 test('owned Astro asset pins use exact new version; JS syntax, portable tests carry no private source prerequisites',()=>{
- for(const f of ['src/pages/reader/chumash-lh/[part]/[torah].astro','src/pages/reader/tanach-bereishit/[part]/[torah].astro'])assert(source(f).includes('?v=parsha-author-20261016-r2'));
- assert(source('src/pages/reader/chok.astro').includes('/chok.js?v=parsha-author-20261016-r2'));
+ for(const f of ['src/pages/reader/chumash-lh/[part]/[torah].astro','src/pages/reader/tanach-bereishit/[part]/[torah].astro'])assert(source(f).includes('?v=parsha-author-20261018-r1'));
+ assert(source('src/pages/reader/chok.astro').includes('/chok.js?v=parsha-author-20261018-r1'));
  for(const f of ['public/chok.js','public/reader-script.js'])new vm.Script(source(f),{filename:f});
 });
 

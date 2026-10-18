@@ -224,7 +224,7 @@ for (const options of [{ rangeError: true }, { noRects: true }]) test(`missing/t
 test('own versioned helper include is singular and shared includes unchanged', () => {
   const page = fs.readFileSync(process.env.SH_ARRIVAL_PAGE_PATH || new URL('../src/pages/reader/sefer-hamidos/[part]/[torah].astro', import.meta.url), 'utf8');
   assert.equal((page.match(/src="\/reader-sefer-hamidos-arrival\.js\?v=20261014-1" is:inline defer/g) || []).length, 1);
-  assert.ok(page.includes('/reader-script.js?v=parsha-author-20261016-r2'));
+  assert.ok(page.includes('/reader-script.js?v=parsha-author-20261018-r1'));
 });
 test('pre-DOM trusted input prevents delayed startup from taking over reading', async () => {
   const s = fixture({ readyState: 'loading' }); s.event('pointerdown', { isTrusted: true }); s.document.readyState = 'interactive'; s.domEvent('DOMContentLoaded'); await s.advance(12000);

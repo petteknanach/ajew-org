@@ -114,7 +114,11 @@ test('healthy complete118 in narrow real-template full init of each of five week
   const ss=weekly.querySelectorAll('[data-source-status]');statuses+=ss.length;held+=ss.filter(n=>n.getAttribute('data-source-status').startsWith('held')).length;
   for(const u of selected)for(const p of u.pairs)for(const lang of ['he','en']){const n=weekly.querySelectorAll('[data-source-status]').find(n=>n.getAttribute('data-note-owner')===u.id&&n.getAttribute('data-note-pair')===p.id&&n.getAttribute('data-field-language')===lang);assert(n);assert.equal(n.getAttribute('data-source-status'),p.sourceStatus[lang]);}
  }finally{r.h.close();}}
- assert.deepEqual({owners,pairs,notes,statuses,held},{owners:118,pairs:732,notes:1738,statuses:1464,held:413});console.log('ACTUAL_TEMPLATE_HEALTHY118 '+JSON.stringify({owners,pairs,notes,statuses,held}));
+ // Only these three author-approved fields moved out of held status.
+ for(const [owner,pair,lang]of [['NB-M019','NB-M019:P002','he'],['NB-M031','source-authoring-3--NB-M031--p013','he'],['NB-M031','source-authoring-3--NB-M031--p013','en']]){
+  assert.equal(masters[2].units.find(u=>u.id===owner).pairs.find(p=>p.id===pair).sourceStatus[lang],'qualified',owner+' '+pair+' '+lang);
+ }
+ assert.deepEqual({owners,pairs,notes,statuses,held},{owners:118,pairs:732,notes:1738,statuses:1464,held:410});console.log('ACTUAL_TEMPLATE_HEALTHY118 '+JSON.stringify({owners,pairs,notes,statuses,held}));
 });
 const faults=[
  {name:'newest index503',url:newest+'index.json',status:503},
@@ -175,6 +179,6 @@ test('synchronous acquisition and validation errors are observed per edition',as
 });
 test('changed template compiles without ABI transformation; three script pins only',async()=>{
  const raw=code('src/pages/reader/chok.astro'),compiler=dependencies('@astrojs/compiler');const compiled=await compiler.transform(raw,{filename:'src/pages/reader/chok.astro'});assert(!compiled.diagnostics.some(x=>x.severity===1));
- for(const p of ['chok.js','chok-verse-breslov.js','chok-source-reader.js']){new vm.Script(code('public/'+p));assert(raw.includes('/'+p+'?v=parsha-author-20261016-r2'));}
- assert.equal((raw.match(/parsha-author-20261016-r2/g)||[]).length,3);
+ for(const p of ['chok.js','chok-verse-breslov.js','chok-source-reader.js']){new vm.Script(code('public/'+p));assert(raw.includes('/'+p+'?v=parsha-author-20261018-r1'));}
+ assert.equal((raw.match(/parsha-author-20261018-r1/g)||[]).length,3);
 });

@@ -1,5 +1,5 @@
 ---
-import {qualifiedParsha, PARSHA_READER, fieldStatus, fieldStatusLabel} from '../lib/qualified-parsha.mjs';
+import {qualifiedParsha, PARSHA_READER, fieldStatus, fieldStatusLabel, note89Binding, note89Reference, note89QualificationText} from '../lib/qualified-parsha.mjs';
 // A separate edition: never borrow the older reviewed or legacy OCR bodies.
 const { slug, dataset = null } = Astro.props;
 let selection = dataset;
@@ -15,6 +15,8 @@ for (const unit of [...(selection.units || []), ...(selection.apparatus || [])])
   byIdentity.set(unit.id, unit);
 }
 const units = [...byIdentity.values()];
+const marker = note89Binding(units);
+const noteTarget = `qp-${slug || "chapter"}-note89`;
 const sourceRole = unit => unit.sourceKind || unit.source_kind || (unit.kind === 'apparatus' ? 'note' : unit.kind);
 const earlier = ['bereishit', 'noach', 'lech-lecha'].includes(slug) || selection.qualifiedMasterUrl?.includes('/qualified-1-109/') || selection.namespace === 'qualified-1-109' || units.some(unit => unit.allocationScope || ['title', 'title-metadata', 'aside', 'compiler-aside', 'compiler_aside'].includes(sourceRole(unit)) || unit.owner_main_id != null || unit.ownerMainId != null);
 const ownerId = unit => unit.owner_main_id ?? unit.ownerMainId ?? null;
@@ -49,20 +51,20 @@ const afterOwner = unit => (unit.qualifications || []).filter(note => note.place
       <h3>{group.title}</h3>
       {group.kind === 'apparatus' && !earlier && <p class="qp-notice">Standalone source bodies; main ownership remains unassigned.</p>}
       {group.kind === 'apparatus' && selection.apparatusScopeNotice && <p class="qp-notice">{selection.apparatusScopeNotice}</p>}
-      {group.items.map(unit => <article class="qp-unit" data-source-id={unit.id} data-source-kind={sourceRole(unit)} data-owner-main-id={ownerId(unit) == null ? 'null' : ownerId(unit)} data-allocation-scope={unit.allocationScope}>
+      {group.items.map(unit => <article id={marker && unit.id === marker.noteId ? noteTarget : undefined} data-note89-target={marker && unit.id === marker.noteId ? "" : undefined} tabindex={marker && unit.id === marker.noteId ? "-1" : undefined} role={marker && unit.id === marker.noteId ? "doc-endnote" : undefined} aria-label={marker && unit.id === marker.noteId ? "Printed note 89" : undefined} class="qp-unit" data-source-id={unit.id} data-source-kind={sourceRole(unit)} data-owner-main-id={ownerId(unit) == null ? 'null' : ownerId(unit)} data-allocation-scope={unit.allocationScope}>
         <p class="qp-locator">{unit.id}{unit.verseRef ? ` · ${unit.verseRef.book} ${unit.verseRef.chapter}:${unit.verseRef.verse}` : ''}</p>
         {earlier && <p class="qp-notice">{sourceRole(unit) === 'main' ? 'Main teaching' : sourceRole(unit) === 'note' ? 'Printed note' : ['title', 'title-metadata'].includes(sourceRole(unit)) ? 'Source title' : ['aside', 'compiler-aside', 'compiler_aside'].includes(sourceRole(unit)) ? 'Compiler aside' : 'Printed apparatus'}{ownerId(unit) != null ? ` · Source owner: ${ownerId(unit)}` : sourceRole(unit) !== 'main' ? ' · Source owner unassigned' : ''}</p>}
         {earlier && sourceRole(unit) === 'main' && !unit.verseRef && <p class="qp-notice">Independent weekly source context — no verse or daily assignment (not Genesis 3:1).</p>}
         {unit.pairs.map(pair => <div class="qp-pair" data-pair-id={pair.id}>
           {['he', 'en'].map(language => fieldStatus(pair, language) && <aside class="qp-qualification" data-field-language={language} data-source-status={fieldStatus(pair, language)}>{fieldStatusLabel(pair, language)}</aside>)}
-          <p class="qp-he" data-qualified-text="he" lang="he" dir="rtl">{pair.he}</p>
-          <p class="qp-en" data-qualified-text="en" lang="en" dir="ltr">{pair.en}</p>
+          <p class="qp-he" data-qualified-text="he" lang="he" dir="rtl">{note89Reference(marker, unit, pair, noteTarget) ? <><span data-source-field="he">{pair.he}</span><Fragment set:html={note89Reference(marker, unit, pair, noteTarget)} /></> : pair.he}</p>
+          <p class="qp-en" data-qualified-text="en" lang="en" dir="ltr">{note89Reference(marker, unit, pair, noteTarget) ? <><span data-source-field="en">{pair.en}</span><Fragment set:html={note89Reference(marker, unit, pair, noteTarget)} /></> : pair.en}</p>
           {afterPair(unit, pair).map(note => <aside class="qp-qualification" data-note-id={note.id} data-note-placement={note.placement} lang="en" dir="ltr">
-            <p>{note.text}</p><small>{note.id}{aliasLabel(note) && ` · Aliases: ${aliasLabel(note)}`}</small>
+            <p>{note89QualificationText(note)}</p><small>{note.id}{aliasLabel(note) && ` · Aliases: ${aliasLabel(note)}`}</small>
           </aside>)}
         </div>)}
         {afterOwner(unit).map(note => <aside class="qp-qualification" data-note-id={note.id} data-note-placement={note.placement} lang="en" dir="ltr">
-          <p>{note.text}</p><small>{note.id}{aliasLabel(note) && ` · Aliases: ${aliasLabel(note)}`}</small>
+          <p>{note89QualificationText(note)}</p><small>{note.id}{aliasLabel(note) && ` · Aliases: ${aliasLabel(note)}`}</small>
         </aside>)}
       </article>)}
     </section>
@@ -70,7 +72,7 @@ const afterOwner = unit => (unit.qualifications || []).filter(note => note.place
   {globals.length > 0 && <section class="qp-global-qualifications" aria-label="Global source qualifications">
     <h3>Global source qualifications</h3>
     {globals.map(note => <aside class="qp-qualification" data-note-id={note.id} data-note-placement={note.placement} lang="en" dir="ltr">
-      <p>{note.text}</p><small>{note.id}{aliasLabel(note) && ` · Aliases: ${aliasLabel(note)}`}</small>
+      <p>{note89QualificationText(note)}</p><small>{note.id}{aliasLabel(note) && ` · Aliases: ${aliasLabel(note)}`}</small>
     </aside>)}
   </section>}
 </section>
@@ -78,6 +80,20 @@ const afterOwner = unit => (unit.qualifications || []).filter(note => note.place
 .qualified-parsha{margin:24px auto;padding:22px;max-width:960px;background:var(--reader-bg-secondary,#f8f5ef);color:var(--reader-text,#202838);border:1px solid var(--reader-border,#c7c0b0);border-radius:14px;overflow-wrap:anywhere}.qp-notice{line-height:1.65;font-size:.95rem;white-space:pre-wrap}.qp-resources,.qp-languages{display:flex;flex-wrap:wrap;gap:12px;margin:18px 0}.qp-languages button{min-height:44px;padding:8px 18px;border:1px solid #777;border-radius:8px;background:transparent;color:inherit;cursor:pointer}.qp-languages button[aria-pressed=true]{background:#1a365d;color:white}.qp-unit{border-top:1px solid #a9a18d;padding:20px 0}.qp-locator{font-size:.85rem}.qp-he,.qp-en{white-space:pre-wrap;line-height:1.85;margin:12px 0}.qp-he{font-family:'Noto Serif Hebrew','Frank Ruhl Libre',serif;font-size:1.25rem;text-align:right}.qp-en{text-align:left}.qp-qualification{margin:12px 0;padding:12px;border-inline-start:3px solid #a15c18;background:var(--reader-bg,#fffaf0);font-size:.95rem;line-height:1.65}.qp-qualification p{white-space:pre-wrap;margin:0 0 6px}.qp-qualification small{overflow-wrap:anywhere}.qp-group{margin:24px 0}.qp-pair [hidden]{display:none!important}@media(max-width:500px){.qualified-parsha{padding:14px;margin:16px 0}.qp-he{font-size:1.15rem}}
 </style>
 <script>
+function note89Activate(event, rootSelector) {
+  var link = event.target && event.target.closest('[data-note89-ref]');
+  var root = link && link.closest(rootSelector);
+  if (!root) return;
+  var id = link.getAttribute('href').slice(1);
+  var target = Array.prototype.find.call(root.querySelectorAll('[data-note89-target]'), function(n) { return n.id === id; });
+  if (!target) return;
+  event.preventDefault();
+  for (var p = target; p && p !== root; p = p.parentNode) if (p.tagName && p.tagName.toLowerCase() === 'details') p.open = true;
+  var body = target.querySelector('details'); if (body) body.open = true;
+  target.focus(); target.scrollIntoView({block:'nearest'});
+}
+
+document.addEventListener('click', event => note89Activate(event, '[data-qualified-parsha]'));
 // Delegation also covers chapter-sidebar clones of the server-rendered template.
 document.addEventListener('click', event => {
   const button = (event.target as Element)?.closest<HTMLButtonElement>('[data-qualified-lang]');
