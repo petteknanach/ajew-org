@@ -31,6 +31,11 @@ def is_sichos221230_archive(path: Path, reader_dir: Path) -> bool:
     return path.relative_to(reader_dir).parts[:2] == ("reviewed", "sichos-221230-sources")
 
 
+def is_sichos231240_archive(path: Path, reader_dir: Path) -> bool:
+    """Preserved original/comparison witnesses are not ordinary teaching inputs."""
+    return path.relative_to(reader_dir).parts[:2] == ("reviewed", "sichos-231240-sources")
+
+
 def strip_html(s: Any) -> str:
     if s is None:
         return ""
@@ -270,7 +275,7 @@ def main() -> None:
     entries: list[dict[str, Any]] = []
     for path in sorted(READER_DIR.rglob("*.json")):
         rel = path.relative_to(READER_DIR)
-        if is_wrapup_archive(path, READER_DIR) or is_sichos221230_archive(path, READER_DIR):
+        if is_wrapup_archive(path, READER_DIR) or is_sichos221230_archive(path, READER_DIR) or is_sichos231240_archive(path, READER_DIR):
             continue  # retained originals/wrappers are not plain selected editions
         if rel.parts and rel.parts[0] in SKIP_DIRS:
             continue
