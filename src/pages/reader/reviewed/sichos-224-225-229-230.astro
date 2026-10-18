@@ -1,0 +1,58 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import {loadEdition,PIN,escape} from '../../../lib/qualified-sichos-five.mjs';
+const edition=await loadEdition();
+const plain='/reader-plain/reviewed/sichos-224-225-229-230/';
+---
+<Layout noindex={true} title={edition.title} description={edition.notice}>
+<section class="qualified-sichos-five" data-qualified-sichos-five data-projection-sha={PIN} data-print-safe="false" data-mode="both" data-witness="he">
+<script is:inline>
+(function(){
+ const scope=document.querySelector('[data-qualified-sichos-five]');
+ const authenticated=()=>typeof window.QualifiedSichosFiveIntegrityReady==='function'&&window.QualifiedSichosFiveIntegrityReady();
+ const notify=()=>scope.querySelector('[data-integrity-status]').textContent='Exports blocked: the complete reading text and source notes could not be verified.';
+ document.addEventListener('click',e=>{const b=e.target.closest('button');if(b&&b.matches('#btn-share,#btn-add-sefer,#btn-print,.seg-copy-btn,.seg-add-sefer-btn,.ajew-segment-action-btn,.selection-popup .sel-btn,#highlight-context-menu .hl-action[data-action="share"],#highlight-context-menu .hl-action[data-action="save"],.notes-panel-btn,[data-q-action]')&&!authenticated()){e.preventDefault();e.stopImmediatePropagation();notify();}},true);
+ document.addEventListener('copy',e=>{const sel=getSelection();if(authenticated()||!sel||sel.isCollapsed)return;let intersects=false;try{for(let i=0;i<sel.rangeCount;i++)if(sel.getRangeAt(i).intersectsNode(scope))intersects=true;intersects=intersects||scope.contains(sel.anchorNode)||scope.contains(sel.focusNode);}catch(_){intersects=true;}if(intersects){e.preventDefault();e.stopImmediatePropagation();notify();}},true);
+})();
+</script>
+<p class="qualified-print-warning" role="alert">Print withheld: the complete reading text and readable source notes could not be verified. Return to the reading page and try again.</p>
+<nav aria-label="Reader navigation"><a href="/reader/">Reader</a> › <a href="/reader/reviewed/">Reviewed editions</a></nav>
+<h1>{edition.title}</h1><p>{edition.notice}</p>
+<p>This selection contains five paragraphs, not the complete teachings. The two supplied Hebrew texts remain separate and unchanged. Source notes stay visible in every language view. Copy, Save and Share include the complete selected paragraphs, both Hebrew texts, English and all accompanying source notes, regardless of the language displayed.</p>
+<p data-integrity-status role="status" aria-live="polite">Checking the reading text and source notes; exports are not yet available.</p>
+<div class="qualified-toolbar" aria-label="Reading and export controls">
+ <button type="button" data-q-mode="hebrew" aria-pressed="false">Hebrew</button><button type="button" data-q-mode="english" aria-pressed="false">English</button><button type="button" data-q-mode="both" aria-pressed="true">Bilingual</button>
+ <button type="button" data-q-witness="he" aria-pressed="true">Supplied Hebrew</button><button type="button" data-q-witness="he_nikud" aria-pressed="false">Supplied pointed Hebrew</button>
+ <button type="button" data-q-action="copy">Copy five paragraphs with source notes</button><button type="button" data-q-action="save">Save to My Sefer</button><button type="button" data-q-action="share">Share five paragraphs with source notes</button><button type="button" id="btn-print">Print with source notes</button>
+ <label>Find in these paragraphs <input data-reader-query type="search" /></label><span data-search-status role="status"></span>
+</div>
+<div class="qualified-selection-actions selection-popup" aria-label="Selected text actions">
+<button type="button" class="sel-btn" data-action="copy" disabled>Copy selected paragraphs with source notes</button><button type="button" class="sel-btn" data-action="mysefer" disabled>Save selected paragraphs</button><button type="button" class="sel-btn" data-action="share" disabled>Share selected paragraphs</button><p data-qualified-selection-status role="status">Select visible source text. Exports include the complete selected paragraphs, both Hebrew texts and all source notes.</p>
+</div>
+<nav aria-label="Teachings">{edition.groups.map(g=><a href={'#group-'+g.id}>{g.title}</a>)}</nav>
+{edition.groups.map(g=><section class="qualified-group" data-group={g.id} id={'group-'+g.id}>
+ <h2>{g.title}</h2><p><a href={g.canonical_url}>Read the complete teaching in the earlier edition</a></p>
+ {edition.units.filter(u=>u.group===g.id).map(u=><article class="qualified-unit" data-unit={u.owner} data-index={u.owner} data-source-index={String(u.source_index)} data-position={String(u.array_position)} id={u.anchor}>
+  <h3>Teaching {u.section}, paragraph {u.source_index}</h3>
+  <div class="qualified-pair"><div class="qualified-he" lang="he" dir="rtl"><p class="witness-label primary" lang="en" dir="ltr">Supplied Hebrew</p><p data-source-field="he" set:html={escape(u.he)} /><p class="witness-label secondary" lang="en" dir="ltr">Supplied pointed Hebrew</p><p data-source-field="he_nikud" set:html={escape(u.he_nikud)} /></div><div class="qualified-en" lang="en" dir="ltr"><p class="witness-label">English</p><p data-source-field="en" set:html={escape(u.en)} /></div></div>
+  <div class="required-qualifications" aria-label="Source notes">{u.qualifications.map((q,i)=><p data-qualification={q.id} data-owner={u.owner} data-ordinal={String(i)} set:html={escape(q.text)} />)}</div>
+  <div class="qualified-unit-actions"><button type="button" data-q-action="copy">Copy paragraph with source notes</button><button type="button" data-q-action="save">Save paragraph</button><button type="button" data-q-action="share">Share paragraph with source notes</button></div>
+  <details class="archive"><summary>Earlier English — historical comparison, not the corrected translation</summary><pre set:html={escape(u.displacedEnglish)} /></details>
+ </article>)}
+</section>)}
+<section class="archive"><h2>Text downloads and earlier editions</h2><p>These downloads contain the five paragraphs with both Hebrew texts and every source note. They are not a complete edition of the four teachings.</p>
+<p><a href={plain}>HTML</a> · <a href={plain+'index.txt'}>TXT</a> · <a href={plain+'index.md'}>Markdown</a> · <a href={plain+'index.json'}>JSON</a></p>
+<details><summary>Earlier complete teaching files and selected text</summary><p>The earlier files are retained unchanged for historical comparison. They do not replace the corrected translation or resolve the source limitations described above.</p><ul>{edition.assets.map(a=><li><a href={a.url}>{a.name==='selected-five.json'?'Five selected paragraphs with source notes':'Earlier teaching '+a.name.match(/\d+/)?.[0]}</a></li>)}</ul></details>
+</section>
+</section>
+<script is:inline type="module" src="/qualified-sichos-five-reader.js?v=1"></script>
+<style is:global>
+.qualified-sichos-five { max-width:1100px; margin:auto; padding:1rem; background:#fff; color:#111; font:18px/1.65 system-ui; }
+.qualified-sichos-five h1 { font-size:1.6rem; }.qualified-sichos-five nav,.qualified-sichos-five .qualified-toolbar { display:flex; flex-wrap:wrap; gap:.6rem; margin:1rem 0; }.qualified-sichos-five button { padding:.65rem; min-height:44px; cursor:pointer; }.qualified-sichos-five button[aria-pressed=true] { border:2px solid #294e6a; background:#eaf3fa; }.qualified-sichos-five .qualified-toolbar label { display:block; max-width:100%; }.qualified-sichos-five input { max-width:100%; }
+.qualified-sichos-five .qualified-unit { margin:2rem 0; padding:1rem; border:1px solid #bbb; scroll-margin-top:5rem; }.qualified-sichos-five .qualified-pair { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:1rem; }.qualified-sichos-five [data-source-field],.qualified-sichos-five [data-qualification],.qualified-sichos-five pre { white-space:pre-wrap; overflow-wrap:anywhere; }.qualified-sichos-five pre { max-width:100%; font:inherit; }.qualified-sichos-five .required-qualifications { border-top:1px solid #777; padding-top:1rem; }.qualified-sichos-five .witness-label { font-size:.85rem; }.qualified-sichos-five .qualified-print-warning { display:none; }
+.qualified-sichos-five .qualified-selection-actions { position:static; background:#fff; border:1px solid #888; padding:.6rem; display:block; font-size:.85rem; }.qualified-sichos-five .qualified-selection-actions p { margin:.5rem 0; }
+@media screen { .qualified-sichos-five[data-mode=hebrew] .qualified-en,.qualified-sichos-five[data-mode=english] .qualified-he { display:none; }.qualified-sichos-five[data-mode=hebrew] .qualified-pair,.qualified-sichos-five[data-mode=english] .qualified-pair { grid-template-columns:minmax(0,1fr); }.qualified-sichos-five[data-witness=he] [data-source-field=he_nikud],.qualified-sichos-five[data-witness=he] .witness-label.secondary,.qualified-sichos-five[data-witness=he_nikud] [data-source-field=he],.qualified-sichos-five[data-witness=he_nikud] .witness-label.primary { display:none; } }
+@media screen and (max-width:700px) { .qualified-sichos-five .qualified-pair { grid-template-columns:minmax(0,1fr); }.qualified-sichos-five .qualified-unit { padding:.6rem; }.qualified-sichos-five { padding:.6rem; } }
+@media print { body,.qualified-sichos-five { background:white!important; color:black!important; }.qualified-sichos-five nav,.qualified-sichos-five .qualified-toolbar,.qualified-sichos-five .qualified-selection-actions,.qualified-sichos-five .qualified-unit-actions,.qualified-sichos-five .archive,.qualified-sichos-five [data-integrity-status] { display:none!important; }.qualified-sichos-five .qualified-pair { display:block!important; }.qualified-sichos-five [data-source-field] { display:block!important; }.qualified-sichos-five [data-qualification] { display:block!important; color:rgb(0,0,0)!important; -webkit-text-fill-color:rgb(0,0,0)!important; font-size:16px!important; text-indent:0; letter-spacing:normal; word-spacing:0; }.qualified-sichos-five .qualified-unit { break-inside:auto; }.qualified-sichos-five[data-print-safe=false] > * { display:none!important; }.qualified-sichos-five[data-print-safe=false] > .qualified-print-warning { display:block!important; } body > :not(main):not(script):not(style) { display:none!important; } }
+</style>
+</Layout>

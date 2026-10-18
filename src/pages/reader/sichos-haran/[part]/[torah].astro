@@ -109,6 +109,12 @@ const structuredData = torahData ? JSON.stringify({
         </aside>
       )}
 
+      {[224, 225, 229, 230].includes(torahNum) && (
+        <aside data-sichos-five-entry style="margin:1rem 0;padding:1rem;border:1px solid currentColor;border-radius:8px">
+          <p>A corrected English translation is available for {torahNum === 230 ? 'paragraphs 2 and 3' : `paragraph ${torahNum === 225 ? 11 : 3}`} of this teaching, with the supplied Hebrew and source notes. This earlier edition and the other paragraphs are unchanged.</p>
+          <a href={`/reader/reviewed/sichos-224-225-229-230/#group-sichos${torahNum}`}>Read the corrected {torahNum === 230 ? 'paragraphs' : 'paragraph'}</a>
+        </aside>
+      )}
       <div class="reader-breadcrumb">
         <a href="/reader">Reader</a>
         <span>&rsaquo;</span>
