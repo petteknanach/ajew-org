@@ -702,7 +702,9 @@ import Layout from '../layouts/Layout.astro';
   </style>
 
   <script is:inline src="/my-sefer-storage.js"></script>
-  <script is:inline>
+  <script>
+  import {buildFullSavedShare, deliverFullSavedShare} from '../lib/my-sefer-full-saved-share.mjs';
+
   (async function() {
     'use strict';
 
@@ -1067,9 +1069,28 @@ import Layout from '../layouts/Layout.astro';
     });
 
     // --- Share ---
-    document.getElementById('btn-share-sefer').addEventListener('click', () => {
+    document.getElementById('btn-share-sefer').addEventListener('click', async () => {
       if (sefer.passages.length === 0) {
         alert('Your Sefer is empty. Add some passages first!');
+        return;
+      }
+      const fullSavedShare = buildFullSavedShare(sefer);
+      if (fullSavedShare) {
+        try {
+          const result = await deliverFullSavedShare(fullSavedShare, {
+            share: typeof navigator.share === 'function' ? data => navigator.share(data) : undefined,
+            writeText: navigator.clipboard && typeof navigator.clipboard.writeText === 'function'
+              ? text => navigator.clipboard.writeText(text) : undefined,
+            manualCopy: text => { window.prompt('Copy this full Sefer text (including personal notes):', text); }
+          });
+          if (result === 'copied') {
+            const btn = document.getElementById('btn-share-sefer');
+            btn.textContent = 'Full Text Copied!';
+            setTimeout(() => { btn.textContent = 'Share'; }, 2000);
+          }
+        } catch {
+          alert('Full Sefer text could not be shared or copied. Your saved collection has not been changed.');
+        }
         return;
       }
       // Build shareable data: compact references
