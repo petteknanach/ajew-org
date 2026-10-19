@@ -23,14 +23,78 @@
     });
   }
   function esc(x) { return String(x == null ? '' : x).replace(/[&<>"']/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
-  function rich(x) {
-    // Empty provider commentary anchors are markup, not recited characters.
-    var source=String(x).replace(/<i\b(?=[^>]*\bdata-commentator\s*=)[^>]*>\s*<\/i\s*>/gi,'');
-    return esc(source).replace(/&lt;(\/?)(b|i)&gt;/g, '<$1$2>').replace(/&lt;small&gt;/g, '<span class="ck-classical-gloss" data-source-role="classical-context">').replace(/&lt;\/small&gt;/g, '</span>');
+  function sourceEntityText(text) {
+    var named={amp:'&',lt:'<',gt:'>',quot:'"',apos:"'",nbsp:'\u00a0',ndash:'\u2013',mdash:'\u2014',lsquo:'\u2018',rsquo:'\u2019',ldquo:'\u201c',rdquo:'\u201d',hellip:'\u2026',ensp:'\u2002',emsp:'\u2003',thinsp:'\u2009',shy:'\u00ad',middot:'\u00b7',bull:'\u2022',lrm:'\u200e',rlm:'\u200f'};
+    return text.replace(/&(#x[0-9a-f]+|#[0-9]+|[a-z][a-z0-9]+);/gi,function(entity,key){
+      if(key[0]==='#'){
+        var n=key[1].toLowerCase()==='x'?parseInt(key.slice(2),16):parseInt(key.slice(1),10);
+        // HTML5 numeric references retain the specified legacy C1 replacements.
+        if(n>=128&&n<=159)n=[8364,129,8218,402,8222,8230,8224,8225,710,8240,352,8249,338,141,381,143,144,8216,8217,8220,8221,8226,8211,8212,732,8482,353,8250,339,157,382,376][n-128];
+        return n===0||n>0x10ffff||(n>=0xd800&&n<=0xdfff)?'\ufffd':String.fromCodePoint(n);
+      }
+      if(Object.prototype.hasOwnProperty.call(named,key))return named[key];
+      // Decode just one complete entity, never arbitrary markup or a whole field.
+      if(typeof document.createElement==='function'){
+        var decoder=document.createElement('textarea');decoder.innerHTML=entity;
+        return decoder.value||decoder.textContent||entity;
+      }
+      return entity;
+    });
+  }
+  function rich(x, suppressBold) {
+    // Presentation-only, quote-aware carrier tokenizer. Raw sources never change.
+    var source=String(x==null?'':x).replace(/\r\n?/g,'\n'),html='',at=0,textAt=0,stack=[];
+    var known='a abbr address article aside b bdi bdo blockquote br button caption center cite code col colgroup dd del details div dl dt em fieldset figcaption figure font footer h1 h2 h3 h4 h5 h6 header hr i iframe img input ins kbd label legend li link main mark meta nav ol option p picture pre q rp rt ruby s samp script section select small source span strike strong style sub summary sup table tbody td template textarea tfoot th thead time tr tt u ul var video wbr'.split(' ');
+    function token(position){
+      var escaped=source.slice(position,position+4)==='&lt;',width=escaped?4:1;
+      if(!escaped&&source[position]!=='<')return null;
+      var m=/^(\/?)([a-z][a-z0-9]*)\b/i.exec(source.slice(position+width));
+      if(!m||known.indexOf(m[2].toLowerCase())<0)return null;
+      var i=position+width+m[0].length,attrsAt=i,quote=null;
+      while(i<source.length){
+        var q=source[i],step=1;
+        if(escaped){
+          var quoted=/^&(?:quot|QUOT|apos|#(?:0*(?:34|39)|[xX]0*(?:22|27)));/.exec(source.slice(i));
+          if(quoted){q=/^&(?:quot|QUOT|#(?:0*34|[xX]0*22));$/.test(quoted[0])?'"':"'";step=quoted[0].length;}
+        }
+        // Literal quotes and encoded-carrier quotes are distinct lexical layers.
+        if(quote){if(q===quote.char&&(step>1)===quote.encoded)quote=null;i+=step;continue;}
+        if(q==='"'||q==="'"){quote={char:q,encoded:step>1};i+=step;continue;}
+        var end=escaped&&source.slice(i,i+4)==='&gt;'?4:!escaped&&q==='>'?1:0;
+        if(end)return {escaped:escaped,name:m[2].toLowerCase(),close:!!m[1],end:i+end,complete:true,selfClosing:/\/\s*$/.test(source.slice(attrsAt,i)),attrs:source.slice(attrsAt,i)};
+        if(q==='<'||escaped&&source.slice(i,i+4)==='&lt;')return {name:m[2].toLowerCase(),close:!!m[1],end:i,complete:false,selfClosing:false,attrs:source.slice(attrsAt,i)};
+        i+=step;
+      }
+      return {name:m[2].toLowerCase(),close:!!m[1],end:i,complete:false,selfClosing:false,attrs:source.slice(attrsAt,i)};
+    }
+    function text(end){html+=esc(sourceEntityText(source.slice(textAt,end))).replace(/\r/g,'&#13;');}
+    function close(entry){return entry==='small'?'</span>':'</'+entry+'>';}
+    while(at<source.length){
+      var comment=source.slice(at,at+4)==='<!--'?4:source.slice(at,at+7)==='&lt;!--'?7:0;
+      if(comment){text(at);var commentEnd=source.indexOf(comment===4?'-->':'--&gt;',at+comment);at=commentEnd<0?source.length:commentEnd+(comment===4?3:6);textAt=at;continue;}
+      var t=token(at);
+      if(!t){at++;continue;}
+      text(at);at=t.end;textAt=at;
+      if(!t.complete)continue;
+      if(!t.close&&(t.name==='script'||t.name==='style')){
+        var ending=new RegExp(t.escaped?'&lt;\\/'+t.name+'\\s*&gt;':'<\\/'+t.name+'\\s*>','ig');ending.lastIndex=at;var found=ending.exec(source);at=found?ending.lastIndex:source.length;textAt=at;continue;
+      }
+      if(t.selfClosing){if(t.name==='br')html+='<br>';continue;}
+      if(t.name==='i'&&!t.close&&/\bdata-commentator\s*=/i.test(sourceEntityText(t.attrs))){
+        var blank=/^\s*/.exec(source.slice(at))[0].length,following=token(at+blank);
+        if(following&&following.complete&&following.close&&following.name==='i'){at=following.end;textAt=at;continue;}
+      }
+      var name=t.name==='strong'?'b':t.name==='em'?'i':t.name;
+      if(suppressBold&&name==='b')continue;
+      if(name==='b'||name==='i'||name==='small'){
+        if(t.close){var index=stack.lastIndexOf(name);if(index>=0)while(stack.length>index)html+=close(stack.pop());}
+        else {stack.push(name);html+=name==='small'?'<span class="ck-classical-gloss" data-source-role="classical-context">':'<'+name+'>';}
+      }else if(name==='br'||t.close&&/^(p|div|li|blockquote)$/.test(name))html+='<br>';
+    }
+    text(source.length);while(stack.length)html+=close(stack.pop());return html;
   }
   function targumText(x) {
-    // Imported bold emphasis is not part of the recited Aramaic.
-    return rich(String(x == null ? '' : x).replace(/<\/?(?:b|strong)\b[^<>]*>/gi, ''));
+    return rich(x,true);
   }
   function digest(raw) { return window.crypto.subtle.digest('SHA-256', new TextEncoder().encode(raw)).then(function (b) { return Array.from(new Uint8Array(b)).map(function (x) { return x.toString(16).padStart(2,'0'); }).join(''); }); }
   function read(url, rawLoader) { return rawLoader(url + '?v=' + PINS[url]).then(function (raw) { return digest(raw).then(function (hash) { if (hash !== PINS[url]) throw Error('Source changed'); return JSON.parse(raw); }); }); }

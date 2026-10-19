@@ -181,9 +181,10 @@
   // Generated references only: never normalize source paragraphs or Names.
   function plainHeNum(n) { return heNum(n).replace(/['\u05f3\u05f4]/g, ''); }
   function refLabelHTML(ref) {
-    // Hebrew citations read chapter:verse from right to left; Latin/digit-only
-    // citations remain left to right. Keep source chapter/verse values unchanged.
-    var direction = /[א-ת]/.test(ref) ? 'rtl' : 'ltr';
+    // Keep the user-requested visual chapter:verse sequence left-to-right.
+    // Hebrew numeral groups retain their own internal right-to-left order.
+    // Never swap the underlying chapter/verse values to repair presentation.
+    var direction = 'ltr';
     return '<bdi class="ck-generated-ref" dir="' + direction + '">' + esc(ref).replace(/[א-ת]+/g, function (n) {
       return '<bdi dir="rtl">' + n + '</bdi>';
     }) + '</bdi>';
@@ -1024,6 +1025,15 @@
     return '<details class="ck-layer ck-zohar" data-field-role="original-source"><summary>זוהר — נוסח המקור · Original source — ' +
       zoharEscape(identities.join(' ← ')) + '</summary>' + body + '</details>' + qualification;
   }
+  function isLechMonday(wk, day) { return wk === 'לך לך' && day === 'יום שני'; }
+  function lechMondayReading(wk, day) {
+    var english = state.tanachen;
+    function unavailable() { return '<p class="ck-source-unavailable" dir="rtl">גמרא — שבת <bdi dir="ltr">41a</bdi> · <span lang="en" dir="ltr">This reading is temporarily unavailable.</span></p>'; }
+    if (!window.ChokLechMonday || typeof window.ChokLechMonday.reading !== 'function') return Promise.resolve(unavailable());
+    return Promise.resolve().then(function () {
+      return window.ChokLechMonday.reading(wk, day, 'talmud', english, function (url) { return fetchJSON(url, true); });
+    }).catch(unavailable);
+  }
   function isLechSunday(wk, day) { return wk === 'לך לך' && day === 'יום ראשון'; }
   function lechSundayReading(wk, day, section, originalRef) {
     function unavailable() {
@@ -1195,8 +1205,8 @@
       }
       if (d.gemara && d.gemara.masechet && want('talmud')) {
         p = p.then(function () {
-          return (isLechSunday(wk,dayE) ? lechSundayReading(wk,dayE,'talmud') : qualifiedDay ? Promise.resolve(window.ChokSources.reading('talmud', state.tanachen)) : wk==='נח' ? Promise.resolve(window.ChokSources.weekReading(wk,dayE,'talmud',state.tanachen)||window.ChokSources.unavailable('talmud')) : gemaraHTML(d.gemara)).then(function (html) { html = html || ''; html = dayKavana('talmud', d) + html; html = voiceBox(wk!=='נח' && dc && dc.talmud, 'גמרא') + html;
-            if (html) out.push('<section class="ck-section" data-sec="talmud">' + html + '</section>');
+          return (isLechMonday(wk,dayE) ? lechMondayReading(wk,dayE) : isLechSunday(wk,dayE) ? lechSundayReading(wk,dayE,'talmud') : qualifiedDay ? Promise.resolve(window.ChokSources.reading('talmud', state.tanachen)) : wk==='נח' ? Promise.resolve(window.ChokSources.weekReading(wk,dayE,'talmud',state.tanachen)||window.ChokSources.unavailable('talmud')) : gemaraHTML(d.gemara)).then(function (html) { html = html || ''; html = dayKavana('talmud', d) + html; html = voiceBox(wk!=='נח' && !isLechMonday(wk,dayE) && dc && dc.talmud, 'גמרא') + html;
+            if (html) out.push('<section class="ck-section" data-sec="talmud">' + (isLechMonday(wk,dayE) ? popBtn() : '') + html + '</section>');
           });
         });
       }

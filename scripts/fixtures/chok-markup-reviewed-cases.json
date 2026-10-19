@@ -1,0 +1,111 @@
+{
+  "findings": [
+    {
+      "id": "F01",
+      "reproductions": [
+        {
+          "input": "<span title=\"x > y\">יהוה</span>",
+          "expectedHTML": "יהוה"
+        },
+        {
+          "input": "<span title=\"<script>\">יהוה</span>",
+          "expectedHTML": "יהוה"
+        },
+        {
+          "input": "<span title=\"<!--\">יהוה</span>",
+          "expectedHTML": "יהוה"
+        }
+      ]
+    },
+    {
+      "id": "F02",
+      "reproductions": [
+        {
+          "input": "<b>יהוה &amp; God</b>",
+          "expectedHTML": "<b>יהוה &amp; God</b>"
+        },
+        {
+          "input": "&lt;span&gt;L&#111;rd&lt;/span&gt;",
+          "expectedHTML": "Lord"
+        }
+      ]
+    },
+    {
+      "id": "F03",
+      "reproductions": [
+        {
+          "input": "&lt;b&gt;וְנָקְבָּא&lt;/b&gt;",
+          "expectedHTML": "וְנָקְבָּא"
+        },
+        {
+          "input": "&lt;strong&gt;וְנָקְבָּא&lt;/strong&gt;",
+          "expectedHTML": "וְנָקְבָּא"
+        }
+      ]
+    },
+    {
+      "id": "F04",
+      "reproductions": [
+        {
+          "input": "Text <b",
+          "expectedHTML": "Text "
+        },
+        {
+          "input": "<small/>",
+          "expectedHTML": ""
+        },
+        {
+          "input": "<small>gloss",
+          "expectedHTML": "<span class=\"ck-classical-gloss\" data-source-role=\"classical-context\">gloss</span>"
+        }
+      ]
+    },
+    {
+      "id": "F05-parent-active-carrier",
+      "reproductions": [
+        {
+          "input": "<script/>alert(1)</script>לֵאמֹר",
+          "expectedHTML": "לֵאמֹר"
+        },
+        {
+          "input": "<style/>body{color:red}</style>לֵאמֹר",
+          "expectedHTML": "לֵאמֹר"
+        },
+        {
+          "input": "<script>unseen &lt;/script&gt;unseen</script>לֵאמֹר",
+          "expectedHTML": "לֵאמֹר"
+        }
+      ]
+    },
+    {
+      "id": "T01",
+      "reproductions": [
+        {
+          "input": "&lt;span title=&#34;x &gt; y&#34;&gt;יהוה&lt;/span&gt;",
+          "expectedHTML": "יהוה"
+        },
+        {
+          "input": "&lt;span title=&#34;&lt;script&gt;&#34;&gt;יהוה&lt;/span&gt;",
+          "expectedHTML": "יהוה"
+        },
+        {
+          "input": "&lt;span title=&apos;&lt;script&gt;&apos;&gt;יהוה&lt;/span&gt;",
+          "expectedHTML": "יהוה"
+        }
+      ]
+    },
+    {
+      "id": "T02",
+      "reproductions": [
+        {
+          "input": "יהוה &#128;",
+          "expectedHTML": "יהוה €"
+        },
+        {
+          "input": "יהוה &#x80;",
+          "expectedHTML": "יהוה €"
+        }
+      ]
+    }
+  ]
+}

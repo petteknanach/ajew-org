@@ -83,9 +83,10 @@ import Layout from '../../layouts/Layout.astro';
 <script src="/medooyuk.js?v=four-surfaces-20261006-r1" defer></script>
 <script src="/psalms-data.js?v=psalms-annotations-20261002-r1&amp;integrity=sha256-20261003" defer></script>
 <script src="/chok-verse-breslov.js?v=parsha-author-20261018-r1" defer></script>
-<script src="/chok-source-reader.js?v=parsha-author-20261018-r1" defer></script>
+<script src="/chok-source-reader.js?v=chok-live-corrections-20261019-r1" defer></script>
 <script src="/chok-lech-sunday.js?v=chok-live-corrections-20261018-r2" defer></script>
-<script src="/chok.js?v=chok-live-corrections-20261018-r2" defer></script>
+<script src="/chok-lech-monday.js?v=chok-live-corrections-20261019-r1" defer></script>
+<script src="/chok.js?v=chok-live-corrections-20261019-r1" defer></script>
 
 <style is:global>
   /* Actual study offerings: three columns/two rows, selectors separate. */
@@ -763,11 +764,13 @@ import Layout from '../../layouts/Layout.astro';
     }
   }
   /* Full daily source bodies must not inherit commentary-size reductions. */
-  #ck-content [data-qualified-daily="lech-sunday"] .ck-complete-pair > .ck-original {
+  #ck-content [data-qualified-daily="lech-sunday"] .ck-complete-pair > .ck-original,
+  #ck-content [data-qualified-daily="lech-monday"] .ck-complete-pair > .ck-original {
     font-size:var(--ck-size,26px);
     line-height:1.9;
   }
-  #ck-content [data-qualified-daily="lech-sunday"] .ck-complete-pair > .ck-en-line {
+  #ck-content [data-qualified-daily="lech-sunday"] .ck-complete-pair > .ck-en-line,
+  #ck-content [data-qualified-daily="lech-monday"] .ck-complete-pair > .ck-en-line {
     font-family:var(--ck-font-en);
     font-size:1.12rem;
     line-height:1.8;
@@ -783,6 +786,7 @@ import Layout from '../../layouts/Layout.astro';
   #ck-content > .ck-section > .ck-zohar > summary,
   #ck-content > .ck-section > .ck-mussar > summary,
   #ck-content > .ck-section > [data-qualified-daily="lech-sunday"] > .ck-talmud > summary,
+  #ck-content > .ck-section > [data-qualified-daily="lech-monday"] > .ck-talmud > summary,
   #ck-content > .ck-section > [data-qualified-daily="lech-sunday"] > .ck-zohar > summary {
     font-size:clamp(1.2rem,2.2vw,1.65rem);
     font-weight:700;

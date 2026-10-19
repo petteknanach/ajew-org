@@ -35,6 +35,14 @@ for (const input of ['<img src=x onerror=evil()>', '<script>evil()</script>', '<
   const safe = s.richText(input);
   assert(!/<(?:img|script|b\s)/i.test(safe), 'Unknown elements and attributes must remain inert');
 }
+for (const [input, expected] of [
+  ['And Abram journeyed. <span class="wst-verse wst-verse-default"', 'And Abram journeyed. '],
+  ['A <span class="wst-verse">source</span> B', 'A source B'],
+  ['A &lt;span class=&quot;wst-verse&quot;&gt;source&lt;/span&gt; B', 'A source B'],
+  ['<span onclick="evil()"><b class="carrier">Source</b></span>', '<b>Source</b>'],
+  ['<script>evil()</script><style>body{display:none}</style>Source', 'Source'],
+  ['Name & punctuation: 3 < 5; אֲבַג.', 'Name &amp; punctuation: 3 &lt; 5; אֲבַג.']
+]) assert.equal(s.richText(input), expected, 'Provider markup must not become source text or executable attributes');
 assert(s.english('<i>English</i>', true).includes('<i>English</i>'));
 assert.equal(s.english('English', false), '');
 assert.equal(s.targum(row, false, true).includes('Male and female.'), false);
@@ -48,18 +56,18 @@ vm.runInContext(main.slice(main.indexOf('  function heNum(n)'), main.indexOf('  
 assert.equal(numeralContext.heNum(1), "א'");
 assert.equal(numeralContext.heNum(28), "כח'");
 assert.equal(numeralContext.refLabelHTML(numeralContext.plainHeNum(28) + ':' + numeralContext.plainHeNum(15)).replace(/<[^>]+>/g, ''), 'כח:טו');
-// Logical chapter:verse values do not change; Hebrew reads from the right.
+// Latest user correction: preserve the visual chapter:verse sequence, including Hebrew groups.
 let referenceCases = 0;
 for (let chapter = 1; chapter <= 150; chapter++) {
   for (let verse = 1; verse <= 176; verse++) {
     const label = numeralContext.plainHeNum(chapter) + ':' + numeralContext.plainHeNum(verse);
     const html = numeralContext.refLabelHTML(label);
-    assert(html.startsWith('<bdi class="ck-generated-ref" dir="rtl">'));
+    assert(html.startsWith('<bdi class="ck-generated-ref" dir="ltr">'));
     assert.equal(html.replace(/<[^>]+>/g, ''), label);
     referenceCases++;
   }
 }
-assert(numeralContext.refLabelHTML('יב:א–יג:ד').startsWith('<bdi class="ck-generated-ref" dir="rtl">'));
+assert(numeralContext.refLabelHTML('יב:א–יג:ד').startsWith('<bdi class="ck-generated-ref" dir="ltr">'));
 for (const label of ['12:1', '28:15', 'Genesis 12:1', '12:1–13:4']) {
   const html = numeralContext.refLabelHTML(label);
   assert(html.startsWith('<bdi class="ck-generated-ref" dir="ltr">'));
