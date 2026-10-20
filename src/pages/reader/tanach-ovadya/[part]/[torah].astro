@@ -1,5 +1,6 @@
 ---
 import Layout from '../../../../layouts/Layout.astro';
+import { normalizeReaderNavigation } from '../../../../lib/reader-navigation.mjs';
 import Comments from '../../../../components/Comments.astro';
 import CommentarySidebar from '../../../../components/CommentarySidebar.astro';
 import hkIndex from '../../../../data/hk-citations-index.json';
@@ -93,6 +94,12 @@ const breadcrumbData = torahData ? JSON.stringify({
     { "@type": "ListItem", "position": 3, "name": torahData.hebrewTitle || torahData.title }
   ]
 }) : '';
+// URL adaptation only; source JSON, bodies and publication holds stay unchanged.
+const readerNavigation = normalizeReaderNavigation(torahData?.navigation, {
+  book: 'tanach-ovadya', part: partNum, torah: torahNum, minTorah: 1, maxTorah: 1,
+  contentDir: path.join(process.cwd(), `public/reader/tanach-ovadya/part-${partNum}`),
+});
+
 ---
 
 <Layout title={pageTitle} description={pageDesc}>
@@ -176,13 +183,13 @@ const breadcrumbData = torahData ? JSON.stringify({
       </div>
 
       <div class="reader-nav">
-        {torahData.navigation.prevUrl ? (
-          <a href={torahData.navigation.prevUrl} data-dir="prev">&larr; Previous</a>
+        {readerNavigation.prevUrl ? (
+          <a href={readerNavigation.prevUrl} data-dir="prev">&larr; Previous</a>
         ) : <span class="disabled">&larr; Previous</span>}
         <a href={`/reader/tanach-ovadya/${partNum}`}>Book Index</a>
         <a href="/reader">All Books</a>
-        {torahData.navigation.nextUrl ? (
-          <a href={torahData.navigation.nextUrl} data-dir="next">Next &rarr;</a>
+        {readerNavigation.nextUrl ? (
+          <a href={readerNavigation.nextUrl} data-dir="next">Next &rarr;</a>
         ) : <span class="disabled">Next &rarr;</span>}
       </div>
 
@@ -202,13 +209,13 @@ const breadcrumbData = torahData ? JSON.stringify({
       </div>
 
       <div class="reader-nav">
-        {torahData.navigation.prevUrl ? (
-          <a href={torahData.navigation.prevUrl} data-dir="prev">&larr; Previous</a>
+        {readerNavigation.prevUrl ? (
+          <a href={readerNavigation.prevUrl} data-dir="prev">&larr; Previous</a>
         ) : <span class="disabled">&larr; Previous</span>}
         <a href={`/reader/tanach-ovadya/${partNum}`}>Book Index</a>
         <a href="/reader">All Books</a>
-        {torahData.navigation.nextUrl ? (
-          <a href={torahData.navigation.nextUrl} data-dir="next">Next &rarr;</a>
+        {readerNavigation.nextUrl ? (
+          <a href={readerNavigation.nextUrl} data-dir="next">Next &rarr;</a>
         ) : <span class="disabled">Next &rarr;</span>}
       </div>
 
