@@ -139,7 +139,7 @@ async function validatorControls(){
    const d=documentFor('<article data-owner-main-id="null">'+html+'</article>'),n=d.querySelector('article');mutate(n);assert.throws(()=>checkOwner(n,u));
   }
   checkOwner(panel.querySelector('[data-bop-unit="'+u.id+'"]'),u);
-  const before=panel.innerHTML,scope=d.createElement('aside');scope.setAttribute('data-breslov-scope','injected-production-note');scope.textContent=readingNotes.scopes.Lech;panel.appendChild(scope);panel.open=false;assert.throws(()=>contract(r,days.find(x=>x.week==='לך לך'&&x.day==='יום ראשון'),false));panel.innerHTML=before;
+  const before=panel.innerHTML,scope=r.d.createElement('aside');scope.setAttribute('data-breslov-scope','injected-production-note');scope.textContent=readingNotes.scopes.Lech;panel.appendChild(scope);panel.open=false;assert.throws(()=>contract(r,days.find(x=>x.week==='לך לך'&&x.day==='יום ראשון'),false),/Selection\/production correspondence must not enter the study product/);panel.innerHTML=before;
   return {validatorNegatives:Object.keys(mutations).length+4,domNegatives:6,nullMain:'explicit synthetic fixture; real null apparatus retained weekly'};
  }finally{r.env.close();}
 }
