@@ -83,10 +83,10 @@ import Layout from '../../layouts/Layout.astro';
 <script src="/medooyuk.js?v=four-surfaces-20261006-r1" defer></script>
 <script src="/psalms-data.js?v=psalms-annotations-20261002-r1&amp;integrity=sha256-20261003" defer></script>
 <script src="/chok-verse-breslov.js?v=parsha-author-20261018-r1" defer></script>
-<script src="/chok-source-reader.js?v=chok-live-corrections-20261019-r1" defer></script>
+<script src="/chok-source-reader.js?v=chok-live-corrections-20261020-r1" defer></script>
 <script src="/chok-lech-sunday.js?v=chok-live-corrections-20261018-r2" defer></script>
 <script src="/chok-lech-monday.js?v=chok-live-corrections-20261019-r1" defer></script>
-<script src="/chok.js?v=chok-live-corrections-20261019-r1" defer></script>
+<script src="/chok.js?v=chok-live-corrections-20261020-r1" defer></script>
 
 <style is:global>
   /* Actual study offerings: three columns/two rows, selectors separate. */
@@ -124,7 +124,9 @@ import Layout from '../../layouts/Layout.astro';
   .ck-classical-gloss { display:block; border-inline-start:2px solid var(--ck-border); padding-inline-start:.6rem; font-size:.85em; margin:.5rem 0; }
   .ck-content[data-language='original'] .ck-voice-layer, .ck-content[data-language='original'] .ck-explanation, .ck-content[data-language='original'] .ck-voice-row, .ck-content[data-language='original'] .ck-comm, .ck-content[data-language='original'] .ck-mishna-explanation, .ck-content[data-language='original'] .ck-mishna-questions, .ck-content[data-language='original'] .ck-mishna-terms { display:none; }
   .ck-source-island[data-language='he'] .ck-en, .ck-source-island[data-language='en'] .ck-he { display:none; }
-  .ck-generated-ref { unicode-bidi: isolate; white-space: nowrap; }
+  .ck-generated-ref { display:inline-flex; direction:ltr; unicode-bidi:isolate; white-space:nowrap; }
+  /* Source abbreviations remain in their Onkelos sentence, not a block note. */
+  .ck-targum-line .ck-classical-gloss { display:inline; border:0; padding:0; margin:0; }
   .ck-kavana-para { margin-block: 0.65rem; white-space: pre-wrap; }
   .ck-kavana-note { font-size: 0.85rem; line-height: 1.6; color: var(--ck-muted-2); }
   /* ═══════════════════════════════════════════════════════════════

@@ -44,7 +44,7 @@
   function rich(x, suppressBold) {
     // Presentation-only, quote-aware carrier tokenizer. Raw sources never change.
     var source=String(x==null?'':x).replace(/\r\n?/g,'\n'),html='',at=0,textAt=0,stack=[];
-    var known='a abbr address article aside b bdi bdo blockquote br button caption center cite code col colgroup dd del details div dl dt em fieldset figcaption figure font footer h1 h2 h3 h4 h5 h6 header hr i iframe img input ins kbd label legend li link main mark meta nav ol option p picture pre q rp rt ruby s samp script section select small source span strike strong style sub summary sup table tbody td template textarea tfoot th thead time tr tt u ul var video wbr'.split(' ');
+    var known='a abbr address article aside b bdi bdo big blockquote br button caption center cite code col colgroup dd del details div dl dt em fieldset figcaption figure font footer h1 h2 h3 h4 h5 h6 header hr i iframe img input ins kbd label legend li link main mark meta nav ol option p picture pre q rp rt ruby s samp script section select small source span strike strong style sub summary sup table tbody td template textarea tfoot th thead time tr tt u ul var video wbr'.split(' ');
     function token(position){
       var escaped=source.slice(position,position+4)==='&lt;',width=escaped?4:1;
       if(!escaped&&source[position]!=='<')return null;
@@ -86,7 +86,7 @@
       }
       var name=t.name==='strong'?'b':t.name==='em'?'i':t.name;
       if(suppressBold&&name==='b')continue;
-      if(name==='b'||name==='i'||name==='small'){
+      if(name==='b'||name==='i'||name==='big'||name==='small'){
         if(t.close){var index=stack.lastIndexOf(name);if(index>=0)while(stack.length>index)html+=close(stack.pop());}
         else {stack.push(name);html+=name==='small'?'<span class="ck-classical-gloss" data-source-role="classical-context">':'<'+name+'>';}
       }else if(name==='br'||t.close&&/^(p|div|li|blockquote)$/.test(name))html+='<br>';
