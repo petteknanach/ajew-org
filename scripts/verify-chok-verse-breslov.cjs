@@ -39,7 +39,23 @@ async function boot(w,day,focused){
  // The authentic template's static inner Layout markup, without executing Layout.
  const inner=template.slice(template.indexOf('  <div class="ck-wrap"'),template.indexOf('</Layout>'));
  const d=documentFor('<html><body>'+inner+'</body></html>');let active=0,peak=0;
- const env=sandbox(d,'/reader/chok/',async url=>{active++;peak=Math.max(peak,active);const rel='public'+decodeURIComponent(String(url).split('?')[0]);const raw=read(rel);await new Promise(r=>setTimeout(r,1));active--;return {ok:raw!==null,status:raw===null?404:200,text:async()=>raw,json:async()=>JSON.parse(raw)};});
+ const env=sandbox(d,'/reader/chok/',async url=>{active++;peak=Math.max(peak,active);const rel='public'+decodeURIComponent(String(url).split('?')[0]);const raw=read(rel);await new Promise(r=>setTimeout(r,1));active--;return {ok:raw!==null,status:raw===null?404:200,text:async()=>raw,json:async()=>JSON.parse(raw),arrayBuffer:async()=>{const b=Buffer.from(raw,'utf8');return b.buffer.slice(b.byteOffset,b.byteOffset+b.byteLength);}};});
+ // Model the actual dynamic script transport, including SRI and load/error events.
+ // Newly qualified weeks use this browser path; a plain head append cannot settle it.
+ const appendHead=d.head.appendChild;
+ d.head.appendChild=function(n){
+  appendHead.call(this,n);
+  if(String(n.tagName).toLowerCase()==='script'&&n.src){
+   env.box.fetch(n.src).then(async response=>{
+    assert(response.ok,'Dynamic script response must succeed');
+    const bytes=Buffer.from(await response.arrayBuffer());
+    assert.equal(n.integrity,'sha256-'+crypto.createHash('sha256').update(bytes).digest('base64'),'Dynamic script SRI');
+    vm.runInContext(bytes.toString('utf8'),env.box,{filename:n.src});
+    if(typeof n.onload==='function')n.onload();
+   }).catch(error=>{if(typeof n.onerror==='function')n.onerror(error);});
+  }
+  return n;
+ };
  env.box.location.search='?week='+encodeURIComponent(w)+'&day='+encodeURIComponent(day)+(focused?'&sec=torah':'');
  // Real annotation helpers, actual source adapter, full actual init and callbacks.
  const urls=[...template.matchAll(/<script src="([^"?]+)[^"]*" defer><\/script>/g)].map(m=>m[1]);
