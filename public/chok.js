@@ -1025,6 +1025,15 @@
     return '<details class="ck-layer ck-zohar" data-field-role="original-source"><summary>זוהר — נוסח המקור · Original source — ' +
       zoharEscape(identities.join(' ← ')) + '</summary>' + body + '</details>' + qualification;
   }
+  function isLechTuesday(wk, day) { return wk === 'לך לך' && day === 'יום שלישי'; }
+  function lechTuesdayReading(wk, day, section) {
+    function unavailable() { return '<p class="ck-source-unavailable" dir="rtl">' + (section === 'talmud' ? 'גמרא ורש״י — יבמות ל ע״א' : 'זוהר חלק א — פא ע״ב') + ' · <span lang="en" dir="ltr">This reading is temporarily unavailable.</span></p>'; }
+    if (!window.ChokLechTuesday || typeof window.ChokLechTuesday.reading !== 'function') return Promise.resolve(unavailable());
+    return Promise.resolve().then(function () {
+      var scheduled = ((state.sched.weeks[wk] || {}).days || {})[day] || {};
+      return window.ChokLechTuesday.reading(wk, day, section, state.tanachen, function (url) { return fetchJSON(url, true); }, scheduled);
+    }).then(function (html) { if (!html) throw Error('Tuesday reading unavailable'); return html; }).catch(unavailable);
+  }
   function isLechMonday(wk, day) { return wk === 'לך לך' && day === 'יום שני'; }
   function lechMondayReading(wk, day) {
     var english = state.tanachen;
@@ -1046,6 +1055,7 @@
     }).catch(unavailable);
   }
   function zoharHTML(z, wk, day) {
+    if (isLechTuesday(wk, day)) return lechTuesdayReading(wk, day, 'zohar');
     // Admit only the exact separately ratified daily key before the old inventory.
     if (isLechSunday(wk, day)) return lechSundayReading(wk, day, 'zohar', z);
     // Only the separately ratified exact Sunday successor bypasses the old
@@ -1127,6 +1137,7 @@
     var jobs = weeks.map(function (wk, weekIndex) {
       var w = state.sched.weeks[wk];
       if (!w) return Promise.resolve('<p class="ck-error">No schedule for ' + esc(wk) + '</p>');
+      if (isLechTuesday(wk, day) && !w.days[day]) return Promise.resolve('<p class="ck-source-unavailable">This reading is temporarily unavailable.</p>');
       var dayE = availDay(w, day);
       var d = w.days[dayE] || {};
       var qualifiedDay = window.ChokSources.isTuesday(wk, dayE);
@@ -1205,15 +1216,15 @@
       }
       if (d.gemara && d.gemara.masechet && want('talmud')) {
         p = p.then(function () {
-          return (isLechMonday(wk,dayE) ? lechMondayReading(wk,dayE) : isLechSunday(wk,dayE) ? lechSundayReading(wk,dayE,'talmud') : qualifiedDay ? Promise.resolve(window.ChokSources.reading('talmud', state.tanachen)) : wk==='נח' ? Promise.resolve(window.ChokSources.weekReading(wk,dayE,'talmud',state.tanachen)||window.ChokSources.unavailable('talmud')) : gemaraHTML(d.gemara)).then(function (html) { html = html || ''; html = dayKavana('talmud', d) + html; html = voiceBox(wk!=='נח' && !isLechMonday(wk,dayE) && dc && dc.talmud, 'גמרא') + html;
-            if (html) out.push('<section class="ck-section" data-sec="talmud">' + (isLechMonday(wk,dayE) ? popBtn() : '') + html + '</section>');
+          return (isLechTuesday(wk,dayE) ? lechTuesdayReading(wk,dayE,'talmud') : isLechMonday(wk,dayE) ? lechMondayReading(wk,dayE) : isLechSunday(wk,dayE) ? lechSundayReading(wk,dayE,'talmud') : qualifiedDay ? Promise.resolve(window.ChokSources.reading('talmud', state.tanachen)) : wk==='נח' ? Promise.resolve(window.ChokSources.weekReading(wk,dayE,'talmud',state.tanachen)||window.ChokSources.unavailable('talmud')) : gemaraHTML(d.gemara)).then(function (html) { html = html || ''; html = dayKavana('talmud', d) + html; html = voiceBox(wk!=='נח' && !isLechMonday(wk,dayE) && !isLechTuesday(wk,dayE) && dc && dc.talmud, 'גמרא') + html;
+            if (html) out.push('<section class="ck-section" data-sec="talmud">' + (isLechMonday(wk,dayE) || isLechTuesday(wk,dayE) ? popBtn() : '') + html + '</section>');
           });
         });
       }
       if (want('kabbala')) {
         p = p.then(function () {
-          return zoharHTML(d.zohar, wk, dayE).then(function (html) { html = html || ''; if (!html) return; html = dayKavana('kabbala', d) + html + voiceBox(dc && dc.kabbala, 'זוהר');
-            if (html) out.push('<section class="ck-section" data-sec="kabbala">' + html + '</section>');
+          return zoharHTML(d.zohar, wk, dayE).then(function (html) { html = html || ''; if (!html) return; html = dayKavana('kabbala', d) + html + voiceBox(!isLechTuesday(wk,dayE) && dc && dc.kabbala, 'זוהר');
+            if (html) out.push('<section class="ck-section" data-sec="kabbala">' + (isLechTuesday(wk,dayE) ? popBtn() : '') + html + '</section>');
           });
         });
       }
