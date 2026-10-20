@@ -1054,7 +1054,31 @@
       return window.ChokLechSunday.reading(wk, day, section, english, function (url) { return fetchJSON(url, true); });
     }).catch(unavailable);
   }
+  var QUALIFIED_ZOHAR_KEYS = ["חיי שרה|יום ראשון","חיי שרה|יום שני","חיי שרה|יום רביעי","חיי שרה|יום חמישי","חיי שרה|יום שישי","וירא|יום רביעי","וירא|יום שני","וירא|יום שישי","וירא|יום שלישי"];
+  function exactQualifiedZohar(wk, day) { return QUALIFIED_ZOHAR_KEYS.indexOf(wk + "|" + day) !== -1; }
+  var qualifiedZoharModulePromise = null;
+  function qualifiedZoharReady(api) { return api && typeof api.has === 'function' && typeof api.load === 'function' && typeof api.reading === 'function'; }
+  function qualifiedZoharModule() {
+    if (qualifiedZoharReady(window.ChokQualifiedZohar)) return Promise.resolve(window.ChokQualifiedZohar);
+    if (!qualifiedZoharModulePromise) qualifiedZoharModulePromise = new Promise(function (resolve,reject) {
+      var script=document.createElement('script');
+      script.src='/chok-qualified-zohar.js?v=ba266f5539c01b5036b6aa33c6467cf83ab2359bb9c92001c704f12f372d9dda';
+      script.integrity='sha256-uiZvVTnAG1A2tqozxkZ8+DqyNZu5ySABxwTxLzctndo=';
+      script.crossOrigin='anonymous';
+      script.onload=function () { if (qualifiedZoharReady(window.ChokQualifiedZohar)) resolve(window.ChokQualifiedZohar); else reject(Error('Zohar module unavailable')); };
+      script.onerror=function () { reject(Error('Zohar module unavailable')); };
+      document.head.appendChild(script);
+    }).catch(function (error) { qualifiedZoharModulePromise=null; throw error; });
+    return qualifiedZoharModulePromise;
+  }
   function zoharHTML(z, wk, day) {
+    if (exactQualifiedZohar(wk,day)) {
+      var english = state.tanachen;
+      return qualifiedZoharModule().then(function (module) {
+        if (!module.has(wk+'|'+day)) throw Error('Zohar module unavailable');
+        return module.reading(wk+'|'+day,english,function (url) { return fetchJSON(url,true); });
+      }).catch(function () { return zoharPendingHTML(z,true); });
+    }
     if (isLechTuesday(wk, day)) return lechTuesdayReading(wk, day, 'zohar');
     // Admit only the exact separately ratified daily key before the old inventory.
     if (isLechSunday(wk, day)) return lechSundayReading(wk, day, 'zohar', z);
@@ -1223,8 +1247,8 @@
       }
       if (want('kabbala')) {
         p = p.then(function () {
-          return zoharHTML(d.zohar, wk, dayE).then(function (html) { html = html || ''; if (!html) return; html = dayKavana('kabbala', d) + html + voiceBox(!isLechTuesday(wk,dayE) && dc && dc.kabbala, 'זוהר');
-            if (html) out.push('<section class="ck-section" data-sec="kabbala">' + (isLechTuesday(wk,dayE) ? popBtn() : '') + html + '</section>');
+          return zoharHTML(d.zohar, wk, dayE).then(function (html) { html = html || ''; if (!html) return; html = dayKavana('kabbala', d) + html + voiceBox(!exactQualifiedZohar(wk,dayE) && !isLechTuesday(wk,dayE) && dc && dc.kabbala, 'זוהר');
+            if (html) out.push('<section class="ck-section" data-sec="kabbala">' + (exactQualifiedZohar(wk,dayE) || isLechTuesday(wk,dayE) ? popBtn() : '') + html + '</section>');
           });
         });
       }
