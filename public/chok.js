@@ -1054,7 +1054,7 @@
       return window.ChokLechSunday.reading(wk, day, section, english, function (url) { return fetchJSON(url, true); });
     }).catch(unavailable);
   }
-  var QUALIFIED_ZOHAR_KEYS = ["חיי שרה|יום ראשון","חיי שרה|יום שני","חיי שרה|יום רביעי","חיי שרה|יום חמישי","חיי שרה|יום שישי","וירא|יום רביעי","וירא|יום שני","וירא|יום שישי","וירא|יום שלישי"];
+  var QUALIFIED_ZOHAR_KEYS = ["חיי שרה|יום ראשון","חיי שרה|יום שני","חיי שרה|יום רביעי","חיי שרה|יום חמישי","חיי שרה|יום שישי","וירא|יום רביעי","וירא|יום שני","וירא|יום שישי","וירא|יום שלישי","בראשית|יום ראשון","בראשית|יום רביעי","בראשית|יום שישי","בראשית|יום שלישי","בראשית|יום שני"];
   function exactQualifiedZohar(wk, day) { return QUALIFIED_ZOHAR_KEYS.indexOf(wk + "|" + day) !== -1; }
   var qualifiedZoharModulePromise = null;
   function qualifiedZoharReady(api) { return api && typeof api.has === 'function' && typeof api.load === 'function' && typeof api.reading === 'function'; }
@@ -1062,8 +1062,8 @@
     if (qualifiedZoharReady(window.ChokQualifiedZohar)) return Promise.resolve(window.ChokQualifiedZohar);
     if (!qualifiedZoharModulePromise) qualifiedZoharModulePromise = new Promise(function (resolve,reject) {
       var script=document.createElement('script');
-      script.src='/chok-qualified-zohar.js?v=ba266f5539c01b5036b6aa33c6467cf83ab2359bb9c92001c704f12f372d9dda';
-      script.integrity='sha256-uiZvVTnAG1A2tqozxkZ8+DqyNZu5ySABxwTxLzctndo=';
+      script.src='/chok-qualified-zohar.js?v=36338dd0df8d5549ed032878097df38b8e3f39125eb700fb66bed26d6a379820';
+      script.integrity='sha256-NjON0N+NVUntAyh4CX3zi44/ORJetwD7Zr7SbWo3mCA=';
       script.crossOrigin='anonymous';
       script.onload=function () { if (qualifiedZoharReady(window.ChokQualifiedZohar)) resolve(window.ChokQualifiedZohar); else reject(Error('Zohar module unavailable')); };
       script.onerror=function () { reject(Error('Zohar module unavailable')); };
