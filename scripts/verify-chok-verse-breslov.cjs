@@ -67,7 +67,7 @@ function contract(run,record,focus){const {d}=run,s=sources[weeks.indexOf(record
  const access=v.querySelector('.ck-verse-access');assert(access);assert(v.children.indexOf(access)<v.children.indexOf(panel));
  for(const prev of v.querySelectorAll('.ck-rashi,.ck-super,.ck-comm'))assert(v.innerHTML.indexOf(prev.innerHTML)<v.innerHTML.indexOf(panel.innerHTML),'After Rashi/supercommentary');
  panel.open=true;
- const scope=panel.querySelector('[data-breslov-scope]');assert(scope&&visible(scope),'Selection scope before sources');assert.equal(scope.textContent,readingNotes.scopes[record.week==='לך לך'?'Lech':'Noach']);assert(panel.children.indexOf(scope)<panel.children.indexOf(panel.querySelector('[data-bop-unit]')));
+ assert(!panel.querySelector('[data-breslov-scope]'),'Selection/production correspondence must not enter the study product');
  const nodes=panel.querySelectorAll('[data-bop-unit]');assert.deepEqual(nodes.map(n=>n.getAttribute('data-bop-unit')),expected.map(u=>u.id));
  expected.forEach((u,i)=>checkOwner(nodes[i],u));
  for(const lang of ['he','en','both']){const b=panel.querySelector('[data-ck-source-lang="'+lang+'"]');assert(visible(b));b.click();assert.equal(panel.getAttribute('data-language'),lang);for(const n of panel.querySelectorAll('.ck-he,.ck-en'))assert.equal(n.hidden,lang!=='both'&&!n.classList.contains(lang==='he'?'ck-he':'ck-en'));expected.forEach((u,i)=>checkOwner(nodes[i],u));}
@@ -75,7 +75,7 @@ function contract(run,record,focus){const {d}=run,s=sources[weeks.indexOf(record
  }
  assert(!d.querySelectorAll('.ck-onkelos-translation').some(n=>n.open),'Focus must not open Onkelos translations');
  const ids=d.querySelectorAll('[id]').map(n=>n.id);assert.equal(new Set(ids).size,ids.length,'Unique IDs across inline and weekly namespaces');
- if(!focus){const offer=d.getElementById('ck-breslov-offering');offer.open=true;const weekly=offer.querySelector('.ck-breslov');assert(weekly,'Weekly offering');weekly.open=true;const scope=weekly.querySelector('[data-breslov-scope]');assert(scope&&visible(scope));
+ if(!focus){const offer=d.getElementById('ck-breslov-offering');offer.open=true;const weekly=offer.querySelector('.ck-breslov');assert(weekly,'Weekly offering');weekly.open=true;assert(!weekly.querySelector('[data-breslov-scope]'),'No production scope in weekly study');
  weekly.querySelectorAll('.ck-weekly-unowned').forEach(n=>n.open=true);
  const ns=weekly.querySelectorAll('[data-bop-unit]');assert.deepEqual(ns.map(n=>n.getAttribute('data-bop-unit')),s.units.map(u=>u.id));s.units.forEach((u,i)=>checkOwner(ns[i],u));
  if(record.week==='נח'){
@@ -139,7 +139,7 @@ async function validatorControls(){
    const d=documentFor('<article data-owner-main-id="null">'+html+'</article>'),n=d.querySelector('article');mutate(n);assert.throws(()=>checkOwner(n,u));
   }
   checkOwner(panel.querySelector('[data-bop-unit="'+u.id+'"]'),u);
-  const before=panel.innerHTML,scope=panel.querySelector('[data-breslov-scope]');scope.remove();panel.appendChild(scope);panel.open=false;assert.throws(()=>contract(r,days.find(x=>x.week==='לך לך'&&x.day==='יום ראשון'),false));panel.innerHTML=before;
+  const before=panel.innerHTML,scope=d.createElement('aside');scope.setAttribute('data-breslov-scope','injected-production-note');scope.textContent=readingNotes.scopes.Lech;panel.appendChild(scope);panel.open=false;assert.throws(()=>contract(r,days.find(x=>x.week==='לך לך'&&x.day==='יום ראשון'),false));panel.innerHTML=before;
   return {validatorNegatives:Object.keys(mutations).length+4,domNegatives:6,nullMain:'explicit synthetic fixture; real null apparatus retained weekly'};
  }finally{r.env.close();}
 }
@@ -155,7 +155,7 @@ async function main(){let failures=0;const results=[];
  for(const focused of [false,true])for(const record of days){const name=record.week+'|'+record.day+'|'+(focused?'focused':'ordinary');let run;
  try{run=await boot(record.week,record.day,focused);save('html-'+weeks.indexOf(record.week)+'-'+Object.keys(schedule.weeks[record.week].days).indexOf(record.day)+'-'+(focused?'focus':'day')+'.html',run.d.innerHTML);contract(run,record,focused);results.push({name,status:'PASS',peakFetch:run.peak()});console.log('PASS '+name);}
  catch(e){failures++;results.push({name,status:'FAIL',error:e.message,stack:e.stack});console.log('FAIL '+name+' '+e.message);}
- finally{run?.env.close();}
+ finally{run?.env.close();if(typeof global.gc==='function')global.gc();}
  }
  for(const [name,fn] of [['canonical Parsha/Chumash complete source/owner/pair/qualification parity',canonicalParity],['registered lifecycle/redraw/four page languages/isolation',lifecycle],['candidate validator and exact DOM negative controls',validatorControls]]){try{const detail=await fn();results.push({name,status:'PASS',detail});console.log('PASS '+name);}catch(e){failures++;results.push({name,status:'FAIL',error:e.message,stack:e.stack});console.log('FAIL '+name+' '+e.message);}}
  save('SOURCE-OWNER-PAIR-QUALIFICATION-INVENTORY.json',inventory);save('ALL14-DAY-MAPPING-INVENTORY.json',days);save('DATA-READS.json',[...dataReads.values()]);save('FULL-INIT-RESULT.json',{scriptRoot:scripts,cases:results,failures,browser:false,layoutSSR:false});

@@ -206,7 +206,7 @@ function verifyWeekly(html, expected) {
   const qs=n.querySelectorAll('[data-note-id]');assert.equal(qs.length,u.qualifications.length);
   u.qualifications.forEach((q,i)=>{const el=qs[i];assert.equal(el.getAttribute('data-note-id'),q.id);assert.equal(el.querySelector('[data-note-text]').textContent,q.text);assert.equal(el.getAttribute('data-note-owner'),u.id);assert.equal(el.getAttribute('data-note-pair'),q.pair_id===null?'null':q.pair_id);assert.equal(el.getAttribute('data-note-placement'),q.placement);assert.equal(el.getAttribute('data-note-display-placement'),'owner-local');assert(!el.closest('.ck-qualified-disclosure'));assert(!el.closest('.ck-he'));assert(!el.closest('.ck-en'));});
  }
- const scope=d.querySelector('[data-breslov-scope]');assert(scope);assert.equal(scope.textContent,expected.scope);
+ assert(!d.querySelector('[data-breslov-scope]'),'Chok study text must not contain selection or production correspondence');
  return d;
 }
 async function fullChok() {
