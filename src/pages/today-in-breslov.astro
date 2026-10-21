@@ -1,0 +1,46 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+<Layout title="Today in Breslov — היום בברסלב" description="Breslov history on this Hebrew date: dated letters, teachings, yahrzeits and events, in English and Hebrew with links to the sources.">
+  <div id="today-breslov" class="tb-page" data-mode="both">
+    <header class="tb-header">
+      <a href="/" class="tb-home"><span lang="en">← Home</span> · <span lang="he" dir="rtl">דף הבית</span></a>
+      <p class="tb-eyebrow"><span lang="en">The Breslov calendar</span> · <span lang="he" dir="rtl">לוח ברסלב</span></p>
+      <h1><span lang="en">Today in Breslov</span><span lang="he" dir="rtl">היום בברסלב</span></h1>
+      <p class="tb-intro"><span lang="en">Letters, teachings and moments in Breslov history — on this Hebrew date, across the years.</span><span lang="he" dir="rtl">מכתבים, תורות ומאורעות בתולדות ברסלב — בתאריך העברי הזה, לאורך השנים.</span></p>
+      <div class="tb-modes" role="group" aria-label="Language / שפה">
+        <button type="button" data-mode="both" aria-pressed="true">Both / שניהם</button><button type="button" data-mode="en" aria-pressed="false">English</button><button type="button" data-mode="he" aria-pressed="false">עברית</button>
+      </div>
+    </header>
+    <section class="tb-date-panel" aria-label="Date / תאריך">
+      <div class="tb-date-copy"><h2 id="tb-hebrew" lang="he" dir="rtl">טוען תאריך…</h2><p id="tb-gregorian"></p><p id="tb-boundary" class="tb-small"></p></div>
+      <div class="tb-date-controls"><button id="tb-prev" type="button" aria-label="Previous day / היום הקודם">←</button><label><span lang="en">Choose a date</span><span lang="he" dir="rtl">בחירת תאריך</span><input id="tb-date" type="date" min="1600-01-01" max="2199-12-31" /></label><button id="tb-next" type="button" aria-label="Next day / היום הבא">→</button><button id="tb-today" type="button"><span lang="en">Today</span><span lang="he" dir="rtl">היום</span></button></div>
+      <div class="tb-location"><span id="tb-place"></span><button id="tb-location" type="button"><span lang="en">Use my location</span><span lang="he" dir="rtl">לפי המיקום שלי</span></button><span id="tb-location-status" role="status"></span></div>
+    </section>
+    <section class="tb-tools" aria-label="Browse events / עיון במאורעות">
+      <label><span lang="en">Event type</span><span lang="he" dir="rtl">סוג המאורע</span><select id="tb-kind"><option value="all">Everything / הכל</option><option value="teaching">Teachings / תורות</option><option value="letter">Letters / מכתבים</option><option value="yahrzeit">Yahrzeits / ימי פטירה</option><option value="decree">Decrees / גזירות</option><option value="history">History / מאורעות</option><option value="other">Other / אחר</option></select></label>
+      <label><span lang="en">Browse registered Hebrew dates</span><span lang="he" dir="rtl">עיון בתאריכים עבריים רשומים</span><select id="tb-browse"><option value="">Choose / בחירה</option></select></label>
+    </section>
+    <p id="tb-status" role="status" aria-live="polite"><span lang="en">Loading registered events…</span><span lang="he" dir="rtl">טוען מאורעות רשומים…</span></p>
+    <div id="tb-events" class="tb-events" aria-busy="true"></div>
+    <p id="tb-error" role="alert" hidden></p><button id="tb-retry" type="button" hidden><span lang="en">Try again</span><span lang="he" dir="rtl">נסו שוב</span></button>
+    <noscript><p>This calendar needs JavaScript to select today's Hebrew date. / יש להפעיל JavaScript כדי לבחור את התאריך העברי של היום.</p></noscript>
+    <div class="tb-notes"><p><span lang="en">This is a growing, source-linked register, not a claim that every historical event is known. An empty day means no event is registered for that date. Original years are shown when recorded; missing or uncertain years are not guessed. Historical civil dates use the proleptic Gregorian calendar; a Hebrew date begins the preceding evening.</span><span lang="he" dir="rtl">זהו מאגר מתרחב עם קישורים למקורות, ולא טענה שכל מאורע היסטורי ידוע לנו. יום ריק מציין שלא נרשם מאורע בתאריך זה. השנים המקוריות מוצגות כשהן רשומות; אין השלמה משוערת של שנה חסרה או מסופקת. התאריכים הלועזיים ההיסטוריים מחושבים לפי הלוח הגרגוריאני; התאריך העברי מתחיל בערב שלפניהם.</span></p><p id="tb-coverage"></p></div>
+    <div id="tb-utilities" class="tb-utilities" aria-label="Other calendar dates / תאריכים נוספים"></div>
+  </div>
+  <script is:inline type="module" src="/today-breslov.mjs?v=20261021-1"></script>
+</Layout>
+<style is:global>
+.tb-page{max-width:1050px;margin:auto;padding:clamp(1rem,4vw,3rem) 1rem 7rem;color:var(--ds-text-primary,#192e45)}
+.tb-header{margin-bottom:2rem}.tb-home{font-size:.9rem}.tb-eyebrow{margin-top:2rem;color:var(--ds-text-secondary,#5d6571)}
+.tb-header h1{font-size:clamp(2rem,5vw,3rem);line-height:1.2;margin:.5rem 0 1rem;display:flex;flex-wrap:wrap;gap:.5rem 1.5rem}.tb-intro{font-size:1.08rem;max-width:52rem;line-height:1.7}
+.tb-intro>span,.tb-notes p>span{display:block}.tb-page [lang=he]{font-family:var(--font-hebrew,'Noto Serif Hebrew',serif);line-height:1.8}
+.tb-page button,.tb-page select,.tb-page input{font:inherit;min-height:44px;border:1px solid var(--ds-border,#a7b0bb);border-radius:9px;padding:.5rem .7rem;background:var(--ds-white,#fff);color:inherit;max-width:100%}.tb-page button{cursor:pointer}.tb-page button:hover{border-color:#a87821}.tb-page button:focus-visible,.tb-page a:focus-visible,.tb-page select:focus-visible,.tb-page input:focus-visible{outline:3px solid #c18c31;outline-offset:3px}
+.tb-modes{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1.25rem}.tb-modes [aria-pressed=true]{background:#243b52;color:#fff;border-color:#243b52}
+.tb-date-panel{padding:1.3rem;border:1px solid var(--ds-border,#d5d9df);border-top:4px solid #b38231;border-radius:14px;background:var(--ds-white,#fff)}.tb-date-copy h2{font-size:1.7rem;margin:0}.tb-date-copy p{margin:.4rem 0}.tb-small,.tb-location,.tb-notes{font-size:.88rem;color:var(--ds-text-secondary,#5d6571)}
+.tb-date-controls{display:flex;align-items:end;gap:.5rem;flex-wrap:wrap;margin-top:1rem}.tb-page label{display:flex;flex-direction:column;gap:.25rem;font-size:.9rem}.tb-date-controls label{flex:1;min-width:155px}.tb-location{display:flex;gap:.7rem;flex-wrap:wrap;align-items:center;margin-top:1rem}.tb-location button{font-size:.85rem}
+.tb-tools{display:flex;gap:1rem;flex-wrap:wrap;margin:1.3rem 0}.tb-tools label{flex:1;min-width:220px}.tb-events{display:grid;gap:1rem}.tb-card{padding:1.4rem;border:1px solid var(--ds-border,#d5d9df);border-radius:14px;background:var(--ds-white,#fff);border-inline-start:4px solid #b38231;overflow-wrap:anywhere}.tb-card h3{font-size:1.25rem;margin:.6rem 0}.tb-card h3 span{display:block}.tb-card .tb-pair{display:grid;grid-template-columns:1fr 1fr;gap:1.3rem}.tb-card p{margin:.45rem 0;line-height:1.75}.tb-kind{font-size:.8rem;font-weight:600;color:var(--ds-text-secondary,#5d6571)}.tb-event-date{font-size:.95rem}.tb-sources{margin-top:1rem;display:flex;flex-wrap:wrap;gap:.5rem 1rem}.tb-sources a{text-decoration:underline;text-underline-offset:3px}.tb-card details{margin-top:1rem;font-size:.9rem}.tb-card summary{cursor:pointer;min-height:35px}.tb-card blockquote{margin:.6rem 0;padding:.7rem;border-inline-start:2px solid #b38231;background:var(--ds-surface,#f4f5f7)}.tb-empty{padding:2rem 1rem;border:1px dashed var(--ds-border,#a7b0bb);border-radius:12px;line-height:1.8}.tb-notes{margin-top:2rem;border-top:1px solid var(--ds-border,#d5d9df);padding-top:1rem;line-height:1.7}
+.tb-utilities{margin-top:1.5rem}.tb-utilities #compactYahrzeit{position:relative!important;inset:auto!important;z-index:auto!important;transform:none!important;max-width:100%;margin:0}
+.tb-page[data-mode=en] [lang=he]:not(#tb-hebrew):not([data-source-original]),.tb-page[data-mode=he] [lang=en]{display:none}.tb-page[data-mode=en] .tb-card .tb-pair,.tb-page[data-mode=he] .tb-card .tb-pair{grid-template-columns:1fr}.tb-page[data-mode=he]{direction:rtl}.tb-page #tb-date{direction:ltr}.tb-page [hidden]{display:none!important}
+@media(max-width:600px){.tb-card .tb-pair{grid-template-columns:1fr;gap:.4rem}.tb-card{padding:1rem}.tb-header h1{display:block}.tb-header h1 span{display:block}.tb-tools label{min-width:100%}}
+</style>

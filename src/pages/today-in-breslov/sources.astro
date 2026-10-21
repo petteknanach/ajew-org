@@ -1,0 +1,37 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import registry from '../../../public/data/today-breslov-events.json';
+const records=registry.events.filter(event=>event.sources.some(source=>['structured-breslov-yahrzeit-row','reviewed-existing-literal-calendar-row'].includes(source.provenance.rule)));
+const months={Nisan:'ניסן',Iyyar:'אייר',Sivan:'סיוון',Tamuz:'תמוז',Av:'אב',Elul:'אלול',Tishrei:'תשרי',Cheshvan:'חשוון',Kislev:'כסלו',Tevet:'טבת',Shvat:'שבט',Adar:'אדר','Adar I':'אדר א׳','Adar II':'אדר ב׳'};
+---
+<Layout title="Registered Breslov Calendar Sources — מקורות לוח ברסלב" description="Persistent source records for dates already registered in ajew.org’s Breslov calendar and yahrzeit database.">
+ <div class="calendar-sources">
+  <a href="/today-in-breslov">← Today in Breslov · היום בברסלב</a>
+  <h1>Registered calendar sources <span lang="he" dir="rtl">מקורות לוח ברסלב הרשומים</span></h1>
+  <p>These records reproduce dates already registered in ajew.org’s calendar or database. They document those entries; they are not independent historical confirmation. Unknown Hebrew years are left unknown.</p>
+  <p lang="he" dir="rtl">רשומות אלו מציגות תאריכים שכבר נרשמו בלוח או במאגר של האתר. הן מתעדות את הרשומות הקיימות ואינן אימות היסטורי עצמאי. שנה עברית שלא נרשמה לא הושלמה.</p>
+  {records.map(event=><section id={event.id} class="source-record">
+   <h2>{event.title.en}<span lang="he" dir="rtl">{event.title.he}</span></h2>
+   <p>{event.day} {event.month} · {event.year??'Hebrew year not recorded'}</p>
+   <p lang="he" dir="rtl">{event.day} ב{months[event.month]} · {event.year??'השנה העברית לא נרשמה'}</p>
+   <p>{event.description.en}</p><p lang="he" dir="rtl">{event.description.he}</p>
+   {event.dateNote&&<><p>{event.dateNote.en}</p><p lang="he" dir="rtl">{event.dateNote.he}</p></>}
+   <h3>Original registered wording · <span lang="he" dir="rtl">נוסח הרשומה המקורי</span></h3>
+   {event.sources.filter(source=>['structured-breslov-yahrzeit-row','reviewed-existing-literal-calendar-row'].includes(source.provenance.rule)).map(source=><>
+    <p>{source.label.en} · <span lang="he" dir="rtl">{source.label.he}</span></p>
+    <blockquote dir="auto">{source.quoteHe}</blockquote>
+   </>)}
+   {event.provenance.registeredYearText&&<p>Registered death-year value / שנת הפטירה הרשומה: <bdi>{event.provenance.registeredYearText}</bdi></p>}
+   {event.sources.some(source=>source.provenance.rule==='structured-breslov-yahrzeit-row')&&<p><a href="/tzaddikim/">Public yahrzeit directory / רשימת ימי הפטירה</a> · <a href="/data/tzaddikim-database-complete.json">Original database / המאגר המקורי</a></p>}
+   <a href={'/today-in-breslov?month='+encodeURIComponent(event.month)+'&day='+event.day}>See this Hebrew date / עיון בתאריך העברי הזה →</a>
+  </section>)}
+  <div id="tb-source-utilities"></div>
+ </div>
+ <script is:inline>
+  (() => {const widget=document.getElementById('compactYahrzeit'),dock=document.getElementById('tb-source-utilities');if(widget&&dock)dock.appendChild(widget);})();
+ </script>
+</Layout>
+<style>
+.calendar-sources{max-width:900px;margin:auto;padding:2rem 1rem 7rem;color:var(--ds-text-primary,#192e45);line-height:1.8}.calendar-sources h1{font-size:2rem;line-height:1.4}.calendar-sources h1 span,.calendar-sources h2 span{display:block}.source-record{scroll-margin-top:90px;border:1px solid var(--ds-border,#d5d9df);border-inline-start:4px solid #b38231;border-radius:12px;padding:1.3rem;margin:1.5rem 0;background:var(--ds-white,#fff);overflow-wrap:anywhere}.source-record blockquote{white-space:pre-wrap;overflow-wrap:anywhere;margin:1rem 0;padding:.8rem;background:var(--ds-surface,#f4f5f7)}.source-record a{text-decoration:underline;text-underline-offset:3px}.source-record h2{font-size:1.3rem}
+#tb-source-utilities :global(#compactYahrzeit){position:relative!important;inset:auto!important;z-index:auto!important;transform:none!important;max-width:100%;margin:1rem 0}
+</style>
