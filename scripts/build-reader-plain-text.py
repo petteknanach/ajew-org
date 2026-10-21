@@ -17,6 +17,8 @@ from reviewed_chayay_exports import is_reviewed_source, write_plain
 from reviewed_alim_exports import is_reviewed_source as is_alim_source, write_plain as alim_write_plain
 from reviewed_wrapup_exports import is_reviewed_source as is_wrapup_source, write_plain as wrapup_write_plain, is_archival_source as is_wrapup_archive
 
+from qualified_aitzoas362_exports import (BOOK as AITZOAS_BOOK, is_archive as is_aitzoas_archive, is_source as is_aitzoas_source, load_edition as load_aitzoas_edition, checked_section as aitzoas_checked_section, section_exports as aitzoas_section_exports)
+
 ROOT = Path(__file__).resolve().parents[1]
 READER_DIR = ROOT / "public" / "reader"
 OUT_DIR = ROOT / "public" / "reader-plain"
@@ -288,9 +290,10 @@ def main() -> None:
     OUT_DIR.mkdir(parents=True)
 
     entries: list[dict[str, Any]] = []
+    aitzoas_edition = None
     for path in sorted(READER_DIR.rglob("*.json")):
         rel = path.relative_to(READER_DIR)
-        if is_wrapup_archive(path, READER_DIR) or is_sichos221230_archive(path, READER_DIR) or is_sichos231240_archive(path, READER_DIR) or is_sichos241250_archive(path, READER_DIR) or is_sichos251260_archive(path, READER_DIR) or is_sichos261270_archive(path, READER_DIR):
+        if is_aitzoas_archive(path, READER_DIR) or is_wrapup_archive(path, READER_DIR) or is_sichos221230_archive(path, READER_DIR) or is_sichos231240_archive(path, READER_DIR) or is_sichos241250_archive(path, READER_DIR) or is_sichos251260_archive(path, READER_DIR) or is_sichos261270_archive(path, READER_DIR):
             continue  # retained originals/wrappers are not plain selected editions
         if rel.parts and rel.parts[0] in SKIP_DIRS:
             continue
@@ -299,8 +302,19 @@ def main() -> None:
         try:
             data = json.loads(path.read_text(encoding="utf-8"))
         except Exception:
-            if is_wrapup_source(path, READER_DIR):
+            if is_aitzoas_source(path, READER_DIR) or is_wrapup_source(path, READER_DIR):
                 raise  # exact current qualification projection cannot be skipped
+            continue
+        if is_aitzoas_source(path, READER_DIR):
+            if aitzoas_edition is None:
+                aitzoas_edition = load_aitzoas_edition(ROOT)
+            section = aitzoas_checked_section(aitzoas_edition, path, data, READER_DIR)
+            files, entry = aitzoas_section_exports(aitzoas_edition, section)
+            out = OUT_DIR / AITZOAS_BOOK / "1" / str(section)
+            out.mkdir(parents=True, exist_ok=True)
+            for name, raw in files.items():
+                (out / name).write_bytes(raw)
+            entries.append(entry)
             continue
         if is_reviewed_source(path, READER_DIR):
             entries.append(write_plain(path, data, OUT_DIR))
@@ -351,6 +365,10 @@ def main() -> None:
 
     book_links = []
     for book, rows in sorted(by_book.items()):
+        if book == AITZOAS_BOOK:
+            expected = [f"/reader-plain/{AITZOAS_BOOK}/1/{s}/" for s in range(1, 7)]
+            if [r["url"] for r in rows] != expected:
+                raise ValueError("Aitzoas full book requires exactly six canonical sections once")
         bdir = OUT_DIR / book
         bdir.mkdir(exist_ok=True)
         full_txt: list[str] = [f"{book} — complete plain text", f"Source index: https://ajew.org/reader/{book}/", "", "Sections:"]
@@ -364,12 +382,19 @@ def main() -> None:
         for r in rows:
             sec_txt = (OUT_DIR / r["url"].strip("/") .replace("reader-plain/", "") / "index.txt")
             sec_md = (OUT_DIR / r["url"].strip("/") .replace("reader-plain/", "") / "index.md")
+            if book == AITZOAS_BOOK and (not sec_txt.is_file() or not sec_md.is_file()):
+                raise ValueError("Missing canonical Aitzoas plain section in full-book assembly")
             if sec_txt.exists():
-                full_txt += [f"\n\n# {r['title']}", f"URL: https://ajew.org{r['url']}\n", sec_txt.read_bytes().decode("utf-8") if r["url"] in {"/reader-plain/chayey-moharan/reviewed/14-58/", "/reader-plain/alim-litrufa/reviewed/part-2-17-62-63/", "/reader-plain/reviewed/wrapup-18-19-92-209/"} else sec_txt.read_text(encoding="utf-8")]
+                full_txt += [f"\n\n# {r['title']}", f"URL: https://ajew.org{r['url']}\n", sec_txt.read_bytes().decode("utf-8") if book == AITZOAS_BOOK or r["url"] in {"/reader-plain/chayey-moharan/reviewed/14-58/", "/reader-plain/alim-litrufa/reviewed/part-2-17-62-63/", "/reader-plain/reviewed/wrapup-18-19-92-209/"} else sec_txt.read_text(encoding="utf-8")]
             if sec_md.exists():
-                full_md += [f"\n\n# {r['title']}", f"\nURL: https://ajew.org{r['url']}\n", sec_md.read_bytes().decode("utf-8") if r["url"] in {"/reader-plain/chayey-moharan/reviewed/14-58/", "/reader-plain/alim-litrufa/reviewed/part-2-17-62-63/", "/reader-plain/reviewed/wrapup-18-19-92-209/"} else sec_md.read_text(encoding="utf-8")]
-        (bdir / "full.txt").write_text("\n".join(full_txt).strip() + "\n", encoding="utf-8")
-        (bdir / "full.md").write_text("\n".join(full_md).strip() + "\n", encoding="utf-8")
+                full_md += [f"\n\n# {r['title']}", f"\nURL: https://ajew.org{r['url']}\n", sec_md.read_bytes().decode("utf-8") if book == AITZOAS_BOOK or r["url"] in {"/reader-plain/chayey-moharan/reviewed/14-58/", "/reader-plain/alim-litrufa/reviewed/part-2-17-62-63/", "/reader-plain/reviewed/wrapup-18-19-92-209/"} else sec_md.read_text(encoding="utf-8")]
+        if book == AITZOAS_BOOK:
+            # Do not strip or newline-normalize exact qualified fields.
+            (bdir / "full.txt").write_bytes(("\n".join(full_txt) + "\n").encode("utf-8"))
+            (bdir / "full.md").write_bytes(("\n".join(full_md) + "\n").encode("utf-8"))
+        else:
+            (bdir / "full.txt").write_text("\n".join(full_txt).strip() + "\n", encoding="utf-8")
+            (bdir / "full.md").write_text("\n".join(full_md).strip() + "\n", encoding="utf-8")
         items = "\n".join(f'<li><a href="{html.escape(r["url"].split(f"/reader-plain/{book}/",1)[1])}">{html.escape(r["title"])}</a> <small>({r["segments"]} segments)</small></li>' for r in rows)
         (bdir / "index.html").write_text(f"<!doctype html><meta charset=utf-8><title>{html.escape(book)} complete plain text</title><meta name='description' content='Complete static plain text for {html.escape(book)} on ajew.org, with all sections in one crawlable file.'><meta name='robots' content='index,follow,max-snippet:-1'><link rel='alternate' type='text/plain' href='full.txt'><link rel='alternate' type='text/markdown' href='full.md'><h1>{html.escape(book)}</h1><p><a href='/reader-plain/'>All books</a> · <a href='full.txt'>Complete book TXT</a> · <a href='full.md'>Complete book Markdown</a></p><ol>{items}</ol>", encoding="utf-8")
         book_links.append(f'<li><a href="{html.escape(book)}/">{html.escape(book)}</a> <small>{len(rows)}</small> <a href="{html.escape(book)}/full.txt">full TXT</a></li>')

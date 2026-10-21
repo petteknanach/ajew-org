@@ -495,6 +495,13 @@
       tikunHeader.prepend(box);
     }
 
+    // Qualified Reader owns a separate flow host, outside its guarded source tree.
+    const aitzoasHeader = document.querySelector('[data-aitzoas362-yahrzeit-host]');
+    if (aitzoasHeader) {
+      box.classList.add('aitzoas-yahrzeit');
+      aitzoasHeader.prepend(box);
+    }
+
     // Check if user dismissed the box
     const dismissed = localStorage.getItem('ajew-yahrzeit-dismissed');
     if (dismissed && Date.now() < parseInt(dismissed)) {
@@ -512,7 +519,7 @@
       upList.innerHTML = '<div class="tzaddik-link upcoming-event"><span class="tzaddik-name">Loading...</span></div>';
       upSection.style.display = 'block';
       box.style.display = 'block';
-      if (window.innerWidth > 768 && !document.querySelector('.reader-container') && !box.classList.contains('chok-yahrzeit') && !box.classList.contains('lens-yahrzeit') && !box.classList.contains('tikkun-yahrzeit')) box.classList.remove('collapsed');
+      if (window.innerWidth > 768 && !document.querySelector('.reader-container') && !box.classList.contains('chok-yahrzeit') && !box.classList.contains('lens-yahrzeit') && !box.classList.contains('tikkun-yahrzeit') && !box.classList.contains('aitzoas-yahrzeit')) box.classList.remove('collapsed');
     }, 8000);
 
     try {
@@ -549,7 +556,7 @@
 
       // ALWAYS show the box
       box.style.display = 'block';
-      if (window.innerWidth > 768 && !document.querySelector('.reader-container') && !box.classList.contains('chok-yahrzeit') && !box.classList.contains('lens-yahrzeit') && !box.classList.contains('tikkun-yahrzeit')) {
+      if (window.innerWidth > 768 && !document.querySelector('.reader-container') && !box.classList.contains('chok-yahrzeit') && !box.classList.contains('lens-yahrzeit') && !box.classList.contains('tikkun-yahrzeit') && !box.classList.contains('aitzoas-yahrzeit')) {
         box.classList.remove('collapsed');
       }
 
@@ -632,7 +639,7 @@
       // On error, still show box with a simple message
       document.getElementById('yahrzeitLoading').style.display = 'none';
       box.style.display = 'block';
-      if (window.innerWidth > 768 && !document.querySelector('.reader-container') && !box.classList.contains('chok-yahrzeit') && !box.classList.contains('lens-yahrzeit') && !box.classList.contains('tikkun-yahrzeit')) box.classList.remove('collapsed');
+      if (window.innerWidth > 768 && !document.querySelector('.reader-container') && !box.classList.contains('chok-yahrzeit') && !box.classList.contains('lens-yahrzeit') && !box.classList.contains('tikkun-yahrzeit') && !box.classList.contains('aitzoas-yahrzeit')) box.classList.remove('collapsed');
       const upSection = document.getElementById('upcomingSection');
       const upList = document.getElementById('upcomingList');
       upList.innerHTML = '<div class="tzaddik-link upcoming-event"><span class="event-description">Check back soon</span></div>';
@@ -1001,7 +1008,8 @@
   /* Header dates scroll in normal flow, outside source/reference lines. */
   .compact-yahrzeit.chok-yahrzeit,
   .compact-yahrzeit.lens-yahrzeit,
-  .compact-yahrzeit.tikkun-yahrzeit {
+  .compact-yahrzeit.tikkun-yahrzeit,
+  .compact-yahrzeit.aitzoas-yahrzeit {
     position: relative;
     inset: auto;
     margin: 0 auto 1rem;
@@ -1012,7 +1020,8 @@
   }
   .compact-yahrzeit.chok-yahrzeit.collapsed,
   .compact-yahrzeit.lens-yahrzeit.collapsed,
-  .compact-yahrzeit.tikkun-yahrzeit.collapsed {
+  .compact-yahrzeit.tikkun-yahrzeit.collapsed,
+  .compact-yahrzeit.aitzoas-yahrzeit.collapsed {
     /* 44px action plus the existing 2px border on each side. */
     width: 48px;
     height: 48px;
@@ -1025,7 +1034,8 @@
   }
   .chok-yahrzeit.collapsed .toggle-btn,
   .lens-yahrzeit.collapsed .toggle-btn,
-  .tikkun-yahrzeit.collapsed .toggle-btn {
+  .tikkun-yahrzeit.collapsed .toggle-btn,
+  .aitzoas-yahrzeit.collapsed .toggle-btn {
     inset: 0;
     width: 100%;
     height: 100%;
@@ -1034,14 +1044,16 @@
   }
   .chok-yahrzeit .close-btn,
   .lens-yahrzeit .close-btn,
-  .tikkun-yahrzeit .close-btn {
+  .tikkun-yahrzeit .close-btn,
+  .aitzoas-yahrzeit .close-btn {
     width: 44px;
     height: 44px;
     border-radius: 8px;
   }
   .compact-yahrzeit.chok-yahrzeit:not(.collapsed),
   .compact-yahrzeit.lens-yahrzeit:not(.collapsed),
-  .compact-yahrzeit.tikkun-yahrzeit:not(.collapsed) {
+  .compact-yahrzeit.tikkun-yahrzeit:not(.collapsed),
+  .compact-yahrzeit.aitzoas-yahrzeit:not(.collapsed) {
     max-width: min(100%, 320px);
     max-height: 260px;
     overflow-y: auto;

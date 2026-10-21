@@ -21,6 +21,8 @@ from reviewed_chayay_exports import is_reviewed_source, search_document
 from reviewed_alim_exports import is_reviewed_source as is_alim_source, search_document as alim_search_document
 from reviewed_wrapup_exports import is_reviewed_source as is_wrapup_source, search_document as wrapup_search_document
 
+from qualified_aitzoas362_exports import (load_edition as load_aitzoas_edition, search_text as aitzoas_search_text, route_section as aitzoas_route_section, checked_search_artifacts as aitzoas_checked_search_artifacts)
+
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / 'public' / 'data'
 OUT = ROOT / 'public' / 'reader-search'
@@ -149,6 +151,10 @@ def hebrew_section_number(text):
 
 def segment_map(raw_link):
     """Return compact [DOM index, logical section, HE start/end, EN start/end]."""
+    if raw_link.startswith('/reader/aitzoas-yeshuroas/'):
+        section = aitzoas_route_section(raw_link)
+        edition = load_aitzoas_edition(ROOT)
+        return aitzoas_search_text(edition, section)[2]
     source = ROOT / 'public' / f"{raw_link.strip('/')}.json"
     if not source.exists():
         if is_wrapup_source(source, ROOT / "public" / "reader"):
@@ -188,9 +194,28 @@ def segment_map(raw_link):
     return rows
 
 
+def require_aitzoas_catalog_inventory(he, en):
+    """Validate both language catalogs before any output deletion or write."""
+    prefix = '/reader/aitzoas-yeshuroas/'
+    if not isinstance(he, list) or not isinstance(en, list):
+        raise ValueError('Search language catalogs must be arrays')
+    def routes(docs):
+        return [d.get('l', '') for d in docs if isinstance(d, dict)
+                and isinstance(d.get('l', ''), str) and d.get('l', '').startswith(prefix)]
+    observed = {'he': routes(he), 'en': routes(en)}
+    source_present = (ROOT / 'public' / 'reader' / 'aitzoas-yeshuroas').is_dir()
+    if not source_present and not any(observed.values()):
+        return  # unrelated bounded fixtures without this source book stay unrelated
+    expected = {f'{prefix}1/{section}' for section in range(1, 7)}
+    for language, links in observed.items():
+        if len(links) != 6 or set(links) != expected:
+            raise ValueError(f'Aitzoas {language} catalog requires exactly six canonical routes once')
+
+
 def main():
     he = load_gz('light-search-index-he.json.gz')
     en = load_gz('light-search-index-en.json.gz')
+    require_aitzoas_catalog_inventory(he, en)
     # Light artifacts already contain canonical public links from the shared
     # source resolver.  Never run a second, lossy path rewrite here.
     by_link = {}
@@ -199,10 +224,14 @@ def main():
             link = doc.get('l', '')
             if not link:
                 continue
+            if link.startswith('/reader/reviewed/aitzoas362-sources/'):
+                continue  # historical assets never ordinary ingestion
             entry = by_link.setdefault(link, {'he': None, 'en': None, 'raw': link})
             if entry[language] is not None and entry[language] != doc:
                 raise RuntimeError(f'nonidentical {language} search documents share canonical route {link}')
             entry[language] = doc
+
+    aitzoas_edition = load_aitzoas_edition(ROOT) if any(k.startswith("/reader/aitzoas-yeshuroas/") for k in by_link) else None
 
     if OUT.exists(): shutil.rmtree(OUT)
     SHARDS.mkdir(parents=True, exist_ok=True)
@@ -232,8 +261,12 @@ def main():
         hebrew = (hd.get('h') or ed.get('h') or title).strip()
         book = (hd.get('b') or ed.get('b') or '').strip()
         aliases = (hd.get('a') or ed.get('a') or '').strip()
-        he_text = clean_text(hd.get('x',''))
-        en_text = clean_text(ed.get('x','') or hd.get('e','') or ed.get('e',''))
+        qualified_locations = None
+        if link.startswith('/reader/aitzoas-yeshuroas/'):
+            he_text, en_text, qualified_locations = aitzoas_checked_search_artifacts(aitzoas_edition, link, hd, ed)
+        else:
+            he_text = clean_text(hd.get('x',''))
+            en_text = clean_text(ed.get('x','') or hd.get('e','') or ed.get('e',''))
         text = clean_text(title, hebrew, book, aliases, he_text, en_text)
         item_id = len(items)
         # No consumer reads the per-item alias blob: the web client matches
@@ -242,7 +275,7 @@ def main():
         # largest meta.json field (~1.5 MB decoded for 27,282 docs).
         items.append({'t': title, 'h': hebrew, 'c': book, 'p': link})
         normalized = normalize(text)
-        location_map = hd.get('m') if isinstance(hd.get('m'), list) else segment_map(raw_link)
+        location_map = qualified_locations if qualified_locations is not None else (hd.get('m') if isinstance(hd.get('m'), list) else segment_map(raw_link))
         with open(DOCS / f'{item_id}.json', 'w', encoding='utf-8') as f:
             json.dump({'id': item_id, 't': title, 'h': hebrew, 'c': book, 'p': link, 'he': he_text, 'en': en_text, 'n': normalized, 'm': location_map}, f, ensure_ascii=False, separators=(',', ':'))
         for term in set(words(text)):

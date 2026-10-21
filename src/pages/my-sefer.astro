@@ -699,6 +699,7 @@ import Layout from '../layouts/Layout.astro';
         color: black !important;
       }
     }
+    @media print { .passage-full-saved-disclosure { display: none !important; } }
   </style>
 
   <script is:inline src="/my-sefer-storage.js"></script>
@@ -960,6 +961,7 @@ import Layout from '../layouts/Layout.astro';
           ${heSnippet ? '<div class="passage-text-he passage-snippet">' + escHtml(heSnippet) + (p.he && p.he.length > 150 ? '...' : '') + '</div>' : ''}
           ${enSnippet ? '<div class="passage-text-en passage-snippet">' + escHtml(enSnippet) + (p.en && p.en.length > 200 ? '...' : '') + '</div>' : ''}
           ${p.savedText ? '<div class="passage-saved-text passage-snippet" dir="auto">' + escHtml(p.savedText.slice(0, 220)) + (p.savedText.length > 220 ? '...' : '') + '</div>' : ''}
+          ${p.savedText ? '<details class="passage-full-saved-disclosure"><summary>Read full saved text (including source notes and history)</summary><div class="passage-saved-text" dir="auto" style="white-space:pre-wrap;overflow-wrap:anywhere">' + escHtml(p.savedText).replace(/\r/g, '&#13;') + '</div></details>' : ''}
           ${p.he ? '<div class="passage-print-text passage-text-he" dir="rtl">' + escHtml(p.he) + '</div>' : ''}
           ${p.en ? '<div class="passage-print-text passage-text-en" dir="ltr">' + escHtml(p.en) + '</div>' : ''}
           ${p.savedText ? '<div class="passage-print-text passage-saved-text" dir="auto">' + escHtml(p.savedText) + '</div>' : ''}

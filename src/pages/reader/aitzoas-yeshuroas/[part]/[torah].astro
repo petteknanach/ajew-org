@@ -1,302 +1,113 @@
 ---
 import Layout from '../../../../layouts/Layout.astro';
 import Comments from '../../../../components/Comments.astro';
-import '../../../../styles/reader.css';
-import '../../../../styles/reader-v2.css';
+import {loadEdition,historyHTML,noteHTML} from '../../../../lib/qualified-aitzoas362.mjs';
+import {PIN,displayPlan} from '../../../../../public/qualified-aitzoas362-core.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
-
-// Storage sections come from this book's actual index, not printed topic numbers.
-export function getStaticPaths() {
-  const index = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'public/reader/aitzoas-yeshuroas/index.json'), 'utf8'));
-  const seen = new Set();
-  return index.torahs.map(({ torah }) => {
-    if (!Number.isSafeInteger(torah) || torah < 1 || seen.has(torah)) throw new Error('Invalid Aitzoas Yesharoas section index');
-    seen.add(torah);
-    return { params: { part: '1', torah: String(torah) } };
-  });
+export function getStaticPaths(){
+ const index=JSON.parse(fs.readFileSync(path.join(process.cwd(),'public/reader/aitzoas-yeshuroas/index.json'),'utf8'));
+ if(JSON.stringify(index.torahs.map(x=>x.torah))!=='[1,2,3,4,5,6]')throw Error('Six persisted section routes required');
+ return index.torahs.map(({torah})=>({params:{part:'1',torah:String(torah)}}));
 }
-
-const { part, torah } = Astro.params;
-const partNum = Number(part);
-const torahNum = Number(torah);
-const bookIndex = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'public/reader/aitzoas-yeshuroas/index.json'), 'utf8'));
-const sectionPosition = bookIndex.torahs.findIndex((entry) => String(entry.torah) === torah);
-let torahData = null;
-let error = null;
-
-if (part !== '1' || sectionPosition < 0) {
-  error = 'Section not found';
-} else {
-  const filePath = path.join(process.cwd(), `public/reader/aitzoas-yeshuroas/section-${torahNum}.json`);
-  torahData = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-  if (torahData.bookId !== 'aitzoas-yeshuroas' || torahData.part !== partNum || torahData.torah !== torahNum) throw new Error('Aitzoas Yesharoas source identity mismatch');
-  const indices = torahData.segments.map((seg) => seg.index);
-  if (indices.some((index) => !Number.isSafeInteger(index) || index < 1) || new Set(indices).size !== indices.length) throw new Error('Invalid persisted Aitzoas Yesharoas paragraph anchors');
-}
-
-const bookName = bookIndex.bookTitle;
-const bookHebrew = bookIndex.bookHebrew;
-const sectionUrl = (entry) => entry ? `/reader/aitzoas-yeshuroas/1/${entry.torah}` : null;
-const navigation = {
-  prevUrl: sectionUrl(bookIndex.torahs[sectionPosition - 1]),
-  nextUrl: sectionUrl(bookIndex.torahs[sectionPosition + 1]),
-};
-
-const pageTitle = torahData
-  ? `${torahData.hebrewTitle || torahData.title} - ${bookName}`
-  : 'Not Found';
-const pageDesc = torahData
-  ? `Read ${torahData.title} from ${bookName}. Original Hebrew text; paired English has known mismatches and is not approved. Translation review pending.`
-  : '';
-
-const structuredData = torahData ? JSON.stringify({
-  "@context": "https://schema.org",
-  "@type": "Article",
-  "headline": `${torahData.title} - ${bookName}`,
-  "alternativeHeadline": torahData.hebrewTitle || '',
-  "author": { "@type": "Person", "name": bookIndex.author },
-  "publisher": { "@type": "Organization", "name": "ajew.org" },
-  "inLanguage": ["he", "en"],
-  "description": pageDesc,
-  "isPartOf": { "@type": "Book", "name": bookName },
-  "url": `https://ajew.org/reader/aitzoas-yeshuroas/${partNum}/${torahNum}`
-}) : '';
-const breadcrumbData = torahData ? JSON.stringify({
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    { "@type": "ListItem", "position": 1, "name": "Library", "item": "https://ajew.org/reader" },
-    { "@type": "ListItem", "position": 2, "name": "Aitzoas Yesharoas", "item": `https://ajew.org/reader/aitzoas-yeshuroas/${partNum}/` },
-    { "@type": "ListItem", "position": 3, "name": torahData.hebrewTitle || torahData.title }
-  ]
-}) : '';
+const {part,torah}=Astro.params;
+const edition=await loadEdition();
+const index=JSON.parse(fs.readFileSync(path.join(process.cwd(),'public/reader/aitzoas-yeshuroas/index.json'),'utf8'));
+const section=Number(torah);
+if(part!=='1'||!Number.isInteger(section)||section<1||section>6)throw Error('Section not found');
+const source=edition.sections[section-1],rows=edition.rows.filter(r=>r.section===section);
+const title=`${source.hebrewTitle||source.title} - ${index.bookTitle}`;
+const description=`${source.title}: supplied Hebrew with source-bound English, origin notices, required reading notes and labelled earlier-English history. Reader paragraph anchors are not printed teaching numbers.`;
+const url=`https://ajew.org/reader/aitzoas-yeshuroas/1/${section}`;
+const jsonLd={'@context':'https://schema.org','@type':'Article',headline:title,alternativeHeadline:source.hebrewTitle||'',author:{'@type':'Person',name:index.author},publisher:{'@type':'Organization',name:'ajew.org'},inLanguage:['he','en'],description,isPartOf:{'@type':'Book',name:index.bookTitle},url};
+const crumbs=[{name:'Library',url:'https://ajew.org/reader'},{name:index.bookTitle,url:'https://ajew.org/reader/aitzoas-yeshuroas/1/'},{name:source.title,url}];
 ---
-
-<Layout title={pageTitle} description={pageDesc} jsonLd={torahData ? JSON.parse(structuredData) : undefined} breadcrumbs={torahData ? JSON.parse(breadcrumbData).itemListElement.map((crumb) => ({ name: crumb.name, url: crumb.item || `https://ajew.org/reader/aitzoas-yeshuroas/${partNum}/${torahNum}` })) : undefined}>
-  {error ? (
-    <div style="text-align: center; padding: 80px 20px;">
-      <h1>{error}</h1>
-      <p><a href="/reader">Back to Reader</a></p>
-    </div>
-  ) : (
-    <div
-      class="reader-container"
-      data-torah-id={`aitzoas-yeshuroas-${partNum}-${torahNum}`}
-      data-torah-title={`${torahData.title} - ${bookName}`}
-    >
-      <div class="reader-progress"></div>
-
-      <div class="reader-breadcrumb">
-        <a href="/reader">Reader</a>
-        <span>&rsaquo;</span>
-        <a href={`/reader/aitzoas-yeshuroas/${partNum}/`}>{bookName}</a>
-        <span>&rsaquo;</span>
-        {torahData.hebrewTitle || torahData.title}
-      </div>
-
-
-
-<!-- Unified Audio Player -->
-<div id="audio-controls" style="margin:0 auto 12px auto; max-width:700px; font-family:'Open Sans',sans-serif;">
-  <div style="display:flex; gap:0; border-radius:8px; overflow:hidden; border:1px solid var(--reader-border,#ddd);">
-    <button id="audio-btn-he" onclick="toggleAudio('he')" 
-      style="flex:1; padding:8px 12px; border:none; cursor:pointer; font-size:0.85em; font-weight:600;
-      background:var(--reader-bg-secondary,#f8f5f0); color:var(--reader-text,#333);">
-      🎧 Hebrew
-    </button>
-    <button id="audio-btn-en" onclick="toggleAudio('en')" 
-      style="flex:1; padding:8px 12px; border:none; cursor:pointer; font-size:0.85em; font-weight:600;
-      background:var(--reader-bg-secondary,#f8f5f0); color:var(--reader-text,#333); border-left:1px solid var(--reader-border,#ddd);">
-      🔊 English
-    </button>
-  </div>
-  
-  <!-- Hidden data element for book/part/torah -->
-  <div id="en-tts-player" data-book="aitzoas-yeshuroas" data-part={partNum} data-torah={torahNum} style="display:none;"></div>
-  
-  <div id="audio-panel-he" style="display:none; background:var(--reader-bg-secondary,#f8f5f0); 
-    border:1px solid var(--reader-border,#ddd); border-top:none; border-radius:0 0 8px 8px; padding:12px 16px;">
-    <audio id="kol-hatzadik-audio" controls preload="none" style="width:100%; border-radius:4px;"></audio>
-    <div id="kol-hatzadik-note" style="font-size:0.8em; color:var(--reader-text-secondary,#888); margin-top:4px;"></div>
-  </div>
-  
-  <div id="audio-panel-en" style="display:none; background:#1a3a1a; 
-    border:1px solid #2d5a2d; border-top:none; border-radius:0 0 8px 8px; padding:12px 16px;">
-    <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-      <span style="font-size:1em;">🔊</span>
-      <strong style="color:#7fff7f; font-size:0.85em;">English Audio</strong>
-      <div style="margin-left:auto; display:flex; gap:4px;">
-        <button id="en-btn-ryan" onclick="enSetVoice('ryan')" 
-          style="background:#7fff7f20; border:2px solid #7fff7f; color:#fff; border-radius:4px; 
-          padding:2px 8px; cursor:pointer; font-size:0.8em;">🇬🇧</button>
-        <button id="en-btn-guy" onclick="enSetVoice('guy')" 
-          style="background:#7fff7f10; border:1px solid #7fff7f40; color:#fff; border-radius:4px; 
-          padding:2px 8px; cursor:pointer; font-size:0.8em;">🇺🇸</button>
-        <button id="en-btn-connor" onclick="enSetVoice('connor')" 
-          style="background:#7fff7f10; border:1px solid #7fff7f40; color:#fff; border-radius:4px; 
-          padding:2px 8px; cursor:pointer; font-size:0.8em;">🇮🇪</button>
-      </div>
-    </div>
-    <button id="en-btn-play" onclick="enTogglePlay()" 
-      style="background:#2d8a2d; color:#fff; border:none; border-radius:4px; padding:6px 16px; 
-      cursor:pointer; font-size:0.9em; font-weight:bold; width:100%;">▶ Play English</button>
-    <div id="en-progress" style="margin-top:4px; height:3px; background:#2d5a2d; border-radius:2px; 
-      overflow:hidden; display:none;">
-      <div id="en-progress-bar" style="height:100%; width:0%; background:#7fff7f;"></div>
-    </div>
-  </div>
-</div>
-<script src="/unified-audio.js" defer></script>
-
-      <div class="reader-toolbar">
-        <div class="reader-toolbar-group">
-          <button class="reader-btn" data-mode="hebrew">Hebrew</button>
-          <button class="reader-btn" data-mode="english">English</button>
-          <button class="reader-btn" data-mode="both">Both</button>
-        </div>
-        <div class="reader-toolbar-group">
-          <button class="reader-btn" id="btn-nikud">Nikud</button>
-        </div>
-        <div class="reader-toolbar-group">
-          <span style="font-size:0.7em; font-family: 'Open Sans', sans-serif; color: var(--reader-text-secondary);">A</span>
-          <input type="range" id="font-size-slider" class="font-size-slider" min="12" max="32" value="18" />
-          <span style="font-size:0.9em; font-family: 'Open Sans', sans-serif; color: var(--reader-text-secondary);">A</span>
-        </div>
-        <div class="reader-toolbar-group">
-          <button class="reader-btn reader-btn-icon" data-theme-btn="day">Day</button>
-          <button class="reader-btn reader-btn-icon" data-theme-btn="sepia">Sepia</button>
-          <button class="reader-btn reader-btn-icon" data-theme-btn="night">Night</button>
-        </div>
-        <div class="reader-toolbar-group">
-          <button class="reader-btn reader-btn-icon" id="btn-align" title="Sentence-by-sentence aligned view">Align</button>
-          <button class="reader-btn reader-btn-icon" id="btn-listen">Listen</button>
-          <button class="reader-btn reader-btn-icon" id="btn-search">Search</button>
-          <button class="reader-btn reader-btn-icon" id="btn-bookmark">Bookmark</button>
-          <button class="reader-btn reader-btn-icon" id="btn-notes">Notes</button>
-          <button class="reader-btn reader-btn-icon" id="btn-fullscreen">Fullscreen</button>
-        </div>
-      </div>
-
-      <div class="reader-search-bar">
-        <input type="text" placeholder="Search in this section..." dir="auto" />
-        <span class="search-info"></span>
-        <button class="reader-btn search-close">Close</button>
-      </div>
-
-      <button class="reader-toc-toggle" title="Table of Contents">&#9776;</button>
-      <div class="reader-toc">
-        <button class="reader-toc-close">&times;</button>
-        <h3>Original paragraphs / פסקאות מקור</h3>
-        <ul class="reader-toc-list">
-          {torahData.segments.map((seg) => (
-            <li><a href={`#seg-${seg.index}`} data-index={String(seg.index)}>¶ {seg.index}</a></li>
-          ))}
-        </ul>
-      </div>
-
-      <div class="reader-header">
-        {torahData.hebrewTitle && <div class="hebrew-title">{torahData.hebrewTitle}</div>}
-        <h1>{torahData.title}</h1>
-        <p style="color: var(--reader-text-secondary); font-size: 0.9em; font-family: 'Open Sans', sans-serif;">
-          {bookHebrew} - {bookName}
-        </p>
-      </div>
-
-      <aside id="translation-review-warning" role="note" aria-label="Translation review warning" class="ajew-segment-actions" style="margin: 16px 0; padding: 14px 16px; border: 2px solid var(--reader-border, #a67c45); border-radius: 8px; background: var(--reader-bg-secondary, #f8f5f0); color: var(--reader-text, #333);">
-        <p lang="en"><strong>Translation review warning:</strong> The paired English is known to be mismatched with the Hebrew and is not approved. It is retained unchanged pending review; paragraph links do not certify it.</p>
-        <p lang="he" dir="rtl"><strong>אזהרה — התרגום בבדיקה:</strong> ידוע שהטקסט באנגלית אינו תואם לטקסט העברי ואינו מאושר. הוא נשמר ללא שינוי עד לבדיקתו; קישורים לפסקאות אינם אישור לתרגום.</p>
-        <p lang="en">¶ labels are newly assigned stable Reader paragraph anchors, not printed teaching numbers. Manuscript headings and printed numbering remain in the Original text.</p>
-        <p lang="he" dir="rtl">סימוני ¶ הם מזהי פסקאות קבועים חדשים של הקורא, ולא מספרי הסעיפים בדפוס. כותרות המקור ומספורו נשמרים בטקסט המקורי.</p>
-      </aside>
-
-      <div class="reader-nav">
-        {navigation.prevUrl ? (
-          <a href={navigation.prevUrl} data-dir="prev">&larr; Previous</a>
-        ) : <span class="disabled">&larr; Previous</span>}
-        <a href={`/reader/aitzoas-yeshuroas/${partNum}`}>Book Index</a>
-        <a href="/reader">All Books</a>
-        {navigation.nextUrl ? (
-          <a href={navigation.nextUrl} data-dir="next">Next &rarr;</a>
-        ) : <span class="disabled">Next &rarr;</span>}
-      </div>
-
-      <div class="reader-content mode-hebrew">
-        <div class="reader-content-original">
-{torahData.segments.map((seg) => (
-          <div class="reader-segment-pair" id={`seg-${seg.index}`}>
-            <div class="reader-segment segment-he" data-index={String(seg.index)}>
-              <span class="segment-number" title="Reader paragraph anchor — not a printed teaching number">{seg.index}</span>
-              <p data-nikud={seg.he_nikud || seg.he}>{seg.he}</p>
-            </div>
-            <div class={`reader-segment segment-en ${!seg.en ? 'empty-translation' : ''}`} data-index={String(seg.index)}>
-              <span class="segment-number" title="Reader paragraph anchor — not a printed teaching number">{seg.index}</span>
-              <p>{seg.en || 'Translation not yet available'}</p>
-            </div>
-          </div>
-        ))}
-        </div>
-        {torahData.aligned_segments && (
-          <div class="reader-content-aligned" style="display:none;">
-            {torahData.aligned_segments.map((seg) => (
-              <div class={`reader-segment-pair ${seg.type === 'note' ? 'segment-note' : ''}`} id={`aligned-${seg.index}`}>
-                <div class="reader-segment segment-he" data-index={String(seg.index)}>
-                  <span class="segment-number" title="Reader paragraph anchor — not a printed teaching number">{seg.index}</span>
-                  <p>{seg.he || '\u00A0'}</p>
-                </div>
-                <div class={`reader-segment segment-en ${!seg.en ? 'empty-translation' : ''}`} data-index={String(seg.index)}>
-                  <span class="segment-number" title="Reader paragraph anchor — not a printed teaching number">{seg.index}</span>
-                  <p>{seg.en || '\u00A0'}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      <div class="reader-nav">
-        {navigation.prevUrl ? (
-          <a href={navigation.prevUrl} data-dir="prev">&larr; Previous</a>
-        ) : <span class="disabled">&larr; Previous</span>}
-        <a href={`/reader/aitzoas-yeshuroas/${partNum}`}>Book Index</a>
-        <a href="/reader">All Books</a>
-        {navigation.nextUrl ? (
-          <a href={navigation.nextUrl} data-dir="next">Next &rarr;</a>
-        ) : <span class="disabled">Next &rarr;</span>}
-      </div>
-
-      <div class="reader-shortcuts-overlay">
-        <div class="reader-shortcuts-panel">
-          <h2>Keyboard Shortcuts</h2>
-          <div class="shortcut-row"><span>Hebrew mode</span><span class="shortcut-key">H</span></div>
-          <div class="shortcut-row"><span>English mode</span><span class="shortcut-key">E</span></div>
-          <div class="shortcut-row"><span>Both columns</span><span class="shortcut-key">B</span></div>
-          <div class="shortcut-row"><span>Toggle nikud</span><span class="shortcut-key">N</span></div>
-          <div class="shortcut-row"><span>Fullscreen</span><span class="shortcut-key">F</span></div>
-          <div class="shortcut-row"><span>Search in text</span><span class="shortcut-key">Ctrl+F</span></div>
-          <div class="shortcut-row"><span>Save bookmark</span><span class="shortcut-key">S</span></div>
-          <div class="shortcut-row"><span>Listen / Pause</span><span class="shortcut-key">L</span></div>
-          <div class="shortcut-row"><span>Print</span><span class="shortcut-key">P</span></div>
-          <div class="shortcut-row"><span>Next segment</span><span class="shortcut-key">J / ↓</span></div>
-          <div class="shortcut-row"><span>Prev segment</span><span class="shortcut-key">K / ↑</span></div>
-          <div class="shortcut-row"><span>Toggle favorite</span><span class="shortcut-key">G</span></div>
-          <div class="shortcut-row"><span>Previous/Next</span><span class="shortcut-key">&larr; &rarr;</span></div>
-          <div class="shortcut-row"><span>Show shortcuts</span><span class="shortcut-key">?</span></div>
-          <br />
-          <button class="reader-btn" onclick="this.closest('.reader-shortcuts-overlay').classList.remove('open')">Close</button>
-        </div>
-      </div>
-      {torahData && (
-        <Comments teachingId={`aitzoas-yeshuroas-${part}-${torah}`} teachingTitle={`aitzoas-yeshuroas ${part}:${torah}${torahData?.title ? ' — ' + torahData.title : ''}`} />
-      )}
-
-
-      <script src="/reader-aitzoas-qualifications.js?v=20261014-r11" is:inline defer></script>
-      <script src="/reader-script.js?v=parsha-author-20261018-r1" defer></script>
-      <script src="/reader-v2.js" defer></script>
-      <script src="/pwa-register.js" defer></script>
-      <script src="/tts-fix.js" defer></script>
-      <script src="/reader-notes.js" is:inline></script>
-    </div>
-  )}
+<Layout title={title} description={description} jsonLd={jsonLd} breadcrumbs={crumbs}>
+ <div data-aitzoas362-yahrzeit-host aria-label="Dates"></div>
+ <section class="aitzoas362" data-aitzoas362 data-section={section} data-edition-sha={PIN} data-ready="false" data-print-safe="false" data-mode="both" data-theme="day">
+  <aside data-pending role="alert">Source authentication pending. Copy, Share, Save, selection annotations and printing are disabled until this page's source, notes and history are verified.</aside>
+  <noscript>JavaScript is unavailable. Read the source notes and labelled history below; qualified exports and authenticated printing are unavailable.</noscript>
+  <p data-print-warning>PRINT NOT AUTHENTICATED — source reading, ownership, notes, history and visible ink must pass the route-local print gate. Do not use this output as a verified edition.</p>
+  <h1 data-print-heading>{source.title}</h1>
+  <header><p>{index.bookHebrew} — {index.bookTitle}</p>{source.hebrewTitle&&<p lang="he" dir="rtl">{source.hebrewTitle}</p>}
+   <p>¶ labels identify stable Reader paragraphs, not printed teaching numbers. Supplied Hebrew is preserved; no separately verified pointed-Hebrew field is supplied. English origin is stated per paragraph. Earlier English is comparison history, never an unavailable-field substitute.</p>
+  </header>
+  <nav aria-label="Section navigation">
+   {section>1?<a href={`/reader/aitzoas-yeshuroas/1/${section-1}`}>← Previous</a>:<span>← Previous (first section)</span>}
+   <a href="/reader/aitzoas-yeshuroas/1/">Book Index</a><a href="/reader">All Books</a>
+   {section<6?<a href={`/reader/aitzoas-yeshuroas/1/${section+1}`}>Next →</a>:<span>Next (last section) →</span>}
+  </nav>
+  <section class="q-controls" aria-label="Reading and export controls">
+   <div>{[['hebrew','Hebrew'],['english','English'],['both','Both']].map(([mode,label])=><button type="button" data-mode-button={mode} disabled aria-pressed={mode==='both'?'true':'false'}>{label}</button>)}
+    <button type="button" disabled title="No independent pointed Hebrew field is supplied">Nikud unavailable</button>
+    <button type="button" disabled title="No authenticated sentence-level alignment is supplied">Align unavailable</button>
+    <button type="button" disabled title="Audio is not source-authenticated for this edition">Audio / Listen unavailable</button>
+   </div>
+   <label>Text size <input data-font type="range" min="16" max="24" value="18" disabled /></label>
+   <div>{['day','sepia','night'].map(theme=><button type="button" data-theme-button={theme} disabled>{theme}</button>)}<button type="button" data-fullscreen disabled>Fullscreen</button><button type="button" data-bookmark disabled>Bookmark this paragraph</button></div>
+   <label>Search this section <input data-query type="search" disabled /></label><output data-search-status aria-live="polite"></output>
+   <div>{[['copy','Copy section'],['share','Share section'],['save','Save section to My Sefer']].map(([action,label])=><button type="button" data-action={action} disabled>{label}</button>)}<button type="button" data-print disabled>Print (integrity checked)</button></div>
+   <div><button type="button" data-selection-action="copy" disabled>Copy selected owner</button><button type="button" data-selection-action="share" disabled>Share selected owner</button><button type="button" data-selection-action="save" disabled>Save selected owner</button><button type="button" data-capture disabled>Capture source selection</button></div>
+   <p>Select within one visible source field. Exports carry its complete owner's Hebrew, assembled English, applicable notes, origin and labelled full history. Paragraph 242 omits only the approved overlapping inline caveat with both complete source notes attached; stored English remains unchanged. Captures cannot originate in notes, history or controls.</p>
+   <details><summary>Keyboard shortcuts</summary><p>H / E / B: Hebrew / English / Both. P: checked print. J / K: next / previous paragraph. Use the labelled controls for source exports. No audio or fabricated alignment is offered.</p></details>
+   <details><summary>Paragraph table of contents</summary><ol>{rows.map(r=><li><a href={`#seg-${r.stableIndex}`}>¶ {r.stableIndex}</a></li>)}</ol></details>
+  </section>
+  <p data-status role="status" aria-live="polite">Authentication pending; outward source actions disabled.</p>
+  <section data-source-root aria-label="Source paragraphs">
+   {rows.map(r=> (
+    <article data-unit={r.owner} data-index={r.stableIndex} id={`seg-${r.stableIndex}`}>
+     <h2>¶ {r.stableIndex}</h2>
+     <section data-he-wrap><h3>Supplied Hebrew</h3><p data-source-field="he" lang="he" dir="rtl">{r.he}</p></section>
+     <section data-en-wrap><h3>English</h3>{r.en===null?<p data-unavailable>{r.origin.notice} No historical fallback is used.</p>:<p data-source-field="en" lang="en">{displayPlan(r).en}</p>}</section>
+     <section data-origin-wrap><h3>English origin</h3><p data-origin>{r.origin.notice}</p></section>
+     <section data-notes-root aria-label={`Required notes for paragraph ${r.stableIndex}`} set:html={noteHTML(r)} />
+     <div class="q-unit-controls">{[['copy','Copy paragraph'],['share','Share paragraph'],['save','Save paragraph']].map(([action,label])=><button type="button" data-action={action} disabled>{label}</button>)}</div>
+     <Fragment set:html={historyHTML(r)} />
+    </article>
+   ))}
+  </section>
+  <section class="q-annotations"><h2>Source-bound local annotations</h2><p>New highlights, notes and prayers use exact field/occurrence identities. Earlier generic Reader annotations are not reattached by text matching and remain unchanged in their original storage.</p><div data-capture-host></div><div data-annotations></div></section>
+  <nav aria-label="All sections">{index.torahs.map(t=><a href={`/reader/aitzoas-yeshuroas/1/${t.torah}`} aria-current={section===t.torah?'page':undefined}>{t.title}</a>)}</nav>
+ </section>
+ <Comments teachingId={`aitzoas-yeshuroas-${part}-${torah}`} teachingTitle={`aitzoas-yeshuroas ${part}:${torah} — ${source.title}`} />
+ <!-- This route intentionally does not load generic Reader/V2/notes/TTS source callbacks. -->
+ <script is:inline>
+  // Runs even if the module fetch/import fails. No shared callbacks/prototypes changed.
+  (function(){const c=document.querySelector('[data-aitzoas362]');if(!c)return;
+   const blocks=e=>{try{const s=getSelection();if(!s||s.isCollapsed)return false;if(c.contains(s.anchorNode)||c.contains(s.focusNode))return true;for(let i=0;i<s.rangeCount;i++)if(s.getRangeAt(i).intersectsNode(c))return true;}catch{return true;}return false;};
+   for(const type of ['copy','cut','dragstart'])document.addEventListener(type,e=>{if(c.dataset.ready!=='true'&&blocks(e)){e.preventDefault();e.stopImmediatePropagation();if(e.clipboardData)e.clipboardData.setData('text/plain','');}},true);
+  })();
+ </script>
+ <script type="module" src="/reader-aitzoas-qualifications.js?v=aitzoas362-native-3" is:inline></script>
 </Layout>
+<style is:global>
+ body:has([data-aitzoas362]) .ai-reader-access{display:none!important}
+ .aitzoas362{max-width:76rem;margin:auto;padding:1rem;color:#171717;background:#fff;font:18px/1.7 system-ui;--q-font:18px}
+ .aitzoas362 [data-source-field]{font-size:var(--q-font);white-space:pre-wrap;overflow-wrap:anywhere}
+ .aitzoas362 [data-notes-root] p,.aitzoas362 [data-history-field],.aitzoas362 [data-origin]{white-space:pre-wrap;overflow-wrap:anywhere}
+ .aitzoas362 [data-source-field="he"]{font-family:serif;font-size:calc(var(--q-font) + 2px)}
+ .aitzoas362 [data-unit]{border-top:1px solid #888;padding:1rem 0;scroll-margin-top:5rem}
+ .aitzoas362 button,.aitzoas362 input,.aitzoas362 nav a{margin:.25rem;padding:.45rem}
+ .aitzoas362 nav{display:flex;flex-wrap:wrap;gap:.4rem}.aitzoas362 [data-notes-root]{border-inline-start:3px solid #94733c;padding-inline-start:1rem}
+ .aitzoas362 [data-pending],.aitzoas362 [data-print-warning]{border:2px solid #8a310b;padding:1rem}
+ .aitzoas362[data-ready="true"] [data-pending]{display:none}.aitzoas362 [data-print-warning]{display:none}
+ .aitzoas362[data-mode="hebrew"] [data-en-wrap],.aitzoas362[data-mode="english"] [data-he-wrap]{display:none}
+ .aitzoas362[data-theme="sepia"]{color:#2b2118;background:#faf1df}.aitzoas362[data-theme="night"]{color:#eee;background:#181818}
+ .aitzoas362 pre{white-space:pre-wrap;overflow-wrap:anywhere}.aitzoas362 [data-capture-host]{position:relative}
+ @media print{
+  /* Authenticate the genuine Layout ancestors too; sourceInk remains strict. */
+  html:has([data-aitzoas362]),body:has([data-aitzoas362]),body:has([data-aitzoas362]) #main-content:has([data-aitzoas362]){color:#000!important;-webkit-text-fill-color:#000!important}
+  body>*{display:none!important}body:has([data-aitzoas362])>*:has([data-aitzoas362]){display:block!important}
+  body *:not([data-aitzoas362]):not([data-aitzoas362] *):not(:has([data-aitzoas362])){display:none!important}
+  [data-aitzoas362]{display:block!important;background:#fff!important;color:#000!important;max-width:none!important;margin:0!important;padding:0!important}
+  [data-aitzoas362]>*,[data-aitzoas362] [data-source-root]{display:none!important}
+  [data-aitzoas362] [data-print-warning]{display:block!important;color:#000!important;background:#fff!important}
+  [data-aitzoas362][data-print-safe="true"]>[data-source-root],[data-aitzoas362][data-print-safe="true"]>[data-print-heading]{display:block!important}
+  [data-aitzoas362][data-print-checking="true"]>[data-source-root],[data-aitzoas362][data-print-checking="true"]>[data-print-heading]{display:block!important}
+  [data-aitzoas362][data-print-safe="true"]>[data-print-warning]{display:none!important}
+  [data-aitzoas362]:is([data-print-safe="true"],[data-print-checking="true"]) :is([data-source-root] *,[data-print-heading]){display:block!important;position:static!important;overflow:visible!important;max-height:none!important;height:auto!important;opacity:1!important;visibility:visible!important;color:#000!important;-webkit-text-fill-color:#000!important;background:#fff!important;transform:none!important;clip:auto!important;clip-path:none!important;filter:none!important;mask-image:none!important;text-shadow:none!important;box-shadow:none!important;font-size:16px!important;letter-spacing:normal!important;word-spacing:0!important;text-indent:0!important;white-space:pre-wrap!important}
+  [data-aitzoas362]:is([data-print-safe="true"],[data-print-checking="true"]) .q-unit-controls,[data-aitzoas362]:is([data-print-safe="true"],[data-print-checking="true"]) .q-unit-controls *{display:none!important}
+  [data-aitzoas362]:is([data-print-safe="true"],[data-print-checking="true"]) summary{display:none!important}
+  [data-aitzoas362] mark{background:#fff!important;color:#000!important}
+ }
+</style>

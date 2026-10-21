@@ -16,6 +16,8 @@ from reviewed_chayay_exports import is_reviewed_source, search_document
 from reviewed_alim_exports import is_reviewed_source as is_alim_source, search_document as alim_search_document
 from reviewed_wrapup_exports import is_reviewed_source as is_wrapup_source, search_document as wrapup_search_document
 
+from qualified_aitzoas362_exports import (is_archive as is_aitzoas_archive, is_source as is_aitzoas_source, load_edition as load_aitzoas_edition, checked_section as aitzoas_checked_section, search_text as aitzoas_search_text)
+
 READER_DIR = Path('public/reader')
 OUT_DIR = Path('public/data')
 OUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -158,6 +160,9 @@ total_he_bytes = 0
 total_en_bytes = 0
 skipped = 0
 
+aitzoas_edition = None
+# Filter before route discovery can open a collision operand.
+json_files = [p for p in json_files if not is_aitzoas_archive(p, READER_DIR)]
 for routed in discover_routed_sources(json_files, READER_DIR):
     fpath = routed.source
     url = routed.route
@@ -169,12 +174,12 @@ for routed in discover_routed_sources(json_files, READER_DIR):
         with open(fpath, 'r', encoding='utf-8') as f:
             data = json.load(f)
     except (json.JSONDecodeError, Exception):
-        if is_wrapup_source(fpath, READER_DIR):
+        if is_aitzoas_source(fpath, READER_DIR) or is_wrapup_source(fpath, READER_DIR):
             raise  # current qualified source is never silently skipped
         skipped += 1
         continue
     if not isinstance(data, dict):
-        if is_wrapup_source(fpath, READER_DIR):
+        if is_aitzoas_source(fpath, READER_DIR) or is_wrapup_source(fpath, READER_DIR):
             raise ValueError("Malformed current qualified projection")
         # Non-document JSON (schedules, maps, calendars, commentary files...)
         # carries no segments to index.
@@ -187,7 +192,15 @@ for routed in discover_routed_sources(json_files, READER_DIR):
         data = alim_search_document(fpath, data)
     if is_wrapup_source(fpath, READER_DIR):
         data = wrapup_search_document(fpath, data)
-    he_text, en_text, segment_map = extract_segments(data)
+    if is_aitzoas_source(fpath, READER_DIR):
+        if aitzoas_edition is None:
+            aitzoas_edition = load_aitzoas_edition(READER_DIR.resolve().parents[1])
+        section = aitzoas_checked_section(aitzoas_edition, fpath, data, READER_DIR)
+        if url != f"/reader/aitzoas-yeshuroas/1/{section}":
+            raise ValueError("Qualified search route drift")
+        he_text, en_text, segment_map = aitzoas_search_text(aitzoas_edition, section)
+    else:
+        he_text, en_text, segment_map = extract_segments(data)
     if fpath.parent.name == 'chayey-moharan' and fpath.stem == 'hashmata-162':
         he_text = str(data.get('hashmata_he', '') or '').strip()
         en_text = '\n'.join(filter(None, [str(data.get('hashmata_en', '') or '').strip(), str(data.get('note', '') or '').strip()]))
