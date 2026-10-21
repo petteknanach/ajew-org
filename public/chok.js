@@ -228,7 +228,7 @@
       return window.AjewMarkedHebrew.applyBook(d, slug);
     }
     if (slug === 'tanach-tehillim') return window.AjewPsalmsData.load().then(authenticate);
-    if (!state.bookCache[slug]) state.bookCache[slug] = fetchJSON('/reader/medooyuk/' + slug + '.json')
+    if (!state.bookCache[slug]) state.bookCache[slug] = fetchJSON('/reader/medooyuk/' + slug + '.json' + (slug === 'tanach-bereishit' ? '?v=a2633f304364c9592f2f9637aeee4730a28c52303bc80a508c4af26faa7fba9b' : ''))
       .then(authenticate).catch(function (error) {
         delete state.bookCache[slug]; // Allow explicit day/control retry; never cache unauthenticated data.
         throw error;
@@ -555,10 +555,32 @@
     return '<div class="ck-hk-src">מקורות ברסלב <span class="ck-hk-t">(הלכתא כנחמני)</span>: ' +
       names.join('; ') + '</div>';
   }
+  // Only the exact Genesis schedule admits the selected owner carrier.
+  var SCHEDULED_BIBLE_WEEKS = ["בראשית","נח","לך לך","וירא","חיי שרה","תולדות","ויצא","וישלח","וישב","מקץ","ויגש","ויחי"];
+  var SCHEDULED_BIBLE_SLUGS = ["tanach-amos","tanach-bereishit","tanach-hoshea","tanach-malachi","tanach-melachim-a","tanach-melachim-b","tanach-mishlei","tanach-ovadya","tanach-yechezkel","tanach-yeshayahu","tanach-yonah"];
+  var scheduledBibleModulePromise;
+  function scheduledBibleModule() {
+    if (!scheduledBibleModulePromise) scheduledBibleModulePromise = new Promise(function(resolve,reject) {
+      var script=document.createElement('script');
+      script.src='/chok-scheduled-bible.js?v=93056aac35b093cdbb7ebc7efa9bf3daa858ad8e0882ca77bb6535a4ac3395af';
+      script.integrity='sha256-kwVqrDWwk827frx++pvz2qhYrY4Igsp3u2U1pKwzla8='; script.crossOrigin='anonymous';
+      script.onload=function(){window.ChokScheduledBible?resolve(window.ChokScheduledBible):reject(Error('Bible module unavailable'));};
+      script.onerror=function(){reject(Error('Bible module unavailable'));};
+      document.head.appendChild(script);
+    }).catch(function(error){scheduledBibleModulePromise=null;throw error;});
+    return scheduledBibleModulePromise;
+  }
+  function scheduledBible(wk,day,slug,original) {
+    if (SCHEDULED_BIBLE_WEEKS.indexOf(wk)<0 || SCHEDULED_BIBLE_SLUGS.indexOf(slug)<0) return Promise.resolve(null);
+    return scheduledBibleModule().then(function(api) {
+      return api.prepare(wk,day,slug,original,function(url){return fetchJSON(url,true);});
+    }).catch(function(){return {unavailable:true};});
+  }
   function versesHTML(slug, from, to, kind, vcomm, parsha, day) {
+    var englishEnabled = state.tanachen, capturedLanguage = state.language;
     return book(slug).then(function (d) {
-      return Promise.all([targ(slug), state.tanachen ? en(slug) : Promise.resolve(null)]).then(function (ts) {
-        var tg = ts[0], en = ts[1];
+      return Promise.all([targ(slug), englishEnabled ? en(slug) : Promise.resolve(null), scheduledBible(parsha, day, slug, d)]).then(function (ts) {
+        var tg = ts[0], en = ts[1], selectedBible = ts[2];
         var qualifiedDay = window.ChokSources.isTuesday(parsha, day);
         var items = [];
         var c = from.c, v = from.v;
@@ -571,13 +593,17 @@
           vv.forEach(function (x) {
             if (to && (c > to.c || (c === to.c && x > to.v))) return;
             var verse = ch[x];
-            var row = (state.language === 'original' ? '<span class="ck-untouched-original">' + esc(verse.t.join(' ')) + '</span>' : coloredVerse(verse)) + ' <span class="tk-vnum">' + refLabelHTML(plainHeNum(c) + ':' + plainHeNum(x)) + '</span>';
+            var row = (capturedLanguage === 'original' ? '<span class="ck-untouched-original">' + esc(verse.t.join(' ')) + '</span>' : coloredVerse(verse)) + ' <span class="tk-vnum">' + refLabelHTML(plainHeNum(c) + ':' + plainHeNum(x)) + '</span>';
             var sourceRef = c + ':' + x;
             var sourceSection = kind === 'torah' ? 'torah' : kind;
             var source = qualifiedDay ? window.ChokSources.bound(sourceSection, sourceRef, verse.t.join(' ')) : window.ChokSources.weekUnit(parsha, day, sourceSection, sourceRef, verse.t.join(' '));
             var englishText = source ? source.en : en && (en.ch || {})[String(c)] && en.ch[String(c)][x - 1];
-            row += window.ChokSources.english(englishText, state.tanachen);
-            row += window.ChokSources.meaningNotes(source);
+            var generic = selectedBible && !selectedBible.unavailable ? window.ChokScheduledBible.render(selectedBible, sourceRef, verse, source, englishEnabled) : null;
+            if (source || generic === null && !(selectedBible && selectedBible.unavailable)) {
+              row += window.ChokSources.english(englishText, englishEnabled);
+              row += window.ChokSources.meaningNotes(source);
+            } else if (generic !== null) row += generic;
+            else row += '<p class="ck-source-unavailable" lang="en" dir="ltr">This translation is temporarily unavailable.</p>';
             if (state.targum) {
               var tgOriginal = tg && (tg.ch || {})[c] && tg.ch[c][x];
               var targumRow = qualifiedDay ? kind === 'torah' ? window.ChokSources.bound('targum', sourceRef, tgOriginal) : window.ChokSources.nachTargum(kind, sourceRef) : window.ChokSources.weekUnit(parsha, day, kind==='torah'?'torahTargum':kind+'Targum', sourceRef, tgOriginal);

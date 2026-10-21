@@ -60,9 +60,16 @@ async function boot(week,fault,predecessor=false,focused=false){
  const d=documentFor('<html><body>'+inner+'</body></html>');let active=0,peak=0,failed=0;const requests=[];
  const h=sandbox(d,'/reader/chok/',async url=>{const u=String(url).split('?')[0];requests.push(u);active++;peak=Math.max(peak,active);
   try{await new Promise(r=>setTimeout(r,1));let raw=transport('public'+u,predecessor);try{raw=inject(u,raw,fault);}catch(e){failed++;return {ok:false,status:Number(e.message),text:async()=>'',json:async()=>null};}
-   return {ok:raw!==null,status:raw===null?404:200,text:async()=>raw,json:async()=>JSON.parse(raw)};
+   return {ok:raw!==null,status:raw===null?404:200,text:async()=>raw,json:async()=>JSON.parse(raw),arrayBuffer:async()=>{const b=Buffer.from(raw||'','utf8');return b.buffer.slice(b.byteOffset,b.byteOffset+b.byteLength);}};
   }finally{active--;}
  });
+ // Test-local browser transport: resolve, authenticate and evaluate before load.
+ const append=d.head.appendChild.bind(d.head);
+ d.head.appendChild=function(n){append(n);if(n.tagName==='script')Promise.resolve().then(()=>{
+  try{const u=String(n.src||n.getAttribute('src')).split('?')[0],raw=inject(u,transport('public'+u,predecessor),fault);assert.notEqual(raw,null,'dynamic script exists');const b=Buffer.from(raw,'utf8');
+   assert.equal(n.integrity,'sha256-'+require('node:crypto').createHash('sha256').update(b).digest('base64'),'actual script SRI');vm.runInContext(b.toString('utf8'),h.box,{filename:u});if(n.onload)n.onload();
+  }catch(e){if(n.onerror)n.onerror(e);}
+ });return n;};
  h.box.location.search='?week='+encodeURIComponent(week)+'&day='+encodeURIComponent('יום ראשון')+(focused?'&sec=torah':'');
  try{for(const m of template.matchAll(/<script src="([^"?]+)[^"]*" defer><\/script>/g))vm.runInContext(code('public'+m[1],predecessor),h.box,{filename:m[1]});
   await until(()=>!!d.querySelector('#ck-content').innerHTML&&!d.querySelector('.ck-loading'),30000);
@@ -179,6 +186,6 @@ test('synchronous acquisition and validation errors are observed per edition',as
 });
 test('changed template compiles without ABI transformation; three script pins only',async()=>{
  const raw=code('src/pages/reader/chok.astro'),compiler=dependencies('@astrojs/compiler');const compiled=await compiler.transform(raw,{filename:'src/pages/reader/chok.astro'});assert(!compiled.diagnostics.some(x=>x.severity===1));
- const versions={'chok.js':'652e0b8c5fb3373cb224fd26cac0b46be26e6200482eb49dd8a691bba1e6b061','chok-verse-breslov.js':'parsha-author-20261020-reader-notes-r1','chok-source-reader.js':'chok-live-corrections-20261020-r1'};
+ const versions={'chok.js':'28a5b498e9280b4dafb5fba01c1fa19feadf0aded0a90c899ee1de994ac4d11c','chok-verse-breslov.js':'parsha-author-20261020-reader-notes-r1','chok-source-reader.js':'chok-live-corrections-20261020-r1'};
  for(const [p,v]of Object.entries(versions)){new vm.Script(code('public/'+p));assert(raw.includes('/'+p+'?v='+v));assert.equal(raw.split('/'+p+'?v='+v).length-1,1);}
 });

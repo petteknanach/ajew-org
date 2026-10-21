@@ -17,7 +17,14 @@ function blob(p){if(EXTRA&&fs.existsSync(path.join(EXTRA,p)))return fs.readFileS
 async function bootActual(w,day,focused){
  const template=read('src/pages/reader/chok.astro'),inner=template.slice(template.indexOf('  <div class="ck-wrap"'),template.indexOf('</Layout>'));
  const d=documentFor('<html><body>'+inner+'</body></html>'),requests=[];let active=0,peak=0;
- const env=sandbox(d,'/reader/chok/',async url=>{active++;peak=Math.max(peak,active);const p='public'+decodeURIComponent(String(url).split('?')[0]);requests.push(p);const raw=blob(p);await new Promise(r=>setTimeout(r,1));active--;return {ok:raw!==null,status:raw===null?404:200,text:async()=>raw,json:async()=>JSON.parse(raw)};});
+ const env=sandbox(d,'/reader/chok/',async url=>{active++;peak=Math.max(peak,active);const p='public'+decodeURIComponent(String(url).split('?')[0]);requests.push(p);const raw=blob(p);await new Promise(r=>setTimeout(r,1));active--;return {ok:raw!==null,status:raw===null?404:200,text:async()=>raw,json:async()=>JSON.parse(raw),arrayBuffer:async()=>{const b=Buffer.from(raw||'','utf8');return b.buffer.slice(b.byteOffset,b.byteOffset+b.byteLength);}};});
+ // Test-local browser transport: use this helper's resolver, never preload modules.
+ const append=d.head.appendChild.bind(d.head);
+ d.head.appendChild=function(n){append(n);if(n.tagName==='script')Promise.resolve().then(()=>{
+  try{const u=String(n.src||n.getAttribute('src')).split('?')[0],raw=blob('public'+u);assert.notEqual(raw,null,'dynamic script exists');const b=Buffer.from(raw,'utf8');
+   assert.equal(n.integrity,'sha256-'+require('node:crypto').createHash('sha256').update(b).digest('base64'),'actual script SRI');vm.runInContext(b.toString('utf8'),env.box,{filename:u});if(n.onload)n.onload();
+  }catch(e){if(n.onerror)n.onerror(e);}
+ });return n;};
  env.box.location.search='?week='+encodeURIComponent(w)+'&day='+encodeURIComponent(day)+(focused?'&sec=torah':'');
  try{for(const m of template.matchAll(/<script src="([^"?]+)[^"]*" defer><\/script>/g)){const code=blob('public'+m[1]);assert(code);vm.runInContext(code,env.box,{filename:m[1]});}await until(()=>!!d.querySelector('#ck-content').innerHTML&&!d.querySelector('.ck-loading'),20000);assert(!d.querySelector('#ck-content').textContent.includes('Could not load'));return {d,env,requests,peak:()=>peak};}catch(e){env.close();e.message=w+'|'+day+'|'+focused+': '+e.message+'; requested '+requests.slice(-8).join(', ');throw e;}
 }
@@ -128,7 +135,7 @@ test('changed Astro templates compile with installed read-only compiler; every l
  const compiler=dependencies('@astrojs/compiler'),esbuild=dependencies('esbuild');
  for(const p of ['src/components/QualifiedParsha.astro','src/pages/parsha/[slug].astro','src/pages/reader/chumash-lh/[part]/[torah].astro','src/pages/reader/tanach-bereishit/[part]/[torah].astro','src/pages/reader/chok.astro']){const result=await compiler.transform(read(p),{filename:p});assert(!result.diagnostics.some(d=>d.severity===1));await esbuild.transform(result.code,{loader:'ts'});for(const s of result.scripts||[])await esbuild.transform(s.code,{loader:'ts'});}
  const refs=execFileSync('git',['grep','-l','-z','-F','reader-script.js?v=','HEAD','--','src'],{cwd:ROOT}).toString().split('\0').filter(Boolean).map(p=>p.slice(5)).filter(p=>p.endsWith('.astro'));assert.equal(refs.length,248);for(const p of refs)assert(read(p).includes('/reader-script.js?v='+VERSION),p);
- for(const [asset,version]of Object.entries({'chok.js':'652e0b8c5fb3373cb224fd26cac0b46be26e6200482eb49dd8a691bba1e6b061','chok-source-reader.js':'chok-live-corrections-20261020-r1','chok-verse-breslov.js':'parsha-author-20261020-reader-notes-r1'})){new vm.Script(read('public/'+asset));assert(read('src/pages/reader/chok.astro').includes('/'+asset+'?v='+version));}
+ for(const [asset,version]of Object.entries({'chok.js':'28a5b498e9280b4dafb5fba01c1fa19feadf0aded0a90c899ee1de994ac4d11c','chok-source-reader.js':'chok-live-corrections-20261020-r1','chok-verse-breslov.js':'parsha-author-20261020-reader-notes-r1'})){new vm.Script(read('public/'+asset));assert(read('src/pages/reader/chok.astro').includes('/'+asset+'?v='+version));}
 });
 test('actual server Sidebar init and route bridge retain complete chapter pairs, notes, language controls and tab lifecycle',async()=>{
  const {qualifiedChapter}=await lib,data=qualifiedChapter(18,undefined,ROOT).selection,comp=await compileComponent(),rendered=await comp.render({dataset:data});
