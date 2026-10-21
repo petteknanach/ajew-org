@@ -11,13 +11,15 @@ type Meme = {
   title: string;
   text: string;
   alt?: string;
+  search?: string;
 };
 
 const metadataPath = path.join(process.cwd(), 'public/images/hebrew-memes/metadata.json');
 const memes: Meme[] = fs.existsSync(metadataPath)
   ? JSON.parse(fs.readFileSync(metadataPath, 'utf-8')).map((m: Meme) => {
       const reviewed = getGalleryMetadata('hebrew-memes', m.filename);
-      return { ...m, title: reviewed.title || m.title, alt: reviewed.alt || m.title };
+      return { ...m, title: reviewed.title || m.title, alt: reviewed.alt || m.alt || m.title,
+        search: gallerySearchText('hebrew-memes', m.filename, m) };
     })
   : [];
 
@@ -46,7 +48,7 @@ const shareUrl = (n: number) => `https://ajew.org/gallery/hebrew-memes/#meme-${S
 
     <section class="memes-grid">
       {memes.map((m) => (
-        <article class="meme-card" data-gallery-search-item data-media-kind={galleryMediaKind('hebrew-memes', m.filename)} id={`meme-${String(m.number).padStart(3, '0')}`} data-search={gallerySearchText('hebrew-memes', m.filename, m)}>
+        <article class="meme-card" data-gallery-search-item data-media-kind={galleryMediaKind('hebrew-memes', m.filename)} id={`meme-${String(m.number).padStart(3, '0')}`} data-search={m.search}>
           <a class="imagebox" href={imageUrl(m.filename)} target="_blank" rel="noopener">
             <img src={imageUrl(m.filename)} alt={m.alt || m.title || `Hebrew meme ${m.number}`} loading="lazy" />
           </a>

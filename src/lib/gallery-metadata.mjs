@@ -25,7 +25,7 @@ export const mediaLabels = {
   composite: 'Collage or text overlay / קולאז׳',
   illustration: 'Illustration / איור',
   'generated-artwork': 'Generated artwork / אמנות שנוצרה',
-  unreviewed: 'Not visually reviewed / טרם נבדק חזותית'
+  unreviewed: 'Unclassified medium / סוג המדיה לא נקבע'
 };
 export function galleryMediaKind(folder, filename) {
   return getGalleryMetadata(folder, filename).mediaKind || 'unreviewed';
@@ -35,10 +35,13 @@ export function galleryMediaLabel(folder, filename) {
 }
 export function gallerySearchText(folder, filename, legacy = {}) {
   const reviewed = getGalleryMetadata(folder, filename);
-  // Review caveats are NOT search tags: "not a tallis" must not create a hit.
+  // Union positive fields: a shared label must not erase a rich local description.
+  // Only explicitly transcribed visibleText is indexed; never review caveats.
   const strings = value => Array.isArray(value) ? value.filter(item => typeof item === 'string') : [];
-  return [filename, reviewed.title || legacy.title, reviewed.alt || legacy.alt,
-    legacy.text, ...strings(legacy.categories), ...strings(reviewed.categories),
+  const text = value => typeof value === 'string' ? value : '';
+  return [filename, text(legacy.title), text(legacy.alt), text(reviewed.title), text(reviewed.alt),
+    text(legacy.text), text(legacy.visibleText), text(reviewed.visibleText),
+    ...strings(legacy.categories), ...strings(reviewed.categories),
     ...strings(legacy.aliases), ...strings(legacy.archivedAliases),
     ...strings(legacy.subjects), ...strings(legacy.tags),
     ...strings(reviewed.aliases), ...strings(reviewed.archivedAliases),
