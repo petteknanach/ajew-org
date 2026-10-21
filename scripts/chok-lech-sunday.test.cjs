@@ -14,7 +14,7 @@ const roots=[root,...args.flatMap((x,i)=>x==='--data-root'?[path.resolve(args[i+
 const sha=x=>crypto.createHash('sha256').update(x).digest('hex');
 const pins={
  'public/chok-lech-sunday.js':'7ce17fdd4c55ce81ed197ff027dafc2df923384e690ab741f8aa8fbc5259943a',
- 'public/chok.js':'41c720e59e4e6785f728f0b6c5b8ef56b376612d3cdae28a2c5cacab7066a89c',
+ 'public/chok.js':'228e626c237d3a4b8fe081451890b8838c7c5ae4c3d3d283302c07f29d823f80',
  'public/chok-source-reader.js':'edab4f903dec95cb4d62662827b002b6c6f50dd77cf49539c0d368b6939e4a2f',
  'public/reader/chok/lech-sunday-talmud-zohar.json':'0f6739147c793ccf167c22fee2bed3d27ed7f2546e021441dbf60c9d94242a93'
 };

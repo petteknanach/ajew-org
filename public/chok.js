@@ -1058,6 +1058,46 @@
     return '<details class="ck-layer ck-zohar" data-field-role="original-source"><summary>זוהר — נוסח המקור · Original source — ' +
       zoharEscape(identities.join(' ← ')) + '</summary>' + body + '</details>' + qualification;
   }
+  function isBiraishisSundayMishna(wk,day) { return wk==='בראשית' && day==='יום ראשון'; }
+  var biraishisSundayMishnaPromise=null;
+  function biraishisSundayMishnaModule() {
+    function ready(api) { return api && typeof api.reading==='function' && typeof api.load==='function'; }
+    if (ready(window.ChokBiraishisSundayMishna)) return Promise.resolve(window.ChokBiraishisSundayMishna);
+    if (!biraishisSundayMishnaPromise) biraishisSundayMishnaPromise=new Promise(function(resolve,reject) {
+      var script=document.createElement('script');
+      script.src='/chok-biraishis-sunday-mishna.js?v=b87607cd0c59c3a648f7247a599d3171e62b347c386a3a312157279841bd2f99';
+      script.integrity='sha256-uHYHzQxZw6ZI9yR6WZ0xceYrNHw4ajoxIVcnmEG9L5k='; script.crossOrigin='anonymous';
+      script.onload=function(){if(ready(window.ChokBiraishisSundayMishna))resolve(window.ChokBiraishisSundayMishna);else reject(Error('Sunday Mishna module unavailable'));};
+      script.onerror=function(){reject(Error('Sunday Mishna module unavailable'));};
+      document.head.appendChild(script);
+    }).catch(function(e){biraishisSundayMishnaPromise=null;throw e;});
+    return biraishisSundayMishnaPromise;
+  }
+  function biraishisSundayMishnaReading(wk,day) {
+    var language=state.language,commentary=state.commentary,mode=state.mode;
+    var scheduled=((state.sched.weeks[wk]||{}).days||{})[day]||{};
+    return biraishisSundayMishnaModule().then(function(module){return module.reading(wk,day,language,commentary,function(url){return fetchJSON(url,true);},scheduled,mode,applyWednesdayMode,window.ChokSources.richText);}).catch(function(){return '<p class="ck-source-unavailable" dir="rtl">משנה וברטנורא — ברכות א · <span lang="en" dir="ltr">This reading is temporarily unavailable.</span></p>';});
+  }
+  function isBiraishisSundayGemara(wk,day) { return wk==='בראשית' && day==='יום ראשון'; }
+  var biraishisSundayGemaraPromise=null;
+  function biraishisSundayGemaraModule() {
+    function ready(api) { return api && typeof api.reading==='function' && typeof api.load==='function'; }
+    if (ready(window.ChokBiraishisSundayGemara)) return Promise.resolve(window.ChokBiraishisSundayGemara);
+    if (!biraishisSundayGemaraPromise) biraishisSundayGemaraPromise=new Promise(function(resolve,reject) {
+      var script=document.createElement('script');
+      script.src='/chok-biraishis-sunday-gemara.js?v=e55a6856e091c040353ee65b20b9fbf02a5c9f2cebca7d7d10351c25f6835e34';
+      script.integrity='sha256-5VpoVuCRwEA1PuZbILn78Cpcnyzryn19EDUcJfaDXjQ='; script.crossOrigin='anonymous';
+      script.onload=function(){if(ready(window.ChokBiraishisSundayGemara))resolve(window.ChokBiraishisSundayGemara);else reject(Error('Sunday Gemara module unavailable'));};
+      script.onerror=function(){reject(Error('Sunday Gemara module unavailable'));};
+      document.head.appendChild(script);
+    }).catch(function(e){biraishisSundayGemaraPromise=null;throw e;});
+    return biraishisSundayGemaraPromise;
+  }
+  function biraishisSundayGemaraReading(wk,day) {
+    var language=state.language,commentary=state.commentary,mode=state.mode;
+    var scheduled=((state.sched.weeks[wk]||{}).days||{})[day]||{};
+    return biraishisSundayGemaraModule().then(function(module){return module.reading(wk,day,language,commentary,function(url){return fetchJSON(url,true);},scheduled,mode,applyWednesdayMode,window.ChokSources.richText);}).catch(function(){return '<p class="ck-source-unavailable" dir="rtl">גמרא ורש״י — ברכות · <span lang="en" dir="ltr">This reading is temporarily unavailable.</span></p>';});
+  }
   function isLechWednesday(wk,day) { return wk==='לך לך' && day==='יום רביעי'; }
   var lechWednesdayModulePromise=null;
   function lechWednesdayModule() {
@@ -1277,8 +1317,8 @@
       if (d.mishna && d.mishna.masechet && want('mishna')) {
         p = p.then(function () {
           var actual=qualifiedDay ? window.ChokSources.reading('mishna',state.tanachen) : window.ChokSources.weekReading(wk,dayE,'mishna',state.tanachen);
-          return (isLechWednesday(wk,dayE) ? lechWednesdayReading(wk,dayE,'mishna') : actual ? bartenuraHTML(d.mishna.masechet,d.mishna.perek).then(function (bar) { return actual+bar; }) : mishnaHTML(d.mishna.masechet, d.mishna.perek)).then(function (html) { html = html || ''; html = dayKavana('mishna', d) + html; html = voiceBox(!isLechWednesday(wk,dayE) && dc && dc.mishna, 'משנה') + html;
-            if (html) out.push('<section class="ck-section" data-sec="mishna">' + (isLechWednesday(wk,dayE)?popBtn():'') + html + '</section>');
+          return (isBiraishisSundayMishna(wk,dayE) ? biraishisSundayMishnaReading(wk,dayE) : isLechWednesday(wk,dayE) ? lechWednesdayReading(wk,dayE,'mishna') : actual ? bartenuraHTML(d.mishna.masechet,d.mishna.perek).then(function (bar) { return actual+bar; }) : mishnaHTML(d.mishna.masechet, d.mishna.perek)).then(function (html) { html = html || ''; html = dayKavana('mishna', d) + html; html = voiceBox(!isBiraishisSundayMishna(wk,dayE) && !isLechWednesday(wk,dayE) && dc && dc.mishna, 'משנה') + html;
+            if (html) out.push('<section class="ck-section" data-sec="mishna">' + (isBiraishisSundayMishna(wk,dayE)||isLechWednesday(wk,dayE)?popBtn():'') + html + '</section>');
           });
         });
       }
@@ -1294,8 +1334,8 @@
       }
       if (d.gemara && d.gemara.masechet && want('talmud')) {
         p = p.then(function () {
-          return (isLechWednesday(wk,dayE) ? lechWednesdayReading(wk,dayE,'talmud') : isLechTuesday(wk,dayE) ? lechTuesdayReading(wk,dayE,'talmud') : isLechMonday(wk,dayE) ? lechMondayReading(wk,dayE) : isLechSunday(wk,dayE) ? lechSundayReading(wk,dayE,'talmud') : qualifiedDay ? Promise.resolve(window.ChokSources.reading('talmud', state.tanachen)) : wk==='נח' ? Promise.resolve(window.ChokSources.weekReading(wk,dayE,'talmud',state.tanachen)||window.ChokSources.unavailable('talmud')) : gemaraHTML(d.gemara)).then(function (html) { html = html || ''; html = dayKavana('talmud', d) + html; html = voiceBox(wk!=='נח' && !isLechMonday(wk,dayE) && !isLechTuesday(wk,dayE) && !isLechWednesday(wk,dayE) && dc && dc.talmud, 'גמרא') + html;
-            if (html) out.push('<section class="ck-section" data-sec="talmud">' + (isLechMonday(wk,dayE) || isLechTuesday(wk,dayE) || isLechWednesday(wk,dayE) ? popBtn() : '') + html + '</section>');
+          return (isBiraishisSundayGemara(wk,dayE) ? biraishisSundayGemaraReading(wk,dayE) : isLechWednesday(wk,dayE) ? lechWednesdayReading(wk,dayE,'talmud') : isLechTuesday(wk,dayE) ? lechTuesdayReading(wk,dayE,'talmud') : isLechMonday(wk,dayE) ? lechMondayReading(wk,dayE) : isLechSunday(wk,dayE) ? lechSundayReading(wk,dayE,'talmud') : qualifiedDay ? Promise.resolve(window.ChokSources.reading('talmud', state.tanachen)) : wk==='נח' ? Promise.resolve(window.ChokSources.weekReading(wk,dayE,'talmud',state.tanachen)||window.ChokSources.unavailable('talmud')) : gemaraHTML(d.gemara)).then(function (html) { html = html || ''; html = dayKavana('talmud', d) + html; html = voiceBox(!isBiraishisSundayGemara(wk,dayE) && wk!=='נח' && !isLechMonday(wk,dayE) && !isLechTuesday(wk,dayE) && !isLechWednesday(wk,dayE) && dc && dc.talmud, 'גמרא') + html;
+            if (html) out.push('<section class="ck-section" data-sec="talmud">' + (isBiraishisSundayGemara(wk,dayE) || isLechMonday(wk,dayE) || isLechTuesday(wk,dayE) || isLechWednesday(wk,dayE) ? popBtn() : '') + html + '</section>');
           });
         });
       }

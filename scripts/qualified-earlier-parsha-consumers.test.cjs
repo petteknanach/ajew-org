@@ -3,6 +3,7 @@
 // whole-book/source acceptance is required or claimed. Native DOM is modeled.
 const test = require('node:test'), assert = require('node:assert/strict');
 const fs = require('node:fs'), path = require('node:path'), vm = require('node:vm');
+const crypto = require('node:crypto');
 const {documentFor, sandbox, until, tick, visible, dependencies} = require('./qualified-earlier-parsha-test-dom.cjs');
 const ROOT = process.env.EARLIER_CONSUMER_ROOT || path.resolve(__dirname, '..');
 const source = f => fs.readFileSync(path.join(ROOT, f), 'utf8');
@@ -20,7 +21,7 @@ const declaredQualified = {
 const ROUTES = {bereishit:'1/1',noach:'1/2','lech-lecha':'1/3',vayeira:'1/4','chayei-sarah':'1/5',toldot:'1/6',vayeitzei:'1/7',vayishlach:'1/8',vayeishev:'1/9',mikeitz:'1/10',vayigash:'1/11',vayechi:'1/12'};
 function emittedChokScripts() {
  const scripts=[...source('src/pages/reader/chok.astro').matchAll(/<script src="([^"?]+)[^"]*" defer><\/script>/g)].map(m=>'public'+m[1]);
- assert.deepEqual(scripts.slice(-3),['public/chok-verse-breslov.js','public/chok-source-reader.js','public/chok.js']);
+ assert.deepEqual(scripts,['tikkun-boundaries','tikkun-qatan','medooyuk','psalms-data','chok-verse-breslov','chok-source-reader','chok-lech-sunday','chok-lech-monday','chok-lech-tuesday','chok'].map(name=>'public/'+name+'.js'));
  return scripts;
 }
 /** @typedef {{id:string, he:string, en:string}} Pair */
@@ -209,12 +210,34 @@ function verifyWeekly(html, expected) {
  assert(!d.querySelector('[data-breslov-scope]'),'Chok study text must not contain selection or production correspondence');
  return d;
 }
+// BEGIN genuine caller transport
+async function callerResponse(url,requests) {
+ const key=decodeURIComponent(String(url).split('?')[0]);requests.push(key);
+ const file=path.join(ROOT,'public',key),ok=fs.existsSync(file),raw=ok?fs.readFileSync(file):Buffer.alloc(0);
+ return {ok,status:ok?200:404,text:async()=>raw.toString('utf8'),json:async()=>JSON.parse(raw.toString('utf8')),arrayBuffer:async()=>raw.buffer.slice(raw.byteOffset,raw.byteOffset+raw.byteLength)};
+}
+function callerTransport(d,env) {
+ const append=d.head.appendChild.bind(d.head),events=[],errors=[],faults=[];
+ d.head.appendChild=function(n){append(n);if(n.tagName==='script')Promise.resolve().then(async()=>{
+  const event={url:String(n.src||n.getAttribute('src'))};events.push(event);let failure;
+  try {
+   const response=await callerResponse(event.url,[]);assert(response.ok,'dynamic script exists');
+   const raw=Buffer.from(await response.arrayBuffer());event.sha256=crypto.createHash('sha256').update(raw).digest('hex');
+   event.integrity=n.integrity;assert.equal(n.integrity,'sha256-'+crypto.createHash('sha256').update(raw).digest('base64'),'actual script SRI');
+   vm.runInContext(raw.toString('utf8'),env.box,{filename:event.url.split('?')[0]});event.outcome='load';
+  } catch(e){failure=e;event.outcome='error';event.error=String(e);errors.push(event);}
+  try{if(failure){if(n.onerror)n.onerror(failure);}else if(n.onload)n.onload();}catch(e){faults.push(String(e));throw e;}
+ });return n;};
+ return {events,errors,faults};
+}
+// END genuine caller transport
 async function fullChok() {
  const template=source('src/pages/reader/chok.astro'),inner=template.slice(template.indexOf('  <div class="ck-wrap"'),template.indexOf('</Layout>'));
- const requests=[], f=async url=>{const key=String(url).split('?')[0];requests.push(key);const file=path.join(ROOT,'public',key);const ok=fs.existsSync(file);const raw=ok?fs.readFileSync(file,'utf8'):'';return {ok,status:ok?200:404,text:async()=>raw,json:async()=>JSON.parse(raw)};};f.requests=requests;
+ const requests=[],f=url=>callerResponse(url,requests);f.requests=requests;
  const d=documentFor('<html><body>'+inner+'</body></html>'),env=sandbox(d,'/reader/chok/',f);
+ const transport=callerTransport(d,env);
  env.box.location.search='?week='+encodeURIComponent('נח')+'&day='+encodeURIComponent(DAY_NAMES[0]);
- try{for(const file of emittedChokScripts())vm.runInContext(file==='public/chok.js'?withExport(source(file),'state'):source(file),env.box,{filename:file});await until(()=>d.querySelector('#ck-breslov-offering-body .ck-breslov')&&!d.querySelector('.ck-loading'),30000);assert(!d.querySelector('.ck-error'));return {d,env,f,state:env.box.__qa.state};}catch(e){env.close();throw e;}
+ try{for(const file of emittedChokScripts())vm.runInContext(file==='public/chok.js'?withExport(source(file),'state'):source(file),env.box,{filename:file});await until(()=>d.querySelector('#ck-breslov-offering-body .ck-breslov')&&!d.querySelector('.ck-loading'),30000);assert(!d.querySelector('.ck-error'));assert.deepEqual(transport.errors,[]);assert.deepEqual(transport.faults,[]);return {d,env,f,state:env.box.__qa.state};}catch(e){env.close();throw e;}
 }
 test('Chok FULL init/lifecycle gate RED: weekly sources on7Noach days, native-model closed/visible, HE/EN qualifiers, week change',async()=>{
  const r=await fullChok();try{
@@ -291,12 +314,14 @@ test('actual standalone/full Chumash branches RED: prefer169, use runtime JSON/m
 });
 test('owned Astro asset pins use exact new version; JS syntax, portable tests carry no private source prerequisites',()=>{
  for(const f of ['src/pages/reader/chumash-lh/[part]/[torah].astro','src/pages/reader/tanach-bereishit/[part]/[torah].astro'])assert(source(f).includes('?v=parsha-author-20261018-r1'));
- assert(source('src/pages/reader/chok.astro').includes('/chok.js?v=chok-live-corrections-20261018-r2'));
+ const mainDigest=crypto.createHash('sha256').update(source('public/chok.js'),'utf8').digest('hex');
+ assert.equal([...source('src/pages/reader/chok.astro').matchAll(/<script src="(\/chok\.js\?v=[^"]+)" defer><\/script>/g)].filter(m=>m[1]==='/chok.js?v='+mainDigest).length,1);
  for(const f of ['public/chok.js','public/reader-script.js'])new vm.Script(source(f),{filename:f});
 });
 
 async function routeFrontmatter(file, params, fixtures, names) {
- const reads=[], box={Astro:{params,props:{},redirect:x=>x},process:{cwd:()=>ROOT},path,hkIndex:json('src/data/hk-citations-index.json'),console,...declaredQualified,
+ const {normalizeReaderNavigation}=await import('data:text/javascript;base64,'+Buffer.from(source('src/lib/reader-navigation.mjs')).toString('base64'));
+ const reads=[], box={Astro:{params,props:{},redirect:x=>x},process:{cwd:()=>ROOT},path,hkIndex:json('src/data/hk-citations-index.json'),console,normalizeReaderNavigation,...declaredQualified,
    fs:{existsSync:f=>fs.existsSync(f),readFileSync(f){reads.push(f);const key=path.relative(ROOT,f);return Object.hasOwn(fixtures,key)?JSON.stringify(fixtures[key]):fs.readFileSync(f,'utf8');}}};
  let code=source(file).split('---')[1].replace(/^import .*;\r?\n/gm,'').replace(/export function /g,'function ');
  code=(await dependencies('esbuild').transform(code,{loader:'ts',format:'cjs'})).code;

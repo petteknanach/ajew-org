@@ -46,18 +46,19 @@ class Element {
   constructor(tag = '', attrs = {}, value = '') {
     this.tagName = tag; this.attrs = {...attrs}; this.value = ''; this.checked = true; this.scrollTop = 0;
     this.childNodes = []; this._text = value; this.parentNode = null; this._listeners = {};
-    this.style = {setProperty() {}, removeProperty() {}};
-    this.dataset = new Proxy({}, {
+
+  }
+  get style() { const value = {setProperty() {}, removeProperty() {}}; Object.defineProperty(this,'style',{value,writable:true,configurable:true,enumerable:true}); return value; }
+  get dataset() { const value = new Proxy({}, {
       get: (_, k) => this.getAttribute('data-' + String(k).replace(/[A-Z]/g, x => '-' + x.toLowerCase())),
       set: (_, k, v) => {this.setAttribute('data-' + String(k).replace(/[A-Z]/g, x => '-' + x.toLowerCase()), String(v)); return true;}
-    });
-    this.classList = {
+    }); Object.defineProperty(this,'dataset',{value,writable:true,configurable:true,enumerable:true}); return value; }
+  get classList() { const value = {
       contains: c => (this.className || '').split(/\s+/).includes(c),
       add: (...cs) => { this.className = [...new Set((this.className || '').split(/\s+/).filter(Boolean).concat(cs))].join(' '); },
       remove: (...cs) => { this.className = (this.className || '').split(/\s+/).filter(c => c && !cs.includes(c)).join(' '); },
       toggle: (c, force) => { const yes = force === undefined ? !this.classList.contains(c) : force; this.classList[yes ? 'add' : 'remove'](c); return yes; }
-    };
-  }
+    }; Object.defineProperty(this,'classList',{value,writable:true,configurable:true,enumerable:true}); return value; }
   get id() { return this.attrs.id || ''; } set id(v) { this.setAttribute('id', v); }
   get className() { return this.attrs.class || ''; } set className(v) { this.setAttribute('class', v); }
   get children() { return this.childNodes.filter(x => x.tagName); }
