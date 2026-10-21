@@ -43,7 +43,7 @@ try {
     const item = metadata[filename];
     if (!item) return;
     picture.label = item.title || picture.label;
-    picture.text = [item.alt, item.credit, ...(item.categories || [])].filter(Boolean).join(' ');
+    picture.text = [item.alt, item.credit, ...[item.categories, item.aliases, item.archivedAliases, item.subjects, item.tags].flatMap(value => Array.isArray(value) ? value.filter(term => typeof term === 'string') : [])].filter(Boolean).join(' ');
   });
 } catch (_) {}
 
@@ -89,6 +89,7 @@ galleryPictures.forEach((picture) => {
   picture.label = (folder === 'saba' && picture.localTitle ? picture.localTitle : reviewed.title || picture.label);
   picture.alt = picture.alt || reviewed.alt || picture.label;
   picture.kind = reviewed.mediaKind || 'unreviewed';
+  picture.detailPage = typeof reviewed.detailPage === 'string' && reviewed.detailPage.startsWith('/gallery/') ? reviewed.detailPage : '';
   picture.search = [gallerySearchText(folder, filename, { title: picture.label, alt: picture.alt, text: picture.text }), picture.label, picture.alt].filter(Boolean).join(' ');
   picture.kindLabel = picture.kind === 'unreviewed' && folder === 'saba' && picture.text
     ? 'Image type not classified (description reviewed)' : mediaLabels[picture.kind];
@@ -118,12 +119,12 @@ galleryPictures.forEach((picture) => {
       <h2>Picture Search Results <span class="hebrew">תוצאות חיפוש תמונות</span></h2>
       <div class="picture-search-grid">
         {galleryPictures.map((picture) => (
-          <a class="picture-search-card" data-gallery-search-item data-media-kind={picture.kind} data-search={`${picture.search} ${picture.gallery}`} href={picture.url} target="_blank" rel="noopener">
+          <a class="picture-search-card" data-gallery-search-item data-media-kind={picture.kind} data-search={`${picture.search} ${picture.gallery}`} href={picture.detailPage || picture.url} target="_blank" rel="noopener">
             <img src={picture.url} alt={picture.alt} loading="lazy" />
             <span class="picture-label">{picture.label}</span>
             <small>{picture.kindLabel}</small>
             <small>{picture.gallery}</small>
-            <em>Open image / פתח תמונה</em>
+            <em>{picture.detailPage ? 'View image & details / תמונה ופרטים' : 'Open image / פתח תמונה'}</em>
           </a>
         ))}
       </div>

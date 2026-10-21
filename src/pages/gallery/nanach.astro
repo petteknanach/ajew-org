@@ -335,6 +335,7 @@ categories['other'] = { name: 'Other Archive Images', hebrew: 'תמונות נו
                   <div class="overlay"><span>{cat.name} #{index + 1}</span></div>
                   <div class="caption">{imageLabel(img)}</div>
                   <div class="caption">{galleryMediaLabel('nanach', img)}</div>
+                  {imageMetadata[img]?.detailPage && <div class="caption"><a href={imageMetadata[img].detailPage} onclick="event.stopPropagation()">Image details / פרטי התמונה</a></div>}
                 </div>
               ))}
             </div>

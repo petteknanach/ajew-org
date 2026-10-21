@@ -36,9 +36,13 @@ export function galleryMediaLabel(folder, filename) {
 export function gallerySearchText(folder, filename, legacy = {}) {
   const reviewed = getGalleryMetadata(folder, filename);
   // Review caveats are NOT search tags: "not a tallis" must not create a hit.
+  const strings = value => Array.isArray(value) ? value.filter(item => typeof item === 'string') : [];
   return [filename, reviewed.title || legacy.title, reviewed.alt || legacy.alt,
-    legacy.text, ...(legacy.categories || []), ...(reviewed.categories || []),
-    ...(reviewed.aliases || []), ...(reviewed.subjects || [])].filter(Boolean).join(' ');
+    legacy.text, ...strings(legacy.categories), ...strings(reviewed.categories),
+    ...strings(legacy.aliases), ...strings(legacy.archivedAliases),
+    ...strings(legacy.subjects), ...strings(legacy.tags),
+    ...strings(reviewed.aliases), ...strings(reviewed.archivedAliases),
+    ...strings(reviewed.subjects), ...strings(reviewed.tags)].filter(Boolean).join(' ');
 }
 export function galleryExtraFiles(folder) {
   // Known extensionless document photos are exposed without renaming bytes.
