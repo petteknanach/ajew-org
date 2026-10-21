@@ -33,6 +33,8 @@ try {
   imageMetadata = JSON.parse(fs.readFileSync(`${imageDir}metadata.json`, 'utf-8'));
 } catch (_) {}
 
+// Retain the original positive fields for search before display-label overrides.
+const legacyImageMetadata = { ...imageMetadata };
 for (const img of allImages) {
   const legacy = imageMetadata[img] || {};
   const reviewed = getGalleryMetadata('nanach', img);
@@ -330,12 +332,12 @@ categories['other'] = { name: 'Other Archive Images', hebrew: 'תמונות נו
             <h2><span class="icon">{cat.icon}</span> {cat.name} <span class="hebrew">({cat.hebrew})</span></h2>
             <div class="gallery-grid">
               {cat.images.map((img, index) => (
-                <div class="gallery-item" data-gallery-search-item data-media-kind={galleryMediaKind('nanach', img)} data-search={gallerySearchText('nanach', img, imageMetadata[img])}>
+                <div class="gallery-item" data-gallery-search-item data-media-kind={galleryMediaKind('nanach', img)} data-search={gallerySearchText('nanach', img, legacyImageMetadata[img])}>
                   <img src={`/images/nanach/${encodeURIComponent(img)}`} alt={imageAlt(img)} loading="lazy" />
                   <div class="overlay"><span>{cat.name} #{index + 1}</span></div>
                   <div class="caption">{imageLabel(img)}</div>
                   <div class="caption">{galleryMediaLabel('nanach', img)}</div>
-                  {imageMetadata[img]?.detailPage && <div class="caption"><a href={imageMetadata[img].detailPage} onclick="event.stopPropagation()">Image details / פרטי התמונה</a></div>}
+                  {imageMetadata[img]?.detailPage && <div class="caption image-details"><a href={imageMetadata[img].detailPage} onclick="event.stopPropagation()">Image details / פרטי התמונה</a></div>}
                 </div>
               ))}
             </div>
@@ -388,9 +390,10 @@ categories['other'] = { name: 'Other Archive Images', hebrew: 'תמונות נו
   .gallery-item:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.18); }
   .gallery-item img { width: 100%; height: auto; border-radius: 12px 12px 0 0; transition: transform 0.3s; display: block; }
   .gallery-item:hover img { transform: scale(1.02); }
-  .gallery-item .overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.7)); padding: 2rem 1rem 1rem; opacity: 0; transition: opacity 0.3s; }
+  .gallery-item .overlay { pointer-events: none; position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.7)); padding: 2rem 1rem 1rem; opacity: 0; transition: opacity 0.3s; }
   .gallery-item:hover .overlay { opacity: 1; }
   .gallery-item .overlay span { color: white; font-size: 0.95rem; }
+  .gallery-item .image-details { position: relative; z-index: 1; background: #f8f8f8; }
   .gallery-item .caption { padding: 0.75rem; font-size: 0.85rem; color: #555; text-align: center; word-break: break-word; line-height: 1.4; }
   .navigation { background: var(--color-primary); padding: 3rem 0; }
   .nav-buttons { display: flex; justify-content: space-between; gap: 1rem; }
