@@ -33,13 +33,13 @@ await test('independent mapped forty topics: exhaustive owners, bilingual labels
 });
 await test('source conservation, separate apparatus and independent repeated witnesses, not aliases',()=>{
  assert.equal(CORRECTION_PREDECESSOR_PIN,oracle.selectedBankSHA256);
- assert.equal(sha(read(ASSET.slice(1))),oracle.sourceCorrection.selectedBankSHA256);assert.equal(PIN,oracle.sourceCorrection.selectedBankSHA256);assert.equal(sha(stable(CORRECTION_OPERATIONS)),oracle.sourceCorrection.operationsSHA256);
+ assert.equal(sha(read(ASSET.slice(1))),oracle.sourceQuestions.selectedBankSHA256);assert.equal(PIN,oracle.sourceQuestions.selectedBankSHA256);assert.equal(sha(stable(CORRECTION_OPERATIONS)),oracle.sourceCorrection.operationsSHA256);
  const repeats=d.rows.slice(281);assert.equal(repeats.length,85);assert.equal(repeats.filter(r=>ownerNavigation(d,r.stableIndex).primaryIndex!==null).length,84);
  assert.equal(ownerNavigation(d,283).primaryIndex,null);
  for(const r of repeats){const m=ownerNavigation(d,r.stableIndex);if(m.primaryIndex!==null){const primary=d.rows[m.primaryIndex-1];assert.equal(r.he,primary.he);assert.notEqual(r.owner,primary.owner);assert.equal(m.primaryOwner,primary.owner);}}
  // Former apparatus-arrival assertion documented the defect. Keep the exact
  // source partition; change ONLY the explicitly authorized reading destinations.
- for(const [id,target]of [[62,81],[63,82],[193,165]]){assert.equal(ownerNavigation(d,id).number,null);assert.equal(ownerNavigation(d,id).readingUrl,ownerNavigation(d,target).readingUrl);assert.ok(s.apparatus[2].rows.includes(d.rows[id-1]));}
+ for(const [id,target]of [[1,11],[62,81],[63,82],[193,165],[283,223]]){assert.equal(ownerNavigation(d,id).number,null);assert.equal(ownerNavigation(d,id).readingUrl,ownerNavigation(d,target).readingUrl);assert.ok(s.apparatus[2].rows.includes(d.rows[id-1]));}
  for(let section=1;section<=6;section++){const v=projectionForPath(d,`/reader/aitzoas-yeshuroas/1/${section}`);assert.deepEqual(ids(v.rows),d.rows.filter(r=>r.section===section).map(r=>r.stableIndex));}
 });
 await test('immutable authenticated projections reject forged edition/view, wrong-route/wrong-topic and numbering changes',()=>{

@@ -31,7 +31,7 @@ class Topics(unittest.TestCase):
                 self.assertEqual(actual,dict(index=row['stableIndex'],**row))
                 self.assertEqual(link['sourceUrl'],row['canonicalUrl'])
                 self.assertEqual(link['owner'],row['owner'])
-                target={62:81,63:82,193:165}.get(row['stableIndex'],row['stableIndex'])
+                target={1:11,62:81,63:82,193:165,283:223}.get(row['stableIndex'],row['stableIndex'])
                 self.assertTrue(link['readingUrl'].endswith('#seg-'+str(target)))
                 self.assertIn(q.escape_exact(link['readingUrl']),files['index.html'].decode())
                 self.assertIn(q.escape_exact(q.passage_text(row)),files['index.html'].decode())

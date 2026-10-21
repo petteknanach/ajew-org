@@ -12,7 +12,7 @@ import re
 
 # Updated only with explicit route-projection changes; source-bank pins live in
 # the inherited qualified_aitzoas362_exports adapter and remain untouched.
-TOPICS_SHA256 = '3e388f03de12ddbbb25c31705672da71ab6499c5939f7e9327e675d5c03c5ee3'
+TOPICS_SHA256 = 'ff6c80d8eed3043e319460b45d543aaabed97d13377925a6d5c410364e84eaef'
 BASE = '/reader/aitzoas-yeshuroas'
 
 
@@ -47,7 +47,7 @@ def navigation(rows):
             label = {'front-matter':'Front matter','source-appendix':'Repeated source witness / appendix artifact','closing':'Closing','page-headers':'Inline source artifact'}[part]
         result[index] = {'owner':r['owner'], 'sourceUrl':r['canonicalUrl'], 'readingUrl':url, 'label':label, 'number':local}
     # Compatibility destinations only: exact source owners and payloads survive.
-    for alias, target in ((62,81),(63,82),(193,165)):
+    for alias, target in ((1,11),(62,81),(63,82),(193,165),(283,223)):
         result[alias]['readingUrl'] = result[target]['readingUrl']
         result[alias]['label'] = result[target]['label']
     return result

@@ -25,7 +25,7 @@ await test('genuine git-derived baseline362 positive through original complete m
 await test('final4 complete module authentication, actual named-export ABI, cache-bound source URLs',async()=>{
  for(const n of ['authenticateEdition','validateBank','validateAnnotation','displayPlan','fullBodyPayload','requireEdition','appendLegacyCollection','ranges','historyEntries'])assert.equal(typeof current[n],'function');
  const urls=[];edition=await current.authenticateEdition(bytes,a=>{urls.push(a.url);assert.equal(a.url,'/'+a.name+'?v='+a.sha256);return read(a.name);},sha);
- assert.equal(urls.length,13);assert.ok(urls.includes('/'+current.CORRECTION_ARCHIVE+'?v='+current.CORRECTION_ARCHIVE_PIN.sha256));assert.equal(edition.rows.filter(r=>r.en!==null).length,366);
+ assert.equal(urls.length,14);assert.ok(urls.includes('/'+current.QUESTION_ARCHIVE+'?v='+current.QUESTION_ARCHIVE_PIN.sha256));assert.ok(urls.includes('/'+current.CORRECTION_ARCHIVE+'?v='+current.CORRECTION_ARCHIVE_PIN.sha256));assert.equal(edition.rows.filter(r=>r.en!==null).length,366);
  assert.equal(edition.rows.flatMap(r=>r.requiredNotes).length,current.FINAL_NOTE_COUNT);
 });
 function project(b,l){
@@ -42,7 +42,7 @@ const mutations=[
  ['final4 anchor error',b=>{b.rows[0].requiredNotes[0].anchors[0].codepointStart=1;}],
  ['old362 anchor error',b=>{b.rows.find(r=>!Object.hasOwn(current.FINAL4_PINS,r.stableIndex)&&r.requiredNotes.length).requiredNotes[0].anchors[0].fullFieldSHA256='0'.repeat(64);}],
  ['unknown four English with valid renewed anchors',b=>{b.rows[86].en+=' unauthorized';renewWholeAnchors(b.rows[86]);}],
- ['displayRules',b=>{b.displayRules['208'].inlineNoteId='wrong';}],
+ ['displayRules',b=>{b.displayRules['208']={inlineNoteId:'wrong'};}],
  ['bad English count',b=>{b.rows[0].en=null;}],
  ['unselected origin scalar',b=>{b.rows[61].origin.notice+=' unauthorized';}],
  ['private nested anchor metadata',b=>{b.rows[0].requiredNotes[0].anchors[0].hidden_private='secret';}]
@@ -55,8 +55,8 @@ for(const [label,mutate]of mutations){
   const envelope=sha(current.stable(b));let message='';
   try{await current.validateBank(b,l,x=>{const h=sha(x);return h===envelope?current.BANK_VALUE_PIN:h;});}catch(e){message=e.message;}
   assert.ok(message,'mutant was accepted');console.log('rejected '+label+': '+message);
-  if(label==='old362 English'||label.startsWith('Hebrew coordinated')||label.startsWith('history coordinated'))assert.match(message,/Immutable baseline362 bank drift/);
-  if(label.startsWith('unknown four'))assert.match(message,/Exact final-four row drift/);
+  if(label==='old362 English'||label.startsWith('Hebrew coordinated')||label.startsWith('history coordinated'))assert.match(message,/Immutable question predecessor drift/);
+  if(label.startsWith('unknown four'))assert.match(message,/Exact question successor row drift/);
  });
 }
 await test('fresh final4 positive after all logical negatives',async()=>{await current.validateBank(structuredClone(bank),structuredClone(loaded),sha);edition=await current.authenticateEdition(bytes,a=>read(a.name),sha);});
@@ -67,10 +67,10 @@ await test('original362 oldPIN annotations: unchanged fields attach, two correct
  let count=0,detached=0;
  for(const r of edition.rows)if(!Object.hasOwn(current.FINAL4_PINS,r.stableIndex))for(const field of ['he','en']){
   const prior=oldBank.rows[r.stableIndex-1],a=annotation(prior,current.PREVIOUS_EDITION_PIN,field),before=JSON.stringify(a);
-  if(field==='en'&&[63,193].includes(r.stableIndex)){assert.notEqual(r[field],prior[field]);assert.throws(()=>current.validateAnnotation(edition,a));detached++;}
+  if(field==='en'&&r[field]!==prior[field]){assert.notEqual(r[field],prior[field]);assert.throws(()=>current.validateAnnotation(edition,a));detached++;}
   else{assert.equal(r[field],prior[field]);assert.equal(current.validateAnnotation(edition,a),r);count++;}
   assert.equal(JSON.stringify(a),before);
- }assert.equal(count,722);assert.equal(detached,2);
+ }assert.equal(count+detached,724);assert.equal(detached,10);
 });
 await test('oldPIN changed4 rejected even unchanged Hebrew; arbitrary edition and malformed selections rejected',()=>{
  for(const index of [1,62,87,179])for(const f of ['he','en'])assert.throws(()=>current.validateAnnotation(edition,annotation(edition.rows[index-1],current.PREVIOUS_EDITION_PIN,f)));
@@ -79,10 +79,10 @@ await test('oldPIN changed4 rejected even unchanged Hebrew; arbitrary edition an
  for(const index of [1,62,87,179])for(const f of ['he','en'])current.validateAnnotation(edition,annotation(edition.rows[index-1],current.PIN,f));
 });
 await test('mixed annotation collection retains unchanged362 attachments despite changed4 or arbitrary editions; raw bytes untouched',()=>{
- const valid=edition.rows.filter(r=>!Object.hasOwn(current.FINAL4_PINS,r.stableIndex)&&![63,193].includes(r.stableIndex)).map((r,i)=>({...annotation(r,current.PREVIOUS_EDITION_PIN),id:'old-'+i}));
+ const valid=edition.rows.filter(r=>!Object.hasOwn(current.FINAL4_PINS,r.stableIndex)&&r.en===oldBank.rows[r.stableIndex-1].en).map((r,i)=>({...annotation(r,current.PREVIOUS_EDITION_PIN),id:'old-'+i}));
  const rejected=[{...annotation(edition.rows[0],current.PREVIOUS_EDITION_PIN,'he'),id:'changed4'},{...annotation(ordinary,'f'.repeat(64)),id:'wrong-edition'},...[63,193].map(i=>({...annotation(oldBank.rows[i-1],current.PREVIOUS_EDITION_PIN),id:'corrected-'+i}))];
  const raw=JSON.stringify([...valid,...rejected],null,2),result=current.annotationAttachments(edition,raw);
- assert.equal(result.attached.length,360);assert.equal(result.detached.length,4);
+ assert.equal(result.attached.length,352);assert.equal(result.detached.length,4);
  assert.deepEqual(result.attached.map(x=>x.annotation),valid);assert.equal(raw,JSON.stringify([...valid,...rejected],null,2));
  assert.throws(()=>current.annotationAttachments({},raw));
  assert.throws(()=>current.annotationAttachments(edition,JSON.stringify([valid[0],valid[0]])));
@@ -91,8 +91,7 @@ await test('mixed annotation collection retains unchanged362 attachments despite
 await test('all366 actual fullBodyPayload, exact fields/qualifications/history; 208/242 display policy unchanged',()=>{
  for(const r of edition.rows){
   const expected=structuredClone(r);let en=r.en,notes=r.requiredNotes;
-  if(r.stableIndex===208)notes=notes.filter(q=>q.id!=='C-208-N01');
-  if(r.stableIndex===242){const a=oldBank.displayRules['242'].overlappingInlineSpan;en=Array.from(en).slice(0,a.start).join('')+Array.from(en).slice(a.endExclusive).join('');}
+  // All-30 successor no longer contracts the now-replaced 208/242 caveats.
   assert.deepEqual(current.displayPlan(r),{en,notes});
   const payload=current.fullBodyPayload(edition,[r.owner]);assert.equal(payload.editionSHA256,current.PIN);assert.equal(payload.sourceUnits[0].en,r.en);assert.deepEqual(payload.sourceUnits[0].history,r.history);
   assert.ok(payload.content.includes('\nSupplied Hebrew\n'+r.he));assert.ok(payload.content.includes('\nEnglish\n'+en));assert.ok(payload.content.includes(r.origin.notice));assert.ok(payload.content.includes(r.history.archiveUrl));assert.ok(payload.content.includes(r.history.en));

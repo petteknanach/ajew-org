@@ -13,11 +13,13 @@ const links=[...new Map(targets.map(t=>[t.url,t])).values()];
 // The finite same-book map is generated from the authenticated edition, not a
 // destination supplied by the URL. Old fragments remain compatibility identities.
 const arrivals=Object.fromEntries(targets.map(t=>['#seg-'+t.id,t.url]));
-const fallback=ids.every(id=>Object.hasOwn(INLINE_ARRIVALS,id))?links:[...new Map(targets.map(t=>{
+const grouped=ids.every(id=>Object.hasOwn(INLINE_ARRIVALS,id))?links:[...new Map(targets.map(t=>{
  if(t.url==='/reader/aitzoas-yeshuroas/1/')return [t.url,t];
  const item=structure.topics.find(topic=>t.url.startsWith(topic.url))??structure.apparatus.find(a=>t.url.startsWith(a.url));
  return [item.url,{url:item.url,label:item.hebrewTitle+' — '+item.title}];
 })).values()];
+// Mixed legacy batches must also expose complete inline-teaching anchors without JS.
+const fallback=[...new Map([...grouped,...targets.filter(t=>Object.hasOwn(INLINE_ARRIVALS,t.id))].map(t=>[t.url,t])).values()];
 ---
 <Layout title={`${index.bookTitle} — Continue reading`} description="Continue to the passage in the book.">
  <div class="reading-arrival">

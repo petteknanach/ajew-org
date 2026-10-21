@@ -1,13 +1,13 @@
 // Topic navigation is a projection, never a replacement source or owner namespace.
 // All text, translations, notes, history, saved identities and source pins remain
 // in the authenticated final-four edition. No import-time I/O or DOM effects.
-import {requireEdition} from './qualified-aitzoas-runtime.js?v=c7e62ae2be8aa52736ecbffdcc1796b7f87f45c5402ae342690d4e8a83e87260';
+import {requireEdition} from './qualified-aitzoas-runtime.js?v=d0cc6f1438771d57a039a88a3831ccfeb2bd907a649763a13b0feb51e612a013';
 const freeze=x=>{if(x&&typeof x==='object'&&!Object.isFrozen(x)){Object.values(x).forEach(freeze);Object.freeze(x);}return x;};
 const must=(ok,msg)=>{if(!ok)throw Error(msg);};
 export const TOPIC_STARTS=freeze([[8,'truth-and-faith'],[42,'eating'],[54,'land-of-israel'],[61,'covenant'],[69,'children'],[74,'trust'],[77,'garments'],[83,'pride-and-humility'],[92,'understanding'],[97,'speech'],[101,'secluded-personal-prayer'],[109,'strengthening-oneself'],[115,'g-dliness'],[118,'memory-and-forgetfulness'],[121,'midnight'],[124,'travel'],[126,'fear-and-service'],[131,'honor'],[133,'anger'],[137,'mockery'],[139,'money'],[151,'thoughts'],[155,'controversy'],[158,'obstacles'],[161,'ritual-bath'],[164,'festivals'],[184,'melody'],[186,'eyes'],[189,'counsel'],[195,'tzadik'],[214,'tzedakah'],[220,'tzitzis'],[224,'will'],[229,'joy'],[233,'torah-study'],[238,'prayer'],[253,'tefillin'],[257,'rebuke'],[260,'repentance'],[272,'wholeness-and-simplicity']]);
 // Compatibility fragments from inline words; never independent teachings.
-export const INLINE_ARRIVALS=freeze({62:81,63:82,193:165});
-export const HEADER_IDS=freeze([62,63,193]);
+export const INLINE_ARRIVALS=freeze({1:11,62:81,63:82,193:165,283:223});
+export const HEADER_IDS=freeze([1,62,63,193,283]);
 export const APPARATUS=freeze([
  {slug:'front-matter',title:'Introduction',hebrewTitle:'פתיחה',start:1,end:7},
  {slug:'closing',title:'Closing',hebrewTitle:'סיום',start:280,end:281},
@@ -30,9 +30,9 @@ export function topicStructure(d){
  const byId={};
  for(const r of d.rows){
   const i=r.stableIndex,topic=topics.find(t=>i>=t.start&&i<=t.end),number=printedNumber(r.he);
-  let kind=i<=7?'front-matter':i>=282?'repeated-witness':i>=280?'closing':HEADER_IDS.includes(i)?'page-header-artifact':i===topic?.start?'topic-heading':'teaching';
+  let kind=HEADER_IDS.includes(i)?'page-header-artifact':i<=7?'front-matter':i>=282?'repeated-witness':i>=280?'closing':HEADER_IDS.includes(i)?'page-header-artifact':i===topic?.start?'topic-heading':'teaching';
   const primary=i>=282?d.rows.find(x=>x.stableIndex<282&&x.he===r.he):null;
-  if(i===283){kind='appendix-artifact';must(!primary,'Unique appendix artifact drift');}
+  if(i===283)must(!primary,'Unique inline artifact drift');
   if(i>=282&&i!==283)must(primary,'Repeated Hebrew witness drift');
   const label=kind==='teaching'?`${topic.title} — ${number.he} (${number.decimal})`:kind==='topic-heading'?`${topic.hebrewTitle} — ${topic.title}`:kind==='page-header-artifact'?`Inline source artifact — source owner ${i}`:kind==='repeated-witness'?`Repeated witness — ${byId[primary.stableIndex].label}`:kind==='appendix-artifact'?'Retained appendix artifact — ט״ל':kind==='closing'?'Closing — '+(i===280?'תם ונשלם':'סליק ספר עצות ישרות'):'Front matter — '+({1:'Opening formula',2:'Divine Names',3:'Divine Name',4:'Book title',5:'Title page',6:'Introduction',7:'Introduction text'}[i]);
   const readingUrl=topic&&!HEADER_IDS.includes(i)?topic.url+`#seg-${i}`:BASE+'/apparatus/'+(i<=7?'front-matter':i>=282?'source-appendix':i>=280?'closing':'page-headers')+`/#seg-${i}`;
@@ -41,7 +41,7 @@ export function topicStructure(d){
  // Only reading destinations change. The inline owners and their exact bodies,
  // notes/history, source URLs, bank membership and annotation keys stay intact.
  for(const [alias,target]of Object.entries(INLINE_ARRIVALS)){byId[alias].readingUrl=byId[target].readingUrl;byId[alias].label=byId[target].label;}
- const s=freeze({topics,byId,apparatus:APPARATUS.map(a=>({...a,url:`${BASE}/apparatus/${a.slug}/`,rows:d.rows.filter(r=>a.ids?a.ids.includes(r.stableIndex):r.stableIndex>=a.start&&r.stableIndex<=a.end)}))});
+ const s=freeze({topics,byId,apparatus:APPARATUS.map(a=>({...a,url:`${BASE}/apparatus/${a.slug}/`,rows:d.rows.filter(r=>a.ids?a.ids.includes(r.stableIndex):r.stableIndex>=a.start&&r.stableIndex<=a.end&&!HEADER_IDS.includes(r.stableIndex))}))});
  cache.set(d,s);return s;
 }
 export function ownerNavigation(d,index){const m=topicStructure(d).byId[index];must(m,'Unknown source owner');return m;}

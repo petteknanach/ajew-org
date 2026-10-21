@@ -27,7 +27,7 @@ class Correction(unittest.TestCase):
   forward=copy.deepcopy(previous)
   for op in q.CORRECTION_OPERATIONS:
    x,k=cell(forward,op['pointer']);self.assertEqual(x[k],op['before']);x[k]=copy.deepcopy(op['after'])
-  self.assertEqual(forward,bank);q.validate_values(forward,copy.deepcopy(loaded))
+  self.assertEqual(forward,q.question_predecessor(bank));q.validate_values(bank,copy.deepcopy(loaded))
   self.assertEqual(q.correction_predecessor(bank),previous);self.assertEqual(q.sha(q.stable(previous)),old['BANK_VALUE_PIN'])
  def test_each_selected_operation_required_exactly(self):
   for op in q.CORRECTION_OPERATIONS[:10]:
@@ -37,16 +37,17 @@ class Correction(unittest.TestCase):
      with self.assertRaises(ValueError):q.validate_values(b,l)
  def test_all_other_rows_he_history_witnesses_and_note_identities_conserved(self):
   unchanged=0
-  for r,p in zip(bank['rows'],previous['rows'],strict=True):
+  historical=q.question_predecessor(bank)
+  for r,p in zip(historical['rows'],previous['rows'],strict=True):
    self.assertEqual(r['he'],p['he']);self.assertEqual(r['history'],p['history']);self.assertEqual(r['owner'],p['owner'])
    self.assertEqual([n['id'] for n in r['requiredNotes']],[n['id'] for n in p['requiredNotes']])
    self.assertEqual([a for n in r['requiredNotes'] for a in n['anchors'] if a['field']=='governingHebrew'],[a for n in p['requiredNotes'] for a in n['anchors'] if a['field']=='governingHebrew'])
    if r['stableIndex'] not in (62,63,193,358):self.assertEqual(r,p);unchanged+=1
-  self.assertEqual(unchanged,362);self.assertEqual(sum(len(r['requiredNotes']) for r in bank['rows']),218)
+  self.assertEqual(unchanged,362);self.assertEqual(sum(len(r['requiredNotes']) for r in historical['rows']),218)
   for s in range(1,7):
    n=f'reader/reviewed/aitzoas362-sources/section-{s}-original.json';self.assertEqual(read(n),git('public/'+n))
   for s in (1,3,4):
-   n=f'reader/{q.BOOK}/section-{s}.json';self.assertEqual(read(n),git('public/'+n))
+   n=f'reader/{q.BOOK}/section-{s}.json';projection=copy.deepcopy(loaded);project(historical,projection);self.assertEqual(projection[n],q.decode(git('public/'+n)))
  def test_neighbor_mutations_rejected_even_current_envelopes_renewed(self):
   def he(b,l):
    r=b['rows'][63];r['he']+='!';l[f"reader/reviewed/aitzoas362-sources/section-{r['section']}-original.json"]['segments'][r['arrayPosition']]['he']=r['he']

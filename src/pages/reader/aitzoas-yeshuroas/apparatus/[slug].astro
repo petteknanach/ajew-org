@@ -11,4 +11,4 @@ const view=projectionForPath(edition,Astro.url.pathname);
 if(view.key!=='apparatus-'+Astro.params.slug)throw Error('Route/topic parameter mismatch');
 const index=JSON.parse(fs.readFileSync(path.join(process.cwd(),'public/reader/aitzoas-yeshuroas/index.json'),'utf8'));
 ---
-{Astro.params.slug==='page-headers'?<AitzoasReadingArrival edition={edition} ids={[62,63,193]} index={index}/>:<AitzoasQualifiedPage edition={edition} view={view} index={index}/>}
+{Astro.params.slug==='page-headers'?<AitzoasReadingArrival edition={edition} ids={[1,62,63,193,283]} index={index}/>:<AitzoasQualifiedPage edition={edition} view={view} index={index}/>}

@@ -25,7 +25,7 @@ await test('ten exact allowed text operations plus three necessary anchor bindin
  assert.equal(q.CORRECTION_OPERATIONS.length,13);assert.equal(sha(q.stable(q.CORRECTION_OPERATIONS)),'26ee02a2abca774512eacc414f6e0c2187070a3549790a1affb4c0c6b32c59bd');
  const forward=structuredClone(previous);
  for(const o of q.CORRECTION_OPERATIONS){const [x,k]=cell(forward,o.pointer);assert.deepEqual(x[k],o.before);x[k]=structuredClone(o.after);}
- assert.deepEqual(forward,bank);await q.validateBank(forward,structuredClone(loaded),sha);
+ assert.deepEqual(forward,q.questionPredecessor(bank));await q.validateBank(bank,structuredClone(loaded),sha);
  assert.deepEqual(q.correctionPredecessor(bank),previous);assert.equal(sha(q.stable(previous)),old.BANK_VALUE_PIN);
 });
 for(const operation of q.CORRECTION_OPERATIONS.slice(0,10))await test('exact selected operation cannot be omitted or changed: '+operation.pointer,async()=>{
@@ -36,15 +36,17 @@ for(const operation of q.CORRECTION_OPERATIONS.slice(0,10))await test('exact sel
 });
 await test('all other rows, HE, original history, note identities and HE anchors remain exact',()=>{
  let untouched=0;
- for(const [i,r]of bank.rows.entries()){
+ const historical=q.questionPredecessor(bank);
+ for(const [i,r]of historical.rows.entries()){
   const p=previous.rows[i];assert.equal(r.he,p.he);assert.deepEqual(r.history,p.history);
   assert.equal(r.owner,p.owner);assert.deepEqual(r.requiredNotes.map(n=>n.id),p.requiredNotes.map(n=>n.id));
   assert.deepEqual(r.requiredNotes.flatMap(n=>n.anchors.filter(a=>a.field==='governingHebrew')),p.requiredNotes.flatMap(n=>n.anchors.filter(a=>a.field==='governingHebrew')));
   if(![62,63,193,358].includes(r.stableIndex)){assert.deepEqual(r,p);untouched++;}
  }
- assert.equal(untouched,362);assert.equal(bank.rows.flatMap(r=>r.requiredNotes).length,218);
+ assert.equal(untouched,362);assert.equal(historical.rows.flatMap(r=>r.requiredNotes).length,218);
  for(let s=1;s<=6;s++)assert.deepEqual(read(q.archivePath(s)),git('public/'+q.archivePath(s)));
- for(const s of [1,3,4])assert.deepEqual(read(q.sectionPath(s)),git('public/'+q.sectionPath(s)));
+ const projection=structuredClone(loaded);project(historical,projection);
+ for(const s of [1,3,4])assert.deepEqual(projection[q.sectionPath(s)],JSON.parse(git('public/'+q.sectionPath(s))));
 });
 const mutations=[
  ['neighbor English',b=>b.rows[63].en+='!'],
@@ -76,9 +78,9 @@ await test('historical archive is byte-bound and complete prior rows/claims surv
 const annotation=(r,pin,f,id)=>({schema:'qualified-aitzoas362-annotation/v1',id,type:'highlight',note:'',selection:{owner:r.owner,field:f,editionSHA256:pin,start:0,end:1,text:r[f].slice(0,1),fullField:r[f]}});
 await test('preceding edition annotations retain every unchanged field and detach only three changed English fields, with raw saved bytes untouched',async()=>{
  const d=await q.authenticateEdition(read(q.ASSET.slice(1)),a=>read(a.name),sha),items=[];let expected=0;
- for(const r of previous.rows)for(const f of ['he','en']){items.push(annotation(r,q.CORRECTION_PREDECESSOR_PIN,f,r.owner+'-'+f));if(f==='he'||![62,63,193].includes(r.stableIndex))expected++;}
+ for(const r of previous.rows)for(const f of ['he','en']){items.push(annotation(r,q.CORRECTION_PREDECESSOR_PIN,f,r.owner+'-'+f));if(f==='he'||r.en===bank.rows[r.stableIndex-1].en)expected++;}
  const raw=JSON.stringify(items,null,2),snapshot=raw,result=q.annotationAttachments(d,raw);
- assert.equal(result.attached.length,expected);assert.equal(result.detached.length,3);assert.equal(raw,snapshot);
+ assert.equal(result.attached.length,expected);assert.equal(result.detached.length,items.length-expected);assert.equal(raw,snapshot);
  for(const r of d.rows)for(const f of ['he','en'])q.validateAnnotation(d,annotation(r,q.PIN,f,r.owner+f));
  // Matching even a literal substring does not rescue an old complete field.
  for(const i of [62,63,193]){const a=annotation(previous.rows[i-1],q.CORRECTION_PREDECESSOR_PIN,'en','old');a.selection.text='';a.selection.end=0;assert.throws(()=>q.validateAnnotation(d,a));}

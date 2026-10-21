@@ -1,6 +1,6 @@
 // One route-local source engine. Other books and legacy annotation stores are untouched.
-import {ASSET,PIN,BOOK,authenticateEdition,requireEdition,fullBodyPayload,appendLegacyCollection,stable,displayPlan,historyEntries,ranges,validateAnnotation,annotationAttachments} from './qualified-aitzoas-runtime.js?v=c7e62ae2be8aa52736ecbffdcc1796b7f87f45c5402ae342690d4e8a83e87260';
-import {projectionForPath,assertProjection,ownerNavigation} from './qualified-aitzoas-topics.js?v=3e388f03de12ddbbb25c31705672da71ab6499c5939f7e9327e675d5c03c5ee3';
+import {ASSET,PIN,BOOK,authenticateEdition,requireEdition,fullBodyPayload,appendLegacyCollection,stable,displayPlan,historyEntries,ranges,validateAnnotation,validateRetainedAnnotation,annotationAttachments} from './qualified-aitzoas-runtime.js?v=d0cc6f1438771d57a039a88a3831ccfeb2bd907a649763a13b0feb51e612a013';
+import {projectionForPath,assertProjection,ownerNavigation} from './qualified-aitzoas-topics.js?v=49d616aa47e0484bfc543526583f5939c506970e4d03af8d207ca7eb8c3ea160';
 export const ANNOTATION_KEY='ajew-aitzoas362-source-annotations-v1';
 export async function browserSHA(bytes){return [...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))].map(x=>x.toString(16).padStart(2,'0')).join('');}
 export function installAitzoas362(win=window){
@@ -125,10 +125,10 @@ export function installAitzoas362(win=window){
  }
  function descriptor(x){
   const before=doc.createRange();before.selectNodeContents(x.field);before.setEnd(x.start,x.a);let start=before.toString().length;const field=x.field.dataset.sourceField,u=x.row.u;
-  if(field==='en'&&u.stableIndex===242){const chars=Array.from(u.en),span=d.bank.displayRules['242'].overlappingInlineSpan,cut=chars.slice(0,span.start).join('').length,length=span.text.length;if(start>=cut)start+=length;}
+  if(field==='en'&&u.stableIndex===242&&d.bank.displayRules['242']){const chars=Array.from(u.en),span=d.bank.displayRules['242'].overlappingInlineSpan,cut=chars.slice(0,span.start).join('').length,length=span.text.length;if(start>=cut)start+=length;}
   const end=start+x.text.length;must(u[field].slice(start,end)===x.text,'Selection crosses a display contraction; choose a literal source span');return {editionSHA256:PIN,owner:u.owner,field,start,end,text:x.text,fullField:u[field]};
  }
- function readAnnotations(raw){const a=raw===null?[]:JSON.parse(raw);must(Array.isArray(a)&&new Set(a.map(x=>x.id)).size===a.length,'Invalid annotation collection');a.forEach(x=>validateAnnotation(d,x));return a;}
+ function readAnnotations(raw){const a=raw===null?[]:JSON.parse(raw);must(Array.isArray(a)&&new Set(a.map(x=>x.id)).size===a.length,'Invalid annotation collection');a.forEach(x=>validateRetainedAnnotation(d,x));return a;}
  function renderAnnotations(){const panel=c.querySelector('[data-annotations]');panel.replaceChildren();try{const {attached,detached}=annotationAttachments(d,win.localStorage.getItem(ANNOTATION_KEY));for(const {annotation:a,row:r}of attached){const item=doc.createElement('article'),h=doc.createElement('h3'),quote=doc.createElement('p'),note=doc.createElement('p'),detail=doc.createElement('details'),summary=doc.createElement('summary'),body=doc.createElement('pre');h.textContent=a.type+' — '+ownerNavigation(d,r.stableIndex).label;quote.textContent=a.selection.text;note.textContent=a.note;summary.textContent='Complete paragraph and text notes';body.textContent=fullBodyPayload(d,[r.owner]).content;detail.append(summary,body);item.append(h,quote,note,detail);panel.append(item);}if(detached.length){const notice=doc.createElement('p');notice.textContent=detached.length+' existing local annotation(s) retained but not attached to this edition.';panel.append(notice);}}catch(err){panel.textContent='Your earlier notes are saved, but could not be displayed on this page.';}}
  async function annotate(type,x,el){
   const note=type==='note'||type==='prayer'?win.prompt('Personal '+type+' (not source text):',''):'';if(note===null)return;checkCapture(el);const selection=descriptor(x),a={schema:'qualified-aitzoas362-annotation/v1',id:win.crypto.randomUUID(),type,note,selection,createdAt:new Date().toISOString()};validateAnnotation(d,a);must(win.navigator.locks?.request,'Exclusive annotation locking unavailable');

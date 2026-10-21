@@ -24,9 +24,7 @@ def renew(r):
 
 def expected_passage(r):
     en=r['en'];notes=r['requiredNotes']
-    if r['stableIndex']==208:notes=[n for n in notes if n['id']!='C-208-N01']
-    if r['stableIndex']==242:
-        s=oldbank['displayRules']['242']['overlappingInlineSpan'];en=en[:s['start']]+en[s['endExclusive']:]
+    # Replaced 208/242 fields have no once-only caveat contractions.
     h=r['history']
     blocks=[f"Aitzoas Yesharoas — section {r['section']}, Reader paragraph {r['stableIndex']}\nReader anchors are not printed teaching numbers.",'Supplied Hebrew\n'+r['he'],'English\n'+en,'English origin\n'+r['origin']['notice']]
     blocks += ['Source note ['+n['id']+']\n'+n['text'] for n in notes]
@@ -50,7 +48,7 @@ class FinalFour(unittest.TestCase):
         def anchor(b,l):b['rows'][0]['requiredNotes'][0]['anchors'][0]['codepointStart']=1
         def oldanchor(b,l):next(r for r in b['rows'] if str(r['stableIndex']) not in q.FINAL4_PINS and r['requiredNotes'])['requiredNotes'][0]['anchors'][0]['fullFieldSHA256']='0'*64
         def unknown(b,l):b['rows'][86]['en']+=' unauthorized';renew(b['rows'][86])
-        def display(b,l):b['displayRules']['208']['inlineNoteId']='wrong'
+        def display(b,l):b['displayRules']['208']={'inlineNoteId':'wrong'}
         def count(b,l):b['rows'][0]['en']=None
         def origin(b,l):b['rows'][61]['origin']['notice']+=' unauthorized'
         def private(b,l):b['rows'][0]['requiredNotes'][0]['anchors'][0]['hidden_private']='secret'
@@ -62,19 +60,21 @@ class FinalFour(unittest.TestCase):
                 try:
                     with self.assertRaises(ValueError) as caught:q.validate_values(b,l)
                     print('rejected '+label+': '+str(caught.exception))
-                    if label in ('old362 English','HE','history'):self.assertIn('Immutable baseline362 bank drift',str(caught.exception))
-                    if label=='unknown4English':self.assertIn('Exact final-four row drift',str(caught.exception))
+                    if label in ('old362 English','HE','history'):self.assertIn('Immutable question predecessor drift',str(caught.exception))
+                    if label=='unknown4English':self.assertIn('Exact question successor row drift',str(caught.exception))
                 finally:q.BANK_VALUE_PIN,q.SOURCE_BINDING_PIN=pins
     def test_03_independent_baseline_python_binding_rejects_after_other_envelope_rebinding(self):
         b,l=copy.deepcopy(bank),copy.deepcopy(loaded);b['rows'][ordinary['stableIndex']-1]['en']+=' unauthorized';project(b,l)
         restored=q.correction_predecessor(b)
         for index in (1,62,87,179):restored['rows'][index-1].update(q.FINAL4_ORIGINALS[str(index)])
-        previous=q.BANK_VALUE_PIN,q.SOURCE_BINDING_PIN,q.BASELINE_BANK_VALUE_PIN
+        previous=q.BANK_VALUE_PIN,q.SOURCE_BINDING_PIN,q.BASELINE_BANK_VALUE_PIN,q.QUESTION_PREDECESSOR_VALUE_PIN,q.QUESTION_PREDECESSOR_BINDING_PIN
         q.BANK_VALUE_PIN=q.sha(q.stable(b));q.SOURCE_BINDING_PIN=q.sha(q.stable([q._binding(r) for r in b['rows']]))
         q.BASELINE_BANK_VALUE_PIN=q.sha(q.stable(restored))
+        immediate=q.question_predecessor(b)
+        q.QUESTION_PREDECESSOR_VALUE_PIN=q.sha(q.stable(immediate));q.QUESTION_PREDECESSOR_BINDING_PIN=q.sha(q.stable([q._binding(r) for r in immediate['rows']]))
         try:
             with self.assertRaisesRegex(ValueError,'Immutable baseline362 source binding drift'):q.validate_values(b,l)
-        finally:q.BANK_VALUE_PIN,q.SOURCE_BINDING_PIN,q.BASELINE_BANK_VALUE_PIN=previous
+        finally:q.BANK_VALUE_PIN,q.SOURCE_BINDING_PIN,q.BASELINE_BANK_VALUE_PIN,q.QUESTION_PREDECESSOR_VALUE_PIN,q.QUESTION_PREDECESSOR_BINDING_PIN=previous
     def test_04_fresh_positive_after_negatives(self):self.assertEqual(len(q.load_edition(ROOT).rows),366)
     def test_05_original362_and_he_history_all366_and_bytes_immutable(self):
         # The selected correction is first inverted, not silently exempted.
@@ -131,11 +131,13 @@ class FinalFour(unittest.TestCase):
             self.assertEqual(q.checked_search_artifacts(edition,common['l'],hd,ed),(he,en,loc))
             hd['m']=copy.deepcopy(loc);hd['m'][-1][-1]+=1
             with self.assertRaises(ValueError):q.checked_search_artifacts(edition,common['l'],hd,ed)
-            if section==6:self.assertEqual((en,loc),(olden,oldloc))
+            historical=q.question_predecessor(bank)
+            historical_en=' '.join(re.sub(r'\s+',' ',r['en']).strip() for r in historical['rows'] if r['section']==section)
+            if section==6:self.assertEqual(historical_en,olden)
             if section==5:
                 old_fragment=re.sub(r'\s+',' ',oldbank['rows'][192]['en']).strip()
                 new_fragment=re.sub(r'\s+',' ',bank['rows'][192]['en']).strip()
-                self.assertEqual(en,olden.replace(old_fragment,new_fragment));self.assertEqual([x[:4] for x in loc],[x[:4] for x in oldloc])
+                self.assertEqual(historical_en,olden.replace(old_fragment,new_fragment));self.assertEqual([x[:4] for x in loc],[x[:4] for x in oldloc])
     def test_08_final_fresh_positive(self):self.assertEqual(q.verify(read)['availableEnglish'],366)
 
 if __name__=='__main__':unittest.main(verbosity=2)
