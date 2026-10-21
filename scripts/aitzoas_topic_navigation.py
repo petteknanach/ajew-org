@@ -12,7 +12,7 @@ import re
 
 # Updated only with explicit route-projection changes; source-bank pins live in
 # the inherited qualified_aitzoas362_exports adapter and remain untouched.
-TOPICS_SHA256 = 'ff6c80d8eed3043e319460b45d543aaabed97d13377925a6d5c410364e84eaef'
+TOPICS_SHA256 = '49d616aa47e0484bfc543526583f5939c506970e4d03af8d207ca7eb8c3ea160'
 BASE = '/reader/aitzoas-yeshuroas'
 
 
