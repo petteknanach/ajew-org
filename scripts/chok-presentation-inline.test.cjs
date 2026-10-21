@@ -14,5 +14,5 @@ const template=fs.readFileSync(process.env.CHOK_TEMPLATE||'src/pages/reader/chok
 assert(template.includes('.ck-targum-line .ck-classical-gloss { display:inline; border:0; padding:0; margin:0; }'));
 assert(template.includes('.ck-generated-ref { display:inline-flex; unicode-bidi:isolate; white-space:nowrap; }'));
 assert(template.includes('/chok-source-reader.js?v=chok-live-corrections-20261020-r1'));
-assert(template.includes('/chok.js?v=63b2c1d980d72aa18ec696aef3d1a3f54d20fca47729476e1931b0916d3d973a'));
+assert(template.includes('/chok.js?v=41c720e59e4e6785f728f0b6c5b8ef56b376612d3cdae28a2c5cacab7066a89c'));
 console.log(JSON.stringify({bigActualAndEncodedAndAttributedWrappers:true,nestedFormatting:true,literalAngleBracketNegative:true,inlineOnkelosAbbreviationCharactersConserved:true,HebrewChapterPhysicallyRightContract:true,cacheBumps:true,scope:'private initialized source adapter plus exact CSS/template contracts; native pixels pending'}));

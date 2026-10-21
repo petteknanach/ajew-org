@@ -70,7 +70,14 @@ function fullFixture(week,day,mutate){
  const template=read('src/pages/reader/chok.astro'),inner=template.slice(template.indexOf('  <div class="ck-wrap"'),template.indexOf('</Layout>'));
  const d=documentFor('<html><body>'+inner+'</body></html>');let active=0,peak=0;
  const disk=p=>{try{return read(p);}catch{try{return require('node:child_process').execFileSync('git',['show','HEAD:'+p],{cwd:root,encoding:'utf8',maxBuffer:32*1024*1024,stdio:['ignore','pipe','ignore']});}catch{return null;}}};
- const e=sandbox(d,'/reader/chok/',async url=>{active++;peak=Math.max(peak,active);try{const rel='public'+decodeURIComponent(String(url).split('?')[0]);let body=disk(rel);body=await mutate(rel,body);await tick(1);return{ok:body!==null,status:body===null?404:200,text:async()=>body,json:async()=>JSON.parse(body)};}finally{active--;}});
+ const e=sandbox(d,'/reader/chok/',async url=>{active++;peak=Math.max(peak,active);try{const rel='public'+decodeURIComponent(String(url).split('?')[0]);let body=disk(rel);body=await mutate(rel,body);await tick(1);return{ok:body!==null,status:body===null?404:200,text:async()=>body,json:async()=>JSON.parse(body),arrayBuffer:async()=>{const b=Buffer.from(body||'','utf8');return b.buffer.slice(b.byteOffset,b.byteOffset+b.byteLength);}};}finally{active--;}});
+ // Test-local browser transport: use this fixture's resolver, never preload modules.
+ const append=d.head.appendChild.bind(d.head);
+ d.head.appendChild=function(n){append(n);if(n.tagName==='script')Promise.resolve().then(()=>{
+  try{const u=String(n.src||n.getAttribute('src')).split('?')[0],raw=disk('public'+u);assert.notEqual(raw,null,'dynamic script exists');const b=Buffer.from(raw,'utf8');
+   assert.equal(n.integrity,'sha256-'+crypto.createHash('sha256').update(b).digest('base64'),'actual script SRI');vm.runInContext(b.toString('utf8'),e.box,{filename:u});if(n.onload)n.onload();
+  }catch(error){if(n.onerror)n.onerror(error);}
+ });return n;};
  e.box.location.search='?week='+encodeURIComponent(week)+'&day='+encodeURIComponent(day);
  for(const m of template.matchAll(/<script src="([^"?]+)[^"]*" defer><\/script>/g))vm.runInContext(disk('public'+m[1]),e.box,{filename:m[1]});
  const settled=()=>until(()=>!!d.getElementById('ck-content').innerHTML&&!d.querySelector('.ck-loading'),20000);
