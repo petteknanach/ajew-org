@@ -25,7 +25,7 @@ await test('genuine git-derived baseline362 positive through original complete m
 await test('final4 complete module authentication, actual named-export ABI, cache-bound source URLs',async()=>{
  for(const n of ['authenticateEdition','validateBank','validateAnnotation','displayPlan','fullBodyPayload','requireEdition','appendLegacyCollection','ranges','historyEntries'])assert.equal(typeof current[n],'function');
  const urls=[];edition=await current.authenticateEdition(bytes,a=>{urls.push(a.url);assert.equal(a.url,'/'+a.name+'?v='+a.sha256);return read(a.name);},sha);
- assert.equal(urls.length,12);assert.equal(edition.rows.filter(r=>r.en!==null).length,366);
+ assert.equal(urls.length,13);assert.ok(urls.includes('/'+current.CORRECTION_ARCHIVE+'?v='+current.CORRECTION_ARCHIVE_PIN.sha256));assert.equal(edition.rows.filter(r=>r.en!==null).length,366);
  assert.equal(edition.rows.flatMap(r=>r.requiredNotes).length,current.FINAL_NOTE_COUNT);
 });
 function project(b,l){
@@ -63,11 +63,14 @@ await test('fresh final4 positive after all logical negatives',async()=>{await c
 function annotation(r,editionSHA256,field='en'){
  const text=r[field];return {schema:'qualified-aitzoas362-annotation/v1',id:'fixture',type:'highlight',note:'',selection:{owner:r.owner,field,editionSHA256,start:0,end:Math.min(3,text.length),text:text.slice(0,Math.min(3,text.length)),fullField:text}};
 }
-await test('all original362 oldPIN annotations accepted unchanged, both fields, no data rewrite',()=>{
- let count=0;
+await test('original362 oldPIN annotations: unchanged fields attach, two corrected English fields detach, no data rewrite',()=>{
+ let count=0,detached=0;
  for(const r of edition.rows)if(!Object.hasOwn(current.FINAL4_PINS,r.stableIndex))for(const field of ['he','en']){
-  assert.equal(r[field],oldBank.rows[r.stableIndex-1][field]);const a=annotation(r,current.PREVIOUS_EDITION_PIN,field),before=JSON.stringify(a);assert.equal(current.validateAnnotation(edition,a),r);assert.equal(JSON.stringify(a),before);count++;
- }assert.equal(count,724);
+  const prior=oldBank.rows[r.stableIndex-1],a=annotation(prior,current.PREVIOUS_EDITION_PIN,field),before=JSON.stringify(a);
+  if(field==='en'&&[63,193].includes(r.stableIndex)){assert.notEqual(r[field],prior[field]);assert.throws(()=>current.validateAnnotation(edition,a));detached++;}
+  else{assert.equal(r[field],prior[field]);assert.equal(current.validateAnnotation(edition,a),r);count++;}
+  assert.equal(JSON.stringify(a),before);
+ }assert.equal(count,722);assert.equal(detached,2);
 });
 await test('oldPIN changed4 rejected even unchanged Hebrew; arbitrary edition and malformed selections rejected',()=>{
  for(const index of [1,62,87,179])for(const f of ['he','en'])assert.throws(()=>current.validateAnnotation(edition,annotation(edition.rows[index-1],current.PREVIOUS_EDITION_PIN,f)));
@@ -76,10 +79,10 @@ await test('oldPIN changed4 rejected even unchanged Hebrew; arbitrary edition an
  for(const index of [1,62,87,179])for(const f of ['he','en'])current.validateAnnotation(edition,annotation(edition.rows[index-1],current.PIN,f));
 });
 await test('mixed annotation collection retains unchanged362 attachments despite changed4 or arbitrary editions; raw bytes untouched',()=>{
- const valid=edition.rows.filter(r=>!Object.hasOwn(current.FINAL4_PINS,r.stableIndex)).map((r,i)=>({...annotation(r,current.PREVIOUS_EDITION_PIN),id:'old-'+i}));
- const rejected=[{...annotation(edition.rows[0],current.PREVIOUS_EDITION_PIN,'he'),id:'changed4'},{...annotation(ordinary,'f'.repeat(64)),id:'wrong-edition'}];
+ const valid=edition.rows.filter(r=>!Object.hasOwn(current.FINAL4_PINS,r.stableIndex)&&![63,193].includes(r.stableIndex)).map((r,i)=>({...annotation(r,current.PREVIOUS_EDITION_PIN),id:'old-'+i}));
+ const rejected=[{...annotation(edition.rows[0],current.PREVIOUS_EDITION_PIN,'he'),id:'changed4'},{...annotation(ordinary,'f'.repeat(64)),id:'wrong-edition'},...[63,193].map(i=>({...annotation(oldBank.rows[i-1],current.PREVIOUS_EDITION_PIN),id:'corrected-'+i}))];
  const raw=JSON.stringify([...valid,...rejected],null,2),result=current.annotationAttachments(edition,raw);
- assert.equal(result.attached.length,362);assert.equal(result.detached.length,2);
+ assert.equal(result.attached.length,360);assert.equal(result.detached.length,4);
  assert.deepEqual(result.attached.map(x=>x.annotation),valid);assert.equal(raw,JSON.stringify([...valid,...rejected],null,2));
  assert.throws(()=>current.annotationAttachments({},raw));
  assert.throws(()=>current.annotationAttachments(edition,JSON.stringify([valid[0],valid[0]])));

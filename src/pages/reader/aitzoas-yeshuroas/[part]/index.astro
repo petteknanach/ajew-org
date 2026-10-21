@@ -7,22 +7,15 @@ import path from 'node:path';
 export function getStaticPaths(){return [{params:{part:'1'}}];}
 const edition=await loadEdition(),structure=topicStructure(edition);
 const index=JSON.parse(fs.readFileSync(path.join(process.cwd(),'public/reader/aitzoas-yeshuroas/index.json'),'utf8'));
-// Derive current status from the authenticated successor. The historical index
-// metadata remains unchanged because its original acceptance is independently pinned.
-const available=edition.rows.filter(r=>r.en!==null).length;
 ---
-<Layout title={`${index.bookTitle} — Topics`} description="Forty original bilingual topics, with original local teaching numbers and separate source apparatus.">
+<Layout title={`${index.bookTitle} — Contents`} description="Read the complete book in Hebrew and English, arranged by its original topics.">
  <div class="aitzoas-directory">
   <h1>{index.bookHebrew} — {index.bookTitle}</h1><p>{index.author}</p>
-  <p>{available} of {edition.rows.length} source owners have current English, with source-bound origin notices, required notes and labelled earlier-English history. This does not resolve readings explicitly qualified in those notes.</p>
-  <p>40 topics in the primary reading sequence. Teaching numbers restart within each topic. Stable source owner IDs and all six earlier source routes are unchanged.</p>
-  <a href={structure.apparatus[0].url}>פתיחה — Front matter and introduction</a>
+  <a href={structure.apparatus[0].url}>פתיחה — Introduction</a>
+  <h2>Contents</h2>
   <ol class="topic-directory">{structure.topics.map(t=><li><a class="topic-link" href={t.url}><span lang="he" dir="rtl">{t.hebrewTitle}</span> — {t.title}</a> <small>{t.teachingCount} teachings</small></li>)}</ol>
-  <section><h2>Separate source apparatus</h2><ul>{structure.apparatus.slice(1).map(a=><li><a href={a.url}>{a.hebrewTitle} — {a.title}</a></li>)}</ul>
-   <p>The repeated opening witnesses (source owners 282–366) are retained in the appendix, not repeated in the main sequence. Source artifacts 62, 63 and 193 remain available separately with all their source notes and accepted English.</p>
-  </section>
-  <details><summary>Six retained source routes — stable legacy anchors</summary><ul>{index.torahs.map(t=><li><a href={`/reader/aitzoas-yeshuroas/1/${t.torah}`}>Source batch {t.torah}</a></li>)}</ul><p>These are storage/source batches, not the book’s topic divisions.</p></details>
+  <p><a href={structure.apparatus[1].url}>סיום — Closing</a></p>
   <a href="/reader">All Books</a>
  </div>
 </Layout>
-<style>.aitzoas-directory{max-width:62rem;margin:auto;padding:1.5rem;line-height:1.8}.topic-directory{columns:2;column-width:22rem}.topic-directory li{break-inside:avoid;margin-bottom:.75rem}.topic-link{font-weight:600}small{display:block}</style>
+<style>.aitzoas-directory{max-width:62rem;margin:auto;padding:1.5rem;line-height:1.8}.topic-directory{columns:2;column-width:22rem;column-gap:3rem}.topic-directory li{break-inside:avoid;margin-bottom:.75rem}.aitzoas-directory .topic-link{display:block;max-width:100%;white-space:normal;overflow-wrap:anywhere;font-weight:600}small{display:block}a:focus-visible{outline:2px solid currentColor;outline-offset:3px}</style>

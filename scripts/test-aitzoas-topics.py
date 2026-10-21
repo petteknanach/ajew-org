@@ -31,7 +31,8 @@ class Topics(unittest.TestCase):
                 self.assertEqual(actual,dict(index=row['stableIndex'],**row))
                 self.assertEqual(link['sourceUrl'],row['canonicalUrl'])
                 self.assertEqual(link['owner'],row['owner'])
-                self.assertTrue(link['readingUrl'].endswith('#seg-'+str(row['stableIndex'])))
+                target={62:81,63:82,193:165}.get(row['stableIndex'],row['stableIndex'])
+                self.assertTrue(link['readingUrl'].endswith('#seg-'+str(target)))
                 self.assertIn(q.escape_exact(link['readingUrl']),files['index.html'].decode())
                 self.assertIn(q.escape_exact(q.passage_text(row)),files['index.html'].decode())
                 if row['stableIndex'] in expected:
@@ -41,7 +42,8 @@ class Topics(unittest.TestCase):
                     self.assertIn('/topics/',link['readingUrl'])
                 elif row['stableIndex'] in (62,63,193):
                     self.assertIsNone(link['number'])
-                    self.assertIn('/apparatus/page-headers/',link['readingUrl'])
+                    # Explicit successor to the defective orphan-word arrival.
+                    self.assertIn('/topics/',link['readingUrl'])
                 observed.append(row['stableIndex'])
         self.assertEqual(observed,list(range(1,367)))
 

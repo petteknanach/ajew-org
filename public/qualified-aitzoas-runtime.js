@@ -3,5 +3,5 @@
 // through the implementation leaf. No source bytes or validators are replaced.
 const core = typeof window === 'undefined'
  ? await import('./qualified-aitzoas362-core.mjs')
- : await import('./qualified-aitzoas362-core.js?v=609af7efd3ad2d5c5c6feb013a0a1feb198fd82c095eea969c5835b49341d792');
+ : await import('./qualified-aitzoas362-core.js?v=6780cbc7defe3fe189f94d0528b59307d6787b2d852a89b055a94e5dc9881574');
 export const {ASSET,PIN,BOOK,authenticateEdition,requireEdition,fullBodyPayload,appendLegacyCollection,stable,displayPlan,historyEntries,ranges,validateAnnotation,annotationAttachments}=core;

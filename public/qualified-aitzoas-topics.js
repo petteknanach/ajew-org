@@ -1,13 +1,15 @@
 // Topic navigation is a projection, never a replacement source or owner namespace.
 // All text, translations, notes, history, saved identities and source pins remain
 // in the authenticated final-four edition. No import-time I/O or DOM effects.
-import {requireEdition} from './qualified-aitzoas-runtime.js?v=29760feeb82d8d2d3ec1078b02e78a22ccb1d6145f1bf8f47b2e75947e0b508f';
+import {requireEdition} from './qualified-aitzoas-runtime.js?v=c7e62ae2be8aa52736ecbffdcc1796b7f87f45c5402ae342690d4e8a83e87260';
 const freeze=x=>{if(x&&typeof x==='object'&&!Object.isFrozen(x)){Object.values(x).forEach(freeze);Object.freeze(x);}return x;};
 const must=(ok,msg)=>{if(!ok)throw Error(msg);};
 export const TOPIC_STARTS=freeze([[8,'truth-and-faith'],[42,'eating'],[54,'land-of-israel'],[61,'covenant'],[69,'children'],[74,'trust'],[77,'garments'],[83,'pride-and-humility'],[92,'understanding'],[97,'speech'],[101,'secluded-personal-prayer'],[109,'strengthening-oneself'],[115,'g-dliness'],[118,'memory-and-forgetfulness'],[121,'midnight'],[124,'travel'],[126,'fear-and-service'],[131,'honor'],[133,'anger'],[137,'mockery'],[139,'money'],[151,'thoughts'],[155,'controversy'],[158,'obstacles'],[161,'ritual-bath'],[164,'festivals'],[184,'melody'],[186,'eyes'],[189,'counsel'],[195,'tzadik'],[214,'tzedakah'],[220,'tzitzis'],[224,'will'],[229,'joy'],[233,'torah-study'],[238,'prayer'],[253,'tefillin'],[257,'rebuke'],[260,'repentance'],[272,'wholeness-and-simplicity']]);
+// Compatibility fragments from inline words; never independent teachings.
+export const INLINE_ARRIVALS=freeze({62:81,63:82,193:165});
 export const HEADER_IDS=freeze([62,63,193]);
 export const APPARATUS=freeze([
- {slug:'front-matter',title:'Front matter',hebrewTitle:'פתיחה',start:1,end:7},
+ {slug:'front-matter',title:'Introduction',hebrewTitle:'פתיחה',start:1,end:7},
  {slug:'closing',title:'Closing',hebrewTitle:'סיום',start:280,end:281},
  {slug:'page-headers',title:'Retained inline source artifacts',hebrewTitle:'פריטי מקור נלווים שנשמרו',ids:HEADER_IDS},
  {slug:'source-appendix',title:'Repeated source witnesses — appendix',hebrewTitle:'נספח עדי נוסח חוזרים',start:282,end:366}
@@ -36,6 +38,9 @@ export function topicStructure(d){
   const readingUrl=topic&&!HEADER_IDS.includes(i)?topic.url+`#seg-${i}`:BASE+'/apparatus/'+(i<=7?'front-matter':i>=282?'source-appendix':i>=280?'closing':'page-headers')+`/#seg-${i}`;
   byId[i]={owner:r.owner,stableIndex:i,sourceUrl:r.canonicalUrl,kind,topicSlug:topic?.slug??null,number,label,readingUrl,primaryOwner:primary?.owner??null,primaryIndex:primary?.stableIndex??null};
  }
+ // Only reading destinations change. The inline owners and their exact bodies,
+ // notes/history, source URLs, bank membership and annotation keys stay intact.
+ for(const [alias,target]of Object.entries(INLINE_ARRIVALS)){byId[alias].readingUrl=byId[target].readingUrl;byId[alias].label=byId[target].label;}
  const s=freeze({topics,byId,apparatus:APPARATUS.map(a=>({...a,url:`${BASE}/apparatus/${a.slug}/`,rows:d.rows.filter(r=>a.ids?a.ids.includes(r.stableIndex):r.stableIndex>=a.start&&r.stableIndex<=a.end)}))});
  cache.set(d,s);return s;
 }
@@ -46,7 +51,7 @@ export function projectionForPath(d,pathname){
  if(source){const section=Number(source[1]);key='source-'+section;kind='source';item={title:`Retained source batch ${section}`,hebrewTitle:'ארכיון המקור',rows:d.rows.filter(r=>r.section===section),url:`${BASE}/1/${section}`,section};if(section>1)previous={title:`Source batch ${section-1}`,url:`${BASE}/1/${section-1}`};if(section<6)next={title:`Source batch ${section+1}`,url:`${BASE}/1/${section+1}`};}
  else if(p.startsWith(BASE+'/topics/')){const slug=p.slice((BASE+'/topics/').length),pos=s.topics.findIndex(t=>t.slug===slug);must(pos>=0,'Unknown topic route');item=s.topics[pos];key='topic-'+slug;kind='topic';previous=s.topics[pos-1]??s.apparatus[0];next=s.topics[pos+1]??s.apparatus[1];}
  else {const slug=p.startsWith(BASE+'/apparatus/')?p.slice((BASE+'/apparatus/').length):null;item=s.apparatus.find(a=>a.slug===slug);must(item,'Unknown Aitzoas route');key='apparatus-'+slug;kind='apparatus';if(slug==='front-matter')next=s.topics[0];if(slug==='closing')previous=s.topics.at(-1);}
- const notice=kind==='topic'?`${item.hebrewTitle} — ${item.title}. Original local teaching numbers are shown in Hebrew and decimal. Source owner IDs are stable references, not teaching numbers.`:kind==='source'?'Retained source batch: original owner order, including front matter, source artifacts and repeated witnesses. Use the Book Index for the non-repeating topic sequence.':'Separate source apparatus, not part of the primary teaching sequence. All source text, English, required notes and history are retained.';
+ const notice=kind==='topic'?`${item.hebrewTitle} — ${item.title}`:item.title;
  const v=freeze({key,kind,title:item.title,hebrewTitle:item.hebrewTitle,url:item.url,section:item.section??null,notice,rows:item.rows,labels:item.rows.map(r=>s.byId[r.stableIndex].label),artifactIds:item.artifactIds??[],previous,next});views.add(v);return v;
 }
 export function assertProjection(d,v,pathname,key){requireEdition(d);must(views.has(v),'Unauthenticated reading projection');const now=projectionForPath(d,pathname);must(now.key===v.key&&key===v.key&&now.rows.length===v.rows.length&&now.rows.every((r,i)=>r===v.rows[i]),'Route/topic ownership drift');return v;}

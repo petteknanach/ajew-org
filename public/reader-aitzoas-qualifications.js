@@ -1,6 +1,6 @@
 // One route-local source engine. Other books and legacy annotation stores are untouched.
-import {ASSET,PIN,BOOK,authenticateEdition,requireEdition,fullBodyPayload,appendLegacyCollection,stable,displayPlan,historyEntries,ranges,validateAnnotation,annotationAttachments} from './qualified-aitzoas-runtime.js?v=29760feeb82d8d2d3ec1078b02e78a22ccb1d6145f1bf8f47b2e75947e0b508f';
-import {projectionForPath,assertProjection,ownerNavigation} from './qualified-aitzoas-topics.js?v=79a36ec7b9841c71a8fd75977b8e141442855a367e3e0380affc90c8910afc2e';
+import {ASSET,PIN,BOOK,authenticateEdition,requireEdition,fullBodyPayload,appendLegacyCollection,stable,displayPlan,historyEntries,ranges,validateAnnotation,annotationAttachments} from './qualified-aitzoas-runtime.js?v=c7e62ae2be8aa52736ecbffdcc1796b7f87f45c5402ae342690d4e8a83e87260';
+import {projectionForPath,assertProjection,ownerNavigation} from './qualified-aitzoas-topics.js?v=3e388f03de12ddbbb25c31705672da71ab6499c5939f7e9327e675d5c03c5ee3';
 export const ANNOTATION_KEY='ajew-aitzoas362-source-annotations-v1';
 export async function browserSHA(bytes){return [...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))].map(x=>x.toString(16).padStart(2,'0')).join('');}
 export function installAitzoas362(win=window){
@@ -39,14 +39,15 @@ export function installAitzoas362(win=window){
   must([...c.childNodes].every(n=>n.nodeType===1||n.nodeType===8||(n.nodeType===3&&!/\S/u.test(n.textContent))),'Foreign route-level print text');
   for(const r of rows){
    const {u,el}=r,he=el.querySelector('[data-he-wrap]'),en=el.querySelector('[data-en-wrap]'),origin=el.querySelector('[data-origin-wrap]'),buttons=el.querySelector('.q-unit-controls');
-   slots(el,'ARTICLE',[el.children[0],he,en,origin,r.noteRoot,buttons,r.history]);leaf(el.children[0],'H2',ownerNavigation(d,u.stableIndex).label);
-   for(const [wrap,label,body]of [[he,'Supplied Hebrew',r.fields[0]],[en,'English',u.en===null?el.querySelector('[data-unavailable]'):r.fields[1]],[origin,'English origin',r.origin]]){slots(wrap,'SECTION',[wrap.children[0],body]);leaf(wrap.children[0],'H3',label);}
+   slots(el,'ARTICLE',[el.children[0],he,en,r.disclosure,buttons]);leaf(el.children[0],'H2',ownerNavigation(d,u.stableIndex).label);
+   slots(r.disclosure,'DETAILS',[r.disclosure.children[0],r.noteRoot,origin,r.history]);leaf(r.disclosure.children[0],'SUMMARY','Text notes');
+   for(const [wrap,label,body]of [[he,'Hebrew',r.fields[0]],[en,'English',u.en===null?el.querySelector('[data-unavailable]'):r.fields[1]],[origin,'About this translation',r.origin]]){slots(wrap,'SECTION',[wrap.children[0],body]);leaf(wrap.children[0],'H3',label);}
    if(u.en===null)leaf(el.querySelector('[data-unavailable]'),'P',u.origin.notice+' No historical fallback is used.');
    for(const f of r.fields){must(f.tagName==='P','Source field element drift');for(const child of f.childNodes)if(child.nodeType===1)must(child.tagName==='MARK'&&marks.has(child)&&child.attributes.length===0&&[...child.childNodes].every(n=>n.nodeType===3),'Owned search mark attributes/markup changed');}
    slots(r.noteRoot,'SECTION',r.notes);r.notes.forEach((n,j)=>leaf(n,'P',expected(u).notes[j].text));leaf(r.origin,'P',u.origin.notice);
    must(buttons?.tagName==='DIV'&&buttons.getAttribute('class')==='q-unit-controls','Hidden controls slot changed');
    // Controls are never exposed in print, including their text and descendants.
-   const hs=r.history.querySelector('summary'),groups=r.historyFields.map(f=>f.parentElement);slots(r.history,'DETAILS',[hs,...groups]);leaf(hs,'SUMMARY','Earlier English — historical comparison only');
+   const hs=r.history.querySelector('summary'),groups=r.historyFields.map(f=>f.parentElement);slots(r.history,'DETAILS',[hs,...groups]);leaf(hs,'SUMMARY','Earlier translation');
    historyEntries(u).forEach((e,j)=>{const f=r.historyFields[j],group=groups[j],label=f.previousElementSibling;slots(group,'SECTION',[label,f]);leaf(label,'H4',e.label);leaf(f,e.href?'A':'P',e.text);});
   }
   return true;
@@ -61,15 +62,16 @@ export function installAitzoas362(win=window){
   must(all('[data-source-field]').length===rows.reduce((n,r)=>n+r.fields.length,0)&&all('[data-note-id]').length===rows.reduce((n,r)=>n+expected(r.u).notes.length,0)&&all('[data-owner-history]').length===rows.length&&all('[data-origin]').length===rows.length,'Foreign or missing source elements');
   for(const [i,r]of rows.entries()){
    const {u,el}=r,plan=expected(u);must(installed[i]===el&&el.id==='seg-'+u.stableIndex&&el.dataset.unit===u.owner&&el.dataset.index===String(u.stableIndex)&&el.parentElement===c.querySelector('[data-source-root]'),'Paragraph identity/order changed');
-   must(el.children.length===7&&el.children[0].tagName==='H2'&&el.children[0].textContent===ownerNavigation(d,u.stableIndex).label,'Unexpected paragraph content');
-   for(const [selector,label]of [['[data-he-wrap]','Supplied Hebrew'],['[data-en-wrap]','English'],['[data-origin-wrap]','English origin']]){const wrap=el.querySelector(selector);must(wrap?.parentElement===el&&wrap.children.length===2&&wrap.children[0].tagName==='H3'&&wrap.children[0].textContent===label,'Source label/placement changed');}
+   must(el.children.length===5&&el.children[0].tagName==='H2'&&el.children[0].textContent===ownerNavigation(d,u.stableIndex).label,'Unexpected paragraph content');
+   must(el.querySelector('[data-text-notes]')===r.disclosure&&r.disclosure?.parentElement===el&&r.disclosure.tagName==='DETAILS'&&r.disclosure.children.length===4,'Text notes disclosure changed');
+   for(const [selector,label]of [['[data-he-wrap]','Hebrew'],['[data-en-wrap]','English'],['[data-origin-wrap]','About this translation']]){const wrap=el.querySelector(selector);must(wrap?.parentElement===(selector==='[data-origin-wrap]'?r.disclosure:el)&&wrap.children.length===2&&wrap.children[0].tagName==='H3'&&wrap.children[0].textContent===label,'Source label/placement changed');}
    const fields=all('[data-source-field]',el),keys=u.en===null?['he']:['he','en'];must(fields.length===keys.length,'Field inventory changed');
    fields.forEach((f,j)=>{must(f===r.fields[j]&&f.dataset.sourceField===keys[j]&&f.textContent===(keys[j]==='he'?u.he:displayPlan(u).en)&&f.parentElement===el.querySelector(keys[j]==='he'?'[data-he-wrap]':'[data-en-wrap]'),'Source field changed');for(const child of f.childNodes)must(child.nodeType===3||(child.nodeType===1&&child.tagName==='MARK'&&marks.has(child)&&child.children.length===0),'Unbound field markup');});
    must(el.querySelector('[data-origin]')===r.origin&&r.origin.textContent===u.origin.notice&&r.origin.children.length===0&&r.origin.parentElement===el.querySelector('[data-origin-wrap]'),'Origin changed');
    const unavailable=all('[data-unavailable]',el);must(unavailable.length===(u.en===null?1:0)&&(!unavailable.length||unavailable[0].textContent===u.origin.notice+' No historical fallback is used.'),'Unavailable owner changed');
-   const nr=el.querySelector('[data-notes-root]'),notes=all('[data-note-id]',el);must(nr===r.noteRoot&&notes.length===plan.notes.length&&nr.parentElement===el&&nr.children.length===notes.length,'Note root changed');
+   const nr=el.querySelector('[data-notes-root]'),notes=all('[data-note-id]',el);must(nr===r.noteRoot&&notes.length===plan.notes.length&&nr.parentElement===r.disclosure&&nr.children.length===notes.length,'Note root changed');
    notes.forEach((n,j)=>{const q=plan.notes[j];must(n===r.notes[j]&&n.parentElement===nr&&n.dataset.noteId===q.id&&n.dataset.owner===u.owner&&n.textContent===q.text&&n.children.length===0,'Required note changed');});
-   must(el.querySelector('[data-owner-history]')===r.history&&r.history.parentElement===el&&r.history.dataset.ownerHistory===u.owner&&r.history.querySelector('summary')?.textContent==='Earlier English — historical comparison only','History owner changed');
+   must(el.querySelector('[data-owner-history]')===r.history&&r.history.parentElement===r.disclosure&&r.history.dataset.ownerHistory===u.owner&&r.history.querySelector('summary')?.textContent==='Earlier translation','History owner changed');
    must(r.history.children.length===6,'Unexpected history content');
    const entries=historyEntries(u),hf=all('[data-history-field]',el);must(hf.length===entries.length,'History inventory changed');hf.forEach((h,j)=>{const e=entries[j];must(h===r.historyFields[j]&&h.dataset.historyField===e.key&&h.textContent===e.text&&h.children.length===0&&h.parentElement.parentElement===r.history&&h.parentElement.children.length===2&&h.previousElementSibling?.tagName==='H4'&&h.previousElementSibling?.textContent===e.label&&(e.href?h.tagName==='A'&&h.getAttribute('href')===e.href:h.tagName==='P'),'History source changed');});
   }
@@ -79,7 +81,14 @@ export function installAitzoas362(win=window){
   guard();for(const owner of owners){const r=rows.find(r=>r.u.owner===owner);must(r,'Owner outside live route');
    const fields=r.fields.filter(f=>mode==='both'||f.dataset.sourceField===(mode==='hebrew'?'he':'en'));
    const unavailable=r.el.querySelector('[data-unavailable]');must(fields.length?fields.every(visible):mode==='english'&&unavailable&&visible(unavailable),'Live source is hidden/clipped/detached');
-   must(visible(r.origin)&&r.notes.every(visible)&&visible(r.history.querySelector('summary')),'Live origin, notes or history disclosure hidden/clipped');
+   must(visible(r.disclosure.querySelector('summary')),'Text notes disclosure hidden/clipped');
+   // A native closed disclosure is intentional; CSS-hidden ink is not. Open
+   // only the two authenticated details, verify every conserved attachment,
+   // then restore their original state. No source node/text is substituted.
+   const prior=[r.disclosure,r.history].map(el=>[el,el.open]);
+   try{for(const [el]of prior)disclosureOpen(el,true);
+    must(visible(r.origin)&&r.notes.every(visible)&&visible(r.history.querySelector('summary'))&&r.historyFields.every(h=>(!h.textContent||visible(h))&&visible(h.previousElementSibling)),'Live origin, notes or history hidden/clipped');
+   }finally{for(const [el,open]of prior.reverse())disclosureOpen(el,open);}
   }return owners;
  }
  function selection(){
@@ -92,27 +101,27 @@ export function installAitzoas362(win=window){
  function checkCapture(el){flushMutations();guard();const x=captures.get(el);must(menu===el&&el.isConnected&&x&&x.generation===generation&&x.start.isConnected&&x.end.isConnected&&x.range.startContainer===x.start&&x.range.endContainer===x.end&&x.range.startOffset===x.a&&x.range.endOffset===x.b&&x.range.toString()===x.text&&x.field.contains(x.start)&&x.field.contains(x.end)&&visible(x.field)&&visible(atElement(x.start))&&visible(atElement(x.end)),'Stale captured source');outwardOwners(x.owners);return x;}
  function sourceTouch(){const s=win.getSelection();if(!s||s.isCollapsed)return false;try{if(c.contains(s.anchorNode)||c.contains(s.focusNode))return true;for(let i=0;i<s.rangeCount;i++)if(s.getRangeAt(i).intersectsNode(c))return true;}catch{return true;}return false;}
  function live(token,check){flushMutations();guard();must(generation===token,'Source action generation changed');if(check)check();}
- function manualCopy(p,token,check){live(token,check);outwardOwners(p.owners);if(menu){menu.remove();menu=null;}if(manual)manual.remove();manual=doc.createElement('section');manual.setAttribute('data-manual-export','');const label=doc.createElement('p'),area=doc.createElement('textarea'),close=doc.createElement('button');label.textContent='Clipboard unavailable. This is the complete owner payload, including source notes, origin and history. Select all and copy.';area.value=p.content;area.readOnly=true;area.rows=12;close.textContent='Close manual copy';close.type='button';close.addEventListener('click',()=>{manual?.remove();manual=null;});manual.append(label,area,close);c.querySelector('[data-capture-host]').append(manual);
-  area.addEventListener('copy',e=>{e.preventDefault();e.stopImmediatePropagation();try{live(token);outwardOwners(p.owners);must(area.value===p.content&&manual?.isConnected,'Stale manual source');must(e.clipboardData,'Native clipboard data unavailable');e.clipboardData.setData('text/plain',p.content);}catch(err){say('Manual copy blocked: '+err.message);}},true);area.focus();area.select();
+ function manualCopy(p,token,check){live(token,check);outwardOwners(p.owners);if(menu){menu.remove();menu=null;}if(manual)manual.remove();manual=doc.createElement('section');manual.setAttribute('data-manual-export','');const label=doc.createElement('p'),area=doc.createElement('textarea'),close=doc.createElement('button');label.textContent='Clipboard unavailable. Select all and copy this complete paragraph with its text notes.';area.value=p.content;area.readOnly=true;area.rows=12;close.textContent='Close manual copy';close.type='button';close.addEventListener('click',()=>{manual?.remove();manual=null;});manual.append(label,area,close);c.querySelector('[data-capture-host]').append(manual);
+  area.addEventListener('copy',e=>{e.preventDefault();e.stopImmediatePropagation();try{live(token);outwardOwners(p.owners);must(area.value===p.content&&manual?.isConnected,'Stale manual source');must(e.clipboardData,'Native clipboard data unavailable');e.clipboardData.setData('text/plain',p.content);}catch(err){say('Could not copy this passage. Reload the page and try again.');}},true);area.focus();area.select();
  }
  async function save(p,token,check){
   const id='aitzoas362-'+await browserSHA(encode(stable([PIN,p.owners,p.content])));live(token,check);
   must(win.navigator.locks?.request,'Exclusive storage locking unavailable; save disabled');
   await win.navigator.locks.request('ajew-my-sefer',{mode:'exclusive'},()=>{
    live(token,check);const key='ajew-my-sefer',before=win.localStorage.getItem(key),old=before===null?{sections:[]}:JSON.parse(before);must(Array.isArray(old.sections),'Invalid legacy save collection');const existing=old.sections.filter(e=>e?.id===id);must(existing.length<=1,'Duplicate saved identity');
-   const entry={id,title:'Aitzoas Yesharoas — '+p.sourceUnits.map(r=>'section '+r.section+', paragraph '+r.stableIndex).join('; '),content:p.content,source:'https://ajew.org'+p.sourceUnits[0].canonicalUrl,addedAt:existing[0]?.addedAt||new Date().toISOString(),qualifiedFullBody:p};
+   const entry={id,title:existing[0]?.title??'Aitzoas Yesharoas — '+p.sourceUnits.map(r=>ownerNavigation(d,r.stableIndex).label).join('; '),content:p.content,source:'https://ajew.org'+p.sourceUnits[0].canonicalUrl,addedAt:existing[0]?.addedAt||new Date().toISOString(),qualifiedFullBody:p};
    const next=appendLegacyCollection(before,entry);live(token,check);must(win.localStorage.getItem(key)===before,'Collection changed; retry');if(next!==before)win.localStorage.setItem(key,next);must(win.localStorage.getItem(key)===next,'Saved collection readback failed');
   });
  }
  async function act(action,owners,check=null){
   const token=generation,originalCheck=check;check=()=>{outwardOwners(owners);if(originalCheck)originalCheck();};try{live(token,check);outwardOwners(owners);const p=fullBodyPayload(d,owners);
-   if(action==='save'){await save(p,token,check);say('Saved complete source owners to My Sefer; legacy bridge unchanged.');}
-   else if(action==='share'&&win.navigator.share){live(token,check);await win.navigator.share({title:'Aitzoas Yesharoas',text:p.content,url:'https://ajew.org'+p.sourceUnits[0].canonicalUrl});say('Shared complete owners, notes, origin and history.');}
+   if(action==='save'){await save(p,token,check);say('Saved to My Sefer.');}
+   else if(action==='share'&&win.navigator.share){live(token,check);await win.navigator.share({title:'Aitzoas Yesharoas',text:p.content,url:'https://ajew.org'+p.sourceUnits[0].canonicalUrl});say('Shared with text notes.');}
    else if(action==='copy'||action==='share'){
-    try{live(token,check);must(win.navigator.clipboard?.writeText,'Clipboard unavailable');await win.navigator.clipboard.writeText(p.content);say('Copied complete owners, notes, origin and history.');}
+    try{live(token,check);must(win.navigator.clipboard?.writeText,'Clipboard unavailable');await win.navigator.clipboard.writeText(p.content);say('Copied with text notes.');}
     catch(err){live(token,check);manualCopy(p,token,check);}
    }else fail('Unsupported source action');
-  }catch(err){say(err.name==='AbortError'?'Share cancelled; nothing saved.':'Source action blocked: '+err.message);}
+  }catch(err){say(err.name==='AbortError'?'Share cancelled; nothing saved.':'Could not complete this action. Reload the page and try again.');}
  }
  function descriptor(x){
   const before=doc.createRange();before.selectNodeContents(x.field);before.setEnd(x.start,x.a);let start=before.toString().length;const field=x.field.dataset.sourceField,u=x.row.u;
@@ -120,14 +129,14 @@ export function installAitzoas362(win=window){
   const end=start+x.text.length;must(u[field].slice(start,end)===x.text,'Selection crosses a display contraction; choose a literal source span');return {editionSHA256:PIN,owner:u.owner,field,start,end,text:x.text,fullField:u[field]};
  }
  function readAnnotations(raw){const a=raw===null?[]:JSON.parse(raw);must(Array.isArray(a)&&new Set(a.map(x=>x.id)).size===a.length,'Invalid annotation collection');a.forEach(x=>validateAnnotation(d,x));return a;}
- function renderAnnotations(){const panel=c.querySelector('[data-annotations]');panel.replaceChildren();try{const {attached,detached}=annotationAttachments(d,win.localStorage.getItem(ANNOTATION_KEY));for(const {annotation:a,row:r}of attached){const item=doc.createElement('article'),h=doc.createElement('h3'),quote=doc.createElement('p'),note=doc.createElement('p'),detail=doc.createElement('details'),summary=doc.createElement('summary'),body=doc.createElement('pre');h.textContent=a.type+' — paragraph '+r.stableIndex;quote.textContent=a.selection.text;note.textContent=a.note;summary.textContent='Complete source owner, notes and history';body.textContent=fullBodyPayload(d,[r.owner]).content;detail.append(summary,body);item.append(h,quote,note,detail);panel.append(item);}if(detached.length){const notice=doc.createElement('p');notice.textContent=detached.length+' existing local annotation(s) retained but not attached to this edition.';panel.append(notice);}}catch(err){panel.textContent='Existing local annotation data retained but not attached: '+err.message;}}
+ function renderAnnotations(){const panel=c.querySelector('[data-annotations]');panel.replaceChildren();try{const {attached,detached}=annotationAttachments(d,win.localStorage.getItem(ANNOTATION_KEY));for(const {annotation:a,row:r}of attached){const item=doc.createElement('article'),h=doc.createElement('h3'),quote=doc.createElement('p'),note=doc.createElement('p'),detail=doc.createElement('details'),summary=doc.createElement('summary'),body=doc.createElement('pre');h.textContent=a.type+' — '+ownerNavigation(d,r.stableIndex).label;quote.textContent=a.selection.text;note.textContent=a.note;summary.textContent='Complete paragraph and text notes';body.textContent=fullBodyPayload(d,[r.owner]).content;detail.append(summary,body);item.append(h,quote,note,detail);panel.append(item);}if(detached.length){const notice=doc.createElement('p');notice.textContent=detached.length+' existing local annotation(s) retained but not attached to this edition.';panel.append(notice);}}catch(err){panel.textContent='Your earlier notes are saved, but could not be displayed on this page.';}}
  async function annotate(type,x,el){
   const note=type==='note'||type==='prayer'?win.prompt('Personal '+type+' (not source text):',''):'';if(note===null)return;checkCapture(el);const selection=descriptor(x),a={schema:'qualified-aitzoas362-annotation/v1',id:win.crypto.randomUUID(),type,note,selection,createdAt:new Date().toISOString()};validateAnnotation(d,a);must(win.navigator.locks?.request,'Exclusive annotation locking unavailable');
-  await win.navigator.locks.request(ANNOTATION_KEY,{mode:'exclusive'},()=>{checkCapture(el);const before=win.localStorage.getItem(ANNOTATION_KEY),items=readAnnotations(before);items.push(a);const next=JSON.stringify(items);must(win.localStorage.getItem(ANNOTATION_KEY)===before,'Annotation conflict');win.localStorage.setItem(ANNOTATION_KEY,next);must(win.localStorage.getItem(ANNOTATION_KEY)===next,'Annotation readback failed');});invalidate();renderAnnotations();say('Saved source-bound personal '+type+'. Legacy annotations unchanged.');
+  await win.navigator.locks.request(ANNOTATION_KEY,{mode:'exclusive'},()=>{checkCapture(el);const before=win.localStorage.getItem(ANNOTATION_KEY),items=readAnnotations(before);items.push(a);const next=JSON.stringify(items);must(win.localStorage.getItem(ANNOTATION_KEY)===before,'Annotation conflict');win.localStorage.setItem(ANNOTATION_KEY,next);must(win.localStorage.getItem(ANNOTATION_KEY)===next,'Annotation readback failed');});invalidate();renderAnnotations();say('Saved your '+type+'.');
  }
- function openCapture(){try{const x=selection();invalidate();x.generation=generation;menu=doc.createElement('div');menu.setAttribute('data-source-capture','');menu.setAttribute('role','group');for(const [a,label]of [['copy','Copy complete owner'],['share','Share complete owner'],['save','Save complete owner'],['highlight','Highlight'],['note','Personal note'],['prayer','Personal prayer']]){const b=doc.createElement('button');b.type='button';b.dataset.capturedAction=a;b.textContent=label;if(['save','highlight','note','prayer'].includes(a)&&!win.navigator.locks?.request){b.disabled=true;b.title='Exclusive storage locking is unavailable in this browser';}menu.append(b);}c.querySelector('[data-capture-host]').append(menu);captures.set(menu,x);}catch(err){say('Capture blocked: '+err.message);}}
+ function openCapture(){try{const x=selection();invalidate();x.generation=generation;menu=doc.createElement('div');menu.setAttribute('data-source-capture','');menu.setAttribute('role','group');for(const [a,label]of [['copy','Copy paragraph'],['share','Share paragraph'],['save','Save paragraph'],['highlight','Highlight'],['note','Personal note'],['prayer','Personal prayer']]){const b=doc.createElement('button');b.type='button';b.dataset.capturedAction=a;b.textContent=label;if(['save','highlight','note','prayer'].includes(a)&&!win.navigator.locks?.request){b.disabled=true;b.title='Exclusive storage locking is unavailable in this browser';}menu.append(b);}c.querySelector('[data-capture-host]').append(menu);captures.set(menu,x);}catch(err){say('Select a passage in Hebrew or English first.');}}
  function paint(){invalidate();c.dataset.mode=mode;for(const r of rows){const root=r.noteRoot;root.replaceChildren();for(const q of expected(r.u).notes){const p=doc.createElement('p');p.dataset.noteId=q.id;p.dataset.owner=r.u.owner;p.textContent=q.text;root.append(p);}r.notes=all('[data-note-id]',r.el);}all('[data-mode-button]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.modeButton===mode)));guard();}
- function search(){guard();invalidate();const query=c.querySelector('[data-query]').value;let count=0;for(const r of rows)for(const f of r.fields){const text=f.dataset.sourceField==='he'?r.u.he:displayPlan(r.u).en,frag=doc.createDocumentFragment();let start=0;for(const [a,b]of ranges(text,query)){frag.append(doc.createTextNode(text.slice(start,a)));const mark=doc.createElement('mark');mark.textContent=text.slice(a,b);marks.add(mark);frag.append(mark);start=b;count++;}frag.append(doc.createTextNode(text.slice(start)));f.replaceChildren(frag);}guard();c.querySelector('[data-search-status]').textContent=count+' literal-text matches';}
+ function search(){guard();invalidate();const query=c.querySelector('[data-query]').value;let count=0;for(const r of rows)for(const f of r.fields){const text=f.dataset.sourceField==='he'?r.u.he:displayPlan(r.u).en,frag=doc.createDocumentFragment();let start=0;for(const [a,b]of ranges(text,query)){frag.append(doc.createTextNode(text.slice(start,a)));const mark=doc.createElement('mark');mark.textContent=text.slice(a,b);marks.add(mark);frag.append(mark);start=b;count++;}frag.append(doc.createTextNode(text.slice(start)));f.replaceChildren(frag);}guard();c.querySelector('[data-search-status]').textContent=count+' matches';}
  function sourceInk(el){
   if(!visible(el))return false;
   function chain(leaf){
@@ -188,6 +197,11 @@ export function installAitzoas362(win=window){
   printFlag('printSafe','false');printFlag('printChecking','false');
  }
  function flushMutations(){if(observer)mutations(observer.takeRecords());}
+ function disclosureOpen(el,open){
+  flushMutations();if(el.open===open)return;
+  const old=el.getAttribute('open');el.open=open;
+  if(observer){let own=false;const foreign=observer.takeRecords().filter(r=>{if(!own&&r.target===el&&r.type==='attributes'&&r.attributeName==='open'&&r.oldValue===old){own=true;return false;}return true;});mutations(foreign);}
+ }
  function printFlag(key,value){
   // Drain foreign records BEFORE a narrowly owned attribute write. Only the
   // single exact record produced by that write is exempt, not a whole batch.
@@ -205,15 +219,15 @@ export function installAitzoas362(win=window){
  function restorePrint(){
   admission=null;printFlag('printSafe','false');printFlag('printChecking','false');
   if(printState){const prior=printState;printState=null;mode=prior.mode;
-   try{paint();}catch(err){say('Print restore blocked: '+err.message);}
+   try{paint();}catch(err){say('Could not restore reading settings. Reload the page.');}
    finally{for(const [el,open]of prior.details)el.open=open;flushMutations();}
   }
  }
  function printGate(){
   admission=null;printFlag('printSafe','false');printFlag('printChecking','false');try{
    guard();must(observer&&win.matchMedia('print').matches,'Print media/tracking not active');watchAncestors();
-   if(!printState)printState={mode,details:rows.map(r=>[r.history,r.history.open])};
-   if(mode!=='both'){mode='both';paint();}rows.forEach(r=>r.history.open=true);
+   if(!printState)printState={mode,details:rows.flatMap(r=>[[r.disclosure,r.disclosure.open],[r.history,r.history.open]])};
+   if(mode!=='both'){mode='both';paint();}rows.forEach(r=>{r.disclosure.open=true;r.history.open=true;});
    flushMutations();guard();const epoch=printEpoch;
    // Checking exposes the SAME admitted tree for geometry, not an alternate body;
    // the warning remains visible until the complete synchronous check succeeds.
@@ -222,37 +236,37 @@ export function installAitzoas362(win=window){
    for(const r of rows)for(const el of [...r.fields,...r.notes,r.origin,...all('[data-unavailable]',r.el),...r.historyFields,...r.historyFields.map(h=>h.previousElementSibling),...all('[data-he-wrap] h3,[data-en-wrap] h3,[data-origin-wrap] h3',r.el),r.el.children[0]])if(el.textContent)must(sourceInk(el),'Unreadable/clipped source, note, origin or history');
    guard();flushMutations();must(epoch===printEpoch&&win.matchMedia('print').matches,'Print generation changed');
    admission={epoch};printFlag('printSafe','true');printFlag('printChecking','false');
-   must(admission?.epoch===printEpoch,'Print admission revoked');say('Print media source/notes/history ink gate passed; native PDF review remains required.');
-  }catch(err){admission=null;printFlag('printSafe','false');printFlag('printChecking','false');say('Print blocked: '+err.message);}
+   must(admission?.epoch===printEpoch,'Print admission revoked');say('Ready to print.');
+  }catch(err){admission=null;printFlag('printSafe','false');printFlag('printChecking','false');say('This page could not be printed safely. Reload the page and try again.');}
  }
  doc.addEventListener('selectionchange',()=>{if(menu)invalidate();},true);
  doc.addEventListener('mousedown',e=>{if(atElement(e.target)?.closest('[data-selection-action],[data-capture],[data-source-capture]'))e.preventDefault();},true);
- doc.addEventListener('copy',e=>{if(atElement(e.target)?.closest('[data-manual-export]'))return;if(!sourceTouch())return;e.preventDefault();e.stopImmediatePropagation();try{const x=selection();must(e.clipboardData,'Clipboard data unavailable');e.clipboardData.setData('text/plain',fullBodyPayload(d,x.owners).content);}catch(err){if(e.clipboardData)e.clipboardData.setData('text/plain','');say('Native copy blocked: '+err.message);}},true);
- for(const type of ['cut','dragstart'])doc.addEventListener(type,e=>{if(sourceTouch()){e.preventDefault();e.stopImmediatePropagation();say('Source cut/drag disabled; use complete-owner Copy.');}},true);
+ doc.addEventListener('copy',e=>{if(atElement(e.target)?.closest('[data-manual-export]'))return;if(!sourceTouch())return;e.preventDefault();e.stopImmediatePropagation();try{const x=selection();must(e.clipboardData,'Clipboard data unavailable');e.clipboardData.setData('text/plain',fullBodyPayload(d,x.owners).content);}catch(err){if(e.clipboardData)e.clipboardData.setData('text/plain','');say('Select a passage in Hebrew or English to copy its complete paragraph and text notes.');}},true);
+ for(const type of ['cut','dragstart'])doc.addEventListener(type,e=>{if(sourceTouch()){e.preventDefault();e.stopImmediatePropagation();say('Use Copy to include the complete paragraph and text notes.');}},true);
  doc.addEventListener('click',e=>{
   const b=atElement(e.target)?.closest('button');if(!b||!c.contains(b))return;
   const scope=b.closest('[data-unit]'),owned=rows.find(r=>r.el===scope);
-  if(b.hasAttribute('data-action')||b.hasAttribute('data-selection-action')||b.hasAttribute('data-captured-action')){e.preventDefault();e.stopImmediatePropagation();try{guard();must(visible(b)&&!b.disabled,'Hidden or disabled source control');must(b.dataset.capturedAction||controls.has(b),'Unbound source control');if(b.dataset.capturedAction){const el=b.closest('[data-source-capture]'),x=checkCapture(el),a=b.dataset.capturedAction;if(['copy','share','save'].includes(a))void act(a,x.owners,()=>checkCapture(el));else if(['highlight','note','prayer'].includes(a))void annotate(a,x,el).catch(err=>say('Annotation blocked: '+err.message));else fail('Unknown capture action');}
+  if(b.hasAttribute('data-action')||b.hasAttribute('data-selection-action')||b.hasAttribute('data-captured-action')){e.preventDefault();e.stopImmediatePropagation();try{guard();must(visible(b)&&!b.disabled,'Hidden or disabled source control');must(b.dataset.capturedAction||controls.has(b),'Unbound source control');if(b.dataset.capturedAction){const el=b.closest('[data-source-capture]'),x=checkCapture(el),a=b.dataset.capturedAction;if(['copy','share','save'].includes(a))void act(a,x.owners,()=>checkCapture(el));else if(['highlight','note','prayer'].includes(a))void annotate(a,x,el).catch(err=>say('Could not save your note. Try selecting the passage again.'));else fail('Unknown capture action');}
    else if(b.dataset.selectionAction){const x=selection();void act(b.dataset.selectionAction,x.owners,()=>{const current=selection();must(current.start===x.start&&current.end===x.end&&current.a===x.a&&current.b===x.b&&current.text===x.text,'Selection changed');});}
-   else {must(!scope||owned,'Foreign paragraph control');void act(b.dataset.action,owned?[owned.u.owner]:rows.map(r=>r.u.owner));}}catch(err){say('Export blocked: '+err.message);}return;}
+   else {must(!scope||owned,'Foreign paragraph control');void act(b.dataset.action,owned?[owned.u.owner]:rows.map(r=>r.u.owner));}}catch(err){say('Could not copy, share or save this passage. Reload the page and try again.');}return;}
   try{if(b.hasAttribute('data-capture')){openCapture();return;}if(b.dataset.modeButton){guard();must(['hebrew','english','both'].includes(b.dataset.modeButton),'Unknown mode');mode=b.dataset.modeButton;paint();return;}
    if(b.dataset.themeButton){guard();must(['day','sepia','night'].includes(b.dataset.themeButton),'Unknown theme');invalidate();c.dataset.theme=b.dataset.themeButton;return;}
    if(b.hasAttribute('data-print')){guard();invalidate();win.print();return;}
-   if(b.hasAttribute('data-fullscreen')){guard();invalidate();if(doc.fullscreenElement)void doc.exitFullscreen().catch(err=>say(err.message));else if(c.requestFullscreen)void c.requestFullscreen().catch(err=>say(err.message));else say('Fullscreen unavailable in this browser.');return;}
-   if(b.hasAttribute('data-bookmark')){guard();const r=rows.find(r=>r.el.getBoundingClientRect().bottom>0)||rows[0],key='ajew-aitzoas362-bookmark-v1',value=JSON.stringify({editionSHA256:PIN,owner:r.u.owner,url:r.u.canonicalUrl});win.localStorage.setItem(key,value);must(win.localStorage.getItem(key)===value,'Bookmark readback failed');win.history.replaceState(null,'','#seg-'+r.u.stableIndex);say('Bookmarked paragraph '+r.u.stableIndex);}
-  }catch(err){say('Control blocked: '+err.message);}
+   if(b.hasAttribute('data-fullscreen')){guard();invalidate();if(doc.fullscreenElement)void doc.exitFullscreen().catch(err=>say('This reading tool is not available right now.'));else if(c.requestFullscreen)void c.requestFullscreen().catch(err=>say('This reading tool is not available right now.'));else say('Fullscreen unavailable in this browser.');return;}
+   if(b.hasAttribute('data-bookmark')){guard();const r=rows.find(r=>r.el.getBoundingClientRect().bottom>0)||rows[0],key='ajew-aitzoas362-bookmark-v1',value=JSON.stringify({editionSHA256:PIN,owner:r.u.owner,url:r.u.canonicalUrl});win.localStorage.setItem(key,value);must(win.localStorage.getItem(key)===value,'Bookmark readback failed');win.history.replaceState(null,'','#seg-'+r.u.stableIndex);say('Bookmarked '+ownerNavigation(d,r.u.stableIndex).label);}
+  }catch(err){say('Could not change this setting. Reload the page and try again.');}
  },true);
  c.addEventListener('dblclick',e=>{if(atElement(e.target)?.closest('[data-source-field]'))openCapture();});
- c.querySelector('[data-query]').addEventListener('input',()=>{try{search();}catch(err){say('Search blocked: '+err.message);}});
- c.querySelector('[data-font]').addEventListener('input',e=>{try{guard();const n=Number(e.target.value);must(Number.isInteger(n)&&n>=16&&n<=24,'Invalid text size');invalidate();c.style.setProperty('--q-font',n+'px');}catch(err){say(err.message);}});
- c.addEventListener('keydown',e=>{if(e.ctrlKey||e.altKey||e.metaKey||atElement(e.target)?.closest('input,textarea,button,select'))return;try{guard();const key=e.key.toLowerCase();if(['h','e','b'].includes(key)){mode={h:'hebrew',e:'english',b:'both'}[key];paint();}else if(key==='p'){invalidate();win.print();}else if(key==='j'||key==='k'){const r=rows.findIndex(r=>r.el.getBoundingClientRect().top>=0),i=Math.max(0,Math.min(rows.length-1,(r<0?0:r)+(key==='j'?1:-1)));rows[i].el.scrollIntoView();}else return;e.preventDefault();}catch(err){say(err.message);}});
+ c.querySelector('[data-query]').addEventListener('input',()=>{try{search();}catch(err){say('Could not search this page. Reload the page and try again.');}});
+ c.querySelector('[data-font]').addEventListener('input',e=>{try{guard();const n=Number(e.target.value);must(Number.isInteger(n)&&n>=16&&n<=24,'Invalid text size');invalidate();c.style.setProperty('--q-font',n+'px');}catch(err){say('This reading tool is not available right now.');}});
+ c.addEventListener('keydown',e=>{if(e.ctrlKey||e.altKey||e.metaKey||atElement(e.target)?.closest('input,textarea,button,select'))return;try{guard();const key=e.key.toLowerCase();if(['h','e','b'].includes(key)){mode={h:'hebrew',e:'english',b:'both'}[key];paint();}else if(key==='p'){invalidate();win.print();}else if(key==='j'||key==='k'){const r=rows.findIndex(r=>r.el.getBoundingClientRect().top>=0),i=Math.max(0,Math.min(rows.length-1,(r<0?0:r)+(key==='j'?1:-1)));rows[i].el.scrollIntoView();}else return;e.preventDefault();}catch(err){say('This reading tool is not available right now.');}});
  win.addEventListener('beforeprint',printGate);win.addEventListener('afterprint',restorePrint);win.matchMedia('print').addEventListener('change',e=>e.matches?printGate():restorePrint());win.addEventListener('pagehide',()=>{ready=false;c.dataset.ready='false';invalidate();},{once:true});
  const readyPromise=(async()=>{try{
   const read=async url=>{const res=await win.fetch(url,{cache:'no-store',credentials:'same-origin',redirect:'error'});must(res.ok,'Source unavailable: '+url);return res.arrayBuffer();};
   d=await authenticateEdition(await read(ASSET+'?v='+PIN),a=>read(a.url),browserSHA);view=projectionForPath(d,win.location.pathname);const units=view.rows;
-  rows=all('[data-unit]').map((el,i)=>({u:units[i],el,fields:all('[data-source-field]',el),notes:all('[data-note-id]',el),noteRoot:el.querySelector('[data-notes-root]'),origin:el.querySelector('[data-origin]'),history:el.querySelector('[data-owner-history]'),historyFields:all('[data-history-field]',el)}));
-  sourceRoot=c.querySelector('[data-source-root]');heading=c.querySelector('[data-print-heading]');ready=true;guard();paint();renderAnnotations();all('button,input').filter(el=>el.matches('[data-action],[data-selection-action],[data-capture],[data-mode-button],[data-theme-button],[data-print],[data-fullscreen],[data-bookmark],[data-query],[data-font]')).forEach(el=>{el.disabled=(el.dataset.action==='save'||el.dataset.selectionAction==='save')&&!win.navigator.locks?.request||el.hasAttribute('data-fullscreen')&&!c.requestFullscreen;if(el.disabled)el.title='Required native locking or fullscreen support is unavailable';});c.dataset.ready='true';watchPrint();say('Source fields, origin, required notes and labelled history authenticated. Exports carry complete owners.');const q=new URLSearchParams(win.location.search).get('q');if(q){c.querySelector('[data-query]').value=q;search();}return true;
- }catch(err){ready=false;c.dataset.ready='false';c.dataset.printSafe='false';say('Source actions disabled: '+err.message);return false;}})();
+  rows=all('[data-unit]').map((el,i)=>({u:units[i],el,fields:all('[data-source-field]',el),notes:all('[data-note-id]',el),noteRoot:el.querySelector('[data-notes-root]'),disclosure:el.querySelector('[data-text-notes]'),origin:el.querySelector('[data-origin]'),history:el.querySelector('[data-owner-history]'),historyFields:all('[data-history-field]',el)}));
+  sourceRoot=c.querySelector('[data-source-root]');heading=c.querySelector('[data-print-heading]');ready=true;guard();paint();renderAnnotations();all('button,input').filter(el=>el.matches('[data-action],[data-selection-action],[data-capture],[data-mode-button],[data-theme-button],[data-print],[data-fullscreen],[data-bookmark],[data-query],[data-font]')).forEach(el=>{el.disabled=(el.dataset.action==='save'||el.dataset.selectionAction==='save')&&!win.navigator.locks?.request||el.hasAttribute('data-fullscreen')&&!c.requestFullscreen;if(el.disabled)el.title='This browser does not support this reading tool';});c.dataset.ready='true';watchPrint();say('');const q=new URLSearchParams(win.location.search).get('q');if(q){c.querySelector('[data-query]').value=q;search();}return true;
+ }catch(err){ready=false;c.dataset.ready='false';c.dataset.printSafe='false';const pending=c.querySelector('[data-pending]');if(pending)pending.textContent='Reading tools unavailable.';win.console?.warn('Aitzoas reading tools:',err);say('Reading tools could not load. You can still read the text and open Text notes. Reload to try again.');return false;}})();
  Object.defineProperty(win,'Aitzoas362Ready',{value:readyPromise});Object.defineProperty(win,'Aitzoas362IntegrityReady',{value:()=>{try{return guard();}catch{return false;}}});return readyPromise;
 }
 if(typeof window!=='undefined'&&typeof document!=='undefined')installAitzoas362();

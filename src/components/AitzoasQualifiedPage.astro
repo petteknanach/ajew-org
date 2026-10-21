@@ -16,52 +16,54 @@ const crumbs=[{name:'Library',url:'https://ajew.org/reader'},{name:index.bookTit
 <Layout title={title} description={description} jsonLd={jsonLd} breadcrumbs={crumbs}>
  <div data-aitzoas362-yahrzeit-host aria-label="Dates"></div>
  <section class="aitzoas362" data-aitzoas362 data-section={view.section??undefined} data-view={view.key} data-edition-sha={PIN} data-ready="false" data-print-safe="false" data-mode="both" data-theme="day">
-  <aside data-pending role="alert">Source authentication pending. Copy, Share, Save, selection annotations and printing are disabled until this page's source, notes and history are verified.</aside>
-  <noscript>JavaScript is unavailable. Read the source notes and labelled history below; qualified exports and authenticated printing are unavailable.</noscript>
-  <p data-print-warning>PRINT NOT AUTHENTICATED — source reading, ownership, notes, history and visible ink must pass the route-local print gate. Do not use this output as a verified edition.</p>
+  <aside data-pending role="status">Loading reading tools…</aside>
+  <noscript>You can read the full text and open Text notes below. Enable JavaScript to copy, save, share or print.</noscript>
+  <p data-print-warning>This page could not be printed safely. Return to the book and try again.</p>
   <h1 data-print-heading>{view.title}</h1>
   <header><p data-view-hebrew lang="he" dir="rtl">{view.hebrewTitle}</p><p data-view-context>{view.notice}</p></header>
-  {view.artifactIds.length>0&&<nav aria-label="Separate source artifacts">Source artifacts retained separately: {view.artifactIds.map(id=><a href={`/reader/aitzoas-yeshuroas/apparatus/page-headers/#seg-${id}`}>Source owner {id}</a>)}</nav>}
+
   <nav aria-label="Reading navigation">
    {view.previous&&<a href={view.previous.url}>← {view.previous.title}</a>}
-   <a href="/reader/aitzoas-yeshuroas/1/">Book Index</a><a href="/reader">All Books</a>
+   <a href="/reader/aitzoas-yeshuroas/1/">Contents</a><a href="/reader">All Books</a>
    {view.next&&<a href={view.next.url}>{view.next.title} →</a>}
   </nav>
-  <section class="q-controls" aria-label="Reading and export controls">
+  <section class="q-controls" aria-label="Reading tools">
    <div>{[['hebrew','Hebrew'],['english','English'],['both','Both']].map(([mode,label])=><button type="button" data-mode-button={mode} disabled aria-pressed={mode==='both'?'true':'false'}>{label}</button>)}
-    <button type="button" disabled title="No independent pointed Hebrew field is supplied">Nikud unavailable</button>
-    <button type="button" disabled title="No authenticated sentence-level alignment is supplied">Align unavailable</button>
-    <button type="button" disabled title="Audio is not source-authenticated for this edition">Audio / Listen unavailable</button>
+
    </div>
-   <label>Text size <input data-font type="range" min="16" max="24" value="18" disabled /></label>
-   <div>{['day','sepia','night'].map(theme=><button type="button" data-theme-button={theme} disabled>{theme}</button>)}<button type="button" data-fullscreen disabled>Fullscreen</button><button type="button" data-bookmark disabled>Bookmark this paragraph</button></div>
+   <details><summary>Reading settings</summary>
+    <label>Text size <input data-font type="range" min="16" max="24" value="18" disabled /></label>
+    <div>{[['day','Day'],['sepia','Sepia'],['night','Night']].map(([theme,label])=><button type="button" data-theme-button={theme} disabled>{label}</button>)}<button type="button" data-fullscreen disabled>Fullscreen</button><button type="button" data-bookmark disabled>Bookmark</button></div>
+   </details>
    <label>Search this page <input data-query type="search" disabled /></label><output data-search-status aria-live="polite"></output>
-   <div>{[['copy','Copy page'],['share','Share page'],['save','Save page to My Sefer']].map(([action,label])=><button type="button" data-action={action} disabled>{label}</button>)}<button type="button" data-print disabled>Print (integrity checked)</button></div>
-   <div><button type="button" data-selection-action="copy" disabled>Copy selected owner</button><button type="button" data-selection-action="share" disabled>Share selected owner</button><button type="button" data-selection-action="save" disabled>Save selected owner</button><button type="button" data-capture disabled>Capture source selection</button></div>
-   <p>Select within one visible source field. Exports carry its complete owner's Hebrew, assembled English, applicable notes, origin and labelled full history. Paragraph 242 omits only the approved overlapping inline caveat with both complete source notes attached; stored English remains unchanged. Captures cannot originate in notes, history or controls.</p>
-   <details><summary>Keyboard shortcuts</summary><p>H / E / B: Hebrew / English / Both. P: checked print. J / K: next / previous paragraph. Use the labelled controls for source exports. No audio or fabricated alignment is offered.</p></details>
-   <details><summary>Page table of contents</summary><ol>{rows.map(r=><li><a href={`#seg-${r.stableIndex}`}>{ownerNavigation(edition,r.stableIndex).label}</a></li>)}</ol></details>
+   <div>{[['copy','Copy page'],['share','Share page'],['save','Save page to My Sefer']].map(([action,label])=><button type="button" data-action={action} disabled>{label}</button>)}<button type="button" data-print disabled>Print</button></div>
+   <details><summary>Selected text</summary>
+    <p>Select a passage in Hebrew or English. Copy, Share and Save include its complete paragraph and text notes.</p>
+    <div><button type="button" data-selection-action="copy" disabled>Copy paragraph</button><button type="button" data-selection-action="share" disabled>Share paragraph</button><button type="button" data-selection-action="save" disabled>Save paragraph</button><button type="button" data-capture disabled>Highlight or add a note</button></div>
+   </details>
+   <details><summary>Keyboard shortcuts</summary><p>H / E / B: Hebrew / English / Both. P: print. J / K: next / previous paragraph.</p></details>
+   <details><summary>On this page</summary><ol>{rows.map(r=><li><a href={`#seg-${r.stableIndex}`}>{ownerNavigation(edition,r.stableIndex).label}</a></li>)}</ol></details>
   </section>
-  <p data-status role="status" aria-live="polite">Authentication pending; outward source actions disabled.</p>
-  <section data-source-root aria-label="Source paragraphs">
+  <p data-status role="status" aria-live="polite"></p>
+  <section data-source-root aria-label="Book text">
    {rows.map(r=> (
     <article data-unit={r.owner} data-index={r.stableIndex} id={`seg-${r.stableIndex}`}>
      <h2>{ownerNavigation(edition,r.stableIndex).label}</h2>
-     <section data-he-wrap><h3>Supplied Hebrew</h3><p data-source-field="he" lang="he" dir="rtl">{r.he}</p></section>
+     <section data-he-wrap><h3>Hebrew</h3><p data-source-field="he" lang="he" dir="rtl">{r.he}</p></section>
      <section data-en-wrap><h3>English</h3>{r.en===null?<p data-unavailable>{r.origin.notice} No historical fallback is used.</p>:<p data-source-field="en" lang="en">{displayPlan(r).en}</p>}</section>
-     <section data-origin-wrap><h3>English origin</h3><p data-origin>{r.origin.notice}</p></section>
-     <section data-notes-root aria-label={`Required notes for paragraph ${r.stableIndex}`} set:html={noteHTML(r)} />
+     <details data-text-notes><summary>Text notes</summary>
+      <section data-notes-root aria-label="Text notes" set:html={noteHTML(r)} />
+      <section data-origin-wrap><h3>About this translation</h3><p data-origin>{r.origin.notice}</p></section>
+      <Fragment set:html={historyHTML(r)} />
+     </details>
      <div class="q-unit-controls">{[['copy','Copy paragraph'],['share','Share paragraph'],['save','Save paragraph']].map(([action,label])=><button type="button" data-action={action} disabled>{label}</button>)}</div>
-     <Fragment set:html={historyHTML(r)} />
     </article>
    ))}
   </section>
-  <section class="q-annotations"><h2>Source-bound local annotations</h2><p>New highlights, notes and prayers use exact field/occurrence identities. Earlier generic Reader annotations are not reattached by text matching and remain unchanged in their original storage.</p><div data-capture-host></div><div data-annotations></div></section>
-  <details><summary>Topic navigation and source ownership</summary>
+  <section class="q-annotations"><h2>Your notes</h2><div data-capture-host></div><div data-annotations></div></section>
+  <details><summary>All topics</summary>
    <nav aria-label="All topics">{structure.topics.map(t=><a href={t.url} aria-current={view.key==='topic-'+t.slug?'page':undefined}>{t.hebrewTitle} — {t.title}</a>)}</nav>
-   <nav aria-label="Source apparatus">{structure.apparatus.map(a=><a href={a.url}>{a.hebrewTitle} — {a.title}</a>)}</nav>
-   <nav aria-label="Retained source routes">{index.torahs.map(t=><a href={`/reader/aitzoas-yeshuroas/1/${t.torah}`}>Source batch {t.torah}</a>)}</nav>
-   <ul>{rows.map(r=><li>{ownerNavigation(edition,r.stableIndex).label} — <a href={r.canonicalUrl}>Stable source owner {r.stableIndex}</a> · <a href={ownerNavigation(edition,r.stableIndex).readingUrl}>Reading location</a></li>)}</ul>
+   <nav aria-label="Introduction and closing">{structure.apparatus.slice(0,2).map(a=><a href={a.url}>{a.hebrewTitle} — {a.title}</a>)}</nav>
   </details>
  </section>
  <Comments teachingId={view.kind==='source'?`aitzoas-yeshuroas-1-${view.section}`:`aitzoas-yeshuroas-${view.key}`} teachingTitle={`aitzoas-yeshuroas — ${view.title}`} />
@@ -73,7 +75,7 @@ const crumbs=[{name:'Library',url:'https://ajew.org/reader'},{name:index.bookTit
    for(const type of ['copy','cut','dragstart'])document.addEventListener(type,e=>{if(c.dataset.ready!=='true'&&blocks(e)){e.preventDefault();e.stopImmediatePropagation();if(e.clipboardData)e.clipboardData.setData('text/plain','');}},true);
   })();
  </script>
- <script type="module" src="/reader-aitzoas-qualifications.js?v=e97b351db3deeca8da4a2541bfb724f420033ba8bc64cf361f0ed09b55d5c0c4" is:inline></script>
+ <script type="module" src="/reader-aitzoas-qualifications.js?v=6631511422a19f672c9750ebe47868448907d96bdf44362a7770f7300b8e9eb5" is:inline></script>
 </Layout>
 <style is:global>
  body:has([data-aitzoas362]) .ai-reader-access{display:none!important}
@@ -89,6 +91,7 @@ const crumbs=[{name:'Library',url:'https://ajew.org/reader'},{name:index.bookTit
  .aitzoas362[data-mode="hebrew"] [data-en-wrap],.aitzoas362[data-mode="english"] [data-he-wrap]{display:none}
  .aitzoas362[data-theme="sepia"]{color:#2b2118;background:#faf1df}.aitzoas362[data-theme="night"]{color:#eee;background:#181818}
  .aitzoas362 pre{white-space:pre-wrap;overflow-wrap:anywhere}.aitzoas362 [data-capture-host]{position:relative}
+ .aitzoas362 summary{cursor:pointer;padding:.5rem 0}.aitzoas362 [data-text-notes]{margin:.75rem 0}.aitzoas362 :is(button,input,a,summary):focus-visible{outline:2px solid currentColor;outline-offset:3px}.aitzoas362 [data-status]:empty{display:none}
  @media print{
   /* Authenticate the genuine Layout ancestors too; sourceInk remains strict. */
   html:has([data-aitzoas362]),body:has([data-aitzoas362]),body:has([data-aitzoas362]) #main-content:has([data-aitzoas362]){color:#000!important;-webkit-text-fill-color:#000!important}

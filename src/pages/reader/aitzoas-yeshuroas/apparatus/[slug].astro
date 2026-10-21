@@ -1,5 +1,6 @@
 ---
 import AitzoasQualifiedPage from '../../../../components/AitzoasQualifiedPage.astro';
+import AitzoasReadingArrival from '../../../../components/AitzoasReadingArrival.astro';
 import {loadEdition} from '../../../../lib/qualified-aitzoas362.mjs';
 import {projectionForPath,topicStructure} from '../../../../../public/qualified-aitzoas-topics.mjs';
 import fs from 'node:fs';
@@ -10,4 +11,4 @@ const view=projectionForPath(edition,Astro.url.pathname);
 if(view.key!=='apparatus-'+Astro.params.slug)throw Error('Route/topic parameter mismatch');
 const index=JSON.parse(fs.readFileSync(path.join(process.cwd(),'public/reader/aitzoas-yeshuroas/index.json'),'utf8'));
 ---
-<AitzoasQualifiedPage edition={edition} view={view} index={index}/>
+{Astro.params.slug==='page-headers'?<AitzoasReadingArrival edition={edition} ids={[62,63,193]} index={index}/>:<AitzoasQualifiedPage edition={edition} view={view} index={index}/>}

@@ -21,10 +21,11 @@ export function testDOM(html,pathname,read){
  }
  class Element{
   constructor(n){this.n=n;this.handlers={};this.style={setProperty(){}};}
-  get nodeType(){return this.n.nodeName==='#text'?3:this.n.nodeName==='#comment'?8:this.n.nodeName==='#document'?9:1;}
+  get nodeType(){return this.n.nodeName==='#text'?3:this.n.nodeName==='#comment'?8:this.n.nodeName==='#document'?9:this.n.nodeName==='#document-fragment'?11:1;}
   get tagName(){return this.n.tagName?.toUpperCase();}
   get dataset(){return new Proxy({}, {get:(_,k)=>attr(this.n,'data-'+String(k).replace(/[A-Z]/g,c=>'-'+c.toLowerCase())),set:(_,k,v)=>{set(this.n,'data-'+String(k).replace(/[A-Z]/g,c=>'-'+c.toLowerCase()),v);return true;}});}
   get id(){return attr(this.n,'id')??'';}set id(v){set(this.n,'id',v);}
+  get open(){return this.hasAttribute('open');}set open(value){if(value)this.setAttribute('open','');else this.removeAttribute('open');}
   get children(){return(this.n.childNodes??[]).filter(n=>n.tagName).map(wrap);}
   get childNodes(){return(this.n.childNodes??[]).map(wrap);}
   get attributes(){return this.n.attrs??[];}
@@ -35,10 +36,11 @@ export function testDOM(html,pathname,read){
   get isConnected(){return this.getRootNode()===document;}
   getRootNode(){let n=this.n;while(n.parentNode)n=n.parentNode;return wrap(n);}
   getAttribute(k){return attr(this.n,k)??null;}setAttribute(k,v){set(this.n,k,v);}hasAttribute(k){return attr(this.n,k)!==undefined;}
+  removeAttribute(k){this.n.attrs=(this.n.attrs??[]).filter(a=>a.name!==k);}
   querySelectorAll(s){return query(this.n,s).map(wrap);}querySelector(s){return this.querySelectorAll(s)[0]??null;}
   matches(s){return match(this.n,s);}closest(s){for(let n=this;n;n=n.parentElement)if(n.matches(s))return n;return null;}
   contains(el){return all(this.n).includes(el?.n);}
-  append(...els){for(const el of els){if(el.parentNode)el.remove();el.n.parentNode=this.n;(this.n.childNodes??=[]).push(el.n);}}
+  append(...els){for(const el of els){if(el.nodeType===11){this.append(...el.childNodes);continue;}if(el.parentNode)el.remove();el.n.parentNode=this.n;(this.n.childNodes??=[]).push(el.n);}}
   replaceChildren(...els){for(const n of this.n.childNodes??[])n.parentNode=null;this.n.childNodes=[];this.append(...els);}
   remove(){const a=this.n.parentNode?.childNodes;if(a)a.splice(a.indexOf(this.n),1);this.n.parentNode=null;}
   addEventListener(type,f){(this.handlers[type]??=[]).push(f);}
@@ -48,6 +50,7 @@ export function testDOM(html,pathname,read){
  const document=wrap(parse(html));document.head=document.querySelector('head');document.body=document.querySelector('body');
  document.createElement=tag=>wrap({nodeName:tag,tagName:tag,attrs:[],childNodes:[]});
  document.createTextNode=value=>wrap({nodeName:'#text',value});
+ document.createDocumentFragment=()=>wrap({nodeName:'#document-fragment',childNodes:[]});
  const clipboard=[],shares=[],local=new Map(),listeners={};
  const window={document,location:{pathname,search:'',origin:'https://ajew.org'},navigator:{clipboard:{writeText:async t=>clipboard.push(t)},share:async p=>shares.push(p),locks:{request:async(_name,_options,fn)=>fn()}},crypto:globalThis.crypto,localStorage:{getItem:k=>local.get(k)??null,setItem:(k,v)=>local.set(k,String(v))},history:{replaceState(){}},getSelection:()=>null,MutationObserver:class{observe(){}takeRecords(){return[];}},matchMedia:()=>({matches:false,addEventListener(){}}),addEventListener(type,f){(listeners[type]??=[]).push(f);},fetch:async url=>{const b=read(url.split('?')[0].replace(/^\//,''));return{ok:true,arrayBuffer:async()=>new Uint8Array(b).buffer};},getComputedStyle:()=>({display:'block',visibility:'visible',opacity:'1',contentVisibility:'visible',clipPath:'none',clip:'auto',filter:'none',transform:'none',overflowX:'visible',overflowY:'visible'})};
  async function click(el){const e={target:el,preventDefault(){},stopImmediatePropagation(){}};for(const f of document.handlers.click??[])f(e);await new Promise(resolve=>setImmediate(resolve));}

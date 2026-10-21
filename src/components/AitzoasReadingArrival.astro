@@ -1,0 +1,40 @@
+---
+import Layout from '../layouts/Layout.astro';
+import {topicStructure,ownerNavigation,INLINE_ARRIVALS} from '../../public/qualified-aitzoas-topics.mjs';
+const {edition,ids,index}=Astro.props;
+const structure=topicStructure(edition);
+const targets=ids.map(id=>{
+ const original=ownerNavigation(edition,INLINE_ARRIVALS[id]??id);
+ const target=ownerNavigation(edition,original.primaryIndex??original.stableIndex);
+ if(target.kind==='appendix-artifact')return {id,url:'/reader/aitzoas-yeshuroas/1/',label:'Contents'};
+ return {id,url:target.readingUrl,label:target.label};
+});
+const links=[...new Map(targets.map(t=>[t.url,t])).values()];
+// The finite same-book map is generated from the authenticated edition, not a
+// destination supplied by the URL. Old fragments remain compatibility identities.
+const arrivals=Object.fromEntries(targets.map(t=>['#seg-'+t.id,t.url]));
+const fallback=ids.every(id=>Object.hasOwn(INLINE_ARRIVALS,id))?links:[...new Map(targets.map(t=>{
+ if(t.url==='/reader/aitzoas-yeshuroas/1/')return [t.url,t];
+ const item=structure.topics.find(topic=>t.url.startsWith(topic.url))??structure.apparatus.find(a=>t.url.startsWith(a.url));
+ return [item.url,{url:item.url,label:item.hebrewTitle+' — '+item.title}];
+})).values()];
+---
+<Layout title={`${index.bookTitle} — Continue reading`} description="Continue to the passage in the book.">
+ <div class="reading-arrival">
+  <h1>{index.bookHebrew} — {index.bookTitle}</h1>
+  <p>This passage is now part of the book’s topic pages. Continue reading below.</p>
+  <ul>{fallback.map(t=><li><a href={t.url}>{t.label}</a></li>)}</ul>
+  <p><a href="/reader/aitzoas-yeshuroas/1/">Contents</a></p>
+  <script type="application/json" data-reading-arrivals set:html={JSON.stringify(arrivals).replace(/</g,'\\u003c')} />
+ </div>
+ <script is:inline>
+  (function(){
+   const data=document.querySelector('[data-reading-arrivals]');if(!data)return;
+   const arrivals=JSON.parse(data.textContent);
+   function arrive(){const target=Object.hasOwn(arrivals,location.hash)?arrivals[location.hash]:null;if(target&&target.startsWith('/reader/aitzoas-yeshuroas/')){const url=new URL(target,location.origin);url.search=location.search;location.replace(url.pathname+url.search+url.hash);}}
+   arrive();addEventListener('hashchange',arrive);
+  })();
+ </script>
+</Layout>
+<style is:global>body:has(.reading-arrival) .ai-reader-access{display:none!important}</style>
+<style>.reading-arrival{max-width:54rem;margin:auto;padding:1.5rem;line-height:1.8}a:focus-visible{outline:2px solid currentColor;outline-offset:3px}</style>

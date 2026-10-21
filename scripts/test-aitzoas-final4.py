@@ -67,7 +67,7 @@ class FinalFour(unittest.TestCase):
                 finally:q.BANK_VALUE_PIN,q.SOURCE_BINDING_PIN=pins
     def test_03_independent_baseline_python_binding_rejects_after_other_envelope_rebinding(self):
         b,l=copy.deepcopy(bank),copy.deepcopy(loaded);b['rows'][ordinary['stableIndex']-1]['en']+=' unauthorized';project(b,l)
-        restored=copy.deepcopy(b)
+        restored=q.correction_predecessor(b)
         for index in (1,62,87,179):restored['rows'][index-1].update(q.FINAL4_ORIGINALS[str(index)])
         previous=q.BANK_VALUE_PIN,q.SOURCE_BINDING_PIN,q.BASELINE_BANK_VALUE_PIN
         q.BANK_VALUE_PIN=q.sha(q.stable(b));q.SOURCE_BINDING_PIN=q.sha(q.stable([q._binding(r) for r in b['rows']]))
@@ -77,12 +77,20 @@ class FinalFour(unittest.TestCase):
         finally:q.BANK_VALUE_PIN,q.SOURCE_BINDING_PIN,q.BASELINE_BANK_VALUE_PIN=previous
     def test_04_fresh_positive_after_negatives(self):self.assertEqual(len(q.load_edition(ROOT).rows),366)
     def test_05_original362_and_he_history_all366_and_bytes_immutable(self):
-        for r,oldr in zip(bank['rows'],oldbank['rows'],strict=True):
+        # The selected correction is first inverted, not silently exempted.
+        predecessor=q.correction_predecessor(bank)
+        for current,prior in zip(bank['rows'],predecessor['rows'],strict=True):
+            self.assertEqual(current['he'],prior['he']);self.assertEqual(current['history'],prior['history'])
+        for r,oldr in zip(predecessor['rows'],oldbank['rows'],strict=True):
             if r['stableIndex'] in (1,62,87,179):
                 for key in set(r)-{'en','origin','englishStatus','requiredNotes'}:self.assertEqual(r[key],oldr[key])
             else:self.assertEqual(r,oldr)
         for section in (5,6):
-            name=f'public/reader/{q.BOOK}/section-{section}.json';self.assertEqual((ROOT/name).read_bytes(),git(name))
+            name=f'public/reader/{q.BOOK}/section-{section}.json';restored=json.loads((ROOT/name).read_bytes())
+            for r in predecessor['rows']:
+                if r['section']==section:
+                    restored['segments'][r['arrayPosition']].update(en=r['en'],englishReading={k:r[k] for k in ('englishStatus','origin','requiredNotes','history')})
+            self.assertEqual(restored,json.loads(git(name)))
         for section in range(1,7):
             name=f'public/reader/reviewed/aitzoas362-sources/section-{section}-original.json';self.assertEqual((ROOT/name).read_bytes(),git(name))
     def test_06_actual_section_exports_all_six_four_formats_full_body_display(self):
@@ -123,7 +131,11 @@ class FinalFour(unittest.TestCase):
             self.assertEqual(q.checked_search_artifacts(edition,common['l'],hd,ed),(he,en,loc))
             hd['m']=copy.deepcopy(loc);hd['m'][-1][-1]+=1
             with self.assertRaises(ValueError):q.checked_search_artifacts(edition,common['l'],hd,ed)
-            if section in (5,6):self.assertEqual((en,loc),(olden,oldloc))
+            if section==6:self.assertEqual((en,loc),(olden,oldloc))
+            if section==5:
+                old_fragment=re.sub(r'\s+',' ',oldbank['rows'][192]['en']).strip()
+                new_fragment=re.sub(r'\s+',' ',bank['rows'][192]['en']).strip()
+                self.assertEqual(en,olden.replace(old_fragment,new_fragment));self.assertEqual([x[:4] for x in loc],[x[:4] for x in oldloc])
     def test_08_final_fresh_positive(self):self.assertEqual(q.verify(read)['availableEnglish'],366)
 
 if __name__=='__main__':unittest.main(verbosity=2)
