@@ -1,0 +1,57 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { getGalleryMetadata } from '../../../lib/gallery-metadata.mjs';
+const image = getGalleryMetadata('nanach', 'nanach-karate-kid.jpg');
+if (!image.sha256) throw new Error('Mr. Miyagi image does not match its reviewed bytes');
+const imageUrl = '/images/nanach/nanach-karate-kid.jpg';
+const pageUrl = 'https://ajew.org/gallery/nanach/mr-miyagi-karate-kid-na-nach-beanie/';
+const structured = {
+  '@context': 'https://schema.org',
+  '@type': 'ImageObject',
+  name: image.title,
+  description: image.alt,
+  caption: 'Mr. Miyagi (Pat Morita) from The Karate Kid in a Na Nach beanie — edited film still.',
+  contentUrl: `https://ajew.org${imageUrl}`,
+  url: pageUrl,
+  encodingFormat: 'image/jpeg',
+  width: image.width,
+  height: image.height,
+  keywords: image.aliases.join(', '),
+  representativeOfPage: true
+};
+---
+<Layout title="Mr. Miyagi — Karate Kid Na Nach Beanie" description={image.alt}>
+  <article class="picture-page">
+    <nav aria-label="Breadcrumb"><a href="/gallery/">Gallery</a> / <a href="/gallery/nanach/">Na Nach</a></nav>
+    <h1>Mr. Miyagi in a Na Nach Beanie</h1>
+    <p class="hebrew-title" lang="he" dir="rtl">מר מיאגי (פט מוריטה) מקראטה קיד בכיפת נ נח — תמונה ערוכה</p>
+    <figure>
+      <a href={imageUrl} aria-label="Open the full Mr. Miyagi Na Nach image">
+        <img src={imageUrl} width={image.width} height={image.height} alt={image.alt} fetchpriority="high" />
+      </a>
+      <figcaption><strong>Edited film still.</strong> Mr. Miyagi, portrayed by Pat Morita in <cite>The Karate Kid</cite>, is shown holding chopsticks and wearing a white Na Nach knitted beanie. This is not presented as a documentary photograph of the actor wearing that cap.</figcaption>
+    </figure>
+    <p>The karate teacher and sensei is also known as Mister Miyagi. Search the galleries by his name, the film title, sensei, or Na Nach.</p>
+    <div class="picture-links">
+      <a href={imageUrl} download="mr-miyagi-pat-morita-karate-kid-na-nach-beanie.jpg">Download image / הורדת התמונה</a>
+      <a href="/gallery/?q=Mr%20Miyagi">Find in all galleries</a>
+      <a href="/gallery/nanach/?q=Karate%20Kid">Find in the Na Nach gallery</a>
+    </div>
+    <p class="source">Source image: <a href={image.sourceUrl} rel="noopener noreferrer" target="_blank">Blogger archive</a>. The original creator and reuse licence have not been established.</p>
+    <script type="application/ld+json" set:html={JSON.stringify(structured)} />
+  </article>
+</Layout>
+<style>
+  .picture-page { max-width: 900px; margin: 0 auto; padding: 2rem 1.2rem 4rem; color: var(--color-text, #24364b); }
+  nav { margin-bottom: 1.5rem; }
+  h1 { line-height: 1.2; margin-block: .8rem; }
+  .hebrew-title { font-size: 1.2rem; }
+  figure { margin: 1.5rem 0; }
+  img { display: block; width: 100%; max-width: 720px; height: auto; margin-inline: auto; border-radius: .6rem; }
+  figcaption, p { line-height: 1.7; }
+  figcaption { margin-top: 1rem; }
+  .picture-links { display: flex; flex-wrap: wrap; gap: .8rem; margin-block: 1.5rem; }
+  .picture-links a { border: 1px solid currentColor; border-radius: .5rem; padding: .7rem 1rem; }
+  a:focus-visible { outline: 3px solid #b8860b; outline-offset: 3px; }
+  .source { font-size: .9rem; }
+</style>

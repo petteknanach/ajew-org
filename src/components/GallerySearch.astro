@@ -85,10 +85,22 @@ const {
           ? `${visibleSources.size} matching picture${visibleSources.size === 1 ? '' : 's'}${visibleSources.size ? '' : ' — try All images or a shorter query'}`
           : `${total} searchable pictures (image-type review is partial)`;
       }
-      input.addEventListener('input', applySearch);
-      kind?.addEventListener('change', applySearch);
+      // Result links are shareable and reloadable; do not add history entries.
+      const initial = new URL(window.location.href);
+      if (initial.searchParams.has('q')) input.value = initial.searchParams.get('q') || '';
+      const initialKind = initial.searchParams.get('type') || '';
+      if (kind && Array.from(kind.options).some(option => option.value === initialKind)) kind.value = initialKind;
+      function syncSearchUrl() {
+        const url = new URL(window.location.href);
+        const query = input.value.trim();
+        if (query) url.searchParams.set('q', query); else url.searchParams.delete('q');
+        if (kind?.value) url.searchParams.set('type', kind.value); else url.searchParams.delete('type');
+        window.history.replaceState(window.history.state, '', url.pathname + url.search + url.hash);
+      }
+      input.addEventListener('input', () => { applySearch(); syncSearchUrl(); });
+      kind?.addEventListener('change', () => { applySearch(); syncSearchUrl(); });
       clear?.addEventListener('click', () => {
-        input.value = ''; if (kind) kind.value = ''; applySearch(); input.focus();
+        input.value = ''; if (kind) kind.value = ''; applySearch(); syncSearchUrl(); input.focus();
       });
       applySearch();
     }
