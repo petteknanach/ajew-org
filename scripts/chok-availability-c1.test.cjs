@@ -186,6 +186,6 @@ test('synchronous acquisition and validation errors are observed per edition',as
 });
 test('changed template compiles without ABI transformation; three script pins only',async()=>{
  const raw=code('src/pages/reader/chok.astro'),compiler=dependencies('@astrojs/compiler');const compiled=await compiler.transform(raw,{filename:'src/pages/reader/chok.astro'});assert(!compiled.diagnostics.some(x=>x.severity===1));
- const versions={'chok.js':'28a5b498e9280b4dafb5fba01c1fa19feadf0aded0a90c899ee1de994ac4d11c','chok-verse-breslov.js':'parsha-author-20261020-reader-notes-r1','chok-source-reader.js':'chok-live-corrections-20261020-r1'};
+ const versions={'chok.js':'63b2c1d980d72aa18ec696aef3d1a3f54d20fca47729476e1931b0916d3d973a','chok-verse-breslov.js':'parsha-author-20261020-reader-notes-r1','chok-source-reader.js':'chok-live-corrections-20261020-r1'};
  for(const [p,v]of Object.entries(versions)){new vm.Script(code('public/'+p));assert(raw.includes('/'+p+'?v='+v));assert.equal(raw.split('/'+p+'?v='+v).length-1,1);}
 });
