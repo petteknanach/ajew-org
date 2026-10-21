@@ -41,7 +41,7 @@
     function fetchJson(url) { return fetch(url).then(function (r) { if (!r.ok) throw Error('HTTP ' + r.status); return r.json(); }); }
     function load() {
       if (loaded || pending || failed || (edition === 'original' && !special)) return;
-      pending = Promise.all([route[1] === 'tanach-tehillim' ? window.AjewPsalmsData.load() : fetchJson('/reader/medooyuk/' + route[1] + '.json'), fetchJson('/reader-source-tails.json?v=1')]).then(function (all) {
+      pending = Promise.all([route[1] === 'tanach-tehillim' ? window.AjewPsalmsData.load() : fetchJson('/reader/medooyuk/' + route[1] + '.json' + (route[1] === 'tanach-bereishit' ? '?v=a2633f304364c9592f2f9637aeee4730a28c52303bc80a508c4af26faa7fba9b' : '')), fetchJson('/reader-source-tails.json?v=1')]).then(function (all) {
         var authenticated = renderer.applyBook(all[0], route[1]);
         loaded = adapter.prepare(authenticated.ch[route[2]], route[1], route[2], all[1]);
         pending = null; refresh(); // Read CURRENT intent; never resurrect a stale edition.

@@ -314,7 +314,7 @@
     state.chapter = chapter || 1;
     state.data = null; state.targumData = null; state.fixedPage = null; readingError = '';
     render();
-    (slug === 'tanach-tehillim' ? window.AjewPsalmsData.load() : fetchJSON('/reader/medooyuk/' + slug + '.json')).then(function (d) {
+    (slug === 'tanach-tehillim' ? window.AjewPsalmsData.load() : fetchJSON('/reader/medooyuk/' + slug + '.json' + (slug === 'tanach-bereishit' ? '?v=a2633f304364c9592f2f9637aeee4730a28c52303bc80a508c4af26faa7fba9b' : ''))).then(function (d) {
       if (id !== requestId) return;
       state.data = window.TikkunQatanOccurrences.applyBook(d, slug);
       // A pending reading fetch must not rewind a later physical-column move.
