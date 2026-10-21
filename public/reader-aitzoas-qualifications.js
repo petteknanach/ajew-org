@@ -1,13 +1,14 @@
 // One route-local source engine. Other books and legacy annotation stores are untouched.
-import {ASSET,PIN,BOOK,authenticateEdition,requireEdition,fullBodyPayload,appendLegacyCollection,stable,displayPlan,historyEntries,ranges,validateAnnotation,annotationAttachments} from './qualified-aitzoas362-core.js?v=609af7efd3ad2d5c5c6feb013a0a1feb198fd82c095eea969c5835b49341d792';
+import {ASSET,PIN,BOOK,authenticateEdition,requireEdition,fullBodyPayload,appendLegacyCollection,stable,displayPlan,historyEntries,ranges,validateAnnotation,annotationAttachments} from './qualified-aitzoas-runtime.js?v=29760feeb82d8d2d3ec1078b02e78a22ccb1d6145f1bf8f47b2e75947e0b508f';
+import {projectionForPath,assertProjection,ownerNavigation} from './qualified-aitzoas-topics.js?v=79a36ec7b9841c71a8fd75977b8e141442855a367e3e0380affc90c8910afc2e';
 export const ANNOTATION_KEY='ajew-aitzoas362-source-annotations-v1';
 export async function browserSHA(bytes){return [...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))].map(x=>x.toString(16).padStart(2,'0')).join('');}
 export function installAitzoas362(win=window){
  const doc=win.document,c=doc.querySelector('[data-aitzoas362]');
- if(!c||!/^\/reader\/aitzoas-yeshuroas\/1\/[1-6]\/?$/.test(win.location.pathname))return null;
+ if(!c||!/^\/reader\/aitzoas-yeshuroas\/(?:1\/[1-6]|topics\/[a-z-]+|apparatus\/[a-z-]+)\/?$/.test(win.location.pathname))return null;
  if(c.dataset.engineInstalled)return win.Aitzoas362Ready;c.dataset.engineInstalled='true';
  const all=(s,root=c)=>[...root.querySelectorAll(s)],say=text=>c.querySelector('[data-status]').textContent=text;
- let d,rows=[],ready=false,mode='both',generation=0,menu=null,manual=null,printState=null,sourceRoot=null,heading=null,observer=null,printEpoch=0,admission=null;
+ let d,view,rows=[],ready=false,mode='both',generation=0,menu=null,manual=null,printState=null,sourceRoot=null,heading=null,observer=null,printEpoch=0,admission=null;
  const marks=new WeakSet(),captures=new WeakMap(),controls=new WeakSet(all('[data-action],[data-selection-action],[data-capture],[data-print]')),encode=x=>new TextEncoder().encode(x);
  const fail=msg=>{throw Error(msg);},must=(ok,msg)=>{if(!ok)fail(msg);};
  const atElement=n=>n?.nodeType===1?n:n?.parentElement;
@@ -30,12 +31,15 @@ export function installAitzoas362(win=window){
   must(sourceRoot?.isConnected&&sourceRoot.parentElement===c&&doc.querySelectorAll('[data-source-root]').length===1&&doc.querySelector('[data-source-root]')===sourceRoot,'Source root identity drift');
   slots(sourceRoot,'SECTION',rows.map(r=>r.el));
   must(heading?.parentElement===c&&doc.querySelectorAll('[data-print-heading]').length===1&&c.querySelector('[data-print-heading]')===heading,'Print heading identity drift');
-  leaf(heading,'H1',d.sections[Number(c.dataset.section)-1].title);
+  leaf(heading,'H1',view.title);
+  const header=c.querySelector('header'),context=c.querySelector('[data-view-context]'),hebrewHeading=c.querySelector('[data-view-hebrew]');
+  must(header?.parentElement===c&&all('[data-view-context]').length===1&&all('[data-view-hebrew]').length===1,'Reading header identity drift');
+  slots(header,'HEADER',[hebrewHeading,context]);leaf(context,'P',view.notice);leaf(hebrewHeading,'P',view.hebrewTitle);
   // Direct text in the exposed route container is printable even without a marker.
   must([...c.childNodes].every(n=>n.nodeType===1||n.nodeType===8||(n.nodeType===3&&!/\S/u.test(n.textContent))),'Foreign route-level print text');
   for(const r of rows){
    const {u,el}=r,he=el.querySelector('[data-he-wrap]'),en=el.querySelector('[data-en-wrap]'),origin=el.querySelector('[data-origin-wrap]'),buttons=el.querySelector('.q-unit-controls');
-   slots(el,'ARTICLE',[el.children[0],he,en,origin,r.noteRoot,buttons,r.history]);leaf(el.children[0],'H2','¶ '+u.stableIndex);
+   slots(el,'ARTICLE',[el.children[0],he,en,origin,r.noteRoot,buttons,r.history]);leaf(el.children[0],'H2',ownerNavigation(d,u.stableIndex).label);
    for(const [wrap,label,body]of [[he,'Supplied Hebrew',r.fields[0]],[en,'English',u.en===null?el.querySelector('[data-unavailable]'):r.fields[1]],[origin,'English origin',r.origin]]){slots(wrap,'SECTION',[wrap.children[0],body]);leaf(wrap.children[0],'H3',label);}
    if(u.en===null)leaf(el.querySelector('[data-unavailable]'),'P',u.origin.notice+' No historical fallback is used.');
    for(const f of r.fields){must(f.tagName==='P','Source field element drift');for(const child of f.childNodes)if(child.nodeType===1)must(child.tagName==='MARK'&&marks.has(child)&&child.attributes.length===0&&[...child.childNodes].every(n=>n.nodeType===3),'Owned search mark attributes/markup changed');}
@@ -50,13 +54,14 @@ export function installAitzoas362(win=window){
  function expected(r){return displayPlan(r,{english:mode!=='hebrew'});}
  function guard(){
   must(ready&&c.isConnected&&doc.querySelectorAll('[data-aitzoas362]').length===1&&doc.querySelector('[data-aitzoas362]')===c&&c.dataset.editionSha===PIN,'Source authentication unavailable');requireEdition(d);
-  const installed=all('[data-unit]');must(installed.length===rows.length&&rows.length===d.rows.filter(r=>r.section===Number(c.dataset.section)).length,'Scope inventory drift');
-  must(heading?.textContent===d.sections[Number(c.dataset.section)-1]?.title,'Section heading changed');
-  must(c.dataset.section===win.location.pathname.match(/\/1\/([1-6])\/?$/)?.[1]&&c.dataset.mode===mode,'Route/mode drift');
+  const installed=all('[data-unit]');must(installed.length===rows.length&&rows.length===view.rows.length,'Scope inventory drift');
+  must(heading?.textContent===view.title,'Reading heading changed');
+  assertProjection(d,view,win.location.pathname,c.dataset.view);
+  must((view.section===null?!c.dataset.section:c.dataset.section===String(view.section))&&c.dataset.mode===mode,'Route/mode drift');
   must(all('[data-source-field]').length===rows.reduce((n,r)=>n+r.fields.length,0)&&all('[data-note-id]').length===rows.reduce((n,r)=>n+expected(r.u).notes.length,0)&&all('[data-owner-history]').length===rows.length&&all('[data-origin]').length===rows.length,'Foreign or missing source elements');
   for(const [i,r]of rows.entries()){
    const {u,el}=r,plan=expected(u);must(installed[i]===el&&el.id==='seg-'+u.stableIndex&&el.dataset.unit===u.owner&&el.dataset.index===String(u.stableIndex)&&el.parentElement===c.querySelector('[data-source-root]'),'Paragraph identity/order changed');
-   must(el.children.length===7&&el.children[0].tagName==='H2'&&el.children[0].textContent==='¶ '+u.stableIndex,'Unexpected paragraph content');
+   must(el.children.length===7&&el.children[0].tagName==='H2'&&el.children[0].textContent===ownerNavigation(d,u.stableIndex).label,'Unexpected paragraph content');
    for(const [selector,label]of [['[data-he-wrap]','Supplied Hebrew'],['[data-en-wrap]','English'],['[data-origin-wrap]','English origin']]){const wrap=el.querySelector(selector);must(wrap?.parentElement===el&&wrap.children.length===2&&wrap.children[0].tagName==='H3'&&wrap.children[0].textContent===label,'Source label/placement changed');}
    const fields=all('[data-source-field]',el),keys=u.en===null?['he']:['he','en'];must(fields.length===keys.length,'Field inventory changed');
    fields.forEach((f,j)=>{must(f===r.fields[j]&&f.dataset.sourceField===keys[j]&&f.textContent===(keys[j]==='he'?u.he:displayPlan(u).en)&&f.parentElement===el.querySelector(keys[j]==='he'?'[data-he-wrap]':'[data-en-wrap]'),'Source field changed');for(const child of f.childNodes)must(child.nodeType===3||(child.nodeType===1&&child.tagName==='MARK'&&marks.has(child)&&child.children.length===0),'Unbound field markup');});
@@ -244,7 +249,7 @@ export function installAitzoas362(win=window){
  win.addEventListener('beforeprint',printGate);win.addEventListener('afterprint',restorePrint);win.matchMedia('print').addEventListener('change',e=>e.matches?printGate():restorePrint());win.addEventListener('pagehide',()=>{ready=false;c.dataset.ready='false';invalidate();},{once:true});
  const readyPromise=(async()=>{try{
   const read=async url=>{const res=await win.fetch(url,{cache:'no-store',credentials:'same-origin',redirect:'error'});must(res.ok,'Source unavailable: '+url);return res.arrayBuffer();};
-  d=await authenticateEdition(await read(ASSET+'?v='+PIN),a=>read(a.url),browserSHA);const section=Number(c.dataset.section),units=d.rows.filter(r=>r.section===section);
+  d=await authenticateEdition(await read(ASSET+'?v='+PIN),a=>read(a.url),browserSHA);view=projectionForPath(d,win.location.pathname);const units=view.rows;
   rows=all('[data-unit]').map((el,i)=>({u:units[i],el,fields:all('[data-source-field]',el),notes:all('[data-note-id]',el),noteRoot:el.querySelector('[data-notes-root]'),origin:el.querySelector('[data-origin]'),history:el.querySelector('[data-owner-history]'),historyFields:all('[data-history-field]',el)}));
   sourceRoot=c.querySelector('[data-source-root]');heading=c.querySelector('[data-print-heading]');ready=true;guard();paint();renderAnnotations();all('button,input').filter(el=>el.matches('[data-action],[data-selection-action],[data-capture],[data-mode-button],[data-theme-button],[data-print],[data-fullscreen],[data-bookmark],[data-query],[data-font]')).forEach(el=>{el.disabled=(el.dataset.action==='save'||el.dataset.selectionAction==='save')&&!win.navigator.locks?.request||el.hasAttribute('data-fullscreen')&&!c.requestFullscreen;if(el.disabled)el.title='Required native locking or fullscreen support is unavailable';});c.dataset.ready='true';watchPrint();say('Source fields, origin, required notes and labelled history authenticated. Exports carry complete owners.');const q=new URLSearchParams(win.location.search).get('q');if(q){c.querySelector('[data-query]').value=q;search();}return true;
  }catch(err){ready=false;c.dataset.ready='false';c.dataset.printSafe='false';say('Source actions disabled: '+err.message);return false;}})();

@@ -259,15 +259,17 @@ def section_exports(edition, section):
     source = f'/reader/{BOOK}/1/{section}'
     url = f'/reader-plain/{BOOK}/1/{section}/'
     content = '\n\n'.join(passage_text(r) for r in rows)
-    raw = {'bookId':BOOK,'part':'1','torah':str(section),'title':title,'hebrewTitle':he_title,'sourceUrl':source,'plainUrl':url,
+    from aitzoas_topic_navigation import navigation
+    nav = navigation(edition.rows)
+    raw = {'readingNavigation':[nav[r['stableIndex']] for r in rows], 'bookId':BOOK,'part':'1','torah':str(section),'title':title,'hebrewTitle':he_title,'sourceUrl':source,'plainUrl':url,
            'editionSHA256':ASSET_PINS[BANK]['sha256'],'content':content,
            'sourceUnitsRole':'Exact stored fields for authentication; not a second reader body.',
            'segments':[dict(index=r['stableIndex'], **copy.deepcopy(r)) for r in rows]}
     # Fenced literal Markdown is safe even when stored fields contain HTML.
     fence = '`' * max(3, 1 + max((len(m.group()) for m in re.finditer(r'`+', content)), default=0))
     md = '# ' + title + '\n\n' + fence + 'text\n' + content + '\n' + fence + '\n'
-    rendered = ''.join(f'<section id="segment-{r["stableIndex"]}"><span id="seg-{r["stableIndex"]}"></span><pre dir="auto">{escape_exact(passage_text(r))}</pre></section>' for r in rows)
-    page = '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+escape_exact(title)+'</title><link rel="canonical" href="https://ajew.org'+source+'"><style>body{max-width:980px;margin:auto;padding:24px}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;line-height:1.7}</style><header><h1>'+escape_exact(title)+'</h1><a href="'+source+'">Reader</a> · <a href="index.txt">TXT</a> · <a href="index.md">Markdown</a> · <a href="index.json">Stored fields JSON</a></header><main>'+rendered+'</main></html>\n'
+    rendered = ''.join(f'<section id="segment-{r["stableIndex"]}"><span id="seg-{r["stableIndex"]}"></span><h2>{escape_exact(nav[r['stableIndex']]['label'])}</h2><a href="{escape_exact(nav[r['stableIndex']]['readingUrl'])}">Topic / reading location</a><pre dir="auto">{escape_exact(passage_text(r))}</pre></section>' for r in rows)
+    page = '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+escape_exact(title)+'</title><link rel="canonical" href="https://ajew.org'+source+'"><style>body{max-width:980px;margin:auto;padding:24px}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;line-height:1.7}</style><header><h1>'+escape_exact(title)+'</h1><a href="/reader/aitzoas-yeshuroas/1/">40-topic book directory</a> · <a href="'+source+'">Reader</a> · <a href="index.txt">TXT</a> · <a href="index.md">Markdown</a> · <a href="index.json">Stored fields JSON</a></header><main>'+rendered+'</main></html>\n'
     files = {'index.txt':content+'\n', 'index.md':md, 'index.json':json.dumps(raw, ensure_ascii=False, indent=2), 'index.html':page}
     entry = {'bookId':BOOK,'part':'1','torah':str(section),'title':title,'hebrewTitle':he_title,'url':url,'sourceUrl':source,'segments':len(rows)}
     return {name:text.encode('utf-8') for name,text in files.items()}, entry
