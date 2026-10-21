@@ -56,18 +56,18 @@ vm.runInContext(main.slice(main.indexOf('  function heNum(n)'), main.indexOf('  
 assert.equal(numeralContext.heNum(1), "א'");
 assert.equal(numeralContext.heNum(28), "כח'");
 assert.equal(numeralContext.refLabelHTML(numeralContext.plainHeNum(28) + ':' + numeralContext.plainHeNum(15)).replace(/<[^>]+>/g, ''), 'כח:טו');
-// Latest user correction: preserve the visual chapter:verse sequence, including Hebrew groups.
+// Hebrew chapter then verse reads right-to-left; Latin/numeric controls stay left-to-right.
 let referenceCases = 0;
 for (let chapter = 1; chapter <= 150; chapter++) {
   for (let verse = 1; verse <= 176; verse++) {
     const label = numeralContext.plainHeNum(chapter) + ':' + numeralContext.plainHeNum(verse);
     const html = numeralContext.refLabelHTML(label);
-    assert(html.startsWith('<bdi class="ck-generated-ref" dir="ltr">'));
+    assert(html.startsWith('<bdi class="ck-generated-ref" dir="rtl">'));
     assert.equal(html.replace(/<[^>]+>/g, ''), label);
     referenceCases++;
   }
 }
-assert(numeralContext.refLabelHTML('יב:א–יג:ד').startsWith('<bdi class="ck-generated-ref" dir="ltr">'));
+assert(numeralContext.refLabelHTML('יב:א–יג:ד').startsWith('<bdi class="ck-generated-ref" dir="rtl">'));
 for (const label of ['12:1', '28:15', 'Genesis 12:1', '12:1–13:4']) {
   const html = numeralContext.refLabelHTML(label);
   assert(html.startsWith('<bdi class="ck-generated-ref" dir="ltr">'));

@@ -12,7 +12,7 @@ const onkelos='וַהֲוָה כַּד (<small>נ"י</small> אַרֵי) קְר�
 assert.equal(api.targumText(onkelos),'וַהֲוָה כַּד (<span class="ck-classical-gloss" data-source-role="classical-context">נ&quot;י</span> אַרֵי) קְרֵיב');
 const template=fs.readFileSync(process.env.CHOK_TEMPLATE||'src/pages/reader/chok.astro','utf8');
 assert(template.includes('.ck-targum-line .ck-classical-gloss { display:inline; border:0; padding:0; margin:0; }'));
-assert(template.includes('.ck-generated-ref { display:inline-flex; direction:ltr; unicode-bidi:isolate; white-space:nowrap; }'));
+assert(template.includes('.ck-generated-ref { display:inline-flex; unicode-bidi:isolate; white-space:nowrap; }'));
 assert(template.includes('/chok-source-reader.js?v=chok-live-corrections-20261020-r1'));
-assert(template.includes('/chok.js?v=28a5b498e9280b4dafb5fba01c1fa19feadf0aded0a90c899ee1de994ac4d11c'));
-console.log(JSON.stringify({bigActualAndEncodedAndAttributedWrappers:true,nestedFormatting:true,literalAngleBracketNegative:true,inlineOnkelosAbbreviationCharactersConserved:true,chapterPhysicallyLeftContract:true,cacheBumps:true,scope:'private initialized source adapter plus exact CSS/template contracts; native pixels pending'}));
+assert(template.includes('/chok.js?v=63b2c1d980d72aa18ec696aef3d1a3f54d20fca47729476e1931b0916d3d973a'));
+console.log(JSON.stringify({bigActualAndEncodedAndAttributedWrappers:true,nestedFormatting:true,literalAngleBracketNegative:true,inlineOnkelosAbbreviationCharactersConserved:true,HebrewChapterPhysicallyRightContract:true,cacheBumps:true,scope:'private initialized source adapter plus exact CSS/template contracts; native pixels pending'}));

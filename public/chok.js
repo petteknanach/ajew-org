@@ -181,10 +181,9 @@
   // Generated references only: never normalize source paragraphs or Names.
   function plainHeNum(n) { return heNum(n).replace(/['\u05f3\u05f4]/g, ''); }
   function refLabelHTML(ref) {
-    // Keep the user-requested visual chapter:verse sequence left-to-right.
-    // Hebrew numeral groups retain their own internal right-to-left order.
-    // Never swap the underlying chapter/verse values to repair presentation.
-    var direction = 'ltr';
+    // Hebrew references read chapter then verse right-to-left; Latin digits stay LTR.
+    // Preserve logical chapter:verse values and the letters inside each numeral.
+    var direction = /[א-ת]/.test(ref) ? 'rtl' : 'ltr';
     return '<bdi class="ck-generated-ref" dir="' + direction + '">' + esc(ref).replace(/[א-ת]+/g, function (n) {
       return '<bdi dir="rtl">' + n + '</bdi>';
     }) + '</bdi>';
