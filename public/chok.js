@@ -1129,6 +1129,26 @@
     var scheduled=((state.sched.weeks[wk]||{}).days||{})[day]||{};
     return lechWednesdayModule().then(function(module){return module.reading(wk,day,section,language,commentary,function(url){return fetchJSON(url,true);},scheduled,mode,applyWednesdayMode);}).catch(function(){return '<p class="ck-source-unavailable" dir="rtl">'+({mishna:'משנה וברטנורא — בבא קמא ג',talmud:'גמרא ורש״י — בבא קמא לב ע״א–ע״ב',zohar:'זוהר חלק א — פג ע״א'}[section])+' · <span lang="en" dir="ltr">This reading is temporarily unavailable.</span></p>';});
   }
+  // Qualified entries are explicitly selected independently of payload schema.
+  function qualifiedDailyHas(wk,day,section) {
+    var api=window.ChokQualifiedDailySelected;
+    return !!(api && typeof api.has==='function' && api.has(wk,day,section));
+  }
+  function qualifiedDailyHasDay(wk,day) {
+    return ['torah','navi','kesuvim','mishna','talmud','zohar','halacha','mussar','prayers','kavanos','breslov'].some(function(s){return qualifiedDailyHas(wk,day,s);});
+  }
+  function qualifiedDailyReading(wk,day,section,scheduled) {
+    var api=window.ChokQualifiedDailySelected;
+    var options={language:state.language,mode:state.mode,commentary:state.commentary,optionalRashi:state.rashi,transform:applyWednesdayMode};
+    if(window.ChokQualifiedDaily) window.ChokQualifiedDaily.bind(document);
+    return api.reading(wk,day,section,options,function(url){return fetchJSON(url,true);},scheduled).then(function(html){
+      if(html===null) throw Error('Qualified daily reading unavailable');
+      return html;
+    });
+  }
+  function qualifiedDailyOr(wk,day,section,scheduled,legacy) {
+    return qualifiedDailyHas(wk,day,section)?qualifiedDailyReading(wk,day,section,scheduled):legacy();
+  }
   function isLechThursday(wk,day) { return wk==='לך לך' && day==='יום חמישי'; }
   var lechThursdayModulePromise=null;
   function lechThursdayModule() {
@@ -1196,6 +1216,7 @@
     return qualifiedZoharModulePromise;
   }
   function zoharHTML(z, wk, day) {
+    if (qualifiedDailyHas(wk,day,'zohar')) return qualifiedDailyReading(wk,day,'zohar',((state.sched.weeks[wk]||{}).days||{})[day]);
     if (isLechThursday(wk,day)) return lechThursdayReading(wk,day,'zohar');
     if (exactQualifiedZohar(wk,day)) {
       var english = state.tanachen;
@@ -1287,7 +1308,7 @@
     var jobs = weeks.map(function (wk, weekIndex) {
       var w = state.sched.weeks[wk];
       if (!w) return Promise.resolve('<p class="ck-error">No schedule for ' + esc(wk) + '</p>');
-      if ((isLechTuesday(wk, day) || isLechWednesday(wk,day) || isLechThursday(wk,day)) && !w.days[day]) return Promise.resolve('<p class="ck-source-unavailable">This reading is temporarily unavailable.</p>');
+      if ((qualifiedDailyHasDay(wk,day) || isLechTuesday(wk, day) || isLechWednesday(wk,day) || isLechThursday(wk,day)) && !w.days[day]) return Promise.resolve('<p class="ck-source-unavailable">This reading is temporarily unavailable.</p>');
       var dayE = availDay(w, day);
       var d = w.days[dayE] || {};
       var qualifiedDay = window.ChokSources.isTuesday(wk, dayE);
@@ -1346,11 +1367,11 @@
           }).catch(function (error) { out.push(nachDataError(pair[1], sec.book, error)); });
         });
       });
-      if ((isLechThursday(wk,dayE) || d.mishna && d.mishna.masechet) && want('mishna')) {
+      if ((qualifiedDailyHas(wk,dayE,'mishna') || isLechThursday(wk,dayE) || d.mishna && d.mishna.masechet) && want('mishna')) {
         p = p.then(function () {
-          var actual=isLechThursday(wk,dayE) ? null : qualifiedDay ? window.ChokSources.reading('mishna',state.tanachen) : window.ChokSources.weekReading(wk,dayE,'mishna',state.tanachen);
-          return (isLechThursday(wk,dayE) ? lechThursdayReading(wk,dayE,'mishna') : isBiraishisSundayMishna(wk,dayE) ? biraishisSundayMishnaReading(wk,dayE) : isLechWednesday(wk,dayE) ? lechWednesdayReading(wk,dayE,'mishna') : actual ? bartenuraHTML(d.mishna.masechet,d.mishna.perek).then(function (bar) { return actual+bar; }) : mishnaHTML(d.mishna.masechet, d.mishna.perek)).then(function (html) { html = html || ''; html = dayKavana('mishna', d) + html; html = voiceBox(!isBiraishisSundayMishna(wk,dayE) && !isLechWednesday(wk,dayE) && !isLechThursday(wk,dayE) && dc && dc.mishna, 'משנה') + html;
-            if (html) out.push('<section class="ck-section" data-sec="mishna">' + (isBiraishisSundayMishna(wk,dayE)||isLechWednesday(wk,dayE)||isLechThursday(wk,dayE)?popBtn():'') + html + '</section>');
+          var actual=qualifiedDailyHas(wk,dayE,'mishna') || isLechThursday(wk,dayE) ? null : qualifiedDay ? window.ChokSources.reading('mishna',state.tanachen) : window.ChokSources.weekReading(wk,dayE,'mishna',state.tanachen);
+          return qualifiedDailyOr(wk,dayE,'mishna',d,function(){return (isLechThursday(wk,dayE) ? lechThursdayReading(wk,dayE,'mishna') : isBiraishisSundayMishna(wk,dayE) ? biraishisSundayMishnaReading(wk,dayE) : isLechWednesday(wk,dayE) ? lechWednesdayReading(wk,dayE,'mishna') : actual ? bartenuraHTML(d.mishna.masechet,d.mishna.perek).then(function (bar) { return actual+bar; }) : mishnaHTML(d.mishna.masechet, d.mishna.perek));}).then(function (html) { if (qualifiedDailyHas(wk,dayE,'mishna') && html==='') return; html = html || ''; html = dayKavana('mishna', d) + html; html = voiceBox(!qualifiedDailyHas(wk,dayE,'mishna') && !isBiraishisSundayMishna(wk,dayE) && !isLechWednesday(wk,dayE) && !isLechThursday(wk,dayE) && dc && dc.mishna, 'משנה') + html;
+            if (html) out.push('<section class="ck-section" data-sec="mishna">' + (qualifiedDailyHas(wk,dayE,'mishna')||isBiraishisSundayMishna(wk,dayE)||isLechWednesday(wk,dayE)||isLechThursday(wk,dayE)?popBtn():'') + html + '</section>');
           });
         });
       }
@@ -1364,17 +1385,17 @@
           });
         });
       }
-      if ((isLechThursday(wk,dayE) || d.gemara && d.gemara.masechet) && want('talmud')) {
+      if ((qualifiedDailyHas(wk,dayE,'talmud') || isLechThursday(wk,dayE) || d.gemara && d.gemara.masechet) && want('talmud')) {
         p = p.then(function () {
-          return (isLechThursday(wk,dayE) ? lechThursdayReading(wk,dayE,'talmud') : isBiraishisSundayGemara(wk,dayE) ? biraishisSundayGemaraReading(wk,dayE) : isLechWednesday(wk,dayE) ? lechWednesdayReading(wk,dayE,'talmud') : isLechTuesday(wk,dayE) ? lechTuesdayReading(wk,dayE,'talmud') : isLechMonday(wk,dayE) ? lechMondayReading(wk,dayE) : isLechSunday(wk,dayE) ? lechSundayReading(wk,dayE,'talmud') : qualifiedDay ? Promise.resolve(window.ChokSources.reading('talmud', state.tanachen)) : wk==='נח' ? Promise.resolve(window.ChokSources.weekReading(wk,dayE,'talmud',state.tanachen)||window.ChokSources.unavailable('talmud')) : gemaraHTML(d.gemara)).then(function (html) { html = html || ''; html = dayKavana('talmud', d) + html; html = voiceBox(!isBiraishisSundayGemara(wk,dayE) && wk!=='נח' && !isLechMonday(wk,dayE) && !isLechTuesday(wk,dayE) && !isLechWednesday(wk,dayE) && !isLechThursday(wk,dayE) && dc && dc.talmud, 'גמרא') + html;
-            if (html) out.push('<section class="ck-section" data-sec="talmud">' + (isBiraishisSundayGemara(wk,dayE) || isLechMonday(wk,dayE) || isLechTuesday(wk,dayE) || isLechWednesday(wk,dayE) || isLechThursday(wk,dayE) ? popBtn() : '') + html + '</section>');
+          return qualifiedDailyOr(wk,dayE,'talmud',d,function(){return (isLechThursday(wk,dayE) ? lechThursdayReading(wk,dayE,'talmud') : isBiraishisSundayGemara(wk,dayE) ? biraishisSundayGemaraReading(wk,dayE) : isLechWednesday(wk,dayE) ? lechWednesdayReading(wk,dayE,'talmud') : isLechTuesday(wk,dayE) ? lechTuesdayReading(wk,dayE,'talmud') : isLechMonday(wk,dayE) ? lechMondayReading(wk,dayE) : isLechSunday(wk,dayE) ? lechSundayReading(wk,dayE,'talmud') : qualifiedDay ? Promise.resolve(window.ChokSources.reading('talmud', state.tanachen)) : wk==='נח' ? Promise.resolve(window.ChokSources.weekReading(wk,dayE,'talmud',state.tanachen)||window.ChokSources.unavailable('talmud')) : gemaraHTML(d.gemara));}).then(function (html) { if (qualifiedDailyHas(wk,dayE,'talmud') && html==='') return; html = html || ''; html = dayKavana('talmud', d) + html; html = voiceBox(!qualifiedDailyHas(wk,dayE,'talmud') && !isBiraishisSundayGemara(wk,dayE) && wk!=='נח' && !isLechMonday(wk,dayE) && !isLechTuesday(wk,dayE) && !isLechWednesday(wk,dayE) && !isLechThursday(wk,dayE) && dc && dc.talmud, 'גמרא') + html;
+            if (html) out.push('<section class="ck-section" data-sec="talmud">' + (qualifiedDailyHas(wk,dayE,'talmud') || isBiraishisSundayGemara(wk,dayE) || isLechMonday(wk,dayE) || isLechTuesday(wk,dayE) || isLechWednesday(wk,dayE) || isLechThursday(wk,dayE) ? popBtn() : '') + html + '</section>');
           });
         });
       }
       if (want('kabbala')) {
         p = p.then(function () {
-          return zoharHTML(d.zohar, wk, dayE).then(function (html) { html = html || ''; if (!html) return; html = dayKavana('kabbala', d) + html + voiceBox(!exactQualifiedZohar(wk,dayE) && !isLechTuesday(wk,dayE) && !isLechWednesday(wk,dayE) && !isLechThursday(wk,dayE) && dc && dc.kabbala, 'זוהר');
-            if (html) out.push('<section class="ck-section" data-sec="kabbala">' + (exactQualifiedZohar(wk,dayE) || isLechTuesday(wk,dayE) || isLechWednesday(wk,dayE) || isLechThursday(wk,dayE) ? popBtn() : '') + html + '</section>');
+          return zoharHTML(d.zohar, wk, dayE).then(function (html) { html = html || ''; if (!html) return; html = dayKavana('kabbala', d) + html + voiceBox(!qualifiedDailyHas(wk,dayE,'zohar') && !exactQualifiedZohar(wk,dayE) && !isLechTuesday(wk,dayE) && !isLechWednesday(wk,dayE) && !isLechThursday(wk,dayE) && dc && dc.kabbala, 'זוהר');
+            if (html) out.push('<section class="ck-section" data-sec="kabbala">' + (qualifiedDailyHas(wk,dayE,'zohar') || exactQualifiedZohar(wk,dayE) || isLechTuesday(wk,dayE) || isLechWednesday(wk,dayE) || isLechThursday(wk,dayE) ? popBtn() : '') + html + '</section>');
           });
         });
       }
@@ -1437,7 +1458,7 @@
         buildSectionJumps(root);
         wireKavanos(root);
         if (state.focus) {
-          Array.prototype.forEach.call(box.querySelectorAll('.ck-section[data-sec] details:not(.ck-kavana)'), function (dtl) { if (!dtl.closest('.ck-verse-breslov') && !dtl.classList.contains('ck-onkelos-translation')) dtl.open = true; });
+          Array.prototype.forEach.call(box.querySelectorAll('.ck-section[data-sec] details:not(.ck-kavana)'), function (dtl) { if (!dtl.closest('.ck-qualified-daily') && !dtl.closest('.ck-verse-breslov') && !dtl.classList.contains('ck-onkelos-translation')) dtl.open = true; });
           var el = box.querySelector('.ck-section[data-sec="' + state.focus + '"]');
           if (el && el.scrollIntoView) el.scrollIntoView(); else { box.scrollTop = 0; window.scrollTo(0, 0); }
         } else {

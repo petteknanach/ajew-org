@@ -87,7 +87,9 @@ import Layout from '../../layouts/Layout.astro';
 <script src="/chok-lech-sunday.js?v=chok-live-corrections-20261018-r2" defer></script>
 <script src="/chok-lech-monday.js?v=chok-live-corrections-20261019-r1" defer></script>
 <script src="/chok-lech-tuesday.js?v=6105a3ee4cb5216795cf74684ffbd59d08f8be3bd2a363b1234394041f3edefd" defer></script>
-<script src="/chok.js?v=e540c2702d2e7af86f11fbe7305666f179fc0b867c09de227906d558b1c44da6" defer></script>
+<script is:inline src="/chok-qualified-daily.js?v=00ce7a4d805eff8d94dded4ea93fc747fe1d5ead1e919b8247d8863cd0505e65" integrity="sha256-AM56TYBe/42U3e1OqT/HR/4dXq0ekZuCR9iGPNBQXmU=" crossorigin="anonymous" defer></script>
+<script is:inline src="/chok-qualified-daily-selected.js?v=4da2fc7faff3cf1432f4d87a4e19c55c93413f2df835c4c297207f3baf927fb6" integrity="sha256-TaL8f6/zzxQy9Nh6ThnFXJNBPy34NcTClyB/O6+Sf7Y=" crossorigin="anonymous" defer></script>
+<script is:inline src="/chok.js?v=ad8873d26a38b8c171dfb854e6002cf30268d148a8f9e95ad1b8d0d4de26cdeb" integrity="sha256-rYhz0mo4uMFx37hU5gAs8wJo0Uio+ela0bjQ1N4mzes=" crossorigin="anonymous" defer></script>
 
 <style is:global>
   /* Actual study offerings: three columns/two rows, selectors separate. */
@@ -801,4 +803,15 @@ import Layout from '../../layouts/Layout.astro';
 .ck-wednesday-source [data-wednesday-field="body"] > .ck-en-line {font-size:1rem;line-height:1.7;}
 .ck-wednesday-source [data-wednesday-field="explanation"] {font-size:1rem;}
 .ck-wednesday-source [hidden] {display:none!important;}
+</style>
+
+<style is:global>
+  .ck-qualified-daily [hidden] { display:none !important; }
+  .ck-qualified-daily [role="group"] { display:flex; flex-wrap:wrap; gap:.4rem; margin:.6rem 0; }
+  .ck-qualified-daily [role="group"] button { padding:.4rem .6rem; min-height:44px; border:1px solid var(--ck-border-strong); border-radius:7px; background:var(--ck-panel-2); color:var(--ck-ink); }
+  .ck-qualified-daily [role="group"] button[aria-pressed="true"] { border-color:var(--ck-teal); outline:1px solid var(--ck-teal); }
+  .ck-qualified-daily .ck-daily-original, .ck-qualified-daily .ck-daily-untouched, .ck-qualified-daily .ck-daily-he { white-space:pre-wrap; font-size:var(--ck-size,26px); line-height:1.9; font-family:var(--ck-font-he); font-synthesis:none; }
+  .ck-qualified-daily .ck-daily-en { white-space:pre-wrap; font-family:var(--ck-font-en); font-size:1.12rem; line-height:1.8; }
+  .ck-qualified-daily .ck-daily-unit { margin:.7rem 0; }
+
 </style>
