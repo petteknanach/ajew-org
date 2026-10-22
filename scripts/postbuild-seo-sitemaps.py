@@ -16,6 +16,8 @@ from html.parser import HTMLParser
 from urllib.parse import unquote, urlsplit
 import xml.etree.ElementTree as ET
 
+from reader_soft404_artifacts import prune_reader_errors
+
 NS = "http://www.sitemaps.org/schemas/sitemap/0.9"
 ET.register_namespace("", NS)
 # These Astro artifacts are shadowed by the independently served blog runtime.
@@ -207,7 +209,16 @@ def main() -> None:
     raw_urls = list(dict.fromkeys(raw_urls))
     (DIST / "sitemap-reader-raw.xml").write_text(xml_urlset(raw_urls, "0.60"), encoding="utf-8")
 
+    # Never publish empty Reader error wrappers as successful HTML pages.
+    # This runs only in the completed, non-served build, before XML admission.
+    # Any unsafe-path/drift exception aborts the build and must not be swallowed.
+    errors = prune_reader_errors(DIST)
+    public_errors = {key: value for key, value in errors.items() if key != "root"}
+    (DIST / "reader-soft404-removals.json").write_text(
+        json.dumps(public_errors, ensure_ascii=False, indent=2), encoding="utf-8")
     receipt = prune_search_sitemaps(DIST)
+    print(f"Reader error HTML: removed {errors['removed_count']} empty fallbacks; "
+          f"all other source and export artifacts retained")
     print(f"SEO sitemaps: preserved {len(raw_urls)} raw manifest URLs; "
           f"search retained {receipt['retained']}/{receipt['scanned']}, "
           f"excluded {receipt['excluded']} ({receipt['reasons']})")
