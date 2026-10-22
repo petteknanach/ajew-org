@@ -1058,15 +1058,15 @@
     return '<details class="ck-layer ck-zohar" data-field-role="original-source"><summary>זוהר — נוסח המקור · Original source — ' +
       zoharEscape(identities.join(' ← ')) + '</summary>' + body + '</details>' + qualification;
   }
-  function isBiraishisSundayMishna(wk,day) { return wk==='בראשית' && day==='יום ראשון'; }
+  function isBiraishisSundayMishna(wk,day) { return (wk==='בראשית'||wk==='ויצא') && day==='יום ראשון'; }
   var biraishisSundayMishnaPromise=null;
   function biraishisSundayMishnaModule() {
     function ready(api) { return api && typeof api.reading==='function' && typeof api.load==='function'; }
     if (ready(window.ChokBiraishisSundayMishna)) return Promise.resolve(window.ChokBiraishisSundayMishna);
     if (!biraishisSundayMishnaPromise) biraishisSundayMishnaPromise=new Promise(function(resolve,reject) {
       var script=document.createElement('script');
-      script.src='/chok-biraishis-sunday-mishna.js?v=b87607cd0c59c3a648f7247a599d3171e62b347c386a3a312157279841bd2f99';
-      script.integrity='sha256-uHYHzQxZw6ZI9yR6WZ0xceYrNHw4ajoxIVcnmEG9L5k='; script.crossOrigin='anonymous';
+      script.src='/chok-biraishis-sunday-mishna.js?v=807fe918ce830f244e93fd2e2253b3c93945ae0919a59c7fa2dc48b2fd0a05f2';
+      script.integrity='sha256-gH/pGM6DDyROk/0uIlOzyTlFrgkZpZx/otxIsv0KBfI='; script.crossOrigin='anonymous';
       script.onload=function(){if(ready(window.ChokBiraishisSundayMishna))resolve(window.ChokBiraishisSundayMishna);else reject(Error('Sunday Mishna module unavailable'));};
       script.onerror=function(){reject(Error('Sunday Mishna module unavailable'));};
       document.head.appendChild(script);
@@ -1076,7 +1076,7 @@
   function biraishisSundayMishnaReading(wk,day) {
     var language=state.language,commentary=state.commentary,mode=state.mode;
     var scheduled=((state.sched.weeks[wk]||{}).days||{})[day]||{};
-    return biraishisSundayMishnaModule().then(function(module){return module.reading(wk,day,language,commentary,function(url){return fetchJSON(url,true);},scheduled,mode,applyWednesdayMode,window.ChokSources.richText);}).catch(function(){return '<p class="ck-source-unavailable" dir="rtl">משנה וברטנורא — ברכות א · <span lang="en" dir="ltr">This reading is temporarily unavailable.</span></p>';});
+    return biraishisSundayMishnaModule().then(function(module){return module.reading(wk,day,language,commentary,function(url){return fetchJSON(url,true);},scheduled,mode,applyWednesdayMode,window.ChokSources.richText);}).catch(function(){return '<p class="ck-source-unavailable" dir="rtl">משנה וברטנורא — ברכות '+(wk==='ויצא'?'ז':'א')+' · <span lang="en" dir="ltr">This reading is temporarily unavailable.</span></p>';});
   }
   function isBiraishisSundayGemara(wk,day) { return wk==='בראשית' && day==='יום ראשון'; }
   var biraishisSundayGemaraPromise=null;
