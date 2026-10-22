@@ -5,7 +5,7 @@
 
 // Bumped 2026-07-23 so stale reader/commentary responses cannot leave the
 // Pettek Nanach sidebar stuck loading after a deployment.
-const CACHE_NAME = 'ajew-v8-aitzoas-annotation-repair-20261021';
+const CACHE_NAME = 'ajew-v9-aitzoas-confirmed-literals-20261022';
 const CORE_ASSETS = [
   '/',
   '/reader',

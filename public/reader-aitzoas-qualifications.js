@@ -1,6 +1,6 @@
 // One route-local source engine. Other books and legacy annotation stores are untouched.
-import {ASSET,PIN,BOOK,authenticateEdition,requireEdition,fullBodyPayload,appendLegacyCollection,stable,displayPlan,historyEntries,ranges,validateAnnotation,validateRetainedAnnotation,annotationAttachments} from './qualified-aitzoas-runtime.js?v=d0cc6f1438771d57a039a88a3831ccfeb2bd907a649763a13b0feb51e612a013';
-import {projectionForPath,assertProjection,ownerNavigation} from './qualified-aitzoas-topics.js?v=49d616aa47e0484bfc543526583f5939c506970e4d03af8d207ca7eb8c3ea160';
+import {ASSET,PIN,BOOK,authenticateEdition,requireEdition,fullBodyPayload,appendLegacyCollection,stable,displayPlan,historyEntries,ranges,validateAnnotation,validateRetainedAnnotation,annotationAttachments} from './qualified-aitzoas-runtime.js?v=04665c9c60d8d01484600d5d1346b8e1cf6b9d7f002987ca5082e2ee43192916';
+import {projectionForPath,assertProjection,ownerNavigation} from './qualified-aitzoas-topics.js?v=16e35f7c3eab3ca28642029804babb399cad681caea1494bc3fdc5250b527f9e';
 export const ANNOTATION_KEY='ajew-aitzoas362-source-annotations-v1';
 export async function browserSHA(bytes){return [...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))].map(x=>x.toString(16).padStart(2,'0')).join('');}
 export function installAitzoas362(win=window){

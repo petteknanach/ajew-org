@@ -1,7 +1,7 @@
 // Topic navigation is a projection, never a replacement source or owner namespace.
 // All text, translations, notes, history, saved identities and source pins remain
 // in the authenticated final-four edition. No import-time I/O or DOM effects.
-import {requireEdition} from './qualified-aitzoas-runtime.js?v=d0cc6f1438771d57a039a88a3831ccfeb2bd907a649763a13b0feb51e612a013';
+import {requireEdition} from './qualified-aitzoas-runtime.js?v=04665c9c60d8d01484600d5d1346b8e1cf6b9d7f002987ca5082e2ee43192916';
 const freeze=x=>{if(x&&typeof x==='object'&&!Object.isFrozen(x)){Object.values(x).forEach(freeze);Object.freeze(x);}return x;};
 const must=(ok,msg)=>{if(!ok)throw Error(msg);};
 export const TOPIC_STARTS=freeze([[8,'truth-and-faith'],[42,'eating'],[54,'land-of-israel'],[61,'covenant'],[69,'children'],[74,'trust'],[77,'garments'],[83,'pride-and-humility'],[92,'understanding'],[97,'speech'],[101,'secluded-personal-prayer'],[109,'strengthening-oneself'],[115,'g-dliness'],[118,'memory-and-forgetfulness'],[121,'midnight'],[124,'travel'],[126,'fear-and-service'],[131,'honor'],[133,'anger'],[137,'mockery'],[139,'money'],[151,'thoughts'],[155,'controversy'],[158,'obstacles'],[161,'ritual-bath'],[164,'festivals'],[184,'melody'],[186,'eyes'],[189,'counsel'],[195,'tzadik'],[214,'tzedakah'],[220,'tzitzis'],[224,'will'],[229,'joy'],[233,'torah-study'],[238,'prayer'],[253,'tefillin'],[257,'rebuke'],[260,'repentance'],[272,'wholeness-and-simplicity']]);
