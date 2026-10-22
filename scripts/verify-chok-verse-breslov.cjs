@@ -58,8 +58,10 @@ async function boot(w,day,focused){
  };
  env.box.location.search='?week='+encodeURIComponent(w)+'&day='+encodeURIComponent(day)+(focused?'&sec=torah':'');
  // Real annotation helpers, actual source adapter, full actual init and callbacks.
- const urls=[...template.matchAll(/<script src="([^"?]+)[^"]*" defer><\/script>/g)].map(m=>m[1]);
- try{for(const url of urls){const p=path.join(scripts,'public',url);const code=fs.existsSync(p)?fs.readFileSync(p,'utf8'):read('public'+url);assert(code,'Missing real script '+url);vm.runInContext(code,env.box,{filename:url});}
+ // Parse each actual external deferred tag with the fixture's HTML5 parser.
+ // Attribute order, Astro is:inline and browser SRI attributes must not hide it.
+ const tags=[...template.matchAll(/<script\b[^>]*>\s*<\/script>/g)].map(m=>documentFor('<html><body>'+m[0]+'</body></html>').querySelector('script')).filter(n=>n.getAttribute('src')!==null&&n.getAttribute('defer')!==null);
+ try{for(const tag of tags){const url=tag.getAttribute('src');assert(url.startsWith('/')&&!url.startsWith('//'),'Same-origin static script');const relative=url.split('?')[0];const p=path.join(scripts,'public',relative);const code=fs.existsSync(p)?fs.readFileSync(p,'utf8'):read('public'+relative);assert(code,'Missing real script '+url);const integrity=tag.getAttribute('integrity');if(integrity!==null)assert.equal(integrity,'sha256-'+crypto.createHash('sha256').update(code).digest('base64'),'Static script SRI '+url);vm.runInContext(code,env.box,{filename:url});}
  await until(()=>!!d.querySelector('#ck-content').innerHTML&&!d.querySelector('.ck-loading'),20000);
  assert(!d.querySelector('#ck-content').textContent.includes('Could not load'),d.querySelector('#ck-content').textContent.slice(0,500));
  return {d,env,peak:()=>peak};}catch(e){env.close();throw e;}
