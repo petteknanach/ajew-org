@@ -2,17 +2,32 @@
 """Bounded private actual-builder and original-history controls; never whole-corpus generation."""
 import argparse, ast, hashlib, importlib.util, json, os, pathlib, shutil, subprocess, sys
 
+def assert_historical_owner(r,m):
+    """Join conserved original master fields separately from the one current successor."""
+    assert r['owner']==m['owner']
+    historical_fields=dict(r['fields'])
+    if r['owner']=='sichos-271-position-0':
+        assert m['fields']['en'] is None
+        assert isinstance(r['fields']['en'],str)
+        assert hashlib.sha256(r['fields']['en'].encode()).hexdigest()=='ee67021d0524ff9dea18421207104c9d13de88624fb149a471e7c77961cce50c'
+        assert r['currentOrigin']['englishUTF8SHA256']=='ee67021d0524ff9dea18421207104c9d13de88624fb149a471e7c77961cce50c'
+        historical_fields['en']=None
+    assert historical_fields==m['fields']
+    assert r['historicalEnglish']==m['historical_English']
+    assert r['privateOriginalOrigin']==m['origin']
+    assert r['originalOrderedQualificationIDs']==[q['id'] for q in m['qualifications']]
+
 def main():
     ap=argparse.ArgumentParser();ap.add_argument('evidence');ap.add_argument('oracle');ap.add_argument('master');args=ap.parse_args()
     root=pathlib.Path.cwd();out=pathlib.Path(args.evidence).resolve();out.mkdir(parents=True,exist_ok=True)
-    oracle=json.loads(pathlib.Path(args.oracle).read_bytes());master=json.loads(pathlib.Path(args.master).read_bytes())
+    oracle_raw=pathlib.Path(args.oracle).read_bytes();master_raw=pathlib.Path(args.master).read_bytes()
+    assert hashlib.sha256(oracle_raw).hexdigest()=='916ec07a3606d0b5412d8721a3fa1eef977410d1411e10d69b10d54dbcae8b23'
+    oracle=json.loads(oracle_raw);master=json.loads(master_raw)
+    assert len(master_raw)==oracle['privateCompleteHistoryMaster']['bytes']
+    assert hashlib.sha256(master_raw).hexdigest()==oracle['privateCompleteHistoryMaster']['sha256']
     original=[]
     for r,m in zip(oracle['owners'],master['paragraphs'],strict=True):
-        assert r['owner']==m['owner']
-        assert r['fields']==m['fields']
-        assert r['historicalEnglish']==m['historical_English']
-        assert r['privateOriginalOrigin']==m['origin']
-        assert r['originalOrderedQualificationIDs']==[q['id'] for q in m['qualifications']]
+        assert_historical_owner(r,m)
         original.append({'owner':m['owner'],'qualifications':m['qualifications'],'origin':m['origin'],'historical_status':m['historical_status'],'source_binding':m['source_binding'],'retained_fragments':m['retained_fragments']})
     history={'owners':original,'global_qualifications':master['global_qualifications']}
     assert sum(len(r['qualifications']) for r in original)+len(history['global_qualifications'])==131
@@ -50,7 +65,7 @@ def main():
     for format in ['txt','md','json','html']:
         raw=(bounded/('index.'+format)).read_bytes();assert raw==(importedOut/'sichos-haran/reviewed/271-280'/('index.'+format)).read_bytes()
         if format in ['txt','md']:assert raw in (fixture/'public/reader-plain/sichos-haran'/('full.'+format)).read_bytes()
-    parsed=json.loads((bounded/'index.json').read_bytes());assert parsed['sourceUnits'][0]['en'] is None
+    parsed=json.loads((bounded/'index.json').read_bytes());assert parsed['sourceUnits'][0]['en']==oracle['owners'][0]['fields']['en']
     assert len(parsed['globalQualifications'])==4 and len(parsed['sourceUnits'])==41
     assert sum(len(u['qualifications']) for u in parsed['sourceUnits'])==57
     expectedCR=sum((r['fields']['he']+r['fields']['he_nikud']+(r['fields']['en'] or '')+r['historicalEnglish']).count('\r') for r in oracle['owners'])+sum(q['text'].count('\r') for r in oracle['owners'] for q in r['activeQualifications'])+sum(q['text'].count('\r') for q in oracle['globalQualifications'])

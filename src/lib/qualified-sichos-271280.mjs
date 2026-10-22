@@ -4,8 +4,8 @@ import crypto from 'node:crypto';
 import {PIN,ASSET,SOURCE_PREFIX,authenticateEdition,fullBodyPayload,historyEntries,displayEnglish} from '../../public/qualified-sichos-271280-core.mjs';
 export {PIN,displayEnglish};
 // Independent parent anchor, never derived from the runtime's asset manifest.
-export const EXPECTED_SELECTED_SHA256='9321b5b4fdf6dfdd9a757cdb37fe2daf06a5b509f7e5777aef84fe1af8f92b3c';
-export const EXPECTED_SELECTED_BYTES=91672;
+export const EXPECTED_SELECTED_SHA256='d1a3471e10d5d969d2005130e5493bf80c015bc9fe79626b29f0e4dd88c2d877';
+export const EXPECTED_SELECTED_BYTES=92200;
 const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
 export function assertAudienceSafe(text){
  const privateToken=/\/mnt\/[a-z]\/|\/root\/|[A-Za-z]:\\|qualifiedEnglish|acceptance_counter|hidden_private|English_qualified_total_private_only|parent-owned-public|QUALIFIED66-INDEPENDENT-SOURCE-ORACLE/;

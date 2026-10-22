@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';import fs from 'node:fs';import path from 'node:path';import vm from 'node:vm';import crypto from 'node:crypto';import zlib from 'node:zlib';
 import * as core from '../public/qualified-sichos-271280-core.mjs';
 import {loadEdition,plainExport} from '../src/lib/qualified-sichos-271280.mjs';
-import {verifyAgainstParent,sha} from './verify-sichos-271280.mjs';
+import {verifyAgainstParent,sha,PARENT_CONTRACT} from './verify-sichos-271280.mjs';
 const root=process.cwd(),out=path.resolve(process.argv[2]);fs.mkdirSync(out,{recursive:true});const clone=v=>JSON.parse(JSON.stringify(v));
 const d=await loadEdition(),assets=Object.fromEntries(d.assets.map(a=>[a.name,JSON.parse(fs.readFileSync(path.join(root,'public',a.url)))])),bank=assets['selected-41.json'];
 const cases=[];function positive(name){assert.equal(core.validateProjection(d,assets),d);assert(verifyAgainstParent(d,bank,assets));cases.push({name,expected:'accept',actual:'accept',process:'one Node controls process'});}
@@ -15,9 +15,10 @@ const mutations=[
  ['wrong-group',(v,a)=>{v.units[1].group='sichos272';}],
  ['changed-he',(v,a)=>change(v,a,'he',v.units[1].he+'x')],
  ['changed-he-nikud',(v,a)=>change(v,a,'he_nikud',v.units[1].he_nikud+'x')],
- ['null-fallback',(v,a)=>change(v,a,'en',v.units[0].history.earlier_supplied_English,0)],
- ['null-empty',(v,a)=>change(v,a,'en','',0)],
- ['null-missing',(v,a)=>{delete v.units[0].en;delete a['selected-41.json'].rows[0].fields.en;}],
+ ['historical-fallback',(v,a)=>change(v,a,'en',v.units[0].history.earlier_supplied_English,0)],
+ ['adopted-empty',(v,a)=>change(v,a,'en','',0)],
+ ['adopted-missing',(v,a)=>{delete v.units[0].en;delete a['selected-41.json'].rows[0].fields.en;}],
+ ['retired-owner0-null',(v,a)=>change(v,a,'en',null,0)],
  ['extra-null',(v,a)=>change(v,a,'en',null)],
  ['wrong-owner-null',(v,a)=>{change(v,a,'en',v.units[1].en,0);change(v,a,'en',null,1);}],
  ['nonnull-empty',(v,a)=>change(v,a,'en','')],
@@ -55,7 +56,7 @@ for(const [name,mutate] of mutations){
  positive('fresh-pristine-after-'+name);
 }
 // Actual full-body source/save code and unchanged actual migration consumer, with existing data.
-const payload=core.fullBodyPayload(d,[d.units[0].owner,d.units[1].owner]);assert.equal(payload.sourceUnits[0].en,null);
+const payload=core.fullBodyPayload(d,[d.units[0].owner,d.units[1].owner]);assert.equal(payload.sourceUnits[0].en,PARENT_CONTRACT[0].fields.en);
 const entry={id:'private-fixture',title:d.title,content:payload.content,source:'https://ajew.org'+core.ROUTE+'/',addedAt:'fixture'};
 const old={sections:[{id:'existing',title:'Existing',content:'Leave unchanged',source:'https://ajew.org/reader/example/',addedAt:'old'}]};
 const appended=core.appendLegacyCollection(JSON.stringify(old),entry);assert.deepEqual(JSON.parse(appended).sections[0],old.sections[0]);assert.equal(core.appendLegacyCollection(appended,entry),appended);
@@ -66,4 +67,4 @@ const migrated=await context.AjewSeferStorage.loadAndMigrate(storage,'https://aj
 const again=await context.AjewSeferStorage.loadAndMigrate(storage,'https://ajew.org');assert.equal(again.passages.length,3);
 for(const q of [...d.globalQualifications,...d.units[0].qualifications,...d.units[1].qualifications])assert(migrated.passages.at(-1).savedText.includes(q.text));
 for(const u of d.units){assert.equal(JSON.parse(plainExport(d,'json')).sourceUnits.find(x=>x.owner===u.owner).en,u.en);}
-const result={status:'PASS',negativeLogicalCases:mutations.length,freshPristinePositiveCases:cases.filter(c=>c.actual==='accept').length,cases,migration:{actualConsumer:'public/my-sefer-storage.js',existingPreserved:true,sectionsContentExact:true,repeatNoDuplicate:true,sourceNotesAttached:true},nullProjection:true};fs.writeFileSync(path.join(out,'RESULTS.json'),JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify({status:result.status,negativeLogicalCases:result.negativeLogicalCases,freshPristinePositiveCases:result.freshPristinePositiveCases,migration:result.migration}));
+const result={status:'PASS',negativeLogicalCases:mutations.length,freshPristinePositiveCases:cases.filter(c=>c.actual==='accept').length,cases,migration:{actualConsumer:'public/my-sefer-storage.js',existingPreserved:true,sectionsContentExact:true,repeatNoDuplicate:true,sourceNotesAttached:true},currentEnglish:41,wholeNULL:[]};fs.writeFileSync(path.join(out,'RESULTS.json'),JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify({status:result.status,negativeLogicalCases:result.negativeLogicalCases,freshPristinePositiveCases:result.freshPristinePositiveCases,migration:result.migration}));
