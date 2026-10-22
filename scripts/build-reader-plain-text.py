@@ -13,11 +13,26 @@ import shutil
 from datetime import date
 from pathlib import Path
 from typing import Any
-from reviewed_chayay_exports import is_reviewed_source, write_plain
-from reviewed_alim_exports import is_reviewed_source as is_alim_source, write_plain as alim_write_plain
-from reviewed_wrapup_exports import is_reviewed_source as is_wrapup_source, write_plain as wrapup_write_plain, is_archival_source as is_wrapup_archive
+# Resolve sibling exporters by this file, including spec_from_file_location callers.
+import importlib.util
+import subprocess
 
-from qualified_aitzoas362_exports import (BOOK as AITZOAS_BOOK, is_archive as is_aitzoas_archive, is_source as is_aitzoas_source, load_edition as load_aitzoas_edition, checked_section as aitzoas_checked_section, section_exports as aitzoas_section_exports)
+def _load_sibling(name):
+    p = Path(__file__).resolve().parent / (name + ".py")
+    spec = importlib.util.spec_from_file_location(name, p)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+_chayay = _load_sibling("reviewed_chayay_exports")
+is_reviewed_source, write_plain = _chayay.is_reviewed_source, _chayay.write_plain
+_alim = _load_sibling("reviewed_alim_exports")
+is_alim_source, alim_write_plain = _alim.is_reviewed_source, _alim.write_plain
+_wrapup = _load_sibling("reviewed_wrapup_exports")
+is_wrapup_source, wrapup_write_plain, is_wrapup_archive = _wrapup.is_reviewed_source, _wrapup.write_plain, _wrapup.is_archival_source
+_aitzoas = _load_sibling("qualified_aitzoas362_exports")
+AITZOAS_BOOK, is_aitzoas_archive, is_aitzoas_source = _aitzoas.BOOK, _aitzoas.is_archive, _aitzoas.is_source
+load_aitzoas_edition, aitzoas_checked_section, aitzoas_section_exports = _aitzoas.load_edition, _aitzoas.checked_section, _aitzoas.section_exports
 
 ROOT = Path(__file__).resolve().parents[1]
 READER_DIR = ROOT / "public" / "reader"
@@ -51,6 +66,27 @@ def is_sichos251260_archive(path: Path, reader_dir: Path) -> bool:
 def is_sichos261270_archive(path: Path, reader_dir: Path) -> bool:
     """Preserved original/comparison witnesses are not ordinary teaching inputs."""
     return path.relative_to(reader_dir).parts[:2] == ("reviewed", "sichos-261270-sources")
+
+
+def is_sichos271280_archive(path: Path, reader_dir: Path) -> bool:
+    """Only the new archive namespace is excluded; ordinary legacy sources stay eligible."""
+    return path.relative_to(reader_dir).parts[:2] == ("reviewed", "sichos-271280-sources")
+
+
+def write_sichos271280(root: Path, out_dir: Path) -> dict[str, Any]:
+    """Use the actual authenticated nullable Node exporter, not generic segment fallback."""
+    program = """import {pathToFileURL} from 'node:url';
+const root=process.argv[1];
+const {loadEdition,plainExport}=await import(pathToFileURL(root+'/src/lib/qualified-sichos-271280.mjs'));
+const d=await loadEdition(root);
+console.log(JSON.stringify({title:d.title,files:Object.fromEntries(['txt','md','json','html'].map(f=>['index.'+f,plainExport(d,f)]))}));"""
+    result = subprocess.run(["node", "--max-old-space-size=512", "--input-type=module", "-e", program, str(root)], capture_output=True, check=True, timeout=600)
+    payload = json.loads(result.stdout)
+    out = out_dir / "sichos-haran" / "reviewed" / "271-280"
+    out.mkdir(parents=True, exist_ok=True)
+    for name, text in payload["files"].items():
+        (out / name).write_bytes(text.encode("utf-8"))
+    return {"bookId":"sichos-haran", "part":"reviewed", "torah":"271-280", "title":payload["title"], "url":"/reader-plain/sichos-haran/reviewed/271-280/", "segments":41}
 
 
 def strip_html(s: Any) -> str:
@@ -293,9 +329,12 @@ def main() -> None:
     aitzoas_edition = None
     for path in sorted(READER_DIR.rglob("*.json")):
         rel = path.relative_to(READER_DIR)
-        if is_aitzoas_archive(path, READER_DIR) or is_wrapup_archive(path, READER_DIR) or is_sichos221230_archive(path, READER_DIR) or is_sichos231240_archive(path, READER_DIR) or is_sichos241250_archive(path, READER_DIR) or is_sichos251260_archive(path, READER_DIR) or is_sichos261270_archive(path, READER_DIR):
+        if is_aitzoas_archive(path, READER_DIR) or is_wrapup_archive(path, READER_DIR) or is_sichos221230_archive(path, READER_DIR) or is_sichos231240_archive(path, READER_DIR) or is_sichos241250_archive(path, READER_DIR) or is_sichos251260_archive(path, READER_DIR) or is_sichos261270_archive(path, READER_DIR) or is_sichos271280_archive(path, READER_DIR):
             continue  # retained originals/wrappers are not plain selected editions
         if rel.parts and rel.parts[0] in SKIP_DIRS:
+            continue
+        if rel.parts == ("reviewed", "sichos-271-280.json"):
+            entries.append(write_sichos271280(ROOT, OUT_DIR))
             continue
         if path.name in {"index.json", "catalog.json"}:
             continue
@@ -385,9 +424,9 @@ def main() -> None:
             if book == AITZOAS_BOOK and (not sec_txt.is_file() or not sec_md.is_file()):
                 raise ValueError("Missing canonical Aitzoas plain section in full-book assembly")
             if sec_txt.exists():
-                full_txt += [f"\n\n# {r['title']}", f"URL: https://ajew.org{r['url']}\n", sec_txt.read_bytes().decode("utf-8") if book == AITZOAS_BOOK or r["url"] in {"/reader-plain/chayey-moharan/reviewed/14-58/", "/reader-plain/alim-litrufa/reviewed/part-2-17-62-63/", "/reader-plain/reviewed/wrapup-18-19-92-209/"} else sec_txt.read_text(encoding="utf-8")]
+                full_txt += [f"\n\n# {r['title']}", f"URL: https://ajew.org{r['url']}\n", sec_txt.read_bytes().decode("utf-8") if book == AITZOAS_BOOK or r["url"] in {"/reader-plain/sichos-haran/reviewed/271-280/","/reader-plain/chayey-moharan/reviewed/14-58/", "/reader-plain/alim-litrufa/reviewed/part-2-17-62-63/", "/reader-plain/reviewed/wrapup-18-19-92-209/"} else sec_txt.read_text(encoding="utf-8")]
             if sec_md.exists():
-                full_md += [f"\n\n# {r['title']}", f"\nURL: https://ajew.org{r['url']}\n", sec_md.read_bytes().decode("utf-8") if book == AITZOAS_BOOK or r["url"] in {"/reader-plain/chayey-moharan/reviewed/14-58/", "/reader-plain/alim-litrufa/reviewed/part-2-17-62-63/", "/reader-plain/reviewed/wrapup-18-19-92-209/"} else sec_md.read_text(encoding="utf-8")]
+                full_md += [f"\n\n# {r['title']}", f"\nURL: https://ajew.org{r['url']}\n", sec_md.read_bytes().decode("utf-8") if book == AITZOAS_BOOK or r["url"] in {"/reader-plain/sichos-haran/reviewed/271-280/","/reader-plain/chayey-moharan/reviewed/14-58/", "/reader-plain/alim-litrufa/reviewed/part-2-17-62-63/", "/reader-plain/reviewed/wrapup-18-19-92-209/"} else sec_md.read_text(encoding="utf-8")]
         if book == AITZOAS_BOOK:
             # Do not strip or newline-normalize exact qualified fields.
             (bdir / "full.txt").write_bytes(("\n".join(full_txt) + "\n").encode("utf-8"))
