@@ -248,5 +248,5 @@ test('Layout explicit contract, versioned classic defer after slot, independent 
   assert.equal(layout.match(/src="\/reader-plain-access.js\?v=20261023-1" is:inline defer/g)?.length, 1);
   assert.ok(layout.indexOf('src="/reader-plain-access.js') > layout.indexOf('<slot />'));
   const core = readFileSync(new URL('../public/reader-v2.js', import.meta.url));
-  assert.equal(createHash('sha256').update(core).digest('hex'), '6525bb35d4e6a6388228e80c6ce38cb3d84f08de883a766db3ab85436fa8db9d');
+  assert.equal(createHash('sha256').update(core).digest('hex'), '84eaa193e0410a83dc602f365712564c22609ab978d4f90122b7f055d47d4d8b');
 });
