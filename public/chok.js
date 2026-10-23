@@ -606,6 +606,16 @@
     }).join('');
   }
   /* CHOK_ALIYAH_END */
+  /* CHOK_FRIDAY_BEGIN: ordinary annual haftara locators from the same pinned
+     Hebcal aliyot source as CHOK_ALIYAH_STARTS; no date-specific substitution. */
+  var CHOK_FRIDAY_HAFTARA = {"בראשית":[{"book":"ישעיה","slug":"tanach-yeshayahu","from":{"c":42,"v":5},"to":{"c":43,"v":10}}],"נח":[{"book":"ישעיה","slug":"tanach-yeshayahu","from":{"c":54,"v":1},"to":{"c":55,"v":5}}],"לך לך":[{"book":"ישעיה","slug":"tanach-yeshayahu","from":{"c":40,"v":27},"to":{"c":41,"v":16}}],"וירא":[{"book":"מלכים ב","slug":"tanach-melachim-b","from":{"c":4,"v":1},"to":{"c":4,"v":37}}],"חיי שרה":[{"book":"מלכים א","slug":"tanach-melachim-a","from":{"c":1,"v":1},"to":{"c":1,"v":31}}],"תולדות":[{"book":"מלאכי","slug":"tanach-malachi","from":{"c":1,"v":1},"to":{"c":2,"v":7}}],"ויצא":[{"book":"הושע","slug":"tanach-hoshea","from":{"c":12,"v":13},"to":{"c":14,"v":10}}],"וישלח":[{"book":"עובדיה","slug":"tanach-ovadya","from":{"c":1,"v":1},"to":{"c":1,"v":21}}],"וישב":[{"book":"עמוס","slug":"tanach-amos","from":{"c":2,"v":6},"to":{"c":3,"v":8}}],"מקץ":[{"book":"מלכים א","slug":"tanach-melachim-a","from":{"c":3,"v":15},"to":{"c":4,"v":1}}],"ויגש":[{"book":"יחזקאל","slug":"tanach-yechezkel","from":{"c":37,"v":15},"to":{"c":37,"v":28}}],"ויחי":[{"book":"מלכים א","slug":"tanach-melachim-a","from":{"c":2,"v":1},"to":{"c":2,"v":12}}]};
+  function fridayNachPlans(week, day, section) {
+    if (day !== 'יום שישי' || !Object.prototype.hasOwnProperty.call(CHOK_FRIDAY_HAFTARA, week)) return null;
+    if (section === 'navi') return CHOK_FRIDAY_HAFTARA[week];
+    if (section === 'kesuvim') return [{book:'תהלים',slug:'tanach-tehillim',from:{c:93,v:1},to:{c:93,v:5},optional:true}];
+    return null;
+  }
+  /* CHOK_FRIDAY_END */
   function versesHTML(slug, from, to, kind, vcomm, parsha, day) {
     var englishEnabled = state.tanachen, capturedLanguage = state.language;
     return book(slug).then(function (d) {
@@ -1351,6 +1361,18 @@
       }
       [['navi','נביא'],['kesuvim','כתובים']].forEach(function (pair) {
         p = p.then(function () {
+          var fridayPlans = fridayNachPlans(wk, dayE, pair[0]);
+          if (fridayPlans) {
+            if (!want(pair[0])) return;
+            return Promise.all(fridayPlans.map(function (plan) {
+              return versesHTML(plan.slug, plan.from, plan.to, pair[0], null, wk, dayE);
+            })).then(function (bodies) {
+              var title = pair[0] === 'navi' ? 'הפטרה — ' + wk : 'כתובים — תהלים צ״ג (רשות)';
+              var body = bodies.join('');
+              if (pair[0] === 'kesuvim') body = '<details class="ck-friday-psalm"><summary>' + title + '</summary>' + body + '</details>';
+              out.push('<section class="ck-section" data-sec="' + pair[0] + '">' + (pair[0] === 'navi' ? secHead(title, fridayPlans.map(refStr).join('; '), true) : '') + popBtn() + body + '</section>');
+            });
+          }
           var sec = d[pair[0]];
           if (!sec || !sec.book) {
             if (want(pair[0]) && DAYS.indexOf(dayE) >= 0 && DAYS.indexOf(dayE) < 5) {

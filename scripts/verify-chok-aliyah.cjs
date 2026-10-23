@@ -6,7 +6,14 @@ const base=cp.execFileSync('git',['-c','core.packedGitWindowSize=1m','-c','core.
 const start=current.indexOf('  /* CHOK_ALIYAH_BEGIN'),end=current.indexOf('  /* CHOK_ALIYAH_END */')+'  /* CHOK_ALIYAH_END */\n'.length;
 assert(start>=0&&end>start);const block=current.slice(start,end);
 const changed="return aliyahHeading(slug, parsha, kind, it.c, it.x) + '<article class=\"ck-verse\" data-verse-ref=\"'",original="return '<article class=\"ck-verse\" data-verse-ref=\"'";
-assert.equal(current.slice(0,start).concat(current.slice(end)).replace(changed,original),base,'whole owning main inverse');
+let inverse=current.slice(0,start).concat(current.slice(end)).replace(changed,original);
+if(inverse.includes('  /* CHOK_FRIDAY_BEGIN')) {
+ const fa=inverse.indexOf('  /* CHOK_FRIDAY_BEGIN'),fb=inverse.indexOf('  /* CHOK_FRIDAY_END */')+'  /* CHOK_FRIDAY_END */\n'.length;
+ inverse=inverse.slice(0,fa)+inverse.slice(fb);
+ const fc=inverse.indexOf('          var fridayPlans = fridayNachPlans('),fd=inverse.indexOf('          var sec = d[pair[0]];',fc);assert(fc>=0&&fd>fc);
+ inverse=inverse.slice(0,fc)+inverse.slice(fd);
+}
+assert.equal(inverse,base,'whole owning main inverse, separately exercised Friday addition excluded');
 const sourceBook=JSON.parse(fs.readFileSync(process.env.CHOK_TEST_BOOK||path.join(root,'public/reader/medooyuk/tanach-bereishit.json'),'utf8'));
 const escape=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function setup(code,newTarget){
