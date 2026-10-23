@@ -6,6 +6,10 @@ const source=readFileSync(new URL('../public/reader-script.js',import.meta.url),
 const start=source.indexOf('function scrollToReaderArrival(');
 const end=source.indexOf('// --- Segment Permalink Buttons ---',start);
 assert.ok(start>=0 && end>start);
+const predicateStart=source.indexOf('function isPrayerReader(');
+const predicateEnd=source.indexOf('// --- State ---',predicateStart);
+if(predicateStart>=0) assert.ok(predicateEnd>predicateStart,'actual predicate boundary');
+const predicatePrelude=predicateStart>=0?source.slice(predicateStart,predicateEnd)+'\n':'';
 for(const [name,search,hasMatch,expected] of [
  ['search arrival chooses exact highlight','?q=joy',true,'match'],
  ['plain fragment keeps segment target','',true,'segment'],
@@ -16,7 +20,7 @@ for(const [name,search,hasMatch,expected] of [
  const match={scrollIntoView:options=>calls.push(['match',options.block])};
  const target={querySelector:selector=>{assert.equal(selector,'.search-highlight');return hasMatch?match:null;},scrollIntoView:options=>calls.push(['segment',options.block])};
  const ctx=vm.createContext({URLSearchParams,window:{location:{search}}});
- vm.runInContext(source.slice(start,end),ctx);
+ vm.runInContext(predicatePrelude+source.slice(start,end),ctx);
  ctx.scrollToReaderArrival(target);
  assert.deepEqual(calls,[[expected,'center']]);
 });

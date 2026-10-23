@@ -1,0 +1,32 @@
+/* Private Prayer-only reachability proposal. Native mobile occluder remains UNKNOWN.
+   Existing sidebar/main offset stays intact; contain oversized toolbar groups
+   inside the already-offset Reader instead of overflowing behind the sidebar. */
+.reader-container[data-book="likutay-tefilos"] .reader-toolbar {
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: clip;
+}
+.reader-container[data-book="likutay-tefilos"] .reader-toolbar-group {
+  min-width: 0;
+  max-width: 100%;
+  flex-wrap: wrap;
+  box-sizing: border-box;
+}
+@media (max-width: 768px) {
+  .reader-container[data-book="likutay-tefilos"] .reader-toolbar {
+    /* Preserve the captured mobile stylesheet's existing header offset. */
+    top: 56px;
+  }
+}
+
+/* Prayer portrait only: keep the collapsed global control out of the language bar. */
+@media (max-width: 768px) and (min-height: 400px) {
+  body:has(.reader-container[data-book="likutay-tefilos"]) #compactYahrzeit.collapsed {
+    top: calc(50% - 76px) !important;
+    left: 0 !important;
+    right: auto !important;
+  }
+}

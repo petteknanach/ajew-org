@@ -3,9 +3,13 @@ import Layout from '../layouts/Layout.astro';
 import fs from 'node:fs';
 import path from 'node:path';
 import { prayerReferences, unverifiedPrayerReferences, firstPrayerUrl } from '../lib/source-entry-integrity.mjs';
+import { createPrayerTopicHrefResolver } from '../lib/prayer-topic-passages.mjs';
 
 const topicsPath = path.join(process.cwd(), 'public/reader/likutay-tefilos/toc-topics.json');
 const topicsData = JSON.parse(fs.readFileSync(topicsPath, 'utf8'));
+const topicPrayerHref = createPrayerTopicHrefResolver((part, prayer) => JSON.parse(
+  fs.readFileSync(path.join(process.cwd(), `public/reader/likutay-tefilos/part-${part}/prayer-${prayer}.json`), 'utf8'),
+));
 const englishFallback = {
   'אֱמֶת': 'Truth',
   'אֱמוּנָה': 'Faith',
@@ -56,7 +60,7 @@ const featured = commonTopicOrder
     </div>
     <div class="featured-prayer-grid">
       {featured.map((topic) => (
-        <a class="featured-prayer-card" href={firstPrayerUrl(topic)}>
+        <a class="featured-prayer-card" href={topicPrayerHref(topic.topic, firstPrayerUrl(topic))}>
           <span class="topic-he" lang="he" dir="rtl">{topic.topic}</span>
           <strong>{topic.english}</strong>
           <em>{topic.total} {topic.referenceNote ? 'selected ' : ''}prayer {topic.total === 1 ? 'reference' : 'references'}</em>
@@ -77,13 +81,13 @@ const featured = commonTopicOrder
             <h3>{topic.english}</h3>
             <p class="topic-index-he" lang="he" dir="rtl">{topic.topic}</p>
             <p class="topic-refs">{topic.references.map((ref, index) => (
-              <>{index > 0 && ' · '}<a href={ref.href} aria-label={`${topic.english} — Likutay Tefilos ${ref.label}`}>{ref.label}</a></>
+              <>{index > 0 && ' · '}<a href={topicPrayerHref(topic.topic, ref.href)} aria-label={`${topic.english} — Likutay Tefilos ${ref.label}`}>{ref.label}</a></>
             ))}</p>
             {topic.referenceNote && <p class="topic-refs">{topic.referenceNote}</p>}
             {topic.unverifiedReferences.length > 0 && <p class="topic-refs">Index references awaiting verification: {topic.unverifiedReferences.join(', ')}</p>}
           </div>
           {topic.total > 0
-            ? <a href={firstPrayerUrl(topic)}>Open prayer →</a>
+            ? <a href={topicPrayerHref(topic.topic, firstPrayerUrl(topic))}>Open prayer →</a>
             : <p class="topic-refs">References awaiting verification</p>}
         </article>
       ))}
