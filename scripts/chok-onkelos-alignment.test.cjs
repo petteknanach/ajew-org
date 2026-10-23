@@ -65,6 +65,18 @@ for(const failure of ['manifest','book','transport'])test('actual queued loader 
  }finally{e.close();}
 });
 
+// Test-local static transport: parse real HTML attributes and authenticate bytes.
+function deferredFixtureScripts(template, disk) {
+ const tags=Array.from(documentFor(template).querySelectorAll('script')).filter(n=>n.getAttribute('src')!==null&&n.getAttribute('defer')!==null);
+ return tags.map(tag=>{
+  const url=tag.getAttribute('src');assert(url.startsWith('/')&&!url.startsWith('//'),'Same-origin static script');
+  const parsed=new URL(url,'https://ajew.org');assert.equal(parsed.origin,'https://ajew.org','Same-origin static script');
+  const code=disk('public'+parsed.pathname);assert.equal(typeof code,'string','Missing real static script '+url);assert(code,'Missing real static script '+url);
+  const integrity=tag.getAttribute('integrity');if(integrity!==null)assert.equal(integrity,'sha256-'+crypto.createHash('sha256').update(code,'utf8').digest('base64'),'Static script SRI '+url);
+  return {url,code};
+ });
+}
+
 // Actual template, source adapters and complete initializer; no helper substitution.
 function fullFixture(week,day,mutate){
  const template=read('src/pages/reader/chok.astro'),inner=template.slice(template.indexOf('  <div class="ck-wrap"'),template.indexOf('</Layout>'));
@@ -79,7 +91,7 @@ function fullFixture(week,day,mutate){
   }catch(error){if(n.onerror)n.onerror(error);}
  });return n;};
  e.box.location.search='?week='+encodeURIComponent(week)+'&day='+encodeURIComponent(day);
- for(const m of template.matchAll(/<script src="([^"?]+)[^"]*" defer><\/script>/g))vm.runInContext(disk('public'+m[1]),e.box,{filename:m[1]});
+ for(const script of deferredFixtureScripts(template,disk))vm.runInContext(script.code,e.box,{filename:script.url});
  const settled=()=>until(()=>!!d.getElementById('ck-content').innerHTML&&!d.querySelector('.ck-loading'),20000);
  const change=async(id,value)=>{const n=d.getElementById(id);n.value=value;n.dispatchEvent({type:'change'});await settled();};
  return{d,e,settled,change,peak:()=>peak};
@@ -98,4 +110,24 @@ test('stale delayed corrupt-source rejection cannot replace the newer valid Noac
  let release,entered=false;const gate=new Promise(resolve=>release=resolve);
  const r=fullFixture('יתרו','יום שישי',async(p,body)=>{if(p==='public/reader/medooyuk/targum/tanach-shemos.json'){entered=true;await gate;return body+' ';}return body;});
  try{await until(()=>entered,20000);await r.change('ck-parsha','נח');assert(r.d.querySelector('[data-sec="torah"]'));const before=r.d.getElementById('ck-content').innerHTML;release();await tick(50);assert.equal(r.d.getElementById('ck-content').innerHTML,before);assert(r.peak()<=6);}finally{release();r.e.close();}
+});
+// Static transport controls are additional tests, not replacements for full init.
+test('static discovery preserves deferred order, extra attributes and decoded query identity',()=>{
+ const code='globalThis.syntheticFixtureControl=1;',sri='sha256-'+crypto.createHash('sha256').update(code).digest('base64');
+ const html=`<!-- <script src="/ignored.js" defer></script> --><script defer data-extra="yes" src="/a.js?v=1&amp;part=2" integrity="${sri}" crossorigin="anonymous"></script><script src="/inline-not-deferred.js"></script><script is:inline src="/b.js" integrity="${sri}" defer></script>`;
+ const reads=[],scripts=deferredFixtureScripts(html,p=>{reads.push(p);return code;});
+ assert.deepEqual(scripts.map(s=>s.url),['/a.js?v=1&part=2','/b.js']);assert.deepEqual(reads,['public/a.js','public/b.js']);assert(scripts.every(s=>s.code===code));
+});
+test('static SRI-only corruption rejects and an unchanged fresh positive restores',()=>{
+ const code='globalThis.syntheticFixtureControl=1;',sri='sha256-'+crypto.createHash('sha256').update(code).digest('base64'),wrong='sha256-'+crypto.createHash('sha256').update(code+' ').digest('base64');
+ const good=`<script is:inline src="/a.js" integrity="${sri}" crossorigin="anonymous" defer></script>`;
+ assert.throws(()=>deferredFixtureScripts(good.replace(sri,wrong),()=>code),/Static script SRI/);
+ assert.equal(deferredFixtureScripts(good,()=>code)[0].code,code);
+});
+test('static transport rejects external/protocol-relative origins before source lookup',()=>{
+ for(const src of ['https://external.invalid/a.js','//external.invalid/a.js','/\\external.invalid/a.js']){let read=false;assert.throws(()=>deferredFixtureScripts(`<script src="${src}" defer></script>`,()=>{read=true;return 'x';}),/Same-origin static script/);assert.equal(read,false);}
+});
+test('actual current template discovers the complete ordered twelve static scripts with real SRI',()=>{
+ const scripts=deferredFixtureScripts(read('src/pages/reader/chok.astro'),read);
+ assert.deepEqual(scripts.map(s=>new URL(s.url,'https://ajew.org').pathname),["/tikkun-boundaries.js", "/tikkun-qatan.js", "/medooyuk.js", "/psalms-data.js", "/chok-verse-breslov.js", "/chok-source-reader.js", "/chok-lech-sunday.js", "/chok-lech-monday.js", "/chok-lech-tuesday.js", "/chok-qualified-daily.js", "/chok-qualified-daily-selected.js", "/chok.js"]);
 });

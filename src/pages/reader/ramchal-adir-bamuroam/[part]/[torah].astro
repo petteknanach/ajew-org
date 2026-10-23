@@ -5,18 +5,18 @@ import '../../../../styles/reader.css';
 import '../../../../styles/reader-v2.css';
 import fs from 'node:fs';
 import path from 'node:path';
+import { hasRamchalSection, ramchalSectionPaths } from '../../../../lib/ramchal-section-routes.mjs';
 
 export function getStaticPaths() {
-  const paths = [];
-  for (let torah = 1; torah <= 22; torah++) {
-    paths.push({ params: { part: '1', torah: String(torah) } });
-  }
-  return paths;
+  return ramchalSectionPaths(path.join(process.cwd(), 'public/reader/ramchal-adir-bamuroam'));
 }
 
 const { part, torah } = Astro.params;
 const partNum = parseInt(part);
 const torahNum = parseInt(torah);
+const sectionDir = path.join(process.cwd(), 'public/reader/ramchal-adir-bamuroam');
+const hasPreviousSection = torahNum > 1 && hasRamchalSection(sectionDir, torahNum - 1);
+const hasNextSection = torahNum < 22 && hasRamchalSection(sectionDir, torahNum + 1);
 
 let torahData = null;
 let error = null;
@@ -165,11 +165,11 @@ const breadcrumbs = torahData ? [
       </div>
 
       <div class="reader-nav">
-        {torahNum > 1 ? (
+        {hasPreviousSection ? (
           <a href={`/reader/ramchal-adir-bamuroam/1/${torahNum - 1}`} data-dir="prev">&larr; Previous</a>
         ) : <span class="disabled">&larr; Previous</span>}
         <a href="/ramchal">Ramchal Library</a>
-        {torahNum < 22 ? (
+        {hasNextSection ? (
           <a href={`/reader/ramchal-adir-bamuroam/1/${torahNum + 1}`} data-dir="next">Next &rarr;</a>
         ) : <span class="disabled">Next &rarr;</span>}
       </div>
@@ -190,11 +190,11 @@ const breadcrumbs = torahData ? [
       </div>
 
       <div class="reader-nav">
-        {torahNum > 1 ? (
+        {hasPreviousSection ? (
           <a href={`/reader/ramchal-adir-bamuroam/1/${torahNum - 1}`} data-dir="prev">&larr; Previous</a>
         ) : <span class="disabled">&larr; Previous</span>}
         <a href="/ramchal">Ramchal Library</a>
-        {torahNum < 22 ? (
+        {hasNextSection ? (
           <a href={`/reader/ramchal-adir-bamuroam/1/${torahNum + 1}`} data-dir="next">Next &rarr;</a>
         ) : <span class="disabled">Next &rarr;</span>}
       </div>
