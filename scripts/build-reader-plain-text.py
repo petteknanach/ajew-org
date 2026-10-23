@@ -381,6 +381,9 @@ def main() -> None:
 
     entries.sort(key=lambda e: (e["bookId"], str(e["part"]), str(e["torah"])))
     _navigation.harden_section_links(OUT_DIR, entries)
+    held_catalog_sources = _navigation.reconcile_catalog_sources(OUT_DIR, entries)
+    if held_catalog_sources:
+        print("Held overwritten human exports: " + json.dumps(held_catalog_sources, ensure_ascii=False), file=sys.stderr)
     (OUT_DIR / "index.json").write_text(json.dumps({"generatedFor": "ajew.org", "total": len(entries), "entries": entries}, ensure_ascii=False, indent=2), encoding="utf-8")
     by_book: dict[str, list[dict[str, Any]]] = {}
     for e in entries:

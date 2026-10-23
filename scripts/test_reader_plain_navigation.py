@@ -341,5 +341,55 @@ class NavigationTests(unittest.TestCase):
         self.assertFalse((self.out / "1/999/index.html").exists())
 
 
+    def test_catalog_proven_owner_matches_selected_artifact_or_is_withheld(self):
+        source = "/reader/likutay-nanach/4/1/"
+        url = "/reader-plain/likutay-nanach/volume-4/1/"
+        directory = self.out / "likutay-nanach/volume-4/1"
+        directory.mkdir(parents=True)
+        target = directory / "index.json"
+        raw = json.dumps({"sourceUrl": None, "title": "Other actual selected teaching", "segments": [{"he": "EXACT"}]}).encode()
+        target.write_bytes(raw)
+        rows = [{"sourceUrl": source, "url": url, "title": "Original claimant", "segments": 211},
+                {"sourceUrl": None, "url": url},
+                {"sourceUrl": "/reader/other/1/2", "url": "/reader-plain/other/1/2/"}]
+        frozen = copy.deepcopy(rows)
+        held = N.reconcile_catalog_sources(self.out, rows)
+        self.assertEqual([item["ordinal"] for item in held], [0])
+        self.assertIsNone(rows[0]["sourceUrl"])
+        self.assertEqual({k: v for k, v in rows[0].items() if k != "sourceUrl"}, {k: v for k, v in frozen[0].items() if k != "sourceUrl"})
+        self.assertEqual(rows[1:], frozen[1:])
+        self.assertEqual(target.read_bytes(), raw)
+        target.write_text(json.dumps({"sourceUrl": source, "segments": []}))
+        fresh = copy.deepcopy(frozen)
+        self.assertEqual(N.reconcile_catalog_sources(self.out, fresh), [])
+        self.assertEqual(fresh, frozen)
+        target.write_text(json.dumps({"sourceUrl": "/reader/likutay-nanach/4/2/", "segments": []}))
+        mismatch = copy.deepcopy(frozen)
+        N.reconcile_catalog_sources(self.out, mismatch)
+        self.assertIsNone(mismatch[0]["sourceUrl"], "never borrow the winning different owner's URL")
+
+    def test_catalog_owner_prerequisites_fail_before_any_row_mutation(self):
+        url = "/reader-plain/likutay-nanach/volume-4/1/"
+        directory = self.out / "likutay-nanach/volume-4/1"
+        directory.mkdir(parents=True)
+        target = directory / "index.json"
+        rows = [{"sourceUrl": "/reader/likutay-nanach/4/1/", "url": url},
+                {"sourceUrl": "/reader/likutay-nanach/4/2/", "url": "/reader-plain/likutay-nanach/volume-4/2/"}]
+        frozen = copy.deepcopy(rows)
+        target.write_text(json.dumps({"sourceUrl": None}))
+        with self.assertRaises(FileNotFoundError):
+            N.reconcile_catalog_sources(self.out, rows)
+        self.assertEqual(rows, frozen)
+        for bad in ["{broken", "[]", "{}"]:
+            target.write_text(bad)
+            with self.assertRaises((ValueError, json.JSONDecodeError)):
+                N.reconcile_catalog_sources(self.out, rows[:1])
+            self.assertEqual(rows, frozen)
+        target.write_text(json.dumps({"sourceUrl": rows[0]["sourceUrl"]}))
+        positive = rows[:1]
+        self.assertEqual(N.reconcile_catalog_sources(self.out, positive), [])
+        self.assertEqual(positive, frozen[:1])
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

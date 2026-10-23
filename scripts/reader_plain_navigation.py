@@ -91,6 +91,30 @@ def root_absolute_hrefs(text: str, canonical_path: str) -> str:
     return text
 
 
+def reconcile_catalog_sources(out_dir: Path, entries: list[dict]) -> list[dict]:
+    """Withhold a proven Nanach owner if a later physical input won its export.
+
+    Preserve every row, destination and body. Never assign the winning owner's
+    URL to an earlier row: a different teaching is not a substitute export.
+    """
+    held = []
+    for ordinal, entry in enumerate(entries):
+        source = entry.get("sourceUrl")
+        if not isinstance(source, str) or not re.fullmatch(r"/reader/likutay-nanach/[1-5]/[1-9][0-9]*/", source):
+            continue
+        directory = plain_target_directory(out_dir, entry["url"], legacy_export_names=True)
+        selected = json.loads((directory / "index.json").read_bytes())
+        if not isinstance(selected, dict) or "sourceUrl" not in selected:
+            raise ValueError("Selected ordinary export lacks its sourceUrl contract")
+        if selected["sourceUrl"] != source:
+            held.append({"ordinal": ordinal, "url": entry["url"], "sourceUrl": source,
+                         "selectedSourceUrl": selected["sourceUrl"]})
+    # Do not partially mutate the catalog when a later prerequisite fails.
+    for item in held:
+        entries[item["ordinal"]]["sourceUrl"] = None
+    return held
+
+
 def harden_section_links(out_dir: Path, entries: list[dict]) -> None:
     """Include unchanged qualified exporters without modifying their bodies/logic."""
     for url in dict.fromkeys(entry["url"] for entry in entries):
