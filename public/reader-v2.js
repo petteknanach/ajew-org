@@ -8,6 +8,12 @@
 (function() {
   'use strict';
 
+  // Private Prayer Reader boundary: both route and owning template must agree.
+  function isPrayerReader() {
+    return /^\/reader\/likutay-tefilos\/[12]\/\d+\/?$/.test(window.location.pathname) &&
+      document.querySelector('.reader-container')?.dataset.book === 'likutay-tefilos';
+  }
+
   // ─── State ───
   const PREFS_KEY = 'ajew-reader-prefs';
   const HIGHLIGHTS_KEY = 'ajew-highlights';
@@ -26,7 +32,7 @@
 
   // ─── Load/Save ───
   function loadPrefs() {
-    if (window.AjewReaderEdition) { state = window.AjewReader.getState(); return; }
+    if (window.AjewReaderEdition || isPrayerReader()) { state = window.AjewReader.getState(); return; }
     try {
       const saved = localStorage.getItem(PREFS_KEY);
       if (saved) state = { ...state, ...JSON.parse(saved) };
@@ -34,6 +40,7 @@
   }
 
   function savePrefs() {
+    if (isPrayerReader()) { window.AjewReader.savePrefs(); return; }
     try {
       localStorage.setItem(PREFS_KEY, JSON.stringify(state));
     } catch (e) {}
@@ -88,7 +95,7 @@
   }
 
   function setTheme(theme) {
-    if (window.AjewReaderEdition) { window.AjewReader.setState('theme', theme); applyTheme(); return; }
+    if (window.AjewReaderEdition || isPrayerReader()) { window.AjewReader.setState('theme', theme); applyTheme(); return; }
     state.theme = theme;
     savePrefs();
     applyTheme();
@@ -96,7 +103,7 @@
 
   // ─── Language Mode ───
   function applyMode() {
-    if (window.AjewReaderEdition) { window.AjewReader.refresh(); return; }
+    if (window.AjewReaderEdition || isPrayerReader()) { window.AjewReader.refresh(); return; }
     const content = document.querySelector('.reader-content');
     if (!content) return;
 
@@ -115,10 +122,11 @@
     });
   }
 
-  function setMode(mode) {
-    if (window.AjewReaderEdition) {
-      window.AjewReader.setState('mode', mode);
-      if (window.AjewReaderEdition.edition() === 'uxlc') return;
+  function setMode(mode, event) {
+    if (window.AjewReaderEdition || isPrayerReader()) {
+      const alreadyApplied = isPrayerReader() && window.AjewReader.consumePrayerToolbarMode?.(event, mode);
+      if (!alreadyApplied) window.AjewReader.setState('mode', mode);
+      if (window.AjewReaderEdition?.edition() === 'uxlc') return;
     } else {
       state.mode = mode;
       savePrefs();
@@ -153,7 +161,7 @@
   }
 
   function setFontSize(size) {
-    if (window.AjewReaderEdition) { window.AjewReader.setState('fontSize', Math.max(12, Math.min(32, size))); return; }
+    if (window.AjewReaderEdition || isPrayerReader()) { window.AjewReader.setState('fontSize', Math.max(12, Math.min(32, size))); return; }
     state.fontSize = Math.max(12, Math.min(32, size));
     savePrefs();
     applyFontSize();
@@ -163,6 +171,10 @@
   let alignedView = false;
 
   function toggleAligned() {
+    if (isPrayerReader()) {
+      window.AjewReader.togglePrayerAligned();
+      return;
+    }
     const original = document.querySelector('.reader-content-original');
     const aligned = document.querySelector('.reader-content-aligned');
     const tocList = document.querySelector('.reader-toc-list');
@@ -655,6 +667,14 @@
     // The general Reader owns shortcuts on edition-enabled routes; do not double-toggle.
     if (window.AjewReaderEdition) return;
     document.addEventListener('keydown', (e) => {
+      if (isPrayerReader()) {
+        const target = e.target;
+        if (target && (['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName) ||
+            target.isContentEditable || target.closest?.('[contenteditable]:not([contenteditable="false"])'))) return;
+        if (e.ctrlKey || e.metaKey || e.altKey) return;
+        // Core owns every overlapping key; v2 still owns a and Escape.
+        if (['h', 'e', 'b', 'f', 's', '+', '=', '-', 'ArrowLeft', 'ArrowRight'].includes(e.key)) return;
+      }
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
 
       switch (e.key) {
@@ -770,6 +790,10 @@
 
   // ─── Initialize ───
   function init() {
+    if (isPrayerReader() && !window.AjewReader) {
+      document.addEventListener('ajew-reader-ready', init, { once: true });
+      return;
+    }
     loadPrefs();
     applyMode();
     applyTheme();
@@ -784,7 +808,7 @@
 
     // Bind toolbar
     document.querySelectorAll('[data-mode]').forEach(btn => {
-      btn.addEventListener('click', () => setMode(btn.dataset.mode));
+      btn.addEventListener('click', e => setMode(btn.dataset.mode, e));
     });
 
     const alignBtn = document.getElementById('btn-align');

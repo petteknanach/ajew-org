@@ -55,6 +55,12 @@
   }
   fixEnglishReaderNumbers();
 
+  // Private Prayer Reader boundary: both route and owning template must agree.
+  function isPrayerReader() {
+    return /^\/reader\/likutay-tefilos\/[12]\/\d+\/?$/.test(window.location.pathname) &&
+      document.querySelector('.reader-container')?.dataset.book === 'likutay-tefilos';
+  }
+
   // --- State ---
   const PREFS_KEY = 'ajew-reader-prefs';
   let state = {
@@ -94,11 +100,62 @@
   function applyNikud() {
     document.querySelectorAll('.segment-he [data-nikud]').forEach(el => {
       const original = el.getAttribute('data-nikud');
-      el.textContent = state.nikud ? original : stripNikud(original);
+      const prayer = isPrayerReader();
+      const value = prayer && !state.nikud && el.hasAttribute('data-original-he')
+        ? el.getAttribute('data-original-he')
+        : (state.nikud ? original : stripNikud(original));
+      // Preserve existing source Text nodes when a Prayer mode change needs no text change.
+      if (!prayer || el.textContent !== value) el.textContent = value;
     });
     // Update button state
     const btn = document.getElementById('btn-nikud');
     if (btn) btn.classList.toggle('active', state.nikud);
+  }
+
+  // Prayer fragments are source coordinates, never cross-projection ordinals.
+  function getPrayerCoordinate() {
+    if (!isPrayerReader()) return null;
+    const match = /^#(seg|aligned)-([1-9]\d*)$/.exec(window.location.hash);
+    if (!match) return null;
+    const target = document.getElementById(match[0].slice(1));
+    const aligned = match[1] === 'aligned';
+    const wrapper = document.querySelector(aligned
+      ? '.reader-content-aligned' : '.reader-content-original');
+    if (!target || !wrapper || !target.classList.contains('reader-segment-pair') ||
+        target.closest(aligned ? '.reader-content-aligned' : '.reader-content-original') !== wrapper) return null;
+    return { target, aligned };
+  }
+
+  function getPrayerAligned() {
+    const coordinate = getPrayerCoordinate();
+    return coordinate ? coordinate.aligned : state.prayerAligned === true;
+  }
+
+  function togglePrayerAligned() {
+    if (!isPrayerReader()) return;
+    const aligned = !getPrayerAligned();
+    if (getPrayerCoordinate()) {
+      // An actual UI action supersedes its incompatible explicit coordinate.
+      window.history.replaceState(window.history.state, '', window.location.pathname + window.location.search);
+    }
+    setState('prayerAligned', aligned);
+  }
+
+  function setupPrayerNavigation() {
+    if (!isPrayerReader()) return;
+    window.addEventListener('hashchange', () => {
+      applyMode();
+      const coordinate = getPrayerCoordinate();
+      if (coordinate) scrollToReaderArrival(coordinate.target, false, true);
+    });
+  }
+
+  // Prayer alone has a shared keyboard owner and typing/modifier policy.
+  function ignorePrayerShortcut(e) {
+    const target = e.target;
+    if (target && (['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName) ||
+        target.isContentEditable || target.closest?.('[contenteditable]:not([contenteditable="false"])'))) return true;
+    return !!(e.altKey || ((e.ctrlKey || e.metaKey) && e.key !== 'f'));
   }
 
   // --- Language Mode ---
@@ -113,7 +170,26 @@
     var originalContent = document.querySelector('.reader-content-original');
     var alignedContent = document.querySelector('.reader-content-aligned');
 
-    if (alignedEl && alignedContent) {
+    if (isPrayerReader() && originalContent && alignedContent) {
+      // Language and segmentation are separate choices. No ordinal correspondence.
+      const aligned = getPrayerAligned();
+      originalContent.style.display = aligned ? 'none' : 'contents';
+      alignedContent.style.display = aligned ? 'block' : 'none';
+      const btn = document.getElementById('btn-align');
+      if (btn) btn.classList.toggle('active', aligned);
+      const toc = document.querySelector('.reader-toc-list');
+      const heading = document.querySelector('.reader-toc h3');
+      const segments = document.querySelectorAll(aligned
+        ? '.reader-content-aligned .reader-segment-pair'
+        : '.reader-content-original .reader-segment-pair');
+      if (toc && segments.length) {
+        if (heading) heading.textContent = aligned ? 'SEGMENTS' : 'PARAGRAPHS';
+        toc.innerHTML = Array.from(segments).map(seg => {
+          const idx = seg.querySelector('.segment-number')?.textContent || '';
+          return `<li><a href="#${seg.id}" data-index="${idx}">${aligned ? idx : 'Paragraph ' + idx}</a></li>`;
+        }).join('');
+      }
+    } else if (alignedEl && alignedContent) {
       if (state.mode === 'both') {
         // Show aligned version, hide original
         if (originalContent) originalContent.style.display = 'none';
@@ -372,6 +448,7 @@
   // --- Keyboard Shortcuts ---
   function setupKeyboard() {
     document.addEventListener('keydown', (e) => {
+      if (isPrayerReader() && ignorePrayerShortcut(e)) return;
       // Don't trigger when typing in inputs
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
 
@@ -479,6 +556,16 @@
   }
 
   // --- State Management ---
+  const prayerToolbarModeEvents = new WeakMap();
+  function consumePrayerToolbarMode(event, mode) {
+    const applied = event && prayerToolbarModeEvents.get(event);
+    if (!applied || !event.isTrusted || event.type !== 'click' || applied.mode !== mode ||
+        event.currentTarget !== applied.button || !applied.button.contains(event.target) ||
+        applied.button.dataset.mode !== mode || state.mode !== mode || !isPrayerReader()) return false;
+    prayerToolbarModeEvents.delete(event);
+    return true;
+  }
+
   function setState(key, value) {
     if (key === 'mode' && window.AjewReaderEdition?.edition() === 'uxlc') return;
     state[key] = value;
@@ -654,6 +741,7 @@
     restoreBookmark();
     setupCopyAttribution();
     setupKeyboard();
+    setupPrayerNavigation();
     setupScrollSpy();
     setupNotes();
     saveToHistory();
@@ -683,7 +771,7 @@
 
     // Scroll to segment from URL hash (e.g. #seg-5)
     if (window.location.hash) {
-      const target = document.getElementById(window.location.hash.substring(1));
+      const target = isPrayerReader() ? getPrayerCoordinate()?.target : document.getElementById(window.location.hash.substring(1));
       if (target) {
         scrollToReaderArrival(target, true);
         setTimeout(() => {
@@ -697,7 +785,119 @@
 
     // Bind toolbar buttons
     document.querySelectorAll('[data-mode]').forEach(btn => {
-      btn.addEventListener('click', () => setState('mode', btn.dataset.mode));
+      btn.addEventListener('click', e => {
+        // Toolbar-only ownership; never arm/reset the independent startup guard.
+        const previous = init.prayerToolbarTransaction;
+        if (previous) previous.cancel();
+        const mode = btn.dataset.mode, modes = ['hebrew', 'english', 'both'];
+        let tx = null;
+        function shown(el) { if (!el?.isConnected) return false; for (let n = el; n && n.nodeType === 1; n = n.parentElement) { const s = getComputedStyle(n); if (s.display === 'none' || s.visibility !== 'visible' || s.contentVisibility === 'hidden' || s.opacity === '0') return false; } return true; }
+        function chrome(line) { const bars = Array.from(document.querySelectorAll('.mobile-header, .navbar, .reader-toolbar, .reader-search-bar, .reader-progress')).filter(shown).map(el => ({ s: getComputedStyle(el), r: el.getBoundingClientRect() })).filter(({ r }) => r.height > 0 && r.right > line.left && r.left < line.right); let bottom = 0; bars.forEach(({ s, r }) => { const top = parseFloat(s.top); if (s.position === 'sticky' && Number.isFinite(top)) bottom = Math.max(bottom, top + r.height); }); for (let i = 0; i < bars.length; i++) bars.forEach(({ s, r }) => { if (s.position === 'fixed' && r.top <= bottom && r.bottom > 0) bottom = Math.max(bottom, r.bottom); }); return bottom; }
+        function openings(ps, selectedMode) { const sides = selectedMode === 'both' ? ['he', 'en'] : [selectedMode === 'english' ? 'en' : 'he']; const lines = []; for (const side of sides) { const source = ps.find(item => item.side === side && /\S/u.test(item.p.textContent)); if (!source || !shown(source.p) || !source.p.getClientRects().length) return null; const walker = document.createTreeWalker(source.p, NodeFilter.SHOW_TEXT); let text, match; while ((text = walker.nextNode())) { match = /\S/u.exec(text.data); if (match) break; } if (!text || !match || !shown(text.parentElement)) return null; const range = document.createRange(), start = match.index; range.setStart(text, start); range.setEnd(text, start + (text.data.codePointAt(start) > 0xffff ? 2 : 1)); const rects = Array.from(range.getClientRects()).filter(r => r.width > 0 && r.height > 0); if (rects.length !== 1) return null; const line = rects[0]; if (![line.top, line.bottom, line.left, line.right].every(Number.isFinite) || line.right <= 0 || line.left >= window.innerWidth) return null; lines.push({ p: source.p, text, line, edge: chrome(line) }); } return lines.sort((a, b) => a.line.top - b.line.top || a.line.left - b.line.left); }
+        function begin() {
+          if (!e.isTrusted || e.currentTarget !== btn || !btn.matches('button[data-mode]') || btn.disabled || !btn.contains(e.target) || !btn.closest('.reader-toolbar') || !shown(btn) || !btn.getClientRects().length || !isPrayerReader() || !modes.includes(mode) || !modes.includes(state.mode) || mode === state.mode || typeof MutationObserver !== 'function') return null;
+          const body = document.body, container = document.querySelector('.reader-container'), href = window.location.href;
+          const wrapper = document.querySelector('.reader-content-original'), content = document.querySelector('.reader-content');
+          const match = /^#seg-([1-9]\d*)$/.exec(window.location.hash), searchInput = document.querySelector('.reader-search-bar input');
+          if (!match || window.location.search || href.split('#')[0].includes('?') || state.searchOpen || searchInput?.value || document.querySelector('.reader-search-bar.open') || state.prayerAligned === true || getPrayerAligned() || !shown(wrapper) || !body?.isConnected || !container?.contains(wrapper) || !content?.contains(wrapper) || !container.contains(btn) || wrapper.querySelector('.search-highlight')) return null;
+          const pair = document.getElementById(match[0].slice(1)), path = window.location.pathname, hash = window.location.hash, query = window.location.search;
+          if (!pair?.isConnected || !pair.classList.contains('reader-segment-pair') || pair.closest('.reader-content-original') !== wrapper || document.querySelectorAll('[id="' + pair.id + '"]').length !== 1 || pair.querySelectorAll('.segment-he').length !== 1 || pair.querySelectorAll('.segment-en').length !== 1) return null;
+          const ps = Array.from(pair.querySelectorAll('.segment-he p, .segment-en p')).map(p => ({ p, side: p.closest('.segment-he') ? 'he' : 'en', source: p.closest('.segment-he, .segment-en'), text: p.textContent }));
+          const before = openings(ps, state.mode), opening = before?.[0];
+          if (!opening || ps.some(item => item.p.closest('.reader-segment-pair') !== pair) || opening.line.top < opening.edge || opening.line.top > opening.edge + 24 || opening.line.bottom > window.innerHeight || !opening.p.contains(document.elementFromPoint(Math.max(0, Math.min(window.innerWidth - 1, (opening.line.left + opening.line.right) / 2)), (opening.line.top + opening.line.bottom) / 2))) return null;
+          const settings = () => JSON.stringify([state.fontFamily, state.fontSize, state.nikud, state.theme, state.fullscreen, state.prayerAligned, state.searchOpen]), savedSettings = settings();
+          const sx = window.scrollX, sy = window.scrollY, deadline = performance.now() + 5000;
+          const fonts = document.fonts;
+          const signature = p => { const s = getComputedStyle(p); return JSON.stringify([s.fontFamily, s.fontSize, s.fontStyle, s.fontWeight, s.fontStretch, s.lineHeight, s.letterSpacing, s.wordSpacing, s.fontFeatureSettings, s.fontVariationSettings, s.fontKerning, s.fontOpticalSizing, s.writingMode]); };
+          const signatures = ps.map(item => signature(item.p));
+          // Only these exact applyNikud rewrites may replace pre-commit Text.
+          const rewrites = Array.from(pair.querySelectorAll('.segment-he [data-nikud]'))
+            .filter(el => ps.some(item => item.p === el || item.p.contains(el)))
+            .map(el => ({
+              el, before: Array.from(el.childNodes),
+              value: !state.nikud && el.hasAttribute('data-original-he') ? el.getAttribute('data-original-he') :
+                (state.nikud ? el.getAttribute('data-nikud') : stripNikud(el.getAttribute('data-nikud')))
+            }));
+          let closed = false, timer = 0, task = 0, raf = 0, ready = null, pins = null, modeDirections = null, fontsDone = false, frames = 0;
+          const anchorNeeded = state.mode === 'hebrew' && mode === 'both';
+          const anchorRoot = anchorNeeded ? document.documentElement : null, anchorHead = anchorNeeded ? document.head : null;
+          const anchorCSS = ':root { overflow-anchor: none !important; }';
+          let anchorNode = null, anchorText = null, anchorSheet = null, anchorRule = null;
+          const anchorOK = () => !anchorNeeded || (!closed && document.documentElement === anchorRoot && document.head === anchorHead && document.scrollingElement === anchorRoot && anchorRoot?.isConnected && anchorHead?.isConnected && anchorHead.parentNode === anchorRoot && anchorNode?.ownerDocument === document && anchorNode.isConnected && anchorNode.parentNode === anchorHead && anchorNode.attributes.length === 0 && anchorNode.childNodes.length === 1 && anchorNode.firstChild === anchorText && anchorText?.nodeType === Node.TEXT_NODE && anchorText.data === anchorCSS && anchorNode.disabled === false && anchorNode.media === '' && anchorNode.type === '' && anchorSheet && anchorNode.sheet === anchorSheet && anchorSheet.ownerNode === anchorNode && anchorSheet.disabled === false && anchorSheet.href === null && anchorSheet.media.mediaText === '' && anchorSheet.cssRules.length === 1 && anchorSheet.cssRules[0] === anchorRule && anchorRule?.type === 1 && anchorRule.parentStyleSheet === anchorSheet && anchorRule.parentRule === null && anchorRule.selectorText === ':root' && anchorRule.style.parentRule === anchorRule && anchorRule.style.length === 1 && anchorRule.style[0] === 'overflow-anchor' && anchorRule.style.getPropertyValue('overflow-anchor') === 'none' && anchorRule.style.getPropertyPriority('overflow-anchor') === 'important');
+          const releaseAnchor = () => { if (anchorNode) anchorNode.remove(); };
+          const legacyClose = () => { if (closed) return; closed = true; clearTimeout(timer); clearTimeout(task); cancelAnimationFrame(raf); observer.disconnect(); ['wheel', 'touchstart', 'pointerdown', 'keydown', 'scroll', 'pagehide', 'hashchange', 'popstate'].forEach(type => window.removeEventListener(type, close, true)); if (init.prayerToolbarTransaction === session) init.prayerToolbarTransaction = null; };
+          const detach = () => {
+            if (closed) return;
+            closed = true;
+            let failed = false, fault;
+            const actions = [() => clearTimeout(timer), () => clearTimeout(task), () => cancelAnimationFrame(raf), () => observer.disconnect(), ...['wheel', 'touchstart', 'pointerdown', 'keydown', 'scroll', 'pagehide', 'hashchange', 'popstate'].map(type => () => window.removeEventListener(type, close, true)), () => { if (init.prayerToolbarTransaction === session) init.prayerToolbarTransaction = null; }];
+            actions.forEach(action => { try { action(); } catch (error) { if (!failed) { failed = true; fault = error; } } });
+            if (failed) throw fault;
+          };
+          const close = () => { if (!anchorNeeded) return legacyClose(); try { detach(); } finally { releaseAnchor(); } };
+          const anchorWork = action => { if (!anchorNeeded) return action(); try { return action(); } catch (error) { try { close(); } catch (_) {} throw error; } };
+          const valid = () => { if (closed || init.prayerToolbarTransaction !== session || performance.now() >= deadline || document.body !== body || !body.isConnected || document.querySelector('.reader-container') !== container || document.querySelector('.reader-content') !== content || document.querySelector('.reader-content-original') !== wrapper || !container.isConnected || !container.contains(wrapper) || !content.contains(wrapper) || !shown(wrapper) || !pair.isConnected || pair.closest('.reader-content-original') !== wrapper || document.getElementById(hash.slice(1)) !== pair || document.querySelectorAll('[id="' + hash.slice(1) + '"]').length !== 1 || window.location.href !== href || window.location.pathname !== path || window.location.hash !== hash || window.location.search !== query || !isPrayerReader() || state.mode !== mode || !content.classList.contains('mode-' + mode) || state.prayerAligned === true || getPrayerAligned() || state.searchOpen || document.querySelector('.reader-search-bar.open') || document.querySelector('.reader-search-bar input')?.value || wrapper.querySelector('.search-highlight') || settings() !== savedSettings || document.fonts !== fonts || (ready && fonts && fonts.ready !== ready) || window.scrollX !== sx || window.scrollY !== sy) return false; const current = Array.from(pair.querySelectorAll('.segment-he p, .segment-en p')); if (current.length !== ps.length || ps.some((item, i) => current[i] !== item.p || !item.p.isConnected || item.p.closest('.segment-he, .segment-en') !== item.source || item.p.textContent !== item.text || signature(item.p) !== signatures[i])) return false; if (modeDirections && ps.some((item, i) => getComputedStyle(item.p).direction !== modeDirections[i])) return false; if (pins) { const fresh = openings(ps, mode); if (!fresh || fresh.length !== pins.length || pins.some(pin => !fresh.some(item => item.p === pin.p && item.text === pin.text))) return false; } return !anchorNeeded || anchorOK(); };
+          const owned = [body, container, content, wrapper, pair, ...ps.flatMap(item => [item.source, item.p]), ...(anchorNeeded ? [anchorRoot, anchorHead] : [])];
+          const removedOwned = records => records.some(record => (anchorNode && (record.target === anchorNode || record.target === anchorText)) || Array.from(record.removedNodes).some(node => [...owned, ...(anchorNode ? [anchorNode, anchorText] : []), ...(pins ? pins.map(item => item.text) : [])].some(item => node === item || node.contains(item))));
+          const sameNodes = (a, b) => a.length === b.length && Array.from(a).every((node, i) => node === b[i]);
+          const coreRecordsOK = records => {
+            if (removedOwned(records)) return false;
+            const seen = new Set();
+            for (const record of records) {
+              if (!ps.some(item => record.target === item.p || item.p.contains(record.target))) continue;
+              const write = rewrites.find(item => item.el === record.target);
+              if (record.type !== 'childList' || !write || seen.has(write) || !sameNodes(record.removedNodes, write.before) || !sameNodes(record.addedNodes, write.el.childNodes)) return false;
+              seen.add(write);
+            }
+            return rewrites.every(write => write.el.isConnected && write.el.textContent === write.value && (write.value ? write.el.childNodes.length === 1 && write.el.firstChild.nodeType === Node.TEXT_NODE : !write.el.childNodes.length) && (seen.has(write) || (!write.before.length && !write.value)));
+          };
+          const check = () => anchorWork(() => pins !== null && !removedOwned(observer.takeRecords()) && valid());
+          // A callback before commit is not authority to acquire new Text identities.
+          const observer = new MutationObserver(records => anchorWork(() => { if (!pins || removedOwned(records) || !check()) close(); }));
+          const tick = () => anchorWork(() => { raf = 0; if (!check() || (fontsDone && fonts && fonts.status !== 'loaded')) { close(); return; } if (!fontsDone || ++frames < 2) { raf = requestAnimationFrame(tick); return; } const fresh = openings(ps, mode), selected = fresh?.[0]; if (!selected || !check() || selected.edge + 8 + selected.line.height > window.innerHeight) { close(); return; } const top = window.scrollY + selected.line.top - selected.edge - 8; if (!anchorNeeded) { close(); window.scrollTo({ top, behavior: 'instant' }); } else { try { detach(); window.scrollTo({ top, behavior: 'instant' }); } finally { releaseAnchor(); } } });
+          const session = {
+            cancel: close,
+            commitCoreMutation() {
+              if (closed || pins) return false;
+              if (!coreRecordsOK(observer.takeRecords()) || !valid()) { close(); return false; }
+              pins = openings(ps, mode);
+              modeDirections = ps.map(item => getComputedStyle(item.p).direction);
+              if (!check()) { close(); return false; }
+              return true;
+            },
+            settle() {
+              if (closed || task) return;
+              if (!check()) { close(); return; }
+              task = setTimeout(() => anchorWork(() => { if (!check()) { close(); return; } ready = fonts ? fonts.ready : Promise.resolve(); Promise.resolve(ready).then(() => anchorWork(() => { if (!check() || (fonts && fonts.status !== 'loaded')) { close(); return; } fontsDone = true; frames = 0; }), close); raf = requestAnimationFrame(tick); }), 0);
+            }
+          };
+          init.prayerToolbarTransaction = session;
+          if (anchorNeeded) {
+            if (!anchorRoot?.isConnected || !anchorHead?.isConnected || anchorHead.parentNode !== anchorRoot || document.scrollingElement !== anchorRoot || typeof CSS === 'undefined' || !CSS.supports('overflow-anchor', 'none')) { close(); return null; }
+            anchorNode = document.createElement('style');
+            anchorText = document.createTextNode(anchorCSS);
+            anchorNode.appendChild(anchorText);
+            anchorHead.appendChild(anchorNode);
+            anchorSheet = anchorNode.sheet;
+            anchorRule = anchorSheet?.cssRules[0];
+            if (!anchorOK()) { close(); return null; }
+          }
+          ['wheel', 'touchstart', 'pointerdown', 'keydown', 'scroll', 'pagehide', 'hashchange', 'popstate'].forEach(type => window.addEventListener(type, close, { capture: true, passive: true }));
+          observer.observe(document.documentElement, { subtree: true, childList: true, attributes: true, characterData: true });
+          timer = setTimeout(close, 5000);
+          return session;
+        }
+        try { tx = begin(); } catch (_) { init.prayerToolbarTransaction?.cancel(); }
+        try { setState('mode', mode); } catch (error) { if (tx) tx.cancel(); throw error; }
+        if (tx) {
+          try {
+            if (tx.commitCoreMutation()) {
+              prayerToolbarModeEvents.set(e, { button: btn, mode });
+              tx.settle();
+            }
+          } catch (_) { tx.cancel(); }
+        }
+      });
     });
 
     const nikudBtn = document.getElementById('btn-nikud');
@@ -853,6 +1053,12 @@
 
     // Shortcuts overlay close on click outside
     window.AjewReader = { setState: setState, getState: function () { return state; }, refresh: applyAll, setupSegmentShareActions: setupSegmentShareActions };
+    if (isPrayerReader()) {
+      window.AjewReader.savePrefs = savePrefs;
+      window.AjewReader.getPrayerAligned = getPrayerAligned;
+      window.AjewReader.togglePrayerAligned = togglePrayerAligned;
+      window.AjewReader.consumePrayerToolbarMode = consumePrayerToolbarMode;
+    }
     document.dispatchEvent(new Event('ajew-reader-ready'));
 
     const shortcutsOverlay = document.querySelector('.reader-shortcuts-overlay');
@@ -3143,8 +3349,46 @@ function note89QualificationText(q) {
     });
   }
 
+  // Original #seg-* and aligned-* anchors have separate source coordinate spaces.
+  // A hidden original anchor in persisted Align is a correspondence HOLD, not a
+  // license to invent an aligned ordinal or overwrite the user's preference.
+  function scrollPrayerFirstLine(target, behavior) {
+    const wrapper = target.closest('.reader-content-original, .reader-content-aligned');
+    if (wrapper && getComputedStyle(wrapper).display === 'none') return;
+    const paragraph = target.querySelector(state.mode === 'english' ? '.segment-en p' : '.segment-he p');
+    if (!paragraph || !paragraph.getClientRects().length) return;
+    const range = document.createRange();
+    range.selectNodeContents(paragraph);
+    const line = range.getClientRects()[0];
+    if (!line) return;
+    let chromeBottom = 0;
+    document.querySelectorAll('.mobile-header, .navbar, .reader-toolbar, .reader-search-bar, .reader-progress').forEach(el => {
+      const style = getComputedStyle(el);
+      const rect = el.getBoundingClientRect();
+      if (style.display === 'none' || style.visibility === 'hidden' || !rect.height ||
+          rect.right <= line.left || rect.left >= line.right) return;
+      if (style.position === 'fixed' && rect.top <= chromeBottom) {
+        chromeBottom = Math.max(chromeBottom, rect.bottom);
+      } else if (style.position === 'sticky') {
+        const top = parseFloat(style.top);
+        if (Number.isFinite(top)) chromeBottom = Math.max(chromeBottom, top + rect.height);
+      }
+    });
+    window.scrollTo({ top: window.scrollY + line.top - chromeBottom - 8, behavior });
+  }
+
   // A search arrival must land on its match, not the center of a long segment.
-  function scrollToReaderArrival(target, prepareOnly = false) {
+  function scrollToReaderArrival(target, prepareOnly = false, explicitNavigation = false) {
+    if (isPrayerReader()) {
+      const coordinate = getPrayerCoordinate();
+      if (!coordinate || coordinate.target !== target) return;
+      if (explicitNavigation) {
+        const previous = scrollToReaderArrival.startupGuard;
+        if (previous) { previous.cancelled = true; previous.cleanup(); }
+        scrollToReaderArrival.startupGuard = null;
+        scrollToReaderArrival.startupSettled = false;
+      }
+    }
     // Arm before the startup timers, not only after their 300ms delay.
     let guard = scrollToReaderArrival.startupGuard;
     if (!guard && typeof document !== 'undefined' &&
@@ -3164,7 +3408,8 @@ function note89QualificationText(q) {
     if (prepareOnly || (guard && guard.cancelled)) return;
     const query = new URLSearchParams(window.location.search).get('q');
     const match = query ? target.querySelector('.search-highlight') : null;
-    (match || target).scrollIntoView({ behavior: 'smooth', block: 'center' });
+    if (isPrayerReader() && !query) scrollPrayerFirstLine(target, 'smooth');
+    else (match || target).scrollIntoView({ behavior: 'smooth', block: 'center' });
 
     // Native fragment restoration and font layout can overwrite startup scroll.
     // Settle once after load/fonts; never pull back a reader who has interacted.
@@ -3178,7 +3423,8 @@ function note89QualificationText(q) {
         requestAnimationFrame(() => requestAnimationFrame(() => {
           if (!guard.cancelled && window.location.hash === '#' + target.id) {
             const finalMatch = query ? target.querySelector('.search-highlight') : null;
-            (finalMatch || target).scrollIntoView({ behavior: 'instant', block: 'center' });
+            if (isPrayerReader() && !query) scrollPrayerFirstLine(target, 'instant');
+            else (finalMatch || target).scrollIntoView({ behavior: 'instant', block: 'center' });
           }
           guard.cleanup();
         }));
@@ -3209,7 +3455,7 @@ function note89QualificationText(q) {
     });
     // Scroll to fragment on load
     if (window.location.hash) {
-      var target = document.querySelector(window.location.hash);
+      var target = isPrayerReader() ? getPrayerCoordinate()?.target : document.querySelector(window.location.hash);
       if (target) {
         scrollToReaderArrival(target, true);
         setTimeout(function() { scrollToReaderArrival(target); }, 300);
