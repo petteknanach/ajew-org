@@ -594,6 +594,18 @@
       return api.prepare(wk,day,slug,original,function(url){return fetchJSON(url,true);});
     }).catch(function(){return {unavailable:true};});
   }
+  /* CHOK_ALIYAH_BEGIN: standard annual Genesis boundaries, factual locators.
+     Hebcal leyning dc3e46a15ccf4e1bdc9802e32d7c807ffb8065b5/src/aliyot.json,
+     SHA256 9f71b236ccc2301a6a3f8edd31fe7d10306942dceae133d41a8bddf8dae0fffc.
+     Ordinary maftir, not calendar-special readings. Bereshit sixth uses4:23. */
+  var CHOK_ALIYAH_STARTS = {"בראשית":[[1,1,"ראשון","1"],[2,4,"שני","2"],[2,20,"שלישי","3"],[3,22,"רביעי","4"],[4,19,"חמישי","5"],[4,23,"ששי","6"],[5,25,"שביעי","7"],[6,5,"מפטיר","M"]],"נח":[[6,9,"ראשון","1"],[7,1,"שני","2"],[7,17,"שלישי","3"],[8,15,"רביעי","4"],[9,8,"חמישי","5"],[9,18,"ששי","6"],[11,1,"שביעי","7"],[11,29,"מפטיר","M"]],"לך לך":[[12,1,"ראשון","1"],[12,14,"שני","2"],[13,5,"שלישי","3"],[14,1,"רביעי","4"],[14,21,"חמישי","5"],[15,7,"ששי","6"],[17,7,"שביעי","7"],[17,24,"מפטיר","M"]],"וירא":[[18,1,"ראשון","1"],[18,15,"שני","2"],[19,1,"שלישי","3"],[19,21,"רביעי","4"],[21,5,"חמישי","5"],[21,22,"ששי","6"],[22,1,"שביעי","7"],[22,20,"מפטיר","M"]],"חיי שרה":[[23,1,"ראשון","1"],[23,17,"שני","2"],[24,10,"שלישי","3"],[24,27,"רביעי","4"],[24,53,"חמישי","5"],[25,1,"ששי","6"],[25,12,"שביעי","7"],[25,16,"מפטיר","M"]],"תולדות":[[25,19,"ראשון","1"],[26,6,"שני","2"],[26,13,"שלישי","3"],[26,23,"רביעי","4"],[26,30,"חמישי","5"],[27,28,"ששי","6"],[28,5,"שביעי","7"],[28,7,"מפטיר","M"]],"ויצא":[[28,10,"ראשון","1"],[29,1,"שני","2"],[29,18,"שלישי","3"],[30,14,"רביעי","4"],[30,28,"חמישי","5"],[31,17,"ששי","6"],[31,43,"שביעי","7"],[32,1,"מפטיר","M"]],"וישלח":[[32,4,"ראשון","1"],[32,14,"שני","2"],[32,31,"שלישי","3"],[33,6,"רביעי","4"],[34,1,"חמישי","5"],[35,12,"ששי","6"],[36,20,"שביעי","7"],[36,40,"מפטיר","M"]],"וישב":[[37,1,"ראשון","1"],[37,12,"שני","2"],[37,23,"שלישי","3"],[38,1,"רביעי","4"],[39,1,"חמישי","5"],[39,7,"ששי","6"],[40,1,"שביעי","7"],[40,20,"מפטיר","M"]],"מקץ":[[41,1,"ראשון","1"],[41,15,"שני","2"],[41,39,"שלישי","3"],[41,53,"רביעי","4"],[42,19,"חמישי","5"],[43,16,"ששי","6"],[43,30,"שביעי","7"],[44,14,"מפטיר","M"]],"ויגש":[[44,18,"ראשון","1"],[44,31,"שני","2"],[45,8,"שלישי","3"],[45,19,"רביעי","4"],[45,28,"חמישי","5"],[46,28,"ששי","6"],[47,11,"שביעי","7"],[47,25,"מפטיר","M"]],"ויחי":[[47,28,"ראשון","1"],[48,10,"שני","2"],[48,17,"שלישי","3"],[49,1,"רביעי","4"],[49,19,"חמישי","5"],[49,27,"ששי","6"],[50,21,"שביעי","7"],[50,23,"מפטיר","M"]]};
+  function aliyahHeading(slug, parsha, kind, chapter, verse) {
+    if (kind !== 'torah' || slug !== 'tanach-bereishit' || !Object.prototype.hasOwnProperty.call(CHOK_ALIYAH_STARTS, parsha)) return '';
+    return CHOK_ALIYAH_STARTS[parsha].filter(function (row) { return row[0] === chapter && row[1] === verse; }).map(function (row) {
+      return '<h3 class="ck-aliyah-heading" dir="rtl" lang="he" data-aliyah="' + row[3] + '" data-aliyah-ref="' + chapter + ':' + verse + '">' + row[2] + '</h3>';
+    }).join('');
+  }
+  /* CHOK_ALIYAH_END */
   function versesHTML(slug, from, to, kind, vcomm, parsha, day) {
     var englishEnabled = state.tanachen, capturedLanguage = state.language;
     return book(slug).then(function (d) {
@@ -643,7 +655,7 @@
               voiceLine(vcomm.rashi[it.c + ':' + it.x]) : '')])
             .then(function (parts) {
               var explanation = vcomm && vcomm.verses && vcomm.verses[it.c + ':' + it.x] ? voiceLine(vcomm.verses[it.c + ':' + it.x]) : '';
-              return '<article class="ck-verse" data-verse-ref="' + it.c + ':' + it.x + '">' + it.row + parts.join('') + explanation + (kind === 'torah' ? hkLine(parsha, it.c, it.x) + window.ChokSources.verseAccess(slug, it.c, it.x, parsha) : '') + '</article>';
+              return aliyahHeading(slug, parsha, kind, it.c, it.x) + '<article class="ck-verse" data-verse-ref="' + it.c + ':' + it.x + '">' + it.row + parts.join('') + explanation + (kind === 'torah' ? hkLine(parsha, it.c, it.x) + window.ChokSources.verseAccess(slug, it.c, it.x, parsha) : '') + '</article>';
             });
         })).then(function (rows) { return rows.join(''); });
       });
