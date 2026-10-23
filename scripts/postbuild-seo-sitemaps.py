@@ -17,6 +17,7 @@ from urllib.parse import unquote, urlsplit
 import xml.etree.ElementTree as ET
 
 from reader_soft404_artifacts import prune_reader_errors
+from plain_seo_canonicals import repair_plain_canonicals, raw_section_url
 
 NS = "http://www.sitemaps.org/schemas/sitemap/0.9"
 ET.register_namespace("", NS)
@@ -196,7 +197,7 @@ def main() -> None:
         if not (book and part and torah):
             continue
         books.add(book)
-        raw_urls.append(f"{SITE}/reader/{book}/{part}/{torah}/raw.txt")
+        raw_urls.append(raw_section_url(DIST, e))
     raw_urls.extend(f"{SITE}/reader/{book}/full.txt" for book in sorted(books))
     raw_urls.extend(f"{SITE}/reader/{book}/full.md" for book in sorted(books))
     raw_urls.extend([
@@ -216,6 +217,9 @@ def main() -> None:
     public_errors = {key: value for key, value in errors.items() if key != "root"}
     (DIST / "reader-soft404-removals.json").write_text(
         json.dumps(public_errors, ensure_ascii=False, indent=2), encoding="utf-8")
+    plain_repairs = repair_plain_canonicals(DIST, entries)
+    (DIST / "plain-canonical-repairs.json").write_text(
+        json.dumps(plain_repairs, ensure_ascii=False, indent=2), encoding="utf-8")
     receipt = prune_search_sitemaps(DIST)
     print(f"Reader error HTML: removed {errors['removed_count']} empty fallbacks; "
           f"all other source and export artifacts retained")
