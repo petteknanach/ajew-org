@@ -379,8 +379,11 @@ test('Layout injects only versioned feature assets under the qualified Reader fl
     ['/reader/unknown-book/siman/260', false], ['/reader/chayey-moharan/siman/0', false],
     ['/reader/chayey-moharan/siman/0260', false], ['/reader/chayey-moharan/siman/story', false],
     ['/reader/chayey-moharan/siman/260/extra', false]]) {
-    const flags = vm.runInNewContext(layout.slice(start, end) + '\n({hasYouTubeReader, readerPlainBase});',
-      { Astro: { url: { pathname } } });
+    // This route-only feature test supplies explicitly unavailable exports:
+    // YouTube admission must not depend on the new filesystem-backed resolver.
+    // Keep the legacy result field so every inherited assertion stays exact.
+    const flags = vm.runInNewContext(layout.slice(start, end) + '\n({hasYouTubeReader, readerPlainBase: readerPlainSection?.html ?? null});',
+      { Astro: { url: { pathname } }, getReaderPlainAvailability: () => null });
     assert.equal(flags.hasYouTubeReader, expected, pathname);
     if (pathname.includes('/siman/')) assert.equal(flags.readerPlainBase, null, 'no invented plain-text siman link');
   }

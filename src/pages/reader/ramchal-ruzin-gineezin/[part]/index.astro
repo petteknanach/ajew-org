@@ -1,0 +1,21 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import path from 'node:path';
+import { ruzinDirectory } from '../../../../lib/ruzin-section-routes.mjs';
+export function getStaticPaths() { return [{ params: { part: '1' } }]; }
+const sections = ruzinDirectory(path.join(process.cwd(), 'public/reader/ramchal-ruzin-gineezin'));
+if (!sections.length) throw new Error('Ruzin directory requires actual source sections');
+---
+<Layout title="Ruzin Gineezin — Sections" description="Read the available sections of Ruzin Gineezin in Hebrew and English, with their original section numbers.">
+  <article class="ruzin-directory" lang="en" dir="ltr">
+    <nav aria-label="Breadcrumb"><a href="/reader/">Torah Library</a><span aria-hidden="true"> / </span><span>Ruzin Gineezin</span></nav>
+    <h1>Ruzin Gineezin</h1>
+    <p lang="he" dir="rtl">רוזין גינזין</p>
+    <h2>Sections</h2>
+    <ul>{sections.map((section) => <li><a href={section.url}><span class="number">Section {section.number}</span><span>{section.title}</span>{section.hebrewTitle && <span class="hebrew" lang="he" dir="rtl">{section.hebrewTitle}</span>}</a></li>)}</ul>
+    <p><a href="/reader-plain/ramchal-ruzin-gineezin/">Plain text and complete-work downloads</a></p>
+  </article>
+</Layout>
+<style>
+  .ruzin-directory{max-width:900px;margin:0 auto;padding:36px 24px 90px;color:var(--ds-text-primary,#263248);line-height:1.7}nav{font-size:.9rem;margin-bottom:30px}a{color:var(--ds-link,#24496a);text-underline-offset:.2em}h1,h2{font-family:'Frank Ruhl Libre',Georgia,serif;line-height:1.2}h1{font-size:clamp(2rem,5vw,3rem)}h2{font-size:1.5rem;margin-top:30px}ul{list-style:none;padding:0;display:grid;gap:14px}li a{display:flex;flex-direction:column;gap:8px;padding:20px;border:1px solid var(--ds-border,#d9d2c2);border-radius:10px;background:var(--ds-surface,#fffdf8);overflow-wrap:anywhere}.number{font-size:.88rem;font-weight:700}.hebrew{font-family:'Frank Ruhl Libre',serif;font-size:1.2rem}a:focus-visible{outline:3px solid var(--ds-link,#24496a);outline-offset:4px}@media(max-width:600px){.ruzin-directory{padding:26px 18px 90px}}
+</style>

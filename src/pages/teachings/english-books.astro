@@ -1,0 +1,52 @@
+---
+import fs from 'node:fs';
+import path from 'node:path';
+import Layout from '../../layouts/Layout.astro';
+import { englishBookNavigation } from '../../lib/english-book-navigation.mjs';
+
+const publicRoot = path.join(process.cwd(), 'public');
+const catalog = JSON.parse(fs.readFileSync(path.join(publicRoot, 'reader-plain/index.json'), 'utf8'));
+const master = JSON.parse(fs.readFileSync(path.join(publicRoot, 'reader/catalog.json'), 'utf8'));
+const books = englishBookNavigation(publicRoot, catalog, master);
+if (!books.length) throw new Error('English books directory cannot be empty');
+---
+<Layout title="English Books — Breslov Torah Library" description="Browse books with English text on ajew.org. Open an English section or explore the complete plain-text book directory.">
+  <div class="english-directory" lang="en" dir="ltr">
+    <nav aria-label="Breadcrumb"><a href="/reader/">Torah Library</a><span aria-hidden="true"> / </span><span>English Books</span></nav>
+    <header>
+      <p class="eyebrow">The Torah library</p>
+      <h1>English Books</h1>
+      <p class="intro">These works and collections contain English in at least one published plain-text section. Coverage varies by section; read any source notes with the text.</p>
+      <p class="count">{books.length} works and collections with English text</p>
+    </header>
+    <ul class="book-grid" aria-label="Works and collections with English text">
+      {books.map((book) => (
+        <li class="book-card" data-book={book.id} data-english-sections={book.englishSections}>
+          <h2 dir="auto">{book.title}</h2>
+          {book.hebrewTitle && <p class="hebrew" lang="he" dir="rtl">{book.hebrewTitle}</p>}
+          <p class="coverage">{book.englishSections} {book.englishSections === 1 ? 'section' : 'sections'} with English</p>
+          <p class="section-title" dir="auto">{book.firstEnglishTitle}</p>
+          <div class="book-links">
+            <a class="start" href={book.firstEnglishUrl}>Open an English section <span aria-hidden="true">→</span></a>
+            <a href={book.directoryUrl}>All sections</a>
+          </div>
+        </li>
+      ))}
+    </ul>
+    <footer><a href="/reader/">Browse the complete Torah Library</a><a href="/search-enhanced/">Search the texts</a></footer>
+  </div>
+</Layout>
+<style>
+  .english-directory{max-width:1080px;margin:0 auto;padding:36px 24px 80px;color:var(--ds-text-primary,#263248)}
+  nav{font-size:.9rem;margin-bottom:30px}a{color:var(--ds-link,#24496a);text-underline-offset:.2em}
+  .eyebrow{text-transform:uppercase;letter-spacing:.12em;font-size:.78rem;font-weight:700;color:var(--ds-text-primary,#263248);margin:0 0 8px}
+  h1{font-family:'Frank Ruhl Libre',Georgia,serif;font-size:clamp(2.2rem,5vw,3.4rem);line-height:1.1;margin:0 0 18px}
+  .intro{max-width:760px;font-size:1.08rem;line-height:1.7}.count{font-weight:600;margin:20px 0 30px}
+  .book-grid{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,285px),1fr));gap:18px}
+  .book-card{border:1px solid var(--ds-border,#d9d2c2);border-radius:12px;padding:24px;background:var(--ds-surface,#fffdf8);display:flex;flex-direction:column;min-width:0}
+  h2{font-family:'Frank Ruhl Libre',Georgia,serif;font-size:1.45rem;line-height:1.3;margin:0 0 10px;overflow-wrap:anywhere}.hebrew{font-family:'Frank Ruhl Libre',serif;font-size:1.15rem;margin:0 0 12px}
+  .coverage{font-size:.88rem;font-weight:600;color:var(--ds-text-primary,#263248)}.section-title{font-size:.93rem;line-height:1.55;overflow-wrap:anywhere;flex:1}
+  .book-links{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin-top:18px}.book-links a{padding:12px 0;min-height:44px;box-sizing:border-box}.book-links .start{font-weight:700}
+  a:focus-visible{outline:3px solid var(--ds-link,#24496a);outline-offset:5px;border-radius:3px}footer{display:flex;flex-wrap:wrap;gap:12px 28px;margin-top:38px;border-top:1px solid var(--ds-border,#d9d2c2);padding-top:24px}footer a{padding:10px 0}
+  @media(max-width:600px){.english-directory{padding:26px 18px 90px}.book-card{padding:20px}.book-grid{gap:14px}}
+</style>

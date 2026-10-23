@@ -5,6 +5,7 @@ import '../../styles/reader-index.css';
 // Load master catalog and all book indexes
 import fs from 'node:fs';
 import path from 'node:path';
+import { ruzinDirectory } from '../../lib/ruzin-section-routes.mjs';
 
 function loadJSON(filePath) {
   try {
@@ -24,7 +25,12 @@ function loadBookIndexes(book) {
   const indexes = [];
   for (const part of book.parts) {
     const idx = loadJSON(part.indexUrl.replace(/^\//, 'public/'));
-    if (idx) indexes.push({ ...part, index: idx });
+    if (idx) {
+      const index = book.id === 'ramchal-ruzin-gineezin'
+        ? { ...idx, torahs: ruzinDirectory(path.join(process.cwd(), 'public/reader/ramchal-ruzin-gineezin')) }
+        : idx;
+      indexes.push({ ...part, index });
+    }
   }
   return indexes;
 }

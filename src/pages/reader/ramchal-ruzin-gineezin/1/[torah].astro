@@ -4,17 +4,16 @@ import '../../../../styles/reader.css';
 import '../../../../styles/reader-v2.css';
 import fs from 'node:fs';
 import path from 'node:path';
+import { ruzinSectionPaths, ruzinNavigation } from '../../../../lib/ruzin-section-routes.mjs';
 
 export function getStaticPaths() {
-  const paths = [];
-  for (let torah = 1; torah <= 7; torah++) {
-    paths.push({ params: { part: '1', torah: String(torah) } });
-  }
-  return paths;
+  return ruzinSectionPaths(path.join(process.cwd(), 'public/reader/ramchal-ruzin-gineezin'))
+    .map(({ params }) => ({ params: { torah: params.torah } }));
 }
 
-const { part, torah } = Astro.params;
-const partNum = parseInt(part);
+const { torah } = Astro.params;
+// This route's part is the literal directory /1/, not an Astro parameter.
+const partNum = 1;
 const torahNum = parseInt(torah);
 
 let torahData = null;
@@ -30,9 +29,10 @@ try {
 
 if (!torahData && !error) error = 'Content not available';
 
+const navigation = ruzinNavigation(path.join(process.cwd(), 'public/reader/ramchal-ruzin-gineezin'), partNum, torahNum);
 const bookName = 'Ruzin Gineezin';
 const bookHebrew = 'רוזין גנוזין';
-const bookUrl = 'https://ajew.org/reader/ramchal-ruzin-gineezin/1/1';
+const bookUrl = 'https://ajew.org/reader/ramchal-ruzin-gineezin/1/';
 
 const pageTitle = torahData
   ? `${torahData.title} — ${torahData.hebrewTitle || bookHebrew} | Ramchal`
@@ -85,7 +85,7 @@ const breadcrumbs = torahData ? [
   { name: "Home", url: "https://ajew.org/" },
   { name: "Library", url: "https://ajew.org/reader" },
   { name: "Ramchal", url: "https://ajew.org/ramchal" },
-  { name: "Ruzin Gineezin", url: "https://ajew.org/reader/ramchal-ruzin-gineezin/1/1" },
+  { name: "Ruzin Gineezin", url: "https://ajew.org/reader/ramchal-ruzin-gineezin/1/" },
   { name: torahData.hebrewTitle || torahData.title, url: `https://ajew.org/reader/ramchal-ruzin-gineezin/1/${torahNum}` }
 ] : [];
 ---
@@ -163,13 +163,13 @@ const breadcrumbs = torahData ? [
       </div>
 
       <div class="reader-nav">
-        {torahNum > 1 ? (
-          <a href={`/reader/ramchal-ruzin-gineezin/1/${torahNum - 1}`} data-dir="prev">&larr; Previous</a>
+        {navigation.prevUrl ? (
+          <a href={navigation.prevUrl} data-dir="prev">&larr; Previous</a>
         ) : <span class="disabled">&larr; Previous</span>}
-        <a href={`/reader/ramchal-ruzin-gineezin/${partNum}`}>Book Index</a>
+        <a href={`/reader/ramchal-ruzin-gineezin/${partNum}/`}>Book Index</a>
         <a href="/ramchal">Ramchal Library</a>
-        {torahNum < 7 ? (
-          <a href={`/reader/ramchal-ruzin-gineezin/1/${torahNum + 1}`} data-dir="next">Next &rarr;</a>
+        {navigation.nextUrl ? (
+          <a href={navigation.nextUrl} data-dir="next">Next &rarr;</a>
         ) : <span class="disabled">Next &rarr;</span>}
       </div>
 
@@ -189,13 +189,13 @@ const breadcrumbs = torahData ? [
       </div>
 
       <div class="reader-nav">
-        {torahNum > 1 ? (
-          <a href={`/reader/ramchal-ruzin-gineezin/1/${torahNum - 1}`} data-dir="prev">&larr; Previous</a>
+        {navigation.prevUrl ? (
+          <a href={navigation.prevUrl} data-dir="prev">&larr; Previous</a>
         ) : <span class="disabled">&larr; Previous</span>}
-        <a href={`/reader/ramchal-ruzin-gineezin/${partNum}`}>Book Index</a>
+        <a href={`/reader/ramchal-ruzin-gineezin/${partNum}/`}>Book Index</a>
         <a href="/ramchal">Ramchal Library</a>
-        {torahNum < 7 ? (
-          <a href={`/reader/ramchal-ruzin-gineezin/1/${torahNum + 1}`} data-dir="next">Next &rarr;</a>
+        {navigation.nextUrl ? (
+          <a href={navigation.nextUrl} data-dir="next">Next &rarr;</a>
         ) : <span class="disabled">Next &rarr;</span>}
       </div>
 

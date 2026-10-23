@@ -4,6 +4,7 @@ interface Props {
   description?: string;
   image?: string;
   noindex?: boolean;
+  noindexFollow?: boolean;
   type?: string;
   jsonLd?: object;
   breadcrumbs?: Array<{name: string; url: string}>;
@@ -14,6 +15,7 @@ interface Props {
 
 import Navigation from '../components/Navigation.astro';
 import CompactYahrzeit from '../components/CompactYahrzeit.astro';
+import { getReaderPlainAvailability, readerPlainAlternates } from '../lib/reader-plain-availability.mjs';
 // The --ds-* tokens components style themselves with. Without these, every
 // var(--ds-*, fallback) in the site resolves to its literal fallback, which is
 // how the dark-mode sidebar ended up dark grey on dark navy.
@@ -24,6 +26,7 @@ const {
   description = "The largest online Breslov Torah library. 249 sacred texts — Likutay Moharan, Zohar, Talmud, Rambam — plus a fully vocalized Tanach with shva-na/nach and kamatz katan/gadol demarcations, Shnayim Mikra v’Echad Targum, and Rashi in Hebrew and English. Free.",
   image = "/og-image-20260731-x.png",
   noindex = false,
+  noindexFollow = false,
   type = "website",
   jsonLd,
   breadcrumbs,
@@ -41,9 +44,11 @@ const ogImage = new URL(image, Astro.site);
 const siteName = "ajew.org — A Jew Breslov Torah Library";
 const isReaderPage = Astro.url.pathname.startsWith('/reader/');
 const readerPlainMatch = Astro.url.pathname.match(/^\/reader\/([^\/]+)\/(\d+)\/([^\/]+)\/?$/);
-const readerPlainBase = readerPlainMatch ? `/reader-plain/${readerPlainMatch[1]}/${readerPlainMatch[2]}/${readerPlainMatch[3]}/` : null;
-const readerPlainBookBase = readerPlainMatch ? `/reader-plain/${readerPlainMatch[1]}/` : null;
-const hasYouTubeReader = Boolean(readerPlainBase) || /^\/reader\/chayey-moharan\/siman\/[1-9][0-9]*\/?$/.test(Astro.url.pathname);
+const readerPlainAccess = getReaderPlainAvailability(Astro.url.pathname, Astro.site);
+const readerPlainSection = readerPlainAccess?.section;
+const readerPlainWork = readerPlainAccess?.work;
+// Video admission is independent of whether a static text export exists.
+const hasYouTubeReader = Boolean(readerPlainMatch) || /^\/reader\/chayey-moharan\/siman\/[1-9][0-9]*\/?$/.test(Astro.url.pathname);
 ---
 
 <!doctype html>
@@ -56,8 +61,8 @@ const hasYouTubeReader = Boolean(readerPlainBase) || /^\/reader\/chayey-moharan\
     <meta name="description" content={description} />
     <meta name="keywords" content="Rabbi Nachman, Rebbe Nachman, Reb Nachman, Rabbeinu Nachman, Rabbi Nachman of Breslov, Nachman of Breslov, Rabbi Nachman of Bratslav, Breslov, Breslev, Bratslav, Braslav, Braclav, Breslov Chassidus, Breslov Hasidism, Breslover, רבי נחמן, רבינו נחמן, רבי נחמן מברסלב, רבי נחמן מאומן, נחמן מאומן, ברסלב, ברסלוב, ברסלבר, חסידות ברסלב, חסידי ברסלב, Na Nach, Nanach, Na Nach Nachma Nachman Meuman, נ נח נחמ נחמן מאומן, Judaism, Torah, Likutay Moharan, Likutey Moharan, Likutei Moharan, ליקוטי מוהרן, Likutay Halachos, Likutay Tefilos, Sichos HaRan, שיחות הרן, Sefer HaMidos, ספר המידות, Sippurei Maasiyos, סיפורי מעשיות, Tikkun HaKlali, Tikun Haklali, תיקון הכללי, Hitbodedut, Hisbodedus, התבודדות, Uman Rosh Hashanah, Rosh Hashanah Uman, ראש השנה באומן, Zohar, Talmud, Mishna, Rambam, Tanach, Jewish texts, Hebrew books online, Torah study, Kabbalah, Jewish mysticism" />
     <meta name="author" content="Pettek Nanach" />
-    <meta name="robots" content={noindex ? "noindex, nofollow" : "index, follow"} />
-    <meta name="googlebot" content={noindex ? "noindex, nofollow" : "index, follow"} />
+    <meta name="robots" content={noindexFollow ? "noindex, follow" : noindex ? "noindex, nofollow" : "index, follow"} />
+    <meta name="googlebot" content={noindexFollow ? "noindex, follow" : noindex ? "noindex, nofollow" : "index, follow"} />
     <link rel="canonical" href={canonicalURL} />
     {isReaderPage && <link rel="stylesheet" href="/reader-mobile.css?v=1" />}
     <link rel="icon" type="image/png" sizes="512x512" href="/favicon.png?v=nanach-petek-20260707" />
@@ -67,29 +72,14 @@ const hasYouTubeReader = Boolean(readerPlainBase) || /^\/reader\/chayey-moharan\
     <link rel="alternate" type="application/rss+xml" title="A Jew RSS Feed" href="/rss.xml" />
     <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap-index.xml" />
     {hasYouTubeReader && <link rel="stylesheet" href="/reader-youtube-links.css?v=20261014-4" />}
-    {readerPlainBase && <link rel="alternate" type="text/html" title="Plain text reader page" href={new URL(readerPlainBase, Astro.site)} />}
-    {readerPlainBase && <link rel="alternate" type="text/plain" title="Plain text TXT" href={new URL(`${readerPlainBase}index.txt`, Astro.site)} />}
-    {readerPlainBase && <link rel="alternate" type="text/markdown" title="Plain text Markdown" href={new URL(`${readerPlainBase}index.md`, Astro.site)} />}
-    {readerPlainBase && <link rel="alternate" type="application/json" title="Plain text JSON" href={new URL(`${readerPlainBase}index.json`, Astro.site)} />}
-    {readerPlainBookBase && <link rel="alternate" type="text/plain" title="Complete work plain text" href={new URL(`${readerPlainBookBase}full.txt`, Astro.site)} />}
-    {readerPlainBookBase && <link rel="alternate" type="text/markdown" title="Complete work Markdown" href={new URL(`${readerPlainBookBase}full.md`, Astro.site)} />}
+    {readerPlainAccess && <meta name="ajew-reader-plain-access"
+      data-state={readerPlainAccess.state} data-source={readerPlainAccess.source}
+      data-section={readerPlainSection?.html} data-work-html={readerPlainWork?.html}
+      data-work-txt={readerPlainWork?.txt} data-work-md={readerPlainWork?.markdown} />}
+    {readerPlainAlternates(readerPlainAccess).map(([type, title, href]) => (
+      <link rel="alternate" type={type} title={title} href={href} />
+    ))}
 
-    {readerPlainBase && readerPlainBookBase && (
-      <script is:inline define:vars={{ readerPlainBase, readerPlainBookBase }}>
-        (() => {
-          const params = new URLSearchParams(window.location.search);
-          const raw = (params.get('format') || params.get('view') || '').toLowerCase();
-          const wantsPlain = params.has('plain') || params.has('text') || params.has('raw') || raw === 'txt' || raw === 'text' || raw === 'plain' || raw === 'md' || raw === 'markdown' || raw === 'json' || raw === 'full';
-          if (!wantsPlain) return;
-          let target = readerPlainBase;
-          if (params.has('full') || raw === 'full') target = readerPlainBookBase + 'full.txt';
-          else if (raw === 'md' || raw === 'markdown') target = readerPlainBase + 'index.md';
-          else if (raw === 'json') target = readerPlainBase + 'index.json';
-          else if (raw === 'txt' || raw === 'text' || raw === 'plain' || params.has('text') || params.has('raw')) target = readerPlainBase + 'index.txt';
-          window.location.replace(target);
-        })();
-      </script>
-    )}
     <title>{title} | ajew.org</title>
 
     <!-- Open Graph -->
@@ -238,26 +228,24 @@ const hasYouTubeReader = Boolean(readerPlainBase) || /^\/reader\/chayey-moharan\
   </head>
   <body>
     <a href="#main-content" class="skip-link">Skip to content</a>
-    {readerPlainBase && readerPlainBookBase && (
+    {readerPlainSection && (
       <details class="ai-reader-access" style="padding:12px 16px;background:#fff8dc;border-bottom:1px solid #d6b85a;text-align:center;font-size:15px;line-height:1.5;">
         <summary>Text downloads &amp; AI access</summary>
         <strong>AI / raw text access:</strong>{' '}
-        <a href={readerPlainBase}>plain section HTML</a>{' · '}
-        <a href={`${readerPlainBase}index.txt`}>section TXT</a>{' · '}
-        <a href={`${readerPlainBase}index.md`}>section Markdown</a>{' · '}
-        <a href={`${readerPlainBase}index.json`}>section JSON</a>{' · '}
-        <a href={readerPlainBookBase}>all sections list</a>{' · '}
-        <a href={`${readerPlainBookBase}full.txt`}>complete work TXT</a>{' · '}
-        <a href={`${readerPlainBookBase}full.md`}>complete work Markdown</a>{' · '}
+        <a href={readerPlainSection.html}>plain section HTML</a>{' · '}
+        <a href={readerPlainSection.txt}>section TXT</a>{' · '}
+        <a href={readerPlainSection.markdown}>section Markdown</a>{' · '}
+        <a href={readerPlainSection.json}>section JSON</a>{' · '}
+        {readerPlainWork?.html && <><a href={readerPlainWork.html}>all sections list</a>{' · '}</>}
+        {readerPlainWork?.txt && <><a href={readerPlainWork.txt}>complete work TXT</a>{' · '}</>}
+        {readerPlainWork?.markdown && <><a href={readerPlainWork.markdown}>complete work Markdown</a>{' · '}</>}
         <a href="/reader-plain/">all plain-text books</a>{' · '}
         <a href="/ai.txt">AI instructions</a>
         <details style="margin-top:8px;text-align:start;max-width:980px;margin-left:auto;margin-right:auto;">
           <summary><strong>Use this for exact quotes / later sections / non-JS tools</strong></summary>
           <p>
-            This reader has a human interface, but every reader page also has static crawlable text. For any book, use
-            <code>/reader-plain/&lt;book&gt;/full.txt</code> to search the complete work, or
-            <code>/reader-plain/&lt;book&gt;/&lt;part&gt;/&lt;section&gt;/index.txt</code> for one section.
-            This is sitewide and works for all reader teachings, not just this page.
+            Use the section links above for static crawlable text of this page.
+            Complete-work downloads are listed when available.
           </p>
         </details>
       </details>
@@ -277,6 +265,7 @@ const hasYouTubeReader = Boolean(readerPlainBase) || /^\/reader\/chayey-moharan\
     <script src="/name-overlay.js?v=20261015-2" is:inline defer></script>
     {isReaderPage && <script src="/reader-mobile.js?v=20260928-focus" is:inline defer></script>}
     {hasYouTubeReader && <script src="/reader-youtube-links.js?v=20261014-4" is:inline defer></script>}
+    {readerPlainAccess && <script src="/reader-plain-access.js?v=20261023-1" is:inline defer></script>}
 
     <footer role="contentinfo">
       <div class="footer-container">

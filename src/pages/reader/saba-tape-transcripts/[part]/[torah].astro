@@ -76,12 +76,15 @@ const hasWordTiming = hasMatchedAudio && wordTiming?.publishable === true && tim
 const pageTitle = torahData
   ? `${torahData.title} - ${bookName} | AJEW.org`
   : 'Tape Not Found';
-const pageDesc = torahData
+const isMissingSource = isCanonical && torahData?.sourceStatus === 'missing';
+const pageDesc = isMissingSource
+  ? `Source status and available resources for ${torahData.title} from ${bookName}.`
+  : torahData
   ? `Read ${torahData.title} from Saba Yisroel (Rabbi Yisroel Dov Odesser), with the complete Hebrew transcript and verified English translation where available.`
   : '';
 ---
 
-<Layout title={pageTitle} description={pageDesc}>
+<Layout title={pageTitle} description={pageDesc} noindexFollow={isMissingSource}>
   {error ? (
     <div style="text-align: center; padding: 80px 20px;">
       <h1>{error}</h1>

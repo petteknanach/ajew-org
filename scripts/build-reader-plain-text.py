@@ -10,6 +10,7 @@ import html
 import json
 import re
 import shutil
+import sys
 from datetime import date
 from pathlib import Path
 from typing import Any
@@ -33,6 +34,7 @@ is_wrapup_source, wrapup_write_plain, is_wrapup_archive = _wrapup.is_reviewed_so
 _aitzoas = _load_sibling("qualified_aitzoas362_exports")
 AITZOAS_BOOK, is_aitzoas_archive, is_aitzoas_source = _aitzoas.BOOK, _aitzoas.is_archive, _aitzoas.is_source
 load_aitzoas_edition, aitzoas_checked_section, aitzoas_section_exports = _aitzoas.load_edition, _aitzoas.checked_section, _aitzoas.section_exports
+_navigation = _load_sibling("reader_plain_navigation")
 
 ROOT = Path(__file__).resolve().parents[1]
 READER_DIR = ROOT / "public" / "reader"
@@ -161,7 +163,7 @@ def collect_segments(data: dict[str, Any]) -> list[dict[str, Any]]:
     return out
 
 
-def html_page(title: str, hebrew_title: str, source_url: str, txt_url: str, md_url: str, raw_url: str, segments: list[dict[str, Any]]) -> str:
+def html_page(title: str, hebrew_title: str, source_url: str | None, txt_url: str, md_url: str, raw_url: str, segments: list[dict[str, Any]], plain_url: str) -> str:
     rows = []
     for seg in segments:
         idx = html.escape(str(seg["index"]))
@@ -174,7 +176,8 @@ def html_page(title: str, hebrew_title: str, source_url: str, txt_url: str, md_u
   {f'<div class="en" dir="ltr" lang="en">{en}</div>' if en else ''}
 </section>""")
     toc = "\n".join(f'<li><a href="#segment-{html.escape(str(s["index"]))}">Segment {html.escape(str(s["index"]))}</a></li>' for s in segments)
-    plain_url = source_url.replace('/reader/', '/reader-plain/', 1) + '/'
+    canonical_url = source_url or plain_url
+    human_link = f' · <a href="{html.escape(source_url)}">Human reader page</a>' if source_url else ''
     desc_text = ' '.join((segments[0].get('en') or segments[0].get('he') or title).split())[:260]
     json_ld = json.dumps({
         "@context": "https://schema.org",
@@ -185,7 +188,7 @@ def html_page(title: str, hebrew_title: str, source_url: str, txt_url: str, md_u
         "inLanguage": ["he", "en"],
         "isPartOf": {"@type": "WebSite", "name": "A Jew - Breslov Torah Library", "url": "https://ajew.org"},
         "url": "https://ajew.org" + plain_url,
-        "mainEntityOfPage": "https://ajew.org" + source_url,
+        "mainEntityOfPage": "https://ajew.org" + canonical_url,
         "encoding": [
             {"@type": "MediaObject", "encodingFormat": "text/plain", "contentUrl": "https://ajew.org" + plain_url + "index.txt"},
             {"@type": "MediaObject", "encodingFormat": "text/markdown", "contentUrl": "https://ajew.org" + plain_url + "index.md"},
@@ -200,7 +203,7 @@ def html_page(title: str, hebrew_title: str, source_url: str, txt_url: str, md_u
 <title>{html.escape(title)} — Plain Text | A Jew</title>
 <meta name="description" content="{html.escape(desc_text)}">
 <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">
-<link rel="canonical" href="https://ajew.org{html.escape(source_url)}">
+<link rel="canonical" href="https://ajew.org{html.escape(canonical_url)}">
 <link rel="alternate" type="text/html" title="Plain text HTML" href="https://ajew.org{html.escape(plain_url)}">
 <link rel="alternate" type="text/plain" title="Plain text" href="https://ajew.org{html.escape(plain_url)}index.txt">
 <link rel="alternate" type="text/markdown" title="Markdown" href="https://ajew.org{html.escape(plain_url)}index.md">
@@ -215,7 +218,7 @@ nav a{{margin-right:12px}} .he{{font-size:1.25rem;text-align:right;margin:12px 0
 </head>
 <body>
 <header>
-  <p><a href="/reader-plain/">Plain reader index</a> · <a href="{html.escape(source_url)}">Human reader page</a> · <a href="{html.escape(txt_url)}">TXT</a> · <a href="{html.escape(md_url)}">Markdown</a> · <a href="{html.escape(raw_url)}">Raw JSON</a></p>
+  <p><a href="/reader-plain/">Plain reader index</a>{human_link} · <a href="{html.escape(txt_url)}">TXT</a> · <a href="{html.escape(md_url)}">Markdown</a> · <a href="{html.escape(raw_url)}">Raw JSON</a></p>
   <h1>{html.escape(title)}</h1>
   {f'<div class="heb-title" dir="rtl" lang="he">{html.escape(hebrew_title)}</div>' if hebrew_title else ''}
 </header>
@@ -234,18 +237,23 @@ def write_teaching(path: Path, data: dict[str, Any], book: str, part: str, torah
         return None
     title = title_for(data, f"{book} {part}/{torah}")
     hebrew_title = strip_html(data.get("hebrewTitle") or data.get("h") or "")
-    source_url = f"/reader/{book}/{part}/{torah}"
+    source_url = _navigation.human_source_url(path, READER_DIR, f"/reader/{book}/{part}/{torah}")
+    # A held human route must not move or rename the existing plain destination.
+    plain_url = f"/reader-plain/{book}/{part}/{torah}/"
+    source_reference = source_url or "/reader/" + path.relative_to(READER_DIR).as_posix()
+    if source_url is None:
+        print("Held human route: " + json.dumps({"input": path.relative_to(READER_DIR).as_posix(), "plainUrl": plain_url}, ensure_ascii=False), file=sys.stderr)
     out = OUT_DIR / book / part / torah
     out.mkdir(parents=True, exist_ok=True)
 
     txt_lines = [title]
     if hebrew_title:
         txt_lines.append(hebrew_title)
-    txt_lines += [f"Source: https://ajew.org{source_url}", ""]
+    txt_lines += [f"Source: https://ajew.org{source_reference}", ""]
     md_lines = [f"# {title}"]
     if hebrew_title:
         md_lines.append(f"\n<div dir=\"rtl\">{hebrew_title}</div>")
-    md_lines.append(f"\nSource: https://ajew.org{source_url}\n")
+    md_lines.append(f"\nSource: https://ajew.org{source_reference}\n")
     for seg in segments:
         idx = seg["index"]
         txt_lines.append(f"Segment {idx}")
@@ -270,7 +278,7 @@ def write_teaching(path: Path, data: dict[str, Any], book: str, part: str, torah
         "segments": segments,
     }
     (out / "index.json").write_text(json.dumps(raw, ensure_ascii=False, indent=2), encoding="utf-8")
-    (out / "index.html").write_text(html_page(title, hebrew_title, source_url, "index.txt", "index.md", "index.json", segments), encoding="utf-8")
+    (out / "index.html").write_text(html_page(title, hebrew_title, source_url, plain_url + "index.txt", plain_url + "index.md", plain_url + "index.json", segments, plain_url), encoding="utf-8")
     return {"bookId": book, "part": part, "torah": torah, "title": title, "hebrewTitle": hebrew_title, "url": f"/reader-plain/{book}/{part}/{torah}/", "sourceUrl": source_url, "segments": len(segments)}
 
 
@@ -307,8 +315,8 @@ def write_known_quoted_passages() -> list[str]:
     (out / "index.html").write_text(
         "<!doctype html><meta charset=utf-8><title>Adir beracha quoted passage</title>"
         "<meta name='robots' content='index,follow,max-snippet:-1'>"
-        "<link rel='alternate' type='text/plain' href='index.txt'>"
-        "<link rel='alternate' type='text/markdown' href='index.md'>"
+        "<link rel='alternate' type='text/plain' href='/reader-plain/quoted-passages/adir-beracha/index.txt'>"
+        "<link rel='alternate' type='text/markdown' href='/reader-plain/quoted-passages/adir-beracha/index.md'>"
         "<h1>Adir BaMurom beracha / tosafah quoted passage</h1>"
         f"<pre dir='rtl' style='white-space:pre-wrap;font-size:18px;line-height:1.7'>{html.escape(content)}</pre>",
         encoding="utf-8",
@@ -372,6 +380,7 @@ def main() -> None:
             entries.append(entry)
 
     entries.sort(key=lambda e: (e["bookId"], str(e["part"]), str(e["torah"])))
+    _navigation.harden_section_links(OUT_DIR, entries)
     (OUT_DIR / "index.json").write_text(json.dumps({"generatedFor": "ajew.org", "total": len(entries), "entries": entries}, ensure_ascii=False, indent=2), encoding="utf-8")
     by_book: dict[str, list[dict[str, Any]]] = {}
     for e in entries:
@@ -434,10 +443,14 @@ def main() -> None:
         else:
             (bdir / "full.txt").write_text("\n".join(full_txt).strip() + "\n", encoding="utf-8")
             (bdir / "full.md").write_text("\n".join(full_md).strip() + "\n", encoding="utf-8")
-        items = "\n".join(f'<li><a href="{html.escape(r["url"].split(f"/reader-plain/{book}/",1)[1])}">{html.escape(r["title"])}</a> <small>({r["segments"]} segments)</small></li>' for r in rows)
-        (bdir / "index.html").write_text(f"<!doctype html><meta charset=utf-8><title>{html.escape(book)} complete plain text</title><meta name='description' content='Complete static plain text for {html.escape(book)} on ajew.org, with all sections in one crawlable file.'><meta name='robots' content='index,follow,max-snippet:-1'><link rel='alternate' type='text/plain' href='full.txt'><link rel='alternate' type='text/markdown' href='full.md'><h1>{html.escape(book)}</h1><p><a href='/reader-plain/'>All books</a> · <a href='full.txt'>Complete book TXT</a> · <a href='full.md'>Complete book Markdown</a></p><ol>{items}</ol>", encoding="utf-8")
-        book_links.append(f'<li><a href="{html.escape(book)}/">{html.escape(book)}</a> <small>{len(rows)}</small> <a href="{html.escape(book)}/full.txt">full TXT</a></li>')
-    (OUT_DIR / "index.html").write_text(f"<!doctype html><meta charset=utf-8><title>ajew.org plain-text reader</title><meta name='description' content='Clean crawlable Hebrew and English Torah text from ajew.org for AI tools, search engines, researchers, and students.'><meta name='robots' content='index,follow'><link rel='sitemap' type='application/xml' href='/reader-plain/sitemap.xml'><h1>ajew.org plain-text reader</h1><p>Clean crawlable Hebrew/English text for AI tools, researchers, and students. Also available: <a href='index.json'>JSON catalog</a>, <a href='sitemap.xml'>XML sitemap</a>, <a href='sitemap.txt'>plain sitemap</a>.</p><ol>{''.join(book_links)}</ol>", encoding="utf-8")
+        items = "\n".join(f'<li><a href="{html.escape(r["url"])}">{html.escape(r["title"])}</a> <small>({r["segments"]} segments)</small></li>' for r in rows)
+        (bdir / "index.html").write_text(f"<!doctype html><meta charset=utf-8><title>{html.escape(book)} complete plain text</title><meta name='description' content='Complete static plain text for {html.escape(book)} on ajew.org, with all sections in one crawlable file.'><meta name='robots' content='index,follow,max-snippet:-1'><link rel='alternate' type='text/plain' href='/reader-plain/{html.escape(book)}/full.txt'><link rel='alternate' type='text/markdown' href='/reader-plain/{html.escape(book)}/full.md'><h1>{html.escape(book)}</h1><p><a href='/reader-plain/'>All books</a> · <a href='/reader-plain/{html.escape(book)}/full.txt'>Complete book TXT</a> · <a href='/reader-plain/{html.escape(book)}/full.md'>Complete book Markdown</a></p><ol>{items}</ol>", encoding="utf-8")
+        book_links.append(f'<li><a href="/reader-plain/{html.escape(book)}/">{html.escape(book)}</a> <small>{len(rows)}</small> <a href="/reader-plain/{html.escape(book)}/full.txt">full TXT</a></li>')
+    (OUT_DIR / "index.html").write_text(f"<!doctype html><meta charset=utf-8><title>ajew.org plain-text reader</title><meta name='description' content='Clean crawlable Hebrew and English Torah text from ajew.org for AI tools, search engines, researchers, and students.'><meta name='robots' content='index,follow'><link rel='sitemap' type='application/xml' href='/reader-plain/sitemap.xml'><h1>ajew.org plain-text reader</h1><p>Clean crawlable Hebrew/English text for AI tools, researchers, and students. Also available: <a href='/reader-plain/index.json'>JSON catalog</a>, <a href='/reader-plain/sitemap.xml'>XML sitemap</a>, <a href='/reader-plain/sitemap.txt'>plain sitemap</a>.</p><ol>{''.join(book_links)}</ol>", encoding="utf-8")
+    # These noindex navigation views never enter entries, by_book or sitemaps.
+    navigation_report = _navigation.write_legacy_navigation(OUT_DIR, entries, _navigation.book_labels(READER_DIR))
+    # Catalog ordinals preserve duplicate provenance in the private build log only.
+    print("Legacy plain navigation: " + json.dumps(navigation_report, ensure_ascii=False), file=sys.stderr)
     print(f"Built {len(entries)} plain reader teachings at {OUT_DIR}")
 
 

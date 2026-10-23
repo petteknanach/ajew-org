@@ -76,14 +76,15 @@ const commentaryEntry = torahData ? {
     }
   ]
 } : null;
-const pageTitle = torahData
+const isLockedHashmata = torah === 'hashmata-162' && Boolean(torahData?.passwordHash);
+const pageTitle = isLockedHashmata ? 'Locked item 162 — Chayay Moharan' : torahData
   ? `${torahData.hebrewTitle || torahData.title} - Chayey Moharan`
   : 'Chapter Not Found';
-const pageDesc = torahData
+const pageDesc = isLockedHashmata ? 'Locked item 162 from Chayay Moharan.' : torahData
   ? `Read ${torahData.title} from Chayey Moharan by Rabbi Nosson of Breslov`
   : '';
 
-const structuredData = torahData ? JSON.stringify({
+const structuredData = torahData && !isLockedHashmata ? JSON.stringify({
   "@context": "https://schema.org",
   "@type": "Article",
   "headline": `${torahData.title} - Chayey Moharan`,
@@ -96,7 +97,7 @@ const structuredData = torahData ? JSON.stringify({
 }) : '';
 ---
 
-<Layout title={pageTitle} description={pageDesc}>
+<Layout title={pageTitle} description={pageDesc} noindexFollow={isLockedHashmata}>
   {torahData && structuredData && (
     <script type="application/ld+json" set:html={structuredData} slot="head" />
   )}
@@ -109,7 +110,7 @@ const structuredData = torahData ? JSON.stringify({
     <div
       class="reader-container"
       data-torah-id={torahData.id}
-      data-torah-title={`${torahData.title} - Chayey Moharan`}
+      data-torah-title={isLockedHashmata ? pageTitle : `${torahData.title} - Chayey Moharan`}
     >
       <div class="reader-progress"></div>
 
@@ -223,7 +224,7 @@ const structuredData = torahData ? JSON.stringify({
 
       <div class="reader-header">
         {torahData.hebrewTitle && <div class="hebrew-title">{torahData.hebrewTitle}</div>}
-        <h1>{torahData.title}</h1>
+        <h1>{isLockedHashmata ? 'Locked item 162' : torahData.title}</h1>
         <p style="color: var(--reader-text-secondary); font-size: 0.9em; font-family: 'Open Sans', sans-serif;">
           חיי מוהר"ן - Chayey Moharan
         </p>

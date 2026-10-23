@@ -1,0 +1,60 @@
+---
+import Layout from '../../layouts/Layout.astro';
+const sources = [
+  {
+    "id": 1,
+    "label": "Sefaria — Ba'al Shem Tov: biographical overview and collected works",
+    "url": "https://www.sefaria.org/topics/baal-shem-tov"
+  },
+  {
+    "id": 2,
+    "label": "Torat Har Etzion — Nachman of Breslav (1): family connection and teachings on prayer",
+    "url": "https://etzion.org.il/en/philosophy/issues-jewish-thought/issues-mussar-and-faith/nachman-breslav-1"
+  }
+];
+---
+<Layout title="Baal Shem Tov — Founder of Chassidus and the Breslov Connection" description="A sourced introduction to the Baal Shem Tov, Rabbi Yisroel ben Eliezer, his teachings on prayer, and his family connection to Rebbe Nachman of Breslov." type="article" breadcrumbs={[{ name: 'Tzaddikim', url: '/tzaddikim/' }, { name: 'Baal Shem Tov', url: '/tzaddikim/baal-shem-tov/' }]}>
+  <article class="profile" lang="en" dir="ltr">
+    <nav aria-label="Breadcrumb"><a href="/tzaddikim/">Tzaddikim</a><span aria-hidden="true"> / </span><span>Baal Shem Tov</span></nav>
+    <header>
+      <p class="eyebrow">A source-based introduction</p>
+      <h1>The Baal Shem Tov</h1>
+      <p class="hebrew" lang="he" dir="rtl">רבי ישראל בן אליעזר — הבעל שם טוב</p>
+      <p class="lead">The Baal Shem Tov, Rabbi Yisroel ben Eliezer, is remembered as the founder of Chassidus.<a class="citation" href="#source-1" aria-label="Source 1">[1]</a> His teachings helped make Kabbalistic ideas accessible to a wider Jewish audience.<a class="citation" href="#source-1" aria-label="Source 1">[1]</a></p>
+    </header>
+    <section aria-labelledby="prayer-heading">
+      <h2 id="prayer-heading">The words of prayer</h2>
+      <p>Teachings collected in his name give particular attention to prayer, intention, and the spiritual significance of its words and letters.<a class="citation" href="#source-2" aria-label="Source 2">[2]</a> The Torat Har Etzion study listed below discusses these passages alongside Rebbe Nachman’s teachings on prayer.<a class="citation" href="#source-2" aria-label="Source 2">[2]</a></p>
+      <p>The collected works are a place to study individual teachings with their own references and context, rather than treating a brief biography as a substitute for the text.</p>
+    </section>
+    <section aria-labelledby="breslov-heading">
+      <h2 id="breslov-heading">The family connection to Breslov</h2>
+      <p>Rebbe Nachman of Breslov was a great-grandson of the Baal Shem Tov.<a class="citation" href="#source-2" aria-label="Source 2">[2]</a> This family connection is part of the background to the Breslov tradition and its teachings on prayer.<a class="citation" href="#source-2" aria-label="Source 2">[2]</a></p>
+      <a class="related" href="/tzaddikim/rebbe-nachman/">Rebbe Nachman of Breslov — profile and works <span aria-hidden="true">→</span></a>
+    </section>
+    <section aria-labelledby="study-heading">
+      <h2 id="study-heading">Study and further reading</h2>
+      <ul class="study-links">
+        <li><a href="https://www.sefaria.org/topics/baal-shem-tov">The Baal Shem Tov’s collected teachings and works on Sefaria</a></li>
+        <li><a href="/reader/">The Breslov Torah Library on ajew.org</a></li>
+        <li><a href="/tzaddikim/">More profiles in the Tzaddikim directory</a></li>
+      </ul>
+    </section>
+    <section class="sources" aria-labelledby="sources-heading">
+      <h2 id="sources-heading">Sources</h2>
+      <ol>{sources.map((source) => <li id={`source-${source.id}`}><a href={source.url}>{source.label}</a></li>)}</ol>
+    </section>
+  </article>
+</Layout>
+<style>
+  .profile{max-width:860px;margin:0 auto;padding:36px 24px 90px;color:var(--ds-text-primary,#263248);line-height:1.8}
+  nav{font-size:.9rem;margin-bottom:34px}a{color:var(--ds-link,#24496a);text-underline-offset:.2em}
+  .eyebrow{text-transform:uppercase;letter-spacing:.1em;font-size:.78rem;font-weight:700;color:var(--ds-text-primary,#263248);margin:0 0 10px}
+  h1,h2{font-family:'Frank Ruhl Libre',Georgia,serif;line-height:1.2}h1{font-size:clamp(2.1rem,5vw,3.3rem);margin:0 0 14px}h2{font-size:1.65rem;margin:0 0 15px}
+  .hebrew{font-family:'Frank Ruhl Libre',serif;font-size:1.5rem;text-align:start;margin:0 0 26px}.lead{font-size:1.15rem}
+  section{margin-top:38px}p{margin:0 0 18px;max-width:68ch}.citation{font-family:system-ui,sans-serif;font-size:.78em;vertical-align:super;margin-left:.3em}
+  .related{display:block;border:1px solid var(--ds-border,#d9d2c2);border-radius:10px;padding:18px 20px;background:var(--ds-surface,#fffdf8);font-weight:600}
+  .study-links{padding-left:24px}.study-links li,.sources li{padding:8px 0;overflow-wrap:anywhere}.sources{border-top:1px solid var(--ds-border,#d9d2c2);padding-top:24px;font-size:.92rem}
+  a:focus-visible{outline:3px solid var(--ds-link,#24496a);outline-offset:4px;border-radius:3px}
+  @media(max-width:600px){.profile{padding:26px 18px 90px}.related{padding:16px}}
+</style>

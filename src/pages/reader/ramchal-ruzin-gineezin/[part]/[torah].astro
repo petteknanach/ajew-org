@@ -5,13 +5,10 @@ import '../../../../styles/reader.css';
 import '../../../../styles/reader-v2.css';
 import fs from 'node:fs';
 import path from 'node:path';
+import { ruzinSectionPaths, ruzinNavigation } from '../../../../lib/ruzin-section-routes.mjs';
 
 export function getStaticPaths() {
-  const paths = [];
-  for (let section = 1; section <= 5; section++) {
-    paths.push({ params: { part: '1', torah: String(section) } });
-  }
-  return paths;
+  return ruzinSectionPaths(path.join(process.cwd(), 'public/reader/ramchal-ruzin-gineezin'));
 }
 
 const { part, torah } = Astro.params;
@@ -32,12 +29,9 @@ try {
 if (!torahData && !error) error = 'Content not available';
 
 if (torahData) {
-  if (!torahData.navigation) {
-    torahData.navigation = {
-      prevUrl: torahNum > 1 ? `/reader/ramchal-ruzin-gineezin/${partNum}/${torahNum - 1}` : null,
-      nextUrl: torahNum < 5 ? `/reader/ramchal-ruzin-gineezin/${partNum}/${torahNum + 1}` : null,
-    };
-  }
+  torahData.navigation = ruzinNavigation(
+    path.join(process.cwd(), 'public/reader/ramchal-ruzin-gineezin'), partNum, torahNum
+  );
   torahData.segments.forEach((seg, i) => {
     if (!seg.index) seg.index = i + 1;
   });
