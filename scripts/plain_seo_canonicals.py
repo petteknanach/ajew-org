@@ -17,6 +17,7 @@ from urllib.parse import unquote, urlsplit
 
 SITE = "https://ajew.org"
 QUALIFIED_RAW = "/reader-plain/reviewed/wrapup-18-19-92-209/"
+QUALIFIED_281_RAW = '/reader-plain/sichos-haran/reviewed/281-290/'
 
 
 def iri_path(value: str) -> str:
@@ -180,9 +181,11 @@ def repair_plain_canonicals(dist: Path, entries: list[dict]) -> dict:
 
 
 def raw_section_url(dist: Path, row: dict) -> str:
-    """One proven qualified exception; never interpolate its composite owner."""
-    if (row.get("bookId"), row.get("part"), row.get("torah")) == ("reviewed", "reviewed", "wrapup-18-19-92-209"):
-        if row.get("url") != QUALIFIED_RAW:
+    """Resolve proven qualified catalog exports, not guessed human routes."""
+    identity = (row.get("bookId"), row.get("part"), row.get("torah"))
+    if identity in (("reviewed", "reviewed", "wrapup-18-19-92-209"), ("sichos-haran", "reviewed", "281-290")):
+        expected = QUALIFIED_RAW if identity == ("reviewed", "reviewed", "wrapup-18-19-92-209") else QUALIFIED_281_RAW
+        if row.get("url") != expected:
             raise ValueError("Qualified raw identity drift")
         p = iri_path(row["url"] + "index.txt")
         if regular(dist, p.lstrip("/")) is None:

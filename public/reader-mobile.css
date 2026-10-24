@@ -72,3 +72,22 @@ details.ai-reader-access > summary { cursor: pointer; }
 @media print {
   .reader-audio-disclosure, #reader-tools-toggle { display: none !important; }
 }
+
+/* Keep the 281-290 ordinary-reader action controls distinct. Text and other editions are unchanged. */
+.reader-container:is([data-torah-id="sr-281"],[data-torah-id="sr-282"],[data-torah-id="sr-283"],[data-torah-id="sr-284"],[data-torah-id="sr-285"],[data-torah-id="sr-286"],[data-torah-id="sr-287"],[data-torah-id="sr-288"],[data-torah-id="sr-289"],[data-torah-id="sr-290"]) .reader-segment-pair:has(> .ajew-segment-actions) > .ajew-segment-actions {
+  grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center;
+  gap: .4rem; width: 100%; box-sizing: border-box; padding-inline-end: 44px; margin-block-end: .75rem;
+}
+.reader-container:is([data-torah-id="sr-281"],[data-torah-id="sr-282"],[data-torah-id="sr-283"],[data-torah-id="sr-284"],[data-torah-id="sr-285"],[data-torah-id="sr-286"],[data-torah-id="sr-287"],[data-torah-id="sr-288"],[data-torah-id="sr-289"],[data-torah-id="sr-290"]) .reader-segment-pair:has(> .ajew-segment-actions) > .ajew-segment-actions > .ajew-segment-action-btn { min-height: 32px; }
+.reader-container:is([data-torah-id="sr-281"],[data-torah-id="sr-282"],[data-torah-id="sr-283"],[data-torah-id="sr-284"],[data-torah-id="sr-285"],[data-torah-id="sr-286"],[data-torah-id="sr-287"],[data-torah-id="sr-288"],[data-torah-id="sr-289"],[data-torah-id="sr-290"]) .reader-segment-pair:has(> .ajew-segment-actions) > .note-indicator {
+  position: absolute; inset: auto; inset-block-start: 0; inset-inline-end: 0;
+  width: 32px; height: 32px; min-width: 32px; min-height: 32px; line-height: 32px;
+  padding: 0; opacity: 1; z-index: 6;
+}
+.reader-container:is([data-torah-id="sr-281"],[data-torah-id="sr-282"],[data-torah-id="sr-283"],[data-torah-id="sr-284"],[data-torah-id="sr-285"],[data-torah-id="sr-286"],[data-torah-id="sr-287"],[data-torah-id="sr-288"],[data-torah-id="sr-289"],[data-torah-id="sr-290"]) .reader-segment-pair:has(> .ajew-segment-actions) > .seg-copy-btn { display: none !important; }
+.reader-container:is([data-torah-id="sr-281"],[data-torah-id="sr-282"],[data-torah-id="sr-283"],[data-torah-id="sr-284"],[data-torah-id="sr-285"],[data-torah-id="sr-286"],[data-torah-id="sr-287"],[data-torah-id="sr-288"],[data-torah-id="sr-289"],[data-torah-id="sr-290"]) .reader-segment-pair:has(> .ajew-segment-actions) > .note-editor { grid-column: 1 / -1; width: 100%; box-sizing: border-box; }
+
+/* Reader action controls are screen UI, not printed source. */
+@media print {
+  .reader-container:is([data-torah-id="sr-281"],[data-torah-id="sr-282"],[data-torah-id="sr-283"],[data-torah-id="sr-284"],[data-torah-id="sr-285"],[data-torah-id="sr-286"],[data-torah-id="sr-287"],[data-torah-id="sr-288"],[data-torah-id="sr-289"],[data-torah-id="sr-290"]) .reader-segment-pair:has(> .ajew-segment-actions) > :is(.ajew-segment-actions,.note-indicator,.note-editor) { display: none !important; }
+}
