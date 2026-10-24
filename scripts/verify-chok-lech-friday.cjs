@@ -12,7 +12,8 @@ const one=(n,p)=>{const a=nodes(n,p);assert.equal(a.length,1);return a[0];};
 function sourceFunction(code,name){const marker='  function '+name+'(';const a=code.indexOf(marker);assert(a>=0);const b=code.indexOf('\n  }',a);assert(b>a);return code.slice(a,b+4);}
 (async()=>{
  sourceSRI(root);const main=read('public/chok.js');let rawRequests=0;const {api,libraryAPI,entries}=boot(root),entry=entries.find(e=>e.key===fixture.readingKey);assert(entry);assert.deepEqual(entry,fixture.selectedEntry);
- assert.deepEqual(entries.filter(e=>e.key!==entry.key).map(e=>e.key),fixture.priorSelectedKeys);
+ assert.deepEqual(entries.filter(e=>fixture.priorSelectedKeys.includes(e.key)).map(e=>e.key),fixture.priorSelectedKeys);
+ assert.deepEqual(entries.map(e=>e.key).sort(),oracle.readingKeys.slice().sort(),'EXACT_REVIEWED_ENTRY_KEYSET');
  const raw=read('public'+entry.url),packet=JSON.parse(raw);assert.deepEqual(packet,fixture.expectedPacket);const checked=checkOracle(packet,entry,oracle);assert.equal(checked.checked,12);assert.equal(checked.notes,17);
  const sources=new Map(fixture.sourceOwners.map(s=>[s.id,s])),drafts=new Map(fixture.drafts.map(s=>[s.id,s]));
  for(const section of Object.values(packet.sections))for(const u of section.units){
