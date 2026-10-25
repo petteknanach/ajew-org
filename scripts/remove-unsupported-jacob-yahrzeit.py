@@ -1,60 +1,64 @@
 #!/usr/bin/env python3
-"""Remove only the unsupported legacy 15-Cheshvan Jacob duplicate.
+"""Clear the unsupported 15-Cheshvan date without shifting registry source rows.
 
-User correction: 2026-10-25. Each database already has a separately sourced
-Yaakov Avinu identity; preserve it byte-for-byte as a decoded row. No replacement
-date is researched or assigned here. The removed row remains in Git history.
+The Today-in-Breslov registry has legacy index-bound exclusions and public source
+pointers. Retain Jacob's existing catalog identity, but no unsourced date/year.
+The separately sourced Yaakov Avinu entry is unchanged. A predecessor removal
+is repaired only at its original, neighbor-checked slot. No new date is assigned.
 """
 import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-FILES = (
-    'tzaddikim-database.json',
-    'tzaddikim-database-complete.json',
-    'tzaddikim-database-filtered.json',
-)
+SLOTS = {
+    'tzaddikim-database.json': (359, 'Rav Eliezer ben Yitzchak ibn Archa', 'Rav (Reb) Shlomo Carlebach'),
+    'tzaddikim-database-complete.json': (107, 'Rabbi Avraham Chazan', 'Rabban Gamliel the Elder'),
+    'tzaddikim-database-filtered.json': (80, 'Rabbi Avraham bar Nachman of Tulchin', 'Mattisyahu ben Yochanan'),
+}
+FILES = tuple(SLOTS)
+DROP_KEYS = ('yahrzeit_hebrew', 'yahrzeit_month', 'yahrzeit_day', 'is_adar_ii', 'year_passed')
+IDENTITY = {'name': 'Jacob', 'hebrew_name': 'יעקב', 'notes': 'Third Patriarch', 'category': 'biblical', 'source': 'editable'}
 
 
-def unsupported(row):
-    return (
-        row.get('name') == 'Jacob'
-        and row.get('hebrew_name') == 'יעקב'
-        and row.get('category') == 'biblical'
-        and row.get('source') == 'editable'
-        and row.get('yahrzeit_month') == 'Cheshvan'
-        and str(row.get('yahrzeit_day')) == '15'
-        and row.get('notes') == 'Third Patriarch'
-        and not row.get('source_url')
-        and not row.get('source_urls')
-    )
+def legacy(row):
+    return all(row.get(k) == value for k, value in IDENTITY.items()) and not row.get('source_urls') and not row.get('source_url')
 
 
-def corrected(data):
-    rows = data['all_tzaddikim']
-    assert sum(unsupported(row) for row in rows) <= 1, 'Unexpected legacy duplicates'
-    canonical = [row for row in rows if row.get('name') == 'Yaakov Avinu'
-                 and row.get('hebrew_name') == 'יעקב אבינו']
-    assert len(canonical) == 1 and canonical[0].get('source_urls'), 'Sourced identity missing'
+def corrected(data, filename):
     result = json.loads(json.dumps(data, ensure_ascii=False))
-    result['all_tzaddikim'] = [row for row in result['all_tzaddikim'] if not unsupported(row)]
-    result['metadata']['total_count'] = len(result['all_tzaddikim'])
+    rows = result['all_tzaddikim']
+    slot, previous, following = SLOTS[filename]
+    matches = [i for i, row in enumerate(rows) if legacy(row)]
+    assert len(matches) <= 1, 'Unexpected legacy duplicates'
+    if not matches:
+        assert rows[slot - 1]['name'] == previous and rows[slot]['name'] == following, 'Original slot/neighbor drift'
+        rows.insert(slot, dict(IDENTITY))
+    else:
+        assert matches == [slot], 'Legacy identity moved: do not rewrite source-pointer positions'
+        row = rows[slot]
+        if any(key in row for key in DROP_KEYS):
+            assert row.get('yahrzeit_month') == 'Cheshvan' and str(row.get('yahrzeit_day')) == '15', 'Unexpected date: requires review'
+        for key in DROP_KEYS:
+            row.pop(key, None)
+    assert rows[slot] == IDENTITY
+    canonical = [row for row in rows if row.get('name') == 'Yaakov Avinu' and row.get('hebrew_name') == 'יעקב אבינו']
+    assert len(canonical) == 1 and canonical[0].get('source_urls'), 'Sourced identity missing'
+    result['metadata']['total_count'] = len(rows)
     return result
 
 
 def main():
-    # Validate every file and idempotence before the first write.
     pending = []
     for filename in FILES:
         path = ROOT / 'public' / 'data' / filename
         before = json.loads(path.read_text(encoding='utf-8'))
-        after = corrected(before)
-        assert corrected(after) == after, 'Not idempotent'
+        after = corrected(before, filename)
+        assert corrected(after, filename) == after, 'Not idempotent'
         pending.append((path, before, after))
     for path, before, after in pending:
         if before != after:
             path.write_text(json.dumps(after, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
-        print(f'{path.name}: removed {len(before["all_tzaddikim"]) - len(after["all_tzaddikim"])} unsupported row(s)')
+        print(f'{path.name}: unsupported date absent; source-row positions retained')
 
 
 if __name__ == '__main__':
