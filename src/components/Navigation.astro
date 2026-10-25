@@ -1128,6 +1128,17 @@ function isActive(path: string) {
     .sidebar-link { transition: none; }
     .sidebar-link:hover { transform: none; }
   }
+
+  /* Fixed screen navigation must not cover printed reading text. */
+  @media print {
+    .desktop-sidebar,
+    .mobile-header,
+    .mobile-tabbar,
+    .mobile-more-sheet,
+    .hitbodedut-fab {
+      display: none !important;
+    }
+  }
 </style>
 
 <!-- ═══════════════════════════════════════
