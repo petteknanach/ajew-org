@@ -183,6 +183,14 @@ def repair_plain_canonicals(dist: Path, entries: list[dict]) -> dict:
 def raw_section_url(dist: Path, row: dict) -> str:
     """Resolve proven qualified catalog exports, not guessed human routes."""
     identity = (row.get("bookId"), row.get("part"), row.get("torah"))
+    if identity == ("sichos-haran", "reviewed", "301-308"):
+        expected = "/reader-plain/sichos-haran/reviewed/301-308/"
+        if row.get("url") != expected:
+            raise ValueError("Qualified raw identity drift")
+        p = iri_path(row["url"] + "index.txt")
+        if regular(dist, p.lstrip("/")) is None:
+            raise ValueError("Missing qualified TXT export")
+        return SITE + row["url"] + "index.txt"
     if identity in (("reviewed", "reviewed", "wrapup-18-19-92-209"), ("sichos-haran", "reviewed", "281-290"), ("sichos-haran", "reviewed", "291-300")):
         expected = QUALIFIED_RAW if identity == ("reviewed", "reviewed", "wrapup-18-19-92-209") else (QUALIFIED_281_RAW if identity == ("sichos-haran", "reviewed", "281-290") else "/reader-plain/sichos-haran/reviewed/291-300/")
         if row.get("url") != expected:

@@ -52,6 +52,7 @@ function canonicalReaderLink(link) {
   // This registered additive edition has no numeric part component.
   if (book === 'reviewed' && parts.length === 3 && parts[2] === 'wrapup-18-19-92-209') return '/reader/reviewed/wrapup-18-19-92-209';
   if (book === 'reviewed' && parts.length === 3 && parts[2] === 'sichos-291-300') return '/reader/reviewed/sichos-291-300';
+  if (book === 'reviewed' && parts.length === 3 && parts[2] === 'sichos-301-308') return '/reader/reviewed/sichos-301-308';
   const cleanPart = value => value.replace(/^part-/, '');
   const cleanUnit = value => /^(?:torah|halacha|prayer|topic|section|sicha|chapter)-\d+$/.test(value)
     ? value.replace(/^(?:torah|halacha|prayer|topic|section|sicha|chapter)-/, '')
