@@ -108,6 +108,10 @@ function toggleNikud() {
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 .content-text p { margin-bottom: 1.5rem; }
+/* Keep the screen-only pointing control out of printed source. */
+@media print {
+  .nikud-toggle { display: none !important; }
+}
 </style>
 
 <nav class="navigation" style="background: #f7f5f0; padding: 1rem; margin-top: 2rem; border-radius: 8px;">
