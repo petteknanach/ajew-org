@@ -53,6 +53,33 @@ self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   if (url.pathname.startsWith('/api/')) return;
 
+  // Calendar metadata can be corrected at runtime. Revalidate it online instead
+  // of retaining a browser/worker copy of an unsupported yahrzeit indefinitely.
+  if (url.origin === self.location.origin && [
+    '/data/tzaddikim-database.json',
+    '/data/tzaddikim-database-complete.json',
+    '/data/tzaddikim-database-filtered.json',
+  ].includes(url.pathname)) {
+    event.respondWith(
+      caches.open(CACHE_NAME).then(async (cache) => {
+        try {
+          const response = await fetch(event.request, { cache: 'no-cache' });
+          if (response.ok) {
+            try { await cache.put(event.request, response.clone()); } catch (_) { /* quota */ }
+            return response;
+          }
+          return (await cache.match(event.request)) || response;
+        } catch (_) {
+          return (await cache.match(event.request)) || new Response(
+            JSON.stringify({error:'Offline'}),
+            {status:503, headers:{'Content-Type':'application/json'}}
+          );
+        }
+      })
+    );
+    return;
+  }
+
   // Reader JSON files - stale-while-revalidate.
   // Returns cached copy instantly, refreshes in background so commentary edits
   // propagate without needing another CACHE_NAME bump.
