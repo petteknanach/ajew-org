@@ -15,6 +15,7 @@ from reader_search_routes import discover_routed_sources
 from reviewed_chayay_exports import is_reviewed_source, search_document
 from reviewed_alim_exports import is_reviewed_source as is_alim_source, search_document as alim_search_document
 from reviewed_wrapup_exports import is_reviewed_source as is_wrapup_source, search_document as wrapup_search_document
+from qualified_sichos291300_exports import is_source as is_sichos291300_source, search_document as sichos291300_search_document
 
 from qualified_aitzoas362_exports import (is_archive as is_aitzoas_archive, is_source as is_aitzoas_source, load_edition as load_aitzoas_edition, checked_section as aitzoas_checked_section, search_text as aitzoas_search_text)
 
@@ -174,12 +175,12 @@ for routed in discover_routed_sources(json_files, READER_DIR):
         with open(fpath, 'r', encoding='utf-8') as f:
             data = json.load(f)
     except (json.JSONDecodeError, Exception):
-        if is_aitzoas_source(fpath, READER_DIR) or is_wrapup_source(fpath, READER_DIR):
+        if is_aitzoas_source(fpath, READER_DIR) or is_wrapup_source(fpath, READER_DIR) or is_sichos291300_source(fpath, READER_DIR):
             raise  # current qualified source is never silently skipped
         skipped += 1
         continue
     if not isinstance(data, dict):
-        if is_aitzoas_source(fpath, READER_DIR) or is_wrapup_source(fpath, READER_DIR):
+        if is_aitzoas_source(fpath, READER_DIR) or is_wrapup_source(fpath, READER_DIR) or is_sichos291300_source(fpath, READER_DIR):
             raise ValueError("Malformed current qualified projection")
         # Non-document JSON (schedules, maps, calendars, commentary files...)
         # carries no segments to index.
@@ -192,6 +193,9 @@ for routed in discover_routed_sources(json_files, READER_DIR):
         data = alim_search_document(fpath, data)
     if is_wrapup_source(fpath, READER_DIR):
         data = wrapup_search_document(fpath, data)
+    if is_sichos291300_source(fpath, READER_DIR):
+        data = sichos291300_search_document(fpath, data)
+        book = "sichos-haran"
     if is_aitzoas_source(fpath, READER_DIR):
         if aitzoas_edition is None:
             aitzoas_edition = load_aitzoas_edition(READER_DIR.resolve().parents[1])

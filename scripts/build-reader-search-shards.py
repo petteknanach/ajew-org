@@ -20,6 +20,7 @@ if _SCRIPT_DIR not in sys.path:
 from reviewed_chayay_exports import is_reviewed_source, search_document
 from reviewed_alim_exports import is_reviewed_source as is_alim_source, search_document as alim_search_document
 from reviewed_wrapup_exports import is_reviewed_source as is_wrapup_source, search_document as wrapup_search_document
+from qualified_sichos291300_exports import is_source as is_sichos291300_source, search_document as sichos291300_search_document, checked_catalog_artifacts as sichos291300_checked_catalog_artifacts, ROUTE as SICHOS291300_ROUTE
 
 from qualified_aitzoas362_exports import (load_edition as load_aitzoas_edition, search_text as aitzoas_search_text, route_section as aitzoas_route_section, checked_search_artifacts as aitzoas_checked_search_artifacts)
 
@@ -157,13 +158,13 @@ def segment_map(raw_link):
         return aitzoas_search_text(edition, section)[2]
     source = ROOT / 'public' / f"{raw_link.strip('/')}.json"
     if not source.exists():
-        if is_wrapup_source(source, ROOT / "public" / "reader"):
+        if is_wrapup_source(source, ROOT / "public" / "reader") or is_sichos291300_source(source, ROOT / "public" / "reader"):
             raise FileNotFoundError(source)
         return []
     try:
         data = json.loads(source.read_text(encoding='utf-8'))
     except (OSError, json.JSONDecodeError):
-        if is_wrapup_source(source, ROOT / "public" / "reader"):
+        if is_wrapup_source(source, ROOT / "public" / "reader") or is_sichos291300_source(source, ROOT / "public" / "reader"):
             raise
         return []
     if is_reviewed_source(source, ROOT / 'public' / 'reader'):
@@ -172,6 +173,8 @@ def segment_map(raw_link):
         data = alim_search_document(source, data)
     if is_wrapup_source(source, ROOT / 'public' / 'reader'):
         data = wrapup_search_document(source, data)
+    if is_sichos291300_source(source, ROOT / 'public' / 'reader'):
+        data = sichos291300_search_document(source, data)
     segments = data.get('segments') or []
     if not isinstance(segments, list):
         return []
@@ -233,6 +236,8 @@ def main():
 
     aitzoas_edition = load_aitzoas_edition(ROOT) if any(k.startswith("/reader/aitzoas-yeshuroas/") for k in by_link) else None
 
+    sichos291300_artifacts = sichos291300_checked_catalog_artifacts(ROOT, he, en)
+
     if OUT.exists(): shutil.rmtree(OUT)
     SHARDS.mkdir(parents=True, exist_ok=True)
     DOCS.mkdir(parents=True, exist_ok=True)
@@ -264,6 +269,8 @@ def main():
         qualified_locations = None
         if link.startswith('/reader/aitzoas-yeshuroas/'):
             he_text, en_text, qualified_locations = aitzoas_checked_search_artifacts(aitzoas_edition, link, hd, ed)
+        elif link == SICHOS291300_ROUTE:
+            he_text, en_text, qualified_locations = sichos291300_artifacts
         else:
             he_text = clean_text(hd.get('x',''))
             en_text = clean_text(ed.get('x','') or hd.get('e','') or ed.get('e',''))

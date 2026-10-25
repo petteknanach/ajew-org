@@ -70,6 +70,28 @@ def is_sichos261270_archive(path: Path, reader_dir: Path) -> bool:
     return path.relative_to(reader_dir).parts[:2] == ("reviewed", "sichos-261270-sources")
 
 
+def is_sichos291300_archive(path: Path, reader_dir: Path) -> bool:
+    """Exclude only this edition's independently conserved original-source archive."""
+    return path.relative_to(reader_dir).parts[:2] == ("reviewed", "sichos-291300-sources")
+
+
+def write_sichos291300(root: Path, out_dir: Path) -> dict[str, Any]:
+    """Use the actual authenticated exact27 Node exporter, not generic segment fallback."""
+    program = """import {pathToFileURL} from 'node:url';
+const root=process.argv[1];
+const {loadEdition,plainExport}=await import(pathToFileURL(root+'/src/lib/qualified-sichos-291300.mjs'));
+const d=await loadEdition(root);
+console.log(JSON.stringify({title:d.title,files:Object.fromEntries(['txt','md','json','html'].map(f=>['index.'+f,plainExport(d,f)]))}));"""
+    result = subprocess.run(["node", "--max-old-space-size=512", "--input-type=module", "-e", program, str(root)], capture_output=True, check=True, timeout=600)
+    payload = json.loads(result.stdout)
+    out = out_dir / "sichos-haran" / "reviewed" / "291-300"
+    out.mkdir(parents=True, exist_ok=True)
+    for name, text in payload["files"].items():
+        (out / name).write_bytes(text.encode("utf-8"))
+    return {"bookId":"sichos-haran", "part":"reviewed", "torah":"291-300", "title":payload["title"], "url":"/reader-plain/sichos-haran/reviewed/291-300/", "segments":27}
+
+
+
 def is_sichos281290_archive(path: Path, reader_dir: Path) -> bool:
     """Only the new archive namespace is excluded; ordinary legacy sources stay eligible."""
     return path.relative_to(reader_dir).parts[:2] == ("reviewed", "sichos-281290-sources")
@@ -359,6 +381,11 @@ def main() -> None:
     aitzoas_edition = None
     for path in sorted(READER_DIR.rglob("*.json")):
         rel = path.relative_to(READER_DIR)
+        if is_sichos291300_archive(path, READER_DIR):
+            continue
+        if rel.parts == ("reviewed", "sichos-291-300.json"):
+            entries.append(write_sichos291300(ROOT, OUT_DIR))
+            continue
         if is_sichos281290_archive(path, READER_DIR):
             continue  # exact281290 archive exclusion precedes ordinary ingestion
         if rel.parts == ("reviewed", "sichos-281-290.json"):
@@ -463,9 +490,9 @@ def main() -> None:
             if book == AITZOAS_BOOK and (not sec_txt.is_file() or not sec_md.is_file()):
                 raise ValueError("Missing canonical Aitzoas plain section in full-book assembly")
             if sec_txt.exists():
-                full_txt += [f"\n\n# {r['title']}", f"URL: https://ajew.org{r['url']}\n", sec_txt.read_bytes().decode("utf-8") if book == AITZOAS_BOOK or r["url"] in {"/reader-plain/sichos-haran/reviewed/281-290/","/reader-plain/sichos-haran/reviewed/271-280/","/reader-plain/chayey-moharan/reviewed/14-58/", "/reader-plain/alim-litrufa/reviewed/part-2-17-62-63/", "/reader-plain/reviewed/wrapup-18-19-92-209/"} else sec_txt.read_text(encoding="utf-8")]
+                full_txt += [f"\n\n# {r['title']}", f"URL: https://ajew.org{r['url']}\n", sec_txt.read_bytes().decode("utf-8") if book == AITZOAS_BOOK or r["url"] in {"/reader-plain/sichos-haran/reviewed/291-300/","/reader-plain/sichos-haran/reviewed/281-290/","/reader-plain/sichos-haran/reviewed/271-280/","/reader-plain/chayey-moharan/reviewed/14-58/", "/reader-plain/alim-litrufa/reviewed/part-2-17-62-63/", "/reader-plain/reviewed/wrapup-18-19-92-209/"} else sec_txt.read_text(encoding="utf-8")]
             if sec_md.exists():
-                full_md += [f"\n\n# {r['title']}", f"\nURL: https://ajew.org{r['url']}\n", sec_md.read_bytes().decode("utf-8") if book == AITZOAS_BOOK or r["url"] in {"/reader-plain/sichos-haran/reviewed/281-290/","/reader-plain/sichos-haran/reviewed/271-280/","/reader-plain/chayey-moharan/reviewed/14-58/", "/reader-plain/alim-litrufa/reviewed/part-2-17-62-63/", "/reader-plain/reviewed/wrapup-18-19-92-209/"} else sec_md.read_text(encoding="utf-8")]
+                full_md += [f"\n\n# {r['title']}", f"\nURL: https://ajew.org{r['url']}\n", sec_md.read_bytes().decode("utf-8") if book == AITZOAS_BOOK or r["url"] in {"/reader-plain/sichos-haran/reviewed/291-300/","/reader-plain/sichos-haran/reviewed/281-290/","/reader-plain/sichos-haran/reviewed/271-280/","/reader-plain/chayey-moharan/reviewed/14-58/", "/reader-plain/alim-litrufa/reviewed/part-2-17-62-63/", "/reader-plain/reviewed/wrapup-18-19-92-209/"} else sec_md.read_text(encoding="utf-8")]
         if book == AITZOAS_BOOK:
             # Do not strip or newline-normalize exact qualified fields.
             (bdir / "full.txt").write_bytes(("\n".join(full_txt) + "\n").encode("utf-8"))
