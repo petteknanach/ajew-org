@@ -1,10 +1,11 @@
 ---
-interface Props { packet: any; segmentPrefix?: string; }
-const { packet, segmentPrefix = "noach-source" } = Astro.props;
+interface Props { packet: any; segmentPrefix?: string; headingTag?: 'h1' | 'h2'; }
+const { packet, segmentPrefix = "noach-source", headingTag: HeadingTag = 'h2' } = Astro.props;
+if (HeadingTag !== 'h1' && HeadingTag !== 'h2') throw new Error('Invalid parsha supplement heading tag');
 ---
 {packet && (
   <section class="parsha-source-supplement" id="noach-source-supplement" data-view="en" aria-label={packet.title}>
-    <h2>{packet.title}</h2>
+    <HeadingTag>{packet.title}</HeadingTag>
     <p class="supplement-context">{packet.description}</p>
     <div class="supplement-views" aria-label="Supplement language">
       <button type="button" data-supplement-view="en" aria-pressed="true">English</button>
@@ -43,7 +44,7 @@ const { packet, segmentPrefix = "noach-source" } = Astro.props;
 </script>
 <style>
   .parsha-source-supplement { margin: 1.5rem 0; padding: clamp(1rem, 3vw, 2rem); border: 1px solid var(--reader-border, #72828d); border-radius: 12px; color: var(--reader-text, inherit); background: var(--reader-bg, transparent); overflow-wrap: anywhere; }
-  h2 { font-size: 1.4rem; margin: 0 0 .6rem; }
+  h2, .parsha-source-supplement > h1 { font-size: 1.4rem; margin: 0 0 .6rem; }
   h3 { font-size: 1.1rem; margin: 1.5rem 0 .8rem; }
   .supplement-context, .supplement-citation { font-size: .9rem; line-height: 1.6; }
   .supplement-views { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1rem 0; }

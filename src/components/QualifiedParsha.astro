@@ -1,7 +1,9 @@
 ---
 import {qualifiedParsha, PARSHA_READER, fieldStatus, fieldStatusLabel, note89Binding, note89Reference, note89QualificationText} from '../lib/qualified-parsha.mjs';
 // A separate edition: never borrow the older reviewed or legacy OCR bodies.
-const { slug, dataset = null } = Astro.props;
+interface Props { slug?: string; dataset?: any; headingTag?: 'h1' | 'h2'; }
+const { slug, dataset = null, headingTag: HeadingTag = 'h2' } = Astro.props;
+if (HeadingTag !== 'h1' && HeadingTag !== 'h2') throw new Error('Invalid qualified parsha heading tag');
 let selection = dataset;
 let coverage = null;
 if (!selection) {
@@ -30,7 +32,7 @@ const afterPair = (unit, pair) => (unit.qualifications || []).filter(note => not
 const afterOwner = unit => (unit.qualifications || []).filter(note => note.placement !== 'after_pair' || !unit.pairs.some(pair => pair.id === note.pair_id));
 ---
 <section class="qualified-parsha" dir="ltr" data-qualified-parsha data-language="both" data-revision={selection.revision}>
-  <h2>ברסלב על הפרשה · Qualified source selections</h2>
+  <HeadingTag style={HeadingTag === 'h1' ? 'font-size: 1.5em;' : undefined}>ברסלב על הפרשה · Qualified source selections</HeadingTag>
   {coverage && <h3><span lang="he" dir="rtl">{coverage.titleHe}</span> · {coverage.titleEn}</h3>}
   <p class="qp-notice" role="status">{selection.scopeNotice}</p>
   {coverage?.notice && <p class="qp-notice">{coverage.notice}</p>}

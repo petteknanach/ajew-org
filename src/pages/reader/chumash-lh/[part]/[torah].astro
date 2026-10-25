@@ -40,6 +40,7 @@ export function getStaticPaths() {
 }
 
 const { part, torah } = Astro.params;
+const qualifiedHeadingTag = part === '1' && ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'].includes(torah || '') ? 'h1' : 'h2';
 const partNum = parseInt(part);
 const torahNum = parseInt(torah);
 const routeSlug = Object.keys(PARSHA_READER).find(slug => PARSHA_READER[slug] === `${partNum}/${torahNum}`);
@@ -121,7 +122,7 @@ const structuredData = torahData ? JSON.stringify({
       </nav>
       <ParshaSourceSupplement packet={sourceSupplement} />
       {torahData.pdfSource && <a href={torahData.pdfSource} target="_blank" rel="noopener">View Original PDF</a>}
-      <QualifiedParsha slug={qualifiedSlug} dataset={earlierQualified ? torahData : null} />
+      <QualifiedParsha slug={qualifiedSlug} dataset={earlierQualified ? torahData : null} headingTag={qualifiedHeadingTag} />
       {earlierQualified && ['bereishit', 'noach'].includes(qualifiedSlug) && <details class="legacy-reviewed-edition"><summary>Earlier reviewed-v1 edition · distinct legacy selections</summary><ReviewedParsha slug={qualifiedSlug} /></details>}
     </div>
   ) : (

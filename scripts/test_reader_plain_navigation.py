@@ -43,6 +43,19 @@ def baseline_bytes(path):
     return subprocess.check_output(["git", "-c", "core.packedGitWindowSize=16m", "-c", "core.packedGitLimit=32m", "show", f"{BASE}:{path}"], cwd=ROOT)
 
 
+# Only these reviewed presentation edits may precede the immutable full-template check.
+# Route limits, physical loader, reading fields, IDs and scripts are not normalized.
+_NANACH_H1_PRESENTATION_EDITS = (('{semanticH1 ? <h1 class="torah-number" style="font: inherit; margin: 0; color: inherit;">{torahData.title}</h1> : <div class="torah-number">{torahData.title}</div>}', '<div class="torah-number">{torahData.title}</div>'), ('const { part, torah } = Astro.params;\nconst semanticH1 = ["1/1","1/2","1/3","1/4","1/5","1/6","1/7","1/8","1/9","1/10","1/11","1/12","1/14","1/15","1/17","1/18","1/19","1/20","1/21","1/22","1/23","2/1","2/3","2/4","2/5","2/6","2/7","2/8","2/9","2/10","2/11","3/1","3/2","3/3","3/4","3/5","3/6","3/7","3/8","3/9","3/10","3/11","3/12","3/13","3/14","3/15","3/16","3/17","3/18","4/1","4/2","4/3","4/4","4/5","4/6","4/7","4/8","4/9","4/10","4/11","4/12","4/13","4/14","4/15","4/16","4/17","4/18","4/19","4/20","4/21","4/22","4/23","4/24","4/25","4/26","4/27","4/28","4/29","4/30","4/31","4/32","4/33","4/35","4/36","4/37","4/38","4/39","4/40","5/4","5/5","5/6","5/7","5/8","1/13","1/16","1/24","2/2","4/34","5/1","5/2","5/3"].includes(`${part}/${torah}`);', 'const { part, torah } = Astro.params;'))
+
+
+def nanach_heading_preimage(template):
+    for current, predecessor in _NANACH_H1_PRESENTATION_EDITS:
+        if template.count(current) != 1:
+            raise ValueError("Nanach semantic heading edit changed or duplicated")
+        template = template.replace(current, predecessor, 1)
+    return template
+
+
 def baseline_producer():
     module = types.ModuleType("plain_baseline")
     module.__file__ = str(HERE / "build-reader-plain-text.py")
@@ -239,6 +252,20 @@ class NavigationTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             N.write_legacy_navigation(self.out, rows)
 
+    def test_semantic_heading_inverse_rejects_unapproved_source_mutations(self):
+        path = "src/pages/reader/likutay-nanach/[part]/[torah].astro"
+        template = (ROOT / path).read_text()
+        baseline = baseline_bytes(path)
+        self.assertEqual(nanach_heading_preimage(template).encode(), baseline)
+        mutations = [('guard expansion', 'const semanticH1 = ["1/1"', 'const semanticH1 = ["1/999","1/1"'), ('guard coercion', '.includes(`${part}/${torah}`)', '.includes(`${parseInt(part)}/${parseInt(torah)}`)'), ('hidden heading', '<h1 class="torah-number"', '<h1 hidden class="torah-number"'), ('hidden ancestor', '<div class="reader-header">', '<div class="reader-header" aria-hidden="true">'), ('heading text', '{torahData.title}</h1>', "{'changed'}</h1>"), ('physical loader', 'volume-${part}/chapter-${torahNum}.json', 'volume-${part}/chapter-${torahNum + 1}.json'), ('route lower bound', 'for (let torah = 1; torah <=', 'for (let torah = 0; torah <='), ('English reading field', '{seg.en}</div>', "{'changed'}</div>"), ('pointing fallback', '>{seg.he_nikud || seg.he}</div>', '>{seg.he}</div>'), ('source segment ID', 'id={`seg-${seg.index}`}', 'id={`seg-${seg.index + 1}`}'), ('script version', 'parsha-author-20261018-r1', 'unapproved-script-version'), ('duplicate heading', '<div class="reader-header">', '<div class="reader-header"><h1>Unapproved</h1>'), ('removed inherited heading color', 'margin: 0; color: inherit;', 'margin: 0;'), ('changed inherited heading color', 'color: inherit;', 'color: #000;')]
+        for label, old, new in mutations:
+            with self.subTest(mutation=label):
+                self.assertIn(old, template)
+                mutated = template.replace(old, new, 1)
+                with self.assertRaises((ValueError, AssertionError)):
+                    self.assertEqual(nanach_heading_preimage(mutated).encode(), baseline)
+                self.assertEqual(nanach_heading_preimage(template).encode(), baseline)
+
     def test_template_physical_route_ranges_and_holds(self):
         reader = ROOT / "public/reader"
         for volume, count in N.NANACH_LIMITS.items():
@@ -251,7 +278,7 @@ class NavigationTests(unittest.TestCase):
         self.assertEqual(N.human_source_url(reader / "other/chapter-1.json", reader, "/reader/other/1/1"), "/reader/other/1/1")
         # Authenticate the route limits and physical loader against the full template.
         template = (ROOT / "src/pages/reader/likutay-nanach/[part]/[torah].astro").read_text()
-        self.assertEqual(template.encode(), baseline_bytes("src/pages/reader/likutay-nanach/[part]/[torah].astro"))
+        self.assertEqual(nanach_heading_preimage(template).encode(), baseline_bytes("src/pages/reader/likutay-nanach/[part]/[torah].astro"))
         ranges = re.findall(r'for \(let torah = 1; torah <= (\d+); torah\+\+\) \{\s*paths.push\(\{ params: \{ part: "(\d+)"', template)
         self.assertEqual({v: int(n) for n, v in ranges}, N.NANACH_LIMITS)
         self.assertIn("volume-${part}/chapter-${torahNum}.json", template)
