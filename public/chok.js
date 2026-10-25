@@ -1570,7 +1570,7 @@
       } catch (e) {}
     }
     Promise.all([
-      fetchJSON('/reader/chok/schedule.json'),
+      fetchJSON('/reader/chok/schedule.json?v=1849b9a7f4df8528f4571905d7be97b343e61fff1fe937932833324783e19b3c'),
       fetchJSON('/reader/chok/shabbos-map.json'),
       fetchJSON('/reader/chok/mishna-bonus.json').catch(function () { return null; }),
       fetchJSON('/reader/chok/mussar.json').catch(function(){return null;}),
