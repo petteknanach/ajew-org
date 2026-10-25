@@ -17,11 +17,17 @@ const isPatriarch = row => ['Jacob', 'Yaakov Avinu'].includes(row.name)
 for (const filename of ['tzaddikim-database.json', 'tzaddikim-database-complete.json', 'tzaddikim-database-filtered.json']) {
   const data = JSON.parse(fs.readFileSync(new URL('public/data/' + filename, root), 'utf8'));
   const rows = data.all_tzaddikim;
-  test(filename + ': corrected cardinality and one preserved sourced identity', () => {
+  test(filename + ': sourced identity and original undated source slot are preserved', () => {
     assert.equal(data.metadata.total_count, rows.length);
-    assert.equal(rows.filter(isPatriarch).length, 1);
-    assert.equal(rows.filter(isPatriarch)[0].name, 'Yaakov Avinu');
-    assert.ok(rows.filter(isPatriarch)[0].source_urls.length);
+    assert.equal(rows.filter(isPatriarch).length, 2);
+    const sourced = rows.filter(row => row.name === 'Yaakov Avinu');
+    assert.equal(sourced.length, 1);
+    assert.ok(sourced[0].source_urls.length);
+    const slot = {'tzaddikim-database.json':359, 'tzaddikim-database-complete.json':107, 'tzaddikim-database-filtered.json':80}[filename];
+    assert.equal(rows[slot].name, 'Jacob');
+    for (const key of ['yahrzeit_hebrew','yahrzeit_month','yahrzeit_day','is_adar_ii','year_passed']) {
+      assert.equal(Object.hasOwn(rows[slot], key), false);
+    }
   });
   test(filename + ': actual widget never selects the patriarch on 15 Cheshvan', () => {
     assert.equal(find(rows, 'Cheshvan', 15).filter(isPatriarch).length, 0);
