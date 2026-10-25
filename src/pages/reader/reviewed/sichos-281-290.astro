@@ -5,6 +5,7 @@ const edition=await loadEdition();
 const plain='/reader-plain/reviewed/sichos-281-290/';
 ---
 <Layout noindex={true} title={edition.title} description={edition.notice}>
+<aside class="sichos281290-date-host" data-sichos281290-yahrzeit-host aria-label="Dates"></aside>
 <section class="qualified-sichos-281290" data-qualified-sichos-281290 data-projection-sha={PIN} data-print-safe="false" data-controls-ready="false" data-mode="both" data-witness="he">
 <script is:inline>
 (function(){
@@ -59,6 +60,8 @@ const plain='/reader-plain/reviewed/sichos-281-290/';
 <script is:inline type="module" src="/qualified-sichos-281290-reader.js?v=13fab1a9a4c3e26f312e687c8845248c0016c065c4cb0862d2c73ed1af4e4e87"></script>
 <script is:inline type="module" src="/qualified-sichos-281290-controls.js?v=03a1997190289aecde7db550cfe9a434e6ae3013ec94383f27018d3fc61c35c0"></script>
 <style is:global>
+.sichos281290-date-host { max-width:1100px; margin:auto; padding:0 1rem; }
+@media print { .sichos281290-date-host { display:none!important; } }
 .qualified-sichos-281290 .qualified-controls { margin:1rem 0; padding:.75rem; border:1px solid #888; background:#fff; color:#111; font:1rem/1.5 system-ui; }
 .qualified-sichos-281290 .qualified-control-row { display:flex; flex-wrap:wrap; align-items:center; gap:.6rem; margin:.5rem 0; }
 .qualified-sichos-281290 .qualified-controls label { display:flex; flex-wrap:wrap; align-items:center; gap:.4rem; max-width:100%; }

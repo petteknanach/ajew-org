@@ -502,6 +502,13 @@
       aitzoasHeader.prepend(box);
     }
 
+    // Dates for this edition stay outside its authenticated reading source.
+    const sichosHeader = document.querySelector('[data-sichos281290-yahrzeit-host]');
+    if (sichosHeader) {
+      box.classList.add('sichos281290-yahrzeit');
+      sichosHeader.prepend(box);
+    }
+
     // Check if user dismissed the box
     const dismissed = localStorage.getItem('ajew-yahrzeit-dismissed');
     if (dismissed && Date.now() < parseInt(dismissed)) {
@@ -519,7 +526,7 @@
       upList.innerHTML = '<div class="tzaddik-link upcoming-event"><span class="tzaddik-name">Loading...</span></div>';
       upSection.style.display = 'block';
       box.style.display = 'block';
-      if (window.innerWidth > 768 && !document.querySelector('.reader-container') && !box.classList.contains('chok-yahrzeit') && !box.classList.contains('lens-yahrzeit') && !box.classList.contains('tikkun-yahrzeit') && !box.classList.contains('aitzoas-yahrzeit')) box.classList.remove('collapsed');
+      if (window.innerWidth > 768 && !document.querySelector('.reader-container') && !box.classList.contains('chok-yahrzeit') && !box.classList.contains('lens-yahrzeit') && !box.classList.contains('tikkun-yahrzeit') && !box.classList.contains('aitzoas-yahrzeit') && !box.classList.contains('sichos281290-yahrzeit')) box.classList.remove('collapsed');
     }, 8000);
 
     try {
@@ -556,7 +563,7 @@
 
       // ALWAYS show the box
       box.style.display = 'block';
-      if (window.innerWidth > 768 && !document.querySelector('.reader-container') && !box.classList.contains('chok-yahrzeit') && !box.classList.contains('lens-yahrzeit') && !box.classList.contains('tikkun-yahrzeit') && !box.classList.contains('aitzoas-yahrzeit')) {
+      if (window.innerWidth > 768 && !document.querySelector('.reader-container') && !box.classList.contains('chok-yahrzeit') && !box.classList.contains('lens-yahrzeit') && !box.classList.contains('tikkun-yahrzeit') && !box.classList.contains('aitzoas-yahrzeit') && !box.classList.contains('sichos281290-yahrzeit')) {
         box.classList.remove('collapsed');
       }
 
@@ -639,7 +646,7 @@
       // On error, still show box with a simple message
       document.getElementById('yahrzeitLoading').style.display = 'none';
       box.style.display = 'block';
-      if (window.innerWidth > 768 && !document.querySelector('.reader-container') && !box.classList.contains('chok-yahrzeit') && !box.classList.contains('lens-yahrzeit') && !box.classList.contains('tikkun-yahrzeit') && !box.classList.contains('aitzoas-yahrzeit')) box.classList.remove('collapsed');
+      if (window.innerWidth > 768 && !document.querySelector('.reader-container') && !box.classList.contains('chok-yahrzeit') && !box.classList.contains('lens-yahrzeit') && !box.classList.contains('tikkun-yahrzeit') && !box.classList.contains('aitzoas-yahrzeit') && !box.classList.contains('sichos281290-yahrzeit')) box.classList.remove('collapsed');
       const upSection = document.getElementById('upcomingSection');
       const upList = document.getElementById('upcomingList');
       upList.innerHTML = '<div class="tzaddik-link upcoming-event"><span class="event-description">Check back soon</span></div>';
@@ -1078,5 +1085,44 @@
       align-items: center;
       justify-content: center;
     }
+  }
+  /* This edition has no overlay gutter; dates stay in their own flow host. */
+  .compact-yahrzeit.sichos281290-yahrzeit {
+    position: relative;
+    inset: auto;
+    margin: 0 auto 1rem;
+    direction: ltr;
+    text-align: left;
+    opacity: 1;
+    transition: none;
+  }
+  .compact-yahrzeit.sichos281290-yahrzeit.collapsed {
+    /* 44px action plus the existing 2px border on each side. */
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    min-height: 48px;
+    max-width: 48px;
+    max-height: 48px;
+    padding: 0;
+    border-radius: 8px;
+  }
+  .sichos281290-yahrzeit.collapsed .toggle-btn {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+  }
+  .sichos281290-yahrzeit .close-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+  }
+  .compact-yahrzeit.sichos281290-yahrzeit:not(.collapsed) {
+    max-width: min(100%, 320px);
+    max-height: 260px;
+    overflow-y: auto;
+    padding-top: 3.25rem;
   }
 </style>
