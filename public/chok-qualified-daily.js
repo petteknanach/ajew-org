@@ -172,20 +172,33 @@
     if (field === 'he') return language === 'he' || language === 'both';
     return language === 'en' || language === 'both';
   }
-  function field(value, kind, language) {
+  function boldSource(value) {
+    var parts = String(value).split(/(<\/?b>)/g), depth = 0;
+    for (var i = 0; i < parts.length; i++) {
+      if (parts[i] === '<b>') depth++;
+      else if (parts[i] === '</b>') { if (!depth) return esc(value); depth--; }
+      else if (/[<>]/.test(parts[i])) return esc(value);
+    }
+    if (depth) return esc(value);
+    return parts.map(function (part) { return part === '<b>' || part === '</b>' ? part : esc(part); }).join('');
+  }
+  function field(value, kind, language, boldCarrier) {
     var he = kind === 'he' || kind === 'original' || kind === 'untouched';
-    return '<div class="ck-daily-' + kind + '" data-daily-field="' + kind + '" lang="' + (he ? 'he' : 'en') + '" dir="' + (he ? 'rtl' : 'ltr') + '" style="white-space:pre-wrap"' + (shown(kind, language) ? '' : ' hidden') + '>' + esc(value) + '</div>';
+    // Only exact, source-qualified <b> carriers are presentation markup.
+    // Unknown, attribute-bearing or unbalanced carriers stay escaped text.
+    var displayed = boldCarrier === true ? boldSource(value) : esc(value);
+    return '<div class="ck-daily-' + kind + '" data-daily-field="' + kind + '" lang="' + (he ? 'he' : 'en') + '" dir="' + (he ? 'rtl' : 'ltr') + '" style="white-space:pre-wrap"' + (shown(kind, language) ? '' : ' hidden') + '>' + displayed + '</div>';
   }
   function mandatory(units) {
     return units.map(function (u) { return u.notes.map(function (n) {
       return '<aside class="ck-source-qualification" data-daily-note="' + esc(n.id) + '" data-note-owner="' + esc(u.owner) + '" data-field-role="' + esc(n.role) + '"><p lang="he" dir="rtl">' + esc(n.he) + '</p><p lang="en" dir="ltr">' + esc(n.en) + '</p></aside>';
     }).join(''); }).join('');
   }
-  function body(u, language, mode, transform, commentary) {
+  function body(u, language, mode, transform, commentary, boldCarrier) {
     if (u.status === 'source-empty') return '';
     var transformed = transform(u.he, mode); if (typeof transformed !== 'string') fail('invalid source transform');
     return '<article class="ck-daily-unit" data-reading-unit="' + esc(u.owner) + '" data-reading-ref="' + esc(u.ref) + '" data-field-role="' + esc(u.role) + '">' +
-      field(transformed, 'original', language) + field(u.he, 'untouched', language) + field(u.en, 'en', language) +
+      field(transformed, 'original', language, boldCarrier) + field(u.he, 'untouched', language, boldCarrier) + field(u.en, 'en', language) +
       '<details class="ck-daily-explanation" data-daily-field="explanation" open' + (commentary && shown('explanation', language) ? '' : ' hidden') + '><summary>' + esc(u.explanation.title.he) + ' · ' + esc(u.explanation.title.en) + '</summary>' +
       u.explanation.paragraphs.map(function (p) { return field(p.he, 'he', language) + field(p.en, 'en', language); }).join('') + '</details></article>';
   }
@@ -193,7 +206,11 @@
     var s = packet.sections[section], plan = expected.sections[section];
     if (s.disposition === 'not-prescribed') return '';
     var lang = options.language, html = '', units = new Map(s.units.map(function (u) { return [u.owner, u]; }));
-    function show(owner) { return body(units.get(owner), lang, options.mode, options.transform, options.commentary); }
+    function show(owner) {
+      var u = units.get(owner);
+      var boldCarrier = expected.key === 'וירא|יום ראשון' && section === 'mishna' && u.role === 'bartenura' && /^bartenura-berakhot-4-[1-7]$/.test(u.owner);
+      return body(u, lang, options.mode, options.transform, options.commentary, boldCarrier);
+    }
     if (section === 'mishna') {
       plan.pairs.forEach(function (r) {
         html += '<section data-mishna-owner="' + esc(r.mishna) + '"><h4>' + esc(r.ref) + '</h4>' + show(r.mishna) +

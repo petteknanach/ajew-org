@@ -51,19 +51,53 @@ function sourceSRI(root){
  }
  assert(astro.includes('.ck-qualified-daily')&&astro.includes('--ck-size')&&astro.includes('--ck-font-he')&&astro.includes('--ck-font-en'));return true;
 }
+function htmlSourceFields(html, owner){
+ const parse5=require('parse5');const root=parse5.parseFragment(html);
+ function attr(n,k){return(n.attrs||[]).find(a=>a.name===k)?.value;}
+ function walk(n,match,out=[]){if(match(n))out.push(n);for(const c of n.childNodes||[])walk(c,match,out);return out;}
+ function text(n){return n.nodeName==='#text'?n.value:(n.childNodes||[]).map(text).join('');}
+ const units=walk(root,n=>attr(n,'data-reading-unit')===owner);assert.equal(units.length,1,'BOLD_OWNER');
+ const fields={};for(const kind of ['original','untouched']){const a=walk(units[0],n=>attr(n,'data-daily-field')===kind);assert.equal(a.length,1);fields[kind]={text:text(a[0]),bold:walk(a[0],n=>n.tagName==='b').length,unsafe:walk(a[0],n=>['script','img','iframe','style','a'].includes(n.tagName)||Boolean((n.attrs||[]).some(a=>a.name.startsWith('on')))).length};}
+ return fields;
+}
+function reviewedBoldFields(payload,html){
+ if(payload.key!=='וירא|יום ראשון')return 0;
+ const parse5=require('parse5');let count=0;
+ function text(n){return n.nodeName==='#text'?n.value:(n.childNodes||[]).map(text).join('');}
+ for(const u of payload.sections.mishna.units.filter(u=>u.role==='bartenura')){
+  const expected=text(parse5.parseFragment(u.he)),fields=htmlSourceFields(html,u.owner);assert.notEqual(expected,u.he,'QUALIFIED_BOLD_CARRIER_REQUIRED');
+  for(const value of Object.values(fields)){assert.equal(value.text,expected,'BARTENURA_VISIBLE_HEBREW:'+u.owner);assert.equal(value.bold,(u.he.match(/<b>/g)||[]).length,'BARTENURA_BOLD_COUNT');assert.equal(value.unsafe,0);count++;}
+ }
+ assert.equal(count,14);return count;
+}
+async function boldPresentationControls(api,entry,payload,loader,scheduled){
+ const b=payload.sections.mishna.units.find(u=>u.role==='bartenura'),m=payload.sections.mishna.units.find(u=>u.role==='mishna');let checks=0;
+ const cases=[
+  {input:'<b>כותרת</b>',visible:'כותרת',bold:1},
+  {input:'<b>א<b>ב</b>ג</b>',visible:'אבג',bold:2},
+  {input:'<b>לא סגור',visible:'<b>לא סגור',bold:0},
+  {input:'סיום</b>',visible:'סיום</b>',bold:0},
+  {input:'<b onclick="alert(1)">שלום</b>',visible:'<b onclick="alert(1)">שלום</b>',bold:0},
+  {input:'<b>א</b><img src=x onerror=alert(1)><script>bad()</script>',visible:'<b>א</b><img src=x onerror=alert(1)><script>bad()</script>',bold:0},
+  {input:'&lt;b&gt;מילולי&lt;/b&gt;',visible:'&lt;b&gt;מילולי&lt;/b&gt;',bold:0}
+ ];
+ for(const c of cases){const html=await api.reading(entry.week,entry.day,'mishna',{language:'both',mode:'full',commentary:true,optionalRashi:false,transform:()=>c.input},loader,scheduled);const actual=htmlSourceFields(html,b.owner).original;assert.equal(actual.text,c.visible);assert.equal(actual.bold,c.bold);assert.equal(actual.unsafe,0);const defaultOwner=htmlSourceFields(html,m.owner).original;assert.equal(defaultOwner.text,c.input,'UNSCOPED_MISHNA_LITERAL_CONSERVATION');assert.equal(defaultOwner.bold,0);assert.equal(defaultOwner.unsafe,0);checks++;}
+ const html=await api.reading(entry.week,entry.day,'mishna',{language:'both',mode:'full',commentary:true,optionalRashi:false,transform:s=>s},loader,scheduled);assert.equal(reviewedBoldFields(payload,html),14);return checks;
+}
 async function verify(root){
  root=path.resolve(root);const oracle=JSON.parse(fs.readFileSync(path.join(root,'scripts/chok-qualified-daily-reviewed.json'),'utf8'));assert.equal(oracle.schema,'chok-qualified-reviewed-hashes-v1');sourceSRI(root);
  const{api,entries}=boot(root),schedule=JSON.parse(fs.readFileSync(path.join(root,'public/reader/chok/schedule.json'),'utf8'));assert.deepEqual(entries.map(e=>e.key).sort(),oracle.readingKeys.slice().sort());
- let units=0,notes=0,requests=0;const seen=new Set();
+ let units=0,notes=0,requests=0,boldOriginalFields=0,boldControls=0;const seen=new Set();
  for(const e of entries){
   assert(!seen.has(e.key));seen.add(e.key);const scheduled=schedule.weeks[e.week].days[e.day];assert.deepEqual(e.schedule,scheduled);
   const loader=async url=>{requests++;assert.equal(url,e.url+'?v='+e.payloadSHA256,'UNVERSIONED_PAYLOAD');const filename=path.resolve(root,'public','.'+e.url);assert(filename.startsWith(path.join(root,'public')+path.sep));return fs.readFileSync(filename,'utf8');};
   const payload=await api.load(e.week,e.day,scheduled,loader),count=checkOracle(clone(payload),e,oracle);units+=count.checked;notes+=count.notes;
   for(const section of Object.keys(e.sections)){
    const html=await api.reading(e.week,e.day,section,{language:'both',mode:'full',commentary:true,optionalRashi:false,transform:s=>s},loader,scheduled);assert(html&&html.includes('ck-qualified-daily'));
+   if(e.key==='וירא|יום ראשון'&&section==='mishna'){boldOriginalFields+=reviewedBoldFields(payload,html);boldControls+=await boldPresentationControls(api,e,payload,loader,scheduled);}
   }
  }
- assert.equal(units,oracle.units.length);assert.equal(requests,entries.length);return{readings:entries.length,units,bilingualNotes:notes,versionedPayloadRequests:requests,sourceOracle:true,scriptSRI:true};
+ assert.equal(units,oracle.units.length);assert.equal(requests,entries.length);return{readings:entries.length,units,bilingualNotes:notes,versionedPayloadRequests:requests,sourceOracle:true,scriptSRI:true,boldOriginalFields,boldControls};
 }
 module.exports={boot,checkOracle,verify,sourceSRI};
 if(require.main===module)verify(path.resolve(__dirname,'..')).then(result=>console.log(JSON.stringify(result))).catch(error=>{console.error(error.stack||String(error));process.exitCode=1;});
