@@ -28,7 +28,7 @@ test('letterModeSearch orders candidates by book priority from meta', () => {
 });
 
 test('priority ordering runs after the advanced-books filter', () => {
-  const filterAt = body.indexOf('allowed.has(bookIdFromPath');
+  const filterAt = body.indexOf('allowed.has(bookIdFromSearchItem(meta.items[id]))');
   const orderAt = body.indexOf('orderByBookPriority');
   assert.ok(filterAt > 0, 'book filter not found');
   assert.ok(orderAt > filterAt, 'ordering must run after the book filter');
