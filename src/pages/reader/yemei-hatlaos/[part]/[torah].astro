@@ -5,13 +5,11 @@ import '../../../../styles/reader.css';
 import '../../../../styles/reader-v2.css';
 import fs from 'node:fs';
 import path from 'node:path';
+import {loadDirectory as loadYimaiDirectory} from '../../../../lib/qualified-yimai-hatlaos-directory.mjs';
 
-export function getStaticPaths() {
-  const paths = [];
-  for (let torah = 1; torah <= 41; torah++) {
-    paths.push({ params: { part: '1', torah: String(torah) } });
-  }
-  return paths;
+export async function getStaticPaths() {
+  const directory=await loadYimaiDirectory();
+  return directory.items.map(item=>({params:{part:'1',torah:String(item.number)}}));
 }
 
 const { part, torah } = Astro.params;
@@ -31,28 +29,27 @@ try {
 
 if (!torahData && !error) error = 'Content not available';
 
-const bookName = 'Yemei HaTlaos';
+const bookName = 'Yimai HaTlaos';
 const bookHebrew = 'ימי התלאות';
 
 const pageTitle = torahData
-  ? `${torahData.hebrewTitle || torahData.title} - Yemei HaTlaos`
+  ? `${torahData.hebrewTitle || torahData.title} - Yimai HaTlaos`
   : 'Not Found';
 const pageDesc = torahData
   ? (() => {
     const snippet = (torahData.segments?.find(s => s.en)?.en || '').replace(/<[^>]+>/g, '').slice(0, 120);
-    return `Read ${torahData.title} from Yemei HaTlaos online free. ${snippet ? snippet + '...' : 'Hebrew text with English translation on ajew.org.'}`;
+    return `Read ${torahData.title} from Yimai HaTlaos online free. ${snippet ? snippet + '...' : 'Hebrew text with English translation on ajew.org.'}`;
   })()
   : '';
 
 const structuredData = torahData ? JSON.stringify({
   "@context": "https://schema.org",
   "@type": "Article",
-  "headline": `${torahData.title} - Yemei HaTlaos`,
+  "headline": `${torahData.title} - Yimai HaTlaos`,
   "alternativeHeadline": torahData.hebrewTitle || '',
-  "author": { "@type": "Person", "name": "Rabbi Nosson of Breslov" },
   "publisher": { "@type": "Organization", "name": "ajew.org" },
   "inLanguage": ["he", "en"],
-  "isPartOf": { "@type": "Book", "name": "Yemei HaTlaos" },
+  "isPartOf": { "@type": "Book", "name": "Yimai HaTlaos" },
   "url": `https://ajew.org/reader/yemei-hatlaos/${partNum}/${torahNum}`
 }) : '';
 const breadcrumbData = torahData ? JSON.stringify({
@@ -60,13 +57,13 @@ const breadcrumbData = torahData ? JSON.stringify({
   "@type": "BreadcrumbList",
   "itemListElement": [
     { "@type": "ListItem", "position": 1, "name": "Library", "item": "https://ajew.org/reader" },
-    { "@type": "ListItem", "position": 2, "name": "Yemei HaTlaos", "item": `https://ajew.org/reader/yemei-hatlaos/${partNum}/` },
+    { "@type": "ListItem", "position": 2, "name": "Yimai HaTlaos", "item": `https://ajew.org/reader/yemei-hatlaos/${partNum}/` },
     { "@type": "ListItem", "position": 3, "name": torahData.hebrewTitle || torahData.title }
   ]
 }) : '';
 ---
 
-<Layout title={pageTitle} description={pageDesc}>
+<Layout noindex={true} title={pageTitle} description={pageDesc}>
   {torahData && structuredData && (
     <script type="application/ld+json" set:html={structuredData} slot="head" />
   )}
@@ -82,8 +79,9 @@ const breadcrumbData = torahData ? JSON.stringify({
     <div
       class="reader-container"
       data-torah-id={torahData.id}
-      data-torah-title={`${torahData.title} - Yemei HaTlaos`}
+      data-torah-title={`${torahData.title} - Yimai HaTlaos`}
     >
+      <aside aria-label="Earlier edition" style="padding:1rem;border:1px solid currentColor;margin-bottom:1rem;"><p>This page keeps the earlier text and English for comparison.</p><p><a href={"/reader/reviewed/yimai-hatlaos/#group-yimai"+torahNum}>Read the Hebrew and current English in the complete bilingual edition</a></p></aside>
       <div class="reader-progress"></div>
 
       <div class="reader-breadcrumb">
@@ -222,7 +220,8 @@ const breadcrumbData = torahData ? JSON.stringify({
             </div>
             <div class={`reader-segment segment-en ${!seg.en ? 'empty-translation' : ''}`} data-index={String(seg.index)}>
               <span class="segment-number">{seg.index}</span>
-              <p>{seg.en || 'Translation not yet available'}</p>
+              <p><small>Earlier English — textual history</small></p>
+              <p>{seg.en || 'No earlier English supplied'}</p>
             </div>
           </div>
         ))}

@@ -183,6 +183,14 @@ def repair_plain_canonicals(dist: Path, entries: list[dict]) -> dict:
 def raw_section_url(dist: Path, row: dict) -> str:
     """Resolve proven qualified catalog exports, not guessed human routes."""
     identity = (row.get("bookId"), row.get("part"), row.get("torah"))
+    if identity == ("yemei-hatlaos", "reviewed", "yimai-hatlaos"):
+        expected = "/reader-plain/yemei-hatlaos/reviewed/yimai-hatlaos/"
+        if row.get("url") != expected:
+            raise ValueError("Yimai raw export identity drift")
+        p = iri_path(expected + "index.txt")
+        if regular(dist, p.lstrip("/")) is None:
+            raise ValueError("Missing Yimai TXT export")
+        return SITE + expected + "index.txt"
     if identity == ("sichos-haran", "reviewed", "301-308"):
         expected = "/reader-plain/sichos-haran/reviewed/301-308/"
         if row.get("url") != expected:

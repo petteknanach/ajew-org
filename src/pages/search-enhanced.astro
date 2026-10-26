@@ -85,7 +85,7 @@ const searchBookLabelsJSON = JSON.stringify(searchBookLabels).replace(/</g, '\\u
   <script type="application/json" id="search-book-labels" set:html={searchBookLabelsJSON} />
   <script>
     import { displayBookLabel } from '../lib/search-book-labels.mjs';
-    import { qualifiedSearchAnchor } from '../lib/qualified-search-arrival.mjs';
+    import { qualifiedSearchAnchor, qualifiedSearchLocation } from '../lib/qualified-search-arrival.mjs';
     import {
       acronymMatch,
       booleanCandidateIds,
@@ -402,6 +402,10 @@ const searchBookLabelsJSON = JSON.stringify(searchBookLabels).replace(/</g, '\\u
       function bookIdFromPath(path) {
         return (path || '').replace(/^\/reader\//, '').split('/')[0] || '';
       }
+      function bookIdFromSearchItem(item) {
+        const book = item?.c;
+        return typeof book === 'string' && book ? book : bookIdFromPath(item?.p || '');
+      }
 
       function postingsForGroup(shards, group) {
         const merged = new Set();
@@ -692,7 +696,7 @@ const searchBookLabelsJSON = JSON.stringify(searchBookLabels).replace(/</g, '\\u
         return {
           snippet,
           anchor: qualifiedSearchAnchor(doc.p, row),
-          location: readerReference(doc.p, row?.[1] || row?.[0] || null)
+          location: qualifiedSearchLocation(doc.p,row) || readerReference(doc.p, row?.[1] || row?.[0] || null)
         };
       }
 
@@ -783,7 +787,7 @@ const searchBookLabelsJSON = JSON.stringify(searchBookLabels).replace(/</g, '\\u
         const allowed = new Set(advanced?.books || []);
         let ids = await idsForLetterMode(query, mode, order);
         if (requestId !== activeSearchRequest) return null;
-        if (allowed.size) ids = ids.filter(id => allowed.has(bookIdFromPath(meta.items[id]?.p || '')));
+        if (allowed.size) ids = ids.filter(id => allowed.has(bookIdFromSearchItem(meta.items[id])));
         // Letter-mode postings have no relevance ordering — verify
         // highest-priority works (Likutay Moharan first) before anything else
         // so the first visible page is not left to raw postings order.
@@ -839,7 +843,7 @@ const searchBookLabelsJSON = JSON.stringify(searchBookLabels).replace(/</g, '\\u
           if (requestId !== activeSearchRequest) return null;
           ids = idsForMode(shards, query, searchType, advanced?.minWords || 0, meta.items.length);
         }
-        if (allowed.size) ids = ids.filter(id => allowed.has(bookIdFromPath(meta.items[id]?.p || '')));
+        if (allowed.size) ids = ids.filter(id => allowed.has(bookIdFromSearchItem(meta.items[id])));
 
         // Candidate ordering from postings is intentional relevance ordering.
         // Book preference is a score boost after verification, never a rewrite

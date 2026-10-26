@@ -6,6 +6,7 @@ import '../../styles/reader-index.css';
 import fs from 'node:fs';
 import path from 'node:path';
 import { ruzinDirectory } from '../../lib/ruzin-section-routes.mjs';
+import {loadDirectory as loadYimaiDirectory} from '../../lib/qualified-yimai-hatlaos-directory.mjs';
 
 function loadJSON(filePath) {
   try {
@@ -15,6 +16,9 @@ function loadJSON(filePath) {
 
 const masterCatalog = loadJSON('public/reader/catalog.json') || { books: [] };
 const bookDescriptions = loadJSON('src/data/book-descriptions.json') || {};
+const yimaiDirectory=await loadYimaiDirectory();
+for(const book of masterCatalog.books)if(book.id==='yemei-hatlaos'){Object.assign(book,{title:yimaiDirectory.title,hebrewTitle:yimaiDirectory.hebrewTitle,author:'',hebrewAuthor:'',directoryHref:yimaiDirectory.url,pageCount:yimaiDirectory.items.length});book.parts=book.parts.map((p,i)=>i===0?{...p,totalTorahs:yimaiDirectory.items.length}:p);}
+bookDescriptions['yemei-hatlaos']='Yimai HaTlaos in Hebrew and English, with source notes and the earlier English kept separately.';
 
 const neviimBookIds = ['tanach-yehoshua', 'tanach-shoftim', 'tanach-shmuel-a', 'tanach-shmuel-b', 'tanach-melachim-a', 'tanach-melachim-b', 'tanach-yeshayahu', 'tanach-yirmiyahu', 'tanach-yechezkel', 'tanach-hoshea', 'tanach-yoel', 'tanach-amos', 'tanach-ovadya', 'tanach-yonah', 'tanach-michah', 'tanach-nachum', 'tanach-havakkuk', 'tanach-tzefanya', 'tanach-chaggai', 'tanach-zecharya', 'tanach-malachi'];
 const ketuvimBookIds = ['tanach-tehillim', 'tanach-mishlei', 'tanach-iyov', 'tanach-shir-hashirim', 'tanach-rus', 'tanach-eicha', 'tanach-koheles', 'tanach-esther', 'tanach-daniel', 'tanach-ezra', 'tanach-nechemia', 'tanach-divrei-hayamim-a', 'tanach-divrei-hayamim-b'];
@@ -170,6 +174,7 @@ function cleanCategoryTitle(title) {
 }
 
 function bookDirectoryUrl(book) {
+  if (book.id === 'yemei-hatlaos') return yimaiDirectory.url;
   if (book.id === 'chayey-moharan') return '/reader/chayey-moharan/';
   if (book.id === 'likutay-nanach') return '/reader/likutay-nanach/';
   const firstPart = book.parts[0];
@@ -268,6 +273,7 @@ const alphabeticalDirectoryEntries = [
 ].sort((a, b) => String(a.title || '').localeCompare(String(b.title || ''), 'en', { sensitivity: 'base' }));
 
 function specialBookItems(bookId) {
+  if (bookId === 'yemei-hatlaos') return yimaiDirectory.items;
   if (bookId === 'shivchay-haran') {
     return [
       { number: 1, displayNumber: 'Foreword', title: 'Translator Foreword', hebrewTitle: 'הקדמת המתרגם', url: '/reader/praises-of-rabbi-nachman/1/1', paragraphs: 10 },
@@ -696,7 +702,7 @@ function linkClass(bookId, totalPages) {
                 class="volume-section"
                 id={book.id}
                 data-book-title={book.title}
-                data-book-url={book.id === 'likutay-moharan' ? '/reader/likutay-moharan/1/' : `/reader/${book.id}/${book.parts[0]?.part || 1}/`}
+                data-book-url={book.id === 'yemei-hatlaos' ? yimaiDirectory.url : book.id === 'likutay-moharan' ? '/reader/likutay-moharan/1/' : `/reader/${book.id}/${book.parts[0]?.part || 1}/`}
                 data-search={[book.title, book.hebrewTitle, book.author, book.hebrewAuthor, bookDescriptions[book.id], bookSearchAliases[book.id]].filter(Boolean).join(' ')}
                 style="margin-bottom: 30px;"
               >

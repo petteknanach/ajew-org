@@ -1,26 +1,11 @@
 ---
 import Layout from '../../../../layouts/Layout.astro';
 import ReaderDirectory from '../../../../components/ReaderDirectory.astro';
-import fs from 'node:fs';
-import path from 'node:path';
-
-export function getStaticPaths() { return [{ params: { part: '1' } }]; }
-const { part } = Astro.params;
-const partNum = parseInt(part || '1');
-let indexData = null;
-try {
-  const idxPath = path.join(process.cwd(), 'public/reader/yemei-hatlaos/index.json');
-  indexData = JSON.parse(fs.readFileSync(idxPath, 'utf8'));
-} catch (e) { console.error('Error loading yemei-hatlaos index:', e); }
-const totalSections = indexData?.torahs?.length || 0;
+import {loadDirectory} from '../../../../lib/qualified-yimai-hatlaos-directory.mjs';
+export function getStaticPaths(){return [{params:{part:'1'}}];}
+const directory=await loadDirectory();
 ---
-<Layout title={`${indexData?.title || 'Yemei Hatlaos'} — Directory`} description={`Directory for ${indexData?.title || 'Yemei Hatlaos'}.`}>
-  <ReaderDirectory
-    title={indexData?.title || 'Yemei Hatlaos'}
-    hebrewTitle={indexData?.hebrewTitle || ''}
-    subtitle={indexData?.author || ''}
-    countLabel={`${totalSections} entries`}
-    items={indexData?.torahs || []}
-    hrefBase={`/reader/yemei-hatlaos/${partNum}/`}
-  />
+<Layout title={directory.title+' — Contents'} description={'Read '+directory.title+' in Hebrew and English, with source notes.'}>
+  <p><a href={directory.url}>Read the complete bilingual book</a></p>
+  <ReaderDirectory title={directory.title} hebrewTitle={directory.hebrewTitle} subtitle="Hebrew and English, with source notes" countLabel={`${directory.items.length} sections`} items={directory.items} hrefBase={directory.url} />
 </Layout>

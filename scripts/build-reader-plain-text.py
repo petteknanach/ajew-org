@@ -17,6 +17,7 @@ from typing import Any
 # Resolve sibling exporters by this file, including spec_from_file_location callers.
 import importlib.util
 import subprocess
+import os
 
 def _load_sibling(name):
     p = Path(__file__).resolve().parent / (name + ".py")
@@ -75,6 +76,21 @@ def is_sichos261270_archive(path: Path, reader_dir: Path) -> bool:
 def is_sichos301308_archive(path: Path, reader_dir: Path) -> bool:
     """Exclude only this edition's independently conserved original-source archive."""
     return path.relative_to(reader_dir).parts[:2] == ("reviewed", "sichos-301308-sources")
+
+
+def write_yimai_hatlaos(root: Path, out_dir: Path) -> dict[str, Any]:
+    program = """import {pathToFileURL} from 'node:url';
+const root=process.argv[1];
+const {loadEdition,plainExport}=await import(pathToFileURL(root+'/src/lib/qualified-yimai-hatlaos.mjs'));
+const d=await loadEdition(root);
+console.log(JSON.stringify({title:d.title,files:Object.fromEntries(['txt','md','json','html'].map(f=>['index.'+f,plainExport(d,f)]))}));"""
+    result = subprocess.run(["node", "--max-old-space-size=512", "--input-type=module", "-e", program, str(root)], capture_output=True, check=True, timeout=600, env={"PATH":os.environ.get("PATH", "/usr/bin:/bin"),"LANG":"C.UTF-8","TZ":"UTC"})
+    payload = json.loads(result.stdout)
+    out = out_dir / "yemei-hatlaos" / "reviewed" / "yimai-hatlaos"
+    out.mkdir(parents=True, exist_ok=True)
+    for name, text in payload["files"].items():
+        (out / name).write_bytes(text.encode("utf-8"))
+    return {"bookId":"yemei-hatlaos", "part":"reviewed", "torah":"yimai-hatlaos", "title":payload["title"], "url":"/reader-plain/yemei-hatlaos/reviewed/yimai-hatlaos/", "sourceUrl":"/reader/reviewed/yimai-hatlaos", "segments":116}
 
 
 def write_sichos301308(root: Path, out_dir: Path) -> dict[str, Any]:
@@ -403,6 +419,15 @@ def main() -> None:
     aitzoas_edition = None
     for path in sorted(READER_DIR.rglob("*.json")):
         rel = path.relative_to(READER_DIR)
+        if rel.parts[:2] == ("reviewed", "yimai-hatlaos-sources"):
+            continue
+        if rel.parts == ("reviewed", "yimai-hatlaos.json"):
+            entries.append(write_yimai_hatlaos(ROOT, OUT_DIR))
+            continue
+        if rel.parts[0] == "yemei-hatlaos":
+            if not (READER_DIR / "reviewed" / "yimai-hatlaos.json").is_file():
+                raise ValueError("Missing current Yimai edition; no historical export fallback")
+            continue
         if is_sichos301308_archive(path, READER_DIR):
             continue
         if rel.parts == ("reviewed", "sichos-301-308.json"):
