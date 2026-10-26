@@ -189,10 +189,17 @@
     var displayed = boldCarrier === true ? boldSource(value) : esc(value);
     return '<div class="ck-daily-' + kind + '" data-daily-field="' + kind + '" lang="' + (he ? 'he' : 'en') + '" dir="' + (he ? 'rtl' : 'ltr') + '" style="white-space:pre-wrap"' + (shown(kind, language) ? '' : ' hidden') + '>' + displayed + '</div>';
   }
-  function mandatory(units) {
-    return units.map(function (u) { return u.notes.map(function (n) {
+  function licenseNote(n) {
+    return n.role === 'source-qualification' && /https:\/\/creativecommons\.org\/licenses\//.test(n.en);
+  }
+  function mandatory(units, licenses) {
+    return units.map(function (u) { return u.notes.filter(function (n) { return licenseNote(n) === !!licenses; }).map(function (n) {
       return '<aside class="ck-source-qualification" data-daily-note="' + esc(n.id) + '" data-note-owner="' + esc(u.owner) + '" data-field-role="' + esc(n.role) + '"><p lang="he" dir="rtl">' + esc(n.he) + '</p><p lang="en" dir="ltr">' + esc(n.en) + '</p></aside>';
     }).join(''); }).join('');
+  }
+  function sourceCredits(units) {
+    var credit = mandatory(units, true);
+    return credit ? '<details class="ck-source-credits"><summary>מקורות ורישיון · Sources and licence</summary>' + credit + '</details>' : '';
   }
   function body(u, language, mode, transform, commentary, boldCarrier) {
     if (u.status === 'source-empty') return '';
@@ -227,8 +234,8 @@
     }).join('');
     // Deliberately not ck-source-island/ck-he/ck-en/ck-explanation: the existing
     // global applyLanguages consumer and original-mode CSS must not own this island.
-    // Mandatory notes precede every disclosure, including closed optional Rashi.
-    return '<div class="ck-qualified-daily" data-qualified-daily="' + esc(expected.key) + '" data-daily-section="' + section + '" data-daily-language="' + lang + '" data-daily-commentary="' + (options.commentary ? 'on' : 'off') + '"><header><h3>' + esc(plan.title.he) + ' · ' + esc(plan.title.en) + '</h3><div role="group" aria-label="Source language">' + controls + '</div></header>' + (section === 'mishna' ? '' : mandatory(s.units)) + html + '</div>';
+    // Study notes remain outside optional source disclosures; legal credits have their own panel.
+    return '<div class="ck-qualified-daily" data-qualified-daily="' + esc(expected.key) + '" data-daily-section="' + section + '" data-daily-language="' + lang + '" data-daily-commentary="' + (options.commentary ? 'on' : 'off') + '"><header><h3>' + esc(plan.title.he) + ' · ' + esc(plan.title.en) + '</h3><div role="group" aria-label="Source language">' + controls + '</div></header>' + html + (section === 'mishna' ? '' : mandatory(s.units)) + sourceCredits(s.units) + '</div>';
   }
   function setLanguage(island, language) {
     if (LANGUAGES.indexOf(language) < 0) fail('invalid language');

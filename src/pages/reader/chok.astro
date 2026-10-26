@@ -87,9 +87,9 @@ import Layout from '../../layouts/Layout.astro';
 <script src="/chok-lech-sunday.js?v=chok-live-corrections-20261018-r2" defer></script>
 <script src="/chok-lech-monday.js?v=chok-live-corrections-20261019-r1" defer></script>
 <script src="/chok-lech-tuesday.js?v=6105a3ee4cb5216795cf74684ffbd59d08f8be3bd2a363b1234394041f3edefd" defer></script>
-<script is:inline src="/chok-qualified-daily.js?v=76fe0ef1f92b7fad0766e581e85a9dcd8aafa7ee67da6b83d5cc277615e40399" integrity="sha256-dv4O8fkrf60HZuWB6FqdzYqvp+5n2muD1cwndhXkA5k=" crossorigin="anonymous" defer></script>
+<script is:inline src="/chok-qualified-daily.js?v=9f575a5db15365a670a65365dabd8015dc06b225cd1fb53b5bb416302e1e9b65" integrity="sha256-n1daXbFTZaZwplNl2r2AFdwGsiXNH7U7W7QWMC4em2U=" crossorigin="anonymous" defer></script>
 <script is:inline src="/chok-qualified-daily-selected.js?v=1f89561308402fc1435b27d29d82cdbb32cd7a7f9d7339fe539849f65942c133" integrity="sha256-H4lWEwhAL8FDWyfSnYLNuzLNen+dczn+U5hJ9llCwTM=" crossorigin="anonymous" defer></script>
-<script is:inline src="/chok.js?v=cfe3b9633e0937e1879e6d3e8ad7b148a54c103ed5bad2bf9f7c7cf72572ddc0" integrity="sha256-z+O5Yz4JN+GHnm0+itexSKVMED7VutK/n3x89yVy3cA=" crossorigin="anonymous" defer></script>
+<script is:inline src="/chok.js?v=2cc89b5fc1c117cc2a9bc3f09ca75514bea410670c8992096137f6300e5af1c1" integrity="sha256-LMibX8HBF8wqm8PwnKdVFL6kEGcMiZIJYTf2MA5a8cE=" crossorigin="anonymous" defer></script>
 
 <style is:global>
   /* Actual study offerings: three columns/two rows, selectors separate. */
@@ -807,7 +807,12 @@ import Layout from '../../layouts/Layout.astro';
 
 <style is:global>
   /* Keep the qere marker continuous beneath vowel/descender contours. */
-  #ck-content .marked-qere { text-decoration-skip-ink: none; }
+  #ck-content .marked-qere { text-decoration: none; cursor: help; }
+  #ck-content .ck-section[data-sec="talmud"],
+  #ck-content .ck-section[data-sec="kabbala"] { border-top: 2px solid var(--border, #cbd5e1); padding-top: 1.5rem; }
+  #ck-content .ck-section > .ck-kavana { padding: .65rem .9rem; border-inline-start: 3px solid var(--border, #cbd5e1); margin: .75rem 0 1.25rem; }
+  #ck-content .ck-source-credits { margin-top: 1rem; font-size: .85em; }
+  #ck-content .ck-source-credits > summary { cursor: pointer; }
   #ck-content .ck-aliyah-heading {
     clear: both;
     margin: 1.35rem 0 .55rem;
