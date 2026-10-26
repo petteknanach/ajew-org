@@ -51,53 +51,120 @@ function sourceSRI(root){
  }
  assert(astro.includes('.ck-qualified-daily')&&astro.includes('--ck-size')&&astro.includes('--ck-font-he')&&astro.includes('--ck-font-en'));return true;
 }
-function htmlSourceFields(html, owner){
- const parse5=require('parse5');const root=parse5.parseFragment(html);
- function attr(n,k){return(n.attrs||[]).find(a=>a.name===k)?.value;}
- function walk(n,match,out=[]){if(match(n))out.push(n);for(const c of n.childNodes||[])walk(c,match,out);return out;}
- function text(n){return n.nodeName==='#text'?n.value:(n.childNodes||[]).map(text).join('');}
- const units=walk(root,n=>attr(n,'data-reading-unit')===owner);assert.equal(units.length,1,'BOLD_OWNER');
- const fields={};for(const kind of ['original','untouched']){const a=walk(units[0],n=>attr(n,'data-daily-field')===kind);assert.equal(a.length,1);fields[kind]={text:text(a[0]),bold:walk(a[0],n=>n.tagName==='b').length,unsafe:walk(a[0],n=>['script','img','iframe','style','a'].includes(n.tagName)||Boolean((n.attrs||[]).some(a=>a.name.startsWith('on')))).length};}
- return fields;
-}
-function reviewedBoldFields(payload,html){
- if(payload.key!=='וירא|יום ראשון')return 0;
- const parse5=require('parse5');let count=0;
- function text(n){return n.nodeName==='#text'?n.value:(n.childNodes||[]).map(text).join('');}
- for(const u of payload.sections.mishna.units.filter(u=>u.role==='bartenura')){
-  const expected=text(parse5.parseFragment(u.he)),fields=htmlSourceFields(html,u.owner);assert.notEqual(expected,u.he,'QUALIFIED_BOLD_CARRIER_REQUIRED');
-  for(const value of Object.values(fields)){assert.equal(value.text,expected,'BARTENURA_VISIBLE_HEBREW:'+u.owner);assert.equal(value.bold,(u.he.match(/<b>/g)||[]).length,'BARTENURA_BOLD_COUNT');assert.equal(value.unsafe,0);count++;}
+// Independent QA parser only; the browser renderer has no HTML-parser dependency.
+const parse5=require('parse5');
+function attr(n,k){return(n.attrs||[]).find(a=>a.name===k)?.value;}
+function walk(n,match,out=[]){if(match(n))out.push(n);for(const c of n.childNodes||[])walk(c,match,out);return out;}
+function nodeText(n){return n.nodeName==='#text'?n.value:(n.childNodes||[]).map(nodeText).join('');}
+function expectedSource(value,qualified){
+ const literal={text:value,bold:0};
+ if(!qualified||!value.includes('<b>'))return literal;
+ // Preserve literal entities exactly once, as the renderer's text escaping does.
+ // Parser locations must account for EVERY exact source wrapper. This rejects
+ // parser-repaired, unknown, attribute-bearing and unbalanced markup independently
+ // of the production renderer's token/depth scanner.
+ if(/[<>]/.test(value.replace(/<\/?b>/g,'')))return literal;
+ const encoded=value.replace(/&/g,'&amp;'),root=parse5.parseFragment(encoded,{sourceCodeLocationInfo:true});
+ const nodes=walk(root,n=>n!==root&&n.nodeName!=='#text');
+ for(const n of nodes){
+  const loc=n.sourceCodeLocation;
+  if(n.tagName!=='b'||(n.attrs||[]).length||!loc?.startTag||!loc.endTag)return literal;
+  if(encoded.slice(loc.startTag.startOffset,loc.startTag.endOffset)!=='<b>'||encoded.slice(loc.endTag.startOffset,loc.endTag.endOffset)!=='</b>')return literal;
  }
- assert.equal(count,14);return count;
+ if(nodes.length!==(value.match(/<b>/g)||[]).length||nodes.length!==(value.match(/<\/b>/g)||[]).length)return literal;
+ return{text:nodeText(root),bold:nodes.length};
+}
+function htmlSourceFields(html){
+ const root=parse5.parseFragment(html),units=walk(root,n=>attr(n,'data-reading-unit')!==undefined),result=new Map();
+ for(const unit of units){
+  const owner=attr(unit,'data-reading-unit');assert(!result.has(owner),'DUPLICATE_VISIBLE_OWNER:'+owner);const fields={};
+  for(const kind of ['original','untouched','en']){
+   // Direct children exclude explanation translations and prevent alias matches.
+   const a=(unit.childNodes||[]).filter(n=>attr(n,'data-daily-field')===kind);assert.equal(a.length,1,'SOURCE_FIELD:'+owner+':'+kind);
+   const elements=walk(a[0],n=>n!==a[0]&&n.nodeName!=='#text');
+   fields[kind]={text:nodeText(a[0]),bold:elements.filter(n=>n.tagName==='b').length,unsafe:elements.filter(n=>n.tagName!=='b'||(n.attrs||[]).length!==0).length,hidden:attr(a[0],'hidden')!==undefined};
+  }
+  result.set(owner,fields);
+ }
+ return result;
+}
+function assertSourceField(actual,expected,label,hidden){
+ assert.equal(actual.text,expected.text,'VISIBLE_TEXT:'+label);assert.equal(actual.bold,expected.bold,'BOLD_COUNT:'+label);assert.equal(actual.unsafe,0,'UNSAFE_ELEMENT_OR_ATTRIBUTE:'+label);assert.equal(actual.hidden,hidden,'FIELD_LANGUAGE:'+label);
+}
+function reviewedSourceFields(payload,section,html){
+ const fields=htmlSourceFields(html),units=Array.from(payload.sections[section].units);
+ assert.deepEqual([...fields.keys()],units.filter(u=>u.status!=='source-empty').map(u=>u.owner),'VISIBLE_OWNER_ORDER');
+ let sourceVisibleFields=0,bartenuraOriginalFields=0,boldOriginalFields=0,plainBartenuraOriginalFields=0;
+ for(const u of units){
+  if(u.status==='source-empty'){assert(!fields.has(u.owner));continue;}
+  const qualified=section==='mishna'&&u.role==='bartenura',expected=expectedSource(u.he,qualified),actual=fields.get(u.owner);assert(actual,'MISSING_VISIBLE_OWNER:'+u.owner);
+  for(const kind of ['original','untouched']){
+   assertSourceField(actual[kind],expected,u.owner+':'+kind,kind==='untouched');sourceVisibleFields++;
+   if(qualified){bartenuraOriginalFields++;if(expected.bold)boldOriginalFields++;else plainBartenuraOriginalFields++;}
+  }
+  assertSourceField(actual.en,{text:u.en,bold:0},u.owner+':en',false);sourceVisibleFields++;
+ }
+ return{sourceVisibleFields,bartenuraOriginalFields,boldOriginalFields,plainBartenuraOriginalFields};
 }
 async function boldPresentationControls(api,entry,payload,loader,scheduled){
- const b=payload.sections.mishna.units.find(u=>u.role==='bartenura'),m=payload.sections.mishna.units.find(u=>u.role==='mishna');let checks=0;
+ assert(payload.sections.mishna.units.some(u=>u.role==='bartenura'&&u.status==='complete'));
+ assert(payload.sections.mishna.units.some(u=>u.role==='mishna'&&u.status==='complete'));
  const cases=[
+  {input:'טקסט רגיל',visible:'טקסט רגיל',bold:0},
   {input:'<b>כותרת</b>',visible:'כותרת',bold:1},
   {input:'<b>א<b>ב</b>ג</b>',visible:'אבג',bold:2},
+  {input:'פתיחה\n<b>כותרת</b> זנב\n<b>סוף</b>',visible:'פתיחה\nכותרת זנב\nסוף',bold:2},
+  {input:'<b></b>זנב',visible:'זנב',bold:1},
   {input:'<b>לא סגור',visible:'<b>לא סגור',bold:0},
   {input:'סיום</b>',visible:'סיום</b>',bold:0},
+  {input:'</b><b>א</b>',visible:'</b><b>א</b>',bold:0},
+  {input:'<b><b>א</b>',visible:'<b><b>א</b>',bold:0},
   {input:'<b onclick="alert(1)">שלום</b>',visible:'<b onclick="alert(1)">שלום</b>',bold:0},
   {input:'<b>א</b><img src=x onerror=alert(1)><script>bad()</script>',visible:'<b>א</b><img src=x onerror=alert(1)><script>bad()</script>',bold:0},
-  {input:'&lt;b&gt;מילולי&lt;/b&gt;',visible:'&lt;b&gt;מילולי&lt;/b&gt;',bold:0}
+  {input:'<b>א</b><i>ב</i>',visible:'<b>א</b><i>ב</i>',bold:0},
+  {input:'<B>א</B>',visible:'<B>א</B>',bold:0},
+  {input:'<b >א</b>',visible:'<b >א</b>',bold:0},
+  {input:'<b/>א',visible:'<b/>א',bold:0},
+  {input:'<b>א</b><!--הערה-->',visible:'<b>א</b><!--הערה-->',bold:0},
+  {input:'<b>א</b><',visible:'<b>א</b><',bold:0},
+  {input:'א < ב > ג',visible:'א < ב > ג',bold:0},
+  {input:'&lt;b&gt;מילולי&lt;/b&gt;',visible:'&lt;b&gt;מילולי&lt;/b&gt;',bold:0},
+  {input:'<b>&amp; &#1488; &lt;b&gt;</b> &amp;amp;',visible:'&amp; &#1488; &lt;b&gt; &amp;amp;',bold:1}
  ];
- for(const c of cases){const html=await api.reading(entry.week,entry.day,'mishna',{language:'both',mode:'full',commentary:true,optionalRashi:false,transform:()=>c.input},loader,scheduled);const actual=htmlSourceFields(html,b.owner).original;assert.equal(actual.text,c.visible);assert.equal(actual.bold,c.bold);assert.equal(actual.unsafe,0);const defaultOwner=htmlSourceFields(html,m.owner).original;assert.equal(defaultOwner.text,c.input,'UNSCOPED_MISHNA_LITERAL_CONSERVATION');assert.equal(defaultOwner.bold,0);assert.equal(defaultOwner.unsafe,0);checks++;}
- const html=await api.reading(entry.week,entry.day,'mishna',{language:'both',mode:'full',commentary:true,optionalRashi:false,transform:s=>s},loader,scheduled);assert.equal(reviewedBoldFields(payload,html),14);return checks;
+ const languages=['he','en','both','original'],modes=['full','nikud','taamim','letters'];let checks=0;
+ for(const [i,c]of cases.entries()){
+  assert.deepEqual(expectedSource(c.input,true),{text:c.visible,bold:c.bold},'INDEPENDENT_ORACLE_CONTROL');
+  const language=languages[i%languages.length],mode=modes[Math.floor(i/languages.length)%modes.length];let transformed=0;
+  const html=await api.reading(entry.week,entry.day,'mishna',{language,mode,commentary:i%2===0,optionalRashi:false,transform:(s,actualMode)=>{assert.equal(actualMode,mode,'MODE_FORWARDING');transformed++;return c.input;}},loader,scheduled);
+  const fields=htmlSourceFields(html),units=Array.from(payload.sections.mishna.units).filter(u=>u.status!=='source-empty');
+  assert.equal(transformed,units.length);assert.deepEqual([...fields.keys()],units.map(u=>u.owner),'CONTROL_OWNER_ORDER');
+  for(const u of units){
+   const qualified=u.role==='bartenura',actual=fields.get(u.owner),label=entry.key+':'+u.owner;
+   assertSourceField(actual.original,qualified?{text:c.visible,bold:c.bold}:{text:c.input,bold:0},label+':transformed',language==='original');
+   assertSourceField(actual.untouched,expectedSource(u.he,qualified),label+':untouched',language!=='original');
+   assertSourceField(actual.en,{text:u.en,bold:0},label+':en',language!=='en'&&language!=='both');
+  }
+  checks++;
+ }
+ // Positive restoration follows every negative batch through the real selected API.
+ const html=await api.reading(entry.week,entry.day,'mishna',{language:'both',mode:'full',commentary:true,optionalRashi:false,transform:s=>s},loader,scheduled);
+ reviewedSourceFields(payload,'mishna',html);return checks;
 }
 async function verify(root){
  root=path.resolve(root);const oracle=JSON.parse(fs.readFileSync(path.join(root,'scripts/chok-qualified-daily-reviewed.json'),'utf8'));assert.equal(oracle.schema,'chok-qualified-reviewed-hashes-v1');sourceSRI(root);
  const{api,entries}=boot(root),schedule=JSON.parse(fs.readFileSync(path.join(root,'public/reader/chok/schedule.json'),'utf8'));assert.deepEqual(entries.map(e=>e.key).sort(),oracle.readingKeys.slice().sort());
- let units=0,notes=0,requests=0,boldOriginalFields=0,boldControls=0;const seen=new Set();
+ let units=0,notes=0,requests=0,boldOriginalFields=0,boldControls=0,sourceVisibleFields=0,bartenuraOriginalFields=0,plainBartenuraOriginalFields=0;const seen=new Set();
  for(const e of entries){
   assert(!seen.has(e.key));seen.add(e.key);const scheduled=schedule.weeks[e.week].days[e.day];assert.deepEqual(e.schedule,scheduled);
   const loader=async url=>{requests++;assert.equal(url,e.url+'?v='+e.payloadSHA256,'UNVERSIONED_PAYLOAD');const filename=path.resolve(root,'public','.'+e.url);assert(filename.startsWith(path.join(root,'public')+path.sep));return fs.readFileSync(filename,'utf8');};
   const payload=await api.load(e.week,e.day,scheduled,loader),count=checkOracle(clone(payload),e,oracle);units+=count.checked;notes+=count.notes;
   for(const section of Object.keys(e.sections)){
    const html=await api.reading(e.week,e.day,section,{language:'both',mode:'full',commentary:true,optionalRashi:false,transform:s=>s},loader,scheduled);assert(html&&html.includes('ck-qualified-daily'));
-   if(e.key==='וירא|יום ראשון'&&section==='mishna'){boldOriginalFields+=reviewedBoldFields(payload,html);boldControls+=await boldPresentationControls(api,e,payload,loader,scheduled);}
+   const visible=reviewedSourceFields(payload,section,html);sourceVisibleFields+=visible.sourceVisibleFields;bartenuraOriginalFields+=visible.bartenuraOriginalFields;boldOriginalFields+=visible.boldOriginalFields;plainBartenuraOriginalFields+=visible.plainBartenuraOriginalFields;
+   if(section==='mishna')boldControls+=await boldPresentationControls(api,e,payload,loader,scheduled);
   }
  }
- assert.equal(units,oracle.units.length);assert.equal(requests,entries.length);return{readings:entries.length,units,bilingualNotes:notes,versionedPayloadRequests:requests,sourceOracle:true,scriptSRI:true,boldOriginalFields,boldControls};
+ assert.equal(units,oracle.units.length);assert.equal(requests,entries.length);return{readings:entries.length,units,bilingualNotes:notes,versionedPayloadRequests:requests,sourceOracle:true,scriptSRI:true,boldOriginalFields,boldControls,sourceVisibleFields,bartenuraOriginalFields,plainBartenuraOriginalFields};
 }
 module.exports={boot,checkOracle,verify,sourceSRI};
 if(require.main===module)verify(path.resolve(__dirname,'..')).then(result=>console.log(JSON.stringify(result))).catch(error=>{console.error(error.stack||String(error));process.exitCode=1;});

@@ -208,7 +208,8 @@
     var lang = options.language, html = '', units = new Map(s.units.map(function (u) { return [u.owner, u]; }));
     function show(owner) {
       var u = units.get(owner);
-      var boldCarrier = expected.key === 'וירא|יום ראשון' && section === 'mishna' && u.role === 'bartenura' && /^bartenura-berakhot-4-[1-7]$/.test(u.owner);
+      // Qualification comes from the selected section/role, never a day or owner list.
+      var boldCarrier = section === 'mishna' && u.role === 'bartenura';
       return body(u, lang, options.mode, options.transform, options.commentary, boldCarrier);
     }
     if (section === 'mishna') {
