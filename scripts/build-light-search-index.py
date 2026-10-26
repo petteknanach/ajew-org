@@ -33,6 +33,8 @@ BOOK_SEARCH_ALIASES = {
     'chayey-moharan': 'Chayey Moharan Chayay Moharan Chayei Moharan The Life of Our Leader Rabbi Nachman Life of Rabbi Nachman חיי מוהרן חיי מוהר״ן',
     'yimay-shmuel': 'Yimay Shmuel Yemei Shmuel Yimei Shmuel Yimay Shmuel Volume 3 Rabbi Shmuel Horowitz רבי שמואל הורוויץ ימי שמואל חלק ג',
     'kaftor-vaferach-a': 'Kaftor VaFerach Kaftor VeFerach Knob and Flower Breslov Chachmei Lublin כפתור ופרח חכמי לובלין',
+    'michtivay-yideedoos': 'Michtivay Yideedoos Michtavei Yedidut Michoel Michael Barzel מכתבי ידידות מיכאל ברזל',
+    'liroas-biebay-hanachal': 'Liroas BiEbay HaNachal Lirot BeIbei HaNachal Michoel Michael Barzel לראות באבי הנחל לראות באב״י הנחל מיכאל ברזל',
 }
 LAYER_KEYS = ('beginner', 'intermediate', 'scholarly')
 HEBREW_NUMERALS = {
