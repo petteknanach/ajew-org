@@ -9,6 +9,75 @@
 const fs = require('fs');
 const path = require('path');
 
+// BEGIN FINITE LN URL HELPER
+// Source-reviewed existing numeric destinations only; no path normalization.
+const LN_CONNECTION_URLS = Object.freeze({
+  "/reader/likutay-nanach/volume-1/1/1": "/reader/likutay-nanach/1/1/",
+  "/reader/likutay-nanach/volume-1/1/11": "/reader/likutay-nanach/1/11/",
+  "/reader/likutay-nanach/volume-1/1/13": "/reader/likutay-nanach/1/13/",
+  "/reader/likutay-nanach/volume-1/1/14": "/reader/likutay-nanach/1/14/",
+  "/reader/likutay-nanach/volume-1/1/15": "/reader/likutay-nanach/1/15/",
+  "/reader/likutay-nanach/volume-1/1/16": "/reader/likutay-nanach/1/16/",
+  "/reader/likutay-nanach/volume-1/1/17": "/reader/likutay-nanach/1/17/",
+  "/reader/likutay-nanach/volume-1/1/19": "/reader/likutay-nanach/1/19/",
+  "/reader/likutay-nanach/volume-1/1/20": "/reader/likutay-nanach/1/20/",
+  "/reader/likutay-nanach/volume-1/1/21": "/reader/likutay-nanach/1/21/",
+  "/reader/likutay-nanach/volume-1/1/22": "/reader/likutay-nanach/1/22/",
+  "/reader/likutay-nanach/volume-1/1/23": "/reader/likutay-nanach/1/23/",
+  "/reader/likutay-nanach/volume-1/1/24": "/reader/likutay-nanach/1/24/",
+  "/reader/likutay-nanach/volume-1/1/9": "/reader/likutay-nanach/1/9/",
+  "/reader/likutay-nanach/volume-2/1/1": "/reader/likutay-nanach/2/1/",
+  "/reader/likutay-nanach/volume-2/1/10": "/reader/likutay-nanach/2/10/",
+  "/reader/likutay-nanach/volume-2/1/11": "/reader/likutay-nanach/2/11/",
+  "/reader/likutay-nanach/volume-2/1/2": "/reader/likutay-nanach/2/2/",
+  "/reader/likutay-nanach/volume-2/1/3": "/reader/likutay-nanach/2/3/",
+  "/reader/likutay-nanach/volume-2/1/6": "/reader/likutay-nanach/2/6/",
+  "/reader/likutay-nanach/volume-2/1/7": "/reader/likutay-nanach/2/7/",
+  "/reader/likutay-nanach/volume-2/1/8": "/reader/likutay-nanach/2/8/",
+  "/reader/likutay-nanach/volume-3/1/1": "/reader/likutay-nanach/3/1/",
+  "/reader/likutay-nanach/volume-3/1/12": "/reader/likutay-nanach/3/12/",
+  "/reader/likutay-nanach/volume-3/1/14": "/reader/likutay-nanach/3/14/",
+  "/reader/likutay-nanach/volume-3/1/15": "/reader/likutay-nanach/3/15/",
+  "/reader/likutay-nanach/volume-3/1/17": "/reader/likutay-nanach/3/17/",
+  "/reader/likutay-nanach/volume-3/1/18": "/reader/likutay-nanach/3/18/",
+  "/reader/likutay-nanach/volume-3/1/2": "/reader/likutay-nanach/3/2/",
+  "/reader/likutay-nanach/volume-3/1/3": "/reader/likutay-nanach/3/3/",
+  "/reader/likutay-nanach/volume-3/1/4": "/reader/likutay-nanach/3/4/",
+  "/reader/likutay-nanach/volume-3/1/5": "/reader/likutay-nanach/3/5/",
+  "/reader/likutay-nanach/volume-3/1/6": "/reader/likutay-nanach/3/6/",
+  "/reader/likutay-nanach/volume-3/1/7": "/reader/likutay-nanach/3/7/",
+  "/reader/likutay-nanach/volume-3/1/8": "/reader/likutay-nanach/3/8/",
+  "/reader/likutay-nanach/volume-3/1/9": "/reader/likutay-nanach/3/9/",
+  "/reader/likutay-nanach/volume-4/1/1": "/reader/likutay-nanach/4/1/",
+  "/reader/likutay-nanach/volume-4/1/13": "/reader/likutay-nanach/4/13/",
+  "/reader/likutay-nanach/volume-4/1/18": "/reader/likutay-nanach/4/18/",
+  "/reader/likutay-nanach/volume-4/1/25": "/reader/likutay-nanach/4/25/",
+  "/reader/likutay-nanach/volume-4/1/26": "/reader/likutay-nanach/4/26/",
+  "/reader/likutay-nanach/volume-4/1/27": "/reader/likutay-nanach/4/27/",
+  "/reader/likutay-nanach/volume-4/1/3": "/reader/likutay-nanach/4/3/",
+  "/reader/likutay-nanach/volume-4/1/30": "/reader/likutay-nanach/4/30/",
+  "/reader/likutay-nanach/volume-4/1/31": "/reader/likutay-nanach/4/31/",
+  "/reader/likutay-nanach/volume-4/1/33": "/reader/likutay-nanach/4/33/",
+  "/reader/likutay-nanach/volume-4/1/34": "/reader/likutay-nanach/4/34/",
+  "/reader/likutay-nanach/volume-4/1/36": "/reader/likutay-nanach/4/36/",
+  "/reader/likutay-nanach/volume-4/1/37": "/reader/likutay-nanach/4/37/",
+  "/reader/likutay-nanach/volume-4/1/38": "/reader/likutay-nanach/4/38/",
+  "/reader/likutay-nanach/volume-4/1/39": "/reader/likutay-nanach/4/39/",
+  "/reader/likutay-nanach/volume-4/1/5": "/reader/likutay-nanach/4/5/",
+  "/reader/likutay-nanach/volume-4/1/7": "/reader/likutay-nanach/4/7/",
+  "/reader/likutay-nanach/volume-4/1/8": "/reader/likutay-nanach/4/8/",
+  "/reader/likutay-nanach/volume-4/1/9": "/reader/likutay-nanach/4/9/",
+  "/reader/likutay-nanach/volume-5/1/1": "/reader/likutay-nanach/5/1/",
+  "/reader/likutay-nanach/volume-5/1/2": "/reader/likutay-nanach/5/2/",
+  "/reader/likutay-nanach/volume-5/1/3": "/reader/likutay-nanach/5/3/"
+});
+function connectionUrl(bookId, url) {
+  return bookId === 'likutay-nanach' && typeof url === 'string' &&
+    Object.prototype.hasOwnProperty.call(LN_CONNECTION_URLS, url)
+    ? LN_CONNECTION_URLS[url] : url;
+}
+// END FINITE LN URL HELPER
+
 function stripNikud(text) {
   return text.replace(/[\u0591-\u05BD\u05BF-\u05C7]/g, '');
 }
@@ -356,6 +425,12 @@ const output = {
 };
 
 const outputPath = path.join(outputDir, 'parsha-connections.json');
+// Correct only finite URL metadata after sorting, retaining every record and order.
+for (const parsha of Object.values(output.parshas)) {
+  for (const connection of parsha.connections) {
+    connection.url = connectionUrl(connection.bookId, connection.url);
+  }
+}
 fs.writeFileSync(outputPath, JSON.stringify(output));
 
 // Stats
