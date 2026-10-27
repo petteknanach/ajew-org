@@ -722,6 +722,7 @@
   function presentPrimaryStudy(root) {
     // Source readings are primary; optional commentary and legal credits keep their own state.
     root.querySelectorAll('.ck-section[data-sec]').forEach(function (section) {
+      if (['mishna', 'talmud', 'kabbala', 'halacha', 'mussar'].indexOf(section.getAttribute('data-sec')) === -1) return;
       section.querySelectorAll('details.ck-mishna, details.ck-talmud, details.ck-gemara, details.ck-zohar, details.ck-halacha, details.ck-mussar').forEach(function (reading) {
         reading.open = true;
       });
