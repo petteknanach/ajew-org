@@ -28,7 +28,7 @@
     "verify": "npm run verify:yimai-hatlaos && npm run verify:yimai-search-arrival && npm run verify:yimai-controls-identity && npm run verify:yimai-search-book-filter && npm run verify:today-breslov && npm run verify:aitzoas362 && npm run verify:chok-qualified-daily && npm run verify:base && npm run verify:search && npm run verify:sichos-saba && npm run verify:chok-markup && npm run verify:chok-sunday && npm run verify:chok-monday && npm run verify:chok-verse-breslov && npm run verify:chok-onkelos && npm run verify:sichos-five && npm run verify:sichos-301308 && npm run verify:sichos-291300 && npm run verify:sichos-281290 && npm run verify:sichos-271280 && npm run verify:sichos-261270 && npm run verify:sichos-251260 && npm run verify:sichos-241250 && npm run verify:sichos-231240 && npm run verify:sichos-221230",
     "verify:chok-markup": "node --max-old-space-size=128 scripts/verify-chok-markup.cjs && node --max-old-space-size=128 scripts/verify-chok-markup-reviewed-fixtures.cjs && node --max-old-space-size=128 scripts/verify-chok-markup-entities.cjs",
     "verify:chok-monday": "node --max-old-space-size=128 scripts/chok-lech-monday.test.cjs && node --max-old-space-size=128 scripts/chok-lech-monday-init.test.cjs",
-    "verify:chok-sunday": "node --max-old-space-size=128 scripts/chok-lech-sunday.test.cjs",
+    "verify:chok-sunday": "node --max-old-space-size=128 scripts/chok-source-presentation.test.cjs && node --max-old-space-size=128 scripts/chok-lech-sunday.test.cjs",
     "verify:sichos-five": "node --max-old-space-size=128 scripts/verify-sichos-five.mjs",
     "verify:sichos-221230": "node --max-old-space-size=128 scripts/verify-sichos-221230.mjs",
     "verify:sichos-231240": "node --max-old-space-size=128 scripts/verify-sichos-231240.mjs",

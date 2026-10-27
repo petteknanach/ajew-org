@@ -89,7 +89,7 @@ import Layout from '../../layouts/Layout.astro';
 <script src="/chok-lech-tuesday.js?v=6105a3ee4cb5216795cf74684ffbd59d08f8be3bd2a363b1234394041f3edefd" defer></script>
 <script is:inline src="/chok-qualified-daily.js?v=9f575a5db15365a670a65365dabd8015dc06b225cd1fb53b5bb416302e1e9b65" integrity="sha256-n1daXbFTZaZwplNl2r2AFdwGsiXNH7U7W7QWMC4em2U=" crossorigin="anonymous" defer></script>
 <script is:inline src="/chok-qualified-daily-selected.js?v=19fc41c37a8ce22db58668f2ff91c2992655b2a21f2ae65dab0d13459f9e7db4" integrity="sha256-GfxBw3qM4i21hmjy/5HCmSZVsqIfKuZdqw0TRZ+efbQ=" crossorigin="anonymous" defer></script>
-<script is:inline src="/chok.js?v=2cc89b5fc1c117cc2a9bc3f09ca75514bea410670c8992096137f6300e5af1c1" integrity="sha256-LMibX8HBF8wqm8PwnKdVFL6kEGcMiZIJYTf2MA5a8cE=" crossorigin="anonymous" defer></script>
+<script is:inline src="/chok.js?v=7ab74773a8639f78b3437e3e6e798530b78a6b31087c15dddf31d850bf1cc0e4" integrity="sha256-erdHc6hjn3izQ34+bnmFMLeKazEIfBXd3zHYUL8cwOQ=" crossorigin="anonymous" defer></script>
 
 <style is:global>
   /* Actual study offerings: three columns/two rows, selectors separate. */
@@ -831,5 +831,24 @@ import Layout from '../../layouts/Layout.astro';
   .ck-qualified-daily .ck-daily-original, .ck-qualified-daily .ck-daily-untouched, .ck-qualified-daily .ck-daily-he { white-space:pre-wrap; font-size:var(--ck-size,26px); line-height:1.9; font-family:var(--ck-font-he); font-synthesis:none; }
   .ck-qualified-daily .ck-daily-en { white-space:pre-wrap; font-family:var(--ck-font-en); font-size:1.12rem; line-height:1.8; }
   .ck-qualified-daily .ck-daily-unit { margin:.7rem 0; }
+
+
+  /* Primary readings stay at the reader's chosen size; notes are a distinct secondary layer. */
+  #ck-content .ck-sec-head { margin-top: 0; }
+  #ck-content details.ck-zohar { font-size: inherit; }
+  #ck-content .ck-study-notes {
+    font-size: 1rem;
+    line-height: 1.75;
+    border: 1px solid var(--border, #cbd5e1);
+    border-inline-start: 3px solid var(--ck-gold, #8a6d1d);
+    border-radius: .4rem;
+    padding: .7rem .9rem;
+    margin-block: .75rem 1rem;
+  }
+  #ck-content .ck-study-notes-label { font-weight: 700; margin-bottom: .45rem; }
+  #ck-content .ck-study-notes .ck-zohar-qualification { font-size: inherit; }
+  #ck-content .ck-study-notes p { margin-block: .35rem; }
+  #ck-content .ck-source-qualification,
+  #ck-content .ck-daily-explanation { font-size: 1rem; line-height: 1.75; }
 
 </style>

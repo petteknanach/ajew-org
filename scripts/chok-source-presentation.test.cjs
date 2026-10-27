@@ -1,0 +1,18 @@
+'use strict';
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+const {documentFor}=require('./qualified-earlier-parsha-test-dom.cjs');
+const code=fs.readFileSync(require('node:path').join(__dirname,'../public/chok.js'),'utf8');
+const begin=code.indexOf('  function presentPrimaryStudy(root) {'),end=code.indexOf('  function secHead(',begin);
+assert(begin>=0&&end>begin);
+const doc=documentFor('<main id="fixture"><section class="ck-section" data-sec="kabbala"><div class="ck-zohar-qualification" data-note-id="one"><p lang="he">הערת מקור מלאה</p><p lang="en">Complete source qualification.</p></div><div class="ck-zohar-qualification" data-note-id="two">Second complete note</div><article><details class="ck-zohar"><summary>Zohar source</summary><div data-field-role="original-source">מקור שלם</div></details></article><details class="ck-source-credits"><summary>Credits</summary>Mandatory licence</details><details class="ck-daily-explanation"><summary>Explanation</summary>Interpretation</details></section><section class="ck-section" data-sec="mishna"><details class="ck-mishna"><summary>Mishna</summary>Complete Mishna</details></section><section class="ck-section" data-sec="talmud"><details class="ck-gemara"><summary>Gemara</summary>Complete Gemara</details><details class="ck-rashi"><summary>Rashi</summary>Complete Rashi</details></section></main>');
+const root=doc.querySelector('#fixture');const context={document:doc};vm.createContext(context);vm.runInContext(code.slice(begin,end)+';this.apply=presentPrimaryStudy;',context);
+const before=[...root.querySelectorAll('[data-note-id],[data-field-role]')].map(n=>[n.getAttribute('data-note-id'),n.getAttribute('data-field-role'),n.textContent]);
+context.apply(root);
+for(const selector of ['.ck-zohar','.ck-mishna','.ck-gemara'])assert.equal(root.querySelector(selector).open,true,selector);
+for(const selector of ['.ck-source-credits','.ck-daily-explanation','.ck-rashi'])assert.equal(root.querySelector(selector).open,false,selector);
+assert.equal(root.querySelectorAll('.ck-study-notes').length,1);assert.equal(root.querySelector('.ck-study-notes-label').textContent,'הערות ללימוד · Study notes');
+assert.deepEqual([...root.querySelectorAll('[data-note-id],[data-field-role]')].map(n=>[n.getAttribute('data-note-id'),n.getAttribute('data-field-role'),n.textContent]),before);
+assert.equal(root.querySelector('.ck-study-notes').nextElementSibling.tagName,'article');
+context.apply(root);assert.equal(root.querySelectorAll('.ck-study-notes-label').length,1);
+assert.match(code,/presentPrimaryStudy\(box\);/);assert.match(code,/<h2 class="ck-sec-head">/);
+console.log(JSON.stringify({sourceDefaultOpen:true,notesLabelledAndConserved:true,optionalLayersUnchanged:true,idempotent:true}));

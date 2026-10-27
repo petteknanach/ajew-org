@@ -719,8 +719,33 @@
     lsSet('chok-carry-last', key);
     return true;
   }
+  function presentPrimaryStudy(root) {
+    // Source readings are primary; optional commentary and legal credits keep their own state.
+    root.querySelectorAll('.ck-section[data-sec]').forEach(function (section) {
+      section.querySelectorAll('details.ck-mishna, details.ck-talmud, details.ck-gemara, details.ck-zohar, details.ck-halacha, details.ck-mussar').forEach(function (reading) {
+        reading.open = true;
+      });
+      // Keep every qualification visible, in its original order and at its owning source.
+      section.querySelectorAll('.ck-zohar-qualification').forEach(function (note) {
+        if (note.closest('.ck-study-notes')) return;
+        var group = document.createElement('aside');
+        group.className = 'ck-study-notes';
+        group.setAttribute('aria-label', 'הערות ללימוד · Study notes');
+        var label = document.createElement('div');
+        label.className = 'ck-study-notes-label';
+        label.textContent = 'הערות ללימוד · Study notes';
+        group.appendChild(label);
+        note.parentNode.insertBefore(group, note);
+        while (note && note.nodeType === 1 && note.classList.contains('ck-zohar-qualification')) {
+          var next = note.nextSibling;
+          group.appendChild(note);
+          note = next;
+        }
+      });
+    });
+  }
   function secHead(title, ref, generatedRef) {
-    return '<div class="ck-sec-head">' + title + (ref ? ' <span class="ck-ref">' + (generatedRef ? refLabelHTML(ref) : esc(ref)) + '</span>' : '') + '</div>';
+    return '<h2 class="ck-sec-head">' + title + (ref ? ' <span class="ck-ref">' + (generatedRef ? refLabelHTML(ref) : esc(ref)) + '</span>' : '') + '</h2>';
   }
   function refStr(r) {
     if (!r) return '';
@@ -1482,6 +1507,7 @@
         if (commentHTML) parts.push(commentHTML);
         if (revision !== state.renderRevision) return;
         box.innerHTML = parts.join('') || '<p class="ck-error">Nothing to show.</p>';
+        presentPrimaryStudy(box);
         box.setAttribute('data-language', state.language);
         var root=box.closest('.ck-wrap');root.setAttribute('data-language',state.language);
         $('ck-study-overview-body').innerHTML=state.focus?'':window.ChokSources.isTuesday(weeks[0],availDay(state.sched.weeks[weeks[0]],day))?window.ChokSources.overview(state.kavanaMode==='always'):studyOverviewHTML();

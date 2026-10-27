@@ -63,6 +63,8 @@ class Element {
   get className() { return this.attrs.class || ''; } set className(v) { this.setAttribute('class', v); }
   get children() { return this.childNodes.filter(x => x.tagName); }
   get firstChild() { return this.childNodes[0] || null; }
+  get nodeType() { return this.tagName === '#text' ? 3 : this.tagName === '#document' ? 9 : this.tagName === '#document-fragment' ? 11 : 1; }
+  get nextElementSibling() { let n=this.nextSibling; while(n && n.nodeType!==1)n=n.nextSibling; return n; }
   get nextSibling() { const a = this.parentNode?.childNodes || []; return a[a.indexOf(this) + 1] || null; }
   get textContent() { return this.tagName === '#text' ? this._text : this.childNodes.map(n => n.textContent).join(''); }
   set textContent(value) { if (this.tagName === '#text') this._text = String(value); else this.replaceChildren(new Element('#text', {}, String(value))); changed(); }
@@ -76,9 +78,9 @@ class Element {
   hasAttribute(k) { return Object.hasOwn(this.attrs, k); }
   setAttribute(k,v) { this.attrs[k] = String(v); changed(); }
   removeAttribute(k) { delete this.attrs[k]; changed(); }
-  appendChild(n) { if (n.tagName === '#document-fragment') {for (const child of [...n.childNodes]) this.appendChild(child); return n;} n.parentNode = this; this.childNodes.push(n); changed(); return n; }
+  appendChild(n) { if (n.tagName === '#document-fragment') {for (const child of [...n.childNodes]) this.appendChild(child); return n;} if (n.parentNode) n.remove(); n.parentNode = this; this.childNodes.push(n); changed(); return n; }
   append(...nodes) { for (const n of nodes) this.appendChild(n); }
-  insertBefore(n, ref) { if (!ref) return this.appendChild(n); n.parentNode = this; this.childNodes.splice(this.childNodes.indexOf(ref),0,n); changed(); return n; }
+  insertBefore(n, ref) { if (n === ref) return n; if (!ref) return this.appendChild(n); if (n.parentNode) n.remove(); n.parentNode = this; this.childNodes.splice(this.childNodes.indexOf(ref),0,n); changed(); return n; }
   replaceChildren(...nodes) { for (const n of this.childNodes) n.parentNode = null; this.childNodes = []; for (const n of nodes) this.appendChild(n); changed(); }
   remove() { if (this.parentNode) { const p = this.parentNode; p.childNodes.splice(p.childNodes.indexOf(this),1); this.parentNode = null; changed(); } }
   querySelectorAll(selector) { const out=[]; const visit = p => { for (const n of p.childNodes) {if (n.tagName !== '#text' && selector.split(',').some(s => selects(n,s))) out.push(n); visit(n);} };visit(this);return out; }
