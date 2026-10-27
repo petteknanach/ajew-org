@@ -4,7 +4,7 @@ import klali from '../data/tikkun-klali.json';
 <section id="tikun-haklali" class="klali-reader" aria-labelledby="klali-heading">
   <header>
     <h2 id="klali-heading">Tikun Haklali · <span lang="he" dir="rtl">תיקון הכללי</span></h2>
-    <p>All ten Psalms · 164 verses · complete published English translation and frozen pronunciation.</p>
+    <p>All ten Psalms · 164 verses · English translation and transliteration.</p>
     <p class="klali-charity"><strong>It is good to first set aside charity, even one penny.</strong></p>
   </header>
   <div class="klali-controls" aria-label="Tikun reading controls">
@@ -36,9 +36,9 @@ import klali from '../data/tikkun-klali.json';
   </nav>
   <details class="klali-source-note">
     <summary>Sources and pronunciation convention</summary>
-    <p>English translation and transliteration are copied from the published Tikun back matter in <cite>Revival of the Soul (Misheevas Nefesh)</cite>, the user-saved final author edits, corroborated by its pagination-repaired edition. The printed spellings are frozen, not corrected to another convention.</p>
-    <p>The English accompanies the Psalm and verse identity. It is not a new translation or a pronunciation overlay for Medooyuk. Original app Hebrew, published prayer Hebrew, and the independent Medooyuk edition can differ in pointing, divine-name spelling and qere. Each verse’s disclosure retains the exact published Hebrew underlying its pronunciation.</p>
-    <p>Medooyuk uses the current approved annotations and renderer with the independent <a href="https://tanach.us/">UXLC 2.5 Hebrew text (CC BY)</a>; no classifications are borrowed for Original app Hebrew or unannotated prayers. This transports approved marks, not a new claim of universal linguistic completeness. <a href="/tikkun/qatan-sources.html">Annotation source notes · MAM qatan supplement, Hebrew Wikisource (CC BY-SA 4.0)</a>.</p>
+    <p>English translation and transliteration follow the Tikun back matter in <cite>Revival of the Soul (Misheevas Nefesh)</cite>. The transliteration preserves that edition’s spellings.</p>
+    <p>The English accompanies each Psalm and verse and follows the published prayer edition, not the Medooyuk Hebrew. The Original app Hebrew, published prayer text and Medooyuk edition may differ in pointing, divine-name spelling and qere. Each verse’s source disclosure shows the published Hebrew underlying its transliteration.</p>
+    <p>Medooyuk is based on the independent <a href="https://tanach.us/">UXLC 2.5 Hebrew text (CC BY)</a>. Its reading marks apply only to that edition, not to Original app Hebrew or the prayers, and should not be taken as complete coverage of every linguistic distinction. <a href="/tikkun/qatan-sources.html">Annotation source notes · MAM qatan supplement, Hebrew Wikisource (CC BY-SA 4.0)</a>.</p>
     <p>Transliterator's note: The method used here is not the sophisticated conventional way, rather it is extremely simple and straightforward.</p>
     <ul>
       <li>ch = kh</li>
@@ -50,18 +50,18 @@ import klali from '../data/tikkun-klali.json';
     <h3>Before the Psalms · Binding Declaration</h3>
     <p data-klali-text="transliteration" lang="en" hidden>Haraynee mekashehr es atzmee bi-ameeras hu-asara mizmuray tihilim ailoo lichul hatzadikim hu-ameeteem shebidoarainoo, oolichul hatzadikim hu-ameeteem shoachney ufur kidoasheem ashehr bu-uretz haimu, oobifrat li-rabainoo hakudoash tzadik yisoad oalum nachal noavaiya mikur chuchmu ra-bainoo Na Nach Nachmu Nachmun Me-Oomon zichoosoa yugain ulainoo vi-al kul yisru-el umain.</p>
     <p data-klali-text="translation" lang="en">Hereby I bind myself, through the recitation of these ten Psalms, to all the true tzaddikim in our generation, and to all the true tzaddikim who have passed on, the holy ones who rest in the dust, and in particular to our holy Rabbi, the foundation of the world, the flowing stream, the source of wisdom, our Rabbi Na Nach Nachma Nachman of Uman; may his merit protect us and all of Israel, Amen.</p>
-    <p class="klali-note">The published declaration is provided in English; no new Hebrew wording or special annotations are supplied for it.</p>
+    <p class="klali-note">The declaration is provided in English translation and transliteration, without marked Hebrew text.</p>
   </section>
   <section class="klali-prelude">
     <h3>Prelude · Psalm 95:1–3</h3>
     <div class="klali-companion" hidden>
-      <p class="klali-note">Independent biblical companion, Hebrew only; not a replacement for the preserved prayer variant.</p>
+      <p class="klali-note">Biblical companion, Hebrew only; the prayer text below is a separate variant.</p>
       {[1,2,3].map(v => <p class="klali-hebrew" dir="rtl" lang="he" data-annotated-ref={`95:${v}`}></p>)}
     </div>
     <p class="klali-hebrew klali-prelude-original" dir="rtl" lang="he">לְכוּ נְרַנְּנָה לַיהוָה נָרִיעָה לְצוּר יִשְׁעֵנוּ׃ נְקַדְּמָה פָנָיו בְּתוֹדָה בְּזִמְרוֹת נָרִיעַ לוֹ׃ כִּי אֵל גָּדוֹל יְהוָה וּמֶלֶךְ גָּדוֹל עַל כָּל אֱלֹהִים׃</p>
     <p data-klali-text="transliteration" lang="en" hidden>Lichoo niraninuh laHshem nuhreya litzoor yeeshainoo. Nikadmuh punuv bisoadah bizmeeroas nuhreeya loa. Kee Ai-l gadoal Adoa-neye oomelech gadoal al kul eloaheem.</p>
     <p data-klali-text="translation" lang="en">Go, let us give praise to Hashem, let us holler to the Rock of our salvation. Let us greet His countenance with thanksgiving, with songs we will holler to Him. For Hashem is a great G-d, and a great King over all gods.</p>
-    <p class="klali-note">This inherited prayer variant and its English are retained separately from the recovered ten-Psalm back matter; they are not annotated.</p>
+    <p class="klali-note">The opening prayer and its English follow their own text, separate from the ten Psalms below. This prayer does not use the Medooyuk reading marks.</p>
   </section>
   {klali.chapters.map(({chapter,title,verses}) => (
     <section id={`klali-psalm-${chapter}`} class="klali-psalm" data-psalm={chapter} aria-labelledby={`klali-title-${chapter}`}>
@@ -74,7 +74,7 @@ import klali from '../data/tikkun-klali.json';
         <p data-klali-text="transliteration" lang="en" hidden>{verse.transliteration}</p>
         <details class="klali-published-variant" hidden>
           <summary>Published Hebrew underlying this pronunciation</summary>
-          <p class="klali-note">Frozen book prayer text; not the independent Medooyuk edition.</p>
+          <p class="klali-note">Published prayer text; distinct from the Medooyuk edition.</p>
           <p class="klali-hebrew" dir="rtl" lang="he">{verse.publishedHebrew}</p>
         </details>
       </div>)}
