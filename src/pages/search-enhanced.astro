@@ -584,7 +584,7 @@ const searchBookLabelsJSON = JSON.stringify(searchBookLabels).replace(/</g, '\\u
         return docMatchScore(doc, query, mode) > 0;
       }
 
-      function normalizedRange(raw, query) {
+      function normalizedRange(raw, query, wholeWords = false) {
         const target = normalizeForSearch(query);
         if (!raw || !target) return null;
         let normalized = '';
@@ -611,7 +611,13 @@ const searchBookLabelsJSON = JSON.stringify(searchBookLabels).replace(/</g, '\\u
           }
           offset += width;
         }
-        const at = normalized.indexOf(target);
+        let at = normalized.indexOf(target);
+        if (wholeWords) {
+          while (at >= 0 && ((at > 0 && normalized[at - 1] !== ' ') ||
+            (at + target.length < normalized.length && normalized[at + target.length] !== ' '))) {
+            at = normalized.indexOf(target, at + 1);
+          }
+        }
         if (at < 0) return null;
         return { start: rawOffsets[at], end: (rawOffsets[at + target.length - 1] ?? raw.length - 1) + 1 };
       }
@@ -708,7 +714,8 @@ const searchBookLabelsJSON = JSON.stringify(searchBookLabels).replace(/</g, '\\u
         const words = (hit && hit.matchedWords) || [];
         const useHebrew = /[\u0590-\u05FF]/.test(words.join(' '));
         const raw = useHebrew ? (doc.he || doc.en || '') : (doc.en || doc.he || '');
-        const range = matchWindowAround(raw, words);
+        // Keep the verified consecutive words together before the dispersed-word fallback.
+        const range = normalizedRange(raw, words.join(' '), true) || matchWindowAround(raw, words);
         if (!range) {
           return { snippet: (raw || '').slice(0, 420), anchor: '', location: '' };
         }
