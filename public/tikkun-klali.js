@@ -63,7 +63,7 @@
       show('.klali-annotated, .klali-companion', false);
       show('.klali-original, .klali-prelude-original', hebrew);
       if (!hebrew) {
-        status.textContent = 'Complete published English · 164 verses. Translation and frozen pronunciation follow the book, not the independent Hebrew editions.';
+        status.textContent = 'Complete published English · 164 verses. Translation and transliteration follow the book’s prayer text, rather than the independent Hebrew editions.';
         return;
       }
       if (!prefs.annotated) {
@@ -87,7 +87,7 @@
         show('.klali-original, .klali-prelude-original', false);
         show('.klali-annotated, .klali-companion', true);
         annotated.textContent = 'Medooyuk · independent Hebrew edition';
-        status.textContent = 'Medooyuk · independent UXLC Hebrew with approved annotations. English translation and frozen pronunciation follow the published book by verse identity, not a Medooyuk pronunciation overlay. The Psalm 95 companion is independent of the prayer variant.';
+        status.textContent = 'Medooyuk · independent UXLC Hebrew with reading marks. English translation and transliteration follow the published prayer text, which may differ from this edition. The Psalm 95 companion is separate from the prayer text.';
       } catch (_) {
         if (own !== epoch) return;
         status.textContent = 'Medooyuk source or marked font unavailable. Original app Hebrew remains visible, unchanged and unannotated. Retry Medooyuk or choose Original app Hebrew; published English remains available.';
