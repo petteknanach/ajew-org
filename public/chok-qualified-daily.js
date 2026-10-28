@@ -60,7 +60,12 @@
     hash(p.notesSHA256);
   }
   function sectionPlan(s, name) {
-    fields(s, ['disposition', 'reference', 'extent', 'title', 'units', 'pairs', 'prescribedRashi', 'optionalRashi', 'admission']);
+    var absent = Object.prototype.hasOwnProperty.call(s, 'absenceProofs');
+    fields(s, ['disposition', 'reference', 'extent', 'title', 'units', 'pairs', 'prescribedRashi', 'optionalRashi', 'admission'].concat(absent ? ['absenceProofs'] : []));
+    if (absent) {
+      if (name !== 'mishna') fail('absence outside Mishna');
+      equal(s.absenceProofs, [{"mishna":"mishna-mikvaot-6-6","owner":"תולדות|יום שישי|bartenura|mishna-mikvaot:6:6","schema":"witness-limited-commentary-absence-v1","selectedViewSHA256":"2ecc221e85f7a5571c56d195a4d0851049ce3548c74d8ee14f1fa4a7ebcdcb25","sourceCandidateSHA256":"1cad8e1b20f53fda213e8c9937ada9e9280685bc1f3261485ef7f797ebc688f4","sourceProofPointer":"/extentProof/B6_6WitnessLimitedEmpty","sourceSelectionID":"B-06","universalAbsence":false}]);
+    }
     pair(s.title); object(s.reference); object(s.extent); gates(s.admission);
     list(s.units); list(s.pairs); list(s.prescribedRashi); list(s.optionalRashi);
     if (s.disposition !== 'prescribed' && s.disposition !== 'not-prescribed') fail('held section');
@@ -81,6 +86,11 @@
         if (!m || !b || m.role !== 'mishna' || b.role !== 'bartenura' || m.ref !== r.ref || b.ref !== r.ref) fail('wrong commentary owner');
         ordered.push(m.owner, b.owner);
       });
+      if (absent) {
+        var missing = s.units.find(function (u) { return u.owner === s.absenceProofs[0].mishna; });
+        if (!missing || missing.role !== 'mishna' || missing.status !== 'complete' || ordered.indexOf(missing.owner) >= 0) fail('invalid absence companion');
+        ordered.splice(s.units.indexOf(missing), 0, missing.owner);
+      }
     } else if (name === 'talmud') {
       if (s.pairs.length) fail('unexpected pairing');
       s.units.forEach(function (u) {
@@ -110,6 +120,7 @@
     var names = Object.keys(e.sections); if (!names.length) fail('empty admission');
     names.forEach(function (name) {
       if (SECTIONS.indexOf(name) < 0) fail('unknown section');
+      if (Object.prototype.hasOwnProperty.call(e.sections[name], 'absenceProofs') && e.key !== 'תולדות|יום שישי') fail('absence wrong reading');
       sectionPlan(e.sections[name], name);
       var field = name === 'talmud' ? 'gemara' : name;
       if (['torah', 'navi', 'kesuvim', 'mishna', 'gemara', 'zohar', 'halacha', 'mussar'].indexOf(field) >= 0) {
@@ -141,7 +152,9 @@
     var checks = [], seen = new Set();
     Object.keys(expected.sections).forEach(function (name) {
       var plan = expected.sections[name], s = p.sections[name];
-      fields(s, ['disposition', 'reference', 'extent', 'units']);
+      var absent = Object.prototype.hasOwnProperty.call(plan, 'absenceProofs');
+      fields(s, ['disposition', 'reference', 'extent', 'units'].concat(absent ? ['absenceProofs'] : []));
+      if (absent) equal(s.absenceProofs, plan.absenceProofs);
       equal(s.disposition, plan.disposition); equal(s.reference, plan.reference); equal(s.extent, plan.extent);
       list(s.units); if (s.units.length !== plan.units.length) fail('incomplete section');
       s.units.forEach(function (u, i) {
@@ -230,9 +243,11 @@
       return body(u, lang, options.mode, options.transform, options.commentary, boldCarrier);
     }
     if (section === 'mishna') {
-      plan.pairs.forEach(function (r) {
-        html += '<section data-mishna-owner="' + esc(r.mishna) + '"><h4>' + esc(r.ref) + '</h4>' + show(r.mishna) +
-          mandatory([units.get(r.mishna)]) + '<section class="ck-daily-bartenura" data-commentary-owner="' + esc(r.mishna) + '"' + (options.commentary ? '' : ' hidden') + '><h5>ברטנורא · Bartenura</h5>' + show(r.bartenura) + '</section>' + mandatory([units.get(r.bartenura)]) + '</section>';
+      s.units.filter(function (u) { return u.role === 'mishna'; }).forEach(function (m) {
+        var r = plan.pairs.find(function (p) { return p.mishna === m.owner; });
+        html += '<section data-mishna-owner="' + esc(m.owner) + '"><h4>' + esc(m.ref) + '</h4>' + show(m.owner) + mandatory([m]);
+        if (r) html += '<section class="ck-daily-bartenura" data-commentary-owner="' + esc(r.mishna) + '"' + (options.commentary ? '' : ' hidden') + '><h5>ברטנורא · Bartenura</h5>' + show(r.bartenura) + '</section>' + mandatory([units.get(r.bartenura)]);
+        html += '</section>';
       });
     } else if (section === 'talmud') {
       s.units.filter(function (u) { return u.role === 'gemara'; }).forEach(function (u) { html += show(u.owner); });

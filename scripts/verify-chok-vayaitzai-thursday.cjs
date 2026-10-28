@@ -31,7 +31,7 @@ const coordinatedEvidence=[];
  assert.equal(fixture.schema,'chok-vayaitzai-thursday-reviewed-v1');assert.equal(fixture.readings.length,1);sourceSRI(root);
  const main=read('public/chok.js'),astro=read('src/pages/reader/chok.astro'),schedule=JSON.parse(read('public/reader/chok/schedule.json'));
  const {api,libraryAPI,entries}=boot(root),oldKeys=fixture.priorSelectedKeys,newKeys=fixture.readings.map(f=>f.key);
- assert.equal(oldKeys.length,10);assert.equal(entries.length,24);assert.deepEqual(entries.slice(0,10).map(e=>e.key),oldKeys);assert.deepEqual(entries.slice(10,11).map(e=>e.key),newKeys);assert.deepEqual(entries.map(e=>e.key).sort(),oracle.readingKeys.slice().sort());
+ assert.equal(oldKeys.length,10);assert.equal(entries.length,31);assert.deepEqual(entries.slice(0,10).map(e=>e.key),oldKeys);assert.deepEqual(entries.slice(10,11).map(e=>e.key),newKeys);assert.deepEqual(entries.map(e=>e.key).sort(),oracle.readingKeys.slice().sort());
  // The owning initializer really calls the extracted qualifiedDailyOr helper for Mishna.
  assert(main.includes("return qualifiedDailyOr(wk,dayE,'mishna',d,function()"));
  for(const id of ['ck-language','ck-mode']){

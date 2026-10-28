@@ -162,7 +162,7 @@ async function boldPresentationControls(api,entry,payload,loader,scheduled){
  reviewedSourceFields(payload,'mishna',html);return checks;
 }
 async function verify(root){
- root=path.resolve(root);const oracle=JSON.parse(fs.readFileSync(path.join(root,'scripts/chok-qualified-daily-reviewed.json'),'utf8'));assert.equal(oracle.schema,'chok-qualified-reviewed-hashes-v1');sourceSRI(root);
+ root=path.resolve(root);const oracle=JSON.parse(fs.readFileSync(path.join(root,'scripts/chok-qualified-daily-reviewed.json'),'utf8'));assert.equal(oracle.schema,'chok-qualified-reviewed-hashes-v1');require('./verify-chok-next-readings-source-admission.cjs').check(root,oracle);sourceSRI(root);
  const{api,entries}=boot(root),schedule=JSON.parse(fs.readFileSync(path.join(root,'public/reader/chok/schedule.json'),'utf8'));assert.deepEqual(entries.map(e=>e.key).sort(),oracle.readingKeys.slice().sort());
  let units=0,notes=0,requests=0,boldOriginalFields=0,boldControls=0,sourceVisibleFields=0,bartenuraOriginalFields=0,plainBartenuraOriginalFields=0;const seen=new Set();
  for(const e of entries){
