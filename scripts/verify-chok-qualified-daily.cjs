@@ -22,7 +22,10 @@ function checkOracle(payload,entry,oracle){
  const approved=new Map(oracle.units.filter(u=>u.readingId===entry.key).map(u=>[u.owner,u]));assert(approved.size);
  assert.deepEqual(Object.keys(payload.sections).sort(),Object.keys(entry.sections).sort());let checked=0,notes=0;
  for(const[name,section]of Object.entries(payload.sections)){
-  if(name==='halacha'){
+  if(name==='mussar'){
+   const owners={'וירא|יום רביעי':'וירא|יום רביעי|mussar|Charedim67b-selected','וירא|יום חמישי':'וירא|יום חמישי|mussar|Charedim70a-selected'};
+   const native=oracle.nativeMussar&&oracle.nativeMussar[entry.key];assert(native&&native.owner===owners[entry.key],'UNQUALIFIED_NATIVE_MUSSAR');assert.equal(section.units.length,1);assert.equal(section.units[0].owner,native.owner);assert.deepEqual(section.reference,native.reference);assert.deepEqual(section.extent,native.extent);assert.equal(entry.sections.mussar.units[0].admission.sourceUse.evidenceSHA256,native.sourceUseEvidenceSHA256);
+  }else if(name==='halacha'){
    const exactOwners={'וירא|יום רביעי':'וירא|יום רביעי|halacha|CM227-selected','וירא|יום חמישי':'וירא|יום חמישי|halacha|CM348-selected'};
    const native=oracle.nativeHalacha&&oracle.nativeHalacha[entry.key];assert(native&&native.owner===exactOwners[entry.key],'UNQUALIFIED_NATIVE_HALACHA');assert.equal(section.units.length,1);assert.equal(section.units[0].owner,native.owner);assert.deepEqual(section.reference,native.reference);assert.deepEqual(section.extent,native.extent);assert.equal(entry.sections.halacha.units[0].admission.sourceUse.evidenceSHA256,native.sourceUseEvidenceSHA256);
   }else{
@@ -42,7 +45,7 @@ function checkOracle(payload,entry,oracle){
    assert.equal(sha(u.explanation.paragraphs.map(p=>p.en).join('\n\n')),a.explanationEnSHA256,'REVIEWED_EN_EXPLANATION_MISMATCH:'+u.owner);
    assert.deepEqual(u.notes.map(n=>({id:n.id,owner:n.owner,role:n.role,placement:n.placement,heSHA256:sha(n.he),enSHA256:sha(n.en),sourceTextSHA256:n.sourceTextSHA256,span:n.span})),a.notes,'REVIEWED_NOTE_MISMATCH:'+u.owner);
    const plan=entry.sections[name].units.find(x=>x.owner===u.owner);assert(plan);assert.equal(plan.edition,a.edition);assert.equal(plan.provenanceSHA256,a.provenanceSHA256);
-   if(name==='halacha'){
+   if(name==='halacha'||name==='mussar'){
     assert(a.nativeAdmission,'NATIVE_FIELD_AUTHORITY_REQUIRED');assert.deepEqual(plan.admission,a.nativeAdmission.unit);assert.deepEqual(entry.sections[name].admission,a.nativeAdmission.section);assert.deepEqual(entry.admission,a.nativeAdmission.entry);
     for(const g of[plan.admission,entry.sections[name].admission,entry.admission])for(const decision of Object.values(g)){assert.equal(decision.decision,'accepted');assert(/^[a-f0-9]{64}$/.test(decision.evidenceSHA256));}
    }else for(const g of[plan.admission,entry.sections[name].admission,entry.admission])for(const decision of Object.values(g)){assert.equal(decision.decision,'accepted');assert.equal(decision.evidenceSHA256,a.authoritySHA256||oracle.authoritySHA256);}

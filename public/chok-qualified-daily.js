@@ -131,7 +131,7 @@
     } else {
       fields(n.span, ['start', 'end', 'endExclusive', 'unit']);
       if (!Number.isInteger(n.span.start) || !Number.isInteger(n.span.end) || n.span.start < 0 || n.span.end <= n.span.start || n.span.end > Array.from(u.he).length || n.span.endExclusive !== true || n.span.unit !== 'unicode-codepoint') fail('invalid note span');
-      checks.push(checkDigest(u.he, n.sourceTextSHA256));
+      checks.push(function () { return checkDigest(u.he, n.sourceTextSHA256); });
     }
   }
   function validate(p, expected) {
@@ -156,13 +156,14 @@
           list(u.explanation.paragraphs); if (!u.explanation.paragraphs.length) fail('missing distinct explanation');
           u.explanation.paragraphs.forEach(pair);
           if (u.explanation.paragraphs.map(function (v) { return v.en; }).join('\n\n') === u.en || u.explanation.paragraphs.map(function (v) { return v.he; }).join('\n\n') === u.he) fail('explanation duplicates source');
-          checks.push(checkDigest(u.he, wanted.originalSHA256), checkDigest(u.en, wanted.englishSHA256), checkDigest(canonical(u.explanation), wanted.explanationSHA256));
+          checks.push(function () { return checkDigest(u.he, wanted.originalSHA256); }, function () { return checkDigest(u.en, wanted.englishSHA256); }, function () { return checkDigest(canonical(u.explanation), wanted.explanationSHA256); });
         }
         u.notes.forEach(function (n) { note(n, u, seen, checks); });
-        checks.push(checkDigest(canonical(u.notes), wanted.notesSHA256));
+        checks.push(function () { return checkDigest(canonical(u.notes), wanted.notesSHA256); });
       });
     });
-    return Promise.all(checks).then(function () { return freeze(p); });
+    // Start no digest promises until every synchronous shape/span check has passed.
+    return Promise.all(checks.map(function (check) { return Promise.resolve().then(check); })).then(function () { return freeze(p); });
   }
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return {'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'}[c]; }); }
   function shown(field, language) {
@@ -190,7 +191,7 @@
     return '<div class="ck-daily-' + kind + '" data-daily-field="' + kind + '" lang="' + (he ? 'he' : 'en') + '" dir="' + (he ? 'rtl' : 'ltr') + '" style="white-space:pre-wrap"' + (shown(kind, language) ? '' : ' hidden') + '>' + displayed + '</div>';
   }
   function licenseNote(n) {
-    return n.role === 'source-qualification' && (/https:\/\/creativecommons\.org\/licenses\//.test(n.en) || /^other-native-(131|133)-source$/.test(n.id));
+    return n.role === 'source-qualification' && (/https:\/\/creativecommons\.org\/licenses\//.test(n.en) || /^other-native-(131|132|133|134)-source$/.test(n.id));
   }
   function creditText(value) {
     var out = '', end = 0;

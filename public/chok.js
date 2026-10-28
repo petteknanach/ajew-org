@@ -315,12 +315,14 @@
   function richText(s) {
     return window.ChokSources.richText(s || '');
   }
-  function rashiHTML(slug, c, v, qualifiedDay) {
-    if (!state.rashi) return Promise.resolve('');
-    return Promise.all([rashi(slug), rashiEn(slug)]).then(function (rs) {
+  function rashiHTML(slug, c, v, qualifiedDay, otherContext) {
+    if (!state.rashi && !(window.ChokOtherLayers && window.ChokOtherLayers.hasAbsence(otherContext,c+':'+v))) return Promise.resolve('');
+    return Promise.all([rashi(slug), rashiEn(slug), (window.ChokOtherLayers && window.ChokOtherLayers.hasAbsence(otherContext,c+':'+v) ? fetchJSON('/reader/rashi/'+slug+'.json',true).catch(function(){return null;}) : Promise.resolve(null))]).then(async function (rs) {
       var rd = rs[0], re = rs[1];
       var he = rd && (rd.ch || {})[c] && rd.ch[c][v];
       var en = re && (re.ch || {})[c] && re.ch[c][v];
+      if (otherContext) { var absence = await window.ChokOtherLayers.rashiAbsence(otherContext,c+':'+v,rs[2],he,en); if (absence !== null) return absence; }
+      if (!state.rashi) return '';
       if (qualifiedDay) return window.ChokSources.rashi(c + ':' + v, he, state.tanachen);
       if ((!he || !he.length) && (!en || !en.length)) return '';
       var body = '';
@@ -664,7 +666,7 @@
         }
         return Promise.all(items.map(function (it) {
           var nightTorah=parsha==='נח' && day==='ליל שישי' && kind==='torah';
-          return Promise.all([nightTorah ? Promise.resolve('') : rashiHTML(slug, it.c, it.x, qualifiedDay && kind === 'torah'),
+          return Promise.all([nightTorah ? Promise.resolve('') : rashiHTML(slug, it.c, it.x, qualifiedDay && kind === 'torah', otherContext),
             !nightTorah && (kind || 'torah') === 'torah' ? rashiSuper(slug, it.c, it.x, otherContext, englishEnabled) : Promise.resolve(''),
             verseCommHTML(kind === 'torah' ? 'torah' : 'navi', slug, it.c, it.x, otherContext, englishEnabled),
             Promise.resolve(vcomm && vcomm.rashi && vcomm.rashi[it.c + ':' + it.x] ?
@@ -1474,7 +1476,7 @@
       }
       p = p.then(function () {
         if (!want('mussar')) return;
-        return (qualifiedDay ? Promise.resolve(window.ChokSources.reading('mussar', state.tanachen)) : wk==='נח' ? Promise.resolve(dayE==='ליל שישי'?'':window.ChokSources.weekReading(wk,dayE,'mussar',state.tanachen)||window.ChokSources.unavailable('mussar')) : mussarHTML(wk, dayE)).then(function (html) { html = html || ''; html = voiceBox(wk!=='נח' && dc && dc.mussar, 'מוסר') + html;
+        return qualifiedDailyOr(wk,dayE,'mussar',d,function(){return (qualifiedDay ? Promise.resolve(window.ChokSources.reading('mussar', state.tanachen)) : wk==='נח' ? Promise.resolve(dayE==='ליל שישי'?'':window.ChokSources.weekReading(wk,dayE,'mussar',state.tanachen)||window.ChokSources.unavailable('mussar')) : mussarHTML(wk, dayE));}).then(function (html) { html = html || ''; html = voiceBox(!qualifiedDailyHas(wk,dayE,'mussar') && wk!=='נח' && dc && dc.mussar, 'מוסר') + html;
           if (html) out.push('<section class="ck-section" data-sec="mussar">' + html + '</section>');
         });
       });
