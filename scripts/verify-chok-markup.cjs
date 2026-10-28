@@ -75,8 +75,12 @@ for (const label of ['12:1', '28:15', 'Genesis 12:1', '12:1–13:4']) {
 }
 console.log('Chapter:verse direction regression PASS:', referenceCases, 'Hebrew labels, range and English/numeric controls');
 const dayRenderer=main.slice(main.indexOf('  function renderDay()'),main.indexOf('  function renderDay()')+18000);
-assert(dayRenderer.indexOf("if (d.gemara &&")<dayRenderer.indexOf("if (d.halacha &&"));
-assert(dayRenderer.indexOf("if (want('kabbala'))")<dayRenderer.indexOf("if (d.halacha &&"));
+const halachaGate="if ((qualifiedDailyHas(wk,dayE,'halacha') || d.halacha && d.halacha.work) && want('halacha'))";
+const talmudGate="if ((qualifiedDailyHas(wk,dayE,'talmud') || isLechThursday(wk,dayE) || d.gemara && d.gemara.masechet) && want('talmud'))";
+const gemaraAt=dayRenderer.indexOf(talmudGate),zoharAt=dayRenderer.indexOf("if (want('kabbala'))"),halachaAt=dayRenderer.indexOf(halachaGate);
+assert(gemaraAt>=0&&zoharAt>=0&&halachaAt>=0,'All ordered section guards must exist');
+assert(gemaraAt<halachaAt);
+assert(zoharAt<halachaAt);
 assert(main.includes("en:'One sign in the printed text is unclear.'"));
 const template=fs.readFileSync('src/pages/reader/chok.astro','utf8');
 assert(template.includes('#ck-content > .ck-section > .ck-talmud > summary'));

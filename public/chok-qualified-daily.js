@@ -190,7 +190,7 @@
     return '<div class="ck-daily-' + kind + '" data-daily-field="' + kind + '" lang="' + (he ? 'he' : 'en') + '" dir="' + (he ? 'rtl' : 'ltr') + '" style="white-space:pre-wrap"' + (shown(kind, language) ? '' : ' hidden') + '>' + displayed + '</div>';
   }
   function licenseNote(n) {
-    return n.role === 'source-qualification' && /https:\/\/creativecommons\.org\/licenses\//.test(n.en);
+    return n.role === 'source-qualification' && (/https:\/\/creativecommons\.org\/licenses\//.test(n.en) || /^other-native-(131|133)-source$/.test(n.id));
   }
   function creditText(value) {
     var out = '', end = 0;

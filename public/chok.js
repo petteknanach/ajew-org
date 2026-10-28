@@ -358,10 +358,11 @@
     if (!body) return '';
     return '<details class="ck-layer ck-comm"><summary>' + label + '</summary>' + body + '</details>';
   }
-  function rashiSuper(slug, c, v) {
+  function rashiSuper(slug, c, v, otherContext, englishEnabled) {
     state.superCache[slug] = state.superCache[slug] || fetchJSON('/reader/commentary/rashi-super/' + slug + '.json').catch(function () { return null; });
     return state.superCache[slug].then(function (d) {
       var row = d && (d.ch || {})[c] && d.ch[c][c + ':' + v];
+      if (otherContext) return window.ChokOtherLayers.superHTML(otherContext,c,v,row,englishEnabled,richText);
       if (!row) return '';
       var names = Object.keys(row).filter(function (n) { return (row[n] || []).length; });
       if (!names.length) return '';
@@ -546,16 +547,18 @@
       });
     });
   }
-  function verseCommHTML(kind, slug, c, v) {
+  function verseCommHTML(kind, slug, c, v, otherContext, englishEnabled) {
     // Ramban only on Torah - no Ibn Ezra (Chayei Moharan 410)
     if (kind === 'navi') {
       return comm('navi-metzudas', slug).then(function (d) {
         var metz = d && (d.ch || {})[String(c)] && d.ch[String(c)][v - 1];
+      if (otherContext) { var attached = window.ChokOtherLayers.commentary(otherContext,kind,c+':'+v,metz,englishEnabled); if (attached !== null) return attached; }
         return metz ? commDetails('מצודת דוד', '<div class="ck-comm-body">' + richText(metz) + '</div>') : '';
       });
     }
     return comm('torah-ramban', slug).then(function (d) {
       var rb = d && (d.ch || {})[String(c)] && d.ch[String(c)][v - 1];
+      if (otherContext) { var attached = window.ChokOtherLayers.commentary(otherContext,kind,c+':'+v,rb,englishEnabled); if (attached !== null) return attached; }
       return rb ? commDetails('רמב״ן', '<div class="ck-comm-body">' + richText(rb) + '</div>') : '';
     });
   }
@@ -620,8 +623,8 @@
   function versesHTML(slug, from, to, kind, vcomm, parsha, day) {
     var englishEnabled = state.tanachen, capturedLanguage = state.language;
     return book(slug).then(function (d) {
-      return Promise.all([targ(slug), englishEnabled ? en(slug) : Promise.resolve(null), scheduledBible(parsha, day, slug, d)]).then(function (ts) {
-        var tg = ts[0], en = ts[1], selectedBible = ts[2];
+      return Promise.all([targ(slug), englishEnabled ? en(slug) : Promise.resolve(null), scheduledBible(parsha, day, slug, d), (window.ChokOtherLayers && window.ChokOtherLayers.supports(parsha,day) ? targ(slug).then(function(t){return window.ChokOtherLayers.prepare(parsha,day,slug,t,function(u){return fetchJSON(u,true);});}).catch(function(e){ console.warn('Other-layer additions unavailable; retaining original reader',e); return null; }) : Promise.resolve(null))]).then(function (ts) {
+        var tg = ts[0], en = ts[1], selectedBible = ts[2], otherContext = ts[3];
         var qualifiedDay = window.ChokSources.isTuesday(parsha, day);
         var items = [];
         var c = from.c, v = from.v;
@@ -648,7 +651,9 @@
             if (state.targum) {
               var tgOriginal = tg && (tg.ch || {})[c] && tg.ch[c][x];
               var targumRow = qualifiedDay ? kind === 'torah' ? window.ChokSources.bound('targum', sourceRef, tgOriginal) : window.ChokSources.nachTargum(kind, sourceRef) : window.ChokSources.weekUnit(parsha, day, kind==='torah'?'torahTargum':kind+'Targum', sourceRef, tgOriginal);
-              if (targumRow) row += window.ChokSources.targum(targumRow, state.tanachen, kind === 'torah');
+              var attachedTargum = otherContext ? window.ChokOtherLayers.targum(otherContext,sourceRef,tgOriginal,englishEnabled) : null;
+              if (attachedTargum !== null) row += attachedTargum;
+              else if (targumRow) row += window.ChokSources.targum(targumRow, state.tanachen, kind === 'torah');
               else if (tgOriginal) row += '<div class="ck-targum-reading"><h4>' + (kind === 'torah' ? 'אונקלוס · Onkelos' : 'תרגום · Targum') + '</h4><div class="ck-targum-line">' + window.ChokSources.targumText(applyMode(tgOriginal)) + '</div></div>';
             }
 
@@ -660,8 +665,8 @@
         return Promise.all(items.map(function (it) {
           var nightTorah=parsha==='נח' && day==='ליל שישי' && kind==='torah';
           return Promise.all([nightTorah ? Promise.resolve('') : rashiHTML(slug, it.c, it.x, qualifiedDay && kind === 'torah'),
-            !nightTorah && (kind || 'torah') === 'torah' ? rashiSuper(slug, it.c, it.x) : Promise.resolve(''),
-            verseCommHTML(kind === 'torah' ? 'torah' : 'navi', slug, it.c, it.x),
+            !nightTorah && (kind || 'torah') === 'torah' ? rashiSuper(slug, it.c, it.x, otherContext, englishEnabled) : Promise.resolve(''),
+            verseCommHTML(kind === 'torah' ? 'torah' : 'navi', slug, it.c, it.x, otherContext, englishEnabled),
             Promise.resolve(vcomm && vcomm.rashi && vcomm.rashi[it.c + ':' + it.x] ?
               voiceLine(vcomm.rashi[it.c + ':' + it.x]) : '')])
             .then(function (parts) {
@@ -1247,7 +1252,7 @@
       return window.ChokLechSunday.reading(wk, day, section, english, function (url) { return fetchJSON(url, true); });
     }).catch(unavailable);
   }
-  var QUALIFIED_ZOHAR_KEYS = ["חיי שרה|יום ראשון","חיי שרה|יום שני","חיי שרה|יום רביעי","חיי שרה|יום חמישי","חיי שרה|יום שישי","וירא|יום רביעי","וירא|יום שני","וירא|יום שישי","וירא|יום שלישי","בראשית|יום ראשון","בראשית|יום רביעי","בראשית|יום שישי","בראשית|יום שלישי","בראשית|יום שני","בראשית|יום חמישי"];
+  var QUALIFIED_ZOHAR_KEYS = ["חיי שרה|יום ראשון","חיי שרה|יום שני","חיי שרה|יום רביעי","חיי שרה|יום חמישי","חיי שרה|יום שישי","וירא|יום רביעי","וירא|יום שני","וירא|יום שישי","וירא|יום שלישי","בראשית|יום ראשון","בראשית|יום רביעי","בראשית|יום שישי","בראשית|יום שלישי","בראשית|יום שני","בראשית|יום חמישי","וירא|יום חמישי"];
   function exactQualifiedZohar(wk, day) { return QUALIFIED_ZOHAR_KEYS.indexOf(wk + "|" + day) !== -1; }
   var qualifiedZoharModulePromise = null;
   function qualifiedZoharReady(api) { return api && typeof api.has === 'function' && typeof api.load === 'function' && typeof api.reading === 'function'; }
@@ -1255,8 +1260,8 @@
     if (qualifiedZoharReady(window.ChokQualifiedZohar)) return Promise.resolve(window.ChokQualifiedZohar);
     if (!qualifiedZoharModulePromise) qualifiedZoharModulePromise = new Promise(function (resolve,reject) {
       var script=document.createElement('script');
-      script.src='/chok-qualified-zohar.js?v=868bf814fd10d46890c8b367478a9789eea6f0c650527c3bcd6e856915054638';
-      script.integrity='sha256-hov4FP0Q1GiQyLNnR4qXie6m8MZQUnw7zW6FaRUFRjg=';
+      script.src='/chok-qualified-zohar.js?v=71be59fdff1134f7a3567e47ef6f88624398f59630281d364362a8fdafab2e6d';
+      script.integrity='sha256-cb5Z/f8RNPejVn5H72+IYkOY9ZYwKB02Q2Ko/a+rLm0=';
       script.crossOrigin='anonymous';
       script.onload=function () { if (qualifiedZoharReady(window.ChokQualifiedZohar)) resolve(window.ChokQualifiedZohar); else reject(Error('Zohar module unavailable')); };
       script.onerror=function () { reject(Error('Zohar module unavailable')); };
@@ -1460,9 +1465,9 @@
           });
         });
       }
-      if (d.halacha && d.halacha.work && want('halacha')) {
+      if ((qualifiedDailyHas(wk,dayE,'halacha') || d.halacha && d.halacha.work) && want('halacha')) {
         p = p.then(function () {
-          return (qualifiedDay ? Promise.resolve(window.ChokSources.reading('halacha', state.tanachen)) : wk==='נח' ? Promise.resolve(window.ChokSources.weekReading(wk,dayE,'halacha',state.tanachen)||window.ChokSources.unavailable('halacha')) : halachaHTML(d)).then(function (html) { html = html || ''; html = dayKavana('halacha', d) + html; html = voiceBox(wk!=='נח' && dc && dc.halacha, 'הלכה') + html;
+          return qualifiedDailyOr(wk,dayE,'halacha',d,function(){return (qualifiedDay ? Promise.resolve(window.ChokSources.reading('halacha', state.tanachen)) : wk==='נח' ? Promise.resolve(window.ChokSources.weekReading(wk,dayE,'halacha',state.tanachen)||window.ChokSources.unavailable('halacha')) : halachaHTML(d));}).then(function (html) { html = html || ''; html = dayKavana('halacha', d) + html; html = voiceBox(!qualifiedDailyHas(wk,dayE,'halacha') && wk!=='נח' && dc && dc.halacha, 'הלכה') + html;
             if (html) out.push('<section class="ck-section" data-sec="halacha">' + html + '</section>');
           });
         });

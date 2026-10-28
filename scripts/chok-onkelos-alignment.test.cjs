@@ -127,7 +127,7 @@ test('static SRI-only corruption rejects and an unchanged fresh positive restore
 test('static transport rejects external/protocol-relative origins before source lookup',()=>{
  for(const src of ['https://external.invalid/a.js','//external.invalid/a.js','/\\external.invalid/a.js']){let read=false;assert.throws(()=>deferredFixtureScripts(`<script src="${src}" defer></script>`,()=>{read=true;return 'x';}),/Same-origin static script/);assert.equal(read,false);}
 });
-test('actual current template discovers the complete ordered twelve static scripts with real SRI',()=>{
+test('actual current template discovers the complete ordered thirteen static scripts with real SRI',()=>{
  const scripts=deferredFixtureScripts(read('src/pages/reader/chok.astro'),read);
- assert.deepEqual(scripts.map(s=>new URL(s.url,'https://ajew.org').pathname),["/tikkun-boundaries.js", "/tikkun-qatan.js", "/medooyuk.js", "/psalms-data.js", "/chok-verse-breslov.js", "/chok-source-reader.js", "/chok-lech-sunday.js", "/chok-lech-monday.js", "/chok-lech-tuesday.js", "/chok-qualified-daily.js", "/chok-qualified-daily-selected.js", "/chok.js"]);
+ assert.deepEqual(scripts.map(s=>new URL(s.url,'https://ajew.org').pathname),["/tikkun-boundaries.js", "/tikkun-qatan.js", "/medooyuk.js", "/psalms-data.js", "/chok-verse-breslov.js", "/chok-source-reader.js", "/chok-lech-sunday.js", "/chok-lech-monday.js", "/chok-lech-tuesday.js", "/chok-qualified-daily.js", "/chok-qualified-daily-selected.js", "/chok-other-layers.js", "/chok.js"]);
 });
