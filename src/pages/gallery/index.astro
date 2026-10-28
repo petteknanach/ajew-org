@@ -125,6 +125,7 @@ galleryPictures.forEach((picture) => {
           <a class="picture-search-card" data-gallery-search-item data-media-kind={picture.kind} data-search={`${picture.search} ${picture.gallery}`} href={picture.detailPage || picture.url} target="_blank" rel="noopener">
             <img src={picture.url} alt={picture.alt} loading="lazy" />
             <span class="picture-label">{picture.label}</span>
+            {picture.alt !== picture.label && <p class="picture-description" dir="auto">{picture.alt}</p>}
             <small>{picture.kindLabel}</small>
             <small>{picture.gallery}</small>
             <em>{picture.detailPage ? 'View image & details / תמונה ופרטים' : 'Open image / פתח תמונה'}</em>
@@ -625,6 +626,7 @@ galleryPictures.forEach((picture) => {
   }
 
   .picture-label { font-weight: 800; line-height: 1.25; }
+  .picture-description { margin: 0; font-size: 0.9rem; line-height: 1.55; text-align: start; color: #475569; overflow-wrap: anywhere; }
   .picture-search-card small { color: #6b5a2b; font-weight: 700; }
   .picture-search-card em { color: #9c5a00; font-style: normal; font-size: 0.85rem; }
 
