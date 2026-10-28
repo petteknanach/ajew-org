@@ -192,9 +192,18 @@
   function licenseNote(n) {
     return n.role === 'source-qualification' && /https:\/\/creativecommons\.org\/licenses\//.test(n.en);
   }
+  function creditText(value) {
+    var out = '', end = 0;
+    String(value).replace(/https:\/\/[^\s<>"']+/g, function (url, offset) {
+      out += esc(value.slice(end, offset)) + '<a href="' + esc(url) + '">' + esc(url) + '</a>';
+      end = offset + url.length;
+      return url;
+    });
+    return out + esc(value.slice(end));
+  }
   function mandatory(units, licenses) {
     return units.map(function (u) { return u.notes.filter(function (n) { return licenseNote(n) === !!licenses; }).map(function (n) {
-      return '<aside class="ck-source-qualification" data-daily-note="' + esc(n.id) + '" data-note-owner="' + esc(u.owner) + '" data-field-role="' + esc(n.role) + '"><p lang="he" dir="rtl">' + esc(n.he) + '</p><p lang="en" dir="ltr">' + esc(n.en) + '</p></aside>';
+      return '<aside class="ck-source-qualification" data-daily-note="' + esc(n.id) + '" data-note-owner="' + esc(u.owner) + '" data-field-role="' + esc(n.role) + '"><p lang="he" dir="rtl">' + (licenses ? creditText(n.he) : esc(n.he)) + '</p><p lang="en" dir="ltr">' + (licenses ? creditText(n.en) : esc(n.en)) + '</p></aside>';
     }).join(''); }).join('');
   }
   function sourceCredits(units) {
