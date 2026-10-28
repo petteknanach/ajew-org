@@ -7,6 +7,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { ruzinDirectory } from '../../lib/ruzin-section-routes.mjs';
 import {loadDirectory as loadYimaiDirectory} from '../../lib/qualified-yimai-hatlaos-directory.mjs';
+import {loadDirectory as loadYereachDirectory} from '../../lib/qualified-yereach-haeitanim-directory.mjs';
 
 function loadJSON(filePath) {
   try {
@@ -19,6 +20,9 @@ const bookDescriptions = loadJSON('src/data/book-descriptions.json') || {};
 const yimaiDirectory=await loadYimaiDirectory();
 for(const book of masterCatalog.books)if(book.id==='yemei-hatlaos'){Object.assign(book,{title:yimaiDirectory.title,hebrewTitle:yimaiDirectory.hebrewTitle,author:'',hebrewAuthor:'',directoryHref:yimaiDirectory.url,pageCount:yimaiDirectory.items.length});book.parts=book.parts.map((p,i)=>i===0?{...p,totalTorahs:yimaiDirectory.items.length}:p);}
 bookDescriptions['yemei-hatlaos']='Yimai HaTlaos in Hebrew and English, with source notes and the earlier English kept separately.';
+const yereachDirectory=await loadYereachDirectory();
+for(const book of masterCatalog.books)if(book.id==='yereach-haeitanim'){Object.assign(book,{title:yereachDirectory.title,hebrewTitle:yereachDirectory.hebrewTitle,directoryHref:yereachDirectory.url,pageCount:yereachDirectory.items.length});book.parts=book.parts.map((p,i)=>i===0?{...p,totalTorahs:yereachDirectory.items.length}:p);}
+bookDescriptions['yereach-haeitanim']='Hebrew and English from all supplied sections, with source notes and the earlier English kept separately.';
 
 const neviimBookIds = ['tanach-yehoshua', 'tanach-shoftim', 'tanach-shmuel-a', 'tanach-shmuel-b', 'tanach-melachim-a', 'tanach-melachim-b', 'tanach-yeshayahu', 'tanach-yirmiyahu', 'tanach-yechezkel', 'tanach-hoshea', 'tanach-yoel', 'tanach-amos', 'tanach-ovadya', 'tanach-yonah', 'tanach-michah', 'tanach-nachum', 'tanach-havakkuk', 'tanach-tzefanya', 'tanach-chaggai', 'tanach-zecharya', 'tanach-malachi'];
 const ketuvimBookIds = ['tanach-tehillim', 'tanach-mishlei', 'tanach-iyov', 'tanach-shir-hashirim', 'tanach-rus', 'tanach-eicha', 'tanach-koheles', 'tanach-esther', 'tanach-daniel', 'tanach-ezra', 'tanach-nechemia', 'tanach-divrei-hayamim-a', 'tanach-divrei-hayamim-b'];
@@ -174,6 +178,7 @@ function cleanCategoryTitle(title) {
 }
 
 function bookDirectoryUrl(book) {
+  if (book.id === 'yereach-haeitanim') return yereachDirectory.url;
   if (book.id === 'yemei-hatlaos') return yimaiDirectory.url;
   if (book.id === 'chayey-moharan') return '/reader/chayey-moharan/';
   if (book.id === 'likutay-nanach') return '/reader/likutay-nanach/';
@@ -273,6 +278,7 @@ const alphabeticalDirectoryEntries = [
 ].sort((a, b) => String(a.title || '').localeCompare(String(b.title || ''), 'en', { sensitivity: 'base' }));
 
 function specialBookItems(bookId) {
+  if (bookId === 'yereach-haeitanim') return yereachDirectory.items;
   if (bookId === 'yemei-hatlaos') return yimaiDirectory.items;
   if (bookId === 'shivchay-haran') {
     return [
@@ -702,7 +708,7 @@ function linkClass(bookId, totalPages) {
                 class="volume-section"
                 id={book.id}
                 data-book-title={book.title}
-                data-book-url={book.id === 'yemei-hatlaos' ? yimaiDirectory.url : book.id === 'likutay-moharan' ? '/reader/likutay-moharan/1/' : `/reader/${book.id}/${book.parts[0]?.part || 1}/`}
+                data-book-url={book.id === 'yereach-haeitanim' ? yereachDirectory.url : book.id === 'yemei-hatlaos' ? yimaiDirectory.url : book.id === 'likutay-moharan' ? '/reader/likutay-moharan/1/' : `/reader/${book.id}/${book.parts[0]?.part || 1}/`}
                 data-search={[book.title, book.hebrewTitle, book.author, book.hebrewAuthor, bookDescriptions[book.id], bookSearchAliases[book.id]].filter(Boolean).join(' ')}
                 style="margin-bottom: 30px;"
               >

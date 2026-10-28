@@ -93,6 +93,22 @@ console.log(JSON.stringify({title:d.title,files:Object.fromEntries(['txt','md','
     return {"bookId":"yemei-hatlaos", "part":"reviewed", "torah":"yimai-hatlaos", "title":payload["title"], "url":"/reader-plain/yemei-hatlaos/reviewed/yimai-hatlaos/", "sourceUrl":"/reader/reviewed/yimai-hatlaos", "segments":116}
 
 
+def write_yereach_haeitanim(root: Path, out_dir: Path) -> dict[str, Any]:
+    program = """import {pathToFileURL} from 'node:url';
+const root=process.argv[1];
+const {loadEdition,plainExport}=await import(pathToFileURL(root+'/src/lib/qualified-yereach-haeitanim.mjs'));
+const {htmlExport}=await import(pathToFileURL(root+'/src/lib/qualified-yereach-haeitanim-formats.mjs'));
+const d=await loadEdition(root);
+console.log(JSON.stringify({title:d.title,files:Object.fromEntries(['txt','md','json','html'].map(f=>['index.'+f,f==='html'?htmlExport(d):plainExport(d,f)]))}));"""
+    result = subprocess.run(["node", "--max-old-space-size=512", "--input-type=module", "-e", program, str(root)], capture_output=True, check=True, timeout=600, env={"PATH":os.environ.get("PATH", "/usr/bin:/bin"),"LANG":"C.UTF-8","TZ":"UTC"})
+    payload = json.loads(result.stdout)
+    out = out_dir / "yereach-haeitanim" / "reviewed" / "yereach-haeitanim"
+    out.mkdir(parents=True, exist_ok=True)
+    for name, text in payload["files"].items():
+        (out / name).write_bytes(text.encode("utf-8"))
+    return {"bookId":"yereach-haeitanim", "part":"reviewed", "torah":"yereach-haeitanim", "title":payload["title"], "url":"/reader-plain/yereach-haeitanim/reviewed/yereach-haeitanim/", "sourceUrl":"/reader/reviewed/yereach-haeitanim", "segments":260}
+
+
 def write_sichos301308(root: Path, out_dir: Path) -> dict[str, Any]:
     """Use the actual authenticated exact63 Node exporter, not generic segment fallback."""
     program = """import {pathToFileURL} from 'node:url';
@@ -419,6 +435,15 @@ def main() -> None:
     aitzoas_edition = None
     for path in sorted(READER_DIR.rglob("*.json")):
         rel = path.relative_to(READER_DIR)
+        if rel.parts[:2] == ("reviewed", "yereach-haeitanim-sources"):
+            continue
+        if rel.parts == ("reviewed", "yereach-haeitanim.json"):
+            entries.append(write_yereach_haeitanim(ROOT, OUT_DIR))
+            continue
+        if rel.parts[0] == "yereach-haeitanim":
+            if not (READER_DIR / "reviewed" / "yereach-haeitanim.json").is_file():
+                raise ValueError("Missing current edition; no historical export fallback")
+            continue
         if rel.parts[:2] == ("reviewed", "yimai-hatlaos-sources"):
             continue
         if rel.parts == ("reviewed", "yimai-hatlaos.json"):

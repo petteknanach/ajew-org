@@ -1,0 +1,6 @@
+---
+import {loadEdition} from '../../../../lib/qualified-yereach-haeitanim.mjs';
+import {htmlExport} from '../../../../lib/qualified-yereach-haeitanim-formats.mjs';
+const html=htmlExport(await loadEdition());
+---
+<Fragment set:html={html} />

@@ -1,0 +1,10 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import ReaderDirectory from '../../../../components/ReaderDirectory.astro';
+import {loadDirectory} from '../../../../lib/qualified-yereach-haeitanim-directory.mjs';
+export function getStaticPaths(){return [{params:{part:'1'}}];}
+const directory=await loadDirectory();
+---
+<Layout title={`${directory.title} — Directory`} description="All supplied sections in Hebrew and English, with source notes and earlier wording.">
+<ReaderDirectory title={directory.title} hebrewTitle={directory.hebrewTitle} countLabel={`${directory.items.length} source sections`} items={directory.items} hrefBase={directory.url} />
+</Layout>

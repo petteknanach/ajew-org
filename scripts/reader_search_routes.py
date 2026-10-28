@@ -40,6 +40,8 @@ def route_for_source(source: Path, reader_dir: Path) -> str | None:
         return '/reader/reviewed/wrapup-18-19-92-209'
     if parts == ('reviewed', 'yimai-hatlaos.json'):
         return '/reader/reviewed/yimai-hatlaos'
+    if parts == ('reviewed', 'yereach-haeitanim.json'):
+        return '/reader/reviewed/yereach-haeitanim'
     if parts == ('reviewed', 'sichos-301-308.json'):
         return '/reader/reviewed/sichos-301-308'
     if parts == ('reviewed', 'sichos-291-300.json'):
@@ -47,6 +49,10 @@ def route_for_source(source: Path, reader_dir: Path) -> str | None:
     if parts[0] == 'reviewed':
         return None  # exact archival assets are retention, never selected search
     book = parts[0]
+    if book == "yereach-haeitanim":
+        if not (Path(reader_dir) / "reviewed" / "yereach-haeitanim.json").is_file():
+            raise ValueError("Missing current edition; historical English is not a fallback")
+        return None
     if book == "yemei-hatlaos":
         if not (Path(reader_dir) / "reviewed" / "yimai-hatlaos.json").is_file():
             raise ValueError("Missing current Yimai edition; historical English is not a fallback")

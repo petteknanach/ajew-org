@@ -18,6 +18,7 @@ from reviewed_wrapup_exports import is_reviewed_source as is_wrapup_source, sear
 from qualified_sichos291300_exports import is_source as is_sichos291300_source, search_document as sichos291300_search_document
 from qualified_sichos301308_exports import is_source as is_sichos301308_source, search_document as sichos301308_search_document
 from qualified_yimai_hatlaos_exports import is_source as is_yimai_source, search_document as yimai_search_document
+from qualified_yereach_haeitanim_exports import is_source as is_yereach_source, search_document as yereach_search_document
 
 from qualified_aitzoas362_exports import (is_archive as is_aitzoas_archive, is_source as is_aitzoas_source, load_edition as load_aitzoas_edition, checked_section as aitzoas_checked_section, search_text as aitzoas_search_text)
 
@@ -179,12 +180,12 @@ for routed in discover_routed_sources(json_files, READER_DIR):
         with open(fpath, 'r', encoding='utf-8') as f:
             data = json.load(f)
     except (json.JSONDecodeError, Exception):
-        if is_aitzoas_source(fpath, READER_DIR) or is_wrapup_source(fpath, READER_DIR) or is_sichos291300_source(fpath, READER_DIR) or is_sichos301308_source(fpath, READER_DIR) or is_yimai_source(fpath, READER_DIR):
+        if is_aitzoas_source(fpath, READER_DIR) or is_wrapup_source(fpath, READER_DIR) or is_sichos291300_source(fpath, READER_DIR) or is_sichos301308_source(fpath, READER_DIR) or is_yimai_source(fpath, READER_DIR) or is_yereach_source(fpath, READER_DIR):
             raise  # current qualified source is never silently skipped
         skipped += 1
         continue
     if not isinstance(data, dict):
-        if is_aitzoas_source(fpath, READER_DIR) or is_wrapup_source(fpath, READER_DIR) or is_sichos291300_source(fpath, READER_DIR) or is_sichos301308_source(fpath, READER_DIR) or is_yimai_source(fpath, READER_DIR):
+        if is_aitzoas_source(fpath, READER_DIR) or is_wrapup_source(fpath, READER_DIR) or is_sichos291300_source(fpath, READER_DIR) or is_sichos301308_source(fpath, READER_DIR) or is_yimai_source(fpath, READER_DIR) or is_yereach_source(fpath, READER_DIR):
             raise ValueError("Malformed current qualified projection")
         # Non-document JSON (schedules, maps, calendars, commentary files...)
         # carries no segments to index.
@@ -206,6 +207,9 @@ for routed in discover_routed_sources(json_files, READER_DIR):
     if is_yimai_source(fpath, READER_DIR):
         data = yimai_search_document(fpath, data)
         book = "yemei-hatlaos"
+    if is_yereach_source(fpath, READER_DIR):
+        data = yereach_search_document(fpath, data)
+        book = "yereach-haeitanim"
     if is_aitzoas_source(fpath, READER_DIR):
         if aitzoas_edition is None:
             aitzoas_edition = load_aitzoas_edition(READER_DIR.resolve().parents[1])

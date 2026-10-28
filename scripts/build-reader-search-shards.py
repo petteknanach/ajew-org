@@ -23,6 +23,7 @@ from reviewed_wrapup_exports import is_reviewed_source as is_wrapup_source, sear
 from qualified_sichos291300_exports import is_source as is_sichos291300_source, search_document as sichos291300_search_document, checked_catalog_artifacts as sichos291300_checked_catalog_artifacts, ROUTE as SICHOS291300_ROUTE
 from qualified_sichos301308_exports import is_source as is_sichos301308_source, search_document as sichos301308_search_document, checked_catalog_artifacts as sichos301308_checked_catalog_artifacts, ROUTE as SICHOS301308_ROUTE
 from qualified_yimai_hatlaos_exports import is_source as is_yimai_source, search_document as yimai_search_document, checked_catalog_artifacts as yimai_checked_catalog_artifacts, ROUTE as YIMAI_ROUTE
+from qualified_yereach_haeitanim_exports import is_source as is_yereach_source, search_document as yereach_search_document, checked_catalog_artifacts as yereach_checked_catalog_artifacts, ROUTE as YEREACH_ROUTE
 
 from qualified_aitzoas362_exports import (load_edition as load_aitzoas_edition, search_text as aitzoas_search_text, route_section as aitzoas_route_section, checked_search_artifacts as aitzoas_checked_search_artifacts)
 
@@ -160,13 +161,13 @@ def segment_map(raw_link):
         return aitzoas_search_text(edition, section)[2]
     source = ROOT / 'public' / f"{raw_link.strip('/')}.json"
     if not source.exists():
-        if is_wrapup_source(source, ROOT / "public" / "reader") or is_sichos291300_source(source, ROOT / "public" / "reader") or is_sichos301308_source(source, ROOT / "public" / "reader") or is_yimai_source(source, ROOT / "public" / "reader"):
+        if is_wrapup_source(source, ROOT / "public" / "reader") or is_sichos291300_source(source, ROOT / "public" / "reader") or is_sichos301308_source(source, ROOT / "public" / "reader") or is_yimai_source(source, ROOT / "public" / "reader") or is_yereach_source(source, ROOT / "public" / "reader"):
             raise FileNotFoundError(source)
         return []
     try:
         data = json.loads(source.read_text(encoding='utf-8'))
     except (OSError, json.JSONDecodeError):
-        if is_wrapup_source(source, ROOT / "public" / "reader") or is_sichos291300_source(source, ROOT / "public" / "reader") or is_sichos301308_source(source, ROOT / "public" / "reader") or is_yimai_source(source, ROOT / "public" / "reader"):
+        if is_wrapup_source(source, ROOT / "public" / "reader") or is_sichos291300_source(source, ROOT / "public" / "reader") or is_sichos301308_source(source, ROOT / "public" / "reader") or is_yimai_source(source, ROOT / "public" / "reader") or is_yereach_source(source, ROOT / "public" / "reader"):
             raise
         return []
     if is_reviewed_source(source, ROOT / 'public' / 'reader'):
@@ -181,6 +182,8 @@ def segment_map(raw_link):
         data = sichos301308_search_document(source, data)
     if is_yimai_source(source, ROOT / 'public' / 'reader'):
         data = yimai_search_document(source, data)
+    if is_yereach_source(source, ROOT / 'public' / 'reader'):
+        data = yereach_search_document(source, data)
     segments = data.get('segments') or []
     if not isinstance(segments, list):
         return []
@@ -233,7 +236,7 @@ def main():
             link = doc.get('l', '')
             if not link:
                 continue
-            if link.startswith('/reader/reviewed/aitzoas362-sources/') or link.startswith('/reader/reviewed/sichos-301308-sources/') or link.startswith('/reader/reviewed/yimai-hatlaos-sources/'):
+            if link.startswith('/reader/reviewed/aitzoas362-sources/') or link.startswith('/reader/reviewed/sichos-301308-sources/') or link.startswith('/reader/reviewed/yimai-hatlaos-sources/') or link.startswith('/reader/reviewed/yereach-haeitanim-sources/'):
                 continue  # historical assets never ordinary ingestion
             entry = by_link.setdefault(link, {'he': None, 'en': None, 'raw': link})
             if entry[language] is not None and entry[language] != doc:
@@ -245,6 +248,7 @@ def main():
     sichos291300_artifacts = sichos291300_checked_catalog_artifacts(ROOT, he, en)
     sichos301308_artifacts = sichos301308_checked_catalog_artifacts(ROOT, he, en)
     yimai_artifacts = yimai_checked_catalog_artifacts(ROOT, he, en)
+    yereach_artifacts = yereach_checked_catalog_artifacts(ROOT, he, en)
 
     if OUT.exists(): shutil.rmtree(OUT)
     SHARDS.mkdir(parents=True, exist_ok=True)
@@ -283,6 +287,8 @@ def main():
             he_text, en_text, qualified_locations = sichos301308_artifacts
         elif link == YIMAI_ROUTE:
             he_text, en_text, qualified_locations = yimai_artifacts
+        elif link == YEREACH_ROUTE:
+            he_text, en_text, qualified_locations = yereach_artifacts
         else:
             he_text = clean_text(hd.get('x',''))
             en_text = clean_text(ed.get('x','') or hd.get('e','') or ed.get('e',''))
