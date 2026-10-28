@@ -702,7 +702,7 @@ import Layout from '../layouts/Layout.astro';
     @media print { .passage-full-saved-disclosure { display: none !important; } }
   </style>
 
-  <script is:inline src="/my-sefer-storage.js?v=d86d61fe2211"></script>
+  <script is:inline src="/my-sefer-storage.js?v=369fe5e58d2175aeaa4434df1876b8750deceb75d3ca9f139fc2f3083ca93a54"></script>
   <script>
   import {buildFullSavedShare, deliverFullSavedShare} from '../lib/my-sefer-full-saved-share.mjs';
 
@@ -719,7 +719,7 @@ import Layout from '../layouts/Layout.astro';
     function saveSefer(sefer) {
       sefer.updatedAt = Date.now();
       try {
-        localStorage.setItem(SEFER_KEY, JSON.stringify(sefer));
+        localStorage.setItem(SEFER_KEY, window.AjewSeferStorage.serialize(sefer));
       } catch (e) {
         alert('Could not save. LocalStorage may be full.');
       }
@@ -819,7 +819,7 @@ import Layout from '../layouts/Layout.astro';
       // Foreign writers which ignore that lock are not transactionally covered.
       const raw = localStorage.getItem(SEFER_KEY);
       if (raw === null) throw new Error('Saved collection was removed');
-      const current = JSON.parse(raw);
+      const current = window.AjewSeferStorage.parseCurrent(raw);
       validateNoteJSON(raw);
       if (!current || typeof current !== 'object' || Array.isArray(current) ||
           !Array.isArray(current.passages) || !current.passages.every(p =>
@@ -844,7 +844,7 @@ import Layout from '../layouts/Layout.astro';
       // Preserve every other freshly read passage, top-level/passage custom
       // field, and protected source value. Even updatedAt is left untouched.
       target.note = value;
-      const next = JSON.stringify(current);
+      const next = window.AjewSeferStorage.serialize(current);
       localStorage.setItem(SEFER_KEY, next);
       if (localStorage.getItem(SEFER_KEY) !== next) throw new Error('Save verification failed');
       binding.expectedNote = JSON.stringify(noteField(target, 'note'));
