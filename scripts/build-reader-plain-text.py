@@ -217,7 +217,68 @@ def slug_value(v: Any, default: str = "1") -> str:
     return str(v).strip().strip("/") or default
 
 
+def genesis_source_role(path: Path) -> str | None:
+    """Identify only the physical Genesis inputs, not metadata or backup names."""
+    parts = path.relative_to(READER_DIR).parts
+    chapter = r"(?:[1-9]|[1-4][0-9]|50)"
+    if (len(parts) == 3 and parts[:2] == ("likutay-nanach", "tanach")
+            and re.fullmatch(r"tanach-bereishit(?:-" + chapter + r")?\.json", parts[2])):
+        return "likutay-nanach"
+    if (len(parts) == 3 and parts[:2] == ("tanach-bereishit", "part-1")
+            and re.fullmatch(r"torah-" + chapter + r"\.json", parts[2])):
+        return "primary"
+    return None
+
+
+def is_genesis_output(destination: Path) -> bool:
+    """Limit collision enforcement to the affected physical export domains."""
+    return (destination.is_relative_to(OUT_DIR / "tanach-bereishit")
+            or (destination.parent == OUT_DIR / "likutay-nanach" / "tanach"
+                and re.fullmatch(r"tanach-bereishit(?:-(?:[1-9]|[1-4][0-9]|50))?", destination.name) is not None))
+
+
+def register_output_owner(path: Path, book: str, part: str, torah: str, owners: dict) -> str:
+    """Register before writing; distinct affected physical owners cannot overwrite."""
+    destination = Path(os.path.normpath(OUT_DIR / book / part / torah))
+    source = path.relative_to(READER_DIR).as_posix()
+    affected = genesis_source_role(path) is not None or is_genesis_output(destination)
+    previous = owners.get(destination)
+    if previous is not None and previous[0] != source and (affected or previous[1]):
+        raise ValueError(f"Distinct Genesis export owners for {destination}: {previous[0]} and {source}")
+    owners[destination] = (source, affected)
+    return source
+
+
+def validate_genesis_entries(entries: list[dict], entry_sources: dict, owners: dict) -> None:
+    """Bind affected TOC/body rows to the registered physical owner, privately."""
+    primary = []
+    seen = set()
+    for entry in entries:
+        book, part, torah = entry["bookId"], str(entry["part"]), str(entry["torah"])
+        destination = Path(os.path.normpath(OUT_DIR / book / part / torah))
+        registered = owners.get(destination)
+        if not (is_genesis_output(destination) or (registered and registered[1])):
+            continue
+        source = entry_sources.get(id(entry))
+        if registered is None or source != registered[0]:
+            raise ValueError("Genesis catalog/body source owner mismatch")
+        path = READER_DIR / source
+        role = genesis_source_role(path)
+        expected = (("tanach-bereishit", "1", path.stem.removeprefix("torah-"))
+                    if role == "primary" else ("likutay-nanach", "tanach", path.stem))
+        if (role is None or (book, part, torah) != expected
+                or entry["url"] != f"/reader-plain/{book}/{part}/{torah}/" or source in seen):
+            raise ValueError("Invalid or repeated Genesis source owner in catalog")
+        seen.add(source)
+        if role == "primary":
+            primary.append(source)
+    if primary and primary != sorted(f"tanach-bereishit/part-1/torah-{n}.json" for n in range(1, 51)):
+        raise ValueError("Primary Genesis requires its fifty physical chapters once in lexical order")
+
+
 def infer_ids(path: Path, data: dict[str, Any]) -> tuple[str, str, str]:
+    if genesis_source_role(path) == "likutay-nanach":
+        return "likutay-nanach", "tanach", path.stem
     rel = path.relative_to(READER_DIR)
     parts = rel.parts
     book = slug_value(data.get("bookId") or data.get("book") or parts[0])
@@ -432,6 +493,8 @@ def main() -> None:
     OUT_DIR.mkdir(parents=True)
 
     entries: list[dict[str, Any]] = []
+    output_owners: dict = {}
+    entry_sources: dict = {}
     aitzoas_edition = None
     for path in sorted(READER_DIR.rglob("*.json")):
         rel = path.relative_to(READER_DIR)
@@ -506,11 +569,14 @@ def main() -> None:
         if not isinstance(data, dict) or not isinstance(data.get("segments"), list):
             continue
         book, part, torah = infer_ids(path, data)
+        source = register_output_owner(path, book, part, torah, output_owners)
         entry = write_teaching(path, data, book, part, torah)
         if entry:
+            entry_sources[id(entry)] = source
             entries.append(entry)
 
     entries.sort(key=lambda e: (e["bookId"], str(e["part"]), str(e["torah"])))
+    validate_genesis_entries(entries, entry_sources, output_owners)
     _navigation.harden_section_links(OUT_DIR, entries)
     held_catalog_sources = _navigation.reconcile_catalog_sources(OUT_DIR, entries)
     if held_catalog_sources:
