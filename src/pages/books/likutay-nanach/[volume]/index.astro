@@ -43,7 +43,7 @@ if (!volumeData) {
       <h3>תוכן העניינים</h3>
       <div class="chapters-grid">
         {chapters.map(chapter => (
-          <a href={`/books/likutay-nanach/volume-${volume}/chapter-${chapter.number}`} class="chapter-card">
+          <a href={`/books/likutay-nanach/${['3','4','5'].includes(String(volume)) ? '' : 'volume-'}${volume}/chapter-${chapter.number}`} class="chapter-card">
             <div class="chapter-number">פרק {chapter.number}</div>
             <div class="chapter-title">{chapter.title}</div>
             <div class="chapter-preview">

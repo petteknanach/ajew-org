@@ -147,11 +147,19 @@ const pesachTopics = [
               <ul class="topic-teachings">
                 {topic.teachings.map((teaching) => (
                   <li class="teaching-item">
+                    {teaching.book === 'otzar-hayirah' && teaching.part === 1 && [22, 23, 24, 25].includes(teaching.torah) ? (
+                      <div class="teaching-link source-unavailable">
+                        <span class="teaching-title">{teaching.title}</span>
+                        <span class="teaching-snippet">{teaching.snippet}</span>
+                        <span class="teaching-read source-locator-note">Exact Reader link unavailable for this passage.</span>
+                      </div>
+                    ) : (
                     <a href={`/reader/${teaching.book}/${teaching.part ? 'part-' + teaching.part : ''}/${teaching.torah ? 'torah-' + teaching.torah : ''}`} class="teaching-link">
                       <span class="teaching-title">{teaching.title}</span>
                       <span class="teaching-snippet">{teaching.snippet}</span>
                       <span class="teaching-read">Read in Reader</span>
                     </a>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -425,7 +433,7 @@ const pesachTopics = [
     gap: 0.2rem;
   }
 
-  .teaching-link:hover {
+  .teaching-link:not(.source-unavailable):hover {
     background: #fef3c7;
     border-left-color: #d97706;
     transform: translateX(3px);
@@ -454,7 +462,7 @@ const pesachTopics = [
     margin-top: 0.15rem;
   }
 
-  .teaching-read::after {
+  .teaching-read:not(.source-locator-note)::after {
     content: ' \2192';
   }
 

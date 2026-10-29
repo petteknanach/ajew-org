@@ -24,7 +24,7 @@ const volumes = getVolumes();
         <div class="volume-card">
           <h3>כרך {volume.number} - {volume.name}</h3>
           <p>{volume.chapters} פרקים</p>
-          <a href={`/books/likutay-nanach/volume-${volume.number}`} class="btn">
+          <a href={`/books/likutay-nanach/${['3','4','5'].includes(String(volume.number)) ? '' : 'volume-'}${volume.number}`} class="btn">
             פתח את הכרך
           </a>
           <div class="volume-stats">

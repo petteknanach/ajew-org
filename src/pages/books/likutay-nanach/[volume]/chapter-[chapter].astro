@@ -29,7 +29,7 @@ const { volume, chapter } = Astro.params;
 const { chapterData, volumeNumber } = Astro.props;
 
 if (!chapterData) {
-  return Astro.redirect(`/books/likutay-nanach/volume-${volume}`);
+  return Astro.redirect(`/books/likutay-nanach/${['3','4','5'].includes(String(volume)) ? '' : 'volume-'}${volume}`);
 }
 ---
 
@@ -42,7 +42,7 @@ if (!chapterData) {
       <div class="breadcrumb">
         <a href="/books">ספרים</a> › 
         <a href="/books/likutay-nanach">לקוטי ננח</a> › 
-        <a href={`/books/likutay-nanach/volume-${volume}`}>כרך {volume}</a> › 
+        <a href={`/books/likutay-nanach/${['3','4','5'].includes(String(volume)) ? '' : 'volume-'}${volume}`}>כרך {volume}</a> › 
         <span>פרק {chapter}</span>
       </div>
     </header>
@@ -54,19 +54,19 @@ if (!chapterData) {
     <nav class="chapter-nav">
       <div class="nav-buttons">
         {parseInt(chapter) > 1 ? (
-          <a href={`/books/likutay-nanach/volume-${volume}/chapter-${parseInt(chapter) - 1}`} class="nav-btn prev">
+          <a href={`/books/likutay-nanach/${['3','4','5'].includes(String(volume)) ? '' : 'volume-'}${volume}/chapter-${parseInt(chapter) - 1}`} class="nav-btn prev">
             ← הפרק הקודם
           </a>
         ) : (
           <span class="nav-btn disabled">← הפרק הקודם</span>
         )}
         
-        <a href={`/books/likutay-nanach/volume-${volume}`} class="nav-btn toc">
+        <a href={`/books/likutay-nanach/${['3','4','5'].includes(String(volume)) ? '' : 'volume-'}${volume}`} class="nav-btn toc">
           📚 חזרה לתוכן העניינים
         </a>
         
         {chapterData.nextChapter ? (
-          <a href={`/books/likutay-nanach/volume-${volume}/chapter-${parseInt(chapter) + 1}`} class="nav-btn next">
+          <a href={`/books/likutay-nanach/${['3','4','5'].includes(String(volume)) ? '' : 'volume-'}${volume}/chapter-${parseInt(chapter) + 1}`} class="nav-btn next">
             הפרק הבא →
           </a>
         ) : (
