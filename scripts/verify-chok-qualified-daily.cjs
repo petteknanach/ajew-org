@@ -10,7 +10,7 @@ function boot(root){
  const host={crypto:webcrypto},sandbox={window:host,TextEncoder,Uint8Array};vm.createContext(sandbox);
  const library=fs.readFileSync(path.join(root,'public/chok-qualified-daily.js'),'utf8');new vm.Script(library,{filename:'chok-qualified-daily.js'}).runInContext(sandbox);const libraryAPI=host.ChokQualifiedDaily;assert(libraryAPI);
  let entries;host.ChokQualifiedDaily=Object.assign({},libraryAPI,{create(input){assert.equal(entries,undefined);entries=clone(input);return libraryAPI.create(input);}});
- new vm.Script(fs.readFileSync(path.join(root,'public/chok-qualified-daily-selected.js'),'utf8'),{filename:'chok-qualified-daily-selected.js'}).runInContext(sandbox);host.ChokQualifiedDaily=libraryAPI;assert(entries&&entries.length);
+ new vm.Script(fs.readFileSync(path.join(root,'public/chok-qualified-daily-classical-selected-v1.js'),'utf8'),{filename:'chok-qualified-daily-classical-selected-v1.js'}).runInContext(sandbox);host.ChokQualifiedDaily=libraryAPI;assert(entries&&entries.length);
  return{api:host.ChokQualifiedDailySelected,libraryAPI,entries};
 }
 function rejectPaths(value){
@@ -22,7 +22,9 @@ function checkOracle(payload,entry,oracle){
  const approved=new Map(oracle.units.filter(u=>u.readingId===entry.key).map(u=>[u.owner,u]));assert(approved.size);
  assert.deepEqual(Object.keys(payload.sections).sort(),Object.keys(entry.sections).sort());let checked=0,notes=0;
  for(const[name,section]of Object.entries(payload.sections)){
-  if(name==='mussar'){
+  if((name==='halacha'||name==='mussar')&&oracle.classicalSelected&&oracle.classicalSelected[entry.key]){
+   const native=oracle.classicalSelected[entry.key][name];assert(native);assert.equal(section.units.length,1);assert.equal(section.units[0].owner,native.owner);assert.deepEqual(section.reference,native.reference);assert.deepEqual(section.extent,native.extent);assert.equal(entry.sections[name].units[0].admission.sourceUse.evidenceSHA256,native.sourceUseEvidenceSHA256);
+  }else if(name==='mussar'){
    const owners={'וירא|יום רביעי':'וירא|יום רביעי|mussar|Charedim67b-selected','וירא|יום חמישי':'וירא|יום חמישי|mussar|Charedim70a-selected'};
    const native=oracle.nativeMussar&&oracle.nativeMussar[entry.key];assert(native&&native.owner===owners[entry.key],'UNQUALIFIED_NATIVE_MUSSAR');assert.equal(section.units.length,1);assert.equal(section.units[0].owner,native.owner);assert.deepEqual(section.reference,native.reference);assert.deepEqual(section.extent,native.extent);assert.equal(entry.sections.mussar.units[0].admission.sourceUse.evidenceSHA256,native.sourceUseEvidenceSHA256);
   }else if(name==='halacha'){
@@ -56,7 +58,7 @@ function checkOracle(payload,entry,oracle){
 }
 function sourceSRI(root){
  const astro=fs.readFileSync(path.join(root,'src/pages/reader/chok.astro'),'utf8');let previous=-1;
- for(const name of['chok-qualified-daily.js','chok-qualified-daily-selected.js','chok.js']){
+ for(const name of['chok-qualified-daily.js','chok-qualified-daily-classical-selected-v1.js','chok.js']){
   const b=fs.readFileSync(path.join(root,'public',name)),url='/'+name+'?v='+sha(b),pos=astro.indexOf('src="'+url+'"');assert(pos>previous,'SCRIPT_ORDER_OR_VERSION:'+name);previous=pos;
   const begin=astro.lastIndexOf('<script',pos),end=astro.indexOf('</script>',pos),tag=astro.slice(begin,end);assert(tag.includes('integrity="sha256-'+createHash('sha256').update(b).digest('base64')+'"'),'SCRIPT_SRI:'+name);assert(tag.includes('defer'));new vm.Script(b.toString('utf8'),{filename:name});
  }
@@ -162,7 +164,7 @@ async function boldPresentationControls(api,entry,payload,loader,scheduled){
  reviewedSourceFields(payload,'mishna',html);return checks;
 }
 async function verify(root){
- root=path.resolve(root);const oracle=JSON.parse(fs.readFileSync(path.join(root,'scripts/chok-qualified-daily-reviewed.json'),'utf8'));assert.equal(oracle.schema,'chok-qualified-reviewed-hashes-v1');require('./verify-chok-next-readings-source-admission.cjs').check(root,oracle);sourceSRI(root);
+ root=path.resolve(root);const oracle=JSON.parse(fs.readFileSync(path.join(root,'scripts/chok-qualified-daily-reviewed.json'),'utf8'));assert.equal(oracle.schema,'chok-qualified-reviewed-hashes-v1');require('./verify-chok-next-readings-source-admission.cjs').check(root,oracle);require('./verify-chok-classical-public-source-admission.cjs').check(root,oracle);sourceSRI(root);
  const{api,entries}=boot(root),schedule=JSON.parse(fs.readFileSync(path.join(root,'public/reader/chok/schedule.json'),'utf8'));assert.deepEqual(entries.map(e=>e.key).sort(),oracle.readingKeys.slice().sort());
  let units=0,notes=0,requests=0,boldOriginalFields=0,boldControls=0,sourceVisibleFields=0,bartenuraOriginalFields=0,plainBartenuraOriginalFields=0;const seen=new Set();
  for(const e of entries){
