@@ -200,9 +200,9 @@
   // Generated references only: never normalize source paragraphs or Names.
   function plainHeNum(n) { return heNum(n).replace(/['\u05f3\u05f4]/g, ''); }
   function refLabelHTML(ref) {
-    // Hebrew references read chapter then verse right-to-left; Latin digits stay LTR.
+    // Isolate chapter:verse left-to-right; keep each Hebrew numeral group RTL.
     // Preserve logical chapter:verse values and the letters inside each numeral.
-    var direction = /[א-ת]/.test(ref) ? 'rtl' : 'ltr';
+    var direction = 'ltr';
     return '<bdi class="ck-generated-ref" dir="' + direction + '">' + esc(ref).replace(/[א-ת]+/g, function (n) {
       return '<bdi dir="rtl">' + n + '</bdi>';
     }) + '</bdi>';
@@ -925,7 +925,7 @@
     return fetchJSON('/reader/chok/commentary/' + encodeURIComponent(week) + '-' + slug + '.json')
       .catch(function () { return null; });
   }
-  function mishnaHTML(masechet, perek) {
+  function mishnaHTML(masechet, perek, week, day, english) {
     var slug = MISHNA_SLUGS[normLabel(masechet)];
     if (!slug) return Promise.resolve(null);
     return fetchJSON('/reader/mishna/' + slug + '.json').then(function (md) {
@@ -935,6 +935,12 @@
         return '<div class="ck-mishna"><b class="ck-mnum">' + heNum(i + 1) + '</b> ' +
           esc(applyMode(m)) + '</div>';
       }).join('');
+      if (noachEnglish && window.ChokNoachEnglish.supports(week,day,slug,perek)) {
+        return bartenuraHTML(masechet,perek,week,day,english).then(function(bar) {
+          return '<details class="ck-layer ck-mishna" open><summary>משנה — ' + esc(masechet) +
+            ' פרק ' + heNum(perek) + '</summary>' + body + '</details>' + bar;
+        });
+      }
       return comm('mishna-bartenura', slug).then(function (bd) {
         var bar = bd && (bd.ch || {})[String(perek)];
         var barBody = '';
@@ -951,8 +957,15 @@
     }).catch(function () { return null; });
   }
 
-  function bartenuraHTML(masechet, perek) {
+  var noachEnglish = window.ChokNoachEnglish ? window.ChokNoachEnglish.create(function(url) { return fetchJSON(url,true); }) : null;
+  if (window.ChokNoachEnglish) window.ChokNoachEnglish.installCopyConditions(document);
+  function bartenuraHTML(masechet, perek, week, day, english) {
     var slug=MISHNA_SLUGS[normLabel(masechet)];if (!slug) return Promise.resolve('');
+    if (noachEnglish && window.ChokNoachEnglish.supports(week,day,slug,perek)) {
+      return noachEnglish.load({week:week,day:day,slug:slug,chapter:perek,english:english}).then(function(result) {
+        return window.ChokNoachEnglish.render(result,richText);
+      }).catch(function() { return bartenuraHTML(masechet,perek); });
+    }
     return comm('mishna-bartenura',slug).then(function (bd) {
       var rows=bd && bd.ch && bd.ch[String(perek)];if (!rows) return '';
       return '<details class="ck-layer ck-bartenura" data-classical-chapter="'+esc(slug+' '+perek)+'"><summary>ברטנורא — פירוש המשנה · Bartenura — classical commentary</summary>'+rows.map(function (b,i) { return b?'<article class="ck-comm-body" data-classical-unit="'+(i+1)+'">'+richText(b)+'</article>':''; }).join('')+'</details>';
@@ -1359,6 +1372,7 @@
     var box = $('ck-content');
     var revision = state.renderRevision = (state.renderRevision || 0) + 1;
     var day = state.day;
+    var noachEnglishEnabled = state.tanachen;
     var weeks = state.weeks || [];
     if (!weeks.length) { box.innerHTML = '<p class="ck-error">No week selected.</p>'; return; }
     var jobs = weeks.map(function (wk, weekIndex) {
@@ -1438,7 +1452,7 @@
       if ((qualifiedDailyHas(wk,dayE,'mishna') || isLechThursday(wk,dayE) || d.mishna && d.mishna.masechet) && want('mishna')) {
         p = p.then(function () {
           var actual=qualifiedDailyHas(wk,dayE,'mishna') || isLechThursday(wk,dayE) ? null : qualifiedDay ? window.ChokSources.reading('mishna',state.tanachen) : window.ChokSources.weekReading(wk,dayE,'mishna',state.tanachen);
-          return qualifiedDailyOr(wk,dayE,'mishna',d,function(){return (isLechThursday(wk,dayE) ? lechThursdayReading(wk,dayE,'mishna') : isBiraishisSundayMishna(wk,dayE) ? biraishisSundayMishnaReading(wk,dayE) : isLechWednesday(wk,dayE) ? lechWednesdayReading(wk,dayE,'mishna') : actual ? bartenuraHTML(d.mishna.masechet,d.mishna.perek).then(function (bar) { return actual+bar; }) : mishnaHTML(d.mishna.masechet, d.mishna.perek));}).then(function (html) { if (qualifiedDailyHas(wk,dayE,'mishna') && html==='') return; html = html || ''; html = dayKavana('mishna', d) + html; html = voiceBox(!qualifiedDailyHas(wk,dayE,'mishna') && !isBiraishisSundayMishna(wk,dayE) && !isLechWednesday(wk,dayE) && !isLechThursday(wk,dayE) && dc && dc.mishna, 'משנה') + html;
+          return qualifiedDailyOr(wk,dayE,'mishna',d,function(){return (isLechThursday(wk,dayE) ? lechThursdayReading(wk,dayE,'mishna') : isBiraishisSundayMishna(wk,dayE) ? biraishisSundayMishnaReading(wk,dayE) : isLechWednesday(wk,dayE) ? lechWednesdayReading(wk,dayE,'mishna') : actual ? bartenuraHTML(d.mishna.masechet,d.mishna.perek,wk,dayE,noachEnglishEnabled).then(function (bar) { return actual+bar; }) : mishnaHTML(d.mishna.masechet, d.mishna.perek,wk,dayE,noachEnglishEnabled));}).then(function (html) { if (qualifiedDailyHas(wk,dayE,'mishna') && html==='') return; html = html || ''; html = dayKavana('mishna', d) + html; html = voiceBox(!qualifiedDailyHas(wk,dayE,'mishna') && !isBiraishisSundayMishna(wk,dayE) && !isLechWednesday(wk,dayE) && !isLechThursday(wk,dayE) && dc && dc.mishna, 'משנה') + html;
             if (html) out.push('<section class="ck-section" data-sec="mishna">' + secHead('משנה וברטנורא · Mishna and Bartenura') + (qualifiedDailyHas(wk,dayE,'mishna')||isBiraishisSundayMishna(wk,dayE)||isLechWednesday(wk,dayE)||isLechThursday(wk,dayE)?popBtn():'') + html + '</section>');
           });
         });
@@ -1524,6 +1538,7 @@
         $('ck-full-parsha').href=window.ChokVerseBreslov.parsha(weeks[0])?'/parsha/'+window.ChokVerseBreslov.parsha(weeks[0])+'/':'/parsha/';
         if (!state.focus && state.kavanaMode==='always') $('ck-study-overview').open=true;
         window.ChokSources.applyLanguages(root);
+        if (window.ChokNoachEnglish) window.ChokNoachEnglish.bind(root);
         buildSectionJumps(root);
         wireKavanos(root);
         if (state.focus) {

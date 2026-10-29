@@ -11,7 +11,7 @@ function canonical(x){
 }
 function check(root,oracle){
  const raw=fs.readFileSync(path.join(root,'scripts/chok-next-readings-source-admission.json'));
- assert.equal(sha(raw),'b4304d294997c943016ac10953b841d8e3f154f2d1efbfe533fcd47d262f310e','SOURCE_ADMISSION_PIN');
+ assert.equal(sha(raw),'8e48693c68790d584cbc4082e9b245622eb8f8085be1e02bf7e5c7a31b82f70f','SOURCE_ADMISSION_PIN');
  const a=JSON.parse(raw);assert.equal(a.schema,'chok-exact-next-readings-source-admission-v1');
  assert.equal(a.baseRevision,'dfb3b2d99725951eb82b60683570fa61bcad8647');
  assert.deepEqual(a.targets.map(t=>t.readingId).sort(),['ויצא|יום ראשון','ויצא|יום שני','ויצא|יום שלישי'].sort());
