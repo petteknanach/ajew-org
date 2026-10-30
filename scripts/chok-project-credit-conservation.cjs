@@ -50,10 +50,11 @@ const DELTA={
   }
 };
 function restoreProject(relative,bytes){
+ try{bytes=require('./chok-reference-order-conservation.cjs').restoreReference(relative,bytes);}catch(e){e.message='PROJECT_CANDIDATE_PIN:'+relative+':'+e.message;throw e;}
  const d=DELTA[relative];if(!d||sha(bytes)===d.baseSHA256)return bytes;
  assert.equal(sha(bytes),d.candidateSHA256,'PROJECT_CANDIDATE_PIN:'+relative);
  let s=bytes.toString('utf8');for(const op of d.inverse){assert.equal(s.split(op.candidate).length,2,'PROJECT_INVERSE_MEMBERSHIP:'+relative);s=s.replace(op.candidate,op.base);}
  const restored=Buffer.from(s);assert.equal(sha(restored),d.baseSHA256,'PROJECT_EXACT_INVERSE:'+relative);return restored;
 }
 module.exports={DELTA,restoreProject};
-if(require.main===module){const fs=require('node:fs'),path=require('node:path');for(const [relative,d] of Object.entries(DELTA)){const b=fs.readFileSync(path.resolve(__dirname,'..',relative));assert.equal(sha(b),d.candidateSHA256);assert.equal(sha(restoreProject(relative,b)),d.baseSHA256);assert.throws(()=>restoreProject(relative,Buffer.concat([b,Buffer.from(' ')])),/PROJECT_CANDIDATE_PIN/);assert.throws(()=>restoreProject(relative,Buffer.from(b.toString().replace('ck-content','ck-content-mutated'))),/PROJECT_CANDIDATE_PIN/);}console.log('PASS exact settings-only successor inverse; both changed assets; four outside-delta mutation rejections');}
+if(require.main===module){const fs=require('node:fs'),path=require('node:path');for(const [relative,d] of Object.entries(DELTA)){const b=require('./chok-reference-order-conservation.cjs').restoreReference(relative,fs.readFileSync(path.resolve(__dirname,'..',relative)));assert.equal(sha(b),d.candidateSHA256);assert.equal(sha(restoreProject(relative,b)),d.baseSHA256);assert.throws(()=>restoreProject(relative,Buffer.concat([b,Buffer.from(' ')])),/PROJECT_CANDIDATE_PIN/);assert.throws(()=>restoreProject(relative,Buffer.from(b.toString().replace('ck-content','ck-content-mutated'))),/PROJECT_CANDIDATE_PIN/);}console.log('PASS exact settings-only successor inverse; both changed assets; four outside-delta mutation rejections');}

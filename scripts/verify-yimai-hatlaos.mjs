@@ -32,7 +32,7 @@ export async function verifySharedIntegration(root=process.cwd()){
  const pkg=JSON.parse(fs.readFileSync(path.join(root,'package.json')));
  assert.equal(pkg.scripts['verify:yimai-hatlaos'],'node --max-old-space-size=512 scripts/verify-yimai-hatlaos.mjs --shared-integration');
  assert(pkg.scripts.build.startsWith('npm run verify:yimai-hatlaos && '));
- assert(pkg.scripts.verify.startsWith('npm run verify:yimai-hatlaos && '));
+ assert(pkg.scripts.verify.startsWith('npm run verify:chok-three-ui && npm run verify:chok-reference-order && npm run verify:yimai-hatlaos && '));
  const {loadDirectory}=await import('../src/lib/qualified-yimai-hatlaos-directory.mjs');
  const directory=await loadDirectory(root);assert.equal(directory.title,'Yimai HaTlaos');assert.equal(directory.items.length,36);
  assert.equal(directory.items[0].title,'Introduction');assert.equal(directory.items[1].title,'Chapter 1');assert.equal(directory.items[34].title,'Chapter 34');assert(directory.items[35].title.startsWith('What '));

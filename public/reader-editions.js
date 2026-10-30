@@ -40,7 +40,7 @@
     retry.addEventListener('click', function () { failed = false; refresh(); });
     function fetchJson(url) { return fetch(url).then(function (r) { if (!r.ok) throw Error('HTTP ' + r.status); return r.json(); }); }
     function load() {
-      if (loaded || pending || failed || (edition === 'original' && !special)) return;
+      if (loaded || pending || failed) return;
       pending = Promise.all([route[1] === 'tanach-tehillim' ? window.AjewPsalmsData.load() : fetchJson('/reader/medooyuk/' + route[1] + '.json' + (route[1] === 'tanach-bereishit' ? '?v=a2633f304364c9592f2f9637aeee4730a28c52303bc80a508c4af26faa7fba9b' : '')), fetchJson('/reader-source-tails.json?v=1')]).then(function (all) {
         var authenticated = renderer.applyBook(all[0], route[1]);
         loaded = adapter.prepare(authenticated.ch[route[2]], route[1], route[2], all[1]);
@@ -76,16 +76,19 @@
       if (edition === 'uxlc') {
         content.classList.remove('mode-english', 'mode-both'); content.classList.add('mode-hebrew');
         alternative.forEach(function (row) {
-          if (!searching) row.p.innerHTML = renderer.renderVerse(state.nikud ? row.verse : {t: row.verse.t.map(adapter.bare), k: row.verse.k, m: []}, {specialNikud: effective});
-          else row.p.textContent = state.nikud ? adapter.text(row.verse) : adapter.bare(adapter.text(row.verse));
+          var selected = adapter.reading(row.verse, renderer);
+          row.p.innerHTML = renderer.renderVerse(state.nikud ? selected : {t: selected.t.map(adapter.bare), k: selected.k, m: [], b: selected.b}, {specialNikud: effective});
           // No font override while emphasis is off; preserve the user's font choice.
           if (!effective) row.p.querySelectorAll('.marked-hebrew').forEach(function (s) { s.classList.remove('marked-hebrew'); });
         });
       }
       var attached = adapter.chapter(rows.map(function (r) { return {index: r.index, text: r.text}; }), loaded || []);
       if (edition === 'original') rows.forEach(function (r, i) {
-        if (effective && attached[i].verse) r.p.innerHTML = renderer.renderVerse(attached[i].verse);
-        else r.p.textContent = state.nikud ? r.text : r.bare === null ? adapter.bare(r.text) : r.bare;
+        if (attached[i].verse) {
+          var selected = adapter.reading(attached[i].verse, renderer);
+          r.p.innerHTML = renderer.renderVerse(state.nikud ? selected : {t: selected.t.map(adapter.bare), m: [], k: selected.k, b: selected.b}, {specialNikud: effective});
+          if (!effective) r.p.querySelectorAll('.marked-hebrew').forEach(function (s) { s.classList.remove('marked-hebrew'); });
+        } else r.p.textContent = state.nikud ? r.text : r.bare === null ? adapter.bare(r.text) : r.bare;
       });
       panel.querySelectorAll('[data-edition]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.edition === edition)); });
       toggle.textContent = 'Special nikud: ' + (special ? 'on' : 'off'); toggle.setAttribute('aria-pressed', String(special));

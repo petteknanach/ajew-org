@@ -14,6 +14,6 @@ const template=fs.readFileSync(process.env.CHOK_TEMPLATE||'src/pages/reader/chok
 assert(template.includes('.ck-targum-line .ck-classical-gloss { display:inline; border:0; padding:0; margin:0; }'));
 assert(template.includes('.ck-generated-ref { display:inline-flex; unicode-bidi:isolate; white-space:nowrap; }'));
 assert(template.includes('/chok-source-reader.js?v=chok-live-corrections-20261020-r1'));
-assert(template.includes('/chok.js?v=e200d15a081ca7aebd973f7a193f5e62f75d3f69c6bcae0bc7232e5b0f3e7e7e'));
+assert(template.includes('/chok.js?v=1cb6f03d24c9a51d5130de105fdec22154ad6b4ed0cd78cb7dfbc9240f7f9b1d'));
 assert(require('./chok-attribution-conservation.cjs').restoreExact('src/pages/reader/chok.astro',Buffer.from(template)).toString().includes('/chok.js?v=db1000b76a48b28be93a9586f3e00ca44efb04c938530daac6cbe94ff78d9f9f'));
 console.log(JSON.stringify({bigActualAndEncodedAndAttributedWrappers:true,nestedFormatting:true,literalAngleBracketNegative:true,inlineOnkelosAbbreviationCharactersConserved:true,generatedReferenceIsolationCSSContract:true,cacheBumps:true,scope:'private initialized source adapter plus exact CSS/template contracts; native pixels pending'}));

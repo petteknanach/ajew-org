@@ -170,8 +170,34 @@
   }
   /* Shared COLR paint: preserve the raw consonants, metadata and display mode.
      Only isolated vowel contours are enlarged/colored; no CSS run splitting. */
+  // b indices count source tokens BEFORE the boundary; never insert source tokens.
+  function paragraphMarkers(verse, index) {
+    var seen = {};
+    return (verse.b || []).filter(function (b) {
+      if (!Array.isArray(b) || b[0] !== index || index < 0 || index > verse.t.length ||
+          (b[1] !== 'p' && b[1] !== 's') || seen[b[1]]) return false;
+      seen[b[1]] = true; return true;
+    }).map(function (b) {
+      return '<span class="marked-paragraph-boundary" data-source-role="paragraph-boundary" data-paragraph-kind="' + b[1] +
+        '" data-word-boundary="' + index + '" dir="rtl" aria-label="' + (b[1] === 'p' ? 'פרשה פתוחה' : 'פרשה סתומה') + '">' +
+        (b[1] === 'p' ? 'פ' : 'ס') + '</span>';
+    }).join('');
+  }
+  // The no-shared-script and UntouchedOriginal paths retain their original word spacing.
+  function plainVerse(verse, untouched) {
+    var tokens = verse.t.map(function (t) { return esc(untouched ? t : applyMode(t)); });
+    if (!(verse.b || []).some(function (b) { return b[1] === 'p' || b[1] === 's'; }))
+      return untouched ? esc(verse.t.join(' ')) : joinTokens(tokens);
+    var out = '';
+    for (var i = 0; i <= tokens.length; i++) {
+      if (i && i < tokens.length && (untouched || (!/[\u05BE\u05C0\u200F]$/.test(tokens[i - 1]) && tokens[i - 1].slice(-1) !== ' '))) out += ' ';
+      out += paragraphMarkers(verse, i);
+      if (i < tokens.length) out += tokens[i];
+    }
+    return out;
+  }
   function coloredVerse(verse, localQere) {
-    var visible = { t: verse.t.map(applyMode), m: verse.m || [], k: verse.k || [] };
+    var visible = { t: verse.t.map(applyMode), m: verse.m || [], k: verse.k || [], b: verse.b || [] };
     if (window.AjewMarkedHebrew) {
       var html = window.AjewMarkedHebrew.renderVerse(visible, { specialNikud: state.medooyuk });
       // Preserve this source qere exactly while using the ordinary reading font for its combining-mark cluster.
@@ -188,7 +214,7 @@
     }
     // A failed shared-script load must not masquerade as special-nikud output.
     return (state.medooyuk ? '<span class="ck-marked-unavailable" role="status">הניקוד המיוחד אינו זמין · </span>' : '') +
-      joinTokens(visible.t.map(esc));
+      plainVerse(verse, false);
   }
   function heNum(n) {
     var G = ['','א','ב','ג','ד','ה','ו','ז','ח','ט'], T = ['','י','כ','ל','מ','נ','ס','ע','פ','צ'], H = ['','ק','ר','ש','ת'];
@@ -199,12 +225,12 @@
   }
   // Generated references only: never normalize source paragraphs or Names.
   function plainHeNum(n) { return heNum(n).replace(/['\u05f3\u05f4]/g, ''); }
-  function refLabelHTML(ref) {
-    // Isolate chapter:verse left-to-right; keep each Hebrew numeral group RTL.
-    // Preserve logical chapter:verse values and the letters inside each numeral.
-    var direction = 'ltr';
-    return '<bdi class="ck-generated-ref" dir="' + direction + '">' + esc(ref).replace(/[א-ת]+/g, function (n) {
-      return '<bdi dir="rtl">' + n + '</bdi>';
+  function refLabelHTML(ref, language) {
+    // Writing language, not numeral glyphs or the surrounding UI, controls reading order.
+    // Both actual generated callers pass Hebrew explicitly; omitted context keeps legacy LTR.
+    var direction = language === 'he' ? 'rtl' : 'ltr';
+    return '<bdi class="ck-generated-ref" dir="' + direction + '">' + esc(ref).replace(/[א-ת]+|[0-9]+/g, function (n) {
+      return '<bdi dir="' + (/[א-ת]/.test(n) ? 'rtl' : 'ltr') + '">' + n + '</bdi>';
     }) + '</bdi>';
   }
   var __fq = [], __frunning = 0;
@@ -639,7 +665,9 @@
           vv.forEach(function (x) {
             if (to && (c > to.c || (c === to.c && x > to.v))) return;
             var verse = ch[x];
-            var row = (capturedLanguage === 'original' ? '<span class="ck-untouched-original">' + esc(verse.t.join(' ')) + '</span>' : coloredVerse(verse, slug === 'tanach-bereishit' && c === 13 && x === 3 && kind === 'torah' && parsha === 'לך לך' && day === 'יום חמישי')) + ' <span class="tk-vnum">' + refLabelHTML(plainHeNum(c) + ':' + plainHeNum(x)) + '</span>';
+            var displayVerse = window.AjewMarkedHebrew && window.AjewMarkedHebrew.readingVerse
+              ? window.AjewMarkedHebrew.readingVerse(verse, {book: slug, chapter: c, verse: x}) : verse;
+            var row = (capturedLanguage === 'original' ? '<span class="ck-untouched-original">' + plainVerse(displayVerse, true) + '</span>' : coloredVerse(displayVerse, slug === 'tanach-bereishit' && c === 13 && x === 3 && kind === 'torah' && parsha === 'לך לך' && day === 'יום חמישי')) + ' <span class="tk-vnum">' + refLabelHTML(plainHeNum(c) + ':' + plainHeNum(x), 'he') + '</span>';
             var sourceRef = c + ':' + x;
             var sourceSection = kind === 'torah' ? 'torah' : kind;
             var source = qualifiedDay ? window.ChokSources.bound(sourceSection, sourceRef, verse.t.join(' ')) : window.ChokSources.weekUnit(parsha, day, sourceSection, sourceRef, verse.t.join(' '));
@@ -757,8 +785,8 @@
     // settings bank. Never classify or remove meaning/safety/uncertainty notes.
     root.querySelectorAll('.ck-source-credits').forEach(function (panel) { panel.remove(); });
   }
-  function secHead(title, ref, generatedRef) {
-    return '<h2 class="ck-sec-head">' + title + (ref ? ' <span class="ck-ref">' + (generatedRef ? refLabelHTML(ref) : esc(ref)) + '</span>' : '') + '</h2>';
+  function secHead(title, ref, referenceLanguage) {
+    return '<h2 class="ck-sec-head">' + title + (ref ? ' <span class="ck-ref">' + (referenceLanguage ? refLabelHTML(ref, referenceLanguage) : esc(ref)) + '</span>' : '') + '</h2>';
   }
   function refStr(r) {
     if (!r) return '';
@@ -1408,7 +1436,7 @@
         p = p.then(function () {
           return versesHTML(w.slug, d.torah.from, d.torah.to, 'torah', dc, wk, dayE).then(function (vh) {
             out.push('<section class="ck-section" data-sec="torah">' +
-              secHead('תורה — ' + wk, refStr(d.torah), true) + popBtn() + dayKavana('torah', d) + (vh || '') + '</section>');
+              secHead('תורה — ' + wk, refStr(d.torah), 'he') + popBtn() + dayKavana('torah', d) + (vh || '') + '</section>');
           });
         });
       }
@@ -1423,7 +1451,7 @@
               var title = pair[0] === 'navi' ? 'הפטרה — ' + wk : 'כתובים — תהלים צ״ג (רשות)';
               var body = bodies.join('');
               if (pair[0] === 'kesuvim') body = '<details class="ck-friday-psalm"><summary>' + title + '</summary>' + body + '</details>';
-              out.push('<section class="ck-section" data-sec="' + pair[0] + '">' + (pair[0] === 'navi' ? secHead(title, fridayPlans.map(refStr).join('; '), true) : '') + popBtn() + body + '</section>');
+              out.push('<section class="ck-section" data-sec="' + pair[0] + '">' + (pair[0] === 'navi' ? secHead(title, fridayPlans.map(refStr).join('; '), 'he') : '') + popBtn() + body + '</section>');
             });
           }
           var sec = d[pair[0]];
@@ -1448,7 +1476,7 @@
               validateNachSpan(bd, plan);
               return versesHTML(plan.slug, plan.from, plan.to, vkey, null, wk, dayE).then(function (vh) {
                 out.push('<section class="ck-section" data-sec="' + vkey + '">' +
-                  secHead(pair[1] + ' — ' + sec.book, refStr(plan), true) + popBtn() + policyTag + dayKavana(vkey, d) + voiceBox(dc && dc[vkey], pair[1]) + vh + '</section>');
+                  secHead(pair[1] + ' — ' + sec.book, refStr(plan), 'he') + popBtn() + policyTag + dayKavana(vkey, d) + voiceBox(dc && dc[vkey], pair[1]) + vh + '</section>');
               });
             });
           }).catch(function (error) { out.push(nachDataError(pair[1], sec.book, error)); });

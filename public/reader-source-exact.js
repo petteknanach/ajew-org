@@ -7,6 +7,7 @@
   else root.AjewReaderSourceExact = api;
 })(typeof window === 'object' ? window : globalThis, function () {
   'use strict';
+  var readingSources = new WeakMap();
   function text(v) {
     return v.t.map(function (t, i, a) { return t + (i < a.length - 1 && !/\u05BE[\u200e\u200f]*$/.test(t) ? ' ' : ''); }).join('');
   }
@@ -21,7 +22,7 @@
     var plain = text(candidate);
     if (!/[\u0591-\u05AF\u05C0]/.test(source)) plain = plain.replace(/[\u0591-\u05AF\u05C0]/g, '');
     if (!source || compare(source) !== compare(plain)) return result('source-mismatch');
-    var verse = { index: index, t: source.split(' '), m: [] }, positions = [], starts = [], total = 0;
+    var verse = { index: index, t: source.split(' '), m: [], b: [] }, positions = [], starts = [], total = 0;
     if (text(verse) !== source) return result('unsupported-spacing');
     verse.t.forEach(function (tok, ti) {
       var li = 0;
@@ -34,6 +35,21 @@
       var p = positions[starts[m[0]] + m[1]];
       if (p) verse.m.push([p[0], p[1], m[2], m[3]]);
     });
+    var unsupported = false;
+    (candidate.b || []).forEach(function (b) {
+      if (!Array.isArray(b) || !Number.isInteger(b[0]) || b[0] < 0 || b[0] > candidate.t.length) return;
+      var at = b[0] === candidate.t.length ? [verse.t.length, 0] : positions[starts[b[0]]];
+      // Never manufacture a token split or move a boundary through a maqaf.
+      if (!at || (at[1] !== 0 && (b[1] === 'p' || b[1] === 's'))) { unsupported = true; return; }
+      verse.b.push([at[0]].concat(b.slice(1)));
+    });
+    if (unsupported) return result('unsupported-boundary-spacing');
+    var reading = readingSources.get(candidate);
+    if (reading) {
+      var target = positions[starts[1]];
+      if (target && target[1] === 0 && verse.t[target[0]] === candidate.t[1])
+        readingSources.set(verse, {source: reading.source, context: reading.context, tokenIndex: target[0]});
+    }
     return result('attached', verse);
   }
   function chapter(sources, candidates) {
@@ -59,8 +75,20 @@
         if (key !== tail.readingKey && key !== tail.readingTokens.join('\u001f')) throw Error('Source tail mismatch');
         tokens = tail.readingTokens;
       }
-      return { index: +n, t: tokens.slice(), k: (v.k || []).slice(), m: (v.m || []).map(function (m) { return m.slice(); }) };
+      var prepared = { index: +n, t: tokens.slice(), k: (v.k || []).slice(), m: (v.m || []).map(function (m) { return m.slice(); }),
+        b: (v.b || []).map(function (b) { return b.slice(); }) };
+      readingSources.set(prepared, {source: v, context: {book: book, chapter: ch, verse: +n}, tokenIndex: 1});
+      return prepared;
     });
   }
-  return { text: text, bare: bare, attach: attach, chapter: chapter, prepare: prepare };
+  function reading(verse, renderer) {
+    var bound = readingSources.get(verse);
+    if (!bound || !renderer || typeof renderer.readingVerse !== 'function') return verse;
+    var selected = renderer.readingVerse(bound.source, bound.context), at = bound.tokenIndex;
+    if (selected === bound.source || verse.t[at] !== bound.source.t[1]) return verse;
+    var result = Object.assign({}, verse, {t: verse.t.slice()});
+    result.t[at] = selected.t[1];
+    return result;
+  }
+  return { text: text, bare: bare, reading: reading, attach: attach, chapter: chapter, prepare: prepare };
 });

@@ -1,6 +1,6 @@
 /* Shared vowel-only paint for annotated Tanach/readers. No sheva inference.
  * COLR fonts retain Unicode/GPOS; only requested vowel contours are colored.
- * Public API: window.AjewMarkedHebrew.renderVerse({t,m,k}, {teamim,specialNikud})
+ * Public API: window.AjewMarkedHebrew.renderVerse({t,m,k,b}, {teamim,specialNikud})
  * plus .css (installed once), usable by Chok and any annotated reader. */
 (function () {
   'use strict';
@@ -13,6 +13,7 @@
     '[data-theme="night"]{--ajew-marked-font:AjewMarked-night}' +
     '.marked-hebrew{font-family:var(--ajew-marked-font,AjewMarked-day),serif!important;font-weight:400!important;font-synthesis:none}' +
     '.marked-qere{text-decoration:underline;text-underline-offset:.12em}';
+  CSS += '.marked-paragraph-boundary{display:inline-block;direction:rtl;unicode-bidi:isolate;margin-inline:.35em;font:inherit}';
   function esc(s) { return s.replace(/[&<>"']/g, function (ch) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]; }); }
   function renderToken(tok, marks, teamim, specialNikud) {
     var text = teamim === false ? tok.replace(/[\u0591-\u05AF\u05C0]/g, '') : tok;
@@ -37,6 +38,32 @@
     });
     flush(); return html;
   }
+  // b indices count source tokens BEFORE the boundary; never insert source tokens.
+  function paragraphMarkers(verse, index) {
+    var seen = {};
+    return (verse.b || []).filter(function (b) {
+      if (!Array.isArray(b) || b[0] !== index || index < 0 || index > verse.t.length ||
+          (b[1] !== 'p' && b[1] !== 's') || seen[b[1]]) return false;
+      seen[b[1]] = true; return true;
+    }).map(function (b) {
+      return '<span class="marked-paragraph-boundary" data-source-role="paragraph-boundary" data-paragraph-kind="' + b[1] +
+        '" data-word-boundary="' + index + '" dir="rtl" aria-label="' + (b[1] === 'p' ? 'פרשה פתוחה' : 'פרשה סתומה') + '">' +
+        (b[1] === 'p' ? 'פ' : 'ס') + '</span>';
+    }).join('');
+  }
+  // Selected reading, not a raw-edition rewrite. Authority: direct user proposal
+  // SHA256 f8fe6491d87b97bd10ea83f0a4b533ec53dc1ce9974eb04af3739630ac4e80d6.
+  // Edition SHA256 a2633f304364c9592f2f9637aeee4730a28c52303bc80a508c4af26faa7fba9b.
+  var readingSources = new WeakMap();
+  function readingVerse(verse, context) {
+    var pin = verse && readingSources.get(verse);
+    if (!pin || !context || context.book !== 'tanach-bereishit' ||
+        +context.chapter !== 21 || +context.verse !== 33 ||
+        window.TikkunBoundaries.boundaryHash(verse) !== pin || verse.t[1] !== 'אֶ֖שֶׁל') return verse;
+    var selected = Object.assign({}, verse, {t: verse.t.slice()});
+    selected.t[1] = 'אֵ֖שֶׁל';
+    return selected;
+  }
   function renderVerse(verse, options) {
     options = options || {};
     var byTok = {};
@@ -44,8 +71,8 @@
     var html = (verse.t || []).map(function (tok, i, tokens) {
       var result = renderToken(tok, byTok[i] || [], options.teamim, options.specialNikud);
       if (verse.k && verse.k[i] === 1) result = '<span class="marked-qere">' + result + '</span>';
-      return result + (i < tokens.length - 1 && !/\u05BE[\u200e\u200f]*$/.test(tok) ? ' ' : '');
-    }).join('');
+      return paragraphMarkers(verse, i) + result + (i < tokens.length - 1 && !/\u05BE[\u200e\u200f]*$/.test(tok) ? ' ' : '');
+    }).join('') + paragraphMarkers(verse, (verse.t || []).length);
     return '<span class="marked-hebrew">' + html + '</span>';
   }
   // Authenticate the complete response BEFORE chapter/day/range selection.
@@ -60,9 +87,19 @@
         !window.TikkunQatanOccurrences || typeof window.TikkunQatanOccurrences.applyBook !== 'function') {
       throw Error('Authenticated qatan helper unavailable');
     }
-    return window.TikkunQatanOccurrences.applyBook(book, requestedSlug);
+    var authenticated = window.TikkunQatanOccurrences.applyBook(book, requestedSlug);
+    if (requestedSlug === 'tanach-bereishit') {
+      // The unmodified qatan guard admits the complete edition and all marks.
+      // Also pin its complete selected output: never admit a mere token match.
+      if (window.TikkunBoundaries.boundaryHash(authenticated) !== '0c0ad1e69d4ee25860c2180477ef9dd0ccb598b216d4a10b7a70d8fe883d9608')
+        throw Error('Selected reading edition mismatch');
+      var original = authenticated.ch[21][33];
+      if (original.t[1] !== 'אֶ֖שֶׁל') throw Error('Selected reading preimage mismatch');
+      readingSources.set(original, window.TikkunBoundaries.boundaryHash(original));
+    }
+    return authenticated;
   }
-  window.AjewMarkedHebrew = { applyBook: applyBook, renderVerse: renderVerse, renderToken: renderToken, css: CSS, version: VERSION };
+  window.AjewMarkedHebrew = { applyBook: applyBook, readingVerse: readingVerse, renderVerse: renderVerse, renderToken: renderToken, css: CSS, version: VERSION };
   if (!document.getElementById('ajew-marked-hebrew-css')) {
     var style = document.createElement('style'); style.id = 'ajew-marked-hebrew-css'; style.textContent = CSS; document.head.appendChild(style);
   }
