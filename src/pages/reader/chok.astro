@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import projectCredits from '../../data/chok-project-credits.json';
 ---
 <Layout
   title="Chok LiYisroel - Daily Study"
@@ -57,25 +58,18 @@ import Layout from '../../layouts/Layout.astro';
           <span class="ck-legend-note">הסימון על הניקוד עצמו — האותיות רגילות</span>
         </div></details>
         </div></details>
-        <details class="ck-option-box" id="ck-study-overview"><summary>Study overview<br/>סדר הלימוד</summary><div class="ck-option-panel ck-offering-body" id="ck-study-overview-body" dir="rtl"></div></details>
-        <a class="ck-option-box ck-offering-link" href="/reader/chok/tefillos/">Prayers<br/>תפלות</a>
-        <a class="ck-option-box ck-offering-link" href="/reader/chok/kavanos/">Kavanos<br/>כוונות</a>
-        <a class="ck-option-box ck-offering-link" id="ck-full-parsha" href="/parsha/noach/">Full parsha<br/>הפרשה בשלמותה</a>
-        <details class="ck-option-box" id="ck-breslov-offering"><summary>Breslov<br/>ברסלב</summary><div class="ck-option-panel ck-offering-body" id="ck-breslov-offering-body" dir="rtl"></div></details>
+        <details class="ck-option-box" id="ck-general-settings"><summary>General settings<br/>הגדרות כלליות</summary><div class="ck-option-panel">
+      <section id="ck-sources-and-credits" class="ck-project-credits" tabindex="0" role="region" dir="ltr" aria-labelledby="ck-sources-heading">
+      <h2 id="ck-sources-heading">מקורות ורישיונות · Sources / Licences</h2>
+      <p>{projectCredits.scope}</p>
+      <div id="ck-project-credit-bank">
+        {projectCredits.entries.map(entry => <article class="ck-project-credit" data-project-credit={entry.id}>
+          <Fragment set:html={entry.html} />
+          <details><summary>Applicability · תחולה</summary><ul>
+            {entry.bindings.map(binding => <li dir="ltr">{binding.kind === 'qualified' ? `${binding.payload.split('/').pop()} · ${binding.section} · ${binding.owner} · ${binding.note}` : `${binding.owner} · credit ${binding.creditIndex + 1}`}</li>)}
+          </ul></details>
+        </article>)}
       </div>
-      <div id="ck-breslov-availability" aria-live="polite"></div>
-      <div id="ck-days" hidden></div>
-    </div>
-
-    <nav id="ck-jumps" class="ck-jumps" aria-label="Jump to study section" dir="rtl"></nav>
-
-    <main id="ck-content" class="ck-content" dir="rtl" lang="he"></main>
-
-    <footer class="ck-foot" dir="ltr">
-      <p><a href="/reader/tikkun/">שנים מקרא ואחד תרגום · Shnayim Mikra</a></p>
-      <section id="ck-sources-and-credits" class="ck-source-credits" aria-labelledby="ck-sources-heading">
-      <h2 id="ck-sources-heading">מקורות וקרדיטים · Sources and credits</h2>
-      <div id="ck-reading-credits"></div>
       <p><a href="/tikkun/qatan-sources.html">MAM qatan supplement — Hebrew Wikisource · CC BY-SA 4.0 · sources and changes</a></p>
       <details id="ck-noach-legal" class="ck-noach-legal"><summary>Noach Bartenura — source and reuse conditions</summary><p>Selected English translations and source-dependent study notes only. Source: תורת אמת; TextSource: ר' פנחס ראובן שליט''א. In-house English and bilingual study notes. No endorsement is implied.</p><p>Noncommercial free educational Chok Reader use; attribution, same-or-similar share-alike for adaptations and communication of conditions. Retained Creative Commons 2.5 notice; port, jurisdiction and release date unidentified. No commercial or original-pointing/reprint clearance is asserted.</p><p><a href="/reader/chok/noach-bartenura-conditions.html">Complete applicable retained conditions and permission evidence</a></p></details>
       <div class="ck-noach-print-conditions" dir="ltr"><h2>Noach Bartenura — field-specific reuse conditions</h2><pre>These conditions apply only to the selected Noach Bartenura English translations and their source-dependent bilingual study notes and qualifications, not to the entire ajew.org corpus.
@@ -111,6 +105,24 @@ Retained named-contributor permission evidence:
 תודה מיוחדת מקרב לב למזכה הרבים הגדול ר&#x27; פנחס ראובן שליט&quot;א שבזכותו מאגר זה רואה אור שבאהבת השם הגדולה שלו ובאהבת ישראל הגדולה וברוחב לבו התיר לנו להכניס למאגר זה את כל ספרי הקודש שיש לו זכויות יוצרים עליהם !!! השם יברכהו בכל ברוחניות ובגשמיות וימלא כל משאלות לבו לטובה לעבודתו יתברך.
 </pre></div>
       </section>
+        </div></details>
+        <details class="ck-option-box" id="ck-study-overview"><summary>Study overview<br/>סדר הלימוד</summary><div class="ck-option-panel ck-offering-body" id="ck-study-overview-body" dir="rtl"></div></details>
+        <a class="ck-option-box ck-offering-link" href="/reader/chok/tefillos/">Prayers<br/>תפלות</a>
+        <a class="ck-option-box ck-offering-link" href="/reader/chok/kavanos/">Kavanos<br/>כוונות</a>
+        <a class="ck-option-box ck-offering-link" id="ck-full-parsha" href="/parsha/noach/">Full parsha<br/>הפרשה בשלמותה</a>
+        <details class="ck-option-box" id="ck-breslov-offering"><summary>Breslov<br/>ברסלב</summary><div class="ck-option-panel ck-offering-body" id="ck-breslov-offering-body" dir="rtl"></div></details>
+      </div>
+      <div id="ck-breslov-availability" aria-live="polite"></div>
+      <div id="ck-days" hidden></div>
+    </div>
+
+    <nav id="ck-jumps" class="ck-jumps" aria-label="Jump to study section" dir="rtl"></nav>
+
+    <main id="ck-content" class="ck-content" dir="rtl" lang="he"></main>
+
+    <footer class="ck-foot" dir="ltr">
+      <p><a href="/reader/tikkun/">שנים מקרא ואחד תרגום · Shnayim Mikra</a></p>
+      <!-- Credits are available in general settings, independent of the reading. -->
     </footer>
   </div>
 </Layout>
@@ -128,14 +140,14 @@ Retained named-contributor permission evidence:
 <script is:inline src="/chok-qualified-daily-classical-selected-v1.js?v=a3cde32103559b448ceea42fb6d62c25ee31d8c739e09458e8a51b4cc9a1160a" integrity="sha256-o83jIQNVm0SM7qQvttYsJe4x2Mc54JRY6KUbTMmhFgo=" crossorigin="anonymous" defer></script>
 <script is:inline src="/chok-other-layers.js?v=08cadff0fdba47823afa318720f053bbd1f70e0f2a6943ad632963e3de4febe6" integrity="sha256-CMrf8P26R4I6+jGHIPBTu9H3Dg8qaUOtYylj495P6+Y=" crossorigin="anonymous" defer></script>
 <script is:inline src="/chok-noach-english.js?v=2e4862f7114ff71f6683e689ecce6e6f6b741fc77b920c232da794b03836068f" integrity="sha256-Lkhi9xFP9x9mg+aJ7M5ub2t0H8d7kgwjLaeUsDg2Bo8=" crossorigin="anonymous" defer></script>
-<script is:inline src="/chok.js?v=1d9b9535983182e3bedf50f6dadb65135d44d0bd9e729eba32b946ce003617d8" integrity="sha256-HZuVNZgxguO+31D22ttlE11E0L2ecp66MrlGzgA2F9g=" crossorigin="anonymous" defer></script>
+<script is:inline src="/chok.js?v=e200d15a081ca7aebd973f7a193f5e62f75d3f69c6bcae0bc7232e5b0f3e7e7e" integrity="sha256-4gDRWggcp669lz96GT9eYvddP2nGvK4LxyMuWw8+fn4=" crossorigin="anonymous" defer></script>
 
 <style is:global>
   .ck-noach-en { white-space:pre-wrap; font-family:var(--ck-font-en); font-size:1.1rem; line-height:1.8; }
   .ck-noach-notes, .ck-noach-qualification { margin:.75rem 0; padding:.6rem; border-inline-start:3px solid var(--ck-gold); }
   .ck-noach-notes p, .ck-noach-qualification p { white-space:pre-wrap; }
   .ck-noach-print-conditions { display:none; }
-  @media print { .ck-noach-print-conditions { display:block; } .ck-noach-print-conditions pre { white-space:pre-wrap; } }
+  @media print { #ck-general-settings, #ck-general-settings > .ck-option-panel { display:block !important; } #ck-general-settings > summary, #ck-project-credit-bank { display:none; } .ck-noach-print-conditions { display:block; } .ck-noach-print-conditions pre { white-space:pre-wrap; } }
 
   /* Actual study offerings: three columns/two rows, selectors separate. */
   .ck-quick-rail { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.4rem; margin-bottom:.4rem; }
@@ -896,4 +908,11 @@ Retained named-contributor permission evidence:
   #ck-content .ck-source-qualification,
   #ck-content .ck-daily-explanation { font-size: 1rem; line-height: 1.75; }
 
+  #ck-sources-and-credits { font-size:1rem; line-height:1.75; max-height:70vh; overflow:auto; padding:.75rem; overflow-wrap:anywhere; }
+  #ck-sources-and-credits:focus-visible { outline:2px solid currentColor; outline-offset:2px; }
+  #ck-sources-and-credits :global(p) { white-space:pre-line; }
+  #ck-general-settings > .ck-option-panel { color:var(--ck-ink); }
+  @media print { #ck-general-settings::details-content { content-visibility:visible !important; display:block !important; } #ck-general-settings > .ck-option-panel { position:static; box-shadow:none; } }
+  .ck-project-credit { border-block-start:1px solid var(--border, #cbd5e1); padding-block:.75rem; }
+  @media print { #ck-sources-and-credits { max-height:none; overflow:visible; } }
 </style>

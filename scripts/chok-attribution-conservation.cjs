@@ -1,6 +1,7 @@
 'use strict';
 // Exact presentation-only inverse. Historical assertions and data pins are not relabelled.
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict'),{createHash}=require('node:crypto');
+const {restoreProject}=require('./chok-project-credit-conservation.cjs');
 const sha=b=>createHash('sha256').update(b).digest('hex');
 const DELTA={
   "public/chok.js": {
@@ -39,6 +40,7 @@ const DELTA={
 function restoreExact(relative, bytes){
  const delta=DELTA[relative];if(!delta)return bytes;
  if(sha(bytes)===delta.baseSHA256)return bytes;
+ bytes=restoreProject(relative,bytes);
  assert.equal(sha(bytes),delta.candidateSHA256,'ATTRIBUTION_CANDIDATE_PIN:'+relative);
  let text=bytes.toString('utf8');
  for(const op of delta.inverse){assert.equal(text.split(op.candidate).length,2,'EXACT_INVERSE_MEMBERSHIP:'+relative);text=text.replace(op.candidate,op.base);}
@@ -46,4 +48,4 @@ function restoreExact(relative, bytes){
 }
 function historicalSource(root,relative){return restoreExact(relative,fs.readFileSync(path.join(root,relative)));}
 module.exports={DELTA,restoreExact,historicalSource};
-if(require.main===module){for(const relative of Object.keys(DELTA)){const bytes=fs.readFileSync(path.join(__dirname,'..',relative));assert.equal(sha(bytes),DELTA[relative].candidateSHA256);assert.equal(sha(restoreExact(relative,bytes)),DELTA[relative].baseSHA256);assert.throws(()=>restoreExact(relative,Buffer.concat([bytes,Buffer.from(' ')])),/ATTRIBUTION_CANDIDATE_PIN/);assert.throws(()=>restoreExact(relative,Buffer.from(bytes.toString().replace('Chok','ChangedChok'))),/ATTRIBUTION_CANDIDATE_PIN/);}console.log(JSON.stringify({exactInverseFiles:Object.keys(DELTA),outsideDeltaControlsRejected:4,historicalAssertionsPreserved:true}));}
+if(require.main===module){for(const relative of Object.keys(DELTA)){const bytes=restoreProject(relative,fs.readFileSync(path.join(__dirname,'..',relative)));assert.equal(sha(bytes),DELTA[relative].candidateSHA256);assert.equal(sha(restoreExact(relative,bytes)),DELTA[relative].baseSHA256);assert.throws(()=>restoreExact(relative,Buffer.concat([bytes,Buffer.from(' ')])),/(?:ATTRIBUTION|PROJECT)_CANDIDATE_PIN/);assert.throws(()=>restoreExact(relative,Buffer.from(bytes.toString().replace('Chok','ChangedChok'))),/(?:ATTRIBUTION|PROJECT)_CANDIDATE_PIN/);}console.log(JSON.stringify({exactInverseFiles:Object.keys(DELTA),outsideDeltaControlsRejected:4,historicalAssertionsPreserved:true}));}

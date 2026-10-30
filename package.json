@@ -45,7 +45,8 @@
     "verify:sichos-301308": "node --max-old-space-size=512 scripts/verify-sichos-301308.mjs --shared-integration",
     "verify:sichos-291300": "node --max-old-space-size=512 scripts/verify-sichos-291300.mjs",
     "verify:sichos-281290": "node --max-old-space-size=512 scripts/verify-sichos-281290.mjs",
-    "verify:yereach-haeitanim": "node --max-old-space-size=512 scripts/verify-yereach-haeitanim.mjs"
+    "verify:yereach-haeitanim": "node --max-old-space-size=512 scripts/verify-yereach-haeitanim.mjs",
+    "verify:chok-project-credits": "node --max-old-space-size=128 scripts/chok-project-credit-conservation.cjs && node --max-old-space-size=128 scripts/chok-attribution-conservation.cjs && node --max-old-space-size=128 scripts/chok-project-credits.cjs --check && node --max-old-space-size=128 scripts/chok-project-settings.test.cjs && node --max-old-space-size=128 scripts/chok-attribution-copy-conditions.test.cjs"
   },
   "dependencies": {
     "@astrojs/node": "^9.5.5",

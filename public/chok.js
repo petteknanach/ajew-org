@@ -752,51 +752,10 @@
       });
     });
   }
-  function consolidateSourceCredits(root, destination) {
-    // Only the two explicit legal-credit carriers are relocated. Meaning,
-    // safety, recension and uncertainty notes are never classified by text.
-    var panels = Array.prototype.slice.call(root.querySelectorAll('.ck-source-credits'));
-    if (!panels.length) return;
-    if (!destination) {
-      var panel = document.createElement('section');
-      panel.className = 'ck-source-credits';
-      var heading = document.createElement('h2');
-      heading.textContent = 'מקורות וקרדיטים · Sources and credits';
-      panel.appendChild(heading);
-      destination = document.createElement('div');
-      panel.appendChild(destination);
-      root.appendChild(panel);
-    }
-    var seen = new Map();
-    function retain(entry, binding) {
-      // Exact rendered notice equality only: different editions, URLs,
-      // changes and reuse conditions remain distinct entries.
-      var key = entry.innerHTML, prior = seen.get(key);
-      if (!prior) {
-        prior = {element: entry, bindings: []};
-        seen.set(key, prior);
-        destination.appendChild(entry);
-      }
-      prior.bindings.push(binding);
-      prior.element.setAttribute('data-source-credit-bindings', JSON.stringify(prior.bindings));
-    }
-    panels.forEach(function (panel) {
-      var children = Array.prototype.slice.call(panel.children).filter(function (n) { return n.tagName.toLowerCase() !== 'summary'; });
-      var owner = panel.getAttribute('data-other-credit-owner');
-      if (owner !== null && children.length % 3 === 0 && children.every(function (n) { return n.tagName.toLowerCase() === 'p'; })) {
-        // ChokOtherLayers owns one title/licence, URI and changes triple per credit.
-        for (var i = 0; i < children.length; i += 3) {
-          var entry = document.createElement('div');
-          children.slice(i, i + 3).forEach(function (n) { entry.appendChild(n); });
-          retain(entry, {owner: owner, creditIndex: i / 3});
-        }
-      } else {
-        children.forEach(function (entry) {
-          retain(entry, {owner: entry.getAttribute('data-note-owner'), note: entry.getAttribute('data-daily-note'), role: entry.getAttribute('data-field-role')});
-        });
-      }
-      panel.remove();
-    });
+  function suppressSourceCredits(root) {
+    // Only explicit legal-credit carriers are redundant with the static project
+    // settings bank. Never classify or remove meaning/safety/uncertainty notes.
+    root.querySelectorAll('.ck-source-credits').forEach(function (panel) { panel.remove(); });
   }
   function secHead(title, ref, generatedRef) {
     return '<h2 class="ck-sec-head">' + title + (ref ? ' <span class="ck-ref">' + (generatedRef ? refLabelHTML(ref) : esc(ref)) + '</span>' : '') + '</h2>';
@@ -1576,9 +1535,7 @@
         if (revision !== state.renderRevision) return;
         box.innerHTML = parts.join('') || '<p class="ck-error">Nothing to show.</p>';
         presentPrimaryStudy(box);
-        var creditDestination = $('ck-reading-credits');
-        if (creditDestination) creditDestination.innerHTML = '';
-        consolidateSourceCredits(box, creditDestination);
+        suppressSourceCredits(box);
         box.setAttribute('data-language', state.language);
         var root=box.closest('.ck-wrap');root.setAttribute('data-language',state.language);
         $('ck-study-overview-body').innerHTML=state.focus?'':window.ChokSources.isTuesday(weeks[0],availDay(state.sched.weeks[weeks[0]],day))?window.ChokSources.overview(state.kavanaMode==='always'):studyOverviewHTML();
