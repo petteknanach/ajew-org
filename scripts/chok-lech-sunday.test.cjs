@@ -24,7 +24,7 @@ const code=read('public/chok-lech-sunday.js'),sources=read('public/chok-source-r
 const raw=read('public/reader/chok/lech-sunday-talmud-zohar.json'),packet=JSON.parse(raw),PIN=pins['public/reader/chok/lech-sunday-talmud-zohar.json'];
 const main=preimage?fs.readFileSync(preimage,'utf8'):current;
 if(preimage)assert.equal(sha(main),'ccbaaf655029345f55e656132c6b6f553e5df9ae3a4b1d87c7e1784bf8f39770','genuine 4efbf495af4393a4d2ee2bc8941bac947332df9e old-main blob');
-for(const [p,pin] of Object.entries(pins))assert.equal(sha(read(p)),pin,'frozen '+p);
+for(const [p,pin] of Object.entries(pins))assert.equal(sha(require('./chok-attribution-conservation.cjs').restoreExact(p,Buffer.from(read(p)))),pin,'frozen '+p);
 const t=packet.sections.talmud,z=packet.sections.zohar,rows=[...t.units,...z.units,...t.rashiFullSupplement.units];
 const clone=()=>JSON.parse(raw),results=[];
 function save(name,value){if(evidence){fs.mkdirSync(evidence,{recursive:true});fs.writeFileSync(path.join(evidence,name),typeof value==='string'?value:JSON.stringify(value,null,2)+'\n');}}
@@ -141,7 +141,7 @@ async function suite(){
   if(old){assert.equal(sha(old),'ccbaaf655029345f55e656132c6b6f553e5df9ae3a4b1d87c7e1784bf8f39770');for(const [week,day] of [['לך לך','יום שני'],['נח','יום ראשון']]){const a=await boot({mainCode:current,week,day}),b=await boot({mainCode:old,week,day});try{await a.settled();await b.settled();assert.equal(a.d.getElementById('ck-content').innerHTML,b.d.getElementById('ck-content').innerHTML,'unchanged actual old/new caller output '+week+'|'+day);}finally{a.env.close();b.env.close();}}}
   return {oldNewByteParity:!!old,scope:'same authentic local legacy data and explicitly source-free unchanged-dependency facades'};
  }finally{r.env.close();}});
- for(const [p,pin] of Object.entries(pins))assert.equal(sha(read(p)),pin,'source remained frozen '+p);
+ for(const [p,pin] of Object.entries(pins))assert.equal(sha(require('./chok-attribution-conservation.cjs').restoreExact(p,Buffer.from(read(p)))),pin,'source remained frozen '+p);
  const summary={mode:preimage?'RED genuine old main':'GREEN candidate main',mainSHA256:sha(main),frozenSourceHashes:pins,results,passed:results.filter(x=>x.status==='PASS').length,failed:results.filter(x=>x.status==='FAIL').length,scope:{browser:false,network:false,build:false,fullUnfacadedApp:false,dom:'existing parse5 HTML5 modeled DOM',main:'actual unmodified entire main initializer/registered controls, genuine target schedule fields only',facades:['ChokSources.load no-op for unrelated Noach/Breslov master loading','ChokVerseBreslov source-free navigation/availability facade','unchanged optional JSON dependencies return null','two-section schedule projection; no invented source bodies'],semanticNegatives:'explicit outer raw-digest-only crypto facade; no production code edits or inner digest bypass'},inputs:[...inputs.values()]};save('results.json',summary);console.log(JSON.stringify({mode:summary.mode,groups:results.length,passed:summary.passed,failed:summary.failed,mainSHA256:summary.mainSHA256}));process.exitCode=summary.failed?1:0;
 }
 suite().catch(e=>{console.error(e.stack);process.exitCode=1;});

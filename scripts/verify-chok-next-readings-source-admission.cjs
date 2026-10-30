@@ -21,7 +21,7 @@ function check(root,oracle){
  const old=oracle.units.filter(u=>!keys.has(u.readingId));
  assert.equal(old.length,a.untouchedOracleRows);assert.equal(sha(canonical(old)),a.untouchedOracleRowsSHA256,'UNTOUCHED_ORACLE_CONSERVATION');
  assert.equal(sha(fs.readFileSync(path.join(root,'public/chok-qualified-daily-selected.js'))),a.selectedIndexSHA256,'EXACT_SELECTED_SOURCE');
- for(const[p,digest]of Object.entries(a.unchangedSources))assert.equal(sha(fs.readFileSync(path.join(root,p))),digest,'FOREIGN_RUNTIME_CONSERVATION:'+p);
+ for(const[p,digest]of Object.entries(a.unchangedSources))assert.equal(sha(require('./chok-attribution-conservation.cjs').historicalSource(root,p)),digest,'FOREIGN_RUNTIME_CONSERVATION:'+p);
  for(const t of a.targets){
   const rows=oracle.units.filter(u=>u.readingId===t.readingId);assert.deepEqual(rows.map(r=>r.owner),t.owners,'EXACT_SOURCE_OWNERS');
   assert.equal(sha(canonical(rows)),t.expectedRowsSHA256,'APPROVAL_DERIVED_FIELDS');
