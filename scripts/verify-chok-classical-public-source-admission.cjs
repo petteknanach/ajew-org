@@ -10,7 +10,7 @@ function check(root,oracle){
  assert.equal(sha(read('public/chok-qualified-daily-selected.js')),a.oldSelectedSHA256,'FOREIGN_OLD_SELECTED_CONSERVATION');
  assert.equal(sha(require('./chok-attribution-conservation.cjs').historicalSource(root,'src/pages/reader/chok.astro')),a.afterTemplateSHA256,'CLASSICAL_AFTER_TEMPLATE');
  assert.notEqual(a.beforeTemplateSHA256,a.afterTemplateSHA256);
- assert.equal(sha(read(a.newSelectedPath)),a.newSelectedSHA256,'CLASSICAL_AFTER_SELECTED');
+ assert.equal(sha(require('./chok-today-classical-admission.cjs').restore(root,a.newSelectedPath,read(a.newSelectedPath))),a.newSelectedSHA256,'CLASSICAL_AFTER_SELECTED');
  assert.equal(a.rows.length,4);assert.equal(new Set(a.rows.map(x=>x.owner)).size,4);assert.equal(a.entries.length,2);
  for(const r of a.rows){assert(!oracle.units.some(x=>x.owner===r.owner),'DUPLICATE_SELECTED_OWNER');assert.equal(r.nativeAdmission.unit.sourceUse.evidenceSHA256,a.publicDecisionSHA256);assert.equal(r.nativeAdmission.section.sourceUse.evidenceSHA256,a.publicDecisionSHA256);}
  for(const e of a.entries)assert.equal(sha(read('public'+e.url)),e.payloadSHA256,'CLASSICAL_AFTER_PAYLOAD');

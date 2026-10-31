@@ -72,7 +72,7 @@ function deferredFixtureScripts(template, disk) {
   const url=tag.getAttribute('src');assert(url.startsWith('/')&&!url.startsWith('//'),'Same-origin static script');
   const parsed=new URL(url,'https://ajew.org');assert.equal(parsed.origin,'https://ajew.org','Same-origin static script');
   const code=disk('public'+parsed.pathname);assert.equal(typeof code,'string','Missing real static script '+url);assert(code,'Missing real static script '+url);
-  const integrity=tag.getAttribute('integrity');if(integrity!==null)assert.equal(integrity,'sha256-'+crypto.createHash('sha256').update(code,'utf8').digest('base64'),'Static script SRI '+url);
+  const integrity=tag.getAttribute('integrity'),algorithm=parsed.pathname==='/chok.js'?'sha384':'sha256';if(integrity!==null)assert.equal(integrity,algorithm+'-'+crypto.createHash(algorithm).update(code,'utf8').digest('base64'),'Static script SRI '+url);
   return {url,code};
  });
 }

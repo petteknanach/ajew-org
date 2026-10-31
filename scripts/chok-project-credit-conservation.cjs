@@ -50,8 +50,9 @@ const DELTA={
   }
 };
 function restoreProject(relative,bytes){
+ const d=DELTA[relative];if(d&&sha(bytes)===d.baseSHA256)return bytes;
  try{bytes=require('./chok-reference-order-conservation.cjs').restoreReference(relative,bytes);}catch(e){e.message='PROJECT_CANDIDATE_PIN:'+relative+':'+e.message;throw e;}
- const d=DELTA[relative];if(!d||sha(bytes)===d.baseSHA256)return bytes;
+ if(!d||sha(bytes)===d.baseSHA256)return bytes;
  assert.equal(sha(bytes),d.candidateSHA256,'PROJECT_CANDIDATE_PIN:'+relative);
  let s=bytes.toString('utf8');for(const op of d.inverse){assert.equal(s.split(op.candidate).length,2,'PROJECT_INVERSE_MEMBERSHIP:'+relative);s=s.replace(op.candidate,op.base);}
  const restored=Buffer.from(s);assert.equal(sha(restored),d.baseSHA256,'PROJECT_EXACT_INVERSE:'+relative);return restored;

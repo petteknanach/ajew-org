@@ -46,6 +46,6 @@ function restoreExact(relative, bytes){
  for(const op of delta.inverse){assert.equal(text.split(op.candidate).length,2,'EXACT_INVERSE_MEMBERSHIP:'+relative);text=text.replace(op.candidate,op.base);}
  const restored=Buffer.from(text);assert.equal(sha(restored),delta.baseSHA256,'ATTRIBUTION_EXACT_INVERSE:'+relative);return restored;
 }
-function historicalSource(root,relative){return restoreExact(relative,fs.readFileSync(path.join(root,relative)));}
+function historicalSource(root,relative){return restoreExact(relative,require('./chok-today-classical-admission.cjs').restore(root,relative,fs.readFileSync(path.join(root,relative))));}
 module.exports={DELTA,restoreExact,historicalSource};
 if(require.main===module){for(const relative of Object.keys(DELTA)){const bytes=restoreProject(relative,fs.readFileSync(path.join(__dirname,'..',relative)));assert.equal(sha(bytes),DELTA[relative].candidateSHA256);assert.equal(sha(restoreExact(relative,bytes)),DELTA[relative].baseSHA256);assert.throws(()=>restoreExact(relative,Buffer.concat([bytes,Buffer.from(' ')])),/(?:ATTRIBUTION|PROJECT)_CANDIDATE_PIN/);assert.throws(()=>restoreExact(relative,Buffer.from(bytes.toString().replace('Chok','ChangedChok'))),/(?:ATTRIBUTION|PROJECT)_CANDIDATE_PIN/);}console.log(JSON.stringify({exactInverseFiles:Object.keys(DELTA),outsideDeltaControlsRejected:4,historicalAssertionsPreserved:true}));}

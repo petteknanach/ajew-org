@@ -3,7 +3,13 @@
 const assert=require('node:assert/strict'),{createHash}=require('node:crypto');
 const DELTA=require('./chok-reference-order-delta.json');
 const sha=b=>createHash('sha256').update(b).digest('hex');
+function currentReference(relative,bytes){
+ if(relative!=='src/pages/reader/chok.astro'||sha(bytes)!=='e64a0357cb610931e31b741e53c313687240e65d324bbcfdb250ebec278bf5c5')return bytes;
+ const restored=require('./chok-today-classical-admission.cjs').restore(require('node:path').resolve(__dirname,'..'),relative,bytes);
+ assert.equal(sha(restored),DELTA[relative].afterSHA256,'TODAY_REFERENCE_EXACT_INVERSE');return restored;
+}
 function restoreReference(relative,bytes){
+ bytes=currentReference(relative,bytes);
  const d=DELTA[relative];if(!d)return bytes;
  if(sha(bytes)===d.beforeSHA256)return bytes;
  assert.equal(sha(bytes),d.afterSHA256,'REFERENCE_CANDIDATE_PIN:'+relative);
@@ -15,7 +21,7 @@ module.exports={DELTA,restoreReference};
 if(require.main===module){
  const fs=require('node:fs'),path=require('node:path');
  for(const [relative,d]of Object.entries(DELTA)){
-  const b=fs.readFileSync(path.resolve(__dirname,'..',relative));assert.equal(sha(b),d.afterSHA256,'REQUIRED_CURRENT_REFERENCE_SUCCESSOR:'+relative);
+  const b=currentReference(relative,fs.readFileSync(path.resolve(__dirname,'..',relative)));assert.equal(sha(b),d.afterSHA256,'REQUIRED_CURRENT_REFERENCE_SUCCESSOR:'+relative);
   const restored=restoreReference(relative,b);assert.equal(sha(restored),d.beforeSHA256);assert.deepEqual(restoreReference(relative,restored),restored);
   assert.throws(()=>restoreReference(relative,Buffer.concat([b,Buffer.from(' ')])),/REFERENCE_CANDIDATE_PIN/);
   const bad=Buffer.from(b);bad[Math.floor(bad.length/2)]^=1;assert.throws(()=>restoreReference(relative,bad),/REFERENCE_CANDIDATE_PIN/);

@@ -253,14 +253,14 @@
       s.units.filter(function (u) { return u.role === 'gemara'; }).forEach(function (u) { html += show(u.owner); });
       if (plan.prescribedRashi.length) html += '<section data-reading-role="prescribed-rashi"><h4>רש״י · Rashi</h4>' + plan.prescribedRashi.map(show).join('') + '</section>';
       if (options.commentary && options.optionalRashi && plan.optionalRashi.length) html += '<details data-reading-role="optional-rashi"><summary>רש״י נוסף · Additional Rashi</summary>' + plan.optionalRashi.map(show).join('') + '</details>';
-    } else s.units.forEach(function (u) { html += show(u.owner); });
+    } else s.units.forEach(function (u) { html += show(u.owner) + ((section === 'halacha' || section === 'mussar') ? mandatory([u]) : ''); });
     var controls = LANGUAGES.map(function (l, i) {
       return '<button type="button" data-ck-daily-language="' + l + '" aria-pressed="' + (l === lang) + '">' + ['עברית', 'English + original', 'עברית + English', 'מקור ללא שינוי · Untouched original'][i] + '</button>';
     }).join('');
     // Deliberately not ck-source-island/ck-he/ck-en/ck-explanation: the existing
     // global applyLanguages consumer and original-mode CSS must not own this island.
     // Study notes remain outside optional source disclosures; legal credits have their own panel.
-    return '<div class="ck-qualified-daily" data-qualified-daily="' + esc(expected.key) + '" data-daily-section="' + section + '" data-daily-language="' + lang + '" data-daily-commentary="' + (options.commentary ? 'on' : 'off') + '"><header><h3>' + esc(plan.title.he) + ' · ' + esc(plan.title.en) + '</h3><div role="group" aria-label="Source language">' + controls + '</div></header>' + html + (section === 'mishna' ? '' : mandatory(s.units)) + sourceCredits(s.units) + '</div>';
+    return '<div class="ck-qualified-daily" data-qualified-daily="' + esc(expected.key) + '" data-daily-section="' + section + '" data-daily-language="' + lang + '" data-daily-commentary="' + (options.commentary ? 'on' : 'off') + '"><header><h3>' + esc(plan.title.he) + ' · ' + esc(plan.title.en) + '</h3><div role="group" aria-label="Source language">' + controls + '</div></header>' + html + (['mishna', 'halacha', 'mussar'].indexOf(section) >= 0 ? '' : mandatory(s.units)) + sourceCredits(s.units) + '</div>';
   }
   function setLanguage(island, language) {
     if (LANGUAGES.indexOf(language) < 0) fail('invalid language');
