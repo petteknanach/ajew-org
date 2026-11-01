@@ -40,7 +40,7 @@ const pageTitle = torahData
 const pageDesc = torahData
   ? (() => {
     const snippet = (torahData.segments?.find(s => s.en)?.en || '').replace(/<[^>]+>/g, '').slice(0, 120);
-    return `Read ${torahData.title} from Biur HaLikutim online free. ${snippet ? snippet + '...' : 'Hebrew text with English translation on ajew.org.'}`;
+    return `Read ${torahData.title} from Biur HaLikutim online free. ${snippet ? snippet + '...' : 'Hebrew text on ajew.org.'}`;
   })()
   : '';
 
