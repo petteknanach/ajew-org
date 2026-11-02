@@ -9,7 +9,8 @@ export function getStaticPaths() {
   const paths = [];
   for (const entry of manifest.entries || []) {
     for (const img of entry.images || []) {
-      const slug = path.basename(img.path || img.archive_filename || '').replace(/\.[^.]+$/, '');
+      // Keep an existing shared URL when its image receives a cache-safe new filename.
+      const slug = img.share_slug || path.basename(img.path || img.archive_filename || '').replace(/\.[^.]+$/, '');
       if (!slug) continue;
       paths.push({ params: { slug }, props: { entry, img, slug } });
     }

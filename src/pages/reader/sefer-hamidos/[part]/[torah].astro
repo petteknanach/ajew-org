@@ -142,7 +142,7 @@ const mediaOverviewItems = Array.from(mediaBySegment.entries()).flatMap(([segmen
   (entry.images || []).map((img) => ({ segmentIndex, segment: segmentByIndex.get(segmentIndex), img }))
 );
 function mediaSlug(img) {
-  return path.basename(img.path || img.archive_filename || '').replace(/\.[^.]+$/, '');
+  return img.share_slug || path.basename(img.path || img.archive_filename || '').replace(/\.[^.]+$/, '');
 }
 function mediaShareUrl(img) {
   const slug = mediaSlug(img);
