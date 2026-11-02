@@ -1,9 +1,12 @@
 ---
 // Compact Yahrzeit Display for Top Left Corner
 // Always visible — shows today/tomorrow yahrzeits, or the next upcoming significant date
+// Only these discovery hubs opt into mobile expanded-calendar flow.
+const calendarHubPaths = ["/", "/reader", "/reader/", "/resources", "/resources/"];
+const isCalendarHub = calendarHubPaths.includes(Astro.url.pathname);
 ---
 
-<div class="compact-yahrzeit collapsed" id="compactYahrzeit" style="display: none;">
+<div class:list={["compact-yahrzeit collapsed", { "hub-yahrzeit": isCalendarHub }]} id="compactYahrzeit" style="display: none;">
   <!-- Close button - dismisses the box entirely (stored in localStorage) -->
   <button class="close-btn" id="yahrzeitCloseBtn" aria-label="Close yahrzeit box" title="Dismiss">×</button>
   <!-- Toggle button for mobile - shows icon when collapsed -->
@@ -660,7 +663,20 @@
     const collapsed = box.classList.toggle('collapsed');
     const toggle = document.getElementById('yahrzeitToggleBtn');
     toggle.setAttribute('aria-expanded', String(!collapsed));
-    (collapsed ? toggle : document.getElementById('yahrzeitCloseBtn')).focus({ preventScroll: true });
+    if (!collapsed && box.classList.contains('hub-yahrzeit') && window.matchMedia('screen and (max-width: 768px)').matches) {
+      // The hub host moves from a fixed trigger to flow before main.
+      // Reset its own scroller, then reveal below the real fixed header.
+      // Instant scrolling overrides Layout's smooth behavior; stay synchronous
+      // so no queued focus can survive collapse, dismissal or another action.
+      box.scrollTo({ top: 0, behavior: 'instant' });
+      const header = document.querySelector('header.mobile-header');
+      const headerBottom = Math.max(0, header?.getBoundingClientRect().bottom ?? 0);
+      const top = Math.max(0, window.scrollY + box.getBoundingClientRect().top - headerBottom - 8);
+      window.scrollTo({ top, behavior: 'instant' });
+      document.getElementById('yahrzeitCloseBtn').focus({ preventScroll: true });
+    } else {
+      (collapsed ? toggle : document.getElementById('yahrzeitCloseBtn')).focus({ preventScroll: true });
+    }
   }
 
   // Dismiss the yahrzeit box entirely — stores in localStorage
@@ -1124,6 +1140,29 @@
     max-height: 260px;
     overflow-y: auto;
     padding-top: 3.25rem;
+  }
+  /* Expanded hub dates occupy flow before main; collapsed placement is unchanged. */
+  @media screen and (max-width: 768px) {
+    .compact-yahrzeit.hub-yahrzeit:not(.collapsed) {
+      position: relative;
+      inset: auto;
+      flex-shrink: 0;
+      box-sizing: border-box;
+      width: calc(100% - 2rem);
+      max-width: 320px;
+      max-height: 320px;
+      max-height: min(50dvh, 320px);
+      margin: 64px auto 0;
+      padding-top: max(3.25rem, calc(44px + .5rem));
+      overflow-y: auto;
+      opacity: 1;
+      transition: none;
+    }
+    .compact-yahrzeit.hub-yahrzeit:not(.collapsed) .close-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+    }
   }
   /* Floating calendar chrome must not cover printed reading text. */
   @media print {

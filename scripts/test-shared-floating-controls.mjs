@@ -21,11 +21,21 @@ test('Date records, source lookup and rendered descriptions are byte-conserved',
 });
 
 test('Existing Reader/other-route interactions are preserved', () => {
+  // Invert only the four reviewed hub-only UI blocks for this legacy nonhub guard.
+  // Other six tests (including sacred-date/source checks) are deliberately untouched.
+  let conservedSource = source;
+  if (source.includes("const calendarHubPaths =")) {
+    const reviewedHubDelta = [{"after":"// Only these discovery hubs opt into mobile expanded-calendar flow.\nconst calendarHubPaths = [\"/\", \"/reader\", \"/reader/\", \"/resources\", \"/resources/\"];\nconst isCalendarHub = calendarHubPaths.includes(Astro.url.pathname);\n","before":""},{"after":"<div class:list={[\"compact-yahrzeit collapsed\", { \"hub-yahrzeit\": isCalendarHub }]} id=\"compactYahrzeit\" style=\"display: none;\">\n","before":"<div class=\"compact-yahrzeit collapsed\" id=\"compactYahrzeit\" style=\"display: none;\">\n"},{"after":"    if (!collapsed && box.classList.contains('hub-yahrzeit') && window.matchMedia('screen and (max-width: 768px)').matches) {\n      // The hub host moves from a fixed trigger to flow before main.\n      // Reset its own scroller, then reveal below the real fixed header.\n      // Instant scrolling overrides Layout's smooth behavior; stay synchronous\n      // so no queued focus can survive collapse, dismissal or another action.\n      box.scrollTo({ top: 0, behavior: 'instant' });\n      const header = document.querySelector('header.mobile-header');\n      const headerBottom = Math.max(0, header?.getBoundingClientRect().bottom ?? 0);\n      const top = Math.max(0, window.scrollY + box.getBoundingClientRect().top - headerBottom - 8);\n      window.scrollTo({ top, behavior: 'instant' });\n      document.getElementById('yahrzeitCloseBtn').focus({ preventScroll: true });\n    } else {\n      (collapsed ? toggle : document.getElementById('yahrzeitCloseBtn')).focus({ preventScroll: true });\n    }\n","before":"    (collapsed ? toggle : document.getElementById('yahrzeitCloseBtn')).focus({ preventScroll: true });\n"},{"after":"  /* Expanded hub dates occupy flow before main; collapsed placement is unchanged. */\n  @media screen and (max-width: 768px) {\n    .compact-yahrzeit.hub-yahrzeit:not(.collapsed) {\n      position: relative;\n      inset: auto;\n      flex-shrink: 0;\n      box-sizing: border-box;\n      width: calc(100% - 2rem);\n      max-width: 320px;\n      max-height: 320px;\n      max-height: min(50dvh, 320px);\n      margin: 64px auto 0;\n      padding-top: max(3.25rem, calc(44px + .5rem));\n      overflow-y: auto;\n      opacity: 1;\n      transition: none;\n    }\n    .compact-yahrzeit.hub-yahrzeit:not(.collapsed) .close-btn {\n      width: 44px;\n      height: 44px;\n      border-radius: 8px;\n    }\n  }\n","before":""}];
+    for (const {after, before} of reviewedHubDelta) {
+      assert.equal(conservedSource.split(after).length, 2, "Exactly one reviewed hub block may differ");
+      conservedSource = conservedSource.replace(after, before);
+    }
+  }
   const interactions = text => text.slice(text.indexOf('  // Mobile toggle'), text.indexOf('</script>'));
-  assert.equal(interactions(source), interactions(baseline));
-  assert.equal(source.slice(0, source.indexOf('<script>')), baseline.slice(0, baseline.indexOf('<script>')));
+  assert.equal(interactions(conservedSource), interactions(baseline));
+  assert.equal(conservedSource.slice(0, conservedSource.indexOf('<script>')), baseline.slice(0, baseline.indexOf('<script>')));
   const styles = baseline.slice(baseline.indexOf('<style>'), baseline.indexOf('</style>'));
-  assert.ok(source.includes(styles), 'original styles remain byte-conserved; component-owned overrides follow');
+  assert.ok(conservedSource.includes(styles), 'original styles remain byte-conserved; component-owned overrides follow');
 });
 
 test('Lens dates use opt-in header flow on success, timeout and error', () => {
