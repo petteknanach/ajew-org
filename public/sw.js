@@ -53,6 +53,19 @@ self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   if (url.pathname.startsWith('/api/')) return;
 
+  // The dynamic writer serves this script no-store; do not freeze it in SW cache.
+  // Preserve existing cached copy-link behavior only as an offline fallback.
+  if (url.origin === self.location.origin && url.pathname === '/blog/write/share.js') {
+    event.respondWith(
+      fetch(event.request, { cache: 'no-store' }).catch(async () =>
+        (await caches.match(event.request)) || new Response('', {
+          status: 503, headers: { 'Content-Type': 'application/javascript' }
+        })
+      )
+    );
+    return;
+  }
+
   // Calendar metadata can be corrected at runtime. Revalidate it online instead
   // of retaining a browser/worker copy of an unsupported yahrzeit indefinitely.
   if (url.origin === self.location.origin && [

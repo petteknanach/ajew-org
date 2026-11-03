@@ -1,9 +1,10 @@
 # Exact-post Yom Kippur browser enrichment candidate
 
-Scope: only `ops/blog-writer/static/share.js` is executable source. Its original
-327-byte copy-link handler is retained verbatim. This candidate is not published,
-merged, or deployed. No SQLite/English source changes, service restart, nginx
-reload, or remote writes are part of it.
+Executable scope: `ops/blog-writer/static/share.js` and the single-asset cache
+exception in `public/sw.js`. The original 327-byte copy-link handler is retained
+verbatim. No SQLite/English source changes or service restarts are required.
+The writer script is installed statically after review and merge; publish the
+service-worker correction through the unchanged canonical site deployer.
 
 ## Contract
 
@@ -61,3 +62,25 @@ and verification. Source review **and merge to main must precede any executable
 installation**. Static-only installation may use the existing per-request reader;
 do not invoke the restart/reload installer. No-JS and RSS remain English-only.
 The separate large-font Hebrew PDF is outside this source candidate.
+
+## Returning-browser cache correction
+
+The site service worker's generic cache-first JS branch can indefinitely retain
+an old `/blog/write/share.js`, even though the writer sends `Cache-Control:
+no-store`. Before that generic branch, the exact same-origin GET pathname now
+uses network fetch with `cache: 'no-store'`, falling back to its existing cached
+copy only on network failure. No cache name, core asset, cache deletion, reader
+policy, or browser preference is changed. An uncached offline miss returns an
+honest JavaScript 503; HTTP errors are not disguised as success.
+
+```sh
+node --test ops/blog-writer/tests/sw-writer-cache.test.cjs
+```
+
+The 17 native VM routing tests cover network precedence over an old cached
+writer script, query-bearing requests, offline fallback/miss, real HTTP errors,
+negative origins/paths/methods, and existing static/reader/calendar/HTML policies.
+A whole-byte inverse authenticates every pre-existing service-worker byte.
+Returning-reader acceptance additionally requires an ordinary reload in the
+same genuinely warmed browser profile after normal service-worker activation,
+with no storage clearing, response substitution, or worker/cache bypass.
