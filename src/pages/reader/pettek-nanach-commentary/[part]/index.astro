@@ -85,7 +85,7 @@ const part1Max = allLocalFiles.filter(f => /^torah-\d+\.json$/.test(f)).map(f =>
 const part2Max = allLocalFiles.filter(f => /^tinyana-\d+\.json$/.test(f)).map(f => parseInt(f.match(/^tinyana-(\d+)\.json/)[1])).reduce((a, b) => Math.max(a, b), 0);
 ---
 
-<Layout title={`Pettek Nanach Commentary — ${partTitle}`}>
+<Layout title={`Pettek Nanach Commentary — ${partTitle}`} description={`Browse ${count} available Pettek Nanach Commentary entries in ${partNum === 2 ? 'Part 2 (Tinyana)' : 'Part 1'}, with links to individual teachings${introSections.length > 0 ? ' and front matter' : ''} on ajew.org.`}>
   <div style="max-width: 900px; margin: 0 auto; padding: 40px 20px;">
     <div style="text-align: center; margin-bottom: 40px;">
       <h1 style="font-family: 'Cinzel', serif; font-size: 2em; color: #1e3a5f;">Pettek Nanach Commentary</h1>

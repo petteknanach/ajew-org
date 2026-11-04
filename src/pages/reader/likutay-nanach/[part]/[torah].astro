@@ -57,7 +57,7 @@ const pageTitle = torahData
   ? `${torahData.title} - ${volName} - Likutay Nanach`
   : 'Chapter Not Found';
 ---
-<Layout title={pageTitle} lang="he" hreflangs={['he']}>
+<Layout title={pageTitle} description={torahData ? `Read ${torahData.title} in Likutay Nanach, volume ${partNum}, chapter ${torahNum}. View the available source text on ajew.org.` : `Likutay Nanach, volume ${partNum}, chapter ${torahNum}: content not available.`} lang="he" hreflangs={['he']}>
   <main id="reader-container" data-book="likutay-nanach" data-part={part} data-torah={torah}>
     {error ? (
       <div class="error-message">
