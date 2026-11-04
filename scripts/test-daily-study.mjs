@@ -67,10 +67,10 @@ test('all readings and their order/URLs survive every supported year length with
   assert.equal(JSON.stringify(source), original);
 });
 
-async function boot({ delayed = false, saved = null } = {}) {
+async function boot({ delayed = false, saved = null, fetchOverride = null } = {}) {
   const elements = new Map();
   const element = id => {
-    if (!elements.has(id)) elements.set(id, { id, innerHTML: '', textContent: '', style: {}, hidden: false, value: '', handlers: {}, addEventListener(type, fn) { this.handlers[type] = fn; } });
+    if (!elements.has(id)) elements.set(id, { id, innerHTML: '', textContent: '', style: {}, hidden: false, value: '', handlers: {}, registrations: {}, addEventListener(type, fn) { this.handlers[type] = fn; this.registrations[type] = (this.registrations[type] || 0) + 1; } });
     return elements.get(id);
   };
   element('daily-study-references').textContent = JSON.stringify(references);
@@ -82,8 +82,9 @@ async function boot({ delayed = false, saved = null } = {}) {
   let tick = null;
   let release;
   const pending = new Promise(resolve => { release = resolve; });
-  const context = { ...calendar, document, window, Date: FrozenDate, setInterval: fn => { tick = fn; return 1; }, clearInterval: () => { tick = null; }, console, localStorage: { getItem: key => storage.get(key) ?? null, setItem: (key, value) => storage.set(key, value) }, fetch: async url => {
+  const context = { ...calendar, document, window, Date: FrozenDate, AbortController, setTimeout, clearTimeout, setInterval: fn => { tick = fn; return 1; }, clearInterval: () => { tick = null; }, console, localStorage: { getItem: key => storage.get(key) ?? null, setItem: (key, value) => storage.set(key, value) }, fetch: async (url, options) => {
     if (delayed) await pending;
+    if (fetchOverride) { const response = await fetchOverride(url, options); if (response) return response; }
     if (url === '/chok-breslov.json') return { ok: true, json: async () => JSON.parse(original) };
     if (url === '/lt-calendar-map.json') return { ok: true, json: async () => ({ dateMap: { 2: { 24: [{ part: 1, num: 7 }] } }, undated: [{ part: 1, num: 1 }] }) };
     throw new Error(`Unexpected URL ${url}`);
@@ -145,6 +146,89 @@ test('actual card references identify the teaching at their canonical destinatio
   assert.doesNotMatch(card, />Torah 59</);
   app.element('resetBtn').handlers.click();
   assert.match(app.element('portionsGrid').innerHTML, /הַקְדָּמָה/);
+});
+
+test('every assigned reading has its own link, including multi-reading bonus portions', async () => {
+  const annual = calendar.reschedule(source, 385);
+  const app = await boot();
+  const portion = annual.books.find(b => b.id === 'likutay-halachos').portions.find(p => p.sections.length > 1);
+  app.element('dayPicker').value = portion.day;
+  app.element('dayPicker').handlers.change.call(app.element('dayPicker'));
+  const card = app.element('portionsGrid').innerHTML.match(/<div class="book-card[^"]*" data-book="likutay-halachos"[\s\S]*?<div class="book-progress">/)[0];
+  assert.deepEqual([...card.matchAll(/href="([^"]+)"/g)].map(m => m[1]), portion.sections.map(s => s.url));
+  const bonus = annual.bonus.portions.find(p => p.sections.length > 1);
+  assert.ok(bonus);
+  app.element('dayPicker').value = bonus.day;
+  app.element('dayPicker').handlers.change.call(app.element('dayPicker'));
+  assert.deepEqual([...app.element('bonusContent').innerHTML.matchAll(/href="([^"]+)"/g)].map(m => m[1]), bonus.sections.map(s => s.url));
+});
+
+test('optional prayer-calendar failure never removes the daily library', async () => {
+  for (const fault of ['network', 'shape', 'nested']) {
+    const app = await boot({ fetchOverride: url => {
+      if (url !== '/lt-calendar-map.json') return;
+      if (fault === 'network') throw new Error('connection lost');
+      return { ok: true, json: async () => fault === 'nested' ? { dateMap: { 2: { 24: 'broken' } }, undated: [] } : { dateMap: null } };
+    } });
+    assert.ok(app.element('portionsGrid').innerHTML.includes('book-card'), fault);
+    assert.match(app.element('scheduleStatus').textContent, /date-based prayers/i);
+    assert.equal(app.element('retrySchedule').hidden, false);
+    assert.doesNotMatch(app.element('portionsGrid').innerHTML, /node scripts/);
+  }
+});
+
+test('failed schedule retries preserve selected day without duplicate handlers', async () => {
+  let fail = true;
+  const app = await boot({ fetchOverride: url => url === '/chok-breslov.json' && fail ? { ok: false, status: 503 } : undefined });
+  assert.match(template, /id="retrySchedule"/);
+  assert.equal(app.element('retrySchedule').hidden, false);
+  assert.doesNotMatch(app.element('portionsGrid').innerHTML, /node scripts/);
+  app.element('nextDay').handlers.click(); fail = false;
+  app.element('retrySchedule').handlers.click(); await app.settle();
+  assert.equal(app.element('dayNumber').textContent, 'Day 55 of 385');
+  assert.ok(app.element('portionsGrid').innerHTML.includes('book-card'));
+  assert.equal(app.element('retrySchedule').hidden, true);
+  assert.equal(app.element('nextDay').registrations.click, 1);
+});
+
+test('retry restores date-specific prayers after optional transport failure', async () => {
+  let fail = true;
+  const app = await boot({ fetchOverride: url => {
+    if (url === '/lt-calendar-map.json' && fail) throw new Error('offline');
+  } });
+  assert.equal(app.element('retrySchedule').hidden, false); fail = false;
+  app.element('retrySchedule').handlers.click(); await app.settle();
+  assert.match(app.element('portionsGrid').innerHTML, /href="\/reader\/likutay-tefilos\/1\/7"/);
+  assert.equal(app.element('scheduleStatus').hidden, true);
+  assert.equal(app.element('retrySchedule').hidden, true);
+});
+
+test('a portion crossing parts labels both parts instead of a reversed numeric range', async () => {
+  const ordinary = calendar.reschedule(source, 355);
+  const portion = ordinary.books.find(b => b.id === 'likutay-moharan').portions.find(p => p.sections[0].part !== p.sections.at(-1).part);
+  assert.ok(portion, 'real part-boundary portion');
+  const app = await boot();
+  app.setNow('2027-10-02T10:00:00Z'); app.element('todayBtn').handlers.click();
+  app.element('dayPicker').value = portion.day;
+  app.element('dayPicker').handlers.change.call(app.element('dayPicker'));
+  const card = app.element('portionsGrid').innerHTML.match(/<div class="book-card[^"]*" data-book="likutay-moharan"[\s\S]*?<div class="book-progress">/)[0];
+  assert.match(card, /Part 1, Torah 286/); assert.match(card, /Part 2, Torah 1/);
+  assert.doesNotMatch(card, /286–1/);
+});
+
+test('a hung schedule request is aborted and exposes a usable retry', async t => {
+  t.mock.timers.enable({ apis: ['setTimeout'] });
+  let aborted = false;
+  const app = await boot({ fetchOverride: (url, options) => {
+    if (url === '/chok-breslov.json') return new Promise((resolve, reject) => {
+      options.signal.addEventListener('abort', () => { aborted = true; reject(new Error('aborted')); }, { once: true });
+    });
+  } });
+  t.mock.timers.tick(15000); await app.settle();
+  assert.equal(aborted, true);
+  assert.equal(app.element('retrySchedule').hidden, false);
+  assert.equal(app.element('retrySchedule').disabled, false);
+  assert.match(app.element('scheduleStatus').textContent, /could not load/i);
 });
 
 test('a page left open advances at sunset without hijacking a browsed day', async () => {

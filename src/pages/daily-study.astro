@@ -68,6 +68,9 @@ const referenceMapJSON = JSON.stringify(buildKitzurReferenceMap(process.cwd())).
       <div id="dateLettersContent"></div>
     </section>
 
+    <p id="scheduleStatus" role="status" aria-live="polite" hidden></p>
+    <button id="retrySchedule" class="chok-nav-btn" type="button" hidden>Retry loading readings</button>
+
     <!-- Today's Portions -->
     <section class="chok-portions" id="portionsGrid">
       <p class="loading-msg">Loading daily study schedule...</p>
@@ -87,6 +90,8 @@ const referenceMapJSON = JSON.stringify(buildKitzurReferenceMap(process.cwd())).
      All hooks (ids/classes) preserved; JS-generated markup styled
      globally under .chok-container.
      ═════════════════════════════════════════════════════════════ */
+  .chok-container #retrySchedule[hidden] { display: none; }
+  .chok-container .reading-links { display: flex; flex-wrap: wrap; gap: .5rem; }
   .chok-container {
     --font-he: 'Noto Serif Hebrew', 'David Libre', 'Frank Ruhl Libre', serif;
     --font-en: 'EB Garamond', Georgia, 'Times New Roman', serif;
@@ -275,6 +280,27 @@ const referenceMapJSON = JSON.stringify(buildKitzurReferenceMap(process.cwd())).
 
     // === Rendering ===
 
+    function readingReference(book, section) {
+      if (sourceReferences[section.url]) return sourceReferences[section.url];
+      const multipleParts = book.portions.some(portion => portion.sections.some(s => s.part !== section.part));
+      return (multipleParts ? 'Part ' + section.part + ', ' : '') + book.sectionLabel + ' ' + section.num;
+    }
+    function portionReference(book, sections) {
+      const first = sections[0], last = sections[sections.length - 1];
+      if (sections.length === 1) return readingReference(book, first);
+      if (book.id === 'kitzur-likutay-moharan' || first.part !== last.part) {
+        return sections.map(section => readingReference(book, section)).join(' · ');
+      }
+      return readingReference(book, first) + '–' + last.num;
+    }
+    function readingLinks(book, sections) {
+      return '<div class="reading-links">' + sections.map(section => {
+        const label = readingReference(book, section);
+        return '<a href="' + escapeHTML(section.url) + '" class="read-link" aria-label="' + escapeHTML('Read ' + book.title + ', ' + label) + '">' +
+          (sections.length === 1 ? 'Read' : escapeHTML(label)) + ' \u2192</a>';
+      }).join(' ') + '</div>';
+    }
+
     function renderBookCard(book, day) {
       const prayers = book.id === 'likutay-tefilos' ? getLtPrayerForDay(day) : null;
       const portion = prayers ? { sections: prayers } : book.portions[day - 1];
@@ -282,19 +308,7 @@ const referenceMapJSON = JSON.stringify(buildKitzurReferenceMap(process.cwd())).
 
       const isDone = isBookDoneForDay(book.id, day);
       const sections = portion.sections;
-      const firstSection = sections[0];
-      const lastSection = sections[sections.length - 1];
-
-      let ref;
-      if (sections.length === 1) {
-        ref = book.sectionLabel + ' ' + firstSection.num;
-      } else {
-        ref = book.sectionLabel + ' ' + firstSection.num + '–' + lastSection.num;
-      }
-
-      if (book.id === 'kitzur-likutay-moharan') {
-        ref = sections.map(section => sourceReferences[section.url]).join(' · ');
-      }
+      const ref = portionReference(book, sections);
 
       // Calculate book-level completion
       const store = getStorage();
@@ -317,7 +331,7 @@ const referenceMapJSON = JSON.stringify(buildKitzurReferenceMap(process.cwd())).
           '</button>' +
         '</div>' +
         '<p class="section-ref" dir="auto">' + escapeHTML(ref) + '</p>' +
-        '<a href="' + firstSection.url + '" class="read-link">Read \u2192</a>' +
+        readingLinks(book, sections) +
         '<div class="book-progress">' +
           bookPercent + '% of year completed' +
           '<div class="book-progress-bar"><div class="book-progress-fill" style="width:' + bookPercent + '%"></div></div>' +
@@ -365,11 +379,7 @@ const referenceMapJSON = JSON.stringify(buildKitzurReferenceMap(process.cwd())).
 
       document.getElementById('bonusSection').style.display = 'block';
       const sections = portion.sections;
-      const first = sections[0];
-      const last = sections[sections.length - 1];
-      let ref = sections.length === 1
-        ? bonus.sectionLabel + ' ' + first.num
-        : bonus.sectionLabel + ' ' + first.num + '–' + last.num;
+      const ref = portionReference(bonus, sections);
 
       document.getElementById('bonusContent').innerHTML =
         '<div class="book-card" data-book="' + bonus.id + '" data-day="' + day + '">' +
@@ -382,8 +392,8 @@ const referenceMapJSON = JSON.stringify(buildKitzurReferenceMap(process.cwd())).
               (isBookDoneForDay(bonus.id, day) ? '\u2713' : '') +
             '</button>' +
           '</div>' +
-          '<p class="section-ref">' + ref + ' (Part ' + first.part + ')</p>' +
-          '<a href="' + first.url + '" class="read-link">Read \u2192</a>' +
+          '<p class="section-ref" dir="auto">' + escapeHTML(ref) + '</p>' +
+          readingLinks(bonus, sections) +
         '</div>';
     }
 
@@ -493,27 +503,60 @@ const referenceMapJSON = JSON.stringify(buildKitzurReferenceMap(process.cwd())).
 
     // === Init ===
 
-    async function init() {
-      setupEvents();
-      renderAll(); // initial render with loading state
-
+    let loadingSchedule = false;
+    async function fetchStudyJSON(url) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 15000);
       try {
-        const [chokResp, ltResp] = await Promise.all([
-          fetch('/chok-breslov.json'),
-          fetch('/lt-calendar-map.json')
+        const response = await fetch(url, { signal: controller.signal });
+        if (!response.ok) throw new Error('Daily reading HTTP ' + response.status);
+        return await response.json();
+      } finally { clearTimeout(timer); }
+    }
+    function validPrayerCalendar(map) {
+      const object = value => value && typeof value === 'object' && !Array.isArray(value);
+      const prayer = value => object(value) && [1, 2].includes(value.part) && Number.isInteger(value.num) && value.num >= 0;
+      return object(map) && object(map.dateMap) && Array.isArray(map.undated) && map.undated.every(prayer) &&
+        Object.values(map.dateMap).every(month => object(month) && Object.values(month).every(day => Array.isArray(day) && day.every(prayer)));
+    }
+    async function loadSchedule() {
+      if (loadingSchedule) return;
+      loadingSchedule = true;
+      const status = document.getElementById('scheduleStatus');
+      const retry = document.getElementById('retrySchedule');
+      retry.disabled = true;
+      status.hidden = false;
+      status.textContent = 'Loading daily readings…';
+      try {
+        const [schedule, prayerCalendar] = await Promise.allSettled([
+          fetchStudyJSON('/chok-breslov.json'),
+          fetchStudyJSON('/lt-calendar-map.json')
         ]);
-        if (!chokResp.ok) throw new Error('Could not load schedule');
-        sourceSchedule = await chokResp.json();
-        chokData = reschedule(sourceSchedule, DAYS_IN_YEAR);
-        if (ltResp.ok) ltCalendarMap = await ltResp.json();
-      } catch(e) {
-        document.getElementById('portionsGrid').innerHTML =
-          '<p class="loading-msg">Could not load daily study schedule. Please run: <code>node scripts/build-chok-breslov.cjs</code></p>';
-        return;
+        if (schedule.status !== 'fulfilled') throw schedule.reason;
+        const next = reschedule(schedule.value, DAYS_IN_YEAR);
+        sourceSchedule = schedule.value;
+        chokData = next;
+        const map = prayerCalendar.status === 'fulfilled' ? prayerCalendar.value : null;
+        ltCalendarMap = validPrayerCalendar(map) ? map : null;
+        status.hidden = !!ltCalendarMap;
+        status.textContent = ltCalendarMap ? '' : 'Date-based prayers could not be loaded. The regular scheduled prayers are shown; the other readings remain available.';
+        retry.hidden = !!ltCalendarMap;
+        renderAll();
+      } catch {
+        status.hidden = false;
+        status.textContent = chokData ? 'Could not refresh the schedule. Previously loaded readings remain available.' : 'Could not load the daily readings. Try loading them again.';
+        retry.hidden = false;
+        if (!chokData) document.getElementById('portionsGrid').innerHTML = '';
+      } finally {
+        loadingSchedule = false;
+        retry.disabled = false;
       }
-
-      // Dated prayers are selected from the actual displayed Hebrew date in renderBookCard.
+    }
+    function init() {
+      setupEvents();
+      document.getElementById('retrySchedule').addEventListener('click', loadSchedule);
       renderAll();
+      loadSchedule();
     }
 
     // A page left open across sunset follows Today, but never overwrites a browsed date.
