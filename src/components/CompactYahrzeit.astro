@@ -704,9 +704,9 @@ const isCalendarHub = calendarHubPaths.includes(Astro.url.pathname);
   }
   .compact-yahrzeit * { color: inherit; }
   .compact-yahrzeit .section-title { color: #92400e; }
-  .compact-yahrzeit .tzaddik-name { color: #1a1a1a; }
-  .compact-yahrzeit .tzaddik-hebrew { color: #333; }
-  .compact-yahrzeit .event-description { color: #065f46; }
+  .compact-yahrzeit :global(.tzaddik-name) { color: #1a1a1a; }
+  .compact-yahrzeit :global(.tzaddik-hebrew) { color: #333; }
+  .compact-yahrzeit :global(.event-description) { color: #065f46; }
 
   /* On small mobile, shrink below the header and clear the bottom controls. */
   @media (max-width: 480px) {
@@ -773,8 +773,12 @@ const isCalendarHub = calendarHubPaths.includes(Astro.url.pathname);
     gap: 0.25rem;
   }
 
-  .tzaddik-link {
+  /* Runtime-created rows have no Astro scope attribute. */
+  .compact-yahrzeit :global(.tzaddik-link) {
     display: flex;
+    gap: 0.125rem;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
     flex-direction: column;
     padding: 0.25rem 0.375rem;
     background: #fff;
@@ -784,51 +788,51 @@ const isCalendarHub = calendarHubPaths.includes(Astro.url.pathname);
     transition: all 0.2s;
   }
 
-  .tzaddik-link:hover {
+  .compact-yahrzeit :global(.tzaddik-link:hover) {
     background: #fef3c7;
     transform: translateX(2px);
   }
 
-  .tzaddik-name {
-    font-size: 0.8rem;
+  .compact-yahrzeit :global(.tzaddik-name) {
+    font-size: 0.875rem;
     font-weight: 600;
     color: #111;
   }
 
-  .tzaddik-hebrew {
-    font-size: 0.75rem;
+  .compact-yahrzeit :global(.tzaddik-hebrew) {
+    font-size: 0.875rem;
     color: #333;
     margin-top: 0.125rem;
   }
 
-  .upcoming-event {
+  .compact-yahrzeit :global(.upcoming-event) {
     border-left-color: #10b981;
   }
 
-  .upcoming-event:hover {
+  .compact-yahrzeit :global(.upcoming-event:hover) {
     background: #f0fdf4;
   }
 
-  .next-big-date {
+  .compact-yahrzeit :global(.next-big-date) {
     border-left-color: #6366f1;
     background: #f5f3ff;
   }
 
-  .next-big-date:hover {
+  .compact-yahrzeit :global(.next-big-date:hover) {
     background: #ede9fe;
   }
 
-  .event-description {
-    font-size: 0.65rem;
-    color: #059669;
+  .compact-yahrzeit :global(.event-description) {
+    font-size: 0.8125rem;
+    color: #065f46;
     font-style: italic;
     margin-top: 0.125rem;
   }
 
-  .countdown-badge {
-    font-size: 0.6rem;
+  .compact-yahrzeit :global(.countdown-badge) {
+    font-size: 0.75rem;
     font-weight: 600;
-    color: #6366f1;
+    color: #4338ca;
     background: #eef2ff;
     padding: 0.125rem 0.375rem;
     border-radius: 3px;
@@ -837,16 +841,16 @@ const isCalendarHub = calendarHubPaths.includes(Astro.url.pathname);
     margin-top: 0.125rem;
   }
 
-  .event-type {
-    font-size: 0.6rem;
+  .compact-yahrzeit :global(.event-type) {
+    font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin-top: 0.125rem;
   }
 
-  .birth-badge {
-    color: #10b981;
+  .compact-yahrzeit :global(.birth-badge) {
+    color: #047857;
     background: #f0fdf4;
     padding: 0.125rem 0.375rem;
     border-radius: 3px;
@@ -854,7 +858,7 @@ const isCalendarHub = calendarHubPaths.includes(Astro.url.pathname);
     align-self: flex-start;
   }
 
-  .special-badge {
+  .compact-yahrzeit :global(.special-badge) {
     color: #7c3aed;
     background: #f5f3ff;
     padding: 0.125rem 0.375rem;
@@ -863,7 +867,7 @@ const isCalendarHub = calendarHubPaths.includes(Astro.url.pathname);
     align-self: flex-start;
   }
 
-  .yahrzeit-badge {
+  .compact-yahrzeit :global(.yahrzeit-badge) {
     color: #92400e;
     background: #fffbeb;
     padding: 0.125rem 0.375rem;
