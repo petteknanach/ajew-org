@@ -2,6 +2,9 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { test } from 'node:test';
 import vm from 'node:vm';
+import { createRequire } from 'node:module';
+const { buildKitzurReferenceMap } = createRequire(import.meta.url)('../src/lib/daily-study-references.cjs');
+const references = buildKitzurReferenceMap();
 import * as calendar from '../public/daily-study-calendar.mjs';
 
 const source = JSON.parse(await readFile(new URL('../public/chok-breslov.json', import.meta.url)));
@@ -70,6 +73,7 @@ async function boot({ delayed = false, saved = null } = {}) {
     if (!elements.has(id)) elements.set(id, { id, innerHTML: '', textContent: '', style: {}, hidden: false, value: '', handlers: {}, addEventListener(type, fn) { this.handlers[type] = fn; } });
     return elements.get(id);
   };
+  element('daily-study-references').textContent = JSON.stringify(references);
   const storage = new Map(saved ? [['chok-breslov', JSON.stringify(saved)]] : []);
   const document = { readyState: 'complete', handlers: {}, getElementById: element, addEventListener(type, fn) { this.handlers[type] = fn; } };
   let now = '2026-11-04T04:49:32Z';
@@ -129,6 +133,18 @@ test('late schedule completion retains navigation intent and year boundaries res
   assert.equal(app.element('dayNumber').textContent, 'Day 1 of 355');
   app.element('todayBtn').handlers.click();
   assert.equal(app.element('dayNumber').textContent, 'Day 54 of 385');
+});
+
+test('actual card references identify the teaching at their canonical destination', async () => {
+  const app = await boot();
+  app.element('dayPicker').value = 59;
+  app.element('dayPicker').handlers.change.call(app.element('dayPicker'));
+  const card = app.element('portionsGrid').innerHTML.match(/<div class="book-card[^"]*" data-book="kitzur-likutay-moharan"[\s\S]*?<div class="book-progress">/)[0];
+  assert.match(card, /Part 1, Torah 56/);
+  assert.match(card, /href="\/reader\/kitzur-likutay-moharan\/1\/59"/);
+  assert.doesNotMatch(card, />Torah 59</);
+  app.element('resetBtn').handlers.click();
+  assert.match(app.element('portionsGrid').innerHTML, /הַקְדָּמָה/);
 });
 
 test('a page left open advances at sunset without hijacking a browsed day', async () => {

@@ -1,5 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { buildKitzurReferenceMap } from '../lib/daily-study-references.cjs';
+const referenceMapJSON = JSON.stringify(buildKitzurReferenceMap(process.cwd())).replace(/</g, '\\u003c');
 ---
 
 <Layout title="Chok Breslov - Daily Torah Study Schedule" description="Complete the entire Breslov library in one year with daily Torah study portions. Likutay Moharan, Likutay Halachos, Sichos HaRan, Likutay Tefilos, and more. Track your progress day by day." breadcrumbs={[{name: "Home", url: "https://ajew.org"}, {name: "Daily Study", url: "https://ajew.org/daily-study"}]} jsonLd={{
@@ -189,10 +191,13 @@ import Layout from '../layouts/Layout.astro';
   }
 </style>
 
+  <script type="application/json" id="daily-study-references" set:html={referenceMapJSON} />
   <script type="module" is:inline>
   import { todayStudy, studyDate, studyYear, displayStudyDate, calendarMonthDay, reschedule, moveDay } from "/daily-study-calendar.mjs?v=20261104-1";
   (function() {
     'use strict';
+    const sourceReferences = JSON.parse(document.getElementById('daily-study-references').textContent || '{}');
+    const escapeHTML = value => String(value).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
     // === Hebrew Calendar Utilities ===
     let calendar = todayStudy(new Date());
@@ -287,6 +292,10 @@ import Layout from '../layouts/Layout.astro';
         ref = book.sectionLabel + ' ' + firstSection.num + '–' + lastSection.num;
       }
 
+      if (book.id === 'kitzur-likutay-moharan') {
+        ref = sections.map(section => sourceReferences[section.url]).join(' · ');
+      }
+
       // Calculate book-level completion
       const store = getStorage();
       let bookDaysCompleted = 0;
@@ -307,7 +316,7 @@ import Layout from '../layouts/Layout.astro';
             (isDone ? '\u2713' : '') +
           '</button>' +
         '</div>' +
-        '<p class="section-ref">' + ref + '</p>' +
+        '<p class="section-ref" dir="auto">' + escapeHTML(ref) + '</p>' +
         '<a href="' + firstSection.url + '" class="read-link">Read \u2192</a>' +
         '<div class="book-progress">' +
           bookPercent + '% of year completed' +
