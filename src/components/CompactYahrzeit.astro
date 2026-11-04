@@ -49,6 +49,7 @@ const isCalendarHub = calendarHubPaths.includes(Astro.url.pathname);
 </div>
 
 <script>
+  import { calendarDateISO, hebrewDaysUntil } from '../lib/shared-hebrew-calendar.mjs';
   // Hebrew month names mapping (matching Hebcal API output)
   const hebrewMonths = {
     1: 'Nisan', 2: 'Iyyar', 3: 'Sivan', 4: 'Tamuz',
@@ -260,9 +261,9 @@ const isCalendarHub = calendarHubPaths.includes(Astro.url.pathname);
 
   let tzaddikimDatabase = [];
 
-  // Fetch Hebrew date from Hebcal API (per-day sessionStorage cache)
-  async function getHebrewDate(date = new Date()) {
-    const dateStr = date.toISOString().split('T')[0];
+  // Cache by the actual Israel/sunset date, including tomorrow's offset.
+  async function getHebrewDate(date = new Date(), offset = 0) {
+    const dateStr = calendarDateISO(date, offset);
     const cacheKey = 'ajew-hebcal-g2h-' + dateStr;
     try {
       const cached = sessionStorage.getItem(cacheKey);
@@ -348,58 +349,21 @@ const isCalendarHub = calendarHubPaths.includes(Astro.url.pathname);
     });
   }
 
-  // Month order for calculating upcoming dates across month boundaries
-  const monthOrder = ['Nisan', 'Iyyar', 'Sivan', 'Tamuz', 'Av', 'Elul',
-    'Tishrei', 'Cheshvan', 'Kislev', 'Tevet', "Sh'vat", 'Adar', 'Adar II'];
-  const daysInMonth = { 'Nisan': 30, 'Iyyar': 29, 'Sivan': 30, 'Tamuz': 29,
-    'Av': 30, 'Elul': 29, 'Tishrei': 30, 'Cheshvan': 29, 'Kislev': 30,
-    'Tevet': 29, "Sh'vat": 30, 'Adar': 29, 'Adar II': 29 };
-
-  // Calculate days between two Hebrew dates (approximate, using month order)
-  function calcDaysUntil(fromMonth, fromDay, toMonth, toDay) {
-    const normFrom = normalizeMonth(fromMonth);
-    const normTo = normalizeMonth(toMonth);
-    const fromIdx = monthOrder.indexOf(normFrom);
-    const toIdx = monthOrder.indexOf(normTo);
-    if (fromIdx < 0 || toIdx < 0) return 999;
-
-    let days = 0;
-    if (fromIdx === toIdx) {
-      // Same month
-      days = toDay - fromDay;
-      if (days <= 0) {
-        // Wrap around full year
-        days = (daysInMonth[normFrom] || 30) - fromDay;
-        for (let i = 1; i < monthOrder.length; i++) {
-          const mIdx = (fromIdx + i) % monthOrder.length;
-          if (mIdx === toIdx) {
-            days += toDay;
-            break;
-          }
-          days += daysInMonth[monthOrder[mIdx]] || 30;
-        }
-      }
-    } else {
-      // Different months - count forward
-      days = (daysInMonth[normFrom] || 30) - fromDay;
-      let curIdx = (fromIdx + 1) % monthOrder.length;
-      while (curIdx !== toIdx) {
-        days += daysInMonth[monthOrder[curIdx]] || 30;
-        curIdx = (curIdx + 1) % monthOrder.length;
-      }
-      days += toDay;
-    }
-    return days;
+  // Count real civil days in the supplied Hebrew year, not a fixed 13-month year.
+  function calcDaysUntil(fromMonth, fromDay, toMonth, toDay, year) {
+    const calendarMonth = month => month === 'Adar I' ? month :
+      normalizeMonth(month) === "Sh'vat" ? 'Shvat' : normalizeMonth(month);
+    return hebrewDaysUntil(year, calendarMonth(fromMonth), fromDay, calendarMonth(toMonth), toDay);
   }
 
   // Find the NEXT upcoming important date (searches entire year, returns closest)
   // maxDays parameter: if > 0, also returns dates within that window (for "within 7 days" display)
-  function findNextImportantDate(todayMonth, todayDay) {
+  function findNextImportantDate(todayMonth, todayDay, year) {
     let closest = null;
     let closestDays = 999;
 
     for (const date of importantDates) {
-      const days = calcDaysUntil(todayMonth, todayDay, date.month, date.day);
+      const days = calcDaysUntil(todayMonth, todayDay, date.month, date.day, year);
       if (days > 0 && days < closestDays) {
         // Prefer higher-priority dates if within same week, otherwise just closest
         closestDays = days;
@@ -415,10 +379,10 @@ const isCalendarHub = calendarHubPaths.includes(Astro.url.pathname);
   }
 
   // Find all important dates within N days (for the "upcoming within 7 days" section)
-  function findUpcomingImportantDates(todayMonth, todayDay, maxDays = 7) {
+  function findUpcomingImportantDates(todayMonth, todayDay, maxDays = 7, year) {
     const upcoming = [];
     for (const date of importantDates) {
-      const days = calcDaysUntil(todayMonth, todayDay, date.month, date.day);
+      const days = calcDaysUntil(todayMonth, todayDay, date.month, date.day, year);
       if (days > 0 && days <= maxDays) {
         upcoming.push({
           ...date,
@@ -536,12 +500,10 @@ const isCalendarHub = calendarHubPaths.includes(Astro.url.pathname);
       await loadDatabase();
 
       const today = new Date();
-      const tomorrow = new Date(today);
-      tomorrow.setDate(tomorrow.getDate() + 1);
 
       // Both Hebrew-date lookups run in parallel; each is cached per day in
       // sessionStorage so repeat navigations skip the third-party call.
-      const [todayHeb, tomorrowHeb] = await Promise.all([getHebrewDate(today), getHebrewDate(tomorrow)]);
+      const [todayHeb, tomorrowHeb] = await Promise.all([getHebrewDate(today), getHebrewDate(today, 1)]);
       clearTimeout(timeout);
 
       // Find yahrzeits for today and tomorrow
@@ -553,7 +515,7 @@ const isCalendarHub = calendarHubPaths.includes(Astro.url.pathname);
       tomorrowImportant = dedupeImportantAgainstDatabase(tomorrowImportant, tomorrowYahrzeits);
       // Today and tomorrow already have dedicated sections. Excluding them here
       // prevents the same entry from appearing again under "Coming Up".
-      const upcomingWithin7 = findUpcomingImportantDates(todayHeb.month, todayHeb.day, 7)
+      const upcomingWithin7 = findUpcomingImportantDates(todayHeb.month, todayHeb.day, 7, todayHeb.year)
         .filter(evt => evt.daysUntil > 1);
 
       // Determine what to show
@@ -619,7 +581,7 @@ const isCalendarHub = calendarHubPaths.includes(Astro.url.pathname);
         document.getElementById('upcomingSection').style.display = 'block';
       } else if (!hasToday && !hasTomorrow) {
         // Nothing today/tomorrow/within 7 days — find the NEXT big date anywhere in the year
-        const next = findNextImportantDate(todayHeb.month, todayHeb.day);
+        const next = findNextImportantDate(todayHeb.month, todayHeb.day, todayHeb.year);
         if (next) {
           document.getElementById('upcomingLabel').textContent = '';
           const upcomingList = document.getElementById('upcomingList');

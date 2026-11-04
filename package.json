@@ -23,7 +23,7 @@
     "verify:kokhvei": "node scripts/verify-kokhvei-or-alignment.cjs",
     "verify:search": "node --test scripts/test-search-word-shards.mjs && python3 scripts/test-search-word-shards.py && node --test scripts/test-prayer-topic-passages.mjs scripts/test-search-boundaries.mjs scripts/test-reader-search-boundaries.mjs scripts/test-reader-arrival-scroll.mjs scripts/test-search-entry-redirect.mjs scripts/test-search-letter-priority.mjs scripts/test-search-jev-rerank-robustness.mjs scripts/test-search-doc-retry.mjs && node scripts/test-search-modes.mjs && node scripts/verify-search-regressions.cjs && python3 scripts/verify-saba-transcript-integration.py && python3 scripts/audit-reader-search-coverage.py",
     "verify:sichos-saba": "python3 scripts/verify-sichos-saba-full.py",
-    "verify:today-breslov": "node --max-old-space-size=192 --test --test-reporter=tap --test-concurrency=1 scripts/test-today-breslov.mjs scripts/test-today-breslov-review.mjs && python3 scripts/test-today-breslov-data.py",
+    "verify:today-breslov": "node --max-old-space-size=192 --test --test-reporter=tap --test-concurrency=1 scripts/test-today-breslov.mjs scripts/test-today-breslov-review.mjs scripts/test-shared-hebrew-calendar.mjs && python3 scripts/test-today-breslov-data.py",
     "verify:aitzoas362": "python3 scripts/qualified_aitzoas362_exports.py --verify",
     "verify:chok-reference-order": "node --max-old-space-size=128 scripts/chok-reference-order-conservation.cjs && node --max-old-space-size=128 scripts/verify-chok-reference-order.cjs",
     "verify:daily-study": "node --test scripts/test-daily-study.mjs scripts/test-daily-study-references.cjs",
