@@ -163,6 +163,16 @@ test('every assigned reading has its own link, including multi-reading bonus por
   assert.deepEqual([...app.element('bonusContent').innerHTML.matchAll(/href="([^"]+)"/g)].map(m => m[1]), bonus.sections.map(s => s.url));
 });
 
+test('the genuine dated-prayer map remains accepted and produces its actual scheduled links', async () => {
+  const actual = JSON.parse(await readFile(new URL('../public/lt-calendar-map.json', import.meta.url)));
+  const app = await boot({ fetchOverride: url => url === '/lt-calendar-map.json' ? { ok: true, json: async () => actual } : undefined });
+  assert.equal(app.element('scheduleStatus').hidden, true);
+  assert.equal(app.element('retrySchedule').hidden, true);
+  const expected = actual.dateMap[2]?.[24] || [actual.undated[54 % actual.undated.length]];
+  const card = app.element('portionsGrid').innerHTML.match(/<div class="book-card[^"]*" data-book="likutay-tefilos"[\s\S]*?<div class="book-progress">/)[0];
+  assert.deepEqual([...card.matchAll(/href="([^"]+)"/g)].map(m => m[1]), expected.map(p => `/reader/likutay-tefilos/${p.part}/${p.num}`));
+});
+
 test('optional prayer-calendar failure never removes the daily library', async () => {
   for (const fault of ['network', 'shape', 'nested']) {
     const app = await boot({ fetchOverride: url => {
