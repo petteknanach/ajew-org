@@ -65,6 +65,16 @@ const supplementPath = path.join(process.cwd(), 'public/reader/parsha-packets/no
 const sourceSupplement = partNum === 1 && torahNum === 2 && fs.existsSync(supplementPath)
   ? JSON.parse(fs.readFileSync(supplementPath, 'utf8')) : null;
 
+// Match legacy display-title spellings to the existing canonical parsha routes.
+const parshaTitleSlug = torahData?.title.split(' - ')[0].toLowerCase().replace(/[^a-z]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '') || null;
+const parshaPageAliases: Record<string, string> = {
+  'acharei-mos': 'acharei-mot', 'bechukosai': 'bechukotai',
+  'beha-aloscha': 'behaalotcha', 'chukas': 'chukat', 'ki-sisa': 'ki-tisa',
+  'matos': 'matot', 'shemos': 'shemot', 'va-eira': 'vaeira', 'yisro': 'yitro',
+};
+// Holiday PDFs have no independent route in the weekly-parsha catalogue.
+const parshaPageSlug = partNum === 6 || !parshaTitleSlug ? null : (parshaPageAliases[parshaTitleSlug] || parshaTitleSlug);
+
 const PART_NAMES: Record<number, {en: string, he: string}> = {
   1: { en: 'Bereishis', he: 'בראשית' },
   2: { en: 'Shemos', he: 'שמות' },
@@ -258,10 +268,12 @@ const structuredData = torahData ? JSON.stringify({
             <a href={torahData.pdfSource} target="_blank" style="color: var(--reader-link); font-family: 'Open Sans', sans-serif; font-size: 0.85em;">
               View Original PDF
             </a>
-            {' | '}
-            <a href={`/parsha/${torahData.title.split(' - ')[0].toLowerCase().replace(/[^a-z]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')}`} style="color: var(--reader-link); font-family: 'Open Sans', sans-serif; font-size: 0.85em;">
-              Parsha Page
-            </a>
+            {parshaPageSlug && <>
+              {' | '}
+              <a href={`/parsha/${parshaPageSlug}`} style="color: var(--reader-link); font-family: 'Open Sans', sans-serif; font-size: 0.85em;">
+                Parsha Page
+              </a>
+            </>}
           </p>
         )}
       </div>
