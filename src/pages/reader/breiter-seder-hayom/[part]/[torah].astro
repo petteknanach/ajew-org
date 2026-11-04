@@ -147,12 +147,12 @@ const breadcrumbData = torahData ? JSON.stringify({
 
       <div class="reader-nav">
         {torahNum > 1 ? (
-          <a href={torahNum > 1} data-dir="prev">&larr; Previous</a>
+          <a href={`/reader/breiter-seder-hayom/${partNum}/${torahNum - 1}/`} data-dir="prev">&larr; Previous</a>
         ) : <span class="disabled">&larr; Previous</span>}
         <a href={`/reader/breiter-seder-hayom/${partNum}`}>Book Index</a>
         <a href="/reader">All Books</a>
         {torahNum < 27 ? (
-          <a href={torahNum < 27} data-dir="next">Next &rarr;</a>
+          <a href={`/reader/breiter-seder-hayom/${partNum}/${torahNum + 1}/`} data-dir="next">Next &rarr;</a>
         ) : <span class="disabled">Next &rarr;</span>}
       </div>
 
@@ -191,12 +191,12 @@ const breadcrumbData = torahData ? JSON.stringify({
 
       <div class="reader-nav">
         {torahNum > 1 ? (
-          <a href={torahNum > 1} data-dir="prev">&larr; Previous</a>
+          <a href={`/reader/breiter-seder-hayom/${partNum}/${torahNum - 1}/`} data-dir="prev">&larr; Previous</a>
         ) : <span class="disabled">&larr; Previous</span>}
         <a href={`/reader/breiter-seder-hayom/${partNum}`}>Book Index</a>
         <a href="/reader">All Books</a>
         {torahNum < 27 ? (
-          <a href={torahNum < 27} data-dir="next">Next &rarr;</a>
+          <a href={`/reader/breiter-seder-hayom/${partNum}/${torahNum + 1}/`} data-dir="next">Next &rarr;</a>
         ) : <span class="disabled">Next &rarr;</span>}
       </div>
       {torahData && (
