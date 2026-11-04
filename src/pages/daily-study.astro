@@ -20,6 +20,7 @@ import Layout from '../layouts/Layout.astro';
         <span class="hebrew-date" id="hebrewDateDisplay">Loading...</span>
         <span class="day-number" id="dayNumber"></span>
       </div>
+      <p class="chok-boundary">Hebrew dates change at sunset (Israel).</p>
       <div class="chok-progress-bar">
         <div class="chok-progress-fill" id="progressFill"></div>
       </div>
@@ -40,6 +41,8 @@ import Layout from '../layouts/Layout.astro';
       </label>
       <button class="chok-nav-btn chok-small-btn" id="resetBtn" title="Start from Day 1">Reset to Day 1</button>
     </div>
+
+    <p id="legacyProgress" hidden>Earlier 354-day progress remains saved in this browser; completion below is tracked separately for each Hebrew year.</p>
 
     <!-- Stats bar -->
     <div class="chok-stats" id="statsBar">
@@ -186,79 +189,47 @@ import Layout from '../layouts/Layout.astro';
   }
 </style>
 
-  <script is:inline>
+  <script type="module" is:inline>
+  import { todayStudy, studyDate, studyYear, displayStudyDate, calendarMonthDay, reschedule, moveDay } from "/daily-study-calendar.mjs?v=20261104-1";
   (function() {
     'use strict';
 
     // === Hebrew Calendar Utilities ===
-
-    // Tishrei 1 of year 5786 falls on approximately September 22, 2025
-    const TISHREI_5786 = new Date(2025, 8, 22); // month is 0-indexed
-    // Tishrei 1 of year 5787 falls on approximately September 11, 2026
-    const TISHREI_5787 = new Date(2026, 8, 11);
-    const DAYS_IN_YEAR = 354;
-
-    const HEBREW_MONTHS = ['', 'תשרי', 'חשון', 'כסלו', 'טבת', 'שבט', 'אדר', 'ניסן', 'אייר', 'סיון', 'תמוז', 'אב', 'אלול'];
-    const MONTH_DAYS = [0, 30, 29, 30, 29, 30, 29, 30, 29, 30, 29, 30, 29];
-    const HEBREW_DAY_LETTERS = ['', 'א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט', 'י', 'יא', 'יב', 'יג', 'יד', 'טו', 'טז', 'יז', 'יח', 'יט', 'כ', 'כא', 'כב', 'כג', 'כד', 'כה', 'כו', 'כז', 'כח', 'כט', 'ל'];
-
-    function getDayOfYear(date) {
-      // Calculate which Jewish year we're in
-      let tishrei;
-      if (date >= TISHREI_5787) {
-        // Year 5787: offset from TISHREI_5787
-        tishrei = TISHREI_5787;
-      } else if (date >= TISHREI_5786) {
-        tishrei = TISHREI_5786;
-      } else {
-        // Before 5786, just use 5786 start and wrap
-        tishrei = TISHREI_5786;
-      }
-
-      const diffMs = date.getTime() - tishrei.getTime();
-      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-      // Wrap within 354 days (1-indexed)
-      let dayOfYear = (diffDays % DAYS_IN_YEAR) + 1;
-      if (dayOfYear <= 0) dayOfYear += DAYS_IN_YEAR;
-      return dayOfYear;
-    }
-
-    function dayOfYearToHebrewDate(doy) {
-      let remaining = doy;
-      for (let m = 1; m <= 12; m++) {
-        if (remaining <= MONTH_DAYS[m]) {
-          return HEBREW_DAY_LETTERS[remaining] + ' ' + HEBREW_MONTHS[m];
-        }
-        remaining -= MONTH_DAYS[m];
-      }
-      return doy + '';
-    }
-
-    function dayOfYearToMonthDay(doy) {
-      let remaining = doy;
-      for (let m = 1; m <= 12; m++) {
-        if (remaining <= MONTH_DAYS[m]) {
-          return { month: m, day: remaining };
-        }
-        remaining -= MONTH_DAYS[m];
-      }
-      return { month: 12, day: 29 };
+    let calendar = todayStudy(new Date());
+    let DAYS_IN_YEAR = calendar.days;
+    let sourceSchedule = null;
+    let followingToday = true;
+    function dayOfYearToHebrewDate(day) { return displayStudyDate(studyDate(calendar, day)); }
+    function dayOfYearToMonthDay(day) { return calendarMonthDay(studyDate(calendar, day)); }
+    function chooseStudyDate(date, follow = false) {
+      followingToday = follow;
+      const changedYear = calendar.year !== date.year;
+      calendar = date;
+      DAYS_IN_YEAR = calendar.days;
+      currentDay = calendar.day;
+      if (sourceSchedule && changedYear) chokData = reschedule(sourceSchedule, DAYS_IN_YEAR);
+      renderAll();
     }
 
     // === State ===
     let chokData = null;
-    let currentDay = getDayOfYear(new Date());
+    let currentDay = calendar.day;
     const STORAGE_KEY = 'chok-breslov';
 
-    function getStorage() {
+    function readSavedState() {
       try {
-        return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-      } catch { return {}; }
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+        return saved && typeof saved === 'object' && !Array.isArray(saved) ? saved : {};
+      }
+      catch { return {}; }
     }
-
+    function getStorage() { return readSavedState().years?.[calendar.year] || {}; }
     function setStorage(data) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      const store = readSavedState();
+      if (!store.years || typeof store.years !== 'object') store.years = {};
+      store.years[calendar.year] = data;
+      // Keep the old undated 354-day completion records intact, not reassigned to new dates.
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
     }
 
     function isBookDoneForDay(bookId, day) {
@@ -279,7 +250,7 @@ import Layout from '../layouts/Layout.astro';
     function getStreak() {
       const store = getStorage();
       if (!store.completed) return 0;
-      const today = getDayOfYear(new Date());
+      const today = currentDay;
       let streak = 0;
       for (let d = today; d >= 1; d--) {
         if (store.completed[d] && Object.keys(store.completed[d]).length > 0) {
@@ -300,7 +271,8 @@ import Layout from '../layouts/Layout.astro';
     // === Rendering ===
 
     function renderBookCard(book, day) {
-      const portion = book.portions[day - 1];
+      const prayers = book.id === 'likutay-tefilos' ? getLtPrayerForDay(day) : null;
+      const portion = prayers ? { sections: prayers } : book.portions[day - 1];
       if (!portion || portion.sections.length === 0) return '';
 
       const isDone = isBookDoneForDay(book.id, day);
@@ -416,6 +388,9 @@ import Layout from '../layouts/Layout.astro';
       document.getElementById('progressFill').style.width = percent + '%';
       document.getElementById('progressText').textContent = 'Day ' + day + ' of ' + DAYS_IN_YEAR + ' \u2014 ' + percent + '% through the year';
       document.getElementById('dayPicker').value = day;
+      document.getElementById('dayPicker').max = DAYS_IN_YEAR;
+      const legacy = readSavedState().completed;
+      document.getElementById('legacyProgress').hidden = !legacy || Object.keys(legacy).length === 0;
 
       // Stats
       document.getElementById('streakCount').textContent = getStreak();
@@ -443,31 +418,26 @@ import Layout from '../layouts/Layout.astro';
 
     function setupEvents() {
       document.getElementById('prevDay').addEventListener('click', function() {
-        currentDay = currentDay <= 1 ? DAYS_IN_YEAR : currentDay - 1;
-        renderAll();
+        chooseStudyDate(studyYear(moveDay(studyDate(calendar, currentDay).iso, -1)));
       });
 
       document.getElementById('nextDay').addEventListener('click', function() {
-        currentDay = currentDay >= DAYS_IN_YEAR ? 1 : currentDay + 1;
-        renderAll();
+        chooseStudyDate(studyYear(moveDay(studyDate(calendar, currentDay).iso, 1)));
       });
 
       document.getElementById('todayBtn').addEventListener('click', function() {
-        currentDay = getDayOfYear(new Date());
-        renderAll();
+        chooseStudyDate(todayStudy(new Date()), true);
       });
 
       document.getElementById('resetBtn').addEventListener('click', function() {
-        currentDay = 1;
-        renderAll();
+        chooseStudyDate(studyDate(calendar, 1));
       });
 
       document.getElementById('dayPicker').addEventListener('change', function() {
         let val = parseInt(this.value, 10);
         if (isNaN(val) || val < 1) val = 1;
         if (val > DAYS_IN_YEAR) val = DAYS_IN_YEAR;
-        currentDay = val;
-        renderAll();
+        chooseStudyDate(studyDate(calendar, val));
       });
 
       // Delegate checkbox clicks
@@ -483,7 +453,6 @@ import Layout from '../layouts/Layout.astro';
 
     // === LT Calendar Override ===
     let ltCalendarMap = null;
-    let ltUndatedIndex = 0; // tracks which undated prayer we're on
 
     function getLtPrayerForDay(day) {
       if (!ltCalendarMap) return null;
@@ -525,7 +494,8 @@ import Layout from '../layouts/Layout.astro';
           fetch('/lt-calendar-map.json')
         ]);
         if (!chokResp.ok) throw new Error('Could not load schedule');
-        chokData = await chokResp.json();
+        sourceSchedule = await chokResp.json();
+        chokData = reschedule(sourceSchedule, DAYS_IN_YEAR);
         if (ltResp.ok) ltCalendarMap = await ltResp.json();
       } catch(e) {
         document.getElementById('portionsGrid').innerHTML =
@@ -533,21 +503,23 @@ import Layout from '../layouts/Layout.astro';
         return;
       }
 
-      // Override LT portions with calendar-based assignments
-      if (chokData && ltCalendarMap) {
-        const ltBook = chokData.books.find(b => b.id === 'likutay-tefilos');
-        if (ltBook) {
-          for (let day = 1; day <= 354; day++) {
-            const ltPrayers = getLtPrayerForDay(day);
-            if (ltPrayers && ltBook.portions[day - 1]) {
-              ltBook.portions[day - 1].sections = ltPrayers;
-            }
-          }
-        }
-      }
-
+      // Dated prayers are selected from the actual displayed Hebrew date in renderBookCard.
       renderAll();
     }
+
+    // A page left open across sunset follows Today, but never overwrites a browsed date.
+    let refreshTimer = null;
+    function refreshToday() {
+      if (followingToday) {
+        const next = todayStudy(new Date());
+        if (next.iso !== calendar.iso) chooseStudyDate(next, true);
+      }
+    }
+    function startRefresh() { if (refreshTimer === null) refreshTimer = setInterval(refreshToday, 60000); }
+    window.addEventListener('pagehide', () => { clearInterval(refreshTimer); refreshTimer = null; });
+    window.addEventListener('pageshow', () => { refreshToday(); startRefresh(); });
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshToday(); });
+    startRefresh();
 
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', init);
