@@ -11,6 +11,67 @@ const source = JSON.parse(await readFile(new URL('../public/chok-breslov.json', 
 const original = JSON.stringify(source);
 const template = await readFile(new URL('../src/pages/daily-study.astro', import.meta.url), 'utf8');
 const inline = template.match(/<script type="module" is:inline>([\s\S]*?)<\/script>/)[1].replace(/^\s*import .*?;\s*$/m, '');
+const datesController = template.match(/<script is:inline id="daily-study-dates">([\s\S]*?)<\/script>/)[1];
+
+function bootDates({ readyState = 'complete', missing = null } = {}) {
+  const classes = new Set(['collapsed', 'preserved-widget-class']);
+  const payload = { unchanged: 'original dates and events' };
+  const box = { style: { display: 'none' }, payload, listeners: { original: true }, classList: { remove: c => classes.delete(c) } };
+  const summary = { focused: false, focus() { this.focused = true; } };
+  const dates = { hidden: true, open: false, handlers: {}, addEventListener(type, fn, capture) { this.handlers[type] = fn; if (type === 'keydown') this.keyCapture = capture; }, querySelector: selector => selector === 'summary' ? summary : null };
+  const slot = { appendChild(node) { this.child = node; } };
+  const nodes = { 'study-dates': dates, 'study-dates-slot': slot, compactYahrzeit: box };
+  const document = { readyState, handlers: {}, getElementById: id => id === missing ? null : nodes[id], addEventListener(type, fn, options) { this.handlers[type] = fn; this.options = options; } };
+  let observer;
+  class MutationObserver { constructor(fn) { this.callback = fn; observer = this; } observe(node, options) { this.node = node; this.options = options; } }
+  vm.runInNewContext(datesController, { document, MutationObserver });
+  return { box, dates, slot, summary, document, classes, payload, observer: () => observer };
+}
+
+test('dates move the original widget into header flow without replacing data, listeners or preferences', () => {
+  const app = bootDates();
+  assert.equal(app.slot.child, app.box);
+  assert.equal(app.box.payload, app.payload);
+  assert.equal(app.box.listeners.original, true);
+  assert.equal(app.classes.has('collapsed'), false);
+  assert.equal(app.classes.has('preserved-widget-class'), true);
+  assert.match(template, /<header class="chok-header">[\s\S]*?<details class="study-dates" id="study-dates" hidden>[\s\S]*?<div id="study-dates-slot"><\/div>[\s\S]*?<\/header>/);
+  assert.match(template, /\.study-dates #compactYahrzeit \{[^}]*position: relative !important;[^}]*inset: auto !important;[^}]*max-width: 100% !important;[^}]*max-height: none !important;/);
+  assert.doesNotMatch(template, /\.study-dates :global\(/, 'is:global styles must contain native selectors');
+});
+
+test('dates reveal after normal success, delayed timeout or error display and honor original dismissal', () => {
+  for (const path of ['success', 'timeout', 'error']) {
+    const app = bootDates();
+    assert.equal(app.dates.hidden, true, path);
+    assert.equal(app.observer().node, app.box);
+    assert.deepEqual(Array.from(app.observer().options.attributeFilter), ['style']);
+    app.box.style.display = 'block'; app.observer().callback();
+    assert.equal(app.dates.hidden, false, path);
+    app.dates.open = true; app.dates.handlers.toggle();
+    assert.equal(app.classes.has('collapsed'), false);
+    app.box.style.display = 'none'; app.observer().callback();
+    assert.equal(app.dates.hidden, true, 'original dismiss remains effective');
+    assert.equal(app.box.payload, app.payload);
+  }
+});
+
+test('Escape closes only the local dates disclosure and returns focus without dismissing shared dates', () => {
+  const app = bootDates(); let prevented = 0, stopped = 0;
+  const event = { key: 'Escape', preventDefault() { prevented++; }, stopPropagation() { stopped++; } };
+  app.dates.open = true; app.dates.handlers.keydown(event);
+  assert.equal(app.dates.open, false); assert.equal(app.summary.focused, true);
+  assert.equal(prevented, 1); assert.equal(stopped, 1); assert.equal(app.dates.keyCapture, true);
+  app.dates.handlers.keydown(event); assert.equal(prevented, 1);
+  assert.equal(app.box.style.display, 'none');
+});
+
+test('dates wait for Layout completion and tolerate a missing optional widget without affecting study startup', () => {
+  const app = bootDates({ readyState: 'loading' });
+  assert.equal(app.slot.child, undefined); assert.equal(app.document.options.once, true);
+  app.document.handlers.DOMContentLoaded(); assert.equal(app.slot.child, app.box);
+  for (const missing of ['study-dates', 'study-dates-slot', 'compactYahrzeit']) assert.equal(bootDates({ missing }).observer(), undefined);
+});
 
 test('real Hebrew dates, year starts, all six year lengths and DST-safe day counts', () => {
   // Independent Hebcal converter fixtures, not the previous approximate calendar.
