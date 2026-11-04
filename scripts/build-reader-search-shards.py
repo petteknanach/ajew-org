@@ -4,6 +4,7 @@
 Outputs:
   public/reader-search/meta.json                 lightweight id/title/path catalog
   public/reader-search/shards/<prefix>.json      word -> [doc ids]
+  public/reader-search/words/<hash-byte>.json    same whole-word postings, smaller lookup buckets
   public/reader-search/docs/<id>.json            full searchable text for result snippets/verification
 """
 import gzip, json, re, shutil, struct, unicodedata
@@ -34,6 +35,7 @@ SHARDS = OUT / 'shards'
 DOCS = OUT / 'docs'
 PHRASES = OUT / 'phrases'
 LETTERS = OUT / 'letters'
+WORDS = OUT / 'words'
 NIKUD_RE = re.compile(r'[\u0591-\u05BD\u05BF\u05C1-\u05C2\u05C4-\u05C5\u05C7]')
 COMBINING_RE = re.compile(r'[\u0300-\u036f]')
 PUNCT_RE = re.compile(r'[^\w\s\u0590-\u05ff]+', re.UNICODE)
@@ -90,6 +92,25 @@ def phrase_hash(text: str) -> int:
 
 def clean_text(*parts):
     return SPACE_RE.sub(' ', ' '.join(p or '' for p in parts)).strip()
+
+
+def write_word_shards(shard_terms, output):
+    """Repartition existing whole-word postings; never change terms or ID order.
+
+    Prefix/suffix consumers keep the original shards. Full term keys make hash
+    collisions harmless. Emit even empty buckets so a 404 is an unavailable
+    artifact, not evidence that a queried word has no matches.
+    """
+    output.mkdir(parents=True, exist_ok=True)
+    buckets = [dict() for _ in range(256)]
+    for term_map in shard_terms.values():
+        for term, ids in term_map.items():
+            if not term.startswith('e:'):
+                buckets[phrase_hash(term) >> 24][term] = ids
+    for key, terms in enumerate(buckets):
+        with open(output / f'{key:02x}.json', 'w', encoding='utf-8') as f:
+            json.dump(dict(sorted(terms.items())), f, ensure_ascii=False, separators=(',', ':'))
+    return 'fnv1a32-high8-v1'
 
 
 def segment_language_text(seg, keys, hebrew=False):
@@ -335,6 +356,8 @@ def main():
             json.dump({k: v for k, v in sorted(term_map.items())}, f, ensure_ascii=False, separators=(',', ':'))
         term_count += len(term_map)
 
+    word_shards = write_word_shards(shard_terms, WORDS)
+
     phrase_records = 0
     phrase_shards = []
     max_phrase_shard_bytes = 0
@@ -384,7 +407,7 @@ def main():
     with open(LETTERS / 'meta.json', 'w', encoding='utf-8') as f:
         json.dump({'version': 1, 'algorithm': 'fnv1a32-utf8-letter-bigram-le', 'recordBytes': 8, 'modes': letter_stats}, f, ensure_ascii=False, separators=(',', ':'))
 
-    meta = {'generatedAt': datetime.now(timezone.utc).isoformat(), 'total': len(items), 'failures': 0, 'items': items}
+    meta = {'generatedAt': datetime.now(timezone.utc).isoformat(), 'total': len(items), 'failures': 0, 'wordShards': word_shards, 'items': items}
     with open(OUT / 'meta.json', 'w', encoding='utf-8') as f:
         json.dump(meta, f, ensure_ascii=False, separators=(',', ':'))
     print(json.dumps({'items': len(items), 'terms': term_count, 'shards': len(shard_terms), 'docs': len(items), 'phrase_records': phrase_records, 'letter_index': letter_stats, 'max_phrase_shard_bytes': max_phrase_shard_bytes, 'meta_bytes': (OUT/'meta.json').stat().st_size, 'out': str(OUT)}, ensure_ascii=False, indent=2))

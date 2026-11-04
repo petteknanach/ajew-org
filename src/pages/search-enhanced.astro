@@ -279,19 +279,20 @@ const searchBookLabelsJSON = JSON.stringify(searchBookLabels).replace(/</g, '\\u
         return path + (version ? '?v=' + encodeURIComponent(version) : '');
       }
 
-      async function loadShard(key) {
-        if (readerShardCache.has(key)) return readerShardCache.get(key);
-        const r = await fetch(readerAssetUrl('/reader-search/shards/' + encodeURIComponent(key) + '.json'), { headers: { Accept: 'application/json' } });
+      async function loadShard(key, kind = 'shards') {
+        const cacheKey = kind === 'shards' ? key : kind + '/' + key;
+        if (readerShardCache.has(cacheKey)) return readerShardCache.get(cacheKey);
+        const r = await fetch(readerAssetUrl('/reader-search/' + kind + '/' + encodeURIComponent(key) + '.json'), { headers: { Accept: 'application/json' } });
         if (!r.ok) {
-          if (r.status !== 404) throw new Error('Search shard unavailable: HTTP ' + r.status);
+          if (r.status !== 404 || kind !== 'shards') throw new Error('Search shard unavailable: HTTP ' + r.status);
           // The builder omits absent prefixes, but a concurrent success wins.
           // Check and publish synchronously so a late 404 cannot erase postings.
-          if (!readerShardCache.has(key)) readerShardCache.set(key, {});
-          return readerShardCache.get(key);
+          if (!readerShardCache.has(cacheKey)) readerShardCache.set(cacheKey, {});
+          return readerShardCache.get(cacheKey);
         }
         // A successful body may replace cached absence from an earlier 404.
         const shard = await r.json();
-        readerShardCache.set(key, shard);
+        readerShardCache.set(cacheKey, shard);
         return shard;
       }
 
@@ -828,13 +829,16 @@ const searchBookLabelsJSON = JSON.stringify(searchBookLabels).replace(/</g, '\\u
         if (requestId !== activeSearchRequest) return null;
         const allowed = new Set(advanced?.books || []);
         let keys;
+        let terms = [];
         if (searchType === 'endsWith') keys = ['e'];
         else if (searchType === 'startsWith') keys = [normalizeForSearch(query).slice(0,1) || '_'];
         else if (searchType === 'boolean') {
-          keys = Array.from(new Set(booleanCandidateClauses(query).flatMap(clause => [...clause.include, ...clause.exclude]).map(term => term.slice(0, 1) || '_')));
+          terms = booleanCandidateClauses(query).flatMap(clause => [...clause.include, ...clause.exclude]);
+          keys = Array.from(new Set(terms.map(term => term.slice(0, 1) || '_')));
         } else {
           const groups = queryTermGroups(query, { expand: searchType !== 'exact', keepStopWords: searchType === 'exact' });
-          keys = Array.from(new Set(groups.flat().map(w => w.slice(0,1) || '_')));
+          terms = groups.flat();
+          keys = Array.from(new Set(terms.map(w => w.slice(0,1) || '_')));
         }
         let ids;
         if (searchType === 'exact') {
@@ -846,7 +850,16 @@ const searchBookLabelsJSON = JSON.stringify(searchBookLabels).replace(/</g, '\\u
           if (requestId !== activeSearchRequest) return null;
         }
         if (ids == null) {
-          const shards = await Promise.all(keys.map(loadShard));
+          let shards;
+          // New builds advertise small whole-word buckets. Old metadata and
+          // prefix/suffix modes retain the original lookup. On any compact
+          // transport/body failure, fall back without caching false absence.
+          if (meta.wordShards === 'fnv1a32-high8-v1' && searchType !== 'startsWith' && searchType !== 'endsWith') {
+            const buckets = Array.from(new Set(terms.map(term => (fnv1a32(term) >>> 24).toString(16).padStart(2, '0'))));
+            try { shards = await Promise.all(buckets.map(key => loadShard(key, 'words'))); }
+            catch (err) { console.warn('Word lookup unavailable; using prefix shards.', err); }
+          }
+          if (!shards) shards = await Promise.all(keys.map(key => loadShard(key)));
           if (requestId !== activeSearchRequest) return null;
           ids = idsForMode(shards, query, searchType, advanced?.minWords || 0, meta.items.length);
         }
