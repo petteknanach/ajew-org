@@ -55,6 +55,22 @@
     'יום רביעי':'yom-revii','יום חמישי':'yom-chamishi','ליל שישי':'leil-shishi','יום שישי':'yom-shishi'};
   var TUR_HE = {OC:'אור״ח', YD:'יו״ד', EH:'אה״ע', CM:'חו״מ'};
   var RAMBAT_SLUG = {'תפילה':'tefilah-and-birkat-kohanim','שבת':'shabbos','ברכות':'berachot','מעשה הקרבנות':'maaseh-hakorbonos','תשובה':'teshuvah','קריאת שמע':'kriat-shema','תלמוד תורה':'talmud-torah','איסורי ביאה':'issurei-biah','יסודי התורה':'yesodey-hatorah','עבודה זרה':'avodah-kochavim','פרה אדומה':'parah-adummah','אישות':'ishut','דעות':'deot','שמיטה ויובל':'shemita'};
+  function firstweekZHMHalachaSupplementHTML(wk, day, d) {
+    if (wk !== 'בראשית' || ['יום ראשון','יום שני','יום שלישי','יום רביעי'].indexOf(day) < 0 || !qualifiedDailyHas(wk,day,'halacha')) return Promise.resolve('');
+    var h = d.halacha || {};
+    if (h.work !== 'SA' || !h.tur || !h.from) return Promise.resolve('');
+    return comm('sa-magen-avraham', 'sa-' + String(h.tur || '').toLowerCase() + '-' + h.from).then(function (md) {
+      var ma = md && (md.ch || {})[String(h.from)];
+      var maBody = '';
+      if (ma && ma.length) {
+        maBody = ma.map(function (x) {
+          return x ? '<div class="ck-comm-body">' + richText(x) + '</div>' : '';
+        }).join('');
+      }
+      return maBody ? commDetails('מגן אברהם', maBody) : '';
+    });
+  }
+
   function halachaHTML(d) {
     var h = d.halacha || {};
     if (h.work === 'rambam' && h.hilchot && h.from_perek) {
@@ -1519,7 +1535,7 @@
       }
       if ((qualifiedDailyHas(wk,dayE,'halacha') || d.halacha && d.halacha.work) && want('halacha')) {
         p = p.then(function () {
-          return qualifiedDailyOr(wk,dayE,'halacha',d,function(){return (qualifiedDay ? Promise.resolve(window.ChokSources.reading('halacha', state.tanachen)) : wk==='נח' ? Promise.resolve(window.ChokSources.weekReading(wk,dayE,'halacha',state.tanachen)||window.ChokSources.unavailable('halacha')) : halachaHTML(d));}).then(function (html) { html = html || ''; html = dayKavana('halacha', d) + html; html = voiceBox(!qualifiedDailyHas(wk,dayE,'halacha') && wk!=='נח' && dc && dc.halacha, 'הלכה') + html;
+          return qualifiedDailyOr(wk,dayE,'halacha',d,function(){return (qualifiedDay ? Promise.resolve(window.ChokSources.reading('halacha', state.tanachen)) : wk==='נח' ? Promise.resolve(window.ChokSources.weekReading(wk,dayE,'halacha',state.tanachen)||window.ChokSources.unavailable('halacha')) : halachaHTML(d));}).then(function (html) { return firstweekZHMHalachaSupplementHTML(wk,dayE,d).then(function (extra) { return (html || '') + extra; }); }).then(function (html) { html = html || ''; html = dayKavana('halacha', d) + html; html = voiceBox(!qualifiedDailyHas(wk,dayE,'halacha') && wk!=='נח' && dc && dc.halacha, 'הלכה') + html;
             if (html) out.push('<section class="ck-section" data-sec="halacha">' + html + '</section>');
           });
         });

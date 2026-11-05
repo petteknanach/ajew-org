@@ -6,7 +6,7 @@ const PLAN_SHA='e9764fd23b4780e41c7221b9dbbebe916632d3046c670c743b6c0917ec610105
 function canonical(x){if(x===null||typeof x!=='object')return JSON.stringify(x);if(Array.isArray(x))return '['+x.map(canonical).join(',')+']';return '{'+Object.keys(x).sort().map(k=>JSON.stringify(k)+':'+canonical(x[k])).join(',')+'}';}
 function plan(root){const b=fs.readFileSync(path.join(root,'scripts/chok-today-classical-admission.json'));assert.equal(sha(b),PLAN_SHA,'TODAY_ADMISSION_PIN');return JSON.parse(b);}
 function restore(root,relative,bytes){
- if((relative==="public/chok.js"&&sha(bytes)==="2b18c48e1ba1bd5e6b5395358ae7a13598b5aaf1a1683dff69f8b7948837ffd2")||(relative==="src/pages/reader/chok.astro"&&sha(bytes)==="14433695efc241a04667409cd3147f9f147b75dd7ea6cb2d5c4f85efe2150532"))bytes=require('./chok-reference-order-conservation.cjs').restoreGenesis(relative,bytes);
+ if((relative==="public/chok.js"&&sha(bytes)==="89bd8b2ffcba1821c65a3a6c288bb481b74df73d04981521b1f34aa6fb34631e")||(relative==="src/pages/reader/chok.astro"&&sha(bytes)==="6b8b72a8ed918b502e0b00c263b127b27b93950b04ac3059ce9b420479e636db"))bytes=require('./chok-reference-order-conservation.cjs').restoreGenesis(relative,bytes);
  const a=plan(root);let s=bytes.toString('utf8');
  if(relative==='public/chok-qualified-daily-classical-selected-v1.js'){
   assert.equal(sha(bytes),a.newSelectedSHA256,'TODAY_SELECTED_PIN');const needle=canonical(a.newDescriptor);assert.equal(s.split(needle).length,2,'TODAY_DESCRIPTOR_UNIQUE');s=s.replace(needle,canonical(a.oldDescriptor));assert.equal(sha(s),a.oldSelectedSHA256,'TODAY_SELECTED_EXACT_INVERSE');return Buffer.from(s);

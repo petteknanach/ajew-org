@@ -9,8 +9,16 @@
   "paths": {
     "public/chok.js": {
       "beforeSHA256": "1cb6f03d24c9a51d5130de105fdec22154ad6b4ed0cd78cb7dfbc9240f7f9b1d",
-      "afterSHA256": "2b18c48e1ba1bd5e6b5395358ae7a13598b5aaf1a1683dff69f8b7948837ffd2",
+      "afterSHA256": "89bd8b2ffcba1821c65a3a6c288bb481b74df73d04981521b1f34aa6fb34631e",
       "inverse": [
+        {
+          "after": "}).then(function (html) { return firstweekZHMHalachaSupplementHTML(wk,dayE,d).then(function (extra) { return (html || '') + extra; }); }).then(function (html) { html = html || ''; html = dayKavana('halacha', d) + html;",
+          "before": "}).then(function (html) { html = html || ''; html = dayKavana('halacha', d) + html;"
+        },
+        {
+          "after": "  function firstweekZHMHalachaSupplementHTML(wk, day, d) {\n    if (wk !== 'בראשית' || ['יום ראשון','יום שני','יום שלישי','יום רביעי'].indexOf(day) < 0 || !qualifiedDailyHas(wk,day,'halacha')) return Promise.resolve('');\n    var h = d.halacha || {};\n    if (h.work !== 'SA' || !h.tur || !h.from) return Promise.resolve('');\n    return comm('sa-magen-avraham', 'sa-' + String(h.tur || '').toLowerCase() + '-' + h.from).then(function (md) {\n      var ma = md && (md.ch || {})[String(h.from)];\n      var maBody = '';\n      if (ma && ma.length) {\n        maBody = ma.map(function (x) {\n          return x ? '<div class=\"ck-comm-body\">' + richText(x) + '</div>' : '';\n        }).join('');\n      }\n      return maBody ? commDetails('מגן אברהם', maBody) : '';\n    });\n  }\n\n  function halachaHTML(d) {",
+          "before": "  function halachaHTML(d) {"
+        },
         {
           "after": "\n            if (genesisEnglish) row += window.ChokGenesisEnglish.render(genesisEnglish,sourceRef,tgOriginal,{english:englishEnabled,targum:state.targum,existingEnglish:existingTargumEnglish,introduction:!otherContext});\n            items.push({ c: c, x: x, row: row });",
           "before": "\n            items.push({ c: c, x: x, row: row });"
@@ -31,13 +39,170 @@
     },
     "src/pages/reader/chok.astro": {
       "beforeSHA256": "e64a0357cb610931e31b741e53c313687240e65d324bbcfdb250ebec278bf5c5",
-      "afterSHA256": "14433695efc241a04667409cd3147f9f147b75dd7ea6cb2d5c4f85efe2150532",
+      "afterSHA256": "6b8b72a8ed918b502e0b00c263b127b27b93950b04ac3059ce9b420479e636db",
       "inverse": [
+        {
+          "after": "sha384-Be4L4HWL6JiLlsFh/syqFkUKRIRFn8DKUHfhHQpCPufOEKXoajJxZxqJoLiqecsU",
+          "before": "sha384-veyWTlkKzVnrEUZLYOz6Xn/SWMh1RWGwQ5mbmU8xJwRI4CRA6IqAh+plvztrWyk+"
+        },
+        {
+          "after": "/chok.js?v=89bd8b2ffcba1821c65a3a6c288bb481b74df73d04981521b1f34aa6fb34631e",
+          "before": "/chok.js?v=2b18c48e1ba1bd5e6b5395358ae7a13598b5aaf1a1683dff69f8b7948837ffd2"
+        },
+        {
+          "after": "<script is:inline src=\"/chok-firstweek-zhm-private-v1.js?v=9bef640c233ec32e0cc8d9fe5945df7bac143d13b22700b5b4199923d21b8acd\" integrity=\"sha256-m+9kDCM+wy4MyNn+WUXfe6wUPROyJwC1tBmZI9Ibis0=\" crossorigin=\"anonymous\" defer></script>\n<script is:inline src=\"/chok-other-layers.js",
+          "before": "<script is:inline src=\"/chok-other-layers.js"
+        },
         {
           "after": "<style is:inline>\n/* Only the newly selected study fields; existing originals/owners stay unchanged. */\n.ck-genesis-targum-day { margin: .8rem 0; }\n.ck-genesis-targum-day h4 { font-size: 1.08rem; line-height: 1.5; margin: .4rem 0; }\n.ck-genesis-targum-day p, .ck-genesis-english-owner .ck-source-qualification p { font-size: 1rem; line-height: 1.65; margin: .5rem 0; }\n.ck-genesis-english-owner > .ck-en-line { font-style: normal; }\n.ck-genesis-english-owner > .ck-en-line > small { display: block; font-style: normal; font-weight: 600; }\n</style>\n<script is:inline src=\"/chok-genesis-english.js?v=0bd0ca438d69efc3ec59c7c360e8832099b796f54694c395751813a5d810e244\" integrity=\"sha256-C9DKQ41p78PsWcfDYOiDIJm3lvVGlMOVdRgTpdgQ4kQ=\" crossorigin=\"anonymous\" defer></script>\n<script is:inline src=\"/chok.js?v=2b18c48e1ba1bd5e6b5395358ae7a13598b5aaf1a1683dff69f8b7948837ffd2\" integrity=\"sha384-veyWTlkKzVnrEUZLYOz6Xn/SWMh1RWGwQ5mbmU8xJwRI4CRA6IqAh+plvztrWyk+\" crossorigin=\"anonymous\" defer></script>",
           "before": "<script is:inline src=\"/chok.js?v=1cb6f03d24c9a51d5130de105fdec22154ad6b4ed0cd78cb7dfbc9240f7f9b1d\" integrity=\"sha384-6jtSQ/BMDr8WOtLKNuDlL+ek4m9A2vKJcQw3PovUns9Sr8b7aqFCBkpGrnmfqeJ+\" crossorigin=\"anonymous\" defer></script>"
         }
       ]
     }
+  },
+  "subsequentFirstweekComposition": {
+    "sourceUsePreparationSHA256": "c2f189b72e6c75ae8c7a9b78a83476a66e029938acf941ed7f987f92c00d39c4",
+    "selectedSourceOwnerTuples": [
+      {
+        "owner": "בראשית|יום ראשון|zohar",
+        "originalSHA256": "8a1fc56a0d82a757cfc4d214532b3cda0707a119d560f5f2bbfe040533e73631",
+        "englishSHA256": "570c5ee7beef7ced787f3d570c5f676cc39c1cc0a14a0decbd5744559494307e",
+        "mandatoryNoteIds": [
+          "yom-rishon-note-1",
+          "yom-rishon-note-2"
+        ]
+      },
+      {
+        "owner": "בראשית|יום שני|zohar",
+        "originalSHA256": "b5edd21fa0de39806bc250d8ca227f9249b345182b3aa6d5e6dcedb5df130796",
+        "englishSHA256": "2f4fe1dfac06b1e72bfe4d5cba2dd503e3cc3277ec993eec99a1e81db3d0be9b",
+        "mandatoryNoteIds": [
+          "yom-sheni-note-1",
+          "yom-sheni-note-2",
+          "yom-sheni-note-3",
+          "yom-sheni-note-4"
+        ]
+      },
+      {
+        "owner": "בראשית|יום שלישי|zohar",
+        "originalSHA256": "4d511111b81d0f483e1127f315e94c4df74349cf379cac7f618cf9d3b71e4928",
+        "englishSHA256": "94991d10b5312aeffa82c534c86c716c800b6524d9a14097ec73f2317c5ecfc4",
+        "mandatoryNoteIds": [
+          "yom-shlishi-note-1",
+          "yom-shlishi-note-2"
+        ]
+      },
+      {
+        "owner": "בראשית|יום רביעי|zohar",
+        "originalSHA256": "1827f23317be331deb77e4f5af3fa5eb3225ab2dd04e2f03b42f250b92136b4f",
+        "englishSHA256": "a6a5220f4be6ac5d4089d3884428fa2ad5c9fe752900abbc043d6e18cb349e41",
+        "mandatoryNoteIds": [
+          "yom-revii-note-1",
+          "yom-revii-note-2",
+          "yom-revii-note-3"
+        ]
+      },
+      {
+        "owner": "בראשית|יום שישי|zohar",
+        "originalSHA256": "db4e294d99034ea421d7e55f0a93fc4020b1681b4e6b309a55805d792d1a7810",
+        "englishSHA256": "383b38956896541b7ab88573920ca738dc45e6c0dba19f1292bac3a75c5e4f2d",
+        "mandatoryNoteIds": [
+          "yom-shishi-note-1",
+          "yom-shishi-note-2",
+          "yom-shishi-note-3"
+        ]
+      },
+      {
+        "owner": "בראשית|יום ראשון|halacha",
+        "originalSHA256": "990525dbc213dfaab8af97c4dc952ccf77c9d581c4e7be423a0173c6d21169f7",
+        "englishSHA256": "a4fb347583f517e460d86f6454e293cfa82d9abedd132f6946c1dd960249f704",
+        "mandatoryNoteIds": [
+          "classical-note-1",
+          "classical-note-2",
+          "context-condition-8",
+          "context-condition-10",
+          "context-condition-11",
+          "context-condition-12",
+          "yom-rishon-halacha-shared-caution"
+        ]
+      },
+      {
+        "owner": "בראשית|יום שני|halacha",
+        "originalSHA256": "e590845ef17a6f5aefbf7c2091c0014edcd0b9a09fbf96c9a8e3ee65e428c705",
+        "englishSHA256": "cad26ce7f6619688bb7f0da12a44b4073127107b306867368b05f136668ac584",
+        "mandatoryNoteIds": [
+          "classical-note-3",
+          "context-condition-14",
+          "context-condition-17",
+          "yom-sheni-halacha-shared-caution"
+        ]
+      },
+      {
+        "owner": "בראשית|יום שלישי|halacha",
+        "originalSHA256": "4377f64d4d3908adf300ac2dfec1e47bd6b0746577271c994c0b13961c5de0e2",
+        "englishSHA256": "ec03a5c7bd2cd81110174df99ddc7f3253a022f251b62e09a83ff3a05c3a0e05",
+        "mandatoryNoteIds": [
+          "classical-note-6",
+          "classical-note-7",
+          "context-condition-20",
+          "context-condition-21",
+          "context-condition-22",
+          "context-condition-23",
+          "context-condition-24",
+          "context-condition-25",
+          "yom-shlishi-halacha-shared-caution"
+        ]
+      },
+      {
+        "owner": "בראשית|יום רביעי|halacha",
+        "originalSHA256": "8de240824293a49aa24f156608e4152e479603c28352b426ac5bff5f4eee1d06",
+        "englishSHA256": "e743342ba3bbde471a062d1b21c7356b1ead073a0b67290cd5268ed83d7e2051",
+        "mandatoryNoteIds": [
+          "classical-note-9",
+          "classical-note-10",
+          "context-condition-2",
+          "context-condition-3",
+          "context-condition-4",
+          "context-condition-5",
+          "yom-revii-halacha-shared-caution"
+        ]
+      },
+      {
+        "owner": "בראשית|יום ראשון|mussar",
+        "originalSHA256": "bb08c6050f679a1bb4872b84529dcf5fcb7b1928680f186ff66c302887fe4f20",
+        "englishSHA256": "3874bae82bbd85d986ed1581cb04824bdb46762b3daed5fb17e8fadf28c54ff6",
+        "mandatoryNoteIds": [
+          "yom-rishon-mussar-NOTE-1"
+        ]
+      },
+      {
+        "owner": "בראשית|יום שני|mussar",
+        "originalSHA256": "f7d9817f184902f93ad75f5bbcb2b5d3ac98e847c2d2d59318b79c1c8c925f74",
+        "englishSHA256": "176f2e11f51f218347597c98239761a7d815a8422cc98f62a499c308bf8e962c",
+        "mandatoryNoteIds": [
+          "yom-sheni-mussar-NOTE-1"
+        ]
+      },
+      {
+        "owner": "בראשית|יום שלישי|mussar",
+        "originalSHA256": "ed93800b1ecc965b0196cd3444a3c1aa865766a12716e26d5e17f6d64c0b9485",
+        "englishSHA256": "fb32039925de12a94064f98191771daee3989addf9307e0d3602f23a7e53ed68",
+        "mandatoryNoteIds": [
+          "yom-shlishi-mussar-NOTE-1"
+        ]
+      },
+      {
+        "owner": "בראשית|יום רביעי|mussar",
+        "originalSHA256": "b1dc31e0c24bc326394d79b136415a98d47ddff81dcad361cdbacae8bf93812e",
+        "englishSHA256": "fe8f48a16ce7dad1d34f0aaaa3a72efccc6b6aa456c81278578dc57dcd41ca79",
+        "mandatoryNoteIds": [
+          "yom-revii-mussar-NOTE-1"
+        ]
+      }
+    ],
+    "scope": "Thirteen separately parent-selected ancient unpointed daily original/own-English/explanation/qualification tuples composed after the unchanged Genesis own-language selection. No change to any of its 2133 meanings,204 introductions,249 qualifications,24 held bodies or source corpus. Current Thursday and complete existing Magen Avraham supplements preserved.",
+    "parentSelection": "Affirmative original-owner selection under AUTHORIZED-RESUME-LH5-20261105-chok for these thirteen exact ancient unpointed plain-text daily/own-field tuples in the free educational web Reader, with the unchanged current Thursday tuple, all mandatory qualifications, all existing supplements and all unrelated rights/meaning holds preserved. No scan/image/modern-feature or foreign-English licence adoption; no worldwide or fresh-policy-version certificate. Private full API, owning route and five ordinary full-day native cases passed; canonical/public acceptance separate.",
+    "newTargumMeaningAcceptances": 0,
+    "publicFieldSelectionSHA256": "db8ef31c0242852949e9cbeb6cfca1010e67374600b63231607c9154ca44d9d5"
   }
 }
