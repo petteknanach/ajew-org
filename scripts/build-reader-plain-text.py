@@ -11,7 +11,6 @@ import json
 import re
 import shutil
 import sys
-from datetime import date
 from pathlib import Path
 from typing import Any
 # Resolve sibling exporters by this file, including spec_from_file_location callers.
@@ -598,9 +597,8 @@ def main() -> None:
     # De-duplicate while preserving order.
     sitemap_urls = list(dict.fromkeys(sitemap_urls))
     (OUT_DIR / "sitemap.txt").write_text("\n".join(sitemap_urls) + "\n", encoding="utf-8")
-    today = date.today().isoformat()
     xml_urls = "\n".join(
-        f"  <url><loc>{html.escape(url)}</loc><lastmod>{today}</lastmod><changefreq>monthly</changefreq><priority>{'0.65' if url.endswith('/full.txt') or url.endswith('/full.md') else '0.45'}</priority></url>"
+        f"  <url><loc>{html.escape(url)}</loc><changefreq>monthly</changefreq><priority>{'0.65' if url.endswith('/full.txt') or url.endswith('/full.md') else '0.45'}</priority></url>"
         for url in sitemap_urls
     )
     (OUT_DIR / "sitemap.xml").write_text(

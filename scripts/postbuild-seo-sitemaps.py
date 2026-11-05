@@ -157,11 +157,10 @@ SITE = "https://ajew.org"
 
 
 def xml_urlset(urls: list[str], priority: str = "0.55") -> str:
-    today = date.today().isoformat()
     rows = []
     for url in urls:
         rows.append(
-            f"  <url><loc>{html.escape(url)}</loc><lastmod>{today}</lastmod>"
+            f"  <url><loc>{html.escape(url)}</loc>"
             f"<changefreq>monthly</changefreq><priority>{priority}</priority></url>"
         )
     return (
