@@ -1,0 +1,169 @@
+/**
+ * Service Worker for ajew.org
+ * Provides offline support for reader pages and core assets
+ */
+
+// Bumped 2026-07-23 so stale reader/commentary responses cannot leave the
+// Pettek Nanach sidebar stuck loading after a deployment.
+const CACHE_NAME = 'ajew-v9-aitzoas-confirmed-literals-20261022';
+const CORE_ASSETS = [
+  '/',
+  '/reader',
+  '/search-enhanced',
+  '/reader/catalog.json',
+  "/tikkun/study-geometry.json?v=readable-stam-20260930-r3",
+  "/fonts/tikkun/study-stam/AjewStudyStam-bare.ttf?v=study-1",
+  "/fonts/tikkun/study-stam/AjewStudyStam-nikud.ttf?v=study-1",
+  "/fonts/tikkun/study-stam/AjewStudyStam-taamim.ttf?v=study-1",
+  "/fonts/tikkun/study-stam/AjewStudyStam-full.ttf?v=study-1",
+  '/reader-script.js',
+];
+
+// Install: cache core assets
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(CORE_ASSETS);
+    })
+  );
+  self.skipWaiting();
+});
+
+// Activate: clean old caches
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((keys) => {
+      return Promise.all(
+        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
+      );
+    })
+  );
+  self.clients.claim();
+});
+
+// Fetch strategy:
+// - Reader JSON files: cache-first (content doesn't change often)
+// - Reader pages: network-first with cache fallback
+// - Static assets (CSS/JS/images): cache-first
+// - API calls: network only
+self.addEventListener('fetch', (event) => {
+  const url = new URL(event.request.url);
+
+  // Skip non-GET requests and API calls
+  if (event.request.method !== 'GET') return;
+  if (url.pathname.startsWith('/api/')) return;
+
+  // The dynamic writer serves this script no-store; do not freeze it in SW cache.
+  // Preserve existing cached copy-link behavior only as an offline fallback.
+  if (url.origin === self.location.origin && url.pathname === '/blog/write/share.js') {
+    event.respondWith(
+      fetch(event.request, { cache: 'no-store' }).catch(async () =>
+        (await caches.match(event.request)) || new Response('', {
+          status: 503, headers: { 'Content-Type': 'application/javascript' }
+        })
+      )
+    );
+    return;
+  }
+
+  // Calendar metadata can be corrected at runtime. Revalidate it online instead
+  // of retaining a browser/worker copy of an unsupported yahrzeit indefinitely.
+  if (url.origin === self.location.origin && [
+    '/data/tzaddikim-database.json',
+    '/data/tzaddikim-database-complete.json',
+    '/data/tzaddikim-database-filtered.json',
+  ].includes(url.pathname)) {
+    event.respondWith(
+      caches.open(CACHE_NAME).then(async (cache) => {
+        try {
+          const response = await fetch(event.request, { cache: 'no-cache' });
+          if (response.ok) {
+            try { await cache.put(event.request, response.clone()); } catch (_) { /* quota */ }
+            return response;
+          }
+          return (await cache.match(event.request)) || response;
+        } catch (_) {
+          return (await cache.match(event.request)) || new Response(
+            JSON.stringify({error:'Offline'}),
+            {status:503, headers:{'Content-Type':'application/json'}}
+          );
+        }
+      })
+    );
+    return;
+  }
+
+  // Reader JSON files - stale-while-revalidate.
+  // Returns cached copy instantly, refreshes in background so commentary edits
+  // propagate without needing another CACHE_NAME bump.
+  if (url.pathname.match(/\/(?:reader|tikkun)\/.*\.json$/)) {
+    event.respondWith(
+      caches.open(CACHE_NAME).then((cache) => {
+        return cache.match(event.request).then((cached) => {
+          const networkFetch = fetch(event.request).then((response) => {
+            if (response && response.ok) {
+              cache.put(event.request, response.clone());
+            }
+            return response;
+          }).catch(() => cached || new Response(JSON.stringify({error:'Offline'}), { status:503, headers:{'Content-Type':'application/json'} }));
+          return cached || networkFetch;
+        });
+      })
+    );
+    return;
+  }
+
+  // Static assets — cache-first
+  if (url.pathname.match(/\.(css|js|woff2?|ttf|svg|ico|webp|avif)$/)) {
+    event.respondWith(
+      caches.match(event.request).then((cached) => {
+        if (cached) return cached;
+        return fetch(event.request).then((response) => {
+          if (response.ok) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          }
+          return response;
+        });
+      })
+    );
+    return;
+  }
+
+  // Images — cache-first
+  if (url.pathname.match(/\.(jpg|jpeg|png|gif)$/)) {
+    event.respondWith(
+      caches.match(event.request).then((cached) => {
+        if (cached) return cached;
+        return fetch(event.request).then((response) => {
+          if (response.ok) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          }
+          return response;
+        });
+      })
+    );
+    return;
+  }
+
+  // HTML pages — network-first with cache fallback
+  if (event.request.headers.get('accept')?.includes('text/html')) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          if (response.ok) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          }
+          return response;
+        })
+        .catch(() => {
+          return caches.match(event.request).then((cached) => {
+            return cached || caches.match('/');
+          });
+        })
+    );
+    return;
+  }
+});

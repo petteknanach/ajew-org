@@ -19,7 +19,7 @@
   var torah = m[3] ? decodeURIComponent(m[3]) : null;
   if (bookId === 'index.html' || bookId === '' || bookId === 'super') return;
 
-  var AUDIO_SOURCES_URL = '/audio-sources.json';
+  var AUDIO_SOURCES_URL = '/audio-sources.json?v=20261105-exact-track-r1';
   var IA_METADATA = 'https://archive.org/metadata/';
   var IA_DOWNLOAD = 'https://archive.org/download/';
   var SUNO_SONGS_URL = (bookId === 'sefer-hamidos' || bookId === 'chayey-moharan')
@@ -34,6 +34,7 @@
     audio: null,
     collapsed: true,
     pendingOpen: false,
+    requestId: 0,
   };
 
   function el(tag, attrs, children) {
@@ -263,9 +264,68 @@ function loadSources() {
           title: (f.title && String(f.title).trim()) || f.name.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' '),
           url: IA_DOWNLOAD + encodeURIComponent(identifier) + '/' + encodeURIComponent(f.name),
           identifier: identifier,
+          sha1: String(f.sha1 || '').toLowerCase(),
+          size: String(f.size || ''),
         };
       });
     });
+  }
+
+  function exactEntry(edition) {
+    var tm = edition && edition.trackMap;
+    return tm && tm.mode === 'verified-filename' && tm.teachings &&
+      tm.teachings[String(part) + ':' + String(torah)];
+  }
+
+  function verifiedEdition() {
+    return state.editions.find(function (ed) { return !!exactEntry(ed); });
+  }
+
+  function teachingMatch(edition, files) {
+    var entry = exactEntry(edition);
+    var matches = [];
+    if (entry) {
+      // A semantic witness identifies the reading; metadata pins its file identity.
+      files.forEach(function (file, i) { if (file.name === entry.filename) matches.push(i); });
+      if (matches.length !== 1) return { index: -1, reason: 'Mapped recording unavailable or ambiguous' };
+      var file = files[matches[0]];
+      if (!entry.sha1 || file.sha1 !== entry.sha1.toLowerCase() || (entry.size && file.size !== String(entry.size))) {
+        return { index: -1, reason: 'Mapped recording file identity changed or missing' };
+      }
+      return { index: matches[0], label: entry.label, verified: true };
+    }
+    var tm = edition && edition.trackMap;
+    if (tm && tm.mode === 'filename' && tm.pattern && torah !== null && /^[1-9][0-9]*$/.test(torah)) {
+      var re = new RegExp(tm.pattern);
+      var p2re = tm.part2Markers ? new RegExp(tm.part2Markers) : null;
+      files.forEach(function (file, i) {
+        var name = file.name || '';
+        if (p2re && p2re.test(name) !== (String(part) === '2')) return;
+        var found = name.match(re);
+        if (found && gematriaToInt(found[tm.group || 1].replace(/["׳״]/g, '')) === Number(torah)) matches.push(i);
+      });
+      if (matches.length === 1) return { index: matches[0], label: 'Likutay Moharan ' + (String(part) === '2' ? 'II' : 'I') + ':' + torah, literal: true };
+    }
+    return { index: -1, reason: 'No verified track mapping for this teaching' };
+  }
+
+  function updateTrackStatus() {
+    if (!state.statusEl) return;
+    var f = state.files[state.currentIndex];
+    var match = state.match || {};
+    var selected = f ? 'Selected ' + (state.currentIndex + 1) + ' of ' + state.files.length + ': ' + f.title : state.files.length + ' tracks';
+    state.statusEl.textContent = selected + ' — ' +
+      (match.index === state.currentIndex && match.index >= 0
+        ? (match.verified ? 'Full recording; section start not indexed' : 'Matched by literal teaching filename.')
+        : ((match.index >= 0 ? 'Browsing archive; selected track is not the mapped teaching' : match.reason || 'Teaching mapping unknown') + '. Browse all tracks.'));
+  }
+
+  function revealSelected() {
+    if (state.collapsed) return;
+    var list = document.querySelector('#ajew-audio-player .ajew-ap-list');
+    var active = list && list.querySelector('button.active');
+    // Scroll only the track list, never the Reader text/page.
+    if (active) list.scrollTop = Math.max(0, active.offsetTop - list.offsetTop - list.clientHeight / 2 + active.offsetHeight / 2);
   }
 
   function render(container) {
@@ -299,6 +359,8 @@ function loadSources() {
       sel.appendChild(opt);
     });
     body.appendChild(sel);
+    if (verifiedEdition()) body.appendChild(el('button', { onclick: returnToTeaching }, 'Return to this teaching: ' + exactEntry(verifiedEdition()).label));
+
 
     // Audio element
     var audio = el('audio', { controls: '', preload: 'none' });
@@ -346,6 +408,7 @@ function loadSources() {
       closeBtn.setAttribute('aria-label', state.collapsed ? 'Open audio player' : 'Close audio player');
       closeBtn.setAttribute('aria-expanded', state.collapsed ? 'false' : 'true');
     }
+    if (!state.collapsed) revealSelected();
     var mobileAudioBtn = document.getElementById('mobile-audio-btn');
     if (mobileAudioBtn) {
       mobileAudioBtn.setAttribute('aria-expanded', state.collapsed ? 'false' : 'true');
@@ -366,12 +429,34 @@ function loadSources() {
       return;
     }
     if (state.collapsed) toggleCollapsed();
+    revealSelected();
   };
+
+  // Only this explicit action leaves a visitor's manual archive selection.
+  // Opening/closing the player must not own teaching selection or restart audio.
+  function returnToTeaching() {
+    var edition = verifiedEdition();
+    if (!edition) return;
+    if (edition !== state.currentEdition) {
+      selectEdition(state.editions.indexOf(edition));
+    } else if (state.match && state.match.index >= 0 && state.currentIndex !== state.match.index) {
+      state.audio.pause();
+      state.playAttempt = (state.playAttempt || 0) + 1;
+      state.currentIndex = state.match.index;
+      state.audio.src = state.files[state.currentIndex].url;
+      updateTrackStatus();
+      var buttons = document.querySelectorAll('#ajew-audio-player .ajew-ap-list .ajew-ap-track');
+      buttons.forEach(function (b, i) { b.classList.toggle('active', i === state.currentIndex); });
+    }
+    window.openAjewAudioPlayer();
+  }
 
   function selectEdition(index) {
     var ed = state.editions[parseInt(index, 10)];
     if (!ed) return;
+    if (state.audio) state.audio.pause();
     state.currentEdition = ed;
+    state.match = null;
     state.files = [];
     state.currentIndex = -1;
     try {
@@ -383,7 +468,10 @@ function loadSources() {
 
   function loadAndRenderFiles(listEl, statusEl) {
     statusEl.textContent = 'Loading tracks…';
-    fetchEditionFiles(state.currentEdition.identifier).then(function (files) {
+    var edition = state.currentEdition;
+    var requestId = ++state.requestId;
+    fetchEditionFiles(edition.identifier).then(function (files) {
+      if (requestId !== state.requestId || edition !== state.currentEdition) return;
       state.files = files;
       if (!files.length) {
         statusEl.textContent = 'No audio files available.';
@@ -398,46 +486,29 @@ function loadSources() {
         return;
       }
       statusEl.textContent = files.length + ' track' + (files.length === 1 ? '' : 's');
-      // If this edition maps Torah numbers to track positions, jump to the current Torah's track.
-      var tm = state.currentEdition && state.currentEdition.trackMap;
-      if (tm && torah !== null && !state.torahJumped) {
-        state.torahJumped = true;
-        var tNum = parseInt(torah, 10);
-        var label = 'Torah ' + torah;
-        var idx = -1;
-        if (tm.mode === 'filename' && tm.pattern) {
-          // Match the current Torah number inside decoded file names (supports Hebrew gematria).
-          var re = new RegExp(tm.pattern);
-          var p2re = tm.part2Markers ? new RegExp(tm.part2Markers) : null;
-          var wantPart2 = String(part) === '2';
-          files.forEach(function (f, i) {
-            if (idx >= 0) return;
-            var name;
-            try { name = decodeURIComponent(f.url.split('/').pop() || ''); } catch (e) { name = f.title || f.name || ''; }
-            if (!name) return;
-            if (p2re && p2re.test(name) !== wantPart2) return;
-            var m = name.match(re);
-            if (!m) return;
-            var val = gematriaToInt(m[tm.group || 1]);
-            if (val === tNum) idx = i;
-          });
-          if (idx >= 0) label = 'Torah ' + tNum + ' — matched reading';
-        } else if (!isNaN(tNum) && (!tm.maxTorah || tNum <= tm.maxTorah)) {
-          var pos = tm.hakdamaTrack ? (tNum + 1) : tNum; // track index (1-based) for this Torah
-          idx = pos - 1;
-          if (idx >= 0) label = 'Torah ' + tNum + ' — track ' + pos + ' of ' + files.length;
-        }
-        if (idx >= 0 && idx < files.length) {
-          state.currentIndex = idx;
-          if (state.audio) state.audio.src = files[idx].url;
-          statusEl.textContent = label;
-        }
+      var tm = edition.trackMap;
+      if (tm && tm.mode === 'verified-filename') Object.keys(tm.teachings || {}).forEach(function (key) {
+        if (key.split(':')[0] !== String(part)) return;
+        var known = tm.teachings[key];
+        var matched = files.filter(function (file) { return file.name === known.filename; });
+        if (matched.length === 1 && matched[0].sha1 === known.sha1 && matched[0].size === String(known.size))
+          matched[0].title = known.label + ' — ' + matched[0].name;
+      });
+      var match = teachingMatch(edition, files);
+      state.match = match;
+      state.statusEl = statusEl;
+      if (match.index >= 0) {
+        state.currentIndex = match.index;
+        state.audio.src = files[match.index].url;
+        if (match.label) files[match.index].title = match.label + ' — ' + files[match.index].name;
       }
+      updateTrackStatus();
       files.forEach(function (f, i) {
-        var btn = el('button', { onclick: function () { playIndex(i); }, title: f.title }, (i + 1) + '. ' + f.title);
+        var btn = el('button', { class: 'ajew-ap-track', onclick: function () { playIndex(i); }, title: f.title }, (i + 1) + '. ' + f.title);
         if (i === state.currentIndex) btn.classList.add('active');
         listEl.appendChild(btn);
       });
+      revealSelected();
       // Sefer HaMidos visitors get individual song playback/downloads without whole-item archive links.
       if (bookId !== 'sefer-hamidos') {
         listEl.appendChild(el('div', { style: { padding: '.4rem .6rem', borderTop: '1px solid #333', display: 'flex', gap: '.4rem', flexWrap: 'wrap', alignItems: 'center' } }, [
@@ -446,6 +517,7 @@ function loadSources() {
         ]));
       }
     }).catch(function (err) {
+      if (requestId !== state.requestId || edition !== state.currentEdition) return;
       statusEl.textContent = 'Error loading tracks';
       listEl.appendChild(el('div', { style: { padding: '.5rem', color: '#c77' } }, String(err.message || err)));
     });
@@ -457,10 +529,20 @@ function loadSources() {
     var f = state.files[i];
     if (!state.audio) return;
     state.audio.src = f.url;
-    state.audio.play().catch(function () { /* autoplay may be blocked; user can press play */ });
+    updateTrackStatus();
+    var audio = state.audio;
+    var playAttempt = state.playAttempt = (state.playAttempt || 0) + 1;
+    var result = audio.play();
+    if (result && result.catch) result.catch(function (err) {
+      if (state.audio !== audio || state.currentIndex !== i || state.playAttempt !== playAttempt) return;
+      if (err && err.name === 'AbortError') return;
+      state.statusEl.textContent += err && err.name === 'NotAllowedError'
+        ? ' — Playback blocked; press Play.' : ' — Playback failed; try Play or another track.';
+    });
     // mark active
-    var buttons = document.querySelectorAll('#ajew-audio-player .ajew-ap-list button');
+    var buttons = document.querySelectorAll('#ajew-audio-player .ajew-ap-list .ajew-ap-track');
     buttons.forEach(function (b, idx) { b.classList.toggle('active', idx === i); });
+    revealSelected();
   }
 
   function playNext() {
@@ -772,7 +854,7 @@ function loadSources() {
       // restore previously chosen edition
       var saved = null;
       try { saved = localStorage.getItem('ajew:audio:edition:' + bookId); } catch (e) {}
-      state.currentEdition = editions.find(function (e) { return e.identifier === saved; }) || editions[0];
+      state.currentEdition = verifiedEdition() || editions.find(function (e) { return e.identifier === saved; }) || editions[0];
 
       var wrap = el('div', { id: 'ajew-audio-player', class: 'collapsed' });
       document.body.appendChild(wrap);

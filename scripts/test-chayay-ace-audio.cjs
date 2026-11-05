@@ -109,6 +109,7 @@ class Element {
     this[`on${type}`]?.call(this, event);
     (this.listeners[type] || []).forEach(fn => fn.call(this, event));
   }
+  pause() {}
   play() { this.plays++; return Promise.resolve(); }
   focus() { this.focused = true; }
   scrollIntoView(options) { this.scrolled = options; }
@@ -136,7 +137,7 @@ async function boot({ book = 'chayey-moharan', part = '1', torah = '9', song = '
   const fetch = async url => {
     fetches.push(url);
     let data;
-    if (url === '/audio-sources.json') data = { books: edition ? { [book]: { editions: [{ name: 'Fixture Archive edition', identifier: 'ajew-suno-sefer-hamidos-001' }] } } : {} };
+    if (url === '/audio-sources.json?v=20261105-exact-track-r1') data = { books: edition ? { [book]: { editions: [{ name: 'Fixture Archive edition', identifier: 'ajew-suno-sefer-hamidos-001' }] } } : {} };
     else if (url === '/reader/suno-songs/chayey-moharan.json') data = manifest;
     else if (url === '/reader/suno-songs/sefer-hamidos.json') data = oldManifest;
     else if (url === 'https://archive.org/metadata/ajew-suno-sefer-hamidos-001') data = { files: [
@@ -179,7 +180,7 @@ function button(node, text) {
 
 test('Chayay full init fetches only its manifest and places two sorted songs at seg-184', async () => {
   const r = await boot();
-  assert.deepEqual(r.fetches.sort(), ['/audio-sources.json', '/reader/suno-songs/chayey-moharan.json']);
+  assert.deepEqual(r.fetches.sort(), ['/audio-sources.json?v=20261105-exact-track-r1', '/reader/suno-songs/chayey-moharan.json']);
   const { seg, dropdown, rows, playlist } = songUI(r);
   assert.equal(rows.length, 2); assert.equal(dropdown.parentNode, seg);
   assert.equal(dropdown.closest('.segment-he'), null); assert.equal(dropdown.closest('.segment-en'), null);
@@ -268,7 +269,7 @@ test('Existing Sefer HaMidos manifest, legacy segment- IDs, shared-song open and
 
 test('Unrelated book gets no new song fetch; its ordinary Archive audio still initializes', async () => {
   const r = await boot({ book: 'likutay-moharan', edition: true });
-  assert.deepEqual(r.fetches.sort(), ['/audio-sources.json', 'https://archive.org/metadata/ajew-suno-sefer-hamidos-001']);
+  assert.deepEqual(r.fetches.sort(), ['/audio-sources.json?v=20261105-exact-track-r1', 'https://archive.org/metadata/ajew-suno-sefer-hamidos-001']);
   assert.equal(r.document.querySelector('.ajew-suno-segment-player'), null);
   assert.equal(r.document.querySelector('.ajew-suno-playlist'), null);
   assert.ok(r.document.getElementById('ajew-audio-player'));

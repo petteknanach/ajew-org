@@ -7,7 +7,7 @@ const books = ['likutay-tefilos','sichos-haran','chayey-moharan','shivchay-haran
 for (const book of books) test(`${book}: one unified audio player, no duplicate IDs`, () => {
   const page = read(`src/pages/reader/${book}/[part]/[torah].astro`);
   assert.equal((page.match(/id="audio-controls"/g) || []).length, 1);
-  assert.equal((page.match(/src="\/unified-audio.js"/g) || []).length, 1);
+  assert.equal((page.match(/src="\/unified-audio.js\?v=english-device-20261105-r1"/g) || []).length, 1);
   assert.equal((page.match(/id="audio-btn-he"/g) || []).length, 1);
   assert.equal((page.match(/id="audio-btn-en"/g) || []).length, 1);
 });
