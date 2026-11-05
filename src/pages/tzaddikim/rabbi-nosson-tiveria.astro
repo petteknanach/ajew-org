@@ -83,7 +83,6 @@ const tzaddik = {
   title={`Rabbi Nosson of Tiveria | Tzaddikim Profiles`}
   description={`Learn about Rabbi Nosson (Nathan) son of Yehuda of Tiveria, Breslov disciple with yahrzeit on 26 Adar. Early Breslov presence in the Holy Land.`}
 >
-  <script type="application/ld+json" set:html={} />
 
   <div class="tzaddik-profile">
     <!-- Header with image and basic info -->
@@ -168,10 +167,17 @@ const tzaddik = {
       <h2>Related Tzaddikim</h2>
       <div class="related-tzaddikim">
         {tzaddik.related.map((related, index) => (
-          <a href={related.path} class="related-link" key={index}>
-            <span class="related-name">{related.name}</span>
-            <span class="related-relationship">{related.relationship}</span>
-          </a>
+          related.path === "/tzaddikim/tiveria" ? (
+            <div class="related-unlinked" key={index}>
+              <span class="related-name">{related.name}</span>
+              <span class="related-relationship">{related.relationship}</span>
+            </div>
+          ) : (
+            <a href={related.path} class="related-link" key={index}>
+              <span class="related-name">{related.name}</span>
+              <span class="related-relationship">{related.relationship}</span>
+            </a>
+          )
         ))}
       </div>
     </div>
@@ -350,7 +356,8 @@ const tzaddik = {
     gap: 1rem;
   }
   
-  .related-link {
+  .related-link,
+  .related-unlinked {
     display: block;
     padding: 1rem;
     background: white;
