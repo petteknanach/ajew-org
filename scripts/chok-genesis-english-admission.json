@@ -1,0 +1,43 @@
+{
+  "schema": "chok-genesis-english-admission-v1",
+  "meaningAuthoritySHA256": "56d52fd720a848c73942828cf5207575d1149e7d47e952407ff076571e11073b",
+  "selectedOwnTranslations": 2133,
+  "selectedRoleDayIntroductions": 204,
+  "substantiveOrderedBilingualQualifications": 249,
+  "heldCompleteEnglishSelections": 0,
+  "originalCorpusOperations": 0,
+  "paths": {
+    "public/chok.js": {
+      "beforeSHA256": "1cb6f03d24c9a51d5130de105fdec22154ad6b4ed0cd78cb7dfbc9240f7f9b1d",
+      "afterSHA256": "2b18c48e1ba1bd5e6b5395358ae7a13598b5aaf1a1683dff69f8b7948837ffd2",
+      "inverse": [
+        {
+          "after": "\n            if (genesisEnglish) row += window.ChokGenesisEnglish.render(genesisEnglish,sourceRef,tgOriginal,{english:englishEnabled,targum:state.targum,existingEnglish:existingTargumEnglish,introduction:!otherContext});\n            items.push({ c: c, x: x, row: row });",
+          "before": "\n            items.push({ c: c, x: x, row: row });"
+        },
+        {
+          "after": "              existingTargumEnglish = attachedTargum !== null || !!(targumRow && typeof targumRow.en === 'string' && targumRow.en.trim());\n              if (attachedTargum !== null) row += attachedTargum;\n              else if (targumRow)",
+          "before": "              if (attachedTargum !== null) row += attachedTargum;\n              else if (targumRow)"
+        },
+        {
+          "after": "            var tgOriginal = tg && (tg.ch || {})[c] && tg.ch[c][x], existingTargumEnglish = false;\n            if (genesisEnglish && !otherContext) row += window.ChokGenesisEnglish.render(genesisEnglish,sourceRef,tgOriginal,{english:englishEnabled,targum:state.targum,existingEnglish:true});\n            if (state.targum) {",
+          "before": "            if (state.targum) {\n              var tgOriginal = tg && (tg.ch || {})[c] && tg.ch[c][x];"
+        },
+        {
+          "after": " : Promise.resolve(null)), (window.ChokGenesisEnglish ? window.ChokGenesisEnglish.prepare(parsha,day,kind,slug,targ(slug),function(u){return fetchJSON(u,true);}) : Promise.resolve(null))]).then(function (ts) {\n        var tg = ts[0], en = ts[1], selectedBible = ts[2], otherContext = ts[3], genesisEnglish = ts[4];",
+          "before": " : Promise.resolve(null))]).then(function (ts) {\n        var tg = ts[0], en = ts[1], selectedBible = ts[2], otherContext = ts[3];"
+        }
+      ]
+    },
+    "src/pages/reader/chok.astro": {
+      "beforeSHA256": "e64a0357cb610931e31b741e53c313687240e65d324bbcfdb250ebec278bf5c5",
+      "afterSHA256": "14433695efc241a04667409cd3147f9f147b75dd7ea6cb2d5c4f85efe2150532",
+      "inverse": [
+        {
+          "after": "<style is:inline>\n/* Only the newly selected study fields; existing originals/owners stay unchanged. */\n.ck-genesis-targum-day { margin: .8rem 0; }\n.ck-genesis-targum-day h4 { font-size: 1.08rem; line-height: 1.5; margin: .4rem 0; }\n.ck-genesis-targum-day p, .ck-genesis-english-owner .ck-source-qualification p { font-size: 1rem; line-height: 1.65; margin: .5rem 0; }\n.ck-genesis-english-owner > .ck-en-line { font-style: normal; }\n.ck-genesis-english-owner > .ck-en-line > small { display: block; font-style: normal; font-weight: 600; }\n</style>\n<script is:inline src=\"/chok-genesis-english.js?v=0bd0ca438d69efc3ec59c7c360e8832099b796f54694c395751813a5d810e244\" integrity=\"sha256-C9DKQ41p78PsWcfDYOiDIJm3lvVGlMOVdRgTpdgQ4kQ=\" crossorigin=\"anonymous\" defer></script>\n<script is:inline src=\"/chok.js?v=2b18c48e1ba1bd5e6b5395358ae7a13598b5aaf1a1683dff69f8b7948837ffd2\" integrity=\"sha384-veyWTlkKzVnrEUZLYOz6Xn/SWMh1RWGwQ5mbmU8xJwRI4CRA6IqAh+plvztrWyk+\" crossorigin=\"anonymous\" defer></script>",
+          "before": "<script is:inline src=\"/chok.js?v=1cb6f03d24c9a51d5130de105fdec22154ad6b4ed0cd78cb7dfbc9240f7f9b1d\" integrity=\"sha384-6jtSQ/BMDr8WOtLKNuDlL+ek4m9A2vKJcQw3PovUns9Sr8b7aqFCBkpGrnmfqeJ+\" crossorigin=\"anonymous\" defer></script>"
+        }
+      ]
+    }
+  }
+}
