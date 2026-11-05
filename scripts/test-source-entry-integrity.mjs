@@ -55,7 +55,7 @@ test('out-of-range index references are disclosed without fabricated links', () 
 });
 
 test('homepage retains tzion presentation and My Fire' , () => {
-  assert.match(home, /nanach-fire-huaish-sheli-letters\.png/);
+  assert.match(home, /nanach-fire-huaish-sheli-letters-lossless-2f9e4ef7be48\.webp/);
   assert.match(home, /huaishFire/);
   assert.match(home, /tomb|tziyun|tzion|uman/i);
 });
