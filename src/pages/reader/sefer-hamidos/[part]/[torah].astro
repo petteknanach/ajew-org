@@ -62,7 +62,7 @@ const structuredData = torahData ? JSON.stringify({
 // LN commentary entry — focused per-topic excerpt from Likutay Nanach when available.
 const lnSection = torahNum === 1 ? 'volume-4/sefer-hamidos-truth-focused' : `volume-4/chapter-251-topic-${torahNum}`;
 const lnUrl = `/reader/likutay-nanach/${lnSection}.json`;
-const commentaryEntry = torahData ? {
+const commentaryEntry = torahData && fs.existsSync(path.join(process.cwd(), 'public', lnUrl.slice(1))) ? {
   related_commentaries: [
     {
       book: "likutay-nanach",
