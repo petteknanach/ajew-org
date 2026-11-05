@@ -50,7 +50,6 @@ const jsonLd = {
     "inLanguage": book.hasHebrew ? ["he", "en"] : ["en"],
     "url": `https://ajew.org/reader/${book.id}/1/1`,
     "description": book.desc,
-    "numberOfPages": book.sections,
     "genre": "Kabbalah",
     "bookFormat": "https://schema.org/EBook"
   })).concat(pdfCatalog.entries.map(book => ({
