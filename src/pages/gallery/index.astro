@@ -5,6 +5,11 @@ import { getGalleryMetadata, gallerySearchText, galleryExtraFiles, mediaLabels }
 import fs from 'node:fs';
 import path from 'node:path';
 
+// Remove repeated raw tokens without changing the gallery's search vocabulary.
+function compactSearchText(text) {
+  return [...new Set(text.split(/\s+/).filter(Boolean))].join(' ');
+}
+
 function formatFilename(filename) {
   let formatted = decodeURIComponent(filename);
   formatted = formatted.replace(/\.(jpg|jpeg|png|gif|webp|svg|tiff)$/i, '');
@@ -122,7 +127,7 @@ galleryPictures.forEach((picture) => {
       <h2>Picture Search Results <span class="hebrew">תוצאות חיפוש תמונות</span></h2>
       <div class="picture-search-grid">
         {galleryPictures.map((picture) => (
-          <a class="picture-search-card" data-gallery-search-item data-media-kind={picture.kind} data-search={`${picture.search} ${picture.gallery}`} href={picture.detailPage || picture.url} target="_blank" rel="noopener">
+          <a class="picture-search-card" data-gallery-search-item data-media-kind={picture.kind} data-search={compactSearchText(`${picture.search} ${picture.gallery}`)} href={picture.detailPage || picture.url} target="_blank" rel="noopener">
             <img src={picture.url} alt={picture.alt} loading="lazy" />
             <span class="picture-label">{picture.label}</span>
             {picture.alt !== picture.label && <p class="picture-description" dir="auto">{picture.alt}</p>}
