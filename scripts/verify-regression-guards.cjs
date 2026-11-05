@@ -44,9 +44,9 @@ function walkJsonFiles(dir) {
 mustContain('src/pages/index.astro', 'href="/shavuos"', 'Shavuos homepage button');
 mustContain('src/pages/index.astro', 'Shavuos / שבועות', 'bilingual Shavuos button text');
 mustContain('src/pages/index.astro', 'hero-saba-link', 'Saba bottom-corner image/link');
-mustContain('src/pages/index.astro', 'saba-hands-up-isolated.png', 'Saba isolated image asset');
+mustContain('src/pages/index.astro', 'saba-hands-up-isolated-lossless-c2ee8b171dc5.webp', 'Saba isolated image asset');
 mustContain('src/pages/index.astro', 'hero-nosson-link', 'Rabbi Nosson bottom-corner image/link');
-mustContain('src/pages/index.astro', 'rabbi-nosson-tomb-house-isolated.png', 'Rabbi Nosson isolated image asset');
+mustContain('src/pages/index.astro', 'rabbi-nosson-tomb-house-isolated-lossless-1bd46c643890.webp', 'Rabbi Nosson isolated image asset');
 mustContain('src/pages/index.astro', 'margin: 0.6rem auto 1.15in;', 'large space under האש שלי fire image');
 mustContain('src/pages/index.astro', '<span class="no-break">English &amp; Hebrew&nbsp;—&nbsp;free.</span>', 'short one-line subtitle above search');
 mustContain('src/pages/index.astro', 'home-prayers-section', 'Prayers for All Occasions homepage card');
