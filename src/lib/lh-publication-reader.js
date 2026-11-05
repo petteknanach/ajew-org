@@ -34,6 +34,20 @@ export function snapshotFor(data, index, pathname) {
   };
 }
 
+export function snapshotForIndices(data, indices, pathname) {
+  const requested = new Set(indices.map(String));
+  const rows = data.segments.filter(row => requested.has(String(row.index)));
+  if (!requested.size || rows.length !== requested.size) throw new Error('Source selection not found');
+  if (rows.length === 1) return snapshotFor(data, rows[0].index, pathname);
+  if (rows.length === data.segments.length) return snapshotFor(data, null, pathname);
+  const snapshot = snapshotFor({ ...data, segments: rows }, null, pathname);
+  snapshot._key = `${pathname}#selection-${rows.map(row => row.index).join('.')}@${data.sourcePublication.edition}`;
+  snapshot.ref = `${data.title} — ${rows.length} complete source passages`;
+  snapshot.readerUrl = `${pathname}#seg-${rows[0].index}`;
+  snapshot.sourceSelectionIndices = rows.map(row => row.index);
+  return snapshot;
+}
+
 export async function persistSnapshot(storage, api, snapshot, origin) {
   if (!api || typeof api.loadAndMigrate !== 'function' || typeof api.serialize !== 'function') {
     throw new Error('The existing saved-collection service is unavailable');
@@ -85,14 +99,133 @@ function initialisePublication() {
   const report = text => { if (status) status.textContent = text; };
   const wholeIndex = button => button.hasAttribute('data-lh-save') ? button.getAttribute('data-lh-save') : null;
 
-  async function save(index) {
-    const snapshot = snapshotFor(data, index, location.pathname);
+  async function saveSnapshot(snapshot) {
     const commit = () => persistSnapshot(localStorage, globalThis.AjewSeferStorage, snapshot, location.origin);
     const added = navigator.locks?.request
       ? await navigator.locks.request('ajew-my-sefer', { mode: 'exclusive' }, commit)
       : await commit();
     report(added ? 'Saved with the complete source text and translator notes.' : 'This source passage is already saved.');
   }
+
+  const save = index => saveSnapshot(snapshotFor(data, index, location.pathname));
+
+  // Bind selection ranges to the original owned nodes, not mutable DOM text or
+  // a later data-index edit. Payloads always come from the immutable source.
+  const selectionBindings = data.segments.map(row => ({ row, node: document.getElementById(`seg-${row.index}`) }))
+    .filter(({ row, node }) => node && root.contains(node) &&
+      (!row.sourceOwner || node.getAttribute('data-source-owner') === row.sourceOwner));
+  const publicationPath = location.pathname;
+  function selectedAuthority() {
+    const selection = window.getSelection();
+    if (!selection || selection.isCollapsed || !selection.rangeCount) return null;
+    const ranges = Array.from({ length: selection.rangeCount }, (_, n) => selection.getRangeAt(n));
+    const owners = selectionBindings.filter(({ node }) => node.isConnected && root.contains(node) &&
+      ranges.some(range => range.intersectsNode(node)));
+    return owners.length ? { snapshot: snapshotForIndices(data, owners.map(({ row }) => row.index), publicationPath),
+      nodes: owners.map(({ node }) => node) } : null;
+  }
+  const selectedSnapshot = () => selectedAuthority()?.snapshot ?? null;
+  const validAuthority = authority => root.isConnected && location.pathname === publicationPath &&
+    authority?.nodes.length && authority.nodes.every(node => node.isConnected && root.contains(node));
+  const payloadFor = snapshot => snapshot.savedText + '\n\n' + location.origin + snapshot.readerUrl;
+  const selectionButton = target => target instanceof Element
+    ? target.closest('.selection-popup .sel-btn, #highlight-context-menu .hl-action[data-action="share"]') : null;
+  // Highlight menus capture text in their own closure. Bind the actual menu
+  // instance at creation; never borrow a later selection or fall through after
+  // its LH authority becomes invalid. The reusable popup follows live selection.
+  const menuBindings = new WeakMap();
+  let menuOrigin = null;
+  function bindNewMenus(records) {
+    for (const record of records) for (const menu of record.addedNodes) {
+      if (!(menu instanceof Element) || menu.id !== 'highlight-context-menu' || menuBindings.has(menu)) continue;
+      const authority = selectedAuthority() || menuOrigin;
+      menuBindings.set(menu, { lh: !!authority, authority });
+    }
+  }
+  const menuObserver = new MutationObserver(bindNewMenus);
+  menuObserver.observe(document.body, { childList: true });
+  document.addEventListener('dblclick', () => {
+    const origin = selectedAuthority();
+    menuOrigin = origin;
+    queueMicrotask(() => {
+      bindNewMenus(menuObserver.takeRecords());
+      if (menuOrigin === origin) menuOrigin = null;
+    });
+  }, true);
+  function bindPopupSelection() {
+    const selection = window.getSelection();
+    if (!selection || selection.isCollapsed || !selection.rangeCount) return;
+    const popup = document.querySelector('.selection-popup');
+    if (!popup) return;
+    const authority = selectedAuthority();
+    menuBindings.set(popup, { lh: !!authority, authority });
+  }
+  document.addEventListener('selectionchange', bindPopupSelection);
+
+  document.addEventListener('copy', event => {
+    if (event.target instanceof Element && event.target.closest('input,textarea,[contenteditable="true"]')) return;
+    const snapshot = selectedSnapshot();
+    if (!snapshot) return;
+    event.preventDefault(); event.stopImmediatePropagation();
+    if (!event.clipboardData) { report('Use Copy passage to copy the complete source and notes.'); return; }
+    event.clipboardData.setData('text/plain', payloadFor(snapshot));
+    report('Copied complete source passages with translator notes.');
+  }, true);
+
+  // Shared selection menus are appended outside the Reader container. Capture
+  // only their outward LH actions; local highlight/Note/Prayer remain intact.
+  document.addEventListener('mousedown', event => {
+    const button = selectionButton(event.target);
+    if (button?.closest('.selection-popup')) bindPopupSelection();
+  }, true);
+  document.addEventListener('click', event => {
+    const button = selectionButton(event.target);
+    if (!button || !['copy', 'share', 'mysefer'].includes(button.dataset.action)) return;
+    bindNewMenus(menuObserver.takeRecords());
+    const menu = button.closest('.selection-popup, #highlight-context-menu');
+    const binding = menuBindings.get(menu);
+    if (!binding?.lh) return;
+    event.preventDefault(); event.stopImmediatePropagation();
+    if (!menu.isConnected || !validAuthority(binding.authority)) {
+      report('Not exported: select the source passage again to include its complete text and notes.');
+      return;
+    }
+    const snapshot = binding.authority.snapshot;
+    const action = button.dataset.action;
+    menu.style.setProperty('display', 'none');
+    window.getSelection()?.removeAllRanges();
+    if (action === 'mysefer') {
+      saveSnapshot(snapshot).catch(error => report(`Not saved: ${error.message}`));
+    } else if (action === 'share' && navigator.share) {
+      navigator.share({ title: snapshot.ref, text: snapshot.savedText, url: location.origin + snapshot.readerUrl })
+        .then(() => report('Shared with translator notes.'), error => report(error.name === 'AbortError' ? 'Share cancelled.' : 'Share was blocked by this browser.'));
+    } else {
+      navigator.clipboard.writeText(payloadFor(snapshot))
+        .then(() => report('Copied complete source passages with translator notes.'), () => report('Copy was blocked by this browser.'));
+    }
+  }, true);
+
+  document.addEventListener('mouseup', () => setTimeout(() => {
+    bindPopupSelection();
+    if (!selectedSnapshot()) return;
+    for (const [selector, label] of [
+      ['.selection-popup [data-action="copy"]', 'Copy source'],
+      ['.selection-popup [data-action="share"]', 'Share source'],
+      ['.selection-popup [data-action="mysefer"]', '+ My Sefer'],
+      ['#highlight-context-menu [data-action="share"]', 'Share source']
+    ]) {
+      const button = document.querySelector(selector);
+      if (button) { button.textContent = label; button.title = 'Complete bilingual source passages with translator notes'; button.style.minHeight = '44px'; }
+    }
+    for (const menu of document.querySelectorAll('.selection-popup, #highlight-context-menu')) {
+      if (getComputedStyle(menu).display === 'none') continue;
+      menu.style.maxWidth = `${Math.max(1, innerWidth - 20)}px`;
+      menu.style.boxSizing = 'border-box';
+      menu.style.flexWrap = 'wrap';
+      const rect = menu.getBoundingClientRect();
+      menu.style.left = `${scrollX + Math.max(10, Math.min(rect.left, innerWidth - rect.width - 10))}px`;
+    }
+  }, 20));
 
   // Capture only LH save controls, including the existing first-paragraph-only
   // toolbar/hover consumer. All other readers retain their unchanged handlers.

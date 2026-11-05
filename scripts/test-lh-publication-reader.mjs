@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { createHash } from 'node:crypto';
-import { snapshotFor, persistSnapshot } from '../src/lib/lh-publication-reader.js';
+import { snapshotFor, snapshotForIndices, persistSnapshot } from '../src/lib/lh-publication-reader.js';
 import '../public/my-sefer-storage.js';
 
 const root = new URL('../', import.meta.url);
@@ -108,6 +108,35 @@ test('complete snapshots include both languages and every attached qualification
     assert.equal(all.sourceEnglishSHA256, page.sourcePublication.enSHA256);
   }
   assert.throws(() => snapshotFor(longPage, 'not-a-source-index', '/reader/likutay-halachos/1/49/'), /not found/);
+});
+
+test('selection snapshots use complete immutable owning rows and qualified real Save', async () => {
+  const rows = longPage.segments.filter(row => row.sourceReference != null && row.translatorNotes.length).slice(0, 2);
+  assert.equal(rows.length, 2);
+  const pathname = '/reader/likutay-halachos/1/49/';
+  const selection = snapshotForIndices(longPage, [rows[1].index, rows[0].index, rows[1].index], pathname);
+  assert.deepEqual(selection.sourceSelectionIndices, rows.map(row => row.index));
+  for (const row of rows) {
+    assert.ok(selection.savedText.includes(row.en));
+    assert.ok(selection.savedText.includes(row.he_nikud));
+    for (const note of row.translatorNotes) assert.ok(selection.savedText.includes(note.text));
+  }
+  assert.equal(selection.readerUrl, pathname+'#seg-'+rows[0].index);
+  const single = snapshotForIndices(longPage, [rows[0].index], pathname);
+  const ordinary = snapshotFor(longPage, rows[0].index, pathname);
+  assert.equal(single.savedText, ordinary.savedText);
+  assert.equal(single._key, ordinary._key);
+  const whole = snapshotForIndices(longPage, longPage.segments.map(row => row.index), pathname);
+  assert.equal(whole.savedText, snapshotFor(longPage, null, pathname).savedText);
+  assert.equal(whole._key, saved._key);
+  assert.throws(() => snapshotForIndices(longPage, [], pathname), /not found/);
+  assert.throws(() => snapshotForIndices(longPage, [rows[0].index, 'unknown-source'], pathname), /not found/);
+  const storage = new Store();
+  assert.equal(await persistSnapshot(storage, api, selection, 'https://ajew.org'), true);
+  const actual = await api.loadAndMigrate(storage, 'https://ajew.org');
+  assert.equal(actual.passages[0].savedText, selection.savedText);
+  assert.deepEqual(actual.passages[0].sourceSelectionIndices, selection.sourceSelectionIndices);
+  assert.equal(await persistSnapshot(storage, api, snapshotForIndices(longPage, rows.map(row => row.index), pathname), 'https://ajew.org'), false);
 });
 
 test('real migration owns two verified writes, retains old store and refuses duplicate Save', async () => {
