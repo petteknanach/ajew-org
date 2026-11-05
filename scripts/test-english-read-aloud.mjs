@@ -120,7 +120,14 @@ test('long unpunctuated and supplementary characters are conserved, page session
 test('every actual unified consumer is cache versioned with exact inverse source conservation',()=>{
  const consumers=JSON.parse(read('scripts/fixtures/reader-audio/english/consumers.json'));assert.ok(consumers.length>=30);
  for(const p of consumers){const before=Buffer.from(beforeTemplates[p], 'base64').toString('utf8'),after=read(p);
- assert.equal(after.replaceAll('/unified-audio.js?v=english-device-20261105-r1"','/unified-audio.js"'),before,p);
+ let conserved=after.replaceAll('/unified-audio.js?v=english-device-20261105-r1"','/unified-audio.js"');
+ if(p==='src/pages/reader/sefer-hamidos/[part]/[torah].astro'){
+   // Invert only the separately approved availability guard; historical audio baselines remain fixed.
+   const approved="const commentaryEntry = torahData && fs.existsSync(path.join(process.cwd(), 'public', lnUrl.slice(1))) ? {";
+   assert.equal(conserved.split(approved).length,2,`${p}: expected exactly one approved commentary availability guard`);
+   conserved=conserved.replace(approved,'const commentaryEntry = torahData ? {');
+ }
+ assert.equal(conserved,before,p);
  assert.ok(!/src="\/unified-audio\.js"/.test(after),p);}
  assert.equal(read('public/tts-fix.js'),read('scripts/fixtures/reader-audio/english/served-tts-fix.js'));
 });
