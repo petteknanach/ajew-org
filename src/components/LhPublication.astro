@@ -1,0 +1,140 @@
+---
+import fs from 'node:fs';
+import path from 'node:path';
+interface Props { data: any }
+const imageSizes = new Map<string, {width: number; height: number}>();
+function imageSize(url: string) {
+  if (imageSizes.has(url)) return imageSizes.get(url)!;
+  if (!/^\/images\/lh-study\/volume-5\/[a-z0-9-]+\.png$/.test(url)) throw new Error('Unexpected LH diagram path');
+  const file = path.join(process.cwd(), 'public', url.slice(1));
+  const descriptor = fs.openSync(file, 'r');
+  const header = Buffer.alloc(24);
+  try { if (fs.readSync(descriptor, header, 0, 24, 0) !== 24) throw new Error('Incomplete LH PNG'); }
+  finally { fs.closeSync(descriptor); }
+  if (!header.subarray(0, 8).equals(Buffer.from([137,80,78,71,13,10,26,10]))) throw new Error('Invalid LH PNG');
+  const size = {width: header.readUInt32BE(16), height: header.readUInt32BE(20)};
+  if (!size.width || !size.height || size.width > 20000 || size.height > 20000) throw new Error('Invalid LH diagram dimensions');
+  imageSizes.set(url, size);
+  return size;
+}
+const { data } = Astro.props;
+const edition = data.sourcePublication;
+const units = new Map(edition.units.map((unit: any) => [unit.unit, unit]));
+const finalRecords = new Map(edition.units.map((unit: any) => [unit.recordIndices.at(-1), unit]));
+const isStructure = (segment: any) => segment.sourceEdition && ['unit_heading', 'item_marker', 'embedded_subheading'].includes(segment.sourceRole);
+const body = JSON.stringify(data).replace(/</g, '\\u003c');
+---
+
+<div class="reader-content mode-hebrew lh-publication" data-lh-publication={edition.edition}>
+  <p class="lh-edition-credit">Matched source edition · Volume 5 · Bracketed references are separate from the traditional items.</p>
+  <div class="reader-content-original">
+    {data.segments.map((segment: any) => (
+      <>
+        {isStructure(segment) ? (
+          <div class={`lh-structure lh-structure-${segment.sourceRole}`} id={`seg-${segment.index}`} data-source-owner={segment.sourceOwner} data-source-role={segment.sourceRole}>
+            <span id={segment.canonicalAnchor}></span>
+            {segment.sourceRole === 'unit_heading' ? (
+              <h2><span class="lh-structural-he" lang="he" dir="rtl">{segment.he_nikud}</span><span class="lh-structural-en" lang="en" dir="ltr">{segment.en}</span></h2>
+            ) : (
+              <h3><span class="lh-structural-he" lang="he" dir="rtl">{segment.he_nikud}</span><span class="lh-structural-en" lang="en" dir="ltr">{segment.en}</span></h3>
+            )}
+            {segment.translatorNotes?.length > 0 && <aside class="lh-translator-notes segment-en" aria-label="Translator notes">
+              {segment.translatorNotes.map((note: any) => <p id={note.id} dir="auto">{note.text}</p>)}
+            </aside>}
+          </div>
+        ) : (
+          <div class="reader-segment-pair" id={`seg-${segment.index}`} data-lh-index={segment.index} data-source-owner={segment.sourceOwner}>
+            {segment.canonicalAnchor && <span class="lh-source-anchor" id={segment.canonicalAnchor}></span>}
+            <div class="ajew-segment-actions lh-passage-actions">
+              <button type="button" data-lh-copy={segment.index}>Copy passage</button>
+              <button type="button" data-lh-save={segment.index}>Save passage</button>
+            </div>
+            <div class="reader-segment segment-he" data-index={String(segment.index)} lang="he" dir="rtl">
+              {segment.sourceReference != null ? <span class="segment-number lh-published-reference">[{segment.sourceReference}]</span> : !segment.sourceEdition && <span class="segment-number">{segment.index}</span>}
+              <p data-nikud={segment.sourceEdition ? segment.he_nikud : segment.he} data-lh-plain={segment.sourceEdition ? segment.he : undefined}>{segment.sourceEdition ? segment.he_nikud : segment.he}</p>
+            </div>
+            <div class={`reader-segment segment-en ${!segment.en ? 'empty-translation' : ''}`} data-index={String(segment.index)} lang="en" dir="ltr">
+              {segment.sourceReference != null ? <span class="segment-number lh-published-reference">[{segment.sourceReference}]</span> : !segment.sourceEdition && <span class="segment-number">{segment.index}</span>}
+              <p>{segment.en || 'Translation not yet available'}</p>
+            </div>
+            {segment.translatorNotes?.length > 0 && <aside class="lh-translator-notes segment-en" aria-label="Translator notes">
+              <strong>Translator notes</strong>
+              {segment.translatorNotes.map((note: any) => <p id={note.id} dir="auto">{note.text}</p>)}
+            </aside>}
+          </div>
+        )}
+        {finalRecords.has(segment.index) && (() => {
+          const unit: any = finalRecords.get(segment.index);
+          return <details class="lh-editorial" id={unit.aidAnchor}>
+            <summary>Summary &amp; study aids — {unit.title}</summary>
+            <p class="lh-editorial-credit">{unit.editorialAttribution}</p>
+            <div lang="en" dir="ltr">
+              {unit.editorialAids.map((aid: any) => /Heading|Subhead/.test(aid.style)
+                ? <h3>{aid.text}</h3> : <p>{aid.text}</p>)}
+            </div>
+            <div class="lh-diagrams">
+              {unit.diagrams.map((diagram: any) => <figure id={diagram.id}>
+                <a href={diagram.url} target="_blank" rel="noopener" aria-label={`Open full-size: ${diagram.title}`}>
+                  <img src={diagram.url} alt={diagram.title} width={imageSize(diagram.url).width} height={imageSize(diagram.url).height} loading="lazy" decoding="async" />
+                </a>
+                <figcaption><strong>{diagram.title}</strong><span>{diagram.attribution}</span><a href={diagram.url} target="_blank" rel="noopener">Open full-size diagram</a></figcaption>
+              </figure>)}
+            </div>
+          </details>;
+        })()}
+      </>
+    ))}
+  </div>
+</div>
+
+<details class="lh-legacy-contexts">
+  <summary>Earlier annotations and link context</summary>
+  <p>Earlier Reader contexts are retained separately. Their links identify current source references; they do not assert that an earlier English selection has the same meaning in the corrected edition.</p>
+  {data.legacyAnnotationContext.map((context: any) => <details class="lh-legacy-context" id={`seg-${context.index}`} data-legacy-note-key={context.noteKey}>
+    <summary>Earlier paragraph {context.index}</summary>
+    <p class="lh-context-credit">{context.contextQualification}</p>
+    {context.sourceReferences.length > 0 && <p>Current source references: {context.sourceReferences.map((ref: number) => <a href={`#lh5-ref-${ref}`}>[{ref}] </a>)}</p>}
+    <p lang="he" dir="rtl" class="lh-earlier-text">{context.originalContext.he}</p>
+    {context.originalContext.he_nikud && context.originalContext.he_nikud !== context.originalContext.he && <details><summary>Earlier pointed Hebrew field</summary><p lang="he" dir="rtl" class="lh-earlier-text">{context.originalContext.he_nikud}</p></details>}
+    <p lang="en" dir="ltr" class="lh-earlier-text">{context.originalContext.en}</p>
+    <label>Earlier personal note<textarea data-lh-legacy-note={context.noteKey} dir="auto"></textarea></label>
+    <button type="button" data-lh-save-legacy-note={context.noteKey}>Save earlier note</button>
+  </details>)}
+</details>
+<p class="lh-action-status" role="status" aria-live="polite"></p>
+<script type="application/json" id="lh-publication-data" set:html={body} />
+<script is:inline src="/my-sefer-storage.js?v=lh5-source-edition-1" defer></script>
+<script>
+  import '../lib/lh-publication-reader.js';
+</script>
+
+<style>
+  :global(.reader-container:has(.lh-publication) #btn-align){display:none}
+  .lh-publication :global(.seg-copy-btn){display:none}
+  @media print{.lh-legacy-contexts,.lh-passage-actions,.lh-action-status{display:none!important}}
+  .lh-edition-credit,.lh-editorial-credit,.lh-context-credit{font:0.86rem/1.65 system-ui,sans-serif;color:var(--reader-text,#374151)}
+  .lh-publication :global(.reader-segment-pair){position:relative;scroll-margin-top:9rem}
+  .lh-source-anchor{position:absolute;top:0;scroll-margin-top:9rem}
+  .lh-passage-actions{display:flex;gap:.5rem;flex-wrap:wrap;grid-column:1/-1;margin:.4rem 0}
+  .lh-passage-actions button,.lh-legacy-context button{font:inherit;min-height:2.75rem;padding:.4rem .7rem;border:1px solid currentColor;border-radius:.4rem;color:var(--reader-text,#1a365d);background:transparent;cursor:pointer}
+  .lh-published-reference{font-size:.75rem!important;font-weight:400!important;opacity:1!important;color:var(--reader-text,#525252)}
+  .lh-publication p,.lh-earlier-text{white-space:pre-wrap;overflow-wrap:anywhere}
+  .lh-structure{margin:1.7rem 0;scroll-margin-top:9rem}
+  .lh-structure h2,.lh-structure h3{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;line-height:1.65}
+  .lh-structure-item_marker h3{font-size:1.1em}
+  :global(.mode-hebrew) .lh-structural-en,:global(.mode-english) .lh-structural-he{display:none}
+  :global(.mode-hebrew) .lh-structure h2,:global(.mode-hebrew) .lh-structure h3,:global(.mode-english) .lh-structure h2,:global(.mode-english) .lh-structure h3{grid-template-columns:1fr}
+  .lh-translator-notes{grid-column:1/-1;border-inline-start:3px solid currentColor;padding:.65rem 1rem;font-size:.92em;line-height:1.7}
+  .lh-editorial,.lh-legacy-contexts{margin:1.5rem 0;padding:1rem;border:1px solid currentColor;border-radius:.5rem;scroll-margin-top:9rem}
+  .lh-editorial summary,.lh-legacy-contexts summary{cursor:pointer;font-weight:600;line-height:1.65;overflow-wrap:anywhere}
+  .lh-editorial p{font-size:1rem;line-height:1.8}
+  .lh-diagrams{display:grid;gap:1.5rem}
+  .lh-diagrams figure{margin:0;min-width:0}
+  .lh-diagrams img{display:block;width:100%;height:auto;border:1px solid #6b7280;background:white}
+  figcaption{display:grid;gap:.4rem;font:1rem/1.65 system-ui,sans-serif;margin-top:.6rem}
+  figcaption a{min-height:2.75rem;display:inline-flex;align-items:center;text-decoration:underline}
+  .lh-legacy-context{margin:1rem 0;padding:.6rem;border-top:1px solid currentColor;scroll-margin-top:9rem}
+  .lh-legacy-context textarea{display:block;width:100%;box-sizing:border-box;min-height:6rem;margin:.5rem 0;font:inherit;color:inherit;background:transparent}
+  .lh-action-status{font:1rem/1.5 system-ui,sans-serif;min-height:1.5em}
+  @media(max-width:480px){.lh-structure h2,.lh-structure h3{gap:.65rem}.lh-editorial,.lh-legacy-contexts{padding:.7rem}}
+</style>

@@ -2,6 +2,7 @@
 import Layout from '../../../../layouts/Layout.astro';
 import Comments from '../../../../components/Comments.astro';
 import TeachingVideo from '../../../../components/TeachingVideo.astro';
+import LhPublication from '../../../../components/LhPublication.astro';
 import '../../../../styles/reader.css';
 import '../../../../styles/reader-v2.css';
 import fs from 'node:fs';
@@ -42,7 +43,7 @@ const torahNum = parseInt(torah);
 
 let torahData = null;
 let error = null;
-let summaryEntry = null;
+let summaryEntries = [];
 
 try {
   const filePath = path.join(process.cwd(), `public/reader/likutay-halachos/part-${partNum}/halacha-${torahNum}.json`);
@@ -59,7 +60,7 @@ if (torahData) {
   try {
     const summaryPath = path.join(process.cwd(), 'public/reader/likutay-halachos/summaries/index.json');
     const summaryIndex = JSON.parse(fs.readFileSync(summaryPath, 'utf8'));
-    summaryEntry = (summaryIndex.items || []).find((item) => item.part === partNum && item.torah === torahNum) || null;
+    summaryEntries = (summaryIndex.items || []).filter((item) => item.part === partNum && (item.torah === torahNum || item.readerAliases?.includes(torahNum)));
   } catch (e) {}
 
   if (!torahData.navigation) {
@@ -181,6 +182,7 @@ const structuredData = torahData ? JSON.stringify({
       <div class="reader-toolbar">
         <div class="reader-toolbar-group">
           <button class="reader-btn" data-mode="hebrew">Hebrew</button>
+          {torahData.sourcePublication?.schema === 'lh-authenticated-publication-v1' && <><button class="reader-btn" data-mode="english">English</button><button class="reader-btn" data-mode="both">Both</button></>}
         </div>
         <div class="reader-toolbar-group">
           <button class="reader-btn" id="btn-nikud">Nikud</button>
@@ -234,13 +236,14 @@ const structuredData = torahData ? JSON.stringify({
           <a href={torahData.navigation.prevUrl} data-dir="prev">&larr; Previous</a>
         ) : <span class="disabled">&larr; Previous</span>}
         <a href={`/reader/likutay-halachos/${partNum}`}>Book Index</a>
-        {summaryEntry && <a href={summaryEntry.summaryUrl}>Summary</a>}
+        {summaryEntries.map((entry) => <a href={entry.summaryUrl} dir="auto">Summary{summaryEntries.length > 1 ? ` — ${entry.hebrewTitle}` : ''}</a>)}
         <a href="/reader">All Books</a>
         {torahData.navigation.nextUrl ? (
           <a href={torahData.navigation.nextUrl} data-dir="next">Next &rarr;</a>
         ) : <span class="disabled">Next &rarr;</span>}
       </div>
 
+      {torahData.sourcePublication?.schema === 'lh-authenticated-publication-v1' ? <LhPublication data={torahData} /> : (
       <div class="reader-content mode-hebrew">
         <div class="reader-content-original">
 {torahData.segments.map((seg) => (
@@ -274,6 +277,8 @@ const structuredData = torahData ? JSON.stringify({
         )}
       </div>
 
+      )}
+
       {partNum === 2 && torahNum === 37 && (
         <TeachingVideo
           title="Hope in Every Generation Through the True Tzaddikim"
@@ -293,7 +298,7 @@ const structuredData = torahData ? JSON.stringify({
           <a href={torahData.navigation.prevUrl} data-dir="prev">&larr; Previous</a>
         ) : <span class="disabled">&larr; Previous</span>}
         <a href={`/reader/likutay-halachos/${partNum}`}>Book Index</a>
-        {summaryEntry && <a href={summaryEntry.summaryUrl}>Summary</a>}
+        {summaryEntries.map((entry) => <a href={entry.summaryUrl} dir="auto">Summary{summaryEntries.length > 1 ? ` — ${entry.hebrewTitle}` : ''}</a>)}
         <a href="/reader">All Books</a>
         {torahData.navigation.nextUrl ? (
           <a href={torahData.navigation.nextUrl} data-dir="next">Next &rarr;</a>

@@ -185,6 +185,7 @@ const anchorFor = (item) => (item.summaryUrl?.split('#')[1] || `summary-${item.t
       <div class="hebrew-title">{summaryData.hebrewTitle}</div>
       <h1>{summaryData.title}</h1>
       <p>{summaryData.description}</p>
+      <p>Editorial summaries and diagrams are learning aids, separate from the original teaching.</p>
       <p>{items.length} summaries are now available here for Likutay Halachos, Orach Chaim A.</p>
       <div class="summary-actions">
         <a class="pill-link" href="/reader/likutay-halachos/1">📖 Open Orach Chaim A Index</a>
@@ -223,8 +224,12 @@ const anchorFor = (item) => (item.summaryUrl?.split('#')[1] || `summary-${item.t
 
         <footer>
           <a class="pill-link" href={item.readerUrl}>Read the full halacha</a>
+          {item.studyAidUrl && <a class="pill-link" href={item.studyAidUrl}>Open illustrated study aid</a>}
           <a class="pill-link" href="#top" onclick="window.scrollTo({top:0,behavior:'smooth'}); return false;">Back to top</a>
         </footer>
+        {item.diagrams?.length > 0 && <nav aria-label={`Full-size diagrams for ${item.title}`} class="summary-actions">
+          {item.diagrams.map((diagram) => <a class="pill-link" href={diagram.url} target="_blank" rel="noopener">{diagram.title} — full-size diagram</a>)}
+        </nav>}
       </article>
     ))}
   </main>

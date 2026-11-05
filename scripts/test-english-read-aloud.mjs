@@ -127,6 +127,17 @@ test('every actual unified consumer is cache versioned with exact inverse source
    assert.equal(conserved.split(approved).length,2,`${p}: expected exactly one approved commentary availability guard`);
    conserved=conserved.replace(approved,'const commentaryEntry = torahData ? {');
  }
+ if(p==='src/pages/reader/likutay-halachos/[part]/[torah].astro'){
+   // Adopt only the reviewed LH publication island and its aid navigation.
+   // The original audio fixture and all other consumer bytes remain fixed.
+   const adoption=JSON.parse(read('scripts/fixtures/lh5-reader/approved-template-delta.json'));
+   assert.equal(adoption.path,p);
+   for(const change of adoption.inverse){
+     assert.ok(change.after.length>0);
+     assert.equal(conserved.split(change.after).length,2,`${p}: expected exactly one approved LH delta`);
+     conserved=conserved.replace(change.after,change.before);
+   }
+ }
  assert.equal(conserved,before,p);
  assert.ok(!/src="\/unified-audio\.js"/.test(after),p);}
  assert.equal(read('public/tts-fix.js'),read('scripts/fixtures/reader-audio/english/served-tts-fix.js'));

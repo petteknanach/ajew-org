@@ -35,6 +35,7 @@ _aitzoas = _load_sibling("qualified_aitzoas362_exports")
 AITZOAS_BOOK, is_aitzoas_archive, is_aitzoas_source = _aitzoas.BOOK, _aitzoas.is_archive, _aitzoas.is_source
 load_aitzoas_edition, aitzoas_checked_section, aitzoas_section_exports = _aitzoas.load_edition, _aitzoas.checked_section, _aitzoas.section_exports
 _navigation = _load_sibling("reader_plain_navigation")
+_lh_publication = _load_sibling("lh_publication_exports")
 
 ROOT = Path(__file__).resolve().parents[1]
 READER_DIR = ROOT / "public" / "reader"
@@ -390,6 +391,12 @@ nav a{{margin-right:12px}} .he{{font-size:1.25rem;text-align:right;margin:12px 0
 
 
 def write_teaching(path: Path, data: dict[str, Any], book: str, part: str, torah: str) -> dict[str, Any] | None:
+    if book == "likutay-halachos" and "sourcePublication" in data:
+        publication = data["sourcePublication"]
+        if not isinstance(publication, dict) or publication.get("schema") != "lh-authenticated-publication-v1":
+            raise ValueError("Unsupported LH source publication; no unqualified fallback")
+        source_url = _navigation.human_source_url(path, READER_DIR, f"/reader/{book}/{part}/{torah}")
+        return _lh_publication.write_publication(OUT_DIR, data, book, part, torah, source_url)
     segments = collect_segments(data)
     if not segments:
         return None

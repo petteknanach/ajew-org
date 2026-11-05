@@ -1,0 +1,34 @@
+{
+  "path": "src/pages/reader/likutay-halachos/[part]/[torah].astro",
+  "scope": "Exact LH-only authenticated source rendering, Both-language buttons and complete study-aid navigation; no audio collector changes",
+  "inverse": [
+    {
+      "before": "import Layout from '../../../../layouts/Layout.astro';\nimport Comments from '../../../../components/Comments.astro';\nimport TeachingVideo from '../../../../components/TeachingVideo.astro';\nimport '../../../../styles/reader.css';\nimport '../../../../styles/reader-v2.css';\nimport fs from 'node:fs';\n",
+      "after": "import Layout from '../../../../layouts/Layout.astro';\nimport Comments from '../../../../components/Comments.astro';\nimport TeachingVideo from '../../../../components/TeachingVideo.astro';\nimport LhPublication from '../../../../components/LhPublication.astro';\nimport '../../../../styles/reader.css';\nimport '../../../../styles/reader-v2.css';\nimport fs from 'node:fs';\n"
+    },
+    {
+      "before": "\nlet torahData = null;\nlet error = null;\nlet summaryEntry = null;\n\ntry {\n  const filePath = path.join(process.cwd(), `public/reader/likutay-halachos/part-${partNum}/halacha-${torahNum}.json`);\n",
+      "after": "\nlet torahData = null;\nlet error = null;\nlet summaryEntries = [];\n\ntry {\n  const filePath = path.join(process.cwd(), `public/reader/likutay-halachos/part-${partNum}/halacha-${torahNum}.json`);\n"
+    },
+    {
+      "before": "  try {\n    const summaryPath = path.join(process.cwd(), 'public/reader/likutay-halachos/summaries/index.json');\n    const summaryIndex = JSON.parse(fs.readFileSync(summaryPath, 'utf8'));\n    summaryEntry = (summaryIndex.items || []).find((item) => item.part === partNum && item.torah === torahNum) || null;\n  } catch (e) {}\n\n  if (!torahData.navigation) {\n",
+      "after": "  try {\n    const summaryPath = path.join(process.cwd(), 'public/reader/likutay-halachos/summaries/index.json');\n    const summaryIndex = JSON.parse(fs.readFileSync(summaryPath, 'utf8'));\n    summaryEntries = (summaryIndex.items || []).filter((item) => item.part === partNum && (item.torah === torahNum || item.readerAliases?.includes(torahNum)));\n  } catch (e) {}\n\n  if (!torahData.navigation) {\n"
+    },
+    {
+      "before": "      <div class=\"reader-toolbar\">\n        <div class=\"reader-toolbar-group\">\n          <button class=\"reader-btn\" data-mode=\"hebrew\">Hebrew</button>\n        </div>\n        <div class=\"reader-toolbar-group\">\n          <button class=\"reader-btn\" id=\"btn-nikud\">Nikud</button>\n",
+      "after": "      <div class=\"reader-toolbar\">\n        <div class=\"reader-toolbar-group\">\n          <button class=\"reader-btn\" data-mode=\"hebrew\">Hebrew</button>\n          {torahData.sourcePublication?.schema === 'lh-authenticated-publication-v1' && <><button class=\"reader-btn\" data-mode=\"english\">English</button><button class=\"reader-btn\" data-mode=\"both\">Both</button></>}\n        </div>\n        <div class=\"reader-toolbar-group\">\n          <button class=\"reader-btn\" id=\"btn-nikud\">Nikud</button>\n"
+    },
+    {
+      "before": "          <a href={torahData.navigation.prevUrl} data-dir=\"prev\">&larr; Previous</a>\n        ) : <span class=\"disabled\">&larr; Previous</span>}\n        <a href={`/reader/likutay-halachos/${partNum}`}>Book Index</a>\n        {summaryEntry && <a href={summaryEntry.summaryUrl}>Summary</a>}\n        <a href=\"/reader\">All Books</a>\n        {torahData.navigation.nextUrl ? (\n          <a href={torahData.navigation.nextUrl} data-dir=\"next\">Next &rarr;</a>\n        ) : <span class=\"disabled\">Next &rarr;</span>}\n      </div>\n\n      <div class=\"reader-content mode-hebrew\">\n        <div class=\"reader-content-original\">\n{torahData.segments.map((seg) => (\n",
+      "after": "          <a href={torahData.navigation.prevUrl} data-dir=\"prev\">&larr; Previous</a>\n        ) : <span class=\"disabled\">&larr; Previous</span>}\n        <a href={`/reader/likutay-halachos/${partNum}`}>Book Index</a>\n        {summaryEntries.map((entry) => <a href={entry.summaryUrl} dir=\"auto\">Summary{summaryEntries.length > 1 ? ` — ${entry.hebrewTitle}` : ''}</a>)}\n        <a href=\"/reader\">All Books</a>\n        {torahData.navigation.nextUrl ? (\n          <a href={torahData.navigation.nextUrl} data-dir=\"next\">Next &rarr;</a>\n        ) : <span class=\"disabled\">Next &rarr;</span>}\n      </div>\n\n      {torahData.sourcePublication?.schema === 'lh-authenticated-publication-v1' ? <LhPublication data={torahData} /> : (\n      <div class=\"reader-content mode-hebrew\">\n        <div class=\"reader-content-original\">\n{torahData.segments.map((seg) => (\n"
+    },
+    {
+      "before": "        )}\n      </div>\n\n      {partNum === 2 && torahNum === 37 && (\n        <TeachingVideo\n          title=\"Hope in Every Generation Through the True Tzaddikim\"\n",
+      "after": "        )}\n      </div>\n\n      )}\n\n      {partNum === 2 && torahNum === 37 && (\n        <TeachingVideo\n          title=\"Hope in Every Generation Through the True Tzaddikim\"\n"
+    },
+    {
+      "before": "          <a href={torahData.navigation.prevUrl} data-dir=\"prev\">&larr; Previous</a>\n        ) : <span class=\"disabled\">&larr; Previous</span>}\n        <a href={`/reader/likutay-halachos/${partNum}`}>Book Index</a>\n        {summaryEntry && <a href={summaryEntry.summaryUrl}>Summary</a>}\n        <a href=\"/reader\">All Books</a>\n        {torahData.navigation.nextUrl ? (\n          <a href={torahData.navigation.nextUrl} data-dir=\"next\">Next &rarr;</a>\n",
+      "after": "          <a href={torahData.navigation.prevUrl} data-dir=\"prev\">&larr; Previous</a>\n        ) : <span class=\"disabled\">&larr; Previous</span>}\n        <a href={`/reader/likutay-halachos/${partNum}`}>Book Index</a>\n        {summaryEntries.map((entry) => <a href={entry.summaryUrl} dir=\"auto\">Summary{summaryEntries.length > 1 ? ` — ${entry.hebrewTitle}` : ''}</a>)}\n        <a href=\"/reader\">All Books</a>\n        {torahData.navigation.nextUrl ? (\n          <a href={torahData.navigation.nextUrl} data-dir=\"next\">Next &rarr;</a>\n"
+    }
+  ]
+}
