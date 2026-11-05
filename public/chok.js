@@ -651,8 +651,8 @@
   function versesHTML(slug, from, to, kind, vcomm, parsha, day) {
     var englishEnabled = state.tanachen, capturedLanguage = state.language;
     return book(slug).then(function (d) {
-      return Promise.all([targ(slug), englishEnabled ? en(slug) : Promise.resolve(null), scheduledBible(parsha, day, slug, d), (window.ChokOtherLayers && window.ChokOtherLayers.supports(parsha,day) ? targ(slug).then(function(t){return window.ChokOtherLayers.prepare(parsha,day,slug,t,function(u){return fetchJSON(u,true);});}).catch(function(e){ console.warn('Other-layer additions unavailable; retaining original reader',e); return null; }) : Promise.resolve(null))]).then(function (ts) {
-        var tg = ts[0], en = ts[1], selectedBible = ts[2], otherContext = ts[3];
+      return Promise.all([targ(slug), englishEnabled ? en(slug) : Promise.resolve(null), scheduledBible(parsha, day, slug, d), (window.ChokOtherLayers && window.ChokOtherLayers.supports(parsha,day) ? targ(slug).then(function(t){return window.ChokOtherLayers.prepare(parsha,day,slug,t,function(u){return fetchJSON(u,true);});}).catch(function(e){ console.warn('Other-layer additions unavailable; retaining original reader',e); return null; }) : Promise.resolve(null)), (window.ChokGenesisEnglish ? window.ChokGenesisEnglish.prepare(parsha,day,kind,slug,targ(slug),function(u){return fetchJSON(u,true);}) : Promise.resolve(null))]).then(function (ts) {
+        var tg = ts[0], en = ts[1], selectedBible = ts[2], otherContext = ts[3], genesisEnglish = ts[4];
         var qualifiedDay = window.ChokSources.isTuesday(parsha, day);
         var items = [];
         var c = from.c, v = from.v;
@@ -678,15 +678,18 @@
               row += window.ChokSources.meaningNotes(source);
             } else if (generic !== null) row += generic;
             else row += '<p class="ck-source-unavailable" lang="en" dir="ltr">This translation is temporarily unavailable.</p>';
+            var tgOriginal = tg && (tg.ch || {})[c] && tg.ch[c][x], existingTargumEnglish = false;
+            if (genesisEnglish && !otherContext) row += window.ChokGenesisEnglish.render(genesisEnglish,sourceRef,tgOriginal,{english:englishEnabled,targum:state.targum,existingEnglish:true});
             if (state.targum) {
-              var tgOriginal = tg && (tg.ch || {})[c] && tg.ch[c][x];
               var targumRow = qualifiedDay ? kind === 'torah' ? window.ChokSources.bound('targum', sourceRef, tgOriginal) : window.ChokSources.nachTargum(kind, sourceRef) : window.ChokSources.weekUnit(parsha, day, kind==='torah'?'torahTargum':kind+'Targum', sourceRef, tgOriginal);
               var attachedTargum = otherContext ? window.ChokOtherLayers.targum(otherContext,sourceRef,tgOriginal,englishEnabled) : null;
+              existingTargumEnglish = attachedTargum !== null || !!(targumRow && typeof targumRow.en === 'string' && targumRow.en.trim());
               if (attachedTargum !== null) row += attachedTargum;
               else if (targumRow) row += window.ChokSources.targum(targumRow, state.tanachen, kind === 'torah');
               else if (tgOriginal) row += '<div class="ck-targum-reading"><h4>' + (kind === 'torah' ? 'אונקלוס · Onkelos' : 'תרגום · Targum') + '</h4><div class="ck-targum-line">' + window.ChokSources.targumText(applyMode(tgOriginal)) + '</div></div>';
             }
 
+            if (genesisEnglish) row += window.ChokGenesisEnglish.render(genesisEnglish,sourceRef,tgOriginal,{english:englishEnabled,targum:state.targum,existingEnglish:existingTargumEnglish,introduction:!otherContext});
             items.push({ c: c, x: x, row: row });
           });
           if (to && c >= to.c) break;
