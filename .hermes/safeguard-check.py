@@ -4,9 +4,49 @@ Run before every deployment. Blocks push if corruption detected.
 Checks: LH English, LM English, Sefer HaMidos, Likutay Tefilos,
 Otzar HaYirah, Kitzur LM, parsha files, JSON validity."""
 
-import json, os, re, sys, gzip
+import json, os, re, sys, gzip, hashlib
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# Exact published LH5 data, independently conserved by the LH Reader gate.
+# Authority: accepted-files fixture SHA256
+# 7eb798f7d25fb01f92cc63a1acdec7a481c2923a8b0921ad607e129db5319e06.
+# Only real authorial item markers in these complete unchanged files qualify;
+# sourceRole metadata alone never exempts a numeric English body.
+_LH_PUBLISHED_MARKER_FILES = {'public/reader/likutay-halachos/part-1/halacha-43.json': {'bytes': 526794, 'sha256': '15f2caedf2c5991d9d7c79d8143a3a9aa645a9359b916651216e2aefa0dea2ca'}, 'public/reader/likutay-halachos/part-1/halacha-44.json': {'bytes': 1248137, 'sha256': '0382bbfeb55f77ea469f4c75fc948645bf5f8b85e77862fd971c9c27825670a8'}, 'public/reader/likutay-halachos/part-1/halacha-45.json': {'bytes': 521342, 'sha256': '4b7c90b2e26df981f1a7598b0a3c2dc2b9b54f3c2231647ae0c82fafc5eab06e'}, 'public/reader/likutay-halachos/part-1/halacha-46.json': {'bytes': 154818, 'sha256': 'c2fa1b7ba32ce32a21aeb9395dc2f3919fa11e64fde9a555229163c924efa513'}, 'public/reader/likutay-halachos/part-1/halacha-47.json': {'bytes': 234504, 'sha256': '8379bd6fb8a47ae4cbac636b5d6b770df8fe67458ae3647973933b454162852f'}, 'public/reader/likutay-halachos/part-1/halacha-48.json': {'bytes': 267549, 'sha256': 'ac196d168601853c98547269e754d0a711e1c9ce626ac5c591eacc9a19a2020f'}, 'public/reader/likutay-halachos/part-1/halacha-49.json': {'bytes': 1381912, 'sha256': '78d6b965c6956e4fd8fc851591cb2add3cefe8f143858c07f59ea76d927dfbcb'}, 'public/reader/likutay-halachos/part-1/halacha-50.json': {'bytes': 128296, 'sha256': 'b0ee49f5b28f4fc616ab1280bfd170551f0c49f1192c09f62fb9cc44e1de934f'}, 'public/reader/likutay-halachos/part-1/halacha-51.json': {'bytes': 66719, 'sha256': '99fe680474e4f5aea4017c9e5341c0d616c464c46ac61bd820b9b969c8b591da'}, 'public/reader/likutay-halachos/part-1/halacha-52.json': {'bytes': 143285, 'sha256': 'b671a6c41855d5d42e273cabbcff131f5e0ae2f6f907a827f507ff81a9028d78'}, 'public/reader/likutay-halachos/part-1/halacha-53.json': {'bytes': 299715, 'sha256': 'ac93392daf9618b15ba2cbb49d2da715cd9ed55ed042e1dedceb52a01f18dcec'}, 'public/reader/likutay-halachos/part-1/halacha-54.json': {'bytes': 1180560, 'sha256': '34d5a31a059ac226921bd9440d2e6e37be16279bdefea59add38739112c43c97'}, 'public/reader/likutay-halachos/part-1/halacha-55.json': {'bytes': 998799, 'sha256': 'e327bb9c3925cb2bb4a864f4408aa420ce6d3ec9da317cca3ebadd77886cb65d'}, 'public/reader/likutay-halachos/part-1/halacha-56.json': {'bytes': 1000060, 'sha256': '3bd71aa57777e24eea94e7a3303404f8ecf3a7128ae6bec31bf332d148228275'}}
+
+def _admitted_lh_item_markers(fp, data):
+    relative = os.path.relpath(fp, ROOT).replace(os.sep, '/')
+    expected = _LH_PUBLISHED_MARKER_FILES.get(relative)
+    if expected is None or os.path.realpath(fp) != os.path.abspath(fp):
+        return set()
+    try:
+        with open(fp, 'rb') as source:
+            raw = source.read(expected['bytes'] + 1)
+        if (len(raw) != expected['bytes'] or
+                hashlib.sha256(raw).hexdigest() != expected['sha256'] or
+                json.loads(raw) != data):
+            return set()
+    except (OSError, ValueError, TypeError):
+        return set()
+    admitted = set()
+    for key in ('segments', 'aligned_segments'):
+        for segment in data.get(key, []):
+            number = segment.get('traditionalItem')
+            owner = segment.get('sourceOwner')
+            if (segment.get('sourceRole') == 'item_marker' and
+                    segment.get('sourceEdition') == 'lh-volume-5-en13-he2' and
+                    type(number) is int and number > 0 and
+                    segment.get('en') == str(number) and
+                    isinstance(owner, str) and re.fullmatch(r'LH5_H[0-9]{4}', owner) and
+                    segment.get('canonicalAnchor') == 'lh5-owner-' + owner.lower() and
+                    isinstance(segment.get('sourceUnit'), str) and segment['sourceUnit'] and
+                    isinstance(segment.get('he'), str) and segment['he'] and
+                    segment.get('he_nikud') == segment['he'] and
+                    segment.get('sourceReference') is None and
+                    isinstance(segment.get('translatorNotes'), list)):
+                admitted.add(id(segment))
+    return admitted
 
 def check_lh_english():
     """Verify LH English: no scrambled Psalm text, no placeholder numbers."""
@@ -28,6 +68,7 @@ def check_lh_english():
                 errors.append(f"CORRUPT: {fp}")
                 continue
             
+            admitted_item_markers = _admitted_lh_item_markers(fp, data)
             for key in ['segments', 'aligned_segments']:
                 segs = data.get(key, [])
                 if not segs:
@@ -55,7 +96,8 @@ def check_lh_english():
                         break
                 # Check placebo numbers
                 for s in segs:
-                    if re.match(r'^\d+[\.\)]?\s*$', s.get('en','').strip()):
+                    if (re.match(r'^\d+[\.\)]?\s*$', s.get('en','').strip()) and
+                            id(s) not in admitted_item_markers):
                         errors.append(f"PLACEHOLDER: {fp}")
                         break
             
