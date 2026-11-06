@@ -131,11 +131,17 @@ def repair_plain_canonicals(dist: Path, entries: list[dict]) -> dict:
             continue
         target = reader_html(dist, before)
         target_noindex = False
+        target_canonical = None
         if target is not None:
             target_meta = metadata(target.read_text(encoding="utf-8"))
-            if not target_meta.closed or not target_meta.noindex:
+            if not target_meta.closed:
                 continue
-            target_noindex = True
+            if target_meta.noindex:
+                target_noindex = True
+            elif target_meta.canonicals == [before + "/"]:
+                target_canonical = before + "/"
+            else:
+                continue
         # Require the exact ordinary producer contract, not a false wrapper or
         # qualified page which happens to have a similar URL.
         main = re.findall(r"<main\b[^>]*>.*?</main>", original, re.S)
@@ -153,6 +159,7 @@ def repair_plain_canonicals(dist: Path, entries: list[dict]) -> dict:
         key = '"mainEntityOfPage": ' + json.dumps(before, ensure_ascii=False)
         if schema[0].count(key) != 1:
             continue
+        after = target_canonical or after
         head, body = original.split("</head>", 1)
         head = head.replace(canonical, '<link rel="canonical" href="' + html.escape(after) + '">', 1)
         head = head.replace(key, '"mainEntityOfPage": ' + json.dumps(after, ensure_ascii=False), 1)
@@ -163,7 +170,7 @@ def repair_plain_canonicals(dist: Path, entries: list[dict]) -> dict:
             head = robots.sub('<meta name="robots" content="noindex,follow">', head, count=1)
         withheld = False
         # Known dead link only, outside main; never substitute an inferred owner.
-        if not target_noindex:
+        if not target_noindex and target_canonical is None:
             link = ' · <a href="' + html.escape(human) + '">Human reader page</a>'
             header = re.search(r"<header>.*?</header>", body, re.S)
             if header and header.end() <= body.index(main[0]) and header[0].count(link) == 1:
@@ -174,8 +181,8 @@ def repair_plain_canonicals(dist: Path, entries: list[dict]) -> dict:
         if re.findall(r"<main\b[^>]*>.*?</main>", revised, re.S) != main:
             raise ValueError("Reading body drift")
         source.write_bytes(revised.encode("utf-8"))
-        bindings.append({"url": after, "before": before, "after": after,
-                         "reason": "target_noindex" if target_noindex else "target_missing",
+        bindings.append({"url": SITE + plain, "before": before, "after": after,
+                         "reason": "target_noindex" if target_noindex else "target_canonical_slash" if target_canonical else "target_missing",
                          "human_link_withheld": withheld, "noindex": target_noindex or meta.noindex})
     return {"changed": len(bindings), "bindings": bindings}
 

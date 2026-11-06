@@ -20,7 +20,7 @@ const totalSections = indexData?.torahs?.length || 0;
     hebrewTitle={indexData?.hebrewTitle || ''}
     subtitle={indexData?.author || ''}
     countLabel={`${totalSections} entries`}
-    items={indexData?.torahs || []}
+    items={(indexData?.torahs || []).map((item) => ({ ...item, url: `/reader/praises-of-rabbi-nachman/${partNum}/${item.torah}/` }))}
     hrefBase={`/reader/praises-of-rabbi-nachman/${partNum}/`}
   />
 </Layout>
