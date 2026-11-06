@@ -106,6 +106,34 @@ class CanonicalRepairTests(unittest.TestCase):
         self.assertEqual(iri_path('/reader/עברית/1/Hello World'), '/reader/עברית/1/Hello World')
         self.assertEqual(iri_path('/reader/%D7%90/1/1'), '/reader/א/1/1')
 
+    def test_live_target_exact_trailing_slash_canonical(self):
+        before = SITE + self.row['sourceUrl']
+        after = before + '/'
+        self.target('<head><link rel="canonical" href="' + after + '"></head><body>Reader</body>')
+        result = self.repair()
+        self.assertEqual(result['changed'], 1)
+        self.assertEqual(result['bindings'][0]['reason'], 'target_canonical_slash')
+        self.assertEqual(result['bindings'][0]['url'], SITE + self.row['url'])
+        self.assertFalse(result['bindings'][0]['human_link_withheld'])
+        self.assertEqual(metadata(self.path.read_text()).canonicals, [after])
+        self.assertEqual(self.path.read_bytes().replace(after.encode(), before.encode()), self.before.encode())
+        self.assertEqual(self.repair()['changed'], 0)
+
+    def test_live_target_canonical_must_be_exact_successor(self):
+        before = SITE + self.row['sourceUrl']
+        for canonical in [before, before + '/other/', before + '/?x=1', 'https://elsewhere.test/reader/book/1/1/']:
+            with self.subTest(canonical=canonical):
+                self.target('<head><link rel="canonical" href="' + canonical + '"></head><body>Reader</body>')
+                self.assertEqual(self.repair()['changed'], 0)
+                self.assertEqual(self.path.read_bytes(), self.before.encode())
+
+    def test_live_target_canonical_preserves_plain_noindex(self):
+        self.path.write_bytes(self.before.replace('content="index,follow"', 'content="noindex,follow"').encode())
+        self.target('<head><link rel="canonical" href="' + SITE + self.row['sourceUrl'] + '/"></head><body>Reader</body>')
+        self.assertEqual(self.repair()['changed'], 1)
+        self.assertTrue(metadata(self.path.read_text()).noindex)
+        self.assertIn('Human reader page', self.path.read_text())
+
     def test_qualified_raw_exact_row_and_physical_guard(self):
         row = dict(bookId='reviewed', part='reviewed', torah='wrapup-18-19-92-209', url=QUALIFIED_RAW)
         with self.assertRaises(ValueError): raw_section_url(self.root, row)
