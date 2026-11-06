@@ -6,7 +6,8 @@ const zlib = require('zlib');
 const root = path.resolve(__dirname, '..');
 const failures = [];
 const requiredArtifacts = process.env.REQUIRE_SEARCH_ARTIFACTS === '1';
-const expectedCanonicalHalachos = 600;
+// Four approved Volume 4 continuation routes (57–60) extend the prior 600.
+const expectedCanonicalHalachos = 604;
 const QUERY = 'הוא בבחינת דבר';
 const TARGET_PATH = '/reader/likutay-moharan/2/1';
 const KOKHVEI_PATH = '/reader/kokhvei-or/1/11';
