@@ -9,7 +9,18 @@ const root = new URL('../', import.meta.url);
 const read = path => fs.readFileSync(new URL(path, root));
 const json = path => JSON.parse(read(path));
 const admitted = json('scripts/fixtures/lh5-reader/accepted-files.json');
-const pages = Array.from({length: 14}, (_, n) => json(`public/reader/likutay-halachos/part-1/halacha-${n + 43}.json`));
+// Keep the already accepted LH5 cohort regression intact while V4 replaces
+// its old unqualified prefix. New transport/mixed consumers have their own test.
+function retainedLH5View(page) {
+  if (page.readerTransportVersion !== 2) return page;
+  const segments = [...page.legacyAnnotationContext.filter(row => row.index <= 68).map(row => row.originalContext),
+    ...page.segments.filter(row => row.sourceEdition === 'lh-volume-5-en13-he2')];
+  const view = {...page, segments, aligned_segments: segments,
+    legacyAnnotationContext: page.legacyAnnotationContext.filter(row => row.index >= 69)};
+  delete view.readerTransportVersion; delete view.sourcePublications;
+  return view;
+}
+const pages = Array.from({length: 14}, (_, n) => retainedLH5View(json(`public/reader/likutay-halachos/part-1/halacha-${n + 43}.json`)));
 const owners = new Map();
 const units = new Map();
 for (const page of pages) {
@@ -74,7 +85,8 @@ test('current pair, hierarchy and qualifications have independent complete domai
 });
 
 test('14 independent aids conserve all 414 editorial rows and 28 real diagrams', () => {
-  const summaries = json('public/reader/likutay-halachos/summaries/index.json');
+  const allSummaries = json('public/reader/likutay-halachos/summaries/index.json');
+  const summaries = {...allSummaries, items: allSummaries.items.filter(item => item.sourceEdition !== 'lh-volume-4-supplied-finals-v3')};
   assert.equal(summaries.items.length, 42);
   const added = summaries.items.filter(item => item.sourceEdition === 'lh-volume-5-en13-he2');
   assert.equal(added.length, 14);

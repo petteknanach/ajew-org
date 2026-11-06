@@ -6,7 +6,7 @@
     "node": "22.x"
   },
   "scripts": {
-    "verify:lh-publication-reader": "node --test scripts/test-lh-publication-reader.mjs",
+    "verify:lh-publication-reader": "node --test scripts/test-lh-publication-reader.mjs && node --max-old-space-size=512 scripts/test-lh4-publication-reader.mjs && python3 scripts/test-lh-publication-exports.py",
     "verify:reader-toolbar-gutter": "node --test scripts/test-reader-toolbar-gutter.mjs",
     "verify:sefer-commentary-availability": "node --test scripts/test-sefer-commentary-availability.mjs",
     "verify:sefer-hamidos-media-fit": "node --test scripts/test-sefer-hamidos-media-fit.mjs",

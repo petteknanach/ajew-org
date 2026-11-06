@@ -8,27 +8,55 @@ def write_publication(out_dir, data, book, part, torah, source_url):
     publication = data["sourcePublication"]
     assert publication["schema"] == "lh-authenticated-publication-v1"
     assert book == "likutay-halachos" and str(part) == "1"
+    multi = data.get("readerTransportVersion") == 2
+    if not multi and (data.get("sourcePublications") or
+                      publication.get("volume", 5) != 5 or
+                      any(row.get("sourceRole") == "supplied_english_source_paragraph" for row in data["segments"])):
+        raise ValueError("Unsupported LH source edition transport; no unqualified export fallback")
+    publications = [publication, *(data.get("sourcePublications", []) if multi else [])]
+    by_edition = {pub["edition"]: pub for pub in publications}
+    if len(by_edition) != len(publications):
+        raise ValueError("Duplicate LH source edition")
     segments = data["segments"]
-    units = {unit["unit"]: unit for unit in publication["units"]}
-    last = {unit["recordIndices"][-1]: unit for unit in units.values()}
+    if multi and any(row.get("sourceEdition") not in by_edition for row in segments):
+        raise ValueError("Unqualified LH export record")
+    last = {(pub["edition"], unit["recordIndices"][-1]): unit
+            for pub in publications for unit in pub["units"]}
     plain_url = f"/reader-plain/{book}/{part}/{torah}/"
     canonical = source_url or plain_url
     title = data["title"]
     hebrew_title = data.get("hebrewTitle", "")
     credit = "Current matched Volume 5 source edition; unchanged Reader material is identified separately. Translator notes and learning aids are editorial layers, not original teaching paragraphs."
+    if multi:
+        credit = "Supplied source editions: " + "; ".join(f"Likutay Halachos, Volume {pub['volume']}" for pub in publications) + ". Additional supplied English paragraphs retain their nonexclusive reference spans and qualifications; no Hebrew counterpart is manufactured. Source qualifications and editorial learning aids remain separate from original teaching. Earlier personal annotations were not migrated."
     txt = [title, hebrew_title, "Source: https://ajew.org" + canonical, credit, ""]
     md = ["# " + title, hebrew_title, "Source: https://ajew.org" + canonical, credit, ""]
     rows = []
     toc = []
+    previous_edition = None
     for segment in segments:
-        current = segment.get("sourceEdition") == publication["edition"]
+        owner = by_edition.get(segment.get("sourceEdition"))
+        current = owner is not None
+        if multi and len(publications) > 1 and segment["sourceEdition"] != previous_edition:
+            boundary_owner = by_edition[segment["sourceEdition"]]
+            boundary = f"Source edition: Likutay Halachos, Volume {boundary_owner['volume']} ({boundary_owner['edition']})"
+            txt += [boundary, ""]
+            md += ["## " + boundary, ""]
+            rows.append(f'<section class="source-edition-boundary" data-source-edition="{html.escape(boundary_owner["edition"], quote=True)}"><h2>{html.escape(boundary)}</h2></section>')
+            previous_edition = segment["sourceEdition"]
         role = segment.get("sourceRole", "")
         reference = segment.get("sourceReference")
         he = segment.get("he_nikud", segment.get("he", "")) if current else segment.get("he", "")
         en = segment.get("en", "")
         index = segment["index"]
         anchor = segment.get("canonicalAnchor") or f"segment-{index}"
-        if current and role in ["unit_heading", "item_marker", "embedded_subheading"]:
+        if multi and role == "supplied_english_source_paragraph":
+            if (segment.get("exclusiveBilingualOwnerAsserted") is not False or
+                    segment.get("editorialAid") is not False or he or not segment.get("sourceQualifications")):
+                raise ValueError("Unsupported supplied-English export association")
+            label = "Additional supplied English source paragraph — related references " + ", ".join(f"[{ref}]" for ref in segment["relatedReferences"])
+            heading = 3
+        elif current and role in ["unit_heading", "item_marker", "embedded_subheading"]:
             label = en or he
             heading = 2 if role == "unit_heading" else 3
         elif reference is not None:
@@ -49,11 +77,13 @@ def write_publication(out_dir, data, book, part, torah, source_url):
                 f'<h{heading}>{html.escape(label)}</h{heading}>',
                 f'<div class="he" lang="he" dir="rtl">{html.escape(he)}</div>',
                 f'<div class="en" lang="en" dir="ltr">{html.escape(en)}</div>' if not structure else ""]
-        notes = segment.get("translatorNotes", [])
+        notes = ([*(owner or {}).get("sourceQualifications", []), *segment.get("translatorNotes", []), *segment.get("sourceQualifications", [])]
+                 if multi else segment.get("translatorNotes", []))
         if notes:
-            txt += ["Translator notes — separate from the original teaching"]
-            md += ["#### Translator notes — separate from the original teaching"]
-            body.append('<aside class="translator-notes" aria-label="Translator notes">')
+            note_label = "Source qualifications — separate from the original teaching" if multi else "Translator notes — separate from the original teaching"
+            txt += [note_label]
+            md += ["#### " + note_label]
+            body.append(f'<aside class="translator-notes" aria-label="{html.escape(note_label if multi else "Translator notes", quote=True)}">')
             for note in notes:
                 text = note["text"]
                 txt += [text, ""]
@@ -62,9 +92,9 @@ def write_publication(out_dir, data, book, part, torah, source_url):
             body.append('</aside>')
         body.append('</section>')
         rows.append("\n".join(body))
-        if index not in last:
+        if (segment.get("sourceEdition"), index) not in last:
             continue
-        unit = last[index]
+        unit = last[(segment.get("sourceEdition"), index)]
         aid_title = "Summary and study aids — " + unit["title"]
         txt += [aid_title, unit["editorialAttribution"], ""]
         md += ["## " + aid_title, unit["editorialAttribution"], ""]
@@ -92,6 +122,8 @@ def write_publication(out_dir, data, book, part, torah, source_url):
     raw = {"bookId": book, "part": str(part), "torah": str(torah), "title": title, "hebrewTitle": hebrew_title,
            "sourceUrl": source_url, "plainUrl": plain_url, "sourceQualification": credit,
            "sourcePublication": publication, "segments": segments}
+    if multi:
+        raw.update(readerTransportVersion=2, sourcePublications=data.get("sourcePublications", []))
     (output / "index.json").write_text(json.dumps(raw, ensure_ascii=False, indent=2) + "\n", encoding="utf8")
     page = f'''<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
@@ -103,3 +135,19 @@ def write_publication(out_dir, data, book, part, torah, source_url):
     (output / "index.html").write_text(page, encoding="utf8")
     return {"bookId": book, "part": str(part), "torah": str(torah), "title": title, "hebrewTitle": hebrew_title,
             "url": plain_url, "sourceUrl": source_url, "segments": len(segments)}
+
+
+def reading_order(rows, reader_dir):
+    """Follow the authenticated LH part-one index, without renumbering routes."""
+    index = json.loads((Path(reader_dir) / "likutay-halachos/part-1/index.json").read_text(encoding="utf8"))
+    sequence = index.get("sourceReadingSequence")
+    if sequence is None:
+        return rows
+    if not isinstance(sequence, list) or len(set(sequence)) != len(sequence):
+        raise ValueError("Invalid LH source reading sequence")
+    ranks = {str(number): rank for rank, number in enumerate(sequence)}
+    for row in rows:
+        if str(row["part"]) == "1" and str(row["torah"]) not in ranks:
+            raise ValueError("LH export missing from source reading sequence")
+    return sorted(rows, key=lambda row: (str(row["part"]), ranks[str(row["torah"])]
+                  if str(row["part"]) == "1" else str(row["torah"])))

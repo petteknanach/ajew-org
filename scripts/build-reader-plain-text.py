@@ -618,6 +618,8 @@ def main() -> None:
 
     book_links = []
     for book, rows in sorted(by_book.items()):
+        if book == "likutay-halachos":
+            rows = _lh_publication.reading_order(rows, READER_DIR)
         if book == AITZOAS_BOOK:
             expected = [f"/reader-plain/{AITZOAS_BOOK}/1/{s}/" for s in range(1, 7)]
             if [r["url"] for r in rows] != expected:

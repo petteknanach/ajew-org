@@ -1,5 +1,10 @@
 // Bounded LH publication adapter. Existing readers and browser note keys stay untouched.
+import { editionAwareSnapshot } from './lh-publication-snapshot.js';
+
 export function snapshotFor(data, index, pathname) {
+  if (data.readerTransportVersion === 2) return editionAwareSnapshot(data, index, pathname);
+  if (data.sourcePublications?.length || (data.sourcePublication.volume != null && data.sourcePublication.volume !== 5) ||
+      data.segments.some(row => row.sourceRole === 'supplied_english_source_paragraph')) throw new Error('Unsupported source edition transport');
   const rows = index == null ? data.segments : data.segments.filter(row => String(row.index) === String(index));
   if (!rows.length) throw new Error('Source paragraph not found');
   const units = new Map(data.sourcePublication.units.map(unit => [unit.unit, unit]));
@@ -41,7 +46,7 @@ export function snapshotForIndices(data, indices, pathname) {
   if (rows.length === 1) return snapshotFor(data, rows[0].index, pathname);
   if (rows.length === data.segments.length) return snapshotFor(data, null, pathname);
   const snapshot = snapshotFor({ ...data, segments: rows }, null, pathname);
-  snapshot._key = `${pathname}#selection-${rows.map(row => row.index).join('.')}@${data.sourcePublication.edition}`;
+  snapshot._key = `${pathname}#selection-${rows.map(row => row.index).join('.')}@${snapshot.sourceEdition}`;
   snapshot.ref = `${data.title} — ${rows.length} complete source passages`;
   snapshot.readerUrl = `${pathname}#seg-${rows[0].index}`;
   snapshot.sourceSelectionIndices = rows.map(row => row.index);
@@ -104,7 +109,7 @@ function initialisePublication() {
     const added = navigator.locks?.request
       ? await navigator.locks.request('ajew-my-sefer', { mode: 'exclusive' }, commit)
       : await commit();
-    report(added ? 'Saved with the complete source text and translator notes.' : 'This source passage is already saved.');
+    report(added ? (data.readerTransportVersion === 2 ? 'Saved with the complete source text and source qualifications.' : 'Saved with the complete source text and translator notes.') : 'This source passage is already saved.');
   }
 
   const save = index => saveSnapshot(snapshotFor(data, index, location.pathname));
@@ -169,7 +174,7 @@ function initialisePublication() {
     event.preventDefault(); event.stopImmediatePropagation();
     if (!event.clipboardData) { report('Use Copy passage to copy the complete source and notes.'); return; }
     event.clipboardData.setData('text/plain', payloadFor(snapshot));
-    report('Copied complete source passages with translator notes.');
+    report(data.readerTransportVersion === 2 ? 'Copied complete source records with source qualifications.' : 'Copied complete source passages with translator notes.');
   }, true);
 
   // Shared selection menus are appended outside the Reader container. Capture
@@ -198,10 +203,10 @@ function initialisePublication() {
       saveSnapshot(snapshot).catch(error => report(`Not saved: ${error.message}`));
     } else if (action === 'share' && navigator.share) {
       navigator.share({ title: snapshot.ref, text: snapshot.savedText, url: location.origin + snapshot.readerUrl })
-        .then(() => report('Shared with translator notes.'), error => report(error.name === 'AbortError' ? 'Share cancelled.' : 'Share was blocked by this browser.'));
+        .then(() => report(data.readerTransportVersion === 2 ? 'Shared with source qualifications.' : 'Shared with translator notes.'), error => report(error.name === 'AbortError' ? 'Share cancelled.' : 'Share was blocked by this browser.'));
     } else {
       navigator.clipboard.writeText(payloadFor(snapshot))
-        .then(() => report('Copied complete source passages with translator notes.'), () => report('Copy was blocked by this browser.'));
+        .then(() => report(data.readerTransportVersion === 2 ? 'Copied complete source records with source qualifications.' : 'Copied complete source passages with translator notes.'), () => report('Copy was blocked by this browser.'));
     }
   }, true);
 
@@ -215,7 +220,7 @@ function initialisePublication() {
       ['#highlight-context-menu [data-action="share"]', 'Share source']
     ]) {
       const button = document.querySelector(selector);
-      if (button) { button.textContent = label; button.title = 'Complete bilingual source passages with translator notes'; button.style.minHeight = '44px'; }
+      if (button) { button.textContent = label; button.title = data.readerTransportVersion === 2 ? 'Complete selected source records with source qualifications' : 'Complete bilingual source passages with translator notes'; button.style.minHeight = '44px'; }
     }
     for (const menu of document.querySelectorAll('.selection-popup, #highlight-context-menu')) {
       if (getComputedStyle(menu).display === 'none') continue;
@@ -243,7 +248,7 @@ function initialisePublication() {
       event.preventDefault(); event.stopImmediatePropagation();
       const snapshot = snapshotFor(data, copy.getAttribute('data-lh-copy'), location.pathname);
       navigator.clipboard.writeText(snapshot.savedText + '\n\n' + location.origin + snapshot.readerUrl)
-        .then(() => report('Copied with translator notes.'), () => report('Copy was blocked by this browser.'));
+        .then(() => report(data.readerTransportVersion === 2 ? 'Copied with source qualifications.' : 'Copied with translator notes.'), () => report('Copy was blocked by this browser.'));
     }
   }, true);
 
@@ -281,9 +286,12 @@ function initialisePublication() {
       const link = document.createElement('a');
       link.href = '#' + (row.canonicalAnchor || `seg-${row.index}`);
       link.dataset.index = String(row.index);
-      link.textContent = row.sourceRole === 'unit_heading' || row.sourceRole === 'item_marker'
-        ? row.en : row.sourceReference != null ? `[${row.sourceReference}]`
+      link.textContent = row.sourceRole === 'unit_heading' || row.sourceRole === 'item_marker' || (data.readerTransportVersion === 2 && row.sourceRole === 'embedded_subheading')
+        ? (data.readerTransportVersion === 2 ? row.en || row.he_nikud : row.en) : row.sourceReference != null ? `[${row.sourceReference}]`
+        : data.readerTransportVersion === 2 && row.sourceRole === 'supplied_english_source_paragraph'
+          ? `Supplied English — related ${row.relatedReferences.map(ref => `[${ref}]`).join(', ')}`
         : row.sourceEdition ? row.sourceRole.replaceAll('_', ' ') : `Paragraph ${row.index}`;
+      if (data.readerTransportVersion === 2) link.dir = 'auto';
       li.appendChild(link);
       if (row.sourceRole === 'unit_heading') {
         fragment.appendChild(li);unitList = document.createElement('ol');li.appendChild(unitList);itemList = null;

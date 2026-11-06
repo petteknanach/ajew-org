@@ -5,7 +5,7 @@ interface Props { data: any }
 const imageSizes = new Map<string, {width: number; height: number}>();
 function imageSize(url: string) {
   if (imageSizes.has(url)) return imageSizes.get(url)!;
-  if (!/^\/images\/lh-study\/volume-5\/[a-z0-9-]+\.png$/.test(url)) throw new Error('Unexpected LH diagram path');
+  if (!/^\/images\/lh-study\/volume-(4|5)\/[a-z0-9-]+\.png$/.test(url)) throw new Error('Unexpected LH diagram path');
   const file = path.join(process.cwd(), 'public', url.slice(1));
   const descriptor = fs.openSync(file, 'r');
   const header = Buffer.alloc(24);
@@ -19,58 +19,68 @@ function imageSize(url: string) {
 }
 const { data } = Astro.props;
 const edition = data.sourcePublication;
-const units = new Map(edition.units.map((unit: any) => [unit.unit, unit]));
-const finalRecords = new Map(edition.units.map((unit: any) => [unit.recordIndices.at(-1), unit]));
+const multiEdition = data.readerTransportVersion === 2;
+const publications = multiEdition ? [edition, ...(data.sourcePublications || [])] : [edition];
+if (new Set(publications.map((publication: any) => publication.edition)).size !== publications.length) throw new Error('Duplicate LH source edition');
+const finalRecords = new Map(publications.flatMap((publication: any) => publication.units.map((unit: any) => [`${publication.edition}:${unit.recordIndices.at(-1)}`, unit])));
+const sourceNotes = (segment: any) => multiEdition ? [...(segment.translatorNotes || []), ...(segment.sourceQualifications || [])] : (segment.translatorNotes || []);
+const sourceLanguageClass = (segment: any) => !multiEdition || !segment.sourceEdition ? '' : !segment.he_nikud ? 'lh-source-en-only' : !segment.en ? 'lh-source-he-only' : '';
 const isStructure = (segment: any) => segment.sourceEdition && ['unit_heading', 'item_marker', 'embedded_subheading'].includes(segment.sourceRole);
 const body = JSON.stringify(data).replace(/</g, '\\u003c');
 ---
 
 <div class="reader-content mode-hebrew lh-publication" data-lh-publication={edition.edition}>
-  <p class="lh-edition-credit">Matched source edition · Volume 5 · Bracketed references are separate from the traditional items.</p>
+  <p class="lh-edition-credit">{multiEdition ? `Matched source ${publications.length === 1 ? 'edition' : 'editions'} · ${publications.length === 1 ? 'Volume' : 'Volumes'} ${publications.map((publication: any) => publication.volume).join(', ')} · Bracketed references are separate from the traditional items.` : 'Matched source edition · Volume 5 · Bracketed references are separate from the traditional items.'}</p>
+  {multiEdition && publications.map((publication: any) => publication.sourceQualifications?.length > 0 && <aside class="lh-translator-notes" aria-label={`Source edition qualifications, Volume ${publication.volume}`}>
+    <strong>Source edition qualifications · Volume {publication.volume}</strong>
+    {publication.sourceQualifications.map((note: any) => <p id={`edition-${publication.edition}-${note.id}`} dir="auto">{note.text}</p>)}
+  </aside>)}
   <div class="reader-content-original">
-    {data.segments.map((segment: any) => (
+    {data.segments.map((segment: any, position: number) => (
       <>
+        {multiEdition && publications.length > 1 && (position === 0 || data.segments[position - 1].sourceEdition !== segment.sourceEdition) && <h2 class="lh-edition-boundary" data-source-edition={segment.sourceEdition}>Source edition · Likutay Halachos, Volume {publications.find((publication: any) => publication.edition === segment.sourceEdition)!.volume}</h2>}
         {isStructure(segment) ? (
-          <div class={`lh-structure lh-structure-${segment.sourceRole}`} id={`seg-${segment.index}`} data-source-owner={segment.sourceOwner} data-source-role={segment.sourceRole}>
+          <div class={`lh-structure lh-structure-${segment.sourceRole} ${sourceLanguageClass(segment)}`} id={`seg-${segment.index}`} data-source-owner={segment.sourceOwner} data-source-role={segment.sourceRole}>
             <span id={segment.canonicalAnchor}></span>
             {segment.sourceRole === 'unit_heading' ? (
               <h2><span class="lh-structural-he" lang="he" dir="rtl">{segment.he_nikud}</span><span class="lh-structural-en" lang="en" dir="ltr">{segment.en}</span></h2>
             ) : (
               <h3><span class="lh-structural-he" lang="he" dir="rtl">{segment.he_nikud}</span><span class="lh-structural-en" lang="en" dir="ltr">{segment.en}</span></h3>
             )}
-            {segment.translatorNotes?.length > 0 && <aside class="lh-translator-notes segment-en" aria-label="Translator notes">
-              {segment.translatorNotes.map((note: any) => <p id={note.id} dir="auto">{note.text}</p>)}
+            {sourceNotes(segment).length > 0 && <aside class="lh-translator-notes segment-en" aria-label={segment.sourceQualifications?.length ? 'Source qualifications' : 'Translator notes'}>
+              {sourceNotes(segment).map((note: any) => <p id={note.id} dir="auto">{note.text}</p>)}
             </aside>}
           </div>
         ) : (
-          <div class="reader-segment-pair" id={`seg-${segment.index}`} data-lh-index={segment.index} data-source-owner={segment.sourceOwner}>
+          <div class={`reader-segment-pair ${sourceLanguageClass(segment)}`} id={`seg-${segment.index}`} data-lh-index={segment.index} data-source-owner={segment.sourceOwner} data-source-role={segment.sourceRole}>
             {segment.canonicalAnchor && <span class="lh-source-anchor" id={segment.canonicalAnchor}></span>}
             <div class="ajew-segment-actions lh-passage-actions">
               <button type="button" data-lh-copy={segment.index}>Copy passage</button>
               <button type="button" data-lh-save={segment.index}>Save passage</button>
             </div>
+            {multiEdition && segment.sourceRole === 'supplied_english_source_paragraph' && <p class="lh-source-part-label" lang="en" dir="ltr">Additional supplied English source paragraph · Related references {segment.relatedReferences.map((ref: number) => `[${ref}]`).join(', ')}</p>}
             <div class="reader-segment segment-he" data-index={String(segment.index)} lang="he" dir="rtl">
               {segment.sourceReference != null ? <span class="segment-number lh-published-reference">[{segment.sourceReference}]</span> : !segment.sourceEdition && <span class="segment-number">{segment.index}</span>}
               <p data-nikud={segment.sourceEdition ? segment.he_nikud : segment.he} data-lh-plain={segment.sourceEdition ? segment.he : undefined}>{segment.sourceEdition ? segment.he_nikud : segment.he}</p>
             </div>
             <div class={`reader-segment segment-en ${!segment.en ? 'empty-translation' : ''}`} data-index={String(segment.index)} lang="en" dir="ltr">
               {segment.sourceReference != null ? <span class="segment-number lh-published-reference">[{segment.sourceReference}]</span> : !segment.sourceEdition && <span class="segment-number">{segment.index}</span>}
-              <p>{segment.en || 'Translation not yet available'}</p>
+              <p>{segment.en || (multiEdition ? '' : 'Translation not yet available')}</p>
             </div>
-            {segment.translatorNotes?.length > 0 && <aside class="lh-translator-notes segment-en" aria-label="Translator notes">
-              <strong>Translator notes</strong>
-              {segment.translatorNotes.map((note: any) => <p id={note.id} dir="auto">{note.text}</p>)}
+            {sourceNotes(segment).length > 0 && <aside class="lh-translator-notes segment-en" aria-label={segment.sourceQualifications?.length ? 'Source qualifications' : 'Translator notes'}>
+              <strong>{segment.sourceQualifications?.length ? 'Source qualifications' : 'Translator notes'}</strong>
+              {sourceNotes(segment).map((note: any) => <p id={note.id} dir="auto">{note.text}</p>)}
             </aside>}
           </div>
         )}
-        {finalRecords.has(segment.index) && (() => {
-          const unit: any = finalRecords.get(segment.index);
+        {finalRecords.has(`${segment.sourceEdition}:${segment.index}`) && (() => {
+          const unit: any = finalRecords.get(`${segment.sourceEdition}:${segment.index}`);
           return <details class="lh-editorial" id={unit.aidAnchor}>
             <summary>Summary &amp; study aids — {unit.title}</summary>
             <p class="lh-editorial-credit">{unit.editorialAttribution}</p>
             <div lang="en" dir="ltr">
               {unit.editorialAids.map((aid: any) => /Heading|Subhead/.test(aid.style)
-                ? <h3>{aid.text}</h3> : <p>{aid.text}</p>)}
+                ? <h3>{aid.displayText ?? aid.text}</h3> : <p>{aid.displayText ?? aid.text}</p>)}
             </div>
             <div class="lh-diagrams">
               {unit.diagrams.map((diagram: any) => <figure id={diagram.id}>
@@ -93,7 +103,7 @@ const body = JSON.stringify(data).replace(/</g, '\\u003c');
   {data.legacyAnnotationContext.map((context: any) => <details class="lh-legacy-context" id={`seg-${context.index}`} data-legacy-note-key={context.noteKey}>
     <summary>Earlier paragraph {context.index}</summary>
     <p class="lh-context-credit">{context.contextQualification}</p>
-    {context.sourceReferences.length > 0 && <p>Current source references: {context.sourceReferences.map((ref: number) => <a href={`#lh5-ref-${ref}`}>[{ref}] </a>)}</p>}
+    {context.sourceReferences.length > 0 && <p>Current source references: {context.sourceReferenceTargets ? context.sourceReferenceTargets.map((target: any) => <a href={target.href}>[{target.reference}] </a>) : context.sourceReferences.map((ref: number) => <a href={`#lh5-ref-${ref}`}>[{ref}] </a>)}</p>}
     <p lang="he" dir="rtl" class="lh-earlier-text">{context.originalContext.he}</p>
     {context.originalContext.he_nikud && context.originalContext.he_nikud !== context.originalContext.he && <details><summary>Earlier pointed Hebrew field</summary><p lang="he" dir="rtl" class="lh-earlier-text">{context.originalContext.he_nikud}</p></details>}
     <p lang="en" dir="ltr" class="lh-earlier-text">{context.originalContext.en}</p>
@@ -113,11 +123,17 @@ const body = JSON.stringify(data).replace(/</g, '\\u003c');
   .lh-publication :global(.seg-copy-btn){display:none}
   @media print{.lh-legacy-contexts,.lh-passage-actions,.lh-action-status{display:none!important}}
   .lh-edition-credit,.lh-editorial-credit,.lh-context-credit{font:0.86rem/1.65 system-ui,sans-serif;color:var(--reader-text,#374151)}
+  .lh-edition-boundary{font:600 1.05rem/1.65 system-ui,sans-serif;margin:2rem 0 1rem;padding-top:1rem;border-top:1px solid currentColor}
   .lh-publication :global(.reader-segment-pair){position:relative;scroll-margin-top:9rem}
   .lh-source-anchor{position:absolute;top:0;scroll-margin-top:9rem}
   .lh-passage-actions{display:flex;gap:.5rem;flex-wrap:wrap;grid-column:1/-1;margin:.4rem 0}
   .lh-passage-actions button,.lh-legacy-context button{font:inherit;min-height:2.75rem;padding:.4rem .7rem;border:1px solid currentColor;border-radius:.4rem;color:var(--reader-text,#1a365d);background:transparent;cursor:pointer}
   .lh-published-reference{font-size:.75rem!important;font-weight:400!important;opacity:1!important;color:var(--reader-text,#525252)}
+  .lh-source-part-label{grid-column:1/-1;font:0.9rem/1.6 system-ui,sans-serif}
+  :global(.mode-hebrew) .lh-source-en-only,:global(.mode-english) .lh-source-he-only{display:none!important}
+  .lh-source-en-only .segment-he,.lh-source-en-only .lh-structural-he,.lh-source-he-only .segment-en,.lh-source-he-only .lh-structural-en{display:none!important}
+  .lh-source-en-only,.lh-source-he-only,.lh-source-en-only h2,.lh-source-en-only h3,.lh-source-he-only h2,.lh-source-he-only h3{grid-template-columns:1fr!important}
+  .lh-source-en-only>.segment-en,.lh-source-he-only>.segment-he{grid-column:1/-1!important;grid-row:auto!important}
   .lh-publication p,.lh-earlier-text{white-space:pre-wrap;overflow-wrap:anywhere}
   .lh-structure{margin:1.7rem 0;scroll-margin-top:9rem}
   .lh-structure h2,.lh-structure h3{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;line-height:1.65}
