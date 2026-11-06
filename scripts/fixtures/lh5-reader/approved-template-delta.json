@@ -29,6 +29,10 @@
     {
       "before": "          <a href={torahData.navigation.prevUrl} data-dir=\"prev\">&larr; Previous</a>\n        ) : <span class=\"disabled\">&larr; Previous</span>}\n        <a href={`/reader/likutay-halachos/${partNum}`}>Book Index</a>\n        {summaryEntry && <a href={summaryEntry.summaryUrl}>Summary</a>}\n        <a href=\"/reader\">All Books</a>\n        {torahData.navigation.nextUrl ? (\n          <a href={torahData.navigation.nextUrl} data-dir=\"next\">Next &rarr;</a>\n",
       "after": "          <a href={torahData.navigation.prevUrl} data-dir=\"prev\">&larr; Previous</a>\n        ) : <span class=\"disabled\">&larr; Previous</span>}\n        <a href={`/reader/likutay-halachos/${partNum}`}>Book Index</a>\n        {summaryEntries.map((entry) => <a href={entry.summaryUrl} dir=\"auto\">Summary{summaryEntries.length > 1 ? ` — ${entry.hebrewTitle}` : ''}</a>)}\n        <a href=\"/reader\">All Books</a>\n        {torahData.navigation.nextUrl ? (\n          <a href={torahData.navigation.nextUrl} data-dir=\"next\">Next &rarr;</a>\n"
+    },
+    {
+      "before": "/reader-script.js?v=parsha-author-20261018-r1",
+      "after": "/reader-script.js?v=lh-qualified-find-20261106-r1"
     }
   ]
 }
