@@ -9,7 +9,7 @@ export function getStaticPaths() {
   let parts = [];
   try {
     const idx = JSON.parse(fs.readFileSync(idxPath, 'utf8'));
-    parts = idx.parts || [];
+    parts = idx.torahs?.length ? [{ part: 1 }] : [];
   } catch (e) {}
   return parts.map(p => ({ params: { part: String(p.part) } }));
 }
@@ -19,7 +19,7 @@ const partNum = parseInt(part);
 
 let indexData = null;
 try {
-  const idxPath = path.join(process.cwd(), 'public/reader/fires-of-israel/part-' + partNum + '/index.json');
+  const idxPath = path.join(process.cwd(), 'public/reader/fires-of-israel/index.json');
   indexData = JSON.parse(fs.readFileSync(idxPath, 'utf8'));
 } catch (e) {
   console.error('Error loading index:', e);
@@ -30,10 +30,10 @@ const totalSections = indexData?.torahs?.length || 0;
 <Layout title={`${indexData?.title || "Fires of Israel"} — Part ${partNum} Index`} description={`Beautiful directory for Fires of Israel, part ${partNum}.`}>
   <ReaderDirectory
     title="Fires of Israel"
-    hebrewTitle="אישי ישראל"
-    subtitle={`The fire of Saba and Na Nach · Part ${partNum}`}
+    hebrewTitle="אשי ישראל"
+    subtitle={`Part ${partNum}`}
     countLabel={`${totalSections} sections`}
-    items={indexData?.torahs || []}
+    items={(indexData?.torahs || []).map(item => ({ ...item, number: item.torah, url: `/reader/fires-of-israel/${partNum}/${item.torah}/` }))}
     hrefBase={`/reader/fires-of-israel/${partNum}/`}
   />
 </Layout>
