@@ -136,3 +136,24 @@ for (const [q,text,expected] of [
  assert.equal(typeof ctx.readerSearchPattern,'function');
  assert.equal(new RegExp(ctx.readerSearchPattern(q),'giu').test(text),expected);
 });
+
+const qualifiedSearchSelector = "document.querySelectorAll('.reader-segment p, .lh-publication .lh-translator-notes p')";
+test('Find includes separately attributed LH notes without broadening other book selectors',()=>{
+ const begin=source.indexOf('function performSearch(');
+ const end=source.indexOf('function updateSearchInfo(',begin);
+ assert.ok(begin>=0&&end>begin,'complete actual Find caller must exist');
+ const caller=source.slice(begin,end);
+ assert.equal(caller.split(qualifiedSearchSelector).length-1,1);
+ assert.ok(!caller.includes("document.querySelectorAll('p')"));
+});
+test('URL-query Find uses the same qualified source paragraph scope',()=>{
+ const begin=source.indexOf('function tryHighlight(');
+ assert.ok(begin>=0,'actual URL-query initialization must exist');
+ const end=source.indexOf('performSearch(q)',begin);
+ assert.ok(end>begin);
+ assert.equal(source.slice(begin,end).split(qualifiedSearchSelector).length-1,1);
+});
+test('LH owning page versions the changed Find runtime without rewriting other books',()=>{
+ const page=readFileSync(new URL('../src/pages/reader/likutay-halachos/[part]/[torah].astro',import.meta.url),'utf8');
+ assert.ok(page.includes('<script src="/reader-script.js?v=lh-qualified-find-20261106-r1" defer></script>'));
+});

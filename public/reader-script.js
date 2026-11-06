@@ -344,7 +344,7 @@
     }
 
     let count = 0;
-    const segments = document.querySelectorAll('.reader-segment p');
+    const segments = document.querySelectorAll('.reader-segment p, .lh-publication .lh-translator-notes p');
     const pattern = readerSearchPattern(query);
     const regex = new RegExp(pattern, 'giu');
 
@@ -3513,7 +3513,7 @@ function note89QualificationText(q) {
     let attempts = 0;
     const maxAttempts = 30; // ~3 seconds max
     function tryHighlight() {
-      const segments = document.querySelectorAll('.reader-segment p');
+      const segments = document.querySelectorAll('.reader-segment p, .lh-publication .lh-translator-notes p');
       if (segments.length > 0) {
         performSearch(q);
       } else if (attempts < maxAttempts) {
