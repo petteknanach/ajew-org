@@ -4,7 +4,7 @@
  */
 (function () {
   'use strict';
-  var WEEKS = {"בראשית":["portion-01.json","b5e65f4e367ce5395ac21be2d930ffee9ccaca11007a4ff20f79b501063e9a05",148799,198],"נח":["portion-02.json","5a21c579d0ef4457c2a048412ff5588e6bad1d219d96126d7297633f0af62dbf",151041,204],"לך לך":["portion-03.json","f8535a0d641212d21e14717f6eaeb7cee407d710d292fec0cc60ae30f0d9c92c",148853,178],"וירא":["portion-04.json","8f3d773cb77922cd9aaa0444eb574f498416aad7d268186557cc86f2c33d8160",152951,197],"חיי שרה":["portion-05.json","5188cd82b65a8f9f7d30aa711c05c52e33403bcdc1af56f7cd36e2f1917176ff",104449,154],"תולדות":["portion-06.json","53a4d58948e8ebd8674e2efd493bcfdad73c7b188dd5cd9f8517e19917ebf0b3",151054,157],"ויצא":["portion-07.json","a7ae70496ed16da53a743dc05ffd9ab0ec00d9fec3c30050b6b2d31033c5cfc4",158863,199],"וישלח":["portion-08.json","847286517623cb9e80222a0998b26afd76efa699cc2b552b4a3073a459aa6c65",138019,202],"וישב":["portion-09.json","c6af02e3ea798b4497c926c069a15ce968f8cdea0a7d5525ec98ba8dbe116d6f",126160,157],"מקץ":["portion-10.json","b34a596c980da228314d8b9bcbb3ae4011f619abc92880312cc3051b6c879fd8",130119,197],"ויגש":["portion-11.json","82de0480f11afcf9d5dfd7d183743a31bc03fe317be7e3249834d077f13dd47b",105252,156],"ויחי":["portion-12.json","c5b02cfe210ba10fa8d12b6c540d2358dd5a07db1d473c86b7eb24484f01dd06",102289,134]};
+  var WEEKS = {"בראשית":["portion-01.json","b5e65f4e367ce5395ac21be2d930ffee9ccaca11007a4ff20f79b501063e9a05",148799,198],"נח":["portion-02.json","3a59a0f0f21dbaa2f46b5192bcd29ae909bb04a722ade03294412c3d1f1b965d",133426,205],"לך לך":["portion-03.json","f8535a0d641212d21e14717f6eaeb7cee407d710d292fec0cc60ae30f0d9c92c",148853,178],"וירא":["portion-04.json","52a1429ed144f1d5db92d24cf124c4df6efad2304600166e764f8dd0bde607c4",156028,199],"חיי שרה":["portion-05.json","5336f7aba7d3ea964cbad75dc494e47cda40f538f4303bf34d85aadc7d36a70e",109214,157],"תולדות":["portion-06.json","d6002f14e665c298a9083fe8cdd58c50c82701eb8217d8adcc386df27fe6609b",134118,158],"ויצא":["portion-07.json","136d079734df30b9233c944b5a4863e8fdd8ea9e35190819798f5b021a4f2a24",140172,200],"וישלח":["portion-08.json","4c3268f72b7f211f467f711307610c7a8968ce12bccd7e63059c27eb08412354",141809,205],"וישב":["portion-09.json","937aecb549c5847e7eaec24a6b9a989c122225b7d5ca218157fdcbc8015a96d3",137466,164],"מקץ":["portion-10.json","2b64a8d9382b20acddb82502b98153b9234b0144a944ffe78003de17ff7b3471",131549,198],"ויגש":["portion-11.json","2eb57a68214e33b960ac0a0b45e5f8fd9a17cbab95fc30406399e5db047605f8",108643,158],"ויחי":["portion-12.json","ea8873a71eec2e9b99bd3f6cbaf9848c775297bd7d6a5c12c8c83649ad1119dd",107063,137]};
   var DAYS = ['יום ראשון','יום שני','יום שלישי','יום רביעי','יום חמישי','ליל שישי','יום שישי'];
   var pending = Object.create(null);
   function own(o,k) { return Object.prototype.hasOwnProperty.call(o,k); }
@@ -51,6 +51,23 @@
     }
     return pending[week];
   }
+  function selectedSource(original, reading) {
+    if (!reading) return Promise.resolve(original);
+    need(reading && Array.isArray(reading.edits) && typeof reading.suffix==='string' && /^[a-f0-9]{64}$/.test(reading.sha256));
+    var points=Array.from(original), priorEnd=0;
+    reading.edits.forEach(function(e){
+      need(e && Number.isInteger(e.start)&&Number.isInteger(e.end)&&e.start>=priorEnd&&e.end>=e.start&&e.end<=points.length&&typeof e.before==='string'&&typeof e.after==='string'&&points.slice(e.start,e.end).join('')===e.before);
+      priorEnd=e.end;
+    });
+    for(var i=reading.edits.length-1;i>=0;i--){var e=reading.edits[i];points.splice.apply(points,[e.start,e.end-e.start].concat(Array.from(e.after)));}
+    var result=points.join('')+reading.suffix;
+    return hash(result).then(function(h){need(h===reading.sha256);return result;});
+  }
+  function selected(context,reference,original) {
+    if(!context||!own(context.rows,reference))return null;
+    var b=context.rows[reference];
+    return b.original===original&&b.row.sourceReading?b.displayOriginal:null;
+  }
   function prepare(week,day,kind,slug,rawPromise,load) {
     var r=role(kind);
     if (!slot(week,day,r,slug)) return Promise.resolve(null);
@@ -60,7 +77,7 @@
       return Promise.all(p.pairs.filter(function(x){return x.key===week+'|'+day && x.role===r && x.slug===slug;}).map(function(x){
         var ref=x.reference.split(':'),original=raw.ch[ref[0]]&&raw.ch[ref[0]][ref[1]];
         if (!text(original)) return null;
-        return hash(original).then(function(h){if(h===x.originalSHA256) rows[x.reference]={row:x,original:original};});
+        return hash(original).then(function(h){if(h!==x.originalSHA256)return null;return selectedSource(original,x.sourceReading).then(function(display){rows[x.reference]={row:x,original:original,displayOriginal:display};});});
       })).then(function(){return {week:week,day:day,role:r,slug:slug,rows:rows,introduction:p.days[week+'|'+day+'|'+r],introductionRendered:false};});
     }).catch(function(){return null;});
   }
@@ -83,5 +100,5 @@
       '<p lang="he" dir="rtl" style="display:block!important;white-space:pre-wrap">'+esc(n.he)+'</p><p lang="en" dir="ltr" style="display:block!important;white-space:pre-wrap">'+esc(n.en)+'</p></aside>';}).join('');
     return intro+'<section class="ck-genesis-english-owner" data-owner-scope-key="'+esc(r.ownerScopeKey)+'" data-original-sha256="'+r.originalSHA256+'" data-english-sha256="'+r.englishSHA256+'">'+body+notes+'</section>';
   }
-  window.ChokGenesisEnglish=Object.freeze({prepare:prepare,render:render});
+  window.ChokGenesisEnglish=Object.freeze({prepare:prepare,render:render,selected:selected});
 })();

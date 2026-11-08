@@ -33,7 +33,7 @@ test('every selected source-bound pair, all full bilingual notes and all role-da
  assert.equal(pairs,reviewed.selectedPairs);assert.equal(notes,reviewed.orderedQualifications);assert.equal(dayFields,reviewed.selectedRoleDayIntroductions);console.log(JSON.stringify({completePairs:pairs,completeBilingualQualifications:notes,completeRoleDayIntroductions:dayFields,actualSourceContexts:contexts}));
  }finally{e.close();}
 });
-test('held and unscheduled readings never acquire English; qualified existing English wins; modes conserve mandatory notes',async()=>{
+test('unscheduled readings never acquire English; qualified existing English wins; modes conserve mandatory notes',async()=>{
  const e=env();try{const p=JSON.parse(read(files[0])),r=p.pairs.find(r=>r.qualifications.length),book=rawBook(r.slug),day=r.key.split('|')[1],kind=r.role==='onkelos'?'torah':r.role==='navi-targum'?'navi':'kesuvim',ctx=await e.api.prepare(p.week,day,kind,r.slug,Promise.resolve(book),loader),[c,v]=r.reference.split(':');
  assert.equal(e.api.render(ctx,'999:999','missing',{english:true,targum:true}),'');
  const existing=e.api.render(ctx,r.reference,book.ch[c][v],{english:true,targum:true,existingEnglish:true});assert(!existing.includes('ck-genesis-english-owner'));assert(!existing.includes('ck-source-qualification'));
@@ -43,9 +43,20 @@ test('held and unscheduled readings never acquire English; qualified existing En
  assert.equal(await e.api.prepare('שמות',day,'torah','tanach-shemos',Promise.resolve({ch:{}}),loader),null);
  }finally{e.close();}
 });
-test('the actual 24 held complete readings remain absent, without freezing their selected neighbors',async()=>{
- const e=env();try{assert.equal(reviewed.heldOwnerScopeKeys.length,24);for(const id of reviewed.heldOwnerScopeKeys){const [week,day,role,slug,ref]=id.split('|'),kind=role==='onkelos'?'torah':role==='navi-targum'?'navi':'kesuvim',book=rawBook(slug),ctx=await e.api.prepare(week,day,kind,slug,Promise.resolve(book),loader),[c,v]=ref.split(':');assert(ctx,id);assert.equal(e.api.render(ctx,ref,book.ch[c][v],{english:true,targum:true}),'',id);}}
- finally{e.close();}
+test('all24 exact author-selected formerly-held owners expose their coupled source, English and ordered qualifications; changed sources cannot borrow them',async()=>{
+ const e=env();try{
+ assert.deepEqual(reviewed.heldOwnerScopeKeys,[]);assert.equal(reviewed.authorSelectedOwnerScopeKeys.length,24);
+ assert.deepEqual([...reviewed.authorSelectedOwnerScopeKeys].sort(),[...reviewed.historicalHeldOwnerScopeKeys].sort());
+ assert.equal(reviewed.authorRulingsCompleteFieldSuccessorSHA256,'ecd218bdcf2d6bd7c4c270a0bae994f24bf5c5f8e7196884d0e62dac9cb99a7d');
+ for(const id of reviewed.authorSelectedOwnerScopeKeys){
+  const [week,day,role,slug,ref]=id.split('|'),kind=role==='onkelos'?'torah':role==='navi-targum'?'navi':'kesuvim',book=rawBook(slug),ctx=await e.api.prepare(week,day,kind,slug,Promise.resolve(book),loader),[c,v]=ref.split(':'),original=book.ch[c][v],pin=reviewed.authorMeaningPins[id];assert(ctx,id);
+  const selected=e.api.selected(ctx,ref,original);assert.equal(typeof selected,'string');assert.equal(crypto.createHash('sha256').update(selected).digest('hex'),pin.selectedOriginalSHA256,id);assert.equal(e.api.selected(ctx,ref,original+' '),null);assert.equal(e.api.selected(ctx,'999:999',original),null);
+  const html=e.api.render(ctx,ref,original,{english:true,targum:true}),d=documentFor('<html><body>'+html+'</body></html>'),owner=d.querySelector('.ck-genesis-english-owner');assert(owner,id);assert.equal(owner.getAttribute('data-owner-scope-key'),id);assert.equal(ctx.rows[ref].row.englishSHA256,pin.fullEnglishSHA256);assert.equal(crypto.createHash('sha256').update(ctx.rows[ref].row.fullEnglish).digest('hex'),pin.fullEnglishSHA256);
+  const ns=owner.querySelectorAll('.ck-source-qualification');assert.equal(ns.length,pin.orderedReaderNoteSHA256.length);ns.forEach((n,i)=>assert.equal(crypto.createHash('sha256').update(n.querySelector('[lang="he"]').textContent+'\u0000'+n.querySelector('[lang="en"]').textContent).digest('hex'),pin.orderedReaderNoteSHA256[i]));
+  const off=documentFor('<html><body>'+e.api.render(ctx,ref,original,{english:false,targum:true})+'</body></html>');assert.equal(off.querySelectorAll('.ck-source-qualification').length,ns.length);assert(!off.querySelector('.ck-en-line'));
+  const changed=structuredClone(book);changed.ch[c][v]+=' ';const rejected=await e.api.prepare(week,day,kind,slug,Promise.resolve(changed),loader);assert(rejected);assert.equal(e.api.selected(rejected,ref,original),null);assert.equal(e.api.render(rejected,ref,changed.ch[c][v],{english:true,targum:true}),'');
+ }
+ }finally{e.close();}
 });
 
 test('all 204 day introductions can precede the original without separating its full English or duplicating the introduction',async()=>{
@@ -55,9 +66,9 @@ test('all 204 day introductions can precede the original without separating its 
  const body=e.api.render(ctx,r.reference,original,{english:true,targum:true,existingEnglish:false});assert(!body.includes('ck-genesis-targum-day'));assert(body.includes(e.box.window.ChokSources.english(r.fullEnglish,true,'Targum English translation')));assert.equal(documentFor('<html><body>'+body+'</body></html>').querySelectorAll('.ck-source-qualification').length,r.qualifications.length);checked++;
  }}assert.equal(checked,204);}finally{e.close();}
 });
-test('owning page binds exact script bytes and each historical guard admits only the exact two owned successors',()=>{
+test('owning page binds exact script bytes and each historical guard admits only the exact owned successors',()=>{
  const admission=JSON.parse(read('scripts/chok-genesis-english-admission.json')),guard=require('./chok-reference-order-conservation.cjs'),page=read('src/pages/reader/chok.astro');
- for(const [relative,d] of Object.entries(admission.paths)){const actual=fs.readFileSync(path.join(root,relative)),restored=guard.restoreGenesis(relative,actual);assert.equal(crypto.createHash('sha256').update(restored).digest('hex'),d.beforeSHA256);const corrupt=Buffer.concat([actual,Buffer.from(' ')]);assert.equal(guard.restoreGenesis(relative,corrupt),corrupt);assert.throws(()=>guard.restoreReference(relative,corrupt));}
+ for(const [relative,d] of Object.entries(admission.paths)){const actual=fs.readFileSync(path.join(root,relative)),restored=guard.restoreGenesis(relative,actual);assert.equal(crypto.createHash('sha256').update(restored).digest('hex'),d.beforeSHA256);const corrupt=Buffer.concat([actual,Buffer.from(' ')]);assert.equal(guard.restoreGenesis(relative,corrupt),corrupt);if(Object.hasOwn(guard.DELTA,relative))assert.throws(()=>guard.restoreReference(relative,corrupt));else assert.notEqual(crypto.createHash('sha256').update(guard.restoreReference(relative,corrupt)).digest('hex'),d.beforeSHA256);}
  for(const [asset,algorithm] of [['chok.js','sha384'],['chok-genesis-english.js','sha256']]){const b=fs.readFileSync(path.join(root,'public',asset)),h=crypto.createHash('sha256').update(b).digest('hex'),sri=algorithm+'-'+crypto.createHash(algorithm).update(b).digest('base64');assert(page.includes('src="/'+asset+'?v='+h+'" integrity="'+sri+'"'));}
  const main=read('public/chok.js'),pre=main.indexOf('existingEnglish:true});');assert(pre>=0&&pre<main.indexOf('var targumRow =',pre));assert(main.indexOf('existingEnglish:existingTargumEnglish')>main.indexOf('var targumRow =',pre));
 });
@@ -71,5 +82,22 @@ test('corrupt transport is rejected; exact same source recovers without acceptin
  assert.equal(await e.api.prepare(p.week,day,kind,r.slug,Promise.resolve(book),url=>loader(url).then(x=>x+' ')),null);
  const ok=await e.api.prepare(p.week,day,kind,r.slug,Promise.resolve(book),loader);assert(ok);assert(Object.keys(ok.rows).length>0);
  const changed=structuredClone(book),[c,v]=r.reference.split(':');changed.ch[c][v]+=' ';const partial=await e.api.prepare(p.week,day,kind,r.slug,Promise.resolve(changed),loader);assert(!Object.hasOwn(partial.rows,r.reference));assert(Object.keys(partial.rows).length<Object.keys(ok.rows).length);
+ }finally{e.close();}
+});
+test('new Toldos Sunday complete Zohar remains source-bound with all8 mandatory bilingual notes and English-off conservation',async()=>{
+ const e=env();try{
+  const expected=reviewed.toldosSundayZohar;assert(expected);const key='תולדות|יום ראשון',script=read('public/chok-qualified-zohar.js'),m=script.match(/  var INDEX = (\{[^\n]+\});/);assert(m);const index=JSON.parse(m[1]);assert.equal(Object.keys(index).length,17);assert.deepEqual(index[key],expected.payload);delete index[key];assert.equal(crypto.createHash('sha256').update(JSON.stringify(index)).digest('hex'),expected.predecessorIndexSHA256);
+  assert.equal(crypto.createHash('sha256').update(script.slice(0,m.index+m[0].indexOf(m[1]))+'<INDEX>'+script.slice(m.index+m[0].indexOf(m[1])+m[1].length)).digest('hex'),expected.outsideIndexLogicSHA256);
+  vm.runInContext(script,e.box);const api=e.box.window.ChokQualifiedZohar;assert(api.has(key));assert(!api.has('תולדות|יום שני'));await assert.rejects(api.load('תולדות|יום שני',loader),/not admitted/);
+  const raw=read('public'+expected.payload.url);assert.equal(crypto.createHash('sha256').update(raw).digest('hex'),expected.payload.sha256);const p=await api.load(key,loader);assert.equal(p.originalSHA256,expected.payload.originalSHA256);assert.equal(p.englishSHA256,expected.payload.englishSHA256);assert.equal(p.sourceOwnerSHA256,expected.parentAdoptionSHA256);assert.equal(p.original.split('⟦').length-1,4);assert(p.original.startsWith('ואלה תולדות יצחק'));assert(p.original.endsWith('ישמיע כל תהלתו:'));
+  for(const english of [true,false]){const html=await api.reading(key,english,loader),d=documentFor('<html><body>'+html+'</body></html>');assert.equal(d.querySelector('[data-field-role="original-source"]').textContent,p.original);const en=d.querySelector('[data-field-role="english-translation"]');if(english)assert.equal(en.textContent,p.english);else assert(!en);const ns=d.querySelectorAll('[data-zohar-note-owner]');assert.equal(ns.length,8);ns.forEach((n,i)=>{assert.equal(n.getAttribute('data-note-id'),p.notes[i].id);assert.equal(n.querySelector('[lang="he"]').textContent,p.notes[i].he);assert.equal(n.querySelector('[lang="en"]').textContent,p.notes[i].en);assert(!n.closest('details'));});}
+ }finally{e.close();}
+});
+test('actual Main selects Toldos Sunday before the old missing inventory; dynamic module SRI failure stays closed and recovers',async()=>{
+ const expected=reviewed.toldosSundayZohar,wire=read('public'+expected.payload.url);let requests=[];const e=env(async url=>{requests.push(String(url));const ok=String(url)===expected.payload.url+'?v='+expected.payload.sha256;return {ok,status:ok?200:404,text:async()=>ok?wire:'',json:async()=>ok?JSON.parse(wire):{}};});
+ try{let corrupt=true,events=[],originalAppend=e.d.head.appendChild.bind(e.d.head);e.d.head.appendChild=function(n){const out=originalAppend(n);if(String(n.tagName).toLowerCase()==='script'&&String(n.src).startsWith('/chok-qualified-zohar.js?'))queueMicrotask(()=>{const bytes=read('public/chok-qualified-zohar.js')+(corrupt?' ':'');const sri='sha256-'+crypto.createHash('sha256').update(bytes).digest('base64');if(sri!==n.integrity){events.push('integrity-error');n.onerror();return;}events.push('verified-load');vm.runInContext(bytes,e.box);n.onload();});return out;};
+  const main=read('public/chok.js'),marker="  if (document.readyState === 'loading') {";assert.equal(main.split(marker).length,2);vm.runInContext(main.replace(marker,"  globalThis.actualToldosZohar=function(english){state.sched={weeks:{}};state.tanachen=english;return zoharHTML({vol:'תולדות',daf:134,amud:1},'תולדות','יום ראשון');};\n"+marker),e.box);
+  const denied=await e.box.actualToldosZohar(true);assert(!denied.includes('data-qualified-zohar="תולדות|יום ראשון"'));assert.equal(requests.length,0);corrupt=false;
+  const html=await e.box.actualToldosZohar(true),d=documentFor('<html><body>'+html+'</body></html>'),p=JSON.parse(wire);assert(d.querySelector('[data-qualified-zohar="תולדות|יום ראשון"]'));assert.equal(d.querySelector('[data-field-role="original-source"]').textContent,p.original);assert.equal(d.querySelector('[data-field-role="english-translation"]').textContent,p.english);assert.equal(d.querySelectorAll('[data-zohar-note-owner]').length,8);assert.deepEqual(events,['integrity-error','verified-load']);assert.deepEqual(requests,[expected.payload.url+'?v='+expected.payload.sha256]);
  }finally{e.close();}
 });
