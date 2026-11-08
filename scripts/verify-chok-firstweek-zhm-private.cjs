@@ -47,7 +47,7 @@ function checkNew(u, p, a) {
 }
 async function verify(root) {
   root = path.resolve(root);
-  const expected = JSON.parse(read(root,'scripts/chok-firstweek-zhm-reviewed.json','7043dfba94709cb3f7b9a3b0b883c6e4bb79f5ae534e2a91296efdbe83f36738'));
+  const expected = JSON.parse(read(root,'scripts/chok-firstweek-zhm-reviewed.json','b22f03032cd0e7d0e6122cf5988e5e573a011b16354a22a7c3c33d01f63f24ea'));
   for (const [name,pin] of Object.entries(expected.dependencies)) read(root,name,pin.sha256);
   const legacyChecker = require(path.join(root,'scripts/verify-chok-qualified-daily.cjs')).checkOracle;
   const host = {crypto:webcrypto};

@@ -6,10 +6,10 @@ const sha=b=>createHash('sha256').update(b).digest('hex');
 // Admit only the exact independently meaning-selected English augmentation.
 // Every historical source guard still receives its complete original preimage.
 function restoreGenesis(relative,bytes){
- if(!((relative==='public/chok.js'&&sha(bytes)==='89bd8b2ffcba1821c65a3a6c288bb481b74df73d04981521b1f34aa6fb34631e')||(relative==='src/pages/reader/chok.astro'&&sha(bytes)==='6b8b72a8ed918b502e0b00c263b127b27b93950b04ac3059ce9b420479e636db')))return bytes;
+ if(!((relative==='public/chok.js'&&sha(bytes)==='7987621767f6bacf9cc742b85c9578e15730248a0ef7c1e4cfe7c5a3eb2844c9')||(relative==='src/pages/reader/chok.astro'&&sha(bytes)==='20e32cb922d077c2958340e077ec23ac3d6736bd5743a72daf5912a47f9e1619')||(relative==='public/chok-qualified-zohar.js'&&sha(bytes)==='0c920181116e71c08c40235b0a02fb1d0648945c3f323952a44a4d4a69321372')))return bytes;
  const fs=require('node:fs'),path=require('node:path');
  const raw=fs.readFileSync(path.resolve(__dirname,'chok-genesis-english-admission.json'));
- assert.equal(sha(raw),'356d9e714e38db67d0f01f4b428a5e715b417ef422a69ad8882016a7034c0210','GENESIS_ENGLISH_ADMISSION_PIN');
+ assert.equal(sha(raw),'46b87aeac256133c3f9f115e4ac67f3fc28b66400ad463f5c8730c08b5cec3f2','GENESIS_ENGLISH_ADMISSION_PIN');
  const d=JSON.parse(raw).paths[relative];if(!d||sha(bytes)!==d.afterSHA256)return bytes;
  let s=bytes.toString('utf8');for(const op of d.inverse){assert.equal(s.split(op.after).length,2,'GENESIS_ENGLISH_INVERSE_MEMBERSHIP:'+relative);s=s.replace(op.after,op.before);}
  const restored=Buffer.from(s);assert.equal(sha(restored),d.beforeSHA256,'GENESIS_ENGLISH_EXACT_INVERSE:'+relative);return restored;

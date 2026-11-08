@@ -695,14 +695,19 @@
             } else if (generic !== null) row += generic;
             else row += '<p class="ck-source-unavailable" lang="en" dir="ltr">This translation is temporarily unavailable.</p>';
             var tgOriginal = tg && (tg.ch || {})[c] && tg.ch[c][x], existingTargumEnglish = false;
+            var selectedTargum = genesisEnglish && window.ChokGenesisEnglish.selected ? window.ChokGenesisEnglish.selected(genesisEnglish,sourceRef,tgOriginal) : null;
             if (genesisEnglish && !otherContext) row += window.ChokGenesisEnglish.render(genesisEnglish,sourceRef,tgOriginal,{english:englishEnabled,targum:state.targum,existingEnglish:true});
             if (state.targum) {
+              if (selectedTargum !== null) {
+                row += '<div class="ck-targum-reading"><h4>' + (kind === 'torah' ? 'אונקלוס · Onkelos' : 'תרגום · Targum') + '</h4><div class="ck-targum-line">' + window.ChokSources.targumText(applyMode(selectedTargum)) + '</div></div>';
+              } else {
               var targumRow = qualifiedDay ? kind === 'torah' ? window.ChokSources.bound('targum', sourceRef, tgOriginal) : window.ChokSources.nachTargum(kind, sourceRef) : window.ChokSources.weekUnit(parsha, day, kind==='torah'?'torahTargum':kind+'Targum', sourceRef, tgOriginal);
               var attachedTargum = otherContext ? window.ChokOtherLayers.targum(otherContext,sourceRef,tgOriginal,englishEnabled) : null;
               existingTargumEnglish = attachedTargum !== null || !!(targumRow && typeof targumRow.en === 'string' && targumRow.en.trim());
               if (attachedTargum !== null) row += attachedTargum;
               else if (targumRow) row += window.ChokSources.targum(targumRow, state.tanachen, kind === 'torah');
               else if (tgOriginal) row += '<div class="ck-targum-reading"><h4>' + (kind === 'torah' ? 'אונקלוס · Onkelos' : 'תרגום · Targum') + '</h4><div class="ck-targum-line">' + window.ChokSources.targumText(applyMode(tgOriginal)) + '</div></div>';
+              }
             }
 
             if (genesisEnglish) row += window.ChokGenesisEnglish.render(genesisEnglish,sourceRef,tgOriginal,{english:englishEnabled,targum:state.targum,existingEnglish:existingTargumEnglish,introduction:!otherContext});
@@ -1319,7 +1324,7 @@
       return window.ChokLechSunday.reading(wk, day, section, english, function (url) { return fetchJSON(url, true); });
     }).catch(unavailable);
   }
-  var QUALIFIED_ZOHAR_KEYS = ["חיי שרה|יום ראשון","חיי שרה|יום שני","חיי שרה|יום רביעי","חיי שרה|יום חמישי","חיי שרה|יום שישי","וירא|יום רביעי","וירא|יום שני","וירא|יום שישי","וירא|יום שלישי","בראשית|יום ראשון","בראשית|יום רביעי","בראשית|יום שישי","בראשית|יום שלישי","בראשית|יום שני","בראשית|יום חמישי","וירא|יום חמישי"];
+  var QUALIFIED_ZOHAR_KEYS = ["חיי שרה|יום ראשון","חיי שרה|יום שני","חיי שרה|יום רביעי","חיי שרה|יום חמישי","חיי שרה|יום שישי","וירא|יום רביעי","וירא|יום שני","וירא|יום שישי","וירא|יום שלישי","בראשית|יום ראשון","בראשית|יום רביעי","בראשית|יום שישי","בראשית|יום שלישי","בראשית|יום שני","בראשית|יום חמישי","וירא|יום חמישי","תולדות|יום ראשון"];
   function exactQualifiedZohar(wk, day) { return QUALIFIED_ZOHAR_KEYS.indexOf(wk + "|" + day) !== -1; }
   var qualifiedZoharModulePromise = null;
   function qualifiedZoharReady(api) { return api && typeof api.has === 'function' && typeof api.load === 'function' && typeof api.reading === 'function'; }
@@ -1327,8 +1332,8 @@
     if (qualifiedZoharReady(window.ChokQualifiedZohar)) return Promise.resolve(window.ChokQualifiedZohar);
     if (!qualifiedZoharModulePromise) qualifiedZoharModulePromise = new Promise(function (resolve,reject) {
       var script=document.createElement('script');
-      script.src='/chok-qualified-zohar.js?v=71be59fdff1134f7a3567e47ef6f88624398f59630281d364362a8fdafab2e6d';
-      script.integrity='sha256-cb5Z/f8RNPejVn5H72+IYkOY9ZYwKB02Q2Ko/a+rLm0=';
+      script.src='/chok-qualified-zohar.js?v=0c920181116e71c08c40235b0a02fb1d0648945c3f323952a44a4d4a69321372';
+      script.integrity='sha256-DJIBgRFuccCMQCNbCgL7HQZIlFw/MjlSpEpNSmkyE3I=';
       script.crossOrigin='anonymous';
       script.onload=function () { if (qualifiedZoharReady(window.ChokQualifiedZohar)) resolve(window.ChokQualifiedZohar); else reject(Error('Zohar module unavailable')); };
       script.onerror=function () { reject(Error('Zohar module unavailable')); };
