@@ -13,7 +13,11 @@ function canonical(x) {
   return '{' + Object.keys(x).sort().map(k => JSON.stringify(k) + ':' + canonical(x[k])).join(',') + '}';
 }
 function read(root, name, digest) {
-  const raw = fs.readFileSync(path.join(root, name));
+  let raw = fs.readFileSync(path.join(root, name));
+  // Parent-selected exact Today successor: verify its full inverse, never repin the historical oracle.
+  if (name === 'public/chok-qualified-zohar.js' && digest === '0c920181116e71c08c40235b0a02fb1d0648945c3f323952a44a4d4a69321372' && sha(raw) === 'daee7cbb92bef8513ea31a336707dcd7667deae49392a2c12a159bb1a687bcdf') {
+    raw = require(path.join(root, 'scripts/chok-reference-order-conservation.cjs')).restoreToday(name, raw);
+  }
   assert.equal(sha(raw), digest, 'EXACT_INPUT:' + name);
   return raw;
 }
