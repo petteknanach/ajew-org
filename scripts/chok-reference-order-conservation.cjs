@@ -16,7 +16,13 @@ function restoreToday(relative,bytes){
  const before=Buffer.from(s);assert.equal(sha(before),d.beforeSHA256,'TOLDOS_MONDAY_WHOLE_INVERSE:'+relative);return before;
 }
 // Exact TOMORROW-only outer inverse; restoreToday keeps its original 18-source boundary.
+function restoreCleared(relative,bytes){
+ const allowed={"public/chok.js":"418514feb99ec895017ddef2b6746f99f2e6c64613a549d5354213c4cf637a06","public/chok-qualified-zohar.js":"d89f12181e90034b08d036cf96fe7493ed984776db5a5574a515e0c095346a08","src/pages/reader/chok.astro":"f3a696f8ed967b071eacd3f9d93bd69827ffa7cb21a875891258efac9035149f","scripts/chok-genesis-english.test.cjs":"c74463b3593e308e1596e1352ea60541b97c023c96eee1bc1960540b16332fdf"};
+ if(!allowed[relative]||sha(bytes)!==allowed[relative])return bytes;
+ return require('./chok-all-cleared-zohar-admission.cjs').restore(relative,bytes);
+}
 function restoreTomorrow(relative,bytes){
+ bytes=restoreCleared(relative,bytes);
  const allowed={"public/chok-qualified-zohar.js":"0200b50cf4226520e049f751fb6d63e98c2f8702f8f1058112c76e612860b114","public/chok.js":"21ec760448c18fbed0a2357278660a033311fe8d20fe17263051417da31da78e","src/pages/reader/chok.astro":"4e3d4fa3ccf53ffddb10a1446daa4289804a5f24a5331163253b1daf05a09413"};
  if(!allowed[relative]||sha(bytes)!==allowed[relative])return bytes;
  const fs=require('node:fs'),path=require('node:path'),raw=fs.readFileSync(path.resolve(__dirname,'chok-tomorrow-toldos-tuesday-admission.json'));
@@ -51,7 +57,7 @@ function restoreReference(relative,bytes){
  for(const op of d.inverse){assert.equal(text.split(op.after).length,2,'REFERENCE_INVERSE_MEMBERSHIP:'+relative);text=text.replace(op.after,op.before);}
  const before=Buffer.from(text);assert.equal(sha(before),d.beforeSHA256,'REFERENCE_EXACT_INVERSE:'+relative);return before;
 }
-module.exports={DELTA,restoreReference,restoreGenesis,restoreToday,restoreTomorrow};
+module.exports={restoreCleared,DELTA,restoreReference,restoreGenesis,restoreToday,restoreTomorrow};
 if(require.main===module){
  const fs=require('node:fs'),path=require('node:path');
  for(const [relative,d]of Object.entries(DELTA)){
