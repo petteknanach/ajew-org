@@ -15,8 +15,9 @@ function canonical(x) {
 function read(root, name, digest) {
   let raw = fs.readFileSync(path.join(root, name));
   // Parent-selected exact Today successor: verify its full inverse, never repin the historical oracle.
-  if (name === 'public/chok-qualified-zohar.js' && digest === '0c920181116e71c08c40235b0a02fb1d0648945c3f323952a44a4d4a69321372' && sha(raw) === 'daee7cbb92bef8513ea31a336707dcd7667deae49392a2c12a159bb1a687bcdf') {
-    raw = require(path.join(root, 'scripts/chok-reference-order-conservation.cjs')).restoreToday(name, raw);
+  if (name === 'public/chok-qualified-zohar.js' && digest === '0c920181116e71c08c40235b0a02fb1d0648945c3f323952a44a4d4a69321372' && (sha(raw) === 'daee7cbb92bef8513ea31a336707dcd7667deae49392a2c12a159bb1a687bcdf' || sha(raw) === '0200b50cf4226520e049f751fb6d63e98c2f8702f8f1058112c76e612860b114')) {
+    const conservation = require(path.join(root, 'scripts/chok-reference-order-conservation.cjs'));
+    raw = conservation.restoreToday(name, conservation.restoreTomorrow(name, raw));
   }
   assert.equal(sha(raw), digest, 'EXACT_INPUT:' + name);
   return raw;

@@ -15,7 +15,18 @@ function restoreToday(relative,bytes){
  let s=bytes.toString('utf8');for(const op of d.inverse){assert.equal(s.split(op.after).length,2,'TOLDOS_MONDAY_INVERSE_MEMBERSHIP:'+relative);s=s.replace(op.after,op.before);}
  const before=Buffer.from(s);assert.equal(sha(before),d.beforeSHA256,'TOLDOS_MONDAY_WHOLE_INVERSE:'+relative);return before;
 }
+// Exact TOMORROW-only outer inverse; restoreToday keeps its original 18-source boundary.
+function restoreTomorrow(relative,bytes){
+ const allowed={"public/chok-qualified-zohar.js":"0200b50cf4226520e049f751fb6d63e98c2f8702f8f1058112c76e612860b114","public/chok.js":"21ec760448c18fbed0a2357278660a033311fe8d20fe17263051417da31da78e","src/pages/reader/chok.astro":"4e3d4fa3ccf53ffddb10a1446daa4289804a5f24a5331163253b1daf05a09413"};
+ if(!allowed[relative]||sha(bytes)!==allowed[relative])return bytes;
+ const fs=require('node:fs'),path=require('node:path'),raw=fs.readFileSync(path.resolve(__dirname,'chok-tomorrow-toldos-tuesday-admission.json'));
+ assert.equal(sha(raw),'60bb19020ed1b3aa711619194dcd9e782731bec2c5c93870c23e3b92ce9f217f','TOLDOS_TUESDAY_ADMISSION_PIN');
+ const d=JSON.parse(raw).paths[relative];assert(d);assert.equal(sha(bytes),d.afterSHA256,'TOLDOS_TUESDAY_AFTER_PIN');
+ let s=bytes.toString('utf8');for(const op of d.inverse){assert.equal(s.split(op.after).length,2,'TOLDOS_TUESDAY_INVERSE_MEMBERSHIP:'+relative);s=s.replace(op.after,op.before);}
+ const before=Buffer.from(s);assert.equal(sha(before),d.beforeSHA256,'TOLDOS_TUESDAY_WHOLE_INVERSE:'+relative);return before;
+}
 function restoreGenesis(relative,bytes){
+ bytes=restoreTomorrow(relative,bytes);
  bytes=restoreToday(relative,bytes);
  if(!((relative==='public/chok.js'&&sha(bytes)==='7987621767f6bacf9cc742b85c9578e15730248a0ef7c1e4cfe7c5a3eb2844c9')||(relative==='src/pages/reader/chok.astro'&&sha(bytes)==='20e32cb922d077c2958340e077ec23ac3d6736bd5743a72daf5912a47f9e1619')||(relative==='public/chok-qualified-zohar.js'&&sha(bytes)==='0c920181116e71c08c40235b0a02fb1d0648945c3f323952a44a4d4a69321372')))return bytes;
  const fs=require('node:fs'),path=require('node:path');
@@ -40,7 +51,7 @@ function restoreReference(relative,bytes){
  for(const op of d.inverse){assert.equal(text.split(op.after).length,2,'REFERENCE_INVERSE_MEMBERSHIP:'+relative);text=text.replace(op.after,op.before);}
  const before=Buffer.from(text);assert.equal(sha(before),d.beforeSHA256,'REFERENCE_EXACT_INVERSE:'+relative);return before;
 }
-module.exports={DELTA,restoreReference,restoreGenesis,restoreToday};
+module.exports={DELTA,restoreReference,restoreGenesis,restoreToday,restoreTomorrow};
 if(require.main===module){
  const fs=require('node:fs'),path=require('node:path');
  for(const [relative,d]of Object.entries(DELTA)){

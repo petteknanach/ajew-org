@@ -6,6 +6,7 @@ const PLAN_SHA='e9764fd23b4780e41c7221b9dbbebe916632d3046c670c743b6c0917ec610105
 function canonical(x){if(x===null||typeof x!=='object')return JSON.stringify(x);if(Array.isArray(x))return '['+x.map(canonical).join(',')+']';return '{'+Object.keys(x).sort().map(k=>JSON.stringify(k)+':'+canonical(x[k])).join(',')+'}';}
 function plan(root){const b=fs.readFileSync(path.join(root,'scripts/chok-today-classical-admission.json'));assert.equal(sha(b),PLAN_SHA,'TODAY_ADMISSION_PIN');return JSON.parse(b);}
 function restore(root,relative,bytes){
+ bytes=require('./chok-reference-order-conservation.cjs').restoreTomorrow(relative,bytes);
  if((relative==='public/chok.js'&&sha(bytes)==='04eaaeea7ce2bc6cf153837d235ba76868b4bbdb7c6fa2f18bf3639b0f67eeea')||(relative==='src/pages/reader/chok.astro'&&sha(bytes)==='3617da3a1dfe1ee5d056b9204e8c46a9f5b5bf38bca9899dc99195339299797c')||(relative==='public/chok-qualified-zohar.js'&&sha(bytes)==='daee7cbb92bef8513ea31a336707dcd7667deae49392a2c12a159bb1a687bcdf')||(relative==='public/chok.js'&&sha(bytes)==='7987621767f6bacf9cc742b85c9578e15730248a0ef7c1e4cfe7c5a3eb2844c9')||(relative==='src/pages/reader/chok.astro'&&sha(bytes)==='20e32cb922d077c2958340e077ec23ac3d6736bd5743a72daf5912a47f9e1619')||(relative==='public/chok-qualified-zohar.js'&&sha(bytes)==='0c920181116e71c08c40235b0a02fb1d0648945c3f323952a44a4d4a69321372'))bytes=require('./chok-reference-order-conservation.cjs').restoreGenesis(relative,bytes);
  const a=plan(root);let s=bytes.toString('utf8');
  if(relative==='public/chok-qualified-daily-classical-selected-v1.js'){

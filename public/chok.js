@@ -1324,7 +1324,7 @@
       return window.ChokLechSunday.reading(wk, day, section, english, function (url) { return fetchJSON(url, true); });
     }).catch(unavailable);
   }
-  var QUALIFIED_ZOHAR_KEYS = ["חיי שרה|יום ראשון","חיי שרה|יום שני","חיי שרה|יום רביעי","חיי שרה|יום חמישי","חיי שרה|יום שישי","וירא|יום רביעי","וירא|יום שני","וירא|יום שישי","וירא|יום שלישי","בראשית|יום ראשון","בראשית|יום רביעי","בראשית|יום שישי","בראשית|יום שלישי","בראשית|יום שני","בראשית|יום חמישי","וירא|יום חמישי","תולדות|יום ראשון","תולדות|יום שני"];
+  var QUALIFIED_ZOHAR_KEYS = ["חיי שרה|יום ראשון","חיי שרה|יום שני","חיי שרה|יום רביעי","חיי שרה|יום חמישי","חיי שרה|יום שישי","וירא|יום רביעי","וירא|יום שני","וירא|יום שישי","וירא|יום שלישי","בראשית|יום ראשון","בראשית|יום רביעי","בראשית|יום שישי","בראשית|יום שלישי","בראשית|יום שני","בראשית|יום חמישי","וירא|יום חמישי","תולדות|יום ראשון","תולדות|יום שני","תולדות|יום שלישי"];
   function exactQualifiedZohar(wk, day) { return QUALIFIED_ZOHAR_KEYS.indexOf(wk + "|" + day) !== -1; }
   var qualifiedZoharModulePromise = null;
   function qualifiedZoharReady(api) { return api && typeof api.has === 'function' && typeof api.load === 'function' && typeof api.reading === 'function'; }
@@ -1332,8 +1332,8 @@
     if (qualifiedZoharReady(window.ChokQualifiedZohar)) return Promise.resolve(window.ChokQualifiedZohar);
     if (!qualifiedZoharModulePromise) qualifiedZoharModulePromise = new Promise(function (resolve,reject) {
       var script=document.createElement('script');
-      script.src='/chok-qualified-zohar.js?v=daee7cbb92bef8513ea31a336707dcd7667deae49392a2c12a159bb1a687bcdf';
-      script.integrity='sha256-2u58u5K++FE+oxozZwfc12Z96uSTkqLBKhWbsaaHvN8=';
+      script.src='/chok-qualified-zohar.js?v=0200b50cf4226520e049f751fb6d63e98c2f8702f8f1058112c76e612860b114';
+      script.integrity='sha256-AgC1DPQiZSDgSfdR+21j6YwvhwL48QWBEsduYShgsRQ=';
       script.crossOrigin='anonymous';
       script.onload=function () { if (qualifiedZoharReady(window.ChokQualifiedZohar)) resolve(window.ChokQualifiedZohar); else reject(Error('Zohar module unavailable')); };
       script.onerror=function () { reject(Error('Zohar module unavailable')); };
