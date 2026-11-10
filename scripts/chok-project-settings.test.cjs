@@ -15,12 +15,29 @@ const mapExpression=`{projectCredits.entries.map(entry => <article class="ck-pro
 assert.equal(template.split(mapExpression).length,2,'exact production bank binding');
 assert(template.includes("import projectCredits from '../../data/chok-project-credits.json';"));
 function markup(){return template.slice(template.indexOf('  <div class="ck-wrap"'),template.indexOf('</Layout>')).replace('{projectCredits.scope}',esc(bank.scope)).replace(mapExpression,bank.entries.map(e=>'<article class="ck-project-credit" data-project-credit="'+e.id+'">'+e.html+'<details><summary>Applicability · תחולה</summary><ul>'+e.bindings.map(b=>'<li dir="ltr">'+esc(b.kind==='qualified'?`${b.payload.split('/').pop()} · ${b.section} · ${b.owner} · ${b.note}`:`${b.owner} · credit ${b.creditIndex+1}`)+'</li>').join('')+'</ul></details></article>').join(''));}
+const approvedNativeCreditId='native-eight-zohar';
+const approvedNativeCreditHTML="<article class=\"ck-project-credit\" data-project-credit=\"native-eight-zohar\"><p><a href=\"https://he.wikisource.org/wiki/זהר\">Hebrew Wikisource · זהר</a></p></article>";
+function checkProjectCreditDomain(d){
+ const expectedIds=[approvedNativeCreditId,...bank.entries.map(e=>e.id)],nodes=[...d.querySelectorAll('[data-project-credit]')],root=d.getElementById('ck-project-credit-bank');
+ assert.equal(new Set(expectedIds).size,expectedIds.length,'complete generated and separately approved credit identities');
+ assert.deepEqual(nodes.map(n=>n.getAttribute('data-project-credit')),expectedIds,'complete ordered generated bank plus approved native-eight supplement');
+ const own=nodes[0],expected=documentFor('<main>'+approvedNativeCreditHTML+'</main>').querySelector('[data-project-credit]');
+ assert.equal(own.closest('#ck-project-credit-bank'),root,'approved credit remains in the once-only project bank');
+ assert.equal(own.innerHTML,expected.innerHTML,'complete approved native-eight credit text and link');return own;
+}
+function creditDomainControls(d){
+ const n=checkProjectCreditDomain(d),id=n.getAttribute('data-project-credit');
+ n.setAttribute('data-project-credit','foreign-credit');assert.throws(()=>checkProjectCreditDomain(d));n.setAttribute('data-project-credit',id);checkProjectCreditDomain(d);
+ const a=n.querySelector('a'),href=a.getAttribute('href');a.setAttribute('href','/unapproved-credit');assert.throws(()=>checkProjectCreditDomain(d));a.setAttribute('href',href);checkProjectCreditDomain(d);
+ const extra=n.cloneNode(true);extra.setAttribute('data-project-credit','unapproved-extra-credit');n.parentNode.appendChild(extra);assert.throws(()=>checkProjectCreditDomain(d));extra.remove();checkProjectCreditDomain(d);
+ return {wrongIdentityRejected:true,changedSourceLinkRejected:true,unexpectedAdditionalCreditRejected:true,exactFreshRestoration:true};
+}
 function checkSettings(d){
  const settings=d.getElementById('ck-general-settings'),section=d.getElementById('ck-sources-and-credits');
  assert(settings&&section);assert.equal(settings.tagName,'details');assert.equal(settings.children[0].tagName,'summary');assert(settings.children[0].textContent.includes('General settings'));
  assert.equal(section.closest('#ck-general-settings'),settings);assert.equal(section.getAttribute('tabindex'),'0');assert.equal(section.getAttribute('aria-labelledby'),'ck-sources-heading');assert.equal(section.getAttribute('role'),'region');
  assert.equal(d.querySelectorAll('#ck-sources-and-credits').length,1);assert(!d.getElementById('ck-reading-credits'));assert(!d.querySelector('footer .ck-project-credits'));
- assert.equal(d.querySelectorAll('[data-project-credit]').length,bank.entries.length);
+ checkProjectCreditDomain(d);
  assert([...section.querySelectorAll('a')].some(a=>a.getAttribute('href')==='/tikkun/qatan-sources.html'));assert(section.querySelector('#ck-noach-legal'));assert(section.querySelector('.ck-noach-print-conditions').textContent.includes('Creative Commons 2.5'));
  const before=section.innerHTML;settings.children[0].click();assert(settings.open,'native disclosure activation opens general settings');assert.equal(section.innerHTML,before);settings.children[0].click();assert(!settings.open);return before;
 }
@@ -31,14 +48,14 @@ function inventory(){
  const bindings=bank.entries.flatMap(e=>e.bindings),daily=bindings.filter(b=>b.kind==='qualified'),other=bindings.filter(b=>b.kind==='other-layer');
  assert.equal(daily.length,38);assert.equal(other.length,133);assert.equal(new Set(other.map(b=>b.owner)).size,128);
  // Check notice paragraphs/links themselves, not just bank counts.
- const d=documentFor(markup());checkSettings(d);
+ const d=documentFor(markup());checkSettings(d);const approvedCreditControls=creditDomainControls(d);
  const semantic=require('./chok-project-credit-semantics.test.cjs').verify(bank,d.getElementById('ck-project-credit-bank')); 
  for(const e of bank.entries){const n=d.querySelector('[data-project-credit="'+e.id+'"]'),probe=documentFor('<main>'+e.html+'</main>');for(const a of probe.querySelectorAll('a'))assert(n.querySelectorAll('a').some(v=>v.getAttribute('href')===a.getAttribute('href')));assert(n.textContent.includes(probe.querySelector('main').textContent));}
  const start=main.indexOf('  function suppressSourceCredits(root) {'),end=main.indexOf('  function secHead(',start);assert(start>=0&&end>start);
  const context={};vm.runInNewContext(main.slice(start,end)+';this.run=suppressSourceCredits',context);
  const sample=documentFor('<main><p>Source body</p><aside class="ck-source-qualification" data-daily-note="meaning">Meaning, reading, safety and uncertainty stay local.</aside><details class="ck-source-credits"><summary>Legal</summary>'+bank.entries[0].html+'</details><details class="ck-source-credits" data-other-credit-owner="owner">'+bank.entries[bank.entries.length-1].html+'</details></main>');
  const root=sample.querySelector('main'),clone=root.cloneNode(true);clone.querySelectorAll('.ck-source-credits').forEach(n=>n.remove());const expected=clone.innerHTML;context.run(root);assert.equal(root.innerHTML,expected);context.run(root);assert.equal(root.innerHTML,expected);
- return {projectNotices:bank.entries.length,qualifiedNotices:bank.entries.filter(e=>e.bindings[0].kind==='qualified').length,otherNotices:bank.entries.filter(e=>e.bindings[0].kind==='other-layer').length,qualifiedBindings:daily.length,otherBindings:other.length,otherOwners:128,inputPins:Object.keys(bank.inputs).length,semantic,nonCreditDOMExact:true};
+ return {projectNotices:bank.entries.length+1,generatedProjectNotices:bank.entries.length,approvedStandaloneProjectNotices:1,approvedCreditControls,qualifiedNotices:bank.entries.filter(e=>e.bindings[0].kind==='qualified').length,otherNotices:bank.entries.filter(e=>e.bindings[0].kind==='other-layer').length,qualifiedBindings:daily.length,otherBindings:other.length,otherOwners:128,inputPins:Object.keys(bank.inputs).length,semantic,nonCreditDOMExact:true};
 }
 async function initializer(unavailable=false){
  const full=JSON.parse(read('public/reader/chok/schedule.json')),schedule={weeks:{'וירא':{slug:full.weeks['וירא'].slug,days:{'יום שלישי':full.weeks['וירא'].days['יום שלישי'],'יום שני':full.weeks['וירא'].days['יום שני'],'יום רביעי':full.weeks['וירא'].days['יום רביעי']}}}};

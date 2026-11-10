@@ -14,7 +14,7 @@ function canonical(x) {
 }
 function read(root, name, digest) {
   let raw = fs.readFileSync(path.join(root, name));
-  if(name==='public/chok-qualified-zohar.js' && sha(raw)==='e263e015614e8328fddbd9fd9ea5e78431e6b58e571632a842755da982f96289') raw=require(path.join(root,'scripts/chok-reference-order-conservation.cjs')).restoreCurrent37(name,raw);
+  if(name==='public/chok-qualified-zohar.js' && (sha(raw)==='e263e015614e8328fddbd9fd9ea5e78431e6b58e571632a842755da982f96289' || sha(raw)==='c9f930afecfea0afcb6472b08a2b46ac51c6380621ad4e1a9123452dc0a048d8')) raw=require(path.join(root,'scripts/chok-reference-order-conservation.cjs')).restoreCurrent37(name,raw);
   // Exact cleared-cohort outer inverse precedes the unchanged Monday/Tuesday dispatch.
   if(name==='public/chok-qualified-zohar.js' && digest==='0c920181116e71c08c40235b0a02fb1d0648945c3f323952a44a4d4a69321372' && sha(raw)==='d89f12181e90034b08d036cf96fe7493ed984776db5a5574a515e0c095346a08') raw=require(path.join(root,'scripts/chok-reference-order-conservation.cjs')).restoreCleared(name,raw);
   // Parent-selected exact Today successor: verify its full inverse, never repin the historical oracle.

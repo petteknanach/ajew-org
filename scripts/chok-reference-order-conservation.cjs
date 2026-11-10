@@ -16,6 +16,7 @@ function restoreToday(relative,bytes){
  const before=Buffer.from(s);assert.equal(sha(before),d.beforeSHA256,'TOLDOS_MONDAY_WHOLE_INVERSE:'+relative);return before;
 }
 // Exact TOMORROW-only outer inverse; restoreToday keeps its original 18-source boundary.
+function restoreCurrent38(relative,bytes){return require('./chok-all-cleared-zohar-admission.cjs').restoreCurrent38(relative,bytes);}
 function restoreCurrent37(relative,bytes){return require('./chok-all-cleared-zohar-admission.cjs').restoreCurrent37(relative,bytes);}
 function restoreCleared(relative,bytes){
  bytes=restoreCurrent37(relative,bytes);
@@ -59,7 +60,7 @@ function restoreReference(relative,bytes){
  for(const op of d.inverse){assert.equal(text.split(op.after).length,2,'REFERENCE_INVERSE_MEMBERSHIP:'+relative);text=text.replace(op.after,op.before);}
  const before=Buffer.from(text);assert.equal(sha(before),d.beforeSHA256,'REFERENCE_EXACT_INVERSE:'+relative);return before;
 }
-module.exports={restoreCurrent37,restoreCleared,DELTA,restoreReference,restoreGenesis,restoreToday,restoreTomorrow};
+module.exports={restoreCurrent38,restoreCurrent37,restoreCleared,DELTA,restoreReference,restoreGenesis,restoreToday,restoreTomorrow};
 if(require.main===module){
  const fs=require('node:fs'),path=require('node:path');
  for(const [relative,d]of Object.entries(DELTA)){
