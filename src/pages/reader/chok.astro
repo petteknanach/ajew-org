@@ -63,6 +63,7 @@ import projectCredits from '../../data/chok-project-credits.json';
       <h2 id="ck-sources-heading">מקורות ורישיונות · Sources / Licences</h2>
       <p>{projectCredits.scope}</p>
       <div id="ck-project-credit-bank">
+        <article class="ck-project-credit" data-project-credit="native-eight-zohar"><p><a href="https://he.wikisource.org/wiki/זהר">Hebrew Wikisource · זהר</a></p></article>
         {projectCredits.entries.map(entry => <article class="ck-project-credit" data-project-credit={entry.id}>
           <Fragment set:html={entry.html} />
           <details><summary>Applicability · תחולה</summary><ul>
@@ -150,7 +151,7 @@ Retained named-contributor permission evidence:
 .ck-genesis-english-owner > .ck-en-line > small { display: block; font-style: normal; font-weight: 600; }
 </style>
 <script is:inline src="/chok-genesis-english.js?v=c6a049d5caa607ed679c912ccae5b7de086b59e1ea173b907eef82cb0df75c12" integrity="sha256-xqBJ1cqmB+1nnJEsyuW33ghrWeHqFzuQfu+Cyw33XBI=" crossorigin="anonymous" defer></script>
-<script is:inline src="/chok.js?v=418514feb99ec895017ddef2b6746f99f2e6c64613a549d5354213c4cf637a06" integrity="sha384-88MFnYdCx8k9jZ0lwm0dkjoLjm5S2AhsZ4VNCzow95TvPjivJP/s/yNOyAur54pd" crossorigin="anonymous" defer></script>
+<script is:inline src="/chok.js?v=9252e0ad3af22de43601fb4805736ee9d2aef7733e69253eb41888ad7621dae0" integrity="sha384-e8J8FG80hhM+grvWwc5H5rgcvI1D3DdfDhcEYAskAzOXuiL7yLAIxnLcSQxJb895" crossorigin="anonymous" defer></script>
 
 <style is:global>
   .ck-noach-en { white-space:pre-wrap; font-family:var(--ck-font-en); font-size:1.1rem; line-height:1.8; }

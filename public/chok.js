@@ -1324,7 +1324,7 @@
       return window.ChokLechSunday.reading(wk, day, section, english, function (url) { return fetchJSON(url, true); });
     }).catch(unavailable);
   }
-  var QUALIFIED_ZOHAR_KEYS = ["חיי שרה|יום ראשון","חיי שרה|יום שני","חיי שרה|יום רביעי","חיי שרה|יום חמישי","חיי שרה|יום שישי","וירא|יום רביעי","וירא|יום שני","וירא|יום שישי","וירא|יום שלישי","בראשית|יום ראשון","בראשית|יום רביעי","בראשית|יום שישי","בראשית|יום שלישי","בראשית|יום שני","בראשית|יום חמישי","וירא|יום חמישי","תולדות|יום ראשון","תולדות|יום שני","תולדות|יום שלישי","לך לך|יום שני","לך לך|יום שישי","נח|יום שלישי","חיי שרה|יום שלישי","ויצא|יום רביעי","וישלח|יום חמישי","וישב|יום שישי","מקץ|יום שישי","ויגש|יום שני","ויחי|יום ראשון"];
+  var QUALIFIED_ZOHAR_KEYS = ["חיי שרה|יום ראשון","חיי שרה|יום שני","חיי שרה|יום רביעי","חיי שרה|יום חמישי","חיי שרה|יום שישי","וירא|יום רביעי","וירא|יום שני","וירא|יום שישי","וירא|יום שלישי","בראשית|יום ראשון","בראשית|יום רביעי","בראשית|יום שישי","בראשית|יום שלישי","בראשית|יום שני","בראשית|יום חמישי","וירא|יום חמישי","תולדות|יום ראשון","תולדות|יום שני","תולדות|יום שלישי","לך לך|יום שני","לך לך|יום שישי","נח|יום שלישי","חיי שרה|יום שלישי","ויצא|יום רביעי","וישלח|יום חמישי","וישב|יום שישי","מקץ|יום שישי","ויגש|יום שני","ויחי|יום ראשון","ויגש|יום חמישי","ויגש|יום שלישי","ויחי|יום שני","וישב|יום חמישי","וישב|יום ראשון","וישב|יום שלישי","וישלח|יום שני","תולדות|יום רביעי"];
   function exactQualifiedZohar(wk, day) { return QUALIFIED_ZOHAR_KEYS.indexOf(wk + "|" + day) !== -1; }
   var qualifiedZoharModulePromise = null;
   function qualifiedZoharReady(api) { return api && typeof api.has === 'function' && typeof api.load === 'function' && typeof api.reading === 'function'; }
@@ -1332,8 +1332,8 @@
     if (qualifiedZoharReady(window.ChokQualifiedZohar)) return Promise.resolve(window.ChokQualifiedZohar);
     if (!qualifiedZoharModulePromise) qualifiedZoharModulePromise = new Promise(function (resolve,reject) {
       var script=document.createElement('script');
-      script.src='/chok-qualified-zohar.js?v=d89f12181e90034b08d036cf96fe7493ed984776db5a5574a515e0c095346a08';
-      script.integrity='sha256-2J8SGB6QA0sI0DbPlv50k+2YR3bbWlV0pRXgwJU0agg=';
+      script.src='/chok-qualified-zohar.js?v=e263e015614e8328fddbd9fd9ea5e78431e6b58e571632a842755da982f96289';
+      script.integrity='sha256-4mPgFWFOgyj929n9nqXnhDHmtY5XFjKoQnVdqYL5Yok=';
       script.crossOrigin='anonymous';
       script.onload=function () { if (qualifiedZoharReady(window.ChokQualifiedZohar)) resolve(window.ChokQualifiedZohar); else reject(Error('Zohar module unavailable')); };
       script.onerror=function () { reject(Error('Zohar module unavailable')); };

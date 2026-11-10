@@ -80,12 +80,56 @@ const scheduleProjection={weeks:{}};
 for(const week of ['לך לך','נח']){const w=schedule.weeks[week];scheduleProjection.weeks[week]={slug:w.slug,days:{}};for(const day of ['יום ראשון','יום שני']){const d=w.days[day];scheduleProjection.weeks[week].days[day]={gemara:d.gemara,zohar:d.zohar};}}
 const template=read('src/pages/reader/chok.astro'),markup=template.slice(template.indexOf('  <div class="ck-wrap"'),template.indexOf('</Layout>'));
 const facadeJSON=new Set(['/reader/chok/mishna-bonus.json','/reader/chok/mussar.json','/reader/chok/day-comm.json','/reader/chok/kavanos-chok.json','/reader/chok/kavanos-actual.json','/reader/chok/miluy-kavana.json','/reader/chok/hk-verses.json','/reader/chok/kavanos-torah.json','/reader/kavanos/index.json']);
+// This declared partial fixture does not qualify a full page or Nach reading.
+// Compare every error node: no filtering, blanket allowance or hidden error.
+function assertProjectedNachBoundary(d,projection,fields){
+ for(const week of Object.values(projection.weeks))for(const day of Object.values(week.days))assert.deepEqual(Object.keys(day).sort(),fields,'unchanged declared schedule projection');
+ const tail="Nach book data error: Error: Nach facts: missing original schedule qualifier. No fallback verses are displayed.",lead=" — : נתוני הספר או טווח המקור אינם מאומתים; לא מוצגים פסוקים חלופיים. ";
+ const actual=d.querySelectorAll('#ck-content .ck-error').map(n=>({class:n.getAttribute('class'),nach:n.getAttribute('data-nach-error'),role:n.getAttribute('role'),text:n.textContent,html:n.innerHTML,owned:!!(n.closest('[data-sec="talmud"]')||n.closest('[data-sec="kabbala"]'))}));
+ const expected=["נביא", "כתובים"].map(label=>({class:'ck-error ck-nach-boundary',nach:'book-data',role:'status',text:label+lead+tail,html:label+lead+'<span dir="ltr">'+tail+'</span>',owned:false}));
+ assert.deepEqual(actual,expected,'only complete exact protected missing-qualifier statuses from the declared omitted Nach fields; every other error fails');
+}
+// Test-local browser script transport: never preload or replace the renderer.
+function qualifiedTransport(d,env,mainCode){
+ const requests=[],errors=[],append=d.head.appendChild.bind(d.head);
+ const owners={d89f12181e90034b08d036cf96fe7493ed984776db5a5574a515e0c095346a08:'418514feb99ec895017ddef2b6746f99f2e6c64613a549d5354213c4cf637a06',e263e015614e8328fddbd9fd9ea5e78431e6b58e571632a842755da982f96289:'9252e0ad3af22de43601fb4805736ee9d2aef7733e69253eb41888ad7621dae0'};
+ const digest=(bytes,encoding='hex')=>crypto.createHash('sha256').update(bytes).digest(encoding);
+ d.head.appendChild=function(node){
+  const result=append(node);
+  if(String(node.tagName).toLowerCase()==='script'){
+   const job=Promise.resolve().then(()=>{
+    try{
+     const src=String(node.src||node.getAttribute('src')),url=new URL(src,'https://fixture.invalid/reader/chok/');requests.push(src);
+     assert.equal(url.origin,'https://fixture.invalid');assert.equal(src,url.pathname+url.search);assert.equal(url.hash,'');
+     const match=/^\/chok-qualified-zohar\.js\?v=([a-f0-9]{64})$/.exec(src);assert(match,'exact qualified-module URL/query required');
+     assert(Object.hasOwn(owners,match[1]),'accepted29/current37 module only');assert.equal(digest(mainCode),owners[match[1]],'module belongs to actual selected Main');
+     const bytes=Buffer.from(read('public'+url.pathname),'utf8');assert.equal(digest(bytes),match[1],'complete versioned module bytes');
+     assert.equal(node.integrity,'sha256-'+digest(bytes,'base64'),'actual declared SRI');assert.equal(node.crossOrigin,'anonymous');
+     vm.runInContext(bytes.toString('utf8'),env.box,{filename:src});
+     if(typeof node.onload==='function')node.onload.call(node,{type:'load',target:node});
+    }catch(error){errors.push(error);if(typeof node.onerror==='function')node.onerror.call(node,{type:'error',target:node,error});else throw error;}
+   });
+   job.catch(error=>{if(!errors.includes(error))errors.push(error);});
+  }
+  return result;
+ };
+ return {requests,errors};
+}
+function checkQualifiedMonday(d,english=true){
+ const bytes=read('public/reader/chok/qualified-zohar/lech-yom-sheni-reuse.json');
+ assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'),'014110425174f202c79952060f46fdcf47d530d5e097c55cbfaa588db6cc4cd2','unchanged actual Monday packet');
+ const p=JSON.parse(bytes),a=d.querySelector('[data-qualified-zohar="לך לך|יום שני"]');assert(a,'actual newly approved Monday owner');
+ assert.equal(a.getAttribute('data-original-sha256'),p.originalSHA256);assert.equal(a.getAttribute('data-english-sha256'),p.englishSHA256);
+ assert.deepEqual(a.querySelectorAll('[data-zohar-unit]').map(n=>n.getAttribute('data-zohar-unit')),p.units.map(u=>u.owner));
+ for(const u of p.units){const n=a.querySelector('[data-zohar-unit="'+u.owner+'"]');assert.equal(n.querySelector('[data-field-role="original-source"]').textContent,u.original);const en=n.querySelector('[data-field-role="english-translation"]');assert.equal(!!en,english);if(en)assert.equal(en.textContent,u.english);}
+}
 async function boot({mainCode=main,missing=false,week='לך לך',day='יום ראשון',packetBytes=raw,hold=false}={}){
  const requests=[],facades=[],legacy=[],r=envFor('<html><body>'+markup+'</body></html>',async url=>{
   const key=String(url).split('?')[0];requests.push(String(url));let value;
   if(key==='/reader/chok/schedule.json')value=JSON.stringify(scheduleProjection);
   else if(key==='/reader/chok/shabbos-map.json')value=mapRaw;
   else if(key==='/reader/chok/lech-sunday-talmud-zohar.json'){if(r.hold)await new Promise(resolve=>r.release=resolve);value=r.packetBytes;}
+  else if(key==='/reader/chok/qualified-zohar/lech-yom-sheni-reuse.json')value=read('public'+key);
   else if(facadeJSON.has(key)||key.startsWith('/reader/chok/commentary/')){facades.push(key);return {ok:true,json:async()=>null};}
   else {legacy.push(key);value=read('public'+key);}
   return {ok:true,status:200,text:async()=>value,json:async()=>JSON.parse(value),arrayBuffer:async()=>{const b=Buffer.from(value);return b.buffer.slice(b.byteOffset,b.byteOffset+b.byteLength);}};
@@ -99,8 +143,9 @@ async function boot({mainCode=main,missing=false,week='לך לך',day='יום ר
  r.env.box.window.ChokVerseBreslov={has:()=>false,availability:()=>'',parsha:()=>null,weekly:()=>''};
  if(!missing)vm.runInContext(code,r.env.box,{filename:'chok-lech-sunday.js'});
  else if(missing==='malformed')r.env.box.window.ChokLechSunday={};
+ r.transport=qualifiedTransport(r.d,r.env,mainCode);
  vm.runInContext(mainCode,r.env.box,{filename:preimage?'genuine-old-chok.js':'chok.js'});
- r.settled=async()=>{await until(()=>!!r.d.getElementById('ck-content').innerHTML&&!r.d.querySelector('.ck-loading'),10000);assert(!r.d.getElementById('ck-content').textContent.includes('Could not load'),r.d.getElementById('ck-content').textContent.slice(0,400));};
+ r.settled=async()=>{await until(()=>!!r.d.getElementById('ck-content').innerHTML&&!r.d.querySelector('.ck-loading'),10000);assert(!r.d.getElementById('ck-content').textContent.includes('Could not load'),r.d.getElementById('ck-content').textContent.slice(0,400));assertProjectedNachBoundary(r.d,scheduleProjection,['gemara','zohar']);assert.deepEqual(r.transport.errors,[],'genuine dynamic script transport');};
  r.change=async(id,value)=>{const n=r.d.getElementById(id);n.value=value;n.dispatchEvent({type:'change'});await r.settled();};
  return r;
 }
@@ -137,8 +182,13 @@ async function suite(){
  }finally{r.env.close();}});
  await run('real main missing/malformed-script guard with named Zohar reference and no legacy fallback',async()=>{for(const missing of [true,'malformed']){const r=await boot({missing});try{await r.settled();assert.equal(r.d.querySelectorAll('[data-qualified-daily]').length,0);assert(r.d.querySelector('[data-sec="talmud"] [data-unavailable-body="talmud"]'));checkZoharUnavailable(r.d);assert.equal(targetRequests(r).length,0);assert.equal(r.legacy.length,0);}finally{r.env.close();}}});
  await run('real queued loader rejected bytes -> actual language redraw -> restored original bytes',async()=>{const r=await boot({packetBytes:raw+' '});try{await r.settled();assert.equal(r.d.querySelectorAll('[data-unavailable-body="talmud"]').length,1);checkZoharUnavailable(r.d);assert.equal(targetRequests(r).length,2,'each sequential caller rejects and clears');r.packetBytes=raw;await r.change('ck-language','en');checkBodies(r.d);assert.equal(targetRequests(r).length,3,'one new queued request recovers both sections');assert.equal(r.legacy.length,0);}finally{r.env.close();}});
- await run('real caller stale-response guard and wrong-day/week noninterference',async()=>{const old=preimage?main:opt('--old-main')?fs.readFileSync(opt('--old-main'),'utf8'):null;const r=await boot({hold:true});try{await until(()=>!!r.release,5000);const control=r.d.getElementById('ck-day');control.value='יום שני';control.dispatchEvent({type:'change'});await r.settled();assert.equal(r.d.querySelector('[data-qualified-daily]'),null);const before=r.d.getElementById('ck-content').innerHTML;r.hold=false;r.release();await new Promise(resolve=>setTimeout(resolve,40));assert.equal(r.d.getElementById('ck-content').innerHTML,before,'late Sunday response cannot replace Monday');assert.equal(targetRequests(r).length,1);await r.change('ck-parsha','נח');await r.change('ck-day','יום ראשון');assert.equal(r.d.querySelector('[data-qualified-daily]'),null);assert.equal(targetRequests(r).length,1,'unrelated controls never request Sunday packet');
-  if(old){assert.equal(sha(old),'ccbaaf655029345f55e656132c6b6f553e5df9ae3a4b1d87c7e1784bf8f39770');for(const [week,day] of [['לך לך','יום שני'],['נח','יום ראשון']]){const a=await boot({mainCode:current,week,day}),b=await boot({mainCode:old,week,day});try{await a.settled();await b.settled();assert.equal(a.d.getElementById('ck-content').innerHTML,b.d.getElementById('ck-content').innerHTML,'unchanged actual old/new caller output '+week+'|'+day);}finally{a.env.close();b.env.close();}}}
+ await run('real caller stale-response guard and wrong-day/week noninterference',async()=>{const old=preimage?main:opt('--old-main')?fs.readFileSync(opt('--old-main'),'utf8'):null;const r=await boot({hold:true});try{await until(()=>!!r.release,5000);const control=r.d.getElementById('ck-day');control.value='יום שני';control.dispatchEvent({type:'change'});await r.settled();checkQualifiedMonday(r.d);assert.equal(r.transport.requests.length,1,'one genuine lazy module insertion');assert.equal(r.d.querySelector('[data-qualified-daily]'),null);const before=r.d.getElementById('ck-content').innerHTML;r.hold=false;r.release();await new Promise(resolve=>setTimeout(resolve,40));assert.equal(r.d.getElementById('ck-content').innerHTML,before,'late Sunday response cannot replace Monday');assert.equal(targetRequests(r).length,1);await r.change('ck-parsha','נח');await r.change('ck-day','יום ראשון');assert.equal(r.d.querySelector('[data-qualified-daily]'),null);assert.equal(targetRequests(r).length,1,'unrelated controls never request Sunday packet');
+  if(old){assert.equal(sha(old),'ccbaaf655029345f55e656132c6b6f553e5df9ae3a4b1d87c7e1784bf8f39770');for(const [week,day] of [['לך לך','יום שני'],['נח','יום ראשון']]){const a=await boot({mainCode:current,week,day}),b=await boot({mainCode:old,week,day});try{await a.settled();await b.settled();if(week==='לך לך'&&day==='יום שני'){
+   checkQualifiedMonday(a.d);assert.equal(b.d.querySelector('[data-qualified-zohar="לך לך|יום שני"]'),null,'genuine old Main has no newly approved Monday owner');
+   const left=a.d.getElementById('ck-content').cloneNode(true),right=b.d.getElementById('ck-content').cloneNode(true);
+   for(const node of [left,right])for(const z of node.querySelectorAll('[data-sec="kabbala"]'))z.remove();
+   assert.equal(left.innerHTML,right.innerHTML,'old/new byte parity outside exact newly approved Monday Zohar');
+  }else {assert.equal(a.d.getElementById('ck-content').innerHTML,b.d.getElementById('ck-content').innerHTML,'unchanged actual old/new caller output '+week+'|'+day);}}finally{a.env.close();b.env.close();}}}
   return {oldNewByteParity:!!old,scope:'same authentic local legacy data and explicitly source-free unchanged-dependency facades'};
  }finally{r.env.close();}});
  for(const [p,pin] of Object.entries(pins))assert.equal(sha(require('./chok-attribution-conservation.cjs').restoreExact(p,Buffer.from(read(p)))),pin,'source remained frozen '+p);
