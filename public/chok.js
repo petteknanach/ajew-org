@@ -1324,7 +1324,7 @@
       return window.ChokLechSunday.reading(wk, day, section, english, function (url) { return fetchJSON(url, true); });
     }).catch(unavailable);
   }
-  var QUALIFIED_ZOHAR_KEYS = ["חיי שרה|יום ראשון","חיי שרה|יום שני","חיי שרה|יום רביעי","חיי שרה|יום חמישי","חיי שרה|יום שישי","וירא|יום רביעי","וירא|יום שני","וירא|יום שישי","וירא|יום שלישי","בראשית|יום ראשון","בראשית|יום רביעי","בראשית|יום שישי","בראשית|יום שלישי","בראשית|יום שני","בראשית|יום חמישי","וירא|יום חמישי","תולדות|יום ראשון","תולדות|יום שני","תולדות|יום שלישי","לך לך|יום שני","לך לך|יום שישי","נח|יום שלישי","חיי שרה|יום שלישי","ויצא|יום רביעי","וישלח|יום חמישי","וישב|יום שישי","מקץ|יום שישי","ויגש|יום שני","ויחי|יום ראשון","ויגש|יום חמישי","ויגש|יום שלישי","ויחי|יום שני","וישב|יום חמישי","וישב|יום ראשון","וישב|יום שלישי","וישלח|יום שני","תולדות|יום רביעי"];
+  var QUALIFIED_ZOHAR_KEYS = ["חיי שרה|יום ראשון","חיי שרה|יום שני","חיי שרה|יום רביעי","חיי שרה|יום חמישי","חיי שרה|יום שישי","וירא|יום רביעי","וירא|יום שני","וירא|יום שישי","וירא|יום שלישי","בראשית|יום ראשון","בראשית|יום רביעי","בראשית|יום שישי","בראשית|יום שלישי","בראשית|יום שני","בראשית|יום חמישי","וירא|יום חמישי","תולדות|יום ראשון","תולדות|יום שני","תולדות|יום שלישי","לך לך|יום שני","לך לך|יום שישי","נח|יום שלישי","חיי שרה|יום שלישי","ויצא|יום רביעי","וישלח|יום חמישי","וישב|יום שישי","מקץ|יום שישי","ויגש|יום שני","ויחי|יום ראשון","ויגש|יום חמישי","ויגש|יום שלישי","ויחי|יום שני","וישב|יום חמישי","וישב|יום ראשון","וישב|יום שלישי","וישלח|יום שני","תולדות|יום רביעי","לך לך|יום שלישי"];
   function exactQualifiedZohar(wk, day) { return QUALIFIED_ZOHAR_KEYS.indexOf(wk + "|" + day) !== -1; }
   var qualifiedZoharModulePromise = null;
   function qualifiedZoharReady(api) { return api && typeof api.has === 'function' && typeof api.load === 'function' && typeof api.reading === 'function'; }
@@ -1332,8 +1332,8 @@
     if (qualifiedZoharReady(window.ChokQualifiedZohar)) return Promise.resolve(window.ChokQualifiedZohar);
     if (!qualifiedZoharModulePromise) qualifiedZoharModulePromise = new Promise(function (resolve,reject) {
       var script=document.createElement('script');
-      script.src='/chok-qualified-zohar.js?v=e263e015614e8328fddbd9fd9ea5e78431e6b58e571632a842755da982f96289';
-      script.integrity='sha256-4mPgFWFOgyj929n9nqXnhDHmtY5XFjKoQnVdqYL5Yok=';
+      script.src='/chok-qualified-zohar.js?v=c9f930afecfea0afcb6472b08a2b46ac51c6380621ad4e1a9123452dc0a048d8';
+      script.integrity='sha256-yfkwr+z+oK/LZHKwiitGrFHGOAYhrU4akSNFLcCgSNg=';
       script.crossOrigin='anonymous';
       script.onload=function () { if (qualifiedZoharReady(window.ChokQualifiedZohar)) resolve(window.ChokQualifiedZohar); else reject(Error('Zohar module unavailable')); };
       script.onerror=function () { reject(Error('Zohar module unavailable')); };

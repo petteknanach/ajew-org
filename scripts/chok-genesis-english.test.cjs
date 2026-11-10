@@ -157,6 +157,9 @@ const clearedAdmission=JSON.parse(read('scripts/chok-all-cleared-zohar-admission
 const reuseReviewed={...reuseRawReviewed,keys:reuseRawReviewed.keys.filter(k=>clearedAdmission.groups.reuse.includes(k)),entries:reuseRawReviewed.entries.filter(r=>clearedAdmission.groups.reuse.includes(r.key)),index:{...clearedAdmission.baselineIndex,...Object.fromEntries(Object.entries(reuseRawReviewed.index).filter(([k])=>clearedAdmission.groups.reuse.includes(k)))}};
 const nativeEightRaw=read('scripts/chok-native-eight-reviewed.json'),nativeEightReviewed=JSON.parse(nativeEightRaw),nativeEightAdmission=clearedAdmission.current37;
 assert.equal(crypto.createHash('sha256').update(nativeEightRaw).digest('hex'),nativeEightAdmission.oracleSHA256);
+const tuesdayAdmission=JSON.parse(read('scripts/chok-lech-tuesday38-admission.json')),tuesdayRaw=read('scripts/chok-lech-tuesday38-reviewed.json'),tuesdayReviewed=JSON.parse(tuesdayRaw);
+assert.equal(crypto.createHash('sha256').update(tuesdayRaw).digest('hex'),tuesdayAdmission.oracleSHA256);
+function fullZoharIndex(){return {...reuseReviewed.index,...new8Reviewed.index,...nativeEightReviewed.index,[tuesdayReviewed.key]:tuesdayReviewed.payload};}
 const reuseSha=x=>crypto.createHash('sha256').update(x).digest('hex');
 const reuseCanonical=x=>x===null||typeof x!=='object'?JSON.stringify(x):Array.isArray(x)?'['+x.map(reuseCanonical).join(',')+']':'{'+Object.keys(x).sort().map(k=>JSON.stringify(k)+':'+reuseCanonical(x[k])).join(',')+'}';
 function reuseModule(e){
@@ -180,9 +183,10 @@ function reuseFields(d,p,english,expectedOriginal){
 test('reuse attachments API: complete exact fields, full independent registry equality, owner/source/foreign negatives and recovery',async()=>{
  const e=env();try{
   const code=read('public/chok-qualified-zohar.js'),index=JSON.parse(code.match(/var INDEX = (\{[^\n]+\});/)[1]);
-  assert.deepEqual(index,{...reuseReviewed.index,...new8Reviewed.index,...nativeEightReviewed.index});assert.deepEqual(Object.keys(index),Object.keys({...clearedAdmission.index,...nativeEightReviewed.index}));
+  assert.deepEqual(index,fullZoharIndex());assert.deepEqual(Object.keys(index),Object.keys({...clearedAdmission.index,...nativeEightReviewed.index,[tuesdayReviewed.key]:tuesdayReviewed.payload}));
+  const nativeStart=Object.keys(clearedAdmission.index).length;assert.deepEqual(Object.keys(index).slice(nativeStart,nativeStart+nativeEightReviewed.rows.length),Object.keys(nativeEightReviewed.index),'fixed eight is bounded, not the growing registry suffix');
   for(const[k,pin]of Object.entries(clearedAdmission.baselineIndex)){assert.deepEqual(index[k],pin,'complete current19 descriptor conservation');}
-  const api=reuseModule(e);for(const key of ['לך לך|יום שלישי','נח|יום רביעי','שמות|יום שני']){assert(!api.has(key));await assert.rejects(api.load(key,loader),/not admitted/);}
+  const api=reuseModule(e);for(const key of ['לך לך|יום רביעי','נח|יום רביעי','שמות|יום שני']){assert(!api.has(key));await assert.rejects(api.load(key,loader),/not admitted/);}
   for(const row of reuseReviewed.entries){
    const raw=read('public'+row.payload.url),p=JSON.parse(raw);assert.equal(reuseSha(raw),row.payload.sha256);assert.equal(reuseSha(p.original),row.originalSHA256);assert.equal(reuseSha(p.english),row.englishSHA256);assert.equal(reuseSha(reuseCanonical(p.notes)),row.orderedNotesSHA256);assert.deepEqual(p.notes,row.notes);assert.deepEqual(p.units||[],row.units);assert.deepEqual(p.sectionQualifications||[],row.sectionQualifications);assert.deepEqual(p.explanation||null,row.explanation||null);
    await assert.rejects(api.load(row.key,async()=>raw+' '),/packet changed/);const loaded=await api.load(row.key,loader);assert.equal(loaded.key,row.key);
@@ -754,8 +758,9 @@ async function r3OwningReader(nativeFocus=false){
  "/chok.js?v=418514feb99ec895017ddef2b6746f99f2e6c64613a549d5354213c4cf637a06"
 ];
  const originalResourceCount=Object.keys(resources).length;assert.equal(originalResourceCount,105);assert.equal(Object.values(resources).filter(v=>v===null).length,1);
- const current37URL=u=>{const asset=nativeEightAdmission.assets.find(a=>a.beforeURL===u);return asset?asset.url:u;};
+ const current37URL=u=>{const asset=nativeEightAdmission.assets.find(a=>a.beforeURL===u),v=asset?asset.url:u,next=tuesdayAdmission.assets.find(a=>a.beforeURL===v);return next?next.url:v;};
  for(const a of nativeEightAdmission.assets){assert(!Object.hasOwn(resources,a.url));resources[a.url]=[a.path,a.sha256,a.bytes];scriptIntegrity[a.url]=a.integrity;}
+ for(const a of tuesdayAdmission.assets){assert(!Object.hasOwn(resources,a.url));resources[a.url]=[a.path,a.sha256,a.bytes];scriptIntegrity[a.url]=a.integrity;}
  for(const r of nativeEightReviewed.rows){const a=r.payload;resources[a.url+'?v='+a.sha256]=['public'+a.url,a.sha256,nativeEightAdmission.packetBytes[r.key]];}
  const commentaryPin=nativeEightAdmission.commentaryFixtures,commentaryRaw=fs.readFileSync(path.join(root,commentaryPin.path));assert.equal(commentaryRaw.length,commentaryPin.bytes);assert.equal(crypto.createHash('sha256').update(commentaryRaw).digest('hex'),commentaryPin.sha256);
  const commentaryFixtures=JSON.parse(commentaryRaw);assert.equal(commentaryFixtures.schema,'native-eight-finite-authentic-commentary-fixtures-v1');assert.equal(commentaryFixtures.rows.length,commentaryPin.count);
@@ -880,7 +885,7 @@ const new8RawReviewed=JSON.parse(read('scripts/chok-zohar-new8-reviewed.json'));
 const new8Reviewed={...new8RawReviewed,keys:new8RawReviewed.keys.filter(k=>clearedAdmission.groups.new8.includes(k)),entries:new8RawReviewed.entries.filter(r=>clearedAdmission.groups.new8.includes(r.key)),index:Object.fromEntries(Object.entries(new8RawReviewed.index).filter(([k])=>clearedAdmission.groups.new8.includes(k)))};
 test('new8 exact adopted fields: complete API, seven held exclusions, genuine corruptions and fresh same-owner recovery',async()=>{
  const e=env(),events=[];const unhandled=x=>events.push(['unhandledRejection',String(x)]),handled=()=>events.push(['rejectionHandled']);process.on('unhandledRejection',unhandled);process.on('rejectionHandled',handled);
- try{const api=reuseModule(e),index=JSON.parse(read('public/chok-qualified-zohar.js').match(/var INDEX = (\{[^\n]+\});/)[1]);assert.deepEqual(index,{...reuseReviewed.index,...new8Reviewed.index,...nativeEightReviewed.index});assert.equal(Object.keys(index).length,new8Reviewed.expectedRegistryCount+nativeEightReviewed.rows.length);assert.equal(new8Reviewed.entries.length,clearedAdmission.groups.new8.length);assert.equal(new8Reviewed.heldKeys.length,7);
+ try{const api=reuseModule(e),index=JSON.parse(read('public/chok-qualified-zohar.js').match(/var INDEX = (\{[^\n]+\});/)[1]);assert.deepEqual(index,fullZoharIndex());assert.equal(Object.keys(index).length,new8Reviewed.expectedRegistryCount+nativeEightReviewed.rows.length+1);assert.equal(new8Reviewed.entries.length,clearedAdmission.groups.new8.length);assert.equal(new8Reviewed.heldKeys.length,7);
   for(const key of new8Reviewed.heldKeys){assert(!api.has(key));await assert.rejects(api.load(key,loader),/not admitted/);}
   for(const row of new8Reviewed.entries){const raw=read('public'+row.payload.url),p=JSON.parse(raw);assert.equal(reuseSha(raw),row.payload.sha256);assert.deepEqual(index[row.key],row.payload);assert.equal(reuseSha(p.original),row.originalSHA256);assert.equal(reuseSha(p.english),row.englishSHA256);assert.equal(reuseSha(reuseCanonical(p.notes)),row.notesSHA256);assert.equal(reuseSha(reuseCanonical(p.explanation)),row.explanationSHA256);assert.deepEqual(p.noteIDs,row.notes.map(q=>q.id));
    p.notes.forEach((q,i)=>{const expected=row.notes[i];assert.equal(reuseSha(q.he),expected.heSHA256);assert.equal(reuseSha(q.en),expected.enSHA256);assert.equal(q.sourceQualificationSHA256,expected.sourceQualificationSHA256);assert.equal(q.placement,expected.placement);assert.equal(q.role,expected.role);assert.deepEqual(q.sourceSpan,expected.sourceSpan);assert.equal(Array.from(p.original).slice(...q.sourceSpan).join(''),q.sourceAnchor);assert.equal(reuseSha(q.sourceAnchor),expected.sourceAnchorSHA256);assert.equal(q.englishOwnerSHA256,p.englishSHA256);assert.equal(q.sourceOwnerRawSHA256,p.originalSHA256);});
@@ -902,7 +907,7 @@ test('cleared cohort exact source inverses and dependent SHA256 module / SHA384 
  const guard=require('./chok-reference-order-conservation.cjs'),admission=clearedAdmission,page=read('src/pages/reader/chok.astro'),main=read('public/chok.js'),module=read('public/chok-qualified-zohar.js');
  for(const [relative,d]of Object.entries(admission.paths)){const current=Buffer.from(read(relative)),after=guard.restoreCurrent37(relative,current),before=guard.restoreCleared(relative,after);assert.equal(reuseSha(after),d.afterSHA256);assert.equal(reuseSha(before),d.beforeSHA256);assert.deepEqual(before,Buffer.from(d.beforeBase64,'base64'),'complete exact current19 preimage');assert.equal(reuseSha(after),d.afterSHA256,'complete forward target');for(const corrupt of [Buffer.concat([after,Buffer.from(' ')]),Buffer.from(after)]){if(corrupt.length===after.length)corrupt[Math.floor(corrupt.length/2)]^=1;assert.equal(guard.restoreCleared(relative,corrupt),corrupt);}}
  assert(main.includes("script.src='/chok-qualified-zohar.js?v="+reuseSha(module)+"'"));assert(main.includes("script.integrity='sha256-"+crypto.createHash('sha256').update(module).digest('base64')+"'"));assert(page.includes('src="/chok.js?v='+reuseSha(main)+'" integrity="sha384-'+crypto.createHash('sha384').update(main).digest('base64')+'"'));
- const keys=JSON.parse(main.match(/var QUALIFIED_ZOHAR_KEYS = (\[[^\n]+\]);/)[1]);assert.deepEqual(keys,Object.keys({...reuseReviewed.index,...new8Reviewed.index,...nativeEightReviewed.index}));for(const key of new8Reviewed.heldKeys)assert(!keys.includes(key));
+ const keys=JSON.parse(main.match(/var QUALIFIED_ZOHAR_KEYS = (\[[^\n]+\]);/)[1]);assert.deepEqual(keys,Object.keys(fullZoharIndex()));for(const key of new8Reviewed.heldKeys)assert(!keys.includes(key));
 });
 
 function nativeSafe(p){
@@ -947,6 +952,48 @@ test('native eight complete independent authority, recursive public safety, real
  assert.equal(scalars,96);assert.equal(notes,24);
 });
 test('current37 exact outer inverses precede old29 and old19 ABI without admitting modified bytes',()=>{
- const g=require('./chok-reference-order-conservation.cjs');for(const[relative,d]of Object.entries(nativeEightAdmission.paths)){const b=fs.readFileSync(path.join(root,relative)),old=g.restoreCurrent37(relative,b);assert.equal(reuseSha(b),d.afterSHA256);assert.equal(reuseSha(old),d.beforeSHA256);assert.deepEqual(old,Buffer.from(d.beforeBase64,'base64'));assert.equal(reuseSha(g.restoreCleared(relative,b)),clearedAdmission.paths[relative].beforeSHA256);for(const q of [Buffer.concat([b,Buffer.from(' ')]),Buffer.from(b)]){if(q.length===b.length)q[Math.floor(q.length/2)]^=1;assert.equal(g.restoreCurrent37(relative,q),q);assert.equal(g.restoreCleared(relative,q),q);}}
- const m=read('public/chok-qualified-zohar.js');assert.equal(reuseSha(m),nativeEightAdmission.renderer.rawSHA256);assert.equal(reuseSha(m.replace(/var INDEX = \{[^\n]+\};/,'var INDEX = {};')),nativeEightAdmission.renderer.indexBlankSHA256);assert.notEqual(nativeEightAdmission.renderer.rawSHA256,nativeEightAdmission.renderer.indexBlankSHA256);
+ const g=require('./chok-reference-order-conservation.cjs');for(const[relative,d]of Object.entries(nativeEightAdmission.paths)){const actual=fs.readFileSync(path.join(root,relative)),b=g.restoreCurrent38(relative,actual),old=g.restoreCurrent37(relative,b);assert.equal(reuseSha(b),d.afterSHA256);assert.equal(reuseSha(old),d.beforeSHA256);assert.deepEqual(old,Buffer.from(d.beforeBase64,'base64'));assert.equal(reuseSha(g.restoreCleared(relative,b)),clearedAdmission.paths[relative].beforeSHA256);for(const q of [Buffer.concat([b,Buffer.from(' ')]),Buffer.from(b)]){if(q.length===b.length)q[Math.floor(q.length/2)]^=1;assert.equal(g.restoreCurrent37(relative,q),q);assert.equal(g.restoreCleared(relative,q),q);}}
+ const m=g.restoreCurrent38('public/chok-qualified-zohar.js',Buffer.from(read('public/chok-qualified-zohar.js'))).toString('utf8');assert.equal(reuseSha(m),nativeEightAdmission.renderer.rawSHA256);assert.equal(reuseSha(m.replace(/var INDEX = \{[^\n]+\};/,'var INDEX = {};')),nativeEightAdmission.renderer.indexBlankSHA256);assert.notEqual(nativeEightAdmission.renderer.rawSHA256,nativeEightAdmission.renderer.indexBlankSHA256);
+});
+
+// Exact Tuesday case is independent of the fixed native eight (3 notes each).
+function tuesdaySafe(p){
+ const walk=(x,m)=>{
+  assert.equal(typeof x,typeof m,'Tuesday public recursive type');
+  if(typeof x==='string'){assert(!/(?:[A-Za-z]:[\\/]|\/(?:mnt|home|root)\/|file:\/\/|projectionProof|workflow|approval|private|custody|proposal|parent-intake|credential)/i.test(x),'Tuesday public recursive string');return;}
+  if(Array.isArray(m)){assert(Array.isArray(x),'Tuesday public array');assert.equal(x.length,m.length,'Tuesday public array membership');x.forEach((v,i)=>walk(v,m[i]));return;}
+  if(m&&typeof m==='object'){assert(x&&!Array.isArray(x),'Tuesday public object');assert.deepEqual(Object.keys(x).sort(),Object.keys(m).sort(),'Tuesday public recursive schema');for(const k of Object.keys(x))walk(x[k],m[k]);}
+ };
+ walk(p,tuesdayReviewed.expected);
+}
+function tuesdayAuthority(p){
+ tuesdaySafe(p);assert.deepEqual(p,tuesdayReviewed.expected,'Tuesday authority complete body, twelve scalars and both complete notes');
+ assert.equal(p.notes.length,2,'Tuesday is not the three-note native cohort');
+ const values=[p.original,p.english,...p.notes.flatMap(n=>[n.he,n.en]),p.explanation.title.he,p.explanation.title.en,p.explanation.paragraphs[0].he,p.explanation.paragraphs[0].en,...['he','en'].map(lang=>p.explanation.paragraphs.slice(1).map(x=>x[lang]).join('\n\n'))];
+ assert.equal(values.length,12);assert.deepEqual(values.map(reuseSha),tuesdayReviewed.scalarSHA256,'Tuesday twelve parent-selected scalar authority pins');
+ assert.deepEqual(p.notes,tuesdayReviewed.expected.notes,'Tuesday complete ordered qualification records');
+}
+test('Tuesday38 exact independent twelve scalars and two complete notes, recursive audience safety, actual API/Main and exact outer inverse',async()=>{
+ const r=tuesdayReviewed,p=JSON.parse(read('public'+r.payload.url));assert.equal(reuseSha(read('public'+r.payload.url)),r.payload.sha256);tuesdayAuthority(p);
+ const g=require('./chok-reference-order-conservation.cjs');
+ for(const[relative,d]of Object.entries(tuesdayAdmission.paths)){
+  const b=fs.readFileSync(path.join(root,relative));assert.equal(reuseSha(b),d.afterSHA256,'Tuesday current38 exact target');
+  const old=g.restoreCurrent38(relative,b);assert.equal(reuseSha(old),d.beforeSHA256);let forward=old.toString('utf8');for(const op of d.inverse.slice().reverse()){assert.equal(forward.split(op.before).length,2);forward=forward.replace(op.before,op.after);}assert.deepEqual(Buffer.from(forward),b,'Tuesday complete inverse/forward bytes');
+  for(const bad of [Buffer.concat([b,Buffer.from(' ')]),Buffer.from(b)]){if(bad.length===b.length)bad[Math.floor(bad.length/2)]^=1;assert.equal(g.restoreCurrent38(relative,bad),bad);assert.equal(g.restoreCurrent37(relative,bad),bad);}
+  assert.equal(g.restoreCurrent38('unselected/source',b),b,'wrong-path cannot borrow inverse');assert.deepEqual(g.restoreCurrent38(relative,b),old,'fresh exact inverse');
+ }
+ const paths=[['original'],['english'],['notes',0,'he'],['notes',0,'en'],['notes',1,'he'],['notes',1,'en'],['explanation','title','he'],['explanation','title','en'],['explanation','paragraphs',0,'he'],['explanation','paragraphs',0,'en'],['explanation','paragraphs',1,'he'],['explanation','paragraphs',1,'en']];
+ assert.equal(paths.length,12);
+ for(const parts of paths){const q=structuredClone(p);let x=q;for(const k of parts.slice(0,-1))x=x[k];x[parts.at(-1)]+=' ';assert.throws(()=>tuesdayAuthority(q),/Tuesday authority/);tuesdayAuthority(p);}
+ for(const mutate of [q=>q.notes[0].localAnchor.projectionProof='opaque',q=>q.notes[1].anchors[0].workflow='approved',q=>q.explanation.paragraphs[0].privateReceipt='/home/owner',q=>q.sourceSelection.extent='publication approval complete']){const q=structuredClone(p);mutate(q);assert.throws(()=>tuesdaySafe(q),/Tuesday public/);tuesdaySafe(p);}
+ const e=env();try{
+  const api=reuseModule(e);assert(api.has(r.key));await assert.rejects(api.load(r.key,async()=>JSON.stringify({...p,key:'foreign'})));
+  const recovered=JSON.parse(JSON.stringify(await api.load(r.key,loader)));tuesdayAuthority(recovered);
+  for(const english of [true,false]){const d=documentFor('<html><body>'+await api.reading(r.key,english,loader)+'</body></html>');reuseFields(d,r.expected,english);d.querySelectorAll('[data-zohar-note-owner]').forEach(n=>{assert(!n.closest('details'));assert(!n.closest('[hidden]'));assert(!n.hasAttribute('hidden'));});}
+ }finally{e.close();}
+ const requests=[],mainEnv=env(async url=>{assert.equal(String(url),r.payload.url+'?v='+r.payload.sha256);requests.push(String(url));const raw=read('public'+r.payload.url);return{ok:true,status:200,text:async()=>raw,json:async()=>JSON.parse(raw)};});
+ try{reuseModule(mainEnv);const main=reuseMain(mainEnv);let combinations=0;
+  for(const language of ['he','en','both','original'])for(const mode of ['full','nikud','taamim','letters']){const d=documentFor('<html><body>'+await main.reading(r,language,mode)+'</body></html>');reuseFields(d,r.expected,['en','both'].includes(language),s=>main.project(s,language==='original'?'full':mode));assert.equal(d.querySelectorAll('[data-qualified-zohar="'+r.key+'"]').length,1);assert.equal(d.querySelectorAll('[data-zohar-note-owner]').length,2);d.querySelectorAll('[data-zohar-note-owner]').forEach(n=>{assert.equal(n.getAttribute('data-zohar-note-owner'),r.key);assert(!n.closest('details'));assert(!n.closest('[hidden]'));});combinations++;}
+  assert.equal(combinations,16);assert.deepEqual(requests,[r.payload.url+'?v='+r.payload.sha256],'Tuesday exact queued load coalesces independently');
+ }finally{mainEnv.close();}
 });

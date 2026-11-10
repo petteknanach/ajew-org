@@ -17,7 +17,7 @@ function assertProjectedNachBoundary(d,projection,fields){
 // Test-local browser script transport: never preload or replace the renderer.
 function qualifiedTransport(d,env,mainCode){
  const requests=[],errors=[],append=d.head.appendChild.bind(d.head);
- const owners={d89f12181e90034b08d036cf96fe7493ed984776db5a5574a515e0c095346a08:'418514feb99ec895017ddef2b6746f99f2e6c64613a549d5354213c4cf637a06',e263e015614e8328fddbd9fd9ea5e78431e6b58e571632a842755da982f96289:'9252e0ad3af22de43601fb4805736ee9d2aef7733e69253eb41888ad7621dae0'};
+ const owners={d89f12181e90034b08d036cf96fe7493ed984776db5a5574a515e0c095346a08:'418514feb99ec895017ddef2b6746f99f2e6c64613a549d5354213c4cf637a06',e263e015614e8328fddbd9fd9ea5e78431e6b58e571632a842755da982f96289:'9252e0ad3af22de43601fb4805736ee9d2aef7733e69253eb41888ad7621dae0',c9f930afecfea0afcb6472b08a2b46ac51c6380621ad4e1a9123452dc0a048d8:'0fa752655b0c54a5d5947d1ebd92b6d30b2a87c858d0f811b5685aeceb834e22'};
  const digest=(bytes,encoding='hex')=>crypto.createHash('sha256').update(bytes).digest(encoding);
  d.head.appendChild=function(node){
   const result=append(node);
