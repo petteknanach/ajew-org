@@ -118,9 +118,20 @@ for (const cat of Object.keys(byCategory)) {
     });
   }
 }
+const pageJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "Breslov PDF Library",
+  "url": "https://ajew.org/pdf-library/",
+  "description": "Browse Hebrew scans of Breslov books, including rare editions. Download PDFs and consult each scan's title page and imprint for edition and citation details."
+};
 ---
 
-<Layout title="Breslov PDF Library - Original Printings" description="Browse and download original printings of Breslov holy books - Likutay Moharan, Sipurey Maasiyos, Likutay Halachos, and more. Scanned PDFs of first editions.">
+<Layout
+  title="Breslov PDF Library — Hebrew Scans &amp; Rare Editions"
+  description="Browse Hebrew scans of Breslov books, including rare editions. Download PDFs and consult each scan's title page and imprint for edition and citation details."
+  jsonLd={pageJsonLd}
+>
   <style>
     .pdf-page {
       max-width: 800px;
@@ -199,13 +210,19 @@ for (const cat of Object.keys(byCategory)) {
     <div class="pdf-header">
       <div class="hebrew-title">ספריית ברסלב</div>
       <h1>Breslov PDF Library</h1>
-      <p class="subtitle">Original printings and rare editions - scanned PDFs of holy Breslov books</p>
+      <p class="subtitle">Hebrew scans of Breslov books, including rare editions</p>
       <div class="pdf-stats">
         <span>{displayEntries.length} books</span>
-        <span>First editions & rare prints</span>
+        <span>Rare editions &amp; scans</span>
         <span>Hebrew scans</span>
       </div>
     </div>
+
+    <section aria-labelledby="pdf-citation-heading">
+      <h2 id="pdf-citation-heading">Reading and citing these scans</h2>
+      <p>For citations, consult the title page and imprint of the specific scan for its edition and publication details. Editions and page numbering vary.</p>
+      <p>The links below download scanned PDFs. For searchable online texts, use the <a href="/reader/">online Reader</a>.</p>
+    </section>
 
     <p class="coming-soon">
       Tap a book to download its scan. More scans are being added.

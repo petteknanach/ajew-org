@@ -23,11 +23,19 @@ const quotes = [
 const dayIndex = Math.floor(Date.now() / 86400000) % quotes.length;
 const todayQuote = quotes[dayIndex];
 
+const pageJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "Rabbi Nachman of Breslov — Complete Torah Library",
+  "url": "https://ajew.org/",
+  "description": "Breslov books, teachings and prayers, with links to online reading, daily study tools, reference resources and scanned PDFs."
+};
 ---
 
 <Layout
   title="Rabbi Nachman of Breslov — Complete Torah Library"
   description="Read the teachings of Rabbi Nachman of Breslov free in English and Hebrew — Likutay Moharan, Sefer HaMidos, daily Chok LiYisroel and Chok Breslov study — with a fully vocalized Tanach: shva-na/nach and kamatz katan/gadol demarcations, Shnayim Mikra v’Echad Targum, and Rashi."
+  jsonLd={pageJsonLd}
 >
 
 <!-- Fire animation CSS -->
@@ -224,6 +232,23 @@ const todayQuote = quotes[dayIndex];
     </a>
   </div>
 </section>
+
+<nav class="home-reading-guides" aria-labelledby="home-reading-guides-heading">
+  <h2 id="home-reading-guides-heading">Guides to the library</h2>
+  <ul>
+    <li><a href="/start/">Start here: choose a reading path</a></li>
+    <li><a href="/reference/">Reference lookup: verses and passages</a></li>
+    <li><a href="/pdf-library/">PDF library: Hebrew scans and rare editions</a></li>
+  </ul>
+</nav>
+
+<style>
+  .home-reading-guides { max-width: 900px; margin: 0 auto 2rem; padding: 1rem 1.5rem; background: #faf7f0; color: #1a365d; border-radius: 12px; }
+  .home-reading-guides h2 { margin: 0 0 .5rem; font-size: 1.1rem; color: #1a365d; }
+  .home-reading-guides ul { display: flex; flex-wrap: wrap; gap: .25rem 1.5rem; margin: 0; padding-left: 1.25rem; }
+  .home-reading-guides a { display: inline-block; padding: .5rem 0; color: #1a365d; text-decoration: underline; text-underline-offset: .15em; }
+  .home-reading-guides a:focus-visible { outline: 3px solid currentColor; outline-offset: 3px; }
+</style>
 
 <!-- ═══════════════════════════════════════
      CONTINUE READING — Only shown if history exists
