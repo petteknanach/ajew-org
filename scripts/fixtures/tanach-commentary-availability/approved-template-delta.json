@@ -1,0 +1,343 @@
+{
+  "schema": "reader-commentary-complete-inverse-v1",
+  "base": "2d6ffa6564a2585a55461b37577476f0f94f2ddd",
+  "reviewedCandidate": "a3d16d47a50aa39cf36ce2cbeed56352e573a151",
+  "paths": {
+    "src/pages/reader/tanach-amos/[part]/[torah].astro": {
+      "beforeSHA256": "3de949f3f43582d68788abeb44849b7c22a14f48a618d1173fd54b88fd29c485",
+      "afterSHA256": "41242965a7760202d0c022d5c9d5203ceaf832dfb7e9ce1f1c895860e504cecf",
+      "inverse": [
+        {
+          "before": "const lnBookSlug = 'tanach-amos';",
+          "after": "const lnBookSlug = 'tanach-amos';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-amos-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-amos-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-bereishit/[part]/[torah].astro": {
+      "beforeSHA256": "d1d2fc6ffb6e2119f9586eba894ccf5486ce8c8f5f909fb4a7cef0e744fb7ff7",
+      "afterSHA256": "5cd07e02adf64f396a08851bd48f29373ab235d3b92cf83c4e7cc372a73c18a6",
+      "inverse": [
+        {
+          "before": "const lnBookSlug = 'tanach-bereishit';",
+          "after": "const lnBookSlug = 'tanach-bereishit';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-bereishit-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-bereishit-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-chaggai/[part]/[torah].astro": {
+      "beforeSHA256": "a09a7fcb6bfefa3e6fda804c72d22477b2129603eebaeeecaf3515580e4a4bc7",
+      "afterSHA256": "5f89441c2bcf6a8060978842fc440de03b9132a0239cfd5af47fa9cb858a4582",
+      "inverse": [
+        {
+          "before": "const lnBookSlug = 'tanach-chaggai';",
+          "after": "const lnBookSlug = 'tanach-chaggai';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-chagai-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-chaggai-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-daniel/[part]/[torah].astro": {
+      "beforeSHA256": "d8b9e5e50cdafdb56604e7c8c7313b01d0258a5986fc70ce5997ebaf23d0a55c",
+      "afterSHA256": "0aae260b00b92c43ed28a1bfc47cd278f7f79083aaef7536c892153581cc4197",
+      "inverse": [
+        {
+          "before": "const lnBookSlug = 'tanach-daniel';",
+          "after": "const lnBookSlug = 'tanach-daniel';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-daniel-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-daniel-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-eicha/[part]/[torah].astro": {
+      "beforeSHA256": "a5b3c9565a44e98cf3e342962a80a10dae3da636b5dcf4a65fe5f8e54e322ead",
+      "afterSHA256": "e8f527882acfa4573c0367a92d741c8a422c45d9ab321083385f7c40021b8e15",
+      "inverse": [
+        {
+          "before": "const lnBookSlug = 'tanach-eicha';",
+          "after": "const lnBookSlug = 'tanach-eicha';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-eicha-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-eicha-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-esther/[part]/[torah].astro": {
+      "beforeSHA256": "04337a72edd2add3c427cc6b15946f67907ad496c49dcff638cb85abd309379a",
+      "afterSHA256": "5e0d9e57ae75dd7cf3989c5b183f5c9d162c67e4f42433e03a8bf694e525597e",
+      "inverse": [
+        {
+          "before": "const lnBookSlug = 'tanach-esther';",
+          "after": "const lnBookSlug = 'tanach-esther';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-esther-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-esther-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-ezra/[part]/[torah].astro": {
+      "beforeSHA256": "9d0be3bb589bb6725b420562d71cba7ba5aea6ae5285673eb8894aa9bb30aec0",
+      "afterSHA256": "6e0b10f79d1627a4b01d6782536e4a1b984774ff6c23a075af74444af98c835c",
+      "inverse": [
+        {
+          "before": "const lnBookSlug = 'tanach-ezra';",
+          "after": "const lnBookSlug = 'tanach-ezra';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-ezra-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-ezra-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-havakkuk/[part]/[torah].astro": {
+      "beforeSHA256": "e688f4fcd9de60f1c979d819726dabd6d07e92301d92d2464f933e6a5ed41f91",
+      "afterSHA256": "84470d2165f19798172d77ddf9f16d78a7af98297f5f65389da80ff3c89e2cb6",
+      "inverse": [
+        {
+          "before": "const lnBookSlug = 'tanach-havakkuk';",
+          "after": "const lnBookSlug = 'tanach-havakkuk';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-chavakuk-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-havakkuk-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-iyov/[part]/[torah].astro": {
+      "beforeSHA256": "ef2eff63e2a8e6bd5951c886c66c9d393641ddc3889892a46e3dac3626b8b21c",
+      "afterSHA256": "0cb98306f3a0301af8f29f9bf976de37c1ab57fa7f0a8668901f924395c7afa8",
+      "inverse": [
+        {
+          "before": "const lnBookSlug = 'tanach-iyov';",
+          "after": "const lnBookSlug = 'tanach-iyov';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-iyov-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-iyov-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-koheles/[part]/[torah].astro": {
+      "beforeSHA256": "f1881c8eaee597f7031eb7b983a7e6dd0d623f04dd2ee9844ac9fc1985f3561a",
+      "afterSHA256": "199841042bab8d2cd9ba486fa8d67a3b561433d0ee8bd464daa1a5aa99f09580",
+      "inverse": [
+        {
+          "before": "const lnBookSlug = 'tanach-koheles';",
+          "after": "const lnBookSlug = 'tanach-koheles';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-kohelet-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-koheles-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-malachi/[part]/[torah].astro": {
+      "beforeSHA256": "bc102a04bacd067ac3ecb9fb48f23d96c9f38849f00f931617cba4b005799c01",
+      "afterSHA256": "200f10e710eac5144999bea83adf61c7a675444a7dc423cfe9f101316712b1d0",
+      "inverse": [
+        {
+          "before": "const lnBookSlug = 'tanach-malachi';",
+          "after": "const lnBookSlug = 'tanach-malachi';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-malachi-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-malachi-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-michah/[part]/[torah].astro": {
+      "beforeSHA256": "73421784dd8c61e50b88008615118351d731ad23f748147db0c86ef101d37766",
+      "afterSHA256": "d8af79478465e4c62cba2a4158640ae99b40a29a68fa233acbf5988b72e727b0",
+      "inverse": [
+        {
+          "before": "const lnBookSlug = 'tanach-michah';",
+          "after": "const lnBookSlug = 'tanach-michah';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-micha-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-michah-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-mishlei/[part]/[torah].astro": {
+      "beforeSHA256": "61127d432a632d42906308c60dfd974d11a5970d218f1e84e22ca7ca55523b42",
+      "afterSHA256": "9913ac98faad6d6e84c2ef3ed555073c2cca67bd5add781314f57cde067fb5f7",
+      "inverse": [
+        {
+          "before": "const lnBookSlug = 'tanach-mishlei';",
+          "after": "const lnBookSlug = 'tanach-mishlei';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-mishlei-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-mishlei-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-ovadya/[part]/[torah].astro": {
+      "beforeSHA256": "2cb7fa1fca3017b0a49a2b35feaf218e20adce22c3f005b846cc27061baf20a2",
+      "afterSHA256": "34ba58171071e53682ad35d19e4440e32708d75806b4f6c7de355b78728fa135",
+      "inverse": [
+        {
+          "before": "const lnBookSlug = 'tanach-ovadya';",
+          "after": "const lnBookSlug = 'tanach-ovadya';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-ovadia-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-ovadya-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-rus/[part]/[torah].astro": {
+      "beforeSHA256": "cf190cf487f3eae798bfdb4948a932b7c283afab66840edf246751fadafa381e",
+      "afterSHA256": "bd33f914daa880bb311b0c14f80d5c28d9254334391648117f920069ed0920fc",
+      "inverse": [
+        {
+          "before": "const lnBookSlug = 'tanach-rus';",
+          "after": "const lnBookSlug = 'tanach-rus';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-rut-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-rus-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-shemos/[part]/[torah].astro": {
+      "beforeSHA256": "873511e648088a25678045afd7b95bb3c2ff0c4c88118c80a26bbe778d1456af",
+      "afterSHA256": "4b9a932342a00afa01fd7b9b1a3962c005269e2a15592f9af2aa1de6b032e47e",
+      "inverse": [
+        {
+          "before": "const lnBookSlug = 'tanach-shemos';",
+          "after": "const lnBookSlug = 'tanach-shemos';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-shemos-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-shemos-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-shir-hashirim/[part]/[torah].astro": {
+      "beforeSHA256": "31c634ffddb59a4a86cc46912f67cb9abe78251515619ba4898399d4f2b761e5",
+      "afterSHA256": "21c1de50934e655997578d70baa05a813f4a6265f40a537b8650d3058bbe7fb6",
+      "inverse": [
+        {
+          "before": "const lnBookSlug = 'tanach-shir-hashirim';",
+          "after": "const lnBookSlug = 'tanach-shir-hashirim';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-shir_hashirim-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-shir-hashirim-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-shoftim/[part]/[torah].astro": {
+      "beforeSHA256": "48eac85040af33bf3ddc7eb0b1d9f82a604df3f0833e63b7f44c7ca6b592ba97",
+      "afterSHA256": "812e532d4194dcb2de0f7993b7b7ff385f0a7e4236353be7db617c82b798c39d",
+      "inverse": [
+        {
+          "before": "const lnBookSlug = 'tanach-shoftim';",
+          "after": "const lnBookSlug = 'tanach-shoftim';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-shoftim-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-shoftim-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-tehillim/[part]/[torah].astro": {
+      "beforeSHA256": "3843a9fbc111690386bfca1e2b6f4e8da52e9578e15293617eb51ddc72c6d14a",
+      "afterSHA256": "7c240f778bfc49ddcae528b8fd90ae660a7f8c2e1f3df414465c383a7d1f9e94",
+      "inverse": [
+        {
+          "before": "const lnBookSlug = 'tanach-tehillim';",
+          "after": "const lnBookSlug = 'tanach-tehillim';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-tehilim-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-tehillim-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-tzefanya/[part]/[torah].astro": {
+      "beforeSHA256": "16359c3fe22feef594f1eff0c2b711452536867db866726209e948e786ade7c5",
+      "afterSHA256": "a1859717698a401f55ffe1ed1597100b9082ef30ddffb7425fee90ad251a285b",
+      "inverse": [
+        {
+          "before": "const lnBookSlug = 'tanach-tzefanya';",
+          "after": "const lnBookSlug = 'tanach-tzefanya';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-tzefania-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-tzefanya-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-vayikra/[part]/[torah].astro": {
+      "beforeSHA256": "779038934ab0cee56933e21785896172576b964888a2e315a6271850fa0da320",
+      "afterSHA256": "6c1c8f73fde4bee260ed129f9d513dcace2d8446a607e0efa8b330b6701e46b2",
+      "inverse": [
+        {
+          "before": "const lnBookSlug = 'tanach-vayikra';",
+          "after": "const lnBookSlug = 'tanach-vayikra';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-vayikra-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-vayikra-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-yoel/[part]/[torah].astro": {
+      "beforeSHA256": "4a948675b80ace3301d30073e03b9f0d39c5bdf1a965ef0fda652afccb7b1926",
+      "afterSHA256": "b45d117789722fcd9f7c600c91c2f971760842199bcbc75d36f885af1a1a4ac8",
+      "inverse": [
+        {
+          "before": "const lnBookSlug = 'tanach-yoel';",
+          "after": "const lnBookSlug = 'tanach-yoel';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-yoel-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-yoel-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-yonah/[part]/[torah].astro": {
+      "beforeSHA256": "1b68f9062110c750ddb0748c5529c4e8d84fa54d4e8252e40e6200996554a2e6",
+      "afterSHA256": "ff0407917c0bb26ecee63460a94235ce2f620b2d525f11b55330b5d39d72f36f",
+      "inverse": [
+        {
+          "before": "const lnBookSlug = 'tanach-yonah';",
+          "after": "const lnBookSlug = 'tanach-yonah';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-yona-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-yonah-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-zecharya/[part]/[torah].astro": {
+      "beforeSHA256": "6e21eccdf0ff6d5796e35a3a160670ac97a856dae78968d64f24cff2cada6fea",
+      "afterSHA256": "b5261959646bffbbd8bdac3bb5feacf7c77e9747891c74d130c158791624aa8a",
+      "inverse": [
+        {
+          "before": "const lnBookSlug = 'tanach-zecharya';",
+          "after": "const lnBookSlug = 'tanach-zecharya';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-zecharya-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-zecharya-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    }
+  }
+}

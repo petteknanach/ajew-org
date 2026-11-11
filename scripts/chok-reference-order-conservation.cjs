@@ -3,6 +3,19 @@
 const assert=require('node:assert/strict'),{createHash}=require('node:crypto');
 const DELTA=require('./chok-reference-order-delta.json');
 const sha=b=>createHash('sha256').update(b).digest('hex');
+// Restore only the independently reviewed chapter-resource adoption before the
+// unchanged reference/paragraph guards. No historical hash or manifest changes.
+const readerAdoptionRaw=require('node:fs').readFileSync(require('node:path').resolve(__dirname,'fixtures/tanach-commentary-availability/approved-template-delta.json'));
+assert.equal(sha(readerAdoptionRaw),'8dba2fc162cb511197afd10ab12eec5c361c5bc1a41d7518c7523cc3f055eb61','READER_COMMENTARY_ADOPTION_PIN');
+const READER_ADOPTION=JSON.parse(readerAdoptionRaw);
+assert.equal(Object.keys(READER_ADOPTION.paths).length,24,'READER_COMMENTARY_EXACT_DOMAIN');
+for(const [relative,d]of Object.entries(READER_ADOPTION.paths))assert.equal(d.beforeSHA256,DELTA[relative].afterSHA256,'READER_COMMENTARY_HISTORICAL_JOIN:'+relative);
+function restoreReaderCommentary(relative,bytes){
+ const d=READER_ADOPTION.paths[relative];if(!d||sha(bytes)!==d.afterSHA256)return bytes;
+ let text=bytes.toString('utf8');
+ for(const op of d.inverse){assert.equal(text.split(op.after).length,2,'READER_COMMENTARY_INVERSE_MEMBERSHIP:'+relative);text=text.replace(op.after,op.before);}
+ const before=Buffer.from(text);assert.equal(sha(before),d.beforeSHA256,'READER_COMMENTARY_WHOLE_INVERSE:'+relative);return before;
+}
 // Admit only the exact independently meaning-selected English augmentation.
 // Every historical source guard still receives its complete original preimage.
 // Exact TODAY-only outer inverse; historical admissions below remain unchanged.
@@ -46,6 +59,7 @@ function restoreGenesis(relative,bytes){
  const restored=Buffer.from(s);assert.equal(sha(restored),d.beforeSHA256,'GENESIS_ENGLISH_EXACT_INVERSE:'+relative);return restored;
 }
 function currentReference(relative,bytes){
+ bytes=restoreReaderCommentary(relative,bytes);
  bytes=restoreGenesis(relative,bytes);
  if(relative!=='src/pages/reader/chok.astro'||sha(bytes)!=='e64a0357cb610931e31b741e53c313687240e65d324bbcfdb250ebec278bf5c5')return bytes;
  const restored=require('./chok-today-classical-admission.cjs').restore(require('node:path').resolve(__dirname,'..'),relative,bytes);
@@ -64,10 +78,23 @@ module.exports={restoreCurrent38,restoreCurrent37,restoreCleared,DELTA,restoreRe
 if(require.main===module){
  const fs=require('node:fs'),path=require('node:path');
  for(const [relative,d]of Object.entries(DELTA)){
-  const b=currentReference(relative,fs.readFileSync(path.resolve(__dirname,'..',relative)));assert.equal(sha(b),d.afterSHA256,'REQUIRED_CURRENT_REFERENCE_SUCCESSOR:'+relative);
+  const actual=fs.readFileSync(path.resolve(__dirname,'..',relative));
+  const b=currentReference(relative,actual);assert.equal(sha(b),d.afterSHA256,'REQUIRED_CURRENT_REFERENCE_SUCCESSOR:'+relative);
   const restored=restoreReference(relative,b);assert.equal(sha(restored),d.beforeSHA256);assert.deepEqual(restoreReference(relative,restored),restored);
   assert.throws(()=>restoreReference(relative,Buffer.concat([b,Buffer.from(' ')])),/REFERENCE_CANDIDATE_PIN/);
   const bad=Buffer.from(b);bad[Math.floor(bad.length/2)]^=1;assert.throws(()=>restoreReference(relative,bad),/REFERENCE_CANDIDATE_PIN/);
+  const adopted=READER_ADOPTION.paths[relative];
+  if(adopted){
+   assert.equal(sha(actual),adopted.afterSHA256,'REQUIRED_CURRENT_COMMENTARY_SUCCESSOR:'+relative);
+   assert.equal(sha(restoreReaderCommentary(relative,actual)),adopted.beforeSHA256);
+   assert.throws(()=>restoreReference(relative,Buffer.concat([actual,Buffer.from(' ')])),/REFERENCE_CANDIDATE_PIN/);
+   const corrupt=Buffer.from(actual);corrupt[Math.floor(corrupt.length/2)]^=1;
+   assert.throws(()=>restoreReference(relative,corrupt),/REFERENCE_CANDIDATE_PIN/);
+   const guard=adopted.inverse[0];assert.equal(actual.toString('utf8').split(guard.after).length,2);
+   const missingGuard=Buffer.from(actual.toString('utf8').replace(guard.after,guard.before));
+   assert.throws(()=>restoreReference(relative,missingGuard),/REFERENCE_CANDIDATE_PIN/);
+  }
  }
+ console.log('Exact Reader commentary adoption PASS: 24 whole-template inverses; current candidates required; append/mid-body/missing-guard corruption rejected');
  console.log('Exact reference/paragraph successor inverse PASS:',Object.keys(DELTA).length,'complete paths; append/mid-body corruption rejected; historical manifests unchanged');
 }
