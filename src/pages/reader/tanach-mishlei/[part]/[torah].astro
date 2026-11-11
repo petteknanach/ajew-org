@@ -61,6 +61,8 @@ const structuredData = torahData ? JSON.stringify({
 
 // LN verse-by-verse commentary
 const lnBookSlug = 'tanach-mishlei';
+const lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-mishlei-${torahNum}.json`;
+const lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));
 // Hilchasa Kinachamani citation tab (facts: verse -> Breslov sources)
 const hkData = (hkIndex as any)?.tanach?.['tanach-mishlei'];
 const hkEntry = torahData && hkData && Array.isArray(hkData.chapters) && hkData.chapters.includes(torahNum) ? {
@@ -76,13 +78,13 @@ const hkEntry = torahData && hkData && Array.isArray(hkData.chapters) && hkData.
 const commentaryEntry = torahData ? {
   related_commentaries: [
     ...(hkEntry ? [hkEntry] : []),
-    {
+    ...(lnChapterAvailable ? [{
       book: "likutay-nanach",
       section: lnBookSlug,
       label: "Likutay Nanach",
       sectionTitle: "Verse-by-Verse",
-      url: "/reader/likutay-nanach/tanach/tanach-mishlei-${torahNum}.json"
-    }
+      url: lnChapterUrl
+    }] : [])
   ]
 } : null;
 const breadcrumbData = torahData ? JSON.stringify({

@@ -71,6 +71,8 @@ const noachEntry = torahData && torahNum === 6 ? {
 
 // LN verse-by-verse commentary
 const lnBookSlug = 'tanach-bereishit';
+const lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-bereishit-${torahNum}.json`;
+const lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));
 // Hilchasa Kinachamani citation tab (facts: verse -> Breslov sources)
 const hkData = (hkIndex as any)?.tanach?.['tanach-bereishit'];
 const hkEntry = torahData && hkData && Array.isArray(hkData.chapters) && hkData.chapters.includes(torahNum) ? {
@@ -110,13 +112,13 @@ const commentaryEntry = torahData ? {
     ...(noachEntry ? [noachEntry] : []),
     ...(breslovEntry && !qualifiedBreslovEntry ? [breslovEntry] : []),
     ...(qualifiedBreslovEntry ? [qualifiedBreslovEntry] : []),
-    {
+    ...(lnChapterAvailable ? [{
       book: "likutay-nanach",
       section: lnBookSlug,
       label: "Likutay Nanach",
       sectionTitle: "Verse-by-Verse",
-      url: "/reader/likutay-nanach/tanach/tanach-bereishit-${torahNum}.json"
-    }
+      url: lnChapterUrl
+    }] : [])
   ]
 } : null;
 const qualifiedTabIndex = commentaryEntry?.related_commentaries.findIndex(c => c === qualifiedBreslovEntry);

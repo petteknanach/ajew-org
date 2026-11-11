@@ -1,0 +1,30 @@
+{
+  "base": "2d6ffa6564a2585a55461b37577476f0f94f2ddd",
+  "changes": [
+    {
+      "path": "src/pages/reader/azamra/[part]/[torah].astro",
+      "before": "      nextUrl: `/reader/azamra/${partNum}/${torahNum + 1}`,",
+      "after": "      nextUrl: fs.existsSync(path.join(process.cwd(), `public/reader/azamra/section-${torahNum + 1}.json`))\n        ? `/reader/azamra/${partNum}/${torahNum + 1}` : null,"
+    },
+    {
+      "path": "src/pages/reader/fires-of-israel/[part]/[torah].astro",
+      "before": "      nextUrl: `/reader/fires-of-israel/${partNum}/${torahNum + 1}`,",
+      "after": "      nextUrl: fs.existsSync(path.join(process.cwd(), `public/reader/fires-of-israel/section-${torahNum + 1}.json`))\n        ? `/reader/fires-of-israel/${partNum}/${torahNum + 1}` : null,"
+    },
+    {
+      "path": "src/pages/reader/hisbodidus-alone-time/[part]/[torah].astro",
+      "before": "      nextUrl: `/reader/hisbodidus-alone-time/${partNum}/${torahNum + 1}`,",
+      "after": "      nextUrl: fs.existsSync(path.join(process.cwd(), `public/reader/hisbodidus-alone-time/section-${torahNum + 1}.json`))\n        ? `/reader/hisbodidus-alone-time/${partNum}/${torahNum + 1}` : null,"
+    },
+    {
+      "path": "src/pages/reader/seven-pillars/[part]/[torah].astro",
+      "before": "      nextUrl: `/reader/seven-pillars/${partNum}/${torahNum + 1}`,",
+      "after": "      nextUrl: fs.existsSync(path.join(process.cwd(), `public/reader/seven-pillars/section-${torahNum + 1}.json`))\n        ? `/reader/seven-pillars/${partNum}/${torahNum + 1}` : null,"
+    },
+    {
+      "path": "src/pages/reader/sichos-haran/[part]/[torah].astro",
+      "before": "  // Add segment indexes if missing",
+      "after": "  // Do not offer a source-declared next link when its adjacent section is absent.\n  if (torahData.navigation.nextUrl && !fs.existsSync(path.join(process.cwd(), `public/reader/sichos-haran/sicha-${torahNum + 1}.json`))) {\n    torahData.navigation = { ...torahData.navigation, nextUrl: null };\n  }\n  // Add segment indexes if missing"
+    }
+  ]
+}
