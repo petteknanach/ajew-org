@@ -133,6 +133,13 @@ test('every actual unified consumer is cache versioned with exact inverse source
    assert.equal(conserved.split(approved).length,2,`${p}: expected exactly one approved terminal navigation guard`);
    conserved=conserved.replace(approved,'      nextUrl: `/reader/praises-of-rabbi-nachman/${partNum}/${torahNum + 1}`,');
  }
+ const navigationAdoption=JSON.parse(read('scripts/fixtures/reader-navigation-wave2/approved-template-delta.json'));
+ const navigationChange=navigationAdoption.changes.find(change=>change.path===p);
+ if(navigationChange){
+   assert.ok(navigationChange.after.length>0);
+   assert.equal(conserved.split(navigationChange.after).length,2,`${p}: expected exactly one approved navigation availability delta`);
+   conserved=conserved.replace(navigationChange.after,navigationChange.before);
+ }
  if(p==='src/pages/reader/likutay-halachos/[part]/[torah].astro'){
    // Adopt only the reviewed LH publication island and its aid navigation.
    // The original audio fixture and all other consumer bytes remain fixed.

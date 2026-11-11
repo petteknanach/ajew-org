@@ -1,0 +1,463 @@
+{
+  "base": "2d6ffa6564a2585a55461b37577476f0f94f2ddd",
+  "books": [
+    {
+      "owner": "tanach-amos",
+      "path": "src/pages/reader/tanach-amos/[part]/[torah].astro",
+      "resourceBook": "tanach-amos",
+      "maxChapter": 9,
+      "missingChapters": [
+        4
+      ],
+      "titleBook": "Amos",
+      "changes": [
+        {
+          "before": "const lnBookSlug = 'tanach-amos';",
+          "after": "const lnBookSlug = 'tanach-amos';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-amos-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-amos-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    {
+      "owner": "tanach-bereishit",
+      "path": "src/pages/reader/tanach-bereishit/[part]/[torah].astro",
+      "resourceBook": "tanach-bereishit",
+      "maxChapter": 50,
+      "missingChapters": [],
+      "titleBook": "Genesis",
+      "changes": [
+        {
+          "before": "const lnBookSlug = 'tanach-bereishit';",
+          "after": "const lnBookSlug = 'tanach-bereishit';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-bereishit-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-bereishit-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    {
+      "owner": "tanach-chaggai",
+      "path": "src/pages/reader/tanach-chaggai/[part]/[torah].astro",
+      "resourceBook": "tanach-chagai",
+      "maxChapter": 2,
+      "missingChapters": [],
+      "titleBook": "Haggai",
+      "changes": [
+        {
+          "before": "const lnBookSlug = 'tanach-chaggai';",
+          "after": "const lnBookSlug = 'tanach-chaggai';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-chagai-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-chaggai-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    {
+      "owner": "tanach-daniel",
+      "path": "src/pages/reader/tanach-daniel/[part]/[torah].astro",
+      "resourceBook": "tanach-daniel",
+      "maxChapter": 12,
+      "missingChapters": [],
+      "titleBook": "Daniel",
+      "changes": [
+        {
+          "before": "const lnBookSlug = 'tanach-daniel';",
+          "after": "const lnBookSlug = 'tanach-daniel';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-daniel-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-daniel-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    {
+      "owner": "tanach-eicha",
+      "path": "src/pages/reader/tanach-eicha/[part]/[torah].astro",
+      "resourceBook": "tanach-eicha",
+      "maxChapter": 5,
+      "missingChapters": [],
+      "titleBook": "Lamentations",
+      "changes": [
+        {
+          "before": "const lnBookSlug = 'tanach-eicha';",
+          "after": "const lnBookSlug = 'tanach-eicha';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-eicha-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-eicha-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    {
+      "owner": "tanach-esther",
+      "path": "src/pages/reader/tanach-esther/[part]/[torah].astro",
+      "resourceBook": "tanach-esther",
+      "maxChapter": 10,
+      "missingChapters": [
+        10
+      ],
+      "titleBook": "Esther",
+      "changes": [
+        {
+          "before": "const lnBookSlug = 'tanach-esther';",
+          "after": "const lnBookSlug = 'tanach-esther';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-esther-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-esther-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    {
+      "owner": "tanach-ezra",
+      "path": "src/pages/reader/tanach-ezra/[part]/[torah].astro",
+      "resourceBook": "tanach-ezra",
+      "maxChapter": 10,
+      "missingChapters": [],
+      "titleBook": "Ezra",
+      "changes": [
+        {
+          "before": "const lnBookSlug = 'tanach-ezra';",
+          "after": "const lnBookSlug = 'tanach-ezra';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-ezra-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-ezra-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    {
+      "owner": "tanach-havakkuk",
+      "path": "src/pages/reader/tanach-havakkuk/[part]/[torah].astro",
+      "resourceBook": "tanach-chavakuk",
+      "maxChapter": 3,
+      "missingChapters": [],
+      "titleBook": "Habakkuk",
+      "changes": [
+        {
+          "before": "const lnBookSlug = 'tanach-havakkuk';",
+          "after": "const lnBookSlug = 'tanach-havakkuk';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-chavakuk-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-havakkuk-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    {
+      "owner": "tanach-iyov",
+      "path": "src/pages/reader/tanach-iyov/[part]/[torah].astro",
+      "resourceBook": "tanach-iyov",
+      "maxChapter": 42,
+      "missingChapters": [
+        10,
+        18,
+        23,
+        35,
+        41
+      ],
+      "titleBook": "Job",
+      "changes": [
+        {
+          "before": "const lnBookSlug = 'tanach-iyov';",
+          "after": "const lnBookSlug = 'tanach-iyov';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-iyov-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-iyov-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    {
+      "owner": "tanach-koheles",
+      "path": "src/pages/reader/tanach-koheles/[part]/[torah].astro",
+      "resourceBook": "tanach-kohelet",
+      "maxChapter": 12,
+      "missingChapters": [],
+      "titleBook": "Ecclesiastes",
+      "changes": [
+        {
+          "before": "const lnBookSlug = 'tanach-koheles';",
+          "after": "const lnBookSlug = 'tanach-koheles';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-kohelet-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-koheles-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    {
+      "owner": "tanach-malachi",
+      "path": "src/pages/reader/tanach-malachi/[part]/[torah].astro",
+      "resourceBook": "tanach-malachi",
+      "maxChapter": 3,
+      "missingChapters": [],
+      "titleBook": "Malachi",
+      "changes": [
+        {
+          "before": "const lnBookSlug = 'tanach-malachi';",
+          "after": "const lnBookSlug = 'tanach-malachi';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-malachi-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-malachi-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    {
+      "owner": "tanach-michah",
+      "path": "src/pages/reader/tanach-michah/[part]/[torah].astro",
+      "resourceBook": "tanach-micha",
+      "maxChapter": 7,
+      "missingChapters": [],
+      "titleBook": "Micah",
+      "changes": [
+        {
+          "before": "const lnBookSlug = 'tanach-michah';",
+          "after": "const lnBookSlug = 'tanach-michah';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-micha-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-michah-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    {
+      "owner": "tanach-mishlei",
+      "path": "src/pages/reader/tanach-mishlei/[part]/[torah].astro",
+      "resourceBook": "tanach-mishlei",
+      "maxChapter": 31,
+      "missingChapters": [],
+      "titleBook": "Proverbs",
+      "changes": [
+        {
+          "before": "const lnBookSlug = 'tanach-mishlei';",
+          "after": "const lnBookSlug = 'tanach-mishlei';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-mishlei-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-mishlei-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    {
+      "owner": "tanach-ovadya",
+      "path": "src/pages/reader/tanach-ovadya/[part]/[torah].astro",
+      "resourceBook": "tanach-ovadia",
+      "maxChapter": 1,
+      "missingChapters": [],
+      "titleBook": "Obadiah",
+      "changes": [
+        {
+          "before": "const lnBookSlug = 'tanach-ovadya';",
+          "after": "const lnBookSlug = 'tanach-ovadya';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-ovadia-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-ovadya-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    {
+      "owner": "tanach-rus",
+      "path": "src/pages/reader/tanach-rus/[part]/[torah].astro",
+      "resourceBook": "tanach-rut",
+      "maxChapter": 4,
+      "missingChapters": [],
+      "titleBook": "Ruth",
+      "changes": [
+        {
+          "before": "const lnBookSlug = 'tanach-rus';",
+          "after": "const lnBookSlug = 'tanach-rus';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-rut-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-rus-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    {
+      "owner": "tanach-shemos",
+      "path": "src/pages/reader/tanach-shemos/[part]/[torah].astro",
+      "resourceBook": "tanach-shemos",
+      "maxChapter": 40,
+      "missingChapters": [],
+      "titleBook": "Exodus",
+      "changes": [
+        {
+          "before": "const lnBookSlug = 'tanach-shemos';",
+          "after": "const lnBookSlug = 'tanach-shemos';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-shemos-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-shemos-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    {
+      "owner": "tanach-shir-hashirim",
+      "path": "src/pages/reader/tanach-shir-hashirim/[part]/[torah].astro",
+      "resourceBook": "tanach-shir_hashirim",
+      "maxChapter": 8,
+      "missingChapters": [],
+      "titleBook": "Song of Songs",
+      "changes": [
+        {
+          "before": "const lnBookSlug = 'tanach-shir-hashirim';",
+          "after": "const lnBookSlug = 'tanach-shir-hashirim';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-shir_hashirim-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-shir-hashirim-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    {
+      "owner": "tanach-shoftim",
+      "path": "src/pages/reader/tanach-shoftim/[part]/[torah].astro",
+      "resourceBook": "tanach-shoftim",
+      "maxChapter": 21,
+      "missingChapters": [
+        15
+      ],
+      "titleBook": "Judges",
+      "changes": [
+        {
+          "before": "const lnBookSlug = 'tanach-shoftim';",
+          "after": "const lnBookSlug = 'tanach-shoftim';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-shoftim-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-shoftim-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    {
+      "owner": "tanach-tehillim",
+      "path": "src/pages/reader/tanach-tehillim/[part]/[torah].astro",
+      "resourceBook": "tanach-tehilim",
+      "maxChapter": 150,
+      "missingChapters": [
+        28,
+        70,
+        117,
+        125,
+        127,
+        129,
+        131,
+        133,
+        134,
+        141,
+        142
+      ],
+      "titleBook": "Psalms",
+      "changes": [
+        {
+          "before": "const lnBookSlug = 'tanach-tehillim';",
+          "after": "const lnBookSlug = 'tanach-tehillim';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-tehilim-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-tehillim-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    {
+      "owner": "tanach-tzefanya",
+      "path": "src/pages/reader/tanach-tzefanya/[part]/[torah].astro",
+      "resourceBook": "tanach-tzefania",
+      "maxChapter": 3,
+      "missingChapters": [],
+      "titleBook": "Zephaniah",
+      "changes": [
+        {
+          "before": "const lnBookSlug = 'tanach-tzefanya';",
+          "after": "const lnBookSlug = 'tanach-tzefanya';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-tzefania-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-tzefanya-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    {
+      "owner": "tanach-vayikra",
+      "path": "src/pages/reader/tanach-vayikra/[part]/[torah].astro",
+      "resourceBook": "tanach-vayikra",
+      "maxChapter": 27,
+      "missingChapters": [],
+      "titleBook": "Leviticus",
+      "changes": [
+        {
+          "before": "const lnBookSlug = 'tanach-vayikra';",
+          "after": "const lnBookSlug = 'tanach-vayikra';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-vayikra-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-vayikra-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    {
+      "owner": "tanach-yoel",
+      "path": "src/pages/reader/tanach-yoel/[part]/[torah].astro",
+      "resourceBook": "tanach-yoel",
+      "maxChapter": 4,
+      "missingChapters": [
+        3
+      ],
+      "titleBook": "Joel",
+      "changes": [
+        {
+          "before": "const lnBookSlug = 'tanach-yoel';",
+          "after": "const lnBookSlug = 'tanach-yoel';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-yoel-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-yoel-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    {
+      "owner": "tanach-yonah",
+      "path": "src/pages/reader/tanach-yonah/[part]/[torah].astro",
+      "resourceBook": "tanach-yona",
+      "maxChapter": 4,
+      "missingChapters": [],
+      "titleBook": "Jonah",
+      "changes": [
+        {
+          "before": "const lnBookSlug = 'tanach-yonah';",
+          "after": "const lnBookSlug = 'tanach-yonah';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-yona-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-yonah-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    },
+    {
+      "owner": "tanach-zecharya",
+      "path": "src/pages/reader/tanach-zecharya/[part]/[torah].astro",
+      "resourceBook": "tanach-zecharya",
+      "maxChapter": 14,
+      "missingChapters": [],
+      "titleBook": "Zechariah",
+      "changes": [
+        {
+          "before": "const lnBookSlug = 'tanach-zecharya';",
+          "after": "const lnBookSlug = 'tanach-zecharya';\nconst lnChapterUrl = `/reader/likutay-nanach/tanach/tanach-zecharya-${torahNum}.json`;\nconst lnChapterAvailable = !!torahData && fs.existsSync(path.join(process.cwd(), 'public', lnChapterUrl.slice(1)));"
+        },
+        {
+          "before": "    {\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: \"/reader/likutay-nanach/tanach/tanach-zecharya-${torahNum}.json\"\n    }",
+          "after": "    ...(lnChapterAvailable ? [{\n      book: \"likutay-nanach\",\n      section: lnBookSlug,\n      label: \"Likutay Nanach\",\n      sectionTitle: \"Verse-by-Verse\",\n      url: lnChapterUrl\n    }] : [])"
+        }
+      ]
+    }
+  ]
+}

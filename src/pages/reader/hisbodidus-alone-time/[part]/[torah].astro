@@ -36,7 +36,8 @@ if (torahData) {
   if (!torahData.navigation) {
     torahData.navigation = {
       prevUrl: torahNum > 1 ? `/reader/hisbodidus-alone-time/${partNum}/${torahNum - 1}` : null,
-      nextUrl: `/reader/hisbodidus-alone-time/${partNum}/${torahNum + 1}`,
+      nextUrl: fs.existsSync(path.join(process.cwd(), `public/reader/hisbodidus-alone-time/section-${torahNum + 1}.json`))
+        ? `/reader/hisbodidus-alone-time/${partNum}/${torahNum + 1}` : null,
     };
   }
   // Add segment indexes if missing

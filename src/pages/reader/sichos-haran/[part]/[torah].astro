@@ -41,6 +41,10 @@ if (torahData) {
       nextUrl: `/reader/sichos-haran/${partNum}/${torahNum + 1}`,
     };
   }
+  // Do not offer a source-declared next link when its adjacent section is absent.
+  if (torahData.navigation.nextUrl && !fs.existsSync(path.join(process.cwd(), `public/reader/sichos-haran/sicha-${torahNum + 1}.json`))) {
+    torahData.navigation = { ...torahData.navigation, nextUrl: null };
+  }
   // Add segment indexes if missing
   torahData.segments.forEach((seg, i) => {
     if (!seg.index) seg.index = i + 1;

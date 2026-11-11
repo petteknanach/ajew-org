@@ -36,7 +36,8 @@ if (torahData) {
   if (!torahData.navigation) {
     torahData.navigation = {
       prevUrl: torahNum > 1 ? `/reader/seven-pillars/${partNum}/${torahNum - 1}` : null,
-      nextUrl: `/reader/seven-pillars/${partNum}/${torahNum + 1}`,
+      nextUrl: fs.existsSync(path.join(process.cwd(), `public/reader/seven-pillars/section-${torahNum + 1}.json`))
+        ? `/reader/seven-pillars/${partNum}/${torahNum + 1}` : null,
     };
   }
   // Add segment indexes if missing
