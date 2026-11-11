@@ -36,7 +36,8 @@ if (torahData) {
   if (!torahData.navigation) {
     torahData.navigation = {
       prevUrl: torahNum > 1 ? `/reader/praises-of-rabbi-nachman/${partNum}/${torahNum - 1}` : null,
-      nextUrl: `/reader/praises-of-rabbi-nachman/${partNum}/${torahNum + 1}`,
+      nextUrl: fs.existsSync(path.join(process.cwd(), `public/reader/praises-of-rabbi-nachman/section-${torahNum + 1}.json`))
+        ? `/reader/praises-of-rabbi-nachman/${partNum}/${torahNum + 1}` : null,
     };
   }
   // Add segment indexes if missing
