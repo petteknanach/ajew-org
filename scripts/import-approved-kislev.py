@@ -54,6 +54,7 @@ def apply(data, entries, held_entries=()):
             before = rows[i]
             record = copy.deepcopy(before)
             record.update(copy.deepcopy(e['record']))
+            record.pop('kislev_date_hold_id', None)
             aliases = list(before.get('aliases', []))
             for name in (before.get('name'), before.get('hebrew_name')):
                 if name and name not in (record['name'], record['hebrew_name']) and name not in aliases:
@@ -85,6 +86,11 @@ def component_after(source, entries):
                         'name': r['name'], 'hebrew_name': r['hebrew_name'],
                         'description': r['notes'], 'priority': 3,
                         'kislev_review_id': r['kislev_review_id']})
+        for alternate in r.get('yahrzeit_alternate_dates', []):
+            objects.append({'month': alternate['month'], 'day': alternate['day'], 'type': 'yahrzeit',
+                            'name': r['name'], 'hebrew_name': r['hebrew_name'],
+                            'description': r['notes'], 'priority': 3,
+                            'kislev_review_id': r['kislev_review_id'] + '-alternate-' + alternate['month'] + '-' + str(alternate['day'])})
         if e.get('observed_hillula'):
             event = e['observed_hillula']
             assert event['type'] in ('birth', 'special')
@@ -113,6 +119,7 @@ def main():
     held_entries = manifest.get('held_existing', [])
     validate(entries)
     assert {e['id'] for e in entries} | set(manifest.get('held_ids', [])) == APPROVED_IDS, 'Cohort coverage mismatch'
+    assert {e['id'] for e in entries}.isdisjoint(manifest.get('held_ids', [])), 'Published and held cohorts overlap'
     assert {e['id'] for e in held_entries} == set(manifest['held_ids'])
     outputs = []
     for filename in FILES:

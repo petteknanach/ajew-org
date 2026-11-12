@@ -102,6 +102,13 @@ test('approved Kislev cohort is unique in all feeds and actual calendar selector
       assert.equal(actual.hebrew_name, r.hebrew_name);
       assert.equal(actual.name, r.name);
       assert.deepEqual(actual.source_urls, r.source_urls);
+      for (const alternate of r.yahrzeit_alternate_dates || []) {
+        const selected = context.api.findYahrzeits(alternate.month, alternate.day);
+        assert.equal(selected.filter(row => row.kislev_review_id === key).length, 1, 'alternate date selects the same single identity: ' + key);
+        const important = context.api.findImportantDates(alternate.month, alternate.day).filter(row => row.kislev_review_id?.startsWith(key + '-alternate-'));
+        assert.equal(important.length, 1, 'alternate upcoming event is present: ' + key);
+        assert(!context.api.dedupeImportantAgainstDatabase(important, selected).length, 'alternate Today/Tomorrow event is deduplicated');
+      }
       if (entry.observed_hillula) {
         const observances = context.api.findImportantDates(entry.observed_hillula.month, entry.observed_hillula.day).filter(row => row.kislev_review_id === key + '-observance');
         assert.equal(observances.length, 1);
