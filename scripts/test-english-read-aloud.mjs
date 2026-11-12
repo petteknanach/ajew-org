@@ -121,6 +121,13 @@ test('every actual unified consumer is cache versioned with exact inverse source
  const consumers=JSON.parse(read('scripts/fixtures/reader-audio/english/consumers.json'));assert.ok(consumers.length>=30);
  for(const p of consumers){const before=Buffer.from(beforeTemplates[p], 'base64').toString('utf8'),after=read(p);
  let conserved=after.replaceAll('/unified-audio.js?v=english-device-20261105-r1"','/unified-audio.js"');
+ if(['ebay-hanachal','fires-of-israel','praises-of-rabbi-nachman','shivchay-haran','sichos-chayay-saba','sichos-haran']
+   .some(book=>p===`src/pages/reader/${book}/[part]/[torah].astro`)){
+   // Invert only the approved font-size name before the fixed historical guards.
+   const approved='<input type="range" id="font-size-slider" aria-label="Font size" class="font-size-slider" min="12" max="32" value="18" />';
+   assert.equal(conserved.split(approved).length,2,`${p}: expected exactly one approved font-size name`);
+   conserved=conserved.replace(approved,'<input type="range" id="font-size-slider" class="font-size-slider" min="12" max="32" value="18" />');
+ }
  if(p==='src/pages/reader/sefer-hamidos/[part]/[torah].astro'){
    // Invert only the separately approved availability guard; historical audio baselines remain fixed.
    const approved="const commentaryEntry = torahData && fs.existsSync(path.join(process.cwd(), 'public', lnUrl.slice(1))) ? {";
