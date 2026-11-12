@@ -66,6 +66,51 @@ test('containment guard rejects sibling escape, missing scope and extra targets'
   }
 });
 
+test('approved Kislev cohort is unique in all feeds and actual calendar selectors', async () => {
+  const vm = await import('node:vm');
+  const manifest = JSON.parse(await readFile(new URL('./approved-kislev-records.json', import.meta.url), 'utf8'));
+  const entries = manifest.entries;
+  assert.equal(new Set(entries.map(e => e.id)).size, entries.length);
+  assert.equal(entries.length + manifest.held_ids.length, 37);
+  for (const id of [43, 44, 119, 142]) assert(!entries.some(e => e.id === id), 'excluded or duplicate source ID ' + id);
+  const important = source.slice(source.indexOf('  const importantDates ='), source.indexOf('  let tzaddikimDatabase'));
+  const begin = source.indexOf('  function normalizeMonth(');
+  const end = source.indexOf('  // Count real civil days');
+  assert(begin >= 0 && end > begin, 'real calendar selector source located');
+  const helpers = source.slice(begin, end);
+  for (const filename of ['tzaddikim-database-complete.json', 'tzaddikim-database.json', 'tzaddikim-database-filtered.json']) {
+    const data = JSON.parse(await readFile(new URL('../public/data/' + filename, import.meta.url), 'utf8'));
+    const rows = data.all_tzaddikim;
+    assert.equal(data.metadata.total_count, rows.length, filename + ': declared count');
+    for (const hold of manifest.held_existing) {
+      for (const row of rows.filter(row => hold.aliases.includes(row.name))) {
+        assert(!row.yahrzeit_month && !row.yahrzeit_day, 'unresolved date is not still displayed: ' + hold.id);
+      }
+    }
+    const context = { rows };
+    vm.runInNewContext('const tzaddikimDatabase = rows;\n' + important + helpers + '\nthis.api = {findYahrzeits,findImportantDates,dedupeImportantAgainstDatabase,importantDates};', context);
+    for (const entry of entries) {
+      const r = entry.record, key = r.kislev_review_id;
+      assert.equal(rows.filter(row => row.kislev_review_id === key).length, 1, filename + ': ' + key);
+      const today = context.api.findYahrzeits(r.yahrzeit_month, r.yahrzeit_day);
+      assert.equal(today.filter(row => row.kislev_review_id === key).length, 1, filename + ': dated selector ' + key);
+      assert(!context.api.findYahrzeits(r.yahrzeit_month, r.yahrzeit_day === 30 ? 1 : r.yahrzeit_day + 1).some(row => row.kislev_review_id === key), 'wrong-day control ' + key);
+      assert.equal(context.api.importantDates.filter(row => row.kislev_review_id === key).length, 1, 'upcoming identity ' + key);
+      const additional = context.api.dedupeImportantAgainstDatabase(context.api.findImportantDates(r.yahrzeit_month, r.yahrzeit_day), today);
+      assert(!additional.some(row => row.kislev_review_id === key), 'Today/Tomorrow duplicate suppressed: ' + key);
+      const actual = rows.find(row => row.kislev_review_id === key);
+      assert.equal(actual.hebrew_name, r.hebrew_name);
+      assert.equal(actual.name, r.name);
+      assert.deepEqual(actual.source_urls, r.source_urls);
+      if (entry.observed_hillula) {
+        const observances = context.api.findImportantDates(entry.observed_hillula.month, entry.observed_hillula.day).filter(row => row.kislev_review_id === key + '-observance');
+        assert.equal(observances.length, 1);
+        assert.notEqual(observances[0].type, 'yahrzeit', 'a birthday/hillula must not be labelled a death date');
+      }
+    }
+  }
+});
+
 test('winning label colors meet normal-text AA on normal and hover row backgrounds', () => {
   for (const variant of ['', 'upcoming-event', 'next-big-date']) {
     const normal = { ...declarations('tzaddik-link'), ...(variant ? declarations(variant) : {}) };
