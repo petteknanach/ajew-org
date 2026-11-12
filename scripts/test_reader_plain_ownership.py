@@ -144,6 +144,63 @@ class OwnershipTests(unittest.TestCase):
             pins = [{'path':str(p.relative_to(self.reader)), 'bytes':len(b), 'sha256':hashlib.sha256(b).hexdigest()} for p,b in before.items()]
             Path(retained).with_suffix('.inputs.json').write_text(json.dumps(pins, indent=2)+'\n')
 
+    def test_all_primary_complete_exports_follow_physical_chapter_order(self):
+        import re
+        source_reader = ROOT / 'public/reader'
+        bindings = P._ownership.preflight(source_reader, P.collect_segments)
+        primary = {owner[0] for owner in bindings.values() if owner[0] != 'likutay-nanach'}
+        self.assertEqual(len(primary), 39)
+        self.assertEqual(sum(owner[0] in primary for owner in bindings.values()), 929)
+        # Complete genuine source/index memberships, including all commentary;
+        # retain the existing nonprimary controls and real navigation witnesses.
+        paths = set(bindings)
+        paths.update(f'{book}/part-{part}/index.json' for book, part, _ in bindings.values() if book in primary)
+        for relative in paths:
+            target = self.reader / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(source_reader / relative, target)
+        before = {p: hashlib.sha256(p.read_bytes()).hexdigest() for p in self.reader.rglob('*.json')}
+        catalog = run_producer(self.reader, self.out)
+        self.assertEqual(catalog['entries'], sorted(catalog['entries'], key=lambda r: (r['bookId'], str(r['part']), str(r['torah']))))
+        books = json.loads((self.reader / 'catalog.json').read_bytes())['books']
+        chapter_counts = {}
+        for book in sorted(primary):
+            with self.subTest(book=book):
+                declared = next(b for b in books if b['id'] == book)
+                rows = []
+                for part in sorted(declared['parts'], key=lambda p: int(p['part'])):
+                    index = json.loads((self.reader / part['indexUrl'].removeprefix('/reader/')).read_bytes())
+                    for item in index['items']:
+                        ids = (book, str(part['part']), str(item['number']))
+                        self.assertIn(ids, bindings.values())
+                        row = next(r for r in catalog['entries'] if (r['bookId'], r['part'], r['torah']) == ids)
+                        rows.append(row)
+                        source = json.loads((self.reader / f'{book}/part-{ids[1]}/torah-{ids[2]}.json').read_bytes())
+                        exported = json.loads((self.out / row['url'].removeprefix('/reader-plain/') / 'index.json').read_bytes())
+                        self.assertEqual(exported['segments'], P.collect_segments(source))
+                        self.assertEqual(len(exported['segments']), len(source['segments']))
+                chapter_counts[book] = len(rows)
+                txt = [f'{book} — complete plain text', f'Source index: https://ajew.org/reader/{book}/', '', 'Sections:']
+                md = [f'# {book} — complete plain text', f'\nSource index: https://ajew.org/reader/{book}/\n', '## Sections']
+                txt += [f"- {r['title']} — https://ajew.org{r['url']}index.txt" for r in rows]
+                md += [f"- [{r['title']}]({r['url']}) — [TXT]({r['url']}index.txt)" for r in rows]
+                txt.append('\n\n====================\n')
+                md.append('\n---\n')
+                for r in rows:
+                    section = self.out / r['url'].removeprefix('/reader-plain/')
+                    txt += [f"\n\n# {r['title']}", f"URL: https://ajew.org{r['url']}\n", (section / 'index.txt').read_bytes().decode()]
+                    md += [f"\n\n# {r['title']}", f"\nURL: https://ajew.org{r['url']}\n", (section / 'index.md').read_bytes().decode()]
+                for name, chunks in [('full.txt', txt), ('full.md', md)]:
+                    expected = ('\n'.join(chunks).strip() + '\n').encode()
+                    self.assertTrue((self.out / book / name).read_bytes() == expected, f'{book}/{name}: exact numeric TOC and complete section chunks')
+                directory = (self.out / book / 'index.html').read_text()
+                self.assertEqual(re.findall(r'<li><a href="([^"]+)">', directory), [r['url'] for r in rows])
+        self.assertEqual(chapter_counts['tanach-koheles'], 12)
+        self.assertEqual(chapter_counts['tanach-tehillim'], 150)
+        self.assertEqual(sum(chapter_counts.values()), 929)
+        self.assertEqual(hashlib.sha256((self.out / 'tanach-malachi/full.txt').read_bytes()).hexdigest(), 'b388508af396360c1b4387aeb6de8413cbbd96383ad907333ba37997c06a36cb')
+        self.assertEqual({p: hashlib.sha256(p.read_bytes()).hexdigest() for p in self.reader.rglob('*.json')}, before)
+
     def test_malformed_missing_ambiguous_sources_fail_closed(self):
         mutations = {
             'missing primary': lambda r: (r / 'tanach-malachi/part-1/torah-2.json').unlink(),

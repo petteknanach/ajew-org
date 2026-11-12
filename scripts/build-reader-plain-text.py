@@ -579,8 +579,11 @@ def main() -> None:
         encoding="utf-8",
     )
 
+    qualified_primary_books = {owner[0] for owner in tanach_bindings.values() if owner[0] != "likutay-nanach"}
     book_links = []
     for book, rows in sorted(by_book.items()):
+        if book in qualified_primary_books:
+            rows = sorted(rows, key=lambda r: (int(r["part"]), int(r["torah"])))
         if book == "likutay-halachos":
             rows = _lh_publication.reading_order(rows, READER_DIR)
         if book == AITZOAS_BOOK:
