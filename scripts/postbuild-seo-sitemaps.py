@@ -37,7 +37,9 @@ def valid_search_location(url: str) -> bool:
     if parsed.scheme != "https" or parsed.netloc != "ajew.org" or parsed.query or parsed.fragment:
         return False
     decoded = unquote(parsed.path)
-    return decoded.startswith("/") and not any(p in {".", ".."} for p in decoded.split("/")) and "\x00" not in decoded
+    return (decoded.startswith("/") and "\\" not in decoded
+            and not any(p in {".", ".."} for p in decoded.split("/"))
+            and not any(ord(c) < 32 or ord(c) == 127 for c in decoded))
 
 
 def html_artifact(dist: Path, url: str) -> Path | None:
@@ -114,6 +116,7 @@ def prune_search_sitemaps(dist: Path) -> dict:
     prepared = []
     exclusions = []
     seen = set()
+    admitted_urls = []
     scanned = 0
     for child in children:
         tree = ET.parse(child)
@@ -136,15 +139,20 @@ def prune_search_sitemaps(dist: Path) -> dict:
                 exclusions.append({"url": url, "child": child.name, "reason": reason})
             else:
                 seen.add(url)
+                admitted_urls.append(url)
         prepared.append((child, tree))
     if not seen:
         raise RuntimeError("Canonical search sitemap would be empty")
+    # Text is a representation of the same admitted canonical HTML graph, not
+    # an XML redirect, raw-export manifest, or independent source of URLs.
+    text = text_sitemap(admitted_urls)
     # Parse/admit every child before writing any, so malformed XML fails closed.
     for child, tree in prepared:
         tree.write(child, encoding="utf-8", xml_declaration=True)
     index = sitemap_index([f"{SITE}/{p.name}" for p in children])
     for name in ("sitemap-index.xml", "sitemap.xml"):
         (dist / name).write_text(index, encoding="utf-8")
+    (dist / "sitemap.txt").write_text(text, encoding="utf-8")
     receipt = {"scanned": scanned, "retained": len(seen), "excluded": len(exclusions),
                "reasons": dict(Counter(r["reason"] for r in exclusions)), "exclusions": exclusions}
     (dist / "search-sitemap-admission.json").write_text(json.dumps(receipt, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -154,6 +162,17 @@ ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT / "dist"
 CATALOG = ROOT / "public" / "reader-plain" / "index.json"
 SITE = "https://ajew.org"
+
+
+def text_sitemap(urls: list[str]) -> str:
+    if not urls or len(urls) > 50000 or len(set(urls)) != len(urls):
+        raise RuntimeError("Text sitemap requires 1–50,000 unique canonical URLs")
+    if not all(valid_search_location(url) for url in urls):
+        raise RuntimeError("Invalid text sitemap location")
+    text = "\n".join(urls) + "\n"
+    if len(text.encode("utf-8")) > 50 * 1024 * 1024:
+        raise RuntimeError("Text sitemap exceeds 50 MB")
+    return text
 
 
 def xml_urlset(urls: list[str], priority: str = "0.55") -> str:
