@@ -27,6 +27,7 @@ def validate(entries):
         assert e['date_status'] in ('verified', 'traditional', 'disputed_documented')
         assert e['source_text'] and e['source_document']
         assert r['source_urls'] and r['name'] and r['hebrew_name']
+        assert r['category'] in ('breslov', 'biblical', 'talmudic', 'rishonim', 'acharonim', 'chassidic', 'lithuanian', 'sephardic', 'chabad', 'other'), 'Category must be visible in the public catalogue'
         assert any('\u05d0' <= c <= '\u05ea' for c in r['hebrew_name'])
         assert r['yahrzeit_month'] in ('Kislev', 'Iyyar', 'Sivan', 'Tishrei', 'Tevet', 'Tamuz', 'Av', 'Elul', 'Cheshvan', 'Nissan', "Sh'vat", 'Adar', 'Adar II')
         assert type(r['yahrzeit_day']) is int and 1 <= r['yahrzeit_day'] <= 30

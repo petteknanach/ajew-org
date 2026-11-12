@@ -70,6 +70,11 @@ test('approved Kislev cohort is unique in all feeds and actual calendar selector
   const vm = await import('node:vm');
   const manifest = JSON.parse(await readFile(new URL('./approved-kislev-records.json', import.meta.url), 'utf8'));
   const entries = manifest.entries;
+  const catalogSource = await readFile(new URL('../src/pages/tzaddikim/index.astro', import.meta.url), 'utf8');
+  const categoryDeclaration = catalogSource.match(/const categoryOrder = (\[[^;]+\]);/);
+  assert(categoryDeclaration, 'actual public category order located');
+  const visibleCategories = vm.runInNewContext(categoryDeclaration[1]);
+  for (const entry of entries) assert(visibleCategories.includes(entry.record.category), 'approved identity remains visible in public catalogue: ' + entry.id);
   assert.equal(new Set(entries.map(e => e.id)).size, entries.length);
   assert.equal(entries.length + manifest.held_ids.length, 37);
   for (const id of [43, 44, 119, 142]) assert(!entries.some(e => e.id === id), 'excluded or duplicate source ID ' + id);
