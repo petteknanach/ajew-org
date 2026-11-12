@@ -6,6 +6,11 @@ const source=readFileSync(process.env.READER_ARRIVAL_SOURCE || new URL('../publi
 const start=source.indexOf('function scrollToReaderArrival(');
 const end=source.indexOf('// --- Segment Permalink Buttons ---',start);
 assert.ok(start>=0 && end>start);
+// Bind the owning route predicate from the same current runtime, not a stub.
+const prayerStart=source.indexOf('  function isPrayerReader() {');
+const prayerEnd=source.indexOf('\n  }',prayerStart)+4;
+assert.ok(prayerStart>=0 && prayerEnd>prayerStart);
+const prayerPredicate=source.slice(prayerStart,prayerEnd);
 function rig({ready='loading',search='?q=joy',matched=true,fonts=true}={}) {
   const calls=[],frames=[],timers=[],listeners=new Map();
   let resolveFonts,rejectFonts;
@@ -15,7 +20,7 @@ function rig({ready='loading',search='?q=joy',matched=true,fonts=true}={}) {
   const window={location:{search,hash:'#seg-10'},addEventListener(type,fn,options){const entries=listeners.get(type)||[];entries.push({fn,options});listeners.set(type,entries);},removeEventListener(type,fn){listeners.set(type,(listeners.get(type)||[]).filter(e=>e.fn!==fn));}};
   const document={readyState:ready,getElementById:()=>target,querySelector:()=>target,...(fonts?{fonts:{ready:fontPromise}}:{})};
   const ctx=vm.createContext({window,document,URLSearchParams,Promise,setTimeout:(fn,delay)=>timers.push({fn,delay}),requestAnimationFrame:fn=>frames.push(fn)});
-  vm.runInContext(source.slice(start,end),ctx);
+  vm.runInContext(prayerPredicate+'\n'+source.slice(start,end),ctx);
   const emit=type=>{for(const e of [...listeners.get(type)||[]]){if(e.options?.once)window.removeEventListener(type,e.fn);e.fn();}};
   const flush=async()=>{await Promise.resolve();await Promise.resolve();while(frames.length)frames.shift()();};
   const clean=()=>assert.equal(['wheel','touchstart','pointerdown','keydown','pagehide','load'].reduce((n,k)=>n+(listeners.get(k)||[]).length,0),0);
@@ -65,7 +70,7 @@ test('every referencing Astro page closes the immutable script cache',()=>{
   for(const name of stdout.trim().split('\n').filter(n=>n.endsWith('.astro'))){
     const bytes=readFileSync(new URL('../'+name,import.meta.url));if(!bytes.includes(Buffer.from('/reader-script.js')))continue;
     const urls=bytes.toString().match(/\/reader-script\.js(?:\?v=[^"\s<>]+)?/g)||[];
-    for(const url of urls){assert.equal(url,'/reader-script.js?v=reader-arrival-20261008-r1',name);references++;}
+    for(const url of urls){assert.equal(url,'/reader-script.js?v=xref-membership-7630cd78fcb4',name);references++;}
   }
   assert.ok(references>0);
 });

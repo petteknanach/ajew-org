@@ -3,6 +3,7 @@
 const assert=require('node:assert/strict'),{createHash}=require('node:crypto');
 const DELTA=require('./chok-reference-order-delta.json');
 const sha=b=>createHash('sha256').update(b).digest('hex');
+const restoreReaderQuery=require('./reader-cross-reference-cache-conservation.cjs').restore;
 // Restore only the independently reviewed chapter-resource adoption before the
 // unchanged reference/paragraph guards. No historical hash or manifest changes.
 const readerAdoptionRaw=require('node:fs').readFileSync(require('node:path').resolve(__dirname,'fixtures/tanach-commentary-availability/approved-template-delta.json'));
@@ -91,6 +92,7 @@ function restoreGenesis(relative,bytes){
  const restored=Buffer.from(s);assert.equal(sha(restored),d.beforeSHA256,'GENESIS_ENGLISH_EXACT_INVERSE:'+relative);return restored;
 }
 function currentReference(relative,bytes){
+ bytes=restoreReaderQuery(relative,bytes);
  bytes=restoreReaderCommentary(relative,bytes);
  bytes=restoreGenesis(relative,bytes);
  if(relative!=='src/pages/reader/chok.astro'||sha(bytes)!=='e64a0357cb610931e31b741e53c313687240e65d324bbcfdb250ebec278bf5c5')return bytes;
@@ -141,7 +143,7 @@ if(require.main===module){
   assert.equal(restoreVayaitzaiFridayNote('unselected/source',b),b);assert.deepEqual(restoreVayaitzaiFridayNote(relative,old),old);
  }
  for(const [relative,d]of Object.entries(DELTA)){
-  const actual=fs.readFileSync(path.resolve(__dirname,'..',relative));
+  const actual=restoreReaderQuery(relative,fs.readFileSync(path.resolve(__dirname,'..',relative)));
   const b=currentReference(relative,actual);assert.equal(sha(b),d.afterSHA256,'REQUIRED_CURRENT_REFERENCE_SUCCESSOR:'+relative);
   const restored=restoreReference(relative,b);assert.equal(sha(restored),d.beforeSHA256);assert.deepEqual(restoreReference(relative,restored),restored);
   assert.throws(()=>restoreReference(relative,Buffer.concat([b,Buffer.from(' ')])),/REFERENCE_CANDIDATE_PIN/);

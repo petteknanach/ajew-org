@@ -8,10 +8,15 @@ import { createHash } from 'node:crypto';
 // Optional exact historical helper for paired RED; ordinary invocation stays repo-relative.
 const helper = fs.readFileSync(process.env.SH_ARRIVAL_HELPER_PATH || new URL('../public/reader-sefer-hamidos-arrival.js', import.meta.url), 'utf8');
 const shared = fs.readFileSync(new URL('../public/reader-script.js', import.meta.url), 'utf8');
-const signature = '  function scrollToReaderArrival(target, prepareOnly = false) {';
+const signature = '  function scrollToReaderArrival(target, prepareOnly = false, explicitNavigation = false) {';
 const begin = shared.indexOf(signature), end = shared.indexOf('\n  }', begin) + 4;
 assert.ok(begin >= 0 && end > begin);
 const arrivalBody = shared.slice(begin, end);
+// The current unchanged shared callback owns this real route predicate.
+const prayerBegin = shared.indexOf('  function isPrayerReader() {');
+const prayerEnd = shared.indexOf('\n  }', prayerBegin) + 4;
+assert.ok(prayerBegin >= 0 && prayerEnd > prayerBegin);
+const prayerPredicate = shared.slice(prayerBegin, prayerEnd);
 const sha = value => createHash('sha256').update(value).digest('hex');
 const observations = [];
 
@@ -128,7 +133,7 @@ function fixture(options = {}) {
     localStorage: { getItem: k => prefs.get(k), setItem: () => { throw Error('helper must not write preferences'); } } });
   function load() { vm.runInContext(helper, context); }
   if (!options.disableHelper && !process.env.SH_ARRIVAL_DISABLE_HELPER) load();
-  vm.runInContext(arrivalBody, context);
+  vm.runInContext(prayerPredicate + '\n' + arrivalBody, context);
   context.target = target;
   const microtasks = async () => { for (let i = 0; i < 5; i++) await Promise.resolve(); };
   async function advance(ms) {
@@ -224,7 +229,7 @@ for (const options of [{ rangeError: true }, { noRects: true }]) test(`missing/t
 test('own versioned helper include is singular and shared includes unchanged', () => {
   const page = fs.readFileSync(process.env.SH_ARRIVAL_PAGE_PATH || new URL('../src/pages/reader/sefer-hamidos/[part]/[torah].astro', import.meta.url), 'utf8');
   assert.equal((page.match(/src="\/reader-sefer-hamidos-arrival\.js\?v=20261014-1" is:inline defer/g) || []).length, 1);
-  assert.ok(page.includes('/reader-script.js?v=parsha-author-20261018-r1'));
+  assert.ok(page.includes('/reader-script.js?v=xref-membership-7630cd78fcb4'));
 });
 test('pre-DOM trusted input prevents delayed startup from taking over reading', async () => {
   const s = fixture({ readyState: 'loading' }); s.event('pointerdown', { isTrusted: true }); s.document.readyState = 'interactive'; s.domEvent('DOMContentLoaded'); await s.advance(12000);

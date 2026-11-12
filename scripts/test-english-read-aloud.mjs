@@ -7,6 +7,7 @@ import { createRequire } from 'node:module';
 import { gunzipSync } from 'node:zlib';
 const require = createRequire(import.meta.url);
 const { load } = require('cheerio');
+const { requireCurrent: currentReaderQuery } = require('./reader-cross-reference-cache-conservation.cjs');
 const root = new URL('../', import.meta.url);
 const read = p => fs.readFileSync(new URL(p, root), 'utf8');
 const beforeTemplates = JSON.parse(gunzipSync(fs.readFileSync(new URL('scripts/fixtures/reader-audio/english/consumer-baselines.json.gz', root))));
@@ -121,18 +122,20 @@ test('long unpunctuated and supplementary characters are conserved, page session
 test('every actual unified consumer is cache versioned with exact inverse source conservation',()=>{
  const consumers=JSON.parse(read('scripts/fixtures/reader-audio/english/consumers.json'));assert.ok(consumers.length>=30);
  for(const p of consumers){const before=Buffer.from(beforeTemplates[p], 'base64').toString('utf8'),after=read(p);
- let conserved=after.replaceAll('/unified-audio.js?v=english-device-20261105-r1"','/unified-audio.js"');
+ // Remove only the exact current per-path Reader query delta before all fixed audio inverses.
+ const readerPreimage=after.includes('/reader-script.js') ? currentReaderQuery(p,Buffer.from(after)).toString('utf8') : after;
+ let conserved=readerPreimage.replaceAll('/unified-audio.js?v=english-device-20261105-r1"','/unified-audio.js"');
  if(p==='src/pages/reader/sefer-hamidos/[part]/[torah].astro'){
    // Admit only this complete hash-pinned lazy-picture delta before the fixed historical inverse.
    const adoption=JSON.parse(read('scripts/fixtures/sefer-hamidos-lazy-images/approved-template-delta.json'));
    assert.equal(adoption.path,p);
-   assert.equal(createHash('sha256').update(after).digest('hex'),adoption.afterSHA256,p+': lazy-picture source pin');
+   assert.equal(createHash('sha256').update(readerPreimage).digest('hex'),adoption.afterSHA256,p+': lazy-picture source pin');
    for(const change of adoption.inverse){
      assert.ok(change.after.length>0);
      assert.equal(conserved.split(change.after).length,2,p+': expected exactly one approved lazy-picture delta');
      conserved=conserved.replace(change.after,change.before);
    }
-   let preimage=after;
+   let preimage=readerPreimage;
    for(const change of adoption.inverse) preimage=preimage.replace(change.after,change.before);
    assert.equal(createHash('sha256').update(preimage).digest('hex'),adoption.beforeSHA256,p+': exact lazy-picture preimage');
  }
