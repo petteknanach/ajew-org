@@ -6,7 +6,7 @@ const {execFileSync}=require('node:child_process');
 const {pathToFileURL}=require('node:url');
 const {dependencies,documentFor,sandbox,until}=require('./qualified-earlier-parsha-test-dom.cjs');
 const ROOT=path.resolve(__dirname,'..'),EXTRA=process.env.QUALIFIED_EXPORT_ROOT;
-const VERSION='xref-membership-7630cd78fcb4';
+const VERSION='xref-recognition-947964bb91d9';
 const read=p=>fs.readFileSync(path.join(ROOT,p),'utf8'),json=p=>JSON.parse(read(p));
 const lib=import(pathToFileURL(path.join(ROOT,'src/lib/qualified-parsha.mjs')).href);
 const namespaces=['qualified-1-109','qualified-110-171'];

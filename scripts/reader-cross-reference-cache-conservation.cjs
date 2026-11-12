@@ -4,7 +4,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs'), path = require('node:path'), {createHash} = require('node:crypto');
 const sha = b => createHash('sha256').update(b).digest('hex');
 const raw = fs.readFileSync(path.join(__dirname, 'reader-cross-reference-cache-delta.json'));
-assert.equal(sha(raw), 'd684a887e89732d56478b27f99bc4aa107d0f810ade91c2d6fb542164388eb02', 'XREF_QUERY_AUTHORITY_PIN');
+assert.equal(sha(raw), '0e6f0bada6335d1abee32a85ac2c022669b5055ab3a0d750e83a889d40067278', 'XREF_QUERY_AUTHORITY_PIN');
 const delta = JSON.parse(raw);
 assert.equal(Object.keys(delta.paths).length, 258, 'XREF_EXACT_QUERY_DOMAIN');
 function restore(relative, bytes) {
@@ -28,17 +28,30 @@ module.exports = {restore, requireCurrent, delta};
 if (require.main === module) (async () => {
   const root = path.resolve(__dirname, '..'), {execFileSync} = require('node:child_process');
   const paths = Object.keys(delta.paths);
+  const predecessorCommit = '6a25210908f78164e4b570a9a80db46d49fd1d69', predecessorURL = '/reader-script.js?v=xref-membership-7630cd78fcb4';
   const actual = execFileSync('git', ['grep', '-l', '-z', '-F', 'reader-script.js?v=', 'HEAD', '--', 'src'], {cwd:root})
     .toString().split('\0').filter(Boolean).map(p=>p.slice(5)).filter(p=>p.endsWith('.astro')).sort();
   assert.equal(actual.length, 248);
   assert.equal(sha(actual.join('\n')), 'a04df1b755ef33557e632d32891c8adc9ada75a147fd8335b0f5d12234b0c6f7');
   assert.deepEqual(paths.filter(p=>p.endsWith('.astro')), actual);
-  assert.equal(paths.filter(p=>p.startsWith('public/')).length, 2);
-  assert.equal(paths.filter(p=>p.startsWith('scripts/')).length, 8);
+  const scan = (needle, area) => execFileSync('git', ['grep', '-l', '-z', '-F', needle, 'HEAD', '--', area], {cwd:root})
+    .toString().split('\0').filter(Boolean).map(p=>p.slice(5)).sort();
+  const staticHTML = scan('reader-script.js?v=', 'public').filter(p=>p.endsWith('.html'));
+  // Operative generator sources, not frozen JSON/HTML fixtures or test assertions.
+  const producers = scan('<script src="' + '/reader-script.js?v=', 'scripts')
+    .filter(p=>/\.(?:cjs|mjs|js|py)$/.test(p) && !/(?:^|\/)(?:test[-_]|.*\.test\.)/.test(p));
+  assert.equal(staticHTML.length, 2);
+  assert.equal(producers.length, 8);
+  assert.deepEqual(paths.filter(p=>p.startsWith('public/')), staticHTML);
+  assert.deepEqual(paths.filter(p=>p.startsWith('scripts/')), producers);
   let negativeControls = 0;
   for (const relative of paths) {
     const b = fs.readFileSync(path.join(root, relative)), d = delta.paths[relative];
     const old = requireCurrent(relative, b);
+    const predecessor = execFileSync('git', ['show', predecessorCommit + ':' + relative], {cwd:root,maxBuffer:8*1024*1024});
+    assert.equal(predecessor.toString().split(predecessorURL).length, 2);
+    assert.deepEqual(Buffer.from(predecessor.toString().replace(predecessorURL, delta.url)), b, 'INDEPENDENT_CURRENT_PARENT_QUERY_ONLY:' + relative);
+    assert.deepEqual(Buffer.from(b.toString().replace(delta.url, predecessorURL)), predecessor, 'CURRENT_PARENT_QUERY_INVERSE:' + relative);
     const gitOld = execFileSync('git', ['show', delta.sourceCommit + ':' + relative], {cwd:root,maxBuffer:8*1024*1024});
     assert.deepEqual(old, gitOld, 'INDEPENDENT_GIT_QUERY_PREIMAGE:' + relative);
     assert.equal(old.toString().split(d.previousURL).length, 2);
@@ -55,7 +68,7 @@ if (require.main === module) (async () => {
   assert.equal(sha(candidate), delta.runtimeSHA256, 'XREF_RUNTIME_BYTE_BOUND_URL');
   // Actual frozen cache-first workers, warmed with every historical query key.
   // No installed worker, browser, cache policy or global cache name is changed.
-  const vm = require('node:vm'), origin='https://ajew.org', warmed=[...new Set(paths.map(p=>delta.paths[p].previousURL)), '/reader-script.js'];
+  const vm = require('node:vm'), origin='https://ajew.org', warmed=[...new Set(paths.map(p=>delta.paths[p].previousURL)), '/reader-script.js', predecessorURL];
   const workerResults=[];
   for (const worker of ['public/sw.js','public/sw-v2.js']) {
     const listeners={}, store=new Map(warmed.map(u=>[origin+u,new Response('HISTORICAL:'+u)])), network=[];

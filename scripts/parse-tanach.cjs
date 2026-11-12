@@ -775,7 +775,7 @@ const structuredData = torahData ? JSON.stringify({
         </div>
       </div>
 
-      <script src="/reader-script.js?v=xref-membership-7630cd78fcb4" is:inline></script>
+      <script src="/reader-script.js?v=xref-recognition-947964bb91d9" is:inline></script>
     </div>
   )}
 </Layout>
