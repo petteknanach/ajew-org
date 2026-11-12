@@ -1045,7 +1045,7 @@
      Classical whole owners, every ordered native span and raw body authenticated
      offline against REVIEW.json; source approval is not expert/release approval.
      No fallback to legacy amud text and no external source requests. */
-  var ZOHAR_DAILY_SHA256 = '2bb410d428ad16e96b95ef59e150367589a174db56312b6b698243514fb3bf2a';
+  var ZOHAR_DAILY_SHA256 = '0bbd695d0b8d4398793a73ba6cea30e3512c9e30079dbece7c5e34301d5eb8d3';
   var zoharDailyPromise = null;
   function zoharDigest(bytes) {
     if (!window.crypto || !window.crypto.subtle) return Promise.reject(Error('Zohar authentication unavailable'));
@@ -1060,7 +1060,7 @@
       var data = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes));
       if (data.schema !== 'chok-zohar-day-passages-v1' || data.wholeCycleComplete !== false ||
           !data.days || Object.keys(data.days).length !== 374 ||
-          data.counts.SOURCE_RANGE_APPROVED !== 133 || data.counts.SOURCE_VERIFICATION_PENDING !== 191 ||
+          data.counts.SOURCE_RANGE_APPROVED !== 134 || data.counts.SOURCE_VERIFICATION_PENDING !== 190 ||
           data.counts.NO_ZOHAR_SOURCE_VERIFIED !== 50) throw Error('Zohar daily inventory mismatch');
       return data;
     });
@@ -1094,7 +1094,7 @@
     if (row.disposition !== 'SOURCE_RANGE_APPROVED' || row.fieldRole !== 'original-source' ||
         !Array.isArray(row.spans) || !row.spans.length || !/^[a-f0-9]{64}$/.test(row.rawBodySha256Utf8 || ''))
       return Promise.reject(Error('Zohar daily bounds missing'));
-    return Promise.all(row.spans.map(function (s, i) {
+    var spanChecks = row.spans.map(function (s, i) {
       var validWork = (s.work === 'Zohar' && [1, 2, 3].indexOf(s.volume) !== -1) ||
         (s.work === 'ZoharChadash' && s.volume === null);
       if (!validWork || s.ordinal !== i || !Number.isInteger(s.daf) || s.daf < 1 ||
@@ -1104,7 +1104,14 @@
             (s.sourceUnitType === 'LiteralNativeParagraphSlice' && s.nativeElementName === 'p' &&
               Number.isInteger(s.nativeParagraphIndex) && s.nativeParagraphIndex >= 0 && Number.isInteger(s.nativeBlockIndex) && s.nativeBlockIndex >= 0) ||
             (s.sourceUnitType === 'LiteralNativeListItemSlice' && s.nativeElementName === 'li' && s.nativeParagraphIndex === null &&
-              Number.isInteger(s.nativeBlockIndex) && s.nativeBlockIndex >= 0)) || s.offsetUnit !== 'Unicode-codepoint' ||
+              Number.isInteger(s.nativeBlockIndex) && s.nativeBlockIndex >= 0) ||
+            (s.sourceUnitType === 'OwnedWikisourceJSONParagraphSlice' && s.nativeParagraphIndex === null &&
+              s.nativeElementName === undefined && s.nativeBlockIndex === undefined &&
+              Number.isInteger(s.jsonParagraphIndex) && s.jsonParagraphIndex >= 0 &&
+              /^public\/reader\/zohar\/zohar-[^/]+\.json$/.test(s.sourceRelativePath || '') &&
+              s.sourceJsonPointer === '/ch/' + s.daf + '/' + (s.amud === 1 ? 'a' : 'b') + '/' + s.jsonParagraphIndex &&
+              typeof s.sourceParagraphRaw === 'string' &&
+              Array.from(s.sourceParagraphRaw).slice(s.startOffset, s.endOffsetExclusive).join('') === s.rawText)) || s.offsetUnit !== 'Unicode-codepoint' ||
           !Number.isInteger(s.startOffset) || !Number.isInteger(s.endOffsetExclusive) ||
           s.startOffset < 0 || s.endOffsetExclusive <= s.startOffset || typeof s.rawText !== 'string' ||
           Array.from(s.rawText).length !== s.endOffsetExclusive - s.startOffset ||
@@ -1112,10 +1119,18 @@
           !/^[a-f0-9]{64}$/.test(s.selectedSha256Utf8 || '') ||
           ['decode', 'preserve entity spellings'].indexOf(s.entityPolicy) === -1)
         throw Error('Zohar daily span identity/bounds mismatch');
-      return zoharTextDigest(s.rawText).then(function (hash) {
+      return function () { return zoharTextDigest(s.rawText).then(function (hash) {
         if (hash !== s.selectedSha256Utf8) throw Error('Zohar daily span changed');
-      });
-    })).then(function () {
+        if (s.sourceUnitType === 'OwnedWikisourceJSONParagraphSlice') {
+          if (s.endOffsetExclusive > Array.from(s.sourceParagraphRaw).length)
+            throw Error('Zohar JSON paragraph bounds changed');
+          return zoharTextDigest(s.sourceParagraphRaw).then(function (paragraphHash) {
+            if (paragraphHash !== s.paragraphSha256Utf8) throw Error('Zohar JSON paragraph changed');
+          });
+        }
+      }); };
+    });
+    return Promise.all(spanChecks.map(function (check) { return Promise.resolve().then(check); })).then(function () {
       return zoharTextDigest(row.spans.map(function (s) { return s.rawText; }).join('\n'));
     }).then(function (hash) {
       if (hash !== row.rawBodySha256Utf8) throw Error('Zohar daily body changed');
