@@ -180,7 +180,7 @@ class OwnershipTests(unittest.TestCase):
 
     def test_catalog_and_overwrite_guards_reject_foreign_or_repeated_owner(self):
         with patch.object(P, 'READER_DIR', self.reader), patch.object(P, 'OUT_DIR', self.out):
-            bindings = P._ownership.preflight(self.reader)
+            bindings = P._ownership.preflight(self.reader, P.collect_segments)
             path = self.reader / 'tanach-malachi/part-1/torah-1.json'
             owners = {}
             P.register_output_owner(path, 'tanach-malachi', '1', '1', owners)
@@ -202,6 +202,92 @@ class OwnershipTests(unittest.TestCase):
             run_producer(self.reader, self.out)
         self.assertFalse(self.out.exists())
         self.assertEqual(witness.read_bytes(), original)
+
+    def assert_rejected_without_writes(self, reader, out, witnesses):
+        out.mkdir(parents=True, exist_ok=True)
+        sentinel = b'unchanged previous output'
+        (out / 'sentinel').write_bytes(sentinel)
+        before = {p: p.read_bytes() for p in witnesses}
+        with self.assertRaises(ValueError):
+            run_producer(reader, out)
+        self.assertEqual(list(out.iterdir()), [out / 'sentinel'])
+        self.assertEqual((out / 'sentinel').read_bytes(), sentinel)
+        self.assertEqual({p: p.read_bytes() for p in witnesses}, before)
+
+    def test_nonemitting_selected_segments_fail_before_output_reset(self):
+        # Keep all eighteen older malformed/missing/ambiguous controls intact.
+        # Every selected physical row must survive the actual projection, not
+        # merely pass a dict/list shape or source-index cardinality check.
+        blanks = {
+            'blank dict': {},
+            'blank text': {k: ' \n\t ' for k in (*P.HE_KEYS, *P.EN_KEYS)},
+            'markup only': {k: '<p> &nbsp; </p>' for k in (*P.HE_KEYS, *P.EN_KEYS)},
+            'nondict': None,
+        }
+        for namespace, relative in [
+            ('primary', 'tanach-malachi/part-1/torah-2.json'),
+            ('commentary', 'likutay-nanach/tanach/tanach-malachi-2.json'),
+        ]:
+            for shape, replacement in blanks.items():
+                with self.subTest(namespace=namespace, shape=shape):
+                    private = Path(self.temp.name) / (namespace + '-' + shape)
+                    reader, out = private / 'reader', private / 'out'
+                    copy_inputs(reader)
+                    self.edit(reader / relative, lambda d: d['segments'].__setitem__(0, replacement))
+                    self.assert_rejected_without_writes(reader, out, list(reader.rglob('*.json')))
+
+    def test_selected_directory_ancestor_and_file_links_fail_before_output_reset(self):
+        # Include links rglob would never descend, not just discovered JSON files.
+        selected = (
+            'tanach-malachi', 'tanach-malachi/part-1',
+            'tanach-malachi/part-1/torah-2.json',
+            'tanach-malachi/part-1/index.json', 'catalog.json',
+            'likutay-nanach', 'likutay-nanach/tanach',
+            'likutay-nanach/tanach/tanach-malachi-2.json',
+            'likutay-nanach/tanach/index.json', 'reader', 'ancestor',
+        )
+        for number, relative in enumerate(selected):
+            with self.subTest(link=relative):
+                private = Path(self.temp.name) / f'link-{number}'
+                reader, out = private / 'input/reader', private / 'out'
+                copy_inputs(reader)
+                target = reader if relative == 'reader' else reader.parent if relative == 'ancestor' else reader / relative
+                outside = private / 'outside'
+                target.rename(outside)
+                target.symlink_to(outside, target_is_directory=outside.is_dir())
+                witnesses = list(outside.rglob('*.json')) if outside.is_dir() else [outside]
+                # Snapshot the rest too; symlink traversal is deliberately not
+                # our witness enumerator for the relocated physical originals.
+                witnesses += list(reader.rglob('*.json'))
+                self.assert_rejected_without_writes(reader, out, witnesses)
+
+    def test_projection_field_selection_and_bounded_absence_remain_valid(self):
+        # First populated accepted fallback wins, except commentary prepends
+        # a distinct verse. An English-only row also emits a real segment.
+        for namespace, relative in [
+            ('primary', 'tanach-malachi/part-1/torah-2.json'),
+            ('commentary', 'likutay-nanach/tanach/tanach-malachi-2.json'),
+        ]:
+            for key in (*P.HE_KEYS, *P.EN_KEYS):
+                with self.subTest(namespace=namespace, field=key):
+                    reader = Path(self.temp.name) / f'fields-{namespace}-{key}/reader'
+                    copy_inputs(reader)
+                    self.edit(reader / relative, lambda d: d['segments'].__setitem__(0, {key: '<b>real text</b>'}))
+                    # New guard must use the producer's actual selection mode.
+                    with patch.object(P, 'READER_DIR', reader):
+                        bindings = P._ownership.preflight(reader, P.collect_segments)
+                    self.assertIn(relative, bindings)
+        empty = Path(self.temp.name) / 'bounded/reader'
+        empty.mkdir(parents=True)
+        # A global index does not select absent commentary subjects or books.
+        for relative in ('catalog.json', 'likutay-nanach/tanach/index.json'):
+            target = empty / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(ROOT / 'public/reader' / relative, target)
+        self.assertEqual(P._ownership.preflight(empty, P.collect_segments), {})
+        unrelated = empty / 'unselected'
+        unrelated.symlink_to(Path(self.temp.name) / 'absent', target_is_directory=True)
+        self.assertEqual(P._ownership.preflight(empty, P.collect_segments), {})
 
     @staticmethod
     def edit(path, fn):

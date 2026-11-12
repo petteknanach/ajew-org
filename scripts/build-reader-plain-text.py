@@ -456,7 +456,7 @@ def write_known_quoted_passages() -> list[str]:
 
 
 def main() -> None:
-    tanach_bindings = _ownership.preflight(READER_DIR)
+    tanach_bindings = _ownership.preflight(READER_DIR, collect_segments)
     if OUT_DIR.exists():
         shutil.rmtree(OUT_DIR)
     OUT_DIR.mkdir(parents=True)

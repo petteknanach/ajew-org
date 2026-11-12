@@ -52,29 +52,59 @@ def read_object(path: Path) -> dict:
     return data
 
 
-def source_data(path: Path) -> dict:
+def source_data(path: Path, project_segments, *, include_verse: bool = False) -> dict:
     data = read_object(path)
     segments = data.get('segments')
     if (not isinstance(data.get('title'), str) or not data['title'].strip()
             or not isinstance(segments, list) or not segments
             or any(not isinstance(s, dict) for s in segments)):
         raise ValueError(f'Missing title or complete segment body: {path}')
+    # Use the actual exporter, with its primary/default or commentary mode.
+    # Shape/cardinality alone cannot detect a dictionary that emits no text.
+    # Never filter/pad bad rows or allow a shorter successful selected export.
+    if len(project_segments(data, include_verse=include_verse)) != len(segments):
+        raise ValueError(f'Nonemitting selected segment body: {path}')
     return data
 
 
-def preflight(reader: Path) -> dict[str, tuple[str, str, str]]:
+def reject_selected_symlinks(reader: Path) -> None:
+    """Check before rglob, which silently skips linked directories.
+
+    Inspect only protected namespaces and their ancestors; unrelated/absent
+    bounded groups do not select their global catalog's missing sources.
+    """
+    def reject(path):
+        if path.is_symlink():
+            raise ValueError(f'Symlink selected namespace/source/index: {path}')
+
+    for path in (reader, *reader.parents, reader / 'likutay-nanach'):
+        reject(path)
+
+    def walk(path):
+        reject(path)  # Also rejects dangling links before exists/is_dir.
+        if path.is_dir():
+            for child in path.iterdir():
+                walk(child)
+
+    for root in reader.glob('tanach-*'):
+        walk(root)
+    walk(reader / 'likutay-nanach/tanach')
+
+
+def preflight(reader: Path, project_segments) -> dict[str, tuple[str, str, str]]:
     """Bind every selected physical source to exactly one catalog membership.
 
     Validate before the producer clears its previous output. No missing chapter,
     malformed selected JSON or ambiguous membership may become a partial full.txt.
     """
+    reject_selected_symlinks(reader)
     bindings: dict[str, tuple[str, str, str]] = {}
     primary_groups: dict[tuple[str, str], list[Path]] = {}
     commentary_files = []
     for path in sorted(reader.rglob('*.json')):
         if not protected_source(path, reader) or path.name == 'index.json':
             continue
-        data = source_data(path)
+        data = source_data(path, project_segments, include_verse=bool(COMMENTARY.fullmatch(path.relative_to(reader).as_posix())))
         owner = identity(path, data, reader)
         if owner is None:
             raise ValueError(f'Missing physical source identity: {path}')
@@ -121,7 +151,7 @@ def preflight(reader: Path) -> dict[str, tuple[str, str, str]]:
                 raise ValueError(f'Primary book requires every indexed chapter once: {book}/{part}')
             for item in items:
                 n = item['number']
-                data = source_data(reader / f'{book}/part-{part}/torah-{n}.json')
+                data = source_data(reader / f'{book}/part-{part}/torah-{n}.json', project_segments)
                 if (item.get('url') != f'/reader/{book}/{part}/{n}'
                         or any(data.get(k) != item.get(k) for k in ('title', 'hebrewTitle'))):
                     raise ValueError(f'Primary chapter header/catalog mismatch: {book}/{part}/{n}')
@@ -149,7 +179,7 @@ def preflight(reader: Path) -> dict[str, tuple[str, str, str]]:
             if url not in members:
                 raise ValueError(f'Unindexed commentary source owner: {url}')
             subject, chapter, count = members[url]
-            data = source_data(path)
+            data = source_data(path, project_segments, include_verse=True)
             if (data.get('book') != subject or data.get('chapter', '') != chapter
                     or len(data['segments']) != count):
                 raise ValueError(f'Commentary source/catalog mismatch: {url}')
