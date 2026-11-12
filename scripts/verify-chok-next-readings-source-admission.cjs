@@ -10,6 +10,9 @@ function canonical(x){
  return '{'+Object.keys(x).sort().map(k=>JSON.stringify(k)+':'+canonical(x[k])).join(',')+'}';
 }
 function check(root,oracle){
+ const currentOracleRaw=fs.readFileSync(path.join(root,'scripts/chok-qualified-daily-reviewed.json'));
+ assert.deepEqual(oracle,JSON.parse(currentOracleRaw),'CURRENT_ORACLE_ARGUMENT_BINDING');
+ oracle=JSON.parse(require('./chok-reference-order-conservation.cjs').restoreVayaitzaiFridayNote('scripts/chok-qualified-daily-reviewed.json',currentOracleRaw));
  const raw=fs.readFileSync(path.join(root,'scripts/chok-next-readings-source-admission.json'));
  assert.equal(sha(raw),'8e48693c68790d584cbc4082e9b245622eb8f8085be1e02bf7e5c7a31b82f70f','SOURCE_ADMISSION_PIN');
  const a=JSON.parse(raw);assert.equal(a.schema,'chok-exact-next-readings-source-admission-v1');
@@ -28,7 +31,7 @@ function check(root,oracle){
   const chain=a.chains.find(c=>c.readingId===t.readingId);assert(chain);assert.equal(sha(canonical(chain)),t.sourceApprovalChainSHA256,'SOURCE_APPROVAL_CHAIN');
   for(const r of rows)assert.equal(r.authoritySHA256,t.sourceApprovalChainSHA256,'OWNER_SOURCE_AUTHORITY');
   const file=path.resolve(root,'public','.'+t.url);assert(file.startsWith(path.resolve(root,'public')+path.sep));
-  assert.equal(sha(fs.readFileSync(file)),t.payloadSHA256,'EXACT_APPROVED_PAYLOAD');
+  assert.equal(sha(require('./chok-reference-order-conservation.cjs').restoreVayaitzaiFridayNote(path.relative(root,file).split(path.sep).join('/'),fs.readFileSync(file))),t.payloadSHA256,'EXACT_APPROVED_PAYLOAD');
  }
  return {sourceAdmission:true,targets:a.targets.length,untouchedRows:old.length,nativeOrPublicationApproval:false};
 }

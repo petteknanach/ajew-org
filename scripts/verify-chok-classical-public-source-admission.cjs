@@ -6,7 +6,7 @@ function canonical(x){if(x===null||typeof x!=='object')return JSON.stringify(x);
 function check(root,oracle){
  const read=p=>fs.readFileSync(path.join(root,p));const raw=read('scripts/chok-classical-public-source-admission.json');
  assert.equal(sha(raw),'63cbb9874c588f9a3dc4143ebbcccd295675b203b4d39ea35142ba4cf4dd1c49','CLASSICAL_PUBLIC_ADMISSION_PIN');const a=JSON.parse(raw);
- assert.equal(sha(read('scripts/chok-qualified-daily-reviewed.json')),a.oldOracleSHA256,'CLASSICAL_BEFORE_ORACLE');
+ assert.equal(sha(require('./chok-reference-order-conservation.cjs').restoreVayaitzaiFridayNote('scripts/chok-qualified-daily-reviewed.json',read('scripts/chok-qualified-daily-reviewed.json'))),a.oldOracleSHA256,'CLASSICAL_BEFORE_ORACLE');
  assert.equal(sha(read('public/chok-qualified-daily-selected.js')),a.oldSelectedSHA256,'FOREIGN_OLD_SELECTED_CONSERVATION');
  assert.equal(sha(require('./chok-attribution-conservation.cjs').historicalSource(root,'src/pages/reader/chok.astro')),a.afterTemplateSHA256,'CLASSICAL_AFTER_TEMPLATE');
  assert.notEqual(a.beforeTemplateSHA256,a.afterTemplateSHA256);

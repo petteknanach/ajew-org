@@ -266,15 +266,15 @@ async function r3OwningReader(nativeFocus=false){
   "6105a3ee4cb5216795cf74684ffbd59d08f8be3bd2a363b1234394041f3edefd",
   5624
  ],
- "/chok-qualified-daily.js?v=c585fd125ab028f02d4fcf7fcd3f1b4b1dcf2f0704f94631e297e2ec86c60fd7": [
+ "/chok-qualified-daily.js?v=9d3039077c36ec66f8e71d65c42ae903f4f5d94b8c7db129cb7b90e6ae580a25": [
   "public/chok-qualified-daily.js",
-  "c585fd125ab028f02d4fcf7fcd3f1b4b1dcf2f0704f94631e297e2ec86c60fd7",
-  22909
+  "9d3039077c36ec66f8e71d65c42ae903f4f5d94b8c7db129cb7b90e6ae580a25",
+  24267
  ],
- "/chok-qualified-daily-classical-selected-v1.js?v=9d5301317bf4529804dc71847c1cf61ed2e2645d5fb2f76afda6b1622967bc53": [
+ "/chok-qualified-daily-classical-selected-v1.js?v=91c4fbea65117b3c507151eb90ed57b466f019c550d9bd1499a4ac82ba6d61f7": [
   "public/chok-qualified-daily-classical-selected-v1.js",
-  "9d5301317bf4529804dc71847c1cf61ed2e2645d5fb2f76afda6b1622967bc53",
-  960964
+  "91c4fbea65117b3c507151eb90ed57b466f019c550d9bd1499a4ac82ba6d61f7",
+  965788
  ],
  "/chok-firstweek-zhm-private-v1.js?v=9bef640c233ec32e0cc8d9fe5945df7bac143d13b22700b5b4199923d21b8acd": [
   "public/chok-firstweek-zhm-private-v1.js",
@@ -729,8 +729,8 @@ async function r3OwningReader(nativeFocus=false){
  "/chok-lech-sunday.js?v=chok-live-corrections-20261018-r2": null,
  "/chok-lech-monday.js?v=chok-live-corrections-20261019-r1": null,
  "/chok-lech-tuesday.js?v=6105a3ee4cb5216795cf74684ffbd59d08f8be3bd2a363b1234394041f3edefd": null,
- "/chok-qualified-daily.js?v=c585fd125ab028f02d4fcf7fcd3f1b4b1dcf2f0704f94631e297e2ec86c60fd7": "sha256-xYX9ElqwKPAtT89/zT8bSx3PLwcE+UYx4pfi7IbGD9c=",
- "/chok-qualified-daily-classical-selected-v1.js?v=9d5301317bf4529804dc71847c1cf61ed2e2645d5fb2f76afda6b1622967bc53": "sha256-nVMBMXv0UpgE3HGEfBz2HtLiZF1fsvdq/aaxYilnvFM=",
+ "/chok-qualified-daily.js?v=9d3039077c36ec66f8e71d65c42ae903f4f5d94b8c7db129cb7b90e6ae580a25": "sha256-nTA5B3w27Gb45x1lxCrpA/T12UuMfbEpy3uQ5q5YCiU=",
+ "/chok-qualified-daily-classical-selected-v1.js?v=91c4fbea65117b3c507151eb90ed57b466f019c550d9bd1499a4ac82ba6d61f7": "sha256-kcT76mURezxQcVHrkO1XtGbwGcVQ2b0UmaSsgrptYfc=",
  "/chok-firstweek-zhm-private-v1.js?v=9bef640c233ec32e0cc8d9fe5945df7bac143d13b22700b5b4199923d21b8acd": "sha256-m+9kDCM+wy4MyNn+WUXfe6wUPROyJwC1tBmZI9Ibis0=",
  "/chok-other-layers.js?v=08cadff0fdba47823afa318720f053bbd1f70e0f2a6943ad632963e3de4febe6": "sha256-CMrf8P26R4I6+jGHIPBTu9H3Dg8qaUOtYylj495P6+Y=",
  "/chok-noach-english.js?v=2e4862f7114ff71f6683e689ecce6e6f6b741fc77b920c232da794b03836068f": "sha256-Lkhi9xFP9x9mg+aJ7M5ub2t0H8d7kgwjLaeUsDg2Bo8=",
@@ -749,8 +749,8 @@ async function r3OwningReader(nativeFocus=false){
  "/chok-lech-sunday.js?v=chok-live-corrections-20261018-r2",
  "/chok-lech-monday.js?v=chok-live-corrections-20261019-r1",
  "/chok-lech-tuesday.js?v=6105a3ee4cb5216795cf74684ffbd59d08f8be3bd2a363b1234394041f3edefd",
- "/chok-qualified-daily.js?v=c585fd125ab028f02d4fcf7fcd3f1b4b1dcf2f0704f94631e297e2ec86c60fd7",
- "/chok-qualified-daily-classical-selected-v1.js?v=9d5301317bf4529804dc71847c1cf61ed2e2645d5fb2f76afda6b1622967bc53",
+ "/chok-qualified-daily.js?v=9d3039077c36ec66f8e71d65c42ae903f4f5d94b8c7db129cb7b90e6ae580a25",
+ "/chok-qualified-daily-classical-selected-v1.js?v=91c4fbea65117b3c507151eb90ed57b466f019c550d9bd1499a4ac82ba6d61f7",
  "/chok-firstweek-zhm-private-v1.js?v=9bef640c233ec32e0cc8d9fe5945df7bac143d13b22700b5b4199923d21b8acd",
  "/chok-other-layers.js?v=08cadff0fdba47823afa318720f053bbd1f70e0f2a6943ad632963e3de4febe6",
  "/chok-noach-english.js?v=2e4862f7114ff71f6683e689ecce6e6f6b741fc77b920c232da794b03836068f",
@@ -977,7 +977,7 @@ test('Tuesday38 exact independent twelve scalars and two complete notes, recursi
  const r=tuesdayReviewed,p=JSON.parse(read('public'+r.payload.url));assert.equal(reuseSha(read('public'+r.payload.url)),r.payload.sha256);tuesdayAuthority(p);
  const g=require('./chok-reference-order-conservation.cjs');
  for(const[relative,d]of Object.entries(tuesdayAdmission.paths)){
-  const b=fs.readFileSync(path.join(root,relative));assert.equal(reuseSha(b),d.afterSHA256,'Tuesday current38 exact target');
+  const b=g.restoreVayaitzaiFridayNote(relative,fs.readFileSync(path.join(root,relative)));assert.equal(reuseSha(b),d.afterSHA256,'Tuesday current38 exact target');
   const old=g.restoreCurrent38(relative,b);assert.equal(reuseSha(old),d.beforeSHA256);let forward=old.toString('utf8');for(const op of d.inverse.slice().reverse()){assert.equal(forward.split(op.before).length,2);forward=forward.replace(op.before,op.after);}assert.deepEqual(Buffer.from(forward),b,'Tuesday complete inverse/forward bytes');
   for(const bad of [Buffer.concat([b,Buffer.from(' ')]),Buffer.from(b)]){if(bad.length===b.length)bad[Math.floor(bad.length/2)]^=1;assert.equal(g.restoreCurrent38(relative,bad),bad);assert.equal(g.restoreCurrent37(relative,bad),bad);}
   assert.equal(g.restoreCurrent38('unselected/source',b),b,'wrong-path cannot borrow inverse');assert.deepEqual(g.restoreCurrent38(relative,b),old,'fresh exact inverse');
