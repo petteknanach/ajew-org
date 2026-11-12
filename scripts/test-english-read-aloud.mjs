@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
+import { createHash } from 'node:crypto';
 import { createRequire } from 'node:module';
 import { gunzipSync } from 'node:zlib';
 const require = createRequire(import.meta.url);
@@ -121,6 +122,21 @@ test('every actual unified consumer is cache versioned with exact inverse source
  const consumers=JSON.parse(read('scripts/fixtures/reader-audio/english/consumers.json'));assert.ok(consumers.length>=30);
  for(const p of consumers){const before=Buffer.from(beforeTemplates[p], 'base64').toString('utf8'),after=read(p);
  let conserved=after.replaceAll('/unified-audio.js?v=english-device-20261105-r1"','/unified-audio.js"');
+ if(p==='src/pages/reader/sefer-hamidos/[part]/[torah].astro'){
+   // Admit only this complete hash-pinned lazy-picture delta before the fixed historical inverse.
+   const adoption=JSON.parse(read('scripts/fixtures/sefer-hamidos-lazy-images/approved-template-delta.json'));
+   assert.equal(adoption.path,p);
+   assert.equal(createHash('sha256').update(after).digest('hex'),adoption.afterSHA256,p+': lazy-picture source pin');
+   for(const change of adoption.inverse){
+     assert.ok(change.after.length>0);
+     assert.equal(conserved.split(change.after).length,2,p+': expected exactly one approved lazy-picture delta');
+     conserved=conserved.replace(change.after,change.before);
+   }
+   let preimage=after;
+   for(const change of adoption.inverse) preimage=preimage.replace(change.after,change.before);
+   assert.equal(createHash('sha256').update(preimage).digest('hex'),adoption.beforeSHA256,p+': exact lazy-picture preimage');
+ }
+
  if(['ebay-hanachal','fires-of-israel','praises-of-rabbi-nachman','shivchay-haran','sichos-chayay-saba','sichos-haran']
    .some(book=>p===`src/pages/reader/${book}/[part]/[torah].astro`)){
    // Invert only the approved font-size name before the fixed historical guards.

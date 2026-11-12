@@ -386,7 +386,8 @@ function mediaShareTitle(seg, img) {
                     {mediaBySegment.get(Number(seg.index)).images.map((img) => (
                       <figure id={`media-${mediaSlug(img)}`} class={`sh-media-card sh-media-lang-${img.language === 'hebrew' ? 'he' : 'en'}`} data-media-url={mediaDirectUrl(img)} data-share-url={mediaShareUrl(img)} data-share-text={img.language === 'hebrew' ? (seg.he_nikud || seg.he || '') : (seg.en || seg.he || '')}>
                         <a href={img.path} target="_blank" rel="noopener">
-                          <img src={img.path} alt={img.description || `Sefer HaMidos ${torahData.title} ${seg.index} ${img.language} image ${img.variant}`} loading="lazy" />
+                          <img data-sh-src={img.path} alt={img.description || `Sefer HaMidos ${torahData.title} ${seg.index} ${img.language} image ${img.variant}`} loading="lazy" />
+                          <noscript><img src={img.path} alt={img.description || `Sefer HaMidos ${torahData.title} ${seg.index} ${img.language} image ${img.variant}`} loading="lazy" /></noscript>
                         </a>
                         <figcaption>
                           <span>{img.language} · {img.variant}</span>
@@ -664,6 +665,32 @@ function mediaShareTitle(seg, img) {
             var share = event.target && event.target.closest && event.target.closest('.sh-media-share-file');
             if (share) primeActualImage(share.getAttribute('data-media-url') || '').catch(function () {});
           }, { capture: true, passive: true });
+          // Gate strip images by the document viewport, not their nested horizontal scrollport.
+          function loadTeachingPictures(panel) {
+            Array.prototype.forEach.call(panel.querySelectorAll('img[data-sh-src]'), function (image) {
+              image.src = image.getAttribute('data-sh-src');
+              image.removeAttribute('data-sh-src');
+            });
+          }
+          var picturePanels = document.querySelectorAll('.sefer-hamidos-media');
+          if ('IntersectionObserver' in window) {
+            var pictureObserver = new IntersectionObserver(function (entries) {
+              entries.forEach(function (entry) {
+                clearTimeout(entry.target._shPictureTimer);
+                if (!entry.isIntersecting) return;
+                // Do not hydrate teachings passed during automatic fragment scrolling.
+                entry.target._shPictureTimer = setTimeout(function () {
+                  var rect = entry.target.getBoundingClientRect();
+                  if (rect.bottom < -600 || rect.top > window.innerHeight + 600) return;
+                  loadTeachingPictures(entry.target);
+                  pictureObserver.unobserve(entry.target);
+                }, 200);
+              });
+            }, { rootMargin: '600px 0px' });
+            Array.prototype.forEach.call(picturePanels, function (panel) { pictureObserver.observe(panel); });
+          } else {
+            Array.prototype.forEach.call(picturePanels, loadTeachingPictures);
+          }
           Array.prototype.forEach.call(document.querySelectorAll('.sh-media-card img'), function (image) {
             function cacheLoadedImage() { primeActualImage(image.currentSrc || image.src || '').catch(function () {}); }
             if (image.complete && image.naturalWidth) cacheLoadedImage();
@@ -890,6 +917,7 @@ function mediaShareTitle(seg, img) {
         .sh-media-strip{min-width:0;max-width:100%;box-sizing:border-box;display:flex;gap:12px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;padding:2px 2px 10px;}
         .sh-media-card{flex:0 0 min(78vw,260px);scroll-snap-align:start;margin:0;padding:8px;border:1px solid var(--reader-border,#ddd);border-radius:12px;background:rgba(255,255,255,.6);}
         .sh-media-card a{display:block;text-decoration:none;color:inherit;}
+        .sh-media-card img[data-sh-src]{display:none;}
         .sh-media-card img{width:100%;height:auto;border-radius:8px;display:block;}
         .sh-media-card figcaption{display:grid;gap:.45rem;margin-top:6px;font-size:.82em;color:var(--reader-text-secondary);}
         .sh-media-share,.sh-media-video,.sh-media-archive,.sh-media-load-video{border-radius:999px;padding:.24rem .58rem;font-weight:700;text-decoration:none;font-size:.86em;}

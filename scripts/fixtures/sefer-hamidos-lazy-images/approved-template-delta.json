@@ -1,0 +1,19 @@
+{
+  "path": "src/pages/reader/sefer-hamidos/[part]/[torah].astro",
+  "beforeSHA256": "dadb84137a6c41641d1bdc658b68a585f682af86b5da5cbcdb2b5f1029b89a7c",
+  "afterSHA256": "52a72451865f5fe3cedae788495bd1ccae1adf0d55a596f18f7d3e90659f8c2e",
+  "inverse": [
+    {
+      "before": "                          <img src={img.path} alt={img.description || `Sefer HaMidos ${torahData.title} ${seg.index} ${img.language} image ${img.variant}`} loading=\"lazy\" />\n",
+      "after": "                          <img data-sh-src={img.path} alt={img.description || `Sefer HaMidos ${torahData.title} ${seg.index} ${img.language} image ${img.variant}`} loading=\"lazy\" />\n                          <noscript><img src={img.path} alt={img.description || `Sefer HaMidos ${torahData.title} ${seg.index} ${img.language} image ${img.variant}`} loading=\"lazy\" /></noscript>\n"
+    },
+    {
+      "before": "",
+      "after": "          // Gate strip images by the document viewport, not their nested horizontal scrollport.\n          function loadTeachingPictures(panel) {\n            Array.prototype.forEach.call(panel.querySelectorAll('img[data-sh-src]'), function (image) {\n              image.src = image.getAttribute('data-sh-src');\n              image.removeAttribute('data-sh-src');\n            });\n          }\n          var picturePanels = document.querySelectorAll('.sefer-hamidos-media');\n          if ('IntersectionObserver' in window) {\n            var pictureObserver = new IntersectionObserver(function (entries) {\n              entries.forEach(function (entry) {\n                clearTimeout(entry.target._shPictureTimer);\n                if (!entry.isIntersecting) return;\n                // Do not hydrate teachings passed during automatic fragment scrolling.\n                entry.target._shPictureTimer = setTimeout(function () {\n                  var rect = entry.target.getBoundingClientRect();\n                  if (rect.bottom < -600 || rect.top > window.innerHeight + 600) return;\n                  loadTeachingPictures(entry.target);\n                  pictureObserver.unobserve(entry.target);\n                }, 200);\n              });\n            }, { rootMargin: '600px 0px' });\n            Array.prototype.forEach.call(picturePanels, function (panel) { pictureObserver.observe(panel); });\n          } else {\n            Array.prototype.forEach.call(picturePanels, loadTeachingPictures);\n          }\n"
+    },
+    {
+      "before": "",
+      "after": "        .sh-media-card img[data-sh-src]{display:none;}\n"
+    }
+  ]
+}
