@@ -13,6 +13,7 @@
     "verify:sefer-hamidos-media-fit": "node --test scripts/test-sefer-hamidos-media-fit.mjs",
     "verify:chok-qualified-daily": "node --max-old-space-size=128 scripts/verify-chok-qualified-daily.cjs && node --max-old-space-size=512 scripts/verify-chok-firstweek-zhm-private.cjs --execute-private-candidate",
     "dev": "astro dev",
+    "prebuild": "node scripts/verify-node-runtime.cjs && node --test scripts/test-node-runtime.cjs",
     "build": "npm run verify:yimai-hatlaos && npm run verify:yimai-search-arrival && npm run verify:yimai-controls-identity && npm run verify:yimai-search-book-filter && npm run verify:yereach-haeitanim && node scripts/dl-pnc-data.cjs && node scripts/create-app-aliases.cjs && node scripts/build-parsha-connections.cjs && python3 scripts/build-saba-transcript-topics.py && python3 scripts/build-light-search-index.py && python3 scripts/build-reader-search-shards.py && python3 scripts/build-reader-plain-text.py && python3 scripts/build-today-breslov.py && REQUIRE_SEARCH_ARTIFACTS=1 npm run verify && astro build && python3 scripts/postbuild-seo-sitemaps.py",
     "preview": "astro preview",
     "astro": "astro",
