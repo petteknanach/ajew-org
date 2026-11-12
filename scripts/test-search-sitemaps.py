@@ -1,11 +1,18 @@
 #!/usr/bin/env python3
 """Regression tests for canonical-only search admission; no corpus needed."""
 import importlib.util
+import io
 from pathlib import Path
 import tempfile
 import unittest
 import xml.etree.ElementTree as ET
 import os
+import errno
+import hashlib
+import json
+import subprocess
+import sys
+from unittest.mock import patch
 
 spec = importlib.util.spec_from_file_location('sitemaps', Path(__file__).with_name('postbuild-seo-sitemaps.py'))
 assert spec is not None and spec.loader is not None
@@ -165,5 +172,242 @@ class SitemapTests(unittest.TestCase):
         (self.dist/'sitemap-1.xml').write_text('<broken>')
         with self.assertRaises(ET.ParseError):m.prune_search_sitemaps(self.dist)
         self.assertEqual(p.read_bytes(),before)
+
+    def snapshot(self):
+        return {p.name: p.read_bytes() for p in self.dist.iterdir() if p.is_file()}
+
+    def assert_committed_graph(self, expected):
+        receipt = json.loads((self.dist/m.ADMISSION_RECEIPT).read_bytes())
+        files = receipt['generation']['files']
+        children = sorted(self.dist.glob('sitemap-[0-9]*.xml'), key=lambda p: int(p.stem.split('-')[1]))
+        names = [p.name for p in children] + ['sitemap-index.xml', 'sitemap.xml', 'sitemap.txt']
+        self.assertEqual(list(files), names)
+        self.assertEqual(receipt['generation']['protocol'], 'sha256-files-receipt-last-v1')
+        for name in names:
+            self.assertEqual(files[name], hashlib.sha256((self.dist/name).read_bytes()).hexdigest())
+            self.assertEqual((self.dist/name).stat().st_mode & 0o777, 0o644)
+        xml = [n.text for p in children for n in ET.parse(p).findall('.//{'+m.NS+'}loc')]
+        self.assertEqual(xml, expected)
+        self.assertEqual((self.dist/'sitemap.txt').read_bytes(), ('\n'.join(expected)+'\n').encode())
+        self.assertEqual(receipt['retained'], len(expected))
+        for index in ('sitemap.xml', 'sitemap-index.xml'):
+            self.assertEqual([n.text for n in ET.parse(self.dist/index).findall('.//{'+m.NS+'}loc')],
+                             [m.SITE+'/'+p.name for p in children])
+        self.assertFalse(list(self.dist.glob('.*.search-sitemaps-*')))
+
+    def stale_generation(self):
+        # A genuinely completed previous generation, not a placeholder receipt.
+        old, good = m.SITE+'/old/', m.SITE+'/good/'
+        self.page('old/index.html', old)
+        self.page('good/index.html', good)
+        self.child([old, good])
+        self.child([good], 'sitemap-1.xml')
+        m.prune_search_sitemaps(self.dist)
+        self.assert_committed_graph([old, good])
+        held = self.page('old/index.html', old, '<meta name="robots" content="noindex">')
+        self.held = held
+        self.held_before = held.read_bytes()
+        self.before = self.snapshot()
+        # Cleanup must preserve foreign files even with a matching prefix.
+        self.foreign = self.dist/'.foreign.search-sitemaps-do-not-remove'
+        self.foreign.write_bytes(b'foreign temporary control')
+        return good
+
+    def assert_owned_cleanup(self):
+        self.assertEqual(list(self.dist.glob('.*.search-sitemaps-*')), [self.foreign])
+        self.assertEqual(self.foreign.read_bytes(), b'foreign temporary control')
+        self.assertEqual(self.held.read_bytes(), self.held_before)
+
+    def restore_positive(self, good):
+        self.assert_owned_cleanup()
+        self.foreign.unlink()
+        m.prune_search_sitemaps(self.dist)
+        self.assert_committed_graph([good])
+        self.assertEqual(self.held.read_bytes(), self.held_before)
+
+    def test_mid_staged_text_write_preserves_complete_old_generation(self):
+        good = self.stale_generation()
+        real_fdopen = os.fdopen
+        partial_paths = []
+
+        class PartialWriter:
+            def __init__(self, stream): self.stream = stream
+            def __enter__(self): return self
+            def __exit__(self, *args): return self.stream.__exit__(*args)
+            def __getattr__(self, name): return getattr(self.stream, name)
+            def write(self, body):
+                self.stream.write(body[:7])
+                self.stream.flush()
+                raise OSError(errno.ENOSPC, 'injected actual partial staged text write')
+
+        def fdopen(fd, *args, **kwargs):
+            name = Path(os.readlink('/proc/self/fd/'+str(fd)))
+            stream = real_fdopen(fd, *args, **kwargs)
+            if name.name.startswith('.sitemap.txt.search-sitemaps-'):
+                partial_paths.append(name)
+                return PartialWriter(stream)
+            return stream
+
+        with patch.object(m.os, 'fdopen', fdopen), self.assertRaisesRegex(OSError, 'partial staged text'):
+            m.prune_search_sitemaps(self.dist)
+        self.assertEqual(len(partial_paths), 1)
+        self.assertFalse(partial_paths[0].exists())
+        self.assertEqual({k:v for k,v in self.snapshot().items() if k != self.foreign.name}, self.before)
+        self.restore_positive(good)
+
+    def test_each_replace_failure_invalidates_receipt_and_cleans_owned_temps(self):
+        names = ['sitemap-0.xml', 'sitemap-1.xml', 'sitemap-index.xml', 'sitemap.xml', 'sitemap.txt', m.ADMISSION_RECEIPT]
+        for failed in names:
+            with self.subTest(failed=failed):
+                good = self.stale_generation()
+                real_replace = os.replace
+                promoted = []
+
+                def replace(src, dst):
+                    src, dst = Path(src), Path(dst)
+                    self.assertEqual(src.parent, self.dist)
+                    self.assertEqual(dst.parent, self.dist)
+                    self.assertFalse((self.dist/m.ADMISSION_RECEIPT).exists())
+                    if dst.name == failed:
+                        raise OSError(errno.EIO, 'injected replace failure: '+failed)
+                    real_replace(src, dst)
+                    promoted.append(dst.name)
+
+                with patch.object(m.os, 'replace', replace), self.assertRaisesRegex(OSError, 'replace failure'):
+                    m.prune_search_sitemaps(self.dist)
+                self.assertEqual(promoted, names[:names.index(failed)])
+                self.assertFalse((self.dist/m.ADMISSION_RECEIPT).exists())
+                # Every promoted file is complete; all not-yet-promoted files
+                # are byte-identical to the old set, never truncated text/XML.
+                for name in names[:-1]:
+                    if name not in promoted:
+                        self.assertEqual((self.dist/name).read_bytes(), self.before[name])
+                if 'sitemap.txt' in promoted:
+                    self.assertEqual((self.dist/'sitemap.txt').read_bytes(), (good+'\n').encode())
+                self.restore_positive(good)
+
+    def test_all_bytes_staged_before_any_promotion_receipt_last(self):
+        good = self.stale_generation()
+        self.foreign.unlink()
+        real_replace = os.replace
+        calls = []
+        expected_names = ['sitemap-0.xml', 'sitemap-1.xml', 'sitemap-index.xml', 'sitemap.xml', 'sitemap.txt', m.ADMISSION_RECEIPT]
+
+        def replace(src, dst):
+            dst = Path(dst)
+            self.assertFalse((self.dist/m.ADMISSION_RECEIPT).exists())
+            if not calls:
+                staged = list(self.dist.glob('.*.search-sitemaps-*'))
+                self.assertEqual(len(staged), len(expected_names))
+                staged_receipt = next(p for p in staged if p.name.startswith('.'+m.ADMISSION_RECEIPT+'.'))
+                receipt = json.loads(staged_receipt.read_bytes())
+                for name, digest in receipt['generation']['files'].items():
+                    p = next(p for p in staged if p.name.startswith('.'+name+'.search-sitemaps-'))
+                    self.assertEqual(hashlib.sha256(p.read_bytes()).hexdigest(), digest)
+            real_replace(src, dst)
+            calls.append(dst.name)
+
+        with patch.object(m.os, 'replace', replace): m.prune_search_sitemaps(self.dist)
+        self.assertEqual(calls, expected_names)
+        self.assert_committed_graph([good])
+        self.assertEqual(self.held.read_bytes(), self.held_before)
+
+    def test_fsync_failure_after_receipt_promotion_removes_success_receipt(self):
+        good = self.stale_generation()
+        real_sync = m.sync_directory
+        failed = []
+
+        def sync(dist):
+            if (dist/m.ADMISSION_RECEIPT).exists() and not failed:
+                failed.append(True)
+                raise OSError(errno.EIO, 'injected post-receipt directory fsync failure')
+            real_sync(dist)
+
+        with patch.object(m, 'sync_directory', sync), self.assertRaisesRegex(OSError, 'post-receipt'):
+            m.prune_search_sitemaps(self.dist)
+        self.assertEqual(failed, [True])
+        self.assertFalse((self.dist/m.ADMISSION_RECEIPT).exists())
+        self.restore_positive(good)
+
+    def test_twelve_children_fresh_exact_order_and_hashes(self):
+        urls = [m.SITE+f'/good-{i}/' for i in range(12)]
+        for i, url in enumerate(urls):
+            self.page(f'good-{i}/index.html', url)
+            self.child([url], f'sitemap-{i}.xml')
+        before = {p: p.read_bytes() for p in self.dist.rglob('*.html')}
+        expected_xml = {}
+        for p in self.dist.glob('sitemap-[0-9]*.xml'):
+            # Exact historical ElementTree.write serialization, not a second
+            # call to the candidate's new serializer.
+            stream = io.BytesIO()
+            ET.parse(p).write(stream, encoding='utf-8', xml_declaration=True)
+            expected_xml[p] = stream.getvalue()
+        m.prune_search_sitemaps(self.dist)
+        self.assert_committed_graph(urls)
+        for p, body in expected_xml.items(): self.assertEqual(p.read_bytes(), body)
+        for p, body in before.items(): self.assertEqual(p.read_bytes(), body)
+
+    def test_actual_main_process_failures_are_nonzero_and_invalidate_stale_admission(self):
+        # Import the genuine producer, inject only labelled filesystem faults,
+        # then call the actual main() used by npm build. No substitute producer.
+        runner = r'''
+import errno, importlib.util, os, sys
+from pathlib import Path
+script, dist, catalog, fault = sys.argv[1:]
+sys.path.insert(0, str(Path(script).parent))
+spec = importlib.util.spec_from_file_location('actual_postbuild', script)
+m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+m.DIST = Path(dist); m.CATALOG = Path(catalog)
+if fault == 'replace':
+    real_replace = os.replace
+    def replace(src, dst):
+        if Path(dst).name == 'sitemap.txt':
+            raise OSError(errno.EIO, 'injected actual-main text replace failure')
+        return real_replace(src, dst)
+    m.os.replace = replace
+elif fault == 'midwrite':
+    real_fdopen = os.fdopen
+    class PartialWriter:
+        def __init__(self, stream): self.stream = stream
+        def __enter__(self): return self
+        def __exit__(self, *args): return self.stream.__exit__(*args)
+        def __getattr__(self, name): return getattr(self.stream, name)
+        def write(self, body):
+            self.stream.write(body[:7]); self.stream.flush()
+            raise OSError(errno.ENOSPC, 'injected actual-main partial text stage write')
+    def fdopen(fd, *args, **kwargs):
+        path = Path(os.readlink('/proc/self/fd/'+str(fd)))
+        stream = real_fdopen(fd, *args, **kwargs)
+        return PartialWriter(stream) if path.name.startswith('.sitemap.txt.search-sitemaps-') else stream
+    m.os.fdopen = fdopen
+m.main()
+'''
+        catalog = self.dist.parent/'main-catalog.json'
+        for fault, error in [('midwrite', 'partial text stage write'), ('replace', 'text replace failure'),
+                             ('catalog', 'JSONDecodeError')]:
+            with self.subTest(fault=fault):
+                good = self.stale_generation()
+                catalog.write_text('broken' if fault == 'catalog' else '{"entries":[]}')
+                result = subprocess.run([sys.executable, '-B', '-c', runner, str(Path(__file__).with_name('postbuild-seo-sitemaps.py').resolve()),
+                                         str(self.dist), str(catalog), fault], capture_output=True, text=True)
+                print(json.dumps({'case': 'actual-main-'+fault, 'returncode': result.returncode,
+                                  'stdout': result.stdout, 'stderr': result.stderr}))
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn(error, result.stderr)
+                self.assertNotIn('SEO sitemaps:', result.stdout)
+                self.assertFalse((self.dist/m.ADMISSION_RECEIPT).exists())
+                self.assert_owned_cleanup()
+                # Restore the real main path after each negative, not only the
+                # lower-level serializer, and require exact positive graph.
+                catalog.write_text('{"entries":[]}')
+                positive = subprocess.run([sys.executable, '-B', '-c', runner, str(Path(__file__).with_name('postbuild-seo-sitemaps.py').resolve()),
+                                           str(self.dist), str(catalog), 'none'], capture_output=True, text=True)
+                print(json.dumps({'case': 'actual-main-restored-'+fault, 'returncode': positive.returncode,
+                                  'stdout': positive.stdout, 'stderr': positive.stderr}))
+                self.assertEqual(positive.returncode, 0, positive.stderr)
+                self.assertIn('SEO sitemaps:', positive.stdout)
+                self.assert_owned_cleanup()
+                self.foreign.unlink()
+                self.assert_committed_graph([good])
 
 if __name__ == '__main__':unittest.main(verbosity=2)
