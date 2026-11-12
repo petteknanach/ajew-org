@@ -1045,7 +1045,7 @@
      Classical whole owners, every ordered native span and raw body authenticated
      offline against REVIEW.json; source approval is not expert/release approval.
      No fallback to legacy amud text and no external source requests. */
-  var ZOHAR_DAILY_SHA256 = '3f2dcb34379bad0850f43bce60b5c4b7b1958de93b8f516815a70e9b9822c812';
+  var ZOHAR_DAILY_SHA256 = '25fc97128a539cfc601d7713530a3bf3d684c43b03893bd38aa7db01f6817e8c';
   var zoharDailyPromise = null;
   function zoharDigest(bytes) {
     if (!window.crypto || !window.crypto.subtle) return Promise.reject(Error('Zohar authentication unavailable'));
@@ -1060,7 +1060,7 @@
       var data = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes));
       if (data.schema !== 'chok-zohar-day-passages-v1' || data.wholeCycleComplete !== false ||
           !data.days || Object.keys(data.days).length !== 374 ||
-          data.counts.SOURCE_RANGE_APPROVED !== 228 || data.counts.SOURCE_VERIFICATION_PENDING !== 96 ||
+          data.counts.SOURCE_RANGE_APPROVED !== 230 || data.counts.SOURCE_VERIFICATION_PENDING !== 94 ||
           data.counts.NO_ZOHAR_SOURCE_VERIFIED !== 50) throw Error('Zohar daily inventory mismatch');
       return data;
     });
