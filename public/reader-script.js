@@ -2034,6 +2034,11 @@
   // Only canonical Hebrew numerals in these affected reference families.
   // Do not reuse the permissive parser's partial word sums as source citations.
   function _xrefHebrewNum(s) {
+    // A complete quoted numeral may carry stray trailing Hebrew pointing.
+    // Never remove internal pointing (ordinary חַלֶק is not a numeral).
+    if (/^[א-ת"״׳']+[\u0591-\u05BD\u05BF\u05C1-\u05C2\u05C4-\u05C5\u05C7]+$/.test(s) && /["״׳']/.test(s)) {
+      s = s.replace(/[\u0591-\u05BD\u05BF\u05C1-\u05C2\u05C4-\u05C5\u05C7]+$/, '');
+    }
     s = s.replace(/['"״׳]/g, '');
     var n = _parseHebrewNum(s);
     if (!n || n > 400) return 0;
@@ -2046,10 +2051,107 @@
     return s === canonical ? n : 0;
   }
 
-  // Validate the complete English token, not parseInt's valid numeric prefix.
-  // The matchers deliberately consume word suffixes/decimals even when rejected.
-  function _xrefEnglishNum(s) {
-    return /^\d+$/.test(s) && Number.isSafeInteger(Number(s)) ? Number(s) : 0;
+  // Complete-token guard: no formatted-number prefix or hidden Cf suffix.
+  // Preserve only the first existing anchor of unambiguous member lists/ranges;
+  // never expand a range, infer a volume, or interpret slash notation.
+  function _xrefEnglishNum(s, tail, max) {
+    if (!/^\d+$/.test(s) || !Number.isSafeInteger(Number(s))) return 0;
+    tail = tail || '';
+    if (/^\s*\/\s*\d/.test(tail) || /^[,'’\u066C]\d{3}(?!\d)/u.test(tail) || /^[ \u00A0\u202F]+0\d{2}(?!\d)/u.test(tail)) return 0;
+    var range = tail.match(/^\s*[-–—]\s*(\d[\p{L}\p{N}\p{M}\p{Cf}_]*(?:\.\d+)?)/u);
+    if (range) {
+      var end = range[1], endpoint = end.length < s.length ? Number(s.slice(0, s.length - end.length) + end) : Number(end);
+      if (!/^\d+$/.test(end) || endpoint < Number(s) || endpoint > max) return 0;
+    }
+    var list = tail.match(/^,\s*(\d[\p{L}\p{N}\p{M}\p{Cf}_]*)/u);
+    if (list && (!/^\d+$/.test(list[1]) || Number(list[1]) < 1 || Number(list[1]) > max)) return 0;
+    return Number(s);
+  }
+
+  // A free prose word ("Moharan in Torah 56") is not a volume. Unknown
+  // number words, a Part label, or a colon explicitly claim a volume and fail
+  // closed; Tinyana explicitly names the existing second volume.
+  function _xrefExplicitPart(volume, partLabel, citation) {
+    if (/^(?:Two|II|2|Tinyana)$/i.test(volume)) return 2;
+    if (/^(?:One|I|1)$/i.test(volume)) return 1;
+    if (partLabel || /[\p{Cf}]/u.test(volume) || /^\d/.test(volume) || /^(?:[IVX]+|Zero|Three|Four|Five|Six|Seven|Eight|Nine|Ten|Eleven|Twelve|Unknown)$/i.test(volume) || new RegExp('\\b' + volume + '\\s*:', 'i').test(citation)) return 0;
+    return -1;
+  }
+
+  // HTML5 tag/attribute state only; do not turn citation-like attribute bytes
+  // (including malformed source angle-bracket annotations) into visible links.
+  function _xrefInsideTag(html, offset) {
+    if (html.indexOf('<') === -1) return false;
+    for (var start = html.indexOf('<'); start !== -1 && start <= offset; start = html.indexOf('<', end + 1)) {
+      if (!/[A-Za-z/!?]/.test(html[start + 1] || '')) { var end = start; continue; }
+      if (html.slice(start, start + 4) === '<!--') {
+        end = html.indexOf('-->', start + 4); end = end < 0 ? html.length : end + 2;
+      } else {
+        var quote = '', value = false;
+        for (end = start + 1; end < html.length; end++) {
+          var ch = html[end];
+          if (quote) { if (ch === quote) quote = ''; continue; }
+          if (ch === '>') break;
+          if (value && /\s/.test(ch)) continue;
+          if (value && (ch === '"' || ch === "'")) quote = ch;
+          value = ch === '=';
+        }
+      }
+      if (offset <= end) return true;
+    }
+    return false;
+  }
+
+  // Only explicit LM-volume citations may cross these inline tags. A text-only
+  // recognition shadow carries exact source offsets; emitted text is ALWAYS the
+  // original source slice. Only NBSP entities project as spaces; block tags
+  // and other entities are barriers. Never serialize this recognition shadow.
+  // Unbalanced/incomplete inline spans are protected, not linked across tags.
+  function _xrefMarkupVolumes(html, english, keepReference, makeLink) {
+    if (!/[<&]/.test(html)) return html;
+    var text = '', offsets = [], last = 0;
+    var tags = /<(?:[^"'<>]|"[^"]*"|'[^']*')*>|&(?:#\w+|\w+);/g, tag;
+    function append(a, b) { for (var i = a; i < b; i++) { text += html[i]; offsets.push(i); } }
+    while ((tag = tags.exec(html))) {
+      append(last, tag.index);
+      if (/^&(?:nbsp|#160|#x0*a0);$/i.test(tag[0])) { text += ' '; offsets.push(tag.index); }
+      else if (!/^<\/?(?:b|strong|em|i|u|span|small|sup|sub|mark|abbr|cite|code|s|del|ins|kbd|samp|var|q|time|bdi|bdo|ruby|rt|rp)(?=\s|>)/i.test(tag[0])) { text += '\u0001'; offsets.push(tag.index); }
+      last = tags.lastIndex;
+    }
+    append(last, html.length);
+    var pattern = english
+      ? /(?<![\p{L}\p{N}\p{M}\p{Cf}_])(Likut[ae]y?\s*Moharan|LM)\s*(Part\s*)?([A-Za-z0-9][\p{L}\p{N}\p{M}\p{Cf}_]*)(?:\s*[,:;]\s*|\s+)((?:Torah|Lesson|Siman)\s*)?(\d[\p{L}\p{N}\p{M}\p{Cf}_]*(?:\.\d+)?)|(?<![\p{L}\p{N}\p{M}\p{Cf}_])(Tinyana)\s*[,:;]?\s+(?:(?:Torah|Lesson|Siman)\s*)?(\d[\p{L}\p{N}\p{M}\p{Cf}_]*(?:\.\d+)?)/giu
+      : /לי?קוטי\s*מוהר[""״]?ן\s*תנינא\s*(?:סי(?:מן|[׳'])?\s*)?([א-ת][\p{L}\p{N}\p{M}\p{Cf}_""״׳']*)/gu;
+    var match, replacements = [];
+    while ((match = pattern.exec(text))) {
+      if (english && match[6]) { match[1] = match[6]; match[2] = ''; match[3] = 'Two'; match[4] = ''; match[5] = match[7]; }
+      if (english && /^\d+$/.test(match[3]) && !match[2] && !match[4] && (match[1].toUpperCase() === 'LM' || !/^[12]$/.test(match[3]))) continue;
+      var start = offsets[match.index], end = offsets[match.index + match[0].length - 1] + 1;
+      if (_xrefInsideTag(html, start)) continue;
+      var raw = html.slice(start, end);
+      if (!/[<&]/.test(raw)) continue;
+      var stack = [], balanced = true, inner;
+      var inline = /<\/?(b|strong|em|i|u|span|small|sup|sub|mark|abbr|cite|code|s|del|ins|kbd|samp|var|q|time|bdi|bdo|ruby|rt|rp)(?=\s|>)(?:[^"'<>]|"[^"]*"|'[^']*')*>/gi;
+      while ((inner = inline.exec(raw))) {
+        if (inner[0][1] === '/') { if (stack.pop() !== inner[1].toLowerCase()) balanced = false; }
+        else stack.push(inner[1].toLowerCase());
+      }
+      while (stack.length) {
+        var close = html.slice(end).match(/^<\/(b|strong|em|i|u|span|small|sup|sub|mark|abbr|cite|code|s|del|ins|kbd|samp|var|q|time|bdi|bdo|ruby|rt|rp)\s*>/i);
+        if (!close || close[1].toLowerCase() !== stack.pop()) { balanced = false; break; }
+        end += close[0].length;
+      }
+      var part = english ? _xrefExplicitPart(match[3], match[2], match[0]) : 2;
+      if (part < 0) continue;
+      var n = english ? _xrefEnglishNum(match[5], text.slice(pattern.lastIndex), part === 2 ? 125 : 286) : _xrefHebrewNum(match[1]);
+      var url = part ? _lmUrl(n, part) : null;
+      raw = html.slice(start, end);
+      replacements.push({start:start, end:end, value:keepReference(url && balanced ? makeLink(url, raw, english ? undefined : 'LM II:' + n) : raw)});
+    }
+    for (var j = replacements.length - 1; j >= 0; j--) {
+      var r = replacements[j]; html = html.slice(0, r.start) + r.value + html.slice(r.end);
+    }
+    return html;
   }
 
   // Linkify English text references
@@ -2070,49 +2172,57 @@
       return '<a href="' + url + '" class="' + LINK_CLS + '" target="_blank" title="' + (title || 'Open in reader') + '">' + text + '</a>';
     }
 
+    html = _xrefMarkupVolumes(html, true, keepReference, makeLink);
+
     // ORDER MATTERS: more specific patterns must come before general ones
 
     // --- Explicit LM volume (before every unqualified/contextual pass) ---
     // Consume the whole number token, including rejected word/decimal suffixes.
     // Unknown explicit volumes are protected, never reinterpreted as volume I.
-    html = html.replace(/(?<![\p{L}\p{N}\p{M}_])(Likut[ae]y?\s*Moharan|LM)\s*(Part\s*)?(One|Two|[IVX]+|\d+)(?:\s*[,:;]\s*|\s+)((?:Torah|Lesson|Siman)\s*)?(\d[\p{L}\p{N}\p{M}_]*(?:\.\d+)?)/giu, function(match, book, partLabel, volume, numberLabel, num) {
+    html = html.replace(/(?<![\p{L}\p{N}\p{M}\p{Cf}_])(Likut[ae]y?\s*Moharan|LM)\s*(Part\s*)?([A-Za-z0-9][\p{L}\p{N}\p{M}\p{Cf}_]*)(?:\s*[,:;]\s*|\s+)((?:Torah|Lesson|Siman)\s*)?(\d[\p{L}\p{N}\p{M}\p{Cf}_]*(?:\.\d+)?)/giu, function(match, book, partLabel, volume, numberLabel, num, offset, whole) {
+      if (_xrefInsideTag(whole, offset)) return keepReference(match);
       // A bare short "LM 22:11" is teaching 22, section 11, not volume 22.
       // Keep the existing long-name numeric I/II forms; require a label for
       // otherwise ambiguous short numeric volume syntax.
       if (/^\d+$/.test(volume) && !partLabel && !numberLabel && (book.toUpperCase() === 'LM' || !/^[12]$/.test(volume))) return match;
-      var part = /^(?:Two|II|2)$/i.test(volume) ? 2 : /^(?:One|I|1)$/i.test(volume) ? 1 : 0;
-      var url = part ? _lmUrl(_xrefEnglishNum(num), part) : null;
+      var part = _xrefExplicitPart(volume, partLabel, match);
+      if (part < 0) return match;
+      var url = part ? _lmUrl(_xrefEnglishNum(num, whole.slice(offset + match.length), part === 2 ? 125 : 286), part) : null;
       return keepReference(url ? makeLink(url, match) : match);
     });
 
     // --- Tinyana is an explicit second-volume reference too ---
-    html = html.replace(/(?<![\p{L}\p{N}\p{M}_])Tinyana\s+(?:(?:Torah|Lesson|Siman)\s*)?(\d[\p{L}\p{N}\p{M}_]*(?:\.\d+)?)/giu, function(match, num) {
-      var url = _lmUrl(_xrefEnglishNum(num), 2);
+    html = html.replace(/(?<![\p{L}\p{N}\p{M}\p{Cf}_])Tinyana\s*[,:;]?\s+(?:(?:Torah|Lesson|Siman)\s*)?(\d[\p{L}\p{N}\p{M}\p{Cf}_]*(?:\.\d+)?)/giu, function(match, num, offset, whole) {
+      if (_xrefInsideTag(whole, offset)) return keepReference(match);
+      var url = _lmUrl(_xrefEnglishNum(num, whole.slice(offset + match.length), 125), 2);
       return keepReference(url ? makeLink(url, match) : match);
     });
 
     // --- General LM references ---
     // "Likutay Moharan 22" / "Likutey Moharan, Torah 22" / "LM 22"
-    html = html.replace(/(?<![\p{L}\p{N}\p{M}_])(?:Likut[ae]y?\s*Moharan\s*[,:;]?\s*(?:Torah\s*)?|LM\s+)(\d[\p{L}\p{N}\p{M}_]*(?:\.\d+)?)/giu, function(match, num) {
+    html = html.replace(/(?<![\p{L}\p{N}\p{M}\p{Cf}_])(?:Likut[ae]y?\s*Moharan\s*[,:;]?\s*(?:Torah\s*)?|LM\s+)(\d[\p{L}\p{N}\p{M}\p{Cf}_]*(?:\.\d+)?)/giu, function(match, num, offset, whole) {
+      if (_xrefInsideTag(whole, offset)) return keepReference(match);
       // Skip if already linked
       if (match.indexOf('cross-ref') !== -1) return keepReference(match);
-      var url = _lmUrl(_xrefEnglishNum(num));
+      var url = _lmUrl(_xrefEnglishNum(num, whole.slice(offset + match.length), 286));
       if (!url) return keepReference(match);
       return keepReference(makeLink(url, match));
     });
 
     // --- "Torah 5" / "Lesson 5" (contextual - default to LM) ---
     // Only match when preceded by certain contexts or standalone
-    html = html.replace(/(?<![\p{L}\p{N}\p{M}_])(?:Torah|Lesson)\s+(\d[\p{L}\p{N}\p{M}_]*(?:\.\d+)?)/giu, function(match, num) {
+    html = html.replace(/(?<![\p{L}\p{N}\p{M}\p{Cf}_])(?:Torah|Lesson)\s+(\d[\p{L}\p{N}\p{M}\p{Cf}_]*(?:\.\d+)?)/giu, function(match, num, offset, whole) {
+      if (_xrefInsideTag(whole, offset)) return keepReference(match);
       if (match.indexOf('cross-ref') !== -1) return keepReference(match);
-      var url = _lmUrl(_xrefEnglishNum(num));
+      var url = _lmUrl(_xrefEnglishNum(num, whole.slice(offset + match.length), 286));
       if (!url) return keepReference(match);
       return keepReference(makeLink(url, match, 'Likutay Moharan ' + num));
     });
 
     // --- "Siman 5" (default to LM) ---
-    html = html.replace(/(?<![\p{L}\p{N}\p{M}_])Siman\s+(\d[\p{L}\p{N}\p{M}_]*(?:\.\d+)?)/giu, function(match, num) {
-      var url = _lmUrl(_xrefEnglishNum(num));
+    html = html.replace(/(?<![\p{L}\p{N}\p{M}\p{Cf}_])Siman\s+(\d[\p{L}\p{N}\p{M}\p{Cf}_]*(?:\.\d+)?)/giu, function(match, num, offset, whole) {
+      if (_xrefInsideTag(whole, offset)) return keepReference(match);
+      var url = _lmUrl(_xrefEnglishNum(num, whole.slice(offset + match.length), 286));
       if (!url) return keepReference(match);
       return keepReference(makeLink(url, match, 'Likutay Moharan ' + num));
     });
@@ -2127,8 +2237,9 @@
 
     // --- Likutay Tefilos ---
     // "Prayer 5" / "Tefila 5" / "Likutay Tefilos 5" / "Likutey Tefilot 5"
-    html = html.replace(/(?<![\p{L}\p{N}\p{M}_])(?:Likut[ae]y?\s*Tefil[lo][st]\s*|Prayer\s+|Tefil[la]h?\s+)(\d[\p{L}\p{N}\p{M}_]*(?:\.\d+)?)/giu, function(match, num) {
-      var n = _xrefEnglishNum(num);
+    html = html.replace(/(?<![\p{L}\p{N}\p{M}\p{Cf}_])(?:Likut[ae]y?\s*Tefil[lo][st]\s*|Prayer\s+|Tefil[la]h?\s+)(\d[\p{L}\p{N}\p{M}\p{Cf}_]*(?:\.\d+)?)/giu, function(match, num, offset, whole) {
+      if (_xrefInsideTag(whole, offset)) return keepReference(match);
+      var n = _xrefEnglishNum(num, whole.slice(offset + match.length), 151);
       if (!n || n < 1 || n > 151) return keepReference(match);
       return keepReference(makeLink('/reader/likutay-tefilos/1/' + n + '/', match));
     });
@@ -2172,8 +2283,9 @@
 
     // --- Sipurey Maasiyos / Stories ---
     // "Sipurey Maasiyos, Story 5" / "Rabbi Nachman's Stories 5"
-    html = html.replace(/(?<![\p{L}\p{N}\p{M}_])(?:Sipure[iy]\s*Ma?asiy?os|Rabbi\s*Nachman'?s?\s*Stories?)\s*[,:;]?\s*(?:Story\s*)?(\d[\p{L}\p{N}\p{M}_]*(?:\.\d+)?)/giu, function(match, num) {
-      var n = _xrefEnglishNum(num);
+    html = html.replace(/(?<![\p{L}\p{N}\p{M}\p{Cf}_])(?:Sipure[iy]\s*Ma?asiy?os|Rabbi\s*Nachman'?s?\s*Stories?)\s*[,:;]?\s*(?:Story\s*)?(\d[\p{L}\p{N}\p{M}\p{Cf}_]*(?:\.\d+)?)/giu, function(match, num, offset, whole) {
+      if (_xrefInsideTag(whole, offset)) return keepReference(match);
+      var n = _xrefEnglishNum(num, whole.slice(offset + match.length), 15);
       if (!n || n < 1 || n > 15) return keepReference(match);
       return keepReference(makeLink('/reader/sipurey-maasiyos/1/' + n + '/', match));
     });
@@ -2227,8 +2339,10 @@
       return '<a href="' + url + '" class="' + LINK_CLS + '" target="_blank" title="' + (title || 'Open in reader') + '">' + text + '</a>';
     }
 
+    html = _xrefMarkupVolumes(html, false, keepReference, makeLink);
+
     // --- ליקוטי מוהר"ן תנינא (Part 2 - must come before Part 1) ---
-    html = html.replace(/לי?קוטי\s*מוהר[""״]?ן\s*תנינא\s*(?:סי(?:מן|[׳'])?\s*)?([א-ת][\p{L}\p{N}\p{M}_""״׳']*)/gu, function(match, numStr) {
+    html = html.replace(/לי?קוטי\s*מוהר[""״]?ן\s*תנינא\s*(?:סי(?:מן|[׳'])?\s*)?([א-ת][\p{L}\p{N}\p{M}\p{Cf}_""״׳']*)/gu, function(match, numStr) {
       var n = _xrefHebrewNum(numStr);
       var url = _lmUrl(n, 2);
       if (!url) return keepReference(match);
@@ -2236,7 +2350,7 @@
     });
 
     // --- ליקוטי מוהר"ן (Part 1) ---
-    html = html.replace(/לי?קוטי\s*מוהר[""״]?ן\s*(?:סי(?:מן|[׳'])?\s*)?([א-ת][\p{L}\p{N}\p{M}_""״׳']*)/gu, function(match, numStr) {
+    html = html.replace(/לי?קוטי\s*מוהר[""״]?ן\s*(?:סי(?:מן|[׳'])?\s*)?([א-ת][\p{L}\p{N}\p{M}\p{Cf}_""״׳']*)/gu, function(match, numStr) {
       var n = _xrefHebrewNum(numStr);
       if (!n || n < 1) return keepReference(match);
       var url = _lmUrl(n);
@@ -2245,7 +2359,7 @@
     });
 
     // --- סימן with a number (default to LM in context) ---
-    html = html.replace(/סימן\s+([א-ת][\p{L}\p{N}\p{M}_""״׳']*)/gu, function(match, numStr) {
+    html = html.replace(/סימן\s+([א-ת][\p{L}\p{N}\p{M}\p{Cf}_""״׳']*)/gu, function(match, numStr) {
       if (match.indexOf('cross-ref') !== -1) return keepReference(match);
       var n = _xrefHebrewNum(numStr);
       if (!n || n < 1) return keepReference(match);
@@ -2262,7 +2376,7 @@
     });
 
     // --- ליקוטי תפילות ---
-    html = html.replace(/לי?קוטי\s*תפי?לות\s*(?:תפילה\s*)?([א-ת][\p{L}\p{N}\p{M}_""״׳']*)/gu, function(match, numStr) {
+    html = html.replace(/לי?קוטי\s*תפי?לות\s*(?:תפילה\s*)?([א-ת][\p{L}\p{N}\p{M}\p{Cf}_""״׳']*)/gu, function(match, numStr) {
       var n = _xrefHebrewNum(numStr);
       if (!n || n < 1 || n > 151) return keepReference(match);
       return keepReference(makeLink('/reader/likutay-tefilos/1/' + n + '/', match, 'Prayer ' + n));
@@ -2302,7 +2416,7 @@
     });
 
     // --- סיפורי מעשיות ---
-    html = html.replace(/סיפורי\s*מעשי?ות\s*(?:מעשה\s*)?([א-ת][\p{L}\p{N}\p{M}_""״׳']*)/gu, function(match, numStr) {
+    html = html.replace(/סיפורי\s*מעשי?ות\s*(?:מעשה\s*)?([א-ת][\p{L}\p{N}\p{M}\p{Cf}_""״׳']*)/gu, function(match, numStr) {
       var n = _xrefHebrewNum(numStr);
       if (!n || n < 1 || n > 15) return keepReference(match);
       return keepReference(makeLink('/reader/sipurey-maasiyos/1/' + n + '/', match));
