@@ -8,6 +8,10 @@ from __future__ import annotations
 
 import json
 import html
+import hashlib
+import os
+import tempfile
+from contextlib import ExitStack
 from datetime import date
 from pathlib import Path
 import re
@@ -37,7 +41,9 @@ def valid_search_location(url: str) -> bool:
     if parsed.scheme != "https" or parsed.netloc != "ajew.org" or parsed.query or parsed.fragment:
         return False
     decoded = unquote(parsed.path)
-    return decoded.startswith("/") and not any(p in {".", ".."} for p in decoded.split("/")) and "\x00" not in decoded
+    return (decoded.startswith("/") and "\\" not in decoded
+            and not any(p in {".", ".."} for p in decoded.split("/"))
+            and not any(ord(c) < 32 or ord(c) == 127 for c in decoded))
 
 
 def html_artifact(dist: Path, url: str) -> Path | None:
@@ -102,6 +108,72 @@ def search_admission(dist: Path, url: str) -> str | None:
     return None
 
 
+ADMISSION_RECEIPT = "search-sitemap-admission.json"
+
+
+def sync_directory(dist: Path) -> None:
+    fd = os.open(dist, os.O_RDONLY | os.O_DIRECTORY)
+    try:
+        os.fsync(fd)
+    finally:
+        os.close(fd)
+
+
+def invalidate_search_admission(dist: Path) -> None:
+    # Absence is the durable invalid-generation signal, never a success receipt.
+    (dist / ADMISSION_RECEIPT).unlink(missing_ok=True)
+    sync_directory(dist)
+
+
+def commit_search_generation(dist: Path, outputs: dict[str, bytes], receipt: dict) -> None:
+    """Commit a single-writer, non-served build; NOT a live multi-file rename.
+
+    Stage and fsync ALL bytes before mutating targets. Invalidate the previous
+    receipt durably before the first promotion, then atomically replace each
+    file. Commit the hash-bound receipt LAST, after the graph is durable. A
+    staging failure leaves the old search set untouched; a promotion/cleanup
+    failure leaves NO admission receipt and propagates to the build caller.
+    Interrupted promotion likewise has no receipt. Never consume/publish a
+    failed build or a graph without this receipt and its exact file hashes.
+    Existing atomic release publication remains the live-reader boundary.
+    """
+    receipt['generation'] = {
+        'protocol': 'sha256-files-receipt-last-v1',
+        'files': {name: hashlib.sha256(body).hexdigest() for name, body in outputs.items()},
+    }
+    payloads = dict(outputs)
+    payloads[ADMISSION_RECEIPT] = json.dumps(receipt, ensure_ascii=False, indent=2).encode('utf-8')
+    promoting = False
+    try:
+        with ExitStack() as cleanup:
+            staged = {}
+            for name, body in payloads.items():
+                # mkstemp's exact owned path is the only cleanup authority;
+                # never glob/remove other runs' or foreign temporary files.
+                fd, tmp = tempfile.mkstemp(prefix=f'.{name}.search-sitemaps-', dir=dist)
+                path = Path(tmp)
+                cleanup.callback(path.unlink, missing_ok=True)
+                with os.fdopen(fd, 'wb') as stream:
+                    os.fchmod(stream.fileno(), 0o644)
+                    stream.write(body)
+                    stream.flush()
+                    os.fsync(stream.fileno())
+                staged[name] = path
+            promoting = True
+            invalidate_search_admission(dist)
+            for name in outputs:
+                os.replace(staged[name], dist / name)
+            sync_directory(dist)
+            os.replace(staged[ADMISSION_RECEIPT], dist / ADMISSION_RECEIPT)
+            sync_directory(dist)
+    except BaseException:
+        if promoting:
+            # Includes a failed receipt rename, fsync, or owned-temp cleanup.
+            # Never roll back by copying partially written destinations.
+            invalidate_search_admission(dist)
+        raise
+
+
 def prune_search_sitemaps(dist: Path) -> dict:
     children = sorted(p for p in dist.iterdir() if p.is_file() and re.fullmatch(r"sitemap-\d+\.xml", p.name))
     if not children:
@@ -114,6 +186,7 @@ def prune_search_sitemaps(dist: Path) -> dict:
     prepared = []
     exclusions = []
     seen = set()
+    admitted_urls = []
     scanned = 0
     for child in children:
         tree = ET.parse(child)
@@ -136,24 +209,40 @@ def prune_search_sitemaps(dist: Path) -> dict:
                 exclusions.append({"url": url, "child": child.name, "reason": reason})
             else:
                 seen.add(url)
+                admitted_urls.append(url)
         prepared.append((child, tree))
     if not seen:
         raise RuntimeError("Canonical search sitemap would be empty")
-    # Parse/admit every child before writing any, so malformed XML fails closed.
-    for child, tree in prepared:
-        tree.write(child, encoding="utf-8", xml_declaration=True)
-    index = sitemap_index([f"{SITE}/{p.name}" for p in children])
+    # Text is a representation of the same admitted canonical HTML graph, not
+    # an XML redirect, raw-export manifest, or independent source of URLs.
+    text = text_sitemap(admitted_urls)
+    # Serialize every child and representation before even staging output.
+    outputs = {child.name: ET.tostring(tree.getroot(), encoding='utf-8', xml_declaration=True)
+               for child, tree in prepared}
+    index = sitemap_index([f"{SITE}/{p.name}" for p in children]).encode('utf-8')
     for name in ("sitemap-index.xml", "sitemap.xml"):
-        (dist / name).write_text(index, encoding="utf-8")
+        outputs[name] = index
+    outputs['sitemap.txt'] = text.encode('utf-8')
     receipt = {"scanned": scanned, "retained": len(seen), "excluded": len(exclusions),
                "reasons": dict(Counter(r["reason"] for r in exclusions)), "exclusions": exclusions}
-    (dist / "search-sitemap-admission.json").write_text(json.dumps(receipt, ensure_ascii=False, indent=2), encoding="utf-8")
+    commit_search_generation(dist, outputs, receipt)
     return receipt
 
 ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT / "dist"
 CATALOG = ROOT / "public" / "reader-plain" / "index.json"
 SITE = "https://ajew.org"
+
+
+def text_sitemap(urls: list[str]) -> str:
+    if not urls or len(urls) > 50000 or len(set(urls)) != len(urls):
+        raise RuntimeError("Text sitemap requires 1–50,000 unique canonical URLs")
+    if not all(valid_search_location(url) for url in urls):
+        raise RuntimeError("Invalid text sitemap location")
+    text = "\n".join(urls) + "\n"
+    if len(text.encode("utf-8")) > 50 * 1024 * 1024:
+        raise RuntimeError("Text sitemap exceeds 50 MB")
+    return text
 
 
 def xml_urlset(urls: list[str], priority: str = "0.55") -> str:
@@ -184,6 +273,9 @@ def sitemap_index(urls: list[str]) -> str:
 
 def main() -> None:
     DIST.mkdir(exist_ok=True)
+    # Astro or an earlier postbuild step may already have changed dist. A prior
+    # admission is not authority for this build, even if failure precedes prune.
+    invalidate_search_admission(DIST)
     data = json.loads(CATALOG.read_text(encoding="utf-8"))
     entries = data.get("entries", [])
 

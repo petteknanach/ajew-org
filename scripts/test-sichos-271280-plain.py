@@ -36,20 +36,31 @@ def main():
     (out/'PRIVATE-HISTORY-RECONSTRUCTION.json').write_text(json.dumps(history,ensure_ascii=False,indent=2)+'\n')
     fixture=out/'actual-builder-fixture';(fixture/'scripts').mkdir(parents=True)
     script=root/'scripts/build-reader-plain-text.py'
-    deps=['build-reader-plain-text.py','reviewed_chayay_exports.py','reviewed_alim_exports.py','reviewed_wrapup_exports.py','qualified_aitzoas362_exports.py']
+    deps=['build-reader-plain-text.py','reviewed_chayay_exports.py','reviewed_alim_exports.py','reviewed_wrapup_exports.py','qualified_aitzoas362_exports.py','reader_plain_navigation.py','reader_plain_ownership.py','lh_publication_exports.py','reader-legacy-bookless-paths.json']
     for name in deps:shutil.copyfile(root/'scripts'/name,fixture/'scripts'/name)
     (fixture/'src').symlink_to(root/'src',target_is_directory=True)
     (fixture/'package.json').write_text('{"type":"module","private":true}\n')
     for path in ['public/qualified-sichos-271280-core.js','public/qualified-sichos-271280-core.mjs','public/reader/reviewed/sichos-271-280.json','public/reader/sichos-haran/sicha-271.json','public/reader/reviewed/sichos-261270-sources/sicha-261-original.json']:
         dest=fixture/path;dest.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(root/path,dest)
     shutil.copytree(root/'public/reader/reviewed/sichos-271280-sources',fixture/'public/reader/reviewed/sichos-271280-sources')
+    # The actual main now includes its finite 117-path navigation caller. Supply
+    # genuine source witnesses; never stub that caller or discard its guards.
+    seed=json.loads((root/'scripts/reader-legacy-bookless-paths.json').read_bytes())
+    assert len(seed)==117 and len(set(seed))==117
+    for alias in seed:
+        part,section=alias.split('/')[-2:]
+        relative=f'public/reader/likutay-nanach/volume-{part}/chapter-251-{section}.json' if section.startswith('topic-') else f'public/reader/likutay-moharan/part-{part}/torah-{section}.json'
+        dest=fixture/relative;dest.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(root/relative,dest)
     env={**os.environ,'PYTHONDONTWRITEBYTECODE':'1'}
     command=[sys.executable,str(fixture/'scripts/build-reader-plain-text.py')]
     result=subprocess.run(command,cwd=fixture,capture_output=True,timeout=600,env=env)
     (out/'direct.stdout').write_bytes(result.stdout);(out/'direct.stderr').write_bytes(result.stderr)
     (out/'direct-command.json').write_text(json.dumps({'argv':command,'cwd':str(fixture),'exit':result.returncode},indent=2))
     assert result.returncode==0,result.stderr.decode()
-    catalog=json.loads((fixture/'public/reader-plain/index.json').read_bytes());assert catalog['total']==2
+    catalog=json.loads((fixture/'public/reader-plain/index.json').read_bytes());assert catalog['total']==119
+    assert len(catalog['entries'])==119 and len({r['url'] for r in catalog['entries']})==119
+    for alias in seed:
+        assert 'noindex,follow' in (fixture/'public'/alias.lstrip('/')/'index.html').read_text()
     entries=catalog['entries'];assert [e['segments'] for e in entries if e['part']=='reviewed']==[41]
     # File/import caller has no scripts/ in sys.path. Exercise the actual changed file itself.
     spec=importlib.util.spec_from_file_location('actual_plain_builder',script);module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
@@ -70,6 +81,6 @@ def main():
     assert sum(len(u['qualifications']) for u in parsed['sourceUnits'])==57
     expectedCR=sum((r['fields']['he']+r['fields']['he_nikud']+(r['fields']['en'] or '')+r['historicalEnglish']).count('\r') for r in oracle['owners'])+sum(q['text'].count('\r') for r in oracle['owners'] for q in r['activeQualifications'])+sum(q['text'].count('\r') for q in oracle['globalQualifications'])
     assert (bounded/'index.txt').read_bytes().count(b'\r')==expectedCR
-    report={'status':'PASS','actualDirectScriptExit':result.returncode,'actualFileImportCaller':True,'plainExactFormats':4,'fullBookContainsBoundedBytes':['txt','md'],'literalCRCount':expectedCR,'fixtureEntries':2,'originalQualificationsReconstructed':131,'historicalEnglishJoins':41,'originalOrigins':41,'currentLocalNotes':57,'currentGlobalNotes':4,'onlyNewNamespaceExcluded':True,'accepted261270ExclusionUnchanged':True}
+    report={'status':'PASS','actualDirectScriptExit':result.returncode,'actualFileImportCaller':True,'plainExactFormats':4,'fullBookContainsBoundedBytes':['txt','md'],'literalCRCount':expectedCR,'fixtureEntries':119,'actualLegacyNavigationPages':117,'originalQualificationsReconstructed':131,'historicalEnglishJoins':41,'originalOrigins':41,'currentLocalNotes':57,'currentGlobalNotes':4,'onlyNewNamespaceExcluded':True,'accepted261270ExclusionUnchanged':True}
     (out/'RESULTS.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report))
 if __name__=='__main__':main()

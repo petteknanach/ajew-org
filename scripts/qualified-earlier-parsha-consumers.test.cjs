@@ -313,7 +313,7 @@ test('actual standalone/full Chumash branches RED: prefer169, use runtime JSON/m
  assert(genesis.includes('qualifiedChapter(torahNum)'));assert(genesis.includes('<CommentarySidebar part={partNum} torah={torahNum} entry={commentaryEntry} />'));assert(genesis.includes('<QualifiedParsha dataset={qualifiedChapterData} />'));
 });
 test('owned Astro asset pins use exact new version; JS syntax, portable tests carry no private source prerequisites',()=>{
- for(const f of ['src/pages/reader/chumash-lh/[part]/[torah].astro','src/pages/reader/tanach-bereishit/[part]/[torah].astro'])assert(source(f).includes('/reader-script.js?v=xref-membership-7630cd78fcb4'));
+ for(const f of ['src/pages/reader/chumash-lh/[part]/[torah].astro','src/pages/reader/tanach-bereishit/[part]/[torah].astro'])assert(source(f).includes('/reader-script.js?v=xref-recognition-98deb332e54c'));
  const mainDigest=crypto.createHash('sha256').update(source('public/chok.js'),'utf8').digest('hex');
  assert.equal([...source('src/pages/reader/chok.astro').matchAll(/<script src="(\/chok\.js\?v=[^"]+)" defer><\/script>/g)].filter(m=>m[1]==='/chok.js?v='+mainDigest).length,1);
  for(const f of ['public/chok.js','public/reader-script.js'])new vm.Script(source(f),{filename:f});

@@ -160,7 +160,10 @@ self.addEventListener('fetch', (event) => {
         })
         .catch(() => {
           return caches.match(event.request).then((cached) => {
-            return cached || caches.match('/');
+            // An unknown offline URL is not the homepage. Keep failure status.
+            return cached || new Response('Offline — check your connection / אין חיבור לרשת', {
+              status: 503, headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+            });
           });
         })
     );

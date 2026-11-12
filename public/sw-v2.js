@@ -174,9 +174,10 @@ async function networkFirstWithCache(request) {
 
     // Return offline page for HTML requests
     if (request.headers.get('accept')?.includes('text/html')) {
-      return await caches.match('/offline.html') || new Response('Offline — check your connection', {
+      const offline = await caches.match('/offline.html');
+      return new Response(offline ? await offline.text() : 'Offline — check your connection / אין חיבור לרשת', {
         status: 503,
-        headers: { 'Content-Type': 'text/html' }
+        headers: { 'Content-Type': offline ? 'text/html; charset=utf-8' : 'text/plain; charset=utf-8' }
       });
     }
     return new Response('Offline', { status: 503 });
