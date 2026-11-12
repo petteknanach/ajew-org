@@ -1045,7 +1045,7 @@
      Classical whole owners, every ordered native span and raw body authenticated
      offline against REVIEW.json; source approval is not expert/release approval.
      No fallback to legacy amud text and no external source requests. */
-  var ZOHAR_DAILY_SHA256 = 'ce8ce498c9f97991c1d71208b48ce9c7b9fe5edc3cf5c48552273e7b30c0350e';
+  var ZOHAR_DAILY_SHA256 = '3f2dcb34379bad0850f43bce60b5c4b7b1958de93b8f516815a70e9b9822c812';
   var zoharDailyPromise = null;
   function zoharDigest(bytes) {
     if (!window.crypto || !window.crypto.subtle) return Promise.reject(Error('Zohar authentication unavailable'));
@@ -1060,7 +1060,7 @@
       var data = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes));
       if (data.schema !== 'chok-zohar-day-passages-v1' || data.wholeCycleComplete !== false ||
           !data.days || Object.keys(data.days).length !== 374 ||
-          data.counts.SOURCE_RANGE_APPROVED !== 185 || data.counts.SOURCE_VERIFICATION_PENDING !== 139 ||
+          data.counts.SOURCE_RANGE_APPROVED !== 228 || data.counts.SOURCE_VERIFICATION_PENDING !== 96 ||
           data.counts.NO_ZOHAR_SOURCE_VERIFIED !== 50) throw Error('Zohar daily inventory mismatch');
       return data;
     });
@@ -1078,6 +1078,29 @@
     if (a == null || b == null) return a == null && b == null;
     var ak = Object.keys(a).sort(), bk = Object.keys(b).sort();
     return ak.length === bk.length && ak.every(function (k, i) { return k === bk[i] && a[k] === b[k]; });
+  }
+  function zoharLeafIdentity(s) {
+    var ancestorFields = {"html":["class","lang","dir"],"body":["class"],"div":["class","id","aria-labelledby","data-mw-ve-target-container","lang","dir"],"main":["id","class"],"p":[],"span":["class","style"],"a":["href","class","title"],"b":[],"small":[],"i":[]};
+    if (!exactFields(s,["ordinal","sourceUnitType","work","volume","daf","amud","stream","nativeParagraphIndex","nativeElementName","nativeBlockIndex","offsetUnit","startOffset","endOffsetExclusive","rawText","sourceSha256","paragraphSha256Utf8","selectedSha256Utf8","entityPolicy","sourceHTMLPointer","sourceHTMLSha256Utf8","actualTitle","sourceRenderingRevision","sourceURL","leaves","leafRecipeSha256Utf8"]) || typeof s.rawText !== 'string' ||
+        s.startOffset !== 0 || s.endOffsetExclusive !== Array.from(s.rawText).length ||
+        s.paragraphSha256Utf8 !== s.selectedSha256Utf8 || s.entityPolicy !== 'decode') return false;
+    if (!Array.isArray(s.leaves) || !s.leaves.length || !/^[a-f0-9]{64}$/.test(s.sourceHTMLSha256Utf8 || '') ||
+        !/^[a-f0-9]{64}$/.test(s.leafRecipeSha256Utf8 || '') || typeof s.actualTitle !== 'string' || !s.actualTitle ||
+        ['', '/nativeHTML', '/parse/text/*', '/native/parse/text/*'].indexOf(s.sourceHTMLPointer) === -1) return false;
+    var last=-1;
+    return s.leaves.every(function(l) {
+      if (!exactFields(l,['rawHTMLCodepointBounds','rawLeaf','decodedLeaf','selectedCodepointBounds','selectedText','rawLeafSha256Utf8','ancestors']) ||
+          !Array.isArray(l.rawHTMLCodepointBounds) || l.rawHTMLCodepointBounds.length!==2 ||
+          !l.rawHTMLCodepointBounds.every(Number.isSafeInteger) || l.rawHTMLCodepointBounds[0]<last || l.rawHTMLCodepointBounds[0]<0 ||
+          typeof l.rawLeaf!=='string' || /[<>]/.test(l.rawLeaf) || Array.from(l.rawLeaf).length!==l.rawHTMLCodepointBounds[1]-l.rawHTMLCodepointBounds[0] ||
+          typeof l.decodedLeaf!=='string' || zoharPresentation(l.rawLeaf)!==l.decodedLeaf ||
+          !Array.isArray(l.selectedCodepointBounds) || l.selectedCodepointBounds.length!==2 || !l.selectedCodepointBounds.every(Number.isSafeInteger) ||
+          l.selectedCodepointBounds[0]<0 || l.selectedCodepointBounds[1]<=l.selectedCodepointBounds[0] || l.selectedCodepointBounds[1]>Array.from(l.decodedLeaf).length ||
+          Array.from(l.decodedLeaf).slice(l.selectedCodepointBounds[0],l.selectedCodepointBounds[1]).join('')!==l.selectedText ||
+          !/^[a-f0-9]{64}$/.test(l.rawLeafSha256Utf8||'') || !Array.isArray(l.ancestors) || !l.ancestors.length ||
+          l.ancestors.some(function(a){return !Array.isArray(a)||a.length!==2||typeof a[0]!=='string'||!a[1]||typeof a[1]!=='object'||Array.isArray(a[1])||!Object.prototype.hasOwnProperty.call(ancestorFields,a[0])||Object.keys(a[1]).some(function(k){return ancestorFields[a[0]].indexOf(k)===-1||(a[1][k]!==null&&typeof a[1][k]!=='string');})||['script','style','sup'].indexOf(a[0])!==-1||/TooltipSpan|reference-text|mw-editsection/.test(a[1]['class']||'');})) return false;
+      last=l.rawHTMLCodepointBounds[1];return true;
+    }) && s.leaves.map(function(l){return l.selectedText;}).join('')===s.rawText;
   }
   function zoharQualifiedRow(data, z, wk, day) {
     var key = wk + '|' + day, row = data.days[key];
@@ -1105,6 +1128,7 @@
               Number.isInteger(s.nativeParagraphIndex) && s.nativeParagraphIndex >= 0 && Number.isInteger(s.nativeBlockIndex) && s.nativeBlockIndex >= 0) ||
             (s.sourceUnitType === 'LiteralNativeListItemSlice' && s.nativeElementName === 'li' && s.nativeParagraphIndex === null &&
               Number.isInteger(s.nativeBlockIndex) && s.nativeBlockIndex >= 0) ||
+            (s.sourceUnitType === 'NativeAncientTextLeafSelectionV1' && s.nativeParagraphIndex === null && s.nativeElementName === null && s.nativeBlockIndex === null && zoharLeafIdentity(s)) ||
             (s.sourceUnitType === 'OwnedWikisourceJSONParagraphSlice' && s.nativeParagraphIndex === null &&
               s.nativeElementName === undefined && s.nativeBlockIndex === undefined &&
               Number.isInteger(s.jsonParagraphIndex) && s.jsonParagraphIndex >= 0 &&
@@ -1121,6 +1145,9 @@
         throw Error('Zohar daily span identity/bounds mismatch');
       return function () { return zoharTextDigest(s.rawText).then(function (hash) {
         if (hash !== s.selectedSha256Utf8) throw Error('Zohar daily span changed');
+        if (s.sourceUnitType === 'NativeAncientTextLeafSelectionV1') {
+          return Promise.all(s.leaves.map(function(l){return zoharTextDigest(l.rawLeaf).then(function(h){if(h!==l.rawLeafSha256Utf8)throw Error('Native leaf hash changed');});})).then(function(){return zoharTextDigest(JSON.stringify(s.leaves));}).then(function(h){if(h!==s.leafRecipeSha256Utf8)throw Error('Native leaf recipe changed');});
+        }
         if (s.sourceUnitType === 'OwnedWikisourceJSONParagraphSlice') {
           if (s.endOffsetExclusive > Array.from(s.sourceParagraphRaw).length)
             throw Error('Zohar JSON paragraph bounds changed');
@@ -1131,7 +1158,7 @@
       }); };
     });
     return Promise.all(spanChecks.map(function (check) { return Promise.resolve().then(check); })).then(function () {
-      return zoharTextDigest(row.spans.map(function (s) { return s.rawText; }).join('\n'));
+      if (row.rawJoinSeparator !== undefined && (row.rawJoinSeparator !== '\n\n' || !row.spans.every(function(s){return s.sourceUnitType === 'NativeAncientTextLeafSelectionV1';}))) throw Error('Native join recipe changed'); return zoharTextDigest(row.spans.map(function (s) { return s.rawText; }).join(row.rawJoinSeparator === undefined ? '\n' : row.rawJoinSeparator));
     }).then(function (hash) {
       if (hash !== row.rawBodySha256Utf8) throw Error('Zohar daily body changed');
       return row;
