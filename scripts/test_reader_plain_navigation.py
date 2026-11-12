@@ -25,6 +25,7 @@ from urllib.parse import urljoin
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 BASE = "3bf112e23adc6b11ca6d13ddd9059f59e987000a"
+OWNERSHIP_BASE = "6a25210908f78164e4b570a9a80db46d49fd1d69"
 
 
 def load_producer():
@@ -39,8 +40,8 @@ P = load_producer()
 N = P._navigation
 
 
-def baseline_bytes(path):
-    return subprocess.check_output(["git", "-c", "core.packedGitWindowSize=16m", "-c", "core.packedGitLimit=32m", "show", f"{BASE}:{path}"], cwd=ROOT)
+def baseline_bytes(path, base=BASE):
+    return subprocess.check_output(["git", "-c", "core.packedGitWindowSize=16m", "-c", "core.packedGitLimit=32m", "show", f"{base}:{path}"], cwd=ROOT)
 
 
 # Only these reviewed presentation edits may precede the immutable full-template check.
@@ -255,9 +256,11 @@ class NavigationTests(unittest.TestCase):
     def test_semantic_heading_inverse_rejects_unapproved_source_mutations(self):
         path = "src/pages/reader/likutay-nanach/[part]/[torah].astro"
         template = (ROOT / path).read_text()
-        baseline = baseline_bytes(path)
+        # Current base already contains separately delivered description/script
+        # changes; conserve those exact bytes rather than roll them back.
+        baseline = nanach_heading_preimage(baseline_bytes(path, OWNERSHIP_BASE).decode()).encode()
         self.assertEqual(nanach_heading_preimage(template).encode(), baseline)
-        mutations = [('guard expansion', 'const semanticH1 = ["1/1"', 'const semanticH1 = ["1/999","1/1"'), ('guard coercion', '.includes(`${part}/${torah}`)', '.includes(`${parseInt(part)}/${parseInt(torah)}`)'), ('hidden heading', '<h1 class="torah-number"', '<h1 hidden class="torah-number"'), ('hidden ancestor', '<div class="reader-header">', '<div class="reader-header" aria-hidden="true">'), ('heading text', '{torahData.title}</h1>', "{'changed'}</h1>"), ('physical loader', 'volume-${part}/chapter-${torahNum}.json', 'volume-${part}/chapter-${torahNum + 1}.json'), ('route lower bound', 'for (let torah = 1; torah <=', 'for (let torah = 0; torah <='), ('English reading field', '{seg.en}</div>', "{'changed'}</div>"), ('pointing fallback', '>{seg.he_nikud || seg.he}</div>', '>{seg.he}</div>'), ('source segment ID', 'id={`seg-${seg.index}`}', 'id={`seg-${seg.index + 1}`}'), ('script version', 'parsha-author-20261018-r1', 'unapproved-script-version'), ('duplicate heading', '<div class="reader-header">', '<div class="reader-header"><h1>Unapproved</h1>'), ('removed inherited heading color', 'margin: 0; color: inherit;', 'margin: 0;'), ('changed inherited heading color', 'color: inherit;', 'color: #000;')]
+        mutations = [('guard expansion', 'const semanticH1 = ["1/1"', 'const semanticH1 = ["1/999","1/1"'), ('guard coercion', '.includes(`${part}/${torah}`)', '.includes(`${parseInt(part)}/${parseInt(torah)}`)'), ('hidden heading', '<h1 class="torah-number"', '<h1 hidden class="torah-number"'), ('hidden ancestor', '<div class="reader-header">', '<div class="reader-header" aria-hidden="true">'), ('heading text', '{torahData.title}</h1>', "{'changed'}</h1>"), ('physical loader', 'volume-${part}/chapter-${torahNum}.json', 'volume-${part}/chapter-${torahNum + 1}.json'), ('route lower bound', 'for (let torah = 1; torah <=', 'for (let torah = 0; torah <='), ('English reading field', '{seg.en}</div>', "{'changed'}</div>"), ('pointing fallback', '>{seg.he_nikud || seg.he}</div>', '>{seg.he}</div>'), ('source segment ID', 'id={`seg-${seg.index}`}', 'id={`seg-${seg.index + 1}`}'), ('script version', 'xref-membership-7630cd78fcb4', 'unapproved-script-version'), ('duplicate heading', '<div class="reader-header">', '<div class="reader-header"><h1>Unapproved</h1>'), ('removed inherited heading color', 'margin: 0; color: inherit;', 'margin: 0;'), ('changed inherited heading color', 'color: inherit;', 'color: #000;')]
         for label, old, new in mutations:
             with self.subTest(mutation=label):
                 self.assertIn(old, template)
@@ -278,7 +281,7 @@ class NavigationTests(unittest.TestCase):
         self.assertEqual(N.human_source_url(reader / "other/chapter-1.json", reader, "/reader/other/1/1"), "/reader/other/1/1")
         # Authenticate the route limits and physical loader against the full template.
         template = (ROOT / "src/pages/reader/likutay-nanach/[part]/[torah].astro").read_text()
-        self.assertEqual(nanach_heading_preimage(template).encode(), baseline_bytes("src/pages/reader/likutay-nanach/[part]/[torah].astro"))
+        self.assertEqual(nanach_heading_preimage(template).encode(), nanach_heading_preimage(baseline_bytes("src/pages/reader/likutay-nanach/[part]/[torah].astro", OWNERSHIP_BASE).decode()).encode())
         ranges = re.findall(r'for \(let torah = 1; torah <= (\d+); torah\+\+\) \{\s*paths.push\(\{ params: \{ part: "(\d+)"', template)
         self.assertEqual({v: int(n) for n, v in ranges}, N.NANACH_LIMITS)
         self.assertIn("volume-${part}/chapter-${torahNum}.json", template)
@@ -295,24 +298,47 @@ class NavigationTests(unittest.TestCase):
                 data = json.loads(source)
                 frozen = copy.deepcopy(data)
                 ids = old.infer_ids(path, data)
-                self.assertEqual(ids, P.infer_ids(path, data))
+                current_ids = P.infer_ids(path, data)
+                affected = path.parent == reader / "likutay-nanach/tanach"
+                if affected:
+                    self.assertEqual(current_ids, ("likutay-nanach", "tanach", path.stem))
+                else:
+                    self.assertEqual(ids, current_ids)
                 self.assertEqual(old.collect_segments(data), P.collect_segments(data))
                 with patch.object(old, "OUT_DIR", self.root / "before"), patch.object(P, "OUT_DIR", self.root / "after"):
                     before_entry = old.write_teaching(path, data, *ids)
-                    after_entry = P.write_teaching(path, data, *ids)
+                    after_entry = P.write_teaching(path, data, *current_ids)
                 self.assertEqual(data, frozen)
                 self.assertEqual(path.read_bytes(), source)
                 self.assertIsNotNone(after_entry)
-                self.assertEqual({k: v for k, v in before_entry.items() if k != "sourceUrl"}, {k: v for k, v in after_entry.items() if k != "sourceUrl"})
+                identity_fields = {"bookId", "part", "torah", "url"} if affected else set()
+                self.assertEqual({k: v for k, v in before_entry.items() if k not in identity_fields | {"sourceUrl"}}, {k: v for k, v in after_entry.items() if k not in identity_fields | {"sourceUrl"}})
                 relative = before_entry["url"].removeprefix("/reader-plain/")
-                b, a = self.root / "before" / relative, self.root / "after" / relative
+                b, a = self.root / "before" / relative, self.root / "after" / after_entry["url"].removeprefix("/reader-plain/")
                 bj, aj = json.loads((b / "index.json").read_bytes()), json.loads((a / "index.json").read_bytes())
-                self.assertEqual({k: v for k, v in bj.items() if k != "sourceUrl"}, {k: v for k, v in aj.items() if k != "sourceUrl"})
+                raw_identity_fields = {"bookId", "part", "torah", "plainUrl"} if affected else set()
+                replaced_fields = raw_identity_fields | {"sourceUrl"} | ({"segments"} if affected else set())
+                self.assertEqual({k: v for k, v in bj.items() if k not in replaced_fields}, {k: v for k, v in aj.items() if k not in replaced_fields})
+                if affected:
+                    self.assertEqual(aj["segments"], P.collect_segments(data, include_verse=True))
+                    for original, current in zip(data["segments"], aj["segments"], strict=True):
+                        for field in ("verse", "commentary_he"):
+                            if original.get(field):
+                                self.assertIn(P.strip_html(original[field]), current["he"])
                 for name in ("index.txt", "index.md"):
                     strip_source = lambda s: re.sub(r"^Source: https://ajew.org[^\n]*$", "SOURCE URL", s, flags=re.M)
-                    self.assertEqual(strip_source((b / name).read_text()), strip_source((a / name).read_text()))
+                    if affected:
+                        for seg in aj["segments"]:
+                            self.assertIn(seg["he"], (a / name).read_text())
+                    else:
+                        self.assertEqual(strip_source((b / name).read_text()), strip_source((a / name).read_text()))
                 bh, ah = (b / "index.html").read_text(), (a / "index.html").read_text()
-                self.assertEqual(bh.split("<main>", 1)[1], ah.split("<main>", 1)[1])
+                if affected:
+                    import html
+                    for seg in aj["segments"]:
+                        self.assertIn(html.escape(seg["he"]), ah.split("<main>", 1)[1])
+                else:
+                    self.assertEqual(bh.split("<main>", 1)[1], ah.split("<main>", 1)[1])
                 self.assertEqual(re.findall(r'<nav aria-label="Table of contents">.*?</nav>', bh), re.findall(r'<nav aria-label="Table of contents">.*?</nav>', ah))
                 links = Links(ah)
                 self.assertTrue(all(h.startswith(("/", "https://", "#")) for h in links.hrefs))
@@ -327,14 +353,16 @@ class NavigationTests(unittest.TestCase):
     def test_unchanged_complete_helpers_and_qualified_hold_logic(self):
         for name in ("reviewed_chayay_exports.py", "reviewed_alim_exports.py", "reviewed_wrapup_exports.py", "qualified_aitzoas362_exports.py"):
             self.assertEqual((HERE / name).read_bytes(), baseline_bytes("scripts/" + name))
-        before = ast.parse(baseline_bytes("scripts/build-reader-plain-text.py"))
+        before = ast.parse(baseline_bytes("scripts/build-reader-plain-text.py", OWNERSHIP_BASE))
         after = ast.parse((HERE / "build-reader-plain-text.py").read_text())
-        changed = {"html_page", "write_teaching", "write_known_quoted_passages", "main"}
+        # Replaced by the catalog-bound general owner resolver, exercised by
+        # test_reader_plain_ownership.py. Every other producer function is exact.
+        changed = {"infer_ids", "collect_segments", "write_teaching", "register_output_owner", "genesis_source_role", "is_genesis_output", "validate_genesis_entries", "main"}
         b = {f.name: ast.dump(f, include_attributes=False) for f in before.body if isinstance(f, ast.FunctionDef) and f.name not in changed}
         a = {f.name: ast.dump(f, include_attributes=False) for f in after.body if isinstance(f, ast.FunctionDef) and f.name not in changed}
         self.assertEqual(b, a)
         # Verify the full qualified dispatch/hold block, not just function names.
-        old_s = baseline_bytes("scripts/build-reader-plain-text.py").decode()
+        old_s = baseline_bytes("scripts/build-reader-plain-text.py", OWNERSHIP_BASE).decode()
         new_s = (HERE / "build-reader-plain-text.py").read_text()
         begin, end = '    aitzoas_edition = None\n', '    entries.sort('
         self.assertEqual(old_s.split(begin)[1].split(end)[0], new_s.split(begin)[1].split(end)[0])

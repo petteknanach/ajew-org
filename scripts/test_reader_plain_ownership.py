@@ -1,0 +1,212 @@
+#!/usr/bin/env python3
+"""Real bounded plain producer regression; no generated/static book substitutes.
+
+Reads exact tracked inputs, including their source indexes. TMPDIR owns disposable
+fixtures. A retained artifact run uses PLAIN_OWNERSHIP_OUTPUT (must not exist).
+"""
+from __future__ import annotations
+import contextlib
+import copy
+import hashlib
+import importlib.util
+import io
+import json
+import os
+from pathlib import Path
+import shutil
+import tempfile
+import unittest
+from unittest.mock import patch
+
+ROOT = Path(__file__).resolve().parents[1]
+SPEC = importlib.util.spec_from_file_location('ownership_producer', ROOT / 'scripts/build-reader-plain-text.py')
+assert SPEC is not None and SPEC.loader is not None
+P = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(P)
+PRIMARY = ('tanach-malachi', 'tanach-bereishit', 'tanach-chaggai', 'tanach-ovadya')
+COMMENTARY = ('tanach-malachi', 'tanach-bereishit', 'tanach-chagai', 'tanach-ovadia', 'tanach-shmuel')
+CONTROLS = ('likutay-nanach/volume-1/chapter-1.json', 'likutay-nanach/volume-4/chapter-16.json', 'likutay-moharan/part-1/torah-1.json')
+
+
+def input_paths():
+    paths = {'catalog.json', 'likutay-nanach/tanach/index.json'}
+    for book in PRIMARY:
+        paths.update(p.relative_to(ROOT / 'public/reader').as_posix() for p in (ROOT / 'public/reader' / book).rglob('*.json'))
+    index = json.loads((ROOT / 'public/reader/likutay-nanach/tanach/index.json').read_bytes())
+    for book in COMMENTARY:
+        paths.update(row['file'].removeprefix('/reader/') for row in index['books'][book])
+    paths.update(CONTROLS)
+    # Real seed witnesses, not synthetic replacement teachings or a disabled
+    # navigation writer. This permits the entire unchanged main caller to run.
+    for alias in P._navigation.load_legacy_paths():
+        part, section = alias.split('/')[-2:]
+        paths.add(f'likutay-nanach/volume-{part}/chapter-251-{section}.json' if section.startswith('topic-') else f'likutay-moharan/part-{part}/torah-{section}.json')
+    return sorted(paths)
+
+
+def copy_inputs(reader):
+    for relative in input_paths():
+        target = reader / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(ROOT / 'public/reader' / relative, target)
+
+
+def run_producer(reader, out):
+    # Only path roots are rebound; all producer helpers and all 117 navigation
+    # seeds run unchanged, with genuine exact source files in the private root.
+    with patch.object(P, 'ROOT', reader.parent), patch.object(P, 'READER_DIR', reader), patch.object(P, 'OUT_DIR', out):
+        P.main()
+    return json.loads((out / 'index.json').read_bytes())
+
+
+class OwnershipTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory(prefix='plain-ownership-', dir=os.environ.get('TMPDIR'))
+        self.addCleanup(self.temp.cleanup)
+        self.reader = Path(self.temp.name) / 'reader'
+        self.out = Path(self.temp.name) / 'reader-plain'
+        copy_inputs(self.reader)
+
+    def test_real_main_complete_primary_commentary_and_controls(self):
+        before = {p: p.read_bytes() for p in self.reader.rglob('*.json')}
+        catalog = run_producer(self.reader, self.out)
+        rows = catalog['entries']
+        self.assertEqual(catalog['total'], len(rows))
+        self.assertEqual(len({r['url'] for r in rows}), len(rows), 'one catalog row per physical owner; never overwrite')
+        for alias in P._navigation.load_legacy_paths():
+            text = (self.out / alias.removeprefix('/reader-plain/') / 'index.html').read_text()
+            self.assertIn('noindex,follow', text)
+        malachi = [r for r in rows if r['bookId'] == 'tanach-malachi']
+        self.assertEqual([(r['part'], r['torah']) for r in malachi], [('1', str(n)) for n in range(1, 4)])
+        full = (self.out / 'tanach-malachi/full.txt').read_text()
+        expected_bodies = []
+        for n, count in [(1, 14), (2, 17), (3, 24)]:
+            source = json.loads((self.reader / f'tanach-malachi/part-1/torah-{n}.json').read_bytes())
+            target = self.out / f'tanach-malachi/1/{n}'
+            raw = json.loads((target / 'index.json').read_bytes())
+            self.assertEqual(raw['title'], source['title'])
+            self.assertEqual(raw['hebrewTitle'], source['hebrewTitle'])
+            self.assertEqual(raw['segments'], P.collect_segments(source))
+            self.assertEqual(len(raw['segments']), count)
+            self.assertEqual(full.count(f'\n# {source["title"]}\n'), 1)
+            body = (target / 'index.txt').read_text()
+            self.assertEqual(full.count(body), 1)
+            expected_bodies.append(body)
+            html = (target / 'index.html').read_text()
+            self.assertIn(f'<h1>{source["title"]}</h1>', html)
+            self.assertTrue(all(s['he'] in body for s in raw['segments']))
+        self.assertNotIn('Likutay Nanach', full)
+        self.assertEqual(full.count('Segment '), 55)
+        lnindex = json.loads((self.reader / 'likutay-nanach/tanach/index.json').read_bytes())
+        for subject in COMMENTARY:
+            for member in lnindex['books'][subject]:
+                source_path = self.reader / member['file'].removeprefix('/reader/')
+                source = json.loads(source_path.read_bytes())
+                target = self.out / 'likutay-nanach/tanach' / source_path.stem
+                raw = json.loads((target / 'index.json').read_bytes())
+                self.assertEqual((raw['bookId'], raw['part'], raw['torah']), ('likutay-nanach', 'tanach', source_path.stem))
+                self.assertEqual(raw['segments'], P.collect_segments(source, include_verse=True))
+                # Independent full-field oracle: the old first_text fallback
+                # silently lost verse text in segments with commentary_he.
+                import html
+                for original, exported in zip(source['segments'], raw['segments'], strict=True):
+                    verse = P.strip_html(original.get('verse'))
+                    commentary = P.strip_html(original.get('commentary_he'))
+                    expected = '\n\n'.join(s for s in (verse, commentary) if s)
+                    self.assertEqual(exported['he'], expected)
+                    for name in ('index.txt', 'index.md'):
+                        self.assertIn(expected, (target / name).read_text())
+                    self.assertIn(html.escape(expected), (target / 'index.html').read_text())
+                    if subject == 'tanach-malachi':
+                        self.assertNotIn(expected, full, 'no commentary body in primary aggregate')
+                self.assertEqual(raw['title'], source['title'])
+                self.assertIsNone(raw['sourceUrl'], 'unproven human commentary route stays held')
+                self.assertEqual(sum(r['url'] == raw['plainUrl'] for r in rows), 1)
+                self.assertIn((target / 'index.txt').read_text(), (self.out / 'likutay-nanach/full.txt').read_text())
+                self.assertNotIn('Human reader page', (target / 'index.html').read_text())
+        # Disjoint non-Tanach exports are byte-identical to genuine pinned base.
+        import subprocess, types
+        old = types.ModuleType('old'); old.__file__ = str(ROOT / 'scripts/build-reader-plain-text.py')
+        exec(compile(subprocess.check_output(['git','show','6a25210908f78164e4b570a9a80db46d49fd1d69:scripts/build-reader-plain-text.py'], cwd=ROOT), old.__file__, 'exec'), old.__dict__)
+        for relative in CONTROLS:
+            path = self.reader / relative
+            data = json.loads(path.read_bytes())
+            with patch.object(old, 'READER_DIR', self.reader), patch.object(old, 'OUT_DIR', Path(self.temp.name) / 'baseline'):
+                ids = old.infer_ids(path, data)
+                entry = old.write_teaching(path, data, *ids)
+                for name in ('index.txt','index.md','index.json','index.html'):
+                    suffix = entry['url'].removeprefix('/reader-plain/')
+                    self.assertEqual((old.OUT_DIR / suffix / name).read_bytes(), (self.out / suffix / name).read_bytes())
+        self.assertEqual({p: p.read_bytes() for p in self.reader.rglob('*.json')}, before)
+        retained = os.environ.get('PLAIN_OWNERSHIP_OUTPUT')
+        if retained:
+            shutil.copytree(self.out, retained)
+            pins = [{'path':str(p.relative_to(self.reader)), 'bytes':len(b), 'sha256':hashlib.sha256(b).hexdigest()} for p,b in before.items()]
+            Path(retained).with_suffix('.inputs.json').write_text(json.dumps(pins, indent=2)+'\n')
+
+    def test_malformed_missing_ambiguous_sources_fail_closed(self):
+        mutations = {
+            'missing primary': lambda r: (r / 'tanach-malachi/part-1/torah-2.json').unlink(),
+            'malformed primary': lambda r: (r / 'tanach-malachi/part-1/torah-2.json').write_text('{broken'),
+            'missing commentary': lambda r: (r / 'likutay-nanach/tanach/tanach-malachi-2.json').unlink(),
+            'malformed commentary': lambda r: (r / 'likutay-nanach/tanach/tanach-malachi-2.json').write_text('{broken'),
+            'empty primary': lambda r: self.edit(r / 'tanach-malachi/part-1/torah-2.json', lambda d: d.update(segments=[])),
+            'wrong commentary subject': lambda r: self.edit(r / 'likutay-nanach/tanach/tanach-malachi-2.json', lambda d: d.update(book='tanach-bereishit')),
+            'duplicate commentary membership': lambda r: self.edit(r / 'likutay-nanach/tanach/index.json', lambda d: d['books']['tanach-malachi'].append(copy.deepcopy(d['books']['tanach-malachi'][0]))),
+            'missing catalog member': lambda r: self.edit(r / 'likutay-nanach/tanach/index.json', lambda d: d['books']['tanach-malachi'].pop()),
+            'duplicate primary membership': lambda r: self.edit(r / 'tanach-malachi/part-1/index.json', lambda d: d['items'].append(copy.deepcopy(d['items'][0]))),
+            'wrong header': lambda r: self.edit(r / 'tanach-malachi/part-1/torah-2.json', lambda d: d.update(title='Likutay Nanach')),
+            'unsafe identity': lambda r: self.edit(r / 'tanach-malachi/part-1/torah-2.json', lambda d: d.update(bookId='../outside')),
+            'duplicate primary book': lambda r: self.edit(r / 'catalog.json', lambda d: d['books'].append(copy.deepcopy(next(b for b in d['books'] if b['id'] == 'tanach-malachi')))),
+            'missing primary index': lambda r: (r / 'tanach-malachi/part-1/index.json').unlink(),
+            'missing commentary index': lambda r: (r / 'likutay-nanach/tanach/index.json').unlink(),
+            'stale commentary count': lambda r: self.edit(r / 'likutay-nanach/tanach/index.json', lambda d: d['books']['tanach-malachi'][0].update(segments=999)),
+            'wrong commentary chapter': lambda r: self.edit(r / 'likutay-nanach/tanach/tanach-malachi-2.json', lambda d: d.update(chapter='3')),
+            'malformed primary shape': lambda r: (r / 'tanach-malachi/part-1/torah-2.json').write_text('[]'),
+            'undeclared commentary': lambda r: shutil.copyfile(r / 'likutay-nanach/tanach/tanach-malachi-2.json', r / 'likutay-nanach/tanach/tanach-malachi-02.json'),
+        }
+        for name, mutate in mutations.items():
+            with self.subTest(name=name):
+                private = Path(self.temp.name) / name
+                reader, out = private / 'reader', private / 'out'
+                copy_inputs(reader)
+                out.mkdir(parents=True)
+                (out / 'sentinel').write_bytes(b'unchanged previous output')
+                mutate(reader)
+                with self.assertRaises((ValueError, FileNotFoundError, json.JSONDecodeError)):
+                    run_producer(reader, out)
+                self.assertEqual((out / 'sentinel').read_bytes(), b'unchanged previous output', 'preflight must fail before destructive output reset')
+                self.assertEqual(list(out.iterdir()), [out / 'sentinel'])
+
+    def test_catalog_and_overwrite_guards_reject_foreign_or_repeated_owner(self):
+        with patch.object(P, 'READER_DIR', self.reader), patch.object(P, 'OUT_DIR', self.out):
+            bindings = P._ownership.preflight(self.reader)
+            path = self.reader / 'tanach-malachi/part-1/torah-1.json'
+            owners = {}
+            P.register_output_owner(path, 'tanach-malachi', '1', '1', owners)
+            with self.assertRaises(ValueError):
+                P.register_output_owner(self.reader / 'foreign/section-1.json', 'tanach-malachi', '1', '1', owners)
+            data = json.loads(path.read_bytes())
+            entry = P.write_teaching(path, data, 'tanach-malachi', '1', '1')
+            source = path.relative_to(self.reader).as_posix()
+            for rows, provenance in [([entry, entry], {id(entry):source}), ([entry], {}), ([dict(entry, bookId='foreign')], {})]:
+                with self.assertRaises(ValueError):
+                    P._ownership.validate_entries(rows, provenance, bindings)
+
+    def test_symlink_selected_source_fails_before_output_reset(self):
+        target = self.reader / 'tanach-malachi/part-1/torah-2.json'
+        original = target.read_bytes()
+        witness = Path(self.temp.name) / 'outside.json'; witness.write_bytes(original)
+        target.unlink(); target.symlink_to(witness)
+        with self.assertRaises(ValueError):
+            run_producer(self.reader, self.out)
+        self.assertFalse(self.out.exists())
+        self.assertEqual(witness.read_bytes(), original)
+
+    @staticmethod
+    def edit(path, fn):
+        data = json.loads(path.read_bytes()); fn(data); path.write_text(json.dumps(data))
+
+
+if __name__ == '__main__':
+    unittest.main(verbosity=2)
