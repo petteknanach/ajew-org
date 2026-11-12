@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { createHash } from 'node:crypto';
 import { load } from 'cheerio';
+import cacheConservation from './reader-cross-reference-cache-conservation.cjs';
 
 // Current-main preimages (098ce892): invert only the accessible-name insertion.
 // Historical audio/navigation fixtures stay fixed; no Git dependency at runtime.
@@ -21,7 +22,8 @@ const before = '<input type="range" id="font-size-slider" class="font-size-slide
 const approved = before.replace(' id="font-size-slider"', ' id="font-size-slider" aria-label="Font size"');
 const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');
 
-function check(bytes, baseline) {
+function check(bytes, baseline, relative) {
+  bytes = cacheConservation.restore(relative, bytes);
   const page = bytes.toString('utf8');
   assert.equal(page.split('id="font-size-slider"').length - 1, 1, 'one original slider ID');
   const tags = page.match(/<input\b[^>]*\bid="font-size-slider"[^>]*>/g) || [];
@@ -42,7 +44,9 @@ assert.equal(Object.keys(baselines).length, 9);
 for (const [book, baseline] of Object.entries(baselines)) {
   test(`${book}: named font-size range and exact whole-template conservation`, () => {
     const bytes = fs.readFileSync(new URL(`../src/pages/reader/${book}/[part]/[torah].astro`, import.meta.url));
-    check(bytes, baseline);
+    const relative = `src/pages/reader/${book}/[part]/[torah].astro`;
+    cacheConservation.requireCurrent(relative, bytes);
+    check(bytes, baseline, relative);
     const page = bytes.toString('utf8');
     for (const [label, mutation] of [
       ['missing name', page.replace(approved, before)],
@@ -51,7 +55,7 @@ for (const [book, baseline] of Object.entries(baselines)) {
       ['duplicate slider', page.replace(approved, approved + approved)],
       ['changed range', page.replace(approved, approved.replace('max="32"', 'max="33"'))],
       ['unrelated source change', page + '\n<!-- unrelated -->\n'],
-    ]) assert.throws(() => check(Buffer.from(mutation), baseline), assert.AssertionError, label);
-    check(bytes, baseline); // Fresh positive after all in-memory negative controls.
+    ]) assert.throws(() => check(Buffer.from(mutation), baseline, relative), assert.AssertionError, label);
+    check(bytes, baseline, relative); // Fresh positive after all in-memory negative controls.
   });
 }

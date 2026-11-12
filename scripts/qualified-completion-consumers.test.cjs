@@ -6,7 +6,7 @@ const {execFileSync}=require('node:child_process');
 const {pathToFileURL}=require('node:url');
 const {dependencies,documentFor,sandbox,until}=require('./qualified-earlier-parsha-test-dom.cjs');
 const ROOT=path.resolve(__dirname,'..'),EXTRA=process.env.QUALIFIED_EXPORT_ROOT;
-const VERSION='parsha-author-20261018-r1';
+const VERSION='xref-membership-7630cd78fcb4';
 const read=p=>fs.readFileSync(path.join(ROOT,p),'utf8'),json=p=>JSON.parse(read(p));
 const lib=import(pathToFileURL(path.join(ROOT,'src/lib/qualified-parsha.mjs')).href);
 const namespaces=['qualified-1-109','qualified-110-171'];
@@ -26,7 +26,7 @@ async function bootActual(w,day,focused){
   }catch(e){if(n.onerror)n.onerror(e);}
  });return n;};
  env.box.location.search='?week='+encodeURIComponent(w)+'&day='+encodeURIComponent(day)+(focused?'&sec=torah':'');
- try{for(const m of template.matchAll(/<script src="([^"?]+)[^"]*" defer><\/script>/g)){const code=blob('public'+m[1]);assert(code);vm.runInContext(code,env.box,{filename:m[1]});}await until(()=>!!d.querySelector('#ck-content').innerHTML&&!d.querySelector('.ck-loading'),20000);assert(!d.querySelector('#ck-content').textContent.includes('Could not load'));return {d,env,requests,peak:()=>peak};}catch(e){env.close();e.message=w+'|'+day+'|'+focused+': '+e.message+'; requested '+requests.slice(-8).join(', ');throw e;}
+ try{for(const m of template.matchAll(/<script\b[^>]*\bsrc="([^"?]+)[^"]*"[^>]*\bdefer[^>]*><\/script>/g)){const code=blob('public'+m[1]);assert(code);const sri=/\bintegrity="([^"]+)"/.exec(m[0]);if(sri){const algorithm=sri[1].split('-')[0];assert.equal(sri[1],algorithm+'-'+require('node:crypto').createHash(algorithm).update(code).digest('base64'),'actual static script SRI');}vm.runInContext(code,env.box,{filename:m[1]});}await until(()=>!!d.querySelector('#ck-content').innerHTML&&!d.querySelector('.ck-loading'),20000);assert(!d.querySelector('#ck-content').textContent.includes('Could not load'));return {d,env,requests,peak:()=>peak};}catch(e){env.close();e.message=w+'|'+day+'|'+focused+': '+e.message+'; requested '+requests.slice(-8).join(', ');throw e;}
 }
 function expose(code,expr){const i=code.lastIndexOf('})();');assert(i>0);return code.slice(0,i)+'\nglobalThis.qa={'+expr+'};\n'+code.slice(i);}
 function helper(){const d=documentFor('<html><body></body></html>'),env=sandbox(d,'/reader/chok/',()=>{});vm.runInContext(read('public/chok-verse-breslov.js'),env.box);return {env,api:env.box.window.ChokVerseBreslov};}
@@ -68,7 +68,7 @@ async function compileComponent(){
  bridge=(await esbuild.transform(bridge,{loader:'ts',format:'esm'})).code;
  const module=await import('data:text/javascript;base64,'+Buffer.from(bridge).toString('base64'));
  const script=(await esbuild.transform(raw.scripts[0].code,{loader:'ts'})).code;
- component={script,render:props=>runtime.renderToString({_metadata:{renderedHead:true,hasRenderedHead:true,extraHead:[],propagators:new Set()},styles:new Set(),scripts:new Set(),links:new Set(),createAstro:(_,p)=>({props:p})},module.default,props,{})};return component;
+ component={script,render:props=>runtime.renderToString({renderers:[],clientDirectives:new Map(),_metadata:{renderedHead:true,hasRenderedHead:true,extraHead:[],propagators:new Set()},styles:new Set(),scripts:new Set(),links:new Set(),createAstro:(_,p)=>({props:p})},module.default,props,{})};return component;
 }
 test('route IDs are the real standalone map AND full Reader directory, not transliteration guesses',async()=>{
  const {PARSHA_READER}=await lib;
@@ -134,8 +134,8 @@ test('fallback overlap combines actual namespace sources without duplicate owner
 test('changed Astro templates compile with installed read-only compiler; every live script URL pin is current, no other assets bumped',async()=>{
  const compiler=dependencies('@astrojs/compiler'),esbuild=dependencies('esbuild');
  for(const p of ['src/components/QualifiedParsha.astro','src/pages/parsha/[slug].astro','src/pages/reader/chumash-lh/[part]/[torah].astro','src/pages/reader/tanach-bereishit/[part]/[torah].astro','src/pages/reader/chok.astro']){const result=await compiler.transform(read(p),{filename:p});assert(!result.diagnostics.some(d=>d.severity===1));await esbuild.transform(result.code,{loader:'ts'});for(const s of result.scripts||[])await esbuild.transform(s.code,{loader:'ts'});}
- const refs=execFileSync('git',['grep','-l','-z','-F','reader-script.js?v=','HEAD','--','src'],{cwd:ROOT}).toString().split('\0').filter(Boolean).map(p=>p.slice(5)).filter(p=>p.endsWith('.astro'));assert.equal(refs.length,247,'immutable65 independently scanned Astro predicate pathset');assert.equal(require('node:crypto').createHash('sha256').update([...refs].sort().join('\n')).digest('hex'),'7c4f47e49cf9454518f0d1258104757e80f0da46f6ada197ee136b51a2179ee0','exact independently scanned immutable65 pathset');for(const p of refs)assert(read(p).includes('/reader-script.js?v='+VERSION),p);
- for(const [asset,version]of Object.entries({'chok.js':'e540c2702d2e7af86f11fbe7305666f179fc0b867c09de227906d558b1c44da6','chok-source-reader.js':'chok-live-corrections-20261020-r1','chok-verse-breslov.js':'parsha-author-20261020-reader-notes-r1'})){new vm.Script(read('public/'+asset));assert(read('src/pages/reader/chok.astro').includes('/'+asset+'?v='+version));}
+ const refs=execFileSync('git',['grep','-l','-z','-F','reader-script.js?v=','HEAD','--','src'],{cwd:ROOT}).toString().split('\0').filter(Boolean).map(p=>p.slice(5)).filter(p=>p.endsWith('.astro'));assert.equal(refs.length,248,'current-main independently scanned Astro predicate pathset');assert.equal(require('node:crypto').createHash('sha256').update([...refs].sort().join('\n')).digest('hex'),'a04df1b755ef33557e632d32891c8adc9ada75a147fd8335b0f5d12234b0c6f7','exact independently scanned current-main pathset');for(const p of refs)assert(read(p).includes('/reader-script.js?v='+VERSION),p);
+ for(const [asset,version]of Object.entries({'chok.js':'0fa752655b0c54a5d5947d1ebd92b6d30b2a87c858d0f811b5685aeceb834e22','chok-source-reader.js':'chok-live-corrections-20261020-r1','chok-verse-breslov.js':'parsha-author-20261020-reader-notes-r1'})){new vm.Script(read('public/'+asset));assert(read('src/pages/reader/chok.astro').includes('/'+asset+'?v='+version));}
 });
 test('actual server Sidebar init and route bridge retain complete chapter pairs, notes, language controls and tab lifecycle',async()=>{
  const {qualifiedChapter}=await lib,data=qualifiedChapter(18,undefined,ROOT).selection,comp=await compileComponent(),rendered=await comp.render({dataset:data});
