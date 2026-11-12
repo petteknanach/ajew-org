@@ -102,7 +102,7 @@ function qualifiedTransport(d,env,mainCode){
      const src=String(node.src||node.getAttribute('src')),url=new URL(src,'https://fixture.invalid/reader/chok/');requests.push(src);
      assert.equal(url.origin,'https://fixture.invalid');assert.equal(src,url.pathname+url.search);assert.equal(url.hash,'');
      const match=/^\/chok-qualified-zohar\.js\?v=([a-f0-9]{64})$/.exec(src);assert(match,'exact qualified-module URL/query required');
-     assert(Object.hasOwn(owners,match[1]),'accepted29/current37 module only');assert.equal(digest(mainCode),owners[match[1]],'module belongs to actual selected Main');
+     assert(Object.hasOwn(owners,match[1]),'accepted29/current37 module only');assert.equal(digest(require('./chok-reference-order-conservation.cjs').restoreTodayZohar('public/chok.js',Buffer.from(mainCode))),owners[match[1]],'module belongs to actual selected Main');
      const bytes=Buffer.from(read('public'+url.pathname),'utf8');assert.equal(digest(bytes),match[1],'complete versioned module bytes');
      assert.equal(node.integrity,'sha256-'+digest(bytes,'base64'),'actual declared SRI');assert.equal(node.crossOrigin,'anonymous');
      vm.runInContext(bytes.toString('utf8'),env.box,{filename:src});
