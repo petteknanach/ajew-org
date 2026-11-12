@@ -7,7 +7,7 @@ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),asse
 const root=path.resolve(__dirname,'..'),{boot,checkOracle,sourceSRI}=require('./verify-chok-qualified-daily.cjs');
 const parse5=require(path.join(process.env.AJEW_TEST_DEPENDENCIES||root,'node_modules/parse5/dist/cjs/index.js'));
 const read=p=>fs.readFileSync(path.join(root,p),'utf8'),copy=x=>JSON.parse(JSON.stringify(x)),sha=s=>crypto.createHash('sha256').update(s).digest('hex');
-const fixture=JSON.parse(read('scripts/fixtures/chok-vayaitzai-thursday-reviewed.json')),oracle=JSON.parse(read('scripts/chok-qualified-daily-reviewed.json'));
+const fixture=require('./verify-chok-qualified-daily.cjs').adoptNoteFixture(JSON.parse(read('scripts/fixtures/chok-vayaitzai-thursday-reviewed.json'))),oracle=JSON.parse(read('scripts/chok-qualified-daily-reviewed.json'));
 function attr(n,k){const a=(n.attrs||[]).find(a=>a.name===k);return a&&a.value;}
 function nodes(n,p,out=[]){if(p(n))out.push(n);for(const c of n.childNodes||[])nodes(c,p,out);return out;}
 function text(n){return n.nodeName==='#text'?n.value:(n.childNodes||[]).map(text).join('');}
@@ -17,7 +17,7 @@ function sourceFunction(code,name){const marker='  function '+name+'(';const a=c
 function visiblePath(n){for(let p=n;p;p=p.parentNode){assert.equal(attr(p,'hidden'),undefined,'MANDATORY_NOTE_HIDDEN');assert.notEqual(p.tagName,'details','MANDATORY_NOTE_INSIDE_DISCLOSURE');assert(!/display\s*:\s*none|visibility\s*:\s*hidden/.test(attr(p,'style')||''));}}
 function expectedMode(s,mode){if(mode==='full')return s;if(mode==='nikud')return s.replace(/[\u0591-\u05AF\u05BD\u05C0]/g,'');if(mode==='taamim')return s.replace(/[\u05B0-\u05BC\u05C1\u05C2\u05C7]/g,'');return s.replace(/[\u0591-\u05AF\u05BD\u05C0\u05B0-\u05BC\u05C1\u05C2\u05C7]/g,'');}
 function fullPositive(p,e,libraryAPI){
- const f=fixture.readings[0];assert.equal(e.key,f.key);assert.deepEqual(checkOracle(p,e,oracle),{checked:12,notes:13});
+ const f=fixture.readings[0];assert.equal(e.key,f.key);assert.deepEqual(checkOracle(p,e,oracle),{checked:12,notes:f.owners.reduce((n,o)=>n+o.notes.length,0)});
  assert.deepEqual(p.sections.mishna.units.map(u=>u.owner),f.owners.map(a=>a.owner));
  for(const a of f.owners){const u=p.sections.mishna.units.find(u=>u.owner===a.owner),b=a.adoptedFieldBinding;assert(u);
   assert.equal(u.he,a.he);assert.equal(u.en,a.en);assert.equal(sha(u.he),b.originalSHA256);assert.equal(sha(u.en),b.EnglishSHA256);
@@ -28,10 +28,10 @@ function fullPositive(p,e,libraryAPI){
 }
 const coordinatedEvidence=[];
 (async()=>{
- assert.equal(fixture.schema,'chok-vayaitzai-thursday-reviewed-v1');assert.equal(fixture.readings.length,1);sourceSRI(root);
+ assert.equal(sha(require('./chok-reference-order-conservation.cjs').restoreToldosWednesdayMussar('scripts/chok-qualified-daily-reviewed.json',Buffer.from(read('scripts/chok-qualified-daily-reviewed.json')))),'c7f8aec7b88b942eddbe877667353a0fd5b8be5c4f5607ee2c4d690fd5ae1b0b','CURRENT_ACCEPTED_ORACLE_PIN');assert.equal(sha(read('scripts/fixtures/chok-vayaitzai-thursday-reviewed.json')),'d6d01c8489cb47ff59da52cb48434d45e8142384425fca70d4501e49001e404f','HISTORICAL_THURSDAY_FIXTURE_PIN');assert.equal(sha(require('./chok-today-classical-admission.cjs').canonical(fixture)),'5c5ca42287ff94e7ddc42b550b3ddb26338711d3806615f37f3f55f743ab2aef','ADOPTED_THURSDAY_FIXTURE_PIN');assert.equal(fixture.schema,'chok-vayaitzai-thursday-reviewed-v1');assert.equal(fixture.readings.length,1);sourceSRI(root);
  const main=read('public/chok.js'),astro=read('src/pages/reader/chok.astro'),schedule=JSON.parse(read('public/reader/chok/schedule.json'));
  const {api,libraryAPI,entries}=boot(root),oldKeys=fixture.priorSelectedKeys,newKeys=fixture.readings.map(f=>f.key);
- assert.equal(oldKeys.length,10);assert.equal(entries.length,31);assert.deepEqual(entries.slice(0,10).map(e=>e.key),oldKeys);assert.deepEqual(entries.slice(10,11).map(e=>e.key),newKeys);assert.deepEqual(entries.map(e=>e.key).sort(),oracle.readingKeys.slice().sort());
+ assert.equal(oldKeys.length,10);const acceptedKeys=["ויצא|יום רביעי","ויצא|יום שישי","ויצא|יום שלישי","ויצא|יום שני","וישלח|יום ראשון","לך לך|יום שישי","וישלח|יום שני","וישלח|יום שלישי","בראשית|יום שני","בראשית|יום שלישי","ויצא|יום חמישי","וירא|יום ראשון","וירא|יום שני","וירא|יום שלישי","וירא|יום שישי","חיי שרה|יום ראשון","חיי שרה|יום שני","חיי שרה|יום שלישי","חיי שרה|יום רביעי","חיי שרה|יום חמישי","חיי שרה|יום שישי","תולדות|יום ראשון","וירא|יום רביעי","וירא|יום חמישי","תולדות|יום שני","תולדות|יום שישי","תולדות|יום שלישי","תולדות|יום רביעי","תולדות|יום חמישי","בראשית|יום חמישי","בראשית|יום שישי","ויצא|יום ראשון"];assert.equal(acceptedKeys.length,32);assert.equal(new Set(acceptedKeys).size,32);assert.equal(entries.length,32);assert.deepEqual(oracle.readingKeys,acceptedKeys);assert.deepEqual(entries.map(e=>e.key).sort(),acceptedKeys.slice().sort());assert(entries.some(e=>e.key==='בראשית|יום שישי'),'KNOWN_BIRAISHIS_FRIDAY_ADDITION');assert.deepEqual(entries.slice(0,10).map(e=>e.key),oldKeys);assert.deepEqual(entries.slice(10,11).map(e=>e.key),newKeys);assert.deepEqual(entries.map(e=>e.key).sort(),oracle.readingKeys.slice().sort());
  // The owning initializer really calls the extracted qualifiedDailyOr helper for Mishna.
  assert(main.includes("return qualifiedDailyOr(wk,dayE,'mishna',d,function()"));
  for(const id of ['ck-language','ck-mode']){
@@ -103,7 +103,7 @@ const coordinatedEvidence=[];
    const fresh=libraryAPI.create([e]);const restored=copy(await fresh.load(e.week,e.day,e.schedule,async url=>{assert.equal(url,e.url+'?v='+e.payloadSHA256);return raw;}));assert.deepEqual(restored,packet);fullPositive(restored,e,libraryAPI);restoredPositives++;
   }
  }
- assert.equal(owners,12);assert.equal(notes,13);assert.equal(requests.length,1);assert.equal(new Set(requests).size,1);
+ assert.equal(owners,12);assert.equal(notes,44);assert.equal(requests.length,1);assert.equal(new Set(requests).size,1);
  // Actual selected Wednesday -> new Thursday -> selected Friday -> same new Thursday.
  const freshBoxAPI=boot(root).api;box.window.ChokQualifiedDailySelected=freshBoxAPI;
  const target=plans.get(newKeys[0]),neighbors=['יום רביעי','יום שישי'].map(day=>entries.find(e=>e.week===target.week&&e.day===day));assert(neighbors.every(Boolean));
@@ -113,7 +113,7 @@ const coordinatedEvidence=[];
  for(const e of sequence){const html=await box.qualifiedDailyOr(e.week,e.day,'mishna',e.schedule,()=>{throw Error('ADJACENT_SELECTED_FALLBACK');});const dom=parse5.parseFragment(html);assert.equal(nodes(dom,n=>attr(n,'data-qualified-daily')===e.key).length,1);const packet=JSON.parse(raws.get(e.url+'?v='+e.payloadSHA256));for(const u of packet.sections.mishna.units){const a=one(dom,n=>attr(n,'data-reading-unit')===u.owner);assert.equal(text(direct(a,'original')),u.he);assert.equal(text(direct(a,'en')),u.en);}sequenceRenders++;}
  assert.deepEqual(requests.slice(beforeSequence),[neighbors[0],target,neighbors[1]].map(e=>e.url+'?v='+e.payloadSHA256),'EXACT_NEIGHBOR_REQUEST_SEQUENCE');
  assert.equal(requests.length,4,'FRESH_NEIGHBOR_CACHE_ISOLATION');assert.equal(new Set(requests).size,3);
- assert.equal(renders,64);assert.equal(unitInstances,768);assert.equal(noteInstances,832);assert.equal(pairInstances,384);assert.equal(negativeCases,8);assert.equal(restoredPositives,12);assert.equal(coordinatedEvidence.length,4);
+ assert.equal(renders,64);assert.equal(unitInstances,768);assert.equal(noteInstances,2816);assert.equal(pairInstances,384);assert.equal(negativeCases,8);assert.equal(restoredPositives,12);assert.equal(coordinatedEvidence.length,4);
  const compiler=require(path.join(process.env.AJEW_TEST_DEPENDENCIES||root,'node_modules/@astrojs/compiler'));const transformed=await compiler.transform(astro,{filename:'src/pages/reader/chok.astro'});assert.equal(transformed.diagnostics.filter(d=>d.severity===1).length,0);
  console.log(JSON.stringify({pass:true,newReadings:1,independentOwners:owners,independentBilingualNotes:notes,realRegisteredCallerMatrixRenders:renders,completeUnitInstances:unitInstances,mandatoryVisibleNoteInstances:noteInstances,immediatePairInstances:pairInstances,initialVersionedPayloadRequests:1,checksumValidNegativeCases:negativeCases,freshSameOwnerPositives:restoredPositives,coordinatedOracleNegatives:coordinatedEvidence,unselectedLegacyCases:adjacentLegacy,WednesdayThursdayFridayThursdayCallerRenders:sequenceRenders,totalIsolatedVersionedRequests:requests.length,scriptSRI:true,actualAstroTransformErrors:0,nativeOrWholePageOrFullInitializerOrPublicationClaim:false}));
 })().catch(error=>{console.error(error.stack||String(error));process.exitCode=1;});

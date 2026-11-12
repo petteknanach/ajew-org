@@ -51,7 +51,9 @@
     });
   }
   function unitPlan(p) {
-    fields(p, ['owner', 'ref', 'role', 'status', 'originalSHA256', 'englishSHA256', 'explanationSHA256', 'notesSHA256', 'edition', 'provenanceSHA256', 'admission']);
+    var optional = ['introductionSHA256', 'learningAidSHA256'].filter(function (k) { return Object.prototype.hasOwnProperty.call(p, k); });
+    fields(p, ['owner', 'ref', 'role', 'status', 'originalSHA256', 'englishSHA256', 'explanationSHA256', 'notesSHA256', 'edition', 'provenanceSHA256', 'admission'].concat(optional));
+    optional.forEach(function (k) { if (p.status !== 'complete') fail('supplement on empty unit'); hash(p[k]); });
     text(p.owner); text(p.ref); text(p.role); text(p.edition); hash(p.provenanceSHA256); gates(p.admission);
     if (p.status !== 'complete' && p.status !== 'source-empty') fail('held unit');
     if (p.status === 'source-empty') {
@@ -159,7 +161,9 @@
       list(s.units); if (s.units.length !== plan.units.length) fail('incomplete section');
       s.units.forEach(function (u, i) {
         var wanted = plan.units[i];
-        fields(u, ['owner', 'ref', 'role', 'status', 'he', 'en', 'explanation', 'notes']);
+        var supplements = ['introduction', 'learningAid'].filter(function (k) { return Object.prototype.hasOwnProperty.call(wanted, k + 'SHA256'); });
+        fields(u, ['owner', 'ref', 'role', 'status', 'he', 'en', 'explanation', 'notes'].concat(supplements));
+        supplements.forEach(function (k) { pair(u[k]); checks.push(function () { return checkDigest(canonical(u[k]), wanted[k + 'SHA256']); }); });
         ['owner', 'ref', 'role', 'status'].forEach(function (key) { if (u[key] !== wanted[key]) fail('wrong unit identity'); });
         list(u.notes);
         if (u.status === 'source-empty') {
@@ -182,7 +186,7 @@
   function shown(field, language) {
     if (field === 'original') return language !== 'original';
     if (field === 'untouched') return language === 'original';
-    if (field === 'explanation') return language !== 'original';
+    if (field === 'explanation' || field === 'introduction' || field === 'learning-aid') return language !== 'original';
     if (field === 'he') return language === 'he' || language === 'both';
     return language === 'en' || language === 'both';
   }
@@ -224,13 +228,21 @@
     var credit = mandatory(units, true);
     return credit ? '<details class="ck-source-credits"><summary>מקורות ורישיון · Sources and licence</summary>' + credit + '</details>' : '';
   }
+  function supplement(value, role, language) {
+    if (!value) return '';
+    var aid = role === 'learning-aid', tag = aid ? 'details' : 'section';
+    var title = aid ? 'עזר לימוד · Learning aid' : 'הקדמה · Introduction';
+    return '<' + tag + ' class="ck-daily-' + role + '" data-daily-field="' + role + '" data-daily-role="' + role + '"' + (shown(role, language) ? '' : ' hidden') + '>' +
+      '<' + (aid ? 'summary' : 'h4') + '>' + title + '</' + (aid ? 'summary' : 'h4') + '>' + field(value.he, 'he', language) + field(value.en, 'en', language) + '</' + tag + '>';
+  }
   function body(u, language, mode, transform, commentary, boldCarrier) {
     if (u.status === 'source-empty') return '';
     var transformed = transform(u.he, mode); if (typeof transformed !== 'string') fail('invalid source transform');
     return '<article class="ck-daily-unit" data-reading-unit="' + esc(u.owner) + '" data-reading-ref="' + esc(u.ref) + '" data-field-role="' + esc(u.role) + '">' +
+      supplement(u.introduction, 'introduction', language) +
       field(transformed, 'original', language, boldCarrier) + field(u.he, 'untouched', language, boldCarrier) + field(u.en, 'en', language) +
       '<details class="ck-daily-explanation" data-daily-field="explanation" open' + (commentary && shown('explanation', language) ? '' : ' hidden') + '><summary>' + esc(u.explanation.title.he) + ' · ' + esc(u.explanation.title.en) + '</summary>' +
-      u.explanation.paragraphs.map(function (p) { return field(p.he, 'he', language) + field(p.en, 'en', language); }).join('') + '</details></article>';
+      u.explanation.paragraphs.map(function (p) { return field(p.he, 'he', language) + field(p.en, 'en', language); }).join('') + '</details>' + supplement(u.learningAid, 'learning-aid', language) + '</article>';
   }
   function render(packet, expected, section, options) {
     var s = packet.sections[section], plan = expected.sections[section];

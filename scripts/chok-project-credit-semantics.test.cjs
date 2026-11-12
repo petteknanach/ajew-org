@@ -3,7 +3,7 @@
 const assert=require('node:assert/strict'),{createHash}=require('node:crypto');
 const {documentFor}=require('./qualified-earlier-parsha-test-dom.cjs');
 const sha=b=>createHash('sha256').update(b).digest('hex');
-const SOURCE_NOTICES_SHA='b1964e0c449f831e8cc9b5786efe7221b70ccc50f1316cf503413c377f6e9e11';
+const SOURCE_NOTICES_SHA='0c7521f86cf7316ed78f1c2319bdabf7d47a097f5cfb884634965b5684a8b39f';
 const GROUPS=[['credit-32','credit-34'],['credit-43','credit-44','credit-45','credit-46']];
 const URIS=[
  'http://he.wikisource.org/wiki/%D7%AA%D7%9C%D7%9E%D7%95%D7%93_%D7%91%D7%91%D7%9C%D7%99',
