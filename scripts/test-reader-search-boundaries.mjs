@@ -155,5 +155,5 @@ test('URL-query Find uses the same qualified source paragraph scope',()=>{
 });
 test('LH owning page versions the changed Find runtime without rewriting other books',()=>{
  const page=readFileSync(new URL('../src/pages/reader/likutay-halachos/[part]/[torah].astro',import.meta.url),'utf8');
- assert.ok(page.includes('<script src="/reader-script.js?v=xref-recognition-947964bb91d9" defer></script>'));
+ assert.ok(page.includes('<script src="/reader-script.js?v=xref-recognition-98deb332e54c" defer></script>'));
 });

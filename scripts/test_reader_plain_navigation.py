@@ -51,8 +51,8 @@ _NANACH_H1_PRESENTATION_EDITS = (('{semanticH1 ? <h1 class="torah-number" style=
 
 def nanach_heading_preimage(template):
     # Only the complete admitted cache-query successor can reach the frozen 6a body guard.
-    if hashlib.sha256(template.encode()).hexdigest() == "95c38c2fb41ea0d09acca73d55cee6d479fa05123c23a5b5142a257ad5026728":
-        template = template.replace("/reader-script.js?v=xref-recognition-947964bb91d9", "/reader-script.js?v=xref-membership-7630cd78fcb4", 1)
+    if hashlib.sha256(template.encode()).hexdigest() == "b72ffc42da69d6d2a9f5f08622e4d0619042dbeccd8fbc599b1386733c5a2fd3":
+        template = template.replace("/reader-script.js?v=xref-recognition-98deb332e54c", "/reader-script.js?v=xref-membership-7630cd78fcb4", 1)
         assert hashlib.sha256(template.encode()).hexdigest() == "c2ec78543e8956743d394406d9fbaf3dd93e42f39e84894cf3490b915fe64ed5"
     for current, predecessor in _NANACH_H1_PRESENTATION_EDITS:
         if template.count(current) != 1:
@@ -264,7 +264,7 @@ class NavigationTests(unittest.TestCase):
         # changes; conserve those exact bytes rather than roll them back.
         baseline = nanach_heading_preimage(baseline_bytes(path, OWNERSHIP_BASE).decode()).encode()
         self.assertEqual(nanach_heading_preimage(template).encode(), baseline)
-        mutations = [('guard expansion', 'const semanticH1 = ["1/1"', 'const semanticH1 = ["1/999","1/1"'), ('guard coercion', '.includes(`${part}/${torah}`)', '.includes(`${parseInt(part)}/${parseInt(torah)}`)'), ('hidden heading', '<h1 class="torah-number"', '<h1 hidden class="torah-number"'), ('hidden ancestor', '<div class="reader-header">', '<div class="reader-header" aria-hidden="true">'), ('heading text', '{torahData.title}</h1>', "{'changed'}</h1>"), ('physical loader', 'volume-${part}/chapter-${torahNum}.json', 'volume-${part}/chapter-${torahNum + 1}.json'), ('route lower bound', 'for (let torah = 1; torah <=', 'for (let torah = 0; torah <='), ('English reading field', '{seg.en}</div>', "{'changed'}</div>"), ('pointing fallback', '>{seg.he_nikud || seg.he}</div>', '>{seg.he}</div>'), ('source segment ID', 'id={`seg-${seg.index}`}', 'id={`seg-${seg.index + 1}`}'), ('script version', 'xref-recognition-947964bb91d9', 'unapproved-script-version'), ('duplicate heading', '<div class="reader-header">', '<div class="reader-header"><h1>Unapproved</h1>'), ('removed inherited heading color', 'margin: 0; color: inherit;', 'margin: 0;'), ('changed inherited heading color', 'color: inherit;', 'color: #000;')]
+        mutations = [('guard expansion', 'const semanticH1 = ["1/1"', 'const semanticH1 = ["1/999","1/1"'), ('guard coercion', '.includes(`${part}/${torah}`)', '.includes(`${parseInt(part)}/${parseInt(torah)}`)'), ('hidden heading', '<h1 class="torah-number"', '<h1 hidden class="torah-number"'), ('hidden ancestor', '<div class="reader-header">', '<div class="reader-header" aria-hidden="true">'), ('heading text', '{torahData.title}</h1>', "{'changed'}</h1>"), ('physical loader', 'volume-${part}/chapter-${torahNum}.json', 'volume-${part}/chapter-${torahNum + 1}.json'), ('route lower bound', 'for (let torah = 1; torah <=', 'for (let torah = 0; torah <='), ('English reading field', '{seg.en}</div>', "{'changed'}</div>"), ('pointing fallback', '>{seg.he_nikud || seg.he}</div>', '>{seg.he}</div>'), ('source segment ID', 'id={`seg-${seg.index}`}', 'id={`seg-${seg.index + 1}`}'), ('script version', 'xref-recognition-98deb332e54c', 'unapproved-script-version'), ('duplicate heading', '<div class="reader-header">', '<div class="reader-header"><h1>Unapproved</h1>'), ('removed inherited heading color', 'margin: 0; color: inherit;', 'margin: 0;'), ('changed inherited heading color', 'color: inherit;', 'color: #000;')]
         for label, old, new in mutations:
             with self.subTest(mutation=label):
                 self.assertIn(old, template)

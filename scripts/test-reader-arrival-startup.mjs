@@ -70,7 +70,7 @@ test('every referencing Astro page closes the immutable script cache',()=>{
   for(const name of stdout.trim().split('\n').filter(n=>n.endsWith('.astro'))){
     const bytes=readFileSync(new URL('../'+name,import.meta.url));if(!bytes.includes(Buffer.from('/reader-script.js')))continue;
     const urls=bytes.toString().match(/\/reader-script\.js(?:\?v=[^"\s<>]+)?/g)||[];
-    for(const url of urls){assert.equal(url,'/reader-script.js?v=xref-recognition-947964bb91d9',name);references++;}
+    for(const url of urls){assert.equal(url,'/reader-script.js?v=xref-recognition-98deb332e54c',name);references++;}
   }
   assert.ok(references>0);
 });

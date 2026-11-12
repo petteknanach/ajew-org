@@ -4,7 +4,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs'), path = require('node:path'), {createHash} = require('node:crypto');
 const sha = b => createHash('sha256').update(b).digest('hex');
 const raw = fs.readFileSync(path.join(__dirname, 'reader-cross-reference-cache-delta.json'));
-assert.equal(sha(raw), '0e6f0bada6335d1abee32a85ac2c022669b5055ab3a0d750e83a889d40067278', 'XREF_QUERY_AUTHORITY_PIN');
+assert.equal(sha(raw), 'f2fe87303dc58496d37f671b9316bd7c42a3caf7a186007d59ffa25ab731a89a', 'XREF_QUERY_AUTHORITY_PIN');
 const delta = JSON.parse(raw);
 assert.equal(Object.keys(delta.paths).length, 258, 'XREF_EXACT_QUERY_DOMAIN');
 function restore(relative, bytes) {
@@ -68,7 +68,7 @@ if (require.main === module) (async () => {
   assert.equal(sha(candidate), delta.runtimeSHA256, 'XREF_RUNTIME_BYTE_BOUND_URL');
   // Actual frozen cache-first workers, warmed with every historical query key.
   // No installed worker, browser, cache policy or global cache name is changed.
-  const vm = require('node:vm'), origin='https://ajew.org', warmed=[...new Set(paths.map(p=>delta.paths[p].previousURL)), '/reader-script.js', predecessorURL];
+  const vm = require('node:vm'), origin='https://ajew.org', warmed=[...new Set(paths.map(p=>delta.paths[p].previousURL)), '/reader-script.js', predecessorURL, '/reader-script.js?v=xref-recognition-947964bb91d9'];
   const workerResults=[];
   for (const worker of ['public/sw.js','public/sw-v2.js']) {
     const listeners={}, store=new Map(warmed.map(u=>[origin+u,new Response('HISTORICAL:'+u)])), network=[];
