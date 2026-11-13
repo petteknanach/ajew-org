@@ -27,7 +27,7 @@ function qualifiedTransport(d,env,mainCode){
      const src=String(node.src||node.getAttribute('src')),url=new URL(src,'https://fixture.invalid/reader/chok/');requests.push(src);
      assert.equal(url.origin,'https://fixture.invalid');assert.equal(src,url.pathname+url.search);assert.equal(url.hash,'');
      const match=/^\/chok-qualified-zohar\.js\?v=([a-f0-9]{64})$/.exec(src);assert(match,'exact qualified-module URL/query required');
-     assert(Object.hasOwn(owners,match[1]),'accepted29/current37 module only');assert.equal(digest(require('./chok-reference-order-conservation.cjs').restoreTodayZohar('public/chok.js',Buffer.from(mainCode))),owners[match[1]],'module belongs to actual selected Main');
+     if(match[1]==="0bc54ea8f9db892a4c12fe3da366a66770f6b874d7c42fd0b8d3a7774de07365"){assert.equal(digest(require('./chok-sa-optional-inverse.cjs').restore('public/chok.js',Buffer.from(mainCode))),"1d9e4563b3f8263d28978356f03e14756930286b270a6f01d7d289b7aa418e51",'exact all-adopted final Main owns this module');}else{assert(Object.hasOwn(owners,match[1]),'accepted29/current37 module only');assert.equal(digest(require('./chok-reference-order-conservation.cjs').restoreTodayZohar('public/chok.js',Buffer.from(mainCode))),owners[match[1]],'module belongs to actual selected Main');}
      const bytes=Buffer.from(read('public'+url.pathname),'utf8');assert.equal(digest(bytes),match[1],'complete versioned module bytes');
      assert.equal(node.integrity,'sha256-'+digest(bytes,'base64'),'actual declared SRI');assert.equal(node.crossOrigin,'anonymous');
      vm.runInContext(bytes.toString('utf8'),env.box,{filename:src});

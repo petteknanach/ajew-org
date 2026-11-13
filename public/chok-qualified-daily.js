@@ -51,7 +51,7 @@
     });
   }
   function unitPlan(p) {
-    var optional = ['introductionSHA256', 'learningAidSHA256'].filter(function (k) { return Object.prototype.hasOwnProperty.call(p, k); });
+    var optional = ['introductionSHA256', 'learningAidSHA256', 'segmentsSHA256'].filter(function (k) { return Object.prototype.hasOwnProperty.call(p, k); });
     fields(p, ['owner', 'ref', 'role', 'status', 'originalSHA256', 'englishSHA256', 'explanationSHA256', 'notesSHA256', 'edition', 'provenanceSHA256', 'admission'].concat(optional));
     optional.forEach(function (k) { if (p.status !== 'complete') fail('supplement on empty unit'); hash(p[k]); });
     text(p.owner); text(p.ref); text(p.role); text(p.edition); hash(p.provenanceSHA256); gates(p.admission);
@@ -63,7 +63,9 @@
   }
   function sectionPlan(s, name) {
     var absent = Object.prototype.hasOwnProperty.call(s, 'absenceProofs');
-    fields(s, ['disposition', 'reference', 'extent', 'title', 'units', 'pairs', 'prescribedRashi', 'optionalRashi', 'admission'].concat(absent ? ['absenceProofs'] : []));
+    var chapter = ['introductionSHA256', 'notesSHA256'].filter(function (k) { return Object.prototype.hasOwnProperty.call(s, k); });
+    chapter.forEach(function (k) { hash(s[k]); });
+    fields(s, ['disposition', 'reference', 'extent', 'title', 'units', 'pairs', 'prescribedRashi', 'optionalRashi', 'admission'].concat(absent ? ['absenceProofs'] : [], chapter));
     if (absent) {
       if (name !== 'mishna') fail('absence outside Mishna');
       equal(s.absenceProofs, [{"mishna":"mishna-mikvaot-6-6","owner":"תולדות|יום שישי|bartenura|mishna-mikvaot:6:6","schema":"witness-limited-commentary-absence-v1","selectedViewSHA256":"2ecc221e85f7a5571c56d195a4d0851049ce3548c74d8ee14f1fa4a7ebcdcb25","sourceCandidateSHA256":"1cad8e1b20f53fda213e8c9937ada9e9280685bc1f3261485ef7f797ebc688f4","sourceProofPointer":"/extentProof/B6_6WitnessLimitedEmpty","sourceSelectionID":"B-06","universalAbsence":false}]);
@@ -155,15 +157,33 @@
     Object.keys(expected.sections).forEach(function (name) {
       var plan = expected.sections[name], s = p.sections[name];
       var absent = Object.prototype.hasOwnProperty.call(plan, 'absenceProofs');
-      fields(s, ['disposition', 'reference', 'extent', 'units'].concat(absent ? ['absenceProofs'] : []));
+      var chapter = ['introduction', 'notes'].filter(function (k) { return Object.prototype.hasOwnProperty.call(plan, k + 'SHA256'); });
+      fields(s, ['disposition', 'reference', 'extent', 'units'].concat(absent ? ['absenceProofs'] : [], chapter));
+      chapter.forEach(function (k) {
+        if (k === 'introduction') pair(s[k]);
+        else { list(s.notes); s.notes.forEach(function (n) { fields(n, ['id', 'role', 'he', 'en']); text(n.id); pair({he:n.he,en:n.en}); if (n.role !== 'general-reading-caution' || seen.has(n.id)) fail('invalid chapter caution'); seen.add(n.id); }); }
+        checks.push(function () { return checkDigest(canonical(s[k]), plan[k + 'SHA256']); });
+      });
       if (absent) equal(s.absenceProofs, plan.absenceProofs);
       equal(s.disposition, plan.disposition); equal(s.reference, plan.reference); equal(s.extent, plan.extent);
       list(s.units); if (s.units.length !== plan.units.length) fail('incomplete section');
       s.units.forEach(function (u, i) {
         var wanted = plan.units[i];
-        var supplements = ['introduction', 'learningAid'].filter(function (k) { return Object.prototype.hasOwnProperty.call(wanted, k + 'SHA256'); });
+        var supplements = ['introduction', 'learningAid', 'segments'].filter(function (k) { return Object.prototype.hasOwnProperty.call(wanted, k + 'SHA256'); });
         fields(u, ['owner', 'ref', 'role', 'status', 'he', 'en', 'explanation', 'notes'].concat(supplements));
-        supplements.forEach(function (k) { pair(u[k]); checks.push(function () { return checkDigest(canonical(u[k]), wanted[k + 'SHA256']); }); });
+        supplements.forEach(function (k) {
+          if (k !== 'segments') pair(u[k]);
+          else {
+            list(u.segments); if (!u.segments.length) fail('missing source segments');
+            var end = 0, source = Array.from(u.he);
+            u.segments.forEach(function (v, index) {
+              fields(v, ['index', 'he', 'en', 'sourceStart', 'sourceEnd', 'endExclusive', 'unit']); text(v.he); text(v.en);
+              if (v.index !== index || !Number.isInteger(v.sourceStart) || !Number.isInteger(v.sourceEnd) || v.sourceStart < end || ['', '\n\n'].indexOf(source.slice(end,v.sourceStart).join('')) < 0 || (index === 0 && v.sourceStart !== 0) || v.sourceEnd <= end || v.sourceEnd > source.length || v.endExclusive !== true || v.unit !== 'unicode-codepoint' || source.slice(v.sourceStart,v.sourceEnd).join('') !== v.he) fail('invalid source segment'); end = v.sourceEnd;
+            });
+            if (end !== source.length || u.segments.map(function (v) { return v.en; }).join('\n\n') !== u.en) fail('incomplete segment aliases');
+          }
+          checks.push(function () { return checkDigest(canonical(u[k]), wanted[k + 'SHA256']); });
+        });
         ['owner', 'ref', 'role', 'status'].forEach(function (key) { if (u[key] !== wanted[key]) fail('wrong unit identity'); });
         list(u.notes);
         if (u.status === 'source-empty') {
@@ -186,7 +206,7 @@
   function shown(field, language) {
     if (field === 'original') return language !== 'original';
     if (field === 'untouched') return language === 'original';
-    if (field === 'explanation' || field === 'introduction' || field === 'learning-aid') return language !== 'original';
+    if (field === 'explanation' || field === 'introduction' || field === 'learning-aid' || field === 'chapter-introduction') return language !== 'original';
     if (field === 'he') return language === 'he' || language === 'both';
     return language === 'en' || language === 'both';
   }
@@ -272,7 +292,7 @@
     // Deliberately not ck-source-island/ck-he/ck-en/ck-explanation: the existing
     // global applyLanguages consumer and original-mode CSS must not own this island.
     // Study notes remain outside optional source disclosures; legal credits have their own panel.
-    return '<div class="ck-qualified-daily" data-qualified-daily="' + esc(expected.key) + '" data-daily-section="' + section + '" data-daily-language="' + lang + '" data-daily-commentary="' + (options.commentary ? 'on' : 'off') + '"><header><h3>' + esc(plan.title.he) + ' · ' + esc(plan.title.en) + '</h3><div role="group" aria-label="Source language">' + controls + '</div></header>' + html + (['mishna', 'halacha', 'mussar'].indexOf(section) >= 0 ? '' : mandatory(s.units)) + sourceCredits(s.units) + '</div>';
+    return '<div class="ck-qualified-daily" data-qualified-daily="' + esc(expected.key) + '" data-daily-section="' + section + '" data-daily-language="' + lang + '" data-daily-commentary="' + (options.commentary ? 'on' : 'off') + '"><header><h3>' + esc(plan.title.he) + ' · ' + esc(plan.title.en) + '</h3><div role="group" aria-label="Source language">' + controls + '</div></header>' + supplement(s.introduction, 'chapter-introduction', lang) + (s.notes || []).map(function (n) { return '<aside class="ck-source-qualification" data-daily-note="' + esc(n.id) + '" data-note-section="' + esc(section) + '" data-field-role="' + esc(n.role) + '"><p lang="he" dir="rtl">' + esc(n.he) + '</p><p lang="en" dir="ltr">' + esc(n.en) + '</p></aside>'; }).join('') + html + (['mishna', 'halacha', 'mussar'].indexOf(section) >= 0 ? '' : mandatory(s.units)) + sourceCredits(s.units) + '</div>';
   }
   function setLanguage(island, language) {
     if (LANGUAGES.indexOf(language) < 0) fail('invalid language');
