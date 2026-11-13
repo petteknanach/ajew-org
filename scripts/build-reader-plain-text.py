@@ -456,7 +456,48 @@ def write_known_quoted_passages() -> list[str]:
 
 
 def main() -> None:
+    def rimzei_source_order() -> dict[str, int]:
+        """Qualify only the selected thirteen-section physical owner, not other books."""
+        book = 'rimzei-hamaasiyos'
+        directory = READER_DIR / book
+        if directory.is_symlink():
+            raise ValueError('Symlink Rimzei source namespace')
+        if not directory.exists():
+            return {}
+        if any(p.is_symlink() for p in directory.rglob('*')):
+            raise ValueError('Symlink Rimzei source/index')
+        books = _ownership.read_object(READER_DIR / 'catalog.json').get('books', [])
+        owners = [b for b in books if isinstance(b, dict) and b.get('id') == book]
+        if len(owners) != 1:
+            raise ValueError('Missing/ambiguous Rimzei catalog owner')
+        parts = owners[0].get('parts')
+        if (not isinstance(parts, list) or len(parts) != 1 or not isinstance(parts[0], dict)
+                or parts[0].get('part') != 1 or parts[0].get('totalTorahs') != 13
+                or parts[0].get('indexUrl') != f'/reader/{book}/index.json'):
+            raise ValueError('Invalid Rimzei catalog part')
+        index = _ownership.read_object(directory / 'index.json')
+        items = index.get('torahs', [])
+        if (index.get('book') != book or index.get('part') != 1
+                or index.get('totalTorahs') != 13
+                or [i.get('number') for i in items] != list(range(1, 14))):
+            raise ValueError('Incomplete/ambiguous Rimzei source index')
+        if {p.relative_to(READER_DIR).as_posix() for p in directory.rglob('*.json')} != {f'{book}/section-{i["number"]}.json' for i in items} | {f'{book}/index.json'}:
+            raise ValueError('Missing/unexpected Rimzei source owner')
+        order = {}
+        for rank, item in enumerate(items):
+            n = item['number']
+            path = directory / f'section-{n}.json'
+            data = _ownership.source_data(path, collect_segments)
+            if (infer_ids(path, data) != (book, '1', str(n))
+                    or item.get('url') != f'/reader/{book}/1/{n}'
+                    or any(data.get(k) != item.get(k) for k in ('title', 'hebrewTitle'))
+                    or len(data['segments']) != item.get('paragraphs')):
+                raise ValueError(f'Rimzei physical source/index mismatch: {path}')
+            order[path.relative_to(READER_DIR).as_posix()] = rank
+        return order
+
     tanach_bindings = _ownership.preflight(READER_DIR, collect_segments)
+    rimzei_order = rimzei_source_order()
     if OUT_DIR.exists():
         shutil.rmtree(OUT_DIR)
     OUT_DIR.mkdir(parents=True)
@@ -584,6 +625,11 @@ def main() -> None:
     for book, rows in sorted(by_book.items()):
         if book in qualified_primary_books:
             rows = sorted(rows, key=lambda r: (int(r["part"]), int(r["torah"])))
+        if book == 'rimzei-hamaasiyos':
+            sources = [entry_sources.get(id(r)) for r in rows]
+            if len(sources) != len(rimzei_order) or set(sources) != set(rimzei_order):
+                raise ValueError('Rimzei full book requires every physical indexed owner once')
+            rows = sorted(rows, key=lambda r: rimzei_order[entry_sources[id(r)]])
         if book == "likutay-halachos":
             rows = _lh_publication.reading_order(rows, READER_DIR)
         if book == AITZOAS_BOOK:

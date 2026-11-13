@@ -201,6 +201,66 @@ class OwnershipTests(unittest.TestCase):
         self.assertEqual(hashlib.sha256((self.out / 'tanach-malachi/full.txt').read_bytes()).hexdigest(), 'b388508af396360c1b4387aeb6de8413cbbd96383ad907333ba37997c06a36cb')
         self.assertEqual({p: hashlib.sha256(p.read_bytes()).hexdigest() for p in self.reader.rglob('*.json')}, before)
 
+    def test_rimzei_complete_exports_follow_source_index_order(self):
+        import re
+        book = 'rimzei-hamaasiyos'
+        for source in (ROOT / 'public/reader' / book).glob('*.json'):
+            target = self.reader / book / source.name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(source, target)
+        before = {p: p.read_bytes() for p in self.reader.rglob('*.json')}
+        catalog = run_producer(self.reader, self.out)
+        index = json.loads((self.reader / book / 'index.json').read_bytes())
+        self.assertEqual([i['number'] for i in index['torahs']], list(range(1, 14)))
+        rows = [next(r for r in catalog['entries'] if (r['bookId'], r['part'], r['torah']) == (book, '1', str(i['number']))) for i in index['torahs']]
+        self.assertEqual(sum(r['bookId'] == book for r in catalog['entries']), 13)
+        txt = [f'{book} — complete plain text', f'Source index: https://ajew.org/reader/{book}/', '', 'Sections:']
+        md = [f'# {book} — complete plain text', f'\nSource index: https://ajew.org/reader/{book}/\n', '## Sections']
+        txt += [f"- {r['title']} — https://ajew.org{r['url']}index.txt" for r in rows]
+        md += [f"- [{r['title']}]({r['url']}) — [TXT]({r['url']}index.txt)" for r in rows]
+        txt.append('\n\n====================\n')
+        md.append('\n---\n')
+        for r in rows:
+            section = self.out / r['url'].removeprefix('/reader-plain/')
+            source = json.loads((self.reader / book / f'section-{r["torah"]}.json').read_bytes())
+            self.assertEqual(json.loads((section / 'index.json').read_bytes())['segments'], P.collect_segments(source))
+            txt += [f"\n\n# {r['title']}", f"URL: https://ajew.org{r['url']}\n", (section / 'index.txt').read_bytes().decode()]
+            md += [f"\n\n# {r['title']}", f"\nURL: https://ajew.org{r['url']}\n", (section / 'index.md').read_bytes().decode()]
+        for name, chunks in [('full.txt', txt), ('full.md', md)]:
+            self.assertTrue((self.out / book / name).read_bytes() == ('\n'.join(chunks).strip() + '\n').encode(), f'{book}/{name}: exact source-index TOC and complete section chunks')
+        self.assertEqual(re.findall(r'<li><a href="([^"]+)">', (self.out / book / 'index.html').read_text()), [r['url'] for r in rows])
+        self.assertEqual({p: p.read_bytes() for p in self.reader.rglob('*.json')}, before)
+
+    def test_rimzei_invalid_selection_preserves_previous_output(self):
+        book = 'rimzei-hamaasiyos'
+        for source in (ROOT / 'public/reader' / book).glob('*.json'):
+            target = self.reader / book / source.name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(source, target)
+        mutations = {
+            'missing section': lambda r: (r / book / 'section-2.json').unlink(),
+            'empty section': lambda r: self.edit(r / book / 'section-2.json', lambda d: d.update(segments=[])),
+            'wrong owner': lambda r: self.edit(r / book / 'section-2.json', lambda d: d.update(book='foreign')),
+            'wrong header': lambda r: self.edit(r / book / 'section-2.json', lambda d: d.update(title='foreign')),
+            'duplicate index item': lambda r: self.edit(r / book / 'index.json', lambda d: d['torahs'].append(copy.deepcopy(d['torahs'][0]))),
+            'duplicate catalog owner': lambda r: self.edit(r / 'catalog.json', lambda d: d['books'].append(copy.deepcopy(next(b for b in d['books'] if b['id'] == book)))),
+        }
+        for name, mutate in mutations.items():
+            with self.subTest(name=name):
+                reader = Path(self.temp.name) / name / 'reader'
+                shutil.copytree(self.reader, reader)
+                mutate(reader)
+                self.assert_rejected_without_writes(reader, reader.parent / 'out', list(reader.rglob('*.json')))
+        for relative in [book, book + '/index.json', book + '/section-2.json']:
+            with self.subTest(symlink=relative):
+                reader = Path(self.temp.name) / ('link-' + relative.replace('/', '-')) / 'reader'
+                shutil.copytree(self.reader, reader)
+                selected = reader / relative
+                witness = selected.with_name(selected.name + '.outside')
+                selected.rename(witness)
+                selected.symlink_to(witness, target_is_directory=witness.is_dir())
+                self.assert_rejected_without_writes(reader, reader.parent / 'out', [p for p in reader.rglob('*.json') if not p.is_symlink()])
+
     def test_malformed_missing_ambiguous_sources_fail_closed(self):
         mutations = {
             'missing primary': lambda r: (r / 'tanach-malachi/part-1/torah-2.json').unlink(),
