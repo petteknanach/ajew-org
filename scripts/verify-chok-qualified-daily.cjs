@@ -35,7 +35,20 @@ function checkOracle(payload,entry,oracle){
  const approved=new Map(oracle.units.filter(u=>u.readingId===entry.key).map(u=>[u.owner,u]));assert(approved.size);
  assert.deepEqual(Object.keys(payload.sections).sort(),Object.keys(entry.sections).sort());let checked=0,notes=0;
  for(const[name,section]of Object.entries(payload.sections)){
-  if((name==='halacha'||name==='mussar')&&oracle.todayClassical&&entry.key===oracle.todayClassical.key){ const selected=oracle.todayClassical.sections[name];assert(selected);assert.deepEqual(section.reference,selected.reference);assert.deepEqual(section.extent,selected.extent);assert.deepEqual(section.units.map(u=>u.owner),selected.owners);
+  const chapterApproved=oracle.sectionSupplements&&oracle.sectionSupplements[entry.key]&&oracle.sectionSupplements[entry.key][name];
+  for(const k of ['introduction','notes']){
+   const approvedPresent=!!chapterApproved&&Object.prototype.hasOwnProperty.call(chapterApproved,k),descriptorPresent=Object.prototype.hasOwnProperty.call(entry.sections[name],k+'SHA256'),payloadPresent=Object.prototype.hasOwnProperty.call(section,k);
+   assert.equal(descriptorPresent,approvedPresent,'REVIEWED_CHAPTER_PRESENCE:descriptor:'+k);assert.equal(payloadPresent,approvedPresent,'REVIEWED_CHAPTER_PRESENCE:payload:'+k);
+   if(approvedPresent){assert.deepEqual(section[k],chapterApproved[k],'REVIEWED_CHAPTER_FULL_FIELD:'+k);assert.equal(entry.sections[name][k+'SHA256'],chapterApproved[k+'SHA256'],'REVIEWED_CHAPTER_DESCRIPTOR:'+k);assert.equal(sha(require('./chok-today-classical-admission.cjs').canonical(section[k])),chapterApproved[k+'SHA256'],'REVIEWED_CHAPTER_DIGEST:'+k);}
+  }
+  const seven=oracle.sevenSourceSelected&&oracle.sevenSourceSelected[entry.key]&&oracle.sevenSourceSelected[entry.key][name];
+  if(seven){
+   assert(['halacha','mussar'].includes(name),'SEVEN_SECTION_ROLE');
+   if(seven.title)assert.deepEqual(entry.sections[name].title,seven.title,'SELECTED_SECTION_TITLE');
+   assert.deepEqual(section.units.map(u=>u.owner),seven.owners,'SEVEN_COMPLETE_OWNER_ORDER');
+   assert.deepEqual(section.reference,seven.reference,'SEVEN_SELECTED_REFERENCE');assert.deepEqual(section.extent,seven.extent,'SEVEN_SELECTED_EXTENT');
+   for(const unit of entry.sections[name].units)assert.equal(unit.admission.sourceUse.evidenceSHA256,seven.sourceUseEvidenceSHA256[unit.owner],'SEVEN_SELECTED_SOURCE_USE');
+  }else if((name==='halacha'||name==='mussar')&&oracle.todayClassical&&entry.key===oracle.todayClassical.key){ const selected=oracle.todayClassical.sections[name];assert(selected);assert.deepEqual(section.reference,selected.reference);assert.deepEqual(section.extent,selected.extent);assert.deepEqual(section.units.map(u=>u.owner),selected.owners);
   }else if((name==='halacha'||name==='mussar')&&oracle.classicalSelected&&oracle.classicalSelected[entry.key]){
    const native=oracle.classicalSelected[entry.key][name];assert(native);assert.equal(section.units.length,1);assert.equal(section.units[0].owner,native.owner);assert.deepEqual(section.reference,native.reference);assert.deepEqual(section.extent,native.extent);assert.equal(entry.sections[name].units[0].admission.sourceUse.evidenceSHA256,native.sourceUseEvidenceSHA256);
   }else if(name==='mussar'){
@@ -56,8 +69,17 @@ function checkOracle(payload,entry,oracle){
   }
   for(const u of section.units){
    const a=approved.get(u.owner);assert(a,'UNREVIEWED_OWNER');assert.equal(u.role,a.role);assert.equal(u.status,'complete');
+   if(a.currentAttachments){
+    assert.deepEqual(u.notes.map(n=>n.id),a.currentAttachments.map(n=>n.id),'CURRENT_ATTACHMENT_ORDER');
+    for(const n of a.currentAttachments){
+     const he=Array.from(u.he).slice(...n.sourceCodepointSpan).join(''),en=Array.from(u.en).slice(...n.englishCodepointSpan).join('');
+     assert.equal(he,n.sourceAnchor,'CURRENT_SOURCE_ANCHOR');assert.equal(sha(he),n.sourceAnchorUTF8SHA256,'CURRENT_SOURCE_ANCHOR_HASH');
+     assert.equal(en,n.englishAnchor,'CURRENT_ENGLISH_ANCHOR');assert.equal(sha(en),n.englishAnchorUTF8SHA256,'CURRENT_ENGLISH_ANCHOR_HASH');assert.equal(sha(u.en),n.englishOwnerSHA256,'CURRENT_ENGLISH_OWNER');
+     const note=u.notes.find(x=>x.id===n.id);assert.deepEqual([note.span.start,note.span.end],n.sourceCodepointSpan,'CURRENT_NOTE_SOURCE_ATTACHMENT');
+    }
+   }
    const plan=entry.sections[name].units.find(x=>x.owner===u.owner);assert(plan);
-   for(const k of ['introduction','learningAid']){
+   for(const k of ['introduction','learningAid','segments']){
     const approvedPresent=Object.prototype.hasOwnProperty.call(a,k+'SHA256'),descriptorPresent=Object.prototype.hasOwnProperty.call(plan,k+'SHA256'),payloadPresent=Object.prototype.hasOwnProperty.call(u,k);
     assert.equal(descriptorPresent,approvedPresent,'REVIEWED_SUPPLEMENT_PRESENCE:descriptor:'+u.owner+':'+k);assert.equal(payloadPresent,approvedPresent,'REVIEWED_SUPPLEMENT_PRESENCE:payload:'+u.owner+':'+k);
     if(approvedPresent){assert.equal(plan[k+'SHA256'],a[k+'SHA256'],'REVIEWED_SUPPLEMENT_DESCRIPTOR_MISMATCH:'+u.owner+':'+k);assert.equal(sha(require('./chok-today-classical-admission.cjs').canonical(u[k])),a[k+'SHA256'],'REVIEWED_SUPPLEMENT_MISMATCH:'+u.owner+':'+k);}
@@ -385,14 +407,103 @@ async function toldosWednesdayHalachaCallerMatrix(root,libraryAPI,entries,e,payl
  }finally{env.close();}
 }
 
+
+// Exact parent-selected Peah successor controls. Registered callbacks only; no native/runtime claim from source preparation.
+async function miketzPeahControls(root,libraryAPI,entries,e,payload,oracle){
+ if(e.key!=='מקץ|יום ראשון')return null;
+ const canonical=require('./chok-today-classical-admission.cjs').canonical;
+ const raw=fs.readFileSync(path.join(root,'public','.'+e.url),'utf8');assert.equal(sha(raw),e.payloadSHA256);assert.deepEqual(JSON.parse(raw),clone(payload));
+ const wanted=oracle.sectionSupplements[e.key].mishna;assert(wanted);assert.equal(payload.sections.mishna.units.length,12);assert.deepEqual(clone(payload.sections.mishna.units.filter(u=>u.role==='bartenura').map(u=>u.segments.length)),[7,4,4,7,1,7]);
+ assert.equal(payload.sections.mishna.units.reduce((n,u)=>n+u.notes.length,0),25);assert.equal(payload.sections.mishna.notes.length,1);
+ const records=[];
+ async function positive(label){const a=libraryAPI.create([e]);const p=clone(await a.load(e.week,e.day,e.schedule,async url=>{assert.equal(url,e.url+'?v='+e.payloadSHA256);return raw;}));assert.deepEqual(p,clone(payload));checkOracle(p,e,oracle);records.push({label,positive:true});}
+ async function control(label,mutate,libraryAccepts){
+  const p=clone(payload),d=clone(e);mutate(p,d);assert(JSON.stringify(p)!==JSON.stringify(payload)||JSON.stringify(d)!==JSON.stringify(e),'PEAH_GENUINE_MUTATION:'+label);const wire=JSON.stringify(p);d.payloadSHA256=sha(wire);
+  const load=async()=>libraryAPI.create([d]).load(d.week,d.day,d.schedule,async url=>{assert.equal(url,d.url+'?v='+d.payloadSHA256);return wire;});
+  if(libraryAccepts){assert.deepEqual(clone(await load()),p);assert.throws(()=>checkOracle(p,d,oracle),undefined,'PEAH_INDEPENDENT_ORACLE_REJECTS:'+label);}else await assert.rejects(load,undefined,'PEAH_SCHEMA_OR_DIGEST_REJECTS:'+label);
+  records.push({label,checksumValid:true,libraryAccepted:libraryAccepts,independentOracleRejected:libraryAccepts});await positive('restored:'+label);
+ }
+ await positive('initial');
+ for(const key of ['introduction','notes']){
+  await control('chapter:'+key+':missing',p=>{delete p.sections.mishna[key];},false);
+  await control('chapter:'+key+':coordinated-removal',(p,d)=>{delete p.sections.mishna[key];delete d.sections.mishna[key+'SHA256'];},true);
+  await control('chapter:'+key+':changed',(p,d)=>{if(key==='notes')p.sections.mishna.notes[0].en+=' changed';else p.sections.mishna.introduction.en+=' changed';},false);
+  await control('chapter:'+key+':coordinated-change',(p,d)=>{if(key==='notes')p.sections.mishna.notes[0].en+=' changed';else p.sections.mishna.introduction.en+=' changed';d.sections.mishna[key+'SHA256']=sha(canonical(p.sections.mishna[key]));},true);
+ }
+ for(let i=0;i<12;i++){
+  for(const key of ['introduction','segments']){
+   await control('owner:'+i+':'+key+':missing',p=>{delete p.sections.mishna.units[i][key];},false);
+   await control('owner:'+i+':'+key+':coordinated-removal',(p,d)=>{delete p.sections.mishna.units[i][key];delete d.sections.mishna.units[i][key+'SHA256'];},true);
+  }
+ }
+ await control('wrong-interleave',p=>{[p.sections.mishna.units[0],p.sections.mishna.units[1]]=[p.sections.mishna.units[1],p.sections.mishna.units[0]];},false);
+ await control('duplicate-owner',p=>{p.sections.mishna.units[1]=clone(p.sections.mishna.units[0]);},false);
+ await control('missing-note',p=>{p.sections.mishna.units[1].notes.pop();},false);
+ await control('note-in-wrong-owner',p=>{p.sections.mishna.units[1].notes[0].owner=p.sections.mishna.units[0].owner;},false);
+ await control('segment-order',p=>{p.sections.mishna.units[1].segments.reverse();},false);
+ await control('segment-heading-tail',p=>{p.sections.mishna.units[1].segments[0].he+=' changed';},false);
+ await control('segment-english-alias',p=>{p.sections.mishna.units[1].segments[0].en+=' changed';},false);
+ await control('coordinated-segment-english',(p,d)=>{const u=p.sections.mishna.units[1],v=d.sections.mishna.units[1];u.segments[0].en+=' changed';u.en=u.segments.map(s=>s.en).join('\n\n');v.englishSHA256=sha(u.en);v.segmentsSHA256=sha(canonical(u.segments));},true);
+ await control('private-field',p=>{p.sections.mishna.units[0].sourceBinding={path:'/root/private-test'};},false);
+ await control('raw-html-in-literal-field',p=>{p.sections.mishna.units[1].he='<b>'+p.sections.mishna.units[1].he+'</b>';},false);
+ // Descriptor-coordinated additions on an actual old owner must still fail independent optional-presence authority.
+ const old=entries.find(x=>x.key==='ויצא|יום שני');assert(old);const oldRaw=fs.readFileSync(path.join(root,'public','.'+old.url),'utf8');assert.equal(sha(oldRaw),old.payloadSHA256);
+ for(const key of ['introduction','notes']){const p=JSON.parse(oldRaw),d=clone(old);p.sections.mishna[key]=clone(wanted[key]);d.sections.mishna[key+'SHA256']=sha(canonical(p.sections.mishna[key]));const wire=JSON.stringify(p);d.payloadSHA256=sha(wire);assert.deepEqual(clone(await libraryAPI.create([d]).load(d.week,d.day,d.schedule,async()=>wire)),p);assert.throws(()=>checkOracle(p,d,oracle),/REVIEWED_CHAPTER_PRESENCE/);await positive('restored:old-unapproved-chapter-'+key);records.push({label:'old-unapproved-chapter-'+key,checksumValid:true,libraryAccepted:true,independentOracleRejected:true});}
+ const originalMain=fs.readFileSync(path.join(root,'public/chok.js'),'utf8'),astro=fs.readFileSync(path.join(root,'src/pages/reader/chok.astro'),'utf8');sourceSRI(root);
+ assert(originalMain.includes("if ((qualifiedDailyHas(wk,dayE,'mishna') || isLechThursday(wk,dayE) || d.mishna && d.mishna.masechet) && want('mishna'))"),'PEAH_ACTUAL_NORMAL_FOCUSED_ELIGIBILITY');
+ assert(originalMain.includes("return qualifiedDailyOr(wk,dayE,'mishna',d,function()"),'PEAH_REGISTERED_MISHNA_CALLER');
+ function originalFunction(name){const marker='  function '+name+'(',a=originalMain.indexOf(marker);assert(a>=0);assert.equal(originalMain.indexOf(marker,a+1),-1);const b=originalMain.indexOf('\n  }',a);assert(b>a);return originalMain.slice(a,b+4);}
+ function choices(id){const select=astro.match(new RegExp('<select id="'+id+'"[^>]*>([\\s\\S]*?)</select>'));assert(select);return Array.from(select[1].matchAll(/<option value="([^"]+)"/g),m=>m[1]);}
+ const languages=choices('ck-language'),modes=choices('ck-mode');assert.deepEqual(languages.slice().sort(),['both','en','he','original']);assert.deepEqual(modes.slice().sort(),['full','letters','nikud','taamim']);
+ const {sandbox,documentFor}=require('./qualified-earlier-parsha-test-dom.cjs'),document=documentFor('<html><body></body></html>'),requests=[],raws=new Map([[e.url+'?v='+e.payloadSHA256,raw],[old.url+'?v='+old.payloadSHA256,oldRaw]]);
+ const env=sandbox(document,'/reader/chok/',async url=>{assert(raws.has(url),'PEAH_REAL_QUEUE_EXACT_REQUEST');requests.push(url);return{ok:true,status:200,text:async()=>raws.get(url)};});
+ try{
+  const box=env.box;box.window.ChokQualifiedDaily=libraryAPI;box.window.ChokQualifiedDailySelected=libraryAPI.create(entries);box.state={};
+  const declarations=['TAAMIM','NIKUD'].map(name=>{const m=originalMain.match(new RegExp('var '+name+'\\s*=\\s*([^;]+);'));assert(m);return'var '+name+' = '+m[1]+';';});
+  const queue=originalMain.match(/  var __fq = \[\], __frunning = 0;/);assert(queue);
+  const want=originalMain.match(/  function want\(key\) \{[^\n]+\}/);assert(want);
+  vm.runInContext(declarations.concat([queue[0],want[0]],['__fnext','rawJSON','fetchJSON','applyWednesdayMode','qualifiedDailyHas','qualifiedDailyReading','qualifiedDailyOr'].map(originalFunction)).join('\n'),box,{filename:'registered-miketz-peah-main-callers.js'});
+  function one(n,p,label){const found=walk(n,p);assert.equal(found.length,1,label);return found[0];}
+  function direct(n,k){return one(n,x=>x.parentNode===n&&attr(x,'data-daily-field')===k,'PEAH_DIRECT_FIELD:'+k);}
+  function visible(n){for(let p=n;p;p=p.parentNode){assert.equal(attr(p,'hidden'),undefined,'PEAH_REQUIRED_NOTE_HIDDEN');assert.notEqual(p.tagName,'details','PEAH_REQUIRED_NOTE_DISCLOSURE');assert(!/display\s*:\s*none|visibility\s*:\s*hidden/.test(attr(p,'style')||''));}}
+  function expectedMode(s,mode){if(mode==='full')return s;if(mode==='nikud')return s.replace(/[\u0591-\u05AF\u05BD\u05C0]/g,'');if(mode==='taamim')return s.replace(/[\u05B0-\u05BC\u05C1\u05C2\u05C7]/g,'');return s.replace(/[\u0591-\u05AF\u05BD\u05C0\u05B0-\u05BC\u05C1\u05C2\u05C7]/g,'');}
+  let cases=0;
+  for(const focus of [null,'mishna'])for(const language of languages)for(const mode of modes)for(const commentary of [false,true]){
+   Object.assign(box.state,{focus,language,mode,commentary,rashi:false});assert(box.want('mishna'));assert(box.qualifiedDailyHas(e.week,e.day,'mishna'));
+   const html=await box.qualifiedDailyOr(e.week,e.day,'mishna',e.schedule,()=>{throw Error('PEAH_QUALIFIED_USED_LEGACY');});assert.equal(typeof html,'string');const dom=parse5.parseFragment(html),island=one(dom,n=>attr(n,'data-qualified-daily')===e.key,'PEAH_ONE_ISLAND');
+   assert.deepEqual(walk(island,n=>attr(n,'data-reading-unit')!==undefined).map(n=>attr(n,'data-reading-unit')),clone(payload.sections.mishna.units.map(u=>u.owner)),'PEAH_INTERLEAVE');
+   const chapter=one(island,n=>attr(n,'data-daily-role')==='chapter-introduction','PEAH_DISTINCT_CHAPTER_INTRO');assert.equal(attr(chapter,'hidden')!==undefined,language==='original');for(const l of ['he','en'])assert.equal(nodeText(direct(chapter,l)),wanted.introduction[l]);
+   const section=payload.sections.mishna;
+   for(const u of section.units){const article=one(island,n=>attr(n,'data-reading-unit')===u.owner,'PEAH_OWNER');const source=direct(article,'original'),untouched=direct(article,'untouched'),english=direct(article,'en');assert.equal(nodeText(source),expectedMode(u.he,mode));assert.equal(nodeText(untouched),u.he);assert.equal(nodeText(english),u.en);assert.equal(attr(source,'hidden')!==undefined,language==='original');assert.equal(attr(untouched,'hidden')!==undefined,language!=='original');assert.equal(attr(english,'hidden')!==undefined,!['en','both'].includes(language));
+    const intro=one(article,n=>attr(n,'data-daily-role')==='introduction','PEAH_OWNER_INTRO');for(const l of ['he','en'])assert.equal(nodeText(direct(intro,l)),u.introduction[l]);const explanation=direct(article,'explanation');assert.equal(attr(explanation,'hidden')!==undefined,!commentary||language==='original');assert.equal(nodeText(one(explanation,n=>n.tagName==='summary','PEAH_EXPLANATION_TITLE')),u.explanation.title.he+' · '+u.explanation.title.en);for(const l of ['he','en'])assert.deepEqual((explanation.childNodes||[]).filter(n=>attr(n,'data-daily-field')===l).map(nodeText),clone(u.explanation.paragraphs.map(p=>p[l])));
+    for(const n of u.notes){const aside=one(island,x=>attr(x,'data-daily-note')===n.id,'PEAH_NOTE');assert.equal(attr(aside,'data-note-owner'),u.owner);visible(aside);for(const l of ['he','en'])assert.equal(nodeText(one(aside,x=>x.tagName==='p'&&attr(x,'lang')===l,'PEAH_FULL_NOTE')),n[l]);}
+   }
+   for(const n of section.notes){const aside=one(island,x=>attr(x,'data-daily-note')===n.id,'PEAH_CHAPTER_CAUTION');visible(aside);assert.equal(attr(aside,'data-note-section'),'mishna');for(const l of ['he','en'])assert.equal(nodeText(one(aside,x=>x.tagName==='p'&&attr(x,'lang')===l,'PEAH_FULL_CAUTION')),n[l]);}
+   assert.equal(walk(island,n=>attr(n,'data-daily-note')!==undefined).length,26);cases++;
+  }
+  assert.equal(cases,64);Object.assign(box.state,{focus:'talmud'});assert.equal(box.want('mishna'),false);
+  for(const section of ['talmud','halacha','mussar','zohar'])assert.equal(box.qualifiedDailyHas(e.week,e.day,section),false,'PEAH_NO_CROSS_SECTION_WIDENING');
+  const actualMondaySchedule=JSON.parse(fs.readFileSync(path.join(root,'public/reader/chok/schedule.json'),'utf8')).weeks[e.week].days['יום שני'];
+  const selectedMonday=entries.find(x=>x.key===e.week+'|יום שני');assert(selectedMonday);assert.deepEqual(actualMondaySchedule,clone(selectedMonday.schedule));assert.deepEqual(Object.keys(selectedMonday.sections),['mussar']);
+  assert.equal(box.qualifiedDailyHas(e.week,'יום שני','mishna'),false);assert.equal(box.window.ChokQualifiedDailySelected.has(e.week,'יום שני','mishna'),false);
+  assert.equal(await box.window.ChokQualifiedDailySelected.reading(e.week,'יום שני','mishna',{language:'both',mode:'full',commentary:true,optionalRashi:false,transform:x=>x},()=>{throw Error('ABSENT_SECTION_LOADER');},actualMondaySchedule),null);
+  const unselectedNight='ליל שישי';assert(!entries.some(x=>x.key===e.week+'|'+unselectedNight));assert.equal(await box.window.ChokQualifiedDailySelected.load(e.week,unselectedNight,{},()=>{throw Error('UNSELECTED_LOADER');}),null);
+  Object.assign(box.state,{focus:null,language:'both',mode:'full',commentary:true,rashi:false});
+  for(const entry of [old,e,old]){const html=await box.qualifiedDailyOr(entry.week,entry.day,'mishna',entry.schedule,()=>{throw Error('PEAH_CACHE_SEQUENCE_FALLBACK');});const dom=parse5.parseFragment(html),actual=walk(dom,n=>attr(n,'data-qualified-daily')!==undefined);assert.equal(actual.length,1);assert.equal(attr(actual[0],'data-qualified-daily'),entry.key);const expected=JSON.parse(raws.get(entry.url+'?v='+entry.payloadSHA256));for(const u of expected.sections.mishna.units){const article=one(dom,n=>attr(n,'data-reading-unit')===u.owner,'CACHE_EXACT_OWNER');assert.equal(nodeText(direct(article,'original')),expectedSource(u.he,u.role==='bartenura').text);assert.equal(nodeText(direct(article,'en')),u.en);}}
+  assert.deepEqual(requests,[e.url+'?v='+e.payloadSHA256,old.url+'?v='+old.payloadSHA256]);assert.equal(box.__fq.length,0);assert.equal(box.__frunning,0);
+  await positive('final');return{cases,negativeControls:records.filter(r=>r.checksumValid).length,restoredPositives:records.filter(r=>r.positive).length,records,scope:'Existing registered Main Mishna callback, exact queued raw loader and actual focus predicate only; not whole initializer, native browser, public or cache-migration acceptance'};
+ }finally{env.close();}
+}
+
 async function verify(root){
  root=path.resolve(root);const oracle=JSON.parse(fs.readFileSync(path.join(root,'scripts/chok-qualified-daily-reviewed.json'),'utf8'));assert.equal(oracle.schema,'chok-qualified-reviewed-hashes-v1');require('./verify-chok-next-readings-source-admission.cjs').check(root,oracle);require('./verify-chok-classical-public-source-admission.cjs').check(root,oracle);require('./chok-today-classical-admission.cjs').check(root,oracle);sourceSRI(root);
  const{api,libraryAPI,entries}=boot(root),schedule=JSON.parse(fs.readFileSync(path.join(root,'public/reader/chok/schedule.json'),'utf8'));assert.deepEqual(entries.map(e=>e.key).sort(),oracle.readingKeys.slice().sort());
- let units=0,notes=0,requests=0,boldOriginalFields=0,boldControls=0,sourceVisibleFields=0,bartenuraOriginalFields=0,plainBartenuraOriginalFields=0,selectedFridayNoteCases=0,registeredCallerMatrix=0,registeredHalachaCallerMatrix=0;const supplementControlRecords=[];const seen=new Set();
+ let units=0,notes=0,requests=0,boldOriginalFields=0,boldControls=0,sourceVisibleFields=0,bartenuraOriginalFields=0,plainBartenuraOriginalFields=0,selectedFridayNoteCases=0,registeredCallerMatrix=0,registeredHalachaCallerMatrix=0;const supplementControlRecords=[];let miketzPeah=null;const seen=new Set();
  for(const e of entries){
   assert(!seen.has(e.key));seen.add(e.key);const scheduled=schedule.weeks[e.week].days[e.day];assert.deepEqual(e.schedule,scheduled);
   const loader=async url=>{requests++;assert.equal(url,e.url+'?v='+e.payloadSHA256,'UNVERSIONED_PAYLOAD');const filename=path.resolve(root,'public','.'+e.url);assert(filename.startsWith(path.join(root,'public')+path.sep));return fs.readFileSync(filename,'utf8');};
   const payload=await api.load(e.week,e.day,scheduled,loader),count=checkOracle(clone(payload),e,oracle);units+=count.checked;notes+=count.notes;
+  if(e.key==='מקץ|יום ראשון')miketzPeah=await miketzPeahControls(root,libraryAPI,entries,e,payload,oracle);
   selectedFridayNoteCases+=await selectedFridayNoteControls(api,libraryAPI,e,payload,oracle,loader,scheduled);
   selectedFridayNoteCases+=await adoptedNoteControls(api,libraryAPI,e,payload,oracle,loader,scheduled);
   supplementControlRecords.push(...await supplementOracleControls(root,libraryAPI,e,payload,oracle,scheduled));
@@ -407,7 +518,7 @@ async function verify(root){
  }
  assert.equal(supplementControlRecords.length,26,'SUPPLEMENT_CONTROL_CARDINALITY');assert.equal(registeredCallerMatrix,32,'REGISTERED_CALLER_MATRIX');
  assert.equal(registeredHalachaCallerMatrix,32,'REGISTERED_HALACHA_CALLER_MATRIX');
- assert.equal(units,oracle.units.length);assert.equal(requests,entries.length);return{readings:entries.length,units,bilingualNotes:notes,versionedPayloadRequests:requests,sourceOracle:true,scriptSRI:true,boldOriginalFields,boldControls,sourceVisibleFields,bartenuraOriginalFields,plainBartenuraOriginalFields,selectedFridayNoteCases,supplementControls:supplementControlRecords,REGISTERED_HALACHA_CALLER_MATRIX:{cases:registeredHalachaCallerMatrix,scope:'registered Halacha Main callback and genuine queued loader only; not initialized Main/browser'},REGISTERED_CALLER_MATRIX:{cases:registeredCallerMatrix,scope:'registered Main callbacks and genuine queued loader only; not initialized Main/browser'}};
+ assert.equal(units,oracle.units.length);assert.equal(requests,entries.length);assert(miketzPeah&&miketzPeah.cases===64,'PEAH_REGISTERED_MATRIX');return{miketzPeah,readings:entries.length,units,bilingualNotes:notes,versionedPayloadRequests:requests,sourceOracle:true,scriptSRI:true,boldOriginalFields,boldControls,sourceVisibleFields,bartenuraOriginalFields,plainBartenuraOriginalFields,selectedFridayNoteCases,supplementControls:supplementControlRecords,REGISTERED_HALACHA_CALLER_MATRIX:{cases:registeredHalachaCallerMatrix,scope:'registered Halacha Main callback and genuine queued loader only; not initialized Main/browser'},REGISTERED_CALLER_MATRIX:{cases:registeredCallerMatrix,scope:'registered Main callbacks and genuine queued loader only; not initialized Main/browser'}};
 }
 module.exports={boot,checkOracle,verify,sourceSRI,adoptNoteFixture};
 if(require.main===module)verify(path.resolve(__dirname,'..')).then(result=>console.log(JSON.stringify(result))).catch(error=>{console.error(error.stack||String(error));process.exitCode=1;});

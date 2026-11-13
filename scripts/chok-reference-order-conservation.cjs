@@ -1,9 +1,87 @@
 'use strict';
+function restoreJointEighthOnFive(relative,bytes,target){
+ const allowed={"src/pages/reader/chok.astro":"480e983c9f5e46f0abeceacc02ade8bb2a0367192da57f3e518232a76b0d5322"};if(!Object.prototype.hasOwnProperty.call(allowed,relative)||bytes===null||sha(bytes)!==allowed[relative])return bytes;
+ const raw=require('node:fs').readFileSync(require('node:path').resolve(__dirname,'chok-all-biraishis-ab-join.json'));assert.equal(sha(raw),"ec1073ee54cf6004162ed54b2a7734117a6a0ce6baf9f20e71318e8c76d64510",'ALL_BIRAISHIS_AB_BANK_PIN');
+ const row=JSON.parse(raw).paths[relative];assert.equal(bytes.length,row.after.bytes);target=target||'A';assert(['A','B'].includes(target),'ALL_BIRAISHIS_AB_TARGET');const d=row[target],old=Buffer.from(d.beforeUTF8,'utf8');assert.equal(old.length,d.bytes);assert.equal(sha(old),d.sha256,'ALL_BIRAISHIS_AB_WHOLE_INVERSE');return old;
+}
+function restoreAllBiraishisFinal(relative,bytes){return require('./chok-all-biraishis-final-inverse.cjs').restore(relative,bytes);}
+'use strict';
 // Strict outer inverse only. Historical source/authority manifests stay unchanged.
 const assert=require('node:assert/strict'),{createHash}=require('node:crypto');
 const DELTA=require('./chok-reference-order-delta.json');
 const sha=b=>createHash('sha256').update(b).digest('hex');
 const restoreReaderQuery=require('./reader-cross-reference-cache-conservation.cjs').restore;
+// Exact QA/credit-to-accepted-production inverse, separate from the Peah metadata layer.
+// Exact current-canonical/accepted-donor join; no historical admission is rewritten.
+function restorePeahCurrentJoin(relative,bytes,target){
+ bytes=restoreSevenSourceFields(relative,bytes);
+ const allowed={"src/pages/reader/chok.astro":"e990d90213f8790e091609776f02c16de66f06853aa85399a65719801824dd76","scripts/chok-genesis-english.test.cjs":"7e5352d7c9a5c2b5e41727c62543f90e51c33464877625e9bb2cfb3ae2e191d6"};if(!allowed[relative]||bytes===null||sha(bytes)!==allowed[relative])return bytes;
+ const raw=require('node:fs').readFileSync(require('node:path').resolve(__dirname,'chok-biraishis-finish-current-join.json'));assert.equal(sha(raw),'dd33e8d0441b958d51f4759414227ec4b2d27cbd6fd2fa034272dfa3f32f3db6','BIRAISHIS_FINISH_CURRENT_dd33e8d0441b958d51f4759414227ec4b2d27cbd6fd2fa034272dfa3f32f3db6');
+ const d=JSON.parse(raw).paths[relative];assert.equal(bytes.length,d.afterBytes);assert(target==='current'||target==='donor');
+ let text=bytes.toString('utf8');for(const op of d[target+'Inverse']){assert.equal(text.split(op.after).length,op.occurrences+1,'BIRAISHIS_FINISH_JOIN_MEMBERSHIP');text=text.split(op.after).join(op.before);}
+ const old=Buffer.from(text);assert.equal(sha(old),d[target+'SHA256'],'BIRAISHIS_FINISH_JOIN_WHOLE_INVERSE');return old;
+}
+function restoreMiketzPeahQA(relative,bytes){
+ const allowed={"scripts/verify-chok-qualified-daily.cjs":"750f837bc63b0882c7e951118b19596c63854333eb9778d5ac3478ad8c6ffaca","scripts/verify-chok-next-four.cjs":"4135ff9253f207bb0377a06d4ecc766bcfdbe0773430c3106d036a8e42cf189f","src/data/chok-project-credits.json":"fc1bb0966649d01de2af133bc4e47e2ca15d5910abb9422afe3301e0ec652c65"};if(!allowed[relative]||bytes===null||sha(bytes)!==allowed[relative])return bytes;
+ const raw=require('node:fs').readFileSync(require('node:path').resolve(__dirname,'chok-miketz-peah1-qa-credit-admission.json'));assert.equal(sha(raw),'69d92a242ce22398b4d269846fc642138ea9088efe38d56caa0b59b3f4cd1f82','MIKETZ_PEAH_QA_CREDIT_ADMISSION_PIN');
+ const d=JSON.parse(raw).paths[relative];assert(d);assert.equal(bytes.length,d.afterBytes,'MIKETZ_PEAH_QA_AFTER_BYTES');
+ let text=bytes.toString('utf8');for(const op of d.inverse){assert.equal(text.split(op.after).length,op.occurrences+1,'MIKETZ_PEAH_QA_INVERSE_MEMBERSHIP:'+relative);text=text.split(op.after).join(op.before);}
+ const old=Buffer.from(text);assert.equal(old.length,d.beforeBytes);assert.equal(sha(old),d.beforeSHA256,'MIKETZ_PEAH_QA_WHOLE_INVERSE:'+relative);return old;
+}
+
+// Exact new-to-frozen-Toldos layer. Unselected paths and wrong after-bytes never acquire authority.
+// Exact seven-field outer layer; this is integrity/inverse, not semantic approval.
+// Exact private Zohar addition inverse; no historical admission or meaning rewritten.
+function restoreQ7Q8(relative,bytes){
+ const allowed={"public/reader/chok/qualified-zohar/vayishlach-q7-parent-qualified-v1.json":"b8d430ee0cd6b154d9de835913fcba5c4cc974097bc47ac170e91af52bdaec91","public/reader/chok/qualified-zohar/vayishlach-q8-parent-qualified-v1.json":"5375f7e035627b9d54f001468c6d80a480be91e1248d689e720dbc5238375342","public/chok-qualified-zohar.js":"7d4a91d567cb9cf80f1237029665e6ee1fe50c2354512be532708315c23a88d9","public/chok.js":"fe5e6f3992f007a13f66fc553a70c025154e2581448edd38dbb2c6f2fd118bd2","src/pages/reader/chok.astro":"8a1ab0505862a0851e2fb3af8d4088c875015af4d20ca3d79efdbebd993cb345"};if(!allowed[relative]||bytes===null||sha(bytes)!==allowed[relative])return bytes;
+ const raw=require('node:fs').readFileSync(require('node:path').resolve(__dirname,"chok-zohar-q7-q8-admission.json"));assert.equal(sha(raw),"6058e80504b481df95ec6fc483a82f6350ceedc2000286c7c6c403749060ba2e",'ZOHAR_EXACT_OUTER_PIN');
+ const r=JSON.parse(raw).paths[relative];assert.equal(bytes.length,r.after.bytes);if(r.before===null){assert.equal(r.beforeUTF8,null);return null;}
+ const old=Buffer.from(r.beforeUTF8,'utf8');assert.equal(old.length,r.before.bytes);assert.equal(sha(old),r.before.sha256,'ZOHAR_EXACT_WHOLE_INVERSE');return old;
+}
+// Exact private Zohar addition inverse; no historical admission or meaning rewritten.
+function restoreQ3Q9(relative,bytes){
+ const allowed={"public/reader/chok/qualified-zohar/biraishis-q3-parent-qualified-v1.json":"377dd79e06cf3b8b630b2adcdbe844b48a9a28e849e8aa2f240ad1b76217d4f2","public/reader/chok/qualified-zohar/biraishis-q9-parent-qualified-v1.json":"92f6f719e312bff009f71c9ea6d75be701318d0f1d0349eb1878aadad83e619b","public/chok-qualified-zohar.js":"e46f1d03b818baeb7ed067c4ed34fc90d99a6f2d21386ab5b41dc605cbe7a03a","public/chok.js":"7d07852a8576cf4013248902dc48d27a18e86253e51514e9ebfe280c4d7f8640","src/pages/reader/chok.astro":"4b138fb3c9eb21e92dd775899a10589a9c2ef5d7f303f40bdc0ddf27e3ceb66c"};if(!allowed[relative]||bytes===null||sha(bytes)!==allowed[relative])return bytes;
+ const raw=require('node:fs').readFileSync(require('node:path').resolve(__dirname,"chok-zohar-q3-q9-admission.json"));assert.equal(sha(raw),"5a6797abafc0a404e5764716047802c9ec098c545d5699fa31fa99b10f2d9adb",'ZOHAR_EXACT_OUTER_PIN');
+ const r=JSON.parse(raw).paths[relative];assert.equal(bytes.length,r.after.bytes);if(r.before===null){assert.equal(r.beforeUTF8,null);return null;}
+ const old=Buffer.from(r.beforeUTF8,'utf8');assert.equal(old.length,r.before.bytes);assert.equal(sha(old),r.before.sha256,'ZOHAR_EXACT_WHOLE_INVERSE');return old;
+}
+function restoreFiveCurrentZohar(relative,bytes){
+ const allowed={"public/chok-qualified-zohar.js":"9ea5f4caaf89cf24fec8bafb8a590666c18a8a6667347bb3a080438ffb18ef9b","public/chok.js":"93c664c4f4fe8ab972deef79c399bb035b0215352709a4205674e42bd0253e22","public/reader/chok/qualified-zohar/biraishis-q13-parent-current-qualified-v1.json":"266ecd651123db7b06ea1d08503902564e4ff4293648f3cd85a8ca1be926ca5b","public/reader/chok/qualified-zohar/biraishis-q9-parent-qualified-v1.json":"06ac9f984de9360d0e9edcb682104def2038cd8f754c0c9069234cd2745f9baf","src/pages/reader/chok.astro":"1883f616c64854348e490465904f227d5b0161644c5237d074a9ef8a1e1199a9"};if(!Object.prototype.hasOwnProperty.call(allowed,relative)||bytes===null||sha(bytes)!==allowed[relative])return bytes;
+ const raw=require('node:fs').readFileSync(require('node:path').resolve(__dirname,'chok-zohar-five-current-admission.json'));assert.equal(sha(raw),'eeeedc51acae7e33ed9c9387355f6e806ef576ab7134346edf60541d5ed780c0','ZOHAR_FIVE_CURRENT_OUTER_PIN');
+ const r=JSON.parse(raw).paths[relative];assert.equal(bytes.length,r.after.bytes);if(r.before===null){assert.equal(r.beforeUTF8,null);return null;}
+ const old=Buffer.from(r.beforeUTF8,'utf8');assert.equal(old.length,r.before.bytes);assert.equal(sha(old),r.before.sha256,'ZOHAR_FIVE_CURRENT_WHOLE_INVERSE');return old;
+}
+// Eighth selected source-only outer inverse. Prior seven authority is unchanged.
+function restoreVayishlachEighth(relative,bytes){
+ const allowed={"public/chok-qualified-daily-classical-selected-v1.js":"c1abe023a6da6165a7cac3df39c93991da9a0b015b9d95d092ee448af0ab199f","public/reader/chok/qualified/p06-vayishlach-sunday-mishna-bartenura.json":"27a1c10c972995446a7ebfd890ac73c1dbf2959fec1dee7ed467e7b539b020bc","scripts/chok-qualified-daily-reviewed.json":"aed77fcba0216d88ca0252957b0d4d73be6ccba22a62691e4fa45fc79d41bed0","scripts/verify-chok-qualified-daily.cjs":"0fc2b5fb6f6c2dc8ba78a1698878fa31594f6979340d68c8fae565ae8b1cb565","src/pages/reader/chok.astro":"5c76fab61ec9b2439b11e7f1fc9a22055dcd81fd6c3d6a1bbdfbc5d1ff24065c"};if(!Object.prototype.hasOwnProperty.call(allowed,relative)||bytes===null||sha(bytes)!==allowed[relative])return bytes;
+ const raw=require('node:fs').readFileSync(require('node:path').resolve(__dirname,'chok-vayishlach-eighth-source-admission.json'));assert.equal(sha(raw),'75f572f95bae9646a6aa78df05156730f91e96dbeb34f45c4e6b96f67daeeeda','EIGHTH_ADMISSION_PIN');
+ const row=JSON.parse(raw).paths[relative];assert.equal(bytes.length,row.after.bytes,'EIGHTH_AFTER_BYTES');
+ const before=Buffer.from(row.beforeUTF8,'utf8');assert.equal(before.length,row.before.bytes);assert.equal(sha(before),row.before.sha256,'EIGHTH_WHOLE_INVERSE');return before;
+}
+function restoreSevenSourceFields(relative,bytes){
+ bytes=restoreAllBiraishisFinal(relative,bytes);
+ bytes=restoreJointEighthOnFive(relative,bytes);
+ bytes=restoreVayishlachEighth(relative,bytes);
+ bytes=restoreFiveCurrentZohar(relative,bytes);
+ bytes=restoreQ3Q9(relative,bytes);
+ bytes=restoreQ7Q8(relative,bytes);
+ const allowed={"public/chok-qualified-daily-classical-selected-v1.js":"e5bd2dc3cafbcb2783e885e4f75bbf9b22ebbb0778fbe0a77f3506c97bc6e3f4","public/reader/chok/qualified/chayay-sara-sunday-mishna-talmud.json":"45b2e43f9cf87bbe1d3737a0186ece28083214730917d027bc74e4867297c033","public/reader/chok/qualified/miketz-mussar-2-1874-selected-v1.json":"b991a544e15de53c01054764ae2f5696e8427dcdafba4e7727a0266926929a7b","public/reader/chok/qualified/miketz-mussar-5-1874-selected-v1.json":"d8b6f7d4ed3ca57b64913de508499ca354707eaac9652c5119adc1682c5df83e","public/reader/chok/qualified/miketz-mussar-6-1874-selected-v1.json":"146f14d15b97cd8554752163d03fc2fb9cfb648d3e7dd7a59d253948cd2be183","scripts/chok-biraishis-seven-source-data.json":"c789ab2e9a6152028904bfb3e41ff3ca13a00c81ec9738018238e4a6053a6a00","scripts/chok-qualified-daily-reviewed.json":"4383e907f89745a6ce02a631eeded33dbc68b0d1ce82917120e79c204efd7c13","scripts/verify-chok-qualified-daily.cjs":"a9408404c3c16b27bb9d7ee3ae964425814f864394349638b69dacda282ece3a","src/pages/reader/chok.astro":"0f5094ec0e82518b0a4f9b092197958803d35119899e7967d448c542229380be"};if(!Object.prototype.hasOwnProperty.call(allowed,relative)||bytes===null||sha(bytes)!==allowed[relative])return bytes;
+ const raw=require('node:fs').readFileSync(require('node:path').resolve(__dirname,'chok-biraishis-seven-source-admission.json'));assert.equal(sha(raw),'6139f6131f67eae12f03c4fbc5c7b2d5115ccddf7411aff7110377ed5a9408d4','SEVEN_SOURCE_ADMISSION_PIN');
+ const row=JSON.parse(raw).paths[relative];assert.equal(bytes.length,row.after.bytes,'SEVEN_AFTER_BYTES');
+ if(row.before===null){assert.equal(row.beforeUTF8,null);return null;}
+ const before=Buffer.from(row.beforeUTF8,'utf8');assert.equal(before.length,row.before.bytes);assert.equal(sha(before),row.before.sha256,'SEVEN_EXACT_OUTER_INVERSE');return before;
+}
+function restoreMiketzPeah(relative,bytes){
+ bytes=restoreSevenSourceFields(relative,bytes);
+ const joined=restorePeahCurrentJoin(relative,bytes,'current');if(joined!==bytes)return joined;
+ bytes=restoreMiketzPeahQA(relative,bytes);
+ const allowed={"public/chok-qualified-daily.js":"982aabd8e6ec9e326f7455d3f10708512644347a4f5122cbac213c6e9640d444","public/chok-qualified-daily-classical-selected-v1.js":"af9e00ae7ee1dc435607b3fc0e63237f371d8fdc0246596788fc63471950234f","scripts/chok-qualified-daily-reviewed.json":"35753d1ae9246696ace9f6548d85694e6496a2ac983e281673b6637906e51b91","src/pages/reader/chok.astro":"d5044e6e15ffd8f824c585f15545ed3dd2d6add1f407ef2a7461c9ad7d700ab7","scripts/verify-chok-qualified-daily.cjs":"92b543f7f146da4a50bd9d3735f5cb2bfc438f14909402a8cf46752f06d871bc","scripts/chok-genesis-english.test.cjs":"bd000a31116c7ac3f7ae902a8b627fda548fb0873b6edde5b0379d0a39980af3","scripts/verify-chok-vayaitzai-thursday.cjs":"e574692b9358e55f4f423bc08e9a3fff04b99086f769eb1a3e5eadc75d055a80","public/reader/chok/qualified/miketz-sunday-complete-peah1-v1.json":"015d103642071427c522c74c005f0085cb7b9e7ca305bc9200d434c5d051cb13"};if(!allowed[relative]||bytes===null||sha(bytes)!==allowed[relative])return bytes;
+ const raw=require('node:fs').readFileSync(require('node:path').resolve(__dirname,'chok-miketz-peah1-source-admission.json'));assert.equal(sha(raw),'7ce1673b0794fc817374fd08ce70ad6b53c6610898bbd90e0ec2a4ee5f961635','MIKETZ_PEAH_OUTER_ADMISSION_PIN');
+ const d=JSON.parse(raw).paths[relative];assert(d);assert.equal(bytes.length,d.afterBytes,'MIKETZ_PEAH_AFTER_BYTES');if(d.beforeSHA256===null)return null;
+ let s=bytes.toString('utf8');for(const op of d.inverse){assert.equal(s.split(op.after).length,op.occurrences+1,'MIKETZ_PEAH_INVERSE_MEMBERSHIP:'+relative);s=s.split(op.after).join(op.before);}
+ const old=Buffer.from(s);assert.equal(old.length,d.beforeBytes);assert.equal(sha(old),d.beforeSHA256,'MIKETZ_PEAH_WHOLE_INVERSE:'+relative);return old;
+}
+
 // Restore only the independently reviewed chapter-resource adoption before the
 // unchanged reference/paragraph guards. No historical hash or manifest changes.
 const readerAdoptionRaw=require('node:fs').readFileSync(require('node:path').resolve(__dirname,'fixtures/tanach-commentary-availability/approved-template-delta.json'));
@@ -29,9 +107,10 @@ function restoreToldosWednesdayOuter(relative,bytes,filename,pin){
  let s=bytes.toString('utf8');for(const op of d.inverse){assert.equal(s.split(op.after).length,op.occurrences+1,'TOLDOS_WEDNESDAY_OUTER_MEMBERSHIP:'+relative);s=s.split(op.after).join(op.before);}
  const old=Buffer.from(s);assert.equal(old.length,d.beforeBytes);assert.equal(sha(old),d.beforeSHA256,'TOLDOS_WEDNESDAY_OUTER_WHOLE_INVERSE:'+relative);return old;
 }
-function restoreToldosWednesdayHalacha(relative,bytes){bytes=restoreTodayZohar(relative,bytes);const allowed={"public/chok-qualified-daily-classical-selected-v1.js":"91c4fbea65117b3c507151eb90ed57b466f019c550d9bd1499a4ac82ba6d61f7","scripts/chok-qualified-daily-reviewed.json":"0b379a4c079e3cd009a4f847035eaf59d9e0c1359161d1c2d9c4ba62ddfe22be","src/pages/reader/chok.astro":"084af3faa253e1dd96fda6aa46f4ff43db78e038f35eaa2eb2b5eda44b798533","public/reader/chok/qualified/toldos-wednesday-complete-mussar-halacha-data-candidate-v1.json":"57da31e58cff24736b9db39b71e714ff0326e25366bdffe827523a1dea5c4624"};if(!allowed[relative]||bytes===null||sha(bytes)!==allowed[relative])return bytes;return restoreToldosWednesdayOuter(relative,bytes,'chok-toldos-wednesday-halacha-admission.json','8691851fb48045fee5b79def3713e0d03d921d1f7f9848824c8380fabea2e793');}
-function restoreToldosWednesdayFinalQA(relative,bytes){bytes=restoreTodayZoharQA(relative,bytes);const allowed={"scripts/verify-chok-qualified-daily.cjs":"b834c1ec21157e573754cfa5701daa067710071384c743ec5e68d3f8604a651b","scripts/chok-genesis-english.test.cjs":"0863944fc7f2ccd1a0211f8410fb63190be9d35e3fdfbd5e5e7f5d9904ec3503"};if(!allowed[relative]||bytes===null||sha(bytes)!==allowed[relative])return bytes;return restoreToldosWednesdayOuter(relative,bytes,'chok-toldos-wednesday-final-qa-admission.json','760e9f8d67e27027cb665f4da5d6c369dadf9ee0941c8abf8da2c421234e1f17');}
+function restoreToldosWednesdayHalacha(relative,bytes){bytes=restoreMiketzPeah(relative,bytes);if(bytes===null)return null;bytes=restoreTodayZohar(relative,bytes);const allowed={"public/chok-qualified-daily-classical-selected-v1.js":"91c4fbea65117b3c507151eb90ed57b466f019c550d9bd1499a4ac82ba6d61f7","scripts/chok-qualified-daily-reviewed.json":"0b379a4c079e3cd009a4f847035eaf59d9e0c1359161d1c2d9c4ba62ddfe22be","src/pages/reader/chok.astro":"084af3faa253e1dd96fda6aa46f4ff43db78e038f35eaa2eb2b5eda44b798533","public/reader/chok/qualified/toldos-wednesday-complete-mussar-halacha-data-candidate-v1.json":"57da31e58cff24736b9db39b71e714ff0326e25366bdffe827523a1dea5c4624"};if(!allowed[relative]||bytes===null||sha(bytes)!==allowed[relative])return bytes;return restoreToldosWednesdayOuter(relative,bytes,'chok-toldos-wednesday-halacha-admission.json','8691851fb48045fee5b79def3713e0d03d921d1f7f9848824c8380fabea2e793');}
+function restoreToldosWednesdayFinalQA(relative,bytes){bytes=restoreMiketzPeah(relative,bytes);if(bytes===null)return null;bytes=restoreTodayZoharQA(relative,bytes);const allowed={"scripts/verify-chok-qualified-daily.cjs":"b834c1ec21157e573754cfa5701daa067710071384c743ec5e68d3f8604a651b","scripts/chok-genesis-english.test.cjs":"0863944fc7f2ccd1a0211f8410fb63190be9d35e3fdfbd5e5e7f5d9904ec3503"};if(!allowed[relative]||bytes===null||sha(bytes)!==allowed[relative])return bytes;return restoreToldosWednesdayOuter(relative,bytes,'chok-toldos-wednesday-final-qa-admission.json','760e9f8d67e27027cb665f4da5d6c369dadf9ee0941c8abf8da2c421234e1f17');}
 function restoreToldosWednesdayMussar(relative,bytes){
+ bytes=restoreMiketzPeah(relative,bytes);
  bytes=restoreToldosWednesdayFinalQA(relative,restoreToldosWednesdayHalacha(relative,bytes));if(bytes===null)return null;
  const allowed={"public/chok-qualified-daily-classical-selected-v1.js":"fb9b96722705e771c2c137a7f2058219685a84e14267cf7c7ea93e43d59a4727","public/chok-qualified-daily.js":"9d3039077c36ec66f8e71d65c42ae903f4f5d94b8c7db129cb7b90e6ae580a25","public/reader/chok/qualified/toldos-wednesday-complete-mussar-additive-v1.json":"404a8ccccbb70d787a91102c422bf0de091113739d9f155a89280ad98af78fbc","scripts/chok-genesis-english.test.cjs":"f799caf596cb860dc2c1482db1f220471a74d07aea6c060c4b887438ffc789db","scripts/chok-qualified-daily-reviewed.json":"58a4e359d1e333959dcdaadfd9088e07e06b2c6821e7875187f276613d6f69aa","scripts/verify-chok-qualified-daily.cjs":"213c9bfe2556e3c16e546845ee548070fd3f9cf38f7ed819b13e880d83084ac5","scripts/verify-chok-vayaitzai-thursday.cjs":"250e6ba5d83cdbfd696a155b7652b5f42e7c1594f3ca7144fdef3e3517fccf47","src/pages/reader/chok.astro":"ab05733826a4102a0bcbf95d083a7ed25aebdf9a76890973de609f67cd949805"};
  if(!allowed[relative]||sha(bytes)!==allowed[relative])return bytes;
@@ -111,17 +190,40 @@ function restoreReference(relative,bytes){
 var adoptedNoteAuthorityCache;
 function freezeAdoptedNoteAuthority(x){if(x&&typeof x==='object'){Object.values(x).forEach(freezeAdoptedNoteAuthority);Object.freeze(x);}return x;}
 function vayaitzaiFridayNoteAuthority(){if(!adoptedNoteAuthorityCache){const raw=require('node:fs').readFileSync(require('node:path').resolve(__dirname,'chok-vayaitzai-friday-mishna-note-admission.json'));assert.equal(sha(raw),'705a27f9fcff045acc3582db44034b776f7cb24611d5e6ba3a1fe43ef0860acd','VAYA_FRI_NOTE_ADOPTION_PIN');adoptedNoteAuthorityCache=freezeAdoptedNoteAuthority(JSON.parse(raw));}return adoptedNoteAuthorityCache;}
-module.exports={restoreTodayZohar,restoreToldosWednesdayHalacha,restoreToldosWednesdayFinalQA,restoreToldosWednesdayMussar,vayaitzaiFridayNoteAuthority,restoreVayaitzaiFridayNote,restoreCurrent38,restoreCurrent37,restoreCleared,DELTA,restoreReference,restoreGenesis,restoreToday,restoreTomorrow};
+module.exports={restoreAllBiraishisFinal,restoreJointEighthOnFive,restoreVayishlachEighth,restoreFiveCurrentZohar,restoreQ3Q9,restoreQ7Q8,restoreSevenSourceFields,restoreMiketzPeahQA,restoreMiketzPeah,restorePeahCurrentJoin,restoreTodayZohar,restoreToldosWednesdayHalacha,restoreToldosWednesdayFinalQA,restoreToldosWednesdayMussar,vayaitzaiFridayNoteAuthority,restoreVayaitzaiFridayNote,restoreCurrent38,restoreCurrent37,restoreCleared,DELTA,restoreReference,restoreGenesis,restoreToday,restoreTomorrow};
 if(require.main===module){
+ const joinRaw=require('node:fs').readFileSync(require('node:path').resolve(__dirname,'chok-biraishis-finish-current-join.json'));assert.equal(sha(joinRaw),'dd33e8d0441b958d51f4759414227ec4b2d27cbd6fd2fa034272dfa3f32f3db6');
+ for(const[relative,d]of Object.entries(JSON.parse(joinRaw).paths)){
+  const b=restoreSevenSourceFields(relative,require('node:fs').readFileSync(require('node:path').resolve(__dirname,'..',relative)));assert.equal(sha(b),d.afterSHA256);assert.equal(b.length,d.afterBytes);
+  for(const target of ['current','donor']){const old=restorePeahCurrentJoin(relative,b,target);assert.equal(sha(old),d[target+'SHA256']);let text=old.toString('utf8');for(const op of d[target+'Inverse'].slice().reverse()){assert.equal(text.split(op.before).length,op.occurrences+1);text=text.split(op.before).join(op.after);}assert.deepEqual(Buffer.from(text),b);}
+  assert.deepEqual(restoreMiketzPeah(relative,b),restorePeahCurrentJoin(relative,b,'current'));
+  for(const pos of [0,Math.floor(b.length/2),b.length-1]){const bad=Buffer.from(b);bad[pos]^=1;assert.equal(Object.is(restorePeahCurrentJoin(relative,bad,'current'),bad),true);assert.equal(Object.is(restoreMiketzPeah(relative,bad),bad),true);}
+  assert.equal(Object.is(restorePeahCurrentJoin('unselected/source',b,'current'),b),true);
+ }
+
  const todayZoharRequired={"public/chok.js":{"afterSHA256":"a4dca5305bbec0b248a163db9f0a88a08e40c44a5a88fbd67091bf7cf2cac950","beforeSHA256":"0fa752655b0c54a5d5947d1ebd92b6d30b2a87c858d0f811b5685aeceb834e22","afterBytes":136908,"beforeBytes":135690},"public/reader/chok/zohar-day-passages.json":{"afterSHA256":"0bbd695d0b8d4398793a73ba6cea30e3512c9e30079dbece7c5e34301d5eb8d3","beforeSHA256":"2bb410d428ad16e96b95ef59e150367589a174db56312b6b698243514fb3bf2a","afterBytes":1010102,"beforeBytes":1001311},"src/pages/reader/chok.astro":{"afterSHA256":"845aef610d25d48b7c3c3a516ad700fb0e949e341f4e8d6463a6ebd12b8fdd1b","beforeSHA256":"084af3faa253e1dd96fda6aa46f4ff43db78e038f35eaa2eb2b5eda44b798533","afterBytes":47365,"beforeBytes":47365}};
- for(const [relative,d]of Object.entries(todayZoharRequired)){const b=require('./chok-original52-private-inverse.cjs').restore(relative,require('./chok-original43-private-inverse.cjs').restore(relative,require('./chok-original2-bo-tazria-private-inverse.cjs').restore(relative,require('node:fs').readFileSync(require('node:path').resolve(__dirname,'..',relative)))));assert.equal(sha(b),d.afterSHA256,'TODAY_ZOHAR_REQUIRED_SUCCESSOR:'+relative);assert.equal(b.length,d.afterBytes);const old=restoreTodayZohar(relative,b);assert.equal(sha(old),d.beforeSHA256);assert.equal(old.length,d.beforeBytes);for(const offset of [0,Math.floor(b.length/2),b.length-1]){const corrupt=Buffer.from(b);corrupt[offset]^=1;assert.equal(restoreTodayZohar(relative,corrupt),corrupt,'TODAY_ZOHAR_CORRUPTION_NOT_ADMITTED');}assert.equal(restoreTodayZohar('unselected/source',b),b);assert.deepEqual(restoreTodayZohar(relative,b),old,'TODAY_ZOHAR_RESTORED_POSITIVE');}
+ for(const [relative,d]of Object.entries(todayZoharRequired)){const b=require('./chok-original52-private-inverse.cjs').restore(relative,require('./chok-original43-private-inverse.cjs').restore(relative,require('./chok-original2-bo-tazria-private-inverse.cjs').restore(relative,restoreMiketzPeah(relative,require('node:fs').readFileSync(require('node:path').resolve(__dirname,'..',relative))))));assert.equal(sha(b),d.afterSHA256,'TODAY_ZOHAR_REQUIRED_SUCCESSOR:'+relative);assert.equal(b.length,d.afterBytes);const old=restoreTodayZohar(relative,b);assert.equal(sha(old),d.beforeSHA256);assert.equal(old.length,d.beforeBytes);for(const offset of [0,Math.floor(b.length/2),b.length-1]){const corrupt=Buffer.from(b);corrupt[offset]^=1;assert.equal(restoreTodayZohar(relative,corrupt),corrupt,'TODAY_ZOHAR_CORRUPTION_NOT_ADMITTED');}assert.equal(restoreTodayZohar('unselected/source',b),b);assert.deepEqual(restoreTodayZohar(relative,b),old,'TODAY_ZOHAR_RESTORED_POSITIVE');}
  const fs=require('node:fs'),path=require('node:path');
+ const qaRaw=fs.readFileSync(path.resolve(__dirname,'chok-miketz-peah1-qa-credit-admission.json'));assert.equal(sha(qaRaw),'69d92a242ce22398b4d269846fc642138ea9088efe38d56caa0b59b3f4cd1f82');
+ for(const[relative,d]of Object.entries(JSON.parse(qaRaw).paths)){
+  const current=restoreSevenSourceFields(relative,fs.readFileSync(path.resolve(__dirname,'..',relative)));assert.equal(sha(current),d.afterSHA256);const old=restoreMiketzPeahQA(relative,current);assert.equal(sha(old),d.beforeSHA256);
+  let forward=old.toString('utf8');for(const op of d.inverse.slice().reverse()){assert.equal(forward.split(op.before).length,op.occurrences+1);forward=forward.split(op.before).join(op.after);}assert.deepEqual(Buffer.from(forward),current);assert.deepEqual(restoreMiketzPeahQA(relative,old),old);
+  const bad=Buffer.from(current);bad[Math.floor(bad.length/2)]^=1;for(const x of[bad,Buffer.concat([current,Buffer.from(' ')])])assert.equal(restoreMiketzPeahQA(relative,x),x,'PEAH_QA_CORRUPTION_NOT_ADMITTED');assert.equal(restoreMiketzPeahQA('unselected/source',current),current);assert.deepEqual(restoreMiketzPeahQA(relative,current),old,'PEAH_QA_RESTORED_POSITIVE');
+ }
+
+ const peahRaw=fs.readFileSync(path.resolve(__dirname,'chok-miketz-peah1-source-admission.json'));assert.equal(sha(peahRaw),'7ce1673b0794fc817374fd08ce70ad6b53c6610898bbd90e0ec2a4ee5f961635');
+ for(const[relative,d]of Object.entries(JSON.parse(peahRaw).paths)){
+  const current=restoreMiketzPeahQA(relative,restorePeahCurrentJoin(relative,restoreSevenSourceFields(relative,fs.readFileSync(path.resolve(__dirname,'..',relative))),'donor'));assert.equal(sha(current),d.afterSHA256);const old=restoreMiketzPeah(relative,current);
+  if(d.beforeSHA256===null)assert.equal(old,null);else{assert.equal(sha(old),d.beforeSHA256);let forward=old.toString('utf8');for(const op of d.inverse.slice().reverse()){assert.equal(forward.split(op.before).length,op.occurrences+1);forward=forward.split(op.before).join(op.after);}assert.deepEqual(Buffer.from(forward),current);assert.deepEqual(restoreMiketzPeah(relative,old),old);}
+  const bad=Buffer.from(current);bad[Math.floor(bad.length/2)]^=1;for(const b of[bad,Buffer.concat([current,Buffer.from(' ')])])assert.equal(restoreMiketzPeah(relative,b),b,'PEAH_CORRUPTION_NOT_ADMITTED');assert.equal(restoreMiketzPeah('unselected/source',current),current);assert.deepEqual(restoreMiketzPeah(relative,current),old);
+ }
+
  for(const[filename,pin,restore]of[
   ['chok-toldos-wednesday-halacha-admission.json','8691851fb48045fee5b79def3713e0d03d921d1f7f9848824c8380fabea2e793',restoreToldosWednesdayHalacha],
   ['chok-toldos-wednesday-final-qa-admission.json','760e9f8d67e27027cb665f4da5d6c369dadf9ee0941c8abf8da2c421234e1f17',restoreToldosWednesdayFinalQA]]){
   const raw=fs.readFileSync(path.resolve(__dirname,filename));assert.equal(sha(raw),pin);const authority=JSON.parse(raw);
   for(const[relative,d]of Object.entries(authority.paths)){
-   const b=restoreTodayZoharQA(relative,restoreTodayZohar(relative,fs.readFileSync(path.resolve(__dirname,'..',relative))));assert.equal(sha(b),d.afterSHA256,'OUTER_REQUIRED_SUCCESSOR:'+relative);assert.equal(b.length,d.afterBytes);
+   const b=restoreTodayZoharQA(relative,restoreTodayZohar(relative,restoreMiketzPeah(relative,fs.readFileSync(path.resolve(__dirname,'..',relative)))));assert.equal(sha(b),d.afterSHA256,'OUTER_REQUIRED_SUCCESSOR:'+relative);assert.equal(b.length,d.afterBytes);
    const old=restore(relative,b);if(d.beforeSHA256===null)assert.equal(old,null,'HALACHA_ABSENT_PACKET_PREIMAGE');else{
     assert.equal(sha(old),d.beforeSHA256);assert.equal(old.length,d.beforeBytes);let f=old.toString('utf8');for(const op of d.inverse.slice().reverse()){assert.equal(f.split(op.before).length,op.occurrences+1);f=f.split(op.before).join(op.after);}assert.deepEqual(Buffer.from(f),b);assert.deepEqual(restore(relative,old),old);
    }
@@ -145,7 +247,7 @@ if(require.main===module){
   assert.equal(restoreVayaitzaiFridayNote('unselected/source',b),b);assert.deepEqual(restoreVayaitzaiFridayNote(relative,old),old);
  }
  for(const [relative,d]of Object.entries(DELTA)){
-  const actual=restoreReaderQuery(relative,restoreTodayZoharQA(relative,restoreTodayZohar(relative,fs.readFileSync(path.resolve(__dirname,'..',relative)))));
+  const actual=restoreReaderQuery(relative,restoreTodayZoharQA(relative,restoreTodayZohar(relative,restoreMiketzPeah(relative,fs.readFileSync(path.resolve(__dirname,'..',relative))))));
   const b=currentReference(relative,actual);assert.equal(sha(b),d.afterSHA256,'REQUIRED_CURRENT_REFERENCE_SUCCESSOR:'+relative);
   const restored=restoreReference(relative,b);assert.equal(sha(restored),d.beforeSHA256);assert.deepEqual(restoreReference(relative,restored),restored);
   assert.throws(()=>restoreReference(relative,Buffer.concat([b,Buffer.from(' ')])),/REFERENCE_CANDIDATE_PIN/);
