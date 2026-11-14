@@ -982,10 +982,43 @@
     if (!carry && !out.length) return null;
     return { carry: carry, layers: out.length ? out.join('') : null };
   }
+  function commentaryKnownAbsent(filename) {
+    // Only a fresh, complete publication snapshot may establish absence. Do not
+    // cache this decision: returning documents and data-only releases fail open
+    // after 24 hours even if their HTML was never replaced.
+    try {
+      var root = document.querySelector('#ck-content');
+      var script = document.querySelector('script[src^="/chok.js?v="]');
+      var data = JSON.parse(root && root.getAttribute('data-ck-commentary'));
+      var now = Date.now();
+      if (!data || data.schema !== 'chok-optional-commentary/v1' || !script ||
+          script.getAttribute('src') !== '/chok.js?v=' + data.clientSHA256 ||
+          !/^[a-f0-9]{64}$/.test(data.clientSHA256) ||
+          !Number.isSafeInteger(data.generatedAt) || now < data.generatedAt ||
+          now - data.generatedAt >= 86400000 || !Array.isArray(data.files) ||
+          !/^[a-f0-9]{64}$/.test(data.filesSHA256)) return Promise.resolve(false);
+      var files = data.files;
+      if (files.some(function (name, i) {
+        return typeof name !== 'string' || !name.endsWith('.json') ||
+          /[\\/\u0000-\u001f]/.test(name) || (i > 0 && files[i - 1] >= name);
+      }) || !window.crypto || !window.crypto.subtle) return Promise.resolve(false);
+      return window.crypto.subtle.digest('SHA-256', new TextEncoder().encode(JSON.stringify(files))).then(function (digest) {
+        var hash = Array.from(new Uint8Array(digest)).map(function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+        var checkedAt = Date.now();
+        return hash === data.filesSHA256 && checkedAt >= data.generatedAt &&
+          checkedAt - data.generatedAt < 86400000 && files.indexOf(filename) === -1;
+      }).catch(function () { return false; });
+    } catch (_) {
+      return Promise.resolve(false);
+    }
+  }
   function fetchCommentary(week, day) {
     var slug = DAY_SLUGS[day] || 'yom-rishon';
-    return fetchJSON('/reader/chok/commentary/' + encodeURIComponent(week) + '-' + slug + '.json')
-      .catch(function () { return null; });
+    return commentaryKnownAbsent(week + '-' + slug + '.json').then(function (absent) {
+      if (absent) return null;
+      return fetchJSON('/reader/chok/commentary/' + encodeURIComponent(week) + '-' + slug + '.json')
+        .catch(function () { return null; });
+    });
   }
   function mishnaHTML(masechet, perek, week, day, english) {
     var slug = MISHNA_SLUGS[normLabel(masechet)];

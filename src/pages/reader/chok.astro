@@ -1,6 +1,8 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import projectCredits from '../../data/chok-project-credits.json';
+import { commentaryAvailability } from '../../lib/chok-commentary-availability.mjs';
+const optionalCommentary = commentaryAvailability();
 ---
 <Layout
   title="Chok LiYisroel - Daily Study"
@@ -119,7 +121,7 @@ Retained named-contributor permission evidence:
 
     <nav id="ck-jumps" class="ck-jumps" aria-label="Jump to study section" dir="rtl"></nav>
 
-    <main id="ck-content" class="ck-content" dir="rtl" lang="he"></main>
+    <main id="ck-content" class="ck-content" dir="rtl" lang="he" data-ck-commentary={optionalCommentary ? JSON.stringify(optionalCommentary) : undefined}></main>
 
     <footer class="ck-foot" dir="ltr">
       <p><a href="/reader/tikkun/">שנים מקרא ואחד תרגום · Shnayim Mikra</a></p>
@@ -151,7 +153,7 @@ Retained named-contributor permission evidence:
 .ck-genesis-english-owner > .ck-en-line > small { display: block; font-style: normal; font-weight: 600; }
 </style>
 <script is:inline src="/chok-genesis-english.js?v=c6a049d5caa607ed679c912ccae5b7de086b59e1ea173b907eef82cb0df75c12" integrity="sha256-xqBJ1cqmB+1nnJEsyuW33ghrWeHqFzuQfu+Cyw33XBI=" crossorigin="anonymous" defer></script>
-<script is:inline src="/chok.js?v=e121d4517a1979695f61c7e23f10f35c2c1d21b3b6d32867c906b1ac169186ab" integrity="sha384-HMcuZUGRoMalYBniiBBCF100l48VkHAYC4TZZ+Vwa9FghJ3hOSWhjNfBJPtoysk2" crossorigin="anonymous" defer></script>
+<script is:inline src="/chok.js?v=a7d5486ce220ed5c965b2061149e9c68914d148d498bc83bf49820a7c2c3023a" integrity="sha384-boDuD2I9Nt23Swy9+cVfUmJwm+kv5qOqgb9ArW/LdbVuyON1kWu+0Ffnf1XDDASk" crossorigin="anonymous" defer></script>
 
 <style is:global>
   .ck-noach-en { white-space:pre-wrap; font-family:var(--ck-font-en); font-size:1.1rem; line-height:1.8; }

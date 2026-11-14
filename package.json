@@ -57,7 +57,8 @@
     "verify:chok-project-credits": "node --max-old-space-size=128 scripts/chok-project-credit-conservation.cjs && node --max-old-space-size=128 scripts/chok-attribution-conservation.cjs && node --max-old-space-size=128 scripts/chok-project-credits.cjs --check && node --max-old-space-size=128 scripts/chok-project-settings.test.cjs && node --max-old-space-size=128 scripts/chok-attribution-copy-conditions.test.cjs",
     "verify:chok-three-ui": "node --max-old-space-size=128 scripts/verify-chok-three-ui.cjs",
     "verify:chok-today-classical": "node --max-old-space-size=128 scripts/verify-chok-today-classical.cjs api && node --max-old-space-size=128 scripts/verify-chok-today-classical.cjs halacha && node --max-old-space-size=128 scripts/verify-chok-today-classical.cjs mussar && node --max-old-space-size=128 scripts/verify-chok-today-classical.cjs ordinary",
-    "verify:chok-genesis-english": "node --max-old-space-size=256 --test --test-reporter=tap --test-concurrency=1 scripts/chok-genesis-english.test.cjs"
+    "verify:chok-optional-commentary": "node --max-old-space-size=512 --test --test-reporter=tap --test-concurrency=1 scripts/chok-optional-commentary.test.cjs && node --max-old-space-size=512 scripts/chok-optional-commentary-init.cjs",
+    "verify:chok-genesis-english": "npm run verify:chok-optional-commentary && node --max-old-space-size=256 --test --test-reporter=tap --test-concurrency=1 scripts/chok-genesis-english.test.cjs"
   },
   "dependencies": {
     "@astrojs/node": "^9.5.5",
