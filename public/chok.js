@@ -982,10 +982,64 @@
     if (!carry && !out.length) return null;
     return { carry: carry, layers: out.length ? out.join('') : null };
   }
+  var commentaryAvailabilityFlight = null;
+  function freshCommentaryAvailability() {
+    // Static build output from the current release, not a live filesystem API.
+    // Share only work in flight: even successful membership is never retained.
+    if (commentaryAvailabilityFlight) return commentaryAvailabilityFlight;
+    var controller, timer;
+    var work = Promise.resolve().then(function () {
+      controller = new AbortController();
+      return fetch('/chok-commentary-availability.json', {
+        method: 'GET', mode: 'same-origin', credentials: 'same-origin',
+        cache: 'no-store', redirect: 'error', headers: { Accept: 'application/json' },
+        signal: controller.signal
+      });
+    }).then(function (response) {
+      if (!response.ok) throw new Error('Optional metadata unavailable');
+      return response.text();
+    }).then(function (text) {
+      if (text.length > 65536) return null;
+      var data = JSON.parse(text);
+      var script = document.querySelector('script[src^="/chok.js?v="]');
+      if (!data || data.schema !== 'chok-optional-commentary/v2' ||
+          data.freshness !== 'current-release-response/v1' || !script ||
+          !/^[a-f0-9]{64}$/.test(data.clientSHA256) ||
+          script.getAttribute('src') !== '/chok.js?v=' + data.clientSHA256 ||
+          !Array.isArray(data.files) || !/^[a-f0-9]{64}$/.test(data.filesSHA256)) return null;
+      var files = data.files;
+      if (files.some(function (name, i) {
+        return typeof name !== 'string' || !name.endsWith('.json') ||
+          /[\\/\u0000-\u001f]/.test(name) || (i > 0 && files[i - 1] >= name);
+      }) || !window.crypto || !window.crypto.subtle) return null;
+      return window.crypto.subtle.digest('SHA-256', new TextEncoder().encode(JSON.stringify(files))).then(function (digest) {
+        var hash = Array.from(new Uint8Array(digest)).map(function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+        return hash === data.filesSHA256 ? files : null;
+      });
+    }).catch(function () { return null; });
+    var deadline = new Promise(function (resolve) {
+      // Includes headers, complete body and digest, even if abort is ignored.
+      timer = setTimeout(function () { if (controller) controller.abort(); resolve(null); }, 1500);
+    });
+    commentaryAvailabilityFlight = Promise.race([work, deadline]).then(function (files) {
+      clearTimeout(timer);
+      commentaryAvailabilityFlight = null;
+      return files;
+    });
+    return commentaryAvailabilityFlight;
+  }
+  function commentaryKnownAbsent(filename) {
+    return freshCommentaryAvailability().then(function (files) {
+      return files !== null && files.indexOf(filename) === -1;
+    });
+  }
   function fetchCommentary(week, day) {
     var slug = DAY_SLUGS[day] || 'yom-rishon';
-    return fetchJSON('/reader/chok/commentary/' + encodeURIComponent(week) + '-' + slug + '.json')
-      .catch(function () { return null; });
+    return commentaryKnownAbsent(week + '-' + slug + '.json').then(function (absent) {
+      if (absent) return null;
+      return fetchJSON('/reader/chok/commentary/' + encodeURIComponent(week) + '-' + slug + '.json')
+        .catch(function () { return null; });
+    });
   }
   function mishnaHTML(masechet, perek, week, day, english) {
     var slug = MISHNA_SLUGS[normLabel(masechet)];
