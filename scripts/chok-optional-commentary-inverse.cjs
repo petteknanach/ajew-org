@@ -2,6 +2,7 @@
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict'),crypto=require('node:crypto');
 const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
 function restore(relative,bytes){
+ bytes=require('./chok-commentary-fresh-inverse.cjs').restore(relative,bytes);
  if(bytes===null)return bytes;
  const raw=fs.readFileSync(path.join(__dirname,'chok-optional-commentary-admission.json'));
  assert.equal(sha(raw),'a11a6a58827f768685427a3edcc2187c7653ca11847ff7df1c3b9e618aa2e40b','CHOK_OPTIONAL_ADMISSION_PIN');
