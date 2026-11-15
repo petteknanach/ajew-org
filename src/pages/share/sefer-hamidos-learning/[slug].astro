@@ -32,7 +32,7 @@ const whatsappHref = `https://wa.me/?text=${encodeURIComponent(`${shareText} ${p
 <Layout title={title} description={desc} image={img.path} type="article">
   <main class="learning-share-page" style="width:100%; min-width:0; box-sizing:border-box; max-width: 980px; margin: 0 auto; padding: 2rem 1rem; text-align: center;">
     <p><a href={readerUrl}>← Back to the teaching</a></p>
-    <h1>{title}</h1>
+    <h1>{title}</h1>{typeof img.source === 'string' && img.source.startsWith('AI-generated editorial illustration by ajew.org using ChatGPT/OpenAI;') && typeof entry.source_note === 'string' && <p class="learning-share-source-note" style="line-height:1.65;">{entry.source_note}</p>}
     <p style="color:#666;">X, Telegram, and WhatsApp share this picture preview page. “Share actual image” sends the image file itself through the phone share sheet when supported.</p>
     <p style="color:#666;">Direct image: <a href={absImage}>{absImage}</a></p>
     <img id="actual-image" src={img.path} alt={title} style="max-width:100%;height:auto;border-radius:18px;box-shadow:0 16px 44px rgba(0,0,0,.18);" />
