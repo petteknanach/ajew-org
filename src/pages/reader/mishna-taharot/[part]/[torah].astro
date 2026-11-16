@@ -37,7 +37,7 @@ const bookName = 'Mishna - Taharot';
 const bookHebrew = 'משנה - טהרות';
 
 
-const commentaryEntry = torahData ? {
+const commentaryEntry = torahData && fs.statSync(path.join(process.cwd(), 'public/reader/likutay-nanach/oral-torah/mishna-taharot.json'), { throwIfNoEntry: false })?.isFile() ? {
   related_commentaries: [
     {
       book: "likutay-nanach",

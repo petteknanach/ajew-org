@@ -1,5 +1,6 @@
 ---
 import Layout from '../../../../layouts/Layout.astro';
+import ReaderEntryRecoveryNotice from '../../../../components/ReaderEntryRecoveryNotice.astro';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -97,6 +98,7 @@ const superReaderTorahs = Array.from({ length: 34 }, (_, index) => {
 ---
 
 <Layout title={`${indexData?.title || 'Likutay Moharan'} — Complete Directory`} description={`Complete directory for Likutay Moharan part ${partNum}, including introductions, approbations, prefaces, sections, and teachings.`}>
+  <ReaderEntryRecoveryNotice directory={`/reader/likutay-moharan/${partNum}/`} />
   <main class="lm-dir">
     <section class="lm-hero">
       <div class="lm-keter">כתר</div>

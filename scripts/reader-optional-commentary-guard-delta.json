@@ -1,0 +1,30 @@
+{
+  "schema": "reader-optional-commentary-guard/v1",
+  "sourceCommit": "27e29dc4db9277e11d346d6a353c3ff14e497455",
+  "paths": {
+    "src/pages/reader/mishna-machshirin/[part]/[torah].astro": {
+      "beforeSHA256": "178e6d2634069be868a059d78b8a0fc7f0b9d19be8ecbb92ebcf98bbb01b9226",
+      "afterSHA256": "38ecdec420cccd31188eb475a4cb2357a8ab8b3c316988fcb66dca0622872d74",
+      "beforeBytes": 9210,
+      "afterBytes": 9354,
+      "before": "const commentaryEntry = torahData ?",
+      "after": "const commentaryEntry = torahData && fs.statSync(path.join(process.cwd(), 'public/reader/likutay-nanach/oral-torah/mishna-machshirin.json'), { throwIfNoEntry: false })?.isFile() ?"
+    },
+    "src/pages/reader/mishna-taharot/[part]/[torah].astro": {
+      "beforeSHA256": "8fe518eff7b876ead4977097d3cbe0a478e2c2490d9e4f8b1bd626167515ae1d",
+      "afterSHA256": "b6a9e04681e4f6c4a778329ffbef2789adfcc995de1e144cdde0b0ddc14dc6cc",
+      "beforeBytes": 9145,
+      "afterBytes": 9286,
+      "before": "const commentaryEntry = torahData ?",
+      "after": "const commentaryEntry = torahData && fs.statSync(path.join(process.cwd(), 'public/reader/likutay-nanach/oral-torah/mishna-taharot.json'), { throwIfNoEntry: false })?.isFile() ?"
+    },
+    "src/pages/reader/mishna-zavim/[part]/[torah].astro": {
+      "beforeSHA256": "b76413df48388b00912010de7b0336bc6fe26925cd9b1edd831bbfadd7c46d29",
+      "afterSHA256": "2af9ab882e8b43454a65a0333eb04a1436d061a3141dcacaafe73988a955b08c",
+      "beforeBytes": 9103,
+      "afterBytes": 9242,
+      "before": "const commentaryEntry = torahData ?",
+      "after": "const commentaryEntry = torahData && fs.statSync(path.join(process.cwd(), 'public/reader/likutay-nanach/oral-torah/mishna-zavim.json'), { throwIfNoEntry: false })?.isFile() ?"
+    }
+  }
+}

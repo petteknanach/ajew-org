@@ -1,5 +1,6 @@
 ---
 import Layout from '../../../../layouts/Layout.astro';
+import ReaderEntryRecoveryNotice from '../../../../components/ReaderEntryRecoveryNotice.astro';
 import ReaderDirectory from '../../../../components/ReaderDirectory.astro';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -15,6 +16,7 @@ try {
 const totalSections = indexData?.torahs?.length || 0;
 ---
 <Layout title={`${indexData?.title || 'Sipurey Maasiyos'} — Directory`} description={`Directory for ${indexData?.title || 'Sipurey Maasiyos'}.`}>
+  <ReaderEntryRecoveryNotice directory={`/reader/sipurey-maasiyos/${partNum}/`} />
   <ReaderDirectory
     title={indexData?.title || 'Sipurey Maasiyos'}
     hebrewTitle={indexData?.hebrewTitle || ''}

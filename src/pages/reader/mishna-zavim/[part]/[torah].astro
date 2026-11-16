@@ -37,7 +37,7 @@ const bookName = 'Mishna - Zavim';
 const bookHebrew = 'משנה - זבים';
 
 
-const commentaryEntry = torahData ? {
+const commentaryEntry = torahData && fs.statSync(path.join(process.cwd(), 'public/reader/likutay-nanach/oral-torah/mishna-zavim.json'), { throwIfNoEntry: false })?.isFile() ? {
   related_commentaries: [
     {
       book: "likutay-nanach",

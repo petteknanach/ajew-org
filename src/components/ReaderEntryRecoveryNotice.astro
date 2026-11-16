@@ -1,0 +1,20 @@
+---
+import entries from '../data/reader-entry-recovery.json';
+const { directory } = Astro.props;
+const selected = entries.filter(entry => entry.directory === directory);
+---
+{selected.length > 0 && (
+  <aside class="entry-recovery" data-entry-recovery hidden role="status" aria-label="Unavailable address · כתובת לא זמינה">
+    <p><strong>This address is not an available entry in this book.</strong> You are viewing the correct book and part directory, not a replacement teaching.</p>
+    <p lang="he" dir="rtl"><strong>אין בספר ערך זמין בכתובת הזאת.</strong> זהו תוכן העניינים של הספר והחלק המבוקשים, ולא קטע חלופי.</p>
+    <p>Requested address · <span lang="he" dir="rtl">הכתובת המבוקשת</span>: <code data-entry-recovery-path></code></p>
+    {selected.map(entry => <span hidden data-entry-recovery-key={entry.key} data-entry-recovery-directory={entry.directory} data-entry-recovery-source={entry.path}></span>)}
+  </aside>
+)}
+<script is:inline src="/reader-entry-recovery.js?v=20261116-1" defer></script>
+<style>
+  .entry-recovery { box-sizing: border-box; max-width: 72rem; margin: 1rem auto; padding: 1rem; border: 2px solid currentColor; border-radius: .5rem; background: var(--reader-bg-secondary, #fff8e8); color: var(--reader-text, #332b20); }
+  .entry-recovery[hidden] { display: none; }
+  .entry-recovery p { margin: .4rem 0; }
+  .entry-recovery code { overflow-wrap: anywhere; direction: ltr; unicode-bidi: isolate; }
+</style>
