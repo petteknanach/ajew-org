@@ -72,7 +72,7 @@ function deferredFixtureScripts(template, disk) {
   const url=tag.getAttribute('src');assert(url.startsWith('/')&&!url.startsWith('//'),'Same-origin static script');
   const parsed=new URL(url,'https://ajew.org');assert.equal(parsed.origin,'https://ajew.org','Same-origin static script');
   const code=disk('public'+parsed.pathname);assert.equal(typeof code,'string','Missing real static script '+url);assert(code,'Missing real static script '+url);
-  const integrity=tag.getAttribute('integrity'),algorithm=parsed.pathname==='/chok.js'?'sha384':'sha256';if(integrity!==null)assert.equal(integrity,algorithm+'-'+crypto.createHash(algorithm).update(code,'utf8').digest('base64'),'Static script SRI '+url);
+  const integrity=tag.getAttribute('integrity'),algorithm=['/chok.js','/chok-display.js'].includes(parsed.pathname)?'sha384':'sha256';if(integrity!==null)assert.equal(integrity,algorithm+'-'+crypto.createHash(algorithm).update(code,'utf8').digest('base64'),'Static script SRI '+url);
   return {url,code};
  });
 }
@@ -127,7 +127,32 @@ test('static SRI-only corruption rejects and an unchanged fresh positive restore
 test('static transport rejects external/protocol-relative origins before source lookup',()=>{
  for(const src of ['https://external.invalid/a.js','//external.invalid/a.js','/\\external.invalid/a.js']){let read=false;assert.throws(()=>deferredFixtureScripts(`<script src="${src}" defer></script>`,()=>{read=true;return 'x';}),/Same-origin static script/);assert.equal(read,false);}
 });
+test('modeled DOM supports the real display text and generated-reference operations',()=>{
+ const d=documentFor('<html><body><div id="display-probe"><p>יְהוָה </p><section data-sec="mishna"><div data-mishna-owner="probe"><h3>פרק ט:י</h3></div></section><aside class="ck-kavana">יְהוָה</aside></div></body></html>'),e=sandbox(d,'/reader/chok/',async()=>{throw Error('unexpected fetch');});
+ try{require('./chok-display-fixture.cjs').loadDisplay(read('src/pages/reader/chok.astro'),read,e.box);const probe=d.getElementById('display-probe');assert.equal(probe.querySelector('p').children.length,0);assert.equal(probe.querySelector('p').firstChild.data,'יְהוָה ');assert.equal(probe.querySelector('h3').ownerDocument,d);assert.equal(probe.querySelector('h3').parentElement.getAttribute('data-mishna-owner'),'probe');e.box.window.ChokDisplay.apply(probe,'he');assert.equal(probe.querySelector('p').textContent,'יְהֹוָה ');assert.equal(probe.querySelector('.ck-kavana').textContent,'יְהוָה');assert.equal(probe.querySelector('.ck-generated-ref').textContent,'ט:י');assert.equal(probe.querySelector('.ck-generated-ref').getAttribute('dir'),'ltr');e.box.window.ChokDisplay.apply(probe,'he');assert.equal(probe.querySelectorAll('.ck-generated-ref').length,1);assert.equal(probe.querySelector('p').textContent,'יְהֹוָה ');}finally{e.close();}
+});
+test('closed historical caller-source inverse preserves old pins and refuses changed or foreign bytes',()=>{
+ const {restoreCaller}=require('./chok-display-fixture.cjs'),bank=JSON.parse(read('scripts/chok-sa-optional-admission.json')),sha=b=>crypto.createHash('sha256').update(b).digest('hex');
+ for(const p of ['scripts/chok-lech-sunday.test.cjs','scripts/chok-lech-monday-init.test.cjs','scripts/verify-chok-today-classical.cjs']){const actual=Buffer.from(read(p)),old=restoreCaller(p,actual);assert.notDeepEqual(old,actual);assert.equal(sha(old),bank.paths[p].after.sha256);assert.equal(restoreCaller('wrong-owner',actual),actual);for(const pos of [0,Math.floor(actual.length/2),actual.length-1]){const bad=Buffer.from(actual);bad[pos]^=1;assert.equal(restoreCaller(p,bad),bad);}const appended=Buffer.concat([actual,Buffer.from(' ')]);assert.equal(restoreCaller(p,appended),appended);assert.deepEqual(restoreCaller(p,actual),old);assert.equal(restoreCaller(p,old),old);}
+});
+test('partial initializer fixtures authenticate real static ChokDisplay and reject missing/corrupt wiring',()=>{
+ const {loadDisplay}=require('./chok-display-fixture.cjs'),template=read('src/pages/reader/chok.astro');
+ const tag=template.match(/<script\b[^>]*src="\/chok-display\.js\?[^>]*><\/script>/)[0];
+ const positive=()=>{const d=documentFor('<body></body>'),e=sandbox(d,'/reader/chok/',async()=>{throw Error('unexpected fetch');});try{loadDisplay(template,read,e.box);assert.equal(typeof e.box.window.ChokDisplay.apply,'function');}finally{e.close();}};
+ positive();
+ for(const [label,page,disk,error] of [
+  ['missing tag',template.replace(tag,''),read,/one authentic static/],
+  ['duplicate tag',template+tag,read,/one authentic static/],
+  ['missing file',template,()=>{throw Error('missing real display');},/missing real display/],
+  ['changed bytes',template,p=>read(p)+' ',/version binds complete bytes/],
+  ['SRI corruption',template.replace(tag,tag.replace('integrity="sha384-','integrity="sha384-A')),read,/static SRI/],
+  ['version corruption',template.replace(tag,tag.replace(/\?v=[a-f0-9]{64}/,'?v='+'0'.repeat(64))),read,/version binds complete bytes/],
+  ['not deferred',template.replace(tag,tag.replace(' defer','')),read,/is deferred/],
+  ['wrong CORS',template.replace(tag,tag.replace('crossorigin="anonymous"','crossorigin="use-credentials"')),read,/CORS/],
+  ['after Main',template.replace(tag,'')+tag,read,/source\/display\/Main order/]
+ ]){const d=documentFor('<body></body>'),e=sandbox(d,'/reader/chok/',async()=>{throw Error('unexpected fetch');});try{assert.throws(()=>loadDisplay(page,disk,e.box),error,label);assert.equal(e.box.window.ChokDisplay,undefined,'no module execution after rejected '+label);}finally{e.close();}positive();}
+});
 test('actual current template discovers the complete ordered static scripts with real SRI',()=>{
  const scripts=deferredFixtureScripts(read('src/pages/reader/chok.astro'),read);
- assert.deepEqual(scripts.map(s=>new URL(s.url,'https://ajew.org').pathname),["/tikkun-boundaries.js", "/tikkun-qatan.js", "/medooyuk.js", "/psalms-data.js", "/chok-verse-breslov.js", "/chok-source-reader.js", "/chok-lech-sunday.js", "/chok-lech-monday.js", "/chok-lech-tuesday.js", "/chok-qualified-daily.js", "/chok-qualified-daily-classical-selected-v1.js", "/chok-firstweek-zhm-private-v1.js", "/chok-other-layers.js", "/chok-noach-english.js", "/chok-genesis-english.js", "/chok.js"]);
+ assert.deepEqual(scripts.map(s=>new URL(s.url,'https://ajew.org').pathname),["/tikkun-boundaries.js", "/tikkun-qatan.js", "/medooyuk.js", "/psalms-data.js", "/chok-verse-breslov.js", "/chok-source-reader.js", "/chok-lech-sunday.js", "/chok-lech-monday.js", "/chok-lech-tuesday.js", "/chok-qualified-daily.js", "/chok-qualified-daily-classical-selected-v1.js", "/chok-firstweek-zhm-private-v1.js", "/chok-other-layers.js", "/chok-noach-english.js", "/chok-genesis-english.js", "/chok-display.js", "/chok.js"]);
 });
