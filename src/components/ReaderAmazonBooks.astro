@@ -1,0 +1,63 @@
+---
+import { booksForReaderPath, amazonBookUrl, readerBookCatalogLink } from '../lib/amazon-books.mjs';
+interface Props { pathname: string; }
+const { pathname } = Astro.props;
+const books = booksForReaderPath(pathname);
+const catalog = readerBookCatalogLink(pathname);
+---
+{(books.length > 0 || catalog) && (
+  <aside class="reader-amazon-books" aria-label="Our books on Amazon">
+    {books.map(book => (
+      <a class="reader-amazon-buy" href={amazonBookUrl(book)} target="_blank" rel="noopener noreferrer">
+        Buy {book.buttonTitle || book.title} on Amazon
+      </a>
+    ))}
+    <a class="reader-amazon-catalog" href={books.length ? '/print-books/' : catalog.href}>{books.length ? 'All our books' : catalog.label}</a>
+  </aside>
+)}
+<style>
+  .reader-amazon-books {
+    --amazon-fg: var(--ds-text-primary, #263449);
+    --amazon-border: var(--ds-border, #aab4c1);
+    box-sizing: border-box;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 16px;
+    max-width: 1200px;
+    margin: 12px auto 0;
+    padding: 0 16px;
+    font-family: var(--ds-font-body, system-ui, sans-serif);
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+  .reader-amazon-buy, .reader-amazon-catalog {
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    max-width: 100%;
+    color: var(--amazon-fg);
+    text-decoration: none;
+    overflow-wrap: anywhere;
+  }
+  .reader-amazon-buy {
+    border: 1px solid var(--amazon-border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    background: transparent;
+  }
+  .reader-amazon-catalog { text-decoration: underline; text-underline-offset: 3px; }
+  .reader-amazon-buy:hover { text-decoration: underline; text-underline-offset: 3px; }
+  .reader-amazon-buy:focus-visible, .reader-amazon-catalog:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+  }
+  /* Reader theme controls can set night on the reading container only.
+     This preceding sibling must also follow the actual body dark-mode flag. */
+  :global(body.dark-mode) .reader-amazon-books {
+    --amazon-fg: #d0d0e0;
+    --amazon-border: #6d7f98;
+  }
+  @media print { .reader-amazon-books { display: none; } }
+</style>

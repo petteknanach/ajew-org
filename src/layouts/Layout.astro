@@ -15,6 +15,7 @@ interface Props {
 
 import Navigation from '../components/Navigation.astro';
 import CompactYahrzeit from '../components/CompactYahrzeit.astro';
+import ReaderAmazonBooks from '../components/ReaderAmazonBooks.astro';
 import { getReaderPlainAvailability, readerPlainAlternates } from '../lib/reader-plain-availability.mjs';
 // The --ds-* tokens components style themselves with. Without these, every
 // var(--ds-*, fallback) in the site resolves to its literal fallback, which is
@@ -249,6 +250,7 @@ const hasYouTubeReader = Boolean(readerPlainMatch) || /^\/reader\/chayey-moharan
     <CompactYahrzeit />
     
     <main id="main-content">
+      <ReaderAmazonBooks pathname={Astro.url.pathname} />
       <slot />
     </main>
 
