@@ -64,15 +64,15 @@ test('Otzar rejects missing/wrong-work/wrong-part/wrong-number/missing-id source
 });
 
 const haggadah = json('public/reader/haggadah-shel-pesach/index.json');
-const haggadahTargets = new Map([[3,'karpas'],[5,'maggid'],[6,'rachtzah'],[7,'motzi-matzah'],[9,'korech'],[12,'barech']]);
+const haggadahTargets = new Map([[1,'kadesh'],[2,'urchatz'],[3,'karpas'],[4,'yachatz'],[5,'maggid'],[6,'rachtzah'],[7,'motzi-matzah'],[8,'maror'],[9,'korech'],[10,'shulchan-orech'],[11,'tzafun'],[12,'barech'],[13,'hallel'],[14,'nirtzah']]);
 function directoryItems({book = {id:'haggadah-shel-pesach'}, partNum='1', indexData=haggadah} = {}) {
   const text = read(directoryOwner);
   const code = text.slice(text.indexOf('const haggadahSections ='), text.indexOf('\nconst title ='));
   const ctx = vm.createContext({ book, partNum, indexData, rawItems:indexData.sections });
   return JSON.parse(vm.runInContext(code+';JSON.stringify(items)',ctx));
 }
-test('six Haggadah directory links use the same-work named-section owner; others unchanged', () => {
-  const items = directoryItems(); assert.equal(items.length, haggadah.sections.length);
+test('all fourteen Haggadah directory links use their exact same-work named-section owners', () => {
+  const items = directoryItems(); assert.equal(items.length, 14); assert.equal(items.length, haggadah.sections.length); assert.equal(haggadahTargets.size, 14);
   for (const item of items) {
     const id = haggadahTargets.get(item.number);
     assert.equal(item.url, id ? `/haggadah/#section-${id}` : `/reader/haggadah-shel-pesach/1/${item.number}`);

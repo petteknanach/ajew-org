@@ -37,12 +37,11 @@ export function getStaticPaths() {
 const { book, partMeta, indexData } = Astro.props;
 const partNum = String(partMeta?.part || Astro.params.part || 1);
 const rawItems = indexData?.torahs || indexData?.items || indexData?.sections || indexData?.chapters || [];
-// These observed chapter URLs have no item route. Their owning Haggadah
+// All fourteen indexed chapter URLs have no item route. Their owning Haggadah
 // renders the same section JSON at these named anchors. Keep the repair finite
 // and require both the chapter number and section identity in the owned index.
 const haggadahSections = new Map([
-  [3, 'karpas'], [5, 'maggid'], [6, 'rachtzah'],
-  [7, 'motzi-matzah'], [9, 'korech'], [12, 'barech'],
+  [1, 'kadesh'], [2, 'urchatz'], [3, 'karpas'], [4, 'yachatz'], [5, 'maggid'], [6, 'rachtzah'], [7, 'motzi-matzah'], [8, 'maror'], [9, 'korech'], [10, 'shulchan-orech'], [11, 'tzafun'], [12, 'barech'], [13, 'hallel'], [14, 'nirtzah']
 ]);
 const items = rawItems.map((item, index) => {
   const number = item.number ?? item.torah ?? item.chapter ?? item.section ?? item.displayNumber ?? index + 1;
