@@ -37,6 +37,13 @@ export function getStaticPaths() {
 const { book, partMeta, indexData } = Astro.props;
 const partNum = String(partMeta?.part || Astro.params.part || 1);
 const rawItems = indexData?.torahs || indexData?.items || indexData?.sections || indexData?.chapters || [];
+// These observed chapter URLs have no item route. Their owning Haggadah
+// renders the same section JSON at these named anchors. Keep the repair finite
+// and require both the chapter number and section identity in the owned index.
+const haggadahSections = new Map([
+  [3, 'karpas'], [5, 'maggid'], [6, 'rachtzah'],
+  [7, 'motzi-matzah'], [9, 'korech'], [12, 'barech'],
+]);
 const items = rawItems.map((item, index) => {
   const number = item.number ?? item.torah ?? item.chapter ?? item.section ?? item.displayNumber ?? index + 1;
   return {
@@ -45,7 +52,11 @@ const items = rawItems.map((item, index) => {
     displayNumber: item.displayNumber ?? number,
     title: item.title || item.englishTitle || item.name || '',
     hebrewTitle: item.hebrewTitle || item.hebrew_name || item.hebrewName || '',
-    url: item.url || `/reader/${book.id}/${partNum}/${number}`,
+    url: book.id === 'haggadah-shel-pesach' && partNum === '1'
+      && indexData.book === 'haggadah-shel-pesach' && haggadahSections.get(item.number) === item.id
+      && typeof item.id === 'string'
+      ? `/haggadah/#section-${item.id}`
+      : item.url || `/reader/${book.id}/${partNum}/${number}`,
   };
 });
 const title = indexData?.title || book?.title || book?.id || 'Book';

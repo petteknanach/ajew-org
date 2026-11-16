@@ -7,22 +7,35 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 export function getStaticPaths() {
+  // The owned indexes, not historical volume counts, define the item routes.
+  // Admit only existing, same-work/same-part source identities; never emit a
+  // placeholder page for a missing file or infer membership from a filename.
+  const root = path.join(process.cwd(), 'public/reader/otzar-hayirah');
+  const readJson = (file) => {
+    try { return JSON.parse(fs.readFileSync(file, 'utf8')); }
+    catch { return null; }
+  };
+  const index = readJson(path.join(root, 'index.json'));
+  if (index?.book !== 'otzar-hayirah') return [];
   const paths = [];
-  // Part 1: Volume 1 (א–ד) - 111 torahs
-  for (let torah = 1; torah <= 111; torah++) {
-    paths.push({ params: { part: '1', torah: String(torah) } });
-  }
-  // Part 2: Volume 2 (ה–ל) - 16 torahs
-  for (let torah = 1; torah <= 16; torah++) {
-    paths.push({ params: { part: '2', torah: String(torah) } });
-  }
-  // Part 3: Volume 3 (מ) - 17 torahs
-  for (let torah = 1; torah <= 17; torah++) {
-    paths.push({ params: { part: '3', torah: String(torah) } });
-  }
-  // Part 4: Volume 4 (נ–ת) - 25 torahs
-  for (let torah = 1; torah <= 25; torah++) {
-    paths.push({ params: { part: '4', torah: String(torah) } });
+  const seen = new Set();
+  for (const meta of index.parts || []) {
+    const part = meta.part;
+    if (!Number.isSafeInteger(part) || part < 1) continue;
+    const directory = readJson(path.join(root, `part-${part}/index.json`));
+    if (directory?.book !== 'otzar-hayirah' || directory.part !== part) continue;
+    for (const item of directory.torahs || []) {
+      const torah = item.number;
+      if (!Number.isSafeInteger(torah) || torah < 1) continue;
+      const url = `/reader/otzar-hayirah/${part}/${torah}`;
+      if (item.url && item.url !== url && item.url !== `${url}/`) continue;
+      const source = readJson(path.join(root, `part-${part}/torah-${torah}.json`));
+      if (source?.book !== 'otzar-hayirah' || source.part !== part || source.torah !== torah
+          || source.id !== `ohy-${part}-${torah}` || !Array.isArray(source.segments) || !source.segments.length) continue;
+      if (seen.has(url)) continue;
+      seen.add(url);
+      paths.push({ params: { part: String(part), torah: String(torah) } });
+    }
   }
   return paths;
 }
