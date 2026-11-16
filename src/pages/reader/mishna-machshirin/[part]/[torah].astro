@@ -37,7 +37,7 @@ const bookName = 'Mishna - Machshirin';
 const bookHebrew = 'משנה - מכשירין';
 
 
-const commentaryEntry = torahData ? {
+const commentaryEntry = torahData && fs.statSync(path.join(process.cwd(), 'public/reader/likutay-nanach/oral-torah/mishna-machshirin.json'), { throwIfNoEntry: false })?.isFile() ? {
   related_commentaries: [
     {
       book: "likutay-nanach",

@@ -3,11 +3,15 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs'), path = require('node:path'), {createHash} = require('node:crypto');
 const sha = b => createHash('sha256').update(b).digest('hex');
+const guardHelper = path.join(__dirname, 'reader-optional-commentary-guard-conservation.cjs');
+assert.equal(sha(fs.readFileSync(guardHelper)), '1cedf0cbf99372fc985ffcf0d4174f7857820d1d4acff35a64d9c805763074f5', 'OPTIONAL_GUARD_HELPER_PIN');
+const optionalGuard = require(guardHelper);
 const raw = fs.readFileSync(path.join(__dirname, 'reader-cross-reference-cache-delta.json'));
 assert.equal(sha(raw), 'f2fe87303dc58496d37f671b9316bd7c42a3caf7a186007d59ffa25ab731a89a', 'XREF_QUERY_AUTHORITY_PIN');
 const delta = JSON.parse(raw);
 assert.equal(Object.keys(delta.paths).length, 258, 'XREF_EXACT_QUERY_DOMAIN');
 function restore(relative, bytes) {
+  bytes = optionalGuard.restore(relative, bytes);
   const d = delta.paths[relative];
   if (!d || !Buffer.isBuffer(bytes) || sha(bytes) !== d.afterSHA256) return bytes;
   assert.equal(bytes.length, d.afterBytes, 'XREF_QUERY_AFTER_BYTES:' + relative);
@@ -19,6 +23,7 @@ function restore(relative, bytes) {
   return before;
 }
 function requireCurrent(relative, bytes) {
+  bytes = optionalGuard.requireCurrent(relative, bytes);
   const d = delta.paths[relative];
   assert(d, 'XREF_QUERY_SELECTED_PATH:' + relative);
   assert.equal(sha(bytes), d.afterSHA256, 'XREF_QUERY_REQUIRED_CURRENT:' + relative);
@@ -47,15 +52,21 @@ if (require.main === module) (async () => {
   let negativeControls = 0;
   for (const relative of paths) {
     const b = fs.readFileSync(path.join(root, relative)), d = delta.paths[relative];
+    const queryCurrent = optionalGuard.requireCurrent(relative, b);
     const old = requireCurrent(relative, b);
     const predecessor = execFileSync('git', ['show', predecessorCommit + ':' + relative], {cwd:root,maxBuffer:8*1024*1024});
     assert.equal(predecessor.toString().split(predecessorURL).length, 2);
-    assert.deepEqual(Buffer.from(predecessor.toString().replace(predecessorURL, delta.url)), b, 'INDEPENDENT_CURRENT_PARENT_QUERY_ONLY:' + relative);
-    assert.deepEqual(Buffer.from(b.toString().replace(delta.url, predecessorURL)), predecessor, 'CURRENT_PARENT_QUERY_INVERSE:' + relative);
+    assert.deepEqual(Buffer.from(predecessor.toString().replace(predecessorURL, delta.url)), queryCurrent, 'INDEPENDENT_CURRENT_PARENT_QUERY_ONLY:' + relative);
+    assert.deepEqual(Buffer.from(queryCurrent.toString().replace(delta.url, predecessorURL)), predecessor, 'CURRENT_PARENT_QUERY_INVERSE:' + relative);
+    if (optionalGuard.delta.paths[relative]) {
+      const gitGuardOld = execFileSync('git', ['show', optionalGuard.delta.sourceCommit + ':' + relative], {cwd:root});
+      assert.deepEqual(queryCurrent, gitGuardOld, 'INDEPENDENT_GIT_GUARD_PREIMAGE:' + relative);
+      assert.throws(()=>requireCurrent(relative, queryCurrent), assert.AssertionError, 'MISSING_CURRENT_GUARD'); negativeControls++;
+    }
     const gitOld = execFileSync('git', ['show', delta.sourceCommit + ':' + relative], {cwd:root,maxBuffer:8*1024*1024});
     assert.deepEqual(old, gitOld, 'INDEPENDENT_GIT_QUERY_PREIMAGE:' + relative);
     assert.equal(old.toString().split(d.previousURL).length, 2);
-    assert.deepEqual(Buffer.from(old.toString().replace(d.previousURL, delta.url)), b, 'QUERY_FORWARD:' + relative);
+    assert.deepEqual(Buffer.from(old.toString().replace(d.previousURL, delta.url)), queryCurrent, 'QUERY_FORWARD:' + relative);
     const corrupt = Buffer.from(b); corrupt[Math.floor(b.length/2)] ^= 1;
     for (const bad of [old, corrupt, Buffer.concat([b,Buffer.from(' ')]), Buffer.from(b.toString().replace(delta.url,delta.url+'-wrong')), Buffer.from(b.toString().replace(delta.url,delta.url+' '+delta.url))]) {
       assert.equal(restore(relative,bad), bad, 'UNADMITTED_QUERY_BYTES');
