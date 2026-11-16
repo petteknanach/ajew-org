@@ -1688,6 +1688,7 @@
         if (commentHTML) parts.push(commentHTML);
         if (revision !== state.renderRevision) return;
         box.innerHTML = parts.join('') || '<p class="ck-error">Nothing to show.</p>';
+        window.ChokDisplay.apply(box, state.language);
         presentPrimaryStudy(box);
         suppressSourceCredits(box);
         box.setAttribute('data-language', state.language);
