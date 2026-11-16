@@ -177,3 +177,5 @@ test('actual publication producer discovers exact current membership and fails o
  const {commentaryAvailability}=await import(pathToFileURL(path.join(root,'src/lib/chok-commentary-availability.mjs')));
  const data=commentaryAvailability(root);assert.deepEqual(data.files,names);assert.equal(data.clientSHA256,sha(read('public/chok.js')));assert.equal(data.filesSHA256,sha(JSON.stringify(names)));assert.equal(commentaryAvailability(path.join(root,'not-an-input')),null);
 });
+
+require('./chok-display.test.cjs');
