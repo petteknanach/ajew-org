@@ -144,6 +144,7 @@ async function boot({mainCode=main,missing=false,week='לך לך',day='יום ר
  if(!missing)vm.runInContext(code,r.env.box,{filename:'chok-lech-sunday.js'});
  else if(missing==='malformed')r.env.box.window.ChokLechSunday={};
  r.transport=qualifiedTransport(r.d,r.env,mainCode);
+ require('./chok-display-fixture.cjs').loadDisplay(template,read,r.env.box);
  vm.runInContext(mainCode,r.env.box,{filename:preimage?'genuine-old-chok.js':'chok.js'});
  r.settled=async()=>{await until(()=>!!r.d.getElementById('ck-content').innerHTML&&!r.d.querySelector('.ck-loading'),10000);assert(!r.d.getElementById('ck-content').textContent.includes('Could not load'),r.d.getElementById('ck-content').textContent.slice(0,400));assertProjectedNachBoundary(r.d,scheduleProjection,['gemara','zohar']);assert.deepEqual(r.transport.errors,[],'genuine dynamic script transport');};
  r.change=async(id,value)=>{const n=r.d.getElementById(id);n.value=value;n.dispatchEvent({type:'change'});await r.settled();};

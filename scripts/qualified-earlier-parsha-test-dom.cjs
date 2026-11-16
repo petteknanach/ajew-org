@@ -61,7 +61,10 @@ class Element {
     }; Object.defineProperty(this,'classList',{value,writable:true,configurable:true,enumerable:true}); return value; }
   get id() { return this.attrs.id || ''; } set id(v) { this.setAttribute('id', v); }
   get className() { return this.attrs.class || ''; } set className(v) { this.setAttribute('class', v); }
-  get children() { return this.childNodes.filter(x => x.tagName); }
+  get children() { return this.childNodes.filter(x => x.nodeType === 1); }
+  get parentElement() { return this.parentNode?.nodeType === 1 ? this.parentNode : null; }
+  get ownerDocument() { let n=this; while(n.parentNode)n=n.parentNode; return n.nodeType===9?n:null; }
+  get data() { return this._text; } set data(value) { this._text=String(value); changed(); }
   get firstChild() { return this.childNodes[0] || null; }
   get nodeType() { return this.tagName === '#text' ? 3 : this.tagName === '#document' ? 9 : this.tagName === '#document-fragment' ? 11 : 1; }
   get nextElementSibling() { let n=this.nextSibling; while(n && n.nodeType!==1)n=n.nextSibling; return n; }
@@ -85,6 +88,7 @@ class Element {
   remove() { if (this.parentNode) { const p = this.parentNode; p.childNodes.splice(p.childNodes.indexOf(this),1); this.parentNode = null; changed(); } }
   querySelectorAll(selector) { const out=[]; const visit = p => { for (const n of p.childNodes) {if (n.tagName !== '#text' && selector.split(',').some(s => selects(n,s))) out.push(n); visit(n);} };visit(this);return out; }
   querySelector(selector) {return this.querySelectorAll(selector)[0] || null;}
+  matches(selector) { return selector.split(',').some(s=>selects(this,s)); }
   closest(selector) {for(let p=this;p;p=p.parentNode) if(matches(p,selector))return p;return null;}
   contains(node) {for(let p=node;p;p=p.parentNode)if(p===this)return true;return false;}
   cloneNode(deep) {const n=new Element(this.tagName,this.attrs,this._text);if(deep)for(const c of this.childNodes)n.appendChild(c.cloneNode(true));if(this.content)n.content=this.content.cloneNode(deep);return n;}
