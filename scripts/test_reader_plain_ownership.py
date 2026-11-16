@@ -28,6 +28,50 @@ COMMENTARY = ('tanach-malachi', 'tanach-bereishit', 'tanach-chagai', 'tanach-ova
 CONTROLS = ('likutay-nanach/volume-1/chapter-1.json', 'likutay-nanach/volume-4/chapter-16.json', 'likutay-moharan/part-1/torah-1.json')
 
 
+def historical_control_bytes(relative, name, current, source_path, output_dir):
+    """Invert only the authenticated chapter-16 schema/label successor.
+
+    The other two historical controls are the actual unchanged output bytes.
+    Current output is produced normally, never by a legacy producer bypass.
+    """
+    if relative != CONTROLS[1]:
+        return current
+    bank_bytes = (ROOT / 'scripts/fixtures/reader-chapter16-historical-inverse.json').read_bytes()
+    assert hashlib.sha256(bank_bytes).hexdigest() == 'edfba910fe1a9ef9af5a933e0e65fd37db05d074cee65c9ce5e8fcef03092dcc'
+    bank = json.loads(bank_bytes)
+    assert relative == bank['sourceFile']
+    assert hashlib.sha256(source_path.read_bytes()).hexdigest() == bank['sourceSHA256']
+    for file, pin in [('build-reader-plain-text.py', 'producerSHA256'), ('reader_export_repairs.py', 'repairsSHA256')]:
+        assert hashlib.sha256((ROOT / 'scripts' / file).read_bytes()).hexdigest() == bank[pin]
+    source = json.loads(source_path.read_bytes())
+    raw = json.loads((output_dir / 'index.json').read_bytes())
+    assert (raw['bookId'], raw['part'], raw['torah']) == ('likutay-nanach', 'volume-4', '16')
+    assert raw['schema'] == 'reader-plain-source-projection-v1'
+    assert raw['sourceFile'] == '/reader/' + relative
+    # Actual provenance reconstructs the complete genuine physical source.
+    reconstructed = dict(raw['sourceMetadata'], segments=[s['sourceSegment'] for s in raw['segments']])
+    assert json.dumps(reconstructed, sort_keys=True) == json.dumps(source, sort_keys=True)
+    assert len(raw['segments']) == len(source['segments'])
+    for position, (exported, original) in enumerate(zip(raw['segments'], source['segments'], strict=True), 1):
+        assert exported['sourcePosition'] == position
+        assert exported['sourceIndex'] == original.get('index')
+        assert exported['index'] == (original.get('index') or position)
+        assert exported['he'] == (original.get('he_nikud') or original.get('he') or '')
+        assert exported['en'] == (original.get('en') or '')
+    d = bank['outputs'][name]
+    assert len(current) == d['afterBytes']
+    assert hashlib.sha256(current).hexdigest() == d['afterSHA256']
+    before = current
+    for edit in reversed(d['edits']):
+        at = edit['afterOffset']
+        after = edit['after'].encode()
+        assert before[at:at + len(after)] == after
+        before = before[:at] + edit['before'].encode() + before[at + len(after):]
+    assert len(before) == d['beforeBytes']
+    assert hashlib.sha256(before).hexdigest() == d['beforeSHA256']
+    return before
+
+
 def input_paths():
     paths = {'catalog.json', 'likutay-nanach/tanach/index.json'}
     for book in PRIMARY:
@@ -124,10 +168,15 @@ class OwnershipTests(unittest.TestCase):
                 self.assertEqual(sum(r['url'] == raw['plainUrl'] for r in rows), 1)
                 self.assertIn((target / 'index.txt').read_text(), (self.out / 'likutay-nanach/full.txt').read_text())
                 self.assertNotIn('Human reader page', (target / 'index.html').read_text())
-        # Disjoint non-Tanach exports are byte-identical to genuine pinned base.
+        # Preserve both unchanged disjoint controls byte-for-byte. Chapter 16
+        # compares the strict source/whole-output inverse to the same genuine
+        # historical producer; its current provenance schema is tested above.
         import subprocess, types
         old = types.ModuleType('old'); old.__file__ = str(ROOT / 'scripts/build-reader-plain-text.py')
-        exec(compile(subprocess.check_output(['git','show','6a25210908f78164e4b570a9a80db46d49fd1d69:scripts/build-reader-plain-text.py'], cwd=ROOT), old.__file__, 'exec'), old.__dict__)
+        old_source = subprocess.check_output(['git','show','6a25210908f78164e4b570a9a80db46d49fd1d69:scripts/build-reader-plain-text.py'], cwd=ROOT)
+        historical_bank = json.loads((ROOT / 'scripts/fixtures/reader-chapter16-historical-inverse.json').read_bytes())
+        self.assertEqual(hashlib.sha256(old_source).hexdigest(), historical_bank['oldProducerSHA256'])
+        exec(compile(old_source, old.__file__, 'exec'), old.__dict__)
         for relative in CONTROLS:
             path = self.reader / relative
             data = json.loads(path.read_bytes())
@@ -136,7 +185,7 @@ class OwnershipTests(unittest.TestCase):
                 entry = old.write_teaching(path, data, *ids)
                 for name in ('index.txt','index.md','index.json','index.html'):
                     suffix = entry['url'].removeprefix('/reader-plain/')
-                    self.assertEqual((old.OUT_DIR / suffix / name).read_bytes(), (self.out / suffix / name).read_bytes())
+                    self.assertEqual((old.OUT_DIR / suffix / name).read_bytes(), historical_control_bytes(relative, name, (self.out / suffix / name).read_bytes(), path, self.out / suffix))
         self.assertEqual({p: p.read_bytes() for p in self.reader.rglob('*.json')}, before)
         retained = os.environ.get('PLAIN_OWNERSHIP_OUTPUT')
         if retained:

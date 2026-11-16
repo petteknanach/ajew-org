@@ -3,6 +3,14 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs'), path = require('node:path'), {createHash} = require('node:crypto');
 const sha = b => createHash('sha256').update(b).digest('hex');
+function sourceInverse(method, relative, bytes) {
+  // Historical definitions-only fixtures for disjoint owners need no new donor.
+  // For either changed owner a missing/altered helper always fails closed.
+  if (!['src/pages/reader/otzar-hayirah/[part]/[torah].astro', 'src/pages/reader/sefer-hamidos/[part]/[torah].astro'].includes(relative)) return bytes;
+  const sourceHelper = path.join(__dirname, 'reader-source-successor-inverse.cjs');
+  assert.equal(sha(fs.readFileSync(sourceHelper)), 'd8cfc5b3bce55d8341a7f0b577039d1db0c75cbdae3451c482bb1814dd0d29e6', 'SOURCE_SUCCESSOR_HELPER_PIN');
+  return require(sourceHelper)[method](relative, bytes);
+}
 const guardHelper = path.join(__dirname, 'reader-optional-commentary-guard-conservation.cjs');
 assert.equal(sha(fs.readFileSync(guardHelper)), '1cedf0cbf99372fc985ffcf0d4174f7857820d1d4acff35a64d9c805763074f5', 'OPTIONAL_GUARD_HELPER_PIN');
 const optionalGuard = require(guardHelper);
@@ -11,6 +19,7 @@ assert.equal(sha(raw), 'f2fe87303dc58496d37f671b9316bd7c42a3caf7a186007d59ffa25a
 const delta = JSON.parse(raw);
 assert.equal(Object.keys(delta.paths).length, 258, 'XREF_EXACT_QUERY_DOMAIN');
 function restore(relative, bytes) {
+  bytes = sourceInverse('restore', relative, bytes);
   bytes = optionalGuard.restore(relative, bytes);
   const d = delta.paths[relative];
   if (!d || !Buffer.isBuffer(bytes) || sha(bytes) !== d.afterSHA256) return bytes;
@@ -23,10 +32,12 @@ function restore(relative, bytes) {
   return before;
 }
 function requireCurrent(relative, bytes) {
+  bytes = sourceInverse('requireCurrent', relative, bytes);
   bytes = optionalGuard.requireCurrent(relative, bytes);
   const d = delta.paths[relative];
   assert(d, 'XREF_QUERY_SELECTED_PATH:' + relative);
   assert.equal(sha(bytes), d.afterSHA256, 'XREF_QUERY_REQUIRED_CURRENT:' + relative);
+  // The outer admission has already run; restore the authenticated inner body.
   return restore(relative, bytes);
 }
 module.exports = {restore, requireCurrent, delta};
@@ -52,7 +63,7 @@ if (require.main === module) (async () => {
   let negativeControls = 0;
   for (const relative of paths) {
     const b = fs.readFileSync(path.join(root, relative)), d = delta.paths[relative];
-    const queryCurrent = optionalGuard.requireCurrent(relative, b);
+    const queryCurrent = optionalGuard.requireCurrent(relative, sourceInverse('requireCurrent', relative, b));
     const old = requireCurrent(relative, b);
     const predecessor = execFileSync('git', ['show', predecessorCommit + ':' + relative], {cwd:root,maxBuffer:8*1024*1024});
     assert.equal(predecessor.toString().split(predecessorURL).length, 2);

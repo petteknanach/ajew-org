@@ -137,3 +137,19 @@ test('registry raw-text serialization survives closing-script, HTML entities and
   assert.ok(!/[<>&\u2028\u2029]/.test(serialized));assert.match(serialized,/\\u003c\/script\\u003e/);
   const n=finiteEnhance('?ajew_entry='+canary[0].key,{entries:JSON.parse(serialized)});assert.equal(n.title.textContent,canary[0].title);
 });
+
+// Registration only: normal test:reader-entry now owns both source successors.
+import './test-reader-produced-routes.mjs';
+import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+test('source successor: actual complete Python exporter regression module (15 tests)', {timeout: 120_000}, () => {
+  const env = {...process.env};
+  delete env.AJEW_EXPORT_PRODUCER;
+  const result = spawnSync('python3', ['-I', '-B', fileURLToPath(new URL('./test-reader-export-repairs.py', import.meta.url))], {
+    cwd: fileURLToPath(root), env, encoding: 'utf8', timeout: 110_000, maxBuffer: 8 * 1024 * 1024,
+  });
+  assert.ifError(result.error);
+  assert.equal(result.signal, null, result.stderr);
+  assert.equal(result.status, 0, result.stdout + result.stderr);
+  assert.match(result.stderr, /\nRan 15 tests in [^\n]+\n\nOK\s*$/);
+});
