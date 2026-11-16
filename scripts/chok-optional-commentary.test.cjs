@@ -6,6 +6,16 @@ const {pathToFileURL} = require('node:url');
 const root = path.resolve(__dirname, '..');
 const read = p => fs.readFileSync(path.join(root, p));
 const sha = b => createHash('sha256').update(b).digest('hex');
+// Compose only the two exact Reader test registrations before the unchanged
+// historical Chok inverse. Production code, banks and old pins remain intact.
+function restoreReaderTestRegistration(relative, bytes) {
+ if(relative!=='package.json'||!Buffer.isBuffer(bytes)||sha(bytes)!=='d501d058381ed4473b4229fb97341c7a7a08f5367382ff6da142d51f35767930')return bytes;
+ const marker=' scripts/test-reader-optional-commentary-guards.mjs scripts/test-reader-entry-recovery.mjs';
+ const text=bytes.toString('utf8');assert.equal(text.split(marker).length,2,'READER_TEST_REGISTRATION_UNIQUE');
+ const before=Buffer.from(text.replace(marker,''));
+ assert.equal(sha(before),'85c865e4086cd2ba5087f6c47a4b4579c374322a0cbb033a3a6d4056f0976dd5','READER_TEST_REGISTRATION_WHOLE_INVERSE');
+ return before;
+}
 const original = process.env.CHOK_OPTIONAL_SOURCE;
 const code = original ? fs.readFileSync(original, 'utf8') : read('public/chok.js').toString();
 const names = fs.readdirSync(path.join(root,'public/reader/chok/commentary')).filter(n=>n.endsWith('.json')).sort();
@@ -85,8 +95,18 @@ test('fresh producer observes a later file and refuses ambiguous publication inp
   fs.symlinkSync(path.join(target,name),path.join(target,'ambiguous.json'));assert.equal(commentaryAvailability(dir),null);
  }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
+test('Reader test-registration composition is exact, owner-bound and rejects altered package bytes',()=>{
+ const current=read('package.json');assert.equal(sha(current),'d501d058381ed4473b4229fb97341c7a7a08f5367382ff6da142d51f35767930');
+ const before=restoreReaderTestRegistration('package.json',current);assert.equal(sha(before),'85c865e4086cd2ba5087f6c47a4b4579c374322a0cbb033a3a6d4056f0976dd5');
+ assert.equal(restoreReaderTestRegistration('foreign-owner',current),current);
+ const corrupt=Buffer.from(current);corrupt[0]^=1;
+ for(const bad of [corrupt,Buffer.concat([current,Buffer.from(' ')]),Buffer.from(current.toString().replace(' scripts/test-reader-entry-recovery.mjs','')),Buffer.from(current.toString().replace('scripts/test-reader-optional-commentary-guards.mjs','scripts/test-reader-optional-commentary-guards.mjs changed')),Buffer.from(current.toString().replace(' scripts/test-reader-entry-recovery.mjs',' scripts/test-reader-entry-recovery.mjs scripts/test-reader-entry-recovery.mjs'))]){
+  assert.notDeepEqual(bad,current);assert.equal(restoreReaderTestRegistration('package.json',bad),bad);
+ }
+ assert.deepEqual(restoreReaderTestRegistration('package.json',current),before);
+});
 test('exact new inverse preserves every current-main byte, rejects changed bodies and bank corruption',()=>{
- const helper=require('./chok-optional-commentary-inverse.cjs'),p=path.join(root,'scripts/chok-optional-commentary-admission.json'),raw=fs.readFileSync(p),bank=JSON.parse(raw);
+ const historical=require('./chok-optional-commentary-inverse.cjs'),helper={restore:(relative,bytes)=>historical.restore(relative,restoreReaderTestRegistration(relative,bytes))},p=path.join(root,'scripts/chok-optional-commentary-admission.json'),raw=fs.readFileSync(p),bank=JSON.parse(raw);
  for(const [relative,row]of Object.entries(bank.paths)){
   const bytes=read(relative),pre=helper.restore(relative,bytes);assert.equal(sha(pre),row.beforeSHA256);assert.equal(pre.length,row.beforeBytes);assert.equal(helper.restore('foreign-owner',bytes),bytes);
   for(const pos of [0,Math.floor(bytes.length/2),bytes.length-1]){const bad=Buffer.from(bytes);bad[pos]^=1;assert.equal(helper.restore(relative,bad),bad);}
