@@ -1,0 +1,39 @@
+{
+  "schema": "reader-source-successor-inverse-v1",
+  "sourceCommit": "2e562fab24d63bb765523838d1464897385a645e",
+  "successorCommit": "6ef7440824badfbcb27b541391a8f0c4ac624273",
+  "paths": {
+    "src/pages/reader/otzar-hayirah/[part]/[torah].astro": {
+      "beforeSHA256": "2077c8d2df7a83432532a53b6f3dd7e361f8af2fbfee8d271e7af193860b54e4",
+      "afterSHA256": "0467aa3c849030455043e29c1404d164c083439cb18f34ba41796883e3d69f68",
+      "beforeBytes": 14969,
+      "afterBytes": 15910,
+      "edits": [
+        {
+          "before": "",
+          "after": "  // The owned indexes, not historical volume counts, define the item routes.\n  // Admit only existing, same-work/same-part source identities; never emit a\n  // placeholder page for a missing file or infer membership from a filename.\n  const root = path.join(process.cwd(), 'public/reader/otzar-hayirah');\n  const readJson = (file) => {\n    try { return JSON.parse(fs.readFileSync(file, 'utf8')); }\n    catch { return null; }\n  };\n  const index = readJson(path.join(root, 'index.json'));\n  if (index?.book !== 'otzar-hayirah') return [];\n"
+        },
+        {
+          "before": "  // Part 1: Volume 1 (א–ד) - 111 torahs\n  for (let torah = 1; torah <= 111; torah++) {\n    paths.push({ params: { part: '1', torah: String(torah) } });\n  }\n  // Part 2: Volume 2 (ה–ל) - 16 torahs\n  for (let torah = 1; torah <= 16; torah++) {\n    paths.push({ params: { part: '2', torah: String(torah) } });\n  }\n  // Part 3: Volume 3 (מ) - 17 torahs\n  for (let torah = 1; torah <= 17; torah++) {\n    paths.push({ params: { part: '3', torah: String(torah) } });\n  }\n  // Part 4: Volume 4 (נ–ת) - 25 torahs\n  for (let torah = 1; torah <= 25; torah++) {\n    paths.push({ params: { part: '4', torah: String(torah) } });\n",
+          "after": "  const seen = new Set();\n  for (const meta of index.parts || []) {\n    const part = meta.part;\n    if (!Number.isSafeInteger(part) || part < 1) continue;\n    const directory = readJson(path.join(root, `part-${part}/index.json`));\n    if (directory?.book !== 'otzar-hayirah' || directory.part !== part) continue;\n    for (const item of directory.torahs || []) {\n      const torah = item.number;\n      if (!Number.isSafeInteger(torah) || torah < 1) continue;\n      const url = `/reader/otzar-hayirah/${part}/${torah}`;\n      if (item.url && item.url !== url && item.url !== `${url}/`) continue;\n      const source = readJson(path.join(root, `part-${part}/torah-${torah}.json`));\n      if (source?.book !== 'otzar-hayirah' || source.part !== part || source.torah !== torah\n          || source.id !== `ohy-${part}-${torah}` || !Array.isArray(source.segments) || !source.segments.length) continue;\n      if (seen.has(url)) continue;\n      seen.add(url);\n      paths.push({ params: { part: String(part), torah: String(torah) } });\n    }\n"
+        }
+      ]
+    },
+    "src/pages/reader/sefer-hamidos/[part]/[torah].astro": {
+      "beforeSHA256": "3f754c509f655dad7855b08a526b0fedabdce40b4bae72a6fc0a9e69720800b2",
+      "afterSHA256": "3c3f7cab34cfba977bfd8ddee634d5f08b5b33ae7f33679c0f31802a03d5f57a",
+      "beforeBytes": 70328,
+      "afterBytes": 71354,
+      "edits": [
+        {
+          "before": "",
+          "after": "// Finite observed missing share pages: recover the exact published Reader image.\n// This does not claim to restore picture-specific OG metadata.\nconst unavailableMediaSharePaths = new Map([\n  [\"/share/sefer-hamidos-honor/sh-honor-024-chatgpt-a-en/\", 48],\n  [\"/share/sefer-hamidos-honor/sh-honor-024-chatgpt-b-en/\", 48],\n  [\"/share/sefer-hamidos-novelties-of-torah-part-ii/sh-novelties-of-torah-part-ii-009-chatgpt-a-en/\", 40],\n  [\"/share/sefer-hamidos-novelties-of-torah-part-ii/sh-novelties-of-torah-part-ii-009-chatgpt-b-en/\", 40],\n  [\"/share/sefer-hamidos-success/sh-success-003-chatgpt-a-en/\", 26],\n  [\"/share/sefer-hamidos-success/sh-success-003-chatgpt-b-en/\", 26],\n  [\"/share/sefer-hamidos-success/sh-success-004-chatgpt-a-en/\", 26],\n  [\"/share/sefer-hamidos-success/sh-success-004-chatgpt-b-en/\", 26]\n]);\n"
+        },
+        {
+          "before": "  return new URL(`/share/${mediaCollection}/${slug}/?v=${slug}`, base).toString();\n",
+          "after": "  const sharePath = `/share/${mediaCollection}/${slug}/`;\n  if (partNum === 1 && unavailableMediaSharePaths.get(sharePath) === torahNum) {\n    return new URL(`/reader/sefer-hamidos/1/${torahNum}/#media-${slug}`, base).toString();\n  }\n  return new URL(`${sharePath}?v=${slug}`, base).toString();\n"
+        }
+      ]
+    }
+  }
+}

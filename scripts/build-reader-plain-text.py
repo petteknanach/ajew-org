@@ -37,6 +37,7 @@ load_aitzoas_edition, aitzoas_checked_section, aitzoas_section_exports = _aitzoa
 _navigation = _load_sibling("reader_plain_navigation")
 _lh_publication = _load_sibling("lh_publication_exports")
 _ownership = _load_sibling("reader_plain_ownership")
+_repairs = _load_sibling("reader_export_repairs")
 
 ROOT = Path(__file__).resolve().parents[1]
 READER_DIR = ROOT / "public" / "reader"
@@ -223,15 +224,19 @@ def register_output_owner(path: Path, book: str, part: str, torah: str, owners: 
     destination = Path(os.path.normpath(OUT_DIR / book / part / torah))
     source = path.relative_to(READER_DIR).as_posix()
     affected = (_ownership.protected_source(path, READER_DIR)
+                or _repairs.selected(path, READER_DIR)
                 or book.startswith("tanach-") or (book, part) == ("likutay-nanach", "tanach"))
     previous = owners.get(destination)
     if previous is not None and previous[0] != source and (affected or previous[1]):
-        raise ValueError(f"Distinct Tanach export owners for {destination}: {previous[0]} and {source}")
+        raise ValueError(f"Distinct physical export owners for {destination}: {previous[0]} and {source}")
     owners[destination] = (source, affected)
     return source
 
 
 def infer_ids(path: Path, data: dict[str, Any]) -> tuple[str, str, str]:
+    repaired_owner = _repairs.identity(path, READER_DIR)
+    if repaired_owner is not None:
+        return repaired_owner
     physical_owner = _ownership.identity(path, data, READER_DIR)
     if physical_owner is not None:
         return physical_owner
@@ -284,12 +289,16 @@ def collect_segments(data: dict[str, Any], *, include_verse: bool = False) -> li
     return out
 
 
-def html_page(title: str, hebrew_title: str, source_url: str | None, txt_url: str, md_url: str, raw_url: str, segments: list[dict[str, Any]], plain_url: str) -> str:
+def html_page(title: str, hebrew_title: str, source_url: str | None, txt_url: str, md_url: str, raw_url: str, segments: list[dict[str, Any]], plain_url: str, document_blocks=()) -> str:
     rows = []
     for seg in segments:
         idx = html.escape(str(seg["index"]))
         he = html.escape(seg.get("he") or "")
         en = html.escape(seg.get("en") or "")
+        if "blocks" in seg:
+            body = "".join(f'<h3>{html.escape(label)} ({lang.upper()})</h3><div class="{lang}" dir="{"rtl" if lang == "he" else "ltr"}" lang="{lang}">{html.escape(text)}</div>' for label, lang, text in seg["blocks"])
+            rows.append(f'<section id="segment-{idx}" class="segment"><h2>Segment {idx}</h2>{body}</section>')
+            continue
         rows.append(f"""
 <section id="segment-{idx}" class="segment">
   <h2>Segment {idx}</h2>
@@ -299,6 +308,7 @@ def html_page(title: str, hebrew_title: str, source_url: str | None, txt_url: st
     toc = "\n".join(f'<li><a href="#segment-{html.escape(str(s["index"]))}">Segment {html.escape(str(s["index"]))}</a></li>' for s in segments)
     canonical_url = source_url or plain_url
     human_link = f' · <a href="{html.escape(source_url)}">Human reader page</a>' if source_url else ''
+    document_apparatus = ''.join(f'<aside><h2>{html.escape(label)}</h2><div lang="{lang}" dir="{"rtl" if lang == "he" else "ltr"}" style="white-space:pre-wrap">{html.escape(text)}</div></aside>' for label, lang, text in document_blocks)
     desc_text = ' '.join((segments[0].get('en') or segments[0].get('he') or title).split())[:260]
     json_ld = json.dumps({
         "@context": "https://schema.org",
@@ -345,7 +355,7 @@ nav a{{margin-right:12px}} .he{{font-size:1.25rem;text-align:right;margin:12px 0
 </header>
 <nav aria-label="Table of contents"><ol>{toc}</ol></nav>
 <main>
-{''.join(rows)}
+{document_apparatus + ''.join(rows)}
 </main>
 </body>
 </html>
@@ -359,7 +369,12 @@ def write_teaching(path: Path, data: dict[str, Any], book: str, part: str, torah
             raise ValueError("Unsupported LH source publication; no unqualified fallback")
         source_url = _navigation.human_source_url(path, READER_DIR, f"/reader/{book}/{part}/{torah}")
         return _lh_publication.write_publication(OUT_DIR, data, book, part, torah, source_url)
-    segments = collect_segments(data, include_verse=(book, part) == ("likutay-nanach", "tanach"))
+    selected_repair = _repairs.selected(path, READER_DIR)
+    segments = (_repairs.project(data, layered=book == _repairs.PNC) if selected_repair
+                else collect_segments(data, include_verse=(book, part) == ("likutay-nanach", "tanach")))
+    if selected_repair:
+        for seg in segments:
+            seg["blocks"] = _repairs.readable_blocks(seg, layered=book == _repairs.PNC)
     if not segments:
         return None
     title = title_for(data, f"{book} {part}/{torah}")
@@ -381,10 +396,23 @@ def write_teaching(path: Path, data: dict[str, Any], book: str, part: str, torah
     if hebrew_title:
         md_lines.append(f"\n<div dir=\"rtl\">{hebrew_title}</div>")
     md_lines.append(f"\nSource: https://ajew.org{source_reference}\n")
+    document_blocks = []
+    if selected_repair:
+        for field in ('author', 'hebrewAuthor', 'license', 'source', 'sourceRef', 'notes', 'sourceNotes', 'methodology', 'layerAvailability', 'superReaderCoverageNote'):
+            if field in data:
+                document_blocks.extend(_repairs.apparatus_blocks(field, data[field]))
+        for label, lang, text in document_blocks:
+            txt_lines += [label + ':', text, '']
+            md_lines += [f'## {label}\n', text, '']
     for seg in segments:
         idx = seg["index"]
         txt_lines.append(f"Segment {idx}")
         md_lines.append(f"\n## Segment {idx}\n")
+        if "blocks" in seg:
+            for label, lang, text in seg["blocks"]:
+                txt_lines += [f"{label} ({lang.upper()}):", text, ""]
+                md_lines += [f"### {label} ({lang.upper()})\n", text, ""]
+            continue
         if seg.get("he"):
             txt_lines += ["HE:", seg["he"], ""]
             md_lines.append(f"<div dir=\"rtl\" lang=\"he\">\n\n{seg['he']}\n\n</div>\n")
@@ -404,8 +432,13 @@ def write_teaching(path: Path, data: dict[str, Any], book: str, part: str, torah
         "plainUrl": f"/reader-plain/{book}/{part}/{torah}/",
         "segments": segments,
     }
+    if selected_repair:
+        raw.update({"schema": "reader-plain-source-projection-v1",
+                    "documentBlocks": document_blocks,
+                    "sourceFile": "/reader/" + path.relative_to(READER_DIR).as_posix(),
+                    "sourceMetadata": {k: v for k, v in data.items() if k != "segments"}})
     (out / "index.json").write_text(json.dumps(raw, ensure_ascii=False, indent=2), encoding="utf-8")
-    (out / "index.html").write_text(html_page(title, hebrew_title, source_url, plain_url + "index.txt", plain_url + "index.md", plain_url + "index.json", segments, plain_url), encoding="utf-8")
+    (out / "index.html").write_text(html_page(title, hebrew_title, source_url, plain_url + "index.txt", plain_url + "index.md", plain_url + "index.json", segments, plain_url, document_blocks), encoding="utf-8")
     return {"bookId": book, "part": part, "torah": torah, "title": title, "hebrewTitle": hebrew_title, "url": f"/reader-plain/{book}/{part}/{torah}/", "sourceUrl": source_url, "segments": len(segments)}
 
 
@@ -497,6 +530,7 @@ def main() -> None:
         return order
 
     tanach_bindings = _ownership.preflight(READER_DIR, collect_segments)
+    repair_bindings = _repairs.preflight(READER_DIR, infer_ids)
     rimzei_order = rimzei_source_order()
     if OUT_DIR.exists():
         shutil.rmtree(OUT_DIR)
@@ -586,7 +620,13 @@ def main() -> None:
             entries.append(entry)
 
     entries.sort(key=lambda e: (e["bookId"], str(e["part"]), str(e["torah"])))
+    for repaired_book in (_repairs.PNC, 'likutay-nanach'):
+        slots = [i for i, e in enumerate(entries) if e['bookId'] == repaired_book]
+        ordered = _repairs.reading_order([entries[i] for i in slots], READER_DIR)
+        for i, row in zip(slots, ordered):
+            entries[i] = row
     _ownership.validate_entries(entries, entry_sources, tanach_bindings)
+    _repairs.validate_entries(entries, entry_sources, repair_bindings)
     _navigation.harden_section_links(OUT_DIR, entries)
     held_catalog_sources = _navigation.reconcile_catalog_sources(OUT_DIR, entries)
     if held_catalog_sources:
@@ -623,6 +663,8 @@ def main() -> None:
     qualified_primary_books = {owner[0] for owner in tanach_bindings.values() if owner[0] != "likutay-nanach"}
     book_links = []
     for book, rows in sorted(by_book.items()):
+        if book in {_repairs.PNC, "likutay-nanach"}:
+            rows = _repairs.reading_order(rows, READER_DIR)
         if book in qualified_primary_books:
             rows = sorted(rows, key=lambda r: (int(r["part"]), int(r["torah"])))
         if book == 'rimzei-hamaasiyos':

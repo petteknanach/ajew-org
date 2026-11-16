@@ -38,6 +38,10 @@ def load_producer():
 
 P = load_producer()
 N = P._navigation
+_QA_SPEC = importlib.util.spec_from_file_location('reader_navigation_qa', HERE / 'reader_navigation_qa.py')
+assert _QA_SPEC is not None and _QA_SPEC.loader is not None
+QA = importlib.util.module_from_spec(_QA_SPEC)
+_QA_SPEC.loader.exec_module(QA)
 
 
 def baseline_bytes(path, base=BASE):
@@ -320,6 +324,11 @@ class NavigationTests(unittest.TestCase):
                 relative = before_entry["url"].removeprefix("/reader-plain/")
                 b, a = self.root / "before" / relative, self.root / "after" / after_entry["url"].removeprefix("/reader-plain/")
                 bj, aj = json.loads((b / "index.json").read_bytes()), json.loads((a / "index.json").read_bytes())
+                # Authenticate complete actual source/output bodies FIRST. This
+                # explicit legacy view changes neither actual outputs nor banks.
+                actual_outputs = {name: (a / name).read_bytes() for name in QA.FORMATS}
+                legacy_outputs = QA.historical_output_views(path.relative_to(reader).as_posix(), source, actual_outputs)
+                aj = json.loads(legacy_outputs['index.json'])
                 raw_identity_fields = {"bookId", "part", "torah", "plainUrl"} if affected else set()
                 replaced_fields = raw_identity_fields | {"sourceUrl"} | ({"segments"} if affected else set())
                 self.assertEqual({k: v for k, v in bj.items() if k not in replaced_fields}, {k: v for k, v in aj.items() if k not in replaced_fields})
@@ -335,8 +344,10 @@ class NavigationTests(unittest.TestCase):
                         for seg in aj["segments"]:
                             self.assertIn(seg["he"], (a / name).read_text())
                     else:
-                        self.assertEqual(strip_source((b / name).read_text()), strip_source((a / name).read_text()))
+                        self.assertEqual(strip_source((b / name).read_text()), strip_source(legacy_outputs[name].decode()))
                 bh, ah = (b / "index.html").read_text(), (a / "index.html").read_text()
+                actual_html = ah
+                ah = legacy_outputs['index.html'].decode()
                 if affected:
                     import html
                     for seg in aj["segments"]:
@@ -344,6 +355,7 @@ class NavigationTests(unittest.TestCase):
                 else:
                     self.assertEqual(bh.split("<main>", 1)[1], ah.split("<main>", 1)[1])
                 self.assertEqual(re.findall(r'<nav aria-label="Table of contents">.*?</nav>', bh), re.findall(r'<nav aria-label="Table of contents">.*?</nav>', ah))
+                ah = actual_html  # Actual emitted navigation/canonical checks below.
                 links = Links(ah)
                 self.assertTrue(all(h.startswith(("/", "https://", "#")) for h in links.hrefs))
                 self.assertIn("https://ajew.org" + after_entry["url"], ah)
@@ -354,11 +366,119 @@ class NavigationTests(unittest.TestCase):
                 else:
                     self.assertRegex(aj["sourceUrl"], r"^/reader/likutay-nanach/[1-5]/[0-9]+/$")
 
+    def test_navigation_inverse_actual_source_and_output_negative_matrix(self):
+        bank = QA.authority()
+        current_producer = (HERE / 'build-reader-plain-text.py').read_bytes()
+        self.assertEqual(QA.historical_producer_bytes(current_producer), baseline_bytes('scripts/build-reader-plain-text.py', bank['predecessorGit']))
+        negatives = 0
+        for bad in (current_producer + b'\n', current_producer.replace(b'document_blocks=()', b'document_blocks=(1,)', 1)):
+            with self.assertRaises(ValueError):
+                QA.historical_producer_bytes(bad)
+            negatives += 1
+        # Authenticate the actual anchor readers, not just a declared hash table.
+        anchors = self.root / 'anchor-root'
+        (anchors / 'scripts').mkdir(parents=True)
+        for name in ('build-reader-plain-text.py', 'reader_export_repairs.py'):
+            (anchors / 'scripts' / name).write_bytes((HERE / name).read_bytes())
+        for name in ('build-reader-plain-text.py', 'reader_export_repairs.py'):
+            target = anchors / 'scripts' / name
+            genuine = target.read_bytes()
+            target.write_bytes(genuine + b'\n')
+            with patch.object(QA, 'ROOT', anchors), self.assertRaises(ValueError):
+                QA.authority()
+            negatives += 1
+            target.write_bytes(genuine)
+        altered_bank = self.root / 'altered-bank.json'
+        altered_bank.write_bytes(QA.BANK.read_bytes() + b'\n')
+        with patch.object(QA, 'BANK', altered_bank), self.assertRaises(ValueError):
+            QA.authority()
+        negatives += 1
+        for relative, declaration in bank['controls'].items():
+            source_path = ROOT / 'public/reader' / relative
+            source = source_path.read_bytes()
+            data = json.loads(source)
+            with patch.object(P, 'OUT_DIR', self.root / 'negative-actual'):
+                entry = P.write_teaching(source_path, data, *P.infer_ids(source_path, data))
+            directory = self.root / 'negative-actual' / entry['url'].removeprefix('/reader-plain/')
+            actual = {name: (directory / name).read_bytes() for name in QA.FORMATS}
+            positive = QA.historical_output_views(relative, source, actual)
+            for name in QA.FORMATS:
+                changed = dict(actual, **{name: actual[name] + b' '})
+                with self.subTest(source=relative, format=name), self.assertRaises(ValueError):
+                    QA.historical_output_views(relative, source, changed)
+                negatives += 1
+                self.assertEqual(QA.historical_output_views(relative, source, actual), positive)
+            with self.assertRaises(ValueError):
+                QA.historical_output_views(relative, source + b'\n', actual)
+            negatives += 1
+            with self.assertRaises(ValueError):
+                QA.historical_output_views(relative, source, {'index.json': actual['index.json']})
+            negatives += 1
+            # Exercise the independent semantic join separately from output hash
+            # rejection, against genuine unaltered source bytes for every owner.
+            raw = json.loads(actual['index.json'])
+            mutations = []
+            for field in ('schema', 'sourceFile', 'bookId', 'part', 'torah', 'plainUrl'):
+                bad = copy.deepcopy(raw); bad[field] = 'unapproved'
+                mutations.append((field, bad))
+            for field in raw['sourceMetadata']:
+                bad = copy.deepcopy(raw); bad['sourceMetadata'][field] = {'changed': True}
+                mutations.append(('metadata/' + field, bad))
+            bad = copy.deepcopy(raw); bad['sourceMetadata'] = dict(reversed(list(bad['sourceMetadata'].items())))
+            if not QA.exact(bad, raw):
+                mutations.append(('metadata/order', bad))
+            bad = copy.deepcopy(raw); bad['segments'] = bad['segments'][:-1]
+            mutations.append(('record/loss', bad))
+            for field in raw['segments'][0]:
+                bad = copy.deepcopy(raw); bad['segments'][0][field] = None
+                if not QA.exact(bad, raw):
+                    mutations.append(('record/' + field, bad))
+            # A first actual occurrence for EACH original source record field,
+            # including empty languages, pointing, references and notes.
+            visited = set()
+            for position, segment in enumerate(raw['segments']):
+                for field in segment['sourceSegment']:
+                    if field not in visited:
+                        visited.add(field)
+                        bad = copy.deepcopy(raw); bad['segments'][position]['sourceSegment'][field] = {'changed': True}
+                        mutations.append(('original/' + field, bad))
+                for field in ('he', 'en'):
+                    key = field + ('/empty' if not segment[field] else '/literal')
+                    if key not in visited:
+                        visited.add(key)
+                        bad = copy.deepcopy(raw); bad['segments'][position][field] += 'unapproved'
+                        mutations.append((key, bad))
+            bad = copy.deepcopy(raw); bad['documentBlocks'].append(['invented', 'en', 'unapproved'])
+            mutations.append(('document/apparatus', bad))
+            for label, bad in mutations:
+                with self.subTest(source=relative, mutation=label), self.assertRaises(ValueError):
+                    QA.authenticate_source_projection(source, dict(actual, **{'index.json': json.dumps(bad, ensure_ascii=False).encode()}), relative, declaration)
+                negatives += 1
+            for name in QA.FORMATS:
+                bad_declaration = copy.deepcopy(declaration['outputs'][name])
+                bad_declaration['beforeSHA256'] = '0' * 64
+                with self.assertRaises(ValueError):
+                    QA.inverse(actual[name], bad_declaration)
+                negatives += 1
+            self.assertEqual(QA.historical_output_views(relative, source, actual), positive)
+            self.assertEqual({name: (directory / name).read_bytes() for name in QA.FORMATS}, actual)
+        # The two unaffected genuine controls keep byte-identical operands.
+        for relative in ('likutay-nanach/volume-1/chapter-1.json', 'likutay-nanach/tanach/tanach-shmuel.json'):
+            source_path = ROOT / 'public/reader' / relative
+            source = source_path.read_bytes(); data = json.loads(source)
+            with patch.object(P, 'OUT_DIR', self.root / 'unaffected-actual'):
+                entry = P.write_teaching(source_path, data, *P.infer_ids(source_path, data))
+            directory = self.root / 'unaffected-actual' / entry['url'].removeprefix('/reader-plain/')
+            actual = {name: (directory / name).read_bytes() for name in QA.FORMATS}
+            self.assertEqual(QA.historical_output_views(relative, source, actual), actual)
+        print('Navigation inverse matrix: 6 authentic selected sources / 24 complete outputs, 2 unchanged controls, ' + str(negatives) + ' negative controls; restored positives PASS')
+
     def test_unchanged_complete_helpers_and_qualified_hold_logic(self):
         for name in ("reviewed_chayay_exports.py", "reviewed_alim_exports.py", "reviewed_wrapup_exports.py", "qualified_aitzoas362_exports.py"):
             self.assertEqual((HERE / name).read_bytes(), baseline_bytes("scripts/" + name))
         before = ast.parse(baseline_bytes("scripts/build-reader-plain-text.py", OWNERSHIP_BASE))
         after = ast.parse((HERE / "build-reader-plain-text.py").read_text())
+        after = ast.parse(QA.historical_producer_bytes((HERE / 'build-reader-plain-text.py').read_bytes()))
         # Replaced by the catalog-bound general owner resolver, exercised by
         # test_reader_plain_ownership.py. Every other producer function is exact.
         changed = {"infer_ids", "collect_segments", "write_teaching", "register_output_owner", "genesis_source_role", "is_genesis_output", "validate_genesis_entries", "main"}
@@ -368,6 +488,7 @@ class NavigationTests(unittest.TestCase):
         # Verify the full qualified dispatch/hold block, not just function names.
         old_s = baseline_bytes("scripts/build-reader-plain-text.py", OWNERSHIP_BASE).decode()
         new_s = (HERE / "build-reader-plain-text.py").read_text()
+        new_s = QA.historical_producer_bytes(new_s.encode()).decode()
         begin, end = '    aitzoas_edition = None\n', '    entries.sort('
         self.assertEqual(old_s.split(begin)[1].split(end)[0], new_s.split(begin)[1].split(end)[0])
 

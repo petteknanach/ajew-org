@@ -144,10 +144,26 @@ const mediaOverviewItems = Array.from(mediaBySegment.entries()).flatMap(([segmen
 function mediaSlug(img) {
   return img.share_slug || path.basename(img.path || img.archive_filename || '').replace(/\.[^.]+$/, '');
 }
+// Finite observed missing share pages: recover the exact published Reader image.
+// This does not claim to restore picture-specific OG metadata.
+const unavailableMediaSharePaths = new Map([
+  ["/share/sefer-hamidos-honor/sh-honor-024-chatgpt-a-en/", 48],
+  ["/share/sefer-hamidos-honor/sh-honor-024-chatgpt-b-en/", 48],
+  ["/share/sefer-hamidos-novelties-of-torah-part-ii/sh-novelties-of-torah-part-ii-009-chatgpt-a-en/", 40],
+  ["/share/sefer-hamidos-novelties-of-torah-part-ii/sh-novelties-of-torah-part-ii-009-chatgpt-b-en/", 40],
+  ["/share/sefer-hamidos-success/sh-success-003-chatgpt-a-en/", 26],
+  ["/share/sefer-hamidos-success/sh-success-003-chatgpt-b-en/", 26],
+  ["/share/sefer-hamidos-success/sh-success-004-chatgpt-a-en/", 26],
+  ["/share/sefer-hamidos-success/sh-success-004-chatgpt-b-en/", 26]
+]);
 function mediaShareUrl(img) {
   const slug = mediaSlug(img);
   const base = Astro.site || 'https://ajew.org';
-  return new URL(`/share/${mediaCollection}/${slug}/?v=${slug}`, base).toString();
+  const sharePath = `/share/${mediaCollection}/${slug}/`;
+  if (partNum === 1 && unavailableMediaSharePaths.get(sharePath) === torahNum) {
+    return new URL(`/reader/sefer-hamidos/1/${torahNum}/#media-${slug}`, base).toString();
+  }
+  return new URL(`${sharePath}?v=${slug}`, base).toString();
 }
 function mediaDirectUrl(img) {
   const base = Astro.site || 'https://ajew.org';

@@ -1,0 +1,38 @@
+---
+import entries from '../../data/reader-finite-entry-recovery.json';
+import { recoveryRegistryJSON } from '../../lib/reader-finite-entry-recovery.mjs';
+import '../../styles/reader-finite-entry-recovery.css';
+const registry = recoveryRegistryJSON(entries);
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="referrer" content="no-referrer" />
+    <title>Unavailable Reader address · כתובת שאינה זמינה | A Jew</title>
+    <script is:inline src="/reader-finite-entry-recovery.js" defer></script>
+  </head>
+  <body>
+    <main id="finite-entry-recovery">
+      <h1>That Reader address is unavailable</h1>
+      <p lang="he" dir="rtl">כתובת הקריאה המבוקשת אינה זמינה</p>
+      <section role="status" aria-live="polite" aria-label="Address recovery notice">
+        <p>This page does not contain the requested teaching and is not a replacement teaching. Where the book is known, the link below opens its existing directory or current reviewed edition. We have not restored the missing address.</p>
+        <p lang="he" dir="rtl">העמוד הזה אינו מכיל את הלימוד המבוקש ואינו תחליף לו. כאשר הספר מזוהה, הקישור למטה מוביל למפתח הקיים של הספר או למהדורה הנוכחית שעברה בדיקה. הכתובת החסרה לא שוחזרה.</p>
+        <p id="finite-recovery-unknown">This address was not identified. No book has been selected. <span lang="he" dir="rtl">הכתובת לא זוהתה. לא נבחר ספר.</span></p>
+        <div id="finite-recovery-known" hidden>
+          <p>Requested address / <span lang="he" dir="rtl">הכתובת המבוקשת</span>: <code id="finite-recovery-address" dir="ltr"></code></p>
+          <h2><span id="finite-recovery-title"></span> <span id="finite-recovery-hebrew-title" lang="he" dir="rtl"></span></h2>
+          <p id="finite-recovery-part"></p>
+          <p id="finite-recovery-reviewed" hidden>The earlier per-section edition is not being restored. Use the current reviewed edition, including its source notes. <span lang="he" dir="rtl">המהדורה הקודמת המחולקת לסעיפים אינה משוחזרת. יש לעיין במהדורה הנוכחית שנבדקה, עם הערות המקור שלה.</span></p>
+          <p>These links are book navigation only: no equivalence to another letter, teaching or language is asserted. <span lang="he" dir="rtl">הקישורים מיועדים לניווט בספר בלבד: אין כאן טענה להתאמה למכתב אחר, ללימוד אחר או לשפה אחרת.</span></p>
+          <a id="finite-recovery-directory" rel="noreferrer" referrerpolicy="no-referrer">Open this book / פתיחת הספר</a>
+        </div>
+        <noscript><p>JavaScript is required to identify a book from this finite address list. No replacement text is supplied. <span lang="he" dir="rtl">נדרש JavaScript לזיהוי הספר מתוך רשימת הכתובות הסגורה. לא מוצג טקסט חלופי.</span></p></noscript>
+      </section>
+    </main>
+    <script id="finite-recovery-registry" type="application/json" is:inline set:html={registry}></script>
+  </body>
+</html>
