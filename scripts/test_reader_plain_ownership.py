@@ -23,6 +23,10 @@ SPEC = importlib.util.spec_from_file_location('ownership_producer', ROOT / 'scri
 assert SPEC is not None and SPEC.loader is not None
 P = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(P)
+ORDER_SPEC = importlib.util.spec_from_file_location('catalog_order_qa', ROOT / 'scripts/reader_catalog_order_qa.py')
+assert ORDER_SPEC is not None and ORDER_SPEC.loader is not None
+ORDER_QA = importlib.util.module_from_spec(ORDER_SPEC)
+ORDER_SPEC.loader.exec_module(ORDER_QA)
 PRIMARY = ('tanach-malachi', 'tanach-bereishit', 'tanach-chaggai', 'tanach-ovadya')
 COMMENTARY = ('tanach-malachi', 'tanach-bereishit', 'tanach-chagai', 'tanach-ovadia', 'tanach-shmuel')
 CONTROLS = ('likutay-nanach/volume-1/chapter-1.json', 'likutay-nanach/volume-4/chapter-16.json', 'likutay-moharan/part-1/torah-1.json')
@@ -210,7 +214,13 @@ class OwnershipTests(unittest.TestCase):
             shutil.copyfile(source_reader / relative, target)
         before = {p: hashlib.sha256(p.read_bytes()).hexdigest() for p in self.reader.rglob('*.json')}
         catalog = run_producer(self.reader, self.out)
+        # Validate the actual new contract independently, then execute the
+        # historical assertion unchanged on an explicit metadata-only view.
+        actual_catalog = catalog
+        source_index = self.reader / 'likutay-nanach/index.json'
+        catalog = ORDER_QA.historical_catalog_view(catalog, (self.out / 'index.json').read_bytes(), source_index.read_bytes() if source_index.exists() else None)
         self.assertEqual(catalog['entries'], sorted(catalog['entries'], key=lambda r: (r['bookId'], str(r['part']), str(r['torah']))))
+        catalog = actual_catalog  # All 929 downstream physical/assembly checks use actual rows.
         books = json.loads((self.reader / 'catalog.json').read_bytes())['books']
         chapter_counts = {}
         for book in sorted(primary):
@@ -454,6 +464,98 @@ class OwnershipTests(unittest.TestCase):
         unrelated = empty / 'unselected'
         unrelated.symlink_to(Path(self.temp.name) / 'absent', target_is_directory=True)
         self.assertEqual(P._ownership.preflight(empty, P.collect_segments), {})
+
+    def test_catalog_order_inverse_rejects_unapproved_changes(self):
+        # Real finite physical sources; never synthetic teaching/index files.
+        for prefix in ('torah', 'tinyana'):
+            for number in (1, 2, 10):
+                relative = f'pettek-nanach-commentary/{prefix}-{number}.json'
+                target = self.reader / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(ROOT / 'public/reader' / relative, target)
+        index_path = self.reader / 'likutay-nanach/index.json'
+        encode = lambda d: json.dumps(d, ensure_ascii=False).encode()
+        for indexed in (False, True):
+            with self.subTest(source_index_present=indexed):
+                if indexed:
+                    shutil.copyfile(ROOT / 'public/reader/likutay-nanach/index.json', index_path)
+                raw_index = index_path.read_bytes() if indexed else None
+                actual = run_producer(self.reader, self.out)
+                actual_bytes = (self.out / 'index.json').read_bytes()
+                before = copy.deepcopy(actual)
+                view = ORDER_QA.historical_catalog_view(actual, actual_bytes, raw_index)
+                rows = actual['entries']
+                self.assertEqual(view['entries'], sorted(rows, key=lambda r: (r['bookId'], str(r['part']), str(r['torah']))))
+                self.assertEqual(actual, before)
+                self.assertEqual(len(view['entries']), len(rows))
+                self.assertEqual({id(r) for r in view['entries']}, {id(r) for r in rows})
+                for book in ORDER_QA.APPROVED:
+                    slots = [i for i, r in enumerate(rows) if r['bookId'] == book]
+                    self.assertGreater(len(slots), 2)
+                    self.assertEqual([i for i, r in enumerate(view['entries']) if r['bookId'] == book], slots)
+                    bad = copy.deepcopy(actual)
+                    a, b = slots[:2]
+                    bad['entries'][a], bad['entries'][b] = bad['entries'][b], bad['entries'][a]
+                    with self.assertRaisesRegex(ValueError, 'actual natural/source-index order'):
+                        ORDER_QA.historical_catalog_view(bad, encode(bad), raw_index)
+                    bad = copy.deepcopy(actual)
+                    lexical_group = sorted([bad['entries'][i] for i in slots], key=lambda r: (r['part'], r['torah']))
+                    self.assertNotEqual(lexical_group, [rows[i] for i in slots], 'real numeric/source-index witness must distinguish legacy order')
+                    for i, row in zip(slots, lexical_group, strict=True):
+                        bad['entries'][i] = row
+                    with self.assertRaisesRegex(ValueError, 'actual natural/source-index order'):
+                        ORDER_QA.historical_catalog_view(bad, encode(bad), raw_index)
+                unaffected = [i for i, r in enumerate(rows) if r['bookId'] not in ORDER_QA.APPROVED]
+                for i in unaffected:
+                    self.assertIs(view['entries'][i], rows[i])
+                bad = copy.deepcopy(actual)
+                a, b = unaffected[:2]
+                bad['entries'][a], bad['entries'][b] = bad['entries'][b], bad['entries'][a]
+                with self.assertRaisesRegex(ValueError, 'unapproved order change'):
+                    ORDER_QA.historical_catalog_view(bad, encode(bad), raw_index)
+                bad = copy.deepcopy(actual)
+                bad['entries'][0], bad['entries'][-1] = bad['entries'][-1], bad['entries'][0]
+                with self.assertRaisesRegex(ValueError, 'global slots'):
+                    ORDER_QA.historical_catalog_view(bad, encode(bad), raw_index)
+                bad = copy.deepcopy(actual)
+                a = next(i for i, row in enumerate(rows) if row['bookId'] in ORDER_QA.APPROVED)
+                b = unaffected[-1]
+                bad['entries'][a], bad['entries'][b] = bad['entries'][b], bad['entries'][a]
+                with self.assertRaisesRegex(ValueError, 'global slots'):
+                    ORDER_QA.historical_catalog_view(bad, encode(bad), raw_index)
+                bad = copy.deepcopy(actual)
+                bad['entries'][1] = copy.deepcopy(bad['entries'][0])
+                with self.assertRaisesRegex(ValueError, 'duplicate catalog identity'):
+                    ORDER_QA.historical_catalog_view(bad, encode(bad), raw_index)
+                bad = copy.deepcopy(actual)
+                bad['entries'].pop()
+                with self.assertRaisesRegex(ValueError, 'cardinality'):
+                    ORDER_QA.historical_catalog_view(bad, encode(bad), raw_index)
+                for field in ('title', 'url', 'segments', 'bookId'):
+                    bad = copy.deepcopy(actual)
+                    bad['entries'][0][field] = 'unrelated mutation'
+                    with self.assertRaisesRegex(ValueError, 'actual output body'):
+                        ORDER_QA.historical_catalog_view(bad, actual_bytes, raw_index)
+                for malformed in (b'{broken', b'[]', b'{"book":"likutay-nanach","parts":[]}',
+                                  b'{"book":"likutay-nanach","parts":[null]}'):
+                    with self.assertRaises(ValueError):
+                        ORDER_QA.historical_catalog_view(actual, actual_bytes, malformed)
+                if indexed:
+                    assert raw_index is not None
+                    for mutate in (lambda d: d['parts'].append(copy.deepcopy(d['parts'][0])),
+                                   lambda d: d['parts'][0].update(path='/reader/foreign/'),
+                                   lambda d: d['parts'].reverse()):
+                        bad_index = json.loads(raw_index)
+                        mutate(bad_index)
+                        with self.assertRaises(ValueError):
+                            ORDER_QA.historical_catalog_view(actual, actual_bytes, encode(bad_index))
+                for relative in ORDER_QA.SOURCE_PINS:
+                    with patch.dict(ORDER_QA.SOURCE_PINS, {relative: '0' * 64}):
+                        with self.assertRaisesRegex(ValueError, 'unrecognized order source'):
+                            ORDER_QA.historical_catalog_view(actual, actual_bytes, raw_index)
+                self.assertEqual(ORDER_QA.historical_catalog_view(actual, actual_bytes, raw_index), view, 'restored positive')
+                self.assertEqual(actual, before)
+                self.assertEqual((self.out / 'index.json').read_bytes(), actual_bytes)
 
     @staticmethod
     def edit(path, fn):
