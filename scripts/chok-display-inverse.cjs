@@ -5,7 +5,7 @@ const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
 function restore(relative,bytes){
  if(bytes===null)return bytes;
  const raw=fs.readFileSync(path.join(__dirname,'chok-display-admission.json'));
- assert.equal(sha(raw),'2fe5766493bae7c91b7d2057947f2fbbf88d10aa15cbe364ebbda5f4240f5bf1','CHOK_DISPLAY_ADMISSION_PIN');
+ assert.equal(sha(raw),'1a639cad49f8f61cbd4291e34a1e8041ab8caa37bd14d232b3b14a6ecb0a55ab','CHOK_DISPLAY_ADMISSION_PIN');
  const row=JSON.parse(raw).paths[relative];
  if(!row||sha(bytes)!==row.afterSHA256)return bytes;
  assert.equal(bytes.length,row.afterBytes);let s=bytes.toString('utf8');

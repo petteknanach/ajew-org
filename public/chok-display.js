@@ -22,7 +22,7 @@
   }
   function referenceHTML(ref) {
     function esc(s) { return s.replace(/[&<>]/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c]; }); }
-    return '<bdi class="ck-generated-ref" dir="ltr">' + esc(ref).replace(/[א-ת]+|[0-9]+/g, function (n) { return '<bdi dir="' + (/[א-ת]/.test(n) ? 'rtl' : 'ltr') + '">' + n + '</bdi>'; }) + '</bdi>';
+    return '<bdi class="ck-generated-ref" dir="' + (/[א-ת]/.test(ref) ? 'rtl' : 'ltr') + '">' + esc(ref).replace(/[א-ת]+|[0-9]+/g, function (n) { return '<bdi dir="' + (/[א-ת]/.test(n) ? 'rtl' : 'ltr') + '">' + n + '</bdi>'; }) + '</bdi>';
   }
   function mishnaReferences(root) {
     root.querySelectorAll('[data-sec="mishna"], [data-sec="bonus"]').forEach(function (section) {
