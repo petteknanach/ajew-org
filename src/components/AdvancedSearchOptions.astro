@@ -36,6 +36,7 @@ const hebrewNames: Record<string, string> = {
   'alim-litrufa': 'עלים לתרופה',
   'yemei-moharnat': 'ימי מוהרנ"ת',
   'ebay-hanachal': 'אבי הנחל',
+  'liroas-biebay-hanachal': 'לראות באב"י הנחל',
   'shemos-hatzadikim': 'שמות הצדיקים',
   'yemei-hatlaos': 'ימי התלאות',
   'parparos-lechochma': 'פרפראות לחוכמה',
@@ -89,7 +90,7 @@ const hebrewNames: Record<string, string> = {
 const categories = [
   { icon: '📖', label: 'Rebbe Nachman / רבי נחמן', ids: ['likutay-moharan', 'pettek-nanach-commentary', 'kitzur-likutay-moharan', 'sefer-hamidos', 'sipurey-maasiyos', 'sichos-haran', 'shivchay-haran', 'chayey-moharan', 'azamra'] },
   { icon: '📘', label: 'Rabbi Nosson / רבי נתן', ids: ['likutay-halachos', 'likutay-tefilos', 'likutay-eitzos', 'likutay-eitzos-basra', 'yemei-moharnat', 'alim-litrufa', 'shemos-hatzadikim', 'yemei-hatlaos'] },
-  { icon: '🔥', label: 'Saba / סבא', ids: ['yisroel-saba', 'fires-of-israel', 'sichos-chayay-saba', 'saba-tape-transcripts', 'saba-says', 'netzach-yisrael', 'ebay-hanachal', 'likutay-nanach', 'misc-אגרת-הפורים'] },
+  { icon: '🔥', label: 'Saba / סבא', ids: ['yisroel-saba', 'fires-of-israel', 'sichos-chayay-saba', 'saba-tape-transcripts', 'saba-says', 'netzach-yisrael', 'ebay-hanachal', 'liroas-biebay-hanachal', 'likutay-nanach', 'misc-אגרת-הפורים'] },
   { icon: '📗', label: 'Tcheryn / הרב מטשערין', ids: ['parparos-lechochma', 'rimzei-hamaasiyos', 'zimras-haaretz', 'yikra-dshabbata', 'yereach-haeitanim', 'nachas-hashulchan'] },
   { icon: '📙', label: "R' Alter Tepliker / רבי אלתר", ids: ['hashtatfchus-hanefesh', 'meshivas-nefesh'] },
   { icon: '📕', label: "R' Avraham / רבי אברהם", ids: ['biur-halikutim', 'chochma-utvuna', 'kokhvei-or'] },
@@ -361,7 +362,7 @@ for (const cat of categories) {
   window.selectBreslovOnly = function() {
     var breslovPrefixes = ['likutay-', 'sefer-', 'sipurey-', 'sichos-', 'shivchay-', 'chayey-', 'alim-', 'yemei-', 'ebay-', 'shemos-', 'yereach-', 'nachas-', 'hashtatfchus-', 'meshivas-', 'biur-', 'chochma-', 'kokhvei-', 'siach-', 'otzar-', 'yisroel-', 'chumash-', 'toldos-', 'kuntrass-', 'pettek-', 'fires-', 'azamra-', 'hisbodidus-', 'seven-', 'breiter-', 'michtevay-', 'shimshon-', 'gevuros-', 'aitzoas-', 'misc-'];
     document.querySelectorAll('input[name="searchBook"]').forEach(function(cb) {
-      var isBreslov = breslovPrefixes.some(function(p) { return cb.value.startsWith(p); });
+      var isBreslov = cb.value === 'liroas-biebay-hanachal' || breslovPrefixes.some(function(p) { return cb.value.startsWith(p); });
       cb.checked = isBreslov;
     });
     updateSelectedCount();

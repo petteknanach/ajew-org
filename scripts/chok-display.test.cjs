@@ -8,9 +8,32 @@ test('display-only missing cholam: ordinary and Elohim qere retain their distinc
 test('unpointed, already-pointed, arbitrary kavana pointing and unrelated words are conserved',()=>{
  for(const s of ['יהוה','יְהֹוָה','יֱהֹוִה','יֹהֹוֹהֹ','יְהֻוָה','יְהוּה','יְהוָהך','אליהוָה','אֱלֹהִים','יְהוָֹה'])assert.equal(api.pointedName(s),s,s);
 });
-test('chapter:item remains logical order with LTR outer and RTL Hebrew groups',()=>{
- assert.equal(api.referenceHTML('ז:א'),'<bdi class="ck-generated-ref" dir="ltr"><bdi dir="rtl">ז</bdi>:<bdi dir="rtl">א</bdi></bdi>');
- for(const s of ['ז:ב','יב:טו','12:15','יב:טו–יג:א'])assert.equal(api.referenceHTML(s).replace(/<[^>]*>/g,''),s);
+test('Hebrew Mishna chapter:item is RTL (chapter RIGHT); Arabic digits retain LTR and logical values',()=>{
+ assert.equal(api.referenceHTML('ז:א'),'<bdi class="ck-generated-ref" dir="rtl"><bdi dir="rtl">ז</bdi>:<bdi dir="rtl">א</bdi></bdi>');
+ for(const s of ['ז:ב','יב:טו','כח:טו','יב:טו–יג:א','יב:טו-טז','12:15','7:1–8:2']){
+  const html=api.referenceHTML(s);assert.equal(html.replace(/<[^>]*>/g,''),s);assert(html.startsWith('<bdi class="ck-generated-ref" dir="'+(/[א-ת]/.test(s)?'rtl':'ltr')+'">'));
+ }
+});
+test('the complete display source differs only in generated-reference outer direction; Name and all other bytes conserved',()=>{
+ const {createHash}=require('node:crypto'),s=fs.readFileSync(path.join(root,'public/chok-display.js'),'utf8');
+ const after=`'<bdi class="ck-generated-ref" dir="' + (/[א-ת]/.test(ref) ? 'rtl' : 'ltr') + '">'`,before=`'<bdi class="ck-generated-ref" dir="ltr">'`;
+ assert.equal(s.split(after).length,2);assert.equal(createHash('sha256').update(s.replace(after,before)).digest('hex'),'94587bad9b091f1b8df2251552702cd467a2e0262fe4aeae19706a3044a7339e');
+});
+test('all prescribed/bonus generated-owner grammars, isolates and ranges retain c:item, source and Bible labels stay untouched',()=>{
+ const {documentFor}=require('./qualified-earlier-parsha-test-dom.cjs');
+ for(const sec of ['mishna','bonus'])for(const parent of ['rtl','ltr'])for(const ref of ['ז:א','ז:ב','יב:טו','כח:טו','יב:טו–יג:א','יב:טו-טז','12:15','7:1–8:2'])for(const markup of [
+  '<div data-mishna-owner="owner"><h3>משנה REF</h3><h4>ברטנורא REF</h4></div>',
+  '<div data-reading-unit="owner"><h3>משנה REF</h3><h4>ברטנורא REF</h4></div>',
+  '<span class="ck-mnum">REF</span><span class="ck-reading-ref">REF</span>'
+ ]){
+  const decorated='\u2066'+ref.replace(/[א-ת]+/g,n=>'\u2067'+n+'\u2069')+'\u2069';
+  const d=documentFor('<div id="root" dir="'+parent+'"><section data-sec="'+sec+'">'+markup.replaceAll('REF',decorated)+'<p>מקור '+ref+'</p><h3>ציטוט '+ref+'</h3></section><section data-sec="torah"><span class="ck-mnum">'+ref+'</span></section></div>'),r=d.getElementById('root');
+  const untouched=[...r.querySelectorAll('p,section[data-sec="torah"],section > h3')].map(x=>x.outerHTML);api.apply(r,'original');
+  const labels=r.querySelectorAll('.ck-generated-ref');assert.equal(labels.length,2);
+  for(const x of labels){assert.equal(x.textContent,ref);assert.equal(x.getAttribute('dir'),/[א-ת]/.test(ref)?'rtl':'ltr');assert.equal(x.children[0].textContent,ref.split(':')[0]);}
+  assert.deepEqual([...r.querySelectorAll('p,section[data-sec="torah"],section > h3')].map(x=>x.outerHTML),untouched);
+  const once=r.innerHTML;api.apply(r,'original');assert.equal(r.innerHTML,once);
+ }
 });
 test('only Chok template loads projection before actual initializer, both content addressed and integrity bound',()=>{
  const {createHash}=require('node:crypto');const template=fs.readFileSync(path.join(root,'src/pages/reader/chok.astro'),'utf8');
