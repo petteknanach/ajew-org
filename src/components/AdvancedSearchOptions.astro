@@ -362,7 +362,7 @@ for (const cat of categories) {
   window.selectBreslovOnly = function() {
     var breslovPrefixes = ['likutay-', 'sefer-', 'sipurey-', 'sichos-', 'shivchay-', 'chayey-', 'alim-', 'yemei-', 'ebay-', 'shemos-', 'yereach-', 'nachas-', 'hashtatfchus-', 'meshivas-', 'biur-', 'chochma-', 'kokhvei-', 'siach-', 'otzar-', 'yisroel-', 'chumash-', 'toldos-', 'kuntrass-', 'pettek-', 'fires-', 'azamra-', 'hisbodidus-', 'seven-', 'breiter-', 'michtevay-', 'shimshon-', 'gevuros-', 'aitzoas-', 'misc-'];
     document.querySelectorAll('input[name="searchBook"]').forEach(function(cb) {
-      var isBreslov = breslovPrefixes.some(function(p) { return cb.value.startsWith(p); });
+      var isBreslov = cb.value === 'liroas-biebay-hanachal' || breslovPrefixes.some(function(p) { return cb.value.startsWith(p); });
       cb.checked = isBreslov;
     });
     updateSelectedCount();

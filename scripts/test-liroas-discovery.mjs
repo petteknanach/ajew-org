@@ -56,3 +56,25 @@ test('existing Saba picker books and non-Saba categories stay available', () => 
   assert(categories.find(c => c.label === 'Rebbe Nachman / רבי נחמן').books.some(b => b.id === 'likutay-moharan'));
   assert(categories.find(c => c.prefix === 'tanach-').books.length > 0);
 });
+
+test('Breslov Only includes this Saba book without changing any previous selection', () => {
+  const match = options.match(/window\.selectBreslovOnly = function\(\) \{[\s\S]*?\n  \};/);
+  assert(match, 'actual shortcut callback');
+  const previousLine = "var isBreslov = breslovPrefixes.some(function(p) { return cb.value.startsWith(p); });";
+  const currentLine = "var isBreslov = cb.value === 'liroas-biebay-hanachal' || breslovPrefixes.some(function(p) { return cb.value.startsWith(p); });";
+  assert.equal(match[0].split(currentLine).length, 2);
+  const ids = [...new Set(picker.result.categories.flatMap(c => c.books.map(b => b.id)))];
+  assert(ids.includes(id));
+  function execute(code) {
+    const boxes = ids.map(value => ({value, checked: false})); let updates = 0;
+    const env = {window: {}, document: {querySelectorAll(selector) {
+      assert.equal(selector, 'input[name="searchBook"]'); return boxes;
+    }}, updateSelectedCount() { updates++; }};
+    vm.runInNewContext(code, env); env.window.selectBreslovOnly();
+    assert.equal(updates, 1);
+    return new Map(boxes.map(b => [b.value, b.checked]));
+  }
+  const previous = execute(match[0].replace(currentLine, previousLine)), current = execute(match[0]);
+  assert.equal(previous.get(id), false); assert.equal(current.get(id), true);
+  for (const value of ids) if (value !== id) assert.equal(current.get(value), previous.get(value), value);
+});
