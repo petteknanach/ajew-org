@@ -18,6 +18,7 @@ import hashlib
 import json
 from pathlib import Path
 import re
+import subprocess
 import sys
 import unicodedata
 
@@ -870,3 +871,7 @@ def main(argv=None):
 
 if __name__=='__main__':
     main()
+    # In the default site build this command follows the pinned plain exporter.
+    # Refine the additive collection only on that path, not on audit/fixture runs.
+    if len(sys.argv) == 1 and (ROOT/'src/data/kabala-corpus.jsonl.gz').is_file():
+        subprocess.run([sys.executable, str(ROOT/'scripts/build-kabala-exports.py')], check=True)

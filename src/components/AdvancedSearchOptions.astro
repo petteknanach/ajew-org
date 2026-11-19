@@ -3,7 +3,7 @@
 import fs from 'fs';
 import path from 'path';
 import zlib from 'zlib';
-import kabalaCatalog from '../data/kabala-catalog.json';
+
 
 // Build the book picker from the same canonical light index used by live search.
 const indexPath = path.join(process.cwd(), 'public/data/light-search-index-he.json.gz');
@@ -22,7 +22,12 @@ try {
 } catch (e) {}
 
 // Hebrew names
-const kabalaNames = new Map(kabalaCatalog.entries.map(({id, title}) => [id, title]));
+const kabalaNames = new Map<string, string>();
+const kabalaPath = path.join(process.cwd(), 'src/data/kabala-catalog.json');
+if (fs.existsSync(kabalaPath)) {
+  const catalog = JSON.parse(fs.readFileSync(kabalaPath, 'utf8'));
+  for (const { id, title } of catalog.entries) kabalaNames.set(id, title);
+}
 const hebrewNames: Record<string, string> = {
   'likutay-moharan': 'ליקוטי מוהר"ן',
   'kitzur-likutay-moharan': 'קיצור ליקוטי מוהר"ן',

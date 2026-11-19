@@ -9,7 +9,7 @@ Both share the same metadata (t, h, b, l) so docs can be merged if needed.
 Strategy: serve preferred-language index first (~31MB), lazy-load the other
 half only when user searches in the other language.
 """
-import json, os, re, gzip, sys
+import json, os, re, gzip, subprocess, sys
 from pathlib import Path
 from reader_search_routes import KABALA_BOOK_RE, discover_routed_sources
 from reviewed_chayay_exports import is_reviewed_source, search_document
@@ -41,6 +41,10 @@ BOOK_SEARCH_ALIASES = {
 kabala_catalog_path = Path('src/data/kabala-catalog.json')
 kabala_titles = {}
 if kabala_catalog_path.is_file():
+    # A normal production build has the reviewed archive; source-only fixtures
+    # can supply already materialized bodies without borrowing the archive.
+    if Path('src/data/kabala-corpus.jsonl.gz').is_file():
+        subprocess.run([sys.executable, str(Path(__file__).with_name('materialize-kabala.py'))], check=True)
     kabala_titles = {
         entry['id']: entry['title']
         for entry in json.loads(kabala_catalog_path.read_text(encoding='utf-8'))['entries']
