@@ -11,7 +11,7 @@ half only when user searches in the other language.
 """
 import json, os, re, gzip, sys
 from pathlib import Path
-from reader_search_routes import discover_routed_sources
+from reader_search_routes import KABALA_BOOK_RE, discover_routed_sources
 from reviewed_chayay_exports import is_reviewed_source, search_document
 from reviewed_alim_exports import is_reviewed_source as is_alim_source, search_document as alim_search_document
 from reviewed_wrapup_exports import is_reviewed_source as is_wrapup_source, search_document as wrapup_search_document
@@ -38,6 +38,14 @@ BOOK_SEARCH_ALIASES = {
     'michtivay-yideedoos': 'Michtivay Yideedoos Michtavei Yedidut Michoel Michael Barzel מכתבי ידידות מיכאל ברזל',
     'liroas-biebay-hanachal': 'Liroas BiEbay HaNachal Lirot BeIbei HaNachal Michoel Michael Barzel לראות באבי הנחל לראות באב״י הנחל מיכאל ברזל',
 }
+kabala_catalog_path = Path('src/data/kabala-catalog.json')
+kabala_titles = {}
+if kabala_catalog_path.is_file():
+    kabala_titles = {
+        entry['id']: entry['title']
+        for entry in json.loads(kabala_catalog_path.read_text(encoding='utf-8'))['entries']
+        if entry.get('sections') and not entry.get('aliasOf')
+    }
 LAYER_KEYS = ('beginner', 'intermediate', 'scholarly')
 HEBREW_NUMERALS = {
     'א':1,'ב':2,'ג':3,'ד':4,'ה':5,'ו':6,'ז':7,'ח':8,'ט':9,'י':10,
@@ -229,6 +237,10 @@ for routed in discover_routed_sources(json_files, READER_DIR):
     
     title = data.get('title', '') or ''
     hebrew_title = data.get('hebrewTitle', '') or data.get('title', '') or ''
+    if KABALA_BOOK_RE.fullmatch(book):
+        work = kabala_titles[book]
+        hebrew_title = f'{work} — {hebrew_title}' if hebrew_title != work else work
+        title = hebrew_title
     if fpath.parent.name == 'chayey-moharan' and fpath.stem == 'hashmata-162':
         title = 'Hashmata 162 (Locked)'
         hebrew_title = data.get('label', '') or 'השמטה קס״ב'
@@ -240,7 +252,7 @@ for routed in discover_routed_sources(json_files, READER_DIR):
         'h': hebrew_title[:200] if hebrew_title else '',
         'b': book[:50],
         'l': url[:200],
-        'a': BOOK_SEARCH_ALIASES.get(book, ''),
+        'a': BOOK_SEARCH_ALIASES.get(book, 'Kabbalah Kabala ספרי קבלה' if KABALA_BOOK_RE.fullmatch(book) else ''),
     }
     
     # Hebrew index: x = Hebrew text, e = English snippet for display

@@ -289,8 +289,9 @@ def collect_segments(data: dict[str, Any], *, include_verse: bool = False) -> li
     return out
 
 
-def html_page(title: str, hebrew_title: str, source_url: str | None, txt_url: str, md_url: str, raw_url: str, segments: list[dict[str, Any]], plain_url: str, document_blocks=()) -> str:
+def html_page(title: str, hebrew_title: str, source_url: str | None, txt_url: str, md_url: str, raw_url: str, segments: list[dict[str, Any]], plain_url: str, document_blocks=(), *, hebrew_only=False) -> str:
     rows = []
+    part_label = "פסקה" if hebrew_only else "Segment"
     for seg in segments:
         idx = html.escape(str(seg["index"]))
         he = html.escape(seg.get("he") or "")
@@ -301,13 +302,18 @@ def html_page(title: str, hebrew_title: str, source_url: str | None, txt_url: st
             continue
         rows.append(f"""
 <section id="segment-{idx}" class="segment">
-  <h2>Segment {idx}</h2>
+  <h2>{part_label} {idx}</h2>
   {f'<div class="he" dir="rtl" lang="he">{he}</div>' if he else ''}
   {f'<div class="en" dir="ltr" lang="en">{en}</div>' if en else ''}
 </section>""")
-    toc = "\n".join(f'<li><a href="#segment-{html.escape(str(s["index"]))}">Segment {html.escape(str(s["index"]))}</a></li>' for s in segments)
+    toc = "\n".join(f'<li><a href="#segment-{html.escape(str(s["index"]))}">{part_label} {html.escape(str(s["index"]))}</a></li>' for s in segments)
     canonical_url = source_url or plain_url
-    human_link = f' · <a href="{html.escape(source_url)}">Human reader page</a>' if source_url else ''
+    human_label = "קריאה בקורא" if hebrew_only else "Human reader page"
+    human_link = f' · <a href="{html.escape(source_url)}">{human_label}</a>' if source_url else ''
+    index_label = "ספריית הקבלה" if hebrew_only else "Plain reader index"
+    index_href = "/kabala/" if hebrew_only else "/reader-plain/"
+    contents_label = "תוכן העניינים" if hebrew_only else "Table of contents"
+    page_language = 'lang="he" dir="rtl"' if hebrew_only else 'lang="en"'
     document_apparatus = ''.join(f'<aside><h2>{html.escape(label)}</h2><div lang="{lang}" dir="{"rtl" if lang == "he" else "ltr"}" style="white-space:pre-wrap">{html.escape(text)}</div></aside>' for label, lang, text in document_blocks)
     desc_text = ' '.join((segments[0].get('en') or segments[0].get('he') or title).split())[:260]
     json_ld = json.dumps({
@@ -316,7 +322,7 @@ def html_page(title: str, hebrew_title: str, source_url: str | None, txt_url: st
         "name": title,
         "headline": title,
         "alternateName": hebrew_title or None,
-        "inLanguage": ["he", "en"],
+        "inLanguage": "he" if hebrew_only else ["he", "en"],
         "isPartOf": {"@type": "WebSite", "name": "A Jew - Breslov Torah Library", "url": "https://ajew.org"},
         "url": "https://ajew.org" + plain_url,
         "mainEntityOfPage": "https://ajew.org" + canonical_url,
@@ -326,8 +332,10 @@ def html_page(title: str, hebrew_title: str, source_url: str | None, txt_url: st
             {"@type": "MediaObject", "encodingFormat": "application/json", "contentUrl": "https://ajew.org" + plain_url + "index.json"}
         ]
     }, ensure_ascii=False)
+    if hebrew_only:
+        json_ld = json_ld.replace("<", "\\u003c")
     return f"""<!doctype html>
-<html lang="en">
+<html {page_language}>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -349,11 +357,11 @@ nav a{{margin-right:12px}} .he{{font-size:1.25rem;text-align:right;margin:12px 0
 </head>
 <body>
 <header>
-  <p><a href="/reader-plain/">Plain reader index</a>{human_link} · <a href="{html.escape(txt_url)}">TXT</a> · <a href="{html.escape(md_url)}">Markdown</a> · <a href="{html.escape(raw_url)}">Raw JSON</a></p>
+  <p><a href="{index_href}">{index_label}</a>{human_link} · <a href="{html.escape(txt_url)}">TXT</a> · <a href="{html.escape(md_url)}">Markdown</a> · <a href="{html.escape(raw_url)}">{"JSON" if hebrew_only else "Raw JSON"}</a></p>
   <h1>{html.escape(title)}</h1>
   {f'<div class="heb-title" dir="rtl" lang="he">{html.escape(hebrew_title)}</div>' if hebrew_title else ''}
 </header>
-<nav aria-label="Table of contents"><ol>{toc}</ol></nav>
+<nav aria-label="{contents_label}"><ol>{toc}</ol></nav>
 <main>
 {document_apparatus + ''.join(rows)}
 </main>
@@ -370,8 +378,13 @@ def write_teaching(path: Path, data: dict[str, Any], book: str, part: str, torah
         source_url = _navigation.human_source_url(path, READER_DIR, f"/reader/{book}/{part}/{torah}")
         return _lh_publication.write_publication(OUT_DIR, data, book, part, torah, source_url)
     selected_repair = _repairs.selected(path, READER_DIR)
-    segments = (_repairs.project(data, layered=book == _repairs.PNC) if selected_repair
-                else collect_segments(data, include_verse=(book, part) == ("likutay-nanach", "tanach")))
+    kabala = bool(re.fullmatch(r"kabala-[0-9a-f]{12}", book))
+    if selected_repair:
+        segments = _repairs.project(data, layered=book == _repairs.PNC)
+    elif kabala:
+        segments = [{"index": seg["index"], "he": seg["he"], "en": ""} for seg in data["segments"]]
+    else:
+        segments = collect_segments(data, include_verse=(book, part) == ("likutay-nanach", "tanach"))
     if selected_repair:
         for seg in segments:
             seg["blocks"] = _repairs.readable_blocks(seg, layered=book == _repairs.PNC)
@@ -379,7 +392,7 @@ def write_teaching(path: Path, data: dict[str, Any], book: str, part: str, torah
         return None
     title = title_for(data, f"{book} {part}/{torah}")
     hebrew_title = strip_html(data.get("hebrewTitle") or data.get("h") or "")
-    source_url = _navigation.human_source_url(path, READER_DIR, f"/reader/{book}/{part}/{torah}")
+    source_url = _navigation.human_source_url(path, READER_DIR, f"/reader/{book}/{part}/{torah}" + ('/' if kabala else ''))
     # A held human route must not move or rename the existing plain destination.
     plain_url = f"/reader-plain/{book}/{part}/{torah}/"
     source_reference = source_url or "/reader/" + path.relative_to(READER_DIR).as_posix()
@@ -406,16 +419,18 @@ def write_teaching(path: Path, data: dict[str, Any], book: str, part: str, torah
             md_lines += [f'## {label}\n', text, '']
     for seg in segments:
         idx = seg["index"]
-        txt_lines.append(f"Segment {idx}")
-        md_lines.append(f"\n## Segment {idx}\n")
+        segment_title = f"{'פסקה' if kabala else 'Segment'} {idx}"
+        txt_lines.append(segment_title)
+        md_lines.append(f"\n## {segment_title}\n")
         if "blocks" in seg:
             for label, lang, text in seg["blocks"]:
                 txt_lines += [f"{label} ({lang.upper()}):", text, ""]
                 md_lines += [f"### {label} ({lang.upper()})\n", text, ""]
             continue
         if seg.get("he"):
-            txt_lines += ["HE:", seg["he"], ""]
-            md_lines.append(f"<div dir=\"rtl\" lang=\"he\">\n\n{seg['he']}\n\n</div>\n")
+            txt_lines += [seg["he"], ""] if kabala else ["HE:", seg["he"], ""]
+            he_body = html.escape(seg["he"]) if kabala else seg["he"]
+            md_lines.append(f"<div dir=\"rtl\" lang=\"he\">\n\n{he_body}\n\n</div>\n")
         if seg.get("en"):
             txt_lines += ["EN:", seg["en"], ""]
             md_lines.append(f"{seg['en']}\n")
@@ -438,7 +453,7 @@ def write_teaching(path: Path, data: dict[str, Any], book: str, part: str, torah
                     "sourceFile": "/reader/" + path.relative_to(READER_DIR).as_posix(),
                     "sourceMetadata": {k: v for k, v in data.items() if k != "segments"}})
     (out / "index.json").write_text(json.dumps(raw, ensure_ascii=False, indent=2), encoding="utf-8")
-    (out / "index.html").write_text(html_page(title, hebrew_title, source_url, plain_url + "index.txt", plain_url + "index.md", plain_url + "index.json", segments, plain_url, document_blocks), encoding="utf-8")
+    (out / "index.html").write_text(html_page(title, hebrew_title, source_url, plain_url + "index.txt", plain_url + "index.md", plain_url + "index.json", segments, plain_url, document_blocks, hebrew_only=kabala), encoding="utf-8")
     return {"bookId": book, "part": part, "torah": torah, "title": title, "hebrewTitle": hebrew_title, "url": f"/reader-plain/{book}/{part}/{torah}/", "sourceUrl": source_url, "segments": len(segments)}
 
 
@@ -663,9 +678,10 @@ def main() -> None:
     qualified_primary_books = {owner[0] for owner in tanach_bindings.values() if owner[0] != "likutay-nanach"}
     book_links = []
     for book, rows in sorted(by_book.items()):
+        kabala = bool(re.fullmatch(r"kabala-[0-9a-f]{12}", book))
         if book in {_repairs.PNC, "likutay-nanach"}:
             rows = _repairs.reading_order(rows, READER_DIR)
-        if book in qualified_primary_books:
+        if book in qualified_primary_books or kabala:
             rows = sorted(rows, key=lambda r: (int(r["part"]), int(r["torah"])))
         if book == 'rimzei-hamaasiyos':
             sources = [entry_sources.get(id(r)) for r in rows]
@@ -682,6 +698,10 @@ def main() -> None:
         bdir.mkdir(exist_ok=True)
         full_txt: list[str] = [f"{book} — complete plain text", f"Source index: https://ajew.org/reader/{book}/", "", "Sections:"]
         full_md: list[str] = [f"# {book} — complete plain text", f"\nSource index: https://ajew.org/reader/{book}/\n", "## Sections"]
+        if kabala:
+            source_index = f"https://ajew.org/kabala/{book}/"
+            full_txt = ["טקסט מלא", f"תוכן הספר: {source_index}", "", "קטעי קריאה:"]
+            full_md = ["# טקסט מלא", f"\n[תוכן הספר]({source_index})\n", "## קטעי קריאה"]
         for r in rows:
             rel_url = r["url"].split(f"/reader-plain/{book}/", 1)[1]
             full_txt.append(f"- {r['title']} — https://ajew.org{r['url']}index.txt")

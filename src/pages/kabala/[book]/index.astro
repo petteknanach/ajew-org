@@ -1,0 +1,39 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { textEntries, sectionHref, orderedSections, downloadName, type KabalaEntry } from '../../../lib/kabala-catalog';
+import '../../../styles/kabala.css';
+
+export function getStaticPaths() {
+  return textEntries.map(entry => ({ params: { book: entry.id }, props: { entry } }));
+}
+interface Props { entry: KabalaEntry }
+const { entry } = Astro.props;
+const sections = orderedSections(entry);
+---
+<Layout title={`${entry.title} | ספריית הקבלה`} description={`תוכן העניינים של ${entry.title}: קריאה של קטעים בעברית והורדת הטקסט המלא.`} lang="he" hreflangs={['he']}>
+  <article class="kabala kb-book" dir="rtl" lang="he">
+    <header class="kb-hero">
+      <div class="kb-hero-inner">
+        <a class="kb-return" href="/kabala/">חזרה לספריית הקבלה</a>
+        <p class="kb-kicker" dir="auto">{entry.group}</p>
+        <h1 dir="auto">{entry.title}</h1>
+        <p>{sections.length === 1 ? 'קטע אחד' : `${sections.length} קטעים לקריאה`}</p>
+      </div>
+    </header>
+    <div class="kb-book-inner">
+      <nav class="kb-actions kb-book-actions" aria-label="קריאה וקבצים">
+        <a href={sectionHref(entry.id, sections[0].number)} class="kb-link kb-primary">תחילת הקריאה</a>
+        <a href={entry.download} download={downloadName(entry)} class="kb-link">הורדת הטקסט המלא</a>
+        <a href={entry.download} class="kb-link">טקסט מלא לכלי בינה מלאכותית</a>
+      </nav>
+      <nav aria-labelledby="kb-sections-title">
+        <h2 id="kb-sections-title">תוכן העניינים</h2>
+        <ol class="kb-chapters">
+          {sections.map(section => <li value={section.number}>
+            <a href={sectionHref(entry.id, section.number)}><span dir="auto">{section.title}</span></a>
+          </li>)}
+        </ol>
+      </nav>
+    </div>
+  </article>
+</Layout>

@@ -3,6 +3,7 @@
 import fs from 'fs';
 import path from 'path';
 import zlib from 'zlib';
+import kabalaCatalog from '../data/kabala-catalog.json';
 
 // Build the book picker from the same canonical light index used by live search.
 const indexPath = path.join(process.cwd(), 'public/data/light-search-index-he.json.gz');
@@ -21,6 +22,7 @@ try {
 } catch (e) {}
 
 // Hebrew names
+const kabalaNames = new Map(kabalaCatalog.entries.map(({id, title}) => [id, title]));
 const hebrewNames: Record<string, string> = {
   'likutay-moharan': 'ליקוטי מוהר"ן',
   'kitzur-likutay-moharan': 'קיצור ליקוטי מוהר"ן',
@@ -103,6 +105,7 @@ const categories = [
   { icon: '📚', label: 'Talmud Bavli / תלמוד בבלי', prefix: 'talmud-bavli-' },
   { icon: '📖', label: 'Mishna / משנה', prefix: 'mishna-' },
   { icon: '📚', label: 'Ramchal / רמח"ל', prefix: 'ramchal-' },
+  { icon: '📚', label: 'ספרי קבלה', prefix: 'kabala-' },
   { icon: '📚', label: 'Other / אחרים', ids: [], other: true },
 ];
 
@@ -175,7 +178,7 @@ for (const cat of categories) {
             {cat.books!.map(book => (
               <label class="book-checkbox">
                 <input type="checkbox" name="searchBook" value={book.id} checked onchange="updateSelectedCount()" />
-                <span class="book-name">{hebrewNames[book.id] || book.id}</span>
+                <span class="book-name">{kabalaNames.get(book.id) || hebrewNames[book.id] || book.id}</span>
                 <span class="book-count">{book.count}</span>
               </label>
             ))}
