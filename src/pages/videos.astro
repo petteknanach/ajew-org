@@ -11,6 +11,17 @@ import TeachingVideo from '../components/TeachingVideo.astro';
     <p class="subtitle">Na Nach Breslov shiurim, music, and more</p>
   </header>
 
+  <section id="saba-yisroel-odesser-in-france" class="video-section archival-video" aria-labelledby="saba-france-title">
+    <h2 id="saba-france-title">Saba Yisroel Dov Odesser — Eating in France</h2>
+    <p class="section-desc">Archival footage of Saba seated at a table in France (5:44). The recording date is unknown.</p>
+    <video controls playsinline preload="none" width="320" height="240"
+      poster="/images/videos/saba-yisroel-odesser-france-poster.jpg" aria-labelledby="saba-france-title">
+      <source src="https://archive.org/download/saba-yisroel-odesser-eating-in-france-ajew/saba-yisroel-odesser-france-playback.mp4" type="video/mp4" />
+      <a href="https://archive.org/details/saba-yisroel-odesser-eating-in-france-ajew">Watch on Internet Archive</a>
+    </video>
+    <p><a class="channel-link" href="https://archive.org/details/saba-yisroel-odesser-eating-in-france-ajew">Internet Archive — watch or download the original →</a></p>
+  </section>
+
   <section class="featured-teaching-videos" aria-labelledby="featured-teaching-videos-title">
     <h2 id="featured-teaching-videos-title">Featured Teaching Videos <span lang="he" dir="rtl">סרטוני תורה נבחרים</span></h2>
     <TeachingVideo
@@ -260,6 +271,16 @@ import TeachingVideo from '../components/TeachingVideo.astro';
   }
 
   .section-desc { color: #666; font-size: 0.9em; margin: 0 0 16px; }
+
+  .archival-video { scroll-margin-top: 6rem; }
+  .archival-video video {
+    display: block;
+    width: min(100%, 520px);
+    height: auto;
+    aspect-ratio: 4 / 3;
+    background: #000;
+    border-radius: 8px;
+  }
 
   .video-embed {
     border-radius: 12px;
