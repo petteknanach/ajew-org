@@ -1,0 +1,135 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { entries, representation, directoryHref, downloadName, kinds } from '../lib/kabala-catalog';
+import '../styles/kabala.css';
+
+const title = 'ספריית הקבלה';
+const description = 'אוסף ספרי קבלה וכתבים לקריאה ולהורדה: טקסטים בעברית ומהדורות בקובצי PDF.';
+const canonical = new URL('/kabala/', Astro.site);
+const groups = [...new Set(entries.map(entry => entry.group))].map((name, i) => ({
+  name, id: `kabala-group-${i + 1}`, entries: entries.filter(entry => entry.group === name),
+}));
+const jsonLd = {
+  '@context': 'https://schema.org', '@type': 'CollectionPage',
+  name: title, description, inLanguage: 'he', url: canonical.href,
+  mainEntity: {
+    '@type': 'ItemList', numberOfItems: entries.filter(entry => !entry.aliasOf).length,
+    itemListElement: entries.filter(entry => !entry.aliasOf).map((entry, i) => ({
+      '@type': 'ListItem', position: i + 1,
+      url: new URL(entry.kind === 'pdf' ? entry.download : directoryHref(entry.id), canonical).href,
+    })),
+  },
+};
+---
+<Layout title={title} description={description} lang="he" hreflangs={['he']} jsonLd={jsonLd}>
+  <div class="kabala kb-catalog" dir="rtl" lang="he" data-kb-catalog>
+    <header class="kb-hero">
+      <div class="kb-hero-inner">
+        <p class="kb-kicker">ספרייה · קריאה ולימוד</p>
+        <h1>{title}</h1>
+        <p>עיינו בכתבים לפי מדור, קראו באתר או הורידו את הקובץ המלא.</p>
+      </div>
+    </header>
+    <div class="kb-browse">
+      <aside class="kb-sidebar">
+        <nav aria-label="מדורי הספרייה">
+          <h2>לפי מדור</h2>
+          <ul class="kb-groups">
+            {groups.map(group => <li><a href={`#${group.id}`}><span dir="auto">{group.name}</span><small>{group.entries.length}</small></a></li>)}
+          </ul>
+        </nav>
+      </aside>
+      <div class="kb-listing">
+        <div class="kb-filter" data-kb-filter hidden>
+          <label for="kb-filter">חיפוש בקטלוג</label>
+          <div class="kb-filter-row">
+            <input id="kb-filter" type="search" placeholder="שם החיבור, מדור או סוג קובץ" autocomplete="off" dir="auto" />
+            <button type="button" class="kb-link" data-kb-clear hidden>ניקוי</button>
+          </div>
+          <p data-kb-count role="status"></p>
+        </div>
+        <p class="kb-empty" data-kb-empty hidden>לא נמצאו פריטים מתאימים. נסו מילה אחרת או נקו את החיפוש.</p>
+        {groups.map(group => (
+          <section id={group.id} class="kb-group" aria-labelledby={`${group.id}-title`} data-kb-group>
+            <h2 id={`${group.id}-title`} dir="auto">{group.name}</h2>
+            <ul class="kb-items">
+              {group.entries.map(entry => {
+                const target = representation(entry);
+                const pdf = target.kind === 'pdf';
+                const readHref = pdf ? target.reader : directoryHref(target.id);
+                return <li class="kb-entry" data-kb-entry data-search={[entry.title, group.name, kinds[entry.kind], pdf ? 'PDF' : 'TXT', target.title].join(' ')}>
+                  <div class="kb-entry-text">
+                    <h3><a href={readHref}><bdi>{entry.title}</bdi></a></h3>
+                    <p class="kb-meta">
+                      {pdf ? <bdi>PDF</bdi> : `${target.sections.length} ${target.sections.length === 1 ? 'קטע' : 'קטעים'}`}
+                      {entry.aliasOf && <> · קישור לאותו קובץ</>}
+                    </p>
+                  </div>
+                  <div class="kb-actions">
+                    <a href={readHref} class="kb-link kb-primary" aria-label={`קריאה: ${entry.title}`}>{pdf ? <>קריאת <bdi>PDF</bdi></> : 'קריאה'}</a>
+                    <a href={target.download} download={downloadName(entry)} class="kb-link" aria-label={`הורדה: ${entry.title}`}>הורדה</a>
+                    {pdf && <button type="button" class="kb-link" data-kb-share={readHref} data-title={entry.title} aria-label={`שיתוף: ${entry.title}`} hidden>שיתוף</button>}
+                    {pdf && <p class="kb-meta kb-share-status" role="status" hidden></p>}
+                  </div>
+                </li>;
+              })}
+            </ul>
+          </section>
+        ))}
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script is:inline>
+  (() => {
+    const root = document.querySelector('[data-kb-catalog]');
+    if (!root) return;
+    const input = root.querySelector('#kb-filter');
+    const clear = root.querySelector('[data-kb-clear]');
+    const status = root.querySelector('[data-kb-count]');
+    const empty = root.querySelector('[data-kb-empty]');
+    const normalize = text => text.normalize('NFKC').replace(/[\u0591-\u05bd\u05bf\u05c1\u05c2\u05c4\u05c5\u05c7]/g, '').toLocaleLowerCase('he');
+    const groups = Array.from(root.querySelectorAll('[data-kb-group]'), group => ({
+      group, jump: root.querySelector(`a[href="#${group.id}"]`).closest('li'),
+      entries: Array.from(group.querySelectorAll('[data-kb-entry]'), entry => [entry, normalize(entry.dataset.search)]),
+    }));
+    function filter() {
+      const terms = normalize(input.value).trim().split(/\s+/).filter(Boolean);
+      let count = 0;
+      for (const { group, jump, entries } of groups) {
+        let hits = 0;
+        for (const [entry, text] of entries) {
+          entry.hidden = !terms.every(term => text.includes(term));
+          if (!entry.hidden) hits++;
+        }
+        group.hidden = jump.hidden = hits === 0;
+        jump.querySelector('small').textContent = hits;
+        count += hits;
+      }
+      clear.hidden = !input.value;
+      empty.hidden = count > 0;
+      status.textContent = count === 1 ? 'פריט אחד' : `${count} פריטים`;
+    }
+    input.addEventListener('input', filter);
+    clear.addEventListener('click', () => { input.value = ''; filter(); input.focus(); });
+    if (navigator.share || navigator.clipboard?.writeText) {
+      root.querySelectorAll('[data-kb-share]').forEach(button => {
+        button.hidden = false;
+        button.addEventListener('click', async () => {
+          const url = new URL(button.dataset.kbShare, location.href).href;
+          const feedback = button.nextElementSibling;
+          if (navigator.share) {
+            try { await navigator.share({ title: button.dataset.title, url }); return; }
+            catch (error) { if (error?.name === 'AbortError') return; }
+          }
+          feedback.hidden = false;
+          try { await navigator.clipboard.writeText(url); feedback.textContent = 'הקישור הועתק.'; }
+          catch { feedback.textContent = 'לא ניתן לשתף אוטומטית. פתחו את הקובץ כדי להעתיק את כתובתו.'; }
+        });
+      });
+    }
+    filter();
+    root.querySelector('[data-kb-filter]').hidden = false;
+  })();
+</script>

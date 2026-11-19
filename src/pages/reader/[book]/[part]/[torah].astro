@@ -1,0 +1,126 @@
+---
+import { readFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
+import Layout from '../../../../layouts/Layout.astro';
+import { directoryHref, downloadName, orderedSections, sectionHref, sectionJsonHref, textEntries, type KabalaEntry, type KabalaSection } from '../../../../lib/kabala-catalog';
+import '../../../../styles/reader.css';
+import '../../../../styles/kabala.css';
+
+export function getStaticPaths() {
+  return textEntries.flatMap(entry => orderedSections(entry).map((section, i, sections) => ({
+    params: { book: entry.id, part: '1', torah: String(section.number) },
+    props: { entry, section, prev: sections[i - 1]?.number ?? null, next: sections[i + 1]?.number ?? null },
+  })));
+}
+interface Props { entry: KabalaEntry; section: KabalaSection; prev: number | null; next: number | null }
+interface Segment { index: number; he: string }
+const { entry, section, prev, next } = Astro.props;
+const id = `${entry.id}-1-${section.number}`;
+const jsonHref = sectionJsonHref(entry.id, section.number);
+const data = JSON.parse(await readFile(resolve(process.cwd(), `public${jsonHref}`), 'utf8'));
+const indices = new Set<number>();
+if (data.id !== id || data.bookId !== entry.id || data.part !== 1 || data.torah !== section.number ||
+    typeof data.title !== 'string' || typeof data.hebrewTitle !== 'string' ||
+    !Array.isArray(data.segments) || !data.segments.length ||
+    data.segments.some((segment: Segment) => {
+      if (!segment || !Number.isSafeInteger(segment.index) || segment.index < 0 ||
+          indices.has(segment.index) || typeof segment.he !== 'string') return true;
+      indices.add(segment.index);
+      return false;
+    }) || !data.segments.some((segment: Segment) => segment.he.trim())) {
+  throw new Error(`Invalid Kabala reader artifact: ${jsonHref}`);
+}
+const segments: Segment[] = data.segments;
+const heading = section.title;
+const repeatedTitle = heading === entry.title;
+const bookUrl = directoryHref(entry.id);
+const pageTitle = repeatedTitle ? `${heading} | ספריית הקבלה` : `${heading} — ${entry.title} | ספריית הקבלה`;
+const description = `קריאה בעברית מתוך ${entry.title}, קטע ${section.number}.`;
+const navigation = [
+  { href: prev === null ? null : sectionHref(entry.id, prev), dir: 'prev', label: '→ הקטע הקודם' },
+  { href: bookUrl, dir: null, label: 'תוכן העניינים' },
+  { href: next === null ? null : sectionHref(entry.id, next), dir: 'next', label: 'הקטע הבא ←' },
+];
+---
+<Layout title={pageTitle} description={description} lang="he" hreflangs={['he']}>
+  {/* Shared Reader structure and styling. The bilingual scripts would rewrite headings,
+      honor a saved English-only mode, autolink this source, and inject unrelated tools. */}
+  <article class="kabala kb-reader reader-container" dir="rtl" lang="he" data-kb-reader
+    data-book={entry.id} data-torah-id={id} data-torah-title={pageTitle}>
+    <div class="reader-progress" aria-hidden="true" data-kb-progress></div>
+    <nav class="reader-breadcrumb" aria-label="מיקום בספרייה">
+      <a href="/kabala/">ספריית הקבלה</a>
+      <span aria-hidden="true">‹</span>
+      <a href={bookUrl}><bdi>{entry.title}</bdi></a>
+    </nav>
+    <header class="reader-header">
+      <p class="kb-kicker" dir="auto">{repeatedTitle ? entry.group : entry.title}</p>
+      <h1 class="hebrew-title" dir="auto">{heading}</h1>
+      <p class="kb-meta">{`קטע ${section.number} מתוך ${entry.sections.length}`}</p>
+    </header>
+
+    <nav class="reader-nav kb-reader-nav" aria-label="ניווט בין קטעים">
+      {navigation.map(({ href, dir, label }) => href && <a href={href} data-dir={dir ?? undefined}>{label}</a>)}
+    </nav>
+    <div class="kb-reader-panel">
+      <div class="reader-toolbar" role="group" aria-label="כלי קריאה" data-kb-toolbar hidden>
+        <div class="reader-toolbar-group kb-preferences">
+          <label for="font-size-slider">גודל הכתב</label>
+          <input type="range" id="font-size-slider" class="font-size-slider" min="16" max="36" value="22" />
+          <label for="kb-reader-theme">רקע</label>
+          <select id="kb-reader-theme" class="reader-btn">
+            <option value="day">בהיר</option><option value="sepia">נייר</option><option value="night">לילה</option>
+          </select>
+        </div>
+        <div class="reader-toolbar-group kb-page-actions">
+          <button class="reader-btn" type="button" id="btn-listen" hidden>הקראה בעברית</button>
+          <button class="reader-btn" type="button" id="btn-print">הדפסה</button>
+          <button class="reader-btn" type="button" id="btn-share" hidden>שיתוף</button>
+          <button class="reader-btn" type="button" data-kb-copy hidden>העתקת הקטע</button>
+        </div>
+      </div>
+      <p class="kb-reader-status" role="status" data-kb-status hidden></p>
+      <details class="kb-reader-files">
+        <summary>הורדה וגישה לכלי בינה מלאכותית</summary>
+        <div class="kb-actions">
+          <a href={entry.download} class="kb-link" download={downloadName(entry)}>הורדת הטקסט המלא</a>
+          <a href={entry.download} class="kb-link">פתיחת הטקסט המלא</a>
+          <a href={jsonHref} class="kb-link">נתוני הקטע <bdi dir="ltr">(JSON)</bdi></a>
+        </div>
+      </details>
+    </div>
+    <div class="kb-reader-utility" data-kb-utility hidden>
+      <div class="kb-actions" role="group" aria-label="כלים לניווט בטקסט">
+        <button class="reader-btn" type="button" id="btn-search" aria-controls="kb-reader-search" aria-expanded="false">חיפוש בקטע</button>
+        <button class="reader-btn" type="button" id="btn-bookmark">שמירת מקום</button>
+        <button class="reader-btn" type="button" data-kb-restore hidden>חזרה לסימנייה</button>
+      </div>
+      <p class="kb-reader-status" role="status" data-kb-bookmark-status hidden></p>
+      <div id="kb-reader-search" class="reader-search-bar" hidden>
+        <label for="kb-find">חיפוש בטקסט</label>
+        <input id="kb-find" type="search" dir="auto" autocomplete="off" />
+        <button class="reader-btn" type="button" data-kb-find-prev disabled aria-label="תוצאת החיפוש הקודמת">הקודמת</button>
+        <button class="reader-btn" type="button" data-kb-find-next disabled aria-label="תוצאת החיפוש הבאה">הבאה</button>
+        <button class="reader-btn" type="button" data-kb-find-close>סגירה</button>
+        <span class="search-info" role="status" data-kb-find-status></span>
+      </div>
+    </div>
+
+    <div class="reader-content mode-hebrew" data-kb-source>
+      {segments.map(segment => (
+        <div class="reader-segment-pair" id={`seg-${segment.index}`}>
+          <div class="reader-segment segment-he" data-index={segment.index}>
+            <a class="segment-number" href={`#seg-${segment.index}`} aria-label={`קישור לפסקה ${segment.index}`}>{segment.index}</a>
+            <p data-xref-done="1">{segment.he}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+    <nav class="reader-nav kb-reader-nav" aria-label="המשך הקריאה">
+      {navigation.map(({ href, dir, label }) => href && <a href={href} data-dir={dir ?? undefined}>{label}</a>)}
+    </nav>
+  </article>
+</Layout>
+<script>
+  import '../../../../lib/kabala-reader.js';
+</script>

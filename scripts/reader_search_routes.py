@@ -16,6 +16,7 @@ from typing import Iterable
 
 NUMERIC_LEAF_RE = re.compile(r"^(?:torah|halacha|prayer|topic|section|sicha|chapter)-(\d+)$")
 PART_RE = re.compile(r"^part-(\d+)$")
+KABALA_BOOK_RE = re.compile(r"kabala-[0-9a-f]{12}")
 
 
 @dataclass(frozen=True)
@@ -58,6 +59,12 @@ def route_for_source(source: Path, reader_dir: Path) -> str | None:
             raise ValueError("Missing current Yimai edition; historical English is not a fallback")
         return None
     stem = source.stem
+
+    if KABALA_BOOK_RE.fullmatch(book):
+        match = re.fullmatch(r"torah-([1-9][0-9]*)\.json", source.name)
+        if len(parts) == 3 and parts[1] == "volume-1" and match:
+            return f"/reader/{book}/1/{match[1]}"
+        return None
 
     if book == "alim-litrufa" and len(parts) == 3 and parts[1] == "reviewed":
         return "/reader/alim-litrufa/reviewed/part-2-17-62-63" if parts[2] == "part-2-17-62-63.json" else None
