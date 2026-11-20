@@ -59,6 +59,7 @@ function restoreVayishlachEighth(relative,bytes){
  const before=Buffer.from(row.beforeUTF8,'utf8');assert.equal(before.length,row.before.bytes);assert.equal(sha(before),row.before.sha256,'EIGHTH_WHOLE_INVERSE');return before;
 }
 function restoreSevenSourceFields(relative,bytes){
+ bytes=require('./genesis-30-20-segoal-inverse.cjs').restore(relative,bytes);
  bytes=restoreAllBiraishisFinal(relative,bytes);
  bytes=restoreJointEighthOnFive(relative,bytes);
  bytes=restoreVayishlachEighth(relative,bytes);
@@ -171,6 +172,7 @@ function restoreGenesis(relative,bytes){
  const restored=Buffer.from(s);assert.equal(sha(restored),d.beforeSHA256,'GENESIS_ENGLISH_EXACT_INVERSE:'+relative);return restored;
 }
 function currentReference(relative,bytes){
+ bytes=require('./genesis-30-20-segoal-inverse.cjs').restore(relative,bytes);
  bytes=restoreReaderQuery(relative,bytes);
  bytes=restoreReaderCommentary(relative,bytes);
  bytes=restoreGenesis(relative,bytes);

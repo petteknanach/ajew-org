@@ -1,0 +1,430 @@
+{
+  "schema": "genesis-30-20-segoal-exact-delta/v1",
+  "base": "5cf420b753184be180a1eb0ad6e0a30b9f5b5b69",
+  "paths": {
+    "public/medooyuk.js": {
+      "before": "f06e1fc21f812fcdd3a9b8f9a9d59daa887f2b57baa028fbb2fd237e864345ea",
+      "after": "7d0e8581b592448a3b2a3f8e1da9ae125be66570fb302d0e9d2b194b2aed76be",
+      "inverse": [
+        {
+          "after": "  var readingSources = new WeakMap();\n  var selectedReadings = [\n    {chapter: 21, verse: 33, token: 1, before: 'אֶ֖שֶׁל', after: 'אֵ֖שֶׁל'},\n    // User's exact occurrence ruling: segoal under the zayin; retain munach and bet's segoal.\n    {chapter: 30, verse: 20, token: 5, before: 'זֵ֣בֶד', after: 'זֶ֣בֶד'}\n  ];\n  function readingVerse(verse, context) {\n    var entry = verse && readingSources.get(verse);\n    if (!entry || !context || context.book !== 'tanach-bereishit') return verse;\n    var reading = entry.reading;\n    if (+context.chapter !== reading.chapter || +context.verse !== reading.verse ||\n        window.TikkunBoundaries.boundaryHash(verse) !== entry.pin || verse.t[reading.token] !== reading.before) return verse;\n    var selected = Object.assign({}, verse, {t: verse.t.slice()});\n    selected.t[reading.token] = reading.after;\n    return selected;\n  }",
+          "before": "  var readingSources = new WeakMap();\n  function readingVerse(verse, context) {\n    var pin = verse && readingSources.get(verse);\n    if (!pin || !context || context.book !== 'tanach-bereishit' ||\n        +context.chapter !== 21 || +context.verse !== 33 ||\n        window.TikkunBoundaries.boundaryHash(verse) !== pin || verse.t[1] !== 'אֶ֖שֶׁל') return verse;\n    var selected = Object.assign({}, verse, {t: verse.t.slice()});\n    selected.t[1] = 'אֵ֖שֶׁל';\n    return selected;\n  }"
+        },
+        {
+          "after": "      selectedReadings.forEach(function (reading) {\n        var original = authenticated.ch[reading.chapter][reading.verse];\n        if (original.t[reading.token] !== reading.before) throw Error('Selected reading preimage mismatch');\n        readingSources.set(original, {reading: reading, pin: window.TikkunBoundaries.boundaryHash(original)});\n      });",
+          "before": "      var original = authenticated.ch[21][33];\n      if (original.t[1] !== 'אֶ֖שֶׁל') throw Error('Selected reading preimage mismatch');\n      readingSources.set(original, window.TikkunBoundaries.boundaryHash(original));"
+        }
+      ]
+    },
+    "src/components/TikunHaklaliReader.astro": {
+      "before": "a877914b9b256fafa397ac340e4ce9da6a0934c655dc3db753097bc79c70c37a",
+      "after": "d53866c5881b730f53e904c819a8d82df2e01bce918a15d20cda937ca8c82d1c",
+      "inverse": [
+        {
+          "after": "/medooyuk.js?v=7d0e8581b592448a3b2a3f8e1da9ae125be66570fb302d0e9d2b194b2aed76be",
+          "before": "/medooyuk.js?v=f06e1fc21f812fcdd3a9b8f9a9d59daa887f2b57baa028fbb2fd237e864345ea"
+        }
+      ]
+    },
+    "src/pages/reader/chok.astro": {
+      "before": "a4c1d9024137c0a490ce6173cc9c1ca8caefd6771d0c1e37d0fb2be02e53952b",
+      "after": "20eaadb1e283b3f13925f53eb9e56c65dc9b57b464cf735fcb1c219ee23fd8ec",
+      "inverse": [
+        {
+          "after": "/medooyuk.js?v=7d0e8581b592448a3b2a3f8e1da9ae125be66570fb302d0e9d2b194b2aed76be",
+          "before": "/medooyuk.js?v=f06e1fc21f812fcdd3a9b8f9a9d59daa887f2b57baa028fbb2fd237e864345ea"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-amos/[part]/[torah].astro": {
+      "before": "318b9523e076de3729a65bb90f4540f937f62e40a82bb0e8363ac14a19fe564c",
+      "after": "b0805591be3e509655301c6a0e4bde186b56c609b5390f162d7c8e7d0e2885d9",
+      "inverse": [
+        {
+          "after": "/medooyuk.js?v=7d0e8581b592448a3b2a3f8e1da9ae125be66570fb302d0e9d2b194b2aed76be",
+          "before": "/medooyuk.js?v=f06e1fc21f812fcdd3a9b8f9a9d59daa887f2b57baa028fbb2fd237e864345ea"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-bamidbar/[part]/[torah].astro": {
+      "before": "b0e31450f211e06ef8945850876ea72f0289d60dc728888b5026c44e792c2dc6",
+      "after": "97e9e47a98e3b699907e4c1e34d5f45329d31c1ec705ea1a176686a3bfc67381",
+      "inverse": [
+        {
+          "after": "/medooyuk.js?v=7d0e8581b592448a3b2a3f8e1da9ae125be66570fb302d0e9d2b194b2aed76be",
+          "before": "/medooyuk.js?v=f06e1fc21f812fcdd3a9b8f9a9d59daa887f2b57baa028fbb2fd237e864345ea"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-bereishit/[part]/[torah].astro": {
+      "before": "63828f2662aaecf85c6976de7dbcfb2e73bde852a8fdc57c61696241b1a4cc6b",
+      "after": "f407364fdf5cf675df74d600103f63e40261785c750d75e9871133e1fe0921ec",
+      "inverse": [
+        {
+          "after": "/medooyuk.js?v=7d0e8581b592448a3b2a3f8e1da9ae125be66570fb302d0e9d2b194b2aed76be",
+          "before": "/medooyuk.js?v=f06e1fc21f812fcdd3a9b8f9a9d59daa887f2b57baa028fbb2fd237e864345ea"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-chaggai/[part]/[torah].astro": {
+      "before": "ded08891aa7c9f92951c9197dd00a9580cdc6f23fb6d0ef7dbbcab6932672e17",
+      "after": "c5dc979cc4676d00a02a090cfd73d0a51c248d8e2d06ee4a439e7431c2167cdc",
+      "inverse": [
+        {
+          "after": "/medooyuk.js?v=7d0e8581b592448a3b2a3f8e1da9ae125be66570fb302d0e9d2b194b2aed76be",
+          "before": "/medooyuk.js?v=f06e1fc21f812fcdd3a9b8f9a9d59daa887f2b57baa028fbb2fd237e864345ea"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-daniel/[part]/[torah].astro": {
+      "before": "08c11851529a035330e5e7e735cbaa1c22d1dc5acde7a0dac4f8f5d16e0cb38c",
+      "after": "b2793146948ce89e82864aef537eb2cccf37ff7c9d690b5dccd578f958436bb0",
+      "inverse": [
+        {
+          "after": "/medooyuk.js?v=7d0e8581b592448a3b2a3f8e1da9ae125be66570fb302d0e9d2b194b2aed76be",
+          "before": "/medooyuk.js?v=f06e1fc21f812fcdd3a9b8f9a9d59daa887f2b57baa028fbb2fd237e864345ea"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-devarim/[part]/[torah].astro": {
+      "before": "4f525550f9556c916f02e57e00d42a37fdad008b0f7eba3a96810ca4d1bd510f",
+      "after": "c23a4df066146320b757591885cdfee22351f37c0a00517cd2de9be620e340ce",
+      "inverse": [
+        {
+          "after": "/medooyuk.js?v=7d0e8581b592448a3b2a3f8e1da9ae125be66570fb302d0e9d2b194b2aed76be",
+          "before": "/medooyuk.js?v=f06e1fc21f812fcdd3a9b8f9a9d59daa887f2b57baa028fbb2fd237e864345ea"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-divrei-hayamim-a/[part]/[torah].astro": {
+      "before": "01d5dcf6770ad5920a138f9b1f47e8c5ec3f95c1c9fd3c1e05161e8ba01b735c",
+      "after": "a10224bbd3f3cd2e203b5f5383898c97e390c5b7bb5f9f35c2d7e50d38c32387",
+      "inverse": [
+        {
+          "after": "/medooyuk.js?v=7d0e8581b592448a3b2a3f8e1da9ae125be66570fb302d0e9d2b194b2aed76be",
+          "before": "/medooyuk.js?v=f06e1fc21f812fcdd3a9b8f9a9d59daa887f2b57baa028fbb2fd237e864345ea"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-divrei-hayamim-b/[part]/[torah].astro": {
+      "before": "868f12363a6a9b29e4ecd86c9a78f90b74cfa26029f4068a432e48463293cb73",
+      "after": "2b8e0c5c49ebb29aecbf5b13b1dd386622b8c00ac0216b9b87817bce735c1eb9",
+      "inverse": [
+        {
+          "after": "/medooyuk.js?v=7d0e8581b592448a3b2a3f8e1da9ae125be66570fb302d0e9d2b194b2aed76be",
+          "before": "/medooyuk.js?v=f06e1fc21f812fcdd3a9b8f9a9d59daa887f2b57baa028fbb2fd237e864345ea"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-eicha/[part]/[torah].astro": {
+      "before": "465f05ec861ed2190cc17a99552b96ee52c95e0eb9318f3e562a3ac5ebcd3d35",
+      "after": "c2973066d3ff742a91712212e7be9d155f2344052498f74257d7347af3d967fe",
+      "inverse": [
+        {
+          "after": "/medooyuk.js?v=7d0e8581b592448a3b2a3f8e1da9ae125be66570fb302d0e9d2b194b2aed76be",
+          "before": "/medooyuk.js?v=f06e1fc21f812fcdd3a9b8f9a9d59daa887f2b57baa028fbb2fd237e864345ea"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-esther/[part]/[torah].astro": {
+      "before": "12e17a215ac2d5fe9120bc9d3c2590ff38f7238325eace7773c57b5df22d8970",
+      "after": "be2ab3405337dde763e0a6e42579607969c60c9872c6e171a0e12dce5090beaf",
+      "inverse": [
+        {
+          "after": "/medooyuk.js?v=7d0e8581b592448a3b2a3f8e1da9ae125be66570fb302d0e9d2b194b2aed76be",
+          "before": "/medooyuk.js?v=f06e1fc21f812fcdd3a9b8f9a9d59daa887f2b57baa028fbb2fd237e864345ea"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-ezra/[part]/[torah].astro": {
+      "before": "7619e47a42abd4454cc382343bd66c0a25392de5efa17e536df2e460764639af",
+      "after": "30646a79193e651c3ab2be6830c425843733c84096240e9a5d7b54335823a30f",
+      "inverse": [
+        {
+          "after": "/medooyuk.js?v=7d0e8581b592448a3b2a3f8e1da9ae125be66570fb302d0e9d2b194b2aed76be",
+          "before": "/medooyuk.js?v=f06e1fc21f812fcdd3a9b8f9a9d59daa887f2b57baa028fbb2fd237e864345ea"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-havakkuk/[part]/[torah].astro": {
+      "before": "2d588c814468681bd5d57ff051a2966f86a09e24108629ca777a81031cd1edfd",
+      "after": "95024bad5636e8dffbf79ec153db1107f3f374e43c61cbeda4710a077cbfa76b",
+      "inverse": [
+        {
+          "after": "/medooyuk.js?v=7d0e8581b592448a3b2a3f8e1da9ae125be66570fb302d0e9d2b194b2aed76be",
+          "before": "/medooyuk.js?v=f06e1fc21f812fcdd3a9b8f9a9d59daa887f2b57baa028fbb2fd237e864345ea"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-hoshea/[part]/[torah].astro": {
+      "before": "ad47ad896532fa9b99689a4ef02f0d4ecda0f7164e9ffe7119bf2a88f81425fd",
+      "after": "7aabc6231fff6be14b92aef8b414ecebd9c687b19b6a5bfd4c98dea4f6ba6d52",
+      "inverse": [
+        {
+          "after": "/medooyuk.js?v=7d0e8581b592448a3b2a3f8e1da9ae125be66570fb302d0e9d2b194b2aed76be",
+          "before": "/medooyuk.js?v=f06e1fc21f812fcdd3a9b8f9a9d59daa887f2b57baa028fbb2fd237e864345ea"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-iyov/[part]/[torah].astro": {
+      "before": "2ac032fa22e3e0e9fc4278950e812322d1b6a921cb700c956a89b90524c2ad22",
+      "after": "88d91ceb1805f184ce0a00dc943b98683cf50b5c00e765538ae0520a026af2d8",
+      "inverse": [
+        {
+          "after": "/medooyuk.js?v=7d0e8581b592448a3b2a3f8e1da9ae125be66570fb302d0e9d2b194b2aed76be",
+          "before": "/medooyuk.js?v=f06e1fc21f812fcdd3a9b8f9a9d59daa887f2b57baa028fbb2fd237e864345ea"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-koheles/[part]/[torah].astro": {
+      "before": "e79e7bf826356eee2defed39db859e4378bfba7dae0b5bb34616c2adf9c0ef82",
+      "after": "d69c106bd730dbdb13ee146e24dcacdf1b548d9411d06f294b0ccf5adddcb0a5",
+      "inverse": [
+        {
+          "after": "/medooyuk.js?v=7d0e8581b592448a3b2a3f8e1da9ae125be66570fb302d0e9d2b194b2aed76be",
+          "before": "/medooyuk.js?v=f06e1fc21f812fcdd3a9b8f9a9d59daa887f2b57baa028fbb2fd237e864345ea"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-malachi/[part]/[torah].astro": {
+      "before": "bd6f95e43b31cb47294b098fb92323ae32905dcc064ab8e929d3ef99e692aa90",
+      "after": "549d3f84de390de93522b469107c5fddaa6cc2c83f4a7c47e15302aed3b07813",
+      "inverse": [
+        {
+          "after": "/medooyuk.js?v=7d0e8581b592448a3b2a3f8e1da9ae125be66570fb302d0e9d2b194b2aed76be",
+          "before": "/medooyuk.js?v=f06e1fc21f812fcdd3a9b8f9a9d59daa887f2b57baa028fbb2fd237e864345ea"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-melachim-a/[part]/[torah].astro": {
+      "before": "375a1f3323ccabbd922f793b1f3b9e6a02911ca752cf5b996507c0f51d3764f1",
+      "after": "a933208f37163c1802a0e2e1472a813683b317f7bceb185b00dbd88933316b62",
+      "inverse": [
+        {
+          "after": "/medooyuk.js?v=7d0e8581b592448a3b2a3f8e1da9ae125be66570fb302d0e9d2b194b2aed76be",
+          "before": "/medooyuk.js?v=f06e1fc21f812fcdd3a9b8f9a9d59daa887f2b57baa028fbb2fd237e864345ea"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-melachim-b/[part]/[torah].astro": {
+      "before": "fdc02429147c6437e15c90174e135b64c92699f150eca5833ad134caa1856cad",
+      "after": "590a7aea73384336ce3662708a34519a419c66596f1756781d52d780b0a542d6",
+      "inverse": [
+        {
+          "after": "/medooyuk.js?v=7d0e8581b592448a3b2a3f8e1da9ae125be66570fb302d0e9d2b194b2aed76be",
+          "before": "/medooyuk.js?v=f06e1fc21f812fcdd3a9b8f9a9d59daa887f2b57baa028fbb2fd237e864345ea"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-michah/[part]/[torah].astro": {
+      "before": "e73544c10e1c9173eff032dfa717c9c4aac9f2bb3254242ea3976748282543e5",
+      "after": "3c08c4ef3fa65ee6d4a39323f9ea428377f929cf3feebdec9cfa4cb2c76ceaa1",
+      "inverse": [
+        {
+          "after": "/medooyuk.js?v=7d0e8581b592448a3b2a3f8e1da9ae125be66570fb302d0e9d2b194b2aed76be",
+          "before": "/medooyuk.js?v=f06e1fc21f812fcdd3a9b8f9a9d59daa887f2b57baa028fbb2fd237e864345ea"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-mishlei/[part]/[torah].astro": {
+      "before": "e8ac8026267e2ab981b73ed5ae9f702e202292f1f405fc86ec5dfd4d124820e2",
+      "after": "10721332c95e83f4200592968231534e64a7fdf7d2cfc280ca17470784bb187a",
+      "inverse": [
+        {
+          "after": "/medooyuk.js?v=7d0e8581b592448a3b2a3f8e1da9ae125be66570fb302d0e9d2b194b2aed76be",
+          "before": "/medooyuk.js?v=f06e1fc21f812fcdd3a9b8f9a9d59daa887f2b57baa028fbb2fd237e864345ea"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-nachum/[part]/[torah].astro": {
+      "before": "efe914113261f7111826103975d19a1937a0966a6bd947e86dd906d3e6831922",
+      "after": "e7918b0e134349ff3a5968e18c4383bea96b5757c8bcc44268a095c713393763",
+      "inverse": [
+        {
+          "after": "/medooyuk.js?v=7d0e8581b592448a3b2a3f8e1da9ae125be66570fb302d0e9d2b194b2aed76be",
+          "before": "/medooyuk.js?v=f06e1fc21f812fcdd3a9b8f9a9d59daa887f2b57baa028fbb2fd237e864345ea"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-nechemia/[part]/[torah].astro": {
+      "before": "62300392996ac6b95643f56342bccd272218e88d242f7df8d17fee4718e59448",
+      "after": "0246fb8a9d24ee2d342b1c52b1be51a49030ac85adc5887fab42bad5704831be",
+      "inverse": [
+        {
+          "after": "/medooyuk.js?v=7d0e8581b592448a3b2a3f8e1da9ae125be66570fb302d0e9d2b194b2aed76be",
+          "before": "/medooyuk.js?v=f06e1fc21f812fcdd3a9b8f9a9d59daa887f2b57baa028fbb2fd237e864345ea"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-ovadya/[part]/[torah].astro": {
+      "before": "e0cc600045dd3a7541c4802f3f8fb5652abd12a516aee845ebaa676ff915e08d",
+      "after": "c8b9582df5d320bb9c296102047c744ab143f40e850ffc5df30d4d78fd028b5a",
+      "inverse": [
+        {
+          "after": "/medooyuk.js?v=7d0e8581b592448a3b2a3f8e1da9ae125be66570fb302d0e9d2b194b2aed76be",
+          "before": "/medooyuk.js?v=f06e1fc21f812fcdd3a9b8f9a9d59daa887f2b57baa028fbb2fd237e864345ea"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-rus/[part]/[torah].astro": {
+      "before": "e715d5f992b6f124d77a24406f6d3788bedf4d024ad6abc8817a5079cc8cb783",
+      "after": "61206d35db4447eb4f5e7f7181561870c3b8455b53792230c15dd44d715cadb8",
+      "inverse": [
+        {
+          "after": "/medooyuk.js?v=7d0e8581b592448a3b2a3f8e1da9ae125be66570fb302d0e9d2b194b2aed76be",
+          "before": "/medooyuk.js?v=f06e1fc21f812fcdd3a9b8f9a9d59daa887f2b57baa028fbb2fd237e864345ea"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-shemos/[part]/[torah].astro": {
+      "before": "dcaa9821d8f8715f4e2262edae6a877538fd313378d8a5972c13fdabbddb294c",
+      "after": "6a1f66e16514f91d86d474ed1088b47adea91dc1001855462fea0cc844d6647a",
+      "inverse": [
+        {
+          "after": "/medooyuk.js?v=7d0e8581b592448a3b2a3f8e1da9ae125be66570fb302d0e9d2b194b2aed76be",
+          "before": "/medooyuk.js?v=f06e1fc21f812fcdd3a9b8f9a9d59daa887f2b57baa028fbb2fd237e864345ea"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-shir-hashirim/[part]/[torah].astro": {
+      "before": "8e2931adfece2a8623f7b3821f3f3cc7868bc03b6d6d6bb4a7d6a32ca4e787c4",
+      "after": "1f4c1598a5636f13c34dba725c5a73412fabcd293f82ce2a1f4a40f7de0c2f4b",
+      "inverse": [
+        {
+          "after": "/medooyuk.js?v=7d0e8581b592448a3b2a3f8e1da9ae125be66570fb302d0e9d2b194b2aed76be",
+          "before": "/medooyuk.js?v=f06e1fc21f812fcdd3a9b8f9a9d59daa887f2b57baa028fbb2fd237e864345ea"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-shmuel-a/[part]/[torah].astro": {
+      "before": "d5b07c10e19b5e05cb5387256fd7e2449eb4a934f0ba80af839088e43a6432e8",
+      "after": "eeffe6e81b3058f69b89eb9ad3758c6f25806be95ee698df9a54c21ea742029e",
+      "inverse": [
+        {
+          "after": "/medooyuk.js?v=7d0e8581b592448a3b2a3f8e1da9ae125be66570fb302d0e9d2b194b2aed76be",
+          "before": "/medooyuk.js?v=f06e1fc21f812fcdd3a9b8f9a9d59daa887f2b57baa028fbb2fd237e864345ea"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-shmuel-b/[part]/[torah].astro": {
+      "before": "e53207c732fa6a6d94ddc635d9b93f9e94d21d669d589f6a1e42f907cbf4e43e",
+      "after": "5f2ff34c4da38d44716dbcb065aba82fb1af2db4eb8d29b0e2845fb783f5cdd3",
+      "inverse": [
+        {
+          "after": "/medooyuk.js?v=7d0e8581b592448a3b2a3f8e1da9ae125be66570fb302d0e9d2b194b2aed76be",
+          "before": "/medooyuk.js?v=f06e1fc21f812fcdd3a9b8f9a9d59daa887f2b57baa028fbb2fd237e864345ea"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-shoftim/[part]/[torah].astro": {
+      "before": "45a4bbf1314534b00bdefe3f8dca8fa37cd67e167e12b275bc041dc10bbc591d",
+      "after": "ecec5d1a39545351e17b33c75fcc52c249a7996163589059c345b4db4baecc52",
+      "inverse": [
+        {
+          "after": "/medooyuk.js?v=7d0e8581b592448a3b2a3f8e1da9ae125be66570fb302d0e9d2b194b2aed76be",
+          "before": "/medooyuk.js?v=f06e1fc21f812fcdd3a9b8f9a9d59daa887f2b57baa028fbb2fd237e864345ea"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-tehillim/[part]/[torah].astro": {
+      "before": "4bad8873b4cbff0321881758cbdb60fdae2ab9ad881027cf0261546327b15cf8",
+      "after": "c02e190fffa9dae928cc7d320b0650e2deab13985ee26c7386b02248b33b87d3",
+      "inverse": [
+        {
+          "after": "/medooyuk.js?v=7d0e8581b592448a3b2a3f8e1da9ae125be66570fb302d0e9d2b194b2aed76be",
+          "before": "/medooyuk.js?v=f06e1fc21f812fcdd3a9b8f9a9d59daa887f2b57baa028fbb2fd237e864345ea"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-tzefanya/[part]/[torah].astro": {
+      "before": "ad4f591ca31e26eb87e5182994f91c05e0d2616f7b4ef6e472ba9150195e693a",
+      "after": "a646661e40b09b49712b2b201af8bfe652f8e73825b7805805b24366dc667bb2",
+      "inverse": [
+        {
+          "after": "/medooyuk.js?v=7d0e8581b592448a3b2a3f8e1da9ae125be66570fb302d0e9d2b194b2aed76be",
+          "before": "/medooyuk.js?v=f06e1fc21f812fcdd3a9b8f9a9d59daa887f2b57baa028fbb2fd237e864345ea"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-vayikra/[part]/[torah].astro": {
+      "before": "b24f07437a2a55cb6585e71df30311e3593d376e1dc4196209ba41114425b873",
+      "after": "407c7a62a9eea91358c6f0c32b9d272634e2bbc2a58483192733f270704d7733",
+      "inverse": [
+        {
+          "after": "/medooyuk.js?v=7d0e8581b592448a3b2a3f8e1da9ae125be66570fb302d0e9d2b194b2aed76be",
+          "before": "/medooyuk.js?v=f06e1fc21f812fcdd3a9b8f9a9d59daa887f2b57baa028fbb2fd237e864345ea"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-yechezkel/[part]/[torah].astro": {
+      "before": "b81ad9a8695eeceb0de52715f26562e507488ffe41b1bf38c79f0fd48e1c9f84",
+      "after": "a937a84f697de167726df07e19e61e918e7288cd1af7409391e267834b6a54fc",
+      "inverse": [
+        {
+          "after": "/medooyuk.js?v=7d0e8581b592448a3b2a3f8e1da9ae125be66570fb302d0e9d2b194b2aed76be",
+          "before": "/medooyuk.js?v=f06e1fc21f812fcdd3a9b8f9a9d59daa887f2b57baa028fbb2fd237e864345ea"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-yehoshua/[part]/[torah].astro": {
+      "before": "567b00fdf92674a2f7878cb13dd65092fcb9e719c9a2677d36558abfad05a244",
+      "after": "e199ea364806ee3c6602df04f1614e11726832a0bd8689186203170ebd1d50ed",
+      "inverse": [
+        {
+          "after": "/medooyuk.js?v=7d0e8581b592448a3b2a3f8e1da9ae125be66570fb302d0e9d2b194b2aed76be",
+          "before": "/medooyuk.js?v=f06e1fc21f812fcdd3a9b8f9a9d59daa887f2b57baa028fbb2fd237e864345ea"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-yeshayahu/[part]/[torah].astro": {
+      "before": "4dc3bf00efe5628826f31de7b3e11ff2bb07038e96e1b307c9e22e9dc2dbf4a6",
+      "after": "700c415d2dc9c07bcc5a6e03c9620b00ad3eb922491695124ef25d27c53971b9",
+      "inverse": [
+        {
+          "after": "/medooyuk.js?v=7d0e8581b592448a3b2a3f8e1da9ae125be66570fb302d0e9d2b194b2aed76be",
+          "before": "/medooyuk.js?v=f06e1fc21f812fcdd3a9b8f9a9d59daa887f2b57baa028fbb2fd237e864345ea"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-yirmiyahu/[part]/[torah].astro": {
+      "before": "4ad4b3542a90607dc1ddb7cf1dfc377efc7ce7c36a7a897bc2dd4ea68119696f",
+      "after": "3e8e2435679c349f86af090cf5680ac21ba4efa0ad6530e9bf2f023afab4bcb9",
+      "inverse": [
+        {
+          "after": "/medooyuk.js?v=7d0e8581b592448a3b2a3f8e1da9ae125be66570fb302d0e9d2b194b2aed76be",
+          "before": "/medooyuk.js?v=f06e1fc21f812fcdd3a9b8f9a9d59daa887f2b57baa028fbb2fd237e864345ea"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-yoel/[part]/[torah].astro": {
+      "before": "0bb0b04bd3d235cf4bccdcdb884c01c2fa761dd96de597c74a7ad351577ec682",
+      "after": "952d7620c322c24aa06dfd4c31bd0f7ac02d3094d345ae42745a9b3dba3cec01",
+      "inverse": [
+        {
+          "after": "/medooyuk.js?v=7d0e8581b592448a3b2a3f8e1da9ae125be66570fb302d0e9d2b194b2aed76be",
+          "before": "/medooyuk.js?v=f06e1fc21f812fcdd3a9b8f9a9d59daa887f2b57baa028fbb2fd237e864345ea"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-yonah/[part]/[torah].astro": {
+      "before": "d585fd498f01211cc26589291787c75f8bc4400f8358199564118bf724069c1d",
+      "after": "f606a1e989831721219d3050504335cc3f9b1535c31eb83de769b8c07237c5f3",
+      "inverse": [
+        {
+          "after": "/medooyuk.js?v=7d0e8581b592448a3b2a3f8e1da9ae125be66570fb302d0e9d2b194b2aed76be",
+          "before": "/medooyuk.js?v=f06e1fc21f812fcdd3a9b8f9a9d59daa887f2b57baa028fbb2fd237e864345ea"
+        }
+      ]
+    },
+    "src/pages/reader/tanach-zecharya/[part]/[torah].astro": {
+      "before": "c0e0ecb5108291291a67997ca20af08b2cd657f4c03c8e52bf33736f1ad848b4",
+      "after": "632bd2030eb99390395a40c955adca2047eaa9be5247f0374272389689fa0e28",
+      "inverse": [
+        {
+          "after": "/medooyuk.js?v=7d0e8581b592448a3b2a3f8e1da9ae125be66570fb302d0e9d2b194b2aed76be",
+          "before": "/medooyuk.js?v=f06e1fc21f812fcdd3a9b8f9a9d59daa887f2b57baa028fbb2fd237e864345ea"
+        }
+      ]
+    }
+  }
+}

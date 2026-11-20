@@ -55,13 +55,19 @@
   // SHA256 f8fe6491d87b97bd10ea83f0a4b533ec53dc1ce9974eb04af3739630ac4e80d6.
   // Edition SHA256 a2633f304364c9592f2f9637aeee4730a28c52303bc80a508c4af26faa7fba9b.
   var readingSources = new WeakMap();
+  var selectedReadings = [
+    {chapter: 21, verse: 33, token: 1, before: 'אֶ֖שֶׁל', after: 'אֵ֖שֶׁל'},
+    // User's exact occurrence ruling: segoal under the zayin; retain munach and bet's segoal.
+    {chapter: 30, verse: 20, token: 5, before: 'זֵ֣בֶד', after: 'זֶ֣בֶד'}
+  ];
   function readingVerse(verse, context) {
-    var pin = verse && readingSources.get(verse);
-    if (!pin || !context || context.book !== 'tanach-bereishit' ||
-        +context.chapter !== 21 || +context.verse !== 33 ||
-        window.TikkunBoundaries.boundaryHash(verse) !== pin || verse.t[1] !== 'אֶ֖שֶׁל') return verse;
+    var entry = verse && readingSources.get(verse);
+    if (!entry || !context || context.book !== 'tanach-bereishit') return verse;
+    var reading = entry.reading;
+    if (+context.chapter !== reading.chapter || +context.verse !== reading.verse ||
+        window.TikkunBoundaries.boundaryHash(verse) !== entry.pin || verse.t[reading.token] !== reading.before) return verse;
     var selected = Object.assign({}, verse, {t: verse.t.slice()});
-    selected.t[1] = 'אֵ֖שֶׁל';
+    selected.t[reading.token] = reading.after;
     return selected;
   }
   function renderVerse(verse, options) {
@@ -93,9 +99,11 @@
       // Also pin its complete selected output: never admit a mere token match.
       if (window.TikkunBoundaries.boundaryHash(authenticated) !== '0c0ad1e69d4ee25860c2180477ef9dd0ccb598b216d4a10b7a70d8fe883d9608')
         throw Error('Selected reading edition mismatch');
-      var original = authenticated.ch[21][33];
-      if (original.t[1] !== 'אֶ֖שֶׁל') throw Error('Selected reading preimage mismatch');
-      readingSources.set(original, window.TikkunBoundaries.boundaryHash(original));
+      selectedReadings.forEach(function (reading) {
+        var original = authenticated.ch[reading.chapter][reading.verse];
+        if (original.t[reading.token] !== reading.before) throw Error('Selected reading preimage mismatch');
+        readingSources.set(original, {reading: reading, pin: window.TikkunBoundaries.boundaryHash(original)});
+      });
     }
     return authenticated;
   }

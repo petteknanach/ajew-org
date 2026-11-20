@@ -44,6 +44,24 @@ const badPreimage=JSON.parse(rawBefore);badPreimage.ch[21][33].t[1]='שונה';a
 const prepared=a.prepare({'33':v},ctxTarget.book,21,tails)[0],exact=a.attach(a.text(prepared),33,prepared);assert.equal(exact.reason,'attached');
 for(const vv of [prepared,exact.verse])assert.equal(a.reading(vv,r).t[1],'אֵ֖שֶׁל');
 const unrelated={t:['אֶ֖שֶׁל'],m:[],k:[],b:[]};assert.equal(r.readingVerse(unrelated,ctxTarget),unrelated);
+// The second occurrence is admitted exclusively on its authenticated Genesis verse.
+const zab=authenticated.ch[30][20],zabContext={book:'tanach-bereishit',chapter:30,verse:20};
+const unselected=JSON.stringify(zab),zabSelected=r.readingVerse(zab,zabContext);
+assert.equal(zab.t[5],'זֵ֣בֶד');assert.equal(zabSelected.t[5],'זֶ֣בֶד');
+const invert={...zabSelected,t:zabSelected.t.slice()};invert.t[5]=invert.t[5].replace('ֶ','ֵ');
+same(invert,zab);assert.equal(JSON.stringify(zab),unselected);assert.equal(JSON.stringify(genesis),rawBefore);
+assert.deepEqual([...zabSelected.t[5]].map(x=>x.codePointAt(0)),[0x5d6,0x5b6,0x5a3,0x5d1,0x5b6,0x5d3]);
+assert(r.renderVerse(zabSelected).includes('זֶ֣בֶד'));
+assert.equal(r.readingVerse(zab,{...zabContext,verse:21}),zab);
+assert.equal(r.readingVerse(zab,{...zabContext,book:'tanach-shemos'}),zab);
+const copy=JSON.parse(unselected);assert.equal(r.readingVerse(copy,zabContext),copy);
+assert.equal(r.readingVerse(authenticated.ch[30][19],zabContext),authenticated.ch[30][19]);
+const segolInverse=require('./genesis-30-20-segoal-inverse.cjs').restore;
+for(const [relative,row] of Object.entries(json('scripts/genesis-30-20-segoal-admission.json').paths)){
+  const current=read(relative);assert.equal(sha(current),row.after);
+  assert.equal(sha(segolInverse(relative,current)),row.before);
+  const bad=Buffer.concat([current,Buffer.from(' ')]);assert.equal(segolInverse(relative,bad),bad);
+}
 console.log(JSON.stringify({stage:'API',contexts,paints,other,pass:true}));
 const main=read('public/chok.js').toString();
 function fn(name){const start=main.indexOf('  function '+name+'(');assert(start>=0);const end=main.indexOf('\n  }',start);return main.slice(start,end+4);}
@@ -52,6 +70,10 @@ vm.runInContext(main.slice(main.indexOf('  var TAAMIM ='),main.indexOf('  var st
 for(const name of ['stripTaamim','stripNikud','applyMode','joinTokens','paragraphMarkers','plainVerse','coloredVerse']){if(main.includes('  function '+name+'('))vm.runInContext(fn(name),b);}
 // Execute the actual owning Main display projection, not a parallel formatter.
 const start=main.indexOf('            var displayVerse ='),end=main.indexOf('\n            var sourceRef =',start);assert(start>=0&&end>start);
+// Exercise the live Chok display call site for the reported Vayetzei occurrence.
+Object.assign(b,{verse:zab,slug:'tanach-bereishit',c:30,x:20,kind:'torah',parsha:'ויצא',day:'יום שישי',capturedLanguage:'he',plainHeNum:n=>String(n),refLabelHTML:s=>s});
+b.state.mode='full';b.state.medooyuk=true;vm.runInContext(main.slice(start,end),b);
+assert(b.row.includes('זֶ֣בֶד'));assert(!b.row.includes('זֵ֣בֶד'));assert.equal(JSON.stringify(zab),unselected);
 let mainPaints=0;
 for(const mode of ['full','nikud','letters'])for(const capturedLanguage of ['he','original'])for(const special of [false,true]){
  Object.assign(b,{verse:v,slug:'tanach-bereishit',c:21,x:33,kind:'torah',parsha:'וירא',day:'יום שישי',capturedLanguage,plainHeNum:n=>String(n),refLabelHTML:s=>s});b.state.mode=mode;b.state.medooyuk=special;
