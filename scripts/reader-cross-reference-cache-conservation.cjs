@@ -60,9 +60,23 @@ if (require.main === module) (async () => {
   assert.equal(producers.length, 8);
   assert.deepEqual(paths.filter(p=>p.startsWith('public/')), staticHTML);
   assert.deepEqual(paths.filter(p=>p.startsWith('scripts/')), producers);
+  // Check the current pointing-version pins before replaying this historical,
+  // query-only proof on the exact pre-pointing templates.
+  const pointing = require('./genesis-30-20-segoal-inverse.cjs');
+  const pointingPins = require('./genesis-30-37-patach-admission.json').paths;
   let negativeControls = 0;
   for (const relative of paths) {
-    const b = fs.readFileSync(path.join(root, relative)), d = delta.paths[relative];
+    let b = fs.readFileSync(path.join(root, relative));
+    if (pointingPins[relative]) {
+      const current = b;
+      assert.equal(sha(current), pointingPins[relative][1], 'POINTING_REQUIRED_CURRENT:' + relative);
+      b = pointing.restore(relative, current);
+      assert.notEqual(b, current, 'POINTING_INVERSE_REQUIRED:' + relative);
+      const changed = Buffer.concat([current, Buffer.from(' ')]);
+      assert.equal(pointing.restore(relative, changed), changed, 'UNADMITTED_POINTING_BYTES');
+      negativeControls++;
+    }
+    const d = delta.paths[relative];
     const queryCurrent = optionalGuard.requireCurrent(relative, sourceInverse('requireCurrent', relative, b));
     const old = requireCurrent(relative, b);
     const predecessor = execFileSync('git', ['show', predecessorCommit + ':' + relative], {cwd:root,maxBuffer:8*1024*1024});
