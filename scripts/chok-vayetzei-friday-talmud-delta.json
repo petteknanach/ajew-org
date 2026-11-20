@@ -1,0 +1,42 @@
+{
+  "public/chok.js": {
+    "after": "9ec3cc9625ffff6f480351cd5381d2fdf55ec32f4c96aef86f7a4dbd3d19bf1d",
+    "before": "2bba735982561b3fe100087935fdf4f1048a7dc703f22eae62850a800668db9c",
+    "ops": [
+      [
+        "  function isVayetzeiFriday(wk, day) { return wk === 'ויצא' && day === 'יום שישי'; }\n\n  function gemaraHTML(g, vayetzeiFriday) {\n",
+        "  function gemaraHTML(g) {\n"
+      ],
+      [
+        "    var missing = vayetzeiFriday ? '<p class=\"ck-source-unavailable\">הקריאה אינה זמינה כעת · This reading is temporarily unavailable.</p>' : null;\n    if (!sl || !g.daf || (vayetzeiFriday && (sl !== 'niddah' || g.daf !== 13 || g.amud !== 2))) return Promise.resolve(missing);\n",
+        "    if (!sl || !g.daf) return Promise.resolve(null);\n"
+      ],
+      [
+        "      if (!lines || !lines.length) return missing;\n      if (vayetzeiFriday) {\n        // Niddah 13b:13–14 in the Reader's existing folio. Both paragraphs are complete.\n        var lead = \"<strong><big>גְּמָ'</big></strong> \";\n        if (!lines[12] || !lines[12].startsWith(lead + 'חֵרֶשֶׁת') ||\n            !lines[13] || !lines[13].endsWith('וְאֵינוֹ מְדַבֵּר.')) return missing;\n        lines = [lines[12].slice(lead.length), lines[13]];\n      }\n",
+        "      if (!lines || !lines.length) return null;\n"
+      ],
+      [
+        "        var rashiSegs = rd && (rd.ch || {})[String(g.daf)] && rd.ch[String(g.daf)][letter];\n        if (vayetzeiFriday) {\n          // The three daily glosses, in order, independent of Gemara array indices.\n          if (!rashiSegs || !rashiSegs[11] || !rashiSegs[11].startsWith(\"גמ' ומראות לה - \") ||\n              !rashiSegs[12] || !rashiSegs[12].startsWith('מדברת ואינה שומעת - ') ||\n              !rashiSegs[12].endsWith('בכל מקום - להוציא מכלל בן דעת:')) return missing;\n          rashiSegs = [rashiSegs[11].slice(4), rashiSegs[12]];\n        }\n",
+        "        var rashiSegs = rd && (rd.ch || {})[String(g.daf)] && rd.ch[String(g.daf)][letter];\n"
+      ],
+      [
+        "    }).catch(function () { return missing; });\n",
+        "    }).catch(function () { return null; });\n"
+      ],
+      [
+        "          var vayetzeiFriday = isVayetzeiFriday(wk, dayE);\n          return qualifiedDailyOr(wk,dayE,'talmud',d,function(){return (isLechThursday(wk,dayE) ? lechThursdayReading(wk,dayE,'talmud') : isBiraishisSundayGemara(wk,dayE) ? biraishisSundayGemaraReading(wk,dayE) : isLechWednesday(wk,dayE) ? lechWednesdayReading(wk,dayE,'talmud') : isLechTuesday(wk,dayE) ? lechTuesdayReading(wk,dayE,'talmud') : isLechMonday(wk,dayE) ? lechMondayReading(wk,dayE) : isLechSunday(wk,dayE) ? lechSundayReading(wk,dayE,'talmud') : qualifiedDay ? Promise.resolve(window.ChokSources.reading('talmud', state.tanachen)) : wk==='נח' ? Promise.resolve(window.ChokSources.weekReading(wk,dayE,'talmud',state.tanachen)||window.ChokSources.unavailable('talmud')) : gemaraHTML(d.gemara, vayetzeiFriday));}).then(function (html) { if (qualifiedDailyHas(wk,dayE,'talmud') && html==='') return; html = html || ''; html = dayKavana('talmud', d) + html; html = voiceBox(!vayetzeiFriday && !qualifiedDailyHas(wk,dayE,'talmud') && !isBiraishisSundayGemara(wk,dayE) && wk!=='נח' && !isLechMonday(wk,dayE) && !isLechTuesday(wk,dayE) && !isLechWednesday(wk,dayE) && !isLechThursday(wk,dayE) && dc && dc.talmud, 'גמרא') + html;\n",
+        "          return qualifiedDailyOr(wk,dayE,'talmud',d,function(){return (isLechThursday(wk,dayE) ? lechThursdayReading(wk,dayE,'talmud') : isBiraishisSundayGemara(wk,dayE) ? biraishisSundayGemaraReading(wk,dayE) : isLechWednesday(wk,dayE) ? lechWednesdayReading(wk,dayE,'talmud') : isLechTuesday(wk,dayE) ? lechTuesdayReading(wk,dayE,'talmud') : isLechMonday(wk,dayE) ? lechMondayReading(wk,dayE) : isLechSunday(wk,dayE) ? lechSundayReading(wk,dayE,'talmud') : qualifiedDay ? Promise.resolve(window.ChokSources.reading('talmud', state.tanachen)) : wk==='נח' ? Promise.resolve(window.ChokSources.weekReading(wk,dayE,'talmud',state.tanachen)||window.ChokSources.unavailable('talmud')) : gemaraHTML(d.gemara));}).then(function (html) { if (qualifiedDailyHas(wk,dayE,'talmud') && html==='') return; html = html || ''; html = dayKavana('talmud', d) + html; html = voiceBox(!qualifiedDailyHas(wk,dayE,'talmud') && !isBiraishisSundayGemara(wk,dayE) && wk!=='נח' && !isLechMonday(wk,dayE) && !isLechTuesday(wk,dayE) && !isLechWednesday(wk,dayE) && !isLechThursday(wk,dayE) && dc && dc.talmud, 'גמרא') + html;\n"
+      ]
+    ]
+  },
+  "src/pages/reader/chok.astro": {
+    "after": "a1096ce91a9a1178fc40b3ec2e6f9717e071abb8b2eb17543d8e6e938a2fc111",
+    "before": "c5b7e21622fdf695882b96a4851c64fdbda386efdb4c75658c9135369388ffc6",
+    "ops": [
+      [
+        "<script is:inline src=\"/chok.js?v=9ec3cc9625ffff6f480351cd5381d2fdf55ec32f4c96aef86f7a4dbd3d19bf1d\" integrity=\"sha384-BpJdGB8nPTWb3CCjXn4KR/4JGekEFlc3XeYynLs2zDpxGMdkEOeGqIgnx6DNxMiB\" crossorigin=\"anonymous\" defer></script>",
+        "<script is:inline src=\"/chok.js?v=2bba735982561b3fe100087935fdf4f1048a7dc703f22eae62850a800668db9c\" integrity=\"sha384-xkcv9elaNslg7gIBz4eSc9hHlxCxra9sjwK6F/YnWAVgvPcB2L4y8FG96hkFwFLU\" crossorigin=\"anonymous\" defer></script>"
+      ]
+    ]
+  }
+}

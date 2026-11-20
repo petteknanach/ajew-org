@@ -1488,19 +1488,36 @@
     return Promise.resolve('<details class="ck-layer ck-mussar"><summary>' + head + '</summary>' + body + '</details>');
   }
 
-  function gemaraHTML(g) {
+  function isVayetzeiFriday(wk, day) { return wk === 'ויצא' && day === 'יום שישי'; }
+
+  function gemaraHTML(g, vayetzeiFriday) {
     var lbl = normGem(g.masechet);
     var sl = GEMARA_SLUG[lbl];
-    if (!sl || !g.daf) return Promise.resolve(null);
+    var missing = vayetzeiFriday ? '<p class="ck-source-unavailable">הקריאה אינה זמינה כעת · This reading is temporarily unavailable.</p>' : null;
+    if (!sl || !g.daf || (vayetzeiFriday && (sl !== 'niddah' || g.daf !== 13 || g.amud !== 2))) return Promise.resolve(missing);
     var letter = g.amud === 2 ? 'b' : 'a';
     return fetchJSON('/reader/gemara/gemara-' + sl + '.json').then(function (md) {
       var lines = ((md.ch || {})[String(g.daf)] || {})[letter];
-      if (!lines || !lines.length) return null;
+      if (!lines || !lines.length) return missing;
+      if (vayetzeiFriday) {
+        // Niddah 13b:13–14 in the Reader's existing folio. Both paragraphs are complete.
+        var lead = "<strong><big>גְּמָ'</big></strong> ";
+        if (!lines[12] || !lines[12].startsWith(lead + 'חֵרֶשֶׁת') ||
+            !lines[13] || !lines[13].endsWith('וְאֵינוֹ מְדַבֵּר.')) return missing;
+        lines = [lines[12].slice(lead.length), lines[13]];
+      }
       var body = lines.map(function (ln) {
         return '<div class="ck-gemara-line">' + richText(applyMode(ln)) + '</div>';
       }).join('');
       return comm('gemara-rashi', 'gemara-' + sl).then(function (rd) {
         var rashiSegs = rd && (rd.ch || {})[String(g.daf)] && rd.ch[String(g.daf)][letter];
+        if (vayetzeiFriday) {
+          // The three daily glosses, in order, independent of Gemara array indices.
+          if (!rashiSegs || !rashiSegs[11] || !rashiSegs[11].startsWith("גמ' ומראות לה - ") ||
+              !rashiSegs[12] || !rashiSegs[12].startsWith('מדברת ואינה שומעת - ') ||
+              !rashiSegs[12].endsWith('בכל מקום - להוציא מכלל בן דעת:')) return missing;
+          rashiSegs = [rashiSegs[11].slice(4), rashiSegs[12]];
+        }
         var rashiBody = '';
         if (rashiSegs && rashiSegs.length) {
           rashiBody = rashiSegs.map(function (x) {
@@ -1511,7 +1528,7 @@
         return '<details class="ck-layer ck-gemara"><summary>גמרא — ' + esc(lbl) +
           ' דף ' + heNum(g.daf) + ' ע׳ ' + heNum(letter === 'a' ? 1 : 2) + '</summary>' + body + extra + '</details>';
       });
-    }).catch(function () { return null; });
+    }).catch(function () { return missing; });
   }
 
   function bonusHTML(item) {
@@ -1628,7 +1645,8 @@
       }
       if ((qualifiedDailyHas(wk,dayE,'talmud') || isLechThursday(wk,dayE) || d.gemara && d.gemara.masechet) && want('talmud')) {
         p = p.then(function () {
-          return qualifiedDailyOr(wk,dayE,'talmud',d,function(){return (isLechThursday(wk,dayE) ? lechThursdayReading(wk,dayE,'talmud') : isBiraishisSundayGemara(wk,dayE) ? biraishisSundayGemaraReading(wk,dayE) : isLechWednesday(wk,dayE) ? lechWednesdayReading(wk,dayE,'talmud') : isLechTuesday(wk,dayE) ? lechTuesdayReading(wk,dayE,'talmud') : isLechMonday(wk,dayE) ? lechMondayReading(wk,dayE) : isLechSunday(wk,dayE) ? lechSundayReading(wk,dayE,'talmud') : qualifiedDay ? Promise.resolve(window.ChokSources.reading('talmud', state.tanachen)) : wk==='נח' ? Promise.resolve(window.ChokSources.weekReading(wk,dayE,'talmud',state.tanachen)||window.ChokSources.unavailable('talmud')) : gemaraHTML(d.gemara));}).then(function (html) { if (qualifiedDailyHas(wk,dayE,'talmud') && html==='') return; html = html || ''; html = dayKavana('talmud', d) + html; html = voiceBox(!qualifiedDailyHas(wk,dayE,'talmud') && !isBiraishisSundayGemara(wk,dayE) && wk!=='נח' && !isLechMonday(wk,dayE) && !isLechTuesday(wk,dayE) && !isLechWednesday(wk,dayE) && !isLechThursday(wk,dayE) && dc && dc.talmud, 'גמרא') + html;
+          var vayetzeiFriday = isVayetzeiFriday(wk, dayE);
+          return qualifiedDailyOr(wk,dayE,'talmud',d,function(){return (isLechThursday(wk,dayE) ? lechThursdayReading(wk,dayE,'talmud') : isBiraishisSundayGemara(wk,dayE) ? biraishisSundayGemaraReading(wk,dayE) : isLechWednesday(wk,dayE) ? lechWednesdayReading(wk,dayE,'talmud') : isLechTuesday(wk,dayE) ? lechTuesdayReading(wk,dayE,'talmud') : isLechMonday(wk,dayE) ? lechMondayReading(wk,dayE) : isLechSunday(wk,dayE) ? lechSundayReading(wk,dayE,'talmud') : qualifiedDay ? Promise.resolve(window.ChokSources.reading('talmud', state.tanachen)) : wk==='נח' ? Promise.resolve(window.ChokSources.weekReading(wk,dayE,'talmud',state.tanachen)||window.ChokSources.unavailable('talmud')) : gemaraHTML(d.gemara, vayetzeiFriday));}).then(function (html) { if (qualifiedDailyHas(wk,dayE,'talmud') && html==='') return; html = html || ''; html = dayKavana('talmud', d) + html; html = voiceBox(!vayetzeiFriday && !qualifiedDailyHas(wk,dayE,'talmud') && !isBiraishisSundayGemara(wk,dayE) && wk!=='נח' && !isLechMonday(wk,dayE) && !isLechTuesday(wk,dayE) && !isLechWednesday(wk,dayE) && !isLechThursday(wk,dayE) && dc && dc.talmud, 'גמרא') + html;
             if (html) out.push('<section class="ck-section" data-sec="talmud">' + secHead('תלמוד — גמרא ורש״י · Talmud — Gemara and Rashi') + (qualifiedDailyHas(wk,dayE,'talmud') || isBiraishisSundayGemara(wk,dayE) || isLechMonday(wk,dayE) || isLechTuesday(wk,dayE) || isLechWednesday(wk,dayE) || isLechThursday(wk,dayE) ? popBtn() : '') + html + '</section>');
           });
         });

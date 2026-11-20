@@ -73,8 +73,9 @@ const patachInverse=require('./genesis-30-37-patach-inverse.cjs').restore;
 const patachPins=json('scripts/genesis-30-37-patach-admission.json').paths;
 assert.equal(sha(patachInverse('public/reader-source-exact.js',read('public/reader-source-exact.js'))),patachPins['public/reader-source-exact.js'][0]);
 const segolInverse=require('./genesis-30-20-segoal-inverse.cjs').restore;
+const fridayInverse=require('./chok-vayetzei-friday-talmud-inverse.cjs').restore;
 for(const [relative,row] of Object.entries(json('scripts/genesis-30-20-segoal-admission.json').paths)){
-  const current=read(relative),[priorPin,currentPin]=patachPins[relative];
+  const current=fridayInverse(relative,read(relative)),[priorPin,currentPin]=patachPins[relative];
   assert.equal(priorPin,row.after);assert.equal(sha(current),currentPin);
   assert.equal(sha(patachInverse(relative,current)),row.after);
   assert.equal(sha(segolInverse(relative,current)),row.before);
@@ -165,4 +166,33 @@ async function reader(rawBook=genesis,chapter=21,index=33){
   return count;
  }finally{model.close();}
 }
-Promise.all([reader(),reader(genesis,30,37),reader(genesis,35,22),reader(kings,1,17)]).then(counts=>{const readerPaints=counts.reduce((a,b)=>a+b,0);console.log(JSON.stringify({pass:true,books:oracle.books.length,sourceExactContexts:contexts,sourceExactModePaints:paints,otherBoundaryCodes:other,mainDisplayPaints:mainPaints,readerEditionPaints:readerPaints,currentDayMarkers,currentDayVerses,currentDayPaints,originalRawConserved:true,englishSourceOperandsUnchanged:true}));}).catch(e=>{console.error(e.stack);process.exitCode=1;});
+async function vayetzeiFridayTalmud() {
+ const gemara=read('public/reader/gemara/gemara-niddah.json');
+ const rashi=read('public/reader/commentary/gemara-rashi/gemara-niddah.json');
+ assert.equal(sha(gemara),'2472665e96fb6415e390960cc938942111373fa5cad608420b50b9ab5999df16');assert.equal(sha(rashi),'f1677d55fbc842d383754216ca519ba7bdaf19f23e2b6f5c9a29a264468ed2c6');
+ const g=JSON.parse(gemara),r=JSON.parse(rashi),page=g.ch['13'].b,glosses=r.ch['13'].b;
+ const day=JSON.parse(scheduleBytes).weeks['ויצא'].days['יום שישי'];
+ const deps={GEMARA_SLUG:{'נדה':'niddah'},normGem:x=>x,fetchJSON:async url=>{assert.equal(url,'/reader/gemara/gemara-niddah.json');return g;},comm:async (source,slug)=>{assert.equal(source,'gemara-rashi');assert.equal(slug,'gemara-niddah');return r;},applyMode:x=>x,richText:x=>x,heNum:String,esc:x=>x,commDetails:(label,body)=>body};
+ const context=vm.createContext(deps);
+ const predicate=main.split('  function isVayetzeiFriday(')[1].split('\n')[0];
+ vm.runInContext('function isVayetzeiFriday('+predicate+'\n'+fn('gemaraHTML'),context);
+ assert(context.isVayetzeiFriday('ויצא','יום שישי'));assert(!context.isVayetzeiFriday('ויצא','יום חמישי'));assert(!context.isVayetzeiFriday('וישלח','יום שישי'));
+ assert(main.includes('var vayetzeiFriday = isVayetzeiFriday(wk, dayE);'));
+ assert(main.includes('gemaraHTML(d.gemara, vayetzeiFriday)'));
+ const text=await context.gemaraHTML(day.gemara,true);
+ const extract=(text,cls)=>Array.from(text.matchAll(new RegExp('<div class="'+cls+'">(.*?)</div>','g')),m=>m[1]);
+ assert.deepEqual(extract(text,'ck-gemara-line'),[page[12].replace(/^<strong><big>[^<]+<\/big><\/strong> /,''),page[13]]);
+ assert.deepEqual(extract(text,'ck-comm-body'),[glosses[11].slice(4),glosses[12]]);
+ assert.deepEqual(extract(await context.gemaraHTML(day.gemara,false),'ck-gemara-line'),page);
+ for(const bad of [{...day.gemara,daf:12},{...day.gemara,amud:1}])assert((await context.gemaraHTML(bad,true)).includes('ck-source-unavailable'));
+ context.fetchJSON=async()=>({ch:{13:{b:page.slice(1)}}});
+ assert((await context.gemaraHTML(day.gemara,true)).includes('ck-source-unavailable'));
+ context.fetchJSON=async()=>g;context.comm=async()=>null;
+ assert((await context.gemaraHTML(day.gemara,true)).includes('ck-source-unavailable'));
+ const {restore}=require('./chok-vayetzei-friday-talmud-inverse.cjs');
+ for(const [relative,pin] of Object.entries(json('scripts/chok-vayetzei-friday-talmud-delta.json'))){
+  const current=read(relative),bad=Buffer.concat([current,Buffer.from(' ')]);assert.equal(sha(current),pin.after);assert.equal(sha(restore(relative,current)),pin.before);assert.equal(restore(relative,bad),bad);
+ }
+ console.log(JSON.stringify({gate:'VAYETZEI_FRIDAY_NIDDAH_13B_13_14',paragraphs:2,rashiGlosses:3,pass:true}));
+}
+Promise.all([vayetzeiFridayTalmud(),reader(),reader(genesis,30,37),reader(genesis,35,22),reader(kings,1,17)]).then(counts=>{const readerPaints=counts.slice(1).reduce((a,b)=>a+b,0);console.log(JSON.stringify({pass:true,books:oracle.books.length,sourceExactContexts:contexts,sourceExactModePaints:paints,otherBoundaryCodes:other,mainDisplayPaints:mainPaints,readerEditionPaints:readerPaints,currentDayMarkers,currentDayVerses,currentDayPaints,originalRawConserved:true,englishSourceOperandsUnchanged:true}));}).catch(e=>{console.error(e.stack);process.exitCode=1;});
