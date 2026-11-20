@@ -46,9 +46,11 @@
     if (unsupported) return result('unsupported-boundary-spacing');
     var reading = readingSources.get(candidate);
     if (reading) {
-      var target = positions[starts[1]];
-      if (target && target[1] === 0 && verse.t[target[0]] === candidate.t[1])
-        readingSources.set(verse, {source: reading.source, context: reading.context, tokenIndex: target[0]});
+      var targetIndices = starts.map(function (start, i) {
+        var target = positions[start];
+        return target && target[1] === 0 && verse.t[target[0]] === candidate.t[i] ? target[0] : -1;
+      });
+      readingSources.set(verse, {source: reading.source, context: reading.context, targetIndices: targetIndices});
     }
     return result('attached', verse);
   }
@@ -77,18 +79,23 @@
       }
       var prepared = { index: +n, t: tokens.slice(), k: (v.k || []).slice(), m: (v.m || []).map(function (m) { return m.slice(); }),
         b: (v.b || []).map(function (b) { return b.slice(); }) };
-      readingSources.set(prepared, {source: v, context: {book: book, chapter: ch, verse: +n}, tokenIndex: 1});
+      readingSources.set(prepared, {source: v, context: {book: book, chapter: ch, verse: +n}});
       return prepared;
     });
   }
   function reading(verse, renderer) {
     var bound = readingSources.get(verse);
     if (!bound || !renderer || typeof renderer.readingVerse !== 'function') return verse;
-    var selected = renderer.readingVerse(bound.source, bound.context), at = bound.tokenIndex;
-    if (selected === bound.source || verse.t[at] !== bound.source.t[1]) return verse;
-    var result = Object.assign({}, verse, {t: verse.t.slice()});
-    result.t[at] = selected.t[1];
-    return result;
+    var selected = renderer.readingVerse(bound.source, bound.context);
+    if (selected === bound.source || selected.t.length !== bound.source.t.length) return verse;
+    var tokens = null;
+    selected.t.forEach(function (token, i) {
+      var original = bound.source.t[i], at = bound.targetIndices ? bound.targetIndices[i] : i;
+      if (token === original || at < 0 || verse.t[at] !== original) return;
+      if (!tokens) tokens = verse.t.slice();
+      tokens[at] = token;
+    });
+    return tokens ? Object.assign({}, verse, {t: tokens}) : verse;
   }
   return { text: text, bare: bare, reading: reading, attach: attach, chapter: chapter, prepare: prepare };
 });

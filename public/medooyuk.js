@@ -58,7 +58,9 @@
   var selectedReadings = [
     {chapter: 21, verse: 33, token: 1, before: 'אֶ֖שֶׁל', after: 'אֵ֖שֶׁל'},
     // User's exact occurrence ruling: segoal under the zayin; retain munach and bet's segoal.
-    {chapter: 30, verse: 20, token: 5, before: 'זֵ֣בֶד', after: 'זֶ֣בֶד'}
+    {chapter: 30, verse: 20, token: 5, before: 'זֵ֣בֶד', after: 'זֶ֣בֶד'},
+    // User's exact occurrence ruling: patach under the ayin only.
+    {chapter: 30, verse: 37, token: 7, before: 'וְעֶרְמ֑וֹן', after: 'וְעַרְמ֑וֹן'}
   ];
   function readingVerse(verse, context) {
     var entry = verse && readingSources.get(verse);

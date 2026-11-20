@@ -56,9 +56,27 @@ assert.equal(r.readingVerse(zab,{...zabContext,verse:21}),zab);
 assert.equal(r.readingVerse(zab,{...zabContext,book:'tanach-shemos'}),zab);
 const copy=JSON.parse(unselected);assert.equal(r.readingVerse(copy,zabContext),copy);
 assert.equal(r.readingVerse(authenticated.ch[30][19],zabContext),authenticated.ch[30][19]);
+const armon=authenticated.ch[30][37],armonContext={book:'tanach-bereishit',chapter:30,verse:37};
+const armonOriginal=JSON.stringify(armon),armonSelected=r.readingVerse(armon,armonContext);
+assert.equal(armon.t[7],'וְעֶרְמ֑וֹן');assert.equal(armonSelected.t[7],'וְעַרְמ֑וֹן');
+const armonRestored={...armonSelected,t:armonSelected.t.slice()};
+armonRestored.t[7]=armonSelected.t[7].slice(0,3)+'ֶ'+armonSelected.t[7].slice(4);
+same(armonRestored,armon);assert.equal(JSON.stringify(armon),armonOriginal);
+assert.equal(JSON.stringify(genesis),rawBefore);
+const armonCopy=JSON.parse(armonOriginal);assert.equal(r.readingVerse(armonCopy,armonContext),armonCopy);
+for(const wrong of [{...armonContext,verse:20},{...armonContext,chapter:31},{...armonContext,book:'tanach-shemos'}])assert.equal(r.readingVerse(armon,wrong),armon);
+const armonPrepared=a.prepare({'37':armon},armonContext.book,30,tails)[0],armonAttached=a.attach(a.text(armonPrepared),37,armonPrepared);
+assert.equal(armonAttached.reason,'attached');
+assert.equal(a.reading(armonPrepared,r).t[7],'וְעַרְמ֑וֹן');
+assert.equal(a.reading(armonAttached.verse,r).t[6],'וְעַרְמ֑וֹן');
+const patachInverse=require('./genesis-30-37-patach-inverse.cjs').restore;
+const patachPins=json('scripts/genesis-30-37-patach-admission.json').paths;
+assert.equal(sha(patachInverse('public/reader-source-exact.js',read('public/reader-source-exact.js'))),patachPins['public/reader-source-exact.js'][0]);
 const segolInverse=require('./genesis-30-20-segoal-inverse.cjs').restore;
 for(const [relative,row] of Object.entries(json('scripts/genesis-30-20-segoal-admission.json').paths)){
-  const current=read(relative);assert.equal(sha(current),row.after);
+  const current=read(relative),[priorPin,currentPin]=patachPins[relative];
+  assert.equal(priorPin,row.after);assert.equal(sha(current),currentPin);
+  assert.equal(sha(patachInverse(relative,current)),row.after);
   assert.equal(sha(segolInverse(relative,current)),row.before);
   const bad=Buffer.concat([current,Buffer.from(' ')]);assert.equal(segolInverse(relative,bad),bad);
 }
@@ -74,6 +92,13 @@ const start=main.indexOf('            var displayVerse ='),end=main.indexOf('\n 
 Object.assign(b,{verse:zab,slug:'tanach-bereishit',c:30,x:20,kind:'torah',parsha:'ויצא',day:'יום שישי',capturedLanguage:'he',plainHeNum:n=>String(n),refLabelHTML:s=>s});
 b.state.mode='full';b.state.medooyuk=true;vm.runInContext(main.slice(start,end),b);
 assert(b.row.includes('זֶ֣בֶד'));assert(!b.row.includes('זֵ֣בֶד'));assert.equal(JSON.stringify(zab),unselected);
+for(const mode of ['full','nikud','taamim','letters'])for(const capturedLanguage of ['he','original'])for(const special of [false,true]){
+ Object.assign(b,{verse:armon,slug:'tanach-bereishit',c:30,x:37,kind:'torah',parsha:'ויצא',day:'יום שישי',capturedLanguage,plainHeNum:n=>String(n),refLabelHTML:s=>s});
+ b.state.mode=mode;b.state.medooyuk=special;vm.runInContext(main.slice(start,end),b);
+ const want=capturedLanguage==='original'||mode==='full'?'וְעַרְמ֑וֹן':mode==='nikud'?'וְעַרְמוֹן':mode==='taamim'?'וערמ֑ון':'וערמון';
+ assert(b.row.replace(/<[^>]+>/g,'').includes(want),JSON.stringify({mode,capturedLanguage,special,want,row:b.row}));
+ assert(!b.row.includes('עֶ'));assert.equal(JSON.stringify(armon),armonOriginal);
+}
 let mainPaints=0;
 for(const mode of ['full','nikud','letters'])for(const capturedLanguage of ['he','original'])for(const special of [false,true]){
  Object.assign(b,{verse:v,slug:'tanach-bereishit',c:21,x:33,kind:'torah',parsha:'וירא',day:'יום שישי',capturedLanguage,plainHeNum:n=>String(n),refLabelHTML:s=>s});b.state.mode=mode;b.state.medooyuk=special;
@@ -129,6 +154,7 @@ async function reader(rawBook=genesis,chapter=21,index=33){
   for(const special of [false,true])for(const nikud of [false,true])for(const q of ['', 'אשל']){
    if((document.querySelector('#btn-reader-special').getAttribute('aria-pressed')==='true')!==special)document.querySelector('#btn-reader-special').click();state.nikud=nikud;query=q;model.box.window.AjewReaderEdition.paint(state,query);
    if(chapter===21&&index===33)assert(target().textContent.includes(nikud?'אֵ֖שֶׁל':'אשל'));
+   if(chapter===30&&index===37)assert(target().textContent.includes(nikud?'וְעַרְמ֑וֹן':'וערמון'));
    same(markers(target().innerHTML).map(b=>b[1]),expected);if(!special||!nikud||q)assert.equal(target().querySelectorAll('.marked-hebrew').length,0);
   }
   let count=8;
@@ -139,4 +165,4 @@ async function reader(rawBook=genesis,chapter=21,index=33){
   return count;
  }finally{model.close();}
 }
-Promise.all([reader(),reader(genesis,35,22),reader(kings,1,17)]).then(counts=>{const readerPaints=counts.reduce((a,b)=>a+b,0);console.log(JSON.stringify({pass:true,books:oracle.books.length,sourceExactContexts:contexts,sourceExactModePaints:paints,otherBoundaryCodes:other,mainDisplayPaints:mainPaints,readerEditionPaints:readerPaints,currentDayMarkers,currentDayVerses,currentDayPaints,originalRawConserved:true,englishSourceOperandsUnchanged:true}));}).catch(e=>{console.error(e.stack);process.exitCode=1;});
+Promise.all([reader(),reader(genesis,30,37),reader(genesis,35,22),reader(kings,1,17)]).then(counts=>{const readerPaints=counts.reduce((a,b)=>a+b,0);console.log(JSON.stringify({pass:true,books:oracle.books.length,sourceExactContexts:contexts,sourceExactModePaints:paints,otherBoundaryCodes:other,mainDisplayPaints:mainPaints,readerEditionPaints:readerPaints,currentDayMarkers,currentDayVerses,currentDayPaints,originalRawConserved:true,englishSourceOperandsUnchanged:true}));}).catch(e=>{console.error(e.stack);process.exitCode=1;});
