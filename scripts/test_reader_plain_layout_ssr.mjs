@@ -1,6 +1,8 @@
 // Isolated real Layout compiler/runtime test. Navigation/Yahrzeit/CSS are inert
 // import fixtures; this is not a canonical build or full-site rendering proof.
 import test from 'node:test';
+// The static top-of-Reader purchase component has its own real Astro SSR checks.
+import { PurchaseComponent } from './test-amazon-books.mjs';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 import { readFileSync, mkdirSync, writeFileSync, mkdtempSync, rmSync } from 'node:fs';
@@ -36,6 +38,7 @@ function compileLayout(get) {
       return { ...runtime, createMetadata: (_name, metadata) => metadata };
     }
     if (specifier === '../components/Navigation.astro' || specifier === '../components/CompactYahrzeit.astro') return { default: inertComponent, __esModule: true };
+    if (specifier === '../components/ReaderAmazonBooks.astro') return { default: PurchaseComponent, __esModule: true };
     if (specifier === '../lib/reader-plain-availability.mjs') return { getReaderPlainAvailability: get, readerPlainAlternates };
     if (specifier.endsWith('.css')) return {};
     throw new Error('Unexpected Layout import: ' + specifier);
