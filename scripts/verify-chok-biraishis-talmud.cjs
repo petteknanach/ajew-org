@@ -43,16 +43,29 @@ async function run(){
   }
   const code=main.slice(main.indexOf('  var BIRAISHIS_TALMUD_KEYS'),main.indexOf('  function isVayetzeiFriday'));
   assert(code.includes('function biraishisTalmudHTML'));
-  assert(main.includes('biraishisTalmud ? biraishisTalmudHTML(biraishisTalmud) : gemaraHTML(d.gemara, vayetzeiFriday)'));
+  assert(main.includes('biraishisTalmud ? biraishisTalmudHTML(biraishisTalmud, d) : gemaraHTML(d.gemara, vayetzeiFriday)'));
+  const tuesdayKey='בראשית|יום שלישי';
+  if(bank.tuesday){
+    assert.equal(bank.tuesday.key,tuesdayKey);
+    assert.equal(bank.tuesday.payloadSHA256,'ef848687893ebcecae70e2d38ef60cf8d29599229230fc105b290c92dfac36db');
+    const t=read('public'+bank.tuesday.url);
+    assert.equal(sha(t),bank.tuesday.payloadSHA256);
+    const section=JSON.parse(t).sections.talmud;
+    assert.equal(section.units.length,7);
+    assert.equal(section.units.filter(u=>u.role==='gemara').length,1);
+    assert.equal(section.units.filter(u=>u.role==='prescribed-rashi').length,6);
+    assert(section.units.every(u=>u.he&&u.en&&u.explanation));
+  }
   let requests=0, expected=raw.toString();
   const context=vm.createContext({
     fetchJSON:async (url,isRaw)=>{requests++;assert(isRaw);assert.equal(url,'/reader/chok/biraishis-talmud-selections.json?v='+proof.bankSHA256);return expected;},
+    state:{language:'both',commentary:true},applyWednesdayMode:x=>x,
     onkelosHash:async s=>sha(s),richText:x=>x,applyMode:x=>x,esc:x=>x,commDetails:(label,s)=>s
   });
   vm.runInContext(code,context);
   for(const [week,record] of Object.entries(schedule)) for(const day of Object.keys(record.days)){
     const key=week+'|'+day;
-    assert.equal(context.biraishisTalmudKey(week,day),Object.hasOwn(bank.days,key)?key:null);
+    assert.equal(context.biraishisTalmudKey(week,day),Object.hasOwn(bank.days,key)||(bank.tuesday&&key===tuesdayKey)?key:null);
   }
   const extract=(html,cls)=>Array.from(html.matchAll(new RegExp('<div class="'+cls+'">([\\s\\S]*?)</div>','g')),m=>m[1]);
   for(const key of keys(bank.days)){

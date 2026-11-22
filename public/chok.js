@@ -1490,8 +1490,8 @@
 
   // Daily spans are selected from owned classical texts, never from the full-amud fallback.
   // This enumerated domain deliberately excludes separately qualified readings.
-  var BIRAISHIS_TALMUD_KEYS = new Set(["וישלח|יום ראשון"]);
-  var BIRAISHIS_TALMUD_SHA = '67144017483e542e3821b9b4e2244663cf0b2e9bac6631d52c40ecd014df29c7';
+  var BIRAISHIS_TALMUD_KEYS = new Set(["בראשית|יום רביעי", "בראשית|יום שלישי", "ויצא|יום רביעי", "וישלח|יום חמישי", "וישלח|יום ראשון", "וישלח|יום רביעי", "וישלח|יום שישי", "וישלח|יום שלישי", "וישלח|יום שני"]);
+  var BIRAISHIS_TALMUD_SHA = '1d9d3d49d9ad3db4bf3d3f9ed189907ef8b9fa5ca1b4112e1ef26b7e38b32045';
   var biraishisTalmudPromise;
   function biraishisTalmudKey(wk, day) {
     var key = wk + '|' + day;
@@ -1510,7 +1510,7 @@
                 !Array.isArray(row.gemara) || !row.gemara.length || !Array.isArray(row.rashi) || !row.rashi.length ||
                 row.gemara.concat(row.rashi).some(function (t) { return typeof t !== 'string' || !t.trim(); })) throw Error('Invalid daily Talmud owner');
           });
-          return bank.days;
+          return bank;
         });
       }).catch(function (error) {
         biraishisTalmudPromise = null;
@@ -1519,9 +1519,16 @@
     }
     return biraishisTalmudPromise;
   }
-  function biraishisTalmudHTML(key) {
+  function biraishisTalmudHTML(key, scheduled) {
     var missing = '<p class="ck-source-unavailable">הקריאה אינה זמינה כעת · This reading is temporarily unavailable.</p>';
-    return biraishisTalmudBank().then(function (days) {
+    var options = {language:state.language,mode:state.mode,commentary:state.commentary,optionalRashi:state.rashi,transform:applyWednesdayMode};
+    return biraishisTalmudBank().then(function (bank) {
+      if (key === 'בראשית|יום שלישי' && bank.tuesday) {
+        var lib = window.ChokQualifiedDaily;
+        lib.bind(document);
+        return lib.create([bank.tuesday]).reading('בראשית','יום שלישי','talmud',options,function (url) { return fetchJSON(url,true); },scheduled).then(function (html) { return html || missing; });
+      }
+      var days = bank.days;
       if (!Object.prototype.hasOwnProperty.call(days, key)) return missing;
       var row = days[key];
       var g = row.gemara.map(function (p) { return '<div class="ck-gemara-line">' + richText(applyMode(p)) + '</div>'; }).join('');
@@ -1689,7 +1696,7 @@
         p = p.then(function () {
           var vayetzeiFriday = isVayetzeiFriday(wk, dayE);
           var biraishisTalmud = biraishisTalmudKey(wk, dayE);
-          return qualifiedDailyOr(wk,dayE,'talmud',d,function(){return (isLechThursday(wk,dayE) ? lechThursdayReading(wk,dayE,'talmud') : isBiraishisSundayGemara(wk,dayE) ? biraishisSundayGemaraReading(wk,dayE) : isLechWednesday(wk,dayE) ? lechWednesdayReading(wk,dayE,'talmud') : isLechTuesday(wk,dayE) ? lechTuesdayReading(wk,dayE,'talmud') : isLechMonday(wk,dayE) ? lechMondayReading(wk,dayE) : isLechSunday(wk,dayE) ? lechSundayReading(wk,dayE,'talmud') : qualifiedDay ? Promise.resolve(window.ChokSources.reading('talmud', state.tanachen)) : wk==='נח' ? Promise.resolve(window.ChokSources.weekReading(wk,dayE,'talmud',state.tanachen)||window.ChokSources.unavailable('talmud')) : biraishisTalmud ? biraishisTalmudHTML(biraishisTalmud) : gemaraHTML(d.gemara, vayetzeiFriday));}).then(function (html) { if (qualifiedDailyHas(wk,dayE,'talmud') && html==='') return; html = html || ''; html = dayKavana('talmud', d) + html; html = voiceBox(!biraishisTalmud && !vayetzeiFriday && !qualifiedDailyHas(wk,dayE,'talmud') && !isBiraishisSundayGemara(wk,dayE) && wk!=='נח' && !isLechMonday(wk,dayE) && !isLechTuesday(wk,dayE) && !isLechWednesday(wk,dayE) && !isLechThursday(wk,dayE) && dc && dc.talmud, 'גמרא') + html;
+          return qualifiedDailyOr(wk,dayE,'talmud',d,function(){return (isLechThursday(wk,dayE) ? lechThursdayReading(wk,dayE,'talmud') : isBiraishisSundayGemara(wk,dayE) ? biraishisSundayGemaraReading(wk,dayE) : isLechWednesday(wk,dayE) ? lechWednesdayReading(wk,dayE,'talmud') : isLechTuesday(wk,dayE) ? lechTuesdayReading(wk,dayE,'talmud') : isLechMonday(wk,dayE) ? lechMondayReading(wk,dayE) : isLechSunday(wk,dayE) ? lechSundayReading(wk,dayE,'talmud') : qualifiedDay ? Promise.resolve(window.ChokSources.reading('talmud', state.tanachen)) : wk==='נח' ? Promise.resolve(window.ChokSources.weekReading(wk,dayE,'talmud',state.tanachen)||window.ChokSources.unavailable('talmud')) : biraishisTalmud ? biraishisTalmudHTML(biraishisTalmud, d) : gemaraHTML(d.gemara, vayetzeiFriday));}).then(function (html) { if (qualifiedDailyHas(wk,dayE,'talmud') && html==='') return; html = html || ''; html = dayKavana('talmud', d) + html; html = voiceBox(!biraishisTalmud && !vayetzeiFriday && !qualifiedDailyHas(wk,dayE,'talmud') && !isBiraishisSundayGemara(wk,dayE) && wk!=='נח' && !isLechMonday(wk,dayE) && !isLechTuesday(wk,dayE) && !isLechWednesday(wk,dayE) && !isLechThursday(wk,dayE) && dc && dc.talmud, 'גמרא') + html;
             if (html) out.push('<section class="ck-section" data-sec="talmud">' + secHead('תלמוד — גמרא ורש״י · Talmud — Gemara and Rashi') + (qualifiedDailyHas(wk,dayE,'talmud') || isBiraishisSundayGemara(wk,dayE) || isLechMonday(wk,dayE) || isLechTuesday(wk,dayE) || isLechWednesday(wk,dayE) || isLechThursday(wk,dayE) ? popBtn() : '') + html + '</section>');
           });
         });
