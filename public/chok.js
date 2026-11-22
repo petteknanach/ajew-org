@@ -1490,8 +1490,8 @@
 
   // Daily spans are selected from owned classical texts, never from the full-amud fallback.
   // This enumerated domain deliberately excludes separately qualified readings.
-  var BIRAISHIS_TALMUD_KEYS = new Set(["בראשית|יום רביעי", "בראשית|יום שלישי", "ויצא|יום רביעי", "וישלח|יום חמישי", "וישלח|יום ראשון", "וישלח|יום רביעי", "וישלח|יום שישי", "וישלח|יום שלישי", "וישלח|יום שני"]);
-  var BIRAISHIS_TALMUD_SHA = '1d9d3d49d9ad3db4bf3d3f9ed189907ef8b9fa5ca1b4112e1ef26b7e38b32045';
+  var BIRAISHIS_TALMUD_KEYS = new Set(["בראשית|יום רביעי", "בראשית|יום שלישי", "ויגש|יום חמישי", "ויגש|יום ראשון", "ויגש|יום רביעי", "ויגש|יום שישי", "ויגש|יום שלישי", "ויגש|יום שני", "ויחי|יום חמישי", "ויחי|יום ראשון", "ויחי|יום רביעי", "ויחי|יום שישי", "ויחי|יום שלישי", "ויחי|יום שני", "ויצא|יום חמישי", "ויצא|יום רביעי", "וישב|יום חמישי", "וישב|יום ראשון", "וישב|יום רביעי", "וישב|יום שישי", "וישב|יום שלישי", "וישב|יום שני", "וישלח|יום חמישי", "וישלח|יום ראשון", "וישלח|יום רביעי", "וישלח|יום שישי", "וישלח|יום שלישי", "וישלח|יום שני", "מקץ|יום חמישי", "מקץ|יום ראשון", "מקץ|יום רביעי", "מקץ|יום שישי", "מקץ|יום שלישי", "מקץ|יום שני"]);
+  var BIRAISHIS_TALMUD_SHA = '2fbbe4fc094eeda8bc0a76661ddc8fbef727281e63b26cb9e06c89b0e83d40af';
   var biraishisTalmudPromise;
   function biraishisTalmudKey(wk, day) {
     var key = wk + '|' + day;

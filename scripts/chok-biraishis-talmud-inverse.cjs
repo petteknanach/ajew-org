@@ -2,7 +2,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
 const raw=fs.readFileSync(path.join(__dirname,'chok-biraishis-talmud-delta.json'));
-assert.equal(sha(raw),'0d51bb224cca6688d865639bcde4601961be93b7460052be415830237c84d317');
+assert.equal(sha(raw),'3b37fd9e954e311bf018704f7173490398e3ab206da37746bf56195b3f85669a');
 const delta=JSON.parse(raw);
 function restore(relative,bytes){
  const row=Object.hasOwn(delta,relative)&&delta[relative];

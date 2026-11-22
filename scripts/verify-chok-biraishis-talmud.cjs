@@ -30,7 +30,8 @@ async function run(){
       assert.equal(typeof whole,'string'); assert(['textContent','literal'].includes(y.extraction));
       const t=Array.from(y.extraction==='textContent'?visible(whole):whole);
       assert(Number.isSafeInteger(y.start)&&Number.isSafeInteger(y.end)&&y.start>=0&&y.start<y.end&&y.end<=t.length);
-      return t.slice(y.start,y.end).join('').trim();
+      const selected=t.slice(y.start,y.end).join('');
+      return y.extraction==='textContent'?selected.trim():selected;
     });
     assert.deepEqual(extracts.slice(0,x.gemaraCount),bank.days[key].gemara);
     assert.deepEqual(extracts.slice(x.gemaraCount),bank.days[key].rashi);
@@ -45,7 +46,11 @@ async function run(){
   assert(code.includes('function biraishisTalmudHTML'));
   assert(main.includes('biraishisTalmud ? biraishisTalmudHTML(biraishisTalmud, d) : gemaraHTML(d.gemara, vayetzeiFriday)'));
   const tuesdayKey='בראשית|יום שלישי';
-  if(bank.tuesday){
+  const six=['יום ראשון','יום שני','יום שלישי','יום רביעי','יום חמישי','יום שישי'];
+  const affected=['בראשית|יום רביעי','ויצא|יום רביעי','ויצא|יום חמישי',...['וישלח','וישב','מקץ','ויגש','ויחי'].flatMap(w=>six.map(d=>w+'|'+d))];
+  assert.deepEqual(keys(bank.days),affected.sort());
+  assert(bank.tuesday,'the independently reviewed Tuesday bilingual selection is required');
+  {
     assert.equal(bank.tuesday.key,tuesdayKey);
     assert.equal(bank.tuesday.payloadSHA256,'ef848687893ebcecae70e2d38ef60cf8d29599229230fc105b290c92dfac36db');
     const t=read('public'+bank.tuesday.url);
@@ -78,7 +83,7 @@ async function run(){
   context.biraishisTalmudPromise=null; expected=raw.toString()+' ';
   const key=keys(bank.days)[0]; assert((await context.biraishisTalmudHTML(key)).includes('ck-source-unavailable'));
   expected=raw.toString(); assert.deepEqual(extract(await context.biraishisTalmudHTML(key),'ck-gemara-line'),bank.days[key].gemara);
-  console.log(JSON.stringify({gate:'BIRAISHIS_TALMUD_EXACT_OWNED_DAILY_RANGES',selected:keys(bank.days).length,verifiedSourceFiles:keys(cache).length,pass:true}));
+  console.log(JSON.stringify({gate:'BIRAISHIS_TALMUD_EXACT_DAILY_RANGES',selected:keys(bank.days).length+1,verifiedSourceFiles:keys(cache).length,bilingualQualified:1,pass:true}));
 }
 module.exports={run};
 if(require.main===module)run().catch(e=>{console.error(e);process.exitCode=1;});
