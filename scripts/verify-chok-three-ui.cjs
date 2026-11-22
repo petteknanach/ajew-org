@@ -191,8 +191,8 @@ async function vayetzeiFridayTalmud() {
  assert((await context.gemaraHTML(day.gemara,true)).includes('ck-source-unavailable'));
  const {restore}=require('./chok-vayetzei-friday-talmud-inverse.cjs');
  for(const [relative,pin] of Object.entries(json('scripts/chok-vayetzei-friday-talmud-delta.json'))){
-  const current=read(relative),bad=Buffer.concat([current,Buffer.from(' ')]);assert.equal(sha(current),pin.after);assert.equal(sha(restore(relative,current)),pin.before);assert.equal(restore(relative,bad),bad);
+  const current=require('./chok-biraishis-talmud-inverse.cjs').restore(relative,read(relative)),bad=Buffer.concat([current,Buffer.from(' ')]);assert.equal(sha(current),pin.after);assert.equal(sha(restore(relative,current)),pin.before);assert.equal(restore(relative,bad),bad);
  }
  console.log(JSON.stringify({gate:'VAYETZEI_FRIDAY_NIDDAH_13B_13_14',paragraphs:2,rashiGlosses:3,pass:true}));
 }
-Promise.all([vayetzeiFridayTalmud(),reader(),reader(genesis,30,37),reader(genesis,35,22),reader(kings,1,17)]).then(counts=>{const readerPaints=counts.slice(1).reduce((a,b)=>a+b,0);console.log(JSON.stringify({pass:true,books:oracle.books.length,sourceExactContexts:contexts,sourceExactModePaints:paints,otherBoundaryCodes:other,mainDisplayPaints:mainPaints,readerEditionPaints:readerPaints,currentDayMarkers,currentDayVerses,currentDayPaints,originalRawConserved:true,englishSourceOperandsUnchanged:true}));}).catch(e=>{console.error(e.stack);process.exitCode=1;});
+Promise.all([Promise.all([require('./verify-chok-biraishis-talmud.cjs').run(),vayetzeiFridayTalmud()]),reader(),reader(genesis,30,37),reader(genesis,35,22),reader(kings,1,17)]).then(counts=>{const readerPaints=counts.slice(1).reduce((a,b)=>a+b,0);console.log(JSON.stringify({pass:true,books:oracle.books.length,sourceExactContexts:contexts,sourceExactModePaints:paints,otherBoundaryCodes:other,mainDisplayPaints:mainPaints,readerEditionPaints:readerPaints,currentDayMarkers,currentDayVerses,currentDayPaints,originalRawConserved:true,englishSourceOperandsUnchanged:true}));}).catch(e=>{console.error(e.stack);process.exitCode=1;});

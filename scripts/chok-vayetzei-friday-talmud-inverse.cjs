@@ -5,6 +5,7 @@ const raw=fs.readFileSync(path.join(__dirname,'chok-vayetzei-friday-talmud-delta
 assert.equal(sha(raw),'ea74c1abe6678cf13866441841cc402c5d73e3a76318f497970acd7bf33284f8');
 const delta=JSON.parse(raw);
 function restore(relative,bytes){
+ bytes=require('./chok-biraishis-talmud-inverse.cjs').restore(relative,bytes);
  const row=Object.hasOwn(delta,relative)&&delta[relative];
  if(!row||!Buffer.isBuffer(bytes)||sha(bytes)!==row.after)return bytes;
  let text=bytes.toString('utf8');
