@@ -18,7 +18,21 @@ const raw = fs.readFileSync(path.join(__dirname, 'reader-cross-reference-cache-d
 assert.equal(sha(raw), 'f2fe87303dc58496d37f671b9316bd7c42a3caf7a186007d59ffa25ab731a89a', 'XREF_QUERY_AUTHORITY_PIN');
 const delta = JSON.parse(raw);
 assert.equal(Object.keys(delta.paths).length, 258, 'XREF_EXACT_QUERY_DOMAIN');
+// Independently scoped inverse of the two additive Story 1 film insertions in b0a552831.
+function restoreLostPrincessFilm(relative, bytes) {
+  if (relative !== "src/pages/reader/sipurey-maasiyos/[part]/[torah].astro" || !Buffer.isBuffer(bytes) || sha(bytes) !== "ef0db297bbaff31e0e915a37329a5fef2ebcd564e5d60155bb8e835fed6b264c") return bytes;
+  assert.equal(bytes.length, 17890, "STORY_FILM_AFTER_BYTES");
+  const storyFilmBlock1 = Buffer.from("\n<style>\n  .story-film-link {\n    margin: 0 auto 1rem;\n    padding: .75rem 1rem;\n    max-width: 700px;\n    border: 1px solid var(--reader-border, #d8d9df);\n    border-radius: .6rem;\n    background: var(--reader-bg-secondary, #f8f5f0);\n    color: var(--reader-text, #222);\n    font: .9rem/1.5 'Open Sans', sans-serif;\n  }\n  .story-film-link p { margin: 0 0 .25rem; }\n  .story-film-link a {\n    display: inline-flex;\n    align-items: center;\n    flex-wrap: wrap;\n    gap: .45em;\n    min-height: 44px;\n    color: inherit;\n    text-decoration: underline;\n    text-underline-offset: .18em;\n    font-weight: 700;\n  }\n  .story-film-link [lang='he'] { margin-inline-start: .35em; }\n  .story-film-link a:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }\n</style>\n");
+  assert.deepEqual(bytes.subarray(17114, 17890), storyFilmBlock1, "STORY_FILM_EXACT_INSERTION");
+  bytes = Buffer.concat([bytes.subarray(0, 17114), bytes.subarray(17890)]);
+  const storyFilmBlock2 = Buffer.from("      {part === '1' && torah === '1' && (\n        <aside id=\"lost-princess-film\" class=\"story-film-link\" aria-labelledby=\"lost-princess-film-heading\">\n          <p id=\"lost-princess-film-heading\"><strong>The Lost Princess</strong> <span lang=\"he\" dir=\"rtl\">מאבדת בת מלך</span></p>\n          <p>Film adaptation by <bdi>liner-design</bdi> · 7:12 · Higgsfield</p>\n          <a href=\"https://higgsfield.ai/@liner-design/projects/the-lost-princess-contest\" target=\"_blank\" rel=\"noopener noreferrer\">\n            <span aria-hidden=\"true\">▶</span> Watch on Higgsfield <span lang=\"he\" dir=\"rtl\">לצפייה בסרט</span>\n          </a>\n        </aside>\n      )}\n\n");
+  assert.deepEqual(bytes.subarray(12027, 12699), storyFilmBlock2, "STORY_FILM_EXACT_INSERTION");
+  bytes = Buffer.concat([bytes.subarray(0, 12027), bytes.subarray(12699)]);
+  assert.equal(sha(bytes), "1d2d9fc7540e39ce3e66eafcab2c8c0c2513aa8d45fb0b52e903cdbbbabdbda4", "STORY_FILM_WHOLE_INVERSE");
+  return bytes;
+}
 function restore(relative, bytes) {
+  bytes = restoreLostPrincessFilm(relative, bytes);
   bytes = sourceInverse('restore', relative, bytes);
   bytes = optionalGuard.restore(relative, bytes);
   const d = delta.paths[relative];
@@ -32,6 +46,7 @@ function restore(relative, bytes) {
   return before;
 }
 function requireCurrent(relative, bytes) {
+  bytes = restoreLostPrincessFilm(relative, bytes);
   bytes = sourceInverse('requireCurrent', relative, bytes);
   bytes = optionalGuard.requireCurrent(relative, bytes);
   const d = delta.paths[relative];
@@ -52,7 +67,8 @@ if (require.main === module) (async () => {
   assert.deepEqual(paths.filter(p=>p.endsWith('.astro')), actual);
   const scan = (needle, area) => execFileSync('git', ['grep', '-l', '-z', '-F', needle, 'HEAD', '--', area], {cwd:root})
     .toString().split('\0').filter(Boolean).map(p=>p.slice(5)).sort();
-  const staticHTML = scan('reader-script.js?v=', 'public').filter(p=>p.endsWith('.html'));
+  // Scan the same recursive .html domain directly, without loading discarded media blobs.
+  const staticHTML = scan('reader-script.js?v=', ':(glob)public/**/*.html').filter(p=>p.endsWith('.html'));
   // Operative generator sources, not frozen JSON/HTML fixtures or test assertions.
   const producers = scan('<script src="' + '/reader-script.js?v=', 'scripts')
     .filter(p=>/\.(?:cjs|mjs|js|py)$/.test(p) && !/(?:^|\/)(?:test[-_]|.*\.test\.)/.test(p));
@@ -77,7 +93,7 @@ if (require.main === module) (async () => {
       negativeControls++;
     }
     const d = delta.paths[relative];
-    const queryCurrent = optionalGuard.requireCurrent(relative, sourceInverse('requireCurrent', relative, b));
+    const queryCurrent = optionalGuard.requireCurrent(relative, sourceInverse('requireCurrent', relative, restoreLostPrincessFilm(relative, b)));
     const old = requireCurrent(relative, b);
     const predecessor = execFileSync('git', ['show', predecessorCommit + ':' + relative], {cwd:root,maxBuffer:8*1024*1024});
     assert.equal(predecessor.toString().split(predecessorURL).length, 2);
