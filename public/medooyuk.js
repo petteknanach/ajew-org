@@ -60,7 +60,9 @@
     // User's exact occurrence ruling: segoal under the zayin; retain munach and bet's segoal.
     {chapter: 30, verse: 20, token: 5, before: 'זֵ֣בֶד', after: 'זֶ֣בֶד'},
     // User's exact occurrence ruling: patach under the ayin only.
-    {chapter: 30, verse: 37, token: 7, before: 'וְעֶרְמ֑וֹן', after: 'וְעַרְמ֑וֹן'}
+    {chapter: 30, verse: 37, token: 7, before: 'וְעֶרְמ֑וֹן', after: 'וְעַרְמ֑וֹן'},
+    // User's exact occurrence ruling: shoorook in the initial vuv only.
+    {chapter: 32, verse: 18, token: 8, before: 'וִשְׁאֵֽלְךָ֙', after: 'וּשְׁאֵֽלְךָ֙'}
   ];
   function readingVerse(verse, context) {
     var entry = verse && readingSources.get(verse);

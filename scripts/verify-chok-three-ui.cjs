@@ -69,13 +69,31 @@ const armonPrepared=a.prepare({'37':armon},armonContext.book,30,tails)[0],armonA
 assert.equal(armonAttached.reason,'attached');
 assert.equal(a.reading(armonPrepared,r).t[7],'וְעַרְמ֑וֹן');
 assert.equal(a.reading(armonAttached.verse,r).t[6],'וְעַרְמ֑וֹן');
+const shoorook=require('./genesis-32-18-shoorook-inverse.cjs');
+const asked=authenticated.ch[32][18],askedContext={book:'tanach-bereishit',chapter:32,verse:18};
+const askedRaw=JSON.stringify(asked),askedSelected=r.readingVerse(asked,askedContext);
+const oldAsked='וִשְׁאֵֽלְךָ֙',newAsked='וּשְׁאֵֽלְךָ֙';
+assert.equal(asked.t[8],oldAsked); assert.equal(askedSelected.t[8],newAsked);
+const askedRestored={...askedSelected,t:askedSelected.t.slice()};
+askedRestored.t[8]=newAsked.slice(0,1)+'\u05b4'+newAsked.slice(2);
+same(askedRestored,asked); assert.equal(JSON.stringify(asked),askedRaw); assert.equal(JSON.stringify(genesis),rawBefore);
+assert.equal(newAsked.codePointAt(1),0x05bc); assert.equal(asked.k[8],0);
+same(asked.m.filter(n=>n[0]===8),[[8,1,'nach',0],[8,3,'na',0]]);
+const askedCopy=JSON.parse(askedRaw); assert.equal(r.readingVerse(askedCopy,askedContext),askedCopy);
+for(const context of [{...askedContext,verse:19},{...askedContext,chapter:31},{...askedContext,book:'tanach-shemos'}]) assert.equal(r.readingVerse(asked,context),asked);
+const askedPrepared=a.prepare({'18':asked},askedContext.book,32,tails)[0],askedAttached=a.attach(a.text(askedPrepared),18,askedPrepared);
+assert.equal(askedAttached.reason,'attached'); assert.equal(a.reading(askedPrepared,r).t[8],newAsked); assert.equal(a.reading(askedAttached.verse,r).t[7],newAsked);
+for(const [relative,pin] of Object.entries(shoorook.paths)){
+ const current=read(relative),bad=Buffer.concat([current,Buffer.from(' ')]);
+ assert.equal(sha(current),pin.after); assert.equal(sha(shoorook.restore(relative,current)),pin.before); assert.equal(shoorook.restore(relative,bad),bad);
+}
 const patachInverse=require('./genesis-30-37-patach-inverse.cjs').restore;
 const patachPins=json('scripts/genesis-30-37-patach-admission.json').paths;
 assert.equal(sha(patachInverse('public/reader-source-exact.js',read('public/reader-source-exact.js'))),patachPins['public/reader-source-exact.js'][0]);
 const segolInverse=require('./genesis-30-20-segoal-inverse.cjs').restore;
 const fridayInverse=require('./chok-vayetzei-friday-talmud-inverse.cjs').restore;
 for(const [relative,row] of Object.entries(json('scripts/genesis-30-20-segoal-admission.json').paths)){
-  const current=fridayInverse(relative,read(relative)),[priorPin,currentPin]=patachPins[relative];
+  const current=fridayInverse(relative,shoorook.restore(relative,read(relative))),[priorPin,currentPin]=patachPins[relative];
   assert.equal(priorPin,row.after);assert.equal(sha(current),currentPin);
   assert.equal(sha(patachInverse(relative,current)),row.after);
   assert.equal(sha(segolInverse(relative,current)),row.before);
@@ -99,6 +117,13 @@ for(const mode of ['full','nikud','taamim','letters'])for(const capturedLanguage
  const want=capturedLanguage==='original'||mode==='full'?'וְעַרְמ֑וֹן':mode==='nikud'?'וְעַרְמוֹן':mode==='taamim'?'וערמ֑ון':'וערמון';
  assert(b.row.replace(/<[^>]+>/g,'').includes(want),JSON.stringify({mode,capturedLanguage,special,want,row:b.row}));
  assert(!b.row.includes('עֶ'));assert.equal(JSON.stringify(armon),armonOriginal);
+}
+for(const mode of ['full','nikud','taamim','letters'])for(const capturedLanguage of ['he','original'])for(const special of [false,true]){
+ Object.assign(b,{verse:asked,slug:'tanach-bereishit',c:32,x:18,kind:'torah',parsha:'וישלח',day:'יום שלישי',capturedLanguage,plainHeNum:n=>String(n),refLabelHTML:s=>s});
+ b.state.mode=mode;b.state.medooyuk=special;vm.runInContext(main.slice(start,end),b);
+ const want=capturedLanguage==='original'||mode==='full'?newAsked:mode==='nikud'?'וּשְׁאֵלְךָ':mode==='taamim'?'ושאֽלך֙':'ושאלך';
+ assert(b.row.replace(/<[^>]+>/g,'').includes(want),JSON.stringify({mode,capturedLanguage,special,want,row:b.row}));
+ assert(!b.row.includes('וִש'));assert.equal(JSON.stringify(asked),askedRaw);
 }
 let mainPaints=0;
 for(const mode of ['full','nikud','letters'])for(const capturedLanguage of ['he','original'])for(const special of [false,true]){
@@ -156,6 +181,7 @@ async function reader(rawBook=genesis,chapter=21,index=33){
    if((document.querySelector('#btn-reader-special').getAttribute('aria-pressed')==='true')!==special)document.querySelector('#btn-reader-special').click();state.nikud=nikud;query=q;model.box.window.AjewReaderEdition.paint(state,query);
    if(chapter===21&&index===33)assert(target().textContent.includes(nikud?'אֵ֖שֶׁל':'אשל'));
    if(chapter===30&&index===37)assert(target().textContent.includes(nikud?'וְעַרְמ֑וֹן':'וערמון'));
+   if(chapter===32&&index===18)assert(target().textContent.includes(nikud?newAsked:'ושאלך'));
    same(markers(target().innerHTML).map(b=>b[1]),expected);if(!special||!nikud||q)assert.equal(target().querySelectorAll('.marked-hebrew').length,0);
   }
   let count=8;
@@ -191,8 +217,8 @@ async function vayetzeiFridayTalmud() {
  assert((await context.gemaraHTML(day.gemara,true)).includes('ck-source-unavailable'));
  const {restore}=require('./chok-vayetzei-friday-talmud-inverse.cjs');
  for(const [relative,pin] of Object.entries(json('scripts/chok-vayetzei-friday-talmud-delta.json'))){
-  const current=require('./chok-biraishis-talmud-inverse.cjs').restore(relative,read(relative)),bad=Buffer.concat([current,Buffer.from(' ')]);assert.equal(sha(current),pin.after);assert.equal(sha(restore(relative,current)),pin.before);assert.equal(restore(relative,bad),bad);
+  const current=require('./chok-biraishis-talmud-inverse.cjs').restore(relative,shoorook.restore(relative,read(relative))),bad=Buffer.concat([current,Buffer.from(' ')]);assert.equal(sha(current),pin.after);assert.equal(sha(restore(relative,current)),pin.before);assert.equal(restore(relative,bad),bad);
  }
  console.log(JSON.stringify({gate:'VAYETZEI_FRIDAY_NIDDAH_13B_13_14',paragraphs:2,rashiGlosses:3,pass:true}));
 }
-Promise.all([Promise.all([require('./verify-chok-biraishis-talmud.cjs').run(),vayetzeiFridayTalmud()]),reader(),reader(genesis,30,37),reader(genesis,35,22),reader(kings,1,17)]).then(counts=>{const readerPaints=counts.slice(1).reduce((a,b)=>a+b,0);console.log(JSON.stringify({pass:true,books:oracle.books.length,sourceExactContexts:contexts,sourceExactModePaints:paints,otherBoundaryCodes:other,mainDisplayPaints:mainPaints,readerEditionPaints:readerPaints,currentDayMarkers,currentDayVerses,currentDayPaints,originalRawConserved:true,englishSourceOperandsUnchanged:true}));}).catch(e=>{console.error(e.stack);process.exitCode=1;});
+Promise.all([Promise.all([require('./verify-chok-biraishis-talmud.cjs').run(),vayetzeiFridayTalmud()]),reader(),reader(genesis,30,37),reader(genesis,32,18),reader(genesis,35,22),reader(kings,1,17)]).then(counts=>{const readerPaints=counts.slice(1).reduce((a,b)=>a+b,0);console.log(JSON.stringify({pass:true,books:oracle.books.length,sourceExactContexts:contexts,sourceExactModePaints:paints,otherBoundaryCodes:other,mainDisplayPaints:mainPaints,readerEditionPaints:readerPaints,currentDayMarkers,currentDayVerses,currentDayPaints,originalRawConserved:true,englishSourceOperandsUnchanged:true}));}).catch(e=>{console.error(e.stack);process.exitCode=1;});

@@ -80,12 +80,14 @@ if (require.main === module) (async () => {
   // query-only proof on the exact pre-pointing templates.
   const pointing = require('./genesis-30-20-segoal-inverse.cjs');
   const pointingPins = require('./genesis-30-37-patach-admission.json').paths;
+  const shoorook = require('./genesis-32-18-shoorook-inverse.cjs');
   let negativeControls = 0;
   for (const relative of paths) {
     let b = fs.readFileSync(path.join(root, relative));
     if (pointingPins[relative]) {
       const current = b;
-      assert.equal(sha(current), pointingPins[relative][1], 'POINTING_REQUIRED_CURRENT:' + relative);
+      assert.equal(sha(current), shoorook.paths[relative].after, 'SHOOROOK_REQUIRED_CURRENT:' + relative);
+      assert.equal(sha(shoorook.restore(relative,current)), pointingPins[relative][1], 'POINTING_REQUIRED_PREDECESSOR:' + relative);
       b = pointing.restore(relative, current);
       assert.notEqual(b, current, 'POINTING_INVERSE_REQUIRED:' + relative);
       const changed = Buffer.concat([current, Buffer.from(' ')]);
