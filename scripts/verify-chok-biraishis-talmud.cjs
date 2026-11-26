@@ -39,7 +39,7 @@ async function run(){
   const delta=JSON.parse(read('scripts/chok-biraishis-talmud-delta.json'));
   const {restore}=require('./chok-biraishis-talmud-inverse.cjs');
   for(const [name,pin] of Object.entries(delta)){
-    const current=require('./genesis-32-18-shoorook-inverse.cjs').restore(name,require('./chok-two-week-mishna-inverse.cjs').restore(name,read(name))), wrong=Buffer.concat([current,Buffer.from(' ')]);
+    const current=require('./genesis-32-18-shoorook-inverse.cjs').restore(name,read(name)), wrong=Buffer.concat([current,Buffer.from(' ')]);
     assert.equal(sha(current),pin.after); assert.equal(sha(restore(name,current)),pin.before); assert.equal(restore(name,wrong),wrong);
   }
   const code=main.slice(main.indexOf('  var BIRAISHIS_TALMUD_KEYS'),main.indexOf('  function isVayetzeiFriday'));
