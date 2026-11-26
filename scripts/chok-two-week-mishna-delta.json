@@ -1,0 +1,46 @@
+{
+  "base": "04adcd4c1e86f1a4acb3b3250f1a14d1251caa06",
+  "bankSHA256": "f8cfde7444ebdd06fbbd4ddb3dc7bb7fa98e026960cdbc984f56f27c7857a8b4",
+  "paths": {
+    "public/chok.js": {
+      "before": "12c1305acf32f169653baad4a943ee3194de9fb11bb914fa55ef664c89aaf771",
+      "after": "8d89fe70311d49c657735df75bc20f3d66550cbc1aca5ae162fe3ab2b9d933b5",
+      "inverse": [
+        [
+          "(supplementalMishna||qualifiedDailyHas(wk,dayE,'mishna')||isBiraishisSundayMishna",
+          "(qualifiedDailyHas(wk,dayE,'mishna')||isBiraishisSundayMishna"
+        ],
+        [
+          "voiceBox(!supplementalMishna && !qualifiedDailyHas(wk,dayE,'mishna')",
+          "voiceBox(!qualifiedDailyHas(wk,dayE,'mishna')"
+        ],
+        [
+          "d.mishna.perek,wk,dayE,noachEnglishEnabled));})).then(function (html)",
+          "d.mishna.perek,wk,dayE,noachEnglishEnabled));}).then(function (html)"
+        ],
+        [
+          "          return (supplementalMishna ? selectedTwoWeekMishnaReading(wk,dayE,d) : qualifiedDailyOr(wk,dayE,'mishna',d,function(){return (",
+          "          return qualifiedDailyOr(wk,dayE,'mishna',d,function(){return ("
+        ],
+        [
+          "          var supplementalMishna=selectedTwoWeekMishnaKeys.has(wk+'|'+dayE) && !qualifiedDailyHas(wk,dayE,'mishna');\n          var actual=supplementalMishna || qualifiedDailyHas(wk,dayE,'mishna') || isLechThursday(wk,dayE) ? null",
+          "          var actual=qualifiedDailyHas(wk,dayE,'mishna') || isLechThursday(wk,dayE) ? null"
+        ],
+        [
+          "  // A finite Mishna-only selection above the historic chapter fallback.\n  var selectedTwoWeekMishnaKeys=new Set([\"וישלח|יום רביעי\", \"וישב|יום רביעי\", \"וישב|יום ראשון\", \"וישלח|יום שישי\", \"וישב|יום שישי\", \"וישב|יום שני\", \"וישב|יום שלישי\", \"וישלח|יום חמישי\", \"וישב|יום חמישי\"]);\n  var selectedTwoWeekMishnaPromise;\n  function selectedTwoWeekMishnaReading(wk,day,scheduled) {\n    var unavailable='<p class=\"ck-source-unavailable\">הקריאה אינה זמינה כעת · This reading is temporarily unavailable.</p>';\n    var options={language:state.language,mode:state.mode,commentary:state.commentary,optionalRashi:state.rashi,transform:applyWednesdayMode};\n    if (!selectedTwoWeekMishnaPromise) {\n      var pin='f8cfde7444ebdd06fbbd4ddb3dc7bb7fa98e026960cdbc984f56f27c7857a8b4';\n      selectedTwoWeekMishnaPromise=fetchJSON('/reader/chok/selected-two-week-mishna-romm-v1.json?v='+pin,true).then(function(raw){\n        return onkelosHash(raw).then(function(hash){\n          if(hash!==pin) throw Error('Mishna selection digest mismatch');\n          var bank=JSON.parse(raw), lib=window.ChokQualifiedDaily;\n          if(bank.schema!=='chok-mishna-two-weeks-v1' || bank.entries.length!==selectedTwoWeekMishnaKeys.size ||\n             bank.entries.some(function(r){return !selectedTwoWeekMishnaKeys.has(r.key)||Object.keys(r.sections).join()!=='mishna';})) throw Error('Mishna selection scope mismatch');\n          return lib.create(bank.entries);\n        });\n      }).catch(function(e){selectedTwoWeekMishnaPromise=null;throw e;});\n    }\n    return selectedTwoWeekMishnaPromise.then(function(api){\n      window.ChokQualifiedDaily.bind(document);\n      return api.reading(wk,day,'mishna',options,function(url){return fetchJSON(url,true);},scheduled);\n    }).then(function(html){return html||unavailable;}).catch(function(){return unavailable;});\n  }\n  function qualifiedDailyOr(wk,day,section,scheduled,legacy) {",
+          "  function qualifiedDailyOr(wk,day,section,scheduled,legacy) {"
+        ]
+      ]
+    },
+    "src/pages/reader/chok.astro": {
+      "before": "794d083882af98833495a25e39f568aa15bfbafd600d0f3fc0b9f973415ddcf2",
+      "after": "aa085e7555621ee81a65808c648fc4f2c576c7517e0410dc4bfbbfa047a4d977",
+      "inverse": [
+        [
+          "/chok.js?v=8d89fe70311d49c657735df75bc20f3d66550cbc1aca5ae162fe3ab2b9d933b5\" integrity=\"sha384-TdPBFu54IBUE0dc4GxSlcMNpufwk7Y3Qnwv6uoqJrGxgCZ/ZS21hdRQv0Dw0+agq",
+          "/chok.js?v=12c1305acf32f169653baad4a943ee3194de9fb11bb914fa55ef664c89aaf771\" integrity=\"sha384-bnwWT721DldNGeBnx5+4RNeTDruSgxo0l2lwCPmppGRTiM5NSnu2dfiou+J8rkYA"
+        ]
+      ]
+    }
+  }
+}
