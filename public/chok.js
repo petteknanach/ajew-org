@@ -1373,6 +1373,29 @@
       return html;
     });
   }
+  // A finite Mishna-only selection above the historic chapter fallback.
+  var selectedTwoWeekMishnaKeys=new Set(["וישלח|יום רביעי"]);
+  var selectedTwoWeekMishnaPromise;
+  function selectedTwoWeekMishnaReading(wk,day,scheduled) {
+    var unavailable='<p class="ck-source-unavailable">הקריאה אינה זמינה כעת · This reading is temporarily unavailable.</p>';
+    var options={language:state.language,mode:state.mode,commentary:state.commentary,optionalRashi:state.rashi,transform:applyWednesdayMode};
+    if (!selectedTwoWeekMishnaPromise) {
+      var pin='c02022a6dab13db82b1e80b61e3324ff542b6c7de3673f4b77cabae4082e10cc';
+      selectedTwoWeekMishnaPromise=fetchJSON('/reader/chok/selected-two-week-mishna-v1.json?v='+pin,true).then(function(raw){
+        return onkelosHash(raw).then(function(hash){
+          if(hash!==pin) throw Error('Mishna selection digest mismatch');
+          var bank=JSON.parse(raw), lib=window.ChokQualifiedDaily;
+          if(bank.schema!=='chok-mishna-two-weeks-v1' || bank.entries.length!==selectedTwoWeekMishnaKeys.size ||
+             bank.entries.some(function(r){return !selectedTwoWeekMishnaKeys.has(r.key)||Object.keys(r.sections).join()!=='mishna';})) throw Error('Mishna selection scope mismatch');
+          return lib.create(bank.entries);
+        });
+      }).catch(function(e){selectedTwoWeekMishnaPromise=null;throw e;});
+    }
+    return selectedTwoWeekMishnaPromise.then(function(api){
+      window.ChokQualifiedDaily.bind(document);
+      return api.reading(wk,day,'mishna',options,function(url){return fetchJSON(url,true);},scheduled);
+    }).then(function(html){return html||unavailable;}).catch(function(){return unavailable;});
+  }
   function qualifiedDailyOr(wk,day,section,scheduled,legacy) {
     return qualifiedDailyHas(wk,day,section)?qualifiedDailyReading(wk,day,section,scheduled):legacy();
   }
@@ -1676,9 +1699,10 @@
       });
       if ((qualifiedDailyHas(wk,dayE,'mishna') || isLechThursday(wk,dayE) || d.mishna && d.mishna.masechet) && want('mishna')) {
         p = p.then(function () {
-          var actual=qualifiedDailyHas(wk,dayE,'mishna') || isLechThursday(wk,dayE) ? null : qualifiedDay ? window.ChokSources.reading('mishna',state.tanachen) : window.ChokSources.weekReading(wk,dayE,'mishna',state.tanachen);
-          return qualifiedDailyOr(wk,dayE,'mishna',d,function(){return (isLechThursday(wk,dayE) ? lechThursdayReading(wk,dayE,'mishna') : isBiraishisSundayMishna(wk,dayE) ? biraishisSundayMishnaReading(wk,dayE) : isLechWednesday(wk,dayE) ? lechWednesdayReading(wk,dayE,'mishna') : actual ? bartenuraHTML(d.mishna.masechet,d.mishna.perek,wk,dayE,noachEnglishEnabled).then(function (bar) { return actual+bar; }) : mishnaHTML(d.mishna.masechet, d.mishna.perek,wk,dayE,noachEnglishEnabled));}).then(function (html) { if (qualifiedDailyHas(wk,dayE,'mishna') && html==='') return; html = html || ''; html = dayKavana('mishna', d) + html; html = voiceBox(!qualifiedDailyHas(wk,dayE,'mishna') && !isBiraishisSundayMishna(wk,dayE) && !isLechWednesday(wk,dayE) && !isLechThursday(wk,dayE) && dc && dc.mishna, 'משנה') + html;
-            if (html) out.push('<section class="ck-section" data-sec="mishna">' + secHead('משנה וברטנורא · Mishna and Bartenura') + (qualifiedDailyHas(wk,dayE,'mishna')||isBiraishisSundayMishna(wk,dayE)||isLechWednesday(wk,dayE)||isLechThursday(wk,dayE)?popBtn():'') + html + '</section>');
+          var supplementalMishna=selectedTwoWeekMishnaKeys.has(wk+'|'+dayE) && !qualifiedDailyHas(wk,dayE,'mishna');
+          var actual=supplementalMishna || qualifiedDailyHas(wk,dayE,'mishna') || isLechThursday(wk,dayE) ? null : qualifiedDay ? window.ChokSources.reading('mishna',state.tanachen) : window.ChokSources.weekReading(wk,dayE,'mishna',state.tanachen);
+          return (supplementalMishna ? selectedTwoWeekMishnaReading(wk,dayE,d) : qualifiedDailyOr(wk,dayE,'mishna',d,function(){return (isLechThursday(wk,dayE) ? lechThursdayReading(wk,dayE,'mishna') : isBiraishisSundayMishna(wk,dayE) ? biraishisSundayMishnaReading(wk,dayE) : isLechWednesday(wk,dayE) ? lechWednesdayReading(wk,dayE,'mishna') : actual ? bartenuraHTML(d.mishna.masechet,d.mishna.perek,wk,dayE,noachEnglishEnabled).then(function (bar) { return actual+bar; }) : mishnaHTML(d.mishna.masechet, d.mishna.perek,wk,dayE,noachEnglishEnabled));})).then(function (html) { if (qualifiedDailyHas(wk,dayE,'mishna') && html==='') return; html = html || ''; html = dayKavana('mishna', d) + html; html = voiceBox(!supplementalMishna && !qualifiedDailyHas(wk,dayE,'mishna') && !isBiraishisSundayMishna(wk,dayE) && !isLechWednesday(wk,dayE) && !isLechThursday(wk,dayE) && dc && dc.mishna, 'משנה') + html;
+            if (html) out.push('<section class="ck-section" data-sec="mishna">' + secHead('משנה וברטנורא · Mishna and Bartenura') + (supplementalMishna||qualifiedDailyHas(wk,dayE,'mishna')||isBiraishisSundayMishna(wk,dayE)||isLechWednesday(wk,dayE)||isLechThursday(wk,dayE)?popBtn():'') + html + '</section>');
           });
         });
       }

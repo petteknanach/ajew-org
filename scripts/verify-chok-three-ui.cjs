@@ -69,6 +69,7 @@ const armonPrepared=a.prepare({'37':armon},armonContext.book,30,tails)[0],armonA
 assert.equal(armonAttached.reason,'attached');
 assert.equal(a.reading(armonPrepared,r).t[7],'וְעַרְמ֑וֹן');
 assert.equal(a.reading(armonAttached.verse,r).t[6],'וְעַרְמ֑וֹן');
+const priorMishna=require('./chok-two-week-mishna-inverse.cjs').restore;
 const shoorook=require('./genesis-32-18-shoorook-inverse.cjs');
 const asked=authenticated.ch[32][18],askedContext={book:'tanach-bereishit',chapter:32,verse:18};
 const askedRaw=JSON.stringify(asked),askedSelected=r.readingVerse(asked,askedContext);
@@ -84,7 +85,7 @@ for(const context of [{...askedContext,verse:19},{...askedContext,chapter:31},{.
 const askedPrepared=a.prepare({'18':asked},askedContext.book,32,tails)[0],askedAttached=a.attach(a.text(askedPrepared),18,askedPrepared);
 assert.equal(askedAttached.reason,'attached'); assert.equal(a.reading(askedPrepared,r).t[8],newAsked); assert.equal(a.reading(askedAttached.verse,r).t[7],newAsked);
 for(const [relative,pin] of Object.entries(shoorook.paths)){
- const current=read(relative),bad=Buffer.concat([current,Buffer.from(' ')]);
+ const current=priorMishna(relative,read(relative)),bad=Buffer.concat([current,Buffer.from(' ')]);
  assert.equal(sha(current),pin.after); assert.equal(sha(shoorook.restore(relative,current)),pin.before); assert.equal(shoorook.restore(relative,bad),bad);
 }
 const patachInverse=require('./genesis-30-37-patach-inverse.cjs').restore;
@@ -93,7 +94,7 @@ assert.equal(sha(patachInverse('public/reader-source-exact.js',read('public/read
 const segolInverse=require('./genesis-30-20-segoal-inverse.cjs').restore;
 const fridayInverse=require('./chok-vayetzei-friday-talmud-inverse.cjs').restore;
 for(const [relative,row] of Object.entries(json('scripts/genesis-30-20-segoal-admission.json').paths)){
-  const current=fridayInverse(relative,shoorook.restore(relative,read(relative))),[priorPin,currentPin]=patachPins[relative];
+  const current=fridayInverse(relative,shoorook.restore(relative,priorMishna(relative,read(relative)))),[priorPin,currentPin]=patachPins[relative];
   assert.equal(priorPin,row.after);assert.equal(sha(current),currentPin);
   assert.equal(sha(patachInverse(relative,current)),row.after);
   assert.equal(sha(segolInverse(relative,current)),row.before);
@@ -217,7 +218,7 @@ async function vayetzeiFridayTalmud() {
  assert((await context.gemaraHTML(day.gemara,true)).includes('ck-source-unavailable'));
  const {restore}=require('./chok-vayetzei-friday-talmud-inverse.cjs');
  for(const [relative,pin] of Object.entries(json('scripts/chok-vayetzei-friday-talmud-delta.json'))){
-  const current=require('./chok-biraishis-talmud-inverse.cjs').restore(relative,shoorook.restore(relative,read(relative))),bad=Buffer.concat([current,Buffer.from(' ')]);assert.equal(sha(current),pin.after);assert.equal(sha(restore(relative,current)),pin.before);assert.equal(restore(relative,bad),bad);
+  const current=require('./chok-biraishis-talmud-inverse.cjs').restore(relative,shoorook.restore(relative,priorMishna(relative,read(relative)))),bad=Buffer.concat([current,Buffer.from(' ')]);assert.equal(sha(current),pin.after);assert.equal(sha(restore(relative,current)),pin.before);assert.equal(restore(relative,bad),bad);
  }
  console.log(JSON.stringify({gate:'VAYETZEI_FRIDAY_NIDDAH_13B_13_14',paragraphs:2,rashiGlosses:3,pass:true}));
 }

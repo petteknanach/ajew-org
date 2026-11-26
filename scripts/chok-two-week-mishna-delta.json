@@ -1,0 +1,46 @@
+{
+  "base": "04adcd4c1e86f1a4acb3b3250f1a14d1251caa06",
+  "bankSHA256": "c02022a6dab13db82b1e80b61e3324ff542b6c7de3673f4b77cabae4082e10cc",
+  "paths": {
+    "public/chok.js": {
+      "before": "12c1305acf32f169653baad4a943ee3194de9fb11bb914fa55ef664c89aaf771",
+      "after": "aa5f7d02c6e3097213853a4f4d873ca8652fb1df3a612334cbe469e7ef120f49",
+      "inverse": [
+        [
+          "(supplementalMishna||qualifiedDailyHas(wk,dayE,'mishna')||isBiraishisSundayMishna",
+          "(qualifiedDailyHas(wk,dayE,'mishna')||isBiraishisSundayMishna"
+        ],
+        [
+          "voiceBox(!supplementalMishna && !qualifiedDailyHas(wk,dayE,'mishna')",
+          "voiceBox(!qualifiedDailyHas(wk,dayE,'mishna')"
+        ],
+        [
+          "d.mishna.perek,wk,dayE,noachEnglishEnabled));})).then(function (html)",
+          "d.mishna.perek,wk,dayE,noachEnglishEnabled));}).then(function (html)"
+        ],
+        [
+          "          return (supplementalMishna ? selectedTwoWeekMishnaReading(wk,dayE,d) : qualifiedDailyOr(wk,dayE,'mishna',d,function(){return (",
+          "          return qualifiedDailyOr(wk,dayE,'mishna',d,function(){return ("
+        ],
+        [
+          "          var supplementalMishna=selectedTwoWeekMishnaKeys.has(wk+'|'+dayE) && !qualifiedDailyHas(wk,dayE,'mishna');\n          var actual=supplementalMishna || qualifiedDailyHas(wk,dayE,'mishna') || isLechThursday(wk,dayE) ? null",
+          "          var actual=qualifiedDailyHas(wk,dayE,'mishna') || isLechThursday(wk,dayE) ? null"
+        ],
+        [
+          "  // A finite Mishna-only selection above the historic chapter fallback.\n  var selectedTwoWeekMishnaKeys=new Set([\"וישלח|יום רביעי\"]);\n  var selectedTwoWeekMishnaPromise;\n  function selectedTwoWeekMishnaReading(wk,day,scheduled) {\n    var unavailable='<p class=\"ck-source-unavailable\">הקריאה אינה זמינה כעת · This reading is temporarily unavailable.</p>';\n    var options={language:state.language,mode:state.mode,commentary:state.commentary,optionalRashi:state.rashi,transform:applyWednesdayMode};\n    if (!selectedTwoWeekMishnaPromise) {\n      var pin='c02022a6dab13db82b1e80b61e3324ff542b6c7de3673f4b77cabae4082e10cc';\n      selectedTwoWeekMishnaPromise=fetchJSON('/reader/chok/selected-two-week-mishna-v1.json?v='+pin,true).then(function(raw){\n        return onkelosHash(raw).then(function(hash){\n          if(hash!==pin) throw Error('Mishna selection digest mismatch');\n          var bank=JSON.parse(raw), lib=window.ChokQualifiedDaily;\n          if(bank.schema!=='chok-mishna-two-weeks-v1' || bank.entries.length!==selectedTwoWeekMishnaKeys.size ||\n             bank.entries.some(function(r){return !selectedTwoWeekMishnaKeys.has(r.key)||Object.keys(r.sections).join()!=='mishna';})) throw Error('Mishna selection scope mismatch');\n          return lib.create(bank.entries);\n        });\n      }).catch(function(e){selectedTwoWeekMishnaPromise=null;throw e;});\n    }\n    return selectedTwoWeekMishnaPromise.then(function(api){\n      window.ChokQualifiedDaily.bind(document);\n      return api.reading(wk,day,'mishna',options,function(url){return fetchJSON(url,true);},scheduled);\n    }).then(function(html){return html||unavailable;}).catch(function(){return unavailable;});\n  }\n  function qualifiedDailyOr(wk,day,section,scheduled,legacy) {",
+          "  function qualifiedDailyOr(wk,day,section,scheduled,legacy) {"
+        ]
+      ]
+    },
+    "src/pages/reader/chok.astro": {
+      "before": "794d083882af98833495a25e39f568aa15bfbafd600d0f3fc0b9f973415ddcf2",
+      "after": "1895bd77a310e6acde2e9222d854fb9450de59bdb3e79a80dc55de1753c6b5cb",
+      "inverse": [
+        [
+          "/chok.js?v=aa5f7d02c6e3097213853a4f4d873ca8652fb1df3a612334cbe469e7ef120f49\" integrity=\"sha384-U5PjhyYnbE4zqNCQUZU3iag+K/e9YoKNG8HE/GGFc068n6LuXTmWM6EUuBOLS6uF",
+          "/chok.js?v=12c1305acf32f169653baad4a943ee3194de9fb11bb914fa55ef664c89aaf771\" integrity=\"sha384-bnwWT721DldNGeBnx5+4RNeTDruSgxo0l2lwCPmppGRTiM5NSnu2dfiou+J8rkYA"
+        ]
+      ]
+    }
+  }
+}
